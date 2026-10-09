@@ -7,7 +7,6 @@ import {
   SESSION_PREFIX,
 } from "../../plugins/dotclaude-browser/features/search/limits.mjs";
 import {
-  denyText,
   failure,
   pageResult,
   searchQuery,
@@ -72,11 +71,10 @@ test("a page gives a result, and a bot check or an empty page gives a reason", (
   );
 });
 
-test("the result record and the deny text carry the reason", () => {
+test("the result record has the query, the text, and the duration", () => {
   expect(searchResult("q", "t", 1000, 3500)).toEqual({
     query: "q",
     results: ["t"],
     durationSeconds: 2.5,
   });
-  expect(denyText("why")).toContain("why");
 });

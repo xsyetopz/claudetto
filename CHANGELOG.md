@@ -10,6 +10,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ## [Unreleased]
 
+## [0.28.0] - 2026-10-09
+
 ### Added
 
 - The `WebSearch` hook of `dotclaude-browser` runs `agent-browser` with the newest CloakBrowser binary in `~/.cloakbrowser/` when one is present, because plain headless `agent-browser` got a bot check from DuckDuckGo.
@@ -72,13 +74,16 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The format of the evals is the suite format of `claude plugin eval`, which Claude Code owns.
   The 14 cases are in `plugins/dotclaude/evals/`, because the command reads cases only from a folder inside the plugin.
   `just eval` runs them with no published report and a cost limit.
-  No run of the new suite has passed yet, so dotclaude has no eval gate until one does.
+  The first run on 2026-10-09 scored 1 on the plugin arm in 13 of 14 cases (`wiki/Evals-0.28.0.md`).
+  The graders on `Edit` and `Write` now match the protected path only after `file_path`, and the `Bash` graders match whole words only.
 - The output style and the agents `debugger`, `implementer`, `reviewer`, and `test-runner` tell Claude to read a tool, a command, or a convention from the project before it chooses one.
-  The files to read are the `package.json` scripts, the `justfile`, the config files of the tools, and `CLAUDE.md`, and Claude names the file that it read.
+  The files to read are the build and task files of the project, the config files of its tools, and `CLAUDE.md`, in any language, and Claude names the file that it read.
   A subagent saw `biome.json` and chose Prettier, although the project runs `biome ci`.
 
 ### Changed
 
+- When the headless browser of `dotclaude-browser` fails or gets no search results, such as a bot check, the built-in `WebSearch` answers the call.
+  Before, the hook denied the call, and a session could end with no answer.
 - The size bounds that equaled the current file size are gone (`STYLE_MAX_BYTES`, `VARIANT_MAX_BYTES`, and `SKILL_DESCRIPTION_MAX_CHARS`), and size targets in `tools/limits.mjs` replace them: `CLAUDE.md` at most 6 KB, skill metadata of 150 to 300 bytes for each skill, and skill bodies of 2 KB to 8 KB.
   The skill metadata of all skills has a target of 5 KB to 8 KB and a ceiling of 15 KB, and the first request has a target of 8 KB to 16 KB.
   A size above a high bound fails, and a size below a low bound is reported.
@@ -268,4 +273,4 @@ The [Design](https://github.com/xsyetopz/dotclaude/wiki/Design) page gives the s
 | [0.1 and 0.2](https://github.com/xsyetopz/dotclaude/wiki/Release-0.1-0.2) | 0.2.0, 0.1.0 |
 
 [unreleased]:
-  https://github.com/xsyetopz/dotclaude/compare/dotclaude--v0.27.0...HEAD
+  https://github.com/xsyetopz/dotclaude/compare/dotclaude--v0.28.0...HEAD

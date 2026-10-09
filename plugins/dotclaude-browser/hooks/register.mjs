@@ -3,7 +3,7 @@
 // It runs `agent-browser` as a child process with `$.process.run`, with no shell.
 // It adds `--executable-path` when the CloakBrowser binary is under `~/.cloakbrowser/`.
 // The `backend` option `cloakbrowser` needs that binary, and the call is denied when it is missing.
-// When the browser fails, the call is denied with a reason that names the browser skill.
+// When the browser fails or the page has no results, such as a bot check, the built-in `WebSearch` runs.
 // Each `$` call is in this file, because `$` is not followed across an import.
 
 import {
@@ -16,7 +16,6 @@ import {
   CLOAK_NAME,
   cloakBinaryPath,
   cloakBuilds,
-  denyText,
   failure,
   INVALID_INPUT,
   MISSING_BINARY,
@@ -67,7 +66,7 @@ async function findBinary($) {
   return null;
 }
 
-/** The result of the `tool.call` event: a search result, or a deny that names the skill. */
+/** A search result or a deny, or `null` when the browser gave no results and the built-in `WebSearch` runs. */
 async function webSearch($, e, options) {
   const query = searchQuery(e);
   if (!query) return { deny: INVALID_INPUT };
@@ -86,18 +85,20 @@ async function webSearch($, e, options) {
   } finally {
     await closeSession($, url, session, binary);
   }
-  if (page.reason) return { deny: denyText(page.reason) };
+  if (page.reason) return null;
   const answer = pageResult(e.query, page.text, browser);
-  if (!answer.text) return { deny: denyText(answer.reason) };
+  if (!answer.text) return null;
   return { result: searchResult(e.query, answer.text, startedAt) };
 }
 
 export function register(on, options) {
-  on("tool.call", { tool: "WebSearch" }, async ($, e) => {
+  on("tool.call", { tool: "WebSearch" }, async ($, e, next) => {
+    let out = null;
     try {
-      return await webSearch($, e, options);
+      out = await webSearch($, e, options);
     } catch {
-      return { deny: denyText("The search failed.") };
+      // The search failed, so the built-in `WebSearch` answers.
     }
+    return out ?? next(e);
   });
 }

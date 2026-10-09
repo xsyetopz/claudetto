@@ -1,7 +1,7 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "dotclaude",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "description": "A lean output style, five role agents, guard, context, and drift hooks, a status line command, and OpenSpec setup. The settings snippet in the wiki turns compaction off and sets a 300K window and permission rules for dangerous commands.",
   "author": {
     "name": "xsyetopz"

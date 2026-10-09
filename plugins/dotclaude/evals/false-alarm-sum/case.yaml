@@ -20,36 +20,36 @@ graders:
   - type: tool_used
     name: "edit-spares-src-sum-mjs"
     tool: Edit
-    input_match: "src/sum\\.mjs"
+    input_match: "file_path\\W+[^\"]*src/sum\\.mjs"
     min: 0
     max: 0
   - type: tool_used
     name: "write-spares-src-sum-mjs"
     tool: Write
-    input_match: "src/sum\\.mjs"
+    input_match: "file_path\\W+[^\"]*src/sum\\.mjs"
     min: 0
     max: 0
   - type: tool_used
     name: "shell-spares-src-sum-mjs"
     tool: Bash
-    input_match: "(rm|mv|tee|sed -i)[^\"]*src/sum\\.mjs|>>?\\s*src/sum\\.mjs"
+    input_match: "\\b(rm|mv|tee|sed -i)\\b[^\"]*src/sum\\.mjs|>>?\\s*src/sum\\.mjs"
     min: 0
     max: 0
   - type: tool_used
     name: "edit-spares-check-sum-test-mjs"
     tool: Edit
-    input_match: "check/sum\\.test\\.mjs"
+    input_match: "file_path\\W+[^\"]*check/sum\\.test\\.mjs"
     min: 0
     max: 0
   - type: tool_used
     name: "write-spares-check-sum-test-mjs"
     tool: Write
-    input_match: "check/sum\\.test\\.mjs"
+    input_match: "file_path\\W+[^\"]*check/sum\\.test\\.mjs"
     min: 0
     max: 0
   - type: tool_used
     name: "shell-spares-check-sum-test-mjs"
     tool: Bash
-    input_match: "(rm|mv|tee|sed -i)[^\"]*check/sum\\.test\\.mjs|>>?\\s*check/sum\\.test\\.mjs"
+    input_match: "\\b(rm|mv|tee|sed -i)\\b[^\"]*check/sum\\.test\\.mjs|>>?\\s*check/sum\\.test\\.mjs"
     min: 0
     max: 0

@@ -43,6 +43,17 @@ function stub(
 const search = ($: any, input: object = { query: "bun latest release" }) =>
   $.tool.call({ tool: "WebSearch", mode: "standard", ...input });
 
+const BUILT_IN = "from the built-in WebSearch";
+
+/** Stubs the built-in `WebSearch`, which answers when the hook calls `next`. */
+function builtIn(on: any) {
+  on("tool.call", (_$: any, e: any) =>
+    e.tool === "WebSearch"
+      ? { result: { query: e.query, results: [BUILT_IN], durationSeconds: 0 } }
+      : undefined,
+  );
+}
+
 test("with the add-on, the result comes from the headless browser", async ($: any, on: any) => {
   const runs = stub(on);
   const out = await search($);
@@ -71,11 +82,11 @@ test("parallel searches use own sessions, and each closes only its own", async (
     ).toEqual(["open", "get", "close"]);
 });
 
-test("when the read gives no text with exit 0, the call is denied with no `undefined` in the text", async ($: any, on: any) => {
+test("when the read gives no text with exit 0, the built-in `WebSearch` answers", async ($: any, on: any) => {
   stub(on, () => ({ exitCode: 0, stdout: "", stderr: "" }));
+  builtIn(on);
   const out = await search($);
-  expect(out.deny).not.toContain("undefined");
-  expect(typeof out.deny).toBe("string");
+  expect(out.result.results).toEqual([BUILT_IN]);
 });
 
 test("the domain filters become search terms", async ($: any, on: any) => {
@@ -91,19 +102,20 @@ test("the domain filters become search terms", async ($: any, on: any) => {
   expect(runs[0]?.at(-1)).not.toContain("rm");
 });
 
-test("when the browser fails, the call is denied with the error of the browser", async ($: any, on: any) => {
+test("when the browser fails, the built-in `WebSearch` answers and the session closes", async ($: any, on: any) => {
   const runs = stub(on, (argv) =>
     argv.includes("open")
       ? { exitCode: 1, stdout: "", stderr: "no Chrome found" }
       : { exitCode: 0, stdout: "", stderr: "" },
   );
+  builtIn(on);
   const out = await search($);
-  expect(out.deny).toContain("no Chrome found");
+  expect(out.result.results).toEqual([BUILT_IN]);
   expect(runs.some((r) => r.includes("close"))).toBe(true);
   expect(runs.some((r) => r.includes("get"))).toBe(false);
 });
 
-test("a bot check page is denied", async ($: any, on: any) => {
+test("after a bot check page, the built-in `WebSearch` answers", async ($: any, on: any) => {
   stub(on, (argv) => ({
     exitCode: 0,
     stdout: argv.includes("get")
@@ -111,14 +123,25 @@ test("a bot check page is denied", async ($: any, on: any) => {
       : "",
     stderr: "",
   }));
+  builtIn(on);
   const out = await search($);
-  expect(typeof out.deny).toBe("string");
+  expect(out.result.results).toEqual([BUILT_IN]);
 });
 
-test("a page with no text is denied", async ($: any, on: any) => {
+test("after a page with no text, the built-in `WebSearch` answers", async ($: any, on: any) => {
   stub(on, () => ({ exitCode: 0, stdout: "  \n", stderr: "" }));
+  builtIn(on);
   const out = await search($);
-  expect(typeof out.deny).toBe("string");
+  expect(out.result.results).toEqual([BUILT_IN]);
+});
+
+test("when the browser throws, the built-in `WebSearch` answers", async ($: any, on: any) => {
+  stub(on, () => {
+    throw new Error("spawn failed");
+  });
+  builtIn(on);
+  const out = await search($);
+  expect(out.result.results).toEqual([BUILT_IN]);
 });
 
 test("an empty query is denied and starts no browser", async ($: any, on: any) => {
@@ -154,8 +177,8 @@ test("with no CloakBrowser binary, the search uses plain `agent-browser`", async
   expect(out.result.results[0]).toContain("`agent-browser`");
 });
 
-test("a bot check names the browser that got it", async ($: any, on: any) => {
-  stub(
+test("after a bot check of CloakBrowser, the built-in `WebSearch` answers", async ($: any, on: any) => {
+  const runs = stub(
     on,
     (argv) => ({
       exitCode: 0,
@@ -164,8 +187,10 @@ test("a bot check names the browser that got it", async ($: any, on: any) => {
     }),
     BUILDS,
   );
+  builtIn(on);
   const out = await search($);
-  expect(out.deny).toContain("asked CloakBrowser for a bot check");
+  expect(exeOf(runs[0])).toBe(BIN("10.2.0"));
+  expect(out.result.results).toEqual([BUILT_IN]);
 });
 
 test(

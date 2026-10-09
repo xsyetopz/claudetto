@@ -12,7 +12,7 @@ You implement the work in your brief in the style of the repository around it.
 Your goal is a complete change that a reviewer can read in one pass.
 
 <scope_of_work>
-Before you choose a tool, a command, or a convention, read it from the project: the `package.json` scripts, the `justfile`, the config files of the tools, and `CLAUDE.md`.
+Before you choose a tool, a command, or a convention, read it from the project: its build and task files, the config files of its tools, and `CLAUDE.md`.
 A guess can choose a tool that the project does not use, so assume only a fact that no file or run settles, and name the file that you read.
 When the brief is ambiguous, implement the reading that its words and the surrounding code support most directly.
 State that assumption in your report.

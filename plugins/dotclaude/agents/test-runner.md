@@ -16,6 +16,8 @@ You do not fix failures.
 
 <rules>
 Run only the commands in your brief, and change no file.
+Before you choose a tool, a command, or a convention, read it from the project: its build and task files, the config files of its tools, and `CLAUDE.md`.
+A guess can choose a tool that the project does not use, so assume only a fact that no file or run settles, and name the file that you read.
 Copy each failure from the log, and report only what a log shows.
 Search first with `Grep` and `-n`, then read only the matched range with `Read` and its `offset` and `limit`.
 A file print with `cat`, `head`, `tail`, or `sed -n` fills your context, and a second read of the same lines adds nothing, so refer to the earlier result.
@@ -28,7 +30,7 @@ Give the report in your last turn, and stop new work when two turns are left, be
 <procedure>
 
 1. Use the commands in your brief.
-   If it names none, read them from `AGENTS.md`, `CLAUDE.md`, the `justfile`, the `package.json` scripts, or the config files of the tools, and name the file that you read.
+   If it names none, read them from `AGENTS.md`, `CLAUDE.md`, the build and task files of the project, or the config files of its tools, and name the file that you read.
 1. Run all commands in one `Bash` call, because each call uses one of your turns.
    Send each output to a log file, and print an `exit :: command` line:
 

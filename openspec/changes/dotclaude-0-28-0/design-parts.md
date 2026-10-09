@@ -189,6 +189,8 @@ Reason: the plugin is the unit of install and disable, a plugin skill keeps its 
 - `dotclaude-browser` replaces the built-in `WebSearch` with its headless browser (decision of the user).
   Route by D1: a `tool.call` handler on `WebSearch` in the add-on module answers with a search through the browser by `$.process.run`, so the model keeps the tool that it knows and no listing changes.
   If `$.process.run` cannot run the browser (task 3.10), the fallback is a `tool.check` deny of `WebSearch` whose reason names the browser skill.
+  When the browser fails or the page has no results, the handler calls `next(e)` and the built-in `WebSearch` answers (decision of 2026-10-09, task 3.19).
+  Reason: each search engine gave a bot check or a block page to the headless browser on each run from the test network, and a deny ended a sandbox session with no answer.
 - `dotclaude-docs` is new and holds the Context7 `docs` skill (D8), because it needs an outside tool (`ctx7` through `npx`) and costs a listing line when unused.
 - `dotclaude-codegraph` is new (D26).
 - Each add-on ships (decision of the user).

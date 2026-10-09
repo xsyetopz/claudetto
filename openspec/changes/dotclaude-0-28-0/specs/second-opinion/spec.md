@@ -136,7 +136,12 @@ When `dotclaude-browser` is installed, a web search of the model SHALL run throu
 #### Scenario: Web search with the add-on
 
 - **WHEN** `dotclaude-browser` is installed and the model calls `WebSearch`
-- **THEN** the result comes from the headless browser, or the call is denied with a reason that names the browser skill
+- **THEN** the result comes from the headless browser
+
+#### Scenario: Browser gives no results
+
+- **WHEN** `dotclaude-browser` is installed, the model calls `WebSearch`, and the browser fails or the search page has no results, such as a bot check
+- **THEN** the built-in `WebSearch` answers the call
 
 #### Scenario: Web search without the add-on
 

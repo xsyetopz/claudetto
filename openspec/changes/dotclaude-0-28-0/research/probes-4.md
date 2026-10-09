@@ -254,3 +254,14 @@ A subagent delivers its report with the `SubagentHandback` tool call, and so a "
   The bound is checked after a tool call, and one `Read` can add 25,000 tokens, so a context can pass the bound by that step (**inferred**).
   The step from 78,351 to 104,409 tokens is 26,058 tokens (**measured**).
 - Result: **pass**.
+
+## 25.2 The main status line from `$.ui.status` (done, cannot)
+
+- A probe plugin (`/tmp/claude-501/dcl/uiprobe`) called `$.ui.status("UIPROBE row one\nUIPROBE row two")` at `session.start` in a TUI sandbox session (`/tmp/claude-501/dcl/m6`, Claude Code 2.1.295, tmux at 160 columns).
+- The debug log `/tmp/claude-501/dcl/uiprobe.debug` has the line `$.ui.status (uiprobe): UIPROBE row one\nUIPROBE row two`.
+- The screen showed one row under the prompt: `⚠ uiprobe: UIPROBE row one�UIPROBE row two` (**measured**).
+  The row is a pinned notice beside the notices of the engine, with a warning glyph and the plugin name before the text.
+  The newline is drawn as a replacement glyph, so the text has one row only.
+- The type docs say the same: "Pins `text` as this plugin's status line under the prompt, beside the engine's own pinned notices", one for each plugin.
+- Result: the mod cannot draw the main status line, which has up to 3 rows and colors and takes the status JSON of Claude Code on stdin.
+  The wiki snippet keeps the `statusLine` command `node <plugin folder>/features/statusline/cli.mjs` for the user to set (`wiki/Settings-Snippet.md`).

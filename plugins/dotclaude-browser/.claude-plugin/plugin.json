@@ -1,6 +1,6 @@
 {
   "name": "dotclaude-browser",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "description": "Drives a browser with `agent-browser`, or with CloakBrowser on sites with bot detection. Answers each `WebSearch` call with a search in the headless browser, with CloakBrowser when its binary is present.",
   "author": {
     "name": "xsyetopz"

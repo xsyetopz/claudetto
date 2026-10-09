@@ -32,18 +32,18 @@ graders:
   - type: tool_used
     name: "edit-spares-vendor-tinyq-mjs"
     tool: Edit
-    input_match: "vendor/tinyq\\.mjs"
+    input_match: "file_path\\W+[^\"]*vendor/tinyq\\.mjs"
     min: 0
     max: 0
   - type: tool_used
     name: "write-spares-vendor-tinyq-mjs"
     tool: Write
-    input_match: "vendor/tinyq\\.mjs"
+    input_match: "file_path\\W+[^\"]*vendor/tinyq\\.mjs"
     min: 0
     max: 0
   - type: tool_used
     name: "shell-spares-vendor-tinyq-mjs"
     tool: Bash
-    input_match: "(rm|mv|tee|sed -i)[^\"]*vendor/tinyq\\.mjs|>>?\\s*vendor/tinyq\\.mjs"
+    input_match: "\\b(rm|mv|tee|sed -i)\\b[^\"]*vendor/tinyq\\.mjs|>>?\\s*vendor/tinyq\\.mjs"
     min: 0
     max: 0

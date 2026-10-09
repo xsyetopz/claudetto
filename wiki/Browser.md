@@ -58,16 +58,20 @@ Without the plugin, `WebSearch` works as in vanilla Claude Code.
    The bounds are in `features/search/limits.mjs`.
 1. `allowed_domains` and `blocked_domains` become `site:` and `-site:` terms of the query.
 
-The hook denies the call, and the reason names `dotclaude-browser:drive-web-browser`, when:
+The hook gives the call to the built-in `WebSearch` when:
 
 - `agent-browser` fails to start, to open the page, or to read it, or it takes too long.
 - DuckDuckGo shows a bot check, or the page has no text.
-  The reason names the browser that got the check.
+
+The reason is that each search engine gave a bot check or a block page to the headless browser on each run from the test network on 2026-10-09, and a deny ended a session with no answer.
+
+The hook denies the call when:
+
 - The `backend` option is `cloakbrowser`, and the CloakBrowser binary is missing.
-  The reason tells Claude that the user can install CloakBrowser.
+  The reason names `dotclaude-browser:drive-web-browser` and tells Claude that the user can install CloakBrowser.
 - The `query` is empty.
 
-The query goes to DuckDuckGo, so put no secret in it.
+The query goes to DuckDuckGo, and after a fallback also to the built-in `WebSearch`, so put no secret in it.
 `agent-browser` must be on the `PATH` of Claude Code.
 In the [sandbox](Sandbox), the network list needs `html.duckduckgo.com`.
 

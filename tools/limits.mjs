@@ -44,8 +44,7 @@ export const FIRST_REQUEST_HIGH_BYTES = 16 * 1024;
 
 /**
  * Most tokens in the first request of a dotclaude session (input, cache creation, and cache read).
- * The 2.5 capture of the 0.27.0 profile (`research/capture.md`) billed 19,443 tokens in the first request,
- * and 19,443 plus 5% headroom, rounded up, is 20,416.
- * Task 9.7 sets it again from the measure after the cuts.
+ * Task 9.7 measured 12,674 tokens in a headless sandbox session of 0.28.0 on Opus 5.5 with the settings snippet,
+ * and 12,674 plus 5% headroom, rounded up, is 13,308 (`wiki/Prompt-Surface.md`).
  */
-export const START_TOKENS = 20_416;
+export const START_TOKENS = 13_308;

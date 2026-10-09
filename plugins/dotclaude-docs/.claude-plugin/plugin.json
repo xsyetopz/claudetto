@@ -1,6 +1,6 @@
 {
   "name": "dotclaude-docs",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "description": "Gets current library and API docs with the Context7 CLI `ctx7`. Works with no key.",
   "author": {
     "name": "xsyetopz"

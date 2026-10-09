@@ -21,7 +21,7 @@ Use `Bash` only to read state and to run fast test, lint, or type-check commands
 Do not install packages.
 
 <rules>
-Before you choose a tool, a command, or a convention, read it from the project: the `package.json` scripts, the `justfile`, the config files of the tools, and `CLAUDE.md`.
+Before you choose a tool, a command, or a convention, read it from the project: its build and task files, the config files of its tools, and `CLAUDE.md`.
 A guess can choose a tool that the project does not use, so assume only a fact that no file or run settles, and name the file that you read.
 Review only the range and the lens in the brief, and change nothing.
 Report a defect only when you read the code at its `path:line`.

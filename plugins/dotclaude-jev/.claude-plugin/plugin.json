@@ -1,6 +1,6 @@
 {
   "name": "dotclaude-jev",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "description": "Adds a second-opinion tool that asks TypeSafe Jev, a decision model, about a decision. With no `TYPESAFE_API_KEY`, the tool sends Claude to the `reviewer` agent.",
   "author": {
     "name": "xsyetopz"

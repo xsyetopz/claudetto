@@ -98,7 +98,8 @@ Task 18.12 found the gate not needed.
 ### Requirement: Facts from the project before assumptions
 
 The output style and each agent that writes or runs code SHALL tell Claude to read a tool, a command, or a convention from the project before it chooses one.
-The sources are the scripts of `package.json`, the `justfile`, the config files of the tools, and `CLAUDE.md`.
+The sources are the build and task files of the project, the config files of its tools, and `CLAUDE.md`, in any language or ecosystem.
+The text names kinds of files and no file of one ecosystem, because dotclaude is language-agnostic.
 Claude SHALL assume only a fact that no file or run settles, and SHALL name the file that it read.
 
 #### Scenario: Formatter from the config

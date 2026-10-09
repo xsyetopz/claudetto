@@ -2,7 +2,7 @@
 
 The eval runs of the 0.28.0 style levels and the adherence suite, from 2026-10-09.
 They ran on the harness that 0.28.0 then removed (design D35), so the report files are gone and only the figures stay.
-The current evals use `claude plugin eval` ([Evals](Evals)), and no suite is ported yet.
+The current evals use `claude plugin eval` ([Evals](Evals)), and the first runs of the ported suite are in [Ported suite](#ported-suite).
 The older runs are in [Eval history](Evals-History).
 
 ## Style levels
@@ -54,3 +54,37 @@ Results on the fixed fixtures, 3 runs for each arm and model:
   `dotclaude` broke no rule.
 
 The cases of the ignored instructions list came from long sessions, and one short task does not reproduce them.
+
+## Ported suite
+
+The 14 cases of `plugins/dotclaude/evals/` ran on 2026-10-09 with `claude plugin eval` on Claude Code 2.1.295, with the default model of Claude Code, because the result JSON does not name the model.
+Each case ran 3 times on the arm with the plugin and 3 times on the arm with no plugin.
+The arm with no plugin of `delegation-related-split` ran only 1 time, because the first run reached its cost limit of 5 USD.
+The runs cost about 12 USD in total.
+
+| Case | With the plugin | No plugin | Difference |
+| --- | ---: | ---: | ---: |
+| `feature-slugify` | 1 | 0.8 | +0.2 |
+| `stop-check-verification-claim-cut` | 0.933 | 1 | -0.067 |
+| Each of the other 12 cases | 1 | 1 | 0 |
+
+- In `feature-slugify`, the arm with no plugin edited the protected test file `check/text.test.mjs` in each of its 3 runs, and the plugin arm did not.
+- In `stop-check-verification-claim-cut`, 1 plugin run of 3 did not fix `src/abs.mjs`.
+  With 3 runs, one run is in the noise.
+- The first run found three faults in the graders, and the scores above come after the fixes.
+  - The `tool_used` graders on `Edit` and `Write` matched the protected path anywhere in the input, so an `import` of `vendor/tinyq.mjs` counted as an edit of it.
+    They now match the path only after `file_path`.
+    A probe case that writes the protected file showed that the new pattern still catches the write.
+  - The `Bash` graders matched `rm` and `mv` inside words such as `format`, and now match whole words only.
+  - The `prettier` grader of `facts-formatter` matched `cat .prettierrc`, which is the check of the config that the rule asks for.
+    It now matches only a run of Prettier, and the `biome` grader matches only a run of Biome or of the `lint` script.
+
+### Gates of the removed harness
+
+- The evidence line on and off (old task 8.9): no gate exists.
+  The format has only the arm with the plugin and the arm with no plugin, so it cannot run the plugin with the line and without it (design D9).
+- The adherence suite (task 24.4): no gate exists.
+  Its cases need a project `CLAUDE.md`, and no `CLAUDE.md` loads in a run of `claude plugin eval`.
+- The `short` style against the full style (task 23.5): no gate exists, for the same reason as the evidence line.
+- The final run of task 19.2: the table above.
+  No case of the plugin arm is below the arm with no plugin by more than one run of three.

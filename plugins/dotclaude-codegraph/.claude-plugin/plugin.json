@@ -1,6 +1,6 @@
 {
   "name": "dotclaude-codegraph",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "description": "Gives Claude the code graph of a project from the CodeGraph CLI `codegraph`. Syncs the index, and adds callers and definitions to `Grep` and `Glob` calls.",
   "author": {
     "name": "xsyetopz"

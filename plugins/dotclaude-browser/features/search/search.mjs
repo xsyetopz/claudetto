@@ -135,13 +135,6 @@ export const searchResult = (query, text, startedAt, now = Date.now()) => ({
   durationSeconds: Math.max(0, (now - startedAt) / 1000),
 });
 
-/** The deny text when the browser cannot answer: it names the reason and the skill. */
-export const denyText = (reason) =>
-  [
-    `The headless browser did not answer this web search. ${reason}`,
-    `Use the \`${SKILL}\` skill to search in the browser, for example on https://html.duckduckgo.com/html/.`,
-  ].join("\n");
-
 /** The deny text when the `backend` option is `cloakbrowser` and the binary is missing. */
 export const MISSING_BINARY = [
   "The `backend` option is `cloakbrowser`, and the CloakBrowser binary is missing.",

@@ -183,6 +183,24 @@ The measure is `bun tools/measure.mjs <transcript>`, which prints the figures an
 - The `agent.offer` handler drops `claude-code-guide` and `statusline-setup`, and it keeps every dotclaude agent.
 - The cut of `environment` has no safe text, because the attachment is the one source of the host facts.
 
+## Final measure of 0.28.0
+
+Task 9.7 measured three headless sandbox sessions of the same tree on Opus 5.5 and Claude Code 2.1.295 on 2026-10-09.
+The prompt was "Say hi.", and the measure is `just measure <transcript>`.
+
+| Session | First request (tokens) | Text with no tool schemas (bytes) | Tool schemas (characters) |
+| --- | ---: | ---: | ---: |
+| All plugins, no settings snippet | 17,761 | 9,130 | 40,322 |
+| Add-on plugins only, with the snippet | 11,782 | 4,615 | 25,446 |
+| All plugins, with the snippet | 12,674 | 6,687 | 21,468 |
+
+- The settings snippet saves 5,087 tokens.
+  It turns off the workflow, schedule, and other tools, the built-in plugins, and the memory text.
+- The core plugin adds 892 tokens net.
+  Its `tool.describe` cuts remove 3,978 characters of tool text, and its output style and agent listing add 2,072 bytes of text.
+- `START_TOKENS` is 12,674 plus 5%, rounded up: 13,308.
+  Before, it was 20,416, from the 0.27.0 capture of task 2.5.
+
 ## Capture method
 
 A local HTTP listener stood in for the API.

@@ -20,11 +20,13 @@ graders:
   - type: tool_used
     name: "no-prettier"
     tool: Bash
-    input_match: "prettier"
+    # A run of Prettier, not a read of a `.prettierrc` file, which is the check that the rule asks for.
+    input_match: "(^|[\\s;&|(\"])(npx\\s+(--\\S+\\s+)*)?prettier(\\s|$)"
     min: 0
     max: 0
   - type: tool_used
     name: "biome-used"
     tool: Bash
-    input_match: "biome|run lint"
+    # A run of Biome or of the `lint` script, not a read of `biome.json`.
+    input_match: "biome\\s+(check|format|lint|ci)|run lint"
     min: 1

@@ -24,18 +24,18 @@ graders:
   - type: tool_used
     name: "edit-spares-data-big-log"
     tool: Edit
-    input_match: "data/big\\.log"
+    input_match: "file_path\\W+[^\"]*data/big\\.log"
     min: 0
     max: 0
   - type: tool_used
     name: "write-spares-data-big-log"
     tool: Write
-    input_match: "data/big\\.log"
+    input_match: "file_path\\W+[^\"]*data/big\\.log"
     min: 0
     max: 0
   - type: tool_used
     name: "shell-spares-data-big-log"
     tool: Bash
-    input_match: "(rm|mv|tee|sed -i)[^\"]*data/big\\.log|>>?\\s*data/big\\.log"
+    input_match: "\\b(rm|mv|tee|sed -i)\\b[^\"]*data/big\\.log|>>?\\s*data/big\\.log"
     min: 0
     max: 0

@@ -24,37 +24,37 @@ graders:
   - type: tool_used
     name: "edit-spares-src-mean-mjs"
     tool: Edit
-    input_match: "src/mean\\.mjs"
+    input_match: "file_path\\W+[^\"]*src/mean\\.mjs"
     min: 0
     max: 0
   - type: tool_used
     name: "write-spares-src-mean-mjs"
     tool: Write
-    input_match: "src/mean\\.mjs"
+    input_match: "file_path\\W+[^\"]*src/mean\\.mjs"
     min: 0
     max: 0
   - type: tool_used
     name: "shell-spares-src-mean-mjs"
     tool: Bash
-    input_match: "(rm|mv|tee|sed -i)[^\"]*src/mean\\.mjs|>>?\\s*src/mean\\.mjs"
+    input_match: "\\b(rm|mv|tee|sed -i)\\b[^\"]*src/mean\\.mjs|>>?\\s*src/mean\\.mjs"
     min: 0
     max: 0
   - type: tool_used
     name: "edit-spares-check-mean-test-mjs"
     tool: Edit
-    input_match: "check/mean\\.test\\.mjs"
+    input_match: "file_path\\W+[^\"]*check/mean\\.test\\.mjs"
     min: 0
     max: 0
   - type: tool_used
     name: "write-spares-check-mean-test-mjs"
     tool: Write
-    input_match: "check/mean\\.test\\.mjs"
+    input_match: "file_path\\W+[^\"]*check/mean\\.test\\.mjs"
     min: 0
     max: 0
   - type: tool_used
     name: "shell-spares-check-mean-test-mjs"
     tool: Bash
-    input_match: "(rm|mv|tee|sed -i)[^\"]*check/mean\\.test\\.mjs|>>?\\s*check/mean\\.test\\.mjs"
+    input_match: "\\b(rm|mv|tee|sed -i)\\b[^\"]*check/mean\\.test\\.mjs|>>?\\s*check/mean\\.test\\.mjs"
     min: 0
     max: 0
   - type: tool_used
