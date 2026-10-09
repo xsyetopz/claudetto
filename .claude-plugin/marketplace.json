@@ -4,7 +4,7 @@
   "owner": {
     "name": "xsyetopz"
   },
-  "description": "Lists the dotclaude plugin and its optional browser, Jev, and game modding plugins.",
+  "description": "Lists the dotclaude plugin and its optional code-graph, Jev, browser, and docs plugins.",
   "plugins": [
     {
       "name": "dotclaude",
@@ -13,22 +13,28 @@
       "category": "productivity"
     },
     {
-      "name": "dotclaude-browser",
-      "source": "./plugins/dotclaude-browser",
-      "description": "Drives a browser with `agent-browser`, or with CloakBrowser on sites with bot detection.",
+      "name": "dotclaude-codegraph",
+      "source": "./plugins/dotclaude-codegraph",
+      "description": "Gives Claude the code graph of a project from the CodeGraph CLI `codegraph`. Syncs the index, and adds callers and definitions to `Grep` and `Glob` calls.",
       "category": "productivity"
     },
     {
       "name": "dotclaude-jev",
       "source": "./plugins/dotclaude-jev",
-      "description": "Gets a second opinion from TypeSafe Jev, a decision model, for a yes or no check, a pick from options, or a rating. Needs `TYPESAFE_API_KEY`.",
+      "description": "Adds a second-opinion tool that asks TypeSafe Jev, a decision model, about a decision. With no `TYPESAFE_API_KEY`, the tool sends Claude to the `reviewer` agent.",
       "category": "productivity"
     },
     {
-      "name": "dotclaude-modder",
-      "source": "./plugins/dotclaude-modder",
-      "description": "Mods a PC game that you own: engine recon, game internals, fal assets, sprites, in-game tests, showcase videos, and field notes. Based on universal-modder by Rehan.",
-      "category": "development"
+      "name": "dotclaude-browser",
+      "source": "./plugins/dotclaude-browser",
+      "description": "Drives a browser with `agent-browser`, or with CloakBrowser on sites with bot detection. Answers each `WebSearch` call with a search in the headless browser.",
+      "category": "productivity"
+    },
+    {
+      "name": "dotclaude-docs",
+      "source": "./plugins/dotclaude-docs",
+      "description": "Gets current library and API docs with the Context7 CLI `ctx7`. Works with no key.",
+      "category": "productivity"
     }
   ]
 }

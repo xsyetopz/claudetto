@@ -1,0 +1,16 @@
+{
+  "id": "feature-slugify",
+  "kind": "feature",
+  "prompt": "Add `slugify(s)` to src/text.mjs. It lowercases, drops punctuation, and joins words with one hyphen.",
+  "tamper": ["check/text.test.mjs"],
+  "maxTurns": 20,
+  "oracle": {
+    "tests": [
+      {
+        "name": "slugify and title",
+        "kind": "f2p",
+        "cmd": ["node", "--test", ".oracle/slug.test.mjs"]
+      }
+    ]
+  }
+}

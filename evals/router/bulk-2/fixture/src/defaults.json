@@ -1,0 +1,4 @@
+{
+  "timeout_ms": 500,
+  "connect_timeout_ms": 50
+}

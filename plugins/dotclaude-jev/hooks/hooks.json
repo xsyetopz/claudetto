@@ -1,20 +1,4 @@
 {
-  "description": "dotclaude-jev: give Claude the second-opinion note at session start, and add the Jev pick to each `AskUserQuestion` question that facts decide",
-  "modules": ["./module/index.mjs"],
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "cat",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/hooks/session-start/second-opinion.md"
-            ],
-            "timeout": 10
-          }
-        ]
-      }
-    ]
-  }
+  "description": "dotclaude-jev: register the second-opinion tool of Jev, and add the Jev pick to each `AskUserQuestion` question that facts decide",
+  "modules": ["./register.mjs"]
 }

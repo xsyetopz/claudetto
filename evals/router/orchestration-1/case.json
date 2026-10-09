@@ -1,0 +1,17 @@
+{
+  "id": "orchestration-1",
+  "kind": "router",
+  "taskClass": "orchestration",
+  "maxTurns": 25,
+  "prompt": "TASKS.md lists independent tasks. Do every task, each in the file that it names. Check each file with a short script of your own.",
+  "allowed": ["*.mjs"],
+  "oracle": {
+    "tests": [
+      {
+        "name": "tasks",
+        "kind": "f2p",
+        "cmd": ["node", "--test", ".oracle/tasks.test.mjs"]
+      }
+    ]
+  }
+}

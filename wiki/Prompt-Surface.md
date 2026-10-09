@@ -6,8 +6,12 @@ The sizes in the capture sections come from 2.1.283 to 2.1.289, and they are the
 
 ## Summary
 
-- Since 0.27.0, the core plugin gives Claude one text of its own: the forced output style `output-styles/dotclaude.md` (bound `STYLE_MAX_BYTES`, 6,000 bytes).
+- Since 0.27.0, the core plugin gives Claude one text of its own: the forced output style `output-styles/dotclaude.md` (the first request has the targets `FIRST_REQUEST_LOW_BYTES` and `FIRST_REQUEST_HIGH_BYTES`).
   No SessionStart hook of the core plugin adds context.
+- The style is a set of XML blocks with consistent, descriptive tag names, and each example is in an `<example>` tag (**official**, [prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)).
+  The guide says that examples in `<example>` tags let Claude "distinguish them from instructions".
+  The `<reports>` block names its nested `<report_examples>` block, and it says that the names and numbers of the examples are not facts of the session, so that Claude copies the form and not the details.
+  The guide gives no trained meaning to a tag name, and a tag is plain text.
 - The profile turns on the simple prompt with `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1`.
 - The style has `force-for-plugin: true` and `keep-coding-instructions: false`.
   `force-for-plugin` overrides the `outputStyle` that the user set (**official**).
@@ -35,6 +39,11 @@ Two parts correct it:
 
 The shared block has the sections `intro`, `system`, `doing_tasks`, `actions`, `tools`, and `tone` (**binary**).
 The simple prompt replaces them with `lean_body`.
+
+The `intro` text is the same on each call in 2.1.295: "You are an agent working with the user toward their goals, using your own judgment along the way." (**binary**).
+In 2.1.294, the env var `CLAUDE_CODE_INTRO_FRAME` or the flag `tengu_ochre_wren` chose this text.
+The 2.1.294 default was "You are an interactive agent that helps users with software engineering tasks."
+2.1.295 has no variable and no old text.
 
 | Section of the style | What it tells Claude |
 | --- | --- |
@@ -87,8 +96,8 @@ The same switch sends shorter descriptions for Glob, Grep, Write, and WebSearch.
 | 0.18 to 0.26 | A SessionStart hook added the rules. In 0.26 it rendered the sections of an operating spec from `lib/terms.mjs`. |
 | 0.27 | The forced output style only. No SessionStart context from the core plugin. |
 
-The `dotclaude-jev` plugin still adds a short SessionStart note with a `cat` command.
-The `dotclaude-modder` plugin adds none from 0.27.
+From 0.28.0, the `dotclaude-jev` plugin adds no SessionStart note.
+Its `second_opinion` tool holds the rules in its description.
 
 ## Output styles and hook context
 
@@ -128,9 +137,18 @@ The 0.27 profile removes four unused tools (**binary**, 2.1.292):
   `/code-review` uses it only when `CLAUDE_CODE_REPORT_FINDINGS` is set and the tool is present.
   Otherwise `/code-review` gives its findings as text.
 
-With these switches, the profile without the advisor, and only one modder skill, `/context` at the start of a sandbox session fell from 32k to 8.1k tokens (**measured**).
+With these switches and the profile without the advisor, `/context` at the start of a sandbox session fell from 32k to 8.1k tokens (**measured**).
 Of the 8.1k, the loaded tools are 5.3k and the system prompt is 1.6k.
 The deferred tools (16.1k in `/context`) send only their names until Claude loads one.
+
+## MCP tool descriptions
+
+Claude Code cuts the description of an MCP tool.
+In 2.1.295 the cut is 16,384 characters for a tool that the model loads through tool search, and 2,048 characters in other cases (**binary**, 2.1.295).
+In 2.1.294 the cut was 2,048 characters for both.
+`CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH` sets both cuts.
+The `$.tool.register` description of a mod gets the same two cuts (**binary**, 2.1.295).
+The MCP page of the docs still says 2,048 characters for each tool description (**official**).
 
 ## Undocumented surfaces
 
@@ -143,6 +161,27 @@ The deferred tools (16.1k in `/context`) send only their names until Claude load
 - The `prompt.section` and `prompt.compose` mod events can change sections of the system prompt (**official**, d.ts).
   dotclaude uses `prompt.section` for one section, `context_management`.
   See [Claude mods](Claude-Mods).
+
+## Attachment cuts of the hooks module
+
+The `prompt.attachment` handler of dotclaude rewrites an attachment by exact type, and an unknown type passes on.
+Task 9.3 measured one headless sandbox session of the `dotclaude` plugin on Haiku 5.5 before and after the `agent_listing_delta` cut.
+The prompt was "Reply with the word ok."
+The measure is `node tools/measure.mjs <transcript> --no-write`.
+
+| Type | Cut | Saving (tokens) |
+| --- | --- | ---: |
+| `agent_listing_delta` | The concurrency note is one short sentence. The agent lines stay as they are. | 15 |
+| `skill_listing` | None. The listing has two lines, and one is `dotclaude:handoff`. | 0 |
+| `environment` | None. The text holds the facts of the host and the rule for downloaded files. | 0 |
+| `session_context` | The commit list is gone (earlier cut). It was empty in the measured project. | 0 |
+
+- First request before: 10,458 tokens (input 2, cache creation 3,010, cache read 7,446).
+- First request after: 10,443 tokens (input 2, cache creation 2,995, cache read 7,446).
+- The agent lines are the descriptions of the five dotclaude agents.
+  A shorter line would make the model pick an agent with less information, so the cut leaves them.
+- The `agent.offer` handler drops `claude-code-guide` and `statusline-setup`, and it keeps every dotclaude agent.
+- The cut of `environment` has no safe text, because the attachment is the one source of the host facts.
 
 ## Capture method
 

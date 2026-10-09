@@ -8,11 +8,10 @@ It is the evidence for the hooks module of Claude Code 2.1.288, with the 0.27 us
 - Claude Code 2.1.287 and later can load a plugin "hooks module".
   Anthropic calls a plugin with such a module a mod.
   The docs describe mods (**official**, `hooks.md`).
-- dotclaude 0.27.0 uses the module in `plugins/dotclaude/hooks/mod.mjs` for two events, `tool.check` and `prompt.section`.
+- dotclaude 0.28.0 uses the module in `plugins/dotclaude/hooks/register.mjs` for these events: `tool.check`, `prompt.section`, `prompt.compose`, `prompt.attachment`, `agent.offer`, `agent.spawn`, `prompt.submit`, `turn.step`, `session.start`, `tool.describe`, and `tool.call`.
   The `tool.check` handler calls `next(e)` first and returns an engine deny unchanged.
-  Its pure rules are in `lib/guard.mjs`.
-- 0.27.0 has one classic `PreToolUse` command hook, `hooks/auto-mode-guard.mjs`, which acts only in auto mode.
-  It has no prompt hook on `Stop`.
+  Its pure rules are in `features/guard/rules.mjs`.
+- 0.28.0 also has classic command hooks, such as `features/guard/cli.mjs`, which acts only in auto mode, and one `prompt` hook on `Stop` ([Stop prompt hooks](Stop-Prompt-Hooks)).
   The rows and sections below that name other events, `ask-guarded-calls.mjs`, or 0.19 to 0.26 parts are history, and each says so.
 - The module gets no permission mode, and in auto mode the classifier decides an ask of `tool.check` (**measured**, 2.1.292).
   An ask of a classic hook stops the call in auto mode (**measured**, 2.1.292).
@@ -77,8 +76,29 @@ To let its `prompt.section` hook run on a machine with the guard, do one of thes
 1. Copy the marketplace to a folder that only an administrator can write.
    In managed settings, name that folder in `extraKnownMarketplaces`, set `enabledPlugins` for `dotclaude@dotclaude`, and set `prependPlugins` to `["sec-default@builtin", "dotclaude@dotclaude"]`.
 
-The optional `templates/managed-settings.json` of dotclaude is a managed settings file.
-So when you install it, the guard loads, and the `context_management` text of dotclaude goes away.
+### Route A: `prependPlugins` without the guard (measured, 2.1.293)
+
+The managed drop-in `managed-settings.d/50-dotclaude.json` sets `enabledPlugins` for `dotclaude@dotclaude` and sets `prependPlugins` to `["dotclaude@dotclaude"]`.
+A headless run in `just sandbox` with this drop-in gave these results:
+
+- The debug log said `cc-plugin-sec-default@builtin not seated: managed prependPlugins does not list it`.
+- The `prompt.section` hook of dotclaude replaced the `context_management` text, and a user-tier probe mod added text to `env_info_simple`.
+  The model quoted both texts.
+- A classic `UserPromptSubmit` command hook of the probe ran.
+- dotclaude ran at tier `user`, not `prepend`.
+  The log said that managed settings do not name the source of its marketplace, and that `prependPlugins` skipped it.
+  [Managed drop-in](Managed-Drop-In) gives the prepend tier, with the guard seated after dotclaude.
+- At tier `user`, dotclaude gets every event of the guard list, because the guard is not seated.
+  It cannot use `next.to`.
+
+The plugin id is `<name>@inline` for a `--plugin-dir` load.
+When managed `enabledPlugins` names `dotclaude`, Claude Code ignores a `--plugin-dir` copy of it ("plugin is locked by managed settings").
+For the sandbox, add the checkout as a folder marketplace and install `dotclaude@dotclaude` from it, with `CLAUDE_CONFIG_DIR` set to the sandbox config.
+Claude Code then reads the plugin from the checkout.
+`tools/sandbox.mjs` does not do this step yet.
+
+dotclaude ships no managed settings file.
+On a machine that has managed settings of its own, the guard loads, and the `context_management` text of dotclaude goes away.
 The forced output style still says that compaction is off.
 
 ## The gate
@@ -105,10 +125,22 @@ Claude Code refuses a module for one of these reasons (**binary**):
 
 | Work | Event | Evidence |
 | --- | --- | --- |
-| Ask for a recursive `rm` outside the project, and the policy ask | `tool.check` | The hook calls `next(e)`, returns an engine deny unchanged, and otherwise returns an ask (`plugins/dotclaude/hooks/mod.mjs`). Lab tests in `tests/mod.test.ts` cover it. |
+| Ask for a recursive `rm` outside the project, and the policy ask | `tool.check` | The hook calls `next(e)`, returns an engine deny unchanged, and otherwise returns an ask (`plugins/dotclaude/hooks/register.mjs`). Lab tests in `tests/mod.test.ts` cover it. |
 | Replace the `context_management` section of the system prompt | `prompt.section` with the matcher `{ name: "context_management" }` | The hook returns `{ text }` when `DISABLE_COMPACT` is set, and calls `next(e)` otherwise. The text is the same on each call, so the prompt cache stays. Lab tests cover both cases. |
+| Route the model and effort of a prompt and a subagent | `prompt.submit`, `agent.spawn`, `turn.step` | The first two classify and keep the decision, and the stream hook `turn.step` sets `model` and `effort` at each step (probes 2.4 and 2.10). See [Router](Router). |
+| Report drift from the profile | `session.start` | The handler appends one note with `$.session.append` when it finds a difference. See [Parts](Parts#drift-check). |
+| Prompt variant, surface cuts, and line breaks | `prompt.compose`, `agent.spawn`, `prompt.attachment`, `agent.offer`, `tool.describe`, `tool.call` | See [System prompt](System-Prompt), [Prompt surface](Prompt-Surface), and [Semantic line breaks](Semantic-Line-Breaks). |
 
 - The module has no `.catch`, so a failure gives no ask and the verdict of the engine stands.
+  The 2.1.295 fixes for guards in mods do not change this (**official**, release notes of 2.1.295):
+  a hook gets a deeply nested tool input whole, and the module reads only `command` and `url`.
+  A call that another mod makes during a hooks worker reload is refused only when a hook on that event has a `.catch`.
+  A deny after the tool ran now reaches Claude as `<tool> ran, and a plugin withheld its result`, and the module denies only in `tool.check`, before the tool runs.
+- `claude plugin validate` follows `$` into a handler that `register` passes directly to `on`, even when the handler is in an imported file (probe P1).
+  It refuses a `$` that a handler passes to a function of another file, so each function that touches `$` stays in the file of its handler.
+- It also refuses a second `on` of one event with no matcher.
+  For this reason, the router handler of `agent.spawn` has the matcher `{ fork: false }`, and the handler of the prompt variant has none.
+- A stream hook, such as `turn.step`, is an `async function*` that returns `yield* next(e)`.
 - `session.cwd`, `session.root`, `session.id`, `env`, and `process.run` are the calls that the module makes, and the lab stubs each one.
 - A section has an `id`, a `text`, and a `scope` of `shared` or `session` (**official**, d.ts).
   The `session` scope has `context_management`, which says that the system summarizes prior messages (**binary**).
@@ -119,7 +151,8 @@ Claude Code refuses a module for one of these reasons (**binary**):
 
 ## Events that 0.19 to 0.26 used
 
-0.19 to 0.26 also used these events, and 0.27.0 uses none of them.
+0.19 to 0.26 also used these events.
+0.28.0 uses `agent.offer`, `prompt.attachment`, `prompt.submit`, `agent.spawn`, and `tool.call` again, and the rows below are the older evidence.
 The first rows are 0.19 evidence that 0.20.0 removed, and the later releases used `tool.call`, `agent.spawn`, `prompt.submit`, `turn.complete`, and `session.compact` for guards, spawn rules, the cold-cache note, and the compaction handoff.
 
 | Work | Event | Evidence |
@@ -133,13 +166,16 @@ The first rows are 0.19 evidence that 0.20.0 removed, and the later releases use
 0.19 also kept `SubagentStop`, `TaskCompleted`, `StopFailure`, `PreModelSwitch`, `PostModelSwitch`, and `ConfigChange` as classic hooks.
 No native event exists for the first five.
 `config.set` sees only the `/config` rows (**official**, d.ts).
+From 2.1.295 the hook is also asked before `/model`, `/fast`, `/output-style`, and the auto-update channel of `/config` save a setting (**official**, release notes of 2.1.295).
+Earlier releases saved these settings before they asked the hook.
+The hook runs only for a change that a user or a mod makes through a row, so it does not replace `ConfigChange` (inferred).
 
 ## Gaps
 
 | Gap | Effect on dotclaude |
 | --- | --- |
 | No permission mode in the module | The 0.27 module cannot tell auto mode from another mode. |
-| The auto-mode classifier can allow an ask of `tool.check` | `hooks/auto-mode-guard.mjs` gives the same ask from a classic hook in auto mode. |
+| The auto-mode classifier can allow an ask of `tool.check` | `features/guard/cli.mjs` gives the same ask from a classic hook in auto mode. |
 | `sec-default` skips the `prompt.section` hook of a user's mod | On a machine with managed settings or a Team or Enterprise login, the `context_management` text of dotclaude does not load. |
 | A classic `allow` is dropped | Matters only for `Agent` and `SendMessage`. |
 | An action that throws is skipped, with no log | The 0.27 module fails open on purpose. |
@@ -158,7 +194,7 @@ Measured on Claude Code 2.1.292 with `-p --permission-mode auto` in `just sandbo
   In `-p`, the call was in `permission_denials`, and the target of `rm -r` outside the project was still there.
 - The `if` field of a classic hook works as a filter.
   The debug log has "Skipping hook due to if condition … not matching" for each handler whose pattern did not match.
-  So the 7 Bash handlers of `auto-mode-guard.mjs` start one process only for `rm`, `sudo`, `xargs`, `gh`, `git clone`, `curl`, and `wget`.
+  So the 7 Bash handlers of `features/guard/cli.mjs` start one process only for `rm`, `sudo`, `xargs`, `gh`, `git clone`, `curl`, and `wget`.
 - The `permission_mode` field of the classic hook input is `auto` in auto mode.
   The script gives no output in each other mode, so the module alone decides there, and the user sees one ask, not two.
 - In auto mode, Claude Code ignores some allow rules as dangerous, because they "bypass the classifier".
@@ -220,7 +256,7 @@ Measured on Claude Code 2.1.292 with `-p --permission-mode auto` in `just sandbo
 - 2.1.288 fixed it (**official**, release notes).
   The note says: "Fixed a plugin's `tool.call` hook making Bash fail and file searches read the wrong folder in subagents that run in a worktree".
   On 2.1.288, 0 calls failed (**measured**).
-- dotclaude required 2.1.288 for this reason, and 0.27.0 requires 2.1.292.
+- dotclaude required 2.1.288 for this reason, and 0.27.0 required 2.1.292, and 0.28.0 is tested on 2.1.295.
 
 </details>
 
@@ -243,3 +279,4 @@ Measured on Claude Code 2.1.292 with `-p --permission-mode auto` in `just sandbo
 - [Parts](Parts) lists what the module does.
 - [Guards](Guards) tells how the guards ask and deny.
 - [Design](Design) gives the design principles.
+- [Managed drop-in](Managed-Drop-In) puts dotclaude at the prepend tier before the guard.

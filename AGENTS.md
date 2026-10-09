@@ -1,10 +1,11 @@
 # AGENTS.md
 
 A Claude Code plugin marketplace in ESM.
-The scripts in `plugins/` run on Node.js 22.18 or later, so they use only `node:` modules.
-The `um` command of `dotclaude-modder` runs on Bun, and the tests and `tools/` run on Bun.
-The core plugin is in `plugins/dotclaude/`, next to the `dotclaude-browser`, `dotclaude-jev`, and `dotclaude-modder` plugins.
-Each add-on plugin works without the core plugin, so it does not import from `plugins/dotclaude/`.
+The runtime scripts in `plugins/` are `.mjs` files on Node.js 22.18 or later, so they use only `node:` modules.
+A file in the import graph of a hooks module (`hooks/register.mjs`) has no `node:` import, because the module runs with no Node.
+Code that needs Python is Python, and the tests, `tools/`, and evals run on Bun.
+The core plugin is in `plugins/dotclaude/`, next to the `dotclaude-browser` and `dotclaude-jev` add-on plugins.
+Each add-on plugin works without the core plugin, so it imports nothing from another plugin.
 Only `plugins/` ships to users.
 `tests/` has one folder for each plugin, and `tools/` holds the repository scripts.
 `plugins/dotclaude/tests/` holds the hook lab, which `claude plugin test` runs against the hooks module.
@@ -16,7 +17,7 @@ Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/dotclaude/wik
   It must pass before done.
 - `bun test tests/dotclaude/guard.test.mjs` runs one test file.
 - `just lab` runs the hook lab: the tests of the hooks module with stubbed Claude Code events.
-  Test each change to `hooks/mod.mjs` there before a live session.
+  Test each change to `hooks/register.mjs` there before a live session.
 - `bunx markdownlint-cli2 README.md` lints Markdown.
   Headings and code blocks have a 100-column bound.
 - `just sandbox` runs Claude Code with this checkout in a separate config.
@@ -24,21 +25,29 @@ Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/dotclaude/wik
 
 ## Rules
 
-- Keep each `.md` file at 300 lines or less.
-  Split it into linked parts.
+- Keep each file at 300 lines or less, and each test file at 500 lines or less.
+  Split a larger file into files that each hold one concern, and split a long `.md` file into linked parts.
+  Generated files, such as `schemas/`, are out of scope.
 - Write docs in STE-flavored ASD-STE100.
   Use no semicolons.
-- Use semantic line breaks in all text that is not code: Markdown, comments, messages to Claude, commit messages, and pull requests.
+- Use semantic line breaks in all text that is not code: Markdown, comments, messages to Claude, commit messages, pull requests, and chat replies.
   Start each sentence on a new line, and break a long sentence only between clauses.
   Never break a line at a column or in a word.
+- Put each code item in inline code (single backticks) in all text that is not code: Markdown, comments, test names, messages to Claude, commit messages, pull requests, and chat replies.
+  A code item is a command, a tool name, a file path, an identifier, a settings key, an env var, or a literal value, such as `cat F`, `Read`, `hooks.json`, and `maxTurns`.
+  The backticks show a reader, a person or a model, which words are code and which words are prose.
 - Write each message that goes to Claude (hook output, deny reasons, skill and agent prompts) in strict ASD-STE100.
-  Follow Claude's prompting best practices: give the reason, say what to do, use no forceful words, and put code items in backticks.
-- Change a usage bound only in `plugins/dotclaude/lib/budget.mjs`.
-  Tests pin its copies in code and config, not in prose.
+  Follow Claude's prompting best practices: give the reason, say what to do, and use no forceful words.
+- Change a shared runtime bound only in `plugins/dotclaude/lib/budget.mjs`,
+  a feature bound only in `features/<name>/limits.mjs`,
+  and a repository bound only in `tools/limits.mjs`.
+  Tests pin the copies of each bound in code and config, not in prose.
 - Do not write runtime JavaScript (`plugins/`) for a feature that the latest Claude Code has.
   When Claude Code has a setting, a hook, or another extension point for a need, use it.
-- In `plugins/dotclaude/`, `lib/` imports only itself.
-  `hooks/`, `status-line/`, and the skill scripts import only `lib/` and their own folder.
+- In a plugin, `lib/` imports only `lib/`.
+  A folder in `features/` imports only `lib/` and itself, never another feature.
+  The entry points (`hooks/register.mjs`, `features/*/cli.mjs`, and the skill scripts) import `lib/` and features.
+  No file in `plugins/` imports another plugin, `tools/`, or `tests/`.
 - Tests give commands to the guards as strings.
   Never run a guarded command.
 - Never patch the Claude Code CLI binary or its npm package, although it is minified JavaScript that you can read.

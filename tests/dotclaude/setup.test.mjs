@@ -1,4 +1,4 @@
-// The helpers of `lib/setup.mjs`,
+// The helpers of `features/setup/rules.mjs`,
 // and runs of `skills/setup/scripts/settings.mjs` against a temporary config folder.
 // The runs use `node`, as the skill does.
 // They get an empty `PATH`, so that they find no `openspec`, `node`, or language server.
@@ -7,6 +7,7 @@ import { expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { REFRESH_SECONDS } from "../../plugins/dotclaude/features/setup/limits.mjs";
 import {
   backup,
   dropLegacy,
@@ -15,17 +16,19 @@ import {
   lspPlugins,
   mergeProfile,
   olderThan,
-} from "../../plugins/dotclaude/lib/setup.mjs";
+} from "../../plugins/dotclaude/features/setup/rules.mjs";
+
+import { REFRESH_SECONDS as STATUS_REFRESH_SECONDS } from "../../plugins/dotclaude/features/statusline/limits.mjs";
 
 const PLUGIN = path.join(import.meta.dirname, "../../plugins/dotclaude");
 const SCRIPT = path.join(PLUGIN, "skills/setup/scripts/settings.mjs");
 const NODE = Bun.which("node");
 const PROFILE = JSON.parse(
-  fs.readFileSync(path.join(PLUGIN, "templates/settings.json"), "utf8"),
+  fs.readFileSync(path.join(PLUGIN, "features/setup/profile.json"), "utf8"),
 );
 const tempDir = () => fs.mkdtempSync(path.join(os.tmpdir(), "dc-setup-"));
 
-test("mergeProfile merges objects, adds missing array entries, and replaces scalars", () => {
+test("`mergeProfile` merges objects, adds missing array entries, and replaces scalars", () => {
   const { settings, changes } = mergeProfile(
     {
       a: 1,
@@ -52,18 +55,18 @@ test("mergeProfile merges objects, adds missing array entries, and replaces scal
   expect(mergeProfile(settings, { a: 2 }).changes).toEqual([]);
 });
 
-test("dropLegacy removes only the values that 0.26 wrote", () => {
+test("`dropLegacy` removes only the values that `0.26` wrote", () => {
   const changes = [];
   expect(
     dropLegacy(
-      { includeGitInstructions: false, autoCompactWindow: 90000, x: 1 },
+      { advisorModel: "claude-opus-5-5", autoCompactWindow: 90000, x: 1 },
       changes,
     ),
   ).toEqual({ autoCompactWindow: 90000, x: 1 });
-  expect(changes).toEqual(["includeGitInstructions: false -> (unset)"]);
+  expect(changes).toEqual(['advisorModel: "claude-opus-5-5" -> (unset)']);
 });
 
-test("backup keeps the newest backups of a file", () => {
+test("`backup` keeps the newest backups of a file", () => {
   const dir = tempDir();
   const file = path.join(dir, "settings.json");
   const other = path.join(dir, "other.json.dotclaude-backup-0");
@@ -83,7 +86,7 @@ test("backup keeps the newest backups of a file", () => {
   fs.rmSync(dir, { recursive: true });
 });
 
-test("launcherText runs the newest version in the cache that is not orphaned", () => {
+test("`launcherText` runs the newest version in the cache that is not orphaned", () => {
   const dir = tempDir();
   const versions = path.join(dir, "cache/dotclaude");
   for (const [v, orphaned] of [
@@ -91,22 +94,22 @@ test("launcherText runs the newest version in the cache that is not orphaned", (
     ["0.27.0", false],
     ["0.28.0", true],
   ]) {
-    const sl = path.join(versions, v, "status-line");
+    const sl = path.join(versions, v, "features/statusline");
     fs.mkdirSync(sl, { recursive: true });
-    fs.writeFileSync(path.join(sl, "statusline.mjs"), `console.log("${v}");`);
+    fs.writeFileSync(path.join(sl, "cli.mjs"), `console.log("${v}");`);
     if (orphaned) fs.writeFileSync(path.join(versions, v, ".orphaned_at"), "");
   }
   const launcher = path.join(dir, "launcher.mjs");
   fs.writeFileSync(
     launcher,
-    launcherText(path.join(versions, "0.9.0/status-line/statusline.mjs")),
+    launcherText(path.join(versions, "0.9.0/features/statusline/cli.mjs")),
   );
   const out = Bun.spawnSync([NODE, launcher]).stdout.toString();
   expect(out.trim()).toBe("0.27.0");
   fs.rmSync(dir, { recursive: true });
 });
 
-test("lspPlugins lists the official plugins whose servers are all on PATH", () => {
+test("`lspPlugins` lists the official plugins whose servers are all on `PATH`", () => {
   const marketplace = {
     plugins: [
       { name: "ts-lsp", lspServers: { ts: { command: "tsserver" } } },
@@ -129,7 +132,7 @@ test("lspPlugins lists the official plugins whose servers are all on PATH", () =
   ]);
 });
 
-test("olderThan compares version numbers", () => {
+test("`olderThan` compares version numbers", () => {
   expect(olderThan("1.9.0", "1.14.0")).toBe(true);
   expect(olderThan("1.14.1", "1.14.0")).toBe(false);
   expect(olderThan("20.19.0", "20.19.0")).toBe(false);
@@ -151,7 +154,7 @@ const settingsOf = (config) =>
 const hasStub = (config) =>
   fs.existsSync(path.join(config, "dotclaude/statusline.mjs"));
 
-test("setup writes nothing without --apply, then writes the profile once", () => {
+test("setup writes nothing without `--apply`, then writes the profile once", () => {
   const config = tempDir();
   const dry = setup(config);
   expect(dry.code).toBe(0);
@@ -163,7 +166,18 @@ test("setup writes nothing without --apply, then writes the profile once", () =>
   const s = settingsOf(config);
   expect(mergeProfile(s, PROFILE).changes).toEqual([]);
   expect(s.statusLine.command).toContain(path.join(config, "dotclaude"));
+  expect(s.statusLine.refreshInterval).toBe(REFRESH_SECONDS);
+  expect(s.statusLine.hideVimModeIndicator).toBe(true);
+  expect(Object.keys(s.subagentStatusLine).sort()).toEqual(["command", "type"]);
   expect(hasStub(config)).toBe(true);
+  expect(
+    fs.readFileSync(
+      path.join(config, "dotclaude/subagent-statusline.mjs"),
+      "utf8",
+    ),
+  ).toBe(
+    launcherText(path.join(PLUGIN, "features/statusline/subagent-cli.mjs")),
+  );
 
   const again = setup(config, "--apply");
   expect(again.out).toContain("Settings match the profile.");
@@ -172,7 +186,7 @@ test("setup writes nothing without --apply, then writes the profile once", () =>
   fs.rmSync(config, { recursive: true });
 });
 
-test("setup removes what 0.26 wrote, and keeps the rest of the user files", () => {
+test("setup removes what `0.26` wrote, and keeps the rest of the user files", () => {
   const config = tempDir();
   const stubDir = path.join(config, "dotclaude");
   const claudeMd = path.join(config, "CLAUDE.md");
@@ -181,7 +195,6 @@ test("setup removes what 0.26 wrote, and keeps the rest of the user files", () =
   fs.writeFileSync(
     path.join(config, "settings.json"),
     JSON.stringify({
-      includeGitInstructions: false,
       autoCompactWindow: 150000,
       advisorModel: "claude-opus-5-5",
       subagentStatusLine: {
@@ -198,18 +211,24 @@ test("setup removes what 0.26 wrote, and keeps the rest of the user files", () =
   const run = setup(config, "--apply");
   expect(run.code).toBe(0);
   const s = settingsOf(config);
-  expect(s.includeGitInstructions).toBeUndefined();
+  expect(s.includeGitInstructions).toBe(false);
   expect(s.autoCompactWindow).toBeUndefined();
   expect(s.advisorModel).toBeUndefined();
-  expect(s.subagentStatusLine).toBeUndefined();
+  expect(s.subagentStatusLine).toEqual({
+    type: "command",
+    command: `node ${JSON.stringify(path.join(stubDir, "subagent-statusline.mjs"))}`,
+  });
   expect(s.theme).toBe("dark");
   expect(fs.existsSync(path.join(stubDir, "subagents.mjs"))).toBe(false);
+  expect(fs.existsSync(path.join(stubDir, "subagent-statusline.mjs"))).toBe(
+    true,
+  );
   expect(fs.readFileSync(claudeMd, "utf8")).toBe("# Mine\nkept\n");
   expect(run.out).toContain("Backup:");
   fs.rmSync(config, { recursive: true });
 });
 
-test("setup keeps a status line of another tool unless --status-line is given", () => {
+test("setup keeps a status line of another tool unless `--status-line` is given", () => {
   const config = tempDir();
   const theirs = { type: "command", command: "other-tool status" };
   fs.writeFileSync(
@@ -224,6 +243,34 @@ test("setup keeps a status line of another tool unless --status-line is given", 
   expect(settingsOf(config).statusLine.command).toContain("dotclaude");
   expect(hasStub(config)).toBe(true);
   fs.rmSync(config, { recursive: true });
+});
+
+test("setup keeps a subagent status line of another tool unless `--status-line` is given", () => {
+  const config = tempDir();
+  const theirs = { type: "command", command: "other-tool agents" };
+  fs.writeFileSync(
+    path.join(config, "settings.json"),
+    JSON.stringify({ subagentStatusLine: theirs }),
+  );
+  expect(setup(config, "--apply").out).toContain(
+    "Kept your subagentStatusLine",
+  );
+  expect(settingsOf(config).subagentStatusLine).toEqual(theirs);
+  expect(settingsOf(config).statusLine.command).toContain("dotclaude");
+  expect(
+    fs.existsSync(path.join(config, "dotclaude/subagent-statusline.mjs")),
+  ).toBe(false);
+
+  setup(config, "--apply", "--status-line");
+  expect(settingsOf(config).subagentStatusLine.command).toContain(
+    "subagent-statusline.mjs",
+  );
+  fs.rmSync(config, { recursive: true });
+});
+
+test("the refresh interval of setup is the one second of the status line", () => {
+  expect(REFRESH_SECONDS).toBe(STATUS_REFRESH_SECONDS);
+  expect(REFRESH_SECONDS).toBe(1);
 });
 
 test("setup stops on a settings file that is not JSON", () => {

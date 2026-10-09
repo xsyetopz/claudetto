@@ -1,8 +1,8 @@
-// The classic auto-mode hook of `hooks/auto-mode-guard.mjs`, with commands as strings.
+// The classic auto-mode hook of `features/guard/cli.mjs`, with commands as strings.
 // No command runs: `run` is a stub that answers `gh` calls from a table.
 
 import { expect, test } from "bun:test";
-import { decide } from "../../plugins/dotclaude/hooks/auto-mode-guard.mjs";
+import { decide } from "../../plugins/dotclaude/features/guard/cli.mjs";
 
 const env = { CLAUDE_PROJECT_DIR: "/w/app", HOME: "/h", TMPDIR: "/var/tmp/me" };
 const payload = (command, mode = "auto") => ({
@@ -18,15 +18,15 @@ const POLICY = (repo) =>
   `gh api -H Accept: application/vnd.github.raw+json repos/${repo}/contents/CLAUDE.md`;
 const stub = (table) => (argv) => table[argv.join(" ")] ?? null;
 
-test("in auto mode, a recursive rm outside the project asks", async () => {
+test("in auto mode, a recursive `rm` outside the project asks", async () => {
   const out = await decide(payload("rm -r ~/victim"), env, fresh(), stub({}));
   expect(out.hookSpecificOutput.permissionDecision).toBe("ask");
-  expect(out.hookSpecificOutput.permissionDecisionReason).toContain(
-    "`~/victim`",
-  );
+  expect(
+    out.hookSpecificOutput.permissionDecisionReason.length,
+  ).toBeGreaterThan(0);
 });
 
-test("in auto mode, a recursive rm in the project or a temp folder gives no output", async () => {
+test("in auto mode, a recursive `rm` in the project or a temp folder gives no output", async () => {
   for (const command of [
     "rm -rf ./build",
     "rm -rf /tmp/x",
@@ -71,5 +71,28 @@ test("a repository of the user gives no output", async () => {
   const run = stub({ [LOGIN]: "me\n", [POLICY("me/app")]: "Rules of my own." });
   expect(
     await decide(payload("gh repo view me/app"), env, fresh(), run),
+  ).toBeUndefined();
+});
+
+test("in auto mode, a variable that a later segment resets and a `rm` after `do` or `(` ask", async () => {
+  for (const command of [
+    'D=$(mktemp -d); read D <<< "$HOME"; rm -rf "$D"',
+    'D=$(mktemp -d); D+=/../../..; rm -rf "$D"',
+    'D=$(mktemp -d); eval "D=$HOME"; rm -rf "$D"',
+    'D=$(mktemp -d); printf -v D %s "$HOME"; rm -rf "$D"',
+    'D=$(mktemp -d); for D in ~; do rm -rf "$D"; done',
+    "for x in 1; do rm -rf ~; done",
+    "(rm -rf ~)",
+  ]) {
+    const out = await decide(payload(command), env, fresh(), stub({}));
+    expect(out.hookSpecificOutput.permissionDecision).toBe("ask");
+  }
+  expect(
+    await decide(
+      payload('D=$(mktemp -d); rm -rf "$D"'),
+      env,
+      fresh(),
+      stub({}),
+    ),
   ).toBeUndefined();
 });

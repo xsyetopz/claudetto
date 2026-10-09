@@ -1,0 +1,40 @@
+// The Jev client as a child process.
+// The client imports `node:` modules, which the graph of a hooks module cannot hold,
+// so the module runs it through `$.process.run`.
+// The `$` calls are in the hooks module, because `$` is not followed across an import.
+
+import { CLIENT, JEV_TIMEOUT_MS } from "./limits.mjs";
+
+/** The argument vector of one client run. */
+export const clientArgv = (root, args) => [
+  "node",
+  `${root}/${CLIENT}`,
+  ...args,
+];
+
+/**
+ * The init of `$.process.run`.
+ * The key goes in the environment of the child, and never in the argument list.
+ */
+export function clientInit(key, stdin) {
+  return {
+    env: { TYPESAFE_API_KEY: key },
+    timeoutMs: JEV_TIMEOUT_MS,
+    ...(stdin === undefined ? {} : { stdin }),
+  };
+}
+
+/** The outcome of a run: `{ ok: true, stdout }` or `{ ok: false, reason }`. */
+export function outcome(run) {
+  if (run.exitCode === 0) return { ok: true, stdout: run.stdout.trim() };
+  return {
+    ok: false,
+    reason: run.stderr.trim() || `The client exited with code ${run.exitCode}.`,
+  };
+}
+
+/** The outcome of a run that did not start or ran too long. */
+export const failed = {
+  ok: false,
+  reason: "The client did not start or ran too long.",
+};

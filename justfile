@@ -31,6 +31,14 @@ sandbox *args:
 sandbox-clean:
     bun tools/sandbox.mjs --clean
 
+# Log the requests of Claude Code through a local proxy and size each part of the first one; extra arguments go to the proxy (--port N, --out DIR, --no-count)
+capture *args:
+    bun tools/capture.mjs "$@"
+
+# Size the start of a session and its context from a transcript, write tools/baseline.json, and fail above START_TOKENS; extra arguments go to the report (a .jsonl path, --no-write, --bound N)
+measure *args:
+    bun tools/measure.mjs "$@"
+
 # Where your Claude Code usage went; extra arguments go to the report (--days N, --json)
 usage *args:
     bun tools/usage-report.mjs "$@"
@@ -73,3 +81,11 @@ release *flags:
     if [[ "${1:-}" == --dry-run ]]; then exit 0; fi
     for p in plugins/*/; do claude plugin tag "$p"; done
     git push --atomic origin "${tags[@]/#/refs/tags/}"
+
+# Write the settings schemas of the installed Claude Code to schemas/; extra arguments go to the script (--bundle FILE, --version X.Y.Z, --out DIR)
+schema *args:
+    bun tools/schema.mjs "$@"
+
+# Run the eval suite in containers and write a report to evals/results/ (it costs money, and `just check` never runs it); extra arguments go to the harness (--cases a,b, --runs N, --limit USD, --model M, --variant FILE, --dry-run)
+eval *args:
+    bun tools/eval/cli.mjs "$@"

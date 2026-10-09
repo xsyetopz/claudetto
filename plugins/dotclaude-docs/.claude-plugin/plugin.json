@@ -1,0 +1,10 @@
+{
+  "name": "dotclaude-docs",
+  "version": "0.27.0",
+  "description": "Gets current library and API docs with the Context7 CLI `ctx7`. Works with no key.",
+  "author": {
+    "name": "xsyetopz"
+  },
+  "repository": "https://github.com/xsyetopz/dotclaude",
+  "license": "MIT"
+}

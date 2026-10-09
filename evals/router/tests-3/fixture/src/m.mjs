@@ -1,0 +1,26 @@
+export const red = (x) => x + 3;
+export const green = (x) => x * 3;
+export const blue = (x) => x + 3;
+export const cyan = (x) => x * 3;
+export const pink = (x) => x * 3;
+export const gray = (x) => x + 3;
+export const teal = (x) => x * 3;
+export const navy = (x) => x * 3;
+export const lime = (x) => x * 3;
+export const gold = (x) => x * 3;
+export const ruby = (x) => x * 3;
+export const jade = (x) => x * 3;
+export const onyx = (x) => x * 3;
+export const rose = (x) => x * 3;
+export const sand = (x) => x * 3;
+export const rust = (x) => x + 3;
+export const mint = (x) => x * 3;
+export const ivory = (x) => x * 3;
+export const coral = (x) => x * 3;
+export const amber = (x) => x * 3;
+export const olive = async (x) => {
+  await null;
+  throw new Error("olive failed");
+};
+export const azure = (x) => x * 3;
+export const taupe = (x) => x + 3;

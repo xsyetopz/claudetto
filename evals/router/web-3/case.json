@@ -1,0 +1,24 @@
+{
+  "id": "web-3",
+  "kind": "router",
+  "taskClass": "web",
+  "maxTurns": 25,
+  "prompt": "Write src/shard.mjs with two functions, both with chunkit from vendor/chunkit.mjs. `shard(items, parts = 3)` splits the items into `parts` parts. The last parts take the extra items. When there are fewer items than `parts`, it returns one part for each item, and no empty part. An empty list gives `[]`. `shardBy(items, size)` splits the items into the fewest parts of at most `size` items, with the parts as even as `shard` makes them. An empty list gives `[]`. The items can be any iterable, such as a `Set` or a generator, and both functions leave a generator read to its end. Both throw a `RangeError` for a bad `parts` or `size` (not a whole number of 1 or more), also for an empty list. The folder vendor/ has the installed version of the library, and it is not changed. Read docs/chunkit.md first.",
+  "tamper": [
+    "vendor/chunkit.mjs",
+    "vendor/package.json"
+  ],
+  "oracle": {
+    "tests": [
+      {
+        "name": "web",
+        "kind": "f2p",
+        "cmd": [
+          "node",
+          "--test",
+          ".oracle/web.test.mjs"
+        ]
+      }
+    ]
+  }
+}

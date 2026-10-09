@@ -1,0 +1,17 @@
+{
+  "id": "scoped-3",
+  "kind": "router",
+  "taskClass": "scoped",
+  "maxTurns": 25,
+  "prompt": "Write `wrapText(text, width)` in src/wrap.mjs. It splits the text into words on runs of spaces and tabs, and it ignores spaces and tabs at the start and end. It joins the words with one space into lines of at most `width` characters, and it returns the lines as an array. A character is one code point, so `\ud83d\ude00` counts as 1. A word longer than `width` gets its own line. An empty text, or a text with no word, gives `[]`. It throws a `RangeError` if `width` is not a whole number of 1 or more.",
+  "tamper": [],
+  "oracle": {
+    "tests": [
+      {
+        "name": "spec",
+        "kind": "f2p",
+        "cmd": ["node", "--test", ".oracle/spec.test.mjs"]
+      }
+    ]
+  }
+}

@@ -191,6 +191,51 @@ The recipe then runs `plugins/dotclaude/evals/oracle.mjs` and `plugins/dotclaude
 - The estimate comes from `0.17.1-rerun`, where `t4-delegate` cost $0.23 per trial.
   Thus about $0.25 to $0.40 per trial, and about $20 to $32 for 4 arms, 2 cases, and 10 trials.
 
+## Final tree of 0.28.0
+
+The run of 2026-10-09 (`evals/results/2026-10-09T12-14-45-135Z`) used all 12 cases of the main suite on Sonnet 5.5, with 3 runs for each case and arm (72 runs, 1.83 USD, no faults and no time-outs).
+
+| Measure | dotclaude | vanilla | Interval of the difference |
+| --- | --- | --- | --- |
+| resolve | 1 | 0.806 | 0 to 0.417 |
+| wrongfulRevert | 0 | 0.333 | -0.75 to 0 |
+| warrantedFix | 1 | 1 | 0 to 0 |
+| tamper | 0 | 0.028 | -0.083 to 0 |
+| overClaim, policyViolation, recap | 0 | 0 | 0 to 0 |
+| turns for each resolved task | 5.167 | 5.414 | not defined |
+| seconds | 15.571 | 11.051 | 1.74 to 7.349 |
+| cost | 0.023 | 0.028 | -0.01 to 0 |
+
+No rate of dotclaude is worse than vanilla.
+A dotclaude run takes 4.5 seconds and 0.8 turns more, and the interval shows both.
+
+## Router table of 0.28.0
+
+The router search of 2026-10-09 (`evals/results/2026-10-09T12-16-54-262Z`, 5.1 USD) used 3 cases for each class, with 9 paired runs for each pair.
+The table of `features/router/data.mjs` comes from this report and from the effort guide of Anthropic (decision of the user 2026-10-09).
+
+| Class | Reference | Cheapest pair with no loss | Table |
+| --- | --- | --- | --- |
+| `search` | Haiku 5.5 `medium` | Haiku 5.5 `low` | Haiku 5.5 `medium` |
+| `tests` | Haiku 5.5 `low` | none | Haiku 5.5 `low` |
+| `web` | Sonnet 5.5 `medium` | Haiku 5.5 `medium` | Haiku 5.5 `medium` |
+| `bulk` | Haiku 5.5 `medium` | none | Haiku 5.5 `medium` |
+| `scoped` | Sonnet 5.5 `medium` | Haiku 5.5 `low` | Haiku 5.5 `medium` |
+| `debug` | Sonnet 5.5 `high` | Haiku 5.5 `low` | Haiku 5.5 `high` |
+| `review` | Opus 5.5 `high` | Sonnet 5.5 `low` | Sonnet 5.5 `medium` |
+| `audit` | Opus 5.5 `xhigh` | Haiku 5.5 `low` | Sonnet 5.5 `high` |
+| `plan` | Opus 5.5 `high` | Haiku 5.5 `low` | Haiku 5.5 `medium` |
+| `orchestration` | Opus 5.5 `medium` | Haiku 5.5 `low` | Haiku 5.5 `medium` |
+
+- The effort guide tells Haiku 5.5 to start at `medium` for agentic work, and says that at `low` it can skip a search, stop early, or skip a check.
+  Thus a Haiku 5.5 row is at `medium` or above, except `tests`, which copies output.
+- Each Haiku 5.5 pair lost on `review`, at each effort.
+  The `audit` cases do not separate the pairs (task 11.12), so `audit` stays on the review model, at `high`.
+- The `plan` reference and its cheapest pair both resolved 0.667, which points to a fault in a case, not in a model (not verified).
+- The rows above the measured pair are inferred, not measured.
+  One more router search on the final table measures them.
+- The main loop keeps its model and takes only an effort: `high` for `plan`, `review`, and `debug`, and `medium` for other prompts.
+
 ## Planned: compatibility rule
 
 A state-based eval for the working rule that keeps an old name only for a named consumer.
@@ -201,6 +246,7 @@ The case is not written yet.
 
 ## Related pages
 
+- [Evals of 0.28.0](Evals-0.28.0)
 - [Development](Development)
 - [Open items](Open-Items)
 - [Plans and models](Plans-and-Models)

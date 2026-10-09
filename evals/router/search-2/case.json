@@ -1,0 +1,43 @@
+{
+  "id": "search-2",
+  "kind": "router",
+  "taskClass": "search",
+  "maxTurns": 25,
+  "prompt": "List every file in `src/` that calls the function that `src/net/client.mjs` runs with `retryWithBackoff`, the one with the body in the `backoff` folder. Count a call under another name, a call through `Reflect.apply`, a call through a string key, and a call after a dynamic `import()`. Do not count a file that only imports, re-exports, or stores the function, the file that holds its body, or a file that calls another function with the same name or a parameter with the same name. Write one path on each line, in ANSWER.md. Change no other file.",
+  "tamper": [
+    "package.json",
+    "src/jobs/retry.mjs",
+    "src/jobs/worker.mjs",
+    "src/net/backoff/attempt.mjs",
+    "src/net/backoff/engine.mjs",
+    "src/net/backoff/index.mjs",
+    "src/net/backoff/loop.mjs",
+    "src/net/backoff/sleep.mjs",
+    "src/net/batch.mjs",
+    "src/net/client.mjs",
+    "src/net/hooks.mjs",
+    "src/net/keep.mjs",
+    "src/net/lazy.mjs",
+    "src/net/mock.mjs",
+    "src/net/poll.mjs",
+    "src/net/registry.mjs",
+    "src/net/retry-old.mjs",
+    "src/net/retry.mjs",
+    "src/net/shadow.mjs",
+    "src/net/upload.mjs",
+    "src/util/misc.mjs"
+  ],
+  "oracle": {
+    "tests": [
+      {
+        "name": "answer",
+        "kind": "f2p",
+        "cmd": [
+          "node",
+          "--test",
+          ".oracle/answer.test.mjs"
+        ]
+      }
+    ]
+  }
+}

@@ -1,7 +1,6 @@
 ---
 name: handoff
 description: Writes a handoff note that primes a fresh session after `/clear`, or lists and removes notes.
-disable-model-invocation: true
 argument-hint: "[slug] | --list | --rm <slug>"
 allowed-tools: Bash(git status*) Bash(git diff --stat*) Bash(git log --oneline*) Bash(git rev-parse*) Bash(git check-ignore*) Bash(ls *.claude/handoffs*)
 ---
@@ -16,7 +15,8 @@ the next session needs the goal, the constraints, the decisions, and the proof, 
 Read `$ARGUMENTS`:
 
 - `--list`: list `.claude/handoffs/*.md` with the `status` and `written` lines of each note, then stop.
-- `--rm <slug>`: delete `.claude/handoffs/<slug>.md` with the permission prompt, then stop.
+- `--rm <slug>`: ask the user to confirm the removal of `.claude/handoffs/<slug>.md`, because a removed note does not come back.
+  Delete the file only after the user confirms, then stop.
 - `<slug>`: write `.claude/handoffs/<slug>.md`.
 - empty: write the note with a slug of two to four lowercase words that name the task.
 

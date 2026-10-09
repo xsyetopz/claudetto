@@ -1,0 +1,23 @@
+{
+  "id": "audit-1",
+  "kind": "router",
+  "taskClass": "audit",
+  "maxTurns": 25,
+  "prompt": "src/files.mjs takes input from outside the process. Audit it for security flaws. Write each flaw you find in AUDIT.md, on its own line that starts with the function name. Do not list a function that has no flaw. Change no other file.",
+  "tamper": [
+    "src/files.mjs"
+  ],
+  "oracle": {
+    "tests": [
+      {
+        "name": "audit",
+        "kind": "f2p",
+        "cmd": [
+          "node",
+          "--test",
+          ".oracle/audit.test.mjs"
+        ]
+      }
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-// Small helpers for usage-report.mjs. The 0.19.1 hook libraries held them.
+// Small helpers for `usage-report.mjs`. The 0.19.1 hook libraries held them.
 
 import fs from "node:fs";
 import path from "node:path";

@@ -17,9 +17,9 @@ It optimizes for the most quality per unit of usage quota, not for speed.
 /plugin install dotclaude@dotclaude
 ```
 
-Requirements: Claude Code 2.1.292, [Node.js](https://nodejs.org) 22.18 or later on `PATH`, and git.
+Requirements: Claude Code 2.1.295, [Node.js](https://nodejs.org) 22.18 or later on `PATH`, and git.
 The hooks module uses the mods API of Claude Code, which can change between releases,
-so this release is tested only on 2.1.292.
+so this release is tested only on 2.1.295.
 
 ## Setup
 
@@ -51,12 +51,12 @@ To drop a part of the profile, see the setup skill.
 
 | Model | Roles | Effort |
 | --- | --- | --- |
-| Opus 5.5 | main session, `reviewer` | default `medium`, `reviewer` `high` |
-| Sonnet 5.5 | `investigator`, `web-researcher`, `implementer`, `debugger` | `medium` |
-| Haiku 4.5 | `test-runner` | none |
+| Opus 5.5 | main session | default `medium`, the router sets `high` or `medium` by task |
+| Sonnet 5.5 | `reviewer` | `medium` |
+| Haiku 5.5 | `investigator`, `implementer`, `debugger`, `test-runner` | `medium`, `debugger` `high`, `test-runner` `low` |
 
 The profile sets no effort level, so each model keeps its default.
-`maxEffortLevel` is `xhigh`, so `/effort` can go up for a hard check.
+`maxEffortLevel` is `max`, so `/effort` can go up to `max` for a hard check.
 
 ## Long work without compaction
 
@@ -79,23 +79,27 @@ and [OpenSpec](https://github.com/xsyetopz/dotclaude/wiki/OpenSpec).
 Each add-on works without the core plugin.
 
 ```text
-/plugin install dotclaude-browser@dotclaude
+/plugin install dotclaude-codegraph@dotclaude
 /plugin install dotclaude-jev@dotclaude
-/plugin install dotclaude-modder@dotclaude
+/plugin install dotclaude-browser@dotclaude
+/plugin install dotclaude-docs@dotclaude
 ```
 
-- `dotclaude-browser` has the `drive-web-browser` skill.
-  It uses `agent-browser`, and its `backend` option selects CloakBrowser for sites with bot detection.
-- `dotclaude-jev` has the `second-opinion` skill,
-  which asks [TypeSafe Jev](https://docs.typesafe.ai/introduction) for probabilities on a close call.
+- `dotclaude-codegraph` gives Claude the code graph of a project from the CodeGraph CLI `codegraph`.
+  It needs `codegraph` on `PATH` and a project index from `codegraph init -y`.
+  In an indexed project, it syncs the index, adds the callers of a searched symbol to `Grep` and `Glob` calls,
+  and adds no MCP server.
+  See [Code graph](https://github.com/xsyetopz/dotclaude/wiki/Code-Graph).
+- `dotclaude-jev` has the `second_opinion` tool,
+  which asks [TypeSafe Jev](https://docs.typesafe.ai/introduction) for probabilities on a decision.
   Export `TYPESAFE_API_KEY` before Claude Code starts.
   Each call sends the data of the decision to the TypeSafe API.
-- `dotclaude-modder` lets Claude mod a PC game that you own.
-  It is a port of [universal-modder](https://github.com/rehan-remade/universal-modder) by Rehan,
-  and it needs Bun and `uv`.
-  It adds one skill and the fal MCP server, so install it only where you mod games.
-  For reverse engineering, use the skills in [xsyetopz/skills](https://github.com/xsyetopz/skills).
-  See [Modder](https://github.com/xsyetopz/dotclaude/wiki/Modder).
+  With no key, the tool sends Claude to the `reviewer` agent.
+- `dotclaude-browser` has the `drive-web-browser` skill.
+  It uses `agent-browser`, and its `backend` option selects CloakBrowser for sites with bot detection.
+  It also answers each `WebSearch` call with a search in the headless browser.
+- `dotclaude-docs` has the `docs` skill,
+  which gets current library docs with the Context7 CLI `ctx7` and works with no key.
 
 ## Update
 

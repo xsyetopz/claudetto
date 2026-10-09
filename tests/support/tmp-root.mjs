@@ -12,5 +12,5 @@ process.env.TMPDIR = root;
 // On Windows, `os.tmpdir()` reads `TEMP` and `TMP`, not `TMPDIR`.
 process.env.TEMP = root;
 process.env.TMP = root;
-// A preloaded afterAll runs once, after every test file.
+// A preloaded `afterAll` runs once, after every test file.
 afterAll(() => fs.rmSync(root, { recursive: true, force: true }));

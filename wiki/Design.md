@@ -54,6 +54,20 @@ Source tags: **official** is a doc of Claude Code, **binary** is the 2.1.292 bun
   A guardrail pack made no difference in an A/B, and prompt-only rules decay (**reported**).
 - Hook processes per `Bash` call fell from 7 to 2 with the module in 0.19 (**inventory**).
 
+## The 0.28.0 decisions
+
+0.28.0 makes 30 numbered decisions, D1 to D30.
+These five set the frame:
+
+- D1: use the least powerful tool for each need.
+  Look first for no key, then a settings key, then a part to turn off, then a mod handler, and last a script.
+- D2: dotclaude writes no managed file and runs at tier `user` from `settings.json`.
+- D3: cuts of the prompt surface go by exact id, and an unknown id passes on unchanged.
+- D4: the start-of-session bound is a measure plus 5% headroom.
+- D5: only an entry that writes user configuration is user-invoked only.
+
+[Decisions](Decisions) lists D1 to D30 with the page of each.
+
 ## Design principles
 
 | Principle | What it means |
@@ -66,7 +80,7 @@ Source tags: **official** is a doc of Claude Code, **binary** is the 2.1.292 bun
 | No prompt-type or agent-type hooks | They spend usage on every event. |
 | Only documented extension points | dotclaude uses hooks, output styles, skills, agents, `userConfig`, and settings keys. It never patches Claude Code. |
 | Fail open | A bug in a guard must not stop the work of the user. The guards are a best-effort parser, not a sandbox. |
-| Layered imports | `plugins/dotclaude/lib/` imports only itself. `hooks/`, `status-line/`, and the skill scripts import only `lib/` and their own folder. |
+| Layered imports | `plugins/dotclaude/lib/` imports only itself. A folder in `features/` imports only `lib/` and itself. `hooks/register.mjs` and the skill scripts import only `lib/` and their own feature. |
 
 ### No checks on the words of a reply
 
@@ -88,9 +102,9 @@ It cut the working rules from 8.4 KB to 5.1 KB.
 
 ### One module for the tool hooks
 
-0.27.0 loads `plugins/dotclaude/hooks/mod.mjs` as a hooks module.
+0.27.0 loads `plugins/dotclaude/hooks/register.mjs` as a hooks module.
 The module handles one event, `tool.check`, and the core plugin has no classic hook ([Claude mods](Claude-Mods)).
-The pure rules are in `lib/guard.mjs`, and the lab in `tests/mod.test.ts` runs the module with stubs.
+The pure rules are in `features/guard/rules.mjs`, and the lab in `tests/mod.test.ts` runs the module with stubs.
 
 0.22 to 0.26 had a larger module and two classic hooks.
 0.19 started `hooks/dispatch.mjs` once for each event.
@@ -103,12 +117,12 @@ A bare `bun` start takes 5 ms.
 | Scenario | Bound | Mechanism | Check |
 | --- | --- | --- | --- |
 | A subagent works a long task | `maxTurns` in the agent file: 20 for `test-runner`, 80 for `implementer`, 60 for the others | Claude Code ends the agent at the limit | `tests/dotclaude/` |
-| A subagent model and effort | Opus 5.5 and Sonnet 5.5 `low` to `max`, Haiku 4.5 none (`SUBAGENT_EFFORTS`) | The `model` and `effort` of each agent file | `tests/dotclaude/` |
+| A subagent model and effort | The efforts in `ALLOWED_EFFORTS` for each model, in `features/router/limits.mjs` | The `model` and `effort` of each agent file | `tests/dotclaude/` |
 | The main conversation grows | A 300K window and no compaction | `CLAUDE_CODE_MAX_CONTEXT_TOKENS`, `DISABLE_COMPACT`, and `autoCompactEnabled:false` in the profile | `tests/dotclaude/` |
-| A `rm -r` outside the project, or a repo of another owner with an AI policy | An ask | `tool.check` in `hooks/mod.mjs` | `tests/mod.test.ts` |
+| A `rm -r` outside the project, or a repo of another owner with an AI policy | An ask | `tool.check` in `hooks/register.mjs` | `tests/mod.test.ts` |
 | Fan-out | 5 subagents, and 5 agents per workflow, at once | profile env | none |
 | A subagent runs in the background | It runs in the foreground and causes no wake turns | `CLAUDE_CODE_FORK_SUBAGENT=0` in the profile | none |
-| Text of dotclaude on every request | The output style at most 6,000 bytes | `STYLE_MAX_BYTES` | A test fails above the bound (see `tests/dotclaude/`) |
+| Text of dotclaude on every request | The first request text is 8 KB to 16 KB, each `CLAUDE.md` is at most 6 KB, and skill metadata and bodies have bounds | `tools/limits.mjs` | `tests/support/sizes.test.mjs` fails above a high bound and prints an advisory below a low bound, and `just measure` checks the first request |
 | Weekly review | The usage shares in [Usage evidence](Usage-Evidence) are reproducible | `tools/usage-report.mjs` | none |
 
 The profile rows need `/dotclaude:setup`.
@@ -225,7 +239,7 @@ It also tells Claude to match the work to the agent descriptions.
 
 ## The 5-minute main cache
 
-The settings profile (`plugins/dotclaude/templates/settings.json`) sets `promptCacheTtl` to `"5m"`.
+The settings profile (`plugins/dotclaude/features/setup/profile.json`) sets `promptCacheTtl` to `"5m"`.
 
 - **measured:** In 7 days of transcripts, 98.7% of the calls of the main agent came 5 minutes or less after the call before.
 - At API prices, the 5-minute cache would have cost 8.5% less than the 1-hour cache.
@@ -268,6 +282,7 @@ The settings profile (`plugins/dotclaude/templates/settings.json`) sets `promptC
 
 ## Related pages
 
+- [Decisions](Decisions)
 - [Usage evidence](Usage-Evidence)
 - [Plans and models](Plans-and-Models)
 - [Prompt surface](Prompt-Surface)

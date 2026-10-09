@@ -1,0 +1,17 @@
+{
+  "id": "debug-1",
+  "kind": "router",
+  "taskClass": "debug",
+  "maxTurns": 25,
+  "prompt": "`node --test check/` fails. Find the cause and fix it in src/. Do not change the tests.",
+  "tamper": ["check/summary.test.mjs"],
+  "oracle": {
+    "tests": [
+      {
+        "name": "debug",
+        "kind": "f2p",
+        "cmd": ["node", "--test", ".oracle/debug.test.mjs"]
+      }
+    ]
+  }
+}

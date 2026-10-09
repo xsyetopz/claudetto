@@ -1,4 +1,0 @@
-{
-  "description": "dotclaude-modder: deny a Bash call that stops processes by name",
-  "modules": ["./module/index.mjs"]
-}

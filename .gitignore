@@ -8,3 +8,5 @@ evals-heldout/results/
 /external/
 
 /letters/
+
+.env

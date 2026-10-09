@@ -1,55 +1,43 @@
 # Parts
 
-This page lists each part of dotclaude 0.27.0, its file, its bound, and the need that it serves.
-All bounds are in `plugins/dotclaude/lib/budget.mjs`.
+This page lists each part of dotclaude 0.28.0, its file, its bound, and the need that it serves.
+The bounds are in three tiers ([Runtime rules](Runtime-Rules#bound-tiers)).
 Tests pin the copies of a bound in code and config.
 Every path below is under `plugins/dotclaude/`.
 
 ## Core plugin
 
-| Part | File | Bound in `budget.mjs` | What it does |
+| Part | File | Bound | What it does |
 | --- | --- | --- | --- |
-| Hooks module | `hooks/mod.mjs`, rules in `lib/guard.mjs` | `POLICY_TIMEOUT_MS` (5,000 ms), `POLICY_FILE_MAX_CHARS` (2,000) | A `tool.check` handler asks for a recursive `rm` outside the project, and asks once per session for a repository of another owner with a policy file. A `prompt.section` handler replaces `context_management` when `DISABLE_COMPACT` is set. See [Guards](Guards) and [Claude mods](Claude-Mods). |
-| Auto-mode guard | `hooks/auto-mode-guard.mjs`, rules in `lib/guard.mjs` | `POLICY_TIMEOUT_MS` | A classic PreToolUse hook for auto mode only, because the classifier can allow an ask of the module. Needs Node.js. See [Guards](Guards#the-auto-mode-guard). |
-| Output style | `output-styles/dotclaude.md` | `STYLE_MAX_BYTES` (6,000) | The forced style, with the sections `doing_tasks`, `verification`, `actions`, `context`, `subagents`, and `reports`. See [Prompt surface](Prompt-Surface). |
-| Settings profile | `templates/settings.json` | `CONTEXT_WINDOW` (300,000), `USAGE_LEVELS` (75 and 90) | Environment, permission rules, the sandbox, models, and the 300K window. Applied by the setup skill. |
-| Managed settings | `templates/managed-settings.json` | `CONTEXT_WINDOW` | Optional system-level lock. Has the window, no compaction, the sandbox with `failIfUnavailable`, `disableBypassPermissionsMode`, and the deny list. |
-| Setup skill | `skills/setup/SKILL.md`, `skills/setup/scripts/settings.mjs` | none | Previews and applies the profile, and offers the OpenSpec install. See [Install](Install). |
+| Hooks module | `hooks/register.mjs` | `POLICY_TIMEOUT_MS` (5,000 ms), `POLICY_FILE_MAX_CHARS` (2,000) in `lib/budget.mjs` | Holds the `tool.check` guard and the handlers of the prompt, router, drift, surface, and line-break features. See [Guards](Guards) and [Claude mods](Claude-Mods). |
+| Auto-mode guard | `features/guard/cli.mjs` | `POLICY_TIMEOUT_MS` | A classic hook for auto mode only, because the classifier can allow an ask of the module. See [Guards](Guards#the-auto-mode-guard). |
+| Output style | `output-styles/dotclaude.md` | The first request, `FIRST_REQUEST_LOW_BYTES` to `FIRST_REQUEST_HIGH_BYTES` | The forced style. See [Prompt surface](Prompt-Surface). |
+| Prompt variants | `features/prompt/` | The first request, `FIRST_REQUEST_LOW_BYTES` to `FIRST_REQUEST_HIGH_BYTES` | One system prompt variant for each model. See [System prompt](System-Prompt). |
+| Surface cuts | `features/surface/` | none | Cuts attachments, agent lines, and tool descriptions by id. See [Prompt surface](Prompt-Surface#attachment-cuts-of-the-hooks-module). |
+| Settings profile | `features/setup/profile.json` | `CONTEXT_WINDOW` (300,000), `USAGE_LEVELS` (75 and 90) | Environment, permission rules, the sandbox, models, and the 300K window. Applied by the setup skill. |
+| Setup skill | `skills/setup/SKILL.md`, `skills/setup/scripts/settings.mjs` | none | Previews and applies the profile. See [Install](Install) and [Commands](Commands). |
 | Handoff skill | `skills/handoff/SKILL.md` | none | Writes `.claude/handoffs/<slug>.md`. See [Handoffs](Handoffs). |
-| Status line | `status-line/statusline.mjs` | `USAGE_LEVELS` | Model and effort, context against the window, the OpenSpec change, and the 5-hour limit. |
-| Hook lab | `tests/mod.test.ts` | none | 8 tests of the module with stubbed events. Run with `just lab`. |
+| Status line | `features/statusline/cli.mjs` | `USAGE_LEVELS` | Model, effort, context, rates, and the 5-hour limit. See [Status line](Status-Line). |
+| Router | `features/router/` | `ALLOWED_EFFORTS`, `SUBAGENT_MAP_MAX` in `limits.mjs` | Sets model and effort for a prompt and a subagent task. See [Router](Router). |
+| Router fallback | `features/router/cli.mjs` | none | A classic `PreToolUse` hook on `Agent`, off until `DOTCLAUDE_ROUTER_ROUTE=classic`. |
+| Context bound | `features/context/`, `features/reads/` | `limits.mjs` of the context feature | See [Context bound](Context-Bound). |
+| Auto-fix | `features/autofix/cli.mjs` | `limits.mjs` of the feature | Records edited files and runs the project tools once at `Stop`. See [Auto-fix](Auto-Fix). |
+| Line breaks | `features/sembr/`, `lib/sembr.mjs` | none | See [Semantic line breaks](Semantic-Line-Breaks). |
+| Stop prompt hook | `hooks/hooks.json` | none | A claim-check `prompt` hook on `Stop` only. See [Stop prompt hooks](Stop-Prompt-Hooks). |
+| Drift check | `features/drift/` | none | See [Drift check](#drift-check). |
+| Hook lab | `tests/*.test.ts` | none | Tests of the module with stubbed events. Run with `just lab`. |
 
 The skill file paths and the lab path come from the repository layout, and `just check` validates them.
 
 ## Agents
 
-Each agent file is in `agents/`.
-The model, effort, and turn limit of each agent are in `AGENTS` in `budget.mjs`.
-
-| Agent | Model | Effort | `maxTurns` |
-| --- | --- | --- | --- |
-| `investigator` | Sonnet 5.5 | medium | 60 |
-| `web-researcher` | Sonnet 5.5 | medium | 60 |
-| `implementer` | Sonnet 5.5 | medium | 80 |
-| `debugger` | Sonnet 5.5 | medium | 60 |
-| `reviewer` | Opus 5.5 | high | 60 |
-| `test-runner` | Haiku 4.5 | none | 20 |
-
-Haiku 4.5 has no effort setting.
-`SUBAGENT_EFFORTS` lists the efforts that each model accepts.
-
-### Model and effort rules
-
-| Model | Efforts |
-| --- | --- |
-| Opus 5.5 | low, medium, high, xhigh, max |
-| Sonnet 5.5 | low, medium, high, xhigh, max |
-| Haiku 4.5 | none |
+The five agents are in `agents/`.
+The frontmatter of each file is the source of its model, effort, and `maxTurns`.
+See [Agents](Agents) for the roster and the pins.
 
 The settings profile sets `CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-5-5`, so a subagent with no model of its own runs on Sonnet 5.5.
-It denies `Agent(general-purpose)`.
-It sets `CLAUDE_CODE_FORK_SUBAGENT=0`, and it caps concurrent subagents at 5.
-It sets `maxEffortLevel` to `xhigh`, so `max` is not available in a session.
+It turns off the built-in agents, sets `CLAUDE_CODE_FORK_SUBAGENT=0`, and caps concurrent subagents at 5.
+It sets `maxEffortLevel` to `max`, which is no cap.
 See [Plans and models](Plans-and-Models).
 
 ## Settings profile values
@@ -68,22 +56,50 @@ See [Plans and models](Plans-and-Models).
 | `enableArtifact`, `enableWorkflows` | false | Removes the Artifact and Workflow tools from each request. |
 | `permissions.deny`: `ScheduleWakeup`, `ReportFindings` | | Removes two more unused tools. `/code-review` then gives its findings as text. |
 | `promptCacheTtl` | `5m` | The cache time to live. |
-| `cleanupPeriodDays` | 14 | Transcript retention. |
 | `promptSuggestionEnabled`, `awaySummaryEnabled` | false | No background requests. |
 
 The profile has no `effortLevel`.
-Other keys, such as the feedback switches and `enableAllProjectMcpServers`, are in the file.
+The [Profile keys](Profile-Keys) page lists each key with its reason and default.
 
 ## Optional plugins
 
 | Plugin | Files | What it does |
 | --- | --- | --- |
-| `dotclaude-browser` | `skills/` | The `drive-web-browser` skill, and a `backend` option. No hooks. See [Browser](Browser). |
-| `dotclaude-jev` | `hooks/hooks.json`, `hooks/module/index.mjs`, `hooks/session-start/second-opinion.md` | A SessionStart note, and a Jev pick added to `AskUserQuestion`. See [Second opinion](Second-Opinion). |
-| `dotclaude-modder` | `hooks/hooks.json`, `hooks/module/index.mjs`, `skills/mod-any-game/` | One skill, a deny for a kill by process name, and a `fal_key` option. No session note. See [Modder](Modder). |
+| `dotclaude-codegraph` | `hooks/hooks.json`, `bin/`, `features/graph/` | Command hooks that sync the `codegraph` index and add the callers of a searched symbol to `Grep` and `Glob` calls. See [Code graph](Code-Graph). |
+| `dotclaude-jev` | `hooks/hooks.json`, `hooks/register.mjs`, `features/jev/` | The `second_opinion` tool, and a Jev pick added to `AskUserQuestion`. See [Second opinion](Second-Opinion). |
+| `dotclaude-docs` | `skills/docs/` | The `docs` skill, which gets library docs with a pinned `ctx7`. See [Library docs](Library-Docs). |
+| `dotclaude-browser` | `hooks/hooks.json`, `hooks/register.mjs`, `features/search/`, `skills/` | The `drive-web-browser` skill, a `backend` option, and a `WebSearch` replacement that runs the headless browser. See [Browser](Browser). |
 
 ## Related pages
 
 - [Guards](Guards)
 - [Handoffs](Handoffs)
 - [Development](Development)
+
+## Drift check
+
+The `session.start` handler of the hooks module compares the active settings with the profile.
+It appends one note to the conversation only when it finds a difference, and the note asks Claude to tell the user.
+It changes no setting.
+A module cannot add context at `session.start` in another way, so the note is a row from `$.session.append`.
+
+| Difference | Line of the note |
+| --- | --- |
+| A built-in plugin of the profile is not `false` in `enabledPlugins` | Names each plugin and the setting that turns it off, in one line. |
+| A skill of the listing has the source `syncedSkills` | Gives the count and names `syncClaudeAiSkills`. |
+| The Claude Code version is not 2.1.295 | Gives the version and the tested version. |
+| A section id of the system prompt is not an id of Claude Code 2.1.295 and has no colon | Names the id. dotclaude keeps the section as Claude Code made it. |
+| The policy source of the settings has a key | Reports that the guard is seated, and names the dotclaude parts that it skips: the model variants (`prompt.compose`) and the `context_management` text (`prompt.section`). |
+| `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set | Reports that the router cannot route. |
+
+- A fact that cannot be read gives no line, so a failed read cannot make a false report.
+- `data.mjs` holds the plugin list, the tested version, and the section ids, and tests pin the plugin list to the profile.
+- The prompt sections come from a `prompt.compose` call with the `bare` trait, so the prompt hooks of dotclaude do not run in it.
+
+## Skills
+
+A skill that writes user configuration is user-invoked only (`disable-model-invocation: true`), and has no listing line.
+Today that is `setup`.
+Any other skill of the plugin can be invoked by the model, and its description has 100 characters or fewer.
+`skillOverrides` does not apply to a plugin skill on 2.1.293, so the full listing line is the cost.
+`tests/dotclaude/skills.test.mjs` checks the form of each skill and that the skill has a row in this page.

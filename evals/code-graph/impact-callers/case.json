@@ -1,0 +1,23 @@
+{
+  "id": "impact-callers",
+  "kind": "code-graph",
+  "maxTurns": 25,
+  "addons": ["dotclaude-codegraph"],
+  "tamper": [
+    "src/price.mjs",
+    "src/cart.mjs",
+    "src/invoice.mjs",
+    "src/promo.mjs",
+    "src/unrelated.mjs"
+  ],
+  "prompt": "If I change the signature of `applyDiscount`, which files break? List the files that call it, directly or through another function, one path on each line, in IMPACT.md. Change no other file.",
+  "oracle": {
+    "tests": [
+      {
+        "name": "impact",
+        "kind": "f2p",
+        "cmd": ["node", "--test", ".oracle/impact.test.mjs"]
+      }
+    ]
+  }
+}

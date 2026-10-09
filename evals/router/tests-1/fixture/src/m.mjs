@@ -1,0 +1,11 @@
+export const alpha = (x) => x * 3;
+export const beta = (x) => x + 3;
+export const gamma = (x) => x * 3;
+export const delta = (x) => x + 3;
+export const eps = (x) => x * 3;
+export const omega = (x) => x * 3;
+export const sigma = (x) => x + 3;
+export const tau = (x) => x + 3;
+export const phi = (x) => x * 3;
+export const psi = async (x) => x + 3;
+export const row = (n) => (n === 3 ? n * 2 : n * 3);

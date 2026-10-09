@@ -1,5 +1,5 @@
 // The usage bounds of dotclaude, in one place.
-// Tests pin the copies in `templates/settings.json` and in the agent files to these values,
+// Tests pin the copies in `features/setup/profile.json` and in the agent files to these values,
 // so change a bound here and nowhere else.
 
 /**
@@ -16,25 +16,12 @@ export const CONTEXT_WINDOW = 300_000;
 /** The status line shows the context in yellow from the first and in red from the second percentage of `CONTEXT_WINDOW`. */
 export const USAGE_LEVELS = [75, 90];
 
-/** The effort levels that a subagent can set, for each model. A model with none takes no `effort`. */
-export const SUBAGENT_EFFORTS = {
-  "opus-5-5": ["low", "medium", "high", "xhigh", "max"],
-  "sonnet-5-5": ["low", "medium", "high", "xhigh", "max"],
-  "haiku-4-5": [],
-};
-
-/** The model, effort, and `maxTurns` of each agent. */
-export const AGENTS = {
-  investigator: ["claude-sonnet-5-5", "medium", 60],
-  "web-researcher": ["claude-sonnet-5-5", "medium", 60],
-  implementer: ["claude-sonnet-5-5", "medium", 80],
-  debugger: ["claude-sonnet-5-5", "medium", 60],
-  reviewer: ["claude-opus-5-5", "high", 60],
-  "test-runner": ["claude-haiku-4-5", null, 20],
-};
-
-/** The bytes of the output style, which goes into each request. */
-export const STYLE_MAX_BYTES = 6_000;
+/**
+ * The characters of a successful `Bash` output that Claude receives inline, the profile key `bashOutputMaxChars`.
+ * Claude Code saves a longer output to a file and sends a preview and the path, so no output is lost.
+ * 4000 is the lowest value that Claude Code accepts (the 2.1.295 schema clamps to 4000 to 128000).
+ */
+export const BASH_OUTPUT_MAX_CHARS = 4_000;
 
 /** The time for one `gh` call of the policy guard. */
 export const POLICY_TIMEOUT_MS = 5_000;

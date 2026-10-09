@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "imports": {
+    "#time": {
+      "browser": "./src/time/browser.mjs",
+      "node": "./src/time/index.mjs",
+      "default": "./src/time/browser.mjs"
+    }
+  }
+}

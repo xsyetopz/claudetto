@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
-// Bump the plugin version by semver in package.json and each
-// plugins/*/.claude-plugin/plugin.json together, and move the CHANGELOG's [Unreleased] entries under
+// Bump the plugin version by semver in `package.json` and each
+// `plugins/*/.claude-plugin/plugin.json` together, and move the CHANGELOG's [Unreleased] entries under
 // a new dated heading, and point the [unreleased] compare link at the new tag.
 //
 //   bun tools/bump-version.mjs <major|minor|patch|X.Y.Z> [--dry-run] [--root DIR]

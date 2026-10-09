@@ -1,0 +1,17 @@
+{
+  "id": "tests-1",
+  "kind": "router",
+  "taskClass": "tests",
+  "maxTurns": 25,
+  "prompt": "Run the tests with `node --test check/`. Write the name of each failing test, one for each line, in FAILING.md. Do not fix them and change no other file.",
+  "tamper": ["src/m.mjs", "check/m.test.mjs"],
+  "oracle": {
+    "tests": [
+      {
+        "name": "failing",
+        "kind": "f2p",
+        "cmd": ["node", "--test", ".oracle/failing.test.mjs"]
+      }
+    ]
+  }
+}

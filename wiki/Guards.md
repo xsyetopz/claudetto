@@ -11,10 +11,10 @@ This page lists each layer, what to do when one fires, and how to change one.
 
 | Layer | Where it lives | What it does |
 | --- | --- | --- |
-| Permission rules | `templates/settings.json`, applied by `/dotclaude:setup` | Deny, ask, and allow lists for tools and commands. |
+| Permission rules | `features/setup/profile.json`, applied by `/dotclaude:setup` | Deny, ask, and allow lists for tools and commands. |
 | Sandbox | `sandbox` in the same profile | Runs Bash commands in the Claude Code sandbox, with a list of allowed domains. |
-| Module guard | `hooks/mod.mjs`, with pure rules in `lib/guard.mjs` | One `tool.check` handler for a recursive `rm` outside the project and for the policy ask. |
-| Auto-mode guard | `hooks/auto-mode-guard.mjs`, with the same rules in `lib/guard.mjs` | A classic `PreToolUse` hook that gives the same asks in auto mode only. |
+| Module guard | `hooks/register.mjs`, with pure rules in `features/guard/rules.mjs` | One `tool.check` handler for a recursive `rm` outside the project and for the policy ask. |
+| Auto-mode guard | `features/guard/cli.mjs`, with the same rules in `features/guard/rules.mjs` | A classic `PreToolUse` hook that gives the same asks in auto mode only. |
 
 Deny rules are not a security boundary on their own, so the profile pairs them with the sandbox ([Design](Design)).
 
@@ -27,21 +27,39 @@ Deny rules are not a security boundary on their own, so the profile pairs them w
 | allow | Read-only `git` and `gh` commands, and the build and test runners (`bun`, `npm`, `pnpm`, `cargo`, `go`, `just`, `make`). |
 
 The profile also sets `disableBypassPermissionsMode`, so no mode skips these rules.
-The exact patterns are in `plugins/dotclaude/templates/settings.json`.
+The exact patterns are in `plugins/dotclaude/features/setup/profile.json`.
 
 ## The sandbox
 
-The profile sets `sandbox.enabled` and `allowUnsandboxedCommands: false`.
-A command that fails in the sandbox does not retry outside it.
+The profile sets `sandbox.enabled` and `allowUnsandboxedCommands: true`.
+A command that fails in the sandbox can retry outside it with `dangerouslyDisableSandbox`, and Claude Code asks you to approve each retry.
+The reason is that the sandbox limits files and hosts, and it cannot tell a dangerous command from a safe one.
+In the sessions of 2026-10-08, it stopped only safe commands: `bun` (it reads `.env` at start), `gh` (it fails the TLS check of the sandbox proxy), and calls to `api.anthropic.com`.
+The guard and the `deny` and `ask` rules stop the dangerous commands, in and out of the sandbox.
 These commands run outside the sandbox, because they need your credentials and the network: `git fetch`, `git pull`, `git push`, and `gh`.
 `allowedDomains` lists GitHub, npm, PyPI, crates.io, and `proxy.golang.org`.
 
-The optional managed settings add `sandbox.failIfUnavailable`, `disableBypassPermissionsMode`, and the deny list at system level.
-The setup skill prints the `sudo` command for them and never runs it.
+dotclaude uses no managed settings, and the profile holds the sandbox, `disableBypassPermissionsMode`, and the deny list.
+See [Off switches](Off-Switches#managed-settings) for the trade-off.
+
+## No managed file
+
+dotclaude writes no managed settings file.
+The built-in guard `sec-default` of Claude Code is therefore not seated on a machine that has no managed settings and is not in a Team or Enterprise organization.
+In that case dotclaude loads at tier `user`, and its prompt handlers reach the request.
+
+- With the guard not seated, an installed mod with a `tool.check` hook can turn a content deny rule into an allow.
+  A path deny and a whole-tool deny stay enforced.
+  The guard of dotclaude never weakens a deny.
+- Setup does not seat the guard.
+  On a machine that has managed settings, the drift check reports that the guard is seated and names the dotclaude parts that it skips.
+- Review the mods that you install, because they run with your permissions.
+
+See D2 in [Decisions](Decisions-Settings) and [Off switches](Off-Switches#managed-settings).
 
 ## The module guard
 
-`hooks/mod.mjs` registers one `tool.check` handler.
+`hooks/register.mjs` registers one `tool.check` handler.
 It calls the engine first, and it returns a deny of the engine unchanged.
 
 | Case | What the module does |
@@ -61,7 +79,7 @@ See [Development](Development).
 
 In auto mode, the classifier decides an ask of `tool.check`, and it can allow the call.
 An ask of a classic `PreToolUse` hook stops the call in auto mode (**measured**, 2.1.292, see [Claude mods](Claude-Mods#auto-mode-module-ask-against-classic-ask)).
-So `hooks/auto-mode-guard.mjs` runs the same rules from a classic hook.
+So `features/guard/cli.mjs` runs the same rules from a classic hook.
 
 - It acts only when the `permission_mode` of the hook input is `auto`.
   In each other mode it gives no output, so you see one ask, not two.
@@ -71,6 +89,10 @@ So `hooks/auto-mode-guard.mjs` runs the same rules from a classic hook.
 - It keeps the repositories that it checked in a state file for each session, under `${CLAUDE_PLUGIN_DATA}/auto-mode-guard/`, or the temp folder when that variable is not set.
   So the policy ask comes once per session and per repository, as in the module.
 - It fails open: an error gives no output.
+- No hook in `hooks.json` sets `onFailure`, so the default `continue` applies.
+  With `"block"`, a hook that cannot start, for example when `node` is not on `PATH`, would block each guarded call until `node` works again, with a warning only in the log.
+  Claude cannot repair a missing `node`, so the guards fail open, and the permission rules and the sandbox still apply.
+  The decision is D31 in `design.md` of the 0.28.0 change, and a test in `tests/dotclaude/profile.test.mjs` pins it.
 - An `if` filter matches the start of the command.
   `xargs rm` and `sudo rm` have their own handlers, but a recursive `rm` in other forms, such as after `env` or in a subshell, can pass the filter.
   The auto-mode classifier then decides the call.
@@ -82,7 +104,6 @@ In auto mode the classifier decides those commands.
 
 > **Note:** The two plugins that you can add, [Browser](Browser) and [Second opinion](Second-Opinion), add no guard.
 > The Jev hook only adds a pick to a question.
-> The modder plugin has a hook that denies a kill by process name ([Modder](Modder)).
 
 ## What to do when a call is denied
 

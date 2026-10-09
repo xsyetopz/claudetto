@@ -6,18 +6,23 @@
 //   bun tools/sandbox.mjs [claude arguments...]   set up, then run claude
 //   bun tools/sandbox.mjs --clean                 remove the sandbox
 //
-// DOTCLAUDE_SANDBOX sets the sandbox directory (default: dotclaude-sandbox in
-// the system temp folder). It holds `config/` (CLAUDE_CONFIG_DIR) and
+// `DOTCLAUDE_SANDBOX` sets the sandbox directory (default: `dotclaude-sandbox` in
+// the system temp folder). `DOTCLAUDE_SANDBOX_PLUGINS` loads only the named
+// plugins (see below). It holds `config/` (`CLAUDE_CONFIG_DIR`) and
 // `project/`, an empty git repository that is the working directory, and
 // `home/`, the HOME of claude, so that setup scripts that change shell startup
 // files change only the sandbox. The
 // config skips onboarding and trusts the project, and has the dotclaude
 // setup profile and status line applied.
 //
-// Login: the sandbox uses CLAUDE_CODE_OAUTH_TOKEN when it is set. If not, it
+// dotclaude uses no managed settings. On a machine whose managed settings
+// lock a plugin name, Claude Code ignores the `--plugin-dir` copy of it, and
+// the debug log says "plugin is locked by managed settings".
+//
+// Login: the sandbox uses `CLAUDE_CODE_OAUTH_TOKEN` when it is set. If not, it
 // reads your own login token (the macOS Keychain entry, or
-// ~/.claude/.credentials.json) and gives it to claude in its environment
-// only. The token is not written to disk or printed. CLAUDE_BIN sets the
+// `~/.claude/.credentials.json`) and gives it to claude in its environment
+// only. The token is not written to disk or printed. `CLAUDE_BIN` sets the
 // claude executable when `claude` on PATH is not it (for example, a shell
 // function).
 
@@ -134,7 +139,7 @@ function setUp() {
   json.hasCompletedOnboarding = true;
   json.theme ??= "dark";
   json.projects ??= {};
-  // macOS resolves /tmp and /var to /private, and the trust key is the
+  // macOS resolves `/tmp` and `/var` to `/private`, and the trust key is the
   // resolved path.
   for (const dir of new Set([project, fs.realpathSync(project)]))
     json.projects[dir] = {
@@ -173,11 +178,36 @@ delete env.XDG_CONFIG_HOME;
 const token = loginToken();
 if (token) env.CLAUDE_CODE_OAUTH_TOKEN = token;
 else console.error("No login token found. Run /login inside the sandbox.");
-// Each plugin in `plugins/`, such as dotclaude and dotclaude-jev.
+// Each plugin in `plugins/` that has a manifest, such as dotclaude.
+// `DOTCLAUDE_SANDBOX_PLUGINS` (a comma list of names) loads only those plugins,
+// for example an add-on with no core plugin.
+const only = process.env.DOTCLAUDE_SANDBOX_PLUGINS?.split(",").filter(Boolean);
 const pluginDirs = fs
   .readdirSync(path.join(REPO, "plugins"), { withFileTypes: true })
-  .filter((d) => d.isDirectory())
-  .map((d) => path.join(REPO, "plugins", d.name));
+  .filter((d) => d.isDirectory() && (!only || only.includes(d.name)))
+  .map((d) => path.join(REPO, "plugins", d.name))
+  .filter((dir) =>
+    fs.existsSync(path.join(dir, ".claude-plugin", "plugin.json")),
+  );
+// Claude Code gives no error for a `--model` that `availableModels` leaves
+// out, and the session runs on another model, so the script says so.
+const model = args[args.indexOf("--model") + 1];
+if (args.includes("--model")) {
+  let allowed;
+  try {
+    allowed = JSON.parse(
+      fs.readFileSync(path.join(config, "settings.json"), "utf8"),
+    ).availableModels;
+  } catch {}
+  if (
+    Array.isArray(allowed) &&
+    model?.startsWith("claude-") &&
+    !allowed.includes(model)
+  )
+    console.error(
+      `--model ${model} is not in availableModels of the sandbox (${allowed.join(", ")}), so Claude Code runs another model.`,
+    );
+}
 const r = spawnSync(
   claude,
   [...pluginDirs.flatMap((dir) => ["--plugin-dir", dir]), ...args],

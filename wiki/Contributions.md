@@ -7,7 +7,7 @@ The policy ask of the hooks module replaces it.
 
 ## The policy ask
 
-The module in `hooks/mod.mjs` asks once per session and per repository, when Claude reaches a repository of another owner that has a `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md` file.
+The module in `hooks/register.mjs` asks once per session and per repository, when Claude reaches a repository of another owner that has a `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md` file.
 It covers these calls:
 
 - Bash: `git clone`, `gh`, `curl`, or `wget` on the repository.

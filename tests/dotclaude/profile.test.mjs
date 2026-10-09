@@ -5,44 +5,44 @@ import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
 import {
-  AGENTS,
+  BASH_OUTPUT_MAX_CHARS,
   CONTEXT_WINDOW,
-  STYLE_MAX_BYTES,
-  SUBAGENT_EFFORTS,
 } from "../../plugins/dotclaude/lib/budget.mjs";
 
 const ROOT = path.join(import.meta.dirname, "../../plugins/dotclaude");
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
 const json = (rel) => JSON.parse(read(rel));
-const frontMatter = (text) =>
-  Object.fromEntries(
-    text
-      .split("\n---")[0]
-      .split("\n")
-      .slice(1)
-      .map((line) => line.match(/^([\w-]+):\s*(.*)$/))
-      .filter(Boolean)
-      .map(([, key, value]) => [key, value.replace(/^"|"$/g, "")]),
-  );
+test("the profile turns compaction and auto memory off, and sets the window", () => {
+  const s = json("features/setup/profile.json");
+  expect(s.autoCompactEnabled).toBe(false);
+  expect(s.autoMemoryEnabled).toBe(false);
+  expect(s.env.DISABLE_COMPACT).toBe("1");
+  expect(Number(s.env.CLAUDE_CODE_MAX_CONTEXT_TOKENS)).toBe(CONTEXT_WINDOW);
+  expect(Number(s.env.CLAUDE_CODE_AUTO_COMPACT_WINDOW)).toBe(CONTEXT_WINDOW);
+  expect(s.bashOutputMaxChars).toBe(BASH_OUTPUT_MAX_CHARS);
+  expect(s.permissions.disableBypassPermissionsMode).toBe("disable");
+  expect(s.sandbox.enabled).toBe(true);
+  expect(s.sandbox.allowUnsandboxedCommands).toBe(true);
+});
 
-for (const file of [
-  "templates/settings.json",
-  "templates/managed-settings.json",
-]) {
-  test(`${file} turns compaction and auto memory off, and sets the window`, () => {
-    const s = json(file);
-    expect(s.autoCompactEnabled).toBe(false);
-    expect(s.autoMemoryEnabled).toBe(false);
-    expect(s.env.DISABLE_COMPACT).toBe("1");
-    expect(Number(s.env.CLAUDE_CODE_MAX_CONTEXT_TOKENS)).toBe(CONTEXT_WINDOW);
-    expect(Number(s.env.CLAUDE_CODE_AUTO_COMPACT_WINDOW)).toBe(CONTEXT_WINDOW);
-    expect(s.permissions.disableBypassPermissionsMode).toBe("disable");
-    expect(s.sandbox.enabled).toBe(true);
-  });
-}
+test("the profile holds the five keys of the removed managed template, and no template ships", () => {
+  const s = json("features/setup/profile.json");
+  for (const key of [
+    "autoCompactEnabled",
+    "autoMemoryEnabled",
+    "env",
+    "permissions",
+    "sandbox",
+  ])
+    expect(s[key]).toBeDefined();
+  expect(
+    fs.existsSync(path.join(ROOT, "templates/managed-settings.json")),
+  ).toBe(false);
+  expect(s.$schema).toEndWith("/schemas/claude-code-settings.json");
+});
 
 test("the profile asks before destructive git and publish commands", () => {
-  const { ask, deny } = json("templates/settings.json").permissions;
+  const { ask, deny } = json("features/setup/profile.json").permissions;
   for (const rule of [
     "Bash(git push *--force*)",
     "Bash(git reset --hard*)",
@@ -54,13 +54,13 @@ test("the profile asks before destructive git and publish commands", () => {
 });
 
 test("the profile sets no effort level, so each model keeps its default", () => {
-  const s = json("templates/settings.json");
+  const s = json("features/setup/profile.json");
   expect(s.effortLevel).toBeUndefined();
   expect(s.env.CLAUDE_CODE_EFFORT_LEVEL).toBeUndefined();
 });
 
 test("the profile removes the large tools that it does not use, and the advisor", () => {
-  const s = json("templates/settings.json");
+  const s = json("features/setup/profile.json");
   expect(s.enableArtifact).toBe(false);
   expect(s.enableWorkflows).toBe(false);
   for (const tool of ["ScheduleWakeup", "ReportFindings"])
@@ -68,69 +68,77 @@ test("the profile removes the large tools that it does not use, and the advisor"
   expect(s.advisorModel).toBeUndefined();
 });
 
-test("the output style replaces the coding instructions and fits its bound", () => {
-  const text = read("output-styles/dotclaude.md");
-  const fm = frontMatter(text);
-  expect(fm["force-for-plugin"]).toBe("true");
-  expect(fm["keep-coding-instructions"]).toBe("false");
-  expect(Buffer.byteLength(text)).toBeLessThanOrEqual(STYLE_MAX_BYTES);
-});
-
-test("the agents are the agents of the budget, with its model, effort, and turns", () => {
-  const files = fs.readdirSync(path.join(ROOT, "agents")).sort();
-  expect(files).toEqual(
-    Object.keys(AGENTS)
-      .map((a) => `${a}.md`)
-      .sort(),
-  );
-  for (const [name, [model, effort, turns]] of Object.entries(AGENTS)) {
-    const fm = frontMatter(read(`agents/${name}.md`));
-    expect(fm.name).toBe(name);
-    expect(fm.model).toBe(model);
-    expect(fm.effort).toBe(effort ?? undefined);
-    expect(Number(fm.maxTurns)).toBe(turns);
-    const efforts = SUBAGENT_EFFORTS[model.replace(/^claude-/, "")];
-    if (effort) expect(efforts).toContain(effort);
-  }
-});
-
-test("the hooks are one module, and command hooks only for the auto-mode guard", () => {
+test("the hooks are one module, command hooks for the auto-mode guard, and the report-now hook", () => {
   const hooks = json("hooks/hooks.json");
-  expect(hooks.modules).toEqual(["./mod.mjs"]);
-  expect(Object.keys(hooks.hooks)).toEqual(["PreToolUse"]);
-  for (const { matcher, hooks: handlers } of hooks.hooks.PreToolUse)
+  expect(hooks.modules).toEqual(["./register.mjs"]);
+  expect(Object.keys(hooks.hooks)).toEqual([
+    "PreToolUse",
+    "UserPromptSubmit",
+    "PostToolUse",
+    "Stop",
+    "StopFailure",
+    "SessionStart",
+    "SessionEnd",
+  ]);
+  // The carry across `/clear` and the stop record of design D32, with the matcher values of probe 22.1.
+  const context = 'node "${CLAUDE_PLUGIN_ROOT}/features/context/cli.mjs"';
+  expect(hooks.hooks.StopFailure).toEqual([
+    {
+      matcher: "rate_limit|invalid_request",
+      hooks: [{ type: "command", command: context }],
+    },
+  ]);
+  expect(hooks.hooks.SessionStart).toEqual([
+    { hooks: [{ type: "command", command: context }] },
+  ]);
+  expect(hooks.hooks.SessionEnd).toEqual([
+    { matcher: "clear", hooks: [{ type: "command", command: context }] },
+  ]);
+  expect(hooks.hooks.PostToolUse[0].hooks[0].command).toBe(
+    'node "${CLAUDE_PLUGIN_ROOT}/features/context/cli.mjs"',
+  );
+  // The groups for `features/reads` and `features/sembr` have their own tests.
+  const guards = hooks.hooks.PreToolUse.filter(({ hooks: handlers }) =>
+    handlers.every((h) => h.command.includes("features/guard/")),
+  );
+  expect(guards).toHaveLength(2);
+  for (const { matcher, hooks: handlers } of guards)
     for (const h of handlers) {
       expect(h.command).toBe(
-        'node "${CLAUDE_PLUGIN_ROOT}/hooks/auto-mode-guard.mjs"',
+        'node "${CLAUDE_PLUGIN_ROOT}/features/guard/cli.mjs"',
       );
       if (matcher === "Bash") expect(h.if).toMatch(/^Bash\(.+ \*\)$/);
     }
 });
 
-test("the user-invoked skills cannot be invoked by the model", () => {
-  for (const skill of ["setup", "handoff"]) {
-    const fm = frontMatter(read(`skills/${skill}/SKILL.md`));
-    expect(fm["disable-model-invocation"]).toBe("true");
-  }
+// Design D31: a hook that cannot start lets the call through,
+// because `onFailure: "block"` would block each guarded call until `node` works again.
+test("no hook sets `onFailure`, so a hook that cannot start fails open", () => {
+  const hooks = json("hooks/hooks.json");
+  for (const groups of Object.values(hooks.hooks))
+    for (const { hooks: handlers } of groups)
+      for (const h of handlers) expect(h.onFailure).toBeUndefined();
 });
 
-test("lib imports only lib, and the other folders import only lib and their own folder", () => {
-  const files = (dir) =>
-    fs
-      .readdirSync(path.join(ROOT, dir), { recursive: true })
-      .filter((f) => f.endsWith(".mjs"))
-      .map((f) => path.join(dir, f));
-  for (const dir of ["lib", "hooks", "status-line", "skills"])
-    for (const file of files(dir))
-      for (const [, spec] of read(file).matchAll(/from "(\.[^"]+)"/g)) {
-        const target = path.relative(
-          ROOT,
-          path.resolve(ROOT, path.dirname(file), spec),
-        );
-        const top = target.split(path.sep)[0];
-        expect([dir, "lib"], `${file} -> ${spec}`).toContain(
-          dir === "lib" ? "lib" : top,
-        );
-        if (dir === "lib") expect(top, `${file} -> ${spec}`).toBe("lib");
-      }
+test("the profile leaves retention to Claude Code", () => {
+  expect(json("features/setup/profile.json").cleanupPeriodDays).toBeUndefined();
+});
+
+test("the profile has no cap on effort, the four roster models, and no haiku 4.5", () => {
+  const s = json("features/setup/profile.json");
+  expect(s.maxEffortLevel).toBe("max");
+  expect(s.enforceAvailableModels).toBe(true);
+  expect(s.availableModels).toEqual([
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-fable-5-1",
+  ]);
+  expect(read("features/setup/profile.json")).not.toContain("claude-haiku-4-5");
+});
+
+test("the profile leaves the subagent cache lifetime to the eval-gated item (task 5.8)", () => {
+  const s = json("features/setup/profile.json");
+  expect(s.subagentPromptCacheTtl).toBeUndefined();
+  expect(s.env.CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL).toBeUndefined();
 });

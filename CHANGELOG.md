@@ -10,6 +10,115 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ## [Unreleased]
 
+### Added
+
+- The eval suite `adherence` (`evals/adherence`) has 6 cases with a rule in `CLAUDE.md` and a task that tempts a break of it.
+  The rules are of the kinds format, scope, approval, and process, and the oracle of each case names the rule that broke.
+  Run it with `just eval --suite adherence`.
+- A `Bash` command whose output has no limit, such as `cat F | grep x`, `jq . F`, `git log`, or `rg x`, is denied.
+  The reason gives the bounded form, such as `| head -n N`, `grep -m N`, `git log -n N`, or `Read` with `offset` and `limit`.
+- The profile sets `bashOutputMaxChars` to 4000, so a longer `Bash` output goes to a file, and Claude gets a preview and the path.
+- The status line has 3 columns when the terminal has about 130 columns.
+  The left column shows the session, the middle column shows the context and what fills it, and the right column shows the 5-hour, 7-day, and Fable windows.
+  A narrower terminal keeps the row packing.
+  The memory, skills, and agents parts are estimates from the start of the transcript, read one time for each session.
+  After the user runs `/context`, they are the exact rows of its newest table, and the messages are the total minus them.
+  The Fable window comes from the usage cache of Claude Code, and it is hidden when that cache is older than 1 hour.
+- The add-on plugin `dotclaude-codegraph` gives Claude the code graph of a project from the CodeGraph CLI `codegraph`.
+  It works without the core plugin, and it runs only in a project that has a `.codegraph/` index.
+  At session start, it syncs the index and adds one line that names `impact` and `callers`.
+  At a `Grep` or `Glob` call for a name, it adds the definition and the callers of that name.
+  After an edit, a write, or a git command that changes the tree, it syncs the index in the background.
+  Install it with `claude plugin install dotclaude-codegraph@dotclaude`, and install the CLI and run `codegraph init` yourself.
+- The add-on plugin `dotclaude-docs` gets current library docs with the Context7 CLI `ctx7`.
+  It works without the core plugin and with no key.
+- `dotclaude-browser` answers each `WebSearch` call with a search in the headless browser.
+- `dotclaude-jev` adds a second-opinion tool that asks TypeSafe Jev about a decision.
+  With no `TYPESAFE_API_KEY`, the tool sends Claude to the `reviewer` agent.
+  The question gives each option at least one fact for it and one fact against it, and no lean of the user, the notes, or the team.
+- A router picks the model and the effort of each subagent from the task class.
+  `DOTCLAUDE_ROUTER_ROUTE=classic` selects a `PreToolUse` hook for the same job.
+  A model you name in the `Agent` call stays as it is.
+  The table follows the eval report of 2026-10-09 and the Anthropic effort guide.
+  `investigator`, `implementer`, `debugger`, and `test-runner` use Haiku 5.5, and `reviewer` uses Sonnet 5.5.
+  The main loop keeps the model of your session, and the router changes only its effort, because an effort change keeps the prompt cache.
+- The core plugin gives a prompt variant for each model, with an evidence line and an attribution line.
+  The evidence line tells Claude to run a new check before it undoes finished work because of a claim of fault.
+  The attribution line tells Claude to end commit messages and pull request text with the attribution text of the session.
+- The hooks module cuts the prompt surface with the handlers `prompt.attachment` and `tool.describe`.
+  They shorten the `sandbox_instructions` and `auto_mode` texts and the descriptions of large tools, and they defer `AskUserQuestion` and `ListAgents`.
+- A subagent that reaches its context bound gets a message to report now.
+- A subagent with 2 turns left before its `maxTurns` gets a message to report now, in the same note as the context message when both apply.
+  The main session gets one note when its context or a usage limit of the account first reaches a level.
+  At 60% of the context or 75% of a usage limit, the note tells the model to continue in small slices, and to do the handoff steps when it stops before the handoff.
+  The context notice gives the tokens left before the client block, and the model starts a slice only when it fits with 20K tokens to spare for the handoff.
+  At 80% of the context or 90% of a usage limit, or when the limit runs out within 15 minutes, the note tells the model to hand off: tick the tasks, write a status note, and name the command that continues the work.
+  After `/clear`, the new session gets the handoff message of the old session one time.
+  When a usage limit or a full context stops a turn, a stop record is written, and the next session start names the stop in one line and tells the model to examine the working tree.
+- A `Read` rule hook denies a `Bash` command that only prints a file (`cat`, `sed`, `head`) and gives the `Read` call instead.
+- Semantic line breaks: a written Markdown file and the quoted heredoc of `git commit` and `gh pr create` get one sentence on each line.
+  At `Stop`, a hook counts the chat lines that have more than one sentence.
+- A prompt hook on `Stop` blocks one time a message that calls a part done when no passing check shows it.
+  It never runs on `SubagentStop`.
+- Auto-fix at `Stop` runs the project formatters and linters once on the files that Claude edited.
+  It is off by default, because a hook command runs outside the sandbox.
+  Turn it on with `DOTCLAUDE_AUTOFIX=1`, which setup `--with autofix` writes after a question.
+- A drift check at `SessionStart` tells Claude when the active settings differ from the profile.
+- The status line has segments for the context, the cache, and each usage limit with its pace, burn rate, and reset credits.
+- `schemas/claude-code-settings.json` and `schemas/claude-code-managed-settings.json` hold the settings schemas of Claude Code 2.1.295, and `tools/schema.mjs` builds them.
+  The version is in the `x-claude-code-version` key and not in the file name, so the `$schema` link stays the same after an update.
+  The generator puts the code items of each description in single backticks, so an editor shows them as code.
+  The generator takes the last definition before the schema for a reused short name, so `hooks` and `sandbox.credentials.sigv4` carry no wrong shape.
+  The profile points to it.
+
+### Changed
+
+- The size bounds that equaled the current file size are gone (`STYLE_MAX_BYTES`, `VARIANT_MAX_BYTES`, and `SKILL_DESCRIPTION_MAX_CHARS`), and size targets in `tools/limits.mjs` replace them: `CLAUDE.md` at most 6 KB, skill metadata of 150 to 300 bytes for each skill, and skill bodies of 2 KB to 8 KB.
+  The skill metadata of all skills has a target of 5 KB to 8 KB and a ceiling of 15 KB, and the first request has a target of 8 KB to 16 KB.
+  A size above a high bound fails, and a size below a low bound is reported.
+- The output style asks for reports that start with the result, name each item exactly, and give numbers before and after a change.
+  Three report examples and the wrong and right line examples are in `<example>` tags, so that Claude does not read them as instructions.
+  The style is now at most 7,061 bytes.
+- dotclaude is tested on Claude Code 2.1.295, and the minimum version is 2.1.295, because the profile points to the 2.1.295 schema.
+  The `intro` section of the system prompt has one text in 2.1.295, and `CLAUDE_CODE_INTRO_FRAME` is gone.
+- The profile sets `sandbox.allowUnsandboxedCommands` to `true`, so a command that fails in the sandbox can retry outside it after you approve the retry.
+  The sandbox stopped only safe commands, such as `bun` and `gh`, and the guard and the `deny` and `ask` rules stop the dangerous ones.
+- The profile now denies `EnterPlanMode`, `ExitPlanMode`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, and `TaskUpdate`, and sets `includeGitInstructions` to `false`.
+  The eval of 2026-10-08 showed no loss for the items `plan-mode`, `task-tools`, and `git-instructions`, so they are no longer eval-gated.
+  `telemetry`, `nonessential-traffic`, and `subagent-cache-1h` stay eval-gated.
+- Setup no longer removes `includeGitInstructions: false`, because the profile sets it.
+- The profile turns off the built-in plugins except `cc-plugin-plugin-authoring`, tips, the survey, feedback drafts, fast mode, agent view, Remote Control, claude.ai skill, plugin, and connector sync, and the `computer-use` server.
+  It also sets the `env` entries of the forced-off list, and denies three built-in agents.
+  The wiki page "Off switches" lists each part with its scope.
+- `lib/never-set.mjs` holds the keys that the profile never sets, and a test fails when the profile sets one.
+- Setup `--with <item>` adds an eval-gated item, which is off by default.
+  The items are `plan-mode`, `task-tools`, `telemetry`, `nonessential-traffic`, `git-instructions`, and `subagent-cache-1h`.
+- Setup writes no managed file and prints no `sudo cp` command.
+  With `--move-managed`, it moves the keys of an old dotclaude managed file into user settings, and it prints the `sudo rm` command for you.
+  `templates/managed-settings.json` is gone, and the profile holds its keys.
+- The core plugin follows the plugin layout of the Claude Code docs.
+  `hooks/register.mjs` is the one hooks module, `features/<name>/` holds the code of each part, and `lib/` holds the shared code.
+- Each file has 300 lines or fewer, and each test file 500 lines or fewer.
+  A test fails on a file over its bound.
+- Runtime JavaScript in `plugins/` is `.mjs` on Node.
+  A test fails on another script type, except the hook-lab `.test.ts` files.
+- The profile sets `maxEffortLevel` to `max`, `enforceAvailableModels` to `true`, and `availableModels` to Opus 5.5, Sonnet 5.5, Haiku 5.5, and Fable 5.1.
+  `subagentPromptCacheTtl: "1h"` is the gated item `subagent-cache-1h`.
+  `claude-haiku-4-5`, `cleanupPeriodDays`, and `enableAllProjectMcpServers` left the profile.
+  Setup removes `cleanupPeriodDays: 14` only after a question, and keeps any other value.
+- Setup shows the diff of each file and writes only with `--apply`.
+  In project scope, it writes a key that Claude Code ignores in project settings to local settings.
+  The wiki page [Profile keys](https://github.com/xsyetopz/dotclaude/wiki/Profile-Keys) lists each key with its reason and default.
+- The core plugin has five agents: `debugger`, `implementer`, `investigator`, `reviewer`, and `test-runner`.
+  Each agent has a `maxTurns` value, and `web-researcher` is merged into `investigator`.
+- The guard allows `rm -rf` of a shell variable that the same command sets to `$(mktemp -d)` or to a path under `$TMPDIR`.
+- For contributors: `just measure` sizes the start of a session, `just capture` logs and sizes the requests of Claude Code, `just schema` writes the settings schemas, and `just eval` runs the eval suite (it costs money).
+
+### Removed
+
+- The `dotclaude-modder` plugin left the marketplace, because dotclaude is a set of general software-engineering roles.
+  Uninstall it with `claude plugin uninstall dotclaude-modder@dotclaude`.
+
 ## [0.27.0] - 2026-10-07
 
 0.27.0 is a breaking release.
@@ -102,179 +211,13 @@ The [Design](https://github.com/xsyetopz/dotclaude/wiki/Design) page gives the s
 - The `reverse-engineer` agent of `dotclaude-modder`.
   The `reverse-engineer-binary` skill in [xsyetopz/skills](https://github.com/xsyetopz/skills) replaces it.
 
-## [0.26.0] - 2026-10-06
-
-### Migration from 0.25
-
-- Run `/dotclaude:setup` after the update.
-  The settings profile now sets `promptCacheTtl` to `"5m"`, and setup writes it over the earlier value.
-  The other options, the stored state, the status line, and the `CLAUDE.md` block need no change.
-
-### Removed
-
-- The clause 18 prompt hook on `SubagentStop`.
-  Claude Code sends the transcript with each prompt hook call on `Stop` and `SubagentStop`, up to half of the context window of the model.
-  In 7 days of sessions, the mean was about 46k tokens, or about $0.046 on Claude Haiku 4.5, for each call.
-  Clause 18 already tells the main agent to compare each "done" in a subagent report with the check output.
-  The prompt hook on `Stop` stays.
-
-### Changed
-
-- The settings profile sets `promptCacheTtl: 5m` for the main conversation.
-  In 7 days of transcripts, 98.7% of the main-agent calls came 5 minutes or less after the call before them.
-  At API prices, the 5-minute cache would have cost 8.5% less than the 1-hour cache.
-- The section "Long runs" is now "Runs and subagents", and it has a new routing rule for the main agent.
-  The main agent does a chain of dependent steps itself, and gives long reads, long check runs, and bulk work to worker agents.
-  The main agent does a worker slice itself when its check failed twice.
-  In 7 days of transcripts, tool results in the main context cost about 15% of the main-agent cost, because each later turn reads them again.
-- The SessionStart context is about 2.5 KB, and the SubagentStart context is about 1 KB.
-  Each rule is one line, with a reason only where the rule needs one.
-  The rules that a hook teaches (Bash writes, line breaks, `AskUserQuestion`) are not in the context, because the hook message gives the rule when it fires.
-  The handoff rules move to the `handoff` skill, and the session context only points to an open note.
-  The project AI policy rules come with the ask of the policy guard, because Claude does not see an ask reason.
-  Subagents get one section of six rules, with their progress file.
-  The section "Known defects" is now "Checks", and the done-claim rule is now rule 12.1.
-  The line-break note gives the line numbers of each block, and not the sembr text.
-- The agent prompts are about half as long (66 KB to less than 32 KB), and a test keeps all agent files together at 32,000 bytes or less (`AGENTS_MAX_BYTES`).
-  They lose the rules that the SubagentStart context now gives each subagent: defects, checks, the turn budget, denies, and the report start.
-  They also lose examples and repeated points.
-  A new subagent rule tells each subagent to start its report with `Done` or `Not done`.
-- Rules 10.6 and 12.1 do not offer the **Not verified** list as an exit.
-  When the check of a part fails, the agent fixes the part and runs the check again.
-  A part goes under **Not verified** only when its check cannot run.
-- Text from outside (AI policy files, CodeGraph index data, and `um kb` field notes) goes to Claude in its own tag, with each `<` escaped, so that the text cannot close the tag.
-  The Stop prompt hook puts its input in a `hook_input` tag first, and asks for only the JSON object.
-  Wrapper tags around one short block are removed.
-- The `handoff` skill is 43% shorter (5.1 KB to 2.9 KB), and it also tells Claude how to read a note.
-  The rules removed in 0.26.0: wait-for-go, no-invented-steps, measure, deny-route, deny-final, lower-cost, no-extras, keep-safety, background, blocker, shared-runs, policy-subagent, the progress rules for the main agent, escalate, fix-own, run-checks, self-check, not-verified, and continue.
-- **Breaking:** the Terms of Use clauses are now the dotclaude operating spec (`wiki/Operating-Spec.md`).
-  Each rule has a number, such as 12.1, and an RFC 2119 level, and each hook reason ends with the number of its rule.
-  The text goes to Claude in `dotclaude_spec` tags, and not in `dotclaude_terms` tags.
-  The working rules lose the `<verification>` block and the line about LSP, CodeGraph, and `grep`.
-  The Jev section loses the line about `AskUserQuestion`, because rule 11.1 says the same thing.
-- The rule about a deny moves to the start of the spec, which subagents also get.
-  A hook deny is a decision of the user, so the agent does what its reason says, and does not get its result another way.
-  A subagent got past a deny in 0.25.1 by rewording a command.
-- The Bash guard deny of a write to a project file tells an agent with no `Edit` or `Write`, such as a read-only subagent, to report the write that it needs.
-  Before, the deny told it only to use tools that it did not have.
-- The wiki labels the subagent cache figures in `Design.md` with their measurement, and records that the Stop hook lets one retry through.
-- The cold-cache note counts the idle time from the last compaction of the main agent, and not only from the last turn.
-  A compaction writes a new cache, so after it the note does not say that the cache expired too early.
-
-### Fixed
-
-- The clause 18 prompt hook blocked correct messages that list a part as not verified, repeat a claim of another agent that they did not check, or report a run whose results they did not read.
-  It now blocks only when it can quote the words of the done claim.
-  In a replay of 32 real messages and 5 breaks with the transcript, the system prompt, and the model of Claude Code 2.1.292, false blocks went from 4 of 32 to 2 of 32, and the hook caught 5 of 5 breaks.
-  Transcripts do not record `background_tasks` and `session_crons`, so the replay sent them empty.
-  A second replay of one real progress report and one false done claim, each with `background_tasks` empty and with a running `just check`, gave the correct result in 4 of 4 runs.
-- The clause 18 prompt hook on `Stop` blocked a message that only asked the user for approval.
-  The prompt now states rule 12.1 as a stopping condition about the claims of the last message, and not about whether the task is complete.
-  In 10 sandbox runs on Claude Haiku 4.5, the false blocks went from 2 to 0, and 2 of 2 unchecked done claims were still blocked.
-  The block reason tells the agent to run the check and fix the part, and does not offer the **Not verified** list as an exit.
-  The prompt went from 1,859 to 1,498 characters.
-- The Bash guard denied a write to a temporary file as a write to a project file.
-  It now ignores module paths in `import`, `from`, and `require`, and follows `cd` from part to part of a command, so that `cd "$TMPDIR/x" && … > out.txt` writes to `$TMPDIR`.
-
-## [0.25.1] - 2026-10-06
-
-### Fixed
-
-- The clause 18 prompt hook let through a progress report that calls each part written or still running, and says that its checks are still to run.
-  Before, it blocked such a report in 2 of 5 runs, because it read "written" as "done".
-  With the fix, it let through the same report in 8 of 8 runs, and blocked a false done claim in 4 of 4 runs.
-
-## [0.25.0] - 2026-10-06
-
-### Added
-
-- Clause 18, "Known defects", goes to the main agent and to each subagent.
-  - Claude fixes each defect in its own change, and each defect that makes its check fail, before it reports done.
-  - Claude reports a defect outside the request with its evidence.
-    The main agent then asks you to fix it now, or to keep it open with a reason and an owner.
-  - Claude calls a failing check "flaky" only when it names the cause and a rerun passes.
-- A prompt hook on `Stop` and `SubagentStop` blocks a last message that calls a part done that no check passed on.
-  This includes a check that did not run, failed, is flaky, or is pre-existing, and a failed-test count that is not 0.
-  A **Not verified** list, open items, and a skipped step that is not a check do not count.
-  When the model is not sure, it blocks, because a missed failure looks like finished work.
-  It blocks only once in a row.
-  It uses the background model of Claude Code, so each stop adds one model call.
-  Live tests on Claude Code 2.1.292 confirm that a plugin prompt hook runs on both events.
-  Claude Code shows the full hook prompt to Claude at each block, so the prompt is short and reads as the rule.
-- The guards ask before each `PublishPlugin` call (Claude Code 2.1.292), because it publishes a plugin to the claude.ai library of your organization.
-  No `guard_*` option turns this ask off.
-
-### Changed
-
-- The 13 agent prompts start each report with `Done` or `Not done`, and list each part with no passing check under **Not verified**.
-  - A worker agent fixes each defect in its own change, and reports a defect outside the brief under **Outside the brief**, with its evidence.
-    It no longer puts such a defect in the report as a follow-up.
-  - Each agent runs its checks before it uses 3/4 of its turns.
-- Clause 1: a check that cannot run blocks a done report.
-- Clause 6 and the `dotclaude:handoff` skill: each **Open** item has the reason that it stays open and its owner.
-  An item that was open in an earlier note is done in the new session, or Claude asks you about it.
-- Clause 10 (`dotclaude-jev`): a pick of Jev on a fact question with a confidence of 0.9 or more settles the question.
-  When Claude does not follow a pick of Jev, it says so and gives the reason.
-- Clause 15: the main agent gives each subagent a slice whose checks fit in its turn limit, and reads "done" next to "did not run" or "flaky" as not done.
-- The hook texts of the three plugins are in stricter ASD-STE100: shorter sentences, and each text gives the reason and the action.
-  The assertion and skip-marker asks of the edit guard now say why a weaker test is a risk.
-
-## [0.24.0] - 2026-10-06
-
-### Added
-
-- The `dotclaude-modder` plugin lets Claude mod a PC game that you own.
-  It is a port of [universal-modder](https://github.com/rehan-remade/universal-modder) by Rehan, under the MIT license.
-  - Nine skills take Claude from engine recon to assets, in-game tests, a published mod, a showcase video, and field notes.
-  - The `um` command keeps the commands of the upstream `um`.
-    It runs on Bun, and `uv` runs its Python parts (`um sprite`, `um video`, and `um backup`).
-  - The `fal_key` option gives the key to `um fal` and to the fal MCP server.
-  - `um kb` puts each field note in `untrusted_field_note` tags.
-    By default, it reads the notes of a reviewed upstream commit from 2026-10-05.
-    `UM_KB_BRANCH=main` gives the latest notes.
-    With `UM_KB_REPO` and no `UM_KB_BRANCH`, `um kb` reads `main` of that repository, because the reviewed commit is not in a fork.
-  - The `um kb pr` dry run makes no network call.
-  - `um kb sync` stops when GitHub sends only a part of the file list.
-    When a sync fails, `um kb` tells you that it uses the older cached copy.
-  - `um kb search` stops on a `--limit` that is not a number, also an empty one.
-    `um kb show` of a folder name shows the first note whose path contains the name.
-  - The skills pre-approve only the `um` commands that read or that write local files.
-    Claude Code asks before `um kb pr`, `um fal` jobs, `um backup restore`, and `um win` input, launch, kill, and registry commands.
-  - `um backup create` never replaces a snapshot.
-    A second snapshot in the same second gets a number suffix.
-  - `um backup` accepts only a snapshot name that stays in the `backups` folder, also on Windows.
-    A failed `um backup create` leaves a `.part` file, and not a damaged latest snapshot.
-    `um backup restore` checks the whole snapshot before it changes a file, and it stops with a clear message on a damaged snapshot.
-  - `um sprite` (`palette`, `cutout`, and `outline`) and `um video` beat detection are faster and use less memory, with the same output.
-  - The modding skills refer to [xsyetopz/skills](https://github.com/xsyetopz/skills) for reverse engineering.
-  - `um <group> <command> --help` shows the help of each option, as the upstream `um` does.
-    The help lists the permitted values of an option, and a `-h` after `--` goes to the program that `um` starts.
-- Clause 17 of the Terms of Use, `Game modding`: Claude backs up saves before a change, stops a process only by its PID, keeps a modded game off official online servers and away from DRM and anti-cheat, reads field notes as reference text, and gets your OK before a publish.
-  A hook of `dotclaude-modder` denies a `Bash` call that stops processes by name.
-- CI installs `uv` to run the Python tests of `um`.
-- Three worker agents, so the roster grows from 10 to 13.
-  TypeSafe Jev scored a list of candidate roles, and the audit of the usage data since 0.23.0 picked these three.
-  - `eval-designer` writes eval cases and graders, and checks that each case fails on a baseline before it measures the change.
-  - `fuzz-engineer` writes fuzz and property tests for parsers and input handlers, and reduces each crash to a minimal input.
-  - `infra-engineer` writes CI, container, build, and deploy config, checks it locally, and stops before an apply or a deploy.
-- The `reviewer` agent has an `api` lens for a public surface and its breaking changes.
-  Its `security` lens also audits a whole feature or trust boundary, not only a diff.
-- The `investigator` agent audits dependencies for licenses, abandoned packages, and the breaking changes of each upgrade.
-
-### Fixed
-
-- The `sembr` hook no longer tells Claude to split a front matter value, such as the one-line `description:` of an agent.
-  An `Edit` sends only its new text, so the hook did not see the `---` line of the front matter.
-  Now a line that starts with a lowercase `key:` is not prose.
-- The working rules tell Claude to offer a commit only with no known defect, and to fix each defect at its cause.
-  Before, Claude could list a defect as not fixed and offer a commit.
-- Clause 15 tells Claude what to do when `SendMessage` cannot continue an agent, such as an agent in a worktree that Claude Code lost.
-  Claude starts one new agent with the worktree folder of the old agent, its progress file, and its diff, and the new agent does only the steps that are not done.
-
 ## Older Releases
 
 | Series | Releases |
 | --- | --- |
+| [0.26](https://github.com/xsyetopz/dotclaude/wiki/Release-0.26) | 0.26.0 |
+| [0.25](https://github.com/xsyetopz/dotclaude/wiki/Release-0.25) | 0.25.1, 0.25.0 |
+| [0.24](https://github.com/xsyetopz/dotclaude/wiki/Release-0.24) | 0.24.0 |
 | [0.23](https://github.com/xsyetopz/dotclaude/wiki/Release-0.23) | 0.23.2, 0.23.1, 0.23.0 |
 | [0.22](https://github.com/xsyetopz/dotclaude/wiki/Release-0.22) | 0.22.3, 0.22.2, 0.22.1, 0.22.0 |
 | [0.21](https://github.com/xsyetopz/dotclaude/wiki/Release-0.21) | 0.21.0 |

@@ -1,0 +1,130 @@
+{
+  "description": "dotclaude-codegraph: features/graph/cli.mjs syncs the CodeGraph index at session start and adds one line about the graph, adds the callers of a searched symbol to `Grep` and `Glob` calls, and syncs the index in the background after an edit, a write, or a git command that changes the tree. Each hook runs only in a project with a `.codegraph/` index.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" session-start",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Grep|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" search",
+            "timeout": 6
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" sync",
+            "async": true,
+            "timeout": 60
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git merge *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git rebase *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git pull *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git checkout *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git switch *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git reset *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git cherry-pick *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git revert *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git stash *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git apply *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git am *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.mjs\" sync",
+            "async": true,
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

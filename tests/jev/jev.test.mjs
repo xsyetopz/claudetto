@@ -1,17 +1,14 @@
-// dotclaude-jev: the `jev.mjs` request bodies, answer text, and retries,
+// dotclaude-jev: the `features/jev/cli.mjs` request bodies, answer text, and retries,
 // with a fake `fetch` (no call reaches the TypeSafe API).
 
 import { expect, test } from "bun:test";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import path from "node:path";
 import {
   buildBody,
   call,
   format,
   parseArgs,
   UsageError,
-} from "../../plugins/dotclaude-jev/skills/second-opinion/scripts/jev.mjs";
+} from "../../plugins/dotclaude-jev/features/jev/cli.mjs";
 
 const noStdin = () => {
   throw new Error("stdin read");
@@ -37,19 +34,26 @@ test("each verb builds its question type", () => {
   });
 });
 
-test("the state comes from a file, stdin, or the text itself", () => {
-  const dir = mkdtempSync(path.join(tmpdir(), "jev-"));
-  try {
-    const file = path.join(dir, "state.txt");
-    writeFileSync(file, "from file");
-    expect(body(["yes", "Q", "--state", file]).state).toBe("from file");
-    expect(body(["yes", "Q", "--state", "-"], () => "piped").state).toBe(
-      "piped",
-    );
-    expect(body(["yes", "Q"]).state).toBe("");
-  } finally {
-    rmSync(dir, { recursive: true });
-  }
+test("the state comes from stdin or the text itself, and never from a file", () => {
+  expect(body(["yes", "Q", "--state", "-"], () => "piped").state).toBe("piped");
+  expect(body(["yes", "Q"]).state).toBe("");
+  // The path of a file that exists is text, so the client never reads it.
+  const here = new URL(import.meta.url).pathname;
+  expect(body(["yes", "Q", "--state", here]).state).toBe(here);
+  expect(body(["yes", "Q", "--state", ".env"]).state).toBe(".env");
+});
+
+test("after `--`, a word is never a flag", () => {
+  const parsed = parseArgs(["yes", "--state", "-", "--", "--state", "x"]);
+  expect(parsed.state).toBe("-");
+  expect(parsed.words).toEqual(["--state", "x"]);
+  const pick = body(["pick", "--", "Q", "--state=/etc/passwd", "b"], noStdin);
+  expect(pick.state).toBe("");
+  expect(pick.questions.q.instructions).toBe("Q");
+  expect(pick.questions.q.criteria).toEqual({
+    "--state": "/etc/passwd",
+    b: null,
+  });
 });
 
 test("`ask` takes the API questions, with or without the wrapper", () => {
@@ -64,20 +68,6 @@ test("`ask` takes the API questions, with or without the wrapper", () => {
       JSON.stringify({ state: "ignored", questions }),
     ).state,
   ).toBe("s");
-});
-
-test("the decision check asks for the kind and the soundness", () => {
-  const file = path.join(
-    import.meta.dirname,
-    "../../plugins/dotclaude-jev/skills/second-opinion/decision.json",
-  );
-  const { questions } = body(["ask", "--state", "{}"], () =>
-    readFileSync(file, "utf8"),
-  );
-  expect(questions.kind.type).toBe("choice");
-  expect(Object.keys(questions.kind.criteria)).toEqual(["preference", "facts"]);
-  expect(questions.sound.type).toBe("score");
-  expect(questions.sound.criteria).toHaveLength(3);
 });
 
 test("bad input is a usage error", () => {
@@ -134,22 +124,4 @@ test("a 529 is retried with backoff, and a 401 names the key", async () => {
   await expect(call({}, "k", { fetchFn: denied })).rejects.toThrow(
     "`TYPESAFE_API_KEY` is not valid",
   );
-});
-
-test("the session hook prints the note that sends decisions through Jev", () => {
-  const dir = path.join(
-    import.meta.dirname,
-    "../../plugins/dotclaude-jev/hooks",
-  );
-  const hooks = JSON.parse(readFileSync(path.join(dir, "hooks.json"), "utf8"));
-  const [cmd] = hooks.hooks.SessionStart[0].hooks;
-  expect(cmd.args[0]).toEndWith("/hooks/session-start/second-opinion.md");
-  const note = readFileSync(
-    path.join(dir, "session-start", "second-opinion.md"),
-    "utf8",
-  );
-  expect(note).toContain("`dotclaude-jev:second-opinion`");
-  expect(note).toContain("`TYPESAFE_API_KEY`");
-  expect(note).not.toContain("dotclaude_spec");
-  expect(note).not.toContain(";");
 });

@@ -2,13 +2,15 @@
 
 0.26.0 used a classic hook with `"type": "prompt"` on `Stop` for its checks rule, and it had removed the same hook on `SubagentStop`, because each call sends the transcript, about 46k tokens in the mean.
 0.27.0 has neither hook.
-The facts below stay as evidence for a later prompt hook.
+0.28.0 adds a short claim-check `prompt` hook on `Stop` only, in `plugins/dotclaude/hooks/hooks.json` (D27 in [Decisions](Decisions-Evidence)).
+It stays only if the over-claim eval shows a lower rate with no loss and a cost within the noise bound.
+The facts below are the evidence for it.
 
 ## Facts from the binary
 
 These facts are from the Claude Code 2.1.292 binary (**binary**), read only:
 
-- Claude Code sends the hook `prompt` as a condition, after the words "has the following stopping condition been satisfied? Answer based on transcript evidence only."
+- Claude Code sends the hook `prompt` as a stopping condition, and asks whether it holds, based on transcript evidence only.
   Stop and SubagentStop get their own system prompt for this.
 - The model is the hook `model` field, else `ANTHROPIC_SMALL_FAST_MODEL`, else Haiku in most setups.
 - The default timeout is 30 seconds.

@@ -1,0 +1,124 @@
+# semantic-line-breaks Specification
+
+## Purpose
+
+Applies semantic line breaks to the text that Claude writes, with a silent formatter that costs no model tokens (design D29).
+A chat reply has a measure and a prompt rule, and a rewrite only when a probe shows that the display uses it.
+
+## Requirements
+
+### Requirement: Sentence-split formatter
+
+The core plugin SHALL have a formatter `sembr` in `lib/` that uses only `node:` modules or none.
+The formatter SHALL break a line only after a sentence end (`.`, `!`, or `?`) that a space and a new sentence follow.
+The formatter SHALL NOT join lines, so an existing break stays and a second run gives the same text.
+The formatter SHALL NOT change code fences, inline code, link targets, URLs, tables, headings, front matter, link definitions, or a line that ends in a hard break.
+The formatter SHALL NOT split after an abbreviation such as `e.g.`, `i.e.`, `etc.`, or `vs.`, a single capital letter, or a version number.
+The formatter SHALL NOT change the rendered output.
+
+#### Scenario: Two sentences on one line
+
+- **WHEN** the formatter reads `Read the file. Then edit it.`
+- **THEN** it gives two lines, one for each sentence
+
+#### Scenario: Idempotence
+
+- **WHEN** the formatter runs on its own output
+- **THEN** the text does not change
+
+#### Scenario: Protected text
+
+- **WHEN** the input has a code fence, a table row, an abbreviation `e.g. this`, or a line that ends in two spaces
+- **THEN** the formatter leaves each of them unchanged
+
+### Requirement: Silent rewrite before a write
+
+A `PreToolUse` hook SHALL rewrite the text of a `Write` and of an `Edit` to a `.md` or `.mdx` path through `updatedInput`.
+For `Edit`, the hook SHALL change `new_string` only and SHALL keep `old_string` as it is.
+The hook SHALL print no `additionalContext` and no `systemMessage`, so that no token goes to the model.
+The hook SHALL NOT set `permissionDecision`, so that the normal permission flow stays.
+The hook SHALL rewrite a `new_string` only when it starts and ends at line bounds of the file, and SHALL NOT change table rows or inline-code spans.
+The hook SHALL do nothing when the text needs no change.
+
+#### Scenario: Write with fused sentences
+
+- **WHEN** the model writes a `.md` file with two sentences on one line
+- **THEN** the file on disk has one sentence on each line, and the hook output has no text for the model
+
+#### Scenario: Edit
+
+- **WHEN** the model edits a `.md` file and `new_string` has two sentences on one line
+- **THEN** the hook changes only `new_string`
+
+#### Scenario: Permission flow
+
+- **WHEN** the hook rewrites a write or a `gh pr create` command
+- **THEN** its output has no `permissionDecision`, and the write still prompts and `gh pr create` still asks before it publishes
+
+#### Scenario: Fragment of a line
+
+- **WHEN** `new_string` is a part of a line, or a table row
+- **THEN** the hook leaves it unchanged
+
+#### Scenario: Other file type
+
+- **WHEN** the model writes a `.mjs` file
+- **THEN** the hook changes nothing
+
+### Requirement: Commit and pull request text
+
+A `PreToolUse` hook on `Bash` SHALL rewrite the message of `git commit` and the body of `gh pr create` only in the quoted heredoc form (`<<'EOF'`).
+The hook SHALL NOT change the subject line, the title, or a trailer such as `Co-Authored-By:`.
+For any other form (`-m "..."`, `-F`, `--body-file`, or an unquoted heredoc), the hook SHALL do nothing.
+The hook SHALL NOT rewrite when any output line equals the heredoc delimiter.
+
+#### Scenario: Quoted heredoc
+
+- **WHEN** the command is `git commit -m "$(cat <<'EOF' ... EOF)"` and the body has two sentences on one line
+- **THEN** the hook returns a command with one sentence on each line, and the subject and trailers are unchanged
+
+#### Scenario: Delimiter line
+
+- **WHEN** a split would make a line equal to `EOF`
+- **THEN** the hook returns the command unchanged
+
+#### Scenario: Other form
+
+- **WHEN** the command uses `-F file`
+- **THEN** the hook returns the command unchanged
+
+### Requirement: No rewrite after a write
+
+dotclaude SHALL NOT rewrite a file in a `PostToolUse` hook or in the auto-fix hook for line breaks, because the rewrite may make the next `Edit` fail with "File has been modified since read" (inferred from bundle text, not run, until probe 2.29).
+
+#### Scenario: Auto-fix table
+
+- **WHEN** a test reads the detection table of the auto-fix hook
+- **THEN** the table has no row for `sembr`
+
+### Requirement: Chat measure and prompt rule
+
+A silent `Stop` hook SHALL count the lines of `last_assistant_message` that have more than one sentence, and SHALL append the counts to a log file for the eval.
+The hook SHALL exit 0 with no output and SHALL NOT block.
+The output style SHALL have a `<reply_format>` block that gives the reason, one wrong example, and one right example.
+A `session.append` rewrite of the chat reply SHALL ship only when the probe of task 2.31 shows that the display uses the rewritten row.
+
+#### Scenario: Stop hook
+
+- **WHEN** the last message has three lines and one of them has two sentences
+- **THEN** the log has the line count 3 and the multi-sentence count 1, and the hook output is empty
+
+#### Scenario: Reply format block
+
+- **WHEN** a test reads the output style
+- **THEN** it has a `<reply_format>` block with the reason, one wrong example, and one right example
+
+### Requirement: Probes first
+
+The tasks SHALL run three probes before the hooks ship: a later `Edit` whose `old_string` comes from the unwrapped text after a rewrite, `updatedInput` in auto mode, and `session.append` with door `response` on the chat display.
+A failed probe SHALL change the route in design D29 and SHALL NOT turn into a workaround.
+
+#### Scenario: Probe fails
+
+- **WHEN** an `Edit` with the unwrapped `old_string` fails after a rewrite
+- **THEN** the design records the failure and the route changes before the hook ships

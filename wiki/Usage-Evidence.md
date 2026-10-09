@@ -46,7 +46,7 @@ Model choice is not one of them.
    The 0.19 output style preferred dotclaude agents in prose.
    That preference did not hold.
    The 0.20 to 0.26 profile denied `Agent(general-purpose)`.
-   Check the 0.27 deny list in `plugins/dotclaude/templates/settings.json` before you rely on this rule.
+   Check the 0.27 deny list in `plugins/dotclaude/features/setup/profile.json` before you rely on this rule.
 
 ## The delegation share
 
@@ -109,7 +109,8 @@ dotclaude 0.20.4 checked each tip against the Claude Code docs or a measurement 
 - Old `.jsonl` transcripts in `~/.claude/projects/` do not go into the context.
   Only `/resume` loads one.
   A remove saves disk space only, and this machine had 1.9 GB of them.
-  The profile sets `cleanupPeriodDays` to 14, so Claude Code removes them.
+  The 0.27.0 profile set `cleanupPeriodDays` to 14, so Claude Code removed them.
+  Since 0.28.0, the profile does not set it (see [Profile keys](Profile-Keys)).
 
 ### Tools that dotclaude does not use
 
@@ -155,8 +156,21 @@ Thus 0.20.4 adds the graph to the search result, as the GitNexus hooks do, and k
 
 </details>
 
+## Usage report
+
+`just measure` (`tools/measure.mjs`) reads a session transcript and prints where the context went.
+It reports the first request of the session against `START_TOKENS`.
+For each subagent of the session, it reports the requests, the final context, and the total input tokens.
+For the main session, it reports the tool-result size for each tool and the count of repeat reads of the same file.
+The measures that led to the context bounds are in [Context bound](Context-Bound).
+
+**measured** (2026-10-07, 14 main sessions): 3 sessions passed 70% of the 300K window, and all 3 were planning sessions.
+The largest peak was 269,602 tokens.
+`research/session-growth.md` holds the table.
+
 ## Related pages
 
 - [Design](Design)
+- [Context bound](Context-Bound)
 - [Plans and models](Plans-and-Models)
 - [Eval history](Evals-History)

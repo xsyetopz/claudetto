@@ -6,7 +6,7 @@ It shows the commands, the layout rules, and the steps to test, release, and pub
 ## Before you begin
 
 - Install [Bun](https://bun.sh) and `just`.
-- Install Claude Code 2.1.292 or later.
+- Install Claude Code 2.1.295 or later.
   `just validate`, `just lab`, `just update`, and `just release` call the `claude` CLI.
 - Run each command in the repository root.
 
@@ -48,7 +48,7 @@ Each `.md` file has at most 300 lines.
 ### The hook lab
 
 `just lab` runs `claude plugin test plugins/dotclaude`.
-The test file imports from `claude-code/testing`, loads `hooks/mod.mjs`, and fires `tool.check` and `prompt.section` events.
+The test file imports from `claude-code/testing`, loads `hooks/register.mjs`, and fires `tool.check` and `prompt.section` events.
 It stubs the engine verdict, the environment, `session.cwd`, `session.root`, `session.id`, and `process.run`.
 No command runs, no session starts, and no network call goes out.
 
@@ -64,9 +64,9 @@ The file has 5 tests:
 
 | Rule | Meaning |
 | --- | --- |
-| One owner for each number | `plugins/dotclaude/lib/budget.mjs` holds every usage bound. Tests pin its copies in code and config, not in prose. |
+| One owner for each number | `plugins/dotclaude/lib/budget.mjs` holds the shared runtime bounds, `features/<name>/limits.mjs` the bounds of one feature, and `tools/limits.mjs` the repository bounds. Tests pin the copies in code and config, not in prose. |
 | No copy of Claude Code | Runtime JavaScript (`plugins/`) does only the work that the latest Claude Code does not do. When Claude Code has a setting, a hook, or another extension point for a need, use it. |
-| Layered imports | `plugins/dotclaude/lib/` imports only itself. `hooks/`, `status-line/`, and the skill scripts import only `lib/` and their own folder. |
+| Layered imports | `plugins/dotclaude/lib/` imports only itself. A folder in `features/` imports only `lib/` and itself. `hooks/register.mjs` and the skill scripts import only `lib/` and their own feature. |
 | Guards get strings | The tests give commands to the guards as strings, and never run a guarded command. |
 | No patch of Claude Code | Never patch the CLI binary or its npm package. Reading the bundle for evidence is allowed. |
 
@@ -74,6 +74,8 @@ The file has 5 tests:
 Layered imports keep the start of each hook small and its failure local.
 A test that runs a destructive command can do the damage that the guard exists to stop.
 See the design principles on the [Design](Design) page.
+
+The removed `dotclaude-modder` plugin is in `external/archive/dotclaude-modder/dotclaude-modder.tar.gz`, which git ignores, so that you can unpack its skills and the `um` command as a base for your own plugin.
 
 ## Types
 

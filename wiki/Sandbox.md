@@ -49,6 +49,7 @@ just sandbox --model claude-haiku-4-5 -p "prompt"
 | Variable | Default | Use |
 | --- | --- | --- |
 | `DOTCLAUDE_SANDBOX` | `dotclaude-sandbox` in the temp folder | Sandbox directory |
+| `DOTCLAUDE_SANDBOX_PLUGINS` | Each plugin in `plugins/` | A comma list of the plugins to load, such as `dotclaude-docs` to test an add-on with no core plugin |
 | `CLAUDE_BIN` | `claude` on `PATH` | The `claude` executable |
 | `CLAUDE_CODE_OAUTH_TOKEN` | Your login token | The login the sandbox uses |
 
@@ -72,6 +73,12 @@ The native installer keeps each version at `~/.local/share/claude/versions/<vers
 - The script removes the variables of a Claude Code session that runs the script.
   It removes each variable that has the value your own settings `env` gives it.
   A value that you set on the command line for the sandbox stays.
+
+### Managed settings
+
+dotclaude uses no managed settings.
+On a machine whose managed `enabledPlugins` holds a plugin name, Claude Code ignores the `--plugin-dir` copy of that plugin, and the debug log says "plugin is locked by managed settings".
+Remove the managed entry, or test on a machine without it.
 
 In `config/.claude.json` the script sets these keys:
 
@@ -127,6 +134,35 @@ Use it for hook behavior that the reply shows.
   This deny is not a decision of the user.
 - Before the run, list each tool that the test needs, such as `--allowedTools 'Bash' 'Write' 'Edit'`.
 
+## Agent sessions
+
+An AI agent that runs the sandbox in its own agent sandbox meets two limits on macOS:
+
+- `just capture` listens on a local port.
+  The user sets `sandbox.network.allowLocalBinding: true` in the settings of the agent session.
+- A Bash call in the sandbox session starts a second Seatbelt sandbox, and macOS does not let a sandboxed process apply a second one (`sandbox-exec: sandbox_apply: Operation not permitted`).
+  No setting of the agent session changes this.
+  A test that needs Bash in the sandbox session runs in a terminal outside the agent sandbox, and the user gives the output to the agent.
+
+Do not turn off the Bash sandbox in the sandbox config to work around the second limit.
+
+### Capture session
+
+A capture session sends each request of the agent session and of its sandbox runs through `just capture`.
+
+1. In a terminal, run `just capture`.
+1. In a second terminal, start the agent session with the proxy:
+
+   ```bash
+   ANTHROPIC_BASE_URL=http://127.0.0.1:8787 ENABLE_TOOL_SEARCH=true claude
+   ```
+
+1. `just sandbox` runs in that session inherit both variables.
+   The proxy writes each request body to `$TMPDIR/dotclaude-capture`.
+
+- `ENABLE_TOOL_SEARCH=true` keeps tool search on, because Claude Code turns it off for a base URL that is not first-party.
+- The proxy never writes a request header, because the headers carry the credential.
+
 ## TUI tests in tmux
 
 The status line, the agent panel, and dialogs show only in the TUI.
@@ -148,11 +184,11 @@ tmux kill-session -t sandbox
 ## Status line commands
 
 To test the status line script without a session, give it input on stdin.
-The script is `plugins/dotclaude/status-line/statusline.mjs`.
+The script is `plugins/dotclaude/features/statusline/cli.mjs`.
 The fields of the input are in the script and in the status line docs of Claude Code, so read them before you write the input.
 
 ```bash
-echo '<input JSON>' | bun plugins/dotclaude/status-line/statusline.mjs
+echo '<input JSON>' | bun plugins/dotclaude/features/statusline/cli.mjs
 ```
 
 Claude Code does not log a status line command that works.
@@ -176,6 +212,8 @@ That lets you continue a test, but an old sandbox can hide a first-run problem.
 | `claude` finds no prompt in a headless run | Put the prompt before variadic flags such as `--allowedTools`. |
 | A headless tool call is denied with "you haven't granted it yet" | List the tool in `--allowedTools`. |
 | A `gh api` call fails in the sandbox | `gh` reads its token with the real `HOME`. Use a test that does not need it. |
+| "plugin is locked by managed settings" in the debug log | A managed `enabledPlugins` entry holds the name. Remove it, because dotclaude uses no managed settings. |
+| Bash fails with `EPERM` on a `srt-mux` socket | See [Agent sessions](#agent-sessions). |
 
 ## Related pages
 

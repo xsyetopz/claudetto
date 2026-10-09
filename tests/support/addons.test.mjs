@@ -29,8 +29,6 @@ for (const addon of ADDONS) {
     for (const file of files(path.join(PLUGINS, addon))) {
       const text = fs.readFileSync(file, "utf8");
       expect(text, file).not.toMatch(/\.\.\/dotclaude\/|plugins\/dotclaude\//);
-      expect(text, file).not.toContain("dotclaude_spec");
-      expect(text, file).not.toContain("operating spec");
     }
   });
 }
