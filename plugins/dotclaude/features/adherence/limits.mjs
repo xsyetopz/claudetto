@@ -16,14 +16,5 @@ export const TRANSCRIPT_MAX_BYTES = 4_000_000;
 /** The most code items that a deny reason lists. The reason gives the count of the rest. */
 export const ITEMS_SHOWN_MAX = 8;
 
-/** The largest rules file in bytes. A larger file counts as absent. */
-export const RULES_FILE_MAX_BYTES = 64_000;
-
-/** The most entries of each kind (`maxLines`, `banned`, `ask`) that the loader keeps. */
-export const RULES_ENTRIES_MAX = 200;
-
-/** The most characters of a `pattern` of a rules file. A longer pattern is dropped. */
-export const PATTERN_MAX_CHARS = 200;
-
 /** The most characters of a changed line that an ask reason shows. A longer line is cut. */
 export const LINE_SHOWN_MAX_CHARS = 80;

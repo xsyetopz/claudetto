@@ -2,6 +2,8 @@
 
 This page holds the per-version eval runs and the compaction bench.
 0.27.0 removed the eval suite, the Evals page, and `evals/`, so these runs are history.
+0.28.0 removed the harness of the later suite (`tools/eval/`, `evals/`, and `just eval`) and its report files.
+The current evals use `claude plugin eval` ([Evals](Evals)).
 The 0.27 checks are `just check` and the hook lab ([Development](Development)).
 Labels: **measured** means a run on this machine, and **reported** means a claim from a user.
 
@@ -52,7 +54,7 @@ The replay of 5 real compactions found 70 needed tokens.
 Compact while the cache is warm.
 After the TTL expires, compaction re-reads the whole conversation without the cache (**reported**).
 The 200k `autoCompactWindow` of that time compacted during an active turn.
-The 0.20.0 profile sets 150k.
+The setup profile of 0.20.0 set 150k, and 0.28.0 removed the profile.
 
 ## Results for 0.4.0
 
@@ -69,7 +71,7 @@ These runs used the old `evals/` suite, Claude Code 2.1.283, and Opus 5.5 as age
 
 **Measured:** the 8 `t*` cases, 3 trials per arm, dotclaude only, Claude Code 2.1.287, and a Sonnet 5.5 judge.
 Effort came from `CLAUDE_CODE_EFFORT_LEVEL`.
-The summary is `evals/results/0.17.1-sweep/summary.md`.
+The summary file went with the removed harness.
 
 | Arm | Passed | Cost per pass |
 | --- | --- | --- |
@@ -90,7 +92,7 @@ The summary is `evals/results/0.17.1-sweep/summary.md`.
 ## Longer Opus and Sonnet run for 0.17.1
 
 **Measured:** the 11 cases, with the 3 role cases, 10 trials per arm, dotclaude only, Claude Code 2.1.287, and a Sonnet 5.5 judge.
-The summary is `evals/results/0.17.1-long/summary.md`.
+The summary file went with the removed harness.
 
 | Arm | Passed | Without `t1-false-alarm` | Cost per pass |
 | --- | --- | --- | --- |
@@ -115,7 +117,7 @@ The summary is `evals/results/0.17.1-long/summary.md`.
 ## Re-run and model swap for 0.17.1
 
 **Measured:** the same 11 cases and arms after the fixes above.
-The summary is `evals/results/0.17.1-rerun/summary.md`.
+The summary file went with the removed harness.
 
 | Arm | Passed | Cost per pass |
 | --- | --- | --- |
@@ -170,12 +172,12 @@ The cases let the same rule check the move.
   Check the page before a run.
   The Node.js page was read on 2026-10-04 and has both sentences.
 
-`just eval-agent <model> <effort> [runs]` runs both cases.
+The removed recipe `just eval-agent <model> <effort> [runs]` ran both cases.
 The main conversation stays on Opus 5.5 (`--model opus`).
 `CLAUDE_CODE_SUBAGENT_MODEL` sets the model of the agent, and `CLAUDE_CODE_EFFORT_LEVEL` sets the effort, as in the 0.17.1 sweep.
-The recipe then runs `plugins/dotclaude/evals/oracle.mjs` and `plugins/dotclaude/evals/report.mjs`.
+The recipe then ran an oracle script and a report script, which are removed.
 
-| Arm | Command | Old setting of |
+| Arm | Removed command | Old setting of |
 | --- | --- | --- |
 | Opus 5.5 low | `just eval-agent opus low` | `web-researcher` |
 | Opus 5.5 medium | `just eval-agent opus medium` | `investigator` |
@@ -193,7 +195,7 @@ The recipe then runs `plugins/dotclaude/evals/oracle.mjs` and `plugins/dotclaude
 
 ## Final tree of 0.28.0
 
-The run of 2026-10-09 (`evals/results/2026-10-09T12-14-45-135Z`) used all 12 cases of the main suite on Sonnet 5.5, with 3 runs for each case and arm (72 runs, 1.83 USD, no faults and no time-outs).
+The run of 2026-10-09 used all 12 cases of the main suite on Sonnet 5.5, with 3 runs for each case and arm (72 runs, 1.83 USD, no faults and no time-outs).
 
 | Measure | dotclaude | vanilla | Interval of the difference |
 | --- | --- | --- | --- |
@@ -211,7 +213,7 @@ A dotclaude run takes 4.5 seconds and 0.8 turns more, and the interval shows bot
 
 ## Router table of 0.28.0
 
-The router search of 2026-10-09 (`evals/results/2026-10-09T12-16-54-262Z`, 5.1 USD) used 3 cases for each class, with 9 paired runs for each pair.
+The router search of 2026-10-09 (5.1 USD) used 3 cases for each class, with 9 paired runs for each pair.
 The table of `features/router/data.mjs` comes from this report and from the effort guide of Anthropic (decision of the user 2026-10-09).
 
 | Class | Reference | Cheapest pair with no loss | Table |

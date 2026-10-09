@@ -2,7 +2,7 @@
 
 This page says how the repository, the marketplace, and the plugins are laid out.
 The decisions are D17, D18, D20, and D24 in [Decisions](Decisions-Layout).
-The runtime rules and the bound tiers are in [Runtime rules](Runtime-Rules).
+The runtimes, the bound tiers, and the file size bounds are on this page too.
 
 ## Marketplace and plugins
 
@@ -32,7 +32,8 @@ The layout follows the plugin and marketplace docs of Claude Code:
 plugins/dotclaude/
   .claude-plugin/plugin.json   manifest
   agents/*.md                  the five agents
-  skills/<name>/SKILL.md       setup and handoff, each with its own scripts/
+  settings.json                keys that a plugin may set (an empty object)
+  skills/<name>/SKILL.md       the setup skill, with its own scripts/
   hooks/hooks.json             the module (one path) and the classic hooks
   hooks/register.mjs           the one hooks module
   output-styles/dotclaude.md   the forced output style
@@ -43,7 +44,7 @@ plugins/dotclaude/
 
 A feature folder holds `rules.mjs` for pure logic and `limits.mjs` for its own bounds.
 It may also hold `cli.mjs` for a classic hook, and `data.mjs` for tables.
-The features are `autofix`, `context`, `drift`, `guard`, `prompt`, `reads`, `router`, `sembr`, `setup`, `statusline`, and `surface`.
+The features are `adherence`, `context`, `drift`, `guard`, `prompt`, `reads`, `sembr`, `setup`, `statusline`, and `surface`.
 
 ## Dependency rule
 
@@ -67,7 +68,54 @@ An import test (`tests/dotclaude/imports.test.mjs`) parses the `import` lines an
   The glue of a feature that has `$` calls can sit in a feature file that the module imports (probe P1 in `research/probes-3.md`).
 - When `hooks/register.mjs` passes 250 lines, the next feature becomes an add-on plugin with its own module.
 - A module file imports by relative path inside the plugin, because the cache copy has no file outside it.
-  No file in its graph has a `node:` import ([Runtime rules](Runtime-Rules)).
+  No file in its graph has a `node:` import ([Runtimes](#runtimes)).
+
+## Runtimes
+
+| Code | Runtime |
+| --- | --- |
+| Code that needs Python | Python, with the standard library or a pinned requirement. |
+| Runtime JavaScript in `plugins/` | `.mjs` files on Node.js 22.18 or later, with `node:` modules only. |
+| Tests, `tools/`, and evals | Bun. |
+
+- A plugin ships no `.js` or `.ts` file.
+  The exceptions are the `.test.ts` files that `claude plugin test` runs and the `types/*.d.ts` file that a manifest names.
+- A test lists the files under `plugins/` and fails on any other script type (`tests/support/runtimes.test.mjs`).
+- The hooks module runs with no Node.
+  A file in the import graph of `hooks/register.mjs` therefore has no `node:` import.
+  The import test fails on one.
+  Only a `cli.mjs` entry for a classic hook can use `node:`.
+- When the module needs a system call, it uses a `$` function, such as `$.process.run`.
+- The `sembr` formatter in `lib/sembr.mjs` is pure string code with no import, so the module can load it.
+
+## Bound tiers
+
+Each bound has one owner.
+Tests pin the copies of a bound in code and config, not in prose.
+
+| Tier | File | What it holds |
+| --- | --- | --- |
+| Shared runtime | `plugins/dotclaude/lib/budget.mjs` | Bounds that two or more parts read: `CONTEXT_WINDOW`, `USAGE_LEVELS`, `BASH_OUTPUT_MAX_CHARS`, and the policy bounds. |
+| Feature | `features/<name>/limits.mjs`, or the own module of an add-on | Bounds that one feature reads, such as `SUBAGENT_CONTEXT_MAX` and the allowed efforts of each model. |
+| Repository | `tools/limits.mjs` | Bounds that only tests and tools read, such as the file size bounds, the size targets of `CLAUDE.md`, skills, and the first request, and `START_TOKENS`. |
+
+- No router table exists.
+  The frontmatter of `agents/*.md` is the source of the model, the effort, and `maxTurns` ([Agents](Agents#pins)).
+- `just measure` prints the size of the first request and fails above `START_TOKENS`.
+  It writes no file.
+- `userConfig` is for a choice that the user makes, which the module reads as `options`.
+  The status line cannot read `options`, so its bounds stay in `budget.mjs` and `features/statusline/limits.mjs`.
+  Each plugin with options costs one dialog at install, so a plugin adds an option only for a real user choice.
+
+## File size
+
+- A normal file has 300 lines or fewer.
+- A test file has 500 lines or fewer.
+- `FILE_MAX_LINES` and `TEST_FILE_MAX_LINES` are in `tools/limits.mjs`.
+  A test in `tests/support/file-size.test.mjs` fails on a file over its bound and names the file.
+- Generated files, such as `schemas/` and lock files, are excluded by name.
+- The 300-line bound also applies to Markdown files, so a long page is split into linked pages.
+- A test searches `plugins/` for the repository bounds and finds none.
 
 ## Add-on plugins
 
@@ -88,11 +136,11 @@ No plugin or agent description names a game, a modding task, or another niche, a
 ## Modder removed
 
 0.28.0 removed `dotclaude-modder` from the marketplace and from `plugins/`.
-An archive is in `external/archive/dotclaude-modder/`, which git ignores.
+Its files are in git history at commit `5cf4cb4`, in `plugins/dotclaude-modder/`.
 You can build your own skills or tools from it ([Development](Development)).
 
 ## Related pages
 
-- [Runtime rules](Runtime-Rules)
+- [Decisions: layout](Decisions-Layout)
 - [Parts](Parts)
 - [Development](Development)

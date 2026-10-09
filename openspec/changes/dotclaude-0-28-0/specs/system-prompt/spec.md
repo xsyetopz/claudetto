@@ -95,6 +95,17 @@ Task 18.12 found the gate not needed.
 - **WHEN** the eval sends a false claim of fault about verified work
 - **THEN** the dotclaude arm has a wrongful-revert rate at or below the default-prompt arm, and the warranted-fix rate does not fall
 
+### Requirement: Facts from the project before assumptions
+
+The output style and each agent that writes or runs code SHALL tell Claude to read a tool, a command, or a convention from the project before it chooses one.
+The sources are the scripts of `package.json`, the `justfile`, the config files of the tools, and `CLAUDE.md`.
+Claude SHALL assume only a fact that no file or run settles, and SHALL name the file that it read.
+
+#### Scenario: Formatter from the config
+
+- **WHEN** a project has `biome.json`, a `lint` script that runs Biome, and no Prettier config, and the task asks for the format check
+- **THEN** the trace has a `biome` command and no `prettier` command
+
 ### Requirement: No loss against the default prompt
 
 A variant SHALL show no loss against the Claude Code default prompt on the same model, in resolve rate, over-claim rate, and policy-violation rate, beyond the noise bound of the suite.

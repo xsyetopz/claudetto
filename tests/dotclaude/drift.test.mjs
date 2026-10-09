@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   OFF_PLUGINS,
-  ROUTER_BLOCKING_ENV,
+  OVERRIDE_ENV,
   TESTED_VERSION,
 } from "../../plugins/dotclaude/features/drift/data.mjs";
 import {
@@ -17,15 +17,12 @@ import {
   syncedSkills,
   unknownSections,
 } from "../../plugins/dotclaude/features/drift/rules.mjs";
-import { BLOCKING_ENV } from "../../plugins/dotclaude/features/router/data.mjs";
 
 const ROOT = path.join(import.meta.dirname, "../..");
-const profile = JSON.parse(
-  fs.readFileSync(
-    path.join(ROOT, "plugins/dotclaude/features/setup/profile.json"),
-    "utf8",
-  ),
-);
+// Settings that turn off each plugin of `OFF_PLUGINS`, as the settings snippet of the wiki does.
+const profile = {
+  enabledPlugins: Object.fromEntries(OFF_PLUGINS.map((id) => [id, false])),
+};
 const settled = {
   settings: profile,
   policy: {},
@@ -34,13 +31,6 @@ const settled = {
   sections: [],
 };
 
-test("the plugin list is the list of plugins that the profile turns off", () => {
-  const off = Object.entries(profile.enabledPlugins)
-    .filter(([, on]) => on === false)
-    .map(([id]) => id);
-  expect([...OFF_PLUGINS].sort()).toEqual(off.sort());
-});
-
 test("the tested version is the version of the shipped schema", () => {
   const schema = JSON.parse(
     fs.readFileSync(
@@ -48,11 +38,14 @@ test("the tested version is the version of the shipped schema", () => {
       "utf8",
     ),
   );
-  expect(schema["x-claude-code-version"]).toBe(TESTED_VERSION);
+  expect(schema.$comment).toBe(`Extracted from Claude Code ${TESTED_VERSION}`);
 });
 
-test("the router variables are the variables that the router blocks on", () => {
-  expect([...ROUTER_BLOCKING_ENV]).toEqual([...BLOCKING_ENV]);
+test("the override variables are the two that beat the agent files", () => {
+  expect([...OVERRIDE_ENV]).toEqual([
+    "CLAUDE_CODE_EFFORT_LEVEL",
+    "CLAUDE_CODE_SUBAGENT_MODEL_FORCE",
+  ]);
 });
 
 test("the profile itself gives no line", () => {

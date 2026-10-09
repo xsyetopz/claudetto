@@ -2,7 +2,7 @@
 
 dotclaude defines five agents in `plugins/dotclaude/agents/`.
 This page lists the roster, the pins, and the rules for the files.
-The decision is D25 in [Decisions](Decisions-Router).
+The decisions are D12, D13, and D25 in [Decisions](Decisions-Router).
 
 ## Roster
 
@@ -19,8 +19,8 @@ The decision is D25 in [Decisions](Decisions-Router).
 - No agent has the `Agent` tool, so no agent starts another agent.
 - Each `maxTurns` holds one spare turn for the report.
   A subagent that reaches `maxTurns` returns no report.
-- The file is the default.
-  The router can set another model and effort for a task ([Router](Router)).
+- The file is the only source of the choice.
+  No router rewrites it, and a coordinator can pass `model` and `effort` in an `Agent` call ([Decisions: router and agents](Decisions-Router)).
 - Planning and orchestration stay in the main loop.
 - Fable 5.1 and Mythos 5.1 are in no file.
   They run only when the user selects them.
@@ -34,11 +34,11 @@ The pin test in `tests/dotclaude/agents.test.mjs` does these checks:
 
 - The model is one of `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`.
   `claude-haiku-4-5` fails the test.
-- The effort is in `ALLOWED_EFFORTS` for that model.
-  `ALLOWED_EFFORTS` is data in `features/router/limits.mjs`.
-  For example, Sonnet 5.5 at `xhigh` fails.
-- The `maxTurns` equals the value in the table above.
+- The effort is in `SUBAGENT_EFFORTS` for that model, and it is not `max`.
+  `SUBAGENT_EFFORTS` is in `features/statusline/limits.mjs`, and the status line marks an effort that is not in the list.
 - The roster is these five names and no other.
+
+The turn bound reads `maxTurns` from the file, and `tests/dotclaude/turn-bound.test.mjs` tests it.
 
 ## Description rules
 
@@ -60,6 +60,6 @@ Each body therefore repeats the rules that matter for its role:
 
 ## Related pages
 
-- [Router](Router)
+- [Decisions: router and agents](Decisions-Router)
 - [Parts](Parts)
 - [Context bound](Context-Bound)

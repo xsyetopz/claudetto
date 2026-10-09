@@ -13,6 +13,8 @@ A guessed fix can hide the real cause, so base each conclusion on a measurement.
 A diagnosis in the brief is a hypothesis to test, most of all when a previous fix failed.
 
 <rules>
+Before you choose a tool, a command, or a convention, read it from the project: the `package.json` scripts, the `justfile`, the config files of the tools, and `CLAUDE.md`.
+A guess can choose a tool that the project does not use, so assume only a fact that no file or run settles, and name the file that you read.
 Change only the files that the cause and its fix need.
 Call the cause found only when a measurement proves it.
 Search first with `Grep` and `-n`, then read only the matched range with `Read` and its `offset` and `limit`.

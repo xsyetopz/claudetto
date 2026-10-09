@@ -12,9 +12,6 @@ A chat reply has a prompt rule and an eval measure, and no rewrite and no log.
 The core plugin SHALL have a formatter `sembr` in `lib/` that uses only `node:` modules or none.
 The formatter SHALL break a line only after a sentence end (`.`, `!`, or `?`) that a space and a new sentence follow.
 The formatter SHALL NOT join lines, so an existing break stays and a second run gives the same text.
-The formatter SHALL NOT change code fences, inline code, link targets, URLs, tables, headings, front matter, link definitions, or a line that ends in a hard break.
-The formatter SHALL NOT split after an abbreviation such as `e.g.`, `i.e.`, `etc.`, or `vs.`, a single capital letter, or a version number.
-The formatter SHALL NOT change the rendered output.
 
 #### Scenario: Two sentences on one line
 
@@ -26,6 +23,12 @@ The formatter SHALL NOT change the rendered output.
 - **WHEN** the formatter runs on its own output
 - **THEN** the text does not change
 
+### Requirement: Formatter protected text
+
+The formatter SHALL NOT change code fences, inline code, link targets, URLs, tables, headings, front matter, link definitions, or a line that ends in a hard break.
+The formatter SHALL NOT split after an abbreviation such as `e.g.`, `i.e.`, `etc.`, or `vs.`, a single capital letter, or a version number.
+The formatter SHALL NOT change the rendered output.
+
 #### Scenario: Protected text
 
 - **WHEN** the input has a code fence, a table row, an abbreviation `e.g. this`, or a line that ends in two spaces
@@ -35,9 +38,6 @@ The formatter SHALL NOT change the rendered output.
 
 A `PreToolUse` hook SHALL rewrite the text of a `Write` and of an `Edit` to a `.md` or `.mdx` path through `updatedInput`.
 For `Edit`, the hook SHALL change `new_string` only and SHALL keep `old_string` as it is.
-The hook SHALL print no `additionalContext` and no `systemMessage`, so that no token goes to the model.
-The hook SHALL NOT set `permissionDecision`, so that the normal permission flow stays.
-The hook SHALL rewrite a `new_string` only when it starts and ends at line bounds of the file, and SHALL NOT change table rows or inline-code spans.
 The hook SHALL do nothing when the text needs no change.
 
 #### Scenario: Write with fused sentences
@@ -50,20 +50,29 @@ The hook SHALL do nothing when the text needs no change.
 - **WHEN** the model edits a `.md` file and `new_string` has two sentences on one line
 - **THEN** the hook changes only `new_string`
 
+#### Scenario: Other file type
+
+- **WHEN** the model writes a `.mjs` file
+- **THEN** the hook changes nothing
+
+### Requirement: Rewrite output
+
+The hook SHALL print no `additionalContext` and no `systemMessage`, so that no token goes to the model.
+The hook SHALL NOT set `permissionDecision`, so that the normal permission flow stays.
+
 #### Scenario: Permission flow
 
 - **WHEN** the hook rewrites a write or a `gh pr create` command
 - **THEN** its output has no `permissionDecision`, and the write still prompts and `gh pr create` still asks before it publishes
 
+### Requirement: Rewrite whole lines only
+
+The hook SHALL rewrite a `new_string` only when it starts and ends at line bounds of the file, and SHALL NOT change table rows or inline-code spans.
+
 #### Scenario: Fragment of a line
 
 - **WHEN** `new_string` is a part of a line, or a table row
 - **THEN** the hook leaves it unchanged
-
-#### Scenario: Other file type
-
-- **WHEN** the model writes a `.mjs` file
-- **THEN** the hook changes nothing
 
 ### Requirement: Commit and pull request text
 

@@ -40,44 +40,6 @@ export const FIRST_REQUEST_LOW_BYTES = 8 * 1024;
 /** Most bytes in the first request, with no tool schemas (16 KB). `just measure` checks it. */
 export const FIRST_REQUEST_HIGH_BYTES = 16 * 1024;
 
-// Eval harness bounds (`tools/eval/`, design D9).
-
-/** Cost limit of one `just eval` in US dollars, when no `--limit` is given. */
-export const EVAL_COST_LIMIT_USD = 20;
-/** Runs of each case and arm, when no `--runs` is given. */
-export const EVAL_RUNS_DEFAULT = 3;
-/** Runs at the same time, when no `--concurrency` is given. */
-export const EVAL_CONCURRENCY_DEFAULT = 4;
-/** Resamples of the paired bootstrap. */
-export const EVAL_BOOTSTRAP_RESAMPLES = 10_000;
-/** Confidence of the bootstrap interval. */
-export const EVAL_CONFIDENCE = 0.95;
-/** Seed of the bootstrap, so that a report is the same on every build. */
-export const EVAL_BOOTSTRAP_SEED = 20_280;
-/**
- * Largest loss in a rate that the router search counts as noise (design D12).
- * The figure of 0.05 is a proposal, not a fitted value.
- */
-export const EVAL_ROUTER_NOISE = 0.05;
-/** Most characters of the container stderr that the run record keeps (the first part). */
-export const EVAL_STDERR_CHARS = 4000;
-/** Most characters of the container stdout that the run record keeps (the last part). */
-export const EVAL_STDOUT_TAIL_CHARS = 2000;
-/** Wall time of one run in seconds. */
-export const EVAL_RUN_TIMEOUT_S = 900;
-/**
- * Cost in US dollars that the suite charges for a run that timed out, because that run has no `result` event and no price table exists.
- * The figure of 2 is a proposal, not a measured value.
- */
-export const EVAL_TIMEOUT_CHARGE_USD = 2;
-/**
- * Fewest paired runs of a candidate pair before the router search can accept it.
- * A class has 3 cases, and a run has 3 repeats by default, so 9 is one full default suite.
- */
-export const EVAL_ROUTER_MIN_PAIRS = 9;
-/** Largest ratio between the evidence of two options in a neutral question. */
-export const EVAL_SKEW_RATIO_MAX = 2;
-
 // Start-of-session bound (`tools/measure.mjs`, design D4).
 
 /**

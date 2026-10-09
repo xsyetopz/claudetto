@@ -9,7 +9,7 @@ Use it to see a hook, the status line, or an agent work in a real session before
 - `claude --plugin-dir plugins/dotclaude` in your own setup loads the checkout next to your installed dotclaude, your settings, and your sessions.
 - A test there can change your settings files and write to your session history.
 - The sandbox has its own `CLAUDE_CONFIG_DIR` and `HOME`, so the test changes only the sandbox.
-  That includes the shell startup files that `/dotclaude:setup` changes.
+  That includes the files that the OpenSpec step of `/dotclaude:setup` writes under `HOME`.
 
 ## Before you begin
 
@@ -25,9 +25,9 @@ Use it to see a hook, the status line, or an agent work in a real session before
    just sandbox
    ```
 
-1. The script applies the dotclaude setup profile and the status line stub to `config/` on the first start.
-   It runs `skills/setup/scripts/settings.mjs --apply` for this, so you do not run `/dotclaude:setup`.
-1. Put more settings in `config/settings.json` when a test needs them.
+1. The script writes no dotclaude setting to `config/`.
+   Copy the keys that a test needs from the [settings snippet](Settings-Snippet) into `config/settings.json`.
+   With no snippet, the sandbox runs with the defaults of Claude Code plus the hooks, agents, and output style of the plugins.
 1. Remove the sandbox when you finish:
 
    ```bash
@@ -43,7 +43,7 @@ just sandbox --model claude-haiku-4-5 -p "prompt"
 
 - Arguments after `just sandbox` go to `claude`.
 - The script loads the checkout and each plugin in `plugins/`, such as `dotclaude-browser` and `dotclaude-jev`.
-- It loads the profile of `dotclaude` too, so the sandbox runs with the 300K window and no compaction.
+- It loads `dotclaude` too, but compaction and the 300K window come from the settings snippet, so the sandbox has them only when `config/settings.json` holds them.
 - `tools/sandbox.mjs` does the work, and `bun tools/sandbox.mjs` is the same without `just`.
 
 | Variable | Default | Use |

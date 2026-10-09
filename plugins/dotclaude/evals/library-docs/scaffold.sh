@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Builds the fixture in the empty workspace.
+# Needs the flag `--scaffold`.
+set -euo pipefail
+cat > package.json <<'EOF'
+{
+  "type": "module"
+}
+EOF
+mkdir -p docs
+cat > docs/tinyq.md <<'EOF'
+# tinyq
+
+`createQueue()` makes a queue.
+`q.add(item, rank)` adds an item.
+A lower `rank` is taken first.
+`q.take()` removes and returns the next item, or `undefined` when the queue is empty.
+EOF
+mkdir -p vendor
+cat > vendor/tinyq.mjs <<'EOF'
+export function createQueue() {
+  const items = [];
+  return {
+    add(item, rank) {
+      items.push({ item, rank });
+      items.sort((a, b) => a.rank - b.rank);
+    },
+    take() {
+      return items.shift()?.item;
+    },
+    get size() {
+      return items.length;
+    },
+  };
+}
+EOF

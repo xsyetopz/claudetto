@@ -1,16 +1,51 @@
 // The OpenSpec steps of setup.
 // `planOpenSpec` only reads.
-// `runOpenSpec` writes, and `setupOpenSpec` calls it only with `--openspec --apply`, after the user agrees.
+// `runOpenSpec` writes, and `setupOpenSpec` calls it only with `--apply`, after the user agrees.
 // OpenSpec 1.14.1 has no `--delivery` flag on `init`, so the order is `init`, `config set delivery skills`, `update`.
 // `update` then removes the command copies and keeps the skills (probe 2.15).
 
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { run } from "./environment.mjs";
-import { OPENSPEC_MIN, olderThan } from "./rules.mjs";
 
 const CONFIG = ["openspec", "config"];
+
+/** The lowest OpenSpec version that the dotclaude docs describe. */
+export const OPENSPEC_MIN = "1.14.0";
+
+/** True when version text `a` is lower than `b`. */
+const olderThan = (a, b) =>
+  String(a).localeCompare(b, "en", { numeric: true }) < 0;
+
+/** Run `cmd`, and return its trimmed output, or null when it fails. */
+const run = (cmd) => {
+  try {
+    const r = spawnSync(cmd[0], cmd.slice(1), {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+    return r.status === 0 ? r.stdout.trim() : null;
+  } catch {
+    return null;
+  }
+};
+
+/** Print the OpenSpec state of the computer and of `projectDir`. */
+export function reportOpenSpec(projectDir) {
+  const openspec = run(["openspec", "--version"]);
+  const node = run(["node", "--version"])?.replace(/^v/, "");
+  console.log("OpenSpec:");
+  if (!openspec) console.log("  openspec: not found");
+  else if (olderThan(openspec, OPENSPEC_MIN))
+    console.log(`  openspec: ${openspec}, older than ${OPENSPEC_MIN}`);
+  else console.log(`  openspec: ${openspec}`);
+  console.log(
+    `  node: ${node ?? "not found"}${node && olderThan(node, "20.19.0") ? ", older than 20.19.0" : ""}`,
+  );
+  console.log(
+    `  project: ${fs.existsSync(path.join(projectDir, "openspec")) ? "initialized" : "not initialized"} (${projectDir})`,
+  );
+}
 
 /** True when `dir` holds a file. `openspec update` leaves the empty folder. */
 const hasFiles = (dir) => fs.existsSync(dir) && fs.readdirSync(dir).length > 0;
@@ -49,7 +84,7 @@ export function planOpenSpec(projectDir) {
 /** Print the steps of `planOpenSpec`. */
 export function reportOpenSpecSteps(steps) {
   if (!steps.length) return;
-  console.log("\nOpenSpec steps. To run them, add --openspec to --apply:");
+  console.log("\nOpenSpec steps. To run them, add --apply:");
   for (const s of steps) console.log(`  ${s.label}: ${s.cmd.join(" ")}`);
 }
 

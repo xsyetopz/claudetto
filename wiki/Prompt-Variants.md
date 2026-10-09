@@ -35,12 +35,12 @@ The evidence line is also in the output style.
 
 A variant has no byte bound of its own.
 The text of the first request, with no tool schemas, has the targets `FIRST_REQUEST_LOW_BYTES` (8 KB) and `FIRST_REQUEST_HIGH_BYTES` (16 KB) in `tools/limits.mjs`.
-`just measure` checks them, where 1 KB is 1,024 bytes.
+`just measure` prints the size and checks them, and it writes no file, where 1 KB is 1,024 bytes.
 A size above the high bound fails, and a size below the low bound is reported.
 
 ## The compact prompt gap
 
 Claude Code has no route to override the compact prompt.
 The `prompt.compose` and `prompt.section` hooks do not reach it.
-The profile limits compaction instead: `DISABLE_COMPACT` turns it off, and the session stops at the context limit.
+The [settings snippet](Settings-Snippet) limits compaction instead: `DISABLE_COMPACT` turns it off, and the session stops at the context limit.
 The user then starts a fresh session with `/clear`.

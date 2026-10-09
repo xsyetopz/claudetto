@@ -49,8 +49,24 @@ dotclaude SHALL NOT set `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODE
 
 The roster SHALL be `claude-opus-5-5`, `claude-sonnet-5-5`, `claude-haiku-5-5`, and `claude-fable-5-1`, or `claude-mythos-5-1` for an account in CVP.
 A CVP account gets Mythos 5.1 in place of Fable 5.1 at the same cost, so the roster SHALL NOT hold both.
-The wiki SHALL document how the user checks that Mythos 5.1 serves the account (`research/account.md`).
+
+#### Scenario: Roster ids
+
+- **WHEN** a test reads the roster
+- **THEN** it holds the four ids, with `claude-fable-5-1` or `claude-mythos-5-1` and not both
+
+### Requirement: Fable and Mythos on selection
+
 Fable 5.1 and Mythos 5.1 SHALL have no agent, and SHALL run only when the user selects them.
+The wiki SHALL document how the user checks that Mythos 5.1 serves the account (`research/account.md`).
+
+#### Scenario: No agent
+
+- **WHEN** a test reads the `model` of each agent file
+- **THEN** none is `claude-fable-5-1` or `claude-mythos-5-1`
+
+### Requirement: No Haiku 4.5
+
 `claude-haiku-4-5` SHALL NOT be in the roster, in `availableModels`, or in any pin.
 The agent files SHALL use the full id `claude-haiku-5-5` and not the `haiku` alias, because the alias resolves to Haiku 4.5 on Bedrock, Vertex, and Foundry.
 
@@ -67,19 +83,35 @@ The agent files SHALL use the full id `claude-haiku-5-5` and not the `haiku` ali
 ### Requirement: Search decides the frontmatter
 
 The evals MAY search the frontmatter of an agent role.
-A search runs the cases of one role, tries pairs from the cheapest, and stops at the first pair with no loss in resolve rate, over-claim rate, policy-violation rate, and wrongful-revert rate, for each rate that the suite can express.
-The result SHALL be written into the agent file and into the wiki as prose, and SHALL NOT be written into a table, a report file, or a data file.
-Where the cases do not separate the pairs, the agent file SHALL hold the pair that the effort guide of Anthropic supports, and the wiki SHALL mark that pair as inferred.
+When it does, a search SHALL run the cases of one role, try pairs from the cheapest, and stop at the first pair with no loss in the rates that the suite can express.
 
 #### Scenario: Cheaper pair passes
 
 - **WHEN** Haiku 5.5 at `medium` shows no loss for the `investigator` role
 - **THEN** the agent file holds Haiku 5.5 at `medium` or a cheaper passing pair
 
+#### Scenario: Rates compared
+
+- **WHEN** a search compares a pair
+- **THEN** it compares the resolve rate, the over-claim rate, the policy-violation rate, and the wrongful-revert rate, for each rate that the suite can express
+
+### Requirement: Search result as prose
+
+The result of a search SHALL be written into the agent file and into the wiki as prose, and SHALL NOT be written into a table, a report file, or a data file.
+
 #### Scenario: Record
 
 - **WHEN** the frontmatter of an agent changes from a search
 - **THEN** the wiki gives the date and the figures of the run that supports it
+
+### Requirement: Inferred pair
+
+Where the cases do not separate the pairs, the agent file SHALL hold the pair that the effort guide of Anthropic supports, and the wiki SHALL mark that pair as inferred.
+
+#### Scenario: Cases do not separate
+
+- **WHEN** a search finds no difference between pairs
+- **THEN** the agent file holds the pair of the effort guide, and the wiki marks it as inferred
 
 ### Requirement: Haiku context bound
 

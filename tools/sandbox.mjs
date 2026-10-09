@@ -12,8 +12,7 @@
 // `project/`, an empty git repository that is the working directory, and
 // `home/`, the HOME of claude, so that setup scripts that change shell startup
 // files change only the sandbox. The
-// config skips onboarding and trusts the project, and has the dotclaude
-// setup profile and status line applied.
+// config skips onboarding and trusts the project.
 //
 // dotclaude uses no managed settings. On a machine whose managed settings
 // lock a plugin name, Claude Code ignores the `--plugin-dir` copy of it, and
@@ -147,19 +146,6 @@ function setUp() {
       hasTrustDialogAccepted: true,
     };
   fs.writeFileSync(state, JSON.stringify(json, null, 2));
-  // The setup profile and the status-line stubs, as the `setup` skill
-  // applies them for a user.
-  if (!fs.existsSync(path.join(config, "dotclaude", "statusline.mjs"))) {
-    const setup = spawnSync(
-      "node",
-      [
-        path.join(REPO, "plugins/dotclaude/skills/setup/scripts/settings.mjs"),
-        "--apply",
-      ],
-      { env: { ...process.env, CLAUDE_CONFIG_DIR: config }, stdio: "inherit" },
-    );
-    if (setup.status !== 0) process.exit(setup.status ?? 1);
-  }
 }
 
 setUp();

@@ -87,7 +87,7 @@ A headless run in `just sandbox` with this drop-in gave these results:
 - A classic `UserPromptSubmit` command hook of the probe ran.
 - dotclaude ran at tier `user`, not `prepend`.
   The log said that managed settings do not name the source of its marketplace, and that `prependPlugins` skipped it.
-  [Managed drop-in](Managed-Drop-In) gives the prepend tier, with the guard seated after dotclaude.
+  0.28.0 removed the managed drop-in that was to give the prepend tier, so dotclaude runs at tier `user` (design D35).
 - At tier `user`, dotclaude gets every event of the guard list, because the guard is not seated.
   It cannot use `next.to`.
 
@@ -127,8 +127,7 @@ Claude Code refuses a module for one of these reasons (**binary**):
 | --- | --- | --- |
 | Ask for a recursive `rm` outside the project, and the policy ask | `tool.check` | The hook calls `next(e)`, returns an engine deny unchanged, and otherwise returns an ask (`plugins/dotclaude/hooks/register.mjs`). Lab tests in `tests/mod.test.ts` cover it. |
 | Replace the `context_management` section of the system prompt | `prompt.section` with the matcher `{ name: "context_management" }` | The hook returns `{ text }` when `DISABLE_COMPACT` is set, and calls `next(e)` otherwise. The text is the same on each call, so the prompt cache stays. Lab tests cover both cases. |
-| Route the model and effort of a prompt and a subagent | `prompt.submit`, `agent.spawn`, `turn.step` | The first two classify and keep the decision, and the stream hook `turn.step` sets `model` and `effort` at each step (probes 2.4 and 2.10). See [Router](Router). |
-| Report drift from the profile | `session.start` | The handler appends one note with `$.session.append` when it finds a difference. See [Parts](Parts#drift-check). |
+| Report drift from the settings snippet | `session.start` | The handler appends one note with `$.session.append` when it finds a difference. See [Parts](Parts#drift-check). |
 | Prompt variant, surface cuts, and line breaks | `prompt.compose`, `agent.spawn`, `prompt.attachment`, `agent.offer`, `tool.describe`, `tool.call` | See [System prompt](System-Prompt), [Prompt surface](Prompt-Surface), and [Semantic line breaks](Semantic-Line-Breaks). |
 
 - The module has no `.catch`, so a failure gives no ask and the verdict of the engine stands.
@@ -230,7 +229,7 @@ Measured on Claude Code 2.1.292 with `-p --permission-mode auto` in `just sandbo
   0.19 had a `DOTCLAUDE_DEBUG` switch that rethrew, and 0.20.0 has none.
 - In 0.19, the running marker was written after `next` of `agent.spawn`, so two spawns in one message could both pass the concurrency check.
   0.20.0 has no such check.
-  The profile bounds fan-out with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`.
+  The settings snippet bounds fan-out with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`.
 - `$.fs.write` is not atomic.
   It runs `mkdir` and then `writeFile` (**measured**, 2.1.287 bundle).
   `$.fs` has no rename, so the module cannot write a file atomically.
@@ -279,4 +278,3 @@ Measured on Claude Code 2.1.292 with `-p --permission-mode auto` in `just sandbo
 - [Parts](Parts) lists what the module does.
 - [Guards](Guards) tells how the guards ask and deny.
 - [Design](Design) gives the design principles.
-- [Managed drop-in](Managed-Drop-In) puts dotclaude at the prepend tier before the guard.

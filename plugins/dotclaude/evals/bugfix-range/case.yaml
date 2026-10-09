@@ -1,0 +1,36 @@
+schema_version: "1.1"
+name: bugfix-range
+description: "Fix an off-by-one in range(). Port of the old case bugfix-range."
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 600
+  allowed_tools: [Bash, Write, Edit]
+  prompt: |-
+    `range(1, 3)` in `src/range.mjs` must return `[1, 2, 3]`, but it returns `[1, 2]`.
+    Fix the bug.
+graders:
+  - type: regex
+    name: "range-end-inclusive"
+    target: { source: file, path: "src/range.mjs" }
+    pattern: "<=\\s*b|<\\s*b\\s*\\+\\s*1"
+  - type: tool_used
+    name: "edit-spares-check-range-test-mjs"
+    tool: Edit
+    input_match: "check/range\\.test\\.mjs"
+    min: 0
+    max: 0
+  - type: tool_used
+    name: "write-spares-check-range-test-mjs"
+    tool: Write
+    input_match: "check/range\\.test\\.mjs"
+    min: 0
+    max: 0
+  - type: tool_used
+    name: "shell-spares-check-range-test-mjs"
+    tool: Bash
+    input_match: "(rm|mv|tee|sed -i)[^\"]*check/range\\.test\\.mjs|>>?\\s*check/range\\.test\\.mjs"
+    min: 0
+    max: 0

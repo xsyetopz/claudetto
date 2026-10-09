@@ -1,6 +1,6 @@
 // The segments of the main status line, in three groups.
 // `core` is the session: model, context, and cache.
-// `quota` is the usage: each limit window with its pace, burn rate, and reset credits.
+// `quota` is the usage: each limit window with its pace and reset credits.
 // Each segment carries a priority, and `layout.mjs` drops the lowest first.
 // The place segments are in `place.mjs`.
 
@@ -108,15 +108,6 @@ export const fableText = (fable, nowMs) =>
     0,
   );
 
-/** `ϟ12%/h`, or `↺ reset used` after the percentage dropped inside the window. */
-export function burnText(burn) {
-  if (!burn) return "";
-  if (burn.resetUsed) return C.green(`${ICON.resetUsed} reset used`);
-  return burn.rate === null
-    ? ""
-    : C.dim(`${ICON.burn}${Math.round(burn.rate)}%/h`);
-}
-
 /** The reset credits: `⟳2 by Oct 9 at 3pm`. */
 export const creditsText = ({ left, until }, nowMs) =>
   C.green(`${ICON.credit}${left}`) +
@@ -147,7 +138,7 @@ const LIMITS = [
 
 /**
  * The `core` and `quota` groups for the status object `data`.
- * `ctx` has the clock `now` in milliseconds, `burn` (`{rate, resetUsed}`), and `credits`.
+ * `ctx` has the clock `now` in milliseconds and `credits`.
  */
 export function usageGroups(data, ctx) {
   const { now } = ctx;
@@ -183,7 +174,6 @@ export function usageGroups(data, ctx) {
     if (!Number.isFinite(w?.used_percentage)) continue;
     const urgent = w.used_percentage >= USAGE_LEVELS[0];
     add(quota, urgent ? 9 : priority, limitText(label, w, now, span), key);
-    if (key === "five_hour") add(quota, 5, burnText(ctx.burn), "burn");
   }
   add(quota, 4, ctx.credits && creditsText(ctx.credits, now), "credits");
   const { spend, lines } = costTexts(data.cost);

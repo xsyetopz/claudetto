@@ -1,5 +1,4 @@
-// Runs of `skills/setup/scripts/settings.mjs` for the OpenSpec steps (task 15.4),
-// and the `skillOverrides` of the profile (task 15.5).
+// Runs of `skills/setup/scripts/openspec.mjs` for the OpenSpec steps (task 15.4).
 // The `openspec` here is a STUB shell script in a temporary `bin` folder.
 // It logs each call to `calls.log`, and keeps `delivery` and `telemetry.enabled` in files.
 // The real CLI run is in the task 15.4 evidence.
@@ -10,20 +9,8 @@ import os from "node:os";
 import path from "node:path";
 
 const PLUGIN = path.join(import.meta.dirname, "../../plugins/dotclaude");
-const SCRIPT = path.join(PLUGIN, "skills/setup/scripts/settings.mjs");
+const SCRIPT = path.join(PLUGIN, "skills/setup/scripts/openspec.mjs");
 const NODE = Bun.which("node");
-const PROFILE = JSON.parse(
-  fs.readFileSync(path.join(PLUGIN, "features/setup/profile.json"), "utf8"),
-);
-const SKILLS = [
-  "apply-change",
-  "archive-change",
-  "explore",
-  "propose",
-  "sync-specs",
-  "update-change",
-].map((name) => `openspec-${name}`);
-
 const STUB = `#!/bin/sh
 echo "$*" >> "$STUB_DIR/calls.log"
 case "$1 $2" in
@@ -74,7 +61,7 @@ const calls = (d) => {
 
 test("the preview lists the OpenSpec steps and runs none", () => {
   const d = sandbox();
-  const r = setup(d, ["--apply"]);
+  const r = setup(d, []);
   expect(r.out).toContain("config set telemetry.enabled false");
   expect(r.out).toContain("openspec init --tools claude");
   expect(r.out).toContain("config set delivery skills");
@@ -84,9 +71,9 @@ test("the preview lists the OpenSpec steps and runs none", () => {
   fs.rmSync(d.root, { recursive: true });
 });
 
-test("`--openspec --apply` runs init, then the delivery and the update, with telemetry off first", () => {
+test("`--apply` runs init, then the delivery and the update, with telemetry off first", () => {
   const d = sandbox();
-  const r = setup(d, ["--apply", "--openspec"]);
+  const r = setup(d, ["--apply"]);
   expect(r.code).toBe(0);
   expect(calls(d)).toEqual([
     "config set telemetry.enabled false",
@@ -102,7 +89,7 @@ test("a project with skills delivery, telemetry off, and no command copies needs
   fs.mkdirSync(path.join(d.project, "openspec"));
   fs.writeFileSync(path.join(d.stub, "delivery"), "skills\n");
   fs.writeFileSync(path.join(d.stub, "telemetry.enabled"), "false\n");
-  const r = setup(d, ["--apply", "--openspec"]);
+  const r = setup(d, ["--apply"]);
   expect(r.out).not.toContain("OpenSpec steps");
   expect(calls(d).some((c) => c.startsWith("update"))).toBe(false);
   fs.rmSync(d.root, { recursive: true });
@@ -117,13 +104,7 @@ test("command copies in `.claude/commands/opsx` need only an `update`", () => {
   fs.writeFileSync(path.join(d.project, ".claude/commands/opsx/apply.md"), "");
   fs.writeFileSync(path.join(d.stub, "delivery"), "skills\n");
   fs.writeFileSync(path.join(d.stub, "telemetry.enabled"), "false\n");
-  setup(d, ["--apply", "--openspec"]);
+  setup(d, ["--apply"]);
   expect(calls(d)).toEqual(["update"]);
   fs.rmSync(d.root, { recursive: true });
-});
-
-test("the profile sets each openspec skill to `name-only`", () => {
-  for (const name of SKILLS)
-    expect(PROFILE.skillOverrides[name]).toBe("name-only");
-  expect(PROFILE.skillOverrides["plugin-authoring"]).toBe("name-only");
 });

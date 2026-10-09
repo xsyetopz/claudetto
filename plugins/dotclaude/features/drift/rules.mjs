@@ -1,18 +1,18 @@
-// The drift check: the differences between the active settings and the profile, as lines for Claude.
+// The drift check: the differences between the active settings and the settings snippet of the wiki, as lines for Claude.
 // The functions are pure, so the lab test and the hooks module share them.
 
 import {
   ENGINE_SECTIONS,
   GUARD_SKIPS,
   OFF_PLUGINS,
-  ROUTER_BLOCKING_ENV,
+  OVERRIDE_ENV,
   SYNCED_SOURCE,
   TESTED_VERSION,
 } from "./data.mjs";
 
 const names = (list) => list.map((n) => `\`${n}\``).join(", ");
 
-/** The built-in plugins of the profile that the settings do not turn off. */
+/** The built-in plugins of the snippet that the settings do not turn off. */
 export const pluginsOn = (settings) =>
   OFF_PLUGINS.filter((id) => settings?.enabledPlugins?.[id] !== false);
 
@@ -32,7 +32,7 @@ export const isSeated = (policy) => Object.keys(policy ?? {}).length > 0;
 /**
  * The lines of the drift check, in a fixed order.
  * The facts are `settings` (merged), `policy` (the managed source), `version`, `skills` (the listing entries), `sections`,
- * and `blocking` (the value of each router-blocking variable).
+ * and `blocking` (the value of each variable that overrides the agent files).
  * A fact that the caller could not read is undefined, and it gives no line.
  * The result is empty when nothing differs.
  */
@@ -68,10 +68,10 @@ export function driftLines({
     lines.push(
       `The system prompt has ${unknown.length > 1 ? "sections" : "a section"} with ${unknown.length > 1 ? "ids" : "an id"} that dotclaude does not know: ${names(unknown)}. dotclaude keeps ${unknown.length > 1 ? "them" : "it"} as Claude Code made ${unknown.length > 1 ? "them" : "it"}.`,
     );
-  const set = ROUTER_BLOCKING_ENV.filter((k) => blocking[k]);
+  const set = OVERRIDE_ENV.filter((k) => blocking[k]);
   if (set.length)
     lines.push(
-      `The router cannot route, because ${names(set)} ${set.length > 1 ? "are" : "is"} set. Unset ${set.length > 1 ? "them" : "it"} to turn routing on.`,
+      `The \`model\` and \`effort\` of the agent files do not apply, because ${names(set)} ${set.length > 1 ? "are" : "is"} set. Unset ${set.length > 1 ? "them" : "it"} to apply them.`,
     );
   return lines;
 }
@@ -83,5 +83,5 @@ export function driftLines({
  */
 export const driftNote = (lines) =>
   lines.length
-    ? `dotclaude found differences from its settings profile.\nMention them to the user in your first answer.\nEach fix is a step for the user, because the settings and the environment are the decision of the user. Do not change them yourself.\n${lines.map((l) => `- ${l}`).join("\n")}`
+    ? `dotclaude found differences from its settings snippet.\nMention them to the user in your first answer.\nEach fix is a step for the user, because the settings and the environment are the decision of the user. Do not change them yourself.\n${lines.map((l) => `- ${l}`).join("\n")}`
     : undefined;

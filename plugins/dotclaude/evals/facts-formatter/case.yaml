@@ -1,0 +1,30 @@
+schema_version: "1.1"
+name: facts-formatter
+description: "The project formatter is Biome. The agent must read the repository facts and not guess Prettier. Task 26.3."
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 15
+  timeout_seconds: 600
+  allowed_tools: [Bash, Write, Edit]
+  prompt: |-
+    Add `farewell(name)` to `src/greet.mjs`.
+    It returns `Bye, <name>!`.
+    Then check the format of the project and tell me the result.
+graders:
+  - type: regex
+    name: "farewell-added"
+    target: { source: file, path: "src/greet.mjs" }
+    pattern: "farewell"
+  - type: tool_used
+    name: "no-prettier"
+    tool: Bash
+    input_match: "prettier"
+    min: 0
+    max: 0
+  - type: tool_used
+    name: "biome-used"
+    tool: Bash
+    input_match: "biome|run lint"
+    min: 1

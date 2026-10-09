@@ -12,20 +12,21 @@ If Claude does something because of dotclaude and you ask "why did you do that?"
 - Turns off compaction and sets a 300K context window, so that a session stops at the limit and you start fresh with `/clear`.
 - Forces one output style over the simple system prompt.
 - Gives Claude five agents with a model, an effort, and a turn limit each ([Agents](Agents)).
-- Sets the model and effort of each task with a rule-based [router](Router).
-- Writes a handoff note on request (`/dotclaude:handoff`), and works with [OpenSpec](OpenSpec) for the task list.
+- Works with [OpenSpec](OpenSpec) for the task list, so work continues after `/clear` with `/opsx:apply`.
 - Shows model, effort, context, the OpenSpec change, and the 5-hour limit in a status line.
 - Adds optional plugins for a code graph (`dotclaude-codegraph`), a second opinion (`dotclaude-jev`), a browser (`dotclaude-browser`), and library docs (`dotclaude-docs`).
 
 ## New in 0.28.0
 
-- A rule-based [router](Router) and a [system prompt](System-Prompt) variant for each model.
+- A [system prompt](System-Prompt) variant for each model.
 - A [context bound](Context-Bound) for subagents and the main session.
-- [Usage awareness](Usage-Awareness): a handoff before the context or a usage limit stops the session.
 - [Semantic line breaks](Semantic-Line-Breaks) in written text, with no model token.
-- A new [plugin layout](Plugin-Layout) and [runtime rules](Runtime-Rules).
-- An [eval suite](Evals) in a container.
-- The [decisions](Decisions) D1 to D30 with their evidence.
+- A new [plugin layout](Plugin-Layout).
+- Evals through `claude plugin eval` ([Evals](Evals)), with no suite ported yet.
+- The [decisions](Decisions) D1 to D35 with their evidence.
+- Removed: the setup profile, the router, the handoff skill, usage state, and the old eval harness (design D35).
+  The `agents/*.md` frontmatter sets the model and effort of each agent ([Agents](Agents)).
+  The [settings snippet](Settings-Snippet) replaces the profile.
 - `dotclaude-modder` is removed.
 
 ## The position
@@ -36,7 +37,7 @@ If Claude does something because of dotclaude and you ask "why did you do that?"
 | Quality over quantity | One checked change is worth more than several unchecked changes. Claude reproduces a bug before it fixes it, and it reports what it did not check. |
 | Official points over runtime code | When Claude Code has a setting, a rule, or a hook for a need, dotclaude uses it and writes no runtime code. |
 | Evidence over habit | Each bound comes from a measurement, an official source, or a reverse-read of the Claude Code binary. |
-| The user decides | Rules ask before hard-to-reverse or public actions, and they never approve anything. The setup skill shows every change and makes a backup first. |
+| The user decides | Rules ask before hard-to-reverse or public actions, and they never approve anything. The setup skill shows every step before it runs. |
 
 ## Next steps
 
@@ -45,7 +46,6 @@ If Claude does something because of dotclaude and you ask "why did you do that?"
 | [Install](Install) | Install the marketplace and the plugins. |
 | [Quickstart](Quickstart) | See what happens in a first session. |
 | [Guards](Guards) | Learn what asks, what denies, and what the sandbox does. |
-| [Handoffs](Handoffs) | Carry work across `/clear`. |
 | [OpenSpec](OpenSpec) | Keep the task list in OpenSpec. |
 | [Browser](Browser) | Drive a browser. |
 | [Second opinion](Second-Opinion) | Get a second opinion from Jev. |
@@ -59,11 +59,11 @@ If Claude does something because of dotclaude and you ask "why did you do that?"
 | Page | What it holds |
 | --- | --- |
 | [Design](Design) | The 0.27 rebuild, design principles, and rejected alternatives. |
-| [Decisions](Decisions) | The design decisions D1 to D30. |
+| [Decisions](Decisions) | The design decisions D1 to D35. |
 | [Usage evidence](Usage-Evidence) | Where one Max 20x week of usage went, and what that means on Pro. |
 | [Plans and models](Plans-and-Models) | Prices, model fit, and effort. |
 | [Prompt surface](Prompt-Surface) | What a request contains, the simple prompt, and the forced style. |
-| [Eval history](Evals-History) | The behavior eval suites of the 0.4 to 0.26 releases. |
+| [Eval history](Evals-History) | The eval runs of the 0.4 to 0.28 releases. |
 | [Claude mods](Claude-Mods) | The plugin hooks modules of Claude Code, and the gaps. |
 | [Open items](Open-Items) | Work still to measure or decide. |
 | [Release history](Release-History) | What changed in each older release, and why. |

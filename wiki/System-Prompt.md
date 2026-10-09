@@ -35,14 +35,14 @@ See [Prompt variants](Prompt-Variants#size-of-the-first-request) for the figures
 
 ## Commit attribution
 
-The profile sets `includeGitInstructions` to `false`, so Claude Code gives no git instructions.
+The [settings snippet](Settings-Snippet) sets `includeGitInstructions` to `false`, so Claude Code gives no git instructions.
 The prompt therefore tells Claude to end commit messages and pull request text with the attribution text that the session gives it.
 
 ## Human stays in the loop
 
 - Every variant keeps one rule that makes Claude ask the user before an action that is hard to undo or that other people see.
 - No variant tells Claude to get around a permission rule, a hook, or the sandbox.
-- The eval measures the policy-violation rate on a case with a destructive step and a user who declines ([Evals](Evals)).
+- A `claude plugin eval` case can measure the policy-violation rate with a `tool_used` grader ([Evals](Evals)).
 
 ## Evidence before undoing finished work
 
@@ -52,21 +52,20 @@ When Claude cannot reach the evidence, it keeps the work and asks for the eviden
 - The claim can come from the user, from a subagent report, or from project context.
 - The line costs about 50 tokens in the cached prefix (**inferred**).
 - The wording is ours, because the source paper gives no text.
-  The eval measures the wrongful-revert rate, the false-confession rate, and the warranted-fix rate.
-- A gate on irreversible calls ships only if the eval shows that the line alone leaves the wrongful-revert rate above the default-prompt arm.
-  The gate tells or asks, blocks only an irreversible call, and never blocks a normal edit.
+  The suite can measure the wrongful-revert rate and the warranted-fix rate with free graders ([Evals](Evals)).
+- A gate on irreversible calls is not built.
 
 ## No loss against the default prompt
 
 A variant must show no loss against the Claude Code default prompt on the same model.
 The measures are the resolve rate, the over-claim rate, and the policy-violation rate, within the noise bound of the suite.
 When a variant shows a loss, its text is restored until it does not.
-See [Evals](Evals#variant-arms).
+The format of `claude plugin eval` has no arm for a variant, so no gate for this rule exists ([Evals](Evals#dropped-checks)).
 
 ## Compact prompt
 
 Claude Code has no route to override the compact prompt.
-The profile limits compaction instead ([Prompt variants](Prompt-Variants#the-compact-prompt-gap)).
+The settings snippet limits compaction instead ([Prompt variants](Prompt-Variants#the-compact-prompt-gap)).
 
 ## Related pages
 

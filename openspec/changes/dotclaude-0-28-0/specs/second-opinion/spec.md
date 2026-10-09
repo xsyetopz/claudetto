@@ -10,9 +10,22 @@ Each add-on works without the core plugin and imports nothing from it (design D2
 ### Requirement: Second-opinion tool
 
 The hooks module of `dotclaude-jev` SHALL register one custom tool that Claude consults before almost every decision (decision of the user: Jev is the consultant).
+The tool description SHALL hold the rules of the old session note: facts decide, and the user decides goals, preferences, and approvals.
+
+#### Scenario: Add-on not installed
+
+- **WHEN** `dotclaude-jev` is not installed
+- **THEN** the request has no second-opinion tool and no Jev text, and `dotclaude` works as before
+
+#### Scenario: Description rules
+
+- **WHEN** a test reads the tool description
+- **THEN** it says that facts decide, and that the user decides goals, preferences, and approvals
+
+### Requirement: Tool loading
+
 When `TYPESAFE_API_KEY` is set, the tool SHALL be loaded, because Claude calls it for most decisions and a deferred tool costs a `ToolSearch` call first.
 When the key is not set, the tool SHALL be deferred, and its description SHALL limit it to decisions that are hard to undo.
-The tool description SHALL hold the rules of the old session note: facts decide, and the user decides goals, preferences, and approvals.
 
 #### Scenario: Start cost with the key
 
@@ -24,32 +37,34 @@ The tool description SHALL hold the rules of the old session note: facts decide,
 - **WHEN** a session starts with the snippet applied and no key
 - **THEN** the request has the tool name in the deferred list only
 
-#### Scenario: Add-on not installed
-
-- **WHEN** `dotclaude-jev` is not installed
-- **THEN** the request has no second-opinion tool and no Jev text, and `dotclaude` works as before
-
 ### Requirement: Neutral questions
 
 Claude SHALL NOT skew a question to Jev toward its own preference.
 The tool description SHALL tell Claude to give the decision, every option, and for each option at least one fact for it and one fact against it.
-It SHALL tell Claude to give no preferred answer and no leading words, and to leave out a lean or a preference of the user, the notes, or the team, because Jev judges the facts only.
-The tool handler SHALL put the options in a random order before it sends the question, so that the order carries no preference.
 
 #### Scenario: Description
 
 - **WHEN** a test reads the tool description
 - **THEN** it has the neutral-question rule
 
-#### Scenario: Option order
+### Requirement: No lean in questions
 
-- **WHEN** the tool sends a question with options A, B, and C many times
-- **THEN** each option comes first in some of the sent questions
+The tool description SHALL tell Claude to give no preferred answer and no leading words.
+It SHALL tell Claude to leave out a lean or a preference of the user, the notes, or the team, because Jev judges the facts only.
 
 #### Scenario: Eval
 
 - **WHEN** an eval case gives Claude a reason to prefer one option
 - **THEN** the grader finds no stated preference, no one-sided evidence, and no lean of the user, the notes, or the team that the question passes on
+
+### Requirement: Random option order
+
+The tool handler SHALL put the options in a random order before it sends the question, so that the order carries no preference.
+
+#### Scenario: Option order
+
+- **WHEN** the tool sends a question with options A, B, and C many times
+- **THEN** each option comes first in some of the sent questions
 
 ### Requirement: Jev with a key
 
@@ -64,9 +79,6 @@ The tool SHALL call the Jev client as a child process through `$.process.run`, b
 ### Requirement: Reviewer fallback
 
 When `TYPESAFE_API_KEY` is not set, or Jev fails, the tool SHALL give a reviewer check on Haiku 5.5.
-The check SHALL run on Haiku 5.5.
-The check SHALL use `$.model.complete` when a probe shows that it works from a tool handler.
-Otherwise the tool result SHALL tell the model to start the `reviewer` agent of `dotclaude` when it is installed, which runs on the model of its definition (Opus 5.5, design D25), else to answer from its own check.
 The result SHALL say which route and which model answered.
 
 #### Scenario: No key
@@ -78,6 +90,21 @@ The result SHALL say which route and which model answered.
 
 - **WHEN** Jev returns an error or times out
 - **THEN** the tool gives the reviewer check and names the Jev failure once
+
+### Requirement: Reviewer check route
+
+The reviewer check SHALL use `$.model.complete` when a probe shows that it works from a tool handler.
+Otherwise the tool result SHALL tell the model to start the `reviewer` agent of `dotclaude` when it is installed, which runs on the model of its definition (Opus 5.5, design D25), else to answer from its own check.
+
+#### Scenario: Probe works
+
+- **WHEN** the probe shows that `$.model.complete` works from a tool handler
+- **THEN** the check runs on Haiku 5.5 through `$.model.complete`
+
+#### Scenario: Probe fails
+
+- **WHEN** the probe shows that `$.model.complete` does not work from a tool handler
+- **THEN** the result tells the model to start the `reviewer` agent when it is installed, else to answer from its own check
 
 ### Requirement: Question pick only with a key
 

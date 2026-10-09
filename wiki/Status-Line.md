@@ -14,7 +14,7 @@ Each input field is checked against the strings of the Claude Code 2.1.294 bundl
 
 - The status line calls no model and no network.
   It runs no program except `git`.
-- It writes only its own files in the temporary folder.
+- It writes no file and keeps no state (design D35).
 - Text that is not JSON gives an empty line and exit code 0.
 - Claude Code runs it again every `refreshInterval` seconds, so the countdowns stay current.
   The blinking glyph changes on each run.
@@ -35,7 +35,6 @@ A segment of an absent field is not shown.
 | 5-hour, 7-day, and spend limits | none | `rate_limits` |
 | Pace and run-out time | `▲` `▼` `⏵` | derived from `rate_limits` |
 | Reset time of a limit | `↻` | `rate_limits[*].resets_at` |
-| Burn rate and used reset | `ϟ` `↺` | samples in the temporary folder |
 | Reset credits | `⟳` | usage cache of Claude Code |
 | Cost and lines for each hour | none | `cost` |
 | Folder and repository | `▣` `⌂` | `workspace.current_dir`, `workspace.repo` |
@@ -62,7 +61,7 @@ An empty cell stays blank, and a column with no cells is left out.
 | Middle | `◧` context meter | `⊛` system and tools, `☰` memory | `✦` skills and agents, `❝` messages, `◇` free |
 | Right | `5h` window | `7d` window | `✧` Fable window |
 
-The other segments (cache, burn rate, cost, lines, pull request, worktree, repository, credits, and so on)
+The other segments (cache, cost, lines, pull request, worktree, repository, credits, and so on)
 go at the end of a cell of the column that fits them.
 They stay only while the grid fits `COLUMNS`, and the segment of lowest priority goes first.
 When the grid is still too wide with no other segment, the status line uses the row packing of "Width" below.
@@ -71,32 +70,12 @@ The 3 columns need about 130 columns.
 ### Context breakdown
 
 The status input has only totals, so the middle column reads the transcript at `transcript_path`.
-The read starts at the first byte, goes line by line, and stops at the first `assistant` record
-that is not `isSidechain` and has `message.usage`.
-It reads at most `TRANSCRIPT_BYTES_MAX` bytes.
-
-| Part | Source | Exact |
-| --- | --- | --- |
-| Start size | `input_tokens` + `cache_creation_input_tokens` + `cache_read_input_tokens` of that `usage` | yes |
-| `☰` memory | `attachment.files[].content` of the `instructions` attachment | estimate |
-| `✦` skills and agents | `content` of `skill_listing` and `addedLines` of `agent_listing_delta` | estimate |
-| `⊛` system and tools | start size minus the memory, skills, and agents estimates, never below 0 | estimate |
-| `❝` messages | `context_window.total_input_tokens` minus the start size, never below 0 | yes |
-| `◇` free | `CONTEXT_WINDOW` minus `CONTEXT_BLOCK_MARGIN` minus `total_input_tokens`, never below 0 | yes |
-
-An estimate is the characters divided by the divisor of the local estimate of `/context` in the 2.1.295 bundle, and it shows with a `~`.
-The divisor is `CHARS_PER_TOKEN` (3), and `CHARS_PER_TOKEN_LEGACY` (4) for a model in `LEGACY_TOKENIZER_MODELS`, such as Haiku 4.5.
-The system and tools part also holds the other start attachments, so it shows with a `~` too.
-Claude Code counts each `/context` category with the count-tokens API.
-A script cannot rebuild the system prompt and the tool definitions, so this line does not match `/context` to the token.
-`CONTEXT_BLOCK_MARGIN` in `features/statusline/limits.mjs` is a copy of the one in `features/context/limits.mjs`, and a test pins the copy.
-
-The result stays in the private folder, in a file for each `session_id`, so the transcript is read one time for each session.
-
-### Exact parts from `/context`
+It shows the meter and the free tokens from the totals alone.
+The other parts come only from a `/context` table.
 
 `/context` writes its table into the transcript as a `user` record whose content starts with `## Context Usage`.
-When the transcript has such a record that is not `isSidechain`, the middle column uses the rows of the newest one, with no `~`.
+When the transcript has such a record that is not `isSidechain`, the middle column uses the rows of the newest one.
+Each run reads at most the last `TABLE_TAIL_BYTES_MAX` bytes of the transcript and keeps no state.
 
 | Part | Rows of the `/context` table |
 | --- | --- |
@@ -104,14 +83,15 @@ When the transcript has such a record that is not `isSidechain`, the middle colu
 | `☰` memory | `Memory files` |
 | `✦` skills and agents | `Skills` + `Custom agents` |
 | `❝` messages | `total_input_tokens` minus the 3 parts above, never below 0 |
+| `◇` free | `CONTEXT_WINDOW` minus `CONTEXT_BLOCK_MARGIN` minus `total_input_tokens`, never below 0 |
 
+Claude Code counts each `/context` category with the count-tokens API.
+A script cannot rebuild the system prompt and the tool definitions.
+So the line makes no estimate, and before the first `/context` it shows only the free tokens.
 `System tools (deferred)` is not a part, because the `Tokens` total of `/context` does not include the deferred tools.
 The rows are as exact as `/context`, and they are from the time of the run, so a memory file that changed later is not in them.
-Each run reads only the bytes after the kept offset, at most `TABLE_TAIL_BYTES_MAX`.
-The offset and the newest table stay in the private folder, in a file for each `session_id`.
-A transcript with no table keeps the estimates of the section above.
-A read that finds no `usage` is not kept unless it hit the byte cap, so the first request is found when it comes.
-When `transcript_path` is missing, the file is not readable, or the transcript has no `usage`,
+`CONTEXT_BLOCK_MARGIN` in `features/statusline/limits.mjs` is a copy of the one in `features/context/limits.mjs`, and a test pins the copy.
+When `transcript_path` is missing, the file is not readable, or the transcript has no table,
 the middle column shows the meter and the free tokens only.
 Any read error gives that same result.
 
@@ -137,8 +117,6 @@ The times are in seconds.
   Pace and run-out time are not shown while less than 3% of the window passed.
 - The run-out time is `now + (100 - used) * elapsed_seconds / used`.
   It is shown only when it is before `resets_at`, in yellow, or in red from the first value of `USAGE_LEVELS`.
-- The burn rate of the 5-hour limit is the change in percent between the oldest and the newest sample
-  of the last hour, divided by the time between them.
 - Cost for each hour is `total_cost_usd / hours`.
   Lines for each hour are added plus removed lines divided by `hours`.
   `hours` is `cost.total_duration_ms` in hours.
@@ -147,17 +125,6 @@ The times are in seconds.
 - The cache hit is `prompt_cache.hit_ratio`.
   Misses by idle time past the TTL and by a model switch are not counted.
   The cache segment blinks a warning glyph when less than 2 minutes remain.
-
-## Burn-rate samples
-
-The status line keeps one JSON file for each account window in the temporary folder, named `dotclaude-burn-<account hash>-<resets_at hash>.json`.
-The account hash is of the config folder, and the other hash is of the `resets_at` of the 5-hour limit.
-The file holds up to 50 samples and a used-reset mark.
-
-- A sample is added after 60 seconds or when the percentage changes.
-- A new `resets_at` makes a new file and removes the files of the old windows of the same account.
-- A drop of the percentage inside a window means that the user used a reset.
-  The samples start again, and the line shows `↺ reset used`.
 
 ## Reset credits
 
@@ -175,7 +142,7 @@ A test pins that shape with a fixture.
 
 One `git --no-optional-locks status --porcelain=v2 -b` call gives the branch, the dirty count, and the ahead and behind counts.
 The call has a time limit (`GIT_TIMEOUT_MS`).
-The result is cached for `STATUS_CACHE_MS`, also when the call fails.
+The call keeps no cache file.
 If `git` does not answer, the line has no git segment and still prints.
 
 ## Width

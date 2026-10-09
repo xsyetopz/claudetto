@@ -90,7 +90,7 @@ test("a plugin that the settings set to `true` is on again", async ($, on) => {
 
 test("a synced skill in the listing adds a note, and a plugin skill alone adds none", async ($, on) => {
   const plain = stub(on, {
-    skills: [{ name: "handoff", source: "plugin", tokens: 40 }],
+    skills: [{ name: "setup", source: "plugin", tokens: 40 }],
   });
   await start($);
   expect(plain.appended()).toEqual([]);
@@ -99,7 +99,7 @@ test("a synced skill in the listing adds a note, and a plugin skill alone adds n
 test("a synced skill in the listing adds a note", async ($, on) => {
   const session = stub(on, {
     skills: [
-      { name: "handoff", source: "plugin", tokens: 40 },
+      { name: "setup", source: "plugin", tokens: 40 },
       { name: "anthropic-skills:pdf", source: "syncedSkills", tokens: 60 },
     ],
   });
@@ -137,7 +137,7 @@ test("a seated guard names the dotclaude parts that it skips", async ($, on) => 
   expect(note).toContain("`prompt.section`");
 });
 
-test("a variable that stops the router is reported with its name", async ($, on) => {
+test("a variable that overrides the agent files is reported with its name", async ($, on) => {
   const session = stub(on, { env: { CLAUDE_CODE_EFFORT_LEVEL: "low" } });
   await start($);
   const [note] = noteOf(session);

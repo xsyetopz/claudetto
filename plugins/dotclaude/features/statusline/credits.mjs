@@ -11,7 +11,6 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { cached } from "./cache.mjs";
 import { CREDITS_MAX_AGE_MS, FABLE_MAX_AGE_MS } from "./limits.mjs";
 
 /**
@@ -67,28 +66,22 @@ export function parseFable(limits) {
  */
 export function readUsage(env = process.env, now = Date.now()) {
   const file = path.join(env.CLAUDE_CONFIG_DIR || os.homedir(), ".claude.json");
-  return cached(
-    `credits ${file}`,
-    () => {
-      try {
-        const copy = JSON.parse(
-          fs.readFileSync(file, "utf8"),
-        ).cachedUsageUtilization;
-        const age = now - copy.fetchedAtMs;
-        return {
-          credits:
-            age < CREDITS_MAX_AGE_MS
-              ? parseCredits(copy.utilization.cedar_ember, now)
-              : null,
-          fable:
-            age < FABLE_MAX_AGE_MS ? parseFable(copy.utilization.limits) : null,
-        };
-      } catch {
-        return { credits: null, fable: null };
-      }
-    },
-    now,
-  );
+  try {
+    const copy = JSON.parse(
+      fs.readFileSync(file, "utf8"),
+    ).cachedUsageUtilization;
+    const age = now - copy.fetchedAtMs;
+    return {
+      credits:
+        age < CREDITS_MAX_AGE_MS
+          ? parseCredits(copy.utilization.cedar_ember, now)
+          : null,
+      fable:
+        age < FABLE_MAX_AGE_MS ? parseFable(copy.utilization.limits) : null,
+    };
+  } catch {
+    return { credits: null, fable: null };
+  }
 }
 
 /** The credits from the usage cache file, or `null`. */

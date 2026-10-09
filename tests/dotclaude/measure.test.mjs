@@ -101,17 +101,6 @@ test("the budget passes at the bound and names the sum, the bound, and the diffe
   expect(over.message).toContain("100");
 });
 
-test("the committed baseline is at or below `START_TOKENS`, and fails a lowered bound", () => {
-  const baseline = JSON.parse(
-    fs.readFileSync(
-      path.join(import.meta.dirname, "../../tools/baseline.json"),
-      "utf8",
-    ),
-  );
-  expect(checkBudget(baseline.total, START_TOKENS).ok).toBe(true);
-  expect(checkBudget(baseline.total, baseline.total - 1).ok).toBe(false);
-});
-
 test("the report fails over a lowered bound and passes at the first request", () => {
   const dir = folder();
   const file = path.join(dir, "s.jsonl");

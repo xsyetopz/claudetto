@@ -46,9 +46,14 @@ The model keeps the tool that it knows, and no tool listing changes.
 Without the plugin, `WebSearch` works as in vanilla Claude Code.
 
 1. A `tool.call` hook on `WebSearch` in `hooks/register.mjs` takes the call.
+1. The hook looks for the newest `chromium-<version>` folder under `~/.cloakbrowser/` with `$.fs.list`.
+   The binary is at `Chromium.app/Contents/MacOS/Chromium` in that folder, so only macOS finds it.
 1. The hook runs `agent-browser` with `$.process.run`, as an argument vector with no shell, in its own session, whose name starts with `dcws`.
+   When it found the CloakBrowser binary, it adds `--executable-path <binary>`.
+   Without the binary, it runs plain `agent-browser`.
+   The reason is that plain headless `agent-browser` got a DuckDuckGo bot check on each run.
    `open` loads `https://html.duckduckgo.com/html/?q=<query>`, `get text body` reads the page text, and `close` ends the session.
-1. The result is the page text, with a line that tells Claude the text is data.
+1. The result is the page text, with a line that names the browser that was used and tells Claude the text is data.
    It has 20,000 characters or fewer.
    The bounds are in `features/search/limits.mjs`.
 1. `allowed_domains` and `blocked_domains` become `site:` and `-site:` terms of the query.
@@ -57,7 +62,9 @@ The hook denies the call, and the reason names `dotclaude-browser:drive-web-brow
 
 - `agent-browser` fails to start, to open the page, or to read it, or it takes too long.
 - DuckDuckGo shows a bot check, or the page has no text.
-- The `backend` option is `cloakbrowser`, because the search flow uses plain `agent-browser`.
+  The reason names the browser that got the check.
+- The `backend` option is `cloakbrowser`, and the CloakBrowser binary is missing.
+  The reason tells Claude that the user can install CloakBrowser.
 - The `query` is empty.
 
 The query goes to DuckDuckGo, so put no secret in it.
@@ -71,7 +78,7 @@ In the [sandbox](Sandbox), the network list needs `html.duckduckgo.com`.
 | `agent-browser` (default) | Most pages. | No setup. |
 | `cloakbrowser` | A site shows a bot check, a block page, or a CAPTCHA to `agent-browser`. | Set the option `backend` to `cloakbrowser` in `/config` under dotclaude-browser. |
 
-With `cloakbrowser`, the skill tells Claude to use CloakBrowser, and not plain `agent-browser`.
+With `cloakbrowser`, the `WebSearch` hook always uses the CloakBrowser binary, and the skill tells Claude to use CloakBrowser, and not plain `agent-browser`.
 Claude runs `agent-browser` with the CloakBrowser binary and `--headed`, because headless mode is easier to detect.
 
 ```bash

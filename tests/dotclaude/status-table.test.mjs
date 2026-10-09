@@ -4,13 +4,16 @@ import { expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { partsOf } from "../../plugins/dotclaude/features/statusline/breakdown.mjs";
 import {
   lastTable,
   parseTable,
+  partsOf,
   readTable,
 } from "../../plugins/dotclaude/features/statusline/context-table.mjs";
-import { CONTEXT_BLOCK_MARGIN } from "../../plugins/dotclaude/features/statusline/limits.mjs";
+import {
+  CONTEXT_BLOCK_MARGIN,
+  TABLE_TAIL_BYTES_MAX,
+} from "../../plugins/dotclaude/features/statusline/limits.mjs";
 import { render } from "../../plugins/dotclaude/features/statusline/render.mjs";
 
 /** The text of a `/context` record, as Claude Code 2.1.295 writes it (from a transcript of 2026-10-09). */
@@ -57,9 +60,7 @@ test("table: the fixed parts are exact, and the deferred tools are not a part", 
 
 test("table: the messages are the current total minus the fixed parts", () => {
   const table = parseTable(context("1.6k"));
-  expect(
-    partsOf({ start: 1, memory: 1, skills: 1 }, 40_000, 300_000, table),
-  ).toEqual({
+  expect(partsOf(40_000, 300_000, table)).toEqual({
     free: 300_000 - CONTEXT_BLOCK_MARGIN - 40_000,
     exact: true,
     system: 7700,
@@ -80,7 +81,7 @@ test("table: the messages are the current total minus the fixed parts", () => {
   expect(text).not.toMatch(/[⊛☰✦] ~/);
 });
 
-test("no table: the transcript gives `null`, and the estimate stays", () => {
+test("no table: the transcript gives `null`, and only the free tokens are known", () => {
   expect(lastTable(prompt.split("\n"))).toBeNull();
   // A table in a side thread is not the context of the main thread.
   expect(
@@ -90,18 +91,20 @@ test("no table: the transcript gives `null`, and the estimate stays", () => {
   try {
     const file = path.join(dir, "t.jsonl");
     fs.writeFileSync(file, prompt);
+    expect(readTable({ session_id: "s1", transcript_path: file })).toBeNull();
+    expect(readTable({ session_id: "s1" })).toBeNull();
     expect(
-      readTable({ session_id: "s1", transcript_path: file }, dir),
+      readTable({ transcript_path: path.join(dir, "missing") }),
     ).toBeNull();
-    expect(readTable({ session_id: "s1" }, dir)).toBeNull();
-    const start = { start: 24_000, memory: 3000, skills: 500 };
-    expect(partsOf(start, 84_000, 300_000, null).memory).toBe(3000);
+    expect(partsOf(84_000, 300_000, null)).toEqual({
+      free: 300_000 - CONTEXT_BLOCK_MARGIN - 84_000,
+    });
   } finally {
     fs.rmSync(dir, { recursive: true });
   }
 });
 
-test("an older table and a newer one: the newer one wins, also across runs", () => {
+test("newest table wins: a later table replaces an earlier one at each call, with no kept state", () => {
   expect(
     lastTable(
       (record(context("1.6k")) + prompt + record(context("2.5k"))).split("\n"),
@@ -112,31 +115,37 @@ test("an older table and a newer one: the newer one wins, also across runs", () 
     const file = path.join(dir, "t.jsonl");
     const input = { session_id: "s2", transcript_path: file };
     fs.writeFileSync(file, record(context("1.6k")) + prompt);
-    expect(readTable(input, dir).memory).toBe(1600);
-    // A later run with no new table keeps the table of the earlier run.
-    fs.appendFileSync(file, prompt);
-    expect(readTable(input, dir).memory).toBe(1600);
+    expect(readTable(input).memory).toBe(1600);
     fs.appendFileSync(file, record(context("2.5k")));
-    expect(readTable(input, dir).memory).toBe(2500);
+    expect(readTable(input).memory).toBe(2500);
+    // A transcript without a table gives `null` again: nothing from the earlier call is kept.
+    fs.writeFileSync(file, prompt);
+    expect(readTable(input)).toBeNull();
+    expect(fs.readdirSync(dir)).toEqual(["t.jsonl"]);
   } finally {
     fs.rmSync(dir, { recursive: true });
   }
 });
 
-test("offset: a run reads only the new lines, and a line in progress is read again", () => {
+test("tail: a table before the tail bound is not read, and a record cut by the bound is skipped", () => {
   const dir = tmp();
   try {
     const file = path.join(dir, "t.jsonl");
-    const input = { session_id: "s3", transcript_path: file };
-    const full = record(context("3k"));
-    // Claude Code is still writing the record, so it has no newline yet.
-    fs.writeFileSync(file, prompt + full.slice(0, 40));
-    expect(readTable(input, dir)).toBeNull();
-    fs.appendFileSync(file, full.slice(40));
-    expect(readTable(input, dir).memory).toBe(3000);
-    // A transcript shorter than the offset is a new file, so the kept table goes.
-    fs.writeFileSync(file, prompt);
-    expect(readTable(input, dir)).toBeNull();
+    const filler = line({
+      type: "user",
+      message: { content: "x".repeat(1000) },
+    });
+    fs.writeFileSync(
+      file,
+      record(context("1.6k")) +
+        filler.repeat(Math.ceil(TABLE_TAIL_BYTES_MAX / filler.length) + 1),
+    );
+    expect(readTable({ transcript_path: file })).toBeNull();
+    fs.appendFileSync(file, record(context("2.5k")));
+    expect(readTable({ transcript_path: file }).memory).toBe(2500);
+    // An unfinished last record has no valid JSON, so the table before it stays.
+    fs.appendFileSync(file, record(context("9k")).slice(0, 40));
+    expect(readTable({ transcript_path: file }).memory).toBe(2500);
   } finally {
     fs.rmSync(dir, { recursive: true });
   }

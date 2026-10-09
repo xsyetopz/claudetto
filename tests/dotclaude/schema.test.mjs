@@ -1,5 +1,4 @@
 // The schema script scans a bundle string, so the tests run it on fixtures.
-// The shipped schemas and the dotclaude settings templates are checked against each other.
 
 import { expect, test } from "bun:test";
 import { spawnSync } from "node:child_process";
@@ -18,52 +17,14 @@ import {
   splitTop,
   unquote,
 } from "../../tools/schema.mjs";
+import { validate } from "./fixtures/validate.mjs";
 
 const REPO = path.join(import.meta.dirname, "../..");
 const VERSION = "2.1.295";
-const RAW = "https://raw.githubusercontent.com/xsyetopz/dotclaude/main/schemas";
 const shipped = (kind) =>
   JSON.parse(
     fs.readFileSync(path.join(REPO, "schemas", schemaFiles()[kind]), "utf8"),
   );
-
-// The errors of `value` against `schema`, one string each, with the path and the key name.
-// It knows the keywords that the generated schemas use.
-function validate(value, schema, at = "") {
-  const where = at || "(root)";
-  const types = {
-    string: (v) => typeof v === "string",
-    boolean: (v) => typeof v === "boolean",
-    number: (v) => typeof v === "number",
-    integer: (v) => Number.isInteger(v),
-    array: Array.isArray,
-    object: (v) => v !== null && typeof v === "object" && !Array.isArray(v),
-  };
-  if (schema.type && !types[schema.type](value))
-    return [`${where}: expected ${schema.type}`];
-  if ("const" in schema && value !== schema.const)
-    return [`${where}: expected ${JSON.stringify(schema.const)}`];
-  if (schema.enum && !schema.enum.includes(value))
-    return [`${where}: ${JSON.stringify(value)} is not one of ${schema.enum}`];
-  if (schema.minimum !== undefined && value < schema.minimum)
-    return [`${where}: below ${schema.minimum}`];
-  if (schema.type === "array" && schema.items)
-    return value.flatMap((v, i) => validate(v, schema.items, `${at}[${i}]`));
-  if (schema.type !== "object") return [];
-  const errors = [];
-  for (const key of schema.required ?? [])
-    if (!(key in value)) errors.push(`${where}: missing key "${key}"`);
-  for (const [key, sub] of Object.entries(value)) {
-    const child = at ? `${at}.${key}` : key;
-    if (schema.properties?.[key])
-      errors.push(...validate(sub, schema.properties[key], child));
-    else if (schema.additionalProperties === false)
-      errors.push(`${where}: unknown key "${key}"`);
-    else if (typeof schema.additionalProperties === "object")
-      errors.push(...validate(sub, schema.additionalProperties, child));
-  }
-  return errors;
-}
 
 // The fixture uses the helper names of 2.1.293.
 const FIXTURE = [
@@ -208,6 +169,27 @@ test("`forceLoginGatewayUrl` is a user key and not managed-only", () => {
   expect(user.forceLoginMethod).toBeDefined();
 });
 
+test("each schema names the version in a root `$comment` and has no `x-claude-code-version`", () => {
+  const { user, managed } = buildSchemas(FIXTURE, "2.1.293");
+  for (const schema of [user, managed]) {
+    expect(schema.$comment).toBe("Extracted from Claude Code 2.1.293");
+    expect("x-claude-code-version" in schema).toBe(false);
+  }
+});
+
+test("the shipped schema files have the `$comment` and no `x-claude-code-version`", () => {
+  for (const name of Object.values(schemaFiles())) {
+    const text = fs.readFileSync(
+      path.join(import.meta.dirname, "../../schemas", name),
+      "utf8",
+    );
+    expect(text).not.toContain("x-claude-code-version");
+    expect(JSON.parse(text).$comment).toMatch(
+      /^Extracted from Claude Code \d+\.\d+\.\d+$/,
+    );
+  }
+});
+
 test("`isManagedOnly` reads the admin-controlled text of 2.1.294 and 2.1.295", () => {
   const managed =
     "Cloud gateway URL to pre-fill. Honored only from admin-controlled managed settings (MDM / managed-settings.json / policy helper).";
@@ -236,31 +218,8 @@ test("the shipped schema has nested keys, and marks the managed-only keys", () =
   ).toBeUndefined();
 });
 
-for (const [file, kind] of [["features/setup/profile.json", "user"]]) {
-  const template = JSON.parse(
-    fs.readFileSync(path.join(REPO, "plugins/dotclaude", file), "utf8"),
-  );
-  test(`\`${file}\` points to its schema and has only keys that the schema has`, () => {
-    expect(template.$schema).toBe(`${RAW}/${schemaFiles()[kind]}`);
-    expect(shipped(kind)["x-claude-code-version"]).toBe(VERSION);
-    expect(validate(template, shipped(kind))).toEqual([]);
-  });
-  test(`an unknown key in \`${file}\` fails and the failure names the key`, () => {
-    const bad = { ...template, notAClaudeKey: true };
-    expect(validate(bad, shipped(kind))).toEqual([
-      '(root): unknown key "notAClaudeKey"',
-    ]);
-  });
-}
-
-test("a managed-only key in the user template fails", () => {
-  const template = JSON.parse(
-    fs.readFileSync(
-      path.join(REPO, "plugins/dotclaude/features/setup/profile.json"),
-      "utf8",
-    ),
-  );
-  expect(
-    validate({ ...template, prependPlugins: [] }, shipped("user")),
-  ).toEqual(['(root): unknown key "prependPlugins"']);
+test("a managed-only key in the user settings fails", () => {
+  expect(validate({ prependPlugins: [] }, shipped("user"))).toEqual([
+    '(root): unknown key "prependPlugins"',
+  ]);
 });

@@ -26,7 +26,7 @@ export const AGENT_NOTE_FULL =
 export const AGENT_NOTE =
   "Send agents for independent work in one message, so that they run in parallel.";
 
-/** The built-in agents that the profile does not use. `agent.offer` leaves them out of the listing and out of dispatch. */
+/** The built-in agents that dotclaude does not use. `agent.offer` leaves them out of the listing and out of dispatch. */
 export const DROPPED_AGENTS = ["claude-code-guide", "statusline-setup"];
 
 /**

@@ -198,6 +198,24 @@ ${tags.join("\n")}`;
 }
 
 /**
+ * The ask reason for a recursive `rm` in a `Bash` call, or undefined.
+ * It keeps no state and runs no command.
+ * `ctx` holds the paths `cwd`, `root`, `home`, and `tmp`.
+ */
+export function rmAsk(tool, input, ctx) {
+  if (tool !== "Bash") return undefined;
+  const safe = ["/tmp", "/private/tmp", ctx.tmp].filter(Boolean);
+  const targets = rmOutside(String(input?.command ?? ""), {
+    cwd: ctx.cwd || ctx.root,
+    root: ctx.root,
+    home: ctx.home,
+    safe,
+    tmp: ctx.tmp,
+  });
+  return targets.length ? rmReason(targets, ctx.root) : undefined;
+}
+
+/**
  * The ask reason for a call of `tool` with `input`, or undefined.
  * `ctx` gives the facts and the I/O of the caller:
  * `cwd`, `root`, `home`, and `tmp` are paths,
@@ -206,17 +224,8 @@ ${tags.join("\n")}`;
  * and `seen` is the set of repositories that this session checked.
  */
 export async function askReason(tool, input, ctx) {
-  if (tool === "Bash") {
-    const safe = ["/tmp", "/private/tmp", ctx.tmp].filter(Boolean);
-    const targets = rmOutside(String(input?.command ?? ""), {
-      cwd: ctx.cwd || ctx.root,
-      root: ctx.root,
-      home: ctx.home,
-      safe,
-      tmp: ctx.tmp,
-    });
-    if (targets.length) return rmReason(targets, ctx.root);
-  }
+  const rm = rmAsk(tool, input, ctx);
+  if (rm) return rm;
   const repos = reachedRepos(tool, input).filter((r) => !ctx.seen.has(r));
   if (!repos.length) return undefined;
   const mine = await ctx.owners();

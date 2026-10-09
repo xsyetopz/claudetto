@@ -124,36 +124,35 @@ It SHALL use no emoji, and no color when `NO_COLOR` is set.
 ### Requirement: Three columns
 
 The status line SHALL show 3 columns of at most 3 rows when they fit in `COLUMNS` (design D33).
-The left column SHALL show the model with its effort, the OpenSpec change, and the task count with the branch.
-The middle column SHALL show the context meter and the context breakdown.
-The right column SHALL show the 5-hour window, the 7-day window, and the weekly window of Fable 5.1.
 Each column SHALL be as wide as its widest cell, and the other segments SHALL fill a cell only when the columns still fit.
 When the 3 columns do not fit, the status line SHALL use the row packing of "Fit to width".
-
-#### Scenario: Wide terminal
-
-- **WHEN** `COLUMNS` is 160, and the input has a model, a context window, and both usage windows
-- **THEN** the output has 3 rows, and the model, the context meter, and the 5-hour window start the first row in that order
 
 #### Scenario: Narrow terminal falls back
 
 - **WHEN** the 3 columns are wider than `COLUMNS`
 - **THEN** the output is the row packing, and no row is wider than `COLUMNS`
 
+#### Scenario: Column width
+
+- **WHEN** the 3 columns fit in `COLUMNS`
+- **THEN** each column is as wide as its widest cell
+
+### Requirement: Column content
+
+The left column SHALL show the model with its effort, the OpenSpec change, and the task count with the branch.
+The middle column SHALL show the context meter and the context breakdown.
+The right column SHALL show the 5-hour window, the 7-day window, and the weekly window of Fable 5.1.
+
+#### Scenario: Wide terminal
+
+- **WHEN** `COLUMNS` is 160, and the input has a model, a context window, and both usage windows
+- **THEN** the output has 3 rows, and the model, the context meter, and the 5-hour window start the first row in that order
+
 ### Requirement: Context breakdown
 
 The status line SHALL show what fills the context only from the newest `/context` table in a bounded tail of the transcript at `transcript_path` (design D33).
 It SHALL read that tail at each call, up to `TABLE_TAIL_BYTES_MAX`, and SHALL keep no offset or parsed table.
-The table has a `user` record whose string content starts with `## Context Usage` and has the rows `| Category | Tokens | Percentage |`.
-The fixed parts SHALL be exact: system prompt, system tools, memory files, skills, and custom agents.
-The messages SHALL be the current total minus the sum of the fixed parts.
 The status line SHALL NOT estimate a part from the first `usage` or from the start attachments, because that needs a state file (design D35).
-The free tokens SHALL be the window minus `CONTEXT_BLOCK_MARGIN` minus the current total.
-
-#### Scenario: Table in the tail
-
-- **WHEN** the tail holds a `/context` table with memory 1.6k and skills 1.4k, and the current total is 84,000 tokens
-- **THEN** the breakdown shows memory `1.6k` and skills `1.4k` as exact, and the messages as the total minus the fixed parts
 
 #### Scenario: Newest table wins
 
@@ -164,6 +163,26 @@ The free tokens SHALL be the window minus `CONTEXT_BLOCK_MARGIN` minus the curre
 
 - **WHEN** `transcript_path` is missing, has no `usage`, or its tail holds no `/context` table
 - **THEN** the middle column shows the context meter and the free tokens only
+
+### Requirement: Context table shape
+
+The table SHALL be a `user` record whose string content starts with `## Context Usage` and has the rows `| Category | Tokens | Percentage |`.
+
+#### Scenario: Other record
+
+- **WHEN** a `user` record in the tail does not start with `## Context Usage`
+- **THEN** the status line does not read it as a table
+
+### Requirement: Breakdown figures
+
+The fixed parts SHALL be exact: system prompt, system tools, memory files, skills, and custom agents.
+The messages SHALL be the current total minus the sum of the fixed parts.
+The free tokens SHALL be the window minus `CONTEXT_BLOCK_MARGIN` minus the current total.
+
+#### Scenario: Table in the tail
+
+- **WHEN** the tail holds a `/context` table with memory 1.6k and skills 1.4k, and the current total is 84,000 tokens
+- **THEN** the breakdown shows memory `1.6k` and skills `1.4k` as exact, and the messages as the total minus the fixed parts
 
 ### Requirement: Fable weekly window
 
@@ -209,8 +228,6 @@ dotclaude SHALL NOT write a launcher stub into the config folder.
 
 - **WHEN** a test reads the snippet
 - **THEN** `statusLine` has a `refreshInterval`
-
-## MODIFIED Requirements
 
 ### Requirement: No side effects
 

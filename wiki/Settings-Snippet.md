@@ -1,0 +1,279 @@
+# Settings snippet
+
+dotclaude 0.28.0 writes no Claude Code setting.
+A plugin cannot set permissions, environment variables, or models, and dotclaude keeps no profile file.
+This page gives a plain JSON snippet.
+You copy the keys that you want into your own `settings.json`.
+Nothing merges, diffs, backs up, or migrates them for you.
+Code comments and the drift note call this snippet the settings profile.
+The two names mean the same thing, and no profile file exists.
+The reason, scope, and Claude Code default of each key are on [Settings snippet keys](Settings-Snippet-Keys).
+
+## How to use it
+
+1. Copy the keys that you want into `~/.claude/settings.json` (user scope).
+1. Replace `<plugin folder>` in `statusLine` and `subagentStatusLine` with the absolute path of the installed `dotclaude` plugin folder, or delete both keys.
+   The commands are `node <plugin folder>/features/statusline/cli.mjs` and `node <plugin folder>/features/statusline/subagent-cli.mjs`.
+   `plugins/dotclaude/settings.json` is an empty object, so the plugin sets no status line itself.
+   Research for this change found that a status line command gets no `${CLAUDE_PLUGIN_ROOT}` (`research/architecture.md`, confirmed), so the path must be absolute.
+   The folder is the `installPath` of `dotclaude@dotclaude` in `~/.claude/plugins/installed_plugins.json`.
+   On the maintainer machine it is `~/.claude/plugins/cache/dotclaude/dotclaude/<version>` (checked for 0.27.0).
+   The path holds the version, so change the two commands again after each plugin update.
+   Not verified: a glob in place of `<version>`, because a cache can hold more than one version.
+   A checkout started with `--plugin-dir` uses the path of that checkout.
+1. If you used 0.27.0, your `statusLine` runs the stub `<config dir>/dotclaude/statusline.mjs`.
+   That stub imports `status-line/statusline.mjs`, a file that 0.28.0 removed, so the status line shows nothing.
+   Replace the `statusLine` command as above, and delete the old stub file by hand.
+   You can also delete the `<file>.dotclaude-backup-<time>` backups that 0.27.0 made next to your settings files.
+   dotclaude deletes no file of yours.
+   If your 0.27.0 `subagentStatusLine` also runs a stub of dotclaude, replace it and delete that stub too.
+1. Replace `claude-fable-5-1` with `claude-mythos-5-1` if your account is in the Cyber Verification Program.
+   See [the CVP procedure](Settings-Snippet-Keys#cvp-procedure).
+1. Restart Claude Code.
+
+The snippet sets a key only when the Claude Code default does not give the result that dotclaude needs.
+A test checks each key of the block below against `schemas/claude-code-settings.json`.
+The same test fails when the block holds a key of the [never-set list](Off-Switches#never-set).
+
+## The snippet
+
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/xsyetopz/dotclaude/main/schemas/claude-code-settings.json",
+  "env": {
+    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000",
+    "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
+    "CLAUDE_CODE_DISABLE_ADVISOR_TOOL": "1",
+    "CLAUDE_CODE_DISABLE_CFC_PROMPT": "1",
+    "CLAUDE_CODE_DISABLE_CRON": "1",
+    "CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS": "1",
+    "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
+    "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1",
+    "CLAUDE_CODE_FORK_SUBAGENT": "0",
+    "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "1",
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "5",
+    "CLAUDE_CODE_MAX_CONTEXT_TOKENS": "300000",
+    "CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT": "1",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-5-5",
+    "CLAUDE_CODE_TODO_REMINDER_MODE": "off",
+    "DISABLE_COMPACT": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "DISABLE_FEEDBACK_COMMAND": "1"
+  },
+  "autoCompactEnabled": false,
+  "autoMemoryEnabled": false,
+  "includeGitInstructions": false,
+  "model": "claude-opus-5-5",
+  "availableModels": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-fable-5-1"
+  ],
+  "enforceAvailableModels": true,
+  "maxEffortLevel": "max",
+  "enableArtifact": false,
+  "enableWorkflows": false,
+  "promptCacheTtl": "5m",
+  "disableBundledSkills": true,
+  "promptSuggestionEnabled": false,
+  "bashOutputMaxChars": 4000,
+  "awaySummaryEnabled": false,
+  "spinnerTipsEnabled": false,
+  "feedbackSurveyRate": 0,
+  "feedbackDrafts": "off",
+  "fastMode": false,
+  "disableAgentView": true,
+  "disableRemoteControl": true,
+  "syncClaudeAiSkills": false,
+  "syncClaudeAiPlugins": false,
+  "disableClaudeAiConnectors": true,
+  "statusLine": {
+    "type": "command",
+    "command": "node <plugin folder>/features/statusline/cli.mjs",
+    "padding": 0,
+    "refreshInterval": 1,
+    "hideVimModeIndicator": true
+  },
+  "subagentStatusLine": {
+    "type": "command",
+    "command": "node <plugin folder>/features/statusline/subagent-cli.mjs"
+  },
+  "enabledPlugins": {
+    "cc-plugin-agents-md@builtin": false,
+    "cc-plugin-claude-test@builtin": false,
+    "cc-plugin-diff@builtin": false,
+    "cc-plugin-mermaid@builtin": false,
+    "cc-plugin-mods-guide@builtin": false,
+    "cc-plugin-responsive-mode@builtin": false,
+    "cc-plugin-telemetry@builtin": false,
+    "cc-plugin-tips@builtin": false,
+    "cc-plugin-you-should-know@builtin": false
+  },
+  "skillOverrides": {
+    "plugin-authoring": "name-only",
+    "openspec-apply-change": "name-only",
+    "openspec-archive-change": "name-only",
+    "openspec-explore": "name-only",
+    "openspec-propose": "name-only",
+    "openspec-sync-specs": "name-only",
+    "openspec-update-change": "name-only"
+  },
+  "attribution": {
+    "commit": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+    "pr": "🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+  },
+  "sandbox": {
+    "enabled": true,
+    "allowUnsandboxedCommands": true,
+    "excludedCommands": ["git fetch *", "git pull *", "git push *", "gh *"],
+    "network": {
+      "allowedDomains": [
+        "github.com",
+        "*.github.com",
+        "*.githubusercontent.com",
+        "registry.npmjs.org",
+        "pypi.org",
+        "files.pythonhosted.org",
+        "crates.io",
+        "static.crates.io",
+        "index.crates.io",
+        "proxy.golang.org"
+      ]
+    }
+  },
+  "permissions": {
+    "disableBypassPermissionsMode": "disable",
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.local)",
+      "Read(**/.env.production)",
+      "Read(**/.env.*.local)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/credentials)",
+      "Read(~/.gnupg/**)",
+      "Read(~/.netrc)",
+      "Read(~/.docker/config.json)",
+      "Bash(rm -rf /)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf ~/*)",
+      "Bash(mkfs *)",
+      "Bash(mkfs.*)",
+      "Bash(dd * of=/dev/*)",
+      "Agent(general-purpose)",
+      "Agent(claude-code-guide)",
+      "Agent(statusline-setup)",
+      "mcp__computer-use",
+      "ScheduleWakeup",
+      "ReportFindings",
+      "EnterPlanMode",
+      "ExitPlanMode",
+      "TaskCreate",
+      "TaskGet",
+      "TaskList",
+      "TaskStop",
+      "TaskUpdate"
+    ],
+    "ask": [
+      "Bash(git push *--force*)",
+      "Bash(git push -f*)",
+      "Bash(git push * -f)",
+      "Bash(git push * -f *)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean -f*)",
+      "Bash(git clean -d*)",
+      "Bash(git branch -D *)",
+      "Bash(git checkout -- *)",
+      "Bash(git restore *)",
+      "Bash(sh)",
+      "Bash(sh -)",
+      "Bash(sh -s*)",
+      "Bash(bash)",
+      "Bash(bash -)",
+      "Bash(bash -s*)",
+      "Bash(zsh)",
+      "Bash(sudo *)",
+      "Bash(npm publish*)",
+      "Bash(bun publish*)",
+      "Bash(pnpm publish*)",
+      "Bash(yarn publish*)",
+      "Bash(cargo publish*)",
+      "Bash(gh pr create *)",
+      "Bash(gh pr merge *)",
+      "Bash(gh pr comment *)",
+      "Bash(gh pr review *)",
+      "Bash(gh issue create *)",
+      "Bash(gh issue comment *)",
+      "Bash(gh release *)",
+      "Bash(* DROP DATABASE *)",
+      "Bash(* DROP TABLE *)",
+      "Bash(* TRUNCATE *)",
+      "Bash(* drop database *)",
+      "Bash(* drop table *)",
+      "Bash(* truncate table *)"
+    ],
+    "allow": [
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git branch)",
+      "Bash(git fetch *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh issue view *)",
+      "Bash(gh issue list *)",
+      "Bash(gh run view *)",
+      "Bash(gh run list *)",
+      "Bash(gh repo view *)",
+      "Bash(bun test *)",
+      "Bash(bun run *)",
+      "Bash(npm test *)",
+      "Bash(npm run *)",
+      "Bash(pnpm test *)",
+      "Bash(pnpm run *)",
+      "Bash(cargo build *)",
+      "Bash(cargo test *)",
+      "Bash(cargo check *)",
+      "Bash(go build *)",
+      "Bash(go test *)",
+      "Bash(go vet *)",
+      "Bash(just *)",
+      "Bash(make *)"
+    ]
+  }
+}
+```
+
+## Lines for the `dotclaude-docs` add-on
+
+Add these lines only when you install `dotclaude-docs` ([Library docs](Library-Docs)).
+Merge them into the `permissions.allow` list and the `sandbox.network.allowedDomains` list above.
+The `allowed-tools` line of the skill did not approve the call on Claude Code 2.1.294 (live run), so the snippet allows it.
+The command form must equal the form in `plugins/dotclaude-docs/skills/docs/SKILL.md`.
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Skill(dotclaude-docs:docs)",
+      "Bash(CTX7_TELEMETRY_DISABLED=1 npx -y ctx7@0.5.14 *)"
+    ]
+  },
+  "sandbox": {
+    "network": { "allowedDomains": ["context7.com", "registry.npmjs.org"] }
+  }
+}
+```
+
+## Related pages
+
+- [Settings snippet keys](Settings-Snippet-Keys)
+- [Off switches](Off-Switches)
+- [Settings schema](Settings-Schema)
+- [Install](Install)

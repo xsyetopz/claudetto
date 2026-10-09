@@ -3,7 +3,7 @@
 0.26.0 used a classic hook with `"type": "prompt"` on `Stop` for its checks rule, and it had removed the same hook on `SubagentStop`, because each call sends the transcript, about 46k tokens in the mean.
 0.27.0 has neither hook.
 0.28.0 adds a short claim-check `prompt` hook on `Stop` only, in `plugins/dotclaude/hooks/hooks.json` (D27 in [Decisions](Decisions-Evidence)).
-It stays only if the over-claim eval shows a lower rate with no loss and a cost within the noise bound.
+The hook stays on the evidence of a live run, and no suite gates it ([Evals](Evals#dropped-checks)).
 The facts below are the evidence for it.
 
 ## Facts from the binary

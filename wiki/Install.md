@@ -10,7 +10,7 @@ The core plugin is `dotclaude`.
 | --- | --- | --- |
 | Claude Code 2.1.295 or later | all plugins | |
 | git | `dotclaude` | |
-| [Node.js](https://nodejs.org) 22.18 or later on `PATH` | the setup script, the status line, and the auto-mode guard of `dotclaude`, the script of `dotclaude-jev`, and OpenSpec | Without Node.js, the auto-mode guard does not run, and the auto-mode classifier decides the calls. |
+| [Node.js](https://nodejs.org) 22.18 or later on `PATH` | the setup script, the status line, the classic hooks, and the auto-mode guard of `dotclaude`, the script of `dotclaude-jev`, and OpenSpec | Without Node.js, the auto-mode guard does not run, and the auto-mode classifier decides the calls. |
 | `gh` on `PATH` | the policy ask of `dotclaude` | Without `gh`, the ask does not run and the call goes on. |
 | `codegraph` on `PATH` | `dotclaude-codegraph` | Run `npm i -g @colbymchenry/codegraph`. The plugin never installs it. |
 | `TYPESAFE_API_KEY` | `dotclaude-jev` | Export it before Claude Code starts. |
@@ -36,19 +36,18 @@ See [Claude mods](Claude-Mods#the-built-in-guard-sec-default).
    /plugin install dotclaude@dotclaude
    ```
 
-1. Run the setup skill, and restart Claude Code.
+1. Copy the keys that you want from the [settings snippet](Settings-Snippet) into your own `settings.json`, and restart Claude Code.
+1. Optional: run the setup skill to set up OpenSpec.
 
    ```text
    /dotclaude:setup
    ```
 
 A plugin cannot set permissions, environment variables, or models.
-The setup skill merges one profile into a settings file that you choose.
-It shows each change and makes a backup first.
-It keeps the 3 newest backups.
-It also sets the status line.
-The skill offers to install OpenSpec, and it writes no managed settings and runs no `sudo`.
-If it finds an old dotclaude managed file, it offers to move the keys and prints the `sudo rm` command for you.
+So dotclaude gives a plain JSON snippet and writes no setting for you.
+The setup skill does one thing.
+It shows the OpenSpec steps, asks, and runs them after your yes.
+It writes no Claude Code setting, no managed settings, and no backup, and it runs no `sudo`.
 See [OpenSpec](OpenSpec) and [Guards](Guards).
 
 ## Install the Jev plugin
@@ -111,14 +110,17 @@ See [Browser](Browser).
 
 1. Restart Claude Code, because a running session keeps the old hooks and agents.
 1. Read the new entry in the [CHANGELOG](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md).
-1. Run `/dotclaude:setup` again.
-   It shows each change.
+1. Compare your `settings.json` with the [settings snippet](Settings-Snippet).
+   The drift check at session start reports some differences.
 
 > **Warning:** Before 1.0, a release can change or remove behavior without a compatibility layer.
 > Release 0.27.0 rebuilt the core plugin from an empty tree.
-> It removed the 0.26 options, hooks, Terms of Use, evals, and most skills.
-> The setup skill removes these 0.26 leftovers from your settings:
-> `autoCompactWindow`, the 0.26 `subagentStatusLine`, and the 0.26 `CLAUDE.md` block.
+> Release 0.28.0 removed each format that dotclaude had made up for itself:
+> the setup profile with its merge, diff, and backups, the router table, the usage state file, and the handoff notes.
+> dotclaude deletes no file of yours.
+> Files that earlier versions wrote stay on your machine, such as `.claude/handoffs/`, setup backups, and launcher stubs.
+> A `settings.json` that setup merged keeps its keys, and nothing updates them.
+> Remove what you do not want by hand.
 
 ## Try an unreleased checkout
 

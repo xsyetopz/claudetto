@@ -12,13 +12,13 @@ Each row gives the number, the title, and the page with the detail.
 | D4 | Measured budget | [Prompt](Decisions-Prompt) |
 | D5 | Who invokes what | [Settings](Decisions-Settings) |
 | D6 | Status line | [Tools](Decisions-Tools) |
-| D7 | Auto-fix hook | [Tools](Decisions-Tools) |
+| D7 | Auto-fix hook (removed) | [Tools](Decisions-Tools) |
 | D8 | Context7 skill | [Tools](Decisions-Tools) |
-| D9 | Eval harness | [Tools](Decisions-Tools) |
+| D9 | Evals through `claude plugin eval` | [Tools](Decisions-Tools) |
 | D10 | Schema extraction | [Settings](Decisions-Settings) |
 | D11 | OpenSpec | [Tools](Decisions-Tools) |
-| D12 | Router table search | [Router](Decisions-Router) |
-| D13 | Router routes and cap | [Router](Decisions-Router) |
+| D12 | Agent frontmatter search | [Router](Decisions-Router) |
+| D13 | No router | [Router](Decisions-Router) |
 | D14 | Off switches | [Settings](Decisions-Settings) |
 | D15 | dotclaude owns the system prompt | [Prompt](Decisions-Prompt) |
 | D16 | Request capture and the 30K start | [Prompt](Decisions-Prompt) |
@@ -36,8 +36,13 @@ Each row gives the number, the title, and the page with the detail.
 | D28 | Compliance by checks, not by prose | [Prompt](Decisions-Prompt) |
 | D29 | Semantic line breaks | [Evidence](Decisions-Evidence) |
 | D30 | Hold correct work under an unsupported claim | [Evidence](Decisions-Evidence) |
+| D31 | Guard hooks fail open (`onFailure`) | [Guards](Guards) |
+| D32 | Usage awareness, removed by D35 | [Context bound](Context-Bound) |
+| D33 | Three-column status line | [Status line](Status-Line) |
+| D34 | Adherence by checks in code, with no new judge | [Parts](Parts) |
+| D35 | No proprietary formats | [Settings](Decisions-Settings#d35-no-proprietary-formats) |
 
-The source of each decision is `design.md`, `design-parts.md`, and `design-parts-2.md` in `openspec/changes/dotclaude-0-28-0/`.
+The source of each decision is `design.md`, `design-parts.md`, `design-parts-2.md`, and `design-parts-3.md` in `openspec/changes/dotclaude-0-28-0/`.
 The facts behind them are in the `research/` folder of that change.
 
 ## Related pages

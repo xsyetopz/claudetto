@@ -5,17 +5,18 @@ Source labels (official, binary, capture, measured, reported, inference) are in 
 
 ## Summary
 
-- The current model and effort rules are in [Agents](Agents) and [Router](Router).
+- The current model and effort rules are in [Agents](Agents) and [Decisions: router and agents](Decisions-Router).
+  0.28.0 has no router, and the frontmatter of each agent file is the only source.
 - 0.20.0 removed Fable from `availableModels`, plan detection as a policy, and the model lock.
   This page keeps the 0.19 policy as history.
 - 0.27.0 has no plan detection.
-  `lib/plan.mjs` and the `plans` object of the profile are gone, and the usage bounds in `lib/budget.mjs` are the same on every plan.
-- Opus 5.5 is the default model in the profile.
-  0.27.0 has no advisor, and setup removes the 0.26 `advisorModel`.
-  Sonnet 5.5 is the model of three subagents and of `CLAUDE_CODE_SUBAGENT_MODEL`.
-  Haiku 5.5 runs `test-runner`.
-- `maxEffortLevel` is `max`, and the profile sets no `effortLevel`.
-  The allowed efforts of each model are `ALLOWED_EFFORTS` in `plugins/dotclaude/features/router/limits.mjs`.
+  `lib/plan.mjs` and the `plans` object of the old profile file are gone, and the usage bounds in `lib/budget.mjs` are the same on every plan.
+- Opus 5.5 is the default model in the [settings snippet](Settings-Snippet).
+  0.27.0 has no advisor, and the snippet sets no `advisorModel`.
+  Sonnet 5.5 is the model of `reviewer` and of `CLAUDE_CODE_SUBAGENT_MODEL`.
+  Haiku 5.5 runs the other four agents.
+- `maxEffortLevel` is `max`, and the snippet sets no `effortLevel`.
+  The efforts of each model that the status line accepts are `SUBAGENT_EFFORTS` in `plugins/dotclaude/features/statusline/limits.mjs`.
 
 ## Plan detection
 
@@ -93,14 +94,15 @@ API list prices per million tokens (**official**):
   A move to Sonnet 5.5 therefore halves only the writes and the output.
   **inference:** that is about a fifth to a third of subagent cost.
 
-## Cache care in the router
+## Cache care
 
-- The router changes the effort at any step, because an effort change keeps the prompt cache (probe 2.16: 19,453 against 19,454 tokens read).
+- An effort change keeps the prompt cache (probe 2.16: 19,453 against 19,454 tokens read).
 - A model change rebuilds the whole prefix once, because the cache is for each model (probe 2.16: 22,070 tokens written and 0 read at the switch).
-  The router changes the main-loop model only at the first step of a turn, only when the steps ahead pay back one rebuild, and never back inside the same turn.
-- The profile leaves `subagentPromptCacheTtl` unset, so a subagent cache lives 5 minutes.
+  dotclaude changes neither the model nor the effort of the main loop.
+  A hook-based router was built in the first 0.28.0 work and removed (D13 in [Decisions](Decisions-Router)).
+- The snippet leaves `subagentPromptCacheTtl` unset, so a subagent cache lives 5 minutes.
   A 1-hour cache cost about $171 a week more ([Design](Design#rejected-alternatives)).
-  The profile sets it only if an eval shows a lower cost for each resolved task ([Off switches](Off-Switches)).
+  No gate exists to test a change of it ([Off switches](Off-Switches#not-in-the-snippet)).
 
 ## Cache facts
 
@@ -116,7 +118,7 @@ API list prices per million tokens (**official**):
 A prompt after the TTL, and a `/compact` after it, write the whole context again.
 0.20 to 0.26 told Claude, and so the user, about an expired cache.
 0.27.0 has no cache note.
-It turns compaction off, and `promptCacheTtl` is `5m` in the profile.
+It turns compaction off, and `promptCacheTtl` is `5m` in the snippet.
 
 ### Advisor cost
 
@@ -145,7 +147,7 @@ This section weighs **reported** experience and the guidance of Anthropic.
 ### The advisor
 
 0.20 to 0.26 set `advisorModel` to Opus 5.5.
-0.27.0 removes it, and `/dotclaude:setup` deletes the 0.26 value.
+0.27.0 removes it, and the snippet sets no `advisorModel`.
 
 - The instructions of the advisor tool go in each request.
 - The prompt of the tool asks for a call before the work and a call before "done" on each task of several steps.
@@ -164,7 +166,7 @@ Sonnet 5.5 replaced Sonnet 5 in 0.11.0.
 - dotclaude uses it for `implementer`, which took the work of the removed `mechanical-worker` in 0.20.0.
 - In 0.28.0, `reviewer` uses it at `medium`.
   `investigator`, `implementer`, and `debugger` use Haiku 5.5 ([Agents](Agents)).
-  Each Haiku 5.5 pair lost on the review cases, and Sonnet 5.5 at `low` had no loss ([Router](Router#tables)).
+  Each Haiku 5.5 pair lost on the review cases, and Sonnet 5.5 at `low` had no loss ([Eval history](Evals-History)).
 - From 0.17.1 to 0.26, `reviewer` and `debugger` also used it, at `high` until 0.20.0 and at `medium` since.
   In the 0.17.1 evals, they passed the review and debug cases as often as Opus 5.5 at about 55% of the cost ([Eval history](Evals-History)).
 - Claude Code has separate weekly limits for Opus and Sonnet on Pro and Max.
@@ -230,9 +232,9 @@ Each pair is score and cost per task:
 
 | Setting | Value and reason |
 | --- | --- |
-| `maxEffortLevel` | `"max"` in the profile since 0.28.0, which blocks no level. 0.27.0 set `"xhigh"`, and 0.20 to 0.26 set `high`. The claude.ai effort picker warns that `max` uses about 5.5x the usage on Opus 5.5 and 3.5x on Fable 5.1. |
+| `maxEffortLevel` | `"max"` in the snippet since 0.28.0, which blocks no level. 0.27.0 set `"xhigh"`, and 0.20 to 0.26 set `high`. The claude.ai effort picker warns that `max` uses about 5.5x the usage on Opus 5.5 and 3.5x on Fable 5.1. |
 | `effortLevel` | Not set. A top-level `effortLevel` does not count for Opus 5.5 (**official**, `model-config.md`). |
-| `ALLOWED_EFFORTS` | In `plugins/dotclaude/features/router/limits.mjs`: Opus 5.5 and Haiku 5.5 up to `xhigh`, Sonnet 5.5 up to `high`. The `effort` of each agent file sets the default, and the pin test checks it against the list. |
+| `SUBAGENT_EFFORTS` | In `plugins/dotclaude/features/statusline/limits.mjs`: `low` to `max` for Opus 5.5, Sonnet 5.5, and Haiku 5.5. The `effort` of each agent file sets the default, and the pin test checks it against the list and bans `max`. |
 
 - **binary:** no hook event fires on an effort change, so the main session is not covered.
   The status line shows the model and the effort.

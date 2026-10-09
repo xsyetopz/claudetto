@@ -112,3 +112,34 @@ test("text that is not JSON prints an empty line and exits with `0`, and JSON `n
   expect(line("not json")).toBe("");
   expect(line("null")).toContain(`0k/${CONTEXT_WINDOW / 1000}k 0%`);
 });
+
+test("the status line writes no file in the temporary, config, or project folder", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dc-nofile-"));
+  const transcript = path.join(dir, "t.jsonl");
+  fs.writeFileSync(
+    transcript,
+    `${JSON.stringify({ type: "user", message: { content: "## Context Usage\n\n| Category | Tokens | Percentage |\n|---|---|---|\n| Skills | 1.4k | 0.5% |\n" } })}\n`,
+  );
+  const before = () => fs.readdirSync(dir, { recursive: true }).sort();
+  const names = before();
+  try {
+    const out = line(
+      status(at(40), {
+        transcript_path: transcript,
+        workspace: { current_dir: dir, project_dir: dir },
+        rate_limits: {
+          five_hour: {
+            used_percentage: 40,
+            resets_at: Date.now() / 1000 + 3600,
+          },
+        },
+      }),
+      { TMPDIR: dir, CLAUDE_CONFIG_DIR: dir, CLAUDE_PLUGIN_DATA: dir },
+    );
+    expect(out).toContain("5h");
+    expect(out).toContain("✦ 1k");
+    expect(before()).toEqual(names);
+  } finally {
+    fs.rmSync(dir, { recursive: true });
+  }
+});

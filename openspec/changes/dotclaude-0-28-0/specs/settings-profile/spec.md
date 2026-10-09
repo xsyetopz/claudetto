@@ -90,11 +90,24 @@ The snippet SHALL name the generated dotclaude schema as `$schema`.
 ### Requirement: Subagent cache lifetime
 
 The snippet SHALL leave `subagentPromptCacheTtl` unset, which gives 5 minutes.
-The reason is the measure of 2026-10-05 (`wiki/Design.md`): 21,765 of 21,807 request gaps of subagents were under 5 minutes, so a 1-hour cache cost about $171 a week more at the documented write prices.
-The eval of 2026-10-08 showed no saving from `"1h"`, so no gated item offers it.
-The snippet SHALL NOT set `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`, because the setting is the documented route and the variable overrides it.
+The reason is the measure of 2026-10-05 (`wiki/Design.md`): 21,765 of 21,807 request gaps of subagents were under 5 minutes.
 
 #### Scenario: Snippet value
 
 - **WHEN** a test reads the snippet
 - **THEN** it has no `subagentPromptCacheTtl` key and no `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` entry
+
+#### Scenario: Cost of 1 hour
+
+- **WHEN** the 1-hour cache is costed at the documented write prices for the measure of 2026-10-05
+- **THEN** it costs about $171 a week more
+
+### Requirement: No 1-hour cache offer
+
+The eval of 2026-10-08 showed no saving from `"1h"`, so no gated item offers it.
+The snippet SHALL NOT set `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`, because the setting is the documented route and the variable overrides it.
+
+#### Scenario: Gated items
+
+- **WHEN** a test reads the gated items of the snippet
+- **THEN** none sets `subagentPromptCacheTtl` to `"1h"`

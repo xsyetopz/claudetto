@@ -12,7 +12,7 @@ The sizes in the capture sections come from 2.1.283 to 2.1.289, and they are the
   The guide says that examples in `<example>` tags let Claude "distinguish them from instructions".
   The `<reports>` block names its nested `<report_examples>` block, and it says that the names and numbers of the examples are not facts of the session, so that Claude copies the form and not the details.
   The guide gives no trained meaning to a tag name, and a tag is plain text.
-- The profile turns on the simple prompt with `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1`.
+- The [settings snippet](Settings-Snippet) turns on the simple prompt with `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1`.
 - The style has `force-for-plugin: true` and `keep-coding-instructions: false`.
   `force-for-plugin` overrides the `outputStyle` that the user set (**official**).
   `keep-coding-instructions` defaults to false (**official**).
@@ -28,7 +28,7 @@ The system prompt has a `shared` block and a `session` block (**binary**, 2.1.29
 The forced style then adds the dotclaude rules.
 
 The `context_management` section of the `session` block says that the system summarizes prior messages when the context grows long (**binary**, 2.1.292).
-That is wrong in a dotclaude session, because the profile turns compaction off.
+That is wrong in a dotclaude session, because the snippet turns compaction off.
 Two parts correct it:
 
 - The hooks module replaces the section with a `prompt.section` hook when `DISABLE_COMPACT` is set.
@@ -109,7 +109,7 @@ The docs say that the style is "appended to the end of the system prompt", which
 - The `additionalContext` of a SessionStart hook arrives in the same role-`system` message as the output style (**capture**, 2.1.288).
 - Claude Code keeps at most about 10,000 bytes of output from each hook command (**binary**).
 - After a compaction, Claude Code runs a SessionStart hook again with source `compact`, and it drops the copy from startup (**capture**).
-  The 0.27 profile turns compaction off, so a session does not reach this case.
+  The snippet turns compaction off, so a session does not reach this case.
 
 ## Tool removal
 
@@ -127,17 +127,17 @@ Only a loaded tool saves much, because a deferred tool costs one name.
 | Bash | 2237 |
 | ReportFindings | 2177 |
 
-The 0.27 profile denies `Agent(general-purpose)`, which is a pattern and not a bare tool name.
+The snippet denies `Agent(general-purpose)`, which is a pattern and not a bare tool name.
 
-The 0.27 profile removes four unused tools (**binary**, 2.1.292):
+The snippet removes four unused tools (**binary**, 2.1.292):
 
 - `enableArtifact: false` removes Artifact, and `enableWorkflows: false` removes Workflow.
-- ScheduleWakeup has no setting, so the profile denies it by name.
-- The profile also denies ReportFindings.
+- ScheduleWakeup has no setting, so the snippet denies it by name.
+- The snippet also denies ReportFindings.
   `/code-review` uses it only when `CLAUDE_CODE_REPORT_FINDINGS` is set and the tool is present.
   Otherwise `/code-review` gives its findings as text.
 
-With these switches and the profile without the advisor, `/context` at the start of a sandbox session fell from 32k to 8.1k tokens (**measured**).
+With these switches and the snippet without the advisor, `/context` at the start of a sandbox session fell from 32k to 8.1k tokens (**measured**).
 Of the 8.1k, the loaded tools are 5.3k and the system prompt is 1.6k.
 The deferred tools (16.1k in `/context`) send only their names until Claude loads one.
 
@@ -167,12 +167,12 @@ The MCP page of the docs still says 2,048 characters for each tool description (
 The `prompt.attachment` handler of dotclaude rewrites an attachment by exact type, and an unknown type passes on.
 Task 9.3 measured one headless sandbox session of the `dotclaude` plugin on Haiku 5.5 before and after the `agent_listing_delta` cut.
 The prompt was "Reply with the word ok."
-The measure is `node tools/measure.mjs <transcript> --no-write`.
+The measure is `bun tools/measure.mjs <transcript>`, which prints the figures and writes no file.
 
 | Type | Cut | Saving (tokens) |
 | --- | --- | ---: |
 | `agent_listing_delta` | The concurrency note is one short sentence. The agent lines stay as they are. | 15 |
-| `skill_listing` | None. The listing has two lines, and one is `dotclaude:handoff`. | 0 |
+| `skill_listing` | None. The listing had two lines in the measured session, and one was the removed `dotclaude:handoff` skill. | 0 |
 | `environment` | None. The text holds the facts of the host and the rule for downloaded files. | 0 |
 | `session_context` | The commit list is gone (earlier cut). It was empty in the measured project. | 0 |
 

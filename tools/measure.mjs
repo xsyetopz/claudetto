@@ -1,12 +1,11 @@
 #!/usr/bin/env bun
 // What a session sent at its start, and where its context went, from a transcript.
 //
-//   bun tools/measure.mjs [SESSION.jsonl] [--no-write] [--bound N]
+//   bun tools/measure.mjs [SESSION.jsonl] [--bound N]
 //
 // Prints the tokens of the first request, the size of each tool, system block, and attachment,
 // the requests and context of each subagent, the tool-result size of each tool of the main session,
 // and the repeat file reads.
-// Writes the start tokens to `tools/baseline.json` unless `--no-write` is given.
 // Prints the bytes of the first request text with no tool schemas, and the advisory when it is below `FIRST_REQUEST_LOW_BYTES`.
 // Exits 1 when the first request is above `START_TOKENS` (or `--bound`), or its text is above `FIRST_REQUEST_HIGH_BYTES`.
 // With no file, it reads the newest main transcript of this checkout.
@@ -26,7 +25,6 @@ import { readEntries } from "./measure/transcript.mjs";
 import { repeatReads, subagentRuns, toolResults } from "./measure/usage.mjs";
 import { checkFirstRequestBytes } from "./sizes.mjs";
 
-const BASELINE = path.join(import.meta.dirname, "baseline.json");
 const n = (x) => x.toLocaleString("en-US");
 const k = (x) => `${Math.round(x / 1000)}K`;
 
@@ -123,14 +121,7 @@ if (import.meta.main) {
     );
     process.exit(2);
   }
-  const { text, ok, first } = reportOf(file, bound);
+  const { text, ok } = reportOf(file, bound);
   console.log(text);
-  if (first && !args.includes("--no-write")) {
-    const { total, ...tokens } = first;
-    fs.writeFileSync(
-      BASELINE,
-      `${JSON.stringify({ session: path.basename(file, ".jsonl"), ...tokens, total }, null, 2)}\n`,
-    );
-  }
   process.exit(ok ? 0 : 1);
 }

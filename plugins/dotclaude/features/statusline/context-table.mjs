@@ -1,13 +1,10 @@
 // The exact context breakdown: the newest `/context` table of the transcript (design D33).
 // `/context` writes its Markdown table into the transcript as a `user` record whose content starts with `## Context Usage`.
-// Its rows come from the count-tokens API, so they replace the estimates of `breakdown.mjs` after the user runs it.
-// Each run reads only the bytes after the kept offset, and at most `TABLE_TAIL_BYTES_MAX` of them.
+// Its rows come from the count-tokens API.
+// Each call reads the last `TABLE_TAIL_BYTES_MAX` bytes of the transcript and keeps no state (design D35).
 
-import { createHash } from "node:crypto";
 import fs from "node:fs";
-import path from "node:path";
-import { privateDir } from "../../lib/private-dir.mjs";
-import { TABLE_TAIL_BYTES_MAX } from "./limits.mjs";
+import { CONTEXT_BLOCK_MARGIN, TABLE_TAIL_BYTES_MAX } from "./limits.mjs";
 
 const HEADER = "## Context Usage";
 const ROW = /^\|\s*([^|]+?)\s*\|\s*~?\s*([\d.]+)\s*([kKmM]?)\s*\|/;
@@ -63,28 +60,16 @@ export function lastTable(lines) {
   return table;
 }
 
-/**
- * The lines of `file` from `offset`, at most the last `max` bytes, the offset after the last full line,
- * and `reset` when the file is shorter than `offset`.
- * A read error gives `null`.
- */
-function tail(file, offset, max) {
+/** The last `max` bytes of `file` as lines. The first line may be cut, and `lastTable` skips it. A read error gives `null`. */
+function tail(file, max) {
   let fd;
   try {
     fd = fs.openSync(file, "r");
     const size = fs.fstatSync(fd).size;
-    // A file shorter than the offset is a new transcript, so the read starts again.
-    const reset = size < offset;
-    const from = Math.max(reset ? 0 : offset, size - max);
+    const from = Math.max(0, size - max);
     const buffer = Buffer.alloc(size - from);
     const n = fs.readSync(fd, buffer, 0, buffer.length, from);
-    // A line that Claude Code is still writing has no newline, so the next run reads it again.
-    const end = buffer.lastIndexOf(0x0a, n - 1) + 1;
-    return {
-      lines: buffer.toString("utf8", 0, end).split("\n"),
-      offset: from + end,
-      reset,
-    };
+    return buffer.toString("utf8", 0, n).split("\n");
   } catch {
     return null;
   } finally {
@@ -93,40 +78,30 @@ function tail(file, offset, max) {
 }
 
 /**
- * The newest `/context` table of the session in `data`, or `null`.
- * The table and the read offset stay in `dir`, so a run reads only the new lines of the transcript.
+ * The newest `/context` table in the last `TABLE_TAIL_BYTES_MAX` bytes of the transcript in `data`, or `null`.
+ * Each call reads the tail again and keeps no offset and no table.
  * Any error gives `null`.
  */
-export function readTable(data, dir = privateDir()) {
-  try {
-    const file = data?.transcript_path;
-    if (typeof file !== "string" || !file) return null;
-    const key = data.session_id || file;
-    const state = dir
-      ? path.join(
-          dir,
-          `dotclaude-table-${createHash("sha256").update(key).digest("hex").slice(0, 16)}.json`,
-        )
-      : null;
-    let kept = { offset: 0, table: null };
-    if (state)
-      try {
-        kept = JSON.parse(fs.readFileSync(state, "utf8"));
-      } catch {
-        // Not read yet, or another run is writing it.
-      }
-    const read = tail(file, kept.offset ?? 0, TABLE_TAIL_BYTES_MAX);
-    if (!read) return kept.table ?? null;
-    const table =
-      lastTable(read.lines) ?? (read.reset ? null : (kept.table ?? null));
-    if (state && read.offset !== kept.offset)
-      try {
-        fs.writeFileSync(state, JSON.stringify({ offset: read.offset, table }));
-      } catch {
-        // The result is right. Only the next run reads the lines again.
-      }
-    return table;
-  } catch {
-    return null;
-  }
+export function readTable(data) {
+  const file = data?.transcript_path;
+  if (typeof file !== "string" || !file) return null;
+  const lines = tail(file, TABLE_TAIL_BYTES_MAX);
+  return lines ? lastTable(lines) : null;
+}
+
+/**
+ * The parts of the context, in tokens.
+ * `total` is the current context tokens, and `window` is the context window.
+ * With a `/context` table, `memory`, `skills`, and `system` are exact, and `messages` is the total minus them.
+ * With no table, only `free` is known, because an estimate needs a state file (design D35).
+ */
+export function partsOf(total, window, table = null) {
+  const free = Math.max(0, window - CONTEXT_BLOCK_MARGIN - total);
+  if (!table) return { free };
+  return {
+    free,
+    exact: true,
+    ...table,
+    messages: Math.max(0, total - table.system - table.memory - table.skills),
+  };
 }

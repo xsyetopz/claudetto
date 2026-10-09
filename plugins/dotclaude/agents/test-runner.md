@@ -28,7 +28,7 @@ Give the report in your last turn, and stop new work when two turns are left, be
 <procedure>
 
 1. Use the commands in your brief.
-   If it names none, read them from `AGENTS.md`, `CLAUDE.md`, or `justfile`.
+   If it names none, read them from `AGENTS.md`, `CLAUDE.md`, the `justfile`, the `package.json` scripts, or the config files of the tools, and name the file that you read.
 1. Run all commands in one `Bash` call, because each call uses one of your turns.
    Send each output to a log file, and print an `exit :: command` line:
 

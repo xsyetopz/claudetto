@@ -13,7 +13,7 @@ The source study is `research/sembr.md`.
 - A rule in prose did not hold, so a program fixes the text ([Compliance](Decisions-Prompt#d28-compliance-by-checks-not-by-prose)).
 - No rewrite runs after a write.
   A rewrite of a file after the write can make the next `Edit` fail with "File has been modified since read" (**inferred** from bundle text, not run).
-  So the auto-fix table has no row for line breaks ([Auto-fix](Auto-Fix)).
+  So no hook rewrites a file after it is written.
 
 ## The formatter
 
@@ -34,7 +34,6 @@ The source study is `research/sembr.md`.
 | `PreToolUse` on `Write` and `Edit` of a `.md` or `.mdx` path | Rewrites the text through `updatedInput`. |
 | `tool.call` on `Edit` in the hooks module | Repairs an `old_string` that spans two sentences. |
 | `PreToolUse` on `Bash` for `git commit` and `gh pr create` | Rewrites the quoted heredoc text. |
-| `Stop` | Counts the chat lines with more than one sentence. |
 
 The entry for the classic hooks is `features/sembr/cli.mjs`.
 The rules are in `features/sembr/rules.mjs`.
@@ -61,10 +60,10 @@ The rules are in `features/sembr/rules.mjs`.
 
 ## Chat
 
-- The `Stop` hook counts the lines of `last_assistant_message` that have more than one sentence.
-  It appends the counts to a log for the eval, exits 0 with no output, and never blocks.
-- The output style has a `<reply_format>` block.
-  It gives the reason (the user reads the source of a reply in diffs and logs), one wrong example, and one right example.
+- No hook counts or logs the chat lines.
+  The `Stop` count and its log `sembr-chat.jsonl` are removed, because a log that only an eval read is a made-up format (design D35).
+- The output style has a `<text_format>` block.
+  It tells Claude to write each code item in single backticks and to start each sentence on a new line.
 - dotclaude does not rewrite the chat reply.
   Probe 2.31 showed that a `session.append` handler changes the display and the stored row, and that the hook fires once for each content block.
   The next turn read about 200 fewer cached tokens in one run, and the rewrite also changed the `result` text of `claude -p --output-format json`.
@@ -83,6 +82,5 @@ It does not turn into a workaround.
 
 ## Related pages
 
-- [Auto-fix](Auto-Fix)
 - [Claude mods](Claude-Mods)
 - [Development](Development)

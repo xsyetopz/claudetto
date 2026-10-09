@@ -13,11 +13,10 @@ The decision is D5 in [Decisions](Decisions-Settings).
 | Entry | Invoked by | File |
 | --- | --- | --- |
 | `/dotclaude:setup` | The user only (`disable-model-invocation: true`) | `skills/setup/SKILL.md` |
-| `/dotclaude:handoff` | The user or the model | `skills/handoff/SKILL.md` |
 | `docs` in `dotclaude-docs` | The model | `plugins/dotclaude-docs/skills/docs/SKILL.md` |
 | Drift check | Runs at session start | `features/drift/` |
 
-The paths for `setup` and `handoff` are under `plugins/dotclaude/`.
+The path for `setup` is under `plugins/dotclaude/`.
 
 ## Small listing
 
@@ -27,30 +26,24 @@ These rules keep the cost small:
 - The `name` and `description` of a skill have 150 to 300 bytes together.
   `SKILL_META_LOW_BYTES` and `SKILL_META_HIGH_BYTES` in `tools/limits.mjs` hold the bounds.
 - A user-invoked entry has no listing line.
-- The `openspec-*` skills are project skills, so the profile sets them `name-only` in `skillOverrides`.
+- The `openspec-*` skills are project skills, so the [settings snippet](Settings-Snippet) sets them `name-only` in `skillOverrides`.
 - `skillOverrides` does not apply to a plugin skill on Claude Code 2.1.293.
   A plugin skill therefore keeps its full listing line until the user turns off the whole plugin.
   This is why `docs` is in its own add-on ([Library docs](Library-Docs)).
 
 ## Setup
 
-`/dotclaude:setup` applies the settings profile.
-It shows the diff and asks before it writes.
-See [Profile keys](Profile-Keys) for the keys, the scope, the backup, and the dry run.
-
-## Handoff
-
-`/dotclaude:handoff <slug>` writes a note at `.claude/handoffs/<slug>.md`.
-The note primes a new session after `/clear`.
-`--list` lists the notes, and `--rm <slug>` removes one after the user confirms.
-See [Handoffs](Handoffs).
+`/dotclaude:setup` sets up OpenSpec in the current project.
+It shows each step and asks before it runs one.
+It changes no Claude Code setting.
+The settings are in the [settings snippet](Settings-Snippet), which you merge by hand.
 
 ## Drift check
 
-At session start, the hooks module compares the active settings with the profile.
+At session start, the hooks module compares the active settings with the [settings snippet](Settings-Snippet).
 It adds text to the context only when it finds a difference, and it changes no setting.
 
-- Plugin on again: a Claude Code update turned on a built-in plugin that the profile turns off.
+- Plugin on again: a Claude Code update turned on a built-in plugin that the snippet turns off.
   The check names the plugin and the setting that turns it off, in one line.
 - Synced skill: a skill of the listing comes from the claude.ai sync.
 - Version: Claude Code is not 2.1.295, the tested version.
@@ -58,9 +51,9 @@ It adds text to the context only when it finds a difference, and it changes no s
   The section stays as Claude Code made it.
 - Guard seated: the machine has managed settings.
   The check names the dotclaude parts that the guard skips ([Parts](Parts#drift-check)).
-- Router blocked: `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set.
+- Agent files blocked: `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set, so the `model` and `effort` of the agent files do not apply.
 
-When the settings match the profile, the check adds no text.
+When the settings match the snippet, the check adds no text.
 A fact that the check cannot read gives no line.
 
 ## Script before model

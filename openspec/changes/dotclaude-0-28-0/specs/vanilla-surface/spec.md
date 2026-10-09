@@ -37,15 +37,33 @@ A part that might cost quality SHALL stay on until an eval shows no loss.
 ### Requirement: Never-set list
 
 The snippet and the plugin `settings.json` SHALL NOT set a key that stops hooks or plugins, removes project instructions or attachments, or forces a model or effort.
-The list SHALL be a constant in the pin test and SHALL NOT be a file in `lib/`, because `lib/` ships to users.
-The list SHALL include `disableAllHooks`, `allowManagedHooksOnly`, `strictPluginOnlyCustomization`, `disableSideloadFlags`, `CLAUDE_CODE_SIMPLE`, `CLAUDE_CODE_SAFE_MODE`, `CLAUDE_CODE_ENABLE_TASKS=0`, `CLAUDE_CODE_DISABLE_CLAUDE_MDS`, `CLAUDE_CODE_DISABLE_ATTACHMENTS`, `CLAUDE_CODE_EFFORT_LEVEL`, `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`, `MAX_THINKING_TOKENS`, `alwaysThinkingEnabled`, and `CLAUDE_CODE_REMOVE_PROMPT_STRINGS`.
-The list SHALL also include the other keys of the never-set list in the wiki.
 
 #### Scenario: Profile keys
 
 - **WHEN** a test reads the plugin `settings.json` and the snippet of the wiki
 - **THEN** they set no key of the never-set list
 - **AND** the test fails and names the key if one is set
+
+### Requirement: Never-set list location
+
+The never-set list SHALL be a constant in the pin test and SHALL NOT be a file in `lib/`, because `lib/` ships to users.
+
+#### Scenario: No list in lib
+
+- **WHEN** a test lists the files in `lib/`
+- **THEN** none holds the never-set list
+
+### Requirement: Never-set list content
+
+The never-set list SHALL include the keys that stop hooks or plugins, remove project instructions or attachments, or force a model or effort.
+The list SHALL also include the other keys of the never-set list in the wiki.
+
+#### Scenario: Listed keys
+
+- **WHEN** a test reads the never-set list
+- **THEN** it includes `disableAllHooks`, `allowManagedHooksOnly`, `strictPluginOnlyCustomization`, `disableSideloadFlags`, `CLAUDE_CODE_SIMPLE`, and `CLAUDE_CODE_SAFE_MODE`
+- **AND** it includes `CLAUDE_CODE_ENABLE_TASKS=0`, `CLAUDE_CODE_DISABLE_CLAUDE_MDS`, `CLAUDE_CODE_DISABLE_ATTACHMENTS`, and `CLAUDE_CODE_EFFORT_LEVEL`
+- **AND** it includes `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`, `MAX_THINKING_TOKENS`, `alwaysThinkingEnabled`, and `CLAUDE_CODE_REMOVE_PROMPT_STRINGS`
 
 ### Requirement: No managed file, guard not seated
 
@@ -116,19 +134,31 @@ dotclaude 0.28 and later SHALL NOT use or make up a proprietary schema or format
 dotclaude SHALL take only what the latest vanilla Claude Code provides:
 settings, env vars, key-values, hooks and the other documented extension points, the API, and possibly the Agent SDK.
 A feature that needs its own state file SHALL NOT be built.
-A format that earlier work built SHALL be deleted outright with its tests, with no migration, no compatibility shim, and no kept copy.
-The rule SHALL NOT cover these kept items:
-formats that Claude Code owns (including the suite format of `claude plugin eval`), the schemas that `tools/schema.mjs` extracts from Claude Code 2.1.295 and later, read-only reads of Claude Code data that the wiki documents with no user detail, code constants in `limits.mjs`, `lib/budget.mjs`, and `tools/limits.mjs`, prompt text and its XML-like tags, the frontmatter of agents, skills, and output styles, OpenSpec files, and `.env`.
 
 #### Scenario: New feature needs a state file
 
 - **WHEN** a design for a feature needs a file that a later hook call or the status line reads back
 - **THEN** the feature is not built, and the design records the cut
 
+### Requirement: Delete earlier formats
+
+A format that earlier work built SHALL be deleted outright with its tests, with no migration, no compatibility shim, and no kept copy.
+
 #### Scenario: Test pins a proprietary file
 
 - **WHEN** a test pins a file or a key that only dotclaude defines
 - **THEN** the file and the test are both deleted, and no replacement reads the old file
+
+### Requirement: Kept items
+
+The rule of "No proprietary format" SHALL NOT cover the items that the scenario "Kept items" lists.
+
+#### Scenario: Kept items
+
+- **WHEN** an item is a format that Claude Code owns (including the suite format of `claude plugin eval`), or a schema that `tools/schema.mjs` extracts from Claude Code 2.1.295 and later
+- **THEN** the rule does not cover it
+- **AND** the rule does not cover read-only reads of Claude Code data that the wiki documents with no user detail, or code constants in `limits.mjs`, `lib/budget.mjs`, and `tools/limits.mjs`
+- **AND** the rule does not cover prompt text and its XML-like tags, the frontmatter of agents, skills, and output styles, OpenSpec files, and `.env`
 
 #### Scenario: Extracted schema
 

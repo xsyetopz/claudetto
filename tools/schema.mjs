@@ -12,7 +12,7 @@
 // A version without a table fails with a message, because a wrong table gives a wrong schema.
 // Writes `schemas/claude-code-settings.json` and `schemas/claude-code-managed-settings.json`.
 // The file names have no version, so the `$schema` links stay the same.
-// The version is in `x-claude-code-version` and `title` inside each file.
+// The version is in the root `$comment` and in `title` inside each file.
 // A key that its description limits to managed settings is absent from the first file
 // and carries `x-managed-only` in the second.
 // The code items of each description go in single backticks (`schema/spans.mjs`).
@@ -62,7 +62,7 @@ export function buildSchemas(src, version) {
     );
   const base = {
     $schema: "http://json-schema.org/draft-07/schema#",
-    "x-claude-code-version": version,
+    $comment: `Extracted from Claude Code ${version}`,
     type: "object",
     properties,
     additionalProperties: false,

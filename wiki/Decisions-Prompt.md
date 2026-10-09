@@ -9,7 +9,7 @@ The index is [Decisions](Decisions).
   An unknown id passes on unchanged.
 - `prompt.attachment` shortens the sandbox, auto mode, skill listing, agent listing, environment, and model attachments where the shorter text keeps the behavior.
 - `tool.describe` rewrites the large loaded tools.
-- `agent.offer` drops the built-in agent lines that the profile does not need.
+- `agent.offer` drops the built-in agent lines that dotclaude does not need.
 - Deferred tools stay on.
   The mod never sets `isDeferred` to `false`.
 - Cuts of `session_context` and `prompt.context` need an eval with no loss.
@@ -18,9 +18,9 @@ See [Prompt surface](Prompt-Surface#attachment-cuts-of-the-hooks-module).
 
 ## D4 Measured budget
 
-`just measure` runs one headless turn and reads the usage of the first request.
+`just measure` reads the usage of the first request in a session transcript, prints it, and compares it with `START_TOKENS`.
 `START_TOKENS` in `tools/limits.mjs` is the measure after the cuts plus 5% headroom.
-The measure goes to `tools/baseline.json`.
+The command writes no file, because a baseline file is a format that dotclaude made up (D35).
 The request capture of D16 closes the gap between the measure and what the API bills.
 
 ## D15 dotclaude owns the system prompt
@@ -33,7 +33,7 @@ The rules are in [System prompt](System-Prompt) and the variants are in [Prompt 
 - One scope line, one keep-going sentence, and one confirmation rule for hard-to-undo actions.
 - The verification line depends on the model.
 - Delegation text: delegate only large, independent, parallel work.
-- The attribution line replaces the git instructions that the profile turns off.
+- The attribution line replaces the git instructions that the snippet turns off.
 - No variant changes in a session or an agent, because a change breaks the cache.
 - The compact prompt has no override route, and the wiki records that.
 
@@ -43,7 +43,7 @@ The rules are in [System prompt](System-Prompt) and the variants are in [Prompt 
   The capture run sets `ENABLE_TOOL_SEARCH=true`, because a non-first-party base URL turns tool search off.
 - The agent sandbox blocks a local port, so the user starts `just capture` in a terminal ([Sandbox](Sandbox)).
 - The capture splits the first request into system blocks, tool schemas, and messages.
-- The research found a 30K start only when the profile did not apply.
+- The research found a 30K start only when the settings of the snippet did not apply.
   The cause is a config source that the surface does not read (**inferred**).
 
 ## D28 Compliance by checks, not by prose
@@ -57,7 +57,8 @@ Prose rules failed, such as no recap, no semicolons in long lists, and one sente
    All asks were `rm -rf` of a variable.
    The guard now resolves a variable that an earlier part of the same command set from `mktemp -d` or from `$TMPDIR`.
    It rejects `..` and a reset `TMPDIR`, and it keeps the ask for any other unresolved path.
-1. The eval adds measures for repeat reads, recap, and chat lines with more than one sentence.
+1. The old eval harness had measures for repeat reads, recap, and chat lines with more than one sentence.
+   The harness is gone (D9), and the format of `claude plugin eval` has no such measure, so no gate exists for them.
 1. `CLAUDE.md` states whether chat replies are in the scope of the line-break rule.
 
 ## Related pages

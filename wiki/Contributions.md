@@ -41,7 +41,7 @@ A project with no policy is unknown, not permitted, so read its `CONTRIBUTING.md
 
 ## Public writes
 
-The settings profile adds `permissions.ask` rules for writes with `gh pr` and `gh issue`, and for `gh release`.
+The [settings snippet](Settings-Snippet) adds `permissions.ask` rules for writes with `gh pr` and `gh issue`, and for `gh release`.
 A contribution is public and stays after a removal.
 The decision is yours, and a prompt gives you the facts for it.
 See [Guards](Guards).
@@ -61,4 +61,4 @@ The older text is in [Release history](Release-History).
 ## Related pages
 
 - [Guards](Guards): the module guard.
-- [Install](Install): set up the profile that adds the ask rules.
+- [Install](Install): copy the snippet that adds the ask rules.

@@ -1,17 +1,12 @@
 // The silent `sembr` hooks (spec semantic-line-breaks, design D29):
-// the `PreToolUse` rewrite of `Write` and `Edit`, the repair of a cross-sentence `old_string`, and the `Stop` count.
+// the `PreToolUse` rewrite of `Write` and `Edit`, and the repair of a cross-sentence `old_string`.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { rewrite } from "../../plugins/dotclaude/features/sembr/cli.mjs";
 import {
-  count,
-  logFile,
-  rewrite,
-} from "../../plugins/dotclaude/features/sembr/cli.mjs";
-import {
-  chatCounts,
   repairEdit,
   rewriteEdit,
 } from "../../plugins/dotclaude/features/sembr/rules.mjs";
@@ -144,40 +139,7 @@ test("repair: a file written before the hook keeps its normal match", () => {
   expect(repairEdit(`${FUSED}\nTail.\n`, FUSED, FUSED)).toBeUndefined();
 });
 
-test("the `Stop` count: three lines and one with two sentences", () => {
-  expect(chatCounts(`Short line.\n${FUSED}\nLast one`)).toEqual({
-    lines: 3,
-    multi: 1,
-  });
-  expect(chatCounts("")).toEqual({ lines: 0, multi: 0 });
-  expect(chatCounts("```\nA. B. C.\n```\n\nOne. Two.")).toEqual({
-    lines: 4,
-    multi: 1,
-  });
-});
-
-test("the `Stop` hook appends the counts to the log and prints nothing", () => {
-  const data = fs.mkdtempSync(path.join(os.tmpdir(), "sembr-"));
-  const env = { CLAUDE_PLUGIN_DATA: data };
-  const payload = {
-    hook_event_name: "Stop",
-    session_id: "s1",
-    last_assistant_message: `One.\n${FUSED}\nThree`,
-  };
-  expect(count(payload, env, () => 0)).toBeUndefined();
-  count(payload, env, () => 0);
-  const rows = fs
-    .readFileSync(logFile(env), "utf8")
-    .trim()
-    .split("\n")
-    .map((l) => JSON.parse(l));
-  expect(rows).toEqual([
-    { ts: "1970-01-01T00:00:00.000Z", session_id: "s1", lines: 3, multi: 1 },
-    { ts: "1970-01-01T00:00:00.000Z", session_id: "s1", lines: 3, multi: 1 },
-  ]);
-});
-
-test("run as a script: `Stop` prints nothing and exits `0`, `PreToolUse` prints `updatedInput`", () => {
+test("run as a script: `Stop` prints nothing and writes no file, `PreToolUse` prints `updatedInput`", () => {
   const data = fs.mkdtempSync(path.join(os.tmpdir(), "sembr-"));
   const cli = path.join(
     import.meta.dirname,
@@ -195,9 +157,7 @@ test("run as a script: `Stop` prints nothing and exits `0`, `PreToolUse` prints 
   });
   expect(stop.exitCode).toBe(0);
   expect(stop.stdout.toString()).toBe("");
-  expect(
-    JSON.parse(fs.readFileSync(path.join(data, "sembr-chat.jsonl"), "utf8")),
-  ).toMatchObject({ lines: 1, multi: 1 });
+  expect(fs.readdirSync(data)).toEqual([]);
   const pre = run({
     hook_event_name: "PreToolUse",
     ...write("/w/a.md", FUSED),
@@ -212,7 +172,7 @@ test("run as a script: `Stop` prints nothing and exits `0`, `PreToolUse` prints 
   expect(other.stdout.toString()).toBe("");
 });
 
-test("`hooks.json`: the rewrite is on `Write`, `Edit`, and `Bash`, the count is on `Stop`", () => {
+test("`hooks.json`: the rewrite is on `Write`, `Edit`, and `Bash`, and `Stop` has no sembr hook", () => {
   const hooks = JSON.parse(
     fs.readFileSync(
       path.join(
@@ -237,5 +197,5 @@ test("`hooks.json`: the rewrite is on `Write`, `Edit`, and `Bash`, the count is 
   ]);
   expect(
     hooks.Stop.flatMap((g) => g.hooks).some((h) => h.command === cmd),
-  ).toBe(true);
+  ).toBe(false);
 });

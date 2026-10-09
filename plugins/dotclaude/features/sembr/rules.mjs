@@ -1,5 +1,4 @@
 // The rules of the `sembr` hooks (design D29): the rewrite of a write and of an edit, the repair of a cross-sentence `old_string`,
-// and the count of chat lines with more than one sentence.
 // The functions are pure and import only `lib/sembr.mjs`, so the hooks module may load this file.
 
 import { sembr, sembrCounts } from "../../lib/sembr.mjs";
@@ -116,18 +115,4 @@ export function rewriteCommand(command) {
   if (out.includes(delimiter) || out.join("\n") === lines.join("\n"))
     return undefined;
   return command.slice(0, bodyAt) + [...out, ...rest.slice(end)].join("\n");
-}
-
-/** The counts of the non-empty lines of a chat reply and of the lines with more than one sentence. */
-export function chatCounts(text) {
-  const lines = String(text ?? "").split("\n");
-  const counts = sembrCounts(lines.join("\n"));
-  let total = 0;
-  let multi = 0;
-  lines.forEach((line, i) => {
-    if (line.trim() === "") return;
-    total++;
-    if (counts[i] > 1) multi++;
-  });
-  return { lines: total, multi };
 }

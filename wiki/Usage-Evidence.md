@@ -45,8 +45,8 @@ Model choice is not one of them.
 1. **`general-purpose` in place of dotclaude agents.**
    The 0.19 output style preferred dotclaude agents in prose.
    That preference did not hold.
-   The 0.20 to 0.26 profile denied `Agent(general-purpose)`.
-   Check the 0.27 deny list in `plugins/dotclaude/features/setup/profile.json` before you rely on this rule.
+   The setup profile of 0.20 to 0.27 denied `Agent(general-purpose)`.
+   The [settings snippet](Settings-Snippet) now holds the deny list, so check it before you rely on this rule.
 
 ## The delegation share
 
@@ -96,7 +96,7 @@ dotclaude 0.20.4 checked each tip against the Claude Code docs or a measurement 
 - `/compact` reads the whole conversation to write its summary.
   On a large context it is an expensive request (**official**: costs, prompt caching).
   `/clear` costs nothing.
-- A handoff note and then `/clear` is the cheap way to start the next task.
+- Task checkboxes in OpenSpec and then `/clear` is the cheap way to start the next task ([OpenSpec](OpenSpec)).
 - Sonnet does implementation work for less usage than Opus ([Plans and models](Plans-and-Models#model-fit)).
 - `MEMORY.md` loads at every start, up to its first 200 lines or 25 KB (**official**).
   Topic files in the memory folder do not load at start.
@@ -110,7 +110,7 @@ dotclaude 0.20.4 checked each tip against the Claude Code docs or a measurement 
   Only `/resume` loads one.
   A remove saves disk space only, and this machine had 1.9 GB of them.
   The 0.27.0 profile set `cleanupPeriodDays` to 14, so Claude Code removed them.
-  Since 0.28.0, the profile does not set it (see [Profile keys](Profile-Keys)).
+  Since 0.28.0, the settings snippet does not set it (see [Snippet keys](Settings-Snippet-Keys#retention)).
 
 ### Tools that dotclaude does not use
 
@@ -166,7 +166,6 @@ The measures that led to the context bounds are in [Context bound](Context-Bound
 
 **measured** (2026-10-07, 14 main sessions): 3 sessions passed 70% of the 300K window, and all 3 were planning sessions.
 The largest peak was 269,602 tokens.
-`research/session-growth.md` holds the table.
 
 ## Related pages
 

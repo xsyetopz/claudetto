@@ -3,7 +3,7 @@
 dotclaude is a Claude Code plugin for software engineering on official extension points.
 It turns compaction off, sets a 300K context window, asks only before dangerous commands,
 replaces the coding part of the system prompt with a short output style,
-and keeps the state of long work in OpenSpec changes and handoff notes across `/clear`.
+and keeps the state of long work in OpenSpec changes across `/clear`.
 It optimizes for the most quality per unit of usage quota, not for speed.
 
 [The wiki](https://github.com/xsyetopz/dotclaude/wiki) tells what each part does and why.
@@ -23,11 +23,11 @@ so this release is tested only on 2.1.295.
 
 ## Setup
 
-Run `/dotclaude:setup` and restart Claude Code.
 A plugin settings file can set only `agent` and `subagentStatusLine`,
-so the skill merges the profile into a settings file that you choose.
-It shows each change and makes a backup first.
-It also checks OpenSpec and offers to install it and to run `openspec init --tools claude`.
+so dotclaude gives the other keys as a plain [settings snippet](https://github.com/xsyetopz/dotclaude/wiki/Settings-Snippet).
+Copy the keys that you want into your own `settings.json`, and restart Claude Code.
+The `/dotclaude:setup` skill checks OpenSpec and offers to install it and to run `openspec init --tools claude`.
+It changes no Claude Code setting, and it shows each step before it runs.
 
 ## Parts
 
@@ -35,27 +35,27 @@ It also checks OpenSpec and offers to install it and to run `openspec init --too
 | --- | --- |
 | No compaction | `autoCompactEnabled: false` and `DISABLE_COMPACT=1`, which also turns off `/compact`. |
 | Window | `CLAUDE_CODE_MAX_CONTEXT_TOKENS=300000` and `CLAUDE_CODE_AUTO_COMPACT_WINDOW=300000`. At the limit the session stops, and you run `/clear`. |
-| No auto memory | `autoMemoryEnabled: false`. Handoff notes and OpenSpec hold the state. |
+| No auto memory | `autoMemoryEnabled: false`. OpenSpec holds the state. |
 | System prompt | `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1` and the forced `dotclaude` output style, which replaces the built-in coding instructions. |
 | Permissions | Deny secret reads and disk wipes. Ask before force pushes, history rewrites, piped shells, `sudo`, publishes, public `gh` writes, and SQL drops. Allow read-only git and the usual build and test commands. |
 | Sandbox | Bash runs in the sandbox, with network access only to GitHub and the package registries. |
 | Guard | One hooks module asks before a recursive `rm` outside the project, and before the first call to a GitHub repository of another owner with an AI policy. |
 | Status line | Model, effort, context against the window (yellow at 75%, red at 90%), the 5-hour limit, and the active OpenSpec change with its task count. |
-| Agents | `investigator`, `web-researcher`, `implementer`, `debugger`, `reviewer`, `test-runner`. |
-| Skills | `/dotclaude:setup`, `/dotclaude:handoff`. |
+| Agents | `investigator`, `implementer`, `debugger`, `reviewer`, `test-runner`. |
+| Skills | `/dotclaude:setup`. |
 
 The plugin has no options.
-To drop a part of the profile, see the setup skill.
+To drop a part, leave its key out of your `settings.json`.
 
 ## Models and effort
 
 | Model | Roles | Effort |
 | --- | --- | --- |
-| Opus 5.5 | main session | default `medium`, the router sets `high` or `medium` by task |
+| Opus 5.5 | main session | the default of the model |
 | Sonnet 5.5 | `reviewer` | `medium` |
 | Haiku 5.5 | `investigator`, `implementer`, `debugger`, `test-runner` | `medium`, `debugger` `high`, `test-runner` `low` |
 
-The profile sets no effort level, so each model keeps its default.
+The settings snippet sets no effort level, so each model keeps its default.
 `maxEffortLevel` is `max`, so `/effort` can go up to `max` for a hard check.
 
 ## Long work without compaction
@@ -64,14 +64,13 @@ Each turn reads the whole context again, so the size of the context sets the cos
 
 - For work of more than one session, start an OpenSpec change with `/opsx:propose`.
   After `/clear`, `/opsx:apply` continues at the first unchecked task.
-- Before `/clear`, run `/dotclaude:handoff` to write the goal, the decisions, and the proof
-  to `.claude/handoffs/<slug>.md`.
-  Start the next session with `@.claude/handoffs/<slug>.md`.
+- Before `/clear`, mark the finished tasks in `tasks.md` and put the decisions in `design.md`.
+  At 80% of the window, a note tells Claude to do this and to name the command that continues the work.
 - Change the model only right after `/clear`,
   because a new model starts a new prompt cache.
   An effort change keeps the cache.
 
-See [Handoffs](https://github.com/xsyetopz/dotclaude/wiki/Handoffs)
+See [Context bound](https://github.com/xsyetopz/dotclaude/wiki/Context-Bound)
 and [OpenSpec](https://github.com/xsyetopz/dotclaude/wiki/OpenSpec).
 
 ## Add-on plugins
@@ -111,11 +110,11 @@ claude plugin update dotclaude@dotclaude
 1. Restart Claude Code, because a running session keeps the old hooks and agents.
 1. Read the new entry in [`CHANGELOG.md`](CHANGELOG.md).
    Before 1.0, a release can change or remove behavior without a compatibility layer.
-1. Run `/dotclaude:setup` again.
-   It shows each change.
+1. Compare your `settings.json` with the [settings snippet](https://github.com/xsyetopz/dotclaude/wiki/Settings-Snippet).
+   The drift check at session start reports some differences.
 
-0.27.0 is a rebuild that removes most 0.26 parts.
-See its changelog entry for the list.
+0.27.0 is a rebuild that removes most 0.26 parts, and 0.28.0 removes the setup profile, the router, and the handoff skill.
+See their changelog entries for the list.
 To try an unreleased checkout, run `claude --plugin-dir /path/to/dotclaude/plugins/dotclaude`.
 
 ## Development

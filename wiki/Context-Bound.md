@@ -1,6 +1,6 @@
 # Context bound
 
-Compaction is off in the dotclaude profile, so a session that reaches its limit stops and loses its state.
+Compaction is off in the [settings snippet](Settings-Snippet), so a session that reaches its limit stops and loses its state.
 This page says how dotclaude bounds the context of each subagent and of the main session.
 The decision is D22 in [Decisions](Decisions-Tools).
 The measures are in [Usage evidence](Usage-Evidence).
@@ -50,7 +50,7 @@ Haiku 5.5 costs 5 times as much for each request above 100K prompt tokens.
   A group or a loop that ends in a bound, such as `for f in *; do cat $f; done | head -n 20`, runs.
 - A deny here costs little, because the next call does the same read with a limit and no work is lost.
   In the main sessions of 2026-10-09, the rule fires on 59 of 250 `Bash` commands, 41 of them a `grep` with no limit.
-- The profile sets `bashOutputMaxChars` to 4000, the lowest value.
+- The snippet sets `bashOutputMaxChars` to 4000, the lowest value.
   Claude Code saves a longer output to a file and sends a preview and the path.
 
 ## Subagent report at the bound
@@ -67,10 +67,15 @@ When the context passes the bound of its model, the hook gives `additionalContex
 - A resume after the limit starts a new count.
   The delegation text therefore tells the coordinator to take the report of a stopped run and not to resume it.
 
-## Context figure from the measure
+## Main session notes
 
 - The main session gets its context figure only at a level, in one note for each level.
-  The levels and the handoff are on the page [Usage awareness](Usage-Awareness).
+  The notice level is `CONTEXT_NOTICE_AT` (60%), and the handoff level is `CONTEXT_HANDOFF_AT` (80%).
+  The hook computes the level from the transcript on each run and keeps no state (design D35).
+- The notice tells Claude to start only a slice that fits in the free tokens, and `HANDOFF_RESERVE` keeps room for the handoff steps.
+- The handoff note tells Claude to mark the finished tasks in `tasks.md` of the OpenSpec change and to put the decisions in `design.md`.
+  The last message gives the command that continues the work, such as `/opsx:apply <change>`, after the user runs `/clear`.
+  The note is the only handoff, and no file in `.claude/` carries it.
 - The status line may show the figure to the user, but the model does not read it, so the hook is the route to the model.
 - No prompt text tells the model to estimate or announce its context share.
   A model can report a false state, so the figure comes from a program (D27 in [Decisions](Decisions-Evidence)).

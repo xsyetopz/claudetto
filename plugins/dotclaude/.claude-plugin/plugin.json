@@ -2,11 +2,11 @@
   "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "dotclaude",
   "version": "0.27.0",
-  "description": "A Claude Code profile with compaction off, a 300K window, permission rules for dangerous commands, a lean system prompt, six role agents, handoff notes, and OpenSpec setup.",
+  "description": "A lean output style, five role agents, guard, context, and drift hooks, a status line command, and OpenSpec setup. The settings snippet in the wiki turns compaction off and sets a 300K window and permission rules for dangerous commands.",
   "author": {
     "name": "xsyetopz"
   },
   "repository": "https://github.com/xsyetopz/dotclaude",
   "license": "MIT",
-  "keywords": ["settings", "output-style", "agents", "handoff", "openspec"]
+  "keywords": ["settings", "output-style", "agents", "openspec"]
 }

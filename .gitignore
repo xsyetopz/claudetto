@@ -1,8 +1,6 @@
 .DS_Store
 __pycache__/
 *.pyc
-evals/results/
-evals-heldout/results/
 .pytest_cache/
 
 /external/
@@ -10,3 +8,5 @@ evals-heldout/results/
 /letters/
 
 .env
+
+/plugins/dotclaude/evals/results/

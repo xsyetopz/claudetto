@@ -11,7 +11,7 @@ A model can report a false state, so dotclaude does not take a state figure from
 
 1. No prompt text tells the model to estimate or announce its context share.
 1. The context figure reaches the model through `additionalContext` of a `UserPromptSubmit` hook.
-   The hook reads the usage of the last request and gives one note at each level ([Usage awareness](Usage-Awareness)).
+   The hook reads the usage of the last request and gives a note at each prompt at or above a level ([Context bound](Context-Bound#main-session-notes)).
 1. Claims of a passed check stay under the over-claim measure of the eval.
    A `Stop` prompt hook checks the claims of the last message ([Stop prompt hooks](Stop-Prompt-Hooks)).
    Two eval cases gave 0 over-claims with the hook and without it (2026-10-09), so the eval shows no fall and no loss.
@@ -24,7 +24,7 @@ See [Context bound](Context-Bound).
 The source is `research/sembr.md`.
 dotclaude fixes the text before it is written, with no model token.
 It uses no `PostToolUse` rewrite, because that can make the next `Edit` fail.
-The parts are a formatter in `lib/`, a silent `PreToolUse` rewrite of Markdown writes and of commit and pull request text, a repair of a cross-sentence `old_string`, a `Stop` count for the eval, a `<reply_format>` block in the output style, and a chat rewrite that ships because probe 2.31 showed that the display uses the rewritten row.
+The parts are a formatter in `lib/`, a silent `PreToolUse` rewrite of Markdown writes and of commit and pull request text, a repair of a cross-sentence `old_string`, a `<text_format>` block in the output style, and a chat rewrite that ships because probe 2.31 showed that the display uses the rewritten row.
 An alternative is `markdownlint-rule-sembr` as a gate.
 It is rejected for the runtime, because it needs four packages and a block costs tokens.
 See [Semantic line breaks](Semantic-Line-Breaks).

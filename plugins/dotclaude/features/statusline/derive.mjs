@@ -1,7 +1,7 @@
 // Pure functions for the values that the status line derives from its input.
 // Times are in seconds, as in `rate_limits[*].resets_at`.
 
-import { BURN_WINDOW_S, PACE_MIN_FRACTION, RATE_MIN_MS } from "./limits.mjs";
+import { PACE_MIN_FRACTION, RATE_MIN_MS } from "./limits.mjs";
 
 /**
  * The pace of a limit window of `span` seconds at time `now`, or `null` while it is too early.
@@ -65,15 +65,3 @@ export function rates(cost) {
 
 /** The tokens left to the context window, and never below 0. */
 export const headroom = (tokens, window) => Math.max(window - tokens, 0);
-
-/**
- * The burn rate of the samples `{t, pct}` in percent for each hour, or `null` with fewer than 2 samples.
- * It reads the samples of the last `BURN_WINDOW_S` seconds before the newest one.
- */
-export function burnRate(samples) {
-  if (!Array.isArray(samples) || samples.length < 2) return null;
-  const last = samples.at(-1);
-  const first = samples.find((s) => last.t - s.t <= BURN_WINDOW_S);
-  if (!first || last.t <= first.t) return null;
-  return ((last.pct - first.pct) * 3600) / (last.t - first.t);
-}

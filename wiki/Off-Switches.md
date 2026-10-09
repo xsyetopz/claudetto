@@ -1,14 +1,15 @@
 # Off switches
 
-This page lists what the dotclaude profile turns off in a vanilla Claude Code install, what it never sets, and what waits for an eval.
+This page lists what the [settings snippet](Settings-Snippet) turns off in a vanilla Claude Code install, what it never sets, and what has no gate.
 The research behind it is the off-switch survey of Claude Code 2.1.293 and 2.1.294.
-The profile is `plugins/dotclaude/features/setup/profile.json`.
-Each key and `env` entry has its reason on [Profile keys](Profile-Keys).
+Each key and `env` entry has its reason on [Settings snippet keys](Settings-Snippet-Keys).
+dotclaude writes none of these keys.
+You copy the ones that you want.
 
 ## Forced off, no quality cost
 
-A scope of `user` means that Claude Code reads the key from user settings and local settings, and ignores it in project settings.
-Setup sends such a key to local settings when you pick project scope, and tells you where it went.
+A scope of `User` means that Claude Code reads the key from user settings and local settings, and ignores it in project settings.
+Put such a key in user settings.
 
 | Part | Key or entry | Scope | Reason |
 | --- | --- | --- | --- |
@@ -28,18 +29,18 @@ Setup sends such a key to local settings when you pick project scope, and tells 
 | Advisor tool | `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` | Any | Removes the tool and its text. |
 | Terminal title | `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` | Any | Removes a small-model request. |
 | Attribution header | `CLAUDE_CODE_ATTRIBUTION_HEADER` set to 0 | Any | Removes a block at the start of the prompt. |
-| IDE auto-connect | `CLAUDE_CODE_AUTO_CONNECT_IDE` set to false | Any | The key is in the global config, so the profile uses the variable. |
+| IDE auto-connect | `CLAUDE_CODE_AUTO_CONNECT_IDE` set to false | Any | The key is in the global config, so the snippet uses the variable. |
 | IDE extension install | `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL` | Any | The global config holds the key. |
 | Task list reminder | `CLAUDE_CODE_TODO_REMINDER_MODE` set to `off` | Any | Removes a recurring reminder. |
 | Built-in agents | `permissions.deny` entries `Agent(claude-code-guide)` and `Agent(statusline-setup)` | Any | Removes two agent lines from each request. |
-| Plan mode tools | `permissions.deny` entries `EnterPlanMode` and `ExitPlanMode` | Any | Removes two tool lines. The eval of 2026-10-08 showed no loss, see [Eval-gated](#eval-gated). |
+| Plan mode tools | `permissions.deny` entries `EnterPlanMode` and `ExitPlanMode` | Any | Removes two tool lines. The eval of 2026-10-08 showed no loss, see [Not in the snippet](#not-in-the-snippet). |
 | Task tools | `permissions.deny` entries `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, and `TaskUpdate` | Any | Saves about 30 tokens, and the model keeps no task list. The eval showed no loss. |
 | Git instructions | `includeGitInstructions` set to false | Any | About 6.2k characters of git text and the git status snapshot leave the prompt. The eval showed no loss, and the prompt variants carry the attribution line. |
 
-The built-in plugins that the profile turns off are `cc-plugin-agents-md`, `cc-plugin-claude-test`,
+The built-in plugins that the snippet turns off are `cc-plugin-agents-md`, `cc-plugin-claude-test`,
 `cc-plugin-diff`, `cc-plugin-mermaid`, `cc-plugin-mods-guide`, `cc-plugin-responsive-mode`,
 `cc-plugin-telemetry`, `cc-plugin-tips`, and `cc-plugin-you-should-know`.
-The profile leaves `cc-plugin-plugin-authoring` on, because it teaches the plugin format.
+The snippet leaves `cc-plugin-plugin-authoring` on, because it teaches the plugin format.
 It leaves `cc-plugin-sec-default` alone, because only a managed setting enables it.
 A new built-in plugin stays as Claude Code sets it.
 
@@ -51,13 +52,13 @@ Check it with `/context` in `just sandbox`.
 ## Built-in agents
 
 The five dotclaude agents take the work of the built-in agents ([Agents](Agents)).
-The profile turns off these built-in agents:
+The snippet turns off these built-in agents:
 
 - `Explore` and `Plan`, with `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1`.
 - `general-purpose`, `claude-code-guide`, and `statusline-setup`, with one `permissions.deny` entry `Agent(<name>)` each.
 
 Each listed agent adds a line to each request, and `Explore` runs on the main model.
-After setup, the agent listing holds only the five dotclaude agents.
+With the snippet, the agent listing holds only the five dotclaude agents.
 
 ## Computer use
 
@@ -67,57 +68,51 @@ In 7 sandbox runs on 2.1.293 the server was never in a request, so the default n
 The `mcp__computer-use` deny rule is a guard for the case that you enable it.
 The deny rule on a running server is not tested, because the server needs the `cu-desktop` binary.
 
-## Eval-gated
+## Not in the snippet
 
-These items might cost quality, so they stay off until an eval shows no loss beyond the noise bound.
-They are not in the profile.
-Run setup with `--with <item>` to add one, and an eval arm uses the same switch.
+These items might cost quality, so they are not in the snippet.
+The harness that tested them is gone, and the format of `claude plugin eval` has no gate for them (design D9, [Evals](Evals)).
+So no gate exists for these items, and they stay off.
+Set one by hand in your own settings at your own risk.
 
-| Item | `--with` | What it adds | Saving |
-| --- | --- | --- | --- |
-| Telemetry | `telemetry` | Sets `DISABLE_TELEMETRY` to 1, which also stops the GrowthBook fetch | No flag fetch, so flags use the code defaults. |
-| Non-essential traffic | `nonessential-traffic` | Sets `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` to 1 | No auto-update, error report, release notes, or PR badge check. |
-| Subagent cache of 1 hour | `subagent-cache-1h` | Sets `subagentPromptCacheTtl` to `1h` | See the reason below. |
+| Item | What it sets | Saving |
+| --- | --- | --- |
+| Telemetry | `DISABLE_TELEMETRY` set to 1, which also stops the GrowthBook fetch | No flag fetch, so flags use the code defaults. |
+| Non-essential traffic | `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` set to 1 | No auto-update, error report, release notes, or PR badge check. |
+| Subagent cache of 1 hour | `subagentPromptCacheTtl` set to `1h` | See the reason below. |
 
-Reason for `subagent-cache-1h`: the measure of 2026-10-05 (981 subagent runs in 7 days, see [Design](Design)) found that 1 hour costs $171 more than 5 minutes.
+Reason for the subagent cache: the measure of 2026-10-05 (981 subagent runs in 7 days, see [Design](Design)) found that 1 hour costs $171 more than 5 minutes.
 Of 21,807 gaps between two requests, 41 were 5 to 60 minutes long.
-The item goes into the profile only if the cost for each resolved task falls with no loss beyond the noise bound.
-Each item has one eval arm, named `gated-` and the item name (`tools/eval/arms.mjs`).
 
 ### Eval of 2026-10-08
 
-The eval ran 12 cases with 3 runs per arm.
-The rule: drop an item when the resolve rate, the over-claim rate, or the policy-violation rate gets worse beyond the noise bound.
-When another measure gets worse with a shown interval, run the arm again.
-Drop the item only when the loss shows again.
-The reports are local and not in the repository, so this page gives the figures.
+The eval ran 12 cases with 3 runs per arm, with the harness of 0.27.0 and the first 0.28.0 work.
+The rule was to drop an item when the resolve rate, the over-claim rate, or the policy-violation rate got worse beyond the noise bound.
+When another measure got worse with a shown interval, the arm ran again, and the item was dropped only when the loss showed again.
+This page gives the figures, because the reports are not in the repository.
 
 | Item | Result | Decision |
 | --- | --- | --- |
-| `plan-mode` | First run: `multiSentenceShare` 0.6 against 0.718, shown. Second run: 0.694 against 0.752, not shown. Cost was lower with the item (0.002, interval 0 to 0.003, shown). | In the profile. |
-| `task-tools` | No measure was worse. | In the profile. |
-| `git-instructions` | No measure was worse. A sandbox commit kept the `Co-Authored-By` trailer. | In the profile. |
-| `telemetry` | Second run: `turns` 4.75 against 5.5, `seconds` 12.113 against 15.432, and `outputTokens` 655.861 against 799.917. All three were shown worse for the item. | Gated. |
-| `nonessential-traffic` | Second run: `turns` 4.75 against 5.389 and `outputTokens` 655.861 against 762.472. Both were shown worse for the item. | Gated. |
-| `subagent-cache-1h` | Cost for each resolved task 0.028 against 0.027. The mean difference was 0.002, interval -0.008 to 0.007. No saving was shown. | Gated. |
+| `plan-mode` | First run: `multiSentenceShare` 0.6 against 0.718, shown. Second run: 0.694 against 0.752, not shown. Cost was lower with the item (0.002, interval 0 to 0.003, shown). | In the snippet. |
+| `task-tools` | No measure was worse. | In the snippet. |
+| `git-instructions` | No measure was worse. A sandbox commit kept the `Co-Authored-By` trailer. | In the snippet. |
+| `telemetry` | Second run: `turns` 4.75 against 5.5, `seconds` 12.113 against 15.432, and `outputTokens` 655.861 against 799.917. All three were shown worse for the item. | Not in the snippet. |
+| `nonessential-traffic` | Second run: `turns` 4.75 against 5.389 and `outputTokens` 655.861 against 762.472. Both were shown worse for the item. | Not in the snippet. |
+| `subagent-cache-1h` | Cost for each resolved task 0.028 against 0.027. The mean difference was 0.002, interval -0.008 to 0.007. No saving was shown. | Not in the snippet. |
 
-The likely cause of the `telemetry` loss is that `DISABLE_TELEMETRY` stops the GrowthBook flag fetch (see the table above).
+The likely cause of the `telemetry` loss is that `DISABLE_TELEMETRY` stops the GrowthBook flag fetch.
 This cause is not verified.
 
 ## Opt-in
 
-An opt-in item is off until you say yes, and the reason is risk and not quality.
-Run setup with `--with <item>` to add one, and no eval arm uses it.
-The list is data in `plugins/dotclaude/features/setup/optin.mjs`.
-
-| Item | `--with` | What it adds | Risk |
-| --- | --- | --- | --- |
-| Auto-fix | `autofix` | Sets `DOTCLAUDE_AUTOFIX` to 1, which turns on the hooks of [Auto-fix](Auto-Fix) | A hook runs outside the Bash sandbox, so a config that a prompt-injected model wrote could run with full network and file access. |
+dotclaude 0.28.0 has no opt-in item.
+Auto-fix at `Stop` and its `DOTCLAUDE_AUTOFIX` variable are removed, so no hook runs a project formatter outside the sandbox.
 
 ## Never set
 
-The profile never sets a key that stops hooks or plugins, removes project instructions or attachments, or forces a model or effort.
-The list is data in `plugins/dotclaude/lib/never-set.mjs`, and a test fails when the profile sets any entry.
+The snippet never sets a key that stops hooks or plugins, removes project instructions or attachments, or forces a model or effort.
+The list is a constant in `tests/dotclaude/settings-pin.test.mjs`, because `lib/` ships to users and only the test reads it.
+The test fails when the plugin `settings.json` or the JSON block of the snippet sets any entry.
 
 | Entry | Reason |
 | --- | --- |
@@ -146,15 +141,10 @@ The list is data in `plugins/dotclaude/lib/never-set.mjs`, and a test fails when
 ## Managed settings
 
 dotclaude uses no managed settings.
-Setup writes no `managed-settings.json` and no `managed-settings.d/` drop-in, runs no `sudo`, and writes nothing in the Claude Code install folder.
-The 0.27.0 template `templates/managed-settings.json` is gone, and its five keys
-(`autoCompactEnabled`, `autoMemoryEnabled`, `env`, `permissions`, and `sandbox`) are in the profile.
-`sandbox.failIfUnavailable` was in the template only, so the profile does not hold it.
-
-If setup finds an old dotclaude managed file, it asks whether to move the keys into user settings.
-On yes (`--move-managed`, user scope), the keys merge into `settings.json` after the diff.
-Setup then prints `sudo rm "<file>"` for you to run.
-It never runs the command, and it never changes the managed file.
+It writes no `managed-settings.json` and no `managed-settings.d/` drop-in, runs no `sudo`, and writes nothing in the Claude Code install folder.
+The 0.27.0 template `templates/managed-settings.json` is gone.
+dotclaude no longer reads, moves, or removes a managed file that an earlier version wrote.
+If you have one, review it yourself.
 
 ### Deny-override trade-off
 

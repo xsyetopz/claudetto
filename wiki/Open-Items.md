@@ -7,8 +7,8 @@ Labels: **measured** means a run on this machine, and **reported** means a claim
 
 ## Summary
 
-- 16 items are open.
-- 9 items were closed or made moot by 0.27.0.
+- 15 items are open.
+- 11 items were closed or made moot by 0.27.0 and 0.28.0.
 - 11 claims from users were checked and not acted on.
 
 ## Open items
@@ -20,31 +20,31 @@ Labels: **measured** means a run on this machine, and **reported** means a claim
 | A recursive `rm` in auto mode that no `if` filter matches | The auto-mode guard starts only for commands that start with `rm`, `sudo`, `xargs`, `gh`, `git clone`, `curl`, or `wget`. Other forms go to the classifier. | The next session | A list of the forms that reach the classifier, from a week of auto-mode sessions. |
 | The 300K window | The window is a judgment from reports (rot "around 300-400K" on a 1M window, and "200K is the sweet spot"), not from a measure on this machine (**reported**). | The user | A week of sessions, then a look at where the quality drops and where sessions stop. |
 | Usage report after a week on 0.27 | No week of 0.27 data exists yet. | The next session | Run `just usage --days 7` and compare it with [Usage evidence](Usage-Evidence). |
-| A capability eval suite | 0.27.0 removed the evals, so no suite covers the behavior of the output style and the agents. | The user | A blind, frozen suite written before any run, for long sessions, corrections over several turns, and large repositories. |
+| A capability eval suite | 0.27.0 removed the evals, and 0.28.0 ported no suite to `claude plugin eval`, so no suite covers the behavior of the output style and the agents. | The user | A blind, frozen suite written before any run, for long sessions, corrections over several turns, and large repositories. |
 | `implementer` on Opus 5.5 against Sonnet 5.5 | The runs on this machine had different tasks (see [Model fit](Plans-and-Models#model-fit)). The ProjectArchitect Bench A/B is outside evidence on a different harness with a private hard tier. | The user | Run both models on the same tasks. Anthropic recalibrated the effort levels of Sonnet 5.5, so also re-check the `medium` setting of the Sonnet agents. |
 | Per-turn effort changes in one long-lived process | No data: each effort value in the transcripts of 2026-10-04 and 2026-10-05 is `medium`. | The next session | Measure the changes in one long-lived process. |
 | A Bash read of a directory does not load its `CLAUDE.md` or path-scoped `.claude/rules` files | Open in Claude Code ([#90450](https://github.com/anthropics/claude-code/issues/90450)). Claude Code 2.1.288 loads rules on Write and Edit. | The user (a fix in Claude Code) | A fix in Claude Code. |
-| The final router table | The user set the table in `features/router/data.mjs` on 2026-10-09 from the eval report `evals/results/2026-10-09T12-16-54-262Z` and the effort guide of Anthropic. The `search`, `web`, `bulk`, and `audit` cases do not separate the pairs (task 11.12). The rows `debug` and `audit`, and each `medium` that is one step above a tested `low`, are inferred ([Router](Router#tables)). | The user | Harder cases for `search`, `web`, `bulk`, and `audit` (11.12), and one `just eval --router` run that measures the inferred rows ([Evals](Evals#router-search)). |
-| The source of the `xhigh` effort cap | A hook-set `max` arrives as `xhigh`. The cause is probably an account limit for each model (**unverified**, [Router](Router#effort-clamp)). | The next session | A probe on a second account. |
-| The debug escalation of the router | `failedFixes` is 0, so the router does not yet send a debug task to Opus 5.5 ([Router](Router#routes)). The main loop keeps its model and routes only the effort. | The next session | A counter of failed fixes. |
-| A fixed prompt variant after a model switch | The variant stays as chosen at session start. The router no longer switches the main-loop model, but the user can with `/model`. Whether this costs adherence is not measured ([System prompt](System-Prompt#stable-inside-a-session-and-an-agent)). | The user | `just eval --variant FILE` for each model. |
-| The compact prompt | Claude Code has no route to override it. The profile turns compaction off instead ([Prompt variants](Prompt-Variants#the-compact-prompt-gap)). | None | A route in a later Claude Code version. |
-| The cause of the 30K start in some windows | Research found it only when the profile did not apply (**inferred**). | The user | A check in the terminal, the desktop app, and the IDE with `/context`. |
-| The 0.28.0 evals | The output style size, the claim-check `Stop` hook, the `<reply_format>` block, and the evidence line wait for `just eval` ([Evals](Evals)). | The user | A report in `evals/results/`. |
+| The model and effort of the agents | The user set them in the `agents/*.md` frontmatter on 2026-10-09 from a router search of the removed eval harness and the effort guide of Anthropic. The `search`, `web`, `bulk`, and `audit` cases did not separate the pairs. The pairs for `debug` and `audit`, and each `medium` that is one step above a tested `low`, are inferred ([Agents](Agents)). | The user | Harder cases for those roles, run with `claude plugin eval` ([Evals](Evals)). |
+| The source of the `xhigh` effort cap | A hook-set `max` arrives as `xhigh`. The cause is probably an account limit for each model (**unverified**). | The next session | A probe on a second account. |
+| A fixed prompt variant after a model switch | The variant stays as chosen at session start, and the user can switch the model with `/model`. Whether this costs adherence is not measured ([System prompt](System-Prompt#stable-inside-a-session-and-an-agent)). The eval format has no arm for a variant. | The user | A hand comparison of the variants for each model. |
+| The compact prompt | Claude Code has no route to override it. The settings snippet turns compaction off instead ([Prompt variants](Prompt-Variants#the-compact-prompt-gap)). | None | A route in a later Claude Code version. |
+| The cause of the 30K start in some windows | Research found it only when the settings snippet did not apply (**inferred**). | The user | A check in the terminal, the desktop app, and the IDE with `/context`. |
+| The 0.28.0 evals | The output style size, the claim-check `Stop` hook, the `<reply_format>` block, and the evidence line wait for a suite on `claude plugin eval`. No suite is ported yet ([Evals](Evals)). | The user | A suite and its figures in [Evals](Evals). |
 
 ## Closed items
 
 | Item | Closed by |
 | --- | --- |
 | The compaction handoff and its retention baseline | 0.27.0. Compaction is off, and the user writes each note. |
-| A week with compaction at 150k | 0.27.0. The profile turns compaction off. |
+| A week with compaction at 150k | 0.27.0. The settings turn compaction off. |
 | What the user does after a handoff note | 0.27.0. No hook tells the user to run `/clear`. |
 | The line-break hook (`sembr`) | 0.28.0 adds a new formatter and hooks ([Semantic line breaks](Semantic-Line-Breaks)). |
 | The behavior of the `tool.check` ask in auto mode on 2.1.292 | Measured on 2026-10-07: the classifier allowed the ask of the module, so 0.27.0 adds `features/guard/cli.mjs`. Its classic ask stopped `rm -r` outside the project. |
 | The stop at the 300K window | Measured on 2026-10-07: the turn ended with `blocking_limit`, and no compaction ran ([Design](Design#the-027-rebuild)). |
 | The OpenSpec resume after `/clear` | Measured on 2026-10-07: `/opsx:apply` in a fresh session continued at the first unchecked task ([OpenSpec](OpenSpec#measured-flow)). |
-| Full model id, `haiku` alias, and the effort clamp of the router | A full id works in `agent.spawn`. The `haiku` alias is Haiku 5.5 on the Anthropic API and Haiku 4.5 on Bedrock, Vertex, and Foundry (docs only, no probe there). `maxEffortLevel: max` causes no clamp, and a hook-set `max` arrives as `xhigh` ([Router](Router#model-ids)). |
+| Full model id, `haiku` alias, and the effort clamp | A full id works in `agent.spawn`. The `haiku` alias is Haiku 5.5 on the Anthropic API and Haiku 4.5 on Bedrock, Vertex, and Foundry (docs only, no probe there). `maxEffortLevel: max` causes no clamp, and a hook-set `max` arrives as `xhigh` ([Decisions](Decisions-Router)). |
 | The session ledger race | 0.20.0 |
+| The debug escalation of the router | 0.28.0 removed the router (design D35). The agent files hold the model and effort. |
 | The shape of a usage-limit hit | The transcripts of 2026-10-04. It is an `assistant` entry with `error` set to `rate_limit`, `isApiErrorMessage` set to true, `apiErrorStatus` 429, and the model `<synthetic>`. The usage report counts this shape. |
 
 ## Claims not acted on

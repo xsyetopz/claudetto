@@ -22,7 +22,7 @@ Source labels (official, binary, capture, measured, reported, inference) are in 
 Source tags: **official** is a doc of Claude Code, **binary** is the 2.1.292 bundle, **reported** is a public best-practices source or user feedback, and **inventory** is a count in this repository.
 
 - A plugin `settings.json` can keep only `agent` and `subagentStatusLine` (**official**, `plugins/components.md`).
-  So the profile is a template that `/dotclaude:setup` applies.
+  So dotclaude gives a plain [settings snippet](Settings-Snippet) for your own `settings.json`, and writes no setting.
 - `force-for-plugin` in an output style overrides the `outputStyle` of the user.
   `keep-coding-instructions` defaults to false (**official**, `output-styles.md`).
 - No settings key replaces the system prompt, and only CLI flags do (**official**, `cli-reference.md`).
@@ -46,9 +46,9 @@ Source tags: **official** is a doc of Claude Code, **binary** is the 2.1.292 bun
   Reports put context rot around 300K to 400K on a 1M window, and one says to keep use under 40% (**reported**, [Open items](Open-Items)).
 - A top-level `effortLevel` does not count for Opus 5.5 (**official**, `model-config.md`).
   An effort change keeps the cache, and a model switch, a tool-set change, and compaction break it (**official**, `prompt-caching`).
-- Each tool definition goes in each request, so the profile removes the tools that dotclaude does not use: Artifact, Workflow, ScheduleWakeup, ReportFindings, and the advisor.
+- Each tool definition goes in each request, so the snippet removes the tools that dotclaude does not use: Artifact, Workflow, ScheduleWakeup, ReportFindings, and the advisor.
   `/context` at the start of a sandbox session fell from 32k to 8.1k tokens (**measured**, [Prompt surface](Prompt-Surface#tool-removal)).
-- Deny rules are not a security boundary, so the profile pairs them with the sandbox (**official**, `permissions.md`).
+- Deny rules are not a security boundary, so the snippet pairs them with the sandbox (**official**, `permissions.md`).
   A sandbox cut permission prompts by 84% in one report (**reported**).
 - Users want asks only for destroy, reach-out, and secret reads (**reported**).
   A guardrail pack made no difference in an A/B, and prompt-only rules decay (**reported**).
@@ -56,7 +56,7 @@ Source tags: **official** is a doc of Claude Code, **binary** is the 2.1.292 bun
 
 ## The 0.28.0 decisions
 
-0.28.0 makes 30 numbered decisions, D1 to D30.
+0.28.0 makes numbered decisions from D1 to D35.
 These five set the frame:
 
 - D1: use the least powerful tool for each need.
@@ -67,6 +67,8 @@ These five set the frame:
 - D5: only an entry that writes user configuration is user-invoked only.
 
 [Decisions](Decisions) lists D1 to D30 with the page of each.
+Rule D35 sets one more frame: dotclaude never makes up a format of its own, and takes only what Claude Code provides.
+The CHANGELOG lists what it removed.
 
 ## Design principles
 
@@ -116,16 +118,16 @@ A bare `bun` start takes 5 ms.
 
 | Scenario | Bound | Mechanism | Check |
 | --- | --- | --- | --- |
-| A subagent works a long task | `maxTurns` in the agent file: 20 for `test-runner`, 80 for `implementer`, 60 for the others | Claude Code ends the agent at the limit | `tests/dotclaude/` |
-| A subagent model and effort | The efforts in `ALLOWED_EFFORTS` for each model, in `features/router/limits.mjs` | The `model` and `effort` of each agent file | `tests/dotclaude/` |
-| The main conversation grows | A 300K window and no compaction | `CLAUDE_CODE_MAX_CONTEXT_TOKENS`, `DISABLE_COMPACT`, and `autoCompactEnabled:false` in the profile | `tests/dotclaude/` |
+| A subagent works a long task | `maxTurns` in the agent file: 16 for `test-runner`, 31 for `investigator`, 41 for `reviewer`, and 61 for `implementer` and `debugger` | Claude Code ends the agent at the limit | `tests/dotclaude/` |
+| A subagent model and effort | The efforts in `SUBAGENT_EFFORTS` for each model, in `features/statusline/limits.mjs` | The `model` and `effort` of each agent file | `tests/dotclaude/` |
+| The main conversation grows | A 300K window and no compaction | `CLAUDE_CODE_MAX_CONTEXT_TOKENS`, `DISABLE_COMPACT`, and `autoCompactEnabled:false` in the snippet | `tests/dotclaude/` |
 | A `rm -r` outside the project, or a repo of another owner with an AI policy | An ask | `tool.check` in `hooks/register.mjs` | `tests/mod.test.ts` |
-| Fan-out | 5 subagents, and 5 agents per workflow, at once | profile env | none |
-| A subagent runs in the background | It runs in the foreground and causes no wake turns | `CLAUDE_CODE_FORK_SUBAGENT=0` in the profile | none |
+| Fan-out | 5 subagents, and 5 agents per workflow, at once | snippet env | none |
+| A subagent runs in the background | It runs in the foreground and causes no wake turns | `CLAUDE_CODE_FORK_SUBAGENT=0` in the snippet | none |
 | Text of dotclaude on every request | The first request text is 8 KB to 16 KB, each `CLAUDE.md` is at most 6 KB, and skill metadata and bodies have bounds | `tools/limits.mjs` | `tests/support/sizes.test.mjs` fails above a high bound and prints an advisory below a low bound, and `just measure` checks the first request |
 | Weekly review | The usage shares in [Usage evidence](Usage-Evidence) are reproducible | `tools/usage-report.mjs` | none |
 
-The profile rows need `/dotclaude:setup`.
+The snippet rows need your copy of the [settings snippet](Settings-Snippet).
 The `maxTurns`, effort, and ask rows need only the plugin.
 
 ### Subagent context (0.19 to 0.26 history)
@@ -228,7 +230,7 @@ The routing rule tells Claude to delegate work whose tool results it does not ne
 It also tells Claude to match the work to the agent descriptions.
 
 - The old rule came from one week in which subagents were over half the cost.
-  The causes were fan-out and `general-purpose` agents, which the profile and `maxTurns` now limit.
+  The causes were fan-out and `general-purpose` agents, which the snippet and `maxTurns` now limit.
 - Each main Opus turn reads the whole main context again (99.9% cache reads, see [Usage evidence](Usage-Evidence#the-measured-week)).
 - Users report that the main agent does almost all the work itself.
 - **measured** before the change (2026-10-03, 7 days): 3.8 subagent runs per 100 main turns.
@@ -239,7 +241,7 @@ It also tells Claude to match the work to the agent descriptions.
 
 ## The 5-minute main cache
 
-The settings profile (`plugins/dotclaude/features/setup/profile.json`) sets `promptCacheTtl` to `"5m"`.
+The [settings snippet](Settings-Snippet) sets `promptCacheTtl` to `"5m"`.
 
 - **measured:** In 7 days of transcripts, 98.7% of the calls of the main agent came 5 minutes or less after the call before.
 - At API prices, the 5-minute cache would have cost 8.5% less than the 1-hour cache.
@@ -276,7 +278,7 @@ The settings profile (`plugins/dotclaude/features/setup/profile.json`) sets `pro
   But all 65.5M tokens of writes in these 7 days paid the higher price.
 - A new agent that reads the cached prefix of an earlier agent of the same kind saves at most $5 more.
 - The 1-hour TTL pays only when about each subagent run has a pause of 5 to 60 minutes.
-- The 0.20.4 profile does not set `subagentPromptCacheTtl`.
+- The snippet does not set `subagentPromptCacheTtl`.
 
 </details>
 

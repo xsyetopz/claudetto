@@ -1,4 +1,4 @@
-// The derived values, the burn-rate state, and the reset-credit parser of the status line.
+// The derived values and the reset-credit parser of the status line.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
@@ -9,17 +9,12 @@ import {
   readCredits,
 } from "../../plugins/dotclaude/features/statusline/credits.mjs";
 import {
-  burnRate,
   cacheLeft,
   cacheStats,
   headroom,
   pace,
   rates,
 } from "../../plugins/dotclaude/features/statusline/derive.mjs";
-import {
-  recordBurn,
-  step,
-} from "../../plugins/dotclaude/features/statusline/state.mjs";
 
 const H = 3600;
 const NOW = 1_000_000;
@@ -87,75 +82,6 @@ test("rates: cost and changed lines for each hour of the session", () => {
 test("headroom is the tokens left and never below `0`", () => {
   expect(headroom(100_000, 300_000)).toBe(200_000);
   expect(headroom(400_000, 300_000)).toBe(0);
-});
-
-test("burn rate: `40%` at `10:00` and `46%` at `10:30` is `12%/h`", () => {
-  expect(
-    burnRate([
-      { t: 0, pct: 40 },
-      { t: 1800, pct: 46 },
-    ]),
-  ).toBeCloseTo(12, 5);
-  expect(burnRate([{ t: 0, pct: 40 }])).toBeNull();
-  expect(burnRate([])).toBeNull();
-  // A sample older than the burn window does not count.
-  const old = [
-    { t: 0, pct: 0 },
-    { t: 7200, pct: 50 },
-    { t: 7200 + 1800, pct: 56 },
-  ];
-  expect(burnRate(old)).toBeCloseTo(12, 5);
-});
-
-test("state: a sample comes after 60 seconds or a change, and 50 samples stay", () => {
-  let s = step(undefined, 100, 40, 0);
-  expect(s.samples).toEqual([{ t: 0, pct: 40 }]);
-  expect(step(s, 100, 40, 59)).toBe(s);
-  s = step(s, 100, 40, 60);
-  expect(s.samples).toHaveLength(2);
-  s = step(s, 100, 41, 61);
-  expect(s.samples).toHaveLength(3);
-  for (let i = 0; i < 80; i++) s = step(s, 100, 41 + (i % 2) * 0, 62 + i * 60);
-  expect(s.samples).toHaveLength(50);
-  expect(s.samples.at(-1).t).toBe(62 + 79 * 60);
-});
-
-test("state: a new `resets_at` removes the samples of the old window, and a drop marks a used reset", () => {
-  let s = step(undefined, 100, 40, 0);
-  s = step(s, 100, 46, 1800);
-  expect(s.resetUsed).toBe(false);
-  const next = step(s, 200, 3, 2000);
-  expect(next).toEqual({
-    resets_at: 200,
-    samples: [{ t: 2000, pct: 3 }],
-    resetUsed: false,
-  });
-  const used = step(s, 100, 2, 1900);
-  expect(used).toEqual({
-    resets_at: 100,
-    samples: [{ t: 1900, pct: 2 }],
-    resetUsed: true,
-  });
-});
-
-test("state: the file in the temporary folder follows the same rules", () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dc-burn-"));
-  try {
-    const w = (used_percentage, resets_at = 100) => ({
-      used_percentage,
-      resets_at,
-    });
-    recordBurn("acct", w(40), 0, dir);
-    const two = recordBurn("acct", w(46), 1800, dir);
-    expect(burnRate(two.samples)).toBeCloseTo(12, 5);
-    expect(recordBurn("acct", w(1, 200), 2000, dir).samples).toHaveLength(1);
-    expect(recordBurn("other", w(5), 2000, dir).samples).toHaveLength(1);
-    // The window that rolled removed the old file of the same account.
-    expect(fs.readdirSync(dir)).toHaveLength(2);
-    expect(recordBurn("acct", {}, 0, dir)).toBeNull();
-  } finally {
-    fs.rmSync(dir, { recursive: true });
-  }
 });
 
 // The known shape of `cachedUsageUtilization` from Claude Code 2.1.289, pinned as a fixture.

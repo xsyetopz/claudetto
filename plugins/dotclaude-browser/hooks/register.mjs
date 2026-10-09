@@ -1,8 +1,9 @@
 // The hooks module of dotclaude-browser.
 // A `tool.call` hook on `WebSearch` answers with a search in the headless browser.
 // It runs `agent-browser` as a child process with `$.process.run`, with no shell.
-// When the browser fails, or the `backend` option is `cloakbrowser`, the call is denied
-// with a reason that names the browser skill.
+// It adds `--executable-path` when the CloakBrowser binary is under `~/.cloakbrowser/`.
+// The `backend` option `cloakbrowser` needs that binary, and the call is denied when it is missing.
+// When the browser fails, the call is denied with a reason that names the browser skill.
 // Each `$` call is in this file, because `$` is not followed across an import.
 
 import {
@@ -11,9 +12,15 @@ import {
   READ_TIMEOUT_MS,
 } from "../features/search/limits.mjs";
 import {
+  CLOAK_DIR,
+  CLOAK_NAME,
+  cloakBinaryPath,
+  cloakBuilds,
   denyText,
   failure,
   INVALID_INPUT,
+  MISSING_BINARY,
+  PLAIN_NAME,
   pageResult,
   searchQuery,
   searchResult,
@@ -23,8 +30,8 @@ import {
 } from "../features/search/search.mjs";
 
 /** Opens the search page and reads its text. Gives `{ text }` or `{ reason }`. */
-async function readPage($, url, session) {
-  const cmd = steps(url, session);
+async function readPage($, url, session, binary) {
+  const cmd = steps(url, session, binary);
   const open = await $.process.run(cmd.open, { timeoutMs: OPEN_TIMEOUT_MS });
   const opened = failure(open, "Opening the search page");
   if (opened) return { reason: opened };
@@ -34,9 +41,9 @@ async function readPage($, url, session) {
 }
 
 /** Closes the session of the search, and ignores a failure. */
-async function closeSession($, url, session) {
+async function closeSession($, url, session, binary) {
   try {
-    await $.process.run(steps(url, session).close, {
+    await $.process.run(steps(url, session, binary).close, {
       timeoutMs: CLOSE_TIMEOUT_MS,
     });
   } catch {
@@ -44,29 +51,43 @@ async function closeSession($, url, session) {
   }
 }
 
+/** The path of the newest CloakBrowser binary, or `null` when there is none. */
+async function findBinary($) {
+  try {
+    const home = await $.env.get("HOME");
+    if (!home) return null;
+    const entries = await $.fs.list(`${home}/${CLOAK_DIR}`);
+    for (const build of cloakBuilds(entries)) {
+      const path = cloakBinaryPath(home, build);
+      if (await $.fs.exists(path)) return path;
+    }
+  } catch {
+    // No folder of builds: there is no binary.
+  }
+  return null;
+}
+
 /** The result of the `tool.call` event: a search result, or a deny that names the skill. */
 async function webSearch($, e, options) {
   const query = searchQuery(e);
   if (!query) return { deny: INVALID_INPUT };
-  if (options?.backend === "cloakbrowser")
-    return {
-      deny: denyText(
-        "The `backend` option is `cloakbrowser`, and this search uses `agent-browser`.",
-      ),
-    };
+  const binary = await findBinary($);
+  if (!binary && options?.backend === "cloakbrowser")
+    return { deny: MISSING_BINARY };
+  const browser = binary ? CLOAK_NAME : PLAIN_NAME;
   const url = searchUrl(query);
   const session = sessionName();
   const startedAt = Date.now();
   let page;
   try {
-    page = await readPage($, url, session);
+    page = await readPage($, url, session, binary);
   } catch {
     page = { reason: "The browser did not start or ran too long." };
   } finally {
-    await closeSession($, url, session);
+    await closeSession($, url, session, binary);
   }
   if (page.reason) return { deny: denyText(page.reason) };
-  const answer = pageResult(e.query, page.text);
+  const answer = pageResult(e.query, page.text, browser);
   if (!answer.text) return { deny: denyText(answer.reason) };
   return { result: searchResult(e.query, answer.text, startedAt) };
 }

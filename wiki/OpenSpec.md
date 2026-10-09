@@ -20,6 +20,8 @@ brew install openspec
 `/dotclaude:setup` checks `openspec --version` and `node --version`.
 When `openspec` is missing or old, setup offers the install command.
 It runs the command only after you say yes, because a global install changes your computer.
+This is all that setup does.
+It changes no Claude Code setting.
 
 ## Set up a project
 
@@ -56,9 +58,9 @@ with `proposal.md`, `design.md`, `tasks.md`, and its delta specs.
 1. For work of more than one session, start with `/opsx:propose`.
 1. Work through the tasks with `/opsx:apply`.
    The agent checks off each task in `tasks.md` when it is done.
-1. When the status line turns yellow or red, run `/dotclaude:handoff` and then `/clear`.
-   The handoff note names the change id and holds only what `tasks.md` does not hold:
-   decisions, rejected approaches, and the commands that prove each result.
+1. When the status line turns yellow or red, or when a hook tells Claude to stop, let Claude tick the finished tasks in `tasks.md` and put the decisions in `design.md`.
+   Then run `/clear`.
+   dotclaude writes no handoff file, because the artifacts of the change hold the state.
 1. In the fresh session, run `/opsx:apply <id>`.
    It reads the artifacts and continues at the first unchecked task.
 1. When all tasks are done, run `/opsx:archive`.

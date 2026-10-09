@@ -1,10 +1,10 @@
-// The facts that the drift check compares with the settings profile.
-// Tests pin `OFF_PLUGINS` to `features/setup/profile.json`, and `TESTED_VERSION` to the schema file of the profile.
+// The facts that the drift check compares with the settings snippet of the wiki.
+// Tests pin `TESTED_VERSION` to the schema file.
 
 /** The Claude Code version that this release of dotclaude is tested on. */
 export const TESTED_VERSION = "2.1.295";
 
-/** The built-in plugins that the profile turns off with `enabledPlugins`. */
+/** The built-in plugins that the snippet turns off with `enabledPlugins`. */
 export const OFF_PLUGINS = [
   "cc-plugin-agents-md@builtin",
   "cc-plugin-claude-test@builtin",
@@ -72,10 +72,9 @@ export const GUARD_SKIPS = [
 ];
 
 /**
- * The variables that stop the router.
- * Tests pin this list to `BLOCKING_ENV` of the router, because a feature imports no other feature.
+ * The variables that override the `model` and `effort` of the agent files.
  */
-export const ROUTER_BLOCKING_ENV = [
+export const OVERRIDE_ENV = [
   "CLAUDE_CODE_EFFORT_LEVEL",
   "CLAUDE_CODE_SUBAGENT_MODEL_FORCE",
 ];

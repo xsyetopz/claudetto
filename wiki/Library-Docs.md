@@ -30,15 +30,16 @@ The decision is D8 in [Decisions](Decisions-Tools).
 | No secrets in queries | A query goes to the Context7 service, so it holds only the library name and the topic. No secret, token, or private code goes in it. |
 | Pinned and quiet | The command uses an exact `ctx7` version and sets `CTX7_TELEMETRY_DISABLED=1`. |
 
-## Profile parts
+## Snippet parts
 
-`/dotclaude:setup` merges these parts only when `dotclaude-docs` is installed and not disabled (`features/setup/addons.mjs`):
+The [settings snippet](Settings-Snippet) holds these parts, and you copy them when you use `dotclaude-docs`.
+No command merges them for you:
 
 - The `permissions.allow` entries `Skill(dotclaude-docs:docs)` and the pinned `ctx7` command form.
-  The `allowed-tools` line of the skill does not approve the call on Claude Code 2.1.294 (live run), so the profile allows it.
+  The `allowed-tools` line of the skill does not approve the call on Claude Code 2.1.294 (live run), so the snippet allows it.
 - The sandbox network hosts `context7.com` and `registry.npmjs.org`.
 
-A test pins the command form in the profile to the form in the skill.
+A test pins the command form in the snippet to the form in the skill.
 
 ## Related pages
 

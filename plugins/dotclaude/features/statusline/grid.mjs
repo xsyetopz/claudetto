@@ -13,7 +13,7 @@ const BASE = Number.POSITIVE_INFINITY;
 /** `850` or `12k`: small numbers show in full, because `12k` rounds `400` to `0k`. */
 const tokens = (n) => (n >= 1000 ? k(n) : String(n));
 const part = (icon, text) => `${C.dim(icon)} ${text}`;
-/** The cells of the middle column below the meter. `parts` is from `partsOf` in `breakdown.mjs`. */
+/** The cells of the middle column below the meter. `parts` is from `partsOf` in `context-table.mjs`. */
 function breakdownCells(parts) {
   const free = part(ICON.free, tokens(parts.free));
   if (parts.system === undefined) return [free, ""];
@@ -51,7 +51,6 @@ const EXTRA_CELLS = {
   name: [0, 2],
   cache: [1, 0],
   cacheDetail: [1, 0],
-  burn: [2, 0],
   credits: [2, 1],
   spend_limit: [2, 2],
 };

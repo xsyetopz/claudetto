@@ -35,7 +35,7 @@ sandbox-clean:
 capture *args:
     bun tools/capture.mjs "$@"
 
-# Size the start of a session and its context from a transcript, write tools/baseline.json, and fail above START_TOKENS; extra arguments go to the report (a .jsonl path, --no-write, --bound N)
+# Size the start of a session and its context from a transcript, print the numbers, and fail above START_TOKENS; extra arguments go to the report (a .jsonl path, --bound N)
 measure *args:
     bun tools/measure.mjs "$@"
 
@@ -86,6 +86,6 @@ release *flags:
 schema *args:
     bun tools/schema.mjs "$@"
 
-# Run the eval suite in containers and write a report to evals/results/ (it costs money, and `just check` never runs it); extra arguments go to the harness (--cases a,b, --runs N, --limit USD, --model M, --variant FILE, --dry-run)
-eval *args:
-    bun tools/eval/cli.mjs "$@"
+# Run the eval cases of the core plugin with `claude plugin eval`, on a path target so the checkout and not the installed copy is tested. The run costs money, so --max-cost-usd bounds it
+eval:
+    claude plugin eval plugins/dotclaude --no-publish --scaffold --allow-tools Bash,Write,Edit --max-cost-usd 5

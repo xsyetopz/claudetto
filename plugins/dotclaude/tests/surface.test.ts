@@ -164,9 +164,8 @@ test("an agent listing with no concurrency note passes on with no change", async
   expect((await attach($, "agent_listing_delta", text)).text).toBe(text);
 });
 
-test("the skill listing and the environment text pass on with no change, because the profile keeps handoff and the facts", async ($, on) => {
-  const skills =
-    "- dotclaude:handoff: Writes a handoff note.\n- plugin-authoring";
+test("the skill listing and the environment text pass on with no change, because the profile keeps setup and the facts", async ($, on) => {
+  const skills = "- dotclaude:setup: Sets up OpenSpec.\n- plugin-authoring";
   engine(on, { text: skills });
   expect((await attach($, "skill_listing", skills)).text).toBe(skills);
   expect((await attach($, "environment", skills)).text).toBe(skills);

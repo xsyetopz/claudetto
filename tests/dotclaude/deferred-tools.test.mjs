@@ -1,4 +1,4 @@
-// Test 9.5: the profile keeps deferred tool loading on, and no plugin file sets `isDeferred: false`.
+// Test 9.5: no plugin file sets `isDeferred: false`, and the ban list of the env names that turn off deferral is exact.
 // The engine defers the tools that it can only when none of these keys sends every tool schema in full.
 
 import { expect, test } from "bun:test";
@@ -6,13 +6,6 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = path.join(import.meta.dirname, "../..");
-const PROFILE = JSON.parse(
-  fs.readFileSync(
-    path.join(ROOT, "plugins/dotclaude/features/setup/profile.json"),
-    "utf8",
-  ),
-);
-
 // The env names that turn off deferral or send every tool in full, and the one value that turns off a name that has values.
 const ENV_BANNED = [
   { name: "CLAUDE_CODE_SIMPLE", value: null },
@@ -21,16 +14,6 @@ const ENV_BANNED = [
   { name: "ENABLE_TOOL_SEARCH", value: "0" },
   { name: "ENABLE_TOOL_SEARCH", value: "auto:0" },
 ];
-
-test("no `env` key of the profile turns off deferred tools", () => {
-  const env = PROFILE.env ?? {};
-  const found = ENV_BANNED.filter(
-    ({ name, value }) =>
-      Object.hasOwn(env, name) &&
-      (value === null || String(env[name]) === value),
-  ).map(({ name }) => name);
-  expect(found).toEqual([]);
-});
 
 test("a ban matches its value and no other", () => {
   const env = { ENABLE_TOOL_SEARCH: "true" };
@@ -43,11 +26,6 @@ test("a ban matches its value and no other", () => {
       ({ name, value }) => name === "ENABLE_TOOL_SEARCH" && value === "false",
     ),
   ).toHaveLength(1);
-});
-
-test("the profile sets the simple system prompt, which is not the simple mode", () => {
-  expect(PROFILE.env.CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT).toBe("1");
-  expect(PROFILE.env.CLAUDE_CODE_SIMPLE).toBeUndefined();
 });
 
 function files(dir) {

@@ -3,8 +3,8 @@
 // one `tool.call` hook on `Edit` that splits a cross-sentence `old_string` of a Markdown file (design D29),
 // one `prompt.section` hook that makes the `context_management` section of the system prompt true without compaction,
 // and the surface hooks (`prompt.attachment`, `agent.offer`, `tool.describe`) that cut attachments, agent lines, and tool schemas by exact id.
-// The router (`prompt.submit`, `agent.spawn`, `turn.step`) and the drift check (`session.start`) have their handlers in `features/router/hooks.mjs` and `features/drift/hooks.mjs`.
-// Permission rules and the sandbox in the settings profile cover the other dangerous calls.
+// The drift check (`session.start`) has its handler in `features/drift/hooks.mjs`.
+// Permission rules and the sandbox of the settings snippet cover the other dangerous calls.
 // This guard covers the two cases that a rule cannot express:
 // a recursive `rm` outside the project folder,
 // and the first call of a session that reaches a GitHub repository of another owner with an AI policy.
@@ -32,11 +32,6 @@ import {
   variantKey,
   withBlock,
 } from "../features/prompt/select.mjs";
-import {
-  onAgentSpawn,
-  onPromptSubmit,
-  onStep,
-} from "../features/router/hooks.mjs";
 import { isMarkdown, repairEdit } from "../features/sembr/rules.mjs";
 import {
   ATTACHMENT_TYPES,
@@ -93,7 +88,7 @@ async function guardAsk($, e) {
 }
 
 // The variant key of each session, chosen at the first `prompt.compose` of the session and kept.
-// A model switch of the router changes nothing, because a changed system prompt breaks the cache.
+// A model switch changes nothing, because a changed system prompt breaks the cache.
 const variants = new Map();
 
 /** @type {import('claude-code').Register} */
@@ -108,16 +103,11 @@ export function register(on) {
     return key ? { sections: composeSections(result.sections, key) } : result;
   });
   // A subagent gets its system prompt from its agent body, so its model block goes to the end of the task prompt.
-  // The router hook comes first, so the block of the variant is the one of the routed model.
-  // A fork inherits the model of its parent, so the router never routes it.
-  on("agent.spawn", { fork: false }, onAgentSpawn);
   on("agent.spawn", (_$, e, next) => {
     const model = e.model && e.model !== "inherit" ? e.model : e.parentModel;
     const key = variantKey(model);
     return next(key ? { ...e, prompt: withBlock(e.prompt, key) } : e);
   });
-  on("prompt.submit", onPromptSubmit);
-  on("turn.step", onStep);
   on("session.start", onSessionStart);
   on("prompt.section", { name: "context_management" }, async ($, e, next) => {
     const off = await $.env.get("DISABLE_COMPACT");

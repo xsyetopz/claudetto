@@ -75,7 +75,8 @@ Layered imports keep the start of each hook small and its failure local.
 A test that runs a destructive command can do the damage that the guard exists to stop.
 See the design principles on the [Design](Design) page.
 
-The removed `dotclaude-modder` plugin is in `external/archive/dotclaude-modder/dotclaude-modder.tar.gz`, which git ignores, so that you can unpack its skills and the `um` command as a base for your own plugin.
+The removed `dotclaude-modder` plugin is in git history at commit `5cf4cb4`, in `plugins/dotclaude-modder/`.
+You can restore its skills and the `um` command from there as a base for your own plugin.
 
 ## Types
 
@@ -144,6 +145,8 @@ The removed `dotclaude-modder` plugin is in `external/archive/dotclaude-modder/d
 ## Evals
 
 0.27.0 removed the behavior evals and `just eval-agent`.
+0.28.0 removed the Bun harness, `just eval`, and `evals/`.
+The suite format is now the one of `claude plugin eval` ([Evals](Evals)).
 The old results are on the [Eval history](Evals-History) page.
 
 ## Next steps

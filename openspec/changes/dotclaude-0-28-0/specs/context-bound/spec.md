@@ -96,12 +96,10 @@ For the main session, it SHALL report the tool-result size for each tool and the
 
 ### Requirement: Context note at the levels
 
-A `UserPromptSubmit` hook SHALL read the usage of the last request from `transcript_path`, and SHALL give `additionalContext` only when the context share is at or above `CONTEXT_NOTICE_AT` (60% of `CONTEXT_WINDOW`).
-The note SHALL give the figure in tokens and as a share, the tokens left before the client block (`CONTEXT_WINDOW` minus `CONTEXT_BLOCK_MARGIN`), and the rule to start a slice only when it fits in those tokens minus `HANDOFF_RESERVE`.
-At or above `CONTEXT_HANDOFF_AT` (80%), the note SHALL also give the handoff steps:
-finish the current edit, leave no file half-edited, tick each task whose check passed, put the decisions of the chat in the design, name the resume command, and tell the user to run `/clear`.
-The hook SHALL keep no marker and SHALL write no file, so it repeats at each prompt at or above a level (design D32, D35).
-No `PostToolUse` route SHALL give the note, because without a marker it would fire at each tool call.
+A `UserPromptSubmit` hook SHALL read the usage of the last request from `transcript_path`.
+The hook SHALL give `additionalContext` only when the context share is at or above `CONTEXT_NOTICE_AT` (60% of `CONTEXT_WINDOW`).
+The note SHALL give the figure in tokens and as a share, and the tokens left before the client block (`CONTEXT_WINDOW` minus `CONTEXT_BLOCK_MARGIN`).
+The note SHALL also give the rule to start a slice only when it fits in those tokens minus `HANDOFF_RESERVE`.
 
 #### Scenario: Below the notice level
 
@@ -113,22 +111,35 @@ No `PostToolUse` route SHALL give the note, because without a marker it would fi
 - **WHEN** the context is at 62%
 - **THEN** the hook gives the figure, the tokens left before the client block, and the small-slice rule, and no handoff steps
 
-#### Scenario: Handoff level
-
-- **WHEN** the context is at 82%
-- **THEN** the note also names the handoff steps, `/clear`, and the resume command
-
 #### Scenario: No transcript
 
 - **WHEN** `transcript_path` is missing or has no `usage`
 - **THEN** the hook gives nothing
+
+### Requirement: Handoff steps
+
+At or above `CONTEXT_HANDOFF_AT` (80%), the context note SHALL also give the handoff steps.
+
+#### Scenario: Handoff level
+
+- **WHEN** the context is at 82%
+- **THEN** the note also names the handoff steps, `/clear`, and the resume command
+- **AND** the steps are to finish the current edit, leave no file half-edited, tick each task whose check passed, put the decisions of the chat in the design, name the resume command, and tell the user to run `/clear`
+
+### Requirement: Context note keeps no state
+
+The context hook SHALL keep no marker and SHALL write no file, so it repeats at each prompt at or above a level (design D32, D35).
+No `PostToolUse` route SHALL give the note, because without a marker it would fire at each tool call.
 
 #### Scenario: No file
 
 - **WHEN** the hook runs
 - **THEN** it writes no file
 
-## MODIFIED Requirements
+#### Scenario: Repeat at each prompt
+
+- **WHEN** two prompts in a row come at a context of 62%
+- **THEN** the hook gives the note at both prompts
 
 ### Requirement: No model-made context figures
 

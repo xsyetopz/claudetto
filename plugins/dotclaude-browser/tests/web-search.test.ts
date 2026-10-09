@@ -3,15 +3,30 @@
 // No browser runs, no session starts, and no network call goes out.
 // The `process.run` stub is the test's own, so the live engine and the live browser are not tested.
 
-import { expect, test } from "claude-code/testing";
+import { expect, mock, test } from "claude-code/testing";
 
 type Run = { exitCode: number; stdout: string; stderr: string };
 
 const PAGE = "Bun v1.3.0 release notes\nhttps://bun.sh/blog/bun-v1.3";
 
 /** Stubs `process.run`: `answer` gives the run for each argument vector. */
-function stub(on: any, answer?: (argv: string[]) => Run) {
+function stub(
+  on: any,
+  answer?: (argv: string[]) => Run,
+  builds: string[] = [],
+) {
   const runs: string[][] = [];
+  mock.env(on, { HOME: "/home/me" });
+  on("fs.list", () => ({
+    value: builds.map((name) => ({
+      name,
+      kind: "dir",
+      size: 0,
+      mtimeMs: 0,
+      isLink: false,
+    })),
+  }));
+  on("fs.exists", () => ({ value: true }));
   on("process.run", (_$: any, e: any) => {
     runs.push(e.argv);
     return {
@@ -113,14 +128,66 @@ test("an empty query is denied and starts no browser", async ($: any, on: any) =
   expect(runs).toHaveLength(0);
 });
 
+const BIN = (v: string) =>
+  `/home/me/.cloakbrowser/chromium-${v}/Chromium.app/Contents/MacOS/Chromium`;
+const BUILDS = [
+  "chromium-9.1.0",
+  "chromium-10.2.0",
+  "notes",
+  "chromium-10.1.5",
+];
+const exeOf = (r: string[] | undefined) =>
+  r?.[r.indexOf("--executable-path") + 1];
+
+test("with CloakBrowser builds present, the search uses the newest binary", async ($: any, on: any) => {
+  const runs = stub(on, undefined, BUILDS);
+  const out = await search($);
+  expect(runs).toHaveLength(3);
+  for (const r of runs) expect(exeOf(r)).toBe(BIN("10.2.0"));
+  expect(out.result.results[0]).toContain("CloakBrowser");
+});
+
+test("with no CloakBrowser binary, the search uses plain `agent-browser`", async ($: any, on: any) => {
+  const runs = stub(on);
+  const out = await search($);
+  for (const r of runs) expect(r).not.toContain("--executable-path");
+  expect(out.result.results[0]).toContain("`agent-browser`");
+});
+
+test("a bot check names the browser that got it", async ($: any, on: any) => {
+  stub(
+    on,
+    (argv) => ({
+      exitCode: 0,
+      stdout: argv.includes("get") ? "bots use DuckDuckGo too" : "",
+      stderr: "",
+    }),
+    BUILDS,
+  );
+  const out = await search($);
+  expect(out.deny).toContain("asked CloakBrowser for a bot check");
+});
+
 test(
-  "with the `cloakbrowser` backend, the call is denied and no browser starts",
+  "with the `cloakbrowser` backend and no binary, the call is denied and no browser starts",
   { options: { backend: "cloakbrowser" } },
   async ($: any, on: any) => {
     const runs = stub(on);
     const out = await search($);
-    expect(typeof out.deny).toBe("string");
+    expect(out.deny).toContain("CloakBrowser binary is missing");
+    expect(out.deny).toContain("install CloakBrowser");
     expect(runs).toHaveLength(0);
+  },
+);
+
+test(
+  "with the `cloakbrowser` backend and a binary, the search uses CloakBrowser",
+  { options: { backend: "cloakbrowser" } },
+  async ($: any, on: any) => {
+    const runs = stub(on, undefined, BUILDS);
+    const out = await search($);
+    expect(exeOf(runs[0])).toBe(BIN("10.2.0"));
+    expect(out.result.results[0]).toContain("CloakBrowser");
   },
 );
 

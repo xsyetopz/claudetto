@@ -1,24 +1,16 @@
 // The file checks of the `adherence` hooks (design D34): the ask for a test or limits file,
-// the approval claim, and the project rules file (tier 2). Files and transcripts are strings.
+// and the approval claim. Files and transcripts are strings.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import {
   approved,
   claims,
   prompts,
 } from "../../plugins/dotclaude/features/adherence/approval.mjs";
-import {
-  decide,
-  loadRules,
-} from "../../plugins/dotclaude/features/adherence/cli.mjs";
+import { decide } from "../../plugins/dotclaude/features/adherence/cli.mjs";
 import { HOOK_TIMEOUT_S } from "../../plugins/dotclaude/features/adherence/limits.mjs";
-import {
-  matches,
-  parseRules,
-} from "../../plugins/dotclaude/features/adherence/project.mjs";
 
 const CWD = "/w";
 /** The `io` of a test: `files` maps a path to its text, and `transcript` is the text of the transcript. */
@@ -175,163 +167,6 @@ test("the prompts are the text records of the user, and not tool results or remi
   expect(approved(user("a book"))).toBe(false);
 });
 
-const RULES = JSON.stringify({
-  maxLines: [{ glob: "**/*.md", lines: 3 }],
-  banned: [
-    {
-      glob: "plugins/**/*.mjs",
-      pattern: "\\bnode:fs\\b",
-      reason: "No node import.",
-    },
-  ],
-  ask: [
-    {
-      glob: "plugins/*/lib/budget.mjs",
-      reason: "A shared bound changes on request.",
-    },
-  ],
-});
-
-test("`parseRules` keeps valid entries and drops the rest", () => {
-  const rules = parseRules(
-    JSON.stringify({
-      maxLines: [
-        { glob: "a", lines: 5 },
-        { glob: "b", lines: "5" },
-        { lines: 3 },
-        7,
-      ],
-      banned: [
-        { glob: "a", pattern: "(", reason: "x" },
-        { glob: "a", pattern: "ok", reason: "x" },
-      ],
-      ask: [{ glob: "a" }, { glob: "a", reason: "r" }],
-    }),
-  );
-  expect(rules.maxLines).toEqual([{ glob: "a", lines: 5 }]);
-  expect(rules.banned).toEqual([{ glob: "a", pattern: "ok", reason: "x" }]);
-  expect(rules.ask).toEqual([{ glob: "a", reason: "r" }]);
-  expect(parseRules("not json")).toBeNull();
-  expect(parseRules("[]")).toBeNull();
-  expect(
-    parseRules(
-      '{"banned": [{"glob":"a","pattern":"' +
-        "a".repeat(300) +
-        '","reason":"r"}]}',
-    ).banned,
-  ).toEqual([]);
-});
-
-test.each([
-  ["**/*.md", "a/b/c.md", true],
-  ["**/*.md", "c.md", true],
-  ["*.md", "docs/c.md", true],
-  ["docs/*.md", "docs/c.md", true],
-  ["docs/*.md", "docs/x/c.md", false],
-  ["docs/**", "docs/x/c.md", true],
-  ["src/**/*.{mjs,ts}", "src/a/b.ts", true],
-  ["src/**/*.{mjs,ts}", "src/a/b.js", false],
-  ["a?.md", "ab.md", true],
-  ["a.md", "xa.md", false],
-  ["tests/**/*.test.*", "tests/dotclaude/a.test.mjs", true],
-])("the glob `%s` on `%s` is %p", (glob, rel, want) => {
-  expect(matches(glob, rel)).toBe(want);
-});
-
-const withRules = (files = {}, extra = {}) =>
-  io({ "/w/.claude/dotclaude-rules.json": RULES, ...files }, extra);
-
-test("a `Write` over the `maxLines` bound is denied with the bound and the count", () => {
-  const o = out(
-    call("Write", { file_path: "/w/n.md", content: "a\nb\nc\nd\n" }),
-    withRules(),
-  );
-  expect(o.permissionDecision).toBe("deny");
-  expect(o.permissionDecisionReason).toContain("4 lines");
-  expect(o.permissionDecisionReason).toContain("is 3 lines");
-});
-
-test("a `Write` at the bound passes, and an `Edit` that shrinks a file over the bound passes", () => {
-  expect(
-    out(
-      call("Write", { file_path: "/w/n.md", content: "a\nb\nc\n" }),
-      withRules(),
-    ),
-  ).toBeUndefined();
-  const long = "a\nb\nc\nd\ne\n";
-  const o = out(
-    call("Edit", { file_path: "/w/n.md", old_string: "e\n", new_string: "" }),
-    withRules({ "/w/n.md": long }),
-  );
-  expect(o).toBeUndefined();
-});
-
-test("an `Edit` that grows a file over the bound is denied", () => {
-  const o = out(
-    call("Edit", { file_path: "/w/n.md", old_string: "c", new_string: "c\nd" }),
-    withRules({ "/w/n.md": "a\nb\nc\n" }),
-  );
-  expect(o.permissionDecision).toBe("deny");
-});
-
-test("a banned pattern in added text is denied with the reason, and old text passes", () => {
-  const file = "/w/plugins/x/a.mjs";
-  const w = call("Write", {
-    file_path: file,
-    content: 'import fs from "node:fs";',
-  });
-  const o = out(w, withRules());
-  expect(o.permissionDecision).toBe("deny");
-  expect(o.permissionDecisionReason).toContain("No node import.");
-  const old = withRules({ [file]: 'import fs from "node:fs";\nlet a;\n' });
-  const e = call("Edit", {
-    file_path: file,
-    old_string: "let a;",
-    new_string: "let b;",
-  });
-  expect(out(e, old)).toBeUndefined();
-  expect(
-    out(
-      call("Write", { file_path: "/w/other/a.mjs", content: "node:fs" }),
-      withRules(),
-    ),
-  ).toBeUndefined();
-});
-
-test("an `ask` glob of the rules file gets an ask with its reason", () => {
-  const file = "/w/plugins/dotclaude/lib/budget.mjs";
-  const o = out(call("Write", { file_path: file, content: "x" }), withRules());
-  expect(o.permissionDecision).toBe("ask");
-  expect(o.permissionDecisionReason).toContain(
-    "A shared bound changes on request.",
-  );
-});
-
-test("no rules file, a bad rules file, or a file outside the project means no tier 2 check", () => {
-  const w = call("Write", { file_path: "/w/n.md", content: "a\nb\nc\nd\n" });
-  expect(out(w)).toBeUndefined();
-  expect(
-    out(w, io({ "/w/.claude/dotclaude-rules.json": "{oops" })),
-  ).toBeUndefined();
-  const far = call("Write", {
-    file_path: "/elsewhere/n.md",
-    content: "a\nb\nc\nd\n",
-  });
-  expect(out(far, withRules())).toBeUndefined();
-});
-
-test("`loadRules` reads the file from a folder and returns null for a missing one", () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "adherence-"));
-  try {
-    expect(loadRules(dir)).toBeNull();
-    fs.mkdirSync(path.join(dir, ".claude"));
-    fs.writeFileSync(path.join(dir, ".claude/dotclaude-rules.json"), RULES);
-    expect(loadRules(dir).maxLines).toEqual([{ glob: "**/*.md", lines: 3 }]);
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
-});
-
 test("a read that throws fails open", () => {
   const boom = io(
     {},
@@ -339,7 +174,6 @@ test("a read that throws fails open", () => {
       read: () => {
         throw new Error("read");
       },
-      rules: null,
     },
   );
   const w = call("Write", {

@@ -98,15 +98,6 @@ test("the deficit shows with the run-out time", () => {
   expect(plain({ ...base, rate_limits: early })).not.toMatch(/[▲▼⏵]/);
 });
 
-test("the burn rate and the used-reset mark show", () => {
-  const limit = { five_hour: { used_percentage: 46, resets_at: sec + 3600 } };
-  const data = { ...base, rate_limits: limit };
-  const burn = (rate, resetUsed) => plain(data, { burn: { rate, resetUsed } });
-  expect(burn(12, false)).toContain("12%/h");
-  expect(burn(12, true)).toContain("reset used");
-  expect(burn(null, false)).not.toContain("/h");
-});
-
 test("the reset credits show with the next expiry", () => {
   const out = plain(base, { credits: { left: 2, until: sec + 8 * 86_400 } });
   expect(out).toMatch(/⟳2 by Oct 1[123] at \d{1,2}(:\d\d)?[ap]m/);
@@ -230,7 +221,6 @@ test("at 60 columns no row is wider than 60, and the model and context stay", ()
     git: { branch: "main", dirty: 3, ahead: 1, behind: 0 },
     spec: { id: "change", done: 3, total: 10 },
     credits: { left: 2, until: null },
-    burn: { rate: 12, resetUsed: false },
   };
   const rows = render(data, { now: NOW, columns: 60, ...ctx }).split("\n");
   expect(rows.length).toBeLessThanOrEqual(3);
@@ -271,7 +261,7 @@ test("git: a call that does not answer in the time limit gives `null`, and the l
   try {
     process.env.PATH = `${bin}:${saved}`;
     const t0 = Date.now();
-    expect(gitState(tmp, Date.now(), 100, tmp)).toBeNull();
+    expect(gitState(tmp, 100)).toBeNull();
     expect(Date.now() - t0).toBeLessThan(3000);
     const r = Bun.spawnSync(
       [Bun.which("node"), path.join(FEATURE, "cli.mjs")],

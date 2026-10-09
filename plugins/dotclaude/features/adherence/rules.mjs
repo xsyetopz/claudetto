@@ -1,13 +1,12 @@
-// The checks of the `adherence` hooks (design D34, tiers 1 and 2), as pure functions.
+// The checks of the `adherence` hooks (design D34, tier 1), as pure functions.
 // `checkCall` gives the deny reasons and the ask reasons for one `PreToolUse` call.
 // `io` holds the reads: `read(file)` gives the text of a file or null,
-// `transcript(file)` gives `{ text, truncated }` or null, `rules` is the parsed project rules or null, and `root` is the project folder.
+// `transcript(file)` gives `{ text, truncated }` or null, and `root` is the project folder.
 
 import path from "node:path";
 import { approved, claimReason, claims } from "./approval.mjs";
 import { gitReason } from "./git.mjs";
 import { LINE_SHOWN_MAX_CHARS, SCAN_MAX_CHARS } from "./limits.mjs";
-import { ruleReasons } from "./project.mjs";
 import { bareItems, commitMessage, spansReason } from "./spans.mjs";
 import { added, change, FILE_TOOLS, lostLines } from "./text.mjs";
 
@@ -73,7 +72,7 @@ function fileChecks(payload, io) {
   const ch = change(payload, io.read);
   const root = io.root || payload.cwd || "";
   const rel = path.relative(root, ch.file).split(path.sep).join("/");
-  const out = ruleReasons(io.rules, rel, ch);
+  const out = { deny: [], ask: [] };
   const text = ch.after ?? ch.fragment;
   if (text.length > SCAN_MAX_CHARS) return out;
   if (isMarkdown(ch.file)) {

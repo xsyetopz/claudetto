@@ -3,10 +3,8 @@
 // The transcript of the subagent is `<session>/subagents/agent-<agent_id>.jsonl`.
 // The hook tells and does not block, because a block loses the work of the run.
 // On each error it prints nothing.
-// In the main session, on `UserPromptSubmit` and `PostToolUse`, the same entry gives one note
-// when the context or a usage window first reaches a level in the session (design D32).
-// The `PostToolUse` route is necessary because one long turn can pass a level with no new prompt.
-// `SessionEnd`, `StopFailure`, and `SessionStart` carry a handoff across `/clear` and record a hard stop (`carry.mjs`).
+// In the main session, on `UserPromptSubmit` only, the same entry gives the context note at a level (design D32).
+// The note keeps no marker and writes no file, so it repeats at each prompt at or above a level (design D35).
 
 import {
   closeSync,
@@ -15,11 +13,7 @@ import {
   readFileSync,
   readSync,
 } from "node:fs";
-import { CONTEXT_WINDOW } from "../../lib/budget.mjs";
-import { accountOf, readUsage } from "../../lib/usage-state.mjs";
-import { recordStop, saveHandoff, startNote } from "./carry.mjs";
-import { levelsOf, newLevels } from "./levels.mjs";
-import { claimLevel, HANDOFF_MARK, handedOff } from "./marker.mjs";
+import { contextLevel } from "./levels.mjs";
 import { noteText } from "./notes.mjs";
 import {
   boundFor,
@@ -79,63 +73,39 @@ export function decide(
 }
 
 /**
- * The main-session output for `payload`, or undefined below the levels and for a level that fired.
+ * The main-session output for `payload`, or undefined below `CONTEXT_NOTICE_AT`.
  * The context is the usage of the last request of the main session, which is the last row that is not a sidechain row.
- * The usage windows come from the file of the status line. With no file, only the context levels apply.
- * The options replace the reads and the marker claim in a test.
+ * The option replaces the read in a test.
  */
 export function levelNote(
   payload,
-  {
-    read = tailRows,
-    env = process.env,
-    now = Date.now() / 1000,
-    usage = readUsage(accountOf(env), now),
-    claim = claimLevel,
-  } = {},
+  { read = tailRows, env = process.env } = {},
 ) {
   if (!payload?.transcript_path) return undefined;
   try {
     const rows = read(payload.transcript_path).filter((r) => !r?.isSidechain);
-    const tokens = contextTokens(rows);
-    const levels = levelsOf(tokens, usage, now);
-    if (!levels.length) return undefined;
-    const session = payload.session_id || payload.transcript_path;
-    const done = new Set(
-      levels.filter((l) => !claim(session, l.id)).map((l) => l.id),
-    );
-    const fresh = newLevels(levels, done);
-    if (!fresh.length) return undefined;
-    if (fresh.some((l) => l.step === "handoff")) claim(session, HANDOFF_MARK);
-    return {
-      hookSpecificOutput: {
-        hookEventName: payload.hook_event_name,
-        additionalContext: noteText(fresh, {
-          share: (tokens / CONTEXT_WINDOW) * 100,
-          off: compactionOff(env.DISABLE_COMPACT),
-          now,
-        }),
-      },
-    };
+    const text = noteText(contextLevel(contextTokens(rows)), {
+      off: compactionOff(env.DISABLE_COMPACT),
+    });
+    return text
+      ? {
+          hookSpecificOutput: {
+            hookEventName: payload.hook_event_name,
+            additionalContext: text,
+          },
+        }
+      : undefined;
   } catch {
     return undefined;
   }
 }
 
-/** The output for `payload` of any event of this hook, or undefined. `dir` is `${CLAUDE_PLUGIN_DATA}`. */
-export function route(payload, { dir = process.env.CLAUDE_PLUGIN_DATA } = {}) {
-  switch (payload.hook_event_name) {
-    case "SessionEnd":
-      saveHandoff(payload, { dir, read: tailRows, handedOff });
-      return undefined;
-    case "StopFailure":
-      recordStop(payload, { dir, now: Date.now() / 1000 });
-      return undefined;
-    case "SessionStart":
-      return startNote(payload, { dir });
-    default:
-      return payload.agent_id ? decide(payload) : levelNote(payload);
-  }
+/** The output for `payload` of any event of this hook, or undefined. */
+export function route(payload) {
+  if (payload.agent_id) return decide(payload);
+  return payload.hook_event_name === "UserPromptSubmit"
+    ? levelNote(payload)
+    : undefined;
 }
 
 if (import.meta.main) {
