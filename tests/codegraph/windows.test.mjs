@@ -49,3 +49,16 @@ test("`findOnPath` tries each extension of PATHEXT in each folder of PATH, and r
   assert.equal(findOnPath("codegraph", env), path.join(bin, "codegraph.CMD"));
   assert.equal(findOnPath("other", env), undefined);
 });
+
+test("on Windows, a call that fails or times out in `run-tree.mjs` is not a missing CLI, so session start still adds its line", () => {
+  const dir = project();
+  const bin = path.join(dir, "bin");
+  fs.writeFileSync(path.join(bin, "codegraph.CMD"), "");
+  const env = { Path: bin, PATHEXT: ".EXE;.CMD" };
+  const out = onWindows(() =>
+    sessionStart({ cwd: path.join(dir, "project") }, env),
+  );
+  // The `.CMD` file is empty and the node child cannot run it as a program, so the call fails and adds the line:
+  // only an `ENOENT` hides the line, and a failed call is not one.
+  assert.equal(out.hookSpecificOutput.hookEventName, "SessionStart");
+});

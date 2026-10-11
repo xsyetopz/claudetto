@@ -38,6 +38,9 @@ export const rootOf = (payload, env) =>
 export const indexed = (root) =>
   existsSync(join(root, ".codegraph", "codegraph.db"));
 
+const TREE = join(import.meta.dirname, "run-tree.mjs");
+// The time that `run-tree.mjs` gets to start and to end the tree after the limit.
+const TREE_GRACE_MS = 3000;
 // On Windows npm installs `codegraph` as `codegraph.cmd`, and Node runs a `.cmd` file only through a shell.
 // A shell reads the arguments as text, so an argument with a character outside this set is not run.
 const SHELL_SAFE_ARG = /^[\w$.-]+$/;
@@ -70,14 +73,28 @@ function codegraph(args, { root, env, timeout }) {
     };
   if (shell && !args.every((arg) => SHELL_SAFE_ARG.test(arg)))
     return { ok: false, stdout: "", error: new Error("unsafe argument") };
-  const r = spawnSync("codegraph", args, {
-    shell,
-    cwd: root,
-    env,
-    encoding: "utf8",
-    timeout,
-    stdio: ["ignore", "pipe", "ignore"],
-  });
+  const stdio = ["ignore", "pipe", "ignore"];
+  // Windows runs the command in `run-tree.mjs`, which ends the process tree at the time limit.
+  // The `timeout` of this call is a later back stop.
+  const r = shell
+    ? spawnSync(
+        process.execPath,
+        [TREE, String(timeout), "codegraph", ...args],
+        {
+          cwd: root,
+          env,
+          encoding: "utf8",
+          timeout: timeout + TREE_GRACE_MS,
+          stdio,
+        },
+      )
+    : spawnSync("codegraph", args, {
+        cwd: root,
+        env,
+        encoding: "utf8",
+        timeout,
+        stdio,
+      });
   return {
     ok: !r.error && r.status === 0,
     stdout: r.stdout ?? "",
