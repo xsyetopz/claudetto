@@ -154,31 +154,39 @@ test("owners that were read once are not read again", async ($: Engine, on: On) 
 });
 
 /** The project folder and the files of one test: each path of `texts` is a file with that text. */
-function project(on: On, texts: Record<string, string> = {}) {
-  on("fs.exists", (_$, e) => ({ value: e.path in texts }));
+/** Stubs the file system with `texts`, and gives each path that an `fs` event got. */
+function project(on: On, texts: Record<string, string> = {}): string[] {
+  const seen: string[] = [];
+  // On Windows the engine can give a path with `\` and a drive letter, so the key drops both.
+  const key = (p: string) => {
+    seen.push(p);
+    return p.replace(/\\/g, "/").replace(/^[A-Za-z]:/, "");
+  };
+  on("fs.exists", (_$, e) => ({ value: key(e.path) in texts }));
   on("fs.stat", (_$, e) => ({
     value: {
       kind: "file" as const,
-      size: (texts[e.path] ?? "").length,
+      size: (texts[key(e.path)] ?? "").length,
       mtimeMs: 0,
       isLink: false,
     },
   }));
-  on("fs.read", (_$, e) => ({ value: texts[e.path] ?? "" }));
+  on("fs.read", (_$, e) => ({ value: texts[key(e.path)] ?? "" }));
+  return seen;
 }
 
 test("Check in the module: a `Bash` print of a long file is denied", async ($: Engine, on: On) => {
   stub(on);
-  project(on, { "/p/big.txt": "line\n".repeat(2000) });
+  const seen = project(on, { "/p/big.txt": "line\n".repeat(2000) });
   const out = await $.tool.call({ tool: "Bash", command: "cat /p/big.txt" });
   const deny = "deny" in out ? out.deny : undefined;
-  expect(typeof deny).toBe("string");
+  expect(typeof deny, `fs paths: ${seen.join(", ")}`).toBe("string");
   expect(deny?.length).toBeGreaterThan(0);
 });
 
 test("Ask in the module: a `Write` that changes a line of a test file asks", async ($: Engine, on: On) => {
   stub(on);
-  project(on, { "/p/tests/a.test.mjs": "expect(1).toBe(1)\n" });
+  const seen = project(on, { "/p/tests/a.test.mjs": "expect(1).toBe(1)\n" });
   const out = await $.tool.check({
     tool: "Write",
     input: {
@@ -186,6 +194,6 @@ test("Ask in the module: a `Write` that changes a line of a test file asks", asy
       content: "expect(1).toBe(2)\n",
     },
   });
-  expect(out.decision).toBe("ask");
+  expect(out.decision, `fs paths: ${seen.join(", ")}`).toBe("ask");
   expect(out.reason?.length).toBeGreaterThan(0);
 });
