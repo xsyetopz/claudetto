@@ -1,0 +1,118 @@
+{
+  "description": "dotclaude-codegraph: `features/graph/cli.ts` syncs the CodeGraph index at session start and adds one line about the graph, and syncs the index in the background after an `Edit`, a `Write`, or a `git` command that changes the tree. Each hook runs only in a project with a `.codegraph/` index.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" session-start",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" sync",
+            "async": true,
+            "timeout": 60
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git merge *)",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git rebase *)",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git pull *)",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git checkout *)",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git switch *)",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git reset *)",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git cherry-pick *)",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git revert *)",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git stash *)",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git apply *)",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" sync",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "if": "Bash(git am *)",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/features/graph/cli.ts\" sync",
+            "async": true,
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

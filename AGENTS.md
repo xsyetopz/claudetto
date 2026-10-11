@@ -8,6 +8,8 @@ The core plugin is in `plugins/dotclaude/`, next to six add-on plugins: `dotclau
 Each add-on plugin works without the core plugin, so it imports nothing from another plugin.
 Only `plugins/` ships to users.
 `tests/` has one folder for each plugin, and `tools/` holds the repository scripts.
+`src/` holds the source of each text that a plugin ships, such as the agents, the skills, and `hooks.json`.
+Edit the source in `src/` and run `just generate`, because a test fails when a generated file differs from its source.
 `plugins/<name>/tests/` holds the hook lab of a plugin with a hooks module, which `claude plugin test` runs against that module.
 Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/dotclaude/wiki), with its source in `wiki/`.
 

@@ -86,7 +86,7 @@ The [environment variables doc](https://code.claude.com/docs/en/env-vars) says t
 ## Shipped hook (0.28.0)
 
 The hook is in `plugins/dotclaude/hooks/hooks.json`.
-`hooks/Stop.prompt.txt` holds the prompt, and `just hook-text` writes it into `hooks.json`.
+`src/plugins/dotclaude/hooks/Stop.prompt.txt` holds the prompt, and `just generate` writes it into `hooks.json`.
 The file is 1,806 bytes.
 The 1,498-character prompt in the table above is the tested version, and the shipped prompt is longer.
 

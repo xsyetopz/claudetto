@@ -71,9 +71,9 @@ release *flags:
 schema *args:
     bun plugins/dotclaude-lab/bin/dotclaude-schema --out schemas "$@"
 
-# Write the descriptions and the prompt hook texts of each hooks.json from the text files next to it
-hook-text:
-    bun tools/hook-text.ts
+# Write each text that a plugin ships from its source in src/; add --check to name each generated file that differs from its source
+generate *flags:
+    bun tools/generate.ts "$@"
 
 # Run the eval cases of the core plugin with `claude plugin eval`, on a path target so the checkout and not the installed copy is tested; extra arguments go to the eval (--case NAME). The run costs money, so --max-cost-usd bounds it, and a lock stops a second run while one is in progress. --keep-temp is always on, so each run keeps its sandbox and trace.jsonl (the eval prints "kept temp: /private/tmp/e-XXXX") to find the cause of a failed run
 eval *args:

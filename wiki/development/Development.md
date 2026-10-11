@@ -29,7 +29,7 @@ It shows the commands, the layout rules, and the steps to test, release, and pub
 | `just update` | Updates the marketplace, then each plugin under `plugins/` that you installed. Restart Claude Code after it. |
 | `just bump <level>` | Bumps the version. See [Releases](#releases). |
 | `just release` | Tags each plugin and pushes the tags. See [Releases](#releases). |
-| `just hook-text` | Writes the descriptions and the prompt hook texts of each `hooks.json` from the text files next to it. |
+| `just generate` | Writes each text that a plugin ships from its source in `src/`. Add `--check` to name each generated file that differs from its source. |
 | `just measure` | Sizes the start of a session by source from a transcript, and fails above the start bounds of `tools/limits.ts`. Arguments go to `dotclaude-start` (a `.jsonl` path, `--compare BASE OTHER`). |
 | `just capture` | Logs the requests of Claude Code through a local proxy and sizes each part of the first one. Arguments go to the proxy (`--port N`, `--out DIR`, `--no-count`). |
 | `just schema` | Writes the settings schemas of the installed Claude Code to `schemas/`. Arguments go to `dotclaude-schema` (`--bundle FILE`, `--version X.Y.Z`). |
@@ -55,7 +55,7 @@ Each `.md` file has at most 300 lines.
 | --- | --- |
 | `tests/` | The repository tests, with one folder for each plugin. `just test` runs them with `bun test`. |
 | `plugins/<name>/tests/*.test.ts` | The hook lab tests of the plugins with a hooks module. `just lab` runs them. |
-| `tools/` | The repository scripts: `bump-version.ts`, `eval-variant.ts`, `hook-text.ts`, `limits.ts`, `lock.ts`, `measure.ts`, `sizes.ts`, `start-run.ts`, `unsandboxed.ts`, and `validate.ts`. `hook-text.ts` writes the `description` and the `Stop` prompt of each `hooks.json` from `description.txt` and `Stop.prompt.txt` next to it. `lock.ts` lets one eval run run at a time. `unsandboxed.ts` stops an eval run that starts inside the Bash sandbox of Claude Code. `validate.ts` runs `claude plugin validate --strict` on the marketplace and each plugin. |
+| `tools/` | The repository scripts: `bump-version.ts`, `eval-variant.ts`, `generate.ts`, `limits.ts`, `lock.ts`, `measure.ts`, `sizes.ts`, `start-run.ts`, `unsandboxed.ts`, and `validate.ts`. `generate.ts` writes each text that a plugin ships from `src/`, and the `description` and the `Stop` prompt of each `hooks.json` from `description.txt` and `Stop.prompt.txt` next to its source. `lock.ts` lets one eval run run at a time. `unsandboxed.ts` stops an eval run that starts inside the Bash sandbox of Claude Code. `validate.ts` runs `claude plugin validate --strict` on the marketplace and each plugin. |
 
 ### The hook lab
 
