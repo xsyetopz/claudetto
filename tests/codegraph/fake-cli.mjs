@@ -33,7 +33,7 @@ function installFake(bin) {
   if (process.platform === "win32")
     fs.writeFileSync(
       path.join(bin, "codegraph.cmd"),
-      `@"${process.execPath}" "%~dp0codegraph.mjs" %*\r\n`,
+      `@"${process.execPath}" "${path.join(bin, "codegraph.mjs")}" %*\r\n`,
     );
   else
     fs.writeFileSync(

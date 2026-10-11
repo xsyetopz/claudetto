@@ -84,8 +84,8 @@ test("the print check allows a file that is absent and throws for any other read
   const cat = (file) => ({
     tool_name: "Bash",
     cwd: dir,
-    // The shell reads a backslash as an escape, so the path has forward slashes, as in Git Bash.
-    tool_input: { command: `tail -n 5 ${file.split(path.sep).join("/")}` },
+    // The name is relative to `cwd`. A Windows path has backslashes and a short name with `~`, and the rule reads both as not simple.
+    tool_input: { command: `tail -n 5 ${path.basename(file)}` },
   });
   assert.equal(decideReads(cat(absent)), undefined);
   assert.throws(() => decideReads(cat(loop)), { code: "ELOOP" });

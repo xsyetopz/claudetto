@@ -3,9 +3,14 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  runBoth,
+  runBoth as runBothOn,
   withCostBound,
 } from "../../plugins/dotclaude-lab/features/eval-compare/run.mjs";
+import { withPlatform } from "../support/fake-program.mjs";
+
+// The fake runner reads the arguments as an array, which `runProgram` passes except on Windows, where it passes a command line.
+// The Windows form is pinned in `run-program.test.mjs`.
+const runBoth = (...args) => withPlatform("linux", () => runBothOn(...args));
 
 /** A fake runner that gives each call the next status and records the folders and the arguments. */
 function fake(...statuses) {

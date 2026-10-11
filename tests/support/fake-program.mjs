@@ -1,6 +1,6 @@
 // Fake programs for tests that put a program on `PATH`.
 // POSIX runs a file with a `#!` line. Windows runs a file only with an extension from `PATHEXT`,
-// so the program there is a `.cmd` launcher that runs a Node script, as npm installs a command.
+// so the program there is a `.cmd` launcher that runs a Node script by its full path (`%~dp0` is empty when `cmd` finds the launcher on `PATH`), as npm installs a command.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -16,7 +16,10 @@ export function writeProgram(dir, name, source) {
   }
   fs.writeFileSync(path.join(dir, `${name}.cjs`), source);
   const file = path.join(dir, `${name}.cmd`);
-  fs.writeFileSync(file, `@"${process.execPath}" "%~dp0${name}.cjs" %*\r\n`);
+  fs.writeFileSync(
+    file,
+    `@"${process.execPath}" "${path.join(dir, `${name}.cjs`)}" %*\r\n`,
+  );
   return file;
 }
 
@@ -25,4 +28,16 @@ export function withPathFirst(env, dir) {
   const key =
     Object.keys(env).find((k) => k.toUpperCase() === "PATH") ?? "PATH";
   return { ...env, [key]: `${dir}${path.delimiter}${env[key] ?? ""}` };
+}
+
+const platform = Object.getOwnPropertyDescriptor(process, "platform");
+
+/** Runs `fn` with `process.platform` set to `name`, and restores it. */
+export function withPlatform(name, fn) {
+  Object.defineProperty(process, "platform", { value: name });
+  try {
+    return fn();
+  } finally {
+    Object.defineProperty(process, "platform", platform);
+  }
 }

@@ -30,7 +30,11 @@ jobs:
         with:
           just-version: 1.58.0
       # The version in `TESTED_VERSION` of `plugins/dotclaude/features/drift/data.mjs`.
-      - run: npm install --global @anthropic-ai/claude-code@2.1.296
+      # `pnpm/setup` installs its own Node, so the global bin folder of its `npm` is not on `PATH` yet.
+      - run: |
+          npm install --global @anthropic-ai/claude-code@2.1.296
+          echo "$(npm prefix --global)/bin" >> "$GITHUB_PATH"
+      - run: claude --version
       - run: git config --global user.email ci@example.com && git config --global user.name ci
       - run: just ci
 
