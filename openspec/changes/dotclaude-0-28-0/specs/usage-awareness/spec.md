@@ -6,7 +6,7 @@ States that the usage-awareness capability is removed from 0.28.0.
 The first plan gave the main session one-time notes at context and usage levels, a handoff across `/clear`, and a record of a hard stop (design D32).
 Each part kept state: a usage state file written by the status line, a marker file for each session, and carry and stop files in `${CLAUDE_PLUGIN_DATA}`.
 Rule D35 forbids that state, so the parts are deleted with their tests.
-The stateless context note remains, and it is in the `context-bound` spec.
+The main-session context note is removed too, because compaction is off and the `context_management` text of `features/prompt/data.mjs` covers it.
 
 ## ADDED Requirements
 

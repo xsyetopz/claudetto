@@ -56,7 +56,7 @@ The pin test SHALL NOT read a table of allowed efforts for each model in `featur
 
 ### Requirement: Rules repeated in the agent body
 
-A subagent does not inherit the output style.
+A subagent does not inherit the output style or the shared sections of the system prompt.
 Each agent body SHALL repeat the two or three rules that matter for its role.
 
 #### Scenario: Agent body

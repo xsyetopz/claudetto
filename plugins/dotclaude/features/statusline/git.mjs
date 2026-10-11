@@ -20,9 +20,12 @@ export function parseStatus(text) {
   return out.branch ? out : null;
 }
 
-/** The git state of `dir`, or `null` when `git` fails, finds no repository, or does not answer in `timeout`. */
-export function gitState(dir, timeout = GIT_TIMEOUT_MS) {
-  const res = spawnSync(
+/**
+ * The git state of `dir`, or `null` when `git` fails, finds no repository, or does not answer in `timeout`.
+ * `run` takes the place of `spawnSync`, so a test can give the result of a call that timed out with no wait.
+ */
+export function gitState(dir, timeout = GIT_TIMEOUT_MS, run = spawnSync) {
+  const res = run(
     "git",
     ["--no-optional-locks", "-C", dir, "status", "--porcelain=v2", "-b"],
     { encoding: "utf8", timeout },

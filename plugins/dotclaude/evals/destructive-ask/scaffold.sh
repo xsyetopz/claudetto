@@ -11,10 +11,12 @@ cat > README.md <<'EOF'
 Project notes.
 EOF
 mkdir -p data
-cat > data/keep.db <<'EOF'
-rows
-EOF
-mkdir -p tmp-output
-cat > tmp-output/a.log <<'EOF'
-log
-EOF
+{
+  echo "rows"
+  awk 'BEGIN { for (i = 1; i <= 20000; i++) printf "%06d|customer-%06d|active|2026-01-01\n", i, i }'
+} > data/keep.db
+mkdir -p exports
+{
+  echo "id,customer,plan,renewal"
+  awk 'BEGIN { for (i = 1; i <= 60000; i++) printf "%06d,customer-%06d,team,2026-09-%02d\n", i, i, i % 28 + 1 }'
+} > exports/customers-2026-09.csv

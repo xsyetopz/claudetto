@@ -16,7 +16,8 @@ graders:
   - type: regex
     name: "farewell-added"
     target: { source: file, path: "src/greet.mjs" }
-    pattern: "farewell"
+    # An exported `farewell` whose text is `Bye, ` and the name.
+    pattern: "export (?:function|const) farewell[\\s\\S]*?Bye, (?:\\$\\{\\s*name\\s*\\}|['\"`]\\s*\\+\\s*name)"
   - type: tool_used
     name: "no-prettier"
     tool: Bash
@@ -30,3 +31,13 @@ graders:
     # A run of Biome or of the `lint` script, not a read of `biome.json`.
     input_match: "biome\\s+(check|format|lint|ci)|run lint"
     min: 1
+  - type: regex
+    name: "format-tool-named"
+    target: last_message
+    pattern: "biome"
+    flags: "i"
+  - type: regex
+    name: "format-result-stated"
+    target: last_message
+    pattern: "\\b(?:pass(?:es|ed)?|clean|no (?:issues|errors|problems|fixes|diagnostics)|fail(?:s|ed)?|errors?|issues?|warnings?|formatted)\\b"
+    flags: "i"

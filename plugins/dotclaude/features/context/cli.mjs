@@ -3,26 +3,18 @@
 // The transcript of the subagent is `<session>/subagents/agent-<agent_id>.jsonl`.
 // The hook tells and does not block, because a block loses the work of the run.
 // On each error it prints nothing.
-// In the main session, on `UserPromptSubmit` only, the same entry gives the context note at a level (design D32).
-// The note keeps no marker and writes no file, so it repeats at each prompt at or above a level (design D35).
+// The main session gets no note, because compaction is off and the output style covers it.
 
+import { runHook } from "../../lib/hook-io.mjs";
+import { readTail } from "../../lib/tail.mjs";
+import { boundFor, contextTokens, modelOf, reportNow } from "./rules.mjs";
 import {
-  closeSync,
-  fstatSync,
-  openSync,
-  readFileSync,
-  readSync,
-} from "node:fs";
-import { contextLevel } from "./levels.mjs";
-import { noteText } from "./notes.mjs";
-import {
-  boundFor,
-  compactionOff,
-  contextTokens,
-  modelOf,
-  reportNow,
-} from "./rules.mjs";
-import { allRows, countTurns, maxTurnsOf, turnFact } from "./turns.mjs";
+  allRows,
+  countTurns,
+  maxTurnsOf,
+  parseRows,
+  turnFact,
+} from "./turns.mjs";
 
 /** The bytes at the end of the transcript that the hook reads, enough for the last request. */
 const TAIL_BYTES = 262_144;
@@ -34,24 +26,11 @@ export function subagentPath(transcriptPath, agentId) {
 
 /** The parsed rows in the last `TAIL_BYTES` of `file`. The first line may be cut, so the parse skips it. */
 export function tailRows(file) {
-  const fd = openSync(file, "r");
-  try {
-    const size = fstatSync(fd).size;
-    const start = Math.max(0, size - TAIL_BYTES);
-    const buf = Buffer.alloc(size - start);
-    readSync(fd, buf, 0, buf.length, start);
-    const lines = buf.toString("utf8").split("\n");
-    if (start > 0) lines.shift();
-    const rows = [];
-    for (const line of lines) {
-      try {
-        rows.push(JSON.parse(line));
-      } catch {}
-    }
-    return rows;
-  } finally {
-    closeSync(fd);
-  }
+  const tail = readTail(file, TAIL_BYTES);
+  if (!tail) return [];
+  const lines = tail.text.split("\n");
+  if (tail.truncated) lines.shift();
+  return parseRows(lines);
 }
 
 /**
@@ -72,45 +51,9 @@ export function decide(
   return reportNow(contextTokens(rows), boundFor(modelOf(rows)), fact);
 }
 
-/**
- * The main-session output for `payload`, or undefined below `CONTEXT_NOTICE_AT`.
- * The context is the usage of the last request of the main session, which is the last row that is not a sidechain row.
- * The option replaces the read in a test.
- */
-export function levelNote(
-  payload,
-  { read = tailRows, env = process.env } = {},
-) {
-  if (!payload?.transcript_path) return undefined;
-  try {
-    const rows = read(payload.transcript_path).filter((r) => !r?.isSidechain);
-    const text = noteText(contextLevel(contextTokens(rows)), {
-      off: compactionOff(env.DISABLE_COMPACT),
-    });
-    return text
-      ? {
-          hookSpecificOutput: {
-            hookEventName: payload.hook_event_name,
-            additionalContext: text,
-          },
-        }
-      : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-/** The output for `payload` of any event of this hook, or undefined. */
+/** The output for `payload` of any event of this hook, or undefined. The main session gets none. */
 export function route(payload) {
-  if (payload.agent_id) return decide(payload);
-  return payload.hook_event_name === "UserPromptSubmit"
-    ? levelNote(payload)
-    : undefined;
+  return payload.agent_id ? decide(payload) : undefined;
 }
 
-if (import.meta.main) {
-  try {
-    const out = route(JSON.parse(readFileSync(0, "utf8")));
-    if (out) process.stdout.write(JSON.stringify(out));
-  } catch {}
-}
+if (import.meta.main) runHook(route);

@@ -2,23 +2,25 @@
 
 Install the dotclaude marketplace, then each plugin that you want.
 The core plugin is `dotclaude`.
-`dotclaude-codegraph`, `dotclaude-jev`, `dotclaude-browser`, and `dotclaude-docs` are optional.
+`dotclaude-codegraph`, `dotclaude-jev`, `dotclaude-browser`, `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab` are optional.
 
 ## Before you begin
 
 | Need | For | Note |
 | --- | --- | --- |
-| Claude Code 2.1.295 or later | all plugins | |
+| Claude Code 2.1.296 or later | all plugins | |
 | git | `dotclaude` | |
-| [Node.js](https://nodejs.org) 22.18 or later on `PATH` | the setup script, the status line, the classic hooks, and the auto-mode guard of `dotclaude`, the script of `dotclaude-jev`, and OpenSpec | Without Node.js, the auto-mode guard does not run, and the auto-mode classifier decides the calls. |
+| [Node.js](https://nodejs.org) 22.18 or later on `PATH` | the setup script, the status line, and the classic hooks of `dotclaude`, the Jev client, the hooks of `dotclaude-codegraph`, and the bins of `dotclaude-sessions` and `dotclaude-lab` | Without Node.js, the classic hooks do not run and the call goes on. The permission rules and the sandbox still apply. |
 | `gh` on `PATH` | the policy ask of `dotclaude` | Without `gh`, the ask does not run and the call goes on. |
 | `codegraph` on `PATH` | `dotclaude-codegraph` | Run `npm i -g @colbymchenry/codegraph`. The plugin never installs it. |
 | `TYPESAFE_API_KEY` | `dotclaude-jev` | Export it before Claude Code starts. |
+| `agent-browser` on `PATH` | `dotclaude-browser` | See [Browser](Browser#install-agent-browser). |
+| `npx` on `PATH` | `dotclaude-docs` | It comes with Node.js. The `docs` skill runs `ctx7` through it. |
 
 The core hooks module needs no Node.js, because Claude Code runs it.
 
 On a machine with managed settings, or with a Team or Enterprise login, the built-in guard `sec-default` loads.
-It skips the `prompt.section` hook of dotclaude, so the `context_management` text of dotclaude does not load.
+It skips the shared sections and the model variants (`prompt.compose`), and the `context_management` text (`prompt.section`), of dotclaude.
 The other parts work.
 See [Claude mods](Claude-Mods#the-built-in-guard-sec-default).
 
@@ -99,6 +101,19 @@ It uses `agent-browser` by default.
 Set its `backend` option to `cloakbrowser` to run `agent-browser` with the CloakBrowser binary on sites with bot detection.
 See [Browser](Browser).
 
+## Install the other plugins
+
+```text
+/plugin install dotclaude-docs@dotclaude
+/plugin install dotclaude-sessions@dotclaude
+/plugin install dotclaude-lab@dotclaude
+```
+
+`dotclaude-docs` adds the `docs` skill ([Library docs](Library-Docs)).
+`dotclaude-sessions` adds two bins that measure usage and the skills `start-cost` and `usage` ([Sessions](Sessions)).
+`dotclaude-lab` adds the tools for plugin authors ([Lab](Lab)).
+Each of the three needs no key.
+
 ## Update
 
 1. Update the marketplace and the plugin.
@@ -106,6 +121,17 @@ See [Browser](Browser).
    ```bash
    claude plugin marketplace update dotclaude
    claude plugin update dotclaude@dotclaude
+   ```
+
+   For each add-on that you installed, run one more line, with its name in place of `dotclaude`:
+
+   ```bash
+   claude plugin update dotclaude-codegraph@dotclaude
+   claude plugin update dotclaude-jev@dotclaude
+   claude plugin update dotclaude-browser@dotclaude
+   claude plugin update dotclaude-docs@dotclaude
+   claude plugin update dotclaude-sessions@dotclaude
+   claude plugin update dotclaude-lab@dotclaude
    ```
 
 1. Restart Claude Code, because a running session keeps the old hooks and agents.
@@ -132,13 +158,13 @@ For a separate config, see [Sandbox](Sandbox).
 
 ## Troubleshooting
 
-| Symptom | Cause and fix |
-| --- | --- |
-| No ask for a recursive `rm` outside the project | Claude Code does not load hooks modules in your mode, for example `--bare`. |
-| No policy ask for a repository of another owner | `gh` is not on `PATH` or has no login. The ask fails open and the call goes on. |
-| Jev calls fail | `TYPESAFE_API_KEY` was not set when Claude Code started. Export it and restart. |
+A symptom and its fix are on the page of the plugin.
+For a recursive `rm` with no ask, see [Guards](Guards#troubleshooting).
+For a missing policy ask, see [Contributions](Contributions).
+For Claude with no `second_opinion` tool, see [Second opinion](Second-Opinion#troubleshooting).
+More symptoms are on [Troubleshooting](Troubleshooting).
 
 ## Next steps
 
 - [Quickstart](Quickstart): see what happens in a first session.
-- [Parts](Parts): see each part of the core plugin.
+- [Core plugin](Core-Plugin): see each part of the core plugin.

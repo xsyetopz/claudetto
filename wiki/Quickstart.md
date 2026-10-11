@@ -8,6 +8,7 @@ It assumes that you finished [Install](Install).
 | What | When |
 | --- | --- |
 | Status line | After you set the `statusLine` entry of the [settings snippet](Settings-Snippet). It shows model, effort, context against the 300K window, the OpenSpec change, and the usage windows. |
+| Drift note | When the active settings differ from the [settings snippet](Settings-Snippet), such as a built-in plugin that is on again. Claude mentions each difference in its first answer. Nothing shows when no difference exists. |
 | Output style | Always. The plugin forces the `dotclaude` style over the simple system prompt. You do not see it. |
 
 On a terminal of about 130 columns, the status line has 3 columns.
@@ -30,14 +31,13 @@ Claude Code asks you first, because the [settings snippet](Settings-Snippet) has
 It denies a read of secrets and a `rm -rf` of the root or your home.
 See [Guards](Guards).
 
-### A recursive rm outside the project asks
+### A recursive rm asks
 
-Claude plans `rm -r` on a folder outside the project root.
-The hooks module asks you first and names the target.
-A target in the project, in `/tmp`, in `/private/tmp`, or in `$TMPDIR` goes on.
-A target with `$` or a backtick counts as outside.
+Claude plans `rm -r` on a folder.
+Claude Code asks you first, because the settings snippet has `ask` rules for each recursive `rm`, also inside the project.
+The plugin alone gives no `rm` ask, because a plugin cannot ship `permissions`.
+The sandbox stops a write outside the allowed folders.
 You decide.
-The module never approves a command for you.
 
 ### A policy ask for a repository of another owner
 
@@ -50,9 +50,9 @@ See [Contributions](Contributions).
 
 Compaction is off.
 When the session reaches 300K tokens, it stops.
-At 60% of the window, a hook tells Claude to start a slice only when it fits in the tokens that are left.
-At 80%, the hook tells Claude to stop, to tick the finished tasks in the OpenSpec change, to write the decisions in `design.md`, and to name the command that continues the work.
-Then run `/clear` and the command that Claude names, such as `/opsx:apply <change>`.
+The status line turns yellow at 75% and red at 90% of the window.
+No hook speaks to the main session.
+When the session stops, run `/clear` and then the `openspec-apply-change` skill with `<change>`, so the work continues from the task list.
 dotclaude writes no handoff file.
 See [Context bound](Context-Bound) and [OpenSpec](OpenSpec).
 

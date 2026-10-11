@@ -1,8 +1,7 @@
-// Preloaded by bunfig.toml before any test file. Every temporary folder the
-// tests or the hooks they spawn create goes under one folder per run, removed
-// at exit, so repeated runs leave nothing behind in the system temp folder.
+// Loaded with `node --import` before each test file. Every temporary folder the
+// tests or the hooks they spawn create goes under one folder per test process,
+// removed at exit, so repeated runs leave nothing behind in the system temp folder.
 
-import { afterAll } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -12,5 +11,5 @@ process.env.TMPDIR = root;
 // On Windows, `os.tmpdir()` reads `TEMP` and `TMP`, not `TMPDIR`.
 process.env.TEMP = root;
 process.env.TMP = root;
-// A preloaded `afterAll` runs once, after every test file.
-afterAll(() => fs.rmSync(root, { recursive: true, force: true }));
+// `node --test` runs each test file in its own process, so each process removes its own folder.
+process.on("exit", () => fs.rmSync(root, { recursive: true, force: true }));

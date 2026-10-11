@@ -41,9 +41,16 @@ const UNDERLINE = /^\s*(?:=+|-+)\s*$/;
 const CLOSERS = "\"')]*_”’";
 const OPENERS = /[A-Z`["*_]/;
 
-/** The ranges `[start, end)` of `text` that a split must not enter. */
+/**
+ * The ranges `[start, end)` of `text` that a split must not enter.
+ *
+ * @param {string} text
+ * @returns {[number, number][]}
+ */
 function protectedRanges(text) {
+  /** @type {[number, number][]} */
   const ranges = [];
+  /** @param {RegExp} re */
   const add = (re) => {
     for (const m of text.matchAll(re))
       ranges.push([m.index, m.index + m[0].length]);
@@ -57,20 +64,30 @@ function protectedRanges(text) {
   return ranges;
 }
 
-/** True when the word before the period at `at` ends no sentence. */
+/**
+ * True when the word before the period at `at` ends no sentence.
+ *
+ * @param {string} text
+ * @param {number} at
+ */
 function abbreviation(text, at) {
-  const word = text
-    .slice(0, at)
-    .match(/[^\s([]*$/)[0]
-    .replace(/^["'*_]+/, "");
+  const word = (text.slice(0, at).match(/[^\s([]*$/)?.[0] ?? "").replace(
+    /^["'*_]+/,
+    "",
+  );
   if (/^[A-Z]$/.test(word)) return true;
   if (/\d\.\d+$/.test(word) || /^\d+$/.test(word)) return true;
   return ABBREVIATIONS.has(word.toLowerCase());
 }
 
-/** The sentences of one line body, without the prefix. */
+/**
+ * The sentences of one line body, without the prefix.
+ *
+ * @param {string} body
+ */
 function sentences(body) {
   const ranges = protectedRanges(body);
+  /** @param {number} i */
   const inside = (i) => ranges.some(([a, b]) => i >= a && i < b);
   const parts = [];
   let start = 0;
@@ -78,11 +95,16 @@ function sentences(body) {
     const c = body[i];
     if ((c !== "." && c !== "!" && c !== "?") || inside(i)) continue;
     let j = i + 1;
-    while (j < body.length && (body[j] === c || CLOSERS.includes(body[j]))) j++;
+    while (
+      j < body.length &&
+      (body[j] === c || CLOSERS.includes(body.charAt(j)))
+    )
+      j++;
     if (body[j] !== " ") continue;
     let k = j;
     while (body[k] === " ") k++;
-    if (k >= body.length || !OPENERS.test(body[k]) || inside(k)) continue;
+    if (k >= body.length || !OPENERS.test(body.charAt(k)) || inside(k))
+      continue;
     if (BLOCK_START.test(body.slice(k))) continue;
     if (c === "." && j === i + 1 && abbreviation(body, i)) continue;
     parts.push(body.slice(start, j));
@@ -93,13 +115,17 @@ function sentences(body) {
   return parts;
 }
 
-/** The set of line numbers in tables, in front matter, and in fences. */
+/**
+ * The set of line numbers in tables, in front matter, and in fences.
+ *
+ * @param {string[]} lines
+ */
 function protectedLines(lines) {
   const skip = new Set();
   let fence = null;
   let block = null;
   for (let n = 0; n < lines.length; n++) {
-    const line = lines[n];
+    const line = lines[n] ?? "";
     if (n === 0 && line === "---") {
       const end = lines.findIndex(
         (l, i) => i > 0 && (l === "---" || l === "..."),
@@ -135,14 +161,14 @@ function protectedLines(lines) {
       let top = n - 1;
       while (
         top > 0 &&
-        lines[top - 1].trim() !== "" &&
-        lines[top - 1].includes("|")
+        lines[top - 1]?.trim() !== "" &&
+        lines[top - 1]?.includes("|")
       )
         top--;
       for (let i = top; i <= n; i++) skip.add(i);
       for (
         let i = n + 1;
-        i < lines.length && lines[i].trim() !== "" && lines[i].includes("|");
+        i < lines.length && lines[i]?.trim() !== "" && lines[i]?.includes("|");
         i++
       )
         skip.add(i);
@@ -151,7 +177,11 @@ function protectedLines(lines) {
   return skip;
 }
 
-/** True when `line` has code or data syntax outside inline code and links. */
+/**
+ * True when `line` has code or data syntax outside inline code and links.
+ *
+ * @param {string} line
+ */
 function codeLike(line) {
   const plain = line
     .replace(/(`+)[\s\S]*?(?<!`)\1(?!`)/g, "")
@@ -159,25 +189,33 @@ function codeLike(line) {
   return CODE_LIKE.test(plain);
 }
 
-/** The width of the leading white space of `line`, with a tab as four columns. */
+/**
+ * The width of the leading white space of `line`, with a tab as four columns.
+ *
+ * @param {string} line
+ */
 const indentOf = (line) =>
-  line.match(/^[ \t]*/)[0].replace(/\t/g, "    ").length;
+  (line.match(/^[ \t]*/)?.[0] ?? "").replace(/\t/g, "    ").length;
 
 /**
  * The formatted lines of `text` and the count of output lines for each input line.
  * `sembr` only splits a line and never joins, so the counts sum to the output length.
+ *
+ * @param {unknown} text
  */
 function format(text) {
   const lines = String(text).split("\n");
   const skip = protectedLines(lines);
+  /** @type {string[]} */
   const out = [];
+  /** @type {number[]} */
   const counts = [];
   let listOpen = false;
   let listIndent = 0;
   let listCode = false;
   let esm = false;
   for (let n = 0; n < lines.length; n++) {
-    const line = lines[n];
+    const line = lines[n] ?? "";
     const list = line.match(LIST);
     const blank = line.trim() === "";
     if (list) {
@@ -188,7 +226,7 @@ function format(text) {
     if (blank) esm = false;
     else if (ESM.test(line)) esm = true;
     if (listOpen && !list && !blank && indentOf(line) >= listIndent + 4) {
-      if (listCode || lines[n - 1].trim() === "") listCode = true;
+      if (listCode || lines[n - 1]?.trim() === "") listCode = true;
     } else if (!blank) listCode = false;
     const indented = /^( {4}|\t)/.test(line) && (!listOpen || listCode);
     if (
@@ -204,24 +242,32 @@ function format(text) {
       counts.push(1);
       continue;
     }
-    const first = list ? list[0] : line.match(/^\s*(?:>\s*)*/)[0];
+    const first = list ? list[0] : (line.match(/^\s*(?:>\s*)*/)?.[0] ?? "");
     const rest = line.slice(first.length);
-    const quote = first.match(/^\s*(?:>\s*)*/)[0];
+    const quote = first.match(/^\s*(?:>\s*)*/)?.[0] ?? "";
     const next = list ? quote + " ".repeat(first.length - quote.length) : first;
     const parts = sentences(rest);
-    out.push(first + parts[0]);
+    out.push(first + (parts[0] ?? ""));
     for (const part of parts.slice(1)) out.push(next + part);
     counts.push(parts.length);
   }
   return { out, counts };
 }
 
-/** `text` with a line break after each sentence end of a paragraph line. */
+/**
+ * `text` with a line break after each sentence end of a paragraph line.
+ *
+ * @param {unknown} text
+ */
 export function sembr(text) {
   return format(text).out.join("\n");
 }
 
-/** The count of output lines that `sembr` makes for each line of `text`. */
+/**
+ * The count of output lines that `sembr` makes for each line of `text`.
+ *
+ * @param {unknown} text
+ */
 export function sembrCounts(text) {
   return format(text).counts;
 }

@@ -7,7 +7,8 @@ and keeps the state of long work in OpenSpec changes across `/clear`.
 It optimizes for the most quality per unit of usage quota, not for speed.
 
 [The wiki](https://github.com/xsyetopz/dotclaude/wiki) tells what each part does and why.
-[Parts](https://github.com/xsyetopz/dotclaude/wiki/Parts) lists each part with its file and bound.
+[Core plugin](https://github.com/xsyetopz/dotclaude/wiki/Core-Plugin) lists each part of the core plugin with its file and bound,
+and the [overview](https://github.com/xsyetopz/dotclaude/wiki/Home) links the page of each plugin.
 [Design](https://github.com/xsyetopz/dotclaude/wiki/Design) gives the source of each design claim.
 
 ## Install
@@ -17,9 +18,9 @@ It optimizes for the most quality per unit of usage quota, not for speed.
 /plugin install dotclaude@dotclaude
 ```
 
-Requirements: Claude Code 2.1.295, [Node.js](https://nodejs.org) 22.18 or later on `PATH`, and git.
+Requirements: Claude Code 2.1.296, [Node.js](https://nodejs.org) 22.18 or later on `PATH`, and git.
 The hooks module uses the mods API of Claude Code, which can change between releases,
-so this release is tested only on 2.1.295.
+so this release is tested only on 2.1.296.
 
 ## Setup
 
@@ -37,9 +38,9 @@ It changes no Claude Code setting, and it shows each step before it runs.
 | Window | `CLAUDE_CODE_MAX_CONTEXT_TOKENS=300000` and `CLAUDE_CODE_AUTO_COMPACT_WINDOW=300000`. At the limit the session stops, and you run `/clear`. |
 | No auto memory | `autoMemoryEnabled: false`. OpenSpec holds the state. |
 | System prompt | `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1` and the forced `dotclaude` output style, which replaces the built-in coding instructions. |
-| Permissions | Deny secret reads and disk wipes. Ask before force pushes, history rewrites, piped shells, `sudo`, publishes, public `gh` writes, and SQL drops. Allow read-only git and the usual build and test commands. |
+| Permissions | Deny secret reads and disk wipes. Ask before force pushes, history rewrites, recursive `rm`, piped shells, `sudo`, publishes, public `gh` writes, and SQL drops. Allow read-only git and the usual build and test commands. |
 | Sandbox | Bash runs in the sandbox, with network access only to GitHub and the package registries. |
-| Guard | One hooks module asks before a recursive `rm` outside the project, and before the first call to a GitHub repository of another owner with an AI policy. |
+| Guard | One hooks module asks before the first call to a GitHub repository of another owner with an AI policy. |
 | Status line | Model, effort, context against the window (yellow at 75%, red at 90%), the 5-hour limit, and the active OpenSpec change with its task count. |
 | Agents | `investigator`, `implementer`, `debugger`, `reviewer`, `test-runner`. |
 | Skills | `/dotclaude:setup`. |

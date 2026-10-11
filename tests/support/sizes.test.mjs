@@ -2,9 +2,10 @@
 // The first tests use fixtures built from the bounds of `tools/limits.mjs`.
 // The last test checks the real files, fails on a failure, and prints the advisories.
 
-import { expect, test } from "bun:test";
+import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { test } from "node:test";
 import {
   CLAUDE_MD_MAX_BYTES,
   FIRST_REQUEST_HIGH_BYTES,
@@ -22,8 +23,8 @@ import {
   checkSizes,
   parseSkill,
 } from "../../tools/sizes.mjs";
+import { REPO, walk } from "./repo.mjs";
 
-const REPO = path.join(import.meta.dirname, "../..");
 const KB = 1024;
 
 /** A `SKILL.md` text whose `name` and `description` have `meta` bytes together and whose body has `body` bytes. */
@@ -40,57 +41,60 @@ const skills = (...texts) =>
   checkSizes({ skills: texts.map((text, i) => ({ path: `s${i}`, text })) });
 
 test("this file states 1 KB as 1,024 bytes", () => {
-  expect(CLAUDE_MD_MAX_BYTES).toBe(6 * KB);
-  expect(FIRST_REQUEST_LOW_BYTES).toBe(8 * KB);
-  expect(FIRST_REQUEST_HIGH_BYTES).toBe(16 * KB);
-  expect(SKILL_META_TOTAL_LOW_BYTES).toBe(5 * KB);
-  expect(SKILL_META_TOTAL_HIGH_BYTES).toBe(8 * KB);
-  expect(SKILL_META_TOTAL_MAX_BYTES).toBe(15 * KB);
+  assert.equal(CLAUDE_MD_MAX_BYTES, 6 * KB);
+  assert.equal(FIRST_REQUEST_LOW_BYTES, 8 * KB);
+  assert.equal(FIRST_REQUEST_HIGH_BYTES, 16 * KB);
+  assert.equal(SKILL_META_TOTAL_LOW_BYTES, 5 * KB);
+  assert.equal(SKILL_META_TOTAL_HIGH_BYTES, 8 * KB);
+  assert.equal(SKILL_META_TOTAL_MAX_BYTES, 15 * KB);
 });
 
 test("`CLAUDE.md` of 6 KB passes and 6 KB plus 1 byte fails", () => {
   const check = (n) =>
     checkSizes({ claudeMd: [{ path: "CLAUDE.md", text: "x".repeat(n) }] });
-  expect(check(6 * KB)).toEqual({ failures: [], advisories: [] });
-  expect(check(6 * KB + 1).failures).toHaveLength(1);
+  assert.deepEqual(check(6 * KB), { failures: [], advisories: [] });
+  assert.equal(check(6 * KB + 1).failures.length, 1);
 });
 
 test("skill metadata of 300 bytes passes and 301 bytes fails", () => {
-  expect(skills(skill(300, MID_BODY)).failures).toEqual([]);
-  expect(skills(skill(301, MID_BODY)).failures).toHaveLength(1);
+  assert.deepEqual(skills(skill(300, MID_BODY)).failures, []);
+  assert.equal(skills(skill(301, MID_BODY)).failures.length, 1);
 });
 
 test("skill metadata of 149 bytes gives an advisory and 150 bytes gives none", () => {
   const low = skills(skill(149, MID_BODY));
-  expect(low.failures).toEqual([]);
-  expect(
-    low.advisories.filter((a) => a.startsWith("s0 metadata")),
-  ).toHaveLength(1);
-  expect(
+  assert.deepEqual(low.failures, []);
+  assert.equal(
+    low.advisories.filter((a) => a.startsWith("s0 metadata")).length,
+    1,
+  );
+  assert.deepEqual(
     skills(skill(150, MID_BODY)).advisories.filter((a) =>
       a.startsWith("s0 metadata"),
     ),
-  ).toEqual([]);
+    [],
+  );
 });
 
 test("a skill body of 8 KB passes and 8 KB plus 1 byte fails", () => {
-  expect(skills(skill(MID_META, 8 * KB)).failures).toEqual([]);
-  expect(skills(skill(MID_META, 8 * KB + 1)).failures).toHaveLength(1);
+  assert.deepEqual(skills(skill(MID_META, 8 * KB)).failures, []);
+  assert.equal(skills(skill(MID_META, 8 * KB + 1)).failures.length, 1);
 });
 
 test("a skill body of 2 KB minus 1 byte gives an advisory and 2 KB gives none", () => {
   const low = skills(skill(MID_META, 2 * KB - 1));
-  expect(low.failures).toEqual([]);
-  expect(low.advisories.filter((a) => a.includes("body"))).toHaveLength(1);
-  expect(
+  assert.deepEqual(low.failures, []);
+  assert.equal(low.advisories.filter((a) => a.includes("body")).length, 1);
+  assert.deepEqual(
     skills(skill(MID_META, 2 * KB)).advisories.filter((a) =>
       a.includes("body"),
     ),
-  ).toEqual([]);
+    [],
+  );
 });
 
 test("the body starts after the frontmatter", () => {
-  expect(parseSkill('---\nname: a\ndescription: "b"\n---\nxyz')).toEqual({
+  assert.deepEqual(parseSkill('---\nname: a\ndescription: "b"\n---\nxyz'), {
     name: "a",
     description: "b",
     body: "xyz",
@@ -107,63 +111,70 @@ test("total skill metadata above 8 KB is reported and does not fail", () => {
   const count =
     Math.floor(SKILL_META_TOTAL_HIGH_BYTES / SKILL_META_HIGH_BYTES) + 1;
   const out = total(count);
-  expect(out.failures).toEqual([]);
-  expect(out.advisories.some((a) => a.includes("all skills"))).toBe(true);
+  assert.deepEqual(out.failures, []);
+  assert.equal(
+    out.advisories.some((a) => a.includes("all skills")),
+    true,
+  );
 });
 
 test("total skill metadata below 5 KB is reported and does not fail", () => {
   const out = total(1);
-  expect(out.failures).toEqual([]);
-  expect(out.advisories.some((a) => a.includes("all skills"))).toBe(true);
+  assert.deepEqual(out.failures, []);
+  assert.equal(
+    out.advisories.some((a) => a.includes("all skills")),
+    true,
+  );
 });
 
 test("total skill metadata above 15 KB fails and 15 KB passes", () => {
   const per = SKILL_META_HIGH_BYTES;
-  expect(total(Math.floor(SKILL_META_TOTAL_MAX_BYTES / per)).failures).toEqual(
+  assert.deepEqual(
+    total(Math.floor(SKILL_META_TOTAL_MAX_BYTES / per)).failures,
     [],
   );
-  expect(
-    total(Math.floor(SKILL_META_TOTAL_MAX_BYTES / per) + 1).failures,
-  ).toHaveLength(1);
+  assert.equal(
+    total(Math.floor(SKILL_META_TOTAL_MAX_BYTES / per) + 1).failures.length,
+    1,
+  );
   // 15 KB exactly: 50 skills of 300 bytes and one of 360 bytes. The per-skill failure of the last one is not counted here.
   const exact = [
     ...Array.from({ length: 50 }, () => skill(300, MID_BODY)),
     skill(SKILL_META_TOTAL_MAX_BYTES - 50 * 300, MID_BODY),
   ];
-  expect(
+  assert.deepEqual(
     skills(...exact).failures.filter((f) => f.includes("all skills")),
-  ).toEqual([]);
+    [],
+  );
   exact.push(skill(150, MID_BODY));
-  expect(
-    skills(...exact).failures.filter((f) => f.includes("all skills")),
-  ).toHaveLength(1);
+  assert.equal(
+    skills(...exact).failures.filter((f) => f.includes("all skills")).length,
+    1,
+  );
 });
 
 test("the first request of 16 KB passes and 16 KB plus 1 byte fails", () => {
-  expect(checkFirstRequestBytes(16 * KB).failures).toEqual([]);
-  expect(checkFirstRequestBytes(16 * KB + 1).failures).toHaveLength(1);
+  assert.deepEqual(checkFirstRequestBytes(16 * KB).failures, []);
+  assert.equal(checkFirstRequestBytes(16 * KB + 1).failures.length, 1);
 });
 
 test("the first request below 8 KB gives an advisory and does not fail", () => {
   const low = checkFirstRequestBytes(8 * KB - 1);
-  expect(low.failures).toEqual([]);
-  expect(low.advisories).toHaveLength(1);
-  expect(checkFirstRequestBytes(8 * KB).advisories).toEqual([]);
+  assert.deepEqual(low.failures, []);
+  assert.equal(low.advisories.length, 1);
+  assert.deepEqual(checkFirstRequestBytes(8 * KB).advisories, []);
 });
 
 /** The files named `name` under `dir`, without `node_modules`, `external`, `.git`, and fixture folders. */
-function find(dir, names, found = []) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (["node_modules", "external", ".git", "fixture"].includes(entry.name))
-      continue;
-    const file = path.join(dir, entry.name);
-    if (entry.isDirectory()) find(file, names, found);
-    else if (names.includes(entry.name)) found.push(file);
-  }
-  return found;
+function find(dir, names) {
+  return walk(dir, {
+    skip: ["node_modules", "external", ".git", "fixture"],
+    keep: (f) => names.includes(path.basename(f)),
+  });
 }
 
-test("the files of the repository are within the size targets", () => {
+// A lint of the live repository.
+test("lint: the files of the repository are within the size targets", () => {
   const rel = (f) => path.relative(REPO, f);
   // `CLAUDE.md` links to `AGENTS.md`, so a file counts once, by its real path.
   const real = new Set(
@@ -179,9 +190,9 @@ test("the files of the repository are within the size targets", () => {
       text: fs.readFileSync(f, "utf8"),
     }),
   );
-  expect(claudeMd.length).toBeGreaterThan(0);
-  expect(skillFiles.length).toBeGreaterThan(0);
+  assert.ok(claudeMd.length > 0, `${claudeMd.length}`);
+  assert.ok(skillFiles.length > 0, `${skillFiles.length}`);
   const { failures, advisories } = checkSizes({ claudeMd, skills: skillFiles });
   for (const line of advisories) console.log(`size advisory: ${line}`);
-  expect(failures).toEqual([]);
+  assert.deepEqual(failures, []);
 });

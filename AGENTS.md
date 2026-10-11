@@ -3,28 +3,30 @@
 A Claude Code plugin marketplace in ESM.
 The runtime scripts in `plugins/` are `.mjs` files on Node.js 22.18 or later, so they use only `node:` modules.
 A file in the import graph of a hooks module (`hooks/register.mjs`) has no `node:` import, because the module runs with no Node.
-Code that needs Python is Python, and the tests, `tools/`, and evals run on Bun.
-The core plugin is in `plugins/dotclaude/`, next to the `dotclaude-browser` and `dotclaude-jev` add-on plugins.
+Code that needs Python is Python, and the tests and `tools/` run on Node.js 22.18 or later, with pnpm for the dev dependencies.
+The core plugin is in `plugins/dotclaude/`, next to six add-on plugins: `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-jev`, `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab`.
 Each add-on plugin works without the core plugin, so it imports nothing from another plugin.
 Only `plugins/` ships to users.
 `tests/` has one folder for each plugin, and `tools/` holds the repository scripts.
-`plugins/dotclaude/tests/` holds the hook lab, which `claude plugin test` runs against the hooks module.
+`plugins/<name>/tests/` holds the hook lab of a plugin with a hooks module, which `claude plugin test` runs against that module.
 Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/dotclaude/wiki), with its source in `wiki/`.
 
 ## Commands (repository root)
 
-- `just check` runs lint, tests, validation, and the hook lab.
+- `just check` runs lint, the type check, tests, validation, and the hook labs.
   It must pass before done.
-- `bun test tests/dotclaude/guard.test.mjs` runs one test file.
-- `just lab` runs the hook lab: the tests of the hooks module with stubbed Claude Code events.
+- `just test tests/dotclaude/guard/rules.test.mjs` runs one test file with `node --test`.
+- `just lab` runs the hook lab of each plugin: the tests of its hooks module with stubbed Claude Code events.
   Test each change to `hooks/register.mjs` there before a live session.
-- `bunx markdownlint-cli2 README.md` lints Markdown.
+- `pnpm run lint:md` lints the Markdown files.
   Headings and code blocks have a 100-column bound.
 - `just sandbox` runs Claude Code with this checkout in a separate config.
-  Read `wiki/Sandbox.md` first.
+  Read `wiki/plugins/Sandbox.md` first.
 
 ## Rules
 
+- Use the env vars of Claude Code and flags.
+  Add a dotclaude env var only when neither can do the work, and give it the prefix `DOTCLAUDE_`.
 - Keep each file at 300 lines or less, and each test file at 500 lines or less.
   Split a larger file into files that each hold one concern, and split a long `.md` file into linked parts.
   Generated files, such as `schemas/`, are out of scope.

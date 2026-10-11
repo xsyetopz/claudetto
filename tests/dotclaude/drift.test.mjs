@@ -1,9 +1,10 @@
 // The drift check (task 13.3): the pure rules and the pins of its copies.
 // The lab test `plugins/dotclaude/tests/drift.test.ts` runs the `session.start` handler.
 
-import { expect, test } from "bun:test";
+import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { test } from "node:test";
 import {
   OFF_PLUGINS,
   OVERRIDE_ENV,
@@ -17,8 +18,8 @@ import {
   syncedSkills,
   unknownSections,
 } from "../../plugins/dotclaude/features/drift/rules.mjs";
+import { REPO } from "../support/repo.mjs";
 
-const ROOT = path.join(import.meta.dirname, "../..");
 // Settings that turn off each plugin of `OFF_PLUGINS`, as the settings snippet of the wiki does.
 const profile = {
   enabledPlugins: Object.fromEntries(OFF_PLUGINS.map((id) => [id, false])),
@@ -34,41 +35,44 @@ const settled = {
 test("the tested version is the version of the shipped schema", () => {
   const schema = JSON.parse(
     fs.readFileSync(
-      path.join(import.meta.dirname, "../../schemas/claude-code-settings.json"),
+      path.join(REPO, "schemas/claude-code-settings.json"),
       "utf8",
     ),
   );
-  expect(schema.$comment).toBe(`Extracted from Claude Code ${TESTED_VERSION}`);
+  assert.equal(schema.$comment, `Extracted from Claude Code ${TESTED_VERSION}`);
 });
 
 test("the override variables are the two that beat the agent files", () => {
-  expect([...OVERRIDE_ENV]).toEqual([
-    "CLAUDE_CODE_EFFORT_LEVEL",
-    "CLAUDE_CODE_SUBAGENT_MODEL_FORCE",
-  ]);
+  assert.deepEqual(
+    [...OVERRIDE_ENV],
+    ["CLAUDE_CODE_EFFORT_LEVEL", "CLAUDE_CODE_SUBAGENT_MODEL_FORCE"],
+  );
 });
 
 test("the profile itself gives no line", () => {
-  expect(driftLines(settled)).toEqual([]);
-  expect(driftNote([])).toBeUndefined();
+  assert.deepEqual(driftLines(settled), []);
+  assert.equal(driftNote([]), undefined);
 });
 
 test("a fact that the caller could not read gives no line", () => {
-  expect(driftLines({})).toEqual([]);
+  assert.deepEqual(driftLines({}), []);
 });
 
 test("each rule finds its difference", () => {
-  expect(pluginsOn({ enabledPlugins: { [OFF_PLUGINS[0]]: false } })).toEqual(
+  assert.deepEqual(
+    pluginsOn({ enabledPlugins: { [OFF_PLUGINS[0]]: false } }),
     OFF_PLUGINS.slice(1),
   );
-  expect(
+  assert.deepEqual(
     syncedSkills([{ name: "a", source: "syncedSkills" }, { name: "b" }]),
-  ).toEqual(["a"]);
-  expect(
+    ["a"],
+  );
+  assert.deepEqual(
     unknownSections([{ id: "lean_body" }, { id: "x:y" }, { id: "new_one" }]),
-  ).toEqual(["new_one"]);
-  expect(isSeated({})).toBe(false);
-  expect(isSeated({ model: "x" })).toBe(true);
+    ["new_one"],
+  );
+  assert.equal(isSeated({}), false);
+  assert.equal(isSeated({ model: "x" }), true);
 });
 
 test("the note lists each line", () => {
@@ -81,8 +85,8 @@ test("the note lists each line", () => {
     settings: {},
     blocking: { CLAUDE_CODE_EFFORT_LEVEL: "low" },
   });
-  expect(lines.length).toBe(6);
-  expect(new Set(lines).size).toBe(6);
+  assert.equal(lines.length, 6);
+  assert.equal(new Set(lines).size, 6);
   const note = driftNote(lines);
-  expect(note.split("\n").filter((l) => l.startsWith("- ")).length).toBe(6);
+  assert.equal(note.split("\n").filter((l) => l.startsWith("- ")).length, 6);
 });

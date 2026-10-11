@@ -1,5 +1,0 @@
-[install]
-linker = "isolated"
-
-[test]
-preload = ["./tests/support/tmp-root.mjs"]

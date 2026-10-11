@@ -23,7 +23,7 @@ Evidence is the debug log (`--debug-file`) and the transcript usage records of t
 - With the guard not seated, the `prompt.section` hooks of dotclaude (`context_management`) and of a user-tier probe (`env_info_simple`) both reached the request: the model quoted both texts.
 - The classic `UserPromptSubmit` command hook of the probe ran.
 - Section ids on Haiku 5.5 (`prompt.compose`): `lean_body`, `communication`, `pronouns`, `action_caution`, `session_guidance`, `env_info_simple`, `context_management`, `heron_brook`, `total_tokens`.
-- Recorded in `wiki/Claude-Mods.md`, section "Route A".
+- Recorded in `wiki/design/Claude-Mods.md`, section "Route A".
 
 ## 2.4 `turn.step` model and effort (open: effort not proven by a run)
 
@@ -86,7 +86,7 @@ The main loop (Sonnet 5.5) and one `dotclaude:investigator` subagent (Haiku 5.5)
   The bundle has `sandbox.network.allowUnixSockets` and `sandbox.network.allowAllUnixSockets`, and the next test is one of them in the agent session, which the user sets.
 - 2.22 (done): with `target.json` installed, a fresh sandbox run logs `hooks module dotclaude@dotclaude loaded (worker, environment 1, tier prepend)` and `cc-plugin-sec-default@builtin seated by managed prependPlugins at position 2`.
   The captured Haiku 5.5 request has the dotclaude `context_management` text ("Compaction is off in this session").
-- 2.23 (done): documented in `wiki/Sandbox.md` (Capture session).
+- 2.23 (done): documented in `wiki/plugins/Sandbox.md` (Capture session).
   In a session with `ANTHROPIC_BASE_URL=http://127.0.0.1:8787` and `ENABLE_TOOL_SEARCH=true`, one sandbox run added 2 request files to the capture folder.
 - 2.24: done, with the variants in `research/dropins/` and the general commands in `wiki/Managed-Drop-In.md`.
 - 2.25: the procedure is in `research/surfaces.md`, and it waits for the user's runs.

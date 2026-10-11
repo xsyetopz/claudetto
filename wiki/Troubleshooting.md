@@ -1,0 +1,74 @@
+# Troubleshooting
+
+This page collects the troubleshooting rows of the dotclaude pages.
+Find the plugin or the symptom, and follow the link for the full text.
+A hook that fails does not block a call, so a missing effect is the usual symptom.
+Run `claude --debug` to see the hook log of Claude Code.
+
+## The core plugin `dotclaude`
+
+| Symptom | Cause and fix | Page |
+| --- | --- | --- |
+| No ask for a recursive `rm` | The plugin alone gives no `rm` ask, because a plugin cannot ship `permissions`. Merge the `ask` rules of the settings snippet. | [Guards](Guards) |
+| No policy ask for a repository of another owner | The repository has no policy file, belongs to you, or is not on GitHub. `gh` can also be missing or logged out, and then the ask fails open. Install `gh` and log in. | [Contributions](Contributions) |
+| A hook has no effect | Node.js 22.18 or later is not on `PATH`. The classic hooks and the status line need it, and the module does not. The call goes on. | [Install](Install) |
+| The status line shows nothing | The `statusLine` command still runs the stub of 0.27.0, or `<plugin folder>` is not replaced. Use the absolute path of the installed plugin folder. The path holds the version, so change it after an update. | [Settings snippet](Settings-Snippet) |
+| The status line has no credits segment or no context breakdown | The data is not documented and can change at a Claude Code release. The breakdown shows only after `/context` ran. | [Undocumented reads](Undocumented-Reads) |
+| A note at session start lists differences from the snippet | The drift check found a difference. Each line gives its fix, and the fix is a step for you. | [Core plugin](Core-Plugin#drift-check) |
+| The drift note says the guard is seated | The machine has managed settings or a Team or Enterprise login. The built-in guard `sec-default` skips the shared sections and the model variants (`prompt.compose`), and the `context_management` text. The other parts work. | [Claude mods](Claude-Mods#the-built-in-guard-sec-default) |
+| The `model` and `effort` of an agent file do not apply | `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set. Unset it. | [Agents](Agents) |
+| A `cat` or `sed -n` call is denied | The hook sends the print to `Read`, which gives a short stub for a repeat read. Call `Read` with the file and range in the reason. | [Context bound](Context-Bound) |
+| A Markdown write is denied for a code item | A command, path, or identifier is outside single backticks. Put it in a code span. | [Core plugin](Core-Plugin#hooks) |
+| A `git stash`, `git reset`, or test file edit asks | The `adherence` hook asks before work that other sessions share is moved or a test is changed. Allow it or change the code instead. | [Hooks](Hooks) |
+| An edit of a lint config, a CI file, or a hook file asks, and so does an added skipped test or lint suppression | The `adherence` hook asks because such a change can hide a defect that a check finds. Allow it only when you want the change. Else tell Claude to change the code. | [Hooks](Hooks) |
+| A `git push` fails in the sandbox | The push runs outside the sandbox, because the snippet excludes it. Check your git credentials. | [Guards](Guards) |
+
+## `dotclaude-codegraph`
+
+| Symptom | Cause and fix | Page |
+| --- | --- | --- |
+| The hooks add nothing | The project has no `.codegraph/codegraph.db`, or `codegraph` is not on `PATH`. Run `bin/dotclaude-codegraph-check`, then `codegraph init -y`. | [Code graph](Code-Graph#install) |
+| No graph context for a short name | A name under 3 characters gives too many hits, so the hook skips it. | [Code graph](Code-Graph#limits) |
+
+## `dotclaude-browser`
+
+| Symptom | Cause and fix | Page |
+| --- | --- | --- |
+| A site blocks `agent-browser` | Claude tells you which page blocked it and asks before it goes on. The steps are `agent-browser read`, a feed or API, CloakBrowser, or opening the page by hand. | [Browser](Browser#troubleshooting) |
+| A search fails with "Socket path would be N bytes (max 103)" | The home folder path is too long. Use a shorter home folder. | [Browser](Browser#troubleshooting) |
+| `WebSearch` is denied for the `cloakbrowser` backend | The CloakBrowser binary is not under `~/.cloakbrowser/`. Claude tells you and does not switch to plain `agent-browser`. Install CloakBrowser or set the `backend` option to `agent-browser`. | [Browser](Browser#choose-a-backend) |
+
+## `dotclaude-jev`
+
+| Symptom | Cause and fix | Page |
+| --- | --- | --- |
+| Claude has no `second_opinion` tool, or Jev calls fail | `TYPESAFE_API_KEY` was not set when Claude Code started. Export it and restart. | [Second opinion](Second-Opinion#troubleshooting) |
+| The result says `TypeSafe API 401` | The key is not valid. Get a new key. | [Second opinion](Second-Opinion#troubleshooting) |
+| No pick on a question | The question has fewer than 2 options, is a preference, or has a confidence under 0.5. Claude asks you the question in each case. | [Second opinion](Second-Opinion#troubleshooting) |
+
+## `dotclaude-docs`
+
+| Symptom | Cause and fix | Page |
+| --- | --- | --- |
+| The `docs` skill fails with a quota error | Set `CONTEXT7_API_KEY` for a higher limit. | [Library docs](Library-Docs#rules) |
+
+## `dotclaude-sessions`
+
+| Symptom | Cause and fix | Page |
+| --- | --- | --- |
+| `No request with usage` | The transcript has no model call yet. | [Sessions](Sessions#troubleshooting) |
+
+## `dotclaude-lab`
+
+| Symptom | Cause and fix | Page |
+| --- | --- | --- |
+| `just` in a tmux pane stops with "failed to get current directory" | Run `dotclaude-sandbox` with `node` in the pane. | [Sandbox](Sandbox#troubleshooting) |
+| No login in the sandbox | Run `/login`, or set `CLAUDE_CODE_OAUTH_TOKEN`. | [Sandbox](Sandbox#troubleshooting) |
+| "plugin is locked by managed settings" in the debug log | A managed `enabledPlugins` entry holds the name. Remove it. | [Sandbox](Sandbox#troubleshooting) |
+| `dotclaude-schema` exits with an error that names a version | See the page. | [Lab](Lab#troubleshooting) |
+
+## Related pages
+
+- [Hooks](Hooks)
+- [Undocumented reads](Undocumented-Reads)
+- [Install](Install)

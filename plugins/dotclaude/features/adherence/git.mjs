@@ -1,73 +1,13 @@
 // The git ask (design D34, case S2): `git stash`, `git checkout -- <path>`, `git restore <path>`, and `git reset`
 // move or discard work that the user or other sessions share.
-// `features/guard/` asks only for `rm` and for foreign repositories, so these commands have no ask there.
+// `features/guard/` asks only for foreign repositories, so these commands have no ask there.
 // The functions are pure and read no file.
 
-/** The shell words of each command of `command`, with quotes removed and heredoc bodies skipped. */
-export function commands(command) {
-  const out = [];
-  let words = [];
-  let word = null;
-  let quote = null;
-  const text = String(command ?? "");
-  const heredocs = [];
-  const push = () => {
-    if (word !== null) words.push(word);
-    word = null;
-  };
-  const end = () => {
-    push();
-    if (words.length) out.push(words);
-    words = [];
-  };
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (quote) {
-      if (c === quote) quote = null;
-      else if (c === "\\" && quote === '"' && i + 1 < text.length)
-        word += text[++i];
-      else word += c;
-    } else if (c === "'" || c === '"') {
-      quote = c;
-      word ??= "";
-    } else if (c === "\\" && i + 1 < text.length)
-      word = (word ?? "") + text[++i];
-    else if (c === "<" && text[i + 1] === "<" && text[i + 2] !== "<") {
-      const m = /^<<-?\s*(["']?)([A-Za-z_]\w*)\1/.exec(text.slice(i));
-      if (m) heredocs.push(m[2]);
-      i += m ? m[0].length - 1 : 1;
-      push();
-    } else if (c === "\n") {
-      end();
-      let pos = i + 1;
-      while (heredocs.length) {
-        const delimiter = heredocs.shift();
-        while (pos < text.length) {
-          const nl = text.indexOf("\n", pos);
-          const line = text.slice(pos, nl < 0 ? text.length : nl);
-          pos = nl < 0 ? text.length : nl + 1;
-          if (line.trim() === delimiter) break;
-        }
-      }
-      i = pos - 1;
-    } else if (c === ";" || c === "&" || c === "|" || c === "(" || c === ")")
-      end();
-    else if (/\s/.test(c)) push();
-    else word = (word ?? "") + c;
-  }
-  end();
-  return out;
-}
+import { SHELL_SCAN_MAX_CHARS } from "../../lib/budget.mjs";
+import { codeCommands } from "../../lib/code.mjs";
+import { stripWrappers } from "../../lib/wrappers.mjs";
+import { withScripts } from "./scripts.mjs";
 
-const WRAPPERS = new Set([
-  "sudo",
-  "command",
-  "env",
-  "time",
-  "exec",
-  "nohup",
-  "nice",
-]);
 /** The git global options that take a value in the next word. */
 const VALUE_OPTIONS = new Set([
   "-C",
@@ -77,75 +17,111 @@ const VALUE_OPTIONS = new Set([
   "--namespace",
 ]);
 
-/** The git subcommand of `words` and its arguments, or null when the command is not git. */
-function gitCall(words) {
-  let i = 0;
-  while (i < words.length && (WRAPPERS.has(words[i]) || /^\w+=/.test(words[i])))
-    i++;
-  if (words[i]?.replace(/^.*\//, "") !== "git") return null;
-  for (i++; i < words.length && words[i].startsWith("-"); i++)
+/**
+ * The git subcommand of `argv` and its arguments, or null when the command is not git.
+ * `sub` is `""` when `xargs` gives the subcommand from its input.
+ */
+export function gitCall(argv) {
+  const words = stripWrappers(argv);
+  if (words[0]?.replace(/^.*\//, "") !== "git") return null;
+  let i = 1;
+  // An array of options (`git "${OPTS[@]}" commit`) stands before the subcommand.
+  const option = (w) => w.startsWith("-") || /^\$\{\w+\[[@*]\]\}$/.test(w);
+  for (; i < words.length && option(words[i]); i++)
     if (VALUE_OPTIONS.has(words[i])) i++;
-  return words[i] === undefined
-    ? null
-    : { sub: words[i], args: words.slice(i + 1) };
+  if (words[i] !== undefined)
+    return { sub: words[i], args: words.slice(i + 1) };
+  return argv.some((w) => /^(?:.*\/)?(?:xargs|parallel)$/.test(w))
+    ? { sub: "", args: [] }
+    : null;
 }
+
+/** True when the reader cannot see the subcommand: it comes from a variable, a substitution, or the input of `xargs`. */
+const unknownSub = (sub) => sub === "" || sub.startsWith("$");
 
 /** The subcommands of `stash` that leave the tree as it is. */
 const STASH_READS = new Set(["list", "show", "create", "store"]);
 const REF =
   /^(?:HEAD|ORIG_HEAD|FETCH_HEAD|MERGE_HEAD|[0-9a-f]{7,40}|origin\/.*|upstream\/.*|refs\/.*)$|[~^@:]/;
 
-/** True when `git <sub> <args>` moves or discards work. */
-function movesWork({ sub, args }) {
-  const flags = args.filter((a) => a.startsWith("-") && a !== "--");
+/** The flags (not `--`), the words before `--`, and the index of `--` in `args`. */
+function shape(args) {
   const dashes = args.indexOf("--");
-  const plain = args.filter(
-    (a, i) => !a.startsWith("-") && (dashes < 0 || i < dashes),
+  return {
+    dashes,
+    flags: args.filter((a) => a.startsWith("-") && a !== "--"),
+    plain: args.filter(
+      (a, i) => !a.startsWith("-") && (dashes < 0 || i < dashes),
+    ),
+  };
+}
+
+function checkoutMoves(args) {
+  const { dashes, flags } = shape(args);
+  return (
+    (dashes >= 0 && args.length > dashes + 1) ||
+    args.includes(".") ||
+    flags.some((f) => f === "-f" || f === "--force")
   );
-  if (sub === "stash") return !STASH_READS.has(args[0]);
-  if (sub === "checkout")
-    return (
-      (dashes >= 0 && args.length > dashes + 1) ||
-      args.includes(".") ||
-      flags.some((f) => f === "-f" || f === "--force")
-    );
-  if (sub === "restore") {
-    const staged = flags.includes("--staged") || flags.includes("-S");
-    const worktree = flags.includes("--worktree") || flags.includes("-W");
-    const paths = args.filter(
-      (a, i) =>
-        !a.startsWith("-") && !/^(?:-s|--source)$/.test(args[i - 1] ?? ""),
-    );
-    return (paths.length > 0 || flags.includes("-p")) && (!staged || worktree);
-  }
-  if (sub === "reset") {
-    if (flags.some((f) => /^--(?:hard|soft|mixed|merge|keep)$/.test(f)))
-      return true;
-    // `git reset <path>` and `git reset <ref> <path>` change the index only.
-    if (dashes >= 0 || plain.length !== 1) return false;
-    return REF.test(plain[0]) || !/[./]/.test(plain[0]);
-  }
-  return false;
 }
 
-/** The ask reason for a `Bash` command, or undefined when no git command in it moves or discards work. */
-export function gitReason(command) {
-  for (const words of commands(command)) {
-    for (const inner of nested(words)) {
-      const call = gitCall(inner);
-      if (call && movesWork(call))
-        return `The command \`git ${call.sub}\` moves or discards work.
-The user and other sessions share this working tree, so a stash, a reset, or a restore can remove changes that are not yours.
-Ask the user first, or use a command that leaves the work in place.`;
-    }
-  }
-  return undefined;
+function restoreMoves(args) {
+  const { flags } = shape(args);
+  const staged = flags.includes("--staged") || flags.includes("-S");
+  const worktree = flags.includes("--worktree") || flags.includes("-W");
+  const paths = args.filter(
+    (a, i) =>
+      !a.startsWith("-") && !/^(?:-s|--source)$/.test(args[i - 1] ?? ""),
+  );
+  return (paths.length > 0 || flags.includes("-p")) && (!staged || worktree);
 }
 
-/** `words` and, for `sh -c '...'`, the commands in the script text. */
-function nested(words) {
-  const shell = /^(?:ba|z|da)?sh$/.test(words[0]?.replace(/^.*\//, "") ?? "");
-  const at = words.indexOf("-c");
-  if (!shell || at < 0 || !words[at + 1]) return [words];
-  return [words, ...commands(words[at + 1])];
+function resetMoves(args) {
+  const { dashes, flags, plain } = shape(args);
+  if (flags.some((f) => /^--(?:hard|soft|mixed|merge|keep)$/.test(f)))
+    return true;
+  // `git reset <path>` and `git reset <ref> <path>` change the index only.
+  if (dashes >= 0 || plain.length !== 1) return false;
+  return REF.test(plain[0]) || !/[./]/.test(plain[0]);
+}
+
+/** For each git subcommand that can move or discard work, the test of its arguments. Any other subcommand moves nothing. */
+const MOVES_WORK = new Map([
+  ["stash", (args) => !STASH_READS.has(args[0])],
+  ["checkout", checkoutMoves],
+  ["restore", restoreMoves],
+  ["reset", resetMoves],
+]);
+
+/** True when `git <sub> <args>` moves or discards work. */
+const movesWork = ({ sub, args }) =>
+  unknownSub(sub) || (MOVES_WORK.get(sub)?.(args) ?? false);
+
+/**
+ * The ask reason for a `Bash` command, or undefined when no git command in it moves or discards work.
+ * `scripts` are the texts of the script files that the command runs (`scriptTexts`).
+ */
+export function gitReason(command, scripts) {
+  const { commands, code, fileCode, truncated } = withScripts(command, scripts);
+  // Code in another language that names a git command gets the same ask, because the guard cannot tell whether the code runs it.
+  for (const argv of [
+    ...commands,
+    ...[...code, ...fileCode].flatMap(codeCommands),
+  ]) {
+    const call = gitCall(argv);
+    if (call && unknownSub(call.sub))
+      return `The git guard cannot read the subcommand of this \`git\` call, because it comes from a variable, a substitution, or the input of \`xargs\`.
+It can be a \`git stash\`, \`git reset\`, or \`git restore\` that moves or discards work that the user and other sessions share.
+A command with the subcommand in its text lets the guard read it.`;
+    if (call && movesWork(call))
+      return `The command \`git ${call.sub}\` moves or discards work.
+The user and other sessions share this working tree, so the command can remove changes that are not from this session.
+A command that leaves the work in place does not have this risk.`;
+  }
+  // The guard cannot read a command over the scan bound, so it asks.
+  return truncated
+    ? `The command is longer than ${SHELL_SCAN_MAX_CHARS} characters, so the git guard cannot read all of it.
+It can hide a \`git stash\`, \`git reset\`, or \`git restore\` that moves or discards shared work.
+Shorter commands let the guard read each one.`
+    : undefined;
 }

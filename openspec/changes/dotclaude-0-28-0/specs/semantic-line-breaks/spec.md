@@ -107,15 +107,15 @@ dotclaude SHALL NOT rewrite a file in a `PostToolUse` hook for line breaks, beca
 
 ### Requirement: Chat prompt rule
 
-The output style SHALL have a `<reply_format>` block that gives the reason, one wrong example, and one right example.
+The output style SHALL have a `<text_format>` block that gives each format rule with its reason.
 dotclaude SHALL NOT ship a `Stop` hook that counts chat lines, because the hook only wrote a log file (design D29, D35).
 The eval MAY measure the share of chat lines with more than one sentence from the run trace.
 A `session.append` rewrite of the chat reply SHALL NOT ship (task 18.11).
 
-#### Scenario: Reply format block
+#### Scenario: Text format block
 
 - **WHEN** a test reads the output style
-- **THEN** it has a `<reply_format>` block with the reason, one wrong example, and one right example
+- **THEN** it has a `<text_format>` block, and each rule in it gives its reason
 
 #### Scenario: No log
 

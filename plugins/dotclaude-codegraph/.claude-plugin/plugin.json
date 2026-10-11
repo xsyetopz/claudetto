@@ -1,4 +1,5 @@
 {
+  "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "dotclaude-codegraph",
   "version": "0.28.0",
   "description": "Gives Claude the code graph of a project from the CodeGraph CLI `codegraph`. Syncs the index, and adds callers and definitions to `Grep` and `Glob` calls.",
@@ -6,5 +7,7 @@
     "name": "xsyetopz"
   },
   "repository": "https://github.com/xsyetopz/dotclaude",
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Code-Graph",
+  "keywords": ["codegraph", "code-graph", "search", "index"]
 }

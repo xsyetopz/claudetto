@@ -264,4 +264,4 @@ A subagent delivers its report with the `SubagentHandback` tool call, and so a "
   The newline is drawn as a replacement glyph, so the text has one row only.
 - The type docs say the same: "Pins `text` as this plugin's status line under the prompt, beside the engine's own pinned notices", one for each plugin.
 - Result: the mod cannot draw the main status line, which has up to 3 rows and colors and takes the status JSON of Claude Code on stdin.
-  The wiki snippet keeps the `statusLine` command `node <plugin folder>/features/statusline/cli.mjs` for the user to set (`wiki/Settings-Snippet.md`).
+  The wiki snippet keeps the `statusLine` command `node <plugin folder>/features/statusline/cli.mjs` for the user to set (`wiki/settings/Settings-Snippet.md`).

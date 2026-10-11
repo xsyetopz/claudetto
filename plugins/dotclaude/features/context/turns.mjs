@@ -4,18 +4,33 @@
 
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { rethrowUnless, UNREADABLE } from "../../lib/errors.mjs";
 import { TURNS_LEFT_AT } from "./limits.mjs";
 
 /** The folder of the agent files of this plugin. */
 const AGENTS_DIR = path.join(import.meta.dirname, "../../agents");
 
-/** All parsed rows of `file`. The count of turns needs the whole file, because a tail can cut early rows. */
+/** All parsed rows of `file`, or none when it is absent. The count of turns needs the whole file, because a tail can cut early rows. */
 export function allRows(file) {
+  let text;
+  try {
+    text = readFileSync(file, "utf8");
+  } catch (err) {
+    rethrowUnless(err, ...UNREADABLE);
+    return [];
+  }
+  return parseRows(text.split("\n"));
+}
+
+/** The parsed rows of `lines`. A line that is not JSON, such as a cut first line, is skipped. */
+export function parseRows(lines) {
   const rows = [];
-  for (const line of readFileSync(file, "utf8").split("\n")) {
+  for (const line of lines) {
     try {
       rows.push(JSON.parse(line));
-    } catch {}
+    } catch (err) {
+      rethrowUnless(err, "SyntaxError");
+    }
   }
   return rows;
 }
@@ -46,7 +61,8 @@ export function maxTurnsOf(agentType, dir = AGENTS_DIR) {
     )[0];
     const value = /^maxTurns:\s*(\d+)\s*$/m.exec(head)?.[1];
     return value ? Number(value) : undefined;
-  } catch {
+  } catch (err) {
+    rethrowUnless(err, ...UNREADABLE);
     return undefined;
   }
 }
@@ -54,5 +70,5 @@ export function maxTurnsOf(agentType, dir = AGENTS_DIR) {
 /** The facts for a subagent with `turns` of `maxTurns`, or undefined while more than `TURNS_LEFT_AT` turns are left. */
 export function turnFact(turns, maxTurns) {
   if (!maxTurns || maxTurns - turns > TURNS_LEFT_AT) return undefined;
-  return `You made ${turns} turns, and the limit is ${maxTurns} turns. The run stops at the limit with no report.`;
+  return `You made ${turns} turns, and the limit is ${maxTurns} turns.`;
 }

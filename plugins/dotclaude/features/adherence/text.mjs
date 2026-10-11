@@ -55,10 +55,6 @@ export function added(find, { before, after, fragment }) {
   });
 }
 
-/** The count of lines in `text`. A final newline does not start a line. */
-export const lineCount = (text) =>
-  text === "" ? 0 : text.split("\n").length - (text.endsWith("\n") ? 1 : 0);
-
 /** The lines of `before` that `after` does not keep, each in order. A line is kept when `after` holds it in the same order. */
 export function lostLines(before, after) {
   const next = after.split("\n");

@@ -1,7 +1,8 @@
 {
+  "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "dotclaude-browser",
   "version": "0.28.0",
-  "description": "Drives a browser with `agent-browser`, or with CloakBrowser on sites with bot detection. Answers each `WebSearch` call with a search in the headless browser, with CloakBrowser when its binary is present.",
+  "description": "Drives a browser with `agent-browser`, or with CloakBrowser on sites with bot detection. Answers each `WebSearch` call with a search in the headless browser. With the `cloakbrowser` backend, `WebSearch` needs the CloakBrowser binary.",
   "author": {
     "name": "xsyetopz"
   },
@@ -12,7 +13,10 @@
       "type": "string",
       "title": "Browser backend",
       "description": "Use `agent-browser`, or `cloakbrowser` for sites with bot detection. CloakBrowser runs through `agent-browser` with its own Chromium binary. With `cloakbrowser`, `WebSearch` needs that binary.",
-      "default": "agent-browser"
+      "default": "agent-browser",
+      "options": ["agent-browser", "cloakbrowser"]
     }
-  }
+  },
+  "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Browser",
+  "keywords": ["browser", "agent-browser", "cloakbrowser", "web-search"]
 }

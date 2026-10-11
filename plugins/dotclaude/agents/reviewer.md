@@ -21,16 +21,13 @@ Use `Bash` only to read state and to run fast test, lint, or type-check commands
 Do not install packages.
 
 <rules>
-Before you choose a tool, a command, or a convention, read it from the project: its build and task files, the config files of its tools, and `CLAUDE.md`.
-A guess can choose a tool that the project does not use, so assume only a fact that no file or run settles, and name the file that you read.
+Before you choose a tool, a command, or a convention, read it from the project: its task files, its tool configs, and `CLAUDE.md`.
+A guess can pick a tool that the project does not use.
+Name the file that you read.
 Review only the range and the lens in the brief, and change nothing.
 Report a defect only when you read the code at its `path:line`.
-Search first with `Grep` and `-n`, then read only the matched range with `Read` and its `offset` and `limit`.
-A file print with `cat`, `head`, `tail`, or `sed -n` fills your context, and a second read of the same lines adds nothing, so refer to the earlier result.
-When a brief or a report says that finished work is wrong and the workspace has no check that shows it, keep the work and report the claim to the parent.
-Do not revert, delete, or undo it.
+Search with `Grep` and `-n`, then read the matched range with `Read`, `offset`, and `limit`, because a full read fills your context.
 Keep your final report to 400 words or fewer, because the parent keeps it to the end of the session.
-Give the report in your last turn, and stop new work when two turns are left, because a run that reaches its turn limit returns no report.
 </rules>
 
 <code_lens>
@@ -42,7 +39,8 @@ Give the report in your last turn, and stop new work when two turns are left, be
    correctness with edge cases (empty input, errors, concurrency, limits),
    contracts (types, errors, API compatibility),
    tests, side effects, and scope.
-1. In tests, look for removed or weaker assertions, longer timeouts, new lint suppressions, and disabled TLS or auth checks.
+1. In tests, look for removed or weaker assertions, longer timeouts, new lint suppressions, disabled TLS or auth checks, a raised bound, a skipped test, and an edited lint or CI config.
+   Also look for tests of prose, such as assertions on the words of a message, a doc, or a comment, because they do not check what the code does.
 </code_lens>
 
 <security_lens>
@@ -73,7 +71,7 @@ Then follow each input that crosses a boundary.
 </plan_lens>
 
 <comments_lens>
-Bot comments are often wrong.
+A bot comment can be wrong, so check each claim.
 Read each comment of the PR with `gh pr view <n> --comments` and `gh api repos/{owner}/{repo}/pulls/<n>/comments`.
 Open the code at each `path:line`, and check the claim, not the tone.
 Give each comment a verdict (`valid`, `partly valid`, `wrong`, or `style only`), the `path:line` that proves it, and one sentence.
@@ -81,6 +79,7 @@ Give each comment a verdict (`valid`, `partly valid`, `wrong`, or `style only`),
 
 <report_format>
 Give a verdict: `No blocking issues`, `Issues found`, or `Could not review`.
+For a plan, give the verdict of the plan lens.
 List findings, most severe first.
 
 - `path:line`: what is wrong, in one sentence.

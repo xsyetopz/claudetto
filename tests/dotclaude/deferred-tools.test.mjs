@@ -1,11 +1,17 @@
-// Test 9.5: no plugin file sets `isDeferred: false`, and the ban list of the env names that turn off deferral is exact.
+// Test 9.5: the core plugin never turns off the deferral of tools, and the ban list of the env names that do is exact.
 // The engine defers the tools that it can only when none of these keys sends every tool schema in full.
 
-import { expect, test } from "bun:test";
+import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { test } from "node:test";
+import {
+  DEFERRED_TOOLS,
+  TOOL_TEXT,
+} from "../../plugins/dotclaude/features/surface/data.mjs";
+import { toolAnswer } from "../../plugins/dotclaude/features/surface/rules.mjs";
+import { PLUGINS } from "../support/repo.mjs";
 
-const ROOT = path.join(import.meta.dirname, "../..");
 // The env names that turn off deferral or send every tool in full, and the one value that turns off a name that has values.
 const ENV_BANNED = [
   { name: "CLAUDE_CODE_SIMPLE", value: null },
@@ -15,33 +21,38 @@ const ENV_BANNED = [
   { name: "ENABLE_TOOL_SEARCH", value: "auto:0" },
 ];
 
-test("a ban matches its value and no other", () => {
-  const env = { ENABLE_TOOL_SEARCH: "true" };
-  const hit = ENV_BANNED.filter(
-    ({ name, value }) => name in env && String(env[name]) === value,
+/** The bans that `env` breaks. */
+const broken = (env) =>
+  ENV_BANNED.filter(
+    ({ name, value }) =>
+      name in env && (value === null || String(env[name]) === value),
   );
-  expect(hit).toEqual([]);
-  expect(
-    ENV_BANNED.filter(
-      ({ name, value }) => name === "ENABLE_TOOL_SEARCH" && value === "false",
-    ),
-  ).toHaveLength(1);
+
+test("a ban matches its value and no other", () => {
+  assert.deepEqual(broken({ ENABLE_TOOL_SEARCH: "true" }), []);
+  assert.deepEqual(broken({ ENABLE_TOOL_SEARCH: "auto:0" }), [
+    { name: "ENABLE_TOOL_SEARCH", value: "auto:0" },
+  ]);
+  assert.equal(broken({ CLAUDE_CODE_SIMPLE: "1" }).length, 1);
 });
 
-function files(dir) {
-  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
-    const p = path.join(dir, d.name);
-    if (d.isDirectory()) return d.name === "node_modules" ? [] : files(p);
-    return /\.(mjs|ts|json)$/.test(d.name) && !d.name.includes(".test.")
-      ? [p]
-      : [];
-  });
-}
+test("the `settings.json` of the core plugin sets no banned env name", () => {
+  const file = path.join(PLUGINS, "dotclaude/settings.json");
+  const settings = JSON.parse(fs.readFileSync(file, "utf8"));
+  assert.deepEqual(broken(settings.env ?? {}), []);
+});
 
-test("no runtime file of the core plugin (hooks, features, lib) sets `isDeferred` to `false`", () => {
-  const dirs = ["hooks", "features", "lib"];
-  const bad = dirs
-    .flatMap((d) => files(path.join(ROOT, "plugins/dotclaude", d)))
-    .filter((f) => /isDeferred\s*:\s*false/.test(fs.readFileSync(f, "utf8")));
-  expect(bad.map((f) => path.relative(ROOT, f))).toEqual([]);
+test("`tool.describe` rules defer the listed tools and never set `isDeferred` to `false`", () => {
+  const tools = [...DEFERRED_TOOLS, ...Object.keys(TOOL_TEXT), "SomethingNew"];
+  for (const tool of tools)
+    for (const description of ["x", "x".repeat(4000)]) {
+      const answer = toolAnswer(tool, { description });
+      assert.notEqual(answer?.isDeferred, false, tool);
+    }
+  for (const tool of DEFERRED_TOOLS)
+    assert.equal(
+      toolAnswer(tool, { description: "x" })?.isDeferred,
+      true,
+      tool,
+    );
 });

@@ -4,12 +4,12 @@
   "owner": {
     "name": "xsyetopz"
   },
-  "description": "Lists the dotclaude plugin and its optional code-graph, Jev, browser, and docs plugins.",
+  "description": "Lists the dotclaude plugin and its optional code-graph, Jev, browser, docs, sessions, and lab plugins.",
   "plugins": [
     {
       "name": "dotclaude",
       "source": "./plugins/dotclaude",
-      "description": "Adds guards against destructive commands and weakened tests, secret redaction, model and effort rules for subagents, a handoff note before compaction, cache notes, working rules, and role agents.",
+      "description": "Adds a lean output style, five role agents, and a status line command. Adds hooks that ask before work on a repo with an AI policy, check edits and `git` calls, bound the context of subagents, and check Markdown line breaks and drift. Sets up OpenSpec.",
       "category": "productivity"
     },
     {
@@ -21,19 +21,31 @@
     {
       "name": "dotclaude-jev",
       "source": "./plugins/dotclaude-jev",
-      "description": "Adds a second-opinion tool that asks TypeSafe Jev, a decision model, about a decision. With no `TYPESAFE_API_KEY`, the tool sends Claude to the `reviewer` agent.",
+      "description": "Adds a second-opinion tool that asks TypeSafe Jev, a decision model, about a decision. With no `TYPESAFE_API_KEY`, the plugin registers no tool.",
       "category": "productivity"
     },
     {
       "name": "dotclaude-browser",
       "source": "./plugins/dotclaude-browser",
-      "description": "Drives a browser with `agent-browser`, or with CloakBrowser on sites with bot detection. Answers each `WebSearch` call with a search in the headless browser.",
+      "description": "Drives a browser with `agent-browser`, or with CloakBrowser on sites with bot detection. Answers each `WebSearch` call with a search in the headless browser. With the `cloakbrowser` backend, `WebSearch` needs the CloakBrowser binary.",
       "category": "productivity"
     },
     {
       "name": "dotclaude-docs",
       "source": "./plugins/dotclaude-docs",
       "description": "Gets current library and API docs with the Context7 CLI `ctx7`. Works with no key.",
+      "category": "productivity"
+    },
+    {
+      "name": "dotclaude-sessions",
+      "source": "./plugins/dotclaude-sessions",
+      "description": "Measures the start of a Claude Code session by source, and the usage of each run: model calls, context that each call reads again, and skills that a period did not use.",
+      "category": "productivity"
+    },
+    {
+      "name": "dotclaude-lab",
+      "source": "./plugins/dotclaude-lab",
+      "description": "Tools for plugin authors. Runs Claude Code in a sandbox, captures and sizes the requests, writes the JSON Schema of `settings.json`, and compares the eval scores of two plugin folders.",
       "category": "productivity"
     }
   ]

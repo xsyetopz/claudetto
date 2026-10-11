@@ -3,14 +3,16 @@
 // It logs each call to `calls.log`, and keeps `delivery` and `telemetry.enabled` in files.
 // The real CLI run is in the task 15.4 evidence.
 
-import { expect, test } from "bun:test";
+import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
+import { test } from "node:test";
+import { PLUGINS, tmpDir } from "../support/repo.mjs";
 
-const PLUGIN = path.join(import.meta.dirname, "../../plugins/dotclaude");
+const PLUGIN = path.join(PLUGINS, "dotclaude");
 const SCRIPT = path.join(PLUGIN, "skills/setup/scripts/openspec.mjs");
-const NODE = Bun.which("node");
+const NODE = process.execPath;
 const STUB = `#!/bin/sh
 echo "$*" >> "$STUB_DIR/calls.log"
 case "$1 $2" in
@@ -23,7 +25,7 @@ exit 0
 
 /** A temporary config folder, project folder, and stub folder. */
 function sandbox() {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dc-openspec-"));
+  const root = tmpDir("dc-openspec");
   const dirs = {
     root,
     config: path.join(root, "config"),
@@ -36,7 +38,8 @@ function sandbox() {
 }
 
 const setup = (d, args) => {
-  const r = Bun.spawnSync([NODE, SCRIPT, ...args], {
+  const r = spawnSync(NODE, [SCRIPT, ...args], {
+    encoding: "utf8",
     env: {
       CLAUDE_CONFIG_DIR: d.config,
       CLAUDE_PROJECT_DIR: d.project,
@@ -45,7 +48,7 @@ const setup = (d, args) => {
     },
     cwd: d.project,
   });
-  return { code: r.exitCode, out: r.stdout.toString() };
+  return { code: r.status, out: r.stdout };
 };
 /** The calls that change something: no `--version`, and no `config get`. */
 const calls = (d) => {
@@ -62,20 +65,20 @@ const calls = (d) => {
 test("the preview lists the OpenSpec steps and runs none", () => {
   const d = sandbox();
   const r = setup(d, []);
-  expect(r.out).toContain("config set telemetry.enabled false");
-  expect(r.out).toContain("openspec init --tools claude");
-  expect(r.out).toContain("config set delivery skills");
-  expect(r.out).toContain("openspec update");
-  expect(calls(d)).toEqual([]);
-  expect(fs.existsSync(path.join(d.stub, "delivery"))).toBe(false);
+  assert.ok(r.out.includes("config set telemetry.enabled false"), r.out);
+  assert.ok(r.out.includes("openspec init --tools claude"), r.out);
+  assert.ok(r.out.includes("config set delivery skills"), r.out);
+  assert.ok(r.out.includes("openspec update"), r.out);
+  assert.deepEqual(calls(d), []);
+  assert.equal(fs.existsSync(path.join(d.stub, "delivery")), false);
   fs.rmSync(d.root, { recursive: true });
 });
 
 test("`--apply` runs init, then the delivery and the update, with telemetry off first", () => {
   const d = sandbox();
   const r = setup(d, ["--apply"]);
-  expect(r.code).toBe(0);
-  expect(calls(d)).toEqual([
+  assert.equal(r.code, 0);
+  assert.deepEqual(calls(d), [
     "config set telemetry.enabled false",
     "init --tools claude --no-animation",
     "config set delivery skills",
@@ -90,8 +93,11 @@ test("a project with skills delivery, telemetry off, and no command copies needs
   fs.writeFileSync(path.join(d.stub, "delivery"), "skills\n");
   fs.writeFileSync(path.join(d.stub, "telemetry.enabled"), "false\n");
   const r = setup(d, ["--apply"]);
-  expect(r.out).not.toContain("OpenSpec steps");
-  expect(calls(d).some((c) => c.startsWith("update"))).toBe(false);
+  assert.ok(!r.out.includes("OpenSpec steps"), r.out);
+  assert.equal(
+    calls(d).some((c) => c.startsWith("update")),
+    false,
+  );
   fs.rmSync(d.root, { recursive: true });
 });
 
@@ -105,6 +111,6 @@ test("command copies in `.claude/commands/opsx` need only an `update`", () => {
   fs.writeFileSync(path.join(d.stub, "delivery"), "skills\n");
   fs.writeFileSync(path.join(d.stub, "telemetry.enabled"), "false\n");
   setup(d, ["--apply"]);
-  expect(calls(d)).toEqual(["update"]);
+  assert.deepEqual(calls(d), ["update"]);
   fs.rmSync(d.root, { recursive: true });
 });

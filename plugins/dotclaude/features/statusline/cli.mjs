@@ -3,6 +3,7 @@
 // It calls no model and no network, and no program except `git`.
 // It writes no file (design D35).
 
+import { failureText } from "../../lib/hook-io.mjs";
 import { readTable } from "./context-table.mjs";
 import { readUsage } from "./credits.mjs";
 import { gitState } from "./git.mjs";
@@ -31,6 +32,8 @@ try {
       }),
     );
   }
-} catch {
+} catch (err) {
+  // The row stays empty, and stderr shows the cause.
+  process.stderr.write(failureText(err));
   console.log("");
 }

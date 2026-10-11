@@ -2,77 +2,49 @@
 // fires `tool.check` events, and stubs each answer of Claude Code.
 // No command runs, no session starts, and no network call goes out.
 
-import { expect, mock, test } from "claude-code/testing";
+import type { On, ProcessRunResult } from "claude-code";
+import { type Engine, expect, mock, test } from "claude-code/testing";
 
-const ROOT = "/work/app";
+/** A finished `gh` run: no cut output. */
+const done = (
+  exitCode: number,
+  stdout: string,
+  stderr: string,
+): { value: ProcessRunResult } => ({
+  value: {
+    exitCode,
+    stdout,
+    stderr,
+    isStdoutTruncated: false,
+    isStderrTruncated: false,
+  },
+});
 
 /** Stubs for one test: the engine verdict, the session, and `gh` output by argument list. */
-function stub(on, { verdict = "allow", gh = {} } = {}) {
+function stub(
+  on: On,
+  {
+    verdict = "allow",
+    gh = {},
+  }: { verdict?: "allow" | "ask" | "deny"; gh?: Record<string, string> } = {},
+) {
   on("tool.check", () => ({ decision: verdict }));
-  mock.env(on, { HOME: "/home/me", TMPDIR: "/var/tmp/me" });
-  on("session.cwd", () => ({ value: ROOT }));
-  on("session.root", () => ({ value: ROOT }));
   on("session.id", () => ({ value: "s1" }));
   on("process.run", (_$, e) => {
     const out = gh[e.argv.join(" ")];
-    return {
-      value:
-        out === undefined
-          ? { exitCode: 1, stdout: "", stderr: "not found" }
-          : { exitCode: 0, stdout: out, stderr: "" },
-    };
+    return out === undefined ? done(1, "", "not found") : done(0, out, "");
   });
 }
 
-const bash = ($, command) => $.tool.check({ tool: "Bash", input: { command } });
+const bash = ($: Engine, command: string) =>
+  $.tool.check({ tool: "Bash", input: { command } });
 
-test("a recursive `rm` outside the project asks", async ($, on) => {
-  stub(on);
-  const out = await bash($, "rm -rf ../other");
-  expect(out.decision).toBe("ask");
-  expect(out.reason).toContain("`../other`");
-});
-
-test("a recursive `rm` in the project or in a temp folder keeps the verdict", async ($, on) => {
-  stub(on);
-  for (const command of [
-    "rm -rf ./build",
-    "rm -r node_modules dist",
-    "rm -rf /tmp/x",
-    "rm -rf /var/tmp/me/x",
-    "rm file.txt",
-  ])
-    expect((await bash($, command)).decision).toBe("allow");
-});
-
-test("a recursive `rm` of a variable that holds a temp folder keeps the verdict", async ($, on) => {
-  stub(on);
-  for (const command of [
-    "P=$(mktemp -d); rm -rf $P",
-    "SBX=$TMPDIR/sbx && rm -rf $SBX",
-    "DOTCLAUDE_SANDBOX=$TMPDIR/dotclaude-sandbox; rm -rf $DOTCLAUDE_SANDBOX/config",
-  ])
-    expect((await bash($, command)).decision).toBe("allow");
-});
-
-test("a recursive `rm` of an unsafe or unresolved path asks", async ($, on) => {
-  stub(on);
-  for (const command of [
-    "TMPDIR=/; rm -rf $TMPDIR/x",
-    "rm -rf $TMPDIR/../..",
-    "rm -rf $VAR",
-    "P=$(mktemp -d); rm -rf ~",
-    "P=$(mktemp -d); rm -rf /",
-  ])
-    expect((await bash($, command)).decision).toBe("ask");
-});
-
-test("a deny of the engine stays a deny", async ($, on) => {
+test("a deny of the engine stays a deny", async ($: Engine, on: On) => {
   stub(on, { verdict: "deny" });
-  expect((await bash($, "rm -rf ~/x")).decision).toBe("deny");
+  expect((await bash($, "gh repo view other/lib")).decision).toBe("deny");
 });
 
-test("with `DISABLE_COMPACT`, the `context_management` section changes", async ($, on) => {
+test("with `DISABLE_COMPACT`, the `context_management` section changes", async ($: Engine, on: On) => {
   on("prompt.section", () => ({ text: "is summarized" }));
   mock.env(on, { DISABLE_COMPACT: "1" });
   const out = await $.prompt.section({
@@ -83,7 +55,7 @@ test("with `DISABLE_COMPACT`, the `context_management` section changes", async (
   expect(out.text).not.toBe("is summarized");
 });
 
-test("another section keeps the text of the engine", async ($, on) => {
+test("another section keeps the text of the engine", async ($: Engine, on: On) => {
   on("prompt.section", () => ({ text: "is summarized" }));
   mock.env(on, { DISABLE_COMPACT: "1" });
   expect((await $.prompt.section({ name: "memory", text: null })).text).toBe(
@@ -91,7 +63,7 @@ test("another section keeps the text of the engine", async ($, on) => {
   );
 });
 
-test("with `DISABLE_COMPACT=0`, the `context_management` text of the engine stays", async ($, on) => {
+test("with `DISABLE_COMPACT=0`, the `context_management` text of the engine stays", async ($: Engine, on: On) => {
   on("prompt.section", () => ({ text: "is summarized" }));
   mock.env(on, { DISABLE_COMPACT: "0" });
   const out = await $.prompt.section({
@@ -102,10 +74,12 @@ test("with `DISABLE_COMPACT=0`, the `context_management` text of the engine stay
 });
 
 const LOGIN = "gh config get user -h github.com";
-const POLICY = (repo) =>
+const ORGS =
+  'gh api user/memberships/orgs --paginate --jq .[] | select(.role == "admin" and .state == "active") | .organization.login';
+const POLICY = (repo: string) =>
   `gh api -H Accept: application/vnd.github.raw+json repos/${repo}/contents/CLAUDE.md`;
 
-test("the first call to a repository of another owner with a policy asks once", async ($, on) => {
+test("the first call to a repository of another owner with a policy asks once", async ($: Engine, on: On) => {
   stub(on, {
     gh: { [LOGIN]: "me\n", [POLICY("other/lib")]: "No AI pull requests." },
   });
@@ -115,7 +89,7 @@ test("the first call to a repository of another owner with a policy asks once", 
   expect((await bash($, "gh repo view other/lib")).decision).toBe("allow");
 });
 
-test("a repository of the user, or one with no policy, keeps the verdict", async ($, on) => {
+test("a repository of the user, or one with no policy, keeps the verdict", async ($: Engine, on: On) => {
   stub(on, {
     gh: { [LOGIN]: "me\n", [POLICY("me/app")]: "Rules of my own." },
   });
@@ -128,4 +102,49 @@ test("a repository of the user, or one with no policy, keeps the verdict", async
       })
     ).decision,
   ).toBe("allow");
+});
+
+/** Like `stub`, but each `gh` call that has a list of answers takes the next answer, and `null` is a failed call. */
+function sequence(
+  on: On,
+  answers: Record<string, string | null | (string | null)[]>,
+) {
+  on("tool.check", () => ({ decision: "allow" }));
+  on("session.id", () => ({ value: "s1" }));
+  const calls: string[] = [];
+  on("process.run", (_$, e) => {
+    const key = e.argv.join(" ");
+    const list = answers[key];
+    const out = Array.isArray(list) ? list.shift() : list;
+    calls.push(key);
+    return out === undefined || out === null
+      ? done(1, "", "failed")
+      : done(0, out, "");
+  });
+  return calls;
+}
+
+test("a failed `gh` call for the owners is tried again at the next check", async ($: Engine, on: On) => {
+  const calls = sequence(on, {
+    [LOGIN]: [null, "me\n"],
+    [POLICY("me/first")]: "Rules of my own.",
+    [POLICY("me/app")]: "Rules of my own.",
+  });
+  // The first check cannot read the owners, so the repository counts as one of another owner.
+  expect((await bash($, "gh repo view me/first")).decision).toBe("ask");
+  // The second check reads the owners again, finds `me`, and keeps the verdict.
+  expect((await bash($, "gh repo view me/app")).decision).toBe("allow");
+  expect(calls.filter((c) => c === LOGIN)).toHaveLength(2);
+});
+
+test("owners that were read once are not read again", async ($: Engine, on: On) => {
+  const calls = sequence(on, {
+    [LOGIN]: ["me\n"],
+    [ORGS]: "",
+    [POLICY("me/one")]: "Rules of my own.",
+    [POLICY("me/two")]: "Rules of my own.",
+  });
+  await bash($, "gh repo view me/one");
+  await bash($, "gh repo view me/two");
+  expect(calls.filter((c) => c === LOGIN)).toHaveLength(1);
 });

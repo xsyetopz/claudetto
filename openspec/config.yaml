@@ -1,32 +1,17 @@
 schema: spec-driven
 
-# Project context (optional)
-# Add only constraints that should guide OpenSpec artifacts and workflows.
-# Include constraints an agent cannot infer by reading the code.
-# Keep general project documentation and discoverable codebase facts out.
-# Example:
-#   context: |
-#     Designs and tasks must cover Windows, macOS, and Linux
-#     Write all artifacts in Spanish
-
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always state what is out of scope
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
-
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+context: |
+  This repository is a Claude Code plugin marketplace in ESM.
+  Read `AGENTS.md` at the root first.
+  It holds the rules, and this text does not copy them.
+  Runtime scripts in `plugins/` are `.mjs` files for Node.js 22.18 and use only `node:` modules.
+  A file in the import graph of `hooks/register.mjs` has no `node:` import.
+  Add-on plugins work alone and import nothing from another plugin.
+  Commands: `just check` (must pass before done), `just test FILE`, `just lab`.
+  Keep each file at 300 lines or less.
+  Write docs in STE with semantic line breaks and no semicolons.
+  Put each code item in inline code.
+  Add CHANGELOG entries under the version that is in work.
+  Use env vars and flags of Claude Code.
+  Add a `DOTCLAUDE_` env var only when no Claude Code setting fits.
+  Use documented extension points and write no runtime code for a feature that Claude Code has.

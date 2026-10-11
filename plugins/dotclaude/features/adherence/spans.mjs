@@ -126,7 +126,9 @@ export function spansReason(items) {
     more > 0 ? `${shown.join(", ")}, and ${more} more` : shown.join(", ");
   return `The new text has code items with no code span: ${list}.
 A reader sees which words are code only when each code item is in single backticks.
-Write the call again with each of these items in single backticks.`;
+Write the call again with each of these items in single backticks.
+The check looks at each word that has the form of a file path, a name, a call, a flag, or an env var.
+Put each such code item in single backticks.`;
 }
 
 /**

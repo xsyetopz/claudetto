@@ -5,14 +5,15 @@
 // The never-set list lives here, because `lib/` ships to users and only this test reads it.
 // The wiki page `Off-Switches` lists the same entries.
 
-import { expect, test } from "bun:test";
+import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { test } from "node:test";
+import { REPO } from "../support/repo.mjs";
 import { validate } from "./fixtures/validate.mjs";
 
-const ROOT = path.join(import.meta.dirname, "../..");
 const SCHEMA = JSON.parse(
-  fs.readFileSync(path.join(ROOT, "schemas/claude-code-settings.json"), "utf8"),
+  fs.readFileSync(path.join(REPO, "schemas/claude-code-settings.json"), "utf8"),
 );
 
 /** The settings keys that are never set, with the reason for each. */
@@ -120,7 +121,7 @@ function neverSetViolations(settings) {
 
 /** The parsed JSON blocks of a Markdown file, or an empty list when the file is absent. */
 function jsonBlocks(file) {
-  const full = path.join(ROOT, file);
+  const full = path.join(REPO, file);
   if (!fs.existsSync(full)) return [];
   const text = fs.readFileSync(full, "utf8");
   return [...text.matchAll(/```json\n([\s\S]*?)\n```/g)].map((m) =>
@@ -134,24 +135,26 @@ const problems = (settings) => [
   ...neverSetViolations(settings).map((n) => `never set: ${n}`),
 ];
 
-// `wiki/Settings-Snippet.md` does not exist yet, and `wiki/Profile-Keys.md` has no JSON block.
-// The test reads both, so the snippet is pinned when a page gets a block.
+// The test reads the JSON blocks of `wiki/settings/Settings-Snippet.md`, so the snippet is pinned.
 const SNIPPETS = [
   [
     "plugins/dotclaude/settings.json",
     [readJson("plugins/dotclaude/settings.json")],
   ],
-  ["wiki/Settings-Snippet.md", jsonBlocks("wiki/Settings-Snippet.md")],
-  ["wiki/Profile-Keys.md", jsonBlocks("wiki/Profile-Keys.md")],
+  [
+    "wiki/settings/Settings-Snippet.md",
+    jsonBlocks("wiki/settings/Settings-Snippet.md"),
+  ],
 ];
 
 function readJson(file) {
-  return JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8"));
+  return JSON.parse(fs.readFileSync(path.join(REPO, file), "utf8"));
 }
 
+// A docs lint: it pins the JSON blocks of the wiki pages, by design (task 25.22).
 for (const [file, blocks] of SNIPPETS)
-  test(`each JSON block of \`${file}\` has only keys of the schema and no never-set key`, () => {
-    for (const block of blocks) expect(problems(block)).toEqual([]);
+  test(`lint: each JSON block of \`${file}\` has only keys of the schema and no never-set key`, () => {
+    for (const block of blocks) assert.deepEqual(problems(block), []);
   });
 
 test("the plugin `settings.json` holds only `agent` and `subagentStatusLine`, the keys that a plugin may set", () => {
@@ -159,7 +162,7 @@ test("the plugin `settings.json` holds only `agent` and `subagentStatusLine`, th
   const extra = Object.keys(readJson("plugins/dotclaude/settings.json")).filter(
     (k) => !allowed.has(k),
   );
-  expect(extra).toEqual([]);
+  assert.deepEqual(extra, []);
 });
 
 test("a fixture with `CLAUDE_CODE_EFFORT_LEVEL` fails, and the failure names it", () => {
@@ -167,33 +170,50 @@ test("a fixture with `CLAUDE_CODE_EFFORT_LEVEL` fails, and the failure names it"
     env: { CLAUDE_CODE_EFFORT_LEVEL: "high" },
     disableAllHooks: true,
   };
-  expect(neverSetViolations(fixture)).toEqual([
+  assert.deepEqual(neverSetViolations(fixture), [
     "disableAllHooks",
     "env.CLAUDE_CODE_EFFORT_LEVEL",
   ]);
-  expect(problems(fixture)).toEqual([
+  assert.deepEqual(problems(fixture), [
     "never set: disableAllHooks",
     "never set: env.CLAUDE_CODE_EFFORT_LEVEL",
   ]);
 });
 
 test("a fixture with an unknown key fails, and the failure names the key", () => {
-  expect(problems({ notAClaudeKey: true })).toEqual([
+  assert.deepEqual(problems({ notAClaudeKey: true }), [
     '(root): unknown key "notAClaudeKey"',
   ]);
 });
 
 test("a fixture with a key of the schema and a never-set env entry passes the schema check and fails the pin", () => {
   const fixture = { model: "x", env: { CLAUDE_CODE_SIMPLE: "1" } };
-  expect(validate(fixture, SCHEMA)).toEqual([]);
-  expect(problems(fixture)).toEqual(["never set: env.CLAUDE_CODE_SIMPLE"]);
+  assert.deepEqual(validate(fixture, SCHEMA), []);
+  assert.deepEqual(problems(fixture), ["never set: env.CLAUDE_CODE_SIMPLE"]);
 });
 
 test("a never-set entry with a banned value is flagged only for that value", () => {
-  expect(
+  assert.deepEqual(
     neverSetViolations({ env: { CLAUDE_CODE_ENABLE_TASKS: "0" } }),
-  ).toEqual(["env.CLAUDE_CODE_ENABLE_TASKS"]);
-  expect(
+    ["env.CLAUDE_CODE_ENABLE_TASKS"],
+  );
+  assert.deepEqual(
     neverSetViolations({ env: { CLAUDE_CODE_ENABLE_TASKS: "1" } }),
-  ).toEqual([]);
+    [],
+  );
+});
+
+test("the settings snippet asks before each flag spelling of a recursive `rm`", () => {
+  const asked = jsonBlocks("wiki/settings/Settings-Snippet.md").flatMap(
+    (b) => b.permissions?.ask ?? [],
+  );
+  for (const rule of [
+    "Bash(rm -*r*)",
+    "Bash(rm -*R*)",
+    "Bash(rm * -*r*)",
+    "Bash(rm * -*R*)",
+    "Bash(rm --recursive*)",
+    "Bash(rm * --recursive*)",
+  ])
+    assert.ok(asked.includes(rule), rule);
 });

@@ -184,7 +184,7 @@ True answer, from reading the code (`rg -n symbolOf`):
 - `search` has no call.
   It is a value in the `HOOKS` map (`cli.mjs:118`) that `hooks/hooks.json:21` reaches through `cli.mjs search`.
 - No test or other plugin names `symbolOf`.
-  Only prose in `research/bundle-2.1.295.md:154` and `research/code-graph-cli.md` names it.
+  Only prose in `research/bundle-2.1.296.md:101` and `research/code-graph-cli.md` names it.
 - The impact set is therefore `search` (depth 1) and nothing at depth 2.
   This question is small, so it does not test the depth limit of `impact`.
 
@@ -200,7 +200,7 @@ True answer, from reading the code (`rg -n symbolOf`):
 Findings:
 
 - All 6 answers named `search` as the only caller, and none named a wrong function.
-  Each also named the `PreToolUse` hook, and the 4 unasked or code-graph answers named the note in `bundle-2.1.295.md:154`.
+  Each also named the `PreToolUse` hook, and the 4 unasked or code-graph answers named the note in `bundle-2.1.296.md:101`.
   The two answers of the LSP tool found the `HOOKS` map by `findReferences` on `search`, and the other four found `hooks.json` by `grep`.
 - The code-graph arm used the `SessionStart` line without being told.
   Both runs ran `codegraph impact symbolOf -d 5` as the first call.
@@ -208,7 +208,7 @@ Findings:
   The answer still used `grep` and 2 `Read` calls to check the tests and the hook wiring.
 - The LSP arm did not use the `LSP` tool when only asked the question.
   It never searched for the deferred tool with `ToolSearch`, and used `grep`.
-  This repeats the Python result of `wiki/Code-Graph.md`.
+  This repeats the Python result of `wiki/plugins/Code-Graph.md`.
 - Told to use the LSP tool, the arm needed `ToolSearch`, then `workspaceSymbol`, `findReferences`, and `incomingCalls`, one hop at a time.
   It used 2.1 to 2.5 times the input tokens of the code-graph arm, and 9 requests.
   The sessions have a fixed context of about 40,000 tokens or more, so the figures compare the runs and not the cost of the question alone.

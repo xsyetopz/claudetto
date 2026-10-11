@@ -1,7 +1,7 @@
 // The subagent status line: one row for each running subagent.
 // A row has the name, the agent type, the model and effort, the context against its window, and the run time.
 
-import { CONTEXT_WINDOW } from "../../lib/budget.mjs";
+import { windowOf } from "../../lib/budget.mjs";
 import { minutes, shortModel } from "./format.mjs";
 import { SUBAGENT_ROWS_MAX } from "./limits.mjs";
 import { C, sep, width } from "./paint.mjs";
@@ -18,10 +18,7 @@ export function renderTask(task, { now = Date.now(), columns = 100 } = {}) {
     typeof task.agentType === "string"
       ? task.agentType.replace(/^[^:]+:/, "")
       : null;
-  const window = Math.min(
-    task.contextWindowSize || CONTEXT_WINDOW,
-    CONTEXT_WINDOW,
-  );
+  const window = windowOf(task.contextWindowSize);
   const model = task.model && shortModel(task.model);
   const start =
     typeof task.startTime === "number"

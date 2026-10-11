@@ -2,6 +2,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { rethrowUnless, UNREADABLE } from "../../lib/errors.mjs";
 
 /** The newest OpenSpec change in `dir` that has a `tasks.md`, with its done and total task counts. */
 export function openspecChange(dir) {
@@ -15,7 +16,9 @@ export function openspecChange(dir) {
       const mtime = fs.statSync(file).mtimeMs;
       if (!newest || mtime > newest.mtime) newest = { id, file, mtime };
     }
-  } catch {
+  } catch (err) {
+    // A project with no `openspec/changes` folder, or a change that goes away during the scan, has no active change.
+    rethrowUnless(err, ...UNREADABLE);
     return null;
   }
   if (!newest) return null;

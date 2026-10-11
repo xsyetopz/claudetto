@@ -4,12 +4,13 @@
 // names. Generated files that git ignores, such as `.claude-plugin/types/`,
 // are out of scope.
 
-import { expect, test } from "bun:test";
+import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { test } from "node:test";
+import { REPO, tmpDir } from "./repo.mjs";
 
-const REPO = path.join(import.meta.dirname, "../..");
 const SCRIPT = /\.(?:js|cjs|ts|mts|cts|jsx|tsx)$/;
 
 /** The `types` paths that the manifest of each plugin names. */
@@ -37,20 +38,24 @@ function offRuntime(root, files) {
   );
 }
 
-test("plugins ship no script that is not `.mjs`, except the allowed ones", () => {
+// A lint of the live repository.
+test("lint: plugins ship no script that is not `.mjs`, except the allowed ones", () => {
   const r = spawnSync(
     "git",
     ["ls-files", "--cached", "--others", "--exclude-standard", "plugins"],
     { cwd: REPO, encoding: "utf8" },
   );
-  expect(r.status).toBe(0);
+  assert.equal(r.status, 0);
   const files = r.stdout.split("\n").filter(Boolean);
-  expect(files.some((f) => f.endsWith(".mjs"))).toBe(true);
-  expect(offRuntime(REPO, files)).toEqual([]);
+  assert.equal(
+    files.some((f) => f.endsWith(".mjs")),
+    true,
+  );
+  assert.deepEqual(offRuntime(REPO, files), []);
 });
 
 test("a `.js`, a `.ts`, and a `.d.ts` that no manifest names fail", () => {
-  const root = fs.mkdtempSync(path.join(process.env.TMPDIR, "runtimes-"));
+  const root = tmpDir("runtimes");
   const manifest = "plugins/p/.claude-plugin/plugin.json";
   fs.mkdirSync(path.dirname(path.join(root, manifest)), { recursive: true });
   fs.writeFileSync(
@@ -66,7 +71,7 @@ test("a `.js`, a `.ts`, and a `.d.ts` that no manifest names fail", () => {
     "plugins/p/features/x/rules.ts",
     "plugins/p/types/extra.d.ts",
   ];
-  expect(offRuntime(root, files)).toEqual([
+  assert.deepEqual(offRuntime(root, files), [
     "plugins/p/features/x/cli.js",
     "plugins/p/features/x/rules.ts",
     "plugins/p/types/extra.d.ts",

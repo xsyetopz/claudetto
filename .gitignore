@@ -10,3 +10,6 @@ __pycache__/
 .env
 
 /plugins/dotclaude/evals/results/
+
+node_modules/
+.pnpm-store/

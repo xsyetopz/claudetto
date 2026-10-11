@@ -2,40 +2,50 @@
 
 The user runs the steps on each surface, and the agent compares the results.
 
-## Versions on this machine (2026-10-08)
+## Versions on this machine (2026-10-10)
 
 | Surface | Claude Code | Source |
 | --- | --- | --- |
-| Terminal | 2.1.293 | `claude --version` |
-| VS Code extension | 2.1.292 | `~/.vscode/extensions/anthropic.claude-code-2.1.292-darwin-arm64/resources/native-binary/claude` |
+| Terminal | 2.1.296 | `claude --version` |
+| VS Code extension | 2.1.292 | `~/.vscode/extensions/anthropic.claude-code-2.1.292-darwin-arm64/` |
 | Desktop app | 2.1.289 | `~/Library/Application Support/Claude/claude-code/2.1.289` |
 
 Each surface runs its own binary.
-A key, an event, or a built-in plugin that is new in 2.1.293 can be missing or different on the other two.
-This is a candidate cause of the 30K start, and the run shows whether it is the cause.
+dotclaude 0.28.0 is tested on 2.1.296, so update VS Code and the desktop app first.
+A key, an event, or a built-in plugin that is new in 2.1.296 can be missing on an older surface.
 
-## Steps for each surface
+## Steps for each surface (task 20.1)
 
-Do the steps in the terminal, in VS Code, and in the desktop app (Code tab), with this repository as the project folder.
-Do them after task 2.22, so that all three surfaces have the same managed drop-in.
+Do the steps in VS Code and in the desktop app (Code tab), with this repository as the project folder.
+Do them also in the terminal, so that the three results come from the same day and the same settings.
 
+1. Update the surface to Claude Code 2.1.296, and record the version that it shows.
+1. Put the keys of `wiki/settings/Settings-Snippet.md` in `~/.claude/settings.json`, the user settings file that each surface reads.
+   Install `dotclaude@dotclaude` and `dotclaude-sessions@dotclaude`.
 1. Start a new session.
 1. Send `Hello, World!` as the first prompt.
 1. Run `/context`, and copy its output to `research/surfaces/<surface>-context.txt`.
 1. Run `/status`, and copy its output to `research/surfaces/<surface>-status.txt`.
    It shows the version, the model, and the setting sources.
-1. Run `/plugin`, and note which plugins are on, with their tier if it shows one.
+1. Run `/plugin`, and note which plugins are on.
 1. Tell the agent the surface name.
 
 ## What the agent compares
 
-- The billed first request: `input_tokens`, `cache_creation_input_tokens`, and `cache_read_input_tokens` of the first assistant message in the newest transcript in `~/.claude/projects/<project>/`.
-- The `prompt_snapshot` attachment of the same transcript: the tool list and the system text.
-- The setting sources in the `/status` output: user settings, the managed file, the managed drop-in, and project settings.
-- The loaded plugins and skills, and the MCP servers.
-- The surface whose start is near 30K, the part that differs from the terminal start, and the config source or version that causes it.
+- The start of each surface by source: `dotclaude-start <transcript>` on the newest transcript of the surface in `~/.claude/projects/<project>/`.
+  The line `First request` gives the billed tokens of the first request.
+- The difference of each surface from the terminal: `dotclaude-start --compare TERMINAL.jsonl SURFACE.jsonl`.
+- The setting sources in the `/status` output: the user settings, the managed settings, and the project settings.
+- The loaded plugins, skills, and MCP servers.
 
-The agent records the result in `research/probes.md` under 2.6.
+The agent records one row for each surface in the table below.
+Task 20.2 passes when each surface shows the start tokens of the terminal within 3%.
+
+| Surface | Version | First request (tokens) | Difference from the terminal | Config source that differs |
+| --- | --- | --- | --- | --- |
+| Terminal | | | | |
+| VS Code | | | | |
+| Desktop app | | | | |
 
 ## Terminal result (task 2.6)
 

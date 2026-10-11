@@ -51,13 +51,25 @@ Each rewrite SHALL keep the instructions that the evals show to affect the outco
 ### Requirement: Sandbox text matches enforcement
 
 The sandbox attachment that the mod sends SHALL state the same limits that the sandbox enforces.
-The mod SHALL shorten the text only when `sandbox.allowUnsandboxedCommands` is `false`.
+The mod SHALL shorten the text only when the settings set `sandbox.allowUnsandboxedCommands` to a boolean.
+When the value is `true`, the short text SHALL keep the rule that a run outside the sandbox needs the approval of the user.
 
 #### Scenario: Escape not possible
 
 - **WHEN** the snippet is applied
 - **THEN** the sandbox text says that each command runs in the sandbox and that the user changes the sandbox settings
 - **AND** a call with `dangerouslyDisableSandbox` runs in the sandbox
+
+#### Scenario: Escape after an approval
+
+- **WHEN** the settings set `sandbox.allowUnsandboxedCommands` to `true`
+- **THEN** the sandbox text says that each command runs in the sandbox
+- **AND** it says that a command with `dangerouslyDisableSandbox` runs only after the user approves it
+
+#### Scenario: No escape setting
+
+- **WHEN** the settings do not set `sandbox.allowUnsandboxedCommands`
+- **THEN** the sandbox text of Claude Code passes on unchanged
 
 ### Requirement: Human stays in the loop
 
@@ -72,6 +84,7 @@ No rewrite SHALL tell Claude to get around a permission rule, a hook, or the san
 ### Requirement: Output style size
 
 The output style SHALL be at or below `STYLE_MAX_BYTES` in `lib/budget.mjs`, because setup and tests both read it.
+The output style holds only the role, the tone, and the format of the reply, and the shared rules are in `features/prompt/shared.mjs`.
 A change that makes it shorter SHALL NOT lower the resolve rate or raise the policy-violation or over-claim rate in the eval suite, beyond the noise bound of the suite.
 
 #### Scenario: Shorter style

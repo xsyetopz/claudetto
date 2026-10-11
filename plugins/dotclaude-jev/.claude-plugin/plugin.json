@@ -1,10 +1,13 @@
 {
+  "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "dotclaude-jev",
   "version": "0.28.0",
-  "description": "Adds a second-opinion tool that asks TypeSafe Jev, a decision model, about a decision. With no `TYPESAFE_API_KEY`, the tool sends Claude to the `reviewer` agent.",
+  "description": "Adds a second-opinion tool that asks TypeSafe Jev, a decision model, about a decision. With no `TYPESAFE_API_KEY`, the plugin registers no tool.",
   "author": {
     "name": "xsyetopz"
   },
   "repository": "https://github.com/xsyetopz/dotclaude",
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Second-Opinion",
+  "keywords": ["second-opinion", "typesafe", "jev", "decisions"]
 }

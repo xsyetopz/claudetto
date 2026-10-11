@@ -73,7 +73,7 @@ Status: first pass written at the turn limit. Categories marked "not checked" ar
 | CLAUDE_CODE_ENABLE_TASKS | env | 0 | Task tools, gives TodoWrite (~9.9k chars at 28959638) instead | swaps | n/a | D | do NOT set 0: raises prompt |
 | CLAUDE_CODE_ENABLE_TODO_TOOLS | env | unset | task tools on all models | none | none | D | leave unset |
 | CLAUDE_CODE_TODO_REMINDER_MODE | env | `off` / `baseline` | todo nudge system-reminders (every 10 turns) | small, recurring | low | B | 24423202 |
-| CLAUDE_CODE_SILENT_TURN_REMINDER (+_TEXT, _TURNS, _SECONDS) | env | bool | "user hasn't heard from you" reminder | small, recurring | low | B | 24413937 |
+| CLAUDE_CODE_SILENT_TURN_REMINDER (+_TEXT,_TURNS, _SECONDS) | env | bool | "user hasn't heard from you" reminder | small, recurring | low | B | 24413937 |
 | CLAUDE_CODE_MAX_EFFORT_REMINDER | env | bool | max-effort reminder | small | none | B | 16631333. Default is flag-driven |
 | CLAUDE_CODE_ENABLE_TOKEN_USAGE_ATTACHMENT | env | unset | token usage attachment (off unless set) | small | none | B | 24487003 |
 | CLAUDE_CODE_ATTRIBUTION_HEADER | env | 0 | version + fingerprint block at system prompt start | small | none | D | |
@@ -101,7 +101,7 @@ Status: first pass written at the turn limit. Categories marked "not checked" ar
 | CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS | env | 1 | all built-in agents, `-p` only | small | n/a interactive | D | 8604553 |
 | CLAUDE_CODE_SIMPLE | env | 1 | hooks, skills, plugins, MCP, memory, CLAUDE.md all off | LARGE | BREAKS dotclaude (hooks+plugin) | D | do not set. Same as `--bare` |
 | CLAUDE_CODE_SAFE_MODE | env | 1 | troubleshooting mode, same loss | LARGE | BREAKS dotclaude | D | do not set |
-| CLAUDE_CODE_DISABLE_HOME_SETTINGS_SEED, _HOOK_FORWARDING, _PLUGIN_FORWARDING, _LAUNCH_COMPOSER, _VITALS_EMITTER, _WORKING_SYNC, _TURN_HANDOFF, _STARTUP_WORK_GATE, _PROACTIVITY, _MEMORY_* | env | truthy | internal sync, forwarding, proactive features | none / small | unknown | B | registry 12954085..12955510. Not checked in depth |
+| CLAUDE_CODE_DISABLE_HOME_SETTINGS_SEED,_HOOK_FORWARDING,_PLUGIN_FORWARDING,_LAUNCH_COMPOSER,_VITALS_EMITTER,_WORKING_SYNC,_TURN_HANDOFF,_STARTUP_WORK_GATE, _PROACTIVITY, *MEMORY** | env | truthy | internal sync, forwarding, proactive features | none / small | unknown | B | registry 12954085..12955510. Not checked in depth |
 | ENABLE_LSP_TOOL, ENABLE_STUB_TOOLS, CLAUDE_CODE_PROACTIVE, CLAUDE_CODE_BRIEF, CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS | env | unset | opt-in features, off by default | none | none | mixed | leave unset |
 | OTEL_*, CLAUDE_CODE_ENABLE_TELEMETRY | env | unset | OTel off unless enabled | none | none | D | leave unset |
 | CTX7_* | env | n/a | not found in the bundle | n/a | n/a | n/a | not a Claude Code var |
@@ -111,7 +111,7 @@ Status: first pass written at the turn limit. Categories marked "not checked" ar
 | name | kind | values | turns off | prompt effect | quality risk | doc | evidence / note |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | disableBundledSkills | settings, restrictive | true | bundled skills | LARGE | none | D | 0.27 set |
-| skillOverrides | settings | map name -> `on|name-only|user-invocable-only|off` | per skill | per skill | none | D | schema 13549310 |
+| skillOverrides | settings | map name -> `on\|name-only\|user-invocable-only\|off` | per skill | per skill | none | D | schema 13549310 |
 | skillListingBudgetFraction / skillListingMaxDescChars | settings | 0..1 / int | shrink skill listing (default 1% / 1536 chars) | up to 1% of window | low | B | schema |
 | enabledPlugins | settings | `"cc-plugin-X@builtin": false` | built-in plugins | see plugin table | see table | D (form), B (ids) | 16092766 |
 | prependPlugins / appendPlugins | managed (user on bare machine) | ids | ordering of `sec-default` | none | affects hook order | B | 10671030 |
@@ -134,7 +134,7 @@ Status: first pass written at the turn limit. Categories marked "not checked" ar
 | alwaysThinkingEnabled | settings | false | thinking | none | HIGH | D | do not set |
 | maxEffortLevel | settings | low..max (`max` = no cap) | caps effort | none | cap lowers quality | D | 0.27 set xhigh. 13372656 |
 | availableModels / enforceAvailableModels | settings | list / bool | model picks | none | none | D | 0.27 sets list. Add `enforceAvailableModels:true`. Managed copy wins |
-| deniedModels / availableModelsMatch | managed-only | list / `prefix|exact` | model block | none | none | D | candidate for managed file |
+| deniedModels / availableModelsMatch | managed-only | list / `prefix\|exact` | model block | none | none | D | candidate for managed file |
 | modelPicker | settings (user/managed) | rows | picker lineup | none | none | D | optional |
 | fastMode / fastModePerSessionOptIn | settings | false / true | fast mode | none | none | D | add `fastMode:false` (env already) |
 | switchModelsOnFlag | settings | false | auto model switch | none | pause on flag | D | candidate |

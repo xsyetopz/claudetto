@@ -1,56 +1,42 @@
 // The second-opinion tool of Jev.
 // The hooks module registers it with `$.tool.register`, and a `tool.call` hook serves it.
-// With `TYPESAFE_API_KEY`, the tool is loaded and asks Jev.
-// Without the key, the tool is deferred, and a call gets the fallback result.
+// With `TYPESAFE_API_KEY`, the hooks module registers the tool, and it asks Jev.
+// Without the key, the hooks module registers no tool, so the tool costs no tokens.
 // This file holds the pure parts. The `$` calls are in the hooks module.
+
+import { MAX_OPTIONS, MIN_OPTIONS } from "./limits.mjs";
 
 export const TOOL = "second_opinion";
 
-const RULES = `Facts decide some questions, and the user decides others.
-Ask the user, and not this tool, about goals, preferences, and approvals, because Jev does not answer for the user.
-When Jev picks an answer with a confidence of 0.9 or more for a question that facts decide, do not ask the user that question unless the user asks for it.
-When you do not follow the pick of Jev, say so and give the reason.
-
-Keep the question neutral.
-Give the decision, every option, and for each option at least one fact for it and one fact against it.
-Give no preferred answer and no leading words.
-Leave out a lean or a preference of the user, the notes, or the team, because Jev judges the facts only.
-The tool puts the options in a random order before it asks Jev.`;
-
-const DESCRIPTION_LOADED = `Asks Jev, a decision model, for a second opinion before you act on a decision.
-Ask about a close call, a technical choice, a decision or an answer of the user, and each request for a second opinion.
-Jev gives the pick and its confidence from 0 to 1.
-A confidence under 0.5 is a weak signal.
-The question goes to the TypeSafe API, so put no secret and no personal data in it.
-
-${RULES}`;
-
-const DESCRIPTION_DEFERRED = `Asks for a second opinion on a decision that is hard to undo, such as a data migration, a public API change, or a security setting.
-Do not use it for a decision that you can undo with one edit.
-Jev is off, so a call gets a reviewer check and not a pick of Jev.
-
-${RULES}`;
+const DESCRIPTION = `Asks Jev, a decision model, for a second opinion on a choice that facts can settle.
+Use it for a close call or a technical choice, and when the user asks for a second opinion.
+Do not use it for goals, preferences, or approvals, because only the user decides those.
+Jev returns a pick and a confidence from 0 to 1.
+The question, the options, and the state go to the TypeSafe API, so put no secret and no personal data in them.
+Keep the question neutral, because a leading question gets the answer that it leads to.
+Give each option with one fact for it and one fact against it.
+Leave out the lean of the user, the notes, or the team, because Jev judges the facts only.
+The tool puts the options in a random order.
+When you do not follow the pick, tell the user and give the reason.`;
 
 const INPUT_SCHEMA = {
   type: "object",
   properties: {
     question: {
       type: "string",
-      description:
-        "The decision to check, as a neutral question with no preferred answer.",
+      description: "The decision to check, as a neutral question.",
     },
     options: {
       type: "array",
-      description:
-        "Every option. Leave it out for a yes or no question. The tool orders the options at random.",
-      minItems: 2,
-      maxItems: 255,
+      description: "Every option. Leave it out for a yes or no question.",
+      minItems: MIN_OPTIONS,
+      maxItems: MAX_OPTIONS,
       items: {
         type: "object",
         properties: {
           key: {
             type: "string",
-            description: "A short name of the option, with no `=` character.",
+            description: "A short name of the option.",
           },
           description: {
             type: "string",
@@ -70,15 +56,13 @@ const INPUT_SCHEMA = {
   required: ["question"],
 };
 
-/** The argument of `$.tool.register`: loaded with the key, deferred without it. */
-export function toolSpec(hasKey) {
-  return {
-    name: TOOL,
-    description: hasKey ? DESCRIPTION_LOADED : DESCRIPTION_DEFERRED,
-    inputSchema: INPUT_SCHEMA,
-    isDeferred: !hasKey,
-  };
-}
+/** The argument of `$.tool.register`. The hooks module calls it only when the key is set. */
+export const toolSpec = () => ({
+  name: TOOL,
+  description: DESCRIPTION,
+  inputSchema: INPUT_SCHEMA,
+  isDeferred: false,
+});
 
 /** The name of the tool for the model. */
 export const fullName = (plugin) => `mcp__${plugin}__${TOOL}`;
@@ -94,46 +78,51 @@ export function shuffled(items, random = Math.random) {
 }
 
 /**
- * The client run for the input, or `null` when the input is not valid.
+ * The client run for the input, or `{ error }` with the one fault of an input that is not valid.
  * The state goes on stdin (`--state -`), and `--` ends the flags before the words of the model.
  */
 export function clientArgs(input, random = Math.random) {
   const { question, options, state } = input ?? {};
-  if (typeof question !== "string" || !question.trim()) return null;
+  if (typeof question !== "string" || !question.trim())
+    return {
+      error: "The `question` is empty. Give a `question` that has text.",
+    };
   const head = typeof state === "string" ? ["--state", "-", "--"] : ["--"];
   const stdin = typeof state === "string" ? state : undefined;
   if (options === undefined) return { args: ["yes", ...head, question], stdin };
-  const valid =
-    Array.isArray(options) &&
-    options.length >= 2 &&
-    options.every(
+  if (!Array.isArray(options) || options.length < MIN_OPTIONS)
+    return { error: `A pick needs ${MIN_OPTIONS} or more \`options\`.` };
+  if (
+    !options.every(
       (o) => typeof o?.key === "string" && o.key && !o.key.includes("="),
-    );
-  if (!valid) return null;
+    )
+  )
+    return {
+      error:
+        "An option `key` is empty or has an `=` character. Give each option a `key` with text and no `=`.",
+    };
   const items = shuffled(options, random).map(
     (o) => `${o.key}=${o.description ?? ""}`,
   );
   return { args: ["pick", ...head, question, ...items], stdin };
 }
 
-/** The result without a pick of Jev: it names the reason and the route once. */
+/** The result without a pick of Jev: it names the reason, and tells Claude to tell the user. */
 export function fallback(reason) {
   return [
     `Jev gave no answer. ${reason}`,
-    "Route: no check ran in this tool, and no model answered.",
-    "Start the `reviewer` agent of `dotclaude` when it is installed, and ask it the same neutral question.",
-    "Else answer from your own check of the evidence.",
-    "Do not call this tool again for this question.",
+    "Another call for this question is unlikely to help.",
+    "Answer from your own check of the evidence, and tell the user that no second opinion was available.",
   ].join("\n");
 }
 
 /** The text result for the outcome of a client run (see `outcome` in `run.mjs`). */
 export function result(run) {
   if (!run.ok) return fallback(`Jev failed: ${run.reason}`);
-  return `Route: Jev (its own models).\n${run.stdout}`;
+  return `Jev answered:\n${run.stdout}`;
 }
 
-export const INVALID_INPUT =
-  "The input is not valid. Give `question` and, for a pick, 2 or more `options`, each with a `key` that has no `=` character.";
-
-export const NO_KEY = fallback("`TYPESAFE_API_KEY` is not set.");
+// A call can reach this only if the key left the environment after the tool was registered.
+export const NO_KEY = fallback(
+  "The user must set `TYPESAFE_API_KEY` before Claude Code starts.",
+);

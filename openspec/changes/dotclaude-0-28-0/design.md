@@ -139,7 +139,7 @@ The coordinator may pass `model` and `effort` in an `Agent` call, which the tool
 The wiki snippet carries `availableModels` and `enforceAvailableModels` without it.
 The research gives no 5.5 effort cost index (`model-routing.md` section 1.3), so only the evals set the final values.
 The values of D25 are the ones that the user set on 2026-10-09 from the eval report `evals/results/2026-10-09T12-16-54-262Z` and the Anthropic effort guide.
-The report files go with the harness (D9), and `wiki/Evals-History.md` keeps the figures.
+The report files go with the harness (D9), and `wiki/evals/Evals-History.md` keeps the figures.
 The rows above a measured pair are inferred, not measured.
 
 ### D13 No router: the main loop keeps the session choice
@@ -180,8 +180,9 @@ The 0.27.0 conflict of `includeGitInstructions: false` with the `attribution` te
 
 ### D15 dotclaude owns the system prompt
 
-The mod replaces the Claude Code sections with a dotclaude variant for each model: Opus 5.5, Sonnet 5.5, Haiku 5.5, and Fable 5.1.
-`prompt.compose` returns the variant sections, and an unknown section id passes on unchanged and shows in the drift check.
+The mod replaces the Claude Code sections with the text of one model: Opus 5.5, Sonnet 5.5, Haiku 5.5, or Fable 5.1.
+The output style holds only the role, the tone, and the format, because Claude Code sends it as a message and not in the system prompt.
+`prompt.compose` returns the shared sections of `features/prompt/shared.mjs` and then the model notes (tasks 28.12 and 29.11), and an unknown section id passes on unchanged and shows in the drift check.
 If `prompt.compose` is not honored, the fallback is `prompt.section` for each known id (task 2.7).
 Rules from `prompting-guidance.md` section 17:
 
@@ -189,7 +190,7 @@ Rules from `prompting-guidance.md` section 17:
 - Plain imperatives, a reason only where it changes behavior, one emphasized word at most, and no stacked CAPS.
 - Scope in one line: no unasked features, and extras go to the end of the reply.
 - A keep-going sentence, and one confirmation rule for destructive or shared-system actions.
-- The verification line depends on the model: on for Sonnet 5.5 and Haiku 5.5, off for Opus 5.5.
+- The verification rule is in the shared sections, and only the subagent block of Sonnet 5.5 and Haiku 5.5 repeats it (cut V2).
   Fable 5.1 follows its own guide (unverified until the variant evals).
 - Delegation text: delegate only for large, independent, parallel work.
 - No "think harder" rules.
@@ -203,7 +204,7 @@ At spawn, `agent.spawn` adds the short per-model block of the chosen subagent mo
 No variant changes in a session or agent, because a mid-session edit breaks the cache.
 A model switch by the user keeps the variant of the session start, and dotclaude does not switch the main-loop model (D13).
 Whether this costs adherence is a variant-eval question (open).
-The output style stays short, and subagents do not inherit it, so each agent body repeats the two or three lines that matter.
+The shared sections stay short, and subagents do not get them, so each agent body repeats the two or three lines that matter.
 The compact prompt has no override route, and the wiki records that.
 
 ### D16 Request capture and the 30K start
@@ -247,7 +248,7 @@ The live patch changes settings only: it leaves `includeGitInstructions` unchang
 
 ### D31 Guard hooks fail open (`onFailure`)
 
-Claude Code 2.1.295 adds `onFailure: "block"` for `command` and `http` hooks (`research/bundle-2.1.295.md`).
+Claude Code 2.1.295 adds `onFailure: "block"` for `command` and `http` hooks (`research/bundle-2.1.296.md`).
 With it, a hook that cannot start, times out, exits with a code other than 0 or 2, or prints JSON that is not valid blocks the call.
 The `PreToolUse` guard hooks do not use it, and no other hook does (decision of the user 2026-10-08).
 The reason: when `node` is missing, each guarded `Bash`, `WebFetch`, and `Agent` call would stay blocked, with a warning only in the log, and Claude cannot repair that.

@@ -23,9 +23,9 @@ const IDENTIFIER = /^[A-Za-z_$][\w$]*$/;
  */
 export const SESSION_LINE =
   "This project has a code graph. " +
-  "For a question about the effect of a change, run `codegraph impact <symbol> -d 5` and `codegraph callers <symbol>`. " +
-  "Run `codegraph callees <symbol>` to see what a symbol calls. " +
-  "Add `--json` for a result that a program can read.";
+  "`codegraph impact <symbol> -d 5` lists the code that a change to a symbol affects. " +
+  "The default depth of 2 misses some of it. " +
+  "`codegraph callers <symbol>` and `codegraph callees <symbol>` list who calls a symbol and what it calls.";
 
 /** The one symbol name that a search pattern names, or null. */
 export function symbolOf(toolName, input, min) {
@@ -46,7 +46,8 @@ export function symbolOf(toolName, input, min) {
 export function parseJson(text) {
   try {
     return JSON.parse(text);
-  } catch {
+  } catch (err) {
+    if (!(err instanceof SyntaxError)) throw err;
     return null;
   }
 }
@@ -79,19 +80,16 @@ const where = (item) => `\`${item.filePath}:${item.startLine}\``;
  */
 export function contextText(node, callers, max) {
   const head = `The code graph knows \`${node.name}\`, a ${node.kind} at ${where(node)}.`;
-  const tail = `For the effect of a change, run \`codegraph impact ${node.name} -d 5\`.`;
-  if (!Array.isArray(callers)) {
-    const text = `${head} ${tail}`;
-    return text.length <= max ? text : null;
-  }
+  if (!Array.isArray(callers)) return head.length <= max ? head : null;
   const list = callers.filter((caller) => !SKIPPED.has(caller?.kind));
   if (list.length === 0) {
-    const text = `${head} It has no callers in the graph. ${tail}`;
+    const text = `${head} The graph shows no callers. A dynamic call is not in the graph.`;
     return text.length <= max ? text : null;
   }
   const base = `${head} Callers: `;
   const shown = [];
-  let used = base.length + tail.length + 40;
+  const hint = `\`codegraph callers ${node.name}\` lists all of them.`;
+  let used = base.length + hint.length + 40;
   for (const caller of list) {
     const item = `\`${caller.name}\` (${where(caller)})`;
     if (used + item.length + 2 > max) break;
@@ -100,8 +98,8 @@ export function contextText(node, callers, max) {
   }
   if (shown.length === 0) return null;
   const more = list.length - shown.length;
-  const rest = more > 0 ? ` and ${more} more` : "";
-  return `${base}${shown.join(", ")}${rest}. ${tail}`;
+  const rest = more > 0 ? ` and ${more} more. ${hint}` : ".";
+  return `${base}${shown.join(", ")}${rest}`;
 }
 
 /** What the check prints, as lines, from whether the CLI answers and whether the project has an index. */

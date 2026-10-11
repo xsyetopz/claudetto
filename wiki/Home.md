@@ -7,27 +7,41 @@ If Claude does something because of dotclaude and you ask "why did you do that?"
 
 ## What it does
 
-- Sets permission rules and the sandbox, so that Claude Code asks before destructive, public, and secret-reading actions.
-- Asks before a recursive `rm` outside the project, and before the first contact with a repository of another owner that has an AI policy file.
-- Turns off compaction and sets a 300K context window, so that a session stops at the limit and you start fresh with `/clear`.
-- Forces one output style over the simple system prompt.
+- Gives permission rules and a sandbox in the [settings snippet](Settings-Snippet), so that Claude Code asks before destructive, public, and secret-reading actions.
+- Gives an `ask` rule for each recursive `rm` in the settings snippet (the plugin alone gives none), and asks before the first contact with a repository of another owner that has an AI policy file.
+- Gives settings in the snippet that turn off compaction and set a 300K context window, so that a session stops at the limit and you start fresh with `/clear`.
+  The plugin itself ships an empty `settings.json`.
+- Forces one output style (role, tone, and format) and puts the working rules in the system prompt.
 - Gives Claude five agents with a model, an effort, and a turn limit each ([Agents](Agents)).
-- Works with [OpenSpec](OpenSpec) for the task list, so work continues after `/clear` with `/opsx:apply`.
+- Works with [OpenSpec](OpenSpec) for the task list, so work continues after `/clear` with the `openspec-apply-change` skill.
 - Shows model, effort, context, the OpenSpec change, and the 5-hour limit in a status line.
-- Adds optional plugins for a code graph (`dotclaude-codegraph`), a second opinion (`dotclaude-jev`), a browser (`dotclaude-browser`), and library docs (`dotclaude-docs`).
+
+## The plugins
+
+Each plugin has one reference page.
+The page says what the plugin does, how to install it, and what it holds: skills, bins, hooks, options, and limits.
+Each add-on works without the core plugin.
+
+| Plugin | What it does | Reference |
+| --- | --- | --- |
+| `dotclaude` | The core: output style, system prompt rules, agents, guards, status line, and drift check. | [Core plugin](Core-Plugin) |
+| `dotclaude-codegraph` | Gives Claude the code graph of a project from the `codegraph` CLI. | [Code graph](Code-Graph) |
+| `dotclaude-browser` | Drives a browser and answers `WebSearch` in the headless browser. | [Browser](Browser) |
+| `dotclaude-jev` | A second opinion on a decision from TypeSafe Jev. | [Second opinion](Second-Opinion) |
+| `dotclaude-docs` | Current library docs from Context7. | [Library docs](Library-Docs) |
+| `dotclaude-sessions` | Measures the start of a session and the usage of each run. | [Sessions](Sessions) |
+| `dotclaude-lab` | Tools for plugin authors: sandbox, capture, schema, and eval compare. | [Lab](Lab) |
 
 ## New in 0.28.0
 
 - A [system prompt](System-Prompt) variant for each model.
-- A [context bound](Context-Bound) for subagents and the main session.
+- A [context bound](Context-Bound) for subagents.
 - [Semantic line breaks](Semantic-Line-Breaks) in written text, with no model token.
-- A new [plugin layout](Plugin-Layout).
-- Evals through `claude plugin eval` ([Evals](Evals)), with no suite ported yet.
+- A new [plugin layout](Plugin-Layout), and the plugins `dotclaude-sessions` and `dotclaude-lab`.
+- Evals through `claude plugin eval` ([Evals](Evals)), with a suite of 16 cases in `plugins/dotclaude/evals/` and `just eval` to run it.
 - The [decisions](Decisions) D1 to D35 with their evidence.
-- Removed: the setup profile, the router, the handoff skill, usage state, and the old eval harness (design D35).
-  The `agents/*.md` frontmatter sets the model and effort of each agent ([Agents](Agents)).
+- Removed: the setup profile, the router, the handoff skill, usage state, the Bun eval harness and the root `evals/` folder (design D35), and `dotclaude-modder`.
   The [settings snippet](Settings-Snippet) replaces the profile.
-- `dotclaude-modder` is removed.
 
 ## The position
 
@@ -39,18 +53,17 @@ If Claude does something because of dotclaude and you ask "why did you do that?"
 | Evidence over habit | Each bound comes from a measurement, an official source, or a reverse-read of the Claude Code binary. |
 | The user decides | Rules ask before hard-to-reverse or public actions, and they never approve anything. The setup skill shows every step before it runs. |
 
-## Next steps
+## Where to read
 
 | Page | Read it to |
 | --- | --- |
-| [Install](Install) | Install the marketplace and the plugins. |
 | [Quickstart](Quickstart) | See what happens in a first session. |
+| [Install](Install) | Install the marketplace and the plugins. |
+| [Settings snippet](Settings-Snippet) | Copy the keys that Claude Code needs. See also [snippet keys](Settings-Snippet-Keys) and [schema](Settings-Schema). |
+| [Hooks](Hooks) | See each hook of each plugin, its event, and what it does. |
+| [Troubleshooting](Troubleshooting) | Fix a symptom. |
+| [Undocumented reads](Undocumented-Reads) | See what dotclaude reads that Claude Code does not document, and how it breaks. |
 | [Guards](Guards) | Learn what asks, what denies, and what the sandbox does. |
-| [OpenSpec](OpenSpec) | Keep the task list in OpenSpec. |
-| [Browser](Browser) | Drive a browser. |
-| [Second opinion](Second-Opinion) | Get a second opinion from Jev. |
-| [Contributions](Contributions) | Draft work for projects that you do not own. |
-| [Parts](Parts) | Find each part, its file, and its bound. |
 | [Development](Development) and [Sandbox](Sandbox) | Change dotclaude and test a checkout. |
 | [Attributions](Attributions) | See the projects whose ideas dotclaude reimplements. |
 

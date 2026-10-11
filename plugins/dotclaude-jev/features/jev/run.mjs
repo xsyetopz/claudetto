@@ -32,9 +32,3 @@ export function outcome(run) {
     reason: run.stderr.trim() || `The client exited with code ${run.exitCode}.`,
   };
 }
-
-/** The outcome of a run that did not start or ran too long. */
-export const failed = {
-  ok: false,
-  reason: "The client did not start or ran too long.",
-};

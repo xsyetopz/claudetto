@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+// Prints where Claude Code usage went: the model calls of each run, the context that each call reads again, and the skills that a period did not use.
+
+import { main } from "../features/usage/cli.mjs";
+
+process.exitCode = main(process.argv.slice(2));

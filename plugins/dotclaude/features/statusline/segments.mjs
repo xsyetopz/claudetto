@@ -4,7 +4,8 @@
 // Each segment carries a priority, and `layout.mjs` drops the lowest first.
 // The place segments are in `place.mjs`.
 
-import { CONTEXT_WINDOW, USAGE_LEVELS } from "../../lib/budget.mjs";
+import { USAGE_LEVELS, windowOf } from "../../lib/budget.mjs";
+import { parseModel } from "../../lib/model.mjs";
 import { cacheLeft, cacheStats, headroom, pace, rates } from "./derive.mjs";
 import { clock, countdown, shortModel } from "./format.mjs";
 import { CACHE_ALARM_S, SUBAGENT_EFFORTS } from "./limits.mjs";
@@ -15,10 +16,9 @@ const money = (n) => `$${n.toFixed(2)}`;
 
 /** The effort levels that the rules allow for a model, or undefined. */
 function allowedEfforts(modelId) {
-  const m = /claude-([a-z]+)-(\d+)-(\d{1,2})(?!\d)/i.exec(
-    String(modelId ?? ""),
-  );
-  return m && SUBAGENT_EFFORTS[`${m[1]}-${m[2]}-${m[3]}`.toLowerCase()];
+  const m = parseModel(modelId);
+  if (!m || m.minor === null) return undefined;
+  return SUBAGENT_EFFORTS[`${m.family}-${m.major}-${m.minor}`];
 }
 
 /** " high", red with a warning glyph when the rules do not allow it for the model. */
@@ -158,10 +158,7 @@ export function usageGroups(data, ctx) {
     "model",
   );
   const tokens = data.context_window?.total_input_tokens ?? 0;
-  const window = Math.min(
-    data.context_window?.context_window_size || CONTEXT_WINDOW,
-    CONTEXT_WINDOW,
-  );
+  const window = windowOf(data.context_window?.context_window_size);
   add(core, 10, contextText(tokens, window, now), "context");
   const cache = data.prompt_cache;
   if (cache && typeof cache === "object" && cache.caching_observed !== false) {

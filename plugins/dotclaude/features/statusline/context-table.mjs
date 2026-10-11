@@ -3,8 +3,10 @@
 // Its rows come from the count-tokens API.
 // Each call reads the last `TABLE_TAIL_BYTES_MAX` bytes of the transcript and keeps no state (design D35).
 
-import fs from "node:fs";
-import { CONTEXT_BLOCK_MARGIN, TABLE_TAIL_BYTES_MAX } from "./limits.mjs";
+import { CONTEXT_BLOCK_MARGIN } from "../../lib/budget.mjs";
+import { rethrowUnless } from "../../lib/errors.mjs";
+import { readTail } from "../../lib/tail.mjs";
+import { TABLE_TAIL_BYTES_MAX } from "./limits.mjs";
 
 const HEADER = "## Context Usage";
 const ROW = /^\|\s*([^|]+?)\s*\|\s*~?\s*([\d.]+)\s*([kKmM]?)\s*\|/;
@@ -51,7 +53,8 @@ export function lastTable(lines) {
     let record;
     try {
       record = JSON.parse(line);
-    } catch {
+    } catch (err) {
+      rethrowUnless(err, "SyntaxError");
       continue;
     }
     if (record?.type !== "user" || record.isSidechain) continue;
@@ -60,27 +63,13 @@ export function lastTable(lines) {
   return table;
 }
 
-/** The last `max` bytes of `file` as lines. The first line may be cut, and `lastTable` skips it. A read error gives `null`. */
-function tail(file, max) {
-  let fd;
-  try {
-    fd = fs.openSync(file, "r");
-    const size = fs.fstatSync(fd).size;
-    const from = Math.max(0, size - max);
-    const buffer = Buffer.alloc(size - from);
-    const n = fs.readSync(fd, buffer, 0, buffer.length, from);
-    return buffer.toString("utf8", 0, n).split("\n");
-  } catch {
-    return null;
-  } finally {
-    if (fd !== undefined) fs.closeSync(fd);
-  }
-}
+/** The last `max` bytes of `file` as lines. The first line may be cut, and `lastTable` skips it. An absent file gives `null`. */
+const tail = (file, max) => readTail(file, max)?.text.split("\n") ?? null;
 
 /**
  * The newest `/context` table in the last `TABLE_TAIL_BYTES_MAX` bytes of the transcript in `data`, or `null`.
  * Each call reads the tail again and keeps no offset and no table.
- * Any error gives `null`.
+ * A transcript that is absent gives `null`, and any other error is thrown.
  */
 export function readTable(data) {
   const file = data?.transcript_path;

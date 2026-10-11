@@ -1,12 +1,13 @@
 // Plain text formats for model names and times. No colors here.
 
+import { parseModel } from "../../lib/model.mjs";
+
 /** "claude-opus-5-5" -> "Opus 5.5", "claude-haiku-4-5-20251001" -> "Haiku 4.5". */
 export function shortModel(id) {
-  const m = /claude-([a-z]+)-(\d+)(?:-(\d{1,2})(?!\d))?/i.exec(
-    String(id ?? ""),
-  );
+  const m = parseModel(id);
   if (!m) return String(id ?? "");
-  return `${m[1][0].toUpperCase()}${m[1].slice(1)} ${m[3] ? `${m[2]}.${m[3]}` : m[2]}`;
+  const name = `${m.family[0].toUpperCase()}${m.family.slice(1)}`;
+  return `${name} ${m.minor === null ? m.major : `${m.major}.${m.minor}`}`;
 }
 
 /** Time left, rounded up: "4m", "1h5m", "3d". */

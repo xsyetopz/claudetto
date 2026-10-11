@@ -86,3 +86,31 @@ The CHANGELOG names what 0.28.0 no longer writes.
 Cut by this rule: the burn-rate samples, the slow-read cache, the context breakdown state, the usage state file, the level markers, the handoff carry and stop records, the guard per-session state, the auto-fix feature, the `sembr-chat.jsonl` log, the codegraph refresh data, the setup profile with its merge, diff, backups, migration, and gated items, the Tier 2 rules file, the router table, the `handoff` skill, `tools/baseline.json`, and the eval harness.
 Alternative: keep each as a documented dotclaude format.
 Rejected by the user, because a format of our own cannot be proven to work against Claude Code updates.
+
+## D36 Clean repository and universal tools (decisions of the user 2026-10-09)
+
+Context: the audits of task 28.2 (`research/audit-*.md`) found 0 import-layer violations and 0 files over the bound.
+They also found workarounds in the runtime code, tools that serve only this repository, and a repository with no CI gate for the labs.
+The comment of `research/issue-38335.md` shows that the start of a session and the number of calls of a run are the two costs that a user can measure.
+
+Decisions:
+
+- The universal tools ship in two add-on plugins.
+  `dotclaude-sessions` is for each user: the start of a session by source, and the usage of each run.
+  `dotclaude-lab` is for plugin authors: the sandbox, the request capture, the settings schema, and the eval comparison.
+  Each one runs on Node 22.18 with only `node:` modules, and imports nothing from another plugin.
+  `tools/` keeps only the scripts of this repository: bump, release, sizes, and limits.
+- The sandbox takes the token from `CLAUDE_CODE_OAUTH_TOKEN`.
+  When the variable is not set, it reads the login of the user from the Keychain or `~/.claude/.credentials.json`, and gives it only to the child process.
+- The `rm` guard parser, the unbounded-output deny, and the context handoff are removed.
+  The sandbox, an `ask` rule, `bashOutputMaxChars`, and the profile with no compaction do the same work with documented means.
+- The reads of undocumented data stay: the credits segment, the `/context` scrape, and the drift section ids.
+  The docs give the source of each one and how it breaks at a release of Claude Code.
+- The docs stay in `wiki/`, the source of the GitHub Wiki that `just wiki` publishes (decision of the user 2026-10-10, which replaces the move into `docs/`).
+  They get the shape of the Claude Code docs.
+  A pull request reviews each doc change, because `wiki/` is in this repository.
+  The old release pages go to an archive folder, because the CHANGELOG has their content.
+- The package manager is `nub` or `pnpm`, chosen from the facts in task 28.3, and the toolchain is pinned with a lockfile.
+- CI runs `just check`.
+
+Order: tests before each move (task 28.4), then the plugins, then the removals, then the docs.

@@ -19,15 +19,12 @@ const olderThan = (a, b) =>
 
 /** Run `cmd`, and return its trimmed output, or null when it fails. */
 const run = (cmd) => {
-  try {
-    const r = spawnSync(cmd[0], cmd.slice(1), {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-    });
-    return r.status === 0 ? r.stdout.trim() : null;
-  } catch {
-    return null;
-  }
+  // `spawnSync` reports a missing program in `r.error` and does not throw.
+  const r = spawnSync(cmd[0], cmd.slice(1), {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  });
+  return r.status === 0 ? r.stdout.trim() : null;
 };
 
 /** Print the OpenSpec state of the computer and of `projectDir`. */

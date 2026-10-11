@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+// Prints the start of a Claude Code session by source, from its transcript, or the difference of two starts.
+
+import { main } from "../features/start/cli.mjs";
+
+process.exitCode = main(process.argv.slice(2));

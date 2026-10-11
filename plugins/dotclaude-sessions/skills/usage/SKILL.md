@@ -1,0 +1,36 @@
+---
+name: usage
+description: Reports where Claude Code usage went over a period, with the model calls of each run, the context that each call reads again, and the skills that the period did not use. Use when asked why usage or limits drained, or which skills to remove.
+allowed-tools: Bash(dotclaude-usage *)
+---
+
+<task>
+Show the user where usage went, from the transcripts on this machine.
+A run that makes many model calls reads its context again at each call, and that is a cost the user can measure.
+The figures are measurements.
+Do not state the cause of a usage limit, because no source gives one.
+</task>
+
+<procedure>
+The bin `dotclaude-usage` reads the transcripts under `~/.claude/projects/` and changes no file.
+
+1. Run the report for the period the user names (default 7 days):
+
+   ```bash
+   dotclaude-usage --days 7
+   ```
+
+   Run `dotclaude-usage --help` for the options.
+
+1. Read the output.
+   Each part has a label.
+   `Skills that the period did not use` names the source of its list.
+</procedure>
+
+<report>
+Copy each figure from the output.
+Do not compute, round, or convert a figure, because a figure that you change can be wrong.
+Name the runs with the most calls and the largest sums first, because they hold most of the usage.
+For unused skills, name the source that gave the list.
+Let the user decide what to remove, and change no skill.
+</report>

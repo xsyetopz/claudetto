@@ -134,7 +134,7 @@ Parts:
 1. No `Stop` hook counts chat lines (D35).
    The hook only wrote its counts to the `sembr-chat.jsonl` log, which was a state file.
    The eval measures the share of fused chat lines from the run trace instead.
-1. The output style gets a `<reply_format>` block as the chat fallback.
+1. The output style gets a `<text_format>` block as the chat fallback.
    It gives the reason (the user reads the source of a reply in diffs and logs), one wrong example, and one right example.
 1. A `session.append` rewrite of the chat reply with door `response` ships only when probe (c) shows that the display uses the rewritten row.
 
@@ -162,7 +162,7 @@ A claim with no check in the workspace is a claim, not a fact, and a program che
 Parts, in the order of D1:
 
 1. Evidence line, from I1.
-   One line in the output style and in each prompt variant (D15): before the model reverts, deletes, or undoes finished work, it shows a new check in the workspace that proves the work wrong.
+   One line in the `actions` shared section and in the spawn block of each model (D15), because a subagent does not get the shared sections: before the model reverts, deletes, or undoes finished work, it shows a new check in the workspace that proves the work wrong.
    When it cannot reach the evidence, it keeps the work and asks for the evidence.
    The cost is about 50 tokens in the cached prefix (**inferred**).
    The paper gives no I1 text, so the wording is ours and the eval tunes it.

@@ -1,0 +1,40 @@
+name: Feature request
+description: Ask for a change or a new feature
+labels: [enhancement]
+body:
+  - type: input
+    id: claude-code
+    attributes:
+      label: Claude Code version
+      description: The output of `claude --version`.
+      placeholder: 2.1.296
+    validations:
+      required: true
+  - type: input
+    id: plugin
+    attributes:
+      label: Plugin and version
+      description: The plugin that the request is for, and its version.
+    validations:
+      required: true
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you need
+      description: Describe the problem, and the steps that you do today.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Describe what the plugin must do after the change.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Current behavior
+      description: Describe what the plugin does today.
+    validations:
+      required: true

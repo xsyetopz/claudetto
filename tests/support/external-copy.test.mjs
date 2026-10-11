@@ -1,34 +1,34 @@
 // No file under `wiki/` or `plugins/` copies text from `external/` (task 16.3).
 // The method is a shingle match: a run of SHINGLE consecutive words (lowercase, letters and digits)
 // that appears in a text file of `external/` and in a shipped file is a copy.
+// A URL is not text, so the scan leaves URLs out.
 // The scan skips the folders of `external/` that are not third-party text:
 // captures, builds of Claude Code, archives, backups, and summaries of this repository.
 // Git ignores `external/`, so the scan passes when the folder is missing.
 
-import { expect, test } from "bun:test";
+import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { test } from "node:test";
+import { REPO, tmpDir, walk } from "./repo.mjs";
 
-const ROOT = path.join(import.meta.dirname, "../..");
 const SHINGLE = 12;
 const TEXT = /\.(?:md|txt|mjs|ts|py|jsonl?|ya?ml|sh)$/;
 const OWN = /^(?:capture|cc-[\d.]+|archive|backup|summaries)$/;
 
 function files(dir) {
-  if (!fs.existsSync(dir)) return [];
-  if (fs.statSync(dir).isFile()) return TEXT.test(dir) ? [dir] : [];
-  return fs
-    .readdirSync(dir, { recursive: true, withFileTypes: true })
-    .flatMap((e) => {
-      const f = path.join(e.parentPath, e.name);
-      return e.isFile() && TEXT.test(f) && !f.includes("node_modules")
-        ? [f]
-        : [];
-    });
+  if (fs.existsSync(dir) && fs.statSync(dir).isFile()) {
+    return TEXT.test(dir) ? [dir] : [];
+  }
+  return walk(dir, { keep: (f) => TEXT.test(f) });
 }
 
-/** The words of `text`, lowercase. */
-const words = (text) => text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
+/** The words of `text`, lowercase, with no URLs, because two files can link to one page. */
+const words = (text) =>
+  text
+    .replace(/\bhttps?:\/\/[^\s<>()\]]+/g, " ")
+    .toLowerCase()
+    .match(/[\p{L}\p{N}]+/gu) ?? [];
 
 /** The shingles of `ws`, each SHINGLE consecutive words joined by a space. */
 function* shingles(ws) {
@@ -47,28 +47,31 @@ function copies(source, shipped) {
     for (const s of shingles(words(fs.readFileSync(f, "utf8"))))
       if (seen.has(s)) {
         found.push(
-          `${path.relative(ROOT, f)}: ${path.relative(ROOT, seen.get(s))}`,
+          `${path.relative(REPO, f)}: ${path.relative(REPO, seen.get(s))}`,
         );
         break;
       }
   return found;
 }
 
-test("no file under `wiki/` or `plugins/` copies text from `external/`", () => {
-  const ext = path.join(ROOT, "external");
+// A lint of the live repository.
+test("lint: no file under `wiki/` or `plugins/` copies text from `external/`", {
+  timeout: 30_000,
+}, () => {
+  const ext = path.join(REPO, "external");
   const folders = fs.existsSync(ext) ? fs.readdirSync(ext) : [];
   const source = folders
     .filter((d) => !OWN.test(d))
     .flatMap((d) => files(path.join(ext, d)));
   const shipped = [
-    ...files(path.join(ROOT, "wiki")),
-    ...files(path.join(ROOT, "plugins")),
+    ...files(path.join(REPO, "wiki")),
+    ...files(path.join(REPO, "plugins")),
   ];
-  expect(copies(source, shipped)).toEqual([]);
-}, 30_000);
+  assert.deepEqual(copies(source, shipped), []);
+});
 
 test("the scan finds a copied run of words and passes when `external/` is missing", () => {
-  const dir = fs.mkdtempSync(path.join(process.env.TMPDIR ?? "/tmp", "ext-"));
+  const dir = tmpDir("ext");
   try {
     const run =
       "one two three four five six seven eight nine ten eleven twelve";
@@ -81,11 +84,27 @@ test("the scan finds a copied run of words and passes when `external/` is missin
       other,
       "one two three four five six seven eight nine ten eleven",
     );
-    expect(copies([src], [copy, other]).map((c) => c.split(": ")[0])).toEqual([
-      path.relative(ROOT, copy),
-    ]);
-    expect(files(path.join(dir, "missing"))).toEqual([]);
-    expect(copies([], [copy])).toEqual([]);
+    assert.deepEqual(
+      copies([src], [copy, other]).map((c) => c.split(": ")[0]),
+      [path.relative(REPO, copy)],
+    );
+    assert.deepEqual(files(path.join(dir, "missing")), []);
+    assert.deepEqual(copies([], [copy]), []);
+  } finally {
+    fs.rmSync(dir, { recursive: true });
+  }
+});
+
+test("a URL that two files both link to is not a copy", () => {
+  const dir = tmpDir("ext");
+  try {
+    const url =
+      "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices";
+    const src = path.join(dir, "src.md");
+    const link = path.join(dir, "link.md");
+    fs.writeFileSync(src, `Source: <${url}>.`);
+    fs.writeFileSync(link, `See [the guide](${url}) for tags.`);
+    assert.deepEqual(copies([src], [link]), []);
   } finally {
     fs.rmSync(dir, { recursive: true });
   }

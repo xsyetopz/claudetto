@@ -86,7 +86,7 @@ The user reports that a 0.27.0 session ended at 267.4K of 300K with compaction o
 The closest session, `00bfd354`, has Bash results of 51.2K tokens, and results plus tool inputs of about 82.7K tokens (**inferred**, `research/session-growth.md`).
 The same report gave skills 858 tokens against 2.8K at 2.1.292, so the listing cuts work (the user's report).
 Tools were 8.2K against 4.4K at the start, which deferred tools loaded in the session can explain (**inferred**).
-The output style already tells the model to read only the part of a file that it needs, so that text alone did not hold the bound.
+The 0.19 output style already told the model to read only the part of a file that it needs, so that text alone did not hold the bound.
 dotclaude bounds each subagent with these parts, in the order of D1:
 
 1. Agent body: one rule to search first and read only the matched range (`Grep` with `-n`, then `Read` with `offset` and `limit`), and never to page a whole file with `head -c` or `tail -c`.
@@ -112,7 +112,7 @@ A Bash slice gets no stub.
 Cross-session injected messages added about 42K tokens in one session (**confirmed**).
 The main session gets these parts:
 
-1. The output style and each agent body tell the model to read files with `Read` and `offset` and `limit`, and to refer to an earlier result instead of a second read of the same lines.
+1. The `tools` shared section and each agent body tell the model to read files with `Read` and `offset` and `limit`, and to refer to an earlier result instead of a second read of the same lines.
 1. A `PreToolUse` hook on `Bash` denies a command that only prints a file (`cat F`, `sed -n 'a,bp' F`, `head F`, `tail F`, with no pipe and no other command).
    The deny reason gives the `Read` call with the same range.
    A deny here is cheap, because the next call does the same read and no work is lost.
@@ -157,7 +157,7 @@ The wiki snippet adds `name-only` for each `openspec-*` skill.
 - Bash in the sandbox and the capture port: an agent sandbox that blocks a local listen stops both the nested Bash sandbox (its socket) and `just capture` (its port).
   The fix is `sandbox.network.allowLocalBinding: true` in the settings of the session that runs the agent, which the user sets.
   A scratch `sandbox.enabled: false` does not help, because a managed `sandbox.enabled: true` with `failIfUnavailable: true` wins, and it would weaken the sandbox.
-- Capture: the capture session of D16, documented in `wiki/Sandbox.md`.
+- Capture: the capture session of D16, documented in `wiki/plugins/Sandbox.md`.
 - Evals: `claude plugin eval` (D9).
 
 History: the drop-in procedure of the first plan wrote variants of a managed drop-in to `research/dropins/`, and the user installed them with `sudo`.
@@ -265,7 +265,7 @@ The lesson is that a model can report a false state on purpose, so dotclaude doe
    The status line may also show the figure to the user, but the model does not read it, so the hook is the route to the model.
    Task 2.26 first checks that Claude Code has no such figure for the model.
 1. Claims of a passed check stay under the over-claim measure of the eval.
-   0.27.0 has no `Stop` claim check (`wiki/Stop-Prompt-Hooks.md`).
+   0.27.0 has no `Stop` claim check (`wiki/design/Stop-Prompt-Hooks.md`).
    The 2.1.294 release notes say that Claude Code judges a `prompt` hook on `Stop` that is written as an instruction better, but its `Stop` evaluator text did not change (task 2.33), so task 18.14 tests a short claim-check `prompt` hook again with the eval as the only proof.
    The hook stays only if the eval shows a lower over-claim rate with no loss, and a cost within the noise bound, because each call sends the transcript (about 46K tokens in the mean on 0.26.0).
 

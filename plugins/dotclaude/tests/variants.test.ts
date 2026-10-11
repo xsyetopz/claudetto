@@ -1,9 +1,10 @@
 // Lab tests of the prompt variants: the `prompt.compose` hook and the `agent.spawn` hook.
 // The hook under test sits above the stub of the engine, so the stub answers `next(e)`.
 
-import { expect, test } from "claude-code/testing";
+import type { On, PromptComposeSection, PromptComposeTrait } from "claude-code";
+import { type Engine, expect, test } from "claude-code/testing";
 
-const ENGINE = [
+const ENGINE: PromptComposeSection[] = [
   { id: "intro", text: "engine intro", scope: "shared" },
   { id: "system", text: "engine system", scope: "shared" },
   { id: "doing_tasks", text: "engine tasks", scope: "shared" },
@@ -17,13 +18,13 @@ const ENGINE = [
 // The session id is a variable, so a test can start a new session without a new hook.
 let session = "s1";
 
-function stub(on, id = "s1") {
+function stub(on: On, id = "s1") {
   session = id;
   on("session.id", () => ({ value: session }));
   on("prompt.compose", () => ({ sections: ENGINE }));
 }
 
-const compose = ($, model, traits = []) =>
+const compose = ($: Engine, model: string, traits: PromptComposeTrait[] = []) =>
   $.prompt.compose({
     model,
     promptModel: model,
@@ -32,7 +33,8 @@ const compose = ($, model, traits = []) =>
     outputStyle: null,
     traits,
   });
-const bytes = (r) => r.sections.map((s) => s.text).join("\n\n");
+const bytes = (r: { sections: readonly PromptComposeSection[] }) =>
+  r.sections.map((s) => s.text).join("\n\n");
 
 const MODELS = [
   "claude-opus-5-5",
@@ -41,59 +43,78 @@ const MODELS = [
   "claude-fable-5-1",
 ];
 
+/** A spawn of a `haiku` subagent from a `claude-sonnet-5-5` session. */
+const spawn = ($: Engine, prompt: string) =>
+  $.agent.spawn({
+    tool_use_id: "t1",
+    prompt,
+    description: "Read the file.",
+    subagentType: "general-purpose",
+    provider: { plugin: "engine", tier: "core" },
+    model: "haiku",
+    parentModel: "claude-sonnet-5-5",
+    background: false,
+    fork: false,
+  });
+
 for (const model of MODELS) {
-  test(`the variant of ${model} replaces the sections of the engine`, async ($, on) => {
+  test(`the variant of ${model} replaces the sections of the engine`, async ($: Engine, on: On) => {
     stub(on);
     const out = await compose($, model);
     const ids = out.sections.map((s) => s.id);
-    expect(ids.slice(0, 5)).toEqual([
-      "dotclaude:role",
-      "dotclaude:tasks",
+    expect(ids).toEqual([
+      "dotclaude:doing_tasks",
+      "dotclaude:system",
+      "dotclaude:blocks",
+      "dotclaude:verification",
       "dotclaude:actions",
       "dotclaude:tools",
-      "dotclaude:tone",
+      "dotclaude:counts",
+      // Sonnet 5.5 has no model notes since cut V2 of task 29.3.
+      ...(model.includes("sonnet") ? [] : ["dotclaude:model_notes"]),
+      "memory",
+      "future_section",
     ]);
-    expect(ids.slice(5)).toEqual(["memory", "future_section"]);
     const text = bytes(out);
     expect(text).not.toContain("engine intro");
   });
 }
 
-test("two turns and a model switch give the same prompt bytes", async ($, on) => {
+test("two turns and a model switch give the same prompt bytes", async ($: Engine, on: On) => {
   stub(on);
   const first = bytes(await compose($, "claude-sonnet-5-5"));
   expect(bytes(await compose($, "claude-sonnet-5-5"))).toBe(first);
   expect(bytes(await compose($, "claude-haiku-5-5"))).toBe(first);
 });
 
-test("a new session chooses its own variant", async ($, on) => {
+test("a new session chooses its own variant", async ($: Engine, on: On) => {
   stub(on, "s-a");
   const a = bytes(await compose($, "claude-opus-5-5"));
   session = "s-b";
   expect(bytes(await compose($, "claude-haiku-5-5"))).not.toBe(a);
 });
 
-test("a model with no variant keeps the sections of the engine", async ($, on) => {
+test("a model with no variant keeps the sections of the engine", async ($: Engine, on: On) => {
   stub(on, "s-unknown");
   expect((await compose($, "some-other-model")).sections).toEqual(ENGINE);
 });
 
-test("the bare prompt keeps the section of the engine", async ($, on) => {
+test("the bare prompt keeps the section of the engine", async ($: Engine, on: On) => {
   stub(on, "s-bare");
   const out = await compose($, "claude-haiku-5-5", ["bare"]);
   expect(out.sections).toEqual(ENGINE);
 });
 
-test("a spawn on Haiku 5.5 ends the task prompt with its block one time", async ($, on) => {
+test("a spawn on Haiku 5.5 ends the task prompt with its block one time", async ($: Engine, on: On) => {
   let seen = "";
   on("agent.spawn", (_$, e) => {
     seen = e.prompt;
     return { model: "claude-haiku-5-5" };
   });
-  await $.agent.spawn({ prompt: "Read the file.", model: "haiku" });
+  await spawn($, "Read the file.");
   expect(seen.startsWith("Read the file.")).toBe(true);
   expect(seen.endsWith("</dotclaude_model_notes>")).toBe(true);
   expect(seen.split("<dotclaude_model_notes>").length).toBe(2);
-  await $.agent.spawn({ prompt: seen, model: "haiku" });
+  await spawn($, seen);
   expect(seen.split("<dotclaude_model_notes>").length).toBe(2);
 });

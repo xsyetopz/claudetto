@@ -7,6 +7,7 @@
 //
 // Each hook runs only in a project with `.codegraph/codegraph.db`, and else it prints nothing.
 // Each hook fails open: on an error or a timeout it adds nothing and never blocks a call.
+// A payload that is not JSON is ignored, and any other error is written to stderr, with exit code 0.
 // The add-on never runs `codegraph install` or `codegraph init`, because they change user files.
 
 import { spawnSync } from "node:child_process";
@@ -123,12 +124,17 @@ if (import.meta.main) {
     if (mode === "check") {
       console.log(check(process.cwd(), process.env).join("\n"));
     } else {
-      const payload = JSON.parse(readFileSync(0, "utf8"));
+      const payload = parseJson(readFileSync(0, "utf8"));
+      if (payload === null) process.exit(0);
       if (mode === "sync") sync(payload, process.env);
       else {
         const out = HOOKS[mode]?.(payload, process.env);
         if (out) process.stdout.write(JSON.stringify(out));
       }
     }
-  } catch {}
+  } catch (err) {
+    process.stderr.write(
+      `dotclaude-codegraph hook failed: ${err?.stack ?? err}\n`,
+    );
+  }
 }

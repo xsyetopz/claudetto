@@ -2,12 +2,13 @@
 // A user-invoked skill sets `disable-model-invocation: true`, which keeps it out of the listing.
 // The size bounds of the skill metadata and body are in `tests/support/sizes.test.mjs`.
 
-import { expect, test } from "bun:test";
+import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { test } from "node:test";
+import { REPO } from "../support/repo.mjs";
 
-const ROOT = path.join(import.meta.dirname, "../..");
-const SKILLS = path.join(ROOT, "plugins/dotclaude/skills");
+const SKILLS = path.join(REPO, "plugins/dotclaude/skills");
 /** The skills that write user configuration. Design D5 makes them user-invoked only. */
 const USER_INVOKED = ["setup"];
 
@@ -31,25 +32,32 @@ const skill = (name) =>
   frontmatter(fs.readFileSync(path.join(SKILLS, name, "SKILL.md"), "utf8"));
 
 test("the plugin has at least one skill, and each user-invoked skill exists", () => {
-  expect(names.length).toBeGreaterThan(0);
-  for (const name of USER_INVOKED) expect(names).toContain(name);
+  assert.ok(names.length > 0, `${names.length}`);
+  for (const name of USER_INVOKED)
+    assert.ok(names.includes(name), names.join("\n"));
 });
 
 for (const name of names) {
   test(`skill ${name} is a dotclaude part with a file and a name that match`, () => {
-    expect(fs.existsSync(path.join(SKILLS, name, "SKILL.md"))).toBe(true);
-    expect(skill(name).name).toBe(name);
+    assert.equal(fs.existsSync(path.join(SKILLS, name, "SKILL.md")), true);
+    assert.equal(skill(name).name, name);
   });
 
   test(`skill ${name} has a description`, () => {
-    expect(skill(name).description?.length).toBeGreaterThan(0);
+    assert.ok(
+      skill(name).description?.length > 0,
+      `${skill(name).description?.length}`,
+    );
   });
 }
 
 test("the frontmatter reader handles quotes and a missing block", () => {
-  expect(frontmatter('---\nname: a\nargument-hint: "[x]"\n---\nbody')).toEqual({
-    name: "a",
-    "argument-hint": "[x]",
-  });
-  expect(frontmatter("no block")).toEqual({});
+  assert.deepEqual(
+    frontmatter('---\nname: a\nargument-hint: "[x]"\n---\nbody'),
+    {
+      name: "a",
+      "argument-hint": "[x]",
+    },
+  );
+  assert.deepEqual(frontmatter("no block"), {});
 });

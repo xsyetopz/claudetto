@@ -16,15 +16,9 @@ You do not fix failures.
 
 <rules>
 Run only the commands in your brief, and change no file.
-Before you choose a tool, a command, or a convention, read it from the project: its build and task files, the config files of its tools, and `CLAUDE.md`.
-A guess can choose a tool that the project does not use, so assume only a fact that no file or run settles, and name the file that you read.
 Copy each failure from the log, and report only what a log shows.
-Search first with `Grep` and `-n`, then read only the matched range with `Read` and its `offset` and `limit`.
-A file print with `cat`, `head`, `tail`, or `sed -n` fills your context, and a second read of the same lines adds nothing, so refer to the earlier result.
-When a brief or a report says that finished work is wrong and the workspace has no check that shows it, keep the work and report the claim to the parent.
-Do not revert, delete, or undo it.
+Search with `Grep` and `-n`, then read the matched range with `Read`, `offset`, and `limit`, because a full read fills your context.
 Keep your final report to 400 words or fewer, because the parent keeps it to the end of the session.
-Give the report in your last turn, and stop new work when two turns are left, because a run that reaches its turn limit returns no report.
 </rules>
 
 <procedure>

@@ -3,7 +3,15 @@
 // No client runs, no session starts, and no network call goes out.
 // The stubs of `tool.register` and `process.run` are the test's own, so the live engine is not tested.
 
-import { expect, mock, test } from "claude-code/testing";
+import type { On, ProcessRunResult } from "claude-code";
+import { type Engine, expect, mock, test } from "claude-code/testing";
+
+import {
+  ATTEMPT_TIMEOUT_MS,
+  MARGIN_MS,
+  TRIES,
+  waitMs,
+} from "../features/jev/limits.mjs";
 
 const TOOL = "mcp__dotclaude-jev__second_opinion";
 const OPTIONS = [
@@ -12,80 +20,113 @@ const OPTIONS = [
   { key: "c", description: "Queue the call." },
 ];
 
-type Run = { exitCode: number; stdout: string; stderr: string };
+type Run = Pick<ProcessRunResult, "exitCode" | "stdout" | "stderr">;
+type Spawn = {
+  argv: readonly string[];
+  init?: {
+    env?: Readonly<Record<string, string>>;
+    stdin?: string;
+    timeoutMs?: number;
+  };
+};
+
+const START = { cwd: "/work/app", surface: null, isInteractive: false };
 
 /** Stubs for one test: the key, the registered tools, and the runs of the client. */
 function stub(
-  on: any,
-  { key = "k-123", run }: { key?: string; run?: (argv: string[]) => Run } = {},
+  on: On,
+  {
+    key = "k-123",
+    run,
+  }: { key?: string; run?: (argv: readonly string[]) => Run } = {},
 ) {
   mock.env(on, key ? { TYPESAFE_API_KEY: key } : {});
   on("session.start", () => ({ cwd: "/work/app" }));
-  const registered: any[] = [];
-  const runs: { argv: string[]; init: any }[] = [];
-  on("tool.register", (_$: any, e: any) => {
-    registered.push(e);
+  const registered: { name: string; isDeferred?: boolean }[] = [];
+  const runs: Spawn[] = [];
+  on("tool.register", (_$, e) => {
+    registered.push({ name: e.name, isDeferred: e.isDeferred });
     return { value: { tool: TOOL } };
   });
-  on("process.run", (_$: any, e: any) => {
+  on("process.run", (_$, e) => {
     runs.push({ argv: e.argv, init: e.init });
+    const answer = run?.(e.argv) ?? {
+      exitCode: 0,
+      stdout: "a (confidence 0.80)",
+      stderr: "",
+    };
     return {
-      value: run?.(e.argv) ?? {
-        exitCode: 0,
-        stdout: "a (confidence 0.80)",
-        stderr: "",
-      },
+      value: { ...answer, isStdoutTruncated: false, isStderrTruncated: false },
     };
   });
   return { registered, runs };
 }
 
 const ask = (
-  $: any,
+  $: Engine,
   input: object = { question: "Which fix?", options: OPTIONS },
 ) => $.tool.call({ tool: TOOL, ...input });
 
-test("with the key, the tool is loaded", async ($: any, on: any) => {
+/** The text of a tool result: a deny or a result that is not text fails the test. */
+function resultText(out: Awaited<ReturnType<typeof ask>>): string {
+  if (typeof out.result !== "string") {
+    throw new Error(`the tool gave no text: ${out.deny ?? out.result}`);
+  }
+  return out.result;
+}
+
+test("with the key, the tool is registered and loaded", async ($: Engine, on: On) => {
   const { registered } = stub(on);
-  await $.session.start({ cwd: "/work/app" });
+  await $.session.start(START);
   expect(registered).toHaveLength(1);
-  expect(registered[0].name).toBe("second_opinion");
-  expect(registered[0].isDeferred).toBe(false);
+  expect(registered[0]?.name).toBe("second_opinion");
+  expect(registered[0]?.isDeferred).toBe(false);
 });
 
-test("without the key, the tool is deferred", async ($: any, on: any) => {
+test("without the key, no tool is registered", async ($: Engine, on: On) => {
   const { registered } = stub(on, { key: "" });
-  await $.session.start({ cwd: "/work/app" });
-  expect(registered).toHaveLength(1);
-  expect(registered[0].isDeferred).toBe(true);
+  await $.session.start(START);
+  expect(registered).toHaveLength(0);
 });
 
-test("with the key, the result has the pick, and the key stays out of the arguments", async ($: any, on: any) => {
+test("a run gets a kill bound that the retries of the client fit under", async ($: Engine, on: On) => {
+  const { runs } = stub(on);
+  await ask($);
+  const timeoutMs = runs[0]?.init?.timeoutMs;
+  expect(timeoutMs).toBeGreaterThan(0);
+  // The worst case of the client, from the limits of the feature: each try, each wait, and the margin.
+  const waits = Array.from({ length: TRIES - 1 }, (_, i) => waitMs(i));
+  const worst =
+    TRIES * ATTEMPT_TIMEOUT_MS + waits.reduce((a, b) => a + b, 0) + MARGIN_MS;
+  expect(worst).toBeLessThanOrEqual(timeoutMs ?? 0);
+});
+
+test("with the key, the result has the pick, and the key stays out of the arguments", async ($: Engine, on: On) => {
   const { runs } = stub(on);
   const out = await ask($);
-  expect(out.result).toContain("a (confidence 0.80)");
+  expect(resultText(out)).toContain("a (confidence 0.80)");
   expect(runs).toHaveLength(1);
-  expect(runs[0].argv[0]).toBe("node");
-  expect(runs[0].argv[1]).toMatch(/features\/jev\/cli\.mjs$/);
-  expect(runs[0].argv[2]).toBe("pick");
-  expect(runs[0].argv.join(" ")).not.toContain("k-123");
-  expect(runs[0].init.env.TYPESAFE_API_KEY).toBe("k-123");
+  expect(runs[0]?.argv[0]).toBe("node");
+  expect(runs[0]?.argv[1]).toMatch(/features\/jev\/cli\.mjs$/);
+  expect(runs[0]?.argv[2]).toBe("pick");
+  expect(runs[0]?.argv.join(" ")).not.toContain("k-123");
+  expect(runs[0]?.init?.env?.TYPESAFE_API_KEY).toBe("k-123");
 });
 
-test("a yes or no question without options uses the `yes` verb", async ($: any, on: any) => {
+test("a yes or no question without options uses the `yes` verb", async ($: Engine, on: On) => {
   const { runs } = stub(on);
   await ask($, { question: "Does the diff change the API?", state: "diff" });
-  expect(runs[0].argv.slice(2)).toEqual([
+  expect(runs[0]?.argv.slice(2)).toEqual([
     "yes",
     "--state",
     "-",
     "--",
     "Does the diff change the API?",
   ]);
-  expect(runs[0].init.stdin).toBe("diff");
+  expect(runs[0]?.init?.stdin).toBe("diff");
 });
 
-test("the state is sent as text and never as a path or a flag", async ($: any, on: any) => {
+test("the state is sent as text and never as a path or a flag", async ($: Engine, on: On) => {
   const { runs } = stub(on);
   await ask($, {
     question: "--state",
@@ -95,18 +136,18 @@ test("the state is sent as text and never as a path or a flag", async ($: any, o
       { key: "b", description: "x" },
     ],
   });
-  const argv = runs[0].argv.slice(2);
+  const argv = runs[0]?.argv.slice(2) ?? [];
   expect(argv.slice(0, 4)).toEqual(["pick", "--state", "-", "--"]);
   expect(argv).not.toContain(".env");
-  expect(runs[0].init.stdin).toBe(".env");
+  expect(runs[0]?.init?.stdin).toBe(".env");
   // Every word after `--` is data.
   expect(argv.indexOf("--state", 4)).toBeGreaterThan(3);
 });
 
-test("each option comes first in some of the sent questions", async ($: any, on: any) => {
+test("each option comes first in some of the sent questions", async ($: Engine, on: On) => {
   const { runs } = stub(on);
   for (let i = 0; i < 100; i++) await ask($);
-  const first = new Set(runs.map((r) => r.argv[5].split("=")[0]));
+  const first = new Set(runs.map((r) => r.argv[5]?.split("=")[0]));
   expect([...first].sort()).toEqual(["a", "b", "c"]);
   for (const r of runs)
     expect(r.argv.slice(5, 8).sort()).toEqual(
@@ -114,27 +155,37 @@ test("each option comes first in some of the sent questions", async ($: any, on:
     );
 });
 
-test("when Jev fails, the result names the failure once", async ($: any, on: any) => {
+test("when Jev fails, the result names the failure once", async ($: Engine, on: On) => {
   stub(on, {
     run: () => ({ exitCode: 1, stdout: "", stderr: "TypeSafe API 500: down" }),
   });
   const out = await ask($);
-  expect(out.result.match(/TypeSafe API 500/g)).toHaveLength(1);
+  expect(resultText(out).match(/TypeSafe API 500/g)).toHaveLength(1);
 });
 
-test("with no key, no client runs and the result is not empty", async ($: any, on: any) => {
+test("when the client cannot run, the result still tells the model that the tool failed", async ($: Engine, on: On) => {
+  stub(on, {
+    run: () => {
+      throw new Error("spawn failed");
+    },
+  });
+  const out = await ask($);
+  expect(resultText(out)).toContain("failed");
+});
+
+test("with no key, no client runs and the result is not empty", async ($: Engine, on: On) => {
   const { runs } = stub(on, { key: "" });
   const out = await ask($);
   expect(runs).toHaveLength(0);
-  expect(out.result.length).toBeGreaterThan(0);
+  expect(resultText(out).length).toBeGreaterThan(0);
 });
 
-test("an input that is not valid gets a message and no client run", async ($: any, on: any) => {
+test("an input that is not valid gets a message and no client run", async ($: Engine, on: On) => {
   const { runs } = stub(on);
   const out = await ask($, {
     question: "Which?",
     options: [{ key: "a=b" }, { key: "c" }],
   });
-  expect(out.result.length).toBeGreaterThan(0);
+  expect(resultText(out).length).toBeGreaterThan(0);
   expect(runs).toHaveLength(0);
 });

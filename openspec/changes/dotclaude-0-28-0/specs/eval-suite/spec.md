@@ -53,8 +53,8 @@ The map SHALL mark each capability that no run has proven as unverified.
 
 ### Requirement: Final-state and tamper checks
 
-Each case SHALL check the final state of the work folder with a `regex` grader on the final file (`target: { source: file, path }`), because no grader of `claude plugin eval` runs a test file (`research/eval-format.md`).
-Each case SHALL guard its protected files with `tool_used` graders on `Edit`, `Write`, and `Bash` with an `input_match` for the protected path and `max: 0`.
+Each case SHALL check the final state of the work folder with a `regex` grader on the final file (`target: { source: file, path }`), because no grader of `claude plugin eval` runs a test file.
+Each case SHALL guard a protected file with `tool_used` graders on `Edit` and `Write` (`max: 0`) and one `regex` file-state grader `kept-<path>`, and no grader SHALL read `Bash` text.
 The suite SHALL NOT have hidden oracle tests, tamper hashes, or canary files.
 
 #### Scenario: Final file matches
@@ -64,7 +64,7 @@ The suite SHALL NOT have hidden oracle tests, tamper hashes, or canary files.
 
 #### Scenario: Agent edits a protected file
 
-- **WHEN** the trace has an `Edit`, `Write`, or `Bash` call whose input names a protected path
+- **WHEN** the trace has an `Edit` or `Write` call whose input names a protected path, or the final content of the file differs from the scaffold
 - **THEN** the tamper grader fails
 
 ### Requirement: Paired comparison
@@ -178,5 +178,5 @@ The repository SHALL NOT keep raw run data, a report file, or a style file for t
 
 #### Scenario: Old run
 
-- **WHEN** a reader follows a figure in `wiki/Evals-History.md`
+- **WHEN** a reader follows a figure in `wiki/evals/Evals-History.md`
 - **THEN** the page gives the date, the model, and the rates, and links no file under `evals/results/`

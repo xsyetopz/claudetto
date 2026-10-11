@@ -6,11 +6,12 @@
 // The known shape, from Claude Code 2.1.289 and the decoder of CodexBar 0.69.0:
 //   { fetchedAtMs: number, utilization: { cedar_ember: { eligible: true, grants: [
 //     { resets_left: integer, paused: false, usable_now: true, starts_at: ISO | null, ends_at: ISO | null } ] } } }
-// The grant fields are those of the schema in Claude Code 2.1.294 (`input.mjs` has the offsets).
+// The grant fields are those of the schema in Claude Code 2.1.296 (`input.mjs` has the offsets).
 
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { rethrowUnless, UNREADABLE } from "../../lib/errors.mjs";
 import { CREDITS_MAX_AGE_MS, FABLE_MAX_AGE_MS } from "./limits.mjs";
 
 /**
@@ -66,22 +67,25 @@ export function parseFable(limits) {
  */
 export function readUsage(env = process.env, now = Date.now()) {
   const file = path.join(env.CLAUDE_CONFIG_DIR || os.homedir(), ".claude.json");
+  const none = { credits: null, fable: null };
+  let copy;
   try {
-    const copy = JSON.parse(
-      fs.readFileSync(file, "utf8"),
-    ).cachedUsageUtilization;
-    const age = now - copy.fetchedAtMs;
-    return {
-      credits:
-        age < CREDITS_MAX_AGE_MS
-          ? parseCredits(copy.utilization.cedar_ember, now)
-          : null,
-      fable:
-        age < FABLE_MAX_AGE_MS ? parseFable(copy.utilization.limits) : null,
-    };
-  } catch {
-    return { credits: null, fable: null };
+    copy = JSON.parse(fs.readFileSync(file, "utf8")).cachedUsageUtilization;
+  } catch (err) {
+    // An absent file, or a file that is not JSON, has no usage cache.
+    rethrowUnless(err, ...UNREADABLE, "SyntaxError");
+    return none;
   }
+  const age = now - copy?.fetchedAtMs;
+  const utilization = copy?.utilization;
+  if (!utilization || !Number.isFinite(age)) return none;
+  return {
+    credits:
+      age < CREDITS_MAX_AGE_MS
+        ? parseCredits(utilization.cedar_ember, now)
+        : null,
+    fable: age < FABLE_MAX_AGE_MS ? parseFable(utilization.limits) : null,
+  };
 }
 
 /** The credits from the usage cache file, or `null`. */

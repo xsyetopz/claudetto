@@ -1,6 +1,8 @@
 // The rules of the report-now hook: the context of a subagent from its transcript rows,
 // and the message that tells it to report.
 
+import { postToolUse } from "../../lib/hook-io.mjs";
+import { parseModel } from "../../lib/model.mjs";
 import {
   HAIKU_CONTEXT_MAX,
   REPORT_MAX_WORDS,
@@ -35,7 +37,8 @@ export function modelOf(rows) {
 
 /** The context bound in tokens for a subagent on `model`. */
 export function boundFor(model) {
-  return /haiku-5-5/.test(model ?? "")
+  const m = parseModel(model);
+  return m?.family === "haiku" && m.major === 5 && m.minor === 5
     ? HAIKU_CONTEXT_MAX
     : SUBAGENT_CONTEXT_MAX;
 }
@@ -47,17 +50,13 @@ export function boundFor(model) {
 export function reportNow(tokens, max = SUBAGENT_CONTEXT_MAX, turnFact) {
   const over = tokens > max;
   if (!over && !turnFact) return undefined;
-  const text = over
-    ? `Your context is ${tokens} tokens, which is over the bound of ${max} tokens. ${turnFact ?? ""} Make no more tool calls except a call that you need for the report. Give your report now in ${REPORT_MAX_WORDS} words or fewer. Include what is done and what stays open, because a run that goes on can reach its turn limit and return no report.`
-    : `${turnFact} Start no new tool call. Give your report now in ${REPORT_MAX_WORDS} words or fewer. Include what is done and what stays open.`;
-  return {
-    hookSpecificOutput: {
-      hookEventName: "PostToolUse",
-      additionalContext: text.replace(/ {2,}/g, " "),
-    },
-  };
+  const facts = [
+    over &&
+      `Your context is ${tokens} tokens, which is over the bound of ${max} tokens.`,
+    turnFact,
+  ].filter(Boolean);
+  facts.push(
+    `A run that reaches its turn limit returns no report. A report of ${REPORT_MAX_WORDS} words or fewer is due now, with what is done and what stays open.`,
+  );
+  return postToolUse({ additionalContext: facts.join(" ") });
 }
-
-/** True when the value `DISABLE_COMPACT` turns compaction off, with the same test as the `prompt.section` hook. */
-export const compactionOff = (value) =>
-  Boolean(value) && value !== "0" && value !== "false";

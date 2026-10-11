@@ -1,23 +1,26 @@
 // The hooks module of dotclaude: one `tool.check` guard,
 // a `prompt.compose` hook and an `agent.spawn` hook for the prompt variant of the model,
-// one `tool.call` hook on `Edit` that splits a cross-sentence `old_string` of a Markdown file (design D29),
+// three `tool.call` hooks, the whole `sembr` feature (design D29):
+// `Write` and `Edit` put each sentence of a Markdown file on its own line, `Edit` also splits a cross-sentence `old_string`,
+// and `Bash` does the same for the quoted heredoc of `git commit` and `gh pr create`,
 // one `prompt.section` hook that makes the `context_management` section of the system prompt true without compaction,
 // and the surface hooks (`prompt.attachment`, `agent.offer`, `tool.describe`) that cut attachments, agent lines, and tool schemas by exact id.
 // The drift check (`session.start`) has its handler in `features/drift/hooks.mjs`.
 // Permission rules and the sandbox of the settings snippet cover the other dangerous calls.
-// This guard covers the two cases that a rule cannot express:
-// a recursive `rm` outside the project folder,
-// and the first call of a session that reaches a GitHub repository of another owner with an AI policy.
-// In auto mode, the classifier decides an ask of `tool.check`,
-// so `features/guard/cli.mjs` gives the same ask from a classic hook in that mode.
+// This guard covers the one case that a rule cannot express:
+// the first call of a session that reaches a GitHub repository of another owner with an AI policy.
+// A recursive `rm` is an `ask` permission rule of the settings snippet, with the sandbox.
 //
 // It only asks, and it keeps a deny of the engine, so it never weakens a rule of the user.
-// The hook has no `.catch` on purpose.
-// When it fails after `next` resolved, the verdict of the engine stands, so the guard fails open.
+// The hook has no catch-all on purpose.
+// When it throws after `next` resolved, Claude Code logs the failure and the verdict of the engine stands, so the guard fails open.
+// A `catch` here names the error that it expects, and the others reach that log.
 //
 // `claude plugin validate` follows `$` only into a function of this file,
 // and each `$.env.get` call needs a literal name.
 // For this reason, each function that touches `$` is here, and the rules are in `features/guard/rules.mjs`.
+
+/** @import { Args, EngineInterface, On } from "claude-code" */
 
 import { onSessionStart } from "../features/drift/hooks.mjs";
 import {
@@ -32,7 +35,11 @@ import {
   variantKey,
   withBlock,
 } from "../features/prompt/select.mjs";
-import { isMarkdown, repairEdit } from "../features/sembr/rules.mjs";
+import {
+  commandInput,
+  editInput,
+  writeInput,
+} from "../features/sembr/rules.mjs";
 import {
   ATTACHMENT_TYPES,
   attachmentText,
@@ -41,47 +48,51 @@ import {
 } from "../features/surface/rules.mjs";
 import { POLICY_TIMEOUT_MS } from "../lib/budget.mjs";
 
-/** The stdout of `argv`, or null when it fails. */
+/**
+ * The stdout of `argv`, or null when it exits with a code other than 0.
+ * A run that throws is not caught: Claude Code logs it and the verdict of the engine stands.
+ *
+ * @param {EngineInterface} $
+ * @param {readonly string[]} argv
+ */
 async function output($, argv) {
-  try {
-    const r = await $.process.run(argv, { timeoutMs: POLICY_TIMEOUT_MS });
-    return r.exitCode === 0 ? r.stdout : null;
-  } catch {
-    return null;
-  }
+  const r = await $.process.run(argv, { timeoutMs: POLICY_TIMEOUT_MS });
+  return r.exitCode === 0 ? r.stdout : null;
 }
 
-// The logins of the user and the organizations where the user is an admin, read once.
+// The logins of the user and the organizations where the user is an admin.
+// Only a complete answer is kept, so a failed `gh` call is tried again at the next check.
+/** @type {string[] | undefined} */
 let owners;
+/** @param {EngineInterface} $ */
 async function ownersOf($) {
-  if (!owners) {
-    const login = linesOf(await output($, LOGIN_ARGV));
-    owners = login.length
-      ? [...login, ...linesOf(await output($, ORGS_ARGV))]
-      : [];
-  }
-  return owners;
+  if (owners) return owners;
+  const login = await output($, LOGIN_ARGV);
+  const orgs = login === null ? null : await output($, ORGS_ARGV);
+  const found = [...linesOf(login), ...linesOf(orgs)];
+  if (login !== null && orgs !== null && linesOf(login).length) owners = found;
+  return found;
 }
 
 // The repositories that this process checked, for each session.
+/** @type {Map<string, Set<string>>} */
 const checked = new Map();
 
-/** The ask reason for the call of `e`, or undefined. */
+/**
+ * The ask reason for the call of `e`, or undefined.
+ *
+ * @param {EngineInterface} $
+ * @param {Args<"tool.check">} e
+ */
 async function guardAsk($, e) {
-  const [cwd, root, home, tmp, session] = await Promise.all([
-    $.session.cwd(),
-    $.session.root(),
-    $.env.get("HOME"),
-    $.env.get("TMPDIR"),
-    $.session.id(),
-  ]);
-  if (!checked.has(session)) checked.set(session, new Set());
+  const session = await $.session.id();
+  let seen = checked.get(session);
+  if (!seen) {
+    seen = new Set();
+    checked.set(session, seen);
+  }
   return askReason(e.tool, e.input, {
-    cwd,
-    root,
-    home,
-    tmp,
-    seen: checked.get(session),
+    seen,
     run: (argv) => output($, argv),
     owners: () => ownersOf($),
   });
@@ -91,7 +102,10 @@ async function guardAsk($, e) {
 // A model switch changes nothing, because a changed system prompt breaks the cache.
 const variants = new Map();
 
-/** @type {import('claude-code').Register} */
+/**
+ * @param {On} on
+ * @returns {void}
+ */
 export function register(on) {
   on("prompt.compose", async ($, e, next) => {
     const result = await next(e);
@@ -116,7 +130,7 @@ export function register(on) {
       : next(e);
   });
   // An unknown attachment type, agent, or tool passes on with no change.
-  // The settings are read only for the sandbox text, which is shorter only when the sandbox has no escape.
+  // The settings are read only for the sandbox text, whose short form depends on `sandbox.allowUnsandboxedCommands`.
   on("prompt.attachment", async ($, e, next) => {
     const result = await next(e);
     if (!ATTACHMENT_TYPES.includes(e.type)) return result;
@@ -132,13 +146,19 @@ export function register(on) {
     const answer = await next(e);
     return toolAnswer(e.tool, answer) ?? answer;
   });
-  // Claude Code checks `old_string` before a classic hook runs, so only this handler can repair it (probe 2.29).
-  // A file that cannot be read passes on with no change.
+  // The `sembr` rewrites run only here (design D29).
+  // Claude Code checks `old_string` before a classic hook runs, so only a module can repair it (probe 2.29).
+  // A file that is absent passes on with no change.
+  // The hook asks `$.fs.exists` first, because `$.fs.read` documents no error code for a missing file.
+  // A rule that throws is a defect: Claude Code logs it, skips the hook, and runs the call as written.
+  on("tool.call", { tool: "Write" }, (_$, e, next) => next(writeInput(e)));
   on("tool.call", { tool: "Edit" }, async ($, e, next) => {
-    if (!isMarkdown(e.file_path)) return next(e);
-    const file = await $.fs.read(e.file_path).catch(() => null);
-    return next({ ...e, ...repairEdit(file, e.old_string, e.new_string) });
+    const file = (await $.fs.exists(e.file_path))
+      ? await $.fs.read(e.file_path)
+      : null;
+    return next(editInput(e, file));
   });
+  on("tool.call", { tool: "Bash" }, (_$, e, next) => next(commandInput(e)));
   on("tool.check", async ($, e, next) => {
     const verdict = await next(e);
     if (verdict?.decision === "deny") return verdict;

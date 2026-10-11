@@ -26,12 +26,6 @@ export const CREDITS_MAX_AGE_MS = 3_600_000;
 /** The age after which the Fable weekly window of the usage cache is hidden. Claude Code rejects a copy older than this. */
 export const FABLE_MAX_AGE_MS = 3_600_000;
 
-/**
- * The tokens below the window that Claude Code keeps free for itself.
- * A feature imports no other feature, so a test pins this copy to `CONTEXT_BLOCK_MARGIN` in `features/context/limits.mjs`.
- */
-export const CONTEXT_BLOCK_MARGIN = 23_000;
-
 /** The text between two columns of the grid. */
 export const GRID_GAP = "   ";
 

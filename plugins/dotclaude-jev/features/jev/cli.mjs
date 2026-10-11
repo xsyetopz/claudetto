@@ -16,13 +16,21 @@
 
 import { readFileSync } from "node:fs";
 import { setTimeout as sleepMs } from "node:timers/promises";
+import {
+  ATTEMPT_TIMEOUT_MS,
+  ERROR_BODY_MAX,
+  MAX_LEVELS,
+  MAX_OPTIONS,
+  MIN_CONFIDENCE,
+  MIN_LEVELS,
+  MIN_OPTIONS,
+  TRIES,
+  waitMs,
+  YES_NO_UNSURE_BAND,
+} from "./limits.mjs";
 
 const API = "https://api.typesafe.ai/v1/systemone";
 const MODEL = "jev-latest";
-const TRIES = 4;
-const TIMEOUT_MS = 30000;
-// Under this confidence, the TypeSafe docs treat an answer as uncertain.
-const LOW_CONFIDENCE = 0.5;
 const VERBS = {
   yes: "noul",
   noul: "noul",
@@ -79,7 +87,8 @@ export function buildBody({ kind, words, state }, stdin) {
     let req;
     try {
       req = JSON.parse(stdin());
-    } catch {
+    } catch (err) {
+      if (!(err instanceof SyntaxError)) throw err;
       throw new UsageError(
         "`ask` needs a JSON object of questions on stdin, as in the TypeSafe API.",
       );
@@ -94,9 +103,9 @@ export function buildBody({ kind, words, state }, stdin) {
   const q = { type: kind, instructions: question };
   switch (kind) {
     case "choice":
-      if (items.length < 2 || items.length > 255)
+      if (items.length < MIN_OPTIONS || items.length > MAX_OPTIONS)
         throw new UsageError(
-          "`pick` needs 2 to 255 options, each as `key` or `key=description`.",
+          `\`pick\` needs ${MIN_OPTIONS} to ${MAX_OPTIONS} options, each as \`key\` or \`key=description\`.`,
         );
       q.criteria = Object.fromEntries(
         items.map((item) => {
@@ -108,9 +117,9 @@ export function buildBody({ kind, words, state }, stdin) {
       );
       break;
     case "score":
-      if (items.length < 2 || items.length > 10)
+      if (items.length < MIN_LEVELS || items.length > MAX_LEVELS)
         throw new UsageError(
-          "`rate` needs 2 to 10 levels, from the lowest to the highest.",
+          `\`rate\` needs ${MIN_LEVELS} to ${MAX_LEVELS} levels, from the lowest to the highest.`,
         );
       q.criteria = items;
       break;
@@ -125,8 +134,8 @@ export function format(kind, answers) {
   if (kind === "ask") return JSON.stringify(answers, null, 2);
   const a = answers.q;
   if (kind === "noul") {
-    const unsure = Math.abs(a.noul - 0.5) < 0.2;
-    return `P(yes) = ${n(a.noul)}${unsure ? "\nThis is near 0.5, so Jev is not sure. Treat it as a weak signal." : ""}`;
+    const unsure = Math.abs(a.noul - 0.5) < YES_NO_UNSURE_BAND;
+    return `P(yes) = ${n(a.noul)}${unsure ? "\nP(yes) is near 0.5, so Jev is not sure." : ""}`;
   }
   const head =
     kind === "choice"
@@ -138,13 +147,16 @@ export function format(kind, answers) {
       ([k, p]) => `  ${n(p)} ${kind === "score" ? `${k} ${a.legend[k]}` : k}`,
     );
   const low =
-    a.confidence < LOW_CONFIDENCE
-      ? ["Confidence is low, so treat this answer as a weak signal."]
+    a.confidence < MIN_CONFIDENCE
+      ? [`The confidence is under ${MIN_CONFIDENCE}, so Jev is not sure.`]
       : [];
   return [head, ...rows, ...low].join("\n");
 }
 
-/** POST the body, with a retry and backoff on 429 and 529. */
+/**
+ * POST the body, with a retry and backoff on 429 and 529.
+ * The tries, the waits, and the timeout of each try end before the kill bound (see `limits.mjs`).
+ */
 export async function call(
   body,
   key,
@@ -158,17 +170,17 @@ export async function call(
         "content-type": "application/json",
       },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(TIMEOUT_MS),
+      signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
     });
     if (res.ok) return res.json();
     if ((res.status === 429 || res.status === 529) && i < TRIES - 1) {
-      await sleep(1000 * 2 ** i);
+      await sleep(waitMs(i));
       continue;
     }
     const why =
       res.status === 401
-        ? "The key in `TYPESAFE_API_KEY` is not valid."
-        : await res.text();
+        ? "The key in `TYPESAFE_API_KEY` is not valid. Tell the user."
+        : (await res.text()).slice(0, ERROR_BODY_MAX);
     throw new Error(`TypeSafe API ${res.status}: ${why}`);
   }
 }
@@ -178,7 +190,7 @@ if (import.meta.main) {
   try {
     if (!key)
       throw new UsageError(
-        "`TYPESAFE_API_KEY` is not set. Get a key at https://console.typesafe.ai and export it before Claude Code starts.",
+        "The user must set `TYPESAFE_API_KEY` before Claude Code starts. A key is at https://console.typesafe.ai.",
       );
     const args = parseArgs(process.argv.slice(2));
     const stdin = () => readFileSync(0, "utf8");

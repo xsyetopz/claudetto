@@ -1,4 +1,5 @@
 {
+  "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "dotclaude-docs",
   "version": "0.28.0",
   "description": "Gets current library and API docs with the Context7 CLI `ctx7`. Works with no key.",
@@ -6,5 +7,7 @@
     "name": "xsyetopz"
   },
   "repository": "https://github.com/xsyetopz/dotclaude",
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Library-Docs",
+  "keywords": ["docs", "context7", "ctx7", "libraries"]
 }

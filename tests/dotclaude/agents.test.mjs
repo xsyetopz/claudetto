@@ -1,12 +1,14 @@
 // The agent files of the core plugin: the roster of five, the description bound, and the `model` and `effort` of the frontmatter.
 
-import { expect, test } from "bun:test";
+import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { test } from "node:test";
 import { SUBAGENT_EFFORTS } from "../../plugins/dotclaude/features/statusline/limits.mjs";
 import { AGENT_DESCRIPTION_MAX_CHARS } from "../../tools/limits.mjs";
+import { PLUGINS } from "../support/repo.mjs";
 
-const DIR = path.join(import.meta.dirname, "../../plugins/dotclaude/agents");
+const DIR = path.join(PLUGINS, "dotclaude/agents");
 const ROSTER = [
   "debugger",
   "implementer",
@@ -44,25 +46,28 @@ const tooLong = (list, max = AGENT_DESCRIPTION_MAX_CHARS) =>
   list.filter((a) => a.fm.description.length > max).map((a) => a.name);
 
 test("the agent files are the five agents of the roster, and no other", () => {
-  expect(agents().map((a) => a.name)).toEqual(ROSTER);
-  for (const a of agents()) expect(a.fm.name).toBe(a.name);
+  assert.deepEqual(
+    agents().map((a) => a.name),
+    ROSTER,
+  );
+  for (const a of agents()) assert.equal(a.fm.name, a.name);
 });
 
 test("no description is over the bound, and a 301-character fixture fails", () => {
-  expect(AGENT_DESCRIPTION_MAX_CHARS).toBe(300);
-  expect(tooLong(agents())).toEqual([]);
+  assert.equal(AGENT_DESCRIPTION_MAX_CHARS, 300);
+  assert.deepEqual(tooLong(agents()), []);
   const fixture = [
     { name: "ok", fm: { description: "x".repeat(300) } },
     { name: "long", fm: { description: "x".repeat(301) } },
   ];
-  expect(tooLong(fixture)).toEqual(["long"]);
+  assert.deepEqual(tooLong(fixture), ["long"]);
 });
 
 test("each agent file sets a roster `model` and an `effort` that the model takes, never `max`", () => {
   for (const a of agents()) {
     const list = SUBAGENT_EFFORTS[a.fm.model?.replace(/^claude-/, "")];
-    expect(list, a.name).toBeDefined();
-    expect(list, a.name).toContain(a.fm.effort);
-    expect(a.fm.effort, a.name).not.toBe("max");
+    assert.notEqual(list, undefined, a.name);
+    assert.ok(list.includes(a.fm.effort), a.name);
+    assert.notEqual(a.fm.effort, "max", a.name);
   }
 });

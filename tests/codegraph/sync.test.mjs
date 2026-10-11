@@ -2,9 +2,10 @@
 // Claude Code picks the hooks with `matcher` and `if`, so the test applies both fields to a tool call
 // as a stand-in for that choice, and then runs the command of each hook that is picked.
 
-import { expect, test } from "bun:test";
+import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { test } from "node:test";
 import { BACKGROUND_SYNC_TIMEOUT_MS } from "../../plugins/dotclaude-codegraph/features/graph/limits.mjs";
 import { PLUGIN, runHook, setUp } from "./fake-cli.mjs";
 
@@ -29,7 +30,7 @@ const bash = (command) => ["Bash", { command }];
 
 test("an edit or a write picks one background sync", () => {
   for (const tool of ["Edit", "Write", "MultiEdit", "NotebookEdit"])
-    expect(picked(tool, { file_path: "a.py" }), tool).toHaveLength(1);
+    assert.equal(picked(tool, { file_path: "a.py" }).length, 1, tool);
 });
 
 test("each git command that changes the tree picks one background sync", () => {
@@ -47,7 +48,7 @@ test("each git command that changes the tree picks one background sync", () => {
     "apply a.patch",
     "am a.mbox",
   ])
-    expect(picked(...bash(`git ${sub}`)), sub).toHaveLength(1);
+    assert.equal(picked(...bash(`git ${sub}`)).length, 1, sub);
 });
 
 test("a git command that does not change the tree, and other calls, pick no sync", () => {
@@ -60,16 +61,17 @@ test("a git command that does not change the tree, and other calls, pick no sync
     "git push",
     "ls",
   ])
-    expect(picked(...bash(command)), command).toHaveLength(0);
-  expect(picked("Read", { file_path: "a.py" })).toHaveLength(0);
-  expect(picked("Grep", { pattern: "x" })).toHaveLength(0);
+    assert.equal(picked(...bash(command)).length, 0, command);
+  assert.equal(picked("Read", { file_path: "a.py" }).length, 0);
+  assert.equal(picked("Grep", { pattern: "x" }).length, 0);
 });
 
 test("every sync hook is async with a time limit that covers the bound of the CLI call", () => {
   for (const hook of PostToolUse.flatMap((g) => g.hooks)) {
-    expect(hook.async).toBe(true);
-    expect(hook.timeout * 1000).toBeGreaterThanOrEqual(
-      BACKGROUND_SYNC_TIMEOUT_MS,
+    assert.equal(hook.async, true);
+    assert.ok(
+      hook.timeout * 1000 >= BACKGROUND_SYNC_TIMEOUT_MS,
+      `${hook.timeout * 1000}`,
     );
   }
 });
@@ -83,18 +85,18 @@ test("the command of a picked hook syncs an indexed project and prints nothing",
     const [hook] = picked(tool, input);
     const mode = hook.command.match(/cli\.mjs" (\S+)$/)[1];
     const r = runHook(mode, { cwd: t.project, tool_name: tool }, t.env);
-    expect(r.out).toBeNull();
-    expect(r.status).toBe(0);
+    assert.equal(r.out, null);
+    assert.equal(r.status, 0);
   }
-  expect(t.log()).toEqual(["sync -q", "sync -q"]);
+  assert.deepEqual(t.log(), ["sync -q", "sync -q"]);
 });
 
 test("the sync of a project with no index, or with no CLI, runs nothing and exits 0", () => {
   const none = setUp({ index: false });
-  expect(runHook("sync", { cwd: none.project }, none.env).status).toBe(0);
-  expect(none.log()).toEqual([]);
+  assert.equal(runHook("sync", { cwd: none.project }, none.env).status, 0);
+  assert.deepEqual(none.log(), []);
   const missing = setUp({ installed: false });
   const r = runHook("sync", { cwd: missing.project }, missing.env);
-  expect(r.status).toBe(0);
-  expect(r.out).toBeNull();
+  assert.equal(r.status, 0);
+  assert.equal(r.out, null);
 });

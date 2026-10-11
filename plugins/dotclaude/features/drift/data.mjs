@@ -2,7 +2,7 @@
 // Tests pin `TESTED_VERSION` to the schema file.
 
 /** The Claude Code version that this release of dotclaude is tested on. */
-export const TESTED_VERSION = "2.1.295";
+export const TESTED_VERSION = "2.1.296";
 
 /** The built-in plugins that the snippet turns off with `enabledPlugins`. */
 export const OFF_PLUGINS = [
@@ -21,10 +21,10 @@ export const OFF_PLUGINS = [
 export const SYNCED_SOURCE = "syncedSkills";
 
 /**
- * The ids of the system prompt sections of Claude Code 2.1.295, as `prompt.compose` lists them.
+ * The ids of the system prompt sections of Claude Code 2.1.296, as `prompt.compose` lists them.
  * An id with a colon belongs to a plugin, so it is not here.
  * The ids after `memory` come only on some conditions, such as a flag, a model, or a deferred tool.
- * They are from the section list of the 2.1.295 bundle, and each one is in 2.1.294 too (`research/bundle-2.1.295.md`).
+ * They are from the section list of the 2.1.296 bundle (`research/bundle-2.1.296.md`).
  */
 export const ENGINE_SECTIONS = [
   "intro",
@@ -67,7 +67,7 @@ export const ENGINE_SECTIONS = [
  * The guard sends the handlers of `prompt.compose` and `prompt.section` of tier `user` to the append tier (`research/mods-api.md` section 3).
  */
 export const GUARD_SKIPS = [
-  "the model variants of the system prompt (`prompt.compose`)",
+  "the shared sections and the model variants of the system prompt (`prompt.compose`)",
   "the `context_management` text (`prompt.section`)",
 ];
 

@@ -11,7 +11,6 @@ execution:
   prompt: |-
     `data/big.log` has about 1 MB of rows.
     Use a subagent to find the audit code in it, and write the code in `ANSWER.md`.
-    Change no other file.
 graders:
   - type: regex
     name: "audit-code-written"
@@ -33,9 +32,9 @@ graders:
     input_match: "file_path\\W+[^\"]*data/big\\.log"
     min: 0
     max: 0
-  - type: tool_used
-    name: "shell-spares-data-big-log"
-    tool: Bash
-    input_match: "\\b(rm|mv|tee|sed -i)\\b[^\"]*data/big\\.log|>>?\\s*data/big\\.log"
-    min: 0
-    max: 0
+  - type: regex
+    name: "kept-data-big-log"
+    target: { source: file, path: "data/big.log" }
+    # The log has 1 MB, so the pattern holds its first line, the line with the audit code, and its last line.
+    # A change in the middle is not seen, and that is the pragmatic bound: a full match of 1 MB costs more than the case is worth.
+    pattern: '(?<![\s\S])2026-01-01T00:00:01 row 000001 status=ok payload=abcdefghijklmnopqrstuv\n[\s\S]*\naudit code is KX-7731\n[\s\S]*\n2026-01-01T00:00:40 row 014500 status=ok payload=abcdefghijklmnopqrstuv\n?(?![\s\S])'

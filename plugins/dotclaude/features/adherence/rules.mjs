@@ -4,14 +4,26 @@
 // `transcript(file)` gives `{ text, truncated }` or null, and `root` is the project folder.
 
 import path from "node:path";
+import { preToolUse } from "../../lib/hook-io.mjs";
+import { isMarkdown } from "../../lib/text.mjs";
 import { approved, claimReason, claims } from "./approval.mjs";
 import { gitReason } from "./git.mjs";
-import { LINE_SHOWN_MAX_CHARS, SCAN_MAX_CHARS } from "./limits.mjs";
+import { namedByHooks } from "./hookscripts.mjs";
+import {
+  contentReasons,
+  isTestPath,
+  pathReasons,
+  skipReasons,
+} from "./kinds.mjs";
+import {
+  LIMIT_FILE_NAME,
+  LINE_SHOWN_MAX_CHARS,
+  SCAN_MAX_CHARS,
+} from "./limits.mjs";
+import { scriptTexts } from "./scripts.mjs";
+import { shellWriteReasons } from "./shellwrites.mjs";
 import { bareItems, commitMessage, spansReason } from "./spans.mjs";
 import { added, change, FILE_TOOLS, lostLines } from "./text.mjs";
-
-/** True for a path of a Markdown file. */
-export const isMarkdown = (file) => /\.mdx?$/i.test(file);
 
 /** `line` trimmed and cut to `LINE_SHOWN_MAX_CHARS`. */
 const shown = (line) => {
@@ -28,19 +40,16 @@ const limitLine = (line) =>
 
 /**
  * The reason to ask before a change of `rel`, or undefined.
- * A test file is `*.test.*`, `*.spec.*`, or a file in a `test`, `tests`, or `__tests__` folder.
+ * A test file is `*.test.*`, `*.spec.*`, `*_test.*`, `*_spec.*`, `test_*.py`, or a file in a `test`, `tests`, `Tests`, or `__tests__` folder (see `isTestPath`).
  * A limits file is `limits.*` or `budget.*`.
  * `ch` is the effect from `change`. Only a call that changes or removes an existing line of a test file asks.
  * For a limits file, only a changed or removed line with a number or a `const` declaration asks.
  * A call that only adds lines, and a call that does not apply to the file, get no ask.
  */
 export function protectedReason(rel, ch) {
-  const parts = rel.split("/");
-  const name = parts[parts.length - 1];
-  const isTest =
-    /\.(?:test|spec)\.[^/]+$/.test(name) ||
-    parts.slice(0, -1).some((p) => /^(?:tests?|__tests__)$/.test(p));
-  const isLimit = /^(?:limits|budget)\.[^/]+$/.test(name);
+  const name = rel.split("/").at(-1);
+  const isTest = isTestPath(rel);
+  const isLimit = LIMIT_FILE_NAME.test(name);
   if ((!isTest && !isLimit) || ch.before === null || ch.after === null)
     return undefined;
   const lost = lostLines(ch.before, ch.after).filter((l) => l.trim() !== "");
@@ -50,15 +59,18 @@ export function protectedReason(rel, ch) {
   const change = now === undefined ? "removes it" : `writes \`${shown(now)}\``;
   return `The file \`${rel}\` is ${isTest ? "a test" : "a limits"} file.
 This call changes or removes the existing line \`${shown(hit)}\` and ${change}.
-A test or a limit changes only when the user asks, because the change can hide the defect that the check exists to find.
-Ask the user, or change the code and leave this file as it is.`;
+A change to a test or a limit can hide the defect that the check exists to find.
+To make a check pass, change the code and leave the check as it is.`;
 }
 
-/** The checks of a `Bash` command: the git ask and the code spans of a commit message. */
-function bashChecks(command) {
+/** The checks of a `Bash` command: the git ask, the ask for a write to a protected file, and the code spans of a commit message. */
+function bashChecks(command, payload, io) {
   const out = { deny: [], ask: [] };
-  const git = gitReason(command);
+  const root = io.root || payload.cwd || "";
+  const scripts = scriptTexts(command, root, io.read, io.home);
+  const git = gitReason(command, scripts);
   if (git) out.ask.push(git);
+  out.ask.push(...shellWriteReasons(command, root, io.read, scripts));
   const message = commitMessage(command);
   if (message !== undefined && message.length <= SCAN_MAX_CHARS) {
     const reason = spansReason(bareItems(message));
@@ -73,8 +85,13 @@ function fileChecks(payload, io) {
   const root = io.root || payload.cwd || "";
   const rel = path.relative(root, ch.file).split(path.sep).join("/");
   const out = { deny: [], ask: [] };
+  out.ask.push(...pathReasons(rel, namedByHooks(rel, root, io.read)));
   const text = ch.after ?? ch.fragment;
-  if (text.length > SCAN_MAX_CHARS) return out;
+  if (text.length > SCAN_MAX_CHARS) {
+    // The skipped-test and suppression checks work one line at a time, so they run on a long text too.
+    out.ask.push(...skipReasons(rel, ch));
+    return out;
+  }
   if (isMarkdown(ch.file)) {
     const reason = spansReason(added((t) => bareItems(t), ch));
     if (reason) out.deny.push(reason);
@@ -84,6 +101,7 @@ function fileChecks(payload, io) {
     out.deny.push(claimReason(found));
   const guarded = protectedReason(rel, ch);
   if (guarded) out.ask.push(guarded);
+  out.ask.push(...contentReasons(rel, ch));
   return out;
 }
 
@@ -94,12 +112,24 @@ function unapproved(file, io) {
   return Boolean(t) && !t.truncated && !approved(t.text);
 }
 
+/** `io` with a `read` that reads each file one time for one hook call. */
+function memoized(io) {
+  const seen = new Map();
+  const read = (file) => {
+    if (!seen.has(file)) seen.set(file, io.read(file));
+    return seen.get(file);
+  };
+  return { ...io, read };
+}
+
 /** The reasons for `payload`: `{ deny: string[], ask: string[] }`. */
-export function checkCall(payload, io) {
+export function checkCall(payload, raw) {
+  const io = memoized(raw);
   const none = { deny: [], ask: [] };
   const input = payload?.tool_input;
   if (!input) return none;
-  if (payload.tool_name === "Bash") return bashChecks(input.command);
+  if (payload.tool_name === "Bash")
+    return bashChecks(input.command, payload, io);
   if (FILE_TOOLS.has(payload.tool_name) && typeof input.file_path === "string")
     return fileChecks(payload, io);
   return none;
@@ -109,11 +139,8 @@ export function checkCall(payload, io) {
 export function verdict({ deny, ask }) {
   const list = deny.length ? deny : ask;
   if (!list.length) return undefined;
-  return {
-    hookSpecificOutput: {
-      hookEventName: "PreToolUse",
-      permissionDecision: deny.length ? "deny" : "ask",
-      permissionDecisionReason: list.join("\n\n"),
-    },
-  };
+  return preToolUse({
+    permissionDecision: deny.length ? "deny" : "ask",
+    permissionDecisionReason: list.join("\n\n"),
+  });
 }

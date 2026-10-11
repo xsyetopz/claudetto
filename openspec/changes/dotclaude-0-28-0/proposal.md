@@ -71,7 +71,7 @@ There is no migration, no compatibility shim, and no kept copy.
 - Rules that a program can check move from prompt text to hooks, lints, and eval measures, and the guard stops asking about `rm -rf` of a variable that holds a temp folder.
 - A plain-Node `sembr` formatter splits sentences onto their own lines before a write.
   Silent `PreToolUse` hooks rewrite Markdown files, commit messages, and pull-request bodies.
-  The output style gets a `<reply_format>` block for chat (design D29).
+  The output style gets a `<text_format>` block for chat (design D29).
 - Claude holds correct work under an unsupported claim of fault from the user, a subagent report, or project context.
   An evidence line in the prompt and the agent bodies comes first, and an irreversible-action gate follows only if the eval needs it.
   New eval measures count wrongful reverts and false confessions, with a warranted-accusation control (design D30).

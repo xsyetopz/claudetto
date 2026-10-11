@@ -4,8 +4,8 @@ Date of research: 2026-10-07. Claude Code 2.1.293.
 Docs were read with WebFetch (`code.claude.com` is blocked for `curl` in the sandbox, reachable with WebFetch).
 Bundle citations: `S` = `external/cc-2.1.293/strings.txt`, form `S@<byte offset>` from `rg -b`.
 The model catalog is one line (line 314727 of `S`, starts at byte 13118615), so catalog offsets are 13118615 plus the offset in the line.
-Docs pages: sub-agents = https://code.claude.com/docs/en/sub-agents, model-config = https://code.claude.com/docs/en/model-config,
-costs = https://code.claude.com/docs/en/costs, hooks = https://code.claude.com/docs/en/hooks, skills = https://code.claude.com/docs/en/skills.
+Docs pages: sub-agents = <https://code.claude.com/docs/en/sub-agents>, model-config = <https://code.claude.com/docs/en/model-config>,
+costs = <https://code.claude.com/docs/en/costs>, hooks = <https://code.claude.com/docs/en/hooks>, skills = <https://code.claude.com/docs/en/skills>.
 Evidence is marked EVIDENCE (quoted source) or INFERENCE (my reading).
 
 ## 1. Models
@@ -157,15 +157,15 @@ Evidence is marked EVIDENCE (quoted source) or INFERENCE (my reading).
      The hook lab (`just lab`) can test the hook output, but only a live session proves the CLI honors it.
    - The built-in Agent tool text tells the model: set `model` and `effort` "ONLY when the user ... explicitly ask" (S@28697941).
      The model will not set them itself, so the hook is the only route that varies them per task.
-2. Skill frontmatter `model` and `effort`, per skill, for one turn (skills docs). Static per skill file, runtime only in the sense that the user or the model picks which skill runs.
+1. Skill frontmatter `model` and `effort`, per skill, for one turn (skills docs). Static per skill file, runtime only in the sense that the user or the model picks which skill runs.
    The repo removed all skills (commit 5cf4cb4 "remove all skills") and sets `disableBundledSkills`, so this route needs new skills.
    Model switches mid-session can break the main prompt cache (community, below).
-3. `ultrathink` in the prompt: a hook (`UserPromptSubmit` `additionalContext`/prompt edit) could add it, but it does not change the effort level and community says it is mostly legacy.
+1. `ultrathink` in the prompt: a hook (`UserPromptSubmit` `additionalContext`/prompt edit) could add it, but it does not change the effort level and community says it is mostly legacy.
    Not recommended as a router lever.
-4. Hook `additionalContext` on `SubagentStart` or PreToolUse: only text, no model or effort control.
+1. Hook `additionalContext` on `SubagentStart` or PreToolUse: only text, no model or effort control.
    EVIDENCE hooks docs: `SubagentStart` has "No blocking or decision control". No hook can set the main session model or effort (hooks docs: "Only SessionStart hooks can receive a model field"; effort is read-only as `$CLAUDE_EFFORT`).
    `PreModelSwitch` can only block a switch.
-5. Mod events (`dotclaude-modder`): the plugin's `hooks/` and `um` are game-modding tools. `rg` for model/effort routing in it found only game-mod docs. No lever found.
+1. Mod events (`dotclaude-modder`): the plugin's `hooks/` and `um` are game-modding tools. `rg` for model/effort routing in it found only game-mod docs. No lever found.
 
 ### 3.3 Static only
 
@@ -219,14 +219,14 @@ All are fields of the hook input (`tool_input`) or the transcript the hook can r
 ## 5. Open questions and risks
 
 1. No live proof that Agent `updatedInput` with `model` and `effort` is honored in 2.1.293. A one-session test is required before building on it.
-2. Unresolved: whether `CLAUDE_CODE_EFFORT_LEVEL` or an explicit `/effort` beats a hook-set Agent `effort` (INFERENCE from `Vw`: env wins; the explicit-session case is unclear).
-3. Whether `maxEffortLevel` clamps Agent `effort` (not confirmed).
-4. 5.5 `effort_cost_index` values are absent from the baked catalog. Only a measurement (design D12 evals) gives them. Remote catalog may differ.
-5. Per-model quota weights are not visible. Use API list price as the proxy and measure `/usage`.
-6. Haiku 5.5 quality on coding sub-agent work is unmeasured. Vendor says it fits sub-agent work, and Haiku 5.5 has an early-stopping guidance capability. Over-claim rate must gate the route.
-7. `haiku` alias resolves to Haiku 4.5 on Bedrock, Vertex, and Foundry (catalog), and the template's `availableModels` lists only `claude-haiku-4-5`.
-8. Budget copies: any pins change `plugins/dotclaude/lib/budget.mjs` first (`SUBAGENT_EFFORTS` has `haiku-4-5: []` and no `haiku-5-5` entry yet).
-9. Hook-set `model` for `Plan` and built-in agents is untested too.
+1. Unresolved: whether `CLAUDE_CODE_EFFORT_LEVEL` or an explicit `/effort` beats a hook-set Agent `effort` (INFERENCE from `Vw`: env wins; the explicit-session case is unclear).
+1. Whether `maxEffortLevel` clamps Agent `effort` (not confirmed).
+1. 5.5 `effort_cost_index` values are absent from the baked catalog. Only a measurement (design D12 evals) gives them. Remote catalog may differ.
+1. Per-model quota weights are not visible. Use API list price as the proxy and measure `/usage`.
+1. Haiku 5.5 quality on coding sub-agent work is unmeasured. Vendor says it fits sub-agent work, and Haiku 5.5 has an early-stopping guidance capability. Over-claim rate must gate the route.
+1. `haiku` alias resolves to Haiku 4.5 on Bedrock, Vertex, and Foundry (catalog), and the template's `availableModels` lists only `claude-haiku-4-5`.
+1. Budget copies: any pins change `plugins/dotclaude/lib/budget.mjs` first (`SUBAGENT_EFFORTS` has `haiku-4-5: []` and no `haiku-5-5` entry yet).
+1. Hook-set `model` for `Plan` and built-in agents is untested too.
 
 ## 6. Sources
 
@@ -238,7 +238,7 @@ All are fields of the hook input (`tool_input`) or the transcript the hook can r
   `export-Opus 5.5 Medium is the best reasoning level.jsonl`,
   `export-Opus 5.5 at Medium is cheaper and faster than Opus4.6-Fable5.1 at high.jsonl`,
   `export-Which model & effort level combination do you use to get the most correct solutions while balancing.jsonl`,
-  `export-Token optimization from Anthropic- choosing the right effort level to the task.jsonl` (comments only; the article is https://claude.dev/blog/spending-your-effort, not fetched),
+  `export-Token optimization from Anthropic- choosing the right effort level to the task.jsonl` (comments only; the article is <https://claude.dev/blog/spending-your-effort>, not fetched),
   `2026-09-29/export-Sonnet 5.5 beats Opus 5.5 at coding and it's half the price--.jsonl`,
   `2026-09-29/export-Sonnet 5.5 may replace Opus 5.5 in your workflow.jsonl`,
   `2026-10-07_p2/export-I was underestimating Sonnet 5.5, but it turns out that for some tasks, it's an absolute beast.jsonl`,

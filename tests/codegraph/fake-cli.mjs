@@ -5,11 +5,9 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { PLUGINS, tmpDir } from "../support/repo.mjs";
 
-const PLUGIN = path.join(
-  import.meta.dirname,
-  "../../plugins/dotclaude-codegraph",
-);
+const PLUGIN = path.join(PLUGINS, "dotclaude-codegraph");
 export const CLI = path.join(PLUGIN, "features/graph/cli.mjs");
 export { PLUGIN };
 
@@ -25,7 +23,7 @@ esac
 
 /** A project folder, a fake CLI folder, and the answers of the fake. `index` makes `.codegraph/codegraph.db`. */
 export function setUp({ index = true, installed = true } = {}) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "codegraph-"));
+  const dir = tmpDir("codegraph");
   const project = path.join(dir, "project");
   const bin = path.join(dir, "bin");
   fs.mkdirSync(project);
@@ -37,7 +35,7 @@ export function setUp({ index = true, installed = true } = {}) {
   if (installed) {
     fs.writeFileSync(path.join(bin, "codegraph"), SCRIPT, { mode: 0o755 });
   }
-  // Bun needs more than `PATH` in its environment, so the base is the test environment
+  // The child process needs more than `PATH` in its environment, so the base is the test environment
   // without the variables of a parent Claude Code session.
   const base = Object.fromEntries(
     Object.entries(process.env).filter(([k]) => !k.startsWith("CLAUDE_")),
@@ -68,12 +66,11 @@ export function setUp({ index = true, installed = true } = {}) {
   };
 }
 
-/** Runs `cli.mjs mode` with `payload` on stdin, and gives `{ out, status, ms }`. `out` is the parsed stdout or null. */
+/** Runs `cli.mjs mode` with `payload` on stdin, and gives `{ out, status, err }`. `out` is the parsed stdout or null. */
 export function runHook(mode, payload, env, script = CLI) {
-  const start = Date.now();
   const r = spawnSync(process.execPath, [script, mode], {
     input: JSON.stringify(payload),
-    // Bun reads a `.env` file of its cwd, so the cwd is a temp folder and not the repository.
+    // The cwd is a temp folder and not the repository, so the run does not depend on the files of the repository.
     cwd: os.tmpdir(),
     env,
     encoding: "utf8",
@@ -81,7 +78,7 @@ export function runHook(mode, payload, env, script = CLI) {
   return {
     out: r.stdout ? JSON.parse(r.stdout) : null,
     status: r.status,
-    ms: Date.now() - start,
+    err: r.stderr,
   };
 }
 

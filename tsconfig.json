@@ -1,4 +1,8 @@
 {
   "extends": "./plugins/dotclaude/.claude-plugin/types/tsconfig.json",
-  "include": ["plugins/*/hooks"]
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true
+  },
+  "include": ["plugins/dotclaude/hooks/*.mjs", "plugins/*/tests/*.test.ts"]
 }

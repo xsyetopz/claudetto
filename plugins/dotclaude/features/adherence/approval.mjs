@@ -4,6 +4,8 @@
 // It does not tie the word to the topic of the claim, so it stops a claim with no approval at all and nothing finer.
 // The functions are pure. The caller reads the transcript and fails open when it cannot.
 
+import { rethrowUnless } from "../../lib/errors.mjs";
+
 const CLAIMS = [
   /\bdecisions?\s+(?:of|by)\s+the\s+user\b/gi,
   /\b(?:approved|authori[sz]ed|decided|confirmed|accepted)\s+by\s+the\s+user\b/gi,
@@ -32,7 +34,8 @@ export function prompts(transcript) {
     let rec;
     try {
       rec = JSON.parse(line);
-    } catch {
+    } catch (err) {
+      rethrowUnless(err, "SyntaxError");
       continue;
     }
     if (rec?.type !== "user" || rec.isMeta || rec.isSidechain) continue;

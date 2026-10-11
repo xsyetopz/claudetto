@@ -90,7 +90,7 @@ The snippet SHALL name the generated dotclaude schema as `$schema`.
 ### Requirement: Subagent cache lifetime
 
 The snippet SHALL leave `subagentPromptCacheTtl` unset, which gives 5 minutes.
-The reason is the measure of 2026-10-05 (`wiki/Design.md`): 21,765 of 21,807 request gaps of subagents were under 5 minutes.
+The reason is the measure of 2026-10-05 (`wiki/design/Design.md`): 21,765 of 21,807 request gaps of subagents were under 5 minutes.
 
 #### Scenario: Snippet value
 

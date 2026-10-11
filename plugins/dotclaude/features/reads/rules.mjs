@@ -3,6 +3,7 @@
 // The functions are pure. `cli.mjs` reads the line count of a file for `tail`.
 
 import path from "node:path";
+import { words as shellWords } from "../../lib/shell.mjs";
 
 /** A path segment or a file name that marks a generated file. The command stays allowed for it. */
 const GENERATED_DIRS = new Set([
@@ -24,27 +25,10 @@ const GENERATED_FILES =
  * A pipe, a list, a redirect, a substitution, a variable, a glob, or a second line makes it not simple.
  */
 export function words(command) {
-  const out = [];
-  let word = null;
-  let quote = null;
-  for (const c of String(command).trim()) {
-    if (quote) {
-      if (c === quote) quote = null;
-      else if (c === "$" || c === "`" || c === "\\" || c === "\n") return null;
-      else word += c;
-    } else if (c === "'" || c === '"') {
-      quote = c;
-      word ??= "";
-    } else if (/\s/.test(c) && c !== "\n") {
-      if (word !== null) out.push(word);
-      word = null;
-    } else if (/[|&;<>()`$\\\n*?[\]{}~!#]/.test(c)) {
-      return null;
-    } else word = (word ?? "") + c;
-  }
-  if (quote) return null;
-  if (word !== null) out.push(word);
-  return out;
+  const text = String(command).trim();
+  // A quoted part may hold a glob character, but not a `$`, a backtick, a backslash, or a newline.
+  const bare = text.replace(/'[^'$`\\\n]*'|"[^"$`\\\n]*"/g, "");
+  return /[|&;<>()`$\\\n*?[\]{}~!#'"]/.test(bare) ? null : shellWords(text);
 }
 
 /** True when `file` (absolute) is a generated file. A file in a temp folder is not generated, because a project can be there. */

@@ -1,7 +1,7 @@
 // The main status line: the three-column grid of `grid.mjs`, or the segments of `segments.mjs`
 // and `place.mjs` packed into rows when the grid does not fit.
 
-import { CONTEXT_WINDOW } from "../../lib/budget.mjs";
+import { windowOf } from "../../lib/budget.mjs";
 import { partsOf } from "./context-table.mjs";
 import { gridRows } from "./grid.mjs";
 import { fitRows } from "./layout.mjs";
@@ -17,10 +17,7 @@ import { usageGroups } from "./segments.mjs";
 export function render(data, ctx) {
   const groups = [...usageGroups(data, ctx), placeGroup(data, ctx)];
   const total = data.context_window?.total_input_tokens ?? 0;
-  const window = Math.min(
-    data.context_window?.context_window_size || CONTEXT_WINDOW,
-    CONTEXT_WINDOW,
-  );
+  const window = windowOf(data.context_window?.context_window_size);
   const parts = partsOf(total, window, ctx.table);
   const grid = gridRows(groups, { ...ctx, parts }, ctx.columns);
   return (grid ?? fitRows(groups, ctx.columns)).join("\n");

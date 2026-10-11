@@ -1,13 +1,20 @@
 // The rules of the `sembr` hooks (design D29): the rewrite of a write and of an edit, the repair of a cross-sentence `old_string`,
-// The functions are pure and import only `lib/sembr.mjs`, so the hooks module may load this file.
+// and the rewrite of a quoted heredoc in a commit command.
+// The functions are pure and import only `lib/`, so the hooks module may load this file.
+
+/** @import { Args } from "claude-code" */
+/** @typedef {Extract<Args<"tool.call">, { content: string, file_path: string }>} WriteCall */
+/** @typedef {Extract<Args<"tool.call">, { old_string: string }>} EditCall */
+/** @typedef {Extract<Args<"tool.call">, { command: string }>} BashCall */
 
 import { sembr, sembrCounts } from "../../lib/sembr.mjs";
+import { isMarkdown } from "../../lib/text.mjs";
 
-/** True for a path of a Markdown file that the hook rewrites. */
-export const isMarkdown = (file) =>
-  typeof file === "string" && /\.mdx?$/i.test(file);
-
-/** The text of a `Write` after the rewrite, or undefined when it needs no change. */
+/**
+ * The text of a `Write` after the rewrite, or undefined when it needs no change.
+ *
+ * @param {unknown} content
+ */
 export function rewriteContent(content) {
   if (typeof content !== "string") return undefined;
   const out = sembr(content);
@@ -19,13 +26,16 @@ export function rewriteContent(content) {
  * `file` is the text of the file before the edit, or null when it does not exist.
  * The rewrite applies only when `new_string` starts and ends at line bounds of the file.
  * The split runs on the whole file after the edit, so a fence or a table around the lines keeps them.
+ *
+ * @param {{ old_string?: unknown, new_string?: unknown, replace_all?: unknown } | null | undefined} input
+ * @param {string | null} file
  */
 export function rewriteEdit(input, file) {
   const { old_string: old, new_string: next } = input ?? {};
   if (typeof old !== "string" || typeof next !== "string") return undefined;
   if (next === "") return undefined;
   if (old === "") return file ? undefined : rewriteContent(next);
-  if (file == null || input.replace_all) return undefined;
+  if (file == null || input?.replace_all) return undefined;
   const at = file.indexOf(old);
   if (at < 0 || file.indexOf(old, at + 1) >= 0) return undefined;
   const after = file.slice(0, at) + next + file.slice(at + old.length);
@@ -38,9 +48,9 @@ export function rewriteEdit(input, file) {
   const counts = sembrCounts(after);
   const lines = sembr(after).split("\n");
   let from = 0;
-  for (let i = 0; i < first; i++) from += counts[i];
+  for (let i = 0; i < first; i++) from += counts[i] ?? 0;
   let length = 0;
-  for (let i = first; i < first + size; i++) length += counts[i];
+  for (let i = first; i < first + size; i++) length += counts[i] ?? 0;
   const body = lines.slice(from, from + length).join("\n");
   const out = trailing ? `${body}\n` : body;
   return out === next ? undefined : out;
@@ -49,6 +59,10 @@ export function rewriteEdit(input, file) {
 /**
  * The repaired `old_string` and `new_string` of an `Edit` whose `old_string` crosses a sentence end,
  * or undefined when `old_string` matches as written or its split form is not in the file either.
+ *
+ * @param {string | null} file
+ * @param {unknown} old
+ * @param {unknown} next
  */
 export function repairEdit(file, old, next) {
   if (typeof file !== "string" || typeof old !== "string" || old === "")
@@ -74,9 +88,13 @@ const TRAILER = /^[A-Za-z][\w-]*: \S/;
  * The text of a heredoc body after the rewrite.
  * `keepFirst` keeps the first line (the subject of a commit).
  * The last paragraph stays as written when each of its lines is a trailer.
+ *
+ * @param {string[]} lines
+ * @param {boolean} keepFirst
  */
 function rewriteBody(lines, keepFirst) {
   const head = keepFirst ? lines.slice(0, 1) : [];
+  /** @type {string[]} */
   let tail = [];
   let middle = lines.slice(head.length);
   const blank = middle.findLastIndex((l) => l.trim() === "");
@@ -96,12 +114,14 @@ function rewriteBody(lines, keepFirst) {
  * and the body of `gh pr create --body "$(cat <<'EOF' ...)"`.
  * The subject of a commit, the title of a pull request, and the trailers stay as written.
  * The command stays when an output line would equal the delimiter, because the heredoc would end early.
+ *
+ * @param {unknown} command
  */
 export function rewriteCommand(command) {
   if (typeof command !== "string") return undefined;
   const found = HEREDOC.exec(command);
   if (!found) return undefined;
-  const [operator, delimiter] = found;
+  const [operator, delimiter = ""] = found;
   const before = command.slice(0, found.index);
   const isCommit = COMMIT_BEFORE.test(before);
   if (!(isCommit || PR_BEFORE.test(before)) || /<</.test(before))
@@ -115,4 +135,42 @@ export function rewriteCommand(command) {
   if (out.includes(delimiter) || out.join("\n") === lines.join("\n"))
     return undefined;
   return command.slice(0, bodyAt) + [...out, ...rest.slice(end)].join("\n");
+}
+
+/**
+ * The `tool.call` input of a `Write` after the rewrite.
+ * A path that is not Markdown, and a text that needs no change, give `e` itself.
+ *
+ * @param {WriteCall} e
+ */
+export function writeInput(e) {
+  if (!isMarkdown(e.file_path)) return e;
+  const content = rewriteContent(e.content);
+  return content === undefined ? e : { ...e, content };
+}
+
+/**
+ * The `tool.call` input of an `Edit` after the repair of `old_string` and the rewrite of `new_string`.
+ * `file` is the text of the file, or null when it cannot be read.
+ * A path that is not Markdown, and an edit that needs no change, give `e` itself.
+ *
+ * @param {EditCall} e
+ * @param {string | null} file
+ */
+export function editInput(e, file) {
+  if (!isMarkdown(e.file_path)) return e;
+  const fix = repairEdit(file, e.old_string, e.new_string);
+  const repaired = fix ? { ...e, ...fix } : e;
+  const next = rewriteEdit(repaired, file);
+  return next === undefined ? repaired : { ...repaired, new_string: next };
+}
+
+/**
+ * The `tool.call` input of a `Bash` call after the rewrite of a quoted heredoc, or `e` itself.
+ *
+ * @param {BashCall} e
+ */
+export function commandInput(e) {
+  const command = rewriteCommand(e.command);
+  return command === undefined ? e : { ...e, command };
 }

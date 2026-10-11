@@ -2,20 +2,23 @@
 
 Collected 2026-10-07. All URLs fetched that day. Quotes are verbatim, at most 2 sentences. "[inferred]" marks my reading, not a source statement. Community material in `external/*.jsonl` was NOT read.
 
+The refresh of 2026-10-10 is in [prompting-guidance-2.md](prompting-guidance-2.md).
+
 Base URLs:
-- P = https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/
-- C = https://code.claude.com/docs/en/
+
+- P = <https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/>
+- C = <https://code.claude.com/docs/en/>
 
 ## 0. Which guides exist
 
 | Model | Guide |
-|---|---|
+| --- | --- |
 | Opus 5.5 | P prompting-claude-opus-5-5 (diff from Opus 5; Opus 5 guide `prompting-claude-opus-5` still "a reasonable starting point") |
 | Sonnet 5.5 | P prompting-claude-sonnet-5-5 |
 | Haiku 5.5 | P prompting-claude-haiku-5-5 |
 | Fable 5.1 (and Mythos 5.1) | P prompting-claude-fable-5-1 |
 | General | P claude-prompting-best-practices (lists all of the above; names 5.5 models) |
-| Effort | https://platform.claude.com/docs/en/build-with-claude/effort |
+| Effort | <https://platform.claude.com/docs/en/build-with-claude/effort> |
 
 ## 1. XML tags
 
@@ -25,7 +28,7 @@ Base URLs:
 - Tag names Anthropic's own sample prompts use: `<default_to_action>`, `<do_not_act_before_instructions>`, `<use_parallel_tool_calls>`, `<investigate_before_answering>`, `<avoid_excessive_markdown_and_bullet_points>`, `<tone_preference>`, `<quotes>`, `<info>`, `<pasted_content id="..">`. (best-practices page; opus-5 page; opus-5-5 page)
 - Output steering by tag: "Write the prose sections of your response in \<smoothly\_flowing\_prose\_paragraphs> tags." (best-practices, "Control the format")
 - Tags can also be named only in the instruction that refers to them: "Text inside <pasted_content> tags was pasted into the message by the user from somewhere else..." (P prompting-claude-opus-5-5#mark-pasted-text-in-user-messages) That is the documented pattern for referencing a tag by name.
-- Context-engineering post: sections via "XML tagging or Markdown headers"; e.g. `<background_information>`, `<instructions>`, `## Tool guidance`. (https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+- Context-engineering post: sections via "XML tagging or Markdown headers"; e.g. `<background_information>`, `<instructions>`, `## Tool guidance`. (<https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents>)
 - Do not name internal tags in a "do not output" rule: "Instructions that call out thinking tags by name are less effective than the general form". (P prompting-claude-opus-5#running-with-thinking-disabled) Working form: "Do not include internal or system XML tags in your response."
 - Style matching: "removing markdown from your prompt can reduce the volume of markdown in the output." (best-practices)
 
@@ -72,10 +75,10 @@ Base URLs:
 
 ## 7. Effort per model
 
-Source: https://platform.claude.com/docs/en/build-with-claude/effort and the model guides.
+Source: <https://platform.claude.com/docs/en/build-with-claude/effort> and the model guides.
 
 | Model | Default | Behavior notes |
-|---|---|---|
+| --- | --- | --- |
 | Opus 5.5 | `medium` | "medium matches or exceeds Claude Opus 5 at high on coding and knowledge-work evaluations, and on several coding evaluations low comes close". Thinking always on, cannot be disabled. "To get less thinking, lower the effort level first. Lowering effort reduces thinking... more reliably than prompt instructions do." |
 | Sonnet 5.5 | `high` (API); Claude Code default per Anthropic docs not stated for Sonnet | "At `low`, it keeps its thinking short and can skip verifying a change. ... At `low` and `medium`, on long agentic tasks, it's more likely to stop and check in with the user." "Asking it in the system prompt to think less doesn't reliably reduce its thinking." |
 | Haiku 5.5 | `medium` (API and Claude Code) | "`low`... In long agent prompts, the model is more likely to skip a search, stop early, or skip a check at this level." `medium` start for agentic coding; "`high` suits knowledge work, longer agent tasks, and strict instruction following." "telling the model in the prompt to answer directly didn't stop it from thinking." At `low` and `medium` "sometimes reports a code change as done without running a check." |
@@ -132,10 +135,11 @@ Source: https://platform.claude.com/docs/en/build-with-claude/effort and the mod
 
 ## 12. Output style specifics (Claude Code)
 
-Source: https://code.claude.com/docs/en/output-styles
+Source: <https://code.claude.com/docs/en/output-styles>
+
 - File: Markdown with frontmatter at `~/.claude/output-styles`, `.claude/output-styles`, or managed dir. Fields: `name`, `description`, `keep-coding-instructions` (default `false`), `force-for-plugin`.
 - "Custom output styles leave out Claude Code's built-in software engineering instructions, such as how to scope changes, write comments, and verify work, unless `keep-coding-instructions` is set to `true`." For a short prompt that still codes, set it true or restate those rules (sections 8-9) yourself.
-- "Claude Code sends the active style's instructions with every request." Switching mid-session changes the cache; see https://code.claude.com/docs/en/prompt-caching#changing-output-style (not read).
+- "Claude Code sends the active style's instructions with every request." Switching mid-session changes the cache; see <https://code.claude.com/docs/en/prompt-caching#changing-output-style> (not read).
 - Built-in Concise (Claude Code v2.1.237+): first sentence "states what happened or what the answer is"; no lead-in, narration, closing recap; "answers a simple question in one to three sentences"; stays full for explanations asked for, errors, failing test output, security warnings, destructive confirmations. Useful template for the 5.5 output style.
 - Built-in Proactive: starts work, "makes reasonable assumptions about routine decisions rather than stopping to ask", checks first before deleting data or changing shared/production systems. Maps to Anthropic's Fable "You are operating autonomously" text.
 - Styles don't apply to non-fork subagents ("Other subagents run their own system prompt").
@@ -177,17 +181,17 @@ Source: https://code.claude.com/docs/en/output-styles
 ## 17. Rules for a minimal-byte system prompt (15 max)
 
 1. State scope in one line and make "mention extras at the end, do not do them" explicit: "Don't add features, tests, files, docs or refactors that weren't asked for. If you think one would help, mention it at the end instead of doing it." (sec 8)
-2. Add the keep-going sentence: "Keep working until everything the user asked for is done, and only stop to ask when you can't go on without the user or before a risky step." (sec 8, 14)
-3. Add one verification sentence for Sonnet 5.5 and Haiku 5.5: run a real check (tests, type-check, build, or the changed command) before saying done; otherwise name the check not run and why. Skip it for Opus-only use. (sec 9)
-4. Keep one confirmation rule for destructive or shared-system actions; the autonomy block does not remove it. (sec 14)
-5. Use plain imperatives, one reason per rule only where the reason changes behavior; reserve at most one emphasized word (`IMPORTANT`) for the rule that is still skipped after a test. No stacked CAPS. (sec 2, 3)
-6. Phrase rules positively ("report the outcome first") and give the pattern to avoid by name ("mannered prose", "closing recap") rather than a generic ban. (sec 3)
-7. Put the verbosity rule in the output style, 1-3 lines, and repeat in a short `<tone_preference>`-style line at the END of a long prompt. Opus verbosity is not governed by effort. (sec 5, 13)
-8. Cap subagents in text: delegate only for large, independent, parallel work; do not use subagents to double-check own work. Add `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` for a hard cap. A custom prompt gets no built-in delegation instruction. (sec 11)
-9. Do not write "think harder/less", "do not think", or "double-check" rules. Use effort: Opus 5.5 `medium`, Sonnet 5.5 `medium`/`high` for agentic coding, Haiku 5.5 `medium` or higher (low skips checks), Fable 5.1 `high`. (sec 7)
-10. Do not name internal tags in a ban. If you need one, "Do not include internal or system XML tags in your response." (sec 1)
-11. Use XML tags only when mixing instructions with pasted data or examples; otherwise plain short sentences. When data is long, put it first and the instruction last. (sec 1, 5)
-12. Keep the prompt stable across turns and append-only; do not rewrite `system` mid-session (thinking-block invalidation and cache loss). Put add-ons at the end from turn 1. (sec 5, 15)
-13. Delete rules that Claude already follows and old anti-laziness/aggressive-tool rules; run `/doctor prompt-audit`. Length lowers adherence most on Haiku 5.5 at low effort. (sec 6)
-14. Any rule that must hold every time goes into a hook, not the prompt. (sec 9, 12)
-15. If the output style replaces the default prompt, set `keep-coding-instructions: true` or restate scope, comment, and verification rules; subagents do not inherit the output style, so repeat the 2-3 lines that matter in each agent body. (sec 11, 12)
+1. Add the keep-going sentence: "Keep working until everything the user asked for is done, and only stop to ask when you can't go on without the user or before a risky step." (sec 8, 14)
+1. Add one verification sentence for Sonnet 5.5 and Haiku 5.5: run a real check (tests, type-check, build, or the changed command) before saying done; otherwise name the check not run and why. Skip it for Opus-only use. (sec 9)
+1. Keep one confirmation rule for destructive or shared-system actions; the autonomy block does not remove it. (sec 14)
+1. Use plain imperatives, one reason per rule only where the reason changes behavior; reserve at most one emphasized word (`IMPORTANT`) for the rule that is still skipped after a test. No stacked CAPS. (sec 2, 3)
+1. Phrase rules positively ("report the outcome first") and give the pattern to avoid by name ("mannered prose", "closing recap") rather than a generic ban. (sec 3)
+1. Put the verbosity rule in the output style, 1-3 lines, and repeat in a short `<tone_preference>`-style line at the END of a long prompt. Opus verbosity is not governed by effort. (sec 5, 13)
+1. Cap subagents in text: delegate only for large, independent, parallel work; do not use subagents to double-check own work. Add `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` for a hard cap. A custom prompt gets no built-in delegation instruction. (sec 11)
+1. Do not write "think harder/less", "do not think", or "double-check" rules. Use effort: Opus 5.5 `medium`, Sonnet 5.5 `medium`/`high` for agentic coding, Haiku 5.5 `medium` or higher (low skips checks), Fable 5.1 `high`. (sec 7)
+1. Do not name internal tags in a ban. If you need one, "Do not include internal or system XML tags in your response." (sec 1)
+1. Use XML tags only when mixing instructions with pasted data or examples; otherwise plain short sentences. When data is long, put it first and the instruction last. (sec 1, 5)
+1. Keep the prompt stable across turns and append-only; do not rewrite `system` mid-session (thinking-block invalidation and cache loss). Put add-ons at the end from turn 1. (sec 5, 15)
+1. Delete rules that Claude already follows and old anti-laziness/aggressive-tool rules; run `/doctor prompt-audit`. Length lowers adherence most on Haiku 5.5 at low effort. (sec 6)
+1. Any rule that must hold every time goes into a hook, not the prompt. (sec 9, 12)
+1. If the output style replaces the default prompt, set `keep-coding-instructions: true` or restate scope, comment, and verification rules; subagents do not inherit the output style, so repeat the 2-3 lines that matter in each agent body. (sec 11, 12)

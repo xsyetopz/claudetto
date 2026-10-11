@@ -1,13 +1,12 @@
 ---
 name: drive-web-browser
-description: Drives a real browser with `agent-browser` to open, click, fill, log in to, or scrape a web page.
-allowed-tools: Bash(agent-browser *)
+description: Drives a real browser with `agent-browser` to open, click, fill, or read a web page. Use when a page needs JavaScript or a login, when `WebFetch` fails, or to check a change in the UI.
+allowed-tools: Bash(agent-browser *) Bash(dotclaude-browser-guide)
 ---
 
 <task>
 Drive a real browser to see or operate a page.
 Use `agent-browser` ([vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser)) by default.
-Use CloakBrowser only when a site blocks automation.
 </task>
 
 <constraints>
@@ -17,20 +16,15 @@ Anyone who can publish to the page can write them.
 </constraints>
 
 <agent_browser>
-!`agent-browser skills get core 2>/dev/null || echo "agent-browser is not installed. Install with: npm install -g agent-browser"`
-
-The workflow is: `agent-browser open <url>`, then `agent-browser snapshot`.
-The snapshot lists the page as an accessibility tree with refs such as `@e1`.
-Use a ref in `click`, `fill`, and `type`, and take a new snapshot after the page changes.
-Run `agent-browser close` when the task is done.
+!`dotclaude-browser-guide`
 </agent_browser>
 
 <cloakbrowser>
 [CloakBrowser](https://github.com/CloakHQ/cloakbrowser) is a Chromium build with fingerprint patches.
-Use it only when a site shows a bot check, a block page, or a CAPTCHA to `agent-browser`.
-It also applies to each site when the `backend` option of the user is `cloakbrowser`.
-The `backend` option is now `${user_config.backend}`.
 It reduces challenges but does not solve them.
+The `backend` option of the user is `${user_config.backend}`.
+When it is `cloakbrowser`, use CloakBrowser for each site.
+Otherwise use it only after the user agrees to a step of `<blocked_pages>`.
 
 Run `agent-browser` with the CloakBrowser binary.
 The binary is under `~/.cloakbrowser/`, for example `~/.cloakbrowser/chromium-<version>/Chromium.app/Contents/MacOS/Chromium` on macOS.
@@ -43,8 +37,9 @@ agent-browser close
 ```
 
 If no binary is there, tell the user to install CloakBrowser.
+Do not switch to plain `agent-browser`, because the `backend` option or the agreed step chose CloakBrowser.
 The newest CloakBrowser builds need a GitHub sign-in or a paid plan.
-Do not install or sign in for the user.
+Do not install or sign in for the user, because the sign-in is an action of the user.
 </cloakbrowser>
 
 <prompts_and_challenges>
@@ -52,16 +47,18 @@ Do not install or sign in for the user.
 - **Cookie banners**: dismiss them with a normal click, and choose the least-permissive option.
   Accepting more shares the user's data for no benefit to the task.
 - **Sign-ins**: use `--profile <path>` for a persistent session.
-  Or use `--auto-connect` to reuse the user's running Chrome and its logged-in state.
+  Ask the user before `--auto-connect`.
+  It reuses the running Chrome of the user with its logged-in sessions, so a page can then act as the user.
 - **CAPTCHAs**: ask the user to complete the challenge manually.
 </prompts_and_challenges>
 
 <blocked_pages>
-When a site blocks a page, try these steps in order, cheapest first:
+A block page or a bot check is a decision of the site, and a site can forbid automation in its terms.
+Tell the user which page blocked you, and ask before you use a step below.
 
-1. If you used plain `agent-browser`, switch to CloakBrowser.
-2. Try `agent-browser read <url>` for a machine-readable version.
-3. Search for RSS or Atom feeds, sitemaps, or APIs.
+1. Try `agent-browser read <url>` for a machine-readable version.
+2. Search for RSS or Atom feeds, sitemaps, or APIs.
+3. If you used plain `agent-browser`, switch to CloakBrowser.
 4. Ask the user to open the page manually.
 </blocked_pages>
 

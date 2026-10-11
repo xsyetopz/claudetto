@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+// Runs `claude plugin eval` on two plugin folders, one after the other.
+//
+//   dotclaude-eval-compare A B [claude plugin eval options...]
+//
+// Each run scores a plugin arm against the same no-plugin baseline arm.
+// So the `WITH` column of the two tables shows which plugin folder scores better.
+// Each run costs money, so `--max-cost-usd 5` bounds each run when the options do not set it.
+// The command adds no `--scaffold` and no `--allow-tools`.
+// Each one runs the scripts or the tools of the suite as the user, so the user adds them for a trusted suite.
+// The results of each run stay in `evals/results/` of its plugin folder.
+// Exits 0 when both runs succeed.
+
+import { runBoth } from "../features/eval-compare/run.mjs";
+
+const args = process.argv.slice(2);
+if (args.includes("--help") || args.includes("-h")) {
+  console.log(
+    "Usage: dotclaude-eval-compare A B [claude plugin eval options...]",
+  );
+  process.exit(0);
+}
+const [a, b, ...rest] = args;
+if (!a || !b || a.startsWith("-") || b.startsWith("-")) {
+  console.error(
+    "Usage: dotclaude-eval-compare A B [claude plugin eval options...]",
+  );
+  process.exit(2);
+}
+process.exit(runBoth(a, b, rest));

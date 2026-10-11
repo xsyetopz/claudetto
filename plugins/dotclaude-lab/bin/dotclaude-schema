@@ -1,0 +1,64 @@
+#!/usr/bin/env node
+// Writes the JSON Schema of Claude Code `settings.json` from the installed bundle.
+//
+//   dotclaude-schema --out DIR [--bundle FILE] [--version X.Y.Z]
+//
+// `--out` is required, so the command never writes into a folder by chance.
+// A repository that keeps the files in `schemas/` passes `--out schemas`.
+// `--bundle` defaults to the file that `claude` on `PATH` resolves to.
+// `--version` defaults to the version in the name of the bundle, or the output of `--version`.
+// The command reads the bundle and never changes it.
+
+import { execFileSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
+import { SchemaError, writeSchemas } from "../features/schema/build.mjs";
+
+const USAGE =
+  "Usage: dotclaude-schema --out DIR [--bundle FILE] [--version X.Y.Z]";
+
+function installedBundle() {
+  const bin = execFileSync("which", ["claude"], { encoding: "utf8" }).trim();
+  return fs.realpathSync(bin);
+}
+
+function versionOf(bundle) {
+  const base = path.basename(bundle);
+  if (/^\d+\.\d+\.\d+$/.test(base)) return base;
+  const out = execFileSync(bundle, ["--version"], { encoding: "utf8" });
+  return /\d+\.\d+\.\d+/.exec(out)?.[0] ?? "unknown";
+}
+
+function main(argv) {
+  if (argv.includes("--help") || argv.includes("-h")) {
+    console.log(USAGE);
+    return;
+  }
+  const opt = (name) => {
+    const at = argv.indexOf(name);
+    return at < 0 ? undefined : argv[at + 1];
+  };
+  const outDir = opt("--out");
+  if (!outDir) {
+    console.error(`schema: --out is required.\n${USAGE}`);
+    process.exit(2);
+  }
+  const bundle = opt("--bundle") ?? installedBundle();
+  const version = opt("--version") ?? versionOf(bundle);
+  try {
+    const { names, count } = writeSchemas(
+      fs.readFileSync(bundle, "latin1"),
+      version,
+      path.resolve(outDir),
+    );
+    console.log(`Claude Code ${version}: ${count} top-level keys`);
+    for (const name of Object.values(names))
+      console.log(path.join(path.resolve(outDir), name));
+  } catch (err) {
+    if (!(err instanceof SchemaError)) throw err;
+    console.error(`schema: ${err.message}`);
+    process.exit(1);
+  }
+}
+
+main(process.argv.slice(2));

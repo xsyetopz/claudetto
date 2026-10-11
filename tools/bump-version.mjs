@@ -1,9 +1,9 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 // Bump the plugin version by semver in `package.json` and each
 // `plugins/*/.claude-plugin/plugin.json` together, and move the CHANGELOG's [Unreleased] entries under
 // a new dated heading, and point the [unreleased] compare link at the new tag.
 //
-//   bun tools/bump-version.mjs <major|minor|patch|X.Y.Z> [--dry-run] [--root DIR]
+//   node tools/bump-version.mjs <major|minor|patch|X.Y.Z> [--dry-run] [--root DIR]
 //
 // Only the "version" line of each manifest and two CHANGELOG lines change, so
 // formatting and key order stay as they are.
@@ -90,7 +90,7 @@ if (import.meta.main) {
   const args = process.argv.slice(2);
   const at = args.indexOf("--root");
   const root = path.resolve(
-    at >= 0 ? args[at + 1] : path.join(import.meta.dir, ".."),
+    at >= 0 ? args[at + 1] : path.join(import.meta.dirname, ".."),
   );
   const level = args.find(
     (a, i) => !a.startsWith("--") && args[i - 1] !== "--root",
