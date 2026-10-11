@@ -282,9 +282,9 @@ The semantic-line-break hooks never use it, because a formatter failure would th
 There is no migration tool (D35).
 
 1. The user updates the plugin.
-1. The user applies the settings snippet of the wiki by hand, and removes by hand the keys that earlier versions wrote.
+2. The user applies the settings snippet of the wiki by hand, and removes by hand the keys that earlier versions wrote.
    The `cleanupPeriodDays` value of 14 is one of them.
-1. The next session start runs the drift check.
+3. The next session start runs the drift check.
 
 Rollback: install 0.27.0 again from the marketplace.
 dotclaude keeps no backup.

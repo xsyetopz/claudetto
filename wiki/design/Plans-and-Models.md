@@ -10,13 +10,13 @@ Source labels (official, binary, capture, measured, reported, inference) are in 
 - 0.20.0 removed Fable from `availableModels`, plan detection as a policy, and the model lock.
   This page keeps the 0.19 policy as history.
 - 0.27.0 has no plan detection.
-  `lib/plan.mjs` and the `plans` object of the old profile file are gone, and the usage bounds in `lib/budget.mjs` are the same on every plan.
+  `lib/plan.mjs` and the `plans` object of the old profile file are gone, and the usage bounds in `lib/budget.ts` are the same on every plan.
 - Opus 5.5 is the default model in the [settings snippet](Settings-Snippet).
   0.27.0 has no advisor, and the snippet sets no `advisorModel`.
   Sonnet 5.5 is the model of `reviewer` and of `CLAUDE_CODE_SUBAGENT_MODEL`.
   Haiku 5.5 runs the other four agents.
 - `maxEffortLevel` is `max`, and the snippet sets no `effortLevel`.
-  The efforts of each model that the status line accepts are `SUBAGENT_EFFORTS` in `plugins/dotclaude/features/statusline/limits.mjs`.
+  The efforts of each model that the status line accepts are `SUBAGENT_EFFORTS` in `plugins/dotclaude/features/statusline/limits.ts`.
 
 ## Plan detection
 
@@ -89,7 +89,7 @@ API list prices per million tokens (**official**):
 
 - Anthropic publishes no subscription multipliers.
 - Sonnet 5.5 has the same prices as Sonnet 5 (**official**).
-- Cache reads cost the same on Opus 5.5 and Sonnet 5.5.
+- Opus 5.5 and Sonnet 5.5 have one price for a cache read.
   They were about 65% of the measured spend.
   A move to Sonnet 5.5 therefore halves only the writes and the output.
   **inference:** that is about a fifth to a third of subagent cost.
@@ -201,7 +201,7 @@ History of the Sonnet 5.5 effort levels:
 <summary>Sonnet 5.5 against Opus 5.5 (reported)</summary>
 
 **reported:** The Artificial Analysis suite shows that Sonnet 5.5 costs less per task than Opus 5.5 at the same effort, except at `max`.
-But Opus 5.5 one level lower gives a score that is not lower, for less cost, than three Sonnet 5.5 levels.
+But at three effort levels, Opus 5.5 at the level below scores at least as high as Sonnet 5.5, and costs less.
 Each pair is score and cost per task:
 
 | Sonnet 5.5 | Opus 5.5 |
@@ -235,7 +235,7 @@ Each pair is score and cost per task:
 | --- | --- |
 | `maxEffortLevel` | `"max"` in the snippet since 0.28.0, which blocks no level. 0.27.0 set `"xhigh"`, and 0.20 to 0.26 set `high`. The claude.ai effort picker warns that `max` uses about 5.5x the usage on Opus 5.5 and 3.5x on Fable 5.1. |
 | `effortLevel` | Not set. A top-level `effortLevel` does not count for Opus 5.5 (**official**, `model-config.md`). |
-| `SUBAGENT_EFFORTS` | In `plugins/dotclaude/features/statusline/limits.mjs`: `low` to `max` for Opus 5.5, Sonnet 5.5, and Haiku 5.5. The `effort` of each agent file sets the default, and the pin test checks it against the list and bans `max`. |
+| `SUBAGENT_EFFORTS` | In `plugins/dotclaude/features/statusline/limits.ts`: `low` to `max` for Opus 5.5, Sonnet 5.5, and Haiku 5.5. The `effort` of each agent file sets the default, and the pin test checks it against the list and bans `max`. |
 
 - **binary:** no hook event fires on an effort change, so the main session is not covered.
   The status line shows the model and the effort.

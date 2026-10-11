@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S bun --no-env-file
 // A local logging proxy for the requests of Claude Code.
 //
 //   dotclaude-capture [--port 8787] [--out DIR] [--upstream URL] [--no-count] [--count FILE]
@@ -19,14 +19,11 @@
 // A test sets `--upstream` to a local fake server.
 
 import fs from "node:fs";
-import http from "node:http";
 import os from "node:os";
 import path from "node:path";
-import { Readable } from "node:stream";
-import { pipeline } from "node:stream/promises";
 
-import { report } from "../features/capture/report.mjs";
-import { resolveUpstream } from "../features/capture/upstream.mjs";
+import { report } from "../features/capture/report.ts";
+import { resolveUpstream } from "../features/capture/upstream.ts";
 
 // Headers that go upstream unchanged; all others stay behind.
 const PASS =
@@ -68,36 +65,28 @@ const run = new Date().toISOString().replace(/[:.]/g, "-");
 let seen = 0;
 
 /** Print an error and keep it in DIR, because the terminal may be gone. */
-const fail = (n) => (e) => {
+const fail = (n) => async (e) => {
   console.error(String(e));
-  fs.writeFileSync(path.join(out, `error-${n}.txt`), `${e?.stack ?? e}\n`);
+  await Bun.write(path.join(out, `error-${n}.txt`), `${e?.stack ?? e}\n`);
 };
 let counted = false;
 
 const passHeaders = (headers) => {
   const kept = new Headers();
-  for (const [name, value] of Object.entries(headers))
-    if (PASS.test(name) && value !== undefined)
-      kept.set(name, Array.isArray(value) ? value.join(", ") : value);
+  for (const [name, value] of headers) if (PASS.test(name)) kept.set(name, value);
   return kept;
 };
 
-const readBody = async (req) => {
-  const chunks = [];
-  for await (const chunk of req) chunks.push(chunk);
-  return Buffer.concat(chunks);
-};
-
-async function handle(req, res) {
-  const url = new URL(req.url, "http://127.0.0.1");
+async function handle(req) {
+  const url = new URL(req.url);
   const headers = passHeaders(req.headers);
   const raw =
     req.method === "GET" || req.method === "HEAD"
       ? undefined
-      : await readBody(req);
+      : Buffer.from(await req.arrayBuffer());
   if (recount && !counted && raw) {
     counted = true;
-    const body = JSON.parse(fs.readFileSync(recount, "utf8"));
+    const body = JSON.parse(await Bun.file(recount).text());
     report(
       UPSTREAM,
       out,
@@ -110,7 +99,7 @@ async function handle(req, res) {
   if (url.pathname === "/v1/messages" && raw) {
     const n = `${run}-${++seen}`;
     const body = JSON.parse(raw.toString("utf8"));
-    fs.writeFileSync(
+    await Bun.write(
       path.join(out, `request-${n}.json`),
       `${JSON.stringify(body, null, 2)}\n`,
     );
@@ -118,52 +107,45 @@ async function handle(req, res) {
     // The main loop sends the first request with tools.
     if (count && !counted && body.tools?.length) {
       counted = true;
-      report(UPSTREAM, out, n, body, passHeaders(req.headers), url.search).catch(fail(n));
+      report(UPSTREAM, out, n, body, passHeaders(req.headers), url.search).catch(
+        fail(n),
+      );
     }
   }
   // A client that goes away, such as an Esc in Claude Code, ends the upstream request too.
-  const abort = new AbortController();
-  res.on("close", () => {
-    if (!res.writableFinished) abort.abort();
-  });
   const upstream = await fetch(`${UPSTREAM}${url.pathname}${url.search}`, {
     method: req.method,
     headers,
     body: raw,
-    signal: abort.signal,
+    signal: req.signal,
   });
   // fetch decodes the body, so the encoding and length headers no longer apply.
   const back = new Headers(upstream.headers);
   back.delete("content-encoding");
   back.delete("content-length");
-  const cookies = back.getSetCookie();
-  back.delete("set-cookie");
-  res.writeHead(upstream.status, {
-    ...Object.fromEntries(back),
-    ...(cookies.length ? { "set-cookie": cookies } : {}),
+  return new Response(upstream.body, {
+    status: upstream.status,
+    headers: back,
   });
-  if (!upstream.body) return res.end();
-  await pipeline(Readable.fromWeb(upstream.body), res);
 }
 
-const server = http.createServer((req, res) => {
-  handle(req, res).catch((e) => {
-    if (e.name === "AbortError" || e.code === "ERR_STREAM_PREMATURE_CLOSE")
-      return;
-    console.error(String(e));
-    if (!res.headersSent) res.writeHead(500);
-    res.end();
+try {
+  Bun.serve({
+    port,
+    hostname: "127.0.0.1",
+    // No idle timeout, as before.
+    idleTimeout: 0,
+    fetch: (req) =>
+      handle(req).catch((e) => {
+        if (e.name === "AbortError") return new Response(null);
+        console.error(String(e));
+        return new Response(null, { status: 500 });
+      }),
   });
-});
-// No idle timeout, as before.
-server.requestTimeout = 0;
-server.timeout = 0;
-server.on("error", (e) => {
+} catch (e) {
   console.error(`capture: cannot listen on 127.0.0.1:${port}: ${e.message}`);
   process.exit(1);
-});
-server.listen(port, "127.0.0.1", () =>
-  console.log(
-    `capture: http://127.0.0.1:${port} -> ${UPSTREAM}, bodies in ${out}`,
-  ),
+}
+console.log(
+  `capture: http://127.0.0.1:${port} -> ${UPSTREAM}, bodies in ${out}`,
 );

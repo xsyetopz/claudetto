@@ -43,9 +43,9 @@ Put `guard-off.json`, `mods-only.json`, or `override-deny.json` in place of `tar
 
 1. Quit and start Claude Code.
    At this start, Claude Code moves the `dotclaude` marketplace from GitHub to the checkout folder.
-1. Quit and start Claude Code again, or run `/reload-plugins`.
+2. Quit and start Claude Code again, or run `/reload-plugins`.
    The plugin now loads in place from the checkout at the prepend tier.
-1. Check the folder:
+3. Check the folder:
 
    ```bash
    claude plugin list | grep -A4 'dotclaude@dotclaude'

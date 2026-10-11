@@ -12,7 +12,7 @@ import {
   CLOSE_TIMEOUT_MS,
   OPEN_TIMEOUT_MS,
   READ_TIMEOUT_MS,
-} from "../features/search/limits.mjs";
+} from "../features/search/limits.ts";
 import {
   CLOAK_DIR,
   CLOAK_NAME,
@@ -29,9 +29,22 @@ import {
   searchUrl,
   sessionName,
   steps,
-} from "../features/search/search.mjs";
+} from "../features/search/search.ts";
 
-/** Opens the search page and reads its text. Gives `{ text }` or `{ reason }`. */
+/** The `WebSearch` tool call that the hook reads. */
+/** @typedef {Extract<import("claude-code").BuiltinToolCallInput, { tool: "WebSearch" }>} SearchCall */
+
+/** The answer of a page read: its text, or the reason that there is none. */
+/** @typedef {{ reason: string } | { text: string }} PageRead */
+
+/**
+ * Opens the search page and reads its text. Gives `{ text }` or `{ reason }`.
+ * @param {import("claude-code").EngineInterface} $
+ * @param {string} url
+ * @param {string} session
+ * @param {string | null} binary
+ * @returns {Promise<PageRead>}
+ */
 async function readPage($, url, session, binary) {
   const cmd = steps(url, session, binary);
   const open = await $.process.run(cmd.open, { timeoutMs: OPEN_TIMEOUT_MS });
@@ -45,18 +58,26 @@ async function readPage($, url, session, binary) {
 /**
  * Closes the session of the search, and ignores a failure.
  * The catch has no narrower test, because `$.process.run` documents no error type.
+ * @param {import("claude-code").EngineInterface} $
+ * @param {string} url
+ * @param {string} session
+ * @param {string | null} binary
+ * @returns {Promise<void>}
  */
 async function closeSession($, url, session, binary) {
   try {
-    await $.process.run(steps(url, session, binary).close, {
-      timeoutMs: CLOSE_TIMEOUT_MS,
-    });
+    const { close } = steps(url, session, binary);
+    await $.process.run(close, { timeoutMs: CLOSE_TIMEOUT_MS });
   } catch {
     // The idle timeout of the browser closes the session.
   }
 }
 
-/** The path of the newest CloakBrowser binary, or `null` when there is none. */
+/**
+ * The path of the newest CloakBrowser binary, or `null` when there is none.
+ * @param {import("claude-code").EngineInterface} $
+ * @returns {Promise<string | null>}
+ */
 async function findBinary($) {
   const home = await $.env.get("HOME");
   if (!home) return null;
@@ -72,26 +93,40 @@ async function findBinary($) {
   return null;
 }
 
-/** A search result, a deny, or `{ fallback }` with the reason that the browser gave no results. */
+/**
+ * The answer of `webSearch` and `answer`: a deny, a fallback, or a result.
+ * @typedef {{ deny: string }
+ *   | { fallback: string }
+ *   | { result: ReturnType<typeof import("../features/search/search.ts").searchResult> }} Outcome
+ */
+
+/**
+ * A search result, a deny, or `{ fallback }` with the reason that the browser gave no results.
+ * @param {import("claude-code").EngineInterface} $
+ * @param {SearchCall} e
+ * @param {import("claude-code").PluginOptions} [options]
+ * @returns {Promise<Outcome>}
+ */
 async function webSearch($, e, options) {
   const query = searchQuery(e);
   if (!query) return { deny: INVALID_INPUT };
   const binary = await findBinary($);
-  if (!binary && options?.backend === "cloakbrowser")
+  if (!binary && options?.["backend"] === "cloakbrowser")
     return { deny: MISSING_BINARY };
   const browser = binary ? CLOAK_NAME : PLAIN_NAME;
   const url = searchUrl(query);
   const session = sessionName();
   const startedAt = Date.now();
+  /** @type {PageRead} */
   let page;
   try {
     page = await readPage($, url, session, binary);
   } finally {
     await closeSession($, url, session, binary);
   }
-  if (page.reason) return { fallback: page.reason };
+  if ("reason" in page) return { fallback: page.reason };
   const answer = pageResult(e.query, page.text, browser);
-  if (!answer.text) return { fallback: answer.reason };
+  if ("reason" in answer) return { fallback: answer.reason };
   return { result: searchResult(e.query, answer.text, startedAt) };
 }
 
@@ -100,22 +135,36 @@ async function webSearch($, e, options) {
  * With the `cloakbrowser` backend, a throw, such as a timeout of `$.process.run`, is a `{ fallback }` with its message, so that the notice reaches Claude.
  * With the other backend, a throw is skipped and logged by Claude Code.
  * The catch has no narrower test, because `$.process.run` and `$.fs.list` document no error type.
+ * @param {import("claude-code").EngineInterface} $
+ * @param {SearchCall} e
+ * @param {import("claude-code").PluginOptions} [options]
+ * @returns {Promise<Outcome>}
  */
 async function answer($, e, options) {
-  if (options?.backend !== "cloakbrowser") return webSearch($, e, options);
+  if (options?.["backend"] !== "cloakbrowser") return webSearch($, e, options);
   try {
     return await webSearch($, e, options);
   } catch (error) {
-    return { fallback: `The search failed: ${error?.message ?? error}` };
+    // The cast reads `message` as the old code did, with no check of the type.
+    const thrown = /** @type {{ message?: unknown } | null | undefined} */ (
+      error
+    );
+    return { fallback: `The search failed: ${thrown?.message ?? error}` };
   }
 }
 
+/**
+ * Registers the `WebSearch` hook.
+ * @param {import("claude-code").On} on
+ * @param {import("claude-code").PluginOptions} options
+ * @returns {void}
+ */
 export function register(on, options) {
   on("tool.call", { tool: "WebSearch" }, async ($, e, next) => {
     const out = await answer($, e, options);
-    if (!out.fallback) return out;
+    if (!("fallback" in out)) return out;
     const builtIn = await next(e);
-    if (options?.backend !== "cloakbrowser" || builtIn.deny !== undefined)
+    if (options?.["backend"] !== "cloakbrowser" || builtIn.deny !== undefined)
       return builtIn;
     return {
       ...builtIn,

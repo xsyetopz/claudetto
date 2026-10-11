@@ -7,7 +7,7 @@ The index is [Decisions](Decisions).
 
 - The mod rewrites by exact id, with a lab test for each handler.
   An unknown id passes on unchanged.
-- `prompt.attachment` shortens the attachments in `ATTACHMENT_TYPES` of `features/surface/rules.mjs` where the shorter text keeps the behavior.
+- `prompt.attachment` shortens the attachments in `ATTACHMENT_TYPES` of `features/surface/rules.ts` where the shorter text keeps the behavior.
   In 0.28.0 these are `sandbox_instructions`, `auto_mode`, `session_context`, and `agent_listing_delta`.
 - `tool.describe` rewrites the large loaded tools.
 - `agent.offer` drops the built-in agent lines that dotclaude does not need.
@@ -21,13 +21,13 @@ See [Prompt surface](Prompt-Surface#attachment-cuts-of-the-hooks-module).
 ## D4 Measured budget
 
 `just measure` reads the usage of the first request in a session transcript, prints it, and compares it with `START_TOKENS`.
-`START_TOKENS` in `tools/limits.mjs` is the measure after the cuts plus 5% headroom.
+`START_TOKENS` in `tools/limits.ts` is the measure after the cuts plus 5% headroom.
 The command writes no file, because a baseline file is a format that dotclaude made up (D35).
 The request capture of D16 closes the gap between the measure and what the API bills.
 
 ## D15 dotclaude owns the system prompt
 
-The shared sections of `features/prompt/shared.mjs` hold the rules that every model shares.
+The shared sections of `features/prompt/shared.ts` hold the rules that every model shares.
 The mod replaces the Claude Code sections with the shared sections and the text of one model, and the block of a subagent adds the evidence line.
 The output style holds only the role, the tone, and the format, because Claude Code sends an output style as a message in the conversation and not in the system prompt.
 The rules are in [System prompt](System-Prompt) and the variants are in [Prompt variants](Prompt-Variants).
@@ -58,16 +58,16 @@ Concrete rules that a check can see held, such as ask before publish, read befor
 Prose rules failed, such as no recap, no semicolons in long lists, and one sentence for each chat line.
 
 1. A rule that a program can check moves to a hook, a lint in `just check`, or an eval measure.
-1. `auto-mode-guard.mjs` asked 56 times and found no real risk.
+2. `auto-mode-guard.mjs` asked 56 times and found no real risk.
    All asks were `rm -rf` of a variable.
    The guard now resolves a variable that an earlier part of the same command set from `mktemp -d` or from `$TMPDIR`.
    It rejects `..` and a reset `TMPDIR`, and it keeps the ask for any other unresolved path.
    Note: this is the 0.27.0 state.
    0.28.0 removed `auto-mode-guard.mjs` and its resolver, and `plugins/` has neither.
    A recursive `rm` is now an `ask` rule of the settings snippet, with the sandbox.
-1. The old eval harness had measures for repeat reads, recap, and chat lines with more than one sentence.
+3. The old eval harness had measures for repeat reads, recap, and chat lines with more than one sentence.
    The harness is gone (D9), and the format of `claude plugin eval` has no such measure, so no gate exists for them.
-1. `CLAUDE.md` states whether chat replies are in the scope of the line-break rule.
+4. `CLAUDE.md` states whether chat replies are in the scope of the line-break rule.
 
 ## Related pages
 

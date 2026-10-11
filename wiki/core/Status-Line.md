@@ -3,12 +3,12 @@
 This page is for dotclaude 0.28.0.
 It shows what the main and subagent status lines display, how each value is computed, and where the data comes from.
 The code is in `plugins/dotclaude/features/statusline/`.
-The bounds are in `features/statusline/limits.mjs`.
+The bounds are in `features/statusline/limits.ts`.
 
 ## Sources of the field names
 
 Each input field is checked against the strings of the Claude Code 2.1.296 bundle.
-`features/statusline/input.mjs` lists the byte offsets.
+`features/statusline/input.ts` lists the byte offsets.
 
 ## Rules
 
@@ -89,7 +89,7 @@ A script cannot rebuild the system prompt and the tool definitions.
 So the line makes no estimate, and before the first `/context` it shows only the free tokens.
 `System tools (deferred)` is not a part, because the `Tokens` total of `/context` does not include the deferred tools.
 The rows are as exact as `/context`, and they are from the time of the run, so a memory file that changed later is not in them.
-`CONTEXT_BLOCK_MARGIN` is defined only in `plugins/dotclaude/lib/budget.mjs`, and the status line imports it.
+`CONTEXT_BLOCK_MARGIN` is defined only in `plugins/dotclaude/lib/budget.ts`, and the status line imports it.
 When `transcript_path` is missing, the file is not readable, or the transcript has no table,
 the middle column shows the meter and the free tokens only.
 Any read error gives that same result.

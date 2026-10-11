@@ -38,9 +38,9 @@ Some keys work only in managed settings.
 
 - The repository holds the generated files in `schemas/`.
   They are generated files, so the size test excludes them.
-- A test (`tests/dotclaude/settings-pin.test.mjs`) checks the JSON blocks of the [settings snippet](Settings-Snippet) against the schema.
+- A test (`tests/dotclaude/settings-pin.test.ts`) checks the JSON blocks of the [settings snippet](Settings-Snippet) against the schema.
   A key that the schema lacks fails the test and the test names the key.
-- A test (`tests/lab/schema/build.test.mjs`) checks that the shipped schema has the keys of 2.1.296.
+- A test (`tests/lab/schema/build.test.ts`) checks that the shipped schema has the keys of 2.1.296.
 - A new Claude Code version needs a new type table and a new run of the script.
   The drift check reports a version other than the tested one ([Core plugin](Core-Plugin#drift-check)).
 

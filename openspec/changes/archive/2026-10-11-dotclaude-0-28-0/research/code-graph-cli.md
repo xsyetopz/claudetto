@@ -104,20 +104,20 @@ Machine: macOS arm64, one run each (`/usr/bin/time -p`), 190 indexed files, 2,08
 
 1. `init -y` builds the first index, and `index` is a full rebuild.
    The add-on opts in by `.codegraph/`, so the install text for the user is `codegraph init -y`.
-1. `sync` has no `--json`, only `-q`.
+2. `sync` has no `--json`, only `-q`.
    `status -j` gives `pendingChanges` for a stale check.
-1. `callers`, `callees`, and `impact` print text, not JSON, for an unknown symbol, with exit 0.
+3. `callers`, `callees`, and `impact` print text, not JSON, for an unknown symbol, with exit 0.
    The spec says "no result adds nothing", so the hook needs a JSON guard.
-1. `query --json` is fuzzy and returns file and import nodes.
+4. `query --json` is fuzzy and returns file and import nodes.
    For the `Grep` hook, keep only `function`, `method`, `class`, and `constant` hits with an exact or prefix name, and cap by `GRAPH_CONTEXT_MAX`.
    Read the top-level `callers` array, which has `name`, `filePath`, `startLine`.
-1. D26 says the index refresh data goes to `${CLAUDE_PLUGIN_DATA}`.
+5. D26 says the index refresh data goes to `${CLAUDE_PLUGIN_DATA}`.
    The CLI keeps the index in the project at `.codegraph/`, so the add-on needs no data folder for it.
-1. A command with no `.codegraph/` exits 1 and does not create it, so the gate on `.codegraph/` is safe.
-1. Telemetry is on and writes to the home folder.
+6. A command with no `.codegraph/` exits 1 and does not create it, so the gate on `.codegraph/` is safe.
+7. Telemetry is on and writes to the home folder.
    The wiki should say so, and name `codegraph telemetry off`.
-1. The install is 284 MB, not light.
-1. The copy held `plugins/dotclaude-modder` files from the working tree, so the graph counted 8 Python files that the commit removes.
+8. The install is 284 MB, not light.
+9. The copy held `plugins/dotclaude-modder` files from the working tree, so the graph counted 8 Python files that the commit removes.
 
 ## 17.1 re-run on the installed CLI 1.6.0
 

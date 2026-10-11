@@ -5,9 +5,9 @@ It shows the commands, the layout rules, and the steps to test, release, and pub
 
 ## Before you begin
 
-- Install Node.js 22.18 or later (`.node-version` names the version of CI), [pnpm](https://pnpm.io), and `just`.
-- Run `pnpm install`.
-  It installs the pinned Biome, markdownlint-cli2, and TypeScript from `pnpm-lock.yaml`.
+- Install [Bun](https://bun.sh) 1.4.3 or later (`packageManager` in `package.json` names the version of CI) and `just`.
+- Run `bun install`.
+  It installs the pinned Biome, markdownlint-cli2, and the Bun and Node types from `bun.lock`.
 - Install Claude Code 2.1.296 or later.
   `just validate`, `just lab`, `just update`, and `just release` call the `claude` CLI.
 - Run each command in the repository root.
@@ -16,10 +16,10 @@ It shows the commands, the layout rules, and the steps to test, release, and pub
 
 | Command | What it does |
 | --- | --- |
-| `just test` | Runs `node --test` on `tests/**/*.test.mjs`. Arguments name the test files to run in place of all of them. |
-| `just lint` | Runs `pnpm run lint` (Biome) and `pnpm run lint:md` (markdownlint-cli2). |
-| `just typecheck` | Runs `pnpm run typecheck` (`tsc --noEmit -p tsconfig.json`). It checks the lab tests `plugins/*/tests/*.test.ts` and `plugins/dotclaude/hooks/register.mjs` with what it imports. The `.mjs` files use JSDoc types, and `any` is not allowed. |
-| `just validate` | Runs `pnpm run validate`, which checks the manifests, skills, and agents. |
+| `just test` | Runs `bun test` on the test files of `tests/`. Arguments name the test files to run in place of all of them. |
+| `just lint` | Runs `bun run lint` (Biome) and `bun run lint:md` (markdownlint-cli2). |
+| `just typecheck` | Runs `bun run typecheck` (`bun check` with `tsconfig.json`). It checks each `.ts` file of `plugins/`, `tests/`, and `tools/`, and `plugins/dotclaude/hooks/register.ts` with what it imports. `any` is not allowed. |
+| `just validate` | Runs `bun run validate`, which checks the manifests, skills, and agents. |
 | `just lab` | Runs `claude plugin test` on each plugin that has a `tests/` folder, the hook lab. |
 | `just check` | Runs lint, typecheck, test, validate, and lab. It must pass before you call a change done. |
 | `just ci` | Runs lint, test, validate, and lab: the gate of the CI `check` job. CI has no type check, because Claude Code writes `.claude-plugin/types/` only when an interactive session loads the plugin. |
@@ -30,7 +30,7 @@ It shows the commands, the layout rules, and the steps to test, release, and pub
 | `just bump <level>` | Bumps the version. See [Releases](#releases). |
 | `just release` | Tags each plugin and pushes the tags. See [Releases](#releases). |
 | `just hook-text` | Writes the descriptions and the prompt hook texts of each `hooks.json` from the text files next to it. |
-| `just measure` | Sizes the start of a session by source from a transcript, and fails above the start bounds of `tools/limits.mjs`. Arguments go to `dotclaude-start` (a `.jsonl` path, `--compare BASE OTHER`). |
+| `just measure` | Sizes the start of a session by source from a transcript, and fails above the start bounds of `tools/limits.ts`. Arguments go to `dotclaude-start` (a `.jsonl` path, `--compare BASE OTHER`). |
 | `just capture` | Logs the requests of Claude Code through a local proxy and sizes each part of the first one. Arguments go to the proxy (`--port N`, `--out DIR`, `--no-count`). |
 | `just schema` | Writes the settings schemas of the installed Claude Code to `schemas/`. Arguments go to `dotclaude-schema` (`--bundle FILE`, `--version X.Y.Z`). |
 | `just eval` | Runs the eval cases of the core plugin with `claude plugin eval`, on a path target so the checkout and not the installed copy is tested. `--max-cost-usd` bounds the cost, and a lock stops a second run while one is in progress. |
@@ -41,9 +41,9 @@ It shows the commands, the layout rules, and the steps to test, release, and pub
 
 ```bash
 just check                                     # must pass before you call a change done
-just test tests/dotclaude/guard/rules.test.mjs # one file
+just test tests/dotclaude/guard/rules.test.ts # one file
 just usage --days 7                            # where your usage went
-pnpm run lint:md                               # lint Markdown
+bun run lint:md                                # lint Markdown
 ```
 
 Headings and code blocks in Markdown have a 100-column bound.
@@ -53,14 +53,14 @@ Each `.md` file has at most 300 lines.
 
 | Folder | What it holds |
 | --- | --- |
-| `tests/` | The repository tests, with one folder for each plugin. `just test` runs them with `node --test`. |
+| `tests/` | The repository tests, with one folder for each plugin. `just test` runs them with `bun test`. |
 | `plugins/<name>/tests/*.test.ts` | The hook lab tests of the plugins with a hooks module. `just lab` runs them. |
-| `tools/` | The repository scripts: `bump-version.mjs`, `eval-variant.mjs`, `hook-text.mjs`, `limits.mjs`, `lock.mjs`, `measure.mjs`, `sizes.mjs`, `start-run.mjs`, and `unsandboxed.mjs`. `hook-text.mjs` writes the `description` and the `Stop` prompt of each `hooks.json` from `description.txt` and `Stop.prompt.txt` next to it. `lock.mjs` lets one eval run run at a time. `unsandboxed.mjs` stops an eval run that starts inside the Bash sandbox of Claude Code. |
+| `tools/` | The repository scripts: `bump-version.ts`, `eval-variant.ts`, `hook-text.ts`, `limits.ts`, `lock.ts`, `measure.ts`, `sizes.ts`, `start-run.ts`, `unsandboxed.ts`, and `validate.ts`. `hook-text.ts` writes the `description` and the `Stop` prompt of each `hooks.json` from `description.txt` and `Stop.prompt.txt` next to it. `lock.ts` lets one eval run run at a time. `unsandboxed.ts` stops an eval run that starts inside the Bash sandbox of Claude Code. `validate.ts` runs `claude plugin validate --strict` on the marketplace and each plugin. |
 
 ### The hook lab
 
 `just lab` loops over `plugins/*/` and runs `claude plugin test` on each plugin that has a `tests/` folder.
-Each test file imports from `claude-code/testing`, loads `hooks/register.mjs`, and fires events.
+Each test file imports from `claude-code/testing`, loads `hooks/register.ts`, and fires events.
 It stubs the engine verdict, the environment, `session.id`, and `process.run`.
 No command runs, no session starts, and no network call goes out.
 
@@ -86,9 +86,9 @@ The guard tests of `mod.test.ts` include:
 
 | Rule | Meaning |
 | --- | --- |
-| One owner for each number | `plugins/dotclaude/lib/budget.mjs` holds the shared runtime bounds, `features/<name>/limits.mjs` the bounds of one feature, and `tools/limits.mjs` the repository bounds. Tests pin the copies in code and config, not in prose. |
+| One owner for each number | `plugins/dotclaude/lib/budget.ts` holds the shared runtime bounds, `features/<name>/limits.ts` the bounds of one feature, and `tools/limits.ts` the repository bounds. Tests pin the copies in code and config, not in prose. |
 | No copy of Claude Code | Runtime JavaScript (`plugins/`) does only the work that the latest Claude Code does not do. When Claude Code has a setting, a hook, or another extension point for a need, use it. |
-| Layered imports | `plugins/dotclaude/lib/` imports only itself. A folder in `features/` imports only `lib/` and itself. The entry points (`hooks/register.mjs`, `features/*/cli.mjs`, and the skill scripts) import `lib/` and features. |
+| Layered imports | `plugins/dotclaude/lib/` imports only itself. A folder in `features/` imports only `lib/` and itself. The entry points (`hooks/register.ts`, `features/*/cli.ts`, and the skill scripts) import `lib/` and features. |
 | Guards get strings | The tests give commands to the guards as strings, and never run a guarded command. |
 | No patch of Claude Code | Never patch the CLI binary or its npm package. Reading the bundle for evidence is allowed. |
 
@@ -113,7 +113,7 @@ You can restore its skills and the `um` command from there as a base for your ow
 
 1. Run `just sandbox` to use a separate config.
    A test then does not change your own setup.
-1. To try the checkout in your own config, run this command:
+2. To try the checkout in your own config, run this command:
 
    ```bash
    claude --plugin-dir /path/to/dotclaude/plugins/dotclaude
@@ -122,26 +122,26 @@ You can restore its skills and the `um` command from there as a base for your ow
 ## Releases
 
 1. Add each change to the CHANGELOG under `[Unreleased]`.
-1. Preview the bump.
+2. Preview the bump.
 
    ```bash
    just bump minor --dry-run
    ```
 
-1. Bump the version.
+3. Bump the version.
    The level is `major`, `minor`, `patch`, or `X.Y.Z`.
 
    ```bash
    just bump minor
    ```
 
-1. Preview the tags.
+4. Preview the tags.
 
    ```bash
    just release --dry-run
    ```
 
-1. Tag and push.
+5. Tag and push.
 
    ```bash
    just release
@@ -157,7 +157,7 @@ You can restore its skills and the `um` command from there as a base for your ow
 
 1. Change a page in `wiki/`.
    A change goes through a pull request, like a code change.
-1. Publish the folder to the GitHub wiki.
+2. Publish the folder to the GitHub wiki.
 
    ```bash
    just wiki

@@ -56,7 +56,7 @@ Prompting guidance (<https://platform.claude.com/docs/en/build-with-claude/promp
 ## Techniques with the best evidence
 
 1. Enforce hard rules with hooks (`PreToolUse`, `Stop`), not prose.
-1. Keep CLAUDE.md under 200 lines, concrete, and free of contradictions.
-1. Keep critical rules in the project-root CLAUDE.md or unscoped rules, which survive compaction.
-1. Cut tool output at the source: `BASH_MAX_OUTPUT_LENGTH`, `PreToolUse` command rewrite, and subagents for verbose work.
-1. Use positive phrasing and XML structure, without forceful words.
+2. Keep CLAUDE.md under 200 lines, concrete, and free of contradictions.
+3. Keep critical rules in the project-root CLAUDE.md or unscoped rules, which survive compaction.
+4. Cut tool output at the source: `BASH_MAX_OUTPUT_LENGTH`, `PreToolUse` command rewrite, and subagents for verbose work.
+5. Use positive phrasing and XML structure, without forceful words.

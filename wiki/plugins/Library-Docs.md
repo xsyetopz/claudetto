@@ -19,7 +19,7 @@ The decision is D8 in [Decisions](Decisions-Tools).
 
 - The add-on has one skill, `docs`, in `plugins/dotclaude-docs/skills/docs/SKILL.md`.
 - The skill is model-invocable.
-  Its `name` and `description` together have `SKILL_META_LOW_BYTES` (150) to `SKILL_META_HIGH_BYTES` (300) bytes, as `tools/limits.mjs` sets.
+  Its `name` and `description` together have `SKILL_META_LOW_BYTES` (150) to `SKILL_META_HIGH_BYTES` (300) bytes, as `tools/limits.ts` sets.
 - The add-on is a separate plugin, so a user who does not install it pays no listing line.
   `dotclaude` works as before without it ([Plugin layout](Plugin-Layout#add-on-plugins)).
 - Claude uses the skill when the task needs the API of a library version that the project uses, and the project does not show it.
@@ -28,8 +28,8 @@ The decision is D8 in [Decisions](Decisions-Tools).
 
 1. Claude runs `ctx7 library <name> "<topic>"` and picks the library ID from the result.
    It skips this step when the user gave the ID.
-1. Claude runs `ctx7 docs <library id> "<topic>"` with a query on one concept.
-1. Claude answers from the docs and names the library ID.
+2. Claude runs `ctx7 docs <library id> "<topic>"` with a query on one concept.
+3. Claude answers from the docs and names the library ID.
 
 ## Rules
 

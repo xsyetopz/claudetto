@@ -10,14 +10,15 @@ The core plugin is `dotclaude`.
 | --- | --- | --- |
 | Claude Code 2.1.296 or later | all plugins | |
 | git | `dotclaude` | |
-| [Node.js](https://nodejs.org) 22.18 or later on `PATH` | the setup script, the status line, and the classic hooks of `dotclaude`, the Jev client, the hooks of `dotclaude-codegraph`, and the bins of `dotclaude-sessions` and `dotclaude-lab` | Without Node.js, the classic hooks do not run and the call goes on. The permission rules and the sandbox still apply. |
+| [Bun](https://bun.sh) 1.4.3 or later on `PATH` | the setup script, the status line, and the classic hooks of `dotclaude`, the Jev client of `dotclaude-jev`, the hooks of `dotclaude-codegraph`, and the bins of `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-sessions`, and `dotclaude-lab` | Without Bun, the classic hooks do not run and the call goes on. The permission rules and the sandbox still apply. |
+| [Node.js](https://nodejs.org) on `PATH` | the npm installs of `codegraph` and `agent-browser`, and the OpenSpec CLI | Without Node.js, the npm installs do not run. OpenSpec needs Node.js 20.19 or later. |
 | `gh` on `PATH` | the policy ask of `dotclaude` | Without `gh`, the ask does not run and the call goes on. |
 | `codegraph` on `PATH` | `dotclaude-codegraph` | Run `npm i -g @colbymchenry/codegraph`. The plugin never installs it. |
 | `TYPESAFE_API_KEY` | `dotclaude-jev` | Export it before Claude Code starts. |
 | `agent-browser` on `PATH` | `dotclaude-browser` | See [Browser](Browser#install-agent-browser). |
 | `npx` on `PATH` | `dotclaude-docs` | It comes with Node.js. The `docs` skill runs `ctx7` through it. |
 
-The core hooks module needs no Node.js, because Claude Code runs it.
+The core hooks module needs no Bun and no Node.js, because Claude Code runs it.
 
 On a machine with managed settings, or with a Team or Enterprise login, the built-in guard `sec-default` loads.
 It skips the shared sections and the model variants (`prompt.compose`), and the `context_management` text (`prompt.section`), of dotclaude.
@@ -32,13 +33,13 @@ See [Claude mods](Claude-Mods#the-built-in-guard-sec-default).
    /plugin marketplace add xsyetopz/dotclaude
    ```
 
-1. Install the plugin.
+2. Install the plugin.
 
    ```text
    /plugin install dotclaude@dotclaude
    ```
 
-1. Run the setup skill, then restart Claude Code.
+3. Run the setup skill, then restart Claude Code.
 
    ```text
    /dotclaude:setup
@@ -63,7 +64,7 @@ See [OpenSpec](OpenSpec) and [Guards](Guards).
    export TYPESAFE_API_KEY=<your key>
    ```
 
-1. Install the plugin.
+2. Install the plugin.
 
    ```text
    /plugin install dotclaude-jev@dotclaude
@@ -137,9 +138,9 @@ Each of the three needs no key.
    claude plugin update dotclaude-lab@dotclaude
    ```
 
-1. Restart Claude Code, because a running session keeps the old hooks and agents.
-1. Read the new entry in the [CHANGELOG](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md).
-1. Run `/dotclaude:setup` again.
+2. Restart Claude Code, because a running session keeps the old hooks and agents.
+3. Read the new entry in the [CHANGELOG](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md).
+4. Run `/dotclaude:setup` again.
    The status line commands hold the path of the plugin version, so each update needs a new run.
    The drift check at session start reports some differences.
 

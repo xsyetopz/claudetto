@@ -1,5 +1,5 @@
-// The hook lab of dotclaude: `claude plugin test plugins/dotclaude` loads `hooks/register.mjs`,
-// fires `tool.check` events, and stubs each answer of Claude Code.
+// The hook lab of dotclaude: `claude plugin test plugins/dotclaude` loads `hooks/register.ts`,
+// fires `tool.check` and `tool.call` events, and stubs each answer of Claude Code.
 // No command runs, no session starts, and no network call goes out.
 
 import type { On, ProcessRunResult } from "claude-code";
@@ -30,6 +30,8 @@ function stub(
 ) {
   on("tool.check", () => ({ decision: verdict }));
   on("session.id", () => ({ value: "s1" }));
+  on("session.cwd", () => ({ value: "/p" }));
+  mock.env(on, { CLAUDE_PROJECT_DIR: "/p" });
   on("process.run", (_$, e) => {
     const out = gh[e.argv.join(" ")];
     return out === undefined ? done(1, "", "not found") : done(0, out, "");
@@ -111,6 +113,8 @@ function sequence(
 ) {
   on("tool.check", () => ({ decision: "allow" }));
   on("session.id", () => ({ value: "s1" }));
+  on("session.cwd", () => ({ value: "/p" }));
+  mock.env(on, { CLAUDE_PROJECT_DIR: "/p" });
   const calls: string[] = [];
   on("process.run", (_$, e) => {
     const key = e.argv.join(" ");
@@ -147,4 +151,41 @@ test("owners that were read once are not read again", async ($: Engine, on: On) 
   await bash($, "gh repo view me/one");
   await bash($, "gh repo view me/two");
   expect(calls.filter((c) => c === LOGIN)).toHaveLength(1);
+});
+
+/** The project folder and the files of one test: each path of `texts` is a file with that text. */
+function project(on: On, texts: Record<string, string> = {}) {
+  on("fs.exists", (_$, e) => ({ value: e.path in texts }));
+  on("fs.stat", (_$, e) => ({
+    value: {
+      kind: "file" as const,
+      size: (texts[e.path] ?? "").length,
+      mtimeMs: 0,
+      isLink: false,
+    },
+  }));
+  on("fs.read", (_$, e) => ({ value: texts[e.path] ?? "" }));
+}
+
+test("Check in the module: a `Bash` print of a long file is denied", async ($: Engine, on: On) => {
+  stub(on);
+  project(on, { "/p/big.txt": "line\n".repeat(2000) });
+  const out = await $.tool.call({ tool: "Bash", command: "cat /p/big.txt" });
+  const deny = "deny" in out ? out.deny : undefined;
+  expect(typeof deny).toBe("string");
+  expect(deny?.length).toBeGreaterThan(0);
+});
+
+test("Ask in the module: a `Write` that changes a line of a test file asks", async ($: Engine, on: On) => {
+  stub(on);
+  project(on, { "/p/tests/a.test.mjs": "expect(1).toBe(1)\n" });
+  const out = await $.tool.check({
+    tool: "Write",
+    input: {
+      file_path: "/p/tests/a.test.mjs",
+      content: "expect(1).toBe(2)\n",
+    },
+  });
+  expect(out.decision).toBe("ask");
+  expect(out.reason?.length).toBeGreaterThan(0);
 });

@@ -25,7 +25,7 @@ Keep your final report to 400 words or fewer, because the parent keeps it to the
 
 1. Use the commands in your brief.
    If it names none, read them from `AGENTS.md`, `CLAUDE.md`, the build and task files of the project, or the config files of its tools, and name the file that you read.
-1. Run all commands in one `Bash` call, because each call uses one of your turns.
+2. Run all commands in one `Bash` call, because each call uses one of your turns.
    Send each output to a log file, and print an `exit :: command` line:
 
    ```bash
@@ -39,11 +39,11 @@ Keep your final report to 400 words or fewer, because the parent keeps it to the
    ```
 
    Set a `timeout` of at most 600000 ms, or split the run.
-1. Search only the failed logs with `rg -n`, and read only the matches.
+3. Search only the failed logs with `rg -n`, and read only the matches.
    Copy the test name, the `path:line`, and the error line exactly.
-1. If a command did not start, report the error line.
+4. If a command did not start, report the error line.
    Do not install anything.
-1. Delete the log directory.
+5. Delete the log directory.
 </procedure>
 
 <report_format>

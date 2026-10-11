@@ -10,8 +10,8 @@ The prompt has three parts, and no rule text is in two of them.
 
 | Part | Holds | Source |
 | --- | --- | --- |
-| Shared sections | The rules that every model shares: `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, and `counts` | `features/prompt/shared.mjs` |
-| Prompt variant | The text of one model, such as the step line of Haiku 5.5, and the block of a subagent | `features/prompt/variants.mjs` |
+| Shared sections | The rules that every model shares: `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, and `counts` | `features/prompt/shared.ts` |
+| Prompt variant | The text of one model, such as the step line of Haiku 5.5, and the block of a subagent | `features/prompt/variants.ts` |
 | Output style | The role, the tone, and the format of the reply (`<role>`, `<reports>`, and `<text_format>`) | `output-styles/dotclaude.md` |
 
 `variantSections` returns the shared sections and then the model notes, and `prompt.compose` puts them where the Claude Code sections were.
@@ -30,9 +30,9 @@ The decisions are D15 and D30 in [Decisions](Decisions-Prompt).
 ## Ownership
 
 - The hooks module replaces the Claude Code sections with the dotclaude text for the model of the session.
-  The models are Opus 5.5, Sonnet 5.5, Haiku 5.5, and Fable 5.1.
+  Each of Fable 5.1, Opus 5.5, Sonnet 5.5, and Haiku 5.5 has its own variant.
   The shared rules arrive as the shared sections before the model notes.
-  Mythos 5.1 gets the Fable variant (`variantKey` in `features/prompt/select.mjs`).
+  Mythos 5.1 gets the Fable variant (`variantKey` in `features/prompt/select.ts`).
 - A section id that the module does not know passes on unchanged.
   The drift check reports it ([Core plugin](Core-Plugin#drift-check)).
 - The shared sections, each variant, and the output style use XML tags to separate their content.
@@ -43,7 +43,7 @@ The decisions are D15 and D30 in [Decisions](Decisions-Prompt).
 ## Size
 
 A variant has no byte bound of its own.
-`just measure` checks the text of the first request against `FIRST_REQUEST_LOW_BYTES` and `FIRST_REQUEST_HIGH_BYTES` in `tools/limits.mjs`.
+`just measure` checks the text of the first request against `FIRST_REQUEST_LOW_BYTES` and `FIRST_REQUEST_HIGH_BYTES` in `tools/limits.ts`.
 See [Prompt variants](Prompt-Variants#size-of-the-first-request) for the figures.
 
 ## Stable inside a session and an agent
@@ -60,7 +60,7 @@ See [Prompt variants](Prompt-Variants#size-of-the-first-request) for the figures
 ## Commit attribution
 
 The [settings snippet](Settings-Snippet) sets `includeGitInstructions` to `false`, so Claude Code gives no git instructions.
-The short `Bash` tool text that `tool.describe` sends (`features/surface/data.mjs`) therefore tells Claude to end commit messages and pull request text with the attribution lines of the system reminder, when it has them.
+The short `Bash` tool text that `tool.describe` sends (`features/surface/data.ts`) therefore tells Claude to end commit messages and pull request text with the attribution lines of the system reminder, when it has them.
 The system prompt has no commit text.
 
 ## Human stays in the loop
@@ -76,7 +76,7 @@ A permission rule, a hook, the sandbox, a failing check, a lint rule, a test, an
 Claude reads the reason, and then it changes the work to fit the block or asks you.
 It does not raise a bound, weaken or skip a test, or edit a check, a config, or a hook so that a check passes, unless you ask.
 The reason is that such a change hides the defect that the check exists to find.
-The block of a subagent carries a short form of the rule (`BLOCK_LINE` in `features/prompt/shared.mjs`), because a subagent does not get the shared sections.
+The block of a subagent carries a short form of the rule (`BLOCK_LINE` in `features/prompt/shared.ts`), because a subagent does not get the shared sections.
 The hook `adherence` asks before the edits that the rule names ([Core plugin](Core-Plugin#hooks)).
 
 ## Tests check code, not words

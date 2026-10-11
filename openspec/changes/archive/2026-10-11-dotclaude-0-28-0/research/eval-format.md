@@ -5,13 +5,13 @@
 1. `claude plugin eval --help` and `claude plugin eval init --help`, Claude Code 2.1.295.
    No eval ran.
    `init` ran only with `--help`.
-1. Official docs: `https://code.claude.com/docs/en/plugin-evals.md` (page "Test plugins with evals"), fetched 2026-10-09.
+2. Official docs: `https://code.claude.com/docs/en/plugin-evals.md` (page "Test plugins with evals"), fetched 2026-10-09.
    The docs state "You need Claude Code v2.1.269 or later".
    The page was read through a summarizer, so its quotes are close but not byte-exact.
-1. The 2.1.295 bundle at `~/.local/share/claude/versions/2.1.295`, read with `strings` only.
+3. The 2.1.295 bundle at `~/.local/share/claude/versions/2.1.295`, read with `strings` only.
    The case schema (zod) is in the bundle, near the strings `scaffold_script`, `execution.max_turns`, and `type:"regex"`.
    A grep for the grader schemas (`wt({type:Mp("<kind>")`) finds the six kinds of the table below and no kind that runs a command.
-1. The command exists, so the stop-and-ask condition of task 25.1 does not apply.
+4. The command exists, so the stop-and-ask condition of task 25.1 does not apply.
 
 Each claim below has a tag.
 `help` is a line of `--help`.
@@ -126,37 +126,37 @@ Build no wrapper.
    The agent can run its own tests, which only gives an agent-visible check.
    The spec requirement "Outcome and tamper checks" must say "files are tested by a `regex` on the final file", or be dropped.
    The user decides which.
-1. The hidden oracle protocol, tamper hashes, and canary files.
+2. The hidden oracle protocol, tamper hashes, and canary files.
    Reason: the format has no hash or protected-file check.
    `tool_used` with `max: 0` on `Edit`, `Write`, and `Bash` for the path is the only substitute.
-1. The scripted user: `script.claims` (a claim at turn N) and `script.asks` (a scripted answer to an approval ask).
+3. The scripted user: `script.claims` (a claim at turn N) and `script.asks` (a scripted answer to an approval ask).
    Reason: the format has one prompt and, at most, one resumed transcript.
    It has no mid-run user message and no answer to a permission ask.
    The cases `accusation-user`, `accusation-warranted`, and `destructive-ask` change to a claim in the prompt, or are dropped.
-1. The fixture `CLAUDE.md` as the source of a rule or an accusation.
+4. The fixture `CLAUDE.md` as the source of a rule or an accusation.
    Reason: no `CLAUDE.md` loads inside a run, even one that a scaffold wrote.
    The case `accusation-claudemd` and the six `adherence/*` cases (each has a fixture `CLAUDE.md`) cannot test a project rule.
    `execution.append_system_prompt` can carry the text, but it is a system prompt and not a `CLAUDE.md`, so the case measures another thing.
-1. The interval rule ("a measure whose interval includes 0 is not shown").
+5. The interval rule ("a measure whose interval includes 0 is not shown").
    Reason: the result gives no interval.
-1. The canary check for a deleted file that was in the fixture.
+6. The canary check for a deleted file that was in the fixture.
    Reason: `file_exists` counts only files that the agent created.
    A `regex` on `{ source: file, path }` may read a missing file as an error or as a fail.
    The behavior is unverified.
-1. The test-based F2P and P2P outcome pair for each case, and "resolved" as a boolean.
+7. The test-based F2P and P2P outcome pair for each case, and "resolved" as a boolean.
    Reason: the format has a score from weighted graders and no boolean for a run.
    `--threshold` gives a pass for a case, not for a run.
    The cost for each resolved task is then a hand division on the `--json` output.
-1. A comparison of dotclaude against a variant, a profile, a style, or a router mode.
+8. A comparison of dotclaude against a variant, a profile, a style, or a router mode.
    Reason: the only arms are "plugin" and "no plugin".
-1. The `neutral-question` and `code-graph` cases that load another add-on plugin.
+9. The `neutral-question` and `code-graph` cases that load another add-on plugin.
    Reason: one target plugin is loaded in a run, and `plugins:` is only a metadata key.
    Whether `plugins:` loads add-ons is unverified.
-1. The LLM grader calibration against human labels, and "see no arm label".
+10. The LLM grader calibration against human labels, and "see no arm label".
     Reason: the format gives `--judge-model` and a fixed rubric.
     It stores no human agreement.
     Keep the calibration in prose in the wiki, or drop it.
-1. Generated fixtures (`big-file-subagent` makes a 1 MB file with a needle) and `resultBound`.
+11. Generated fixtures (`big-file-subagent` makes a 1 MB file with a needle) and `resultBound`.
     Reason: a `scaffold_script` can generate the file, but `--scaffold` runs author bash as the user.
     The `resultBound` check (the size of the subagent result) has no grader.
 

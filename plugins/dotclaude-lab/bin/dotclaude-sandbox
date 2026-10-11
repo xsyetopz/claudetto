@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S bun --no-env-file
 // Run Claude Code in a config directory apart from your own, so a test of a
 // plugin cannot change your settings, sessions, or installed plugins.
 //
@@ -33,15 +33,14 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { runProgram } from "../lib/run-program.mjs";
-import { report } from "../features/sandbox/frontmatter.mjs";
-import { cleanEnv, loginToken } from "../features/sandbox/login.mjs";
+import { runProgram } from "../lib/run-program.ts";
+import { report } from "../features/sandbox/frontmatter.ts";
+import { cleanEnv, loginToken } from "../features/sandbox/login.ts";
 import {
   absolutePluginDirs,
   availableModels,
   setUp,
-  which,
-} from "../features/sandbox/setup.mjs";
+} from "../features/sandbox/setup.ts";
 
 let args = process.argv.slice(2);
 // `--dir DIR` is for this command, so it does not go on to claude.
@@ -92,27 +91,27 @@ if (check) {
   ];
 }
 
-setUp({ config, home, project });
-const claude = which("claude");
+await setUp({ config, home, project });
+const claude = Bun.which("claude");
 if (!claude) {
   console.error("claude is not on PATH. Put the claude executable on PATH.");
   process.exit(1);
 }
 // The token is read above with the real HOME. Only the child gets the sandbox
 // HOME, without the variables that point back to the real shell files.
-const env = { ...cleanEnv(), CLAUDE_CONFIG_DIR: config, HOME: home };
+const env = { ...(await cleanEnv()), CLAUDE_CONFIG_DIR: config, HOME: home };
 // On Windows, Node and Claude Code find the home folder in `USERPROFILE`.
 if (process.platform === "win32") env.USERPROFILE = home;
 delete env.ZDOTDIR;
 delete env.XDG_CONFIG_HOME;
-const token = loginToken();
+const token = await loginToken();
 if (token) env.CLAUDE_CODE_OAUTH_TOKEN = token;
 else console.error("No login token found. Run /login inside the sandbox.");
 // Claude Code gives no error for a `--model` that `availableModels` leaves
 // out, and the session runs on another model, so the script says so.
 const model = args[args.indexOf("--model") + 1];
 if (args.includes("--model")) {
-  const allowed = availableModels(config);
+  const allowed = await availableModels(config);
   if (
     Array.isArray(allowed) &&
     model?.startsWith("claude-") &&
@@ -130,16 +129,16 @@ try {
   console.error(`${err.message} Change that argument and run the command again.`);
   process.exit(1);
 }
-if (!check) process.exit(r.status ?? 1);
+if (!check) process.exit(r?.exitCode ?? 1);
 
-if (r.status !== 0) {
-  console.error(`The sandbox session failed with exit ${r.status}.`);
+if (r?.exitCode !== 0) {
+  console.error(`The sandbox session failed with exit ${r?.exitCode}.`);
   process.exit(1);
 }
 if (!fs.existsSync(log)) {
   console.error(`The session wrote no debug log at ${log}.`);
   process.exit(1);
 }
-const { lines, code } = report(log, fs.readFileSync(log, "utf8"));
+const { lines, code } = report(log, await Bun.file(log).text());
 for (const l of lines) console.log(l);
 process.exit(code);

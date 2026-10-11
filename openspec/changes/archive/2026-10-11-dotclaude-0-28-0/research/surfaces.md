@@ -20,15 +20,15 @@ Do the steps in VS Code and in the desktop app (Code tab), with this repository 
 Do them also in the terminal, so that the three results come from the same day and the same settings.
 
 1. Update the surface to Claude Code 2.1.296, and record the version that it shows.
-1. Put the keys of `wiki/settings/Settings-Snippet.md` in `~/.claude/settings.json`, the user settings file that each surface reads.
+2. Put the keys of `wiki/settings/Settings-Snippet.md` in `~/.claude/settings.json`, the user settings file that each surface reads.
    Install `dotclaude@dotclaude` and `dotclaude-sessions@dotclaude`.
-1. Start a new session.
-1. Send `Hello, World!` as the first prompt.
-1. Run `/context`, and copy its output to `research/surfaces/<surface>-context.txt`.
-1. Run `/status`, and copy its output to `research/surfaces/<surface>-status.txt`.
+3. Start a new session.
+4. Send `Hello, World!` as the first prompt.
+5. Run `/context`, and copy its output to `research/surfaces/<surface>-context.txt`.
+6. Run `/status`, and copy its output to `research/surfaces/<surface>-status.txt`.
    It shows the version, the model, and the setting sources.
-1. Run `/plugin`, and note which plugins are on.
-1. Tell the agent the surface name.
+7. Run `/plugin`, and note which plugins are on.
+8. Tell the agent the surface name.
 
 ## What the agent compares
 

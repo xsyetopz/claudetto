@@ -61,12 +61,12 @@ The main session grew mostly by repeat reads through `Bash`.
 The parts are:
 
 1. A search-first read rule in each agent body.
-1. A context bound for each subagent, with a report-now message and no block.
-1. `maxTurns` with one spare turn.
-1. Delegation text that gives related questions to one subagent.
-1. A `Bash` deny for a command that only prints a file.
-1. A report bound, and a measured context figure for the main session.
-1. `bashOutputMaxChars` at 4000, its lowest value.
+2. A context bound for each subagent, with a report-now message and no block.
+3. `maxTurns` with one spare turn.
+4. Delegation text that gives related questions to one subagent.
+5. A `Bash` deny for a command that only prints a file.
+6. A report bound, and a measured context figure for the main session.
+7. `bashOutputMaxChars` at 4000, its lowest value.
    Claude Code 2.1.295 saves a longer output to a file and sends a preview and the path, so build output is not lost.
    In the main session of 2026-10-09, 9 of 164 `Bash` results were above 4000 characters, and the part above was about 13% of all `Bash` result characters.
 

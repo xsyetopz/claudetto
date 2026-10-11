@@ -1,10 +1,11 @@
 # Release History
 
-The current release line (0.28 and later) is in [CHANGELOG.md](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md), newest first.
+The current release line (0.29 and later) is in [CHANGELOG.md](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md), newest first.
 These pages hold the older lines, one page for each release line, with the changes of all patch versions merged.
 
 | Page | Dates | Summary |
 | --- | --- | --- |
+| [Release 0.28](Release-0.28) | 2026-10-09 | Add-on plugins `dotclaude-codegraph`, `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab`. Status line with columns, rule hooks, and a drift check. |
 | [Release 0.27](Release-0.27) | 2026-10-07 | Breaking release. Rebuild of the core plugin on documented extension points. |
 | [Release 0.26](Release-0.26) | 2026-10-06 | Shorter prompts and session context. The dotclaude operating spec replaces the Terms of Use clauses. |
 | [Release 0.25](Release-0.25) | 2026-10-06 | Clause 18, "Known defects", and a claim-check prompt hook on `Stop` and `SubagentStop`. |

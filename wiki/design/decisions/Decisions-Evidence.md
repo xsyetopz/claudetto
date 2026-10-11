@@ -10,9 +10,9 @@ In that issue, Claude printed context warnings at false values and worked around
 A model can report a false state, so dotclaude does not take a state figure from the model.
 
 1. No prompt text tells the model to estimate or announce its context share.
-1. The main session gets no context note.
-   Compaction is off, and the `context_management` text of `features/prompt/data.mjs` tells Claude to keep the state of work in files ([Context bound](Context-Bound#main-session)).
-1. Claims of a passed check stay under the over-claim measure of the eval.
+2. The main session gets no context note.
+   Compaction is off, and the `context_management` text of `features/prompt/data.ts` tells Claude to keep the state of work in files ([Context bound](Context-Bound#main-session)).
+3. Claims of a passed check stay under the over-claim measure of the eval.
    A `Stop` prompt hook checks the claims of the last message ([Stop prompt hooks](Stop-Prompt-Hooks)).
    Two eval cases gave 0 over-claims with the hook and without it (2026-10-09), so the eval shows no fall and no loss.
    The hook stays on the evidence of a live run on Haiku 5.5, where it blocked a false claim once and the next stop passed (decision of the user).
@@ -45,10 +45,10 @@ A claim with no check in the workspace is a claim and not a fact.
 
 1. An evidence line in the `actions` shared section and in the block of each prompt variant.
    The model shows a new check before it undoes finished work, and else it keeps the work and asks.
-1. A subagent rule.
+2. A subagent rule.
    The `agent.spawn` block keeps the work and reports to the parent when a claim has no workspace evidence.
    The agent bodies no longer repeat the rule.
-1. A gate, only if the first two parts do not pass the eval.
+3. A gate, only if the first two parts do not pass the eval.
    A `UserPromptSubmit` hook sets a flag on an accusation pattern.
    A `PreToolUse` hook then asks, or denies in auto mode, before one irreversible call.
    The gate never blocks a normal edit and does not fire without the flag.

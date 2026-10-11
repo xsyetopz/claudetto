@@ -1,7 +1,7 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S bun --no-env-file
 // Prints whether `codegraph` is on `PATH` and whether this project has an index.
 // It prints the install command when the CLI is missing, and never installs it.
 
-import { check } from "../features/graph/cli.mjs";
+import { check } from "../features/graph/cli.ts";
 
 console.log(check(process.cwd(), process.env).join("\n"));

@@ -15,9 +15,9 @@ The claim holds in part.
   Nothing here is "no architecture".
 - The "bandaid" pattern is real, in four forms:
   1. Hand-written regex parsers of shell text, in three features, with diverged copies (F1, F2).
-  1. Two hook runtimes (module and classic command) that implement the same feature twice (F3).
-  1. Reads of private or bundle-only data, which break at each Claude Code release (F4).
-  1. Failure that is swallowed with no trace (F5).
+  2. Two hook runtimes (module and classic command) that implement the same feature twice (F3).
+  3. Reads of private or bundle-only data, which break at each Claude Code release (F4).
+  4. Failure that is swallowed with no trace (F5).
 - The claim does not hold for: import direction, file length, suppression comments, compat shims, legacy readers, feature flags, long parameter lists (section 8).
 
 ## 2. Architecture map
@@ -113,7 +113,7 @@ Fix:
 1. Short term: one `lib/shell.mjs` (pure, no `node:` import) with one `tokenize(command)` and one `stripWrappers(argv)`.
    `guard`, `reads`, and `adherence` import it.
    `lib/` may hold it, and a feature may import `lib/`.
-1. Better: reduce the rule set to what a documented layer cannot do.
+2. Better: reduce the rule set to what a documented layer cannot do.
    `register.mjs:7-10` already says that permission rules and the sandbox cover the other cases.
    With the sandbox on, the OS refuses a write outside the allowed folders.
    An `ask` rule `Bash(rm -r *)` needs no parser.

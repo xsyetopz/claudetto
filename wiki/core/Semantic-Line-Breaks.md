@@ -17,7 +17,7 @@ The source study is `research/sembr.md`.
 
 ## The formatter
 
-`plugins/dotclaude/lib/sembr.mjs` is pure string code with no import.
+`plugins/dotclaude/lib/sembr.ts` is pure string code with no import.
 
 - It breaks a line only after a sentence end (`.`, `!`, or `?`) that a space and a new sentence follow.
 - It never joins lines.
@@ -35,8 +35,8 @@ The source study is `research/sembr.md`.
 | `tool.call` on `Edit` of a `.md` or `.mdx` path | Repairs an `old_string` that spans two sentences, and then rewrites `new_string`. |
 | `tool.call` on `Bash` | Rewrites the quoted heredoc text of `git commit` and `gh pr create`. |
 
-All three handlers are in the hooks module `hooks/register.mjs`, and no classic hook is left.
-The rules are in `features/sembr/rules.mjs`.
+All three handlers are in the hooks module `hooks/register.ts`, and no classic hook is left.
+The rules are in `features/sembr/rules.ts`.
 Each handler fails open: when a rule throws, or when the file cannot be read, the call goes on as written.
 
 ### Silent rewrite before a write
@@ -75,8 +75,8 @@ Each handler fails open: when a rule throws, or when the file cannot be read, th
 Three probes ran before the hooks shipped:
 
 1. A later `Edit` whose `old_string` comes from the unwrapped text after a rewrite.
-1. `updatedInput` in auto mode, and the normal permission flow when the hook sets no `permissionDecision`.
-1. `session.append` with door `response` on the chat display.
+2. `updatedInput` in auto mode, and the normal permission flow when the hook sets no `permissionDecision`.
+3. `session.append` with door `response` on the chat display.
 
 A failed probe changes the route.
 It does not turn into a workaround.

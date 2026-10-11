@@ -10,7 +10,7 @@ Nothing in it changes your own Claude Code config.
 
 | Item | Value |
 | --- | --- |
-| Install | `/plugin install dotclaude-lab@dotclaude`, with Node.js 22.18 or later |
+| Install | `/plugin install dotclaude-lab@dotclaude`, with Bun 1.4.3 or later |
 | Skills | `eval-compare`, user-invoked only |
 | Bins | `dotclaude-sandbox`, `dotclaude-capture`, `dotclaude-schema`, and `dotclaude-eval-compare`, in `bin/` |
 | Hooks | None |

@@ -5,8 +5,8 @@
 // The client imports `node:` modules, so the module runs it as a child process.
 // Each `$` call is in this file, because `$` is not followed across an import.
 
-import { jevRequest, withPicks } from "../features/jev/ask.mjs";
-import { clientArgv, clientInit, outcome } from "../features/jev/run.mjs";
+import { jevRequest, withPicks } from "../features/jev/ask.ts";
+import { clientArgv, clientInit, outcome } from "../features/jev/run.ts";
 import {
   clientArgs,
   fallback,
@@ -14,7 +14,7 @@ import {
   NO_KEY,
   result,
   toolSpec,
-} from "../features/jev/tool.mjs";
+} from "../features/jev/tool.ts";
 
 /** Runs the client, and gives its outcome. */
 async function runClient($, key, args, stdin) {

@@ -13,7 +13,7 @@ The other plugins work without it.
   The module replaces the long system prompt with the shared sections and a prompt variant for each model ([System prompt](System-Prompt)).
 - Gives five agents with a model, an effort, and a turn limit each ([Agents](Agents)).
 - Asks before the first contact with a repository of another owner that has an AI policy file ([Contributions](Contributions)).
-- Checks work with hooks that use no model call: git asks, edit asks, code-span denies, and approval claims ([Hooks](Hooks)).
+- Checks work with hooks that use no model call: git asks and edit asks ([Hooks](Hooks)).
 - Tells a subagent to report before its context or turn bound ([Context bound](Context-Bound)).
 - Puts each sentence of Markdown and commit text on its own line ([Semantic line breaks](Semantic-Line-Breaks)).
 - Shortens attachments, agent lines, and tool descriptions by exact id ([Prompt surface](Prompt-Surface)).
@@ -31,7 +31,7 @@ Add the marketplace, install the plugin, then copy the keys that you want from t
 ```
 
 Claude Code 2.1.296 or later and `git` are needed.
-Node.js 22.18 or later is needed for the classic hooks, the status line, and the setup script.
+Bun 1.4.3 or later is needed for the classic hooks, the status line, and the setup script.
 `gh` is needed for the policy ask.
 See [Install](Install) for the steps and the update path.
 
@@ -42,7 +42,7 @@ See [Install](Install) for the steps and the update path.
 | `/dotclaude:setup` | The user only (`disable-model-invocation: true`) | Sets up OpenSpec in the current project. It shows each step and asks before it runs one. It changes no Claude Code setting. The script is `skills/setup/scripts/openspec.mjs`. |
 
 A user-invoked skill has no listing line, so it costs no tokens in a request.
-The `name` and `description` of a model-invocable skill have 150 to 300 bytes together (`SKILL_META_LOW_BYTES` and `SKILL_META_HIGH_BYTES` in `tools/limits.mjs`).
+The `name` and `description` of a model-invocable skill have 150 to 300 bytes together (`SKILL_META_LOW_BYTES` and `SKILL_META_HIGH_BYTES` in `tools/limits.ts`).
 The 300 is a bound, and a skill above it fails the size check.
 The 150 is a target, and a skill below it gives only an advisory.
 In a measure on Claude Code 2.1.293, `skillOverrides` did not apply to a plugin skill, so a plugin skill keeps its full listing line until you turn off the whole plugin.
@@ -64,7 +64,7 @@ See [Agents](Agents) for the table with the values and the pin tests.
 
 ## Hooks
 
-The module `hooks/register.mjs` handles nine events: `tool.check`, `tool.call` (on `Write`, `Edit`, and `Bash`), `prompt.compose`, `agent.spawn`, `prompt.section`, `prompt.attachment`, `agent.offer`, `tool.describe`, and `session.start`.
+The module `hooks/register.ts` handles nine events: `tool.check`, `tool.call` (on `Write`, `Edit`, and `Bash`), `prompt.compose`, `agent.spawn`, `prompt.section`, `prompt.attachment`, `agent.offer`, `tool.describe`, and `session.start`.
 Classic command hooks cover `Bash` prints, git asks, edit checks, and subagent bounds, and a prompt hook on the model `claude-sonnet-5-5` covers `Stop`.
 The page [Hooks](Hooks#dotclaude) lists each one with its matcher.
 
@@ -72,14 +72,12 @@ The checks in short:
 
 | Check | Result | Code |
 | --- | --- | --- |
-| Policy ask | Ask, once for each session and repository | `features/guard/rules.mjs` |
+| Policy ask | Ask, once for each session and repository | `features/guard/rules.ts` |
 | File print | Deny, with the `Read` call to use | `features/reads/` |
-| Git move | Ask for `git stash`, `git reset`, and a `git checkout` or `git restore` of a path | `features/adherence/git.mjs` |
-| Test or limits file | Ask before a changed or removed existing line | `features/adherence/rules.mjs` |
-| Lint or type-check config, CI file, or hook file | Ask before an edit | `features/adherence/kinds.mjs` |
-| Skipped or focused test, or inline lint suppression | Ask before an added one | `features/adherence/kinds.mjs` |
-| Code item outside a code span | Deny, in a Markdown write or a commit message | `features/adherence/spans.mjs` |
-| Approval claim | Deny new text that claims an approval that no prompt of the user gives | `features/adherence/approval.mjs` |
+| Git move | Ask for `git stash`, `git reset`, and a `git checkout` or `git restore` of a path | `features/adherence/git.ts` |
+| Test or limits file | Ask before a changed or removed existing line | `features/adherence/rules.ts` |
+| Lint or type-check config, CI file, or hook file | Ask before an edit | `features/adherence/kinds.ts` |
+| Skipped or focused test, or inline lint suppression | Ask before an added one | `features/adherence/kinds.ts` |
 | Stop rules | Block once, on `Stop`, a message that breaks one of three rules: a done claim with no passing check, an opener of agreement, praise, thanks, or an apology in place of the state, or a weakened check, test, bound, config, or hook | `hooks/Stop.prompt.txt` |
 
 A recursive `rm` is not in this list.
@@ -99,8 +97,8 @@ The settings are keys that you copy:
 The status line needs two keys with the absolute path of the plugin folder:
 
 ```text
-node <plugin folder>/features/statusline/cli.mjs
-node <plugin folder>/features/statusline/subagent-cli.mjs
+bun --no-env-file <plugin folder>/features/statusline/cli.ts
+bun --no-env-file <plugin folder>/features/statusline/subagent-cli.ts
 ```
 
 ## Drift check
@@ -127,29 +125,28 @@ Each bound is in one file, and tests pin the copies.
 
 | Bound | Value | File |
 | --- | --- | --- |
-| Context window | 300,000 tokens | `lib/budget.mjs` (`CONTEXT_WINDOW`) |
-| Status line colors | Yellow at 75% and red at 90% of the window | `lib/budget.mjs` (`USAGE_LEVELS`) |
-| `bashOutputMaxChars` | 4,000 characters | `lib/budget.mjs` |
-| Policy `gh` call | 5,000 ms | `lib/budget.mjs` (`POLICY_TIMEOUT_MS`) |
-| Policy text in the ask | 2,000 characters | `lib/budget.mjs` (`POLICY_FILE_MAX_CHARS`) |
-| Subagent context | 100,000 tokens, and 85,000 for Haiku 5.5 | `features/context/limits.mjs` |
-| Subagent turns left at the note | 2 | `features/context/limits.mjs` (`TURNS_LEFT_AT`) |
-| Subagent report | 400 words | `features/context/limits.mjs` (`REPORT_MAX_WORDS`) |
-| `adherence` hook timeout | 10 s | `features/adherence/limits.mjs` |
-| File lists of the asks for configs, CI files, skipped tests, and suppressions | Data in `features/adherence/limits.mjs` | `features/adherence/limits.mjs` |
-| File size that `adherence` reads | 1,000,000 bytes | `features/adherence/limits.mjs` |
-| Rows of the status line | 3 | `features/statusline/limits.mjs` |
+| Context window | 300,000 tokens | `lib/budget.ts` (`CONTEXT_WINDOW`) |
+| Status line colors | Yellow at 75% and red at 90% of the window | `lib/budget.ts` (`USAGE_LEVELS`) |
+| `bashOutputMaxChars` | 4,000 characters | `lib/budget.ts` |
+| Policy `gh` call | 5,000 ms | `lib/budget.ts` (`POLICY_TIMEOUT_MS`) |
+| Policy text in the ask | 2,000 characters | `lib/budget.ts` (`POLICY_FILE_MAX_CHARS`) |
+| Subagent context | 100,000 tokens, and 85,000 for Haiku 5.5 | `features/context/limits.ts` |
+| Subagent turns left at the note | 2 | `features/context/limits.ts` (`TURNS_LEFT_AT`) |
+| Subagent report | 400 words | `features/context/limits.ts` (`REPORT_MAX_WORDS`) |
+| File lists of the asks for configs, CI files, skipped tests, and suppressions | Data in `features/adherence/limits.ts` | `features/adherence/limits.ts` |
+| File size that `adherence` reads | 1,000,000 bytes | `features/adherence/limits.ts` |
+| Rows of the status line | 3 | `features/statusline/limits.ts` |
 
-The size of the first request is bound in `tools/limits.mjs` (`FIRST_REQUEST_LOW_BYTES` to `FIRST_REQUEST_HIGH_BYTES`), and the [Plugin layout](Plugin-Layout#bound-tiers) page explains the tiers.
+The size of the first request is bound in `tools/limits.ts` (`FIRST_REQUEST_LOW_BYTES` to `FIRST_REQUEST_HIGH_BYTES`), and the [Plugin layout](Plugin-Layout#bound-tiers) page explains the tiers.
 
 ## Files
 
 | Path under `plugins/dotclaude/` | Part |
 | --- | --- |
-| `hooks/register.mjs`, `hooks/hooks.json` | The hooks module and the classic hooks. |
-| `hooks/Stop.prompt.txt`, `hooks/description.txt` | The text of the `Stop` prompt hook and the hook description. `just hook-text` (`tools/hook-text.mjs`) builds `hooks.json` from them. |
+| `hooks/register.ts`, `hooks/hooks.json` | The hooks module and the classic hooks. |
+| `hooks/Stop.prompt.txt`, `hooks/description.txt` | The text of the `Stop` prompt hook and the hook description. `just hook-text` (`tools/hook-text.ts`) builds `hooks.json` from them. |
 | `output-styles/dotclaude.md` | The forced style: role, tone, and format. |
-| `features/prompt/shared.mjs`, `features/prompt/variants.mjs` | The shared rules and the model variants of the system prompt. |
+| `features/prompt/shared.ts`, `features/prompt/variants.ts` | The shared rules and the model variants of the system prompt. |
 | `agents/*.md` | The five agents. |
 | `skills/setup/` | The setup skill and its script. |
 | `features/<name>/` | One folder for each concern: `adherence`, `context`, `drift`, `guard`, `prompt`, `reads`, `sembr`, `setup`, `statusline`, and `surface`. |

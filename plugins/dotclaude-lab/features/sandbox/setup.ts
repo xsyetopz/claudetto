@@ -1,0 +1,75 @@
+// The folders and the state file of the sandbox.
+
+import fs from "node:fs";
+import path from "node:path";
+import { spawnSyncOrNull } from "../../lib/run-program.ts";
+import { readJson } from "./json.ts";
+
+/** The folders of the sandbox. */
+interface SandboxDirs {
+  config: string;
+  home: string;
+  project: string;
+}
+
+/** The fields of the state file `.claude.json` that the sandbox sets. */
+interface ClaudeState {
+  hasCompletedOnboarding?: boolean;
+  theme?: string;
+  projects?: Record<string, object>;
+}
+
+/** Creates `config/`, `home/`, and `project/` (a git repository) in `root`, and trusts the project. */
+export async function setUp({
+  config,
+  home,
+  project,
+}: SandboxDirs): Promise<void> {
+  fs.mkdirSync(config, { recursive: true });
+  fs.mkdirSync(home, { recursive: true });
+  if (!fs.existsSync(path.join(project, ".git"))) {
+    fs.mkdirSync(project, { recursive: true });
+    spawnSyncOrNull("git", ["init", "-q", project]);
+  }
+  const state = path.join(config, ".claude.json");
+  // A state file that is absent or damaged starts again from an empty object.
+  const json: ClaudeState = (await readJson<ClaudeState>(state)) ?? {};
+  json.hasCompletedOnboarding = true;
+  json.theme ??= "dark";
+  json.projects ??= {};
+  // macOS resolves `/tmp` and `/var` to `/private`, and the trust key is the
+  // resolved path.
+  for (const dir of new Set([project, fs.realpathSync(project)]))
+    json.projects[dir] = {
+      ...json.projects[dir],
+      hasTrustDialogAccepted: true,
+    };
+  await Bun.write(state, JSON.stringify(json, null, 2));
+}
+
+/** The `availableModels` list in `settings.json` of the folder `config`, or `undefined` when there is none. */
+export async function availableModels(
+  config: string,
+): Promise<string[] | undefined> {
+  return (
+    await readJson<{ availableModels?: string[] }>(
+      path.join(config, "settings.json"),
+    )
+  )?.availableModels;
+}
+
+// claude runs with the project as its working directory, so a relative
+// `--plugin-dir` would point into the project and Claude Code would skip it.
+// Resolve each one against the working directory of the caller.
+export function absolutePluginDirs(
+  args: string[],
+  cwd: string = process.cwd(),
+): string[] {
+  return args.map((a, i) =>
+    args[i - 1] === "--plugin-dir"
+      ? path.resolve(cwd, a)
+      : a.startsWith("--plugin-dir=")
+        ? `--plugin-dir=${path.resolve(cwd, a.slice(13))}`
+        : a,
+  );
+}

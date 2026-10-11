@@ -15,7 +15,7 @@ Each run costs money and takes minutes, so confirm the two folders with the user
    Each one has a `.claude-plugin/plugin.json` file and an `evals/` folder.
    If the user names a git ref instead of a folder, ask for a folder, or tell the user to check out the ref in a `git worktree`, because the command reads folders and not refs.
 
-1. Run the comparison:
+2. Run the comparison:
 
    ```bash
    dotclaude-eval-compare A B
@@ -29,7 +29,7 @@ Each run costs money and takes minutes, so confirm the two folders with the user
    The skill grants no tool, so Claude Code asks the user before each run.
    If a run stops at the cost bound, tell the user, and do not raise the bound without the user.
 
-1. Read the two result tables.
+3. Read the two result tables.
    Compare the `WITH` column of table A with the `WITH` column of table B, case by case.
    Do not compare the `WITHOUT` column of the two tables as a plugin result, because it is the shared baseline.
    If the two baseline scores differ by more than the gap between the arms, say so, because the model varies between runs and the gap is then weak evidence.

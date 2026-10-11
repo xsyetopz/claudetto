@@ -18,15 +18,15 @@ It writes no text or code, and it gives probabilities.
 
 ## Before you begin
 
-1. Install [Node.js](https://nodejs.org) 22.18 or later.
-1. Get an API key at <https://console.typesafe.ai>.
-1. Export the key before Claude Code starts.
+1. Install [Bun](https://bun.sh) 1.4.3 or later.
+2. Get an API key at <https://console.typesafe.ai>.
+3. Export the key before Claude Code starts.
 
    ```bash
    export TYPESAFE_API_KEY=<your key>
    ```
 
-1. Add the `dotclaude-jev` plugin from the dotclaude marketplace.
+4. Add the `dotclaude-jev` plugin from the dotclaude marketplace.
 
 > **Warning:** The tool sends the question and the state to the TypeSafe API.
 > Do not put secrets, credentials, or personal data in them.
@@ -76,11 +76,11 @@ Before the tool asks Jev, it puts the options in a random order (a Fisher-Yates 
 | `options` | 2 to 255 options, each with a `key` and a `description`. Leave it out for a yes or no question. The `key` has no `=` character. |
 | `state` | The facts that the decision depends on, such as a diff, a log, or a plan. |
 
-The hooks module runs the Jev client (`features/jev/cli.mjs`) as a child process with `$.process.run`, because the client imports `node:` modules.
+The hooks module runs the Jev client (`features/jev/cli.ts`) as a child process with `$.process.run`, because the client imports `node:` modules.
 The key goes in the environment of the child and never in the argument list.
 The output gives the probability of each answer and a confidence from 0 to 1.
 A confidence under 0.5 means that Jev is not sure.
-The text of an error reply that goes to Claude is cut to 200 characters (`ERROR_BODY_MAX` in `features/jev/limits.mjs`).
+The text of an error reply that goes to Claude is cut to 200 characters (`ERROR_BODY_MAX` in `features/jev/limits.ts`).
 
 ### The fallback result
 
@@ -88,7 +88,7 @@ When Jev fails or takes more than 45 seconds, the result has no pick of Jev.
 It names the reason once and tells Claude to do this:
 
 1. Answer from its own check of the evidence.
-1. Tell you that no second opinion was available.
+2. Tell you that no second opinion was available.
 
 The result says that another call for this question is unlikely to help.
 No model answers in the tool, so no check ran there.
@@ -96,11 +96,11 @@ No model answers in the tool, so no check ran there.
 ## The hook
 
 1. Claude asks a question with options through `AskUserQuestion`.
-1. The hook runs the client with `ask` once.
+2. The hook runs the client with `ask` once.
    Jev sorts each question into `preference` or `facts`, and picks an option.
-1. For a `facts` question, the hook adds a line to the question, such as `Jev picks "<option>" (confidence 0.82).`
+3. For a `facts` question, the hook adds a line to the question, such as `Jev picks "<option>" (confidence 0.82).`
    It adds the line only when the confidence for the kind and for the pick is 0.5 or more.
-1. You answer the question as usual.
+4. You answer the question as usual.
    The question always comes to you, also when Jev is sure, because Jev does not answer for you.
 
 The hook never denies a call.
@@ -116,7 +116,7 @@ Without `TYPESAFE_API_KEY`, or when Jev fails or takes more than 45 seconds, the
 | Time for a call | 45 seconds, the kill bound of the hooks module |
 | Tries of one call | 3, with a wait of 1 second and then 2 seconds |
 
-The timeout of one try is derived in `features/jev/limits.mjs`.
+The timeout of one try is derived in `features/jev/limits.ts`.
 The tries, their timeouts, the waits, and a margin of 2 seconds always add up to less than the kill bound.
 
 ## Troubleshooting

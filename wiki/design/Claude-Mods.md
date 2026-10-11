@@ -10,12 +10,12 @@ It is the evidence for the hooks module of Claude Code 2.1.288, with the 0.27 us
   The docs describe mods (**official**, `hooks.md`).
 - dotclaude 0.28.0 uses the module in `plugins/dotclaude/hooks/register.mjs` for these events: `tool.check`, `prompt.section`, `prompt.compose`, `prompt.attachment`, `agent.offer`, `agent.spawn`, `session.start`, `tool.describe`, and `tool.call` (on `Write`, `Edit`, and `Bash`).
   The `tool.check` handler calls `next(e)` first and returns an engine deny unchanged.
-  Its pure rules are in `features/guard/rules.mjs`.
-- 0.28.0 also has classic command hooks, such as the hooks of `features/reads/cli.mjs`, and one `prompt` hook on `Stop` ([Stop prompt hooks](Stop-Prompt-Hooks)).
+  Its pure rules are in `features/guard/rules.ts`.
+- 0.28.0 also has classic command hooks, such as the hooks of `features/reads/cli.ts`, and one `prompt` hook on `Stop` ([Stop prompt hooks](Stop-Prompt-Hooks)).
   The rows and sections below that name other events, `ask-guarded-calls.mjs`, or 0.19 to 0.26 parts are history, and each says so.
 - Rule for the runtime of a hook: a rewrite of a tool input and an ask go in the hooks module, and a check that reads files with Node goes in a classic command hook.
   Each hook has one runtime.
-  `sembr` is in the module only, and the classic hooks share `lib/hook-io.mjs`.
+  `sembr` is in the module only, and the classic hooks share `lib/hook-io.ts`.
 - The module gets no permission mode, and in auto mode the classifier decides an ask of `tool.check` (**measured**, 2.1.292).
   An ask of a classic hook stops the call in auto mode (**measured**, 2.1.292).
   See [Auto mode](#auto-mode-module-ask-against-classic-ask).
@@ -76,7 +76,7 @@ To let its `prompt.section` hook run on a machine with the guard, do one of thes
 
 1. Remove the managed settings files, and keep their keys in user settings.
    Without managed settings and without a Team or Enterprise login, the guard does not load.
-1. Copy the marketplace to a folder that only an administrator can write.
+2. Copy the marketplace to a folder that only an administrator can write.
    In managed settings, name that folder in `extraKnownMarketplaces`, set `enabledPlugins` for `dotclaude@dotclaude`, and set `prependPlugins` to `["sec-default@builtin", "dotclaude@dotclaude"]`.
 
 ### Route A: `prependPlugins` without the guard (measured, 2.1.293)
@@ -128,7 +128,7 @@ Claude Code refuses a module for one of these reasons (**binary**):
 
 | Work | Event | Evidence |
 | --- | --- | --- |
-| The policy ask for a repository of another owner | `tool.check` | The hook calls `next(e)`, returns an engine deny unchanged, and otherwise returns an ask (`plugins/dotclaude/hooks/register.mjs`). Lab tests in `plugins/dotclaude/tests/mod.test.ts` cover it. |
+| The policy ask for a repository of another owner | `tool.check` | The hook calls `next(e)`, returns an engine deny unchanged, and otherwise returns an ask (`plugins/dotclaude/hooks/register.ts`). Lab tests in `plugins/dotclaude/tests/mod.test.ts` cover it. |
 | Replace the `context_management` section of the system prompt | `prompt.section` with the matcher `{ name: "context_management" }` | The hook returns `{ text }` when `DISABLE_COMPACT` is set, and calls `next(e)` otherwise. The text is the same on each call, so the prompt cache stays. Lab tests cover both cases. |
 | Report drift from the settings snippet | `session.start` | The handler appends one note with `$.session.append` when it finds a difference. See [Core plugin](Core-Plugin#drift-check). |
 | Prompt variant, surface cuts, and line breaks | `prompt.compose`, `agent.spawn`, `prompt.attachment`, `agent.offer`, `tool.describe`, `tool.call` | See [System prompt](System-Prompt), [Prompt surface](Prompt-Surface), and [Semantic line breaks](Semantic-Line-Breaks). |

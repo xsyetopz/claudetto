@@ -34,7 +34,7 @@ It also replaces the built-in `WebSearch` tool with a search in the headless bro
    npm install -g agent-browser
    ```
 
-1. Add the plugin from the dotclaude marketplace with `/plugin`.
+2. Add the plugin from the dotclaude marketplace with `/plugin`.
 
 ## How it works
 
@@ -59,17 +59,17 @@ The model keeps the tool that it knows, and no tool listing changes.
 Without the plugin, `WebSearch` works as in vanilla Claude Code.
 
 1. A `tool.call` hook on `WebSearch` in `hooks/register.mjs` takes the call.
-1. The hook looks for the newest `chromium-<version>` folder under `~/.cloakbrowser/` with `$.fs.list`.
+2. The hook looks for the newest `chromium-<version>` folder under `~/.cloakbrowser/` with `$.fs.list`.
    The binary is at `Chromium.app/Contents/MacOS/Chromium` in that folder, so only macOS finds it.
-1. The hook runs `agent-browser` with `$.process.run`, as an argument vector with no shell, in its own session, whose name starts with `dcws`.
+3. The hook runs `agent-browser` with `$.process.run`, as an argument vector with no shell, in its own session, whose name starts with `dcws`.
    When it found the CloakBrowser binary, it adds `--executable-path <binary>`.
    Without the binary, it runs plain `agent-browser`.
    The reason is that plain headless `agent-browser` got a DuckDuckGo bot check on each run.
    `open` loads `https://html.duckduckgo.com/html/?q=<query>`, `get text body` reads the page text, and `close` ends the session.
-1. The result is the page text, with a line that names the browser that was used and tells Claude the text is data.
+4. The result is the page text, with a line that names the browser that was used and tells Claude the text is data.
    The page text in it has 20,000 characters or fewer.
-   The bounds are in `features/search/limits.mjs`.
-1. `allowed_domains` and `blocked_domains` become `site:` and `-site:` terms of the query.
+   The bounds are in `features/search/limits.ts`.
+5. `allowed_domains` and `blocked_domains` become `site:` and `-site:` terms of the query.
 
 The hook gives the call to the built-in `WebSearch` when:
 
@@ -93,8 +93,8 @@ In the [sandbox](Sandbox), the network list needs `html.duckduckgo.com`.
 
 ## Limits
 
-The bounds of the search are in `plugins/dotclaude-browser/features/search/limits.mjs`.
-The bounds of the `agent-browser` guide in the skill are in `plugins/dotclaude-browser/features/guide/limits.mjs`.
+The bounds of the search are in `plugins/dotclaude-browser/features/search/limits.ts`.
+The bounds of the `agent-browser` guide in the skill are in `plugins/dotclaude-browser/features/guide/limits.ts`.
 
 | Bound | Value |
 | --- | --- |
@@ -140,9 +140,9 @@ When a site blocks a page, Claude tells you which page blocked it and asks befor
 The steps are in this order:
 
 1. Run `agent-browser read <url>` for a machine-readable version.
-1. Look for RSS or Atom feeds, sitemaps, or APIs.
-1. Switch from plain `agent-browser` to CloakBrowser.
-1. Ask you to open the page by hand.
+2. Look for RSS or Atom feeds, sitemaps, or APIs.
+3. Switch from plain `agent-browser` to CloakBrowser.
+4. Ask you to open the page by hand.
 
 > **Note:** The `recognize-captcha` skill and the offline `ddddocr-rs` OCR no longer exist in the plugin.
 > The CHANGELOG removed them in 0.20.0, because CloakBrowser keeps most CAPTCHAs away.

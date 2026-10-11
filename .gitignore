@@ -7,9 +7,11 @@ __pycache__/
 
 /letters/
 
+# Session exports of `/export` (YYYY-MM-DD-HHMMSS-<slug>.txt)
+/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9]-*.txt
+
 .env
 
 /plugins/dotclaude/evals/results/
 
 node_modules/
-.pnpm-store/

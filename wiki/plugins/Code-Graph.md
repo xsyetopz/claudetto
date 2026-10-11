@@ -11,7 +11,7 @@ It adds no MCP server, and it works without the core plugin.
 | Install | `/plugin install dotclaude-codegraph@dotclaude`, with the CLI and an index ([Install](#install)) |
 | Bin | `bin/dotclaude-codegraph-check` prints whether `codegraph` is on `PATH` and whether the project has an index |
 | Skills | None |
-| Hooks | 15 classic command hooks on 3 events (`SessionStart`, `PreToolUse`, and `PostToolUse`), all in `features/graph/cli.mjs` ([Hooks](Hooks#dotclaude-codegraph)) |
+| Hooks | 15 classic command hooks on 3 events (`SessionStart`, `PreToolUse`, and `PostToolUse`), all in `features/graph/cli.ts` ([Hooks](Hooks#dotclaude-codegraph)) |
 | Options | None. The plugin has no `userConfig` and sets no Claude Code setting |
 | Limits | See [Limits](#limits) |
 | Problems | See [Troubleshooting](#troubleshooting) |
@@ -21,10 +21,10 @@ It adds no MCP server, and it works without the core plugin.
 1. Install the CLI with `npm i -g @colbymchenry/codegraph`.
    The package is 284 MB on disk.
    The plugin never installs it, and never runs `codegraph install`, because that command edits your Claude Code config.
-1. Build the index once in the project with `codegraph init -y`.
+2. Build the index once in the project with `codegraph init -y`.
    The index is the folder `.codegraph/` (7 MB for 190 files).
    Its own `.gitignore` holds `*`, so git ignores it.
-1. Install the plugin with `/plugin install dotclaude-codegraph@dotclaude`.
+3. Install the plugin with `/plugin install dotclaude-codegraph@dotclaude`.
 
 The hooks run only in a project that has `.codegraph/codegraph.db`.
 In another project they run no command and add no text.
@@ -42,38 +42,27 @@ To turn it off, run `codegraph telemetry off`.
 | Event | What it does |
 | --- | --- |
 | `SessionStart` | Runs `codegraph sync -q`, and adds one line that names `codegraph impact`, `callers`, and `callees`. |
-| `PreToolUse` on `Grep` and `Glob` | When the pattern is one name, adds the definition and the callers of that name from the graph. |
 | `PostToolUse` after `Edit`, `Write`, `MultiEdit`, `NotebookEdit`, and a git command that changes the tree | Runs `codegraph sync -q` as an async hook, so the session does not wait. |
 
-- The `PreToolUse` text has at most `GRAPH_CONTEXT_MAX` (1,200) characters.
-  A caller that does not fit is counted as "and N more".
-- The hook keeps only a `function`, `method`, `class`, or `constant` hit whose name equals the pattern or starts with it.
-  `codegraph query` is a fuzzy search and also returns file and import nodes.
-- When the name is unknown, the CLI fails, or a call takes more than 2 s, the hook adds nothing.
-  The hook never denies or asks.
-- `callers` and `impact` print text, not JSON, for an unknown symbol, and exit 0.
-  The hook parses with a guard and treats text as no result.
+- Claude Code 2.1.296 has no `Grep` or `Glob` tool, so 0.29.0 removed the `PreToolUse` hook that added graph context to them.
+- The hooks never deny or ask.
 - Git commands that start a sync: `commit`, `merge`, `rebase`, `pull`, `checkout`, `switch`, `reset`, `cherry-pick`, `revert`, `stash`, `apply`, and `am`.
 
 ## Limits
 
-All bounds are in `plugins/dotclaude-codegraph/features/graph/limits.mjs`.
+All bounds are in `plugins/dotclaude-codegraph/features/graph/limits.ts`.
 
 | Bound | Value | Use |
 | --- | --- | --- |
-| `GRAPH_CONTEXT_MAX` | 1,200 characters | The most graph context that one `Grep` or `Glob` call gets. |
-| `QUERY_TIMEOUT_MS` | 2,000 ms | The time for `codegraph query` or `callers` before the hook adds nothing. |
+| `QUERY_TIMEOUT_MS` | 2,000 ms | The time for `codegraph --version` in the check. |
 | `START_SYNC_TIMEOUT_MS` | 8,000 ms | The sync at session start. The hook `timeout` is 10 s. |
 | `BACKGROUND_SYNC_TIMEOUT_MS` | 60,000 ms | The background sync after an edit or a git change. |
-| `CALLERS_LIMIT` | 10 | The `--limit` of `codegraph callers`. |
-| `SYMBOL_MIN_CHARS` | 3 | A searched name with fewer characters is skipped. |
 
 ## Troubleshooting
 
 | Symptom | Cause and fix |
 | --- | --- |
 | The hooks add nothing | The project has no `.codegraph/codegraph.db`, or `codegraph` is not on `PATH`. Run `bin/dotclaude-codegraph-check`, then `codegraph init -y`. |
-| No graph context for a search | The pattern is not one name, the name has fewer than 3 characters, the name is unknown, or a call took more than 2 s. The hook adds nothing and never blocks. |
 | The index is out of date | The sync runs after an edit and after a git command that changes the tree. Run `codegraph sync -q` by hand after a change outside Claude Code. |
 
 See also [Troubleshooting](Troubleshooting).

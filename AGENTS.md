@@ -1,9 +1,9 @@
 # AGENTS.md
 
 A Claude Code plugin marketplace in ESM.
-The runtime scripts in `plugins/` are `.mjs` files on Node.js 22.18 or later, so they use only `node:` modules.
-A file in the import graph of a hooks module (`hooks/register.mjs`) has no `node:` import, because the module runs with no Node.
-Code that needs Python is Python, and the tests and `tools/` run on Node.js 22.18 or later, with pnpm for the dev dependencies.
+The runtime scripts in `plugins/` run on Bun 1.4.3 or later, so they use only `node:` modules, `bun:` modules, and the `Bun` global.
+A file in the import graph of a hooks module (`hooks/register.mjs`) has no `node:` import, no `bun:` import, and no use of `Bun`, because Claude Code runs the module in its mod runtime.
+Code that needs Python is Python, and the tests and `tools/` run on Bun 1.4.3 or later, with `bun install` for the dev dependencies.
 The core plugin is in `plugins/dotclaude/`, next to six add-on plugins: `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-jev`, `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab`.
 Each add-on plugin works without the core plugin, so it imports nothing from another plugin.
 Only `plugins/` ships to users.
@@ -15,10 +15,10 @@ Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/dotclaude/wik
 
 - `just check` runs lint, the type check, tests, validation, and the hook labs.
   It must pass before done.
-- `just test tests/dotclaude/guard/rules.test.mjs` runs one test file with `node --test`.
+- `just test tests/dotclaude/guard/rules.test.ts` runs one test file with `bun test`.
 - `just lab` runs the hook lab of each plugin: the tests of its hooks module with stubbed Claude Code events.
   Test each change to `hooks/register.mjs` there before a live session.
-- `pnpm run lint:md` lints the Markdown files.
+- `bun run lint:md` lints the Markdown files.
   Headings and code blocks have a 100-column bound.
 - `just sandbox` runs Claude Code with this checkout in a separate config.
   Read `wiki/plugins/Sandbox.md` first.
@@ -42,7 +42,7 @@ Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/dotclaude/wik
   Follow Claude's prompting best practices: give the reason, say what to do, and use no forceful words.
 - Change a shared runtime bound only in `plugins/dotclaude/lib/budget.mjs`,
   a feature bound only in `features/<name>/limits.mjs`,
-  and a repository bound only in `tools/limits.mjs`.
+  and a repository bound only in `tools/limits.ts`.
   Tests pin the copies of each bound in code and config, not in prose.
 - Do not write runtime JavaScript (`plugins/`) for a feature that the latest Claude Code has.
   When Claude Code has a setting, a hook, or another extension point for a need, use it.

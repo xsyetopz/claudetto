@@ -1,8 +1,25 @@
 {
-  "extends": "./plugins/dotclaude/.claude-plugin/types/tsconfig.json",
+  "extends": "./plugins/dotclaude/tsconfig.json",
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "allowJs": true,
-    "checkJs": true
+    "checkJs": true,
+    "erasableSyntaxOnly": true,
+    "noEmit": true,
+    "verbatimModuleSyntax": true,
+    "typeRoots": [
+      "./node_modules",
+      "./node_modules/@types",
+      "./plugins/dotclaude/.claude-plugin/types"
+    ],
+    "types": [
+      "bun-types",
+      "claude-code",
+      "claude-code-mcp",
+      "claude-code-tools",
+      "node"
+    ]
   },
-  "include": ["plugins/dotclaude/hooks/*.mjs", "plugins/*/tests/*.test.ts"]
+  "exclude": ["node_modules"],
+  "include": ["plugins/**/*.ts", "tests/**/*.ts", "tools/**/*.ts"]
 }

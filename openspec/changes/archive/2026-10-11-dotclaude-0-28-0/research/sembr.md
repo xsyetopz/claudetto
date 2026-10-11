@@ -144,7 +144,7 @@ File hooks apply to `.md`, `.mdx`, `.txt`, and `.rst` paths only.
 ## 6. Recommendation
 
 1. Add `lib/sembr.mjs`, a pure function `split(text, {kind})` that does only sentence splits (rule 4, rule 9, rule 2), with unit tests for abbreviations, code, lists, tables, links, and idempotence.
-1. Hook it as a `PreToolUse` command hook on `Write`, `Edit`, and the commit and PR `Bash` forms, silent, with `updatedInput`.
-1. Probe `session.append` on `door: 'response'` for chat. If the display uses the rewritten row, ship it. If not, ship the Stop measure and the `<reply_format>` block.
-1. Add a `Stop` hook that only counts, for the eval suite.
-1. Probes to run first: Edit after a PostToolUse rewrite, `updatedInput` on Write and Edit and Bash in default and auto mode, and `session.append` display.
+2. Hook it as a `PreToolUse` command hook on `Write`, `Edit`, and the commit and PR `Bash` forms, silent, with `updatedInput`.
+3. Probe `session.append` on `door: 'response'` for chat. If the display uses the rewritten row, ship it. If not, ship the Stop measure and the `<reply_format>` block.
+4. Add a `Stop` hook that only counts, for the eval suite.
+5. Probes to run first: Edit after a PostToolUse rewrite, `updatedInput` on Write and Edit and Bash in default and auto mode, and `session.append` display.

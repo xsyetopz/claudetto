@@ -18,7 +18,7 @@ Each part below is a new implementation.
 | [agent-skills](https://github.com/addyosmani/agent-skills) by Addy Osmani | a skill description that says what the skill does and when to use it | the "Use" part of each skill and agent description, and a "Not for" part where a neighbor can match the same request |
 | [Ponytail](https://github.com/DietrichGebert/ponytail) by DietrichGebert | an order of steps that builds the minimum code: no code, reuse, the standard library, one line, then the minimum | none: 0.27.0 removed the minimal-code text and the `ponytail` option (0.20 to 0.26 history) |
 | [GitNexus](https://github.com/abhigyanpatwari/GitNexus) by abhigyanpatwari | hooks that add code graph context to the searches that the agent already runs | none: 0.27.0 removed the CodeGraph augment (0.20 to 0.26 history) |
-| [`jev` CLI](https://gist.github.com/pedramamini/014676fa8684d91bf7000f4623701ada) by pedramamini | short verbs (`yes`, `pick`, `rate`, `ask`) over the TypeSafe API, and keys in place of list positions | `plugins/dotclaude-jev/features/jev/cli.mjs` |
+| [`jev` CLI](https://gist.github.com/pedramamini/014676fa8684d91bf7000f4623701ada) by pedramamini | short verbs (`yes`, `pick`, `rate`, `ask`) over the TypeSafe API, and keys in place of list positions | `plugins/dotclaude-jev/features/jev/cli.ts` |
 
 dotclaude adopts none of the workflow skills of these projects.
 The [xsyetopz/skills](https://github.com/xsyetopz/skills) collection already covers those workflows.

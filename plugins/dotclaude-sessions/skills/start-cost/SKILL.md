@@ -26,7 +26,7 @@ It changes no file.
    The section `Start by source` lists the characters of each source: the built-in set, each plugin (by the name prefix of its skills, agents, and tools), each MCP server, `CLAUDE.md` and memory, the output style, and the system prompt.
    The first line gives the tokens of the first request.
 
-1. Compare a start with a plugin and a start without it.
+2. Compare a start with a plugin and a start without it.
    The transcript of a session shows only the plugins that were on, so the user must start two sessions.
    Ask the user for the two transcript paths, or tell the user to start one session with the plugin and one without it, with the same folder and the same first prompt.
    Then run:

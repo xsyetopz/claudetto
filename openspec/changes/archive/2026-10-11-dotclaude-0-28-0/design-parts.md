@@ -90,17 +90,17 @@ The 0.19 output style already told the model to read only the part of a file tha
 dotclaude bounds each subagent with these parts, in the order of D1:
 
 1. Agent body: one rule to search first and read only the matched range (`Grep` with `-n`, then `Read` with `offset` and `limit`), and never to page a whole file with `head -c` or `tail -c`.
-1. Budget: `SUBAGENT_CONTEXT_MAX` (100K) and `HAIKU_CONTEXT_MAX` (85K) in `features/context/limits.mjs`.
+2. Budget: `SUBAGENT_CONTEXT_MAX` (100K) and `HAIKU_CONTEXT_MAX` (85K) in `features/context/limits.mjs`.
    A Haiku 5.5 subagent uses `HAIKU_CONTEXT_MAX`, because Haiku 5.5 costs 5x for each request above 100K prompt tokens, and the bound leaves room for the report turn below that step.
    A classic `PostToolUse` hook gives `additionalContext` inside the subagent that tells it to report when its context passes the bound, because `turn.step` can change only `model` and `effort` (`research/mods-api.md`).
    Probe 2.32 first checks that the hook runs inside a subagent.
    The hook tells and does not block, because a block loses the work of the run.
    The same hook counts the turns of the subagent in its transcript (distinct `message.id` values) and reads `maxTurns` from the agent file by `agent_type`.
    With `TURNS_LEFT_AT` (2) turns left, it gives one note, joined with the context note when both apply, because a subagent has no turn count and the body rule did not keep a report (probe 10.9).
-1. `maxTurns` stays in each agent file, with a value from the eval, after task 2.17 finds what it counts.
+3. `maxTurns` stays in each agent file, with a value from the eval, after task 2.17 finds what it counts.
    One turn is one request, and a `SendMessage` resume after the limit starts a new count (task 2.17).
    So the delegation text tells the coordinator to take the report of a stopped run, not to resume it for more work.
-1. Delegation text in the prompt variants (D15): delegate a read only when it is larger than the start cost of a subagent, and give one subagent the related questions instead of one subagent for each question.
+4. Delegation text in the prompt variants (D15): delegate a read only when it is larger than the start cost of a subagent, and give one subagent the related questions instead of one subagent for each question.
    Give a simple question to one subagent, and use more subagents only for parts that are independent (the orchestrator-worker pattern, [agentpatterns.ai](https://agentpatterns.ai/patterns/multi-agent/orchestrator-worker/)).
 
 Task 2.25 split the main-session growth (`research/session-growth.md`).
@@ -113,14 +113,14 @@ Cross-session injected messages added about 42K tokens in one session (**confirm
 The main session gets these parts:
 
 1. The `tools` shared section and each agent body tell the model to read files with `Read` and `offset` and `limit`, and to refer to an earlier result instead of a second read of the same lines.
-1. A `PreToolUse` hook on `Bash` denies a command that only prints a file (`cat F`, `sed -n 'a,bp' F`, `head F`, `tail F`, with no pipe and no other command).
+2. A `PreToolUse` hook on `Bash` denies a command that only prints a file (`cat F`, `sed -n 'a,bp' F`, `head F`, `tail F`, with no pipe and no other command).
    The deny reason gives the `Read` call with the same range.
    A deny here is cheap, because the next call does the same read and no work is lost.
    A command with a pipe, a filter, or a generated file stays allowed.
-1. The same hook denies a `Bash` command whose output has no limit, and the reason gives the bounded form (task 18.14, decision of the user 2026-10-09).
+3. The same hook denies a `Bash` command whose output has no limit, and the reason gives the bounded form (task 18.14, decision of the user 2026-10-09).
    A pipe that ends in `head`, `tail`, or `wc`, a count, list, or range option, and output to a file stay allowed.
-1. Each agent body sets a bound on its final report (`REPORT_MAX_WORDS`), because the main session keeps each report to the end.
-1. `just measure` counts the repeat reads of each session, so that the eval can show the effect.
+4. Each agent body sets a bound on its final report (`REPORT_MAX_WORDS`), because the main session keeps each report to the end.
+5. `just measure` counts the repeat reads of each session, so that the eval can show the effect.
 
 Alternative: a lower `BASH_MAX_OUTPUT_LENGTH`.
 Rejected, because large single results are not the cause, and it also cuts build and test output.
@@ -241,11 +241,11 @@ It has these parts, and each part runs only when `.codegraph/` exists in the pro
 
 1. A check of the add-on finds `codegraph` on `PATH`, and when it is not there, it prints the install command and does not install it.
    The check never runs `codegraph install`, because that command edits the user config.
-1. `SessionStart` runs `codegraph sync` and adds one line that names `codegraph callers`, `callees`, and `impact` with `--json`.
-1. A `PreToolUse` hook on `Grep` and `Glob` adds the `codegraph query --json` result for the searched symbol as `additionalContext`, bounded by `GRAPH_CONTEXT_MAX` in the limits module of the add-on.
+2. `SessionStart` runs `codegraph sync` and adds one line that names `codegraph callers`, `callees`, and `impact` with `--json`.
+3. A `PreToolUse` hook on `Grep` and `Glob` adds the `codegraph query --json` result for the searched symbol as `additionalContext`, bounded by `GRAPH_CONTEXT_MAX` in the limits module of the add-on.
    The hook passes the search pattern to the CLI after `--`.
-1. A `PostToolUse` hook after `Edit`, `Write`, and a git command that changes the tree runs `codegraph sync` in the background.
-1. The `SessionStart` hook of the add-on injects the line that names `impact` and `callers` for a question about the effect of a change.
+4. A `PostToolUse` hook after `Edit`, `Write`, and a git command that changes the tree runs `codegraph sync` in the background.
+5. The `SessionStart` hook of the add-on injects the line that names `impact` and `callers` for a question about the effect of a change.
    No core agent body names the code graph, because the add-on must work and be absent without the core text.
 
 Before the add-on is built, task 17.1 compares the CLI with the built-in LSP tool (`ENABLE_LSP_TOOL`), because D1 and the `CLAUDE.md` rule against runtime JavaScript for a feature that Claude Code has apply.
@@ -260,11 +260,11 @@ In that issue, Claude printed context warnings at false values, worked around th
 The lesson is that a model can report a false state on purpose, so dotclaude does not take a state figure from the model.
 
 1. No prompt text tells the model to estimate or announce its context share.
-1. The context figure reaches the model through `additionalContext` of a `UserPromptSubmit` hook that reads the usage of the last request and speaks only above `CONTEXT_NOTICE_AT`.
+2. The context figure reaches the model through `additionalContext` of a `UserPromptSubmit` hook that reads the usage of the last request and speaks only above `CONTEXT_NOTICE_AT`.
    The hook keeps no marker (D35), so it speaks at each prompt above the level (D32).
    The status line may also show the figure to the user, but the model does not read it, so the hook is the route to the model.
    Task 2.26 first checks that Claude Code has no such figure for the model.
-1. Claims of a passed check stay under the over-claim measure of the eval.
+3. Claims of a passed check stay under the over-claim measure of the eval.
    0.27.0 has no `Stop` claim check (`wiki/design/Stop-Prompt-Hooks.md`).
    The 2.1.294 release notes say that Claude Code judges a `prompt` hook on `Stop` that is written as an instruction better, but its `Stop` evaluator text did not change (task 2.33), so task 18.14 tests a short claim-check `prompt` hook again with the eval as the only proof.
    The hook stays only if the eval shows a lower over-claim rate with no loss, and a cost within the noise bound, because each call sends the transcript (about 46K tokens in the mean on 0.26.0).
@@ -276,10 +276,10 @@ Concrete rules that a check can see held (ask before publish, read before edit, 
 Prose rules failed (no recap, semicolons in long lists, one sentence for each chat line), and the docs say that CLAUDE.md is context and a hook is the route to enforce (**confirmed**).
 
 1. Each rule that a program can check moves to a hook, a lint in `just check`, or an eval measure, and leaves the prompt text when the check holds it.
-1. `auto-mode-guard.mjs` asked 56 times and caught no real risk, all on `rm -rf` of a variable such as `$P`, `$SBX`, or `$DOTCLAUDE_SANDBOX` (**confirmed**, `research/compliance.md`).
+2. `auto-mode-guard.mjs` asked 56 times and caught no real risk, all on `rm -rf` of a variable such as `$P`, `$SBX`, or `$DOTCLAUDE_SANDBOX` (**confirmed**, `research/compliance.md`).
    The guard already allows a path under `$TMPDIR` (`ctx.tmp` in `lib/guard.mjs`), but it cannot resolve a variable.
    The fix resolves a variable that an earlier part of the same command assigned from `mktemp -d` or from `$TMPDIR/...` to the temp root.
    It rejects a path with `..` and a reassigned `TMPDIR`, and keeps `ask` for any other unresolved path.
    After task 3.2 the logic is in `features/guard/rules.mjs`.
-1. The eval adds behavior measures for repeat reads, recap and narration, and chat lines with more than one sentence (counted by the `Stop` hook of D29).
-1. The project `CLAUDE.md` states whether chat replies are in the scope of the line-break rule, because the data shows the text is not clear.
+3. The eval adds behavior measures for repeat reads, recap and narration, and chat lines with more than one sentence (counted by the `Stop` hook of D29).
+4. The project `CLAUDE.md` states whether chat replies are in the scope of the line-break rule, because the data shows the text is not clear.

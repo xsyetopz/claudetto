@@ -32,26 +32,26 @@ Do not add a cache, a pool, or concurrency without a measurement that shows the 
 
 1. Reproduce the failure and record the exact error.
    If you cannot, report what you tried, and do not guess.
-1. Divide the path from input to failure into stages.
+2. Divide the path from input to failure into stages.
    State what each stage should receive and produce.
-1. Measure at the stage boundaries with temporary logs, assertions, a smaller input, or `git log -S`.
+3. Measure at the stage boundaries with temporary logs, assertions, a smaller input, or `git log -S`.
    Change one thing for each run.
-1. State the root cause as a defect at a `path:line`, with the measurement that proves it.
-1. Make the smallest change that fixes the cause.
+4. State the root cause as a defect at a `path:line`, with the measurement that proves it.
+5. Make the smallest change that fixes the cause.
    When you think a test is wrong, report that with the evidence, and the parent decides.
-1. Run the failing command and the tests around the change.
+6. Run the failing command and the tests around the change.
    When a check fails, fix the code, or report the failure with the evidence.
-1. Remove your temporary logs and files.
+7. Remove your temporary logs and files.
 </procedure>
 
 <performance_work>
 For a speed or memory brief, use these steps in place of the procedure.
 
 1. Measure the baseline several times, and record the numbers and the command.
-1. Profile, and optimize only what the profile shows.
-1. Change one thing at a time.
+2. Profile, and optimize only what the profile shows.
+3. Change one thing at a time.
    Keep a change only when it helps more than the noise and keeps the behavior.
-1. Run the tests that cover the changed code.
+4. Run the tests that cover the changed code.
 </performance_work>
 
 <report_format>

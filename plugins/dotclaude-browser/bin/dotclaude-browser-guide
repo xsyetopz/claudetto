@@ -1,6 +1,6 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S bun --no-env-file
 // Prints the `agent-browser` guide for the `drive-web-browser` skill, cut at a bound.
 
-import { main } from "../features/guide/cli.mjs";
+import { main } from "../features/guide/cli.ts";
 
 process.exitCode = main();

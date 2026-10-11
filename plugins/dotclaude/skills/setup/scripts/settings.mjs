@@ -1,16 +1,15 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S bun --no-env-file
 // Merge the settings snippet into a Claude Code settings file.
 //
-//   node settings.mjs [--scope user|project|local] [--apply]
+//   bun --no-env-file settings.mjs [--scope user|project|local] [--apply]
 //
 // Without `--apply`, it prints the changes and writes nothing.
 // When the cached model catalog of the account offers `claude-mythos-5-1`, it goes in place of `claude-fable-5-1` in `availableModels`.
 // A list that already holds `claude-mythos-5-1` also keeps it.
-// The merge rules are in `mergeSettings` of `features/setup/settings.mjs`.
+// The merge rules are in `mergeSettings` of `features/setup/settings.ts`.
 // The status line commands get the absolute path of this plugin folder, because a status line command gets no `${CLAUDE_PLUGIN_ROOT}`.
 // The path holds the plugin version, so run setup again after each plugin update.
 
-import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {
@@ -19,8 +18,8 @@ import {
   planSettings,
   settingsFile,
   writeSettings,
-} from "../../../features/setup/settings.mjs";
-import { MYTHOS } from "../../../lib/snippet.mjs";
+} from "../../../features/setup/settings.ts";
+import { MYTHOS } from "../../../lib/snippet.ts";
 
 const args = process.argv.slice(2);
 const i = args.indexOf("--scope");
@@ -39,31 +38,31 @@ if (!file) {
 }
 
 /** The parsed JSON of `p`, or `{}` when it is missing or not valid. */
-const readOptional = (p) => {
+const readOptional = async (p) => {
   try {
-    return JSON.parse(fs.readFileSync(p, "utf8"));
+    return JSON.parse(await Bun.file(p).text());
   } catch {
     return {};
   }
 };
 const withDocs = hasDocsAddon(
-  readOptional(path.join(configDir, "settings.json")),
-  readOptional(path.join(configDir, "plugins", "installed_plugins.json")),
+  await readOptional(path.join(configDir, "settings.json")),
+  await readOptional(path.join(configDir, "plugins", "installed_plugins.json")),
 );
 // Claude Code keeps `.claude.json` in `CLAUDE_CONFIG_DIR` when it is set, and in the home folder otherwise.
-const globalConfig = readOptional(
+const globalConfig = await readOptional(
   process.env.CLAUDE_CONFIG_DIR
     ? path.join(configDir, ".claude.json")
     : path.join(os.homedir(), ".claude.json"),
 );
-const mythos = mythosInCatalog(
+const mythos = await mythosInCatalog(
   path.join(configDir, "cache", "model-catalog"),
   globalConfig.oauthAccount?.organizationUuid,
 );
 
 let plan;
 try {
-  plan = planSettings(file, root, withDocs, mythos, scope === "project");
+  plan = await planSettings(file, root, withDocs, mythos, scope === "project");
 } catch (err) {
   console.error(`${err.message} Nothing changed.`);
   process.exit(1);
@@ -90,7 +89,7 @@ if (!apply) {
   console.log("\nDry run. Run again with --apply to write these changes.");
   process.exit(0);
 }
-writeSettings(file, plan.settings);
+await writeSettings(file, plan.settings);
 console.log(
   `\nWrote ${file}. Restart Claude Code for the env and model settings to take effect.`,
 );

@@ -1,6 +1,6 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S bun --no-env-file
 // Prints the start of a Claude Code session by source, from its transcript, or the difference of two starts.
 
-import { main } from "../features/start/cli.mjs";
+import { main } from "../features/start/cli.ts";
 
-process.exitCode = main(process.argv.slice(2));
+process.exitCode = await main(process.argv.slice(2));

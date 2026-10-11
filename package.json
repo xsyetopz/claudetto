@@ -5,21 +5,22 @@
   "description": "A very opinionated Claude Code plugin designed by a Rustacean",
   "type": "module",
   "scripts": {
-    "test": "node --test --import ./tests/support/tmp-root.mjs --test-timeout=5000 \"tests/**/*.test.mjs\"",
-    "validate": "claude plugin validate --strict . && claude plugin validate --strict plugins/dotclaude && claude plugin validate --strict plugins/dotclaude-codegraph && claude plugin validate --strict plugins/dotclaude-browser && claude plugin validate --strict plugins/dotclaude-jev && claude plugin validate --strict plugins/dotclaude-docs && claude plugin validate --strict plugins/dotclaude-sessions && claude plugin validate --strict plugins/dotclaude-lab",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
-    "lint": "biome ci plugins tests tools",
-    "lint:md": "markdownlint-cli2"
+    "test": "bun test",
+    "validate": "bun tools/validate.ts",
+    "typecheck": "bun check",
+    "lint": "bunx biome ci plugins tests tools",
+    "lint:md": "bunx markdownlint-cli2"
   },
   "license": "MIT",
   "engines": {
-    "node": ">=22.18.0"
+    "bun": ">=1.4.3"
   },
-  "packageManager": "pnpm@12.10.1",
+  "packageManager": "bun@1.4.3",
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
+    "@types/node": "26.6.5",
+    "bun-types": "1.4.3",
     "markdownlint-cli2": "0.23.3",
-    "typescript": "7.0.2",
     "yaml": "2.9.1"
   }
 }

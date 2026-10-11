@@ -3,7 +3,7 @@ name: setup
 description: Applies the dotclaude settings snippet, sets up OpenSpec, and checks the tools of the installed add-ons. Use after an install or update of the plugin `dotclaude`.
 disable-model-invocation: true
 argument-hint: "[user|project|local]"
-allowed-tools: Bash(node *settings.mjs*), Bash(node *openspec.mjs*), Bash(node *addons.mjs*)
+allowed-tools: Bash(bun --no-env-file *settings.mjs*), Bash(bun --no-env-file *openspec.mjs*), Bash(bun --no-env-file *addons.mjs*)
 ---
 
 <task>
@@ -23,10 +23,10 @@ The scripts write nothing without `--apply`, so run their previews first.
    Otherwise, ask the user and offer **User** (`~/.claude/settings.json`, the default), **Project** (`.claude/settings.json`), and **Local** (`.claude/settings.local.json`).
    When `CLAUDE_CONFIG_DIR` is set, the script uses that directory in place of `~/.claude`.
 
-1. Preview the settings changes:
+2. Preview the settings changes:
 
    ```bash
-   node "${CLAUDE_SKILL_DIR}/scripts/settings.mjs" --scope <scope>
+   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/settings.mjs" --scope <scope>
    ```
 
    Show the user the list of changes.
@@ -41,10 +41,10 @@ The scripts write nothing without `--apply`, so run their previews first.
    The project scope gets no status line, because the path is of one computer, so offer the local scope for it.
    When `dotclaude-docs` is installed, the merge also adds its `permissions.allow` and `sandbox.network.allowedDomains` lines.
 
-1. Preview the OpenSpec steps:
+3. Preview the OpenSpec steps:
 
    ```bash
-   node "${CLAUDE_SKILL_DIR}/scripts/openspec.mjs"
+   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/openspec.mjs"
    ```
 
    Read the `OpenSpec:` lines.
@@ -57,10 +57,10 @@ The scripts write nothing without `--apply`, so run their previews first.
      They run `openspec config set delivery skills`, then `openspec update`, so that the six `openspec-*` skills stay and the `/opsx:*` command copies go.
    - After an upgrade, `openspec update` also refreshes the generated files, because they come from the CLI version.
 
-1. Preview the add-on tools:
+4. Preview the add-on tools:
 
    ```bash
-   node "${CLAUDE_SKILL_DIR}/scripts/addons.mjs"
+   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/addons.mjs"
    ```
 
    The preview gives the state of each installed dotclaude add-on, the global installs to offer, and the project steps.
@@ -71,7 +71,7 @@ The scripts write nothing without `--apply`, so run their previews first.
      The key is a secret, so tell the user to export it, and do not ask for its value or write it to a file.
    - `dotclaude-docs` needs `npx` on `PATH`, and the settings step adds its permission lines.
 
-1. Ask the user with one `AskUserQuestion` call.
+5. Ask the user with one `AskUserQuestion` call.
    Ask one question for the settings changes: apply them (recommended) or not.
    When the user wants to drop some keys, apply nothing, and tell the user to copy the keys that they want from the wiki page `Settings-Snippet`.
    Ask one question for the OpenSpec steps, when the preview lists steps.
@@ -79,12 +79,12 @@ The scripts write nothing without `--apply`, so run their previews first.
    A global install changes the computer of the user, so run it only after a yes.
    If the user declines a question, run nothing for it.
 
-1. Run each command that the user picked:
+6. Run each command that the user picked:
 
    ```bash
-   node "${CLAUDE_SKILL_DIR}/scripts/settings.mjs" --scope <scope> --apply
-   node "${CLAUDE_SKILL_DIR}/scripts/openspec.mjs" --apply
-   node "${CLAUDE_SKILL_DIR}/scripts/addons.mjs" --apply
+   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/settings.mjs" --scope <scope> --apply
+   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/openspec.mjs" --apply
+   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/addons.mjs" --apply
    ```
 
    Run each add-on install that the user picked as the preview gives it.
@@ -94,5 +94,5 @@ The scripts write nothing without `--apply`, so run their previews first.
    When a step fails, show the error line to the user.
    Do not do the step another way, for example by an edit of the settings file or of `openspec/config.yaml`, because the scripts are the checked path.
 
-1. Tell the user the files that changed and the steps that ran, and tell them to restart Claude Code.
+7. Tell the user the files that changed and the steps that ran, and tell them to restart Claude Code.
 </procedure>

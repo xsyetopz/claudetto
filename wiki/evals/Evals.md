@@ -54,7 +54,7 @@ The anchors are `(?<![\s\S])` and `(?![\s\S])`, so they hold with or without the
 The large `data/big.log` of `big-file-subagent` has the exact first line, the line with the audit code, and the exact last line, with any text between them.
 A change in the middle of that log is not seen.
 A file that the agent deleted does not exist, so the grader throws and the run fails the grader.
-`tests/dotclaude/eval-graders.test.mjs` runs each `scaffold.sh` and checks that each pattern matches the content that it writes, and no changed content.
+`tests/dotclaude/eval-graders.test.ts` runs each `scaffold.sh` and checks that each pattern matches the content that it writes, and no changed content.
 
 ## Checks that the format can express
 

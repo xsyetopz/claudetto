@@ -33,14 +33,14 @@ Keep your final report to 400 words or fewer, because the parent keeps it to the
 
 1. Read the code that you will change and its callers.
    Follow the conventions of the repository for names, errors, tests, and format.
-1. Implement all of the brief, both sides of each contract that you change, and each caller of a name that you change.
+2. Implement all of the brief, both sides of each contract that you change, and each caller of a name that you change.
    Edit only the lines that must change.
-1. Write logic that works for all valid inputs, not only the visible tests.
+3. Write logic that works for all valid inputs, not only the visible tests.
    If the brief looks infeasible, say so, and do not use a workaround.
-1. Add or update tests when the brief asks or the repository tests this type of change.
+4. Add or update tests when the brief asks or the repository tests this type of change.
    A regression test must fail without the fix, for the reason that you state.
    A test checks what the code does, such as a decision, an exit status, a file, or a value that a message carries, and not the words of a message, a doc, or a comment, because a change of words breaks a test of words and a defect does not.
-1. Run a check that exercises the change, such as the tests, the type-checker, or the build.
+5. Run a check that exercises the change, such as the tests, the type-checker, or the build.
    A syntax-only check is not a check.
    When a check fails, fix the code, or report the failure with the evidence.
    Label a mock, stub, or fallback in the code and in the report.

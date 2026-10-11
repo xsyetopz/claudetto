@@ -11,7 +11,7 @@ Run `claude --debug` to see the hook log of Claude Code.
 | --- | --- | --- |
 | No ask for a recursive `rm` | The plugin alone gives no `rm` ask, because a plugin cannot ship `permissions`. Merge the `ask` rules of the settings snippet. | [Guards](Guards) |
 | No policy ask for a repository of another owner | The repository has no policy file, belongs to you, or is not on GitHub. `gh` can also be missing or logged out, and then the ask fails open. Install `gh` and log in. | [Contributions](Contributions) |
-| A hook has no effect | Node.js 22.18 or later is not on `PATH`. The classic hooks and the status line need it, and the module does not. The call goes on. | [Install](Install) |
+| A hook has no effect | Bun 1.4.3 or later is not on `PATH`. The classic hooks and the status line need it, and the module does not. The call goes on. | [Install](Install) |
 | The status line shows nothing | The `statusLine` command still runs the stub of 0.27.0, or `<plugin folder>` is not replaced. Use the absolute path of the installed plugin folder. The path holds the version, so change it after an update. | [Settings snippet](Settings-Snippet) |
 | The status line has no credits segment or no context breakdown | The data is not documented and can change at a Claude Code release. The breakdown shows only after `/context` ran. | [Undocumented reads](Undocumented-Reads) |
 | A note at session start lists differences from the snippet | The drift check found a difference. Each line gives its fix, and the fix is a step for you. | [Core plugin](Core-Plugin#drift-check) |
@@ -62,7 +62,7 @@ Run `claude --debug` to see the hook log of Claude Code.
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| `just` in a tmux pane stops with "failed to get current directory" | Run `dotclaude-sandbox` with `node` in the pane. | [Sandbox](Sandbox#troubleshooting) |
+| `just` in a tmux pane stops with "failed to get current directory" | Run `bun <repo>/plugins/dotclaude-lab/bin/dotclaude-sandbox --plugin-dir <repo>/plugins/dotclaude` in the pane. | [Sandbox](Sandbox#troubleshooting) |
 | No login in the sandbox | Run `/login`, or set `CLAUDE_CODE_OAUTH_TOKEN`. | [Sandbox](Sandbox#troubleshooting) |
 | "plugin is locked by managed settings" in the debug log | A managed `enabledPlugins` entry holds the name. Remove it. | [Sandbox](Sandbox#troubleshooting) |
 | `dotclaude-schema` exits with an error that names a version | See the page. | [Lab](Lab#troubleshooting) |

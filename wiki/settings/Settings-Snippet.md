@@ -2,15 +2,15 @@
 
 A plugin cannot set permissions, environment variables, or models.
 This page gives the settings that dotclaude needs, as a plain JSON snippet in the format of Claude Code settings.
-The plugin ships the same values in `lib/snippet.mjs`, and a test keeps them equal to the blocks of this page.
+The plugin ships the same values in `lib/snippet.ts`, and a test keeps them equal to the blocks of this page.
 Older releases and some older text call this snippet the settings profile.
 The reason, scope, and Claude Code default of each key are on [Settings snippet keys](Settings-Snippet-Keys).
 
 ## Apply it with setup
 
 1. Run `/dotclaude:setup`.
-1. Pick the scope: user, project, or local.
-1. Read the list of changes, and answer yes to write them.
+2. Pick the scope: user, project, or local.
+3. Read the list of changes, and answer yes to write them.
 
 The merge adds keys and rules, keeps your other keys, and replaces `availableModels`.
 The status line commands get the absolute path of the installed plugin folder.
@@ -25,19 +25,19 @@ See [Mythos detection](Settings-Snippet-Keys#mythos-detection).
 ## Copy it by hand
 
 1. Copy the keys that you want into `~/.claude/settings.json` (user scope).
-1. Replace `<plugin folder>` in `statusLine` and `subagentStatusLine` with the absolute path of the installed `dotclaude` plugin folder, or delete both keys.
-   The commands are `node "<plugin folder>/features/statusline/cli.mjs"` and `node "<plugin folder>/features/statusline/subagent-cli.mjs"`, with forward slashes in the path on each platform.
+2. Replace `<plugin folder>` in `statusLine` and `subagentStatusLine` with the absolute path of the installed `dotclaude` plugin folder, or delete both keys.
+   The commands are `bun --no-env-file "<plugin folder>/features/statusline/cli.ts"` and `bun --no-env-file "<plugin folder>/features/statusline/subagent-cli.ts"`, with forward slashes in the path on each platform.
    `plugins/dotclaude/settings.json` is an empty object, so the plugin sets no status line itself.
    Research for this change found that a status line command gets no `${CLAUDE_PLUGIN_ROOT}` (`research/architecture.md`, confirmed), so the path must be absolute.
    The folder is the `installPath` of `dotclaude@dotclaude` in `~/.claude/plugins/installed_plugins.json`.
    On the maintainer machine it is `~/.claude/plugins/cache/dotclaude/dotclaude/<version>` (checked for 0.27.0).
    The path holds the version, so change the two commands again after each plugin update.
    A checkout started with `--plugin-dir` uses the path of that checkout.
-1. If you used 0.27.0, your `statusLine` runs the stub `<config dir>/dotclaude/statusline.mjs`, which shows nothing now.
+3. If you used 0.27.0, your `statusLine` runs the stub `<config dir>/dotclaude/statusline.mjs`, which shows nothing now.
    Replace the command as above, and delete the stub and the `<file>.dotclaude-backup-<time>` files by hand, because dotclaude deletes no file of yours.
-1. Replace `claude-fable-5-1` with `claude-mythos-5-1` if your account has Mythos.
+4. Replace `claude-fable-5-1` with `claude-mythos-5-1` if your account has Mythos.
    See [Mythos detection](Settings-Snippet-Keys#mythos-detection) and [the CVP procedure](Settings-Snippet-Keys#cvp-procedure).
-1. Restart Claude Code.
+5. Restart Claude Code.
 
 The snippet sets a key only when the Claude Code default does not give the result that dotclaude needs.
 A test checks each key of the block below against `schemas/claude-code-settings.json`.
@@ -100,14 +100,14 @@ The same test fails when the block holds a key of the [never-set list](Off-Switc
   "disableClaudeAiConnectors": true,
   "statusLine": {
     "type": "command",
-    "command": "node \"<plugin folder>/features/statusline/cli.mjs\"",
+    "command": "bun --no-env-file \"<plugin folder>/features/statusline/cli.ts\"",
     "padding": 0,
     "refreshInterval": 1,
     "hideVimModeIndicator": true
   },
   "subagentStatusLine": {
     "type": "command",
-    "command": "node \"<plugin folder>/features/statusline/subagent-cli.mjs\""
+    "command": "bun --no-env-file \"<plugin folder>/features/statusline/subagent-cli.ts\""
   },
   "enabledPlugins": {
     "cc-plugin-agents-md@builtin": false,

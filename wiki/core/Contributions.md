@@ -7,7 +7,7 @@ The policy ask of the hooks module replaces it.
 
 ## The policy ask
 
-The module in `hooks/register.mjs` asks once per session and per repository, when Claude reaches a repository of another owner that has a `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md` file.
+The module in `hooks/register.ts` asks once per session and per repository, when Claude reaches a repository of another owner that has a `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md` file.
 It covers these calls:
 
 - Bash: `git clone`, `gh`, `curl`, or `wget` on the repository.
@@ -16,12 +16,12 @@ It covers these calls:
 How it works:
 
 1. It reads your login with `gh config get user -h github.com`.
-1. It reads the organizations where you are admin with `gh api user/memberships/orgs`.
+2. It reads the organizations where you are admin with `gh api user/memberships/orgs`.
    A repository of you or of such an organization is yours, and it keeps the verdict.
-1. For another owner, it reads the policy files with `gh api` and the raw accept header.
-1. It asks, and shows the policy text.
+3. For another owner, it reads the policy files with `gh api` and the raw accept header.
+4. It asks, and shows the policy text.
    The text is XML-escaped, wrapped in `<policy_file name=...>`, and cut at 2,000 characters with `[cut]`.
-1. The next call to the same repository in the session keeps the verdict.
+5. The next call to the same repository in the session keeps the verdict.
 
 The module has no error handler, so it fails open.
 When `gh` is missing, logged out, or slower than 5 seconds, the call goes on without the ask.
@@ -31,9 +31,9 @@ A project with no policy is unknown, not permitted, so read its `CONTRIBUTING.md
 ## What to do when it asks
 
 1. Read the policy text in the prompt.
-1. If the policy forbids AI work, reject the call.
-1. If it allows AI work, allow the call, and follow what the policy asks for, such as a disclosure line.
-1. Review each draft before you send it.
+2. If the policy forbids AI work, reject the call.
+3. If it allows AI work, allow the call, and follow what the policy asks for, such as a disclosure line.
+4. Review each draft before you send it.
    After you send it, ask Claude to reply in the thread only when you want that.
 
 > **Note:** Maintainers spend time on each report.

@@ -8,7 +8,7 @@
   "MD013": false,
   "MD024": { "siblings_only": true },
   "MD026": { "punctuation": ".,;:!" },
-  "MD029": { "style": "one" },
+  "MD029": { "style": "ordered" },
   "MD030": {
     "ul_single": 1,
     "ol_single": 1,

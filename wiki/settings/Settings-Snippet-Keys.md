@@ -45,20 +45,20 @@ See [Off switches](Off-Switches#not-in-the-snippet).
 | --- | --- | --- | --- | --- |
 | `autoCompactEnabled` | `false` | Any | `true` | No automatic compaction. |
 | `autoMemoryEnabled` | `false` | Any | `true` | No auto memory. |
-| `includeGitInstructions` | `false` | Any | `true` | About 6.2k characters of git text and the git status snapshot leave the prompt. The `Bash` tool text of `features/surface/data.mjs` carries the attribution line. |
+| `includeGitInstructions` | `false` | Any | `true` | About 6.2k characters of git text and the git status snapshot leave the prompt. The `Bash` tool text of `features/surface/data.ts` carries the attribution line. |
 | `model` | `claude-opus-5-5` | Any | The default of the plan | The main model. |
-| `availableModels` | The four models of the roster | Any | Unset, all models | Opus 5.5, Sonnet 5.5, Haiku 5.5, and Fable 5.1. `claude-haiku-4-5` is not in the roster. For a CVP account see [the CVP procedure](#cvp-procedure). |
+| `availableModels` | The four models of the roster | Any | Unset, all models | Fable 5.1, Opus 5.5, Sonnet 5.5, and Haiku 5.5. `claude-haiku-4-5` is not in the roster. For a CVP account see [the CVP procedure](#cvp-procedure). |
 | `enforceAvailableModels` | `true` | Any | Unset | `Default` resolves to a model of the list. |
 | `maxEffortLevel` | `max` | Any | Unset | No cap. Each model keeps its effort, and dotclaude never rewrites it. |
 | `enableArtifact` | `false` | Any, a project can only turn it off | On when the feature is available | Removes the Artifact tool from each request. |
 | `enableWorkflows` | `false` | Any | By plan | Removes the Workflow tool from each request. |
 | `promptCacheTtl` | `5m` | Any | Automatic, 1 hour on a subscription within its limits | The cache lifetime of the main conversation is the same on each account. |
 | `disableBundledSkills` | `true` | Any | `false` | Removes the bundled skills from the listing. |
-| `statusLine` | A command that runs `features/statusline/cli.mjs`, with `refreshInterval` 1 and `hideVimModeIndicator` true | Any | Unset | The three-column status line. `refreshInterval` keeps the countdowns and the blinking glyph current in an idle session. The line shows `vim.mode`, so the built-in `-- INSERT --` indicator would repeat it. See [Status line](Status-Line). |
-| `subagentStatusLine` | A command that runs `features/statusline/subagent-cli.mjs` | Any | Unset, the default rows | One row for each running subagent. |
+| `statusLine` | A command that runs `features/statusline/cli.ts`, with `refreshInterval` 1 and `hideVimModeIndicator` true | Any | Unset | The three-column status line. `refreshInterval` keeps the countdowns and the blinking glyph current in an idle session. The line shows `vim.mode`, so the built-in `-- INSERT --` indicator would repeat it. See [Status line](Status-Line). |
+| `subagentStatusLine` | A command that runs `features/statusline/subagent-cli.ts` | Any | Unset, the default rows | One row for each running subagent. |
 | `promptSuggestionEnabled` | `false` | Any | `true` | No background request for suggestions. |
 | `awaySummaryEnabled` | `false` | Any | `true` | No background request for a recap. |
-| `bashOutputMaxChars` | `4000` | Any | `30000` | The lowest value. A longer `Bash` output goes to a file, and Claude gets a preview and the path. `BASH_OUTPUT_MAX_CHARS` in `lib/budget.mjs` holds the value. |
+| `bashOutputMaxChars` | `4000` | Any | `30000` | The lowest value. A longer `Bash` output goes to a file, and Claude gets a preview and the path. `BASH_OUTPUT_MAX_CHARS` in `lib/budget.ts` holds the value. |
 | `spinnerTipsEnabled` | `false` | Any | `true` | No tips in the spinner. |
 | `feedbackSurveyRate` | `0` | Any | Unset, a survey can show | No quality survey. |
 | `feedbackDrafts` | `off` | Any | `notify` | Removes the `SendFeedback` tool. |
@@ -124,9 +124,9 @@ An answer alone grants nothing, so a probe call must show that Mythos 5.1 serves
      --output-format json
    ```
 
-1. Read the output.
+2. Read the output.
    The call is served by Mythos 5.1 only when the exit code is 0 and `modelUsage` has one key, `claude-mythos-5-1`.
-1. If so, put `claude-mythos-5-1` in `availableModels` in place of `claude-fable-5-1`.
+3. If so, put `claude-mythos-5-1` in `availableModels` in place of `claude-fable-5-1`.
    If not, keep `claude-fable-5-1`.
 
 A call for a model outside `availableModels` falls back to another model with no error.

@@ -87,7 +87,7 @@ Each add-on works without the core plugin.
 
 - `dotclaude-codegraph` gives Claude the code graph of a project from the CodeGraph CLI `codegraph`.
   It needs `codegraph` on `PATH` and a project index from `codegraph init -y`.
-  In an indexed project, it syncs the index, adds the callers of a searched symbol to `Grep` and `Glob` calls,
+  In an indexed project, it syncs the index and adds one line about the graph at session start,
   and adds no MCP server.
   See [Code graph](https://github.com/xsyetopz/dotclaude/wiki/Code-Graph).
 - `dotclaude-jev` has the `second_opinion` tool,
@@ -109,9 +109,9 @@ claude plugin update dotclaude@dotclaude
 ```
 
 1. Restart Claude Code, because a running session keeps the old hooks and agents.
-1. Read the new entry in [`CHANGELOG.md`](CHANGELOG.md).
+2. Read the new entry in [`CHANGELOG.md`](CHANGELOG.md).
    Before 1.0, a release can change or remove behavior without a compatibility layer.
-1. Compare your `settings.json` with the [settings snippet](https://github.com/xsyetopz/dotclaude/wiki/Settings-Snippet).
+3. Compare your `settings.json` with the [settings snippet](https://github.com/xsyetopz/dotclaude/wiki/Settings-Snippet).
    The drift check at session start reports some differences.
 
 0.27.0 is a rebuild that removes most 0.26 parts, and 0.28.0 removes the setup profile, the router, and the handoff skill.

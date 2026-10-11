@@ -11,7 +11,7 @@ The plugin does not state the cause of a usage limit, because no source gives on
 
 | Item | Value |
 | --- | --- |
-| Install | `/plugin install dotclaude-sessions@dotclaude`, with Node.js 22.18 or later |
+| Install | `/plugin install dotclaude-sessions@dotclaude`, with Bun 1.4.3 or later |
 | Skills | `start-cost` and `usage`, in `skills/` |
 | Bins | `dotclaude-start` and `dotclaude-usage`, in `bin/` |
 | Hooks | None |
@@ -26,7 +26,7 @@ The plugin does not state the cause of a usage limit, because no source gives on
 ```
 
 Claude Code adds the `bin/` folder of an installed plugin to `PATH`, so the two commands run from a session.
-Outside a session, run `node <plugin folder>/bin/dotclaude-usage`.
+Outside a session, run `bun <plugin folder>/bin/dotclaude-usage`.
 `<plugin folder>` is the `installPath` of `dotclaude-sessions@dotclaude` in `~/.claude/plugins/installed_plugins.json`.
 
 ## `dotclaude-start`

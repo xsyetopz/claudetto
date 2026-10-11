@@ -40,10 +40,10 @@ Model choice is not one of them.
 1. **Context per turn.**
    Each turn reads the whole context again.
    Independent reports agree: issue #24147 measured 99.9% cache reads, and a cold-start post measured 94%.
-1. **Subagent fan-out.**
+2. **Subagent fan-out.**
    Each fresh subagent writes about 14k tokens to the cache before its first tool call.
    Its 5-minute cache then expires while it waits on long builds.
-1. **`general-purpose` in place of dotclaude agents.**
+3. **`general-purpose` in place of dotclaude agents.**
    The 0.19 output style preferred dotclaude agents in prose.
    That preference did not hold.
    The setup profile of 0.20 to 0.27 denied `Agent(general-purpose)`.
@@ -160,7 +160,7 @@ Thus 0.20.4 adds the graph to the search result, as the GitNexus hooks do, and k
 
 ## Usage report
 
-`just measure` (`tools/measure.mjs`) reads a session transcript and prints where the context went.
+`just measure` (`tools/measure.ts`) reads a session transcript and prints where the context went.
 It reports the first request of the session against `START_TOKENS`.
 For each subagent of the session, it reports the requests, the final context, and the total input tokens.
 For the main session, it reports the tool-result size for each tool and the count of repeat reads of the same file.

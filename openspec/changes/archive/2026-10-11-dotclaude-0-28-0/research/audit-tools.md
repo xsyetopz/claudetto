@@ -189,13 +189,13 @@ Proposal (inferred):
    - Skills `usage` and `measure` over one shared `lib/transcript.mjs`.
    - `bin/dotclaude-usage` and `bin/dotclaude-measure` as thin wrappers.
    - Removes: `CONTEXT_WINDOW` import (take it as `--window N`, default read from the `model` name or `200000`), `START_TOKENS`, `sizes.mjs` bounds (make `--bound N` required to fail), `maxTurns` of `dotclaude:*` agents (read `maxTurns` from any plugin's `agents/*.md` under `--agents-dir`, or drop), `verdicts.jsonl`.
-1. **`dotclaude-lab`** (new add-on, "plugin development kit").
+2. **`dotclaude-lab`** (new add-on, "plugin development kit").
    - `bin/dotclaude-sandbox`, `bin/dotclaude-capture`, `bin/dotclaude-schema`.
    - Skill `eval-compare`.
    - A flag `--check-frontmatter` for the old `debug-agents`.
    - Capture and sandbox use `node:http` and `fetch`, so no Bun.
-1. **Stay in the repository**: `bump`, `release`, `wiki`, `update`, `lab`, `check`, `test`, `lint`, `validate`, `sizes.mjs`, `limits.mjs`, `start-run` (as a thin recipe that calls the two bins).
-1. **Self-management by the marketplace** (optional): a skill `dotclaude-release` is possible, but it names this repo's files, so it is a doc in `wiki/development/Development.md` and not a plugin (inferred).
+3. **Stay in the repository**: `bump`, `release`, `wiki`, `update`, `lab`, `check`, `test`, `lint`, `validate`, `sizes.mjs`, `limits.mjs`, `start-run` (as a thin recipe that calls the two bins).
+4. **Self-management by the marketplace** (optional): a skill `dotclaude-release` is possible, but it names this repo's files, so it is a doc in `wiki/development/Development.md` and not a plugin (inferred).
 
 Why two plugins and not one: the session readers need no network and no TTY.
 The lab tools open a proxy and a TUI and need the login token.
@@ -245,9 +245,9 @@ Repository assumptions:
 ## 7. Open questions for the user
 
 1. One new plugin (`dotclaude-sessions`) or two (`-sessions`, `-lab`)? The proposal is two.
-1. Is a read of the login token (Keychain or `.credentials.json`) in a shipped `sandbox` acceptable? If not, the tool needs `CLAUDE_CODE_OAUTH_TOKEN` or `/login` in the sandbox.
-1. Keep `usage-report` and `measure` beside `/usage`, `/context`, and `/insights`? The `AGENTS.md` rule bars code for a feature that exists. I did not compare field by field.
-1. Drop the dotclaude-only parts (`verdicts.jsonl`, `maxTurns` brief stats) or keep them behind an option?
-1. Is `import.meta.main` safe on your minimum Node (22.18)? I did not run it.
-1. Should `bump` and `release` stay in `justfile` only? Proposed yes.
-1. Tests: the usage, capture, sandbox, start-run, debug-agents, eval-variant, and bump tools have none (measured). Add tests before a port, or after?
+2. Is a read of the login token (Keychain or `.credentials.json`) in a shipped `sandbox` acceptable? If not, the tool needs `CLAUDE_CODE_OAUTH_TOKEN` or `/login` in the sandbox.
+3. Keep `usage-report` and `measure` beside `/usage`, `/context`, and `/insights`? The `AGENTS.md` rule bars code for a feature that exists. I did not compare field by field.
+4. Drop the dotclaude-only parts (`verdicts.jsonl`, `maxTurns` brief stats) or keep them behind an option?
+5. Is `import.meta.main` safe on your minimum Node (22.18)? I did not run it.
+6. Should `bump` and `release` stay in `justfile` only? Proposed yes.
+7. Tests: the usage, capture, sandbox, start-run, debug-agents, eval-variant, and bump tools have none (measured). Add tests before a port, or after?

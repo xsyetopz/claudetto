@@ -15,7 +15,7 @@ This page lists each layer, what to do when one fires, and how to change one.
 | --- | --- | --- |
 | Permission rules | `permissions` in the [settings snippet](Settings-Snippet), copied by you into your `settings.json` | Deny, ask, and allow lists for tools and commands. |
 | Sandbox | `sandbox` in the same snippet | Runs Bash commands in the Claude Code sandbox, with a list of allowed domains. |
-| Module guard | `hooks/register.mjs`, with pure rules in `features/guard/rules.mjs` | One `tool.check` handler for the policy ask. |
+| Module guard | `hooks/register.ts`, with pure rules in `features/guard/rules.ts` | One `tool.check` handler for the policy ask and the adherence ask. |
 
 Deny rules are not a security boundary on their own, so the snippet pairs them with the sandbox ([Design](Design)).
 
@@ -62,7 +62,7 @@ See D2 in [Decisions](Decisions-Settings) and [Off switches](Off-Switches#manage
 
 ## The module guard
 
-`hooks/register.mjs` registers one `tool.check` handler.
+`hooks/register.ts` registers one `tool.check` handler.
 It calls the engine first, and it returns a deny of the engine unchanged.
 
 | Case | What the module does |
@@ -90,11 +90,11 @@ An ask of a classic `PreToolUse` hook stops the call in auto mode (**measured**,
 - The policy ask for a repository of another owner stays in the module, which keeps the repositories that it checked in memory, for each session.
   So in auto mode the classifier decides the policy ask.
 - No hook in `hooks.json` sets `onFailure`, so the default `continue` applies.
-  With `"block"`, a hook that cannot start, for example when `node` is not on `PATH`, would block each guarded call until `node` works again, with a warning only in the log.
-  Claude cannot repair a missing `node`, so the guards fail open, and the permission rules and the sandbox still apply.
+  With `"block"`, a hook that cannot start, for example when `bun` is not on `PATH`, would block each guarded call until `bun` works again, with a warning only in the log.
+  Claude cannot repair a missing `bun`, so the guards fail open, and the permission rules and the sandbox still apply.
   The decision is D31 in `design.md` of the 0.28.0 change.
 
-The `git` ask in `features/adherence/git.mjs` and the file-print deny in `features/reads/rules.mjs` read commands with the shared reader `lib/shell.mjs`.
+The `git` ask in `features/adherence/git.ts` and the file-print deny in `features/reads/rules.ts` read commands with the shared reader `lib/shell.ts`.
 It splits a command at `;`, `&&`, `||`, `|`, `&`, and newlines, and it reads `$(...)`, backticks, `sh -c`, `bash -c`, and `eval`.
 It strips wrapper commands such as `sudo`, `env`, `nice`, `timeout`, and `xargs`.
 
@@ -113,15 +113,15 @@ A deny is a decision of you.
 Claude must not get the same result in another way.
 
 1. Read the reason in the deny message.
-1. Change the call so that it follows the rule.
-1. If the rule is wrong for your project, change the rule in your own settings file.
+2. Change the call so that it follows the rule.
+3. If the rule is wrong for your project, change the rule in your own settings file.
    The drift check does not compare permission rules, so nothing else needs a change.
 
 ## What to do when a call asks
 
 1. Read the reason.
-1. Choose to allow or reject the call.
-1. For the policy ask, read the policy that the prompt shows before you allow.
+2. Choose to allow or reject the call.
+3. For the policy ask, read the policy that the prompt shows before you allow.
    If the policy forbids AI tools, reject the call.
 
 ## Troubleshooting

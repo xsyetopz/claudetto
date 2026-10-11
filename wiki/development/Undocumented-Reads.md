@@ -22,7 +22,7 @@ No read here blocks a tool call or changes a file.
 | `/context` scrape | Status line | The Markdown table that `/context` writes into the transcript | The breakdown shows only the free tokens, or a wrong `messages` figure. |
 | Drift section ids | Drift check | The section ids of `prompt.compose` in the bundle of Claude Code 2.1.296 | A new id gives a line in the drift note at each session start. |
 | Built-in plugin names | Drift check | Internal `cc-plugin-*@builtin` names in the bundle | A renamed plugin gives a false line or no line. |
-| Tested version | Drift check | `TESTED_VERSION` in `features/drift/data.mjs` | Another version gives a line at each session start. |
+| Tested version | Drift check | `TESTED_VERSION` in `features/drift/data.ts` | Another version gives a line at each session start. |
 | Prompt and tool texts | Surface cuts | Hand copies of Claude Code texts | A changed text makes the cut do nothing. |
 | Context margin | Status line | `CONTEXT_BLOCK_MARGIN` of 23,000 tokens, from the 2.1.296 bundle | The free-token figure is off. |
 
@@ -34,7 +34,7 @@ It also shows the weekly window of Fable from the same file.
 - Source: the file `<config dir>/.claude.json`, key `cachedUsageUtilization`.
   The config dir is `CLAUDE_CONFIG_DIR`, or the home folder.
   The credits are in `utilization.cedar_ember`, and the Fable window is in `utilization.limits[]`.
-- Code: `plugins/dotclaude/features/statusline/credits.mjs`.
+- Code: `plugins/dotclaude/features/statusline/credits.ts`.
   The read opens the file one time for each status line run, and it keeps only these two parts.
 - Evidence: the schema of the cache in Claude Code 2.1.296 has no `cedar_ember` key, but it passes unknown keys through.
   The grant fields (`resets_left`, `paused`, `usable_now`, `starts_at`, `ends_at`) are in the grant schema of the bundle.
@@ -63,7 +63,7 @@ The status line shows an exact breakdown of the context (system, memory, and ski
 
 - Source: `/context` writes its Markdown table into the transcript as a `user` record whose text starts with `## Context Usage`.
   Its rows come from the count-tokens API.
-- Code: `plugins/dotclaude/features/statusline/context-table.mjs`.
+- Code: `plugins/dotclaude/features/statusline/context-table.ts`.
   Each status line run reads the last 1,000,000 bytes of the transcript (`TABLE_TAIL_BYTES_MAX`), keeps no state, and takes the newest table.
 - The parser reads only the first table, with a regex for a row and a map of category names: `System prompt`, `System tools`, `Custom agents`, `Memory files`, and `Skills`.
   `System tools (deferred)` is not a part, because deferred tools are not in the context.
@@ -88,11 +88,11 @@ The audit gives this as the way to drop the scrape if the status line moves into
 
 The drift check reports a section in the system prompt that dotclaude does not know.
 
-- Source: `ENGINE_SECTIONS` in `plugins/dotclaude/features/drift/data.mjs`.
+- Source: `ENGINE_SECTIONS` in `plugins/dotclaude/features/drift/data.ts`.
   It lists 33 section ids of Claude Code 2.1.296, such as `intro`, `tools`, `context_management`, `heron_brook`, `tengu_silent_harbor`, and `willow_tern`.
   The ids come from the section list in the bundle, because no document lists them.
   The ids after `memory` come only on some conditions, such as a flag, a model, or a deferred tool.
-- Code: `unknownSections` in `features/drift/rules.mjs` takes the ids from a `prompt.compose` call with the `bare` trait.
+- Code: `unknownSections` in `features/drift/rules.ts` takes the ids from a `prompt.compose` call with the `bare` trait.
   An id with a colon belongs to a plugin, so it does not count.
 
 How it breaks at a Claude Code release:
@@ -106,7 +106,7 @@ How it breaks at a Claude Code release:
 The line is a hint and not an error.
 dotclaude keeps an unknown section as Claude Code made it.
 
-A second list, `KNOWN_SECTIONS` in `features/prompt/select.mjs`, holds the ids that a prompt variant replaces:
+A second list, `KNOWN_SECTIONS` in `features/prompt/select.ts`, holds the ids that a prompt variant replaces:
 `intro`, `system`, `doing_tasks`, `actions`, `tools`, `tone`, and `lean_body`.
 `composeSections` replaces only these ids, and passes any other id on unchanged.
 
@@ -129,11 +129,11 @@ These are not reads of stored data, but they depend on text that Claude Code doe
 
 | Text | Code | Break |
 | --- | --- | --- |
-| The `Agent`, `Bash`, and `Read` tool descriptions | `features/surface/data.mjs` (`TOOL_TEXT`) | A handler replaces a description only when its own text is shorter. A long new description from Claude Code is cut to the old copy, and a short one stays. |
-| The `agent_listing_delta` sentence about parallel agents | `features/surface/rules.mjs` | An exact string replacement. A changed sentence makes it do nothing. |
-| The `Recent commits:` block of the `session_context` attachment | `features/surface/rules.mjs` | A regex. A changed layout makes it do nothing. |
-| The 23,000-token block margin | `lib/budget.mjs` (`CONTEXT_BLOCK_MARGIN`) | The margin is the 20,000-token output reserve plus 3,000 tokens in the 2.1.296 bundle. A change moves the free-token figure. |
-| Model names such as `haiku-5-5` and `opus-5-5` | `lib/model.mjs`, `features/context/rules.mjs`, `features/statusline/limits.mjs` | A new model name takes the default subagent context bound. |
+| The `Agent`, `Bash`, and `Read` tool descriptions | `features/surface/data.ts` (`TOOL_TEXT`) | A handler replaces a description only when its own text is shorter. A long new description from Claude Code is cut to the old copy, and a short one stays. |
+| The `agent_listing_delta` sentence about parallel agents | `features/surface/rules.ts` | An exact string replacement. A changed sentence makes it do nothing. |
+| The `Recent commits:` block of the `session_context` attachment | `features/surface/rules.ts` | A regex. A changed layout makes it do nothing. |
+| The 23,000-token block margin | `lib/budget.ts` (`CONTEXT_BLOCK_MARGIN`) | The margin is the 20,000-token output reserve plus 3,000 tokens in the 2.1.296 bundle. A change moves the free-token figure. |
+| Model names such as `haiku-5-5` and `opus-5-5` | `lib/model.ts`, `features/context/rules.ts`, `features/statusline/limits.ts` | A new model name takes the default subagent context bound. |
 
 A cut that does nothing is silent by design: it passes the text on with no change.
 The effect is only a larger request.
@@ -144,8 +144,8 @@ The lab tests in `plugins/dotclaude/tests/surface.test.ts` run the handlers with
 1. Read the drift note in the first answer of a new session.
    The note goes to the model, and it tells the model to report the differences to you and to change no setting.
    It names a Claude Code version that is not the tested version, the built-in plugins that are on, the synced skills, the settings that stop the agent files, and the ids of the sections that dotclaude does not know.
-1. If the status line lost the credits segment or the context breakdown, read the matching table above.
-1. Report a break that you cannot fix in the issues of the repository, with the Claude Code version.
+2. If the status line lost the credits segment or the context breakdown, read the matching table above.
+3. Report a break that you cannot fix in the issues of the repository, with the Claude Code version.
 
 ## Related pages
 

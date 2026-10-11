@@ -6,7 +6,7 @@ The sizes in the capture sections come from 2.1.283 to 2.1.289, and they are the
 
 ## Summary
 
-- Since 0.27.0, the core plugin gives Claude one text of its own: the forced output style `output-styles/dotclaude.md` and the shared sections of `features/prompt/shared.mjs` (the first request has the targets `FIRST_REQUEST_LOW_BYTES` and `FIRST_REQUEST_HIGH_BYTES`).
+- Since 0.27.0, the core plugin gives Claude one text of its own: the forced output style `output-styles/dotclaude.md` and the shared sections of `features/prompt/shared.ts` (the first request has the targets `FIRST_REQUEST_LOW_BYTES` and `FIRST_REQUEST_HIGH_BYTES`).
   No SessionStart hook of the core plugin adds context.
 - The style is a set of XML blocks with consistent, descriptive tag names (**official**, [prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)).
   The guide gives no trained meaning to a tag name, and a tag is plain text.
@@ -24,7 +24,7 @@ The sizes in the capture sections come from 2.1.283 to 2.1.289, and they are the
 The system prompt has a `shared` block and a `session` block (**binary**, 2.1.292).
 `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1` swaps the `shared` block for a short `lean_body`.
 The forced style then adds the role, the tone, and the format.
-The dotclaude rules are in the system prompt, in the shared sections of `features/prompt/shared.mjs` ([System prompt](System-Prompt#one-route)).
+The dotclaude rules are in the system prompt, in the shared sections of `features/prompt/shared.ts` ([System prompt](System-Prompt#one-route)).
 
 The `context_management` section of the `session` block says that the system summarizes prior messages when the context grows long (**binary**, 2.1.292).
 That is wrong in a dotclaude session, because the snippet turns compaction off.
@@ -56,7 +56,7 @@ The 2.1.294 default was "You are an interactive agent that helps users with soft
 | `counts` | Copy each count from a tool output. |
 
 The output style has the blocks `<role>`, `<reports>`, and `<text_format>`.
-Verify the exact text in `features/prompt/shared.mjs` and `output-styles/dotclaude.md`.
+Verify the exact text in `features/prompt/shared.ts` and `output-styles/dotclaude.md`.
 This page describes their sections and not their words.
 
 ## What a request contains
@@ -80,10 +80,10 @@ Tool search is off by default when `ANTHROPIC_BASE_URL` points to another host.
 The first match in this list decides the prompt (**binary**, 2.1.288):
 
 1. The variable is truthy: simple.
-1. The variable is `0` or `false`: full.
-1. The provider is Bedrock, Vertex, or Foundry: simple.
-1. The feature flag `tengu_velvet_tide` is on: simple.
-1. The feature flag `simple_system_prompt` decides.
+2. The variable is `0` or `false`: full.
+3. The provider is Bedrock, Vertex, or Foundry: simple.
+4. The feature flag `tengu_velvet_tide` is on: simple.
+5. The feature flag `simple_system_prompt` decides.
 
 The simple prompt drops the long system bullets, the coding rules, "Executing actions with care", the task-tool section, and the tone section.
 It keeps a one-line form of the first four.
@@ -169,7 +169,7 @@ The MCP page of the docs still says 2,048 characters for each tool description (
 The `prompt.attachment` handler of dotclaude rewrites an attachment by exact type, and an unknown type passes on.
 Task 9.3 measured one headless sandbox session of the `dotclaude` plugin on Haiku 5.5 before and after the `agent_listing_delta` cut.
 The prompt was "Reply with the word ok."
-The measure is `node tools/measure.mjs <transcript>`, which prints the figures and writes no file.
+The measure is `bun tools/measure.ts <transcript>`, which prints the figures and writes no file.
 
 | Type | Cut | Saving (tokens) |
 | --- | --- | ---: |
@@ -184,7 +184,7 @@ The measure is `node tools/measure.mjs <transcript>`, which prints the figures a
 - First request after: 10,443 tokens (input 2, cache creation 2,995, cache read 7,446).
 - The agent lines are the descriptions of the five dotclaude agents.
   A shorter line would make the model pick an agent with less information, so the cut leaves them.
-- The `tool.describe` handler marks `AskUserQuestion` and `ListAgents` as deferred, so the engine sends only their names until Claude loads one (`features/surface/data.mjs`).
+- The `tool.describe` handler marks `AskUserQuestion` and `ListAgents` as deferred, so the engine sends only their names until Claude loads one (`features/surface/data.ts`).
   It never sets a tool to loaded.
 - The `agent.offer` handler drops `claude-code-guide` and `statusline-setup`, and it keeps every dotclaude agent.
 - The cut of `environment` has no safe text, because the attachment is the one source of the host facts.

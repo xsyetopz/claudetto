@@ -12,10 +12,10 @@ This line requires Claude Code v2.1.283 or later.
 To update:
 
 1. Restart Claude Code.
-1. Run `/dotclaude:apply-settings-profile` again.
+2. Run `/dotclaude:apply-settings-profile` again.
    It adds Sonnet 5 to `availableModels`, replaces the Sonnet deny with Fable denies, and removes the 0.4.0 mapping of `sonnet` to Opus 5.5.
-1. If you set `allowed_models` yourself, add `claude-sonnet-5` to it.
-1. If you use the Codex agents, run `/dotclaude:setup-integrations codex` again.
+3. If you set `allowed_models` yourself, add `claude-sonnet-5` to it.
+4. If you use the Codex agents, run `/dotclaude:setup-integrations codex` again.
 
 ## Added
 

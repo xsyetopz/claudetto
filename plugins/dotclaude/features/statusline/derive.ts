@@ -1,0 +1,85 @@
+// Pure functions for the values that the status line derives from its input.
+// Times are in seconds, as in `rate_limits[*].resets_at`.
+
+import { PACE_MIN_FRACTION, RATE_MIN_MS } from "./limits.ts";
+import type {
+  CacheStats,
+  Cost,
+  LimitWindow,
+  MissCauses,
+  Pace,
+  PromptCache,
+  Rates,
+} from "./types.ts";
+
+/**
+ * The pace of a limit window of `span` seconds at time `now`, or `null` while it is too early.
+ * `delta` is the used percentage minus the elapsed percentage of the window,
+ * so a positive value is a deficit and a negative value is a reserve.
+ * `runOutAt` is the time at which the limit runs out at the current rate,
+ * and it is `null` when the limit lasts to `resets_at`.
+ */
+export function pace(
+  window: LimitWindow | undefined,
+  now: number,
+  span: number,
+): Pace | null {
+  if (!window) return null;
+  const used = window.used_percentage;
+  const resetAt = window.resets_at ?? 0;
+  const left = resetAt - now;
+  if (!(Number.isFinite(used) && left >= 0 && left <= span)) return null;
+  const elapsed = (span - left) / span;
+  if (elapsed < PACE_MIN_FRACTION) return null;
+  const delta = Math.round(used - 100 * elapsed);
+  const out = used > 0 ? now + ((100 - used) * elapsed * span) / used : null;
+  const runOutAt = out !== null && used < 100 && out < resetAt ? out : null;
+  return { delta, runOutAt };
+}
+
+/** The hit percentage, the misses that tell something, and the cause of the last such miss. */
+export function cacheStats(cache: PromptCache | undefined): CacheStats {
+  const causes: MissCauses = cache?.miss_causes ?? {};
+  // Idle time past the TTL and a model switch are no cache fault, so they do not count.
+  const misses =
+    (cache?.misses ?? 0) -
+    (causes.ttl_expired_5m ?? 0) -
+    (causes.ttl_expired_1h ?? 0) -
+    (causes.model_changed ?? 0);
+  const last = (cache?.last_miss_cause?.causes ?? []).find(
+    (c) => c !== "model_changed" && !c.startsWith("ttl_expired"),
+  );
+  return {
+    hit:
+      typeof cache?.hit_ratio === "number"
+        ? Math.round(cache.hit_ratio * 100)
+        : null,
+    misses: Math.max(misses, 0),
+    last: last ?? null,
+  };
+}
+
+/** The seconds until the prompt cache expires, or 0 when it is cold. */
+export const cacheLeft = (
+  cache: PromptCache | undefined,
+  now: number,
+): number => (cache?.warm ? Math.max((cache.expires_at ?? 0) - now, 0) : 0);
+
+/** The cost and the changed lines for each hour of the session, or `null` for a session that is too short. */
+export function rates(cost: Cost | undefined): Rates | null {
+  const ms = cost?.total_duration_ms ?? 0;
+  if (!(ms >= RATE_MIN_MS)) return null;
+  const hours = ms / 3_600_000;
+  const lines =
+    (cost?.total_lines_added ?? 0) + (cost?.total_lines_removed ?? 0);
+  const usd = cost?.total_cost_usd;
+  return {
+    costPerHour:
+      typeof usd === "number" && Number.isFinite(usd) ? usd / hours : null,
+    linesPerHour: lines / hours,
+  };
+}
+
+/** The tokens left to the context window, and never below 0. */
+export const headroom = (tokens: number, window: number): number =>
+  Math.max(window - tokens, 0);

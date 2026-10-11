@@ -35,7 +35,7 @@ Put such a key in user settings.
 | Built-in agents | `permissions.deny` entries `Agent(claude-code-guide)` and `Agent(statusline-setup)` | Any | Removes two agent lines from each request. |
 | Plan mode tools | `permissions.deny` entries `EnterPlanMode` and `ExitPlanMode` | Any | Removes two tool lines. The eval of 2026-10-08 showed no loss, see [Not in the snippet](#not-in-the-snippet). |
 | Task tools | `permissions.deny` entries `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, and `TaskUpdate` | Any | Saves about 30 tokens, and the model keeps no task list. The eval showed no loss. |
-| Git instructions | `includeGitInstructions` set to false | Any | About 6.2k characters of git text and the git status snapshot leave the prompt. The eval showed no loss, and the `Bash` tool text of `features/surface/data.mjs` carries the attribution line. |
+| Git instructions | `includeGitInstructions` set to false | Any | About 6.2k characters of git text and the git status snapshot leave the prompt. The eval showed no loss, and the `Bash` tool text of `features/surface/data.ts` carries the attribution line. |
 
 The built-in plugins that the snippet turns off are `cc-plugin-agents-md`, `cc-plugin-claude-test`,
 `cc-plugin-diff`, `cc-plugin-mermaid`, `cc-plugin-mods-guide`, `cc-plugin-responsive-mode`,
@@ -111,7 +111,7 @@ Auto-fix at `Stop` and its `DOTCLAUDE_AUTOFIX` variable are removed, so no hook 
 ## Never set
 
 The snippet never sets a key that stops hooks or plugins, removes project instructions or attachments, or forces a model or effort.
-The list is a constant in `tests/dotclaude/settings-pin.test.mjs`, because `lib/` ships to users and only the test reads it.
+The list is a constant in `tests/dotclaude/settings-pin.test.ts`, because `lib/` ships to users and only the test reads it.
 The test fails when the plugin `settings.json` or any JSON block of the snippet page sets any entry.
 
 | Entry | Reason |

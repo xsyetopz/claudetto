@@ -17,7 +17,7 @@ The tree, the manifest rules, and the module graph rules are in [Plugin layout](
 
 - One concern for each file, 300 lines or fewer, and 500 for a test file.
   One test walks the repository and fails on a file over its bound.
-- Bounds have three tiers: `lib/budget.mjs`, `features/<name>/limits.mjs`, and `tools/limits.mjs` ([Plugin layout](Plugin-Layout#bound-tiers)).
+- Bounds have three tiers: `lib/budget.ts`, `features/<name>/limits.mjs`, and `tools/limits.ts` ([Plugin layout](Plugin-Layout#bound-tiers)).
 - The `AGENTS` list is dropped, because the agent frontmatter is the official source.
 - Probe P2 showed that install shows a dialog even when each option has a default.
   A plugin adds a `userConfig` option only for a real user choice.

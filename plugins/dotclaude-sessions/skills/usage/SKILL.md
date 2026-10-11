@@ -22,7 +22,7 @@ The bin `dotclaude-usage` reads the transcripts under `~/.claude/projects/` and 
 
    Run `dotclaude-usage --help` for the options.
 
-1. Read the output.
+2. Read the output.
    Each part has a label.
    `Skills that the period did not use` names the source of its list.
 </procedure>

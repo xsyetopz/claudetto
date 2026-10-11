@@ -32,30 +32,30 @@ Style: a small modular monolith with one composition root.
 
 1. A mod has one hooks module.
    `modules` is an array with one path. [MR "Files"] **confirmed**
-1. The module may import files inside the plugin by relative path.
+2. The module may import files inside the plugin by relative path.
    The one bare import is `claude-code`.
    Dynamic `import()` is invalid, and `on()` event names must be string literals. [MC "Check what Claude Code reads"] **confirmed**
-1. Passing `$` to a function imported from another file fails validation.
+3. Passing `$` to a function imported from another file fails validation.
    `$` may go only to a top-level function of the same file. [MC] **confirmed**
-1. Validation lists the events and `$` calls of the module.
+4. Validation lists the events and `$` calls of the module.
    The `plugin.register` event gives that list (`e.uses`) to other mods. [MR "Other mods"] **confirmed**
    That a call invisible to validation is invisible to a policy is **inferred**.
-1. The module runs with no Node. [plugin-authoring skill, this session] **confirmed**
+5. The module runs with no Node. [plugin-authoring skill, this session] **confirmed**
    So each file it imports must be pure ESM with no `node:` import.
    `lib/guard.mjs` is pure today.
-1. A marketplace plugin is copied to the cache, and files outside it are not copied. [L "In-place and copied plugins"] **confirmed**
-1. `${CLAUDE_PLUGIN_ROOT}` changes with each version, and durable files go to `${CLAUDE_PLUGIN_DATA}`. [R "Environment variables"] **confirmed**
-1. A plugin `settings.json` applies only `agent` and `subagentStatusLine`. [R], [Co] **confirmed**
-1. A plugin agent ignores `permissionMode`, `hooks`, `mcpServers`, and `initialPrompt`. [Co "Agents"] **confirmed**
+6. A marketplace plugin is copied to the cache, and files outside it are not copied. [L "In-place and copied plugins"] **confirmed**
+7. `${CLAUDE_PLUGIN_ROOT}` changes with each version, and durable files go to `${CLAUDE_PLUGIN_DATA}`. [R "Environment variables"] **confirmed**
+8. A plugin `settings.json` applies only `agent` and `subagentStatusLine`. [R], [Co] **confirmed**
+9. A plugin agent ignores `permissionMode`, `hooks`, `mcpServers`, and `initialPrompt`. [Co "Agents"] **confirmed**
    `scripts/` is a convention, not a name that Claude Code reads. [Co "Hooks"] **confirmed**
-1. A skill may hold `scripts/`, called with `${CLAUDE_SKILL_DIR}`.
+10. A skill may hold `scripts/`, called with `${CLAUDE_SKILL_DIR}`.
    `skillOverrides` does not apply to a plugin skill. [S] **confirmed**
-1. `dependencies` is the official way to compose plugins.
+11. `dependencies` is the official way to compose plugins.
    A manifest with a `name` and a `dependencies` array is a valid bundle. [D] **confirmed**
-1. `userConfig` values reach the module as `options` in `register(on, options)`.
+12. `userConfig` values reach the module as `options` in `register(on, options)`.
    Classic command hooks get `CLAUDE_PLUGIN_OPTION_<KEY>`.
    A status line command gets neither. [MR "Files"], [R "User configuration"] **confirmed**
-1. `bin/` is on the Bash `PATH`, but claude.ai and Cowork skip a plugin with `bin/`. [R "Standard layout"] **confirmed**
+13. `bin/` is on the Bash `PATH`, but claude.ai and Cowork skip a plugin with `bin/`. [R "Standard layout"] **confirmed**
 
 ## Decision review
 
@@ -84,12 +84,12 @@ Changes:
 
 1. `types/index.d.ts` is needed only for `$.state` or a new namespace. [MR "Files"] **confirmed**
    Add it with the first feature that uses `$.state`.
-1. `tests/mod.test.ts` to `hooks/register.test.ts` has no doc reason.
+2. `tests/mod.test.ts` to `hooks/register.test.ts` has no doc reason.
    [MC] uses `tests/`, and `claude plugin test` runs every `*.test.ts` under the folder. **confirmed**
    Keep `tests/`, with one file for each feature.
-1. `skills/setup/scripts/settings.mjs` to `scripts/setup/` has no doc reason, because the docs bundle a script in the skill. [S] **confirmed**
+3. `skills/setup/scripts/settings.mjs` to `scripts/setup/` has no doc reason, because the docs bundle a script in the skill. [S] **confirmed**
    Move only code that a second caller needs.
-1. `scripts/` names two roles: an entry point, and a pure library that the module imports.
+4. `scripts/` names two roles: an entry point, and a pure library that the module imports.
    The name is allowed, so this is naming only (**inferred**).
 
 ### D18 and the one-module limit
@@ -134,10 +134,10 @@ Three tiers:
 1. **Shared runtime bounds**: read by two or more parts, or written to the profile by setup.
    `CONTEXT_WINDOW`, `USAGE_LEVELS`, `STYLE_MAX_BYTES`.
    They stay in `plugins/dotclaude/lib/budget.mjs`.
-1. **Feature bounds**: read by one feature.
+2. **Feature bounds**: read by one feature.
    They live in `features/<name>/limits.mjs`.
    Examples: guard timeouts, `SUBAGENT_CONTEXT_MAX`, `TOOL_RESULT_MAX`, the router table.
-1. **Repository bounds**: read only by tests and tools.
+3. **Repository bounds**: read only by tests and tools.
    They live in `tools/limits.mjs`.
    `just measure` writes `START_TOKENS` to `tools/baseline.json`, so a measure is data and not a hand edit.
    The baseline file is a proposal.
@@ -192,12 +192,12 @@ Feature folders for 0.28.0: `guard`, `prompt`, `router`, `context` (D22), `autof
 
 1. Entry points are `hooks/register.mjs`, `features/*/cli.mjs`, skill scripts, and the status line.
    They import their own `features/<name>/` and `lib/`.
-1. `features/<name>/` imports `lib/` and its own folder.
+2. `features/<name>/` imports `lib/` and its own folder.
    It never imports another feature.
    Shared code moves to `lib/`.
-1. `lib/` imports only `lib/`.
-1. A file in the module graph has no `node:` import.
-1. `tools/` and `tests/` may import `plugins/`, but never the reverse.
+3. `lib/` imports only `lib/`.
+4. A file in the module graph has no `node:` import.
+5. `tools/` and `tests/` may import `plugins/`, but never the reverse.
    An add-on plugin imports nothing from another plugin. [L] **confirmed**
 
 Enforcement: one Bun test in `tests/dotclaude/` that parses `import` lines (`dependency-cruiser` would add a dev dependency, a user decision).
@@ -205,9 +205,9 @@ Enforcement: one Bun test in `tests/dotclaude/` that parses `import` lines (`dep
 ## Slotting a new feature
 
 1. Make `features/<name>/` with `rules.mjs` and `limits.mjs`.
-1. Add literal `on(...)` lines and top-level `$` functions to `register.mjs`.
-1. Add classic command hooks to `hooks.json` for child-process work.
-1. Add `tests/<name>.test.ts`, `tests/dotclaude/<name>.test.mjs`, a `CHANGELOG` line, and a wiki page.
+2. Add literal `on(...)` lines and top-level `$` functions to `register.mjs`.
+3. Add classic command hooks to `hooks.json` for child-process work.
+4. Add `tests/<name>.test.ts`, `tests/dotclaude/<name>.test.mjs`, a `CHANGELOG` line, and a wiki page.
 
 Only `register.mjs` and `hooks.json` change outside the feature (the composition root), and `budget.mjs` only for a shared bound.
 

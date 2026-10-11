@@ -60,7 +60,7 @@ Three lists are in [Off switches](Off-Switches) and in tests:
   The denies of the plan tools and the Task tools and `includeGitInstructions: false` moved into the snippet after that eval.
   The setup `--with` flag that added these items is removed.
 - Never set: keys that would disable hooks, defeat the `model` and `effort` of the agent files, or remove context that Claude needs.
-  The list is a constant in `tests/dotclaude/settings-pin.test.mjs`.
+  The list is a constant in `tests/dotclaude/settings-pin.test.ts`.
 
 A key in the global config scope is not in `settings.json`, so the snippet uses the env var for it.
 No off switch for the `computer-use` MCP server is known.

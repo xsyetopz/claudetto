@@ -67,17 +67,17 @@ What stays, and why:
 1. Formats that Claude Code owns: settings, env vars, hook input and output, manifests, and the frontmatter of agents, skills, and output styles.
    The suite format of `claude plugin eval` belongs here, but its capabilities are **unverified** (D9, task 25.1).
    OpenSpec files and `.env` stay, because their tools own them.
-1. The schemas that the repository extracts from the bundle: `schemas/claude-code-settings.json` and `schemas/claude-code-managed-settings.json`, for 2.1.295 and later, and the tool `tools/schema.mjs`.
+2. The schemas that the repository extracts from the bundle: `schemas/claude-code-settings.json` and `schemas/claude-code-managed-settings.json`, for 2.1.295 and later, and the tool `tools/schema.mjs`.
    They copy a Claude Code format and are not a dotclaude format.
    The extraction version goes in the standard JSON Schema `$comment` keyword at the root of each file, such as `Extracted from Claude Code 2.1.295`.
    It does not go in a made-up key, and it does not go in the file name, because the `$schema` link must stay the same (decision of the user 2026-10-08).
    The version in the path is the other option, and it is rejected, because each update would change every link and test pin.
    The 2.1.293 and 2.1.294 copies go, because they only served 0.27.0 profiles.
-1. Reads of Claude Code data that no doc covers: `cachedUsageUtilization` in `.claude.json`, the `/context` table in the transcript, `prompt_snapshot`, and the transcript JSONL.
+3. Reads of Claude Code data that no doc covers: `cachedUsageUtilization` in `.claude.json`, the `/context` table in the transcript, `prompt_snapshot`, and the transcript JSONL.
    The wiki documents each read with no user detail.
    A reader accepts the known shape and hides its segment on another shape, which is safe handling and not a format of ours.
    A read that needs its own state file goes under the test above and is cut.
-1. Code constants (`lib/budget.mjs`, `features/<name>/limits.mjs`, `tools/limits.mjs`), prompt text and the XML-like tags in prompts, and OpenSpec files.
+4. Code constants (`lib/budget.mjs`, `features/<name>/limits.mjs`, `tools/limits.mjs`), prompt text and the XML-like tags in prompts, and OpenSpec files.
 
 Wipe policy: task group 25 deletes each proprietary format of earlier work outright, with its tests.
 There is no migration, no compatibility shim, no kept copy, and no reader for an old file.

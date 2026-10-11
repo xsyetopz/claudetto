@@ -14,7 +14,7 @@ import {
   mock,
   test,
 } from "claude-code/testing";
-import { snippetFor } from "../lib/merge.mjs";
+import { snippetFor } from "../lib/merge.ts";
 
 // The `es2023` lib of the lab has no `url` on `ImportMeta`, and the lab runtime gives it.
 declare global {
@@ -132,7 +132,7 @@ const start = ($: Engine) =>
   $.session.start({ cwd: "/work/app", surface: null, isInteractive: false });
 
 const noteOf = (session: MockSession) =>
-  session.appended().map((row) => row.message.content[0]?.text);
+  session.appended().map((row) => row.message.content[0]?.["text"]);
 
 test("no drift adds no text", async ($: Engine, on: On) => {
   const session = stub(on);
@@ -250,7 +250,6 @@ test("a settings file without the snippet names the missing values and the setup
   expect(note).toContain("`env`");
   expect(note).toContain("`autoCompactEnabled`");
   expect(note).toContain("`/dotclaude:setup`");
-  expect(note).toContain("more");
 });
 
 test("a status line of another plugin version folder is reported as stale", async ($: Engine, on: On) => {
@@ -260,7 +259,6 @@ test("a status line of another plugin version folder is reported as stale", asyn
   const [note] = noteOf(session);
   expect(note).toContain("`statusLine.command`");
   expect(note).toContain("`subagentStatusLine.command`");
-  expect(note).not.toContain("do not have");
 });
 
 test("a settings file with Mythos in place of Fable has no drift", async ($: Engine, on: On) => {

@@ -13,7 +13,7 @@ Use it to see a hook, the status line, or an agent work in a real session before
 
 ## Before you begin
 
-- Install `just`, or use `node plugins/dotclaude-lab/bin/dotclaude-sandbox --plugin-dir <plugin>` in its place.
+- Install `just`, or use `bun plugins/dotclaude-lab/bin/dotclaude-sandbox --plugin-dir <plugin>` in its place.
 - Have a Claude login.
   See [Login](#login).
 
@@ -25,10 +25,10 @@ Use it to see a hook, the status line, or an agent work in a real session before
    just sandbox
    ```
 
-1. The script writes no dotclaude setting to `config/`.
+2. The script writes no dotclaude setting to `config/`.
    Copy the keys that a test needs from the [settings snippet](Settings-Snippet) into `config/settings.json`.
    With no snippet, the sandbox runs with the defaults of Claude Code plus the hooks, agents, and output style of the plugins.
-1. Remove the sandbox when you finish:
+3. Remove the sandbox when you finish:
 
    ```bash
    just sandbox-clean
@@ -45,7 +45,7 @@ just sandbox --model claude-haiku-5-5 -p "prompt"
 - `just sandbox` gives `--plugin-dir` for each plugin in `plugins/`, such as `dotclaude-browser` and `dotclaude-jev`.
 - It loads `dotclaude` too, but compaction and the 300K window come from the settings snippet, so the sandbox has them only when `config/settings.json` holds them.
 - `dotclaude-sandbox` of the plugin `dotclaude-lab` does the work.
-  To test an add-on with no core plugin, run `node plugins/dotclaude-lab/bin/dotclaude-sandbox --plugin-dir plugins/dotclaude-docs`.
+  To test an add-on with no core plugin, run `bun plugins/dotclaude-lab/bin/dotclaude-sandbox --plugin-dir plugins/dotclaude-docs`.
 
 | Setting | Default | Use |
 | --- | --- | --- |
@@ -94,7 +94,7 @@ The script gives `claude` a token in its environment only:
 
 1. `CLAUDE_CODE_OAUTH_TOKEN`, when you set it.
    `claude setup-token` makes a long-lived token.
-1. If not, your own login token.
+2. If not, your own login token.
    On macOS it is in the Keychain entry `Claude Code-credentials`.
    On other systems it is in `~/.claude/.credentials.json`.
    The script reads `claudeAiOauth.accessToken`.
@@ -118,13 +118,13 @@ Rules for agents:
 Use it for hook behavior that the reply shows.
 
 1. Put test files in `project/` first, for example a `pkg/CLAUDE.md` with a rule that the reply must show.
-1. Run the prompt:
+2. Run the prompt:
 
    ```bash
    just sandbox --model claude-sonnet-5-5 -p "Run cat pkg/a.ts and describe it."
    ```
 
-1. Add `--debug-file <path>` to see which hooks ran and what they returned.
+3. Add `--debug-file <path>` to see which hooks ran and what they returned.
 
 - Put the prompt before variadic flags such as `--allowedTools`.
   A variadic flag takes all the arguments after it, and then `claude` finds no prompt.
@@ -151,13 +151,13 @@ Do not turn off the Bash sandbox in the sandbox config to work around the second
 A capture session sends each request of the agent session and of its sandbox runs through `just capture`.
 
 1. In a terminal, run `just capture`.
-1. In a second terminal, start the agent session with the proxy:
+2. In a second terminal, start the agent session with the proxy:
 
    ```bash
    ANTHROPIC_BASE_URL=http://127.0.0.1:8787 ENABLE_TOOL_SEARCH=true claude
    ```
 
-1. `just sandbox` runs in that session inherit both variables.
+3. `just sandbox` runs in that session inherit both variables.
    The proxy writes each request body to `$TMPDIR/dotclaude-capture`.
 
 The proxy forwards to `--upstream URL`, else to `ANTHROPIC_BASE_URL`, else to `https://api.anthropic.com`.
@@ -190,11 +190,11 @@ tmux kill-session -t sandbox
 ## Status line commands
 
 To test the status line script without a session, give it input on stdin.
-The script is `plugins/dotclaude/features/statusline/cli.mjs`.
+The script is `plugins/dotclaude/features/statusline/cli.ts`.
 The fields of the input are in the script and in the status line docs of Claude Code, so read them before you write the input.
 
 ```bash
-echo '<input JSON>' | node plugins/dotclaude/features/statusline/cli.mjs
+echo '<input JSON>' | bun plugins/dotclaude/features/statusline/cli.ts
 ```
 
 Claude Code does not log a status line command that works.
@@ -203,7 +203,7 @@ To see the input that it gives, set a command in `config/settings.json` that wri
 ## Clean up
 
 1. Stop each tmux session that you started.
-1. Run `just sandbox-clean`.
+2. Run `just sandbox-clean`.
 
 The sandbox keeps its sessions and settings until you remove it.
 That lets you continue a test, but an old sandbox can hide a first-run problem.
@@ -212,7 +212,7 @@ That lets you continue a test, but an old sandbox can hide a first-run problem.
 
 | Problem | Fix |
 | --- | --- |
-| `just` in a tmux pane stops with "failed to get current directory" | Run `node <repo>/plugins/dotclaude-lab/bin/dotclaude-sandbox --plugin-dir <repo>/plugins/dotclaude` in the pane instead. |
+| `just` in a tmux pane stops with "failed to get current directory" | Run `bun <repo>/plugins/dotclaude-lab/bin/dotclaude-sandbox --plugin-dir <repo>/plugins/dotclaude` in the pane instead. |
 | `claude` is a shell function or alias | Put the `claude` executable on `PATH`. |
 | No login in the sandbox | Run `/login`, or set `CLAUDE_CODE_OAUTH_TOKEN`. |
 | `claude` finds no prompt in a headless run | Put the prompt before variadic flags such as `--allowedTools`. |

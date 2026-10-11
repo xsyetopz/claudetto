@@ -22,7 +22,7 @@ Both runs used the default model of Claude Code, 3 runs for each case and arm, a
 The recipe `eval-variant` builds the variant from a git ref, and the checkout has many uncommitted changes.
 So the variant is a copy of `plugins/dotclaude/` in a temporary folder, with 3 lines removed from `output-styles/dotclaude.md`.
 The 3 lines are the evidence rule: "Before you revert, delete, or undo finished work ...", "A side finding ...", and "When you cannot get that evidence ...".
-The `EVIDENCE_LINE` in `features/prompt/shared.mjs` stays, so the block for a subagent still has the rule in the variant.
+The `EVIDENCE_LINE` in `features/prompt/shared.ts` stays, so the block for a subagent still has the rule in the variant.
 The style has `force-for-plugin: true`, so the style loads in the run.
 Each case ran with `claude plugin eval PLUGIN --case NAME --no-publish --scaffold --trust-plugin --allow-tools Bash,Write,Edit --max-cost-usd 30`.
 The `--case` option takes one glob and no braces, so there was one command for `accusation-*`, one for `false-alarm-sum`, and one for `verification-claim`, for each plugin folder.

@@ -7,11 +7,11 @@ Source labels are in [Home](Home).
 
 The hooks module replaces the Claude Code sections `intro`, `system`, `doing_tasks`, `actions`, `tools`, `tone`, and `lean_body` with the variant of the session model.
 A variant holds only the text of one model.
-The rules that every model shares are the shared sections of `features/prompt/shared.mjs`, and `variantSections` puts them before the model notes ([System prompt](System-Prompt#one-route)).
+The rules that every model shares are the shared sections of `features/prompt/shared.ts`, and `variantSections` puts them before the model notes ([System prompt](System-Prompt#one-route)).
 The model is Opus 5.5, Sonnet 5.5, Haiku 5.5, Fable 5.1, or Mythos 5.1, which gets the Fable variant.
 A section with another id passes on unchanged.
 A model with no variant keeps the sections of Claude Code.
-Source: `plugins/dotclaude/features/prompt/variants.mjs` and `plugins/dotclaude/features/prompt/shared.mjs`.
+Source: `plugins/dotclaude/features/prompt/variants.ts` and `plugins/dotclaude/features/prompt/shared.ts`.
 
 | Variant | Model notes | Verification line in the subagent block |
 | --- | --- | --- |
@@ -41,7 +41,7 @@ The evidence line asks for a new check before Claude undoes finished work becaus
 ## Size of the first request
 
 A variant has no byte bound of its own.
-The text of the first request, with no tool schemas, has the targets `FIRST_REQUEST_LOW_BYTES` (8 KB) and `FIRST_REQUEST_HIGH_BYTES` (16 KB) in `tools/limits.mjs`.
+The text of the first request, with no tool schemas, has the targets `FIRST_REQUEST_LOW_BYTES` (8 KB) and `FIRST_REQUEST_HIGH_BYTES` (16 KB) in `tools/limits.ts`.
 `just measure` prints the size and checks them, and it writes no file, where 1 KB is 1,024 bytes.
 A size above the high bound fails, and a size below the low bound is reported.
 

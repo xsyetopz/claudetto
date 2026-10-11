@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S bun --no-env-file
 // Runs `claude plugin eval` on two plugin folders, one after the other.
 //
 //   dotclaude-eval-compare A B [claude plugin eval options...]
@@ -11,7 +11,7 @@
 // The results of each run stay in `evals/results/` of its plugin folder.
 // Exits 0 when both runs succeed.
 
-import { runBoth } from "../features/eval-compare/run.mjs";
+import { runBoth } from "../features/eval-compare/run.ts";
 
 const args = process.argv.slice(2);
 if (args.includes("--help") || args.includes("-h")) {

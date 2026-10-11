@@ -30,20 +30,20 @@ The decisions are D12, D13, and D25 in [Decisions](Decisions-Router).
 
 The frontmatter of `agents/*.md` is the only source of `model`, `effort`, and `maxTurns`.
 No code list repeats them.
-The pin test in `tests/dotclaude/agents.test.mjs` does these checks:
+The pin test in `tests/dotclaude/agents.test.ts` does these checks:
 
 - The model is one of `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`.
   `claude-haiku-4-5` fails the test.
 - The effort is in `SUBAGENT_EFFORTS` for that model, and it is not `max`.
-  `SUBAGENT_EFFORTS` is in `features/statusline/limits.mjs`, and the status line marks an effort that is not in the list.
+  `SUBAGENT_EFFORTS` is in `features/statusline/limits.ts`, and the status line marks an effort that is not in the list.
 - The roster is these five names and no other.
 
-The turn bound reads `maxTurns` from the file, and `tests/dotclaude/context/turn-bound.test.mjs` tests it.
+The turn bound reads `maxTurns` from the file, and `tests/dotclaude/context/turn-bound.test.ts` tests it.
 
 ## Description rules
 
 - A description has 300 characters or fewer.
-  `AGENT_DESCRIPTION_MAX_CHARS` in `tools/limits.mjs` holds the bound, because only tests read it.
+  `AGENT_DESCRIPTION_MAX_CHARS` in `tools/limits.ts` holds the bound, because only tests read it.
 - A description says what the agent does and when to delegate to it.
 - A description uses no forceful word.
 - The agent listing goes in each request, so a long description costs tokens for each request.
@@ -55,7 +55,7 @@ Each body therefore repeats the rules that matter for its role:
 
 - The scope rule and the verification rule for the role.
 - The read rule: search first with `Grep`, then read the matched range with `Read` and its `offset` and `limit` ([Context bound](Context-Bound)).
-- The report bound `REPORT_MAX_WORDS` (400 words), with the value from `features/context/limits.mjs`.
+- The report bound `REPORT_MAX_WORDS` (400 words), with the value from `features/context/limits.ts`.
 - The keep-the-work rule and the block rule come in the `agent.spawn` block, and not in the body ([System prompt](System-Prompt#evidence-before-undoing-finished-work)).
 - What to do when a check fails: `debugger` and `implementer` fix the code or report the failure with the evidence.
   They do not raise a bound, weaken or skip a test, or edit a check, a config, or a hook unless the brief says that the user asked.

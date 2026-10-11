@@ -42,10 +42,10 @@ Task 2.8 closed the import question: a hooks module may import a file inside the
 The module graph follows these rules:
 
 1. A module file imports by relative path inside the plugin, and no import leaves the plugin, because the cache copy has no file outside it.
-1. A handler with `$` calls may sit in a feature file that the module imports.
+2. A handler with `$` calls may sit in a feature file that the module imports.
    `claude plugin validate` lists those calls under the module (probe P1, task 2.27).
-1. No file in the graph has a `node:` import, because the module runs with no Node.
-1. `on()` event names are string literals, and `import()` is not used.
+3. No file in the graph has a `node:` import, because the module runs with no Node.
+4. `on()` event names are string literals, and `import()` is not used.
 
 Probe P1 (task 2.27) passed, so the glue of a feature sits in its folder (`research/probes-3.md`).
 `CLAUDE.md` at a plugin root does not load, so no plugin has one.
@@ -63,10 +63,10 @@ Bounds have three tiers:
 
 1. Shared runtime bounds are read by two or more parts, or the wiki snippet carries them.
    They stay in `lib/budget.mjs`: `CONTEXT_WINDOW` and `USAGE_LEVELS`.
-1. Feature bounds are read by one feature.
+2. Feature bounds are read by one feature.
    They go in `features/<name>/limits.mjs`, or in the own module of an add-on.
    Examples: the guard timeouts, `SUBAGENT_CONTEXT_MAX`, `REPORT_MAX_WORDS`, `CONTEXT_NOTICE_AT`, `RESULT_MAX_CHARS` (8,000), `GRAPH_CONTEXT_MAX`, and the byte budget of each prompt variant.
-1. Repository bounds are read only by tests and tools.
+3. Repository bounds are read only by tests and tools.
    They go in `tools/limits.mjs`: the file size bounds, `START_TOKENS`, `AGENT_DESCRIPTION_MAX_CHARS`, and the eval bounds.
    `just measure` prints its numbers and compares them with `START_TOKENS`, and writes no file (D35).
 
@@ -84,11 +84,11 @@ Dependency rule:
 
 1. Entry points are `hooks/register.mjs`, `features/*/cli.mjs`, skill scripts, and the status line.
    They import their own `features/<name>/` and `lib/`.
-1. A feature imports `lib/` and its own folder, and never another feature.
+2. A feature imports `lib/` and its own folder, and never another feature.
    Shared code moves to `lib/`.
-1. `lib/` imports only `lib/`.
-1. `tools/` and `tests/` may import `plugins/`, and `plugins/` never imports them.
-1. A plugin imports nothing from another plugin.
+3. `lib/` imports only `lib/`.
+4. `tools/` and `tests/` may import `plugins/`, and `plugins/` never imports them.
+5. A plugin imports nothing from another plugin.
 
 Test T1 (task 3.14) parses the `import` lines and enforces the rule, with no new dependency.
 
@@ -120,23 +120,23 @@ Parts:
    It skips front matter, code fences, inline code, link targets, URLs, tables, headings, link definitions, and a line that ends in a hard break.
    It does not split after `e.g.`, `i.e.`, `etc.`, `vs.`, a single capital letter, or a version number, because a missed split is better than a wrong one.
    It keeps the list indent and the quote prefix of a split line.
-1. A silent `PreToolUse` command hook (entry `features/sembr/cli.mjs`) rewrites `updatedInput` for `Write` and `Edit` of `.md` and `.mdx` paths.
+2. A silent `PreToolUse` command hook (entry `features/sembr/cli.mjs`) rewrites `updatedInput` for `Write` and `Edit` of `.md` and `.mdx` paths.
    For `Edit` it changes `new_string` only, and only when `new_string` starts and ends at line bounds of the file.
    A `new_string` that is a fragment of a line stays unchanged, and so do table rows and inline-code spans.
    It prints no `additionalContext` and no `systemMessage`, and it sets no `permissionDecision`, so the normal permission flow stays (a write still prompts, and `gh pr create` still asks before it publishes).
-1. A `tool.call` handler on `Edit` in the hooks module repairs a cross-sentence `old_string`.
+3. A `tool.call` handler on `Edit` in the hooks module repairs a cross-sentence `old_string`.
    Claude Code checks `old_string` before the classic hook runs, so the classic hook cannot do it (task 2.29 follow-up).
    When the `old_string` is not in the file and its split form is, the handler splits `old_string` and `new_string` and calls `next`.
    It costs no model token.
-1. The same hook type on `Bash` rewrites the quoted-heredoc forms of `git commit` and `gh pr create`, and no other form.
+4. The same hook type on `Bash` rewrites the quoted-heredoc forms of `git commit` and `gh pr create`, and no other form.
    It never touches the subject line, the title, or a trailer.
    It rejects the rewrite and returns the command unchanged when any output line equals the heredoc delimiter, because a split cannot end the heredoc early.
-1. No `Stop` hook counts chat lines (D35).
+5. No `Stop` hook counts chat lines (D35).
    The hook only wrote its counts to the `sembr-chat.jsonl` log, which was a state file.
    The eval measures the share of fused chat lines from the run trace instead.
-1. The output style gets a `<text_format>` block as the chat fallback.
+6. The output style gets a `<text_format>` block as the chat fallback.
    It gives the reason (the user reads the source of a reply in diffs and logs), one wrong example, and one right example.
-1. A `session.append` rewrite of the chat reply with door `response` ships only when probe (c) shows that the display uses the rewritten row.
+7. A `session.append` rewrite of the chat reply with door `response` ships only when probe (c) shows that the display uses the rewritten row.
 
 Probes, first (tasks 2.29 to 2.31):
 
@@ -166,10 +166,10 @@ Parts, in the order of D1:
    When it cannot reach the evidence, it keeps the work and asks for the evidence.
    The cost is about 50 tokens in the cached prefix (**inferred**).
    The paper gives no I1 text, so the wording is ours and the eval tunes it.
-1. Subagent rule.
+2. Subagent rule.
    Each agent body keeps the work and reports to the parent when a claim has no workspace evidence.
    The parent states a user accusation as "the user claims" in the task text.
-1. Gate, from I2 and I3 (not built, D35).
+3. Gate, from I2 and I3 (not built, D35).
    The gate needs a flag that a `UserPromptSubmit` hook sets and a `PreToolUse` hook reads, and that flag is a state file.
    Task 18.12 found it not needed.
    The text below is the design that D35 rules out.

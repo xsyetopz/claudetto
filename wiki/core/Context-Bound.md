@@ -16,7 +16,7 @@ The measures are in [Usage evidence](Usage-Evidence).
 
 ## Bounds
 
-All bounds are in `plugins/dotclaude/features/context/limits.mjs`, because only the context feature reads them.
+All bounds are in `plugins/dotclaude/features/context/limits.ts`, because only the context feature reads them.
 Tests pin each copy of a bound in code and config.
 
 | Bound | Value | Use |
@@ -35,7 +35,8 @@ Haiku 5.5 costs 5 times as much for each request above 100K prompt tokens.
   The model then reads only the matched range with `Read`, and refers to an earlier result instead of a second read of the same lines.
 - `Read` returns a short stub when the same file and the same `offset` and `limit` are read again and the file did not change.
   A `Bash` slice gets no stub.
-- The `PreToolUse` hook `features/reads/cli.mjs` denies a `Bash` command that only prints a file.
+- The `tool.call` hook on `Bash` in `hooks/register.ts` denies a `Bash` command that only prints a file.
+  A file over 4 MiB (`READ_MAX_BYTES`) is denied by its size.
   This covers `cat`, `sed -n` with a print range, `head`, and `tail` on one file, with no pipe and no other command.
   The deny reason gives the `Read` call with the same file and range.
   For example, `sed -n '40,80p' design.md` gets `Read` with `offset` 40 and `limit` 41.
@@ -44,7 +45,7 @@ Haiku 5.5 costs 5 times as much for each request above 100K prompt tokens.
 
 ## Subagent report at the bound
 
-A classic `PostToolUse` hook (`features/context/cli.mjs`) reads the transcript of the subagent.
+A classic `PostToolUse` hook (`hooks/PostToolUse/context.ts`) reads the transcript of the subagent.
 When the context passes the bound of its model, the hook gives `additionalContext` that tells the subagent to report now.
 
 - The hook tells and does not block, because a block loses the work of the run.
@@ -59,7 +60,7 @@ When the context passes the bound of its model, the hook gives `additionalContex
 ## Main session
 
 - The main session gets no context note.
-  Compaction is off, and the `context_management` text of `features/prompt/data.mjs` tells Claude that and to keep the state of work in files.
+  Compaction is off, and the `context_management` text of `features/prompt/data.ts` tells Claude that and to keep the state of work in files.
 - The status line may show the figure to the user.
 - No prompt text tells the model to estimate or announce its context share.
   A model can report a false state, so the figure comes from a program (D27 in [Decisions](Decisions-Evidence)).

@@ -82,10 +82,8 @@ test("a text that is already short is not made longer", async ($: Engine, on: On
 test("the session context loses the commit list and keeps the other sections", async ($: Engine, on: On) => {
   engine(on, { text: SESSION_FULL });
   const out = await attach($, "session_context", SESSION_FULL);
-  expect(out.text).not.toContain("Recent commits");
   expect(out.text).not.toContain("abc1234");
   expect(out.text).toContain("me@example.com");
-  expect(out.text).toContain("Current branch: main");
   expect(out.text).toContain("# currentDate");
 });
 

@@ -1,0 +1,114 @@
+// Behavior tests of the shared glue of the classic command hooks.
+// An injected reader and writer replace stdin and stdout.
+
+import { expect, test } from "bun:test";
+import {
+  postToolUse,
+  preToolUse,
+  runHook,
+} from "../../../plugins/dotclaude/lib/hook-io.ts";
+
+/** Runs `decide` on the text `input` and gives the text that the hook wrote. `failed` collects the stderr text. */
+async function run(
+  decide: (payload: unknown) => unknown,
+  input: string,
+  failed: string[] = [],
+) {
+  const written: string[] = [];
+  await runHook(decide, {
+    read: () => input,
+    write: (t) => written.push(t),
+    fail: (t) => failed.push(t),
+  });
+  return written;
+}
+
+test("a valid payload reaches decide and its output is printed as JSON", async () => {
+  const seen: unknown[] = [];
+  const out = await run((p) => {
+    seen.push(p);
+    return { ok: 1 };
+  }, '{"tool_name":"Bash"}');
+  expect(seen).toStrictEqual([{ tool_name: "Bash" }]);
+  expect(out).toStrictEqual(['{"ok":1}']);
+});
+
+test("a payload that is not JSON prints nothing and does not call decide", async () => {
+  let called = false;
+  const out = await run(() => {
+    called = true;
+    return { ok: 1 };
+  }, "{not json");
+  expect(out).toStrictEqual([]);
+  expect(called).toBe(false);
+});
+
+test("a decide that returns undefined prints nothing", async () => {
+  expect(await run(() => undefined, "{}")).toStrictEqual([]);
+});
+
+test("a payload that is not JSON writes nothing to stderr", async () => {
+  const failed: string[] = [];
+  await run(() => ({ ok: 1 }), "{not json", failed);
+  expect(failed).toStrictEqual([]);
+});
+
+test("a decide that throws prints nothing on stdout and reports the error on stderr", async () => {
+  const failed: string[] = [];
+  const out = await run(
+    () => {
+      throw new Error("rule broke");
+    },
+    "{}",
+    failed,
+  );
+  expect(out).toStrictEqual([]);
+  expect(failed.length).toBe(1);
+  expect(failed[0]).toMatch(/rule broke/);
+});
+
+test("a decide that throws a `SyntaxError` is reported, because it is a defect and not a bad payload", async () => {
+  const failed: string[] = [];
+  await run(() => JSON.parse("{"), "{}", failed);
+  expect(failed.length).toBe(1);
+});
+
+test("a reader that throws prints nothing on stdout and reports the error on stderr", async () => {
+  const written: string[] = [];
+  const failed: string[] = [];
+  await runHook(() => ({ ok: 1 }), {
+    read: () => {
+      throw new Error("no stdin");
+    },
+    write: (t) => written.push(t),
+    fail: (t) => failed.push(t),
+  });
+  expect(written).toStrictEqual([]);
+  expect(failed.join("")).toMatch(/no stdin/);
+});
+
+test("the `PreToolUse` builder keeps the given fields and leaves out the others", () => {
+  expect(
+    preToolUse({ permissionDecision: "deny", permissionDecisionReason: "r" }),
+  ).toStrictEqual({
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "deny",
+      permissionDecisionReason: "r",
+    },
+  });
+  const updated = preToolUse({ updatedInput: { command: "c" } });
+  expect(Object.keys(updated.hookSpecificOutput)).toStrictEqual([
+    "hookEventName",
+    "updatedInput",
+  ]);
+});
+
+test("the `PostToolUse` builder gives `additionalContext`", () => {
+  expect(postToolUse({ additionalContext: "note" })).toStrictEqual({
+    hookSpecificOutput: {
+      hookEventName: "PostToolUse",
+      additionalContext: "note",
+    },
+  });
+});

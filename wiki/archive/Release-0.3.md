@@ -8,8 +8,8 @@ This line requires Claude Code v2.1.283 or later.
 To update:
 
 1. Restart Claude Code.
-1. Run `/dotclaude:apply-settings-profile` again.
-1. If you use the Codex agents, run `/dotclaude:setup-integrations codex` again.
+2. Run `/dotclaude:apply-settings-profile` again.
+3. If you use the Codex agents, run `/dotclaude:setup-integrations codex` again.
 
 ## Added
 

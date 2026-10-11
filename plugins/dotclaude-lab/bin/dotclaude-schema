@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S bun --no-env-file
 // Writes the JSON Schema of Claude Code `settings.json` from the installed bundle.
 //
 //   dotclaude-schema --out DIR [--bundle FILE] [--version X.Y.Z]
@@ -9,27 +9,30 @@
 // `--version` defaults to the version in the name of the bundle, or the output of `--version`.
 // The command reads the bundle and never changes it.
 
-import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { SchemaError, writeSchemas } from "../features/schema/build.mjs";
+import { SchemaError, writeSchemas } from "../features/schema/build.ts";
 
 const USAGE =
   "Usage: dotclaude-schema --out DIR [--bundle FILE] [--version X.Y.Z]";
 
 function installedBundle() {
-  const bin = execFileSync("which", ["claude"], { encoding: "utf8" }).trim();
+  const bin = Bun.which("claude");
+  if (!bin) throw new Error("claude is not on PATH.");
   return fs.realpathSync(bin);
 }
 
 function versionOf(bundle) {
   const base = path.basename(bundle);
   if (/^\d+\.\d+\.\d+$/.test(base)) return base;
-  const out = execFileSync(bundle, ["--version"], { encoding: "utf8" });
+  const r = Bun.spawnSync([bundle, "--version"]);
+  if (r.exitCode !== 0)
+    throw new Error(`${bundle} --version exited with ${r.exitCode}.`);
+  const out = r.stdout.toString();
   return /\d+\.\d+\.\d+/.exec(out)?.[0] ?? "unknown";
 }
 
-function main(argv) {
+async function main(argv) {
   if (argv.includes("--help") || argv.includes("-h")) {
     console.log(USAGE);
     return;
@@ -46,8 +49,9 @@ function main(argv) {
   const bundle = opt("--bundle") ?? installedBundle();
   const version = opt("--version") ?? versionOf(bundle);
   try {
-    const { names, count } = writeSchemas(
-      fs.readFileSync(bundle, "latin1"),
+    // The bundle holds bytes that are not UTF-8, so it is read as latin1.
+    const { names, count } = await writeSchemas(
+      Buffer.from(await Bun.file(bundle).arrayBuffer()).toString("latin1"),
       version,
       path.resolve(outDir),
     );
@@ -61,4 +65,4 @@ function main(argv) {
   }
 }
 
-main(process.argv.slice(2));
+await main(process.argv.slice(2));

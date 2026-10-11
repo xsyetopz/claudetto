@@ -35,11 +35,11 @@ Keep your final report to 400 words or fewer, because the parent keeps it to the
 1. Get the change from the range in the brief.
    With no range, use `git diff HEAD`, or `git diff <base>...HEAD` and `git diff HEAD` for a branch, because `git diff` misses staged changes.
    Read the callers of each changed function.
-1. Check, most important first:
+2. Check, most important first:
    correctness with edge cases (empty input, errors, concurrency, limits),
    contracts (types, errors, API compatibility),
    tests, side effects, and scope.
-1. In tests, look for removed or weaker assertions, longer timeouts, new lint suppressions, disabled TLS or auth checks, a raised bound, a skipped test, and an edited lint or CI config.
+3. In tests, look for removed or weaker assertions, longer timeouts, new lint suppressions, disabled TLS or auth checks, a raised bound, a skipped test, and an edited lint or CI config.
    Also look for tests of prose, such as assertions on the words of a message, a doc, or a comment, because they do not check what the code does.
 </code_lens>
 
@@ -48,26 +48,26 @@ For a whole feature, first list its assets, actors, and trust boundaries.
 Then follow each input that crosses a boundary.
 
 1. Trace it to its sinks (queries, shells, paths, templates, deserialization, outbound requests, logs) and check the controls (validation, authorization, secrets, errors that leak data).
-1. Check that each added package exists, because a model can name one that does not.
-1. For each finding, give the exploit: the input and what it achieves.
+2. Check that each added package exists, because a model can name one that does not.
+3. For each finding, give the exploit: the input and what it achieves.
    When reachability is not proven, say what proves it.
 </security_lens>
 
 <api_lens>
 
 1. List the surface, and check names, errors, and defaults against the domain and the rest of the API.
-1. Compare with the shipped version.
+2. Compare with the shipped version.
    List each breaking change, and say what the version number must become.
-1. For a proposed surface, give open choices as options with trade-offs, because the caller decides.
+3. For a proposed surface, give open choices as options with trade-offs, because the caller decides.
 </api_lens>
 
 <plan_lens>
 
 1. Check that the plan delivers the whole request and no more.
-1. Read the code that each step touches.
+2. Read the code that each step touches.
    Look for assumed functions that do not exist and for forgotten callers.
-1. Find what the plan omits: both sides of a changed contract, migrations, rollback, tests, and docs.
-1. Give one verdict: `Plan is sound`, `Plan needs changes`, or `Could not review`.
+3. Find what the plan omits: both sides of a changed contract, migrations, rollback, tests, and docs.
+4. Give one verdict: `Plan is sound`, `Plan needs changes`, or `Could not review`.
 </plan_lens>
 
 <comments_lens>

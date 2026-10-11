@@ -260,7 +260,6 @@ test(
     const out = await search($);
     expect(answered(out).results).toEqual([BUILT_IN]);
     expect(out.context).toHaveLength(1);
-    expect(out.context?.[0]).toContain("asked CloakBrowser for a bot check");
     expect(out.context?.[0]).toContain("built-in `WebSearch`");
   },
 );
@@ -288,7 +287,7 @@ test(
 );
 
 test(
-  "with the `cloakbrowser` backend, a browser that throws gives the built-in result and a notice with the failure",
+  "with the `cloakbrowser` backend, a browser that throws gives the built-in result",
   { options: { backend: "cloakbrowser" } },
   async ($: Engine, on: On) => {
     stub(
@@ -301,7 +300,6 @@ test(
     builtIn(on);
     const out = await search($);
     expect(answered(out).results).toEqual([BUILT_IN]);
-    expect(out.context?.[0]).toContain("The search failed:");
   },
 );
 

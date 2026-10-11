@@ -10,7 +10,7 @@ Source labels (official, binary, capture, measured, reported, inference) are in 
 - A bound that Claude Code enforces holds.
   A bound that only prose states did not hold in the measured week.
 - One set of usage bounds, sized for Pro, applies on every plan.
-- `plugins/dotclaude/lib/budget.mjs` owns each number.
+- `plugins/dotclaude/lib/budget.ts` owns each number.
 - Hooks read state.
   They never judge tone or architecture.
   One `prompt` hook on `Stop` judges the claims of a reply (D27, [Stop prompt hooks](Stop-Prompt-Hooks)).
@@ -77,13 +77,13 @@ The CHANGELOG lists what it removed.
 | --- | --- |
 | Mechanisms over prose | Prose stays only where no mechanism exists ([Usage evidence](Usage-Evidence#the-measured-week)). |
 | Sized for Pro | Larger plans reach their limits later. 0.27.0 has no plan-specific value ([Plans and models](Plans-and-Models#plan-detection)). |
-| One owner for each number | `plugins/dotclaude/lib/budget.mjs` holds the bounds. Tests pin its copies in code and config, not in prose. |
+| One owner for each number | `plugins/dotclaude/lib/budget.ts` holds the bounds. Tests pin its copies in code and config, not in prose. |
 | No banned-phrase lists | Claude routes around them with synonyms. The rules name what each behavior does and why. |
 | No hooks that judge tone or architecture | A regex cannot tell a needed abstraction from a speculative one. The system prompt and the reviewer agents cover those. |
 | No agent-type hooks, and one `prompt` hook | They spend usage on every event. One `prompt` hook on `Stop`, never on `SubagentStop` (D27). |
 | Only documented extension points | dotclaude uses hooks, output styles, skills, agents, `userConfig`, and settings keys. It never patches Claude Code. |
 | Fail open | A bug in a guard must not stop the work of the user. The guards are a best-effort parser, not a sandbox. |
-| Layered imports | `plugins/dotclaude/lib/` imports only itself. A folder in `features/` imports only `lib/` and itself. The entry points (`hooks/register.mjs`, `features/*/cli.mjs`, and the skill scripts) import `lib/` and features. |
+| Layered imports | `plugins/dotclaude/lib/` imports only itself. A folder in `features/` imports only `lib/` and itself. The entry points (`hooks/register.ts`, `features/*/cli.ts`, and the skill scripts) import `lib/` and features. |
 
 ### No checks on the words of a reply
 
@@ -107,7 +107,7 @@ It cut the working rules from 8.4 KB to 5.1 KB.
 
 0.27.0 loads `plugins/dotclaude/hooks/register.mjs` as a hooks module.
 The module registers several events, and `hooks.json` also has classic hooks on `PreToolUse`, `PostToolUse`, and `Stop` ([Claude mods](Claude-Mods), [Hooks](Hooks)).
-The pure rules are in `features/guard/rules.mjs`, and the lab in `plugins/dotclaude/tests/mod.test.ts` runs the module with stubs.
+The pure rules are in `features/guard/rules.ts`, and the lab in `plugins/dotclaude/tests/mod.test.ts` runs the module with stubs.
 
 0.22 to 0.26 had a larger module and two classic hooks.
 0.19 started `hooks/dispatch.mjs` once for each event.
@@ -120,13 +120,13 @@ A bare `bun` start takes 5 ms.
 | Scenario | Bound | Mechanism | Check |
 | --- | --- | --- | --- |
 | A subagent works a long task | `maxTurns` in the agent file: 16 for `test-runner`, 31 for `investigator`, 41 for `reviewer`, and 61 for `implementer` and `debugger` | Claude Code ends the agent at the limit | `tests/dotclaude/` |
-| A subagent model and effort | The efforts in `SUBAGENT_EFFORTS` for each model, in `features/statusline/limits.mjs` | The `model` and `effort` of each agent file | `tests/dotclaude/` |
+| A subagent model and effort | The efforts in `SUBAGENT_EFFORTS` for each model, in `features/statusline/limits.ts` | The `model` and `effort` of each agent file | `tests/dotclaude/` |
 | The main conversation grows | A 300K window and no compaction | `CLAUDE_CODE_MAX_CONTEXT_TOKENS`, `DISABLE_COMPACT`, and `autoCompactEnabled:false` in the snippet | `tests/dotclaude/` |
-| A repo of another owner with an AI policy | An ask | `tool.check` in `hooks/register.mjs` | `plugins/dotclaude/tests/mod.test.ts` |
-| A recursive `rm` | An ask | `permissions.ask` rules of the settings snippet, with the sandbox | `tests/dotclaude/settings-pin.test.mjs` |
+| A repo of another owner with an AI policy | An ask | `tool.check` in `hooks/register.ts` | `plugins/dotclaude/tests/mod.test.ts` |
+| A recursive `rm` | An ask | `permissions.ask` rules of the settings snippet, with the sandbox | `tests/dotclaude/settings-pin.test.ts` |
 | Fan-out | 5 subagents, and 5 agents per workflow, at once | snippet env | none |
 | A subagent runs in the background | It runs in the foreground and causes no wake turns | `CLAUDE_CODE_FORK_SUBAGENT=0` in the snippet | none |
-| Text of dotclaude on every request | The first request text is 8 KB to 16 KB, each `CLAUDE.md` is at most 6 KB, and skill metadata and bodies have bounds | `tools/limits.mjs` | `tests/support/sizes.test.mjs` fails above a high bound and prints an advisory below a low bound, and `just measure` checks the first request |
+| Text of dotclaude on every request | The first request text is 8 KB to 16 KB, each `CLAUDE.md` is at most 6 KB, and skill metadata and bodies have bounds | `tools/limits.ts` | `tests/support/sizes.test.ts` fails above a high bound and prints an advisory below a low bound, and `just measure` checks the first request |
 | Weekly review | The usage shares in [Usage evidence](Usage-Evidence) are reproducible | `dotclaude-usage` (`dotclaude-sessions`) | none |
 
 The snippet rows need your copy of the [settings snippet](Settings-Snippet).
