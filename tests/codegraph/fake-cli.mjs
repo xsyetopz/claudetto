@@ -124,3 +124,13 @@ export const caller = (name, filePath, startLine, kind = "function") => ({
   filePath,
   startLine,
 });
+
+/** A `Grep` payload for `pattern` in `project`. */
+export const grep = (project, pattern) => ({
+  cwd: project,
+  tool_name: "Grep",
+  tool_input: { pattern },
+});
+
+/** The text that a hook adds to the context. */
+export const text = (result) => result.out.hookSpecificOutput.additionalContext;

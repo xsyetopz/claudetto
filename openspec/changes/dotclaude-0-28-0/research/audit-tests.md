@@ -111,7 +111,7 @@ Legend: Y means a behavior test exists. P means a test exists but misses a part 
 | `features/statusline/subagent-cli.mjs` | `status-render.test.mjs:293-355` | P: the error path (bad JSON) is not covered. [I] |
 | `features/setup` + `skills/setup/scripts/openspec.mjs` | `setup-openspec.test.mjs` | Y. `features/setup/openspec.mjs` is used only through the script. |
 | `features/drift`, `features/surface`, `features/prompt` | labs plus `tests/dotclaude/drift.test.mjs`, `prompt-variants.test.mjs` | Y. They duplicate the lab (see 4). |
-| `features/graph/cli.mjs` `session-start`, `search`, `sync` | `tests/codegraph/hooks.test.mjs`, `sync.test.mjs` | Y |
+| `features/graph/cli.mjs` `session-start`, `search`, `sync` | `tests/codegraph/session.test.mjs`, `symbols.test.mjs`, `lists.test.mjs`, `timeout.test.mjs`, `sync.test.mjs` | Y |
 | `plugins/dotclaude-codegraph/bin/dotclaude-codegraph-check` | `tests/codegraph/layout.test.mjs:83-96` | Y |
 | `features/jev/cli.mjs`, `ask.mjs`, `run.mjs`, `tool.mjs` | `tests/jev/jev.test.mjs`, lab | Y |
 | `plugins/dotclaude-docs` (a skill, no script) | `tests/docs/docs.test.mjs` | No behavior to test. Layout checks only. |

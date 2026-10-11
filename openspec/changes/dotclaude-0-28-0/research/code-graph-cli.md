@@ -135,7 +135,7 @@ Nothing was installed, and no network was used.
 - The hook passed `-f` to `callers`, so on 1.6.0 it never got callers.
   The fix is in `features/graph/cli.mjs`: the call is `callers -j -l 10 -- <symbol>` with no `-f`.
   A symbol with several definitions then gets the union of their callers.
-  The test in `tests/codegraph/hooks.test.mjs` pins the exact arguments.
+  The test in `tests/codegraph/symbols.test.mjs` pins the exact arguments.
 - `--help` of `sync` (`-q` only), `query` (`-p -l -k -j`), `impact` (`-p -d -j`), `init` (`-i -f -v -y`), and `status` (`-j`) match the table above.
 
 ### Shapes and time on 1.6.0
