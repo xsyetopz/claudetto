@@ -42,7 +42,7 @@ Each row gives the number, the title, and the page with the detail.
 | D34 | Adherence by checks in code, with no new judge | [Core plugin](Core-Plugin) |
 | D35 | No proprietary formats | [Settings](Decisions-Settings#d35-no-proprietary-formats) |
 
-The source of each decision is `design.md`, `design-parts.md`, `design-parts-2.md`, and `design-parts-3.md` in `openspec/changes/dotclaude-0-28-0/`.
+The source of each decision is `design.md`, `design-parts.md`, `design-parts-2.md`, and `design-parts-3.md` in `openspec/changes/archive/2026-10-11-dotclaude-0-28-0/`.
 The facts behind them are in the `research/` folder of that change.
 
 ## Related pages
