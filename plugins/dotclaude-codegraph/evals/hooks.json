@@ -1,0 +1,16 @@
+{
+  "SessionStart features/graph/cli.ts session-start": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "tests/codegraph/session.test.ts > a project with no index: no hook runs a command or adds text",
+    "text": "tests/codegraph/session.test.ts > session start in an indexed project syncs and adds one line with the commands for callers, callees, and impact"
+  },
+  "PostToolUse features/graph/cli.ts sync": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "tests/codegraph/sync.test.ts > a git command that does not change the tree, and other calls, pick no sync",
+    "text": "tests/codegraph/sync.test.ts > the command of a picked hook syncs an indexed project and prints nothing"
+  }
+}

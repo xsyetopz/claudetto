@@ -184,6 +184,16 @@ test("Check in the module: a `Bash` print of a long file is denied", async ($: E
   expect(deny?.length).toBeGreaterThan(0);
 });
 
+test("a `Write` of a source file gets no ask", async ($: Engine, on: On) => {
+  stub(on);
+  project(on);
+  const out = await $.tool.check({
+    tool: "Write",
+    input: { file_path: "/p/src/app.ts", content: "export const a = 1\n" },
+  });
+  expect(out.decision).toBe("allow");
+});
+
 test("Ask in the module: a `Write` that changes a line of a test file asks", async ($: Engine, on: On) => {
   stub(on);
   const seen = project(on, { "/p/tests/a.test.mjs": "expect(1).toBe(1)\n" });

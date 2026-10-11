@@ -113,6 +113,11 @@ test("`agent.offer` keeps the other agents, and the dotclaude agents", async ($:
     expect((await offer($, agent)).isOffered).toBe(true);
 });
 
+test("`agent.offer` gives the engine answer with no text for an agent that stays", async ($: Engine, on: On) => {
+  on("agent.offer", () => ({ isOffered: true }));
+  expect(await offer($, "claude")).toEqual({ isOffered: true });
+});
+
 const describe = ($: Engine, tool: string, description = "x".repeat(4000)) =>
   $.tool.describe({ tool, description, provider: CORE });
 

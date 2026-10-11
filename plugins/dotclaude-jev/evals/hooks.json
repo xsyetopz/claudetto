@@ -1,0 +1,16 @@
+{
+  "session.start jev": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude-jev/tests/second-opinion.test.ts > without the key, no tool is registered",
+    "text": "plugins/dotclaude-jev/tests/second-opinion.test.ts > with the key, the session start gives the engine answer with no text"
+  },
+  "tool.call jev": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude-jev/tests/ask-user-question.test.ts > with no key, the question reaches the user unchanged and no client runs",
+    "text": "plugins/dotclaude-jev/tests/ask-user-question.test.ts > with the key, a facts question shows the pick and the confidence in the picked option, and keeps its text"
+  }
+}

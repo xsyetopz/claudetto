@@ -118,3 +118,23 @@ test("a spawn on Haiku 5.5 ends the task prompt with its block one time", async 
   await spawn($, seen);
   expect(seen.split("<dotclaude_model_notes>").length).toBe(2);
 });
+
+test("a spawn on a model with no variant passes the task prompt on unchanged", async ($: Engine, on: On) => {
+  let seen = "";
+  on("agent.spawn", (_$, e) => {
+    seen = e.prompt;
+    return { model: "some-other-model" };
+  });
+  await $.agent.spawn({
+    tool_use_id: "t1",
+    prompt: "Read the file.",
+    description: "Read the file.",
+    subagentType: "general-purpose",
+    provider: { plugin: "engine", tier: "core" },
+    model: "some-other-model",
+    parentModel: "some-other-model",
+    background: false,
+    fork: false,
+  });
+  expect(seen).toBe("Read the file.");
+});

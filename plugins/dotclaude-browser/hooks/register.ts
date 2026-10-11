@@ -149,6 +149,7 @@ async function answer(
 
 /** Registers the `WebSearch` hook. */
 export function register(on: On, options: PluginOptions): void {
+  // eval: tool.call WebSearch search
   on("tool.call", { tool: "WebSearch" }, async ($, e, next) => {
     const out = await answer($, e, options);
     if (!("fallback" in out)) return out;

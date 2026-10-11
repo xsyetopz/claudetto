@@ -235,9 +235,9 @@ A note for each item through the `n` key needs a mod pane in `configure`, which 
 The `Stop` hook of 0.28.0 is a prompt hook on Sonnet 5.5.
 It makes one extra request of about 6,914 input tokens at each turn, also on a one-word reply (probe 1.8), and when it blocks, the session gets the raw evaluator prompt with a literal `$ARGUMENTS`.
 In the `vegaspro` session of 2026-10-11, it blocked the opener "Agreed.", and the same opener passed on the next stop (likely because `stop_hook_active` was true, not verified).
-Each hook gets an eval of its allow path, its block path, the exact text that the session and the user see, its cost for each turn, and its false-block rate on correct messages.
-A block text with instructions for an evaluator, or text that conflicts with the block reason, fails the eval.
-The `Stop` hook becomes a command hook if its eval passes, else it goes.
+Each hook gets an eval of its allow path, its block path, the exact text that the session and the user see, its cost for each turn, and its false-block rate on correct messages, and a block text with evaluator instructions, or text that conflicts with the block reason, fails.
+The hook lab holds these cases, and `evals/hooks.json` of each plugin names them and records the requests and tokens of each turn from a capture, because `claude plugin eval` reports only `costUsd`, `turns`, and `durationSeconds` for each run (2.1.296 bundle).
+A hook that runs a model has its cases in `claude plugin eval`, and the `Stop` hook becomes a command hook if its eval passes, else it goes.
 
 The transcripts show three more hooks with faults:
 

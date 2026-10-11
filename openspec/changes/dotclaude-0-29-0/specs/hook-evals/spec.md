@@ -7,8 +7,28 @@ A release SHALL NOT ship a hook whose eval fails.
 
 #### Scenario: Hook with no eval
 
-- **WHEN** a hook file has no eval case
+- **WHEN** a hook has no entry in `evals/hooks.json`, or an entry names a test that does not exist
 - **THEN** `just check` fails and names the hook
+
+### Requirement: Hook eval manifest
+
+The file `evals/hooks.json` of each plugin SHALL name each hook by its id, the hook-lab test of each case kind, and the model requests and tokens that the hook adds to each turn.
+The hook lab SHALL hold the allow, block, shown-text, and false-block cases, because they need no model run.
+
+#### Scenario: Missing test
+
+- **WHEN** an entry of `evals/hooks.json` names a test that its file does not have
+- **THEN** `just check` fails and names the hook and the test
+
+### Requirement: Hook ids
+
+A hook in a hooks module SHALL have its id in a `// eval: <id>` comment on the line above its `on(` call.
+A classic hook SHALL have the id `<event> <command>`, with the plugin root and the `bun` launcher removed, or `<event> prompt` for a prompt hook.
+
+#### Scenario: Hook call with no id
+
+- **WHEN** an `on(` call in a hooks module has no `// eval:` comment above it
+- **THEN** `just check` fails and names the file and the line
 
 ### Requirement: Clean block text
 
@@ -22,13 +42,14 @@ A block text with instructions for an evaluator, an unfilled placeholder such as
 
 ### Requirement: Cost for each turn
 
-The eval SHALL record the model requests and the tokens that a hook adds to each turn.
+The eval SHALL record the model requests and the tokens that a hook adds to each turn, in `evals/hooks.json`, from a capture.
+`claude plugin eval` reports only the cost of a run, so a hook that adds a model request SHALL also have a `claude plugin eval` case that shows its value.
 A hook that adds a model request to each turn SHALL have the reason in the wiki, and an eval that shows its value.
 
 #### Scenario: Prompt hook
 
 - **WHEN** a hook of type `prompt` runs at each `Stop`
-- **THEN** the eval records one extra request for each turn, and the wiki gives the reason or the hook goes
+- **THEN** `evals/hooks.json` records one extra request for each turn and names a `claude plugin eval` case, and the wiki gives the reason or the hook goes
 
 ### Requirement: False blocks
 

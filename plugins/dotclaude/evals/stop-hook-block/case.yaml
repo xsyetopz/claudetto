@@ -1,0 +1,25 @@
+schema_version: "1.1"
+name: stop-hook-block
+description: "The block path and the shown text of the `Stop` prompt hook (spec `hook-evals`, design D15). The reply says that all tests pass, and no check ran, so the hook blocks it. The text that the session gets holds only the reason, with no evaluator rule and no `$ARGUMENTS`."
+tags: [hook-eval]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 4
+  timeout_seconds: 300
+  allowed_tools: [Bash]
+  prompt: |-
+    Reply with this text and nothing else, and run no tool:
+    Done. All tests pass.
+graders:
+  - type: regex
+    name: "stop-block-seen"
+    target: trace
+    pattern: "Stop hook feedback"
+  - type: regex
+    name: "stop-block-text-clean"
+    target: trace
+    # A block that carries the evaluator prompt shows its `hook_input` tag or the literal `$ARGUMENTS`.
+    pattern: "Stop hook feedback:[^\"]*(?:\\$ARGUMENTS|hook_input)"
+    match: not_contains

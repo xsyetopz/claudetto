@@ -96,7 +96,7 @@ The full `just check` runs at the end of the group.
 
 ## 3. Hook evals (`hook-evals`, `eval-suite`, `second-opinion`)
 
-- [ ] 3.1 Add the hook eval format and one case set for each hook: allow, block, shown text, cost for each turn, and false blocks.
+- [x] 3.1 Add the hook eval format and one case set for each hook: allow, block, shown text, cost for each turn, and false blocks.
   Verify with the "Hook with no eval" test
 - [ ] 3.2 Run the eval on the `Stop` prompt hook, and replace it with a command hook if the eval passes, else remove it.
   Verify with the "Evaluator prompt in the block", "Correct report", and "Repeated block" cases, and the cost of probe 1.8

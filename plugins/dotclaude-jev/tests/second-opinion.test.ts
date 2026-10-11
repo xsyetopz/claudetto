@@ -91,6 +91,11 @@ test("without the key, no tool is registered", async ($: Engine, on: On) => {
   expect(registered).toHaveLength(0);
 });
 
+test("with the key, the session start gives the engine answer with no text", async ($: Engine, on: On) => {
+  stub(on);
+  expect(await $.session.start(START)).toEqual({ cwd: "/work/app" });
+});
+
 test("a run gets a kill bound that the retries of the client fit under", async ($: Engine, on: On) => {
   const { runs } = stub(on);
   await ask($);

@@ -1,0 +1,107 @@
+{
+  "prompt.compose prompt": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/variants.test.ts > a model with no variant keeps the sections of the engine",
+    "text": "plugins/dotclaude/tests/variants.test.ts > two turns and a model switch give the same prompt bytes"
+  },
+  "agent.spawn prompt": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/variants.test.ts > a spawn on a model with no variant passes the task prompt on unchanged",
+    "text": "plugins/dotclaude/tests/variants.test.ts > a spawn on Haiku 5.5 ends the task prompt with its block one time"
+  },
+  "session.start drift": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/drift.test.ts > no drift adds no text",
+    "text": "plugins/dotclaude/tests/drift.test.ts > a settings file without the snippet names the missing values and the setup skill"
+  },
+  "prompt.section context management": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/mod.test.ts > another section keeps the text of the engine",
+    "text": "plugins/dotclaude/tests/mod.test.ts > with `DISABLE_COMPACT`, the `context_management` section changes"
+  },
+  "prompt.attachment surface": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/surface.test.ts > an unknown attachment type passes on with no change",
+    "text": "plugins/dotclaude/tests/surface.test.ts > the session context loses the commit list and keeps the other sections"
+  },
+  "agent.offer surface": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/surface.test.ts > `agent.offer` keeps the other agents, and the dotclaude agents",
+    "text": "plugins/dotclaude/tests/surface.test.ts > `agent.offer` gives the engine answer with no text for an agent that stays"
+  },
+  "tool.describe surface": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/surface.test.ts > `tool.describe` does not replace a description that is shorter than the new text",
+    "text": "plugins/dotclaude/tests/surface.test.ts > `tool.describe` shortens `Agent`, `Bash`, and `Read` by name and keeps the rest"
+  },
+  "tool.call Bash reads": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": true,
+    "allow": "tests/dotclaude/reads/print.test.ts > a file that does not exist or has no lines stays allowed",
+    "text": "tests/dotclaude/reads/print.test.ts > `cat F` is denied with the absolute path and no range",
+    "block": "plugins/dotclaude/tests/mod.test.ts > Check in the module: a `Bash` print of a long file is denied",
+    "false": "tests/dotclaude/reads/print.test.ts > a command with an edit, a byte count, or another bounded form stays allowed"
+  },
+  "tool.call Write sembr": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/sembr.test.ts > a `Write` of another file type keeps its content",
+    "text": "plugins/dotclaude/tests/sembr.test.ts > a `Write` of a Markdown file gets one sentence on each line"
+  },
+  "tool.call Edit sembr": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/sembr.test.ts > an `Edit` of another file type passes on unchanged",
+    "text": "plugins/dotclaude/tests/sembr.test.ts > an `Edit` rewrites a fused `new_string` of whole lines and keeps `old_string`"
+  },
+  "tool.call Bash sembr": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/sembr.test.ts > a `Bash` call that is not a quoted heredoc commit passes on unchanged",
+    "text": "plugins/dotclaude/tests/sembr.test.ts > a `Bash` commit heredoc is rewritten, with the subject kept"
+  },
+  "tool.check guard adherence": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": true,
+    "allow": "plugins/dotclaude/tests/mod.test.ts > a `Write` of a source file gets no ask",
+    "text": "plugins/dotclaude/tests/mod.test.ts > the first call to a repository of another owner with a policy asks once",
+    "block": "plugins/dotclaude/tests/mod.test.ts > Ask in the module: a `Write` that changes a line of a test file asks",
+    "false": "plugins/dotclaude/tests/mod.test.ts > a repository of the user, or one with no policy, keeps the verdict"
+  },
+  "PostToolUse hooks/PostToolUse/context.ts": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "tests/dotclaude/context/pins.test.ts > the report-now hook is silent in the main session and below the bound",
+    "text": "tests/dotclaude/context/pins.test.ts > a Haiku 5.5 subagent at 90K gets the message and a Sonnet 5.5 subagent does not"
+  },
+  "Stop prompt": {
+    "requests": 1,
+    "tokens": 6914,
+    "blocks": true,
+    "eval": "stop-hook-block",
+    "allow": "plugins/dotclaude/evals/stop-hook-correct-report/case.yaml > stop-no-block",
+    "text": "plugins/dotclaude/evals/stop-hook-block/case.yaml > stop-block-text-clean",
+    "block": "plugins/dotclaude/evals/stop-hook-block/case.yaml > stop-block-seen",
+    "false": "plugins/dotclaude/evals/stop-hook-plain-answer/case.yaml > stop-no-false-block"
+  }
+}

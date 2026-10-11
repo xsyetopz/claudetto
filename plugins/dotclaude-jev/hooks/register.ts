@@ -73,6 +73,7 @@ async function askUserQuestion(
 }
 
 export function register(on: On): void {
+  // eval: session.start jev
   on("session.start", async ($, e, next) => {
     // A failure here reaches the log of Claude Code and skips the hook, so the session goes on with no tool.
     const key = await $.env.get("TYPESAFE_API_KEY");
@@ -80,6 +81,7 @@ export function register(on: On): void {
     return next(e);
   });
   // One `tool.call` hook serves both tools, because a second one with no matcher is refused.
+  // eval: tool.call jev
   on("tool.call", async ($, e, next) => {
     if (e.tool === "AskUserQuestion") return askUserQuestion($, e, next);
     if (e.tool !== fullName($.plugin.name)) return next(e);

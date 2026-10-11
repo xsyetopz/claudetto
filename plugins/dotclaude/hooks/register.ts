@@ -142,6 +142,7 @@ async function adherenceAsk($: EngineInterface, e: Args<"tool.check">) {
 const variants = new Map();
 
 export function register(on: On): void {
+  // eval: prompt.compose prompt
   on("prompt.compose", async ($, e, next) => {
     const result = await next(e);
     if (e.traits.includes("bare")) return result;
@@ -152,15 +153,18 @@ export function register(on: On): void {
     return key ? { sections: composeSections(result.sections, key) } : result;
   });
   // A subagent gets its system prompt from its agent body, so its model block goes to the end of the task prompt.
+  // eval: agent.spawn prompt
   on("agent.spawn", (_$, e, next) => {
     const model = e.model && e.model !== "inherit" ? e.model : e.parentModel;
     const key = variantKey(model);
     return next(key ? { ...e, prompt: withBlock(e.prompt, key) } : e);
   });
+  // eval: session.start drift
   on("session.start", onSessionStart);
   // The built-in `context_management` section says that the context is summarized when it grows long.
   // With `DISABLE_COMPACT` that is false, and the model then spends less care on the size of the context.
   // The text is the same for each call, so the cached answer keeps the prompt cache.
+  // eval: prompt.section context management
   on("prompt.section", { name: "context_management" }, async ($, e, next) => {
     const off = await $.env.get("DISABLE_COMPACT");
     return off && off !== "0" && off !== "false"
@@ -169,6 +173,7 @@ export function register(on: On): void {
   });
   // An unknown attachment type, agent, or tool passes on with no change.
   // The settings are read only for the sandbox text, whose short form depends on `sandbox.allowUnsandboxedCommands`.
+  // eval: prompt.attachment surface
   on("prompt.attachment", async ($, e, next) => {
     const result = await next(e);
     if (!ATTACHMENT_TYPES.includes(e.type)) return result;
@@ -177,9 +182,11 @@ export function register(on: On): void {
     const text = attachmentText(e.type, result?.text ?? e.text, settings);
     return text === undefined ? result : { text };
   });
+  // eval: agent.offer surface
   on("agent.offer", async (_$, e, next) =>
     isDropped(e.agent) ? { isOffered: false } : next(e),
   );
+  // eval: tool.describe surface
   on("tool.describe", async (_$, e, next) => {
     const answer = await next(e);
     return toolAnswer(e.tool, answer) ?? answer;
@@ -187,6 +194,7 @@ export function register(on: On): void {
   // A `Bash` command that prints a file, also in one part of a compound command, is denied here, and the `Read` call of the same range runs instead (design D22).
   // The deny runs before the `sembr` rewrite, because a denied call is not run.
   // The session folder is read only for a command that prints a file, because a relative path needs it.
+  // eval: tool.call Bash reads
   on("tool.call", { tool: "Bash" }, async ($, e, next) => {
     if (!printsOf(e.command, "").length) return next(e);
     const cwd = await $.session.cwd();
@@ -201,14 +209,18 @@ export function register(on: On): void {
   // A file that is absent passes on with no change.
   // The hook asks `$.fs.exists` first, because `$.fs.read` documents no error code for a missing file.
   // A rule that throws is a defect: Claude Code logs it, skips the hook, and runs the call as written.
+  // eval: tool.call Write sembr
   on("tool.call", { tool: "Write" }, (_$, e, next) => next(writeInput(e)));
+  // eval: tool.call Edit sembr
   on("tool.call", { tool: "Edit" }, async ($, e, next) => {
     const file = (await $.fs.exists(e.file_path))
       ? await $.fs.read(e.file_path)
       : null;
     return next(editInput(e, file));
   });
+  // eval: tool.call Bash sembr
   on("tool.call", { tool: "Bash" }, (_$, e, next) => next(commandInput(e)));
+  // eval: tool.check guard adherence
   on("tool.check", async ($, e, next) => {
     const verdict = await next(e);
     if (verdict?.decision === "deny") return verdict;

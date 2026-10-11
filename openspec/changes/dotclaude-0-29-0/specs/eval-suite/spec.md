@@ -2,7 +2,8 @@
 
 ### Requirement: Hook evals in the suite
 
-The suite SHALL hold the hook evals of the `hook-evals` capability next to the prompt evals, in the format of `claude plugin eval`.
+The suite SHALL hold the hook evals of the `hook-evals` capability next to the prompt evals.
+A hook case that needs a model run SHALL be in the format of `claude plugin eval`, and the other hook cases SHALL be hook-lab tests that `evals/hooks.json` names.
 
 #### Scenario: Suite run
 
