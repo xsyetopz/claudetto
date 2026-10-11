@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bun --no-env-file
 // Check the tools of the installed dotclaude add-ons.
 //
-//   bun --no-env-file addons.mjs [--apply]
+//   bun --no-env-file addons.ts [--apply]
 //
 // It prints the state of each add-on, the global installs to offer, and the project steps.
 // It runs the project steps only with `--apply`, and it never runs a global install.
@@ -16,13 +16,13 @@ import {
 } from "../../../features/setup/addons.ts";
 
 const configDir =
-  process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), ".claude");
+  process.env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), ".claude");
 const projectDir = path.resolve(
-  process.env.CLAUDE_PROJECT_DIR || process.cwd(),
+  process.env["CLAUDE_PROJECT_DIR"] || process.cwd(),
 );
 
 /** The parsed JSON of `p`, or `{}` when it is missing or not valid. */
-const readOptional = async (p) => {
+const readOptional = async (p: string) => {
   try {
     return JSON.parse(await Bun.file(p).text());
   } catch {

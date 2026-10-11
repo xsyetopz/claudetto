@@ -1,5 +1,5 @@
 // The shared glue of the classic command hooks of dotclaude.
-// Only a classic command hook imports this file, never `hooks/register.mjs`, because the hooks module runs with no Node.
+// Only a classic command hook imports this file, never `hooks/register.ts`, because the hooks module runs with no Node.
 // A hook gives `runHook` a decide function, and `runHook` reads the JSON payload from stdin and prints the output.
 // A payload that is not JSON prints nothing, so the call goes on and the permission flow of Claude Code decides.
 // Any other error also prints nothing on stdout, so the hook fails open, but it writes the error to stderr.

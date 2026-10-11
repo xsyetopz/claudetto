@@ -74,7 +74,7 @@ See [Code graph](Code-Graph).
 
 ## `dotclaude-browser`
 
-The module is `plugins/dotclaude-browser/hooks/register.mjs`.
+The module is `plugins/dotclaude-browser/hooks/register.ts`.
 
 | Event | Matcher | What it does |
 | --- | --- | --- |
@@ -84,7 +84,7 @@ See [Browser](Browser).
 
 ## `dotclaude-jev`
 
-The module is `plugins/dotclaude-jev/hooks/register.mjs`.
+The module is `plugins/dotclaude-jev/hooks/register.ts`.
 
 | Event | Matcher | What it does |
 | --- | --- | --- |

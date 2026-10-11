@@ -1,4 +1,4 @@
-// Runs of `skills/setup/scripts/addons.mjs`, the add-on step of setup.
+// Runs of `skills/setup/scripts/addons.ts`, the add-on step of setup.
 // The `codegraph` here is a STUB Node script in a temporary `bin` folder that logs each call to `calls.log`.
 // `PATH` holds only the stub folder, so `agent-browser` and `npx` are not found.
 
@@ -16,7 +16,7 @@ import { PLUGINS, REPO, tmpDir } from "../../support/repo.ts";
 
 type Sandbox = { config: string; project: string; stub: string };
 
-const SCRIPT = path.join(PLUGINS, "dotclaude/skills/setup/scripts/addons.mjs");
+const SCRIPT = path.join(PLUGINS, "dotclaude/skills/setup/scripts/addons.ts");
 const STUB = `const fs = require("node:fs");
 const path = require("node:path");
 fs.appendFileSync(path.join(process.env.STUB_DIR, "calls.log"), process.argv.slice(2).join(" ") + "\\n");

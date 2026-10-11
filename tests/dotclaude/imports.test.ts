@@ -38,7 +38,7 @@ test("the module graph of `dotclaude-jev` holds its feature files and no `node:`
     f.startsWith("plugins/dotclaude-jev/"),
   );
   expect(
-    jev.includes("plugins/dotclaude-jev/hooks/register.mjs"),
+    jev.includes("plugins/dotclaude-jev/hooks/register.ts"),
     jev.join("\n"),
   ).toBeTruthy();
   expect(

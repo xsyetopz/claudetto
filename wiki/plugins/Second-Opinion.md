@@ -34,7 +34,7 @@ It writes no text or code, and it gives probabilities.
 ## What it does
 
 The plugin has no skill and no `SessionStart` note.
-Its hooks module (`hooks/register.mjs`) registers two parts.
+Its hooks module (`hooks/register.ts`) registers two parts.
 
 | Part | What it does |
 | --- | --- |

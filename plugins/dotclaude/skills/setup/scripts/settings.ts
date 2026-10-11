@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bun --no-env-file
 // Merge the settings snippet into a Claude Code settings file.
 //
-//   bun --no-env-file settings.mjs [--scope user|project|local] [--apply]
+//   bun --no-env-file settings.ts [--scope user|project|local] [--apply]
 //
 // Without `--apply`, it prints the changes and writes nothing.
 // When the cached model catalog of the account offers `claude-mythos-5-1`, it goes in place of `claude-fable-5-1` in `availableModels`.
@@ -23,13 +23,13 @@ import { MYTHOS } from "../../../lib/snippet.ts";
 
 const args = process.argv.slice(2);
 const i = args.indexOf("--scope");
-const scope = i >= 0 && args[i + 1] ? args[i + 1] : "user";
+const scope = (i >= 0 && args[i + 1]) || "user";
 const apply = args.includes("--apply");
 const root = path.resolve(import.meta.dirname, "..", "..", "..");
 const configDir =
-  process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), ".claude");
+  process.env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), ".claude");
 const projectDir = path.resolve(
-  process.env.CLAUDE_PROJECT_DIR || process.cwd(),
+  process.env["CLAUDE_PROJECT_DIR"] || process.cwd(),
 );
 const file = settingsFile(scope, configDir, projectDir);
 if (!file) {
@@ -38,7 +38,7 @@ if (!file) {
 }
 
 /** The parsed JSON of `p`, or `{}` when it is missing or not valid. */
-const readOptional = async (p) => {
+const readOptional = async (p: string) => {
   try {
     return JSON.parse(await Bun.file(p).text());
   } catch {
@@ -51,7 +51,7 @@ const withDocs = hasDocsAddon(
 );
 // Claude Code keeps `.claude.json` in `CLAUDE_CONFIG_DIR` when it is set, and in the home folder otherwise.
 const globalConfig = await readOptional(
-  process.env.CLAUDE_CONFIG_DIR
+  process.env["CLAUDE_CONFIG_DIR"]
     ? path.join(configDir, ".claude.json")
     : path.join(os.homedir(), ".claude.json"),
 );
@@ -60,11 +60,11 @@ const mythos = await mythosInCatalog(
   globalConfig.oauthAccount?.organizationUuid,
 );
 
-let plan;
+let plan: Awaited<ReturnType<typeof planSettings>>;
 try {
   plan = await planSettings(file, root, withDocs, mythos, scope === "project");
 } catch (err) {
-  console.error(`${err.message} Nothing changed.`);
+  console.error(`${(err as Error).message} Nothing changed.`);
   process.exit(1);
 }
 

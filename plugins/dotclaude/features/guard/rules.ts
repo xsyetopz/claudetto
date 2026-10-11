@@ -1,5 +1,5 @@
 // The rules of the dotclaude guard, as pure functions.
-// `hooks/register.mjs` reads the session and runs `gh`, then passes the data here.
+// `hooks/register.ts` reads the session and runs `gh`, then passes the data here.
 // The guard runs in Claude Code with no Node and no Bun,
 // so this file has no `node:` import.
 // The ask for a recursive `rm` is a permission rule of the settings snippet, with the sandbox.

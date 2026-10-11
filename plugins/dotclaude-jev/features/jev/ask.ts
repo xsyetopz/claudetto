@@ -73,11 +73,11 @@ export function jevRequest(questions: AskQuestion[]) {
     : null;
 }
 
-/** The questions with the pick of Jev added to the picked option of each facts question. */
-export function withPicks(
-  questions: AskQuestion[],
-  answers: JevAnswers | undefined,
-): AskQuestion[] {
+/** The questions with the pick of Jev added to the picked option of each facts question, with the other fields of each question kept. */
+export function withPicks<
+  O extends AskOption,
+  Q extends AskQuestion & { options?: O[] },
+>(questions: Q[], answers: JevAnswers | undefined): Q[] {
   return questions.map((q, i) => {
     const kind = answers?.[`kind_${i}`];
     const pick = answers?.[`pick_${i}`];

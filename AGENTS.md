@@ -2,7 +2,7 @@
 
 A Claude Code plugin marketplace in ESM.
 The runtime scripts in `plugins/` run on Bun 1.4.3 or later, so they use only `node:` modules, `bun:` modules, and the `Bun` global.
-A file in the import graph of a hooks module (`hooks/register.mjs`) has no `node:` import, no `bun:` import, and no use of `Bun`, because Claude Code runs the module in its mod runtime.
+A file in the import graph of a hooks module (`hooks/register.ts`) has no `node:` import, no `bun:` import, and no use of `Bun`, because Claude Code runs the module in its mod runtime.
 Code that needs Python is Python, and the tests and `tools/` run on Bun 1.4.3 or later, with `bun install` for the dev dependencies.
 The core plugin is in `plugins/dotclaude/`, next to six add-on plugins: `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-jev`, `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab`.
 Each add-on plugin works without the core plugin, so it imports nothing from another plugin.
@@ -19,7 +19,7 @@ Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/dotclaude/wik
   It must pass before done.
 - `just test tests/dotclaude/guard/rules.test.ts` runs one test file with `bun test`.
 - `just lab` runs the hook lab of each plugin: the tests of its hooks module with stubbed Claude Code events.
-  Test each change to `hooks/register.mjs` there before a live session.
+  Test each change to `hooks/register.ts` there before a live session.
 - `bun run lint:md` lints the Markdown files.
   Headings and code blocks have a 100-column bound.
 - `just sandbox` runs Claude Code with this checkout in a separate config.
@@ -50,7 +50,7 @@ Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/dotclaude/wik
   When Claude Code has a setting, a hook, or another extension point for a need, use it.
 - In a plugin, `lib/` imports only `lib/`.
   A folder in `features/` imports only `lib/` and itself, never another feature.
-  The entry points (`hooks/register.mjs`, `features/*/cli.mjs`, and the skill scripts) import `lib/` and features.
+  The entry points (`hooks/register.ts`, `features/*/cli.ts`, and the skill scripts) import `lib/` and features.
   No file in `plugins/` imports another plugin, `tools/`, or `tests/`.
 - Tests give commands to the guards as strings.
   Never run a guarded command.

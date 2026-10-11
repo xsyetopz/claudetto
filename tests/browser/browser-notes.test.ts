@@ -4,7 +4,7 @@
 import { expect, test } from "bun:test";
 import path from "node:path";
 import type { On } from "claude-code";
-import { register } from "../../plugins/dotclaude-browser/hooks/register.mjs";
+import { register } from "../../plugins/dotclaude-browser/hooks/register.ts";
 import { PLUGINS } from "../support/repo.ts";
 
 const ROOT = path.join(PLUGINS, "dotclaude-browser");
@@ -71,7 +71,7 @@ function webSearchHandler(): Handler {
 
 test("the hooks module is the only module", async () => {
   const hooks = await Bun.file(path.join(ROOT, "hooks/hooks.json")).json();
-  expect(hooks.modules).toStrictEqual(["./register.mjs"]);
+  expect(hooks.modules).toStrictEqual(["./register.ts"]);
 });
 
 test("the hooks module registers one `tool.call` handler for `WebSearch`", () => {
@@ -107,7 +107,7 @@ test("a search that the browser fails passes to the built-in `WebSearch` through
 
 test("the import graph of the hooks module has no `node:` import", async () => {
   const files = [
-    "hooks/register.mjs",
+    "hooks/register.ts",
     "features/search/search.ts",
     "features/search/limits.ts",
   ];

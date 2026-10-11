@@ -39,7 +39,7 @@ See [Install](Install) for the steps and the update path.
 
 | Entry | Invoked by | What it does |
 | --- | --- | --- |
-| `/dotclaude:setup` | The user only (`disable-model-invocation: true`) | Sets up OpenSpec in the current project. It shows each step and asks before it runs one. It changes no Claude Code setting. The script is `skills/setup/scripts/openspec.mjs`. |
+| `/dotclaude:setup` | The user only (`disable-model-invocation: true`) | Sets up OpenSpec in the current project. It shows each step and asks before it runs one. It changes no Claude Code setting. The script is `skills/setup/scripts/openspec.ts`. |
 
 A user-invoked skill has no listing line, so it costs no tokens in a request.
 The `name` and `description` of a model-invocable skill have 150 to 300 bytes together (`SKILL_META_LOW_BYTES` and `SKILL_META_HIGH_BYTES` in `tools/limits.ts`).

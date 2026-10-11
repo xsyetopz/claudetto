@@ -1,4 +1,4 @@
-// Runtime code in `plugins/` is `.ts` with erasable syntax, or `.mjs` until the port of design D11 ends.
+// Runtime code in `plugins/` is `.ts` with erasable syntax, and a plugin ships no `.js` or `.mjs` file (design D11).
 // A `.d.ts` file is allowed only when a manifest names it as its `types`.
 // Generated files that git ignores, such as `.claude-plugin/types/`, are out of scope.
 
@@ -7,7 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { REPO, tmpDir } from "./repo.ts";
 
-const SCRIPT = /\.(?:js|cjs|mts|cts|jsx|tsx)$|\.d\.ts$/;
+const SCRIPT = /\.(?:js|mjs|cjs|mts|cts|jsx|tsx)$|\.d\.ts$/;
 
 /** The `types` paths that the manifest of each plugin names. */
 async function namedTypes(root: string, files: string[]): Promise<string[]> {
@@ -32,7 +32,7 @@ async function offRuntime(root: string, files: string[]): Promise<string[]> {
 }
 
 // A lint of the live repository.
-test("lint: plugins ship no script that is not `.ts` or `.mjs`, except the allowed ones", async () => {
+test("Shipped file: plugins ship no script that is not `.ts`, except the allowed ones", async () => {
   const r = Bun.spawnSync(
     [
       "git",
@@ -50,7 +50,7 @@ test("lint: plugins ship no script that is not `.ts` or `.mjs`, except the allow
   expect(await offRuntime(REPO, files)).toStrictEqual([]);
 });
 
-test("a `.js`, a `.tsx`, and a `.d.ts` that no manifest names fail, and a `.ts` passes", async () => {
+test("a `.js`, a `.mjs`, a `.tsx`, and a `.d.ts` that no manifest names fail, and a `.ts` passes", async () => {
   const root = tmpDir("runtimes");
   const manifest = "plugins/p/.claude-plugin/plugin.json";
   fs.mkdirSync(path.dirname(path.join(root, manifest)), { recursive: true });
@@ -69,8 +69,29 @@ test("a `.js`, a `.tsx`, and a `.d.ts` that no manifest names fail, and a `.ts` 
     "plugins/p/types/extra.d.ts",
   ];
   expect(await offRuntime(root, files)).toStrictEqual([
+    "plugins/p/hooks/register.mjs",
     "plugins/p/features/x/cli.js",
     "plugins/p/features/x/view.tsx",
     "plugins/p/types/extra.d.ts",
   ]);
+});
+
+test("Non-erasable syntax: `bun check` with the config of the repository fails on an `enum` and names the file", async () => {
+  const dir = tmpDir("erasable");
+  await Bun.write(
+    path.join(dir, "tsconfig.json"),
+    JSON.stringify({
+      extends: path.join(REPO, "tsconfig.json"),
+      include: ["*.ts"],
+    }),
+  );
+  const file = path.join(dir, "kind.ts");
+  const check = () =>
+    Bun.spawnSync(["bun", "check", "--no-pretty", "-p", dir], { cwd: REPO });
+  await Bun.write(file, "export const Kind = { A: 0, B: 1 } as const;\n");
+  expect(check().exitCode).toBe(0);
+  await Bun.write(file, "export enum Kind {\n  A,\n  B,\n}\n");
+  const r = check();
+  expect(r.exitCode).toBe(1);
+  expect(r.stdout.toString()).toMatch(/kind\.ts\(1,13\): error TS1294/);
 });

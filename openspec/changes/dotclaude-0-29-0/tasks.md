@@ -76,7 +76,7 @@ The full `just check` runs at the end of the group.
   Verify with the "Generate", "Header", and "Text in the plugin" tests
 - [x] 2.10 Add the check that fails when a generated file differs from its source, and skip generated files in the size test.
   Verify with the "Edit by hand" and "Long generated file" tests
-- [ ] 2.11 Add the tests for "Shipped file", "Non-erasable syntax", and the import boundary on `.ts` files.
+- [x] 2.11 Add the tests for "Shipped file", "Non-erasable syntax", and the import boundary on `.ts` files.
   Verify that each fails on a fixture
 - [x] 2.12 Move the workspace from pnpm to Bun 1.4.3: `bun install` with `bun.lock` in place of `pnpm-lock.yaml`, `packageManager` `bun@1.4.3` in `package.json`, each `package.json` script and `just` recipe on `bun`, `bunx` in place of `npx`, and `CLAUDE.md` on Bun 1.4.3 and its commands (design D11).
   Verify that `just check` passes, and with the "Bun commands" test

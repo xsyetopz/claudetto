@@ -1,4 +1,4 @@
-// Runs of `skills/setup/scripts/openspec.mjs` for the OpenSpec steps (task 15.4).
+// Runs of `skills/setup/scripts/openspec.ts` for the OpenSpec steps (task 15.4).
 // The `openspec` here is a STUB Node script in a temporary `bin` folder.
 // It logs each call to `calls.log`, and keeps `delivery` and `telemetry.enabled` in files.
 // The real CLI run is in the task 15.4 evidence.
@@ -12,7 +12,7 @@ import { PLUGINS, tmpDir } from "../../support/repo.ts";
 type Dirs = { root: string; config: string; project: string; stub: string };
 
 const PLUGIN = path.join(PLUGINS, "dotclaude");
-const SCRIPT = path.join(PLUGIN, "skills/setup/scripts/openspec.mjs");
+const SCRIPT = path.join(PLUGIN, "skills/setup/scripts/openspec.ts");
 const NODE = process.execPath;
 const STUB = `const fs = require("node:fs");
 const path = require("node:path");

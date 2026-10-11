@@ -13,7 +13,7 @@ test("the add-on has no skill and no session note", async () => {
   expect(existsSync(path.join(PLUGIN, "hooks/session-start"))).toBe(false);
   const hooks = await Bun.file(path.join(PLUGIN, "hooks/hooks.json")).json();
   expect(hooks.hooks?.SessionStart).toBe(undefined);
-  expect(hooks.modules).toStrictEqual(["./register.mjs"]);
+  expect(hooks.modules).toStrictEqual(["./register.ts"]);
 });
 
 test("the client script is in `features/jev`", () => {

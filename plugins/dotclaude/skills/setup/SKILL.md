@@ -4,7 +4,7 @@ name: setup
 description: Applies the dotclaude settings snippet, sets up OpenSpec, and checks the tools of the installed add-ons. Use after an install or update of the plugin `dotclaude`.
 disable-model-invocation: true
 argument-hint: "[user|project|local]"
-allowed-tools: Bash(bun --no-env-file *settings.mjs*), Bash(bun --no-env-file *openspec.mjs*), Bash(bun --no-env-file *addons.mjs*)
+allowed-tools: Bash(bun --no-env-file *settings.ts*), Bash(bun --no-env-file *openspec.ts*), Bash(bun --no-env-file *addons.ts*)
 ---
 
 <task>
@@ -27,7 +27,7 @@ The scripts write nothing without `--apply`, so run their previews first.
 2. Preview the settings changes:
 
    ```bash
-   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/settings.mjs" --scope <scope>
+   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/settings.ts" --scope <scope>
    ```
 
    Show the user the list of changes.
@@ -45,7 +45,7 @@ The scripts write nothing without `--apply`, so run their previews first.
 3. Preview the OpenSpec steps:
 
    ```bash
-   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/openspec.mjs"
+   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/openspec.ts"
    ```
 
    Read the `OpenSpec:` lines.
@@ -61,7 +61,7 @@ The scripts write nothing without `--apply`, so run their previews first.
 4. Preview the add-on tools:
 
    ```bash
-   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/addons.mjs"
+   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/addons.ts"
    ```
 
    The preview gives the state of each installed dotclaude add-on, the global installs to offer, and the project steps.
@@ -83,9 +83,9 @@ The scripts write nothing without `--apply`, so run their previews first.
 6. Run each command that the user picked:
 
    ```bash
-   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/settings.mjs" --scope <scope> --apply
-   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/openspec.mjs" --apply
-   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/addons.mjs" --apply
+   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/settings.ts" --scope <scope> --apply
+   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/openspec.ts" --apply
+   bun --no-env-file "${CLAUDE_SKILL_DIR}/scripts/addons.ts" --apply
    ```
 
    Run each add-on install that the user picked as the preview gives it.

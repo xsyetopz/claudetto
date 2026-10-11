@@ -1,4 +1,4 @@
-// Runs of `skills/setup/scripts/settings.mjs`, the settings step of setup.
+// Runs of `skills/setup/scripts/settings.ts`, the settings step of setup.
 // Each run uses a temporary `CLAUDE_CONFIG_DIR` and project folder, so no real settings file changes.
 
 import { expect, test } from "bun:test";
@@ -18,7 +18,7 @@ type Sandbox = { config: string; project: string };
 type CatalogRow = { id: string; section?: string; disabled?: boolean };
 
 const PLUGIN = path.join(PLUGINS, "dotclaude");
-const SCRIPT = path.join(PLUGIN, "skills/setup/scripts/settings.mjs");
+const SCRIPT = path.join(PLUGIN, "skills/setup/scripts/settings.ts");
 // The status line commands hold the plugin folder with forward slashes on each platform.
 const SLASHED = PLUGIN.replaceAll("\\", "/");
 

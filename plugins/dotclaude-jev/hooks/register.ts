@@ -5,7 +5,8 @@
 // The client imports `node:` modules, so the module runs it as a child process.
 // Each `$` call is in this file, because `$` is not followed across an import.
 
-import { jevRequest, withPicks } from "../features/jev/ask.ts";
+import type { Args, EngineInterface, Next, On } from "claude-code";
+import { type JevAnswers, jevRequest, withPicks } from "../features/jev/ask.ts";
 import { clientArgv, clientInit, outcome } from "../features/jev/run.ts";
 import {
   clientArgs,
@@ -13,11 +14,17 @@ import {
   fullName,
   NO_KEY,
   result,
+  type ToolInput,
   toolSpec,
 } from "../features/jev/tool.ts";
 
 /** Runs the client, and gives its outcome. */
-async function runClient($, key, args, stdin) {
+async function runClient(
+  $: EngineInterface,
+  key: string,
+  args: string[],
+  stdin?: string,
+) {
   // A run that throws is not caught: the callers below answer for it.
   const run = await $.process.run(
     clientArgv($.plugin.root, args),
@@ -27,16 +34,20 @@ async function runClient($, key, args, stdin) {
 }
 
 /** The text result of one call of the second-opinion tool. */
-async function secondOpinion($, input) {
+async function secondOpinion($: EngineInterface, input: ToolInput) {
   const call = clientArgs(input);
-  if (call.error) return call.error;
+  if ("error" in call) return call.error;
   const key = await $.env.get("TYPESAFE_API_KEY");
   if (!key) return NO_KEY;
   return result(await runClient($, key, call.args, call.stdin));
 }
 
 /** The `AskUserQuestion` call with the pick of Jev in each facts question. */
-async function askUserQuestion($, e, next) {
+async function askUserQuestion(
+  $: EngineInterface,
+  e: Extract<Args<"tool.call">, { tool: "AskUserQuestion" }>,
+  next: Next<"tool.call">,
+) {
   if (!Array.isArray(e.questions)) return next(e);
   const key = await $.env.get("TYPESAFE_API_KEY");
   if (!key) return next(e);
@@ -49,7 +60,7 @@ async function askUserQuestion($, e, next) {
     JSON.stringify({ state: request.state, questions: request.questions }),
   );
   if (!run.ok) return next(e);
-  let picks;
+  let picks: JevAnswers;
   try {
     picks = JSON.parse(run.stdout);
   } catch (err) {
@@ -61,7 +72,7 @@ async function askUserQuestion($, e, next) {
   return next({ ...e, questions: withPicks(e.questions, picks) });
 }
 
-export function register(on) {
+export function register(on: On): void {
   on("session.start", async ($, e, next) => {
     // A failure here reaches the log of Claude Code and skips the hook, so the session goes on with no tool.
     const key = await $.env.get("TYPESAFE_API_KEY");
@@ -73,7 +84,8 @@ export function register(on) {
     if (e.tool === "AskUserQuestion") return askUserQuestion($, e, next);
     if (e.tool !== fullName($.plugin.name)) return next(e);
     try {
-      return { result: await secondOpinion($, e) };
+      // The tool of this plugin is not in the built-in types, and `clientArgs` checks each field.
+      return { result: await secondOpinion($, e as ToolInput) };
     } catch {
       // The catch has no narrower test, because `$.process.run` documents no error type.
       // The text tells the model that the tool run failed, so the failure is not silent.

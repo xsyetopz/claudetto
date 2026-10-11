@@ -58,7 +58,7 @@ With the plugin installed, a `WebSearch` call of Claude runs in the headless bro
 The model keeps the tool that it knows, and no tool listing changes.
 Without the plugin, `WebSearch` works as in vanilla Claude Code.
 
-1. A `tool.call` hook on `WebSearch` in `hooks/register.mjs` takes the call.
+1. A `tool.call` hook on `WebSearch` in `hooks/register.ts` takes the call.
 2. The hook looks for the newest `chromium-<version>` folder under `~/.cloakbrowser/` with `$.fs.list`.
    The binary is at `Chromium.app/Contents/MacOS/Chromium` in that folder, so only macOS finds it.
 3. The hook runs `agent-browser` with `$.process.run`, as an argument vector with no shell, in its own session, whose name starts with `dcws`.

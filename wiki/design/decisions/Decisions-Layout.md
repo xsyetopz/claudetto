@@ -21,7 +21,7 @@ The tree, the manifest rules, and the module graph rules are in [Plugin layout](
 - The `AGENTS` list is dropped, because the agent frontmatter is the official source.
 - Probe P2 showed that install shows a dialog even when each option has a default.
   A plugin adds a `userConfig` option only for a real user choice.
-- When `hooks/register.mjs` passes 250 lines, the next feature becomes an add-on.
+- When `hooks/register.ts` passes 250 lines, the next feature becomes an add-on.
 - The dependency rule has five lines, and the import test enforces it.
 
 ## D19 Runtimes
@@ -69,7 +69,7 @@ The reasons: the plugin is the unit of install and disable, a plugin skill keeps
 - `dotclaude-jev` registers a custom tool and not a skill.
   A custom tool costs about 10 tokens in the deferred list, against about 60 for a skill line.
   With `TYPESAFE_API_KEY` set, Claude asks Jev, and the handler puts the options in a random order.
-  `hooks/register.mjs` registers the tool only when the key is set, so without the key the tool does not exist.
+  `hooks/register.ts` registers the tool only when the key is set, so without the key the tool does not exist.
   When Jev fails, the tool result says that no second opinion was available, and tells Claude to answer from its own check and to tell the user ([Second opinion](Second-Opinion)).
   No reviewer fallback exists.
 - `dotclaude-browser` keeps the browser skill and replaces the built-in `WebSearch` with its headless browser ([Browser](Browser)).
