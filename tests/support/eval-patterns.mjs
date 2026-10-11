@@ -31,18 +31,29 @@ export function boundedContentPattern(content) {
   return `${START}${escapeRegex(first)}${gap}${escapeRegex(key)}${gap}${escapeRegex(last)}\\n?${END}`;
 }
 
-/** Runs the `scaffold.sh` of `caseDir` in a fresh folder under `os.tmpdir()` and returns the folder. Remove it with `fs.rmSync`. */
+const scaffolds = new Map();
+
+/**
+ * Runs the `scaffold.sh` of `caseDir` in a fresh folder under `os.tmpdir()` and returns the folder.
+ * The run happens once for each `caseDir` in a process, because a bash start costs most of the time on Windows,
+ * and the tests only read the folder.
+ * A test must not change or remove it. `tmp-root.mjs` removes it at exit.
+ */
 export function runScaffold(caseDir) {
+  if (scaffolds.has(caseDir)) return scaffolds.get(caseDir);
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "eval-scaffold-"));
   execFileSync("bash", [path.join(caseDir, "scaffold.sh")], {
     cwd,
     env: {
       PATH: process.env.PATH,
       HOME: cwd,
+      // Bash on Windows cannot start without the Windows folder.
+      ...(process.env.SYSTEMROOT && { SYSTEMROOT: process.env.SYSTEMROOT }),
       GIT_CONFIG_GLOBAL: "/dev/null",
       GIT_CONFIG_NOSYSTEM: "1",
     },
     stdio: "pipe",
   });
+  scaffolds.set(caseDir, cwd);
   return cwd;
 }

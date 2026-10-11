@@ -201,6 +201,10 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - Each `catch` in `plugins/` now names the error that it expects, such as `ENOENT` or `SyntaxError`, and passes the others on.
   A classic hook that crashes still lets the call go on, and it writes the error to stderr.
   The guard of `dotclaude` no longer keeps an empty list of GitHub owners for the session after a failed `gh` call, and it asks `gh` again at the next check.
+- Windows: `codegraph`, `openspec`, and `claude` start through `cmd.exe` when they are `.cmd` files.
+  An argument with `%`, `!`, `"`, a line break, or an end `\` is refused there, because `cmd.exe` expands `%` before it reads quotes.
+  A missing `codegraph` adds no session line, `dotclaude-sandbox` sets `USERPROFILE` for the child, and `readTail` returns `null` for a folder.
+- CI runs `just ci`, which is `just check` without the type check, because Claude Code writes `.claude-plugin/types/` only when an interactive session loads the plugin.
 
 ### Removed
 

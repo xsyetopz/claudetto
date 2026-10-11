@@ -12,7 +12,10 @@ export function readTail(file, max) {
   let fd;
   try {
     fd = openSync(file, "r");
-    const size = fstatSync(fd).size;
+    const stat = fstatSync(fd);
+    // Windows opens a folder without an error, and POSIX gives `EISDIR` on the read.
+    if (stat.isDirectory()) return null;
+    const size = stat.size;
     const length = Math.min(size, max);
     const buffer = Buffer.alloc(length);
     const n = readSync(fd, buffer, 0, length, size - length);

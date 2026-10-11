@@ -1,5 +1,5 @@
 // Runs of `skills/setup/scripts/openspec.mjs` for the OpenSpec steps (task 15.4).
-// The `openspec` here is a STUB shell script in a temporary `bin` folder.
+// The `openspec` here is a STUB Node script in a temporary `bin` folder.
 // It logs each call to `calls.log`, and keeps `delivery` and `telemetry.enabled` in files.
 // The real CLI run is in the task 15.4 evidence.
 
@@ -8,19 +8,23 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
+import { writeProgram } from "../support/fake-program.mjs";
 import { PLUGINS, tmpDir } from "../support/repo.mjs";
 
 const PLUGIN = path.join(PLUGINS, "dotclaude");
 const SCRIPT = path.join(PLUGIN, "skills/setup/scripts/openspec.mjs");
 const NODE = process.execPath;
-const STUB = `#!/bin/sh
-echo "$*" >> "$STUB_DIR/calls.log"
-case "$1 $2" in
-  "--version "*) echo 1.14.1 ;;
-  "config get") [ -f "$STUB_DIR/$3" ] && { read -r v < "$STUB_DIR/$3"; echo "$v"; } ;;
-  "config set") echo "$4" > "$STUB_DIR/$3" ;;
-esac
-exit 0
+const STUB = `const fs = require("node:fs");
+const path = require("node:path");
+const dir = process.env.STUB_DIR;
+const args = process.argv.slice(2);
+fs.appendFileSync(path.join(dir, "calls.log"), args.join(" ") + "\\n");
+if (args[0] === "--version") console.log("1.14.1");
+else if (args[0] === "config" && args[1] === "get") {
+  const file = path.join(dir, args[2]);
+  if (fs.existsSync(file)) console.log(fs.readFileSync(file, "utf8").split("\\n")[0]);
+} else if (args[0] === "config" && args[1] === "set")
+  fs.writeFileSync(path.join(dir, args[2]), args[3] + "\\n");
 `;
 
 /** A temporary config folder, project folder, and stub folder. */
@@ -33,9 +37,21 @@ function sandbox() {
     stub: path.join(root, "stub"),
   };
   for (const d of [dirs.config, dirs.project, dirs.stub]) fs.mkdirSync(d);
-  fs.writeFileSync(path.join(dirs.stub, "openspec"), STUB, { mode: 0o755 });
+  writeProgram(dirs.stub, "openspec", STUB);
   return dirs;
 }
+
+// A `.cmd` stub runs through `cmd.exe`, which Windows finds with `ComSpec` and the system folder.
+const windows =
+  process.platform === "win32"
+    ? {
+        SystemRoot: process.env.SystemRoot,
+        ComSpec: process.env.ComSpec,
+        PATHEXT: process.env.PATHEXT,
+      }
+    : {};
+const system =
+  process.platform === "win32" ? [`${process.env.SystemRoot}\\System32`] : [];
 
 const setup = (d, args) => {
   const r = spawnSync(NODE, [SCRIPT, ...args], {
@@ -43,8 +59,9 @@ const setup = (d, args) => {
     env: {
       CLAUDE_CONFIG_DIR: d.config,
       CLAUDE_PROJECT_DIR: d.project,
-      PATH: d.stub,
+      PATH: [d.stub, ...system].join(path.delimiter),
       STUB_DIR: d.stub,
+      ...windows,
     },
     cwd: d.project,
   });
@@ -57,7 +74,7 @@ const calls = (d) => {
     ? fs
         .readFileSync(file, "utf8")
         .trim()
-        .split("\n")
+        .split(/\r?\n/)
         .filter((c) => c !== "--version" && !c.startsWith("config get"))
     : [];
 };

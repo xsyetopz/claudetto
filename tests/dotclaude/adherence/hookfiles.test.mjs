@@ -5,9 +5,10 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { decide } from "../../../plugins/dotclaude/features/adherence/cli.mjs";
 import { SCAN_MAX_CHARS } from "../../../plugins/dotclaude/features/adherence/limits.mjs";
+import { filesByPath } from "./stub-fs.mjs";
 
 const io = (files = {}) => ({
-  read: (f) => files[f] ?? null,
+  ...filesByPath(files),
   transcript: () => null,
 });
 const call = (tool_name, tool_input) => ({ tool_name, cwd: "/w", tool_input });

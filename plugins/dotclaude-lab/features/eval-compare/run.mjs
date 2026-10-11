@@ -2,6 +2,7 @@
 
 import { spawnSync } from "node:child_process";
 import path from "node:path";
+import { runProgram } from "../../lib/run-program.mjs";
 
 /** The eval options with the cost bound added when the caller sets none. */
 export function withCostBound(opts) {
@@ -15,12 +16,21 @@ export function withCostBound(opts) {
  * It adds no `--scaffold` and no `--allow-tools`, because each one runs the code or the tools of the suite as the user.
  * The user adds them in the options for a suite that the user trusts.
  */
-function evalOf(plugin, opts, spawn) {
-  return (
-    spawn("claude", ["plugin", "eval", plugin, "--no-publish", ...opts], {
-      stdio: "inherit",
-    }).status ?? 1
-  );
+function evalOf(plugin, opts, spawn, log) {
+  try {
+    return (
+      runProgram(
+        "claude",
+        ["plugin", "eval", plugin, "--no-publish", ...opts],
+        { stdio: "inherit" },
+        spawn,
+      ).status ?? 1
+    );
+  } catch (err) {
+    // A word that a Windows shell cannot take safely: say why, and count the run as failed.
+    log(err.message);
+    return 1;
+  }
 }
 
 /**
@@ -32,9 +42,9 @@ export function runBoth(a, b, rest, spawn = spawnSync, log = console.log) {
   const first = path.resolve(a);
   const second = path.resolve(b);
   log(`\n== Arm A (${first})\n`);
-  const x = evalOf(first, opts, spawn);
+  const x = evalOf(first, opts, spawn, log);
   log(`\n== Arm B (${second})\n`);
-  const y = evalOf(second, opts, spawn);
+  const y = evalOf(second, opts, spawn, log);
   if (x === 0 && y === 0) {
     log("\nCompare the WITH column of the two tables.");
     return 0;

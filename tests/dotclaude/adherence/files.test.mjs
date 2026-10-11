@@ -14,12 +14,12 @@ import {
 import { decide } from "../../../plugins/dotclaude/features/adherence/cli.mjs";
 import { HOOK_TIMEOUT_S } from "../../../plugins/dotclaude/features/adherence/limits.mjs";
 import { PLUGINS } from "../../support/repo.mjs";
+import { filesByPath } from "./stub-fs.mjs";
 
 const CWD = "/w";
 /** The `io` of a test: `files` maps a path to its text, and `transcript` is the text of the transcript. */
 const io = (files = {}, extra = {}) => ({
-  read: (f) => files[f] ?? null,
-  exists: (f) => f in files,
+  ...filesByPath(files),
   transcript: () => null,
   ...extra,
 });

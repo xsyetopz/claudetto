@@ -9,7 +9,8 @@ import { decide } from "../../../plugins/dotclaude/features/reads/cli.mjs";
 import { PLUGINS } from "../../support/repo.mjs";
 
 const CWD = "/work/app";
-const FILE = "/work/app/docs/design.md";
+// The hook gives the path in the native form, so it has a drive letter and backslashes on Windows.
+const FILE = path.resolve(CWD, "docs/design.md");
 const run = (command, count = () => 100) =>
   decide({ tool_name: "Bash", cwd: CWD, tool_input: { command } }, count);
 const reason = (command, count) =>

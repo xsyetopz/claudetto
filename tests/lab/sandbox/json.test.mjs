@@ -56,7 +56,12 @@ test("`availableModels` reads the list, and gives undefined when the settings ar
 
 test("`which` skips a folder of `PATH` that is absent and finds a program in a later folder", () => {
   const dir = folder();
-  const program = path.join(dir, "tool-x");
+  // Windows runs a program with an extension from `PATHEXT`, and `which` tries each one.
+  const ext =
+    process.platform === "win32"
+      ? (process.env.PATHEXT || ".EXE;.CMD;.BAT").split(";")[0]
+      : "";
+  const program = path.join(dir, `tool-x${ext}`);
   fs.writeFileSync(program, "#!/bin/sh\n", { mode: 0o755 });
   const saved = process.env.PATH;
   process.env.PATH = [path.join(dir, "missing"), dir].join(path.delimiter);

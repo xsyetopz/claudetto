@@ -4,9 +4,9 @@
 // OpenSpec 1.14.1 has no `--delivery` flag on `init`, so the order is `init`, `config set delivery skills`, `update`.
 // `update` then removes the command copies and keeps the skills (probe 2.15).
 
-import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { runProgram } from "../../lib/run-program.mjs";
 
 const CONFIG = ["openspec", "config"];
 
@@ -20,7 +20,7 @@ const olderThan = (a, b) =>
 /** Run `cmd`, and return its trimmed output, or null when it fails. */
 const run = (cmd) => {
   // `spawnSync` reports a missing program in `r.error` and does not throw.
-  const r = spawnSync(cmd[0], cmd.slice(1), {
+  const r = runProgram(cmd[0], cmd.slice(1), {
     encoding: "utf8",
     stdio: ["ignore", "pipe", "ignore"],
   });
@@ -89,10 +89,16 @@ export function reportOpenSpecSteps(steps) {
 export function runOpenSpec(steps, projectDir) {
   for (const s of steps) {
     console.log(`OpenSpec: ${s.cmd.join(" ")}`);
-    const r = spawnSync(s.cmd[0], s.cmd.slice(1), {
-      cwd: projectDir,
-      stdio: "inherit",
-    });
+    let r;
+    try {
+      r = runProgram(s.cmd[0], s.cmd.slice(1), {
+        cwd: projectDir,
+        stdio: "inherit",
+      });
+    } catch (err) {
+      console.error(err.message);
+      r = { status: 1 };
+    }
     if (r.status !== 0) {
       console.error(
         `OpenSpec step failed: ${s.label}. Later steps did not run.`,

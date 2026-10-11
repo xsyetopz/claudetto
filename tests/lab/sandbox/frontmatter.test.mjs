@@ -7,6 +7,7 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
+import { withPathFirst, writeProgram } from "../../support/fake-program.mjs";
 import { PLUGINS, tmpDir } from "../../support/repo.mjs";
 
 const LAB = path.join(PLUGINS, "dotclaude-lab");
@@ -14,8 +15,7 @@ const UNKNOWN = "[WARN] agents/x.md: unknown frontmatter field `foo`";
 
 // Writes `FAKE_LOG_TEXT` to the file after `--debug-file`, and records its arguments.
 // Exits with `FAKE_EXIT`.
-const FAKE_CLAUDE = `#!${process.execPath}
-const fs = require("node:fs");
+const FAKE_CLAUDE = `const fs = require("node:fs");
 const argv = process.argv.slice(2);
 fs.writeFileSync(process.env.FAKE_OUT, JSON.stringify(argv));
 if (process.env.FAKE_LOG_TEXT !== undefined)
@@ -25,8 +25,7 @@ process.exit(Number(process.env.FAKE_EXIT ?? 0));
 
 function setUp() {
   const dir = tmpDir("lab-frontmatter");
-  const claude = path.join(dir, "claude");
-  fs.writeFileSync(claude, FAKE_CLAUDE, { mode: 0o755 });
+  const claude = writeProgram(dir, "claude", FAKE_CLAUDE);
   return { dir, claude, out: path.join(dir, "out.json") };
 }
 
@@ -41,8 +40,7 @@ function run(s, env, lab = LAB) {
     ],
     {
       env: {
-        ...process.env,
-        PATH: `${s.dir}${path.delimiter}${process.env.PATH}`,
+        ...withPathFirst(process.env, s.dir),
         CLAUDE_CODE_OAUTH_TOKEN: "t",
         FAKE_OUT: s.out,
         ...env,

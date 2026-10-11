@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { decide } from "../../../plugins/dotclaude/features/adherence/cli.mjs";
 import { SCRIPT_FILES_MAX } from "../../../plugins/dotclaude/features/adherence/limits.mjs";
+import { filesByPath } from "./stub-fs.mjs";
 
 const STASH = {
   "/w/x.py": "import os\nos.system('git stash')\n",
@@ -21,7 +22,7 @@ const out = (command, files = STASH) =>
   decide(
     { tool_name: "Bash", cwd: "/w", tool_input: { command } },
     { HOME: "/home/me" },
-    { read: (f) => files[f] ?? null, transcript: () => null },
+    { ...filesByPath(files), transcript: () => null },
   )?.hookSpecificOutput;
 const asks = (command, files) =>
   assert.equal(out(command, files)?.permissionDecision, "ask", command);

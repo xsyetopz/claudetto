@@ -11,7 +11,9 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  # The same gate as the local one: lint, type check, tests, validation, and the hook lab.
+  # The local gate without the type check: lint, tests, validation, and the hook lab.
+  # `tsc` needs `.claude-plugin/types/`, which Claude Code writes only when an interactive session loads the plugin,
+  # so the type check runs only in the local `just check`.
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -30,7 +32,7 @@ jobs:
       # The version in `TESTED_VERSION` of `plugins/dotclaude/features/drift/data.mjs`.
       - run: npm install --global @anthropic-ai/claude-code@2.1.296
       - run: git config --global user.email ci@example.com && git config --global user.name ci
-      - run: just check
+      - run: just ci
 
   # The tests on the other operating systems.
   test:

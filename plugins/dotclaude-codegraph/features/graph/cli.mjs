@@ -11,8 +11,8 @@
 // The add-on never runs `codegraph install` or `codegraph init`, because they change user files.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { delimiter, join } from "node:path";
 import {
   BACKGROUND_SYNC_TIMEOUT_MS,
   CALLERS_LIMIT,
@@ -38,9 +38,40 @@ export const rootOf = (payload, env) =>
 export const indexed = (root) =>
   existsSync(join(root, ".codegraph", "codegraph.db"));
 
+// On Windows npm installs `codegraph` as `codegraph.cmd`, and Node runs a `.cmd` file only through a shell.
+// A shell reads the arguments as text, so an argument with a character outside this set is not run.
+const SHELL_SAFE_ARG = /^[\w$.-]+$/;
+
+/**
+ * The first file `name` + an extension of `PATHEXT` in a folder of `env.PATH`, or undefined.
+ * A shell that runs `codegraph.cmd` gives exit status 1 for a missing program and no `ENOENT`, so Windows looks first.
+ */
+export function findOnPath(name, env) {
+  const key = Object.keys(env).find((k) => k.toUpperCase() === "PATH");
+  const exts = (env.PATHEXT || ".EXE;.CMD;.BAT").split(";");
+  for (const dir of (env[key] ?? "").split(delimiter))
+    for (const ext of exts) {
+      const file = join(dir, name + ext);
+      if (existsSync(file) && statSync(file).isFile()) return file;
+    }
+  return undefined;
+}
+
 /** Runs `codegraph` with `args` in `root`, and gives `{ ok, stdout }`. A missing CLI, a timeout, and a non-zero exit give `ok: false`. */
 function codegraph(args, { root, env, timeout }) {
+  const shell = process.platform === "win32";
+  if (shell && !findOnPath("codegraph", env))
+    return {
+      ok: false,
+      stdout: "",
+      error: Object.assign(new Error("codegraph is not on PATH"), {
+        code: "ENOENT",
+      }),
+    };
+  if (shell && !args.every((arg) => SHELL_SAFE_ARG.test(arg)))
+    return { ok: false, stdout: "", error: new Error("unsafe argument") };
   const r = spawnSync("codegraph", args, {
+    shell,
     cwd: root,
     env,
     encoding: "utf8",

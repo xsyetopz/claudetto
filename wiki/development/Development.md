@@ -22,6 +22,7 @@ It shows the commands, the layout rules, and the steps to test, release, and pub
 | `just validate` | Runs `pnpm run validate`, which checks the manifests, skills, and agents. |
 | `just lab` | Runs `claude plugin test` on each plugin that has a `tests/` folder, the hook lab. |
 | `just check` | Runs lint, typecheck, test, validate, and lab. It must pass before you call a change done. |
+| `just ci` | Runs lint, test, validate, and lab: the gate of the CI `check` job. CI has no type check, because Claude Code writes `.claude-plugin/types/` only when an interactive session loads the plugin. |
 | `just sandbox` | Runs Claude Code with this checkout as its plugin, in its own config. See [Sandbox](Sandbox). |
 | `just sandbox-clean` | Removes the sandbox. |
 | `just usage` | Shows where your Claude Code usage went. Add `--days N` or `--json`. |

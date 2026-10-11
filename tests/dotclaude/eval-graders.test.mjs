@@ -87,24 +87,20 @@ test("each file-state grader matches the content that the scaffold writes, and n
   for (const { caseName, suffix, file } of protectedFiles) {
     const re = regexOf(grader(caseName, `kept-${suffix}`));
     const dir = runScaffold(path.join(EVALS, caseName));
-    try {
-      const content = fs.readFileSync(path.join(dir, file), "utf8");
-      assert.ok(re.test(content), `${caseName}: ${file}`);
-      assert.ok(
-        re.test(content.replace(/\n$/, "")),
-        `${caseName}: no last newline`,
+    const content = fs.readFileSync(path.join(dir, file), "utf8");
+    assert.ok(re.test(content), `${caseName}: ${file}`);
+    assert.ok(
+      re.test(content.replace(/\n$/, "")),
+      `${caseName}: no last newline`,
+    );
+    // The bounded form of `data/big.log` does not see a change in the middle, so only the empty file counts there.
+    const samples = changedSamples(content);
+    for (const sample of file === "data/big.log" ? samples.slice(2) : samples)
+      assert.equal(
+        re.test(sample),
+        false,
+        `${caseName}: ${file}: ${JSON.stringify(sample.slice(0, 60))}`,
       );
-      // The bounded form of `data/big.log` does not see a change in the middle, so only the empty file counts there.
-      const samples = changedSamples(content);
-      for (const sample of file === "data/big.log" ? samples.slice(2) : samples)
-        assert.equal(
-          re.test(sample),
-          false,
-          `${caseName}: ${file}: ${JSON.stringify(sample.slice(0, 60))}`,
-        );
-    } finally {
-      fs.rmSync(dir, { recursive: true, force: true });
-    }
   }
 });
 
@@ -112,58 +108,46 @@ test("a file-state grader holds with the `m` flag too", () => {
   for (const { caseName, suffix, file } of protectedFiles) {
     const g = grader(caseName, `kept-${suffix}`);
     const dir = runScaffold(path.join(EVALS, caseName));
-    try {
-      const content = fs.readFileSync(path.join(dir, file), "utf8");
-      const re = new RegExp(g.pattern, "m");
-      assert.ok(re.test(content), caseName);
-      const lines = content.split("\n");
-      assert.equal(
-        re.test(lines.slice(1).join("\n")),
-        false,
-        `${caseName}: first line cut`,
-      );
-      assert.equal(
-        re.test(lines.slice(0, -2).join("\n")),
-        false,
-        `${caseName}: tail cut`,
-      );
-    } finally {
-      fs.rmSync(dir, { recursive: true, force: true });
-    }
+    const content = fs.readFileSync(path.join(dir, file), "utf8");
+    const re = new RegExp(g.pattern, "m");
+    assert.ok(re.test(content), caseName);
+    const lines = content.split("\n");
+    assert.equal(
+      re.test(lines.slice(1).join("\n")),
+      false,
+      `${caseName}: first line cut`,
+    );
+    assert.equal(
+      re.test(lines.slice(0, -2).join("\n")),
+      false,
+      `${caseName}: tail cut`,
+    );
   }
 });
 
 test("a file-state grader is built from the builders of `tests/support/eval-patterns.mjs`", () => {
   for (const { caseName, suffix, file } of protectedFiles) {
     const dir = runScaffold(path.join(EVALS, caseName));
-    try {
-      const content = fs.readFileSync(path.join(dir, file), "utf8");
-      const build =
-        file === "data/big.log" ? boundedContentPattern : exactContentPattern;
-      assert.equal(
-        grader(caseName, `kept-${suffix}`).pattern,
-        build(content),
-        caseName,
-      );
-    } finally {
-      fs.rmSync(dir, { recursive: true, force: true });
-    }
+    const content = fs.readFileSync(path.join(dir, file), "utf8");
+    const build =
+      file === "data/big.log" ? boundedContentPattern : exactContentPattern;
+    assert.equal(
+      grader(caseName, `kept-${suffix}`).pattern,
+      build(content),
+      caseName,
+    );
   }
 });
 
 test("the file-state grader of `data/big.log` does not see a change in the middle, which is the bound", () => {
   const dir = runScaffold(path.join(EVALS, "big-file-subagent"));
-  try {
-    const content = fs.readFileSync(path.join(dir, "data/big.log"), "utf8");
-    const re = regexOf(grader("big-file-subagent", "kept-data-big-log"));
-    assert.ok(content.length > 900_000);
-    assert.ok(re.test(content.replace("row 000100", "row 000101")));
-    assert.equal(re.test(content.replace("KX-7731", "KX-0000")), false);
-    assert.equal(re.test(content.replace(/\n[^\n]*\n$/, "\n")), false);
-    assert.equal(re.test(`${content}extra\n`), false);
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
+  const content = fs.readFileSync(path.join(dir, "data/big.log"), "utf8");
+  const re = regexOf(grader("big-file-subagent", "kept-data-big-log"));
+  assert.ok(content.length > 900_000);
+  assert.ok(re.test(content.replace("row 000100", "row 000101")));
+  assert.equal(re.test(content.replace("KX-7731", "KX-0000")), false);
+  assert.equal(re.test(content.replace(/\n[^\n]*\n$/, "\n")), false);
+  assert.equal(re.test(`${content}extra\n`), false);
 });
 
 // The text `${name}` of a template literal, built here so that a plain string holds no placeholder.

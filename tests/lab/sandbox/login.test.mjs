@@ -8,19 +8,18 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { withPathFirst, writeProgram } from "../../support/fake-program.mjs";
 import { PLUGINS, tmpDir } from "../../support/repo.mjs";
 
 const TOOL = path.join(PLUGINS, "dotclaude-lab/bin/dotclaude-sandbox");
 const JEV = path.join(PLUGINS, "dotclaude-jev");
 const REAL_HOME = os.homedir();
 
-const FAKE_CLAUDE = `#!${process.execPath}
-const fs = require("node:fs");
+const FAKE_CLAUDE = `const fs = require("node:fs");
 fs.writeFileSync(process.env.FAKE_OUT, JSON.stringify({ env: process.env, argv: process.argv.slice(2), cwd: process.cwd() }));
 `;
 // Prints the token in `FAKE_KEYCHAIN` as the Keychain JSON, or fails when the variable is not set.
-const FAKE_SECURITY = `#!${process.execPath}
-const t = process.env.FAKE_KEYCHAIN;
+const FAKE_SECURITY = `const t = process.env.FAKE_KEYCHAIN;
 if (!t) process.exit(44);
 process.stdout.write(JSON.stringify({ claudeAiOauth: { accessToken: t } }));
 `;
@@ -35,7 +34,7 @@ function setUp() {
     ["claude", FAKE_CLAUDE],
     ["security", FAKE_SECURITY],
   ])
-    fs.writeFileSync(path.join(bin, name), text, { mode: 0o755 });
+    writeProgram(bin, name, text);
   return { dir, bin, home, out: path.join(dir, "out.json") };
 }
 
@@ -48,10 +47,16 @@ function writeCredentials(home, token) {
 
 /** Runs the tool. `extra` sets or (with `undefined`) removes environment variables. */
 function run(s, extra = {}, args = []) {
+  const base = withPathFirst(process.env, s.bin);
+  // An `extra.PATH` replaces the search path. Windows names it `Path`, so the old key goes first.
+  if ("PATH" in extra)
+    for (const key of Object.keys(base))
+      if (key.toUpperCase() === "PATH") delete base[key];
   const env = {
-    ...process.env,
+    ...base,
     HOME: s.home,
-    PATH: `${s.bin}${path.delimiter}${process.env.PATH}`,
+    // Windows finds the home folder in `USERPROFILE`.
+    USERPROFILE: s.home,
     FAKE_OUT: s.out,
     ...extra,
   };
@@ -136,6 +141,8 @@ test("the config is in the sandbox folder, not in the real ~/.claude", () => {
   const config = path.join(path.resolve(sandbox), "config");
   assert.equal(seen.env.CLAUDE_CONFIG_DIR, config);
   assert.equal(seen.env.HOME, path.join(path.resolve(sandbox), "home"));
+  if (process.platform === "win32")
+    assert.equal(seen.env.USERPROFILE, seen.env.HOME);
   assert.ok(fs.existsSync(path.join(config, ".claude.json")));
   assert.ok(config.startsWith(process.env.TMPDIR));
   assert.ok(!config.startsWith(path.join(REAL_HOME, ".claude")));

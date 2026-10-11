@@ -34,8 +34,11 @@ lab:
         if [ -d "${d}tests" ]; then claude plugin test "${d%/}"; fi
     done
 
-# Everything CI runs, plus the type check, plugin validation, and the hook lab
+# The full local gate: lint, the type check, tests, plugin validation, and the hook lab
 check: lint typecheck test validate lab
+
+# The gate of the CI `check` job: `check` without the type check, because CI has no `.claude-plugin/types/`
+ci: lint test validate lab
 
 # Run Claude Code with the plugins of this checkout, in a sandbox config apart from yours; extra arguments go to claude
 sandbox *args:

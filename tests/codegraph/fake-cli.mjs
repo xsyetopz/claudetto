@@ -11,15 +11,37 @@ const PLUGIN = path.join(PLUGINS, "dotclaude-codegraph");
 export const CLI = path.join(PLUGIN, "features/graph/cli.mjs");
 export { PLUGIN };
 
-const SCRIPT = `#!/bin/sh
-echo "$@" >> "$FAKE_DIR/log"
-case "$1" in
-  --version) echo "9.9.9" ;;
-  query) [ -n "$FAKE_QUERY_SLEEP" ] && sleep "$FAKE_QUERY_SLEEP"; cat "$FAKE_DIR/query.out" ;;
-  callers) cat "$FAKE_DIR/callers.out" ;;
-  sync) exit 0 ;;
-esac
+// The fake is a Node script with a launcher: `sh` on POSIX, and `codegraph.cmd` on Windows,
+// where npm installs the real CLI as a `.cmd` file and `PATH` finds no file without an extension.
+const FAKE = `import fs from "node:fs";
+import path from "node:path";
+const dir = process.env.FAKE_DIR;
+const [command, ...rest] = process.argv.slice(2);
+fs.appendFileSync(path.join(dir, "log"), [command, ...rest].join(" ") + "\\n");
+const answer = (name) => process.stdout.write(fs.readFileSync(path.join(dir, name)));
+if (command === "--version") console.log("9.9.9");
+else if (command === "query") {
+  if (process.env.FAKE_QUERY_SLEEP)
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, Number(process.env.FAKE_QUERY_SLEEP) * 1000);
+  answer("query.out");
+} else if (command === "callers") answer("callers.out");
 `;
+
+/** Writes the fake `codegraph` into `bin`, with the launcher of the platform. */
+function installFake(bin) {
+  fs.writeFileSync(path.join(bin, "codegraph.mjs"), FAKE);
+  if (process.platform === "win32")
+    fs.writeFileSync(
+      path.join(bin, "codegraph.cmd"),
+      `@"${process.execPath}" "%~dp0codegraph.mjs" %*\r\n`,
+    );
+  else
+    fs.writeFileSync(
+      path.join(bin, "codegraph"),
+      `#!/bin/sh\nexec "${process.execPath}" "$0.mjs" "$@"\n`,
+      { mode: 0o755 },
+    );
+}
 
 /** A project folder, a fake CLI folder, and the answers of the fake. `index` makes `.codegraph/codegraph.db`. */
 export function setUp({ index = true, installed = true } = {}) {
@@ -32,19 +54,26 @@ export function setUp({ index = true, installed = true } = {}) {
     fs.mkdirSync(path.join(project, ".codegraph"));
     fs.writeFileSync(path.join(project, ".codegraph", "codegraph.db"), "");
   }
-  if (installed) {
-    fs.writeFileSync(path.join(bin, "codegraph"), SCRIPT, { mode: 0o755 });
-  }
+  if (installed) installFake(bin);
   // The child process needs more than `PATH` in its environment, so the base is the test environment
   // without the variables of a parent Claude Code session.
+  // On Windows the variable is `Path`, and a second key `PATH` would be a duplicate, so the base drops both.
   const base = Object.fromEntries(
-    Object.entries(process.env).filter(([k]) => !k.startsWith("CLAUDE_")),
+    Object.entries(process.env).filter(
+      ([k]) => !k.startsWith("CLAUDE_") && k.toUpperCase() !== "PATH",
+    ),
   );
+  // Windows needs its system folder on `PATH` for `cmd.exe`.
+  const system =
+    process.platform === "win32"
+      ? [`${process.env.SystemRoot}\\System32`]
+      : ["/usr/bin", "/bin"];
   const env = {
     ...base,
-    PATH: `${bin}:/usr/bin:/bin`,
+    PATH: [bin, ...system].join(path.delimiter),
     FAKE_DIR: dir,
     HOME: dir,
+    USERPROFILE: dir,
   };
   const answer = (name, value) =>
     fs.writeFileSync(
@@ -60,7 +89,7 @@ export function setUp({ index = true, installed = true } = {}) {
     log: () => {
       const file = path.join(dir, "log");
       return fs.existsSync(file)
-        ? fs.readFileSync(file, "utf8").trim().split("\n")
+        ? fs.readFileSync(file, "utf8").trim().split(/\r?\n/)
         : [];
     },
   };

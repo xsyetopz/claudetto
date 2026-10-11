@@ -30,10 +30,10 @@
 // only. The token is not written to disk or printed.
 // The command finds `claude` on `PATH` only. A shell function or alias does not work.
 
-import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { runProgram } from "../lib/run-program.mjs";
 import { report } from "../features/sandbox/frontmatter.mjs";
 import { cleanEnv, loginToken } from "../features/sandbox/login.mjs";
 import {
@@ -101,6 +101,8 @@ if (!claude) {
 // The token is read above with the real HOME. Only the child gets the sandbox
 // HOME, without the variables that point back to the real shell files.
 const env = { ...cleanEnv(), CLAUDE_CONFIG_DIR: config, HOME: home };
+// On Windows, Node and Claude Code find the home folder in `USERPROFILE`.
+if (process.platform === "win32") env.USERPROFILE = home;
 delete env.ZDOTDIR;
 delete env.XDG_CONFIG_HOME;
 const token = loginToken();
@@ -120,7 +122,14 @@ if (args.includes("--model")) {
       `--model ${model} is not in availableModels of the sandbox (${allowed.join(", ")}), so Claude Code runs another model.`,
     );
 }
-const r = spawnSync(claude, args, { cwd: project, env, stdio: "inherit" });
+let r;
+try {
+  r = runProgram(claude, args, { cwd: project, env, stdio: "inherit" });
+} catch (err) {
+  // A word that a Windows shell cannot take safely, such as a prompt with `%`.
+  console.error(`${err.message} Change that argument and run the command again.`);
+  process.exit(1);
+}
 if (!check) process.exit(r.status ?? 1);
 
 if (r.status !== 0) {

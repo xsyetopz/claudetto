@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { decide } from "../../../plugins/dotclaude/features/adherence/cli.mjs";
 import { SHELL_SCAN_MAX_CHARS } from "../../../plugins/dotclaude/lib/budget.mjs";
+import { filesByPath } from "./stub-fs.mjs";
 
 const NO_IO = { read: () => null, transcript: () => null };
 // Every file exists: an overwrite of a test file or a limits file asks, and a new file does not (see `shellpaths.test.mjs`).
@@ -89,7 +90,7 @@ test("a script that a `hooks.json` names gets an ask", () => {
     }),
   };
   asks("tee plugins/x/bin/s.mjs", "plugins/x/bin/s.mjs", {
-    read: (f) => files[f] ?? null,
+    ...filesByPath(files),
     transcript: () => null,
   });
 });
