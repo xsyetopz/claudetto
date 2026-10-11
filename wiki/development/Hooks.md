@@ -30,7 +30,7 @@ The module sees the events below in the order that Claude Code runs them.
 | `tool.call` | `Write` | Puts each sentence of a Markdown file on its own line. See [Semantic line breaks](Semantic-Line-Breaks). |
 | `tool.call` | `Edit` | Repairs an `old_string` that spans two sentences, then breaks the lines of `new_string`. It reads the file with `$.fs.read` when the file exists. |
 | `tool.call` | `Bash` | Breaks the lines of the quoted heredoc of `git commit` and `gh pr create`. |
-| `tool.call` | `Bash` | Denies a command that only prints a file (`cat`, `sed -n`, `head`, or `tail` on one file, with no pipe), and gives the `Read` call with the same range. A file over 4 MiB (`READ_MAX_BYTES`) is denied by its size. A generated file, such as one in `node_modules` or a `.log` file, stays allowed. See [Context bound](Context-Bound). |
+| `tool.call` | `Bash` | Denies a command that prints a file (`cat`, `sed -n`, `head`, or `tail` on one file, also in one part of a list, and not into a pipe), and gives the `Read` call with the same range. A file over 4 MiB (`READ_MAX_BYTES`) is denied by its size. A generated file, such as one in `node_modules` or a `.log` file, stays allowed. See [Context bound](Context-Bound). |
 | `prompt.compose` | all | Adds the system prompt variant of the model of the session. The key is chosen at the first call and kept. It does nothing for the `bare` trait. See [System prompt](System-Prompt). |
 | `agent.spawn` | all | Adds the model block to the end of the task prompt of a subagent. |
 | `prompt.section` | `context_management` | Gives the shorter text that says compaction is off, when `DISABLE_COMPACT` is set. The built-in guard `sec-default` skips it. |

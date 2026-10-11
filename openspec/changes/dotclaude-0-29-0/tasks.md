@@ -108,7 +108,7 @@ The full `just check` runs at the end of the group.
   Verify with the two start-cost scenarios in a capture
 - [ ] 3.6 Add the approval-claim faults of the transcripts as eval cases of the prompt rule of task 5.7: a future decision, a claim that cites a project file, and a claim that cites an `AskUserQuestion` answer (design D25).
   Verify with the "Future pick" and "Sourced claim" scenarios of `system-prompt`
-- [ ] 3.7 Make each `Bash` guard check each part of a compound command.
+- [x] 3.7 Make each `Bash` guard check each part of a compound command.
   Verify with the "Read in a compound command" scenario
 - [ ] 3.8 Add the code-span blocks of the transcripts as eval cases of the code-span rule of the output style (design D25).
   Verify that the eval of the output style holds the cases

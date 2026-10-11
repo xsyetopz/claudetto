@@ -41,12 +41,7 @@ import {
 } from "../features/prompt/select.ts";
 import { CONTEXT_MANAGEMENT } from "../features/prompt/texts.ts";
 import { READ_MAX_BYTES } from "../features/reads/limits.ts";
-import {
-  type Count,
-  printOf,
-  printReason,
-  words,
-} from "../features/reads/rules.ts";
+import { type Count, printReason, printsOf } from "../features/reads/rules.ts";
 import {
   commandInput,
   editInput,
@@ -189,12 +184,11 @@ export function register(on: On): void {
     const answer = await next(e);
     return toolAnswer(e.tool, answer) ?? answer;
   });
-  // A `Bash` command that only prints a file is denied here, and the `Read` call of the same range runs instead (design D22).
+  // A `Bash` command that prints a file, also in one part of a compound command, is denied here, and the `Read` call of the same range runs instead (design D22).
   // The deny runs before the `sembr` rewrite, because a denied call is not run.
   // The session folder is read only for a command that prints a file, because a relative path needs it.
   on("tool.call", { tool: "Bash" }, async ($, e, next) => {
-    const argv = words(e.command);
-    if (!argv || !printOf(argv)) return next(e);
+    if (!printsOf(e.command, "").length) return next(e);
     const cwd = await $.session.cwd();
     const deny = await printReason(
       { tool_name: "Bash", tool_input: { command: e.command }, cwd },

@@ -37,9 +37,10 @@ Haiku 5.5 costs 5 times as much for each request above 100K prompt tokens.
   The model then reads only the matched range with `Read`, and refers to an earlier result instead of a second read of the same lines.
 - `Read` returns a short stub when the same file and the same `offset` and `limit` are read again and the file did not change.
   A `Bash` slice gets no stub.
-- The `tool.call` hook on `Bash` in `hooks/register.ts` denies a `Bash` command that only prints a file.
+- The `tool.call` hook on `Bash` in `hooks/register.ts` denies a `Bash` command that prints a file, also in one part of a compound command.
   A file over 4 MiB (`READ_MAX_BYTES`) is denied by its size.
-  This covers `cat`, `sed -n` with a print range, `head`, and `tail` on one file, with no pipe and no other command.
+  This covers `cat`, `sed -n` with a print range, `head`, and `tail` on one file, in each part of a list split on `;`, `&&`, `||`, `&`, and new lines.
+  A print into a pipe, a redirect, a substitution, and a heredoc stay allowed.
   The deny reason gives the `Read` call with the same file and range.
   For example, `sed -n '40,80p' design.md` gets `Read` with `offset` 40 and `limit` 41.
 - The snippet sets `bashOutputMaxChars` to 4000, the lowest value.

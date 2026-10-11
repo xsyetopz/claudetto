@@ -73,23 +73,35 @@ test("`tail F` names `Read` at the last lines, from the line count", async () =>
   expect((await readArgs("tail -n +50 docs/design.md")).offset).toBe(50);
 });
 
-test("a bounded pipe, a redirect, and a range in a list stay allowed", async () => {
+test("Read in a compound command: a print in each part of a list gets the same deny as the print alone", async () => {
+  const alone = await reason("cat docs/design.md");
   for (const command of [
-    "grep -n D22 docs/design.md | head -5",
-    "cat docs/design.md > copy.md",
-    "sed -n '1,5p' docs/design.md; ls",
+    "cat docs/design.md; ls",
+    "cat docs/design.md && echo done",
+    "ls || cat docs/design.md",
+    "cat docs/design.md\nls",
+    "cat docs/design.md & ls",
+    "cd docs && cat design.md",
   ])
-    expect(await run(command)).toBe(undefined);
+    expect(await reason(command), command).toBe(alone);
+  expect(await readArgs("sed -n '1,5p' docs/design.md; ls")).toMatchObject({
+    offset: 1,
+    limit: 5,
+  });
 });
 
-test("a print in a pipe, a list, or a substitution stays allowed, because `bashOutputMaxChars` bounds the output", async () => {
+test("a print into a pipe, a redirect, a substitution, a heredoc, a quote, a comment, and an unknown `cd` stay allowed", async () => {
   for (const command of [
+    "grep -n D22 docs/design.md | head -5",
     "cat docs/design.md | grep D22",
-    "cat docs/design.md && echo done",
+    "cat docs/design.md > copy.md",
     "cat $(ls docs)",
-    "cat docs/design.md\nls",
+    "cat <<EOF\ncat docs/design.md\nEOF",
+    'echo "a; cat docs/design.md"',
+    "ls # ; cat docs/design.md",
+    'cd "$DIR" && cat design.md',
   ])
-    expect(await run(command)).toBe(undefined);
+    expect(await run(command), command).toBe(undefined);
 });
 
 test("a command with an edit, a byte count, or another bounded form stays allowed", async () => {
