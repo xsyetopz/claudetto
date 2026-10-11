@@ -69,10 +69,9 @@ The full `just check` runs at the end of the group.
   Verify that `just check` passes
   State: `bun check` finds no type errors in 229 files, and `just check` passes with 1022 tests.
   Where a test showed a wrong type in `plugins/`, the plugin type changed, and the test has no cast.
-- [ ] 2.8 Replace the shell-only `just` recipes with Bun scripts that use `Bun.$`, and the literal `/` path joins with `node:path` and `import.meta.dir`.
+- [x] 2.8 Replace the shell-only `just` recipes with Bun scripts that use `Bun.$`, and the literal `/` path joins with `node:path` and `import.meta.dir`.
   Verify with the "Path join" test, and with CI on Windows, Linux, and macOS
-  State: each recipe calls a script of `tools/`, the CI `check` job runs `just ci` on the three systems, and `just check` and the "Path join" test pass.
-  CI has not run, because it needs a push.
+  State: CI run 38178466172 passes `just ci` on Ubuntu, macOS, and Windows.
 - [ ] 2.9 Add `src/` and `just generate`: each text that a plugin ships comes from `src/` (design D12).
   Verify with the "Generate", "Header", and "Text in the plugin" tests
 - [ ] 2.10 Add the check that fails when a generated file differs from its source, and skip generated files in the size test.
