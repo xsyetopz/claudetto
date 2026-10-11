@@ -93,15 +93,5 @@
     "blocks": false,
     "allow": "tests/dotclaude/context/pins.test.ts > the report-now hook is silent in the main session and below the bound",
     "text": "tests/dotclaude/context/pins.test.ts > a Haiku 5.5 subagent at 90K gets the message and a Sonnet 5.5 subagent does not"
-  },
-  "Stop prompt": {
-    "requests": 1,
-    "tokens": 6914,
-    "blocks": true,
-    "eval": "stop-hook-block",
-    "allow": "plugins/dotclaude/evals/stop-hook-correct-report/case.yaml > stop-no-block",
-    "text": "plugins/dotclaude/evals/stop-hook-block/case.yaml > stop-block-text-clean",
-    "block": "plugins/dotclaude/evals/stop-hook-block/case.yaml > stop-block-seen",
-    "false": "plugins/dotclaude/evals/stop-hook-plain-answer/case.yaml > stop-no-false-block"
   }
 }

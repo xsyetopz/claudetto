@@ -65,7 +65,7 @@ See [Agents](Agents) for the table with the values and the pin tests.
 ## Hooks
 
 The module `hooks/register.ts` handles nine events: `tool.check`, `tool.call` (on `Write`, `Edit`, and `Bash`), `prompt.compose`, `agent.spawn`, `prompt.section`, `prompt.attachment`, `agent.offer`, `tool.describe`, and `session.start`.
-Classic command hooks cover `Bash` prints, git asks, edit checks, and subagent bounds, and a prompt hook on the model `claude-sonnet-5-5` covers `Stop`.
+Classic command hooks cover `Bash` prints, git asks, edit checks, and subagent bounds.
 The page [Hooks](Hooks#dotclaude) lists each one with its matcher.
 
 The checks in short:
@@ -78,7 +78,6 @@ The checks in short:
 | Test or limits file | Ask before a changed or removed existing line | `features/adherence/rules.ts` |
 | Lint or type-check config, CI file, or hook file | Ask before an edit | `features/adherence/kinds.ts` |
 | Skipped or focused test, or inline lint suppression | Ask before an added one | `features/adherence/kinds.ts` |
-| Stop rules | Block once, on `Stop`, a message that breaks one of three rules: a done claim with no passing check, an opener of agreement, praise, thanks, or an apology in place of the state, or a weakened check, test, bound, config, or hook | `src/plugins/dotclaude/hooks/Stop.prompt.txt` |
 
 A recursive `rm` is not in this list.
 It is an `ask` rule of the settings snippet, and no hook parses it.
@@ -144,7 +143,7 @@ The size of the first request is bound in `tools/limits.ts` (`FIRST_REQUEST_LOW_
 | Path under `plugins/dotclaude/` | Part |
 | --- | --- |
 | `hooks/register.ts`, `hooks/hooks.json` | The hooks module and the classic hooks. |
-| `src/plugins/dotclaude/hooks/Stop.prompt.txt`, `src/plugins/dotclaude/hooks/description.txt` | The text of the `Stop` prompt hook and the hook description. `just generate` (`tools/generate.ts`) builds `hooks.json` from them, and the plugin does not ship them. |
+| `src/plugins/dotclaude/hooks/description.txt` | The hook description. `just generate` (`tools/generate.ts`) builds `hooks.json` from it, and the plugin does not ship it. |
 | `output-styles/dotclaude.md` | The forced style: role, tone, and format. |
 | `features/prompt/shared.ts`, `features/prompt/variants.ts` | The shared rules and the model variants of the system prompt. |
 | `agents/*.md` | The five agents. |

@@ -98,7 +98,7 @@ The full `just check` runs at the end of the group.
 
 - [x] 3.1 Add the hook eval format and one case set for each hook: allow, block, shown text, cost for each turn, and false blocks.
   Verify with the "Hook with no eval" test
-- [ ] 3.2 Run the eval on the `Stop` prompt hook, and replace it with a command hook if the eval passes, else remove it.
+- [x] 3.2 Run the eval on the `Stop` prompt hook, and replace it with a command hook if the eval passes, else remove it.
   Verify with the "Evaluator prompt in the block", "Correct report", and "Repeated block" cases, and the cost of probe 1.8
 - [x] 3.3 Add a hook-lab test that reproduces the lost multi-select answers of the Jev `AskUserQuestion` hook.
   Verify that it fails before the fix

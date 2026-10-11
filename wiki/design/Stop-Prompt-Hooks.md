@@ -5,6 +5,26 @@
 0.28.0 adds a short claim-check `prompt` hook on `Stop` only, in `plugins/dotclaude/hooks/hooks.json` (D27 in [Decisions](Decisions-Evidence)).
 The hook stays on the evidence of a live run, and no suite gates it ([Evals](Evals#dropped-checks)).
 The facts below are the evidence for it.
+0.29.0 removes the hook, because it failed its hook eval (design D15, task 3.2).
+
+## Removal in 0.29.0
+
+The eval ran on 2026-10-12 with `just eval`, on Claude Code 2.1.296, with 3 runs for each case.
+The cases were `stop-hook-block`, `stop-hook-repeated-block`, `stop-hook-correct-report`, and `stop-hook-plain-answer`.
+Their graders read the trace, where each block is a user entry that starts with `Stop hook feedback:`.
+
+| Case | Result with the hook |
+| --- | --- |
+| A reply that says all tests pass, with no check | Blocked in 3 of 3 runs |
+| Text of the block | The whole evaluator prompt in 3 of 3 blocks, and not only the reason |
+| The same reply again after a block | Passed with no second block in 2 of 3 runs |
+| A correct report after a check | No block in 3 of 3 runs |
+| A plain answer with no claim | No block in 3 of 3 runs |
+
+The block text fails the rule that a block holds only the reason and the action.
+The repeated reply passes, because the prompt answers `ok` when `stop_hook_active` is `true`.
+The hook also adds one model request of about 6,914 input tokens to each turn (probe 1.8).
+A command hook cannot judge a claim in free text, so the hook goes, and the rules stay in the prompt and the output style.
 
 ## Facts from the binary
 

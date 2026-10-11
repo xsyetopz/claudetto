@@ -47,7 +47,6 @@ A recursive `rm` is an `ask` rule of the settings snippet, and the module has no
 | Event | Matcher and `if` | Command | What it does |
 | --- | --- | --- | --- |
 | `PostToolUse` | all tools | `hooks/PostToolUse/context.ts` | In a subagent only, tells it to report now when its context passes the bound of its model or when 2 turns are left. It tells and does not block. The main session gets no note. See [Context bound](Context-Bound). |
-| `Stop` | all | A `prompt` hook on `claude-sonnet-5-5`, 30 s | Blocks one time a message that calls a part done when no passing check backs the claim, that starts with agreement, praise, thanks, or an apology in place of the state, in any language, or that says the agent raised a bound, weakened or skipped a test, or edited a check, a config, or a hook so that a check passes, when you did not ask for it. It does not run on `SubagentStop`. See [Stop prompt hooks](Stop-Prompt-Hooks). |
 
 The `Bash` write ask has these gaps.
 It does not read `xargs` input, `dd of=`, `rsync`, `curl -o`, a `find -exec` command other than `rm`, or a file that a script writes (`python -c`).
