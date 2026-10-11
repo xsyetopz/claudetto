@@ -13,7 +13,14 @@ test("the variant results are copied to a folder that the message names, and the
   expect(folders.length).toBe(1);
   expect(folders[0]).toMatch(/^variant-feature-x-y-\d{4}-\d\d-\d\dT[\d-]+Z$/);
   const folder = path.join(resultsRoot(s), folders[0] as string);
-  expect(r.stdout.includes(folder), r.stdout).toBeTruthy();
+  // Windows can give the temp folder as a short name (`RUNNER~1`) or a long one, so the paths are compared as real paths.
+  const named = r.stdout.match(
+    /The results of the variant are in (.+)\.$/m,
+  )?.[1];
+  expect(named, r.stdout).toBeDefined();
+  expect(fs.realpathSync.native(named as string)).toBe(
+    fs.realpathSync.native(folder),
+  );
   const saved = await Bun.file(path.join(folder, "run.txt")).text();
   // The file comes from the variant arm: the plugin path was in the worktree.
   expect(
