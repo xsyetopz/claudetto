@@ -45,9 +45,11 @@ export function runProgram(
         `Cannot run ${file} through a shell: the word ${JSON.stringify(word)} is refused, because ${why}.`,
       );
   }
-  const command = [file, ...args].map((word) => `"${word}"`).join(" ");
+  // Node wraps the line in one pair of quotes for `cmd.exe /s`, and passes it without escaping.
+  // Bun escapes each `"` as `\"`, which `cmd.exe` does not read, so the name arrives with a backslash.
+  const words = [file, ...args].map((word) => `"${word}"`).join(" ");
   return spawn(
-    [Bun.env["ComSpec"] ?? "cmd.exe", "/d", "/s", "/c", command],
-    options,
+    [Bun.env["ComSpec"] ?? "cmd.exe", "/d", "/s", "/c", `"${words}"`],
+    { ...options, windowsVerbatimArguments: true },
   );
 }

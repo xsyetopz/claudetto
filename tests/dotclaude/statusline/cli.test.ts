@@ -183,6 +183,8 @@ test("the status line writes no file in the temporary, config, project, plugin d
       CLAUDE_CONFIG_DIR: folders.config,
       CLAUDE_PLUGIN_DATA: folders.data,
       HOME: folders.home,
+      // Bun itself, not the status line, keeps a transpiler cache under `HOME` when no `BUN_INSTALL` is set, as on CI.
+      BUN_RUNTIME_TRANSPILER_CACHE_PATH: "0",
     },
   );
   expect(out.includes("5h"), out).toBeTruthy();

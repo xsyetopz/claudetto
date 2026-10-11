@@ -18,7 +18,8 @@ import {
 import { tmpDir } from "../support/repo.ts";
 
 const dir = tmpDir("sessions-errors");
-const loopTo = (file: string) => fs.symlinkSync(file, file);
+// On Windows a link has a kind, so a loop to a folder needs `"dir"`, or the link reads as a file.
+const loopTo = (file: string, kind?: "dir") => fs.symlinkSync(file, file, kind);
 
 test("`rethrowUnless` returns for a listed code or name and throws the rest", async () => {
   rethrowUnless(Object.assign(new Error("x"), { code: "ENOENT" }), "ENOENT");
@@ -85,7 +86,7 @@ test("`installedSkills` gives no skills for an absent config, a damaged plugin f
 
 test("`installedSkills` throws a read error that is not an absent file", async () => {
   const config = fs.mkdtempSync(path.join(dir, "config-"));
-  loopTo(path.join(config, "skills"));
+  loopTo(path.join(config, "skills"), "dir");
   await expect(installedSkills(config)).rejects.toThrow(
     expect.objectContaining({ code: "ELOOP" }),
   );

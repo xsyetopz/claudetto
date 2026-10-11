@@ -120,9 +120,11 @@ test("`openspecChange` gives null for a project with no changes folder and throw
   expect(await openspecChange(path.join(dir, "no-project"))).toBe(null);
   const project = fs.mkdtempSync(path.join(dir, "project-"));
   fs.mkdirSync(path.join(project, "openspec"));
+  // On Windows a link has a kind, so a loop to a folder needs `"dir"`, or the link reads as a file.
   fs.symlinkSync(
     path.join(project, "openspec", "changes"),
     path.join(project, "openspec", "changes"),
+    "dir",
   );
   await expect(openspecChange(project)).rejects.toThrow(
     expect.objectContaining({ code: "ELOOP" }),

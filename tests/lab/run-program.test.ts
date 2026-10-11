@@ -45,8 +45,8 @@ test("on Windows, the lab runner quotes each word and runs the line through `Com
   expect(seen).toStrictEqual([
     [
       process.env["ComSpec"] || "cmd.exe",
-      ["/d", "/s", "/c", `"claude" "plugin" "a b" "it's"`],
-      { cwd: "c" },
+      ["/d", "/s", "/c", `""claude" "plugin" "a b" "it's""`],
+      { cwd: "c", windowsVerbatimArguments: true },
     ],
   ]);
 });
@@ -73,9 +73,9 @@ test("the core runner gives the same command line on Windows, as one argument ve
         "/d",
         "/s",
         "/c",
-        '"openspec" "config" "get"',
+        '""openspec" "config" "get""',
       ],
-      { cwd: "." },
+      { cwd: ".", windowsVerbatimArguments: true },
     ],
   ]);
 });
@@ -131,7 +131,7 @@ for (const { name, run, commandLine, plain } of RUNNERS) {
     on("win32", () => run(["-p", "Reply with OK."], seen));
     expect(seen.length).toBe(1);
     expect(commandLine(seen[0] as unknown[])).toBe(
-      '"claude" "-p" "Reply with OK."',
+      '""claude" "-p" "Reply with OK.""',
     );
   });
 

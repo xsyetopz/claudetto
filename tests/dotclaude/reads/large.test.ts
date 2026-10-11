@@ -7,6 +7,7 @@ import { expect, test } from "bun:test";
 import path from "node:path";
 import { READ_MAX_BYTES } from "../../../plugins/dotclaude/features/reads/limits.ts";
 import { printReason } from "../../../plugins/dotclaude/features/reads/rules.ts";
+import { toSlash } from "../../../plugins/dotclaude/lib/paths.ts";
 import { tmpDir } from "../../support/repo.ts";
 import { decideRead as decide } from "../../support/verdicts.ts";
 
@@ -35,9 +36,10 @@ test("a cat print of a too large file is denied", async () => {
 test("the read helper denies a file over `READ_MAX_BYTES` by its size", async () => {
   const file = path.join(tmpDir("reads-large"), "big.txt");
   await Bun.write(file, "a\n".repeat(READ_MAX_BYTES / 2 + 1));
-  const out = await decide(bash(`tail -n 3 ${file}`, path.dirname(file)));
+  // A native Windows path has `\` and `~` (in `RUNNER~1`), which the print rule does not read as a simple command.
+  const out = await decide(bash("tail -n 3 big.txt", path.dirname(file)));
   const specific = out?.hookSpecificOutput;
   expect(specific?.permissionDecision).toBe("deny");
-  expect(specific?.permissionDecisionReason).toContain(file);
+  expect(specific?.permissionDecisionReason).toContain(toSlash(file));
   expect(specific?.permissionDecisionReason).not.toContain("`offset`");
 });

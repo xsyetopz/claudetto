@@ -2,7 +2,6 @@
 // No command runs. `count` is a stub for the line count of the named file, and no file is read.
 
 import { expect, test } from "bun:test";
-import path from "node:path";
 import type { Count } from "../../../plugins/dotclaude/features/reads/rules.ts";
 import type { Verdict } from "../../support/verdicts.ts";
 import { decideRead as decide } from "../../support/verdicts.ts";
@@ -11,8 +10,8 @@ import { decideRead as decide } from "../../support/verdicts.ts";
 const specificOf = (out: Verdict | undefined) => out?.hookSpecificOutput;
 
 const CWD = "/work/app";
-// The hook gives the path in the native form, so it has a drive letter and backslashes on Windows.
-const FILE = path.resolve(CWD, "docs/design.md");
+// The print rule gives a path with `/` only, on every platform, as `lib/paths.ts` does.
+const FILE = "/work/app/docs/design.md";
 const run = (command: string, count: Count = async () => 100) =>
   decide({ tool_name: "Bash", cwd: CWD, tool_input: { command } }, count);
 const reason = async (command: string, count?: Count) =>

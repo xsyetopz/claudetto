@@ -53,10 +53,8 @@ test("`availableModels` reads the list, and gives undefined when the settings ar
 test("`which` skips a folder of `PATH` that is absent and finds a program in a later folder", async () => {
   const dir = folder();
   // Windows runs a program with an extension from `PATHEXT`, and `which` tries each one.
-  const ext =
-    process.platform === "win32"
-      ? (process.env["PATHEXT"] || ".EXE;.CMD;.BAT").split(";")[0]
-      : "";
+  // `.cmd` is in every `PATHEXT`, and `which` gives the extension in lower case, so the path is the same on each run.
+  const ext = process.platform === "win32" ? ".cmd" : "";
   const program = path.join(dir, `tool-x${ext}`);
   await Bun.write(program, "#!/bin/sh\n");
   fs.chmodSync(program, 0o755);
