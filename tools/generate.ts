@@ -6,21 +6,53 @@
 //
 // `src/` has the layout of the repository: `src/plugins/<name>/agents/x.md` gives `plugins/<name>/agents/x.md`.
 // `src/shared/` holds the parts that more than one file repeats, and gives no file of its own.
-// In a source, a line `{{include NAME}}` gives the text of `src/shared/NAME.md`, and `{{NAME}}` gives the value of the limit `NAME` of `VALUES`.
+// In a source, a line `{{include NAME}}` gives the text of `src/shared/NAME.md`, `{{include NAME.json}}` the text of `src/shared/NAME.json`, and `{{NAME}}` the value of the limit `NAME` of `VALUES`.
 // A `hooks.json` also gets its texts from the files next to it: `description.txt` and `<Event>.prompt.txt`.
+// A folder `NAME.ts/` gives the module `NAME.ts`, with one constant for each `.md` or `.json` file in it, so that code can import the texts.
+// The constant of `doing-tasks.md` is `DOING_TASKS`, a `.json` file gives an object, and the module holds no logic.
+// Biome formats each generated module, so the lint of `plugins/` passes on it.
 // Each generated file starts with a header that names its source, except a JSON file, because JSON has no comment.
 
 import fs from "node:fs";
 import path from "node:path";
-import { REPORT_MAX_WORDS } from "../plugins/dotclaude/features/context/limits.ts";
+import { FILE_MAX_BYTES } from "../plugins/dotclaude/features/adherence/limits.ts";
+import {
+  HAIKU_CONTEXT_MAX,
+  REPORT_MAX_WORDS,
+  SUBAGENT_CONTEXT_MAX,
+  TURNS_LEFT_AT,
+} from "../plugins/dotclaude/features/context/limits.ts";
+import { MAX_ROWS } from "../plugins/dotclaude/features/statusline/limits.ts";
+import {
+  BASH_OUTPUT_MAX_CHARS,
+  CONTEXT_WINDOW,
+  POLICY_FILE_MAX_CHARS,
+  POLICY_TIMEOUT_MS,
+  USAGE_LEVELS,
+} from "../plugins/dotclaude/lib/budget.ts";
 
 const REPO = path.resolve(import.meta.dir, "..");
 
-/** The limits that a source can name as `{{NAME}}`, from the one place in code where each is set. */
-export const VALUES: Record<string, string | number> = { REPORT_MAX_WORDS };
+/** The limits that a source can name as `{{NAME}}`, from the one place in code where each is set. A number has the `300,000` form of the docs. */
+export const VALUES: Record<string, string> = Object.fromEntries(
+  Object.entries({
+    BASH_OUTPUT_MAX_CHARS,
+    CONTEXT_WINDOW,
+    FILE_MAX_BYTES,
+    HAIKU_CONTEXT_MAX,
+    MAX_ROWS,
+    POLICY_FILE_MAX_CHARS,
+    POLICY_TIMEOUT_MS,
+    REPORT_MAX_WORDS,
+    SUBAGENT_CONTEXT_MAX,
+    TURNS_LEFT_AT,
+    USAGE_LEVEL_LOW: USAGE_LEVELS[0],
+    USAGE_LEVEL_HIGH: USAGE_LEVELS[1],
+  }).map(([name, value]) => [name, value.toLocaleString("en-US")]),
+);
 
 const PROMPT_FILE = /^([A-Za-z]+)\.prompt\.txt$/;
-const INCLUDE = /^\{\{include ([a-z0-9-]+)\}\}$/gm;
+const INCLUDE = /^\{\{include ([a-z0-9-]+(?:\.json)?)\}\}$/gm;
 const VALUE = /\{\{([A-Z0-9_]+)\}\}/g;
 
 /** The words of the header, which a test and the size bound find in the first lines of a generated file. */
@@ -56,7 +88,10 @@ async function fill(
   const names = [...text.matchAll(INCLUDE)].map((m) => m[1] as string);
   const parts: Record<string, string> = {};
   for (const name of names) {
-    const file = path.join(shared, `${name}.md`);
+    const file = path.join(
+      shared,
+      name.endsWith(".json") ? name : `${name}.md`,
+    );
     if (!fs.existsSync(file))
       throw new Error(
         `${source}: no shared part ${posix(path.relative(path.dirname(shared), file))}`,
@@ -69,7 +104,7 @@ async function fill(
   );
   return included.replace(VALUE, (_m, name: string) => {
     if (!(name in VALUES)) throw new Error(`${source}: no value {{${name}}}`);
-    return String(VALUES[name]);
+    return VALUES[name] as string;
   });
 }
 
@@ -125,13 +160,85 @@ const walk = (dir: string): string[] =>
 const isHookText = (rel: string): boolean =>
   /(?:^|\/)hooks\/(?:description\.txt|[A-Za-z]+\.prompt\.txt)$/.test(rel);
 
+/** The module path and the constant name of a text of a module folder, such as `a/texts.ts/doing-tasks.md`. */
+const MODULE_TEXT = /^(.+\.ts)\/([a-z0-9-]+)\.(?:md|json)$/;
+
+/** `text` as a template literal that gives the same string. */
+const literal = (text: string): string =>
+  `\`${text.replace(/[\\`]/g, "\\$&").replace(/\$\{/g, "\\${")}\``;
+
+/** The text module of the source folder `dir` of `root`: one constant for each `.md` or `.json` file, in name order. */
+async function textModule(
+  src: string,
+  shared: string,
+  dir: string,
+): Promise<string> {
+  const lines: string[] = [];
+  for (const name of fs.readdirSync(path.join(src, dir)).sort()) {
+    const source = path.posix.join("src", dir, name);
+    const [, base, ext] = name.match(/^([a-z0-9-]+)\.(md|json)$/) ?? [];
+    if (!base)
+      throw new Error(
+        `${source}: a module folder holds only \`.md\` and \`.json\` files`,
+      );
+    const text = (
+      await fill(
+        await Bun.file(path.join(src, dir, name)).text(),
+        shared,
+        source,
+      )
+    ).replace(/\n+$/, "");
+    if (ext === "json") {
+      try {
+        JSON.parse(text);
+      } catch (err) {
+        throw new Error(`${source}: ${(err as Error).message}`);
+      }
+    }
+    lines.push(
+      `/** From \`${name}\`. */`,
+      `export const ${base.toUpperCase().replace(/-/g, "_")} = ${ext === "json" ? text : literal(text)};`,
+      "",
+    );
+  }
+  return format(path.join(dir), lines.join("\n"));
+}
+
+/** `text` as Biome formats the module `file`. */
+async function format(file: string, text: string): Promise<string> {
+  const run = Bun.spawn(
+    ["bunx", "biome", "format", `--stdin-file-path=${file}`],
+    { cwd: REPO, stdin: new Blob([text]), stdout: "pipe", stderr: "pipe" },
+  );
+  const [out, err, code] = await Promise.all([
+    new Response(run.stdout).text(),
+    new Response(run.stderr).text(),
+    run.exited,
+  ]);
+  if (code !== 0) throw new Error(`biome format ${file}: ${err}`);
+  return out;
+}
+
 /** The generated files of the repository `root`, from its `src/` folder. */
 export async function outputs(root: string): Promise<Output[]> {
   const src = path.join(root, "src");
   const shared = path.join(src, "shared");
   const out: Output[] = [];
+  const modules = new Set<string>();
   for (const rel of walk(src)) {
     if (rel.startsWith("shared/") || isHookText(rel)) continue;
+    const module = rel.match(MODULE_TEXT)?.[1];
+    if (module) {
+      if (modules.has(module)) continue;
+      modules.add(module);
+      const source = `src/${module}/`;
+      out.push({
+        file: module,
+        source,
+        text: withHeader(module, source, await textModule(src, shared, module)),
+      });
+      continue;
+    }
     const source = `src/${rel}`;
     const from = path.join(src, rel);
     let text = await fill(await Bun.file(from).text(), shared, source);

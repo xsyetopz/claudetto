@@ -72,7 +72,7 @@ The full `just check` runs at the end of the group.
 - [x] 2.8 Replace the shell-only `just` recipes with Bun scripts that use `Bun.$`, and the literal `/` path joins with `node:path` and `import.meta.dir`.
   Verify with the "Path join" test, and with CI on Windows, Linux, and macOS
   State: CI run 38178466172 passes `just ci` on Ubuntu, macOS, and Windows.
-- [ ] 2.9 Add `src/` and `just generate`: each text that a plugin ships comes from `src/` (design D12).
+- [x] 2.9 Add `src/` and `just generate`: each text that a plugin ships comes from `src/` (design D12).
   Verify with the "Generate", "Header", and "Text in the plugin" tests
 - [x] 2.10 Add the check that fails when a generated file differs from its source, and skip generated files in the size test.
   Verify with the "Edit by hand" and "Long generated file" tests

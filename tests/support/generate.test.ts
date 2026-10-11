@@ -43,7 +43,7 @@ test("Generate: a changed shared rule reaches each agent body that repeats it", 
 });
 
 test("a value of a limit fills its name, and an unknown name or part is an error that names the source", async () => {
-  const [name, value] = Object.entries(VALUES)[0] as [string, number];
+  const [name, value] = Object.entries(VALUES)[0] as [string, string];
   const ok = await root({
     "src/plugins/p/x.md": `At most {{${name}}} words.\n`,
   });

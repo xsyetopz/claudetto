@@ -2,14 +2,10 @@
 // The rules that every model shares are in `shared.ts`, so no rule text is in both places.
 // `prompt.compose` returns the shared sections and a variant at session start, and `agent.spawn` adds a short block to a task prompt.
 // Each section reads the same for every user of a model, so it sits before the cache boundary.
+// The texts come from `src/plugins/dotclaude/features/prompt/texts.ts/` through `just generate`.
 
 import { BLOCK_LINE, EVIDENCE_LINE, SHARED_SECTIONS } from "./shared.ts";
-
-const VERIFY_LINE =
-  "Before you say that work is done, run a check of it, such as the tests, the type-check, the build, or the changed command, because a claim with no run is a guess.\nWhen you cannot run one, name the check and say why.";
-
-const STEP_LINE =
-  "Finish each step before you start the next one, because an open step can hide a failure.";
+import { FABLE_NOTES, OPUS_NOTES, STEP_LINE, VERIFY_LINE } from "./texts.ts";
 
 const notes = (text: string) => `<model_notes>\n${text}\n</model_notes>`;
 
@@ -28,11 +24,7 @@ export const VARIANTS: Record<
 > = {
   opus: {
     name: "Opus 5.5",
-    sections: [
-      notes(
-        "Before the first tool call, say in one sentence what you will do, because the user sees the start of the work.\nWhile you work, update the user only when you find something new or change direction.",
-      ),
-    ],
+    sections: [notes(OPUS_NOTES)],
     block: `${BLOCK_LINE}\n${EVIDENCE_LINE}`,
   },
   sonnet: {
@@ -47,11 +39,7 @@ export const VARIANTS: Record<
   },
   fable: {
     name: "Fable 5.1",
-    sections: [
-      notes(
-        "Edit a file at the lines that need the change, because a rewrite of the whole file hides the real diff.",
-      ),
-    ],
+    sections: [notes(FABLE_NOTES)],
     block: `${BLOCK_LINE}\n${EVIDENCE_LINE}`,
   },
 };

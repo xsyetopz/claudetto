@@ -34,12 +34,12 @@ import {
   linesOf,
   ORGS_ARGV,
 } from "../features/guard/rules.ts";
-import { CONTEXT_MANAGEMENT } from "../features/prompt/data.ts";
 import {
   composeSections,
   variantKey,
   withBlock,
 } from "../features/prompt/select.ts";
+import { CONTEXT_MANAGEMENT } from "../features/prompt/texts.ts";
 import { READ_MAX_BYTES } from "../features/reads/limits.ts";
 import {
   type Count,
@@ -163,6 +163,9 @@ export function register(on: On): void {
     return next(key ? { ...e, prompt: withBlock(e.prompt, key) } : e);
   });
   on("session.start", onSessionStart);
+  // The built-in `context_management` section says that the context is summarized when it grows long.
+  // With `DISABLE_COMPACT` that is false, and the model then spends less care on the size of the context.
+  // The text is the same for each call, so the cached answer keeps the prompt cache.
   on("prompt.section", { name: "context_management" }, async ($, e, next) => {
     const off = await $.env.get("DISABLE_COMPACT");
     return off && off !== "0" && off !== "false"
