@@ -98,6 +98,17 @@ dotclaude writes no launcher stub for them.
 - The keys of the never-set list and the items without a gate: see [Off switches](Off-Switches).
 - `managed-settings.json`: dotclaude writes no managed file, see [Off switches](Off-Switches#managed-settings).
 
+## Mythos detection
+
+Setup puts `claude-mythos-5-1` in place of `claude-fable-5-1` in `availableModels` when the model catalog of your account offers it.
+Claude Code 2.1.296 caches the catalog that the API serves to the account in `<config dir>/cache/model-catalog/<organizationUuid>-<hash>-<surface>.json`.
+The organization comes from `oauthAccount.organizationUuid` in `.claude.json`.
+The function `isMythosAvailable` of the bundle takes a Mythos row of `catalog.config.models` that is not `disabled` and not in the `deprecated` section, and setup makes the same test.
+No doc covers this file.
+A missing file, another shape, or a new release that moves the file gives no Mythos, and setup keeps Fable.
+A list that already holds `claude-mythos-5-1` keeps it.
+This read needs no model call, so it replaces the probe below for setup.
+
 ## CVP procedure
 
 An account in the Cyber Verification Program (CVP) can call `claude-mythos-5-1` in place of `claude-fable-5-1`.

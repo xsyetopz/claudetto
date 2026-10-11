@@ -8,7 +8,7 @@ It assumes that you finished [Install](Install).
 | What | When |
 | --- | --- |
 | Status line | After you set the `statusLine` entry of the [settings snippet](Settings-Snippet). It shows model, effort, context against the 300K window, the OpenSpec change, and the usage windows. |
-| Drift note | When the active settings differ from the [settings snippet](Settings-Snippet), such as a built-in plugin that is on again. Claude mentions each difference in its first answer. Nothing shows when no difference exists. |
+| Drift note | When the active settings differ from the [settings snippet](Settings-Snippet), such as values that setup did not write, a status line of an old plugin version, or a built-in plugin that is on again. The note names `/dotclaude:setup` as the fix. Claude mentions each difference in its first answer. Nothing shows when no difference exists. |
 | Output style | Always. The plugin forces the `dotclaude` style over the simple system prompt. You do not see it. |
 
 On a terminal of about 130 columns, the status line has 3 columns.

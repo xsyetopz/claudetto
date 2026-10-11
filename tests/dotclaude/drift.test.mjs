@@ -15,9 +15,12 @@ import {
   driftNote,
   isSeated,
   pluginsOn,
+  snippetGaps,
+  staleStatusLines,
   syncedSkills,
   unknownSections,
 } from "../../plugins/dotclaude/features/drift/rules.mjs";
+import { snippetFor } from "../../plugins/dotclaude/lib/merge.mjs";
 import { REPO } from "../support/repo.mjs";
 
 // Settings that turn off each plugin of `OFF_PLUGINS`, as the settings snippet of the wiki does.
@@ -89,4 +92,37 @@ test("the note lists each line", () => {
   assert.equal(new Set(lines).size, 6);
   const note = driftNote(lines);
   assert.equal(note.split("\n").filter((l) => l.startsWith("- ")).length, 6);
+});
+
+test("the snippet gaps skip a superset of `availableModels`, the built-in plugins, and a status line of another tool", () => {
+  const root = "/plugins/dotclaude";
+  const full = snippetFor({}, root);
+  const settings = {
+    ...full,
+    availableModels: [
+      ...full.availableModels,
+      "x-model",
+      full.availableModels[0],
+    ],
+    enabledPlugins: {},
+    statusLine: { type: "command", command: "ccstatusline" },
+  };
+  assert.deepEqual(snippetGaps(settings, root), []);
+  assert.deepEqual(staleStatusLines(settings, root), []);
+  assert.deepEqual(
+    snippetGaps({ ...full, availableModels: ["claude-opus-5-5"] }, root),
+    ["availableModels"],
+  );
+});
+
+test("a 0.27.0 launcher stub in the status line is stale", () => {
+  const root = "/plugins/dotclaude";
+  const settings = {
+    ...snippetFor({}, root),
+    statusLine: {
+      type: "command",
+      command: 'node "/u/.claude/dotclaude/statusline.mjs"',
+    },
+  };
+  assert.deepEqual(staleStatusLines(settings, root), ["statusLine.command"]);
 });

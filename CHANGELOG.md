@@ -100,9 +100,15 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The core plugin has a `settings.json` at its root, which holds only keys that Claude Code reads from a plugin.
   Today it sets no key.
   A test checks it against the generated schema and fails on a key that a plugin must not set.
-- The `setup` skill does one thing: the OpenSpec steps.
-  It checks the `openspec` CLI, offers the install, and runs `openspec init --tools claude`, `openspec config set delivery skills`, and `openspec update` after you agree.
-  It changes no Claude Code setting.
+- The `setup` skill merges the settings snippet into the settings file that you pick, after you see each change and agree.
+  Without it, 0.28.0 applied none of the snippet: compaction stayed on, the full system prompt stayed, and the status line, the permission rules, and the sandbox were not set.
+  The snippet ships in `lib/snippet.mjs`, which setup and the drift check share, and a test keeps it equal to the wiki page `Settings-Snippet`.
+  The status line commands get the absolute path of the installed plugin folder, so run setup again after each plugin update.
+  When `dotclaude-docs` is installed, the merge adds its allow rule and domain, and `availableModels` gets `claude-mythos-5-1` in place of `claude-fable-5-1` when the cached model catalog of the account offers it.
+  Then setup checks the `openspec` CLI, offers the install, and runs `openspec init --tools claude`, `openspec config set delivery skills`, and `openspec update` after you agree.
+  Last, setup checks the tools of each installed add-on (`codegraph` and its index, `agent-browser`, `npx`, `TYPESAFE_API_KEY`, and Node.js), offers each missing global install, and runs `codegraph init -y` after you agree.
+  It never asks for the Jev key or writes it.
+- The drift note at session start reports the values of the snippet that the settings do not have, and a status line command that runs another plugin folder or a 0.27.0 stub, with `/dotclaude:setup` as the fix.
 - The format of the evals is the suite format of `claude plugin eval`, which Claude Code owns.
   The 14 cases are in `plugins/dotclaude/evals/`, because the command reads cases only from a folder inside the plugin.
   `just eval` runs them with no published report and a cost limit.
@@ -216,10 +222,10 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   A feature that must write its own file so that a later call reads it back is not built.
   The next entries list what this rule removed against 0.27.0.
   There is no migration, no compatibility shim, and no reader for an old file.
-- The settings profile is gone: `templates/settings.json`, the setup merge of it into your settings, the diff, `--apply` for settings, and `--with <item>` with its eval-gated items.
+- The settings profile file `templates/settings.json`, the diff, and `--with <item>` with its eval-gated items are gone.
   Setup also lost the backup of each written file, the migration of 0.26 keys, the CVP gate, the `--move-managed` option, the managed drop-in `templates/managed-settings.json` and its `sudo cp` command, the language server hints, and the launcher stub of the status line.
   `lib/never-set.mjs` is gone, and a test holds the list of keys that must stay unset.
-  A plain settings snippet in the wiki (`wiki/settings/Settings-Snippet.md`) replaces the profile, and you copy the keys that you want into your own settings.
+  The settings snippet in the wiki (`wiki/settings/Settings-Snippet.md`) replaces the profile, and setup applies it.
 - The file of project rules for the Tier 2 checks, the router with its table of models and efforts, and the router `PreToolUse` hook are gone.
   The `model` and `effort` of each agent are in its frontmatter.
 - The status line no longer shows a burn rate, the slow-read cache, or the estimates of the memory, skills, and agents parts, because each one needed a state file.

@@ -14,6 +14,23 @@ import {
   mock,
   test,
 } from "claude-code/testing";
+import { snippetFor } from "../lib/merge.mjs";
+
+// The `es2023` lib of the lab has no `url` on `ImportMeta`, and the lab runtime gives it.
+declare global {
+  interface ImportMeta {
+    url: string;
+  }
+}
+
+// The folder of the plugin under test, in the form of `$.plugin.root`: a drive path with backslashes on Windows.
+const url = decodeURIComponent(new URL("..", import.meta.url).pathname).replace(
+  /\/$/,
+  "",
+);
+const ROOT = /^\/[A-Za-z]:/.test(url)
+  ? url.slice(1).replaceAll("/", "\\")
+  : url;
 
 const OFF = [
   "cc-plugin-agents-md@builtin",
@@ -65,7 +82,9 @@ const usageOf = (skillFrontmatter: ContextSkill[]): SessionUsage => ({
   },
 });
 type Facts = {
-  settings?: Record<string, unknown>;
+  settings?:
+    | Record<string, unknown>
+    | ((root: string) => Record<string, unknown>);
   policy?: Record<string, unknown>;
   version?: string;
   skills?: ContextSkill[];
@@ -79,7 +98,7 @@ type Facts = {
 function stub(
   on: On,
   {
-    settings = PROFILE,
+    settings,
     policy = {},
     version = "2.1.296",
     skills = [],
@@ -91,7 +110,12 @@ function stub(
 ) {
   on("session.start", (_$, e) => ({ cwd: e.cwd }));
   on("settings.read", (_$, e) => ({
-    value: e.source === "policy" ? policy : settings,
+    value:
+      e.source === "policy"
+        ? policy
+        : typeof settings === "function"
+          ? settings(ROOT)
+          : (settings ?? snippetFor({}, ROOT)),
   }));
   on("session.version", () => ({ value: { version } }));
   on("session.usage", () => {
@@ -217,4 +241,32 @@ test("a new session with drift still gets its note", async ($: Engine, on: On) =
   const session = stub(on, { version: "2.2.0", turns: 0 });
   await start($);
   expect(session.appended().length).toBe(1);
+});
+
+test("a settings file without the snippet names the missing values and the setup skill", async ($: Engine, on: On) => {
+  const session = stub(on, { settings: PROFILE });
+  await start($);
+  const [note] = noteOf(session);
+  expect(note).toContain("`env`");
+  expect(note).toContain("`autoCompactEnabled`");
+  expect(note).toContain("`/dotclaude:setup`");
+  expect(note).toContain("more");
+});
+
+test("a status line of another plugin version folder is reported as stale", async ($: Engine, on: On) => {
+  const settings = snippetFor({}, "/cache/dotclaude/dotclaude/0.27.0");
+  const session = stub(on, { settings });
+  await start($);
+  const [note] = noteOf(session);
+  expect(note).toContain("`statusLine.command`");
+  expect(note).toContain("`subagentStatusLine.command`");
+  expect(note).not.toContain("do not have");
+});
+
+test("a settings file with Mythos in place of Fable has no drift", async ($: Engine, on: On) => {
+  const session = stub(on, {
+    settings: (root) => snippetFor({}, root, true),
+  });
+  await start($);
+  expect(session.appended()).toEqual([]);
 });

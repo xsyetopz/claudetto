@@ -8,8 +8,8 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
-import { writeProgram } from "../support/fake-program.mjs";
-import { PLUGINS, tmpDir } from "../support/repo.mjs";
+import { writeProgram } from "../../support/fake-program.mjs";
+import { PLUGINS, tmpDir } from "../../support/repo.mjs";
 
 const PLUGIN = path.join(PLUGINS, "dotclaude");
 const SCRIPT = path.join(PLUGIN, "skills/setup/scripts/openspec.mjs");

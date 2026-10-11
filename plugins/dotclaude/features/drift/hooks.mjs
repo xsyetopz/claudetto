@@ -53,6 +53,7 @@ async function reportDrift($) {
         CLAUDE_CODE_EFFORT_LEVEL: effort,
         CLAUDE_CODE_SUBAGENT_MODEL_FORCE: force,
       },
+      root: $.plugin.root,
     }),
   );
   if (note)

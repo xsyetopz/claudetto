@@ -38,18 +38,21 @@ See [Claude mods](Claude-Mods#the-built-in-guard-sec-default).
    /plugin install dotclaude@dotclaude
    ```
 
-1. Copy the keys that you want from the [settings snippet](Settings-Snippet) into your own `settings.json`, and restart Claude Code.
-1. Optional: run the setup skill to set up OpenSpec.
+1. Run the setup skill, then restart Claude Code.
 
    ```text
    /dotclaude:setup
    ```
 
 A plugin cannot set permissions, environment variables, or models.
-So dotclaude gives a plain JSON snippet and writes no setting for you.
-The setup skill does one thing.
-It shows the OpenSpec steps, asks, and runs them after your yes.
-It writes no Claude Code setting, no managed settings, and no backup, and it runs no `sudo`.
+Without the [settings snippet](Settings-Snippet), compaction stays on, the full system prompt stays, and the status line, the permission rules, and the sandbox are not set.
+The setup skill shows each change of the snippet to the settings file that you pick, and writes it after your yes.
+It puts `claude-mythos-5-1` in place of `claude-fable-5-1` when the model catalog of your account offers it.
+Then it shows the OpenSpec steps, asks, and runs them after your yes.
+Last, it checks the tools of each installed add-on: `codegraph` and its index, `agent-browser`, `npx`, `TYPESAFE_API_KEY`, and Node.js.
+It offers each missing global install, runs `codegraph init -y` in the project after your yes, and never asks for or writes a key.
+It writes no managed settings and no backup, and it runs no `sudo`.
+You can also copy the keys that you want from the snippet by hand.
 See [OpenSpec](OpenSpec) and [Guards](Guards).
 
 ## Install the Jev plugin
@@ -136,13 +139,15 @@ Each of the three needs no key.
 
 1. Restart Claude Code, because a running session keeps the old hooks and agents.
 1. Read the new entry in the [CHANGELOG](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md).
-1. Compare your `settings.json` with the [settings snippet](Settings-Snippet).
+1. Run `/dotclaude:setup` again.
+   The status line commands hold the path of the plugin version, so each update needs a new run.
    The drift check at session start reports some differences.
 
 > **Warning:** Before 1.0, a release can change or remove behavior without a compatibility layer.
 > Release 0.27.0 rebuilt the core plugin from an empty tree.
 > Release 0.28.0 removed each format that dotclaude had made up for itself:
-> the setup profile with its merge, diff, and backups, the router table, the usage state file, and the handoff notes.
+> the setup profile with its diff and backups, the router table, the usage state file, and the handoff notes.
+> Setup still merges the settings snippet into your settings, because Claude Code owns that format.
 > dotclaude deletes no file of yours.
 > Files that earlier versions wrote stay on your machine, such as `.claude/handoffs/`, setup backups, and launcher stubs.
 > A `settings.json` that setup merged keeps its keys, and nothing updates them.

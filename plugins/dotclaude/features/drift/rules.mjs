@@ -4,6 +4,11 @@
 /** @import { ContextSkill, PromptComposeSection, Settings } from "claude-code" */
 
 import {
+  isOurStatusLine,
+  mergeSettings,
+  snippetFor,
+} from "../../lib/merge.mjs";
+import {
   ENGINE_SECTIONS,
   GUARD_SKIPS,
   OFF_PLUGINS,
@@ -11,9 +16,60 @@ import {
   SYNCED_SOURCE,
   TESTED_VERSION,
 } from "./data.mjs";
+import { GAP_KEYS_MAX } from "./limits.mjs";
 
 /** @param {string[]} list */
 const names = (list) => list.map((n) => `\`${n}\``).join(", ");
+
+/** The status line commands of the snippet, which hold the plugin folder. */
+const STATUS_KEYS = ["statusLine.command", "subagentStatusLine.command"];
+
+/**
+ * The key paths of the snippet that `settings` does not have or holds with another value.
+ * `root` is the folder of the running plugin, so a status line command of another version is a gap.
+ * The built-in plugins have their own line, so their keys are not here.
+ *
+ * @param {Settings} settings
+ * @param {string} root
+ */
+export function snippetGaps(settings, root) {
+  /** @type {{ key: string, line: string }[]} */
+  const changes = [];
+  const want = snippetFor(settings, root);
+  mergeSettings(settings, want, "", changes);
+  // The merged view can repeat or add models, so `availableModels` is a gap only when it lacks a model of the snippet.
+  /** @type {unknown[]} */
+  const have = Array.isArray(settings.availableModels)
+    ? settings.availableModels
+    : [];
+  const models = /** @type {string[]} */ (want.availableModels ?? []);
+  const allModels = models.every((m) => have.includes(m));
+  return changes
+    .map((c) => c.key)
+    .filter((key) => !key.startsWith("enabledPlugins."))
+    .filter((key) => !(key === "availableModels" && allModels));
+}
+
+/**
+ * The status line commands of `settings` that run the status line of a dotclaude folder other than `root`.
+ *
+ * @param {Settings} settings
+ * @param {string} root
+ */
+export function staleStatusLines(settings, root) {
+  const want = snippetFor(settings, root);
+  /** @type {Record<string, any>} */
+  const have = settings;
+  return STATUS_KEYS.filter((key) => {
+    const [name] = key.split(".");
+    const command = have[name ?? ""]?.command;
+    return (
+      typeof command === "string" &&
+      isOurStatusLine(command) &&
+      command !== want[name ?? ""]?.command
+    );
+  });
+}
 
 /**
  * The built-in plugins of the snippet that the settings do not turn off.
@@ -66,6 +122,7 @@ export const isSeated = (policy) => Object.keys(policy ?? {}).length > 0;
  * @param {ContextSkill[]} [facts.skills]
  * @param {readonly PromptComposeSection[]} [facts.sections]
  * @param {Record<string, string | undefined>} [facts.blocking]
+ * @param {string} [facts.root] the folder of the running plugin
  */
 export function driftLines({
   settings,
@@ -74,6 +131,7 @@ export function driftLines({
   skills,
   sections,
   blocking = {},
+  root,
 }) {
   /** @type {string[]} */
   const lines = [];
@@ -85,6 +143,22 @@ export function driftLines({
     lines.push(
       `Claude Code ${version} is not the tested version ${TESTED_VERSION}, so a mod event can differ.`,
     );
+  const stale = settings && root ? staleStatusLines(settings, root) : [];
+  if (stale.length)
+    lines.push(
+      `${names(stale)} ${stale.length > 1 ? "run" : "runs"} the status line of a dotclaude folder that is not the installed plugin folder \`${root}\`, so the status line can show nothing. The user can fix this with \`/dotclaude:setup\`.`,
+    );
+  const gaps =
+    settings && root
+      ? snippetGaps(settings, root).filter((k) => !stale.includes(k))
+      : [];
+  if (gaps.length) {
+    const keys = [...new Set(gaps.map((k) => k.split(".")[0] ?? k))];
+    const more = keys.length - GAP_KEYS_MAX;
+    lines.push(
+      `The settings do not have ${gaps.length} ${gaps.length > 1 ? "values" : "value"} of the snippet, in ${keys.length > 1 ? "these keys" : "this key"}: ${names(keys.slice(0, GAP_KEYS_MAX))}${more > 0 ? `, and ${more} more` : ""}. The user can apply the snippet with \`/dotclaude:setup\`.`,
+    );
+  }
   const on = settings ? pluginsOn(settings) : [];
   if (on.length)
     lines.push(

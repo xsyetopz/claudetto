@@ -48,11 +48,13 @@ dotclaude does not make up a band-aid that cannot be proven to work.
 D1 cites this rule.
 
 A format is proprietary when dotclaude defines it and no Claude Code surface reads or defines it.
+The formats of Claude Code are allowed, also when only Claude Code defines them, such as the settings file and the model catalog cache.
+The custom solutions of dotclaude are not allowed (decision of the user 2026-10-11).
 Examples:
 
 - A JSON file with dotclaude keys: a profile, a case file, a rules file, a baseline, a report.
 - A state file that a hook or the status line reads back: samples, markers, offsets, caches, logs, records.
-- A protocol between dotclaude parts: a merge, a diff, a backup, a rollback, a launcher stub, a hidden oracle with hashes and a canary.
+- A protocol between dotclaude parts: a diff, a backup, a rollback, a launcher stub, a hidden oracle with hashes and a canary.
 - A text convention that a check enforces, such as the `Status <date>:` note.
 - A made-up key in a file that another tool owns, such as `x-claude-code-version`.
 
@@ -83,7 +85,11 @@ Git history is the only record.
 No code deletes a file of the user.
 The CHANGELOG names what 0.28.0 no longer writes.
 
-Cut by this rule: the burn-rate samples, the slow-read cache, the context breakdown state, the usage state file, the level markers, the handoff carry and stop records, the guard per-session state, the auto-fix feature, the `sembr-chat.jsonl` log, the codegraph refresh data, the setup profile with its merge, diff, backups, migration, and gated items, the Tier 2 rules file, the router table, the `handoff` skill, `tools/baseline.json`, and the eval harness.
+Not cut by this rule: the merge of the settings snippet into a settings file of the user.
+The merge writes keys of the Claude Code settings format, and no dotclaude part reads a file of its own back.
+Release 0.28.0 cut it in error, so the user got none of the snippet, and the fix of 2026-10-11 restores it in `setup` with the snippet in `lib/snippet.mjs`.
+
+Cut by this rule: the burn-rate samples, the slow-read cache, the context breakdown state, the usage state file, the level markers, the handoff carry and stop records, the guard per-session state, the auto-fix feature, the `sembr-chat.jsonl` log, the codegraph refresh data, the setup profile file with its diff, backups, migration, and gated items, the Tier 2 rules file, the router table, the `handoff` skill, `tools/baseline.json`, and the eval harness.
 Alternative: keep each as a documented dotclaude format.
 Rejected by the user, because a format of our own cannot be proven to work against Claude Code updates.
 
