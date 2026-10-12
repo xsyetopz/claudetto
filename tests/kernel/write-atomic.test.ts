@@ -11,16 +11,16 @@ const folder = (): string => fs.mkdtempSync(path.join(os.tmpdir(), "atomic-"));
 test("`writeAtomic` replaces the text of a file and leaves only that file in its folder", async () => {
   const dir = folder();
   const file = path.join(dir, "rate-limits.json");
-  fs.writeFileSync(file, "old");
+  await Bun.write(file, "old");
   await writeAtomic(file, "new");
-  expect(fs.readFileSync(file, "utf8")).toBe("new");
+  expect(await Bun.file(file).text()).toBe("new");
   expect(fs.readdirSync(dir)).toStrictEqual(["rate-limits.json"]);
 });
 
 test("`writeAtomic` fails and leaves no temp file when the folder of the file is not a folder", async () => {
   const dir = folder();
   const blocker = path.join(dir, "blocker");
-  fs.writeFileSync(blocker, "x");
+  await Bun.write(blocker, "x");
   let failed = false;
   try {
     await writeAtomic(path.join(blocker, "rate-limits.json"), "new");

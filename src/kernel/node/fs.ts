@@ -1,6 +1,5 @@
 // The `FileReader` of Node, for the CLIs. A missing file gives null, and a missing folder gives an empty list.
 
-import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import { rethrowUnless, UNREADABLE } from "../errors.ts";
 import type { FileReader } from "../ports.ts";
@@ -10,7 +9,7 @@ export const writeAtomic = async (
   file: string,
   text: string,
 ): Promise<void> => {
-  const tmp = `${file}.${randomUUID()}.tmp`;
+  const tmp = `${file}.${crypto.randomUUID()}.tmp`;
   try {
     await Bun.write(tmp, text);
     await fs.rename(tmp, file);
