@@ -53,17 +53,43 @@ const addLine = async (rel: string, line: string) =>
   });
 
 // Finding 1: hook files.
-for (const rel of [
-  "plugins/x/hooks/Stop.prompt.txt",
-  "plugins/x/hooks/description.txt",
-  ".husky/pre-commit",
-  ".pre-commit-config.yaml",
-]) {
-  test(`an \`Edit\` of the hook file \`${rel}\` gets an ask`, async () => {
+for (const rel of [".husky/pre-commit", ".pre-commit-config.yaml"]) {
+  test(`an \`Edit\` of the hook file \`${rel}\` that removes a line gets an ask`, async () => {
     const file = `/w/${rel}`;
     asks(await edit(file, "a", "b", { [file]: "a" }), rel);
   });
+  test(`an \`Edit\` of the hook file \`${rel}\` that adds a line after the last line gets an ask`, async () => {
+    const file = `/w/${rel}`;
+    asks(await edit(file, "a", "a\nb", { [file]: "a" }), rel);
+  });
 }
+test("an `Edit` of the hook file `Stop.prompt.txt` that drops the block gets an ask", async () => {
+  const rel = "plugins/x/hooks/Stop.prompt.txt";
+  const file = `/w/${rel}`;
+  const src = "Block the stop when a check fails.\nGive the reason.\n";
+  asks(
+    await edit(file, "Block the stop when a check fails.", "Allow the stop.", {
+      [file]: src,
+    }),
+    rel,
+  );
+});
+test("an `Edit` of the hook file `Stop.prompt.txt` that adds a line gets an ask", async () => {
+  const rel = "plugins/x/hooks/Stop.prompt.txt";
+  const file = `/w/${rel}`;
+  const src = "Block the stop when a check fails.\n";
+  asks(
+    await edit(file, "fails.", "fails.\nGive the reason.", { [file]: src }),
+    rel,
+  );
+});
+test("an `Edit` of the hook file `description.txt` that changes a line gets an ask", async () => {
+  const file = "/w/plugins/x/hooks/description.txt";
+  asks(
+    await edit(file, "a", "b", { [file]: "a" }),
+    "plugins/x/hooks/description.txt",
+  );
+});
 
 const HOOKS = JSON.stringify({
   hooks: {
@@ -80,16 +106,25 @@ const HOOKS = JSON.stringify({
     ],
   },
 });
-for (const rel of [
-  "plugins/x/features/checks/cli.ts",
-  "plugins/x/bin/gate.sh",
-]) {
-  test(`a script that \`hooks.json\` names, \`${rel}\`, gets an ask`, async () => {
-    const files = {
-      "/w/plugins/x/hooks/hooks.json": HOOKS,
-      [`/w/${rel}`]: "a",
-    };
-    asks(await edit(`/w/${rel}`, "a", "b", files), rel);
+/** A script that `hooks.json` names: the path, a check line, and a line that cannot fail. */
+const SCRIPTS: [string, string, string][] = [
+  [
+    "plugins/x/features/checks/cli.ts",
+    'if (bad) throw new Error("x");',
+    "if (bad) log();",
+  ],
+  ["plugins/x/bin/gate.sh", 'test -n "$1" || exit 1', "exit 0"],
+];
+for (const [rel, check, soft] of SCRIPTS) {
+  const files = {
+    "/w/plugins/x/hooks/hooks.json": HOOKS,
+    [`/w/${rel}`]: `${check}\nrun\n`,
+  };
+  test(`a script that \`hooks.json\` names, \`${rel}\`, gets an ask when it loses its check`, async () => {
+    asks(await edit(`/w/${rel}`, check, soft, files), rel);
+  });
+  test(`a script that \`hooks.json\` names, \`${rel}\`, gets an ask when it changes another line`, async () => {
+    asks(await edit(`/w/${rel}`, "run", "run --fast", files), rel);
   });
 }
 test("a project `hooks/hooks.json` names a script of the project", async () => {
@@ -97,9 +132,12 @@ test("a project `hooks/hooks.json` names a script of the project", async () => {
     "/w/hooks/hooks.json": JSON.stringify({
       hooks: { Stop: [{ hooks: [{ command: "node scripts/gate.mjs" }] }] },
     }),
-    "/w/scripts/gate.mjs": "a",
+    "/w/scripts/gate.mjs": "if (bad) throw new Error('x');\n",
   };
-  asks(await edit("/w/scripts/gate.mjs", "a", "b", files), "scripts/gate.mjs");
+  asks(
+    await edit("/w/scripts/gate.mjs", "throw new Error('x')", "log()", files),
+    "scripts/gate.mjs",
+  );
 });
 test("a script that no `hooks.json` names gets no ask", async () => {
   const files = {
@@ -160,10 +198,10 @@ for (const rel of [
     asks(await edit(file, "a", "b", { [file]: "a" }), rel);
   });
 }
-test("a `skip` key with a number value gets no ask", async () => {
+test("a `skip` key with a number value in a test file gets an ask", async () => {
   expect(
     await addLine("src/a.test.mjs", "const q = { skip: 2, take: 5 };"),
-  ).toBe(undefined);
+  ).not.toBe(undefined);
 });
 for (const line of [
   "const re = /biome-ignore/;",
@@ -181,31 +219,13 @@ test("a suppression word after code in a comment gets an ask", async () => {
 // Finding 4: more cases.
 test("a lint config asks for a text over the scan bound", async () => {
   asks(
-    await write("/w/biome.json", "x".repeat(SCAN_MAX_CHARS + 1)),
+    await write("/w/biome.json", "x".repeat(SCAN_MAX_CHARS + 1), {
+      "/w/biome.json": "{}",
+    }),
     "biome.json",
   );
 });
 const PY = "[tool.ruff]\nline-length = 80\n\n[project]\nname = 'x'\n";
-for (const [name, sect] of [
-  ["ruff", "[tool.ruff]"],
-  ["mypy", "[tool.mypy]"],
-  ["pytest", "[tool.pytest.ini_options]"],
-  ["pyright", "[tool.pyright]"],
-  ["black", "[tool.black]"],
-]) {
-  test(`an added \`${sect}\` section of \`pyproject.toml\` gets an ask`, async () => {
-    const o = await edit(
-      "/w/pyproject.toml",
-      "[project]",
-      `${sect}\nx = 1\n[project]`,
-      {
-        "/w/pyproject.toml": "[project]\nname = 'x'\n",
-      },
-    );
-    asks(o, `pyproject.toml`);
-    expect(name).toBeTruthy();
-  });
-}
 test("an edit inside `[tool.ruff]` of `pyproject.toml` gets an ask", async () => {
   const f = { "/w/pyproject.toml": PY };
   asks(await edit("/w/pyproject.toml", "= 80", "= 200", f), "pyproject.toml");

@@ -6,13 +6,13 @@
 import { SCAN_MAX_CHARS } from "../limits.ts";
 import { gitReason } from "./git.ts";
 import { namedByHooks } from "./hooks.ts";
-import { contentReasons, pathReasons, skipReasons } from "./kinds.ts";
+import { contentReasons, skipReasons } from "./kinds.ts";
 import { relative } from "./paths.ts";
-import { protectedReason } from "./protect.ts";
 import type { Scripts } from "./scripts.ts";
 import { scriptTexts } from "./scripts.ts";
 import type { Payload, Reader } from "./text.ts";
 import { change, FILE_TOOLS } from "./text.ts";
+import { weakerReasons } from "./weaker.ts";
 import { shellWriteReasons } from "./writes.ts";
 
 /** The reads and the folders of the checks. `home` is the home folder, when the environment has one. */
@@ -42,15 +42,14 @@ const fileChecks = async (payload: Payload, io: Io): Promise<Reasons> => {
   const root = io.root || payload.cwd || "";
   const rel = relative(root, ch.file);
   const out: Reasons = { ask: [] };
-  out.ask.push(...pathReasons(rel, await namedByHooks(rel, root, io.read)));
+  const named = await namedByHooks(rel, root, io.read);
+  out.ask.push(...weakerReasons(rel, ch, named));
   const text = ch.after ?? ch.fragment;
   if (text.length > SCAN_MAX_CHARS) {
     // The skipped-test and suppression checks work one line at a time, so they run on a long text too.
     out.ask.push(...skipReasons(rel, ch));
     return out;
   }
-  const guarded = protectedReason(rel, ch);
-  if (guarded) out.ask.push(guarded);
   out.ask.push(...contentReasons(rel, ch));
   return out;
 };

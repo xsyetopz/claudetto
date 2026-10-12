@@ -11,7 +11,6 @@ import {
   CODE_EXTENSIONS,
   DATA_EXTENSIONS,
   HOOK_PATHS,
-  LINE_SHOWN_MAX_CHARS,
   LINT_CONFIG_NAMES,
   RUNNER_CONFIG_NAMES,
   RUST_IGNORE,
@@ -24,6 +23,7 @@ import {
 } from "../limits.ts";
 import { codePart, commentPart } from "./comments.ts";
 import { contentKind } from "./content.ts";
+import { shown } from "./shown.ts";
 import type { Change } from "./text.ts";
 import { added } from "./text.ts";
 
@@ -65,14 +65,6 @@ const hitLines =
   (text: string): string[] =>
     text.split("\n").filter((line) => res.some((re) => re.test(pick(line))));
 
-/** `s` trimmed and cut to `LINE_SHOWN_MAX_CHARS`. */
-export const shown = (s: string): string => {
-  const t = s.trim();
-  return t.length > LINE_SHOWN_MAX_CHARS
-    ? `${t.slice(0, LINE_SHOWN_MAX_CHARS)}...`
-    : t;
-};
-
 /** What a change of a kind of file puts at risk, for the reason that the user reads. */
 const RISK: Record<string, string> = {
   "a hook file": "A change to it changes which checks run.",
@@ -91,18 +83,12 @@ const FINDING = (
 This call changes it.
 ${riskOf(label)}`;
 
-/** The reasons to ask for a change of `rel` from the path alone, so that a text over the scan bound gets them too. */
-export const pathReasons = (rel: string, named = false): string[] => {
-  const kind = pathKind(rel, named);
-  return kind ? [FINDING(rel, kind)] : [];
-};
-
 /**
  * The reasons to ask before a change of `rel` from the text: a list of strings, empty when none.
- * A settings file, a tool config, a check script, and a check recipe ask for a changed value.
+ * A check script and a check recipe ask for a changed value.
  */
 export const contentReasons = (rel: string, ch: Change): string[] => {
-  const kind = contentKind(rel, rel.split("/").at(-1) as string, ch);
+  const kind = contentKind(rel.split("/").at(-1) as string, ch);
   return [...(kind ? [FINDING(rel, kind)] : []), ...skipReasons(rel, ch)];
 };
 

@@ -52,21 +52,38 @@ const addLine = async (rel: string, line: string) =>
 
 // Settings keys.
 const SETTINGS = "/w/.claude/settings.json";
-for (const key of ["disableAllHooks", "enabledPlugins", "sandbox"]) {
-  test(`a new \`${key}\` key in a settings file gets an ask`, async () => {
-    const before = '{"model":"x"}';
-    const after = `{"model":"x","${key}":true}`;
+/** The key, a settings text that checks more, and the same text with a change that checks less. */
+const KEYS: [string, string, string][] = [
+  ["disableAllHooks", '"disableAllHooks":false', '"disableAllHooks":true'],
+  [
+    "enabledPlugins",
+    '"enabledPlugins":{"a@m":true}',
+    '"enabledPlugins":{"a@m":false}',
+  ],
+  ["sandbox", '"sandbox":{"enabled":true}', '"sandbox":{"enabled":false}'],
+];
+for (const [key, on, off] of KEYS) {
+  test(`a change of \`${key}\` in a settings file that checks less gets an ask`, async () => {
+    const [before, after] = [`{${on}}`, `{${off}}`];
     asks(
       await edit(SETTINGS, before, after, { [SETTINGS]: before }),
       "settings.json",
     );
   });
+  test(`a new \`${key}\` key in a settings file ${key === "enabledPlugins" ? "gets no ask" : "gets an ask"}`, async () => {
+    const base = '{"model":"x"}';
+    const next = `{"model":"x",${on}}`;
+    const found = await edit(SETTINGS, base, next, { [SETTINGS]: base });
+    if (key === "enabledPlugins") expect(found).toBe(undefined);
+    else asks(found, "settings.json");
+  });
 }
-test("a change of `model` in a settings file gets no ask", async () => {
+test("a change of `model` in a settings file gets an ask", async () => {
   const before = '{"model":"x"}';
   const after = '{"model":"y"}';
-  expect(await edit(SETTINGS, before, after, { [SETTINGS]: before })).toBe(
-    undefined,
+  asks(
+    await edit(SETTINGS, before, after, { [SETTINGS]: before }),
+    "settings.json",
   );
 });
 
@@ -80,40 +97,58 @@ const PROJECT_HOOKS: [string, string][] = [
   [`node "\${CLAUDE_PROJECT_DIR}/tools/check.mjs"`, "tools/check.mjs"],
   ["bash $CLAUDE_PROJECT_DIR/ci/run.sh --x", "ci/run.sh"],
 ];
+/** A script that fails on a bad input, and the same script with a line that cannot fail. */
+const GATE = 'if [ -z "$1" ]; then\n  exit 1\nfi\n';
+const SOFT = 'if [ -z "$1" ]; then\n  exit 0\nfi\n';
 for (const [command, rel] of PROJECT_HOOKS) {
-  test(`a script of a project settings hook, \`${rel}\`, gets an ask`, async () => {
-    const files = {
-      "/w/.claude/settings.json": settingsHooks(command),
-      [`/w/${rel}`]: "a",
-    };
-    asks(await edit(`/w/${rel}`, "a", "b", files), rel);
+  const files = {
+    "/w/.claude/settings.json": settingsHooks(command),
+    [`/w/${rel}`]: GATE,
+  };
+  test(`a script of a project settings hook, \`${rel}\`, gets an ask when it can no longer fail`, async () => {
+    asks(await edit(`/w/${rel}`, "exit 1", "exit 0", files), rel);
+  });
+  test(`a script of a project settings hook, \`${rel}\`, gets an ask when a line follows its last command`, async () => {
+    asks(await edit(`/w/${rel}`, "fi\n", "fi\necho done\n", files), rel);
+  });
+  test(`a script of a project settings hook, \`${rel}\`, gets an ask when a line comes first`, async () => {
+    asks(await edit(`/w/${rel}`, "if [", "echo start\nif [", files), rel);
   });
 }
-test("a script of a `settings.local.json` hook gets an ask", async () => {
+test("a script of a `settings.local.json` hook gets an ask when it can no longer fail", async () => {
   const files = {
     "/w/.claude/settings.local.json": settingsHooks(
       "sh $CLAUDE_PROJECT_DIR/a.sh",
     ),
-    "/w/a.sh": "a",
+    "/w/a.sh": GATE,
   };
-  asks(await edit("/w/a.sh", "a", "b", files), "a.sh");
+  asks(await edit("/w/a.sh", "exit 1", "exit 0", files), "a.sh");
+  asks(await edit("/w/a.sh", "fi\n", "fi\necho x\n", files), "a.sh");
 });
-test("a script of an inline hook in `plugin.json` gets an ask", async () => {
+test("a script of an inline hook in `plugin.json` gets an ask when it can no longer fail", async () => {
   const manifest = JSON.stringify({
     name: "x",
     hooks: JSON.parse(settingsHooks(`sh \${CLAUDE_PLUGIN_ROOT}/bin/run.sh`)),
   });
   const files = {
     "/w/plugins/x/.claude-plugin/plugin.json": manifest,
-    "/w/plugins/x/bin/run.sh": "a",
+    "/w/plugins/x/bin/run.sh": GATE,
   };
-  asks(await edit("/w/plugins/x/bin/run.sh", "a", "b", files), "bin/run.sh");
-});
-test("a file under `.claude/hooks/` gets an ask", async () => {
   asks(
-    await write("/w/.claude/hooks/anything.py", "x"),
-    ".claude/hooks/anything.py",
+    await edit("/w/plugins/x/bin/run.sh", "exit 1", "exit 0", files),
+    "bin/run.sh",
   );
+  asks(
+    await edit("/w/plugins/x/bin/run.sh", "fi\n", "fi\necho x\n", files),
+    "bin/run.sh",
+  );
+});
+test("a `Write` over a file under `.claude/hooks/` that loses its check gets an ask", async () => {
+  const f = "/w/.claude/hooks/anything.sh";
+  asks(await write(f, SOFT, { [f]: GATE }), ".claude/hooks/anything.sh");
+});
+test("a `Write` of a new file under `.claude/hooks/` gets no ask", async () => {
+  expect(await write("/w/.claude/hooks/anything.py", "x")).toBe(undefined);
 });
 test("a script that no settings hook names gets no ask", async () => {
   const files = {
@@ -155,12 +190,17 @@ for (const [rel, line] of [
 for (const line of [
   'it("a", { skip: 3 }, f);',
   'it("a", { skip: false }, f);',
-  'const s = "test.skip(x)";',
-  "const s = 'it.only';",
   "const re = /it\\.skip|xit\\(/; const t = `t.Skip()`;",
 ]) {
-  test(`the line \`${line}\` in a test file gets no ask`, async () => {
-    expect(await addLine("src/a.test.mjs", line)).toBe(undefined);
+  test(`the line \`${line}\` in a test file gets an ask, as it holds a skip word`, async () => {
+    asks(await addLine("src/a.test.mjs", line), "src/a.test.mjs");
+  });
+}
+for (const line of ['const s = "test.skip(x)";', "const s = 'it.only';"]) {
+  test(`the line \`${line}\` in a new test block of a test file gets no ask`, async () => {
+    expect(
+      await addLine("src/a.test.mjs", `test("a", () => {\n${line}\n});`),
+    ).toBe(undefined);
   });
 }
 test("a skipped test asks for a text over the scan bound", async () => {
@@ -187,36 +227,60 @@ for (const rel of [
     asks(await edit(`/w/${rel}`, "a", "b", { [`/w/${rel}`]: "a" }), rel);
   });
 }
-for (const section of [
-  "[tool.pylint.main]",
-  "[tool.isort]",
-  "[tool.coverage.run]",
-]) {
-  test(`an added \`${section}\` section of \`pyproject.toml\` gets an ask`, async () => {
-    const f = { "/w/pyproject.toml": "[project]\nname = 'x'\n" };
-    asks(
-      await edit(
-        "/w/pyproject.toml",
-        "[project]",
-        `${section}\nx = 1\n[project]`,
-        f,
-      ),
-      "pyproject.toml",
-    );
+/** A section name, and a body that checks less. */
+const WEAK_SECTIONS: [string, string][] = [
+  ["[tool.pylint.main]", "disable = ['C0114']"],
+  ["[tool.isort]", "skip = ['a.py']"],
+  ["[tool.coverage.run]", "omit = ['a.py']\nignore = ['b.py']"],
+  ["[tool.ruff]", "ignore = ['E501']"],
+  ["[tool.ruff]", "select = ['E', 'F']"],
+  ["[tool.mypy]", "ignore_errors = true"],
+  ["[tool.pytest.ini_options]", "addopts = '--ignore=tests'"],
+  ["[tool.pyright]", "exclude = ['src']"],
+  ["[tool.black]", "exclude = 'src'"],
+];
+/** A section name, and a body that adds a check or only sets a style. */
+const KEEP_SECTIONS: [string, string][] = [["[tool.mypy]", "strict = true"]];
+/** A section name, and a body with a key that is not on the safe list, so that the check cannot tell it is safe. */
+const BARE_SECTIONS: [string, string][] = [
+  ["[tool.pytest.ini_options]", "addopts = '-ra'"],
+  ["[tool.pyright]", "typeCheckingMode = 'strict'"],
+  ["[tool.black]", "line-length = 88"],
+  ["[tool.isort]", "profile = 'black'"],
+];
+const PYPROJECT = "/w/pyproject.toml";
+const addSection = (section: string, body: string) =>
+  edit(PYPROJECT, "[project]", `${section}\n${body}\n[project]`, {
+    [PYPROJECT]: "[project]\nname = 'x'\n",
+  });
+for (const [section, body] of WEAK_SECTIONS) {
+  test(`an added \`${section}\` section of \`pyproject.toml\` that checks less gets an ask`, async () => {
+    asks(await addSection(section, body), "pyproject.toml");
   });
 }
-for (const section of ["[coverage:run]", "[isort]", "[pylint.main]"]) {
-  test(`an added \`${section}\` section of \`setup.cfg\` gets an ask`, async () => {
-    const f = { "/w/setup.cfg": "[metadata]\nname = x\n" };
-    asks(
-      await edit(
-        "/w/setup.cfg",
-        "[metadata]",
-        `${section}\nx = 1\n[metadata]`,
-        f,
-      ),
-      "setup.cfg",
-    );
+for (const [section, body] of KEEP_SECTIONS) {
+  test(`an added \`${section}\` section of \`pyproject.toml\` that checks as before or more gets no ask`, async () => {
+    expect(await addSection(section, body)).toBe(undefined);
+  });
+}
+for (const [section, body] of BARE_SECTIONS) {
+  test(`an added \`${section}\` section of \`pyproject.toml\` with a key that is not on the safe list gets an ask`, async () => {
+    asks(await addSection(section, body), "pyproject.toml");
+  });
+}
+for (const [section, body] of [
+  ["[coverage:run]", "omit = a.py"],
+  ["[isort]", "skip = a.py"],
+  ["[pylint.main]", "disable = C0114"],
+] as const) {
+  const f = { "/w/setup.cfg": "[metadata]\nname = x\n" };
+  const add = (text: string) =>
+    edit("/w/setup.cfg", "[metadata]", `${text}\n[metadata]`, f);
+  test(`an added \`${section}\` section of \`setup.cfg\` that checks less gets an ask`, async () => {
+    asks(await add(`${section}\n${body}`), "setup.cfg");
+  });
+  test(`an added \`${section}\` section of \`setup.cfg\` with a key that is not on the safe list gets an ask`, async () => {
+    asks(await add(`${section}\nprofile = black`), "setup.cfg");
   });
 }
 const JUST =

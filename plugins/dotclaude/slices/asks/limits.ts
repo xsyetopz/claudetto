@@ -7,6 +7,9 @@ import {
   PROJECT_SETTINGS,
 } from "../../kernel/paths.ts";
 
+// The bounds and word lists of the ask on a weaker check are in `weak-limits.ts`, so that each file stays short.
+export * from "./weak-limits.ts";
+
 /** The largest file in bytes that a check reads to compare the text before and after a call. A larger file counts as unread. */
 export const FILE_MAX_BYTES = 1_000_000;
 
@@ -56,6 +59,7 @@ export const RUNNER_CONFIG_NAMES = [
   /^pytest\.ini$/,
   /^tox\.ini$/,
   /^\.coveragerc$/,
+  /^bunfig\.toml$/,
 ];
 
 /** The file names of a build file with recipes or targets, matched on the last path part. */
@@ -110,25 +114,8 @@ export const DATA_EXTENSIONS =
 /** The folder names of a test folder, in any letter case. */
 export const TEST_FOLDER = /^(?:tests?|__tests__)$/i;
 
-/** The sections of `pyproject.toml` that hold a linter, type-check, or test config. A match on the section name asks. */
-export const PYPROJECT_SECTIONS =
-  /^tool\.(?:ruff|mypy|pytest|pyright|black|pylint|isort|coverage)(?:\.|$)/;
-
-/** The sections of `setup.cfg` that hold a linter, type-check, or test config. */
-export const SETUP_CFG_SECTIONS =
-  /^(?:flake8|mypy|pylint(?:\..+)?|pycodestyle|pydocstyle|isort|coverage(?::.+)?|tool:pytest|pytest)$/;
-
 /** The names of a `package.json` script that run a check. A change of such a script asks. */
 export const CHECK_SCRIPT = /lint|test|check/;
-
-/** The `.claude/settings*.json` keys where a change asks. */
-export const SETTINGS_KEYS = [
-  "hooks",
-  "permissions",
-  "disableAllHooks",
-  "enabledPlugins",
-  "sandbox",
-];
 
 /** The code file extensions where an added inline lint suppression asks. */
 export const CODE_EXTENSIONS =
