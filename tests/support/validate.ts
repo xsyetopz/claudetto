@@ -14,7 +14,7 @@ export type Schema = {
 
 // The errors of `value` against `schema`, one string each, with the path and the key name.
 // It knows the keywords that the generated schemas use.
-export function validate(value: unknown, schema: Schema, at = ""): string[] {
+export const validate = (value: unknown, schema: Schema, at = ""): string[] => {
   const where = at || "(root)";
   const types: Record<string, (v: unknown) => boolean> = {
     string: (v) => typeof v === "string",
@@ -51,4 +51,4 @@ export function validate(value: unknown, schema: Schema, at = ""): string[] {
       errors.push(...validate(sub, schema.additionalProperties, child));
   }
   return errors;
-}
+};

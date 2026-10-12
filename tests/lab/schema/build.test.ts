@@ -19,8 +19,8 @@ import {
   splitTop,
   unquote,
 } from "../../../src/plugins/dotclaude-lab/slices/schema/domain/scan.ts";
-import { validate } from "../../dotclaude/fixtures/validate.ts";
 import { REPO, tmpDir } from "../../support/repo.ts";
+import { validate } from "../../support/validate.ts";
 import { spawnText } from "../fixture-repo.ts";
 
 const VERSION = "2.1.296";
