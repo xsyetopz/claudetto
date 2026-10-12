@@ -237,6 +237,9 @@ const WEAK_SECTIONS: [string, string][] = [
 const KEEP_SECTIONS: [string, string][] = [
   ["[tool.ruff]", "select = ['E', 'F']"],
   ["[tool.mypy]", "strict = true"],
+];
+/** A section name, and a body with a key that is not on the safe list, so that the check cannot tell it is safe. */
+const BARE_SECTIONS: [string, string][] = [
   ["[tool.pytest.ini_options]", "addopts = '-ra'"],
   ["[tool.pyright]", "typeCheckingMode = 'strict'"],
   ["[tool.black]", "line-length = 88"],
@@ -257,6 +260,11 @@ for (const [section, body] of KEEP_SECTIONS) {
     expect(await addSection(section, body)).toBe(undefined);
   });
 }
+for (const [section, body] of BARE_SECTIONS) {
+  test(`an added \`${section}\` section of \`pyproject.toml\` with a key that is not on the safe list gets an ask`, async () => {
+    asks(await addSection(section, body), "pyproject.toml");
+  });
+}
 for (const [section, body] of [
   ["[coverage:run]", "omit = a.py"],
   ["[isort]", "skip = a.py"],
@@ -268,8 +276,8 @@ for (const [section, body] of [
   test(`an added \`${section}\` section of \`setup.cfg\` that checks less gets an ask`, async () => {
     asks(await add(`${section}\n${body}`), "setup.cfg");
   });
-  test(`an added \`${section}\` section of \`setup.cfg\` with a style key gets no ask`, async () => {
-    expect(await add(`${section}\nprofile = black`)).toBe(undefined);
+  test(`an added \`${section}\` section of \`setup.cfg\` with a key that is not on the safe list gets an ask`, async () => {
+    asks(await add(`${section}\nprofile = black`), "setup.cfg");
   });
 }
 const JUST =

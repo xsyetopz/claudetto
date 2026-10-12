@@ -136,3 +136,21 @@ export const PERMISSION_DENY_KEYS = ["deny", "ask"];
 
 /** The keys of `permissions` where an added entry lets calls run with fewer asks. */
 export const PERMISSION_ALLOW_KEYS = ["allow", "additionalDirectories"];
+
+/** The keys of a lint config or a type-check config where `true` is the strictest value. A new key with `true` checks more. */
+export const STRICT_FLAG_KEY =
+  /^(?:strict|recommended|noUnused\w+|noImplicit\w+|noFallthroughCasesInSwitch|noUncheckedIndexedAccess|noPropertyAccessFromIndexSignature|exactOptionalPropertyTypes|alwaysStrict|strict[A-Z]\w*|useUnknownInCatchVariables|forceConsistentCasingInFileNames|verbatimModuleSyntax|isolatedModules)$/;
+
+/** The keys of a list where a new entry checks more files or more rules. */
+export const GROWABLE_LIST_KEY =
+  /^(?:select|extend-select|extendSelect|include|includes|enable|only)$/i;
+
+/** The entries of a list that take files or rules away. */
+export const NEGATED_ENTRY = /^[!-]/;
+
+/** The file names of a config in INI format that have no `.ini` or `.cfg` extension. */
+export const INI_CONFIG_FILE =
+  /\.(?:ini|cfg)$|^\.(?:flake8|pylintrc|coveragerc|shellcheckrc)$/;
+
+/** The extension of a config in code, which the check reads as tokens. */
+export const CODE_CONFIG_FILE = /\.[cm]?[jt]sx?$/;

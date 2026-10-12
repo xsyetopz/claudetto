@@ -1,0 +1,84 @@
+// The check on a weaker config in JavaScript or TypeScript (package P36), as pure functions.
+// The check does not run the code, so it reads tokens.
+// A change gets no ask only when the tokens are the same after the comments, the quote marks,
+// the semicolons, and the trailing commas go away, except for a number that a threshold key raises.
+
+import { THRESHOLD_KEY } from "../limits.ts";
+import { uncommented } from "./scan.ts";
+
+const TOKEN =
+  /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\d+(?:\.\d+)?|[\w$]+|[^\s\w$]/g;
+
+/** The tokens of a text without comments. A string has no quote marks, a trailing comma and a semicolon go away. */
+const tokens = (text: string): string[] => {
+  const all = (uncommented(text, false).match(TOKEN) ?? []).map((t) =>
+    /^["'`]/.test(t) ? `"${t.slice(1, -1)}` : t,
+  );
+  return all.filter(
+    (t, i) => t !== ";" && !(t === "," && /^[\]})]$/.test(all[i + 1] ?? "")),
+  );
+};
+
+const NUMBER = /^\d+(?:\.\d+)?$/;
+
+/** True when the token at `i` is a number that follows `key :` where `key` is a threshold key. */
+const thresholdAt = (list: string[], i: number): boolean =>
+  list[i - 1] === ":" &&
+  THRESHOLD_KEY.test((list[i - 2] ?? "").replace(/^"/, ""));
+
+/** True when `added` is only `key : number` pairs of threshold keys, with commas between them. */
+const thresholdPairs = (added: string[]): boolean => {
+  const list = added[0] === "," ? added.slice(1) : added;
+  for (let i = 0; i < list.length; i += 4) {
+    const [key, colon, value] = [list[i], list[i + 1], list[i + 2]];
+    if (
+      colon !== ":" ||
+      !NUMBER.test(value ?? "") ||
+      Number(value) <= 0 ||
+      !THRESHOLD_KEY.test((key ?? "").replace(/^"/, "")) ||
+      (list[i + 3] !== undefined && list[i + 3] !== ",")
+    )
+      return false;
+  }
+  return list.length > 0;
+};
+
+/** True when `now` is `was` with threshold pairs inserted in one place. */
+const insertsThresholds = (was: string[], now: string[]): boolean => {
+  let head = 0;
+  while (head < was.length && was[head] === now[head]) head++;
+  let tail = 0;
+  while (
+    tail < was.length - head &&
+    was[was.length - 1 - tail] === now[now.length - 1 - tail]
+  )
+    tail++;
+  return (
+    head + tail === was.length &&
+    thresholdPairs(now.slice(head, now.length - tail))
+  );
+};
+
+/** What a call takes from a config in code, or undefined. */
+export const codeWeaker = (
+  before: string,
+  after: string,
+): string | undefined => {
+  const [was, now] = [tokens(before), tokens(after)];
+  if (insertsThresholds(was, now)) return undefined;
+  if (was.length === now.length) {
+    const at = was.findIndex(
+      (t, i) =>
+        t !== now[i] &&
+        !(
+          NUMBER.test(t) &&
+          NUMBER.test(now[i] as string) &&
+          Number(now[i]) > Number(t) &&
+          thresholdAt(was, i)
+        ),
+    );
+    if (at === -1) return undefined;
+    return `It changes \`${was[at]}\` to \`${now[at]}\` in a config in code.`;
+  }
+  return "It changes the code of a config in code, and the check cannot tell if it is safe.";
+};
