@@ -212,6 +212,27 @@ export const SHELL_FIND = ["find"];
 /** The `git` subcommands that overwrite a file of the work tree from the index or a commit. */
 export const SHELL_GIT_RESTORES = ["checkout", "restore"];
 
+// The write words of code in another language, for the ask for a path that the code names.
+// The code is read as words (`codeWords`), so a word such as `File.write` or `fs.rmSync` is one word.
+// A path that the code names counts as a write only when the same code has one of these.
+
+/** The parts of a word of code that show a write, matched in any case: `write_text`, `writeFileSync`, `json.dump`, `shutil.copy`. */
+export const CODE_WRITE_PARTS =
+  "write dump save unlink remove rename replace move copy delete truncate rmtree chmod chown symlink append mkdir makedirs rmdir touch utime".split(
+    " ",
+  );
+
+/** The write words that are a whole word, or a whole part of a dotted word (`fs.rmSync`, `FileUtils.rm_rf`). A part such as `rm` would match too many words. */
+export const CODE_WRITE_WORDS =
+  "rm rmSync rm_f rm_r rm_rf cp cpSync cp_r mv ln_s to_csv to_json".split(" ");
+
+/** The open modes that write, as a whole word: `open(p, "w")`, `File.open(p, "a")`. The words of code have no quotes. */
+export const CODE_WRITE_MODES =
+  "w wb wt w+ w+b wb+ a ab at a+ a+b ab+ r+ r+b rb+ x xb x+".split(" ");
+
+/** A redirect in code, such as awk `print > "f"` or Perl `open(F, ">f")`. The words of code drop `>`, so the check reads the text. `->`, `=>`, and `>=` do not count. */
+export const CODE_REDIRECT = /(?<![-=>])>>?(?!=)/;
+
 /**
  * The options of each command that take a value, so the value is not an operand.
  * `letters` are the short options with a value, `suffix` are the short options with an optional attached value (`sed -i.bak`),

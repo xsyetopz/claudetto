@@ -12,10 +12,15 @@
 // Limits: the check does not follow a `cd`, so a path is relative to the project root.
 // A path with a variable (`$F`) or a glob (`*`, `?`, `[a-z]`, `{a,b}`) is read by its literal part: each variable and glob counts as the name `x`.
 // It asks only when the literal part is a protected path (`tests/*.test.mjs`) and passes `$F` or `src/*.mjs`.
+// A path that code in another language names counts as a write only when the same code has a write word (`CODE_WRITE_PARTS`), so `YAML.load_file(".github/ci.yml")` gets no ask.
 // A command over the scan bound (`SHELL_SCAN_MAX_CHARS`) gets no write ask here, and the existing behavior applies.
 
 import { CLAUDE_DIR } from "../../../../../kernel/paths.ts";
 import {
+  CODE_REDIRECT,
+  CODE_WRITE_MODES,
+  CODE_WRITE_PARTS,
+  CODE_WRITE_WORDS,
   ITEMS_SHOWN_MAX,
   LIMIT_FILE_NAME,
   RECIPE_FILE_NAMES,
@@ -119,6 +124,19 @@ const adds = (
   return mode === "append" || (mode === "create" && !exists);
 };
 
+/** Whether `text` has a write word: `File.write`, `fs.rmSync`, an open mode such as `"w"`, or a redirect. A word with `/` is a path and does not count. */
+const hasWriteWord = (text: string): boolean =>
+  CODE_REDIRECT.test(text) ||
+  codeWords(text).some((word) => {
+    if (word.includes("/")) return false;
+    const lower = word.toLowerCase();
+    return (
+      CODE_WRITE_MODES.includes(word) ||
+      CODE_WRITE_PARTS.some((part) => lower.includes(part)) ||
+      word.split(".").some((part) => CODE_WRITE_WORDS.includes(part))
+    );
+  });
+
 /**
  * The ask reasons for the writes in `command`. A list of strings, empty when no write form has a protected target.
  * `scripts` are the texts of the script files that the command runs (`scriptTexts`).
@@ -136,7 +154,9 @@ export const shellWriteReasons = async (
   if (truncated) return [];
   const found: Write[] = [
     // Code in another language can write any path that it names, with a shell command or with its own file API.
+    // A path counts only when the same code has a write word. A shell command in the code is read below.
     ...code
+      .filter(hasWriteWord)
       .flatMap(codeWords)
       .map((word) => ({ form: SCRIPT_FORM, word, mode: "script" })),
     ...[...code, ...fileCode].flatMap(codeCommands).flatMap(targets),
