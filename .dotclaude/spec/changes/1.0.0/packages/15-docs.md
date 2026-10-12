@@ -118,8 +118,8 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    - [x] `Guards`, `Auto-Mode`, `Handoff-Cost`, `Usage-Evidence` (with `Plans-and-Models`), `Prompt-Variants`
    - [ ] `Settings-Snippet` (a WIP commit is merged, so check it)
    - [ ] `Architecture` (with `Core-Plugin`), `Agents`, `Skills`, `Spec-Store`
-   - [ ] `Prompt-Surface` (with `System-Prompt`), `Context-And-Handoff` (with `Context-Bound`), `Second-Opinion`
-   - [ ] `Status-Line`, `Semantic-Line-Breaks`, `Contributions`
+   - [x] `Status-Line`, `Semantic-Line-Breaks`, `Contributions`
+   - [x] `Prompt-Surface`, `Context-And-Handoff`, `Second-Opinion`, `Claude-Code-Internals`, `Subagents`, `Plugin-Loader`
    - [x] `Code-Graph`, `Browser`, `Library-Docs`, `Sessions`
    - [ ] `Add-Ons`, `Lab` (a WIP commit is merged, so check it)
    - [ ] `Claude-Code-Internals`, `Request-Build` (with `Claude-Mods`), `Tools-And-Deferral`, `Hook-Events` (with `Hooks`), `Plugin-Loader`
@@ -130,6 +130,21 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    - [ ] `Home`, `Install`, `Quickstart`, `Troubleshooting`, `Attributions`, `README.md`, `docs/README.md`, the check of `CHANGELOG.md`
 3. Join the branches, run `just generate`, `bun run lint:md`, and `just check`.
 4. A reviewer pass for each section, then one run that fixes the list.
+
+## Findings outside the docs
+
+The page runs found these in code and config.
+P15 does not own them, so they go to P16 or a new package.
+
+- `tools/generate/order.ts` and `slices/handoff/slice.ts` say that the mod runtime refuses an unfiltered `tool.call` handler, but `register.ts` registers the unfiltered `guard` handler.
+- `slices/handoff/domain/context.ts` says that a run at its turn limit returns no report, but the docs and the binary say that partial output returns.
+- `slices/handoff/limits.ts` `AGENT_MAX_TURNS` copies `slices/agents/limits.ts` `MAX_TURNS`, against the rule of one place for each bound.
+- `slices/statusline/limits.ts` says that `USAGE_REWRITE_MS` is half of an age that `dotclaude-spec runs` trusts, and no such bound is in `src/`.
+- `slices/setup/domain/facts.ts`, `slices/handoff/limits.ts`, and `Decisions-Tools` cite `research/` files that are not in the repository.
+- `tests/support/plugin-hooks-exist.test.ts` reads only the `hooks` key, so it does not check that `register.ts` exists.
+- The `homepage` of `plugin.json` points to `Core-Plugin`, which P15 merges into `Architecture`.
+- `package.json` and `plugin.json` say `0.28.0` until `just bump` in P16.
+- Under the load of the full suite, `tests/tools/generate/texts.test.ts` timed out once at 5,000 ms.
 
 ## Acceptance
 
