@@ -1,0 +1,121 @@
+# The 0.28.0 paths in `plugins/`, `src/`, and `tests/` that no package has ported yet.
+# Each group starts with a comment that names the package of `spec/changes/1.0.0/packages.md` that ports or removes it.
+# A line that ends with `/` names a folder and each file in it.
+# The generator fails on a file in `plugins/` that it did not write and that this list does not name.
+# Each package removes its lines, and P16 checks that the list is empty.
+
+# P01b2: the `prompt` slice, and the hand-written hooks module that the generator replaces
+plugins/dotclaude/.claude-plugin/plugin.json
+plugins/dotclaude/hooks/hooks.json
+plugins/dotclaude/hooks/register.ts
+plugins/dotclaude/features/prompt/
+plugins/dotclaude/tests/mod.test.ts
+plugins/dotclaude/tests/variants.test.ts
+src/plugins/dotclaude/hooks/
+src/plugins/dotclaude/features/prompt/
+tests/dotclaude/hooks/
+tests/dotclaude/prompt-variants.test.ts
+
+# P01b3: the settings snippet, and `src/shared/`
+src/shared/
+src/plugins/dotclaude/lib/
+tests/dotclaude/settings-pin.test.ts
+
+# P01b4: the checks
+tests/dotclaude/fixtures/
+tests/dotclaude/import-rules.test.ts
+tests/dotclaude/imports.test.ts
+tests/support/
+
+# P05: `guard` and `reads`
+plugins/dotclaude/features/guard/
+plugins/dotclaude/features/reads/
+tests/dotclaude/guard/
+tests/dotclaude/reads/
+
+# P06: the asks of `adherence`
+plugins/dotclaude/features/adherence/
+tests/dotclaude/adherence/
+
+# P07: `sembr`
+plugins/dotclaude/features/sembr/
+plugins/dotclaude/tests/sembr.test.ts
+tests/dotclaude/sembr/
+
+# P08: `statusline`
+plugins/dotclaude/features/statusline/
+tests/dotclaude/statusline/
+
+# P09: `setup` and the drift check
+plugins/dotclaude/features/drift/
+plugins/dotclaude/features/setup/
+plugins/dotclaude/skills/
+plugins/dotclaude/tests/drift.test.ts
+src/plugins/dotclaude/skills/
+tests/dotclaude/drift.test.ts
+tests/dotclaude/setup/
+tests/dotclaude/skills.test.ts
+
+# P10: `agents`
+plugins/dotclaude/agents/
+src/plugins/dotclaude/agents/
+tests/dotclaude/agents.test.ts
+
+# P11a: `dotclaude-codegraph`
+plugins/dotclaude-codegraph/
+src/plugins/dotclaude-codegraph/
+tests/codegraph/
+
+# P11b: `dotclaude-browser`
+plugins/dotclaude-browser/
+src/plugins/dotclaude-browser/
+tests/browser/
+
+# P11d: `dotclaude-docs`
+plugins/dotclaude-docs/
+src/plugins/dotclaude-docs/
+tests/docs/
+
+# P11e: `dotclaude-sessions`
+plugins/dotclaude-sessions/
+src/plugins/dotclaude-sessions/
+tests/sessions/
+
+# P12: `dotclaude-lab`
+plugins/dotclaude-lab/
+src/plugins/dotclaude-lab/
+tests/lab/
+
+# P13: `handoff`, the 0.28.0 context bound, and the shared 0.28.0 code of the core plugin that the last slice package removes
+plugins/dotclaude/evals/
+plugins/dotclaude/features/context/
+plugins/dotclaude/hooks/PostToolUse/
+plugins/dotclaude/lib/
+plugins/dotclaude/tsconfig.json
+tests/dotclaude/context/
+tests/dotclaude/errors.test.ts
+tests/dotclaude/eval-graders.test.ts
+tests/dotclaude/lib/
+tests/dotclaude/paths.test.ts
+
+# P15: the wiki
+src/wiki/
+
+# P19: `decide`, which replaces the `dotclaude-jev` add-on
+plugins/dotclaude-jev/
+src/plugins/dotclaude-jev/
+tests/jev/
+
+# P20: `surface`
+plugins/dotclaude/features/surface/
+plugins/dotclaude/tests/surface.test.ts
+src/plugins/dotclaude/features/surface/
+
+# P21: `trim`
+plugins/dotclaude/settings.json
+src/plugins/dotclaude/settings.json
+tests/dotclaude/deferred-tools.test.ts
+
+# P22: `styles`
+plugins/dotclaude/output-styles/
+src/plugins/dotclaude/output-styles/
