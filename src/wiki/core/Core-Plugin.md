@@ -1,7 +1,7 @@
 # Core plugin: `dotclaude`
 
 The core plugin `dotclaude` is the base of the marketplace.
-It uses only documented extension points of Claude Code: a forced output style, six agents, one skill, one hooks module, a few classic hooks, and a status line command.
+It uses only documented extension points of Claude Code: an output style, six agents, one skill, one hooks module, a few classic hooks, and a status line command.
 It sets no Claude Code setting, because a plugin cannot set permissions, environment variables, or models.
 The [settings snippet](Settings-Snippet) gives those keys, and you copy them.
 This page is the reference.
@@ -9,7 +9,8 @@ The other plugins work without it.
 
 ## What it does
 
-- Forces the output style `dotclaude` (`force-for-plugin: true`), which holds the role, the tone, and the format.
+- Ships the output style `dotclaude:Concise`, which the settings snippet selects.
+  The style sets no `force-for-plugin`, so your `outputStyle` setting stays in charge.
   The module replaces the long system prompt with the shared sections and a prompt variant for each model ([System prompt](System-Prompt)).
 - Gives six agents with a model, an effort, and a turn limit each ([Agents](Agents)).
 - Asks before the first contact with a repository of another owner that has an AI policy file ([Contributions](Contributions)).
@@ -19,7 +20,7 @@ The other plugins work without it.
 - Shortens attachments, agent lines, and tool descriptions by exact id ([Prompt surface](Prompt-Surface)).
 - Shows a status line and a subagent status line ([Status line](Status-Line)).
 - Reports differences from the settings snippet at session start ([Drift check](#drift-check)).
-- Sets up OpenSpec with the `setup` skill ([OpenSpec](OpenSpec)).
+- Keeps the state of a large change in `.dotclaude/spec/` with the `spec` skill and the `dotclaude-spec` command ([Spec store](OpenSpec)).
 
 ## Install
 
@@ -39,7 +40,7 @@ See [Install](Install) for the steps and the update path.
 
 | Entry | Invoked by | What it does |
 | --- | --- | --- |
-| `/dotclaude:setup` | The user only (`disable-model-invocation: true`) | Sets up OpenSpec in the current project. It shows each step and asks before it runs one. It changes no Claude Code setting. The script is `skills/setup/scripts/openspec.ts`. |
+| `/dotclaude:setup` | The user only (`disable-model-invocation: true`) | Applies the dotclaude settings snippet and checks the tools of the installed add-ons. |
 
 A user-invoked skill has no listing line, so it costs no tokens in a request.
 The `name` and `description` of a model-invocable skill have 150 to 300 bytes together (`SKILL_META_LOW_BYTES` and `SKILL_META_HIGH_BYTES` in `tools/limits.ts`).
@@ -76,12 +77,12 @@ The checks in short:
 
 | Check | Result | Code |
 | --- | --- | --- |
-| Policy ask | Ask, once for each session and repository | `features/guard/rules.ts` |
-| File print | Deny, with the `Read` call to use | `features/reads/` |
-| Git move | Ask for `git stash`, `git reset`, and a `git checkout` or `git restore` of a path | `features/adherence/git.ts` |
-| Test or limits file | Ask before a changed or removed existing line | `features/adherence/rules.ts` |
-| Lint or type-check config, CI file, or hook file | Ask before an edit | `features/adherence/kinds.ts` |
-| Skipped or focused test, or inline lint suppression | Ask before an added one | `features/adherence/kinds.ts` |
+| Policy ask | Ask, once for each session and repository | `slices/guard/domain/owners.ts` |
+| File print | Deny, with the `Read` call to use | `slices/guard/domain/reads.ts` |
+| Git move | Ask for `git stash`, `git reset`, and a `git checkout` or `git restore` of a path | `slices/asks/domain/git.ts` |
+| Test or limits file | Ask before a changed or removed existing line | `slices/asks/domain/testdiff.ts` |
+| Lint or type-check config, CI file, or hook file | Ask before an edit | `slices/asks/domain/lintdiff.ts`, `slices/asks/domain/kinds.ts` |
+| Skipped or focused test, or inline lint suppression | Ask before an added one | `slices/asks/domain/kinds.ts`, `slices/asks/domain/comments.ts` |
 
 A recursive `rm` is not in this list.
 It is an `ask` rule of the settings snippet, and no hook parses it.
@@ -148,9 +149,9 @@ The size of the first request is bound in `tools/limits.ts` (`FIRST_REQUEST_LOW_
 | --- | --- |
 | `hooks/register.ts`, `hooks/hooks.json` | The hooks module and the classic hooks. |
 | `src/plugins/dotclaude/hooks/description.txt` | The hook description. `just generate` (`tools/generate.ts`) builds `hooks.json` from it, and the plugin does not ship it. |
-| `output-styles/dotclaude.md` | The forced style: role, tone, and format. |
+| `output-styles/Concise.md` | The output style `dotclaude:Concise`. |
 | `features/prompt/shared.ts`, `features/prompt/variants.ts` | The shared rules and the model variants of the system prompt. |
-| `agents/*.md` | The five agents. |
+| `agents/*.md` | The six agents. |
 | `skills/setup/` | The setup skill and its script. |
 | `features/<name>/` | One folder for each concern: `adherence`, `context`, `drift`, `guard`, `prompt`, `reads`, `sembr`, `setup`, and `surface`. |
 | `lib/` | Pure shared code. |

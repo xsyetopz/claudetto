@@ -38,15 +38,13 @@ The decisions are D12, D13, and D25 in [Decisions](Decisions-Router).
 
 The frontmatter of `agents/*.md` is the only source of `model`, `effort`, and `maxTurns`.
 No code list repeats them.
-The pin test in `tests/dotclaude/agents.test.ts` does these checks:
+The roster test in `tests/dotclaude/agents/roster.test.ts` does these checks:
 
-- The model is one of `claude-opus-5-5`, `claude-sonnet-5-5`, and `claude-haiku-5-5`.
-  `claude-haiku-4-5` fails the test.
-- The effort is in `SUBAGENT_EFFORTS` for that model, and it is not `max`.
-  `SUBAGENT_EFFORTS` is in `features/statusline/limits.ts`, and the status line marks an effort that is not in the list.
-- The roster is these six names and no other.
+- The agent files are these six names and no other.
+- The `model` and the `effort` of each file are the ones of the table in the test.
+- The `maxTurns` of each file is the turn bound of `turnBound` in `slices/agents/domain/turns.ts`.
 
-The turn bound reads `maxTurns` from the file, and `tests/dotclaude/context/turn-bound.test.ts` tests it.
+The test `tests/dotclaude/agents/turns.test.ts` checks that each agent has a whole-number turn bound of at least one, and that the turn count check allows the counts up to the bound.
 
 ## Description rules
 
