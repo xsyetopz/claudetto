@@ -3,7 +3,7 @@
 This page gives the settings that dotclaude needs, as a JSON block in the format of Claude Code settings.
 The `settings` entries of each slice make the snippet, and `just generate` writes it into this page.
 A test checks each key against `schemas/claude-code-settings.json`.
-The reason, scope, and Claude Code default of each key are on [Settings snippet keys](Settings-Snippet-Keys).
+The reason, the effect in Claude Code, and the default of each key are on [Settings snippet keys](Settings-Snippet-Keys).
 
 ## Apply it with setup
 
