@@ -1,0 +1,9 @@
+// The manifest data of the `dotclaude` plugin. `just generate` writes `plugin.json` from it, and the version from `package.json`.
+
+export const plugin = {
+  name: "dotclaude",
+  description:
+    "Adds a lean output style, five role agents, and a status line command. Adds hooks that ask before work on a repo with an AI policy, check edits and `git` calls, bound the context of subagents, and check Markdown line breaks and drift. Sets up OpenSpec.",
+  keywords: ["output-style", "agents", "hooks", "statusline", "openspec"],
+  homepage: "https://github.com/xsyetopz/dotclaude/wiki/Core-Plugin",
+};
