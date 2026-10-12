@@ -144,6 +144,25 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P25, because both change the setup.
   Owns: `src/plugins/dotclaude/slices/agents/`, `src/plugins/dotclaude/slices/spec/skills/`, `src/plugins/dotclaude/slices/setup/` (the `worktree` keys), and their tests.
   Verify also: `just validate`, and a test that no text in `src/` tells an agent to run `git worktree add`.
+- [ ] P28 `.claude/` evidence: each file and folder of `.claude/` and `~/.claude/` in Claude Code 2.1.296, with what it does, when Claude Code reads it, its cost at the start of a session, the settings, env vars, and flags that control it, and its source in the docs and the bundle ([change](change.md), decisions, the user, 2026-10-12).
+  For rules, it also answers: can a plugin ship rules, do subagents and worktrees load them, does `claudeMdExcludes` apply to them, and how do they show in the `prompt.compose` input of the Mod API.
+  It writes `spec/changes/1.0.0/evidence/claude-directory.md`, with no built-in text.
+  Owns: `spec/changes/1.0.0/evidence/claude-directory.md`.
+  Agent: `implementer`, for the reason of P01c.
+  Verify: each claim has a source, and each rules answer has one live session in `just sandbox`.
+- [ ] P29 `rules` slice: dotclaude uses `.claude/rules/`.
+  The setup and its drift check know each entry of P28, and `trim` and `surface` count rules as a source of context.
+  Each slice part that adds guidance for some files only at runtime becomes a `paths:` rule, when P28 shows that a rule can do the same work.
+  Deps: P28, P24, P26, P27, because they change the setup.
+  Owns: `src/plugins/dotclaude/slices/rules/` except `skills/`, the rules parts of `setup`, `trim`, and `surface`, and their tests.
+- [ ] P30 `/rules-creator` skill: based on the `skill-creator` skill of Anthropic, short, and with each needed area: scope, `paths` globs and their limits, user or project folder, the split of a large `CLAUDE.md`, a check that each glob matches files, and the start cost.
+  Deps: P28.
+  Owns: `src/plugins/dotclaude/slices/rules/skills/`, `tests/dotclaude/rules/` (the skill tests).
+  Verify: `just validate`, and a `reviewer` pass on the text.
+- [ ] P31 Repository rules: each rule of `AGENTS.md` that applies to some files only moves to a `paths:` rule in `.claude/rules/`.
+  `AGENTS.md` keeps the rules for each file, and links to `.claude/rules/`, so that a tool that reads only `AGENTS.md` can find them.
+  Owns: `AGENTS.md`, `.claude/rules/`, and the tests that pin `AGENTS.md`.
+  Verify: `just check`, and a glob check that each `paths:` entry matches at least one file.
 - [ ] P14 Handoff cost: one handoff against one compaction on the same session, with `dotclaude-usage`.
   It only reports, in `spec/changes/1.0.0/evidence/handoff-cost.md`.
   Deps: P13.
