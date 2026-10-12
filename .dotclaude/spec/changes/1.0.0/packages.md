@@ -163,7 +163,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   `AGENTS.md` keeps the rules for each file, and links to `.claude/rules/`, so that a tool that reads only `AGENTS.md` can find them.
   Owns: `AGENTS.md`, `.claude/rules/`, and the tests that pin `AGENTS.md`.
   Verify: `just check`, and a glob check that each `paths:` entry matches at least one file.
-- [ ] P32 `.dotclaude/`: each file that dotclaude writes moves to `.dotclaude/` in the project, or to `~/.dotclaude/` for the user, with a layout based on `.claude/` ([change](change.md), decisions, the user, 2026-10-12).
+- [x] P32 `.dotclaude/`: each file that dotclaude writes moves to `.dotclaude/` in the project, or to `~/.dotclaude/` for the user, with a layout based on `.claude/` ([change](change.md), decisions, the user, 2026-10-12).
   It first lists each file that dotclaude writes, with its scope (project or user), whether git tracks it, and whether `.gitignore` or `.git/info/exclude` gets its rule.
   The setup adds the rules, in the same way as the `.git/info/exclude` rules of P09.
   The paths go in one kernel module, so that each slice reads them from one place.
