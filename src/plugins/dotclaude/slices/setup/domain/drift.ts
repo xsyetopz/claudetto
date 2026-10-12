@@ -3,6 +3,7 @@
 
 import type { ContextSkill, PromptComposeSection, Settings } from "claude-code";
 import { GAP_KEYS_MAX } from "../limits.ts";
+import { planAutoMode } from "./automode.ts";
 import {
   ENGINE_SECTIONS,
   GUARD_SKIPS,
@@ -33,6 +34,7 @@ export const snippetGaps = (settings: Settings, root: string): string[] => {
   const changes: Change[] = [];
   const want = snippetFor(settings, root);
   mergeSettings(settings, want, "", changes);
+  planAutoMode(settings, changes);
   // The merged view can repeat or add models, so `availableModels` is a gap only when it lacks a model of the snippet.
   const have: unknown[] = Array.isArray(settings["availableModels"])
     ? settings["availableModels"]

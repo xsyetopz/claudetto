@@ -59,6 +59,7 @@ export const settingsCommand = async (
       withDocs,
       mythos,
       skipStatusLines: scope === "project",
+      autoMode: scope === "user",
     });
   } catch (err) {
     io.error(`${file}: ${(err as Error).message} Nothing changed.`);

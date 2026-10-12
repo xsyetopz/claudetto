@@ -1,0 +1,9 @@
+{
+  "allow": ["$defaults"],
+  "soft_deny": ["$defaults"],
+  "hard_deny": ["$defaults"],
+  "environment": [
+    "$defaults",
+    "**Claude Code worktrees and temp folders**: Folders `.claude/worktrees/agent-*` in a repository are git worktrees that Claude Code agents create. The folder `/private/tmp/claude-<uid>/`, or `$TMPDIR/claude-<uid>/` when `TMPDIR` is set, is the temp folder of Claude Code sessions. Removing one named folder under these paths is routine cleanup, as the Irreversible Local Destruction and Shared Scratch Sweep rules allow. This does not cover a delete by pattern or glob, a delete of `.git` or of another repository, or a git command beyond the removal of that worktree folder."
+  ]
+}

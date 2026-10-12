@@ -3,6 +3,7 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
+import { planAutoMode } from "../../../plugins/dotclaude/slices/setup/domain/automode.ts";
 import {
   driftLines,
   driftNote,
@@ -97,7 +98,7 @@ test("the note lists each line", () => {
 
 test("the snippet gaps skip a superset of `availableModels`, the built-in plugins, and a status line of another tool", () => {
   const root = "/plugins/dotclaude";
-  const full = snippetFor({}, root);
+  const full = { ...snippetFor({}, root), ...planAutoMode({}, []) };
   const models = full["availableModels"] as string[];
   const settings = {
     ...full,
@@ -110,6 +111,19 @@ test("the snippet gaps skip a superset of `availableModels`, the built-in plugin
   expect(
     snippetGaps({ ...full, availableModels: ["claude-opus-5-5"] }, root),
   ).toStrictEqual(["availableModels"]);
+});
+
+test("the snippet gaps name each `autoMode` list that lacks its entries, and a list with `$defaults` is no gap", () => {
+  const root = "/plugins/dotclaude";
+  const full = { ...snippetFor({}, root), enabledPlugins: {} };
+  expect(snippetGaps(full, root)).toStrictEqual([
+    "autoMode.allow",
+    "autoMode.soft_deny",
+    "autoMode.hard_deny",
+    "autoMode.environment",
+  ]);
+  const withLists = { ...full, ...planAutoMode({}, []) };
+  expect(snippetGaps(withLists, root)).toStrictEqual([]);
 });
 
 test("a 0.27.0 launcher stub in the status line is stale", () => {

@@ -11,7 +11,10 @@ import {
   SNIPPET,
 } from "../../../plugins/dotclaude/slices/setup/domain/merge.ts";
 import type { Json } from "../../../plugins/dotclaude/slices/setup/domain/types.ts";
-import { DOCS_SNIPPET } from "../../../plugins/dotclaude/slices/setup/texts.ts";
+import {
+  AUTOMODE,
+  DOCS_SNIPPET,
+} from "../../../plugins/dotclaude/slices/setup/texts.ts";
 import { PLUGINS, REPO, tmpDir } from "../../support/repo.ts";
 
 type Sandbox = { config: string; project: string };
@@ -282,4 +285,58 @@ test("a scalar where the snippet has an object gets its own change line", () => 
     "sandbox",
     "sandbox.enabled",
   ]);
+});
+
+const AUTO_KEYS = ["allow", "soft_deny", "hard_deny", "environment"];
+
+test("`--apply` writes each `autoMode` list with `$defaults` first, and the dotclaude environment entry", async () => {
+  const d = sandbox();
+  expect(run(d, ["--apply"]).status).toBe(0);
+  const auto = (await readUser(d)).autoMode;
+  for (const key of AUTO_KEYS) expect(auto[key][0]).toBe("$defaults");
+  expect(auto.environment).toStrictEqual(AUTOMODE.environment);
+  expect(auto.allow).toStrictEqual(AUTOMODE.allow);
+});
+
+test("a second `--apply` keeps the `autoMode` lists of the user and adds nothing", async () => {
+  const d = sandbox();
+  await writeUser(d, {
+    autoMode: { allow: ["Custom allow"], environment: ["My env"] },
+  });
+  run(d, ["--apply"]);
+  const before = await Bun.file(userFile(d)).text();
+  expect(run(d, ["--apply"]).status).toBe(0);
+  expect(await Bun.file(userFile(d)).text()).toBe(before);
+});
+
+test("`--apply` keeps the user entries of `autoMode`, and puts `$defaults` in front once", async () => {
+  const d = sandbox();
+  await writeUser(d, {
+    autoMode: {
+      allow: ["Custom allow"],
+      soft_deny: ["$defaults", "Custom deny"],
+      environment: ["My env", AUTOMODE.environment[1]],
+    },
+  });
+  run(d, ["--apply"]);
+  const auto = (await readUser(d)).autoMode;
+  expect(auto.allow).toStrictEqual(["$defaults", "Custom allow"]);
+  expect(auto.soft_deny).toStrictEqual(["$defaults", "Custom deny"]);
+  expect(auto.hard_deny).toStrictEqual(["$defaults"]);
+  expect(auto.environment).toStrictEqual([
+    "$defaults",
+    "My env",
+    AUTOMODE.environment[1],
+  ]);
+});
+
+test("project and local settings get no `autoMode`", async () => {
+  const d = sandbox();
+  run(d, ["--scope", "project", "--apply"]);
+  run(d, ["--scope", "local", "--apply"]);
+  for (const file of [
+    path.join(d.project, ".claude/settings.json"),
+    path.join(d.project, ".claude/settings.local.json"),
+  ])
+    expect((await Bun.file(file).json()).autoMode).toBeUndefined();
 });

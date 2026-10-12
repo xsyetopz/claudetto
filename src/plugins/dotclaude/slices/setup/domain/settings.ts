@@ -2,6 +2,7 @@
 // The CLI reads and writes the files.
 
 import { DOCS_SNIPPET } from "../texts.ts";
+import { planAutoMode } from "./automode.ts";
 import {
   foreignStatusLines,
   isObject,
@@ -57,6 +58,8 @@ export type SettingsOptions = {
   mythos?: boolean;
   /** Leaves out the status line keys, because their command holds an absolute path of this computer. */
   skipStatusLines?: boolean;
+  /** Merges the `autoMode` lists of `planAutoMode`. Only the user settings take them. */
+  autoMode?: boolean;
 };
 
 /**
@@ -67,7 +70,12 @@ export type SettingsOptions = {
 export const planSettings = (
   current: unknown,
   root: string,
-  { withDocs, mythos = false, skipStatusLines = false }: SettingsOptions,
+  {
+    withDocs,
+    mythos = false,
+    skipStatusLines = false,
+    autoMode = false,
+  }: SettingsOptions,
 ): { settings: Json; changes: string[]; kept: string[] } => {
   if (!isObject(current)) throw new Error("The settings are not an object.");
   const changes: Change[] = [];
@@ -84,6 +92,7 @@ export const planSettings = (
       "",
       changes,
     ).settings;
+  if (autoMode) settings = planAutoMode(settings, changes);
   return {
     settings,
     changes: changes.map((c) => c.line),
