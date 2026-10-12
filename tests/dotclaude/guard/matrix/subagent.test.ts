@@ -4,7 +4,7 @@
 // The main session keeps every command of this file, and each deny holds the exact command.
 
 import { expect, test } from "bun:test";
-import { linked, main, mainDeny, subagentDeny } from "./ports.ts";
+import { linked, main, mainDeny, subagentDeny } from "../ports.ts";
 
 /** The stash and worktree commands: denied in a subagent in the main checkout and in a linked worktree. */
 const SUBAGENT_ANY_CHECKOUT = [

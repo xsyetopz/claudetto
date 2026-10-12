@@ -12,13 +12,13 @@ import { tmpDir } from "../../support/repo.ts";
 export const main = tmpDir("dc-guard-ports-main");
 fs.mkdirSync(path.join(main, ".git"), { recursive: true });
 fs.mkdirSync(path.join(main, "src"), { recursive: true });
-fs.writeFileSync(path.join(main, "src", "a.ts"), "export {};\n");
+await Bun.write(path.join(main, "src", "a.ts"), "export {};\n");
 
 /** A linked worktree, where `.git` is a file that names the folder of the main checkout. */
 export const linked = tmpDir("dc-guard-ports-linked");
-fs.writeFileSync(path.join(linked, ".git"), `gitdir: ${main}/.git\n`);
+await Bun.write(path.join(linked, ".git"), `gitdir: ${main}/.git\n`);
 fs.mkdirSync(path.join(linked, "src"), { recursive: true });
-fs.writeFileSync(path.join(linked, "src", "a.ts"), "export {};\n");
+await Bun.write(path.join(linked, "src", "a.ts"), "export {};\n");
 
 /** A folder that has neither a `.git` folder nor the paths of the fixtures. */
 export const bare = tmpDir("dc-guard-ports-bare");
@@ -57,7 +57,7 @@ export const mainDeny = async (
   cwd: string,
 ): Promise<string | null> => {
   const out = await onBashCall(engineIn(cwd), bash(command), passes);
-  return "deny" in out ? out.deny : null;
+  return "deny" in out ? (out.deny ?? null) : null;
 };
 
 /** The deny text of `command` from a subagent in `cwd`, or null when it stays allowed. */
@@ -66,5 +66,5 @@ export const subagentDeny = async (
   cwd: string,
 ): Promise<string | null> => {
   const out = await onBashCall(engineIn(cwd), bash(command, "a1"), passes);
-  return "deny" in out ? out.deny : null;
+  return "deny" in out ? (out.deny ?? null) : null;
 };

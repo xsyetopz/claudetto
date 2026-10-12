@@ -14,13 +14,13 @@ import { tmpDir } from "../../support/repo.ts";
 const main = tmpDir("dc-guard-main");
 fs.mkdirSync(path.join(main, ".git"), { recursive: true });
 fs.mkdirSync(path.join(main, "src"), { recursive: true });
-fs.writeFileSync(path.join(main, "src", "a.ts"), "export {};\n");
+await Bun.write(path.join(main, "src", "a.ts"), "export {};\n");
 
 /** A linked worktree, where `.git` is a file that names the folder of the main checkout. */
 const linked = tmpDir("dc-guard-linked");
-fs.writeFileSync(path.join(linked, ".git"), `gitdir: ${main}/.git\n`);
+await Bun.write(path.join(linked, ".git"), `gitdir: ${main}/.git\n`);
 fs.mkdirSync(path.join(linked, "src"), { recursive: true });
-fs.writeFileSync(path.join(linked, "src", "a.ts"), "export {};\n");
+await Bun.write(path.join(linked, "src", "a.ts"), "export {};\n");
 
 /** The engine ports that the guard reads: `fs.stat` for the kind of a path, relative to `cwd`. */
 const engineIn = (cwd: string): EngineInterface =>

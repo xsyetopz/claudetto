@@ -3,7 +3,7 @@
 // The commands are strings for `onBashCall`, and no command runs.
 
 import { expect, test } from "bun:test";
-import { main, mainDeny, subagentDeny } from "./ports.ts";
+import { main, mainDeny, subagentDeny } from "../ports.ts";
 
 /** The destructive commands of the floor, in their plain form. */
 const FLOOR = [

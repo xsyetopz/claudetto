@@ -11,7 +11,7 @@ import { bare, linked, main, mainDeny, subagentDeny } from "./ports.ts";
 /** A folder with a folder `only-root` and a file `file.txt`, and a subfolder `sub` with a folder `inner`. */
 const root = tmpDir("dc-guard-cwd-root");
 fs.mkdirSync(path.join(root, "only-root"), { recursive: true });
-fs.writeFileSync(path.join(root, "file.txt"), "x\n");
+await Bun.write(path.join(root, "file.txt"), "x\n");
 fs.mkdirSync(path.join(root, "sub", "inner"), { recursive: true });
 
 /** The deny of `command` in the main session, which must hold the exact command. */
