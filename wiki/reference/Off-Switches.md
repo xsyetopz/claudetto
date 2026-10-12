@@ -99,6 +99,18 @@ The `permissions.deny` list of `slices/prompt/slice.ts` removes these tools and 
 
 The other `permissions.deny` and `permissions.ask` entries are safety rules, not switches.
 
+## Built-in agents
+
+The snippet turns off the built-in agents `Explore` and `Plan` with `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`.
+It turns off `general-purpose`, `claude-code-guide`, and `statusline-setup` with one `permissions.deny` entry each.
+The five dotclaude agents take the work of the built-in agents, see [Agents](Agents).
+
+## Computer use
+
+The `computer-use` MCP server is opt-in in Claude Code.
+The research on 2.1.293 found that Claude Code starts it only when the project key `enabledMcpServers` holds `computer-use` (not re-checked on 2.1.296).
+The deny entry `mcp__computer-use` is a guard for the case that you enable the server.
+
 ## Built-in plugins
 
 The snippet sets these entries of `enabledPlugins` to `false`:
