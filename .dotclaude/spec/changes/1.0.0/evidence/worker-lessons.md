@@ -71,3 +71,9 @@ The numbers of the port are not checked again here.
 - The turns that a report and a commit take come from the transcripts of the runs of 2026-10-12.
   A read of those transcripts was refused by the permission system, so step 2 uses a bound that the reasoning gives.
   The bound is open until the transcripts give the count.
+- The Verify of P35 asks for a lab test of the subagent deny and of the report note in a subagent.
+  A lab test cannot make a `tool.call` of a subagent: `ToolCallArgs` documents that `agentId` is dropped (`plugins/dotclaude/.claude-plugin/types/claude-code/index.d.ts`, lines 12645 to 12652).
+  On 2026-10-13, a probe tried two routes.
+  A stubbed `turn.step` with an `agentId` fired no `tool.call`.
+  A `$.tool.call` with an `agentId` reached the handler only through a cast, so a test on it would pin the lab and not Claude Code.
+  So both items have tests at the adapter: `tests/dotclaude/guard/shared-git.test.ts` and `tests/dotclaude/agents/report-note.test.ts`.

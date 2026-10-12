@@ -198,7 +198,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
 
 ## Wave 4: release
 
-- [ ] P35 Worker lessons: the subagent runs of dotclaude use the lessons of the Bun port to Rust, at the scale of a subscription ([change](change.md), decisions, the user, 2026-10-12).
+- [x] P35 Worker lessons: the subagent runs of dotclaude use the lessons of the Bun port to Rust, at the scale of a subscription ([change](change.md), decisions, the user, 2026-10-12).
   A subagent that nears its `maxTurns` commits its work and hands back a report, so no run ends with no report.
   `/ship` runs one `reviewer` on the diff of each package before the merge, and gives it no report of the implementer.
   The `guard` slice denies a git command that changes shared state in a subagent, such as `git stash`, `git reset --hard`, and `git checkout <rev> -- .`.
