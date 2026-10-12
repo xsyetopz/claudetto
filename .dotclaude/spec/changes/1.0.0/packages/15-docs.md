@@ -128,7 +128,7 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    - [x] `Evidence`, `Evals`, `Development`, `Plugin-Layout`, `Sandbox`, `Release-History`
    - [x] `Undocumented-Reads`
    - [x] `Archive`
-   - [ ] `Home`, `Install`, `Quickstart`, `Troubleshooting`, `Attributions`, `README.md`, `docs/README.md`, the check of `CHANGELOG.md`
+   - [x] `Home`, `Install`, `Quickstart`, `Troubleshooting`, `Attributions`, `README.md`, `docs/README.md`, the check of `CHANGELOG.md`
 3. Join the branches, run `just generate`, `bun run lint:md`, and `just check`.
 4. A reviewer pass for each section, then one run that fixes the list.
 
