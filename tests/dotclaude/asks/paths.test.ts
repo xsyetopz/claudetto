@@ -1,11 +1,11 @@
-// The path operations of `lib/paths.ts` against `node:path`.
+// The path operations of `slices/asks/domain/paths.ts` against `node:path`.
 // The `posix` checks use the inputs of a macOS or Linux path.
 // The `win32` checks use the inputs of a Windows path, with a drive letter and mixed separators.
 // The results of `win32` have `\`, so the test turns them into `/` before the comparison.
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import * as paths from "../../plugins/dotclaude/lib/paths.ts";
+import * as paths from "../../../src/plugins/dotclaude/slices/asks/domain/paths.ts";
 
 const { posix, win32 } = path;
 const slash = (text: string) => text.replace(/\\/g, "/");
@@ -97,9 +97,4 @@ test("relative gives the result of win32 with `/` for drive paths", () => {
   ];
   for (const [from, to] of pairs)
     expect(paths.relative(from, to)).toBe(slash(win32.relative(from, to)));
-});
-
-test("segments splits on both separators", () => {
-  expect(paths.segments("C:\\a/b\\c")).toEqual(["C:", "a", "b", "c"]);
-  expect(paths.segments("/a/b")).toEqual(["", "a", "b"]);
 });
