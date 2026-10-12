@@ -53,10 +53,28 @@ test("`cargo test` counts add up over the test binaries", () => {
   expect(parseCounts(out)).toStrictEqual(counts(6, 1, 1));
 });
 
-test("`go test -v` counts each `--- PASS`, `--- FAIL`, and `--- SKIP` line", () => {
+test("`go test -v` counts each top-level `--- PASS`, `--- FAIL`, and `--- SKIP` line", () => {
   const out =
     "--- PASS: TestA (0.00s)\n--- FAIL: TestB (0.00s)\n    --- SKIP: TestB/sub (0.00s)\n--- PASS: TestC (0.00s)\nFAIL";
-  expect(parseCounts(out)).toStrictEqual(counts(2, 1, 1));
+  expect(parseCounts(out)).toStrictEqual(counts(2, 1, 0));
+});
+
+test("`go test -v` does not count an indented subtest line", () => {
+  const out = "--- FAIL: TestA\n    --- FAIL: TestA/sub\n--- PASS: TestB";
+  expect(parseCounts(out)).toStrictEqual(counts(1, 1, 0));
+});
+
+test("plain `go test` gives no counts, because it prints no line of a passing test", () => {
+  const out =
+    "--- FAIL: TestA (0.00s)\n    a_test.go:12: boom\nFAIL\nFAIL\texample.com/pkg\t0.102s";
+  expect(parseCounts(out)).toBeNull();
+});
+
+test("`pytest` counts errors as failed, with or without failures", () => {
+  expect(parseCounts("=== 1 error in 0.1s ===")).toStrictEqual(counts(0, 1, 0));
+  expect(parseCounts("=== 1 failed, 2 errors in 0.1s ===")).toStrictEqual(
+    counts(0, 3, 0),
+  );
 });
 
 test("output of no known runner gives no counts", () => {

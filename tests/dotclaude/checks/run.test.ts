@@ -42,6 +42,7 @@ const run = async (dir: string, ...commands: string[]) => {
     log: (l) => lines.push(l),
     error: (l) => errors.push(l),
     windows: false,
+    env: { get: () => undefined },
   });
   return { status, out: lines.join("\n"), errors };
 };
@@ -114,4 +115,67 @@ test("no command is a usage error with status 2 and no log file", async () => {
   expect(r.status).toBe(2);
   expect(r.errors.join("\n")).toContain("Usage");
   expect(fs.existsSync(path.join(dir, CHECKS_DIR))).toBe(false);
+});
+
+test("two runs in the same second write two log files", async () => {
+  const dir = await project();
+  await run(dir, "bun ok.js");
+  await run(dir, "bun ok.js");
+  expect(logs(dir)).toHaveLength(2);
+});
+
+test("a command killed by a signal names the signal and prints no empty failures header", async () => {
+  const dir = await project();
+  const r = await run(dir, "kill -9 $$");
+  expect(r.status).toBe(1);
+  expect(r.out).toContain("SIGKILL");
+  expect(r.out).not.toContain("failures:");
+});
+
+test("a command over the time bound says that it timed out", async () => {
+  // A fake runner: the real runner needs the whole time bound to time out.
+  const lines: string[] = [];
+  const status = await main(["slow"], os.tmpdir(), {
+    runner: {
+      run: () => ({
+        exitCode: null,
+        stdout: "",
+        stderr: "",
+        signal: "SIGTERM",
+        timedOut: true,
+      }),
+    },
+    clock: { now: () => 0 },
+    writeLog: async () => {},
+    log: (l) => lines.push(l),
+    error: () => {},
+    windows: false,
+    env: { get: () => undefined },
+  });
+  const out = lines.join("\n");
+  expect(status).toBe(1);
+  expect(out).toContain("timed out after 1800s");
+  expect(out).not.toContain("failures:");
+});
+
+test("the log folder is in `CLAUDE_PROJECT_DIR`, and the commands run in the current folder", async () => {
+  const cwd = await project();
+  const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), "checks-project-"));
+  const status = await main(["bun ok.js"], cwd, {
+    runner: processRunner,
+    clock: { now: () => 1_700_000_000_000 },
+    writeLog: async (file, text) => {
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      await Bun.write(file, text);
+    },
+    log: () => {},
+    error: () => {},
+    windows: false,
+    env: {
+      get: (name) => (name === "CLAUDE_PROJECT_DIR" ? projectDir : undefined),
+    },
+  });
+  expect(status).toBe(0);
+  expect(logs(projectDir)).toHaveLength(1);
+  expect(fs.existsSync(path.join(cwd, CHECKS_DIR))).toBe(false);
 });

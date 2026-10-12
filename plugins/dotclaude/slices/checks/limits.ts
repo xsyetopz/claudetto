@@ -13,6 +13,9 @@ export const TAIL_LINES = 10;
 /** The time that one command may run, in milliseconds. A command over it is killed and counts as failed. */
 export const COMMAND_TIMEOUT_MS = 1_800_000;
 
+/** The count of characters of the random part of a log file name, which keeps two runs in one second apart. */
+export const RUN_ID_LENGTH = 8;
+
 /** The kind of a count in the output of a test runner. */
 export type CountKind = "passed" | "failed" | "skipped";
 
@@ -22,6 +25,8 @@ export const COUNT_WORDS: Readonly<Record<string, CountKind>> = {
   passed: "passed",
   fail: "failed",
   failed: "failed",
+  error: "failed",
+  errors: "failed",
   skip: "skipped",
   skipped: "skipped",
   ignored: "skipped",
@@ -43,8 +48,17 @@ export const COUNT_LINES: readonly RegExp[] = [
   /^test result: /,
 ];
 
-/** The line of `go test -v` for one test. Each match counts as 1 of its kind, in the group `1`. */
-export const GO_TEST_LINE = /^\s*--- (PASS|FAIL|SKIP):/;
+/**
+ * The line of `go test -v` for one top-level test. Each match counts as 1 of its kind, in the group `1`.
+ * An indented line is a subtest, and it does not count.
+ */
+export const GO_TEST_LINE = /^--- (PASS|FAIL|SKIP):/;
+
+/**
+ * A line that only `go test -v` prints: `=== RUN` for each test, and `--- PASS:` for each passing test.
+ * Plain `go test` prints neither, so its `--- FAIL:` lines give no counts.
+ */
+export const GO_VERBOSE_LINE = /^(?:=== RUN |--- PASS:)/;
 
 /** The lines of the output that show a failure. */
 export const FAILURE_LINE =

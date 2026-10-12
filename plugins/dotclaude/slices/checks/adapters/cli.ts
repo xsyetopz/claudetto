@@ -13,7 +13,12 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { processRunner } from "../../../kernel/node/process.ts";
 import { CHECKS_DIR } from "../../../kernel/paths.ts";
-import type { Clock, ProcessRunner } from "../../../kernel/ports.ts";
+import type {
+  Clock,
+  Env,
+  ProcessResult,
+  ProcessRunner,
+} from "../../../kernel/ports.ts";
 import { plainArgv, shellArgv } from "../domain/command.ts";
 import { parseCounts } from "../domain/counts.ts";
 import { failureLines } from "../domain/failures.ts";
@@ -23,8 +28,9 @@ import {
   passed,
   renderOutcome,
   renderTotal,
+  type Stop,
 } from "../domain/summary.ts";
-import { COMMAND_TIMEOUT_MS } from "../limits.ts";
+import { COMMAND_TIMEOUT_MS, RUN_ID_LENGTH } from "../limits.ts";
 
 const USAGE = 'Usage: dotclaude-run-checks "<command>" ["<command>" ...]';
 
@@ -32,6 +38,7 @@ const USAGE = 'Usage: dotclaude-run-checks "<command>" ["<command>" ...]';
 export interface Deps {
   readonly runner: ProcessRunner;
   readonly clock: Clock;
+  readonly env: Env;
   readonly writeLog: (file: string, text: string) => Promise<void>;
   readonly log: (line: string) => void;
   readonly error: (line: string) => void;
@@ -41,6 +48,7 @@ export interface Deps {
 const defaults = (): Deps => ({
   runner: processRunner,
   clock: { now: () => Date.now() },
+  env: { get: (name) => process.env[name] },
   writeLog: async (file, text) => {
     await fs.mkdir(path.dirname(file), { recursive: true });
     await Bun.write(file, text);
@@ -50,23 +58,35 @@ const defaults = (): Deps => ({
   windows: process.platform === "win32",
 });
 
-/** Run `command` and give its exit code and its output. A program that is missing gives 127 and the error text. */
+/** Why a run ended with no exit code: the time bound, or else the signal that ended it. */
+const stopOf = (r: ProcessResult): Stop | null => {
+  if (r.timedOut) return { kind: "timeout", afterMs: COMMAND_TIMEOUT_MS };
+  if (r.signal) return { kind: "signal", name: r.signal };
+  return null;
+};
+
+/** Run `command` and give its exit code, its output, and why it stopped with no exit code. A program that is missing gives 127 and the error text. */
 const execute = (
   command: string,
   cwd: string,
   deps: Deps,
-): { exitCode: number | null; output: string } => {
+): { exitCode: number | null; output: string; stop: Stop | null } => {
   const argv = plainArgv(command) ?? shellArgv(command, deps.windows);
   try {
     const r = deps.runner.run(argv.file, argv.args, {
       cwd,
       timeout: COMMAND_TIMEOUT_MS,
     });
-    return { exitCode: r.exitCode, output: r.stdout + r.stderr };
+    return {
+      exitCode: r.exitCode,
+      output: r.stdout + r.stderr,
+      stop: stopOf(r),
+    };
   } catch (err) {
     return {
       exitCode: 127,
       output: `Cannot run ${argv.file}: ${err instanceof Error ? err.message : String(err)}\n`,
+      stop: null,
     };
   }
 };
@@ -83,19 +103,22 @@ export const main = async (
     return 2;
   }
   const start = new Date(deps.clock.now());
+  const runId = crypto.randomUUID().slice(0, RUN_ID_LENGTH);
+  const root = path.resolve(deps.env.get("CLAUDE_PROJECT_DIR") || cwd);
   const outcomes: Outcome[] = [];
   for (const [i, command] of commands.entries()) {
     const began = deps.clock.now();
-    const { exitCode, output } = execute(command, cwd, deps);
+    const { exitCode, output, stop } = execute(command, cwd, deps);
     const ms = deps.clock.now() - began;
-    const logFile = path.posix.join(CHECKS_DIR, logName(start, i + 1));
+    const logFile = path.posix.join(CHECKS_DIR, logName(start, runId, i + 1));
     await deps.writeLog(
-      path.join(cwd, logFile),
+      path.join(root, logFile),
       `$ ${command}\nexit: ${exitCode ?? "killed"}\n\n${output}`,
     );
     const outcome: Outcome = {
       command,
       exitCode,
+      stop,
       ms,
       counts: parseCounts(output),
       failures: exitCode === 0 ? null : failureLines(output),

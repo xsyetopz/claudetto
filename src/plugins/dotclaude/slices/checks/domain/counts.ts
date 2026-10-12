@@ -5,6 +5,7 @@ import {
   COUNT_WORDS,
   type CountKind,
   GO_TEST_LINE,
+  GO_VERBOSE_LINE,
 } from "../limits.ts";
 
 /** The counts of one command. */
@@ -21,8 +22,10 @@ const GO_KINDS: Readonly<Record<string, CountKind>> = {
 export const parseCounts = (output: string): Counts | null => {
   const sum = { passed: 0, failed: 0, skipped: 0 };
   let found = false;
-  for (const line of output.split("\n")) {
-    const go = GO_TEST_LINE.exec(line);
+  const lines = output.split("\n");
+  const verbose = lines.some((line) => GO_VERBOSE_LINE.test(line));
+  for (const line of lines) {
+    const go = verbose ? GO_TEST_LINE.exec(line) : null;
     if (go) {
       sum[GO_KINDS[go[1] as string] as CountKind] += 1;
       found = true;
