@@ -2,6 +2,7 @@
 // The `spec` slice, the status line, and the handoff read the store through this file.
 // Only the `spec` slice writes it. The reader takes a `FileReader`, so a test needs no file on disk.
 
+import path from "node:path";
 import type { FileReader } from "./ports.ts";
 
 /** The `schema` number of `state.json` that this version reads. Another number stops the reader. */
@@ -40,7 +41,7 @@ export type Progress = {
 
 /** The path of `state.json` of the change `id`. */
 export const statePath = (id: string): string =>
-  `${SPEC_ROOT}/${id}/state.json`;
+  path.posix.join(SPEC_ROOT, id, "state.json");
 
 /**
  * The state of the change `id`, or null when the change has no `state.json`.
