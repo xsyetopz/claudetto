@@ -62,10 +62,10 @@ At 60% of the window, the default `mainHandover` option of `manual` gives you a 
 When the session reaches 300K tokens, it stops.
 The status line turns yellow at 75% and red at 90% of the window.
 Without a handoff, run `/clear` and then `dotclaude-spec next <change>`, so the work continues from the lane log.
-See [Context bound](Context-Bound) and [Spec store](Spec-Store).
+See [Context bound](Context-And-Handoff) and [Spec store](Spec-Store).
 
 ## Next steps
 
 - [Guards](Guards): see what asks, what denies, and what the sandbox does.
-- [Context bound](Context-Bound): see how a session ends before the limit.
+- [Context bound](Context-And-Handoff): see how a session ends before the limit.
 - [Spec store](Spec-Store): keep the tasks and the lane log of a change.

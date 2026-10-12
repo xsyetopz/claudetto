@@ -1,8 +1,10 @@
 # Second opinion
 
-The core plugin `dotclaude` gives Claude a calibrated second opinion, the `second_opinion` tool, on a close call.
+The core plugin `dotclaude` gives Claude a second opinion on a close call, with the `second_opinion` tool.
 The tool asks TypeSafe Jev, a decision model.
-Jev writes no text or code, and it gives probabilities.
+Jev writes no text and no code.
+It gives probabilities, and the plugin turns them into a short answer.
+The code is in the `decide` slice (`src/plugins/dotclaude/slices/decide/`).
 
 ## At a glance
 
@@ -10,17 +12,15 @@ Jev writes no text or code, and it gives probabilities.
 | --- | --- |
 | Install | Part of `/plugin install dotclaude@dotclaude`. Export `TYPESAFE_API_KEY` before Claude Code starts. |
 | Skills | None |
-| Bin | `dotclaude-decide` in `bin/`, which runs on Bun |
-| Tool | `second_opinion`, registered at each session start, with or without the key |
-| Hooks | The core hooks module: `session.start` registers the tool, `tool.call` serves each call, and an `AskUserQuestion` hook adds a pick ([Hooks](Hooks)) |
-| Options | None. The only input is the environment variable `TYPESAFE_API_KEY` |
-| Limits | See [Cost and limits](#cost-and-limits) |
-| Problems | See [Troubleshooting](#troubleshooting) |
+| Bin | `dotclaude-decide`, which runs on Bun (`adapters/cli.ts`) |
+| Tool | `mcp__dotclaude__second_opinion`, registered at each session start, with or without the key |
+| Hooks | `session.start` registers the tool. `tool.call` serves the tool. A second `tool.call` adds the pick to `AskUserQuestion`. See [Hooks](Hooks). |
+| Options | None for the tool. The only input is the environment variable `TYPESAFE_API_KEY`. |
 
 ## Before you begin
 
 1. Install [Bun](https://bun.sh) 1.4.3 or later, so that `bun` is on `PATH`.
-2. Get an API key at <https://console.typesafe.ai>.
+2. Get an API key from the TypeSafe console.
 3. Export the key before Claude Code starts.
 
    ```bash
@@ -32,94 +32,111 @@ Jev writes no text or code, and it gives probabilities.
 
 ## What it does
 
-The `decide` slice of the core plugin (`slices/decide/`) registers two parts.
+The slice registers two parts.
 
-| Part | What it does |
+| Part | Code | What it does |
+| --- | --- | --- |
+| `second_opinion` tool | `onSecondOpinion` in `slices/decide/adapters/mod.ts` | Answers a yes or no question, or a pick among options, with Jev, and falls back to a Claude model when Jev gives no answer. |
+| `AskUserQuestion` pick | `onAskUserQuestion` in `slices/decide/adapters/ask.ts` | Adds the pick of Jev to each question of facts that has a confident pick. |
+
+The tool name is `TOOL_NAME` in `slices/decide/domain/tool.ts`.
+The tool takes a `question`, an optional list of `options`, and an optional `state`.
+
+- With no `options`, the tool gives a yes or no answer.
+  The answer gives `P(yes)`.
+  A value within `YES_NO_UNSURE_BAND` of 0.5 adds a line that Jev is not sure.
+- With `options`, the tool gives a pick.
+  The answer gives the chosen key, its confidence, and the probability of each key, most probable first.
+  A confidence under `MIN_CONFIDENCE` adds a line that Jev is not sure.
+
+The options are checked in `domain/request.ts`.
+A pick needs `MIN_OPTIONS` to `MAX_OPTIONS` options, each with a `key`.
+The options go to Jev in a random order (`shuffled` in `domain/picks.ts`), so that the position does not decide the pick.
+
+### AskUserQuestion
+
+The `AskUserQuestion` hook sends each question with two or more options to Jev.
+It skips a question with one option and a question with several choices.
+Jev first classes each question as a kind of question.
+For a question of facts, Jev gives a pick, and the pick goes into the question as the picked option.
+The question then stays as Claude sent it when Jev gives no answer.
+
+## Routes
+
+`route` in `slices/decide/domain/route.ts` decides which provider answers.
+
+1. Jev answers when the variable `TYPESAFE_API_KEY` is set.
+2. The fallback answers when Jev gives no answer.
+   The cause of the Jev failure goes into the result, so the answer names it.
+
+The fallback is a Claude model, `FALLBACK_MODEL`, which is `haiku`.
+It runs through `$.model.complete` in `slices/decide/adapters/fallback.ts`.
+Its answer is not from Jev, and the result text says so.
+
+The causes of a failure are these.
+
+| Cause | Source |
 | --- | --- |
-| `second_opinion` tool | Claude sees it as `mcp__dotclaude__second_opinion`. A call asks Jev for a yes or no check, or for a pick among 2 or more options. |
-| `AskUserQuestion` hook | Asks Jev about each question that has 2 or more options, and adds the pick of Jev to a question that facts decide. It runs only when the key is set. |
+| `no-key` | The variable `TYPESAFE_API_KEY` is not set. |
+| `invalid-key` | The CLI exits with code 3, which is HTTP 401. |
+| `no-balance` | The CLI exits with code 4, which is HTTP 402. |
+| `usage` | The CLI exits with code 2. |
+| `failed` | Any other failure. |
 
-Jev does not answer for you.
-Claude asks you the questions about goals, preferences, and approvals, and the hook does not change them.
-
-## The tool
-
-The tool is registered at `session.start` with `$.tool.register`, with or without the key.
-A `tool.call` hook serves each call.
-Without the key, Jev is not tried, and a small Claude model answers instead (see [The fallback result](#the-fallback-result)).
-
-The description carries these rules.
-
-- Facts decide some questions, and you decide others.
-  Claude asks you, and not the tool, about goals, preferences, and approvals.
-- When Claude does not follow the pick of Jev, it tells you and gives the reason.
-
-### The question stays neutral
-
-Claude gives the decision, every option, and for each option at least one fact for it and one fact against it.
-It gives no preferred answer and no leading words.
-It leaves out a lean or a preference of the user, the notes, or the team, because Jev judges the facts only.
-Before the tool asks Jev, it puts the options in a random order (a Fisher-Yates shuffle), so the order of the list does not lead the pick.
-
-### Input
-
-| Field | Meaning |
-| --- | --- |
-| `question` | The decision, as a neutral question. Required. |
-| `options` | 2 to 255 options, each with a `key` and a `description`. Leave it out for a yes or no question. The `key` has no `=` character. |
-| `state` | The facts that the decision depends on, such as a diff, a log, or a plan. |
-
-The hooks module runs the CLI `dotclaude-decide` (`slices/decide/adapters/cli.ts`) as a child process with `$.process.run`, through `bun --no-env-file`.
-The key goes in the environment of the child and never in the argument list.
-The output gives the probability of each answer and a confidence from 0 to 1.
-A confidence under 0.5 means that Jev is not sure.
-The text of an error reply that goes to Claude is cut to 200 characters (`ERROR_BODY_MAX` in `slices/decide/limits.ts`).
-
-### The fallback result
-
-When no key is set, when Jev fails, or when Jev takes more than 45 seconds, a small Claude model (`haiku`) answers through `$.model.complete`.
-The result names the reason that Jev gave no answer.
-It says that the answer is not from Jev, and it tells Claude to tell you that the answer is from a Claude model.
-If that model also gives no answer, the result tells Claude to answer from its own check of the evidence, and to tell you that no second opinion was available.
-
-## The hook
-
-1. Claude asks a question with options through `AskUserQuestion`.
-2. The hook runs the client with `ask` once.
-   Jev sorts each question into `preference` or `facts`, and picks an option.
-3. For a `facts` question, the hook adds a line to the question, such as `Jev picks "<option>" (confidence 0.82).`
-   It adds the line only when the confidence for the kind and for the pick is 0.5 or more.
-4. You answer the question as usual.
-   The question always comes to you, also when Jev is sure, because Jev does not answer for you.
-
-The hook never denies a call.
-It runs only when the key is set.
-Without `TYPESAFE_API_KEY`, or when Jev fails or takes more than 45 seconds, the question passes unchanged.
+The mapping of code 4 to `no-balance` is not verified against the TypeSafe API.
+The comment of `causeOfExit` in `domain/route.ts` says that it is a decision of the project.
 
 ## Cost and limits
 
-| Item | Value |
-| --- | --- |
-| Price | $0.042 for each million input tokens |
-| Size of a call | Up to 64,000 tokens |
-| Time for a call | 45 seconds, the kill bound of the hooks module |
-| Tries of one call | 3, with a wait of 1 second and then 2 seconds |
+The bounds are in `slices/decide/limits.ts`.
+A test pins that the attempts and the waits fit in the whole run.
 
-The timeout of one try is derived in `slices/decide/limits.ts`.
-The tries, their timeouts, the waits, and a margin of 2 seconds always add up to less than the kill bound.
+| Bound | Value | Use |
+| --- | --- | --- |
+| `JEV_TIMEOUT_MS` | 45000 | The whole run of Jev, in milliseconds. |
+| `ATTEMPT_TIMEOUT_MS` | 12000 | One attempt of the TypeSafe client. |
+| `TRIES` | 3 | The attempts of one call. The client retries HTTP 429 and 529 (`adapters/cli.ts`). |
+| `BACKOFF_MS` | 1000 | The wait between two attempts. |
+| `FALLBACK_TIMEOUT_MS` | 30000 | The run of the fallback model. |
+| `FALLBACK_MAX_TOKENS` | 512 | The output tokens of the fallback model. |
+| `MIN_OPTIONS` and `MAX_OPTIONS` | 2 and 255 | The options of a pick. |
+| `MIN_CONFIDENCE` | 0.5 | The confidence below which the answer says that Jev is not sure. |
+| `YES_NO_UNSURE_BAND` | 0.2 | The band around 0.5 in which a yes or no answer says that Jev is not sure. |
+
+The model of the API is `jev-latest`, and the endpoint is `https://api.typesafe.ai/v1/systemone`.
+Both are set in `slices/decide/adapters/cli.ts`.
+
+## Exit codes
+
+The `dotclaude-decide` command exits with these codes (`EXIT` in `adapters/cli.ts`).
+
+| Code | Meaning |
+| --- | --- |
+| 0 | The answer is printed. |
+| 1 | A failure. |
+| 2 | A fault of the arguments. |
+| 3 | The key is not valid. |
+| 4 | The account has no balance. This mapping is not verified. |
 
 ## Troubleshooting
 
-| Symptom | Cause | Fix |
-| --- | --- | --- |
-| The result says the variable `TYPESAFE_API_KEY` is not set | The key is not in the environment of Claude Code. | Export the key, and restart Claude Code. |
-| The result says the key is not valid | The key is not valid. | Get a new key. |
-| The result says the TypeSafe account has no balance | The account has no balance. | Add balance to the account. |
-| The result says the input is not valid | `question` is empty, or an option has no `key` or a `key` with `=`. | None. Claude corrects the call. |
-| No pick on a question | The question has fewer than 2 options, is a preference, or has confidence under 0.5. | None. |
+- The tool answers with the fallback, and the text names `no-key`.
+  Export `TYPESAFE_API_KEY` before Claude Code starts, and start a new session.
+- The tool answers with `invalid-key`.
+  Check the key in the console.
+- The tool answers with `no-balance`.
+  Check the balance of the account.
+  The mapping of this cause is not verified, so the account may have another fault.
+
+## Tests
+
+- `tests/dotclaude/decide/` checks the routes, the texts, and the `AskUserQuestion` rules.
+- `slices/decide/lab/second-opinion.test.ts` and `slices/decide/lab/session.test.ts` run the hook lab.
+- The key never goes into the argument list, a log, or a test.
+  `adapters/cli.ts` reads it from the environment only.
 
 ## Related pages
 
-- [Install](Install)
-- [Hooks](Hooks)
-- [Troubleshooting](Troubleshooting)
+- [Hooks](Hooks) lists the hooks of the core plugin.
+- [Prompt surface](Prompt-Surface) describes the text that the plugin adds to the prompt.
+- [Decisions](Decisions) gives the choices behind the tool.

@@ -13,11 +13,11 @@ The other plugins work without it.
 
 - Ships the output style `dotclaude:Concise`, which the settings snippet selects.
   The style sets no `force-for-plugin`, so your `outputStyle` setting stays in charge.
-  The module replaces the long system prompt with the shared sections and a prompt variant for each model ([System prompt](System-Prompt)).
+  The module replaces the long system prompt with the shared sections and a prompt variant for each model ([System prompt](Prompt-Surface)).
 - Gives six agents with a model, an effort, and a turn limit each ([Agents](Agents)).
 - Asks before the first contact with a repository of another owner that has an AI policy file ([Contributions](Contributions)).
 - Checks work with hooks that use no model call: git asks and edit asks ([Hooks](Hooks)).
-- Tells a subagent to report before its context or turn bound ([Context bound](Context-Bound)).
+- Tells a subagent to report before its context or turn bound ([Context bound](Context-And-Handoff)).
 - Puts each sentence of Markdown and commit text on its own line ([Semantic line breaks](Semantic-Line-Breaks)).
 - Shortens attachments, agent lines, and tool descriptions by exact id ([Prompt surface](Prompt-Surface)).
 - Shows a status line and a subagent status line ([Status line](Status-Line)).

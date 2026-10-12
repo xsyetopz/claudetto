@@ -37,7 +37,7 @@ Each row gives the number, the title, and the page with the detail.
 | D29 | Semantic line breaks | [Evidence](Decisions-Evidence) |
 | D30 | Hold correct work under an unsupported claim | [Evidence](Decisions-Evidence) |
 | D31 | Guard hooks fail open (`onFailure`) | [Guards](Guards) |
-| D32 | Usage awareness, removed by D35 | [Context bound](Context-Bound) |
+| D32 | Usage awareness, removed by D35 | [Context bound](Context-And-Handoff) |
 | D33 | Three-column status line | [Status line](Status-Line) |
 | D34 | Adherence by checks in code, with no new judge (now the `asks` slice) | [Core plugin](Core-Plugin) |
 | D35 | No proprietary formats | [Settings](Decisions-Settings#d35-no-proprietary-formats) |

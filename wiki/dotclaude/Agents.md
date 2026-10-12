@@ -60,9 +60,9 @@ A subagent does not inherit the output style or the shared sections of the syste
 Each body therefore repeats the rules that matter for its role:
 
 - The scope rule and the verification rule for the role.
-- The read rule: search first with `Grep`, then read the matched range with `Read` and its `offset` and `limit` ([Context bound](Context-Bound)).
+- The read rule: search first with `Grep`, then read the matched range with `Read` and its `offset` and `limit` ([Context bound](Context-And-Handoff)).
 - The report bound `REPORT_MAX_WORDS` (400 words), with the value from `slices/handoff/limits.ts`.
-- The keep-the-work rule and the block rule come in the `agent.spawn` block, and not in the body ([System prompt](System-Prompt#evidence-before-undoing-finished-work)).
+- The keep-the-work rule and the block rule come in the `agent.spawn` block, and not in the body ([System prompt](Prompt-Surface)).
 - What to do when a check fails: `debugger` and `implementer` fix the code or report the failure with the evidence.
   They do not raise a bound, weaken or skip a test, or edit a check, a config, or a hook unless the brief says that the user asked.
 - `debugger` does not change a test.
@@ -73,4 +73,4 @@ Each body therefore repeats the rules that matter for its role:
 
 - [Decisions: router and agents](Decisions-Router)
 - [Core plugin](Core-Plugin)
-- [Context bound](Context-Bound)
+- [Context bound](Context-And-Handoff)

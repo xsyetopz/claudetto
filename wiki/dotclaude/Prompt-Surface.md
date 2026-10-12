@@ -1,258 +1,144 @@
 # Prompt surface
 
-This page shows what a Claude Code request contains and where a plugin can add or remove text.
-Source labels (official, binary, capture, measured, reported, inference) are in [Home](Home).
-The sizes in the capture sections come from 2.1.283 to 2.1.289, and they are the latest measured sizes.
+The prompt surface is the text that the core plugin `dotclaude` adds to what Claude reads.
+It has four parts: the output style, the prompt sections, the model notes, and the tool and agent texts.
+This page says what each part does, where its code is, and why it exists.
+How Claude Code builds the whole request is on [Request build](Request-Build).
 
 ## Summary
 
-- Since 0.27.0, the core plugin gives Claude one text of its own: the forced output style `output-styles/dotclaude.md` and the shared sections of `features/prompt/shared.ts` (the first request has the targets `FIRST_REQUEST_LOW_BYTES` and `FIRST_REQUEST_HIGH_BYTES`).
-  No SessionStart hook of the core plugin adds context.
-- The style is a set of XML blocks with consistent, descriptive tag names (**official**, [prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)).
-  The guide gives no trained meaning to a tag name, and a tag is plain text.
-- The [settings snippet](Settings-Snippet) turns on the simple prompt with `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1`.
-- The style has `force-for-plugin: true` and `keep-coding-instructions: false`.
-  `force-for-plugin` overrides the `outputStyle` that the user set (**official**).
-  `keep-coding-instructions` defaults to false (**official**).
-- Only CLI flags replace the system prompt, and no settings key does (**official**).
-  A plugin cannot pass flags.
-- A request is 122 KB in an interactive session with tool search on (**capture**).
-  Without tool search it is 205 KB.
+- The output style `dotclaude:Concise` is the only style that the plugin ships.
+- The `prompt` slice rewrites the sections of the system prompt, and it adds one model note block for each model family.
+- The `surface` slice shortens the descriptions of four tools and hides two built-in agent types.
+- The `handoff` slice adds the file path to the `/handoff` skill text.
+  It is not part of the `prompt` slice.
+- A plugin cannot replace the system prompt.
+  Only CLI flags do that, and a plugin cannot pass flags.
 
-## The simple prompt plus the forced style
+## Output style
 
-The system prompt has a `shared` block and a `session` block (**binary**, 2.1.292).
-`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1` swaps the `shared` block for a short `lean_body`.
-The forced style then adds the role, the tone, and the format.
-The dotclaude rules are in the system prompt, in the shared sections of `features/prompt/shared.ts` ([System prompt](System-Prompt#one-route)).
+The `styles` slice (`src/plugins/dotclaude/slices/styles/slice.ts`) sets `outputStyle` to `dotclaude:Concise`.
+The style file is `slices/styles/styles/Concise.md`.
+It sets `keep-coding-instructions: true`, so the coding sections stay in the prompt.
 
-The `context_management` section of the `session` block says that the system summarizes prior messages when the context grows long (**binary**, 2.1.292).
-That is wrong in a dotclaude session, because the snippet turns compaction off.
-One part corrects it:
+The slice does not set `force-for-plugin`.
+The `outputStyle` setting of the user therefore keeps control, and the plugin only sets the default.
+The [settings snippet](Settings-Snippet) gives the same value, and the test `tests/dotclaude/settings-pin.test.ts` keeps the two equal.
 
-- The hooks module replaces the section with a `prompt.section` hook when `DISABLE_COMPACT` is set.
-  The new text says that compaction is off, that the session stops at the limit, and that OpenSpec task checkboxes and commits keep the state across `/clear`.
-  The text is the same on each call, so the prompt cache stays.
-  On a machine where the built-in guard `sec-default` loads, the guard skips this hook.
-  It also skips the shared sections and the model variants (`prompt.compose`) (**measured**, see [Claude mods](Claude-Mods#the-built-in-guard-sec-default)).
-  The output style no longer says it, because a style reaches the model as a message and holds only role, tone, and format.
+Why: a style without `keep-coding-instructions` sets the section `doing_tasks` to `null`.
+The `prompt` slice then has no section to change.
 
-The shared block has the sections `intro`, `system`, `doing_tasks`, `actions`, `tools`, and `tone` (**binary**).
-The simple prompt replaces them with `lean_body`.
+## Prompt sections
 
-The `intro` text is the same on each call in 2.1.295: "You are an agent working with the user toward their goals, using your own judgment along the way." (**binary**).
-In 2.1.294, the env var `CLAUDE_CODE_INTRO_FRAME` or the flag `tengu_ochre_wren` chose this text.
-The 2.1.294 default was "You are an interactive agent that helps users with software engineering tasks."
-2.1.295 has no variable and no old text.
+The `prompt` slice changes the sections of the system prompt on two hooks.
 
-| Shared section | What it tells Claude |
-| --- | --- |
-| `doing_tasks` | How to work on a task. |
-| `system` | A tool result is data, and a hook message is true. |
-| `blocks` | A block stops the work for a reason, so fit the work to it. |
-| `verification` | Check a claim before a report. |
-| `actions` | How to treat actions that are hard to reverse. |
-| `tools` | Use the dedicated tools, read only a part of a file, and delegate with care. |
-| `counts` | Copy each count from a tool output. |
+| Hook | Code | What it does |
+| --- | --- | --- |
+| `prompt.compose` | `onCompose` in `slices/prompt/adapters/mod.ts` | Applies the text transforms to each section, and replaces the known sections with the model variant. |
+| `prompt.section` | `onSection` in `slices/prompt/adapters/mod.ts` | Applies one transform to the sections in `TRANSFORMS`. |
 
-The output style has the blocks `<role>`, `<reports>`, and `<text_format>`.
-Verify the exact text in `features/prompt/shared.ts` and `output-styles/dotclaude.md`.
-This page describes their sections and not their words.
+The known sections are in `KNOWN_SECTIONS` in `slices/prompt/domain/apply.ts`.
+They are `intro`, `system`, `doing_tasks`, `actions`, `tools`, `tone`, and `lean_body`.
+The transforms are in `slices/prompt/transforms/`, one file for each section.
+The text of each section is in `slices/prompt/texts.ts/`.
 
-## What a request contains
+The `context_management` section says that the context is summarized.
+Its transform applies only when `DISABLE_COMPACT` is set to a value other than `0` or `false`.
+The [settings snippet](Settings-Snippet) sets `DISABLE_COMPACT` to `1`.
+The reason is on [Context and handoff](Context-And-Handoff).
 
-An interactive session has plugins, MCP servers, and an output style, with tool search on (**capture**):
+The transform of a section gives the same text on each call.
+The prompt cache therefore keeps its entries.
 
-| Part | Size | Contents | Replaced by `--system-prompt-file` |
-| --- | ---: | --- | --- |
-| `system` blocks | 6.4 KB | billing header, identity line, the built-in prompt | the prompt only |
-| `messages[0]`, user | varies | `CLAUDE.md` files and the auto-memory index | no |
-| `messages[1]`, role `system` | 34 KB | environment, output style, hook context, agents, skills, MCP instructions, date | no |
-| `tools`, loaded | 69.5 KB | 14 full definitions, `Artifact` alone 34 KB | no |
-| `tools`, deferred | 0.3 KB | names only, loaded on demand | no |
-| Whole request | 122 KB | | about 6 KB less |
+## Model variants
 
-Without tool search, all 38 tools load in full, which is a 205 KB request.
-Tool search is off by default when `ANTHROPIC_BASE_URL` points to another host.
+Each model family gets one variant.
+The family comes from the model id, in `variantKey` in `slices/prompt/domain/apply.ts`.
 
-## The simple prompt switch
+| Key | Models | Model notes |
+| --- | --- | --- |
+| `opus` | Opus 5.5 | One notes section, and the block and evidence lines. |
+| `sonnet` | Sonnet 5.5 | No notes section, and the verify, block, and evidence lines. |
+| `haiku` | Haiku 5.5 | One notes section with the step line, and the verify, step, block, and evidence lines. |
+| `fable` | Fable 5.1, and Mythos 5.1 | One notes section, and the block and evidence lines. |
 
-The first match in this list decides the prompt (**binary**, 2.1.288):
+The variant sections are in `slices/prompt/domain/variants.ts`.
+Mythos 5.1 uses the `fable` variant, because one prompting guide covers both models.
 
-1. The variable is truthy: simple.
-2. The variable is `0` or `false`: full.
-3. The provider is Bedrock, Vertex, or Foundry: simple.
-4. The feature flag `tengu_velvet_tide` is on: simple.
-5. The feature flag `simple_system_prompt` decides.
+A model that has no key gets no variant.
+Its sections stay as Claude Code sends them.
 
-The simple prompt drops the long system bullets, the coding rules, "Executing actions with care", the task-tool section, and the tone section.
-It keeps a one-line form of the first four.
-The same switch sends shorter descriptions for `Glob`, `Grep`, `Write`, and `WebSearch`.
+The key is chosen at the first `prompt.compose` of a session and kept for the session.
+A model switch therefore changes nothing in the system prompt.
+A changed system prompt would break the prompt cache.
 
-## How the rules reached Claude in older releases
+The variant sits where the first known section was.
+The unknown sections keep their order (`composeSections` in `slices/prompt/domain/apply.ts`).
 
-| Version | How the rules reached Claude |
-| --- | --- |
-| 0.16 | A `claude` shell function passed `--system-prompt-file` with a 4.3k-token replacement prompt. |
-| 0.17 | The profile turned on the lean prompt, and the rules sat in an output style. |
-| 0.18 to 0.26 | A SessionStart hook added the rules. In 0.26 it rendered the sections of an operating spec from `lib/terms.mjs`. |
-| 0.27 | The forced output style only. No SessionStart context from the core plugin. |
+## Subagent model block
 
-From 0.28.0, the `dotclaude-jev` plugin adds no SessionStart note.
-Its `second_opinion` tool holds the rules in its description.
+A subagent gets its system prompt from its agent body.
+The `agent.spawn` hook (`onSpawn`) therefore adds the model block to the end of the task prompt.
+It uses the model of the spawn, or the parent model when the spawn names none or `inherit`.
+The block is added once.
 
-## Output styles and hook context
+## Bare traits
 
-An output style arrives in the role-`system` message, not in the `system` blocks (**capture**, 2.1.283).
-The docs say that the style is "appended to the end of the system prompt", which 2.1.283 does not do.
+When a request has the trait `bare`, `onCompose` returns the sections of Claude Code unchanged.
 
-- `keep-coding-instructions` changes only the full prompt.
-  The lean prompt has no coding instructions, and the flag does not add them (**binary**, 2.1.286).
-- The `additionalContext` of a SessionStart hook arrives in the same role-`system` message as the output style (**capture**, 2.1.288).
-- Claude Code keeps at most about 10,000 bytes of output from each hook command (**binary**).
-- After a compaction, Claude Code runs a SessionStart hook again with source `compact`, and it drops the copy from startup (**capture**).
-  The snippet turns compaction off, so a session does not reach this case.
+## Simple prompt
 
-## Tool removal
+The [settings snippet](Settings-Snippet) sets `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` to `1`.
+The `lean_body` transform is in `slices/prompt/transforms/lean_body.ts`, and it is one of the known sections.
 
-A bare tool name in `permissions.deny` removes the definition of that tool, as `--disallowedTools` does (**capture**).
-Only a loaded tool saves much, because a deferred tool costs one name.
+## Tool descriptions
 
-| Tool | Bytes |
-| --- | ---: |
-| `Artifact` | 34037 |
-| `SendFeedback` | 5508 |
-| `Workflow` | 5355 |
-| `AskUserQuestion` | 4897 |
-| `ScheduleWakeup` | 4631 |
-| `Agent` | 3049 |
-| `Bash` | 2237 |
-| `ReportFindings` | 2177 |
+The `surface` slice (`slices/surface/`) answers `tool.describe` for four tools.
 
-The snippet denies `Agent(general-purpose)`, which is a pattern and not a bare tool name.
+| Tool | Change | Text |
+| --- | --- | --- |
+| `Agent` | A shorter description | `slices/surface/texts.ts/tool-agent.md` |
+| `Bash` | A shorter description | `slices/surface/texts.ts/tool-bash.md` |
+| `Read` | A shorter description | `slices/surface/texts.ts/tool-read.md` |
+| `ListAgents` | Deferred behind `ToolSearch` | None |
 
-The snippet removes four unused tools (**binary**, 2.1.292):
+The rules are in `TOOL_TRANSFORMS` and `toolAnswer` in `slices/surface/domain/tools.ts`.
+A shorter description replaces the built-in one, and only when it is shorter.
+A deferral sets `isDeferred` to `true`.
+It never sets `false`.
+A tool that no transform names passes on with no change.
 
-- `enableArtifact: false` removes `Artifact`, and `enableWorkflows: false` removes `Workflow`.
-- `ScheduleWakeup` has no setting, so the snippet denies it by name.
-- The snippet also denies `ReportFindings`.
-  `/code-review` uses it only when `CLAUDE_CODE_REPORT_FINDINGS` is set and the tool is present.
-  Otherwise `/code-review` gives its findings as text.
+## Agent offers
 
-With these switches and the snippet without the advisor, `/context` at the start of a sandbox session fell from 32k to 8.1k tokens (**measured**).
-Of the 8.1k, the loaded tools are 5.3k and the system prompt is 1.6k.
-The deferred tools (16.1k in `/context`) send only their names until Claude loads one.
+The `agent.offer` hook drops two built-in agent types, `claude-code-guide` and `statusline-setup`.
+They are listed in `DROPPED_AGENTS` in `slices/surface/domain/agents.ts`.
+The hook leaves them out of the listing and out of dispatch.
+The plugin does not use these agents.
 
-## MCP tool descriptions
+## Skill text
 
-Claude Code cuts the description of an MCP tool.
-In 2.1.295 the cut is 16,384 characters for a tool that the model loads through tool search, and 2,048 characters in other cases (**binary**, 2.1.295).
-In 2.1.294 the cut was 2,048 characters for both.
-`CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH` sets both cuts.
-The `$.tool.register` description of a mod gets the same two cuts (**binary**, 2.1.295).
-The MCP page of the docs still says 2,048 characters for each tool description (**official**).
+The `skill.prompt` hook for `/handoff` adds the handoff file path to the skill text.
+The code is `onSkill` in `slices/handoff/adapters/mod.ts`.
+The hook is part of the `handoff` slice, and it runs only for the skill `handoff`.
+See [Context and handoff](Context-And-Handoff).
 
-## Undocumented surfaces
+## Why the prompt is short
 
-- `--append-subagent-system-prompt[-file]` works only with `-p` (**official**).
-  The bundle gates it behind `CLAUDE_CODE_ENABLE_APPEND_SUBAGENT_PROMPT`.
-  Nobody ran it in an interactive session.
-- The `policyHelper` output accepts two optional strings besides `managedSettings`: `appendSystemPrompt` and `claudeMd` (**binary**).
-  They append text and cannot replace the prompt.
-  Nobody has run them end to end.
-- The `prompt.section` and `prompt.compose` mod events can change sections of the system prompt (**official**, d.ts).
-  dotclaude uses `prompt.section` for one section, `context_management`.
-  See [Claude mods](Claude-Mods).
+The text of each section is in the prompt of every request.
+A rule in the prompt costs tokens on each request, so the plugin keeps the text short.
+The [Decisions](Decisions) page gives the choices behind the prompt.
 
-## Attachment cuts of the hooks module
+## Tests
 
-The `prompt.attachment` handler of dotclaude rewrites an attachment by exact type, and an unknown type passes on.
-Task 9.3 measured one headless sandbox session of the `dotclaude` plugin on Haiku 5.5 before and after the `agent_listing_delta` cut.
-The prompt was "Reply with the word ok."
-The measure is `bun tools/measure.ts <transcript>`, which prints the figures and writes no file.
-
-| Type | Cut | Saving (tokens) |
-| --- | --- | ---: |
-| `agent_listing_delta` | The concurrency note is one short sentence. The agent lines stay as they are. | 15 |
-| `sandbox_instructions` | A short text, chosen by `sandbox.allowUnsandboxedCommands`: no escape when it is `false`, and the rule for an approved run outside the sandbox when it is `true`. With no value in the settings, the full text stays. | not measured |
-| `auto_mode` | A four-line text: run routine steps, and when a rule or the classifier stops a call, change the work or ask the user. | not measured |
-| `skill_listing` | None. The listing had two lines in the measured session, and one was the removed `dotclaude:handoff` skill. | 0 |
-| `environment` | None. The text holds the facts of the host and the rule for downloaded files. | 0 |
-| `session_context` | The commit list is gone (earlier cut). It was empty in the measured project. | 0 |
-
-- First request before: 10,458 tokens (input 2, cache creation 3,010, cache read 7,446).
-- First request after: 10,443 tokens (input 2, cache creation 2,995, cache read 7,446).
-- The agent lines are the descriptions of the five dotclaude agents.
-  A shorter line would make the model pick an agent with less information, so the cut leaves them.
-- The `tool.describe` handler marks `AskUserQuestion` and `ListAgents` as deferred, so the engine sends only their names until Claude loads one (`features/surface/data.ts`).
-  It never sets a tool to loaded.
-- The `agent.offer` handler drops `claude-code-guide` and `statusline-setup`, and it keeps every dotclaude agent.
-- The cut of `environment` has no safe text, because the attachment is the one source of the host facts.
-
-## Final measure of 0.28.0 on Claude Code 2.1.295
-
-Task 9.7 measured three headless sandbox sessions of the same tree on Opus 5.5 and Claude Code 2.1.295 on 2026-10-09.
-The prompt was "Say hi.", and the measure is `just measure <transcript>`.
-
-| Session | First request (tokens) | Text with no tool schemas (bytes) | Tool schemas (characters) |
-| --- | ---: | ---: | ---: |
-| All plugins, no settings snippet | 17,761 | 9,130 | 40,322 |
-| Add-on plugins only, with the snippet | 11,782 | 4,615 | 25,446 |
-| All plugins, with the snippet | 12,674 | 6,687 | 21,468 |
-
-- The settings snippet saves 5,087 tokens.
-  It turns off the workflow, schedule, and other tools, the built-in plugins, and the memory text.
-- The core plugin adds 892 tokens net.
-  Its `tool.describe` cuts remove 3,978 characters of tool text, and its output style and agent listing add 2,072 bytes of text.
-- This table is history from 2.1.295.
-  The measure on 2.1.296 is in the next section.
-
-## Clean measure on Claude Code 2.1.296
-
-A clean sandbox session on Claude Code 2.1.296 with all plugins and the settings snippet had a first request of 9,485 tokens (**measured**).
-`START_TOKENS` is 9,485 plus 5%, rounded up: 9,960 (task 27.5).
-Before, it was 20,416, from the 0.27.0 capture of task 2.5.
-The `sandbox_instructions` text is 725 characters on the wire (`SANDBOX_RETRY_TEXT`, used when `allowUnsandboxedCommands` is `true`).
-Before that cut, the same session was 12,388 tokens.
-
-The table has the 15 largest parts of the request.
-The token count of a part comes from the sized capture of the earlier run when the text is the same.
-The cut texts, `environment` and the sandbox text, are not sized, because the `count_tokens` report of the 2.1.296 run is gone.
-
-| Part | Kind | Tokens | Characters |
-| --- | --- | ---: | ---: |
-| `Bash` | tool | 1,198 | 3,358 |
-| `Agent` | tool | 1,015 | 2,947 |
-| `mcp__dotclaude-jev__second_opinion` | tool | 680 | 1,920 |
-| `Skill` | tool | 623 | 1,803 |
-| `<role> You are a software engineer in the terminal of the us` | message 1 (system) | 507 | 1,727 |
-| `Read` | tool | 618 | 1,638 |
-| `ToolSearch` | tool | 535 | 1,440 |
-| `Available agent types for the Agent tool: - dotclaude:debugg` | message 1 (system) | 496 | 1,372 |
-| `<model_notes> Before the first tool call, say in one sentenc` | system | 353 | 1,165 |
-| `Edit` | tool | 348 | 964 |
-| `The following skills are available for use with the Skill to` | message 1 (system) | 299 | 886 |
-| `# Environment You have been invoked in the following environ` | message 1 (system) | not sized | 836 |
-| `<actions> Before an action that is hard to undo or that othe` | message 1 (system) | 233 | 769 |
-| `<tools> Use the dedicated tools for files` | message 1 (system) | 233 | 737 |
-| `Each command runs in the sandbox. The sandbox limits the fil` | message 1 (system) | not sized | 726 |
-
-## Capture method
-
-A local HTTP listener stood in for the API.
-It saved each `/v1/messages` request body and answered 400.
-
-```sh
-ENABLE_TOOL_SEARCH=true ANTHROPIC_BASE_URL=http://127.0.0.1:18771 \
-  gtimeout 40 script -q /dev/null claude "hi" </dev/null
-```
-
-- `script` gives the CLI a terminal, so it runs interactively.
-- To measure print mode, remove `script` and add `-p`.
-- The request bodies contain the `CLAUDE.md` of the user, so this page reports only structure and sizes.
+- `tests/dotclaude/prompt/` checks the transforms and the variant choice.
+- `slices/prompt/lab/section.test.ts` checks the `context_management` rule with `DISABLE_COMPACT`.
+- `slices/surface/lab/surface.test.ts` checks the tool and agent answers.
+- `tests/dotclaude/settings-pin.test.ts` keeps the output style and the environment keys of the snippet equal to the code.
 
 ## Related pages
 
-- [Design](Design)
-- [Claude mods](Claude-Mods)
-- [Usage evidence](Usage-Evidence)
+- [Request build](Request-Build) describes how Claude Code builds each request.
+- [Context and handoff](Context-And-Handoff) describes the context bound and the handoff.
+- [Second opinion](Second-Opinion) describes the `second_opinion` tool.
+- [Agents](Agents) describes the subagent types.
+- [Settings snippet](Settings-Snippet) gives the settings keys.

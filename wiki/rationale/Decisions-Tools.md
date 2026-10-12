@@ -72,7 +72,7 @@ Two alternatives were rejected, and one of them is now replaced.
 A lower `BASH_MAX_OUTPUT_LENGTH` was rejected first, because it cut build output.
 `bashOutputMaxChars` replaces it, because it keeps the full output in a file.
 An `updatedInput` filter for test output is rejected for now, because test output was small.
-See [Context bound](Context-Bound).
+See [Context bound](Context-And-Handoff).
 
 ## D26 Code graph through the CodeGraph CLI
 

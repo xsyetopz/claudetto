@@ -48,7 +48,7 @@ Source tags: **official** is a doc of Claude Code, **binary** is the 2.1.292 bun
 - A top-level `effortLevel` does not count for Opus 5.5 (**official**, `model-config.md`).
   An effort change keeps the cache, and a model switch, a tool-set change, and compaction break it (**official**, `prompt-caching`).
 - Each tool definition goes in each request, so the snippet removes the tools that dotclaude does not use: Artifact, Workflow, ScheduleWakeup, ReportFindings, and the advisor.
-  `/context` at the start of a sandbox session fell from 32k to 8.1k tokens (**measured**, [Prompt surface](Prompt-Surface#tool-removal)).
+  `/context` at the start of a sandbox session fell from 32k to 8.1k tokens (**measured**, [Prompt surface](Prompt-Surface)).
 - Deny rules are not a security boundary, so the snippet pairs them with the sandbox (**official**, `permissions.md`).
   A sandbox cut permission prompts by 84% in one report (**reported**).
 - Users want asks only for destroy, reach-out, and secret reads (**reported**).

@@ -20,7 +20,7 @@ The evals may still decide the frontmatter of each agent:
 - Haiku 5.5 can skip checks at low and medium effort, so the over-claim rate is a pass condition.
 - Haiku 5.5 costs 5 times as much for each request above 100K prompt tokens.
   No rule moves a long task to Sonnet 5.5.
-  Instead, a Haiku 5.5 subagent reports before its context reaches 100K ([Context bound](Context-Bound)), and the delegation text sends large reads to one subagent.
+  Instead, a Haiku 5.5 subagent reports before its context reaches 100K ([Context bound](Context-And-Handoff)), and the delegation text sends large reads to one subagent.
 - `claude-haiku-4-5` leaves the roster.
   The [settings snippet](Settings-Snippet) carries `availableModels` and `enforceAvailableModels` without it.
 - The research gives no effort cost index for the 5.5 models, so only the evals set the final values.

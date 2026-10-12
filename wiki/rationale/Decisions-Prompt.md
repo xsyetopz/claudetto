@@ -14,7 +14,7 @@ The index is [Decisions](Decisions).
 - Cuts of `session_context` and `prompt.context` need an eval with no loss.
   Note: 0.28.0 already cuts the `Recent commits:` block of `session_context`, and no cut of `prompt.context` exists.
 
-See [Prompt surface](Prompt-Surface#attachment-cuts-of-the-hooks-module).
+See [Prompt surface](Prompt-Surface).
 
 ## D4 Measured budget
 
@@ -28,7 +28,7 @@ The request capture of D16 closes the gap between the measure and what the API b
 The shared sections of the `prompt` slice (`slices/prompt/domain/`) hold the rules that every model shares.
 The mod replaces the Claude Code sections with the shared sections and the text of one model, and the block of a subagent adds the evidence line.
 The output style holds only the role, the tone, and the format, because Claude Code sends an output style as a message in the conversation and not in the system prompt.
-The rules are in [System prompt](System-Prompt) and the variants are in [Prompt variants](Prompt-Variants).
+The rules are in [System prompt](Prompt-Surface) and the variants are in [Prompt variants](Prompt-Variants).
 No rule text is in two of the shared sections, a variant, and the output style.
 
 - XML tags separate instructions from data.
@@ -70,5 +70,5 @@ Prose rules failed, such as no recap, no semicolons in long lists, and one sente
 ## Related pages
 
 - [Prompt surface](Prompt-Surface)
-- [System prompt](System-Prompt)
+- [System prompt](Prompt-Surface)
 - [Semantic line breaks](Semantic-Line-Breaks)

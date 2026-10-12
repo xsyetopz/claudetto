@@ -33,8 +33,8 @@ Each add-on works without the core plugin.
 
 ## New in 0.28.0
 
-- A [system prompt](System-Prompt) variant for each model.
-- A [context bound](Context-Bound) for subagents.
+- A [system prompt](Prompt-Surface) variant for each model.
+- A [context bound](Context-And-Handoff) for subagents.
 - [Semantic line breaks](Semantic-Line-Breaks) in written text, with no model token.
 - A new [plugin layout](Plugin-Layout), and the plugins `dotclaude-sessions` and `dotclaude-lab`.
 - Evals through `claude plugin eval` ([Evals](Evals)), with a suite of 16 cases in `plugins/dotclaude/evals/` and `just eval` to run it.

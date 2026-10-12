@@ -30,8 +30,8 @@ The module sees the events below in the order that Claude Code runs them.
 | `tool.call` | `Write` | Puts each sentence of a Markdown file on its own line. See [Semantic line breaks](Semantic-Line-Breaks). |
 | `tool.call` | `Edit` | Repairs an `old_string` that spans two sentences, then breaks the lines of `new_string`. It reads the file with `$.fs.read` when the file exists. |
 | `tool.call` | `Bash` | Breaks the lines of the quoted heredoc of `git commit` and `gh pr create`. |
-| `tool.call` | `Bash` | Denies a command that prints a file (`cat`, `sed -n`, `head`, or `tail` on one file, also in one part of a list, and not into a pipe), and gives the `Read` call with the same range. A file over 4 MiB (`READ_MAX_BYTES`) is denied by its size. A generated file, such as one in `node_modules` or a `.log` file, stays allowed. See [Context bound](Context-Bound). |
-| `prompt.compose` | all | Adds the system prompt variant of the model of the session. The key is chosen at the first call and kept. It does nothing for the `bare` trait. See [System prompt](System-Prompt). |
+| `tool.call` | `Bash` | Denies a command that prints a file (`cat`, `sed -n`, `head`, or `tail` on one file, also in one part of a list, and not into a pipe), and gives the `Read` call with the same range. A file over 4 MiB (`READ_MAX_BYTES`) is denied by its size. A generated file, such as one in `node_modules` or a `.log` file, stays allowed. See [Context bound](Context-And-Handoff). |
+| `prompt.compose` | all | Adds the system prompt variant of the model of the session. The key is chosen at the first call and kept. It does nothing for the `bare` trait. See [System prompt](Prompt-Surface). |
 | `agent.spawn` | all | Adds the model block to the end of the task prompt of a subagent. |
 | `prompt.section` | `context_management` | Gives the shorter text that says compaction is off, when `DISABLE_COMPACT` is set. The built-in guard `sec-default` skips it. |
 | `prompt.attachment` | `sandbox_instructions`, `auto_mode`, `session_context`, `agent_listing_delta` | Gives a shorter text. The sandbox text is shorter only when the settings set `sandbox.allowUnsandboxedCommands`. With `true`, it keeps the rule that a run outside the sandbox needs an approval. Any other attachment type passes on. See [Prompt surface](Prompt-Surface). |
@@ -46,7 +46,7 @@ A recursive `rm` is an `ask` rule of the settings snippet, and the module has no
 
 | Event | Matcher and `if` | Command | What it does |
 | --- | --- | --- | --- |
-| `PostToolUse` | all tools | `hooks/PostToolUse/context.ts` | In a subagent only, tells it to report now when its context passes the bound of its model or when 2 turns are left. It tells and does not block. The main session gets no note. See [Context bound](Context-Bound). |
+| `PostToolUse` | all tools | `hooks/PostToolUse/context.ts` | In a subagent only, tells it to report now when its context passes the bound of its model or when 2 turns are left. It tells and does not block. The main session gets no note. See [Context bound](Context-And-Handoff). |
 
 The `Bash` write ask has these gaps.
 It does not read `xargs` input, `dd of=`, `rsync`, `curl -o`, a `find -exec` command other than `rm`, or a file that a script writes (`python -c`).
