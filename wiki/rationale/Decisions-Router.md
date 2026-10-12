@@ -80,9 +80,10 @@ Problem.
 Which subagents exist, and which work each one takes.
 
 Choice.
-A fixed roster of seven agents, each with a set model, effort, turn bound, and tool list.
-The roster is in `.dotclaude/spec/changes/1.0.0/change.md` (section Scope) and `workflow.md` (section Agents).
-The code of the base commit has six of the seven files, and `test-runner` is not in it yet.
+A fixed roster of six agents, each with a set model, effort, turn bound, and tool list.
+The roster is the set of files in `src/plugins/dotclaude/slices/agents/agents/`.
+The `test-runner` agent of `workflow.md` (section Agents) is replaced by the `dotclaude-run-checks` CLI of the `checks` slice.
+The reason is item 8 of `.dotclaude/spec/changes/1.0.0/evidence/zero-token.md`.
 
 - The roster, the turn limits, and the pins are in [Agents](Agents).
 - The turn bounds are in `src/plugins/dotclaude/slices/agents/limits.ts` (`MAX_TURNS`).
