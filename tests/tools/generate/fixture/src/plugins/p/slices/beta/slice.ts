@@ -11,7 +11,12 @@ export const slice = {
       phase: "answer",
       run: onWrite,
     },
-    { event: "prompt.compose", phase: "rewrite", run: onCompose },
+    {
+      event: "prompt.compose",
+      filter: { model: "fixture" },
+      phase: "rewrite",
+      run: onCompose,
+    },
     {
       event: "tool.call",
       filter: { tool: "Bash" },
