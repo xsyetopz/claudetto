@@ -13,7 +13,7 @@
     "allow": "plugins/dotclaude/tests/variants.test.ts > a spawn on a model with no variant passes the task prompt on unchanged",
     "text": "plugins/dotclaude/tests/variants.test.ts > a spawn on Haiku 5.5 ends the task prompt with its block one time"
   },
-  "session.start drift": {
+  "session.start setup": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,

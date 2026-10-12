@@ -9,6 +9,7 @@ import {
   onContextSection as h3,
   onSpawn as h4,
 } from "../slices/prompt/adapters/mod.ts";
+import { onSessionStart as h5 } from "../slices/setup/adapters/mod.ts";
 import { register as legacy } from "./legacy.ts";
 
 export const register = (on: On): void => {
@@ -18,6 +19,8 @@ export const register = (on: On): void => {
   on("prompt.compose", h2);
   // eval: prompt.section prompt
   on("prompt.section", { name: "context_management" }, h3);
+  // eval: session.start setup
+  on("session.start", h5);
   // eval: tool.call guard
   on("tool.call", h0);
   // eval: tool.check guard
