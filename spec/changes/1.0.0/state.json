@@ -33,7 +33,13 @@
     "P14": "planned",
     "P15": "planned",
     "P16": "planned",
-    "P18": "planned"
+    "P18": "planned",
+    "P24": "done",
+    "P25": "done",
+    "P26": "done",
+    "P27": "done",
+    "P31": "done",
+    "P28": "doing"
   },
   "events": [
     {
@@ -174,6 +180,41 @@
     {
       "at": "2026-10-12T16:13:49.848Z",
       "package": "P19",
+      "lane": "doing"
+    },
+    {
+      "at": "2026-10-12T16:20:09.241Z",
+      "package": "P19",
+      "lane": "doing"
+    },
+    {
+      "at": "2026-10-12T16:25:58.358Z",
+      "package": "P24",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:25:58.407Z",
+      "package": "P25",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:25:58.447Z",
+      "package": "P26",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:25:58.487Z",
+      "package": "P27",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:25:58.529Z",
+      "package": "P31",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:25:58.568Z",
+      "package": "P28",
       "lane": "doing"
     }
   ],
