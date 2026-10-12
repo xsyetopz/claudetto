@@ -1,8 +1,8 @@
 // Tests of the rule catalog of the destructive floor: each id is unique, each rule has a tier and prose, and each id the hook run keys is present.
 
 import { expect, test } from "bun:test";
-import { ANY_ROUTE } from "../../src/kernel/policy/route.ts";
 import { POLICY_RULES, prosesOf } from "../../src/kernel/policy/index.ts";
+import { ANY_ROUTE } from "../../src/kernel/policy/route.ts";
 
 const TIERS = ["floor", "ask", "subagent"];
 
