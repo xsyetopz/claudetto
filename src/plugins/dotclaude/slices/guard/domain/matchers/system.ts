@@ -1,0 +1,139 @@
+// The literal matchers of the system: a recursive delete, a disk erase, a recursive permission change, and a security setting.
+// Each entry has a catalog id, examples, and a `match` on the words of one command.
+// The tier of each id is in `index.ts`, and every id here applies in every session.
+
+import { isForce, isRecursive, positionals } from "./args.ts";
+import type { Matcher } from "./types.ts";
+
+/** The folders of the user and of the system, in the spelling that `norm` gives. */
+const ROOTS = new Set([
+  "",
+  "~",
+  "$HOME",
+  `\${HOME}`,
+  "/System",
+  "/usr",
+  "/etc",
+  "/bin",
+  "/sbin",
+  "/lib",
+  "/lib64",
+  "/boot",
+  "/opt",
+  "/var",
+  "/private",
+  "/Library",
+  "/Applications",
+  "/Users",
+  "/home",
+  "C:",
+  "C:\\Windows",
+]);
+
+/** The folders of the user and of the system for the permission rule: the root and the home folder only. */
+const PERMISSION_ROOTS = new Set(["", "~", "$HOME", `\${HOME}`]);
+
+/** A path with its trailing `/*`, `/`, and `\` removed, so `/`, `/*`, `~/`, and `C:\` read as `""`, `~`, `~`, and `C:`. */
+const norm = (word: string): string =>
+  word.replace(/\/\*$/, "").replace(/[/\\]+$/, "");
+
+/** True when `path` is the `.git` folder of a repository, such as `.git`, `./.git`, or `repo/.git/`. */
+const isGitDir = (path: string): boolean => {
+  const t = path.replace(/\/+$/, "");
+  return t === ".git" || t.endsWith("/.git");
+};
+
+/** True when a delete target is a system folder, the home folder, the root, or a `.git` folder. */
+const isSystemTarget = (path: string): boolean =>
+  ROOTS.has(norm(path)) || isGitDir(path);
+
+/** The disk tools that run on any disk: the file system makers, `fdisk`, and `parted`. */
+const DISK_TOOLS = new Set(["fdisk", "parted"]);
+
+export const systemMatchers: Matcher[] = [
+  {
+    id: "system.recursive-delete",
+    examples: [
+      "rm -rf /",
+      "rm -fr /*",
+      "rm -r -f ~",
+      "rm -Rf ~/",
+      "rm --recursive --force $HOME",
+      'rm -rf "$HOME"',
+      "rm -rf /usr",
+      "rm -rf /etc/",
+      "rm -rf C:\\Windows",
+      "rm -rf .git",
+      "rm -r -f .git/",
+    ],
+    match: async (words) => {
+      const [name = "", ...args] = words;
+      return (
+        name === "rm" &&
+        isRecursive(args) &&
+        isForce(args) &&
+        positionals(args).some(isSystemTarget)
+      );
+    },
+  },
+  {
+    id: "system.disk",
+    examples: [
+      "mkfs.ext4 /dev/sdb1",
+      "mkfs -t ext4 /dev/sdb1",
+      "diskutil eraseDisk JHFS+ X /dev/disk2",
+      "diskutil eraseVolume APFS X disk3",
+      "diskutil partitionDisk disk2 GPT JHFS+ X 100%",
+      "diskutil zeroDisk disk2",
+      "dd if=/dev/zero of=/dev/sda bs=1M",
+      "fdisk /dev/sda",
+      "parted /dev/sda mklabel gpt",
+    ],
+    match: async (words) => {
+      const [name = "", verb = "", ...args] = words;
+      if (name.startsWith("mkfs")) return true;
+      if (name === "diskutil")
+        return (
+          verb.startsWith("erase") ||
+          verb === "partitionDisk" ||
+          verb === "zeroDisk"
+        );
+      if (name === "dd") return args.some((a) => /^of=\/dev\//.test(a));
+      return DISK_TOOLS.has(name);
+    },
+  },
+  {
+    id: "system.permissions",
+    examples: [
+      "chmod -R 777 /",
+      "chmod --recursive 755 ~",
+      "chmod -R 755 $HOME",
+      "chown -R root /",
+      "chown -R user ~/",
+    ],
+    match: async (words) => {
+      const [name = "", ...args] = words;
+      return (
+        (name === "chmod" || name === "chown") &&
+        isRecursive(args) &&
+        positionals(args).some((w) => PERMISSION_ROOTS.has(norm(w)))
+      );
+    },
+  },
+  {
+    id: "system.security",
+    examples: [
+      "csrutil disable",
+      "spctl --master-disable",
+      "security delete-generic-password -s login",
+      "security delete-keychain login.keychain",
+    ],
+    match: async (words) => {
+      const [name = "", ...args] = words;
+      if (name === "csrutil") return args[0] === "disable";
+      if (name === "spctl") return args.includes("--master-disable");
+      if (name === "security") return (args[0] ?? "").startsWith("delete-");
+      return false;
+    },
+  },
+];
