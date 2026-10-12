@@ -15,14 +15,14 @@ const BIN = path.join(PLUGINS, "dotclaude-sessions", "bin", "dotclaude-start");
 
 test("`newestSession` gives the transcript with the latest modification time and skips other files", async () => {
   const dir = tmpDir("newest");
-  const touch = (name: string, seconds: number) => {
+  const touch = async (name: string, seconds: number) => {
     const file = path.join(dir, name);
-    fs.writeFileSync(file, "");
+    await Bun.write(file, "");
     fs.utimesSync(file, seconds, seconds);
   };
-  touch("old.jsonl", 1000);
-  touch("new.jsonl", 3000);
-  touch("newer.txt", 5000);
+  await touch("old.jsonl", 1000);
+  await touch("new.jsonl", 3000);
+  await touch("newer.txt", 5000);
   expect(await newestSession(store, dir)).toBe(path.join(dir, "new.jsonl"));
 });
 
@@ -34,7 +34,7 @@ test("`newestSession` gives null for an absent folder and for a folder with no t
 
 test("`exists` is true for a file and false for an absent path", async () => {
   const dir = tmpDir("exists");
-  fs.writeFileSync(path.join(dir, "a.jsonl"), "");
+  await Bun.write(path.join(dir, "a.jsonl"), "");
   expect(await exists(store, path.join(dir, "a.jsonl"))).toBe(true);
   expect(await exists(store, path.join(dir, "b.jsonl"))).toBe(false);
 });
