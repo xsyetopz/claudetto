@@ -211,13 +211,14 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P13, because P13 adds the note near the turn limit, and P33, because P33 changes `/ship`.
   Owns: the `guard`, `agents`, and `statusline` slices, the `/ship` skill, the turn bound of `handoff`, and their tests.
   Verify: `just check`, a lab test for each denied git command in a subagent, and a lab test that a subagent gets the note before its last turn.
-- [ ] P15 Docs: the wiki, the README, and a new CHANGELOG that starts at 1.0.0, with the numbers of P14.
+- [ ] P15 Docs: rebuild the wiki around the questions of the reader, the README, and the CHANGELOG, with the numbers of P14 ([package](packages/15-docs.md), decisions of 2026-10-13).
   Deps: P14, and P33, P35, and P36, because they change what the docs describe.
-  Owns: `wiki/`, `README.md`, `CHANGELOG.md`, `docs/`, `tools/wiki.ts`.
-  Verify: `bun run lint:md`, and a `reviewer` pass.
+  Owns: `wiki/`, `src/wiki/`, `README.md`, `CHANGELOG.md`, `docs/`, `tools/wiki.ts`, `.claude-plugin/marketplace.json`.
+  Verify: `bun run lint:md`, `just check`, and a `reviewer` pass.
 - [ ] P16 Release check: `tools/rebuild-pending.txt` is empty and deleted with its check, a `reviewer` pass on the full diff, `just check`, and one session in `just sandbox` that runs `/spec`, `/ship`, `/hotfix`, a decision, and a handoff.
   Deps: each package above.
   Verify: the user approves the version 1.0.0 and the push.
-- [ ] P18 History: delete the tags, the GitHub releases, and the wiki release pages of each older version.
+- [ ] P18 History: delete the tags and the GitHub releases of each older version.
+  The wiki release pages stay in `wiki/archive/` (Jev, 2026-10-13).
   Deps: P16.
   Verify: the user approves each deletion before it runs, because a deleted tag or release is public and hard to restore.

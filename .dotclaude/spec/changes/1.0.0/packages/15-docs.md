@@ -1,8 +1,8 @@
 ---
 id: P15
 deps: [P14, P33, P35, P36]
-owns: ["wiki/Attributions.md", "wiki/Home.md", "wiki/Install.md", "wiki/Quickstart.md", "wiki/Troubleshooting.md", "wiki/_Footer.md", "wiki/_Sidebar.md", "wiki/changelog/", "wiki/core/", "wiki/design/", "wiki/development/", "wiki/evals/", "wiki/plugins/", "wiki/settings/", "README.md", "CHANGELOG.md", "docs/", "tools/wiki.ts"]
-verify: bun run lint:md
+owns: ["wiki/", "src/wiki/", "README.md", "CHANGELOG.md", "docs/", "tools/wiki.ts", ".claude-plugin/marketplace.json"]
+verify: bun run lint:md, just check, and a reviewer pass
 agent: implementer
 ---
 
@@ -10,33 +10,128 @@ agent: implementer
 
 ## Goal
 
-Update the docs for 1.0.0: the wiki, the README, and a new `CHANGELOG.md` that starts at 1.0.0, with the numbers of P14.
+Rebuild the docs for 1.0.0: the wiki, the README, and the `CHANGELOG.md`, with the numbers of P14.
+The wiki is easy to navigate and correct against the code.
+It gives the rationale of each design choice.
+It shows how dotclaude works on Claude Code, and how the Claude Code `2.1.296` binary works.
+
+## Decisions (2026-10-13)
+
+The user delegates each decision to Jev, except a push to `main`.
+
+- A stale claim is removed, not reworded (the user).
+- Historical text moves to `wiki/archive/` (the user).
+- The `OpenSpec` page is deleted, because 1.0.0 does not use OpenSpec (the user).
+  `Spec-Store` replaces it.
+- The wiki is rebuilt around the questions of the reader, in the sections below (Jev, 0.98).
+- Facts about the binary can come from the git-ignored `external/` folder (Jev, 0.88).
+  A page gives the facts in its own words, with the version and the extraction method.
+  A page copies no bundle code and no long verbatim prompt text.
+- The 27 release pages in `wiki/archive/` stay (Jev, 0.82).
+  P18 deletes tags and GitHub releases only.
 
 ## Context
 
-- The entry: `.dotclaude/spec/changes/1.0.0/packages.md:181-184`.
-- The numbers come from `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`, which P14 writes.
-- The `wiki/` folder holds 15 entries in this checkout.
-  The entry names `wiki/` as a whole, but P18 owns `wiki/archive/`, so `owns` lists each other entry of `wiki/` by path (`.dotclaude/spec/changes/1.0.0/packages.md:188`).
-- The wiki source is `wiki/`, and `just wiki` publishes it (`CLAUDE.md`).
-- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
-- The Markdown rules: `CLAUDE.md`, with the 100-column bound for headings and code blocks, and `bun run lint:md`.
+- The code is the source of truth: `src/`, `src/kernel/budget.ts`, `slices/*/limits.ts`, `tools/limits.ts`.
+- The 1.0.0 design: `change.md`, `design.md`, `workflow.md`, and `evidence/` in this folder.
+- The binary facts: `external/cc-2.1.296/`, `external/cc-extract/2.1.296/`, `external/dossier/cc-2.1.296`, `external/capture/`, and the `dotclaude-schema` CLI (`src/plugins/dotclaude-lab/slices/schema/`).
+  `TESTED_VERSION` is in `src/plugins/dotclaude/slices/setup/domain/facts.ts`.
+- `src/wiki/` holds the sources of generated pages.
+  `tools/generate/emit/fill.ts` replaces `{{NAME}}` with a bound, and `{{include X}}` with a fragment of `src/fragments/`.
+- Checks that stay green:
+  `tests/support/wiki-links.test.ts` (each link resolves, page names are unique across folders, no folder-qualified link),
+  `tests/dotclaude/settings-pin.test.ts` (the JSON of `Settings-Snippet.md`),
+  `tests/dotclaude/setup/settings.test.ts`,
+  `tests/support/file-size.test.ts` (300 lines),
+  and `bun run lint:md`.
+- A run needs the git-ignored `.claude-plugin/types` folders (`.claude-plugin/types`, `plugins/dotclaude/.claude-plugin/types`, `plugins/dotclaude-browser/.claude-plugin/types`) for `just check`.
+  It copies them from the main checkout and does not commit them.
+
+## Page map
+
+A page name is the file name.
+The old pages in brackets merge into the new page and are deleted.
+
+Start (wiki root):
+
+- `Home`: what dotclaude is, the plugins, and where to read next.
+- `Install`, `Quickstart`, `Troubleshooting` (each "Troubleshooting" part of other pages).
+- `Attributions`.
+
+How dotclaude works (`wiki/dotclaude/`):
+
+- `Architecture` [`Core-Plugin`]: the kernel, the slices, the one hook module `register.ts`, the 11 events, and the path from `src/` to `plugins/`.
+- `Guards`: the `guard` and `asks` slices.
+- `Agents`.
+- `Skills`: the six skills.
+- `Spec-Store` [`OpenSpec`].
+- `Prompt-Surface` [`System-Prompt`]: the output style, the prompt sections, and the tool texts.
+- `Context-And-Handoff` [`Context-Bound`]: the context bound of subagents and the `handoff` slice.
+- `Status-Line`.
+- `Semantic-Line-Breaks`.
+- `Second-Opinion`: the `decide` slice.
+- `Contributions`.
+
+Add-on plugins (`wiki/add-ons/`): `Add-Ons` (index), `Code-Graph`, `Browser`, `Library-Docs`, `Sessions`, `Lab`.
+
+How Claude Code works (`wiki/claude-code/`), for `2.1.296`:
+
+- `Claude-Code-Internals`: the scope, the version, and how the facts are extracted.
+- `Request-Build` [`Claude-Mods`]: the system prompt sections, the attachments, and the cache.
+- `Tools-And-Deferral`.
+- `Hook-Events` [`Hooks`]: the events, their payloads, and the map to the 11 dotclaude events.
+- `Plugin-Loader`.
+- `Settings-Resolution`.
+- `Subagents`.
+- `Compaction-And-Context`.
+- `Auto-Mode`.
+- `Undocumented-Reads`: the settings and env vars that the binary reads and the docs do not name.
+
+Reference (`wiki/reference/`):
+
+- `Settings-Snippet` (generated), `Settings-Snippet-Keys`, `Off-Switches`, `Settings-Schema`.
+- `Bounds` (generated from `src/wiki/`): each bound, its value, and its file.
+
+Rationale (`wiki/rationale/`):
+
+- `Design`: the principles.
+- `Decisions` and its group pages: each decision in force, as problem, choice, alternatives, and evidence.
+  A decision that 1.0.0 reverses moves to the archive.
+
+Evidence (`wiki/evidence/`): `Evidence` (index), `Handoff-Cost`, `Usage-Evidence` [`Plans-and-Models`], `Prompt-Variants`, `Evals`.
+
+Development (`wiki/development/`): `Development`, `Plugin-Layout`, `Sandbox`, `Release-History`.
+
+Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`, `Jev-Plugin-0.28`, the 0.28 eval pages, `OpenSpec-History`, `Stop-Prompt-Hooks`, `Open-Items`, and each reversed decision.
 
 ## Steps
 
-1. Update the pages of `wiki/`, the `README.md`, and `docs/` for the 1.0.0 change.
-2. Write `CHANGELOG.md` new, so that it starts at 1.0.0, with the numbers of P14.
-3. Run `bun run lint:md`.
+1. Skeleton (one run): move each kept page to its folder, and add each new page as a stub with its title and a one-line scope.
+   Move the `src/wiki/` sources with their pages.
+   Write `_Sidebar.md` and the navigation part of `Home.md` for the map above.
+   `just check` passes.
+2. Fill (parallel runs, one branch each, on the skeleton).
+   Each run owns only its pages, and it links other pages by name.
+   - A: `Architecture`, `Guards`, `Agents`, `Skills`, `Spec-Store`.
+   - B: `Prompt-Surface`, `Context-And-Handoff`, `Status-Line`, `Semantic-Line-Breaks`, `Second-Opinion`, `Contributions`.
+   - C: the add-on pages.
+   - D: `Claude-Code-Internals`, `Request-Build`, `Tools-And-Deferral`, `Hook-Events`, `Plugin-Loader`.
+   - E: `Settings-Resolution`, `Subagents`, `Compaction-And-Context`, `Auto-Mode`, `Undocumented-Reads`.
+   - F: the reference and rationale pages.
+   - G: the evidence and development pages, and the archive index.
+   - H: the start pages, `README.md`, `docs/README.md`, and a check of `CHANGELOG.md`.
+3. Join the branches, run `just generate`, `bun run lint:md`, and `just check`.
+4. A reviewer pass for each section, then one run that fixes the list.
 
 ## Acceptance
 
-- `bun run lint:md` passes.
-- Each number in the docs has the source `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.
-- A `reviewer` pass on the text finds no claim without a source.
+- `bun run lint:md` and `just check` pass.
+- Each number has a source: a code path, an `evidence/` file, or a binary fact with its version.
+- A reviewer finds no stale claim and no claim without a source.
+- No page outside `wiki/archive/` presents 0.x as current.
 
 ## Boundaries
 
-- Change only the paths of `owns`.
 - Write the docs in STE-flavored ASD-STE100, with one sentence on each line.
 - Put each code item in inline code.
-- Do not edit `wiki/archive/`, because P18 owns it.
+- Do not run `just wiki` and do not push without a decision.
