@@ -115,7 +115,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Owns: `src/plugins/dotclaude/slices/spec/skills/`, `tools/bump-version.ts`, `tools/release.ts`, `tools/update.ts`.
   Verify: `just generate`, `just validate`, and a `reviewer` pass on the texts.
 - [ ] P13 `handoff`: the triggers, the handoff file, `/clear`, the resume, the `/handoff` skill, and `mainHandover`.
-  Deps: P03, P05, P06, P07.
+  Deps: P03, P05, P06, P07, P32.
   P13 also makes the generator write `plugins/<plugin>/evals/hooks.json` from the eval cases of each slice, because `tests/support/hook-evals.test.ts` needs the file, and wave 2 keeps it hand-written on the rebuild list (P11b, 2026-10-12).
   P13 starts after each other slice package of the core plugin is merged, because the rebuild list makes it the last one: it removes `hooks/legacy.ts`, `lib/`, `features/context/`, and `src/plugins/dotclaude/hooks/`.
   Decisions of the main session (2026-10-12):
@@ -130,7 +130,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P09.
   Owns: `src/plugins/dotclaude/slices/setup/` (the tier parts), `tests/dotclaude/setup/` (the tier tests).
   Verify also: a test for each account type, with a fake `claude auth status` output.
-- [ ] P25 `automode`: the setup writes `autoMode` to the user settings, with `$defaults` in each list and one `environment` entry that names the agent worktrees `.claude/worktrees/agent-*` and the Claude Code temp folder `/private/tmp/claude-<uid>/` ([automode](evidence/automode.md)).
+- [x] P25 `automode`: the setup writes `autoMode` to the user settings, with `$defaults` in each list and one `environment` entry that names the agent worktrees `.claude/worktrees/agent-*` and the Claude Code temp folder `/private/tmp/claude-<uid>/` ([automode](evidence/automode.md)).
   The classifier then allows the removal of those paths, and each default deny rule stays.
   Deps: P09.
   Owns: `src/plugins/dotclaude/slices/setup/` (the `autoMode` parts), `tests/dotclaude/setup/` (the `autoMode` tests).
@@ -144,6 +144,33 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P25, because both change the setup.
   Owns: `src/plugins/dotclaude/slices/agents/`, `src/plugins/dotclaude/slices/spec/skills/`, `src/plugins/dotclaude/slices/setup/` (the `worktree` keys), and their tests.
   Verify also: `just validate`, and a test that no text in `src/` tells an agent to run `git worktree add`.
+- [ ] P28 `.claude/` evidence: each file and folder of `.claude/` and `~/.claude/` in Claude Code 2.1.296, with what it does, when Claude Code reads it, its cost at the start of a session, the settings, env vars, and flags that control it, and its source in the docs and the bundle ([change](change.md), decisions, the user, 2026-10-12).
+  For rules, it also answers: can a plugin ship rules, do subagents and worktrees load them, does `claudeMdExcludes` apply to them, and how do they show in the `prompt.compose` input of the Mod API.
+  It writes `spec/changes/1.0.0/evidence/claude-directory.md`, with no built-in text.
+  Owns: `spec/changes/1.0.0/evidence/claude-directory.md`.
+  Agent: `implementer`, for the reason of P01c.
+  Verify: each claim has a source, and each rules answer has one live session in `just sandbox`.
+- [ ] P29 `rules` slice: dotclaude uses `.claude/rules/`.
+  The setup and its drift check know each entry of P28, and `trim` and `surface` count rules as a source of context.
+  Each slice part that adds guidance for some files only at runtime becomes a `paths:` rule, when P28 shows that a rule can do the same work.
+  Deps: P28, P24, P26, P27, because they change the setup.
+  Owns: `src/plugins/dotclaude/slices/rules/` except `skills/`, the rules parts of `setup`, `trim`, and `surface`, and their tests.
+- [ ] P30 `/rules-creator` skill: based on the `skill-creator` skill of Anthropic, short, and with each needed area: scope, `paths` globs and their limits, user or project folder, the split of a large `CLAUDE.md`, a check that each glob matches files, and the start cost.
+  Deps: P28.
+  Owns: `src/plugins/dotclaude/slices/rules/skills/`, `tests/dotclaude/rules/` (the skill tests).
+  Verify: `just validate`, and a `reviewer` pass on the text.
+- [ ] P31 Repository rules: each rule of `AGENTS.md` that applies to some files only moves to a `paths:` rule in `.claude/rules/`.
+  `AGENTS.md` keeps the rules for each file, and links to `.claude/rules/`, so that a tool that reads only `AGENTS.md` can find them.
+  Owns: `AGENTS.md`, `.claude/rules/`, and the tests that pin `AGENTS.md`.
+  Verify: `just check`, and a glob check that each `paths:` entry matches at least one file.
+- [ ] P32 `.dotclaude/`: each file that dotclaude writes moves to `.dotclaude/` in the project, or to `~/.dotclaude/` for the user, with a layout based on `.claude/` ([change](change.md), decisions, the user, 2026-10-12).
+  It first lists each file that dotclaude writes, with its scope (project or user), whether git tracks it, and whether `.gitignore` or `.git/info/exclude` gets its rule.
+  The setup adds the rules, in the same way as the `.git/info/exclude` rules of P09.
+  The paths go in one kernel module, so that each slice reads them from one place.
+  P13 writes the handoff file to `.dotclaude/`, so P13 starts after P32.
+  Deps: P28, P24, P26, P27.
+  Owns: `src/kernel/` (the path module), the path parts of each slice, the exclude parts of `setup`, and their tests.
+  Verify: `just check`, a test for each rule in a repository with no rule, one with the rule, and a folder that is not a git repository, and a `git status` after one session in `just sandbox` that shows no untracked dotclaude file.
 - [ ] P14 Handoff cost: one handoff against one compaction on the same session, with `dotclaude-usage`.
   It only reports, in `spec/changes/1.0.0/evidence/handoff-cost.md`.
   Deps: P13.

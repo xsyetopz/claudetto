@@ -44,6 +44,12 @@ It gets the highest intelligence for the lowest token cost:
   A command that leaks env vars or secrets, and each dangerous or destructive system, `git`, or tooling command, goes to ask or deny.
 - dotclaude uses the garbage collection of Claude Code.
 - dotclaude uses the worktrees of Claude Code, such as `isolation: worktree`, `EnterWorktree`, `ExitWorktree`, `--worktree`, and the `worktree` settings, and makes no worktree of its own with `git worktree add`.
+- dotclaude uses `.claude/rules/`: a rule with `paths:` loads only when Claude works with a matching file, so it replaces runtime code and `CLAUDE.md` text that applies to some files only.
+  This repository uses its own rules in the same way.
+- dotclaude has a `/rules-creator` skill, based on the `skill-creator` skill of Anthropic, that is short and covers each needed area.
+- dotclaude knows each file and folder of `.claude/` and `~/.claude/`: what it does, when Claude Code reads it, and what controls it.
+- dotclaude writes its own files to `.dotclaude/`, with a layout based on `.claude/`, and keeps `.claude/` for the files that Claude Code reads.
+  A path that git must not track goes to `.gitignore` when the team shares the rule, or to `.git/info/exclude` when only the local checkout needs it.
 
 ## Scope
 

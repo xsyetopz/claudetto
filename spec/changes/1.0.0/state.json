@@ -11,30 +11,171 @@
     "P01d": "done",
     "P02": "done",
     "P11": "done",
-    "P03": "doing",
+    "P03": "done",
     "P05": "done",
-    "P06": "doing",
-    "P07": "doing",
-    "P08": "doing",
+    "P06": "done",
+    "P07": "done",
+    "P08": "done",
     "P09": "done",
     "P10": "done",
     "P19": "doing",
-    "P20": "doing",
-    "P21": "doing",
-    "P22": "doing",
-    "P23": "doing",
-    "P11a": "doing",
+    "P20": "done",
+    "P21": "done",
+    "P22": "done",
+    "P23": "done",
+    "P11a": "done",
     "P11b": "done",
     "P11d": "done",
     "P11e": "done",
-    "P12": "doing",
-    "P04": "planned",
+    "P12": "done",
+    "P04": "done",
     "P13": "planned",
     "P14": "planned",
     "P15": "planned",
     "P16": "planned",
     "P18": "planned"
   },
-  "events": [],
+  "events": [
+    {
+      "at": "2026-10-12T16:13:48.564Z",
+      "package": "P00",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:48.616Z",
+      "package": "P01a",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:48.668Z",
+      "package": "P01b1",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:48.707Z",
+      "package": "P01b2",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:48.744Z",
+      "package": "P01b3",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:48.784Z",
+      "package": "P01b4",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:48.825Z",
+      "package": "P01c",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:48.862Z",
+      "package": "P01d",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:48.905Z",
+      "package": "P02",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:48.957Z",
+      "package": "P11",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:48.999Z",
+      "package": "P03",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.092Z",
+      "package": "P05",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.136Z",
+      "package": "P06",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.177Z",
+      "package": "P07",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.215Z",
+      "package": "P08",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.260Z",
+      "package": "P09",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.295Z",
+      "package": "P10",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.332Z",
+      "package": "P20",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.370Z",
+      "package": "P21",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.419Z",
+      "package": "P22",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.469Z",
+      "package": "P23",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.506Z",
+      "package": "P11a",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.550Z",
+      "package": "P11b",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.596Z",
+      "package": "P11d",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.639Z",
+      "package": "P11e",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.698Z",
+      "package": "P12",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.746Z",
+      "package": "P04",
+      "lane": "done"
+    },
+    {
+      "at": "2026-10-12T16:13:49.848Z",
+      "package": "P19",
+      "lane": "doing"
+    }
+  ],
   "handoff": null
 }
