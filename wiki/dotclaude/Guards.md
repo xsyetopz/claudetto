@@ -1,221 +1,130 @@
 # Guards
 
-Since 0.27 dotclaude guards a session with three layers.
-Permission rules from the [settings snippet](Settings-Snippet) do most of the work.
-The sandbox limits what a command can reach.
-One hooks module covers the cases that a rule cannot match.
-The plugin alone gives no `rm` ask, because a plugin cannot ship `permissions`.
-The `rm` ask is a rule of the settings snippet.
-The module itself keeps the policy ask in memory, with no file.
-This page lists each layer, what to do when one fires, and how to change one.
+The `guard` and `asks` slices of the core plugin `dotclaude`.
+They ask or deny a tool call that would discard work, reach a repository with an AI policy, or print a large file.
 
-## The layers
+## What it does
 
-| Layer | Where it lives | What it does |
+A session has three layers that guard a call.
+The layers are the permission rules, the sandbox, and the hook module.
+
+- Permission rules are the `permissions` keys of the settings snippet.
+  Claude Code reads them, not the plugin.
+  A plugin cannot set `permissions`, so you copy them with `dotclaude-setup settings`.
+  Their source is the `permissions` object of `src/plugins/dotclaude/slices/prompt/slice.ts`.
+- The sandbox runs `Bash` commands in the Claude Code sandbox.
+  The `sandbox` key is also set by the `prompt` slice in the same file.
+- The hook module `hooks/register.ts` covers the cases that a rule cannot match.
+  The `guard` and `asks` slices supply these hooks.
+
+The hook module never weakens a rule of the user.
+The `guard` slice asks, or it keeps a deny of the engine.
+It does not allow a call that the engine denies.
+
+## How it works
+
+### The `guard` slice
+
+The manifest is `src/plugins/dotclaude/slices/guard/slice.ts`.
+It has two mod handlers.
+
+| Event | Phase | Handler | Filter |
+| --- | --- | --- | --- |
+| `tool.call` | `check` | `onBashCall` in `slices/guard/adapters/mod.ts` | none |
+| `tool.check` | `check` | `onCheck` in `slices/guard/adapters/mod.ts` | none |
+
+The generated `plugins/dotclaude/hooks/register.ts` calls `on("tool.call", h4)` and `on("tool.check", h5)` for them.
+
+#### The destructive floor
+
+`onBashCall` ignores each call that is not `Bash`.
+For a `Bash` call, `guardReason` in `slices/guard/domain/guard.ts` walks each simple command with `walk.ts`.
+It runs each matcher from `MATCHERS` in `domain/matchers/index.ts`, which are the `git.ts` and `system.ts` matchers of `domain/matchers/`.
+The first matcher that matches gives the deny reason from `domain/reason.ts`.
+
+The tier of each matcher comes from the rule catalog in `src/kernel/policy/`.
+The catalog has one file for each category: `rules/git.ts`, `rules/system.ts`, `rules/database.ts`, `rules/cloud.ts`, and `rules/backups.ts`.
+`tierOf` in `domain/matchers/index.ts` gives `subagent` for a rule that the catalog marks `subagent`, and `floor` for each other rule.
+A matcher with no catalog entry gets `floor`.
+The `floor` tier applies in every session.
+The `subagent` tier applies only when the call has an `agentId`.
+The only `subagent` rule is `git.shared-checkout`, which keeps a subagent out of the shared checkout and `refs/stash`.
+
+#### The print deny
+
+A `Bash` command that prints one file is denied, also when the print is one part of a compound command.
+The deny names the `Read` call with the same range.
+`printsOf` in `domain/reads.ts` finds the print forms.
+`printReason` in `domain/deny.ts` counts the lines of the file with `countOf` in `adapters/mod.ts`.
+A file over `READ_MAX_BYTES` gives an infinite count, so the print is denied by its size.
+`READ_MAX_BYTES` is `4 * 1024 * 1024` in `slices/guard/limits.ts`.
+The `sembr` slice rewrites a `Write` or `Edit` before this check runs, so the deny checks the command that would run.
+
+#### The AI policy ask
+
+`onCheck` calls `next` first.
+A deny of the engine stays a deny.
+Then `askReason` in `domain/owners.ts` reads each GitHub repository in the tool input.
+It asks only once for each repository in each session, from the `checked` map in `adapters/mod.ts`.
+The ask applies when the repository has another owner than the user.
+The user is the login and the organizations from `gh`, and each `gh` call has `POLICY_TIMEOUT_MS`, which is `5_000` in `src/kernel/budget.ts`.
+The ask applies when the repository has one of the policy files in `POLICY_FILES`: `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md`.
+Each file text is cut at `POLICY_FILE_MAX_CHARS`, which is `2_000` in `src/kernel/budget.ts`.
+A failed `gh` call is tried again at the next check.
+
+The guard adds its ask before the ask of `next`, so the ask of another slice stays.
+
+#### Failure behavior
+
+The adapter has no catch-all on purpose.
+When a handler throws after `next` resolved, Claude Code logs the failure, and the verdict of the engine stands.
+When a handler throws before `next`, Claude Code skips the hook, and the call runs.
+A path that `stat` cannot find gives `missing`, and any other `stat` error counts as a folder, so no matcher takes it for a file.
+
+### The `asks` slice
+
+The manifest is `src/plugins/dotclaude/slices/asks/slice.ts`.
+It has one handler, `onCheck` in `slices/asks/adapters/mod.ts`, on `tool.check` for `Bash`, `Write`, `Edit`, and `MultiEdit`.
+A read never asks.
+A change to a protected file asks, unless every changed part is on the safe list of its kind.
+A `Bash` write to a protected file, such as `sed -i` or `tee`, asks.
+
+The kinds of protected files are in `slices/asks/limits.ts`.
+They are the lint and type-check configs (`LINT_CONFIG_NAMES`), the check runner configs (`RUNNER_CONFIG_NAMES`), the `justfile` and `Makefile` recipes (`RECIPE_FILE_NAMES`), the CI files (`CI_FOLDERS`, `CI_GITHUB_PATHS`, `CI_NAMES`), the hook files (`HOOK_PATHS`, `SETTINGS_HOOK_FILES`), and the test files (`TEST_NAMES`, `TEST_FOLDER`).
+The domain code is in `slices/asks/domain/`, with one file for each kind of diff, such as `testdiff.ts`, `lintdiff.ts`, and `hookdiff.ts`.
+
+The bounds of the `asks` slice are these.
+
+| Name | Value | File |
 | --- | --- | --- |
-| Permission rules | `permissions` in the [settings snippet](Settings-Snippet), copied by you into your `settings.json` | Deny, ask, and allow lists for tools and commands. |
-| Sandbox | `sandbox` in the same snippet | Runs Bash commands in the Claude Code sandbox, with a list of allowed domains. |
-| Module guard | `src/plugins/dotclaude/slices/guard/` (`slice.ts`, `adapters/mod.ts`, `domain/guard.ts`, `domain/matchers/`) | A `tool.call` handler for the destructive floor and the file-print deny, and a `tool.check` handler for the policy ask. The `asks` slice (`src/plugins/dotclaude/slices/asks/`) adds an ask before a call that discards work, skips a test, or changes a protected file. |
-| Destructive floor | The `autoMode` lists in your user settings, and the `guard` hook | Asks for root rights, and forbids destructive work. See [The destructive floor](#the-destructive-floor). |
+| `FILE_MAX_BYTES` | `1_000_000` | `slices/asks/limits.ts` |
+| `SCAN_MAX_CHARS` | `200_000` | `slices/asks/limits.ts` |
+| `ITEMS_SHOWN_MAX` | `8` | `slices/asks/limits.ts` |
+| `SCRIPT_FILES_MAX` | `8` | `slices/asks/limits.ts` |
+| `LINE_SHOWN_MAX_CHARS` | `80` | `slices/asks/limits.ts` |
 
-Deny rules are not a security boundary on their own, so the snippet pairs them with the sandbox ([Design](Design)).
+The shell reader has its own bound, `SHELL_SCAN_MAX_CHARS`, which is `200_000` in `src/kernel/budget.ts`.
+A longer command is read only in part, and the reader reports it as `truncated`.
 
-## Permission rules
+### The bounds of the `guard` slice
 
-| List | What it holds |
-| --- | --- |
-| deny | Reads of secret files, `rm -rf` of `/`, `/*`, `~`, and `~/*`, `mkfs`, `dd` to a device, the `general-purpose`, `claude-code-guide`, and `statusline-setup` agents (`Agent(...)`), the `mcp__computer-use` tools, and the tools `ScheduleWakeup`, `ReportFindings`, `EnterPlanMode`, `ExitPlanMode`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, and `TaskUpdate`. |
-| ask | Force pushes, a recursive `rm`, `git reset --hard`, `git clean -f`, `git branch -D`, `git checkout --`, `git restore`, piped shells, `sudo`, publishes, `gh pr` and `gh issue` writes, `gh release`, and SQL drops and truncates. |
-| allow | Read-only `git` and `gh` commands, and the build and test runners (`bun`, `npm`, `pnpm`, `cargo`, `go`, `just`, `make`). |
-
-The floor denies some forms of the ask list before the ask appears.
-It denies `git reset --hard`, `git clean -f`, and `git branch -D` in every session.
-It denies `git checkout --` and `git restore` only for a whole folder.
-The snippet also sets `disableBypassPermissionsMode`, so no mode skips these rules.
-The exact patterns are in the [settings snippet](Settings-Snippet).
-These layers apply only to the keys that you copy, because dotclaude writes no setting.
-For the destructive forms that lose uncommitted work or history, the floor decides.
-See [The destructive floor](#the-destructive-floor).
-
-## The destructive floor
-
-Normal work passes with no prompt.
-Work that asks for root rights asks you first.
-Destructive work is forbidden, also when you ask for it.
-The floor is a catalog of rules in `src/kernel/policy/`.
-Each rule has an `id`, a `tier`, and a `category`.
-
-| Tier | Where it is written | What it does |
+| Name | Value | File |
 | --- | --- | --- |
-| `soft_deny`, rule `system.privilege` (`ask`) | `autoMode.soft_deny` in your user settings | Asks you before a root-rights command, such as `sudo`. |
-| `hard_deny`, `floor` | `autoMode.hard_deny` in your user settings | Forbids the action in every session. The classifier denies it in auto mode, and the `guard` hook denies the literal forms. |
-| `hard_deny`, `subagent` (rule `git.shared-checkout`) | `autoMode.hard_deny` in your user settings | Forbids a git form that changes the checkout that other workers share. The `guard` hook denies it in a subagent only. |
+| `READ_MAX_BYTES` | `4 * 1024 * 1024` | `slices/guard/limits.ts` |
+| `POLICY_TIMEOUT_MS` | `5_000` | `src/kernel/budget.ts` |
+| `POLICY_FILE_MAX_CHARS` | `2_000` | `src/kernel/budget.ts` |
 
-The rules of each category are:
+## Why
 
-| Category | Rules | Tier |
-| --- | --- | --- |
-| `git` | `git.discard-uncommitted`, `git.clean`, `git.stash-drop`, `git.history-rewrite`, `git.force-push-default`, `git.delete-branch`, `git.delete-repo` | `floor` |
-| `git` | `git.shared-checkout` | `subagent` |
-| `system` | `system.recursive-delete`, `system.disk`, `system.permissions`, `system.security` | `floor` |
-| `system` | `system.privilege` | `ask` |
-| `database` | `db.drop`, `db.truncate`, `db.unscoped-write`, `db.reset`, `db.flush`, `db.delete-files` | `floor` |
-| `cloud` | `cloud.destroy` | `floor` |
-| `backups` | `backups.delete` | `floor` |
+The rules of the user come first, because the hook adds an ask or a deny and keeps a deny of the engine.
+The plugin cannot ship `permissions`, so the rules of the destructive floor are in the settings snippet.
+The hook covers what a rule cannot match, such as a print of a file in a compound command, or a repository of another owner that a rule does not name.
+The deny text names the exact command, so Claude can run it or report it.
 
-`git stash drop` and `git stash clear` are forbidden always.
-`git stash` in a subagent is forbidden by `git.shared-checkout`.
-
-### Set the floor
-
-Claude Code reads `autoMode` only from the user settings, so setup writes it there only.
-Run `dotclaude-setup settings --scope user` first.
-It prints each changed list, and it writes nothing.
-Run `dotclaude-setup settings --scope user --apply` to write the lists.
-
-Each list starts with `$defaults`, which takes the built-in list of Claude Code.
-Setup adds each entry that a list lacks at its end, and it keeps your own entries.
-An entry that you remove comes back with the next `--apply`.
-
-### When a destructive command is stopped
-
-The floor denies the command with the text `dotclaude forbids this destructive action`.
-The deny gives the exact command in a fenced block.
-
-1. In the main session, Claude stops.
-   It does not try the action in another way.
-   It asks you to run the exact command with a `!` command, and then it waits.
-2. In a subagent, Claude stops.
-   It puts the exact command in its report, and the main session gives it to you.
-3. If you want the action, run the command yourself with the `!` prefix.
-   The floor does not stop your own command.
-
-### Add a rule
-
-1. For a new category, add `src/kernel/policy/rules/<category>.ts` that exports a `readonly PolicyRule[]`.
-   Then add one line to `src/kernel/policy/index.ts`, which spreads the new list into `POLICY_RULES`.
-2. For a new rule, add one entry to the file of its category.
-   The entry needs a unique `id`, a `tier`, and `prose`.
-   A forbidden rule ends its prose with `withAnyRoute`, which adds the wrapper clause.
-3. For the `guard` hook to deny the form, add a matcher with the same `id` in `src/plugins/dotclaude/slices/guard/domain/matchers/`.
-   A matcher whose `id` the catalog does not hold gets the `floor` tier.
-4. Run `just generate`, then `just test tests/kernel/policy.test.ts tests/dotclaude/setup`.
-
-### Known limits
-
-The live runs are recorded in the evidence file `destructive-floor.md` of the 1.0.0 change.
-
-- In the live runs of a subagent, the classifier stopped each hidden form before the `guard` hook saw the call.
-  The hidden forms were `bash -c`, `eval`, a variable that holds `git`, and `python3 -c` with `subprocess`.
-  So the subagent layer of the hook has tests at the adapter only, in `tests/dotclaude/guard/shared-git.test.ts` and `tests/dotclaude/guard/matrix/subagent.test.ts`.
-- The lab cannot mark a call as a subagent's call, so the lab does not test the subagent deny.
-- A recursive delete in a worktree with no `node_modules` removed nothing, so the live runs did not test `system.recursive-delete`.
-- The `claude auto-mode critique` command gave no feedback in five runs, so no rule prose changed.
-
-## The sandbox
-
-The snippet sets `sandbox.enabled` and `allowUnsandboxedCommands: true`.
-A command that fails in the sandbox can retry outside it with `dangerouslyDisableSandbox`, and Claude Code asks you to approve each retry.
-The reason is that the sandbox limits files and hosts, and it cannot tell a dangerous command from a safe one.
-In the sessions of 2026-10-08, it stopped only safe commands: `bun` (it reads `.env` at start), `gh` (it fails the TLS check of the sandbox proxy), and calls to `api.anthropic.com`.
-The `deny` and `ask` rules stop the dangerous commands, in and out of the sandbox.
-These commands run outside the sandbox, because they need your credentials and the network: `git fetch`, `git pull`, `git push`, and `gh`.
-`allowedDomains` lists GitHub, npm, PyPI, crates.io, and `proxy.golang.org`.
-
-dotclaude uses no managed settings, and the snippet holds the sandbox, `disableBypassPermissionsMode`, and the deny list.
-See [Off switches](Off-Switches#managed-settings) for the trade-off.
-
-## No managed file
-
-dotclaude writes no managed settings file.
-The built-in guard `sec-default` of Claude Code is therefore not seated on a machine that has no managed settings and is not in a Team or Enterprise organization.
-In that case dotclaude loads at tier `user`, and its prompt handlers reach the request.
-
-- With the guard not seated, an installed mod with a `tool.check` hook can turn a content deny rule into an allow.
-  A path deny and a whole-tool deny stay enforced.
-  The guard of dotclaude never weakens a deny.
-- dotclaude does not seat the guard.
-  On a machine that has managed settings, the drift check reports that the guard is seated and names the dotclaude parts that it skips.
-  It skips the shared sections and the model variants (`prompt.compose`).
-- Review the mods that you install, because they run with your permissions.
-
-See D2 in [Decisions](Decisions-Settings) and [Off switches](Off-Switches#managed-settings).
-
-## The module guard
-
-`slice.ts` registers two handlers from `adapters/mod.ts`: `onBashCall` for `tool.call`, and `onCheck` for `tool.check`.
-`onCheck` calls the engine first, and it returns a deny of the engine unchanged.
-
-| Case | What the module does |
-| --- | --- |
-| `git clone`, `gh`, `curl`, `wget`, or a `WebFetch` of a repository of another owner that has `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md` | Asks once per session and per repository, and shows the policy text. See [Contributions](Contributions). |
-| A `Bash` command that matches a `floor` rule | Denies it in every session. See [The destructive floor](#the-destructive-floor). |
-| A `Bash` command in a subagent that matches `git.shared-checkout` | Denies it. The subagent works in its own worktree instead. |
-
-The module has no `.catch`, so it fails open.
-When `gh` is missing or a call fails, the verdict of the engine stands.
-A call for the policy has a 5-second timeout.
-
-The lab tests of the module are in `src/plugins/dotclaude/slices/guard/lab/`, and `just lab` runs them with stubbed events.
-No command runs in them.
-See [Development](Development).
-
-## The auto-mode classifier
-
-In auto mode, the classifier decides an ask of `tool.check`, and it can allow the call.
-An ask of a classic `PreToolUse` hook stops the call in auto mode (**measured**, 2.1.292, see [Claude mods](Claude-Mods#auto-mode-module-ask-against-classic-ask)).
-0.27.0 used such a hook for the `rm` ask.
-0.28.0 removed that hook and the `rm` parser, because a shell parser cannot read every form of a command.
-
-- The [settings snippet](Settings-Snippet) has `ask` permission rules for each recursive `rm`, also inside the project.
-  The rules match any flag spelling with an `r` or `R`, and `--recursive`.
-- The sandbox stops a write outside the allowed folders, so a recursive `rm` of a path outside them fails.
-- The policy ask for a repository of another owner stays in the module, which keeps the repositories that it checked in memory, for each session.
-  So in auto mode the classifier decides the policy ask.
-- No hook in `hooks.json` sets `onFailure`, so the default `continue` applies.
-  With `"block"`, a hook that cannot start, for example when `bun` is not on `PATH`, would block each guarded call until `bun` works again, with a warning only in the log.
-  Claude cannot repair a missing `bun`, so the guards fail open, and the permission rules and the sandbox still apply.
-  The decision is D31 in `design.md` of the 0.28.0 change.
-
-The `git` ask in `src/plugins/dotclaude/slices/asks/domain/git.ts` and the file-print deny in `src/plugins/dotclaude/slices/guard/domain/reads.ts` read commands with the shared reader `src/kernel/shell.ts`.
-It splits a command at `;`, `&&`, `||`, `|`, `&`, and newlines, and it reads `$(...)`, backticks, `sh -c`, `bash -c`, and `eval`.
-It strips wrapper commands such as `sudo`, `env`, `nice`, `timeout`, and `xargs`.
-
-Auto mode ignores some allow rules of the snippet, because they would bypass the classifier: `Bash(bun run *)`, `Bash(npm run *)`, and `Bash(pnpm run *)` (**measured**, debug log).
-In auto mode the classifier decides those commands.
-
-> **Note:** The six add-on plugins add no guard.
-> The one deny is in [Browser](Browser).
-> Its hook denies `WebSearch` only for an empty query, or for the `cloakbrowser` backend with no CloakBrowser binary.
-> When the browser search fails, the built-in `WebSearch` answers.
-> The Jev hook only adds a pick to a question.
-
-## What to do when a call is denied
-
-A deny is a decision of you.
-Claude must not get the same result in another way.
-
-1. Read the reason in the deny message.
-2. Change the call so that it follows the rule.
-3. If the rule is wrong for your project, change the rule in your own settings file.
-   The drift check does not compare permission rules, so nothing else needs a change.
-4. For a destructive deny, do not look for another way.
-   Run the exact command yourself with a `!` command, if you want the action.
-   See [The destructive floor](#the-destructive-floor).
-
-## What to do when a call asks
-
-1. Read the reason.
-2. Choose to allow or reject the call.
-3. For the policy ask, read the policy that the prompt shows before you allow.
-   If the policy forbids AI tools, reject the call.
-
-## Troubleshooting
-
-See [Troubleshooting](Troubleshooting#the-core-plugin-dotclaude) for a missing `rm` ask, a missing policy ask, and a failed `git push` in the sandbox.
+For the decisions behind each layer, see [Decisions](Decisions).
 
 ## Related pages
 
-- [Core plugin](Core-Plugin)
-- [Claude mods](Claude-Mods)
-- [Design](Design)
+- [Architecture](Architecture) explains the slices and the hook module.
+- [Agents](Agents) explains the `subagent` tier and the `maxTurns` bound.
+- [Settings-Snippet](Settings-Snippet) gives the `permissions` keys that the snippet sets.
