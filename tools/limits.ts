@@ -6,6 +6,8 @@
 export const FILE_MAX_LINES = 300;
 /** Most lines in a test file (`*.test.*`). */
 export const TEST_FILE_MAX_LINES = 500;
+/** Most milliseconds for one test that makes a `git worktree`, because worktree creation on a Windows runner took more than the 5,000 ms of `bunfig.toml`. */
+export const WORKTREE_TEST_TIMEOUT_MS = 15_000;
 
 /** Most characters in the `description` of an agent file, because the listing of agents goes into each request. */
 export const AGENT_DESCRIPTION_MAX_CHARS = 300;
