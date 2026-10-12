@@ -10,7 +10,8 @@ import {
   onContextSection as h4,
   onSpawn as h5,
 } from "../slices/prompt/adapters/mod.ts";
-import { onSessionStart as h6 } from "../slices/setup/adapters/mod.ts";
+import { onToolCall as h6 } from "../slices/sembr/adapters/mod.ts";
+import { onSessionStart as h7 } from "../slices/setup/adapters/mod.ts";
 import { register as legacy } from "./legacy.ts";
 
 export const register = (on: On): void => {
@@ -21,7 +22,9 @@ export const register = (on: On): void => {
   // eval: prompt.section prompt
   on("prompt.section", { name: "context_management" }, h4);
   // eval: session.start setup
-  on("session.start", h6);
+  on("session.start", h7);
+  // eval: tool.call sembr
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h6);
   // eval: tool.call guard
   on("tool.call", h1);
   // eval: tool.check asks

@@ -7,7 +7,7 @@ import {
   repairEdit,
   rewriteEdit,
   writeInput,
-} from "../../../plugins/dotclaude/features/sembr/rules.ts";
+} from "../../../src/plugins/dotclaude/slices/sembr/domain/rewrite.ts";
 
 const FUSED = "Read the file. Then edit it.";
 const SPLIT = "Read the file.\nThen edit it.";

@@ -57,26 +57,12 @@
     "block": "plugins/dotclaude/tests/print.test.ts > a `Bash` print of a file is denied with the `Read` range",
     "false": "tests/dotclaude/guard/print.test.ts > a command with an edit, a byte count, or another bounded form stays allowed"
   },
-  "tool.call Write sembr": {
+  "tool.call sembr": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
     "allow": "plugins/dotclaude/tests/sembr.test.ts > a `Write` of another file type keeps its content",
     "text": "plugins/dotclaude/tests/sembr.test.ts > a `Write` of a Markdown file gets one sentence on each line"
-  },
-  "tool.call Edit sembr": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/dotclaude/tests/sembr.test.ts > an `Edit` of another file type passes on unchanged",
-    "text": "plugins/dotclaude/tests/sembr.test.ts > an `Edit` rewrites a fused `new_string` of whole lines and keeps `old_string`"
-  },
-  "tool.call Bash sembr": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/dotclaude/tests/sembr.test.ts > a `Bash` call that is not a quoted heredoc commit passes on unchanged",
-    "text": "plugins/dotclaude/tests/sembr.test.ts > a `Bash` commit heredoc is rewritten, with the subject kept"
   },
   "tool.check guard": {
     "requests": 0,

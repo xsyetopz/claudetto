@@ -3,7 +3,7 @@
 // The tests give commands to the hook as strings and never run them.
 
 import { expect, test } from "bun:test";
-import { rewriteCommand } from "../../../plugins/dotclaude/features/sembr/rules.ts";
+import { rewriteCommand } from "../../../src/plugins/dotclaude/slices/sembr/domain/rewrite.ts";
 
 const bash = (command: string) => command;
 const commit = (body: string, tag = "'EOF'") =>

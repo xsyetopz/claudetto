@@ -10,11 +10,6 @@ tools/bump-version.ts
 tools/release.ts
 tools/update.ts
 
-# P07: `sembr`
-plugins/dotclaude/features/sembr/
-plugins/dotclaude/tests/sembr.test.ts
-tests/dotclaude/sembr/
-
 # P08: `statusline`
 plugins/dotclaude/features/statusline/
 tests/dotclaude/statusline/
