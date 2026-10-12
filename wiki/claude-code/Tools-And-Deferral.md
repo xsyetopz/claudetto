@@ -117,7 +117,7 @@ The captures do not record their prompt, so this page does not assume one.
 | Run | Tools | Placeholder | Tool part | Whole request | Share |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | vanilla | 10,133 for 11 tools | 93 | 10,226 | 18,253 | 56% |
-| snippet, dotclaude plugins on | 9,301 for 10 tools, including 530 for the MCP tool | 93 | 9,394 | 19,906 | 47% |
+| snippet, dotclaude plugins on | 9,301 for 11 tools, including 530 for the MCP tool | 93 | 9,394 | 19,906 | 47% |
 
 The counts come from `external/capture/*/report-*.json`.
 The whole-request counts match the figures in `external/dossier/cc-2.1.296/tool-costs.md`.

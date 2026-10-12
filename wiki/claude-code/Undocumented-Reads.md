@@ -177,11 +177,14 @@ The readers are in `slices/start-cost/domain/` and `slices/usage/domain/`.
 
 ## Sandbox token file
 
-- Code: `dotclaude-lab` reads the token of the account from `<config dir>/.credentials.json` in `slices/sandbox/adapters/login.ts`.
-  It falls back to the variable `CLAUDE_CODE_OAUTH_TOKEN`.
+- Code: `dotclaude-lab` reads the token of the account in `loginToken` in `slices/sandbox/adapters/login.ts`.
+  It tries three sources in this order:
+  the variable `CLAUDE_CODE_OAUTH_TOKEN`, then on macOS the Keychain entry `Claude Code-credentials`, then the file `.credentials.json` in the `.claude` folder of the home directory.
+  The file path comes from the home directory, not from the config dir.
   The token is passed to the sandbox run.
-- Binary: `.credentials.json` appears 9 times in the bundle.
-- Break: a renamed file starts the sandbox run with no login.
+- Binary: `.credentials.json` appears 11 times in the `2.1.296` strings, from `grep -o` on `external/cc-2.1.296/strings.txt`.
+  The Keychain entry name does not appear in those strings.
+- Break: a renamed file or a renamed Keychain entry starts the sandbox run with no login.
   This read is in the lab add-on, and it runs only in the lab sandbox command.
 
 ## What to do after a Claude Code update
