@@ -36,6 +36,7 @@ for (const cause of JEV_CAUSES) {
     const model = fake("fallback", {
       ok: true,
       text: "yes, the cache is safe",
+      answer: { choice: "yes", confidence: 0.9 },
     });
     expect(await route(jev, model, REQUEST)).toEqual({
       source: "fallback",
@@ -46,7 +47,11 @@ for (const cause of JEV_CAUSES) {
 }
 
 test("no Jev provider gives the cause `no-key` and asks the fallback", async () => {
-  const model = fake("fallback", { ok: true, text: "no" });
+  const model = fake("fallback", {
+    ok: true,
+    text: "no",
+    answer: { choice: "no", confidence: 0.9 },
+  });
   expect(await route(undefined, model, REQUEST)).toEqual({
     source: "fallback",
     text: "no",
@@ -56,8 +61,16 @@ test("no Jev provider gives the cause `no-key` and asks the fallback", async () 
 
 test("a Jev answer is used and the fallback is not asked", async () => {
   const modelSeen: DecisionRequest[] = [];
-  const jev = fake("jev", { ok: true, text: "pick A" });
-  const model = fake("fallback", { ok: true, text: "pick B" }, modelSeen);
+  const jev = fake("jev", {
+    ok: true,
+    text: "pick A",
+    answer: { choice: "A", confidence: 0.9 },
+  });
+  const model = fake(
+    "fallback",
+    { ok: true, text: "pick B", answer: { choice: "B", confidence: 0.9 } },
+    modelSeen,
+  );
   expect(await route(jev, model, REQUEST)).toEqual({
     source: "jev",
     text: "pick A",

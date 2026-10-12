@@ -10,6 +10,7 @@ import {
   main,
   parseArgs,
   post,
+  render,
   UsageError,
 } from "../../../plugins/dotclaude/slices/decide/adapters/cli.ts";
 import {
@@ -55,6 +56,7 @@ test("`yes` with a question and no flag reads the question as a word", () => {
     kind: "yes",
     words: ["Use the cache?"],
     state: undefined,
+    json: false,
   });
 });
 
@@ -65,6 +67,7 @@ test("`--state` takes the value after it, and the words keep their order", () =>
     kind: "pick",
     words: ["Which?", "sql", "kv=keys"],
     state: "-",
+    json: false,
   });
 });
 
@@ -73,11 +76,12 @@ test("a word after `--` that looks like a flag is a literal word", () => {
     kind: "yes",
     words: ["--state"],
     state: undefined,
+    json: false,
   });
 });
 
 test("an unknown verb is a usage fault", () => {
-  expect(() => parseArgs(["ask", "--", "q"])).toThrow(UsageError);
+  expect(() => parseArgs(["guess", "--", "q"])).toThrow(UsageError);
 });
 
 test("a `pick` with one option is a usage fault", async () => {
@@ -191,4 +195,95 @@ test("`main` with no key exits with the usage code and prints no key", async () 
     if (saved === undefined) delete process.env["TYPESAFE_API_KEY"];
     else process.env["TYPESAFE_API_KEY"] = saved;
   }
+});
+
+test("`--json` before `--` is the flag, and after `--` it is a word", () => {
+  expect(parseArgs(["yes", "--json", "--", "Safe?"]).json).toBe(true);
+  expect(parseArgs(["yes", "--", "--json"])).toEqual({
+    kind: "yes",
+    words: ["--json"],
+    state: undefined,
+    json: false,
+  });
+});
+
+test("`ask` is a verb with no words", () => {
+  expect(parseArgs(["ask"])).toEqual({
+    kind: "ask",
+    words: [],
+    state: undefined,
+    json: false,
+  });
+});
+
+test("`ask` sends the questions and the state of the JSON on stdin", async () => {
+  const stdin = JSON.stringify({
+    state: "the state",
+    questions: { kind_0: { type: "choice" } },
+  });
+  expect(await buildBody(parseArgs(["ask"]), async () => stdin)).toEqual({
+    state: "the state",
+    model: "jev-latest",
+    questions: { kind_0: { type: "choice" } },
+  });
+});
+
+test("`ask` with no state sends an empty state", async () => {
+  const stdin = JSON.stringify({ questions: { kind_0: { type: "choice" } } });
+  const body = (await buildBody(parseArgs(["ask"]), async () => stdin)) as {
+    state: string;
+  };
+  expect(body.state).toBe("");
+});
+
+test("`ask` with stdin that is not JSON is a usage fault", async () => {
+  const args = parseArgs(["ask"]);
+  await expect(buildBody(args, async () => "not json")).rejects.toThrow(
+    UsageError,
+  );
+});
+
+test("`ask` with no `questions` in the JSON is a usage fault", async () => {
+  const args = parseArgs(["ask"]);
+  await expect(buildBody(args, async () => "{}")).rejects.toThrow(UsageError);
+});
+
+test("`ask` prints the answers as JSON", () => {
+  const answers = { kind_0: { choice: "facts", confidence: 0.9 } };
+  expect(JSON.parse(render(parseArgs(["ask"]), answers))).toEqual(answers);
+});
+
+test("without `--json` the command prints the text of the answer", () => {
+  const answers = { q: { noul: 0.9 } };
+  expect(render(parseArgs(["yes", "--", "Safe?"]), answers)).toBe(
+    "P(yes) = 0.90",
+  );
+});
+
+test("`--json` prints the text and the structured answer of `yes`", () => {
+  const answers = { q: { noul: 0.9 } };
+  const out = JSON.parse(
+    render(parseArgs(["yes", "--json", "--", "Safe?"]), answers),
+  );
+  expect(out.text).toBe("P(yes) = 0.90");
+  expect(out.answer).toEqual({ choice: "yes", confidence: 0.9 });
+});
+
+test("`--json` prints the chosen key and its confidence for `pick`", () => {
+  const answers = {
+    q: {
+      choice: "sql",
+      confidence: 0.8,
+      probabilities: { sql: 0.8, kv: 0.2 },
+    },
+  };
+  const out = JSON.parse(
+    render(parseArgs(["pick", "--json", "--", "Which?", "sql", "kv"]), answers),
+  );
+  expect(out.answer).toEqual({ choice: "sql", confidence: 0.8 });
+});
+
+test("`--json` with a reply that has no answer throws", () => {
+  const args = parseArgs(["yes", "--json", "--", "Safe?"]);
+  expect(() => render(args, {})).toThrow();
 });

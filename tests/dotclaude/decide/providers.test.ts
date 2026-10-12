@@ -32,10 +32,15 @@ const runWith = (run: Partial<CliRun>) => async (): Promise<CliRun> => ({
 });
 
 test("a Jev run with exit 0 and an answer is an answer", async () => {
-  const jev = createJev(runWith({ stdout: "  sql, relations fit\n" }));
+  const stdout = JSON.stringify({
+    text: "sql, relations fit",
+    answer: { choice: "sql", confidence: 0.9 },
+  });
+  const jev = createJev(runWith({ stdout: `${stdout}\n` }));
   expect(await jev.decide(REQUEST)).toEqual({
     ok: true,
     text: "sql, relations fit",
+    answer: { choice: "sql", confidence: 0.9 },
   });
 });
 
@@ -69,13 +74,18 @@ test("the Jev run gets the arguments of the request, with the question after `--
   const calls: unknown[] = [];
   const jev = createJev(async (call) => {
     calls.push(call);
-    return { exitCode: 0, stdout: "sql", stderr: "" };
+    return { exitCode: 0, stdout: "", stderr: "" };
   });
   await jev.decide(REQUEST);
   // The options come in a random order, so the test compares the options as a set.
   const [call] = calls as { args: string[]; stdin: unknown }[];
-  expect(call?.args.slice(0, 3)).toEqual(["pick", "--", "Which store?"]);
-  expect(call?.args.slice(3).sort()).toEqual(["kv=keys", "sql=relations"]);
+  expect(call?.args.slice(0, 4)).toEqual([
+    "pick",
+    "--json",
+    "--",
+    "Which store?",
+  ]);
+  expect(call?.args.slice(4).sort()).toEqual(["kv=keys", "sql=relations"]);
   expect(call?.stdin).toBeUndefined();
 });
 
@@ -83,11 +93,15 @@ test("the Jev run gets the arguments of the request, with the question after `--
 const completion = (reply: Completion) => async (): Promise<Completion> =>
   reply;
 
-test("a model that answers gives its text, trimmed", async () => {
-  const model = createFallback(
-    completion({ isAnswered: true, text: " kv \n" }),
-  );
-  expect(await model.decide(REQUEST)).toEqual({ ok: true, text: "kv" });
+test("a model that answers gives its choice, its confidence, and its reason", async () => {
+  const reply =
+    '```json\n{"choice": "kv", "confidence": 0.9, "reason": "keys"}\n```';
+  const model = createFallback(completion({ isAnswered: true, text: reply }));
+  expect(await model.decide(REQUEST)).toEqual({
+    ok: true,
+    text: "kv (confidence 0.90)\nkeys",
+    answer: { choice: "kv", confidence: 0.9 },
+  });
 });
 
 test("a model with no reply gives the cause `model-failed`", async () => {
