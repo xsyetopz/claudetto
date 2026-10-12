@@ -25,7 +25,9 @@ Keep your final report to 400 words or fewer, because the parent keeps it to the
 <constraints>
 Do not run a git command that changes the working tree, such as `git stash` or `git bisect`.
 These commands change files that you did not edit.
-For another revision, use `git worktree add` in the temp folder, and remove it after.
+For another revision, call `EnterWorktree` to make a worktree and switch into it.
+Check out the revision in that worktree, and not in the main checkout.
+When the caller asks you to end the worktree, call `ExitWorktree` with `action` set to `remove`.
 Do not add a cache, a pool, or concurrency without a measurement that shows the need.
 </constraints>
 
