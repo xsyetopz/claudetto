@@ -62,9 +62,9 @@ const kindOf =
     }
   };
 
-/** True when the working directory is the main checkout: its `.git` is not a file, which only a linked worktree has. */
-const isMainCheckout = async ($: EngineInterface): Promise<boolean> =>
-  (await kindOf($)(".git")) !== "file";
+/** True when the folder `dir` is the main checkout, or the working directory when `dir` is unset: its `.git` is not a file, which only a linked worktree has. */
+const isMainCheckout = async ($: EngineInterface, dir?: string): Promise<boolean> =>
+  (await kindOf($)(dir === undefined ? ".git" : `${dir}/.git`)) !== "file";
 
 /** The line count of a file for the print rule: `Infinity` when it is too large to read. */
 const countOf =
@@ -85,7 +85,7 @@ export const onBashCall: Handler<"tool.call"> = async ($, e, next) => {
   if (e.tool !== "Bash") return next(e);
   const floor = await guardReason(e.command, {
     kind: kindOf($),
-    isMainCheckout: () => isMainCheckout($),
+    isMainCheckout: (dir) => isMainCheckout($, dir),
     subagent: Boolean(e.agentId),
   });
   if (floor) return { deny: floor };

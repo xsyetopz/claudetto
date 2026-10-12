@@ -10,12 +10,13 @@ export type PathKind = "folder" | "file" | "missing";
 export type Kind = (path: string) => Promise<PathKind>;
 
 /**
- * The context of a matcher: the lookup of a path, under the folder of `git -C` when one is set,
- * and the check whether the working directory is the main checkout of a repository.
+ * The context of a matcher: the lookup of a path, under the folder of `git -C` or `cd` when one is set,
+ * and the check whether a folder is the main checkout of a repository.
+ * Both ports are lazy: a call reads the file system only when a matcher calls it.
  */
 export type Ctx = {
   kind: Kind;
-  isMainCheckout: () => Promise<boolean>;
+  isMainCheckout: (dir?: string) => Promise<boolean>;
 };
 
 /**

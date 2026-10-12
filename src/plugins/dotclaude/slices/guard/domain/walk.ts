@@ -58,6 +58,31 @@ const unwrap = (argv: string[], dir: string | undefined): Simple[] => {
   return [{ words: [name, ...rest], dir }];
 };
 
-/** The simple commands of a `Bash` text, after `parse` and the unwrapping of each wrapper. */
-export const walk = (command: string): Simple[] =>
-  parse(command).commands.flatMap((argv) => unwrap(argv, undefined));
+/**
+ * The operand of a `cd` command, or null when `argv` is not a `cd`.
+ * An empty operand, or `-`, gives `undefined`: the folder is then unknown, and the working directory stands.
+ */
+const cdOf = (argv: string[]): { dir: string | undefined } | null => {
+  const [head, ...rest] = stripWrappers(argv);
+  if (head === undefined || baseName(head) !== "cd") return null;
+  const operand = rest.find((w) => !w.startsWith("-")) ?? "";
+  return { dir: operand === "" || operand === "-" ? undefined : operand };
+};
+
+/**
+ * The simple commands of a `Bash` text, after `parse` and the unwrapping of each wrapper.
+ * A `cd` sets the folder of the commands after it, so `cd <dir> && rm ...` reads `rm` under `<dir>`.
+ */
+export const walk = (command: string): Simple[] => {
+  const out: Simple[] = [];
+  let dir: string | undefined;
+  for (const argv of parse(command).commands) {
+    const cd = cdOf(argv);
+    if (cd) {
+      dir = cd.dir === undefined ? undefined : joinDir(dir, cd.dir);
+      continue;
+    }
+    out.push(...unwrap(argv, dir));
+  }
+  return out;
+};

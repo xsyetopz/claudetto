@@ -25,7 +25,7 @@ export const guardReason = async (
   for (const simple of walk(command)) {
     const scoped: Ctx = {
       kind: under(ctx.kind, simple.dir),
-      isMainCheckout: ctx.isMainCheckout,
+      isMainCheckout: () => ctx.isMainCheckout(simple.dir),
     };
     for (const matcher of MATCHERS) {
       const tier: Tier = TIERS[matcher.id] ?? "floor";
