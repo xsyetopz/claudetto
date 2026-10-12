@@ -4,8 +4,8 @@
 // It also sets the checkbox of the package line in `packages.md`: `[x]` for `done`, `[ ]` for each other lane.
 
 import path from "node:path";
-import { SPEC_ROOT } from "../../../../../kernel/paths.ts";
 import { runProgram } from "../../../../../kernel/node/process.ts";
+import { SPEC_ROOT } from "../../../../../kernel/paths.ts";
 import { LANES, type Lane } from "../../../../../kernel/spec-store.ts";
 import { setChecked } from "./plan-files.ts";
 import type { Run } from "./run.ts";

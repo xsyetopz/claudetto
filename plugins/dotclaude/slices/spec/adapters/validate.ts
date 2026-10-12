@@ -9,8 +9,8 @@ import { parseDelta, parseSpec } from "../domain/parse.ts";
 import { parseTasks } from "../domain/plan.ts";
 import {
   type Issue,
-  validateDelta,
   validateCheckboxes,
+  validateDelta,
   validateDeps,
   validatePackage,
   validateSpec,
