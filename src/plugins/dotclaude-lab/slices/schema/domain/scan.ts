@@ -17,7 +17,7 @@ type Visit = (index: number, char: string, depth: number) => boolean;
 
 // The index after the string, template, regex, or comment that starts at `i`.
 // Returns `i` when none starts there.
-export function skipToken(src: string, i: number, prev: string): number {
+export const skipToken = (src: string, i: number, prev: string): number => {
   const c = src[i];
   if (c === '"' || c === "'") return skipQuoted(src, i, c);
   if (c === "`") return skipTemplate(src, i);
@@ -33,17 +33,17 @@ export function skipToken(src: string, i: number, prev: string): number {
     REGEX_AFTER.includes(prev) ||
     KEYWORDS_BEFORE_REGEX.test(before);
   return isRegex ? skipRegex(src, i) : i;
-}
+};
 
-function skipQuoted(src: string, i: number, quote: string): number {
+const skipQuoted = (src: string, i: number, quote: string): number => {
   for (let j = i + 1; j < src.length; j++) {
     if (src[j] === "\\") j++;
     else if (src[j] === quote) return j + 1;
   }
   return src.length;
-}
+};
 
-function skipTemplate(src: string, i: number): number {
+const skipTemplate = (src: string, i: number): number => {
   for (let j = i + 1; j < src.length; j++) {
     if (src[j] === "\\") j++;
     else if (src[j] === "`") return j + 1;
@@ -51,9 +51,9 @@ function skipTemplate(src: string, i: number): number {
       j = matchClose(src, j + 1) ?? src.length;
   }
   return src.length;
-}
+};
 
-function skipRegex(src: string, i: number): number {
+const skipRegex = (src: string, i: number): number => {
   let inClass = false;
   for (let j = i + 1; j < src.length; j++) {
     const c = src[j];
@@ -67,12 +67,12 @@ function skipRegex(src: string, i: number): number {
     }
   }
   return src.length;
-}
+};
 
 // Walks `src` from `from` and calls `visit(index, char, depth)` for each code character.
 // `visit` returns true to stop.
 // Depth is 0 before the first bracket, and the visit of a bracket sees the depth outside it.
-function walk(src: string, from: number, visit: Visit): number | null {
+const walk = (src: string, from: number, visit: Visit): number | null => {
   let depth = 0;
   let prev = "";
   for (let i = from; i < src.length; i++) {
@@ -89,15 +89,14 @@ function walk(src: string, from: number, visit: Visit): number | null {
     if (!/\s/.test(c)) prev = c;
   }
   return null;
-}
+};
 
 // The index of the bracket that closes the one at `open`, or null.
-export function matchClose(src: string, open: number): number | null {
-  return walk(src, open, (_i, c, depth) => CLOSE.includes(c) && depth === 0);
-}
+export const matchClose = (src: string, open: number): number | null =>
+  walk(src, open, (_i, c, depth) => CLOSE.includes(c) && depth === 0);
 
 // Splits `text` at the commas that are outside any bracket.
-export function splitTop(text: string): string[] {
+export const splitTop = (text: string): string[] => {
   const parts: string[] = [];
   let start = 0;
   walk(text, 0, (i, c, depth) => {
@@ -109,10 +108,10 @@ export function splitTop(text: string): string[] {
   });
   parts.push(text.slice(start));
   return parts.map((p) => p.trim()).filter(Boolean);
-}
+};
 
 // The index where the expression that starts at `from` ends.
-export function exprEnd(src: string, from: number): number {
+export const exprEnd = (src: string, from: number): number => {
   const stop = walk(
     src,
     from,
@@ -121,15 +120,15 @@ export function exprEnd(src: string, from: number): number {
       (depth < 0 && CLOSE.includes(c)),
   );
   return stop ?? src.length;
-}
+};
 
 // The body of the settings object (without braces), or null.
-export function findSchemaBody(src: string): string | null {
+export const findSchemaBody = (src: string): string | null => {
   const start = src.indexOf(ANCHOR);
   if (start < 0) return null;
   const end = matchClose(src, start);
   return end === null ? null : src.slice(start + 1, end);
-}
+};
 
 const ESCAPES: Record<string, string> = {
   n: "\n",
@@ -142,7 +141,7 @@ const ESCAPES: Record<string, string> = {
 };
 
 // The value of a JavaScript string literal.
-export function unquote(lit: string): string {
+export const unquote = (lit: string): string => {
   const body = lit.slice(1, -1);
   return body.replace(
     /\\(?:u([0-9a-fA-F]{4})|x([0-9a-fA-F]{2})|([\s\S]))/g,
@@ -156,9 +155,9 @@ export function unquote(lit: string): string {
         ? String.fromCharCode(Number.parseInt((u || x) as string, 16))
         : ((ESCAPES[c as string] ?? c) as string),
   );
-}
+};
 
-export function splitPlus(expr: string): string[] {
+export const splitPlus = (expr: string): string[] => {
   const parts: string[] = [];
   let start = 0;
   walk(expr, 0, (i, c, depth) => {
@@ -170,10 +169,10 @@ export function splitPlus(expr: string): string[] {
   });
   parts.push(expr.slice(start).trim());
   return parts;
-}
+};
 
 // The `[name, args]` of each top-level method call in a chain such as `o().optional().describe("x")`.
-export function chainCalls(expr: string): Chain {
+export const chainCalls = (expr: string): Chain => {
   const calls: Call[] = [];
   let i = expr.search(/\(/);
   const head = expr.slice(0, i).trim();
@@ -191,15 +190,15 @@ export function chainCalls(expr: string): Chain {
     i = close + 1;
   }
   return { head, headArgs, calls };
-}
+};
 
 // The `[key, expr]` pairs of an object body.
 // A conditional spread such as `...flag&&{key:()=>x}` gives the pairs of its object.
 // Any other spread has no key and is skipped.
-export function parseEntries(
+export const parseEntries = (
   body: string,
   thunk: boolean,
-): Array<[string, string]> {
+): Array<[string, string]> => {
   const entries: Array<[string, string]> = [];
   for (const part of splitTop(body)) {
     const gated = /^\.\.\.[^{]*?&&\{/.exec(part);
@@ -214,4 +213,4 @@ export function parseEntries(
     if (m) entries.push([m[1] as string, part.slice(m[0].length).trim()]);
   }
   return entries;
-}
+};

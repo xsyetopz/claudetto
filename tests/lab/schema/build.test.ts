@@ -5,17 +5,20 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   buildSchemas,
+  schemaFiles,
+} from "../../../src/plugins/dotclaude-lab/slices/schema/domain/build.ts";
+import { fallbackOf } from "../../../src/plugins/dotclaude-lab/slices/schema/domain/descriptions.ts";
+import { isManagedOnly } from "../../../src/plugins/dotclaude-lab/slices/schema/domain/managed.ts";
+import type { Schema } from "../../../src/plugins/dotclaude-lab/slices/schema/domain/model.ts";
+import {
   chainCalls,
   findSchemaBody,
-  isManagedOnly,
   matchClose,
   parseEntries,
-  schemaFiles,
   skipToken,
   splitTop,
   unquote,
-} from "../../../plugins/dotclaude-lab/features/schema/build.ts";
-import type { Schema } from "../../../plugins/dotclaude-lab/features/schema/model.ts";
+} from "../../../src/plugins/dotclaude-lab/slices/schema/domain/scan.ts";
 import { validate } from "../../dotclaude/fixtures/validate.ts";
 import { REPO, tmpDir } from "../../support/repo.ts";
 import { spawnText } from "../fixture-repo.ts";
@@ -49,7 +52,7 @@ const FIXTURE = [
   'permissions:()=>Ae(()=>ya(e)).describe("Permissions"),',
   "sandbox:()=>Ae(()=>Z()),",
   'polOnly:()=>H().optional().describe("Only honored from managed settings."),',
-  `pat:()=>o().optional().describe(\`t $\{a} }\`),re:()=>o().optional().describe("r"),`,
+  `pat:()=>o().optional().describe("t \${a} }"),re:()=>o().optional().describe("r"),`,
   '...!1,...flag&&{gated:()=>H().optional().describe("Gated key")},',
   "...Qr(Xi(e),(i)=>()=>i)};",
 ].join("");
@@ -155,26 +158,27 @@ test("a build that reuses short names takes the last definition before the schem
     "var Z=p(()=>u({early:H()}));",
     "var Y=p(()=>wrap(A(o())));",
     "var Z=p(()=>u({late:H().optional()}));",
-    "const s={$schema:()=>o().optional(),",
-    "keep:()=>Ae(()=>Z()),",
-    "wrapped:()=>Ae(()=>Y()),};",
+    'const s={$schema:()=>o().optional().describe("Schema"),',
+    'keep:()=>Ae(()=>Z()).describe("Keep"),',
+    'wrapped:()=>Ae(()=>Y()).describe("Wrapped"),};',
     "var Y=p(()=>u({after:H()}));",
   ].join("");
   const { user } = buildSchemas(bundle, VERSION);
   expect(Object.keys(props(at(user, "keep")))).toStrictEqual(["late"]);
-  expect(at(user, "wrapped")).toStrictEqual({});
+  expect(at(user, "wrapped")).toStrictEqual({ description: "Wrapped" });
 });
 
 test("a lazy reference to a record helper gives an object", () => {
   const bundle = [
     "var E=p(()=>ue(o(),o()));",
-    "const s={$schema:()=>o().optional(),",
-    "env:()=>Ae(()=>E()),};",
+    'const s={$schema:()=>o().optional().describe("Schema"),',
+    'env:()=>Ae(()=>E()).describe("Env"),};',
   ].join("");
   const { user } = buildSchemas(bundle, VERSION);
   expect(at(user, "env")).toStrictEqual({
     type: "object",
     additionalProperties: { type: "string" },
+    description: "Env",
   });
 });
 
@@ -266,4 +270,24 @@ test("a managed-only key in the user settings fails", async () => {
   expect(validate({ prependPlugins: [] }, await shipped("user"))).toStrictEqual(
     ['(root): unknown key "prependPlugins"'],
   );
+});
+
+test("a key takes its bundle description, else its fallback text, and a key with neither fails", () => {
+  const { managed } = buildSchemas(FIXTURE, VERSION);
+  // A bundle description wins.
+  expect(props(managed)["permissions"]?.description).toBe("Permissions");
+  // `sandbox` has no description in the fixture, so `FALLBACK` gives its text.
+  expect(props(managed)["sandbox"]?.description).toBe(fallbackOf("sandbox"));
+  // A top-level key with no description in the bundle and no fallback fails the build.
+  const bare = FIXTURE.replace(
+    'describe("Schema `ref` {x}"),',
+    'describe("Schema `ref` {x}"),bare:()=>o().optional(),',
+  );
+  expect(() => buildSchemas(bare, VERSION)).toThrow(/"bare"/);
+  // An inherited name is no fallback, so `constructor` fails too.
+  const inherited = FIXTURE.replace(
+    'describe("Schema `ref` {x}"),',
+    'describe("Schema `ref` {x}"),constructor:()=>o().optional(),',
+  );
+  expect(() => buildSchemas(inherited, VERSION)).toThrow(/"constructor"/);
 });
