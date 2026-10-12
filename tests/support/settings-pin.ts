@@ -27,6 +27,8 @@ export const NEVER_SET_KEYS = {
   alwaysThinkingEnabled: "forces thinking on every model",
   allowAllClaudeAiMcps: "turns on every claude.ai connector",
   claudeMd: "replaces the project instructions",
+  attribution:
+    "the attribution slice adds the lines to each commit and pull request",
 };
 
 /**

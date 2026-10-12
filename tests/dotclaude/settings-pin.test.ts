@@ -47,6 +47,12 @@ test("a fixture with `CLAUDE_CODE_EFFORT_LEVEL` fails, and the failure names it"
   ]);
 });
 
+test("a fixture with an `attribution` block fails, because the hook adds the lines", () => {
+  expect(problems({ attribution: { commit: "x" } })).toStrictEqual([
+    "never set: attribution",
+  ]);
+});
+
 test("a fixture with an unknown key fails, and the failure names the key", () => {
   expect(problems({ notAClaudeKey: true })).toStrictEqual([
     '(root): unknown key "notAClaudeKey"',

@@ -102,10 +102,6 @@ export const slice = {
     skillOverrides: {
       "plugin-authoring": "name-only",
     },
-    attribution: {
-      commit: "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
-      pr: "🤖 Generated with [Claude Code](https://claude.com/claude-code)",
-    },
     sandbox: {
       enabled: true,
       allowUnsandboxedCommands: true,

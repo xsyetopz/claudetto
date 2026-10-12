@@ -69,6 +69,13 @@
     "allow": "plugins/dotclaude/tests/handoff.test.ts > a step of the main session adds no note to a later call",
     "text": "plugins/dotclaude/tests/handoff.test.ts > a package that goes to `done` adds the hint"
   },
+  "tool.call attribution": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/attribution.test.ts > a `Bash` call that is not a commit or a pull request keeps its command",
+    "text": "plugins/dotclaude/tests/attribution.test.ts > a `git commit -m` gets the trailer of the model before its message option"
+  },
   "tool.call decide": {
     "requests": 0,
     "tokens": 0,
