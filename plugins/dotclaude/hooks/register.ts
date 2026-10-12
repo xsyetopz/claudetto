@@ -25,14 +25,20 @@ import {
 import { onToolCall as h14 } from "../slices/sembr/adapters/mod.ts";
 import { onSessionStart as h15 } from "../slices/setup/adapters/mod.ts";
 import {
-  onAgentOffer as h16,
-  onToolDescribe as h17,
+  onComplete as h16,
+  onSpawn as h17,
+} from "../slices/spec/adapters/mod.ts";
+import {
+  onAgentOffer as h18,
+  onToolDescribe as h19,
 } from "../slices/surface/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h6(options);
   // eval: agent.offer surface
-  on("agent.offer", h16);
+  on("agent.offer", h18);
+  // eval: agent.spawn spec
+  on("agent.spawn", { subagentType: /(?:^|:)implementer$/ }, h17);
   // eval: agent.spawn prompt
   on("agent.spawn", h13);
   // eval: prompt.compose prompt
@@ -60,9 +66,11 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.check guard
   on("tool.check", h5);
   // eval: tool.describe surface
-  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h17);
+  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h19);
   // eval: turn.complete handoff
   on("turn.complete", h9);
+  // eval: turn.complete spec
+  on("turn.complete", { agentId: /./ }, h16);
   // eval: turn.step handoff
   on("turn.step", { agentId: /./ }, h10);
 };

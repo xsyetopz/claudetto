@@ -6,6 +6,13 @@
     "allow": "plugins/dotclaude/tests/surface.test.ts > `agent.offer` offers an agent that is not dropped",
     "text": "plugins/dotclaude/tests/surface.test.ts > `agent.offer` leaves a dropped agent out of the listing"
   },
+  "agent.spawn spec": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/ship-lane.test.ts > a spawn with no brief in its prompt moves no lane",
+    "text": "plugins/dotclaude/tests/ship-lane.test.ts > the spawn of an implementer moves its package to `doing`"
+  },
   "agent.spawn prompt": {
     "requests": 0,
     "tokens": 0,
@@ -109,6 +116,13 @@
     "blocks": false,
     "allow": "plugins/dotclaude/tests/handoff.test.ts > below the context bound the turn ends with no handoff",
     "text": "plugins/dotclaude/tests/handoff.test.ts > with `manual` a context over the bound adds the hint to run `/handoff`"
+  },
+  "turn.complete spec": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/ship-lane.test.ts > the end of another subagent moves no lane",
+    "text": "plugins/dotclaude/tests/ship-lane.test.ts > the end of an implementer moves its package to `review`"
   },
   "turn.step handoff": {
     "requests": 0,
