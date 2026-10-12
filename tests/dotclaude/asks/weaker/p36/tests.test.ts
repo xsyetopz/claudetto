@@ -3,7 +3,7 @@
 // Files are strings and no file is read.
 
 import { expect, test } from "bun:test";
-import { asks, editAsks, write, writeAsks } from "../calls.ts";
+import { asks, editAsks, write, writeAsks } from "../../calls.ts";
 
 const TS = "/w/tests/a.test.ts";
 const PY = "/w/tests/test_a.py";
@@ -18,7 +18,11 @@ test("b", () => {
 
 test("an added skip or early return in a TypeScript test gets an ask", async () => {
   expect(
-    await writeAsks(TS, BASE, BASE.replace('test("b"', '/* x */ test.skip("b", () => {});\ntest("b"')),
+    await writeAsks(
+      TS,
+      BASE,
+      BASE.replace('test("b"', '/* x */ test.skip("b", () => {});\ntest("b"'),
+    ),
   ).toBe(true);
   expect(
     await editAsks(TS, BASE, 'expect(f()).toBe("a b");', "/* x */ return;"),

@@ -53,11 +53,20 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The write ask for code in another language, such as `ruby -e` or `python3 -c`, counts a path that the code names only when the same code has a write word (`File.write`, `json.dump`, `os.remove`, an open mode `"w"`, or a `>` redirect).
   A command such as `ruby -e 'YAML.load_file(".github/workflows/check.yml")'` that only reads the path no longer asks.
 - The `asks` slice never asks for a read.
+  A new file gets no ask.
   A change to a protected file asks unless every changed part is on the safe list of its kind.
-  The protected kinds are a test file, a limits file, a lint config, a runner config, a CI file, a hook file, and a settings file.
-  The safe parts are a format change, a comment change, a move with the same content, a new file, and an added check.
-  An added check is an added test, a stricter rule, an added step, job, or hook, an added `deny` or `ask` rule, or a removed `allow` rule.
-  Every other change asks, also a changed `model`, an added `env` key, a key that the code does not know, and a line that follows the last command of a hook script.
+  The safe list of each kind is:
+  - A test file: a format or comment change, a move of lines, a rename of a test title, and an added line that holds no control flow, skip, focus, timeout, or hidden test.
+  - A limits file: a change that keeps every bound and changes no other code.
+  - A lint config or a runner config: a format or comment change, a move with the same content, an added key with the strictest value, an added entry in a list of rules or files, a raised level or threshold, and a strict flag that goes to `true`.
+    A new `select`, `include`, or `only` key asks.
+    A config in JavaScript or TypeScript gets the same check on its tokens.
+  - A CI file: a format or comment change, a move of lines, a change of a `name` key, and an added step or job with no risky key or failure-hiding command.
+  - A hook file: a format change, an added hook, and a change of `description`.
+  - A hook script: a format or comment change, an added blank line or comment, a stricter `set` line in a shell script, and a `"use strict"` line in a JavaScript or TypeScript file.
+  - A settings file: a format change, an added `deny` or `ask` rule, a removed `allow` rule, and a plugin that goes on in `enabledPlugins`.
+  Every other change asks.
+  A format that the code cannot read asks.
   A shell edit in place, such as `sed -i`, of a protected file asks, because the text after the edit is not known before the command runs.
 
 ### Removed

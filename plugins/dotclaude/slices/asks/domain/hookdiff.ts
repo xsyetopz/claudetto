@@ -2,9 +2,10 @@
 // The check on a weaker hook file or settings file (package P36), as pure functions.
 // A change gets no ask only when every changed part is safe:
 // a change of format or comments only, a move with the same content,
-// an added hook (a new entry with its matcher and command), an added `deny` or `ask` permission rule, or a removed `allow` rule,
+// an added hook (a new entry with its matcher and command), an added `deny` or `ask` permission rule, a removed `allow` rule,
+// a change of `description` in a hooks file, or a plugin that goes on in `enabledPlugins`,
 // and, in a hook script, an added line on its safe list: a blank line, a comment, a stricter `set` line in a shell script,
-// or a `"use strict"` line in a JavaScript file. Every other added code line asks, in any position.
+// or a `"use strict"` line in a JavaScript or TypeScript file. Every other added code line asks, in any position.
 // Every other change asks: a removed or changed hook, matcher, command, or timeout, a removed `deny` or `ask` rule,
 // an added `allow` rule, `disableAllHooks`, a changed `permissions.defaultMode`, a changed `model`, an added or changed `env` key,
 // and any key that the code does not know.

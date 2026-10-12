@@ -3,7 +3,7 @@
 // Files are strings and no file is read.
 
 import { expect, test } from "bun:test";
-import { writeAsks } from "../calls.ts";
+import { writeAsks } from "../../calls.ts";
 
 const CI = "/w/.github/workflows/ci.yml";
 const BASE = `name: ci
@@ -17,7 +17,10 @@ jobs:
 `;
 
 const withStep = (step: string): string =>
-  BASE.replace("      - run: bun test\n", `      ${step}\n      - run: bun test\n`);
+  BASE.replace(
+    "      - run: bun test\n",
+    `      ${step}\n      - run: bun test\n`,
+  );
 
 const WEAKENING_STEPS = [
   'run: echo "SKIP=1" >> $GITHUB_ENV',

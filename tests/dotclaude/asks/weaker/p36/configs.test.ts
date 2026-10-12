@@ -3,7 +3,7 @@
 // Files are strings and no file is read.
 
 import { expect, test } from "bun:test";
-import { editAsks, writeAsks } from "../calls.ts";
+import { editAsks, writeAsks } from "../../calls.ts";
 
 const ESLINT = "/w/eslint.config.js";
 const BIOME = "/w/biome.json";
@@ -25,14 +25,18 @@ test("an added weakening section in a Python project config gets an ask", async 
 
 test("an added skip in a setup.cfg bandit section gets an ask", async () => {
   const text = "[metadata]\nname = x\n";
-  expect(
-    await writeAsks(SETUP, text, `${text}[bandit]\nskips = B101\n`),
-  ).toBe(true);
+  expect(await writeAsks(SETUP, text, `${text}[bandit]\nskips = B101\n`)).toBe(
+    true,
+  );
 });
 
 test("a ruff config that selects only `E` gets an ask", async () => {
   expect(
-    await writeAsks(RUFF, "line-length = 88\n", 'line-length = 88\nselect = ["E"]\n'),
+    await writeAsks(
+      RUFF,
+      "line-length = 88\n",
+      'line-length = 88\nselect = ["E"]\n',
+    ),
   ).toBe(true);
 });
 
@@ -72,7 +76,8 @@ test("a weaker tsconfig strict flag or an added include gets an ask", async () =
 });
 
 test("an added `eslint` rule set to off in a config gets an ask", async () => {
-  const text = 'export default [{\n  rules: {\n    "no-console": "error",\n  },\n}];\n';
+  const text =
+    'export default [{\n  rules: {\n    "no-console": "error",\n  },\n}];\n';
   expect(
     await writeAsks(
       ESLINT,
@@ -85,11 +90,12 @@ test("an added `eslint` rule set to off in a config gets an ask", async () => {
   ).toBe(true);
 });
 
+// This case passed before P36 too, so it is not a regression test of P36.
 test("a runner config with a lower coverage threshold gets an ask", async () => {
   const text = "export default { coverage: { lines: 90 } };\n";
-  expect(await editAsks("/w/vitest.config.ts", text, "lines: 90", "lines: 10")).toBe(
-    true,
-  );
+  expect(
+    await editAsks("/w/vitest.config.ts", text, "lines: 90", "lines: 10"),
+  ).toBe(true);
 });
 
 test("a changed bound in a limits file gets an ask", async () => {

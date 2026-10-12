@@ -3,7 +3,7 @@
 // Files are strings and no file is read.
 
 import { expect, test } from "bun:test";
-import { asks, write, writeAsks } from "../calls.ts";
+import { asks, write, writeAsks } from "../../calls.ts";
 
 const SH = "/w/.claude/hooks/guard.sh";
 const PY = "/w/.claude/hooks/guard.py";

@@ -2,7 +2,7 @@
 // A small reader of code text for the ask on a weaker check, as pure functions.
 // It finds a statement, and it gives the statement in a normal form,
 // so that a format change (spaces, line breaks, a trailing comma, quote marks) does not change the statement.
-// It reads no type, so it works for TypeScript, JavaScript, Python, Rust, Go, and similar text.
+// It reads no type, so it reads TypeScript, JavaScript, Python, Rust, Go, and similar text in the common forms.
 
 import { STATEMENT_MAX_CHARS } from "../limits.ts";
 

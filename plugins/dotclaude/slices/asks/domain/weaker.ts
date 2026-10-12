@@ -6,7 +6,7 @@
 // A change to a protected file asks unless every changed part is on the safe list of its kind:
 // a format change, a comment change, a move with the same content, or an added check.
 // The safe list of each kind is in the file of its function.
-// The call asks when a function cannot read the format, or when the text is over `SCAN_MAX_CHARS`, so that an unknown change never passes.
+// The call asks when a function cannot read the format, when an `old_string` is not in the text, or when the text is over `SCAN_MAX_CHARS`, so that an unknown change never passes.
 // A `sed -i` of a protected file asks in `writes.ts`.
 // A new file has no text before, so it adds checks and gets no ask.
 // `ch` is the effect from `change` in `text.ts`.

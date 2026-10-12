@@ -1,7 +1,8 @@
 // The check on a weaker lint config, runner config, or `tsconfig.json` (package P36), as pure functions.
+// A config in code, such as `eslint.config.js`, goes to `tokendiff.ts`.
 // A change gets no ask only when every changed part is safe:
 // a change of format or comments only, a move with the same content (keys of a map in any order),
-// an added key whose value is the strictest level (`error`, `true` for a strict flag, a number for a threshold),
+// an added key whose value is the strictest level (`error`, `true` for a strict flag, a number above zero for a threshold),
 // an added entry in a list of rules or files, a raised level, a raised threshold, or a strict flag that goes to `true`.
 // Every other change asks: a removed key, a lowered value, a new `off`, `warn`, or `false`,
 // a new ignore, exclude, or `!` pattern, a removed `!` entry of an ignore list, a narrowed list,
