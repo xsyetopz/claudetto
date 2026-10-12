@@ -11,7 +11,7 @@
 // The results of each run stay in `evals/results/` of its plugin folder.
 // Exits 0 when both runs succeed.
 
-import { runBoth } from "./run-both.ts";
+import { runBoth } from "./eval-both.ts";
 
 const USAGE =
   "Usage: dotclaude-eval-compare A B [claude plugin eval options...]";

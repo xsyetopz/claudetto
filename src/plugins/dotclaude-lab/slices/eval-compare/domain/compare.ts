@@ -1,5 +1,5 @@
 // The rules of `dotclaude-eval-compare` that need no process and no output.
-// The adapter in `../adapters/run-both.ts` runs the arguments and prints the lines.
+// The adapter in `../adapters/eval-both.ts` runs the arguments and prints the lines.
 
 /** The result of the two runs: the exit code and the lines to print after them. */
 export type Verdict = { code: number; lines: string[] };

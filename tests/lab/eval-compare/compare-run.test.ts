@@ -1,7 +1,7 @@
 // dotclaude-lab: the two runs of `runBoth`, with a fake process runner and a fake output.
 
 import { expect, test } from "bun:test";
-import { runBoth as runBothOn } from "../../../src/plugins/dotclaude-lab/slices/eval-compare/adapters/run-both.ts";
+import { runBoth as runBothOn } from "../../../src/plugins/dotclaude-lab/slices/eval-compare/adapters/eval-both.ts";
 import type { RunResult } from "../../../src/plugins/dotclaude-lab/slices/eval-compare/adapters/run-program.ts";
 import { withCostBound } from "../../../src/plugins/dotclaude-lab/slices/eval-compare/domain/compare.ts";
 import { withPlatform } from "../../support/fake-program.ts";
