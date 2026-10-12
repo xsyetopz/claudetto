@@ -97,7 +97,7 @@ Each package depends on P01b4.
   Verify: `just validate`, and a `reviewer` pass on the text.
 - [ ] P23 `prompt` transforms: one transform for each built-in section of P01c, and the test that each transform finds its section.
   Deps: P01c.
-- [ ] P11a `dotclaude-codegraph` with 1 hook.
+- [x] P11a `dotclaude-codegraph` with 1 hook.
 - [x] P11b `dotclaude-browser`.
 - [x] P11d `dotclaude-docs`.
 - [x] P11e `dotclaude-sessions`.
