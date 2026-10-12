@@ -11,7 +11,7 @@ const ROOTS = new Set([
   "",
   "~",
   "$HOME",
-  "${HOME}",
+  `\${HOME}`,
   "/System",
   "/usr",
   "/etc",
@@ -32,7 +32,7 @@ const ROOTS = new Set([
 ]);
 
 /** The folders of the user and of the system for the permission rule: the root and the home folder only. */
-const PERMISSION_ROOTS = new Set(["", "~", "$HOME", "${HOME}"]);
+const PERMISSION_ROOTS = new Set(["", "~", "$HOME", `\${HOME}`]);
 
 /** A path with its trailing `/*`, `/`, and `\` removed, so `/`, `/*`, `~/`, and `C:\` read as `""`, `~`, `~`, and `C:`. */
 const norm = (word: string): string =>

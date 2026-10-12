@@ -129,17 +129,16 @@ test("each destructive git command is denied in a subagent and in the main sessi
   for (const command of FLOOR) {
     const sub = await subagentDeny(command, linked);
     expect("deny" in sub, `subagent ${command}`).toBe(true);
-    const mainOut = await onBashCall(
-      engineIn(main),
-      bash(command),
-      passes,
-    );
+    const mainOut = await onBashCall(engineIn(main), bash(command), passes);
     expect("deny" in mainOut, `main ${command}`).toBe(true);
   }
 });
 
 test("the main session keeps the stash and branch commands of the shared-checkout rule", async () => {
-  for (const command of [...SUBAGENT_IN_ANY_CHECKOUT, ...SUBAGENT_IN_MAIN_ONLY]) {
+  for (const command of [
+    ...SUBAGENT_IN_ANY_CHECKOUT,
+    ...SUBAGENT_IN_MAIN_ONLY,
+  ]) {
     const out = await onBashCall(engineIn(main), bash(command), passes);
     expect("deny" in out, command).toBe(false);
   }

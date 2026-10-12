@@ -42,7 +42,10 @@ export const splitDashes = (
 const MAGIC = /[*?[\]]/;
 
 /** True when a pathspec names a whole folder: `.`, `..`, a glob, pathspec magic, or an existing folder. */
-export const isWholeFolder = async (path: string, ctx: Ctx): Promise<boolean> => {
+export const isWholeFolder = async (
+  path: string,
+  ctx: Ctx,
+): Promise<boolean> => {
   if (path.startsWith(":") || MAGIC.test(path) || /^\.\.?\/?$/.test(path))
     return true;
   return (await ctx.kind(path)) === "folder";

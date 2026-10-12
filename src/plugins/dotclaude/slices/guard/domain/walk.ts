@@ -54,7 +54,8 @@ const unwrap = (argv: string[], dir: string | undefined): Simple[] => {
   if (head === undefined) return [];
   const name = baseName(head);
   if (name === "git") return [gitOf([name, ...rest], dir)];
-  if (name === "find") return [{ words: ["find", ...rest], dir }, ...execOf(rest, dir)];
+  if (name === "find")
+    return [{ words: ["find", ...rest], dir }, ...execOf(rest, dir)];
   return [{ words: [name, ...rest], dir }];
 };
 

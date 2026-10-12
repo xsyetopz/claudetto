@@ -12,7 +12,9 @@ export type GuardCtx = Ctx & { subagent: boolean };
 
 /** The lookup of a path under `dir`, when `dir` is set and the path is relative. */
 const under = (kind: Kind, dir: string | undefined): Kind =>
-  dir === undefined ? kind : (path) => kind(path.startsWith("/") ? path : `${dir}/${path}`);
+  dir === undefined
+    ? kind
+    : (path) => kind(path.startsWith("/") ? path : `${dir}/${path}`);
 
 /**
  * The deny reason of `command`, or null when no matcher whose tier applies matches one of its simple commands.

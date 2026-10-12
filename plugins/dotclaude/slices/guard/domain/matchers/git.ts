@@ -28,10 +28,7 @@ const pathsOf = (args: string[], values: string[]): string[] => {
 };
 
 /** True when one path of `paths` names a whole folder. */
-const anyWholeFolder = async (
-  paths: string[],
-  ctx: Ctx,
-): Promise<boolean> => {
+const anyWholeFolder = async (paths: string[], ctx: Ctx): Promise<boolean> => {
   for (const p of paths) if (await isWholeFolder(p, ctx)) return true;
   return false;
 };
@@ -60,7 +57,11 @@ const stashAction = (args: string[]): string | undefined =>
 
 /** The host of a push target: `+main`, `HEAD:main`, and `refs/heads/main` all read as `main`. */
 const destOf = (word: string): string =>
-  word.replace(/^\+/, "").split(":").pop()?.replace(/^refs\/heads\//, "") ?? "";
+  word
+    .replace(/^\+/, "")
+    .split(":")
+    .pop()
+    ?.replace(/^refs\/heads\//, "") ?? "";
 
 export const gitMatchers: Matcher[] = [
   {
@@ -102,7 +103,12 @@ export const gitMatchers: Matcher[] = [
   },
   {
     id: "git.clean",
-    examples: ["git clean -fd", "git clean -f", "git clean --force -d", "git clean -xdf"],
+    examples: [
+      "git clean -fd",
+      "git clean -f",
+      "git clean --force -d",
+      "git clean -xdf",
+    ],
     match: async (words) => {
       const [name, verb, ...args] = words;
       return name === "git" && verb === "clean" && isForce(args);
@@ -150,8 +156,7 @@ export const gitMatchers: Matcher[] = [
         args.some((a) => a === "-f" || a.startsWith("--force")) ||
         args.some((a) => a.startsWith("+"));
       return (
-        forced &&
-        positionals(args).some((w) => DEFAULT_BRANCHES.has(destOf(w)))
+        forced && positionals(args).some((w) => DEFAULT_BRANCHES.has(destOf(w)))
       );
     },
   },
@@ -192,7 +197,8 @@ export const gitMatchers: Matcher[] = [
         return args[0] === "remove" && hasFlag(args, "--force", "-f");
       if (verb === "checkout" || verb === "switch")
         return (
-          (await switchesBranch(verb, args, ctx)) && (await ctx.isMainCheckout())
+          (await switchesBranch(verb, args, ctx)) &&
+          (await ctx.isMainCheckout())
         );
       return false;
     },

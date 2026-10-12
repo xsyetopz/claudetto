@@ -2,9 +2,9 @@
 // A path that is a folder under `<dir>` is denied, and the same path under the working directory stays allowed.
 // A branch switch reads the `.git` of `<dir>`, so the main checkout and a linked worktree differ by `<dir>` and not by the working directory.
 
+import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { expect, test } from "bun:test";
 import { tmpDir } from "../../support/repo.ts";
 import { bare, linked, main, mainDeny, subagentDeny } from "./ports.ts";
 
@@ -62,5 +62,7 @@ test("a subagent's branch switch reads the checkout of git -C, not of the workin
 test("a subagent's branch switch reads the checkout of a leading cd, not of the working directory", async () => {
   const deny = await subagentDeny(`cd ${main} && git switch main`, linked);
   expect(deny).toContain(`cd ${main} && git switch main`);
-  expect(await subagentDeny(`cd ${linked} && git checkout -b x`, main)).toBeNull();
+  expect(
+    await subagentDeny(`cd ${linked} && git checkout -b x`, main),
+  ).toBeNull();
 });

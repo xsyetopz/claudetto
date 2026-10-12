@@ -2,8 +2,8 @@
 // The ports are lazy, so a counting fake shows the lookups of each call, and a git call is the positive control.
 
 import { expect, test } from "bun:test";
-import { guardReason } from "../../../src/plugins/dotclaude/slices/guard/domain/guard.ts";
 import { onBashCall } from "../../../src/plugins/dotclaude/slices/guard/adapters/mod.ts";
+import { guardReason } from "../../../src/plugins/dotclaude/slices/guard/domain/guard.ts";
 import { bare, bash, engineIn, main, passes } from "./ports.ts";
 
 /** A context whose ports count each call, and which answers a missing path and a main checkout. */
@@ -50,6 +50,10 @@ test("a git command that reads a path makes a lookup, so the counter is a real c
   expect(calls.kind).toBeGreaterThan(0);
   expect(calls.isMainCheckout).toBeGreaterThan(0);
   const stats: string[] = [];
-  await onBashCall(engineIn(bare, stats), bash("git checkout main", "a1"), passes);
+  await onBashCall(
+    engineIn(bare, stats),
+    bash("git checkout main", "a1"),
+    passes,
+  );
   expect(stats.length).toBeGreaterThan(0);
 });

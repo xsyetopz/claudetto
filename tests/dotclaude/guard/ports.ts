@@ -52,13 +52,19 @@ export const bash = (command: string, agentId?: string) => ({
 export const passes = (() => ({ result: "ok" })) as never;
 
 /** The deny text of `command` from the main session in `cwd`, or null when it stays allowed. */
-export const mainDeny = async (command: string, cwd: string): Promise<string | null> => {
+export const mainDeny = async (
+  command: string,
+  cwd: string,
+): Promise<string | null> => {
   const out = await onBashCall(engineIn(cwd), bash(command), passes);
   return "deny" in out ? out.deny : null;
 };
 
 /** The deny text of `command` from a subagent in `cwd`, or null when it stays allowed. */
-export const subagentDeny = async (command: string, cwd: string): Promise<string | null> => {
+export const subagentDeny = async (
+  command: string,
+  cwd: string,
+): Promise<string | null> => {
   const out = await onBashCall(engineIn(cwd), bash(command, "a1"), passes);
   return "deny" in out ? out.deny : null;
 };

@@ -17,8 +17,8 @@ import { POLICY_TIMEOUT_MS } from "../../../../../kernel/budget.ts";
 import type { Handler } from "../../../../../kernel/slice.ts";
 import { lineCount } from "../../../../../kernel/text.ts";
 import { type Count, printReason } from "../domain/deny.ts";
-import type { PathKind } from "../domain/matchers/types.ts";
 import { guardReason } from "../domain/guard.ts";
+import type { PathKind } from "../domain/matchers/types.ts";
 import { askReason, LOGIN_ARGV, linesOf, ORGS_ARGV } from "../domain/owners.ts";
 import { printsOf } from "../domain/reads.ts";
 import { READ_MAX_BYTES } from "../limits.ts";
@@ -58,12 +58,17 @@ const kindOf =
       const stat = await $.fs.stat(path);
       return stat.kind === "file" ? "file" : "folder";
     } catch (err) {
-      return (err as { code?: string }).code === "ENOENT" ? "missing" : "folder";
+      return (err as { code?: string }).code === "ENOENT"
+        ? "missing"
+        : "folder";
     }
   };
 
 /** True when the folder `dir` is the main checkout, or the working directory when `dir` is unset: its `.git` is not a file, which only a linked worktree has. */
-const isMainCheckout = async ($: EngineInterface, dir?: string): Promise<boolean> =>
+const isMainCheckout = async (
+  $: EngineInterface,
+  dir?: string,
+): Promise<boolean> =>
   (await kindOf($)(dir === undefined ? ".git" : `${dir}/.git`)) !== "file";
 
 /** The line count of a file for the print rule: `Infinity` when it is too large to read. */

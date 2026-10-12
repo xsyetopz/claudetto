@@ -1,0 +1,86 @@
+// The destructive floor of the `guard` slice, denied in every session: the main session and a subagent alike (spec P37, step 4).
+// Each command is also sent through the wrappers that run another command, and each deny holds the exact command.
+// The commands are strings for `onBashCall`, and no command runs.
+
+import { expect, test } from "bun:test";
+import { main, mainDeny, subagentDeny } from "./ports.ts";
+
+/** The destructive commands of the floor, in their plain form. */
+const FLOOR = [
+  "git reset --hard",
+  "git clean -fd",
+  "git stash drop",
+  "git stash clear",
+  "git checkout -- .",
+  "git checkout HEAD -- src",
+  "git restore --source=HEAD src",
+  "git checkout -f main",
+  "git switch --discard-changes main",
+  "git reflog expire --expire=now --all",
+  "git gc --prune=now",
+  "git filter-branch --index-filter cmd HEAD",
+  "git push --force origin main",
+  "git push -f origin master",
+  "git branch -D x",
+  "rm -rf /",
+  "rm -rf ~",
+  "rm -fr $HOME",
+  "rm -r -f .git",
+  "rm --recursive --force /usr",
+  "mkfs.ext4 /dev/sda1",
+  "diskutil eraseDisk APFS X disk2",
+  "dd if=/dev/zero of=/dev/disk2",
+  "chmod -R 777 /",
+  "chown -R x ~",
+  "csrutil disable",
+  "spctl --master-disable",
+];
+
+/** The same commands with a changed spelling or a changed option, which the words of the command still match. */
+const SPELLINGS = [
+  'g"i"t reset --hard',
+  "git -C . reset --hard",
+  "git -c core.x=y reset --hard",
+  "find . -maxdepth 0 -exec git reset --hard \\;",
+];
+
+/** The forms of one command: the plain text, and the text through each wrapper that runs another command. */
+const formsOf = (command: string): string[] => [
+  command,
+  `env A=1 ${command}`,
+  `sudo ${command}`,
+  `timeout 5 ${command}`,
+  `xargs ${command}`,
+  ...(command.includes('"')
+    ? []
+    : [`bash -c "${command}"`, `eval "${command}"`]),
+  ...(command.includes("'") ? [] : [`sh -c '${command}'`]),
+];
+
+const ALL = [...FLOOR, ...SPELLINGS];
+
+test("each destructive command is denied in the main session, through each wrapper", async () => {
+  for (const base of ALL) {
+    for (const command of formsOf(base)) {
+      const reason = await mainDeny(command, main);
+      expect(reason, command).not.toBeNull();
+      expect(reason, command).toContain(command);
+    }
+  }
+});
+
+test("each destructive command is denied in a subagent, through each wrapper", async () => {
+  for (const base of ALL) {
+    for (const command of formsOf(base)) {
+      const reason = await subagentDeny(command, main);
+      expect(reason, command).not.toBeNull();
+      expect(reason, command).toContain(command);
+    }
+  }
+});
+
+test("a destructive command in a compound command is denied with the whole command in the reason", async () => {
+  const command = "ls -la && cd src; git reset --hard || echo failed";
+  const reason = await mainDeny(command, main);
+  expect(reason).toContain(command);
+});
