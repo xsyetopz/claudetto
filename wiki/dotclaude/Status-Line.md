@@ -19,7 +19,7 @@ The rows are set in `segments.ts`, and each segment has a row number.
 | 1, the session | Model and effort, context window, and cost |
 | 2, the limits | 5-hour limit, 7-day limit, and spend limit |
 
-- The folder segment shows the base name of `workspace.current_dir`.
+- The folder segment shows the base name of `workspace.current_dir`, then of `cwd`, then of the process folder, whichever is set first.
 - The git segment shows the branch, the dirty files, and the commits ahead and behind.
   It runs one `git` call, `status --porcelain=v2 -b` (`GIT_ARGS` in `domain/git.ts`).
   The call stops after `GIT_TIMEOUT_MS`, which is `1_500` milliseconds.

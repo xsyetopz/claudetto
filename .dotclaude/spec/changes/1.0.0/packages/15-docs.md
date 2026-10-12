@@ -134,7 +134,7 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
 4. A reviewer pass for each section, then one run that fixes the list.
    The sections of the pass: the start pages with `README.md` and `add-ons/`, `dotclaude/`, `claude-code/`, `rationale/` with `Decisions-Reversed`, `reference/` with `evidence/`, and `development/` with `CHANGELOG.md` and a light pass of `archive/`.
    - [x] The reviewer pass, with the findings in `evidence/p15-review.md`
-   - [ ] The fix runs: `p15-fix-start`, `p15-fix-rationale`, `p15-fix-reference`, `p15-fix-dotclaude`, `p15-fix-claude-code`, `p15-fix-evidence`, then item 6 of the last review section
+   - [x] The fix runs: `p15-fix-start`, `p15-fix-rationale`, `p15-fix-reference`, `p15-fix-dotclaude`, `p15-fix-claude-code`, `p15-fix-evidence`, then item 6 of the last review section
 
 ## Findings outside the docs
 
@@ -169,6 +169,7 @@ P15 does not own them, so they go to P16 or a new package.
   The `addons` check of `setup` also checks `npx`, not `bunx`.
 - `manualHint` in `slices/handoff/domain/text.ts` names `/handoff`, but the skill is `/dotclaude:handoff`.
 - The snippet asks for `git reset --hard`, and the guard denies it.
+- The comment of `src/kernel/budget.ts` on `CLAUDE_CODE_MAX_CONTEXT_TOKENS` says that Claude Code reads it only with `DISABLE_COMPACT`, but the `2.1.296` strings also read it as the window of a model id that is not a `claude-` id.
 - Claude Code `2.1.296` lists `hooksModules` as an `earlyAccess` flag. No source shows that the core hooks module runs without early access.
 
 ## Stale wiki claims for the reviewer pass

@@ -74,9 +74,8 @@ The problem is that dotclaude needs checks that run the plugin in a real session
 
 The choice is the `claude plugin eval` command of Claude Code.
 Claude Code owns the case format, so dotclaude keeps no harness of its own.
-The cases are in `src/plugins/dotclaude/evals/`, and each case has a `case.yaml` and a
-`scaffold.sh`.
-The folder holds 3 cases.
+Each case has a `case.yaml` and a `scaffold.sh`.
+`src/plugins/dotclaude/evals/` holds 3 cases, and the `evals/` folders of the slices hold 9 more.
 The recipe `eval` in `justfile` runs `claude plugin eval plugins/dotclaude` on the path of the
 checkout, with `--max-cost-usd 5`, `--keep-temp`, and a lock from `tools/lock.ts`.
 The add-on `dotclaude-lab` has the `eval-compare` slice, which runs `claude plugin eval` on two
