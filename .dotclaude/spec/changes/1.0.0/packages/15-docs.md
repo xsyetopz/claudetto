@@ -162,6 +162,10 @@ P15 does not own them, so they go to P16 or a new package.
 - `tests/dotclaude/agents/no-worktree-add.test.ts` checks text, against the test rule of `design.md`.
 - `evidence/zero-token.md` says that `state.json` is the only source, but P34 replaced it with `events.jsonl`.
 - `src/fragments/docs-snippet.json` allows `npx -y ctx7@0.5.14`, but the `docs` skill runs `bunx -y ctx7@latest`, so the rule does not match the command.
+  The `addons` check of `setup` also checks `npx`, not `bunx`.
+- `manualHint` in `slices/handoff/domain/text.ts` names `/handoff`, but the skill is `/dotclaude:handoff`.
+- The snippet asks for `git reset --hard`, and the guard denies it.
+- Claude Code `2.1.296` lists `hooksModules` as an `earlyAccess` flag. No source shows that the core hooks module runs without early access.
 
 ## Stale wiki claims for the reviewer pass
 
