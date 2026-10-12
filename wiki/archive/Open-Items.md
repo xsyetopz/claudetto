@@ -39,7 +39,7 @@ Labels: **measured** means a run on this machine, and **reported** means a claim
 | What the user does after a handoff note | 0.27.0. No hook tells the user to run `/clear`. |
 | The line-break hook (`sembr`) | 0.28.0 adds a new formatter and hooks ([Semantic line breaks](Semantic-Line-Breaks)). |
 | The behavior of the `tool.check` ask in auto mode on 2.1.292 | Measured on 2026-10-07: the classifier allowed the ask of the module, so 0.27.0 added a classic hook for the `rm` ask. 0.28.0 replaces that hook with `ask` permission rules and the sandbox. |
-| The stop at the 300K window | Measured on 2026-10-07: the turn ended with `blocking_limit`, and no compaction ran ([Design](Design#the-027-rebuild)). |
+| The stop at the 300K window | Measured on 2026-10-07: the turn ended with `blocking_limit`, and no compaction ran ([Design](Design)). |
 | The OpenSpec resume after `/clear` | Measured on 2026-10-07: `/opsx:apply` in a fresh session continued at the first unchecked task ([OpenSpec history](OpenSpec-History#measured-flow)). |
 | Full model id, `haiku` alias, and the effort clamp | A full id works in `agent.spawn`. The `haiku` alias is Haiku 5.5 on the Anthropic API and Haiku 4.5 on Bedrock, Vertex, and Foundry (docs only, no probe there). `maxEffortLevel: max` causes no clamp, and a hook-set `max` arrives as `xhigh` ([Decisions](Decisions-Router)). |
 | The session ledger race | 0.20.0 |

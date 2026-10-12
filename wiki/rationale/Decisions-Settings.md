@@ -52,7 +52,7 @@ That skips the `prompt.section` handlers at tier `user`, so the prompt text of d
 Trade-off, accepted by the user: with no guard, an installed mod with a `tool.check` hook can turn a content deny rule into an allow.
 A path deny and a whole-tool deny stay enforced.
 The guard of dotclaude never weakens a deny.
-See [Off-Switches](Off-Switches#deny-override-trade-off).
+See [Off-Switches](Off-Switches#managed-settings).
 
 Evidence:
 
@@ -133,10 +133,25 @@ Each key is in one list.
    - `DISABLE_TELEMETRY` and `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`, which both showed a loss on the second run.
    - `subagentPromptCacheTtl` set to `"1h"`, which showed no saving.
    The plan-mode denies, the task-tool denies, and `includeGitInstructions: false` are in the snippet, because the eval showed no loss.
-   The table is at [Off-Switches](Off-Switches#eval-of-2026-10-08).
-   The eval reports are not in the repository, so the table holds the figures.
+   The figures are in [Eval of 2026-10-08](#eval-of-2026-10-08).
 3. Never set: keys that disable hooks, that defeat the `model` and `effort` of the agent files, or that remove context that Claude needs.
    The lists are `NEVER_SET_KEYS` and `NEVER_SET_ENV` in `tests/support/settings-pin.ts`.
+
+### Eval of 2026-10-08
+
+The eval ran 12 cases with 3 runs per arm, with the harness of 0.27.0 and the first 0.28.0 work.
+The rule was to drop an item when the resolve rate, the over-claim rate, or the policy-violation rate got worse beyond the noise bound.
+When another measure got worse with a shown interval, the arm ran again, and the item was dropped only when the loss showed again.
+This page gives the figures, because the reports are not in the repository.
+
+| Item | Result | Decision |
+| --- | --- | --- |
+| `plan-mode` | First run: `multiSentenceShare` 0.6 against 0.718, shown. Second run: 0.694 against 0.752, not shown. Cost was lower with the item (0.002, interval 0 to 0.003, shown). | In the snippet. |
+| `task-tools` | No measure was worse. | In the snippet. |
+| `git-instructions` | No measure was worse. A sandbox commit kept the `Co-Authored-By` trailer. | In the snippet. |
+| `telemetry` | Second run: `turns` 4.75 against 5.5, `seconds` 12.113 against 15.432, and `outputTokens` 655.861 against 799.917. All three were shown worse for the item. | Not in the snippet. |
+| `nonessential-traffic` | Second run: `turns` 4.75 against 5.389 and `outputTokens` 655.861 against 762.472. Both were shown worse for the item. | Not in the snippet. |
+| `subagent-cache-1h` | Cost for each resolved task 0.028 against 0.027. The mean difference was 0.002, interval -0.008 to 0.007. No saving was shown. | Not in the snippet. |
 
 A key of the global config (`~/.claude.json`) is not in `settings.json`.
 The snippet sets the env var for it, such as `CLAUDE_CODE_AUTO_CONNECT_IDE`.
