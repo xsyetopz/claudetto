@@ -4,12 +4,17 @@
 
 import {
   hasFlag,
+  hasShort,
   isForce,
+  isPathspec,
   isWholeFolder,
   positionals,
   splitDashes,
 } from "./args.ts";
 import type { Ctx, Matcher } from "./types.ts";
+
+/** A subcommand word of `git` that the hook can read: letters, digits, and dashes only. */
+const LITERAL = /^[A-Za-z][\w-]*$/;
 
 /** The options of `checkout` that take a value. */
 const CHECKOUT_VALUES = ["-b", "-B", "--orphan", "--conflict"];
@@ -20,10 +25,21 @@ const STASH_VALUES = ["-m", "--message"];
 /** The branches that a force push must not change. */
 const DEFAULT_BRANCHES = new Set(["main", "master"]);
 
-/** The paths of `checkout` or `restore`: the words after `--`, or each word when there is no `--`. */
-const pathsOf = (args: string[], values: string[]): string[] => {
+/** The paths of `restore`: the words after `--`, or each word when there is no `--`. */
+const restorePaths = (args: string[]): string[] => {
   const { before, after } = splitDashes(args);
-  return after ?? positionals(before, values);
+  return after ?? positionals(before, RESTORE_VALUES);
+};
+
+/**
+ * The paths of `checkout`: the words after `--`.
+ * With no `--`, git reads the first word as a revision, so it is a path only when its form is a pathspec, such as `.` or a glob.
+ */
+const checkoutPaths = (args: string[]): string[] => {
+  const { before, after } = splitDashes(args);
+  if (after !== null) return after;
+  const [first, ...rest] = positionals(before, CHECKOUT_VALUES);
+  return first !== undefined && isPathspec(first) ? [first, ...rest] : rest;
 };
 
 /** True when one path of `paths` names a whole folder. */
@@ -80,23 +96,30 @@ export const gitMatchers: Matcher[] = [
       "git restore -s HEAD~1 ./",
       "git switch -f main",
       "git switch --discard-changes main",
+      "git rm -rf .",
+      "git rm -r -f src/",
+      "git $(echo reset) --hard",
     ],
     match: async (words, ctx) => {
       const [name, verb, ...args] = words;
       if (name !== "git") return false;
+      // The hook cannot read a subcommand that a substitution wrote, so it denies that call (the word is `""` or a variable).
+      if (verb !== undefined && !LITERAL.test(verb)) return true;
       if (verb === "reset") return args.includes("--hard");
       if (verb === "switch")
         return hasFlag(args, "-f", "--force", "--discard-changes");
       if (verb === "checkout")
         return (
           hasFlag(args, "-f", "--force") ||
-          (await anyWholeFolder(pathsOf(args, CHECKOUT_VALUES), ctx))
+          (await anyWholeFolder(checkoutPaths(args), ctx))
         );
       if (verb === "restore")
         return (
           writesWorktree(args) &&
-          (await anyWholeFolder(pathsOf(args, RESTORE_VALUES), ctx))
+          (await anyWholeFolder(restorePaths(args), ctx))
         );
+      // A forced `rm` drops the uncommitted work of its paths. `--cached` only unstages them.
+      if (verb === "rm") return isForce(args) && !hasFlag(args, "--cached");
       return false;
     },
   },
@@ -110,7 +133,9 @@ export const gitMatchers: Matcher[] = [
     ],
     match: async (words) => {
       const [name, verb, ...args] = words;
-      return name === "git" && verb === "clean" && isForce(args);
+      // A dry run only lists the files, so `-n` and `--dry-run` make the clean allowed.
+      const dryRun = hasShort(args, "n") || hasFlag(args, "--dry-run");
+      return name === "git" && verb === "clean" && isForce(args) && !dryRun;
     },
   },
   {
@@ -147,12 +172,15 @@ export const gitMatchers: Matcher[] = [
       "git push -f origin master",
       "git push --force-with-lease origin main",
       "git push origin +main",
+      "git push -fu origin main",
     ],
     match: async (words) => {
       const [name, verb, ...args] = words;
       if (name !== "git" || verb !== "push") return false;
+      // `-f` may sit in a cluster, such as `-fu`. A force push with no branch, such as `git push --force`, is not denied here: the classifier covers it.
       const forced =
-        args.some((a) => a === "-f" || a.startsWith("--force")) ||
+        isForce(args) ||
+        args.some((a) => a.startsWith("--force")) ||
         args.some((a) => a.startsWith("+"));
       return (
         forced && positionals(args).some((w) => DEFAULT_BRANCHES.has(destOf(w)))

@@ -25,6 +25,7 @@ await Bun.write(path.join(linked, "src", "a.ts"), "export {};\n");
 /** The engine ports that the guard reads: `fs.stat` for the kind of a path, relative to `cwd`. */
 const engineIn = (cwd: string): EngineInterface =>
   ({
+    session: { cwd: async () => cwd },
     fs: {
       stat: async (file: string) => {
         const s = await fs.promises.stat(path.resolve(cwd, file));
