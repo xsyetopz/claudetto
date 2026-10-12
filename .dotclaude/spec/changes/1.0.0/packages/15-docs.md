@@ -120,7 +120,8 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    - [ ] `Architecture` (with `Core-Plugin`), `Agents`, `Skills`, `Spec-Store`
    - [ ] `Prompt-Surface` (with `System-Prompt`), `Context-And-Handoff` (with `Context-Bound`), `Second-Opinion`
    - [ ] `Status-Line`, `Semantic-Line-Breaks`, `Contributions`
-   - [ ] `Add-Ons`, `Code-Graph`, `Browser`, `Library-Docs`, `Sessions`, `Lab`
+   - [x] `Code-Graph`, `Browser`, `Library-Docs`, `Sessions`
+   - [ ] `Add-Ons`, `Lab` (a WIP commit is merged, so check it)
    - [ ] `Claude-Code-Internals`, `Request-Build` (with `Claude-Mods`), `Tools-And-Deferral`, `Hook-Events` (with `Hooks`), `Plugin-Loader`
    - [ ] `Settings-Resolution`, `Subagents`, `Compaction-And-Context`, `Undocumented-Reads`
    - [ ] `Settings-Snippet-Keys`, `Off-Switches`, `Settings-Schema`, `Bounds`
