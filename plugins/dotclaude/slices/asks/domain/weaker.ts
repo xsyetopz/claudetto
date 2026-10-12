@@ -2,8 +2,12 @@
 // The ask before a change that makes a check weaker (package P36), as pure functions.
 // A protected file is a test file, a limits file, a lint config, a runner config, a CI file, a hook file, or a settings file.
 // For each kind, a function compares the text before and after a `Write`, `Edit`, or `MultiEdit` and gives what got weaker.
-// A change that keeps or adds checks gets no ask.
+// A read never asks.
+// A change to a protected file asks unless every changed part is on the safe list of its kind:
+// a format change, a comment change, a move with the same content, or an added check.
+// The safe list of each kind is in the file of its function.
 // The call asks when a function cannot read the format, or when the text is over `SCAN_MAX_CHARS`, so that an unknown change never passes.
+// A `sed -i` of a protected file asks in `writes.ts`.
 // A new file has no text before, so it adds checks and gets no ask.
 // `ch` is the effect from `change` in `text.ts`.
 
