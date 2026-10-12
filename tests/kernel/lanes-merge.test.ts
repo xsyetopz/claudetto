@@ -4,9 +4,9 @@ import { expect, test } from "bun:test";
 import type { FileReader } from "../../src/kernel/ports.ts";
 import {
   activeProgress,
+  eventsPath,
   packageLanes,
   SPEC_SCHEMA,
-  statePath,
 } from "../../src/kernel/spec-store.ts";
 
 const fakeFiles = (files: Record<string, string>): FileReader => ({
@@ -20,11 +20,20 @@ const fakeFiles = (files: Record<string, string>): FileReader => ({
   },
 });
 
-const stateText = (lanes: Record<string, string>) =>
-  JSON.stringify({ schema: SPEC_SCHEMA, lanes, events: [], handoff: null });
+const eventsText = (lanes: Record<string, string>) =>
+  [
+    { schema: SPEC_SCHEMA },
+    ...Object.entries(lanes).map(([pkg, lane]) => ({
+      at: "2026-01-01T00:00:00.000Z",
+      package: pkg,
+      lane,
+    })),
+  ]
+    .map((line) => JSON.stringify(line))
+    .join("\n");
 
 const files = fakeFiles({
-  [statePath("1.0.0")]: stateText({ P01: "done", P99: "doing" }),
+  [eventsPath("1.0.0")]: eventsText({ P01: "done", P99: "doing" }),
   ".dotclaude/spec/changes/1.0.0/packages/01-a.md":
     "---\nid: P01\ndeps: []\n---\n",
   ".dotclaude/spec/changes/1.0.0/packages/24-tiers.md":
@@ -32,13 +41,11 @@ const files = fakeFiles({
 });
 
 test("`packageLanes` adds a package with a file as planned and keeps a lane with no file", async () => {
-  const state = {
-    schema: SPEC_SCHEMA,
-    lanes: { P01: "done", P99: "doing" },
-    events: [],
-    handoff: null,
-  } as const;
-  expect(await packageLanes(files, "1.0.0", state)).toStrictEqual({
+  const events = [
+    { at: "t", package: "P01", lane: "done" },
+    { at: "t", package: "P99", lane: "doing" },
+  ] as const;
+  expect(await packageLanes(files, "1.0.0", events)).toStrictEqual({
     P01: "done",
     P99: "doing",
     P24: "planned",

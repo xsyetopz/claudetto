@@ -28,7 +28,8 @@ export type IssueRule =
   | "plan.duplicate-id"
   | "plan.dep-missing"
   | "plan.dep-cycle"
-  | "wave.owns-overlap";
+  | "wave.owns-overlap"
+  | "plan.checkbox-lane";
 
 /** One failed check, with the rule that it broke and the name of the item that broke it. */
 export interface Issue {
@@ -226,7 +227,7 @@ const cycleMembers = (packages: Package[]): string[] => {
 /**
  * Checks that no two packages of one wave own overlapping paths.
  * The caller passes the open packages of one wave, because the lanes and the
- * waves live in `state.json`, outside this domain.
+ * waves live in `events.jsonl`, outside this domain.
  * Two entries overlap when one is a prefix of the other.
  */
 export const validateWave = (packages: Package[]): Issue[] =>
@@ -243,5 +244,21 @@ export const validateWave = (packages: Package[]): Issue[] =>
       ),
   );
 
-const ownsOverlap = (a: string[], b: string[]): boolean =>
+export const ownsOverlap = (a: string[], b: string[]): boolean =>
   a.some((x) => b.some((y) => x.startsWith(y) || y.startsWith(x)));
+
+/** Checks that the checkbox of each package in the list agrees with its lane: `[x]` when `done`, `[ ]` otherwise. */
+export const validateCheckboxes = (
+  entries: readonly { id: string; checked: boolean }[],
+  lanes: Readonly<Record<string, string>>,
+): Issue[] =>
+  entries
+    .filter((e) => lanes[e.id] !== undefined)
+    .filter((e) => e.checked !== (lanes[e.id] === "done"))
+    .map((e) =>
+      issue(
+        "plan.checkbox-lane",
+        e.id,
+        `the checkbox is ${e.checked ? "[x]" : "[ ]"} but the lane is \`${lanes[e.id]}\``,
+      ),
+    );

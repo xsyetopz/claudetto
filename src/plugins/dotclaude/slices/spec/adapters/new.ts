@@ -2,8 +2,11 @@
 
 import path from "node:path";
 import { SPEC_ROOT } from "../../../../../kernel/paths.ts";
-import type { ChangeState } from "../../../../../kernel/spec-store.ts";
-import { SPEC_SCHEMA } from "../../../../../kernel/spec-store.ts";
+import {
+  EVENTS_FILE,
+  eventLine,
+  eventsHeader,
+} from "../../../../../kernel/spec-store.ts";
 import { CHANGE_ID, DEFAULT_SIZE, SIZES, type Size } from "../limits.ts";
 import {
   CHANGE,
@@ -73,14 +76,14 @@ export const newCommand = async (run: Run, args: string[]): Promise<number> => {
     run.io.log(path.posix.join(dir, file));
   }
   if (size === "large") {
-    const state: ChangeState = {
-      schema: SPEC_SCHEMA,
-      lanes: { P01: "planned" },
-      events: [],
-      handoff: null,
-    };
-    await run.store.writeState(id, state);
-    run.io.log(path.posix.join(dir, "state.json"));
+    const file = path.posix.join(dir, EVENTS_FILE);
+    const first = {
+      at: run.clock.now().toISOString(),
+      package: "P01",
+      lane: "planned",
+    } as const;
+    await run.store.write(file, eventsHeader() + eventLine(first));
+    run.io.log(file);
   }
   return 0;
 };

@@ -17,13 +17,19 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The `/handoff` skill names the file, and the `turn.complete` hook runs `/clear` and the resume prompt.
   The option `mainHandover` is `manual` by default, and it takes `auto` and `off`.
   A `tool.call` hook adds a report-now note to a subagent that nears its context bound or its `maxTurns`.
+- The `dotclaude-spec` commands `ready` and `merge` do two steps of `/ship` with no model call.
+  `ready <id>` prints the packages that can start, with no overlap of `owns` between them, and `merge <package> <branch>` needs the package in `review`, commits the lane files, merges the branch, runs `just generate`, sets the lane `done`, and commits `plugins/` with the lane files.
+  `lane` also sets the checkbox of the package line in `packages.md`, `validate` reports a checkbox that does not agree with the lane, and `record` writes the empty sections of a hotfix record.
 
 ### Changed
 
+- The spec store keeps its lane changes in an append-only `events.jsonl`, one line for each change, in place of `state.json`.
+  The lane of a package is its last line, and `.gitattributes` sets `merge=union` so two branches merge with no conflict.
+  The store no longer names the handoff file.
 - The `drift` command of `dotclaude-setup` reports a rule file in `.claude/rules/` whose `paths` front matter does not parse, whose braces expand over 1000 patterns, or whose glob matches no tracked file.
   The `trim` slice lists the rules with no `paths` as a source of context at the start of a session.
 - The spec store takes the packages of a change from its package files.
-  A package with a file and no lane in `state.json` is `planned` for `lane`, `status`, `next`, `validate`, and the status line.
+  A package with a file and no line in `events.jsonl` is `planned` for `lane`, `status`, `next`, `validate`, and the status line.
 - The `lib/` and `features/` files of each plugin are TypeScript (`.ts`), and `bun check` type-checks them with `noUncheckedIndexedAccess`.
 - The core hooks module is `hooks/register.ts`.
   The check that denies a `Bash` command that only prints a file runs in its `tool.call` hook, and the checks that ask before an edit run in its `tool.check` hook.
@@ -32,6 +38,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The classic `PostToolUse` context hook is at `hooks/PostToolUse/context.ts`.
 - The add-on step of `setup` checks the Bun version for `dotclaude-sessions` and `dotclaude-lab`, and names Bun 1.4.3 when it is older.
   It checked Node.js 22.18 before, but the bins of these plugins run on Bun.
+- The write ask for code in another language, such as `ruby -e` or `python3 -c`, counts a path that the code names only when the same code has a write word (`File.write`, `json.dump`, `os.remove`, an open mode `"w"`, or a `>` redirect).
+  A command such as `ruby -e 'YAML.load_file(".github/workflows/check.yml")'` that only reads the path no longer asks.
 
 ### Removed
 

@@ -171,7 +171,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P28, P24, P26, P27.
   Owns: `src/kernel/` (the path module), the path parts of each slice, the exclude parts of `setup`, and their tests.
   Verify: `just check`, a test for each rule in a repository with no rule, one with the rule, and a folder that is not a git repository, and a `git status` after one session in `just sandbox` that shows no untracked dotclaude file.
-- [ ] P34 Spec store events: an append-only `events.jsonl` with one line for each lane change replaces `state.json` ([change](change.md), decisions, the user, 2026-10-12).
+- [x] P34 Spec store events: an append-only `events.jsonl` with one line for each lane change replaces `state.json` ([change](change.md), decisions, the user, 2026-10-12).
   The lanes come from the last line of each package, so no lane map can drift from the log.
   `schema` goes in a header line, and the handoff path follows P32.
   Each reader and writer changes: `src/kernel/spec-store.ts`, `lane`, `status`, `next`, `validate`, `new`, and the status line.
@@ -186,6 +186,11 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P19, P28, P34.
   Owns: the parts that the list names, and their tests.
   Verify: `just check`, and the token cost of each moved task before and after, with `dotclaude-usage`.
+- [ ] P36 `asks` on weaker checks: the `asks` slice asks only when a change weakens a check, and never for a read ([change](change.md), decisions, the user, 2026-10-12).
+  A change to a protected file that keeps or adds checks gets no ask, for `Edit`, `MultiEdit`, `Write`, and a shell edit in place.
+  Deps: P06.
+  Owns: the `asks` slice and its tests.
+  Verify: `just check`, `just lab`, and a test for each kind of protected file with one change that weakens a check and one that does not.
 - [ ] P14 Handoff cost: one handoff against one compaction on the same session, with `dotclaude-usage`.
   It only reports, in `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.
   Deps: P13.
@@ -193,6 +198,14 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
 
 ## Wave 4: release
 
+- [ ] P35 Worker lessons: the subagent runs of dotclaude use the lessons of the Bun port to Rust, at the scale of a subscription ([change](change.md), decisions, the user, 2026-10-12).
+  A subagent that nears its `maxTurns` commits its work and hands back a report, so no run ends with no report.
+  `/ship` runs one `reviewer` on the diff of each package before the merge, and gives it no report of the implementer.
+  The `guard` slice denies a git command that changes shared state in a subagent, such as `git stash`, `git reset --hard`, and `git checkout <rev> -- .`.
+  `/ship` starts each wave with a count of runs from the tier cap of P24 and the 5h and weekly usage now, not from one fixed value.
+  Deps: P13, because P13 adds the note near the turn limit, and P33, because P33 changes `/ship`.
+  Owns: the `guard`, `agents`, and `statusline` slices, the `/ship` skill, the turn bound of `handoff`, and their tests.
+  Verify: `just check`, a lab test for each denied git command in a subagent, and a lab test that a subagent gets the note before its last turn.
 - [ ] P15 Docs: the wiki, the README, and a new CHANGELOG that starts at 1.0.0, with the numbers of P14.
   Deps: P14.
   Owns: `wiki/`, `README.md`, `CHANGELOG.md`, `docs/`, `tools/wiki.ts`.

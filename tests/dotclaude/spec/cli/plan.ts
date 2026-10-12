@@ -1,6 +1,6 @@
-// A fixture plan of a large change: `packages.md`, the briefs, and `state.json`.
+// A fixture plan of a large change: `packages.md`, the briefs, and `events.jsonl`.
 
-import { brief, makeStore, stateText } from "./helpers.ts";
+import { brief, eventsText, makeStore } from "./helpers.ts";
 
 export const CHANGE = ".dotclaude/spec/changes/c1";
 
@@ -25,13 +25,16 @@ export const makePlan = (
     .map((wave) => {
       const entries = packages
         .filter((p) => (p.wave ?? 1) === wave)
-        .map((p) => `- [${p.checked ? "x" : " "}] ${p.id} Title of ${p.id}`);
+        .map(
+          (p) =>
+            `- [${(p.checked ?? p.lane === "done") ? "x" : " "}] ${p.id} Title of ${p.id}`,
+        );
       return [`## Wave ${wave}`, "", ...entries].join("\n");
     })
     .join("\n\n");
   const files: Record<string, string> = {
     [`${CHANGE}/packages.md`]: `# Packages\n\n${list}\n`,
-    [`${CHANGE}/state.json`]: stateText(
+    [`${CHANGE}/events.jsonl`]: eventsText(
       Object.fromEntries(packages.map((p) => [p.id, p.lane ?? "planned"])),
     ),
   };

@@ -11,7 +11,9 @@ test("new trivial writes only change.md with a task", async () => {
     await read(root, ".dotclaude/spec/changes/fix-typo/change.md"),
   ).toContain("# fix-typo");
   expect(has(root, ".dotclaude/spec/changes/fix-typo/specs")).toBe(false);
-  expect(has(root, ".dotclaude/spec/changes/fix-typo/state.json")).toBe(false);
+  expect(has(root, ".dotclaude/spec/changes/fix-typo/events.jsonl")).toBe(
+    false,
+  );
 });
 
 test("new medium is the default and writes a delta file", async () => {
@@ -24,21 +26,20 @@ test("new medium is the default and writes a delta file", async () => {
   expect(has(root, ".dotclaude/spec/changes/add-x/design.md")).toBe(false);
 });
 
-test("new large writes design, packages, and a state with one planned package", async () => {
+test("new large writes design, packages, and a log with one planned package", async () => {
   const root = await makeStore();
   expect((await run(root, "new", "big", "--size", "large")).code).toBe(0);
   for (const f of ["design.md", "packages.md", "packages/01-first.md"]) {
     expect(has(root, `.dotclaude/spec/changes/big/${f}`)).toBe(true);
   }
-  const state = JSON.parse(
-    await read(root, ".dotclaude/spec/changes/big/state.json"),
-  );
-  expect(state).toStrictEqual({
-    schema: 1,
-    lanes: { P01: "planned" },
-    events: [],
-    handoff: null,
-  });
+  const lines = (await read(root, ".dotclaude/spec/changes/big/events.jsonl"))
+    .trim()
+    .split("\n")
+    .map((line) => JSON.parse(line));
+  expect(lines).toStrictEqual([
+    { schema: 1 },
+    { at: `${TODAY}T10:00:00.000Z`, package: "P01", lane: "planned" },
+  ]);
 });
 
 test("a new change of each size passes validate", async () => {
@@ -80,6 +81,15 @@ test("record writes a dated file and keeps a second record of the same text", as
   expect(await read(root, first.out[0] ?? "")).toContain(
     "# Hotfix: Fix the $& crash",
   );
+});
+
+test("record writes the empty sections of a hotfix in order", async () => {
+  const root = await makeStore();
+  const r = await run(root, "record", "Fix the crash");
+  const headings = (await read(root, r.out[0] ?? ""))
+    .split("\n")
+    .filter((l) => l.startsWith("## "));
+  expect(headings).toStrictEqual(["## Cause", "## Fix", "## Check"]);
 });
 
 test("record stops with no text", async () => {

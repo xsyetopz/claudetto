@@ -1,6 +1,6 @@
 ---
 id: P16
-deps: [P13, P14, P15, P19, P24, P26, P27, P28, P29, P30, P31, P32]
+deps: [P13, P14, P15, P19, P24, P26, P27, P28, P29, P30, P31, P32, P33, P34, P35, P36]
 owns: ["tools/rebuild-pending.txt", "tests/support/rebuild-list.test.ts"]
 verify: just check, and the user approves the version 1.0.0 and the push
 agent: implementer

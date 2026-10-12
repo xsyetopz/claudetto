@@ -1,4 +1,4 @@
-// The store of the specs: the types of `state.json` and the reader of it.
+// The store of the specs: the format of `events.jsonl` and the reader of it.
 // The `spec` slice, the status line, and the handoff read the store through this file.
 // Only the `spec` slice writes it. The reader takes a `FileReader`, so a test needs no file on disk.
 
@@ -6,7 +6,10 @@ import path from "node:path";
 import { SPEC_ROOT } from "./paths.ts";
 import type { FileReader } from "./ports.ts";
 
-/** The `schema` number of `state.json` that this version reads. Another number stops the reader. */
+/** The name of the log file in the folder of a change. */
+export const EVENTS_FILE = "events.jsonl";
+
+/** The `schema` number of `events.jsonl` that this version reads. Another number stops the reader. */
 export const SPEC_SCHEMA = 1;
 
 /** The lanes of a package, from the first to the last. */
@@ -22,13 +25,8 @@ export type LaneEvent = {
   readonly lane: Lane;
 };
 
-/** The content of `state.json` of one change. */
-export type ChangeState = {
-  readonly schema: typeof SPEC_SCHEMA;
-  readonly lanes: Readonly<Record<string, Lane>>;
-  readonly events: readonly LaneEvent[];
-  readonly handoff: string | null;
-};
+/** The first line of `events.jsonl`. */
+export type EventsHeader = { readonly schema: typeof SPEC_SCHEMA };
 
 /** The done and total counts of the active change, for a segment such as `◆ 1.0.0 4/13`. */
 export type Progress = {
@@ -37,27 +35,45 @@ export type Progress = {
   readonly total: number;
 };
 
-/** The path of `state.json` of the change `id`. */
-export const statePath = (id: string): string =>
-  path.posix.join(SPEC_ROOT, id, "state.json");
+/** The path of `events.jsonl` of the change `id`. */
+export const eventsPath = (id: string): string =>
+  path.posix.join(SPEC_ROOT, id, EVENTS_FILE);
+
+/** The header line of a new `events.jsonl`, with its line end. */
+export const eventsHeader = (): string =>
+  `${JSON.stringify({ schema: SPEC_SCHEMA } satisfies EventsHeader)}\n`;
+
+/** One line of `events.jsonl` for `event`, with its line end. */
+export const eventLine = (event: LaneEvent): string =>
+  `${JSON.stringify(event)}\n`;
 
 /**
- * The state of the change `id`, or null when the change has no `state.json`.
- * The reader throws an `Error` that names the file when `schema` is not `SPEC_SCHEMA`.
+ * The lane events of the change `id`, in the order of the log, or null when the change has no `events.jsonl`.
+ * The reader throws an `Error` that names the file when the header has a `schema` other than `SPEC_SCHEMA`.
  */
-export const readState = async (
+export const readEvents = async (
   files: FileReader,
   id: string,
-): Promise<ChangeState | null> => {
-  const file = statePath(id);
+): Promise<readonly LaneEvent[] | null> => {
+  const file = eventsPath(id);
   const text = await files.read(file);
   if (text === null) return null;
-  const state = JSON.parse(text) as ChangeState;
-  if (state.schema !== SPEC_SCHEMA)
+  const [head = "", ...rest] = text.split("\n").filter((line) => line.trim());
+  const header = JSON.parse(head || "{}") as Partial<EventsHeader>;
+  if (header.schema !== SPEC_SCHEMA)
     throw new Error(
-      `${file} has schema ${String(state.schema)}, which this version does not read.`,
+      `${file} has schema ${String(header.schema)}, which this version does not read.`,
     );
-  return state;
+  return rest.map((line) => JSON.parse(line) as LaneEvent);
+};
+
+/** The lane of each package in `events`: the last line of the package, in the order of the first line. */
+export const lastLanes = (
+  events: readonly LaneEvent[],
+): Record<string, Lane> => {
+  const lanes: Record<string, Lane> = {};
+  for (const event of events) lanes[event.package] = event.lane;
+  return lanes;
 };
 
 /** The id in the front matter of a package file, or null when the file has none. */
@@ -69,16 +85,16 @@ const packageId = (text: string): string | null => {
 
 /**
  * The lanes of the packages of the change `id`.
- * The package files in `packages/` give the set of packages, and a package with a file and no lane is `planned`.
+ * The package files in `packages/` give the set of packages, and a package with a file and no line in the log is `planned`.
  * A lane of a package with no file stays.
- * The lanes of `state` come first, in their order, and then the packages that have only a file.
+ * The packages of `events` come first, in the order of their first line, and then the packages that have only a file.
  */
 export const packageLanes = async (
   files: FileReader,
   id: string,
-  state: ChangeState,
+  events: readonly LaneEvent[],
 ): Promise<Record<string, Lane>> => {
-  const lanes: Record<string, Lane> = { ...state.lanes };
+  const lanes = lastLanes(events);
   const dir = path.posix.join(SPEC_ROOT, id, "packages");
   for (const name of (await files.list(dir))
     .filter((n) => n.endsWith(".md"))
@@ -92,16 +108,16 @@ export const packageLanes = async (
 
 /**
  * The active change and its counts: the last change, in the order of its id, that has a package which is not `done`.
- * It gives null when every change is done, or when no change has a `state.json`.
+ * It gives null when every change is done, or when no change has an `events.jsonl`.
  */
 export const activeProgress = async (
   files: FileReader,
 ): Promise<Progress | null> => {
   let active: Progress | null = null;
   for (const id of (await files.list(SPEC_ROOT)).sort()) {
-    const state = await readState(files, id);
-    if (!state) continue;
-    const lanes = Object.values(await packageLanes(files, id, state));
+    const events = await readEvents(files, id);
+    if (!events) continue;
+    const lanes = Object.values(await packageLanes(files, id, events));
     const done = lanes.filter((lane) => lane === "done").length;
     if (done < lanes.length) active = { id, done, total: lanes.length };
   }

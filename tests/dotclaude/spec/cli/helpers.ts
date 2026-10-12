@@ -43,8 +43,19 @@ export const run = async (cwd: string, ...args: string[]): Promise<Outcome> => {
   return { code, out, err };
 };
 
-export const stateText = (lanes: Record<string, string>): string =>
-  `${JSON.stringify({ schema: 1, lanes, events: [], handoff: null }, null, 2)}\n`;
+/** The text of an `events.jsonl`: a header, and one line for each package, in order. */
+export const eventsText = (lanes: Record<string, string>, schema = 1): string =>
+  [
+    { schema },
+    ...Object.entries(lanes).map(([pkg, lane]) => ({
+      at: "2026-01-01T00:00:00.000Z",
+      package: pkg,
+      lane,
+    })),
+  ]
+    .map((line) => JSON.stringify(line))
+    .join("\n")
+    .concat("\n");
 
 export const brief = (
   id: string,

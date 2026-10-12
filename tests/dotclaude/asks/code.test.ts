@@ -65,6 +65,44 @@ test("a protected path in code of any language gets the write ask", async () => 
   }
 });
 
+const CI_FILE = ".github/workflows/check.yml";
+
+test("code that only names a path, with no write word, gets no ask", async () => {
+  for (const command of [
+    `ruby -ryaml -e 'YAML.load_file("${CI_FILE}"); puts "yaml ok"'`,
+    `python3 -c 'import json; json.load(open("${CI_FILE}"))'`,
+    `node -e "console.log(require('fs').readFileSync('${CI_FILE}', 'utf8'))"`,
+    `perl -ne 'print if /on:/' ${CI_FILE}`,
+  ])
+    expect(await out(command), command).toBe(undefined);
+});
+
+test("code that writes a path through its own file API gets the write ask", async () => {
+  for (const command of [
+    `ruby -e 'File.write("${CI_FILE}", "x")'`,
+    `python3 -c 'open("${CI_FILE}","w").write("x")'`,
+    `node -e 'require("fs").writeFileSync("${CI_FILE}", "x")'`,
+    `node -e 'require("fs").rmSync("${CI_FILE}")'`,
+    `python3 -c 'import os; os.remove("${CI_FILE}")'`,
+    `ruby -e 'File.open("${CI_FILE}", "a") { |f| f.puts 1 }'`,
+    `perl -e 'open(F, ">${CI_FILE}")'`,
+    `awk 'BEGIN { print "x" > "${CI_FILE}" }'`,
+    `python3 -c 'import os; os.open("${CI_FILE}", os.O_WRONLY)'`,
+    `python3 -c 'import os; os.open("${CI_FILE}", os.O_RDWR | os.O_CREAT)'`,
+    `ruby -e 'File.open("${CI_FILE}", File::WRONLY)'`,
+    `node -e 'const fs=require("fs"); fs.open("${CI_FILE}", fs.constants.O_WRONLY, () => {})'`,
+    `python3 -c 'import fileinput; fileinput.input("${CI_FILE}", inplace=True)'`,
+    `perl -e 'open(FH, "+<${CI_FILE}")'`,
+  ]) {
+    const o = await out(command);
+    expect(o?.permissionDecision, command).toBe("ask");
+    expect(
+      o?.permissionDecisionReason?.includes(`\`${CI_FILE}\``),
+      command,
+    ).toBeTruthy();
+  }
+});
+
 test("text that no program runs as code gets no ask", async () => {
   for (const command of [
     "cat > notes.md <<'EOF'\nRun git stash, and see tests/a.test.mjs.\nEOF",

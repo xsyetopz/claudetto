@@ -106,4 +106,10 @@ export const PACKAGES = `# <id> packages
 export const HOTFIX = `# Hotfix: <text>
 
 Date: <date>
+
+## Cause
+
+## Fix
+
+## Check
 `;

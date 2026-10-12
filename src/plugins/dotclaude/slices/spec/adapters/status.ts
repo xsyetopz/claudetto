@@ -20,12 +20,12 @@ export const statusCommand = async (
 ): Promise<number> => {
   const id = await resolveId(run, args[0]);
   if (id === null) return 1;
-  const state = await run.store.state(id);
-  if (state === null) {
-    run.io.error(`The change \`${id}\` has no \`state.json\`.`);
+  const events = await run.store.events(id);
+  if (events === null) {
+    run.io.error(`The change \`${id}\` has no \`events.jsonl\`.`);
     return 1;
   }
-  const packages = Object.entries(await run.store.lanes(id, state));
+  const packages = Object.entries(await run.store.lanes(id, events));
   const count = (lane: Lane): number =>
     packages.filter(([, l]) => l === lane).length;
   run.io.log(`◆ ${id} ${count("done")}/${packages.length}`);
@@ -46,12 +46,12 @@ export const nextCommand = async (
 ): Promise<number> => {
   const id = await resolveId(run, args[0]);
   if (id === null) return 1;
-  const state = await run.store.state(id);
-  if (state === null) {
-    run.io.error(`The change \`${id}\` has no \`state.json\`.`);
+  const events = await run.store.events(id);
+  if (events === null) {
+    run.io.error(`The change \`${id}\` has no \`events.jsonl\`.`);
     return 1;
   }
-  const lanes = await run.store.lanes(id, state);
+  const lanes = await run.store.lanes(id, events);
   const { packages, texts } = await readBriefs(run.store, id);
   const order = (await readEntries(run.store, id)).map((e) => e.id);
   const rank = (pkg: string): number => {
