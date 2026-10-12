@@ -1,8 +1,7 @@
-// The check on a weaker lint config, check runner config, or CI file (package P36), as pure functions.
+// The check on a weaker lint config or check runner config (package P36), as pure functions.
 // A lint config or a runner config gets weaker when a rule goes off or to a lower level,
 // an ignore or exclude entry is added, a rule is removed, or a threshold gets lower.
-// A CI file gets weaker when a job or a step is removed, a check command is removed,
-// or `continue-on-error`, `|| true`, `if: false`, or a skip is added.
+// The check on a CI file is in `cidiff.ts`.
 // A JSON config is compared by key (`jsondiff.ts`), and other text is compared by line (`textdiff.ts`).
 
 import {
@@ -40,10 +39,3 @@ export const configWeaker = (
   if (isObj(was) && isObj(now)) return jsonWeaker(was, now);
   return textWeaker(before, after, HASH_COMMENT_FILE.test(rel));
 };
-
-/** What a call takes from a CI file, or undefined. A CI file is YAML, or a `Jenkinsfile`, where a line is a step or a key. */
-export const ciWeaker = (
-  _rel: string,
-  before: string,
-  after: string,
-): string | undefined => textWeaker(before, after, true);

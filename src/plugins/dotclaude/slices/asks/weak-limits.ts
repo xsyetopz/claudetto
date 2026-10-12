@@ -96,6 +96,26 @@ export const WEAKENING_LINE = [
   /["']?\w[\w/@.-]*["']?\s*[:=]\s*["']?(?:off|disable|disabled|none)["']?\s*,?$/i,
 ];
 
+/** The file extensions of a CI file that the YAML reader of `cidiff.ts` reads. Another CI file is compared as text. */
+export const CI_YAML_FILE = /\.ya?ml$/i;
+
+/** The keys of a CI step or job that skip it or let it fail. An added step or job with one of them asks. The text is one line of a key or of an inline map. */
+export const CI_RISKY_KEY =
+  /(?:^|[\s{,])["']?(?:if|continue-on-error|timeout-minutes|shell|allow_failure|when)["']?\s*:|<<\s*:/;
+
+/** The text of a CI line that lets a command fail without a failed step. The text is one line of a `run` value or of a script. */
+export const CI_RISKY_COMMAND = [
+  /\|\|\s*(?:true\b|:(?:\s|$)|exit\s+0\b|echo\b)/,
+  /;\s*(?:true\b|:(?:\s|$))/,
+  /\bexit\s+0\b/,
+  /\bset\s+\+e\b/,
+  /^(?:true|:)$/,
+  /^["']?run["']?\s*:\s*["']?(?:true["']?\s*$|:["']?\s*$|exit\b)/,
+];
+
+/** The parents of a CI line where an added child is safe: a step under `steps`, and a job under `jobs`. */
+export const CI_ADDABLE_PARENT = /^["']?(?:steps|jobs)["']?:$/;
+
 /** The text of a lost line that holds no rule, so the loss checks nothing less: a display name, a description, a bracket. */
 export const LABEL_LINE =
   /^\W*$|^\W*(?:name|description|title|label|\$schema|version)\s*[:=]/i;

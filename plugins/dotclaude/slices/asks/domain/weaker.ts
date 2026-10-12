@@ -9,10 +9,11 @@
 
 import { CLAUDE_DIR } from "../../../kernel/paths.ts";
 import { LIMIT_FILE_NAME, SCAN_MAX_CHARS } from "../limits.ts";
+import { ciWeaker } from "./cidiff.ts";
 import { hookFileWeaker, settingsWeaker } from "./hookdiff.ts";
 import { UNREADABLE } from "./jsondiff.ts";
 import { isTestPath, pathKind } from "./kinds.ts";
-import { ciWeaker, configWeaker } from "./lintdiff.ts";
+import { configWeaker } from "./lintdiff.ts";
 import { limitsWeaker, testWeaker } from "./testdiff.ts";
 import type { Change } from "./text.ts";
 

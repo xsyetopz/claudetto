@@ -59,6 +59,7 @@ export const RUNNER_CONFIG_NAMES = [
   /^pytest\.ini$/,
   /^tox\.ini$/,
   /^\.coveragerc$/,
+  /^bunfig\.toml$/,
 ];
 
 /** The file names of a build file with recipes or targets, matched on the last path part. */
