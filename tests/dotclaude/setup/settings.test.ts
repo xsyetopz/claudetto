@@ -331,8 +331,8 @@ test("`--apply` keeps the user entries of `autoMode`, and puts `$defaults` in fr
     "Custom allow",
     ...AUTOMODE.allow.slice(1),
   ]);
-  expect(auto.soft_deny).toStrictEqual(["$defaults", "Custom deny"]);
-  expect(auto.hard_deny).toStrictEqual(["$defaults"]);
+  expect(auto.soft_deny.slice(0, 2)).toStrictEqual(["$defaults", "Custom deny"]);
+  expect(auto.hard_deny[0]).toBe("$defaults");
   expect(auto.environment).toStrictEqual(["$defaults", "My env"]);
 });
 

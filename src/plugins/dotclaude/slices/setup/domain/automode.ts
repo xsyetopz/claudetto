@@ -2,6 +2,7 @@
 // Claude Code reads `autoMode` only from the user settings, so setup writes it to the user scope only.
 // This file is in the import graph of the hooks module through `drift.ts`, so it has no `node:` import.
 
+import { prosesOf } from "../../../../../kernel/policy/index.ts";
 import { AUTOMODE } from "../texts.ts";
 import { isObject } from "./merge.ts";
 import type { Change, Json } from "./types.ts";
@@ -10,6 +11,20 @@ import type { Change, Json } from "./types.ts";
 export const DEFAULTS = "$defaults";
 
 const show = (v: unknown) => (v === undefined ? "(unset)" : JSON.stringify(v));
+
+/**
+ * The lists that setup writes: the texts of `AUTOMODE`, with the rules of the catalog added.
+ * The `ask` rules go to `soft_deny`, and the `floor` and `subagent` rules go to `hard_deny`.
+ */
+export const wantedLists = (): Record<string, unknown[]> => ({
+  ...(AUTOMODE as Record<string, unknown[]>),
+  soft_deny: [...AUTOMODE.soft_deny, ...prosesOf("ask")],
+  hard_deny: [
+    ...AUTOMODE.hard_deny,
+    ...prosesOf("floor"),
+    ...prosesOf("subagent"),
+  ],
+});
 
 /**
  * `had` with `DEFAULTS` first, and each entry of `want` that it lacks added at the end.
@@ -35,7 +50,7 @@ export const planAutoMode = (current: unknown, changes: Change[]): Json => {
       line: `autoMode: ${show(existing)} -> (an object)`,
     });
   const out: Json = { ...base };
-  for (const [key, want] of Object.entries(AUTOMODE as Json)) {
+  for (const [key, want] of Object.entries(wantedLists())) {
     const had = Array.isArray(base[key]) ? base[key] : [];
     const next = listWith(had, want as unknown[]);
     if (JSON.stringify(base[key]) !== JSON.stringify(next))
