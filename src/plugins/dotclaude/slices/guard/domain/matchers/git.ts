@@ -1,13 +1,13 @@
 // The literal matchers of `git` and of the `.git` folder. Each entry has a catalog id, examples, and a `match` on the words of one command.
 // The tier of each id is in `index.ts`, and `git.shared-checkout` applies only in a subagent.
+// A branch switch there is denied only when the working directory is the main checkout (`ctx.isMainCheckout`).
 
 import {
   hasFlag,
-  isWholeFolder,
   isForce,
+  isWholeFolder,
   positionals,
   splitDashes,
-  isRecursive,
 } from "./args.ts";
 import type { Ctx, Matcher } from "./types.ts";
 
@@ -39,10 +39,16 @@ const anyWholeFolder = async (
 const writesWorktree = (args: string[]): boolean =>
   !hasFlag(args, "--staged", "-S") || hasFlag(args, "--worktree", "-W");
 
-/** True when `checkout` moves `HEAD` to another branch or revision, and does not write one file. */
-const switchesBranch = async (args: string[], ctx: Ctx): Promise<boolean> => {
+/** True when `checkout` or `switch` moves `HEAD` to another branch, and does not write one file. */
+const switchesBranch = async (
+  verb: string,
+  args: string[],
+  ctx: Ctx,
+): Promise<boolean> => {
+  if (verb === "switch") return true;
   const { before, after } = splitDashes(args);
-  if (after !== null || hasFlag(args, "-b", "-B", "--orphan")) return false;
+  if (after !== null) return false;
+  if (hasFlag(args, "-b", "-B", "--orphan")) return true;
   const [target] = positionals(before, CHECKOUT_VALUES);
   return target !== undefined && (await ctx.kind(target)) !== "file";
 };
@@ -54,12 +60,6 @@ const stashAction = (args: string[]): string | undefined =>
 /** The host of a push target: `+main`, `HEAD:main`, and `refs/heads/main` all read as `main`. */
 const destOf = (word: string): string =>
   word.replace(/^\+/, "").split(":").pop()?.replace(/^refs\/heads\//, "") ?? "";
-
-/** True when `path` is the `.git` folder of a repository. */
-const isGitDir = (path: string): boolean => {
-  const t = path.replace(/\/+$/, "");
-  return t === ".git" || t.endsWith("/.git");
-};
 
 export const gitMatchers: Matcher[] = [
   {
@@ -168,24 +168,6 @@ export const gitMatchers: Matcher[] = [
     },
   },
   {
-    id: "git.delete-repo",
-    examples: [
-      "rm -rf .git",
-      "rm -fr ./.git",
-      "rm -r -f .git/",
-      "rm --recursive --force .git",
-    ],
-    match: async (words) => {
-      const [name, ...args] = words;
-      return (
-        name === "rm" &&
-        isRecursive(args) &&
-        isForce(args) &&
-        positionals(args).some(isGitDir)
-      );
-    },
-  },
-  {
     id: "git.shared-checkout",
     examples: [
       "git stash",
@@ -195,7 +177,8 @@ export const gitMatchers: Matcher[] = [
       "git stash apply",
       "git worktree remove --force ../wt",
       "git checkout main",
-      "git checkout HEAD~1",
+      "git checkout -b feature",
+      "git switch -c feature",
     ],
     match: async (words, ctx) => {
       const [name, verb, ...args] = words;
@@ -206,7 +189,10 @@ export const gitMatchers: Matcher[] = [
         );
       if (verb === "worktree")
         return args[0] === "remove" && hasFlag(args, "--force", "-f");
-      if (verb === "checkout") return switchesBranch(args, ctx);
+      if (verb === "checkout" || verb === "switch")
+        return (
+          (await switchesBranch(verb, args, ctx)) && (await ctx.isMainCheckout())
+        );
       return false;
     },
   },

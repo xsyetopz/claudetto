@@ -1,6 +1,7 @@
 // The shape of a literal matcher, which each category file of `matchers/` exports as entries.
 // A matcher reads the words of one simple command, after the wrapper commands are removed, and never parses the text itself.
 // The `kind` port tells a whole folder from a file, so a matcher can ask about a path.
+// The `isMainCheckout` port tells the main checkout from a linked worktree, for the rule of a branch switch.
 
 /** What a path is: a folder, a file, or nothing at all. */
 export type PathKind = "folder" | "file" | "missing";
@@ -8,8 +9,14 @@ export type PathKind = "folder" | "file" | "missing";
 /** The lookup of a path, relative to the working directory or absolute. */
 export type Kind = (path: string) => Promise<PathKind>;
 
-/** The context of a matcher: the lookup of a path, under the folder of `git -C` when one is set. */
-export type Ctx = { kind: Kind };
+/**
+ * The context of a matcher: the lookup of a path, under the folder of `git -C` when one is set,
+ * and the check whether the working directory is the main checkout of a repository.
+ */
+export type Ctx = {
+  kind: Kind;
+  isMainCheckout: () => Promise<boolean>;
+};
 
 /**
  * A literal form that the guard denies.
