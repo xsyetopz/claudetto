@@ -42,7 +42,7 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
 - Put each code item in inline code (single backticks) in all text that is not code: Markdown, comments, test names, messages to Claude, commit messages, pull requests, and chat replies.
   A code item is a command, a tool name, a file path, an identifier, a settings key, an env var, or a literal value, such as `cat F`, `Read`, `hooks.json`, and `maxTurns`.
   The backticks show a reader, a person or a model, which words are code and which words are prose.
-- - Change a shared runtime bound only in `src/kernel/budget.ts`,
+- Change a shared runtime bound only in `src/kernel/budget.ts`,
   a slice bound only in `slices/<s>/limits.ts`,
   and a repository bound only in `tools/limits.ts`.
   Tests pin the copies of each bound in code and config, not in prose.
