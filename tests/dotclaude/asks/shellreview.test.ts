@@ -23,14 +23,14 @@ const out = async (command: string, io = NONE): Promise<Ask | undefined> =>
     )
   )?.hookSpecificOutput;
 
-async function asks(command: string, file: string, io = EXIST) {
+const asks = async (command: string, file: string, io = EXIST) => {
   const o = await out(command, io);
   expect(o?.permissionDecision, command).toBe("ask");
   expect(
     o?.permissionDecisionReason?.includes(`\`${file}\``),
     command,
   ).toBeTruthy();
-}
+};
 
 for (const [command, file] of [
   ["cp a ~/.claude/hooks/x.sh", "~/.claude/hooks/x.sh"],

@@ -26,14 +26,14 @@ const out = async (command: string, io = NO_IO): Promise<Ask | undefined> =>
   )?.hookSpecificOutput;
 
 /** Asserts an ask whose reason names `file`. */
-async function asks(command: string, file: string, io = EXISTS) {
+const asks = async (command: string, file: string, io = EXISTS) => {
   const o = await out(command, io);
   expect(o?.permissionDecision, command).toBe("ask");
   expect(
     o?.permissionDecisionReason?.includes(`\`${file}\``),
     command,
   ).toBeTruthy();
-}
+};
 
 const TEST = "tests/x.test.mjs";
 const FORMS = [
