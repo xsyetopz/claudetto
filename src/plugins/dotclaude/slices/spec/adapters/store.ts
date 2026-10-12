@@ -4,14 +4,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileReader } from "../../../../../kernel/node/fs.ts";
+import { ARCHIVE_DIR, SPEC_ROOT } from "../../../../../kernel/paths.ts";
 import type { FileReader } from "../../../../../kernel/ports.ts";
 import {
   type ChangeState,
   readState,
-  SPEC_ROOT,
   statePath,
 } from "../../../../../kernel/spec-store.ts";
-import { ARCHIVE_DIR } from "../limits.ts";
 
 /** The store under the folder `root`. Each path that a method takes is relative to `root`. */
 export class SpecStore {

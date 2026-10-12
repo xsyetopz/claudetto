@@ -2,7 +2,7 @@
 // The file has no import, so the module graph of a hooks module can use it.
 // `.claude/` holds the files that Claude Code reads.
 // `.dotclaude/` holds the files that dotclaude writes, with a layout based on `.claude/`.
-// The list of each file is in `spec/changes/1.0.0/evidence/dotclaude-directory.md`.
+// The list of each file is in `.dotclaude/spec/changes/1.0.0/evidence/dotclaude-directory.md`.
 
 /** The folder of Claude Code, in a project and in the home folder. */
 export const CLAUDE_DIR = ".claude";
@@ -31,6 +31,27 @@ export const CLAUDE_HOOKS_DIR = `${CLAUDE_DIR}/hooks`;
 /** The folder of the handoff files, from the project root. One checkout and one session own them. */
 export const HANDOFF_DIR = `${DOTCLAUDE_DIR}/handoff`;
 
+/** The folder of the spec store in a project. The repository tracks it. */
+export const SPEC_DIR = `${DOTCLAUDE_DIR}/spec`;
+
+/** The folder that holds one folder for each change. */
+export const SPEC_ROOT = `${SPEC_DIR}/changes`;
+
+/** The folder of the finished changes. */
+export const ARCHIVE_DIR = `${SPEC_ROOT}/archive`;
+
+/** The folder of the specs, which are the truth. */
+export const SPECS_DIR = `${SPEC_DIR}/specs`;
+
+/** The scratch copy of `SPECS_DIR` during one `archive` command. */
+export const SPECS_TEMP = `${SPEC_DIR}/.specs-new`;
+
+/** The scratch folder that holds the old `SPECS_DIR` during one `archive` command. */
+export const SPECS_OLD = `${SPEC_DIR}/.specs-old`;
+
+/** The folder of the records of the hotfixes. */
+export const HOTFIX_DIR = `${SPEC_DIR}/hotfixes`;
+
 /** The name of the scratch folder of `dotclaude-sandbox` in the temp folder. */
 export const SANDBOX_TEMP = "dotclaude-sandbox";
 
@@ -53,7 +74,11 @@ export const CLAUDE_LOCAL_PATHS = [
 ] as const;
 
 /** The paths in `.dotclaude/` that git must not track. */
-export const DOTCLAUDE_LOCAL_PATHS = ["handoff/"] as const;
+export const DOTCLAUDE_LOCAL_PATHS = [
+  "handoff/",
+  "spec/.specs-new/",
+  "spec/.specs-old/",
+] as const;
 
 /** The patterns for `.git/info/exclude`: only the local checkout needs them, so the team `.gitignore` stays as it is. */
 export const GIT_EXCLUDE_PATTERNS: readonly string[] = [

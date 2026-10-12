@@ -28,7 +28,9 @@ test("status with no id uses the active change", async () => {
 test("status stops on a missing change and on a change with no state", async () => {
   const root = await makePlan([{ id: "P01" }]);
   expect((await run(root, "status", "nope")).code).toBe(1);
-  const bare = await makeStore({ "spec/changes/c2/change.md": "# c2\n" });
+  const bare = await makeStore({
+    ".dotclaude/spec/changes/c2/change.md": "# c2\n",
+  });
   const r = await run(bare, "status", "c2");
   expect(r.code).toBe(1);
   expect(r.out).toStrictEqual([]);

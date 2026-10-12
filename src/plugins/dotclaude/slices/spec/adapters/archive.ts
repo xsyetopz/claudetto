@@ -3,16 +3,18 @@
 // When one delta fails, nothing changes.
 
 import path from "node:path";
-import { SPEC_ROOT } from "../../../../../kernel/spec-store.ts";
+import {
+  ARCHIVE_DIR,
+  SPEC_ROOT,
+  SPECS_DIR,
+  SPECS_OLD,
+  SPECS_TEMP,
+} from "../../../../../kernel/paths.ts";
 import { applyDelta } from "../domain/delta.ts";
 import { parseDelta, parseSpec } from "../domain/parse.ts";
 import { validateDelta, validateSpec } from "../domain/validate.ts";
-import { ARCHIVE_DIR, SPECS_DIR } from "../limits.ts";
 import { renderSpec } from "./render.ts";
 import { dateOf, type Run } from "./run.ts";
-
-const TEMP_SPECS = "spec/.specs-new";
-const OLD_SPECS = "spec/.specs-old";
 
 /** The new text of each capability that the deltas change, or the problems that stop the archive. */
 const applyAll = async (
@@ -95,15 +97,15 @@ export const archiveCommand = async (
     );
     return 1;
   }
-  run.store.remove(TEMP_SPECS);
-  run.store.remove(OLD_SPECS);
-  if (run.store.exists(SPECS_DIR)) run.store.copyDir(SPECS_DIR, TEMP_SPECS);
+  run.store.remove(SPECS_TEMP);
+  run.store.remove(SPECS_OLD);
+  if (run.store.exists(SPECS_DIR)) run.store.copyDir(SPECS_DIR, SPECS_TEMP);
   for (const [name, text] of texts)
-    await run.store.write(path.posix.join(TEMP_SPECS, name), text);
-  if (run.store.exists(SPECS_DIR)) run.store.move(SPECS_DIR, OLD_SPECS);
-  run.store.move(TEMP_SPECS, SPECS_DIR);
+    await run.store.write(path.posix.join(SPECS_TEMP, name), text);
+  if (run.store.exists(SPECS_DIR)) run.store.move(SPECS_DIR, SPECS_OLD);
+  run.store.move(SPECS_TEMP, SPECS_DIR);
   run.store.move(dir, target);
-  run.store.remove(OLD_SPECS);
+  run.store.remove(SPECS_OLD);
   run.io.log(
     `${target} (${texts.size} capabilit${texts.size === 1 ? "y" : "ies"} changed)`,
   );

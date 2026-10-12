@@ -3,13 +3,11 @@
 // Only the `spec` slice writes it. The reader takes a `FileReader`, so a test needs no file on disk.
 
 import path from "node:path";
+import { SPEC_ROOT } from "./paths.ts";
 import type { FileReader } from "./ports.ts";
 
 /** The `schema` number of `state.json` that this version reads. Another number stops the reader. */
 export const SPEC_SCHEMA = 1;
-
-/** The folder that holds one folder for each change. */
-export const SPEC_ROOT = "spec/changes";
 
 /** The lanes of a package, from the first to the last. */
 export const LANES = ["planned", "doing", "review", "done", "blocked"] as const;

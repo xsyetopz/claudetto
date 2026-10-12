@@ -2,7 +2,7 @@
 // It also checks that no two open packages in one wave have overlapping `owns`.
 
 import path from "node:path";
-import { SPEC_ROOT } from "../../../../../kernel/spec-store.ts";
+import { SPEC_ROOT, SPECS_DIR } from "../../../../../kernel/paths.ts";
 import type { FormatError, Package } from "../domain/formats.ts";
 import { parseDelta, parseSpec } from "../domain/parse.ts";
 import { parseTasks } from "../domain/plan.ts";
@@ -15,7 +15,6 @@ import {
   validateTasks,
   validateWave,
 } from "../domain/validate.ts";
-import { SPECS_DIR } from "../limits.ts";
 import { readBriefs, readEntries } from "./plan-files.ts";
 import type { Run } from "./run.ts";
 import type { SpecStore } from "./store.ts";
