@@ -1,7 +1,7 @@
 // Writes `plugins/<plugin>/hooks/hooks.json` from the classic hooks of each slice (design, "Generated tree").
 // The file names the generated `register.ts` in `modules` when a slice has a mod handler.
 // The hooks of one event and matcher go in one group, in the order of the slices and of their hooks.
-// When `src/plugins/<plugin>/hooks/hooks.json` exists, the file starts from it, with its texts, so no hook of 0.28.0 is lost.
+// When `src/plugins/<plugin>/hooks/hooks.json` exists, the file starts from it, with its texts.
 
 import fs from "node:fs";
 import path from "node:path";

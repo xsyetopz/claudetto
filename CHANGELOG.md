@@ -12,6 +12,13 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ### Added
 
+- The `handoff` slice of the core plugin ports the handoff of 0.28.0 to the hooks module and a CLI `dotclaude-handoff`.
+  The handoff file goes to `.dotclaude/handoff/`.
+  The `/handoff` skill names the file, and the `turn.complete` hook runs `/clear` and the resume prompt.
+  The option `mainHandover` is `manual` by default, and it takes `auto` and `off`.
+  A `tool.call` hook adds a report-now note to a subagent that nears its context bound or its `maxTurns`.
+  The `turn.complete` hook runs the resume only after an `answer` turn, waits at most `HANDOFF_WAIT_TURNS` turns for the file, submits the write prompt once more, and then gives the `manual` hint.
+  A `dotclaude-spec merge` also counts as a package that is done, and quoted text does not.
 - The `dotclaude-spec` commands `ready` and `merge` do two steps of `/ship` with no model call.
   `ready <id>` prints the packages that can start, with no overlap of `owns` between them, and `merge <package> <branch>` needs the package in `review`, commits the lane files, merges the branch, runs `just generate`, sets the lane `done`, and commits `plugins/` with the lane files.
   `lane` also sets the checkbox of the package line in `packages.md`, `validate` reports a checkbox that does not agree with the lane, and `record` writes the empty sections of a hotfix record.

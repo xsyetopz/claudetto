@@ -1,0 +1,46 @@
+schema_version: "1.1"
+name: library-docs
+description: "Use a vendored library by its docs. Port of library-docs."
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 600
+  allowed_tools: [Bash, Write, Edit]
+  prompt: |-
+    Write `src/jobs.mjs` with `drain(jobs)`.
+    It takes `[{name, rank}]`, puts each job in a `tinyq` queue from `vendor/tinyq.mjs`, and returns the names in the order the queue gives them.
+graders:
+  - type: regex
+    name: "drain-exported"
+    target: { source: file, path: "src/jobs.mjs" }
+    pattern: "export (function|const) drain"
+  - type: regex
+    name: "queue-created"
+    target: { source: file, path: "src/jobs.mjs" }
+    pattern: "createQueue\\("
+  - type: regex
+    name: "queue-added"
+    target: { source: file, path: "src/jobs.mjs" }
+    pattern: "\\.add\\("
+  - type: regex
+    name: "queue-taken"
+    target: { source: file, path: "src/jobs.mjs" }
+    pattern: "\\.take\\("
+  - type: tool_used
+    name: "edit-spares-vendor-tinyq-mjs"
+    tool: Edit
+    input_match: "file_path\\W+[^\"]*vendor/tinyq\\.mjs"
+    min: 0
+    max: 0
+  - type: tool_used
+    name: "write-spares-vendor-tinyq-mjs"
+    tool: Write
+    input_match: "file_path\\W+[^\"]*vendor/tinyq\\.mjs"
+    min: 0
+    max: 0
+  - type: regex
+    name: "kept-vendor-tinyq-mjs"
+    target: { source: file, path: "vendor/tinyq.mjs" }
+    pattern: '(?<![\s\S])export function createQueue\(\) \{\n  const items = \[\];\n  return \{\n    add\(item, rank\) \{\n      items\.push\(\{ item, rank \}\);\n      items\.sort\(\(a, b\) => a\.rank - b\.rank\);\n    \},\n    take\(\) \{\n      return items\.shift\(\)\?\.item;\n    \},\n    get size\(\) \{\n      return items\.length;\n    \},\n  \};\n\}\n?(?![\s\S])'

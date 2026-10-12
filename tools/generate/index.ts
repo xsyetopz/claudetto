@@ -8,12 +8,10 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { modeProblems, setModes } from "./modes.ts";
 import { generated, problems } from "./outputs.ts";
 
 const REPO = path.resolve(import.meta.dir, "../..");
-
-/** A launcher in `bin/` of a plugin, which runs as a program. */
-const LAUNCHER = /^plugins\/[^/]+\/bin\//;
 
 if (process.argv[1] === import.meta.path) {
   const made = await generated(REPO);
@@ -23,10 +21,10 @@ if (process.argv[1] === import.meta.path) {
       if (fs.existsSync(at) && (await Bun.file(at).text()) === o.text) continue;
       fs.mkdirSync(path.dirname(at), { recursive: true });
       await Bun.write(at, o.text);
-      if (LAUNCHER.test(o.file)) fs.chmodSync(at, 0o755);
       console.log(`Wrote ${o.file}`);
     }
-  const found = await problems(REPO, made);
+  if (!process.argv.includes("--check")) setModes(REPO, made);
+  const found = [...(await problems(REPO, made)), ...modeProblems(REPO, made)];
   for (const line of found) console.error(line);
   process.exit(found.length ? 1 : 0);
 }

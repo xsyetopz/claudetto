@@ -9,7 +9,39 @@ import { onBashCall, onCheck } from "./adapters/mod.ts";
 export const slice = {
   name: "guard",
   mod: [
-    { event: "tool.call", phase: "check", run: onBashCall },
-    { event: "tool.check", phase: "check", run: onCheck },
+    {
+      event: "tool.call",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: true,
+        allow:
+          "plugins/dotclaude/tests/print.test.ts > a print of a file that is absent, a generated file, and a command that does not print stay allowed",
+        text: "tests/dotclaude/guard/print.test.ts > `cat F` is denied with the absolute path and no range",
+        block:
+          "plugins/dotclaude/tests/print.test.ts > a `Bash` print of a file is denied with the `Read` range",
+        false:
+          "tests/dotclaude/guard/print.test.ts > a command with an edit, a byte count, or another bounded form stays allowed",
+      },
+      phase: "check",
+      run: onBashCall,
+    },
+    {
+      event: "tool.check",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: true,
+        allow:
+          "plugins/dotclaude/tests/ask.test.ts > a repository of the user, or one with no policy, keeps the verdict",
+        text: "plugins/dotclaude/tests/ask.test.ts > the first call to a repository of another owner with a policy asks once",
+        block:
+          "plugins/dotclaude/tests/ask.test.ts > a deny of the engine stays a deny",
+        false:
+          "plugins/dotclaude/tests/ask.test.ts > an ask of the engine stays when the call reaches no other repository",
+      },
+      phase: "check",
+      run: onCheck,
+    },
   ],
 } satisfies Slice;

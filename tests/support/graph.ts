@@ -1,5 +1,5 @@
 // The import graph of the files of `plugins/`: each static, re-export, dynamic, and side-effect import, and the path that a relative import reaches.
-// The rules in `import-rules.ts` and `lib-feature-imports.ts` read the graph.
+// The rules in `import-rules.ts` read the graph.
 
 import path from "node:path";
 

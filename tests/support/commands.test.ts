@@ -4,7 +4,7 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { SNIPPET } from "../../plugins/dotclaude/lib/snippets.ts";
+import { SNIPPET } from "../../plugins/dotclaude/snippets.ts";
 import { REPO, tmpDir } from "./repo.ts";
 
 const PACKAGE_MANAGER = "bun@1.4.3";

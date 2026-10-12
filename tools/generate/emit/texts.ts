@@ -54,6 +54,14 @@ export const withHeader = (
 ): string => {
   const line = `${GENERATED_MARK} \`${source}\`. Edit the source and run \`just generate\`.`;
   if (file.endsWith(".ts")) return `// ${line}\n${text}`;
+  if (file.endsWith(".yaml")) return `# ${line}\n${text}`;
+  if (file.endsWith(".sh")) {
+    // A shebang stays the first line, because the kernel reads it.
+    const [first = "", ...rest] = text.split("\n");
+    return first.startsWith("#!")
+      ? [first, `# ${line}`, ...rest].join("\n")
+      : `# ${line}\n${text}`;
+  }
   if (!file.endsWith(".md")) return text;
   // A frontmatter starts the file, so the header goes inside it as a YAML comment.
   if (text.startsWith("---\n")) return `---\n# ${line}\n${text.slice(4)}`;
@@ -177,7 +185,7 @@ export const textModule = async (
 };
 
 /** The module of the settings snippet of the core plugin: `SNIPPET` from the slices, and `DOCS_SNIPPET` from its fragment. */
-const SNIPPET_MODULE = "plugins/dotclaude/lib/snippets.ts";
+const SNIPPET_MODULE = "plugins/dotclaude/snippets.ts";
 const SNIPPET_SOURCE = "src/plugins/dotclaude/slices/";
 
 const snippetModule = async (
