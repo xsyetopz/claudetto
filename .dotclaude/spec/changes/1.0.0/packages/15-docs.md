@@ -116,7 +116,6 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    The main session runs `just check` after each merge.
    A checked box is a page that is merged into `p15`.
    - [x] `Guards`, `Auto-Mode`, `Handoff-Cost`, `Usage-Evidence` (with `Plans-and-Models`), `Prompt-Variants`
-   - [ ] `Settings-Snippet` (a WIP commit is merged, so check it)
    - [x] `Architecture` (with `Core-Plugin`), `Agents`, `Skills`, `Spec-Store`, `Hook-Events` (with `Hooks`), `Tools-And-Deferral`, `Settings-Resolution`
    - [x] `Status-Line`, `Semantic-Line-Breaks`, `Contributions`
    - [x] `Prompt-Surface`, `Context-And-Handoff`, `Second-Opinion`, `Claude-Code-Internals`, `Subagents`, `Plugin-Loader`
@@ -124,9 +123,10 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    - [ ] `Add-Ons`, `Lab` (a WIP commit is merged, so check it)
    - [ ] `Claude-Code-Internals`, `Request-Build` (with `Claude-Mods`), `Tools-And-Deferral`, `Hook-Events` (with `Hooks`), `Plugin-Loader`
    - [ ] `Settings-Resolution`, `Subagents`, `Compaction-And-Context`, `Undocumented-Reads`
-   - [ ] `Settings-Snippet-Keys`, `Off-Switches`, `Settings-Schema`, `Bounds`
+   - [x] `Settings-Snippet`, `Settings-Snippet-Keys`, `Off-Switches`, `Settings-Schema`, `Bounds`, `Request-Build` (with `Claude-Mods`), `Compaction-And-Context`
    - [ ] `Design`, `Decisions` and its six group pages, `Decisions-Reversed`
-   - [ ] `Evidence`, `Evals`, `Development`, `Plugin-Layout`, `Sandbox`, `Release-History`, `Archive`
+   - [x] `Evidence`, `Evals`, `Development`, `Plugin-Layout`, `Sandbox`, `Release-History`
+   - [ ] `Archive`, `Undocumented-Reads`
    - [ ] `Home`, `Install`, `Quickstart`, `Troubleshooting`, `Attributions`, `README.md`, `docs/README.md`, the check of `CHANGELOG.md`
 3. Join the branches, run `just generate`, `bun run lint:md`, and `just check`.
 4. A reviewer pass for each section, then one run that fixes the list.
@@ -147,6 +147,10 @@ P15 does not own them, so they go to P16 or a new package.
 - `slices/styles/slice.ts` sets `outputStyle` in the plugin `settings`, but Claude Code `2.1.296` takes only `agent` and `subagentStatusLine` from plugin settings (the docs, and the strings of the bundle).
   Only the `outputStyle` of the snippet selects the style.
 - `slices/agents/domain/turns.ts` `withinTurnBound` has no caller outside the tests.
+- `tests/support/import-rules.ts` names `lib` and `features` in `ENTRY_TARGETS` and in its Rule 3.
+- `design.md` names `ports.ts` in each slice, `adapters/hook.ts`, and `texts/`, and the tree has `ports.ts` in some slices only, no `adapters/hook.ts`, and `texts.ts` files.
+- `slices/asks/weak-limits.ts` holds two bounds that `limits.ts` re-exports.
+- `slices/trim/domain/removed.ts` `REMOVED_PARTS` has no importer.
 - Under the load of the full suite, `tests/tools/generate/texts.test.ts` timed out once at 5,000 ms.
 
 ## Acceptance
