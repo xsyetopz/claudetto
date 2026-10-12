@@ -1,6 +1,7 @@
 // The hook evals of each plugin (spec `hook-evals`, the "Generated tree" section of `spec/changes/1.0.0/design.md`).
 // `evals/hooks.json` of a plugin names each hook by its id, the hook-lab test of each case kind, and the model requests and tokens that the hook adds to each turn.
 // A hook in a hooks module has its id in a `// eval: <id>` comment on the line above its `on(` call.
+// A call that joins several hooks has one such comment for each hook, in the lines above it.
 // A classic hook has the id `<event> <command>`, with the plugin root and the `bun` launcher removed, or `<event> prompt`.
 
 import fs from "node:fs";
@@ -34,8 +35,14 @@ export const moduleHooks = (
     const lines = text.split("\n");
     lines.forEach((line, i) => {
       if (!/^\s*on\(\s*(?:"|$)/.test(line)) return;
-      const id = /^\s*\/\/ eval: (.+)$/.exec(lines[i - 1] ?? "")?.[1]?.trim();
-      if (id) ids.push(id);
+      // A call of joined handlers has one `// eval:` line for each handler, in a block above it.
+      const above: string[] = [];
+      for (let j = i - 1; j >= 0; j--) {
+        const id = /^\s*\/\/ eval: (.+)$/.exec(lines[j] ?? "")?.[1]?.trim();
+        if (!id) break;
+        above.unshift(id);
+      }
+      if (above.length) ids.push(...above);
       else
         faults.push(
           `${file}:${i + 1}: an \`on(\` call has no \`// eval:\` comment above it`,
