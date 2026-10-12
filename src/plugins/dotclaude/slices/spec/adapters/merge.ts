@@ -1,0 +1,107 @@
+// `dotclaude-spec merge <package> <branch>`: merges the branch of a package that passed review.
+// The steps are the steps of `/ship`:
+//   1. `git merge --no-edit <branch>`. On a conflict the command stops, sets no lane, and prints the conflicted files.
+//   2. `just generate`, when the project has a `justfile`.
+//   3. A commit of `plugins/` that holds the output of the generator, when the output changed.
+//   4. The lane of the package becomes `done`.
+// Only the main checkout merges, as only the main checkout changes a lane.
+
+import { runProgram } from "../../../../../kernel/node/process.ts";
+import { changeOf, inLinkedWorktree, moveLane } from "./lane.ts";
+import type { Run } from "./run.ts";
+
+const GENERATED_DIR = "plugins";
+
+interface Result {
+  code: number;
+  out: string;
+}
+
+/** Runs `file` with `args` in the root of the store. A program that is not found gives code 127. */
+const exec = (run: Run, file: string, args: string[]): Result => {
+  try {
+    const r = runProgram(file, args, {
+      cwd: run.store.root,
+      stdin: "ignore",
+      stdout: "pipe",
+      stderr: "pipe",
+      timeout: 600_000,
+    });
+    return {
+      code: r.exitCode ?? 1,
+      out: `${r.stdout?.toString() ?? ""}${r.stderr?.toString() ?? ""}`.trim(),
+    };
+  } catch (err) {
+    return { code: 127, out: err instanceof Error ? err.message : String(err) };
+  }
+};
+
+/** The files that the merge left in conflict. */
+const conflicted = (run: Run): string[] =>
+  exec(run, "git", ["diff", "--name-only", "--diff-filter=U"])
+    .out.split("\n")
+    .filter((f) => f !== "");
+
+/** True when the project has a generator: a `justfile` in the root. */
+const hasGenerator = (run: Run): boolean => run.store.exists("justfile");
+
+export const mergeCommand = async (
+  run: Run,
+  args: string[],
+): Promise<number> => {
+  const [pkg, branch] = args;
+  if (!pkg || !branch) {
+    run.io.error("Usage: dotclaude-spec merge <package> <branch>");
+    return 2;
+  }
+  if (inLinkedWorktree(run.store.root)) {
+    run.io.error(
+      "This is a linked git worktree. Only the main checkout merges a package.",
+    );
+    return 1;
+  }
+  if ((await changeOf(run, pkg)) === null) return 1;
+
+  const merge = exec(run, "git", ["merge", "--no-edit", branch]);
+  if (merge.code !== 0) {
+    const files = conflicted(run);
+    if (files.length > 0) {
+      run.io.error(`The merge of \`${branch}\` has conflicts in these files:`);
+      for (const file of files) run.io.error(file);
+    } else run.io.error(merge.out);
+    return 1;
+  }
+
+  if (hasGenerator(run)) {
+    const generate = exec(run, "just", ["generate"]);
+    if (generate.code !== 0) {
+      run.io.error(
+        `\`just generate\` failed after the merge of \`${branch}\`. The lane of \`${pkg}\` is the same.`,
+      );
+      run.io.error(generate.out);
+      return 1;
+    }
+    exec(run, "git", ["add", GENERATED_DIR]);
+    const staged = exec(run, "git", [
+      "diff",
+      "--cached",
+      "--quiet",
+      "--",
+      GENERATED_DIR,
+    ]);
+    if (staged.code !== 0) {
+      const commit = exec(run, "git", [
+        "commit",
+        "-m",
+        `dotclaude: generate \`${GENERATED_DIR}\` after the merge of \`${pkg}\``,
+        "--",
+        GENERATED_DIR,
+      ]);
+      if (commit.code !== 0) {
+        run.io.error(commit.out);
+        return 1;
+      }
+    }
+  }
+  return moveLane(run, pkg, "done");
+};
