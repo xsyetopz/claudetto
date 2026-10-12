@@ -47,13 +47,41 @@ So an `environment` entry that says which paths are agent worktrees and Claude C
 ## Garbage collection
 
 - `cleanupPeriodDays` keeps chat transcripts for 30 days by default (`cTt=30`, L323574), with a minimum of 1 (L261144).
-- The cleanup also removes the folders `todos`, `statsig`, `logs`, `access-audit`, `mcp-skill-archives`, `mcp-discovery-cache`, and `shares` (L323574, L323584).
-- The cleanup pauses while the settings have errors (L148139), and it skips when no enabled source sets the key and the user settings are off (L192527).
+- `desktopSessionCleanupPeriodDays` is a ceiling for the transcripts of the desktop app (L319438).
+- The cleanup pauses while the settings have errors (L148139).
+- The cleanup skips when the user settings are off and no enabled source sets `cleanupPeriodDays` (L192527).
+  It also skips when the key is not valid (L336417).
+- A key that a policy sets always runs the cleanup.
+- dotclaude adds no cleanup key and no cleanup code.
+  Claude Code already removes stale agent worktrees and old `/tmp/claude-<uid>/` images, and no code in `src/` deletes Claude Code files.
+  A shorter `cleanupPeriodDays` also deletes transcripts, which `dotclaude-sessions` reads for its usage reports.
+  So the default of 30 days stays.
 - `--no-session-persistence` turns off the writes of a session.
 
 ## Open
 
 - Whether a permission allow rule skips the classifier in auto mode.
-- Whether Claude Code removes the worktree of an agent with `isolation: worktree` itself, and when it keeps one.
-- Whether the cleanup also removes plans, file history, the paste cache, and task output, and when the cleanup runs.
-- Any cleanup of `/tmp/claude-<uid>/`, the plugin cache, and old versions.
+- The env var or flag of the diskless mode.
+
+## Cleanup answers
+
+- [x] When the cleanup runs.
+  The background housekeeping (`w0r`, L336502) checks 5 s after start.
+  It runs only when the session is interactive and not diskless, and after 60 s of user idle.
+  It runs at most once per 24 h, tracked by `.last-cleanup`.
+  When the session is busy, it retries every 10 min.
+- [x] Which files the sweep removes, and which it keeps.
+  The sweep (`K6r`, L336418) removes files older than the cutoff in `transcripts`, `file-history`, `session-env`, `tasks`, `jobs`, `uploads`, `dev-mods`, `shares`, `todos`, `statsig`, `logs`, and `access-audit`.
+  It also removes paste `.txt` files (L324687) and staging files older than 1 day.
+  It does not name plans.
+  It does not remove the plugin cache, old versions, or `history.jsonl`.
+  `history.jsonl` is pruned only with the HIPAA flag.
+  `mcp-skill-archives` is removed on another path (L323584), not by the sweep.
+- [x] Whether Claude Code removes stale agent worktrees.
+  The sweep (`_Yr`, L327918) removes an agent worktree only when all of these hold.
+  Its name is `agent-a` followed by 16 hex characters.
+  It is older than the cutoff and not the current worktree.
+  No live process locks it, and it is clean.
+- [x] Whether the cleanup removes `/tmp/claude-<uid>/` images, the plugin cache, and old versions.
+  It removes old `images` folders under `/tmp/claude-<uid>/` (L333917).
+  It does not remove the plugin cache or old versions.
