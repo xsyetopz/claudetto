@@ -12,7 +12,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { SANDBOX_TEMP } from "../../../kernel/paths.ts";
+import { SANDBOX_TEMP } from "../../../kernel/temp-paths.ts";
 
 // This file sits six folders below the repository root.
 const REPO = path.resolve(import.meta.dirname, "../../../../../..");

@@ -21,7 +21,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { CAPTURE_TEMP } from "../../../../../kernel/paths.ts";
+import { CAPTURE_TEMP } from "../../../../../kernel/temp-paths.ts";
 import { sizeRequest, sizingLines } from "../domain/report.ts";
 import type { Body } from "../domain/types.ts";
 import { resolveUpstream } from "../domain/upstream.ts";

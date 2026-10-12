@@ -52,12 +52,6 @@ export const SPECS_OLD = `${SPEC_DIR}/.specs-old`;
 /** The folder of the records of the hotfixes. */
 export const HOTFIX_DIR = `${SPEC_DIR}/hotfixes`;
 
-/** The name of the scratch folder of `dotclaude-sandbox` in the temp folder. */
-export const SANDBOX_TEMP = "dotclaude-sandbox";
-
-/** The name of the scratch folder of `dotclaude-capture` in the temp folder. */
-export const CAPTURE_TEMP = "dotclaude-capture";
-
 /** The runtime paths in `.claude/` that git must not track. Claude Code writes the first ones, and the last one is a local file. */
 export const CLAUDE_LOCAL_PATHS = [
   "scheduled_tasks.lock",
@@ -76,8 +70,8 @@ export const CLAUDE_LOCAL_PATHS = [
 /** The paths in `.dotclaude/` that git must not track. */
 export const DOTCLAUDE_LOCAL_PATHS = [
   "handoff/",
-  ".dotclaude/spec/.specs-new/",
-  ".dotclaude/spec/.specs-old/",
+  "spec/.specs-new/",
+  "spec/.specs-old/",
 ] as const;
 
 /** The patterns for `.git/info/exclude`: only the local checkout needs them, so the team `.gitignore` stays as it is. */

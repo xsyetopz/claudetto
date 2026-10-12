@@ -84,7 +84,7 @@ for (const pattern of RUNTIME_PATTERNS) {
     expect(ignores(dir, pattern)).toBe(false);
     const added = await excludeRuntimePaths(dir);
     expect(added).toContain(pattern);
-    expect(fs.readFileSync(excludeFile(dir), "utf8").split("\n")).toContain(
+    expect((await Bun.file(excludeFile(dir)).text()).split("\n")).toContain(
       pattern,
     );
     expect(ignores(dir, pattern)).toBe(true);
@@ -95,7 +95,7 @@ for (const pattern of RUNTIME_PATTERNS) {
     fs.appendFileSync(excludeFile(dir), `${pattern}\n`);
     const added = await excludeRuntimePaths(dir);
     expect(added).not.toContain(pattern);
-    const lines = fs.readFileSync(excludeFile(dir), "utf8").split("\n");
+    const lines = (await Bun.file(excludeFile(dir)).text()).split("\n");
     expect(lines.filter((line) => line === pattern)).toHaveLength(1);
   });
 
@@ -109,14 +109,14 @@ for (const pattern of RUNTIME_PATTERNS) {
 test("a second run on the same repository adds nothing", async () => {
   const dir = repo();
   await excludeRuntimePaths(dir);
-  const before = fs.readFileSync(excludeFile(dir), "utf8");
+  const before = await Bun.file(excludeFile(dir)).text();
   expect(await excludeRuntimePaths(dir)).toStrictEqual([]);
-  expect(fs.readFileSync(excludeFile(dir), "utf8")).toBe(before);
+  expect(await Bun.file(excludeFile(dir)).text()).toBe(before);
 });
 
 test("a pattern that the project `.gitignore` covers gets no line in `.git/info/exclude`", async () => {
   const dir = repo();
-  fs.writeFileSync(path.join(dir, ".gitignore"), `${HANDOFF_DIR}/\n`);
+  await Bun.write(path.join(dir, ".gitignore"), `${HANDOFF_DIR}/\n`);
   const added = await excludeRuntimePaths(dir);
   expect(added).not.toContain(`**/${HANDOFF_DIR}/`);
   expect(added).toContain("**/.claude/settings.local.json");

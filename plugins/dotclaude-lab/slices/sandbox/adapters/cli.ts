@@ -33,7 +33,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { SANDBOX_TEMP } from "../../../kernel/paths.ts";
+import { SANDBOX_TEMP } from "../../../kernel/temp-paths.ts";
 import { report } from "../domain/frontmatter.ts";
 import { cleanEnv, loginToken } from "./login.ts";
 import { runProgram } from "./run-program.ts";

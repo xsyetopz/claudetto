@@ -25,8 +25,10 @@ const stateText = (lanes: Record<string, string>) =>
 
 const files = fakeFiles({
   [statePath("1.0.0")]: stateText({ P01: "done", P99: "doing" }),
-  ".dotclaude/spec/changes/1.0.0/packages/01-a.md": "---\nid: P01\ndeps: []\n---\n",
-  ".dotclaude/spec/changes/1.0.0/packages/24-tiers.md": "---\nid: P24\ndeps: []\n---\n",
+  ".dotclaude/spec/changes/1.0.0/packages/01-a.md":
+    "---\nid: P01\ndeps: []\n---\n",
+  ".dotclaude/spec/changes/1.0.0/packages/24-tiers.md":
+    "---\nid: P24\ndeps: []\n---\n",
 });
 
 test("`packageLanes` adds a package with a file as planned and keeps a lane with no file", async () => {

@@ -2,10 +2,8 @@
 
 import path from "node:path";
 import { SPEC_ROOT } from "../../../../../kernel/paths.ts";
-import {
-  type ChangeState,
-  SPEC_SCHEMA,
-} from "../../../../../kernel/spec-store.ts";
+import type { ChangeState } from "../../../../../kernel/spec-store.ts";
+import { SPEC_SCHEMA } from "../../../../../kernel/spec-store.ts";
 import { CHANGE_ID, DEFAULT_SIZE, SIZES, type Size } from "../limits.ts";
 import {
   CHANGE,
