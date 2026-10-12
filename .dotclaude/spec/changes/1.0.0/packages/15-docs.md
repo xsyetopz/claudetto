@@ -117,7 +117,7 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    A checked box is a page that is merged into `p15`.
    - [x] `Guards`, `Auto-Mode`, `Handoff-Cost`, `Usage-Evidence` (with `Plans-and-Models`), `Prompt-Variants`
    - [ ] `Settings-Snippet` (a WIP commit is merged, so check it)
-   - [ ] `Architecture` (with `Core-Plugin`), `Agents`, `Skills`, `Spec-Store`
+   - [x] `Architecture` (with `Core-Plugin`), `Agents`, `Skills`, `Spec-Store`, `Hook-Events` (with `Hooks`), `Tools-And-Deferral`, `Settings-Resolution`
    - [x] `Status-Line`, `Semantic-Line-Breaks`, `Contributions`
    - [x] `Prompt-Surface`, `Context-And-Handoff`, `Second-Opinion`, `Claude-Code-Internals`, `Subagents`, `Plugin-Loader`
    - [x] `Code-Graph`, `Browser`, `Library-Docs`, `Sessions`
@@ -144,6 +144,9 @@ P15 does not own them, so they go to P16 or a new package.
 - `tests/support/plugin-hooks-exist.test.ts` reads only the `hooks` key, so it does not check that `register.ts` exists.
 - The `homepage` of `plugin.json` points to `Core-Plugin`, which P15 merges into `Architecture`.
 - `package.json` and `plugin.json` say `0.28.0` until `just bump` in P16.
+- `slices/styles/slice.ts` sets `outputStyle` in the plugin `settings`, but Claude Code `2.1.296` takes only `agent` and `subagentStatusLine` from plugin settings (the docs, and the strings of the bundle).
+  Only the `outputStyle` of the snippet selects the style.
+- `slices/agents/domain/turns.ts` `withinTurnBound` has no caller outside the tests.
 - Under the load of the full suite, `tests/tools/generate/texts.test.ts` timed out once at 5,000 ms.
 
 ## Acceptance
