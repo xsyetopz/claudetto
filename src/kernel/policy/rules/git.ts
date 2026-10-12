@@ -68,11 +68,4 @@ export const GIT_RULES: readonly PolicyRule[] = [
       "In a subagent, any git action that changes the shared checkout of the main session or the shared `refs/stash`, such as `git checkout`, `git switch`, `git reset`, or `git stash`.",
     ),
   },
-  {
-    id: "git.force-push-branch",
-    tier: "ask",
-    category: "git",
-    prose:
-      "A force push to a branch that no other person uses. Ask the user first, because the old commits stay recoverable for a while.",
-  },
 ];
