@@ -54,6 +54,7 @@ It gets the highest intelligence for the lowest token cost:
 - Each session records the dotclaude version and the short commit SHA of the build, so that an analysis of the sessions can tell which build had which problem (the user, 2026-10-13).
   The record costs 0 model tokens.
   It goes into the transcript only if Claude does not see it there, and else into a file of `.dotclaude/` keyed by the session id.
+- Each commit and each pull request that Claude makes carries the attribution of Claude Code, and a hook adds it, not prompt text (the user, 2026-10-13).
 - dotclaude uses the garbage collection of Claude Code.
 - dotclaude uses the worktrees of Claude Code, such as `isolation: worktree`, `EnterWorktree`, `ExitWorktree`, `--worktree`, and the `worktree` settings, and makes no worktree of its own with `git worktree add`.
 - dotclaude uses `.claude/rules/`: a rule with `paths:` loads only when Claude works with a matching file, so it replaces runtime code and `CLAUDE.md` text that applies to some files only.

@@ -219,6 +219,10 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P33, because the record must cost 0 tokens.
   Owns: `src/kernel/stamp.ts`, the `stamp` slice, `dotclaude-sessions`, their tests, and `evidence/session-stamp.md`.
   Verify: `just check`, `just lab`, and the probe of step 1 with its output in the evidence file.
+- [ ] P39 Attribution: a hook adds the attribution of Claude Code to each commit and pull request that Claude makes, at 0 model tokens ([package](packages/39-attribution.md), decisions, the user, 2026-10-13).
+  Deps: P33, because the hook replaces prompt text.
+  Owns: the `attribution` slice, its tests, `evidence/attribution.md`, and the attribution rule of `surface/texts.ts/tool-bash.md`.
+  Verify: `just check`, `just lab`, and one commit and one PR body in `just sandbox` that carry the attribution.
 - [ ] P16 Release check: `tools/rebuild-pending.txt` is empty and deleted with its check, a `reviewer` pass on the full diff, `just check`, and one session in `just sandbox` that runs `/spec`, `/ship`, `/hotfix`, a decision, and a handoff.
   Deps: each package above.
   Verify: the user approves the version 1.0.0 and the push.
