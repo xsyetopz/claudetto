@@ -1,0 +1,30 @@
+// The mod handler of the `sembr` slice: the `tool.call` rewrites on `Write`, `Edit`, and `Bash` (design D29).
+// `Write` and `Edit` put each sentence of a Markdown file on its own line, `Edit` also splits a cross-sentence `old_string`,
+// and `Bash` does the same for the quoted heredoc of `git commit` and `gh pr create`.
+// Claude Code checks `old_string` before a classic hook runs, so only a module can repair it (probe 2.29).
+// A file that is absent passes on with no change.
+// The hook asks `$.fs.exists` first, because `$.fs.read` documents no error code for a missing file.
+// A rule that throws is a defect: Claude Code logs it, skips the hook, and runs the call as written.
+//
+// The filter of `slice.ts` narrows `e` to `Write`, `Edit`, and `Bash`, and one handler checks `e.tool`.
+// `claude plugin validate` follows `$` only into a function of one file,
+// so each function that touches `$` is here, and the rules are in `domain/`.
+
+import type { MatchedHook } from "claude-code";
+import { commandInput, editInput, writeInput } from "../domain/rewrite.ts";
+
+/** The hook for the tools in the filter of `slice.ts`, with `e` narrowed to them. */
+export type SembrHook = MatchedHook<
+  "tool.call",
+  { readonly tool: readonly ["Write", "Edit", "Bash"] }
+>;
+
+export const onToolCall: SembrHook = async ($, e, next) => {
+  if (e.tool === "Write") return next(writeInput(e));
+  if (e.tool === "Bash") return next(commandInput(e));
+  if (e.tool !== "Edit") return next(e);
+  const file = (await $.fs.exists(e.file_path))
+    ? await $.fs.read(e.file_path)
+    : null;
+  return next(editInput(e, file));
+};

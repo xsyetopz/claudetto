@@ -10,9 +10,10 @@ import { type Files, moduleGraph, repoFiles } from "./import-rules.ts";
 const stripComments = (src: string): string =>
   src.replace(/^[ \t]*\/\*[\s\S]*?\*\//gm, "").replace(/^[ \t]*\/\/.*$/gm, "");
 
-/** The ways to join a path with a literal `/`: a template operand with a path name, `.join("/")`, and a `+` with `"/"`. */
+/** The ways to join a path with a literal `/`: a template operand with a path name, `.join("/")`, and a `+` with `"/"`.
+ * An escaped `\${` is literal text, such as the `${CLAUDE_PLUGIN_ROOT}` of a hook command that Claude Code fills in, so it is not an operand. */
 const JOINS = [
-  /\$\{[^}]*(?:dir|path|root|home|file|folder)\b[^}]*\}\//i,
+  /(?<!\\)\$\{[^}]*(?:dir|path|root|home|file|folder)\b[^}]*\}\//i,
   /\.join\(\s*["'`]\/["'`]\s*\)/,
   /["'`]\/["'`]\s*\+|\+\s*["'`]\//,
 ];
@@ -38,7 +39,7 @@ test("no file in `plugins/` or `tools/` joins a path with a literal `/`, outside
   expect(found, found.join("\n")).toStrictEqual([]);
 });
 
-test("the search finds each form of a `/` join, and skips the hooks module graph and display text", () => {
+test("the search finds each form of a `/` join, and skips the hooks module graph, display text, and an escaped `${`", () => {
   const files: Files = {
     "plugins/x/hooks/register.ts": 'import { a } from "../lib/a.ts";',
     "plugins/x/lib/a.ts": `export const a = (root) => \`\${root}/hooks\`;`,
@@ -47,6 +48,7 @@ test("the search finds each form of a `/` join, and skips the hooks module graph
       'const u = ["a", "b"].join("/");',
       'const v = dir + "/x";',
       `const w = \`\${spec.done}/\${spec.total}\`;`,
+      `const h = \`bun "\\\${CLAUDE_PLUGIN_ROOT}/hook.ts"\`;`,
     ].join("\n"),
   };
   expect(slashJoins(files)).toStrictEqual([

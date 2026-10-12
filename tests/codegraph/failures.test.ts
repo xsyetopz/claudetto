@@ -3,12 +3,12 @@
 
 import { expect, test } from "bun:test";
 import os from "node:os";
-import { parseJson } from "../../plugins/dotclaude-codegraph/features/graph/rules.ts";
+import { parseJson } from "../../plugins/dotclaude-codegraph/slices/graph/domain/graph.ts";
 import type { Env } from "../support/repo.ts";
 import { CLI, setUp } from "./fake-cli.ts";
 
 /** Runs the hook `mode` with the raw text `input` on stdin. */
-function run(mode: string, input: string, env: Env) {
+const run = (mode: string, input: string, env: Env) => {
   const r = Bun.spawnSync({
     cmd: [process.execPath, "--no-env-file", CLI, mode],
     stdin: Buffer.from(input),
@@ -22,7 +22,7 @@ function run(mode: string, input: string, env: Env) {
     stdout: r.stdout.toString(),
     stderr: r.stderr.toString(),
   };
-}
+};
 
 test("a payload that is not JSON is ignored with no output and no error text", async () => {
   const t = await setUp();

@@ -4,8 +4,8 @@ import { expect, test } from "bun:test";
 import {
   rewriteContent,
   rewriteEdit,
-} from "../../../plugins/dotclaude/features/sembr/rules.ts";
-import { sembr } from "../../../plugins/dotclaude/lib/sembr.ts";
+} from "../../../src/plugins/dotclaude/slices/sembr/domain/rewrite.ts";
+import { sembr } from "../../../src/plugins/dotclaude/slices/sembr/domain/split.ts";
 
 test("leaves a line with data or code syntax alone", () => {
   for (const text of [

@@ -10,23 +10,12 @@ tools/bump-version.ts
 tools/release.ts
 tools/update.ts
 
-# P06: the asks of `adherence`
-plugins/dotclaude/features/adherence/
-tests/dotclaude/adherence/
-
-# P07: `sembr`
-plugins/dotclaude/features/sembr/
-plugins/dotclaude/tests/sembr.test.ts
-tests/dotclaude/sembr/
-
 # P08: `statusline`
 plugins/dotclaude/features/statusline/
 tests/dotclaude/statusline/
 
 # P11a: `dotclaude-codegraph`
-plugins/dotclaude-codegraph/
-src/plugins/dotclaude-codegraph/
-tests/codegraph/
+plugins/dotclaude-codegraph/evals/hooks.json
 
 # P11b: `dotclaude-browser`
 plugins/dotclaude-browser/evals/hooks.json
