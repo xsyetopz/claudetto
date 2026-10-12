@@ -82,7 +82,7 @@ Each package depends on P01b4.
   When dotclaude runs in a git repository, it adds each runtime path of `.claude/` that git does not ignore, such as `.claude/worktrees/`, to `.git/info/exclude` (the user, 2026-10-12).
   It adds only the paths that Claude Code does not ignore itself: Claude Code writes `**/.claude/settings.local.json` to the global git ignore file, and its bundle has a `# claude-code-runtime` list (`external/cc-2.1.296/strings.txt:138985-139000`), whose trigger P09 finds first.
   Verify also: a test for a repository with no rule, one with each rule, and a folder that is not a git repository.
-- [ ] P10 `agents`: the seven agents of [workflow](workflow.md#agents) and the `agent.spawn` handler.
+- [x] P10 `agents`: the seven agents of [workflow](workflow.md#agents) and the `agent.spawn` handler.
   Verify also: `just validate`, and one spawn of each agent in `just sandbox` that runs on the model of the table.
 - [ ] P19 `decide`: Jev through the TypeSafe client, and the fallback through `$.model.complete` when the key is missing or not valid, or the account has no balance.
   It moves the `dotclaude-jev` add-on into this slice, and removes the add-on.
