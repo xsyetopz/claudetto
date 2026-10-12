@@ -36,9 +36,10 @@ const onCall = (e: Entry, hook: string): string => {
 };
 
 /**
- * The one `on()` call of `group`, the unfiltered `observe` handlers of one event, in their order.
- * Each handler gets the same `onward`, which runs the rest of the chain at most once,
- * at the first `next` call or after the last handler. `Object.assign` keeps the members of `next`, such as `is` and `signal`.
+ * The one `on()` call of `group`, the unfiltered handlers of one event in their order, nested as two registrations are.
+ * The first handler gets the `next` of the second, which runs the second handler and then the rest of the chain.
+ * Each handler gets the event that the handler before it passed to `next`, or the event of the call.
+ * `Object.assign` keeps the members of `next`, such as `is` and `signal`.
  * The comment has one `// eval:` line for each handler, so the eval reader finds each id.
  */
 const joinedCall = (
@@ -46,14 +47,14 @@ const joinedCall = (
   hookOf: (e: Entry) => string,
 ): string => {
   const event = (group[0] as Entry).handler.event;
+  // The `next` that the handler `i - 1` gets: the handler `i`, with the `next` of the handler `i + 1`.
+  const from = (i: number): string =>
+    i === group.length
+      ? "next"
+      : `Object.assign((ev?: typeof e) => ${hookOf(group[i] as Entry)}($, ev ?? e, ${from(i + 1)}), next)`;
   return [
     ...group.map((e) => `  // eval: ${event} ${e.slice}`),
-    `  on(${JSON.stringify(event)}, async ($, e, next) => {`,
-    "    let downstream: ReturnType<typeof next> | undefined;",
-    "    const onward = Object.assign(() => (downstream ??= next(e)), next);",
-    ...group.map((e) => `    await ${hookOf(e)}($, e, onward);`),
-    "    return downstream ?? next(e);",
-    "  });",
+    `  on(${JSON.stringify(event)}, ($, e, next) => ${hookOf(group[0] as Entry)}($, e, ${from(1)}));`,
   ].join("\n");
 };
 

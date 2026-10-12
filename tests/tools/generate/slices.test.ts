@@ -98,12 +98,15 @@ export const slice = { name: "delta", mod: [
   expect(error).toContain("delta");
 });
 
-/** The files of an observe slice `name` with no filter. It logs `name` into the event, and passes the event on when `passOn`. */
+/** The files of an observe slice `name` with no filter. It logs its name before and after the rest of the chain, and runs the rest when `passOn`. */
 const observer = (name: string, passOn: boolean): Record<string, string> => ({
   [`src/plugins/p/slices/${name}/adapters/mod.ts`]: `type Next = (e: unknown) => unknown;
 export const start = (_$: unknown, e: unknown, next: Next) => {
-  (e as { log: string[] }).log.push("${name}");
-  return ${passOn ? "next(e)" : "undefined"};
+  const log = (e as { log: string[] }).log;
+  log.push("${name} before");
+  const started = ${passOn ? "next(e)" : "undefined"};
+  log.push("${name} after");
+  return started;
 };
 `,
   [`src/plugins/p/slices/${name}/slice.ts`]: `import { start } from "./adapters/mod.ts";
@@ -113,10 +116,10 @@ export const slice = { name: "${name}", mod: [
 `,
 });
 
-test("two observe handlers with no filter are one `on()` call that runs them in slice order, then the chain once", async () => {
+test("two observe handlers with no filter are one `on()` call that nests them in slice order around the chain once", async () => {
   const dir = await fixtureRoot({
-    ...observer("gamma", false),
-    ...observer("delta", false),
+    ...observer("gamma", true),
+    ...observer("delta", true),
   });
   await write(dir, await generated(dir));
   const calls = (await registered(dir)).filter(
@@ -133,15 +136,21 @@ test("two observe handlers with no filter are one `on()` call that runs them in 
     e.log.push("chain");
     return "downstream";
   });
-  expect(e.log).toStrictEqual(["delta", "gamma", "chain"]);
+  expect(e.log).toStrictEqual([
+    "delta before",
+    "gamma before",
+    "chain",
+    "gamma after",
+    "delta after",
+  ]);
   expect(chain).toBe(1);
   expect(result).toBe("downstream");
 });
 
-test("two observe handlers that each pass the event on continue the chain once, and both see its result", async () => {
+test("a handler that does not call `next` ends the chain for the handlers after it", async () => {
   const dir = await fixtureRoot({
     ...observer("gamma", true),
-    ...observer("delta", true),
+    ...observer("delta", false),
   });
   await write(dir, await generated(dir));
   const hook = (await registered(dir)).find(
@@ -149,13 +158,12 @@ test("two observe handlers that each pass the event on continue the chain once, 
   )?.[2] as Handler;
   const e = { log: [] as string[] };
   let chain = 0;
-  const result = await (hook as Handler)({}, e, () => {
+  await hook({}, e, () => {
     chain += 1;
     return "downstream";
   });
-  expect(e.log).toStrictEqual(["delta", "gamma"]);
-  expect(chain).toBe(1);
-  expect(result).toBe("downstream");
+  expect(e.log).toStrictEqual(["delta before", "delta after"]);
+  expect(chain).toBe(0);
 });
 
 test("a handler with `configure` gets the `options` that the mod runtime gives to `register`", async () => {
