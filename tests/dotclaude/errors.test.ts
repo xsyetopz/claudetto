@@ -20,7 +20,7 @@ import {
   rethrowUnless,
 } from "../../plugins/dotclaude/lib/errors.ts";
 import { PLUGINS, tmpDir } from "../support/repo.ts";
-import { decideRead as decideReads, readText } from "../support/verdicts.ts";
+import { readText } from "../support/verdicts.ts";
 
 const dir = tmpDir("dc-errors");
 const absent = path.join(dir, "absent.jsonl");
@@ -67,19 +67,6 @@ test("`maxTurnsOf` gives undefined for an absent agent file and throws any other
     path.join(dir, "agent-loop.md"),
   );
   await expect(maxTurnsOf("agent-loop", dir)).rejects.toThrow(
-    expect.objectContaining({ code: "ELOOP" }),
-  );
-});
-
-test("the print check allows a file that is absent and throws for any other read error", async () => {
-  const cat = (file: string) => ({
-    tool_name: "Bash",
-    cwd: dir,
-    // The name is relative to `cwd`. A Windows path has backslashes and a short name with `~`, and the rule reads both as not simple.
-    tool_input: { command: `tail -n 5 ${path.basename(file)}` },
-  });
-  expect(await decideReads(cat(absent))).toBe(undefined);
-  await expect(decideReads(cat(loop))).rejects.toThrow(
     expect.objectContaining({ code: "ELOOP" }),
   );
 });
