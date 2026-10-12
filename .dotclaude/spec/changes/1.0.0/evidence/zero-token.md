@@ -80,9 +80,9 @@ No live session measured it.
 | 2. `merge` | 4 calls that ran `dotclaude-spec merge`. Median `input` 2, `cache read` 67,572, `cache write` 891, `output` 12. | 0. `tests/dotclaude/spec/cli/merge.test.ts`, "merge merges the branch, runs the generator, commits plugins, and sets the lane done". |
 | 3. `ready` | 56 calls that read a package file. Median `input` 2, `cache read` 11,969, `cache write` 1,153, `output` 124. | 0. `tests/dotclaude/spec/cli/ready.test.ts`, "ready prints the planned packages with done deps and no owns overlap with a busy package". |
 | 4. Checkbox of `packages.md` | 16 `Edit` or `Write` calls on `packages.md`. Median `input` 2, `cache read` 138,711, `cache write` 1,816, `output` 1,388. | 0. `tests/dotclaude/spec/cli/lane.test.ts`, "lane sets the checkbox of the package line: x for done, a space for each other lane". |
-| 5. `usage` and `start-cost` | 0 runs. The transcripts hold no `Skill` call and no `/dotclaude-sessions:usage` or `/start-cost` command. No number. | 0. `src/plugins/dotclaude-sessions/slices/usage/lab/usage.test.ts`, "the command `dotclaude-sessions:usage` shows the output of the CLI". `src/plugins/dotclaude-sessions/slices/start-cost/lab/start-cost.test.ts`, "the command `start-cost` shows the output of the CLI". |
+| 5. `usage` and `start-cost` | The transcripts hold no run. A live run of the old skill measured `usage`, see [Live runs](#live-runs): 2 turns, `cache read` 30,828, `cache write` 6,615, `output` 822, $0.038. | 0. A live run of the same command took 0 turns and $0. `src/plugins/dotclaude-sessions/slices/usage/lab/usage.test.ts`, "the command `dotclaude-sessions:usage` shows the output of the CLI". `src/plugins/dotclaude-sessions/slices/start-cost/lab/start-cost.test.ts`, "the command `start-cost` shows the output of the CLI". |
 | 7. Sections of a `hotfix` record | 6 `Edit` or `Write` calls on hotfix files. Median `input` 2, `cache read` 64,909, `cache write` 3,157, `output` 709. | 0. `tests/dotclaude/spec/cli/new-record.test.ts`, "record writes the empty sections of a hotfix in order". |
-| 8. `test-runner` agent | 0 runs. The 431 runs of the CLI list no `test-runner` type, and no `Agent` call names it. No number. | 0. `tests/dotclaude/checks/run.test.ts`, "passing commands exit 0 and print counts, time, and the log file". |
+| 8. `test-runner` agent | The transcripts hold no run. 3 live runs measured it, see [Live runs](#live-runs): 2 turns each, $0.009 to $0.029. | Not 0. The main session still calls the CLI with `Bash`. 3 live runs took 3 to 8 turns, $0.032 to $0.036, see [Live runs](#live-runs). `tests/dotclaude/checks/run.test.ts` tests the CLI. |
 
 Notes on the before rows:
 
@@ -95,3 +95,41 @@ Notes on the before rows:
 - The item 3 count is the model calls that read a package file, not a count of waves.
 - The `dotclaude-usage` run used `--days 400 --runs 1000`.
   Its count of calls moved while the session wrote, so it read 18,468 calls in the JSON form and 18,471 in the text form.
+
+## Live runs
+
+On 2026-10-12, headless runs in `just sandbox` measured items 5 and 8, because the transcripts hold no run of their old form.
+Each run used `--model claude-sonnet-5-5` and `--allowedTools Bash Agent Task`, and the numbers come from the `modelUsage` of its result.
+The old form ran from a worktree at `90ff82c1`, the commit before item 5 moved.
+The new form ran from `33280eec`.
+A new sandbox session starts each run, so the prompt cache is warm or cold by chance, and the cost varies.
+
+| Run | Turns | Tokens by model (`cache read`, `cache write`, `output`) | Cost |
+| --- | --- | --- | --- |
+| Item 5 before, `/dotclaude-sessions:usage` as a skill | 2 | Sonnet 30,828, 6,615, 822 | $0.038 |
+| Item 5 after, the same command with the `command.run` hook | 0 | none | $0 |
+| Item 8 before, run 1, `test-runner` | 2 | Sonnet 30,404, 5,761, 250. Haiku 4,080, 4,410, 322 | $0.029 |
+| Item 8 before, run 2 | 2 | Sonnet 30,409, 5,795, 241. Haiku 6,960, 1,463, 273 | $0.029 |
+| Item 8 before, run 3 | 2 | Sonnet 35,592, 645, 244. Haiku 8,168, 253, 311 | $0.009 |
+| Item 8 after, run 1, `dotclaude-run-checks` | 4 | Sonnet 66,811, 5,890, 571 | $0.036 |
+| Item 8 after, run 2 | 3 | Sonnet 48,448, 5,726, 464 | $0.032 |
+| Item 8 after, run 3 | 8 | Sonnet 128,861, 1,809, 1,176 | $0.032 |
+
+The prompts:
+
+- Item 5: `/dotclaude-sessions:usage`.
+- Item 8 before: "Use the test-runner agent to run the check command bun --version, and report its result."
+- Item 8 after: "Run the check command bun --version with dotclaude-run-checks, and report its result."
+
+Item 5 moved to zero tokens.
+Item 8 did not.
+The new form costs more than the old form in these runs, for two reasons:
+
+- No prompt, skill, or output style tells Claude that `dotclaude-run-checks` exists or how to call it.
+  Each run first ran `which dotclaude-run-checks`, and run 3 also read the CLI source and the log folder.
+- Each run first called `dotclaude-run-checks bun --version` with no quotes.
+  The CLI reads each argument as one command, so it ran `bun` and `--version` as two commands.
+  Each run then called it again with `"bun --version"`.
+
+The `test-runner` agent ran on Haiku, so its own cost was at most $0.001 in each run.
+Most of the cost of both forms is the main session on Sonnet.
