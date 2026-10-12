@@ -1,13 +1,13 @@
 // The account tiers of setup, as pure functions: which account a status names, and the picks of each account.
-// Pro is the baseline. Max 5x and Max 20x get more parallel tool calls and a higher effort.
+// Pro is the baseline. Max 5x and Max 20x get more parallel subagents and a higher effort.
 // An account with no login gets no picks, because setup knows nothing about its budget.
 // Claude Code already scales the plan mode agents and the usage warnings by tier, so setup does not set them.
 // The CLI reads `claude auth status --json`, and the adapter gives the parsed value here.
 
 import {
-  CONCURRENCY_MAX_5X,
-  CONCURRENCY_MAX_20X,
-  CONCURRENCY_PRO,
+  SUBAGENTS_MAX_5X,
+  SUBAGENTS_MAX_20X,
+  SUBAGENTS_PRO,
 } from "../limits.ts";
 import { isObject } from "./merge.ts";
 import type { Json } from "./types.ts";
@@ -20,18 +20,18 @@ export const RATE_TIER_MAX_5X = "default_claude_max_5x";
 /** The rate limit tier that Claude Code gives a Max 20x account. */
 export const RATE_TIER_MAX_20X = "default_claude_max_20x";
 
-/** The picks of one account: the stored effort, and the tool call concurrency in `env`. */
-const picks = (effort: string, concurrency: number): Json => ({
+/** The picks of one account: the stored effort, and the subagent cap in `env`. */
+const picks = (effort: string, subagents: number): Json => ({
   effortLevel: effort,
-  env: { CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY: String(concurrency) },
+  env: { CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: String(subagents) },
 });
 
 /** The picks of each account that has a login. The `none` account has no entry. */
 export const PICKS: Record<Exclude<Account, "none">, Json> = {
-  pro: picks("high", CONCURRENCY_PRO),
-  max5x: picks("xhigh", CONCURRENCY_MAX_5X),
-  max20x: picks("xhigh", CONCURRENCY_MAX_20X),
-  api: picks("high", CONCURRENCY_PRO),
+  pro: picks("high", SUBAGENTS_PRO),
+  max5x: picks("xhigh", SUBAGENTS_MAX_5X),
+  max20x: picks("xhigh", SUBAGENTS_MAX_20X),
+  api: picks("high", SUBAGENTS_PRO),
 };
 
 /**

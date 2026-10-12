@@ -40,14 +40,14 @@ const ACCOUNTS: {
   code: number;
   rateTier?: string;
   effortLevel?: string;
-  concurrency?: string;
+  subagents?: string;
 }[] = [
   {
     name: "Pro",
     status: PRO,
     code: 0,
     effortLevel: "high",
-    concurrency: "10",
+    subagents: "5",
   },
   {
     name: "Max 5x",
@@ -55,7 +55,7 @@ const ACCOUNTS: {
     code: 0,
     rateTier: RATE_TIER_MAX_5X,
     effortLevel: "xhigh",
-    concurrency: "15",
+    subagents: "10",
   },
   {
     name: "Max 20x",
@@ -63,16 +63,17 @@ const ACCOUNTS: {
     code: 0,
     rateTier: RATE_TIER_MAX_20X,
     effortLevel: "xhigh",
-    concurrency: "20",
+    subagents: "20",
   },
   {
     name: "API key",
     status: API,
     code: 0,
     effortLevel: "high",
-    concurrency: "10",
+    subagents: "5",
   },
-  { name: "no login", status: { loggedIn: false }, code: 1 },
+  // No picks are written, so the `prompt` pin of the snippet stays.
+  { name: "no login", status: { loggedIn: false }, code: 1, subagents: "5" },
 ];
 
 /** A temporary config folder, project folder, and bin folder with the fake `claude`. */
@@ -146,13 +147,14 @@ test("a status with no login, or no object, gives no account", () => {
   expect(accountOf("not an object")).toBe("none");
 });
 
-test("picks scale up from Pro, and the no-login account has none", () => {
-  const concurrency = (account: keyof typeof PICKS) =>
+test("subagent caps scale up from Pro, and the no-login account has none", () => {
+  const subagents = (account: keyof typeof PICKS) =>
     Number(
-      (PICKS[account]["env"] as Json)["CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY"],
+      (PICKS[account]["env"] as Json)["CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS"],
     );
-  expect(concurrency("max5x")).toBeGreaterThan(concurrency("pro"));
-  expect(concurrency("max20x")).toBeGreaterThan(concurrency("max5x"));
+  expect(subagents("max5x")).toBeGreaterThan(subagents("pro"));
+  expect(subagents("max20x")).toBeGreaterThan(subagents("max5x"));
+  expect(subagents("api")).toBe(subagents("pro"));
   expect(picksOf("none")).toBeUndefined();
   expect(picksOf("pro")).toBe(PICKS.pro);
 });
@@ -167,8 +169,8 @@ for (const account of ACCOUNTS)
     expect(r.status).toBe(0);
     const settings = await readUser(d);
     expect(settings["effortLevel"]).toBe(account.effortLevel);
-    expect(settings["env"]?.["CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY"]).toBe(
-      account.concurrency,
+    expect(settings["env"]?.["CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS"]).toBe(
+      account.subagents,
     );
   });
 
