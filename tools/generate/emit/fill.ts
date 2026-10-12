@@ -5,12 +5,6 @@
 import fs from "node:fs";
 import path from "node:path";
 import {
-  HAIKU_CONTEXT_MAX,
-  REPORT_MAX_WORDS,
-  SUBAGENT_CONTEXT_MAX,
-  TURNS_LEFT_AT,
-} from "../../../src/plugins/dotclaude/slices/handoff/limits.ts";
-import {
   BASH_OUTPUT_MAX_CHARS,
   CONTEXT_WINDOW,
   POLICY_FILE_MAX_CHARS,
@@ -18,6 +12,12 @@ import {
   USAGE_LEVELS,
 } from "../../../src/kernel/budget.ts";
 import { FILE_MAX_BYTES } from "../../../src/plugins/dotclaude/slices/asks/limits.ts";
+import {
+  HAIKU_CONTEXT_MAX,
+  REPORT_MAX_WORDS,
+  SUBAGENT_CONTEXT_MAX,
+  TURNS_LEFT_AT,
+} from "../../../src/plugins/dotclaude/slices/handoff/limits.ts";
 import { MAX_ROWS } from "../../../src/plugins/dotclaude/slices/statusline/limits.ts";
 
 /** The limits that a source can name as `{{NAME}}`, from the one place in code where each is set. A number has the `300,000` form of the docs. */

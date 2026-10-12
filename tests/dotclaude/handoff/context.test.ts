@@ -3,15 +3,15 @@
 
 import { expect, test } from "bun:test";
 import {
+  AGENT_NAMES,
+  turnBound,
+} from "../../../src/plugins/dotclaude/slices/agents/domain/turns.ts";
+import {
   boundFor,
   contextTokens,
   maxTurnsOf,
   reportNote,
 } from "../../../src/plugins/dotclaude/slices/handoff/domain/context.ts";
-import {
-  AGENT_NAMES,
-  turnBound,
-} from "../../../src/plugins/dotclaude/slices/agents/domain/turns.ts";
 import {
   AGENT_MAX_TURNS,
   HAIKU_CONTEXT_MAX,

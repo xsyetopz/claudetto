@@ -3,11 +3,11 @@
 
 import { expect, test } from "bun:test";
 import { CODE_COMMAND_MAX_WORDS } from "../../../src/kernel/budget.ts";
+import { parse } from "../../../src/kernel/shell.ts";
 import {
   codeCommands,
   codeWords,
 } from "../../../src/plugins/dotclaude/slices/asks/domain/code.ts";
-import { parse } from "../../../src/kernel/shell.ts";
 
 const has = (text: string, cmd: string) =>
   codeCommands(text).some((c) => c.join(" ").startsWith(cmd));
