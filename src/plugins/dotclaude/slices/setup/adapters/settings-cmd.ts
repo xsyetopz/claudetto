@@ -9,12 +9,13 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { MYTHOS } from "../domain/merge.ts";
+import { hasDocsAddon, planSettings } from "../domain/settings.ts";
 import {
-  hasDocsAddon,
-  planSettings,
+  mythosInCatalog,
+  type Places,
+  readOptional,
   settingsFile,
-} from "../domain/settings.ts";
-import { mythosInCatalog, type Places, readOptional } from "./files.ts";
+} from "./files.ts";
 import type { Io } from "./io.ts";
 
 /** The parsed settings file `file`, or `{}` when it is missing. Throws on text that is not JSON. */

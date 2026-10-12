@@ -4,13 +4,13 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import type { Json } from "../../../plugins/dotclaude/slices/setup/domain/types.ts";
 import {
   FABLE,
   MYTHOS,
   mergeSettings,
   SNIPPET,
 } from "../../../plugins/dotclaude/slices/setup/domain/merge.ts";
+import type { Json } from "../../../plugins/dotclaude/slices/setup/domain/types.ts";
 import { DOCS_SNIPPET } from "../../../plugins/dotclaude/slices/setup/texts.ts";
 import { PLUGINS, REPO, tmpDir } from "../../support/repo.ts";
 
@@ -23,7 +23,7 @@ const SCRIPT = path.join(PLUGIN, "bin/dotclaude-setup");
 const SLASHED = PLUGIN.replaceAll("\\", "/");
 
 /** A temporary config folder and project folder. */
-function sandbox() {
+const sandbox = () => {
   const root = tmpDir("dc-settings");
   const d = {
     config: path.join(root, "config"),
@@ -31,7 +31,7 @@ function sandbox() {
   };
   for (const dir of Object.values(d)) fs.mkdirSync(dir);
   return d;
-}
+};
 
 const run = (d: Sandbox, args: string[]) => {
   const r = Bun.spawnSync(
@@ -105,7 +105,7 @@ test("`--apply` keeps the other keys and rules of the user", async () => {
 const ORG = "00000000-0000-4000-8000-000000000001";
 
 /** Write `.claude.json` with `ORG`, and a cached catalog file of `org` with `rows`. */
-async function catalog(d: Sandbox, rows: CatalogRow[], org = ORG) {
+const catalog = async (d: Sandbox, rows: CatalogRow[], org = ORG) => {
   await Bun.write(
     path.join(d.config, ".claude.json"),
     JSON.stringify({ oauthAccount: { organizationUuid: ORG } }),
@@ -116,7 +116,7 @@ async function catalog(d: Sandbox, rows: CatalogRow[], org = ORG) {
     path.join(dir, `${org}-abc123-cc.json`),
     JSON.stringify({ version: 2, catalog: { config: { models: rows } } }),
   );
-}
+};
 
 const hasMythos = async (d: Sandbox) => {
   const models = (await readUser(d)).availableModels;

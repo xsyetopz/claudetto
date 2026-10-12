@@ -23,16 +23,6 @@ tests/dotclaude/sembr/
 plugins/dotclaude/features/statusline/
 tests/dotclaude/statusline/
 
-# P09: `setup` and the drift check
-plugins/dotclaude/features/drift/
-plugins/dotclaude/features/setup/
-plugins/dotclaude/skills/
-plugins/dotclaude/tests/drift.test.ts
-src/plugins/dotclaude/skills/
-tests/dotclaude/drift.test.ts
-tests/dotclaude/setup/
-tests/dotclaude/skills.test.ts
-
 # P11a: `dotclaude-codegraph`
 plugins/dotclaude-codegraph/
 src/plugins/dotclaude-codegraph/

@@ -4,11 +4,6 @@
 import { expect, test } from "bun:test";
 import path from "node:path";
 import {
-  OFF_PLUGINS,
-  OVERRIDE_ENV,
-  TESTED_VERSION,
-} from "../../../plugins/dotclaude/slices/setup/domain/facts.ts";
-import {
   driftLines,
   driftNote,
   isSeated,
@@ -18,6 +13,11 @@ import {
   syncedSkills,
   unknownSections,
 } from "../../../plugins/dotclaude/slices/setup/domain/drift.ts";
+import {
+  OFF_PLUGINS,
+  OVERRIDE_ENV,
+  TESTED_VERSION,
+} from "../../../plugins/dotclaude/slices/setup/domain/facts.ts";
 import { snippetFor } from "../../../plugins/dotclaude/slices/setup/domain/merge.ts";
 import { REPO } from "../../support/repo.ts";
 

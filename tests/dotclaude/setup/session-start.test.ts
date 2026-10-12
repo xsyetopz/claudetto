@@ -76,9 +76,7 @@ const run = async ({
         return usageOf(skills);
       },
       turns: async () => turns,
-      append: async (row: {
-        message: { content: { text: string }[] };
-      }) => {
+      append: async (row: { message: { content: { text: string }[] } }) => {
         notes.push(row.message.content[0]?.text ?? "");
       },
     },

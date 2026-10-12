@@ -5,9 +5,8 @@
 
 import fs from "node:fs";
 import { driftLines } from "../domain/drift.ts";
-import { settingsFile } from "../domain/settings.ts";
 import type { Json } from "../domain/types.ts";
-import type { Places } from "./files.ts";
+import { type Places, settingsFile } from "./files.ts";
 import type { Io } from "./io.ts";
 
 /** Run the `drift` command and return the exit status: 0 for no difference, 1 for a difference, and 2 for a bad call. */

@@ -63,3 +63,21 @@ export const mythosInCatalog = async (
     return false;
   }
 };
+
+/**
+ * The settings file of `scope`.
+ * `configDir` is `CLAUDE_CONFIG_DIR` or `~/.claude`, and `projectDir` is the project folder.
+ * Returns null for an unknown scope.
+ */
+export const settingsFile = (
+  scope: string,
+  configDir: string,
+  projectDir: string,
+): string | null => {
+  const files: Record<string, string> = {
+    user: path.join(configDir, "settings.json"),
+    project: path.join(projectDir, ".claude", "settings.json"),
+    local: path.join(projectDir, ".claude", "settings.local.json"),
+  };
+  return Object.hasOwn(files, scope) ? (files[scope] as string) : null;
+};

@@ -38,7 +38,7 @@ export const main = async (
   const apply = rest.includes("--apply");
   const preview = (command === "settings" || command === "addons") && !apply;
   if (COMMANDS.includes(command) && !preview) {
-    const added = excludeRuntimePaths(places.projectDir);
+    const added = await excludeRuntimePaths(places.projectDir);
     if (added.length > 0)
       io.log(`Added runtime paths to .git/info/exclude: ${added.length - 1}.`);
   }

@@ -24,7 +24,7 @@ if (process.argv[2] === "--version") console.log("9.9.9");
 `;
 
 /** A config folder with `ids` installed, a project folder, and a stub folder with `codegraph`. */
-async function sandbox(ids: string[]) {
+const sandbox = async (ids: string[]) => {
   const root = tmpDir("dc-addons");
   const d = {
     config: path.join(root, "config"),
@@ -39,7 +39,7 @@ async function sandbox(ids: string[]) {
   );
   await writeProgram(d.stub, "codegraph", STUB);
   return d;
-}
+};
 
 const windows =
   process.platform === "win32"

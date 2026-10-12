@@ -21,14 +21,17 @@ const git = (args: string[], cwd: string) => {
       stderr: "ignore",
       timeout: 10_000,
     });
-    return { code: result.exitCode, out: (result.stdout?.toString() ?? "").trim() };
+    return {
+      code: result.exitCode,
+      out: (result.stdout?.toString() ?? "").trim(),
+    };
   } catch {
     return undefined;
   }
 };
 
 /** The lines that this step added to `.git/info/exclude` of the repository of `cwd`, or `[]`. */
-export const excludeRuntimePaths = (cwd: string): string[] => {
+export const excludeRuntimePaths = async (cwd: string): Promise<string[]> => {
   const found = git(["rev-parse", "--git-path", "info/exclude"], cwd);
   if (found?.code !== 0 || !found.out) return [];
   const target = path.resolve(cwd, found.out);
@@ -36,7 +39,8 @@ export const excludeRuntimePaths = (cwd: string): string[] => {
     (pattern) =>
       git(["check-ignore", "-q", samplePath(pattern)], cwd)?.code === 0,
   );
-  const text = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : "";
+  const file = Bun.file(target);
+  const text = (await file.exists()) ? await file.text() : "";
   const lines = excludeLines(text, ignored);
   if (lines.length === 0) return [];
   fs.mkdirSync(path.dirname(target), { recursive: true });

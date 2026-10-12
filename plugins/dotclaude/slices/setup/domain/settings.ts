@@ -15,28 +15,6 @@ import type { Change, InstalledPlugins, Json, UserSettings } from "./types.ts";
 /** The scopes that the CLI takes. */
 export const SCOPES = ["user", "project", "local"] as const;
 
-/** The path of `parts` joined with `/`, the form that both `node:path` and the shell of Claude Code take. */
-const join = (...parts: string[]): string =>
-  parts.join("/").replace(/\/{2,}/g, "/");
-
-/**
- * The settings file of `scope`.
- * `configDir` is `CLAUDE_CONFIG_DIR` or `~/.claude`, and `projectDir` is the project folder.
- * Returns null for an unknown scope.
- */
-export const settingsFile = (
-  scope: string,
-  configDir: string,
-  projectDir: string,
-): string | null => {
-  const files: Record<string, string> = {
-    user: join(configDir, "settings.json"),
-    project: join(projectDir, ".claude", "settings.json"),
-    local: join(projectDir, ".claude", "settings.local.json"),
-  };
-  return Object.hasOwn(files, scope) ? (files[scope] as string) : null;
-};
-
 /** True when the user settings or the installed plugins name `dotclaude-docs`. */
 export const hasDocsAddon = (
   userSettings: UserSettings,
