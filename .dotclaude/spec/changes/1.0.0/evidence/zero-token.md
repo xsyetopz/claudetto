@@ -82,7 +82,7 @@ No live session measured it.
 | 4. Checkbox of `packages.md` | 16 `Edit` or `Write` calls on `packages.md`. Median `input` 2, `cache read` 138,711, `cache write` 1,816, `output` 1,388. | 0. `tests/dotclaude/spec/cli/lane.test.ts`, "lane sets the checkbox of the package line: x for done, a space for each other lane". |
 | 5. `usage` and `start-cost` | The transcripts hold no run. A live run of the old skill measured `usage`, see [Live runs](#live-runs): 2 turns, `cache read` 30,828, `cache write` 6,615, `output` 822, $0.038. | 0. A live run of the same command took 0 turns and $0. `src/plugins/dotclaude-sessions/slices/usage/lab/usage.test.ts`, "the command `dotclaude-sessions:usage` shows the output of the CLI". `src/plugins/dotclaude-sessions/slices/start-cost/lab/start-cost.test.ts`, "the command `start-cost` shows the output of the CLI". |
 | 7. Sections of a `hotfix` record | 6 `Edit` or `Write` calls on hotfix files. Median `input` 2, `cache read` 64,909, `cache write` 3,157, `output` 709. | 0. `tests/dotclaude/spec/cli/new-record.test.ts`, "record writes the empty sections of a hotfix in order". |
-| 8. `test-runner` agent | The transcripts hold no run. 3 live runs measured it, see [Live runs](#live-runs): 2 turns each, $0.009 to $0.029. | Not 0. The main session still calls the CLI with `Bash`. 3 live runs took 3 to 8 turns, $0.032 to $0.036, see [Live runs](#live-runs). `tests/dotclaude/checks/run.test.ts` tests the CLI. |
+| 8. `test-runner` agent | The transcripts hold no run. 3 live runs measured it, see [Live runs](#live-runs): 2 turns each, $0.009 to $0.029. | Not 0. The main session still calls the CLI with `Bash`. With the fix of `2c2f9236`, 3 live runs took 2 to 3 turns, $0.006 to $0.075, see [Live runs](#live-runs). `tests/dotclaude/checks/run.test.ts` tests the CLI. |
 
 Notes on the before rows:
 
@@ -114,6 +114,9 @@ A new sandbox session starts each run, so the prompt cache is warm or cold by ch
 | Item 8 after, run 1, `dotclaude-run-checks` | 4 | Sonnet 66,811, 5,890, 571 | $0.036 |
 | Item 8 after, run 2 | 3 | Sonnet 48,448, 5,726, 464 | $0.032 |
 | Item 8 after, run 3 | 8 | Sonnet 128,861, 1,809, 1,176 | $0.032 |
+| Item 8 after the fix, run 1 | 2 | Sonnet 17,702, 17,884, 172 | $0.075 |
+| Item 8 after the fix, run 2 | 3 | Sonnet 48,258, 5,454, 411 | $0.031 |
+| Item 8 after the fix, run 3 | 2 | Sonnet 35,414, 205, 199 | $0.006 |
 
 The prompts:
 
@@ -133,3 +136,15 @@ The new form costs more than the old form in these runs, for two reasons:
 
 The `test-runner` agent ran on Haiku, so its own cost was at most $0.001 in each run.
 Most of the cost of both forms is the main session on Sonnet.
+
+The fix of `2c2f9236` has two parts:
+
+- The shared prompt names `dotclaude-run-checks` and tells Claude to give each command as one quoted argument.
+- The CLI exits 2 with a hint when an argument starts with `-`, and it runs no command.
+
+The "after the fix" runs used the same prompt from `2c2f9236`, with `--output-format stream-json` so that the `Bash` commands show in the stream.
+No run ran `which`, read the CLI source, or called the CLI with no quotes.
+Each run got a pass on its first call, with the same 2 turns as `test-runner` in 2 of the 3 runs.
+Run 2 also read the log file, because the summary of a passing command does not show its output.
+The cost of each run follows the prompt cache: run 1 wrote 17,884 cache tokens, and run 3 wrote 205.
+So the new form costs about the same as `test-runner`, and not 0.
