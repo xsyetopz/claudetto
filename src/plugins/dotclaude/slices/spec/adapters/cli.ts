@@ -4,6 +4,8 @@
 //   dotclaude-spec status [<id>]
 //   dotclaude-spec next [<id>]
 //   dotclaude-spec lane <package> <lane>
+//   dotclaude-spec ready [<id>]
+//   dotclaude-spec merge <package> <branch>
 //   dotclaude-spec validate [<id>]
 //   dotclaude-spec archive <id>
 //   dotclaude-spec record <text>
@@ -14,7 +16,9 @@
 import { archiveCommand } from "./archive.ts";
 import { type Clock, consoleIo, type Io, systemClock } from "./io.ts";
 import { laneCommand } from "./lane.ts";
+import { mergeCommand } from "./merge.ts";
 import { newCommand } from "./new.ts";
+import { readyCommand } from "./ready.ts";
 import { recordCommand } from "./record.ts";
 import type { Run } from "./run.ts";
 import { nextCommand, statusCommand } from "./status.ts";
@@ -22,7 +26,7 @@ import { SpecStore } from "./store.ts";
 import { validateCommand } from "./validate.ts";
 
 const USAGE =
-  "Usage: dotclaude-spec new <id> [--size trivial|medium|large] | status [<id>] | next [<id>] | lane <package> <lane> | validate [<id>] | archive <id> | record <text>";
+  "Usage: dotclaude-spec new <id> [--size trivial|medium|large] | status [<id>] | next [<id>] | lane <package> <lane> | ready [<id>] | merge <package> <branch> | validate [<id>] | archive <id> | record <text>";
 
 const COMMANDS: Readonly<
   Record<string, (run: Run, args: string[]) => number | Promise<number>>
@@ -31,6 +35,8 @@ const COMMANDS: Readonly<
   status: statusCommand,
   next: nextCommand,
   lane: laneCommand,
+  ready: readyCommand,
+  merge: mergeCommand,
   validate: validateCommand,
   archive: archiveCommand,
   record: recordCommand,

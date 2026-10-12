@@ -25,7 +25,10 @@ export const makePlan = (
     .map((wave) => {
       const entries = packages
         .filter((p) => (p.wave ?? 1) === wave)
-        .map((p) => `- [${p.checked ? "x" : " "}] ${p.id} Title of ${p.id}`);
+        .map(
+          (p) =>
+            `- [${(p.checked ?? p.lane === "done") ? "x" : " "}] ${p.id} Title of ${p.id}`,
+        );
       return [`## Wave ${wave}`, "", ...entries].join("\n");
     })
     .join("\n\n");

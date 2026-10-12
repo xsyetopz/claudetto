@@ -9,6 +9,7 @@ import { parseDelta, parseSpec } from "../domain/parse.ts";
 import { parseTasks } from "../domain/plan.ts";
 import {
   type Issue,
+  validateCheckboxes,
   validateDelta,
   validateDeps,
   validatePackage,
@@ -111,6 +112,12 @@ const packageProblems = async (
   );
   const lanes = events ? await store.lanes(id, events) : {};
   const open = (pkg: Package): boolean => lanes[pkg.front.id] !== "done";
+  out.push(
+    ...issueLines(
+      path.posix.join(dir, "packages.md"),
+      validateCheckboxes(entries, lanes),
+    ),
+  );
   const waves = new Set(entries.map((e) => e.wave));
   for (const wave of waves) {
     const inWave = new Set(

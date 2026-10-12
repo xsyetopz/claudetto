@@ -64,6 +64,22 @@ test("validate fails on a dep that does not exist and on a dep cycle", async () 
   expect(b.err.join("\n")).toContain("plan.dep-cycle");
 });
 
+test("validate fails on a checkbox that does not agree with the lane", async () => {
+  const unchecked = await makePlan([
+    { id: "P01", lane: "done", checked: false },
+  ]);
+  const a = await run(unchecked, "validate", "c1");
+  expect(a.code).toBe(1);
+  expect(a.err.join("\n")).toContain("plan.checkbox-lane");
+  const checked = await makePlan([{ id: "P01", lane: "doing", checked: true }]);
+  expect((await run(checked, "validate", "c1")).code).toBe(1);
+  const agree = await makePlan([
+    { id: "P01", lane: "done", owns: ["src/a/"] },
+    { id: "P02", lane: "review", owns: ["src/b/"] },
+  ]);
+  expect((await run(agree, "validate", "c1")).code).toBe(0);
+});
+
 test("validate stops on a change that does not exist", async () => {
   const root = await makePlan([{ id: "P01" }]);
   expect((await run(root, "validate", "nope")).code).toBe(1);

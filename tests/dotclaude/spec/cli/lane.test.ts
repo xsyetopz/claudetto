@@ -42,6 +42,22 @@ test("lane moves a package and adds an event with the time", async () => {
   ).toStrictEqual(["doing", "done"]);
 });
 
+test("lane sets the checkbox of the package line: x for done, a space for each other lane", async () => {
+  const root = await makePlan([{ id: "P01" }, { id: "P02" }]);
+  const boxes = async (): Promise<string[]> =>
+    (await read(root, `${CHANGE}/packages.md`))
+      .split("\n")
+      .filter((l) => l.startsWith("- ["))
+      .map((l) => l.slice(0, 5));
+  expect(await boxes()).toStrictEqual(["- [ ]", "- [ ]"]);
+  await run(root, "lane", "P01", "doing");
+  expect(await boxes()).toStrictEqual(["- [ ]", "- [ ]"]);
+  await run(root, "lane", "P01", "done");
+  expect(await boxes()).toStrictEqual(["- [x]", "- [ ]"]);
+  await run(root, "lane", "P01", "blocked");
+  expect(await boxes()).toStrictEqual(["- [ ]", "- [ ]"]);
+});
+
 test("lane stops on a bad lane, a missing argument, and an unknown package", async () => {
   const root = await makePlan([{ id: "P01" }]);
   const before = await read(root, `${CHANGE}/events.jsonl`);
@@ -106,4 +122,12 @@ test("lane works in the main checkout and is refused in a linked worktree", asyn
   } finally {
     fs.rmSync(linked, { recursive: true, force: true });
   }
+});
+
+test("lane done ticks only the line of its own id when another id starts with it", async () => {
+  const root = await makePlan([{ id: "P11" }, { id: "P11a" }]);
+  expect((await run(root, "lane", "P11", "done")).code).toBe(0);
+  const list = await read(root, `${CHANGE}/packages.md`);
+  expect(list).toContain("- [x] P11 ");
+  expect(list).toContain("- [ ] P11a ");
 });

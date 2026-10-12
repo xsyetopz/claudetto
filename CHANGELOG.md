@@ -10,6 +10,12 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ## [Unreleased]
 
+### Added
+
+- The `dotclaude-spec` commands `ready` and `merge` do two steps of `/ship` with no model call.
+  `ready <id>` prints the packages that can start, with no overlap of `owns` between them, and `merge <package> <branch>` needs the package in `review`, commits the lane files, merges the branch, runs `just generate`, sets the lane `done`, and commits `plugins/` with the lane files.
+  `lane` also sets the checkbox of the package line in `packages.md`, `validate` reports a checkbox that does not agree with the lane, and `record` writes the empty sections of a hotfix record.
+
 ### Changed
 
 - The spec store keeps its lane changes in an append-only `events.jsonl`, one line for each change, in place of `state.json`.
