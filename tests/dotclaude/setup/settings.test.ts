@@ -1,24 +1,24 @@
-// Runs of `skills/setup/scripts/settings.ts`, the settings step of setup.
+// Runs of `dotclaude-setup settings`, the settings step of setup.
 // Each run uses a temporary `CLAUDE_CONFIG_DIR` and project folder, so no real settings file changes.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import type { Json } from "../../../plugins/dotclaude/lib/merge.ts";
-import { mergeSettings } from "../../../plugins/dotclaude/lib/merge.ts";
+import type { Json } from "../../../plugins/dotclaude/slices/setup/domain/types.ts";
 import {
-  DOCS_SNIPPET,
   FABLE,
   MYTHOS,
+  mergeSettings,
   SNIPPET,
-} from "../../../plugins/dotclaude/lib/snippet.ts";
+} from "../../../plugins/dotclaude/slices/setup/domain/merge.ts";
+import { DOCS_SNIPPET } from "../../../plugins/dotclaude/slices/setup/texts.ts";
 import { PLUGINS, REPO, tmpDir } from "../../support/repo.ts";
 
 type Sandbox = { config: string; project: string };
 type CatalogRow = { id: string; section?: string; disabled?: boolean };
 
 const PLUGIN = path.join(PLUGINS, "dotclaude");
-const SCRIPT = path.join(PLUGIN, "skills/setup/scripts/settings.ts");
+const SCRIPT = path.join(PLUGIN, "bin/dotclaude-setup");
 // The status line commands hold the plugin folder with forward slashes on each platform.
 const SLASHED = PLUGIN.replaceAll("\\", "/");
 
@@ -35,7 +35,7 @@ function sandbox() {
 
 const run = (d: Sandbox, args: string[]) => {
   const r = Bun.spawnSync(
-    [process.execPath, "--no-env-file", SCRIPT, ...args],
+    [process.execPath, "--no-env-file", SCRIPT, "settings", ...args],
     {
       env: { CLAUDE_CONFIG_DIR: d.config, CLAUDE_PROJECT_DIR: d.project },
     },
@@ -175,7 +175,7 @@ test("without Mythos, `availableModels` takes the list of the snippet", async ()
   await writeUser(d, { availableModels: ["claude-opus-4-1"] });
   run(d, ["--apply"]);
   expect((await readUser(d)).availableModels).toStrictEqual(
-    SNIPPET.availableModels,
+    SNIPPET["availableModels"],
   );
 });
 
@@ -225,7 +225,7 @@ test("a scalar of the snippet replaces the value of the user, and the change lin
 });
 
 // The wiki page shows the snippet that setup applies, so the two must hold the same keys.
-test("the JSON blocks of `Settings-Snippet.md` equal the snippet constants of `lib/snippet.ts`", async () => {
+test("the JSON blocks of `Settings-Snippet.md` equal the snippet constants of the `setup` slice", async () => {
   const text = await Bun.file(
     path.join(REPO, "wiki/settings/Settings-Snippet.md"),
   ).text();

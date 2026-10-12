@@ -1,4 +1,4 @@
-// Runs of `skills/setup/scripts/addons.ts`, the add-on step of setup.
+// Runs of `dotclaude-setup addons`, the add-on step of setup.
 // The `codegraph` here is a STUB Node script in a temporary `bin` folder that logs each call to `calls.log`.
 // `PATH` holds only the stub folder, so `agent-browser` and `npx` are not found.
 
@@ -8,15 +8,15 @@ import path from "node:path";
 import {
   installedAddons,
   planAddons,
-} from "../../../plugins/dotclaude/features/setup/addons.ts";
-import { BUN_MIN } from "../../../plugins/dotclaude/features/setup/limits.ts";
+} from "../../../plugins/dotclaude/slices/setup/domain/addons.ts";
+import { BUN_MIN } from "../../../plugins/dotclaude/slices/setup/limits.ts";
 import { writeProgram } from "../../support/fake-program.ts";
 import type { Env } from "../../support/repo.ts";
 import { PLUGINS, REPO, tmpDir } from "../../support/repo.ts";
 
 type Sandbox = { config: string; project: string; stub: string };
 
-const SCRIPT = path.join(PLUGINS, "dotclaude/skills/setup/scripts/addons.ts");
+const SCRIPT = path.join(PLUGINS, "dotclaude/bin/dotclaude-setup");
 const STUB = `const fs = require("node:fs");
 const path = require("node:path");
 fs.appendFileSync(path.join(process.env.STUB_DIR, "calls.log"), process.argv.slice(2).join(" ") + "\\n");
@@ -56,7 +56,7 @@ const system =
 
 const run = (d: Sandbox, args: string[], env: Env = {}) => {
   const r = Bun.spawnSync(
-    [process.execPath, "--no-env-file", SCRIPT, ...args],
+    [process.execPath, "--no-env-file", SCRIPT, "addons", ...args],
     {
       env: {
         CLAUDE_CONFIG_DIR: d.config,
@@ -145,14 +145,16 @@ test("an add-on that the user settings turn off is not checked", () => {
 
 test("the line of `dotclaude-sessions` and `dotclaude-lab` names `BUN_MIN` only for an older Bun", () => {
   const plan = (bun: string) =>
-    planAddons(
-      ["dotclaude-sessions", "dotclaude-lab"],
-      tmpDir("dc-bun"),
-      {},
+    planAddons(["dotclaude-sessions", "dotclaude-lab"], {
+      projectDir: tmpDir("dc-bun"),
+      env: {},
       bun,
-      () => null,
-    ).lines;
-  expect(plan("1.3.9").every((line) => line.includes(BUN_MIN))).toBe(true);
+      version: () => null,
+      indexBuilt: false,
+    }).lines;
+  expect(plan("1.3.9").every((line) => line.includes(`than ${BUN_MIN}`))).toBe(
+    true,
+  );
   expect(plan(BUN_MIN).some((line) => line.includes(`than ${BUN_MIN}`))).toBe(
     false,
   );

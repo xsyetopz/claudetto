@@ -6,7 +6,6 @@
 // and `Bash` does the same for the quoted heredoc of `git commit` and `gh pr create`,
 // the `tool.check` ask of the `adherence` feature for a change to a test, a config, a hook, or a settings file,
 // and the surface hooks (`prompt.attachment`, `agent.offer`, `tool.describe`) that cut attachments, agent lines, and tool schemas by exact id.
-// The drift check (`session.start`) has its handler in `features/drift/hooks.ts`.
 // Permission rules and the sandbox of the settings snippet cover the other dangerous calls.
 // The `guard` slice has the file-print deny and the ask for a repository of another owner.
 //
@@ -24,7 +23,6 @@ import type { Args, EngineInterface, On } from "claude-code";
 import { FILE_MAX_BYTES } from "../features/adherence/limits.ts";
 import { askReason as adherenceReason } from "../features/adherence/rules.ts";
 import type { Payload } from "../features/adherence/text.ts";
-import { onSessionStart } from "../features/drift/hooks.ts";
 import {
   commandInput,
   editInput,
@@ -69,8 +67,6 @@ async function adherenceAsk($: EngineInterface, e: Args<"tool.check">) {
 }
 
 export const register = (on: On): void => {
-  // eval: session.start drift
-  on("session.start", onSessionStart);
   // An unknown attachment type, agent, or tool passes on with no change.
   // The settings are read only for the sandbox text, whose short form depends on `sandbox.allowUnsandboxedCommands`.
   // eval: prompt.attachment surface

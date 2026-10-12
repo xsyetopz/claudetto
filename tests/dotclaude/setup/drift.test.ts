@@ -7,7 +7,7 @@ import {
   OFF_PLUGINS,
   OVERRIDE_ENV,
   TESTED_VERSION,
-} from "../../plugins/dotclaude/features/drift/data.ts";
+} from "../../../plugins/dotclaude/slices/setup/domain/facts.ts";
 import {
   driftLines,
   driftNote,
@@ -17,9 +17,9 @@ import {
   staleStatusLines,
   syncedSkills,
   unknownSections,
-} from "../../plugins/dotclaude/features/drift/rules.ts";
-import { snippetFor } from "../../plugins/dotclaude/lib/merge.ts";
-import { REPO } from "../support/repo.ts";
+} from "../../../plugins/dotclaude/slices/setup/domain/drift.ts";
+import { snippetFor } from "../../../plugins/dotclaude/slices/setup/domain/merge.ts";
+import { REPO } from "../../support/repo.ts";
 
 // Settings that turn off each plugin of `OFF_PLUGINS`, as the settings snippet of the wiki does.
 const profile = {
