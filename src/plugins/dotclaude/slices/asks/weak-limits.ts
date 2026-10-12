@@ -73,28 +73,9 @@ export const LEVEL_RANK: Record<string, number> = {
 export const THRESHOLD_KEY =
   /coverage|threshold|fail[-_]?under|minimum|\bmin\b|(?:^|[-_.])min(?:[-_.]|$)|^(?:lines|branches|functions|statements|percent)$/i;
 
-/** The names of a key where a higher number checks less (a size, depth, or complexity bound). */
-export const MAXIMUM_KEY = /max|limit|complexity|depth|length/i;
-
 /** The names of a key whose list gets entries that switch off a check. A new entry checks less. */
 export const IGNORE_KEY =
   /ignor|exclu|skip|omit|allow|disable|suppress|exempt|baseline|per-?file|noqa|unlisted|bypass/i;
-
-/** The JSON keys that the config check does not compare, as they hold no rule. */
-export const IGNORED_JSON_KEY = /^\$|^(?:version|description|name)$/;
-
-/** The text of an added line of a config or a CI file that switches a check off or lets it fail. */
-export const WEAKENING_LINE = [
-  /continue-on-error\s*:\s*(?!false\b)\S/i,
-  /\|\|\s*(?:true|exit\s+0|:)\s*(?:$|[;)&])/,
-  /^\s*-?\s*(?:if|when)\s*:\s*(?:\$\{\{\s*)?(?:false|never)\b/i,
-  /allow[-_]failure\s*:\s*(?!false\b)\S/i,
-  /\[skip ci\]|\[ci skip\]|--no-verify|\bset\s+\+e\b/i,
-  /^\s*-?\s*run\s*:\s*(?:true|:|exit\s+0)\s*$/,
-  /\b(?:ignore|ignores|exclude|excludes|skip|omit|disable|disabled|noqa|per-?file-?ignores)\b\s*[:=[(]/i,
-  /\bignore[-_](?:errors|missing[-_]imports)\s*[:=]\s*["']?true\b/i,
-  /["']?\w[\w/@.-]*["']?\s*[:=]\s*["']?(?:off|disable|disabled|none)["']?\s*,?$/i,
-];
 
 /** The file extensions of a CI file that the YAML reader of `cidiff.ts` reads. Another CI file is compared as text. */
 export const CI_YAML_FILE = /\.ya?ml$/i;
@@ -116,17 +97,13 @@ export const CI_RISKY_COMMAND = [
 /** The parents of a CI line where an added child is safe: a step under `steps`, and a job under `jobs`. */
 export const CI_ADDABLE_PARENT = /^["']?(?:steps|jobs)["']?:$/;
 
-/** The text of a lost line that holds no rule, so the loss checks nothing less: a display name, a description, a bracket. */
-export const LABEL_LINE =
-  /^\W*$|^\W*(?:name|description|title|label|\$schema|version)\s*[:=]/i;
-
 /**
  * The text of an added line of a hook script that is control flow, or that can end the script, mask a status, or join the next line.
  * A line like this can make a hook pass, so an added line with it asks.
  */
 export const SCRIPT_CONTROL = new RegExp(
   [
-    String.raw`(?<![A-Za-z])(?:exit|return|true|false|exec|trap|set|source|if|then|else|elif|fi|case|esac|for|while|until|do|done|break|continue|try|catch|except|finally|raise|throw|pass|kill)(?![A-Za-z])`,
+    "(?<![A-Za-z])(?:exit|return|true|false|exec|trap|set|source|if|then|else|elif|fi|case|esac|for|while|until|do|done|break|continue|try|catch|except|finally|raise|throw|pass|kill)(?![A-Za-z])",
     String.raw`;\s*\S|[|&{}\\!\`]|^:$`,
   ].join("|"),
   "i",
@@ -138,17 +115,6 @@ export const SHELL_SCRIPT =
 
 /** The first line of a script that a shell runs. */
 export const SHELL_SHEBANG = /^#!.*\b(?:ba|z|da|k)?sh\b/;
-
-/** The commands of a hook that cannot fail, as a command or the end of one. */
-export const CANNOT_FAIL =
-  /^\s*(?:true|:|exit\s+0|echo\b[^|;&]*)?\s*$|(?:\|\||;)\s*(?:true|:|exit\s+0)\s*$/;
-
-/** The lines of a hook script or a hook config file that make a hook check: a trigger, a verdict, or a failure exit. */
-export const HOOK_CHECK_LINE =
-  /\b(?:exit\s+[1-9]|deny|ask|block|reject|throw|PreToolUse|PostToolUse|tool\.(?:check|call)|decision|matcher|register|\.on\s*\()/i;
-
-/** The permission modes that keep a check on each call. Another mode lets calls run with fewer asks. */
-export const STRICT_MODES = ["default", "plan"];
 
 /** The keys of `permissions` where a removed entry lets calls run with fewer asks. */
 export const PERMISSION_DENY_KEYS = ["deny", "ask"];

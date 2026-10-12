@@ -95,17 +95,3 @@ export const added = (
     return n === 0;
   });
 };
-
-/** The lines of `before` that `after` does not keep, each in order. A line is kept when `after` holds it in the same order. */
-export const lostLines = (before: string, after: string): string[] => {
-  const next = after.split("\n");
-  const lost: string[] = [];
-  let at = 0;
-  for (const line of before.split("\n")) {
-    let j = at;
-    while (j < next.length && next[j] !== line) j++;
-    if (j < next.length) at = j + 1;
-    else lost.push(line);
-  }
-  return lost;
-};
