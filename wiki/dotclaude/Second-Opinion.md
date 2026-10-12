@@ -12,7 +12,7 @@ Jev writes no text or code, and it gives probabilities.
 | Skills | None |
 | Bin | `dotclaude-decide` in `bin/`, which runs on Bun |
 | Tool | `second_opinion`, registered at each session start, with or without the key |
-| Hooks | The core hooks module: `session.start` registers the tool, `tool.call` serves each call, and an `AskUserQuestion` hook adds a pick ([Hooks](Hooks)) |
+| Hooks | The core hooks module: `session.start` registers the tool, `tool.call` serves each call, and an `AskUserQuestion` hook adds a pick ([Hook events](Hook-Events)) |
 | Options | None. The only input is the environment variable `TYPESAFE_API_KEY` |
 | Limits | See [Cost and limits](#cost-and-limits) |
 | Problems | See [Troubleshooting](#troubleshooting) |
@@ -121,5 +121,5 @@ The tries, their timeouts, the waits, and a margin of 2 seconds always add up to
 ## Related pages
 
 - [Install](Install)
-- [Hooks](Hooks)
+- [Hook events](Hook-Events)
 - [Troubleshooting](Troubleshooting)

@@ -71,6 +71,6 @@ Run `claude --debug` to see the hook log of Claude Code.
 
 ## Related pages
 
-- [Hooks](Hooks)
+- [Hook events](Hook-Events)
 - [Undocumented reads](Undocumented-Reads)
 - [Install](Install)

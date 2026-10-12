@@ -14,7 +14,7 @@ The other plugins work without it.
   The module replaces the long system prompt with the shared sections and a prompt variant for each model ([System prompt](System-Prompt)).
 - Gives six agents with a model, an effort, and a turn limit each ([Agents](Agents)).
 - Asks before the first contact with a repository of another owner that has an AI policy file ([Contributions](Contributions)).
-- Checks work with hooks that use no model call: git asks and edit asks ([Hooks](Hooks)).
+- Checks work with hooks that use no model call: git asks and edit asks ([Hook events](Hook-Events)).
 - Tells a subagent to report before its context or turn bound ([Context bound](Context-Bound)).
 - Puts each sentence of Markdown and commit text on its own line ([Semantic line breaks](Semantic-Line-Breaks)).
 - Shortens attachments, agent lines, and tool descriptions by exact id ([Prompt surface](Prompt-Surface)).
@@ -79,7 +79,7 @@ See [Agents](Agents) for the table with the values and the pin tests.
 
 The module `hooks/register.ts` handles nine events: `tool.check`, `tool.call` (on `Write`, `Edit`, and `Bash`), `prompt.compose`, `agent.spawn`, `prompt.section`, `prompt.attachment`, `agent.offer`, `tool.describe`, and `session.start`.
 Classic command hooks cover `Bash` prints, git asks, edit checks, and subagent bounds.
-The page [Hooks](Hooks#dotclaude) lists each one with its matcher.
+The page [Architecture](Architecture) lists each one with its matcher.
 
 The checks in short:
 
@@ -171,7 +171,7 @@ See [Troubleshooting](Troubleshooting#the-core-plugin-dotclaude).
 
 ## Related pages
 
-- [Hooks](Hooks)
+- [Hook events](Hook-Events)
 - [Guards](Guards)
 - [Settings snippet](Settings-Snippet)
 - [Undocumented reads](Undocumented-Reads)

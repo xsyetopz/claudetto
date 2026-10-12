@@ -223,5 +223,5 @@ That lets you continue a test, but an old sandbox can hide a first-run problem.
 ## Related pages
 
 - [Development](Development) lists the repository commands.
-- [Hooks](Hooks) lists the hooks that you test here, and [Lab](Lab) lists the bins of this page.
+- [Hook events](Hook-Events) describes how to test a hook, and [Lab](Lab) lists the bins of this page.
 - [Guards](Guards) tells how to read guard asks and denies.
