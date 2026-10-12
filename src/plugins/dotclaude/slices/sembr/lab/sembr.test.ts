@@ -25,6 +25,10 @@ const engine = (
     on("fs.exists", () => ({ value: true }));
     on("fs.read", () => ({ value: file }));
   }
+  // The `attribution` hook of the same module reads these for a commit. Its lines are off here,
+  // so the commit tests check the rewrite of `sembr` alone (the combined case is in the `attribution` lab).
+  on("session.model", () => ({ value: "claude-opus-5-5" }));
+  on("settings.read", () => ({ value: { includeCoAuthoredBy: false } }));
   on("tool.call", (_$, e) => {
     if (e.tool === "Edit") {
       seen.push({ old_string: e.old_string, new_string: e.new_string });

@@ -54,13 +54,14 @@ The generator copies each kernel file that a plugin imports into the plugin, so 
 
 ## Slices of the core plugin
 
-The core plugin has 16 slices.
+The core plugin has 17 slices.
 The events column names the events that the slice declares in `mod`, in its `slice.ts`.
 
 | Slice | What it does | Events |
 | --- | --- | --- |
 | `agents` | Holds the six agent files, with the model, the effort, and the `maxTurns` of each. | None |
 | `asks` | Asks before a change to a protected file, a git call that discards work, or an added skipped test or lint suppression. | `tool.check` |
+| `attribution` | Adds the `Co-Authored-By` line to a `git commit` and the footer to a `gh pr create` body, with the model of the main loop. | `tool.call` |
 | `checks` | The CLI `dotclaude-run-checks`, which runs check commands with no model turn. | None |
 | `decide` | The tool `second_opinion` and the CLI `dotclaude-decide`, which ask Jev. | `session.start`, `tool.call` |
 | `guard` | Denies a `Bash` command that only prints a file. Asks before the first call of a session that reaches a repository of another owner with an AI policy. | `tool.call`, `tool.check` |
