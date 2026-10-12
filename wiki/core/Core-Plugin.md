@@ -22,7 +22,7 @@ The other plugins work without it.
 - Shortens attachments, agent lines, and tool descriptions by exact id ([Prompt surface](Prompt-Surface)).
 - Shows a status line and a subagent status line ([Status line](Status-Line)).
 - Reports differences from the settings snippet at session start ([Drift check](#drift-check)).
-- Keeps the state of a large change in `.dotclaude/spec/` with the `spec` skill and the `dotclaude-spec` command ([Spec store](OpenSpec)).
+- Keeps the state of a large change in `.dotclaude/spec/` with the `spec` skill and the `dotclaude-spec` command ([Spec store](Spec-Store)).
 
 ## Install
 

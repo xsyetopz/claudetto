@@ -236,7 +236,7 @@ test("a scalar of the snippet replaces the value of the user, and the change lin
 // The wiki page shows the snippet that setup applies, so the two must hold the same keys.
 test("the JSON blocks of `Settings-Snippet.md` equal the snippet constants of the `setup` slice", async () => {
   const text = await Bun.file(
-    path.join(REPO, "wiki/settings/Settings-Snippet.md"),
+    path.join(REPO, "wiki/reference/Settings-Snippet.md"),
   ).text();
   const [main, docs] = [...text.matchAll(/```json\n([\s\S]*?)\n```/g)].map(
     (m) => JSON.parse(m[1] as string),

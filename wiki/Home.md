@@ -57,11 +57,12 @@ Each add-on works without the core plugin.
 | --- | --- |
 | [Quickstart](Quickstart) | See what happens in a first session. |
 | [Install](Install) | Install the marketplace and the plugins. |
-| [Settings snippet](Settings-Snippet) | Copy the keys that Claude Code needs. See also [snippet keys](Settings-Snippet-Keys) and [schema](Settings-Schema). |
-| [Hooks](Hooks) | See each hook of each plugin, its event, and what it does. |
-| [Troubleshooting](Troubleshooting) | Fix a symptom. |
-| [Undocumented reads](Undocumented-Reads) | See what dotclaude reads that Claude Code does not document, and how it breaks. |
+| [Architecture](Architecture) | See how the core plugin is built, from `src/` to `plugins/`. |
 | [Guards](Guards) | Learn what asks, what denies, and what the sandbox does. |
+| [Settings snippet](Settings-Snippet) | Copy the keys that Claude Code needs. See also [snippet keys](Settings-Snippet-Keys) and [schema](Settings-Schema). |
+| [Hook events](Hook-Events) | See the events that Claude Code sends, and the map to the dotclaude events. |
+| [Undocumented reads](Undocumented-Reads) | See what dotclaude reads that Claude Code does not document, and how it breaks. |
+| [Troubleshooting](Troubleshooting) | Fix a symptom. |
 | [Development](Development) and [Sandbox](Sandbox) | Change dotclaude and test a checkout. |
 | [Attributions](Attributions) | See the projects whose ideas dotclaude reimplements. |
 
