@@ -117,7 +117,28 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
 - [ ] P13 `handoff`: the triggers, the handoff file, `/clear`, the resume, the `/handoff` skill, and `mainHandover`.
   Deps: P03, P05, P06, P07.
   P13 also makes the generator write `plugins/<plugin>/evals/hooks.json` from the eval cases of each slice, because `tests/support/hook-evals.test.ts` needs the file, and wave 2 keeps it hand-written on the rebuild list (P11b, 2026-10-12).
+  P13 starts after each other slice package of the core plugin is merged, because the rebuild list makes it the last one: it removes `hooks/legacy.ts`, `lib/`, `features/context/`, and `src/plugins/dotclaude/hooks/`.
+  Decisions of the main session (2026-10-12):
+  each handler gets an optional field in `src/kernel/slice.ts` that names its eval kinds, and the generator reads it;
+  the 0.28.0 `PostToolUse` context bound of subagents (`hooks/PostToolUse/context.ts`) moves into the `handoff` slice, so no behavior is lost;
+  a handoff hook has `requests: 0`, because it makes no model call.
   Verify also: one run in `just sandbox` that shows the resume.
+- [ ] P24 `tiers`: the setup reads the account type and scales from Pro as the baseline, with the same features for each account ([change](change.md), decisions).
+  Pro is the baseline, Max 5x and Max 20x get more parallel agents and better model and effort picks, and an API key account gets the picks of its own budget.
+  The setup reads `claude auth status --json` for `subscriptionType`, and the rate limit tier only where Claude Code exposes it without the credentials file.
+  It does not scale what Claude Code scales itself ([tiers](evidence/tiers.md)).
+  Deps: P09.
+  Owns: `src/plugins/dotclaude/slices/setup/` (the tier parts), `tests/dotclaude/setup/` (the tier tests).
+  Verify also: a test for each account type, with a fake `claude auth status` output.
+- [ ] P25 `automode`: the setup writes `autoMode` to the user settings, with `$defaults` in each list and one `environment` entry that names the agent worktrees `.claude/worktrees/agent-*` and the Claude Code temp folder `/private/tmp/claude-<uid>/` ([automode](evidence/automode.md)).
+  The classifier then allows the removal of those paths, and each default deny rule stays.
+  Deps: P09.
+  Owns: `src/plugins/dotclaude/slices/setup/` (the `autoMode` parts), `tests/dotclaude/setup/` (the `autoMode` tests).
+  Verify also: `claude auto-mode critique` on the entry, and a test that the written lists start with `$defaults`.
+- [ ] P26 Garbage collection: dotclaude uses the cleanup of Claude Code, such as `cleanupPeriodDays`, and adds no cleanup of its own where Claude Code has one.
+  It first answers the open items of [automode](evidence/automode.md#open) on cleanup.
+  Deps: P09.
+  Owns: `src/plugins/dotclaude/slices/setup/` (the cleanup keys), `tests/dotclaude/setup/` (the cleanup tests).
 - [ ] P14 Handoff cost: one handoff against one compaction on the same session, with `dotclaude-usage`.
   It only reports, in `spec/changes/1.0.0/evidence/handoff-cost.md`.
   Deps: P13.
