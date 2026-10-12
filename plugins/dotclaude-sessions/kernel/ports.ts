@@ -13,6 +13,10 @@ export interface ProcessResult {
   readonly exitCode: number | null;
   readonly stdout: string;
   readonly stderr: string;
+  /** The name of the signal that ended the process, when a signal did. */
+  readonly signal?: string;
+  /** True when the time bound of the run ended the process. */
+  readonly timedOut?: boolean;
 }
 
 /**

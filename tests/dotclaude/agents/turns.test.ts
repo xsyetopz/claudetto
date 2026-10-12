@@ -8,7 +8,7 @@ import {
 } from "../../../src/plugins/dotclaude/slices/agents/domain/turns.ts";
 
 test("each agent has a whole-number turn bound of at least one", () => {
-  expect(AGENT_NAMES.length).toBe(7);
+  expect(AGENT_NAMES.length).toBe(6);
   for (const agent of AGENT_NAMES) {
     const bound = turnBound(agent);
     expect(Number.isInteger(bound), agent).toBe(true);

@@ -30,6 +30,9 @@ export const makeRepo = async (justfile = JUSTFILE): Promise<string> => {
     },
   );
   git(root, "init", "-q", "-b", "main");
+  // A runner can set `core.autocrlf`, and then a merge writes CRLF into the files.
+  // The tests compare the bytes, so the repository keeps the line endings as written.
+  git(root, "config", "core.autocrlf", "false");
   git(root, "add", "-A");
   git(root, "commit", "-q", "-m", "init");
   return root;

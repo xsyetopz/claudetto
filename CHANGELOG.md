@@ -28,6 +28,10 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The plugin `dotclaude-sessions` answers the typed commands `/dotclaude-sessions:usage` and `/start-cost` with a `command.run` hook.
   The hook runs the CLI and shows its output with no model turn.
   Arguments that need a shell go to the skill.
+- The CLI `dotclaude-run-checks` of the new `checks` slice runs a batch of check commands in order, with no model turn.
+  For each command it prints the exit status, the time, the counts of passed, failed, and skipped tests (`bun test`, `vitest`, `jest`, `pytest`, `cargo test`, `go test`), and the failure lines.
+  The full output goes to a log file in `.dotclaude/checks/`, and the exit status is 1 when any command fails.
+  A command of plain words runs with no shell, and a command with shell syntax runs through `sh -c`.
 
 ### Changed
 
@@ -58,6 +62,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ### Removed
 
+- The `test-runner` agent of the core plugin.
+  The CLI `dotclaude-run-checks`, run through `Bash`, replaces it.
 - The classic `PreToolUse` hooks of the core plugin (`features/reads/cli` and `features/adherence/cli`).
   The hooks module does their checks.
 

@@ -50,7 +50,6 @@ export const AGENT_MAX_TURNS: Readonly<Record<string, number>> = {
   investigator: 31,
   implementer: 61,
   debugger: 61,
-  "test-runner": 16,
   planner: 41,
   researcher: 41,
   reviewer: 41,

@@ -4,6 +4,7 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
+import { versionOf } from "../../../src/plugins/dotclaude-lab/slices/schema/adapters/cli.ts";
 import {
   buildSchemas,
   schemaFiles,
@@ -30,7 +31,7 @@ test.skipIf(installed() === null)(
   "each key in `schemas/` is a key that the installed binary reads",
   async () => {
     const bundle = installed() as string;
-    const built = buildSchemas(await bundleText(bundle), path.basename(bundle));
+    const built = buildSchemas(await bundleText(bundle), versionOf(bundle));
     expect(unreadKeys(await shipped("user"), built.user)).toStrictEqual([]);
     expect(unreadKeys(await shipped("managed"), built.managed)).toStrictEqual(
       [],

@@ -57,7 +57,7 @@ export const runProgram = (
   );
 };
 
-/** The `ProcessRunner` of Bun: it reads the output as text and gives a null exit code for a signal. */
+/** The `ProcessRunner` of Bun: it reads the output as text, and it gives a null exit code and the signal for a signal or a timeout. */
 export const processRunner: ProcessRunner = {
   run: (
     file: string,
@@ -73,6 +73,8 @@ export const processRunner: ProcessRunner = {
       exitCode: result.exitCode,
       stdout: result.stdout?.toString() ?? "",
       stderr: result.stderr?.toString() ?? "",
+      ...(result.signalCode ? { signal: String(result.signalCode) } : {}),
+      timedOut: result.exitedDueToTimeout === true,
     };
   },
 };
