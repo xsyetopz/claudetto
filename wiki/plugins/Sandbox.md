@@ -9,7 +9,6 @@ Use it to see a hook, the status line, or an agent work in a real session before
 - `claude --plugin-dir plugins/dotclaude` in your own setup loads the checkout next to your installed dotclaude, your settings, and your sessions.
 - A test there can change your settings files and write to your session history.
 - The sandbox has its own `CLAUDE_CONFIG_DIR` and `HOME`, so the test changes only the sandbox.
-  That includes the files that the OpenSpec step of `/dotclaude:setup` writes under `HOME`.
 
 ## Before you begin
 
@@ -42,7 +41,7 @@ just sandbox --model claude-haiku-5-5 -p "prompt"
 ```
 
 - Arguments after `just sandbox` go to `claude`.
-- `just sandbox` gives `--plugin-dir` for each plugin in `plugins/`, such as `dotclaude-browser` and `dotclaude-jev`.
+- `just sandbox` gives `--plugin-dir` for each plugin in `plugins/`, such as `dotclaude-browser` and `dotclaude-codegraph`.
 - It loads `dotclaude` too, but compaction and the 300K window come from the settings snippet, so the sandbox has them only when `config/settings.json` holds them.
 - `dotclaude-sandbox` of the plugin `dotclaude-lab` does the work.
   To test an add-on with no core plugin, run `bun plugins/dotclaude-lab/bin/dotclaude-sandbox --plugin-dir plugins/dotclaude-docs`.
@@ -190,11 +189,11 @@ tmux kill-session -t sandbox
 ## Status line commands
 
 To test the status line script without a session, give it input on stdin.
-The script is `plugins/dotclaude/features/statusline/cli.ts`.
+The script is `plugins/dotclaude/bin/dotclaude-statusline`.
 The fields of the input are in the script and in the status line docs of Claude Code, so read them before you write the input.
 
 ```bash
-echo '<input JSON>' | bun plugins/dotclaude/features/statusline/cli.ts
+echo '<input JSON>' | bun plugins/dotclaude/bin/dotclaude-statusline
 ```
 
 Claude Code does not log a status line command that works.

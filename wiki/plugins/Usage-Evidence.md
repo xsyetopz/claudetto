@@ -46,7 +46,6 @@ Model choice is not one of them.
 3. **`general-purpose` in place of dotclaude agents.**
    The 0.19 output style preferred dotclaude agents in prose.
    That preference did not hold.
-   The setup profile of 0.20 to 0.27 denied `Agent(general-purpose)`.
    The [settings snippet](Settings-Snippet) now holds the deny list, so check it before you rely on this rule.
 
 ## The delegation share
@@ -96,7 +95,7 @@ dotclaude 0.20.4 checked each tip against the Claude Code docs or a measurement 
 - `/compact` reads the whole conversation to write its summary.
   On a large context it is an expensive request (**official**: costs, prompt caching).
   `/clear` costs nothing.
-- Task checkboxes in the spec store and then `/clear` is the cheap way to start the next task ([Spec store](OpenSpec)).
+- Task checkboxes in the spec store and then `/clear` is the cheap way to start the next task ([Spec store](Spec-Store)).
 - Sonnet does implementation work for less usage than Opus ([Plans and models](Plans-and-Models#model-fit)).
 - `MEMORY.md` loads at every start, up to its first 200 lines or 25 KB (**official**).
   Topic files in the memory folder do not load at start.
@@ -109,8 +108,7 @@ dotclaude 0.20.4 checked each tip against the Claude Code docs or a measurement 
 - Old `.jsonl` transcripts in `~/.claude/projects/` do not go into the context.
   Only `/resume` loads one.
   A remove saves disk space only, and this machine had 1.9 GB of them.
-  The 0.27.0 profile set `cleanupPeriodDays` to 14, so Claude Code removed them.
-  Since 0.28.0, the settings snippet does not set it (see [Snippet keys](Settings-Snippet-Keys#retention)).
+  The settings snippet does not set `cleanupPeriodDays` (see [Snippet keys](Settings-Snippet-Keys#retention)).
 
 ### Tools that dotclaude does not use
 
@@ -123,10 +121,7 @@ dotclaude 0.20.4 checked each tip against the Claude Code docs or a measurement 
 
 ## Code search (0.20 to 0.26 history)
 
-0.27.0 has no CodeGraph hook and no search note.
-0.28.0 brings the search context back in the add-on `dotclaude-codegraph`, with a `PreToolUse` hook on `Grep|Glob` (`plugins/dotclaude-codegraph/hooks/hooks.json`).
 See [Code graph](Code-Graph).
-The measures below are the evidence for the 0.20.4 hook that 0.27.0 removed.
 
 **measured:** The transcripts of this machine include subagents.
 Shell `rg`, `grep`, and `find` calls outnumber `codegraph` calls (CLI and MCP):

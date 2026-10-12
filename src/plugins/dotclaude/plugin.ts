@@ -3,7 +3,7 @@
 export const plugin = {
   name: "dotclaude",
   description:
-    "Adds a lean output style, five role agents, and a status line command. Adds hooks that ask before work on a repo with an AI policy, check edits and `git` calls, bound the context of subagents, and check Markdown line breaks and drift.",
+    "Adds a lean output style, six role agents, and a status line command. Adds hooks that ask before work on a repo with an AI policy, check edits and `git` calls, bound the context of subagents, and check Markdown line breaks and drift.",
   keywords: ["output-style", "agents", "hooks", "statusline"],
   homepage: "https://github.com/xsyetopz/dotclaude/wiki/Core-Plugin",
 };

@@ -10,11 +10,10 @@ If Claude does something because of dotclaude and you ask "why did you do that?"
 - Gives permission rules and a sandbox in the [settings snippet](Settings-Snippet), so that Claude Code asks before destructive, public, and secret-reading actions.
 - Gives an `ask` rule for each recursive `rm` in the settings snippet (the plugin alone gives none), and asks before the first contact with a repository of another owner that has an AI policy file.
 - Gives settings in the snippet that turn off compaction and set a 300K context window, so that a session stops at the limit and you start fresh with `/clear`.
-  The plugin itself ships an empty `settings.json`.
-- Forces one output style (role, tone, and format) and puts the working rules in the system prompt.
+- Selects the output style `dotclaude:Concise` (role, tone, and format) with the snippet, and puts the working rules in the system prompt.
 - Gives Claude six agents with a model, an effort, and a turn limit each ([Agents](Agents)).
   The agents are `reviewer`, `implementer`, `debugger`, `investigator`, `planner`, and `researcher`.
-- Keeps the tasks and the lanes of a change in the [spec store](OpenSpec), so work continues after `/clear` with `dotclaude-spec next`.
+- Keeps the tasks and the lanes of a change in the [spec store](Spec-Store), so work continues after `/clear` with `dotclaude-spec next`.
 - Shows model, effort, context, the spec change, and the 5-hour limit in a status line.
 
 ## The plugins
@@ -25,10 +24,9 @@ Each add-on works without the core plugin.
 
 | Plugin | What it does | Reference |
 | --- | --- | --- |
-| `dotclaude` | The core: output style, system prompt rules, agents, guards, status line, and drift check. | [Core plugin](Core-Plugin) |
+| `dotclaude` | The core: output style, system prompt rules, agents, guards, status line, handoff, drift check, and a second opinion from TypeSafe Jev (`second_opinion`). | [Core plugin](Core-Plugin), [Second opinion](Second-Opinion) |
 | `dotclaude-codegraph` | Gives Claude the code graph of a project from the `codegraph` CLI. | [Code graph](Code-Graph) |
 | `dotclaude-browser` | Drives a browser and answers `WebSearch` in the headless browser. | [Browser](Browser) |
-| `dotclaude-jev` | A second opinion on a decision from TypeSafe Jev. | [Second opinion](Second-Opinion) |
 | `dotclaude-docs` | Current library docs from Context7. | [Library docs](Library-Docs) |
 | `dotclaude-sessions` | Measures the start of a session and the usage of each run. | [Sessions](Sessions) |
 | `dotclaude-lab` | Tools for plugin authors: sandbox, capture, schema, and eval compare. | [Lab](Lab) |
@@ -41,8 +39,7 @@ Each add-on works without the core plugin.
 - A new [plugin layout](Plugin-Layout), and the plugins `dotclaude-sessions` and `dotclaude-lab`.
 - Evals through `claude plugin eval` ([Evals](Evals)), with a suite of 16 cases in `plugins/dotclaude/evals/` and `just eval` to run it.
 - The [decisions](Decisions) D1 to D35 with their evidence.
-- Removed: the setup profile, the router, the handoff skill, usage state, the Bun eval harness and the root `evals/` folder (design D35), and `dotclaude-modder`.
-  The [settings snippet](Settings-Snippet) replaces the profile.
+- The [settings snippet](Settings-Snippet) replaces the setup profile.
 
 ## The position
 

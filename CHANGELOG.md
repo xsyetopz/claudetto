@@ -19,7 +19,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   A `tool.call` hook adds a report-now note to a subagent that nears its context bound or its `maxTurns`.
   The `turn.complete` hook runs the resume only after an `answer` turn, waits at most `HANDOFF_WAIT_TURNS` turns for the file, submits the write prompt once more, and then gives the `manual` hint.
   A `dotclaude-spec merge` also counts as a package that is done, and quoted text does not.
-  On one session, a handoff against a compaction of the same session cost $0.0630 against $0.2288, took 9.1 s against 23.2 s, and left 18,487 tokens of context against 28,418.
+  On one session, a handoff against a compaction of the same session cost $0.0630 against $0.2288, took 9.1 s against 23.2 s, and left 18,487 tokens of context at the last call against 28,418 at the first call of the follow-up.
   Each side is one run.
   The measurement is in `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.
 - The `dotclaude-spec` commands `ready` and `merge` do two steps of `/ship` with no model call.
@@ -63,12 +63,11 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The `trim` slice lists the rules with no `paths` as a source of context at the start of a session.
 - The spec store takes the packages of a change from its package files.
   A package with a file and no line in `events.jsonl` is `planned` for `lane`, `status`, `next`, `validate`, and the status line.
-- The `lib/` and `features/` files of each plugin are TypeScript (`.ts`), and `bun check` type-checks them with `noUncheckedIndexedAccess`.
+- The `slices/` and `kernel/` files of each plugin are TypeScript (`.ts`), and `bun check` type-checks them with `noUncheckedIndexedAccess`.
 - The core hooks module is `hooks/register.ts`.
   The check that denies a `Bash` command that only prints a file runs in its `tool.call` hook, and the checks that ask before an edit run in its `tool.check` hook.
   So a `Bash`, `Write`, or `Edit` call no longer starts a Bun process for these checks.
 - The print check denies a print of a file over 4 MiB by its size, because the hooks module cannot read a file that large.
-- The classic `PostToolUse` context hook is at `hooks/PostToolUse/context.ts`.
 - The add-on step of `setup` checks the Bun version for `dotclaude-sessions` and `dotclaude-lab`, and names Bun 1.4.3 when it is older.
   It checked Node.js 22.18 before, but the bins of these plugins run on Bun.
 - The write ask for code in another language, such as `ruby -e` or `python3 -c`, counts a path that the code names only when the same code has a write word (`File.write`, `json.dump`, `os.remove`, an open mode `"w"`, or a `>` redirect).
@@ -94,7 +93,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 - The `test-runner` agent of the core plugin.
   The CLI `dotclaude-run-checks`, run through `Bash`, replaces it.
-- The classic `PreToolUse` hooks of the core plugin (`features/reads/cli` and `features/adherence/cli`).
+- The classic `PreToolUse` hooks of the core plugin, in the `guard` and `surface` slices.
   The hooks module does their checks.
 
 ## Older Releases

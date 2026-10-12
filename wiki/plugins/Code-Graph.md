@@ -11,7 +11,7 @@ It adds no MCP server, and it works without the core plugin.
 | Install | `/plugin install dotclaude-codegraph@dotclaude`, with the CLI and an index ([Install](#install)) |
 | Bin | `bin/dotclaude-codegraph-check` prints whether `codegraph` is on `PATH` and whether the project has an index |
 | Skills | None |
-| Hooks | 15 classic command hooks on 3 events (`SessionStart`, `PreToolUse`, and `PostToolUse`), all in `features/graph/cli.ts` ([Hooks](Hooks#dotclaude-codegraph)) |
+| Hooks | Two classic command hooks, on `SessionStart` and `PostToolUse`, and one `tool.call` handler for a `git` command that changes the tree, all in `slices/graph/` ([Hooks](Hooks)) |
 | Options | None. The plugin has no `userConfig` and sets no Claude Code setting |
 | Limits | See [Limits](#limits) |
 | Problems | See [Troubleshooting](#troubleshooting) |
@@ -42,15 +42,15 @@ To turn it off, run `codegraph telemetry off`.
 | Event | What it does |
 | --- | --- |
 | `SessionStart` | Runs `codegraph sync -q`, and adds one line that names `codegraph impact`, `callers`, and `callees`. |
-| `PostToolUse` after `Edit`, `Write`, `MultiEdit`, `NotebookEdit`, and a git command that changes the tree | Runs `codegraph sync -q` as an async hook, so the session does not wait. |
+| `PostToolUse` after `Edit`, `Write`, `MultiEdit`, and `NotebookEdit` | Runs `codegraph sync -q` as an async hook, so the session does not wait. |
+| `tool.call` on a `Bash` command | After a `git` command that changes the tree, runs `codegraph sync -q`. |
 
-- Claude Code 2.1.296 has no `Grep` or `Glob` tool, so 0.29.0 removed the `PreToolUse` hook that added graph context to them.
 - The hooks never deny or ask.
 - Git commands that start a sync: `commit`, `merge`, `rebase`, `pull`, `checkout`, `switch`, `reset`, `cherry-pick`, `revert`, `stash`, `apply`, and `am`.
 
 ## Limits
 
-All bounds are in `plugins/dotclaude-codegraph/features/graph/limits.ts`.
+All bounds are in `plugins/dotclaude-codegraph/slices/graph/limits.ts`.
 
 | Bound | Value | Use |
 | --- | --- | --- |
@@ -66,52 +66,6 @@ All bounds are in `plugins/dotclaude-codegraph/features/graph/limits.ts`.
 | The index is out of date | The sync runs after an edit and after a git command that changes the tree. Run `codegraph sync -q` by hand after a change outside Claude Code. |
 
 See also [Troubleshooting](Troubleshooting).
-
-## The CLI against the LSP tool
-
-Task 17.1 of the change `dotclaude-0-28-0` compared the CLI with the built-in LSP tool.
-The reason is the rule that the plugin does not add runtime code for a feature that Claude Code has.
-The user decided that the plugin ships whatever the comparison shows.
-
-Setup:
-
-- The model was `claude-sonnet-5-5`, in a headless sandbox run (`plugins/dotclaude-lab/bin/dotclaude-sandbox`) with no plugin of dotclaude.
-- The project was 9 Python files (`shop/` and `tests/`) of about 80 lines.
-- The question was "If I change the signature of `parse_amount`, which functions are affected, directly or through other calls, and in which files?"
-- The true answer is 8 functions: `Cart.add`, `load_prices`, `apply_discount`, `build_cart`, `summary`, `main`, `test_parse`, and `test_discount`.
-- The LSP tool needs a language server.
-  The run used `pyright-langserver` (installed on the machine) through a scratch plugin with a `.lsp.json` file, and `ENABLE_LSP_TOOL=1`.
-  The run did not test the tool without the variable.
-  The tool is deferred, so Claude finds it with `ToolSearch` first.
-  A machine with no server for the language has no LSP tool result.
-- Input tokens are `input_tokens`, `cache_read_input_tokens`, and `cache_creation_input_tokens`, summed over the requests of the transcript.
-  One run for each arm.
-
-| Arm | Correct | Tool calls | Requests | Input tokens | Output tokens |
-| --- | --- | --- | --- | --- | --- |
-| No graph tool (`Grep`, `Glob`, `Read`) | 8 of 8 | 9 | 5 | 55,752 | 1,003 |
-| CLI on `PATH`, index built, no instruction | 8 of 8 | 4, none of `codegraph` | 4 | 43,555 | 601 |
-| LSP tool, no instruction | 8 of 8 | 11, none of `LSP` | 4 | 43,750 | 1,152 |
-| CLI, told to use `codegraph impact` and `callers` | 6 of 8 | 1 `Bash` | 2 | 17,493 | 204 |
-| LSP, told to use the LSP tool | 8 of 8 | 12 `LSP`, 1 `ToolSearch`, 2 `Read` | 8 | 77,004 | 2,351 |
-
-What the result shows:
-
-- With no instruction, Claude used neither tool.
-  It read the files of the small project instead.
-  This is the reason for the hooks: a tool that Claude does not call saves nothing.
-  One run for each arm is not a rate.
-- When told to use it, the CLI answered in one call and used 4.4 times fewer input tokens than the LSP tool.
-  The LSP tool took one call for each hop of the call chain.
-- `codegraph impact` has a default depth of 2.
-  It missed `summary` and `main`, which are three calls away.
-  The `SessionStart` line gives `-d 5` for this reason.
-  The LSP arm was complete, because Claude followed the chain by hand.
-- The LSP tool is exact for one symbol, and it works on a project with no index.
-  It needs one server for each language, and it gives no impact answer in one call.
-
-The plugin ships, because the CLI gives the impact answer in one call and the LSP tool does not.
-The eval of task 17.7 measures the effect of the hooks on the same question.
 
 ## CLI facts
 

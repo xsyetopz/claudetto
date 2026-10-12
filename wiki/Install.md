@@ -2,7 +2,8 @@
 
 Install the dotclaude marketplace, then each plugin that you want.
 The core plugin is `dotclaude`.
-`dotclaude-codegraph`, `dotclaude-jev`, `dotclaude-browser`, `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab` are optional.
+`dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab` are optional.
+The `second_opinion` tool is part of the core plugin.
 
 ## Before you begin
 
@@ -10,15 +11,16 @@ The core plugin is `dotclaude`.
 | --- | --- | --- |
 | Claude Code 2.1.296 or later | all plugins | |
 | git | `dotclaude` | |
-| [Bun](https://bun.sh) 1.4.3 or later on `PATH` | the setup script, the status line, and the classic hooks of `dotclaude`, the Jev client of `dotclaude-jev`, the hooks of `dotclaude-codegraph`, and the bins of `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-sessions`, and `dotclaude-lab` | Without Bun, the classic hooks do not run and the call goes on. The permission rules and the sandbox still apply. |
+| [Bun](https://bun.sh) 1.4.3 or later on `PATH` | the setup command, the status line, the `second_opinion` tool of `dotclaude` (its CLI `dotclaude-decide`), the hooks of `dotclaude-codegraph`, and the bins of `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-sessions`, and `dotclaude-lab` | Without Bun, the status line shows nothing, the setup command does not run, and `second_opinion` answers from a Claude model. The permission rules, the sandbox, and the checks of the core hooks module still apply. |
 | [Node.js](https://nodejs.org) on `PATH` | the npm installs of `codegraph` and `agent-browser` | Without Node.js, the npm installs do not run. |
 | `gh` on `PATH` | the policy ask of `dotclaude` | Without `gh`, the ask does not run and the call goes on. |
 | `codegraph` on `PATH` | `dotclaude-codegraph` | Run `npm i -g @colbymchenry/codegraph`. The plugin never installs it. |
-| `TYPESAFE_API_KEY` | `dotclaude-jev` | Export it before Claude Code starts. |
+| `TYPESAFE_API_KEY` | `dotclaude` (`second_opinion`) | Export it before Claude Code starts. Without it, `second_opinion` answers from a Claude model. |
 | `agent-browser` on `PATH` | `dotclaude-browser` | See [Browser](Browser#install-agent-browser). |
 | `npx` on `PATH` | `dotclaude-docs` | It comes with Node.js. The `docs` skill runs `ctx7` through it. |
 
-The core hooks module needs no Bun and no Node.js, because Claude Code runs it.
+The checks of the core hooks module need no Bun and no Node.js, because Claude Code runs them.
+The `second_opinion` tool is the exception: its CLI runs on Bun, which must be on `PATH`.
 
 On a machine with managed settings, or with a Team or Enterprise login, the built-in guard `sec-default` loads.
 It skips the shared sections and the model variants (`prompt.compose`), and the `context_management` text (`prompt.section`), of dotclaude.
@@ -55,19 +57,14 @@ It writes no managed settings and no backup, and it runs no `sudo`.
 You can also copy the keys that you want from the snippet by hand.
 See [Guards](Guards).
 
-## Install the Jev plugin
+## Enable the second opinion
 
-1. Export the key before Claude Code starts.
+The `second_opinion` tool needs no plugin install.
+To use TypeSafe Jev, export the key before Claude Code starts.
 
-   ```bash
-   export TYPESAFE_API_KEY=<your key>
-   ```
-
-2. Install the plugin.
-
-   ```text
-   /plugin install dotclaude-jev@dotclaude
-   ```
+```bash
+export TYPESAFE_API_KEY=<your key>
+```
 
 Each call sends the data of the decision to the TypeSafe API.
 See [Second opinion](Second-Opinion).
@@ -130,7 +127,6 @@ Each of the three needs no key.
 
    ```bash
    claude plugin update dotclaude-codegraph@dotclaude
-   claude plugin update dotclaude-jev@dotclaude
    claude plugin update dotclaude-browser@dotclaude
    claude plugin update dotclaude-docs@dotclaude
    claude plugin update dotclaude-sessions@dotclaude
@@ -144,12 +140,9 @@ Each of the three needs no key.
    The drift check at session start reports some differences.
 
 > **Warning:** Before 1.0, a release can change or remove behavior without a compatibility layer.
-> Release 0.27.0 rebuilt the core plugin from an empty tree.
-> Release 0.28.0 removed each format that dotclaude had made up for itself:
-> the setup profile with its diff and backups, the router table, the usage state file, and the handoff notes.
-> Setup still merges the settings snippet into your settings, because Claude Code owns that format.
+> Setup merges the settings snippet into your settings, because Claude Code owns that format.
 > dotclaude deletes no file of yours.
-> Files that earlier versions wrote stay on your machine, such as `.claude/handoffs/`, setup backups, and launcher stubs.
+> Files that earlier versions wrote stay on your machine, such as `.claude/handoffs/` and setup backups.
 > A `settings.json` that setup merged keeps its keys, and nothing updates them.
 > Remove what you do not want by hand.
 
@@ -166,7 +159,7 @@ For a separate config, see [Sandbox](Sandbox).
 A symptom and its fix are on the page of the plugin.
 For a recursive `rm` with no ask, see [Guards](Guards#troubleshooting).
 For a missing policy ask, see [Contributions](Contributions).
-For Claude with no `second_opinion` tool, see [Second opinion](Second-Opinion#troubleshooting).
+For a `second_opinion` answer from a Claude model, see [Second opinion](Second-Opinion#troubleshooting).
 More symptoms are on [Troubleshooting](Troubleshooting).
 
 ## Next steps
