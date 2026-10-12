@@ -12,10 +12,30 @@ export const slice = {
   mod: [
     {
       event: "tool.describe",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow:
+          "plugins/dotclaude/tests/surface.test.ts > `tool.describe` passes an unknown tool on with no change",
+        text: "plugins/dotclaude/tests/surface.test.ts > `tool.describe` replaces the built-in `Bash` description with a shorter one",
+      },
       filter: { tool: ["Agent", "Bash", "Read", "ListAgents"] },
       phase: "answer",
       run: onToolDescribe,
     },
-    { event: "agent.offer", phase: "answer", run: onAgentOffer },
+    {
+      event: "agent.offer",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow:
+          "plugins/dotclaude/tests/surface.test.ts > `agent.offer` offers an agent that is not dropped",
+        text: "plugins/dotclaude/tests/surface.test.ts > `agent.offer` leaves a dropped agent out of the listing",
+      },
+      phase: "answer",
+      run: onAgentOffer,
+    },
   ],
 } satisfies Slice;

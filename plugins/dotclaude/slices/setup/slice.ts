@@ -7,7 +7,20 @@ import { onSessionStart } from "./adapters/mod.ts";
 
 export const slice = {
   name: "setup",
-  mod: [{ event: "session.start", phase: "observe", run: onSessionStart }],
+  mod: [
+    {
+      event: "session.start",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow: "plugins/dotclaude/tests/drift.test.ts > no drift adds no text",
+        text: "plugins/dotclaude/tests/drift.test.ts > a settings file without the snippet names the missing values and the setup skill",
+      },
+      phase: "observe",
+      run: onSessionStart,
+    },
+  ],
   cli: { bin: "dotclaude-setup" },
   skills: ["setup"],
 } satisfies Slice;

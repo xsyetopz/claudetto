@@ -2,6 +2,7 @@
 // Two sources of one file are an error, because only one of them can win.
 
 import { discover } from "./discover.ts";
+import { evalsOf } from "./emit/evals.ts";
 import { hooksOf } from "./emit/hooks.ts";
 import { manifestOf } from "./emit/manifest.ts";
 import { registerOf } from "./emit/register.ts";
@@ -18,6 +19,7 @@ export const generated = async (root: string): Promise<Output[]> => {
   for (const p of plugins)
     made.push(
       ...(await manifestOf(root, p)),
+      ...(await evalsOf(p)),
       ...(await hooksOf(root, p)),
       ...(await registerOf(root, p)),
       ...(await slicesOf(root, p, parts)),
