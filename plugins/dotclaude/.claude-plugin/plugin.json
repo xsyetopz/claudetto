@@ -8,6 +8,6 @@
   },
   "repository": "https://github.com/xsyetopz/dotclaude",
   "license": "MIT",
-  "keywords": ["output-style", "agents", "hooks", "statusline", "openspec"],
-  "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Core-Plugin"
+  "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Core-Plugin",
+  "keywords": ["output-style", "agents", "hooks", "statusline", "openspec"]
 }
