@@ -10,5 +10,4 @@ export const MAX_TURNS = {
   planner: 41,
   researcher: 41,
   reviewer: 41,
-  "test-runner": 16,
 } as const;

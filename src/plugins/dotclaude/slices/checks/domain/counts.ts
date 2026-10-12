@@ -1,0 +1,40 @@
+// The counts of passed, failed, and skipped tests in the output of a test runner.
+
+import {
+  COUNT_LINES,
+  COUNT_WORDS,
+  type CountKind,
+  GO_TEST_LINE,
+} from "../limits.ts";
+
+/** The counts of one command. */
+export type Counts = Readonly<Record<CountKind, number>>;
+
+const PAIR = /(\d+) ([a-z]+)/g;
+const GO_KINDS: Readonly<Record<string, CountKind>> = {
+  PASS: "passed",
+  FAIL: "failed",
+  SKIP: "skipped",
+};
+
+/** The counts that `output` shows, or `null` when no line of a known test runner is in it. */
+export const parseCounts = (output: string): Counts | null => {
+  const sum = { passed: 0, failed: 0, skipped: 0 };
+  let found = false;
+  for (const line of output.split("\n")) {
+    const go = GO_TEST_LINE.exec(line);
+    if (go) {
+      sum[GO_KINDS[go[1] as string] as CountKind] += 1;
+      found = true;
+      continue;
+    }
+    if (!COUNT_LINES.some((pattern) => pattern.test(line))) continue;
+    for (const [, n, word] of line.matchAll(PAIR)) {
+      const kind = COUNT_WORDS[word as string];
+      if (!kind) continue;
+      sum[kind] += Number(n);
+      found = true;
+    }
+  }
+  return found ? sum : null;
+};

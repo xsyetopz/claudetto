@@ -1,0 +1,50 @@
+// The bounds and patterns of the `checks` slice, in one place.
+
+/** The most failure lines that the summary of one command prints. The log file holds the rest. */
+export const MAX_FAILURE_LINES = 40;
+
+/** The most characters of one failure line. A longer line is cut and ends in `...`. */
+export const MAX_LINE_CHARS = 200;
+
+/** The count of last output lines that the summary prints for a failed command with no failure line. */
+export const TAIL_LINES = 10;
+
+/** The time that one command may run, in milliseconds. A command over it is killed and counts as failed. */
+export const COMMAND_TIMEOUT_MS = 1_800_000;
+
+/** The kind of a count in the output of a test runner. */
+export type CountKind = "passed" | "failed" | "skipped";
+
+/** The word of a count in a summary line, and its kind. */
+export const COUNT_WORDS: Readonly<Record<string, CountKind>> = {
+  pass: "passed",
+  passed: "passed",
+  fail: "failed",
+  failed: "failed",
+  skip: "skipped",
+  skipped: "skipped",
+  ignored: "skipped",
+  todo: "skipped",
+};
+
+/**
+ * The lines that carry the counts of a test runner.
+ * Each `N word` pair of a matching line adds N to the count of its kind.
+ * - `bun test`: ` 5 pass`, ` 1 fail`, ` 2 skip`, each on its own line.
+ * - `vitest` and `jest`: `Tests  1 failed | 2 passed (3)` and `Tests:  1 failed, 2 passed, 3 total`.
+ * - `pytest`: `=== 1 failed, 2 passed, 1 skipped in 0.12s ===`.
+ * - `cargo test`: `test result: FAILED. 2 passed; 1 failed; 0 ignored; ...` for each test binary.
+ */
+export const COUNT_LINES: readonly RegExp[] = [
+  /^\s*\d+ (?:pass|fail|skip|todo)\s*$/,
+  /^\s*Tests:?\s+\d+ \w+/,
+  /^[=\s]*(?:\d+ [a-z]+(?:, )?)+ in [\d.]+s/,
+  /^test result: /,
+];
+
+/** The line of `go test -v` for one test. Each match counts as 1 of its kind, in the group `1`. */
+export const GO_TEST_LINE = /^\s*--- (PASS|FAIL|SKIP):/;
+
+/** The lines of the output that show a failure. */
+export const FAILURE_LINE =
+  /\b(?:FAIL|FAILED|ERROR|Error|error|panic|AssertionError)\b|\(fail\)|^\s*[✗✘×]|^E\s/;

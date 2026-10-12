@@ -32,6 +32,9 @@ export const CLAUDE_HOOKS_DIR = `${CLAUDE_DIR}/hooks`;
 /** The folder of the handoff files, from the project root. One checkout and one session own them. */
 export const HANDOFF_DIR = `${DOTCLAUDE_DIR}/handoff`;
 
+/** The folder of the log files of `dotclaude-run-checks`. It is a runtime folder, and git must not track it. */
+export const CHECKS_DIR = `${DOTCLAUDE_DIR}/checks`;
+
 /** The folder of the spec store in a project. The repository tracks it. */
 export const SPEC_DIR = `${DOTCLAUDE_DIR}/spec`;
 
@@ -71,6 +74,7 @@ export const CLAUDE_LOCAL_PATHS = [
 /** The paths in `.dotclaude/` that git must not track. */
 export const DOTCLAUDE_LOCAL_PATHS = [
   "handoff/",
+  "checks/",
   "spec/.specs-new/",
   "spec/.specs-old/",
 ] as const;
