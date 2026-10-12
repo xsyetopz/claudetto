@@ -2,12 +2,20 @@
 // Both are pure functions, so the mod handlers and the tests share them.
 
 import type { PromptComposeSection } from "claude-code";
+import { TRANSFORMS } from "../transforms/index.ts";
 import {
   BLOCK_OPEN,
   spawnBlock,
   type VariantKey,
   variantSections,
 } from "./variants.ts";
+
+/**
+ * The built-in text of a section after its transform, or the text unchanged when no transform has the id.
+ * The transform runs first, so a model with no variant gets the transformed text, and a variant replaces its known sections after it.
+ */
+export const transformText = (id: string, text: string): string =>
+  TRANSFORMS.get(id)?.(text) ?? text;
 
 /** The ids of the Claude Code sections that a variant replaces. Any other id passes on unchanged. */
 export const KNOWN_SECTIONS = [

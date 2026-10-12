@@ -3,19 +3,14 @@
 // its block at the end of a subagent task prompt, and the `context_management` section without compaction.
 
 import type { Slice } from "../../kernel/slice.ts";
-import { onCompose, onContextSection, onSpawn } from "./adapters/mod.ts";
+import { onCompose, onSection, onSpawn } from "./adapters/mod.ts";
 
 export const slice = {
   name: "prompt",
   mod: [
     { event: "prompt.compose", phase: "rewrite", run: onCompose },
     { event: "agent.spawn", phase: "rewrite", run: onSpawn },
-    {
-      event: "prompt.section",
-      filter: { name: "context_management" },
-      phase: "answer",
-      run: onContextSection,
-    },
+    { event: "prompt.section", phase: "answer", run: onSection },
   ],
   settings: {
     $schema:
