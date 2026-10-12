@@ -3,7 +3,7 @@
 # Core plugin: `dotclaude`
 
 The core plugin `dotclaude` is the base of the marketplace.
-It uses only documented extension points of Claude Code: an output style, six agents, one skill, one hooks module, a few classic hooks, and a status line command.
+It uses only documented extension points of Claude Code: an output style, six agents, six skills, one hooks module, a few classic hooks, and a status line command.
 It sets no Claude Code setting, because a plugin cannot set permissions, environment variables, or models.
 The [settings snippet](Settings-Snippet) gives those keys, and you copy them.
 This page is the reference.
@@ -40,9 +40,17 @@ See [Install](Install) for the steps and the update path.
 
 ## Skills
 
-| Entry | Invoked by | What it does |
-| --- | --- | --- |
-| `/dotclaude:setup` | The user only (`disable-model-invocation: true`) | Applies the dotclaude settings snippet and checks the tools of the installed add-ons. |
+The core plugin ships six skills.
+Each one is user-invoked (`disable-model-invocation: true`).
+
+| Entry | What it does |
+| --- | --- |
+| `/dotclaude:handoff` | Writes a handoff file with the goal, the state, the next step, and the constraints of the user, then starts a clean session that reads it. |
+| `/dotclaude:hotfix` | Fixes a defect with a known cause, with no spec before the fix, then runs the check and writes a record with `dotclaude-spec record`. |
+| `/dotclaude:rules-creator` | Creates and improves rule files in `.claude/rules/`, with `paths` globs, and splits a large `CLAUDE.md`. |
+| `/dotclaude:setup` | Applies the dotclaude settings snippet and checks the tools of the installed add-ons. |
+| `/dotclaude:ship` | Runs the open packages of a large change, with one implementer agent in a worktree for each package and one reviewer for each diff, then merges each package that passes. |
+| `/dotclaude:spec` | Sizes a request, starts a change in the spec store with `dotclaude-spec new`, and fills its files. |
 
 A user-invoked skill has no listing line, so it costs no tokens in a request.
 The `name` and `description` of a model-invocable skill have 150 to 300 bytes together (`SKILL_META_LOW_BYTES` and `SKILL_META_HIGH_BYTES` in `tools/limits.ts`).
@@ -92,8 +100,9 @@ The module has no catch-all, so a hook that throws is skipped and the verdict of
 
 ## Settings and options
 
-The plugin has no option, and `plugins/dotclaude/settings.json` is an empty object.
-The settings are keys that you copy:
+The plugin has one option, `mainHandover`, which Claude Code asks for at install.
+It takes `auto`, `manual` (the default), or `off`.
+The other settings are keys that you copy:
 
 - [Settings snippet](Settings-Snippet) gives the JSON.
 - [Settings snippet keys](Settings-Snippet-Keys) gives the reason and default of each key.
@@ -128,19 +137,20 @@ The section ids, the plugin names, and the version are data that Claude Code doe
 ## Limits
 
 Each bound is in one file, and tests pin the copies.
+The shared bounds are in `src/kernel/budget.ts`.
 
 | Bound | Value | File |
 | --- | --- | --- |
-| Context window | 300,000 tokens | `lib/budget.ts` (`CONTEXT_WINDOW`) |
-| Status line colors | Yellow at 75% and red at 90% of the window | `lib/budget.ts` (`USAGE_LEVELS`) |
-| `bashOutputMaxChars` | 4,000 characters | `lib/budget.ts` |
-| Policy `gh` call | 5,000 ms | `lib/budget.ts` (`POLICY_TIMEOUT_MS`) |
-| Policy text in the ask | 2,000 characters | `lib/budget.ts` (`POLICY_FILE_MAX_CHARS`) |
+| Context window | 300,000 tokens | `src/kernel/budget.ts` (`CONTEXT_WINDOW`) |
+| Status line colors | Yellow at 75% and red at 90% of the window | `src/kernel/budget.ts` (`USAGE_LEVELS`) |
+| `bashOutputMaxChars` | 4,000 characters | `src/kernel/budget.ts` (`BASH_OUTPUT_MAX_CHARS`) |
+| Policy `gh` call | 5,000 ms | `src/kernel/budget.ts` (`POLICY_TIMEOUT_MS`) |
+| Policy text in the ask | 2,000 characters | `src/kernel/budget.ts` (`POLICY_FILE_MAX_CHARS`) |
 | Subagent context | 100,000 tokens, and 85,000 for Haiku 5.5 | `slices/handoff/limits.ts` |
 | Subagent turns left at the note | 4 | `slices/handoff/limits.ts` (`TURNS_LEFT_AT`) |
 | Subagent report | 400 words | `slices/handoff/limits.ts` (`REPORT_MAX_WORDS`) |
 | File lists of the asks for configs, CI files, skipped tests, and suppressions | Data in `slices/asks/limits.ts` | `slices/asks/limits.ts` |
-| File size that `adherence` reads | 1,000,000 bytes | `slices/asks/limits.ts` |
+| File size that the `asks` checks read | 1,000,000 bytes | `slices/asks/limits.ts` |
 | Rows of the status line | 3 | `slices/statusline/limits.ts` |
 
 The size of the first request is bound in `tools/limits.ts` (`FIRST_REQUEST_LOW_BYTES` to `FIRST_REQUEST_HIGH_BYTES`), and the [Plugin layout](Plugin-Layout#bound-tiers) page explains the tiers.
@@ -149,15 +159,13 @@ The size of the first request is bound in `tools/limits.ts` (`FIRST_REQUEST_LOW_
 
 | Path under `plugins/dotclaude/` | Part |
 | --- | --- |
-| `hooks/register.ts`, `hooks/hooks.json` | The hooks module and the classic hooks. |
-| `src/plugins/dotclaude/hooks/description.txt` | The hook description. `just generate` (`tools/generate.ts`) builds `hooks.json` from it, and the plugin does not ship it. |
+| `hooks/register.ts`, `hooks/hooks.json` | The hooks module and the classic hooks. `just generate` builds both from the slices. |
 | `output-styles/Concise.md` | The output style `dotclaude:Concise`. |
-| `features/prompt/shared.ts`, `features/prompt/variants.ts` | The shared rules and the model variants of the system prompt. |
 | `agents/*.md` | The six agents. |
-| `skills/setup/` | The setup skill and its script. |
-| `features/<name>/` | One folder for each concern: `adherence`, `context`, `drift`, `guard`, `prompt`, `reads`, `sembr`, `setup`, and `surface`. |
-| `lib/` | Pure shared code. |
-| `tests/*.test.ts` | The hook lab, run with `just lab`. |
+| `skills/<name>/SKILL.md` | The six skills of [Skills](#skills). |
+| `bin/` | The command scripts, such as `dotclaude-setup` and `dotclaude-spec`. |
+| `kernel/` | The shared code of the slices, from `src/kernel/`, such as `budget.ts`, `policy/`, and `shell.ts`. |
+| `slices/<s>/` | One folder for each slice. It holds `slice.ts`, and where present `domain/` (pure code), `adapters/` (the handlers), `limits.ts` (the bounds), and `lab/` (the hook lab tests, run with `just lab`). |
 
 ## Troubleshooting
 

@@ -18,7 +18,7 @@ The measures are in [Usage evidence](Usage-Evidence).
 
 ## Bounds
 
-All bounds are in `plugins/dotclaude/slices/handoff/limits.ts`, because only the context feature reads them.
+The bounds of the subagent context are in `src/plugins/dotclaude/slices/handoff/limits.ts`, because only the `handoff` slice reads them.
 Tests pin each copy of a bound in code and config.
 
 | Bound | Value | Use |
@@ -37,8 +37,8 @@ Haiku 5.5 costs 5 times as much for each request above 100K prompt tokens.
   The model then reads only the matched range with `Read`, and refers to an earlier result instead of a second read of the same lines.
 - `Read` returns a short stub when the same file and the same `offset` and `limit` are read again and the file did not change.
   A `Bash` slice gets no stub.
-- The `tool.call` hook on `Bash` in `hooks/register.ts` denies a `Bash` command that prints a file, also in one part of a compound command.
-  A file over 4 MiB (`READ_MAX_BYTES`) is denied by its size.
+- The `tool.call` handler on `Bash` in `src/plugins/dotclaude/slices/guard/adapters/mod.ts` denies a `Bash` command that prints a file, also in one part of a compound command.
+  A file over 4 MiB (`READ_MAX_BYTES` in `src/plugins/dotclaude/slices/guard/limits.ts`) is denied by its size.
   This covers `cat`, `sed -n` with a print range, `head`, and `tail` on one file, in each part of a list split on `;`, `&&`, `||`, `&`, and new lines.
   A print into a pipe, a redirect, a substitution, and a heredoc stay allowed.
   The deny reason gives the `Read` call with the same file and range.
@@ -48,22 +48,22 @@ Haiku 5.5 costs 5 times as much for each request above 100K prompt tokens.
 
 ## Subagent report at the bound
 
-A classic `PostToolUse` hook (`hooks/PostToolUse/context.ts`) reads the transcript of the subagent.
-When the context passes the bound of its model, the hook gives `additionalContext` that tells the subagent to report now.
+The `handoff` slice (`src/plugins/dotclaude/slices/handoff/`) keeps the context and the turn count of each subagent in its `turn.step` handler.
+When the context passes the bound of its model, its `tool.call` handler adds a note to the result of the subagent, which tells it to report now.
 
-- The hook tells and does not block, because a block loses the work of the run.
+- The handler tells and does not block, because a block loses the work of the run.
 - Below the bound, and in the main session, the hook prints nothing.
 - Each agent body names `REPORT_MAX_WORDS`, because the main session keeps each report to the end.
 - A run at `maxTurns` returns no report, so each `maxTurns` holds one spare turn ([Agents](Agents)).
-- The hook counts the turns of the subagent in its transcript and reads `maxTurns` from the agent file.
-  With `TURNS_LEFT_AT` (2) turns left, it gives one note that tells the subagent to report now, joined with the context message when both apply.
+- The handler counts the turns of the subagent and reads `maxTurns` from `AGENT_MAX_TURNS` in `limits.ts`.
+  With `TURNS_LEFT_AT` (4) turns left, it gives one note that tells the subagent to report now, joined with the context message when both apply.
 - A resume after the limit starts a new count.
   The delegation text therefore tells the coordinator to take the report of a stopped run and not to resume it.
 
 ## Main session
 
 - The main session gets no context note.
-  Compaction is off, and the `context_management` text of `features/prompt/data.ts` tells Claude that and to keep the state of work in files.
+  Compaction is off, and the `context_management` section of the `prompt` slice (`src/plugins/dotclaude/slices/prompt/`) tells Claude that and to keep the state of work in files.
 - The status line may show the figure to the user.
 - No prompt text tells the model to estimate or announce its context share.
   A model can report a false state, so the figure comes from a program (D27 in [Decisions](Decisions-Evidence)).
