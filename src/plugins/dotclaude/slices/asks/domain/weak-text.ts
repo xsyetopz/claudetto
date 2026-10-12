@@ -26,7 +26,9 @@ const keyValue = (text: string): { key: string; value: string } | undefined => {
   return m
     ? {
         key: m[1] as string,
-        value: (m[2] as string).replace(/^["']|["']$/g, ""),
+        value: (m[2] as string)
+          .replace(/^["']|["']$/g, "")
+          .replace(/\s*([[\]{},])\s*/g, "$1"),
       }
     : undefined;
 };
@@ -70,6 +72,7 @@ const valueWeaker = (
     if (MAXIMUM_KEY.test(key))
       return y > x ? `It raises the limit \`${key}\` to ${now}.` : undefined;
   }
+  if (was === now) return undefined;
   if (was === "true" && now === "false") return `It turns \`${key}\` off.`;
   if (was === "false" && now === "true") return undefined;
   return `It changes the value of \`${key}\` from \`${shown(was)}\` to \`${shown(now)}\`.`;

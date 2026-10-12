@@ -83,18 +83,12 @@ const FINDING = (
 This call changes it.
 ${riskOf(label)}`;
 
-/** The reasons to ask for a change of `rel` from the path alone, so that a text over the scan bound gets them too. */
-export const pathReasons = (rel: string, named = false): string[] => {
-  const kind = pathKind(rel, named);
-  return kind ? [FINDING(rel, kind)] : [];
-};
-
 /**
  * The reasons to ask before a change of `rel` from the text: a list of strings, empty when none.
- * A settings file, a tool config, a check script, and a check recipe ask for a changed value.
+ * A check script and a check recipe ask for a changed value.
  */
 export const contentReasons = (rel: string, ch: Change): string[] => {
-  const kind = contentKind(rel, rel.split("/").at(-1) as string, ch);
+  const kind = contentKind(rel.split("/").at(-1) as string, ch);
   return [...(kind ? [FINDING(rel, kind)] : []), ...skipReasons(rel, ch)];
 };
 

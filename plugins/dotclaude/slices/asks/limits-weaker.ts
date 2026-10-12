@@ -71,7 +71,7 @@ export const MAXIMUM_KEY = /max|limit|complexity|depth|length/i;
 
 /** The names of a key whose list gets entries that switch off a check. A new entry checks less. */
 export const IGNORE_KEY =
-  /ignor|exclu|skip|allow|disable|suppress|exempt|baseline|per-?file|noqa|unlisted|bypass/i;
+  /ignor|exclu|skip|omit|allow|disable|suppress|exempt|baseline|per-?file|noqa|unlisted|bypass/i;
 
 /** The JSON keys that the config check does not compare, as they hold no rule. */
 export const IGNORED_JSON_KEY = /^\$|^(?:version|description|name)$/;
@@ -84,7 +84,8 @@ export const WEAKENING_LINE = [
   /allow[-_]failure\s*:\s*(?!false\b)\S/i,
   /\[skip ci\]|\[ci skip\]|--no-verify|\bset\s+\+e\b/i,
   /^\s*-?\s*run\s*:\s*(?:true|:|exit\s+0)\s*$/,
-  /\b(?:ignore|ignores|exclude|excludes|skip|disable|disabled|noqa|per-?file-?ignores)\b\s*[:=[(]/i,
+  /\b(?:ignore|ignores|exclude|excludes|skip|omit|disable|disabled|noqa|per-?file-?ignores)\b\s*[:=[(]/i,
+  /\bignore[-_](?:errors|missing[-_]imports)\s*[:=]\s*["']?true\b/i,
   /["']?\w[\w/@.-]*["']?\s*[:=]\s*["']?(?:off|disable|disabled|none)["']?\s*,?$/i,
 ];
 

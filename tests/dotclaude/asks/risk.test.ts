@@ -64,8 +64,17 @@ for (const rel of [
   });
 }
 
-test("a `Write` of a new lint config gets an ask", async () => {
-  asks(await write("/w/biome.json", "{}"), "biome.json");
+test("a `Write` of a new lint config gets no ask", async () => {
+  expect(await write("/w/biome.json", "{}")).toBe(undefined);
+});
+test("a `Write` over a lint config that drops a rule gets an ask", async () => {
+  const before = '{"linter":{"rules":{"a":"error"}}}';
+  asks(
+    await write("/w/biome.json", '{"linter":{"rules":{"a":"off"}}}', {
+      "/w/biome.json": before,
+    }),
+    "biome.json",
+  );
 });
 
 for (const rel of [
@@ -81,29 +90,67 @@ for (const rel of [
   });
 }
 
-for (const rel of [
-  "plugins/x/hooks/hooks.json",
-  "plugins/x/hooks/register.mjs",
-]) {
-  test(`an \`Edit\` of the hook file \`${rel}\` gets an ask`, async () => {
-    const file = `/w/${rel}`;
-    asks(await edit(file, "a", "b", { [file]: "a" }), rel);
-  });
-}
+const STOP = (command: string) =>
+  `{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"${command}"}]}]}}`;
+test("an `Edit` of `hooks.json` that removes a hook gets an ask", async () => {
+  const file = "/w/plugins/x/hooks/hooks.json";
+  const before = STOP("node check.mjs");
+  asks(
+    await edit(file, before, '{"hooks":{}}', { [file]: before }),
+    "plugins/x/hooks/hooks.json",
+  );
+});
+test("an `Edit` of `hooks.json` that adds a hook gets no ask", async () => {
+  const file = "/w/plugins/x/hooks/hooks.json";
+  const before = STOP("node check.mjs");
+  const after = before.replace(
+    '"hooks":{"Stop":[',
+    '"hooks":{"Start":[{"hooks":[{"command":"node a.mjs"}]}],"Stop":[',
+  );
+  expect(await edit(file, before, after, { [file]: before })).toBe(undefined);
+});
+test("an `Edit` of `register.mjs` that removes a check gets an ask", async () => {
+  const file = "/w/plugins/x/hooks/register.mjs";
+  const src = 'm.on("PreToolUse", deny);\nlog();\n';
+  asks(
+    await edit(file, 'm.on("PreToolUse", deny);\n', "", { [file]: src }),
+    "plugins/x/hooks/register.mjs",
+  );
+});
+test("an `Edit` of `register.mjs` that adds a line gets no ask", async () => {
+  const file = "/w/plugins/x/hooks/register.mjs";
+  const src = 'm.on("PreToolUse", deny);\n';
+  expect(await edit(file, "deny);", "deny);\nlog();", { [file]: src })).toBe(
+    undefined,
+  );
+});
 
 const SETTINGS = "/w/.claude/settings.json";
-test("an edit of `hooks` in a settings file gets an ask", async () => {
-  const before = '{"hooks":{"Stop":[]},"model":"x"}';
-  const after = '{"hooks":{"Stop":[{"a":1}]},"model":"x"}';
+test("an edit of `hooks` in a settings file that removes a hook gets an ask", async () => {
+  const before = `${STOP("node a.mjs").slice(0, -1)},"model":"x"}`;
+  const after = '{"hooks":{"Stop":[]},"model":"x"}';
   asks(
     await edit(SETTINGS, before, after, { [SETTINGS]: before }),
     ".claude/settings.json",
   );
 });
-test("a `Write` of `hooks` to a new settings file gets an ask", async () => {
+test("an edit of `hooks` in a settings file that adds a hook gets no ask", async () => {
+  const before = '{"hooks":{"Stop":[]},"model":"x"}';
+  const after = `${STOP("node a.mjs").slice(0, -1)},"model":"x"}`;
+  expect(await edit(SETTINGS, before, after, { [SETTINGS]: before })).toBe(
+    undefined,
+  );
+});
+test("a `Write` of `hooks` to a new settings file gets no ask", async () => {
+  expect(await write("/w/.claude/settings.local.json", '{"hooks":{}}')).toBe(
+    undefined,
+  );
+});
+test("a `Write` over a settings file that turns a hook to `true` gets an ask", async () => {
+  const before = STOP("node a.mjs");
   asks(
-    await write("/w/.claude/settings.local.json", '{"hooks":{}}'),
-    ".claude/settings.local.json",
+    await write(SETTINGS, STOP("true"), { [SETTINGS]: before }),
+    ".claude/settings.json",
   );
 });
 test("an edit of another key in a settings file gets no ask", async () => {
