@@ -1,9 +1,10 @@
 {
-  "allow": ["$defaults"],
+  "allow": [
+    "$defaults",
+    "Agent worktree removal: `git worktree remove <path>` without `--force` or `-f`, where `<path>` is one literal `.claude/worktrees/agent-<id>` folder of the repository that the session started in, and `git branch -d worktree-agent-<id>` of that worktree's branch, never `-D`. Git refuses a worktree with changes or a lock, and it refuses a branch that is not merged, so these checks stay in place. Not allowed: `--force`, `-f`, `-D`, `git worktree prune`, a glob, a variable, `..`, or the `.claude/worktrees/` folder itself.",
+    "Claude Code temp folder cleanup: removal of one literal named file or folder under `/private/tmp/claude-<uid>/`, `/tmp/claude-<uid>/`, or `$TMPDIR/claude-<uid>/`, that the session created or worked with. The command must hold the resolved path, not a variable. Not allowed: the `claude-<uid>` folder itself, a glob or pattern, `..`, or a path outside these folders."
+  ],
   "soft_deny": ["$defaults"],
   "hard_deny": ["$defaults"],
-  "environment": [
-    "$defaults",
-    "**Claude Code worktrees and temp folders**: Folders `.claude/worktrees/agent-*` in a repository are git worktrees that Claude Code agents create. The folder `/private/tmp/claude-<uid>/`, or `$TMPDIR/claude-<uid>/` when `TMPDIR` is set, is the temp folder of Claude Code sessions. Removing one named folder under these paths is routine cleanup, as the Irreversible Local Destruction and Shared Scratch Sweep rules allow. This does not cover a delete by pattern or glob, a delete of `.git` or of another repository, or a git command beyond the removal of that worktree folder."
-  ]
+  "environment": ["$defaults"]
 }

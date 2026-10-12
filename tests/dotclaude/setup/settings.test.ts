@@ -289,7 +289,7 @@ test("a scalar where the snippet has an object gets its own change line", () => 
 
 const AUTO_KEYS = ["allow", "soft_deny", "hard_deny", "environment"];
 
-test("`--apply` writes each `autoMode` list with `$defaults` first, and the dotclaude environment entry", async () => {
+test("`--apply` writes each `autoMode` list with `$defaults` first, and the dotclaude allow entries", async () => {
   const d = sandbox();
   expect(run(d, ["--apply"]).status).toBe(0);
   const auto = (await readUser(d)).autoMode;
@@ -313,21 +313,21 @@ test("`--apply` keeps the user entries of `autoMode`, and puts `$defaults` in fr
   const d = sandbox();
   await writeUser(d, {
     autoMode: {
-      allow: ["Custom allow"],
+      allow: ["Custom allow", AUTOMODE.allow[1]],
       soft_deny: ["$defaults", "Custom deny"],
-      environment: ["My env", AUTOMODE.environment[1]],
+      environment: ["My env"],
     },
   });
   run(d, ["--apply"]);
   const auto = (await readUser(d)).autoMode;
-  expect(auto.allow).toStrictEqual(["$defaults", "Custom allow"]);
+  expect(auto.allow).toStrictEqual([
+    "$defaults",
+    "Custom allow",
+    ...AUTOMODE.allow.slice(1),
+  ]);
   expect(auto.soft_deny).toStrictEqual(["$defaults", "Custom deny"]);
   expect(auto.hard_deny).toStrictEqual(["$defaults"]);
-  expect(auto.environment).toStrictEqual([
-    "$defaults",
-    "My env",
-    AUTOMODE.environment[1],
-  ]);
+  expect(auto.environment).toStrictEqual(["$defaults", "My env"]);
 });
 
 test("project and local settings get no `autoMode`", async () => {
