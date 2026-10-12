@@ -216,9 +216,9 @@ export const SHELL_GIT_RESTORES = ["checkout", "restore"];
 // The code is read as words (`codeWords`), so a word such as `File.write` or `fs.rmSync` is one word.
 // A path that the code names counts as a write only when the same code has one of these.
 
-/** The parts of a word of code that show a write, matched in any case: `write_text`, `writeFileSync`, `json.dump`, `shutil.copy`. */
+/** The parts of a word of code that show a write, matched in any case: `write_text`, `writeFileSync`, `json.dump`, `shutil.copy`, the open flags `os.O_WRONLY` and `File::WRONLY`, and `inplace=True`. */
 export const CODE_WRITE_PARTS =
-  "write dump save unlink remove rename replace move copy delete truncate rmtree chmod chown symlink append mkdir makedirs rmdir touch utime".split(
+  "write dump save unlink remove rename replace move copy delete truncate rmtree chmod chown symlink append mkdir makedirs rmdir touch utime wronly rdwr o_creat ::creat inplace".split(
     " ",
   );
 
@@ -230,8 +230,8 @@ export const CODE_WRITE_WORDS =
 export const CODE_WRITE_MODES =
   "w wb wt w+ w+b wb+ a ab at a+ a+b ab+ r+ r+b rb+ x xb x+".split(" ");
 
-/** A redirect in code, such as awk `print > "f"` or Perl `open(F, ">f")`. The words of code drop `>`, so the check reads the text. `->`, `=>`, and `>=` do not count. */
-export const CODE_REDIRECT = /(?<![-=>])>>?(?!=)/;
+/** A redirect in code, such as awk `print > "f"` or Perl `open(F, ">f")`. The words of code drop `>`, so the check reads the text. `->`, `=>`, and `>=` do not count. The Perl read-write open `+<` counts. */
+export const CODE_REDIRECT = /(?<![-=>])>>?(?!=)|\+</;
 
 /**
  * The options of each command that take a value, so the value is not an operand.

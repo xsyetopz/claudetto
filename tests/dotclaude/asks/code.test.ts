@@ -87,6 +87,12 @@ test("code that writes a path through its own file API gets the write ask", asyn
     `ruby -e 'File.open("${CI_FILE}", "a") { |f| f.puts 1 }'`,
     `perl -e 'open(F, ">${CI_FILE}")'`,
     `awk 'BEGIN { print "x" > "${CI_FILE}" }'`,
+    `python3 -c 'import os; os.open("${CI_FILE}", os.O_WRONLY)'`,
+    `python3 -c 'import os; os.open("${CI_FILE}", os.O_RDWR | os.O_CREAT)'`,
+    `ruby -e 'File.open("${CI_FILE}", File::WRONLY)'`,
+    `node -e 'const fs=require("fs"); fs.open("${CI_FILE}", fs.constants.O_WRONLY, () => {})'`,
+    `python3 -c 'import fileinput; fileinput.input("${CI_FILE}", inplace=True)'`,
+    `perl -e 'open(FH, "+<${CI_FILE}")'`,
   ]) {
     const o = await out(command);
     expect(o?.permissionDecision, command).toBe("ask");

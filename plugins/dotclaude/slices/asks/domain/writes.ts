@@ -13,7 +13,7 @@
 // Limits: the check does not follow a `cd`, so a path is relative to the project root.
 // A path with a variable (`$F`) or a glob (`*`, `?`, `[a-z]`, `{a,b}`) is read by its literal part: each variable and glob counts as the name `x`.
 // It asks only when the literal part is a protected path (`tests/*.test.mjs`) and passes `$F` or `src/*.mjs`.
-// A path that code in another language names counts as a write only when the same code has a write word (`CODE_WRITE_PARTS`), so `YAML.load_file(".github/ci.yml")` gets no ask.
+// A path that code in another language names counts as a write only when the same code has a write word or a redirect (`CODE_WRITE_PARTS`, `CODE_WRITE_WORDS`, `CODE_WRITE_MODES`, `CODE_REDIRECT`), so `YAML.load_file(".github/ci.yml")` gets no ask.
 // A command over the scan bound (`SHELL_SCAN_MAX_CHARS`) gets no write ask here, and the existing behavior applies.
 
 import { CLAUDE_DIR } from "../../../kernel/paths.ts";
