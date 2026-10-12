@@ -170,7 +170,7 @@ The values are on [Bounds](Bounds).
 | Repository | `tools/limits.ts` | `FILE_MAX_LINES` (300), `TEST_FILE_MAX_LINES` (500), `CLAUDE_MD_MAX_BYTES` (6 KB), `START_TOKENS` (9,960) |
 
 - A slice with no bound has no `limits.ts`.
-  Four slices have none: `start-cost` and `usage` in `dotclaude-sessions`, and the slices of `dotclaude-docs` and `dotclaude-lab`.
+  Some slices have none, such as `prompt` in the core plugin, and `docs` in `dotclaude-docs`.
   Slice `limits.ts` files exist for slices such as `guard`, `handoff`, and `statusline`.
 - The first request has a range in `tools/limits.ts`, from `FIRST_REQUEST_LOW_BYTES` to `FIRST_REQUEST_HIGH_BYTES`.
   `just measure` runs `tools/measure.ts`, which passes `START_TOKENS` to its check and exits with that status.

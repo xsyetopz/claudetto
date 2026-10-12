@@ -40,7 +40,7 @@ Each recipe runs from the repository root.
 | `just debug-agents` | Runs one headless sandbox session with a debug log, and fails when the log names an unknown frontmatter field. |
 | `just usage [ARGS]` | Shows where your Claude Code usage went. Add `--days N`, `--runs N`, or `--json`. |
 | `just update` | Refreshes the marketplace, then updates each installed plugin under `plugins/`. Restart Claude Code after it. |
-| `just bump LEVEL` | Bumps the version in the manifests and moves the `[Unreleased]` CHANGELOG entries. See [Releases](#releases). |
+| `just bump LEVEL` | Bumps the version in `package.json` and moves the `[Unreleased]` CHANGELOG entries. Then run `just generate`. See [Releases](#releases). |
 | `just release` | Tags each plugin under `plugins/` at `HEAD`, and pushes the tags in one push. See [Releases](#releases). |
 | `just generate` | Writes each text that a plugin ships from its source in `src/`. `--check` names each file that differs. |
 | `just schema` | Writes the settings schemas of the installed Claude Code to `schemas/`. |
@@ -175,7 +175,16 @@ The workflows are in `.github/workflows/`.
    just bump minor
    ```
 
-3. Preview the tags, then tag and push.
+   `just bump` changes `package.json` and the `[Unreleased]` lines of `CHANGELOG.md`.
+3. Copy the version to each `plugin.json`, then commit the result.
+
+   ```bash
+   just generate
+   ```
+
+   Commit before you tag.
+   `claude plugin tag` checks that each `plugin.json` agrees with its marketplace entry, and it stops on a dirty working tree.
+4. Preview the tags, then tag and push.
 
    ```bash
    just release --dry-run

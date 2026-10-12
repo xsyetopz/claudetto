@@ -41,7 +41,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `handoff` slice gives a subagent a report note at 4 turns left.
   The note tells the subagent to commit its work first, and then to report.
   In a subagent, the `guard` hook denies a git command that changes the shared checkout or `refs/stash` (`git.shared-checkout`).
-- The `/ship` command runs one `reviewer` on the diff of each package, with no implementer report.
+- The `/ship` skill runs one `reviewer` on the diff of each package, with no implementer report.
   Each wave starts with `dotclaude-spec runs`.
   It counts the runs against the tier cap that `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` sets, and against the `five_hour` and `seven_day` windows.
   The status line writes `.dotclaude/rate-limits.json` atomically.
