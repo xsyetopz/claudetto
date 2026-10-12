@@ -155,7 +155,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Each slice part that adds guidance for some files only at runtime becomes a `paths:` rule, when P28 shows that a rule can do the same work.
   Deps: P28, P24, P26, P27, because they change the setup.
   Owns: `src/plugins/dotclaude/slices/rules/` except `skills/`, the rules parts of `setup`, `trim`, and `surface`, and their tests.
-- [ ] P30 `/rules-creator` skill: based on the `skill-creator` skill of Anthropic, short, and with each needed area: scope, `paths` globs and their limits, user or project folder, the split of a large `CLAUDE.md`, a check that each glob matches files, and the start cost.
+- [x] P30 `/rules-creator` skill: based on the `skill-creator` skill of Anthropic, short, and with each needed area: scope, `paths` globs and their limits, user or project folder, the split of a large `CLAUDE.md`, a check that each glob matches files, and the start cost.
   Deps: P28.
   Owns: `src/plugins/dotclaude/slices/rules/skills/`, `tests/dotclaude/rules/` (the skill tests).
   Verify: `just validate`, and a `reviewer` pass on the text.
