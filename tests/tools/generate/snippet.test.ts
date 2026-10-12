@@ -98,7 +98,7 @@ test("a plugin whose slices have no `settings` entry has no snippet", async () =
   expect(await snippetFor(await fixtureRoot())).toBeNull();
 });
 
-test("the core plugin gets the module `lib/snippets.ts` from the snippet of its slices and the docs fragment, with no source folder", async () => {
+test("the core plugin gets the module `snippets.ts` from the snippet of its slices and the docs fragment, with no source folder", async () => {
   const dir = await fixtureRoot({
     "schemas/claude-code-settings.json": schemaWith(ORDER),
     "src/plugins/dotclaude/slices/gamma/slice.ts": sliceWith(
@@ -108,7 +108,7 @@ test("the core plugin gets the module `lib/snippets.ts` from the snippet of its 
     "src/fragments/docs-snippet.json":
       '{ "permissions": { "allow": ["x"] } }\n',
   });
-  const file = "plugins/dotclaude/lib/snippets.ts";
+  const file = "plugins/dotclaude/snippets.ts";
   const made = (await outputs(dir)).find((o) => o.file === file);
   if (!made) throw new Error(`the generator wrote no ${file}`);
   await Bun.write(path.join(dir, file), made.text);

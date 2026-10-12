@@ -185,7 +185,7 @@ export const textModule = async (
 };
 
 /** The module of the settings snippet of the core plugin: `SNIPPET` from the slices, and `DOCS_SNIPPET` from its fragment. */
-const SNIPPET_MODULE = "plugins/dotclaude/lib/snippets.ts";
+const SNIPPET_MODULE = "plugins/dotclaude/snippets.ts";
 const SNIPPET_SOURCE = "src/plugins/dotclaude/slices/";
 
 const snippetModule = async (
