@@ -29,7 +29,9 @@ Critical path: P01a, P01b1 to P01b4, P05 and P06, P13, P14, P15, P16.
   Deps: P01a.
   Owns: `tools/generate/`, `tools/generate.ts`, `tools/rebuild-pending.txt`, `tests/tools/`, `tests/support/generate.test.ts`, `justfile`.
   Verify: `just test tests/tools` and `just check`.
-- [ ] P01b2 The `prompt` slice, as the proof of the generator, with the 0.28.0 handlers that are not ported in `plugins/dotclaude/hooks/legacy.ts`.
+- [x] P01b2 The `prompt` slice, as the proof of the generator, with the 0.28.0 handlers that are not ported in `plugins/dotclaude/hooks/legacy.ts`.
+  P01b2 changed `checkEntries` in `tests/support/import-rules.ts`, because P01b4 owns it but comes later, and `just check` failed on the new layout.
+  P01b4 replaces that rule with the Biome overrides of `design.md`.
   Deps: P01b1.
   Owns: `src/plugins/dotclaude/plugin.ts`, `src/plugins/dotclaude/slices/prompt/`, `tests/dotclaude/prompt/`.
   Verify: `just test tests/dotclaude/prompt`, `just lab`, and `just check`.
