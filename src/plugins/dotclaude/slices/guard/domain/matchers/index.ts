@@ -1,23 +1,18 @@
-// The catalog of the `guard` matchers: each matcher of `git.ts` and `system.ts`, and the tier of each id.
-// The tiers move to the kernel catalog `src/kernel/policy/` when P37 merges, so this map is local until then.
+// The `guard` matchers: each matcher of `git.ts` and `system.ts`.
+// The tier of each matcher id comes from the kernel rule catalog `src/kernel/policy/`.
 
+import { POLICY_RULES } from "../../../../../../kernel/policy/index.ts";
 import { gitMatchers } from "./git.ts";
 import { systemMatchers } from "./system.ts";
 import type { Matcher, Tier } from "./types.ts";
 
 export const MATCHERS: Matcher[] = [...gitMatchers, ...systemMatchers];
 
-/** The tier of each matcher id: `floor` applies in every session, and `subagent` only in a subagent. */
-export const TIERS: Record<string, Tier> = {
-  "git.discard-uncommitted": "floor",
-  "git.clean": "floor",
-  "git.stash-drop": "floor",
-  "git.history-rewrite": "floor",
-  "git.force-push-default": "floor",
-  "git.delete-branch": "floor",
-  "git.shared-checkout": "subagent",
-  "system.recursive-delete": "floor",
-  "system.disk": "floor",
-  "system.permissions": "floor",
-  "system.security": "floor",
-};
+/**
+ * The tier of a matcher id from the catalog: `subagent` when the catalog says so, and `floor` otherwise.
+ * A matcher with no catalog entry gets `floor`, which applies in every session, and the guard test fails for it.
+ */
+export const tierOf = (id: string): Tier =>
+  POLICY_RULES.find((rule) => rule.id === id)?.tier === "subagent"
+    ? "subagent"
+    : "floor";

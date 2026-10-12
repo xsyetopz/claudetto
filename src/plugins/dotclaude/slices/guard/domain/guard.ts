@@ -2,7 +2,7 @@
 // The `floor` tier applies in every session, and the `subagent` tier only in a subagent.
 // The functions are pure, and the ports of the file system and of the checkout come in through `ctx`.
 
-import { MATCHERS, TIERS } from "./matchers/index.ts";
+import { MATCHERS, tierOf } from "./matchers/index.ts";
 import type { Ctx, Kind, Tier } from "./matchers/types.ts";
 import { denyReason } from "./reason.ts";
 import { walk } from "./walk.ts";
@@ -30,7 +30,7 @@ export const guardReason = async (
       isMainCheckout: () => ctx.isMainCheckout(simple.dir),
     };
     for (const matcher of MATCHERS) {
-      const tier: Tier = TIERS[matcher.id] ?? "floor";
+      const tier: Tier = tierOf(matcher.id);
       if (tier === "subagent" && !ctx.subagent) continue;
       if (await matcher.match(simple.words, scoped))
         return denyReason({ tier, command, subagent: ctx.subagent });
