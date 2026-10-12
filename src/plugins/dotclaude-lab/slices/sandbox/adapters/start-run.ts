@@ -1,4 +1,3 @@
-#!/usr/bin/env -S bun --no-env-file
 // Captures and measures the start of a clean sandbox session in one command.
 //
 //   bun src/plugins/dotclaude-lab/slices/sandbox/adapters/start-run.ts [--port 8787] [--dir DIR]

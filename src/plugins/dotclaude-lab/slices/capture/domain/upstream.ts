@@ -8,7 +8,7 @@ const LOOPBACK = new Set(["127.0.0.1", "localhost", "[::1]"]);
  * The order is the `--upstream` flag, then `baseUrl` (`ANTHROPIC_BASE_URL`), then the Anthropic API.
  * It throws when the URL is not valid, or when it is the address of the proxy (`port`), which is a loop.
  */
-export function resolveUpstream({
+export const resolveUpstream = ({
   flag,
   baseUrl,
   port,
@@ -16,7 +16,7 @@ export function resolveUpstream({
   flag?: string | null;
   baseUrl?: string;
   port: number;
-}): string {
+}): string => {
   const text = (flag || baseUrl || DEFAULT).replace(/\/+$/, "");
   let url: URL | undefined;
   try {
@@ -30,4 +30,4 @@ export function resolveUpstream({
       `The upstream ${text} is the address of this proxy, so requests would loop. Pass --upstream URL, or unset ANTHROPIC_BASE_URL.`,
     );
   return text;
-}
+};

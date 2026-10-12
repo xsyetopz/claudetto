@@ -10,9 +10,9 @@
 const LOCAL = new Set(["localhost", "127.0.0.1", "[::1]"]);
 
 /** The host of the sandbox proxy when `env` is a shell of Claude Code that sends HTTPS through a local proxy, else null. */
-export function sandboxProxy(
+export const sandboxProxy = (
   env: Record<string, string | undefined>,
-): string | null {
+): string | null => {
   const url = env["HTTPS_PROXY"] ?? env["https_proxy"];
   if (!url || !env["CLAUDE_CODE_ENTRYPOINT"]) return null;
   try {
@@ -22,7 +22,7 @@ export function sandboxProxy(
     // A proxy value that is not a URL is not the proxy of the sandbox.
     return null;
   }
-}
+};
 
 if (process.argv[1] === import.meta.path) {
   const host = sandboxProxy(process.env);

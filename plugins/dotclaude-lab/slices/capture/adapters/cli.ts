@@ -23,8 +23,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { sizeRequest, sizingLines } from "../domain/report.ts";
-import { resolveUpstream } from "../domain/upstream.ts";
 import type { Body } from "../domain/types.ts";
+import { resolveUpstream } from "../domain/upstream.ts";
 
 // Headers that go upstream unchanged; all others stay behind.
 const PASS =
@@ -35,7 +35,8 @@ const USAGE =
 
 const passHeaders = (headers: Headers): Headers => {
   const kept = new Headers();
-  for (const [name, value] of headers) if (PASS.test(name)) kept.set(name, value);
+  for (const [name, value] of headers)
+    if (PASS.test(name)) kept.set(name, value);
   return kept;
 };
 

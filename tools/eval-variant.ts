@@ -43,7 +43,7 @@ const git = (...a: string[]) =>
 if (git("worktree", "add", "--detach", tree, ref) !== 0) process.exit(1);
 
 /** Copies the results of the variant arm out of the worktree. Returns the new folder, or `null`. */
-function keepResults(ref: string): string | null {
+const keepResults = (ref: string): string | null => {
   const from = path.join(tree, "plugins/dotclaude/evals/results");
   if (!fs.existsSync(from)) return null;
   const safe = ref.replace(/[^A-Za-z0-9._-]/g, "-");
@@ -55,7 +55,7 @@ function keepResults(ref: string): string | null {
   );
   fs.cpSync(from, to, { recursive: true });
   return to;
-}
+};
 
 let status = 1;
 try {
