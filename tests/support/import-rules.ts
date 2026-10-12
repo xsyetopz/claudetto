@@ -86,20 +86,29 @@ export function checkFeatures(files: Files): string[] {
   return bad;
 }
 
-// Rule 3: entry points import `lib/` and features, and a `cli` file only its own feature and `lib/`.
+// The folders that an entry point imports.
+// `slices/` and `kernel/` hold the 1.0.0 layout, and `hooks/legacy.ts` holds the 0.28.0 handlers that are not ported yet.
+const ENTRY_TARGETS = new Set(["lib", "features", "slices", "kernel"]);
+
+// Rule 3: entry points import `lib/`, features, slices, and `kernel/`, and a `cli` file only its own feature and `lib/`.
+// The imports of `slices/` and `kernel/` follow the Biome overrides of design D18, so this rule skips them.
 export function checkEntries(files: Files): string[] {
   const bad: string[] = [];
   for (const { file, spec, target } of edges(files)) {
     const [top, name, leaf] = within(file);
-    if (top === "lib" || !target || !inside(file, target)) continue;
+    if (top === "lib" || top === "slices" || top === "kernel") continue;
+    if (!target || !inside(file, target)) continue;
     const [tTop, tName] = within(target);
     if (top === "features") {
       if (!/^cli\.(?:mjs|ts)$/.test(leaf as string)) continue;
       if (tTop === "features" && tName !== name)
         bad.push(`${file}: cli imports ${spec}, another feature`);
-    } else if (tTop !== "lib" && tTop !== "features")
+    } else if (
+      !ENTRY_TARGETS.has(tTop as string) &&
+      within(target).join("/") !== "hooks/legacy.ts"
+    )
       bad.push(
-        `${file}: entry point imports ${spec}, outside lib and features`,
+        `${file}: entry point imports ${spec}, outside lib, features, slices, and kernel`,
       );
   }
   return bad;

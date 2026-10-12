@@ -5,16 +5,11 @@
 # Each package removes its lines, and P16 checks that the list is empty.
 
 # P01b2: the `prompt` slice, and the hand-written hooks module that the generator replaces
-plugins/dotclaude/.claude-plugin/plugin.json
 plugins/dotclaude/hooks/hooks.json
-plugins/dotclaude/hooks/register.ts
-plugins/dotclaude/features/prompt/
+plugins/dotclaude/hooks/legacy.ts
 plugins/dotclaude/tests/mod.test.ts
-plugins/dotclaude/tests/variants.test.ts
 src/plugins/dotclaude/hooks/
-src/plugins/dotclaude/features/prompt/
 tests/dotclaude/hooks/
-tests/dotclaude/prompt-variants.test.ts
 
 # P01b3: the settings snippet, and `src/shared/`
 src/shared/

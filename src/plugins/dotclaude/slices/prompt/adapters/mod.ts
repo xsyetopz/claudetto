@@ -1,0 +1,43 @@
+// The mod handlers of the `prompt` slice:
+// `prompt.compose` and `agent.spawn` for the prompt variant of the model,
+// and `prompt.section` that makes the `context_management` section of the system prompt true without compaction.
+
+import type { Handler } from "../../../../../kernel/slice.ts";
+import { composeSections, variantKey, withBlock } from "../domain/apply.ts";
+import type { VariantKey } from "../domain/variants.ts";
+import { CONTEXT_MANAGEMENT } from "../texts.ts";
+
+// The variant key of each session, chosen at the first `prompt.compose` of the session and kept.
+// A model switch changes nothing, because a changed system prompt breaks the cache.
+const variants = new Map<string, VariantKey | null>();
+
+export const onCompose: Handler<"prompt.compose"> = async ($, e, next) => {
+  const result = await next(e);
+  if (e.traits.includes("bare")) return result;
+  const session = await $.session.id();
+  if (!variants.has(session))
+    variants.set(session, variantKey(e.promptModel || e.model));
+  const key = variants.get(session);
+  return key ? { sections: composeSections(result.sections, key) } : result;
+};
+
+// A subagent gets its system prompt from its agent body, so its model block goes to the end of the task prompt.
+export const onSpawn: Handler<"agent.spawn"> = (_$, e, next) => {
+  const model = e.model && e.model !== "inherit" ? e.model : e.parentModel;
+  const key = variantKey(model);
+  return next(key ? { ...e, prompt: withBlock(e.prompt, key) } : e);
+};
+
+// The built-in `context_management` section says that the context is summarized when it grows long.
+// With `DISABLE_COMPACT` that is false, and the model then spends less care on the size of the context.
+// The text is the same for each call, so the cached answer keeps the prompt cache.
+export const onContextSection: Handler<"prompt.section"> = async (
+  $,
+  e,
+  next,
+) => {
+  const off = await $.env.get("DISABLE_COMPACT");
+  return off && off !== "0" && off !== "false"
+    ? { text: CONTEXT_MANAGEMENT }
+    : next(e);
+};

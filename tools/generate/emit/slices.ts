@@ -107,7 +107,7 @@ const filesOf = async (
       if (modules.has(module)) continue;
       modules.add(module);
       const file = `plugins/${p.name}/slices/${s.name}/${module}`;
-      const source = `${path.posix.join(s.dir, module)}/`;
+      const source = path.posix.join(s.dir, module, path.posix.sep);
       const dir = path.posix.relative("src", path.posix.join(s.dir, module));
       const text = await textModule(path.join(root, "src"), shared, dir);
       out.push({ file, source, text: withHeader(file, source, text) });

@@ -46,35 +46,6 @@ test("a deny of the engine stays a deny", async ($: Engine, on: On) => {
   expect((await bash($, "gh repo view other/lib")).decision).toBe("deny");
 });
 
-test("with `DISABLE_COMPACT`, the `context_management` section changes", async ($: Engine, on: On) => {
-  on("prompt.section", () => ({ text: "is summarized" }));
-  mock.env(on, { DISABLE_COMPACT: "1" });
-  const out = await $.prompt.section({
-    name: "context_management",
-    text: null,
-  });
-  expect(out.text?.length).toBeGreaterThan(0);
-  expect(out.text).not.toBe("is summarized");
-});
-
-test("another section keeps the text of the engine", async ($: Engine, on: On) => {
-  on("prompt.section", () => ({ text: "is summarized" }));
-  mock.env(on, { DISABLE_COMPACT: "1" });
-  expect((await $.prompt.section({ name: "memory", text: null })).text).toBe(
-    "is summarized",
-  );
-});
-
-test("with `DISABLE_COMPACT=0`, the `context_management` text of the engine stays", async ($: Engine, on: On) => {
-  on("prompt.section", () => ({ text: "is summarized" }));
-  mock.env(on, { DISABLE_COMPACT: "0" });
-  const out = await $.prompt.section({
-    name: "context_management",
-    text: null,
-  });
-  expect(out.text).toBe("is summarized");
-});
-
 const LOGIN = "gh config get user -h github.com";
 const ORGS =
   'gh api user/memberships/orgs --paginate --jq .[] | select(.role == "admin" and .state == "active") | .organization.login';

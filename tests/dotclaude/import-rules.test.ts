@@ -61,11 +61,14 @@ test("rule 3: a cli imports another feature, and an entry point imports a hook f
     [`${P}/features/reads/cli.ts`]:
       'import { x } from "../setup/rules.ts";\nimport { y } from "../reads/rules.ts";',
     [`${P}/hooks/register.ts`]:
-      'import { a } from "../features/guard/rules.ts";\nimport { b } from "../features/prompt/data.ts";\nimport { c } from "../lib/budget.ts";\nimport { d } from "../skills/setup/scripts/settings.ts";',
+      'import { a } from "../features/guard/rules.ts";\nimport { b } from "../features/prompt/data.ts";\nimport { c } from "../lib/budget.ts";\nimport { d } from "../skills/setup/scripts/settings.ts";\nimport { e } from "../slices/prompt/adapters/mod.ts";\nimport { f } from "../kernel/slice.ts";\nimport { g } from "./legacy.ts";\nimport { h } from "./other.ts";',
+    [`${P}/slices/prompt/slice.ts`]:
+      'import { a } from "../../kernel/slice.ts";\nimport { b } from "./adapters/mod.ts";',
   };
   expect(checkEntries(files)).toStrictEqual([
     `${P}/features/reads/cli.ts: cli imports ../setup/rules.ts, another feature`,
-    `${P}/hooks/register.ts: entry point imports ../skills/setup/scripts/settings.ts, outside lib and features`,
+    `${P}/hooks/register.ts: entry point imports ../skills/setup/scripts/settings.ts, outside lib, features, slices, and kernel`,
+    `${P}/hooks/register.ts: entry point imports ./other.ts, outside lib, features, slices, and kernel`,
   ]);
 });
 

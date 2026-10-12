@@ -20,12 +20,12 @@
     "allow": "plugins/dotclaude/tests/drift.test.ts > no drift adds no text",
     "text": "plugins/dotclaude/tests/drift.test.ts > a settings file without the snippet names the missing values and the setup skill"
   },
-  "prompt.section context management": {
+  "prompt.section prompt": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
-    "allow": "plugins/dotclaude/tests/mod.test.ts > another section keeps the text of the engine",
-    "text": "plugins/dotclaude/tests/mod.test.ts > with `DISABLE_COMPACT`, the `context_management` section changes"
+    "allow": "plugins/dotclaude/tests/section.test.ts > another section keeps the text of the engine",
+    "text": "plugins/dotclaude/tests/section.test.ts > with `DISABLE_COMPACT`, the `context_management` section changes"
   },
   "prompt.attachment surface": {
     "requests": 0,

@@ -4,11 +4,11 @@ import { expect, test } from "bun:test";
 import {
   composeSections,
   variantKey,
-} from "../../plugins/dotclaude/features/prompt/select.ts";
+} from "../../../plugins/dotclaude/slices/prompt/domain/apply.ts";
 import {
   VARIANTS,
   variantSections,
-} from "../../plugins/dotclaude/features/prompt/variants.ts";
+} from "../../../plugins/dotclaude/slices/prompt/domain/variants.ts";
 
 const KEYS = Object.keys(VARIANTS) as (keyof typeof VARIANTS)[];
 
