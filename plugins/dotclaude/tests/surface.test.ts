@@ -8,27 +8,39 @@ import { type Engine, expect, test } from "claude-code/testing";
 const BUILT_IN = "x".repeat(4000);
 
 const engine = (on: On) => {
-  on("tool.describe", (_$, e) => ({ description: BUILT_IN }));
+  on("tool.describe", () => ({ description: BUILT_IN }));
   on("agent.offer", () => ({ isOffered: true }));
 };
 
 test("`tool.describe` replaces the built-in `Bash` description with a shorter one", async ($: Engine, on: On) => {
   engine(on);
-  const answer = await $.tool.describe({ tool: "Bash", description: BUILT_IN });
+  const answer = await $.tool.describe({
+    tool: "Bash",
+    description: BUILT_IN,
+    provider: { plugin: "engine", tier: "core" },
+  });
   expect(answer.description.length).toBeLessThan(BUILT_IN.length);
   expect(answer.isDeferred).toBeUndefined();
 });
 
 test("`tool.describe` defers `ListAgents` and keeps its built-in description", async ($: Engine, on: On) => {
   engine(on);
-  const answer = await $.tool.describe({ tool: "ListAgents", description: "x" });
+  const answer = await $.tool.describe({
+    tool: "ListAgents",
+    description: BUILT_IN,
+    provider: { plugin: "engine", tier: "core" },
+  });
   expect(answer.isDeferred).toBe(true);
-  expect(answer.description).toBe("x");
+  expect(answer.description).toBe(BUILT_IN);
 });
 
 test("`tool.describe` passes an unknown tool on with no change", async ($: Engine, on: On) => {
   engine(on);
-  const answer = await $.tool.describe({ tool: "Grep", description: "x" });
+  const answer = await $.tool.describe({
+    tool: "Grep",
+    description: "x",
+    provider: { plugin: "engine", tier: "core" },
+  });
   expect(answer).toStrictEqual({ description: BUILT_IN });
 });
 

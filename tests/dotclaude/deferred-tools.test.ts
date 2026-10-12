@@ -3,11 +3,6 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import {
-  DEFERRED_TOOLS,
-  TOOL_TEXT,
-} from "../../plugins/dotclaude/features/surface/data.ts";
-import { toolAnswer } from "../../plugins/dotclaude/features/surface/rules.ts";
 import { type Env, PLUGINS } from "../support/repo.ts";
 
 // The env names that turn off deferral or send every tool in full, and the one value that turns off a name that has values.
@@ -38,15 +33,4 @@ test("the `settings.json` of the core plugin sets no banned env name", async () 
   const file = path.join(PLUGINS, "dotclaude/settings.json");
   const settings = JSON.parse(await Bun.file(file).text());
   expect(broken(settings.env ?? {})).toStrictEqual([]);
-});
-
-test("`tool.describe` rules defer the listed tools and never set `isDeferred` to `false`", () => {
-  const tools = [...DEFERRED_TOOLS, ...Object.keys(TOOL_TEXT), "SomethingNew"];
-  for (const tool of tools)
-    for (const description of ["x", "x".repeat(4000)]) {
-      const answer = toolAnswer(tool, { description });
-      expect(answer?.isDeferred, tool).not.toBe(false);
-    }
-  for (const tool of DEFERRED_TOOLS)
-    expect(toolAnswer(tool, { description: "x" })?.isDeferred, tool).toBe(true);
 });

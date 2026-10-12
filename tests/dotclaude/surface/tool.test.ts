@@ -2,11 +2,11 @@
 // The engine defers the tools that it can only when none of the env keys of `deferred-tools.test.ts` sends every tool schema in full.
 
 import { expect, test } from "bun:test";
-import { slice } from "../../../plugins/dotclaude/slices/surface/slice.ts";
 import {
   TOOL_TRANSFORMS,
   toolAnswer,
 } from "../../../plugins/dotclaude/slices/surface/domain/tools.ts";
+import { slice } from "../../../plugins/dotclaude/slices/surface/slice.ts";
 
 test("`tool.describe` rules defer the listed tools and never set `isDeferred` to `false`", () => {
   const tools = [...TOOL_TRANSFORMS.map((t) => t.id), "SomethingNew"];
