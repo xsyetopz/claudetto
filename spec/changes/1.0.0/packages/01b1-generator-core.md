@@ -29,15 +29,22 @@ This package ports no slice: P01b2 ports `prompt`, P01b3 adds the snippet, and P
 - The header of the hand-written hooks module: `plugins/dotclaude/hooks/register.ts:22-24`.
   It says that `claude plugin validate` follows `$` only into a function of that file, and that each `$.env.get` call needs a literal name.
 
+- The decisions of the earlier runs, which this package keeps:
+  - The gate of step 1 passed on 2026-10-12: `claude plugin validate --strict` gave `✔ Validation passed` on a probe whose `register.ts` imports a handler from a slice file that calls `$.env.get`.
+    The `plugin.json` of the probe needed an `author` field.
+  - Each `slice.ts` exports `slice`, and each `plugin.ts` exports `plugin`.
+  - The generated `register.ts` imports `slice` of each slice under one name for each slice, and passes each handler by its index, such as `on("prompt.compose", prompt.mod[0].run)`, with the event and the filter as literals.
+  - `plugin.json` takes its version from `package.json`, which `just bump` changes already, so `plugin.ts` has no version.
+  - `NO_OUTPUT` of the 0.28.0 text step also skips `src/plugins/*/plugin.ts`.
+  - A line of `tools/rebuild-pending.txt` that ends with `/` names a folder and each file in it, so the list stays at 300 lines or less.
+  - The generator also writes the texts of each slice (`skills/`, `agents/`, and `styles/` to `output-styles/`) and one launcher in `bin/` for each `cli`.
+
 ## Steps
 
-1. The gate.
-   In a temporary folder outside the repository, make a minimal plugin whose `hooks/register.ts` imports one handler from `slices/x/adapters/mod.ts`, and that handler calls `$.env.get("DISABLE_COMPACT")`.
-   Run `claude plugin validate --strict` on it.
-   When `validate` rejects it, stop, report the full output, and change nothing in the repository.
+1. The gate passed (see Context), so do not run it again.
 2. Move `tools/generate.ts` into `tools/generate/`, with no change of behavior: `index.ts` runs the command, and `emit/texts.ts` holds the text output of 0.28.0.
-   Change the `generate` recipe of `justfile` to the new path, and the import of `isGenerated` in `tests/support/file-size.test.ts:8` to the new module.
-3. Write `discover.ts` (each `src/plugins/<plugin>/slices/*/slice.ts`), `order.ts` (sort by phase, then by slice name, and fail on two handlers of one slice with the same event, filter, and phase), `closure.ts` (copy the closure of the `src/kernel/` modules that a plugin imports to `plugins/<plugin>/kernel/`, and change each import path in the copies of the slices), `emit/register.ts` (one literal `on()` call for each handler), `emit/hooks.ts` (`hooks.json` from the classic hooks), and `emit/manifest.ts` (`plugin.json`).
+   Change the `generate` recipe of `justfile` to the new path, the import of `isGenerated` in `tests/support/file-size.test.ts:8` to the new module, and the imports of `tests/support/generate.test.ts`.
+3. Write `discover.ts` (each `src/plugins/<plugin>/slices/*/slice.ts`), `order.ts` (sort by phase, then by slice name, and fail on two handlers of one slice with the same event, filter, and phase), `closure.ts` (copy the closure of the `src/kernel/` modules that a plugin imports to `plugins/<plugin>/kernel/`, and change each import path in the copies of the slices), `emit/register.ts` (one literal `on()` call for each handler), `emit/hooks.ts` (`hooks.json` from the classic hooks), `emit/manifest.ts` (`plugin.json`), and the slice texts and launchers of Context.
    Until P01b2, no real slice has a `slice.ts`, so the output of the repository does not change.
 4. Write `tools/rebuild-pending.txt`: each 0.28.0 path in `plugins/`, `src/`, and `tests/`, grouped under a comment that names the package of `spec/changes/1.0.0/packages.md` that ports it.
    The generator fails on a file in `plugins/` that it did not write and that the list does not name.
@@ -47,7 +54,6 @@ This package ports no slice: P01b2 ports `prompt`, P01b3 adds the snippet, and P
 
 ## Acceptance
 
-- The report has the output of the gate of step 1.
 - `just test tests/tools` passes, and `just check` passes.
 - `just generate --check` passes after `just generate`.
 - Each file has 300 lines or less, and each test file has 500 lines or less.
