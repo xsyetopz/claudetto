@@ -193,6 +193,14 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
 
 ## Wave 4: release
 
+- [ ] P35 Worker lessons: the subagent runs of dotclaude use the lessons of the Bun port to Rust, at the scale of a subscription ([change](change.md), decisions, the user, 2026-10-12).
+  A subagent that nears its `maxTurns` commits its work and hands back a report, so no run ends with no report.
+  `/ship` runs one `reviewer` on the diff of each package before the merge, and gives it no report of the implementer.
+  The `guard` slice denies a git command that changes shared state in a subagent, such as `git stash`, `git reset --hard`, and `git checkout <rev> -- .`.
+  `/ship` starts each wave with a count of runs from the tier cap of P24 and the 5h and weekly usage now, not from one fixed value.
+  Deps: P13, because P13 adds the note near the turn limit, and P33, because P33 changes `/ship`.
+  Owns: the `guard`, `agents`, and `statusline` slices, the `/ship` skill, the turn bound of `handoff`, and their tests.
+  Verify: `just check`, a lab test for each denied git command in a subagent, and a lab test that a subagent gets the note before its last turn.
 - [ ] P15 Docs: the wiki, the README, and a new CHANGELOG that starts at 1.0.0, with the numbers of P14.
   Deps: P14.
   Owns: `wiki/`, `README.md`, `CHANGELOG.md`, `docs/`, `tools/wiki.ts`.
