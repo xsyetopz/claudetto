@@ -112,10 +112,6 @@
         "!plugins/dotclaude/features/surface/**",
         "!plugins/dotclaude/tests/surface.test.ts",
         "!src/plugins/dotclaude/features/surface/**",
-        "!plugins/dotclaude/settings.json",
-        "!src/plugins/dotclaude/settings.json",
-        "!tests/dotclaude/deferred-tools.test.ts",
-        "!tests/dotclaude/plugin-settings.test.ts",
         "!plugins/dotclaude/output-styles/**",
         "!src/plugins/dotclaude/output-styles/**"
       ],
