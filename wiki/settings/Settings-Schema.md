@@ -20,6 +20,22 @@ It runs `dotclaude-schema` of the plugin `dotclaude-lab`, which reads the bundle
   A wrong table would give a wrong schema.
 - Extra arguments are `--bundle FILE`, `--version X.Y.Z`, and `--out DIR`.
 
+### Speed
+
+The bundle is about 240 MB, and one pass over it takes about 80 ms on a fast machine.
+The script looks up about 12 minified helper names.
+A search for each name made 24 passes, which took about 1.8 s, and a CI runner is about 4 times slower.
+A regex that starts with the literal name was not faster, because the cost is the pass and not the regex start.
+
+So the first lookup makes 2 passes that find the definitions of all names, and the script keeps them for the rest of the build.
+
+- One pass finds each `function name(` and captures the name.
+- The other pass finds each `=` with an arrow after it, and reads the name back from the `=`.
+  That name, with `,`, `;`, or a space before it, is the same hit that a search for that one name finds.
+
+The output is the same, byte for byte, on Claude Code 2.1.296, and the build takes about 0.2 s.
+Measure a change of the parser with a build from the real bundle, and compare the output and the time with the old code.
+
 ## Keys
 
 The schema holds each top-level key that the bundle defines, with its description.

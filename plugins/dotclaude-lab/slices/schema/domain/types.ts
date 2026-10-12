@@ -190,23 +190,49 @@ export const findDefinition = (
   unique = false,
 ): string | null => {
   const { src, types } = ctx;
-  const esc = name.replace(/\$/g, "\\$");
-  const re = new RegExp(
-    `(?:function ${esc}\\([^)]*\\)\\{return |[,;\\s]${esc}=(?:[fp]\\(\\(\\)=>|\\(\\)=>|\\([\\w$,]*\\)=>))`,
-    "g",
-  );
-  const limit = src.indexOf("{$schema:()=>");
-  // Only the hits before the schema count, so a later module that reuses the name does not make it ambiguous.
-  const hits = [...src.matchAll(re)].filter(
-    (h) => limit < 0 || (h.index as number) < limit,
-  );
-  const shaped = hits.filter((h) =>
-    isShape(src, (h.index as number) + h[0].length, types),
-  );
-  const m = hits.pop();
-  if (!m || !shaped.includes(m) || (unique && shaped.length > 1)) return null;
-  const from = (m.index as number) + m[0].length;
+  ctx.defs ??= definitions(src);
+  const hits = [...(ctx.defs.get(name) ?? [])];
+  const shaped = hits.filter((end) => isShape(src, end, types));
+  const from = hits.pop();
+  if (from === undefined || !shaped.includes(from)) return null;
+  if (unique && shaped.length > 1) return null;
   return src.slice(from, exprEnd(src, from));
+};
+
+// The end of each definition before the schema, by name, in source order:
+// `function name(...){return ` or `name=` with an arrow after it, after `,`, `;`, or a space.
+// Only the definitions before the schema count, so a later module that reuses the name does not make it ambiguous.
+//
+// Speed: the bundle is about 240 MB, and one pass over it costs about 80 ms on a fast machine.
+// A build looks up about 12 names, so a regex for each name made 24 passes, about 1.8 s, and CI runners are 4 times slower.
+// A regex that starts with the literal name was not faster, because the cost is the pass and not the regex start.
+// So the first lookup makes 2 passes that find the definitions of all names, and `ctx.defs` keeps them for the build:
+// - The pass for `function name(` captures the name.
+// - The pass for `=` with an arrow after it reads the name back from the `=`, over `[\w$]` characters.
+//   That longest name, with `,`, `;`, or a space before it, is the same hit as `[,;\s]name=` for that one name.
+// The result is the same as the regex for each name, and the build takes about 0.2 s.
+const definitions = (src: string): Map<string, number[]> => {
+  const anchor = src.indexOf("{$schema:()=>");
+  const limit = anchor < 0 ? src.length : anchor;
+  const hits: [string, number, number][] = [];
+  for (const m of src.matchAll(/function ([\w$]+)\([^)]*\)\{return /g))
+    if ((m.index as number) < limit)
+      hits.push([m[1] as string, m.index as number, m.index + m[0].length]);
+  for (const m of src.matchAll(/=(?:[fp]\(\(\)=>|\(\)=>|\([\w$,]*\)=>)/g)) {
+    let at = m.index as number;
+    while (at > 0 && /[\w$]/.test(src[at - 1] as string)) at--;
+    const start = at - 1;
+    if (at === m.index || start < 0 || start >= limit) continue;
+    if (!/[,;\s]/.test(src[start] as string)) continue;
+    hits.push([src.slice(at, m.index), start, m.index + m[0].length]);
+  }
+  const defs = new Map<string, number[]>();
+  for (const [name, , end] of hits.sort((a, b) => a[1] - b[1])) {
+    const ends = defs.get(name);
+    if (ends) ends.push(end);
+    else defs.set(name, [end]);
+  }
+  return defs;
 };
 
 // The object and record helpers of the version, such as `u` and `ue`.
