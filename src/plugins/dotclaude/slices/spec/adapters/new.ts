@@ -1,5 +1,6 @@
 // `dotclaude-spec new <id> [--size trivial|medium|large]`: writes the files of the size.
 
+import path from "node:path";
 import {
   type ChangeState,
   SPEC_ROOT,
@@ -61,14 +62,17 @@ export const newCommand = async (run: Run, args: string[]): Promise<number> => {
     run.io.error(`The size \`${size}\` is not one of ${SIZES.join(", ")}.`);
     return 2;
   }
-  const dir = `${SPEC_ROOT}/${id}`;
+  const dir = path.posix.join(SPEC_ROOT, id);
   if (run.store.exists(dir)) {
     run.io.error(`The change \`${id}\` exists already.`);
     return 1;
   }
   for (const [file, text] of filesOf(size)) {
-    run.store.write(`${dir}/${file}`, text.replaceAll("<id>", id));
-    run.io.log(`${dir}/${file}`);
+    await run.store.write(
+      path.posix.join(dir, file),
+      text.replaceAll("<id>", id),
+    );
+    run.io.log(path.posix.join(dir, file));
   }
   if (size === "large") {
     const state: ChangeState = {
@@ -77,8 +81,8 @@ export const newCommand = async (run: Run, args: string[]): Promise<number> => {
       events: [],
       handoff: null,
     };
-    run.store.writeState(id, state);
-    run.io.log(`${dir}/state.json`);
+    await run.store.writeState(id, state);
+    run.io.log(path.posix.join(dir, "state.json"));
   }
   return 0;
 };

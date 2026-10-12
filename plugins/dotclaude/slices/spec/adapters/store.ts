@@ -37,9 +37,8 @@ export class SpecStore {
     return fs.existsSync(this.abs(rel));
   }
 
-  write(rel: string, text: string): void {
-    fs.mkdirSync(path.dirname(this.abs(rel)), { recursive: true });
-    fs.writeFileSync(this.abs(rel), text);
+  async write(rel: string, text: string): Promise<void> {
+    await Bun.write(this.abs(rel), text);
   }
 
   /** The state of the change `id`, or null. It throws an `Error` on a `schema` that it does not know. */
@@ -47,8 +46,8 @@ export class SpecStore {
     return readState(this.files, id);
   }
 
-  writeState(id: string, state: ChangeState): void {
-    this.write(statePath(id), `${JSON.stringify(state, null, 2)}\n`);
+  async writeState(id: string, state: ChangeState): Promise<void> {
+    await this.write(statePath(id), `${JSON.stringify(state, null, 2)}\n`);
   }
 
   /** The ids of the open changes, in order. The archive is not a change. */
@@ -58,7 +57,7 @@ export class SpecStore {
     return names
       .filter((name) => name !== archive && !name.startsWith("."))
       .filter((name) =>
-        fs.statSync(this.abs(`${SPEC_ROOT}/${name}`)).isDirectory(),
+        fs.statSync(this.abs(path.posix.join(SPEC_ROOT, name))).isDirectory(),
       )
       .sort();
   }

@@ -5,7 +5,7 @@ import { brief, run } from "./helpers.ts";
 import { CHANGE, makePlan } from "./plan.ts";
 
 test("validate passes on a valid plan", async () => {
-  const root = makePlan([
+  const root = await makePlan([
     { id: "P01", owns: ["src/a/"] },
     { id: "P02", deps: ["P01"], owns: ["src/b/"] },
   ]);
@@ -18,7 +18,7 @@ test("validate fails on a brief with an empty section and names the package", as
     /## Acceptance[\s\S]*?(?=## Boundaries)/,
     "",
   );
-  const root = makePlan([{ id: "P01" }], {
+  const root = await makePlan([{ id: "P01" }], {
     [`${CHANGE}/packages/P01.md`]: bad,
   });
   const r = await run(root, "validate", "c1");
@@ -28,7 +28,7 @@ test("validate fails on a brief with an empty section and names the package", as
 });
 
 test("validate fails on overlapping owns of two open packages in one wave", async () => {
-  const root = makePlan([
+  const root = await makePlan([
     { id: "P01", owns: ["src/a/"] },
     { id: "P02", owns: ["src/a/b.ts"] },
   ]);
@@ -38,12 +38,12 @@ test("validate fails on overlapping owns of two open packages in one wave", asyn
 });
 
 test("validate allows overlapping owns in different waves and with a done package", async () => {
-  const waves = makePlan([
+  const waves = await makePlan([
     { id: "P01", owns: ["src/a/"], wave: 1 },
     { id: "P02", owns: ["src/a/"], wave: 2, deps: ["P01"] },
   ]);
   expect((await run(waves, "validate", "c1")).code).toBe(0);
-  const done = makePlan([
+  const done = await makePlan([
     { id: "P01", owns: ["src/a/"], lane: "done" },
     { id: "P02", owns: ["src/a/"] },
   ]);
@@ -51,11 +51,11 @@ test("validate allows overlapping owns in different waves and with a done packag
 });
 
 test("validate fails on a dep that does not exist and on a dep cycle", async () => {
-  const missing = makePlan([{ id: "P01", deps: ["P09"] }]);
+  const missing = await makePlan([{ id: "P01", deps: ["P09"] }]);
   const a = await run(missing, "validate", "c1");
   expect(a.code).toBe(1);
   expect(a.err.join("\n")).toContain("plan.dep-missing");
-  const cycle = makePlan([
+  const cycle = await makePlan([
     { id: "P01", deps: ["P02"], owns: ["src/a/"] },
     { id: "P02", deps: ["P01"], owns: ["src/b/"] },
   ]);
@@ -65,6 +65,6 @@ test("validate fails on a dep that does not exist and on a dep cycle", async () 
 });
 
 test("validate stops on a change that does not exist", async () => {
-  const root = makePlan([{ id: "P01" }]);
+  const root = await makePlan([{ id: "P01" }]);
   expect((await run(root, "validate", "nope")).code).toBe(1);
 });

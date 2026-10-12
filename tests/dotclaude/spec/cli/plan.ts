@@ -19,7 +19,7 @@ export interface PlanPackage {
 export const makePlan = (
   packages: PlanPackage[],
   extra: Record<string, string> = {},
-): string => {
+): Promise<string> => {
   const waves = [...new Set(packages.map((p) => p.wave ?? 1))].sort();
   const list = waves
     .map((wave) => {

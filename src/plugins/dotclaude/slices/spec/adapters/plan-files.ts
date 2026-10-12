@@ -1,5 +1,6 @@
 // The plan files of one change: the list `packages.md` with its waves, and the briefs in `packages/`.
 
+import path from "node:path";
 import { SPEC_ROOT } from "../../../../../kernel/spec-store.ts";
 import type { FormatError, Package } from "../domain/formats.ts";
 import { parsePackage } from "../domain/plan.ts";
@@ -36,7 +37,8 @@ export const readEntries = async (
   id: string,
 ): Promise<Entry[]> =>
   parseEntries(
-    (await store.files.read(`${SPEC_ROOT}/${id}/packages.md`)) ?? "",
+    (await store.files.read(path.posix.join(SPEC_ROOT, id, "packages.md"))) ??
+      "",
   );
 
 /** One brief that did not parse: the file and its format errors. */
@@ -55,12 +57,12 @@ export const readBriefs = async (
   texts: Record<string, string>;
   failures: BriefFailure[];
 }> => {
-  const dir = `${SPEC_ROOT}/${id}/packages`;
+  const dir = path.posix.join(SPEC_ROOT, id, "packages");
   const packages: Package[] = [];
   const texts: Record<string, string> = {};
   const failures: BriefFailure[] = [];
   for (const name of await store.markdown(dir)) {
-    const file = `${dir}/${name}`;
+    const file = path.posix.join(dir, name);
     const text = (await store.files.read(file)) ?? "";
     const parsed = parsePackage(text);
     if (parsed.ok) {

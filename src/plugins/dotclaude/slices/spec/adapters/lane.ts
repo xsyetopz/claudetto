@@ -84,7 +84,7 @@ export const laneCommand = async (
       { at: run.clock.now().toISOString(), package: pkg, lane },
     ],
   };
-  run.store.writeState(id, next);
+  await run.store.writeState(id, next);
   run.io.log(`${id}: ${pkg} ${state.lanes[pkg]} -> ${lane}`);
   return 0;
 };

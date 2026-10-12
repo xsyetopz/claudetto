@@ -8,17 +8,18 @@ import { main } from "../../../../src/plugins/dotclaude/slices/spec/adapters/cli
 export const TODAY = "2026-10-12";
 
 /** A new temporary folder with the `files`, which map a relative path to a text. */
-export const makeStore = (files: Record<string, string> = {}): string => {
+export const makeStore = async (
+  files: Record<string, string> = {},
+): Promise<string> => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "spec-cli-"));
   for (const [rel, text] of Object.entries(files)) {
-    fs.mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });
-    fs.writeFileSync(path.join(root, rel), text);
+    await Bun.write(path.join(root, rel), text);
   }
   return root;
 };
 
-export const read = (root: string, rel: string): string =>
-  fs.readFileSync(path.join(root, rel), "utf8");
+export const read = (root: string, rel: string): Promise<string> =>
+  Bun.file(path.join(root, rel)).text();
 
 export const has = (root: string, rel: string): boolean =>
   fs.existsSync(path.join(root, rel));

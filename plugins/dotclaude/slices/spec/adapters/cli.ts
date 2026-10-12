@@ -12,15 +12,15 @@
 // Every path is relative to the folder where the command runs, which is the root of the repository.
 // A command that reads `state.json` stops with a message on a `schema` that it does not know.
 
-import { archiveCommand } from "./cmd-archive.ts";
-import { laneCommand } from "./cmd-lane.ts";
-import { newCommand } from "./cmd-new.ts";
-import { recordCommand } from "./cmd-record.ts";
-import { nextCommand, statusCommand } from "./cmd-status.ts";
-import { validateCommand } from "./cmd-validate.ts";
+import { archiveCommand } from "./archive.ts";
 import { type Clock, consoleIo, type Io, systemClock } from "./io.ts";
+import { laneCommand } from "./lane.ts";
+import { newCommand } from "./new.ts";
+import { recordCommand } from "./record.ts";
 import type { Run } from "./run.ts";
+import { nextCommand, statusCommand } from "./status.ts";
 import { SpecStore } from "./store.ts";
+import { validateCommand } from "./validate.ts";
 
 const USAGE =
   "Usage: dotclaude-spec new <id> [--size trivial|medium|large] | status [<id>] | next [<id>] | lane <package> <lane> | validate [<id>] | archive <id> | record <text>";

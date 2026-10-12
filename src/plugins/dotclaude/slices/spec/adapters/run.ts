@@ -1,5 +1,6 @@
 // The context that each command of `dotclaude-spec` takes, and the choice of the change.
 
+import path from "node:path";
 import { activeProgress, SPEC_ROOT } from "../../../../../kernel/spec-store.ts";
 import type { Clock, Io } from "./io.ts";
 import type { SpecStore } from "./store.ts";
@@ -24,8 +25,8 @@ export const resolveId = async (
   id: string | undefined,
 ): Promise<string | null> => {
   if (id !== undefined) {
-    if (run.store.exists(`${SPEC_ROOT}/${id}`)) return id;
-    run.io.error(`The change \`${id}\` does not exist in \`${SPEC_ROOT}/\`.`);
+    if (run.store.exists(path.posix.join(SPEC_ROOT, id))) return id;
+    run.io.error(`The change \`${id}\` does not exist in \`${SPEC_ROOT}\`.`);
     return null;
   }
   const active = await activeProgress(run.store.files);

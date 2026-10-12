@@ -17,28 +17,28 @@ import {
 const CHANGE = "spec/changes/c1";
 
 /** Every file under `root`, with its text, for a before-and-after compare. */
-const snapshot = (root: string): Record<string, string> => {
+const snapshot = async (root: string): Promise<Record<string, string>> => {
   const out: Record<string, string> = {};
-  const walk = (dir: string): void => {
+  const walk = async (dir: string): Promise<void> => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) walk(full);
-      else out[path.relative(root, full)] = fs.readFileSync(full, "utf8");
+      if (entry.isDirectory()) await walk(full);
+      else out[path.relative(root, full)] = await Bun.file(full).text();
     }
   };
-  walk(root);
+  await walk(root);
   return out;
 };
 
 test("archive applies a delta, replaces the spec, and moves the change", async () => {
-  const root = makeStore({
+  const root = await makeStore({
     "spec/specs/store.md": SPEC,
     [`${CHANGE}/change.md`]: "# c1\n",
     [`${CHANGE}/specs/store.md`]: DELTA_ADD_BETA,
   });
   const r = await run(root, "archive", "c1");
   expect(r.code).toBe(0);
-  const spec = read(root, "spec/specs/store.md");
+  const spec = await read(root, "spec/specs/store.md");
   expect(spec).toContain("### Requirement: Alpha");
   expect(spec).toContain("### Requirement: Beta");
   expect(has(root, CHANGE)).toBe(false);
@@ -49,36 +49,38 @@ test("archive applies a delta, replaces the spec, and moves the change", async (
 });
 
 test("archive creates a spec for a new capability", async () => {
-  const root = makeStore({
+  const root = await makeStore({
     [`${CHANGE}/specs/store.md`]: DELTA_ADD_BETA,
   });
   expect((await run(root, "archive", "c1")).code).toBe(0);
-  expect(read(root, "spec/specs/store.md")).toContain("### Requirement: Beta");
+  expect(await read(root, "spec/specs/store.md")).toContain(
+    "### Requirement: Beta",
+  );
 });
 
 test("archive with one failing delta changes no file", async () => {
-  const root = makeStore({
+  const root = await makeStore({
     "spec/specs/store.md": SPEC,
     "spec/specs/other.md": SPEC,
     [`${CHANGE}/change.md`]: "# c1\n",
     [`${CHANGE}/specs/other.md`]: DELTA_ADD_BETA,
     [`${CHANGE}/specs/store.md`]: DELTA_REMOVE_MISSING,
   });
-  const before = snapshot(root);
+  const before = await snapshot(root);
   const r = await run(root, "archive", "c1");
   expect(r.code).toBe(1);
   expect(r.err.join("\n")).toContain("Missing");
-  expect(snapshot(root)).toStrictEqual(before);
+  expect(await snapshot(root)).toStrictEqual(before);
 });
 
 test("archive stops on a missing change, a missing id, and an archive of the same day", async () => {
-  const root = makeStore({
+  const root = await makeStore({
     [`${CHANGE}/specs/store.md`]: DELTA_ADD_BETA,
     [`spec/changes/archive/${TODAY}-c1/change.md`]: "# old\n",
   });
   expect((await run(root, "archive", "nope")).code).toBe(1);
   expect((await run(root, "archive")).code).toBe(2);
-  const before = snapshot(root);
+  const before = await snapshot(root);
   expect((await run(root, "archive", "c1")).code).toBe(1);
-  expect(snapshot(root)).toStrictEqual(before);
+  expect(await snapshot(root)).toStrictEqual(before);
 });

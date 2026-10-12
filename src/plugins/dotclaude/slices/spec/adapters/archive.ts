@@ -2,6 +2,7 @@
 // then replaces `spec/specs/` and moves the change to `archive/`.
 // When one delta fails, nothing changes.
 
+import path from "node:path";
 import { SPEC_ROOT } from "../../../../../kernel/spec-store.ts";
 import { applyDelta } from "../domain/delta.ts";
 import { parseDelta, parseSpec } from "../domain/parse.ts";
@@ -21,7 +22,7 @@ const applyAll = async (
   const texts = new Map<string, string>();
   const problems: string[] = [];
   for (const name of await run.store.markdown(deltaDir)) {
-    const file = `${deltaDir}/${name}`;
+    const file = path.posix.join(deltaDir, name);
     const delta = parseDelta((await run.store.files.read(file)) ?? "");
     if (!delta.ok) {
       problems.push(
@@ -33,7 +34,7 @@ const applyAll = async (
     problems.push(
       ...issues.map((i) => `${file}: ${i.rule} ${i.subject}: ${i.message}`),
     );
-    const target = `${SPECS_DIR}/${name}`;
+    const target = path.posix.join(SPECS_DIR, name);
     const previous = await run.store.files.read(target);
     const spec = parseSpec(previous ?? "");
     if (!spec.ok) {
@@ -73,17 +74,20 @@ export const archiveCommand = async (
     run.io.error("Usage: dotclaude-spec archive <id>");
     return 2;
   }
-  const dir = `${SPEC_ROOT}/${id}`;
-  const target = `${ARCHIVE_DIR}/${dateOf(run.clock)}-${id}`;
+  const dir = path.posix.join(SPEC_ROOT, id);
+  const target = path.posix.join(ARCHIVE_DIR, `${dateOf(run.clock)}-${id}`);
   if (!run.store.exists(dir) || id === "archive") {
-    run.io.error(`The change \`${id}\` does not exist in \`${SPEC_ROOT}/\`.`);
+    run.io.error(`The change \`${id}\` does not exist in \`${SPEC_ROOT}\`.`);
     return 1;
   }
   if (run.store.exists(target)) {
     run.io.error(`\`${target}\` exists already.`);
     return 1;
   }
-  const { texts, problems } = await applyAll(run, `${dir}/specs`);
+  const { texts, problems } = await applyAll(
+    run,
+    path.posix.join(dir, "specs"),
+  );
   if (problems.length > 0) {
     for (const line of problems) run.io.error(line);
     run.io.error(
@@ -95,7 +99,7 @@ export const archiveCommand = async (
   run.store.remove(OLD_SPECS);
   if (run.store.exists(SPECS_DIR)) run.store.copyDir(SPECS_DIR, TEMP_SPECS);
   for (const [name, text] of texts)
-    run.store.write(`${TEMP_SPECS}/${name}`, text);
+    await run.store.write(path.posix.join(TEMP_SPECS, name), text);
   if (run.store.exists(SPECS_DIR)) run.store.move(SPECS_DIR, OLD_SPECS);
   run.store.move(TEMP_SPECS, SPECS_DIR);
   run.store.move(dir, target);
