@@ -31,6 +31,9 @@ export const CLAUDE_HOOKS_DIR = `${CLAUDE_DIR}/hooks`;
 /** The folder of the handoff files, from the project root. One checkout and one session own them. */
 export const HANDOFF_DIR = `${DOTCLAUDE_DIR}/handoff`;
 
+/** The last `rate_limits` of the status line, with the time they were read. The status line writes it, and `dotclaude-spec runs` reads it. Git must not track it. */
+export const RATE_LIMITS_FILE = `${DOTCLAUDE_DIR}/rate-limits.json`;
+
 /** The folder of the log files of `dotclaude-run-checks`. It is a runtime folder, and git must not track it. */
 export const CHECKS_DIR = `${DOTCLAUDE_DIR}/checks`;
 
@@ -76,6 +79,7 @@ export const DOTCLAUDE_LOCAL_PATHS = [
   "checks/",
   "spec/.specs-new/",
   "spec/.specs-old/",
+  "rate-limits.json",
 ] as const;
 
 /** The patterns for `.git/info/exclude`: only the local checkout needs them, so the team `.gitignore` stays as it is. */

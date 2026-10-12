@@ -10,6 +10,7 @@
 //   dotclaude-spec validate [<id>]
 //   dotclaude-spec archive <id>
 //   dotclaude-spec record <text>
+//   dotclaude-spec runs
 //
 // Every path is relative to the folder where the command runs, which is the root of the repository.
 // A command that reads `events.jsonl` stops with a message on a `schema` that it does not know.
@@ -22,12 +23,13 @@ import { newCommand } from "./new.ts";
 import { readyCommand } from "./ready.ts";
 import { recordCommand } from "./record.ts";
 import type { Run } from "./run.ts";
+import { runsCommand } from "./runs.ts";
 import { nextCommand, statusCommand } from "./status.ts";
 import { SpecStore } from "./store.ts";
 import { validateCommand } from "./validate.ts";
 
 const USAGE =
-  "Usage: dotclaude-spec new <id> [--size trivial|medium|large] | status [<id>] | next [<id>] | lane <package> <lane> | ready [<id>] | merge <package> <branch> | validate [<id>] | archive <id> | record <text>";
+  "Usage: dotclaude-spec new <id> [--size trivial|medium|large] | status [<id>] | next [<id>] | lane <package> <lane> | ready [<id>] | merge <package> <branch> | validate [<id>] | archive <id> | record <text> | runs";
 
 const COMMANDS: Readonly<
   Record<string, (run: Run, args: string[]) => number | Promise<number>>
@@ -41,6 +43,7 @@ const COMMANDS: Readonly<
   validate: validateCommand,
   archive: archiveCommand,
   record: recordCommand,
+  runs: runsCommand,
 };
 
 /** Run the CLI with `args` and return the exit status. */

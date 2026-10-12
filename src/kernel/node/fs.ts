@@ -4,6 +4,21 @@ import fs from "node:fs/promises";
 import { rethrowUnless, UNREADABLE } from "../errors.ts";
 import type { FileReader } from "../ports.ts";
 
+/** Writes `text` to `file` through a temp file in the same folder and a rename, so a reader never sees half a file. The temp file is removed when the write fails. */
+export const writeAtomic = async (
+  file: string,
+  text: string,
+): Promise<void> => {
+  const tmp = `${file}.${crypto.randomUUID()}.tmp`;
+  try {
+    await Bun.write(tmp, text);
+    await fs.rename(tmp, file);
+  } catch (err) {
+    await fs.rm(tmp, { force: true });
+    throw err;
+  }
+};
+
 export const fileReader: FileReader = {
   read: async (file) => {
     try {

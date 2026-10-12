@@ -5,14 +5,15 @@
 //
 // Claude Code runs the main command every `refreshInterval` seconds.
 // The CLI calls no model and no network, and no program except `git`.
-// It writes no file.
+// It writes one file: the last `rate_limits` of the status object, at `RATE_LIMITS_FILE` of the project.
 // A failure prints an empty row on stdout and the cause on stderr, so the status line stays up.
 
 import path from "node:path";
-import { fileReader } from "../../../../../kernel/node/fs.ts";
+import { fileReader, writeAtomic } from "../../../../../kernel/node/fs.ts";
 import { failureText } from "../../../../../kernel/node/hook-io.ts";
 import { processRunner } from "../../../../../kernel/node/process.ts";
 import { readStdin } from "../../../../../kernel/node/stdin.ts";
+import { RATE_LIMITS_FILE } from "../../../../../kernel/paths.ts";
 import type { FileReader, ProcessRunner } from "../../../../../kernel/ports.ts";
 import { activeProgress } from "../../../../../kernel/spec-store.ts";
 import { colorOff, paintOf } from "../color.ts";
@@ -25,6 +26,7 @@ import type {
   StatusInput,
   SubagentInput,
 } from "../domain/types.ts";
+import { usageChanged, usageSample } from "../domain/usage.ts";
 import { COLUMNS_MARGIN, DEFAULT_COLUMNS, GIT_TIMEOUT_MS } from "../limits.ts";
 import { SEGMENTS } from "../segments.ts";
 import { taskRows } from "./subagents.ts";
@@ -36,6 +38,7 @@ export interface Deps {
   readonly now: () => number;
   readonly cwd: string;
   readonly files: FileReader;
+  readonly write: (file: string, text: string) => Promise<void>;
   readonly runner: ProcessRunner;
   readonly log: (line: string) => void;
   readonly error: (text: string) => void;
@@ -47,6 +50,7 @@ const defaults = (): Deps => ({
   now: Date.now,
   cwd: process.cwd(),
   files: fileReader,
+  write: writeAtomic,
   runner: processRunner,
   log: (line) => console.log(line),
   error: (text) => process.stderr.write(text),
@@ -96,6 +100,23 @@ const changeOf = async (
   }
 };
 
+/** Keeps the last `rate_limits` of `input` in `root`, and writes only when they differ from the saved sample or the sample is old. A failure goes to `deps.error`, and the row stays. */
+const saveUsage = async (
+  root: string,
+  input: StatusInput,
+  deps: Deps,
+): Promise<void> => {
+  const text = usageSample(input, deps.now());
+  if (text === null) return;
+  try {
+    const saved = await rooted(root, deps.files).read(RATE_LIMITS_FILE);
+    if (!usageChanged(saved, input, deps.now())) return;
+    await deps.write(path.join(root, RATE_LIMITS_FILE), text);
+  } catch (err) {
+    deps.error(failureText(err));
+  }
+};
+
 const columnsOf = (deps: Deps): number =>
   (Number(deps.env["COLUMNS"]) || DEFAULT_COLUMNS) - COLUMNS_MARGIN;
 
@@ -103,11 +124,13 @@ const mainLine = async (text: string, deps: Deps): Promise<string> => {
   const input = parseInput<StatusInput>(text);
   if (!input) return "";
   const dir = input.workspace?.current_dir || input.cwd || deps.cwd;
+  const root = input.workspace?.project_dir || dir;
+  await saveUsage(root, input, deps);
   const status: Status = {
     input,
     folder: baseName(dir),
     git: gitState(dir, deps.runner),
-    change: await changeOf(input.workspace?.project_dir || dir, deps),
+    change: await changeOf(root, deps),
     now: deps.now(),
     paint: paintOf(!colorOff(deps.env)),
   };

@@ -56,6 +56,7 @@ export const depsFor = (
   now: () => NOW,
   cwd: "/work/dotclaude",
   files: fileReader,
+  write: async () => {},
   runner: {
     run: () => ({ exitCode: 0, stdout: GIT_TEXT, stderr: "" }),
   },

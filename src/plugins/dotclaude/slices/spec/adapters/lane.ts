@@ -11,7 +11,7 @@ import { setChecked } from "./plan-files.ts";
 import type { Run } from "./run.ts";
 
 /** The path that `git rev-parse flag` gives in `cwd`, as an absolute path, or null when git gives none. */
-const gitPath = (cwd: string, flag: string): string | null => {
+export const gitPath = (cwd: string, flag: string): string | null => {
   try {
     const result = runProgram("git", ["rev-parse", flag], {
       cwd,

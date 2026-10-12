@@ -132,7 +132,7 @@ Each bound is in one file, and tests pin the copies.
 | Policy `gh` call | 5,000 ms | `lib/budget.ts` (`POLICY_TIMEOUT_MS`) |
 | Policy text in the ask | 2,000 characters | `lib/budget.ts` (`POLICY_FILE_MAX_CHARS`) |
 | Subagent context | 100,000 tokens, and 85,000 for Haiku 5.5 | `features/context/limits.ts` |
-| Subagent turns left at the note | 2 | `features/context/limits.ts` (`TURNS_LEFT_AT`) |
+| Subagent turns left at the note | 4 | `features/context/limits.ts` (`TURNS_LEFT_AT`) |
 | Subagent report | 400 words | `features/context/limits.ts` (`REPORT_MAX_WORDS`) |
 | File lists of the asks for configs, CI files, skipped tests, and suppressions | Data in `features/adherence/limits.ts` | `features/adherence/limits.ts` |
 | File size that `adherence` reads | 1,000,000 bytes | `features/adherence/limits.ts` |
