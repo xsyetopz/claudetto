@@ -215,6 +215,10 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P14, and P33, P35, and P36, because they change what the docs describe.
   Owns: `wiki/`, `src/wiki/`, `README.md`, `CHANGELOG.md`, `docs/`, `tools/wiki.ts`, `.claude-plugin/marketplace.json`.
   Verify: `bun run lint:md`, `just check`, and a `reviewer` pass.
+- [ ] P38 Session stamp: each session records the dotclaude version and the short commit SHA of the build at 0 model tokens, and `dotclaude-usage` groups the sessions by build ([package](packages/38-session-stamp.md), decisions, the user, 2026-10-13).
+  Deps: P33, because the record must cost 0 tokens.
+  Owns: `src/kernel/stamp.ts`, the `stamp` slice, `dotclaude-sessions`, their tests, and `evidence/session-stamp.md`.
+  Verify: `just check`, `just lab`, and the probe of step 1 with its output in the evidence file.
 - [ ] P16 Release check: `tools/rebuild-pending.txt` is empty and deleted with its check, a `reviewer` pass on the full diff, `just check`, and one session in `just sandbox` that runs `/spec`, `/ship`, `/hotfix`, a decision, and a handoff.
   Deps: each package above.
   Verify: the user approves the version 1.0.0 and the push.
