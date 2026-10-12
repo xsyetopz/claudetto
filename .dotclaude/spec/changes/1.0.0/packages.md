@@ -180,7 +180,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P32, because P32 moves the store to `.dotclaude/spec/changes/`.
   Owns: `src/kernel/spec-store.ts`, the store adapters of the `spec` slice, `.gitattributes`, and their tests.
   Verify: `just check`, a test that the lanes of a log equal the last line of each package, a test that two appends from two branches merge with no conflict, and `dotclaude-spec status 1.0.0` gives the same counter before and after the conversion.
-- [ ] P33 Zero token cost: each task that dotclaude or its workflow gives to Claude, and that a hook, a script, a setting, or a status line command can do, moves to that form ([change](change.md), decisions, the user, 2026-10-12).
+- [x] P33 Zero token cost: each task that dotclaude or its workflow gives to Claude, and that a hook, a script, a setting, or a status line command can do, moves to that form ([change](change.md), decisions, the user, 2026-10-12).
   It first lists each such task, with its token cost now: for example a lane change after a tick or a merge, a sync of `packages.md` and `state.json`, and each skill step that only runs a command.
   The lanes change with no model call, from a hook or from the `dotclaude-spec` CLI that a skill or a commit runs.
   Deps: P19, P28, P34.
