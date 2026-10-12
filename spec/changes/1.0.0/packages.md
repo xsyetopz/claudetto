@@ -73,7 +73,7 @@ Each package depends on P01b4.
   Deps: P02.
   Owns: the `spec` slice except `domain/` and `skills/`.
   Verify also: `dotclaude-spec validate 1.0.0` passes.
-- [ ] P05 `guard`: `guard` and `reads` in one slice.
+- [x] P05 `guard`: `guard` and `reads` in one slice.
 - [ ] P06 `asks`: the asks of `adherence`, one file for each ask.
 - [ ] P07 `sembr`.
 - [ ] P08 `statusline`: rows of numbers and icons, the color scale, `NO_COLOR`, and the change segment.
