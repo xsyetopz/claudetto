@@ -1,5 +1,5 @@
 // The mod handler of the drift check: `session.start`.
-// It reads the facts, and appends one note to the conversation when `rules.ts` finds a difference.
+// It reads the facts, and appends one note to the conversation when `drift.ts` finds a difference.
 // The note is a user-role row that the model reads, because a module cannot add context at `session.start` in another way.
 // A fact that fails to read gives no line, so a failure cannot make a false report.
 
