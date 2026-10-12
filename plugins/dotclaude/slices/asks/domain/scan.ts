@@ -6,31 +6,73 @@
 
 import { STATEMENT_MAX_CHARS } from "../limits.ts";
 
-/** The lines of `text` with each comment cut off. `hash` is true for a language where `#` starts a comment. */
-export const uncommented = (text: string, hash: boolean): string =>
-  text
+/**
+ * The lines of `text` with each comment removed and the code around it kept.
+ * `hash` is true for a language where `#` starts a comment, and there `/*` is not a comment.
+ * A block comment `/* ... *\/` can span lines, and the line breaks stay.
+ */
+export const uncommented = (text: string, hash: boolean): string => {
+  let block = false;
+  return text
     .split("\n")
-    .filter((line) => !/^\s*(?:\/\*|\*)/.test(line))
     .map((line) => {
-      let quote: string | null = null;
+      let [quote, kept] = [null as string | null, ""];
       for (let i = 0; i < line.length; i++) {
         const ch = line[i] as string;
-        if (quote) {
-          if (ch === "\\") i++;
+        if (block) {
+          if (ch === "*" && line[i + 1] === "/") [block, i] = [false, i + 1];
+        } else if (quote) {
+          kept += ch;
+          if (ch === "\\" && i + 1 < line.length) kept += line[++i];
           else if (ch === quote) quote = null;
-        } else if (ch === '"' || ch === "`") quote = ch;
-        else if (ch === "'" && line.indexOf("'", i + 1) !== -1) quote = ch;
-        else if (ch === "/" && line[i + 1] === "/") return line.slice(0, i);
+        } else if (!hash && ch === "/" && line[i + 1] === "*") {
+          [block, i] = [true, i + 1];
+          kept += " ";
+        } else if (ch === "/" && line[i + 1] === "/") break;
         else if (
           hash &&
           ch === "#" &&
           (i === 0 || /\s/.test(line[i - 1] ?? ""))
         )
-          return line.slice(0, i);
+          break;
+        else {
+          kept += ch;
+          if (ch === '"' || ch === "`") quote = ch;
+          else if (ch === "'" && line.indexOf("'", i + 1) !== -1) quote = ch;
+        }
       }
-      return line;
+      return kept;
     })
     .join("\n");
+};
+
+/**
+ * The text with `fn` applied to each part outside a string, and each string kept as it is.
+ * A string keeps its text, and its quote marks become `"`, so that a quote style is not a change.
+ */
+const outside = (text: string, fn: (code: string) => string): string => {
+  let [out, code] = ["", ""];
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i] as string;
+    const opens =
+      ch === '"' ||
+      ch === "`" ||
+      (ch === "'" && text.indexOf("'", i + 1) !== -1);
+    if (!opens) {
+      code += ch;
+      continue;
+    }
+    let j = i + 1;
+    while (j < text.length && text[j] !== ch) j += text[j] === "\\" ? 2 : 1;
+    out += `${fn(code)}"${text.slice(i + 1, j)}"`;
+    [code, i] = ["", j];
+  }
+  return out + fn(code);
+};
+
+/** The line with one space for each run of spaces outside a string, and with no space at either end. A string keeps its spaces. */
+export const squeeze = (line: string): string =>
+  outside(line, (code) => code.replace(/\s+/g, " ")).trim();
 
 /** True when a statement goes on after a line break: the line ends with an operator, or the next line starts with one. */
 const goesOn = (text: string, at: number): boolean => {
@@ -62,12 +104,11 @@ export const statementAt = (text: string, from: number): string => {
   return text.slice(from, stop);
 };
 
-/** The normal form of a statement: no space, no trailing comma, and one kind of quote mark. */
+/** The normal form of a statement: no space and no trailing comma outside a string, and one kind of quote mark. A string keeps its text. */
 export const normal = (statement: string): string =>
-  statement
-    .replace(/\s+/g, "")
-    .replace(/,+(?=[)\]}])/g, "")
-    .replace(/['`]/g, '"');
+  outside(statement, (code) =>
+    code.replace(/\s+/g, "").replace(/,+(?=[)\]}])/g, ""),
+  );
 
 /** The items of `was` that `now` does not hold, as a multiset: an item that `now` holds fewer times counts for the rest. */
 export const missing = (was: string[], now: string[]): string[] => {

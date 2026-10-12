@@ -74,12 +74,14 @@ test("an `Edit` of the hook file `Stop.prompt.txt` that drops the block gets an 
     rel,
   );
 });
-test("an `Edit` of the hook file `Stop.prompt.txt` that adds a line gets no ask", async () => {
-  const file = "/w/plugins/x/hooks/Stop.prompt.txt";
+test("an `Edit` of the hook file `Stop.prompt.txt` that adds a line gets an ask", async () => {
+  const rel = "plugins/x/hooks/Stop.prompt.txt";
+  const file = `/w/${rel}`;
   const src = "Block the stop when a check fails.\n";
-  expect(
+  asks(
     await edit(file, "fails.", "fails.\nGive the reason.", { [file]: src }),
-  ).toBe(undefined);
+    rel,
+  );
 });
 test("an `Edit` of the hook file `description.txt` that changes a line gets an ask", async () => {
   const file = "/w/plugins/x/hooks/description.txt";

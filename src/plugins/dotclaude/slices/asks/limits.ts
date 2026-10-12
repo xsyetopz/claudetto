@@ -113,14 +113,6 @@ export const DATA_EXTENSIONS =
 /** The folder names of a test folder, in any letter case. */
 export const TEST_FOLDER = /^(?:tests?|__tests__)$/i;
 
-/** The sections of `pyproject.toml` that hold a linter, type-check, or test config. A match on the section name asks. */
-export const PYPROJECT_SECTIONS =
-  /^tool\.(?:ruff|mypy|pytest|pyright|black|pylint|isort|coverage)(?:\.|$)/;
-
-/** The sections of `setup.cfg` that hold a linter, type-check, or test config. */
-export const SETUP_CFG_SECTIONS =
-  /^(?:flake8|mypy|pylint(?:\..+)?|pycodestyle|pydocstyle|isort|coverage(?::.+)?|tool:pytest|pytest)$/;
-
 /** The names of a `package.json` script that run a check. A change of such a script asks. */
 export const CHECK_SCRIPT = /lint|test|check/;
 

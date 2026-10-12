@@ -117,11 +117,12 @@ test("an `Edit` of `register.mjs` that removes a check gets an ask", async () =>
     "plugins/x/hooks/register.mjs",
   );
 });
-test("an `Edit` of `register.mjs` that adds a line gets no ask", async () => {
+test("an `Edit` of `register.mjs` that adds a line gets an ask", async () => {
   const file = "/w/plugins/x/hooks/register.mjs";
   const src = 'm.on("PreToolUse", deny);\n';
-  expect(await edit(file, "deny);", "deny);\nlog();", { [file]: src })).toBe(
-    undefined,
+  asks(
+    await edit(file, "deny);", "deny);\nlog();", { [file]: src }),
+    "plugins/x/hooks/register.mjs",
   );
 });
 
@@ -187,16 +188,18 @@ for (const line of [
 test("a `Write` of a new test file with a skipped test gets an ask", async () => {
   asks(await write(TEST, 'test.skip("a", () => {});'), "src/a.test.mjs");
 });
-test("a test edit that adds a normal assertion gets no ask", async () => {
-  expect(
+test("a module-level assert added to an existing test file gets an ask", async () => {
+  asks(
     await edit(TEST, "// end", "assert.ok(f());\n// end", { [TEST]: "// end" }),
-  ).toBe(undefined);
+    "src/a.test.mjs",
+  );
 });
-test("a skipped test that the file already holds gets no ask", async () => {
+test("a module-level assert beside a skipped test that the file holds gets an ask", async () => {
   const src = 'test.skip("a", () => {});\n// end';
-  expect(
+  asks(
     await edit(TEST, "// end", "assert.ok(f());\n// end", { [TEST]: src }),
-  ).toBe(undefined);
+    "src/a.test.mjs",
+  );
 });
 test(".only in a source file that is not a test gets no ask", async () => {
   expect(

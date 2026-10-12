@@ -25,6 +25,16 @@ export const canonical = (value: unknown): string =>
 const leafText = (value: unknown): string =>
   typeof value === "string" ? value : canonical(value);
 
+/**
+ * Sets the value of `path` in `out`, or gives false when the path already has one.
+ * A dotted key that collides with a nested path gives a collision, so the caller asks and no value is lost.
+ */
+const put = (out: Conf, path: string, value: string | string[]): boolean => {
+  if (out.has(path)) return false;
+  out.set(path, value);
+  return true;
+};
+
 const putJson = (
   out: Conf,
   value: unknown,
@@ -32,10 +42,12 @@ const putJson = (
   depth: number,
 ): boolean => {
   if (depth > JSON_DEPTH_MAX) return false;
-  if (!isObj(value)) {
-    out.set(path, Array.isArray(value) ? value.map(leafText) : leafText(value));
-    return true;
-  }
+  if (!isObj(value))
+    return put(
+      out,
+      path,
+      Array.isArray(value) ? value.map(leafText) : leafText(value),
+    );
   return Object.entries(value).every(([k, v]) =>
     putJson(out, v, path ? `${path}.${k}` : k, depth + 1),
   );
@@ -111,11 +123,29 @@ const balance = (text: string): number => {
   return depth;
 };
 
-const dotted = (key: string): string =>
-  key
-    .split(".")
-    .map((p) => unquote(p))
-    .join(".");
+/** The parts of a TOML dotted key or table name, cut at each dot outside a quote, each without its quote marks. */
+const tomlParts = (key: string): string[] => {
+  const parts: string[] = [];
+  let [quote, from] = ["", 0];
+  for (let i = 0; i <= key.length; i++) {
+    const ch = key[i];
+    if (quote) {
+      if (ch === "\\" && quote === '"') i++;
+      else if (ch === quote) quote = "";
+    } else if (ch === '"' || ch === "'") quote = ch;
+    else if (ch === "." || ch === undefined) {
+      parts.push(unquote(key.slice(from, i)));
+      from = i + 1;
+    }
+  }
+  return parts;
+};
+
+/** The dotted path of a key or table name, or undefined when a quoted part has a dot, because the path cannot show it. */
+const dotted = (key: string): string | undefined => {
+  const parts = tomlParts(key);
+  return parts.some((p) => p.includes(".")) ? undefined : parts.join(".");
+};
 
 /** Puts the value text of a TOML or INI key in `out`. An inline table gives one path for each key. */
 const putValue = (
@@ -125,25 +155,18 @@ const putValue = (
   ini: boolean,
 ): boolean => {
   const body = raw.trim();
-  if (!ini && body.startsWith("[") && body.endsWith("]")) {
-    out.set(path, splitTop(body.slice(1, -1)).map(unquote));
-    return true;
-  }
+  if (!ini && body.startsWith("[") && body.endsWith("]"))
+    return put(out, path, splitTop(body.slice(1, -1)).map(unquote));
   if (!ini && body.startsWith("{") && body.endsWith("}"))
     return splitTop(body.slice(1, -1)).every((pair) => {
       const m = /^([^=]+?)\s*=\s*(.*)$/.exec(pair);
+      const key = m === null ? undefined : dotted((m[1] as string).trim());
       return (
-        m !== null &&
-        putValue(
-          out,
-          `${path}.${dotted((m[1] as string).trim())}`,
-          m[2] as string,
-          ini,
-        )
+        key !== undefined &&
+        putValue(out, `${path}.${key}`, m?.[2] as string, ini)
       );
     });
-  out.set(path, unquote(body));
-  return true;
+  return put(out, path, unquote(body));
 };
 
 /**
@@ -173,7 +196,9 @@ export const sectionConf = (
     const head = /^\[(.+)\]$/.exec(line);
     if (table || head) {
       last = undefined;
-      const name = unquote((table ?? head)?.[1] as string);
+      const raw = (table ?? head)?.[1] as string;
+      const name = ini ? unquote(raw) : dotted(raw);
+      if (name === undefined) return undefined;
       const n = tables.get(name) ?? 0;
       if (table) tables.set(name, n + 1);
       section = table ? `${name}.${n}` : name;
@@ -189,6 +214,7 @@ export const sectionConf = (
     if (!ini && (balance(value) !== 0 || /^("""|''')/.test(value)))
       return undefined;
     const key = dotted((m[1] as string).trim());
+    if (key === undefined) return undefined;
     const path = [section, key].filter((p) => p !== "").join(".");
     const kept = keep(section);
     last = ini && kept ? path : undefined;

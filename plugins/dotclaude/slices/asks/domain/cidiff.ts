@@ -2,7 +2,8 @@
 // The check on a weaker CI file (package P36), as pure functions.
 // A change gets no ask only when every changed part is on a short list of safe changes:
 // a change of format or comments only, a move of lines, a change of a `name` key,
-// or an added step or job that has no `if`, `continue-on-error`, `timeout-minutes`, or `shell` key
+// or an added step that has a `uses` key and no `if`, `continue-on-error`, `timeout-minutes`, `shell`, or `run` key,
+// or an added job that has no `if`, `continue-on-error`, `timeout-minutes`, or `shell` key and no `run` key at any depth,
 // and no command that lets a step pass after a failure.
 // Every other change asks: a lost line, a changed value, and an added key in an old step or job.
 // A YAML file is read as a tree of lines by indent. Another CI file, such as a `Jenkinsfile`, asks on any change of its code.
@@ -12,6 +13,10 @@ import {
   CI_ADDABLE_PARENT,
   CI_RISKY_COMMAND,
   CI_RISKY_KEY,
+  CI_RUN_KEY,
+  CI_RUN_WRITE,
+  CI_SAFE_PROGRAM,
+  CI_USES_KEY,
   CI_YAML_FILE,
 } from "../limits.ts";
 import { missing, normal } from "./scan.ts";
@@ -135,6 +140,39 @@ const addable = (parent: string, node: Node): boolean =>
   CI_ADDABLE_PARENT.test(parent) &&
   node.item === /^["']?steps["']?:$/.test(parent);
 
+/** The script lines of each `run` key of an added part, at any depth. A block gives one entry for each of its lines. */
+const runScripts = (node: Node): string[][] => [
+  ...(CI_RUN_KEY.test(node.text)
+    ? [
+        node.block
+          ? node.kids.map((k) => k.text)
+          : [node.text.replace(CI_RUN_KEY, "")],
+      ]
+    : []),
+  ...node.kids.flatMap(runScripts),
+];
+
+/** True when the lines of a `run` value run only checking, building, or install programs, and write no file. */
+const safeScript = (lines: string[]): boolean => {
+  const commands = lines
+    .flatMap((l) => l.split(/&&|\|\||;|\|/))
+    .map((c) => c.trim())
+    .filter((c) => c !== "");
+  return (
+    commands.length > 0 &&
+    commands.every((c) => CI_SAFE_PROGRAM.test(c)) &&
+    lines.every((l) => !CI_RUN_WRITE.test(l))
+  );
+};
+
+/** True when an added part has a `run` key that is not a safe script, or is a step with neither a `uses` key nor a `run` key. */
+const unsafeAdded = (node: Node): boolean =>
+  runScripts(node).some((lines) => !safeScript(lines)) ||
+  (node.item &&
+    !node.kids.some(
+      (k) => CI_USES_KEY.test(k.text) || CI_RUN_KEY.test(k.text),
+    ));
+
 /** The first thing in `now` below `parent` that takes a check from `was`, or undefined. */
 const compare = (
   was: Node[],
@@ -158,7 +196,9 @@ const compare = (
     if (found !== undefined) return found;
     open.splice(same, 1);
   }
-  const bad = open.find((n) => !addable(parent, n) || risky(n));
+  const bad = open.find(
+    (n) => !addable(parent, n) || risky(n) || unsafeAdded(n),
+  );
   return bad === undefined
     ? undefined
     : `It adds the line \`${shown(bad.text === "-" ? (bad.kids[0]?.text ?? "-") : bad.text)}\`, which is not a safe step or job.`;

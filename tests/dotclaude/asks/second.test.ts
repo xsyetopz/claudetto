@@ -111,10 +111,8 @@ for (const [command, rel] of PROJECT_HOOKS) {
   test(`a script of a project settings hook, \`${rel}\`, gets an ask when a line follows its last command`, async () => {
     asks(await edit(`/w/${rel}`, "fi\n", "fi\necho done\n", files), rel);
   });
-  test(`a script of a project settings hook, \`${rel}\`, gets no ask when a line comes first`, async () => {
-    expect(await edit(`/w/${rel}`, "if [", "echo start\nif [", files)).toBe(
-      undefined,
-    );
+  test(`a script of a project settings hook, \`${rel}\`, gets an ask when a line comes first`, async () => {
+    asks(await edit(`/w/${rel}`, "if [", "echo start\nif [", files), rel);
   });
 }
 test("a script of a `settings.local.json` hook gets an ask when it can no longer fail", async () => {
@@ -199,8 +197,10 @@ for (const line of [
   });
 }
 for (const line of ['const s = "test.skip(x)";', "const s = 'it.only';"]) {
-  test(`the line \`${line}\` in a test file gets no ask`, async () => {
-    expect(await addLine("src/a.test.mjs", line)).toBe(undefined);
+  test(`the line \`${line}\` in a new test block of a test file gets no ask`, async () => {
+    expect(
+      await addLine("src/a.test.mjs", `test("a", () => {\n${line}\n});`),
+    ).toBe(undefined);
   });
 }
 test("a skipped test asks for a text over the scan bound", async () => {
@@ -233,16 +233,14 @@ const WEAK_SECTIONS: [string, string][] = [
   ["[tool.isort]", "skip = ['a.py']"],
   ["[tool.coverage.run]", "omit = ['a.py']\nignore = ['b.py']"],
   ["[tool.ruff]", "ignore = ['E501']"],
+  ["[tool.ruff]", "select = ['E', 'F']"],
   ["[tool.mypy]", "ignore_errors = true"],
   ["[tool.pytest.ini_options]", "addopts = '--ignore=tests'"],
   ["[tool.pyright]", "exclude = ['src']"],
   ["[tool.black]", "exclude = 'src'"],
 ];
 /** A section name, and a body that adds a check or only sets a style. */
-const KEEP_SECTIONS: [string, string][] = [
-  ["[tool.ruff]", "select = ['E', 'F']"],
-  ["[tool.mypy]", "strict = true"],
-];
+const KEEP_SECTIONS: [string, string][] = [["[tool.mypy]", "strict = true"]];
 /** A section name, and a body with a key that is not on the safe list, so that the check cannot tell it is safe. */
 const BARE_SECTIONS: [string, string][] = [
   ["[tool.pytest.ini_options]", "addopts = '-ra'"],

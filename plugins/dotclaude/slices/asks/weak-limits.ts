@@ -26,6 +26,22 @@ export const TEST_CONTROL = new RegExp(
   "i",
 );
 
+/**
+ * The calls in an added line of a test file that hide a test: a runtime skip, a mocked module, a global assignment, or an assert count of zero.
+ * An added line with one of them asks in any position, also in a new test block.
+ */
+export const TEST_HIDING_CALL = new RegExp(
+  [
+    String.raw`\bpytest\.importorskip\s*\(`,
+    String.raw`\bmock\.module\s*\(`,
+    String.raw`\bglobalThis\.\w+\s*=(?![=>])`,
+    String.raw`\bexpect\.assertions\s*\(\s*0\s*\)`,
+  ].join("|"),
+);
+
+/** The start of a Python assignment of a lambda. An added one at module level asks. */
+export const PY_LAMBDA_ASSIGN = /^[A-Za-z_]\w*\s*=\s*lambda\b/;
+
 /** The start of a test in a test file. The check counts the tests, so a removed test shows. */
 export const TEST_DECLARATION = [
   /\b(?:test|it)(?:\.\w+)*\s*(?:\([^)]*\))?\s*\(\s*["'`]/,
@@ -98,17 +114,28 @@ export const CI_RISKY_COMMAND = [
 /** The parents of a CI line where an added child is safe: a step under `steps`, and a job under `jobs`. */
 export const CI_ADDABLE_PARENT = /^["']?(?:steps|jobs)["']?:$/;
 
+/** The key of a CI step that runs a command. An added part with this key at any depth asks. */
+export const CI_RUN_KEY = /^["']?run["']?\s*:/;
+
+/** The first word of a command in an added CI `run` that checks, builds, or installs. Only such a command is safe in an added step. */
+export const CI_SAFE_PROGRAM =
+  /^(?:(?:bun|bunx|npm|npx|pnpm|yarn|just|make|cargo|go|pytest|uv|tox|ruff|mypy|tsc|eslint|biome|pip|pip3|shellcheck|golangci-lint)|python3?\s+-m)(?=\s|$)/;
+
+/** The text of a `run` line that writes a file or a CI variable file, such as a redirect, `tee`, or `$GITHUB_ENV`. */
+export const CI_RUN_WRITE = />|\btee\b|GITHUB_(?:ENV|PATH|OUTPUT)\b/;
+
+/** The key of a CI step that runs an action. An added step is safe only with this key. */
+export const CI_USES_KEY = /^["']?uses["']?\s*:/;
+
 /**
- * The text of an added line of a hook script that is control flow, or that can end the script, mask a status, or join the next line.
- * A line like this can make a hook pass, so an added line with it asks.
+ * The text of an added line of a shell hook script that makes the script stricter: `set -e`, `set -u`, and `set -o pipefail`, in any mix.
+ * Every other added line of a hook script asks, so this list is the only safe code line of a shell script.
  */
-export const SCRIPT_CONTROL = new RegExp(
-  [
-    "(?<![A-Za-z])(?:exit|return|true|false|exec|trap|set|source|if|then|else|elif|fi|case|esac|for|while|until|do|done|break|continue|try|catch|except|finally|raise|throw|pass|kill)(?![A-Za-z])",
-    String.raw`;\s*\S|[|&{}\\!\`]|^:$`,
-  ].join("|"),
-  "i",
-);
+export const STRICT_SCRIPT_LINE =
+  /^set(?: -[eu]+| -[eu]*o (?:pipefail|errexit|nounset)| -o (?:pipefail|errexit|nounset))+$/;
+
+/** The text of an added `"use strict"` line of a JavaScript hook script. It is the only safe code line of such a script. */
+export const USE_STRICT_LINE = /^(?:"use strict"|'use strict')\s*;?$/;
 
 /** The path of a hook script that a shell runs, where the last command sets the exit status. A first line `#!` with a shell counts too. */
 export const SHELL_SCRIPT =
@@ -130,6 +157,24 @@ export const STRICT_FLAG_KEY =
 /** The keys of a list where a new entry checks more files or more rules. */
 export const GROWABLE_LIST_KEY =
   /^(?:select|extend-select|extendSelect|include|includes|enable|only)$/i;
+
+/** The keys of a list that narrows the scope when the key is new, because a missing key means all. A new key of this kind asks. */
+export const NARROWING_LIST_KEY = /^(?:select|include|includes|only)$/i;
+
+/** The sections of `pyproject.toml` that hold a linter, type-check, test, security, or task config. A match on the section name asks. */
+export const PYPROJECT_SECTIONS =
+  /^tool\.(?:ruff|mypy|pytest|pyright|basedpyright|ty|pyrefly|black|pylint|isort|coverage|flake8|pycodestyle|pydocstyle|bandit|codespell|vulture|tox|nox|poe|pdm)(?:\.|$)|^tool\.hatch\.envs\.[^.]+\.scripts(?:\.|$)/;
+
+/** The sections of `setup.cfg` that hold a linter, type-check, test, or security config. */
+export const SETUP_CFG_SECTIONS =
+  /^(?:flake8|mypy|pylint(?:\..+)?|pycodestyle|pydocstyle|isort|bandit|codespell|vulture|pyflakes|coverage(?::.+)?|tool:pytest|pytest)$/;
+
+/** The start of an added line of a test file that asserts, such as `expect(`, `assert`, a Go `t.Errorf(`, or a `describe` block. */
+export const TEST_SAFE_START =
+  /^(?:await\s+)?(?:(?:self|this|t)\.)?(?:expect|assert\w*!?|should|describe|suite|context|Error|Errorf|Fatal|Fatalf)\s*\(|^assert\s/;
+
+/** The end of an added test declaration that opens a block or a list, such as `{`, `:`, or `]` for a Rust attribute. */
+export const TEST_OPEN_END = /[{:\]]\s*$/;
 
 /** The entries of a list that take files or rules away. */
 export const NEGATED_ENTRY = /^[!-]/;

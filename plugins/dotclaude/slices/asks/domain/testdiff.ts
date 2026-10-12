@@ -3,18 +3,23 @@
 // Each function compares the text before and after a call and gives what got weaker, or undefined.
 // A test file gets no ask only when the change is on a short list of safe changes:
 // a change of format or comments only, a move of lines, a rename of a test title,
-// or added lines that hold no control flow, skip, focus, or timeout, while no line changes or goes away.
-// A limits file gets weaker when a bound changes value or goes away.
+// or added lines that are a safe form: a test start, an assert or `describe` start with one statement, or closing brackets,
+// and that hold no control flow, skip, focus, or timeout, while no line changes or goes away.
+// A limits file gets weaker when a bound changes value or goes away, or when code that is not a bound changes.
 
 import {
   BOUND_CODE_FILE,
   BOUND_DECLARATION,
   HASH_COMMENT_FILE,
+  PY_LAMBDA_ASSIGN,
   TEST_CONTROL,
   TEST_DECLARATION,
+  TEST_HIDING_CALL,
+  TEST_OPEN_END,
+  TEST_SAFE_START,
 } from "../limits.ts";
 import { flatten, readJson } from "./jsondiff.ts";
-import { missing, normal, statementAt, uncommented } from "./scan.ts";
+import { missing, normal, squeeze, statementAt, uncommented } from "./scan.ts";
 import { shown } from "./shown.ts";
 
 /** The text of `line` with the inside of each string cut out, so that a word in a title is not code. */
@@ -39,7 +44,7 @@ const codeLines = (text: string, hash: boolean, indent: boolean): string[] =>
     .split("\n")
     .filter((line) => line.trim() !== "")
     .map((line) => {
-      const body = line.trim().replace(/\s+/g, " ");
+      const body = squeeze(line);
       return indent ? `${line.length - line.trimStart().length}|${body}` : body;
     });
 
@@ -49,6 +54,20 @@ const textOf = (line: string): string => line.replace(/^\d+\|/, "");
 /** True when a line has control flow, a skip, a focus, or a timeout. */
 const controls = (line: string): boolean =>
   TEST_CONTROL.test(bare(textOf(line)));
+
+/**
+ * True when an added line has a safe form: a test start that opens a block, an assert or `describe` start,
+ * or only closing brackets. The line must hold one statement, with no assignment, so a line such as `globalThis.expect = f` asks.
+ */
+const safeLine = (line: string): boolean => {
+  const code = bare(textOf(line));
+  if (/^[\s)}\]>;,]*$/.test(code)) return true;
+  if (/;.*\S/.test(code) || /(?<![=!<>])=(?![=>])/.test(code)) return false;
+  return (
+    TEST_SAFE_START.test(code) ||
+    (TEST_DECLARATION.some((re) => re.test(code)) && TEST_OPEN_END.test(code))
+  );
+};
 
 /** True when a control line of `now` has another line above it than in `was`, so that a move put it in a new place. */
 const controlMoved = (was: string[], now: string[]): boolean => {
@@ -61,6 +80,74 @@ const controlMoved = (was: string[], now: string[]): boolean => {
   const known = pairs(was);
   return [...pairs(now)].some((p) => !known.has(p));
 };
+
+/** The indices of the lines of `now` that `was` does not hold, with one match for each line of `was`. */
+const addedAt = (was: string[], now: string[]): number[] => {
+  const left = new Map<string, number>();
+  for (const item of was) left.set(item, (left.get(item) ?? 0) + 1);
+  return now.flatMap((item, i) => {
+    const n = left.get(item) ?? 0;
+    if (n) left.set(item, n - 1);
+    return n === 0 ? [i] : [];
+  });
+};
+
+/** The indent of a line of `codeLines` in Python form, which starts with the indent and a `|`. */
+const indentOf = (line: string): number => Number(/^\d+/.exec(line)?.[0] ?? 0);
+
+/**
+ * The index after the last line of the test block that starts at `start`.
+ * A Python block is the lines with a larger indent. Another block ends when its brackets close.
+ * A block that never closes ends at its own line, so that the lines below it still get the check.
+ */
+const blockEnd = (lines: string[], start: number, python: boolean): number => {
+  if (python) {
+    let end = start + 1;
+    while (
+      end < lines.length &&
+      indentOf(lines[end] as string) > indentOf(lines[start] as string)
+    )
+      end++;
+    return end;
+  }
+  let depth = 0;
+  for (let i = start; i < lines.length; i++) {
+    for (const ch of bare(textOf(lines[i] as string))) {
+      if ("({[".includes(ch)) depth++;
+      else if (")}]".includes(ch)) depth--;
+    }
+    if (depth <= 0) return i + 1;
+  }
+  return start + 1;
+};
+
+/**
+ * The indices of the lines of `now` that are in a test block the call adds, or in any line of a new file.
+ * A line of such a block is safe unless it has control flow, which the caller checks first.
+ */
+const freshLines = (
+  now: string[],
+  added: number[],
+  isNew: boolean,
+  python: boolean,
+): Set<number> => {
+  if (isNew) return new Set(now.map((_, i) => i));
+  const out = new Set<number>();
+  for (const i of added) {
+    const line = textOf(now[i] as string);
+    if (!TEST_DECLARATION.some((re) => re.test(line))) continue;
+    const end = blockEnd(now, i, python);
+    for (let j = i; j < end; j++) out.add(j);
+  }
+  return out;
+};
+
+/** True when an added line hides a test: a call of `TEST_HIDING_CALL`, or a Python module-level lambda assignment. */
+const hides = (rel: string, line: string): boolean =>
+  TEST_HIDING_CALL.test(bare(textOf(line))) ||
+  (rel.endsWith(".py") &&
+    line.startsWith("0|") &&
+    PY_LAMBDA_ASSIGN.test(textOf(line)));
 
 /**
  * What a call takes from a test file, or undefined.
@@ -86,10 +173,18 @@ export const testWeaker = (
   const lost = missing(a, b)[0];
   if (lost !== undefined)
     return `It removes or changes the line \`${shown(textOf(lost))}\`.`;
-  const added = missing(b, a);
+  const at = addedAt(a, b);
+  const added = at.map((i) => b[i] as string);
   const hot = added.find(controls);
   if (hot !== undefined)
     return `It adds the line \`${shown(textOf(hot))}\`, which can skip a test or an assert.`;
+  const hide = added.find((l) => hides(rel, l));
+  if (hide !== undefined)
+    return `It adds the line \`${shown(textOf(hide))}\`, which can hide a test from the check.`;
+  const fresh = freshLines(b, at, before.trim() === "", python);
+  const other = at.find((i) => !fresh.has(i) && !safeLine(b[i] as string));
+  if (other !== undefined)
+    return `It adds the line \`${shown(textOf(b[other] as string))}\`, which is not a test start, an assert, or a closing bracket.`;
   return added.length === 0 && controlMoved(a, b)
     ? "It moves a line with control flow."
     : undefined;
@@ -114,6 +209,28 @@ const changedBound = (
 ): string | undefined => [...was.keys()].find((k) => was.get(k) !== now.get(k));
 
 /**
+ * The normal form of the code of `text` without its bound statements.
+ * A line that the bound reader does not read stays in this form, so a change of it shows.
+ */
+const unread = (text: string, hash: boolean): string => {
+  const code = uncommented(text, hash);
+  const cut: [number, number][] = [];
+  for (const re of BOUND_DECLARATION)
+    for (const m of code.matchAll(new RegExp(re.source, "gm"))) {
+      const from = m.index + m[0].length;
+      const stop = from + statementAt(code, from).length;
+      cut.push([m.index, code[stop] === ";" ? stop + 1 : stop]);
+    }
+  cut.sort((a, b) => a[0] - b[0]);
+  let [out, at] = ["", 0];
+  for (const [s, e] of cut) {
+    if (s >= at) out += code.slice(at, s);
+    at = Math.max(at, e);
+  }
+  return normal(out + code.slice(at));
+};
+
+/**
  * What a call does to the bounds of a limits file, or undefined.
  * A code file has declarations, and a JSON file has values.
  * Another format gives the lines with a number, and a lost one counts.
@@ -126,9 +243,11 @@ export const limitsWeaker = (
   if (BOUND_CODE_FILE.test(rel)) {
     const hash = HASH_COMMENT_FILE.test(rel);
     const name = changedBound(bounds(before, hash), bounds(after, hash));
-    return name === undefined
+    if (name !== undefined)
+      return `It changes or removes the bound \`${name}\`.`;
+    return unread(before, hash) === unread(after, hash)
       ? undefined
-      : `It changes or removes the bound \`${name}\`.`;
+      : "It changes code of the limits file that the check does not read as a bound.";
   }
   if (rel.endsWith(".json")) {
     const [was, now] = [readJson(before), readJson(after)];

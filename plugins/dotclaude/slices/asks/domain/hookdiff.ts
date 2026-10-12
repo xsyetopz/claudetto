@@ -3,24 +3,27 @@
 // A change gets no ask only when every changed part is safe:
 // a change of format or comments only, a move with the same content,
 // an added hook (a new entry with its matcher and command), an added `deny` or `ask` permission rule, or a removed `allow` rule,
-// and, in a hook script, an added line that has no control flow and does not come after the last command.
+// and, in a hook script, an added line on its safe list: a blank line, a comment, a stricter `set` line in a shell script,
+// or a `"use strict"` line in a JavaScript file. Every other added code line asks, in any position.
 // Every other change asks: a removed or changed hook, matcher, command, or timeout, a removed `deny` or `ask` rule,
 // an added `allow` rule, `disableAllHooks`, a changed `permissions.defaultMode`, a changed `model`, an added or changed `env` key,
 // and any key that the code does not know.
 // A format that the code cannot read asks. The check on a CI file is in `cidiff.ts`.
 
 import {
+  CODE_CONFIG_FILE,
   HASH_COMMENT_FILE,
   PERMISSION_ALLOW_KEYS,
   PERMISSION_DENY_KEYS,
-  SCRIPT_CONTROL,
   SHELL_SCRIPT,
   SHELL_SHEBANG,
+  STRICT_SCRIPT_LINE,
+  USE_STRICT_LINE,
 } from "../limits.ts";
 import { ciWeaker } from "./cidiff.ts";
 import { canonical } from "./confmap.ts";
 import { isObj, type Obj, readJson, UNREADABLE } from "./jsondiff.ts";
-import { missing, uncommented } from "./scan.ts";
+import { missing, squeeze, uncommented } from "./scan.ts";
 import { shown } from "./shown.ts";
 
 /** One hook of a hooks value: the event, the group without its hooks (the matcher), the whole hook, and the text to show. */
@@ -160,14 +163,14 @@ export const settingsWeaker = (
   return undefined;
 };
 
-/** The code lines of a script: the first line if it is a `#!` line, then the lines without comments, trimmed and with one space for a run of spaces. */
+/** The code lines of a script: the first line if it is a `#!` line, then the lines without comments, trimmed and squeezed. */
 const scriptLines = (text: string, hash: boolean): string[] => {
   const first = text.startsWith("#!")
     ? [(text.split("\n")[0] as string).trim()]
     : [];
   const rest = uncommented(text, hash)
     .split("\n")
-    .map((l) => l.trim().replace(/\s+/g, " "))
+    .map(squeeze)
     .filter((l) => l !== "");
   return [...first, ...rest];
 };
@@ -175,22 +178,31 @@ const scriptLines = (text: string, hash: boolean): string[] => {
 /**
  * What a call takes from a hook script, or undefined.
  * The old lines must stay, in the same order.
- * An added line must have no control flow, and must not come after the last old line, because it would then set the exit status.
+ * An added code line must be on the safe list of its kind: a stricter `set` line in a shell script,
+ * and a `"use strict"` line in a JavaScript file. Every other added code line asks, in any position.
  */
 const scriptWeaker = (
   rel: string,
   before: string,
   after: string,
 ): string | undefined => {
-  const hash = HASH_COMMENT_FILE.test(rel) || /(?:^|\/)\.husky\//.test(rel);
-  const [old, next] = [scriptLines(before, hash), scriptLines(after, hash)];
   const shell =
     SHELL_SCRIPT.test(rel) ||
-    [old[0], next[0]].some((l) => SHELL_SHEBANG.test(l ?? ""));
+    [before, after].some((t) =>
+      SHELL_SHEBANG.test((t.split("\n")[0] ?? "").trim()),
+    );
+  const hash =
+    shell || HASH_COMMENT_FILE.test(rel) || /(?:^|\/)\.husky\//.test(rel);
+  const [old, next] = [scriptLines(before, hash), scriptLines(after, hash)];
+  const safe = shell
+    ? [STRICT_SCRIPT_LINE]
+    : CODE_CONFIG_FILE.test(rel)
+      ? [USE_STRICT_LINE]
+      : [];
   const fresh: number[] = [];
-  let [kept, last] = [0, -1];
+  let kept = 0;
   next.forEach((line, i) => {
-    if (kept < old.length && line === old[kept]) [kept, last] = [kept + 1, i];
+    if (kept < old.length && line === old[kept]) kept++;
     else fresh.push(i);
   });
   if (kept < old.length) {
@@ -201,10 +213,8 @@ const scriptWeaker = (
   }
   for (const i of fresh) {
     const line = next[i] as string;
-    if (SCRIPT_CONTROL.test(line))
+    if (!safe.some((re) => re.test(line)))
       return `It adds the line \`${shown(line)}\`, which can let a hook pass.`;
-    if (shell && i > last && old.length > 0)
-      return `It adds the line \`${shown(line)}\` after the last line, and the exit status can change.`;
   }
   return undefined;
 };
@@ -229,5 +239,6 @@ export const hookFileWeaker = (
     return undefined;
   }
   if (/\.ya?ml$/.test(rel)) return ciWeaker(rel, before, after);
+  if (/\.jsonc?$/.test(rel)) return UNREADABLE;
   return scriptWeaker(rel, before, after);
 };

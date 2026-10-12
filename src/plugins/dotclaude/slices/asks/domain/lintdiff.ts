@@ -4,7 +4,8 @@
 // an added key whose value is the strictest level (`error`, `true` for a strict flag, a number for a threshold),
 // an added entry in a list of rules or files, a raised level, a raised threshold, or a strict flag that goes to `true`.
 // Every other change asks: a removed key, a lowered value, a new `off`, `warn`, or `false`,
-// a new ignore, exclude, or `!` pattern, a narrowed list, and a new key that is not on the safe list.
+// a new ignore, exclude, or `!` pattern, a removed `!` entry of an ignore list, a narrowed list,
+// a new `include`, `select`, or `only` key, and a new key that is not on the safe list.
 // A format that the code cannot read asks. The check on a CI file is in `cidiff.ts`.
 
 import {
@@ -13,6 +14,7 @@ import {
   IGNORE_KEY,
   INI_CONFIG_FILE,
   LEVEL_RANK,
+  NARROWING_LIST_KEY,
   NEGATED_ENTRY,
   PYPROJECT_SECTIONS,
   SETUP_CFG_SECTIONS,
@@ -66,7 +68,7 @@ const listWeaker = (
   for (const entry of was) {
     const at = left.indexOf(entry);
     if (at !== -1) left.splice(at, 1);
-    else if (ignoring) dropped = true;
+    else if (ignoring && !NEGATED_ENTRY.test(entry)) dropped = true;
     else return `It removes the entry \`${shown(entry)}\` from \`${path}\`.`;
   }
   if (left.length === 0)
@@ -91,6 +93,7 @@ const addedWeaker = (
   const plain = !segments.some((p) => IGNORE_KEY.test(p));
   const ok = Array.isArray(value)
     ? GROWABLE_LIST_KEY.test(keyOf(path)) &&
+      !NARROWING_LIST_KEY.test(keyOf(path)) &&
       plain &&
       !value.some((e) => NEGATED_ENTRY.test(e))
     : plain &&
