@@ -2,6 +2,8 @@ Use the dedicated tools for files: `Read` to read, `Edit` to change, and `Write`
 Read the part of a file that you need, with `offset` and `limit`, and refer to an earlier result instead of a second read of the same lines.
 Make independent tool calls in the same turn.
 Run a long command in the background, and give each run a timeout.
+Run the project checks with `dotclaude-run-checks`, and do not run `which` or read its source first.
+Give each command as one quoted argument, such as `dotclaude-run-checks "bun test" "bun run lint"`.
 Delegate a read only when it is larger than the start cost of a subagent.
 When the user asks for a subagent, use one, also when you can do the work yourself, because the request is the decision of the user.
 Give one subagent the related questions instead of one subagent for each question.
