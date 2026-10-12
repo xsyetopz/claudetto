@@ -1,30 +1,36 @@
 # Attributions
 
-dotclaude uses ideas from the projects below.
-Each part below is a new implementation.
+dotclaude 1.0.0 uses the outside works below.
+Each row gives the license that the source states.
+Where the source states no license, the row says `not stated`.
 
-## Licenses
+## Outside works
 
-| Project | License | What dotclaude uses |
-| --- | --- | --- |
-| DensePack, agent-skills, Ponytail, `jev` CLI | MIT | ideas only |
-| GitNexus | PolyForm Noncommercial | its design only, no code or text |
+| Work | Link | License | What dotclaude 1.0.0 uses it for |
+| --- | --- | --- | --- |
+| agent-skills by Addy Osmani | [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) | MIT | An idea. The `description` of each skill and agent says what it does and when to use it. Where a neighbor can match the same request, it adds a `Not for` part. |
+| Context7 with the `ctx7` CLI | [context7.com](https://context7.com), [upstash/context7](https://github.com/upstash/context7) | MIT for `upstash/context7`. Not checked for the `ctx7` package. | The `docs` skill of `dotclaude-docs` runs `ctx7` with `bunx` to read the current docs of a library. |
+| agent-browser | [vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser) | Apache-2.0 | The default backend of `dotclaude-browser`. The `drive-web-browser` skill and the `WebSearch` answer run it. |
+| CloakBrowser | [CloakHQ/cloakbrowser](https://github.com/CloakHQ/cloakbrowser) | MIT for the wrapper code. The compiled binary has its own terms. | The optional `cloakbrowser` backend. `agent-browser` runs the CloakBrowser binary through `--executable-path`. |
+| CodeGraph CLI `codegraph` from `@colbymchenry/codegraph` | [colbymchenry/codegraph](https://github.com/colbymchenry/codegraph) | MIT | The `dotclaude-codegraph` plugin runs `codegraph` to sync the index and to read the code graph. |
+| `jev` CLI by pedramamini | [gist](https://gist.github.com/pedramamini/014676fa8684d91bf7000f4623701ada) | MIT, as the gist README states | An idea. Short verbs, `yes`, `pick`, and `ask`, and keys in place of list positions. The `dotclaude-decide` command of the core plugin has these verbs. The answers come from the TypeSafe API. The gist also has a rating verb, which 1.0.0 does not use. |
 
-## Projects
+The CloakBrowser binary has its own terms.
+From `v148`, the binary needs an active CloakBrowser Pro subscription to download.
+Earlier builds are free, with restrictions on redistribution.
+Read the `BINARY-LICENSE.md` file of that project for the full terms.
 
-| Project | Idea | dotclaude part |
-| --- | --- | --- |
-| [DensePack](https://github.com/Fabian-Galvez/DensePack) by Fabian-Galvez | `plugin/scripts/edit_gate.py`: when an `Edit` fails, show the lines that are closest to `old_string` | none: 0.20.0 removed `show-closest-lines.mjs`, the part that reimplemented it |
-| [agent-skills](https://github.com/addyosmani/agent-skills) by Addy Osmani | a skill description that says what the skill does and when to use it | the "Use" part of each skill and agent description, and a "Not for" part where a neighbor can match the same request |
-| [Ponytail](https://github.com/DietrichGebert/ponytail) by DietrichGebert | an order of steps that builds the minimum code: no code, reuse, the standard library, one line, then the minimum | none: 0.27.0 removed the minimal-code text and the `ponytail` option (0.20 to 0.26 history) |
-| [GitNexus](https://github.com/abhigyanpatwari/GitNexus) by abhigyanpatwari | hooks that add code graph context to the searches that the agent already runs | none: 0.27.0 removed the CodeGraph augment (0.20 to 0.26 history) |
-| [`jev` CLI](https://gist.github.com/pedramamini/014676fa8684d91bf7000f4623701ada) by pedramamini | short verbs (`yes`, `pick`, `rate`, `ask`) over the TypeSafe API, and keys in place of list positions | `plugins/dotclaude-jev/features/jev/cli.ts` |
+## Not shipped
 
-dotclaude adopts none of the workflow skills of these projects.
-The [xsyetopz/skills](https://github.com/xsyetopz/skills) collection already covers those workflows.
+dotclaude ships no npm package.
+The packages in the root `package.json` are dev tools of the repository.
+These are `@biomejs/biome`, `@types/node`, `bun-types`, `markdownlint-cli2`, and `yaml`.
+The shipped code in `plugins/` imports only the `node:` built-in modules and the `claude-code` plugin types.
 
 ## Related pages
 
-- [Core plugin](Architecture): each part, its event, and its bound.
-- [Second opinion](Second-Opinion): the part that uses the `jev` verbs.
 - [Home](Home): the overview.
+- [Architecture](Architecture): the core plugin.
+- [Second opinion](Second-Opinion): the `dotclaude-decide` command.
+- [Skills](Skills): the skill descriptions.
+- [Browser](Browser), [Code graph](Code-Graph), and [Library docs](Library-Docs): the add-on plugins that call the CLIs.
