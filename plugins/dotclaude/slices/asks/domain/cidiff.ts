@@ -2,9 +2,10 @@
 // The check on a weaker CI file (package P36), as pure functions.
 // A change gets no ask only when every changed part is on a short list of safe changes:
 // a change of format or comments only, a move of lines, a change of a `name` key,
-// or an added step that has a `uses` key and no `if`, `continue-on-error`, `timeout-minutes`, `shell`, or `run` key,
-// or an added job that has no `if`, `continue-on-error`, `timeout-minutes`, or `shell` key and no `run` key at any depth,
-// and no command that lets a step pass after a failure.
+// or an added step or job with no risky key at any depth (`if`, `continue-on-error`, `timeout-minutes`, `shell`, `allow_failure`, `when`, or `<<:`),
+// no command that lets a failure pass (such as `|| true` or `exit 0`), and no `run` script that is not safe.
+// A `run` script is safe when each of its commands is a check, build, or install program, and no line writes a file or a CI variable file.
+// An added step must have a `uses` key or a `run` key.
 // Every other change asks: a lost line, a changed value, and an added key in an old step or job.
 // A YAML file is read as a tree of lines by indent. Another CI file, such as a `Jenkinsfile`, asks on any change of its code.
 // The check reads the lines of an added part. It does not test a line together with the line above it.

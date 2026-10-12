@@ -2,8 +2,10 @@
 // Each function compares the text before and after a call and gives what got weaker, or undefined.
 // A test file gets no ask only when the change is on a short list of safe changes:
 // a change of format or comments only, a move of lines, a rename of a test title,
-// or added lines that are a safe form: a test start, an assert or `describe` start with one statement, or closing brackets,
-// and that hold no control flow, skip, focus, or timeout, while no line changes or goes away.
+// No line may change or go away, and an added line must not hold control flow, a skip, a focus, or a timeout.
+// An added line must also not hide a test, such as a `mock.module` call, a global `expect` assignment, or a Python lambda assignment.
+// An added line outside a test block that the call adds must be a safe form: a test start, an assert or `describe` start with one statement, or closing brackets.
+// So such a line with an assignment, or with two statements on one line, asks. The lines of an added test block skip this form check.
 // A limits file gets weaker when a bound changes value or goes away, or when code that is not a bound changes.
 
 import {
