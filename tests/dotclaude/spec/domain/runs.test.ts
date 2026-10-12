@@ -4,6 +4,7 @@ import { expect, test } from "bun:test";
 import {
   capOf,
   parseSample,
+  resetOf,
   runsAllowed,
   type UsageSample,
   windowRuns,
@@ -56,6 +57,33 @@ test("`windowRuns` gives the share of the free part of the cap, rounded down", (
   expect(windowRuns(10, open(50), NOW)).toBe(5);
   expect(windowRuns(20, open(80), NOW)).toBe(4);
   expect(windowRuns(10, open(150), NOW)).toBe(0);
+});
+
+test("`windowRuns` gives at least one run while a window is below 100 percent used", () => {
+  expect(windowRuns(5, open(81), NOW)).toBe(1);
+  expect(windowRuns(5, open(99), NOW)).toBe(1);
+  expect(windowRuns(5, open(100), NOW)).toBe(0);
+});
+
+test("`resetOf` gives the latest reset of the full windows, and null when no window is full", () => {
+  const later = { used_percentage: 100, resets_at: SECONDS + 7200 };
+  const sooner = { used_percentage: 100, resets_at: SECONDS + 3600 };
+  expect(
+    resetOf(
+      5,
+      { savedAt: NOW, rate_limits: { five_hour: sooner, seven_day: later } },
+      NOW,
+    ),
+  ).toBe(SECONDS + 7200);
+  expect(resetOf(5, sample(81, null), NOW)).toBeNull();
+  expect(resetOf(5, null, NOW)).toBeNull();
+  expect(
+    resetOf(
+      5,
+      { savedAt: NOW, rate_limits: { five_hour: { used_percentage: 100 } } },
+      NOW,
+    ),
+  ).toBeNull();
 });
 
 test("`windowRuns` gives the cap for a window with no usage, or one that has reset", () => {

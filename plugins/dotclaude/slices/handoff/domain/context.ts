@@ -68,7 +68,7 @@ export const reportNote = (
     over &&
       `Your context is ${state.tokens} tokens, which is over the bound of ${max} tokens.`,
     fact,
-    `A run that reaches its turn limit returns no report. A report of ${REPORT_MAX_WORDS} words or fewer is due now, with what is done and what stays open.`,
+    `Commit your work first, then report. A run that reaches its turn limit returns no report. A report of ${REPORT_MAX_WORDS} words or fewer is due now, with what is done and what stays open.`,
   ].filter(Boolean);
   return facts.join(" ");
 };

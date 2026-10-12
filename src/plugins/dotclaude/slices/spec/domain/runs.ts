@@ -16,6 +16,9 @@ export type UsageSample = {
   rate_limits?: { five_hour?: LimitWindow; seven_day?: LimitWindow };
 };
 
+/** A sample that is older than any bound. A corrupt or unreadable file gives it, so it allows one run. */
+export const STALE_SAMPLE: UsageSample = { savedAt: 0, rate_limits: {} };
+
 /** The runs that one window allows at `now`, under the cap `cap`. A window with no usage, or one that has reset, allows the cap. */
 export const windowRuns = (
   cap: number,
@@ -27,7 +30,27 @@ export const windowRuns = (
   if (typeof window?.resets_at === "number" && window.resets_at * 1000 <= now)
     return cap;
   const free = Math.min(100, Math.max(0, 100 - used));
-  return Math.floor((cap * free) / 100);
+  if (free === 0) return 0;
+  return Math.max(1, Math.floor((cap * free) / 100));
+};
+
+/**
+ * The time, in seconds, when the runs of a wave become more than 0 again, or null.
+ * It is the latest reset of the windows that give 0 runs, because each of them must reset.
+ * It is null when no window gives 0 runs, or when one of them has no reset time.
+ */
+export const resetOf = (
+  cap: number,
+  sample: UsageSample | null,
+  now: number,
+): number | null => {
+  if (sample === null || !sample.rate_limits) return null;
+  const windows = [sample.rate_limits.five_hour, sample.rate_limits.seven_day];
+  const full = windows.filter((w) => windowRuns(cap, w, now) === 0);
+  if (full.length === 0) return null;
+  const resets = full.map((w) => w?.resets_at);
+  if (!resets.every((r): r is number => typeof r === "number")) return null;
+  return Math.max(...resets);
 };
 
 /**

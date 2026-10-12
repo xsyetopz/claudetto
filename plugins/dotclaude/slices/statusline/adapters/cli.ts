@@ -10,7 +10,7 @@
 // A failure prints an empty row on stdout and the cause on stderr, so the status line stays up.
 
 import path from "node:path";
-import { fileReader } from "../../../kernel/node/fs.ts";
+import { fileReader, writeAtomic } from "../../../kernel/node/fs.ts";
 import { failureText } from "../../../kernel/node/hook-io.ts";
 import { processRunner } from "../../../kernel/node/process.ts";
 import { readStdin } from "../../../kernel/node/stdin.ts";
@@ -51,9 +51,7 @@ const defaults = (): Deps => ({
   now: Date.now,
   cwd: process.cwd(),
   files: fileReader,
-  write: async (file, text) => {
-    await Bun.write(file, text);
-  },
+  write: writeAtomic,
   runner: processRunner,
   log: (line) => console.log(line),
   error: (text) => process.stderr.write(text),
