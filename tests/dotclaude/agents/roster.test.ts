@@ -1,4 +1,4 @@
-// Tests of the agent files of the core plugin: the seven agents of the table, their model, effort, and turn bound, and the tools that each may call.
+// Tests of the agent files of the core plugin: the six agents of the table, their model, effort, and turn bound, and the tools that each may call.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
@@ -23,7 +23,6 @@ const TABLE: Record<string, { model: string; effort: string }> = {
   planner: { model: OPUS, effort: "high" },
   researcher: { model: SONNET, effort: "medium" },
   reviewer: { model: OPUS, effort: "high" },
-  "test-runner": { model: HAIKU, effort: "low" },
 };
 
 const frontMatter = (text: string): Record<string, string> =>
@@ -71,7 +70,7 @@ const mayCall = (
   (a.tools.length === 0 || a.tools.includes(tool)) &&
   !a.disallowed.includes(tool);
 
-test("the agent files are the seven agents of the table, and no other", async () => {
+test("the agent files are the six agents of the table, and no other", async () => {
   const list = await agents();
   expect(list.map((a) => a.name)).toStrictEqual(Object.keys(TABLE).sort());
   expect<string[]>([...AGENT_NAMES]).toStrictEqual(Object.keys(TABLE).sort());
@@ -95,12 +94,7 @@ test("each agent file has the turn bound of `domain/turns.ts` as its `maxTurns`"
 
 test("the read-only agents cannot write or edit, and the others can", async () => {
   const byName = Object.fromEntries((await agents()).map((a) => [a.name, a]));
-  for (const name of [
-    "investigator",
-    "researcher",
-    "reviewer",
-    "test-runner",
-  ]) {
+  for (const name of ["investigator", "researcher", "reviewer"]) {
     const a = byName[name] as Parameters<typeof mayCall>[0];
     for (const tool of ["Write", "Edit", "NotebookEdit"])
       expect(mayCall(a, tool), `${name} ${tool}`).toBe(false);
