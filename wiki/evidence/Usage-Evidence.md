@@ -123,6 +123,13 @@ The figures come from a scan of the local transcripts (measured).
 The repository does not hold that scan.
 The transcripts start on 09-25, so the figures are a lower bound.
 
+The week ran under a 0.x config, not under 1.0.0.
+Most of the week ran before 0.5.0 moved `implementer` to Sonnet 5, so the `implementer` row
+ran mostly on Opus 5.5.
+The source is the 0.26 text of this page, in git commit `af3071f4` (`wiki/Usage-Evidence.md`,
+line 22).
+The figures show the 0.x config, and they do not describe the 1.0.0 agents of the table above.
+
 | Measure | Value |
 | --- | --- |
 | Total | $1,854 (Opus 5.5 98.7%) |
