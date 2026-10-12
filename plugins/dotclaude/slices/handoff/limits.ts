@@ -16,10 +16,10 @@ export const HAIKU_CONTEXT_MAX = 85_000;
 
 /**
  * The turns left of a subagent, at which the hook tells it to report now.
- * With 2 turns left the next turn is the report and the last turn is spare.
+ * With 4 turns left, two turns commit the work, one turn writes the report, and the last turn is spare.
  * It must stay below the smallest `maxTurns` of the agent files.
  */
-export const TURNS_LEFT_AT = 2;
+export const TURNS_LEFT_AT = 4;
 
 /** The most words in the final report of an agent. The main session keeps each report to the end. */
 export const REPORT_MAX_WORDS = 400;
