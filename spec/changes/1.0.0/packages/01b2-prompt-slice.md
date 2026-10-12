@@ -51,6 +51,8 @@ The 0.28.0 handlers that are not ported yet stay in one hand-written module, whi
 ## Boundaries
 
 - Change only the paths of `owns`, the 0.28.0 files of `prompt`, `plugins/dotclaude/hooks/`, `tools/rebuild-pending.txt`, the generator changes of step 3 in `tools/generate/emit/register.ts`, `texts.ts`, `slices.ts`, and `hooks.ts`, and their tests in `tests/tools/generate/`.
+- The generated `register.ts` has a `// eval: <event> <slice>` comment above each `on()` call, because `tests/support/hook-evals.test.ts` asks for one, and the generator writes the `lab/` tests of a slice to `plugins/<plugin>/tests/` and not into the copy of the slice.
+  Change the paths of the moved lab tests in `plugins/dotclaude/evals/hooks.json`.
 - Port no other slice, and do not change the behavior of a 0.28.0 hook.
 - Use arrow functions, and add no legacy shim except `legacy.ts`, which the rebuild list names.
 - Commit on the branch of your worktree after each step that passes its tests, with the subject `dotclaude 1.0.0: P01b2 <summary>`.
