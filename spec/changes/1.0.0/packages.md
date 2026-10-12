@@ -84,7 +84,7 @@ Each package depends on P01b4.
   Verify also: a test for a repository with no rule, one with each rule, and a folder that is not a git repository.
 - [x] P10 `agents`: the seven agents of [workflow](workflow.md#agents) and the `agent.spawn` handler.
   Verify also: `just validate`, and one spawn of each agent in `just sandbox` that runs on the model of the table.
-- [ ] P19 `decide`: Jev through the TypeSafe client, and the fallback through `$.model.complete` when the key is missing or not valid, or the account has no balance.
+- [x] P19 `decide`: Jev through the TypeSafe client, and the fallback through `$.model.complete` when the key is missing or not valid, or the account has no balance.
   It moves the `dotclaude-jev` add-on into this slice, and removes the add-on.
   Owns also: `src/plugins/dotclaude-jev/`, `tests/jev/`.
   Verify also: a test for each fallback cause, with a fake `DecisionProvider`.
