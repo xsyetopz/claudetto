@@ -15,10 +15,7 @@ import { failureText } from "../../../kernel/node/hook-io.ts";
 import { processRunner } from "../../../kernel/node/process.ts";
 import { readStdin } from "../../../kernel/node/stdin.ts";
 import type { FileReader, ProcessRunner } from "../../../kernel/ports.ts";
-import {
-  activeProgress,
-  type Progress,
-} from "../../../kernel/spec-store.ts";
+import { activeProgress } from "../../../kernel/spec-store.ts";
 import { colorOff, paintOf } from "../color.ts";
 import { baseName } from "../domain/format.ts";
 import { GIT_ARGS, parseStatus } from "../domain/git.ts";
@@ -88,7 +85,10 @@ const gitState = (dir: string, runner: ProcessRunner): GitState | null => {
 };
 
 /** The active change of the spec store in `root`. A store that cannot be read gives null, and the cause goes to `deps.error`. */
-const changeOf = async (root: string, deps: Deps): Promise<Progress | null> => {
+const changeOf = async (
+  root: string,
+  deps: Deps,
+): Promise<Status["change"]> => {
   try {
     return await activeProgress(rooted(root, deps.files));
   } catch (err) {
