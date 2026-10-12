@@ -38,7 +38,7 @@ Critical path: P01a, P01b, P05 and P06, P13, P14, P15, P16.
   Owns: `external/cc-extract/`, `spec/changes/1.0.0/evidence/extract.md`.
   Agent: `implementer`, because the package writes files and runs live sessions, and `investigator` cannot (Jev, confidence 0.51).
   Verify: each id in the report is in the `prompt.compose` or `tool.describe` input of one live session in `just sandbox`.
-- [ ] P01d Inventory: each built-in part that a setting, an env var, or a mod can turn off, with its cost at the start of a session.
+- [x] P01d Inventory: each built-in part that a setting, an env var, or a mod can turn off, with its cost at the start of a session.
   Owns: `spec/changes/1.0.0/evidence/inventory.md`.
   Agent: `implementer`, for the reason of P01c.
   Verify: `dotclaude-start --compare` on one start with the switches and one start without them.
