@@ -79,7 +79,11 @@ export const planAddons = (
 };
 
 /** The lines that report `plan`, or no line when the plan has no state line. */
-export const addonReport = ({ lines, installs, steps }: AddonPlan): string[] => {
+export const addonReport = ({
+  lines,
+  installs,
+  steps,
+}: AddonPlan): string[] => {
   if (!lines.length) return [];
   const out = ["", "Add-ons:", ...lines.map((line) => `  ${line}`)];
   if (installs.length)

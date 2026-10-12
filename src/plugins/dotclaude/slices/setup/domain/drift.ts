@@ -48,7 +48,10 @@ export const snippetGaps = (settings: Settings, root: string): string[] => {
 /**
  * The status line commands of `settings` that run the status line of a dotclaude folder other than `root`.
  */
-export const staleStatusLines = (settings: Settings, root: string): string[] => {
+export const staleStatusLines = (
+  settings: Settings,
+  root: string,
+): string[] => {
   const want = snippetFor(settings, root);
   return STATUS_KEYS.filter((key) => {
     const [name = ""] = key.split(".");
