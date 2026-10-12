@@ -18,7 +18,6 @@ const hooks: {
 const ORDER = [
   "dotclaude",
   "dotclaude-codegraph",
-  "dotclaude-jev",
   "dotclaude-browser",
   "dotclaude-docs",
   "dotclaude-sessions",

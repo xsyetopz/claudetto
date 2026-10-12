@@ -4,7 +4,7 @@ A Claude Code plugin marketplace in ESM.
 The CLI adapters, in `src/kernel/node/` and `slices/<s>/adapters/cli.ts`, run on Bun 1.4.3 or later, so they use only `node:` modules, `bun:` modules, and the `Bun` global.
 A file in the import graph of a hooks module (`hooks/register.ts`) has no `node:` import, no `bun:` import, and no use of `Bun`, because Claude Code runs the module in its mod runtime.
 Code that needs Python is Python, and the tests and `tools/` run on Bun 1.4.3 or later, with `bun install` for the dev dependencies.
-The core plugin is in `plugins/dotclaude/`, next to six add-on plugins: `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-jev`, `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab`.
+The core plugin is in `plugins/dotclaude/`, next to five add-on plugins: `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab`.
 Each add-on plugin works without the core plugin, so it imports nothing from another plugin.
 Only `plugins/` ships to users.
 `tests/` has one folder for each plugin, with `tests/dotclaude/<slice>/` for each slice of the core plugin.

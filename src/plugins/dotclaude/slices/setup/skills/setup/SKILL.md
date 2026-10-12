@@ -51,8 +51,6 @@ The command `dotclaude-setup` writes nothing without `--apply`, so run the previ
    - `dotclaude-codegraph` needs the `codegraph` CLI and an index in the project, which `codegraph init -y` builds.
      Do not run `codegraph install`, because it edits the Claude Code configuration of the user.
    - `dotclaude-browser` needs `agent-browser` on `PATH`.
-   - `dotclaude-jev` needs `TYPESAFE_API_KEY` in the environment before Claude Code starts.
-     The key is a secret, so tell the user to export it, and do not ask for its value or write it to a file.
    - `dotclaude-docs` needs `npx` on `PATH`, and the settings step adds its permission lines.
 
 4. Ask the user with one `AskUserQuestion` call.

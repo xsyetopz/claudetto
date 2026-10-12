@@ -4,7 +4,7 @@
   "owner": {
     "name": "xsyetopz"
   },
-  "description": "Lists the dotclaude plugin and its optional code-graph, Jev, browser, docs, sessions, and lab plugins.",
+  "description": "Lists the dotclaude plugin and its optional code-graph, browser, docs, sessions, and lab plugins.",
   "plugins": [
     {
       "name": "dotclaude",
@@ -16,12 +16,6 @@
       "name": "dotclaude-codegraph",
       "source": "./plugins/dotclaude-codegraph",
       "description": "Gives Claude the code graph of a project from the CodeGraph CLI `codegraph`. Syncs the index at session start, after an edit, and after a `git` command that changes the tree. Adds one line about the graph commands at session start.",
-      "category": "productivity"
-    },
-    {
-      "name": "dotclaude-jev",
-      "source": "./plugins/dotclaude-jev",
-      "description": "Adds a second-opinion tool that asks TypeSafe Jev, a decision model, about a decision. With no `TYPESAFE_API_KEY`, the plugin registers no tool.",
       "category": "productivity"
     },
     {

@@ -44,7 +44,7 @@ export const main = async (
   }
   if (command === "settings")
     return settingsCommand({ scope: scopeOf(rest), apply }, places, env, io);
-  if (command === "addons") return addonsCommand({ apply }, places, env, io);
+  if (command === "addons") return addonsCommand({ apply }, places, io);
   if (command === "drift")
     return driftCommand({ scope: scopeOf(rest) }, places, io);
   io.error(USAGE);
