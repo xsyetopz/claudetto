@@ -34,6 +34,9 @@ The add-on works with no other plugin installed.
   - `plugins/dotclaude-browser/hooks/register.ts` (164 lines): `register(on, options)` at `:151`, and `on("tool.call", { tool: "WebSearch" }, ...)` at `:153`.
   - The `userConfig` at `plugins/dotclaude-browser/.claude-plugin/plugin.json:11`.
   - The skill source `src/plugins/dotclaude-browser/skills/drive-web-browser/SKILL.md`, and the tests in `tests/browser/` and `plugins/dotclaude-browser/tests/`.
+- `plugins/dotclaude-browser/evals/hooks.json` has no generator, and `tests/support/hook-evals.test.ts` needs it for the hook `tool.call WebSearch search`.
+  Keep that file, change its entry to the new lab test, and change the line `plugins/dotclaude-browser/` of `tools/rebuild-pending.txt` to `plugins/dotclaude-browser/evals/hooks.json`.
+  P13 makes the generator write it.
 - The rebuild list: `tools/rebuild-pending.txt:52-55`.
 
 ## Steps

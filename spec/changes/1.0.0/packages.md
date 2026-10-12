@@ -116,6 +116,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Verify: `just generate`, `just validate`, and a `reviewer` pass on the texts.
 - [ ] P13 `handoff`: the triggers, the handoff file, `/clear`, the resume, the `/handoff` skill, and `mainHandover`.
   Deps: P03, P05, P06, P07.
+  P13 also makes the generator write `plugins/<plugin>/evals/hooks.json` from the eval cases of each slice, because `tests/support/hook-evals.test.ts` needs the file, and wave 2 keeps it hand-written on the rebuild list (P11b, 2026-10-12).
   Verify also: one run in `just sandbox` that shows the resume.
 - [ ] P14 Handoff cost: one handoff against one compaction on the same session, with `dotclaude-usage`.
   It only reports, in `spec/changes/1.0.0/evidence/handoff-cost.md`.
