@@ -16,7 +16,8 @@ Each inference is marked as inference.
 - `claude-sonnet-5-5` had a window of 1,000,000 tokens in the measurement of 2026-10-12.
   Source: [Handoff-Cost](Handoff-Cost).
 - The comment on `CONTEXT_WINDOW` in `src/kernel/budget.ts` says that Claude Code `2.1.296` warns against a 200K window for `claude-opus-5-5` unless `CLAUDE_CODE_AUTO_COMPACT_WINDOW` is set.
-  I did not check this comment in the strings.
+  I did not confirm this comment in the `2.1.296` strings.
+  The strings have a warning for an unknown model id that names `CLAUDE_CODE_MAX_CONTEXT_TOKENS` and `CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT`.
 - The sizes of the other models are not settled, so this page gives no others.
 
 ## What fills the context
@@ -47,6 +48,10 @@ The threshold is an inference from these two formulas, and I did not measure it.
 - With the 300,000-token window of the dotclaude snippet, the threshold is 267,000 tokens (inference).
 - `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` sets a percentage of the effective window from 0 to 100.
   The threshold is then the lower of that value and the default threshold.
+- The `2.1.296` strings also have a second threshold, from a field named `precomputeBufferFraction`.
+  It is the window minus a fraction of the window, and the trigger takes the lower of that value and the threshold above, so it can fire earlier.
+  The fraction comes from a model table.
+  This page does not examine that second threshold.
 - The next request is blocked at the effective window minus 3,000 tokens.
   With the default output limit, that is the window minus 23,000 tokens (inference).
   `CONTEXT_BLOCK_MARGIN` in `src/kernel/budget.ts` has the same value, 23,000, and gives 20,000 plus 3,000 as its source.
@@ -61,10 +66,12 @@ The threshold is an inference from these two formulas, and I did not measure it.
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | env var | Sets the threshold as a percentage of the effective window. | `2.1.296` strings |
 | `DISABLE_AUTO_COMPACT` | env var | Turns off auto-compaction. | `2.1.296` strings |
 | `DISABLE_COMPACT` | env var | Turns off auto-compaction and `/compact`. | `2.1.296` strings, `dossier/cc-2.1.296/env.md` |
-| `CLAUDE_CODE_MAX_CONTEXT_TOKENS` | env var | Sets the window of the model. | `dossier/cc-2.1.296/env.md` |
+| `CLAUDE_CODE_MAX_CONTEXT_TOKENS` | env var | Sets the window of the model, with `DISABLE_COMPACT` or as a fallback for an unrecognized model id. | `2.1.296` strings, `dossier/cc-2.1.296/env.md` |
 
-The `src/kernel/budget.ts` comment says that Claude Code honors `CLAUDE_CODE_MAX_CONTEXT_TOKENS` only with `DISABLE_COMPACT`.
-I did not check that claim in the strings.
+The `2.1.296` strings read `CLAUDE_CODE_MAX_CONTEXT_TOKENS` in two places, found with a search of `external/cc-2.1.296/strings.txt` for the name and its nearby code.
+One read sets the window only when `DISABLE_COMPACT` is set.
+The other read is a fallback for a model id that the name check does not take as a `claude-` id, after the model table and the 1M checks, and it does not need `DISABLE_COMPACT`.
+So the `src/kernel/budget.ts` comment, which says that Claude Code honors the variable only with `DISABLE_COMPACT`, is incomplete for `2.1.296`.
 
 ## What a compaction keeps and drops
 
