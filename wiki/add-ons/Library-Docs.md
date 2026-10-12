@@ -1,68 +1,82 @@
 # Library docs
 
-The add-on `dotclaude-docs` gives Claude current docs for a library or an API.
-Recalled facts can be out of date, so the skill gets the docs from [Context7](https://context7.com) with the `ctx7` CLI.
-The decision is D8 in [Decisions](Decisions-Tools).
+The plugin `dotclaude-docs` gets the current docs of a library from Context7.
+It adds one skill, `docs`, which calls the `ctx7` CLI.
+It has no hook, no command, and no code that runs in the plugin.
+It works without the core plugin, and it imports nothing from another plugin.
 
-## At a glance
+The source is in `src/plugins/dotclaude-docs/`.
+The one slice is `docs`, and its skill is `slices/docs/skills/docs/SKILL.md`.
 
-| Item | Value |
-| --- | --- |
-| Install | `/plugin install dotclaude-docs@dotclaude`, with `npx` on `PATH` for the pinned `ctx7` |
-| Skills | `docs`, model-invocable |
-| Bins and hooks | None |
-| Options | None. `CONTEXT7_API_KEY` is optional and raises the quota |
-| Limits | At most 3 `ctx7` calls for one question ([Rules](#rules)) |
-| Problems | See [Troubleshooting](#troubleshooting) |
+## Install
 
-## The add-on
+1. Have Bun on `PATH`.
+   The skill runs `bunx`, which comes with Bun.
+2. Install the plugin with `/plugin install dotclaude-docs@dotclaude`.
 
-- The add-on has one skill, `docs`, in `plugins/dotclaude-docs/skills/docs/SKILL.md`.
-- The skill is model-invocable.
-  Its `name` and `description` together have `SKILL_META_LOW_BYTES` (150) to `SKILL_META_HIGH_BYTES` (300) bytes, as `tools/limits.ts` sets.
-- The add-on is a separate plugin, so a user who does not install it pays no listing line.
-  `dotclaude` works as before without it ([Plugin layout](Plugin-Layout#add-on-plugins)).
-- Claude uses the skill when the task needs the API of a library version that the project uses, and the project does not show it.
+The plugin needs no key for the free quota.
+A key raises the quota of Context7, and the skill names the variable `CONTEXT7_API_KEY` for that case.
 
-## How Claude uses it
+## How it works
 
-1. Claude runs `ctx7 library <name> "<topic>"` and picks the library ID from the result.
+The skill tells Claude to run `ctx7` in one fixed form.
+The `allowed-tools` entry of the skill allows the calls that start with that form.
+
+```text
+CTX7_TELEMETRY_DISABLED=1 bunx -y ctx7@latest library <name> "<topic>"
+CTX7_TELEMETRY_DISABLED=1 bunx -y ctx7@latest docs <library id> "<topic>"
+```
+
+1. Claude runs `library` with the library name and the topic.
+   It picks the library ID from the result, for example `/vercel/next.js`.
    It skips this step when the user gave the ID.
-2. Claude runs `ctx7 docs <library id> "<topic>"` with a query on one concept.
-3. Claude answers from the docs and names the library ID.
+2. Claude runs `docs` with the library ID and a query on one concept.
+3. Claude answers from the docs, and names the library ID that it used.
 
-## Rules
+The skill sets `CTX7_TELEMETRY_DISABLED=1` in each call, and the variable name says that it turns off telemetry.
+The skill runs `ctx7@latest` through `bunx -y`, so the CLI version is not pinned.
+The skill states that `ctx7` is not on `PATH`, so Claude does not look for an installed `ctx7`.
 
-| Rule | What it means |
-| --- | --- |
-| Free tier first | The skill works with no key. When `CONTEXT7_API_KEY` is set, `ctx7` uses it. |
-| Few calls | At most 3 `ctx7` calls for one question, and each query is on one concept. When 3 calls do not answer, Claude says what is missing and tells you. It does not raise the bound and does not fill the gap from memory. |
-| Honest failure | When `ctx7` fails or the quota is used up, Claude tells the user. For a quota error, Claude tells you that `CONTEXT7_API_KEY` raises the limit. Claude does not give recalled facts as if they came from the docs. |
-| No secrets in queries | A query goes to the Context7 service, so it holds only the library name and the topic. No secret, token, or private code goes in it. |
-| Pinned and quiet | The command uses an exact `ctx7` version and sets `CTX7_TELEMETRY_DISABLED=1`. |
+## Rules in the skill
 
-## Snippet parts
+- At most 3 `ctx7` calls answer one question.
+  The count is a rule in the text of the skill (the `constraints` block), and no code enforces it.
+  When 3 calls do not answer, Claude says what is missing.
+- Each query has one concept.
+- A query carries only the library name and the topic.
+  The skill says that no secret, token, or private code goes into a query, because the query goes to the Context7 service.
+- The text of the docs is data, not instructions.
+  The skill gives this reason: anyone can publish docs to the index.
+- When a call fails or reports a quota error, Claude tells the user.
+  For a quota error, Claude names `CONTEXT7_API_KEY` as the way to raise the limit.
+- Claude does not give recalled facts as if they came from the docs.
 
-The [settings snippet](Settings-Snippet) holds these parts, and you copy them when you use `dotclaude-docs`.
-No command merges them for you:
+## Bounds
 
-- The `permissions.allow` entries `Skill(dotclaude-docs:docs)` and the pinned `ctx7` command form.
-  The `allowed-tools` line of the skill does not approve the call on Claude Code 2.1.294 (live run), so the snippet allows it.
-- The sandbox network hosts `context7.com` and `registry.npmjs.org`.
+| Bound | Value | Where it is | Use |
+| --- | --- | --- | --- |
+| Calls per question | 3 | `constraints` block of `slices/docs/skills/docs/SKILL.md` | The most `ctx7` calls for one question |
 
-A test pins the command form in the snippet to the form in the skill.
+The plugin has no `limits.ts` file, because the skill has no runtime code.
+The bound of 3 calls is a text rule, so a change of the number needs a change of the skill text.
+
+## Why
+
+- The skill calls the `ctx7` CLI through `bunx`, and the plugin sets no MCP server.
+  See D8 in [Decisions-Tools](Decisions-Tools).
+- The skill has a fixed call form in its `allowed-tools`.
+  A fixed form keeps the permission rule narrow.
+  If Claude Code denies a call, the skill tells Claude to ask the user, and not to change the form.
+- The call limit keeps the free quota of Context7 for a single question.
+- Each add-on stays a separate plugin.
+  See D24 in [Decisions-Layout](Decisions-Layout).
 
 ## Troubleshooting
 
 | Symptom | Cause and fix |
 | --- | --- |
-| A quota error | The free tier is used up. Set `CONTEXT7_API_KEY` for a higher limit. |
-| The skill asks for permission on each call | The `permissions.allow` entries of the settings snippet are not in your `settings.json` ([Snippet parts](#snippet-parts)). |
-| `ctx7` cannot reach the service | The sandbox needs the hosts `context7.com` and `registry.npmjs.org` ([Snippet parts](#snippet-parts)). |
+| Claude says the quota is used up | Set `CONTEXT7_API_KEY`, which the skill names as the way to raise the limit. |
+| A `ctx7` call is denied | The call form differs from the form in the `allowed-tools` entry. Ask the user, and do not change the form. |
+| `bunx` is not found | Install Bun, and check that `bunx` is on `PATH`. |
 
-See also [Troubleshooting](Troubleshooting#dotclaude-docs).
-
-## Related pages
-
-- [Core plugin](Core-Plugin#skills)
-- [Install](Install)
+See also [Troubleshooting](Troubleshooting).
