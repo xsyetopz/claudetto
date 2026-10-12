@@ -24,10 +24,13 @@ const bare = (line: string): string =>
  * The identity of a line: the line itself, but a test declaration without its title.
  * A rename of a title is not a change.
  */
-const identity = (line: string): string =>
-  TEST_DECLARATION.some((re) => re.test(line))
-    ? bare(line).replace(/\b(def test|func Test)\w*/, "$1")
+const identity = (line: string): string => {
+  const mark = line.slice(0, line.length - textOf(line).length);
+  const body = textOf(line);
+  return TEST_DECLARATION.some((re) => re.test(body))
+    ? mark + bare(body).replace(/\b(def test|func Test)\w*/, "$1")
     : line;
+};
 
 /** The lines of code in `text`: no comment, no blank line, and one space for each run of spaces. Python keeps its indent. */
 const codeLines = (text: string, hash: boolean, indent: boolean): string[] =>

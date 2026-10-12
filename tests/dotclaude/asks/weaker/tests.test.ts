@@ -96,8 +96,8 @@ test("a moved test gets no ask", async () => {
   );
 });
 
-test("a change of a helper line of a test file gets no ask", async () => {
-  expect(await editAsks(FILE, SRC, "../src/a.mjs", "../src/b.mjs")).toBe(false);
+test("a change of a helper line of a test file gets an ask", async () => {
+  expect(await editAsks(FILE, SRC, "../src/a.mjs", "../src/b.mjs")).toBe(true);
 });
 
 test("a new test file and a new assert in an old test get no ask", async () => {

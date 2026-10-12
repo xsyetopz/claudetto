@@ -187,10 +187,13 @@ for (const [rel, line] of [
 for (const line of [
   'it("a", { skip: 3 }, f);',
   'it("a", { skip: false }, f);',
-  'const s = "test.skip(x)";',
-  "const s = 'it.only';",
   "const re = /it\\.skip|xit\\(/; const t = `t.Skip()`;",
 ]) {
+  test(`the line \`${line}\` in a test file gets an ask, as it holds a skip word`, async () => {
+    asks(await addLine("src/a.test.mjs", line), "src/a.test.mjs");
+  });
+}
+for (const line of ['const s = "test.skip(x)";', "const s = 'it.only';"]) {
   test(`the line \`${line}\` in a test file gets no ask`, async () => {
     expect(await addLine("src/a.test.mjs", line)).toBe(undefined);
   });

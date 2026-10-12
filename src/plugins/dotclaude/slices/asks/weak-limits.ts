@@ -18,7 +18,7 @@ export const TEST_CONTROL = new RegExp(
     String.raw`\b(?:if|else|elif|unless|when|return|try|catch|except|finally|switch|for|foreach|each|while|loop|break|continue|exit|and|or)\b`,
     String.raw`\b(?:skip\w*|only|todo|xfail|pending|ignore\w*|disabled?|should_panic|expectedFailure|cfg\w*)\b`,
     String.raw`(?<![.\w])(?:fit|xit|xtest|xdescribe|fdescribe)\b`,
-    "timeout|process\\.exit|_exit\\b|\\?|&&|\\|\\|",
+    "timeout|_exit\\b|\\?|&&|\\|\\|",
     String.raw`^\}\s*,[^,]*\)\s*;?$`,
     String.raw`\}\s*,\s*\d[\d_.e]*\s*\)\s*;?$`,
   ].join("|"),

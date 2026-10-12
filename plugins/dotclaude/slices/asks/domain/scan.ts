@@ -69,23 +69,6 @@ export const normal = (statement: string): string =>
     .replace(/,+(?=[)\]}])/g, "")
     .replace(/['`]/g, '"');
 
-/** The normal form of each statement that starts at a match of `starts` in `text`. Each match inside a found statement is skipped. */
-export const statements = (text: string, starts: RegExp[]): string[] => {
-  const hits = starts
-    .flatMap((re) => [...text.matchAll(new RegExp(re.source, "gm"))])
-    .map((m) => m.index)
-    .sort((a, b) => a - b);
-  const out: string[] = [];
-  let end = -1;
-  for (const at of hits) {
-    if (at < end) continue;
-    const statement = statementAt(text, at);
-    out.push(normal(statement));
-    end = at + statement.length;
-  }
-  return out;
-};
-
 /** The items of `was` that `now` does not hold, as a multiset: an item that `now` holds fewer times counts for the rest. */
 export const missing = (was: string[], now: string[]): string[] => {
   const left = new Map<string, number>();

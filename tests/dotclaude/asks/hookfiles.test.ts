@@ -193,10 +193,10 @@ for (const rel of [
     asks(await edit(file, "a", "b", { [file]: "a" }), rel);
   });
 }
-test("a `skip` key with a number value gets no ask", async () => {
+test("a `skip` key with a number value in a test file gets an ask", async () => {
   expect(
     await addLine("src/a.test.mjs", "const q = { skip: 2, take: 5 };"),
-  ).toBe(undefined);
+  ).not.toBe(undefined);
 });
 for (const line of [
   "const re = /biome-ignore/;",
