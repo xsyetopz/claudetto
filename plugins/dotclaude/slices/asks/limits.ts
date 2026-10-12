@@ -7,8 +7,8 @@ import {
   PROJECT_SETTINGS,
 } from "../../kernel/paths.ts";
 
-// The bounds and word lists of the ask on a weaker check are in `limits-weaker.ts`, so that each file stays short.
-export * from "./limits-weaker.ts";
+// The bounds and word lists of the ask on a weaker check are in `weak-limits.ts`, so that each file stays short.
+export * from "./weak-limits.ts";
 
 /** The largest file in bytes that a check reads to compare the text before and after a call. A larger file counts as unread. */
 export const FILE_MAX_BYTES = 1_000_000;

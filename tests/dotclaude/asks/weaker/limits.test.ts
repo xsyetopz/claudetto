@@ -2,7 +2,7 @@
 // Files are strings and no file is read.
 
 import { expect, test } from "bun:test";
-import { editAsks, writeAsks } from "./calls.ts";
+import { editAsks, writeAsks } from "../calls.ts";
 
 const FILE = "/w/plugins/x/limits.ts";
 const SRC = `// The bounds.

@@ -3,7 +3,7 @@
 // Files are strings and no file is read.
 
 import { expect, test } from "bun:test";
-import { asks, editAsks, write, writeAsks } from "./calls.ts";
+import { asks, editAsks, write, writeAsks } from "../calls.ts";
 
 const FILE = "/w/tests/a.test.mjs";
 const SRC = `import { f, g } from "../src/a.mjs";

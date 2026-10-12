@@ -11,10 +11,10 @@ import { CLAUDE_DIR } from "../../../kernel/paths.ts";
 import { LIMIT_FILE_NAME, SCAN_MAX_CHARS } from "../limits.ts";
 import { isTestPath, pathKind } from "./kinds.ts";
 import type { Change } from "./text.ts";
-import { ciWeaker, configWeaker } from "./weak-config.ts";
-import { hookFileWeaker, settingsWeaker } from "./weak-hooks.ts";
-import { UNREADABLE } from "./weak-json.ts";
-import { limitsWeaker, testWeaker } from "./weak-tests.ts";
+import { ciWeaker, configWeaker } from "./weak/config.ts";
+import { hookFileWeaker, settingsWeaker } from "./weak/hooks.ts";
+import { UNREADABLE } from "./weak/json.ts";
+import { limitsWeaker, testWeaker } from "./weak/tests.ts";
 
 /** A kind of protected file: the label for the reason and the function that compares the text before and after. */
 type Kind = {

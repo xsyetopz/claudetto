@@ -10,16 +10,16 @@ import {
   BOUND_DECLARATION,
   HASH_COMMENT_FILE,
   TEST_DECLARATION,
-} from "../limits.ts";
+} from "../../limits.ts";
 import {
   missing,
   normal,
   statementAt,
   statements,
   uncommented,
-} from "./scan.ts";
-import { shown } from "./shown.ts";
-import { flatten, readJson } from "./weak-json.ts";
+} from "../scan.ts";
+import { shown } from "../shown.ts";
+import { flatten, readJson } from "./json.ts";
 
 /** The number of tests in `text`. A line is code text without its comment. */
 const testCount = (text: string): number =>
