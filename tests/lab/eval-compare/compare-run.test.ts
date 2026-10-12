@@ -1,15 +1,13 @@
 // dotclaude-lab: the two runs of `runBoth`, with a fake process runner and a fake output.
 
 import { expect, test } from "bun:test";
-import {
-  runBoth as runBothOn,
-  withCostBound,
-} from "../../plugins/dotclaude-lab/features/eval-compare/run.ts";
-import type { RunResult } from "../../plugins/dotclaude-lab/lib/run-program.ts";
-import { withPlatform } from "../support/fake-program.ts";
+import { runBoth as runBothOn } from "../../../src/plugins/dotclaude-lab/slices/eval-compare/adapters/run-both.ts";
+import type { RunResult } from "../../../src/plugins/dotclaude-lab/slices/eval-compare/adapters/run-program.ts";
+import { withCostBound } from "../../../src/plugins/dotclaude-lab/slices/eval-compare/domain/compare.ts";
+import { withPlatform } from "../../support/fake-program.ts";
 
 // The fake runner reads the arguments as an array, which `runProgram` passes except on Windows, where it passes a command line.
-// The Windows form is pinned in `run-program.test.ts`.
+// The Windows form is pinned in `tests/lab/run-program.test.ts`.
 const runBoth = (...args: Parameters<typeof runBothOn>) =>
   withPlatform("linux", () => runBothOn(...args));
 
