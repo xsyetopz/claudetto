@@ -34,6 +34,9 @@ The 0.28.0 handlers that are not ported yet stay in one hand-written module, whi
 3. Move the 0.28.0 handlers that are not `prompt` from `plugins/dotclaude/hooks/register.ts` to `plugins/dotclaude/hooks/legacy.ts`, with no change of behavior.
    The generated `register.ts` registers the `prompt` handlers, then calls the register function of `legacy.ts`.
    When the generator needs a change for this call, make the smallest change in `tools/generate/emit/register.ts`, and name it in your report.
+   Close the two gaps of the generator that the port showed (Jev, confidence 0.72), each with a test on a fixture in `tests/tools/generate/`:
+   - A slice folder `NAME.ts/` of `.md` texts gives the module `NAME.ts` in the copy of the slice, as `tools/generate/emit/texts.ts` does for 0.28.0, and `tools/generate/emit/slices.ts` does not copy the folder itself.
+   - `tools/generate/emit/hooks.ts` keeps the `description` and the classic hooks of `src/plugins/dotclaude/hooks/hooks.json` in the generated `hooks.json`, so that no hook of 0.28.0 is lost, and the source no longer collides with the output.
 4. Move the tests to `tests/dotclaude/prompt/`, and the hook lab test to `slices/prompt/lab/`.
 5. Remove the 0.28.0 files of `prompt` and their lines in `tools/rebuild-pending.txt`, and add `plugins/dotclaude/hooks/legacy.ts` to the list.
 6. Run `just generate`, `just lab`, and `just check`.
@@ -47,7 +50,7 @@ The 0.28.0 handlers that are not ported yet stay in one hand-written module, whi
 
 ## Boundaries
 
-- Change only the paths of `owns`, the 0.28.0 files of `prompt`, `plugins/dotclaude/hooks/`, `tools/rebuild-pending.txt`, and the smallest change of step 3.
+- Change only the paths of `owns`, the 0.28.0 files of `prompt`, `plugins/dotclaude/hooks/`, `tools/rebuild-pending.txt`, the generator changes of step 3 in `tools/generate/emit/register.ts`, `texts.ts`, `slices.ts`, and `hooks.ts`, and their tests in `tests/tools/generate/`.
 - Port no other slice, and do not change the behavior of a 0.28.0 hook.
 - Use arrow functions, and add no legacy shim except `legacy.ts`, which the rebuild list names.
 - Commit on the branch of your worktree after each step that passes its tests, with the subject `dotclaude 1.0.0: P01b2 <summary>`.
