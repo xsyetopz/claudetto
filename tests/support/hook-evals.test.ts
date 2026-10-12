@@ -212,3 +212,18 @@ test("test names come from each quote form, with escapes removed", () => {
     "passes a correct message",
   ]);
 });
+
+test("a call that joins hooks has the id of each `// eval:` line above it", () => {
+  const text = `export const register = (on: On): void => {
+  // eval: session.start decide
+  // eval: session.start setup
+  on("session.start", async ($, e, next) => next(e));
+  // eval: tool.call Bash
+  on("tool.call", { tool: "Bash" }, (_$, e, next) => next(e));
+};
+`;
+  expect(moduleHooks({ "register.ts": text })).toStrictEqual({
+    ids: ["session.start decide", "session.start setup", "tool.call Bash"],
+    faults: [],
+  });
+});
