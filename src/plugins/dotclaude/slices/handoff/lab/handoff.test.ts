@@ -19,6 +19,10 @@ const USAGE = {
 /** The stubs of one test: the context share, the answers of the CLIs, and the lists of what the mod did. */
 const stub = (on: On, percent: number) => {
   const seen = {
+    /** Whether the handoff file exists, as the CLI `dotclaude-handoff newest` tells. */
+    written: true,
+    /** Whether a `tool.call` fails. */
+    toolFails: false,
     run: [] as string[],
     commands: [] as string[],
     prompts: [] as string[],
@@ -31,7 +35,9 @@ const stub = (on: On, percent: number) => {
     },
   }));
   on("turn.complete", (_$, e) => ({ text: e.answer }));
-  on("tool.call", () => ({ result: "ok" }));
+  on("tool.call", () =>
+    seen.toolFails ? { result: "failed", isError: true } : { result: "ok" },
+  );
   on("skill.prompt", (_$, e) => ({ text: e.text }));
   on("turn.step", async function* (_$, e) {
     yield* [];
@@ -48,9 +54,10 @@ const stub = (on: On, percent: number) => {
     const name = e.argv[2]?.split("/").pop() ?? "";
     seen.run.push(`${name} ${e.argv.slice(3).join(" ")}`);
     const stdout = name === "dotclaude-spec" ? "next: P14" : FILE;
+    const missing = e.argv[3] === "newest" && !seen.written;
     return {
       value: {
-        exitCode: 0,
+        exitCode: missing ? 1 : 0,
         stdout,
         stderr: "",
         isStdoutTruncated: false,
@@ -69,14 +76,26 @@ const stub = (on: On, percent: number) => {
   return seen;
 };
 
-const complete = ($: Engine) =>
+const complete = (
+  $: Engine,
+  reason: "answer" | "aborted" | "error" = "answer",
+) =>
   $.turn.complete({
     answer: "done",
     durationMs: 1,
-    isAborted: false,
+    isAborted: reason === "aborted",
     turnId: "t",
-    reason: "answer",
+    reason,
   });
+
+/** Whether the turn result carries a note beyond the answer, such as the `manual` hint. */
+const hasHint = (out: { text: string }) => out.text !== "done";
+
+/** Runs the Bash command `command` as a call of the main session. */
+const bash = ($: Engine, command: string) =>
+  $.tool.call({ tool: "Bash", command });
+
+const AUTO = { options: { mainHandover: "auto" } };
 
 test(
   "below the context bound the turn ends with no handoff",
@@ -92,7 +111,7 @@ test(
 test("with `manual` a context over the bound adds the hint to run `/handoff`", async ($: Engine, on: On) => {
   stub(on, 90);
   const out = await complete($);
-  expect(out.text).toContain("/handoff");
+  expect(hasHint(out)).toBe(true);
 });
 
 test(
@@ -174,9 +193,100 @@ test(
   },
 );
 
-test("a package that goes to `done` adds the hint to run `/handoff`", async ($: Engine, on: On) => {
+test("a package that goes to `done` adds the hint", async ($: Engine, on: On) => {
   stub(on, 10);
-  await $.tool.call({ tool: "Bash", command: "dotclaude-spec lane P13 done" });
-  const out = await complete($);
-  expect(out.text).toContain("/handoff");
+  await bash($, "dotclaude-spec lane P13 done");
+  expect(hasHint(await complete($))).toBe(true);
 });
+
+test("a merge of a package adds the hint", async ($: Engine, on: On) => {
+  stub(on, 10);
+  await bash($, "dotclaude-spec merge P13 feature-branch");
+  expect(hasHint(await complete($))).toBe(true);
+});
+
+test("a lane command that fails adds no hint", async ($: Engine, on: On) => {
+  const seen = stub(on, 10);
+  seen.toolFails = true;
+  await bash($, "dotclaude-spec lane P13 done");
+  expect(hasHint(await complete($))).toBe(false);
+});
+
+test("the lane text in a quoted argument adds no hint", async ($: Engine, on: On) => {
+  stub(on, 10);
+  await bash($, 'git commit -m "x; dotclaude-spec lane P1 done"');
+  await bash($, "echo dotclaude-spec lane P1 done");
+  expect(hasHint(await complete($))).toBe(false);
+});
+
+test("a lane command after `cd` and `&&` adds the hint", async ($: Engine, on: On) => {
+  stub(on, 10);
+  await bash($, "cd /p && dotclaude-spec lane P13 done");
+  expect(hasHint(await complete($))).toBe(true);
+});
+
+test("a lane hint follows a context hint in the same episode", async ($: Engine, on: On) => {
+  stub(on, 90);
+  expect(hasHint(await complete($))).toBe(true);
+  expect(hasHint(await complete($))).toBe(false);
+  await bash($, "dotclaude-spec lane P13 done");
+  expect(hasHint(await complete($))).toBe(true);
+});
+
+test(
+  "an aborted write turn drops the handoff and starts none again",
+  { ...AUTO },
+  async ($: Engine, on: On) => {
+    const seen = stub(on, 90);
+    await complete($);
+    expect(seen.prompts.length).toBe(1);
+    await complete($, "aborted");
+    await complete($);
+    await complete($);
+    expect(seen.commands).toEqual([]);
+    expect(seen.prompts.length).toBe(1);
+  },
+);
+
+test(
+  "a write turn that ends in an error runs no resume",
+  { ...AUTO },
+  async ($: Engine, on: On) => {
+    const seen = stub(on, 90);
+    await complete($);
+    await complete($, "error");
+    expect(seen.commands).toEqual([]);
+    expect(seen.prompts.length).toBe(1);
+  },
+);
+
+test(
+  "a turn of the user in the middle of the cycle keeps the handoff",
+  { ...AUTO },
+  async ($: Engine, on: On) => {
+    const seen = stub(on, 90);
+    seen.written = false;
+    await complete($);
+    await complete($);
+    expect(seen.commands).toEqual([]);
+    seen.written = true;
+    await complete($);
+    expect(seen.commands).toEqual(["clear"]);
+    expect(seen.prompts.length).toBe(2);
+    expect(seen.prompts[1]).toContain(FILE);
+  },
+);
+
+test(
+  "with no file written the write prompt goes out twice and then the hint goes to the user",
+  { ...AUTO },
+  async ($: Engine, on: On) => {
+    const seen = stub(on, 90);
+    seen.written = false;
+    const outs = [];
+    for (let i = 0; i < 8; i++) outs.push(await complete($));
+    expect(seen.prompts.length).toBe(2);
+    expect(seen.commands).toEqual([]);
+    expect(outs.filter(hasHint).length).toBe(1);
+  },
+);

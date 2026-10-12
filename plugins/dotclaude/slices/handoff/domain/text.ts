@@ -28,5 +28,6 @@ export const manualHint = (reason: string): string =>
 
 /** The reason text for a trigger. */
 export const REASON_LANE = "A package of the change is done.";
+export const REASON_NO_FILE = "The handoff file is not written.";
 export const reasonContext = (percent: number): string =>
   `The context is at ${Math.round(percent)} percent.`;

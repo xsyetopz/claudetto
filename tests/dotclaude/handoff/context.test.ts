@@ -32,16 +32,21 @@ test("a subagent over the context bound gets the report-now note", () => {
     { tokens: SUBAGENT_CONTEXT_MAX + 1, model: MODEL, turns: 1 },
     "investigator",
   );
-  expect(note).toContain("report");
+  expect(note).toBeDefined();
+  expect(
+    reportNote(
+      { tokens: SUBAGENT_CONTEXT_MAX, model: MODEL, turns: 1 },
+      "investigator",
+    ),
+  ).toBeUndefined();
 });
 
 test("a subagent that nears its turn limit gets the note", () => {
   const max = AGENT_MAX_TURNS["investigator"] as number;
-  const note = reportNote(
-    { tokens: 10, model: MODEL, turns: max - TURNS_LEFT_AT },
-    "dotclaude:investigator",
-  );
-  expect(note).toContain(`${max - TURNS_LEFT_AT} turns`);
+  const at = (turns: number) =>
+    reportNote({ tokens: 10, model: MODEL, turns }, "dotclaude:investigator");
+  expect(at(max - TURNS_LEFT_AT)).toBeDefined();
+  expect(at(max - TURNS_LEFT_AT - 1)).toBeUndefined();
 });
 
 test("a Haiku 5.5 subagent has the lower context bound", () => {

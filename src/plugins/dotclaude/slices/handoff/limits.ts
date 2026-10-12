@@ -26,6 +26,16 @@ export const REPORT_MAX_WORDS = 400;
 /** The share of the context window in percent, at which the main session starts a handoff. */
 export const CONTEXT_PERCENT = 60;
 
+/**
+ * The turns of the main session that a started handoff waits for the file, before it counts as not written.
+ * The types give no turn id for a prompt of a plugin, so the hook cannot tie the write turn to its end.
+ * The first turn that ends is the write turn or a turn of the user that was queued before it.
+ */
+export const HANDOFF_WAIT_TURNS = 2;
+
+/** The times that the hook submits the write prompt again for one trigger episode when no file appears. */
+export const HANDOFF_RETRY_MAX = 1;
+
 /** The values of the `mainHandover` option. */
 export const MAIN_HANDOVERS = ["auto", "manual", "off"] as const;
 

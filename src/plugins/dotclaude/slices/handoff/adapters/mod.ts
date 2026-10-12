@@ -15,8 +15,8 @@
 import type {
   EngineInterface,
   PluginOptions,
-  ToolCallInput,
-  ToolCallResult,
+  TurnCompleteInput,
+  TurnCompleteResult,
 } from "claude-code";
 import type { Handler } from "../../../../../kernel/slice.ts";
 import {
@@ -27,12 +27,18 @@ import {
 import {
   manualHint,
   REASON_LANE,
+  REASON_NO_FILE,
   reasonContext,
   resumeText,
   writePrompt,
 } from "../domain/text.ts";
-import { isLaneDone, overContext, parseHandover } from "../domain/trigger.ts";
-import { CONTEXT_PERCENT } from "../limits.ts";
+import { laneDoneCall, overContext, parseHandover } from "../domain/trigger.ts";
+import {
+  CONTEXT_PERCENT,
+  HANDOFF_RETRY_MAX,
+  HANDOFF_WAIT_TURNS,
+  type MainHandover,
+} from "../limits.ts";
 
 /** The state of each subagent by its `agentId`. */
 const agents = new Map<string, AgentState>();
@@ -43,11 +49,26 @@ let options: PluginOptions = {};
 /** The reason of a trigger that fired and has no handoff yet, or undefined. */
 let wanted: string | undefined;
 
-/** The handoff file that Claude was asked to write, or undefined. */
-let pending: { readonly file: string } | undefined;
+/** The handoff file that Claude was asked to write, and how many turns ended since, or undefined. */
+let pending: { readonly file: string; waited: number } | undefined;
 
-/** Whether the `manual` hint went to the user for the trigger that is still active. */
-let hinted = false;
+/** The state of one trigger episode, which ends when no trigger is active or a handoff runs. */
+type Episode = {
+  /** The kinds of trigger whose `manual` hint went to the user. */
+  hinted: Set<string>;
+  /** The times that the write prompt went out again. */
+  retries: number;
+  /** Whether the handoff of this episode ended with no resume, so no handoff starts again. */
+  over: boolean;
+};
+
+const newEpisode = (): Episode => ({
+  hinted: new Set(),
+  retries: 0,
+  over: false,
+});
+
+let episode = newEpisode();
 
 /** Keeps the `userConfig` values of the plugin for the handlers. */
 export const keepOptions = (values: PluginOptions): void => {
@@ -59,7 +80,7 @@ export const resetState = (): void => {
   agents.clear();
   wanted = undefined;
   pending = undefined;
-  hinted = false;
+  episode = newEpisode();
   options = {};
 };
 
@@ -92,18 +113,13 @@ export const onTurnStep: Handler<"turn.step"> = async function* (_$, e, next) {
   return result;
 };
 
-/** Sets the trigger when `dotclaude-spec lane <package> done` succeeds in the main session. */
-const laneDone = (e: ToolCallInput, out: ToolCallResult): boolean =>
-  e.tool === "Bash" &&
-  !e.agentId &&
-  out.deny === undefined &&
-  !out.isError &&
-  isLaneDone(e.command);
-
 /** Adds the report-now note to the result of a tool call of a subagent that nears a bound, and watches for a package that goes to `done`. */
 export const onToolCall: Handler<"tool.call"> = async ($, e, next) => {
   const out = await next(e);
-  if (laneDone(e, out)) wanted = REASON_LANE;
+  if (laneDoneCall(e, out)) {
+    wanted = REASON_LANE;
+    if (!pending) episode = newEpisode();
+  }
   const state = e.agentId ? agents.get(e.agentId) : undefined;
   if (!state || out.deny !== undefined) return out;
   const type = (await $.agent.list()).find((row) => row.id === e.agentId)?.type;
@@ -117,60 +133,114 @@ export const onSkill: Handler<"skill.prompt"> = async ($, e, next) => {
   if (parseHandover(options["mainHandover"]) === "off") return out;
   const path = await runBin($, "dotclaude-handoff", ["path"]);
   if (!path.ok) return out;
-  pending = { file: path.text };
+  pending = { file: path.text, waited: 0 };
+  episode = newEpisode();
   return {
     ...out,
     text: `${out.text}\n\nThe handoff file is \`${path.text}\`.`,
   };
 };
 
-/** Clears the session and submits the resume prompt when the file exists. */
-const resume = async ($: EngineInterface, file: string): Promise<void> => {
+/** Clears the session and submits the resume prompt when the file exists. Gives whether it did. */
+const resume = async ($: EngineInterface, file: string): Promise<boolean> => {
   const newest = await runBin($, "dotclaude-handoff", ["newest"]);
-  if (!newest.ok || newest.text !== file) return;
+  if (!newest.ok || newest.text !== file) return false;
   const next = await runBin($, "dotclaude-spec", ["next"]);
   await $.command.run({ command: "clear" });
   await $.prompt.submit({ text: resumeText(file, next.ok ? next.text : "") });
+  return true;
 };
 
+/** A trigger that fired for the main session: its kind and its reason text. */
+type Trigger = { readonly kind: string; readonly reason: string };
+
 /** The trigger that fired for the main session, or undefined. */
-const triggerOf = async ($: EngineInterface): Promise<string | undefined> => {
-  if (wanted) return wanted;
+const triggerOf = async ($: EngineInterface): Promise<Trigger | undefined> => {
+  if (wanted) return { kind: "lane", reason: wanted };
   const { context } = await $.session.usage();
   return overContext(context.percent, CONTEXT_PERCENT)
-    ? reasonContext(context.percent ?? 0)
+    ? { kind: "context", reason: reasonContext(context.percent ?? 0) }
     : undefined;
+};
+
+/** Adds the `manual` hint of `trigger` to `out`, once for each kind of trigger in an episode. */
+const withHint = (
+  out: TurnCompleteResult,
+  trigger: Trigger,
+): TurnCompleteResult => {
+  if (episode.hinted.has(trigger.kind)) return out;
+  episode.hinted.add(trigger.kind);
+  return { ...out, text: `${out.text}\n\n${manualHint(trigger.reason)}` };
+};
+
+/** Asks Claude to write the handoff file. A failed `path` call starts nothing. */
+const startWrite = async ($: EngineInterface): Promise<void> => {
+  const path = await runBin($, "dotclaude-handoff", ["path"]);
+  if (!path.ok) return;
+  pending = { file: path.text, waited: 0 };
+  wanted = undefined;
+  await $.prompt.submit({ text: writePrompt(path.text) });
+};
+
+/**
+ * Ends a turn while a write prompt is out.
+ * Only an `answer` turn can be the write turn that wrote the file.
+ * A turn that ends with another reason drops the handoff, and none starts again in this episode.
+ * When the file is not there after `HANDOFF_WAIT_TURNS` turns, the prompt goes out once more,
+ * and then the `manual` hint goes to the user.
+ */
+const settle = async (
+  $: EngineInterface,
+  e: TurnCompleteInput,
+  out: TurnCompleteResult,
+  mode: MainHandover,
+): Promise<TurnCompleteResult> => {
+  const current = pending as NonNullable<typeof pending>;
+  if (e.reason !== "answer") {
+    pending = undefined;
+    wanted = undefined;
+    episode.over = true;
+    return out;
+  }
+  if (await resume($, current.file)) {
+    pending = undefined;
+    wanted = undefined;
+    episode = newEpisode();
+    return out;
+  }
+  current.waited += 1;
+  if (current.waited < HANDOFF_WAIT_TURNS) return out;
+  pending = undefined;
+  wanted = undefined;
+  if (mode === "auto" && episode.retries < HANDOFF_RETRY_MAX) {
+    episode.retries += 1;
+    await startWrite($);
+    return out;
+  }
+  episode.over = true;
+  return withHint(out, { kind: "no-file", reason: REASON_NO_FILE });
 };
 
 /** Runs the handoff at the end of a turn of the main session. */
 export const onTurnComplete: Handler<"turn.complete"> = async ($, e, next) => {
   const out = await next(e);
-  if (e.agentId) return out;
-  const mode = parseHandover(options["mainHandover"]);
-  if (pending) {
-    const { file } = pending;
-    pending = undefined;
-    wanted = undefined;
-    hinted = false;
-    await resume($, file);
+  if (e.agentId) {
+    agents.delete(e.agentId);
     return out;
   }
+  const mode = parseHandover(options["mainHandover"]);
+  if (pending) return settle($, e, out, mode);
   if (mode === "off") return out;
-  const reason = await triggerOf($);
-  if (!reason) {
-    hinted = false;
+  const trigger = await triggerOf($);
+  if (!trigger) {
+    episode = newEpisode();
     return out;
   }
   if (mode === "manual") {
     wanted = undefined;
-    if (hinted) return out;
-    hinted = true;
-    return { ...out, text: `${out.text}\n\n${manualHint(reason)}` };
+    return withHint(out, trigger);
   }
-  const path = await runBin($, "dotclaude-handoff", ["path"]);
-  if (!path.ok) return out;
-  pending = { file: path.text };
-  wanted = undefined;
-  await $.prompt.submit({ text: writePrompt(path.text) });
+  if (episode.over) return out;
+  await startWrite($);
   return out;
 };
