@@ -107,7 +107,6 @@ It writes two files:
 - `schemas/claude-code-settings.json`, the keys of `settings.json`.
 - `schemas/claude-code-managed-settings.json`, the keys of `managed-settings.json`, as a reference only, because dotclaude writes no managed settings (see [D2](#d2-no-guard-route-settingsjson-only)).
 
-
 Code: `src/plugins/dotclaude-lab/slices/schema/domain/build.ts` builds the schema from the bundle text.
 The file names are at line 32, and the version title is at line 79.
 The CLI is in `src/plugins/dotclaude-lab/slices/schema/adapters/cli.ts`.
