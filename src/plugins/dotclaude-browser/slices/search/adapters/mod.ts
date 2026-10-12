@@ -12,7 +12,7 @@ import type {
   EngineInterface,
   PluginOptions,
 } from "claude-code";
-import type { Configure } from "../../../../../kernel/slice.ts";
+import type { Handler } from "../../../../../kernel/slice.ts";
 import {
   CLOAK_DIR,
   CLOAK_NAME,
@@ -146,9 +146,25 @@ const answer = async (
   }
 };
 
+/**
+ * The `next` of a `tool.call` hook, with a method signature so that its parameter is bivariant.
+ * The generated `register` passes this handler to `on` with the filter `{ tool: "WebSearch" }`, which gives `next` the narrow type of that tool.
+ * The generator does not narrow the handler type, so the method signature lets both `next` types fit.
+ */
+type PassOn = {
+  pass(
+    e: Parameters<Parameters<Handler<"tool.call">>[2]>[0],
+  ): ReturnType<Parameters<Handler<"tool.call">>[2]>;
+}["pass"];
+
 /** The `tool.call` handler on `WebSearch`, with the `backend` option of the plugin. */
-export const onSearch: Configure<"tool.call"> =
-  (options) => async ($, e, next) => {
+export const onSearch =
+  (options: PluginOptions) =>
+  async (
+    $: EngineInterface,
+    e: Parameters<Handler<"tool.call">>[1],
+    next: PassOn,
+  ) => {
     if (e.tool !== "WebSearch") return next(e);
     const out = await answer($, e, options);
     if (!("fallback" in out)) return out;

@@ -8,6 +8,15 @@
   },
   "repository": "https://github.com/xsyetopz/dotclaude",
   "license": "MIT",
+  "userConfig": {
+    "backend": {
+      "type": "string",
+      "title": "Browser backend",
+      "description": "Use `agent-browser`, or `cloakbrowser` for sites with bot detection. CloakBrowser runs through `agent-browser` with its own Chromium binary. With `cloakbrowser`, `WebSearch` needs that binary.",
+      "default": "agent-browser",
+      "options": ["agent-browser", "cloakbrowser"]
+    }
+  },
   "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Browser",
   "keywords": ["browser", "agent-browser", "cloakbrowser", "web-search"]
 }

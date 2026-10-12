@@ -1,5 +1,5 @@
 {
-  "tool.call WebSearch search": {
+  "tool.call search": {
     "requests": 0,
     "tokens": 0,
     "blocks": true,

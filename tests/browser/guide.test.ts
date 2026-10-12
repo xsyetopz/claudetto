@@ -11,8 +11,8 @@ import {
   guideText,
   NOT_INSTALLED,
   noGuide,
-} from "../../plugins/dotclaude-browser/features/guide/guide.ts";
-import { MAX_GUIDE_CHARS } from "../../plugins/dotclaude-browser/features/guide/limits.ts";
+} from "../../plugins/dotclaude-browser/slices/browse/domain/guide.ts";
+import { MAX_GUIDE_CHARS } from "../../plugins/dotclaude-browser/slices/browse/limits.ts";
 import { PLUGINS } from "../support/repo.ts";
 
 const BIN = path.join(PLUGINS, "dotclaude-browser/bin/dotclaude-browser-guide");

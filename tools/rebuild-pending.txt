@@ -50,9 +50,8 @@ src/plugins/dotclaude-codegraph/
 tests/codegraph/
 
 # P11b: `dotclaude-browser`
-plugins/dotclaude-browser/
-src/plugins/dotclaude-browser/
-tests/browser/
+plugins/dotclaude-browser/evals/hooks.json
+plugins/dotclaude-browser/tsconfig.json
 
 # P11e: `dotclaude-sessions`
 plugins/dotclaude-sessions/
