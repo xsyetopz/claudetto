@@ -12,6 +12,7 @@
 // For each run (a session, and each subagent run) it reports the model calls
 // and the context that each call reads again (cache reads plus input tokens).
 // It lists the skills that the transcripts show as available and the period did not call.
+// It shows the build (version and short SHA) of each session from its stamp row, and the cost of each build.
 // When the transcripts list no skills, it reads the installed plugins and the skills folder, and names that source.
 // An advisor call is an `advisor_message` entry in the call's
 // `usage.iterations`, and the call's own token counts leave it out.

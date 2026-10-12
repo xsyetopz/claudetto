@@ -2,7 +2,9 @@
 // One transcript file of the usage report: its calls, its tool uses, and its runs, added to the sums.
 
 import path from "node:path";
+import { type StampRecord, parseStamp } from "../../../kernel/stamp.ts";
 import type { Store } from "../ports.ts";
+import { buildOf } from "./builds.ts";
 import {
   bestUsage,
   briefSize,
@@ -52,6 +54,7 @@ export const scanFile = async (
   let lastModel: string | null | undefined = null;
   let compacted = false;
   let entrypoint: string | null = null;
+  let stamp: StampRecord | undefined;
   const rereads: number[] = [];
   const entries = await readEntries(store, file);
   const best = bestUsage(entries);
@@ -99,6 +102,7 @@ export const scanFile = async (
         break;
       case "system":
         if (entry.subtype === "compact_boundary") compacted = true;
+        stamp ??= parseStamp(entry.content);
         break;
       case "user":
         if (type === "main") {
@@ -193,8 +197,16 @@ export const scanFile = async (
     const row: CallRow = runRow(id, type, rereads);
     s.callRuns.push(row);
   }
-  if (type === "main") s.sessionResultTokens.push(resultTokens);
-  else {
+  if (type === "main") {
+    s.sessionResultTokens.push(resultTokens);
+    if (rereads.length)
+      s.sessions.push({
+        id,
+        build: buildOf(stamp),
+        cost: fileCost,
+        at: await store.mtime(file),
+      });
+  } else {
     s.runsByType[type] = (s.runsByType[type] ?? 0) + 1;
     s.runs.push({
       id,

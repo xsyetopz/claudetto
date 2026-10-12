@@ -3,6 +3,7 @@
 // that `report.ts` collects.
 
 import type { Store } from "../ports.ts";
+import { buildTotals } from "./builds.ts";
 import { briefStats, median, quantile } from "./parse.ts";
 import { callsPerRun, unusedSkills } from "./runs.ts";
 import type { FirstBucket, ReportSums } from "./types.ts";
@@ -29,6 +30,7 @@ export const summarize = async (store: Store, s: ReportSums) => {
     runLimit,
     runs,
     runsByType,
+    sessions,
     sessionResultTokens,
     listed,
     skills,
@@ -82,6 +84,22 @@ export const summarize = async (store: Store, s: ReportSums) => {
         cost: Math.round(cost * 100) / 100,
         share: share(cost),
       })),
+    builds: {
+      byBuild: buildTotals(sessions).map((b) => ({
+        build: b.build,
+        sessions: b.count,
+        cost: Math.round(b.cost * 100) / 100,
+        share: share(b.cost),
+      })),
+      latest: [...sessions]
+        .sort((a, b) => b.at - a.at)
+        .slice(0, runLimit)
+        .map((s) => ({
+          id: s.id,
+          build: s.build,
+          cost: Math.round(s.cost * 100) / 100,
+        })),
+    },
     entrypoints,
     wakesByEntrypoint: wakes,
     limitHits,

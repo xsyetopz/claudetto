@@ -35,6 +35,7 @@ const emptySums = (configDir: string, runLimit: number): ReportSums => ({
   // results add to each main session, and what each `Agent` call said.
   runs: [],
   runsByType: {},
+  sessions: [],
   sessionResultTokens: [],
   listed: new Map(),
   skills: {},

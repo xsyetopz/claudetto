@@ -1,6 +1,7 @@
 // The shapes that the usage report reads from a transcript, and the rows that it builds from them.
 // The shapes of a transcript line are in `transcript.ts`, which the `start` feature also reads.
 
+import type { SessionBuild } from "./builds.ts";
 import type {
   Attachment,
   Block,
@@ -113,6 +114,7 @@ export type ReportSums = {
   runLimit: number;
   runs: AgentRun[];
   runsByType: Record<string, number>;
+  sessions: SessionBuild[];
   sessionResultTokens: number[];
   listed: Map<string, number>;
   skills: Record<string, number>;
