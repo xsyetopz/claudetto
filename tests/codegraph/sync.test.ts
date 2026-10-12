@@ -1,47 +1,40 @@
 // The background sync of dotclaude-codegraph (task 17.5) with a FAKE `codegraph` on `PATH`.
-// Claude Code picks the hooks with `matcher` and `if`, so the test applies both fields to a tool call
+// Claude Code picks the classic hooks with `matcher`, so the test applies that field to a tool call
 // as a stand-in for that choice, and then runs the command of each hook that is picked.
+// The sync after a `git` command is a mod hook with the filter `TREE_CHANGE`, and its lab test is in `slices/graph/lab/`.
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import { BACKGROUND_SYNC_TIMEOUT_MS } from "../../plugins/dotclaude-codegraph/features/graph/limits.ts";
+import { TREE_CHANGE } from "../../plugins/dotclaude-codegraph/slices/graph/domain/graph.ts";
+import { BACKGROUND_SYNC_TIMEOUT_MS } from "../../plugins/dotclaude-codegraph/slices/graph/limits.ts";
 import { PLUGIN, runHook, setUp } from "./fake-cli.ts";
 
 type Hook = {
   type: string;
   command: string;
-  if?: string;
   async?: boolean;
   timeout: number;
 };
 type Group = { matcher: string; hooks: Hook[] };
-type ToolInput = { command?: string; file_path?: string; pattern?: string };
 
 const { PostToolUse }: { PostToolUse: Group[] } = (
   await Bun.file(path.join(PLUGIN, "hooks/hooks.json")).json()
 ).hooks;
 
-/** STAND-IN for the choice of Claude Code: the `Bash(prefix *)` form of `if` against a command. */
-const ifMatches = (rule: string | undefined, input: ToolInput | undefined) => {
-  if (!rule) return true;
-  const prefix = rule.match(/^Bash\((.*) \*\)$/)?.[1];
-  return prefix !== undefined && input?.command?.startsWith(`${prefix} `);
-};
+/** STAND-IN for the choice of Claude Code: the hooks whose `matcher` fits the tool name. */
+const picked = (tool_name: string) =>
+  PostToolUse.filter((g) =>
+    new RegExp(`^(${g.matcher})$`).test(tool_name),
+  ).flatMap((g) => g.hooks);
 
-/** The hooks that a tool call picks. */
-const picked = (tool_name: string, tool_input: ToolInput) =>
-  PostToolUse.filter((g) => new RegExp(`^(${g.matcher})$`).test(tool_name))
-    .flatMap((g) => g.hooks)
-    .filter((h) => ifMatches(h.if, tool_input));
-
-const bash = (command: string): [string, ToolInput] => ["Bash", { command }];
-
-test("an edit or a write picks one background sync", () => {
+test("an edit or a write picks one background sync, and other tools pick none", () => {
   for (const tool of ["Edit", "Write", "MultiEdit", "NotebookEdit"])
-    expect(picked(tool, { file_path: "a.py" }).length, tool).toBe(1);
+    expect(picked(tool).length, tool).toBe(1);
+  for (const tool of ["Bash", "Read", "Grep"])
+    expect(picked(tool).length, tool).toBe(0);
 });
 
-test("each git command that changes the tree picks one background sync", () => {
+test("each git command that changes the tree fits the filter of the mod hook", () => {
   for (const sub of [
     "commit -m x",
     "merge main",
@@ -56,10 +49,10 @@ test("each git command that changes the tree picks one background sync", () => {
     "apply a.patch",
     "am a.mbox",
   ])
-    expect(picked(...bash(`git ${sub}`)).length, sub).toBe(1);
+    expect(TREE_CHANGE.test(`git ${sub}`), sub).toBe(true);
 });
 
-test("a git command that does not change the tree, and other calls, pick no sync", () => {
+test("a git command that does not change the tree, and other commands, do not fit the filter", () => {
   for (const command of [
     "git status",
     "git diff HEAD",
@@ -69,9 +62,7 @@ test("a git command that does not change the tree, and other calls, pick no sync
     "git push",
     "ls",
   ])
-    expect(picked(...bash(command)).length, command).toBe(0);
-  expect(picked("Read", { file_path: "a.py" }).length).toBe(0);
-  expect(picked("Grep", { pattern: "x" }).length).toBe(0);
+    expect(TREE_CHANGE.test(command), command).toBe(false);
 });
 
 test("every sync hook is async with a time limit that covers the bound of the CLI call", () => {
@@ -86,20 +77,14 @@ test("every sync hook is async with a time limit that covers the bound of the CL
 
 test("the command of a picked hook syncs an indexed project and prints nothing", async () => {
   const t = await setUp();
-  const calls: [string, ToolInput][] = [
-    ["Edit", { file_path: "a.py" }],
-    bash("git commit -m x"),
-  ];
-  for (const [tool, input] of calls) {
-    const [hook] = picked(tool, input) as [Hook];
-    const mode = (
-      hook.command.match(/cli\.ts" (\S+)$/) as RegExpMatchArray
-    )[1] as string;
-    const r = runHook(mode, { cwd: t.project, tool_name: tool }, t.env);
-    expect(r.out).toBe(null);
-    expect(r.status).toBe(0);
-  }
-  expect(await t.log()).toStrictEqual(["sync -q", "sync -q"]);
+  const [hook] = picked("Edit") as [Hook];
+  const mode = (
+    hook.command.match(/hook\.ts" (\S+)$/) as RegExpMatchArray
+  )[1] as string;
+  const r = runHook(mode, { cwd: t.project, tool_name: "Edit" }, t.env);
+  expect(r.out).toBe(null);
+  expect(r.status).toBe(0);
+  expect(await t.log()).toStrictEqual(["sync -q"]);
 });
 
 test("the sync of a project with no index, or with no CLI, runs nothing and exits 0", async () => {

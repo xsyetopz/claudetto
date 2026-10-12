@@ -5,7 +5,7 @@ import { expect, test } from "bun:test";
 import {
   runTree,
   taskkill,
-} from "../../plugins/dotclaude-codegraph/features/graph/run-tree.ts";
+} from "../../plugins/dotclaude-codegraph/slices/graph/adapters/run-tree.ts";
 
 test("`taskkill` ends the pid and its children with fixed arguments and no shell", () => {
   const seen: unknown[] = [];

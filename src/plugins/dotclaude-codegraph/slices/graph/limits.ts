@@ -1,0 +1,13 @@
+// The bounds of the `graph` slice.
+
+/** How long `codegraph --version` may run for the check. */
+export const QUERY_TIMEOUT_MS = 2000;
+
+/** How long the sync at session start may run. The hook timeout in `slice.ts` is longer. */
+export const START_SYNC_TIMEOUT_MS = 8000;
+
+/** How long the background sync after an edit may run. The hook timeout in `slice.ts` is longer. */
+export const BACKGROUND_SYNC_TIMEOUT_MS = 60000;
+
+/** How long the sync after a `git` command may run. The `git` result waits for it, so it is shorter. */
+export const GIT_SYNC_TIMEOUT_MS = 15000;

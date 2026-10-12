@@ -15,7 +15,6 @@ import {
   rethrowUnless,
 } from "../../plugins/dotclaude/lib/errors.ts";
 import { tmpDir } from "../support/repo.ts";
-import { readText } from "../support/verdicts.ts";
 
 const dir = tmpDir("dc-errors");
 const absent = path.join(dir, "absent.jsonl");
@@ -28,13 +27,6 @@ test("`rethrowUnless` returns for a listed code or name and throws the rest", ()
   const other = new TypeError("x");
   expect(() => rethrowUnless(other, "ENOENT", "SyntaxError")).toThrow(other);
   expect(isExpected(undefined, "ENOENT")).toBe(false);
-});
-
-test("the adherence reads give null for an absent file and throw any other error", async () => {
-  expect(await readText(absent)).toBe(null);
-  await expect(readText(loop)).rejects.toThrow(
-    expect.objectContaining({ code: "ELOOP" }),
-  );
 });
 
 test("the turn count and the tail read give no rows for an absent transcript and throw any other error", async () => {

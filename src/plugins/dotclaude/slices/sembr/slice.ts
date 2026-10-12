@@ -1,0 +1,24 @@
+// The manifest of the `sembr` slice: the `tool.call` rewrite that puts each sentence of a Markdown file on its own line (design D29).
+// `Write` and `Edit` rewrite a Markdown file, `Edit` also splits a cross-sentence `old_string`,
+// and `Bash` does the same for the quoted heredoc of `git commit` and `gh pr create`.
+// The phase is `rewrite`, which the generator orders before the phase `check` of the `guard` slice.
+//
+// The filter is needed, because `claude plugin validate` refuses two `tool.call` hooks with no matcher in one module,
+// and the `guard` slice has one.
+// `ModHandler.run` has the type of a hook with no filter, but the hook of a filter gets `e` narrowed to the tools of the filter.
+// So `run` has one cast to the wide type, and `register.ts` calls `onToolCall` with its narrow type.
+
+import type { Handler, Slice } from "../../../../kernel/slice.ts";
+import { onToolCall } from "./adapters/mod.ts";
+
+export const slice = {
+  name: "sembr",
+  mod: [
+    {
+      event: "tool.call",
+      filter: { tool: ["Write", "Edit", "Bash"] },
+      phase: "rewrite",
+      run: onToolCall as unknown as Handler<"tool.call">,
+    },
+  ],
+} satisfies Slice;

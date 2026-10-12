@@ -4,7 +4,6 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { FILE_MAX_BYTES } from "../../../plugins/dotclaude/features/adherence/limits.ts";
 import {
   HAIKU_CONTEXT_MAX,
   REPORT_MAX_WORDS,
@@ -18,6 +17,7 @@ import {
   POLICY_TIMEOUT_MS,
   USAGE_LEVELS,
 } from "../../../plugins/dotclaude/lib/budget.ts";
+import { FILE_MAX_BYTES } from "../../../src/plugins/dotclaude/slices/asks/limits.ts";
 import { MAX_ROWS } from "../../../src/plugins/dotclaude/slices/statusline/limits.ts";
 
 /** The limits that a source can name as `{{NAME}}`, from the one place in code where each is set. A number has the `300,000` form of the docs. */
