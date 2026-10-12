@@ -112,8 +112,4 @@ The bounds below are in the code of each file that holds them.
 
 ## Troubleshooting
 
-To read a longer period, pass `--days N` to `dotclaude-usage`.
-To read another transcripts folder, pass `--root DIR`.
-To measure one session, pass the path of its `.jsonl` file to `dotclaude-start`.
-
-See also [Troubleshooting](Troubleshooting).
+The symptoms of this plugin and their fixes are on [Troubleshooting](Troubleshooting).

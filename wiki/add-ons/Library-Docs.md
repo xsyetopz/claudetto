@@ -73,10 +73,4 @@ The bound of 3 calls is a text rule, so a change of the number needs a change of
 
 ## Troubleshooting
 
-| Symptom | Cause and fix |
-| --- | --- |
-| Claude says the quota is used up | Set `CONTEXT7_API_KEY`, which the skill names as the way to raise the limit. |
-| A `ctx7` call is denied | The call form differs from the form in the `allowed-tools` entry. Ask the user, and do not change the form. |
-| `bunx` is not found | Install Bun, and check that `bunx` is on `PATH`. |
-
-See also [Troubleshooting](Troubleshooting).
+The symptoms of this plugin and their fixes are on [Troubleshooting](Troubleshooting).

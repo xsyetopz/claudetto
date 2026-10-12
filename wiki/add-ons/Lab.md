@@ -197,13 +197,6 @@ The value 5 of `--max-cost-usd` is written in the domain file, and it is not in 
 
 ## Troubleshooting
 
-| Symptom | Cause and fix |
-| --- | --- |
-| The sandbox has no login | Set `CLAUDE_CODE_OAUTH_TOKEN`, or log in to Claude Code so that the token is in the Keychain or in `~/.claude/.credentials.json`. |
-| The sandbox warns about a `--model` | The model is not in `availableModels` of the sandbox. Pass a model from that list. |
-| The debug log says that the plugin is locked | A managed setting locks the plugin name. The `--plugin-dir` copy does not load. |
-| `dotclaude-schema` exits 2 | The command needs `--out DIR`. Pass it. |
-| `dotclaude-capture` says that the upstream is the proxy | The upstream points to the port of the proxy. Pass `--upstream URL`, or unset `ANTHROPIC_BASE_URL`. |
-| `dotclaude-eval-compare` stops at a cost bound | The default bound is 5 USD for each run. Pass `--max-cost-usd` with a value of your choice to set another bound. |
+The symptoms of the sandbox and the lab, and their fixes, are on [Troubleshooting](Troubleshooting).
 
 See also [Troubleshooting](Troubleshooting), and the index [Add-Ons](Add-Ons).

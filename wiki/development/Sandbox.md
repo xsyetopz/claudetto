@@ -205,14 +205,7 @@ That lets you continue a test, but an old sandbox can hide a first-run problem.
 
 ## Troubleshooting
 
-| Problem | Fix |
-| --- | --- |
-| `claude` is a shell function or alias | Put the `claude` executable on `PATH`. The script cannot run a shell function or an alias. |
-| No login in the sandbox | Run `/login`, or set `CLAUDE_CODE_OAUTH_TOKEN`. |
-| `claude` finds no prompt in a headless run | Put the prompt before variadic flags such as `--allowedTools`. |
-| A headless tool call is denied with "you haven't granted it yet" | List the tool in `--allowedTools`. |
-| A `gh api` call fails in the sandbox | `gh` reads its token with the real `HOME`. Use a test that does not need it. |
-| "plugin is locked by managed settings" in the debug log | A managed `enabledPlugins` entry holds the name. Remove it. |
+The symptoms of the sandbox and their fixes are on [Troubleshooting](Troubleshooting).
 
 ## Related pages
 
