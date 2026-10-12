@@ -57,7 +57,7 @@ Critical path: P01a, P01b1 to P01b4, P05 and P06, P13, P14, P15, P16.
   It has no dep, because the types of `state.json` stay in `src/kernel/spec-store.ts` (P01a), and P02 holds only the Markdown formats.
   Owns: `src/plugins/dotclaude/slices/spec/domain/`, `tests/dotclaude/spec/domain/`.
   Verify: `just test tests/dotclaude/spec/domain`, on a fixture for each format and each delta rule.
-- [ ] P11 Removal: `openspec/` and `.claude/skills/openspec-*`.
+- [x] P11 Removal: `openspec/` and `.claude/skills/openspec-*`.
   The OpenSpec code of 0.28.0 goes with the package of its slice: setup in P09, the status line in P08.
   The main checkout already has the deletions of `openspec/` and `.claude/skills/openspec-*`, not committed (2026-10-12).
   P11 commits them after its Verify passes.

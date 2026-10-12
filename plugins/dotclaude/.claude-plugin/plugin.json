@@ -2,12 +2,12 @@
   "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "dotclaude",
   "version": "0.28.0",
-  "description": "Adds a lean output style, five role agents, and a status line command. Adds hooks that ask before work on a repo with an AI policy, check edits and `git` calls, bound the context of subagents, and check Markdown line breaks and drift. Sets up OpenSpec.",
+  "description": "Adds a lean output style, five role agents, and a status line command. Adds hooks that ask before work on a repo with an AI policy, check edits and `git` calls, bound the context of subagents, and check Markdown line breaks and drift.",
   "author": {
     "name": "xsyetopz"
   },
   "repository": "https://github.com/xsyetopz/dotclaude",
   "license": "MIT",
   "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Core-Plugin",
-  "keywords": ["output-style", "agents", "hooks", "statusline", "openspec"]
+  "keywords": ["output-style", "agents", "hooks", "statusline"]
 }

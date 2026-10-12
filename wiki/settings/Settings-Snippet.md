@@ -198,13 +198,7 @@ The same test fails when the block holds a key of the [never-set list](Off-Switc
   "enforceAvailableModels": true,
   "disableClaudeAiConnectors": true,
   "skillOverrides": {
-    "plugin-authoring": "name-only",
-    "openspec-apply-change": "name-only",
-    "openspec-archive-change": "name-only",
-    "openspec-explore": "name-only",
-    "openspec-propose": "name-only",
-    "openspec-sync-specs": "name-only",
-    "openspec-update-change": "name-only"
+    "plugin-authoring": "name-only"
   },
   "disableBundledSkills": true,
   "disableAgentView": true,

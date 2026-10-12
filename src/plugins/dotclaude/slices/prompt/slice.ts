@@ -94,12 +94,6 @@ export const slice = {
     },
     skillOverrides: {
       "plugin-authoring": "name-only",
-      "openspec-apply-change": "name-only",
-      "openspec-archive-change": "name-only",
-      "openspec-explore": "name-only",
-      "openspec-propose": "name-only",
-      "openspec-sync-specs": "name-only",
-      "openspec-update-change": "name-only",
     },
     attribution: {
       commit: "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",

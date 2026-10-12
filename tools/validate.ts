@@ -16,13 +16,11 @@ const root = join(import.meta.dir, "..");
 const plugins = join(root, "plugins");
 
 const TEXT = /\.(?:mjs|cjs|js|ts|json|jsonc|md|mdx|py|sh|toml|ya?ml|txt)$/;
-// Files that a tool writes: the settings schemas of `just schema`, lock
-// files, and the OpenSpec skills and commands of `openspec update`.
+// Files that a tool writes: the settings schemas of `just schema` and lock
+// files.
 const GENERATED = [
   /^schemas\//,
   /(?:^|\/)(?:package-lock\.json|pnpm-lock\.yaml)$/,
-  /^\.claude\/skills\/openspec-/,
-  /^\.claude\/commands\/opsx\//,
 ];
 
 const bound = (file: string): number =>
