@@ -16,3 +16,6 @@ __pycache__/
 
 node_modules/
 /.claude/worktrees/
+/.agents/
+/.claude/skills/claude-api
+/skills-lock.json

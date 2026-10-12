@@ -1,7 +1,7 @@
 ---
 id: P01b4
 deps: [P01b3]
-owns: ["biome.json", "tools/lint/", "tools/validate.ts", "tools/limits.ts", "tests/support/", "package.json", "tsconfig.json", "AGENTS.md", "GEMINI.md"]
+owns: ["biome.json", "tools/lint/", "tools/generate/emit/register.ts", "tools/validate.ts", "tools/limits.ts", "tests/support/", "package.json", "tsconfig.json", "AGENTS.md", "GEMINI.md"]
 verify: just check
 agent: implementer
 ---
@@ -30,6 +30,9 @@ Add the lint rules and the checks of the 1.0.0 layout to `just check`, and chang
 1. Set `useArrowFunction` to `error` in `biome.json`, and add the GritQL plugin `tools/lint/arrow-functions.grit`, which reports a `function` declaration.
 2. Add `noRestrictedImports` overrides: a slice imports only `src/kernel/` and its own folder, and `domain/` imports no adapter and no `src/kernel/node/`.
 3. Exempt the paths of `tools/rebuild-pending.txt` from the new rules, and from no other rule.
+   The generated `register.ts` (`tools/generate/emit/register.ts`) writes `export function register`, the shape of the hand-written modules.
+   Change it to `export const register = (on: On): void => {...}`, and keep it only when `just lab` and `claude plugin validate --strict` pass on the generated module.
+   When the mod runtime needs the declaration, keep it, exempt only the generated `register.ts` files, and give the reason in a comment of `biome.json`.
    Keep one list of these paths, so that a later package removes a path in one place.
 4. Add `src` to the `lint` script and to the `include` of `tsconfig.json`, and add `just generate --check` to the `check` recipe of `justfile`.
 5. Move the file-size rule from `tests/support/file-size.test.ts` to `just validate` (`tools/validate.ts`).

@@ -24,7 +24,7 @@ Critical path: P01a, P01b1 to P01b4, P05 and P06, P13, P14, P15, P16.
 - [x] P01a Kernel: `src/kernel/slice.ts` with the phases, `ports.ts`, the split of `src/kernel/` and `src/kernel/node/`, `budget.ts`, and `spec-store.ts` with the store types and the reader.
   Owns: `src/kernel/`, `tests/kernel/`.
   Verify: `just test tests/kernel`.
-- [ ] P01b1 Generator core: the gate of `claude plugin validate` on a handler in a slice file, then `tools/generate/` with discover, order, closure, and the emitters of `register.ts`, `hooks.json`, `plugin.json`, and the texts, and `tools/rebuild-pending.txt`.
+- [x] P01b1 Generator core: the gate of `claude plugin validate` on a handler in a slice file, then `tools/generate/` with discover, order, closure, and the emitters of `register.ts`, `hooks.json`, `plugin.json`, and the texts, and `tools/rebuild-pending.txt`.
   P01b was split in four, because one agent filled its context with the reads of the full package (the user, 2026-10-12, Jev, confidence 0.79).
   Deps: P01a.
   Owns: `tools/generate/`, `tools/generate.ts`, `tools/rebuild-pending.txt`, `tests/tools/`, `tests/support/generate.test.ts`, `justfile`.
@@ -39,9 +39,9 @@ Critical path: P01a, P01b1 to P01b4, P05 and P06, P13, P14, P15, P16.
   Verify: `just test tests/tools` and `just check`.
 - [ ] P01b4 The checks: `useArrowFunction` at `error`, `tools/lint/arrow-functions.grit`, the import overrides, `src` in the lint and the type check, `just generate --check` in `just check`, the file-size rule in `just validate`, `AGENTS.md`, and `GEMINI.md` as a symlink to `AGENTS.md`.
   Deps: P01b3.
-  Owns: `biome.json`, `tools/lint/`, `tools/validate.ts`, `tools/limits.ts`, `tests/support/`, `package.json`, `tsconfig.json`, `AGENTS.md`, `GEMINI.md`.
+  Owns: `biome.json`, `tools/lint/`, `tools/generate/emit/register.ts`, `tools/validate.ts`, `tools/limits.ts`, `tests/support/`, `package.json`, `tsconfig.json`, `AGENTS.md`, `GEMINI.md`.
   Verify: `just check`, and `bunx biome lint` fails on a fixture with a `function` declaration and on one with a `function` expression.
-- [ ] P01c Extract: the full texts and sizes of each built-in system prompt section, tool description, output style, compaction prompt, reminder, and listing of Claude Code 2.1.296, the prompt of `CLAUDE_CODE_SIMPLE` and `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`, and the id that the Mod API gives each part.
+- [x] P01c Extract: the full texts and sizes of each built-in system prompt section, tool description, output style, compaction prompt, reminder, and listing of Claude Code 2.1.296, the prompt of `CLAUDE_CODE_SIMPLE` and `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`, and the id that the Mod API gives each part.
   It writes only to `external/cc-extract/2.1.296/`, and its report to `spec/changes/1.0.0/evidence/extract.md`, with no built-in text in the report.
   Owns: `external/cc-extract/`, `spec/changes/1.0.0/evidence/extract.md`.
   Agent: `implementer`, because the package writes files and runs live sessions, and `investigator` cannot (Jev, confidence 0.51).
