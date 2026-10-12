@@ -11,7 +11,9 @@ test("new trivial writes only change.md with a task", async () => {
     await read(root, ".dotclaude/spec/changes/fix-typo/change.md"),
   ).toContain("# fix-typo");
   expect(has(root, ".dotclaude/spec/changes/fix-typo/specs")).toBe(false);
-  expect(has(root, ".dotclaude/spec/changes/fix-typo/events.jsonl")).toBe(false);
+  expect(has(root, ".dotclaude/spec/changes/fix-typo/events.jsonl")).toBe(
+    false,
+  );
 });
 
 test("new medium is the default and writes a delta file", async () => {
