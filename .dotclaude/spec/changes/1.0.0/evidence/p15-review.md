@@ -107,3 +107,19 @@ The reviewer found no 0.28.0 text in `Context-And-Handoff`, `Guards`, `Status-Li
 8. `Status-Line.md:80` omits the fallbacks `input.cwd` and the process folder (`statusline/adapters/cli.ts:126-127`).
 9. `Context-And-Handoff.md:64` says `/handoff`. Fix: `/dotclaude:handoff`.
    `Guards.md:4` says that the print deny is for a large file, but `Guards.md:55` says that each file print is denied. Make `Guards.md:4` agree with the code.
+
+## `claude-code/`
+
+1. `wiki/claude-code/Undocumented-Reads.md:38` and `:180-181` give the wrong login read of the sandbox.
+   `src/plugins/dotclaude-lab/slices/sandbox/adapters/login.ts:12-35` tries `CLAUDE_CODE_OAUTH_TOKEN` first, then on macOS the Keychain entry `Claude Code-credentials`, then `~/.claude/.credentials.json` from `os.homedir()`, not from the config folder.
+   Fix: the order, the Keychain read, and the path. The "Break" line also names a changed Keychain entry name.
+2. `Tools-And-Deferral.md:120` says "9,301 for 10 tools, including 530 for the MCP tool".
+   `external/capture/snippet/report-2026-10-11T03-06-19-303Z-1.json` has 11 tool rows that sum to 9,301.
+   Fix: "11 tools".
+3. `Request-Build.md:33` gives 29197 and 14847 bytes of tool JSON, with no method.
+   The `tools` arrays of `external/capture/vanilla/request-*-1.json` and `-2.json` give 28546 and 14474 bytes as compact JSON, and 29221 and 14865 bytes with spaced separators.
+   Fix: measure again and name the method, or remove the numbers.
+4. `Compaction-And-Context.md:41-52` gives the threshold as `window - 13000` with the percent override, but the strings also have a `precomputeBufferFraction` path that takes the minimum with it.
+   Fix: one line that a second, earlier trigger exists and is not examined.
+5. `Compaction-And-Context.md:19` and `:66-67` say "not checked", but the strings show that `CLAUDE_CODE_MAX_CONTEXT_TOKENS` is read only when `DISABLE_COMPACT` is set.
+   Fix: give that binary fact with the version.
