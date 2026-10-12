@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bun --no-env-file
 // Captures and measures the start of a clean sandbox session in one command.
 //
-//   node tools/start-run.ts [--port 8787] [--dir DIR]
+//   bun src/plugins/dotclaude-lab/slices/sandbox/adapters/start-run.ts [--port 8787] [--dir DIR]
 //
 // 1. Removes the sandbox (`--dir DIR` names it, as for `dotclaude-sandbox`), so the session is clean.
 // 2. Starts `dotclaude-capture` on the port, with its output in `$TMPDIR/dotclaude-capture`.
@@ -13,7 +13,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-const REPO = path.resolve(import.meta.dirname, "..");
+// This file sits six folders below the repository root.
+const REPO = path.resolve(import.meta.dirname, "../../../../../..");
 const args = process.argv.slice(2);
 const port = args.includes("--port")
   ? (args[args.indexOf("--port") + 1] as string)
