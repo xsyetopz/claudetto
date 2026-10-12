@@ -1,71 +1,122 @@
 # Quickstart
 
-This page shows what you see in your first session with dotclaude.
+This page shows what you see in your first session with dotclaude 1.0.0.
 It assumes that you finished [Install](Install).
+The install steps are not repeated here.
+
+The core plugin `dotclaude` adds a lean output style, six agents, a status line, and hooks.
+The hooks ask, deny, and check.
+See [Architecture](Architecture) for the parts.
 
 ## What you see at session start
 
-| What | When |
-| --- | --- |
-| Status line | After you set the `statusLine` entry of the [settings snippet](Settings-Snippet). It shows model, effort, context against the 300K window, the spec change, and the usage windows. |
-| Drift note | When the active settings differ from the [settings snippet](Settings-Snippet), such as values that setup did not write, a status line of an old plugin version, or a built-in plugin that is on again. The note names `/dotclaude:setup` as the fix. Claude mentions each difference in its first answer. Nothing shows when no difference exists. |
-| Output style | After you set the `outputStyle` entry of the [settings snippet](Settings-Snippet) to `dotclaude:Concise`. The style keeps the coding instructions, so you see its effect in the replies. |
+After you apply the [settings snippet](Settings-Snippet) with `/dotclaude:setup`, you see these parts.
 
-On a terminal of about 130 columns, the status line has 3 columns.
-The left column shows the model, the spec change, and its done and total packages.
-The middle column shows the context against the window.
-The right column shows the 5-hour, 7-day, and Fable windows.
-A narrower terminal packs the same parts into rows.
+- The status line, with the parts in the next section.
+- The output style `dotclaude:Concise`.
+  It sets how Claude writes its replies.
+  See [Prompt-Surface](Prompt-Surface).
+- A drift note, when the active settings differ from the snippet.
+
+Claude receives the drift note at session start.
+The note lists each difference, and it says that the user has not seen the difference.
+Some lines name `/dotclaude:setup` as the fix.
+When no difference exists, the note is not added.
+See [Settings-Snippet](Settings-Snippet) for the keys of the snippet.
+
+## The status line
+
+The status line has up to three rows.
+
+- The first row shows the folder, the git branch with the counts of changed, ahead, and behind files, and the active change as `id done/total`.
+- The second row shows the model, the context against the 300K window, and the cost with the lines added and removed.
+- The third row shows the 5h and 7d usage windows and the spend limit, each with the time to its reset.
+
 The context part turns yellow at 75% and red at 90% of the window.
 The usage parts use the same colors.
-The spec part shows the last change, in id order, whose packages are not all `done`, as `id done/total`.
-The status line calls no model and no network, and it runs no program except `git`.
-See [Status line](Status-Line).
+The active change is the last change in the order of its id that has a package that is not `done`.
 
-## What happens in a session
+The width comes from the `COLUMNS` env var.
+When `COLUMNS` is unset, the width is 120 columns, and 4 columns stay free at the right edge.
+When a row is too wide, its segments at the right drop first.
+Then the row is cut at its end with `…`.
 
-### A permission rule asks
+The status line calls no model and no network.
+It runs no program except `git`.
+It writes the last usage sample to `.dotclaude/rate-limits.json` when the values change.
+See [Status-Line](Status-Line).
 
-Claude plans a package publish, or a write to a pull request or an issue.
-Claude Code asks you first, because the [settings snippet](Settings-Snippet) has an `ask` rule for it.
-It denies a read of secrets and a `rm -rf` of the root or your home.
-See [Guards](Guards).
+## The agents
 
-### A destructive command is stopped
+The plugin adds six agents.
+Claude starts an agent with the `Agent` tool, when a task fits the agent.
 
-Claude plans a force push to a shared or default branch, such as `main`, or a `git reset --hard`.
-The destructive floor forbids both, so dotclaude denies them and Claude stops.
-Claude does not try the action in another way.
-If you want the action, run the exact command that Claude gives you with `!` at the start of your prompt.
-See [Guards](Guards).
+- `investigator` answers a question from several files, logs, or git history.
+  It is read-only.
+- `researcher` answers from web pages and official docs, with quotes and sources.
+  It is read-only.
+- `planner` plans a change across files, and it writes the plan only under `.dotclaude/spec/`.
+- `implementer` implements one scoped slice with a known check, in its own worktree.
+- `debugger` finds the root cause of a failure, and it makes the smallest fix.
+- `reviewer` reviews code, a plan, or a design.
+  It is read-only.
 
-### A recursive rm asks
+No agent runs the tests.
+The `checks` slice has the `dotclaude-run-checks` CLI, which replaces a test-runner agent.
+See [Agents](Agents).
 
-Claude plans `rm -r` on a folder.
-Claude Code asks you first, because the settings snippet has `ask` rules for each recursive `rm`, also inside the project.
-The plugin alone gives no `rm` ask, because a plugin cannot ship `permissions`.
-The sandbox stops a write outside the allowed folders.
-You decide.
+## The spec store and `/dotclaude:handoff`
 
-### A policy ask for a repository of another owner
+The spec store is the folder `.dotclaude/spec/`, which the repository tracks.
+A change has its own folder under `.dotclaude/spec/changes/`.
+Its lane log, `events.jsonl`, moves each package between the lanes `planned`, `doing`, `review`, `done`, and `blocked`.
 
-Claude runs `git clone`, `gh`, `curl`, or `wget` on a repository of another owner, or fetches its page.
-The repository has a `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md`.
-The module asks once per session and per repository, and it shows the policy text, cut at 2,000 characters.
+To start a change, run `/dotclaude:spec <change-id>`.
+The skill starts the change with `dotclaude-spec new`, fills its files, and checks them with `dotclaude-spec validate`.
+The skill does not start the work.
+See [Spec-Store](Spec-Store).
+
+The context has a bound of 300K tokens, and Claude Code does not compact it.
+At 60% of the window, the default `mainHandover` value of `manual` gives you a hint to run `/dotclaude:handoff`.
+The hint also comes when a package moves to `done`.
+The skill writes a handoff file to `.dotclaude/handoff/`, with the goal, the state, the next step, and the constraints.
+Then it starts a clean session that reads the file.
+See [Context-And-Handoff](Context-And-Handoff).
+
+Without a handoff, run `/clear`, and then `dotclaude-spec next <change-id>`.
+The command shows the next package from the lane log.
+
+## The guards
+
+The permission rules, the sandbox, and the hook module guard each call.
+See [Guards](Guards) for the full list.
+
+The settings snippet makes Claude Code ask you first for these commands.
+
+- A package publish, such as `npm publish` or `cargo publish`.
+- A write to a pull request or an issue, such as `gh pr create` or `gh issue comment`.
+- A recursive `rm`, such as `rm -r` or `rm --recursive`.
+
+A `Bash` command that prints a whole file is denied.
+The denial names the `Read` call with the range to use.
+
+The permission rules deny a read of secrets, such as `.env` files and `~/.ssh/**`.
+They also deny `rm -rf` of the root or of your home folder.
+
+A destructive command is denied by the destructive floor.
+The floor denies `git reset --hard`, a force push to `main` or `master`, and a forced checkout or removal that drops uncommitted work.
+Claude stops, and it does not try the action another way.
+The denial gives you the exact command in a block.
+Run that command yourself with `!` at the start of your prompt, if you want the action.
+
+Claude runs `git clone`, `gh`, `curl`, or `wget` on a repository of another owner, or it fetches a page of that repository.
+If the repository has a `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md` file, the guard asks once per session and per repository.
+The ask shows the text of each policy file, cut at 2,000 characters.
 See [Contributions](Contributions).
-
-### The context limit
-
-Compaction is off.
-At 60% of the window, the default `mainHandover` option of `manual` gives you a hint to run `/handoff`.
-`/handoff` writes a handoff file to `.dotclaude/handoff/`, and the work continues from that file in a new session.
-When the session reaches 300K tokens, it stops.
-The status line turns yellow at 75% and red at 90% of the window.
-Without a handoff, run `/clear` and then `dotclaude-spec next <change>`, so the work continues from the lane log.
-See [Context bound](Context-And-Handoff) and [Spec store](Spec-Store).
 
 ## Next steps
 
-- [Guards](Guards): see what asks, what denies, and what the sandbox does.
-- [Context bound](Context-And-Handoff): see how a session ends before the limit.
-- [Spec store](Spec-Store): keep the tasks and the lane log of a change.
+- [Guards](Guards): what asks, what denies, and what the sandbox limits.
+- [Context-And-Handoff](Context-And-Handoff): how a session ends before the bound.
+- [Spec-Store](Spec-Store): the tasks and the lane log of a change.
+- [Troubleshooting](Troubleshooting): what to check when a part does not show.
