@@ -23,29 +23,24 @@ import {
   onSpawn as h13,
 } from "../slices/prompt/adapters/mod.ts";
 import { onToolCall as h14 } from "../slices/sembr/adapters/mod.ts";
+import { onSessionStart as h15 } from "../slices/setup/adapters/mod.ts";
 import {
-  onSessionStart as h15,
-  onSetup as h16,
-} from "../slices/setup/adapters/mod.ts";
-import {
-  onComplete as h17,
-  onSpawn as h18,
+  onComplete as h16,
+  onSpawn as h17,
 } from "../slices/spec/adapters/mod.ts";
 import {
-  onAgentOffer as h19,
-  onToolDescribe as h20,
+  onAgentOffer as h18,
+  onToolDescribe as h19,
 } from "../slices/surface/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h6(options);
   // eval: agent.offer surface
-  on("agent.offer", h19);
+  on("agent.offer", h18);
   // eval: agent.spawn spec
-  on("agent.spawn", { subagentType: /(?:^|:)implementer$/ }, h18);
+  on("agent.spawn", { subagentType: /(?:^|:)implementer$/ }, h17);
   // eval: agent.spawn prompt
   on("agent.spawn", h13);
-  // eval: command.run setup
-  on("command.run", { command: "dotclaude:setup" }, h16);
   // eval: prompt.compose prompt
   on("prompt.compose", h11);
   // eval: prompt.section prompt
@@ -71,11 +66,11 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.check guard
   on("tool.check", h5);
   // eval: tool.describe surface
-  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h20);
+  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h19);
   // eval: turn.complete handoff
   on("turn.complete", h9);
   // eval: turn.complete spec
-  on("turn.complete", { agentId: /./ }, h17);
+  on("turn.complete", { agentId: /./ }, h16);
   // eval: turn.step handoff
   on("turn.step", { agentId: /./ }, h10);
 };
