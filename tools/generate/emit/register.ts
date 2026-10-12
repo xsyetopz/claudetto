@@ -11,7 +11,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { FoundPlugin } from "../discover.ts";
 import { type Entry, filterOf, order } from "../order.ts";
-import { type Output, withHeader } from "./texts.ts";
+import { format, type Output, withHeader } from "./texts.ts";
 
 /** The named export of `mod` that is the function `run`, or `undefined` when no export is `run`. */
 const exportOf = (
@@ -22,25 +22,13 @@ const exportOf = (
     .sort()
     .find((key) => key !== "default" && mod[key] === run);
 
-/** The column bound of the formatter of Biome, which `just lint` runs on `plugins/`. */
-const WIDTH = 80;
-
 const compare = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 
-/** `open`, the comma list `items`, and `close` on one line, or with one item on each line when the line is longer than `WIDTH`, as Biome formats them. */
-const wrap = (open: string, items: string[], close: string): string => {
-  const line = `${open}${items.join(", ")}${close}`;
-  if (line.length <= WIDTH) return line;
-  const indent = open.match(/^ */)?.[0] ?? "";
-  return [
-    open.trimEnd(),
-    ...items.map((item) => `${indent}  ${item},`),
-    `${indent}${close.trimStart()}`,
-  ].join("\n");
-};
-
 /** The generated `register.ts` of the plugin `p` of `root`, or none when its slices have no mod handler and it has no `legacy.ts`. */
-export const registerOf = (root: string, p: FoundPlugin): Output[] => {
+export const registerOf = async (
+  root: string,
+  p: FoundPlugin,
+): Promise<Output[]> => {
   const legacy = fs.existsSync(
     path.join(root, "plugins", p.name, "hooks", "legacy.ts"),
   );
@@ -72,7 +60,7 @@ export const registerOf = (root: string, p: FoundPlugin): Output[] => {
     }
   if (!entries.length && !legacy) return [];
   // One alias for each export, numbered in the order of the module paths and the export names,
-  // so the imports are already in the order of the import sorter of Biome.
+  // so the imports are already in the order of the import sorter of Biome, which formats the file.
   const pairs = [
     ...new Set([
       ...[...where.values()].map((w) => `${w.dir}\0${w.name}`),
@@ -83,13 +71,14 @@ export const registerOf = (root: string, p: FoundPlugin): Output[] => {
     .sort(([a, x], [b, y]) => compare(a, b) || compare(x, y));
   const alias = new Map(pairs.map(([d, n], i) => [`${d}\0${n}`, `h${i}`]));
   const imports = [...new Set(pairs.map(([d]) => d))].map((dir) =>
-    wrap(
+    [
       "import { ",
       pairs
         .filter(([d]) => d === dir)
-        .map(([d, n]) => `${n} as ${alias.get(`${d}\0${n}`)}`),
+        .map(([d, n]) => `${n} as ${alias.get(`${d}\0${n}`)}`)
+        .join(", "),
       ` } from "${path.posix.join("..", "slices", dir, "adapters", "mod.ts")}";`,
-    ),
+    ].join(""),
   );
   const calls = order(entries).map((e) => {
     const at = where.get(e) as { dir: string; name: string };
@@ -98,7 +87,7 @@ export const registerOf = (root: string, p: FoundPlugin): Output[] => {
     const hook = alias.get(`${at.dir}\0${at.name}`) as string;
     return [
       `  // eval: ${e.handler.event} ${e.slice}`,
-      wrap("  on(", [...args, hook], ");"),
+      `  on(${[...args, hook].join(", ")});`,
     ].join("\n");
   });
   const configured = configures.size > 0;
@@ -120,5 +109,7 @@ export const registerOf = (root: string, p: FoundPlugin): Output[] => {
     "};",
     "",
   ].join("\n");
-  return [{ file, source, text: withHeader(file, source, text) }];
+  return [
+    { file, source, text: await format(file, withHeader(file, source, text)) },
+  ];
 };

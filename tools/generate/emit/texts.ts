@@ -201,7 +201,7 @@ const snippetModule = async (
 };
 
 /** `text` as Biome formats the module `file`. */
-const format = async (file: string, text: string): Promise<string> => {
+export const format = async (file: string, text: string): Promise<string> => {
   const run = Bun.spawn(
     ["bunx", "biome", "format", `--stdin-file-path=${file}`],
     { cwd: REPO, stdin: new Blob([text]), stdout: "pipe", stderr: "pipe" },
