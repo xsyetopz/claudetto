@@ -225,7 +225,7 @@ const cycleMembers = (packages: Package[]): string[] => {
 /**
  * Checks that no two packages of one wave own overlapping paths.
  * The caller passes the open packages of one wave, because the lanes and the
- * waves live in `state.json`, outside this domain.
+ * waves live in `events.jsonl`, outside this domain.
  * Two entries overlap when one is a prefix of the other.
  */
 export const validateWave = (packages: Package[]): Issue[] =>

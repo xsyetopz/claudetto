@@ -12,8 +12,11 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ### Changed
 
+- The spec store keeps its lane changes in an append-only `events.jsonl`, one line for each change, in place of `state.json`.
+  The lane of a package is its last line, and `.gitattributes` sets `merge=union` so two branches merge with no conflict.
+  The store no longer names the handoff file.
 - The spec store takes the packages of a change from its package files.
-  A package with a file and no lane in `state.json` is `planned` for `lane`, `status`, `next`, `validate`, and the status line.
+  A package with a file and no line in `events.jsonl` is `planned` for `lane`, `status`, `next`, `validate`, and the status line.
 - The `lib/` and `features/` files of each plugin are TypeScript (`.ts`), and `bun check` type-checks them with `noUncheckedIndexedAccess`.
 - The core hooks module is `hooks/register.ts`.
   The check that denies a `Bash` command that only prints a file runs in its `tool.call` hook, and the checks that ask before an edit run in its `tool.check` hook.

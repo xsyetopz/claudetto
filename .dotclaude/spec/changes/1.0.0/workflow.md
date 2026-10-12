@@ -8,7 +8,7 @@
 .dotclaude/spec/changes/<id>/specs/<capability>.md       # the deltas of one capability
 .dotclaude/spec/changes/<id>/design.md                   # size large only
 .dotclaude/spec/changes/<id>/packages/NN-<slug>.md       # one brief for one agent
-.dotclaude/spec/changes/<id>/state.json                  # lanes, event log, the path of the handoff
+.dotclaude/spec/changes/<id>/events.jsonl                 # the lane log: one line for each lane change
 .dotclaude/spec/changes/<id>/handoff.md                  # the newest handoff of the change
 .dotclaude/spec/changes/archive/<date>-<id>/
 ```
@@ -44,9 +44,13 @@ agent: implementer
 
 ## State
 
-`state.json` holds `schema`, the lane of each package (`planned`, `doing`, `review`, `done`, `blocked`), an event log, and the path of the newest handoff.
+`events.jsonl` is an append-only log.
+Its first line is a header with `schema`.
+Each next line is one lane change, such as `{"at":"…","package":"P30","lane":"done"}`, with a lane of `planned`, `doing`, `review`, `done`, or `blocked`.
+The lane of a package is the lane on its last line.
+A package with a file in `packages/` and no line is `planned`.
 Only the main session changes a lane, with `dotclaude-spec lane`, on the main checkout.
-`lane` stops with a message in a linked worktree, so no merge has a conflict in `state.json`.
+`lane` stops with a message in a linked worktree, and `.gitattributes` sets `merge=union` for `events.jsonl`, so two branches that append lines merge with no conflict.
 A model changes JSON less often than Markdown by mistake (Anthropic, "Effective harnesses for long-running agents", 2025).
 
 ## Sizes
@@ -90,7 +94,7 @@ The flow uses the mod API that the probes of 2026-10 showed in a live session:
 4. The mod runs `$.command.run({ command: "clear" })`.
 5. The mod runs `$.prompt.submit({ text })` with the path of the handoff and the output of `dotclaude-spec next`.
 
-The handoff of a change is `.dotclaude/spec/changes/<id>/handoff.md`, and `state.json` names it.
+The handoff files are in `.dotclaude/handoff/`, and the store does not name them.
 A handoff with no change is `.claude/dotclaude/handoff.md`, which git ignores.
 The `userConfig` option `mainHandover` takes `auto`, `manual`, or `off`, and its default is in `slices/handoff/limits.ts`.
 P14 measures one handoff against one compaction, and the main session sets the default from that report.

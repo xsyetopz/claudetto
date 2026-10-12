@@ -5,10 +5,7 @@
 
 import path from "node:path";
 import { runProgram } from "../../../kernel/node/process.ts";
-import {
-  LANES,
-  type Lane,
-} from "../../../kernel/spec-store.ts";
+import { LANES, type Lane } from "../../../kernel/spec-store.ts";
 import type { Run } from "./run.ts";
 
 /** The path that `git rev-parse flag` gives in `cwd`, as an absolute path, or null when git gives none. */

@@ -1,10 +1,10 @@
-// A package file with no lane in `state.json` is a `planned` package for `lane`, `status`, and `validate`.
+// A package file with no line in `events.jsonl` is a `planned` package for `lane`, `status`, and `validate`.
 
 import { expect, test } from "bun:test";
 import { brief, read, run } from "./helpers.ts";
 import { CHANGE, makePlan } from "./plan.ts";
 
-/** A change with `P01` done and the file `24-tiers.md` for `P24`, which `state.json` does not list. */
+/** A change with `P01` done and the file `24-tiers.md` for `P24`, which `events.jsonl` does not list. */
 const planWithFile = (owns: string[] = ["src/p24/"]): Promise<string> =>
   makePlan([{ id: "P01", lane: "done", owns: ["src/a/"] }], {
     [`${CHANGE}/packages/24-tiers.md`]: brief("P24", [], owns),

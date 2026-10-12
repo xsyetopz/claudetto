@@ -49,7 +49,10 @@ export class SpecStore {
   }
 
   /** The lanes of the change `id`: the package files and the last lines of `events`, from `packageLanes`. */
-  lanes(id: string, events: readonly LaneEvent[]): Promise<Record<string, Lane>> {
+  lanes(
+    id: string,
+    events: readonly LaneEvent[],
+  ): Promise<Record<string, Lane>> {
     return packageLanes(this.files, id, events);
   }
 

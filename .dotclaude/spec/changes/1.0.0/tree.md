@@ -46,7 +46,7 @@ spec/
     │   ├── specs/<capability>.md     # the deltas: ADDED for each capability
     │   ├── packages/NN-<slug>.md
     │   ├── evidence/
-    │   └── state.json
+    │   └── events.jsonl
     └── archive/
 ```
 
