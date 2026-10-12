@@ -88,7 +88,7 @@ Each package depends on P01b4.
   It moves the `dotclaude-jev` add-on into this slice, and removes the add-on.
   Owns also: `src/plugins/dotclaude-jev/`, `tests/jev/`.
   Verify also: a test for each fallback cause, with a fake `DecisionProvider`.
-- [ ] P20 `surface`: the transforms of the tool descriptions, the agent listing, and the reminders.
+- [x] P20 `surface`: the transforms of the tool descriptions, the agent listing, and the reminders.
   Deps: P01c.
 - [x] P21 `trim`: the settings, env, and mod rules that turn off each part of the inventory that dotclaude does not need.
   Deps: P01d.
