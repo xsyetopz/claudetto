@@ -36,7 +36,8 @@ export const projectRuleProblems = async (
     const text = await Bun.file(path.join(dir, name)).text();
     problems.push(
       ...checkRule(
-        path.join(".claude", "rules", name),
+        // The rule path is a project path, with `/` on each OS.
+        path.posix.join(".claude", "rules", ...name.split(path.sep)),
         text,
         files,
         (yaml) => Bun.YAML.parse(yaml),

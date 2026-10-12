@@ -31,7 +31,7 @@ const installedBundle = (): string => {
 };
 
 /** The version in the name of the bundle, or in the output of `bundle --version`. */
-const versionOf = (bundle: string): string => {
+export const versionOf = (bundle: string): string => {
   const base = path.basename(bundle);
   if (/^\d+\.\d+\.\d+$/.test(base)) return base;
   const r = Bun.spawnSync([bundle, "--version"]);

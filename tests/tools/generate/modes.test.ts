@@ -40,11 +40,15 @@ test("a launcher and an eval script with no `+x` get one message each, and a tex
   ).toBe(true);
 });
 
-test("the write sets the mode 755 on a program whose text did not change", async () => {
-  const dir = await rootWithText();
-  setModes(dir, MADE);
-  expect(modeOf(dir, "plugins/q/bin/tool")).toBe(0o755);
-  expect(modeOf(dir, "plugins/q/evals/case/setup.sh")).toBe(0o755);
-  expect(modeOf(dir, "plugins/q/skills/a/SKILL.md")).toBe(0o644);
-  expect(modeProblems(dir, MADE)).toEqual([]);
-});
+// Windows has no POSIX mode bits, so `chmod` cannot set 755, and `modeOf` reads 644 there.
+test.skipIf(process.platform === "win32")(
+  "the write sets the mode 755 on a program whose text did not change",
+  async () => {
+    const dir = await rootWithText();
+    setModes(dir, MADE);
+    expect(modeOf(dir, "plugins/q/bin/tool")).toBe(0o755);
+    expect(modeOf(dir, "plugins/q/evals/case/setup.sh")).toBe(0o755);
+    expect(modeOf(dir, "plugins/q/skills/a/SKILL.md")).toBe(0o644);
+    expect(modeProblems(dir, MADE)).toEqual([]);
+  },
+);
