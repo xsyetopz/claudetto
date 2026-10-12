@@ -1,0 +1,28 @@
+// The git state of the working folder, from the output of `git status --porcelain=v2 -b`.
+
+import type { GitState } from "./types.ts";
+
+/** The arguments of the one `git` call. */
+export const GIT_ARGS = ["status", "--porcelain=v2", "-b"] as const;
+
+/** The state in `text`, or null when `text` has no branch. A detached head shows its short object name. */
+export const parseStatus = (text: string): GitState | null => {
+  let branch: string | null = null;
+  let oid: string | null = null;
+  let dirty = 0;
+  let ahead = 0;
+  let behind = 0;
+  for (const line of text.split("\n")) {
+    if (line.startsWith("# branch.head ")) branch = line.slice(14);
+    else if (line.startsWith("# branch.oid ")) oid = line.slice(13, 20);
+    else if (line.startsWith("# branch.ab ")) {
+      const m = /\+(\d+) -(\d+)/.exec(line);
+      if (m) {
+        ahead = Number(m[1]);
+        behind = Number(m[2]);
+      }
+    } else if (line && !line.startsWith("#")) dirty++;
+  }
+  if (branch === "(detached)") branch = oid;
+  return branch ? { branch, dirty, ahead, behind } : null;
+};

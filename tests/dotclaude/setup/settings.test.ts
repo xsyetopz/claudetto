@@ -68,12 +68,12 @@ test("`--apply` writes the snippet keys with the plugin folder in the status lin
   expect(s.env.CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT).toBe("1");
   expect(s.autoCompactEnabled).toBe(false);
   expect(s.statusLine.command).toBe(
-    `bun --no-env-file "${SLASHED}/features/statusline/cli.ts"`,
+    `bun --no-env-file "${SLASHED}/bin/dotclaude-statusline"`,
   );
   expect(s.subagentStatusLine.command).toBe(
-    `bun --no-env-file "${SLASHED}/features/statusline/subagent-cli.ts"`,
+    `bun --no-env-file "${SLASHED}/bin/dotclaude-statusline" --subagent`,
   );
-  expect(fs.existsSync(path.join(PLUGIN, "features/statusline/cli.ts"))).toBe(
+  expect(fs.existsSync(path.join(PLUGIN, "bin/dotclaude-statusline"))).toBe(
     true,
   );
 });
@@ -258,7 +258,7 @@ test("a 0.27.0 launcher stub in the status line is replaced", async () => {
   });
   run(d, ["--apply"]);
   expect((await readUser(d)).statusLine.command).toBe(
-    `bun --no-env-file "${SLASHED}/features/statusline/cli.ts"`,
+    `bun --no-env-file "${SLASHED}/bin/dotclaude-statusline"`,
   );
 });
 

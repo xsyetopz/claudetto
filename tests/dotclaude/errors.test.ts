@@ -5,21 +5,16 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { stripVTControlCharacters } from "node:util";
 import {
   allRows,
   maxTurnsOf,
 } from "../../plugins/dotclaude/features/context/turns.ts";
-import { readTable } from "../../plugins/dotclaude/features/statusline/context-table.ts";
-import { readUsage } from "../../plugins/dotclaude/features/statusline/credits.ts";
-import { parseInput } from "../../plugins/dotclaude/features/statusline/input.ts";
-import { openspecChange } from "../../plugins/dotclaude/features/statusline/openspec.ts";
 import { tailRows } from "../../plugins/dotclaude/hooks/PostToolUse/context.ts";
 import {
   isExpected,
   rethrowUnless,
 } from "../../plugins/dotclaude/lib/errors.ts";
-import { PLUGINS, tmpDir } from "../support/repo.ts";
+import { tmpDir } from "../support/repo.ts";
 import { readText } from "../support/verdicts.ts";
 
 const dir = tmpDir("dc-errors");
@@ -69,87 +64,4 @@ test("`maxTurnsOf` gives undefined for an absent agent file and throws any other
   await expect(maxTurnsOf("agent-loop", dir)).rejects.toThrow(
     expect.objectContaining({ code: "ELOOP" }),
   );
-});
-
-test("`readUsage` gives no usage for an absent file, text that is not JSON, or a cache of another shape", async () => {
-  const none = { credits: null, fable: null };
-  const home = async (text?: string) => {
-    const config = fs.mkdtempSync(path.join(dir, "config-"));
-    if (text !== undefined)
-      await Bun.write(path.join(config, ".claude.json"), text);
-    return { CLAUDE_CONFIG_DIR: config };
-  };
-  expect(await readUsage(await home(), 1)).toStrictEqual(none);
-  expect(await readUsage(await home("{"), 1)).toStrictEqual(none);
-  expect(await readUsage(await home("{}"), 1)).toStrictEqual(none);
-  expect(
-    await readUsage(
-      await home('{"cachedUsageUtilization":{"fetchedAtMs":1}}'),
-      1,
-    ),
-  ).toStrictEqual(none);
-});
-
-test("`readUsage` throws a read error that is not an absent file", async () => {
-  const config = fs.mkdtempSync(path.join(dir, "config-"));
-  fs.symlinkSync(
-    path.join(config, ".claude.json"),
-    path.join(config, ".claude.json"),
-  );
-  await expect(readUsage({ CLAUDE_CONFIG_DIR: config }, 1)).rejects.toThrow(
-    expect.objectContaining({
-      code: "ELOOP",
-    }),
-  );
-});
-
-test("`openspecChange` gives null for a project with no changes folder and throws any other error", async () => {
-  expect(await openspecChange(path.join(dir, "no-project"))).toBe(null);
-  const project = fs.mkdtempSync(path.join(dir, "project-"));
-  fs.mkdirSync(path.join(project, "openspec"));
-  // On Windows a link has a kind, so a loop to a folder needs `"dir"`, or the link reads as a file.
-  fs.symlinkSync(
-    path.join(project, "openspec", "changes"),
-    path.join(project, "openspec", "changes"),
-    "dir",
-  );
-  await expect(openspecChange(project)).rejects.toThrow(
-    expect.objectContaining({ code: "ELOOP" }),
-  );
-});
-
-test("`readTable` gives null for an absent transcript and throws any other error", async () => {
-  expect(await readTable({ transcript_path: absent })).toBe(null);
-  await expect(readTable({ transcript_path: loop })).rejects.toThrow(
-    expect.objectContaining({ code: "ELOOP" }),
-  );
-});
-
-test("`parseInput` gives null for text that is not JSON", () => {
-  expect(parseInput("{")).toBe(null);
-  expect(parseInput("[]")).toStrictEqual({});
-});
-
-test("the status line writes an unexpected error to stderr and still prints one row", () => {
-  const script = path.join(PLUGINS, "dotclaude/features/statusline/cli.ts");
-  const text = (bytes: Uint8Array) => new TextDecoder().decode(bytes);
-  const run = (input: unknown) => {
-    const out = Bun.spawnSync({
-      cmd: [process.execPath, "--no-env-file", script],
-      stdin: new TextEncoder().encode(JSON.stringify(input)),
-      cwd: dir,
-      env: { ...process.env, CLAUDE_CONFIG_DIR: dir, COLUMNS: "120" },
-    });
-    return {
-      status: out.exitCode,
-      stdout: text(out.stdout),
-      stderr: text(out.stderr),
-    };
-  };
-  const bad = run({ transcript_path: loop });
-  expect(bad.status).toBe(0);
-  expect(bad.stderr).toMatch(/ELOOP/);
-  expect(stripVTControlCharacters(bad.stdout).trim()).toBe("");
-  const fine = run({ transcript_path: absent });
-  expect(fine.stderr).toBe("");
 });

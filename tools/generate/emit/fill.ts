@@ -11,7 +11,7 @@ import {
   SUBAGENT_CONTEXT_MAX,
   TURNS_LEFT_AT,
 } from "../../../plugins/dotclaude/features/context/limits.ts";
-import { MAX_ROWS } from "../../../plugins/dotclaude/features/statusline/limits.ts";
+import { MAX_ROWS } from "../../../src/plugins/dotclaude/slices/statusline/limits.ts";
 import {
   BASH_OUTPUT_MAX_CHARS,
   CONTEXT_WINDOW,

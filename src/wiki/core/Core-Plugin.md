@@ -96,8 +96,8 @@ The settings are keys that you copy:
 The status line needs two keys with the absolute path of the plugin folder:
 
 ```text
-bun --no-env-file <plugin folder>/features/statusline/cli.ts
-bun --no-env-file <plugin folder>/features/statusline/subagent-cli.ts
+bun --no-env-file <plugin folder>/bin/dotclaude-statusline
+bun --no-env-file <plugin folder>/bin/dotclaude-statusline --subagent
 ```
 
 ## Drift check
@@ -134,7 +134,7 @@ Each bound is in one file, and tests pin the copies.
 | Subagent report | {{REPORT_MAX_WORDS}} words | `features/context/limits.ts` (`REPORT_MAX_WORDS`) |
 | File lists of the asks for configs, CI files, skipped tests, and suppressions | Data in `features/adherence/limits.ts` | `features/adherence/limits.ts` |
 | File size that `adherence` reads | {{FILE_MAX_BYTES}} bytes | `features/adherence/limits.ts` |
-| Rows of the status line | {{MAX_ROWS}} | `features/statusline/limits.ts` |
+| Rows of the status line | {{MAX_ROWS}} | `slices/statusline/limits.ts` |
 
 The size of the first request is bound in `tools/limits.ts` (`FIRST_REQUEST_LOW_BYTES` to `FIRST_REQUEST_HIGH_BYTES`), and the [Plugin layout](Plugin-Layout#bound-tiers) page explains the tiers.
 
@@ -148,7 +148,7 @@ The size of the first request is bound in `tools/limits.ts` (`FIRST_REQUEST_LOW_
 | `features/prompt/shared.ts`, `features/prompt/variants.ts` | The shared rules and the model variants of the system prompt. |
 | `agents/*.md` | The five agents. |
 | `skills/setup/` | The setup skill and its script. |
-| `features/<name>/` | One folder for each concern: `adherence`, `context`, `drift`, `guard`, `prompt`, `reads`, `sembr`, `setup`, `statusline`, and `surface`. |
+| `features/<name>/` | One folder for each concern: `adherence`, `context`, `drift`, `guard`, `prompt`, `reads`, `sembr`, `setup`, and `surface`. |
 | `lib/` | Pure shared code. |
 | `tests/*.test.ts` | The hook lab, run with `just lab`. |
 

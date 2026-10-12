@@ -28,7 +28,7 @@ See [Mythos detection](Settings-Snippet-Keys#mythos-detection).
 
 1. Copy the keys that you want into `~/.claude/settings.json` (user scope).
 2. Replace `<plugin folder>` in `statusLine` and `subagentStatusLine` with the absolute path of the installed `dotclaude` plugin folder, or delete both keys.
-   The commands are `bun --no-env-file "<plugin folder>/features/statusline/cli.ts"` and `bun --no-env-file "<plugin folder>/features/statusline/subagent-cli.ts"`, with forward slashes in the path on each platform.
+   The commands are `bun --no-env-file "<plugin folder>/bin/dotclaude-statusline"` and `bun --no-env-file "<plugin folder>/bin/dotclaude-statusline" --subagent`, with forward slashes in the path on each platform.
    `plugins/dotclaude/settings.json` is an empty object, so the plugin sets no status line itself.
    Research for this change found that a status line command gets no `${CLAUDE_PLUGIN_ROOT}` (`research/architecture.md`, confirmed), so the path must be absolute.
    The folder is the `installPath` of `dotclaude@dotclaude` in `~/.claude/plugins/installed_plugins.json`.
@@ -208,14 +208,14 @@ The same test fails when the block holds a key of the [never-set list](Off-Switc
   "bashOutputMaxChars": 4000,
   "statusLine": {
     "type": "command",
-    "command": "bun --no-env-file \"<plugin folder>/features/statusline/cli.ts\"",
+    "command": "bun --no-env-file \"<plugin folder>/bin/dotclaude-statusline\"",
     "padding": 0,
     "refreshInterval": 1,
     "hideVimModeIndicator": true
   },
   "subagentStatusLine": {
     "type": "command",
-    "command": "bun --no-env-file \"<plugin folder>/features/statusline/subagent-cli.ts\""
+    "command": "bun --no-env-file \"<plugin folder>/bin/dotclaude-statusline\" --subagent"
   },
   "enabledPlugins": {
     "cc-plugin-agents-md@builtin": false,

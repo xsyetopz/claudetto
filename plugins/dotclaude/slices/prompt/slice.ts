@@ -70,18 +70,6 @@ export const slice = {
     syncClaudeAiSkills: false,
     syncClaudeAiPlugins: false,
     disableClaudeAiConnectors: true,
-    statusLine: {
-      type: "command",
-      command: 'bun --no-env-file "<plugin folder>/features/statusline/cli.ts"',
-      padding: 0,
-      refreshInterval: 1,
-      hideVimModeIndicator: true,
-    },
-    subagentStatusLine: {
-      type: "command",
-      command:
-        'bun --no-env-file "<plugin folder>/features/statusline/subagent-cli.ts"',
-    },
     enabledPlugins: {
       "cc-plugin-agents-md@builtin": false,
       "cc-plugin-claude-test@builtin": false,
