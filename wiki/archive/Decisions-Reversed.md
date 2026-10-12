@@ -13,7 +13,12 @@ None yet.
 
 ## Router
 
-None yet.
+- D25, number: the old choice was five agents.
+  The 1.0.0 choice is a fixed set of seven agents.
+  The reason is the 1.0.0 scope of `.dotclaude/spec/changes/1.0.0/change.md` (section Scope).
+- D25, planning: the old choice kept planning in the main loop.
+  The 1.0.0 choice adds the `planner` agent (Opus, `high`, writes only under `spec/`).
+  The reason is the Agents table of `.dotclaude/spec/changes/1.0.0/workflow.md`.
 
 ## Tools
 
