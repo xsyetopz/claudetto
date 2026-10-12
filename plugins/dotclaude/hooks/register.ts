@@ -12,9 +12,15 @@ import {
 } from "../slices/prompt/adapters/mod.ts";
 import { onToolCall as h6 } from "../slices/sembr/adapters/mod.ts";
 import { onSessionStart as h7 } from "../slices/setup/adapters/mod.ts";
+import {
+  onAgentOffer as h8,
+  onToolDescribe as h9,
+} from "../slices/surface/adapters/mod.ts";
 import { register as legacy } from "./legacy.ts";
 
 export const register = (on: On): void => {
+  // eval: agent.offer surface
+  on("agent.offer", h8);
   // eval: agent.spawn prompt
   on("agent.spawn", h5);
   // eval: prompt.compose prompt
@@ -31,5 +37,7 @@ export const register = (on: On): void => {
   on("tool.check", { tool: ["Bash", "Write", "Edit", "MultiEdit"] }, h0);
   // eval: tool.check guard
   on("tool.check", h2);
+  // eval: tool.describe surface
+  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h9);
   legacy(on);
 };
