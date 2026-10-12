@@ -56,8 +56,3 @@ plugins/dotclaude-jev/
 src/plugins/dotclaude-jev/
 tests/jev/
 
-# P20: `surface`
-plugins/dotclaude/features/surface/
-plugins/dotclaude/tests/surface.test.ts
-src/plugins/dotclaude/features/surface/
-

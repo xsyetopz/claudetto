@@ -103,10 +103,7 @@
         "!tools/wiki.ts",
         "!plugins/dotclaude-jev/**",
         "!src/plugins/dotclaude-jev/**",
-        "!tests/jev/**",
-        "!plugins/dotclaude/features/surface/**",
-        "!plugins/dotclaude/tests/surface.test.ts",
-        "!src/plugins/dotclaude/features/surface/**"
+        "!tests/jev/**"
       ],
       "plugins": ["./tools/lint/arrow-functions.grit"],
       "linter": {
