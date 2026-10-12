@@ -1,89 +1,92 @@
-# OpenSpec
+# Spec store
 
 dotclaude turns compaction and auto memory off, so `/clear` is the only reset of a long session.
-[OpenSpec](https://github.com/Fission-AI/OpenSpec) keeps the state of long work in the repository:
-specs, a proposal, a design, and task checkboxes.
-A fresh session after `/clear` reads them again, and nothing is lost.
+The spec store keeps the state of long work in the repository.
+A change has its reason, its tasks, its delta specs, and, for a large change, its packages and a lane log.
+A fresh session after `/clear` reads these files again, and nothing is lost.
 
-The facts on this page come from the OpenSpec `main` branch and the npm registry, read 2026-10-07.
+This page replaces the OpenSpec workflow of earlier versions.
+dotclaude no longer uses OpenSpec.
 
-## Install
+The store is the folder `.dotclaude/spec/`, and the repository tracks it.
+The `spec` skill starts a change.
+The `dotclaude-spec` command writes the template files and checks them.
 
-OpenSpec 1.14.1 is the latest version of `@fission-ai/openspec`, and it needs Node 20.19.0 or later.
+## Sizes
 
-```bash
-npm install -g @fission-ai/openspec@latest
-# or
-brew install openspec
+| Size | Use it when | Files |
+| --- | --- | --- |
+| `trivial` | One edit has a command that shows that it is done. | `change.md`, with the tasks |
+| `medium` | A change touches one or more capabilities. | `change.md`, and one delta file for each capability |
+| `large` | Several agents do different parts. | The medium files, `design.md`, `packages.md`, and `packages/` |
+
+The default size is `medium`.
+
+## Layout
+
+```text
+.dotclaude/spec/
+  specs/                      the main specs, one file for each capability
+  changes/<id>/
+    change.md                 the reason, the scope, and the tasks
+    specs/<capability>.md     the delta files of the capabilities
+    design.md                 the design (large)
+    packages.md               the packages, under their waves (large)
+    packages/NN-<slug>.md     one file for each package (large)
+    events.jsonl              the lane of each package, one line for each change (large)
+  changes/archive/            the finished changes, with the date in the name
+  hotfixes/                   the records of the hotfixes
 ```
 
-`/dotclaude:setup` checks `openspec --version` and `node --version`.
-When `openspec` is missing or old, setup offers the install command.
-It runs the command only after you say yes, because a global install changes your computer.
+Each task in `change.md` is a line `- [ ] <id> <text>`, with a `Verify:` line below it.
+Each `Verify:` line names a command or a test that shows that the task is done.
+`validate` fails on a task that has no `Verify:` line.
 
-## Set up a project
+## Commands
 
-Setup does four steps, and it runs them only after you say yes:
-
-1. It turns OpenSpec telemetry off.
-2. It runs `openspec init --tools claude` when the project has no `openspec/` folder.
-3. It runs `openspec config set delivery skills`.
-4. It runs `openspec update`, which removes the command copies in `.claude/commands/opsx/`.
-
-The `init` command writes `openspec/specs/`, `openspec/changes/`, and `openspec/config.yaml`.
-After the four steps, only the six `openspec-*` skills in `.claude/skills/` remain, and the `/opsx:*` commands do not.
-It writes no `CLAUDE.md` block and no `openspec/AGENTS.md`.
-Those come from older OpenSpec versions.
-
-## Skills
-
-| Skill | What it does |
+| Command | What it does |
 | --- | --- |
-| `openspec-propose` | Makes a new change and writes its planning artifacts in one step. |
-| `openspec-explore` | Reads the codebase and compares options before you start a change. It writes no code. |
-| `openspec-apply-change` | Does the tasks of a change, writes the code, and checks off each task. |
-| `openspec-update-change` | Revises the planning artifacts of a change. It never edits code. |
-| `openspec-sync-specs` | Merges the delta specs of a change into the main specs. Optional, because archive asks to sync. |
-| `openspec-archive-change` | Finalizes a completed change and moves it to the archive folder. |
+| `dotclaude-spec new <id> [--size trivial\|medium\|large]` | Writes the files of the size. It stops when the change exists already. |
+| `dotclaude-spec status [<id>]` | Prints the lane of each package of the change. |
+| `dotclaude-spec next [<id>]` | Prints the brief of the first package that is `planned` or `doing`, with each dependency `done`. |
+| `dotclaude-spec lane <package> <lane>` | Moves a package to a lane and adds one line to `events.jsonl`. The lanes are `planned`, `doing`, `review`, `done`, and `blocked`. Only the main session runs it. |
+| `dotclaude-spec ready [<id>]` | Lists the packages that can start now. Their `owns` do not overlap the `owns` of a package in `doing` or `review`. |
+| `dotclaude-spec runs` | Prints the number of agent runs that a wave of `/ship` may start now. |
+| `dotclaude-spec merge <package> <branch>` | Merges the branch of a package that is in the `review` lane. |
+| `dotclaude-spec validate [<id>]` | Checks the specs, the deltas, the tasks, and the packages. It also checks that no two open packages of a wave have overlapping `owns`. |
+| `dotclaude-spec archive <id>` | Applies the deltas to the main specs, and moves the change to `changes/archive/`. When one delta fails, nothing changes. |
+| `dotclaude-spec record <text>` | Writes the record of a hotfix in `hotfixes/`. |
 
-A change is the folder `openspec/changes/<id>/`
-with `proposal.md`, `design.md`, `tasks.md`, and its delta specs.
+Run the command with no argument to print the usage.
 
 ## Work across `/clear`
 
-1. For work of more than one session, start with the `openspec-propose` skill.
-2. Work through the tasks with the `openspec-apply-change` skill.
-   The agent checks off each task in `tasks.md` when it is done.
-3. When the status line turns yellow or red, let Claude tick the finished tasks in `tasks.md` and put the decisions in `design.md`.
-   Then run `/clear`.
-   dotclaude writes no handoff file, because the artifacts of the change hold the state.
-4. In the fresh session, run the `openspec-apply-change` skill with `<id>`.
-   It reads the artifacts and continues at the first unchecked task.
-5. When all tasks are done, run the `openspec-archive-change` skill.
+1. Run the `spec` skill with the id of the change and a size.
+   The skill fills the files, and it ends when `dotclaude-spec validate <id>` passes.
+2. For a medium change, the `Verify:` commands show when the work is done.
+   For a large change, run `/ship <id>`.
+   The `/ship` skill starts an `implementer` agent for each package in a worktree, and a `reviewer` agent for each diff.
+3. Before `/clear`, read the lanes with `dotclaude-spec status <id>`.
+   The state is in the lane log, so a fresh session needs no handoff file.
+4. In the fresh session, run `dotclaude-spec next <id>`.
+   It prints the brief of the next package, and the work continues there.
+5. When all the work is done, run `dotclaude-spec archive <id>`.
 
-The status line shows the newest active change and its task count, such as `add-login 2/4`.
-It reads `openspec/changes/*/tasks.md` directly and skips `archive/`, so it does not start the CLI on each refresh.
+## Hotfixes
+
+A defect with a known cause does not need a change.
+The `hotfix` skill fixes it, runs the check, and runs `dotclaude-spec record` with a text.
+The record goes to `.dotclaude/spec/hotfixes/`.
 
 ## Measured flow
 
-On 2026-10-07, OpenSpec 1.14.1 and Claude Code 2.1.292 ran this flow in `just sandbox` with `-p` (**measured**):
+This section records a measurement of the removed OpenSpec flow.
+It does not describe the spec store.
+On 2026-10-07, OpenSpec 1.14.1 and Claude Code 2.1.292 ran in `just sandbox` with `-p`.
+A fresh session after `/clear` continued at the first unchecked task of the change, and it did not do that task again.
+The result is the evidence for the resume after `/clear` in the open items.
 
-1. `openspec init --tools claude` wrote `openspec/config.yaml`, `openspec/specs/`, `openspec/changes/archive/`, 6 skills in `.claude/skills/openspec-*`, and 6 commands in `.claude/commands/opsx/`.
-   It said that `openspec config profile` adds 6 more workflows.
-2. The `openspec-propose` skill (as `/opsx:propose`, before setup removed the commands) made the change `add-login` with 4 tasks, in 10 turns for $0.16.
-   One Bash write with a heredoc (`mkdir … && cat > … <<EOF`) was denied in `acceptEdits` mode.
-   The model then wrote the file with a write tool and finished.
-3. Task 1.1 was checked off by hand, to stand for an earlier session.
-4. A fresh session ran `/opsx:apply add-login` (the `openspec-apply-change` skill).
-   It ran `openspec list`, `openspec status`, and `openspec instructions apply`, and read the artifacts.
-   It did not do 1.1 again.
-   It did 2.1, 3.1, and 4.1, checked off each one, and ended with all tasks done, in 13 turns for $0.14 with 0 denials.
-5. The status line showed `add-login 1/4` before the apply run.
+## Related pages
 
-## Upgrade
-
-After you upgrade the CLI, run `openspec update` in each project.
-The generated files in `.claude/` come from the CLI version, and OpenSpec owns them.
-Setup offers this step after an upgrade.
-dotclaude does not edit or wrap the generated files,
-and no dotclaude hook enforces OpenSpec.
+- [Core plugin](Core-Plugin)
+- [Agents](Agents)
