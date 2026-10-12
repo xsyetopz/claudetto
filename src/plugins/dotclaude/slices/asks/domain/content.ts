@@ -3,6 +3,7 @@
 // `pyproject.toml` and `setup.cfg`, the check scripts of `package.json`, and the check recipes of a `justfile` or `Makefile`.
 // `ch` is the effect from `change` in `text.ts`.
 
+import { CLAUDE_DIR } from "../../../../../kernel/paths.ts";
 import {
   CHECK_RECIPE,
   CHECK_SCRIPT,
@@ -156,7 +157,7 @@ export const contentKind = (
   ch: Change,
 ): string | undefined => {
   const parts = rel.split("/");
-  if (parts.at(-2) === ".claude" && /^settings.*\.json$/.test(name)) {
+  if (parts.at(-2) === CLAUDE_DIR && /^settings.*\.json$/.test(name)) {
     const key = settingsKey(ch);
     if (key) return "a settings file";
   }

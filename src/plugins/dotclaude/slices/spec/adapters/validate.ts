@@ -2,7 +2,7 @@
 // It also checks that no two open packages in one wave have overlapping `owns`.
 
 import path from "node:path";
-import { SPEC_ROOT } from "../../../../../kernel/spec-store.ts";
+import { SPEC_ROOT, SPECS_DIR } from "../../../../../kernel/paths.ts";
 import type { FormatError, Package } from "../domain/formats.ts";
 import { parseDelta, parseSpec } from "../domain/parse.ts";
 import { parseTasks } from "../domain/plan.ts";
@@ -15,7 +15,6 @@ import {
   validateTasks,
   validateWave,
 } from "../domain/validate.ts";
-import { SPECS_DIR } from "../limits.ts";
 import { readBriefs, readEntries } from "./plan-files.ts";
 import type { Run } from "./run.ts";
 import type { SpecStore } from "./store.ts";
@@ -26,7 +25,7 @@ const formatErrors = (file: string, errors: FormatError[]): string[] =>
 const issueLines = (file: string, issues: Issue[]): string[] =>
   issues.map((i) => `${file}: ${i.rule} ${i.subject}: ${i.message}`);
 
-/** The problems of the capability specs in `spec/specs/`. */
+/** The problems of the capability specs in `.dotclaude/spec/specs/`. */
 const specProblems = async (store: SpecStore): Promise<string[]> => {
   const out: string[] = [];
   for (const name of await store.markdown(SPECS_DIR)) {

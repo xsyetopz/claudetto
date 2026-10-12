@@ -4,6 +4,12 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import {
+  CLAUDE_DIR,
+  PROJECT_LOCAL_SETTINGS,
+  PROJECT_SETTINGS,
+  SETTINGS_FILE,
+} from "../../../kernel/paths.ts";
 import { mythosOffered } from "../domain/settings.ts";
 import type { Json } from "../domain/types.ts";
 
@@ -19,7 +25,7 @@ export type Places = {
 
 /** The folders of this run. `root` is the plugin folder, three levels above this file. */
 export const placesOf = (env: NodeJS.ProcessEnv, cwd: string): Places => ({
-  configDir: env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), ".claude"),
+  configDir: env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), CLAUDE_DIR),
   projectDir: path.resolve(env["CLAUDE_PROJECT_DIR"] || cwd),
   root: path.resolve(import.meta.dirname, "..", "..", ".."),
 });
@@ -76,9 +82,9 @@ export const settingsFile = (
   projectDir: string,
 ): string | null => {
   const files: Record<string, string> = {
-    user: path.join(configDir, "settings.json"),
-    project: path.join(projectDir, ".claude", "settings.json"),
-    local: path.join(projectDir, ".claude", "settings.local.json"),
+    user: path.join(configDir, SETTINGS_FILE),
+    project: path.join(projectDir, PROJECT_SETTINGS),
+    local: path.join(projectDir, PROJECT_LOCAL_SETTINGS),
   };
   return Object.hasOwn(files, scope) ? (files[scope] as string) : null;
 };

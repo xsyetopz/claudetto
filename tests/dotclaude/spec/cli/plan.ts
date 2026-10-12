@@ -2,7 +2,7 @@
 
 import { brief, makeStore, stateText } from "./helpers.ts";
 
-export const CHANGE = "spec/changes/c1";
+export const CHANGE = ".dotclaude/spec/changes/c1";
 
 export interface PlanPackage {
   id: string;

@@ -32,6 +32,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { SANDBOX_TEMP } from "../../../../../kernel/temp-paths.ts";
 import { report } from "../domain/frontmatter.ts";
 import { cleanEnv, loginToken } from "./login.ts";
 import { runProgram } from "./run-program.ts";
@@ -45,7 +46,7 @@ export const main = async (argv: string[]): Promise<number> => {
   const args = [...argv];
   // `--dir DIR` is for this command, so it does not go on to claude.
   const dirAt = args.indexOf("--dir");
-  let dir = path.join(os.tmpdir(), "dotclaude-sandbox");
+  let dir = path.join(os.tmpdir(), SANDBOX_TEMP);
   if (dirAt !== -1) {
     if (!args[dirAt + 1]) {
       console.error("--dir needs a directory.");

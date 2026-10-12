@@ -1,7 +1,7 @@
 // The import rules as pure functions from a map of path to source to a list of violations.
 // `tests/dotclaude/imports.test.ts` runs them over the files of `plugins/`,
 // and `tests/dotclaude/import-rules.test.ts` breaks each rule with a fixture.
-// The rules of the design are in `spec/changes/1.0.0/design.md`, and the graph that they read is in `graph.ts`.
+// The rules of the design are in `.dotclaude/spec/changes/1.0.0/design.md`, and the graph that they read is in `graph.ts`.
 
 import fs from "node:fs";
 import path from "node:path";

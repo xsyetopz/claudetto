@@ -5,6 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { runProgram } from "../../../../../kernel/node/process.ts";
+import { SETTINGS_FILE } from "../../../../../kernel/paths.ts";
 import { addonReport, installedAddons, planAddons } from "../domain/addons.ts";
 import type { Step } from "../domain/types.ts";
 import { type Places, readOptional } from "./files.ts";
@@ -64,7 +65,7 @@ export const addonsCommand = async (
     await readOptional(
       path.join(configDir, "plugins", "installed_plugins.json"),
     ),
-    (await readOptional(path.join(configDir, "settings.json")))[
+    (await readOptional(path.join(configDir, SETTINGS_FILE)))[
       "enabledPlugins"
     ] as Record<string, unknown> | undefined,
   );

@@ -14,6 +14,7 @@
 // It asks only when the literal part is a protected path (`tests/*.test.mjs`) and passes `$F` or `src/*.mjs`.
 // A command over the scan bound (`SHELL_SCAN_MAX_CHARS`) gets no write ask here, and the existing behavior applies.
 
+import { CLAUDE_DIR } from "../../../../../kernel/paths.ts";
 import {
   ITEMS_SHOWN_MAX,
   LIMIT_FILE_NAME,
@@ -60,7 +61,7 @@ const kindOf = async (
     !pathOnly && (await namedByHooks(rel, root, read)),
   );
   if (kind) return kind;
-  if (parts.at(-2) === ".claude" && /^settings.*\.json$/.test(name))
+  if (parts.at(-2) === CLAUDE_DIR && /^settings.*\.json$/.test(name))
     return "a settings file";
   if (RECIPE_FILE_NAMES.test(name)) return "a build file with a check recipe";
   if (pathOnly) return undefined;

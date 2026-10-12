@@ -183,7 +183,7 @@ test("`parsePackage` fails on a file with no front matter", () => {
 
 test("`parsePackage` reads the real package `01a-kernel.md`", async () => {
   const text = await Bun.file(
-    path.join(REPO, "spec/changes/1.0.0/packages/01a-kernel.md"),
+    path.join(REPO, ".dotclaude/spec/changes/1.0.0/packages/01a-kernel.md"),
   ).text();
   const r = parsePackage(text);
   expect(r.ok).toBe(true);
@@ -194,7 +194,7 @@ test("`parsePackage` reads the real package `01a-kernel.md`", async () => {
 
 test("`parseTasks` reads the real task list `packages.md`", async () => {
   const text = await Bun.file(
-    path.join(REPO, "spec/changes/1.0.0/packages.md"),
+    path.join(REPO, ".dotclaude/spec/changes/1.0.0/packages.md"),
   ).text();
   const r = parseTasks(text);
   expect(r.ok).toBe(true);

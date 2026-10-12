@@ -1,7 +1,7 @@
 // The plan files of one change: the list `packages.md` with its waves, and the briefs in `packages/`.
 
 import path from "node:path";
-import { SPEC_ROOT } from "../../../../../kernel/spec-store.ts";
+import { SPEC_ROOT } from "../../../../../kernel/paths.ts";
 import type { FormatError, Package } from "../domain/formats.ts";
 import { parsePackage } from "../domain/plan.ts";
 import type { SpecStore } from "./store.ts";
