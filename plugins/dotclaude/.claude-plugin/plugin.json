@@ -8,6 +8,15 @@
   },
   "repository": "https://github.com/xsyetopz/dotclaude",
   "license": "MIT",
+  "userConfig": {
+    "mainHandover": {
+      "type": "string",
+      "title": "Main session handover",
+      "description": "Use `auto` to write a handoff file, run `/clear`, and resume when the context is near its bound or a package is done. Use `manual` to get a hint to run `/handoff`. Use `off` for neither.",
+      "default": "manual",
+      "options": ["auto", "manual", "off"]
+    }
+  },
   "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Core-Plugin",
   "keywords": ["output-style", "agents", "hooks", "statusline"]
 }

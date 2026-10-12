@@ -5,9 +5,7 @@
 // Each call has the comment `// eval: <event> <slice>` above it, which names its entry in `evals/hooks.json`.
 // A handler with `configure` gets the `userConfig` values of the plugin, which the mod runtime gives to `register` as `options`:
 // the register calls each `configure` once with `options`, before the `on()` calls.
-// When the hand-written `plugins/<plugin>/hooks/legacy.ts` of the rebuild list exists, the register calls its `register` last.
 
-import fs from "node:fs";
 import path from "node:path";
 import type { FoundPlugin } from "../discover.ts";
 import { type Entry, filterOf, order } from "../order.ts";
@@ -34,14 +32,8 @@ const onCall = (e: Entry, hook: string): string => {
   ].join("\n");
 };
 
-/** The generated `register.ts` of the plugin `p` of `root`, or none when its slices have no mod handler and it has no `legacy.ts`. */
-export const registerOf = async (
-  root: string,
-  p: FoundPlugin,
-): Promise<Output[]> => {
-  const legacy = fs.existsSync(
-    path.join(root, "plugins", p.name, "hooks", "legacy.ts"),
-  );
+/** The generated `register.ts` of the plugin `p`, or none when its slices have no mod handler. */
+export const registerOf = async (p: FoundPlugin): Promise<Output[]> => {
   const where = new Map<Entry, { dir: string; name: string }>();
   const configures = new Set<string>();
   const entries: Entry[] = [];
@@ -68,7 +60,7 @@ export const registerOf = async (
           `${s.name}\0${nameOf(s, handler.configure, `the configure of ${part}`)}`,
         );
     }
-  if (!entries.length && !legacy) return [];
+  if (!entries.length) return [];
   // One alias for each export, numbered in the order of the module paths and the export names,
   // so the imports are already in the order of the import sorter of Biome, which formats the file.
   const pairs = [
@@ -102,14 +94,12 @@ export const registerOf = async (
       ? 'import type { On, PluginOptions } from "claude-code";'
       : 'import type { On } from "claude-code";',
     ...imports,
-    ...(legacy ? ['import { register as legacy } from "./legacy.ts";'] : []),
     "",
     configured
       ? "export const register = (on: On, options: PluginOptions): void => {"
       : "export const register = (on: On): void => {",
     ...[...configures].sort().map((key) => `  ${alias.get(key)}(options);`),
     ...calls,
-    ...(legacy ? ["  legacy(on);"] : []),
     "};",
     "",
   ].join("\n");

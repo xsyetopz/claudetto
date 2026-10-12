@@ -8,9 +8,45 @@ import { onCompose, onSection, onSpawn } from "./adapters/mod.ts";
 export const slice = {
   name: "prompt",
   mod: [
-    { event: "prompt.compose", phase: "rewrite", run: onCompose },
-    { event: "agent.spawn", phase: "rewrite", run: onSpawn },
-    { event: "prompt.section", phase: "answer", run: onSection },
+    {
+      event: "prompt.compose",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow:
+          "plugins/dotclaude/tests/variants.test.ts > a model with no variant keeps the sections of the engine",
+        text: "plugins/dotclaude/tests/variants.test.ts > two turns and a model switch give the same prompt bytes",
+      },
+      phase: "rewrite",
+      run: onCompose,
+    },
+    {
+      event: "agent.spawn",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow:
+          "plugins/dotclaude/tests/variants.test.ts > a spawn on a model with no variant passes the task prompt on unchanged",
+        text: "plugins/dotclaude/tests/variants.test.ts > a spawn on Haiku 5.5 ends the task prompt with its block one time",
+      },
+      phase: "rewrite",
+      run: onSpawn,
+    },
+    {
+      event: "prompt.section",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow:
+          "plugins/dotclaude/tests/section.test.ts > another section keeps the text of the engine",
+        text: "plugins/dotclaude/tests/section.test.ts > with `DISABLE_COMPACT`, the `context_management` section changes",
+      },
+      phase: "answer",
+      run: onSection,
+    },
   ],
   settings: {
     $schema:

@@ -1,6 +1,6 @@
 // Each import rule finds the violation that a fixture breaks it with.
 // The rules are in `tests/support/import-rules.ts`, and `imports.test.ts` runs them over the repository.
-// The rules of `AGENTS.md` are the source, and the `lib/` and `features/` rules are in `lib-feature-imports.test.ts`.
+// The rules of `AGENTS.md` are the source.
 
 import { expect, test } from "bun:test";
 import { parseImports } from "../support/graph.ts";
@@ -39,7 +39,7 @@ test("rule 3: a cli imports another feature, and an entry point imports a hook f
     [`${P}/features/reads/cli.ts`]:
       'import { x } from "../setup/rules.ts";\nimport { y } from "../reads/rules.ts";',
     [`${P}/hooks/register.ts`]:
-      'import { a } from "../features/guard/rules.ts";\nimport { b } from "../features/prompt/data.ts";\nimport { c } from "../lib/budget.ts";\nimport { d } from "../skills/setup/scripts/settings.ts";\nimport { e } from "../slices/prompt/adapters/mod.ts";\nimport { f } from "../kernel/slice.ts";\nimport { g } from "./legacy.ts";\nimport { h } from "./other.ts";',
+      'import { a } from "../features/guard/rules.ts";\nimport { b } from "../features/prompt/data.ts";\nimport { c } from "../lib/budget.ts";\nimport { d } from "../skills/setup/scripts/settings.ts";\nimport { e } from "../slices/prompt/adapters/mod.ts";\nimport { f } from "../kernel/slice.ts";\nimport { g } from "./other.ts";',
     [`${P}/slices/prompt/slice.ts`]:
       'import { a } from "../../kernel/slice.ts";\nimport { b } from "./adapters/mod.ts";',
   };

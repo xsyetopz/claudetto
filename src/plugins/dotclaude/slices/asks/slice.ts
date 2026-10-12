@@ -11,6 +11,18 @@ export const slice = {
   mod: [
     {
       event: "tool.check",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: true,
+        allow:
+          "plugins/dotclaude/tests/asks.test.ts > a `Write` of a source file gets no ask",
+        text: "plugins/dotclaude/tests/asks.test.ts > a `Write` that changes a line of a test file asks",
+        block:
+          "plugins/dotclaude/tests/asks.test.ts > a `Write` that changes a line of a test file asks",
+        false:
+          "plugins/dotclaude/tests/asks.test.ts > a `Write` of a source file gets no ask",
+      },
       filter: { tool: ["Bash", "Write", "Edit", "MultiEdit"] },
       phase: "check",
       run: onCheck,

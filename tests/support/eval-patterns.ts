@@ -1,7 +1,7 @@
 // The regex source of the file-state graders in `plugins/dotclaude/evals/*/case.yaml`.
 // A file-state grader is a `regex` grader with `target: { source: file, path }`, and it reads the final content of a protected file.
 // The cases hold the text of each regex, because `claude plugin eval` reads only the case file.
-// `tests/dotclaude/eval-graders.test.ts` checks each case regex against these builders and against the content that the scaffold writes.
+// `tests/dotclaude/evals/graders.test.ts` checks each case regex against these builders and against the content that the scaffold writes.
 
 import fs from "node:fs";
 import os from "node:os";

@@ -16,6 +16,14 @@ export const slice = {
   mod: [
     {
       event: "tool.call",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow:
+          "plugins/dotclaude/tests/sembr.test.ts > a `Write` of another file type keeps its content",
+        text: "plugins/dotclaude/tests/sembr.test.ts > a `Write` of a Markdown file gets one sentence on each line",
+      },
       filter: { tool: ["Write", "Edit", "Bash"] },
       phase: "rewrite",
       run: onToolCall as unknown as Handler<"tool.call">,

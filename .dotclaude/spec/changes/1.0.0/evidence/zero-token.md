@@ -45,3 +45,17 @@ Not candidates:
 
 - Items 1, 5, and 6 need the behavior of the mod events in a lab or a live session.
 - Each cost needs a measurement.
+
+## Verdicts of P33 part 2
+
+- Item 5, `eval-compare`: the skill stays.
+  A run costs money and takes minutes, so the skill confirms the two folders with the user first.
+  The user can add `--scaffold` and `--allow-tools`, which run the scripts of the suite as the user, only after a named yes.
+  A git ref must become a folder first.
+  A handler has a time bound of 120 seconds, and has no such choices.
+  `usage` and `start-cost` moved (`src/plugins/dotclaude-sessions/slices/*/adapters/mod.ts`).
+- Item 6, `setup`: the skill stays the only path.
+  A handler `onSetup` was built and removed.
+  It asked before it showed the preview, so the consent was blind.
+  It lost the path where the user drops some keys, the global installs of add-on tools, and the stop on a failed step.
+  The saving is small, because `/setup` runs once for each install.

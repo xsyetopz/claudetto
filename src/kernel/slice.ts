@@ -36,6 +36,23 @@ export type Handler<E extends EventName = EventName> = Events[E];
 export type Configure = (options: PluginOptions) => void;
 
 /**
+ * The eval kinds of one hook, which the generator writes to `evals/hooks.json` under the id `<event> <slice>`.
+ * A test is `<file from the repository root> > <test name>`.
+ * A hook that runs a model has `requests` above 0 and names its `claude plugin eval` case in `eval`.
+ * A hook that can block also names `block` and `false`.
+ */
+export interface HookEvals {
+  readonly requests: number;
+  readonly tokens: number;
+  readonly blocks: boolean;
+  readonly allow: string;
+  readonly text: string;
+  readonly block?: string;
+  readonly false?: string;
+  readonly eval?: string;
+}
+
+/**
  * One mod handler of a slice. A slice can have more than one for one event, each with its own filter.
  * It has `run`, the hook, and `configure`, when the hook reads the `userConfig` values of the plugin.
  */
@@ -45,6 +62,8 @@ export interface ModHandler<E extends EventName = EventName> {
   readonly phase: Phase;
   readonly run: Handler<E>;
   readonly configure?: Configure;
+  /** The eval kinds of the hook. One entry covers each handler of the slice on the same event. */
+  readonly evals?: HookEvals;
 }
 
 /** One classic command hook, for an event that the mod API does not cover. */

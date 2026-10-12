@@ -21,23 +21,7 @@ tests/lab/sandbox/frontmatter.test.ts
 tests/lab/sandbox/login.test.ts
 
 # P13: `handoff`, the 0.28.0 context bound, and the shared 0.28.0 code of the core plugin that the last slice package removes
-plugins/dotclaude/evals/
-plugins/dotclaude/features/context/
-plugins/dotclaude/hooks/PostToolUse/
-plugins/dotclaude/hooks/legacy.ts
-plugins/dotclaude/lib/
-plugins/dotclaude/tests/mod.test.ts
 plugins/dotclaude/tsconfig.json
-src/plugins/dotclaude/hooks/
-tests/dotclaude/context/
-tests/dotclaude/errors.test.ts
-tests/dotclaude/eval-graders.test.ts
-tests/dotclaude/hooks/
-tests/dotclaude/lib-feature-imports.test.ts
-tests/dotclaude/lib/
-tests/dotclaude/paths.test.ts
-tests/support/verdicts.ts
-tests/support/lib-feature-imports.ts
 
 # P15: the wiki
 src/wiki/

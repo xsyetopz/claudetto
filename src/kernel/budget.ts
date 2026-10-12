@@ -36,6 +36,9 @@ export const USAGE_LEVELS: [number, number] = [75, 90];
  */
 export const BASH_OUTPUT_MAX_CHARS = 4_000;
 
+/** The characters of the CLI output that a skill command shows with no model turn. A longer output is cut, and a line says how much. */
+export const COMMAND_OUTPUT_MAX_CHARS = 20_000;
+
 /** The time for one `gh` call of the policy guard. */
 export const POLICY_TIMEOUT_MS = 5_000;
 

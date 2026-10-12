@@ -1,5 +1,5 @@
 // Behavior of the parts of `tools/generate/` that the port of 0.28.0 needs (P01b2):
-// a module folder of texts in a slice, the `hooks.json` source of a plugin with slices, and the `legacy.ts` call of the register.
+// a module folder of texts in a slice, and the `hooks.json` source of a plugin with slices.
 // Also the `// eval:` id of each generated `on()` call, and the hook lab tests of a slice in `tests/` of the plugin.
 // Each test works in its own copy of the fixture under `TMPDIR`.
 
@@ -73,19 +73,6 @@ test("`hooks.json` keeps the description and the classic hooks of its source, an
   expect(json.hooks.SessionStart).toStrictEqual([
     { hooks: [{ type: "command", command: "true", timeout: 5 }] },
   ]);
-});
-
-test("the register calls the `register` of `legacy.ts` after the slice handlers", async () => {
-  const dir = await fixtureRoot({
-    "plugins/p/hooks/legacy.ts":
-      'export const register = (on) => on("legacy.event", () => 0);\n',
-  });
-  await write(dir, await generated(dir));
-  const mod = await import(path.join(dir, "plugins/p/hooks/register.ts"));
-  const events: unknown[] = [];
-  mod.register((event: unknown) => events.push(event));
-  expect(events.at(-1)).toBe("legacy.event");
-  expect(events.length).toBeGreaterThan(1);
 });
 
 /** The `// eval:` ids of the block directly above line `i`, in order, for an `on()` call. */

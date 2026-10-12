@@ -13,6 +13,14 @@ export const slice = {
   mod: [
     {
       event: "session.start",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow:
+          "plugins/dotclaude/tests/session.test.ts > session start with no key registers `second_opinion` and passes the session on",
+        text: "plugins/dotclaude/tests/session.test.ts > session start with a key registers the same tool with its input schema",
+      },
       // The filter matches each start, because the mod runtime refuses two `session.start` handlers with no filter.
       filter: { isInteractive: [true, false] },
       phase: "observe",
@@ -20,6 +28,14 @@ export const slice = {
     },
     {
       event: "tool.call",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow:
+          "tests/dotclaude/decide/ask.test.ts > a question with one option or several choices is not sent to Jev",
+        text: "tests/dotclaude/decide/ask.test.ts > a confident pick of a facts question goes into the picked option",
+      },
       filter: { tool: ["AskUserQuestion"] },
       phase: "rewrite",
       // The filter narrows `e` to `AskUserQuestion`, so `run` has one cast to the wide type, as in `sembr`.

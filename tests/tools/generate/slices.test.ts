@@ -283,3 +283,23 @@ test("the texts of a slice go to the plugin with a header, and `plugin.ts` makes
   ).toBeTrue();
   expect(made.some((o) => o.file === "plugins/p/plugin.ts")).toBeFalse();
 });
+
+test("an eval case of a slice and an eval case of the plugin go to `evals/` of the plugin", async () => {
+  const dir = await fixtureRoot({
+    "src/plugins/p/slices/alpha/evals/one/case.yaml": "name: one\n",
+    "src/plugins/p/slices/alpha/evals/one/scaffold.sh":
+      "#!/usr/bin/env bash\necho one\n",
+    "src/plugins/p/evals/two/case.yaml": "name: two\n",
+  });
+  const made = await generated(dir);
+  expect(textOf(made, "plugins/p/evals/one/case.yaml")).toEndWith(
+    "\nname: one\n",
+  );
+  const scaffold = textOf(made, "plugins/p/evals/one/scaffold.sh");
+  expect(scaffold.split("\n")[0]).toBe("#!/usr/bin/env bash");
+  expect(isGenerated(scaffold)).toBe(true);
+  expect(textOf(made, "plugins/p/evals/two/case.yaml")).toEndWith(
+    "\nname: two\n",
+  );
+  expect(made.some((o) => o.file.includes("slices/alpha/evals"))).toBe(false);
+});

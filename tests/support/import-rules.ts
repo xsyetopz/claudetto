@@ -14,14 +14,13 @@ import {
   stripComments,
   within,
 } from "./graph.ts";
-import { checkFeatures, checkLib } from "./lib-feature-imports.ts";
 import { REPO } from "./repo.ts";
 
 export type { Files };
 export { parseImports };
 
 // The folders that an entry point imports.
-// `slices/` and `kernel/` hold the 1.0.0 layout, and `hooks/legacy.ts` holds the handlers that the 1.0.0 rebuild has not ported yet.
+// `slices/` and `kernel/` hold the 1.0.0 layout.
 const ENTRY_TARGETS = new Set(["lib", "features", "slices", "kernel"]);
 
 // Rule 3: entry points import `lib/`, features, slices, and `kernel/`, and a `cli` file only its own feature and `lib/`.
@@ -37,10 +36,7 @@ export const checkEntries = (files: Files): string[] => {
       if (!/^cli\.(?:mjs|ts)$/.test(leaf as string)) continue;
       if (tTop === "features" && tName !== name)
         bad.push(`${file}: cli imports ${spec}, another feature`);
-    } else if (
-      !ENTRY_TARGETS.has(tTop as string) &&
-      within(target).join("/") !== "hooks/legacy.ts"
-    )
+    } else if (!ENTRY_TARGETS.has(tTop as string))
       bad.push(
         `${file}: entry point imports ${spec}, outside lib, features, slices, and kernel`,
       );
@@ -149,8 +145,6 @@ export const repoFiles = async (
 };
 
 export const RULES = {
-  checkLib,
-  checkFeatures,
   checkEntries,
   checkPluginBoundary,
   checkNoPackages,

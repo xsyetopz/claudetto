@@ -114,7 +114,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P03.
   Owns: `src/plugins/dotclaude/slices/spec/skills/`, `tools/bump-version.ts`, `tools/release.ts`, `tools/update.ts`.
   Verify: `just generate`, `just validate`, and a `reviewer` pass on the texts.
-- [ ] P13 `handoff`: the triggers, the handoff file, `/clear`, the resume, the `/handoff` skill, and `mainHandover`.
+- [x] P13 `handoff`: the triggers, the handoff file, `/clear`, the resume, the `/handoff` skill, and `mainHandover`.
   Deps: P03, P05, P06, P07, P32.
   P13 also makes the generator write `plugins/<plugin>/evals/hooks.json` from the eval cases of each slice, because `tests/support/hook-evals.test.ts` needs the file, and wave 2 keeps it hand-written on the rebuild list (P11b, 2026-10-12).
   P13 starts after each other slice package of the core plugin is merged, because the rebuild list makes it the last one: it removes `hooks/legacy.ts`, `lib/`, `features/context/`, and `src/plugins/dotclaude/hooks/`.
@@ -191,7 +191,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P06.
   Owns: the `asks` slice and its tests.
   Verify: `just check`, `just lab`, and a test for each kind of protected file with one change that weakens a check and one that does not.
-- [ ] P14 Handoff cost: one handoff against one compaction on the same session, with `dotclaude-usage`.
+- [x] P14 Handoff cost: one handoff against one compaction on the same session, with `dotclaude-usage`.
   It only reports, in `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.
   Deps: P13.
   Agent: `investigator`.
@@ -207,7 +207,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Owns: the `guard`, `agents`, and `statusline` slices, the `/ship` skill, the turn bound of `handoff`, and their tests.
   Verify: `just check`, a lab test for each denied git command in a subagent, and a lab test that a subagent gets the note before its last turn.
 - [ ] P15 Docs: the wiki, the README, and a new CHANGELOG that starts at 1.0.0, with the numbers of P14.
-  Deps: P14.
+  Deps: P14, and P33, P35, and P36, because they change what the docs describe.
   Owns: `wiki/`, `README.md`, `CHANGELOG.md`, `docs/`, `tools/wiki.ts`.
   Verify: `bun run lint:md`, and a `reviewer` pass.
 - [ ] P16 Release check: `tools/rebuild-pending.txt` is empty and deleted with its check, a `reviewer` pass on the full diff, `just check`, and one session in `just sandbox` that runs `/spec`, `/ship`, `/hotfix`, a decision, and a handoff.

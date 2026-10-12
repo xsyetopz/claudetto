@@ -1,7 +1,7 @@
 ---
 id: P33
 deps: [P19, P28, P34]
-owns: [".dotclaude/spec/changes/1.0.0/evidence/zero-token.md", "src/plugins/dotclaude/slices/spec/", "tests/dotclaude/spec/", "src/plugins/dotclaude/slices/setup/", "tests/dotclaude/setup/", "src/plugins/dotclaude-sessions/slices/usage/", "src/plugins/dotclaude-sessions/slices/start-cost/", "tests/sessions/", "src/plugins/dotclaude-lab/slices/eval-compare/", "tests/lab/"]
+owns: [".dotclaude/spec/changes/1.0.0/evidence/zero-token.md", "src/kernel/skill-command.ts", "src/plugins/dotclaude/slices/spec/", "tests/dotclaude/spec/", "src/plugins/dotclaude/slices/setup/", "tests/dotclaude/setup/", "src/plugins/dotclaude-sessions/slices/usage/", "src/plugins/dotclaude-sessions/slices/start-cost/", "tests/sessions/", "src/plugins/dotclaude-lab/slices/eval-compare/", "tests/lab/", "src/plugins/dotclaude/slices/agents/", "tests/dotclaude/agents/", "src/plugins/dotclaude/slices/checks/", "tests/dotclaude/checks/", "src/plugins/dotclaude/slices/handoff/limits.ts", "tests/dotclaude/handoff/"]
 verify: just check
 agent: implementer
 ---
@@ -29,7 +29,7 @@ A hook, a script, a setting, or a status line command does the work, not a model
    - Items 1, 5, and 6 move when a lab or a live session shows the mod behavior that the list names as open.
      When it does not, the item stays, and the evidence file says why.
    - Item 8 starts after P13 merges, because the `handoff` slice of P13 pins the `maxTurns` of `test-runner`.
-     Its files go into `owns` then.
+     Its files are in `owns`: the `agents` slice, a new `checks` slice for the CLI, and the `maxTurns` table of `handoff`.
    - Items 9 and 10 need no change.
 3. Move each task of the list to its zero-token form, with a test for each.
 4. Measure the token cost of each moved task before and after, with `dotclaude-usage`.
