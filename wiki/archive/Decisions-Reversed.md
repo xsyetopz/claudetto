@@ -9,7 +9,16 @@ None yet.
 
 ## Prompt
 
-None yet.
+### D28 Item 2, the auto-mode guard
+
+- Old choice: `auto-mode-guard.mjs` asked before each `rm -rf` of a variable.
+  The guard resolved a variable that an earlier part of the same command set from `mktemp -d` or from `$TMPDIR`.
+  It rejected `..` and a reset `TMPDIR`, and it kept the ask for any other unresolved path.
+  A recursive `rm` was an `ask` rule of the settings snippet, with the sandbox.
+- Reason for the reversal: the guard asked often and found no real risk.
+  The guard file is gone from `src/`.
+  Auto mode now uses the native classifier and the `autoMode.hard_deny` rules.
+- Sources: the decisions of 2026-10-12 in the change file of 1.0.0, and [Auto mode](Auto-Mode).
 
 ## Router
 
