@@ -1,0 +1,9 @@
+// The manifest of the `start-cost` slice: the `dotclaude-start` CLI, and the `/start-cost` skill that runs it.
+
+import type { Slice } from "../../../../kernel/slice.ts";
+
+export const slice = {
+  name: "start-cost",
+  cli: { bin: "dotclaude-start" },
+  skills: ["start-cost"],
+} satisfies Slice;

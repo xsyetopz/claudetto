@@ -1,6 +1,7 @@
 ---
 name: start-cost
 description: Measures what a Claude Code session sends at its start, by source, and compares a start with a plugin against a start without it. Use when asked what a plugin, skill list, or MCP server costs at the start of a session, not for usage over time.
+disable-model-invocation: true
 allowed-tools: Bash(dotclaude-start *)
 ---
 

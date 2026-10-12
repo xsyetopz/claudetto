@@ -1,20 +1,15 @@
 // What a session sent at its start, and where its context went, from a transcript.
-// The `dotclaude-start` bin calls `main`.
 //
-// Prints the tokens of the first request, the characters of each source (built-in, plugins, MCP servers,
+// The report has the tokens of the first request, the characters of each source (built-in, plugins, MCP servers,
 // `CLAUDE.md` and memory, the output style, and the system prompt), the size of each tool, system block, and attachment,
 // the requests and context of each subagent, the tool-result size of each tool of the main session,
 // and the repeat file reads.
-// Prints the bytes of the first request text with no tool schemas.
-// Exits 1 when the first request is above `--bound N`, or its text is outside `--text-min N` and `--text-max N`.
-// With no bound, it never fails on size.
-// `--compare BASE.jsonl OTHER.jsonl` prints the difference of two starts by source, such as a session without a plugin and one with it.
-// With no file, it reads the newest main transcript of this checkout.
+// It has the bytes of the first request text with no tool schemas.
+// The comparison of two starts is the difference of the two by source, such as a session without a plugin and one with it.
 
-import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
-import { type Entry, readEntries } from "../../lib/transcript.ts";
+import { rethrowUnless, UNREADABLE } from "../../../../../kernel/errors.ts";
+import type { Store } from "../ports.ts";
 import {
   attachmentSizes,
   type BudgetVerdict,
@@ -37,6 +32,7 @@ import {
   type SourceSize,
   sourceSizes,
 } from "./sources.ts";
+import { type Entry, readEntries } from "./transcript.ts";
 
 /** The bounds of the first request text in bytes, from `--text-min` and `--text-max`. */
 export type TextLimits = {
@@ -54,23 +50,34 @@ const n = (x: number): string => x.toLocaleString("en-US");
 const signed = (x: number): string => `${x > 0 ? "+" : ""}${n(x)}`;
 const k = (x: number): string => `${Math.round(x / 1000)}K`;
 
-/** The newest main transcript of the project folder of `cwd`. */
-function newestSession(cwd: string, env: NodeJS.ProcessEnv): string | null {
-  const root = env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), ".claude");
-  const dir = path.join(root, "projects", cwd.replace(/[^A-Za-z0-9]/g, "-"));
-  const files = fs.existsSync(dir)
-    ? fs.readdirSync(dir).filter((f) => f.endsWith(".jsonl"))
-    : [];
-  const mtime = (f: string): number => fs.statSync(path.join(dir, f)).mtimeMs;
-  files.sort((a, b) => mtime(b) - mtime(a));
+/** True when `file` exists. */
+export const exists = async (store: Store, file: string): Promise<boolean> => {
+  try {
+    await store.mtime(file);
+    return true;
+  } catch (err) {
+    rethrowUnless(err, ...UNREADABLE);
+    return false;
+  }
+};
+
+/** The newest main transcript of the project folder `dir`, or null when it has none. */
+export const newestSession = async (
+  store: Store,
+  dir: string,
+): Promise<string | null> => {
+  const files = (await store.list(dir)).filter((f) => f.endsWith(".jsonl"));
+  const times = new Map<string, number>();
+  for (const f of files) times.set(f, await store.mtime(path.join(dir, f)));
+  files.sort((a, b) => (times.get(b) ?? 0) - (times.get(a) ?? 0));
   return files[0] ? path.join(dir, files[0]) : null;
-}
+};
 
 /** The failures and advisories for the bytes of the first request text, from `--text-min` and `--text-max`. */
-function checkTextBytes(
+const checkTextBytes = (
   size: number,
   { textMin, textMax }: TextLimits,
-): TextCheck {
+): TextCheck => {
   const out: TextCheck = { failures: [], advisories: [] };
   if (textMax !== undefined && size > textMax)
     out.failures.push(
@@ -81,19 +88,20 @@ function checkTextBytes(
       `first request text is ${size} bytes, ${textMin - size} below ${textMin}`,
     );
   return out;
-}
+};
 
 /**
  * The text of the report for a session file.
  * `bound` is the token bound of the first request, or undefined for no bound.
  * `limits` holds `textMin` and `textMax`, the bytes of the first request text, or none.
  */
-export async function reportOf(
+export const reportOf = async (
+  store: Store,
   file: string,
   bound: number | undefined,
   limits: TextLimits = {},
-): Promise<ReportResult> {
-  const entries: Entry[] = await readEntries(file);
+): Promise<ReportResult> => {
+  const entries: Entry[] = await readEntries(store, file);
   const out = [`Session ${path.basename(file, ".jsonl")}`, ""];
   const first = firstRequest(entries);
   if (!first)
@@ -144,7 +152,7 @@ export async function reportOf(
     out.push(
       `  ${a.type.padEnd(26)} ${String(a.count).padStart(3)}x ${n(a.chars).padStart(8)}`,
     );
-  const runs: SubagentRun[] = await subagentRuns(file);
+  const runs: SubagentRun[] = await subagentRuns(store, file);
   if (runs.length) {
     const largest = Math.max(...runs.map((r) => r.finalContext));
     out.push(
@@ -172,15 +180,16 @@ export async function reportOf(
     ok: (verdict?.ok ?? true) && !sizes?.failures.length,
     first,
   };
-}
+};
 
 /** The text of the difference of two starts by source: `other` minus `base`. */
-export async function compareText(
+export const compareText = async (
+  store: Store,
   baseFile: string,
   otherFile: string,
-): Promise<string> {
-  const base = await readEntries(baseFile);
-  const other = await readEntries(otherFile);
+): Promise<string> => {
+  const base = await readEntries(store, baseFile);
+  const other = await readEntries(store, otherFile);
   const a = firstRequest(base);
   const b = firstRequest(other);
   const out = [
@@ -200,58 +209,4 @@ export async function compareText(
       `  ${signed(r.diff).padStart(9)}  base ${n(r.base).padStart(8)}  other ${n(r.other).padStart(8)}  ${r.source}`,
     );
   return out.join("\n");
-}
-
-const USAGE = `Usage: dotclaude-start [SESSION.jsonl] [--bound N] [--text-min N] [--text-max N]
-       dotclaude-start --compare BASE.jsonl OTHER.jsonl
-
-Prints the start of a session by source, from its transcript.
-With no file, it reads the newest transcript of this folder.
---bound N       Exit 1 when the first request is above N tokens.
---text-min N    Advise when the first request text is below N bytes.
---text-max N    Exit 1 when the first request text is above N bytes.
---compare       Print the difference of two starts by source, other minus base.`;
-
-const number = (args: string[], name: string): number | undefined => {
-  const at = args.indexOf(name);
-  return at < 0 ? undefined : Number(args[at + 1]);
 };
-
-/** Runs the bin with `args`, prints to stdout and stderr, and returns the exit code. */
-export async function main(
-  args: string[],
-  cwd: string = process.cwd(),
-  env: NodeJS.ProcessEnv = process.env,
-): Promise<number> {
-  if (args.includes("--help") || args.includes("-h")) {
-    console.log(USAGE);
-    return 0;
-  }
-  const compareAt = args.indexOf("--compare");
-  if (compareAt >= 0) {
-    const files = args.slice(compareAt + 1, compareAt + 3);
-    if (files.length < 2 || !files.every((f) => fs.existsSync(f))) {
-      console.error("Give two transcript paths: --compare BASE OTHER.");
-      return 2;
-    }
-    console.log(await compareText(files[0] as string, files[1] as string));
-    return 0;
-  }
-  const valued = ["--bound", "--text-min", "--text-max"];
-  const file =
-    args.find(
-      (a, i) => !a.startsWith("--") && !valued.includes(args[i - 1] as string),
-    ) ?? newestSession(cwd, env);
-  if (!file || !fs.existsSync(file)) {
-    console.error(
-      "No transcript found. Give the path of a session .jsonl file.",
-    );
-    return 2;
-  }
-  const { text, ok } = await reportOf(file, number(args, "--bound"), {
-    textMin: number(args, "--text-min"),
-    textMax: number(args, "--text-max"),
-  });
-  console.log(text);
-  return ok ? 0 : 1;
-}

@@ -1,7 +1,7 @@
 // The usage of the subagents and of the tool results of a session.
 
-import fs from "node:fs";
 import path from "node:path";
+import type { Store } from "../ports.ts";
 import {
   agentType,
   type Block,
@@ -12,7 +12,7 @@ import {
   readEntries,
   requestsOf,
   toolCalls,
-} from "../../lib/transcript.ts";
+} from "./transcript.ts";
 
 /** One subagent run: its requests, the context of its final request, and the input tokens of all its requests. */
 export type SubagentRun = {
@@ -42,36 +42,34 @@ export type RepeatReads = {
  * One row for each subagent transcript of a session file: the requests,
  * the context of the final request, and the input tokens summed over all requests.
  * Subagent transcripts are in the folder next to the session file, named like it.
+ * A session with no such folder has no rows.
  */
-export async function subagentRuns(
+export const subagentRuns = async (
+  store: Store,
   sessionFile: string,
-): Promise<SubagentRun[]> {
+): Promise<SubagentRun[]> => {
   const dir = path.join(sessionFile.replace(/\.jsonl$/, ""), "subagents");
-  if (!fs.existsSync(dir)) return [];
+  const files = (await store.list(dir)).filter((f) => f.endsWith(".jsonl"));
   return Promise.all(
-    fs
-      .readdirSync(dir)
-      .filter((f) => f.endsWith(".jsonl"))
-      .sort()
-      .map(async (f) => {
-        const requests: ModelRequest[] = requestsOf(
-          await readEntries(path.join(dir, f)),
-        );
-        return {
-          id: f.replace(/^agent-|\.jsonl$/g, ""),
-          agentType: await agentType(path.join(dir, f)),
-          requests: requests.length,
-          finalContext: requests.length
-            ? contextOf((requests.at(-1) as ModelRequest).usage)
-            : 0,
-          totalInput: requests.reduce((n, r) => n + contextOf(r.usage), 0),
-        };
-      }),
+    files.sort().map(async (f) => {
+      const requests: ModelRequest[] = requestsOf(
+        await readEntries(store, path.join(dir, f)),
+      );
+      return {
+        id: f.replace(/^agent-|\.jsonl$/g, ""),
+        agentType: await agentType(store, path.join(dir, f)),
+        requests: requests.length,
+        finalContext: requests.length
+          ? contextOf((requests.at(-1) as ModelRequest).usage)
+          : 0,
+        totalInput: requests.reduce((n, r) => n + contextOf(r.usage), 0),
+      };
+    }),
   );
-}
+};
 
 /** The tool-result characters of the main session for each tool, as `{ tool, count, chars, largest }` in order of size. */
-export function toolResults(entries: Entry[]): ToolResultRow[] {
+export const toolResults = (entries: Entry[]): ToolResultRow[] => {
   const names = new Map<string | undefined, string | undefined>(
     toolCalls(entries).map((c) => [c.id, c.name] as const),
   );
@@ -91,7 +89,7 @@ export function toolResults(entries: Entry[]): ToolResultRow[] {
     }
   }
   return [...by.values()].sort((a, b) => b.chars - a.chars);
-}
+};
 
 // A command that only prints a file, and the shell separators that end it.
 const PRINTERS = ["cat", "sed", "head", "tail", "wc"];
@@ -101,7 +99,7 @@ const FILE_NAME = /\.[a-z]{1,5}$/i;
 const REDIRECT = /\d*>>?(?!&)\s*\S+|<<-?\s*\S+/g;
 
 /** The file names that a `Bash` command prints with `cat`, `sed -n`, `head`, `tail`, or `wc`. */
-function printedFiles(command: string): string[] {
+const printedFiles = (command: string): string[] => {
   const files: string[] = [];
   for (const part of command.split(SEPARATORS)) {
     const words = (part.split("|")[0] as string)
@@ -119,13 +117,13 @@ function printedFiles(command: string): string[] {
     }
   }
   return files;
-}
+};
 
 /**
  * The file reads of the main session, from `Read` calls and from `Bash` commands that print a file.
  * A call is one read, and it is a repeat when an earlier call touched a file of the same name.
  */
-export function repeatReads(entries: Entry[]): RepeatReads {
+export const repeatReads = (entries: Entry[]): RepeatReads => {
   const seen = new Set<string>();
   let reads = 0;
   let repeats = 0;
@@ -150,4 +148,4 @@ export function repeatReads(entries: Entry[]): RepeatReads {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5);
   return { reads, repeats, most };
-}
+};

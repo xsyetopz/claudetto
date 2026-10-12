@@ -1,6 +1,7 @@
 ---
 name: usage
 description: Reports where Claude Code usage went over a period, with the model calls of each run, the context that each call reads again, and the skills that the period did not use. Use when asked why usage or limits drained, or which skills to remove.
+disable-model-invocation: true
 allowed-tools: Bash(dotclaude-usage *)
 ---
 
