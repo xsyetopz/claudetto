@@ -30,9 +30,13 @@ A request has three parts, and the prompt cache reads them in the same order (**
 
 | Part | What it holds | Size in the captures (**capture**) |
 | --- | --- | --- |
-| `tools` | The tool definitions, with the deferred tools as names only. | 12 definitions, 29197 bytes of JSON, in the sonnet capture. 9 definitions, 14847 bytes, in the opus capture. |
+| `tools` | The tool definitions, with the deferred tools as names only. | 12 definitions, 28546 bytes of JSON, in the sonnet capture. 9 definitions, 14474 bytes, in the opus capture. |
 | `system` | Three blocks: the billing header, the identity line, and the body. | 74, 62, and 5880 bytes in the sonnet lean capture. 62 and 7762 bytes in the opus capture. |
 | `messages` | The first user message with the `<system-reminder>` blocks, then the user prompt. A second message with role `system` holds the environment block. | First message 4794 bytes of reminders. Environment block 9755 bytes in the sonnet capture, and 5389 bytes in the opus capture. |
+
+The byte counts of the `tools` part are the UTF-8 bytes of the `tools` value, as compact JSON with no spaces.
+The method is `json.dumps` with the separators `,` and `:` and `ensure_ascii=False`, run on the `tools` value of `external/capture/vanilla/request-2026-10-11T03-06-47-464Z-1.json` and `-2.json`.
+The files are pretty-printed, so their raw text is larger, 33,619 and 17,825 bytes with the indentation.
 
 The billing header has no cache marker.
 The identity line and the body have the marker in each capture that sends them.
