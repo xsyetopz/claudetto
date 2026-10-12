@@ -60,9 +60,12 @@ test("a write form in a script file gets the write ask", async () => {
   ).toBeTruthy();
 });
 
-test("a path that a script file only names gets no ask, unlike a path in inline code", async () => {
+test("a path that a script file only names gets no ask, and inline code asks only with a write word", async () => {
   expect(await out("node tool.mjs")).toBe(undefined);
-  await asks(`node -e "readFileSync('tests/a.test.mjs')"`);
+  await asks(`node -e "writeFileSync('tests/a.test.mjs', '')"`);
+  expect(await out(`node -e "readFileSync('tests/a.test.mjs')"`)).toBe(
+    undefined,
+  );
 });
 
 test("a test run, a file tool, and an absent file are not read", async () => {

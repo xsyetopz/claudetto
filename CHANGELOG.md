@@ -33,6 +33,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The classic `PostToolUse` context hook is at `hooks/PostToolUse/context.ts`.
 - The add-on step of `setup` checks the Bun version for `dotclaude-sessions` and `dotclaude-lab`, and names Bun 1.4.3 when it is older.
   It checked Node.js 22.18 before, but the bins of these plugins run on Bun.
+- The write ask for code in another language, such as `ruby -e` or `python3 -c`, counts a path that the code names only when the same code has a write word (`File.write`, `json.dump`, `os.remove`, an open mode `"w"`, or a `>` redirect).
+  A command such as `ruby -e 'YAML.load_file(".github/workflows/check.yml")'` that only reads the path no longer asks.
 
 ### Removed
 
