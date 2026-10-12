@@ -12,6 +12,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ### Changed
 
+- The spec store takes the packages of a change from its package files.
+  A package with a file and no lane in `state.json` is `planned` for `lane`, `status`, `next`, `validate`, and the status line.
 - The `lib/` and `features/` files of each plugin are TypeScript (`.ts`), and `bun check` type-checks them with `noUncheckedIndexedAccess`.
 - The core hooks module is `hooks/register.ts`.
   The check that denies a `Bash` command that only prints a file runs in its `tool.call` hook, and the checks that ask before an edit run in its `tool.check` hook.

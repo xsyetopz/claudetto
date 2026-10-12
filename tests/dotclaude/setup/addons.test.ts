@@ -119,26 +119,18 @@ test("a project with an index gets no step", async () => {
   expect(await calls(d)).toStrictEqual([]);
 });
 
-test("the Jev line says whether the key is set and never prints the key", async () => {
-  const d = await sandbox(["dotclaude-jev@dotclaude"]);
-  expect(run(d, []).stdout).toMatch(/TYPESAFE_API_KEY is not set/);
-  const r = run(d, [], { TYPESAFE_API_KEY: "secret-value-123" });
-  expect(r.stdout).toMatch(/TYPESAFE_API_KEY is set/);
-  expect(r.stdout).not.toMatch(/secret-value-123/);
-});
-
 test("an add-on that the user settings turn off is not checked", () => {
   expect(
     installedAddons(
       {
         plugins: {
           "dotclaude@dotclaude": [],
-          "dotclaude-jev@dotclaude": [],
+          "dotclaude-browser@dotclaude": [],
           "dotclaude-lab@dotclaude": [],
           "other@market": [],
         },
       },
-      { "dotclaude-jev@dotclaude": false },
+      { "dotclaude-browser@dotclaude": false },
     ),
   ).toStrictEqual(["dotclaude-lab"]);
 });
@@ -147,7 +139,6 @@ test("the line of `dotclaude-sessions` and `dotclaude-lab` names `BUN_MIN` only 
   const plan = (bun: string) =>
     planAddons(["dotclaude-sessions", "dotclaude-lab"], {
       projectDir: tmpDir("dc-bun"),
-      env: {},
       bun,
       version: () => null,
       indexBuilt: false,

@@ -1,0 +1,33 @@
+// The fallback provider: it asks a small Claude model through `$.model.complete`, when Jev gives no answer.
+// The completion is a parameter, so a test gives a fake, and the hooks module gives `$.model.complete`.
+// The model answers for Claude, so its answer is not from Jev. The result text says so.
+
+import { parseModelReply } from "../domain/reply.ts";
+import { fallbackPrompt } from "../domain/text.ts";
+import type { DecisionProvider } from "../ports.ts";
+
+/** The reply of one completion: the text when the model answered, else nothing. */
+export type Completion =
+  | { readonly isAnswered: true; readonly text: string }
+  | { readonly isAnswered: false };
+
+/** The fallback provider over `complete`, which runs one completion with a system and a user prompt. */
+export const createFallback = (
+  complete: (prompt: { system: string; prompt: string }) => Promise<Completion>,
+): DecisionProvider => ({
+  name: "fallback",
+  decide: async (request) => {
+    try {
+      const reply = await complete(fallbackPrompt(request));
+      const parsed = reply.isAnswered
+        ? parseModelReply(reply.text, request)
+        : undefined;
+      if (parsed) return { ok: true, ...parsed };
+      // A reply that is not the JSON of the prompt is no answer, so the cause is the model.
+      return { ok: false, cause: "model-failed" };
+    } catch {
+      // The engine rejects only a request that it refuses to send, such as a bad cap, so the cause is the model.
+      return { ok: false, cause: "model-failed" };
+    }
+  },
+});

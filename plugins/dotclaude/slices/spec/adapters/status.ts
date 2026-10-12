@@ -26,7 +26,7 @@ export const statusCommand = async (
     run.io.error(`The change \`${id}\` has no \`state.json\`.`);
     return 1;
   }
-  const packages = Object.entries(state.lanes);
+  const packages = Object.entries(await run.store.lanes(id, state));
   const count = (lane: Lane): number =>
     packages.filter(([, l]) => l === lane).length;
   run.io.log(`◆ ${id} ${count("done")}/${packages.length}`);
@@ -52,6 +52,7 @@ export const nextCommand = async (
     run.io.error(`The change \`${id}\` has no \`state.json\`.`);
     return 1;
   }
+  const lanes = await run.store.lanes(id, state);
   const { packages, texts } = await readBriefs(run.store, id);
   const order = (await readEntries(run.store, id)).map((e) => e.id);
   const rank = (pkg: string): number => {
@@ -59,8 +60,8 @@ export const nextCommand = async (
     return i < 0 ? order.length : i;
   };
   const ready = packages
-    .filter((p) => ["planned", "doing"].includes(state.lanes[p.front.id] ?? ""))
-    .filter((p) => p.front.deps.every((d) => state.lanes[d] === "done"))
+    .filter((p) => ["planned", "doing"].includes(lanes[p.front.id] ?? ""))
+    .filter((p) => p.front.deps.every((d) => lanes[d] === "done"))
     .sort((a, b) => rank(a.front.id) - rank(b.front.id));
   const next = ready[0];
   if (!next) {

@@ -60,6 +60,36 @@ export const readState = async (
   return state;
 };
 
+/** The id in the front matter of a package file, or null when the file has none. */
+const packageId = (text: string): string | null => {
+  const front = /^---\r?\n([\s\S]*?)\r?\n---/.exec(text)?.[1] ?? "";
+  const id = /^id:\s*["']?([^\s"']+)["']?\s*$/m.exec(front)?.[1];
+  return id ?? null;
+};
+
+/**
+ * The lanes of the packages of the change `id`.
+ * The package files in `packages/` give the set of packages, and a package with a file and no lane is `planned`.
+ * A lane of a package with no file stays.
+ * The lanes of `state` come first, in their order, and then the packages that have only a file.
+ */
+export const packageLanes = async (
+  files: FileReader,
+  id: string,
+  state: ChangeState,
+): Promise<Record<string, Lane>> => {
+  const lanes: Record<string, Lane> = { ...state.lanes };
+  const dir = path.posix.join(SPEC_ROOT, id, "packages");
+  for (const name of (await files.list(dir))
+    .filter((n) => n.endsWith(".md"))
+    .sort()) {
+    const text = await files.read(path.posix.join(dir, name));
+    const pkg = text === null ? null : packageId(text);
+    if (pkg !== null && !(pkg in lanes)) lanes[pkg] = "planned";
+  }
+  return lanes;
+};
+
 /**
  * The active change and its counts: the last change, in the order of its id, that has a package which is not `done`.
  * It gives null when every change is done, or when no change has a `state.json`.
@@ -71,7 +101,7 @@ export const activeProgress = async (
   for (const id of (await files.list(SPEC_ROOT)).sort()) {
     const state = await readState(files, id);
     if (!state) continue;
-    const lanes = Object.values(state.lanes);
+    const lanes = Object.values(await packageLanes(files, id, state));
     const done = lanes.filter((lane) => lane === "done").length;
     if (done < lanes.length) active = { id, done, total: lanes.length };
   }

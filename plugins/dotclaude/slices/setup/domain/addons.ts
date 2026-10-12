@@ -29,8 +29,6 @@ export const installedAddons = (
 export type AddonFacts = {
   /** The project folder, for the lines. */
   projectDir: string;
-  /** The environment of the session. */
-  env: Record<string, string | undefined>;
   /** The Bun version. */
   bun: string;
   /** The version text of `program`, or null when it does not run. */
@@ -42,7 +40,7 @@ export type AddonFacts = {
 /** The state lines, the global installs to offer, and the project steps for the add-ons `names`. */
 export const planAddons = (
   names: string[],
-  { projectDir, env, bun, version, indexBuilt }: AddonFacts,
+  { projectDir, bun, version, indexBuilt }: AddonFacts,
 ): AddonPlan => {
   const lines: string[] = [];
   const installs: string[] = [];
@@ -67,10 +65,6 @@ export const planAddons = (
   }
   if (has("dotclaude-docs"))
     lines.push(`dotclaude-docs: npx ${version("npx") ?? "not found"}`);
-  if (has("dotclaude-jev"))
-    lines.push(
-      `dotclaude-jev: TYPESAFE_API_KEY ${env["TYPESAFE_API_KEY"] ? "is set" : "is not set, so the tool is not registered"}`,
-    );
   for (const name of ["dotclaude-sessions", "dotclaude-lab"])
     if (has(name))
       lines.push(

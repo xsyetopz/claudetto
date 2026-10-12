@@ -50,6 +50,8 @@ It gets the highest intelligence for the lowest token cost:
 - dotclaude knows each file and folder of `.claude/` and `~/.claude/`: what it does, when Claude Code reads it, and what controls it.
 - dotclaude writes its own files to `.dotclaude/`, with a layout based on `.claude/`, and keeps `.claude/` for the files that Claude Code reads.
   A path that git must not track goes to `.gitignore` when the team shares the rule, or to `.git/info/exclude` when only the local checkout needs it.
+  `.dotclaude/` is the `.claude/` of dotclaude: it also holds the spec store, which moves from `spec/changes/` to `.dotclaude/spec/changes/`, and git tracks it.
+  dotclaude 1.0.0 reads `.dotclaude/` by itself, and 0.28.0 does not read it.
 - dotclaude does each task at zero token cost where it can: a hook, a script, a setting, or a status line command does the work, not a model call or a turn of Claude.
   For example, the lanes of `state.json` change when a package is ticked or merged, with no model call.
 - This repository has a project agent `implementer` that links to the 1.0.0 agent of the plugin, on `claude-sonnet-5-5` at `effort: medium`, in place of the installed 0.28.0 agent on Haiku.

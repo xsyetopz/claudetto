@@ -108,7 +108,8 @@ const packageProblems = async (
       validateDeps([...packages, ...listed]),
     ),
   );
-  const open = (pkg: Package): boolean => state?.lanes[pkg.front.id] !== "done";
+  const lanes = state ? await store.lanes(id, state) : {};
+  const open = (pkg: Package): boolean => lanes[pkg.front.id] !== "done";
   const waves = new Set(entries.map((e) => e.wave));
   for (const wave of waves) {
     const inWave = new Set(
