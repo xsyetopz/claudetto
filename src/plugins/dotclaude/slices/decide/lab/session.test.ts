@@ -8,6 +8,7 @@ import { type Engine, expect, mock, test } from "claude-code/testing";
 /** Stubs for one test: the value of the key, and the list of the tool specs that the hook registers. */
 const stub = (on: On, key: string): Array<Record<string, unknown>> => {
   mock.env(on, { TYPESAFE_API_KEY: key });
+  on("session.start", (_$, e) => ({ cwd: e.cwd }));
   const specs: Array<Record<string, unknown>> = [];
   on("tool.register", (_$, e) => {
     specs.push({ ...e });
@@ -32,4 +33,19 @@ test("session start with a key registers the same tool with its input schema", a
   expect(specs).toHaveLength(1);
   expect(specs[0]).toMatchObject({ name: "second_opinion", isDeferred: false });
   expect(specs[0]?.["inputSchema"]).toMatchObject({ required: ["question"] });
+});
+
+test("the `decide` handler and the `setup` handler both run on an interactive start and on a non-interactive start", async ($: Engine, on: On) => {
+  const specs = stub(on, "");
+  on("settings.read", (_$, e) => ({
+    value: e.source === "policy" ? {} : { syncClaudeAiSkills: false },
+  }));
+  on("session.version", () => ({ value: { version: "2.1.296" } }));
+  on("session.turns", () => ({ value: 0 }));
+  on("prompt.compose", () => ({ sections: [] }));
+  const session = mock.session(on);
+  for (const isInteractive of [true, false])
+    await $.session.start({ cwd: "/work/app", surface: null, isInteractive });
+  expect(specs).toHaveLength(2);
+  expect(session.appended()).toHaveLength(2);
 });

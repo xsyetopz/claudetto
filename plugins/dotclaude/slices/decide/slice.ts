@@ -14,6 +14,8 @@ export const slice = {
   mod: [
     {
       event: "session.start",
+      // The filter matches each start, because the mod runtime refuses two `session.start` handlers with no filter.
+      filter: { isInteractive: [true, false] },
       phase: "observe",
       run: onSessionStart,
     },

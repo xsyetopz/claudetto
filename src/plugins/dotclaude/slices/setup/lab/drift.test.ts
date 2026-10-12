@@ -26,6 +26,10 @@ const stub = (on: On, settings?: Record<string, unknown>) => {
   on("session.turns", () => ({ value: 0 }));
   on("prompt.compose", () => ({ sections: SECTIONS }));
   mock.env(on, {});
+  // The `decide` handler of `session.start` registers its tool in the same start.
+  on("tool.register", (_$, e) => ({
+    value: { tool: `mcp__dotclaude__${e.name}` },
+  }));
   return mock.session(on);
 };
 

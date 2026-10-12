@@ -33,7 +33,7 @@ export const register = (on: On): void => {
   // eval: prompt.section prompt
   on("prompt.section", h7);
   // eval: session.start decide
-  on("session.start", h3);
+  on("session.start", { isInteractive: [true, false] }, h3);
   // eval: session.start setup
   on("session.start", h10);
   // eval: tool.call decide

@@ -98,72 +98,44 @@ export const slice = { name: "delta", mod: [
   expect(error).toContain("delta");
 });
 
-/** The files of an observe slice `name` with no filter. It logs its name before and after the rest of the chain, and runs the rest when `passOn`. */
-const observer = (name: string, passOn: boolean): Record<string, string> => ({
-  [`src/plugins/p/slices/${name}/adapters/mod.ts`]: `type Next = (e: unknown) => unknown;
-export const start = (_$: unknown, e: unknown, next: Next) => {
-  const log = (e as { log: string[] }).log;
-  log.push("${name} before");
-  const started = ${passOn ? "next(e)" : "undefined"};
-  log.push("${name} after");
-  return started;
-};
-`,
+/** The files of a slice `name` with one `session.start` handler in the phase `observe`, with the source `filter` or none. */
+const observer = (name: string, filter = ""): Record<string, string> => ({
+  [`src/plugins/p/slices/${name}/adapters/mod.ts`]:
+    "export const start = () => 0;\n",
   [`src/plugins/p/slices/${name}/slice.ts`]: `import { start } from "./adapters/mod.ts";
 export const slice = { name: "${name}", mod: [
-  { event: "session.start", phase: "observe", run: start },
+  { event: "session.start", ${filter}phase: "observe", run: start },
 ] };
 `,
 });
 
-test("two observe handlers with no filter are one `on()` call that nests them in slice order around the chain once", async () => {
+test("two observe handlers with no filter are an error that names both slices and asks for a filter", async () => {
   const dir = await fixtureRoot({
-    ...observer("gamma", true),
-    ...observer("delta", true),
+    ...observer("gamma"),
+    ...observer("delta"),
+  });
+  const error = await generated(dir).then(
+    () => "",
+    (e: unknown) => String(e),
+  );
+  expect(error).toContain("gamma");
+  expect(error).toContain("delta");
+  expect(error).toContain("filter");
+});
+
+test("an observe handler with a filter next to one with none is one `on()` call for each, with no join", async () => {
+  const dir = await fixtureRoot({
+    ...observer("gamma", "filter: { isInteractive: [true, false] }, "),
+    ...observer("delta"),
   });
   await write(dir, await generated(dir));
   const calls = (await registered(dir)).filter(
     ([event]) => event === "session.start",
   );
-  expect(calls.map(([event, filter]) => [event, filter])).toStrictEqual([
-    ["session.start", undefined],
+  expect(calls.map(([, filter]) => filter)).toStrictEqual([
+    undefined,
+    { isInteractive: [true, false] },
   ]);
-  const hook = calls[0]?.[2] as Handler;
-  const e = { log: [] as string[] };
-  let chain = 0;
-  const result = await hook({}, e, () => {
-    chain += 1;
-    e.log.push("chain");
-    return "downstream";
-  });
-  expect(e.log).toStrictEqual([
-    "delta before",
-    "gamma before",
-    "chain",
-    "gamma after",
-    "delta after",
-  ]);
-  expect(chain).toBe(1);
-  expect(result).toBe("downstream");
-});
-
-test("a handler that does not call `next` ends the chain for the handlers after it", async () => {
-  const dir = await fixtureRoot({
-    ...observer("gamma", true),
-    ...observer("delta", false),
-  });
-  await write(dir, await generated(dir));
-  const hook = (await registered(dir)).find(
-    ([event]) => event === "session.start",
-  )?.[2] as Handler;
-  const e = { log: [] as string[] };
-  let chain = 0;
-  await hook({}, e, () => {
-    chain += 1;
-    return "downstream";
-  });
-  expect(e.log).toStrictEqual(["delta before", "delta after"]);
-  expect(chain).toBe(0);
 });
 
 test("a handler with `configure` gets the `options` that the mod runtime gives to `register`", async () => {
