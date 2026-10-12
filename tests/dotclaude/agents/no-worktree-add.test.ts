@@ -2,7 +2,6 @@
 // dotclaude uses the worktrees of Claude Code (`isolation: worktree`, `EnterWorktree`, and `ExitWorktree`), and it makes none of its own.
 
 import { expect, test } from "bun:test";
-import fs from "node:fs";
 import path from "node:path";
 import { REPO, walk } from "../../support/repo.ts";
 
@@ -12,18 +11,24 @@ const SRC = path.join(REPO, "src");
 const WORKTREE_ADD = /git\s+worktree\s+add\b/i;
 
 /** The paths of the files under `src/` whose text matches `pattern`, relative to the repository. */
-const matchingFiles = (pattern: RegExp): string[] =>
-  walk(SRC)
-    .filter((file) => pattern.test(fs.readFileSync(file, "utf8")))
-    .map((file) => path.relative(REPO, file))
-    .sort();
+const matchingFiles = async (pattern: RegExp): Promise<string[]> => {
+  const hits: string[] = [];
+  for (const file of walk(SRC)) {
+    if (pattern.test(await Bun.file(file).text())) {
+      hits.push(path.relative(REPO, file));
+    }
+  }
+  return hits.sort();
+};
 
-test("no file under `src/` tells an agent to run `git worktree add`", () => {
-  expect(matchingFiles(WORKTREE_ADD)).toEqual([]);
+test("no file under `src/` tells an agent to run `git worktree add`", async () => {
+  expect(await matchingFiles(WORKTREE_ADD)).toEqual([]);
 });
 
 test("the pattern matches `git worktree add` in an instruction and in any spacing", () => {
-  expect(WORKTREE_ADD.test("use `git worktree add` in the temp folder")).toBe(true);
+  expect(WORKTREE_ADD.test("use `git worktree add` in the temp folder")).toBe(
+    true,
+  );
   expect(WORKTREE_ADD.test("run git  worktree   add -b scratch")).toBe(true);
 });
 
