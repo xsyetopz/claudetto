@@ -58,3 +58,52 @@ The reviewer ran out of turns, so `wiki/evidence/Usage-Evidence.md` and most of 
    Fix: "of the entries of this table".
 7. `wiki/evidence/Prompt-Variants.md` says "The first request has no byte bound of its own", but `START_TOKENS` (9,960 tokens, `tools/limits.ts`) bounds it through `tools/measure.ts --bound`.
    Fix: name `START_TOKENS`.
+
+## `rationale/` and `Decisions-Reversed`
+
+1. `wiki/rationale/Decisions-Architecture.md:220-221` (D45) says that no test checks an import between two add-ons.
+   `tests/support/import-rules.ts:47-51` (`checkPluginBoundary`, Rule 4) flags each import that leaves its plugin, and `tests/dotclaude/imports.test.ts:2` runs the rules over `plugins/`.
+   Fix: remove the "Gap" bullet, and cite Rule 4 and `imports.test.ts`.
+2. `Decisions-Architecture.md:158-166` (D43) and the D43 row of `Decisions.md` say that the `asks` slice asks only on a weaker check.
+   `asks/slice.ts:1-3` also asks for discarded work, as `Design.md:175-179` says.
+   Fix: "a weaker check or discarded work", in the heading and the row.
+3. `Decisions-Settings.md:128` (D14) says that `OFF_PLUGINS` is all built-in plugins except `cc-plugin-plugin-authoring`.
+   `facts.ts:9-19` also leaves `cc-plugin-sec-default` alone.
+   Fix: name both.
+4. `Decisions-Settings.md:140-154` (D14, "Eval of 2026-10-08") holds 0.x eval figures that no `evidence/` file backs.
+   The figures came from the old `Off-Switches` page.
+   Fix: move the table to `wiki/archive/Evals-0.28.0.md` (or the archive page of the 0.28 evals), with its source as the old `Off-Switches` page.
+   In D14, keep the three lists, say that 1.0.0 did not measure them again, and link the archive page.
+   `Settings-Snippet-Keys.md` holds some of the same figures: give them the same treatment.
+5. The D16 heading (`Decisions-Prompt.md:99`) and its row in `Decisions.md` say "the 30K start".
+   `Decisions-Prompt.md:118-120` says that "30K" has no source.
+   Fix: drop "30K" from both. Keep the anchor `#d16-request-capture-and-the-30k-start` working, or change each link to it (`Decisions-Layout.md` links it).
+6. Minor: `Decisions-Tools.md:170` (D26) says that the sync runs after `Edit` or `Write`. The matcher is `Edit|Write|MultiEdit|NotebookEdit`.
+7. Minor: `Decisions-Settings.md:111` says line 32 of `schema/domain/build.ts`. The names are at lines 30-33.
+
+## `dotclaude/`
+
+The reviewer did not read `Contributions.md` and `Semantic-Line-Breaks.md`.
+The reviewer found no 0.28.0 text in `Context-And-Handoff`, `Guards`, `Status-Line`, or `Architecture`.
+
+1. `wiki/dotclaude/Skills.md:263-265` says that a size above a high bound fails.
+   `tools/sizes.ts:99-108`: above `SKILL_META_TOTAL_HIGH_BYTES` (8 KB) is a report only, and above `SKILL_META_TOTAL_MAX_BYTES` (15 KB) fails.
+2. `Skills.md:31-32` says that `allowed-tools` limits the tools of a skill.
+   In Claude Code, `allowed-tools` pre-approves the listed tools. It does not deny others.
+   Fix: "pre-approves".
+3. `Context-And-Handoff.md:54`, `Agents.md:77`, and `Agents.md:86` say that a run at `maxTurns` returns no report.
+   `Agents.md:76` and the binary say that partial output returns.
+   Fix: partial output returns, marked as incomplete.
+4. `Architecture.md:10-23` ("Layers") conflicts with D37 and does not describe a slice.
+   Fix: describe the parts of a slice (`domain/`, `adapters/`, the ports of `src/kernel/ports.ts`), and keep kernel, slices, and plugins as the folder map.
+5. `Architecture.md:147` says "A model-invocable skill has 150 to 300 bytes".
+   Each skill sets `disable-model-invocation: true`, and `tools/sizes.ts:75-95` applies the bound to each `SKILL.md`.
+   Fix: remove "model-invocable".
+6. `Prompt-Surface.md:60-63` ties the variants to "Opus 5.5", "Fable 5.1", and "Mythos 5.1".
+   `variantKey` in `slices/prompt/domain/apply.ts:35-40` matches by family.
+   Fix: say that the match is by family, and correct line 68.
+7. `Status-Line.md:23` says "the counts of dirty, ahead, and behind files".
+   Fix: "dirty files, and commits ahead and behind" (`statusline/domain/git.ts`).
+8. `Status-Line.md:80` omits the fallbacks `input.cwd` and the process folder (`statusline/adapters/cli.ts:126-127`).
+9. `Context-And-Handoff.md:64` says `/handoff`. Fix: `/dotclaude:handoff`.
+   `Guards.md:4` says that the print deny is for a large file, but `Guards.md:55` says that each file print is denied. Make `Guards.md:4` agree with the code.
