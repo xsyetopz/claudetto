@@ -74,7 +74,7 @@ Each package depends on P01b4.
   Owns: the `spec` slice except `domain/` and `skills/`.
   Verify also: `dotclaude-spec validate 1.0.0` passes.
 - [x] P05 `guard`: `guard` and `reads` in one slice.
-- [ ] P06 `asks`: the asks of `adherence`, one file for each ask.
+- [x] P06 `asks`: the asks of `adherence`, one file for each ask.
 - [x] P07 `sembr`.
 - [ ] P08 `statusline`: rows of numbers and icons, the color scale, `NO_COLOR`, and the change segment.
   Verify also: a snapshot for each width and for `NO_COLOR`.
