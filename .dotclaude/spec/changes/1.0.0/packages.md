@@ -114,7 +114,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P03.
   Owns: `src/plugins/dotclaude/slices/spec/skills/`, `tools/bump-version.ts`, `tools/release.ts`, `tools/update.ts`.
   Verify: `just generate`, `just validate`, and a `reviewer` pass on the texts.
-- [ ] P13 `handoff`: the triggers, the handoff file, `/clear`, the resume, the `/handoff` skill, and `mainHandover`.
+- [x] P13 `handoff`: the triggers, the handoff file, `/clear`, the resume, the `/handoff` skill, and `mainHandover`.
   Deps: P03, P05, P06, P07, P32.
   P13 also makes the generator write `plugins/<plugin>/evals/hooks.json` from the eval cases of each slice, because `tests/support/hook-evals.test.ts` needs the file, and wave 2 keeps it hand-written on the rebuild list (P11b, 2026-10-12).
   P13 starts after each other slice package of the core plugin is merged, because the rebuild list makes it the last one: it removes `hooks/legacy.ts`, `lib/`, `features/context/`, and `src/plugins/dotclaude/hooks/`.
