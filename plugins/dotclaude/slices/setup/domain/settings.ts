@@ -62,7 +62,7 @@ export type SettingsOptions = {
   /** Merges the `autoMode` lists of `planAutoMode`. Only the user settings take them. */
   autoMode?: boolean;
   /** Merges the tier picks of `picksOf` after the snippet. Setup writes none when the account has no login. */
-  picks?: Json;
+  picks?: Json | undefined;
 };
 
 /**
