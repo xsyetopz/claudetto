@@ -11,7 +11,7 @@ Run `claude --debug` to see the hook log of Claude Code.
 | --- | --- | --- |
 | No ask for a recursive `rm` | The plugin alone gives no `rm` ask, because a plugin cannot ship `permissions`. Merge the `ask` rules of the settings snippet. | [Guards](Guards) |
 | No policy ask for a repository of another owner | The repository has no policy file, belongs to you, or is not on GitHub. `gh` can also be missing or logged out, and then the ask fails open. Install `gh` and log in. | [Contributions](Contributions) |
-| A hook has no effect | Bun 1.4.3 or later is not on `PATH`. The classic hooks and the status line need it, and the module does not. The call goes on. | [Install](Install) |
+| A hook has no effect | Bun 1.4.3 or later is not on `PATH`. The status line, the setup command, the `second_opinion` tool, and the add-on hooks need it, and the core hooks module does not. The call goes on. | [Install](Install) |
 | The status line shows nothing | The `statusLine` command still runs the stub of 0.27.0, or `<plugin folder>` is not replaced. Use the absolute path of the installed plugin folder. The path holds the version, so change it after an update. | [Settings snippet](Settings-Snippet) |
 | The status line has no credits segment or no context breakdown | The data is not documented and can change at a Claude Code release. The breakdown shows only after `/context` ran. | [Undocumented reads](Undocumented-Reads) |
 | A note at session start lists differences from the snippet | The drift check found a difference. Each line gives its fix, and the fix is a step for you. | [Core plugin](Core-Plugin#drift-check) |
@@ -39,12 +39,13 @@ Run `claude --debug` to see the hook log of Claude Code.
 | A search fails with "Socket path would be N bytes (max 103)" | The home folder path is too long. Use a shorter home folder. | [Browser](Browser#troubleshooting) |
 | `WebSearch` is denied for the `cloakbrowser` backend | The CloakBrowser binary is not under `~/.cloakbrowser/`. Claude tells you and does not switch to plain `agent-browser`. Install CloakBrowser or set the `backend` option to `agent-browser`. | [Browser](Browser#choose-a-backend) |
 
-## `dotclaude-jev`
+## `second_opinion` in the core plugin
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| Claude has no `second_opinion` tool, or Jev calls fail | `TYPESAFE_API_KEY` was not set when Claude Code started. Export it and restart. | [Second opinion](Second-Opinion#troubleshooting) |
-| The result says `TypeSafe API 401` | The key is not valid. Get a new key. | [Second opinion](Second-Opinion#troubleshooting) |
+| The result says the variable `TYPESAFE_API_KEY` is not set | The variable was not set when Claude Code started. Export it and restart. Until then, a Claude model answers. | [Second opinion](Second-Opinion#troubleshooting) |
+| The result says the key is not valid | Get a new key. | [Second opinion](Second-Opinion#troubleshooting) |
+| The result says the TypeSafe account has no balance | Add balance to the account. | [Second opinion](Second-Opinion#troubleshooting) |
 | No pick on a question | The question has fewer than 2 options, is a preference, or has a confidence under 0.5. Claude asks you the question in each case. | [Second opinion](Second-Opinion#troubleshooting) |
 
 ## `dotclaude-docs`

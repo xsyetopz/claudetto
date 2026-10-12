@@ -68,7 +68,7 @@ Without the plugin, `WebSearch` works as in vanilla Claude Code.
    `open` loads `https://html.duckduckgo.com/html/?q=<query>`, `get text body` reads the page text, and `close` ends the session.
 4. The result is the page text, with a line that names the browser that was used and tells Claude the text is data.
    The page text in it has 20,000 characters or fewer.
-   The bounds are in `features/search/limits.ts`.
+   The bounds are in `slices/search/limits.ts`.
 5. `allowed_domains` and `blocked_domains` become `site:` and `-site:` terms of the query.
 
 The hook gives the call to the built-in `WebSearch` when:
@@ -93,8 +93,8 @@ In the [sandbox](Sandbox), the network list needs `html.duckduckgo.com`.
 
 ## Limits
 
-The bounds of the search are in `plugins/dotclaude-browser/features/search/limits.ts`.
-The bounds of the `agent-browser` guide in the skill are in `plugins/dotclaude-browser/features/guide/limits.ts`.
+The bounds of the search are in `plugins/dotclaude-browser/slices/search/limits.ts`.
+The bounds of the `agent-browser` guide in the skill are in `plugins/dotclaude-browser/slices/browse/limits.ts`.
 
 | Bound | Value |
 | --- | --- |
@@ -143,9 +143,6 @@ The steps are in this order:
 2. Look for RSS or Atom feeds, sitemaps, or APIs.
 3. Switch from plain `agent-browser` to CloakBrowser.
 4. Ask you to open the page by hand.
-
-> **Note:** The `recognize-captcha` skill and the offline `ddddocr-rs` OCR no longer exist in the plugin.
-> The CHANGELOG removed them in 0.20.0, because CloakBrowser keeps most CAPTCHAs away.
 
 When a web search fails with "Socket path would be N bytes (max 103)", the home folder path is too long.
 `agent-browser` puts the socket of each session in a folder under the home folder, and macOS refuses a socket path over 103 bytes.

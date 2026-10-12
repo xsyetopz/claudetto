@@ -9,7 +9,7 @@ It assumes that you finished [Install](Install).
 | --- | --- |
 | Status line | After you set the `statusLine` entry of the [settings snippet](Settings-Snippet). It shows model, effort, context against the 300K window, the spec change, and the usage windows. |
 | Drift note | When the active settings differ from the [settings snippet](Settings-Snippet), such as values that setup did not write, a status line of an old plugin version, or a built-in plugin that is on again. The note names `/dotclaude:setup` as the fix. Claude mentions each difference in its first answer. Nothing shows when no difference exists. |
-| Output style | Always. The plugin forces the `dotclaude` style over the simple system prompt. You do not see it. |
+| Output style | After you set the `outputStyle` entry of the [settings snippet](Settings-Snippet) to `dotclaude:Concise`. The style keeps the coding instructions, so you see its effect in the replies. |
 
 On a terminal of about 130 columns, the status line has 3 columns.
 The left column shows the model, the spec change, and its done and total packages.
@@ -57,15 +57,15 @@ See [Contributions](Contributions).
 ### The context limit
 
 Compaction is off.
+At 60% of the window, the default `mainHandover` option of `manual` gives you a hint to run `/handoff`.
+`/handoff` writes a handoff file to `.dotclaude/handoff/`, and the work continues from that file in a new session.
 When the session reaches 300K tokens, it stops.
 The status line turns yellow at 75% and red at 90% of the window.
-No hook speaks to the main session.
-When the session stops, run `/clear` and then `dotclaude-spec next <change>`, so the work continues from the lane log.
-dotclaude writes no handoff file.
-See [Context bound](Context-Bound) and [Spec store](OpenSpec).
+Without a handoff, run `/clear` and then `dotclaude-spec next <change>`, so the work continues from the lane log.
+See [Context bound](Context-Bound) and [Spec store](Spec-Store).
 
 ## Next steps
 
 - [Guards](Guards): see what asks, what denies, and what the sandbox does.
 - [Context bound](Context-Bound): see how a session ends before the limit.
-- [Spec store](OpenSpec): keep the tasks and the lane log of a change.
+- [Spec store](Spec-Store): keep the tasks and the lane log of a change.
