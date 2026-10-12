@@ -1,5 +1,6 @@
 // Writes the code and the texts of each slice of a plugin, its kernel closure, and one launcher for each CLI (design, "Generated tree").
 // `skills/`, `agents/`, and `styles/` of a slice go to `skills/`, `agents/`, and `output-styles/` of the plugin.
+// The hook lab tests in `lab/` of a slice go to `tests/` of the plugin, where `claude plugin test` finds them.
 // Each other file of a slice goes to `slices/<s>/`, with each `src/kernel/` import path changed to `kernel/`.
 // A folder `NAME.ts/` of `.md` and `.json` texts gives the module `NAME.ts`, as `emit/texts.ts` does for 0.28.0.
 
@@ -117,6 +118,11 @@ const filesOf = async (
     const [top = "", ...rest] = rel.split("/");
     const text = await Bun.file(from).text();
     const folder = TEXTS[top];
+    if (top === "lab" && rest.length) {
+      const file = path.posix.join("plugins", p.name, "tests", ...rest);
+      out.push({ file, source, text: withHeader(file, source, text) });
+      continue;
+    }
     if (folder && rest.length) {
       const file = path.posix.join("plugins", p.name, folder, ...rest);
       out.push({

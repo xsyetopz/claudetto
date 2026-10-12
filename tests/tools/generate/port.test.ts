@@ -1,10 +1,12 @@
 // Behavior of the parts of `tools/generate/` that the port of 0.28.0 needs (P01b2):
 // a module folder of texts in a slice, the `hooks.json` source of a plugin with slices, and the `legacy.ts` call of the register.
+// Also the `// eval:` id of each generated `on()` call, and the hook lab tests of a slice in `tests/` of the plugin.
 // Each test works in its own copy of the fixture under `TMPDIR`.
 
 import { expect, test } from "bun:test";
 import path from "node:path";
 import { generated } from "../../../tools/generate/outputs.ts";
+import { moduleHooks } from "../../support/hook-evals.ts";
 import { fixtureRoot, textOf, write } from "./fixture.ts";
 
 /** A slice `gamma` whose handler answers with the text of `texts.ts/greeting.md`. */
@@ -84,4 +86,37 @@ test("the register calls the `register` of `legacy.ts` after the slice handlers"
   mod.register((event: unknown) => events.push(event));
   expect(events.at(-1)).toBe("legacy.event");
   expect(events.length).toBeGreaterThan(1);
+});
+
+test("each `on()` call of the register has the id `<event> <slice>` above it", async () => {
+  const file = "plugins/p/hooks/register.ts";
+  const text = textOf(await generated(await fixtureRoot()), file);
+  expect(moduleHooks({ [file]: text }).faults).toStrictEqual([]);
+  const lines = text.split("\n");
+  const ids = lines.flatMap((line, i) =>
+    /^\s*on\(/.test(line)
+      ? [/^\s*\/\/ eval: (.+)$/.exec(lines[i - 1] ?? "")?.[1]]
+      : [],
+  );
+  expect(ids).toStrictEqual([
+    "prompt.compose alpha",
+    "prompt.compose beta",
+    "tool.call beta",
+    "tool.call alpha",
+    "tool.call beta",
+  ]);
+});
+
+test("the hook lab tests of a slice go to `tests/` of the plugin, and not to the copy of the slice", async () => {
+  const lab =
+    'import { test } from "claude-code/testing";\ntest("runs", () => {});\n';
+  const dir = await fixtureRoot({
+    ...GAMMA,
+    "src/plugins/p/slices/gamma/lab/gamma.test.ts": lab,
+  });
+  const made = await generated(dir);
+  expect(textOf(made, "plugins/p/tests/gamma.test.ts")).toEndWith(lab);
+  expect(
+    made.filter((o) => o.file.startsWith("plugins/p/slices/gamma/lab/")),
+  ).toStrictEqual([]);
 });

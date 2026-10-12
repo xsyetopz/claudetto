@@ -2,6 +2,7 @@
 // It has a named import of each handler from the `adapters/mod.ts` of its slice,
 // and one `on()` call for each handler, with the event and the filter as literals,
 // because `claude plugin validate` and the mod runtime read them only as literals in this file.
+// Each call has the comment `// eval: <event> <slice>` above it, which names its entry in `evals/hooks.json`.
 // When the hand-written `plugins/<plugin>/hooks/legacy.ts` of the rebuild list exists, the register calls its `register` last.
 
 import fs from "node:fs";
@@ -76,11 +77,14 @@ export const registerOf = (root: string, p: FoundPlugin): Output[] => {
     const at = where.get(e) as { dir: string; name: string };
     const filter = filterOf(e);
     const args = [JSON.stringify(e.handler.event), ...(filter ? [filter] : [])];
-    return wrap(
-      "  on(",
-      [...args, alias.get(`${at.dir}\0${at.name}`) as string],
-      ");",
-    );
+    return [
+      `  // eval: ${e.handler.event} ${e.slice}`,
+      wrap(
+        "  on(",
+        [...args, alias.get(`${at.dir}\0${at.name}`) as string],
+        ");",
+      ),
+    ].join("\n");
   });
   const file = `plugins/${p.name}/hooks/register.ts`;
   const source = `src/plugins/${p.name}/slices/*/slice.ts`;
