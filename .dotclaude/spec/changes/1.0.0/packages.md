@@ -194,7 +194,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
 - [ ] P37 Destructive floor: the setup writes `autoMode.hard_deny` to the user settings, with `$defaults` in the list, so that a destructive `git`, system, database, or cloud action is blocked for each user request ([change](change.md), decisions, the user, 2026-10-12).
   A stopped action is not retried another way: the agent stops and asks the user to run the exact command with a `!` command, then waits.
   Deps: P25, and P35, because a subagent that stops puts the command in its report.
-  Owns: `src/kernel/policy/` (the rule catalog), `src/plugins/dotclaude/slices/setup/domain/automode.ts` (the block from the catalog), `src/plugins/dotclaude/slices/prompt/texts.ts/tools.md` (the stop rule), `tests/kernel/policy.test.ts`, `tests/dotclaude/setup/floor.test.ts`, and `.dotclaude/spec/changes/1.0.0/evidence/destructive-floor.md`.
+  Owns: `.dotclaude/spec/changes/1.0.0/evidence/destructive-floor.md` (the critique evidence), `src/kernel/policy/` (the rule catalog), `tests/kernel/policy.test.ts`, `src/plugins/dotclaude/slices/setup/domain/automode.ts` (the block from the catalog), `src/plugins/dotclaude/slices/prompt/texts.ts/tools.md` (the stop rule), `tests/dotclaude/setup/floor.test.ts`, and `tests/dotclaude/setup/settings.test.ts`.
   Verify: `just check`, and `claude auto-mode critique` on the new block, with its output in the evidence file.
 - [x] P14 Handoff cost: one handoff against one compaction on the same session, with `dotclaude-usage`.
   It only reports, in `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.
