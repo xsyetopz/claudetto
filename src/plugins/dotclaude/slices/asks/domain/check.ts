@@ -6,7 +6,7 @@
 import { SCAN_MAX_CHARS } from "../limits.ts";
 import { gitReason } from "./git.ts";
 import { namedByHooks } from "./hooks.ts";
-import { contentReasons, pathReasons, skipReasons } from "./kinds.ts";
+import { contentReasons, skipReasons } from "./kinds.ts";
 import { relative } from "./paths.ts";
 import type { Scripts } from "./scripts.ts";
 import { scriptTexts } from "./scripts.ts";
@@ -42,8 +42,8 @@ const fileChecks = async (payload: Payload, io: Io): Promise<Reasons> => {
   const root = io.root || payload.cwd || "";
   const rel = relative(root, ch.file);
   const out: Reasons = { ask: [] };
-  out.ask.push(...pathReasons(rel, await namedByHooks(rel, root, io.read)));
-  out.ask.push(...weakerReasons(rel, ch));
+  const named = await namedByHooks(rel, root, io.read);
+  out.ask.push(...weakerReasons(rel, ch, named));
   const text = ch.after ?? ch.fragment;
   if (text.length > SCAN_MAX_CHARS) {
     // The skipped-test and suppression checks work one line at a time, so they run on a long text too.

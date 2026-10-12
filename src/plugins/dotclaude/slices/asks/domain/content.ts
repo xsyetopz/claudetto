@@ -1,17 +1,8 @@
 // The content checks of the ask for a change that can hide a defect (decision H5), as pure functions.
-// They look at the text before and after a call: the keys of a settings file, the tool sections of
-// `pyproject.toml` and `setup.cfg`, the check scripts of `package.json`, and the check recipes of a `justfile` or `Makefile`.
+// They look at the text before and after a call: the check scripts of `package.json`, and the check recipes of a `justfile` or `Makefile`.
 // `ch` is the effect from `change` in `text.ts`.
 
-import { CLAUDE_DIR } from "../../../../../kernel/paths.ts";
-import {
-  CHECK_RECIPE,
-  CHECK_SCRIPT,
-  PYPROJECT_SECTIONS,
-  RECIPE_FILE_NAMES,
-  SETTINGS_KEYS,
-  SETUP_CFG_SECTIONS,
-} from "../limits.ts";
+import { CHECK_RECIPE, CHECK_SCRIPT, RECIPE_FILE_NAMES } from "../limits.ts";
 import type { Change } from "./text.ts";
 
 /** A JSON object, as the keys and values that the checks read from it. */
@@ -35,25 +26,8 @@ const objectOf = (text: string | null): JsonObject | undefined => {
 const same = (a: unknown, b: unknown): boolean =>
   JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
 
-/** The first of `names` that differs between the objects `was` and `now`, or undefined. */
-const differs = (
-  was: JsonObject | undefined,
-  now: JsonObject | undefined,
-  names: readonly string[],
-): string | undefined => names.find((k) => !same(was?.[k], now?.[k]));
-
-/**
- * The key of `SETTINGS_KEYS` that a call changes in a `.claude/settings*.json` file, or undefined.
- * Text that is not JSON counts a key when the added text names it.
- */
-export const settingsKey = (ch: Change): string | undefined => {
-  const [was, now] = [objectOf(ch.before), objectOf(ch.after)];
-  if (ch.after !== null && was && now) return differs(was, now, SETTINGS_KEYS);
-  return SETTINGS_KEYS.find((k) => ch.fragment.includes(`"${k}"`));
-};
-
 /** The sections of a TOML or INI `text`, as a map from the section name to its body. */
-const sections = (text: string | null): Map<string, string> => {
+export const sections = (text: string | null): Map<string, string> => {
   const map = new Map<string, string>();
   let name = "";
   for (const line of (text ?? "").split("\n")) {
@@ -62,24 +36,6 @@ const sections = (text: string | null): Map<string, string> => {
     map.set(name, `${map.get(name) ?? ""}${line}\n`);
   }
   return map;
-};
-
-/**
- * The name of a section that matches `re` and differs between the text before and after a call, or undefined.
- * When the call does not apply to the file, a section header in the added text counts.
- */
-export const sectionChanged = (ch: Change, re: RegExp): string | undefined => {
-  if (ch.after === null) {
-    for (const line of ch.fragment.split("\n")) {
-      const head = /^\s*\[+\s*([^\]]+?)\s*\]+/.exec(line);
-      if (head && re.test(head[1] as string)) return head[1];
-    }
-    return undefined;
-  }
-  const [was, now] = [sections(ch.before), sections(ch.after)];
-  return [...new Set([...was.keys(), ...now.keys()])].find(
-    (k) => re.test(k) && was.get(k) !== now.get(k),
-  );
 };
 
 /** True when `value` reads as a version spec of a dependency and not as a script command. */
@@ -151,20 +107,7 @@ export const checkRecipeChanged = (ch: Change): string | undefined => {
 };
 
 /** The label of the content kind of a call for the file `rel` and the name `name`, or undefined. */
-export const contentKind = (
-  rel: string,
-  name: string,
-  ch: Change,
-): string | undefined => {
-  const parts = rel.split("/");
-  if (parts.at(-2) === CLAUDE_DIR && /^settings.*\.json$/.test(name)) {
-    const key = settingsKey(ch);
-    if (key) return "a settings file";
-  }
-  if (name === "pyproject.toml" && sectionChanged(ch, PYPROJECT_SECTIONS))
-    return "a lint config file";
-  if (name === "setup.cfg" && sectionChanged(ch, SETUP_CFG_SECTIONS))
-    return "a lint config file";
+export const contentKind = (name: string, ch: Change): string | undefined => {
   if (name === "package.json" && checkScriptChanged(ch))
     return "a file with a check script";
   if (RECIPE_FILE_NAMES.test(name) && checkRecipeChanged(ch))

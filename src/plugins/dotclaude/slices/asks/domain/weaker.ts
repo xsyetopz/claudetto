@@ -6,9 +6,12 @@
 // A new file has no text before, so it adds checks and gets no ask.
 // `ch` is the effect from `change` in `text.ts`.
 
+import { CLAUDE_DIR } from "../../../../../kernel/paths.ts";
 import { LIMIT_FILE_NAME, SCAN_MAX_CHARS } from "../limits.ts";
-import { isTestPath } from "./kinds.ts";
+import { isTestPath, pathKind } from "./kinds.ts";
 import type { Change } from "./text.ts";
+import { ciWeaker, configWeaker } from "./weak-config.ts";
+import { hookFileWeaker, settingsWeaker } from "./weak-hooks.ts";
 import { UNREADABLE } from "./weak-json.ts";
 import { limitsWeaker, testWeaker } from "./weak-tests.ts";
 
@@ -18,18 +21,45 @@ type Kind = {
   weaker: (rel: string, before: string, after: string) => string | undefined;
 };
 
-/** The kind of protected file that `rel` is, or undefined. A test file comes before a limits file. */
-const kindOf = (rel: string): Kind | undefined => {
-  const name = rel.split("/").at(-1) as string;
+const LINT: Kind = { label: "a lint config file", weaker: configWeaker };
+const BY_PATH_KIND: Record<string, Kind> = {
+  "a lint config file": LINT,
+  "a check runner config": {
+    label: "a check runner config",
+    weaker: configWeaker,
+  },
+  "a CI file": { label: "a CI file", weaker: ciWeaker },
+  "a hook file": { label: "a hook file", weaker: hookFileWeaker },
+};
+
+/**
+ * The kind of protected file that `rel` is, or undefined.
+ * A test file comes before a limits file, and the kinds of `pathKind` come last.
+ * `named` is true when a `hooks.json` names the file as a script.
+ */
+const kindOf = (rel: string, named: boolean): Kind | undefined => {
+  const parts = rel.split("/");
+  const name = parts.at(-1) as string;
   if (isTestPath(rel)) return { label: "a test file", weaker: testWeaker };
   if (LIMIT_FILE_NAME.test(name))
     return { label: "a limits file", weaker: limitsWeaker };
-  return undefined;
+  if (parts.at(-2) === CLAUDE_DIR && /^settings.*\.json$/.test(name))
+    return {
+      label: "a settings file",
+      weaker: (_rel, before, after) => settingsWeaker(before, after),
+    };
+  if (name === "pyproject.toml" || name === "setup.cfg") return LINT;
+  const label = pathKind(rel, named);
+  return label ? BY_PATH_KIND[label] : undefined;
 };
 
 /** The reason for a change of `rel` that makes a check weaker, as a list of at most one string. */
-export const weakerReasons = (rel: string, ch: Change): string[] => {
-  const kind = kindOf(rel);
+export const weakerReasons = (
+  rel: string,
+  ch: Change,
+  named = false,
+): string[] => {
+  const kind = kindOf(rel, named);
   if (!kind || ch.before === null) return [];
   const found =
     ch.after === null ||

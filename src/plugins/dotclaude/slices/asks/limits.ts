@@ -123,15 +123,6 @@ export const SETUP_CFG_SECTIONS =
 /** The names of a `package.json` script that run a check. A change of such a script asks. */
 export const CHECK_SCRIPT = /lint|test|check/;
 
-/** The `.claude/settings*.json` keys where a change asks. */
-export const SETTINGS_KEYS = [
-  "hooks",
-  "permissions",
-  "disableAllHooks",
-  "enabledPlugins",
-  "sandbox",
-];
-
 /** The code file extensions where an added inline lint suppression asks. */
 export const CODE_EXTENSIONS =
   /\.(?:[cm]?[jt]sx?|py|rs|go|java|kt|swift|rb|php|cs|c|cc|cpp|h|hpp|sh)$/;
