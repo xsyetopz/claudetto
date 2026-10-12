@@ -28,15 +28,16 @@ import {
   onComplete as h16,
   onSpawn as h17,
 } from "../slices/spec/adapters/mod.ts";
+import { onSessionStart as h18 } from "../slices/stamp/adapters/mod.ts";
 import {
-  onAgentOffer as h18,
-  onToolDescribe as h19,
+  onAgentOffer as h19,
+  onToolDescribe as h20,
 } from "../slices/surface/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h6(options);
   // eval: agent.offer surface
-  on("agent.offer", h18);
+  on("agent.offer", h19);
   // eval: agent.spawn spec
   on("agent.spawn", { subagentType: /(?:^|:)implementer$/ }, h17);
   // eval: agent.spawn prompt
@@ -49,6 +50,8 @@ export const register = (on: On, options: PluginOptions): void => {
   on("session.start", { isInteractive: [true, false] }, h3);
   // eval: session.start setup
   on("session.start", h15);
+  // eval: session.start stamp
+  on("session.start", { isInteractive: [true, false] }, h18);
   // eval: skill.prompt handoff
   on("skill.prompt", { skill: /(?:^|:)handoff$/ }, h7);
   // eval: tool.call handoff
@@ -66,7 +69,7 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.check guard
   on("tool.check", h5);
   // eval: tool.describe surface
-  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h19);
+  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h20);
   // eval: turn.complete handoff
   on("turn.complete", h9);
   // eval: turn.complete spec
