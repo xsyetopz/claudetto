@@ -100,7 +100,10 @@ export const readEntries = async (
 ): Promise<Entry[]> => parseEntries((await store.read(file)) ?? "");
 
 /** The `agentType` of the transcript `file` from its `.meta.json`, `subagent` when it has none, and `main` for a file outside a `subagents` folder. */
-export const agentType = async (store: Store, file: string): Promise<string> => {
+export const agentType = async (
+  store: Store,
+  file: string,
+): Promise<string> => {
   if (!file.includes(`${path.sep}subagents${path.sep}`)) return "main";
   const text = await store.read(file.replace(/\.jsonl$/, ".meta.json"));
   // A run with no meta file has the default type.
