@@ -1,6 +1,7 @@
 // The manifest of the `asks` slice:
-// the ask before a call that discards work, changes a test, a limits file, a config, a hook, or a settings file,
-// writes to one of these files from `Bash`, or adds a skipped test or a lint suppression (design D34).
+// the ask before a call that discards work, adds a skipped test or a lint suppression, or changes a protected file (design D34).
+// A read never asks. A change to a protected file asks unless every changed part is on the safe list of its kind.
+// A write from `Bash` to a protected file, such as `sed -i`, asks.
 
 import type { Slice } from "../../../../kernel/slice.ts";
 import { onCheck } from "./adapters/mod.ts";

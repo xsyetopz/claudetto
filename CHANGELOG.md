@@ -35,10 +35,13 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   It checked Node.js 22.18 before, but the bins of these plugins run on Bun.
 - The write ask for code in another language, such as `ruby -e` or `python3 -c`, counts a path that the code names only when the same code has a write word (`File.write`, `json.dump`, `os.remove`, an open mode `"w"`, or a `>` redirect).
   A command such as `ruby -e 'YAML.load_file(".github/workflows/check.yml")'` that only reads the path no longer asks.
-- The `asks` slice asks before a change to a test file, a limits file, a lint config, a runner config, a CI file, a hook file, or a settings file only when the change makes a check weaker.
-  A change that removes a test or an assert, skips a test, changes a bound, turns a rule off, adds an ignore entry, lowers a threshold, removes a job or a hook, or adds `continue-on-error` or `|| true` asks.
-  A change that adds a check, a format change, a move, or a new file does not ask.
-  A shell edit in place, such as `sed -i`, of such a file still asks, because the text after the edit is not known before the command runs.
+- The `asks` slice never asks for a read.
+  A change to a protected file asks unless every changed part is on the safe list of its kind.
+  The protected kinds are a test file, a limits file, a lint config, a runner config, a CI file, a hook file, and a settings file.
+  The safe parts are a format change, a comment change, a move with the same content, a new file, and an added check.
+  An added check is an added test, a stricter rule, an added step, job, or hook, an added `deny` or `ask` rule, or a removed `allow` rule.
+  Every other change asks, also a changed `model`, an added `env` key, a key that the code does not know, and a line that follows the last command of a hook script.
+  A shell edit in place, such as `sed -i`, of a protected file asks, because the text after the edit is not known before the command runs.
 
 ### Removed
 
