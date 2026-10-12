@@ -155,6 +155,21 @@ P15 does not own them, so they go to P16 or a new package.
 - `src/kernel/budget.ts` `CONTEXT_BLOCK_MARGIN` has no reader.
 - The `dotclaude-lab` slices have no `limits.ts`: `5` in `slices/eval-compare/domain/compare.ts`, `DEPTH_MAX` in `slices/schema/domain/types.ts`, and `SPLIT_CHARS` in `slices/capture/domain/report.ts`, and the `eval` recipe of `justfile` has `--max-cost-usd 5`.
 - Under the load of the full suite, `tests/tools/generate/texts.test.ts` timed out once at 5,000 ms.
+- `workflow.md` (section Agents) and `tree.md` list a `test-runner` agent, but the code has six agents, and item 8 of `evidence/zero-token.md` replaces `test-runner` with the `dotclaude-run-checks` CLI.
+- `workflow.md` says that the main session does not set `model` on a spawn, and also that a failed fix runs again on the next model up.
+- `design.md` says that the `asks` slice asks only when a check is weakened, but `asks/slice.ts` also asks for discarded work.
+- `lane.ts` also writes the `packages.md` checkbox, not only `events.jsonl`.
+- `tests/dotclaude/agents/no-worktree-add.test.ts` checks text, against the test rule of `design.md`.
+- `evidence/zero-token.md` says that `state.json` is the only source, but P34 replaced it with `events.jsonl`.
+
+## Stale wiki claims for the reviewer pass
+
+The page runs found these outside their own pages.
+
+- `Off-Switches` says "The five dotclaude agents" (six in the code), and says that dotclaude writes nothing (`setup --apply` writes the snippet).
+- `Off-Switches` and `Settings-Snippet-Keys` disagree on whether `skillOverrides` applies to a skill of a built-in plugin.
+- `wiki/dotclaude/Architecture.md` has a "Layers" section that conflicts with D37.
+- `Context-And-Handoff`, `Guards`, `Status-Line`, and `Architecture` may still describe 0.28.0 where `Decisions` links them for D31 to D34.
 
 ## Acceptance
 
