@@ -19,6 +19,8 @@ It replaces the 0.28.0 output style `dotclaude`.
   Before a check, run `bun install` in the worktree, and copy each git-ignored types folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree: `.claude-plugin/types/` and `plugins/*/.claude-plugin/types/`.
   The type check reads them.
   `external/` is git-ignored too, so read it in the main checkout.
+- Your worktree can start at an old commit.
+  First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
 - The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`, and this package: `packages.md:95-97`.
 - The decision of the user: `spec/changes/1.0.0/change.md:38`, and the setting: `spec/changes/1.0.0/workflow.md:133`.
 - The files: `spec/changes/1.0.0/tree.md:117-119`.
@@ -52,6 +54,8 @@ It replaces the 0.28.0 output style `dotclaude`.
 - Do not change the settings of `prompt/slice.ts`.
 - Write the style in strict ASD-STE100, with semantic line breaks, and with no forceful words.
 - Write no test of the style text, because a test of the words of a prompt breaks on a change of words and not on a defect.
+- `biome.json` has lines that exempt the 0.28.0 paths of `tools/rebuild-pending.txt` from lint rules, and `tests/support/rebuild-list.test.ts` checks that each one is on the list.
+  Remove the lines of your 0.28.0 paths when you remove their lines in the list.
 - Run `just generate`, and commit the generated `plugins/` with your work.
 - Commit on the branch of your worktree after each step that passes its checks, with the subject `dotclaude 1.0.0: P22 <summary>`.
   Before you reach your turn bound, report the steps that are done and the steps that are open.

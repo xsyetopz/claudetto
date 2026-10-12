@@ -20,6 +20,8 @@ When dotclaude runs in a git repository, it adds each runtime path of `.claude/`
   Before a check, run `bun install` in the worktree, and copy each git-ignored types folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree: `.claude-plugin/types/` and `plugins/*/.claude-plugin/types/`.
   The type check reads them.
   `external/` is git-ignored too, so read it in the main checkout.
+- Your worktree can start at an old commit.
+  First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
 - The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`, and this package: `packages.md:81-84`.
 - The slice contract: `src/kernel/slice.ts` (the fields `cli` and `skills`), and the manifest rules: `spec/changes/1.0.0/design.md:96-133`.
 - The source tree of a slice: `spec/changes/1.0.0/design.md:53-72`, and the code conventions: `spec/changes/1.0.0/design.md:143-150`.
@@ -27,6 +29,10 @@ When dotclaude runs in a git repository, it adds each runtime path of `.claude/`
 - A user-invoked skill has `disable-model-invocation: true` (`spec/changes/1.0.0/design.md:17`).
 - The files: `spec/changes/1.0.0/tree.md:156-160`, and the drift check as a part of `setup`: `spec/changes/1.0.0/workflow.md:149-150`.
 - The generator writes `bin/<bin>` from `adapters/cli.ts` (`tools/generate/emit/slices.ts:72-90`), and the skills of a slice (`:52-57`).
+- The snippet: a text module folder of the slice, such as `snippet.ts/snippet.json` with the line `{{include snippet.json}}`, gives the module `snippet.ts` with the export `SNIPPET`, the generated snippet of the core plugin (`tests/tools/generate/snippet.test.ts`, the last test).
+  Read the snippet only this way, and not from `plugins/dotclaude/lib/`, which P13 deletes.
+- A run of P09 before found that Claude Code 2.1.296 writes the `# claude-code-runtime` list to `.git/info/exclude` itself: the marker at `external/cc-2.1.296/strings.txt:139000`, and the writer function `Ce` at `strings.txt:355955`, with the once-for-each-path claim `claude_runtime_exclude_ensured`.
+  The trigger of `Ce` is not confirmed.
 - The 0.28.0 code:
   - `plugins/dotclaude/features/setup/` (434 lines) and `plugins/dotclaude/features/drift/` (331 lines).
   - The skill `src/plugins/dotclaude/skills/setup/SKILL.md`, and its scripts in `plugins/dotclaude/skills/setup/scripts/` (`settings.ts`, `openspec.ts`, `addons.ts`).
@@ -72,6 +78,8 @@ When dotclaude runs in a git repository, it adds each runtime path of `.claude/`
   When the kernel does not have the code that you need from `plugins/dotclaude/lib/`, write it in your slice and name it in your report, because P13 deletes `lib/`.
 - Do not change the status line (P08) or the settings of `prompt/slice.ts`.
 - Write the skill text in strict ASD-STE100, with semantic line breaks.
+- `biome.json` has lines that exempt the 0.28.0 paths of `tools/rebuild-pending.txt` from lint rules, and `tests/support/rebuild-list.test.ts` checks that each one is on the list.
+  Remove the lines of your 0.28.0 paths when you remove their lines in the list.
 - Run `just generate`, and commit the generated `plugins/` with your work.
 - Use arrow functions, and add no legacy shim, no alias of an old name, and no fallback for an old layout.
 - Each file has 300 lines or less, and each test file has 500 lines or less.

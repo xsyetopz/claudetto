@@ -18,6 +18,8 @@ Move the settings keys that turn off a built-in part from the `prompt` slice to 
 - Your worktree has no git-ignored file.
   Before a check, run `bun install` in the worktree, and copy each git-ignored types folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree: `.claude-plugin/types/` and `plugins/*/.claude-plugin/types/`.
   The type check reads them.
+- Your worktree can start at an old commit.
+  First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
 - The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
 - The goal: `spec/changes/1.0.0/change.md:16`, and the files: `spec/changes/1.0.0/tree.md:113-116`.
 - The inventory: `spec/changes/1.0.0/evidence/inventory.md`, with the switch rows at `:79-105`.
@@ -58,6 +60,8 @@ Move the settings keys that turn off a built-in part from the `prompt` slice to 
 - Change only the paths of `owns`, the 0.28.0 paths of `tools/rebuild-pending.txt:115-119` and those lines, `tests/dotclaude/deferred-tools.test.ts` (delete only), and in `src/plugins/dotclaude/slices/prompt/slice.ts` only the keys that you move.
   Other packages of the wave change other keys of that file, and the main session resolves the merge.
 - Do not change `src/kernel/` or `tools/generate/`.
+- `biome.json` has lines that exempt the 0.28.0 paths of `tools/rebuild-pending.txt` from lint rules, and `tests/support/rebuild-list.test.ts` checks that each one is on the list.
+  Remove the lines of your 0.28.0 paths when you remove their lines in the list.
 - Run `just generate`, and commit the generated `plugins/` with your work.
 - Use arrow functions, and add no legacy shim, no alias of an old name, and no fallback for an old layout.
 - Each file has 300 lines or less, and each test file has 500 lines or less.

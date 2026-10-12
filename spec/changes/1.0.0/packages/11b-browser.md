@@ -18,12 +18,17 @@ The add-on works with no other plugin installed.
 - Your worktree has no git-ignored file.
   Before a check, run `bun install` in the worktree, and copy each git-ignored types folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree: `.claude-plugin/types/` and `plugins/*/.claude-plugin/types/`.
   The type check reads them.
+- Your worktree can start at an old commit.
+  First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
 - The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`, and the add-ons: `packages.md:101,109`.
 - The plugin: `spec/changes/1.0.0/design.md:11,19`, and the files: `spec/changes/1.0.0/tree.md:175-177`.
 - The slice contract: `src/kernel/slice.ts` (the fields `mod`, `cli`, `skills`, and `userConfig`), and the manifest rules: `spec/changes/1.0.0/design.md:96-133`.
 - The source tree of a slice: `spec/changes/1.0.0/design.md:53-72`, and the code conventions: `spec/changes/1.0.0/design.md:143-150`.
 - A ported slice with mod handlers to use as the model: `src/plugins/dotclaude/slices/prompt/`.
 - The generator finds a plugin from `src/plugins/<p>/plugin.ts` (`tools/generate/discover.ts:61-84`), writes `plugin.json` with the `userConfig` of each slice (`tools/generate/emit/manifest.ts:36-61`), writes `hooks/register.ts` from the mod handlers, writes `bin/<bin>` from `adapters/cli.ts` (`tools/generate/emit/slices.ts:72-90`), and copies the kernel closure to `plugins/<p>/kernel/`.
+- The mod runtime gives the `userConfig` values to `register(on, options)`.
+  A mod handler that reads them has `configure: (options) => hook` in place of `run`, and the generated `register` calls it with `options` (`src/kernel/slice.ts`, `Configure`, and `tests/tools/generate/slices.test.ts`).
+- The `browse` slice can have `limits.ts` and `domain/` for the bounds of the guide, although `tree.md:177` does not list them.
 - The 0.28.0 add-on:
   - `plugins/dotclaude-browser/features/search/search.ts` (187 lines), `features/guide/guide.ts` (48), and the launcher `bin/dotclaude-browser-guide`.
   - `plugins/dotclaude-browser/hooks/register.ts` (164 lines): `register(on, options)` at `:151`, and `on("tool.call", { tool: "WebSearch" }, ...)` at `:153`.
@@ -53,6 +58,8 @@ The add-on works with no other plugin installed.
   Other packages of the wave change other entries of that file, and the main session resolves the merge.
 - Do not change `src/kernel/` or `tools/generate/`.
   When the generator cannot write a part of the add-on, name the gap in your report.
+- `biome.json` has lines that exempt the 0.28.0 paths of `tools/rebuild-pending.txt` from lint rules, and `tests/support/rebuild-list.test.ts` checks that each one is on the list.
+  Remove the lines of your 0.28.0 paths when you remove their lines in the list.
 - Run `just generate`, and commit the generated `plugins/` with your work.
 - Use arrow functions, and add no legacy shim, no alias of an old name, and no fallback for an old layout.
 - Each file has 300 lines or less, and each test file has 500 lines or less.

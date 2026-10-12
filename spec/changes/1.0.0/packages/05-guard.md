@@ -18,6 +18,8 @@ The slice denies a `Bash` command that only prints a file and gives the `Read` c
 - Your worktree has no git-ignored file.
   Before a check, run `bun install` in the worktree, and copy each git-ignored types folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree: `.claude-plugin/types/` and `plugins/*/.claude-plugin/types/`.
   The type check reads them.
+- Your worktree can start at an old commit.
+  First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
 - The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
 - The slice contract: `src/kernel/slice.ts`, and the manifest rules: `spec/changes/1.0.0/design.md:96-133`.
 - The source tree of a slice: `spec/changes/1.0.0/design.md:53-72`, and the code conventions: `spec/changes/1.0.0/design.md:143-150`.
@@ -64,6 +66,8 @@ The slice denies a `Bash` command that only prints a file and gives the `Read` c
 - Do not change `src/kernel/`.
   When the kernel does not have the code that you need from `plugins/dotclaude/lib/`, write it in your slice and name it in your report, because P13 deletes `lib/`.
 - Do not change the behavior of a hook, and do not port the `asks` of `adherence` (P06).
+- `biome.json` has lines that exempt the 0.28.0 paths of `tools/rebuild-pending.txt` from lint rules, and `tests/support/rebuild-list.test.ts` checks that each one is on the list.
+  Remove the lines of your 0.28.0 paths when you remove their lines in the list.
 - Run `just generate`, and commit the generated `plugins/` with your work.
 - Use arrow functions, and add no legacy shim, no alias of an old name, and no fallback for an old layout.
 - Each file has 300 lines or less, and each test file has 500 lines or less.
