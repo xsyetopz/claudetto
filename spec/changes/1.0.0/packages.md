@@ -13,7 +13,7 @@ Rules of each wave:
 - Each package removes the 0.28.0 files and tests of its capability, and their lines in `tools/rebuild-pending.txt`.
 - Each slice package owns `src/plugins/<plugin>/slices/<s>/` and `tests/<plugin>/<s>/`, has the agent `implementer`, and verifies with `just test tests/<plugin>/<s>` and `just lab`, unless its entry says otherwise.
 
-Critical path: P01a, P01b, P05 and P06, P13, P14, P15, P16.
+Critical path: P01a, P01b1 to P01b4, P05 and P06, P13, P14, P15, P16.
 
 ## Wave 0: main session
 
@@ -24,14 +24,22 @@ Critical path: P01a, P01b, P05 and P06, P13, P14, P15, P16.
 - [x] P01a Kernel: `src/kernel/slice.ts` with the phases, `ports.ts`, the split of `src/kernel/` and `src/kernel/node/`, `budget.ts`, and `spec-store.ts` with the store types and the reader.
   Owns: `src/kernel/`, `tests/kernel/`.
   Verify: `just test tests/kernel`.
-- [ ] P01b Generator, proved on one real slice: `tools/generate/` finds the slices and writes `plugin.json`, `hooks.json`, `register.ts`, the launchers, the `kernel/` closure, the texts, and the snippet.
-  It ports `prompt` as the proof, moves `src/shared/` texts to `src/fragments/`, and adds `tools/rebuild-pending.txt`.
-  It adds `just generate --check` and the Biome lint rules of [design](design.md#tests-and-checks) to `just check`, and moves the file-size rule to `just validate`.
-  Its tests run the generator on fixture slices and check its output: the order of the handlers in `register.ts`, the kernel closure, and the snippet in schema order.
-  It sets `useArrowFunction` to `error` in `biome.json`, and adds the GritQL plugin `tools/lint/arrow-functions.grit` for `function` declarations.
-  It changes `AGENTS.md` to the new layout and bounds, and adds `GEMINI.md` as a symlink to `AGENTS.md`, next to `CLAUDE.md`.
+- [ ] P01b1 Generator core: the gate of `claude plugin validate` on a handler in a slice file, then `tools/generate/` with discover, order, closure, and the emitters of `register.ts`, `hooks.json`, `plugin.json`, and the texts, and `tools/rebuild-pending.txt`.
+  P01b was split in four, because one agent filled its context with the reads of the full package (the user, 2026-10-12, Jev, confidence 0.79).
   Deps: P01a.
-  Owns: `tools/`, `tests/tools/`, `tests/support/`, `src/fragments/`, `src/shared/`, `src/plugins/dotclaude/plugin.ts`, `src/plugins/dotclaude/slices/prompt/`, `tests/dotclaude/prompt/`, `AGENTS.md`, `GEMINI.md`, `biome.json`, `justfile`, `package.json`, `tsconfig.json`.
+  Owns: `tools/generate/`, `tools/generate.ts`, `tools/rebuild-pending.txt`, `tests/tools/`, `tests/support/generate.test.ts`, `justfile`.
+  Verify: `just test tests/tools` and `just check`.
+- [ ] P01b2 The `prompt` slice, as the proof of the generator, with the 0.28.0 handlers that are not ported in `plugins/dotclaude/hooks/legacy.ts`.
+  Deps: P01b1.
+  Owns: `src/plugins/dotclaude/plugin.ts`, `src/plugins/dotclaude/slices/prompt/`, `tests/dotclaude/prompt/`.
+  Verify: `just test tests/dotclaude/prompt`, `just lab`, and `just check`.
+- [ ] P01b3 The settings snippet in schema order, and `src/shared/` to `src/fragments/`.
+  Deps: P01b2.
+  Owns: `tools/generate/emit/snippet.ts`, `src/shared/`, `src/fragments/`.
+  Verify: `just test tests/tools` and `just check`.
+- [ ] P01b4 The checks: `useArrowFunction` at `error`, `tools/lint/arrow-functions.grit`, the import overrides, `src` in the lint and the type check, `just generate --check` in `just check`, the file-size rule in `just validate`, `AGENTS.md`, and `GEMINI.md` as a symlink to `AGENTS.md`.
+  Deps: P01b3.
+  Owns: `biome.json`, `tools/lint/`, `tools/validate.ts`, `tools/limits.ts`, `tests/support/`, `package.json`, `tsconfig.json`, `AGENTS.md`, `GEMINI.md`.
   Verify: `just check`, and `bunx biome lint` fails on a fixture with a `function` declaration and on one with a `function` expression.
 - [ ] P01c Extract: the full texts and sizes of each built-in system prompt section, tool description, output style, compaction prompt, reminder, and listing of Claude Code 2.1.296, the prompt of `CLAUDE_CODE_SIMPLE` and `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`, and the id that the Mod API gives each part.
   It writes only to `external/cc-extract/2.1.296/`, and its report to `spec/changes/1.0.0/evidence/extract.md`, with no built-in text in the report.
@@ -48,13 +56,13 @@ Critical path: P01a, P01b, P05 and P06, P13, P14, P15, P16.
   Verify: `just test tests/dotclaude/spec/domain`, on a fixture for each format and each delta rule.
 - [ ] P11 Removal: `openspec/` and `.claude/skills/openspec-*`.
   The OpenSpec code of 0.28.0 goes with the package of its slice: setup in P09, the status line in P08.
-  Deps: P01b.
+  Deps: P01b4.
   Owns: `openspec/`, `.claude/skills/`.
   Verify: `just check`, and `grep -ri openspec src tests tools` finds only the 0.28.0 files that `tools/rebuild-pending.txt` names.
 
 ## Wave 2: slices, in parallel
 
-Each package depends on P01b.
+Each package depends on P01b4.
 
 - [ ] P03 `spec`: the adapters, the `dotclaude-spec` CLI with each command of [workflow](workflow.md#cli), and the files of this change in the format.
   Deps: P02.
@@ -66,6 +74,9 @@ Each package depends on P01b.
 - [ ] P08 `statusline`: rows of numbers and icons, the color scale, `NO_COLOR`, and the change segment.
   Verify also: a snapshot for each width and for `NO_COLOR`.
 - [ ] P09 `setup`: the `/setup` skill, its CLI, and the drift check.
+  When dotclaude runs in a git repository, it adds each runtime path of `.claude/` that git does not ignore, such as `.claude/worktrees/`, to `.git/info/exclude` (the user, 2026-10-12).
+  It adds only the paths that Claude Code does not ignore itself: Claude Code writes `**/.claude/settings.local.json` to the global git ignore file, and its bundle has a `# claude-code-runtime` list (`external/cc-2.1.296/strings.txt:138985-139000`), whose trigger P09 finds first.
+  Verify also: a test for a repository with no rule, one with each rule, and a folder that is not a git repository.
 - [ ] P10 `agents`: the seven agents of [workflow](workflow.md#agents) and the `agent.spawn` handler.
   Verify also: `just validate`, and one spawn of each agent in `just sandbox` that runs on the model of the table.
 - [ ] P19 `decide`: Jev through the TypeSafe client, and the fallback through `$.model.complete` when the key is missing or not valid, or the account has no balance.

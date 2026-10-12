@@ -1,6 +1,6 @@
 ---
 id: P11
-deps: [P01b]
+deps: [P01b4]
 owns: ["openspec/", ".claude/skills/"]
 verify: just check
 agent: implementer
