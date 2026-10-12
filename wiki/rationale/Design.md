@@ -91,16 +91,8 @@ Layers spread one capability over four folders, so parallel agents conflict on s
 
 How in the code:
 
-```text
-src/kernel/slice.ts                 the Slice contract and PHASES
-src/plugins/<plugin>/slices/<s>/
-  slice.ts                          the manifest of <s>
-  domain/                           pure code
-  ports.ts                          the interfaces that the domain needs
-  adapters/mod.ts                   mod handlers
-  adapters/cli.ts                   a CLI
-  limits.ts                         the bounds of <s>
-```
+A slice has `domain/` for pure code, `ports.ts`, `adapters/`, and `limits.ts`.
+The contract is `src/kernel/slice.ts`.
 
 - `biome.json` enforces the import rules.
   A slice imports only `kernel/` and its own folder.
@@ -309,17 +301,3 @@ How in the code:
 - `src/kernel/paths.ts` sets `DOTCLAUDE_DIR` to `.dotclaude`.
 - `DOTCLAUDE_LOCAL_PATHS` in the same file lists the paths that git must not track.
 
-## Related pages
-
-- [Decisions](Decisions)
-- [Decisions-Architecture](Decisions-Architecture)
-- [Decisions-Settings](Decisions-Settings)
-- [Decisions-Prompt](Decisions-Prompt)
-- [Decisions-Tools](Decisions-Tools)
-- [Decisions-Router](Decisions-Router)
-- [Decisions-Layout](Decisions-Layout)
-- [Decisions-Evidence](Decisions-Evidence)
-- [Architecture](Architecture)
-- [Guards](Guards)
-- [Agents](Agents)
-- [Spec-Store](Spec-Store)
