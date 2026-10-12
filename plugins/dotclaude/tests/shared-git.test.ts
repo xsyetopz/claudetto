@@ -6,7 +6,11 @@
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
-const KEPT = ["git stash", "git stash pop", "git worktree remove --force ../wt"];
+const KEPT = [
+  "git stash",
+  "git stash pop",
+  "git worktree remove --force ../wt",
+];
 
 const DENIED = [
   "git reset --hard",
