@@ -124,7 +124,7 @@ The messages, the tool output, and the file contents that are not re-read leave 
   A handoff cost $0.0630, and a compaction with its follow-up turn cost $0.2288, at the API list price.
   The run used one session of about 81,000 tokens, so it has no spread.
   See [Handoff-Cost](Handoff-Cost).
-- The bounds of the context of a subagent are in [Context-Bound](Context-Bound).
+- The bounds of the context of a subagent are in [Context-Bound](Context-And-Handoff).
 
 ## Sources
 
