@@ -3,154 +3,200 @@
 Claude Code documents most data that dotclaude uses.
 A few reads use data that Claude Code does not document.
 Claude Code can change or remove such data in any release, and it gives no notice.
-This page lists each read, its source, what shows when the read breaks, and how to find a break.
-The evidence is finding F4 in `research/audit-plugins.md` of the change `dotclaude-0-28-0`.
+This page lists each read that the code of 1.0.0 makes, the code path that reads it, the fact in the Claude Code `2.1.296` binary, and what breaks when a later version changes it.
+
+The binary facts come from the bundle of `2.1.296`, which the extract in the git-ignored `external/cc-2.1.296/` folder holds.
+The method is a search of that extract for each name, and a count of the hits.
+A hit shows that the name is in the bundle.
+It does not show how the name is used, so a name with hits can still be unused.
 
 ## What a break looks like
 
 Each read fails closed.
-A parser that does not know the shape returns `null`, and the part that needs the data does not show.
-Most breaks are silent: the status line has no segment, or the figure is less exact.
+A parser that does not know the shape returns `null`, or `undefined`, and the part that needs the data does not show.
+Most breaks are silent: a line of the drift note is missing, or a figure is less exact.
 Only the drift check is visible, and then only for a change that it knows to look for.
 No read here blocks a tool call or changes a file.
+The drift check changes no setting.
 
 ## Summary
 
-| Read | Used by | Source | Break |
-| --- | --- | --- | --- |
-| Credits segment | Status line | `cachedUsageUtilization` in `<config dir>/.claude.json`, key `cedar_ember` | The segment disappears. |
-| `/context` scrape | Status line | The Markdown table that `/context` writes into the transcript | The breakdown shows only the free tokens, or a wrong `messages` figure. |
-| Drift section ids | Drift check | The section ids of `prompt.compose` in the bundle of Claude Code 2.1.296 | A new id gives a line in the drift note at each session start. |
-| Built-in plugin names | Drift check | Internal `cc-plugin-*@builtin` names in the bundle | A renamed plugin gives a false line or no line. |
-| Tested version | Drift check | `TESTED_VERSION` in `features/drift/data.ts` | Another version gives a line at each session start. |
-| Prompt and tool texts | Surface cuts | Hand copies of Claude Code texts | A changed text makes the cut do nothing. |
-| Context margin | Status line | `CONTEXT_BLOCK_MARGIN` of 23,000 tokens, from the 2.1.296 bundle | The free-token figure is off. |
-
-## The credits segment
-
-The status line shows the count of reset credits that the user can spend, and the next expiry.
-It also shows the weekly window of Fable from the same file.
-
-- Source: the file `<config dir>/.claude.json`, key `cachedUsageUtilization`.
-  The config dir is `CLAUDE_CONFIG_DIR`, or the home folder.
-  The credits are in `utilization.cedar_ember`, and the Fable window is in `utilization.limits[]`.
-- Code: `plugins/dotclaude/features/statusline/credits.ts`.
-  The read opens the file one time for each status line run, and it keeps only these two parts.
-- Evidence: the schema of the cache in Claude Code 2.1.296 has no `cedar_ember` key, but it passes unknown keys through.
-  The grant fields (`resets_left`, `paused`, `usable_now`, `starts_at`, `ends_at`) are in the grant schema of the bundle.
-  The first decoder of the shape was the one of CodexBar 0.69.0.
-- Checks that the parser makes: `eligible` is `true`, `grants` is an array, and each counted grant is not paused, is `usable_now`, has `resets_left` above 0, and is inside its dates.
-  A cache that is older than 1 hour (`CREDITS_MAX_AGE_MS`) counts as absent.
-
-How it breaks at a Claude Code release:
-
-| Change in Claude Code | Result |
-| --- | --- |
-| The key `cedar_ember` is renamed or removed | The credits segment does not show. |
-| A grant field is renamed or its type changes | The grant does not count, and the segment shows fewer credits or none. |
-| The cache moves to another file | The segment does not show. |
-| The cache is written less often than every hour | The segment does not show most of the time. |
-| `limits[]` changes its `kind` or `scope` shape | The Fable window does not show. |
-
-A test pins the known shape with a fixture, and no test reads a real cache, so `just check` does not find a break in Claude Code.
-To check by hand, read `cachedUsageUtilization` in your `.claude.json` and compare the keys with the list above.
-The rate limits of the 5-hour and 7-day windows are not in this read.
-They come from `rate_limits` in the status JSON, which Claude Code documents.
-
-## The `/context` scrape
-
-The status line shows an exact breakdown of the context (system, memory, and skills) only after the user ran `/context`.
-
-- Source: `/context` writes its Markdown table into the transcript as a `user` record whose text starts with `## Context Usage`.
-  Its rows come from the count-tokens API.
-- Code: `plugins/dotclaude/features/statusline/context-table.ts`.
-  Each status line run reads the last 1,000,000 bytes of the transcript (`TABLE_TAIL_BYTES_MAX`), keeps no state, and takes the newest table.
-- The parser reads only the first table, with a regex for a row and a map of category names: `System prompt`, `System tools`, `Custom agents`, `Memory files`, and `Skills`.
-  `System tools (deferred)` is not a part, because deferred tools are not in the context.
-- A subagent record (`isSidechain`) is skipped.
-
-How it breaks at a Claude Code release:
-
-| Change in Claude Code | Result |
-| --- | --- |
-| The header `## Context Usage` changes | No table is found, and the breakdown shows only the free tokens. |
-| Every category name changes | The same as above, because no row counts. |
-| One category name changes | That part counts as 0 and the `messages` figure grows by the same size. The figure is wrong and nothing reports it. |
-| The row format changes, such as the `k` suffix | The same as one changed name. |
-| `/context` stops writing to the transcript | No table is found. |
-
-The table is as old as the last `/context`, so the figure ages while the session goes on.
-A documented source exists in the hooks module: `$.session.usage({ breakdown: "summary" })`, which the drift check uses.
-The status line is a separate process and has no `$`, so it cannot use that call.
-The audit gives this as the way to drop the scrape if the status line moves into the module.
-
-## The drift section ids
-
-The drift check reports a section in the system prompt that dotclaude does not know.
-
-- Source: `ENGINE_SECTIONS` in `plugins/dotclaude/features/drift/data.ts`.
-  It lists 33 section ids of Claude Code 2.1.296, such as `intro`, `tools`, `context_management`, `heron_brook`, `tengu_silent_harbor`, and `willow_tern`.
-  The ids come from the section list in the bundle, because no document lists them.
-  The ids after `memory` come only on some conditions, such as a flag, a model, or a deferred tool.
-- Code: `unknownSections` in `features/drift/rules.ts` takes the ids from a `prompt.compose` call with the `bare` trait.
-  An id with a colon belongs to a plugin, so it does not count.
-
-How it breaks at a Claude Code release:
-
-| Change in Claude Code | Result |
-| --- | --- |
-| A new section id | The note says that the system prompt has a section with an id that dotclaude does not know. The line comes at each session start until a maintainer adds the id. The model can pass it to you as noise. |
-| An id is removed or renamed | No line for the removed id. A renamed id gives a line for the new name. |
-| `prompt.compose` changes its result shape | The read fails, the fact gives no line, and the check goes on with the other facts. |
-
-The line is a hint and not an error.
-dotclaude keeps an unknown section as Claude Code made it.
-
-A second list, `KNOWN_SECTIONS` in `features/prompt/select.ts`, holds the ids that a prompt variant replaces:
-`intro`, `system`, `doing_tasks`, `actions`, `tools`, `tone`, and `lean_body`.
-`composeSections` replaces only these ids, and passes any other id on unchanged.
-
-| Change in Claude Code | Result |
-| --- | --- |
-| A replaced id is renamed | The old text stays next to the variant, and the drift note names the new id |
-
-The same data file holds two more facts of this kind:
-
-- `OFF_PLUGINS` lists 9 internal `cc-plugin-*@builtin` names.
-  The check reports each one that your `enabledPlugins` does not set to `false`.
-  A renamed plugin gives a line for the old name until the list changes.
-- `TESTED_VERSION` is `2.1.296`.
-  Any other version gives one line at each session start, and each Claude Code release needs a code change to stop it.
-  A test pins the value to the schema file in `schemas/`.
-
-## Other texts that follow Claude Code
-
-These are not reads of stored data, but they depend on text that Claude Code does not document.
-
-| Text | Code | Break |
+| Read | Code | Break |
 | --- | --- | --- |
-| The `Agent`, `Bash`, and `Read` tool descriptions | `features/surface/data.ts` (`TOOL_TEXT`) | A handler replaces a description only when its own text is shorter. A long new description from Claude Code is cut to the old copy, and a short one stays. |
-| The `agent_listing_delta` sentence about parallel agents | `features/surface/rules.ts` | An exact string replacement. A changed sentence makes it do nothing. |
-| The `Recent commits:` block of the `session_context` attachment | `features/surface/rules.ts` | A regex. A changed layout makes it do nothing. |
-| The 23,000-token block margin | `lib/budget.ts` (`CONTEXT_BLOCK_MARGIN`) | The margin is the 20,000-token output reserve plus 3,000 tokens in the 2.1.296 bundle. A change moves the free-token figure. |
-| Model names such as `haiku-5-5` and `opus-5-5` | `lib/model.ts`, `features/context/rules.ts`, `features/statusline/limits.ts` | A new model name takes the default subagent context bound. |
+| Drift section ids | `slices/setup/domain/facts.ts` and `domain/drift.ts` | A new id gives a line in the drift note at each session start. |
+| Built-in plugin names | `slices/setup/domain/facts.ts` | A renamed plugin gives a line for the old name, or no line. |
+| Tested version | `slices/setup/domain/facts.ts` | Another version gives a line at each session start. |
+| Tool descriptions | `slices/surface/` | A longer description from Claude Code is replaced by the dotclaude text. |
+| Model ids | `src/kernel/model.ts` | A new id shape gives a raw label in the status line. |
+| Synced skills in the usage payload | `slices/setup/domain/drift.ts` | A renamed field gives no synced-skill line. |
+| Override variables | `slices/setup/adapters/mod.ts` | A renamed variable gives no line about the agent files. |
+| Mythos catalog file | `slices/setup/adapters/files.ts` | A new file name or shape gives `false`. |
+| Account file `.claude.json` | `slices/setup/adapters/settings-cmd.ts` | A renamed key gives no organization id. |
+| `auth status` output and rate limit tier | `slices/setup/adapters/account.ts` | Missing output leaves the account tier unknown. |
+| Transcript records | `dotclaude-sessions` | A renamed record type or field counts as zero. |
+| Plugin file `installed_plugins.json` | `slices/setup/adapters/settings-cmd.ts` | A renamed file hides the docs add-on line. |
+| Sandbox token file | `dotclaude-lab` sandbox login | A renamed file starts the sandbox with no login. |
 
-A cut that does nothing is silent by design: it passes the text on with no change.
-The effect is only a larger request.
-The lab tests in `plugins/dotclaude/tests/surface.test.ts` run the handlers with stubbed engine texts, so they do not see a change in the real text.
+## Reads that the code no longer makes
+
+These reads were in earlier versions.
+The code of 1.0.0 does not read them, so no break can reach them.
+
+- The credits segment, which read the cache key of the account file.
+- The `/context` scrape, which read the table that `/context` writes into the transcript.
+- The exact-text cut of the sentence about parallel agents.
+- The `Recent commits:` block of the `session_context` attachment.
+- The context block margin, `CONTEXT_BLOCK_MARGIN` in `src/kernel/budget.ts`.
+  The constant is defined, but no code reads it.
+
+## Drift section ids
+
+The drift check reports a section of the system prompt that dotclaude does not know.
+
+- Code: `ENGINE_SECTIONS` in `src/plugins/dotclaude/slices/setup/domain/facts.ts` lists the known ids.
+  `unknownSections` in `domain/drift.ts` compares the ids of the `prompt.compose` call with that list.
+  The `setup` adapter in `adapters/mod.ts` makes the call with the `bare` trait.
+  An id with a colon belongs to a plugin, so it does not count.
+- Binary: five of the six ids that this run checked appear in the bundle.
+  Those are `tengu_silent_harbor`, `willow_tern`, `bg-session`, `autonomy_append`, and `endconv_deferred_hint`.
+  The sixth id, `heron_brook`, is found only inside longer names such as `tengu_heron_brook`, so it is not confirmed as a section id.
+  The search matches a substring, so a hit does not prove that the id is a section id.
+  This run did not check the other ids of the list.
+- Break: a new id gives a line in the drift note at each session start, until a maintainer adds the id.
+  An id that is removed or renamed gives no line for the old name.
+  If `prompt.compose` gives no sections, `unknownSections` gives an empty list, so no line appears.
+  The line is a hint and not an error.
+  dotclaude keeps an unknown section as Claude Code made it.
+
+## Built-in plugin names
+
+- Code: `OFF_PLUGINS` in `src/plugins/dotclaude/slices/setup/domain/facts.ts` lists nine internal names of the form `cc-plugin-*@builtin`.
+  `pluginsOn` in `domain/drift.ts` reports each name that the settings do not set to `false`.
+  The `prompt` slice writes the same names into the settings snippet, in `slices/prompt/slice.ts`.
+- Binary: four of the nine names that this run checked appear in the bundle.
+  Those are `cc-plugin-agents-md`, `cc-plugin-responsive-mode`, `cc-plugin-tips`, and `cc-plugin-you-should-know`.
+- Break: a renamed plugin gives a line for the old name until the list changes.
+
+## Tested version
+
+- Code: `TESTED_VERSION` in `src/plugins/dotclaude/slices/setup/domain/facts.ts` is `2.1.296`.
+  `driftLines` in `domain/drift.ts` gives one line when the running version differs.
+  A test in `tests/tools/claude-code-release.test.ts` pins the value to the version that the CI workflow installs.
+- Binary: the extract is the `2.1.296` bundle.
+  This run did not search the bundle for the version string itself.
+- Break: another version gives one line at each session start.
+  Each Claude Code release needs a code change to stop that line.
+
+## Tool descriptions
+
+- Code: `slices/surface/transforms/Agent.ts`, `Bash.ts`, and `Read.ts` give the dotclaude text of each tool.
+  The rule is in `slices/surface/domain/tools.ts`.
+  The dotclaude text replaces the engine text only when the dotclaude text is shorter.
+  The texts are in `slices/surface/texts.ts/`.
+- Binary: this run did not check the tool descriptions in the bundle.
+- Break: a longer description from Claude Code is replaced by the dotclaude text, so new guidance in it does not reach the model.
+  A shorter description from Claude Code stays.
+  The lab test in `slices/surface/lab/surface.test.ts` uses stubbed engine texts, so it does not see a change in the real text.
+
+## Model ids
+
+- Code: `parseModel` in `src/kernel/model.ts` reads the family, major version, and minor version from an id.
+  The status line uses it in `slices/statusline/segments.ts` and `slices/statusline/adapters/subagents.ts`.
+- Binary: the id `claude-haiku-5-5` appears 11 times in the bundle.
+- Break: an id of another shape is not parsed.
+  The subagent label then keeps the id as it is.
+
+## Synced skills in the usage payload
+
+- Code: the `setup` adapter calls `$.session.usage({ breakdown: "summary" })` in `adapters/mod.ts`.
+  `driftLines` reads the skill entries from `context.breakdown.skills.skillFrontmatter`.
+  It counts the entries whose `source` is `SYNCED_SOURCE`, which is `syncedSkills` in `facts.ts`.
+- Binary: `skillFrontmatter` appears 10 times in the bundle, and `syncedSkills` appears 25 times.
+- Break: a renamed field or source gives no synced-skill line.
+
+## Override variables
+
+- Code: the `setup` adapter reads `CLAUDE_CODE_EFFORT_LEVEL` and `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` with `$.env.get` in `adapters/mod.ts`.
+  `OVERRIDE_ENV` in `facts.ts` lists them, and `driftLines` gives a line when either one is set.
+- Binary: the two names appear 15 and 14 times in the bundle.
+  This run did not check whether the Claude Code documentation names them.
+- Break: a renamed variable gives no line about the `model` and `effort` of the agent files.
+
+## Mythos catalog file
+
+- Code: `mythosInCatalog` in `slices/setup/adapters/files.ts` reads the file, and `mythosOffered` in `slices/setup/domain/settings.ts` checks it.
+  The path is `<config dir>/cache/model-catalog/<organizationUuid>-<hash>-<surface>.json`.
+  The `setup` adapter in `adapters/settings-cmd.ts` passes the result to the plan of the settings as `mythos`.
+- Binary: `model-catalog` appears 22 times in the bundle, and `isMythosAvailable` appears 2 times.
+  The shape of the file is inference from the bundle name.
+- Break: another file name or another shape gives `mythos` as `false`.
+  The plan then treats the Mythos model as not offered.
+
+## Account file and the organization id
+
+- Code: `settings-cmd.ts` reads `.claude.json` in `CLAUDE_CONFIG_DIR`, or in the home folder when the variable is not set.
+  It takes the `organizationUuid` of the `oauthAccount` key.
+- Binary: `oauthAccount` appears 22 times in the bundle, and `organizationUuid` appears 73 times.
+- Break: a renamed key gives no organization id.
+  The path of the Mythos file then does not exist, so the check gives `false`.
+
+## Account tier and the rate limit tier
+
+- Code: `slices/setup/adapters/account.ts` runs `claude auth status --json` and reads `subscriptionType` and `loggedIn` from its output.
+  It reads the tier from the environment variable `CLAUDE_CODE_RATE_LIMIT_TIER`, and it never reads the credentials file.
+  `accountOf` in `slices/setup/domain/tiers.ts` builds the account from both.
+- Binary: `auth status` appears 18 times, `subscriptionType` 28 times, and `CLAUDE_CODE_RATE_LIMIT_TIER` 7 times.
+  The variable is also in the table of names that the bundle maps to its settings.
+- Break: missing output, or a renamed field, leaves the subscription type unknown.
+  The tier picks of `setup` then lack the account data.
+  The rate limit tier comes only from the variable, so a renamed variable removes it.
+
+## Transcript records
+
+The add-on `dotclaude-sessions` reads the transcripts in `<config dir>/projects/<folder>/<session>.jsonl`.
+The readers are in `slices/start-cost/domain/` and `slices/usage/domain/`.
+
+- Code: the `start-cost` slice reads the `attachment.type` of each record in `domain/sources.ts`.
+  It reads these types: `prompt_snapshot`, `skill_listing`, `agent_listing_delta`, `deferred_tools_delta`, `instructions`, and the output style.
+  The `prompt_snapshot` record holds `systemBlocks` and the tool schemas, which `domain/first.ts` reads.
+  The `usage` slice reads `message.usage` in `domain/runs.ts`, and the `start-cost` slice reads it in `domain/transcript.ts`.
+  The fields are `input_tokens`, `cache_read_input_tokens`, and `cache_creation_input_tokens`.
+- Binary: `prompt_snapshot` appears 19 times, `skill_listing` 11 times, `agent_listing_delta` 9 times, `deferred_tools_delta` 17 times, and `systemBlocks` 4 times.
+  `cache_read_input_tokens` appears 70 times.
+- Break: a renamed record type gives no item for that source.
+  A renamed usage field counts as zero, so the usage report shows less than the request sent.
+  The `agent_listing_delta` type is a transcript record.
+  It is a different read from the sentence of the `Agent` tool that the core plugin no longer uses.
+
+## Plugin file and the docs add-on
+
+- Code: `settings-cmd.ts` reads `<config dir>/plugins/installed_plugins.json` in `hasDocsAddon`.
+  When the add-on is present, the setup output adds its lines.
+- Binary: `installed_plugins` appears 60 times in the bundle.
+- Break: a renamed file hides the lines of the docs add-on in the setup output.
+
+## Sandbox token file
+
+- Code: `dotclaude-lab` reads the token of the account from `<config dir>/.credentials.json` in `slices/sandbox/adapters/login.ts`.
+  It falls back to the variable `CLAUDE_CODE_OAUTH_TOKEN`.
+  The token is passed to the sandbox run.
+- Binary: `.credentials.json` appears 9 times in the bundle.
+- Break: a renamed file starts the sandbox run with no login.
+  This read is in the lab add-on, and it runs only in the lab sandbox command.
 
 ## What to do after a Claude Code update
 
 1. Read the drift note in the first answer of a new session.
    The note goes to the model, and it tells the model to report the differences to you and to change no setting.
    It names a Claude Code version that is not the tested version, the built-in plugins that are on, the synced skills, the settings that stop the agent files, and the ids of the sections that dotclaude does not know.
-2. If the status line lost the credits segment or the context breakdown, read the matching table above.
+2. If the setup output lost the Mythos line or the docs add-on line, read the matching section above.
 3. Report a break that you cannot fix in the issues of the repository, with the Claude Code version.
 
 ## Related pages
 
 - [Status line](Status-Line)
 - [Core plugin](Architecture)
+- [Drift check](Architecture#drift-check)
 - [Hooks](Hooks)
 - [Troubleshooting](Troubleshooting)
 - [Claude mods](Claude-Mods)
