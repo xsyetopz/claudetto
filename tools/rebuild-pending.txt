@@ -5,12 +5,6 @@
 # The generator fails on a file in `plugins/` that it did not write and that this list does not name.
 # Each package removes its lines, and P16 checks that the list is empty.
 
-# P01b4: the checks
-tests/dotclaude/fixtures/
-tests/dotclaude/import-rules.test.ts
-tests/dotclaude/imports.test.ts
-tests/dotclaude/settings-pin.test.ts
-
 # P04: the release scripts of `/ship`
 tools/bump-version.ts
 tools/release.ts
@@ -71,8 +65,10 @@ src/plugins/dotclaude-sessions/
 tests/sessions/
 
 # P12: `dotclaude-lab`
+# `tests/dotclaude/settings-pin.test.ts` and `tests/support/settings-pin.ts` use the validator of `tests/dotclaude/fixtures/`, so P12 gives them a 1.0.0 validator before it deletes that folder.
 plugins/dotclaude-lab/
 src/plugins/dotclaude-lab/
+tests/dotclaude/fixtures/
 tests/lab/
 tests/support/lock.test.ts
 tests/support/unsandboxed.test.ts
@@ -96,6 +92,7 @@ tests/dotclaude/context/
 tests/dotclaude/errors.test.ts
 tests/dotclaude/eval-graders.test.ts
 tests/dotclaude/hooks/
+tests/dotclaude/lib-feature-imports.test.ts
 tests/dotclaude/lib/
 tests/dotclaude/paths.test.ts
 tests/support/verdicts.ts
@@ -119,6 +116,7 @@ src/plugins/dotclaude/features/surface/
 plugins/dotclaude/settings.json
 src/plugins/dotclaude/settings.json
 tests/dotclaude/deferred-tools.test.ts
+tests/dotclaude/plugin-settings.test.ts
 
 # P22: `styles`
 plugins/dotclaude/output-styles/

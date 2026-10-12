@@ -1,15 +1,14 @@
-// Test T1: each import rule of design D18 finds the violation that a fixture breaks it with.
+// Each import rule finds the violation that a fixture breaks it with.
 // The rules are in `tests/support/import-rules.ts`, and `imports.test.ts` runs them over the repository.
+// The rules of `AGENTS.md` are the source, and the `lib/` and `features/` rules are in `lib-feature-imports.test.ts`.
 
 import { expect, test } from "bun:test";
+import { parseImports } from "../support/graph.ts";
 import {
   checkEntries,
-  checkFeatures,
-  checkLib,
   checkModuleGraph,
   checkNoPackages,
   checkPluginBoundary,
-  parseImports,
 } from "../support/import-rules.ts";
 
 test("`parseImports` reads static, re-export, side-effect, and dynamic imports, and skips comments", () => {
@@ -34,27 +33,6 @@ test("`parseImports` reads static, re-export, side-effect, and dynamic imports, 
 });
 
 const P = "plugins/dotclaude";
-
-test("rule 1: lib importing a feature is a violation", () => {
-  const files = {
-    [`${P}/lib/a.ts`]: 'import { x } from "../features/guard/rules.ts";',
-    [`${P}/lib/b.ts`]: 'import { y } from "./a.ts";\nimport fs from "node:fs";',
-    [`${P}/features/guard/rules.ts`]: "export const x = 1;",
-  };
-  expect(checkLib(files)).toStrictEqual([
-    `${P}/lib/a.ts: lib imports ../features/guard/rules.ts, and lib imports only lib`,
-  ]);
-});
-
-test("rule 2: a feature importing another feature is a violation", () => {
-  const files = {
-    [`${P}/features/guard/rules.ts`]:
-      'import { x } from "../prompt/data.ts";\nimport { y } from "../../lib/b.ts";\nimport { z } from "./own.ts";',
-  };
-  expect(checkFeatures(files)).toStrictEqual([
-    `${P}/features/guard/rules.ts: feature guard imports ../prompt/data.ts, outside lib and itself`,
-  ]);
-});
 
 test("rule 3: a cli imports another feature, and an entry point imports a hook folder", () => {
   const files = {

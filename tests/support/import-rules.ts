@@ -18,7 +18,7 @@ import { checkFeatures, checkLib } from "./lib-feature-imports.ts";
 import { REPO } from "./repo.ts";
 
 export type { Files };
-export { checkFeatures, checkLib, parseImports };
+export { parseImports };
 
 // The folders that an entry point imports.
 // `slices/` and `kernel/` hold the 1.0.0 layout, and `hooks/legacy.ts` holds the handlers that the 1.0.0 rebuild has not ported yet.

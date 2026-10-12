@@ -66,10 +66,6 @@
     {
       "includes": [
         "**",
-        "!tests/dotclaude/fixtures/**",
-        "!tests/dotclaude/import-rules.test.ts",
-        "!tests/dotclaude/imports.test.ts",
-        "!tests/dotclaude/settings-pin.test.ts",
         "!tools/bump-version.ts",
         "!tools/release.ts",
         "!tools/update.ts",
@@ -109,6 +105,7 @@
         "!tests/sessions/**",
         "!plugins/dotclaude-lab/**",
         "!src/plugins/dotclaude-lab/**",
+        "!tests/dotclaude/fixtures/**",
         "!tests/lab/**",
         "!tests/support/lock.test.ts",
         "!tests/support/unsandboxed.test.ts",
@@ -130,6 +127,7 @@
         "!tests/dotclaude/errors.test.ts",
         "!tests/dotclaude/eval-graders.test.ts",
         "!tests/dotclaude/hooks/**",
+        "!tests/dotclaude/lib-feature-imports.test.ts",
         "!tests/dotclaude/lib/**",
         "!tests/dotclaude/paths.test.ts",
         "!tests/support/verdicts.ts",
@@ -145,6 +143,7 @@
         "!plugins/dotclaude/settings.json",
         "!src/plugins/dotclaude/settings.json",
         "!tests/dotclaude/deferred-tools.test.ts",
+        "!tests/dotclaude/plugin-settings.test.ts",
         "!plugins/dotclaude/output-styles/**",
         "!src/plugins/dotclaude/output-styles/**"
       ],
