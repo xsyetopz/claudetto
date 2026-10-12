@@ -1,4 +1,4 @@
-// The exclude step of the CLI: add the runtime paths of `.claude/` to `.git/info/exclude`.
+// The exclude step of the CLI: add the runtime paths of `.claude/` and `.dotclaude/` to `.git/info/exclude`.
 // A folder that is not in a git repository gets no change.
 
 import fs from "node:fs";
