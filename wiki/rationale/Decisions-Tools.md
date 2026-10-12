@@ -167,7 +167,7 @@ The code is in `src/plugins/dotclaude-codegraph/slices/graph/`.
 Each hook runs only when `.codegraph/codegraph.db` exists (`INDEX_PATH` in `domain/graph.ts`).
 The hooks in `hooks/hooks.json` do three things.
 They sync the index at `SessionStart` and add one line about the graph.
-They sync the index after an `Edit` or a `Write`.
+They sync the index after an `Edit`, `Write`, `MultiEdit`, or `NotebookEdit`.
 They sync the index after a `git` command that changes the tree.
 The add-on checks that the CLI is on `PATH` with `findOnPath` in `adapters/codegraph.ts`.
 The bounds are in `slices/graph/limits.ts`: `QUERY_TIMEOUT_MS` is 2000, and `START_SYNC_TIMEOUT_MS` is 8000.

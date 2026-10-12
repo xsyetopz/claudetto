@@ -83,8 +83,8 @@ The `deny` list of the snippet holds these groups.
 | Denied items | Reason |
 | --- | --- |
 | `Read` of secret files, `rm -rf` of `/`, `/*`, `~`, and `~/*`, `mkfs`, and `dd` to a device | Secrets and disk wipes stay out of reach of a tool call. |
-| `EnterPlanMode` and `ExitPlanMode` | Removes two tool lines. The eval of 2026-10-08 showed no loss. |
-| `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, and `TaskUpdate` | Removes five tool lines. The eval showed no loss. |
+| `EnterPlanMode` and `ExitPlanMode` | Removes two tool lines. The [eval of 2026-10-08](Evals-0.28.0#eval-of-2026-10-08-off-switches) showed no loss. |
+| `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, and `TaskUpdate` | Removes five tool lines. The [eval of 2026-10-08](Evals-0.28.0#eval-of-2026-10-08-off-switches) showed no loss. |
 | `Agent(general-purpose)` | Removes an agent line, and a run of this agent replaced the dotclaude agents ([Usage evidence](Usage-Evidence)). |
 | `Agent(claude-code-guide)` and `Agent(statusline-setup)` | Removes two agent lines from each request. |
 | `mcp__computer-use` | A guard for the case that you enable the opt-in server ([Computer use](Off-Switches#computer-use)). |

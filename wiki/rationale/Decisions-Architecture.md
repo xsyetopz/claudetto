@@ -155,7 +155,7 @@ Evidence, with one headless run for each form in `just sandbox`, from `zero-toke
 
 The page on [Spec store](Spec-Store#zero-token-cost) gives the lane part.
 
-## D43 `asks` only on a weaker check
+## D43 `asks` only on a weaker check or discarded work
 
 0.28.0 asked on each adherence check (D34 on [Decisions](Decisions)).
 A read cannot weaken a check, so an ask on it adds no safety.
@@ -217,8 +217,8 @@ Inference: a shared package would make one add-on depend on another install.
 Evidence:
 
 - `tests/support/addons.test.ts` fails when an add-on file names `../dotclaude/` or `plugins/dotclaude/`.
-- Gap: that test checks only the core plugin.
-  A `grep` over `src/plugins/dotclaude-*` found no import between two add-ons, but no test checks it.
+- Rule 4, `checkPluginBoundary` in `tests/support/import-rules.ts`, flags each import that leaves its plugin.
+  `tests/dotclaude/imports.test.ts` runs the rules over `plugins/`, so an import between two add-ons fails.
 - The add-ons are on [Add-ons](Add-Ons).
 
 ## D46 Bounds in three tiers

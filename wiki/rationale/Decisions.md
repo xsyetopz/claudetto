@@ -22,7 +22,7 @@ A row of a reversed decision also links its section in [Decisions-Reversed](Deci
 | D13 | No router, the main loop keeps the session choice | [Router](Decisions-Router) |
 | D14 | Off switches | [Settings](Decisions-Settings) |
 | D15 | dotclaude owns the system prompt | [Prompt](Decisions-Prompt) |
-| D16 | Request capture and the 30K start | [Prompt](Decisions-Prompt) |
+| D16 | Request capture and the session start | [Prompt](Decisions-Prompt) |
 | D17 | Plugin and marketplace layout | [Layout](Decisions-Layout) |
 | D18 | Separation of concerns, size bounds, and bound tiers | [Layout](Decisions-Layout) |
 | D19 | Runtimes | [Reversed](Decisions-Reversed#layout) |
@@ -49,7 +49,7 @@ A row of a reversed decision also links its section in [Decisions-Reversed](Deci
 | D40 | Spec store in place of OpenSpec | [Architecture](Decisions-Architecture) |
 | D41 | An append-only event log in place of `state.json` | [Architecture](Decisions-Architecture) |
 | D42 | Zero token cost where a hook, a script, or a CLI can do the work | [Architecture](Decisions-Architecture) |
-| D43 | `asks` only on a weaker check | [Architecture](Decisions-Architecture) |
+| D43 | `asks` only on a weaker check or discarded work | [Architecture](Decisions-Architecture) |
 | D44 | Jev is a slice of the core plugin, with a small model as the fallback | [Architecture](Decisions-Architecture) |
 | D45 | Add-ons import nothing from the core plugin or from each other | [Architecture](Decisions-Architecture) |
 | D46 | Bounds in three tiers | [Architecture](Decisions-Architecture) |
@@ -66,4 +66,4 @@ Some group pages cite the probes of the 0.28.0 work.
 
 - [Design](Design)
 - [Plugin layout](Plugin-Layout)
-- [Open items](Open-Items)
+- [Open items at 0.28.0](Open-Items), an archive page of the state at 0.28.0, not of 1.0.0

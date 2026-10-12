@@ -99,7 +99,7 @@ Choice:
 - A scratch settings file with `sandbox.enabled: false` does not fix the problem.
   The choice rejects it, because it weakens the sandbox.
 - The capture session of D16 is in [Sandbox](Sandbox#capture-session).
-  D16 is in [Decisions-Prompt](Decisions-Prompt#d16-request-capture-and-the-30k-start).
+  D16 is in [Decisions-Prompt](Decisions-Prompt#d16-request-capture-and-the-session-start).
 - The evals run through `claude plugin eval`.
   The `eval-compare` slice of `dotclaude-lab` runs it, and D9 is in [Decisions-Tools](Decisions-Tools#d9-evals-through-claude-plugin-eval).
 

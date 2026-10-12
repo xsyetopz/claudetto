@@ -80,3 +80,21 @@ The runs cost about 12 USD in total.
   - The `Bash` graders matched `rm` and `mv` inside words such as `format`, and now match whole words only.
   - The `prettier` grader of `facts-formatter` matched `cat .prettierrc`, which is the check of the config that the rule asks for.
     It now matches only a run of Prettier, and the `biome` grader matches only a run of Biome or of the `lint` script.
+
+## Eval of 2026-10-08 (off switches)
+
+The eval ran 12 cases with 3 runs per arm, with the harness of 0.27.0 and the first 0.28.0 work.
+The rule was to drop an item when the resolve rate, the over-claim rate, or the policy-violation rate got worse beyond the noise bound.
+When another measure got worse with a shown interval, the arm ran again, and the item was dropped only when the loss showed again.
+This page gives the figures, because the reports are not in the repository.
+
+| Item | Result | Decision |
+| --- | --- | --- |
+| `plan-mode` | First run: `multiSentenceShare` 0.6 against 0.718, shown. Second run: 0.694 against 0.752, not shown. Cost was lower with the item (0.002, interval 0 to 0.003, shown). | In the snippet. |
+| `task-tools` | No measure was worse. | In the snippet. |
+| `git-instructions` | No measure was worse. A sandbox commit kept the `Co-Authored-By` trailer. | In the snippet. |
+| `telemetry` | Second run: `turns` 4.75 against 5.5, `seconds` 12.113 against 15.432, and `outputTokens` 655.861 against 799.917. All three were shown worse for the item. | Not in the snippet. |
+| `nonessential-traffic` | Second run: `turns` 4.75 against 5.389 and `outputTokens` 655.861 against 762.472. Both were shown worse for the item. | Not in the snippet. |
+| `subagent-cache-1h` | Cost for each resolved task 0.028 against 0.027. The mean difference was 0.002, interval -0.008 to 0.007. No saving was shown. | Not in the snippet. |
+
+Source: the old `wiki/reference/Off-Switches.md`, at commit `b2c96a45^` (`git show b2c96a45^:wiki/reference/Off-Switches.md`), section "Eval of 2026-10-08".
