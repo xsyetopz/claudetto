@@ -30,7 +30,7 @@ const AGENT = (name: string) =>
   `---\nname: ${name}\n---\n\n<rules>\n{{include rule}}\n</rules>\n`;
 
 test("lint: each generated file of the repository matches its source", async () => {
-  const found = await stale(REPO);
+  const found = await stale(REPO, await outputs(REPO));
   expect(found, found.join("\n")).toStrictEqual([]);
 });
 
@@ -143,10 +143,10 @@ test("Edit by hand: the check names an edited generated file and its source, als
     "src/plugins/p/settings.json": "{}\n",
   });
   await generate(dir);
-  expect(await stale(dir)).toStrictEqual([]);
+  expect(await stale(dir, await outputs(dir))).toStrictEqual([]);
   await Bun.write(path.join(dir, "plugins", "p", "agents", "a.md"), "edited\n");
   await Bun.write(path.join(dir, "plugins", "p", "settings.json"), '{"a":1}\n');
-  const found = await stale(dir);
+  const found = await stale(dir, await outputs(dir));
   expect(found).toHaveLength(2);
   expect(found[0]).toContain(
     "plugins/p/agents/a.md differs from its source src/plugins/p/agents/a.md",
@@ -160,7 +160,7 @@ test("the check names a generated file whose source is gone", async () => {
   const dir = await root({ "src/plugins/p/a.md": "Body.\n" });
   await generate(dir);
   fs.rmSync(path.join(dir, "src", "plugins", "p", "a.md"));
-  expect(await stale(dir)).toStrictEqual([
+  expect(await stale(dir, await outputs(dir))).toStrictEqual([
     "plugins/p/a.md has the header of a generated file, but no source in src/.",
   ]);
 });
