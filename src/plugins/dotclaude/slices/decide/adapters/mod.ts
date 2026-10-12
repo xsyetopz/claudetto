@@ -69,8 +69,8 @@ export const onSessionStart: Handler<"session.start"> = async ($, e, next) => {
 };
 
 export const onSecondOpinion: Handler<"tool.call"> = async ($, e) => {
-  // The MCP call has no variant of its own in the event type, so the input is read by its key.
-  const parsed = parseInput("input" in e ? e["input"] : undefined);
+  // An MCP tool gets its arguments as the fields of `e`, next to `tool` and `tool_use_id`.
+  const parsed = parseInput(e);
   if (!parsed.ok) return { result: parsed.error };
   const key = await $.env.get("TYPESAFE_API_KEY");
   const jev = key ? createJev((call) => runCli($, key, call)) : undefined;
