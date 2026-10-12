@@ -6,18 +6,21 @@ import { hooksOf } from "./emit/hooks.ts";
 import { manifestOf } from "./emit/manifest.ts";
 import { registerOf } from "./emit/register.ts";
 import { slicesOf } from "./emit/slices.ts";
+import { snippetParts } from "./emit/snippet.ts";
 import { type Output, outputs, stale } from "./emit/texts.ts";
 import { unlisted } from "./pending.ts";
 
 /** Each generated file of the repository `root`. It throws when two sources make one file. */
 export const generated = async (root: string): Promise<Output[]> => {
   const made = await outputs(root);
-  for (const p of await discover(root))
+  const plugins = await discover(root);
+  const parts = await snippetParts(root, plugins);
+  for (const p of plugins)
     made.push(
       ...(await manifestOf(root, p)),
       ...(await hooksOf(root, p)),
       ...registerOf(root, p),
-      ...(await slicesOf(root, p)),
+      ...(await slicesOf(root, p, parts)),
     );
   const sources = new Map<string, string>();
   for (const o of made) {
