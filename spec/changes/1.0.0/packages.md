@@ -35,7 +35,7 @@ Critical path: P01a, P01b1 to P01b4, P05 and P06, P13, P14, P15, P16.
   Deps: P01b1.
   Owns: `src/plugins/dotclaude/plugin.ts`, `src/plugins/dotclaude/slices/prompt/`, `tests/dotclaude/prompt/`.
   Verify: `just test tests/dotclaude/prompt`, `just lab`, and `just check`.
-- [ ] P01b3 The settings snippet in schema order, and `src/shared/` to `src/fragments/`.
+- [x] P01b3 The settings snippet in schema order, and `src/shared/` to `src/fragments/`.
   Deps: P01b2.
   Owns: `tools/generate/emit/snippet.ts`, `src/shared/`, `src/fragments/`.
   Verify: `just test tests/tools` and `just check`.
