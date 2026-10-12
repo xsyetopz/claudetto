@@ -60,6 +60,8 @@ export type SettingsOptions = {
   skipStatusLines?: boolean;
   /** Merges the `autoMode` lists of `planAutoMode`. Only the user settings take them. */
   autoMode?: boolean;
+  /** Merges the tier picks of `picksOf` after the snippet. Setup writes none when the account has no login. */
+  picks?: Json;
 };
 
 /**
@@ -75,6 +77,7 @@ export const planSettings = (
     mythos = false,
     skipStatusLines = false,
     autoMode = false,
+    picks,
   }: SettingsOptions,
 ): { settings: Json; changes: string[]; kept: string[] } => {
   if (!isObject(current)) throw new Error("The settings are not an object.");
@@ -92,6 +95,7 @@ export const planSettings = (
       "",
       changes,
     ).settings;
+  if (picks) settings = mergeSettings(settings, picks, "", changes).settings;
   if (autoMode) settings = planAutoMode(settings, changes);
   return {
     settings,

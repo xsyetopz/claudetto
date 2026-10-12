@@ -4,12 +4,15 @@
 // A list that already holds `claude-mythos-5-1` also keeps it.
 // The status line commands get the absolute path of the plugin folder, because a status line command gets no `${CLAUDE_PLUGIN_ROOT}`.
 // The path holds the plugin version, so run setup again after each plugin update.
+// The tier picks follow the account that `claude auth status --json` names, and an account with no login gets none.
 
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { MYTHOS } from "../domain/merge.ts";
 import { hasDocsAddon, planSettings } from "../domain/settings.ts";
+import { picksOf } from "../domain/tiers.ts";
+import { readAccount } from "./account.ts";
 import {
   mythosInCatalog,
   type Places,
@@ -52,6 +55,7 @@ export const settingsCommand = async (
     (account["oauthAccount"] as { organizationUuid?: unknown } | undefined)
       ?.organizationUuid,
   );
+  const tier = readAccount(env);
   let plan: ReturnType<typeof planSettings>;
   try {
     plan = planSettings(await readSettings(file), root, {
@@ -59,6 +63,7 @@ export const settingsCommand = async (
       mythos,
       skipStatusLines: scope === "project",
       autoMode: scope === "user",
+      picks: picksOf(tier),
     });
   } catch (err) {
     io.error(`${file}: ${(err as Error).message} Nothing changed.`);
@@ -68,6 +73,7 @@ export const settingsCommand = async (
   io.log(`Plugin folder: ${root}`);
   if (withDocs) io.log("Adds the lines for the `dotclaude-docs` add-on.");
   if (mythos) io.log(`The model catalog of the account offers ${MYTHOS}.`);
+  io.log(`Account tier: ${tier}.`);
   if (scope === "project")
     io.log(
       "Project settings get no status line, because its command holds an absolute path of this computer. Run setup with the user or local scope for it.",

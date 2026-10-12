@@ -17,7 +17,8 @@ import {
 } from "../../../plugins/dotclaude/slices/setup/texts.ts";
 import { PLUGINS, REPO, tmpDir } from "../../support/repo.ts";
 
-type Sandbox = { config: string; project: string };
+// `bin` is the only folder on `PATH`, so no real `claude` answers `claude auth status` in these runs.
+type Sandbox = { config: string; project: string; bin: string };
 type CatalogRow = { id: string; section?: string; disabled?: boolean };
 
 const PLUGIN = path.join(PLUGINS, "dotclaude");
@@ -31,6 +32,7 @@ const sandbox = () => {
   const d = {
     config: path.join(root, "config"),
     project: path.join(root, "project"),
+    bin: path.join(root, "bin"),
   };
   for (const dir of Object.values(d)) fs.mkdirSync(dir);
   return d;
@@ -40,7 +42,11 @@ const run = (d: Sandbox, args: string[]) => {
   const r = Bun.spawnSync(
     [process.execPath, "--no-env-file", SCRIPT, "settings", ...args],
     {
-      env: { CLAUDE_CONFIG_DIR: d.config, CLAUDE_PROJECT_DIR: d.project },
+      env: {
+        CLAUDE_CONFIG_DIR: d.config,
+        CLAUDE_PROJECT_DIR: d.project,
+        PATH: d.bin,
+      },
     },
   );
   return {
