@@ -40,7 +40,7 @@ Critical path: P01a, P01b1 to P01b4, P05 and P06, P13, P14, P15, P16.
   Deps: P01b2.
   Owns: `tools/generate/emit/snippet.ts`, `src/shared/`, `src/fragments/`.
   Verify: `just test tests/tools` and `just check`.
-- [ ] P01b4 The checks: `useArrowFunction` at `error`, `tools/lint/arrow-functions.grit`, the import overrides, `src` in the lint and the type check, `just generate --check` in `just check`, the file-size rule in `just validate`, `AGENTS.md`, and `GEMINI.md` as a symlink to `AGENTS.md`.
+- [x] P01b4 The checks: `useArrowFunction` at `error`, `tools/lint/arrow-functions.grit`, the import overrides, `src` in the lint and the type check, `just generate --check` in `just check`, the file-size rule in `just validate`, `AGENTS.md`, and `GEMINI.md` as a symlink to `AGENTS.md`.
   Deps: P01b3.
   Owns: `biome.json`, `tools/lint/`, `tools/generate/emit/register.ts`, `tools/validate.ts`, `tools/limits.ts`, `tools/lab.ts`, `tools/recipes.ts`, `tools/sizes.ts`, `tests/support/`, `tests/dotclaude/settings-pin.test.ts`, `package.json`, `tsconfig.json`, `AGENTS.md`, `GEMINI.md`.
   Verify: `just check`, and `bunx biome lint` fails on a fixture with a `function` declaration and on one with a `function` expression.
