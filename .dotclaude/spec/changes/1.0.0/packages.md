@@ -171,7 +171,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P28, P24, P26, P27.
   Owns: `src/kernel/` (the path module), the path parts of each slice, the exclude parts of `setup`, and their tests.
   Verify: `just check`, a test for each rule in a repository with no rule, one with the rule, and a folder that is not a git repository, and a `git status` after one session in `just sandbox` that shows no untracked dotclaude file.
-- [ ] P34 Spec store events: an append-only `events.jsonl` with one line for each lane change replaces `state.json` ([change](change.md), decisions, the user, 2026-10-12).
+- [x] P34 Spec store events: an append-only `events.jsonl` with one line for each lane change replaces `state.json` ([change](change.md), decisions, the user, 2026-10-12).
   The lanes come from the last line of each package, so no lane map can drift from the log.
   `schema` goes in a header line, and the handoff path follows P32.
   Each reader and writer changes: `src/kernel/spec-store.ts`, `lane`, `status`, `next`, `validate`, `new`, and the status line.
