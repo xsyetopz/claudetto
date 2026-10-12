@@ -49,6 +49,7 @@
     - [Tools](Decisions-Tools)
     - [Layout](Decisions-Layout)
     - [Evidence](Decisions-Evidence)
+    - [Architecture](Decisions-Architecture)
 - Evidence
   - [Evidence](Evidence)
   - [Handoff cost](Handoff-Cost)
