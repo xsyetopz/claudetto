@@ -161,6 +161,8 @@ The session used 2 turns, and it cost $0.0763.
 
 ### Total
 
-The three runs cost $0.2139 in all.
+Runs 1 to 3 cost $0.2139, and runs 4 and 5 cost $0.163, so the five runs cost $0.3769 in all.
 Run 1 had one block, and it stopped the delegation.
-Run 3 had no blocks.
+Runs 3 and 5 had no blocks.
+In each run, the prompt or the classifier stopped a destructive command before the `guard` hook saw a subagent call.
+So the subagent layer of the hook has tests at the adapter only: `tests/dotclaude/guard/shared-git.test.ts` and `tests/dotclaude/guard/matrix/subagent.test.ts`.
