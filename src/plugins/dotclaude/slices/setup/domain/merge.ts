@@ -24,10 +24,11 @@ const REPLACED = new Set(["availableModels"]);
 const STATUS_LINES = ["statusLine", "subagentStatusLine"];
 
 /**
- * True when `command` runs a status line of dotclaude: the script of a plugin folder,
+ * True when `command` runs a status line of dotclaude: the `bin/dotclaude-statusline` launcher or the script of a plugin folder,
  * or a launcher stub in `<config dir>/dotclaude/` of 0.26 or 0.27.0.
  */
 export const isOurStatusLine = (command: string): boolean =>
+  /[\\/]bin[\\/]dotclaude-statusline(?:["'\s]|$)/.test(command) ||
   /[\\/]features[\\/]statusline[\\/]/.test(command) ||
   /[\\/]dotclaude[\\/](?:statusline|subagent-statusline|subagents)\.mjs/.test(
     command,

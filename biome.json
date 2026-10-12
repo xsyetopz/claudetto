@@ -67,11 +67,6 @@
     {
       "includes": [
         "**",
-        "!tools/bump-version.ts",
-        "!tools/release.ts",
-        "!tools/update.ts",
-        "!plugins/dotclaude/features/statusline/**",
-        "!tests/dotclaude/statusline/**",
         "!plugins/dotclaude-codegraph/evals/hooks.json",
         "!plugins/dotclaude-browser/evals/hooks.json",
         "!plugins/dotclaude-browser/tsconfig.json",
@@ -108,14 +103,7 @@
         "!tools/wiki.ts",
         "!plugins/dotclaude-jev/**",
         "!src/plugins/dotclaude-jev/**",
-        "!tests/jev/**",
-        "!plugins/dotclaude/features/surface/**",
-        "!plugins/dotclaude/tests/surface.test.ts",
-        "!src/plugins/dotclaude/features/surface/**",
-        "!plugins/dotclaude/settings.json",
-        "!src/plugins/dotclaude/settings.json",
-        "!tests/dotclaude/deferred-tools.test.ts",
-        "!tests/dotclaude/plugin-settings.test.ts"
+        "!tests/jev/**"
       ],
       "plugins": ["./tools/lint/arrow-functions.grit"],
       "linter": {

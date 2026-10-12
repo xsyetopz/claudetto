@@ -1,0 +1,34 @@
+import { applyParts, type Part } from "./parts.ts";
+
+export const PARTS: readonly Part[] = [
+  {
+    anchor: /^Write code that reads like the surrounding code.*$/gm,
+    text: "Match the comment density, naming, and idiom of the code around a change.",
+  },
+  {
+    anchor: /^Assume users can't see most tool calls.*$/gm,
+    text: "Users see your text output, not most tool calls. Before the first tool call, say in one sentence what you will do. Give a short update when you find something, change direction, or meet a blocker.",
+  },
+  {
+    anchor: /^Don't narrate your internal deliberation.*$/gm,
+    text: "State results and decisions. Do not narrate your reasoning.",
+  },
+  {
+    anchor: /^When you do write updates.*$/gm,
+    text: "Write each update so that a reader can follow it without earlier context. Use complete sentences and no unexplained shorthand.",
+  },
+  {
+    anchor: /^End-of-turn summary.*$/gm,
+    text: "End each turn with one or two sentences: what changed and what is next.",
+  },
+  {
+    anchor: /^Match responses to the task.*$/gm,
+    text: "Match the length of a reply to the task. A simple question gets a direct answer.",
+  },
+  {
+    anchor: /^In code: default to writing no comments.*$/gm,
+    text: "In code, write a comment only for a non-obvious reason, in one short line. Do not write planning or analysis documents unless the user asks for them.",
+  },
+];
+
+export const transform = (text: string): string => applyParts(text, PARTS);

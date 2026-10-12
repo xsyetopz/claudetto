@@ -1,0 +1,66 @@
+// Lab tests of the `surface` handlers: `tool.describe` on `Agent`, `Bash`, `Read`, and `ListAgents`, and `agent.offer` for a dropped agent.
+// The stub of each event answers as the engine does, so a handler that calls `next` gets the built-in answer.
+
+import type { On } from "claude-code";
+import { type Engine, expect, test } from "claude-code/testing";
+
+const BUILT_IN = "x".repeat(4000);
+
+const engine = (on: On) => {
+  on("tool.describe", () => ({ description: BUILT_IN }));
+  on("agent.offer", () => ({ isOffered: true }));
+};
+
+test("`tool.describe` replaces the built-in `Bash` description with a shorter one", async ($: Engine, on: On) => {
+  engine(on);
+  const answer = await $.tool.describe({
+    tool: "Bash",
+    description: BUILT_IN,
+    provider: { plugin: "engine", tier: "core" },
+  });
+  expect(answer.description.length).toBeLessThan(BUILT_IN.length);
+  expect(answer.isDeferred).toBeUndefined();
+});
+
+test("`tool.describe` defers `ListAgents` and keeps its built-in description", async ($: Engine, on: On) => {
+  engine(on);
+  const answer = await $.tool.describe({
+    tool: "ListAgents",
+    description: BUILT_IN,
+    provider: { plugin: "engine", tier: "core" },
+  });
+  expect(answer.isDeferred).toBe(true);
+  expect(answer.description).toBe(BUILT_IN);
+});
+
+test("`tool.describe` passes an unknown tool on with no change", async ($: Engine, on: On) => {
+  engine(on);
+  const answer = await $.tool.describe({
+    tool: "Grep",
+    description: "x",
+    provider: { plugin: "engine", tier: "core" },
+  });
+  expect(answer).toStrictEqual({ description: BUILT_IN });
+});
+
+test("`agent.offer` leaves a dropped agent out of the listing", async ($: Engine, on: On) => {
+  engine(on);
+  const answer = await $.agent.offer({
+    agent: "statusline-setup",
+    description: "x",
+    source: "built-in",
+    provider: { plugin: "engine", tier: "core" },
+  });
+  expect(answer.isOffered).toBe(false);
+});
+
+test("`agent.offer` offers an agent that is not dropped", async ($: Engine, on: On) => {
+  engine(on);
+  const answer = await $.agent.offer({
+    agent: "Explore",
+    description: "x",
+    source: "built-in",
+    provider: { plugin: "engine", tier: "core" },
+  });
+  expect(answer.isOffered).toBe(true);
+});
