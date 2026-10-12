@@ -74,7 +74,6 @@ This fact comes from a search of the extracted strings of the 2.1.296 bundle, fo
 
 The bundle of 2.1.296 has the text for a subagent that stops at its turn limit.
 When it still calls tools and has produced no report, the parent receives its output as partial output, and the output is marked as incomplete.
-So a subagent that reaches `maxTurns` returns no report.
 The trigger is inferred from the text, and the search did not run a live subagent.
 
 ### The report-now note
@@ -83,7 +82,6 @@ The `tool.call` hook of the handoff slice adds a note when four turns are left.
 The bound `TURNS_LEFT_AT` is in `slices/handoff/limits.ts`.
 The note tells the subagent to commit its work and to report.
 The comment of `TURNS_LEFT_AT` counts two turns for the commit, one for the report, and one spare turn (inference from the comment).
-The note states that a run at its turn limit returns no report.
 
 ## Description and body rules
 

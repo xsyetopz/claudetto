@@ -262,7 +262,8 @@ The bounds that the skills use, with their file:
 
 The size bounds are checked by `tools/sizes.ts`.
 The metadata bounds apply to the `name` and `description` of each skill.
-A size above a high bound fails, and a size below a low bound is reported.
+The metadata and body of each skill fail above their high bound, and they are reported below their low bound.
+The total metadata of all skills fails above `SKILL_META_TOTAL_MAX_BYTES`, and it is reported above `SKILL_META_TOTAL_HIGH_BYTES`.
 The page [Bounds](Bounds) lists all the bounds of the repository.
 
 ## Related pages

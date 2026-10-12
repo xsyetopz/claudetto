@@ -20,7 +20,7 @@ The rows are set in `segments.ts`, and each segment has a row number.
 | 2, the limits | 5-hour limit, 7-day limit, and spend limit |
 
 - The folder segment shows the base name of `workspace.current_dir`.
-- The git segment shows the branch, and the counts of dirty, ahead, and behind files.
+- The git segment shows the branch, the dirty files, and the commits ahead and behind.
   It runs one `git` call, `status --porcelain=v2 -b` (`GIT_ARGS` in `domain/git.ts`).
   The call stops after `GIT_TIMEOUT_MS`, which is `1_500` milliseconds.
 - The change segment shows the id and the done and total count of the active change.
@@ -77,7 +77,8 @@ The countdowns of the limits use this refresh.
 ## Usage sample
 
 The command keeps one file of the last usage, at `RATE_LIMITS_FILE` (`.dotclaude/rate-limits.json`).
-The file is in the project folder, which is `workspace.project_dir`, or the folder of `workspace.current_dir` when that is not set.
+The file is in the project folder, which is `workspace.project_dir`.
+When that is not set, the folder is `workspace.current_dir`, then the `cwd` field of the status object, then the folder of the process.
 The file holds `savedAt` and the `rate_limits` of the status object.
 The `spec` slice reads this file for `dotclaude-spec runs`.
 

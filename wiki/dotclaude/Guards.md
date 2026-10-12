@@ -1,7 +1,7 @@
 # Guards
 
 The `guard` and `asks` slices of the core plugin `dotclaude`.
-They ask or deny a tool call that would discard work, reach a repository with an AI policy, or print a large file.
+They ask or deny a tool call that would discard work, reach a repository with an AI policy, or print a file with a `Bash` command.
 
 ## What it does
 

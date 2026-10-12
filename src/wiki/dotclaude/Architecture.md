@@ -5,16 +5,27 @@ It covers the kernel, the slices of the core plugin `dotclaude`, the one hook mo
 The core plugin is the reference for the parts that you copy from the settings snippet too.
 The Claude Code side of each event is on [Hook-Events](Hook-Events).
 
-## Layers
+## Folder map
 
-dotclaude has three layers.
+dotclaude has three folders of code.
 
 - The kernel, in `src/kernel/`, holds the code that the plugins share.
 - The slices, in `src/plugins/<plugin>/slices/<s>/`, hold the features.
-  Each slice has one `slice.ts`, which names what the slice adds to its plugin.
 - The plugins, in `plugins/<plugin>/`, are the output of `just generate`.
   Claude Code loads these folders.
   Do not edit them by hand.
+
+## Parts of a slice
+
+Each slice has one `slice.ts`, which names what the slice adds to its plugin.
+The other parts depend on the slice.
+
+- `domain/` holds the logic of the slice.
+- `adapters/` connects the domain to an entry point, such as `mod.ts` for the mod handlers.
+- `limits.ts` holds the bounds of the slice.
+- The ports are the interfaces that the domain needs.
+  The shared ports are in `src/kernel/ports.ts`.
+- `lab/` holds the hook lab tests, and `skills/` holds the skill files.
 
 The contract of a slice is in `src/kernel/slice.ts`.
 A mod handler has an `event`, an optional `filter`, a `phase`, and a `run` function.
@@ -142,7 +153,7 @@ Each one is user-invoked, with `disable-model-invocation: true`, so it has no li
 | `/dotclaude:ship` | Runs the open packages of a large change, one implementer for each package in a worktree. |
 | `/dotclaude:spec` | Sizes a request, then starts a change in the spec store with `dotclaude-spec new`. |
 
-A model-invocable skill has a `name` and a `description` of 150 to 300 bytes together.
+A skill has a `name` and a `description` of 150 to 300 bytes together.
 The bounds are `SKILL_META_LOW_BYTES` and `SKILL_META_HIGH_BYTES` in `tools/limits.ts`.
 A skill above 300 bytes fails the size check, and a skill below 150 bytes gives only an advisory.
 
