@@ -14,6 +14,9 @@ fs.mkdirSync(path.join(root, "only-root"), { recursive: true });
 await Bun.write(path.join(root, "file.txt"), "x\n");
 fs.mkdirSync(path.join(root, "sub", "inner"), { recursive: true });
 
+/** `p` in single quotes, so that the `\` of a Windows path stays in the path, as in Bash. */
+const q = (p: string): string => `'${p}'`;
+
 /** The deny of `command` in the main session, which must hold the exact command. */
 const denied = async (command: string, cwd: string) => {
   const reason = await mainDeny(command, cwd);
@@ -27,12 +30,12 @@ const allowed = async (command: string, cwd: string) => {
 };
 
 test("git -C reads the folder of its path under <dir>, not under the working directory", async () => {
-  await denied(`git -C ${root} checkout HEAD -- only-root`, bare);
+  await denied(`git -C ${q(root)} checkout HEAD -- only-root`, bare);
   await allowed("git checkout HEAD -- only-root", bare);
 });
 
 test("git -C reads a file of <dir> as a file, so a checkout of it stays allowed", async () => {
-  await allowed(`git -C ${root} checkout HEAD -- file.txt`, bare);
+  await allowed(`git -C ${q(root)} checkout HEAD -- file.txt`, bare);
 });
 
 test("a relative git -C joins its folder with the working directory", async () => {
@@ -41,7 +44,7 @@ test("a relative git -C joins its folder with the working directory", async () =
 });
 
 test("a leading cd sets the folder of the path of the git command after it", async () => {
-  await denied(`cd ${root} && git checkout HEAD -- only-root`, bare);
+  await denied(`cd ${q(root)} && git checkout HEAD -- only-root`, bare);
   await allowed("cd sub && git checkout HEAD -- only-root", root);
   await denied("cd sub && git checkout HEAD -- inner", root);
 });
@@ -52,17 +55,17 @@ test("a relative cd joins its folder with the working directory", async () => {
 });
 
 test("a subagent's branch switch reads the checkout of git -C, not of the working directory", async () => {
-  expect(await subagentDeny(`git -C ${main} checkout -b x`, linked)).toContain(
-    `git -C ${main} checkout -b x`,
+  expect(await subagentDeny(`git -C ${q(main)} checkout -b x`, linked)).toContain(
+    `git -C ${q(main)} checkout -b x`,
   );
-  expect(await subagentDeny(`git -C ${linked} checkout -b x`, main)).toBeNull();
-  expect(await subagentDeny(`git -C ${linked} switch main`, main)).toBeNull();
+  expect(await subagentDeny(`git -C ${q(linked)} checkout -b x`, main)).toBeNull();
+  expect(await subagentDeny(`git -C ${q(linked)} switch main`, main)).toBeNull();
 });
 
 test("a subagent's branch switch reads the checkout of a leading cd, not of the working directory", async () => {
-  const deny = await subagentDeny(`cd ${main} && git switch main`, linked);
-  expect(deny).toContain(`cd ${main} && git switch main`);
+  const deny = await subagentDeny(`cd ${q(main)} && git switch main`, linked);
+  expect(deny).toContain(`cd ${q(main)} && git switch main`);
   expect(
-    await subagentDeny(`cd ${linked} && git checkout -b x`, main),
+    await subagentDeny(`cd ${q(linked)} && git checkout -b x`, main),
   ).toBeNull();
 });
