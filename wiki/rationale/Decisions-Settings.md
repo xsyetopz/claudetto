@@ -41,6 +41,7 @@ Problem: a managed settings file seats the guard of Claude Code.
 A seated guard skips two dotclaude parts: the shared sections and the model variants of the system prompt (`prompt.compose`), and the `context_management` text (`prompt.section`).
 
 Choice: dotclaude writes no managed settings file, and it runs no `sudo`.
+
 - It writes no `managed-settings.json` and no `managed-settings.d/` drop-in.
 - It runs at tier `user`, so it gets `prompt.section`, `prompt.compose`, and `prompt.context`.
   The guard is not seated on a machine with no managed settings and no Team or Enterprise login.
