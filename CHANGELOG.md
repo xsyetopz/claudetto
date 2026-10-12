@@ -22,6 +22,11 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   On one session, a handoff against a compaction of the same session cost $0.0630 against $0.2288, took 9.1 s against 23.2 s, and left 18,487 tokens of context at the last call against 28,418 at the first call of the follow-up.
   Each side is one run.
   The measurement is in `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.
+- The `attribution` slice of the core plugin adds the attribution to each `git commit` and each `gh pr create` that Claude makes, with no model call.
+  A `tool.call` hook adds a `--trailer` with `Co-Authored-By` and the model of the main loop, such as `Claude Opus 5.5`, and it adds the Claude Code footer to a pull request body.
+  A call of a subagent, or a model with no name and version, gets the name `Claude`.
+  The `attribution` setting of the user stays in force, an empty value turns its part off, and `includeCoAuthoredBy: false` turns both parts off when no `attribution` setting is set.
+  The text of `tool-bash.md` no longer asks Claude to copy the lines.
 - The `dotclaude-spec` commands `ready` and `merge` do two steps of `/ship` with no model call.
   `ready <id>` prints the packages that can start, with no overlap of `owns` between them, and `merge <package> <branch>` needs the package in `review`, commits the lane files, merges the branch, runs `just generate`, sets the lane `done`, and commits `plugins/` with the lane files.
   `lane` also sets the checkbox of the package line in `packages.md`, `validate` reports a checkbox that does not agree with the lane, and `record` writes the empty sections of a hotfix record.
