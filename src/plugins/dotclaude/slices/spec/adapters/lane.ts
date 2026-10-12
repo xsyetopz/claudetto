@@ -1,10 +1,13 @@
 // `dotclaude-spec lane <package> <lane>`: moves a package and adds an event.
 // Only the main session changes a lane, on the main checkout.
 // The command appends one line to `events.jsonl`.
+// It also sets the checkbox of the package line in `packages.md`: `[x]` for `done`, `[ ]` for each other lane.
 
 import path from "node:path";
+import { SPEC_ROOT } from "../../../../../kernel/paths.ts";
 import { runProgram } from "../../../../../kernel/node/process.ts";
 import { LANES, type Lane } from "../../../../../kernel/spec-store.ts";
+import { setChecked } from "./plan-files.ts";
 import type { Run } from "./run.ts";
 
 /** The path that `git rev-parse flag` gives in `cwd`, as an absolute path, or null when git gives none. */
@@ -35,7 +38,10 @@ const isLane = (value: string): value is Lane =>
   (LANES as readonly string[]).includes(value);
 
 /** The id of the one change whose `events.jsonl` has the package, or null with a message. */
-const changeOf = async (run: Run, pkg: string): Promise<string | null> => {
+export const changeOf = async (
+  run: Run,
+  pkg: string,
+): Promise<string | null> => {
   const found: string[] = [];
   for (const id of await run.store.changes()) {
     const events = await run.store.events(id);
@@ -48,6 +54,31 @@ const changeOf = async (run: Run, pkg: string): Promise<string | null> => {
       : `More than one change has the package \`${pkg}\`: ${found.join(", ")}.`,
   );
   return null;
+};
+
+/** Appends the event of the move to `events.jsonl`, and sets the checkbox in `packages.md`. Gives the exit status. */
+export const moveLane = async (
+  run: Run,
+  pkg: string,
+  lane: Lane,
+): Promise<number> => {
+  const id = await changeOf(run, pkg);
+  if (id === null) return 1;
+  const events = await run.store.events(id);
+  if (events === null) return 1;
+  const before = (await run.store.lanes(id, events))[pkg];
+  run.store.appendEvent(id, {
+    at: run.clock.now().toISOString(),
+    package: pkg,
+    lane,
+  });
+  const list = path.posix.join(SPEC_ROOT, id, "packages.md");
+  const text = await run.store.files.read(list);
+  if (text !== null) {
+    await run.store.write(list, setChecked(text, pkg, lane === "done"));
+  }
+  run.io.log(`${id}: ${pkg} ${before} -> ${lane}`);
+  return 0;
 };
 
 export const laneCommand = async (
@@ -69,16 +100,5 @@ export const laneCommand = async (
     );
     return 1;
   }
-  const id = await changeOf(run, pkg);
-  if (id === null) return 1;
-  const events = await run.store.events(id);
-  if (events === null) return 1;
-  const before = (await run.store.lanes(id, events))[pkg];
-  run.store.appendEvent(id, {
-    at: run.clock.now().toISOString(),
-    package: pkg,
-    lane,
-  });
-  run.io.log(`${id}: ${pkg} ${before} -> ${lane}`);
-  return 0;
+  return moveLane(run, pkg, lane);
 };

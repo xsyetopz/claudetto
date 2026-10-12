@@ -31,6 +31,22 @@ export const parseEntries = (text: string): Entry[] => {
   return entries;
 };
 
+/** The text of `packages.md` with the checkbox of the line of package `pkg` set to `checked`. */
+export const setChecked = (
+  text: string,
+  pkg: string,
+  checked: boolean,
+): string =>
+  text
+    .split("\n")
+    .map((line) => {
+      const entry = ENTRY.exec(line);
+      return entry?.[2] === pkg
+        ? line.replace(/^- \[( |x)\]/, `- [${checked ? "x" : " "}]`)
+        : line;
+    })
+    .join("\n");
+
 /** The list of the change `id`, or an empty list when it has no `packages.md`. */
 export const readEntries = async (
   store: SpecStore,
