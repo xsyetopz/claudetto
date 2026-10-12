@@ -1,4 +1,4 @@
-// Fills the includes and the values of a source text (design D12, `just generate`).
+// Fills the includes and the values of a source text (design, "Generated tree").
 // In a source, a line `{{include NAME}}` gives the text of `src/fragments/NAME.md`, `{{include NAME.json}}` the text of `src/fragments/NAME.json`, and `{{NAME}}` the value of the limit `NAME` of `VALUES`.
 // `{{include snippet.json}}` gives the settings snippet of the core plugin, which `emit/snippet.ts` computes from the slices.
 

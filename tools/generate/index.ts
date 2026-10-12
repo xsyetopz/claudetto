@@ -1,5 +1,5 @@
 #!/usr/bin/env -S bun --no-env-file
-// Runs `just generate`: writes each file that a plugin ships from its source in `src/` (design D12, "Generated tree").
+// Runs `just generate`: writes each file that a plugin ships from its source in `src/` (design, "Generated tree").
 //
 //   bun tools/generate/index.ts           write each generated file
 //   bun tools/generate/index.ts --check   exit 1 and name each generated file that differs from its source

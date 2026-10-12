@@ -1,4 +1,4 @@
-// Writes each text that a plugin ships from its source in `src/` (design D12, `just generate`).
+// Writes each text that a plugin ships from its source in `src/` (design, "Generated tree").
 //
 //   bun tools/generate/index.ts           write each generated file
 //   bun tools/generate/index.ts --check   exit 1 and name each generated file that differs from its source
