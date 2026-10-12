@@ -6,7 +6,6 @@ import { hooksOf } from "./emit/hooks.ts";
 import { manifestOf } from "./emit/manifest.ts";
 import { registerOf } from "./emit/register.ts";
 import { slicesOf } from "./emit/slices.ts";
-import { snippetOf } from "./emit/snippet.ts";
 import { type Output, outputs, stale } from "./emit/texts.ts";
 import { unlisted } from "./pending.ts";
 
@@ -19,7 +18,6 @@ export const generated = async (root: string): Promise<Output[]> => {
       ...(await hooksOf(root, p)),
       ...registerOf(root, p),
       ...(await slicesOf(root, p)),
-      ...(await snippetOf(root, p)),
     );
   const sources = new Map<string, string>();
   for (const o of made) {

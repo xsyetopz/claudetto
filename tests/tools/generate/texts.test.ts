@@ -4,11 +4,11 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
+import { VALUES } from "../../../tools/generate/emit/fill.ts";
 import {
   isGenerated,
   outputs,
   stale,
-  VALUES,
 } from "../../../tools/generate/emit/texts.ts";
 import { generated, problems } from "../../../tools/generate/outputs.ts";
 import { REPO, tmpDir } from "../../support/repo.ts";

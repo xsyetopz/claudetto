@@ -6,8 +6,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { FoundPlugin } from "../discover.ts";
+import { fill } from "./fill.ts";
 import {
-  fill,
   formatHooks,
   type HooksFile,
   type Output,

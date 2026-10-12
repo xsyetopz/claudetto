@@ -8,8 +8,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { kernelClosure, rewrite } from "../closure.ts";
 import type { FoundPlugin, FoundSlice } from "../discover.ts";
+import { fill } from "./fill.ts";
 import {
-  fill,
   GENERATED_MARK,
   type Output,
   textModule,

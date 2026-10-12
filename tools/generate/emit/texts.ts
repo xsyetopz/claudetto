@@ -7,7 +7,7 @@
 // `src/shared/` holds the parts that more than one file repeats, and gives no file of its own.
 // `src/kernel/` and `src/plugins/*/slices/` hold the code of the 1.0.0 slices, and give no file here either.
 // The `hooks.json` of a plugin with a slice gives no file here, because `emit/hooks.ts` writes it from the source and the slices.
-// In a source, a line `{{include NAME}}` gives the text of `src/shared/NAME.md`, `{{include NAME.json}}` the text of `src/shared/NAME.json`, and `{{NAME}}` the value of the limit `NAME` of `VALUES`.
+// `emit/fill.ts` fills the `{{include NAME}}` lines and the `{{NAME}}` values of a source.
 // A `hooks.json` also gets its texts from the files next to it: `description.txt` and `<Event>.prompt.txt`.
 // A folder `NAME.ts/` gives the module `NAME.ts`, with one constant for each `.md` or `.json` file in it, so that code can import the texts.
 // The constant of `doing-tasks.md` is `DOING_TASKS`, a `.json` file gives an object, and the module holds no logic.
@@ -16,45 +16,13 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { FILE_MAX_BYTES } from "../../../plugins/dotclaude/features/adherence/limits.ts";
-import {
-  HAIKU_CONTEXT_MAX,
-  REPORT_MAX_WORDS,
-  SUBAGENT_CONTEXT_MAX,
-  TURNS_LEFT_AT,
-} from "../../../plugins/dotclaude/features/context/limits.ts";
-import { MAX_ROWS } from "../../../plugins/dotclaude/features/statusline/limits.ts";
-import {
-  BASH_OUTPUT_MAX_CHARS,
-  CONTEXT_WINDOW,
-  POLICY_FILE_MAX_CHARS,
-  POLICY_TIMEOUT_MS,
-  USAGE_LEVELS,
-} from "../../../plugins/dotclaude/lib/budget.ts";
+import { discover } from "../discover.ts";
+import { fill, textOf } from "./fill.ts";
+import { snippetParts } from "./snippet.ts";
 
 const REPO = path.resolve(import.meta.dir, "../../..");
 
-/** The limits that a source can name as `{{NAME}}`, from the one place in code where each is set. A number has the `300,000` form of the docs. */
-export const VALUES: Record<string, string> = Object.fromEntries(
-  Object.entries({
-    BASH_OUTPUT_MAX_CHARS,
-    CONTEXT_WINDOW,
-    FILE_MAX_BYTES,
-    HAIKU_CONTEXT_MAX,
-    MAX_ROWS,
-    POLICY_FILE_MAX_CHARS,
-    POLICY_TIMEOUT_MS,
-    REPORT_MAX_WORDS,
-    SUBAGENT_CONTEXT_MAX,
-    TURNS_LEFT_AT,
-    USAGE_LEVEL_LOW: USAGE_LEVELS[0],
-    USAGE_LEVEL_HIGH: USAGE_LEVELS[1],
-  }).map(([name, value]) => [name, value.toLocaleString("en-US")]),
-);
-
 const PROMPT_FILE = /^([A-Za-z]+)\.prompt\.txt$/;
-const INCLUDE = /^\{\{include ([a-z0-9-]+(?:\.json)?)\}\}$/gm;
-const VALUE = /\{\{([A-Z0-9_]+)\}\}/g;
 const NO_OUTPUT =
   /^(?:shared\/|kernel\/|plugins\/[^/]+\/(?:slices\/|plugin\.ts$))/;
 
@@ -77,39 +45,6 @@ export type HooksFile = {
 
 /** `p` in the `/` form that the repository paths of this tool use. */
 const posix = (p: string) => p.split(path.sep).join(path.posix.sep);
-
-/** The text of `file` with no newline at its end. */
-const textOf = async (file: string): Promise<string> =>
-  (await Bun.file(file).text()).replace(/\n+$/, "");
-
-/** `text` with each include and value of the source `source` filled in from `shared`. */
-export async function fill(
-  text: string,
-  shared: string,
-  source: string,
-): Promise<string> {
-  const names = [...text.matchAll(INCLUDE)].map((m) => m[1] as string);
-  const parts: Record<string, string> = {};
-  for (const name of names) {
-    const file = path.join(
-      shared,
-      name.endsWith(".json") ? name : `${name}.md`,
-    );
-    if (!fs.existsSync(file))
-      throw new Error(
-        `${source}: no shared part ${posix(path.relative(path.dirname(shared), file))}`,
-      );
-    parts[name] = await textOf(file);
-  }
-  const included = text.replace(
-    INCLUDE,
-    (_m, name: string) => parts[name] as string,
-  );
-  return included.replace(VALUE, (_m, name: string) => {
-    if (!(name in VALUES)) throw new Error(`${source}: no value {{${name}}}`);
-    return VALUES[name] as string;
-  });
-}
 
 /** `text` with the header that names `source`, in the comment form of the file type. */
 export function withHeader(file: string, source: string, text: string): string {
@@ -188,6 +123,7 @@ export async function textModule(
   src: string,
   shared: string,
   dir: string,
+  made: Record<string, string> = {},
 ): Promise<string> {
   const lines: string[] = [];
   for (const name of fs.readdirSync(path.join(src, dir)).sort()) {
@@ -202,6 +138,7 @@ export async function textModule(
         await Bun.file(path.join(src, dir, name)).text(),
         shared,
         source,
+        made,
       )
     ).replace(/\n+$/, "");
     if (ext === "json") {
@@ -239,6 +176,7 @@ async function format(file: string, text: string): Promise<string> {
 export async function outputs(root: string): Promise<Output[]> {
   const src = path.join(root, "src");
   const shared = path.join(src, "shared");
+  const made = await snippetParts(root, await discover(root));
   const out: Output[] = [];
   const modules = new Set<string>();
   for (const rel of walk(src)) {
@@ -252,13 +190,17 @@ export async function outputs(root: string): Promise<Output[]> {
       out.push({
         file: module,
         source,
-        text: withHeader(module, source, await textModule(src, shared, module)),
+        text: withHeader(
+          module,
+          source,
+          await textModule(src, shared, module, made),
+        ),
       });
       continue;
     }
     const source = `src/${rel}`;
     const from = path.join(src, rel);
-    let text = await fill(await Bun.file(from).text(), shared, source);
+    let text = await fill(await Bun.file(from).text(), shared, source, made);
     if (path.basename(rel) === "hooks.json")
       text = formatHooks(await withTexts(path.dirname(from), text));
     out.push({ file: rel, source, text: withHeader(rel, source, text) });

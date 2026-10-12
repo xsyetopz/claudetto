@@ -14,6 +14,7 @@ import {
   mock,
   test,
 } from "claude-code/testing";
+import { GAP_KEYS_MAX } from "../features/drift/limits.ts";
 import { snippetFor } from "../lib/merge.ts";
 
 // The `es2023` lib of the lab has no `url` on `ImportMeta`, and the lab runtime gives it.
@@ -247,8 +248,17 @@ test("a settings file without the snippet names the missing values and the setup
   const session = stub(on, { settings: PROFILE });
   await start($);
   const [note] = noteOf(session);
-  expect(note).toContain("`env`");
-  expect(note).toContain("`autoCompactEnabled`");
+  // The missing keys are the snippet keys that `PROFILE` does not hold with the same value, and the built-in plugins have their own line.
+  const want = snippetFor(PROFILE, ROOT);
+  const have: Record<string, unknown> = PROFILE;
+  const missing = Object.keys(want).filter(
+    (k) =>
+      k !== "enabledPlugins" &&
+      JSON.stringify(have[k]) !== JSON.stringify(want[k]),
+  );
+  const named = missing.slice(0, GAP_KEYS_MAX).map((k) => `\`${k}\``);
+  expect(note).toContain(`: ${named.join(", ")}`);
+  expect(note).not.toContain(`\`${missing[GAP_KEYS_MAX]}\``);
   expect(note).toContain("`/dotclaude:setup`");
 });
 

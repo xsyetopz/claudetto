@@ -2,11 +2,18 @@
 // Each test works in its own copy of the fixture under `TMPDIR`, with a small settings schema in its root.
 
 import { expect, test } from "bun:test";
-import type { Output } from "../../../tools/generate/emit/texts.ts";
-import { generated } from "../../../tools/generate/outputs.ts";
-import { fixtureRoot, textOf } from "./fixture.ts";
+import { discover } from "../../../tools/generate/discover.ts";
+import { snippetOf } from "../../../tools/generate/emit/snippet.ts";
+import { fixtureRoot } from "./fixture.ts";
 
-const SNIPPET = "plugins/p/settings-snippet.json";
+type Json = Record<string, unknown>;
+
+/** The settings snippet of the fixture plugin `p` of `dir`, or `null` when no slice of it has settings. */
+const snippetFor = async (dir: string): Promise<Json | null> => {
+  const plugin = (await discover(dir)).find((p) => p.name === "p");
+  if (!plugin) throw new Error("the fixture has no plugin p");
+  return snippetOf(dir, plugin);
+};
 
 /** The top-level keys of the schema of the fixture, in the order that the snippet follows. */
 const ORDER = ["permissions", "model", "env", "outputStyle", "sandbox"];
@@ -34,8 +41,8 @@ test("the snippet lists its top-level keys in the property order of the schema",
     `{ sandbox: { network: {} }, model: "m", permissions: {} }`,
     `{ outputStyle: "x", env: { A: "1" } }`,
   );
-  const json = JSON.parse(textOf(await generated(dir), SNIPPET));
-  expect(Object.keys(json)).toStrictEqual([
+  const json = await snippetFor(dir);
+  expect(Object.keys(json ?? {})).toStrictEqual([
     "permissions",
     "model",
     "env",
@@ -49,13 +56,13 @@ test("the keys of `env` in the snippet are in alphabetical order, across the sli
     `{ env: { ZETA: "1", ALPHA: "2" } }`,
     `{ env: { MID: "3" } }`,
   );
-  const json = JSON.parse(textOf(await generated(dir), SNIPPET));
-  expect(Object.keys(json.env)).toStrictEqual(["ALPHA", "MID", "ZETA"]);
+  const env = (await snippetFor(dir))?.["env"] as Json;
+  expect(Object.keys(env)).toStrictEqual(["ALPHA", "MID", "ZETA"]);
 });
 
 test("two slices that set one key to different values are an error that names both slices", async () => {
   const dir = await twoSlices(`{ model: "a" }`, `{ model: "b" }`);
-  const message = await generated(dir).then(
+  const message = await snippetFor(dir).then(
     () => "",
     (e: Error) => e.message,
   );
@@ -65,8 +72,7 @@ test("two slices that set one key to different values are an error that names bo
 
 test("two slices that set one key to one value are not an error", async () => {
   const dir = await twoSlices(`{ model: "a" }`, `{ model: "a" }`);
-  const json = JSON.parse(textOf(await generated(dir), SNIPPET));
-  expect(json.model).toBe("a");
+  expect((await snippetFor(dir))?.["model"]).toBe("a");
 });
 
 test("the nested objects of two slices merge by key, and a leaf that two slices set differently is an error", async () => {
@@ -74,8 +80,7 @@ test("the nested objects of two slices merge by key, and a leaf that two slices 
     `{ sandbox: { network: { allowedDomains: ["a.dev"] } } }`,
     `{ sandbox: { filesystem: { allowWrite: ["/tmp"] } } }`,
   );
-  const json = JSON.parse(textOf(await generated(dir), SNIPPET));
-  expect(json.sandbox).toStrictEqual({
+  expect((await snippetFor(dir))?.["sandbox"]).toStrictEqual({
     network: { allowedDomains: ["a.dev"] },
     filesystem: { allowWrite: ["/tmp"] },
   });
@@ -83,10 +88,9 @@ test("the nested objects of two slices merge by key, and a leaf that two slices 
     `{ sandbox: { network: { allowedDomains: ["a.dev"] } } }`,
     `{ sandbox: { network: { allowedDomains: ["b.dev"] } } }`,
   );
-  await expect(generated(clash)).rejects.toThrow(/gamma/);
+  await expect(snippetFor(clash)).rejects.toThrow(/gamma/);
 });
 
-test("a plugin whose slices have no `settings` entry gives no snippet file", async () => {
-  const made: Output[] = await generated(await fixtureRoot());
-  expect(made.some((o) => o.file === SNIPPET)).toBeFalse();
+test("a plugin whose slices have no `settings` entry has no snippet", async () => {
+  expect(await snippetFor(await fixtureRoot())).toBeNull();
 });
