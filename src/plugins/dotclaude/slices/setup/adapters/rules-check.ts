@@ -36,7 +36,7 @@ export const projectRuleProblems = async (
     const text = await Bun.file(path.join(dir, name)).text();
     problems.push(
       ...checkRule(
-        path.posix.join(".claude/rules", name.split(path.sep).join("/")),
+        path.join(".claude", "rules", name),
         text,
         files,
         (yaml) => Bun.YAML.parse(yaml),
