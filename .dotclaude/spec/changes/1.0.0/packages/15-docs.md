@@ -124,7 +124,7 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    - [ ] `Claude-Code-Internals`, `Request-Build` (with `Claude-Mods`), `Tools-And-Deferral`, `Hook-Events` (with `Hooks`), `Plugin-Loader`
    - [ ] `Settings-Resolution`, `Subagents`, `Compaction-And-Context`, `Undocumented-Reads`
    - [x] `Settings-Snippet`, `Settings-Snippet-Keys`, `Off-Switches`, `Settings-Schema`, `Bounds`, `Request-Build` (with `Claude-Mods`), `Compaction-And-Context`
-   - [ ] `Design`, `Decisions` and its six group pages, `Decisions-Reversed`
+   - [x] `Design`, `Decisions` and its six group pages, `Decisions-Reversed`
    - [x] `Evidence`, `Evals`, `Development`, `Plugin-Layout`, `Sandbox`, `Release-History`
    - [x] `Undocumented-Reads`
    - [ ] `Archive`
