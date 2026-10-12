@@ -14,10 +14,13 @@ export interface ProcessResult {
   readonly stderr: string;
 }
 
-/** Reads files and folders. A missing file gives `null`, and a missing folder gives an empty list. */
+/**
+ * Reads files and folders. A missing file gives `null`, and a missing folder gives an empty list.
+ * Each read is async, because the mod runtime reads files only async (`$.fs.read`).
+ */
 export interface FileReader {
-  read(file: string): string | null;
-  list(dir: string): string[];
+  read(file: string): Promise<string | null>;
+  list(dir: string): Promise<string[]>;
 }
 
 /** The current time, in milliseconds since the Unix epoch. */

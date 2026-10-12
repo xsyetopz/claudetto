@@ -46,12 +46,12 @@ export const statePath = (id: string): string =>
  * The state of the change `id`, or null when the change has no `state.json`.
  * The reader throws an `Error` that names the file when `schema` is not `SPEC_SCHEMA`.
  */
-export const readState = (
+export const readState = async (
   files: FileReader,
   id: string,
-): ChangeState | null => {
+): Promise<ChangeState | null> => {
   const file = statePath(id);
-  const text = files.read(file);
+  const text = await files.read(file);
   if (text === null) return null;
   const state = JSON.parse(text) as ChangeState;
   if (state.schema !== SPEC_SCHEMA)
@@ -65,10 +65,12 @@ export const readState = (
  * The active change and its counts: the last change, in the order of its id, that has a package which is not `done`.
  * It gives null when every change is done, or when no change has a `state.json`.
  */
-export const activeProgress = (files: FileReader): Progress | null => {
+export const activeProgress = async (
+  files: FileReader,
+): Promise<Progress | null> => {
   let active: Progress | null = null;
-  for (const id of files.list(SPEC_ROOT).sort()) {
-    const state = readState(files, id);
+  for (const id of (await files.list(SPEC_ROOT)).sort()) {
+    const state = await readState(files, id);
     if (!state) continue;
     const lanes = Object.values(state.lanes);
     const done = lanes.filter((lane) => lane === "done").length;

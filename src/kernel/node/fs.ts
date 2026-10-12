@@ -1,21 +1,21 @@
 // The `FileReader` of Node, for the CLIs. A missing file gives null, and a missing folder gives an empty list.
 
-import fs from "node:fs";
+import fs from "node:fs/promises";
 import { rethrowUnless, UNREADABLE } from "../errors.ts";
 import type { FileReader } from "../ports.ts";
 
 export const fileReader: FileReader = {
-  read: (file) => {
+  read: async (file) => {
     try {
-      return fs.readFileSync(file, "utf8");
+      return await Bun.file(file).text();
     } catch (err) {
       rethrowUnless(err, ...UNREADABLE);
       return null;
     }
   },
-  list: (dir) => {
+  list: async (dir) => {
     try {
-      return fs.readdirSync(dir);
+      return await fs.readdir(dir);
     } catch (err) {
       rethrowUnless(err, ...UNREADABLE);
       return [];

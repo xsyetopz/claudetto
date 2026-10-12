@@ -90,17 +90,17 @@ const offMap = (file: string, source: string): string[] => {
   return faults;
 };
 
-/** The script files of `plugins/`, `tests/`, and `tools/`, with the `bin/` files that have no extension. */
+/** The script files of `plugins/`, `src/`, `tests/`, and `tools/`, with the `bin/` files that have no extension. The hook lab tests are out of scope. */
 const scripts = async (): Promise<string[]> => {
   const files: string[] = [];
   for (const pattern of [
-    "{plugins,tests,tools}/**/*.{ts,mjs}",
+    "{plugins,src,tests,tools}/**/*.{ts,mjs}",
     "plugins/*/bin/*",
   ]) {
     for await (const file of new Bun.Glob(pattern).scan({ cwd: REPO })) {
       const rel = file.split(path.sep).join("/");
-      if (/^plugins\/[^/]+\/tests\//.test(rel) || rel.endsWith(".d.ts"))
-        continue;
+      if (/^plugins\/[^/]+\/tests\/|\/slices\/[^/]+\/lab\//.test(rel)) continue;
+      if (rel.endsWith(".d.ts")) continue;
       if (rel.includes("/node_modules/")) continue;
       files.push(rel);
     }
