@@ -21,7 +21,7 @@ export const generated = async (root: string): Promise<Output[]> => {
       ...(await manifestOf(root, p)),
       ...(await evalsOf(p)),
       ...(await hooksOf(root, p)),
-      ...(await registerOf(root, p)),
+      ...(await registerOf(p)),
       ...(await slicesOf(root, p, parts)),
     );
   const sources = new Map<string, string>();

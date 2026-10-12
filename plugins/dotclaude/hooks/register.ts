@@ -28,7 +28,6 @@ import {
   onAgentOffer as h16,
   onToolDescribe as h17,
 } from "../slices/surface/adapters/mod.ts";
-import { register as legacy } from "./legacy.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h6(options);
@@ -66,5 +65,4 @@ export const register = (on: On, options: PluginOptions): void => {
   on("turn.complete", h9);
   // eval: turn.step handoff
   on("turn.step", { agentId: /./ }, h10);
-  legacy(on);
 };
