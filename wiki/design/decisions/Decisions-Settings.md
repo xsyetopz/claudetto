@@ -38,7 +38,6 @@ The managed drop-in of the first plan was used for probes only, and 0.28.0 remov
   The `handoff` skill is removed (D35).
 - `skillOverrides` does not apply to a plugin skill on Claude Code 2.1.293, so a plugin skill costs its listing line.
   The cost is about 60 tokens for a description of 190 characters.
-- The OpenSpec skills are project skills, so they are `name-only` (17 tokens each against 61).
 - The doctor became a drift check at session start.
 
 See [Core plugin](Core-Plugin#skills).

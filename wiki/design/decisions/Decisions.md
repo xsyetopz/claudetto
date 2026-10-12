@@ -16,7 +16,7 @@ Each row gives the number, the title, and the page with the detail.
 | D8 | Context7 skill | [Tools](Decisions-Tools) |
 | D9 | Evals through `claude plugin eval` | [Tools](Decisions-Tools) |
 | D10 | Schema extraction | [Settings](Decisions-Settings) |
-| D11 | OpenSpec | [Tools](Decisions-Tools) |
+| D11 | Spec store | [Tools](Decisions-Tools) |
 | D12 | Agent frontmatter search | [Router](Decisions-Router) |
 | D13 | No router | [Router](Decisions-Router) |
 | D14 | Off switches | [Settings](Decisions-Settings) |
@@ -39,11 +39,12 @@ Each row gives the number, the title, and the page with the detail.
 | D31 | Guard hooks fail open (`onFailure`) | [Guards](Guards) |
 | D32 | Usage awareness, removed by D35 | [Context bound](Context-Bound) |
 | D33 | Three-column status line | [Status line](Status-Line) |
-| D34 | Adherence by checks in code, with no new judge | [Core plugin](Core-Plugin) |
+| D34 | Adherence by checks in code, with no new judge (now the `asks` slice) | [Core plugin](Core-Plugin) |
 | D35 | No proprietary formats | [Settings](Decisions-Settings#d35-no-proprietary-formats) |
 
-The source of each decision is `design.md`, `design-parts.md`, `design-parts-2.md`, and `design-parts-3.md` in `openspec/changes/archive/2026-10-11-dotclaude-0-28-0/`.
-The facts behind them are in the `research/` folder of that change.
+The source of each decision was the design of the 0.28.0 change, in the OpenSpec flow of that release.
+The spec store (D11) replaced that flow, so the change folder is no longer in the repository.
+The facts behind the decisions were in the `research/` folder of that change.
 
 ## Related pages
 

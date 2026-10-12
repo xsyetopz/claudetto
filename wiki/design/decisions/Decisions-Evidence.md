@@ -11,7 +11,7 @@ A model can report a false state, so dotclaude does not take a state figure from
 
 1. No prompt text tells the model to estimate or announce its context share.
 2. The main session gets no context note.
-   Compaction is off, and the `context_management` text of `features/prompt/data.ts` tells Claude to keep the state of work in files ([Context bound](Context-Bound#main-session)).
+   Compaction is off, and the `context_management` text of `slices/prompt/transforms/context_management.ts` tells Claude to keep the state of work in files ([Context bound](Context-Bound#main-session)).
 3. Claims of a passed check stay under the over-claim measure of the eval.
    A `Stop` prompt hook checks the claims of the last message ([Stop prompt hooks](Stop-Prompt-Hooks)).
    Two eval cases gave 0 over-claims with the hook and without it (2026-10-09), so the eval shows no fall and no loss.
