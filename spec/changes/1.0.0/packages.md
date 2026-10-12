@@ -100,7 +100,7 @@ Each package depends on P01b4.
 - [ ] P11a `dotclaude-codegraph` with 1 hook.
 - [ ] P11b `dotclaude-browser`.
 - [x] P11d `dotclaude-docs`.
-- [ ] P11e `dotclaude-sessions`.
+- [x] P11e `dotclaude-sessions`.
 - [ ] P12 `dotclaude-lab` with `capture`, `sandbox`, `schema`, and `eval-compare`, and no import of another plugin.
   `schema` writes the exact keys and values of `settings.json` and `managed-settings.json` that the pinned binary reads, each with a short description ([workflow](workflow.md#settings-schemas)).
   Verify also: a test fails on a key in `schemas/` that the binary does not read.

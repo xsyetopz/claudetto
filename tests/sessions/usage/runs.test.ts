@@ -8,7 +8,7 @@ import type {
   Block,
   Entry,
   Usage,
-} from "../../../plugins/dotclaude-sessions/lib/transcript.ts";
+} from "../../../src/plugins/dotclaude-sessions/slices/usage/domain/transcript.ts";
 import { PLUGINS, tmpDir } from "../../support/repo.ts";
 import { runBin } from "../spawn.ts";
 
@@ -67,18 +67,18 @@ const listing = (...lines: string[]): Entry => ({
   },
 });
 
-async function write(file: string, entries: Entry[]) {
+const write = async (file: string, entries: Entry[]) => {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   await Bun.write(
     file,
     `${entries.map((e) => JSON.stringify(e)).join("\n")}\n`,
   );
-}
+};
 
 // A config folder with a `projects` folder, and a report of it as JSON.
-async function setup(
+const setup = async (
   build: (config: string) => Promise<void>,
-): Promise<Report> {
+): Promise<Report> => {
   const config = tmpDir("runs");
   await build(config);
   const out = runBin(
@@ -88,7 +88,7 @@ async function setup(
   );
   if (out.status !== 0) throw new Error(out.stderr);
   return JSON.parse(out.stdout) as Report;
-}
+};
 
 test("each run has its calls, and the context that each call reads again is the cache read plus the input", async () => {
   const r = await setup(async (config) => {
