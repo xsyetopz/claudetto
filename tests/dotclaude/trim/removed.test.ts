@@ -1,14 +1,14 @@
 // The `trim` switches and the list of removed parts match, and the `prompt` slice sets none of the switches.
 
 import { expect, test } from "bun:test";
-import { REMOVED_PARTS } from "../../../src/plugins/dotclaude/slices/trim/domain/removed.ts";
-import { slice } from "../../../src/plugins/dotclaude/slices/trim/slice.ts";
 // The `prompt` slice is read from its generated copy, because the source copy imports a `texts.ts` file that only the generator writes.
 import { slice as prompt } from "../../../plugins/dotclaude/slices/prompt/slice.ts";
+import { REMOVED_PARTS } from "../../../src/plugins/dotclaude/slices/trim/domain/removed.ts";
+import { slice } from "../../../src/plugins/dotclaude/slices/trim/slice.ts";
 
 /** The env names and the settings keys of a settings object, in one list. */
 const switchesOf = (settings: Record<string, unknown>): string[] => [
-  ...Object.keys((settings.env ?? {}) as Record<string, unknown>),
+  ...Object.keys((settings["env"] ?? {}) as Record<string, unknown>),
   ...Object.keys(settings).filter((key) => key !== "env"),
 ];
 

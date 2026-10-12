@@ -47,7 +47,8 @@ export const REMOVED_PARTS: readonly RemovedPart[] = [
   {
     part: "Git status in the system prompt",
     switches: ["includeGitInstructions"],
-    reason: "The `guard` slice reads git through `Bash`, not through the git status of the system prompt.",
+    reason:
+      "The `guard` slice reads git through `Bash`, not through the git status of the system prompt.",
   },
   {
     part: "Auto memory",
@@ -62,6 +63,7 @@ export const REMOVED_PARTS: readonly RemovedPart[] = [
   {
     part: "Claude.ai skills and plugins sync",
     switches: ["syncClaudeAiSkills", "syncClaudeAiPlugins"],
-    reason: "The `setup` slice reports the synced skills in a drift note, and does not use them.",
+    reason:
+      "The `setup` slice reports the synced skills in a drift note, and does not use them.",
   },
 ];

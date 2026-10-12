@@ -3,7 +3,7 @@
 
 import { expect, test } from "bun:test";
 import { slice } from "../../../src/plugins/dotclaude/slices/trim/slice.ts";
-import { type Env } from "../../support/repo.ts";
+import type { Env } from "../../support/repo.ts";
 import { neverSetViolations } from "../../support/settings-pin.ts";
 
 // The env names that turn off deferral or send every tool in full, and the one value that turns off a name that has values.
