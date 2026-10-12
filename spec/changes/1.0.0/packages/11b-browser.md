@@ -27,7 +27,9 @@ The add-on works with no other plugin installed.
 - A ported slice with mod handlers to use as the model: `src/plugins/dotclaude/slices/prompt/`.
 - The generator finds a plugin from `src/plugins/<p>/plugin.ts` (`tools/generate/discover.ts:61-84`), writes `plugin.json` with the `userConfig` of each slice (`tools/generate/emit/manifest.ts:36-61`), writes `hooks/register.ts` from the mod handlers, writes `bin/<bin>` from `adapters/cli.ts` (`tools/generate/emit/slices.ts:72-90`), and copies the kernel closure to `plugins/<p>/kernel/`.
 - The mod runtime gives the `userConfig` values to `register(on, options)`.
-  A mod handler that reads them has `configure: (options) => hook` in place of `run`, and the generated `register` calls it with `options` (`src/kernel/slice.ts`, `Configure`, and `tests/tools/generate/slices.test.ts`).
+  A mod handler that reads them has `configure: (options) => void` beside `run`.
+  The generated `register` calls `configure` once with `options`, before the `on()` calls, and gives `run` to `on()` by its name (`src/kernel/slice.ts`, `Configure`, and `tests/tools/generate/slices.test.ts`).
+  `claude plugin validate --strict` follows `$` only into a function of `register.ts`, so `configure` keeps the values in a variable of `adapters/mod.ts`, and `run` reads that variable (2026-10-12).
 - The `browse` slice can have `limits.ts` and `domain/` for the bounds of the guide, although `tree.md:177` does not list them.
 - The 0.28.0 add-on:
   - `plugins/dotclaude-browser/features/search/search.ts` (187 lines), `features/guide/guide.ts` (48), and the launcher `bin/dotclaude-browser-guide`.

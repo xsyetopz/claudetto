@@ -3,7 +3,8 @@
 // and one `on()` call for each handler, with the event and the filter as literals,
 // because `claude plugin validate` and the mod runtime read them only as literals in this file.
 // Each call has the comment `// eval: <event> <slice>` above it, which names its entry in `evals/hooks.json`.
-// A handler with `configure` gets the `userConfig` values of the plugin, which the mod runtime gives to `register` as `options`.
+// A handler with `configure` gets the `userConfig` values of the plugin, which the mod runtime gives to `register` as `options`:
+// the register calls each `configure` once with `options`, before the `on()` calls.
 // When the hand-written `plugins/<plugin>/hooks/legacy.ts` of the rebuild list exists, the register calls its `register` last.
 
 import fs from "node:fs";
@@ -44,23 +45,39 @@ export const registerOf = (root: string, p: FoundPlugin): Output[] => {
     path.join(root, "plugins", p.name, "hooks", "legacy.ts"),
   );
   const where = new Map<Entry, { dir: string; name: string }>();
+  const configures = new Set<string>();
   const entries: Entry[] = [];
+  const nameOf = (
+    s: FoundPlugin["slices"][number],
+    fn: unknown,
+    part: string,
+  ) => {
+    const name = exportOf(s.mod, fn);
+    if (!name)
+      throw new Error(
+        `${path.posix.join(s.dir, "slice.ts")}: ${part} is not a named export of adapters/mod.ts. Export it there, and use that export in the slice.`,
+      );
+    return name;
+  };
   for (const s of p.slices)
     for (const handler of s.slice.mod ?? []) {
-      const name = exportOf(s.mod, handler.run ?? handler.configure);
-      if (!name)
-        throw new Error(
-          `${path.posix.join(s.dir, "slice.ts")}: the handler of ${handler.event} in the phase ${handler.phase} is not a named export of adapters/mod.ts. Export it there, and use that export in the slice.`,
-        );
+      const part = `the handler of ${handler.event} in the phase ${handler.phase}`;
       const e = { slice: s.name, handler };
       entries.push(e);
-      where.set(e, { dir: s.name, name });
+      where.set(e, { dir: s.name, name: nameOf(s, handler.run, part) });
+      if (handler.configure)
+        configures.add(
+          `${s.name}\0${nameOf(s, handler.configure, `the configure of ${part}`)}`,
+        );
     }
   if (!entries.length && !legacy) return [];
   // One alias for each export, numbered in the order of the module paths and the export names,
   // so the imports are already in the order of the import sorter of Biome.
   const pairs = [
-    ...new Set([...where.values()].map((w) => `${w.dir}\0${w.name}`)),
+    ...new Set([
+      ...[...where.values()].map((w) => `${w.dir}\0${w.name}`),
+      ...configures,
+    ]),
   ]
     .map((key) => key.split("\0") as [string, string])
     .sort(([a, x], [b, y]) => compare(a, b) || compare(x, y));
@@ -81,14 +98,10 @@ export const registerOf = (root: string, p: FoundPlugin): Output[] => {
     const hook = alias.get(`${at.dir}\0${at.name}`) as string;
     return [
       `  // eval: ${e.handler.event} ${e.slice}`,
-      wrap(
-        "  on(",
-        [...args, e.handler.configure ? `${hook}(options)` : hook],
-        ");",
-      ),
+      wrap("  on(", [...args, hook], ");"),
     ].join("\n");
   });
-  const configured = entries.some((e) => e.handler.configure);
+  const configured = configures.size > 0;
   const file = `plugins/${p.name}/hooks/register.ts`;
   const source = `src/plugins/${p.name}/slices/*/slice.ts`;
   const text = [
@@ -101,6 +114,7 @@ export const registerOf = (root: string, p: FoundPlugin): Output[] => {
     configured
       ? "export const register = (on: On, options: PluginOptions): void => {"
       : "export const register = (on: On): void => {",
+    ...[...configures].sort().map((key) => `  ${alias.get(key)}(options);`),
     ...calls,
     ...(legacy ? ["  legacy(on);"] : []),
     "};",

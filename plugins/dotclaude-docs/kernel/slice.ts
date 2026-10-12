@@ -29,23 +29,24 @@ export type EventFilter<E extends EventName = EventName> = Matcher<Args<E>>;
 /** The hook signature of the event `E`, as the mod API declares it. */
 export type Handler<E extends EventName = EventName> = Events[E];
 
-/** The hook of a handler that reads the `userConfig` values of its plugin, which the mod runtime gives to `register`. */
-export type Configure<E extends EventName = EventName> = (
-  options: PluginOptions,
-) => Handler<E>;
+/**
+ * Keeps the `userConfig` values of the plugin, which the mod runtime gives to `register`, for a hook to read.
+ * The generated `register` calls it once, before the `on()` calls.
+ * The hook itself goes to `on()` by its name, because `claude plugin validate --strict` follows `$` only into a function of `register.ts`.
+ */
+export type Configure = (options: PluginOptions) => void;
 
 /**
  * One mod handler of a slice. A slice can have more than one for one event, each with its own filter.
- * It has `run`, the hook, or `configure`, when the hook reads the `userConfig` values of the plugin.
+ * It has `run`, the hook, and `configure`, when the hook reads the `userConfig` values of the plugin.
  */
-export type ModHandler<E extends EventName = EventName> = {
+export interface ModHandler<E extends EventName = EventName> {
   readonly event: E;
   readonly filter?: EventFilter<E>;
   readonly phase: Phase;
-} & (
-  | { readonly run: Handler<E>; readonly configure?: never }
-  | { readonly configure: Configure<E>; readonly run?: never }
-);
+  readonly run: Handler<E>;
+  readonly configure?: Configure;
+}
 
 /** One classic command hook, for an event that the mod API does not cover. */
 export interface ClassicHook {
