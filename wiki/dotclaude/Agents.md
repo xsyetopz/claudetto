@@ -136,5 +136,5 @@ The tests are in `tests/dotclaude/agents/` and `tests/dotclaude/handoff/context.
 - [Decisions: router and agents](Decisions-Router#d25-agent-roster)
 - [Decisions](Decisions)
 - [Core plugin](Core-Plugin)
-- [Context bound](Context-Bound)
+- [Context bound](Context-And-Handoff)
 - [Guards](Guards)
