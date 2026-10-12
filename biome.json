@@ -67,9 +67,6 @@
     {
       "includes": [
         "**",
-        "!tools/bump-version.ts",
-        "!tools/release.ts",
-        "!tools/update.ts",
         "!plugins/dotclaude/features/statusline/**",
         "!tests/dotclaude/statusline/**",
         "!plugins/dotclaude-codegraph/evals/hooks.json",
