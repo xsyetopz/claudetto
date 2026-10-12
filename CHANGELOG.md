@@ -32,6 +32,9 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   For each command it prints the exit status, the time, the counts of passed, failed, and skipped tests (`bun test`, `vitest`, `jest`, `pytest`, `cargo test`, `go test`), and the failure lines.
   The full output goes to a log file in `.dotclaude/checks/`, and the exit status is 1 when any command fails.
   A command of plain words runs with no shell, and a command with shell syntax runs through `sh -c`.
+- The workflow `claude.yml` answers an `@claude` mention with `anthropics/claude-code-action`.
+- The workflow `eval-new-claude-code.yml` runs `just eval` one time for each release of `anthropics/claude-code` that is higher than the version of `ci.yml`.
+  Both workflows need the secret `CLAUDE_CODE_OAUTH_TOKEN`, and they skip when it is empty.
 
 ### Changed
 

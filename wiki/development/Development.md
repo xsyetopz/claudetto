@@ -173,6 +173,23 @@ You can restore its skills and the `um` command from there as a base for your ow
 The suite format is now the one of `claude plugin eval` ([Evals](Evals)).
 The old results are on the [Eval history](Evals-History) page.
 
+## Claude in CI
+
+Two workflows use Claude Code with the `CLAUDE_CODE_OAUTH_TOKEN` secret, which `claude setup-token` makes.
+Each one skips its steps when the secret is empty, so a fork or a clone with no secret has no failed run.
+
+- `claude.yml` answers an `@claude` mention in an issue, a pull request review, or a comment, with `anthropics/claude-code-action`.
+  The action answers only users with write access to the repository.
+  It also needs the Claude GitHub App.
+- `eval-new-claude-code.yml` runs `just eval` only when `anthropics/claude-code` has a release tag higher than the version that `ci.yml` installs.
+  It runs each day and from `workflow_dispatch`, and never on a pull request.
+  `tools/claude-code-release.ts` compares the versions as SemVer, so a pre-release is lower than its release.
+  The cost bound is the `--max-cost-usd` of the `eval` recipe.
+  A cache entry for the tag marks a run of the evals, so each tag runs one time.
+  Set the input `force` to run a marked tag again.
+  A failed eval fails the run, so you see that the new release breaks the plugin.
+  Then fix the plugin, and change the version in `ci.yml` to the new release.
+
 ## Next steps
 
 - [Sandbox](Sandbox) tells how to test in a separate config.
