@@ -1,7 +1,7 @@
 // Tests of the `sembr` formatter (spec semantic-line-breaks).
 
 import { expect, test } from "bun:test";
-import { sembr } from "../../../plugins/dotclaude/lib/sembr.ts";
+import { sembr } from "../../../src/plugins/dotclaude/slices/sembr/domain/split.ts";
 
 test("splits after a sentence end", () => {
   expect(sembr("Read the file. Then edit it! Why? Because.")).toBe(

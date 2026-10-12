@@ -14,11 +14,6 @@ tools/update.ts
 plugins/dotclaude/features/adherence/
 tests/dotclaude/adherence/
 
-# P07: `sembr`
-plugins/dotclaude/features/sembr/
-plugins/dotclaude/tests/sembr.test.ts
-tests/dotclaude/sembr/
-
 # P08: `statusline`
 plugins/dotclaude/features/statusline/
 tests/dotclaude/statusline/
