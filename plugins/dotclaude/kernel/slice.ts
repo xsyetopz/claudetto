@@ -3,7 +3,13 @@
 // The generator reads each manifest, and the types of the mod API come from `claude-code`.
 // This file has no runtime import, so the hooks module can load it.
 
-import type { Args, EventName, Events, Matcher } from "claude-code";
+import type {
+  Args,
+  EventName,
+  Events,
+  Matcher,
+  PluginOptions,
+} from "claude-code";
 
 /** The order of the phases of a mod handler, from the first to the last. The generator sorts by it. */
 export const PHASES = [
@@ -23,13 +29,23 @@ export type EventFilter<E extends EventName = EventName> = Matcher<Args<E>>;
 /** The hook signature of the event `E`, as the mod API declares it. */
 export type Handler<E extends EventName = EventName> = Events[E];
 
-/** One mod handler of a slice. A slice can have more than one for one event, each with its own filter. */
-export interface ModHandler<E extends EventName = EventName> {
+/** The hook of a handler that reads the `userConfig` values of its plugin, which the mod runtime gives to `register`. */
+export type Configure<E extends EventName = EventName> = (
+  options: PluginOptions,
+) => Handler<E>;
+
+/**
+ * One mod handler of a slice. A slice can have more than one for one event, each with its own filter.
+ * It has `run`, the hook, or `configure`, when the hook reads the `userConfig` values of the plugin.
+ */
+export type ModHandler<E extends EventName = EventName> = {
   readonly event: E;
   readonly filter?: EventFilter<E>;
   readonly phase: Phase;
-  readonly run: Handler<E>;
-}
+} & (
+  | { readonly run: Handler<E>; readonly configure?: never }
+  | { readonly configure: Configure<E>; readonly run?: never }
+);
 
 /** One classic command hook, for an event that the mod API does not cover. */
 export interface ClassicHook {

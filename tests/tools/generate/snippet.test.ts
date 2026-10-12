@@ -6,6 +6,7 @@ import path from "node:path";
 import { discover } from "../../../tools/generate/discover.ts";
 import { snippetOf } from "../../../tools/generate/emit/snippet.ts";
 import { outputs } from "../../../tools/generate/emit/texts.ts";
+import { generated } from "../../../tools/generate/outputs.ts";
 import { fixtureRoot } from "./fixture.ts";
 
 type Json = Record<string, unknown>;
@@ -115,4 +116,23 @@ test("the core plugin gets the module `lib/snippets.ts` from the snippet of its 
   expect(mod.SNIPPET).toStrictEqual({ model: "m", env: { A: "1", B: "2" } });
   expect(Object.keys(mod.SNIPPET.env)).toStrictEqual(["A", "B"]);
   expect(mod.DOCS_SNIPPET).toStrictEqual({ permissions: { allow: ["x"] } });
+});
+
+test("a text module of a slice of the core plugin can include the snippet", async () => {
+  const dir = await fixtureRoot({
+    "schemas/claude-code-settings.json": schemaWith(ORDER),
+    "src/plugins/dotclaude/slices/gamma/slice.ts": sliceWith(
+      "gamma",
+      '{ model: "m" }',
+    ),
+    "src/plugins/dotclaude/slices/gamma/texts.ts/snippet.json":
+      "{{include snippet.json}}\n",
+    "src/fragments/docs-snippet.json": "{}\n",
+  });
+  const file = "plugins/dotclaude/slices/gamma/texts.ts";
+  const made = (await generated(dir)).find((o) => o.file === file);
+  if (!made) throw new Error(`the generator wrote no ${file}`);
+  await Bun.write(path.join(dir, file), made.text);
+  const mod = await import(path.join(dir, file));
+  expect(mod.SNIPPET).toStrictEqual({ model: "m" });
 });

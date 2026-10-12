@@ -3,6 +3,7 @@
 // and one `on()` call for each handler, with the event and the filter as literals,
 // because `claude plugin validate` and the mod runtime read them only as literals in this file.
 // Each call has the comment `// eval: <event> <slice>` above it, which names its entry in `evals/hooks.json`.
+// A handler with `configure` gets the `userConfig` values of the plugin, which the mod runtime gives to `register` as `options`.
 // When the hand-written `plugins/<plugin>/hooks/legacy.ts` of the rebuild list exists, the register calls its `register` last.
 
 import fs from "node:fs";
@@ -46,7 +47,7 @@ export const registerOf = (root: string, p: FoundPlugin): Output[] => {
   const entries: Entry[] = [];
   for (const s of p.slices)
     for (const handler of s.slice.mod ?? []) {
-      const name = exportOf(s.mod, handler.run);
+      const name = exportOf(s.mod, handler.run ?? handler.configure);
       if (!name)
         throw new Error(
           `${path.posix.join(s.dir, "slice.ts")}: the handler of ${handler.event} in the phase ${handler.phase} is not a named export of adapters/mod.ts. Export it there, and use that export in the slice.`,
@@ -77,23 +78,29 @@ export const registerOf = (root: string, p: FoundPlugin): Output[] => {
     const at = where.get(e) as { dir: string; name: string };
     const filter = filterOf(e);
     const args = [JSON.stringify(e.handler.event), ...(filter ? [filter] : [])];
+    const hook = alias.get(`${at.dir}\0${at.name}`) as string;
     return [
       `  // eval: ${e.handler.event} ${e.slice}`,
       wrap(
         "  on(",
-        [...args, alias.get(`${at.dir}\0${at.name}`) as string],
+        [...args, e.handler.configure ? `${hook}(options)` : hook],
         ");",
       ),
     ].join("\n");
   });
+  const configured = entries.some((e) => e.handler.configure);
   const file = `plugins/${p.name}/hooks/register.ts`;
   const source = `src/plugins/${p.name}/slices/*/slice.ts`;
   const text = [
-    'import type { On } from "claude-code";',
+    configured
+      ? 'import type { On, PluginOptions } from "claude-code";'
+      : 'import type { On } from "claude-code";',
     ...imports,
     ...(legacy ? ['import { register as legacy } from "./legacy.ts";'] : []),
     "",
-    "export const register = (on: On): void => {",
+    configured
+      ? "export const register = (on: On, options: PluginOptions): void => {"
+      : "export const register = (on: On): void => {",
     ...calls,
     ...(legacy ? ["  legacy(on);"] : []),
     "};",

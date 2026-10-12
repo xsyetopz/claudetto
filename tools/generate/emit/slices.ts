@@ -89,11 +89,12 @@ const launcherOf = (root: string, p: FoundPlugin, s: FoundSlice): Output[] => {
   return [{ file: `plugins/${p.name}/bin/${s.slice.cli.bin}`, source, text }];
 };
 
-/** The files of the slice `s` of the plugin `p` in the plugin. */
+/** The files of the slice `s` of the plugin `p` in the plugin. A text module can include each part of `made`, such as `snippet.json`. */
 const filesOf = async (
   root: string,
   p: FoundPlugin,
   s: FoundSlice,
+  made: Record<string, string>,
 ): Promise<Output[]> => {
   const abs = path.join(root, s.dir);
   const fragments = path.join(root, "src", "fragments");
@@ -109,7 +110,12 @@ const filesOf = async (
       const file = `plugins/${p.name}/slices/${s.name}/${module}`;
       const source = path.posix.join(s.dir, module, path.posix.sep);
       const dir = path.posix.relative("src", path.posix.join(s.dir, module));
-      const text = await textModule(path.join(root, "src"), fragments, dir);
+      const text = await textModule(
+        path.join(root, "src"),
+        fragments,
+        dir,
+        made,
+      );
       out.push({ file, source, text: withHeader(file, source, text) });
       continue;
     }
@@ -141,15 +147,16 @@ const filesOf = async (
   return out;
 };
 
-/** The slice files, the kernel closure, and the launchers of the plugin `p`. */
+/** The slice files, the kernel closure, and the launchers of the plugin `p`, with the include parts `made`. */
 export const slicesOf = async (
   root: string,
   p: FoundPlugin,
+  made: Record<string, string> = {},
 ): Promise<Output[]> => {
   const out: Output[] = [];
   const code: string[] = [];
   for (const s of p.slices) {
-    out.push(...(await filesOf(root, p, s)), ...launcherOf(root, p, s));
+    out.push(...(await filesOf(root, p, s, made)), ...launcherOf(root, p, s));
     code.push(
       ...walk(path.join(root, s.dir))
         .filter((rel) => rel.endsWith(".ts") && !TEXTS[rel.split("/")[0] ?? ""])

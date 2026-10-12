@@ -74,6 +74,28 @@ export const slice = { name: "gamma", mod: [
   expect(textOf(made, "plugins/p/hooks/register.ts")).toContain("gamma");
 });
 
+test("a handler with `configure` gets the `options` that the mod runtime gives to `register`", async () => {
+  const dir = await fixtureRoot({
+    "src/plugins/p/slices/gamma/adapters/mod.ts":
+      'export const make = (options) => () => options["backend"];\n',
+    "src/plugins/p/slices/gamma/slice.ts": `import { make } from "./adapters/mod.ts";
+export const slice = { name: "gamma", mod: [
+  { event: "tool.call", filter: { tool: "WebSearch" }, phase: "answer", configure: make },
+] };
+`,
+  });
+  await write(dir, await generated(dir));
+  const mod = await import(path.join(dir, "plugins/p/hooks/register.ts"));
+  const hooks: Handler[] = [];
+  mod.register(
+    (_event: string, filter: { tool?: string }, hook: Handler) => {
+      if (filter?.tool === "WebSearch") hooks.push(hook);
+    },
+    { backend: "cloakbrowser" },
+  );
+  expect(hooks.map((hook) => hook())).toStrictEqual(["cloakbrowser"]);
+});
+
 test("a handler that is not a named export of `adapters/mod.ts` is an error that names the slice", async () => {
   const dir = await fixtureRoot({
     "src/plugins/p/slices/gamma/slice.ts": `export const slice = { name: "gamma", mod: [
