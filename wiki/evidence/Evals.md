@@ -132,6 +132,6 @@ In the run of 2026-10-10 from `! just eval`, 10 runs stopped on a model call unt
 - [Gates of 0.28.0](Evals-0.28.0-Gates) holds the gates.
 - [Open items](Open-Items) holds the measures and decisions that are still open.
 - [Prompt variants](Prompt-Variants) holds the variants that earlier evals tested.
-- [Claude mods](Claude-Mods) holds the results of the mods API probes.
+- [Request build](Request-Build) holds the results of the mods API probes.
 - [Off switches](Off-Switches) holds the switches that wait for an eval.
 - [Usage evidence](Usage-Evidence) holds the usage measures.

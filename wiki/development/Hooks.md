@@ -104,5 +104,5 @@ See [Second opinion](Second-Opinion).
 
 - [Core plugin](Architecture)
 - [Guards](Guards)
-- [Claude mods](Claude-Mods)
+- [Request build](Request-Build)
 - [Troubleshooting](Troubleshooting)

@@ -16,7 +16,7 @@ A version in parentheses marks a later patch of this line, and an entry with no 
   - Where Claude Code does not load mods, no guard runs.
     Examples are `--bare`, safe mode, an untrusted workspace, and `allowManagedModsOnly`.
   - SessionStart, Stop, SubagentStop, TaskCompleted, StopFailure, PreModelSwitch, PostModelSwitch, and ConfigChange stay classic command hooks, because no native event can do their work.
-    The reasons are in [Claude Mods](Claude-Mods).
+    The reasons are in [Request build](Request-Build).
   - The module gets no permission mode.
     So a guard can ask in auto, `dontAsk`, and `bypassPermissions` mode where the classic hook stayed quiet.
 - Working rules: a SessionStart hook adds them to each session, in place of the `dotclaude` output style.

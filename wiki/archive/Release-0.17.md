@@ -121,7 +121,7 @@ A version in parentheses marks a later patch of this line, and an entry with no 
   One checks that the reply says the bug did not reproduce and that nothing changed, and the other checks that the reply shows the command with its output.
   A right reply without the command now fails only the second.
   The `t1-fix` grader `reproduced-first` accepts `Write` as well as `Edit` after the first test run, and it is now a `regex` grader on the trace, because `tool_order` takes only one tool.
-- Dossier (0.17.1): a new part, [Claude Mods](Claude-Mods), records the plugin hooks modules of Claude Code 2.1.287 and the plan for a dotclaude mod in 0.18.
+- Dossier (0.17.1): a new part, [Request build](Request-Build), records the plugin hooks modules of Claude Code 2.1.287 and the plan for a dotclaude mod in 0.18.
 - CI (0.17.1): runs the tests on Windows too, and a `.gitattributes` file keeps LF line endings on Windows checkouts.
 
 ## Removed

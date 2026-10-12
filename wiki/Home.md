@@ -76,7 +76,7 @@ Each add-on works without the core plugin.
 | [Usage evidence](Usage-Evidence) | Prices, model fit, and effort. |
 | [Prompt surface](Prompt-Surface) | What a request contains, the simple prompt, and the forced style. |
 | [Eval history](Evals-History) | The eval runs of the 0.4 to 0.28 releases. |
-| [Claude mods](Claude-Mods) | The plugin hooks modules of Claude Code, and the gaps. |
+| [Request build](Request-Build) | The plugin hooks modules of Claude Code, and the gaps. |
 | [Open items](Open-Items) | Work still to measure or decide. |
 | [Release history](Release-History) | What changed in each older release, and why. |
 
