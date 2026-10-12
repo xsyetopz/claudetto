@@ -2,8 +2,9 @@
 
 This part of the [P28 report](claude-directory.md) answers the questions of the brief.
 The short names in the column "Source" are in the main file.
-No answer here came from a live session in `just sandbox`.
-The verify line of P28 asks for one live session for each rules answer, so each answer has a "Live check" in the open items.
+The answers in the tables came from the docs and the bundle, not from a live session.
+The section "Live checks" holds the results of live sessions in the sandbox.
+The verify line of P28 asks for one live session for each rules answer, so each open item has a "Live check".
 
 ## Rules answers
 
@@ -18,7 +19,7 @@ The verify line of P28 asks for one live session for each rules answer, so each 
 | What is the order? | User rules (`~/.claude/rules/`) load before project rules. Neither overrides the other. | `mem` "User-level rules" |
 | Does `managed-only` for **Project instructions** skip rules? | It skips the launch load of `.claude/rules/` files. Path-scoped rules and rules in a subdirectory still load on demand. | `mem` |
 | Do rules count for the `AGENTS.md` check? | No. They keep loading next to `AGENTS.md`. | `mem` |
-| Can a plugin ship rules? | No path exists in `2.1.296`. The plugin manifest schema lists the component keys `agents`, `commands`, `hooks`, `lspServers`, `mcpServers`, `monitors`, `outputStyles`, `skills`, `themes`, and `workflows`. It has no `rules` key. This is a negative result from one schema line, not a live check. | `bundle:319434` |
+| Can a plugin ship rules? | No path exists in `2.1.296`. The plugin manifest schema lists the component keys `agents`, `commands`, `hooks`, `lspServers`, `mcpServers`, `monitors`, `outputStyles`, `skills`, `themes`, and `workflows`. It has no `rules` key. Live check 5 confirms it: a `rules/` folder at the plugin root does not load. | `bundle:319434` |
 | How do rules show in the Mod API? | The event `prompt.context` has the input `instructionFiles`, a list of `{ path, kind, content }`, next to `blocks`. A block named `claudeMd` holds the instruction text. The event `prompt.compose` takes `sections`, `tools`, and `traits`. The trace found no instruction text in `prompt.compose`. Whether a rule is one entry of `instructionFiles` is open. | `bundle:320307`, `bundle:320310`, `bundle:322283`, `bundle:326668` |
 | Is the cost of a rule known? | A rule with no `paths` costs its full text in every session, like `CLAUDE.md`. A rule with `paths` costs nothing until a matching file is read. The docs give no token numbers. The tool `dotclaude-sessions:start-cost` can measure it. | `mem` |
 
@@ -39,15 +40,36 @@ Both answers come from code paths, not from a live session.
   The trace found no watcher on `.claude/agents/`.
   The expected result is that a new project agent does not appear until a refresh, such as a change in a skill or command file, or a new session.
 
+## Live checks
+
+Claude Code `2.1.296`, model `haiku`, date 2026-10-12.
+Each check is one headless session in a scratch project in the temp folder, with the command `bun plugins/dotclaude-lab/bin/dotclaude-sandbox --dir <scratch> --model haiku -p "<prompt>"` and the token in `CLAUDE_CODE_OAUTH_TOKEN`.
+The scratch project holds the rule `.claude/rules/plain.md` (`CANARY-RULE-7Q3`, no `paths`), the rule `.claude/rules/scoped.md` (`CANARY-PATH-4K8`, `paths: src/**/*.ts`), and a `CLAUDE.md` (`CANARY-CLAUDEMD-2Z9`).
+Each prompt asks Claude to print each unique word that starts with `CANARY-`.
+The sandbox was started with `dotclaude-sandbox`, not `just sandbox`, so none of the plugins of this repository were loaded.
+
+| # | Check | Result | Relevant output |
+| - | - | - | - |
+| 1 | A rule with no `paths` in the main session | Loads. | With no tool use, the reply was `CANARY-CLAUDEMD-2Z9` and `CANARY-RULE-7Q3`. The `paths` rule did not show. |
+| 2 | A rule with `paths` | Loads only after `Read` of a matching file. | After `Read src/a.ts` (`--allowedTools Read`), the reply added `CANARY-PATH-4K8`. |
+| 3 | A `general-purpose` subagent | Sees the no-`paths` rule and the project `CLAUDE.md`. | Prompt: `Agent` with `subagent_type general-purpose`, prompt to print the words. The subagent reply was `CANARY-CLAUDEMD-2Z9` and `CANARY-RULE-7Q3`. The agent `Explore` with `omitClaudeMd` was not run. |
+| 4 | A worktree of the project (`--worktree wt1`) | Loads the rules and the `CLAUDE.md` of the worktree. | The reply showed `pwd` `/private/tmp/<scratch>/project/.claude/worktrees/wt1` and `CANARY-RULE-7Q3`. The main folder had an uncommitted `plain.md` with `CANARY-MAINONLY-9X1`, and that word did not show. A `paths` rule in a worktree was not run. |
+| 5 | A plugin with `rules/pr.md` (`CANARY-PLUGRULE-5W1`) at its root, loaded with `--plugin-dir` | Does not load. | The reply had `CANARY-CLAUDEMD-2Z9` and `CANARY-MAINONLY-9X1`, and no `CANARY-PLUGRULE-5W1`. The plugin itself loaded: the agent `rp:pa` from the same plugin was in the agent list. |
+| 6 | A symlink `.claude/agents/linked-helper.md` to `../../real/helper.md` in the same project | Loads, and the `Agent` tool runs it. | `Agent` with `subagent_type linked-helper` returned `hi! What can I help you with in the project at /private/tmp/<scratch>/project?`. `/agents` was not run, because it needs a TTY. |
+
+- Check 6 first failed with `Agent type 'linked-helper' not found`, because the first link had a wrong relative target (`../real/helper.md`).
+  That was an error in the test, not in Claude Code.
+  A plain copy of the file in the same folder was listed in the same session.
+- Check 7 did not run.
+  The `capture` slice of `dotclaude-lab` records the requests to the API, and no mod on `prompt.context` is ready.
+  The item stays open.
+- Agents added in a session and the checks of the other open items did not run in this pass.
+
 ## Open items
 
 | Item | What is known | Live check in `just sandbox` |
 | - | - | - |
-| Do subagents load rules? | The agent key `omitClaudeMd` skips the user, project, and local `CLAUDE.md` files and keeps managed files (`bundle:319232`). The built-in `Explore` agent sets it (`bundle:326575`). A subagent that skips project instructions also skips `AGENTS.md` (`mem`). The effect on rules is not traced. The loader that reads the key was not found. | Add one rule with no `paths` that holds a marker word. Run one agent with `omitClaudeMd: true` and one without. Ask each to repeat the marker word. |
-| Do worktrees load their own rules? | `mem` points to a section on worktrees for files in `.claude/worktrees/`. That page was not fetched. | Make a worktree. Put a rule with a marker only in the worktree. Start a session inside it and ask for the marker. Repeat with a `paths` rule. |
-| Do rules appear in `instructionFiles` of `prompt.context`, and as what `kind`? | The field exists with `path`, `kind`, and `content`. The values of `kind` were not traced. | Register a mod on `prompt.context` that logs `instructionFiles`. Start with one rule that has `paths` and one that has none. |
-| Can a plugin ship rules by some other path? | The manifest has no `rules` key. A plugin `CLAUDE.md` or a rules folder in the plugin root was not checked. | Install a test plugin with `rules/x.md` and ask for its marker. |
-| Does a symlink in `.claude/agents/` into the same repository load? | The finder follows links. | Link one agent file, start a session, and run `/agents`. |
+| Do rules appear in `instructionFiles` of `prompt.context`, and as what `kind`? | The field exists with `path`, `kind`, and `content`. The values of `kind` were not traced. Live check 7 did not run: no capture of `prompt.context` is ready. | Register a mod on `prompt.context` that logs `instructionFiles`. Start with one rule that has `paths` and one that has none. |
 | Do agents added in a session load? | No watcher on the agents folder was found. A refresh exists. | Add an agent file in a running session. Run `/agents`. Then change a skill file and run `/agents` again. |
 | Where do `routines/`, `themes/`, `launch.json`, and `scheduled_tasks.json` read from, and what is `worktrees/` policy for git? | Only the names appear in the sandbox and permission code. | Read the pages `routines`, `terminal-config`, and `worktrees`. |
 | Does `~/.claude/rules/` load when `user` is not in `--setting-sources`? | Not traced. | Start with `--setting-sources project`. Ask for the marker of a user rule. |
