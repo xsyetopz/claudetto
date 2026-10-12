@@ -8,7 +8,7 @@
     "test": "bun test",
     "validate": "bun tools/validate.ts",
     "typecheck": "bun check",
-    "lint": "bunx biome ci plugins tests tools src",
+    "lint": "bun tools/lint.ts",
     "lint:md": "bunx markdownlint-cli2"
   },
   "license": "MIT",

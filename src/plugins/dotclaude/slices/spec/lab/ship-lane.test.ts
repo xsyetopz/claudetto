@@ -88,7 +88,10 @@ test("the end of another subagent moves no lane", async ($: Engine, on: On) => {
 test("an aborted or errored subagent leaves its lane `doing` and logs it", async ($: Engine, on: On) => {
   const lanes = stub(on);
   const logs: string[] = [];
-  on("ui.log", (_$, e, next) => (logs.push(e.text), next(e)));
+  on("ui.log", (_$, e, next) => {
+    logs.push(e.text);
+    return next(e);
+  });
   await spawn($, BRIEF);
   await end($, "a1", "aborted");
   await spawn($, BRIEF.replace("P33", "P34"));
@@ -107,7 +110,10 @@ test("a prompt that quotes `id: P12` in its body moves no lane", async ($: Engin
 test("a `lane` run that exits 1 is logged", async ($: Engine, on: On) => {
   stub(on, "a1", 1);
   const logs: string[] = [];
-  on("ui.log", (_$, e, next) => (logs.push(e.text), next(e)));
+  on("ui.log", (_$, e, next) => {
+    logs.push(e.text);
+    return next(e);
+  });
   await spawn($, BRIEF);
   expect(logs.some((t) => t.includes("lane refused"))).toBe(true);
 });

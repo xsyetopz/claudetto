@@ -123,7 +123,7 @@ const ASKS: Case[] = [
     "/w/.github/workflows/ci.yml",
     "jobs:\n  t:\n    steps:\n      - run: just check\n",
     "    steps:",
-    "    if: ${{ 1 == 2 }}\n    steps:",
+    `    if: \${{ 1 == 2 }}\n    steps:`,
   ],
   [
     "ci step if false",
@@ -147,11 +147,11 @@ const ASKS: Case[] = [
     "    runs-on: ubuntu\n    if: false\n",
   ],
   [
-    "ci if ${{false}}",
+    `ci if \${{false}}`,
     CI,
     BASE,
     "    runs-on: ubuntu\n",
-    "    runs-on: ubuntu\n    if: ${{ false }}\n",
+    `    runs-on: ubuntu\n    if: \${{ false }}\n`,
   ],
   [
     "ci if 'false'",
@@ -200,7 +200,7 @@ const ASKS: Case[] = [
     "/w/.github/workflows/ci.yml",
     BASE,
     "      - run: just check\n",
-    "      - run: just check\n      - name: x\n        if: ${{ false }}\n        run: just lint\n",
+    `      - run: just check\n      - name: x\n        if: \${{ false }}\n        run: just lint\n`,
   ],
   [
     "new step with continue-on-error",
@@ -247,7 +247,7 @@ const ASKS: Case[] = [
   [
     "new trigger branch",
     "/w/.github/workflows/ci.yml",
-    "on:\n  push:\n    branches: [main]\n" + BASE,
+    `on:\n  push:\n    branches: [main]\n${BASE}`,
     "[main]",
     "[main, x]",
   ],
@@ -297,7 +297,7 @@ const SAFE: Case[] = [
   [
     "name change",
     "/w/.github/workflows/ci.yml",
-    "name: A\n" + BASE,
+    `name: A\n${BASE}`,
     "name: A",
     "name: B",
   ],
