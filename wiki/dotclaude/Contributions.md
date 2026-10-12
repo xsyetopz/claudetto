@@ -2,63 +2,70 @@
 
 A commit, push, pull request, issue, discussion, review, or comment in a project that you do not own speaks for you.
 Maintainers read it as your words.
-Since 0.27 dotclaude has no contribute skill.
-The policy ask of the hooks module replaces it.
+The `guard` slice asks before Claude reaches the project of another owner.
 
 ## The policy ask
 
-The module in `hooks/register.ts` asks once per session and per repository, when Claude reaches a repository of another owner that has a `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md` file.
-It covers these calls:
+The `guard` slice asks once for each repository in a session.
+It asks when Claude reaches a GitHub repository of another owner that has a policy file.
+The policy files are the ones in `POLICY_FILES` in `src/plugins/dotclaude/slices/guard/domain/owners.ts`: `CLAUDE.md`, `AGENTS.md`, and `AI_POLICY.md`.
+The ask covers these calls, which `reachedRepos` finds:
 
 - Bash: `git clone`, `gh`, `curl`, or `wget` on the repository.
 - `WebFetch` of a page of the repository.
 
-How it works:
+The steps are:
 
-1. It reads your login with `gh config get user -h github.com`.
-2. It reads the organizations where you are admin with `gh api user/memberships/orgs`.
-   A repository of you or of such an organization is yours, and it keeps the verdict.
-3. For another owner, it reads the policy files with `gh api` and the raw accept header.
-4. It asks, and shows the policy text.
-   The text is XML-escaped, wrapped in `<policy_file name=...>`, and cut at 2,000 characters with `[cut]`.
-5. The next call to the same repository in the session keeps the verdict.
+1. The `guard` reads your logins with `gh config get user -h github.com` (`LOGIN_ARGV`).
+2. It reads the organizations where you are an admin with `gh api user/memberships/orgs` (`ORGS_ARGV`).
+   A repository of you or of such an organization is yours, and the ask skips it.
+3. For another owner, it reads each policy file with `gh api`.
+4. `policyReason` wraps each file in `<policy_file name=...>`, with the text XML-escaped.
+   A file that is longer than `POLICY_FILE_MAX_CHARS` (`2_000` characters) is cut, and `[cut]` marks the cut.
+5. The ask shows the policy text in the prompt.
 
-The module has no error handler, so it fails open.
-When `gh` is missing, logged out, or slower than 5 seconds, the call goes on without the ask.
-A repository with no policy file also goes on.
-A project with no policy is unknown, not permitted, so read its `CONTRIBUTING.md` yourself.
+Each `gh` call stops after `POLICY_TIMEOUT_MS` (`5_000` milliseconds), which is set in `src/kernel/budget.ts`.
+The ask fails open.
+When `gh` is missing, logged out, slower than the timeout, or it exits with a code other than `0`, the output is null.
+A repository with no policy file also goes on without the ask.
+The owner list is kept only when both `gh` calls answer, so a failed call is tried again at the next check.
+The ask keeps the repositories that it checked for each session.
+
+A project with no policy file is unknown, not permitted.
+Read its `CONTRIBUTING.md` yourself before you write to it.
 
 ## What to do when it asks
 
 1. Read the policy text in the prompt.
 2. If the policy forbids AI work, reject the call.
-3. If it allows AI work, allow the call, and follow what the policy asks for, such as a disclosure line.
+3. If the policy allows AI work, allow the call, and follow what the policy asks for, such as a disclosure line.
 4. Review each draft before you send it.
-   After you send it, ask Claude to reply in the thread only when you want that.
 
 > **Note:** Maintainers spend time on each report.
 > A report that nobody checked, or that is long and vague, costs them that time and costs you their trust.
 
 ## Public writes
 
-The [settings snippet](Settings-Snippet) adds `permissions.ask` rules for writes with `gh pr` and `gh issue`, and for `gh release`.
-A contribution is public and stays after a removal.
-The decision is yours, and a prompt gives you the facts for it.
-See [Guards](Guards).
+The `prompt` slice adds `permissions.ask` rules to the [settings snippet](Settings-Snippet).
+The rules cover these public writes:
 
-## History
+- `gh pr create`, `gh pr merge`, `gh pr comment`, and `gh pr review`.
+- `gh issue create` and `gh issue comment`.
+- `gh release`.
 
-<details>
-<summary>Removed in 0.27.0</summary>
+Claude asks before each of these calls runs.
+A contribution is public, and it stays after a removal.
+The decision is yours.
+See [Guards](Guards) for the other checks of the `guard` slice.
 
-Release 0.26 had the `/dotclaude:contribute` skill and section 9 of the operating spec.
-Release 0.27.0 removed both and kept the policy ask in the module.
-Release 0.19 also had a catalog of project AI policies, and release 0.20.0 removed it.
-The older text is in [Release history](Release-History).
+## Work on this repository
 
-</details>
+The repository rules are in `CLAUDE.md` at the repository root.
+Run `just check` before you call a change done.
+Edit the source in `src/` and run `just generate`, because a test fails when a generated file differs from its source.
+Do not edit `plugins/` by hand.
 
 ## Related pages
 
-- [Guards](Guards): the module guard.
-- [Install](Install): copy the snippet that adds the ask rules.
+- [Guards](Guards): the checks of the `guard` slice.
+- [Install](Install): how to copy the settings snippet.
