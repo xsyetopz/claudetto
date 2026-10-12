@@ -16,8 +16,8 @@ export const slice = {
         tokens: 0,
         blocks: false,
         allow:
-          "plugins/dotclaude/tests/attribution.test.ts > a `Bash` call that is not a commit or a pull request keeps its command",
-        text: "plugins/dotclaude/tests/attribution.test.ts > a `git commit -m` gets the trailer of the model before its message option",
+          "plugins/dotclaude/tests/attribution.test.ts > a call that is not a commit or a pull request keeps its command",
+        text: "plugins/dotclaude/tests/attribution.test.ts > a `git commit -m` gets the trailer of the main model, before the message",
       },
       filter: { tool: ["Bash"] },
       phase: "rewrite",
