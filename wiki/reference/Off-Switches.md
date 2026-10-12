@@ -30,7 +30,8 @@ So no `DOTCLAUDE_` variable turns off a part of dotclaude.
 ## Env entries of the snippet
 
 Claude Code reads each entry in this table.
-At run time, dotclaude reads only `DISABLE_COMPACT`.
+dotclaude reads `DISABLE_COMPACT`, which this table lists.
+It also reads three variables that the table does not list: `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, `CLAUDE_CODE_EFFORT_LEVEL`, and `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`.
 The drift check in `slices/setup/domain/drift.ts` compares every entry of the snippet with the settings file.
 
 | Entry | Effect | Set in |
@@ -81,7 +82,7 @@ The drift check reads each key as described in [Env entries of the snippet](#env
 | `syncClaudeAiPlugins` set to `false` | No plugins synced from claude.ai. | `slices/trim/slice.ts` |
 
 The reasons for the `trim` switches are in `slices/trim/domain/removed.ts`.
-No code imports that list, so the keys above are set in the slice files only.
+No shipped code imports that list, so the keys above are set in the slice files only.
 
 ## Denied tools and agents
 
@@ -103,7 +104,7 @@ The other `permissions.deny` and `permissions.ask` entries are safety rules, not
 
 The snippet turns off the built-in agents `Explore` and `Plan` with `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`.
 It turns off `general-purpose`, `claude-code-guide`, and `statusline-setup` with one `permissions.deny` entry each.
-The five dotclaude agents take the work of the built-in agents, see [Agents](Agents).
+The six dotclaude agents take the work of the built-in agents, see [Agents](Agents).
 
 ## Computer use
 
@@ -158,7 +159,7 @@ See [Decisions-Settings](Decisions-Settings), decision D14.
 
 ## Not in the snippet
 
-dotclaude sets none of the items that might cost quality, and no code reads them.
+The snippet sets none of the items that might cost quality, and no code reads them.
 The reasons and the eval are in [Decisions-Settings](Decisions-Settings) and [Evals](Evals).
 Set one by hand in your own settings at your own risk.
 

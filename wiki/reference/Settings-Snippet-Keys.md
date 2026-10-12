@@ -73,7 +73,7 @@ See [Off switches](Off-Switches#not-in-the-snippet).
 | `syncClaudeAiPlugins` | `false` | Stops the sync of the plugins that you enable on claude.ai. Read in user or managed settings only. Default: on. | No plugin sync from claude.ai. |
 | `disableClaudeAiConnectors` | `true` | Stops the claude.ai MCP connectors from being fetched. A `true` in any settings source wins. Default: `false`. | No claude.ai connector server. |
 | `enabledPlugins` | Nine built-in plugins set to `false` | Turns on or off each plugin, by its `plugin-id@marketplace-id`. Default: each plugin on by its own default. | See [Off switches](Off-Switches). |
-| `skillOverrides` | `plugin-authoring` set to `name-only` | Lists the skill without its description. Default: unset. | A shorter listing line for `plugin-authoring`. |
+| `skillOverrides` | `plugin-authoring` set to `name-only` | Asks Claude Code to list the skill by name only, not re-checked on `2.1.296` ([Off switches](Off-Switches#skilloverrides)). Default: unset. | A shorter listing line for `plugin-authoring`. |
 | `attribution` | The commit and PR lines | Sets the attribution text of commits and PRs. Default: the Claude Code lines. | The attribution that the commit and PR text carries. |
 | `sandbox` | On, a retry outside the sandbox allowed, a list of allowed domains | Limits the files and the network of `Bash`. Default: off. | The sandbox limits `Bash`. `git fetch`, `git pull`, `git push`, and `gh` run outside it, and they still go through the permission flow. |
 | `permissions` | `disableBypassPermissionsMode` set to `disable`, and the `deny`, `ask`, and `allow` lists | Sets the rules for each tool call. `deny` blocks, `ask` asks, and `allow` runs without a prompt. Default: unset. | Risky commands ask, and read-only commands run. The `deny` list holds the groups below. |
@@ -92,7 +92,6 @@ The `deny` list of the snippet holds these groups.
 | `ReportFindings` | Removes the tool. `/code-review` gives its findings as text without it ([Prompt surface](Prompt-Surface)). |
 
 The status line entries need the absolute path of the plugin folder, because a status line command gets no `${CLAUDE_PLUGIN_ROOT}`.
-dotclaude writes no launcher stub for them.
 
 ## Auto mode lists
 
