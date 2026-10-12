@@ -2,7 +2,7 @@
 name: implementer
 description: Implements one scoped slice with a known check: a feature, a fix with a known cause, tests, docs, or a fully specified bulk change over many files. Delegate a slice when it is clear, has a known check, and would fill the main context. Do not use it for plans.
 disallowedTools: Agent
-model: claude-haiku-5-5
+model: claude-sonnet-5-5
 effort: medium
 maxTurns: 61
 color: green

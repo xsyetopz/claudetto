@@ -1,14 +1,14 @@
 // The pure parts of the web search of dotclaude-browser.
 // The hooks module answers a `WebSearch` call with a search in the headless browser.
 // It runs `agent-browser` with `$.process.run`, so the model keeps the tool that it knows.
-// The `$` calls are in the hooks module, because `$` is not followed across an import.
+// The `$` calls are in the adapter of the slice, because `$` is not followed across an import.
 
 import {
   MAX_DOMAINS,
   MAX_OUTPUT_CHARS,
   SEARCH_URL,
   SESSION_PREFIX,
-} from "./limits.ts";
+} from "../limits.ts";
 
 /** The `WebSearch` input. The hooks module passes the input of the tool call. */
 export interface SearchInput {
@@ -40,7 +40,7 @@ const domainTerms = (domains: unknown, sign: string): string[] =>
     .map((d) => `${sign}site:${d}`);
 
 /** The query with the domain filters of the `WebSearch` input as search terms. */
-export function searchQuery(input: SearchInput | undefined): string | null {
+export const searchQuery = (input: SearchInput | undefined): string | null => {
   const query = typeof input?.query === "string" ? input.query.trim() : "";
   if (!input || !query) return null;
   return [
@@ -48,7 +48,7 @@ export function searchQuery(input: SearchInput | undefined): string | null {
     ...domainTerms(input.allowed_domains, ""),
     ...domainTerms(input.blocked_domains, "-"),
   ].join(" ");
-}
+};
 
 /** The URL of the search page for a query. */
 export const searchUrl = (query: string): string =>
@@ -74,7 +74,7 @@ const versionParts = (name: string): number[] =>
     .map(Number);
 
 /** Compares two `chromium-<version>` names by the numbers of the version. Gives a negative number when `a` is older. */
-function compareBuilds(a: string, b: string): number {
+const compareBuilds = (a: string, b: string): number => {
   const x = versionParts(a);
   const y = versionParts(b);
   for (let i = 0; i < Math.max(x.length, y.length); i++) {
@@ -82,7 +82,7 @@ function compareBuilds(a: string, b: string): number {
     if (d !== 0) return d;
   }
   return a < b ? -1 : a > b ? 1 : 0;
-}
+};
 
 /** The `chromium-*` folder names of a listing, newest first. */
 export const cloakBuilds = (entries: unknown): string[] =>
@@ -100,7 +100,7 @@ export const CLOAK_NAME = "CloakBrowser";
 export const PLAIN_NAME = "`agent-browser`";
 
 /** The argument vectors of the browser steps in one session: open the page, read its text, close. */
-export function steps(url: string, session: string, binary?: string | null) {
+export const steps = (url: string, session: string, binary?: string | null) => {
   const base = [
     "agent-browser",
     "--session",
@@ -119,21 +119,21 @@ export function steps(url: string, session: string, binary?: string | null) {
     ],
     close: [...base, "close"],
   };
-}
+};
 
 /** The reason that a run did not give a page, or `null` when the run gave one. */
-export function failure(run: BrowserRun, label: string): string | null {
+export const failure = (run: BrowserRun, label: string): string | null => {
   if (run.exitCode === 0) return null;
   const detail = (run.stderr || run.stdout || "").trim().split("\n")[0];
   return `${label} failed with exit code ${run.exitCode}${detail ? `: ${detail}` : "."}`;
-}
+};
 
 /** The text of one `WebSearch` result, or `{ reason }` when the page has no results. */
-export function pageResult(
+export const pageResult = (
   query: string,
   text: unknown,
   browser: string = PLAIN_NAME,
-): { reason: string } | { text: string } {
+): { reason: string } | { text: string } => {
   const raw = String(text ?? "");
   const page = raw.trim();
   if (!page) return { reason: "The search page had no text." };
@@ -155,7 +155,7 @@ export function pageResult(
         : []),
     ].join("\n"),
   };
-}
+};
 
 /** The `WebSearch` result record for a text. */
 export const searchResult = (

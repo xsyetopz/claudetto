@@ -1,11 +1,11 @@
 // The command `dotclaude-browser-guide`: it prints the `agent-browser` guide for the `drive-web-browser` skill.
 // It runs `agent-browser skills get core` and cuts the output at the bound of `limits.ts`.
 
-import { GUIDE_COMMAND, type GuideRun, guideText } from "./guide.ts";
-import { GUIDE_TIMEOUT_MS } from "./limits.ts";
+import { GUIDE_COMMAND, type GuideRun, guideText } from "../domain/guide.ts";
+import { GUIDE_TIMEOUT_MS } from "../limits.ts";
 
 /** Runs `cmd` with `args` and gives a `GuideRun`. A missing program gives `ENOENT`, and a timeout gives `ETIMEDOUT`. */
-function runGuide(cmd: string, args: string[]): GuideRun {
+const runGuide = (cmd: string, args: string[]): GuideRun => {
   try {
     const run = Bun.spawnSync({
       cmd: [cmd, ...args],
@@ -33,11 +33,11 @@ function runGuide(cmd: string, args: string[]): GuideRun {
           : { code, message: error.message },
     };
   }
-}
+};
 
 /** Prints the guide. Returns the exit code, which is 0 also when `agent-browser` gives no guide, because the text then tells Claude what to do. */
-export function main() {
+export const main = (_argv: readonly string[]): number => {
   const [cmd, ...args] = GUIDE_COMMAND;
   console.log(guideText(runGuide(cmd, args)));
   return 0;
-}
+};

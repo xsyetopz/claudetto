@@ -33,20 +33,14 @@ tests/dotclaude/drift.test.ts
 tests/dotclaude/setup/
 tests/dotclaude/skills.test.ts
 
-# P10: `agents`
-plugins/dotclaude/agents/
-src/plugins/dotclaude/agents/
-tests/dotclaude/agents.test.ts
-
 # P11a: `dotclaude-codegraph`
 plugins/dotclaude-codegraph/
 src/plugins/dotclaude-codegraph/
 tests/codegraph/
 
 # P11b: `dotclaude-browser`
-plugins/dotclaude-browser/
-src/plugins/dotclaude-browser/
-tests/browser/
+plugins/dotclaude-browser/evals/hooks.json
+plugins/dotclaude-browser/tsconfig.json
 
 # P12: `dotclaude-lab`
 # `tests/dotclaude/settings-pin.test.ts` and `tests/support/settings-pin.ts` use the validator of `tests/dotclaude/fixtures/`, so P12 gives them a 1.0.0 validator before it deletes that folder.

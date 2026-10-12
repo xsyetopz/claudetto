@@ -2,11 +2,6 @@
 
 import { expect, test } from "bun:test";
 import {
-  MAX_OUTPUT_CHARS,
-  SESSION_NAME_MAX,
-  SESSION_PREFIX,
-} from "../../plugins/dotclaude-browser/features/search/limits.ts";
-import {
   failure,
   pageResult,
   searchQuery,
@@ -14,7 +9,12 @@ import {
   searchUrl,
   sessionName,
   steps,
-} from "../../plugins/dotclaude-browser/features/search/search.ts";
+} from "../../plugins/dotclaude-browser/slices/search/domain/search.ts";
+import {
+  MAX_OUTPUT_CHARS,
+  SESSION_NAME_MAX,
+  SESSION_PREFIX,
+} from "../../plugins/dotclaude-browser/slices/search/limits.ts";
 
 /** The reason of a page result, or `undefined` when the page gave text. */
 const reasonOf = (page: ReturnType<typeof pageResult>) =>
