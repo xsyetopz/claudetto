@@ -20,6 +20,8 @@ That path holds the plugin version, so run setup again after each plugin update.
 A status line of another tool stays, and the project scope gets no status line, because the path is of one computer.
 When `dotclaude-docs` is installed, the merge also adds the [lines for the `dotclaude-docs` add-on](#lines-for-the-dotclaude-docs-add-on).
 Setup makes no backup, so the list of changes is the record.
+Setup writes the `autoMode` lists of the [destructive floor](Guards#the-destructive-floor) to the user scope only.
+The project and local scopes get none.
 
 Setup puts `claude-mythos-5-1` in place of `claude-fable-5-1` when your account has it.
 See [Mythos detection](Settings-Snippet-Keys#mythos-detection).

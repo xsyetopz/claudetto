@@ -90,6 +90,19 @@ The `deny` list of `Settings-Snippet` holds these groups.
 The status line entries need the absolute path of the plugin folder, because a status line command gets no `${CLAUDE_PLUGIN_ROOT}`.
 dotclaude writes no launcher stub for them.
 
+## Auto mode lists
+
+The snippet does not hold the `autoMode` lists.
+Setup writes them to the user settings, because Claude Code reads `autoMode` only from there.
+
+- `allow`: `$defaults`, and two entries for the worktree and the temp folder.
+- `soft_deny`: `$defaults`, and the `ask` rules of the catalog.
+- `hard_deny`: `$defaults`, and the `floor` and `subagent` rules of the catalog.
+- `environment`: `$defaults` only.
+
+Each list starts with `$defaults`, which takes the built-in list of Claude Code.
+The rules are in [The destructive floor](Guards#the-destructive-floor).
+
 ## Keys that the snippet does not set
 
 - `cleanupPeriodDays`: see [Retention](#retention).
