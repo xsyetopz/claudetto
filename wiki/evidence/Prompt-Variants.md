@@ -42,7 +42,8 @@ The source is `src/plugins/dotclaude/slices/prompt/domain/variants.ts`.
 
 ## Size of the first request
 
-The first request has no byte bound of its own.
+The first request has a token bound, `START_TOKENS` (9,960 tokens) in `tools/limits.ts`.
+`tools/measure.ts` passes it to `dotclaude-start` as `--bound`.
 The text of the first request, with no tool schemas, has two targets in `tools/limits.ts`.
 
 - `FIRST_REQUEST_LOW_BYTES` is 8 KB.
