@@ -48,6 +48,8 @@ It gets the highest intelligence for the lowest token cost:
   This repository uses its own rules in the same way.
 - dotclaude has a `/rules-creator` skill, based on the `skill-creator` skill of Anthropic, that is short and covers each needed area.
 - dotclaude knows each file and folder of `.claude/` and `~/.claude/`: what it does, when Claude Code reads it, and what controls it.
+- dotclaude writes its own files to `.dotclaude/`, with a layout based on `.claude/`, and keeps `.claude/` for the files that Claude Code reads.
+  A path that git must not track goes to `.gitignore` when the team shares the rule, or to `.git/info/exclude` when only the local checkout needs it.
 
 ## Scope
 
