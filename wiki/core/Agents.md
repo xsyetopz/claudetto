@@ -1,6 +1,6 @@
 # Agents
 
-dotclaude defines five agents in `plugins/dotclaude/agents/`.
+dotclaude defines six agents in `plugins/dotclaude/agents/`.
 This page lists the roster, the pins, and the rules for the files.
 The decisions are D12, D13, and D25 in [Decisions](Decisions-Router).
 
@@ -9,22 +9,30 @@ The decisions are D12, D13, and D25 in [Decisions](Decisions-Router).
 | Agent | Work | Model and effort in the file | `maxTurns` |
 | --- | --- | --- | --- |
 | `investigator` | Read-only answers from files, logs, git history, dependency data, or web pages. | Haiku 5.5 `medium` | 31 |
-| `implementer` | One scoped slice: a feature, a fix with a known cause, tests, docs, or a specified bulk change. | Haiku 5.5 `medium` | 61 |
-| `debugger` | A failure with an unknown cause, or a failed fix. | Haiku 5.5 `high` | 61 |
-| `reviewer` | Read-only review of code, security, an API, a plan, or PR comments. | Sonnet 5.5 `medium` | 41 |
-| `test-runner` | Runs checks and returns the exact failures. It has `omitClaudeMd`. | Haiku 5.5 `low` | 16 |
+| `implementer` | One scoped slice: a feature, a fix with a known cause, tests, docs, or a specified bulk change. | Sonnet 5.5 `medium` | 61 |
+| `debugger` | A failure with an unknown cause, or a failed fix. | Sonnet 5.5 `high` | 61 |
+| `planner` | Plans a change across several files before any edit, and writes only the plan. | Opus 5.5 `high` | 41 |
+| `researcher` | Answers from web pages, official docs, specifications, or vendor pages. | Sonnet 5.5 `medium` | 41 |
+| `reviewer` | Read-only review of code, security, an API, a plan, or PR comments. | Opus 5.5 `high` | 41 |
 
+- The `test-runner` agent is gone.
+  The CLI `dotclaude-run-checks` runs a batch of check commands with no model turn, and it prints the failures.
 - `web-researcher` does not exist.
-  `investigator` takes its web lookups.
+  `researcher` takes the web lookups.
 - No agent has the `Agent` tool, so no agent starts another agent.
 - Each `maxTurns` holds one spare turn for the report.
   A subagent that reaches `maxTurns` returns no report.
+- At 4 turns left, the `tool.call` hook adds a note that tells the subagent to report now.
+  The bound `TURNS_LEFT_AT` is in `slices/handoff/limits.ts`.
+- In a subagent, a git action that changes the shared checkout or the shared `refs/stash` is denied.
+  The rule is `git.shared-checkout` in `src/kernel/policy/rules/git.ts`, and it is in the `hard_deny` list of the [Guards](Guards) page.
+  `/ship` runs one `reviewer` for each package diff, and `dotclaude-spec runs` gives the number of reviewers that start at once.
 - The file is the only source of the choice.
   No router rewrites it, and a coordinator can pass `model` and `effort` in an `Agent` call ([Decisions: router and agents](Decisions-Router)).
 - Planning and orchestration stay in the main loop.
 - Fable 5.1 and Mythos 5.1 are in no file.
   They run only when the user selects them.
-- The `Explore`, `Plan`, `general-purpose`, `claude-code-guide`, and `statusline-setup` agents are off, so the listing holds only these five ([Off switches](Off-Switches#built-in-agents)).
+- The `Explore`, `Plan`, `general-purpose`, `claude-code-guide`, and `statusline-setup` agents are off, so the listing holds only these six ([Off switches](Off-Switches#built-in-agents)).
 
 ## Pins
 
@@ -36,7 +44,7 @@ The pin test in `tests/dotclaude/agents.test.ts` does these checks:
   `claude-haiku-4-5` fails the test.
 - The effort is in `SUBAGENT_EFFORTS` for that model, and it is not `max`.
   `SUBAGENT_EFFORTS` is in `features/statusline/limits.ts`, and the status line marks an effort that is not in the list.
-- The roster is these five names and no other.
+- The roster is these six names and no other.
 
 The turn bound reads `maxTurns` from the file, and `tests/dotclaude/context/turn-bound.test.ts` tests it.
 
@@ -55,7 +63,7 @@ Each body therefore repeats the rules that matter for its role:
 
 - The scope rule and the verification rule for the role.
 - The read rule: search first with `Grep`, then read the matched range with `Read` and its `offset` and `limit` ([Context bound](Context-Bound)).
-- The report bound `REPORT_MAX_WORDS` (400 words), with the value from `features/context/limits.ts`.
+- The report bound `REPORT_MAX_WORDS` (400 words), with the value from `slices/handoff/limits.ts`.
 - The keep-the-work rule and the block rule come in the `agent.spawn` block, and not in the body ([System prompt](System-Prompt#evidence-before-undoing-finished-work)).
 - What to do when a check fails: `debugger` and `implementer` fix the code or report the failure with the evidence.
   They do not raise a bound, weaken or skip a test, or edit a check, a config, or a hook unless the brief says that the user asked.

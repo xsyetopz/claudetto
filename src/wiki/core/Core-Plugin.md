@@ -1,7 +1,7 @@
 # Core plugin: `dotclaude`
 
 The core plugin `dotclaude` is the base of the marketplace.
-It uses only documented extension points of Claude Code: a forced output style, five agents, one skill, one hooks module, a few classic hooks, and a status line command.
+It uses only documented extension points of Claude Code: a forced output style, six agents, one skill, one hooks module, a few classic hooks, and a status line command.
 It sets no Claude Code setting, because a plugin cannot set permissions, environment variables, or models.
 The [settings snippet](Settings-Snippet) gives those keys, and you copy them.
 This page is the reference.
@@ -11,7 +11,7 @@ The other plugins work without it.
 
 - Forces the output style `dotclaude` (`force-for-plugin: true`), which holds the role, the tone, and the format.
   The module replaces the long system prompt with the shared sections and a prompt variant for each model ([System prompt](System-Prompt)).
-- Gives five agents with a model, an effort, and a turn limit each ([Agents](Agents)).
+- Gives six agents with a model, an effort, and a turn limit each ([Agents](Agents)).
 - Asks before the first contact with a repository of another owner that has an AI policy file ([Contributions](Contributions)).
 - Checks work with hooks that use no model call: git asks and edit asks ([Hooks](Hooks)).
 - Tells a subagent to report before its context or turn bound ([Context bound](Context-Bound)).
@@ -57,7 +57,11 @@ dotclaude ships no skill from another author.
 | `implementer` | One scoped slice of work. |
 | `debugger` | A failure with an unknown cause. |
 | `reviewer` | Read-only review. |
-| `test-runner` | Runs checks and returns the exact failures. |
+| `planner` | Plans a change across several files before any edit, and writes only the plan. |
+| `researcher` | Answers from web pages, official docs, and specifications. |
+
+The CLI `dotclaude-run-checks` replaces the `test-runner` agent.
+It runs a batch of check commands with no model turn, and it prints the failures.
 
 The frontmatter of `agents/*.md` is the only source of the model, effort, and `maxTurns` of each agent.
 See [Agents](Agents) for the table with the values and the pin tests.
@@ -129,11 +133,11 @@ Each bound is in one file, and tests pin the copies.
 | `bashOutputMaxChars` | {{BASH_OUTPUT_MAX_CHARS}} characters | `lib/budget.ts` |
 | Policy `gh` call | {{POLICY_TIMEOUT_MS}} ms | `lib/budget.ts` (`POLICY_TIMEOUT_MS`) |
 | Policy text in the ask | {{POLICY_FILE_MAX_CHARS}} characters | `lib/budget.ts` (`POLICY_FILE_MAX_CHARS`) |
-| Subagent context | {{SUBAGENT_CONTEXT_MAX}} tokens, and {{HAIKU_CONTEXT_MAX}} for Haiku 5.5 | `features/context/limits.ts` |
-| Subagent turns left at the note | {{TURNS_LEFT_AT}} | `features/context/limits.ts` (`TURNS_LEFT_AT`) |
-| Subagent report | {{REPORT_MAX_WORDS}} words | `features/context/limits.ts` (`REPORT_MAX_WORDS`) |
-| File lists of the asks for configs, CI files, skipped tests, and suppressions | Data in `features/adherence/limits.ts` | `features/adherence/limits.ts` |
-| File size that `adherence` reads | {{FILE_MAX_BYTES}} bytes | `features/adherence/limits.ts` |
+| Subagent context | {{SUBAGENT_CONTEXT_MAX}} tokens, and {{HAIKU_CONTEXT_MAX}} for Haiku 5.5 | `slices/handoff/limits.ts` |
+| Subagent turns left at the note | {{TURNS_LEFT_AT}} | `slices/handoff/limits.ts` (`TURNS_LEFT_AT`) |
+| Subagent report | {{REPORT_MAX_WORDS}} words | `slices/handoff/limits.ts` (`REPORT_MAX_WORDS`) |
+| File lists of the asks for configs, CI files, skipped tests, and suppressions | Data in `slices/asks/limits.ts` | `slices/asks/limits.ts` |
+| File size that `adherence` reads | {{FILE_MAX_BYTES}} bytes | `slices/asks/limits.ts` |
 | Rows of the status line | {{MAX_ROWS}} | `slices/statusline/limits.ts` |
 
 The size of the first request is bound in `tools/limits.ts` (`FIRST_REQUEST_LOW_BYTES` to `FIRST_REQUEST_HIGH_BYTES`), and the [Plugin layout](Plugin-Layout#bound-tiers) page explains the tiers.

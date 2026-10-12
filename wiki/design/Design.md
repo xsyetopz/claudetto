@@ -119,7 +119,7 @@ A bare `bun` start takes 5 ms.
 
 | Scenario | Bound | Mechanism | Check |
 | --- | --- | --- | --- |
-| A subagent works a long task | `maxTurns` in the agent file: 16 for `test-runner`, 31 for `investigator`, 41 for `reviewer`, and 61 for `implementer` and `debugger` | Claude Code ends the agent at the limit | `tests/dotclaude/` |
+| A subagent works a long task | `maxTurns` in the agent file: 31 for `investigator`, 41 for `planner`, `researcher`, and `reviewer`, and 61 for `implementer` and `debugger` | Claude Code ends the agent at the limit | `tests/dotclaude/` |
 | A subagent model and effort | The efforts in `SUBAGENT_EFFORTS` for each model, in `features/statusline/limits.ts` | The `model` and `effort` of each agent file | `tests/dotclaude/` |
 | The main conversation grows | A 300K window and no compaction | `CLAUDE_CODE_MAX_CONTEXT_TOKENS`, `DISABLE_COMPACT`, and `autoCompactEnabled:false` in the snippet | `tests/dotclaude/` |
 | A repo of another owner with an AI policy | An ask | `tool.check` in `hooks/register.ts` | `plugins/dotclaude/tests/mod.test.ts` |

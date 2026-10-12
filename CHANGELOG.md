@@ -19,6 +19,9 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   A `tool.call` hook adds a report-now note to a subagent that nears its context bound or its `maxTurns`.
   The `turn.complete` hook runs the resume only after an `answer` turn, waits at most `HANDOFF_WAIT_TURNS` turns for the file, submits the write prompt once more, and then gives the `manual` hint.
   A `dotclaude-spec merge` also counts as a package that is done, and quoted text does not.
+  On one session, a handoff against a compaction of the same session cost $0.0630 against $0.2288, took 9.1 s against 23.2 s, and left 18,487 tokens of context against 28,418.
+  Each side is one run.
+  The measurement is in `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.
 - The `dotclaude-spec` commands `ready` and `merge` do two steps of `/ship` with no model call.
   `ready <id>` prints the packages that can start, with no overlap of `owns` between them, and `merge <package> <branch>` needs the package in `review`, commits the lane files, merges the branch, runs `just generate`, sets the lane `done`, and commits `plugins/` with the lane files.
   `lane` also sets the checkbox of the package line in `packages.md`, `validate` reports a checkbox that does not agree with the lane, and `record` writes the empty sections of a hotfix record.
@@ -35,6 +38,21 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The workflow `claude.yml` answers an `@claude` mention with `anthropics/claude-code-action`.
 - The workflow `eval-new-claude-code.yml` runs `just eval` one time for each release of `anthropics/claude-code` that is higher than the version of `ci.yml`.
   Both workflows need the secret `CLAUDE_CODE_OAUTH_TOKEN`, and they skip when it is empty.
+- The `handoff` slice gives a subagent a report note at 4 turns left.
+  The note tells the subagent to commit its work first, and then to report.
+  In a subagent, the `guard` hook denies a git command that changes the shared checkout or `refs/stash` (`git.shared-checkout`).
+- The `/ship` command runs one `reviewer` on the diff of each package, with no implementer report.
+  Each wave starts with `dotclaude-spec runs`.
+  It counts the runs against the tier cap that `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` sets, and against the `five_hour` and `seven_day` windows.
+  The status line writes `.dotclaude/rate-limits.json` atomically.
+- The `dotclaude-setup settings --apply` command writes `autoMode.hard_deny` rules to the user settings only.
+  The rules come from the catalog in `src/kernel/policy/`, and `$defaults` stays in place.
+  The command puts `system.privilege` in `soft_deny`.
+- The `guard` hook denies the literal destructive forms of git, the system, and the disk in every session.
+  A stopped agent stops, and it asks the user to run the exact command with `!`.
+- The shared prompt names `dotclaude-run-checks`, and it tells the agent to quote each command.
+  The CLI exits 2 when an argument starts with `-`.
+  The summary of a passing command shows its output when the output has at most 10 lines.
 
 ### Changed
 

@@ -38,11 +38,12 @@ It changes no Claude Code setting, and it shows each step before it runs.
 | Window | `CLAUDE_CODE_MAX_CONTEXT_TOKENS=300000` and `CLAUDE_CODE_AUTO_COMPACT_WINDOW=300000`. At the limit the session stops, and you run `/clear`. |
 | No auto memory | `autoMemoryEnabled: false`. OpenSpec holds the state. |
 | System prompt | `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1` and the forced `dotclaude` output style, which replaces the built-in coding instructions. |
-| Permissions | Deny secret reads and disk wipes. Ask before force pushes, history rewrites, recursive `rm`, piped shells, `sudo`, publishes, public `gh` writes, and SQL drops. Allow read-only git and the usual build and test commands. |
+| Permissions | Normal work passes. `sudo`-like work asks (`soft_deny`). Destructive actions on a database, the system, git, cloud resources, or backups are forbidden always (`hard_deny`), and the `guard` hook denies the literal forms. Deny secret reads. The `asks` hook asks only when a change weakens a check. |
 | Sandbox | Bash runs in the sandbox, with network access only to GitHub and the package registries. |
 | Guard | One hooks module asks before the first call to a GitHub repository of another owner with an AI policy. |
 | Status line | Model, effort, context against the window (yellow at 75%, red at 90%), the 5-hour limit, and the active OpenSpec change with its task count. |
-| Agents | `investigator`, `implementer`, `debugger`, `reviewer`, `test-runner`. |
+| Agents | `investigator`, `implementer`, `debugger`, `reviewer`, `planner`, `researcher`. |
+| Checks | The CLI `dotclaude-run-checks` runs a batch of check commands with no model turn, in place of the `test-runner` agent. |
 | Skills | `/dotclaude:setup`. |
 
 The plugin has no options.
@@ -52,9 +53,9 @@ To drop a part, leave its key out of your `settings.json`.
 
 | Model | Roles | Effort |
 | --- | --- | --- |
-| Opus 5.5 | main session | the default of the model |
-| Sonnet 5.5 | `reviewer` | `medium` |
-| Haiku 5.5 | `investigator`, `implementer`, `debugger`, `test-runner` | `medium`, `debugger` `high`, `test-runner` `low` |
+| Opus 5.5 | main session, `planner`, `reviewer` | the default of the model, `high` for the two agents |
+| Sonnet 5.5 | `researcher`, `implementer`, `debugger` | `medium`, `debugger` `high` |
+| Haiku 5.5 | `investigator` | `medium` |
 
 The settings snippet sets no effort level, so each model keeps its default.
 `maxEffortLevel` is `max`, so `/effort` can go up to `max` for a hard check.
