@@ -1,23 +1,13 @@
-// The runtime paths of `.claude/` that Claude Code writes in a project, and the lines that keep them out of git.
+// The runtime paths of `.claude/` and `.dotclaude/` that git must not track, and the lines that keep them out of git.
 // The lines go to `.git/info/exclude`, so the project `.gitignore` stays as it is.
+
+import { GIT_EXCLUDE_PATTERNS } from "../../../../../kernel/paths.ts";
 
 /** The comment line above the lines that setup adds. */
 export const EXCLUDE_HEADER = "# dotclaude-runtime";
 
-/** The patterns of the runtime paths. Claude Code 2.1.296 writes the first 10 itself, and `settings.local.json` is a local file. */
-export const RUNTIME_PATTERNS = [
-  "**/.claude/scheduled_tasks.lock",
-  "**/.claude/scheduled_tasks.json",
-  "**/.claude/routines/.state/",
-  "**/.claude/worktrees/",
-  "**/.claude/checkpoints/",
-  "**/.claude/mailbox/",
-  "**/.claude/agent-registry.json",
-  "**/.claude/agent-memory-local",
-  "**/.claude/first-run",
-  "**/.claude/assistant-daemon-state.json",
-  "**/.claude/settings.local.json",
-] as const;
+/** The patterns of the runtime paths. Claude Code 2.1.296 writes most of the `.claude/` ones itself, and `.dotclaude/handoff/` is a local file of dotclaude. */
+export const RUNTIME_PATTERNS = GIT_EXCLUDE_PATTERNS;
 
 /** The path of a pattern that `git check-ignore` can test: the pattern without its `**` and `/` start. */
 export const samplePath = (pattern: string): string =>

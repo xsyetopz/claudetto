@@ -6,7 +6,7 @@
 //   dotclaude-setup drift [--scope user|project|local]
 //
 // `settings` and `addons` write nothing without `--apply`.
-// Each other run adds the runtime paths of `.claude/` to `.git/info/exclude` in a git repository.
+// Each other run adds the runtime paths of `.claude/` and `.dotclaude/` to `.git/info/exclude` in a git repository.
 
 import { addonsCommand } from "./addons-cmd.ts";
 import { driftCommand } from "./drift-cmd.ts";

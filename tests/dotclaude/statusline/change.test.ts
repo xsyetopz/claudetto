@@ -17,7 +17,7 @@ const project = async (
   const root = path.join(dir, name);
   fs.mkdirSync(root, { recursive: true });
   for (const [id, state] of Object.entries(changes)) {
-    const folder = path.join(root, "spec", "changes", id);
+    const folder = path.join(root, ".dotclaude", "spec", "changes", id);
     fs.mkdirSync(folder, { recursive: true });
     await Bun.write(path.join(folder, "state.json"), JSON.stringify(state));
   }

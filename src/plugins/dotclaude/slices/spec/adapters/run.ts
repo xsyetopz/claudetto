@@ -1,7 +1,8 @@
 // The context that each command of `dotclaude-spec` takes, and the choice of the change.
 
 import path from "node:path";
-import { activeProgress, SPEC_ROOT } from "../../../../../kernel/spec-store.ts";
+import { SPEC_ROOT } from "../../../../../kernel/paths.ts";
+import { activeProgress } from "../../../../../kernel/spec-store.ts";
 import type { Clock, Io } from "./io.ts";
 import type { SpecStore } from "./store.ts";
 

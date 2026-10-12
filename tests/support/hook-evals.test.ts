@@ -1,4 +1,4 @@
-// Each hook of each plugin has its eval cases (spec `hook-evals`, the "Generated tree" section of `spec/changes/1.0.0/design.md`).
+// Each hook of each plugin has its eval cases (spec `hook-evals`, the "Generated tree" section of `.dotclaude/spec/changes/1.0.0/design.md`).
 // The rules are in `hook-evals.ts`, and the fixtures work in their own folder under `TMPDIR`.
 
 import { expect, test } from "bun:test";

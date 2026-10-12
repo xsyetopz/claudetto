@@ -21,6 +21,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { CAPTURE_TEMP } from "../../../../../kernel/temp-paths.ts";
 import { sizeRequest, sizingLines } from "../domain/report.ts";
 import type { Body } from "../domain/types.ts";
 import { resolveUpstream } from "../domain/upstream.ts";
@@ -77,7 +78,7 @@ export const main = async (
   const port = Number(flag("--port", "8787"));
   const out = flag(
     "--out",
-    path.join(env["TMPDIR"] || os.tmpdir(), "dotclaude-capture"),
+    path.join(env["TMPDIR"] || os.tmpdir(), CAPTURE_TEMP),
   ) as string;
   const baseUrl = env["ANTHROPIC_BASE_URL"];
   let upstream: string;

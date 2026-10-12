@@ -7,28 +7,32 @@ test("new trivial writes only change.md with a task", async () => {
   const root = await makeStore();
   const r = await run(root, "new", "fix-typo", "--size", "trivial");
   expect(r.code).toBe(0);
-  expect(await read(root, "spec/changes/fix-typo/change.md")).toContain(
-    "# fix-typo",
-  );
-  expect(has(root, "spec/changes/fix-typo/specs")).toBe(false);
-  expect(has(root, "spec/changes/fix-typo/state.json")).toBe(false);
+  expect(
+    await read(root, ".dotclaude/spec/changes/fix-typo/change.md"),
+  ).toContain("# fix-typo");
+  expect(has(root, ".dotclaude/spec/changes/fix-typo/specs")).toBe(false);
+  expect(has(root, ".dotclaude/spec/changes/fix-typo/state.json")).toBe(false);
 });
 
 test("new medium is the default and writes a delta file", async () => {
   const root = await makeStore();
   expect((await run(root, "new", "add-x")).code).toBe(0);
-  expect(has(root, "spec/changes/add-x/change.md")).toBe(true);
-  expect(has(root, "spec/changes/add-x/specs/capability.md")).toBe(true);
-  expect(has(root, "spec/changes/add-x/design.md")).toBe(false);
+  expect(has(root, ".dotclaude/spec/changes/add-x/change.md")).toBe(true);
+  expect(has(root, ".dotclaude/spec/changes/add-x/specs/capability.md")).toBe(
+    true,
+  );
+  expect(has(root, ".dotclaude/spec/changes/add-x/design.md")).toBe(false);
 });
 
 test("new large writes design, packages, and a state with one planned package", async () => {
   const root = await makeStore();
   expect((await run(root, "new", "big", "--size", "large")).code).toBe(0);
   for (const f of ["design.md", "packages.md", "packages/01-first.md"]) {
-    expect(has(root, `spec/changes/big/${f}`)).toBe(true);
+    expect(has(root, `.dotclaude/spec/changes/big/${f}`)).toBe(true);
   }
-  const state = JSON.parse(await read(root, "spec/changes/big/state.json"));
+  const state = JSON.parse(
+    await read(root, ".dotclaude/spec/changes/big/state.json"),
+  );
   expect(state).toStrictEqual({
     schema: 1,
     lanes: { P01: "planned" },
@@ -59,7 +63,7 @@ test("new stops on an existing change, a bad size, a bad id, and a missing id", 
   expect((await run(root, "new", "../x")).code).toBe(2);
   expect((await run(root, "new", "archive")).code).toBe(2);
   expect((await run(root, "new")).code).toBe(2);
-  expect(has(root, "spec/changes/c2")).toBe(false);
+  expect(has(root, ".dotclaude/spec/changes/c2")).toBe(false);
 });
 
 test("record writes a dated file and keeps a second record of the same text", async () => {
@@ -67,9 +71,11 @@ test("record writes a dated file and keeps a second record of the same text", as
   const first = await run(root, "record", "Fix the $& crash");
   const second = await run(root, "record", "Fix the $& crash");
   expect(first.code).toBe(0);
-  expect(first.out).toStrictEqual([`spec/hotfixes/${TODAY}-fix-the-crash.md`]);
+  expect(first.out).toStrictEqual([
+    `.dotclaude/spec/hotfixes/${TODAY}-fix-the-crash.md`,
+  ]);
   expect(second.out).toStrictEqual([
-    `spec/hotfixes/${TODAY}-fix-the-crash-2.md`,
+    `.dotclaude/spec/hotfixes/${TODAY}-fix-the-crash-2.md`,
   ]);
   expect(await read(root, first.out[0] ?? "")).toContain(
     "# Hotfix: Fix the $& crash",
@@ -79,7 +85,7 @@ test("record writes a dated file and keeps a second record of the same text", as
 test("record stops with no text", async () => {
   const root = await makeStore();
   expect((await run(root, "record")).code).toBe(2);
-  expect(has(root, "spec/hotfixes")).toBe(false);
+  expect(has(root, ".dotclaude/spec/hotfixes")).toBe(false);
 });
 
 test("an unknown command stops with the usage", async () => {

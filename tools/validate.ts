@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // Validates the marketplace and each plugin with `claude plugin validate --strict`,
 // and fails when a repository file is over its line bound.
-// The bounds and the rule are in `spec/changes/1.0.0/design.md`, "Tests and checks".
+// The bounds and the rule are in `.dotclaude/spec/changes/1.0.0/design.md`, "Tests and checks".
 //
 //   bun tools/validate.ts   exit 0 when each manifest, skill, and agent is valid,
 //                           and each file is within its line bound

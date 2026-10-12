@@ -1,5 +1,5 @@
 // Fixtures of the Markdown formats of the spec store: one text for each format.
-// The texts follow the shape of the real files of `spec/changes/1.0.0/`.
+// The texts follow the shape of the real files of `.dotclaude/spec/changes/1.0.0/`.
 
 export const SPEC_TEXT = `# Kernel Specification
 
@@ -82,7 +82,7 @@ Write the pure domain code.
 
 ## Context
 
-- The formats: \`spec/changes/1.0.0/workflow.md:3-43\`.
+- The formats: \`.dotclaude/spec/changes/1.0.0/workflow.md:3-43\`.
 
 ## Steps
 

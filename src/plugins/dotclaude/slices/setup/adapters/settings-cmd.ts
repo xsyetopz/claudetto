@@ -9,6 +9,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import * as paths from "../../../../../kernel/paths.ts";
 import { MYTHOS } from "../domain/merge.ts";
 import { hasDocsAddon, planSettings } from "../domain/settings.ts";
 import { picksOf } from "../domain/tiers.ts";
@@ -39,7 +40,7 @@ export const settingsCommand = async (
     return 2;
   }
   const withDocs = hasDocsAddon(
-    await readOptional(path.join(configDir, "settings.json")),
+    await readOptional(path.join(configDir, paths.SETTINGS_FILE)),
     await readOptional(
       path.join(configDir, "plugins", "installed_plugins.json"),
     ),
@@ -47,8 +48,8 @@ export const settingsCommand = async (
   // Claude Code keeps `.claude.json` in `CLAUDE_CONFIG_DIR` when it is set, and in the home folder otherwise.
   const account = await readOptional(
     env["CLAUDE_CONFIG_DIR"]
-      ? path.join(configDir, ".claude.json")
-      : path.join(os.homedir(), ".claude.json"),
+      ? path.join(configDir, paths.CLAUDE_STATE_FILE)
+      : path.join(os.homedir(), paths.CLAUDE_STATE_FILE),
   );
   const mythos = await mythosInCatalog(
     path.join(configDir, "cache", "model-catalog"),
