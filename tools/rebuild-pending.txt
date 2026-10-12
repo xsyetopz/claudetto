@@ -10,7 +10,6 @@ tests/dotclaude/fixtures/
 tests/dotclaude/import-rules.test.ts
 tests/dotclaude/imports.test.ts
 tests/dotclaude/settings-pin.test.ts
-tests/support/verdicts.ts
 
 # P04: the release scripts of `/ship`
 tools/bump-version.ts
@@ -99,6 +98,7 @@ tests/dotclaude/eval-graders.test.ts
 tests/dotclaude/hooks/
 tests/dotclaude/lib/
 tests/dotclaude/paths.test.ts
+tests/support/verdicts.ts
 tests/support/lib-feature-imports.ts
 
 # P15: the wiki
