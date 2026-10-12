@@ -1,6 +1,6 @@
 ---
 id: P15
-deps: [P14]
+deps: [P14, P33, P35, P36]
 owns: ["wiki/Attributions.md", "wiki/Home.md", "wiki/Install.md", "wiki/Quickstart.md", "wiki/Troubleshooting.md", "wiki/_Footer.md", "wiki/_Sidebar.md", "wiki/changelog/", "wiki/core/", "wiki/design/", "wiki/development/", "wiki/evals/", "wiki/plugins/", "wiki/settings/", "README.md", "CHANGELOG.md", "docs/", "tools/wiki.ts"]
 verify: bun run lint:md
 agent: implementer
