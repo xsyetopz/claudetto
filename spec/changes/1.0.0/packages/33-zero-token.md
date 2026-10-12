@@ -1,6 +1,6 @@
 ---
 id: P33
-deps: [P19, P28]
+deps: [P19, P28, P34]
 owns: ["spec/changes/1.0.0/evidence/zero-token.md"]
 verify: just check
 agent: implementer
