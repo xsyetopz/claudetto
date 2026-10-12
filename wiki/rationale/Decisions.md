@@ -40,7 +40,7 @@ Each row gives the number, the title, and the page with the detail.
 | D32 | Usage awareness, removed by D35 | [Context bound](Context-And-Handoff) |
 | D33 | Three-column status line | [Status line](Status-Line) |
 | D34 | Adherence by checks in code, with no new judge (now the `asks` slice) | [Core plugin](Architecture) |
-| D35 | No proprietary formats | [Settings](Decisions-Settings#d35-no-proprietary-formats) |
+| D35 | No proprietary formats | [Reversed](Decisions-Reversed#settings) |
 
 The source of each decision was the design of the 0.28.0 change, in the OpenSpec flow of that release.
 The spec store (D11) replaced that flow, so the change folder is no longer in the repository.
