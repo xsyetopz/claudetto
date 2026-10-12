@@ -48,6 +48,13 @@
     "allow": "plugins/dotclaude/tests/drift.test.ts > no drift adds no text",
     "text": "plugins/dotclaude/tests/drift.test.ts > a settings file without the snippet names the missing values and the setup skill"
   },
+  "session.start stamp": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/stamp.test.ts > a stamp that cannot read the manifest writes no notice and the session starts",
+    "text": "plugins/dotclaude/tests/stamp.test.ts > a session with an install entry for its root records the entry's SHA"
+  },
   "skill.prompt handoff": {
     "requests": 0,
     "tokens": 0,
