@@ -35,6 +35,11 @@ ci: lint test validate lab
 sandbox *args:
     bun tools/sandbox.ts "$@"
 
+# Run Claude Code with only the plugin folder PLUGIN, in a new sandbox config with no settings, apart from `just sandbox`; extra arguments go to claude (-p "prompt")
+sandbox-alone plugin *args:
+    bun plugins/dotclaude-lab/bin/dotclaude-sandbox --dir /tmp/dotclaude-sandbox-alone --clean
+    bun plugins/dotclaude-lab/bin/dotclaude-sandbox --dir /tmp/dotclaude-sandbox-alone --plugin-dir "$@"
+
 # Remove the sandbox config and project
 sandbox-clean:
     bun plugins/dotclaude-lab/bin/dotclaude-sandbox --clean
