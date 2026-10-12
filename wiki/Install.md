@@ -25,7 +25,7 @@ The `second_opinion` tool is the exception: its CLI runs on Bun, which must be o
 On a machine with managed settings, or with a Team or Enterprise login, the built-in guard `sec-default` loads.
 It skips the shared sections and the model variants (`prompt.compose`), and the `context_management` text (`prompt.section`), of dotclaude.
 The other parts work.
-See [Claude mods](Claude-Mods#the-built-in-guard-sec-default).
+See [Request build](Request-Build#the-built-in-guard-sec-default).
 
 ## Install the core plugin
 

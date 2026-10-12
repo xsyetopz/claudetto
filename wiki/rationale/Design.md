@@ -106,7 +106,7 @@ It cut the working rules from 8.4 KB to 5.1 KB.
 ### One module for the tool hooks
 
 0.27.0 loads `plugins/dotclaude/hooks/register.mjs` as a hooks module.
-The module registers several events, and `hooks.json` also has classic hooks on `PreToolUse`, `PostToolUse`, and `Stop` ([Claude mods](Claude-Mods), [Hook events](Hook-Events)).
+The module registers several events, and `hooks.json` also has classic hooks on `PreToolUse`, `PostToolUse`, and `Stop` ([Claude mods](Request-Build), [Hook events](Hook-Events)).
 The pure rules are in `features/guard/rules.ts`, and the lab in `plugins/dotclaude/tests/mod.test.ts` runs the module with stubs.
 
 0.22 to 0.26 had a larger module and two classic hooks.

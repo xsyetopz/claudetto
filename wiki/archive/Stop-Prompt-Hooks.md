@@ -135,5 +135,5 @@ The sources are `Stop.prompt.txt`, `hooks.json`, and the `CHANGELOG.md` entry of
 
 ## Related pages
 
-- [Claude mods](Claude-Mods)
+- [Request build](Request-Build)
 - [Design](Design)

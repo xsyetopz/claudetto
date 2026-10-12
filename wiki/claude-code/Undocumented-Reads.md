@@ -153,4 +153,4 @@ The lab tests in `plugins/dotclaude/tests/surface.test.ts` run the handlers with
 - [Core plugin](Architecture)
 - [Hooks](Hook-Events)
 - [Troubleshooting](Troubleshooting)
-- [Claude mods](Claude-Mods)
+- [Request build](Request-Build)
