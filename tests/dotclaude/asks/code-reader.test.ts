@@ -1,13 +1,13 @@
-// The reader of code in any language in `lib/code.ts`, with code as strings.
+// The reader of code in any language in `domain/code.ts`, with code as strings.
 // No command runs.
 
 import { expect, test } from "bun:test";
-import { CODE_COMMAND_MAX_WORDS } from "../../../plugins/dotclaude/lib/budget.ts";
+import { CODE_COMMAND_MAX_WORDS } from "../../../src/kernel/budget.ts";
 import {
   codeCommands,
   codeWords,
-} from "../../../plugins/dotclaude/lib/code.ts";
-import { parse } from "../../../plugins/dotclaude/lib/shell.ts";
+} from "../../../src/plugins/dotclaude/slices/asks/domain/code.ts";
+import { parse } from "../../../src/kernel/shell.ts";
 
 const has = (text: string, cmd: string) =>
   codeCommands(text).some((c) => c.join(" ").startsWith(cmd));
