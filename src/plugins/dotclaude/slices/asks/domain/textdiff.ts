@@ -13,9 +13,9 @@ import {
   MAXIMUM_KEY,
   THRESHOLD_KEY,
   WEAKENING_LINE,
-} from "../../limits.ts";
-import { missing, uncommented } from "../scan.ts";
-import { shown } from "../shown.ts";
+} from "../limits.ts";
+import { missing, uncommented } from "./scan.ts";
+import { shown } from "./shown.ts";
 
 /** One line of a config: the trimmed text and the text of the line above it that opens its list. */
 type Line = { text: string; above: string };

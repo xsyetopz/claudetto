@@ -11,11 +11,17 @@ import {
   PERMISSION_DENY_KEYS,
   STRICT_MODES,
   WEAKENING_LINE,
-} from "../../limits.ts";
-import { missing, uncommented } from "../scan.ts";
-import { shown } from "../shown.ts";
-import { isObj, jsonWeaker, type Obj, readJson, UNREADABLE } from "./json.ts";
-import { textWeaker } from "./text.ts";
+} from "../limits.ts";
+import {
+  isObj,
+  jsonWeaker,
+  type Obj,
+  readJson,
+  UNREADABLE,
+} from "./jsondiff.ts";
+import { missing, uncommented } from "./scan.ts";
+import { shown } from "./shown.ts";
+import { textWeaker } from "./textdiff.ts";
 
 /** One hook of a hooks value: the event, the matcher, and the command (or the JSON text of a hook with no command). */
 type Hook = { event: string; matcher: string; command: string };

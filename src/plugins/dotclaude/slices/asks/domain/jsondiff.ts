@@ -11,7 +11,7 @@ import {
   LEVEL_RANK,
   MAXIMUM_KEY,
   THRESHOLD_KEY,
-} from "../../limits.ts";
+} from "../limits.ts";
 
 /** What a function gives when the text has a format that it cannot read. */
 export const UNREADABLE = "The check cannot read the format of this change.";
