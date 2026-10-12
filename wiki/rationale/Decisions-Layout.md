@@ -28,7 +28,7 @@ Evidence:
 - `plugins/dotclaude/hooks/register.ts`, for the relative imports and the literal event names.
 - `tests/dotclaude/imports.test.ts` and `tests/support/import-rules.ts`, which check the import rules over `plugins/`.
 - `.claude/rules/hooks-module.md`, which forbids a `node:` or `bun:` import in the hooks module.
-- The tree and the module graph are in [Plugin layout](Plugin-Layout#the-core-plugin-tree).
+- The tree and the module graph are in [Plugin layout](Plugin-Layout).
 
 ## D18 Separation of concerns, size bounds, and bound tiers
 
@@ -84,7 +84,7 @@ Evidence:
 
 - `.claude-plugin/marketplace.json` lists six plugins, and it does not list the modder plugin.
 - `plugins/` holds no `dotclaude-modder` folder.
-- The wiki names the removal in [Plugin layout](Plugin-Layout#modder-removed).
+- The wiki names the removal in [Plugin layout](Plugin-Layout).
   The README, `CLAUDE.md`, and `CHANGELOG.md` do not name the removal.
 
 ## D23 Development frictions
