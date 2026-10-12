@@ -42,7 +42,7 @@ const stub = (on: On, seen: string[], answer: string | null): void => {
 
 test("with no key, the tool answers with the text of the fallback model", async ($: Engine, on: On) => {
   const seen: string[] = [];
-  stub(on, seen, "yes");
+  stub(on, seen, '{"choice":"yes","confidence":0.8,"reason":"cheap"}');
   const { result } = await $.tool.call({
     tool: "mcp__dotclaude__second_opinion",
     question: "Use the cache?",
