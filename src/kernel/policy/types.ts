@@ -1,0 +1,18 @@
+// The rule catalog of the destructive floor: each rule has an id, a tier, a category, and the prose that the classifier reads.
+// The `setup` and `guard` slices read the catalog from here, because a slice imports only `src/kernel/` and its own folder.
+// The file holds types only, so every reader can import it.
+
+/**
+ * `floor` goes to `hard_deny`, forbidden always.
+ * `ask` goes to `soft_deny`, which needs the user for an action that is risky but recoverable.
+ * `subagent` goes to `hard_deny` with prose that applies in a subagent only.
+ */
+export type Tier = "floor" | "ask" | "subagent";
+
+/** One rule of the catalog. The `id` is unique, and the hook run keys its matchers by it. */
+export interface PolicyRule {
+  readonly id: string;
+  readonly tier: Tier;
+  readonly category: string;
+  readonly prose: string;
+}

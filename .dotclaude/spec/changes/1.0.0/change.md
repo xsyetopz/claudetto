@@ -42,6 +42,15 @@ It gets the highest intelligence for the lowest token cost:
   Pro is the baseline, and Max 5x, Max 20x, and API-key accounts scale from it, with the same features: for example, more parallel subagents and better model and effort picks.
 - The auto mode classifier allows each safe command, and the removal of Claude Code worktrees and Claude Code temp folders is safe.
   A command that leaks env vars or secrets, and each dangerous or destructive system, `git`, or tooling command, goes to ask or deny.
+- The user narrows the native auto mode classifier, permission system, and sandbox, in the way of macOS (the user, 2026-10-12).
+  Normal work passes with no prompt.
+  Risky but recoverable work needs the user, like `sudo`.
+  Each destructive action on a database, the system, `git`, or anything else is forbidden, also when the user asks for it, like SIP and AMFI.
+  The user can still run such a command with a `!` command.
+  The `autoMode.hard_deny` list holds the forbidden actions, and the classifier reads `autoMode` only from the user settings.
+- When the destructive floor stops an action, the agent does not try another way.
+  It stops that work and asks the user to run the exact command with a `!` command, then waits.
+  A subagent stops and puts the exact command in its report, and the main session gives it to the user (the user, 2026-10-13).
 - dotclaude uses the garbage collection of Claude Code.
 - dotclaude uses the worktrees of Claude Code, such as `isolation: worktree`, `EnterWorktree`, `ExitWorktree`, `--worktree`, and the `worktree` settings, and makes no worktree of its own with `git worktree add`.
 - dotclaude uses `.claude/rules/`: a rule with `paths:` loads only when Claude works with a matching file, so it replaces runtime code and `CLAUDE.md` text that applies to some files only.

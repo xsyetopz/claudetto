@@ -1,0 +1,23 @@
+// The rule catalog of the destructive floor, in one list.
+// A new category is a new file in `rules/` and one line here, and a new rule is one entry in its file.
+
+import { BACKUP_RULES } from "./rules/backups.ts";
+import { CLOUD_RULES } from "./rules/cloud.ts";
+import { DATABASE_RULES } from "./rules/database.ts";
+import { GIT_RULES } from "./rules/git.ts";
+import { SYSTEM_RULES } from "./rules/system.ts";
+import type { PolicyRule, Tier } from "./types.ts";
+
+export type { PolicyRule, Tier } from "./types.ts";
+
+export const POLICY_RULES: readonly PolicyRule[] = [
+  ...GIT_RULES,
+  ...SYSTEM_RULES,
+  ...DATABASE_RULES,
+  ...CLOUD_RULES,
+  ...BACKUP_RULES,
+];
+
+/** The prose of each rule of `tier`, in catalog order. */
+export const prosesOf = (tier: Tier): string[] =>
+  POLICY_RULES.filter((rule) => rule.tier === tier).map((rule) => rule.prose);
