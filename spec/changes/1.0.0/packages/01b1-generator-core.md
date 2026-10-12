@@ -36,7 +36,7 @@ This package ports no slice: P01b2 ports `prompt`, P01b3 adds the snippet, and P
    Run `claude plugin validate --strict` on it.
    When `validate` rejects it, stop, report the full output, and change nothing in the repository.
 2. Move `tools/generate.ts` into `tools/generate/`, with no change of behavior: `index.ts` runs the command, and `emit/texts.ts` holds the text output of 0.28.0.
-   Change the `generate` recipe of `justfile` to the new path.
+   Change the `generate` recipe of `justfile` to the new path, and the import of `isGenerated` in `tests/support/file-size.test.ts:8` to the new module.
 3. Write `discover.ts` (each `src/plugins/<plugin>/slices/*/slice.ts`), `order.ts` (sort by phase, then by slice name, and fail on two handlers of one slice with the same event, filter, and phase), `closure.ts` (copy the closure of the `src/kernel/` modules that a plugin imports to `plugins/<plugin>/kernel/`, and change each import path in the copies of the slices), `emit/register.ts` (one literal `on()` call for each handler), `emit/hooks.ts` (`hooks.json` from the classic hooks), and `emit/manifest.ts` (`plugin.json`).
    Until P01b2, no real slice has a `slice.ts`, so the output of the repository does not change.
 4. Write `tools/rebuild-pending.txt`: each 0.28.0 path in `plugins/`, `src/`, and `tests/`, grouped under a comment that names the package of `spec/changes/1.0.0/packages.md` that ports it.
@@ -54,7 +54,7 @@ This package ports no slice: P01b2 ports `prompt`, P01b3 adds the snippet, and P
 
 ## Boundaries
 
-- Change only the paths of `owns`.
+- Change only the paths of `owns`, and the one import of step 2 in `tests/support/file-size.test.ts`, which P01b4 owns.
 - Write no emitter for the settings snippet, because P01b3 writes it.
 - Do not change the behavior of a 0.28.0 hook or text.
 - Use arrow functions, and add no legacy shim.
