@@ -24,8 +24,8 @@ const stub = (on: On, answers: string[]) => {
   });
   on("tool.call", (_$, e, next) => {
     if (e.tool !== "AskUserQuestion") return next(e);
-    const question = (e as unknown as { questions?: { question: string }[] }).questions?.[0]
-      ?.question;
+    const question = (e as unknown as { questions?: { question: string }[] })
+      .questions?.[0]?.question;
     asked.push(question ?? "");
     const answer = answers.shift() ?? "Skip";
     return {

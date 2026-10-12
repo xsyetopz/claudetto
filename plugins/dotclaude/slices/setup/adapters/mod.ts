@@ -97,7 +97,9 @@ const runSetup = async (
     ["bun", "--no-env-file", `${$.plugin.root}/bin/dotclaude-setup`, ...words],
     { timeoutMs: TIMEOUT_MS },
   );
-  const text = (run.exitCode === 0 ? run.stdout : run.stderr || run.stdout).trim();
+  const text = (
+    run.exitCode === 0 ? run.stdout : run.stderr || run.stdout
+  ).trim();
   return run.exitCode === 0
     ? text
     : `dotclaude-setup ${words.join(" ")} failed with exit status ${run.exitCode}.\n${text}`;
@@ -111,14 +113,22 @@ export const onSetup: Handler<"command.run"> = async ($, e, next) => {
   if (words.length === 1 && given === undefined) return next(e);
   try {
     const scope =
-      given ?? (await $.ui.ask("Which settings file should get the snippet?", [...SCOPES]));
-    if (!SCOPES.some((s) => s === scope)) return { text: "Setup stopped: no scope." };
+      given ??
+      (await $.ui.ask("Which settings file should get the snippet?", [
+        ...SCOPES,
+      ]));
+    if (!SCOPES.some((s) => s === scope))
+      return { text: "Setup stopped: no scope." };
     const settings = await runSetup($, ["settings", "--scope", scope]);
     const addons = await runSetup($, ["addons"]);
     const out = [settings, addons];
-    if ((await $.ui.ask("Apply the settings changes?", [APPLY, SKIP])) === APPLY)
+    if (
+      (await $.ui.ask("Apply the settings changes?", [APPLY, SKIP])) === APPLY
+    )
       out.push(await runSetup($, ["settings", "--scope", scope, "--apply"]));
-    if ((await $.ui.ask("Run the add-on project steps?", [APPLY, SKIP])) === APPLY)
+    if (
+      (await $.ui.ask("Run the add-on project steps?", [APPLY, SKIP])) === APPLY
+    )
       out.push(await runSetup($, ["addons", "--apply"]));
     out.push("Restart Claude Code to load the changes.");
     return { text: out.join("\n\n") };

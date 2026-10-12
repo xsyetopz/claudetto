@@ -25,7 +25,8 @@ export const slice = {
         requests: 0,
         tokens: 0,
         blocks: false,
-        allow: "plugins/dotclaude/tests/setup-command.test.ts > a scope with a shell character runs unchanged",
+        allow:
+          "plugins/dotclaude/tests/setup-command.test.ts > a scope with a shell character runs unchanged",
         text: "plugins/dotclaude/tests/setup-command.test.ts > the command shows the previews and applies only after a yes",
       },
       filter: { command: "dotclaude:setup" },
