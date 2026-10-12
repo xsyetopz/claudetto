@@ -133,8 +133,8 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    - [x] Done on 2026-10-13 at `3433e8f7`: `just generate` changes no file, and `just check` passes.
 4. A reviewer pass for each section, then one run that fixes the list.
    The sections of the pass: the start pages with `README.md` and `add-ons/`, `dotclaude/`, `claude-code/`, `rationale/` with `Decisions-Reversed`, `reference/` with `evidence/`, and `development/` with `CHANGELOG.md` and a light pass of `archive/`.
-   - [ ] The reviewer pass
-   - [ ] The fix run
+   - [x] The reviewer pass, with the findings in `evidence/p15-review.md`
+   - [ ] The fix runs: `p15-fix-start`, `p15-fix-rationale`, `p15-fix-reference`, `p15-fix-dotclaude`, `p15-fix-claude-code`, `p15-fix-evidence`, then item 6 of the last review section
 
 ## Findings outside the docs
 
