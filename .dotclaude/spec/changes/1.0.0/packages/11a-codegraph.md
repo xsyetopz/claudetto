@@ -20,10 +20,10 @@ The add-on works with no other plugin installed.
   The type check reads them.
 - Your worktree can start at an old commit.
   First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`, and the add-ons: `packages.md:100,109`.
-- The plugin: `spec/changes/1.0.0/design.md:10,19`, and the files: `spec/changes/1.0.0/tree.md:172-173`.
-- The slice contract: `src/kernel/slice.ts` (the fields `hooks` and `cli`), and the manifest rules: `spec/changes/1.0.0/design.md:96-133`.
-- The source tree of a slice: `spec/changes/1.0.0/design.md:53-72`, and the code conventions: `spec/changes/1.0.0/design.md:143-150`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`, and the add-ons: `packages.md:100,109`.
+- The plugin: `.dotclaude/spec/changes/1.0.0/design.md:10,19`, and the files: `.dotclaude/spec/changes/1.0.0/tree.md:172-173`.
+- The slice contract: `src/kernel/slice.ts` (the fields `hooks` and `cli`), and the manifest rules: `.dotclaude/spec/changes/1.0.0/design.md:96-133`.
+- The source tree of a slice: `.dotclaude/spec/changes/1.0.0/design.md:53-72`, and the code conventions: `.dotclaude/spec/changes/1.0.0/design.md:143-150`.
 - The generator:
   - It finds a plugin from `src/plugins/<p>/plugin.ts` (`tools/generate/discover.ts:61-84`), and writes `plugin.json` from it (`tools/generate/emit/manifest.ts`).
   - It writes `bin/<bin>` from `adapters/cli.ts` (`tools/generate/emit/slices.ts:72-90`), and copies the kernel closure to `plugins/<p>/kernel/` (`tools/generate/closure.ts`).

@@ -1,6 +1,6 @@
 // Repository bounds, read only by the tests and the tools, so they do not ship in `plugins/`.
 // A shared runtime bound is in `src/kernel/budget.ts`, and a slice bound is in `slices/<s>/limits.ts`.
-// The rule is in `spec/changes/1.0.0/design.md`, "Bounds".
+// The rule is in `.dotclaude/spec/changes/1.0.0/design.md`, "Bounds".
 
 /** Most lines in a file that is not a test. */
 export const FILE_MAX_LINES = 300;

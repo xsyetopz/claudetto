@@ -18,8 +18,8 @@ The add-on works with no other plugin installed.
 - Your worktree has no git-ignored file.
   Before a check, run `bun install` in the worktree, and copy each git-ignored types folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree: `.claude-plugin/types/` and `plugins/*/.claude-plugin/types/`.
   The type check reads them.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`, and the add-ons: `packages.md:102,109`.
-- The plugin: `spec/changes/1.0.0/design.md:13,19`, and the files: `spec/changes/1.0.0/tree.md:179-180`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`, and the add-ons: `packages.md:102,109`.
+- The plugin: `.dotclaude/spec/changes/1.0.0/design.md:13,19`, and the files: `.dotclaude/spec/changes/1.0.0/tree.md:179-180`.
 - The slice contract: `src/kernel/slice.ts` (the field `skills`), and the generator finds a plugin from `src/plugins/<p>/plugin.ts` (`tools/generate/discover.ts:61-84`) and copies the skills of a slice (`tools/generate/emit/slices.ts:52-57`).
 - The 0.28.0 add-on: the skill source `src/plugins/dotclaude-docs/skills/docs/SKILL.md` (43 lines, `allowed-tools` at `:5`), the hand-written `plugins/dotclaude-docs/.claude-plugin/plugin.json`, and the tests in `tests/docs/`.
 - The rebuild list: `tools/rebuild-pending.txt:57-60`.

@@ -1,7 +1,7 @@
 ---
 id: P01c
 deps: []
-owns: ["external/cc-extract/", "spec/changes/1.0.0/evidence/extract.md"]
+owns: ["external/cc-extract/", ".dotclaude/spec/changes/1.0.0/evidence/extract.md"]
 verify: each id of the report is in the prompt.compose or tool.describe input of one live session in just sandbox
 agent: implementer
 ---
@@ -17,7 +17,7 @@ The `prompt`, `surface`, and `styles` slices (P20, P22, P23) write one transform
 
 - Your worktree has no git-ignored file, such as `external/` and `node_modules/`.
   Run `bun install` in the worktree before the first `just` command.
-- The decision to ship transforms keyed by id and not copies of the texts: `spec/changes/1.0.0/change.md:73-75`.
+- The decision to ship transforms keyed by id and not copies of the texts: `.dotclaude/spec/changes/1.0.0/change.md:73-75`.
 - The binary: `~/.local/share/claude/versions/2.1.296`.
   `claude --version` prints `2.1.296 (Claude Code)`.
 - The strings of the binary, already extracted: `/Users/krystian/CodeProjects/xsyetopz/dotclaude/external/cc-2.1.296/strings.txt` (59 MB).
@@ -46,7 +46,7 @@ The `prompt`, `surface`, and `styles` slices (P20, P22, P23) write one transform
 3. Write a small capture mod in a temporary plugin folder outside the repository, which writes the `prompt.compose` and `tool.describe` input of one session to a file.
    Run one headless session in `just sandbox` with that plugin, and compare each id of step 2 with the capture.
    Delete the capture plugin after the run.
-4. Write `spec/changes/1.0.0/evidence/extract.md` in STE-flavored ASD-STE100, with semantic line breaks and no semicolons:
+4. Write `.dotclaude/spec/changes/1.0.0/evidence/extract.md` in STE-flavored ASD-STE100, with semantic line breaks and no semicolons:
    a table with the kind, the id, the size in bytes and in tokens (bytes divided by 4, and say so), the path of the extracted file, and whether the live capture showed the id.
    Name the commands that you ran and the number of ids that the capture confirmed.
 
@@ -54,12 +54,12 @@ The `prompt`, `surface`, and `styles` slices (P20, P22, P23) write one transform
 
 - Each id in the report is in the capture of the live session, or the report marks it as not confirmed with the reason.
 - The report has no built-in text, only ids, sizes, and paths, because the texts are the property of Anthropic and stay in `external/`, which git ignores.
-- `bunx markdownlint-cli2 spec/changes/1.0.0/evidence/extract.md` passes.
+- `bunx markdownlint-cli2 .dotclaude/spec/changes/1.0.0/evidence/extract.md` passes.
 
 ## Boundaries
 
-- Write only to `/Users/krystian/CodeProjects/xsyetopz/dotclaude/external/cc-extract/2.1.296/` and `spec/changes/1.0.0/evidence/extract.md`, and to a temporary folder outside the repository for the capture plugin.
+- Write only to `/Users/krystian/CodeProjects/xsyetopz/dotclaude/external/cc-extract/2.1.296/` and `.dotclaude/spec/changes/1.0.0/evidence/extract.md`, and to a temporary folder outside the repository for the capture plugin.
 - Do not change the binary, its package, the settings of the user, or `~/.claude/`.
 - Run at most 3 headless sessions, because each one costs money.
 - `external/` is not tracked by git, so write the extracted texts to the main checkout, at the absolute path of step 1, and not to your worktree.
-  Commit only `spec/changes/1.0.0/evidence/extract.md`, in one commit on the branch of your worktree, with the subject `dotclaude 1.0.0: P01c <summary>`.
+  Commit only `.dotclaude/spec/changes/1.0.0/evidence/extract.md`, in one commit on the branch of your worktree, with the subject `dotclaude 1.0.0: P01c <summary>`.

@@ -1,7 +1,7 @@
 ---
 id: P01d
 deps: []
-owns: ["spec/changes/1.0.0/evidence/inventory.md"]
+owns: [".dotclaude/spec/changes/1.0.0/evidence/inventory.md"]
 verify: dotclaude-start --compare on one start with the switches and one start without them
 agent: implementer
 ---
@@ -17,7 +17,7 @@ The `trim` slice (P21) turns off each part of this list that dotclaude does not 
 
 - Your worktree has no git-ignored file, such as `external/` and `node_modules/`.
   Run `bun install` in the worktree before the first `just` command.
-- The goal of the lowest token cost: `spec/changes/1.0.0/change.md:10-17`.
+- The goal of the lowest token cost: `.dotclaude/spec/changes/1.0.0/change.md:10-17`.
 - The settings keys of the pinned binary: `schemas/claude-code-settings.json` and `schemas/claude-code-managed-settings.json`.
 - The strings of the binary: `/Users/krystian/CodeProjects/xsyetopz/dotclaude/external/cc-2.1.296/strings.txt` (59 MB).
   Search it with `grep -n`, for example for `CLAUDE_CODE_` and `DISABLE_`, and read a range, because a full read fills your context.
@@ -35,7 +35,7 @@ The `trim` slice (P21) turns off each part of this list that dotclaude does not 
 2. For each part, record the switch (a settings key, an env var, or a mod event and the field it changes), its default, and the source: a key in `schemas/`, a line in `strings.txt`, or a line in the types.
 3. Run one headless start in `just sandbox` with no switch, and one with each switch of step 2 that is a setting or an env var.
    Run `dotclaude-start --compare` on the two transcripts.
-4. Write `spec/changes/1.0.0/evidence/inventory.md` in STE-flavored ASD-STE100, with semantic line breaks and no semicolons:
+4. Write `.dotclaude/spec/changes/1.0.0/evidence/inventory.md` in STE-flavored ASD-STE100, with semantic line breaks and no semicolons:
    a table with the part, the switch, the default, the cost at the start in tokens from the compare, and the source.
    Mark each cost that the compare did not measure as an estimate, with its method.
    Give the command and the totals of the compare.
@@ -44,11 +44,11 @@ The `trim` slice (P21) turns off each part of this list that dotclaude does not 
 
 - The report has the output of `dotclaude-start --compare` for the two starts.
 - Each switch in the report names its source.
-- `bunx markdownlint-cli2 spec/changes/1.0.0/evidence/inventory.md` passes.
+- `bunx markdownlint-cli2 .dotclaude/spec/changes/1.0.0/evidence/inventory.md` passes.
 
 ## Boundaries
 
-- Write only `spec/changes/1.0.0/evidence/inventory.md`, and the sandbox config that `just sandbox` makes.
+- Write only `.dotclaude/spec/changes/1.0.0/evidence/inventory.md`, and the sandbox config that `just sandbox` makes.
   Remove the sandbox with `just sandbox-clean` at the end.
 - Do not decide which parts dotclaude turns off, because P21 does that.
 - Do not change the settings of the user or `~/.claude/`.

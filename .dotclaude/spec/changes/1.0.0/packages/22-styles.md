@@ -21,11 +21,11 @@ It replaces the 0.28.0 output style `dotclaude`.
   `external/` is git-ignored too, so read it in the main checkout.
 - Your worktree can start at an old commit.
   First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`, and this package: `packages.md:95-97`.
-- The decision of the user: `spec/changes/1.0.0/change.md:38`, and the setting: `spec/changes/1.0.0/workflow.md:133`.
-- The files: `spec/changes/1.0.0/tree.md:117-119`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`, and this package: `packages.md:95-97`.
+- The decision of the user: `.dotclaude/spec/changes/1.0.0/change.md:38`, and the setting: `.dotclaude/spec/changes/1.0.0/workflow.md:133`.
+- The files: `.dotclaude/spec/changes/1.0.0/tree.md:117-119`.
 - The slice contract: `src/kernel/slice.ts` (the fields `outputStyles` and `settings`), and the generator copies `styles/` to `output-styles/` (`tools/generate/emit/slices.ts:2,56`).
-- The built-in text: `external/cc-extract/2.1.296/style/Concise.txt` (265 tokens), which `spec/changes/1.0.0/evidence/extract.md:137` marks as not confirmed, because no capture had an output style (`extract.md:217`).
+- The built-in text: `external/cc-extract/2.1.296/style/Concise.txt` (265 tokens), which `.dotclaude/spec/changes/1.0.0/evidence/extract.md:137` marks as not confirmed, because no capture had an output style (`extract.md:217`).
 - An output style without `keepCodingInstructions` sets the section `doing_tasks` to `null` (`extract.md:154`).
 - The 0.28.0 style: `src/plugins/dotclaude/output-styles/dotclaude.md` (22 lines).
 - The rebuild list: `tools/rebuild-pending.txt:121-123`.
@@ -33,7 +33,7 @@ It replaces the 0.28.0 output style `dotclaude`.
 ## Steps
 
 1. Confirm the built-in text: run one session in `just sandbox` (read `wiki/plugins/Sandbox.md` first) with the built-in `Concise` style, capture its system prompt with `dotclaude-capture`, and compare it with `Concise.txt`.
-   Record the result in `spec/changes/1.0.0/evidence/extract.md`, in the row of `Concise`.
+   Record the result in `.dotclaude/spec/changes/1.0.0/evidence/extract.md`, in the row of `Concise`.
    When the sandbox cannot run in your environment, stop, and report it, because the text must not come from an unconfirmed extract.
 2. Write `slice.ts` and `styles/Concise.md`: the built-in text, with the parts of the 0.28.0 style that the built-in text does not have, and with the choice of `keepCodingInstructions` that keeps the facts that the model needs.
    Give the reason for that choice in your report.
@@ -50,7 +50,7 @@ It replaces the 0.28.0 output style `dotclaude`.
 
 ## Boundaries
 
-- Change only the paths of `owns`, the 0.28.0 paths of `tools/rebuild-pending.txt:121-123` and those lines, and the row of `Concise` in `spec/changes/1.0.0/evidence/extract.md`.
+- Change only the paths of `owns`, the 0.28.0 paths of `tools/rebuild-pending.txt:121-123` and those lines, and the row of `Concise` in `.dotclaude/spec/changes/1.0.0/evidence/extract.md`.
 - Do not change the settings of `prompt/slice.ts`.
 - Write the style in strict ASD-STE100, with semantic line breaks, and with no forceful words.
 - Write no test of the style text, because a test of the words of a prompt breaks on a change of words and not on a defect.

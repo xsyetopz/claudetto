@@ -14,12 +14,12 @@ Update the docs for 1.0.0: the wiki, the README, and a new `CHANGELOG.md` that s
 
 ## Context
 
-- The entry: `spec/changes/1.0.0/packages.md:181-184`.
-- The numbers come from `spec/changes/1.0.0/evidence/handoff-cost.md`, which P14 writes.
+- The entry: `.dotclaude/spec/changes/1.0.0/packages.md:181-184`.
+- The numbers come from `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`, which P14 writes.
 - The `wiki/` folder holds 15 entries in this checkout.
-  The entry names `wiki/` as a whole, but P18 owns `wiki/archive/`, so `owns` lists each other entry of `wiki/` by path (`spec/changes/1.0.0/packages.md:188`).
+  The entry names `wiki/` as a whole, but P18 owns `wiki/archive/`, so `owns` lists each other entry of `wiki/` by path (`.dotclaude/spec/changes/1.0.0/packages.md:188`).
 - The wiki source is `wiki/`, and `just wiki` publishes it (`CLAUDE.md`).
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
 - The Markdown rules: `CLAUDE.md`, with the 100-column bound for headings and code blocks, and `bun run lint:md`.
 
 ## Steps
@@ -31,7 +31,7 @@ Update the docs for 1.0.0: the wiki, the README, and a new `CHANGELOG.md` that s
 ## Acceptance
 
 - `bun run lint:md` passes.
-- Each number in the docs has the source `spec/changes/1.0.0/evidence/handoff-cost.md`.
+- Each number in the docs has the source `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.
 - A `reviewer` pass on the text finds no claim without a source.
 
 ## Boundaries

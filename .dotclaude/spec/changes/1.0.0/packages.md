@@ -45,12 +45,12 @@ Critical path: P01a, P01b1 to P01b4, P05 and P06, P13, P14, P15, P16.
   Owns: `biome.json`, `tools/lint/`, `tools/generate/emit/register.ts`, `tools/validate.ts`, `tools/limits.ts`, `tools/lab.ts`, `tools/recipes.ts`, `tools/sizes.ts`, `tests/support/`, `tests/dotclaude/settings-pin.test.ts`, `package.json`, `tsconfig.json`, `AGENTS.md`, `GEMINI.md`.
   Verify: `just check`, and `bunx biome lint` fails on a fixture with a `function` declaration and on one with a `function` expression.
 - [x] P01c Extract: the full texts and sizes of each built-in system prompt section, tool description, output style, compaction prompt, reminder, and listing of Claude Code 2.1.296, the prompt of `CLAUDE_CODE_SIMPLE` and `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`, and the id that the Mod API gives each part.
-  It writes only to `external/cc-extract/2.1.296/`, and its report to `spec/changes/1.0.0/evidence/extract.md`, with no built-in text in the report.
-  Owns: `external/cc-extract/`, `spec/changes/1.0.0/evidence/extract.md`.
+  It writes only to `external/cc-extract/2.1.296/`, and its report to `.dotclaude/spec/changes/1.0.0/evidence/extract.md`, with no built-in text in the report.
+  Owns: `external/cc-extract/`, `.dotclaude/spec/changes/1.0.0/evidence/extract.md`.
   Agent: `implementer`, because the package writes files and runs live sessions, and `investigator` cannot (Jev, confidence 0.51).
   Verify: each id in the report is in the `prompt.compose` or `tool.describe` input of one live session in `just sandbox`.
 - [x] P01d Inventory: each built-in part that a setting, an env var, or a mod can turn off, with its cost at the start of a session.
-  Owns: `spec/changes/1.0.0/evidence/inventory.md`.
+  Owns: `.dotclaude/spec/changes/1.0.0/evidence/inventory.md`.
   Agent: `implementer`, for the reason of P01c.
   Verify: `dotclaude-start --compare` on one start with the switches and one start without them.
 - [x] P02 Spec formats: the parser, the validator, and the delta rules as pure code in `slices/spec/domain/`.
@@ -140,14 +140,14 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P09.
   Owns: `src/plugins/dotclaude/slices/setup/` (the cleanup keys), `tests/dotclaude/setup/` (the cleanup tests).
 - [x] P27 `worktrees`: each part of dotclaude that works in a separate checkout uses the worktrees of Claude Code ([change](change.md), decisions, the user, 2026-10-12).
-  It first lists the worktree features of Claude Code 2.1.296 and each place in `src/` and `spec/changes/1.0.0/` that makes or names a worktree of its own, such as `git worktree add` in the `debugger` agent.
+  It first lists the worktree features of Claude Code 2.1.296 and each place in `src/` and `.dotclaude/spec/changes/1.0.0/` that makes or names a worktree of its own, such as `git worktree add` in the `debugger` agent.
   Deps: P25, because both change the setup.
   Owns: `src/plugins/dotclaude/slices/agents/`, `src/plugins/dotclaude/slices/spec/skills/`, `src/plugins/dotclaude/slices/setup/` (the `worktree` keys), and their tests.
   Verify also: `just validate`, and a test that no text in `src/` tells an agent to run `git worktree add`.
 - [ ] P28 `.claude/` evidence: each file and folder of `.claude/` and `~/.claude/` in Claude Code 2.1.296, with what it does, when Claude Code reads it, its cost at the start of a session, the settings, env vars, and flags that control it, and its source in the docs and the bundle ([change](change.md), decisions, the user, 2026-10-12).
   For rules, it also answers: can a plugin ship rules, do subagents and worktrees load them, does `claudeMdExcludes` apply to them, and how do they show in the `prompt.compose` input of the Mod API.
-  It writes `spec/changes/1.0.0/evidence/claude-directory.md`, with no built-in text.
-  Owns: `spec/changes/1.0.0/evidence/claude-directory.md`.
+  It writes `.dotclaude/spec/changes/1.0.0/evidence/claude-directory.md`, with no built-in text.
+  Owns: `.dotclaude/spec/changes/1.0.0/evidence/claude-directory.md`.
   Agent: `implementer`, for the reason of P01c.
   Verify: each claim has a source, and each rules answer has one live session in `just sandbox`.
 - [ ] P29 `rules` slice: dotclaude uses `.claude/rules/`.
@@ -178,7 +178,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Owns: the parts that the list names, and their tests.
   Verify: `just check`, and the token cost of each moved task before and after, with `dotclaude-usage`.
 - [ ] P14 Handoff cost: one handoff against one compaction on the same session, with `dotclaude-usage`.
-  It only reports, in `spec/changes/1.0.0/evidence/handoff-cost.md`.
+  It only reports, in `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.
   Deps: P13.
   Agent: `investigator`.
 

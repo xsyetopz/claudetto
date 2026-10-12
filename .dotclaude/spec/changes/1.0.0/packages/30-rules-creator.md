@@ -15,10 +15,10 @@ The skill is short, and it covers each needed area: scope, `paths` globs and the
 
 ## Context
 
-- The entry: `spec/changes/1.0.0/packages.md:158-161`.
-- The evidence for the `paths` globs and the scope comes from P28: `spec/changes/1.0.0/evidence/claude-directory.md`.
+- The entry: `.dotclaude/spec/changes/1.0.0/packages.md:158-161`.
+- The evidence for the `paths` globs and the scope comes from P28: `.dotclaude/spec/changes/1.0.0/evidence/claude-directory.md`.
 - The skill goes in `src/plugins/dotclaude/slices/rules/skills/`, and the generator reads it (`tools/generate/emit/slices.ts:52-57`).
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
 
 ## Steps
 

@@ -22,12 +22,12 @@ When dotclaude runs in a git repository, it adds each runtime path of `.claude/`
   `external/` is git-ignored too, so read it in the main checkout.
 - Your worktree can start at an old commit.
   First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`, and this package: `packages.md:81-84`.
-- The slice contract: `src/kernel/slice.ts` (the fields `cli` and `skills`), and the manifest rules: `spec/changes/1.0.0/design.md:96-133`.
-- The source tree of a slice: `spec/changes/1.0.0/design.md:53-72`, and the code conventions: `spec/changes/1.0.0/design.md:143-150`.
-- What a test checks: `spec/changes/1.0.0/design.md:160-172`.
-- A user-invoked skill has `disable-model-invocation: true` (`spec/changes/1.0.0/design.md:17`).
-- The files: `spec/changes/1.0.0/tree.md:156-160`, and the drift check as a part of `setup`: `spec/changes/1.0.0/workflow.md:149-150`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`, and this package: `packages.md:81-84`.
+- The slice contract: `src/kernel/slice.ts` (the fields `cli` and `skills`), and the manifest rules: `.dotclaude/spec/changes/1.0.0/design.md:96-133`.
+- The source tree of a slice: `.dotclaude/spec/changes/1.0.0/design.md:53-72`, and the code conventions: `.dotclaude/spec/changes/1.0.0/design.md:143-150`.
+- What a test checks: `.dotclaude/spec/changes/1.0.0/design.md:160-172`.
+- A user-invoked skill has `disable-model-invocation: true` (`.dotclaude/spec/changes/1.0.0/design.md:17`).
+- The files: `.dotclaude/spec/changes/1.0.0/tree.md:156-160`, and the drift check as a part of `setup`: `.dotclaude/spec/changes/1.0.0/workflow.md:149-150`.
 - The generator writes `bin/<bin>` from `adapters/cli.ts` (`tools/generate/emit/slices.ts:72-90`), and the skills of a slice (`:52-57`).
 - The snippet: a text module folder of the slice, such as `snippet.ts/snippet.json` with the line `{{include snippet.json}}`, gives the module `snippet.ts` with the export `SNIPPET`, the generated snippet of the core plugin (`tests/tools/generate/snippet.test.ts`, the last test).
   Read the snippet only this way, and not from `plugins/dotclaude/lib/`, which P13 deletes.

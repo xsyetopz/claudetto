@@ -14,11 +14,11 @@ Delete the tags, the GitHub releases, and the wiki release pages of each older v
 
 ## Context
 
-- The entry: `spec/changes/1.0.0/packages.md:188-190`.
+- The entry: `.dotclaude/spec/changes/1.0.0/packages.md:188-190`.
 - The wiki release pages of this checkout are in `wiki/archive/`, one file for each version, such as `wiki/archive/Release-0.28.md`.
 - The tags and the GitHub releases are not in the repository.
   The `owns` entry names the only repository path that the deletion changes.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
 
 ## Steps
 

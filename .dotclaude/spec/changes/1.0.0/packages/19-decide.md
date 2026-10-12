@@ -21,12 +21,12 @@ When the API key is missing or not valid, or the account has no balance, the dec
   The type check reads them, and they give the API of `$.model` and `$.tool.register`.
 - Your worktree can start at an old commit.
   First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`, and this package: `packages.md:87-90`.
-- The decision of the user: `spec/changes/1.0.0/change.md:35-37`, and `change.md:71-72`.
-- The files: `spec/changes/1.0.0/tree.md:132-138`, and the removal: `tree.md:230`.
-- The slice contract: `src/kernel/slice.ts`, and the manifest rules: `spec/changes/1.0.0/design.md:96-133`.
-- The source tree of a slice: `spec/changes/1.0.0/design.md:53-72`, and the code conventions: `spec/changes/1.0.0/design.md:143-150`.
-- What a test checks: `spec/changes/1.0.0/design.md:160-172`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`, and this package: `packages.md:87-90`.
+- The decision of the user: `.dotclaude/spec/changes/1.0.0/change.md:35-37`, and `change.md:71-72`.
+- The files: `.dotclaude/spec/changes/1.0.0/tree.md:132-138`, and the removal: `tree.md:230`.
+- The slice contract: `src/kernel/slice.ts`, and the manifest rules: `.dotclaude/spec/changes/1.0.0/design.md:96-133`.
+- The source tree of a slice: `.dotclaude/spec/changes/1.0.0/design.md:53-72`, and the code conventions: `.dotclaude/spec/changes/1.0.0/design.md:143-150`.
+- What a test checks: `.dotclaude/spec/changes/1.0.0/design.md:160-172`.
 - The 0.28.0 add-on:
   - `plugins/dotclaude-jev/features/jev/`: `tool.ts` (150 lines), `cli.ts` (244, the API URL at `:30`), `format.ts` (71), `ask.ts` (106), `limits.ts` (52), and `run.ts` (47, which starts `bun --no-env-file` as a child at `:9-14` and passes the key in the env at `:22`).
   - `plugins/dotclaude-jev/hooks/register.ts`: `on("session.start")` at `:77`, `$.tool.register` at `:80`, and `on("tool.call")` for `AskUserQuestion` and `second_opinion` at `:85`.

@@ -20,14 +20,14 @@ Move the settings keys that turn off a built-in part from the `prompt` slice to 
   The type check reads them.
 - Your worktree can start at an old commit.
   First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
-- The goal: `spec/changes/1.0.0/change.md:16`, and the files: `spec/changes/1.0.0/tree.md:113-116`.
-- The inventory: `spec/changes/1.0.0/evidence/inventory.md`, with the switch rows at `:79-105`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
+- The goal: `.dotclaude/spec/changes/1.0.0/change.md:16`, and the files: `.dotclaude/spec/changes/1.0.0/tree.md:113-116`.
+- The inventory: `.dotclaude/spec/changes/1.0.0/evidence/inventory.md`, with the switch rows at `:79-105`.
   No switch has a single measured cost (`inventory.md:60-63`).
-- The slice contract: `src/kernel/slice.ts`, and the manifest rules: `spec/changes/1.0.0/design.md:96-133`.
+- The slice contract: `src/kernel/slice.ts`, and the manifest rules: `.dotclaude/spec/changes/1.0.0/design.md:96-133`.
 - The settings merge: `tools/generate/emit/snippet.ts:27-49`.
   It fails when two slices set one key to different values, and it allows the same value in two slices.
-- The source tree of a slice: `spec/changes/1.0.0/design.md:53-72`, and the code conventions: `spec/changes/1.0.0/design.md:143-150`.
+- The source tree of a slice: `.dotclaude/spec/changes/1.0.0/design.md:53-72`, and the code conventions: `.dotclaude/spec/changes/1.0.0/design.md:143-150`.
 - The settings now: `src/plugins/dotclaude/slices/prompt/slice.ts:19-230`.
 - The ban list: `tests/dotclaude/deferred-tools.test.ts:13-41` bans `CLAUDE_CODE_SIMPLE`, `CLAUDE_CODE_DISABLE_ATTACHMENTS`, and `ENABLE_TOOL_SEARCH` with `false`, `0`, or `auto:0`, because each sends every tool schema in full or removes the attachments that the `surface` slice (P20) changes.
   `inventory.md:81` lists `CLAUDE_CODE_DISABLE_ATTACHMENTS` as a candidate, and the ban stays.

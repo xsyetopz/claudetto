@@ -15,11 +15,11 @@ Each rule of `AGENTS.md` that applies to some files only moves to a `paths:` rul
 
 ## Context
 
-- The entry: `spec/changes/1.0.0/packages.md:162-165`.
+- The entry: `.dotclaude/spec/changes/1.0.0/packages.md:162-165`.
 - The tests that pin `AGENTS.md` are `tests/support/sizes.test.ts` (the 6 KB bound of `CLAUDE.md` and `AGENTS.md`) and `tests/dotclaude/import-rules.test.ts` (the import rules of `AGENTS.md`).
   The other tests that name `AGENTS.md` only cite it in a comment.
-- The `paths:` format and its evidence come from P28: `spec/changes/1.0.0/evidence/claude-directory.md`.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
+- The `paths:` format and its evidence come from P28: `.dotclaude/spec/changes/1.0.0/evidence/claude-directory.md`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
 
 ## Steps
 

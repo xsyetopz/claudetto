@@ -3,14 +3,14 @@
 ## Spec store
 
 ```text
-spec/specs/<capability>.md                    # the truth
-spec/changes/<id>/change.md                   # why, scope, tasks
-spec/changes/<id>/specs/<capability>.md       # the deltas of one capability
-spec/changes/<id>/design.md                   # size large only
-spec/changes/<id>/packages/NN-<slug>.md       # one brief for one agent
-spec/changes/<id>/state.json                  # lanes, event log, the path of the handoff
-spec/changes/<id>/handoff.md                  # the newest handoff of the change
-spec/changes/archive/<date>-<id>/
+.dotclaude/spec/specs/<capability>.md                    # the truth
+.dotclaude/spec/changes/<id>/change.md                   # why, scope, tasks
+.dotclaude/spec/changes/<id>/specs/<capability>.md       # the deltas of one capability
+.dotclaude/spec/changes/<id>/design.md                   # size large only
+.dotclaude/spec/changes/<id>/packages/NN-<slug>.md       # one brief for one agent
+.dotclaude/spec/changes/<id>/state.json                  # lanes, event log, the path of the handoff
+.dotclaude/spec/changes/<id>/handoff.md                  # the newest handoff of the change
+.dotclaude/spec/changes/archive/<date>-<id>/
 ```
 
 The store is a committed top-level folder, as in OpenSpec and Spec Kitty.
@@ -67,7 +67,7 @@ A model changes JSON less often than Markdown by mistake (Anthropic, "Effective 
 - `next [<id>]` prints the brief of the next package whose deps are `done`.
 - `lane <package> <lane>` moves a package and adds an event.
 - `validate [<id>]` checks the specs, the deltas, the tasks, and the packages, and checks that no two open packages in one wave have overlapping `owns`.
-- `archive <id>` applies the deltas to a temporary copy of `spec/specs/`, then replaces `spec/specs/` and moves the change to `archive/`.
+- `archive <id>` applies the deltas to a temporary copy of `.dotclaude/spec/specs/`, then replaces `.dotclaude/spec/specs/` and moves the change to `archive/`.
   When one delta fails, nothing changes.
 - `record <text>` writes the record of a hotfix.
 
@@ -90,7 +90,7 @@ The flow uses the mod API that the probes of 2026-10 showed in a live session:
 4. The mod runs `$.command.run({ command: "clear" })`.
 5. The mod runs `$.prompt.submit({ text })` with the path of the handoff and the output of `dotclaude-spec next`.
 
-The handoff of a change is `spec/changes/<id>/handoff.md`, and `state.json` names it.
+The handoff of a change is `.dotclaude/spec/changes/<id>/handoff.md`, and `state.json` names it.
 A handoff with no change is `.claude/dotclaude/handoff.md`, which git ignores.
 The `userConfig` option `mainHandover` takes `auto`, `manual`, or `off`, and its default is in `slices/handoff/limits.ts`.
 P14 measures one handoff against one compaction, and the main session sets the default from that report.

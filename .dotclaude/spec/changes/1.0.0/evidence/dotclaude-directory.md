@@ -56,16 +56,17 @@ Nothing reads them in a later session, and the user can delete them at any time.
 | - | - | - | - | - | - | - |
 | `schema` | `--out DIR` (the repository passes `schemas`) | project | yes | stays | none | The output of a build, named by the caller. It is a published file, not a runtime file. |
 
-## Open: the spec store
+## Decided: the spec store
 
-The user has not decided whether the spec store moves into `.dotclaude/`.
-`spec/changes/` stays where it is until the user decides.
+The user decided that the spec store moves into `.dotclaude/`, and that git tracks it.
+The move is done.
+dotclaude 1.0.0 reads `.dotclaude/` by itself, with no fallback for the old layout.
 
-| Slice | Path now | Scope | Tracked | New path | Git rule |
+| Slice | Path before | Scope | Tracked | New path | Git rule |
 | - | - | - | - | - | - |
-| `spec` | `spec/changes/<id>/` (`state.json`, `packages/`, `evidence/`, the plan files) | project | yes | open | none |
-| `spec` | `spec/specs/` (the specs, the truth) | project | yes | open | none |
-| `spec` | `spec/.specs-new/` (a scratch copy during `archive`, then renamed to `spec/specs/`) | project | no, and it exists only during one command | open | none |
+| `spec` | `spec/changes/<id>/` (`state.json`, `packages/`, `evidence/`, the plan files) | project | yes | `.dotclaude/spec/changes/<id>/` | none |
+| `spec` | `spec/specs/` (the specs, the truth) | project | yes | `.dotclaude/spec/specs/` | none |
+| `spec` | `spec/.specs-new/` (a scratch copy during `archive`, then renamed to `.dotclaude/spec/specs/`) | project | no, and it exists only during one command | `.dotclaude/spec/.specs-new/` | none |
 
 ## Files that dotclaude 1.0.0 starts to write
 
@@ -92,4 +93,4 @@ The only entry now is `handoff/`.
 - The code of `src/` writes no file of its own to `.claude/`.
   The move to `.dotclaude/` is therefore a new place for the handoff file, and not a rename of a file that exists.
 - The paths go in `src/kernel/paths.ts`, with the Claude Code names that the slices use, so that a slice names no path in a string of its own.
-- Open for the user: the spec store, `spec/changes/` and `spec/specs/`.
+- The spec store moved to `.dotclaude/spec/`.

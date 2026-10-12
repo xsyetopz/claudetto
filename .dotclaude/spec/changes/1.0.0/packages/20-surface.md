@@ -11,7 +11,7 @@ agent: implementer
 ## Goal
 
 Port the 0.28.0 feature `surface` to the slice `surface`, as one transform for each tool description, agent listing, and reminder that it changes.
-Each transform is keyed by the id of its built-in text and edits that text, so the slice ships no copy of a built-in text (`spec/changes/1.0.0/change.md:73-75`).
+Each transform is keyed by the id of its built-in text and edits that text, so the slice ships no copy of a built-in text (`.dotclaude/spec/changes/1.0.0/change.md:73-75`).
 
 ## Context
 
@@ -21,13 +21,13 @@ Each transform is keyed by the id of its built-in text and edits that text, so t
   `external/` is git-ignored too, so read it in the main checkout.
 - Your worktree can start at an old commit.
   First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
-- The goal of the prompt slices: `spec/changes/1.0.0/change.md:12-17`.
-- The files: `spec/changes/1.0.0/tree.md:108-112`.
-- The slice contract: `src/kernel/slice.ts`, and the manifest rules: `spec/changes/1.0.0/design.md:96-133`.
-- The source tree of a slice: `spec/changes/1.0.0/design.md:53-72`, and the code conventions: `spec/changes/1.0.0/design.md:143-150`.
-- The test that each transform finds its text: `spec/changes/1.0.0/design.md:171`.
-- The extract: `spec/changes/1.0.0/evidence/extract.md`, with the texts in `external/cc-extract/2.1.296/` of the main checkout.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
+- The goal of the prompt slices: `.dotclaude/spec/changes/1.0.0/change.md:12-17`.
+- The files: `.dotclaude/spec/changes/1.0.0/tree.md:108-112`.
+- The slice contract: `src/kernel/slice.ts`, and the manifest rules: `.dotclaude/spec/changes/1.0.0/design.md:96-133`.
+- The source tree of a slice: `.dotclaude/spec/changes/1.0.0/design.md:53-72`, and the code conventions: `.dotclaude/spec/changes/1.0.0/design.md:143-150`.
+- The test that each transform finds its text: `.dotclaude/spec/changes/1.0.0/design.md:171`.
+- The extract: `.dotclaude/spec/changes/1.0.0/evidence/extract.md`, with the texts in `external/cc-extract/2.1.296/` of the main checkout.
   The captures confirm the tool descriptions of `Agent`, `Bash`, `Read`, and `ListAgents` (`extract.md:117`).
   The listings are not confirmed (`extract.md:141-143`), and the captures record no attachment (`extract.md:58,220`).
   Do not use a text that the report marks as not confirmed (`extract.md:222-226`).

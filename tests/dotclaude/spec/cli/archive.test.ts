@@ -46,7 +46,7 @@ test("archive applies a delta, replaces the spec, and moves the change", async (
     has(root, `.dotclaude/spec/changes/archive/${TODAY}-c1/change.md`),
   ).toBe(true);
   expect(has(root, ".dotclaude/spec/.specs-new")).toBe(false);
-  expect(has(root, "spec/.specs-old")).toBe(false);
+  expect(has(root, ".dotclaude/spec/.specs-old")).toBe(false);
   expect((await run(root, "validate")).code).toBe(0);
 });
 

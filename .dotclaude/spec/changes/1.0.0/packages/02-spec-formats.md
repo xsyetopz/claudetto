@@ -17,11 +17,11 @@ The `dotclaude-spec` CLI of P03 and the archive step call this code, so it has n
 
 - Your worktree has no git-ignored file.
   Before a check, run `bun install` in the worktree, and copy each `.claude-plugin/types/` folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree, because the type check reads them.
-- The spec store and its formats: `spec/changes/1.0.0/workflow.md:3-43`.
-- The checks of `validate` and the rule of `archive`: `spec/changes/1.0.0/workflow.md:61-72`.
-- The domain files of the `spec` slice: `spec/changes/1.0.0/tree.md:144-150`.
-- The code conventions: `spec/changes/1.0.0/design.md:143-150`.
-- A file of each kind to use as a real fixture: `spec/changes/1.0.0/packages/01a-kernel.md` (a package), and `spec/changes/1.0.0/packages.md` (tasks with `Verify:` lines).
+- The spec store and its formats: `.dotclaude/spec/changes/1.0.0/workflow.md:3-43`.
+- The checks of `validate` and the rule of `archive`: `.dotclaude/spec/changes/1.0.0/workflow.md:61-72`.
+- The domain files of the `spec` slice: `.dotclaude/spec/changes/1.0.0/tree.md:144-150`.
+- The code conventions: `.dotclaude/spec/changes/1.0.0/design.md:143-150`.
+- A file of each kind to use as a real fixture: `.dotclaude/spec/changes/1.0.0/packages/01a-kernel.md` (a package), and `.dotclaude/spec/changes/1.0.0/packages.md` (tasks with `Verify:` lines).
 - The types of `state.json` and its reader are in `src/kernel/spec-store.ts`, which P01a writes at the same time.
   This package does not import that file, and it does not define the types of `state.json`.
 

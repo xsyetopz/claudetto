@@ -16,11 +16,11 @@ The classifier then allows the removal of those paths, and each default deny rul
 
 ## Context
 
-- The entry: `spec/changes/1.0.0/packages.md:133-137`, and the evidence: `spec/changes/1.0.0/evidence/automode.md`.
+- The entry: `.dotclaude/spec/changes/1.0.0/packages.md:133-137`, and the evidence: `.dotclaude/spec/changes/1.0.0/evidence/automode.md`.
 - The `autoMode` lists count only in the user settings, as `src/plugins/dotclaude/slices/setup/domain/drift.ts` and `adapters/settings-cmd.ts` state.
-- The P25 entry is done in `spec/changes/1.0.0/packages.md:133`.
+- The P25 entry is done in `.dotclaude/spec/changes/1.0.0/packages.md:133`.
   This file lists the files that name `autoMode`, so that the package matches the code of the change.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
 
 ## Steps
 

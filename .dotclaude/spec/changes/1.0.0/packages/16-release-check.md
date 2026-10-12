@@ -16,11 +16,11 @@ One session in `just sandbox` runs `/spec`, `/ship`, `/hotfix`, a decision, and 
 
 ## Context
 
-- The entry: `spec/changes/1.0.0/packages.md:185-187`.
-- The check of the list is `tests/support/rebuild-list.test.ts`, which checks that each line of `tools/rebuild-pending.txt` is on the list (`spec/changes/1.0.0/packages/23-prompt-transforms.md`, Boundaries).
+- The entry: `.dotclaude/spec/changes/1.0.0/packages.md:185-187`.
+- The check of the list is `tests/support/rebuild-list.test.ts`, which checks that each line of `tools/rebuild-pending.txt` is on the list (`.dotclaude/spec/changes/1.0.0/packages/23-prompt-transforms.md`, Boundaries).
 - The entry says `Deps: each package above`.
   This package lists the unfinished packages above it as its deps.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
 
 ## Steps
 

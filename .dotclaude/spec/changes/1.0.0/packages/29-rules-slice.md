@@ -17,13 +17,13 @@ Each part of a slice that adds guidance for some files only at runtime becomes a
 
 ## Context
 
-- The entry: `spec/changes/1.0.0/packages.md:153-157`, and the evidence: `spec/changes/1.0.0/evidence/claude-directory.md` from P28.
+- The entry: `.dotclaude/spec/changes/1.0.0/packages.md:153-157`, and the evidence: `.dotclaude/spec/changes/1.0.0/evidence/claude-directory.md` from P28.
 - The rules parts of the setup are in `src/plugins/dotclaude/slices/setup/domain/drift.ts` and `adapters/mod.ts`.
   The `adapters/mod.ts` file also names `rules.ts` in a comment.
 - The rules parts of `surface` are in `src/plugins/dotclaude/slices/surface/adapters/mod.ts` and `domain/tools.ts`.
   The `trim` slice has no file that names a rule in this checkout, so its folder is in `owns`.
 - The `skills/` folder of the slice `rules` is P30, so this package does not own it.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
 
 ## Steps
 

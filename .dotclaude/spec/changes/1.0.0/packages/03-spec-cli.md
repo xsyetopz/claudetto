@@ -1,7 +1,7 @@
 ---
 id: P03
 deps: [P02]
-owns: ["src/plugins/dotclaude/slices/spec/slice.ts", "src/plugins/dotclaude/slices/spec/limits.ts", "src/plugins/dotclaude/slices/spec/adapters/", "src/plugins/dotclaude/slices/spec/templates/", "tests/dotclaude/spec/cli/", "spec/changes/1.0.0/state.json"]
+owns: ["src/plugins/dotclaude/slices/spec/slice.ts", "src/plugins/dotclaude/slices/spec/limits.ts", "src/plugins/dotclaude/slices/spec/adapters/", "src/plugins/dotclaude/slices/spec/templates/", "tests/dotclaude/spec/cli/", ".dotclaude/spec/changes/1.0.0/state.json"]
 verify: just test tests/dotclaude/spec && just check && plugins/dotclaude/bin/dotclaude-spec validate 1.0.0
 agent: implementer
 ---
@@ -20,29 +20,29 @@ Then write `state.json` of the change 1.0.0, so that the main session moves the 
   The type check reads them.
 - Your worktree can start at an old commit.
   First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:1-15`.
-- The store, the formats, the state, the sizes, and the commands: `spec/changes/1.0.0/workflow.md:3-72`.
-- The files: `spec/changes/1.0.0/tree.md:144-150`.
-- The slice contract: `src/kernel/slice.ts` (the field `cli`), and the manifest rules: `spec/changes/1.0.0/design.md:96-133`, with the `schema` rule at `:132-133`.
-- The source tree of a slice: `spec/changes/1.0.0/design.md:53-72`, and the code conventions: `spec/changes/1.0.0/design.md:143-150`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:1-15`.
+- The store, the formats, the state, the sizes, and the commands: `.dotclaude/spec/changes/1.0.0/workflow.md:3-72`.
+- The files: `.dotclaude/spec/changes/1.0.0/tree.md:144-150`.
+- The slice contract: `src/kernel/slice.ts` (the field `cli`), and the manifest rules: `.dotclaude/spec/changes/1.0.0/design.md:96-133`, with the `schema` rule at `:132-133`.
+- The source tree of a slice: `.dotclaude/spec/changes/1.0.0/design.md:53-72`, and the code conventions: `.dotclaude/spec/changes/1.0.0/design.md:143-150`.
   A class fits the open store of one CLI run (`design.md:148`).
 - The generator writes `bin/<bin>` from `adapters/cli.ts` (`tools/generate/emit/slices.ts:72-90`).
   No slice has a CLI yet, so this is the first one, and `tests/tools/generate/` shows the launcher on a fixture.
 - The domain of P02 in `src/plugins/dotclaude/slices/spec/domain/`: `parseSpec`, `parseDelta` (`parse.ts`), `parseTasks`, `parsePackage` (`plan.ts`), `validateSpec`, `validateDelta`, `validateTasks`, `validatePackage`, `validateDeps`, `validateWave` (`validate.ts`), and `applyDelta` (`delta.ts`).
 - The store types and reader: `src/kernel/spec-store.ts` (`SPEC_SCHEMA`, `SPEC_ROOT`, `LANES`, `statePath`, `readState`, `activeProgress`), and the async `FileReader` port: `src/kernel/ports.ts:21-24`, with its adapter in `src/kernel/node/fs.ts`.
   Only the `spec` slice writes the store, so the writer is `adapters/store.ts`.
-- The change: `spec/changes/1.0.0/`, with `packages.md` (the list of packages with checkboxes and waves) and `packages/*.md` (one brief for each package that has one).
+- The change: `.dotclaude/spec/changes/1.0.0/`, with `packages.md` (the list of packages with checkboxes and waves) and `packages/*.md` (one brief for each package that has one).
 
 ## Steps
 
 1. Write `slice.ts`, `limits.ts`, `adapters/store.ts`, `adapters/cli.ts`, and the templates of `new` for each size.
 2. Write the commands `new`, `status`, `next`, `lane`, `validate`, `archive`, and `record` of `workflow.md:63-72`.
    - `lane` stops with a message in a linked git worktree (`workflow.md:48-49`).
-   - `archive` applies the deltas to a temporary copy of `spec/specs/`, and changes nothing when one delta fails.
+   - `archive` applies the deltas to a temporary copy of `.dotclaude/spec/specs/`, and changes nothing when one delta fails.
    - `status` prints numbers and icons, with no bar.
    - Each command that reads `state.json` stops with a message on a `schema` that it does not know.
 3. Write the tests in `tests/dotclaude/spec/cli/`, on fixture stores in a temporary folder: each command, a pass and a failure, `lane` in a linked worktree, and `archive` with one failing delta.
-4. Write `spec/changes/1.0.0/state.json`: the lane `done` for each package that `packages.md` marks `[x]`, `doing` for each package of wave 2, and `planned` for the others.
+4. Write `.dotclaude/spec/changes/1.0.0/state.json`: the lane `done` for each package that `packages.md` marks `[x]`, `doing` for each package of wave 2, and `planned` for the others.
 5. Run `just generate`, then `plugins/dotclaude/bin/dotclaude-spec validate 1.0.0`.
    When it finds an error in a brief of `packages/`, report the error, and do not change the brief.
 6. Run `just test tests/dotclaude/spec`, `just lab`, and `just check`.

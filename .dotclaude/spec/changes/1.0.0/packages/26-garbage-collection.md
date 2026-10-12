@@ -15,14 +15,14 @@ dotclaude adds no cleanup of its own where Claude Code has one.
 
 ## Context
 
-- The entry: `spec/changes/1.0.0/packages.md:138-141`.
-- The entry says first to answer the open items of `spec/changes/1.0.0/evidence/automode.md#open` on cleanup.
+- The entry: `.dotclaude/spec/changes/1.0.0/packages.md:138-141`.
+- The entry says first to answer the open items of `.dotclaude/spec/changes/1.0.0/evidence/automode.md#open` on cleanup.
 - The setup merges the settings keys in `src/plugins/dotclaude/slices/setup/domain/settings.ts`.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
 
 ## Steps
 
-1. Answer the open items of `spec/changes/1.0.0/evidence/automode.md#open` on cleanup, with a source for each answer.
+1. Answer the open items of `.dotclaude/spec/changes/1.0.0/evidence/automode.md#open` on cleanup, with a source for each answer.
 2. Set the cleanup keys, such as `cleanupPeriodDays`, in `domain/settings.ts` where Claude Code has the cleanup.
 3. Remove each cleanup of dotclaude that Claude Code already does.
 4. Write `tests/dotclaude/setup/cleanup.test.ts` for each key that the setup writes.

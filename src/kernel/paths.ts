@@ -76,8 +76,8 @@ export const CLAUDE_LOCAL_PATHS = [
 /** The paths in `.dotclaude/` that git must not track. */
 export const DOTCLAUDE_LOCAL_PATHS = [
   "handoff/",
-  "spec/.specs-new/",
-  "spec/.specs-old/",
+  ".dotclaude/spec/.specs-new/",
+  ".dotclaude/spec/.specs-old/",
 ] as const;
 
 /** The patterns for `.git/info/exclude`: only the local checkout needs them, so the team `.gitignore` stays as it is. */

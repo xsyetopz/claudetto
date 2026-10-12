@@ -20,14 +20,14 @@ The asks: a `git` command that discards work, a change to a test, a limits file,
   The type check reads them.
 - Your worktree can start at an old commit.
   First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
-- The slice contract: `src/kernel/slice.ts`, and the manifest rules: `spec/changes/1.0.0/design.md:96-133`.
-- The source tree of a slice: `spec/changes/1.0.0/design.md:53-72`, and the code conventions: `spec/changes/1.0.0/design.md:143-150`.
-- What a test checks: `spec/changes/1.0.0/design.md:160-172`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
+- The slice contract: `src/kernel/slice.ts`, and the manifest rules: `.dotclaude/spec/changes/1.0.0/design.md:96-133`.
+- The source tree of a slice: `.dotclaude/spec/changes/1.0.0/design.md:53-72`, and the code conventions: `.dotclaude/spec/changes/1.0.0/design.md:143-150`.
+- What a test checks: `.dotclaude/spec/changes/1.0.0/design.md:160-172`.
 - A ported slice to use as the model: `src/plugins/dotclaude/slices/prompt/`, its tests `tests/dotclaude/prompt/`, and its hook lab tests `src/plugins/dotclaude/slices/prompt/lab/`.
 - The kernel has `shell.ts`, `shellkinds.ts`, `wrappers.ts`, `text.ts`, and `budget.ts`.
   `plugins/dotclaude/lib/code.ts` (43 lines) has no kernel copy.
-- The files of `asks`: `spec/changes/1.0.0/tree.md:124-127` (`git.ts`, `writes.ts`, `content.ts`, `comments.ts`, `scripts.ts`).
+- The files of `asks`: `.dotclaude/spec/changes/1.0.0/tree.md:124-127` (`git.ts`, `writes.ts`, `content.ts`, `comments.ts`, `scripts.ts`).
   The 0.28.0 feature also has `kinds.ts`, `hookscripts.ts`, `shellforms.ts`, `shellwrites.ts`, and `text.ts`.
   Give each ask one domain file, and put the shared helpers in as few other domain files as fit.
 - The 0.28.0 code:

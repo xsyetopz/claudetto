@@ -17,9 +17,9 @@ Add the lint rules and the checks of the 1.0.0 layout to `just check`, change `A
 - Your worktree has no git-ignored file.
   Before a check, run `bun install` in the worktree, and copy each git-ignored types folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree: `.claude-plugin/types/` and `plugins/*/.claude-plugin/types/`.
   The type check reads them.
-- The code conventions and the lint rules: `spec/changes/1.0.0/design.md:143-150` and `:160-172`.
-- The import rules of a slice: `spec/changes/1.0.0/design.md:127-128`.
-- The bounds: `spec/changes/1.0.0/design.md:135-141`.
+- The code conventions and the lint rules: `.dotclaude/spec/changes/1.0.0/design.md:143-150` and `:160-172`.
+- The import rules of a slice: `.dotclaude/spec/changes/1.0.0/design.md:127-128`.
+- The bounds: `.dotclaude/spec/changes/1.0.0/design.md:135-141`.
 - The 0.28.0 paths that the new rules exempt: `tools/rebuild-pending.txt`.
 - The scripts: `package.json` (`lint` runs `bunx biome ci plugins tests tools`, with no `src`), `tsconfig.json` (its `include` has no `src`), and `justfile` (`check`).
 - The file-size test: `tests/support/file-size.test.ts`, with the bounds in `tools/limits.ts:7-9`.

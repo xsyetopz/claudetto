@@ -20,11 +20,11 @@ The add-on works with no other plugin installed.
   The type check reads them.
 - Your worktree can start at an old commit.
   First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`, and the add-ons: `packages.md:103,109`.
-- The plugin: `spec/changes/1.0.0/design.md:14,17,19`, and the files: `spec/changes/1.0.0/tree.md:182-184`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`, and the add-ons: `packages.md:103,109`.
+- The plugin: `.dotclaude/spec/changes/1.0.0/design.md:14,17,19`, and the files: `.dotclaude/spec/changes/1.0.0/tree.md:182-184`.
   A command is a skill with `disable-model-invocation: true` (`design.md:17`), and the 0.28.0 skills do not have it.
-- The slice contract: `src/kernel/slice.ts` (the fields `cli` and `skills`), and the manifest rules: `spec/changes/1.0.0/design.md:96-133`.
-- The source tree of a slice: `spec/changes/1.0.0/design.md:53-72`, and the code conventions: `spec/changes/1.0.0/design.md:143-150`.
+- The slice contract: `src/kernel/slice.ts` (the fields `cli` and `skills`), and the manifest rules: `.dotclaude/spec/changes/1.0.0/design.md:96-133`.
+- The source tree of a slice: `.dotclaude/spec/changes/1.0.0/design.md:53-72`, and the code conventions: `.dotclaude/spec/changes/1.0.0/design.md:143-150`.
 - The generator finds a plugin from `src/plugins/<p>/plugin.ts` (`tools/generate/discover.ts:61-84`), writes `bin/<bin>` from `adapters/cli.ts` (`tools/generate/emit/slices.ts:72-90`), copies the skills of a slice (`:52-57`), and copies the kernel closure to `plugins/<p>/kernel/`.
   `src/kernel/node/` has `fs`, `paths`, `process`, `stdin`, and `tail` for a CLI.
 - The 0.28.0 add-on:

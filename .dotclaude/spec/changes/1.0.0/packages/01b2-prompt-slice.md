@@ -18,7 +18,7 @@ The 0.28.0 handlers that are not ported yet stay in one hand-written module, whi
 - Your worktree has no git-ignored file.
   Before a check, run `bun install` in the worktree, and copy each git-ignored types folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree: `.claude-plugin/types/` and `plugins/*/.claude-plugin/types/`.
   The type check reads them.
-- The source tree of a slice: `spec/changes/1.0.0/design.md:58-72`, and the files of `prompt`: `spec/changes/1.0.0/tree.md:99-107`.
+- The source tree of a slice: `.dotclaude/spec/changes/1.0.0/design.md:58-72`, and the files of `prompt`: `.dotclaude/spec/changes/1.0.0/tree.md:99-107`.
 - The contract: `src/kernel/slice.ts`.
 - The generator: `tools/generate/discover.ts` and `tools/generate/emit/register.ts`.
 - The `prompt` feature of 0.28.0: `plugins/dotclaude/features/prompt/` (`select.ts`, `shared.ts`, `texts.ts`, and `variants.ts`, 270 lines), with its text source `src/plugins/dotclaude/features/prompt/texts.ts/`.

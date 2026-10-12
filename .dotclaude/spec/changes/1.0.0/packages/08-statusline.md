@@ -21,14 +21,14 @@ It has no OpenSpec code.
   The type check reads them.
 - Your worktree can start at an old commit.
   First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
-- The slice contract: `src/kernel/slice.ts` (the fields `cli` and `segments`), and the manifest rules: `spec/changes/1.0.0/design.md:96-133`.
-- The source tree of a slice: `spec/changes/1.0.0/design.md:53-72`, and the code conventions: `spec/changes/1.0.0/design.md:143-150`.
-- What a test checks: `spec/changes/1.0.0/design.md:160-172`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
+- The slice contract: `src/kernel/slice.ts` (the fields `cli` and `segments`), and the manifest rules: `.dotclaude/spec/changes/1.0.0/design.md:96-133`.
+- The source tree of a slice: `.dotclaude/spec/changes/1.0.0/design.md:53-72`, and the code conventions: `.dotclaude/spec/changes/1.0.0/design.md:143-150`.
+- What a test checks: `.dotclaude/spec/changes/1.0.0/design.md:160-172`.
 - The generator writes `bin/<bin>` from `adapters/cli.ts` (`tools/generate/emit/slices.ts:72-90`).
   It writes one launcher for each slice.
   So `adapters/cli.ts` is the CLI `dotclaude-statusline`, which calls `adapters/subagents.ts` when it gets the flag `--subagent`.
-- The design: `spec/changes/1.0.0/workflow.md:118-125`, the files: `spec/changes/1.0.0/tree.md:151-155` and `:199`, and the decision of the user: `spec/changes/1.0.0/change.md:30-31`.
+- The design: `.dotclaude/spec/changes/1.0.0/workflow.md:118-125`, the files: `.dotclaude/spec/changes/1.0.0/tree.md:151-155` and `:199`, and the decision of the user: `.dotclaude/spec/changes/1.0.0/change.md:30-31`.
 - The change segment reads the store with `src/kernel/spec-store.ts` (`readState`, `activeProgress`) through the `FileReader` port (`src/kernel/ports.ts`), and `src/kernel/node/fs.ts` is its adapter.
 - The 0.28.0 code:
   - `plugins/dotclaude/features/statusline/` (18 files, 1566 lines), which uses `plugins/dotclaude/lib/budget.ts`, `hook-io.ts`, `errors.ts`, `tail.ts`, and `model.ts`.

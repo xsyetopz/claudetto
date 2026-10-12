@@ -19,9 +19,9 @@ This package ports no slice: P01b2 ports `prompt`, P01b3 adds the snippet, and P
 - Your worktree has no git-ignored file.
   Before a check, run `bun install` in the worktree, and copy each git-ignored types folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree: `.claude-plugin/types/` and `plugins/*/.claude-plugin/types/`.
   The type check reads them.
-- The generated tree and its rules: `spec/changes/1.0.0/design.md:74-94`.
-- The slice manifest and the order of the handlers: `spec/changes/1.0.0/design.md:96-126`.
-- The rebuild list: `spec/changes/1.0.0/design.md:152-158`.
+- The generated tree and its rules: `.dotclaude/spec/changes/1.0.0/design.md:74-94`.
+- The slice manifest and the order of the handlers: `.dotclaude/spec/changes/1.0.0/design.md:96-126`.
+- The rebuild list: `.dotclaude/spec/changes/1.0.0/design.md:152-158`.
 - The contract: `src/kernel/slice.ts` (`Slice`, `ModHandler`, and `PHASES`).
 - The generator of 0.28.0: `tools/generate.ts` (300 lines, at the bound).
   It writes the texts of `src/plugins/<plugin>/` to `plugins/<plugin>/`.
@@ -48,7 +48,7 @@ This package ports no slice: P01b2 ports `prompt`, P01b3 adds the snippet, and P
    Change the `generate` recipe of `justfile` to the new path, the import of `isGenerated` in `tests/support/file-size.test.ts:8` to the new module, and the imports of `tests/support/generate.test.ts`.
 3. Write `discover.ts` (each `src/plugins/<plugin>/slices/*/slice.ts`), `order.ts` (sort by phase, then by slice name, and fail on two handlers of one slice with the same event, filter, and phase), `closure.ts` (copy the closure of the `src/kernel/` modules that a plugin imports to `plugins/<plugin>/kernel/`, and change each import path in the copies of the slices), `emit/register.ts` (one literal `on()` call for each handler), `emit/hooks.ts` (`hooks.json` from the classic hooks), `emit/manifest.ts` (`plugin.json`), and the slice texts and launchers of Context.
    Until P01b2, no real slice has a `slice.ts`, so the output of the repository does not change.
-4. Write `tools/rebuild-pending.txt`: each 0.28.0 path in `plugins/`, `src/`, and `tests/`, grouped under a comment that names the package of `spec/changes/1.0.0/packages.md` that ports it.
+4. Write `tools/rebuild-pending.txt`: each 0.28.0 path in `plugins/`, `src/`, and `tests/`, grouped under a comment that names the package of `.dotclaude/spec/changes/1.0.0/packages.md` that ports it.
    The generator fails on a file in `plugins/` that it did not write and that the list does not name.
 5. Write the tests in `tests/tools/generate/`, on fixture slices in that folder: the order of the handlers, the failure on a duplicate, the kernel closure, the import paths in the copies, and the failure on a file that the list does not name.
    Move the cases of `tests/support/generate.test.ts` that still apply to `tests/tools/generate/`, and delete that file.

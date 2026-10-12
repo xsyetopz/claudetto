@@ -14,17 +14,17 @@ Each part of dotclaude that works in a separate checkout uses the worktrees of C
 
 ## Context
 
-- The entry: `spec/changes/1.0.0/packages.md:142-146`.
+- The entry: `.dotclaude/spec/changes/1.0.0/packages.md:142-146`.
 - The entry says first to list the worktree features of Claude Code 2.1.296.
-  It also says to list each place in `src/` and `spec/changes/1.0.0/` that makes or names a worktree of its own, such as `git worktree add` in the `debugger` agent.
+  It also says to list each place in `src/` and `.dotclaude/spec/changes/1.0.0/` that makes or names a worktree of its own, such as `git worktree add` in the `debugger` agent.
 - The `worktree` keys of the setup are the new file `domain/worktree.ts`.
   The `.claude/worktrees/agent-*` entry of the `autoMode` lists is P25, and the `**/.claude/worktrees/` exclude line is P32.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
 
 ## Steps
 
 1. List the worktree features of Claude Code 2.1.296, with a source for each, in the report.
-2. List each place in `src/` and `spec/changes/1.0.0/` that makes or names a worktree of its own.
+2. List each place in `src/` and `.dotclaude/spec/changes/1.0.0/` that makes or names a worktree of its own.
 3. Change each agent and each skill in `src/plugins/dotclaude/slices/agents/` and `src/plugins/dotclaude/slices/spec/skills/` to use the worktrees of Claude Code.
 4. Write the `worktree` keys of the setup in `domain/worktree.ts`, and their tests in `tests/dotclaude/setup/worktree.test.ts`.
 5. Write the tests of the agents and the spec skills in `tests/dotclaude/agents/` and `tests/dotclaude/spec/`.

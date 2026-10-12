@@ -18,11 +18,11 @@ Code that uses `node:`, `bun:`, or `Bun` goes only in `src/kernel/node/`, becaus
 
 - Your worktree has no git-ignored file.
   Before a check, run `bun install` in the worktree, and copy each `.claude-plugin/types/` folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree, because the type check reads them.
-- The design of the slice manifest: `spec/changes/1.0.0/design.md:96-133`.
-- The bounds and the code conventions: `spec/changes/1.0.0/design.md:135-150`.
-- The kernel files of the approved tree: `spec/changes/1.0.0/tree.md:55-66`.
-- The state of a change (`state.json`): `spec/changes/1.0.0/workflow.md:45-50`.
-- The change segment of the status line reads the store through `spec-store.ts`: `spec/changes/1.0.0/workflow.md:118-125`.
+- The design of the slice manifest: `.dotclaude/spec/changes/1.0.0/design.md:96-133`.
+- The bounds and the code conventions: `.dotclaude/spec/changes/1.0.0/design.md:135-150`.
+- The kernel files of the approved tree: `.dotclaude/spec/changes/1.0.0/tree.md:55-66`.
+- The state of a change (`state.json`): `.dotclaude/spec/changes/1.0.0/workflow.md:45-50`.
+- The change segment of the status line reads the store through `spec-store.ts`: `.dotclaude/spec/changes/1.0.0/workflow.md:118-125`.
 - The mod API types: `/Users/krystian/CodeProjects/xsyetopz/dotclaude/.claude-plugin/types/claude-code/index.d.ts:4608` (`EventName`), `:4641` (`Events`), `:6468` (`On`), and `:7134` (`Pattern`).
 - The 0.28.0 code to port, as the source of behavior only:
   - `plugins/dotclaude/lib/budget.ts` (55 lines) to `src/kernel/budget.ts`.

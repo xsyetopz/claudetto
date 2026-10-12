@@ -10,15 +10,6 @@ export type Size = (typeof SIZES)[number];
 /** The size of `dotclaude-spec new` when the call has no `--size`. */
 export const DEFAULT_SIZE: Size = "medium";
 
-/** The folder of the specs, which are the truth. */
-export const SPECS_DIR = "spec/specs";
-
-/** The folder that holds one folder for each archived change. */
-export const ARCHIVE_DIR = "spec/changes/archive";
-
-/** The folder of the records of the hotfixes. */
-export const HOTFIX_DIR = "spec/hotfixes";
-
 /** The most characters of the file name of a hotfix record, without the date. */
 export const HOTFIX_SLUG_MAX = 40;
 

@@ -11,7 +11,7 @@ agent: implementer
 ## Goal
 
 Give the `prompt` slice one transform for each confirmed built-in section of the system prompt of Claude Code 2.1.296.
-A transform is keyed by the id of its section and edits the built-in text to a shorter text that keeps the facts that the model needs, so the slice ships no copy of a built-in text (`spec/changes/1.0.0/change.md:73-75`).
+A transform is keyed by the id of its section and edits the built-in text to a shorter text that keeps the facts that the model needs, so the slice ships no copy of a built-in text (`.dotclaude/spec/changes/1.0.0/change.md:73-75`).
 
 ## Context
 
@@ -21,17 +21,17 @@ A transform is keyed by the id of its section and edits the built-in text to a s
   `external/` is git-ignored too, so read it in the main checkout.
 - Your worktree can start at an old commit.
   First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
-- The goal of the prompt slices: `spec/changes/1.0.0/change.md:12-17`, and the files: `spec/changes/1.0.0/tree.md:102-107`.
-- The test that each transform finds its section: `spec/changes/1.0.0/design.md:171`.
-- The extract: `spec/changes/1.0.0/evidence/extract.md`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
+- The goal of the prompt slices: `.dotclaude/spec/changes/1.0.0/change.md:12-17`, and the files: `.dotclaude/spec/changes/1.0.0/tree.md:102-107`.
+- The test that each transform finds its section: `.dotclaude/spec/changes/1.0.0/design.md:171`.
+- The extract: `.dotclaude/spec/changes/1.0.0/evidence/extract.md`.
   The confirmed section ids are at `extract.md:77-94`: `action_caution`, `actions`, `communication`, `context_management`, `doing_tasks`, `env_info_simple`, `intro`, `lean_body`, `memory`, `pronouns`, `session_guidance`, `system`, `tone`, `tools`, and `total_tokens`.
   Their texts are in `external/cc-extract/2.1.296/section/` of the main checkout.
   Do not use a section that the report marks as not confirmed (`extract.md:222-226`).
 - The slice now:
   - `domain/apply.ts:13-21` lists seven ids, and `composeSections` (`apply.ts:38`) replaces them with the sections of the variant of the model (`domain/variants.ts`).
   - `adapters/mod.ts:14-22` (`onCompose`), and `onContextSection` at `adapters/mod.ts:34-43` answers `context_management` through the filter of `slice.ts:12-17`.
-- The code conventions: `spec/changes/1.0.0/design.md:143-150`.
+- The code conventions: `.dotclaude/spec/changes/1.0.0/design.md:143-150`.
 
 ## Steps
 

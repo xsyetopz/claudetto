@@ -2,7 +2,8 @@
 // `dotclaude-spec record <text>`: writes the record of a hotfix.
 
 import path from "node:path";
-import { HOTFIX_DIR, HOTFIX_SLUG_MAX } from "../limits.ts";
+import { HOTFIX_DIR } from "../../../kernel/paths.ts";
+import { HOTFIX_SLUG_MAX } from "../limits.ts";
 import { HOTFIX } from "../templates/files.ts";
 import { dateOf, type Run } from "./run.ts";
 

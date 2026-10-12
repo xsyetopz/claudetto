@@ -17,8 +17,8 @@ The OpenSpec code of 0.28.0 in the slices goes with the package of its slice: se
 
 - Your worktree has no git-ignored file.
   Before a check, run `bun install` in the worktree, and copy each `.claude-plugin/types/` folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree, because the type check reads them.
-- The decision of the user: `spec/changes/1.0.0/change.md:25`.
-- The removed paths: `spec/changes/1.0.0/tree.md:229`.
+- The decision of the user: `.dotclaude/spec/changes/1.0.0/change.md:25`.
+- The removed paths: `.dotclaude/spec/changes/1.0.0/tree.md:229`.
 - The tracked OpenSpec files: `git ls-files openspec .claude/skills` (137 files, which include 6 skills in `.claude/skills/openspec-*/`).
 - The list of the 0.28.0 paths that no package has ported: `tools/rebuild-pending.txt`.
 

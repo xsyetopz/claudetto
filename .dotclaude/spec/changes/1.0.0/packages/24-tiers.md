@@ -17,12 +17,12 @@ An API key account gets the picks of its own budget.
 
 ## Context
 
-- The entry: `spec/changes/1.0.0/packages.md:126-132`, and the evidence: `spec/changes/1.0.0/evidence/tiers.md`.
+- The entry: `.dotclaude/spec/changes/1.0.0/packages.md:126-132`, and the evidence: `.dotclaude/spec/changes/1.0.0/evidence/tiers.md`.
 - The setup reads `claude auth status --json` for `subscriptionType`.
   It reads the rate limit tier only where Claude Code exposes it without the credentials file.
-- The setup does not scale what Claude Code scales itself (`spec/changes/1.0.0/evidence/tiers.md`).
+- The setup does not scale what Claude Code scales itself (`.dotclaude/spec/changes/1.0.0/evidence/tiers.md`).
 - The tier code is in `src/plugins/dotclaude/slices/setup/domain/facts.ts`, which names the account type.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
 - Before a check, run `bun install` in the worktree, and copy each git-ignored types folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude`.
 
 ## Steps

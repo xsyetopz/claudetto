@@ -1,5 +1,5 @@
 // The line bound of each file is checked by `just validate` (`tools/validate.ts`).
-// These tests pin the rule of `overBound` at its boundaries (the "Bounds" section of `spec/changes/1.0.0/design.md`).
+// These tests pin the rule of `overBound` at its boundaries (the "Bounds" section of `.dotclaude/spec/changes/1.0.0/design.md`).
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";

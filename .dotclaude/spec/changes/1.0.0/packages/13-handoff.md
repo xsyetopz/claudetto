@@ -16,17 +16,17 @@ Each handler names its eval kinds in an optional field of `src/kernel/slice.ts`,
 
 ## Context
 
-- P13 starts after each other slice package of the core plugin is merged, because the rebuild list makes P13 the last one (`spec/changes/1.0.0/packages.md:120`).
+- P13 starts after each other slice package of the core plugin is merged, because the rebuild list makes P13 the last one (`.dotclaude/spec/changes/1.0.0/packages.md:120`).
 - The generator writes `plugins/<plugin>/evals/hooks.json`, because `tests/support/hook-evals.test.ts` needs the file.
-  Wave 2 keeps the file hand-written on the rebuild list (`spec/changes/1.0.0/packages.md:119`).
+  Wave 2 keeps the file hand-written on the rebuild list (`.dotclaude/spec/changes/1.0.0/packages.md:119`).
 - The folder `src/plugins/dotclaude/hooks/` holds `description.txt` and `hooks.json` in this checkout.
   The entry names `hooks/legacy.ts`, `lib/`, and `features/context/` too, but these paths do not exist under `src/` here, so only the folder is in `owns`.
 - The entry names `hooks/PostToolUse/context.ts` for the 0.28.0 context bound of subagents.
   This file is not under `src/` in this checkout, so find it in the 0.28.0 history before you move it.
 - Your worktree can start at an old commit.
   First run `git merge-base --is-ancestor 16112523 HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`, and this package: `spec/changes/1.0.0/packages.md:117-125`.
-- The slice contract: `src/kernel/slice.ts`, and the source tree of a slice: `spec/changes/1.0.0/design.md:53-72`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`, and this package: `.dotclaude/spec/changes/1.0.0/packages.md:117-125`.
+- The slice contract: `src/kernel/slice.ts`, and the source tree of a slice: `.dotclaude/spec/changes/1.0.0/design.md:53-72`.
 - Before a check, run `bun install` in the worktree, and copy each git-ignored types folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree.
 
 ## Steps

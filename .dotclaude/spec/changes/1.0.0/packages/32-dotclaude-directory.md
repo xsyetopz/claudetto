@@ -15,14 +15,14 @@ The layout is based on `.claude/`.
 
 ## Context
 
-- The entry: `spec/changes/1.0.0/packages.md:166-173`, and the decisions of the user in `spec/changes/1.0.0/change.md`.
+- The entry: `.dotclaude/spec/changes/1.0.0/packages.md:166-173`, and the decisions of the user in `.dotclaude/spec/changes/1.0.0/change.md`.
 - The entry says first to list each file that dotclaude writes, with its scope (project or user), whether git tracks it, and whether `.gitignore` or `.git/info/exclude` gets its rule.
   The list is the first step of this package.
 - The files that write a `.claude` path are in the `asks` slice (`domain/writes.ts`, `domain/content.ts`, `domain/hooks.ts`, `limits.ts`) and in the `setup` slice (`adapters/files.ts`, `adapters/cli.ts`, `adapters/exclude-step.ts`, `domain/exclude.ts`, `skills/setup/SKILL.md`).
   The path code of the `asks` slice is in `domain/paths.ts`.
-- The setup adds the rules in the same way as the `.git/info/exclude` rules of P09 (`spec/changes/1.0.0/packages/09-setup.md`).
+- The setup adds the rules in the same way as the `.git/info/exclude` rules of P09 (`.dotclaude/spec/changes/1.0.0/packages/09-setup.md`).
 - P13 writes the handoff file to `.dotclaude/`, so P13 starts after P32.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
 
 ## Steps
 

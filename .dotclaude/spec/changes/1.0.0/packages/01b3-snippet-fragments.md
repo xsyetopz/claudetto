@@ -17,7 +17,7 @@ Make the generator write the settings snippet from the `settings` entries of the
 - Your worktree has no git-ignored file.
   Before a check, run `bun install` in the worktree, and copy each git-ignored types folder of the main checkout `/Users/krystian/CodeProjects/xsyetopz/dotclaude` to the same path in the worktree: `.claude-plugin/types/` and `plugins/*/.claude-plugin/types/`.
   The type check reads them.
-- The rules of the snippet: `spec/changes/1.0.0/workflow.md:127-133`.
+- The rules of the snippet: `.dotclaude/spec/changes/1.0.0/workflow.md:127-133`.
 - The property order: `schemas/claude-code-settings.json`.
 - The 0.28.0 snippet: `src/shared/snippet.json` and `src/shared/docs-snippet.json`.
   The 0.28.0 text step (`tools/generate/emit/texts.ts`) puts them in `plugins/dotclaude/lib/snippets.ts` through `src/plugins/dotclaude/lib/snippets.ts/`, and fills `{{include NAME}}` lines from `src/shared/`.

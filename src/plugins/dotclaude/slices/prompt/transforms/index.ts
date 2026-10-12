@@ -1,5 +1,5 @@
 // The transform of each confirmed built-in section of Claude Code 2.1.296, keyed by the section id.
-// The ids come from `spec/changes/1.0.0/evidence/extract.md`, and each file here holds one transform.
+// The ids come from `.dotclaude/spec/changes/1.0.0/evidence/extract.md`, and each file here holds one transform.
 
 import * as actionCaution from "./action_caution.ts";
 import * as actions from "./actions.ts";

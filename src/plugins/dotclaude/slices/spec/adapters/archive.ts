@@ -1,5 +1,5 @@
-// `dotclaude-spec archive <id>`: applies the deltas of a change to a temporary copy of `spec/specs/`,
-// then replaces `spec/specs/` and moves the change to `archive/`.
+// `dotclaude-spec archive <id>`: applies the deltas of a change to a temporary copy of `.dotclaude/spec/specs/`,
+// then replaces `.dotclaude/spec/specs/` and moves the change to `archive/`.
 // When one delta fails, nothing changes.
 
 import path from "node:path";

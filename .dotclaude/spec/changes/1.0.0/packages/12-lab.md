@@ -22,10 +22,10 @@ The add-on works alone, because a user debugs a session with it, so it imports n
   `external/` is git-ignored too, so read the bundle in the main checkout.
 - Your worktree can start at an old commit.
   First run `git merge-base --is-ancestor 8642933e HEAD`, and when it fails, run `git merge --ff-only dotclaude-1-0-0`, or `git rebase dotclaude-1-0-0` when you have commits.
-- The rules of the wave: `spec/changes/1.0.0/packages.md:7-15`, and this package: `packages.md:104-107,109`.
-- The plugin: `spec/changes/1.0.0/design.md:15,19`, the files: `spec/changes/1.0.0/tree.md:186-190`, and the schemas: `spec/changes/1.0.0/workflow.md:135-139` and `tree.md:22-24`.
-- The slice contract: `src/kernel/slice.ts` (the fields `cli` and `skills`), and the manifest rules: `spec/changes/1.0.0/design.md:96-133`.
-- The source tree of a slice: `spec/changes/1.0.0/design.md:53-72`, and the code conventions: `spec/changes/1.0.0/design.md:143-150`.
+- The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`, and this package: `packages.md:104-107,109`.
+- The plugin: `.dotclaude/spec/changes/1.0.0/design.md:15,19`, the files: `.dotclaude/spec/changes/1.0.0/tree.md:186-190`, and the schemas: `.dotclaude/spec/changes/1.0.0/workflow.md:135-139` and `tree.md:22-24`.
+- The slice contract: `src/kernel/slice.ts` (the fields `cli` and `skills`), and the manifest rules: `.dotclaude/spec/changes/1.0.0/design.md:96-133`.
+- The source tree of a slice: `.dotclaude/spec/changes/1.0.0/design.md:53-72`, and the code conventions: `.dotclaude/spec/changes/1.0.0/design.md:143-150`.
 - The generator finds a plugin from `src/plugins/<p>/plugin.ts` (`tools/generate/discover.ts:61-84`), writes `bin/<bin>` from `adapters/cli.ts` (`tools/generate/emit/slices.ts:72-90`), copies the skills of a slice (`:52-57`), and copies the kernel closure to `plugins/<p>/kernel/`.
 - The 0.28.0 add-on:
   - `plugins/dotclaude-lab/features/` (with `capture/report.ts`, 247 lines, and `schema/scan.ts`, 217 lines), `plugins/dotclaude-lab/lib/run-program.ts`, and the launchers `bin/dotclaude-capture`, `dotclaude-eval-compare`, `dotclaude-sandbox`, and `dotclaude-schema`.

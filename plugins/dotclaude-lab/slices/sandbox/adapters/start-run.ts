@@ -12,6 +12,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { SANDBOX_TEMP } from "../../../kernel/paths.ts";
 
 // This file sits six folders below the repository root.
 const REPO = path.resolve(import.meta.dirname, "../../../../../..");
@@ -21,7 +22,7 @@ const port = args.includes("--port")
   : "8787";
 const dir = args.includes("--dir")
   ? (args[args.indexOf("--dir") + 1] as string)
-  : path.join(os.tmpdir(), "dotclaude-sandbox");
+  : path.join(os.tmpdir(), SANDBOX_TEMP);
 const root = path.resolve(dir);
 const LAB = path.join(REPO, "plugins/dotclaude-lab/bin");
 // The measure step. Change this one constant when the command moves.

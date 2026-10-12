@@ -2,9 +2,9 @@
 // `dotclaude-spec new <id> [--size trivial|medium|large]`: writes the files of the size.
 
 import path from "node:path";
+import { SPEC_ROOT } from "../../../kernel/paths.ts";
 import {
   type ChangeState,
-  SPEC_ROOT,
   SPEC_SCHEMA,
 } from "../../../kernel/spec-store.ts";
 import { CHANGE_ID, DEFAULT_SIZE, SIZES, type Size } from "../limits.ts";
