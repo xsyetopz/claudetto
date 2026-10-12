@@ -24,11 +24,27 @@ const opt = (argv: string[], name: string): string | undefined => {
   return at < 0 ? undefined : argv[at + 1];
 };
 
-/** The bundle that `claude` on `PATH` resolves to. */
-const installedBundle = (): string => {
+/**
+ * The bundle of the `claude` on `PATH`.
+ * Bun links a global bin as a symlink on POSIX, but as an `.exe` launcher on Windows.
+ * The launcher holds no bundle, and the `bin/claude.exe` of the main package is a placeholder that `postinstall` replaces,
+ * so a global Bun install uses the binary of the platform package,
+ * which is `install/global/node_modules/@anthropic-ai/claude-code-<platform>-<arch>/` beside `bin`.
+ */
+export const installedBundle = (): string => {
   const bin = Bun.which("claude");
   if (!bin) throw new Error("claude is not on PATH.");
-  return fs.realpathSync(bin);
+  const platformBin = path.join(
+    path.dirname(bin),
+    "..",
+    "install",
+    "global",
+    "node_modules",
+    "@anthropic-ai",
+    `claude-code-${process.platform}-${process.arch}`,
+    process.platform === "win32" ? "claude.exe" : "claude",
+  );
+  return fs.existsSync(platformBin) ? platformBin : fs.realpathSync(bin);
 };
 
 /** The version in the name of the bundle, or in the output of `bundle --version`. */

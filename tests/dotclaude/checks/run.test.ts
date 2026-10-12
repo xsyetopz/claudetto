@@ -124,13 +124,17 @@ test("two runs in the same second write two log files", async () => {
   expect(logs(dir)).toHaveLength(2);
 });
 
-test("a command killed by a signal names the signal and prints no empty failures header", async () => {
-  const dir = await project();
-  const r = await run(dir, "kill -9 $$");
-  expect(r.status).toBe(1);
-  expect(r.out).toContain("SIGKILL");
-  expect(r.out).not.toContain("failures:");
-});
+// Windows has no POSIX signals, so a command cannot end by `kill -9` there, and the run gives status 0.
+test.skipIf(process.platform === "win32")(
+  "a command killed by a signal names the signal and prints no empty failures header",
+  async () => {
+    const dir = await project();
+    const r = await run(dir, "kill -9 $$");
+    expect(r.status).toBe(1);
+    expect(r.out).toContain("SIGKILL");
+    expect(r.out).not.toContain("failures:");
+  },
+);
 
 test("a command over the time bound says that it timed out", async () => {
   // A fake runner: the real runner needs the whole time bound to time out.
