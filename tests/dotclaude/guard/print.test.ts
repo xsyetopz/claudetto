@@ -2,20 +2,17 @@
 // No command runs. `count` is a stub for the line count of the named file, and no file is read.
 
 import { expect, test } from "bun:test";
-import type { Count } from "../../../plugins/dotclaude/features/reads/rules.ts";
-import type { Verdict } from "../../support/verdicts.ts";
-import { decideRead as decide } from "../../support/verdicts.ts";
-
-/** The `hookSpecificOutput` fields of a `PreToolUse` deny that this test reads. */
-const specificOf = (out: Verdict | undefined) => out?.hookSpecificOutput;
+import type { Count } from "../../../plugins/dotclaude/slices/guard/domain/deny.ts";
+import { denyOf } from "./support.ts";
 
 const CWD = "/work/app";
-// The print rule gives a path with `/` only, on every platform, as `lib/paths.ts` does.
+// The print rule gives a path with `/` only, on every platform, as `domain/paths.ts` does.
 const FILE = "/work/app/docs/design.md";
+/** The deny reason of `command`, or null when the command stays allowed. */
 const run = (command: string, count: Count = async () => 100) =>
-  decide({ tool_name: "Bash", cwd: CWD, tool_input: { command } }, count);
+  denyOf(command, CWD, count);
 const reason = async (command: string, count?: Count) =>
-  specificOf(await run(command, count))?.permissionDecisionReason as string;
+  (await run(command, count)) as string;
 /** The `Read` arguments that the reason of the print rule carries. */
 const readArgs = async (command: string, count?: Count) => {
   const text = await reason(command, count);
@@ -31,9 +28,7 @@ const readArgs = async (command: string, count?: Count) => {
 };
 
 test("`cat F` is denied with the absolute path and no range", async () => {
-  const specific = specificOf(await run("cat docs/design.md"));
-  expect(specific?.hookEventName).toBe("PreToolUse");
-  expect(specific?.permissionDecision).toBe("deny");
+  expect(typeof (await run("cat docs/design.md"))).toBe("string");
   expect(await readArgs("cat docs/design.md")).toStrictEqual({
     file: FILE,
     limit: undefined,
@@ -101,7 +96,7 @@ test("a print into a pipe, a redirect, a substitution, a heredoc, a quote, a com
     "ls # ; cat docs/design.md",
     'cd "$DIR" && cat design.md',
   ])
-    expect(await run(command), command).toBe(undefined);
+    expect(await run(command), command).toBe(null);
 });
 
 test("a command with an edit, a byte count, or another bounded form stays allowed", async () => {
@@ -113,7 +108,7 @@ test("a command with an edit, a byte count, or another bounded form stays allowe
     "ls docs",
     "git log -n 5",
   ])
-    expect(await run(command)).toBe(undefined);
+    expect(await run(command)).toBe(null);
 });
 
 test("more than one file, an option, a pattern print, and `git log` stay allowed", async () => {
@@ -123,40 +118,30 @@ test("more than one file, an option, a pattern print, and `git log` stay allowed
     "sed -n '/x/p' docs/design.md",
     "git log",
   ])
-    expect(await run(command)).toBe(undefined);
+    expect(await run(command)).toBe(null);
 });
 
 test("a generated file gets no `Read` call", async () => {
-  expect(await run("tail -n 50 run.log")).toBe(undefined);
+  expect(await run("tail -n 50 run.log")).toBe(null);
   for (const command of [
     "cat node_modules/p/index.js",
     "cat bun.lock",
     "cat dist/app.min.js",
   ])
-    expect(await run(command)).toBe(undefined);
+    expect(await run(command)).toBe(null);
 });
 
 test("a file in a temp folder is denied, because a project can be in a temp folder", async () => {
   for (const command of ["head /tmp/out.txt", "cat /private/tmp/p/notes.txt"])
-    expect(await run(command)).not.toBe(undefined);
+    expect(await run(command)).not.toBe(null);
 });
 
 test("a file that does not exist or has no lines stays allowed", async () => {
-  expect(await run("cat missing.md", async () => null)).toBe(undefined);
-  expect(await run("tail missing.md", async () => null)).toBe(undefined);
-  expect(await run("tail empty.md", async () => 0)).toBe(undefined);
+  expect(await run("cat missing.md", async () => null)).toBe(null);
+  expect(await run("tail missing.md", async () => null)).toBe(null);
+  expect(await run("tail empty.md", async () => 0)).toBe(null);
 });
 
-test("a tool other than `Bash`, and a payload with no command, give no output", async () => {
-  expect(
-    await decide({
-      tool_name: "Read",
-      cwd: CWD,
-      tool_input: { command: "cat a" },
-    }),
-  ).toBe(undefined);
-  expect(await decide({ tool_name: "Bash", cwd: CWD, tool_input: {} })).toBe(
-    undefined,
-  );
-  expect(await decide(undefined)).toBe(undefined);
+test("an empty command stays allowed", async () => {
+  expect(await run("")).toBe(null);
 });

@@ -1,14 +1,14 @@
-// The rules of `features/guard/rules.ts`, with commands as strings.
+// The ask rules of the `guard` slice, `domain/owners.ts`, with commands as strings.
 // No command runs.
-// `plugins/dotclaude/tests/mod.test.ts` tests the module in the hook lab.
+// `slices/guard/lab/ask.test.ts` tests the module in the hook lab.
 
 import { expect, test } from "bun:test";
+import { POLICY_FILE_MAX_CHARS } from "../../../plugins/dotclaude/kernel/budget.ts";
 import {
   ownRepo,
   policyReason,
   reachedRepos,
-} from "../../../plugins/dotclaude/features/guard/rules.ts";
-import { POLICY_FILE_MAX_CHARS } from "../../../plugins/dotclaude/lib/budget.ts";
+} from "../../../plugins/dotclaude/slices/guard/domain/owners.ts";
 
 test("`reachedRepos` reads `Bash` and `WebFetch` calls", () => {
   const bash = (command: string) => reachedRepos("Bash", { command });

@@ -10,12 +10,6 @@ tools/bump-version.ts
 tools/release.ts
 tools/update.ts
 
-# P05: `guard` and `reads`
-plugins/dotclaude/features/guard/
-plugins/dotclaude/features/reads/
-tests/dotclaude/guard/
-tests/dotclaude/reads/
-
 # P06: the asks of `adherence`
 plugins/dotclaude/features/adherence/
 tests/dotclaude/adherence/
