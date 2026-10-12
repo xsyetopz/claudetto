@@ -119,8 +119,7 @@ export const gitMatchers: Matcher[] = [
           (await anyWholeFolder(restorePaths(args), ctx))
         );
       // A forced `rm` drops the uncommitted work of its paths. `--cached` only unstages them.
-      if (verb === "rm")
-        return isForce(args) && !hasFlag(args, "--cached");
+      if (verb === "rm") return isForce(args) && !hasFlag(args, "--cached");
       return false;
     },
   },
