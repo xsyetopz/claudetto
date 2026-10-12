@@ -1,7 +1,6 @@
 # dotclaude Documentation
 
 The documentation is in the [dotclaude wiki](https://github.com/xsyetopz/dotclaude/wiki).
-The source of the wiki pages is in [`wiki/`](../wiki) in this repository.
 
 - Use: [Core plugin](https://github.com/xsyetopz/dotclaude/wiki/Core-Plugin), [OpenSpec](https://github.com/xsyetopz/dotclaude/wiki/OpenSpec), [Contributions](https://github.com/xsyetopz/dotclaude/wiki/Contributions)
 - Develop: [Development](https://github.com/xsyetopz/dotclaude/wiki/Development), [Sandbox](https://github.com/xsyetopz/dotclaude/wiki/Sandbox)

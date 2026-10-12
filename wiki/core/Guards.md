@@ -15,7 +15,8 @@ This page lists each layer, what to do when one fires, and how to change one.
 | --- | --- | --- |
 | Permission rules | `permissions` in the [settings snippet](Settings-Snippet), copied by you into your `settings.json` | Deny, ask, and allow lists for tools and commands. |
 | Sandbox | `sandbox` in the same snippet | Runs Bash commands in the Claude Code sandbox, with a list of allowed domains. |
-| Module guard | `hooks/register.ts`, with pure rules in `features/guard/rules.ts` | One `tool.check` handler for the policy ask and the adherence ask. |
+| Module guard | `src/plugins/dotclaude/slices/guard/` (`slice.ts`, `adapters/mod.ts`, `domain/guard.ts`, `domain/matchers/`) | One `tool.check` handler for the policy ask and the adherence ask. |
+| Destructive floor | The `autoMode` lists in your user settings, and the `guard` hook | Asks for root rights, and forbids destructive work. See [The destructive floor](#the-destructive-floor). |
 
 Deny rules are not a security boundary on their own, so the snippet pairs them with the sandbox ([Design](Design)).
 
@@ -30,6 +31,83 @@ Deny rules are not a security boundary on their own, so the snippet pairs them w
 The snippet also sets `disableBypassPermissionsMode`, so no mode skips these rules.
 The exact patterns are in the [settings snippet](Settings-Snippet).
 These layers apply only to the keys that you copy, because dotclaude writes no setting.
+For the destructive forms that lose uncommitted work or history, the floor decides.
+See [The destructive floor](#the-destructive-floor).
+
+## The destructive floor
+
+Normal work passes with no prompt.
+Work that asks for root rights asks you first.
+Destructive work is forbidden, also when you ask for it.
+The floor is a catalog of rules in `src/kernel/policy/`.
+Each rule has an `id`, a `tier`, and a `category`.
+
+| Tier | Where it is written | What it does |
+| --- | --- | --- |
+| `soft_deny`, rule `system.privilege` (`ask`) | `autoMode.soft_deny` in your user settings | Asks you before a root-rights command, such as `sudo`. |
+| `hard_deny`, `floor` | `autoMode.hard_deny` in your user settings | Forbids the action in every session. The classifier denies it in auto mode, and the `guard` hook denies the literal forms. |
+| `hard_deny`, `subagent` (rule `git.shared-checkout`) | `autoMode.hard_deny` in your user settings | Forbids a git form that changes the checkout that other workers share. The `guard` hook denies it in a subagent only. |
+
+The rules of each category are:
+
+| Category | Rules | Tier |
+| --- | --- | --- |
+| `git` | `git.discard-uncommitted`, `git.clean`, `git.stash-drop`, `git.history-rewrite`, `git.force-push-default`, `git.delete-branch`, `git.delete-repo` | `floor` |
+| `git` | `git.shared-checkout` | `subagent` |
+| `system` | `system.recursive-delete`, `system.disk`, `system.permissions`, `system.security` | `floor` |
+| `system` | `system.privilege` | `ask` |
+| `database` | `db.drop`, `db.truncate`, `db.unscoped-write`, `db.reset`, `db.flush`, `db.delete-files` | `floor` |
+| `cloud` | `cloud.destroy` | `floor` |
+| `backups` | `backups.delete` | `floor` |
+
+`git stash drop` and `git stash clear` are forbidden always.
+`git stash` in a subagent is forbidden by `git.shared-checkout`.
+
+### Set the floor
+
+Claude Code reads `autoMode` only from the user settings, so setup writes it there only.
+Run `dotclaude-setup settings --scope user` first.
+It prints each changed list, and it writes nothing.
+Run `dotclaude-setup settings --scope user --apply` to write the lists.
+
+Each list starts with `$defaults`, which takes the built-in list of Claude Code.
+Setup adds each entry that a list lacks at its end, and it keeps your own entries.
+An entry that you remove comes back with the next `--apply`.
+
+### When a destructive command is stopped
+
+The floor denies the command with the text `dotclaude forbids this destructive action`.
+The deny gives the exact command in a fenced block.
+
+1. In the main session, Claude stops.
+   It does not try the action in another way.
+   It asks you to run the exact command with a `!` command, and then it waits.
+2. In a subagent, Claude stops.
+   It puts the exact command in its report, and the main session gives it to you.
+3. If you want the action, run the command yourself with the `!` prefix.
+   The floor does not stop your own command.
+
+### Add a rule
+
+1. For a new category, add `src/kernel/policy/rules/<category>.ts` that exports a `readonly PolicyRule[]`.
+   Then add one line to `src/kernel/policy/index.ts`, which spreads the new list into `POLICY_RULES`.
+2. For a new rule, add one entry to the file of its category.
+   The entry needs a unique `id`, a `tier`, and `prose`.
+   A forbidden rule ends its prose with `withAnyRoute`, which adds the wrapper clause.
+3. For the `guard` hook to deny the form, add a matcher with the same `id` in `src/plugins/dotclaude/slices/guard/domain/matchers/`.
+   A matcher whose `id` the catalog does not hold gets the `floor` tier.
+4. Run `just generate`, then `just test tests/kernel/policy.test.ts tests/dotclaude/setup`.
+
+### Known limits
+
+The live runs are recorded in the evidence file `destructive-floor.md` of the 1.0.0 change.
+
+- In the live runs of a subagent, the classifier stopped each hidden form before the `guard` hook saw the call.
+  The hidden forms were `bash -c`, `eval`, a variable that holds `git`, and `python3 -c` with `subprocess`.
+  So the subagent layer of the hook has tests at the adapter only, in `tests/dotclaude/guard/shared-git.test.ts` and `tests/dotclaude/guard/matrix/subagent.test.ts`.
+- The lab cannot mark a call as a subagent's call, so the lab does not test the subagent deny.
+- A recursive delete in a worktree with no `node_modules` removed nothing, so the live runs did not test `system.recursive-delete`.
+- The `claude auto-mode critique` command gave no feedback in five runs, so no rule prose changed.
 
 ## The sandbox
 
@@ -62,12 +140,14 @@ See D2 in [Decisions](Decisions-Settings) and [Off switches](Off-Switches#manage
 
 ## The module guard
 
-`hooks/register.ts` registers one `tool.check` handler.
+`slice.ts` registers one `tool.check` handler, `onCheck` in `adapters/mod.ts`.
 It calls the engine first, and it returns a deny of the engine unchanged.
 
 | Case | What the module does |
 | --- | --- |
 | `git clone`, `gh`, `curl`, `wget`, or a `WebFetch` of a repository of another owner that has `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md` | Asks once per session and per repository, and shows the policy text. See [Contributions](Contributions). |
+| A `Bash` command that matches a `floor` rule | Denies it in every session. See [The destructive floor](#the-destructive-floor). |
+| A `Bash` command in a subagent that matches `git.shared-checkout` | Denies it. The subagent works in its own worktree instead. |
 
 The module has no `.catch`, so it fails open.
 When `gh` is missing or a call fails, the verdict of the engine stands.
@@ -116,6 +196,9 @@ Claude must not get the same result in another way.
 2. Change the call so that it follows the rule.
 3. If the rule is wrong for your project, change the rule in your own settings file.
    The drift check does not compare permission rules, so nothing else needs a change.
+4. For a destructive deny, do not look for another way.
+   Run the exact command yourself with a `!` command, if you want the action.
+   See [The destructive floor](#the-destructive-floor).
 
 ## What to do when a call asks
 

@@ -12,7 +12,8 @@ If Claude does something because of dotclaude and you ask "why did you do that?"
 - Gives settings in the snippet that turn off compaction and set a 300K context window, so that a session stops at the limit and you start fresh with `/clear`.
   The plugin itself ships an empty `settings.json`.
 - Forces one output style (role, tone, and format) and puts the working rules in the system prompt.
-- Gives Claude five agents with a model, an effort, and a turn limit each ([Agents](Agents)).
+- Gives Claude six agents with a model, an effort, and a turn limit each ([Agents](Agents)).
+  The agents are `reviewer`, `implementer`, `debugger`, `investigator`, `planner`, and `researcher`.
 - Works with [OpenSpec](OpenSpec) for the task list, so work continues after `/clear` with the `openspec-apply-change` skill.
 - Shows model, effort, context, the OpenSpec change, and the 5-hour limit in a status line.
 
