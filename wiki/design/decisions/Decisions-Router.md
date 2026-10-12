@@ -34,7 +34,7 @@ The router needed the table of D12, and a hook that rewrites `model` or `effort`
 The parts that went are the `prompt.submit` and `agent.spawn` classifiers, the `turn.step` applier, the `PreToolUse` fallback on `Agent`, and the cap.
 
 - The main loop keeps the model and the effort that the user set (`/model`, `/effort`, or `effortLevel`).
-  dotclaude does not rewrite `model` or `effort` in `turn.step`, `agent.spawn`, or a classic hook.
+  dotclaude does not rewrite `model` or `effort` in `turn.step`, `agent.spawn`, or a command in a `hooks.json` file.
 - An effort switch keeps the prompt cache (19,453 tokens read against 19,454 in the probe).
   A model switch rebuilds the full prefix once (22,070 tokens written and 0 read at the switch).
   Anthropic says "Tuning effort is often a better lever than switching models" on its model choice page.

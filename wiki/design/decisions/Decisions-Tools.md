@@ -5,19 +5,18 @@ The index is [Decisions](Decisions).
 
 ## D6 Status line
 
-The code is in `features/statusline/`, in small files that import only `lib/` and their own folder.
+The code is in `slices/statusline/`, in small files that import only `src/kernel/` and their own folder.
 See [Status line](Status-Line).
 
 - The status line writes no file (D35).
   The burn-rate samples (`state`), the cache for slow reads (`cache`), and the context breakdown state (`breakdown`) are removed.
 - `derive` holds pure functions for pace, deficit, run-out time, cache hit, rates, and headroom.
   They use only the status input.
-- Reset credits and the Fable window come from a read-only parse of `cachedUsageUtilization` in `.claude.json`.
-  The parser accepts one known shape, and any other shape hides the segment.
-- The context parts come from the newest `/context` table in a bounded tail of the transcript, read again at each call.
-- `paint` takes the look of 0.26: single-column icons, three colors at `USAGE_LEVELS`, a meter bar, and OSC 8 links.
-  `NO_COLOR` prints no color.
-- `grid` makes 3 columns when they fit, and `layout` packs segments by priority into at most 3 rows of `COLUMNS` width.
+- The status line reads no file of Claude Code except the saved usage sample.
+  It has no reset credits segment and no `/context` breakdown, because their reads of undocumented data were removed ([Undocumented reads](Undocumented-Reads)).
+- `CONTEXT_WINDOW` and `USAGE_LEVELS` come from `src/kernel/budget.ts`.
+  The colors of `USAGE_LEVELS` are yellow and red, and `NO_COLOR` prints no color.
+- `renderRows` fits the segments into at most `MAX_ROWS` rows of `COLUMNS` width, from `slices/statusline/limits.ts`.
 
 ## D7 Auto-fix hook (removed)
 
@@ -50,7 +49,7 @@ See [Evals](Evals).
 
 The spec store is the folder `.dotclaude/spec/`, and the `dotclaude-spec` command in the core plugin writes and checks it.
 dotclaude needs no outside CLI for it, so setup installs and runs nothing for the spec store.
-See [Spec store](OpenSpec).
+See [Spec store](Spec-Store).
 
 ## D22 Context bound for subagents and the main session
 
@@ -79,7 +78,7 @@ See [Context bound](Context-Bound).
 
 The add-on `dotclaude-codegraph` uses the `codegraph` CLI and no MCP server.
 Each part runs only when `.codegraph/` exists in the project.
-The add-on checks that the CLI is on `PATH`, syncs at session start, adds graph context to a `Grep` or `Glob` search, and syncs after an edit.
+The add-on checks that the CLI is on `PATH`, syncs at session start, syncs after an edit, and syncs after a `git` command that changes the tree.
 The add-on ships whatever the comparison with the built-in LSP tool shows, and the comparison goes to the wiki.
 See [Code graph](Code-Graph).
 

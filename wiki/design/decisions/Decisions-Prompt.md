@@ -7,8 +7,6 @@ The index is [Decisions](Decisions).
 
 - The mod rewrites by exact id, with a lab test for each handler.
   An unknown id passes on unchanged.
-- `prompt.attachment` shortens the attachments in `ATTACHMENT_TYPES` of `features/surface/rules.ts` where the shorter text keeps the behavior.
-  In 0.28.0 these are `sandbox_instructions`, `auto_mode`, `session_context`, and `agent_listing_delta`.
 - `tool.describe` rewrites the large loaded tools.
 - `agent.offer` drops the built-in agent lines that dotclaude does not need.
 - Deferred tools stay on.
@@ -27,7 +25,7 @@ The request capture of D16 closes the gap between the measure and what the API b
 
 ## D15 dotclaude owns the system prompt
 
-The shared sections of `features/prompt/shared.ts` hold the rules that every model shares.
+The shared sections of the `prompt` slice (`slices/prompt/domain/`) hold the rules that every model shares.
 The mod replaces the Claude Code sections with the shared sections and the text of one model, and the block of a subagent adds the evidence line.
 The output style holds only the role, the tone, and the format, because Claude Code sends an output style as a message in the conversation and not in the system prompt.
 The rules are in [System prompt](System-Prompt) and the variants are in [Prompt variants](Prompt-Variants).

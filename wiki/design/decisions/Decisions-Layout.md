@@ -17,7 +17,7 @@ The tree, the manifest rules, and the module graph rules are in [Plugin layout](
 
 - One concern for each file, 300 lines or fewer, and 500 for a test file.
   One test walks the repository and fails on a file over its bound.
-- Bounds have three tiers: `lib/budget.ts`, `features/<name>/limits.mjs`, and `tools/limits.ts` ([Plugin layout](Plugin-Layout#bound-tiers)).
+- Bounds have three tiers: `src/kernel/budget.ts`, `slices/<s>/limits.ts`, and `tools/limits.ts` ([Plugin layout](Plugin-Layout#bound-tiers)).
 - The `AGENTS` list is dropped, because the agent frontmatter is the official source.
 - Probe P2 showed that install shows a dialog even when each option has a default.
   A plugin adds a `userConfig` option only for a real user choice.
@@ -66,15 +66,11 @@ The user reversed the first plan that merged the add-ons into dotclaude.
 An optional feature that costs tokens or needs an outside tool is a separate plugin that works without the core and imports nothing from it.
 The reasons: the plugin is the unit of install and disable, a plugin skill keeps its listing line until the plugin is off, and one plugin forces all `$` calls into one module file.
 
-- `dotclaude-jev` registers a custom tool and not a skill.
-  A custom tool costs about 10 tokens in the deferred list, against about 60 for a skill line.
-  With `TYPESAFE_API_KEY` set, Claude asks Jev, and the handler puts the options in a random order.
-  `hooks/register.ts` registers the tool only when the key is set, so without the key the tool does not exist.
-  When Jev fails, the tool result says that no second opinion was available, and tells Claude to answer from its own check and to tell the user ([Second opinion](Second-Opinion)).
-  No reviewer fallback exists.
+- The Jev add-on of 0.28.0 is in the archive ([Jev plugin of 0.28.0](Jev-Plugin-0.28)).
+  In 1.0.0 Jev is the `decide` slice of the core plugin ([Second opinion](Second-Opinion)).
 - `dotclaude-browser` keeps the browser skill and replaces the built-in `WebSearch` with its headless browser ([Browser](Browser)).
 - `dotclaude-docs` and `dotclaude-codegraph` are new.
-- The marketplace lists the plugins in this order: `dotclaude`, `dotclaude-codegraph`, `dotclaude-jev`, `dotclaude-browser`, `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab`.
+- The marketplace lists the plugins in this order: `dotclaude`, `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab`.
 
 ## Related pages
 
