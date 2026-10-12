@@ -194,12 +194,15 @@ export const findDefinition = (
     `(?:function ${esc}\\([^)]*\\)\\{return |[,;\\s]${esc}=(?:[fp]\\(\\(\\)=>|\\(\\)=>|\\([\\w$,]*\\)=>))`,
     "g",
   );
-  const hits = [...src.matchAll(re)];
+  const limit = src.indexOf("{$schema:()=>");
+  // Only the hits before the schema count, so a later module that reuses the name does not make it ambiguous.
+  const hits = [...src.matchAll(re)].filter(
+    (h) => limit < 0 || (h.index as number) < limit,
+  );
   const shaped = hits.filter((h) =>
     isShape(src, (h.index as number) + h[0].length, types),
   );
-  const limit = src.indexOf("{$schema:()=>");
-  const m = hits.filter((h) => limit < 0 || (h.index as number) < limit).pop();
+  const m = hits.pop();
   if (!m || !shaped.includes(m) || (unique && shaped.length > 1)) return null;
   const from = (m.index as number) + m[0].length;
   return src.slice(from, exprEnd(src, from));

@@ -2,9 +2,11 @@
 // The tests skip when `claude` is not on `PATH`, and they run in the lab.
 
 import { expect, test } from "bun:test";
-import fs from "node:fs";
 import path from "node:path";
-import { versionOf } from "../../../src/plugins/dotclaude-lab/slices/schema/adapters/cli.ts";
+import {
+  installedBundle,
+  versionOf,
+} from "../../../src/plugins/dotclaude-lab/slices/schema/adapters/cli.ts";
 import {
   buildSchemas,
   schemaFiles,
@@ -13,10 +15,8 @@ import {
 import type { Schema } from "../../../src/plugins/dotclaude-lab/slices/schema/domain/model.ts";
 import { REPO } from "../../support/repo.ts";
 
-const installed = (): string | null => {
-  const bin = Bun.which("claude");
-  return bin ? fs.realpathSync(bin) : null;
-};
+const installed = (): string | null =>
+  Bun.which("claude") ? installedBundle() : null;
 
 const shipped = async (kind: "user" | "managed"): Promise<Schema> =>
   JSON.parse(
