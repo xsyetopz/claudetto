@@ -2,34 +2,42 @@
 import type { On } from "claude-code";
 import { onCheck as h0 } from "../slices/asks/adapters/mod.ts";
 import {
-  onBashCall as h1,
-  onCheck as h2,
+  onSecondOpinion as h1,
+  onSessionStart as h2,
+} from "../slices/decide/adapters/mod.ts";
+import {
+  onBashCall as h3,
+  onCheck as h4,
 } from "../slices/guard/adapters/mod.ts";
 import {
-  onCompose as h3,
-  onContextSection as h4,
-  onSpawn as h5,
+  onCompose as h5,
+  onContextSection as h6,
+  onSpawn as h7,
 } from "../slices/prompt/adapters/mod.ts";
-import { onToolCall as h6 } from "../slices/sembr/adapters/mod.ts";
-import { onSessionStart as h7 } from "../slices/setup/adapters/mod.ts";
+import { onToolCall as h8 } from "../slices/sembr/adapters/mod.ts";
+import { onSessionStart as h9 } from "../slices/setup/adapters/mod.ts";
 import { register as legacy } from "./legacy.ts";
 
 export const register = (on: On): void => {
   // eval: agent.spawn prompt
-  on("agent.spawn", h5);
+  on("agent.spawn", h7);
   // eval: prompt.compose prompt
-  on("prompt.compose", h3);
+  on("prompt.compose", h5);
   // eval: prompt.section prompt
-  on("prompt.section", { name: "context_management" }, h4);
+  on("prompt.section", { name: "context_management" }, h6);
+  // eval: session.start decide
+  on("session.start", h2);
   // eval: session.start setup
-  on("session.start", h7);
+  on("session.start", h9);
   // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h6);
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h8);
   // eval: tool.call guard
-  on("tool.call", h1);
+  on("tool.call", h3);
+  // eval: tool.call decide
+  on("tool.call", { tool: /^mcp__dotclaude__second_opinion$/ }, h1);
   // eval: tool.check asks
   on("tool.check", { tool: ["Bash", "Write", "Edit", "MultiEdit"] }, h0);
   // eval: tool.check guard
-  on("tool.check", h2);
+  on("tool.check", h4);
   legacy(on);
 };

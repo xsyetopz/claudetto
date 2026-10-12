@@ -1,0 +1,23 @@
+// The manifest of the slice `decide`: the tool `second_opinion`, which asks Jev, and the command `dotclaude-decide`.
+// Jev answers through the TypeSafe API. When Jev gives no answer, a small Claude model answers through `$.model.complete`.
+
+import type { Slice } from "../../../../kernel/slice.ts";
+import { onSecondOpinion, onSessionStart } from "./adapters/mod.ts";
+
+export const slice = {
+  name: "decide",
+  mod: [
+    {
+      event: "session.start",
+      phase: "observe",
+      run: onSessionStart,
+    },
+    {
+      event: "tool.call",
+      filter: { tool: /^mcp__dotclaude__second_opinion$/ },
+      phase: "answer",
+      run: onSecondOpinion,
+    },
+  ],
+  cli: { bin: "dotclaude-decide" },
+} satisfies Slice;
