@@ -17,22 +17,24 @@ const installed = (): string | null => {
   return bin ? fs.realpathSync(bin) : null;
 };
 
-const shipped = (kind: "user" | "managed"): Schema =>
+const shipped = async (kind: "user" | "managed"): Promise<Schema> =>
   JSON.parse(
-    fs.readFileSync(path.join(REPO, "schemas", schemaFiles()[kind]), "utf8"),
+    await Bun.file(path.join(REPO, "schemas", schemaFiles()[kind])).text(),
   ) as Schema;
 
 // The bundle is read as latin1, as the command reads it.
-const bundleText = (file: string): string =>
-  Buffer.from(fs.readFileSync(file)).toString("latin1");
+const bundleText = async (file: string): Promise<string> =>
+  Buffer.from(await Bun.file(file).arrayBuffer()).toString("latin1");
 
 test.skipIf(installed() === null)(
   "each key in `schemas/` is a key that the installed binary reads",
-  () => {
+  async () => {
     const bundle = installed() as string;
-    const built = buildSchemas(bundleText(bundle), path.basename(bundle));
-    expect(unreadKeys(shipped("user"), built.user)).toStrictEqual([]);
-    expect(unreadKeys(shipped("managed"), built.managed)).toStrictEqual([]);
+    const built = buildSchemas(await bundleText(bundle), path.basename(bundle));
+    expect(unreadKeys(await shipped("user"), built.user)).toStrictEqual([]);
+    expect(unreadKeys(await shipped("managed"), built.managed)).toStrictEqual(
+      [],
+    );
   },
 );
 
@@ -50,8 +52,10 @@ test("`unreadKeys` names each shipped key that the built schema lacks, at any de
   expect(unreadKeys(built, built)).toStrictEqual([]);
 });
 
-test("each top-level key of the shipped schemas has a description", () => {
+test("each top-level key of the shipped schemas has a description", async () => {
   for (const kind of ["user", "managed"] as const)
-    for (const [key, sub] of Object.entries(shipped(kind).properties ?? {}))
+    for (const [key, sub] of Object.entries(
+      (await shipped(kind)).properties ?? {},
+    ))
       expect(sub.description, `${kind}: ${key}`).toBeTruthy();
 });
