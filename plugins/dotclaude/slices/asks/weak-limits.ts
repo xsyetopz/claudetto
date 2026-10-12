@@ -121,6 +121,25 @@ export const CI_ADDABLE_PARENT = /^["']?(?:steps|jobs)["']?:$/;
 export const LABEL_LINE =
   /^\W*$|^\W*(?:name|description|title|label|\$schema|version)\s*[:=]/i;
 
+/**
+ * The text of an added line of a hook script that is control flow, or that can end the script, mask a status, or join the next line.
+ * A line like this can make a hook pass, so an added line with it asks.
+ */
+export const SCRIPT_CONTROL = new RegExp(
+  [
+    String.raw`(?<![A-Za-z])(?:exit|return|true|false|exec|trap|set|source|if|then|else|elif|fi|case|esac|for|while|until|do|done|break|continue|try|catch|except|finally|raise|throw|pass|kill)(?![A-Za-z])`,
+    String.raw`;\s*\S|[|&{}\\!\`]|^:$`,
+  ].join("|"),
+  "i",
+);
+
+/** The path of a hook script that a shell runs, where the last command sets the exit status. A first line `#!` with a shell counts too. */
+export const SHELL_SCRIPT =
+  /\.(?:sh|bash|zsh)$|(?:^|\/)\.husky\/|(?:^|\/)[^./]+$/;
+
+/** The first line of a script that a shell runs. */
+export const SHELL_SHEBANG = /^#!.*\b(?:ba|z|da|k)?sh\b/;
+
 /** The commands of a hook that cannot fail, as a command or the end of one. */
 export const CANNOT_FAIL =
   /^\s*(?:true|:|exit\s+0|echo\b[^|;&]*)?\s*$|(?:\|\||;)\s*(?:true|:|exit\s+0)\s*$/;

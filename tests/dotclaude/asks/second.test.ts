@@ -70,19 +70,20 @@ for (const [key, on, off] of KEYS) {
       "settings.json",
     );
   });
-  test(`a new \`${key}\` key in a settings file that checks as before gets no ask`, async () => {
+  test(`a new \`${key}\` key in a settings file ${key === "enabledPlugins" ? "gets no ask" : "gets an ask"}`, async () => {
     const base = '{"model":"x"}';
     const next = `{"model":"x",${on}}`;
-    expect(await edit(SETTINGS, base, next, { [SETTINGS]: base })).toBe(
-      undefined,
-    );
+    const found = await edit(SETTINGS, base, next, { [SETTINGS]: base });
+    if (key === "enabledPlugins") expect(found).toBe(undefined);
+    else asks(found, "settings.json");
   });
 }
-test("a change of `model` in a settings file gets no ask", async () => {
+test("a change of `model` in a settings file gets an ask", async () => {
   const before = '{"model":"x"}';
   const after = '{"model":"y"}';
-  expect(await edit(SETTINGS, before, after, { [SETTINGS]: before })).toBe(
-    undefined,
+  asks(
+    await edit(SETTINGS, before, after, { [SETTINGS]: before }),
+    "settings.json",
   );
 });
 
@@ -107,8 +108,11 @@ for (const [command, rel] of PROJECT_HOOKS) {
   test(`a script of a project settings hook, \`${rel}\`, gets an ask when it can no longer fail`, async () => {
     asks(await edit(`/w/${rel}`, "exit 1", "exit 0", files), rel);
   });
-  test(`a script of a project settings hook, \`${rel}\`, gets no ask when it keeps its checks`, async () => {
-    expect(await edit(`/w/${rel}`, "fi\n", "fi\necho done\n", files)).toBe(
+  test(`a script of a project settings hook, \`${rel}\`, gets an ask when a line follows its last command`, async () => {
+    asks(await edit(`/w/${rel}`, "fi\n", "fi\necho done\n", files), rel);
+  });
+  test(`a script of a project settings hook, \`${rel}\`, gets no ask when a line comes first`, async () => {
+    expect(await edit(`/w/${rel}`, "if [", "echo start\nif [", files)).toBe(
       undefined,
     );
   });
@@ -121,7 +125,7 @@ test("a script of a `settings.local.json` hook gets an ask when it can no longer
     "/w/a.sh": GATE,
   };
   asks(await edit("/w/a.sh", "exit 1", "exit 0", files), "a.sh");
-  expect(await edit("/w/a.sh", "fi\n", "fi\necho x\n", files)).toBe(undefined);
+  asks(await edit("/w/a.sh", "fi\n", "fi\necho x\n", files), "a.sh");
 });
 test("a script of an inline hook in `plugin.json` gets an ask when it can no longer fail", async () => {
   const manifest = JSON.stringify({
@@ -136,9 +140,10 @@ test("a script of an inline hook in `plugin.json` gets an ask when it can no lon
     await edit("/w/plugins/x/bin/run.sh", "exit 1", "exit 0", files),
     "bin/run.sh",
   );
-  expect(
+  asks(
     await edit("/w/plugins/x/bin/run.sh", "fi\n", "fi\necho x\n", files),
-  ).toBe(undefined);
+    "bin/run.sh",
+  );
 });
 test("a `Write` over a file under `.claude/hooks/` that loses its check gets an ask", async () => {
   const f = "/w/.claude/hooks/anything.sh";

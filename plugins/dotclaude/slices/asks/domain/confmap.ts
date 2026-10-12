@@ -11,7 +11,7 @@ import { isObj, readJson } from "./jsondiff.ts";
 export type Conf = Map<string, string | string[]>;
 
 /** The JSON text of `value` with the keys of each object in order, so that the order of keys is not a change. */
-const canonical = (value: unknown): string =>
+export const canonical = (value: unknown): string =>
   isObj(value)
     ? `{${Object.keys(value)
         .sort()

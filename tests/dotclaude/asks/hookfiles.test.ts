@@ -58,9 +58,9 @@ for (const rel of [".husky/pre-commit", ".pre-commit-config.yaml"]) {
     const file = `/w/${rel}`;
     asks(await edit(file, "a", "b", { [file]: "a" }), rel);
   });
-  test(`an \`Edit\` of the hook file \`${rel}\` that adds a line gets no ask`, async () => {
+  test(`an \`Edit\` of the hook file \`${rel}\` that adds a line after the last line gets an ask`, async () => {
     const file = `/w/${rel}`;
-    expect(await edit(file, "a", "a\nb", { [file]: "a" })).toBe(undefined);
+    asks(await edit(file, "a", "a\nb", { [file]: "a" }), rel);
   });
 }
 test("an `Edit` of the hook file `Stop.prompt.txt` that drops the block gets an ask", async () => {
@@ -81,9 +81,12 @@ test("an `Edit` of the hook file `Stop.prompt.txt` that adds a line gets no ask"
     await edit(file, "fails.", "fails.\nGive the reason.", { [file]: src }),
   ).toBe(undefined);
 });
-test("an `Edit` of the hook file `description.txt` that changes a label gets no ask", async () => {
+test("an `Edit` of the hook file `description.txt` that changes a line gets an ask", async () => {
   const file = "/w/plugins/x/hooks/description.txt";
-  expect(await edit(file, "a", "b", { [file]: "a" })).toBe(undefined);
+  asks(
+    await edit(file, "a", "b", { [file]: "a" }),
+    "plugins/x/hooks/description.txt",
+  );
 });
 
 const HOOKS = JSON.stringify({
@@ -118,8 +121,8 @@ for (const [rel, check, soft] of SCRIPTS) {
   test(`a script that \`hooks.json\` names, \`${rel}\`, gets an ask when it loses its check`, async () => {
     asks(await edit(`/w/${rel}`, check, soft, files), rel);
   });
-  test(`a script that \`hooks.json\` names, \`${rel}\`, gets no ask when it keeps its check`, async () => {
-    expect(await edit(`/w/${rel}`, "run", "run --fast", files)).toBe(undefined);
+  test(`a script that \`hooks.json\` names, \`${rel}\`, gets an ask when it changes another line`, async () => {
+    asks(await edit(`/w/${rel}`, "run", "run --fast", files), rel);
   });
 }
 test("a project `hooks/hooks.json` names a script of the project", async () => {

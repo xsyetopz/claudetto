@@ -153,13 +153,17 @@ test("a `Write` over a settings file that turns a hook to `true` gets an ask", a
     ".claude/settings.json",
   );
 });
-test("an edit of another key in a settings file gets no ask", async () => {
+test("an edit of another key in a settings file gets an ask", async () => {
   const before = '{"hooks":{"Stop":[]},"model":"x"}';
   const after = '{"hooks":{"Stop":[]},"model":"y"}';
-  expect(await edit(SETTINGS, '"x"', '"y"', { [SETTINGS]: before })).toBe(
-    undefined,
+  asks(
+    await edit(SETTINGS, '"x"', '"y"', { [SETTINGS]: before }),
+    ".claude/settings.json",
   );
-  expect(await write(SETTINGS, after, { [SETTINGS]: before })).toBe(undefined);
+  asks(
+    await write(SETTINGS, after, { [SETTINGS]: before }),
+    ".claude/settings.json",
+  );
 });
 
 const TEST = "/w/src/a.test.mjs";
