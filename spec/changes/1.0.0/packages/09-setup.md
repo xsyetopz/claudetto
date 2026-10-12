@@ -31,24 +31,22 @@ When dotclaude runs in a git repository, it adds each runtime path of `.claude/`
 - The generator writes `bin/<bin>` from `adapters/cli.ts` (`tools/generate/emit/slices.ts:72-90`), and the skills of a slice (`:52-57`).
 - The snippet: a text module folder of the slice, such as `snippet.ts/snippet.json` with the line `{{include snippet.json}}`, gives the module `snippet.ts` with the export `SNIPPET`, the generated snippet of the core plugin (`tests/tools/generate/snippet.test.ts`, the last test).
   Read the snippet only this way, and not from `plugins/dotclaude/lib/`, which P13 deletes.
-- A run of P09 before found that Claude Code 2.1.296 writes the `# claude-code-runtime` list to `.git/info/exclude` itself: the marker at `external/cc-2.1.296/strings.txt:139000`, and the writer function `Ce` at `strings.txt:355955`, with the once-for-each-path claim `claude_runtime_exclude_ensured`.
-  The trigger of `Ce` is not confirmed.
-- The 0.28.0 code:
-  - `plugins/dotclaude/features/setup/` (434 lines) and `plugins/dotclaude/features/drift/` (331 lines).
-  - The skill `src/plugins/dotclaude/skills/setup/SKILL.md`, and its scripts in `plugins/dotclaude/skills/setup/scripts/` (`settings.ts`, `openspec.ts`, `addons.ts`).
-  - The OpenSpec code that goes: `features/setup/openspec.ts`, `SKILL.md:44-59,77,86`, and `scripts/openspec.ts`.
-  - The drift handler: `plugins/dotclaude/hooks/legacy.ts:30` (import), `:135-136` (`session.start`), and `:10` (header line).
-  - The drift check reads `statusLine.command` (`features/drift/rules.ts:24,50`), and `plugins/dotclaude/lib/merge.ts:17,20` has `STATUS_LINES`.
-  - The tests: `tests/dotclaude/setup/`, `tests/dotclaude/drift.test.ts`, `tests/dotclaude/skills.test.ts`, and the hook lab test `plugins/dotclaude/tests/drift.test.ts`.
-  - The eval entry: `plugins/dotclaude/evals/hooks.json`, the key `session.start drift`.
-- The runtime paths of `.claude/`: `external/cc-2.1.296/strings.txt:138990-139000` in the main checkout, a list of `**/.claude/...` paths that includes `**/.claude/worktrees/`, under the line `# claude-code-runtime`.
-  The claim of `packages.md:83` that Claude Code writes `**/.claude/settings.local.json` to the global git ignore file is not confirmed in that file.
+- Step 1 is done (run 2 of P09): Claude Code 2.1.296 writes the `# claude-code-runtime` list of 10 paths (`external/cc-2.1.296/strings.txt:138990-139000`) to `.git/info/exclude` itself, with the writer `Ce` at `strings.txt:355955`.
+  Its only trigger is the start of the cron scheduler (`de` at `strings.txt:355957`, created at `:351626`), and the snippet sets `CLAUDE_CODE_DISABLE_CRON`, so step 3 is needed.
+  The list has no `**/.claude/settings.local.json`.
+- Decisions of the main session for this package:
+  - The skill moves to `slices/setup/skills/setup/SKILL.md`.
+  - The snippet route: `slices/setup/texts.ts/snippet.json` with `{{include snippet.json}}`, and `texts.ts/docs-snippet.json` with `{{include docs-snippet.json}}`.
+  - The merge code goes to `domain/merge.ts`, the drift check to `domain/drift.ts` and `adapters/mod.ts`, and the CLI runs programs with `runProgram` of `src/kernel/node/process.ts`.
+  - The CLI runs the exclude step on each run, because no event of Claude Code gives a better time.
+  - The drift check keeps its match of the `features/statusline/` path until P08 merges, and the main session changes it after the merge.
+  - Write each message of the drift check that goes to Claude in strict ASD-STE100.
+  - Delete `tests/dotclaude/skills.test.ts` only when each of its cases tests the `setup` skill, and move a case that tests another skill to the tests of that skill.
 - The rebuild list: `tools/rebuild-pending.txt:32-40`.
 
 ## Steps
 
-1. Find in the bundle `external/cc-2.1.296/` when Claude Code writes the `# claude-code-runtime` list and where it writes it, and give the `file:line` in your report.
-   When Claude Code writes that list itself in each case where dotclaude runs, skip step 3, and report it.
+1. Step 1 is done: see Context.
 2. Write `slice.ts`, `domain/merge.ts`, `domain/drift.ts`, `domain/addons.ts`, `adapters/cli.ts`, and `skills/setup/SKILL.md`.
    The CLI previews and applies the settings snippet, checks the tools of the installed add-ons, and checks drift.
    The drift check keeps the behavior of 0.28.0 except the OpenSpec parts, and it reads the `statusLine` command of the snippet that `just generate` writes.

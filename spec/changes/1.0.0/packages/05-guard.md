@@ -34,6 +34,15 @@ The slice denies a `Bash` command that only prints a file and gives the `Read` c
   - `plugins/dotclaude/hooks/legacy.ts:56-93` (`output`, `ownersOf`, `guardAsk`), `:106-115` (`countOf`), `:157-169` (`tool.call` on `Bash`), and `:186-195` (the `tool.check` handler that `guard` shares with `adherence`).
   - The tests: `tests/dotclaude/guard/rules.test.ts`, `tests/dotclaude/reads/large.test.ts`, and `tests/dotclaude/reads/print.test.ts`.
   - The eval entries: `plugins/dotclaude/evals/hooks.json`, the keys `tool.call Bash reads` and `tool.check guard adherence`.
+- Decisions of the main session for this package, after run 1 of P05:
+  - `tests/support/verdicts.ts` imports `features/reads/` and defines `decideRead` and `readLines`, and `tests/dotclaude/errors.test.ts:23,81-82` uses `decideRead`.
+    Move the cases that use them to `tests/dotclaude/guard/`, and remove only the reads parts of both files, because the adherence tests (P06) still import `decideAsk` from `verdicts.ts`.
+  - `plugins/dotclaude/tests/mod.test.ts:44-156` tests `guard` and `reads`: move those cases to `slices/guard/lab/`, and remove them there.
+    Keep `:158-180`, which P06 owns.
+  - The ask reason of `guard` comes first, then the reason of `next`, as in 0.28.0.
+  - The eval keys are `tool.call guard` and `tool.check guard`, because the generator names a key `<event> <slice>`.
+  - `src/kernel/node/paths.ts` is for CLIs only, so copy `resolve`, `segments`, `toSlash`, `normalize`, and `isAbsolute` of `plugins/dotclaude/lib/paths.ts` to `domain/paths.ts`.
+    `POLICY_TIMEOUT_MS` and `POLICY_FILE_MAX_CHARS` are in `src/kernel/budget.ts`, and `lineCount` and `words` are in `src/kernel/text.ts`.
 - The rebuild list: `tools/rebuild-pending.txt:13-17`.
 
 ## Steps
@@ -58,7 +67,7 @@ The slice denies a `Bash` command that only prints a file and gives the `Read` c
 
 ## Boundaries
 
-- Change only the paths of `owns`, the 0.28.0 paths of `tools/rebuild-pending.txt:13-17` and those lines, and these shared files, each only in the parts of your capability:
+- Change only the paths of `owns`, the 0.28.0 paths of `tools/rebuild-pending.txt:13-17` and those lines, the reads parts of `tests/support/verdicts.ts`, `tests/dotclaude/errors.test.ts`, and `plugins/dotclaude/tests/mod.test.ts`, and these shared files, each only in the parts of your capability:
   - `plugins/dotclaude/hooks/legacy.ts`
   - `plugins/dotclaude/evals/hooks.json`
   - the sentences of `description` in `src/plugins/dotclaude/hooks/hooks.json`
