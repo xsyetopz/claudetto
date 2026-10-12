@@ -2,36 +2,34 @@
 
 ## Result
 
-The critique did not run.
-The `claude auto-mode critique` call failed with "Could not resolve authentication method".
-The sandbox config folder has no login, and this run did not read the login of the user.
-No rule prose changed in this run.
-The critique needs a re-run with a login, as described under Next steps.
+The critique did not produce feedback.
+The `claude auto-mode critique` call now reaches the model with the login, so the earlier "Could not resolve authentication method" error no longer appears.
+Each run printed "Analyzing your auto mode rules" and then "No critique was generated.
+Please try again." with exit status 0.
+No rule prose changed, because no feedback named a rule.
 
 ## Method
 
-1. Ran `just generate` in the worktree.
-   The setup block comes from `planAutoMode` in `plugins/dotclaude/slices/setup/domain/automode.ts`, with an empty current settings object.
+1. Removed the rule `git.force-push-branch` from the catalog `src/kernel/policy/rules/git.ts`, and ran `just generate`.
+   The `ask` tier now holds only `system.privilege`.
+2. Built the block with `planAutoMode` from `plugins/dotclaude/slices/setup/domain/automode.ts`, with an empty current settings object and no changes list.
    The block has four keys: `allow`, `soft_deny`, `hard_deny`, and `environment`.
-2. Wrote the block as `settings.json` in the sandbox config folder, `$TMPDIR/dotclaude-sandbox/config/`, which `just sandbox` uses.
-   The file is the block that setup writes, so it has no other key.
-3. Ran `claude auto-mode defaults` with `CLAUDE_CONFIG_DIR` set to that folder.
-   It exited 0 and printed the built-in lists.
-4. Ran `claude auto-mode critique` with the same `CLAUDE_CONFIG_DIR`.
-   It exited 1 with the message in Result.
-5. Removed `settings.json` and the `seed-admin` folder that the Claude Code run created.
-   A file list of the config folder, taken before the run and after the cleanup, matches.
-
-The sandbox script sets `HOME` and the login token.
-This run set only `CLAUDE_CONFIG_DIR`, so `HOME` stayed the real home folder.
-The run did not read the Keychain entry or the credentials file.
+3. Wrote the block as `settings.json` in the `config/` folder of a sandbox directory in the temp folder.
+   The sandbox directory was an isolated `--dir` for `dotclaude-lab`'s sandbox command, so the real config folder did not change.
+4. Ran `dotclaude-sandbox --dir <sandbox> auto-mode critique` from `plugins/dotclaude-lab/bin/dotclaude-sandbox`.
+   The script gave `claude` the login token in its environment only, as `wiki/plugins/Sandbox.md` describes under Login.
+   The token was not printed or written to a file.
+5. Tried the run four more times with the debug log, with `--model sonnet`, and inside a pseudo-terminal.
+   Each run gave the same result.
+   The debug log holds one `[ERROR]` line, "Could not open /dev/tty for stdin override", and no API error.
+6. Removed the block folder and the sandbox files that this run wrote.
 
 ## The block
 
 | List | Entries | Source |
 | --- | --- | --- |
 | `hard_deny` | `$defaults`, then 19 `floor` rules and 1 `subagent` rule | `floor` and `subagent` tiers of the catalog |
-| `soft_deny` | `$defaults`, then 2 `ask` rules | `ask` tier of the catalog |
+| `soft_deny` | `$defaults`, then 1 `ask` rule | `ask` tier of the catalog, `system.privilege` only |
 | `allow` | `$defaults`, then 2 texts of P25 | `AUTOMODE.allow` |
 | `environment` | `$defaults` only | P25 |
 
@@ -43,11 +41,12 @@ The `hard_deny` rules are:
 - `db.drop`, `db.truncate`, `db.unscoped-write`, `db.reset`, `db.flush`, and `db.delete-files` (`floor`).
 - `cloud.destroy` and `backups.delete` (`floor`).
 
-The `soft_deny` rules are `git.force-push-branch` and `system.privilege` (`ask`).
+The `soft_deny` rule is `system.privilege` (`ask`).
+The rule `git.force-push-branch` is no longer in the block, as task 1 removes it.
 
 ## Built-in defaults
 
-`claude auto-mode defaults`, with the sandbox config folder, printed these counts:
+`claude auto-mode defaults`, with the sandbox config folder, printed these counts in the earlier run:
 
 | List | Built-in entries |
 | --- | --- |
@@ -57,17 +56,20 @@ The `soft_deny` rules are `git.force-push-branch` and `system.privilege` (`ask`)
 | `environment` | 21 |
 
 The `$defaults` entry in each list of the block expands to these built-in rules at run time.
-The built-in lists are present, so the `$defaults` entry has rules to expand.
 
 ## Critique summary per rule
 
 Not available.
-The critique did not return feedback for any rule.
+The critique did not return feedback for any rule id, so no rule id has a summary.
+
+## Prose changes
+
+None.
+A change needs feedback that names the rule, and the critique gave none.
 
 ## Next steps
 
-1. Log in to the sandbox with `/login`, or set `CLAUDE_CODE_OAUTH_TOKEN` as the sandbox script does.
-   Get the approval of the user first, as the sandbox page requires.
-2. Write the block to the sandbox config folder as in step 2, and run `claude auto-mode critique` again.
-3. Record the feedback for each rule id in this file.
+1. Re-run the critique when the model returns a result for `claude auto-mode critique`.
+   The debug log of the failed runs has no API error, so the cause is not clear from the log.
+2. Record the feedback for each rule id in this file.
    Apply a prose change in `src/kernel/policy/rules/` only when the change makes the rule stricter or clearer, and list it here.
