@@ -2,9 +2,8 @@
 
 Evals measure the effect of the `dotclaude` plugin on Claude Code.
 They use the `claude plugin eval` command of Claude Code.
-The command needs Claude Code `2.1.269` or later.
 The runs of the current suite use Claude Code `2.1.296`.
-The repository has no eval harness of its own.
+The repository has no eval harness of its own (design `D9`).
 `just check` never runs an eval, because a run costs money.
 
 ## The current suite
@@ -117,7 +116,6 @@ The user approved these drops.
 - A comparison against a prompt variant, a style, or a router mode, because the only arms are plugin and no plugin.
 - The LLM grader calibration against human labels.
 
-There is no adherence gate (design `D9`).
 Instruction adherence is checked by the guards and the hooks in code.
 
 ## Open facts
@@ -175,11 +173,11 @@ No figure of this page replaces those tables.
 - [Evals of 0.28.0](Evals-0.28.0) holds the last runs of the removed harness.
 - [Ported suite of 0.28.0](Evals-0.28.0-Ported-Suite) holds the runs of the first ported suite.
 - [Gates of 0.28.0](Evals-0.28.0-Gates) holds the gates.
-- [Open items](Open-Items) holds the measures and decisions that are still open.
+- [Open items](Open-Items) holds the state at 0.28.0: the measures and decisions that were open then.
 - [Prompt variants](Prompt-Variants) holds the variants that earlier evals tested.
 - [Request build](Request-Build) holds the results of the mods API probes.
 - [Off switches](Off-Switches) holds the switches that wait for an eval.
 - [Usage evidence](Usage-Evidence) holds the usage measures.
 
-The Bun harness of earlier releases (`tools/eval/`) and the root `evals/` folder are removed (design `D35`).
+The Bun harness of earlier releases (`tools/eval/`) and the root `evals/` folder are removed.
 Their figures stay in [Eval history](Evals-History) and [Evals of 0.28.0](Evals-0.28.0).
