@@ -1,12 +1,13 @@
 // The mod handlers of the `decide` slice.
 // `session.start` registers the tool at each start, with or without a key, so the fallback is reachable with no key.
 // `tool.call` serves the tool: it tries Jev when the key is set, and the fallback model when Jev gives no answer.
+// A second `tool.call` handler adds the pick of Jev to each `AskUserQuestion` question that facts decide.
 //
 // `claude plugin validate` follows `$` only into a function of one file,
 // and each `$.env.get` call needs a literal name.
 // For this reason, each function that touches `$` is here, and the rules are in `domain/` and in the adapters.
 
-import type { EngineInterface } from "claude-code";
+import type { EngineInterface, MatchedHook } from "claude-code";
 import type { Handler } from "../../../../../kernel/slice.ts";
 import type { CliCall } from "../domain/request.ts";
 import { parseInput } from "../domain/request.ts";
@@ -19,6 +20,7 @@ import {
   FALLBACK_TIMEOUT_MS,
   JEV_TIMEOUT_MS,
 } from "../limits.ts";
+import { pickQuestions } from "./ask.ts";
 import { type Completion, createFallback } from "./fallback.ts";
 import { type CliRun, createJev } from "./jev.ts";
 
@@ -76,4 +78,20 @@ export const onSecondOpinion: Handler<"tool.call"> = async ($, e) => {
   const jev = key ? createJev((call) => runCli($, key, call)) : undefined;
   const fallback = createFallback((prompt) => complete($, prompt));
   return { result: resultText(await route(jev, fallback, parsed.request)) };
+};
+
+/** The hook for `AskUserQuestion`, with `e` narrowed to that tool by the filter of `slice.ts`. */
+export type AskHook = MatchedHook<
+  "tool.call",
+  { readonly tool: readonly ["AskUserQuestion"] }
+>;
+
+/** The `AskUserQuestion` call with the pick of Jev in each facts question. With no key, the call passes unchanged. */
+export const onAskUserQuestion: AskHook = async ($, e, next) => {
+  const key = await $.env.get("TYPESAFE_API_KEY");
+  if (!key) return next(e);
+  const questions = await pickQuestions(e.questions, (call) =>
+    runCli($, key, call),
+  );
+  return next(questions === undefined ? e : { ...e, questions });
 };

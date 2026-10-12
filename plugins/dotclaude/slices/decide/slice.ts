@@ -2,8 +2,12 @@
 // The manifest of the slice `decide`: the tool `second_opinion`, which asks Jev, and the command `dotclaude-decide`.
 // Jev answers through the TypeSafe API. When Jev gives no answer, a small Claude model answers through `$.model.complete`.
 
-import type { Slice } from "../../kernel/slice.ts";
-import { onSecondOpinion, onSessionStart } from "./adapters/mod.ts";
+import type { Handler, Slice } from "../../kernel/slice.ts";
+import {
+  onAskUserQuestion,
+  onSecondOpinion,
+  onSessionStart,
+} from "./adapters/mod.ts";
 
 export const slice = {
   name: "decide",
@@ -12,6 +16,13 @@ export const slice = {
       event: "session.start",
       phase: "observe",
       run: onSessionStart,
+    },
+    {
+      event: "tool.call",
+      filter: { tool: ["AskUserQuestion"] },
+      phase: "rewrite",
+      // The filter narrows `e` to `AskUserQuestion`, so `run` has one cast to the wide type, as in `sembr`.
+      run: onAskUserQuestion as unknown as Handler<"tool.call">,
     },
     {
       event: "tool.call",

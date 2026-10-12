@@ -58,13 +58,14 @@ export interface CliCall {
   readonly stdin: string | undefined;
 }
 
-/** The CLI call of a valid request: `yes` for a yes or no question, and `pick` for a question with options. */
+/** The CLI call of a valid request: `yes` for a yes or no question, and `pick` for a question with options. Each call asks for `--json`. */
 export const cliCall = (
   request: DecisionRequest,
   random = Math.random,
 ): CliCall => {
   const stdin = request.state;
-  const head = stdin === undefined ? ["--"] : ["--state", "-", "--"];
+  const head =
+    stdin === undefined ? ["--json", "--"] : ["--json", "--state", "-", "--"];
   if (request.options === undefined)
     return { args: ["yes", ...head, request.question], stdin };
   return {

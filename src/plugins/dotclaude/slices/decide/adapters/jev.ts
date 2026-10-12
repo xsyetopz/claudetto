@@ -1,7 +1,8 @@
-// The Jev provider: it runs the CLI `dotclaude-decide` for a request, and maps its exit code to a cause.
+// The Jev provider: it runs the CLI `dotclaude-decide` with `--json` for a request, and maps its exit code to a cause.
 // The run itself is a parameter, so a test gives a fake run, and the hooks module gives `$.process.run`.
 // `$.process.run` documents no error type, so any thrown error becomes the cause `failed`.
 
+import { parseCliOutput } from "../domain/reply.ts";
 import { type CliCall, cliCall } from "../domain/request.ts";
 import { causeOfExit } from "../domain/route.ts";
 import type { DecisionProvider } from "../ports.ts";
@@ -21,9 +22,12 @@ export const createJev = (
   decide: async (request) => {
     try {
       const run = await runCli(cliCall(request));
-      const text = run.stdout.trim();
-      if (run.exitCode === 0 && text !== "") return { ok: true, text };
-      return { ok: false, cause: causeOfExit(run.exitCode) };
+      if (run.exitCode !== 0)
+        return { ok: false, cause: causeOfExit(run.exitCode) };
+      // An exit code of 0 with a reply that does not parse is a failure of the CLI.
+      const parsed = parseCliOutput(run.stdout, request);
+      if (parsed) return { ok: true, ...parsed };
+      return { ok: false, cause: "failed" };
     } catch {
       return { ok: false, cause: "failed" };
     }

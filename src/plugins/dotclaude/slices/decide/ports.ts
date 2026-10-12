@@ -15,6 +15,15 @@ export interface DecisionRequest {
 }
 
 /**
+ * The structured answer of a decision: the chosen key (`yes` or `no` for a yes or no question), and the confidence from 0 to 1.
+ * The confidence is the probability of the chosen key.
+ */
+export interface Answer {
+  readonly choice: string;
+  readonly confidence: number;
+}
+
+/**
  * Why a decision has no answer.
  * `no-key`: the variable `TYPESAFE_API_KEY` is not set, so Jev is not tried.
  * `invalid-key`, `no-balance`, `usage`, and `failed`: the TypeSafe client failed with that cause.
@@ -28,9 +37,13 @@ export type Cause =
   | "failed"
   | "model-failed";
 
-/** The result of one provider: the answer text, or the cause of no answer. */
+/** The result of one provider: the answer text and the structured answer, or the cause of no answer. */
 export type Decision =
-  | { readonly ok: true; readonly text: string }
+  | {
+      readonly ok: true;
+      readonly text: string;
+      readonly answer: Answer;
+    }
   | { readonly ok: false; readonly cause: Cause };
 
 /** A provider of decisions. Jev and the fallback model each implement it. */

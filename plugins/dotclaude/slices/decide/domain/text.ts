@@ -51,9 +51,12 @@ export const fallbackPrompt = (
   const system = [
     "You answer one decision question for a coding agent.",
     "Use only the facts in the state, and do not add facts.",
-    "For a yes or no question, start your reply with `yes` or `no`.",
-    "For a question with options, start your reply with the key of your pick.",
-    "Then give one sentence with the reason.",
+    "Reply with one JSON object and no other text.",
+    "The object has the fields `choice`, `confidence`, and `reason`.",
+    "For a yes or no question, `choice` is `yes` or `no`.",
+    "For a question with options, `choice` is the key of your pick.",
+    "`confidence` is a number from 0 to 1, the probability that your choice is right.",
+    "`reason` is one sentence with the reason.",
   ].join("\n");
   const options = (request.options ?? []).map(
     (o) => `- ${o.key}: ${o.description ?? ""}`,

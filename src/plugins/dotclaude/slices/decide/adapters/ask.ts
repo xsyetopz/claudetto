@@ -1,0 +1,35 @@
+// The `AskUserQuestion` adapter: it sends the questions to Jev through `ask`, and returns them with the pick of Jev.
+// The run of the CLI is a parameter, so a test gives a fake run, and the hooks module gives `$.process.run`.
+// Each failure gives `undefined`, so the question stays as Claude sent it, and the user answers it.
+
+import {
+  type AskQuestion,
+  askRequest,
+  parseAskAnswers,
+  withPicks,
+} from "../domain/ask.ts";
+import type { CliCall } from "../domain/request.ts";
+import type { CliRun } from "./jev.ts";
+
+/** The questions with the pick of Jev, or `undefined` when Jev gives no pick for them. */
+export const pickQuestions = async <Q extends AskQuestion>(
+  questions: readonly Q[],
+  runCli: (call: CliCall) => Promise<CliRun>,
+): Promise<Q[] | undefined> => {
+  if (!Array.isArray(questions)) return undefined;
+  try {
+    const request = askRequest(questions);
+    if (request === null) return undefined;
+    const run = await runCli({
+      args: ["ask"],
+      stdin: JSON.stringify(request),
+    });
+    if (run.exitCode !== 0) return undefined;
+    const answers = parseAskAnswers(run.stdout);
+    if (answers === undefined) return undefined;
+    return withPicks(questions, answers);
+  } catch {
+    // The run can throw, such as when the process cannot start. The question then stays as asked.
+    return undefined;
+  }
+};

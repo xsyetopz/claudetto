@@ -2,50 +2,53 @@
 import type { On } from "claude-code";
 import { onCheck as h0 } from "../slices/asks/adapters/mod.ts";
 import {
-  onSecondOpinion as h1,
-  onSessionStart as h2,
+  onAskUserQuestion as h1,
+  onSecondOpinion as h2,
+  onSessionStart as h3,
 } from "../slices/decide/adapters/mod.ts";
 import {
-  onBashCall as h3,
-  onCheck as h4,
+  onBashCall as h4,
+  onCheck as h5,
 } from "../slices/guard/adapters/mod.ts";
 import {
-  onCompose as h5,
-  onSection as h6,
-  onSpawn as h7,
+  onCompose as h6,
+  onSection as h7,
+  onSpawn as h8,
 } from "../slices/prompt/adapters/mod.ts";
-import { onToolCall as h8 } from "../slices/sembr/adapters/mod.ts";
-import { onSessionStart as h9 } from "../slices/setup/adapters/mod.ts";
+import { onToolCall as h9 } from "../slices/sembr/adapters/mod.ts";
+import { onSessionStart as h10 } from "../slices/setup/adapters/mod.ts";
 import {
-  onAgentOffer as h10,
-  onToolDescribe as h11,
+  onAgentOffer as h11,
+  onToolDescribe as h12,
 } from "../slices/surface/adapters/mod.ts";
 import { register as legacy } from "./legacy.ts";
 
 export const register = (on: On): void => {
   // eval: agent.offer surface
-  on("agent.offer", h10);
+  on("agent.offer", h11);
   // eval: agent.spawn prompt
-  on("agent.spawn", h7);
+  on("agent.spawn", h8);
   // eval: prompt.compose prompt
-  on("prompt.compose", h5);
+  on("prompt.compose", h6);
   // eval: prompt.section prompt
-  on("prompt.section", h6);
+  on("prompt.section", h7);
   // eval: session.start decide
-  on("session.start", h2);
+  on("session.start", h3);
   // eval: session.start setup
-  on("session.start", h9);
-  // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h8);
-  // eval: tool.call guard
-  on("tool.call", h3);
+  on("session.start", h10);
   // eval: tool.call decide
-  on("tool.call", { tool: /^mcp__dotclaude__second_opinion$/ }, h1);
+  on("tool.call", { tool: ["AskUserQuestion"] }, h1);
+  // eval: tool.call sembr
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h9);
+  // eval: tool.call guard
+  on("tool.call", h4);
+  // eval: tool.call decide
+  on("tool.call", { tool: /^mcp__dotclaude__second_opinion$/ }, h2);
   // eval: tool.check asks
   on("tool.check", { tool: ["Bash", "Write", "Edit", "MultiEdit"] }, h0);
   // eval: tool.check guard
-  on("tool.check", h4);
+  on("tool.check", h5);
   // eval: tool.describe surface
-  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h11);
+  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h12);
   legacy(on);
 };

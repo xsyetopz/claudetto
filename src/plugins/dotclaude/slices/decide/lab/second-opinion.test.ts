@@ -9,7 +9,7 @@ import { type Engine, expect, mock, test } from "claude-code/testing";
 // A declaration in the author's project adds the MCP tool to `McpToolInputs`.
 declare module "claude-code" {
   interface McpToolInputs {
-    "mcp__dotclaude__second_opinion": { question: string };
+    mcp__dotclaude__second_opinion: { question: string };
   }
 }
 
@@ -25,7 +25,13 @@ const stub = (on: On, seen: string[], answer: string | null): void => {
   mock.env(on, { TYPESAFE_API_KEY: "" });
   const reply: ModelCompleteResult =
     answer === null
-      ? { isAnswered: false, reason: "api-error", status: null, error: "unknown", usage: NO_USAGE }
+      ? {
+          isAnswered: false,
+          reason: "api-error",
+          status: null,
+          error: "unknown",
+          usage: NO_USAGE,
+        }
       : { isAnswered: true, text: answer, usage: NO_USAGE };
   on("model.complete", (_$, e) => {
     seen.push(e.prompt);
