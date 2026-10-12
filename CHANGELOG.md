@@ -25,6 +25,9 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `spec` slice moves the lane of a package with no model call.
   An `agent.spawn` hook runs `dotclaude-spec lane <package> doing` when `/ship` starts the `implementer` of the package, and a `turn.complete` hook runs `lane <package> review` when that subagent ends.
   The hooks find the package in the `id:` line of the brief in the prompt, and run in the main session, where `lane` works.
+- The plugin `dotclaude-sessions` answers the typed commands `/dotclaude-sessions:usage` and `/start-cost` with a `command.run` hook.
+  The hook runs the CLI and shows its output with no model turn.
+  Arguments that need a shell go to the skill.
 
 ### Changed
 

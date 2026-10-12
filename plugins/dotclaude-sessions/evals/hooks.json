@@ -1,0 +1,16 @@
+{
+  "command.run start-cost": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude-sessions/tests/start-cost.test.ts > arguments that need a shell go to the skill",
+    "text": "plugins/dotclaude-sessions/tests/start-cost.test.ts > the command `start-cost` shows the output of the CLI"
+  },
+  "command.run usage": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude-sessions/tests/usage.test.ts > the built-in `usage` command runs unchanged",
+    "text": "plugins/dotclaude-sessions/tests/usage.test.ts > the command `dotclaude-sessions:usage` shows the output of the CLI"
+  }
+}
