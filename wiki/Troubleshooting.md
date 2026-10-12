@@ -19,8 +19,9 @@ Run `claude --debug` to see the hook log of Claude Code.
 | The `model` and `effort` of an agent file do not apply | `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set. Unset it. | [Agents](Agents) |
 | A `cat` or `sed -n` call is denied | The hook sends the print to `Read`, which gives a short stub for a repeat read. Call `Read` with the file and range in the reason. | [Context bound](Context-Bound) |
 | A Markdown write is denied for a code item | A command, path, or identifier is outside single backticks. Put it in a code span. | [Core plugin](Core-Plugin#hooks) |
-| A `git stash`, `git reset`, or test file edit asks | The `adherence` hook asks before work that other sessions share is moved or a test is changed. Allow it or change the code instead. | [Hooks](Hooks) |
-| An edit of a lint config, a CI file, or a hook file asks, and so does an added skipped test or lint suppression | The `adherence` hook asks because such a change can hide a defect that a check finds. Allow it only when you want the change. Else tell Claude to change the code. | [Hooks](Hooks) |
+| A `git stash` call is denied in a subagent | The `guard` denies `git stash`, `pop`, and `apply` in a subagent, because `refs/stash` is shared. `git stash drop` and `git stash clear` are forbidden in every session. Commit a WIP instead. | [Guards](Guards) |
+| An edit asks for a skipped test, a lint suppression, or a weaker protected file | The `guard` asks only when a change weakens a check. It never asks for a read. Allow the change only when you want it. Else tell Claude to change the code. | [Guards](Guards) |
+| A destructive command is denied and Claude stops | The `guard` denies the command, and Claude does not run it another way. Run the exact command that Claude gives you with `!` at the start of your prompt. | [Guards](Guards) |
 | A `git push` fails in the sandbox | The push runs outside the sandbox, because the snippet excludes it. Check your git credentials. | [Guards](Guards) |
 
 ## `dotclaude-codegraph`

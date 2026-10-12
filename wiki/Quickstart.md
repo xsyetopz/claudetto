@@ -26,9 +26,17 @@ See [Status line](Status-Line).
 
 ### A permission rule asks
 
-Claude plans a force push, a `git reset --hard`, a package publish, or a write to a pull request or an issue.
+Claude plans a package publish, or a write to a pull request or an issue.
 Claude Code asks you first, because the [settings snippet](Settings-Snippet) has an `ask` rule for it.
 It denies a read of secrets and a `rm -rf` of the root or your home.
+See [Guards](Guards).
+
+### A destructive command is stopped
+
+Claude plans a force push to a shared or default branch, such as `main`, or a `git reset --hard`.
+The destructive floor forbids both, so dotclaude denies them and Claude stops.
+Claude does not try the action in another way.
+If you want the action, run the exact command that Claude gives you with `!` at the start of your prompt.
 See [Guards](Guards).
 
 ### A recursive rm asks

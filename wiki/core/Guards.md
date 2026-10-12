@@ -15,7 +15,7 @@ This page lists each layer, what to do when one fires, and how to change one.
 | --- | --- | --- |
 | Permission rules | `permissions` in the [settings snippet](Settings-Snippet), copied by you into your `settings.json` | Deny, ask, and allow lists for tools and commands. |
 | Sandbox | `sandbox` in the same snippet | Runs Bash commands in the Claude Code sandbox, with a list of allowed domains. |
-| Module guard | `hooks/register.ts`, with pure rules in `features/guard/rules.ts` | One `tool.check` handler for the policy ask and the adherence ask. |
+| Module guard | `src/plugins/dotclaude/slices/guard/` (`slice.ts`, `adapters/mod.ts`, `domain/guard.ts`, `domain/matchers/`) | One `tool.check` handler for the policy ask and the adherence ask. |
 | Destructive floor | The `autoMode` lists in your user settings, and the `guard` hook | Asks for root rights, and forbids destructive work. See [The destructive floor](#the-destructive-floor). |
 
 Deny rules are not a security boundary on their own, so the snippet pairs them with the sandbox ([Design](Design)).
@@ -140,7 +140,7 @@ See D2 in [Decisions](Decisions-Settings) and [Off switches](Off-Switches#manage
 
 ## The module guard
 
-`hooks/register.ts` registers one `tool.check` handler.
+`slice.ts` registers one `tool.check` handler, `onCheck` in `adapters/mod.ts`.
 It calls the engine first, and it returns a deny of the engine unchanged.
 
 | Case | What the module does |

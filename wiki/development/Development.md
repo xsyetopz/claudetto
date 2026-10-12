@@ -119,6 +119,15 @@ You can restore its skills and the `um` command from there as a base for your ow
    claude --plugin-dir /path/to/dotclaude/plugins/dotclaude
    ```
 
+## The `/ship` wave
+
+The `/ship` skill runs the open packages of a large change in waves.
+Each wave starts with `dotclaude-spec runs`.
+It prints the count of agent runs that the wave may start now, from the tier cap and from the 5-hour and weekly usage.
+Each package has one `implementer` in its own worktree.
+Before the merge, one `reviewer` reads the diff of each package.
+The reviewer gets no report of the implementer, so it judges only the diff.
+
 ## Releases
 
 1. Add each change to the CHANGELOG under `[Unreleased]`.
