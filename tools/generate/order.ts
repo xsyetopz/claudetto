@@ -20,9 +20,13 @@ export const filterOf = (e: Entry): string =>
 
 const compare = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 
-/** `entries` in the order of the generated `register.ts`. It throws on two handlers of one slice with the same event, filter, and phase. */
+/**
+ * `entries` in the order of the generated `register.ts`. It throws on two handlers of one slice with the same event, filter, and phase,
+ * and on two handlers of one event with no filter, because the mod runtime refuses two unfiltered registrations of one event.
+ */
 export const order = (entries: readonly Entry[]): Entry[] => {
   const seen = new Set<string>();
+  const bare = new Map<string, Entry>();
   for (const e of entries) {
     const key = JSON.stringify([
       e.slice,
@@ -35,6 +39,13 @@ export const order = (entries: readonly Entry[]): Entry[] => {
         `slice ${e.slice}: two mod handlers have the event ${e.handler.event}, the filter ${filterOf(e) || "(none)"}, and the phase ${e.handler.phase}. Join them, or give them different phases.`,
       );
     seen.add(key);
+    if (e.handler.filter !== undefined) continue;
+    const first = bare.get(e.handler.event);
+    if (first)
+      throw new Error(
+        `slice ${first.slice} and slice ${e.slice}: both have a mod handler of the event ${e.handler.event} with no filter, and the mod runtime refuses two of them. Give one of the handlers a filter, or join the two handlers in one handler of one slice.`,
+      );
+    bare.set(e.handler.event, e);
   }
   return [...entries].sort(
     (a, b) =>
