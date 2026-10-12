@@ -4,8 +4,8 @@
 // The wiki page `Off-Switches` lists the same entries.
 
 import path from "node:path";
-import { validate } from "../dotclaude/fixtures/validate.ts";
 import { REPO } from "./repo.ts";
+import { validate } from "./validate.ts";
 
 /** A parsed `settings.json` block: the keys that the tests read, and any other key. */
 export type Settings = {

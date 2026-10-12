@@ -20,20 +20,20 @@ export const LOCK = path.join(
 );
 
 /** True unless the process is certainly gone (`ESRCH`). */
-function isAlive(pid: number): boolean {
+const isAlive = (pid: number): boolean => {
   try {
     process.kill(pid, 0);
     return true;
   } catch (e) {
     return (e as NodeJS.ErrnoException).code !== "ESRCH";
   }
-}
+};
 
 /** Takes the lock, or gives the holder when another live run has it. */
-export async function takeLock(
+export const takeLock = async (
   file: string,
   pid: number = process.pid,
-): Promise<{ release: () => void } | { holder: string }> {
+): Promise<{ release: () => void } | { holder: string }> => {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   for (let i = 0; i < 2; i++) {
     try {
@@ -54,7 +54,7 @@ export async function takeLock(
     fs.rmSync(file, { force: true });
   }
   return { holder: (await Bun.file(file).text()).trim() };
-}
+};
 
 if (process.argv[1] === import.meta.path) {
   const [command, ...args] = process.argv.slice(2);

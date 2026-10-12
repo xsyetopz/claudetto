@@ -14,19 +14,11 @@ plugins/dotclaude-browser/evals/hooks.json
 plugins/dotclaude-browser/tsconfig.json
 
 # P12: `dotclaude-lab`
-# `tests/dotclaude/settings-pin.test.ts` and `tests/support/settings-pin.ts` use the validator of `tests/dotclaude/fixtures/`, so P12 gives them a 1.0.0 validator before it deletes that folder.
-plugins/dotclaude-lab/
-src/plugins/dotclaude-lab/
-tests/dotclaude/fixtures/
-tests/lab/
-tests/support/lock.test.ts
-tests/support/unsandboxed.test.ts
-tools/eval-variant.ts
-tools/lock.ts
-tools/measure.ts
-tools/sandbox.ts
-tools/start-run.ts
-tools/unsandboxed.ts
+tests/lab/eval-variant.test.ts
+tests/lab/fixture-repo.ts
+tests/lab/results-copy.test.ts
+tests/lab/sandbox/frontmatter.test.ts
+tests/lab/sandbox/login.test.ts
 
 # P13: `handoff`, the 0.28.0 context bound, and the shared 0.28.0 code of the core plugin that the last slice package removes
 plugins/dotclaude/evals/

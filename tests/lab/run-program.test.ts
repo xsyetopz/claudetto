@@ -1,12 +1,11 @@
-// `runProgram` of `dotclaude-lab` and `dotclaude`: on Windows a `.cmd` command runs through a shell with quoted words.
+// `runProgram` of `dotclaude-lab`: on Windows a `.cmd` command runs through a shell with quoted words.
 // The tests set `process.platform` to `win32` for one call and give a fake runner, so no program runs.
 
 import { expect, test } from "bun:test";
-import { runProgram as core } from "../../plugins/dotclaude/lib/run-program.ts";
 import {
   runProgram as lab,
   type Spawn,
-} from "../../plugins/dotclaude-lab/lib/run-program.ts";
+} from "../../src/plugins/dotclaude-lab/slices/sandbox/adapters/run-program.ts";
 
 const platform = Object.getOwnPropertyDescriptor(
   process,
@@ -22,20 +21,12 @@ const on = (name: string, fn: () => unknown) => {
 };
 
 /** A fake `Spawn` that records each call in `seen` and runs no program. */
-function fakeSpawn(seen: unknown[][]): Spawn {
-  return (...a) => {
+const fakeSpawn =
+  (seen: unknown[][]): Spawn =>
+  (...a) => {
     seen.push(a);
     return null;
   };
-}
-
-/** A fake `Bun.spawnSync` that records each call in `seen` and runs no program. */
-function fakeSpawnSync(seen: unknown[][]): typeof Bun.spawnSync {
-  return ((...a: unknown[]) => {
-    seen.push(a);
-    return null;
-  }) as unknown as typeof Bun.spawnSync;
-}
 
 test("on Windows, the lab runner quotes each word and runs the line through `ComSpec` with `/d /s /c`", () => {
   const seen: unknown[][] = [];
@@ -61,25 +52,6 @@ test("on Windows, an `.exe` file and any file on another platform run without a 
   ]);
 });
 
-test("the core runner gives the same command line on Windows, as one argument vector", () => {
-  const seen: unknown[][] = [];
-  on("win32", () =>
-    core("openspec", ["config", "get"], { cwd: "." }, fakeSpawnSync(seen)),
-  );
-  expect(seen).toStrictEqual([
-    [
-      [
-        process.env["ComSpec"] || "cmd.exe",
-        "/d",
-        "/s",
-        "/c",
-        '""openspec" "config" "get""',
-      ],
-      { cwd: ".", windowsVerbatimArguments: true },
-    ],
-  ]);
-});
-
 const REFUSED: [string, string][] = [
   ["%", "50% done"],
   ["!", "hi!"],
@@ -92,8 +64,7 @@ const REFUSED: [string, string][] = [
 ];
 
 // Each runner takes the words and the list that records its spawn calls.
-// The lab runner gives its spawn the file, the arguments, and the options, and the core runner gives one argument vector and the options.
-// Both end the vector with the command line on Windows.
+// The runner gives its spawn the file, the arguments, and the options, and the command line is the last argument on Windows.
 const RUNNERS: {
   name: string;
   run: (args: string[], seen: unknown[][]) => unknown;
@@ -105,12 +76,6 @@ const RUNNERS: {
     run: (args, seen) => lab("claude", args, {}, fakeSpawn(seen)),
     commandLine: (call) => (call[1] as string[]).at(-1),
     plain: [["claude", ["50%"], {}]],
-  },
-  {
-    name: "core",
-    run: (args, seen) => core("claude", args, {}, fakeSpawnSync(seen)),
-    commandLine: (call) => (call[0] as string[]).at(-1),
-    plain: [[["claude", "50%"], {}]],
   },
 ];
 

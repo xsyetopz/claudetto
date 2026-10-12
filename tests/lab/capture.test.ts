@@ -4,22 +4,20 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { parts } from "../../plugins/dotclaude-lab/features/capture/report.ts";
+import { parts } from "../../src/plugins/dotclaude-lab/slices/capture/domain/report.ts";
 import type {
   Block,
   Body,
   Message,
   Part,
-} from "../../plugins/dotclaude-lab/features/capture/types.ts";
-import { resolveUpstream } from "../../plugins/dotclaude-lab/features/capture/upstream.ts";
+} from "../../src/plugins/dotclaude-lab/slices/capture/domain/types.ts";
+import { resolveUpstream } from "../../src/plugins/dotclaude-lab/slices/capture/domain/upstream.ts";
 import { PLUGINS, tmpDir } from "../support/repo.ts";
 
 const TOOL = path.join(PLUGINS, "dotclaude-lab", "bin", "dotclaude-capture");
 
 /** The item at `i`, which the tests below know exists. */
-function item<T>(list: readonly T[], i: number): T {
-  return list[i] as T;
-}
+const item = <T>(list: readonly T[], i: number): T => list[i] as T;
 
 /** One request that the fake upstream received. */
 type Seen = {
@@ -29,7 +27,7 @@ type Seen = {
 };
 
 /** A fake upstream that records each request and answers with JSON. */
-async function fakeUpstream() {
+const fakeUpstream = async () => {
   const seen: Seen[] = [];
   const server = Bun.serve({
     port: 0,
@@ -46,9 +44,9 @@ async function fakeUpstream() {
     },
   });
   return { seen, server, url: `http://127.0.0.1:${server.port}` };
-}
+};
 
-async function freePort() {
+const freePort = async () => {
   const s = Bun.serve({
     port: 0,
     hostname: "127.0.0.1",
@@ -57,10 +55,10 @@ async function freePort() {
   const { port } = s;
   s.stop();
   return port;
-}
+};
 
 /** Start the proxy and wait for its `capture:` line. */
-async function startProxy(upstream: string, out: string) {
+const startProxy = async (upstream: string, out: string) => {
   const port = await freePort();
   const child = Bun.spawn(
     [
@@ -90,7 +88,7 @@ async function startProxy(upstream: string, out: string) {
     read(child.stderr);
   });
   return { child, base: `http://127.0.0.1:${port}` };
-}
+};
 
 const body = {
   model: "claude-test",

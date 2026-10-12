@@ -34,7 +34,7 @@ test("the register runs the handlers of one event by phase, then by slice name, 
   const beta = await copyOf(dir, "beta");
   expect(await registered(dir)).toStrictEqual([
     ["prompt.compose", undefined, alpha["onCompose"]],
-    ["prompt.compose", undefined, beta["onCompose"]],
+    ["prompt.compose", { model: "fixture" }, beta["onCompose"]],
     ["tool.call", { tool: "Bash" }, beta["onBash"]],
     ["tool.call", { tool: "Bash" }, alpha["onBash"]],
     [
@@ -72,6 +72,30 @@ export const slice = { name: "gamma", mod: [
   });
   const made = await generated(dir);
   expect(textOf(made, "plugins/p/hooks/register.ts")).toContain("gamma");
+});
+
+test("two slices that each register one event with no filter are an error that names both slices", async () => {
+  const handler = "export const start = () => 0;\n";
+  const dir = await fixtureRoot({
+    "src/plugins/p/slices/gamma/adapters/mod.ts": handler,
+    "src/plugins/p/slices/gamma/slice.ts": `import { start } from "./adapters/mod.ts";
+export const slice = { name: "gamma", mod: [
+  { event: "session.start", phase: "observe", run: start },
+] };
+`,
+    "src/plugins/p/slices/delta/adapters/mod.ts": handler,
+    "src/plugins/p/slices/delta/slice.ts": `import { start } from "./adapters/mod.ts";
+export const slice = { name: "delta", mod: [
+  { event: "session.start", phase: "observe", run: start },
+] };
+`,
+  });
+  const error = await generated(dir).then(
+    () => "",
+    (e: unknown) => String(e),
+  );
+  expect(error).toContain("gamma");
+  expect(error).toContain("delta");
 });
 
 test("a handler with `configure` gets the `options` that the mod runtime gives to `register`", async () => {

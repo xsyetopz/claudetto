@@ -86,7 +86,7 @@ test("mutation: a check that ignores the log would pass the unknown-field log", 
   const s = await setUp();
   const copy = path.join(s.dir, "lab");
   fs.cpSync(LAB, copy, { recursive: true });
-  const file = path.join(copy, "features/sandbox/frontmatter.ts");
+  const file = path.join(copy, "slices/sandbox/domain/frontmatter.ts");
   const source = await Bun.file(file).text();
   const mutated = source.replace("hits.length === 0 ? 0 : 1", "0");
   expect(mutated, "the mutation must change the file").not.toBe(source);

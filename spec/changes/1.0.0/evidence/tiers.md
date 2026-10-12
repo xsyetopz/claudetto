@@ -54,11 +54,18 @@ The user decided that the setup scales from Pro as the baseline (`change.md`, de
 - `maxEffortLevel` caps each effort, and `modelSettings.<model>.maxEffortLevel` replaces it for one model (L262310-262312, confirmed).
 - `CLAUDE_CODE_DISABLE_1M_CONTEXT` turns off the `[1m]` forms (L320099, confirmed).
 - `CLAUDE_CODE_MAX_CONTEXT_TOKENS` applies only with `DISABLE_COMPACT` (L320099, confirmed).
-- `CLAUDE_CODE_SUBAGENT_MODEL`, `CLAUDE_CODE_MAX_TURNS`, and `CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY` exist (L212058, L265174, L318868), and their values are not read.
+- `effortLevel` in the settings takes `low`, `medium`, `high`, or `xhigh` (L319438, L322403, confirmed).
+  The full effort list is `low`, `medium`, `high`, `xhigh`, and `max` (L319433, confirmed).
+- The agent front matter key `effort` takes one of the 5 effort values or a positive integer, `model` takes an alias, a full model id, or `inherit`, and `maxTurns` takes a positive integer (L319232, confirmed).
+  With no `model`, an agent uses the configured default subagent model, else the main model.
+- The agent front matter keys are `name`, `description`, `prompt`, `tools`, `disallowedTools`, `model`, `effort`, `permissionMode`, `mcpServers`, `hooks`, `maxTurns`, `autoCompactWindow`, `skills`, `initialPrompt`, `memory`, `background`, `omitClaudeMd`, and `isolation` (L322283, confirmed).
+- `CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY` defaults to 10 (L332609, confirmed).
+- `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` exists (L260959, L319434, L336251), and its default is not read.
+- `fastMode` is a boolean, next to `fastModePerSessionOptIn` (L319438, confirmed).
+- `CLAUDE_CODE_SUBAGENT_MODEL` and `CLAUDE_CODE_MAX_TURNS` exist (L212058, L265174, L318868), and their values are not read.
 
 ## Open
 
 - The default model of an API key, and the condition `Ev()`.
-- The values of `effortLevel`, `fastMode`, and the agent front matter keys `model`, `effort`, and `maxTurns`.
-- The default of `CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY`, and any bound on parallel subagents.
+- The default of `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`, what `CLAUDE_CODE_SUBAGENT_MODEL` overrides, and which tiers can use fast mode.
 - A way to tell Max 5x from Max 20x without the credentials file.

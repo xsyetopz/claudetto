@@ -96,4 +96,4 @@ debug-agents:
 
 # Capture and measure the start of a clean sandbox session: send one prompt, then type /exit; extra arguments go to the script (--port N, --dir DIR)
 start-run *args:
-    bun tools/start-run.ts "$@"
+    bun src/plugins/dotclaude-lab/slices/sandbox/adapters/start-run.ts "$@"

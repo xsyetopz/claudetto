@@ -1,11 +1,11 @@
-// The code spans of the schema descriptions (`features/schema/spans.ts` of `dotclaude-lab`).
+// The code spans of the schema descriptions (`slices/schema/domain/spans.ts` of `dotclaude-lab`).
 // The tests give the description texts as strings.
 
 import { expect, test } from "bun:test";
 import {
   applyCodeSpans,
   wrapCodeSpans,
-} from "../../../plugins/dotclaude-lab/features/schema/build.ts";
+} from "../../../src/plugins/dotclaude-lab/slices/schema/domain/spans.ts";
 
 const KEYS = new Set(["cleanupPeriodDays", "permissions", "model", "env"]);
 const wrap = (text: string) => wrapCodeSpans(text, KEYS);

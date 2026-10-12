@@ -46,7 +46,8 @@ So an `environment` entry that says which paths are agent worktrees and Claude C
 
 ## Garbage collection
 
-- `cleanupPeriodDays` keeps chat transcripts for 30 days by default, with a minimum of 1 (L319438, L261144).
+- `cleanupPeriodDays` keeps chat transcripts for 30 days by default (`cTt=30`, L323574), with a minimum of 1 (L261144).
+- The cleanup also removes the folders `todos`, `statsig`, `logs`, `access-audit`, `mcp-skill-archives`, `mcp-discovery-cache`, and `shares` (L323574, L323584).
 - The cleanup pauses while the settings have errors (L148139), and it skips when no enabled source sets the key and the user settings are off (L192527).
 - `--no-session-persistence` turns off the writes of a session.
 
@@ -54,5 +55,5 @@ So an `environment` entry that says which paths are agent worktrees and Claude C
 
 - Whether a permission allow rule skips the classifier in auto mode.
 - Whether Claude Code removes the worktree of an agent with `isolation: worktree` itself, and when it keeps one.
-- What else `cleanupPeriodDays` deletes besides transcripts, and when the cleanup runs.
+- Whether the cleanup also removes plans, file history, the paste cache, and task output, and when the cleanup runs.
 - Any cleanup of `/tmp/claude-<uid>/`, the plugin cache, and old versions.

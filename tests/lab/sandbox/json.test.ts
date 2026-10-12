@@ -8,8 +8,8 @@ import path from "node:path";
 import {
   parseJson,
   readJson,
-} from "../../../plugins/dotclaude-lab/features/sandbox/json.ts";
-import { availableModels } from "../../../plugins/dotclaude-lab/features/sandbox/setup.ts";
+} from "../../../src/plugins/dotclaude-lab/slices/sandbox/adapters/json.ts";
+import { availableModels } from "../../../src/plugins/dotclaude-lab/slices/sandbox/adapters/setup.ts";
 import { tmpDir } from "../../support/repo.ts";
 
 const folder = () => tmpDir("lab-json");
