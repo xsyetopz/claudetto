@@ -123,7 +123,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   the 0.28.0 `PostToolUse` context bound of subagents (`hooks/PostToolUse/context.ts`) moves into the `handoff` slice, so no behavior is lost;
   a handoff hook has `requests: 0`, because it makes no model call.
   Verify also: one run in `just sandbox` that shows the resume.
-- [ ] P24 `tiers`: the setup reads the account type and scales from Pro as the baseline, with the same features for each account ([change](change.md), decisions).
+- [x] P24 `tiers`: the setup reads the account type and scales from Pro as the baseline, with the same features for each account ([change](change.md), decisions).
   Pro is the baseline, Max 5x and Max 20x get more parallel agents and better model and effort picks, and an API key account gets the picks of its own budget.
   The setup reads `claude auth status --json` for `subscriptionType`, and the rate limit tier only where Claude Code exposes it without the credentials file.
   It does not scale what Claude Code scales itself ([tiers](evidence/tiers.md)).
@@ -135,7 +135,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P09.
   Owns: `src/plugins/dotclaude/slices/setup/` (the `autoMode` parts), `tests/dotclaude/setup/` (the `autoMode` tests).
   Verify also: `claude auto-mode critique` on the entry, and a test that the written lists start with `$defaults`.
-- [ ] P26 Garbage collection: dotclaude uses the cleanup of Claude Code, such as `cleanupPeriodDays`, and adds no cleanup of its own where Claude Code has one.
+- [x] P26 Garbage collection: dotclaude uses the cleanup of Claude Code, such as `cleanupPeriodDays`, and adds no cleanup of its own where Claude Code has one.
   It first answers the open items of [automode](evidence/automode.md#open) on cleanup.
   Deps: P09.
   Owns: `src/plugins/dotclaude/slices/setup/` (the cleanup keys), `tests/dotclaude/setup/` (the cleanup tests).
