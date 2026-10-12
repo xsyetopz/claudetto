@@ -62,7 +62,7 @@ test("the first row ends with the id and the done count of the active change", a
 });
 
 test("a store where every change is done shows no change segment", async () => {
-  const root = await project("all-done",{ "1.0.0": state({ P01: "done" }) });
+  const root = await project("all-done", { "1.0.0": state({ P01: "done" }) });
   const run = await rowsFor(root);
   expect(run.out[0]).not.toContain("◆");
 });
@@ -78,7 +78,7 @@ test("a folder with no store shows no change segment and no error", async () => 
 });
 
 test("a store of another schema shows no change segment, writes the cause to stderr, and keeps the other rows", async () => {
-  const root = await project("schema",{ "1.0.0": state({ P01: "doing" }, 2) });
+  const root = await project("schema", { "1.0.0": state({ P01: "doing" }, 2) });
   const run = await rowsFor(root);
   expect(run.status).toBe(0);
   expect(run.err.join("")).toContain("state.json");
