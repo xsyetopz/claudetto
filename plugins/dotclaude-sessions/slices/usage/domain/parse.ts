@@ -2,6 +2,7 @@
 // Helpers for the usage report: call prices, transcript parsing, and counts.
 
 import { rethrowUnless } from "../../../kernel/errors.ts";
+import { parseModel } from "../../../kernel/model.ts";
 import type { Store } from "../ports.ts";
 import type {
   Block,
@@ -16,24 +17,67 @@ import type {
 
 // $ per million tokens: input, output, cache read, 5m write, 1h write.
 type Prices = [number, number, number, number, number];
-const PRICES: Record<string, Prices> = {
-  fable: [10, 50, 0.25, 12.5, 20],
-  opus: [4, 20, 0.2, 5, 8],
-  sonnet: [2, 10, 0.2, 2.5, 4],
-  haiku: [1, 5, 0.1, 1.25, 2],
+const FABLE_5_1: Prices = [10, 50, 0.25, 12.5, 20];
+const FABLE_5: Prices = [10, 50, 1, 12.5, 20];
+const OPUS_4_5: Prices = [5, 25, 0.5, 6.25, 10];
+const OPUS_4: Prices = [15, 75, 1.5, 18.75, 30];
+const SONNET_4: Prices = [3, 15, 0.3, 3.75, 6];
+// The prices of the pricing page, https://platform.claude.com/docs/en/about-claude/pricing, on 2026-10-13.
+// A version that is not here gets the prices of the newest version of its family.
+const PRICES: Record<string, Record<string, Prices>> = {
+  fable: { "5.1": FABLE_5_1, "5": FABLE_5 },
+  mythos: { "5.1": FABLE_5_1, "5": FABLE_5 },
+  opus: {
+    "5.5": [4, 20, 0.2, 5, 8],
+    "5": OPUS_4_5,
+    "4.8": OPUS_4_5,
+    "4.7": OPUS_4_5,
+    "4.6": OPUS_4_5,
+    "4.5": OPUS_4_5,
+    "4.1": OPUS_4,
+    "4": OPUS_4,
+  },
+  sonnet: {
+    "5.5": [2, 10, 0.1, 2.5, 4],
+    "5": [2, 10, 0.2, 2.5, 4],
+    "4.6": SONNET_4,
+    "4.5": SONNET_4,
+    "4": SONNET_4,
+  },
+  haiku: {
+    "5.5": [0.1, 0.5, 0.01, 0.125, 0.2],
+    "4.5": [1, 5, 0.1, 1.25, 2],
+  },
+};
+// A Haiku 5.5 call whose prompt, with its cache reads and writes, is over 100,000 tokens pays these prices.
+const HAIKU_5_5_LONG: Prices = [0.5, 2.5, 0.05, 0.625, 1];
+const HAIKU_5_5_PROMPT = 100_000;
+
+const pricesOf = (model: unknown, prompt: number): Prices | undefined => {
+  const id = parseModel(model);
+  const versions = id && PRICES[id.family];
+  if (!(id && versions)) return;
+  const version = id.minor === null ? `${id.major}` : `${id.major}.${id.minor}`;
+  if (version === "5.5" && id.family === "haiku" && prompt > HAIKU_5_5_PROMPT)
+    return HAIKU_5_5_LONG;
+  const newest = Object.keys(versions).sort((a, b) => Number(b) - Number(a));
+  return versions[version] ?? versions[newest[0] as string];
 };
 
 export const callCost = (model: unknown, u: Usage): CallCost => {
-  const family = Object.keys(PRICES).find((f) => String(model).includes(f));
-  if (!family) return { total: 0, write: 0, context: 0, read: 0 };
-  const [pi, po, pr, p5, p1] = PRICES[family] as Prices;
+  const read = u.cache_read_input_tokens ?? 0;
+  const input = u.input_tokens ?? 0;
+  const prices = pricesOf(
+    model,
+    input + read + (u.cache_creation_input_tokens ?? 0),
+  );
+  if (!prices) return { total: 0, write: 0, context: 0, read: 0 };
+  const [pi, po, pr, p5, p1] = prices;
   const cc = u.cache_creation;
   const w1 = cc?.ephemeral_1h_input_tokens ?? 0;
   const w5 = cc
     ? (cc.ephemeral_5m_input_tokens ?? 0)
     : (u.cache_creation_input_tokens ?? 0);
-  const read = u.cache_read_input_tokens ?? 0;
-  const input = u.input_tokens ?? 0;
   const write = (w5 * p5 + w1 * p1) / 1e6;
   return {
     total: (input * pi + (u.output_tokens ?? 0) * po + read * pr) / 1e6 + write,

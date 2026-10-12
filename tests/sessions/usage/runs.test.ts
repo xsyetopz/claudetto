@@ -43,7 +43,7 @@ const call = (id: string, usage: Usage, content: Block[] = []): Entry => ({
   timestamp: at,
   message: {
     id,
-    model: "claude-sonnet-4",
+    model: "claude-sonnet-5-5",
     stop_reason: "end_turn",
     usage,
     content,

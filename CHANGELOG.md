@@ -122,6 +122,9 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The `setup` slice adds the runtime paths of `.claude/` that git does not ignore to `.git/info/exclude`.
 - dotclaude uses the worktrees of Claude Code.
   No file in `src/` runs `git worktree add`.
+- The `dotclaude-usage` report prices each call by the model version, from the pricing page of 2026-10-13.
+  It adds the Mythos models and the two prompt tiers of Haiku 5.5, and the cache read of Sonnet 5.5 is $0.10.
+  A version that is not in the table gets the prices of the newest version of its family.
 
 ### Removed
 

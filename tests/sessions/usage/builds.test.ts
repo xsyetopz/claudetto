@@ -79,27 +79,27 @@ test("the sessions of one build add up to one total, and a session with no stamp
   await write(
     root,
     "a",
-    session("claude-sonnet-4", stampOf("1.0.0", "0123456")),
+    session("claude-sonnet-5-5", stampOf("1.0.0", "0123456")),
   );
   await write(
     root,
     "b",
-    session("claude-haiku-4", stampOf("1.1.0", "fedcba9")),
+    session("claude-haiku-5-5", stampOf("1.1.0", "fedcba9")),
   );
-  await write(root, "c", session("claude-sonnet-4"));
+  await write(root, "c", session("claude-sonnet-5-5"));
   await write(
     root,
     "d",
-    session("claude-sonnet-4", stampOf("1.0.0", "0123456")),
+    session("claude-sonnet-5-5", stampOf("1.0.0", "0123456")),
   );
   const { builds } = run(root);
-  // Sonnet costs $2 and haiku $1 per million input tokens, so the largest total comes first.
+  // Sonnet 5.5 costs $2 and haiku 5.5 $0.5 per million input tokens, so the largest total comes first.
   expect(
     builds.byBuild.map((b) => [b.build, b.sessions, b.cost]),
   ).toStrictEqual([
     ["1.0.0 0123456", 2, 4],
     ["unknown", 1, 2],
-    ["1.1.0 fedcba9", 1, 1],
+    ["1.1.0 fedcba9", 1, 0.5],
   ]);
 });
 
@@ -108,14 +108,14 @@ test("each session shows its own build, from its stamp row", async () => {
   await write(
     root,
     "a",
-    session("claude-sonnet-4", stampOf("1.0.0", "0123456")),
+    session("claude-sonnet-5-5", stampOf("1.0.0", "0123456")),
   );
   await write(
     root,
     "b",
-    session("claude-haiku-4", stampOf("1.1.0", "fedcba9")),
+    session("claude-haiku-5-5", stampOf("1.1.0", "fedcba9")),
   );
-  await write(root, "c", session("claude-sonnet-4"));
+  await write(root, "c", session("claude-sonnet-5-5"));
   const { builds } = run(root);
   expect(
     Object.fromEntries(builds.latest.map((s) => [s.id, s.build])),

@@ -181,7 +181,7 @@ test("a list that already holds Mythos keeps it with no catalog", async () => {
 
 test("without Mythos, `availableModels` takes the list of the snippet", async () => {
   const d = sandbox();
-  await writeUser(d, { availableModels: ["claude-opus-4-1"] });
+  await writeUser(d, { availableModels: ["claude-sonnet-5-5"] });
   run(d, ["--apply"]);
   expect((await readUser(d)).availableModels).toStrictEqual(
     SNIPPET["availableModels"],

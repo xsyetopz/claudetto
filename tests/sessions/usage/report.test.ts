@@ -29,7 +29,7 @@ const near = (a: number, b: number) =>
   expect(Math.abs(a - b) < 1e-9, `${a} is not ${b}`).toBeTruthy();
 
 test("a sonnet call costs input, output, cache read, and the 5m and 1h writes at their prices", async () => {
-  const c = callCost("claude-sonnet-4", {
+  const c = callCost("claude-sonnet-5-5", {
     input_tokens: 1000,
     output_tokens: 500,
     cache_read_input_tokens: 2000,
@@ -39,28 +39,29 @@ test("a sonnet call costs input, output, cache read, and the 5m and 1h writes at
       ephemeral_1h_input_tokens: 20_000,
     },
   });
-  // $2 input, $10 output, $0.2 read, $2.5 5m write, $4 1h write, per million tokens.
+  // $2 input, $10 output, $0.1 read, $2.5 5m write, $4 1h write, per million tokens.
   near(c.write, (10_000 * 2.5 + 20_000 * 4) / 1e6);
-  near(c.total, (1000 * 2 + 500 * 10 + 2000 * 0.2) / 1e6 + c.write);
+  near(c.total, (1000 * 2 + 500 * 10 + 2000 * 0.1) / 1e6 + c.write);
   expect(c.read).toBe(2000);
   expect(c.context).toBe(33_000);
   expect(c.rewrite).toBe(false);
 });
 
 test("a call with no split of the cache write prices all of it as a 5m write", async () => {
-  const c = callCost("claude-opus-4", {
+  const c = callCost("claude-opus-5-5", {
     cache_creation_input_tokens: 1_000_000,
   });
   near(c.write, 5);
   near(c.total, 5);
 });
 
-test("each model family has its own price, and an unknown model costs nothing", async () => {
+test("each model has its own price, and an unknown model costs nothing", async () => {
   const usage = { input_tokens: 1_000_000 };
-  near(callCost("claude-fable-1", usage).total, 10);
-  near(callCost("claude-opus-4", usage).total, 4);
-  near(callCost("claude-sonnet-4", usage).total, 2);
-  near(callCost("claude-haiku-4", usage).total, 1);
+  near(callCost("claude-mythos-5-1", usage).total, 10);
+  near(callCost("claude-fable-5-1", usage).total, 10);
+  near(callCost("claude-opus-5-5", usage).total, 4);
+  near(callCost("claude-sonnet-5-5", usage).total, 2);
+  near(callCost("claude-haiku-5-5", usage).total, 0.5);
   expect(callCost("gpt-x", usage)).toStrictEqual({
     total: 0,
     write: 0,
@@ -70,9 +71,26 @@ test("each model family has its own price, and an unknown model costs nothing", 
   expect(callCost(undefined, usage).total).toBe(0);
 });
 
+test("a haiku 5.5 prompt over 100,000 tokens, with its cache reads and writes, pays the long prices", async () => {
+  const haiku = (u: Usage) => callCost("claude-haiku-5-5", u).total;
+  near(haiku({ input_tokens: 100_000 }), (100_000 * 0.1) / 1e6);
+  near(haiku({ input_tokens: 100_001 }), (100_001 * 0.5) / 1e6);
+  near(
+    haiku({ input_tokens: 1, cache_read_input_tokens: 100_000 }),
+    (1 * 0.5 + 100_000 * 0.05) / 1e6,
+  );
+});
+
+test("each version of a family has its own price, and a version that is not listed gets the newest price", async () => {
+  const read = { cache_read_input_tokens: 1_000_000 };
+  near(callCost("claude-fable-5-1", read).total, 0.25);
+  near(callCost("claude-fable-5", read).total, 1);
+  near(callCost("claude-opus-9-9", { input_tokens: 1_000_000 }).total, 4);
+});
+
 test("a write over 30k tokens that is larger than the read is a full rewrite", async () => {
   const rewrite = (write: number, read: number) =>
-    callCost("claude-sonnet-4", {
+    callCost("claude-sonnet-5-5", {
       cache_creation_input_tokens: write,
       cache_read_input_tokens: read,
     }).rewrite;
@@ -213,16 +231,16 @@ const run = (root: string, ...args: string[]): Report => {
 const fixture = async () => {
   const root = tmpDir("usage");
   const iso = (days: number) => new Date(Date.now() - days * DAY).toISOString();
-  // One million input tokens: $2 for sonnet, $1 for haiku.
+  // One million input tokens: $2 for sonnet 5.5, and $0.5 for haiku 5.5 at its long prices.
   const million = { input_tokens: 1_000_000, output_tokens: 0 };
   await write(
     path.join(root, "p", "recent.jsonl"),
-    transcript("claude-sonnet-4", iso(1), million),
+    transcript("claude-sonnet-5-5", iso(1), million),
     1,
   );
   await write(
     path.join(root, "p", "old.jsonl"),
-    transcript("claude-haiku-4", iso(30), million),
+    transcript("claude-haiku-5-5", iso(30), million),
     30,
   );
   return root;
@@ -239,7 +257,7 @@ test("`--json` prints the report of the window, and `--days` keeps only the call
   expect(week.delegation.mainTurns).toBe(1);
 
   const quarter = run(root, "--days", "60");
-  expect(quarter.total).toBe(3);
+  expect(quarter.total).toBe(2.5);
   expect(quarter.output.messages).toBe(2);
   expect(quarter.skills).toStrictEqual([{ skill: "demo", uses: 2 }]);
 });
@@ -248,12 +266,12 @@ test("`--days` drops the old calls of a file that was written lately", async () 
   const root = tmpDir("usage");
   const iso = (days: number) => new Date(Date.now() - days * DAY).toISOString();
   const million = { input_tokens: 1_000_000 };
-  const old = transcript("claude-sonnet-4", iso(30), million);
-  const recent = transcript("claude-haiku-4", iso(1), million);
+  const old = transcript("claude-sonnet-5-5", iso(30), million);
+  const recent = transcript("claude-haiku-5-5", iso(1), million);
   // The file has a fresh mtime, so the filter on the timestamp of each entry must act.
   await write(path.join(root, "p", "mixed.jsonl"), [...old, ...recent], 0);
   const r = run(root, "--days", "7");
-  expect(r.total).toBe(1);
+  expect(r.total).toBe(0.5);
   expect(r.output.messages).toBe(1);
 });
 
@@ -271,13 +289,13 @@ test("a subagent transcript counts under its agent type from the meta file", asy
   const million = { input_tokens: 1_000_000 };
   await write(
     path.join(root, "p", "s.jsonl"),
-    transcript("claude-sonnet-4", at, million),
+    transcript("claude-sonnet-5-5", at, million),
     1,
   );
   const sub = path.join(root, "p", "s", "subagents");
   await write(
     path.join(sub, "agent-abc.jsonl"),
-    transcript("claude-haiku-4", at, million),
+    transcript("claude-haiku-5-5", at, million),
     1,
   );
   await Bun.write(
@@ -287,7 +305,7 @@ test("a subagent transcript counts under its agent type from the meta file", asy
   const r = run(root, "--days", "7");
   expect(r.byAgent.map((a) => [a.type, a.cost])).toStrictEqual([
     ["main", 2],
-    ["dotclaude:investigator", 1],
+    ["dotclaude:investigator", 0.5],
   ]);
   expect(r.delegation.runsByType).toStrictEqual([
     { type: "dotclaude:investigator", runs: 1 },
@@ -299,7 +317,7 @@ test("`--days` skips a file that nothing has written since the window began", as
   const at = new Date(Date.now() - DAY).toISOString();
   await write(
     path.join(root, "p", "stale.jsonl"),
-    transcript("claude-sonnet-4", at, { input_tokens: 1_000_000 }),
+    transcript("claude-sonnet-5-5", at, { input_tokens: 1_000_000 }),
     30,
   );
   expect(run(root, "--days", "7").total).toBe(0);
