@@ -14,8 +14,8 @@ If Claude does something because of dotclaude and you ask "why did you do that?"
 - Forces one output style (role, tone, and format) and puts the working rules in the system prompt.
 - Gives Claude six agents with a model, an effort, and a turn limit each ([Agents](Agents)).
   The agents are `reviewer`, `implementer`, `debugger`, `investigator`, `planner`, and `researcher`.
-- Works with [OpenSpec](OpenSpec) for the task list, so work continues after `/clear` with the `openspec-apply-change` skill.
-- Shows model, effort, context, the OpenSpec change, and the 5-hour limit in a status line.
+- Keeps the tasks and the lanes of a change in the [spec store](OpenSpec), so work continues after `/clear` with `dotclaude-spec next`.
+- Shows model, effort, context, the spec change, and the 5-hour limit in a status line.
 
 ## The plugins
 

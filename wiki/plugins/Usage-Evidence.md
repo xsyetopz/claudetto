@@ -96,7 +96,7 @@ dotclaude 0.20.4 checked each tip against the Claude Code docs or a measurement 
 - `/compact` reads the whole conversation to write its summary.
   On a large context it is an expensive request (**official**: costs, prompt caching).
   `/clear` costs nothing.
-- Task checkboxes in OpenSpec and then `/clear` is the cheap way to start the next task ([OpenSpec](OpenSpec)).
+- Task checkboxes in the spec store and then `/clear` is the cheap way to start the next task ([Spec store](OpenSpec)).
 - Sonnet does implementation work for less usage than Opus ([Plans and models](Plans-and-Models#model-fit)).
 - `MEMORY.md` loads at every start, up to its first 200 lines or 25 KB (**official**).
   Topic files in the memory folder do not load at start.

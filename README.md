@@ -3,7 +3,7 @@
 dotclaude is a Claude Code plugin for software engineering on official extension points.
 It turns compaction off, sets a 300K context window, asks only before dangerous commands,
 replaces the coding part of the system prompt with a short output style,
-and keeps the state of long work in OpenSpec changes across `/clear`.
+and keeps the state of long work in the spec store, `.dotclaude/spec/`, across `/clear`.
 It optimizes for the most quality per unit of usage quota, not for speed.
 
 [The wiki](https://github.com/xsyetopz/dotclaude/wiki) tells what each part does and why.
@@ -27,8 +27,7 @@ so this release is tested only on 2.1.296.
 A plugin settings file can set only `agent` and `subagentStatusLine`,
 so dotclaude gives the other keys as a plain [settings snippet](https://github.com/xsyetopz/dotclaude/wiki/Settings-Snippet).
 Copy the keys that you want into your own `settings.json`, and restart Claude Code.
-The `/dotclaude:setup` skill checks OpenSpec and offers to install it and to run `openspec init --tools claude`.
-It changes no Claude Code setting, and it shows each step before it runs.
+The `/dotclaude:setup` skill changes no Claude Code setting, and it shows each step before it runs.
 
 ## Parts
 
@@ -36,12 +35,12 @@ It changes no Claude Code setting, and it shows each step before it runs.
 | --- | --- |
 | No compaction | `autoCompactEnabled: false` and `DISABLE_COMPACT=1`, which also turns off `/compact`. |
 | Window | `CLAUDE_CODE_MAX_CONTEXT_TOKENS=300000` and `CLAUDE_CODE_AUTO_COMPACT_WINDOW=300000`. At the limit the session stops, and you run `/clear`. |
-| No auto memory | `autoMemoryEnabled: false`. OpenSpec holds the state. |
+| No auto memory | `autoMemoryEnabled: false`. The spec store holds the state. |
 | System prompt | `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1` and the forced `dotclaude` output style, which replaces the built-in coding instructions. |
 | Permissions | Normal work passes. `sudo`-like work asks (`soft_deny`). Destructive actions on a database, the system, git, cloud resources, or backups are forbidden always (`hard_deny`), and the `guard` hook denies the literal forms. Deny secret reads. The `asks` hook asks only when a change weakens a check. |
 | Sandbox | Bash runs in the sandbox, with network access only to GitHub and the package registries. |
 | Guard | One hooks module asks before the first call to a GitHub repository of another owner with an AI policy. |
-| Status line | Model, effort, context against the window (yellow at 75%, red at 90%), the 5-hour limit, and the active OpenSpec change with its task count. |
+| Status line | Model, effort, context against the window (yellow at 75%, red at 90%), the 5-hour limit, and the last spec change that is not finished, with its done and total packages. |
 | Agents | `investigator`, `implementer`, `debugger`, `reviewer`, `planner`, `researcher`. |
 | Checks | The CLI `dotclaude-run-checks` runs a batch of check commands with no model turn, in place of the `test-runner` agent. |
 | Skills | `/dotclaude:setup`. |
@@ -64,16 +63,16 @@ The settings snippet sets no effort level, so each model keeps its default.
 
 Each turn reads the whole context again, so the size of the context sets the cost of a turn.
 
-- For work of more than one session, start an OpenSpec change with `/opsx:propose`.
-  After `/clear`, `/opsx:apply` continues at the first unchecked task.
-- Before `/clear`, mark the finished tasks in `tasks.md` and put the decisions in `design.md`.
+- For work of more than one session, start a spec change with the `spec` skill and `dotclaude-spec new <id>`.
+  After `/clear`, `dotclaude-spec next <id>` prints the brief of the next package.
+- Before `/clear`, mark the finished tasks in `change.md` and put the reason and the decisions there too.
   At 80% of the window, a note tells Claude to do this and to name the command that continues the work.
 - Change the model only right after `/clear`,
   because a new model starts a new prompt cache.
   An effort change keeps the cache.
 
 See [Context bound](https://github.com/xsyetopz/dotclaude/wiki/Context-Bound)
-and [OpenSpec](https://github.com/xsyetopz/dotclaude/wiki/OpenSpec).
+and [Spec store](https://github.com/xsyetopz/dotclaude/wiki/OpenSpec).
 
 ## Add-on plugins
 

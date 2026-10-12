@@ -7,18 +7,18 @@ It assumes that you finished [Install](Install).
 
 | What | When |
 | --- | --- |
-| Status line | After you set the `statusLine` entry of the [settings snippet](Settings-Snippet). It shows model, effort, context against the 300K window, the OpenSpec change, and the usage windows. |
+| Status line | After you set the `statusLine` entry of the [settings snippet](Settings-Snippet). It shows model, effort, context against the 300K window, the spec change, and the usage windows. |
 | Drift note | When the active settings differ from the [settings snippet](Settings-Snippet), such as values that setup did not write, a status line of an old plugin version, or a built-in plugin that is on again. The note names `/dotclaude:setup` as the fix. Claude mentions each difference in its first answer. Nothing shows when no difference exists. |
 | Output style | Always. The plugin forces the `dotclaude` style over the simple system prompt. You do not see it. |
 
 On a terminal of about 130 columns, the status line has 3 columns.
-The left column shows the model, the OpenSpec change, and its task count.
+The left column shows the model, the spec change, and its done and total packages.
 The middle column shows the context against the window.
 The right column shows the 5-hour, 7-day, and Fable windows.
 A narrower terminal packs the same parts into rows.
 The context part turns yellow at 75% and red at 90% of the window.
 The usage parts use the same colors.
-The OpenSpec part shows the newest change with a `tasks.md` that is not archived, as `id done/total`.
+The spec part shows the last change, in id order, whose packages are not all `done`, as `id done/total`.
 The status line calls no model and no network, and it runs no program except `git`.
 See [Status line](Status-Line).
 
@@ -60,12 +60,12 @@ Compaction is off.
 When the session reaches 300K tokens, it stops.
 The status line turns yellow at 75% and red at 90% of the window.
 No hook speaks to the main session.
-When the session stops, run `/clear` and then the `openspec-apply-change` skill with `<change>`, so the work continues from the task list.
+When the session stops, run `/clear` and then `dotclaude-spec next <change>`, so the work continues from the lane log.
 dotclaude writes no handoff file.
-See [Context bound](Context-Bound) and [OpenSpec](OpenSpec).
+See [Context bound](Context-Bound) and [Spec store](OpenSpec).
 
 ## Next steps
 
 - [Guards](Guards): see what asks, what denies, and what the sandbox does.
 - [Context bound](Context-Bound): see how a session ends before the limit.
-- [OpenSpec](OpenSpec): keep the task list in a change.
+- [Spec store](OpenSpec): keep the tasks and the lane log of a change.

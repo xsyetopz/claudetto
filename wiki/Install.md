@@ -11,7 +11,7 @@ The core plugin is `dotclaude`.
 | Claude Code 2.1.296 or later | all plugins | |
 | git | `dotclaude` | |
 | [Bun](https://bun.sh) 1.4.3 or later on `PATH` | the setup script, the status line, and the classic hooks of `dotclaude`, the Jev client of `dotclaude-jev`, the hooks of `dotclaude-codegraph`, and the bins of `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-sessions`, and `dotclaude-lab` | Without Bun, the classic hooks do not run and the call goes on. The permission rules and the sandbox still apply. |
-| [Node.js](https://nodejs.org) on `PATH` | the npm installs of `codegraph` and `agent-browser`, and the OpenSpec CLI | Without Node.js, the npm installs do not run. OpenSpec needs Node.js 20.19 or later. |
+| [Node.js](https://nodejs.org) on `PATH` | the npm installs of `codegraph` and `agent-browser` | Without Node.js, the npm installs do not run. |
 | `gh` on `PATH` | the policy ask of `dotclaude` | Without `gh`, the ask does not run and the call goes on. |
 | `codegraph` on `PATH` | `dotclaude-codegraph` | Run `npm i -g @colbymchenry/codegraph`. The plugin never installs it. |
 | `TYPESAFE_API_KEY` | `dotclaude-jev` | Export it before Claude Code starts. |
@@ -49,12 +49,11 @@ A plugin cannot set permissions, environment variables, or models.
 Without the [settings snippet](Settings-Snippet), compaction stays on, the full system prompt stays, and the status line, the permission rules, and the sandbox are not set.
 The setup skill shows each change of the snippet to the settings file that you pick, and writes it after your yes.
 It puts `claude-mythos-5-1` in place of `claude-fable-5-1` when the model catalog of your account offers it.
-Then it shows the OpenSpec steps, asks, and runs them after your yes.
 Last, it checks the tools of each installed add-on: `codegraph` and its index, `agent-browser`, `npx`, `TYPESAFE_API_KEY`, and Node.js.
 It offers each missing global install, runs `codegraph init -y` in the project after your yes, and never asks for or writes a key.
 It writes no managed settings and no backup, and it runs no `sudo`.
 You can also copy the keys that you want from the snippet by hand.
-See [OpenSpec](OpenSpec) and [Guards](Guards).
+See [Guards](Guards).
 
 ## Install the Jev plugin
 

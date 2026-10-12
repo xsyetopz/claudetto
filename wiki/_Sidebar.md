@@ -11,7 +11,7 @@
     - [Prompt surface](Prompt-Surface)
     - [Semantic line breaks](Semantic-Line-Breaks)
     - [Contributions](Contributions)
-    - [OpenSpec](OpenSpec)
+    - [Spec store](OpenSpec)
   - [Code graph](Code-Graph)
   - [Browser](Browser)
   - [Second opinion](Second-Opinion)

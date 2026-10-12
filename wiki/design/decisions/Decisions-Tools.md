@@ -46,12 +46,11 @@ A cut that needs an eval gate and has none stays unmade, and the wiki says that 
 Credentials come from `.env`, so the user starts paid runs from a shell.
 See [Evals](Evals).
 
-## D11 OpenSpec
+## D11 Spec store
 
-Setup runs `openspec config set delivery skills`, keeps the `core` profile of OpenSpec, turns telemetry off, and runs `openspec update` after the user confirms.
-The OpenSpec CLI owns those settings, so dotclaude adds no format.
-The [settings snippet](Settings-Snippet) sets each `openspec-*` skill to `name-only`.
-See [OpenSpec](OpenSpec).
+The spec store is the folder `.dotclaude/spec/`, and the `dotclaude-spec` command in the core plugin writes and checks it.
+dotclaude needs no outside CLI for it, so setup installs and runs nothing for the spec store.
+See [Spec store](OpenSpec).
 
 ## D22 Context bound for subagents and the main session
 
