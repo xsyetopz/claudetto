@@ -17,7 +17,7 @@ Critical path: P01a, P01b, P05 and P06, P13, P14, P15, P16.
 
 ## Wave 0: main session
 
-- [ ] P00 The user reviews [tree](tree.md), and the main session writes the briefs of wave 1.
+- [x] P00 The user reviews [tree](tree.md), and the main session writes the briefs of wave 1.
 
 ## Wave 1: foundation
 
@@ -31,19 +31,19 @@ Critical path: P01a, P01b, P05 and P06, P13, P14, P15, P16.
   It sets `useArrowFunction` to `error` in `biome.json`, and adds the GritQL plugin `tools/lint/arrow-functions.grit` for `function` declarations.
   It changes `AGENTS.md` to the new layout and bounds, and adds `GEMINI.md` as a symlink to `AGENTS.md`, next to `CLAUDE.md`.
   Deps: P01a.
-  Owns: `tools/`, `tests/tools/`, `tests/support/`, `src/fragments/`, `src/shared/`, `src/plugins/dotclaude/plugin.ts`, `src/plugins/dotclaude/slices/prompt/`, `tests/dotclaude/prompt/`, `AGENTS.md`, `GEMINI.md`, `biome.json`.
+  Owns: `tools/`, `tests/tools/`, `tests/support/`, `src/fragments/`, `src/shared/`, `src/plugins/dotclaude/plugin.ts`, `src/plugins/dotclaude/slices/prompt/`, `tests/dotclaude/prompt/`, `AGENTS.md`, `GEMINI.md`, `biome.json`, `justfile`, `package.json`, `tsconfig.json`.
   Verify: `just check`, and `bunx biome lint` fails on a fixture with a `function` declaration and on one with a `function` expression.
 - [ ] P01c Extract: the full texts and sizes of each built-in system prompt section, tool description, output style, compaction prompt, reminder, and listing of Claude Code 2.1.296, the prompt of `CLAUDE_CODE_SIMPLE` and `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`, and the id that the Mod API gives each part.
   It writes only to `external/cc-extract/2.1.296/`, and its report to `spec/changes/1.0.0/evidence/extract.md`, with no built-in text in the report.
   Owns: `external/cc-extract/`, `spec/changes/1.0.0/evidence/extract.md`.
-  Agent: `investigator`.
+  Agent: `implementer`, because the package writes files and runs live sessions, and `investigator` cannot (Jev, confidence 0.51).
   Verify: each id in the report is in the `prompt.compose` or `tool.describe` input of one live session in `just sandbox`.
 - [ ] P01d Inventory: each built-in part that a setting, an env var, or a mod can turn off, with its cost at the start of a session.
   Owns: `spec/changes/1.0.0/evidence/inventory.md`.
-  Agent: `investigator`.
+  Agent: `implementer`, for the reason of P01c.
   Verify: `dotclaude-start --compare` on one start with the switches and one start without them.
 - [ ] P02 Spec formats: the parser, the validator, and the delta rules as pure code in `slices/spec/domain/`.
-  Deps: P01a.
+  It has no dep, because the types of `state.json` stay in `src/kernel/spec-store.ts` (P01a), and P02 holds only the Markdown formats.
   Owns: `src/plugins/dotclaude/slices/spec/domain/`, `tests/dotclaude/spec/domain/`.
   Verify: `just test tests/dotclaude/spec/domain`, on a fixture for each format and each delta rule.
 - [ ] P11 Removal: `openspec/` and `.claude/skills/openspec-*`.
