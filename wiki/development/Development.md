@@ -201,6 +201,6 @@ The workflows are in `.github/workflows/`.
 
 - [Sandbox](Sandbox) explains the separate config.
 - [Plugin-Layout](Plugin-Layout) maps the folders of each plugin.
-- [Hooks](Hooks) lists the hook events.
+- [Hooks](Hook-Events) lists the hook events.
 - [Design](Design) gives the design principles.
 - [Decisions](Decisions) lists the decisions in force.
