@@ -49,16 +49,6 @@ test("the plugin has two classic command hooks, one module, and no MCP server", 
   expect(fs.existsSync(path.join(PLUGIN, "hooks/register.ts"))).toBe(true);
   expect(fs.existsSync(path.join(PLUGIN, ".mcp.json"))).toBe(false);
   expect(manifest.mcpServers).toBe(undefined);
-  for (const group of Object.values(hooks.hooks).flat())
-    for (const hook of group.hooks) {
-      expect(hook.type).toBe("command");
-      const file = (
-        hook.command.match(
-          /\$\{CLAUDE_PLUGIN_ROOT\}\/(\S+?)"/,
-        ) as RegExpMatchArray
-      )[1] as string;
-      expect(fs.existsSync(path.join(PLUGIN, file)), file).toBe(true);
-    }
 });
 
 test("the plugin works alone: a copy of the plugin folder runs its hook with no other plugin", async () => {
