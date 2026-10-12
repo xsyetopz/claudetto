@@ -1,7 +1,6 @@
-// Request sizing for `bin/dotclaude-capture`: split a request into parts and count each
-// part with the `count_tokens` endpoint.
+// Request sizing for `dotclaude-capture`: split a request into parts and count each
+// part with the `count_tokens` endpoint. The CLI writes the result.
 
-import path from "node:path";
 import type {
   Block,
   Body,
@@ -10,6 +9,7 @@ import type {
   Message,
   Part,
   Row,
+  Sizing,
   Swap,
   Tool,
 } from "./types.ts";
@@ -35,7 +35,7 @@ const SECTION =
   /^(#{1,3} \S|<[a-z_-]+>\s*$|The following |Available agent types|While auto mode)/;
 
 /** The sections of a text: each one starts at a SECTION line. */
-function sections(text: string): string[] {
+const sections = (text: string): string[] => {
   const lines = text.split("\n");
   const found: string[] = [];
   let from = 0;
@@ -47,18 +47,18 @@ function sections(text: string): string[] {
   });
   found.push(lines.slice(from).join("\n"));
   return found;
-}
+};
 
 /**
  * The parts of one content block. A long text block gives one part for each
  * section, and `swap` returns the request with the block replaced.
  */
-function blockParts(
+const blockParts = (
   kind: string,
   block: Block,
   swap: Swap,
   removable: boolean,
-): Part[] {
+): Part[] => {
   const text = typeof block.text === "string" ? block.text : null;
   if (text && text.length > SPLIT_CHARS) {
     const list = sections(text);
@@ -81,10 +81,10 @@ function blockParts(
       without: () => swap(null),
     },
   ];
-}
+};
 
 /** The parts of a request, each with a function that returns the request without it. */
-export function parts(body: Body): Part[] {
+export const parts = (body: Body): Part[] => {
   const list: Part[] = [];
   const system = asBlocks(body.system ?? []);
   system.forEach((block, i) => {
@@ -133,7 +133,7 @@ export function parts(body: Body): Part[] {
     });
   });
   return list;
-}
+};
 
 /** The fields that `count_tokens` takes. */
 const countable = (body: Body) => {
@@ -158,12 +158,12 @@ const FIXES: Record<string, Fix> = {
   },
 };
 
-async function countTokens(
+const countTokens = async (
   upstream: string,
   body: Body,
   headers: Record<string, string>,
   query: string,
-): Promise<number> {
+): Promise<number> => {
   const res = await fetch(`${upstream}/v1/messages/count_tokens${query}`, {
     method: "POST",
     headers,
@@ -175,15 +175,15 @@ async function countTokens(
       `count_tokens ${res.status}: ${JSON.stringify(json).slice(0, 300)}`,
     );
   return json.input_tokens;
-}
+};
 
 /** The fixes that `count_tokens` needs for this body, and the count with them. */
-async function fixesFor(
+const fixesFor = async (
   upstream: string,
   body: Body,
   headers: Record<string, string>,
   query: string,
-): Promise<{ used: string[]; full: number }> {
+): Promise<{ used: string[]; full: number }> => {
   const used: string[] = [];
   const errors: string[] = [];
   for (const name of [null, ...Object.keys(FIXES)]) {
@@ -196,16 +196,15 @@ async function fixesFor(
     }
   }
   throw new Error(errors.join("\n"));
-}
+};
 
-export async function report(
+/** Sizes one request: the full count, then the count without each part. */
+export const sizeRequest = async (
   upstream: string,
-  out: string,
-  n: string,
   body: Body,
   headers: Record<string, string>,
   query: string,
-): Promise<void> {
+): Promise<Sizing> => {
   const { used, full } = await fixesFor(upstream, body, headers, query);
   const fix = (b: Body): Body => used.reduce((x, f) => (FIXES[f] as Fix)(x), b);
   const rows: Row[] = [];
@@ -224,7 +223,7 @@ export async function report(
     });
   }
   const sum = rows.reduce((s, r) => s + r.tokens, 0);
-  const result = {
+  return {
     model: body.model,
     fixes: used,
     full,
@@ -232,16 +231,15 @@ export async function report(
     rest: full - sum,
     rows,
   };
-  await Bun.write(
-    path.join(out, `report-${n}.json`),
-    `${JSON.stringify(result, null, 2)}\n`,
-  );
-  console.log(
-    `\nrequest ${n}: ${full} tokens by count_tokens, parts ${sum}, rest ${full - sum}`,
-  );
-  for (const r of [...rows].sort((a, b) => b.tokens - a.tokens)) {
-    console.log(
-      `${String(r.tokens).padStart(6)}  ${String(r.chars).padStart(6)}c  ${r.kind}  ${r.name}`,
-    );
-  }
-}
+};
+
+/** The lines that the CLI prints for a sizing, the largest part first. */
+export const sizingLines = (n: string, s: Sizing): string[] => [
+  `\nrequest ${n}: ${s.full} tokens by count_tokens, parts ${s.parts}, rest ${s.rest}`,
+  ...[...s.rows]
+    .sort((a, b) => b.tokens - a.tokens)
+    .map(
+      (r) =>
+        `${String(r.tokens).padStart(6)}  ${String(r.chars).padStart(6)}c  ${r.kind}  ${r.name}`,
+    ),
+];

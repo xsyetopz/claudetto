@@ -4,14 +4,14 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { parts } from "../../plugins/dotclaude-lab/features/capture/report.ts";
+import { parts } from "../../src/plugins/dotclaude-lab/slices/capture/domain/report.ts";
 import type {
   Block,
   Body,
   Message,
   Part,
-} from "../../plugins/dotclaude-lab/features/capture/types.ts";
-import { resolveUpstream } from "../../plugins/dotclaude-lab/features/capture/upstream.ts";
+} from "../../src/plugins/dotclaude-lab/slices/capture/domain/types.ts";
+import { resolveUpstream } from "../../src/plugins/dotclaude-lab/slices/capture/domain/upstream.ts";
 import { PLUGINS, tmpDir } from "../support/repo.ts";
 
 const TOOL = path.join(PLUGINS, "dotclaude-lab", "bin", "dotclaude-capture");
