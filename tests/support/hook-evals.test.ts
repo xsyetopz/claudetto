@@ -1,4 +1,4 @@
-// Each hook of each plugin has its eval cases (spec `hook-evals`, design D15).
+// Each hook of each plugin has its eval cases (spec `hook-evals`, the "Generated tree" section of `spec/changes/1.0.0/design.md`).
 // The rules are in `hook-evals.ts`, and the fixtures work in their own folder under `TMPDIR`.
 
 import { expect, test } from "bun:test";
@@ -13,7 +13,7 @@ import {
 import { REPO, tmpDir } from "./repo.ts";
 
 /** The runtime `.ts` files of a plugin, outside its hook lab, by path from the repository root. */
-async function codeFiles(root: string, plugin: string) {
+const codeFiles = async (root: string, plugin: string) => {
   const files: Record<string, string> = {};
   const glob = new Bun.Glob("**/*.ts");
   const dir = path.join(root, "plugins", plugin);
@@ -25,10 +25,10 @@ async function codeFiles(root: string, plugin: string) {
     ).text();
   }
   return files;
-}
+};
 
 /** The faults of the hook evals of each plugin under `root` that has `hooks/hooks.json`. */
-async function faults(root: string): Promise<string[]> {
+const faults = async (root: string): Promise<string[]> => {
   const out: string[] = [];
   for (const plugin of fs.readdirSync(path.join(root, "plugins")).sort()) {
     const json = path.join(root, "plugins", plugin, "hooks", "hooks.json");
@@ -41,15 +41,15 @@ async function faults(root: string): Promise<string[]> {
     out.push(...mod.faults, ...(await evalFaults(root, plugin, ids)));
   }
   return out;
-}
+};
 
 /** A repository root with the files `files`, by path from the root. */
-async function root(files: Record<string, string>): Promise<string> {
+const root = async (files: Record<string, string>): Promise<string> => {
   const dir = tmpDir("hook-evals");
   for (const [rel, text] of Object.entries(files))
     await Bun.write(path.join(dir, ...rel.split("/")), text);
   return dir;
-}
+};
 
 const LAB = "plugins/p/tests/lab.test.ts";
 const CASE = "plugins/p/evals/stop/case.yaml";
@@ -92,10 +92,10 @@ const HOOKS_JSON = JSON.stringify({
     ],
   },
 });
-const REGISTER = `export function register(on) {
+const REGISTER = `export const register = (on: On): void => {
   // eval: tool.call Bash
   on("tool.call", { tool: "Bash" }, (_$, e, next) => next(e));
-}
+};
 `;
 const TESTS = `test("allows", () => {});\ntest('shows "text"', () => {});\ntest(\`blocks\`, () => {});\ntest("passes a correct message", () => {});\n`;
 const entry = (more = {}) => ({

@@ -1,10 +1,10 @@
-// Bun runs each command of the workspace and of the plugins (design D11).
+// Bun runs each command of the workspace and of the plugins (`AGENTS.md`).
 // A plugin command also passes `--no-env-file`, so Bun does not load the `.env` of the project of the user.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { SNIPPET } from "../../plugins/dotclaude/lib/snippet.ts";
+import { SNIPPET } from "../../plugins/dotclaude/lib/snippets.ts";
 import { REPO, tmpDir } from "./repo.ts";
 
 const PACKAGE_MANAGER = "bun@1.4.3";
@@ -13,7 +13,7 @@ const PLUGIN_COMMAND = /^bun --no-env-file /;
 type Manifest = { packageManager?: string; scripts?: Record<string, string> };
 
 /** The faults of a `package.json`: a command that does not start with `bun`, and a wrong `packageManager`. */
-function offBun(manifest: Manifest): string[] {
+const offBun = (manifest: Manifest): string[] => {
   const faults = Object.entries(manifest.scripts ?? {})
     .filter(([, command]) => !/^bunx? /.test(command))
     .map(([name, command]) => `script ${name}: ${command}`);
@@ -21,10 +21,10 @@ function offBun(manifest: Manifest): string[] {
     faults.push(`packageManager: ${manifest.packageManager}`);
   }
   return faults;
-}
+};
 
 /** The `command` of each command hook in a parsed `hooks.json`. */
-function hookCommands(hooks: unknown): string[] {
+const hookCommands = (hooks: unknown): string[] => {
   if (Array.isArray(hooks)) return hooks.flatMap(hookCommands);
   if (hooks === null || typeof hooks !== "object") return [];
   const entry = hooks as Record<string, unknown>;
@@ -33,7 +33,7 @@ function hookCommands(hooks: unknown): string[] {
       ? [entry["command"]]
       : [];
   return [...own, ...Object.values(entry).flatMap(hookCommands)];
-}
+};
 
 /** The commands that do not start with `bun --no-env-file`. */
 const offPluginBun = (commands: string[]): string[] =>

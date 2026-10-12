@@ -1,4 +1,4 @@
-// The hook evals of each plugin (spec `hook-evals`, design D15).
+// The hook evals of each plugin (spec `hook-evals`, the "Generated tree" section of `spec/changes/1.0.0/design.md`).
 // `evals/hooks.json` of a plugin names each hook by its id, the hook-lab test of each case kind, and the model requests and tokens that the hook adds to each turn.
 // A hook in a hooks module has its id in a `// eval: <id>` comment on the line above its `on(` call.
 // A classic hook has the id `<event> <command>`, with the plugin root and the `bun` launcher removed, or `<event> prompt`.
@@ -22,10 +22,12 @@ export type Entry = {
 };
 
 /** The `on(` calls of the hooks module files, each with its id or a fault. `files` maps a path to its text. */
-export function moduleHooks(files: Record<string, string>): {
+export const moduleHooks = (
+  files: Record<string, string>,
+): {
   ids: string[];
   faults: string[];
-} {
+} => {
   const ids: string[] = [];
   const faults: string[] = [];
   for (const [file, text] of Object.entries(files)) {
@@ -41,12 +43,12 @@ export function moduleHooks(files: Record<string, string>): {
     });
   }
   return { ids, faults };
-}
+};
 
 /** The ids of the classic hooks of a parsed `hooks.json`. */
-export function classicHooks(json: {
+export const classicHooks = (json: {
   hooks?: Record<string, { hooks: { type: string; command?: string }[] }[]>;
-}): string[] {
+}): string[] => {
   const ids = new Set<string>();
   for (const [event, groups] of Object.entries(json.hooks ?? {}))
     for (const group of groups)
@@ -61,25 +63,25 @@ export function classicHooks(json: {
         ids.add(`${event} ${command}`);
       }
   return [...ids];
-}
+};
 
 /** The grader names of a `claude plugin eval` case file. */
-export function graderNames(text: string): Set<string> {
+export const graderNames = (text: string): Set<string> => {
   const graders = text.split(/^graders:\s*$/m)[1] ?? "";
   return new Set(
     [...graders.matchAll(/^\s+name:\s*"?([^"\n]+?)"?\s*$/gm)].map(
       (m) => m[1] as string,
     ),
   );
-}
+};
 
 /** The names of the `test(` calls in a test file, from a string literal. */
-export function testNames(text: string): Set<string> {
+export const testNames = (text: string): Set<string> => {
   const names = new Set<string>();
   for (const m of text.matchAll(/\btest\(\s*(["'`])((?:\\.|(?!\1)[^\\])*)\1/g))
     names.add((m[2] as string).replace(/\\(.)/g, "$1"));
   return names;
-}
+};
 
 /** The kinds of test that an entry names. A blocking hook also names a block case and a false-block case. */
 const kinds = (entry: Entry) =>
@@ -87,15 +89,38 @@ const kinds = (entry: Entry) =>
     ? ["allow", "text", "block", "false"]
     : ["allow", "text"]) as (keyof Entry)[];
 
+/** The fault of the test reference `ref` of the case kind `kind`, or none. */
+const refFault = async (
+  root: string,
+  plugin: string,
+  id: string,
+  kind: keyof Entry,
+  ref: unknown,
+): Promise<string[]> => {
+  const [file, name] = typeof ref === "string" ? ref.split(" > ", 2) : [];
+  if (!file || !name)
+    return [`${plugin}: the hook \`${id}\` names no \`${kind}\` test`];
+  const full = path.join(root, ...file.split("/"));
+  const text = fs.existsSync(full) ? await Bun.file(full).text() : "";
+  const names = file.endsWith("case.yaml")
+    ? graderNames(text)
+    : testNames(text);
+  return names.has(name)
+    ? []
+    : [
+        `${plugin}: the \`${kind}\` test of the hook \`${id}\` is not in ${file}: ${name}`,
+      ];
+};
+
 /**
  * The faults of the hook evals of the plugin `plugin` under `root`, each naming the hook.
  * `hooks` are the ids that the code of the plugin has.
  */
-export async function evalFaults(
+export const evalFaults = async (
   root: string,
   plugin: string,
   hooks: string[],
-): Promise<string[]> {
+): Promise<string[]> => {
   const file = path.join(root, "plugins", plugin, "evals", "hooks.json");
   const manifest: Record<string, Entry> = fs.existsSync(file)
     ? JSON.parse(await Bun.file(file).text())
@@ -128,27 +153,4 @@ export async function evalFaults(
     }
   }
   return faults;
-}
-
-/** The fault of the test reference `ref` of the case kind `kind`, or none. */
-async function refFault(
-  root: string,
-  plugin: string,
-  id: string,
-  kind: keyof Entry,
-  ref: unknown,
-): Promise<string[]> {
-  const [file, name] = typeof ref === "string" ? ref.split(" > ", 2) : [];
-  if (!file || !name)
-    return [`${plugin}: the hook \`${id}\` names no \`${kind}\` test`];
-  const full = path.join(root, ...file.split("/"));
-  const text = fs.existsSync(full) ? await Bun.file(full).text() : "";
-  const names = file.endsWith("case.yaml")
-    ? graderNames(text)
-    : testNames(text);
-  return names.has(name)
-    ? []
-    : [
-        `${plugin}: the \`${kind}\` test of the hook \`${id}\` is not in ${file}: ${name}`,
-      ];
-}
+};

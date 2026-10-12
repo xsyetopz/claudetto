@@ -12,23 +12,21 @@ const START = String.raw`(?<![\s\S])`;
 const END = String.raw`(?![\s\S])`;
 
 /** `text` as a regex source that matches only that text, with a line end as `\n`. */
-export function escapeRegex(text: string): string {
-  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replaceAll("\n", "\\n");
-}
+export const escapeRegex = (text: string): string =>
+  text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replaceAll("\n", "\\n");
 
 /** The regex source of the exact content `content`, with an optional last line end. */
-export function exactContentPattern(content: string): string {
-  return `${START}${escapeRegex(content.replace(/\n$/, ""))}\\n?${END}`;
-}
+export const exactContentPattern = (content: string): string =>
+  `${START}${escapeRegex(content.replace(/\n$/, ""))}\\n?${END}`;
 
 /** The regex source of a large file: the first line, the key line, and the last line, with any text between them. */
-export function boundedContentPattern(content: string): string {
+export const boundedContentPattern = (content: string): string => {
   const lines = content.replace(/\n$/, "").split("\n");
   const key = lines.find((l) => l.includes("audit code is")) as string;
   const [first, last] = [lines[0], lines.at(-1)] as [string, string];
   const gap = String.raw`\n[\s\S]*\n`;
   return `${START}${escapeRegex(first)}${gap}${escapeRegex(key)}${gap}${escapeRegex(last)}\\n?${END}`;
-}
+};
 
 const scaffolds = new Map<string, string>();
 
@@ -38,7 +36,7 @@ const scaffolds = new Map<string, string>();
  * and the tests only read the folder.
  * A test must not change or remove it. `tmp-root.ts` removes it at exit.
  */
-export function runScaffold(caseDir: string): string {
+export const runScaffold = (caseDir: string): string => {
   const known = scaffolds.get(caseDir);
   if (known !== undefined) return known;
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "eval-scaffold-"));
@@ -61,4 +59,4 @@ export function runScaffold(caseDir: string): string {
     );
   scaffolds.set(caseDir, cwd);
   return cwd;
-}
+};
