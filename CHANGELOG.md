@@ -28,6 +28,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The plugin `dotclaude-sessions` answers the typed commands `/dotclaude-sessions:usage` and `/start-cost` with a `command.run` hook.
   The hook runs the CLI and shows its output with no model turn.
   Arguments that need a shell go to the skill.
+- The plugin `dotclaude` answers the typed command `/dotclaude:setup` with a `command.run` hook.
+  The hook runs the previews, asks with `$.ui.ask`, and applies only after a yes, with no model turn.
 
 ### Changed
 

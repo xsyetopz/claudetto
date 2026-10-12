@@ -3,7 +3,7 @@
 // and the drift check at `session.start`.
 
 import type { Slice } from "../../kernel/slice.ts";
-import { onSessionStart } from "./adapters/mod.ts";
+import { onSessionStart, onSetup } from "./adapters/mod.ts";
 
 export const slice = {
   name: "setup",
@@ -19,6 +19,19 @@ export const slice = {
       },
       phase: "observe",
       run: onSessionStart,
+    },
+    {
+      event: "command.run",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow: "plugins/dotclaude/tests/setup-command.test.ts > a scope with a shell character runs unchanged",
+        text: "plugins/dotclaude/tests/setup-command.test.ts > the command shows the previews and applies only after a yes",
+      },
+      filter: { command: "dotclaude:setup" },
+      phase: "answer",
+      run: onSetup,
     },
   ],
   cli: { bin: "dotclaude-setup" },

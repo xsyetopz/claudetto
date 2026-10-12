@@ -20,6 +20,13 @@
     "allow": "plugins/dotclaude/tests/variants.test.ts > a spawn on a model with no variant passes the task prompt on unchanged",
     "text": "plugins/dotclaude/tests/variants.test.ts > a spawn on Haiku 5.5 ends the task prompt with its block one time"
   },
+  "command.run setup": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/setup-command.test.ts > a scope with a shell character runs unchanged",
+    "text": "plugins/dotclaude/tests/setup-command.test.ts > the command shows the previews and applies only after a yes"
+  },
   "prompt.compose prompt": {
     "requests": 0,
     "tokens": 0,

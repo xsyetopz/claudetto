@@ -45,3 +45,19 @@ Not candidates:
 
 - Items 1, 5, and 6 need the behavior of the mod events in a lab or a live session.
 - Each cost needs a measurement.
+
+## Verdicts of P33 part 2
+
+- Item 5, `eval-compare`: the skill stays.
+  A run costs money and takes minutes, so the skill confirms the two folders with the user first.
+  The user can add `--scaffold` and `--allow-tools`, which run the scripts of the suite as the user, only after a named yes.
+  A git ref must become a folder first.
+  A handler has a time bound of 120 seconds, and has no such choices.
+  `usage` and `start-cost` moved (`src/plugins/dotclaude-sessions/slices/*/adapters/mod.ts`).
+- Item 6, `setup`: moved.
+  `$.ui.ask` exists at `plugins/dotclaude/.claude-plugin/types/claude-code/index.d.ts:2436`:
+  `ask: (question: string, options?: readonly string[] | AskOptions) => Promise<string>`.
+  The handler `onSetup` in `src/plugins/dotclaude/slices/setup/adapters/mod.ts` answers `/dotclaude:setup [scope]`.
+  It runs the previews of steps 2 and 3, asks two questions, and runs the apply of step 5.
+  The skill stays for a call of the model, and for the global installs, because `dotclaude-setup addons` never runs one.
+  The lab test `src/plugins/dotclaude/slices/setup/lab/setup-command.test.ts` stubs the `AskUserQuestion` call.

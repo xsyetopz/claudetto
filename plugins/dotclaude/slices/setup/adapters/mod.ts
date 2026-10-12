@@ -5,6 +5,8 @@
 // A fact that fails to read gives no line, so a failure cannot make a false report.
 
 import type { EngineInterface, Hook } from "claude-code";
+import { failedText, wordsOf } from "../../../kernel/skill-command.ts";
+import type { Handler } from "../../../kernel/slice.ts";
 import { driftLines, driftNote } from "../domain/drift.ts";
 
 /**
@@ -73,4 +75,56 @@ export const onSessionStart: Hook<"session.start"> = async ($, e, next) => {
   const turns = await attempt(() => $.session.turns());
   if (!((turns ?? 0) > 0)) await reportDrift($);
   return started;
+};
+
+// The handler that answers the typed command `/dotclaude:setup` with no model turn.
+// It runs the previews of the skill `setup` (steps 2 and 3), asks with `$.ui.ask`, and runs the apply (step 5).
+// A global install of an add-on tool is not here, because `dotclaude-setup addons` never runs one.
+// The skill stays for a call of the model, for a command with arguments that need a shell, and for those installs.
+
+/** The time that one run of the CLI may take, in milliseconds. */
+const TIMEOUT_MS = 120_000;
+const SCOPES = ["user", "project", "local"] as const;
+const APPLY = "Apply";
+const SKIP = "Skip";
+
+/** Runs `dotclaude-setup` with `words`, and gives the text of the run. */
+const runSetup = async (
+  $: Parameters<Handler<"command.run">>[0],
+  words: string[],
+): Promise<string> => {
+  const run = await $.process.run(
+    ["bun", "--no-env-file", `${$.plugin.root}/bin/dotclaude-setup`, ...words],
+    { timeoutMs: TIMEOUT_MS },
+  );
+  const text = (run.exitCode === 0 ? run.stdout : run.stderr || run.stdout).trim();
+  return run.exitCode === 0
+    ? text
+    : `dotclaude-setup ${words.join(" ")} failed with exit status ${run.exitCode}.\n${text}`;
+};
+
+/** Steps 2, 3, and 5 of the skill: preview, ask, apply. */
+export const onSetup: Handler<"command.run"> = async ($, e, next) => {
+  const words = wordsOf(e.args);
+  if (words === undefined || words.length > 1) return next(e);
+  const given = SCOPES.find((scope) => scope === words[0]);
+  if (words.length === 1 && given === undefined) return next(e);
+  try {
+    const scope =
+      given ?? (await $.ui.ask("Which settings file should get the snippet?", [...SCOPES]));
+    if (!SCOPES.some((s) => s === scope)) return { text: "Setup stopped: no scope." };
+    const settings = await runSetup($, ["settings", "--scope", scope]);
+    const addons = await runSetup($, ["addons"]);
+    const out = [settings, addons];
+    if ((await $.ui.ask("Apply the settings changes?", [APPLY, SKIP])) === APPLY)
+      out.push(await runSetup($, ["settings", "--scope", scope, "--apply"]));
+    if ((await $.ui.ask("Run the add-on project steps?", [APPLY, SKIP])) === APPLY)
+      out.push(await runSetup($, ["addons", "--apply"]));
+    out.push("Restart Claude Code to load the changes.");
+    return { text: out.join("\n\n") };
+  } catch (error) {
+    // The catch has no narrower test, because `$.process.run` and `$.ui.ask` document no error type.
+    // `$.ui.ask` rejects when the user dismisses the dialog and in a `-p` run, so nothing is applied then.
+    return { text: failedText("dotclaude-setup", error) };
+  }
 };
