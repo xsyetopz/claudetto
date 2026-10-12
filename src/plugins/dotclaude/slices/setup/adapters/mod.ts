@@ -4,6 +4,7 @@
 // A fact that fails to read gives no line, so a failure cannot make a false report.
 
 import type { EngineInterface, Hook } from "claude-code";
+import { driftLines, driftNote } from "../domain/drift.ts";
 
 /**
  * The result of `read()`, or undefined when it fails.
@@ -25,9 +26,6 @@ const attempt = async <T>(
  * The note of the drift check, or undefined.
  */
 const reportDrift = async ($: EngineInterface): Promise<string | undefined> => {
-  // The import is dynamic on purpose.
-  // `drift.ts` reads `texts.ts`, which includes the generated snippet, and the generator imports `slice.ts` before it makes that snippet.
-  const { driftLines, driftNote } = await import("../domain/drift.ts");
   const [settings, policy, version, usage, composed, effort, force] =
     await Promise.all([
       attempt(() => $.settings.read()),
