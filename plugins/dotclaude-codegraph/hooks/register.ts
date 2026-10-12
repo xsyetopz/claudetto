@@ -6,7 +6,11 @@ export const register = (on: On): void => {
   // eval: tool.call graph
   on(
     "tool.call",
-    { tool: "Bash", command: /(?:^|[;&|])\s*git\s+(?:commit|merge|rebase|pull|checkout|switch|reset|cherry-pick|revert|stash|apply|am)(?:\s|$)/ },
+    {
+      tool: "Bash",
+      command:
+        /(?:^|[;&|])\s*git\s+(?:commit|merge|rebase|pull|checkout|switch|reset|cherry-pick|revert|stash|apply|am)(?:\s|$)/,
+    },
     h0,
   );
 };
