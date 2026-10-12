@@ -34,7 +34,6 @@ export const makePlan = (
     [`${CHANGE}/state.json`]: stateText(
       Object.fromEntries(packages.map((p) => [p.id, p.lane ?? "planned"])),
     ),
-    ...extra,
   };
   for (const p of packages) {
     if (p.brief === false) continue;
@@ -44,5 +43,5 @@ export const makePlan = (
       p.owns ?? [`src/${p.id}/`],
     );
   }
-  return makeStore(files);
+  return makeStore({ ...files, ...extra });
 };

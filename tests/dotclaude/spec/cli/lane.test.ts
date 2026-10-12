@@ -46,11 +46,9 @@ test("lane stops on a bad lane, a missing argument, and an unknown package", asy
 test("lane stops when two changes have the package", async () => {
   const root = makePlan([{ id: "P01" }]);
   const other = makePlan([{ id: "P01" }]);
-  fs.cpSync(
-    path.join(other, CHANGE),
-    path.join(root, "spec/changes/c2"),
-    { recursive: true },
-  );
+  fs.cpSync(path.join(other, CHANGE), path.join(root, "spec/changes/c2"), {
+    recursive: true,
+  });
   const r = await run(root, "lane", "P01", "doing");
   expect(r.code).toBe(1);
   expect(stateOf(root).lanes.P01).toBe("planned");
