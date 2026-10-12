@@ -45,14 +45,8 @@ src/plugins/dotclaude-codegraph/
 tests/codegraph/
 
 # P11b: `dotclaude-browser`
-plugins/dotclaude-browser/
-src/plugins/dotclaude-browser/
-tests/browser/
-
-# P11e: `dotclaude-sessions`
-plugins/dotclaude-sessions/
-src/plugins/dotclaude-sessions/
-tests/sessions/
+plugins/dotclaude-browser/evals/hooks.json
+plugins/dotclaude-browser/tsconfig.json
 
 # P12: `dotclaude-lab`
 # `tests/dotclaude/settings-pin.test.ts` and `tests/support/settings-pin.ts` use the validator of `tests/dotclaude/fixtures/`, so P12 gives them a 1.0.0 validator before it deletes that folder.

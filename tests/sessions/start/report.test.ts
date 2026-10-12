@@ -3,7 +3,7 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { reportOf } from "../../../plugins/dotclaude-sessions/features/start/cli.ts";
+import { store } from "../../../src/plugins/dotclaude-sessions/slices/start-cost/adapters/store.ts";
 import {
   attachmentSizes,
   checkBudget,
@@ -12,18 +12,19 @@ import {
   type Snapshot,
   snapshotSizes,
   type Tokens,
-} from "../../../plugins/dotclaude-sessions/features/start/first.ts";
+} from "../../../src/plugins/dotclaude-sessions/slices/start-cost/domain/first.ts";
+import { reportOf } from "../../../src/plugins/dotclaude-sessions/slices/start-cost/domain/report.ts";
 import {
   repeatReads,
   subagentRuns,
   toolResults,
-} from "../../../plugins/dotclaude-sessions/features/start/session.ts";
+} from "../../../src/plugins/dotclaude-sessions/slices/start-cost/domain/session.ts";
 import {
   type Block,
   type Entry,
   readEntries,
   type Usage,
-} from "../../../plugins/dotclaude-sessions/lib/transcript.ts";
+} from "../../../src/plugins/dotclaude-sessions/slices/start-cost/domain/transcript.ts";
 import { START_TOKENS } from "../../../tools/limits.ts";
 import { tmpDir } from "../../support/repo.ts";
 
@@ -49,16 +50,16 @@ const result = (id: string, content: unknown): Entry => ({
   message: { content: [{ type: "tool_result", tool_use_id: id, content }] },
 });
 
-function folder() {
+const folder = () => {
   return tmpDir("measure");
-}
-async function write(file: string, entries: Entry[]) {
+};
+const write = async (file: string, entries: Entry[]) => {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   await Bun.write(
     file,
     `${entries.map((e) => JSON.stringify(e)).join("\n")}\n`,
   );
-}
+};
 
 test("the first request sums input, cache creation, and cache read of the first message", async () => {
   const dir = folder();
@@ -68,7 +69,9 @@ test("the first request sums input, cache creation, and cache read of the first 
     assistant("a", usage(2, 12_031, 7_744)),
     assistant("b", usage(3, 100, 20_000)),
   ]);
-  expect((firstRequest(await readEntries(file)) as Tokens).total).toBe(19_777);
+  expect((firstRequest(await readEntries(store, file)) as Tokens).total).toBe(
+    19_777,
+  );
 });
 
 test("a message with no tokens does not count as the first request", async () => {
@@ -78,7 +81,9 @@ test("a message with no tokens does not count as the first request", async () =>
     assistant("s", usage(0, 0, 0)),
     assistant("a", usage(1, 2, 3)),
   ]);
-  expect((firstRequest(await readEntries(file)) as Tokens).total).toBe(6);
+  expect((firstRequest(await readEntries(store, file)) as Tokens).total).toBe(
+    6,
+  );
 });
 
 const TOOLS = [
@@ -126,13 +131,13 @@ test("the budget passes at the bound and names the sum, the bound, and the diffe
 test("the report passes at the first request", async () => {
   const file = path.join(folder(), "s.jsonl");
   await write(file, [assistant("a", usage(1, 500, 500))]);
-  expect((await reportOf(file, 1_001)).ok).toBe(true);
+  expect((await reportOf(store, file, 1_001)).ok).toBe(true);
 });
 
 test("the report fails over a lowered bound and gives the excess", async () => {
   const file = path.join(folder(), "s.jsonl");
   await write(file, [assistant("a", usage(1, 500, 500))]);
-  const over = await reportOf(file, 900);
+  const over = await reportOf(store, file, 900);
   expect(over.ok).toBe(false);
   expect(over.text.includes("101"), over.text).toBeTruthy();
   expect(over.text.includes("900"), over.text).toBeTruthy();
@@ -155,7 +160,7 @@ test("each subagent run gets its requests, final context, and total input", asyn
   await write(path.join(sub, "agent-x2.jsonl"), [
     assistant("r1", usage(5, 5, 5)),
   ]);
-  const runs = await subagentRuns(file);
+  const runs = await subagentRuns(store, file);
   expect(runs.length).toBe(2);
   expect(runs[0]).toMatchObject({
     agentType: "dotclaude:investigator",

@@ -4,21 +4,22 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
+import { store } from "../../../src/plugins/dotclaude-sessions/slices/usage/adapters/store.ts";
 import {
   callCost,
   median,
   quantile,
   tokens,
-} from "../../../plugins/dotclaude-sessions/features/usage/parse.ts";
-import {
-  reserve,
-  turnsFromText,
-} from "../../../plugins/dotclaude-sessions/features/usage/turns.ts";
+} from "../../../src/plugins/dotclaude-sessions/slices/usage/domain/parse.ts";
 import {
   agentType,
   type Entry,
   type Usage,
-} from "../../../plugins/dotclaude-sessions/lib/transcript.ts";
+} from "../../../src/plugins/dotclaude-sessions/slices/usage/domain/transcript.ts";
+import {
+  reserve,
+  turnsFromText,
+} from "../../../src/plugins/dotclaude-sessions/slices/usage/domain/turns.ts";
 import { PLUGINS, tmpDir } from "../../support/repo.ts";
 import { runBin } from "../spawn.ts";
 
@@ -89,9 +90,13 @@ test("the agent type is main outside `subagents`, and comes from the meta file i
     path.join(sub, "agent-1.meta.json"),
     '{"agentType":"dotclaude:x"}',
   );
-  expect(await agentType(path.join(root, "s.jsonl"))).toBe("main");
-  expect(await agentType(path.join(sub, "agent-1.jsonl"))).toBe("dotclaude:x");
-  expect(await agentType(path.join(sub, "agent-2.jsonl"))).toBe("subagent");
+  expect(await agentType(store, path.join(root, "s.jsonl"))).toBe("main");
+  expect(await agentType(store, path.join(sub, "agent-1.jsonl"))).toBe(
+    "dotclaude:x",
+  );
+  expect(await agentType(store, path.join(sub, "agent-2.jsonl"))).toBe(
+    "subagent",
+  );
 });
 
 test("the median and the quantile pick from sorted values and give zero for none", async () => {
@@ -137,12 +142,12 @@ test("the turn count restarts at a prompt, and tool results and plain meta entri
 });
 
 // A transcript with one main-session call at `at` and a `Skill` call.
-function transcript(
+const transcript = (
   model: string,
   at: string,
   usage: Usage,
   extra: Partial<Entry> = {},
-): Entry[] {
+): Entry[] => {
   return [
     {
       type: "user",
@@ -170,9 +175,9 @@ function transcript(
       ...extra,
     },
   ];
-}
+};
 
-async function write(file: string, entries: Entry[], ageDays: number) {
+const write = async (file: string, entries: Entry[], ageDays: number) => {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   await Bun.write(
     file,
@@ -180,7 +185,7 @@ async function write(file: string, entries: Entry[], ageDays: number) {
   );
   const when = new Date(Date.now() - ageDays * DAY);
   fs.utimesSync(file, when, when);
-}
+};
 
 /** The parts of the `--json` report that these tests read. */
 type Report = {
@@ -196,16 +201,16 @@ type Report = {
   cacheHitRate: { all: number | null };
 };
 
-function run(root: string, ...args: string[]): Report {
+const run = (root: string, ...args: string[]): Report => {
   const out = runBin(TOOL, ["--root", root, "--json", ...args], {
     ...process.env,
     CLAUDE_CONFIG_DIR: root,
   });
   if (out.status !== 0) throw new Error(out.stderr);
   return JSON.parse(out.stdout) as Report;
-}
+};
 
-async function fixture() {
+const fixture = async () => {
   const root = tmpDir("usage");
   const iso = (days: number) => new Date(Date.now() - days * DAY).toISOString();
   // One million input tokens: $2 for sonnet, $1 for haiku.
@@ -221,7 +226,7 @@ async function fixture() {
     30,
   );
   return root;
-}
+};
 
 test("`--json` prints the report of the window, and `--days` keeps only the calls inside it", async () => {
   const root = await fixture();
