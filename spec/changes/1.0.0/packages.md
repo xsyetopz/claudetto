@@ -58,6 +58,8 @@ Critical path: P01a, P01b1 to P01b4, P05 and P06, P13, P14, P15, P16.
   Verify: `just test tests/dotclaude/spec/domain`, on a fixture for each format and each delta rule.
 - [ ] P11 Removal: `openspec/` and `.claude/skills/openspec-*`.
   The OpenSpec code of 0.28.0 goes with the package of its slice: setup in P09, the status line in P08.
+  The main checkout already has the deletions of `openspec/` and `.claude/skills/openspec-*`, not committed (2026-10-12).
+  P11 commits them after its Verify passes.
   Deps: P01b4.
   Owns: `openspec/`, `.claude/skills/`.
   Verify: `just check`, and `grep -ri openspec src tests tools` finds only the 0.28.0 files that `tools/rebuild-pending.txt` names.
