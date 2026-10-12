@@ -23,7 +23,9 @@ test("`pathsOf` reads a YAML list, a comma string, and no key", () => {
   ]);
   expect(pathsOf("---\nname: x\n---\n")).toEqual([]);
   expect(pathsOf("No front matter")).toEqual([]);
-  expect(pathsOf("---\npaths: [unclosed\n---\n")).toEqual([]);
+  expect(() => pathsOf("---\npaths: [unclosed\n---\n")).toThrow(
+    "does not parse",
+  );
 });
 
 test("`expansions` multiplies nested and sequential braces", () => {
@@ -61,6 +63,81 @@ test("the script exits 1 for an unmatched glob and 0 when all match", async () =
     const r = run();
     expect(r.exitCode).toBe(1);
     expect(r.stdout.toString()).toContain("lib/**/*.ts");
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("the script reports bad YAML as a problem with exit 1", async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "p30-"));
+  try {
+    Bun.spawnSync(["git", "init", "-q"], { cwd: dir });
+    await Bun.write(
+      path.join(dir, "rules/r.md"),
+      "---\npaths: [unclosed\n---\n",
+    );
+    const r = Bun.spawnSync(["bun", SCRIPT, "rules", "."], {
+      cwd: dir,
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    expect(r.exitCode).toBe(1);
+    expect(r.stdout.toString()).toContain("r.md");
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("the script exits 2 for a folder that is not a git repository", async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "p30-"));
+  try {
+    await Bun.write(path.join(dir, "rules/r.md"), "Use x.\n");
+    const r = Bun.spawnSync(["bun", SCRIPT, "rules", "."], {
+      cwd: dir,
+      stdout: "pipe",
+      stderr: "pipe",
+      env: { ...process.env, GIT_CEILING_DIRECTORIES: path.dirname(dir) },
+    });
+    expect(r.exitCode).toBe(2);
+    expect(r.stderr.toString()).not.toContain("    at ");
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("the script exits 2 for a rules folder that does not exist", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "p30-"));
+  try {
+    Bun.spawnSync(["git", "init", "-q"], { cwd: dir });
+    const r = Bun.spawnSync(["bun", SCRIPT, "missing", "."], {
+      cwd: dir,
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    expect(r.exitCode).toBe(2);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("the script reads a rules folder through a symlink", async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "p30-"));
+  try {
+    Bun.spawnSync(["git", "init", "-q"], { cwd: dir });
+    await Bun.write(path.join(dir, "src/a.ts"), "");
+    await Bun.write(
+      path.join(dir, "real/r.md"),
+      "---\npaths:\n  - lib/**\n---\n",
+    );
+    fs.mkdirSync(path.join(dir, "rules"));
+    fs.symlinkSync(path.join(dir, "real"), path.join(dir, "rules/linked"));
+    const r = Bun.spawnSync(["bun", SCRIPT, "rules", "."], {
+      cwd: dir,
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    expect(r.exitCode).toBe(1);
+    expect(r.stdout.toString()).toContain("lib/**");
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
