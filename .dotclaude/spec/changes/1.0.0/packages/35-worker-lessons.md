@@ -1,7 +1,7 @@
 ---
 id: P35
 deps: [P13, P33]
-owns: [".dotclaude/spec/changes/1.0.0/evidence/worker-lessons.md", "src/plugins/dotclaude/slices/guard/", "tests/dotclaude/guard/", "src/plugins/dotclaude/slices/agents/", "tests/dotclaude/agents/", "src/plugins/dotclaude/slices/spec/skills/ship/", "src/plugins/dotclaude/slices/handoff/limits.ts"]
+owns: [".dotclaude/spec/changes/1.0.0/evidence/worker-lessons.md", "src/plugins/dotclaude/slices/guard/", "tests/dotclaude/guard/", "src/plugins/dotclaude/slices/agents/", "tests/dotclaude/agents/", "src/plugins/dotclaude/slices/spec/skills/ship/", "src/plugins/dotclaude/slices/handoff/limits.ts", "src/plugins/dotclaude/slices/statusline/", "tests/dotclaude/statusline/"]
 verify: just check
 agent: implementer
 ---
@@ -26,6 +26,10 @@ Each step fits one run, one `reviewer` reads only the diff of a package, a subag
 - On 2026-10-12, a `git checkout <rev> -- .` in the main session wrote old files over the checkout.
   The work was committed, so a restore from `HEAD` fixed it.
 - P13 adds the note to a subagent near its turn limit, with the bound `TURNS_LEFT_AT` in `src/plugins/dotclaude/slices/handoff/limits.ts`.
+- The tiers (P24): `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is 5 for Pro and an API key, 10 for Max 5x, and 20 for Max 20x (`src/plugins/dotclaude/slices/setup/limits.ts:13-18`).
+- The weekly limit of Max 20x is only about 1.2 to 1.7 times that of Max 5x, but its 5h limit is much larger (the user, 2026-10-12).
+  So for Max 20x the weekly window is the limit, and for a smaller tier the 5h window often is.
+- An example from the user on 2026-10-12 at 19:56: the 5h window was 16% used, with its reset at 22:30.
 - The rules of the wave: `.dotclaude/spec/changes/1.0.0/packages.md:7-15`.
 
 ## Steps
@@ -39,7 +43,11 @@ Each step fits one run, one `reviewer` reads only the diff of a package, a subag
 4. Shared git state: the `guard` slice denies, in a subagent, `git stash` in each form, `git reset --hard`, `git clean`, and a `git checkout` or `git restore` of a revision over a whole folder.
    The deny reason says to commit work to set it aside.
    The main session keeps the asks that it has now.
-5. Parallel bound: `/ship` starts no more runs at one time than a bound in `limits.ts`, with a value for a subscription.
+5. Parallel runs: `/ship` starts each wave with a count of runs that comes from the account and the usage now, and not from one fixed value.
+   - The cap is the `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` of the tier from P24, and `/ship` adds no second cap.
+   - Below the cap, the count comes from the `five_hour` and `seven_day` windows of `rate_limits`, which Claude Code gives the status line: the percent used, and the time to the reset.
+   - The `statusline` slice keeps the last `rate_limits` in the runtime folder of `.dotclaude/`, and the `dotclaude-spec` CLI reads it, with no model call.
+   - The rule of the count is a pure function with tests for each tier, and for a full and an empty window of each kind.
 6. Write the tests of Acceptance.
 
 ## Acceptance
