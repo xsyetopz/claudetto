@@ -12,7 +12,7 @@ Each row gives the number, the title, and the page with the detail.
 | D4 | Measured budget | [Prompt](Decisions-Prompt) |
 | D5 | Who invokes what | [Settings](Decisions-Settings) |
 | D6 | Status line | [Tools](Decisions-Tools) |
-| D7 | Auto-fix hook (removed) | [Tools](Decisions-Tools) |
+| D7 | Auto-fix hook (removed) | [Tools](Decisions-Reversed#tools) |
 | D8 | Context7 skill | [Tools](Decisions-Tools) |
 | D9 | Evals through `claude plugin eval` | [Tools](Decisions-Tools) |
 | D10 | Schema extraction | [Settings](Decisions-Settings) |
