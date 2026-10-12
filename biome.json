@@ -73,7 +73,6 @@
         "!tests/lab/eval-variant.test.ts",
         "!tests/lab/fixture-repo.ts",
         "!tests/lab/results-copy.test.ts",
-        "!tests/lab/run-program.test.ts",
         "!tests/lab/sandbox/frontmatter.test.ts",
         "!tests/lab/sandbox/login.test.ts",
         "!plugins/dotclaude/evals/**",
