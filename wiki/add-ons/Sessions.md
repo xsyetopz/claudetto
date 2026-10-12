@@ -55,6 +55,9 @@ It covers these parts (the header of `slices/usage/adapters/cli.ts`).
 - The main sessions by Claude Code entrypoint, and the usage-limit hits.
 - The `Skill` tool calls by skill, and the skills that the period did not call.
 - The tool results that enter the main context of each session.
+- The build of each main session, which is its `version` and short `sha` from its stamp row, and the cost of each build.
+  A session with no stamp row shows `unknown`.
+  The stamp row is written at each session start by the slice `stamp` of the core plugin.
 
 ```text
 dotclaude-usage [--days 7] [--root DIR] [--runs 20] [--window N] [--agents-dir DIR] [--json]
@@ -64,7 +67,7 @@ dotclaude-usage [--days 7] [--root DIR] [--runs 20] [--window N] [--agents-dir D
 | --- | --- |
 | `--days N` | The period, in days back from now. Default 7. |
 | `--root DIR` | The transcripts folder. |
-| `--runs N` | Rows in the run tables. Default 20. |
+| `--runs N` | Rows in the run tables and in the table of sessions by build. Default 20. |
 | `--window N` | The context window in tokens. |
 | `--agents-dir DIR` | Reads `maxTurns` from `DIR/<agent>.md`, to compare the briefs of runs that hit the turn limit. |
 | `--json` | Prints the report as JSON. |

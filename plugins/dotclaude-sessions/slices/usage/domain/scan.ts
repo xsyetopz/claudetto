@@ -2,7 +2,7 @@
 // One transcript file of the usage report: its calls, its tool uses, and its runs, added to the sums.
 
 import path from "node:path";
-import { type StampRecord, parseStamp } from "../../../kernel/stamp.ts";
+import { parseStamp, type StampRecord } from "../../../kernel/stamp.ts";
 import type { Store } from "../ports.ts";
 import { buildOf } from "./builds.ts";
 import {

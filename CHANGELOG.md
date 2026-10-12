@@ -71,6 +71,11 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The `autoMode.allow` list lets the classifier run the removal of agent worktrees and of the Claude Code temp folder.
 - The `trim` slice turns off 10 built-in parts that no slice of dotclaude uses.
   Each part has its env var or settings key.
+- The `stamp` slice of the core plugin appends the dotclaude version and the short build SHA to each session at its start, as a `system` notice.
+  The SHA comes from `installed_plugins.json`, or from `git` when the plugin root is a dotclaude checkout, else it is `unknown`.
+  The notice costs no model token.
+- The `dotclaude-usage` report shows the build of each session, and the cost of each build.
+  A session with no stamp row shows `unknown`.
 
 ### Changed
 

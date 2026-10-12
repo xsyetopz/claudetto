@@ -3,10 +3,7 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import {
-  type StampRecord,
-  formatStamp,
-} from "../../../src/kernel/stamp.ts";
+import { formatStamp, type StampRecord } from "../../../src/kernel/stamp.ts";
 import type { Entry } from "../../../src/plugins/dotclaude-sessions/slices/usage/domain/transcript.ts";
 import { PLUGINS, tmpDir } from "../../support/repo.ts";
 import { runBin } from "../spawn.ts";
@@ -42,7 +39,12 @@ const session = (model: string, stamp?: StampRecord): Entry[] => [
         },
       ]
     : []),
-  { type: "user", timestamp: AT, entrypoint: "cli", message: { content: "hi" } },
+  {
+    type: "user",
+    timestamp: AT,
+    entrypoint: "cli",
+    message: { content: "hi" },
+  },
   {
     type: "assistant",
     timestamp: AT,
@@ -56,10 +58,10 @@ const session = (model: string, stamp?: StampRecord): Entry[] => [
   },
 ];
 
-const write = (root: string, name: string, entries: Entry[]) => {
+const write = async (root: string, name: string, entries: Entry[]) => {
   const file = path.join(root, "p", `${name}.jsonl`);
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, entries.map((e) => JSON.stringify(e)).join("\n"));
+  await Bun.write(file, entries.map((e) => JSON.stringify(e)).join("\n"));
 };
 
 const run = (root: string): Report => {
@@ -71,29 +73,49 @@ const run = (root: string): Report => {
   return JSON.parse(out.stdout) as Report;
 };
 
-test("the sessions of one build add up to one total, and a session with no stamp row is `unknown`", () => {
+test("the sessions of one build add up to one total, and a session with no stamp row is `unknown`", async () => {
   const root = tmpDir("usage");
   // Two sessions of one build, one session of a second build, and one session with no stamp row.
-  write(root, "a", session("claude-sonnet-4", stampOf("1.0.0", "0123456")));
-  write(root, "b", session("claude-haiku-4", stampOf("1.1.0", "fedcba9")));
-  write(root, "c", session("claude-sonnet-4"));
-  write(root, "d", session("claude-sonnet-4", stampOf("1.0.0", "0123456")));
+  await write(
+    root,
+    "a",
+    session("claude-sonnet-4", stampOf("1.0.0", "0123456")),
+  );
+  await write(
+    root,
+    "b",
+    session("claude-haiku-4", stampOf("1.1.0", "fedcba9")),
+  );
+  await write(root, "c", session("claude-sonnet-4"));
+  await write(
+    root,
+    "d",
+    session("claude-sonnet-4", stampOf("1.0.0", "0123456")),
+  );
   const { builds } = run(root);
   // Sonnet costs $2 and haiku $1 per million input tokens, so the largest total comes first.
-  expect(builds.byBuild.map((b) => [b.build, b.sessions, b.cost])).toStrictEqual(
-    [
-      ["1.0.0 0123456", 2, 4],
-      ["unknown", 1, 2],
-      ["1.1.0 fedcba9", 1, 1],
-    ],
-  );
+  expect(
+    builds.byBuild.map((b) => [b.build, b.sessions, b.cost]),
+  ).toStrictEqual([
+    ["1.0.0 0123456", 2, 4],
+    ["unknown", 1, 2],
+    ["1.1.0 fedcba9", 1, 1],
+  ]);
 });
 
-test("each session shows its own build, from its stamp row", () => {
+test("each session shows its own build, from its stamp row", async () => {
   const root = tmpDir("usage");
-  write(root, "a", session("claude-sonnet-4", stampOf("1.0.0", "0123456")));
-  write(root, "b", session("claude-haiku-4", stampOf("1.1.0", "fedcba9")));
-  write(root, "c", session("claude-sonnet-4"));
+  await write(
+    root,
+    "a",
+    session("claude-sonnet-4", stampOf("1.0.0", "0123456")),
+  );
+  await write(
+    root,
+    "b",
+    session("claude-haiku-4", stampOf("1.1.0", "fedcba9")),
+  );
+  await write(root, "c", session("claude-sonnet-4"));
   const { builds } = run(root);
   expect(
     Object.fromEntries(builds.latest.map((s) => [s.id, s.build])),

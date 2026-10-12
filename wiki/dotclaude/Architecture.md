@@ -56,7 +56,7 @@ The generator copies each kernel file that a plugin imports into the plugin, so 
 
 ## Slices of the core plugin
 
-The core plugin has 15 slices.
+The core plugin has 16 slices.
 The events column names the events that the slice declares in `mod`, in its `slice.ts`.
 
 | Slice | What it does | Events |
@@ -72,6 +72,7 @@ The events column names the events that the slice declares in `mod`, in its `sli
 | `sembr` | Rewrites a `tool.call` on a Markdown file so that each sentence starts a line. | `tool.call` |
 | `setup` | The skill `setup`, the CLI `dotclaude-setup`, and the drift check. | `session.start` |
 | `spec` | The CLI `dotclaude-spec`, which writes the spec store, and the handlers that move a package lane for `ship`. | `agent.spawn`, `turn.complete` |
+| `stamp` | Appends the dotclaude version and the short build SHA to the transcript at each session start, as a `system` notice. | `session.start` |
 | `statusline` | The CLI `dotclaude-statusline` and its segments. | None |
 | `styles` | The output style `dotclaude:Concise`. | None |
 | `surface` | Shortens the descriptions of the built-in tools, and drops built-in agent types from the listing and from dispatch. | `agent.offer`, `tool.describe` |

@@ -50,6 +50,7 @@ export type Attachment = {
 export type Entry = {
   type?: string;
   subtype?: string;
+  content?: unknown;
   timestamp?: string;
   entrypoint?: string;
   isMeta?: boolean;

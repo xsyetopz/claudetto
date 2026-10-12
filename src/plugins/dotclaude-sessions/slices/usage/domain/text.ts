@@ -56,7 +56,9 @@ export const textOf = (
     out.push(
       `  ${x.build.slice(0, 30).padEnd(30)} ${String(x.sessions).padStart(8)} $${x.cost.toFixed(2).padStart(9)}  ${x.share}%`,
     );
-  out.push("  session                      build                          cost");
+  out.push(
+    "  session                      build                          cost",
+  );
   for (const s of b.latest)
     out.push(
       `  ${s.id.slice(0, 28).padEnd(28)} ${s.build.slice(0, 30).padEnd(30)} $${s.cost.toFixed(2).padStart(9)}`,
