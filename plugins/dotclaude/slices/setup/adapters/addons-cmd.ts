@@ -59,7 +59,6 @@ const runSteps = (steps: Step[], projectDir: string, io: Io): boolean => {
 export const addonsCommand = async (
   { apply }: { apply: boolean },
   { configDir, projectDir }: Places,
-  env: NodeJS.ProcessEnv,
   io: Io,
 ): Promise<number> => {
   const names = installedAddons(
@@ -76,7 +75,6 @@ export const addonsCommand = async (
   }
   const plan = planAddons(names, {
     projectDir,
-    env,
     bun: Bun.version,
     version: versionOf,
     indexBuilt: fs.existsSync(

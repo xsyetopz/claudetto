@@ -43,8 +43,3 @@ tests/support/lib-feature-imports.ts
 src/wiki/
 tools/wiki.ts
 
-# P19: `decide`, which replaces the `dotclaude-jev` add-on
-plugins/dotclaude-jev/
-src/plugins/dotclaude-jev/
-tests/jev/
-

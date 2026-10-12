@@ -88,7 +88,7 @@ test("the register calls the `register` of `legacy.ts` after the slice handlers"
   expect(events.length).toBeGreaterThan(1);
 });
 
-/** The `// eval:` ids of the block directly above line `i`, in order, for a joined `on()` call with one id per handler. */
+/** The `// eval:` ids of the block directly above line `i`, in order, for an `on()` call. */
 const evalIdsAbove = (lines: string[], i: number): string[] => {
   const ids: string[] = [];
   for (let j = i - 1; j >= 0; j--) {
@@ -120,18 +120,21 @@ test("each `on()` call of the register has the id `<event> <slice>` above it", a
   ]);
 });
 
-test("a joined `on()` call of two observe slices has the id of each slice above it", async () => {
-  const observe = (name: string): Record<string, string> => ({
+test("the `on()` call of each of two observe slices has the id of its slice above it", async () => {
+  const observe = (name: string, filter = ""): Record<string, string> => ({
     [`src/plugins/p/slices/${name}/adapters/mod.ts`]:
       "export const start = (_$: unknown, e: unknown, next: (e: unknown) => unknown) => next(e);\n",
     [`src/plugins/p/slices/${name}/slice.ts`]: `import { start } from "./adapters/mod.ts";
 export const slice = { name: "${name}", mod: [
-  { event: "session.start", phase: "observe", run: start },
+  { event: "session.start", ${filter}phase: "observe", run: start },
 ] };
 `,
   });
   const ids = await registerIds(
-    await fixtureRoot({ ...observe("omega"), ...observe("psi") }),
+    await fixtureRoot({
+      ...observe("omega", "filter: { isInteractive: [true, false] }, "),
+      ...observe("psi"),
+    }),
   );
   expect(ids.filter((id) => id.startsWith("session.start "))).toStrictEqual([
     "session.start omega",

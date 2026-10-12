@@ -93,10 +93,7 @@
         "!tests/support/verdicts.ts",
         "!tests/support/lib-feature-imports.ts",
         "!src/wiki/**",
-        "!tools/wiki.ts",
-        "!plugins/dotclaude-jev/**",
-        "!src/plugins/dotclaude-jev/**",
-        "!tests/jev/**"
+        "!tools/wiki.ts"
       ],
       "plugins": ["./tools/lint/arrow-functions.grit"],
       "linter": {

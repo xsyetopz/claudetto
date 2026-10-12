@@ -52,13 +52,13 @@ test("rule 3: a cli imports another feature, and an entry point imports a hook f
 
 test("rule 4: an import that leaves its plugin is a violation, for a plugin, `tools`, and `tests`", () => {
   const files = {
-    "plugins/dotclaude-jev/hooks/register.ts":
-      'import { a } from "../../dotclaude/lib/budget.ts";\nimport { b } from "../../../tools/limits.ts";\nimport { c } from "../../../tests/support/x.ts";\nimport { d } from "../features/jev/rules.ts";',
+    "plugins/dotclaude-browser/hooks/register.ts":
+      'import { a } from "../../dotclaude/lib/budget.ts";\nimport { b } from "../../../tools/limits.ts";\nimport { c } from "../../../tests/support/x.ts";\nimport { d } from "../features/browser/rules.ts";',
   };
   expect(checkPluginBoundary(files)).toStrictEqual([
-    "plugins/dotclaude-jev/hooks/register.ts: import ../../dotclaude/lib/budget.ts leaves its plugin",
-    "plugins/dotclaude-jev/hooks/register.ts: import ../../../tools/limits.ts leaves its plugin",
-    "plugins/dotclaude-jev/hooks/register.ts: import ../../../tests/support/x.ts leaves its plugin",
+    "plugins/dotclaude-browser/hooks/register.ts: import ../../dotclaude/lib/budget.ts leaves its plugin",
+    "plugins/dotclaude-browser/hooks/register.ts: import ../../../tools/limits.ts leaves its plugin",
+    "plugins/dotclaude-browser/hooks/register.ts: import ../../../tests/support/x.ts leaves its plugin",
   ]);
 });
 
@@ -121,11 +121,11 @@ test("rule 6: `bun`, a `bun:` module, and a read of `Bun` in the module graph ar
   ]);
 });
 
-test("rule 6 also covers the add-on module of the current jev layout", () => {
+test("rule 6 also covers the module of an add-on plugin", () => {
   const files = {
-    "plugins/dotclaude-jev/hooks/register.ts": 'import fs from "node:fs";',
+    "plugins/dotclaude-browser/hooks/register.ts": 'import fs from "node:fs";',
   };
   expect(checkModuleGraph(files)).toStrictEqual([
-    "plugins/dotclaude-jev/hooks/register.ts: node:fs in the module graph",
+    "plugins/dotclaude-browser/hooks/register.ts: node:fs in the module graph",
   ]);
 });

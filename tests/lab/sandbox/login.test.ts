@@ -11,7 +11,7 @@ import { type Env, PLUGINS, tmpDir } from "../../support/repo.ts";
 import { spawnText } from "../fixture-repo.ts";
 
 const TOOL = path.join(PLUGINS, "dotclaude-lab/bin/dotclaude-sandbox");
-const JEV = path.join(PLUGINS, "dotclaude-jev");
+const BROWSER = path.join(PLUGINS, "dotclaude-browser");
 const REAL_HOME = os.homedir();
 
 /** The parsed output of the fake `claude`, which writes it to `out`. */
@@ -180,13 +180,13 @@ test("the tool starts the `claude` on `PATH` with the plugin dir and the argumen
   const s = await setUp();
   const { seen } = await run(s, { CLAUDE_CODE_OAUTH_TOKEN: "t" }, [
     "--plugin-dir",
-    JEV,
+    BROWSER,
     "--model",
     "x",
   ]);
   expect(seen.argv.slice(-2)).toStrictEqual(["--model", "x"]);
   expect(seen.argv[0]).toBe("--plugin-dir");
-  expect(path.basename(seen.argv[1] as string)).toBe("dotclaude-jev");
+  expect(path.basename(seen.argv[1] as string)).toBe("dotclaude-browser");
 });
 
 test("--clean removes the sandbox folder and starts no claude", async () => {
