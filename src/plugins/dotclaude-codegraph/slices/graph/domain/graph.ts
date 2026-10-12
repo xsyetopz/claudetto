@@ -1,4 +1,4 @@
-// The pure logic of the code-graph hooks: the text that goes to Claude, and the parse of the CLI output.
+// The pure logic of the code-graph hooks: the text that goes to Claude, and the parse of the payload.
 // No function here runs a command or reads a file.
 
 /** The fields of a hook payload that the hooks read. */
@@ -12,6 +12,9 @@ export const INSTALL_COMMAND = "npm i -g @colbymchenry/codegraph";
 /** The command that builds the first index. It is the opt-in of a project. */
 export const INIT_COMMAND = "codegraph init -y";
 
+/** The path of the index database in a project. A project with this file has opted in. */
+export const INDEX_PATH = ".codegraph/codegraph.db";
+
 /**
  * The line that `SessionStart` adds.
  * `impact` has a default depth of 2, so the line gives `-d 5`.
@@ -23,33 +26,40 @@ export const SESSION_LINE =
   "The default depth of 2 misses some of it. " +
   "`codegraph callers <symbol>` and `codegraph callees <symbol>` list who calls a symbol and what it calls.";
 
-/** `text` as parsed JSON, or null when it is not JSON (the CLI prints text for an unknown symbol). */
-export function parseJson(text: string): HookPayload | null {
+/**
+ * A `Bash` command with a `git` command that changes the tree: `commit`, `merge`, `rebase`, `pull`, `checkout`, `switch`, `reset`, `cherry-pick`, `revert`, `stash`, `apply`, or `am`.
+ * The `git` command starts the command or follows `;`, `&`, or `|`, so `cd x && git commit` matches.
+ * The mod handler uses it as its filter, so a command of any other kind starts no process.
+ */
+export const TREE_CHANGE =
+  /(?:^|[;&|])\s*git\s+(?:commit|merge|rebase|pull|checkout|switch|reset|cherry-pick|revert|stash|apply|am)(?:\s|$)/;
+
+/** `text` as a parsed payload, or null when it is not JSON. */
+export const parseJson = (text: string): HookPayload | null => {
   try {
     return JSON.parse(text);
   } catch (err) {
     if (!(err instanceof SyntaxError)) throw err;
     return null;
   }
-}
+};
 
 /** What the check prints, as lines, from whether the CLI answers and whether the project has an index. */
-export function checkLines(
+export const checkLines = (
   found: boolean,
   version: string,
   indexed: boolean,
-): string[] {
+): string[] => {
   if (!found)
     return [
       "`codegraph` is not on `PATH`, so the code-graph hooks do nothing.",
       `To install it, run \`${INSTALL_COMMAND}\`.`,
       "The add-on does not install it.",
     ];
-  const lines = [`\`codegraph\` ${version} is on \`PATH\`.`];
-  lines.push(
+  return [
+    `\`codegraph\` ${version} is on \`PATH\`.`,
     indexed
       ? "This project has an index, so the code-graph hooks run."
       : `This project has no index, so the hooks do nothing. To opt in, run \`${INIT_COMMAND}\` in the project.`,
-  );
-  return lines;
-}
+  ];
+};

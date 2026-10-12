@@ -24,11 +24,8 @@ const runFixed: FixedRun = (command, args) => {
 };
 
 /** Ends the process `pid` and its children with `taskkill`. The arguments are fixed, and no shell reads them. */
-export function taskkill(pid: number | undefined, run: FixedRun = runFixed) {
-  return run("taskkill", ["/pid", String(pid), "/T", "/F"], {
-    stdio: "ignore",
-  });
-}
+export const taskkill = (pid: number | undefined, run: FixedRun = runFixed) =>
+  run("taskkill", ["/pid", String(pid), "/T", "/F"], { stdio: "ignore" });
 
 /**
  * Runs `command` with `args`. At `timeout` ms it calls `kill(pid)`, which must end the tree.
@@ -52,7 +49,7 @@ export interface RunTreeResult {
   error?: Error;
 }
 
-export function runTree({
+export const runTree = ({
   command,
   args,
   cwd,
@@ -60,7 +57,7 @@ export function runTree({
   timeout,
   shell = process.platform === "win32",
   kill = taskkill,
-}: RunTreeOptions): Promise<RunTreeResult> {
+}: RunTreeOptions): Promise<RunTreeResult> => {
   // A shell runs the command line as text, as `cmd.exe /d /s /c` does for Node's `shell` option.
   const cmd = shell
     ? [
@@ -99,7 +96,7 @@ export function runTree({
     clearTimeout(timer);
     return { status: timedOut ? null : code, stdout: await stdout, timedOut };
   });
-}
+};
 
 // Usage: node run-tree.ts TIMEOUT_MS COMMAND ARGS...
 // Prints the output of the command. Exits 124 after a timeout, and 1 when the command cannot start.

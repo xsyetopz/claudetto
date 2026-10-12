@@ -24,8 +24,7 @@ plugins/dotclaude/features/statusline/
 tests/dotclaude/statusline/
 
 # P11a: `dotclaude-codegraph`
-plugins/dotclaude-codegraph/
-src/plugins/dotclaude-codegraph/
+plugins/dotclaude-codegraph/evals/hooks.json
 tests/codegraph/
 
 # P11b: `dotclaude-browser`
