@@ -1,0 +1,23 @@
+// The triggers of a handoff, and the choice of the `mainHandover` value.
+
+import {
+  DEFAULT_MAIN_HANDOVER,
+  MAIN_HANDOVERS,
+  type MainHandover,
+} from "../limits.ts";
+
+/** The `mainHandover` value of `raw`, or the default when `raw` is not one of the values. */
+export const parseHandover = (raw: unknown): MainHandover =>
+  MAIN_HANDOVERS.find((mode) => mode === raw) ?? DEFAULT_MAIN_HANDOVER;
+
+/** Whether `command` moves a package to `done`: `dotclaude-spec lane <package> done`. */
+export const isLaneDone = (command: string): boolean =>
+  /(?:^|[\s;&|(])dotclaude-spec\s+lane\s+\S+\s+done\s*(?:$|[;&|)])/.test(
+    command,
+  );
+
+/** Whether the context share `percent` reaches the bound `bound`. An absent share does not. */
+export const overContext = (
+  percent: number | undefined,
+  bound: number,
+): boolean => percent !== undefined && percent >= bound;

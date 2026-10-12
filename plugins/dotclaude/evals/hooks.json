@@ -41,6 +41,20 @@
     "allow": "plugins/dotclaude/tests/drift.test.ts > no drift adds no text",
     "text": "plugins/dotclaude/tests/drift.test.ts > a settings file without the snippet names the missing values and the setup skill"
   },
+  "skill.prompt handoff": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/handoff.test.ts > another skill gets no handoff file",
+    "text": "plugins/dotclaude/tests/handoff.test.ts > the skill `/handoff` names the handoff file in its text"
+  },
+  "tool.call handoff": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/handoff.test.ts > a step of the main session adds no note to a later call",
+    "text": "plugins/dotclaude/tests/handoff.test.ts > a package that goes to `done` adds the hint to run `/handoff`"
+  },
   "tool.call decide": {
     "requests": 0,
     "tokens": 0,
@@ -88,5 +102,19 @@
     "blocks": false,
     "allow": "plugins/dotclaude/tests/surface.test.ts > `tool.describe` passes an unknown tool on with no change",
     "text": "plugins/dotclaude/tests/surface.test.ts > `tool.describe` replaces the built-in `Bash` description with a shorter one"
+  },
+  "turn.complete handoff": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/handoff.test.ts > below the context bound the turn ends with no handoff",
+    "text": "plugins/dotclaude/tests/handoff.test.ts > with `manual` a context over the bound adds the hint to run `/handoff`"
+  },
+  "turn.step handoff": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/handoff.test.ts > a step of the main session returns the result of the engine",
+    "text": "plugins/dotclaude/tests/handoff.test.ts > a step of a subagent returns the result of the engine"
   }
 }

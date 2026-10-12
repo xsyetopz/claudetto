@@ -10,6 +10,14 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ## [Unreleased]
 
+### Added
+
+- The `handoff` slice of the core plugin ports the handoff of 0.28.0 to the hooks module and a CLI `dotclaude-handoff`.
+  The handoff file goes to `.dotclaude/handoff/`.
+  The `/handoff` skill names the file, and the `turn.complete` hook runs `/clear` and the resume prompt.
+  The option `mainHandover` is `manual` by default, and it takes `auto` and `off`.
+  A `tool.call` hook adds a report-now note to a subagent that nears its context bound or its `maxTurns`.
+
 ### Changed
 
 - The `drift` command of `dotclaude-setup` reports a rule file in `.claude/rules/` whose `paths` front matter does not parse, whose braces expand over 1000 patterns, or whose glob matches no tracked file.
