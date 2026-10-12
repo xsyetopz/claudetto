@@ -33,7 +33,7 @@ Each row gives the number, the title, and the page with the detail.
 | D25 | Agent roster | [Router](Decisions-Router) |
 | D26 | Code graph through the CodeGraph CLI | [Tools](Decisions-Tools) |
 | D27 | Measured facts over model reports | [Evidence](Decisions-Evidence) |
-| D28 | Compliance by checks, not by prose | [Prompt](Decisions-Prompt) |
+| D28 | Compliance by checks, not by prose (item 2 reversed, see [Decisions-Reversed](Decisions-Reversed#prompt)) | [Prompt](Decisions-Prompt) |
 | D29 | Semantic line breaks | [Evidence](Decisions-Evidence) |
 | D30 | Hold correct work under an unsupported claim | [Evidence](Decisions-Evidence) |
 | D31 | Guard hooks fail open (`onFailure`) | [Guards](Guards) |
