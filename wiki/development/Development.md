@@ -1,205 +1,206 @@
 # Development
 
 This page is for contributors.
-It shows the commands, the layout rules, and the steps to test, release, and publish a change.
+It shows the needs, the commands, the layout rules, and the steps to test, release, and publish a change.
 
-## Before you begin
+## Needs
 
-- Install [Bun](https://bun.sh) 1.4.3 or later (`packageManager` in `package.json` names the version of CI) and `just`.
-- Run `bun install`.
-  It installs the pinned Biome, markdownlint-cli2, and the Bun and Node types from `bun.lock`.
-- Install Claude Code 2.1.296 or later.
-  `just validate`, `just lab`, `just update`, and `just release` call the `claude` CLI.
-- Run each command in the repository root.
+- Install [`Bun`](https://bun.sh) 1.4.3 or later.
+  The `engines` field of `package.json` sets the minimum.
+  The `packageManager` field and `.bun-version` pin 1.4.3.
+- Install `just`.
+  CI uses `just` 1.58.0.
+- Run `bun install` in the repository root.
+  It installs the dev dependencies that `bun.lock` pins.
+  These are `@biomejs/biome` 2.5.15, `markdownlint-cli2` 0.23.3, `bun-types` 1.4.3, `@types/node` 26.6.5, and `yaml` 2.9.1.
+- Install Claude Code 2.1.296.
+  CI installs the same version, which the `TESTED_VERSION` constant names.
+  The recipes `sandbox`, `validate`, `lab`, `eval`, and `release` call the `claude` command.
 
 ## Commands
 
+Run `just` with no argument to list the recipes.
+Each recipe runs from the repository root.
+
 | Command | What it does |
 | --- | --- |
-| `just test` | Runs `bun test` on the test files of `tests/`. Arguments name the test files to run in place of all of them. |
-| `just lint` | Runs `bun run lint` (Biome) and `bun run lint:md` (markdownlint-cli2). |
-| `just typecheck` | Runs `bun run typecheck` (`bun check` with `tsconfig.json`). It checks each `.ts` file of `plugins/`, `tests/`, and `tools/`, and `plugins/dotclaude/hooks/register.ts` with what it imports. `any` is not allowed. |
-| `just validate` | Runs `bun run validate`, which checks the manifests, skills, and agents. |
-| `just lab` | Runs `claude plugin test` on each plugin that has a `tests/` folder, the hook lab. |
-| `just check` | Runs lint, typecheck, test, validate, and lab. It must pass before you call a change done. |
-| `just ci` | Runs lint, test, validate, and lab: the gate of the CI `check` job. CI has no type check, because Claude Code writes `.claude-plugin/types/` only when an interactive session loads the plugin. |
-| `just sandbox` | Runs Claude Code with this checkout as its plugin, in its own config. See [Sandbox](Sandbox). |
-| `just sandbox-clean` | Removes the sandbox. |
-| `just usage` | Shows where your Claude Code usage went. Add `--days N` or `--json`. |
-| `just update` | Updates the marketplace, then each plugin under `plugins/` that you installed. Restart Claude Code after it. |
-| `just bump <level>` | Bumps the version. See [Releases](#releases). |
-| `just release` | Tags each plugin and pushes the tags. See [Releases](#releases). |
-| `just generate` | Writes each text that a plugin ships from its source in `src/`. Add `--check` to name each generated file that differs from its source. |
-| `just measure` | Sizes the start of a session by source from a transcript, and fails above the start bounds of `tools/limits.ts`. Arguments go to `dotclaude-start` (a `.jsonl` path, `--compare BASE OTHER`). |
-| `just capture` | Logs the requests of Claude Code through a local proxy and sizes each part of the first one. Arguments go to the proxy (`--port N`, `--out DIR`, `--no-count`). |
-| `just schema` | Writes the settings schemas of the installed Claude Code to `schemas/`. Arguments go to `dotclaude-schema` (`--bundle FILE`, `--version X.Y.Z`). |
-| `just eval` | Runs the eval cases of the core plugin with `claude plugin eval`, on a path target so the checkout and not the installed copy is tested. `--max-cost-usd` bounds the cost, and a lock stops a second run while one is in progress. |
-| `just eval-variant <ref>` | Runs the eval cases on the checkout and on a variant at a git ref (in a temporary worktree), to compare the two plugin arms. |
+| `just test [FILE]` | Runs `bun test` on the tests of `tests/`. A file argument runs that file in place of all of them. |
+| `just lint` | Runs Biome on `plugins`, `tests`, `tools`, and `src`, and `markdownlint-cli2` on the Markdown files. |
+| `just typecheck` | Runs `bun check` with `tsconfig.json`, which checks each `.ts` file and the core hooks module. |
+| `just validate` | Runs `tools/validate.ts`, which runs `claude plugin validate --strict` and checks the file size bounds. |
+| `just lab` | Runs `tools/lab.ts`, which runs `claude plugin test` on each plugin with a `tests/` folder. |
+| `just check` | Runs lint, typecheck, `generate --check`, test, validate, and lab. It must pass before a change is done. |
+| `just ci` | Runs lint, test, validate, and lab. It is the gate of the CI `check` job. |
+| `just sandbox [ARGS]` | Runs Claude Code with this checkout as its plugin, in a separate config. See [Sandbox](Sandbox). |
+| `just sandbox-alone PLUGIN [ARGS]` | Runs Claude Code with only the plugin folder `PLUGIN`, in a new config with no settings. |
+| `just sandbox-clean` | Removes the sandbox config and project. |
+| `just capture [ARGS]` | Logs the requests of Claude Code through a local proxy, and sizes the first request. |
+| `just measure [SESSION.jsonl]` | Sizes the start of a session, and exits 1 above the start bounds of `tools/limits.ts`. |
+| `just start-run [ARGS]` | Captures and measures the start of a clean sandbox session. You send one prompt, then type `/exit`. |
 | `just debug-agents` | Runs one headless sandbox session with a debug log, and fails when the log names an unknown frontmatter field. |
-| `just start-run` | Captures and measures the start of a clean sandbox session: send one prompt, then type `/exit`. Arguments go to the script (`--port N`, `--dir DIR`). |
-| `just wiki` | Publishes `wiki/` to the GitHub wiki. |
+| `just usage [ARGS]` | Shows where your Claude Code usage went. Add `--days N`, `--runs N`, or `--json`. |
+| `just update` | Refreshes the marketplace, then updates each installed plugin under `plugins/`. Restart Claude Code after it. |
+| `just bump LEVEL` | Bumps the version in the manifests and moves the `[Unreleased]` CHANGELOG entries. See [Releases](#releases). |
+| `just release` | Tags each plugin under `plugins/` at `HEAD`, and pushes the tags in one push. See [Releases](#releases). |
+| `just generate` | Writes each text that a plugin ships from its source in `src/`. `--check` names each file that differs. |
+| `just schema` | Writes the settings schemas of the installed Claude Code to `schemas/`. |
+| `just eval` | Runs the eval suite of the core plugin with `claude plugin eval`. See [Evals](Evals). |
+| `just eval-variant REF` | Runs the eval suite on the checkout and on a variant at a git ref, to compare them. |
+| `just wiki` | Publishes `wiki/` to the GitHub wiki. See [Wiki](#wiki). |
+
+`just check` is the local gate.
+`just ci` is the same gate without the type check and without `generate --check`.
+CI has no type check, because Claude Code writes the `.claude-plugin/types/` folder only when an interactive session loads a plugin.
+
+`just measure` is not part of `just check` or `just ci`.
+It exits 1 when the first request is above `START_TOKENS` in `tools/limits.ts`, or when its text is outside the `FIRST_REQUEST_LOW_BYTES` and `FIRST_REQUEST_HIGH_BYTES` range.
 
 ```bash
-just check                                     # must pass before you call a change done
-just test tests/dotclaude/guard/rules.test.ts # one file
+just check                                     # must pass before a change is done
+just test tests/dotclaude/guard/rules.test.ts  # one file
 just usage --days 7                            # where your usage went
 bun run lint:md                                # lint Markdown
 ```
 
-Headings and code blocks in Markdown have a 100-column bound.
-Each `.md` file has at most 300 lines.
+## Size bounds
 
-## The tests layout
+The size bounds are in `tools/limits.ts`.
+`FILE_MAX_LINES` is 300, and `TEST_FILE_MAX_LINES` is 500.
+`just validate` fails when a file is above its bound.
+Split a larger file into files that each hold one concern.
+A Markdown file has the same 300-line bound, and its headings and code blocks have a 100-column bound.
+See [Bounds](Bounds) for each bound, its value, and its file.
+
+## Tests
+
+`just test` runs `bun test` on the test files of `tests/`.
 
 | Folder | What it holds |
 | --- | --- |
-| `tests/` | The repository tests, with one folder for each plugin. `just test` runs them with `bun test`. |
-| `plugins/<name>/tests/*.test.ts` | The hook lab tests of the plugins with a hooks module. `just lab` runs them. |
-| `tools/` | The repository scripts: `bump-version.ts`, `eval-variant.ts`, `generate.ts`, `limits.ts`, `lock.ts`, `measure.ts`, `sizes.ts`, `start-run.ts`, `unsandboxed.ts`, and `validate.ts`. `generate.ts` writes each text that a plugin ships from `src/`, and the `description` and the `Stop` prompt of each `hooks.json` from `description.txt` and `Stop.prompt.txt` next to its source. `lock.ts` lets one eval run run at a time. `unsandboxed.ts` stops an eval run that starts inside the Bash sandbox of Claude Code. `validate.ts` runs `claude plugin validate --strict` on the marketplace and each plugin. |
+| `tests/dotclaude/<slice>/` | The tests of each slice of the core plugin, such as `guard/` and `setup/`. |
+| `tests/<plugin>/` | The tests of each add-on plugin, without the `dotclaude-` prefix. The tests of `dotclaude-browser` are in `tests/browser/`. |
+| `tests/kernel/` | The tests of `src/kernel/`. |
+| `tests/support/` | The helpers of the tests, and the repository checks, such as `file-size.test.ts` and `wiki-links.test.ts`. |
+| `tests/tools/` | The tests of the scripts in `tools/`. |
 
 ### The hook lab
 
-`just lab` loops over `plugins/*/` and runs `claude plugin test` on each plugin that has a `tests/` folder.
-Each test file imports from `claude-code/testing`, loads `hooks/register.ts`, and fires events.
-It stubs the engine verdict, the environment, `session.id`, and `process.run`.
-No command runs, no session starts, and no network call goes out.
-
-| Plugin | Test file | Tests |
-| --- | --- | ---: |
-| `dotclaude` | `drift.test.ts` | 12 |
-| `dotclaude` | `mod.test.ts` | 8 |
-| `dotclaude` | `sembr.test.ts` | 12 |
-| `dotclaude` | `surface.test.ts` | 17 |
-| `dotclaude` | `variants.test.ts` | 6 |
-| `dotclaude-browser` | `web-search.test.ts` | 19 |
-| `dotclaude-jev` | `ask-user-question.test.ts` | 4 |
-| `dotclaude-jev` | `second-opinion.test.ts` | 11 |
-
-The counts are the `test(` calls of each file.
-The guard tests of `mod.test.ts` include:
-
-- A deny of the engine stays a deny.
-- The first call to a repository of another owner with a policy asks once.
-- A repository of the user, or one with no policy, keeps the verdict.
+`just lab` runs `tools/lab.ts`.
+It runs `claude plugin test` on each plugin folder under `plugins/` that has a `tests/` folder.
+In this checkout, these are `dotclaude`, `dotclaude-browser`, `dotclaude-codegraph`, and `dotclaude-sessions`.
+Each test file fires events at a hooks module and stubs the reads of that module.
+Test each change to `hooks/register.ts` in the lab before a live session.
 
 ## Layout rules
 
+The source of each plugin is in `src/`.
+The `plugins/` folder holds the output of `just generate`, and only `plugins/` ships to users.
+Do not edit `plugins/` by hand.
+
 | Rule | Meaning |
 | --- | --- |
-| One owner for each number | `plugins/dotclaude/lib/budget.ts` holds the shared runtime bounds, `features/<name>/limits.ts` the bounds of one feature, and `tools/limits.ts` the repository bounds. Tests pin the copies in code and config, not in prose. |
-| No copy of Claude Code | Runtime JavaScript (`plugins/`) does only the work that the latest Claude Code does not do. When Claude Code has a setting, a hook, or another extension point for a need, use it. |
-| Layered imports | `plugins/dotclaude/lib/` imports only itself. A folder in `features/` imports only `lib/` and itself. The entry points (`hooks/register.ts`, `features/*/cli.ts`, and the skill scripts) import `lib/` and features. |
-| Guards get strings | The tests give commands to the guards as strings, and never run a guarded command. |
-| No patch of Claude Code | Never patch the CLI binary or its npm package. Reading the bundle for evidence is allowed. |
+| Edit the source, then generate | Edit `src/`, then run `just generate`. A test fails when a generated file differs from its source. |
+| One owner for each number | The shared runtime bounds are in `src/kernel/budget.ts`. A slice bound is in `slices/<slice>/limits.ts`, under `src/plugins/<plugin>/`. A repository bound is in `tools/limits.ts`. |
+| A slice imports its own folder | A slice imports only `src/kernel/` and its own folder. Domain code in `domain/` imports no adapter and no `src/kernel/node/`. Biome enforces both rules with `noRestrictedImports`. |
+| A plugin imports no other plugin | No file in `plugins/` imports another plugin, `tools/`, or `tests/`. |
+| No Node or Bun import in the hooks module | A file in the import graph of `hooks/register.ts` has no `node:` import and no `bun:` import. Claude Code runs that module in its own runtime. |
+| No patch of Claude Code | Never patch the Claude Code CLI binary or its npm package. Reading the bundle for evidence is allowed. |
 
 *Why:* a number with two owners drifts, and the drift shows up as two bounds that disagree.
-Layered imports keep the start of each hook small and its failure local.
-A test that runs a destructive command can do the damage that the guard exists to stop.
-See the design principles on the [Design](Design) page.
-
-The removed `dotclaude-modder` plugin is in git history at commit `5cf4cb4`, in `plugins/dotclaude-modder/`.
-You can restore its skills and the `um` command from there as a base for your own plugin.
+The import rules keep each part small, and keep its failure local.
+See [Plugin-Layout](Plugin-Layout) for the folders of each plugin, and [Design](Design) for the design principles.
 
 ## Types
 
 - The root `tsconfig.json` gives an editor the types of the Claude Code hooks module.
-  It extends `plugins/dotclaude/.claude-plugin/types/tsconfig.json`.
-- Claude Code writes that folder when it loads the plugin from your checkout, for example in `just sandbox`.
-- Git ignores the folder.
-  `dotclaude`, `dotclaude-browser`, and `dotclaude-jev` each have a `tsconfig.json` that extends the types folder of their own plugin.
-  The other plugins have none, because they have no hooks module.
+  It extends `plugins/dotclaude/tsconfig.json`.
+- Claude Code writes the `.claude-plugin/types/` folders when it loads a plugin from your checkout, such as in `just sandbox`.
+  Git ignores these folders.
+  `just check` needs them, and CI does not.
 
 ## Test in your config
 
 1. Run `just sandbox` to use a separate config.
    A test then does not change your own setup.
-2. To try the checkout in your own config, run this command:
+2. To load the checkout in your own config, run this command:
 
    ```bash
    claude --plugin-dir /path/to/dotclaude/plugins/dotclaude
    ```
 
-## The `/ship` wave
+## The `/ship` skill
 
-The `/ship` skill runs the open packages of a large change in waves.
-Each wave starts with `dotclaude-spec runs`.
-It prints the count of agent runs that the wave may start now, from the tier cap and from the 5-hour and weekly usage.
-Each package has one `implementer` in its own worktree.
-Before the merge, one `reviewer` reads the diff of each package.
-The reviewer gets no report of the implementer, so it judges only the diff.
-
-## Releases
-
-1. Add each change to the CHANGELOG under `[Unreleased]`.
-2. Preview the bump.
-
-   ```bash
-   just bump minor --dry-run
-   ```
-
-3. Bump the version.
-   The level is `major`, `minor`, `patch`, or `X.Y.Z`.
-
-   ```bash
-   just bump minor
-   ```
-
-4. Preview the tags.
-
-   ```bash
-   just release --dry-run
-   ```
-
-5. Tag and push.
-
-   ```bash
-   just release
-   ```
-
-- `just bump` sets one version in the manifests, and it moves the `[Unreleased]` CHANGELOG entries under a dated heading.
-- `just release` runs `claude plugin tag` on each plugin under `plugins/` at `HEAD`.
-- It checks all plugins before it makes a tag, so a bad manifest stops the release with no tag made.
-- It then pushes all tags to `origin` in one atomic push.
-- Before 1.0, a release can change or remove behavior without a compatibility layer.
-
-## Wiki
-
-1. Change a page in `wiki/`.
-   A change goes through a pull request, like a code change.
-2. Publish the folder to the GitHub wiki.
-
-   ```bash
-   just wiki
-   ```
-
-> **Note:** The wiki repository exists only after the first page is made in the GitHub web UI.
+The `/ship` skill (`plugins/dotclaude/skills/ship/SKILL.md`) runs the open packages of a large change in waves.
+Each package has one `implementer` agent in its own worktree.
+Before each wave, run `dotclaude-spec runs`.
+It prints how many agent runs the wave may start.
+The spec format is on the [Spec-Store](Spec-Store) page.
 
 ## Evals
 
-0.27.0 removed the behavior evals and `just eval-agent`.
-0.28.0 removed the Bun harness and the root `evals/` folder.
-`just eval` now wraps `claude plugin eval` and runs the suite in `plugins/dotclaude/evals/`.
-The suite format is now the one of `claude plugin eval` ([Evals](Evals)).
-The old results are on the [Eval history](Evals-History) page.
+`just eval` runs `claude plugin eval` on the suite in `plugins/dotclaude/evals/`.
+It tests the checkout, and not the installed copy.
+`--max-cost-usd 5` bounds its cost, and a lock stops a second run while one is in progress.
+The suite format and the results are on the [Evals](Evals) page.
 
-## Claude in CI
+## Continuous integration
 
-Two workflows use Claude Code with the `CLAUDE_CODE_OAUTH_TOKEN` secret, which `claude setup-token` makes.
-Each one skips its steps when the secret is empty, so a fork or a clone with no secret has no failed run.
+The workflows are in `.github/workflows/`.
 
-- `claude.yml` answers an `@claude` mention in an issue, a pull request review, or a comment, with `anthropics/claude-code-action`.
-  The action answers only users with write access to the repository.
-  It also needs the Claude GitHub App.
-- `eval-new-claude-code.yml` runs `just eval` only when `anthropics/claude-code` has a release tag higher than the version that `ci.yml` installs.
-  It runs each day and from `workflow_dispatch`, and never on a pull request.
-  `tools/claude-code-release.ts` compares the versions as SemVer, so a pre-release is lower than its release.
-  The cost bound is the `--max-cost-usd` of the `eval` recipe.
-  A cache entry for the tag marks a run of the evals, so each tag runs one time.
+- `ci.yml` runs on each push and each pull request.
+  Its `check` job runs `just ci` on Ubuntu, macOS, and Windows.
+  It installs `Bun` from `package.json`, `just` 1.58.0, and Claude Code 2.1.296.
+  Its `all-green` job is the one to require in branch protection.
+- `claude.yml` answers an `@claude` mention in an issue, a review comment, or a review, with `anthropics/claude-code-action`.
+  It answers only users with write access to the repository.
+  It needs the `CLAUDE_CODE_OAUTH_TOKEN` secret and the Claude GitHub App.
+  Its steps skip when the secret is empty, so a fork has no failed run.
+- `eval-new-claude-code.yml` runs `just eval` each day at 06:00 UTC, and from `workflow_dispatch`.
+  It never runs on a pull request.
+  It runs the evals for a release tag of `anthropics/claude-code` that is higher than the version in `ci.yml`.
+  It marks each tag after the run, so each tag runs one time.
   Set the input `force` to run a marked tag again.
-  A failed eval fails the run, so you see that the new release breaks the plugin.
-  Then fix the plugin, and change the version in `ci.yml` to the new release.
+  A failed eval fails the run.
+  Then fix the plugin, and set the version in `ci.yml` to the new release.
+
+## Releases
+
+1. Add each change under the `## [Unreleased]` heading of `CHANGELOG.md`.
+   `just bump` fails when that heading is missing.
+2. Preview the bump, then bump the version.
+   The level is `major`, `minor`, `patch`, or `X.Y.Z`.
+
+   ```bash
+   just bump minor --dry-run
+   just bump minor
+   ```
+
+3. Preview the tags, then tag and push.
+
+   ```bash
+   just release --dry-run
+   just release
+   ```
+
+- `just bump` moves the `[Unreleased]` entries under a dated heading.
+- `just release` runs `claude plugin tag` on each plugin under `plugins/`.
+  It checks all plugins before it makes a tag, so a bad manifest stops the release with no tag made.
+- It then pushes all tags to `origin` in one atomic push.
+
+## Wiki
+
+1. Edit a page in `wiki/`.
+   The test `tests/support/wiki-links.test.ts` checks that each link resolves, and that each page name is unique.
+   Some pages are generated from `src/wiki/`, such as [Bounds](Bounds).
+   Edit the source there, then run `just generate`.
+2. Run `just wiki` to publish the folder to the GitHub wiki.
+
+> **Note:** The wiki repository exists only after the first page is made in the GitHub web UI.
 
 ## Next steps
 
-- [Sandbox](Sandbox) tells how to test in a separate config.
+- [Sandbox](Sandbox) explains the separate config.
+- [Plugin-Layout](Plugin-Layout) maps the folders of each plugin.
+- [Hooks](Hooks) lists the hook events.
 - [Design](Design) gives the design principles.
+- [Decisions](Decisions) lists the decisions in force.
