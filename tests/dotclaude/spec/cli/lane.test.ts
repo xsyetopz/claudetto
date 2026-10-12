@@ -3,7 +3,7 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { makeStore, read, run, TODAY } from "./helpers.ts";
+import { eventsText, makeStore, read, run, TODAY } from "./helpers.ts";
 import { CHANGE, makePlan } from "./plan.ts";
 
 const git = (cwd: string, ...args: string[]): void => {
@@ -13,11 +13,19 @@ const git = (cwd: string, ...args: string[]): void => {
   }
 };
 
-const stateOf = async (root: string) =>
-  JSON.parse(await read(root, `${CHANGE}/state.json`)) as {
-    lanes: Record<string, string>;
-    events: { at: string; package: string; lane: string }[];
+type Line = { at: string; package: string; lane: string };
+
+/** The lines of `events.jsonl` after the header, and the last lane of each package. */
+const stateOf = async (root: string) => {
+  const [, ...lines] = (await read(root, `${CHANGE}/events.jsonl`))
+    .trim()
+    .split("\n");
+  const events = lines.map((line) => JSON.parse(line) as Line);
+  return {
+    lanes: Object.fromEntries(events.map((e) => [e.package, e.lane])),
+    events,
   };
+};
 
 test("lane moves a package and adds an event with the time", async () => {
   const root = await makePlan([{ id: "P01" }, { id: "P02" }]);
@@ -25,23 +33,22 @@ test("lane moves a package and adds an event with the time", async () => {
   expect(r.code).toBe(0);
   const state = await stateOf(root);
   expect(state.lanes).toStrictEqual({ P01: "doing", P02: "planned" });
-  expect(state.events).toStrictEqual([
+  expect(state.events.slice(2)).toStrictEqual([
     { at: `${TODAY}T10:00:00.000Z`, package: "P01", lane: "doing" },
   ]);
   await run(root, "lane", "P01", "done");
-  expect((await stateOf(root)).events.map((e) => e.lane)).toStrictEqual([
-    "doing",
-    "done",
-  ]);
+  expect(
+    (await stateOf(root)).events.slice(2).map((e) => e.lane),
+  ).toStrictEqual(["doing", "done"]);
 });
 
 test("lane stops on a bad lane, a missing argument, and an unknown package", async () => {
   const root = await makePlan([{ id: "P01" }]);
-  const before = await read(root, `${CHANGE}/state.json`);
+  const before = await read(root, `${CHANGE}/events.jsonl`);
   expect((await run(root, "lane", "P01", "finished")).code).toBe(2);
   expect((await run(root, "lane", "P01")).code).toBe(2);
   expect((await run(root, "lane", "P09", "done")).code).toBe(1);
-  expect(await read(root, `${CHANGE}/state.json`)).toBe(before);
+  expect(await read(root, `${CHANGE}/events.jsonl`)).toBe(before);
 });
 
 test("lane stops when two changes have the package", async () => {
@@ -59,20 +66,15 @@ test("lane stops when two changes have the package", async () => {
   expect((await stateOf(root)).lanes["P01"]).toBe("planned");
 });
 
-test("lane stops on a state with a schema that it does not know", async () => {
+test("lane stops on a log with a schema that it does not know", async () => {
   const root = await makeStore({
-    [`${CHANGE}/state.json`]: JSON.stringify({
-      schema: 2,
-      lanes: { P01: "planned" },
-      events: [],
-      handoff: null,
-    }),
+    [`${CHANGE}/events.jsonl`]: eventsText({ P01: "planned" }, 2),
   });
-  const before = await read(root, `${CHANGE}/state.json`);
+  const before = await read(root, `${CHANGE}/events.jsonl`);
   const r = await run(root, "lane", "P01", "doing");
   expect(r.code).toBe(1);
   expect(r.err.length).toBeGreaterThan(0);
-  expect(await read(root, `${CHANGE}/state.json`)).toBe(before);
+  expect(await read(root, `${CHANGE}/events.jsonl`)).toBe(before);
   expect((await run(root, "status", "c1")).code).toBe(1);
 });
 
@@ -96,10 +98,10 @@ test("lane works in the main checkout and is refused in a linked worktree", asyn
   const linked = `${main}-linked`;
   git(main, "worktree", "add", "-q", "-b", "side", linked);
   try {
-    const before = await read(linked, `${CHANGE}/state.json`);
+    const before = await read(linked, `${CHANGE}/events.jsonl`);
     const r = await run(linked, "lane", "P01", "done");
     expect(r.code).toBe(1);
-    expect(await read(linked, `${CHANGE}/state.json`)).toBe(before);
+    expect(await read(linked, `${CHANGE}/events.jsonl`)).toBe(before);
     expect((await stateOf(main)).lanes["P01"]).toBe("doing");
   } finally {
     fs.rmSync(linked, { recursive: true, force: true });

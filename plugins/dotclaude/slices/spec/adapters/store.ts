@@ -8,11 +8,12 @@ import { fileReader } from "../../../kernel/node/fs.ts";
 import { ARCHIVE_DIR, SPEC_ROOT } from "../../../kernel/paths.ts";
 import type { FileReader } from "../../../kernel/ports.ts";
 import {
-  type ChangeState,
+  eventLine,
+  eventsPath,
   type Lane,
+  type LaneEvent,
   packageLanes,
-  readState,
-  statePath,
+  readEvents,
 } from "../../../kernel/spec-store.ts";
 
 /** The store under the folder `root`. Each path that a method takes is relative to `root`. */
@@ -42,18 +43,19 @@ export class SpecStore {
     await Bun.write(this.abs(rel), text);
   }
 
-  /** The state of the change `id`, or null. It throws an `Error` on a `schema` that it does not know. */
-  state(id: string): Promise<ChangeState | null> {
-    return readState(this.files, id);
+  /** The lane events of the change `id`, or null. It throws an `Error` on a `schema` that it does not know. */
+  events(id: string): Promise<readonly LaneEvent[] | null> {
+    return readEvents(this.files, id);
   }
 
-  /** The lanes of the change `id`: the package files and the lanes of `state`, from `packageLanes`. */
-  lanes(id: string, state: ChangeState): Promise<Record<string, Lane>> {
-    return packageLanes(this.files, id, state);
+  /** The lanes of the change `id`: the package files and the last lines of `events`, from `packageLanes`. */
+  lanes(id: string, events: readonly LaneEvent[]): Promise<Record<string, Lane>> {
+    return packageLanes(this.files, id, events);
   }
 
-  async writeState(id: string, state: ChangeState): Promise<void> {
-    await this.write(statePath(id), `${JSON.stringify(state, null, 2)}\n`);
+  /** Adds one line for `event` to the end of `events.jsonl` of the change `id`. */
+  appendEvent(id: string, event: LaneEvent): void {
+    fs.appendFileSync(this.abs(eventsPath(id)), eventLine(event));
   }
 
   /** The ids of the open changes, in order. The archive is not a change. */

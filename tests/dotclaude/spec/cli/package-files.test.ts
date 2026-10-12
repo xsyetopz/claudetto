@@ -14,12 +14,12 @@ test("lane writes the lane of a package that has a file and no lane", async () =
   const root = await planWithFile();
   const r = await run(root, "lane", "P24", "done");
   expect(r.code).toBe(0);
-  const state = JSON.parse(await read(root, `${CHANGE}/state.json`)) as {
-    lanes: Record<string, string>;
-    events: { package: string }[];
-  };
-  expect(state.lanes).toStrictEqual({ P01: "done", P24: "done" });
-  expect(state.events.map((e) => e.package)).toStrictEqual(["P24"]);
+  const lines = (await read(root, `${CHANGE}/events.jsonl`))
+    .trim()
+    .split("\n")
+    .map((line) => JSON.parse(line) as { package: string; lane: string });
+  expect(lines.at(-1)).toMatchObject({ package: "P24", lane: "done" });
+  expect(lines.filter((l) => l.package === "P24")).toHaveLength(1);
 });
 
 test("status counts a package that has a file and no lane as planned", async () => {

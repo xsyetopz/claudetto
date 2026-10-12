@@ -9,27 +9,33 @@ import { depsFor, type Run, STATUS } from "./support.ts";
 
 const dir = tmpDir("dc-statusline-change");
 
-/** A project folder with one `state.json` for each entry of `lanes`, keyed by change id. */
+/** A project folder with one `events.jsonl` for each entry of `lanes`, keyed by change id. */
 const project = async (
   name: string,
-  changes: Record<string, unknown>,
+  changes: Record<string, string>,
 ): Promise<string> => {
   const root = path.join(dir, name);
   fs.mkdirSync(root, { recursive: true });
   for (const [id, state] of Object.entries(changes)) {
     const folder = path.join(root, ".dotclaude", "spec", "changes", id);
     fs.mkdirSync(folder, { recursive: true });
-    await Bun.write(path.join(folder, "state.json"), JSON.stringify(state));
+    await Bun.write(path.join(folder, "events.jsonl"), state);
   }
   return root;
 };
 
-const state = (lanes: Record<string, string>, schema = 1) => ({
-  schema,
-  lanes,
-  events: [],
-  handoff: null,
-});
+/** The text of an `events.jsonl`: a header, and one line for each package. */
+const state = (lanes: Record<string, string>, schema = 1): string =>
+  [
+    { schema },
+    ...Object.entries(lanes).map(([pkg, lane]) => ({
+      at: "2026-01-01T00:00:00.000Z",
+      package: pkg,
+      lane,
+    })),
+  ]
+    .map((line) => JSON.stringify(line))
+    .join("\n");
 
 const rowsFor = async (root: string): Promise<Run> => {
   const run: Run = { status: -1, out: [], err: [] };
@@ -81,7 +87,7 @@ test("a store of another schema shows no change segment, writes the cause to std
   const root = await project("schema", { "1.0.0": state({ P01: "doing" }, 2) });
   const run = await rowsFor(root);
   expect(run.status).toBe(0);
-  expect(run.err.join("")).toContain("state.json");
+  expect(run.err.join("")).toContain("events.jsonl");
   expect(run.out[0]).not.toContain("◆");
   expect(run.out[0]).toContain("◈ Opus 5.5");
 });

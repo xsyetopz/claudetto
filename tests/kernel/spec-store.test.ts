@@ -4,9 +4,11 @@ import { expect, test } from "bun:test";
 import type { FileReader } from "../../src/kernel/ports.ts";
 import {
   activeProgress,
-  readState,
+  eventsPath,
+  lastLanes,
+  packageLanes,
+  readEvents,
   SPEC_SCHEMA,
-  statePath,
 } from "../../src/kernel/spec-store.ts";
 
 /** A `FileReader` over a map of path to text. A folder is a key of the map that has a `/` after it. */
@@ -21,36 +23,66 @@ const fakeFiles = (files: Record<string, string>): FileReader => ({
   },
 });
 
-/** The text of a `state.json` with the lanes `lanes` and the schema `schema`. */
-const stateText = (lanes: Record<string, string>, schema = SPEC_SCHEMA) =>
-  JSON.stringify({ schema, lanes, events: [], handoff: null });
+/** The text of an `events.jsonl` with one line for each package of `lanes`, and the schema `schema`. */
+const eventsText = (lanes: Record<string, string>, schema = SPEC_SCHEMA) =>
+  [
+    { schema },
+    ...Object.entries(lanes).map(([pkg, lane]) => ({
+      at: "2026-01-01T00:00:00.000Z",
+      package: pkg,
+      lane,
+    })),
+  ]
+    .map((line) => JSON.stringify(line))
+    .join("\n");
 
-test("`readState` gives the state of a change with a known schema", async () => {
+test("`readEvents` gives the lines of a change with a known schema", async () => {
   const files = fakeFiles({
-    [statePath("1.0.0")]: stateText({ "01a": "done", "01b": "doing" }),
+    [eventsPath("1.0.0")]: eventsText({ "01a": "done", "01b": "doing" }),
   });
-  expect(await readState(files, "1.0.0")).toStrictEqual({
-    schema: SPEC_SCHEMA,
-    lanes: { "01a": "done", "01b": "doing" },
-    events: [],
-    handoff: null,
-  });
+  expect(await readEvents(files, "1.0.0")).toStrictEqual([
+    { at: "2026-01-01T00:00:00.000Z", package: "01a", lane: "done" },
+    { at: "2026-01-01T00:00:00.000Z", package: "01b", lane: "doing" },
+  ]);
 });
 
-test("`readState` gives null for a change with no `state.json`", async () => {
-  expect(await readState(fakeFiles({}), "1.0.0")).toBe(null);
+test("`readEvents` gives null for a change with no `events.jsonl`", async () => {
+  expect(await readEvents(fakeFiles({}), "1.0.0")).toBe(null);
 });
 
-test("`readState` stops with an error that names the file when the schema is unknown", async () => {
-  const file = statePath("1.0.0");
-  const files = fakeFiles({ [file]: stateText({ "01a": "done" }, 2) });
-  await expect(readState(files, "1.0.0")).rejects.toThrow(file);
+test("`readEvents` stops with an error that names the file when the schema is unknown", async () => {
+  const file = eventsPath("1.0.0");
+  const files = fakeFiles({ [file]: eventsText({ "01a": "done" }, 2) });
+  await expect(readEvents(files, "1.0.0")).rejects.toThrow(file);
+});
+
+test("the lanes of a log equal the last line of each package", async () => {
+  const at = "2026-01-01T00:00:00.000Z";
+  const lines = [
+    { at, package: "P01", lane: "planned" },
+    { at, package: "P02", lane: "planned" },
+    { at, package: "P01", lane: "doing" },
+    { at, package: "P02", lane: "doing" },
+    { at, package: "P01", lane: "done" },
+    { at, package: "P02", lane: "blocked" },
+    { at, package: "P02", lane: "doing" },
+  ] as const;
+  const text = [{ schema: SPEC_SCHEMA }, ...lines]
+    .map((line) => JSON.stringify(line))
+    .join("\n");
+  const files = fakeFiles({ [eventsPath("1.0.0")]: text });
+  const events = (await readEvents(files, "1.0.0")) ?? [];
+  expect(lastLanes(events)).toStrictEqual({ P01: "done", P02: "doing" });
+  expect(await packageLanes(files, "1.0.0", events)).toStrictEqual({
+    P01: "done",
+    P02: "doing",
+  });
 });
 
 test("`activeProgress` counts the done packages of the last change that is not done", async () => {
   const files = fakeFiles({
-    [statePath("0.9.0")]: stateText({ a: "planned" }),
-    [statePath("1.0.0")]: stateText({
+    [eventsPath("0.9.0")]: eventsText({ a: "planned" }),
+    [eventsPath("1.0.0")]: eventsText({
       "01a": "done",
       "01b": "done",
       "01c": "review",
@@ -64,9 +96,9 @@ test("`activeProgress` counts the done packages of the last change that is not d
   });
 });
 
-test("`activeProgress` gives null when every change is done or none has a state", async () => {
+test("`activeProgress` gives null when every change is done or none has an events log", async () => {
   const done = fakeFiles({
-    [statePath("1.0.0")]: stateText({ "01a": "done" }),
+    [eventsPath("1.0.0")]: eventsText({ "01a": "done" }),
   });
   expect(await activeProgress(done)).toBe(null);
   expect(await activeProgress(fakeFiles({}))).toBe(null);

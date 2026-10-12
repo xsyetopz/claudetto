@@ -9,7 +9,7 @@
 //   dotclaude-spec record <text>
 //
 // Every path is relative to the folder where the command runs, which is the root of the repository.
-// A command that reads `state.json` stops with a message on a `schema` that it does not know.
+// A command that reads `events.jsonl` stops with a message on a `schema` that it does not know.
 
 import { archiveCommand } from "./archive.ts";
 import { type Clock, consoleIo, type Io, systemClock } from "./io.ts";
