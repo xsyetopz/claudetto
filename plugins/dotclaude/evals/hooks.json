@@ -53,7 +53,7 @@
     "tokens": 0,
     "blocks": false,
     "allow": "plugins/dotclaude/tests/handoff.test.ts > a step of the main session adds no note to a later call",
-    "text": "plugins/dotclaude/tests/handoff.test.ts > a package that goes to `done` adds the hint to run `/handoff`"
+    "text": "plugins/dotclaude/tests/handoff.test.ts > a package that goes to `done` adds the hint"
   },
   "tool.call decide": {
     "requests": 0,
