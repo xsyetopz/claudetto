@@ -33,15 +33,15 @@ const sample = (
   },
 });
 
-test("`capOf` reads a whole number of at least one, and gives one for any other value", () => {
+test("`capOf` reads plain digits of at least one, and gives the Claude Code default of 20 for any other value", () => {
   expect(capOf("5")).toBe(5);
   expect(capOf("20")).toBe(20);
-  expect(capOf(undefined)).toBe(1);
-  expect(capOf("")).toBe(1);
-  expect(capOf("0")).toBe(1);
-  expect(capOf("-2")).toBe(1);
-  expect(capOf("1.5")).toBe(1);
-  expect(capOf("many")).toBe(1);
+  expect(capOf(undefined)).toBe(20);
+  expect(capOf("")).toBe(20);
+  expect(capOf("0")).toBe(20);
+  expect(capOf("-2")).toBe(20);
+  expect(capOf("1.5")).toBe(20);
+  expect(capOf("many")).toBe(20);
 });
 
 test("`windowRuns` gives the cap for an empty window and no runs for a full one", () => {
@@ -72,10 +72,9 @@ test("`windowRuns` gives the cap for a window with no usage, or one that has res
 test("`runsAllowed` gives the cap when no usage is known", () => {
   for (const cap of TIER_CAPS) {
     expect(runsAllowed(cap, null, NOW), `no sample ${cap}`).toBe(cap);
-    expect(
-      runsAllowed(cap, { savedAt: NOW }, NOW),
-      `no limits ${cap}`,
-    ).toBe(cap);
+    expect(runsAllowed(cap, { savedAt: NOW }, NOW), `no limits ${cap}`).toBe(
+      cap,
+    );
   }
 });
 

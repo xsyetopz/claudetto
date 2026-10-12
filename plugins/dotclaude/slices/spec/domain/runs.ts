@@ -3,7 +3,7 @@
 // The cap is the `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` of the tier, and the usage sample of the status line lowers it.
 // `/ship` adds no cap of its own.
 
-import { USAGE_SAMPLE_MAX_MS } from "../limits.ts";
+import { SUBAGENTS_DEFAULT, USAGE_SAMPLE_MAX_MS } from "../limits.ts";
 
 /** One limit window of the status object. `used_percentage` is in percent, and `resets_at` is in seconds. */
 export type LimitWindow = {
@@ -51,11 +51,11 @@ export const runsAllowed = (
   );
 };
 
-/** The cap of a value of `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`. A value that is not a whole number of at least one gives 1, so one run goes at a time. */
-export const capOf = (value: string | undefined): number => {
-  const cap = Number(value);
-  return Number.isInteger(cap) && cap >= 1 ? cap : 1;
-};
+/** The cap of a value of `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`. Claude Code reads only plain digits of a positive number, and it uses its default for any other value. */
+export const capOf = (value: string | undefined): number =>
+  value !== undefined && /^[0-9]+$/.test(value) && Number(value) >= 1
+    ? Number(value)
+    : SUBAGENTS_DEFAULT;
 
 /** The usage sample of the text of its file. It throws an `Error` on text that is not a usage sample. */
 export const parseSample = (text: string): UsageSample => {

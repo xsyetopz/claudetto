@@ -77,6 +77,7 @@ P13 starts after P32, so P32 defines its place.
 | Slice | Path now | Scope | Tracked | New path | Git rule |
 | - | - | - | - | - | - |
 | `handoff` (P13) | none yet | project | no | `.dotclaude/handoff/` | `.git/info/exclude`, line `**/.dotclaude/handoff/` |
+| `statusline` (P35) | none yet | project | no | `.dotclaude/rate-limits.json` | `.git/info/exclude`, line `**/.dotclaude/rate-limits.json` |
 
 The handoff belongs to one checkout and one session, so no team shares its rule.
 No file of the layout needs a `.gitignore` rule now.

@@ -15,3 +15,22 @@ export const usageSample = (input: StatusInput, now: number): string | null =>
   input.rate_limits
     ? JSON.stringify({ savedAt: now, rate_limits: input.rate_limits })
     : null;
+
+/**
+ * True when the `rate_limits` of `input` differ from those of the saved sample `saved`, or when `saved` is not a sample.
+ * The time of the sample does not count, so a sample with equal values is not written again.
+ */
+export const usageChanged = (
+  saved: string | null,
+  input: StatusInput,
+): boolean => {
+  if (saved === null) return true;
+  try {
+    const sample = JSON.parse(saved) as { rate_limits?: unknown };
+    return (
+      JSON.stringify(sample.rate_limits) !== JSON.stringify(input.rate_limits)
+    );
+  } catch {
+    return true;
+  }
+};

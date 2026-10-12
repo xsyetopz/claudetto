@@ -4,15 +4,23 @@
 import { expect, test } from "bun:test";
 import path from "node:path";
 import { RATE_LIMITS_FILE } from "../../../src/kernel/paths.ts";
+import type { FileReader } from "../../../src/kernel/ports.ts";
 import { main } from "../../../src/plugins/dotclaude/slices/statusline/adapters/cli.ts";
 import { depsFor, NOW, type Run, STATUS } from "./support.ts";
 
 const ROOT = "/work/dotclaude";
 
+/** A fake `FileReader` whose every file has the text `saved`, or no file when it is null. */
+const savedAs = (saved: string | null): FileReader => ({
+  read: async () => saved,
+  list: async () => [],
+});
+
 /** Runs the main status line on `input`, with a fake `write` that records each write. */
 const runWith = async (
   input: unknown,
   write: (file: string, text: string) => Promise<void> = async () => {},
+  files?: FileReader,
 ): Promise<{ run: Run; writes: [string, string][] }> => {
   const run: Run = { status: -1, out: [], err: [] };
   const writes: [string, string][] = [];
@@ -20,6 +28,7 @@ const runWith = async (
     [],
     depsFor(input, run, {
       env: { COLUMNS: "124", NO_COLOR: "1" },
+      ...(files ? { files } : {}),
       write: async (file, text) => {
         writes.push([file, text]);
         await write(file, text);
@@ -37,6 +46,28 @@ test("the main status line keeps the last `rate_limits` in the runtime file of t
   const sample = JSON.parse(text);
   expect(sample.savedAt).toBe(NOW);
   expect(sample.rate_limits).toStrictEqual(STATUS.rate_limits);
+});
+
+test("a sample with equal `rate_limits` makes no write, though it is older", async () => {
+  const saved = JSON.stringify({
+    savedAt: NOW - 120_000,
+    rate_limits: STATUS.rate_limits,
+  });
+  const { writes, run } = await runWith(STATUS, undefined, savedAs(saved));
+  expect(writes).toStrictEqual([]);
+  expect(run.out.length).toBe(1);
+});
+
+test("a sample with other `rate_limits` is written again", async () => {
+  const saved = JSON.stringify({
+    savedAt: NOW - 120_000,
+    rate_limits: { five_hour: { used_percentage: 5 } },
+  });
+  const { writes } = await runWith(STATUS, undefined, savedAs(saved));
+  expect(writes.length).toBe(1);
+  expect(JSON.parse(writes[0]?.[1] ?? "{}").rate_limits).toStrictEqual(
+    STATUS.rate_limits,
+  );
 });
 
 test("a status object with no `rate_limits` writes no file", async () => {

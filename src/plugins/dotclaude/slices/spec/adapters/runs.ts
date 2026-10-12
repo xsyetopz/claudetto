@@ -1,7 +1,12 @@
 // `dotclaude-spec runs`: prints the number of agent runs that a wave of `/ship` may start now.
 
 import { RATE_LIMITS_FILE } from "../../../../../kernel/paths.ts";
-import { capOf, parseSample, runsAllowed, type UsageSample } from "../domain/runs.ts";
+import {
+  capOf,
+  parseSample,
+  runsAllowed,
+  type UsageSample,
+} from "../domain/runs.ts";
 import type { Run } from "./run.ts";
 
 /** The usage sample of the project, or null when the status line has kept none. A file that is not a sample throws. */
