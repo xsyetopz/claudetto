@@ -2,7 +2,8 @@
 // The functions are pure, so the lab test and the hooks module share them.
 
 import type { ContextSkill, PromptComposeSection, Settings } from "claude-code";
-import { GAP_KEYS_MAX } from "../limits.ts";
+import type { RuleProblem } from "../../../../../kernel/rules.ts";
+import { GAP_KEYS_MAX, RULE_LINES_MAX } from "../limits.ts";
 import { planAutoMode } from "./automode.ts";
 import {
   ENGINE_SECTIONS,
@@ -105,10 +106,32 @@ export const isSeated = (policy: Settings | undefined) =>
   Object.keys(policy ?? {}).length > 0;
 
 /**
+ * The lines for the rule problems, at most `RULE_LINES_MAX`, and one line for the rest.
+ * The facts come from `checkRule` in the kernel: the caller reads the files, because this module has no I/O.
+ */
+export const ruleLines = (problems: readonly RuleProblem[]): string[] => {
+  const lines = problems.map((p) => {
+    if (p.kind === "yaml")
+      return `The rule \`${p.rule}\` has a \`paths\` front matter that does not parse, so Claude Code loads it in every session as a rule with no \`paths\`.`;
+    if (p.kind === "budget")
+      return `The rule \`${p.rule}\` has \`paths\` braces that expand to ${p.count} patterns, and Claude Code expands at most 1000, so a pattern of the rule matches no file.`;
+    return `The rule \`${p.rule}\` has the \`paths\` glob \`${p.glob}\`, which matches no tracked file, so the rule does not load for that glob.`;
+  });
+  const more = lines.length - RULE_LINES_MAX;
+  return more > 0
+    ? [
+        ...lines.slice(0, RULE_LINES_MAX),
+        `${more} more rule ${more > 1 ? "problems" : "problem"} exist.`,
+      ]
+    : lines;
+};
+
+/**
  * The lines of the drift check, in a fixed order.
  * The facts are `settings` (merged), `policy` (the managed source), `version`, `skills` (the listing entries), `sections`,
  * and `blocking` (the value of each variable that overrides the agent files).
  * `user` is the user settings, which hold the `autoMode` lists that count.
+ * `rules` are the problems of the rule files of the project.
  * A fact that the caller could not read is undefined, and it gives no line.
  * The result is empty when nothing differs.
  */
@@ -121,6 +144,7 @@ export const driftLines = ({
   blocking = {},
   root,
   user,
+  rules = [],
 }: {
   settings?: Settings | undefined;
   policy?: Settings | undefined;
@@ -132,6 +156,8 @@ export const driftLines = ({
   root?: string;
   /** The user settings. Claude Code reads the `autoMode` lists only from them. */
   user?: Settings | undefined;
+  /** The problems of the rule files of the project, from `checkRule`. */
+  rules?: readonly RuleProblem[];
 }): string[] => {
   const lines: string[] = [];
   if (isSeated(policy))
@@ -178,6 +204,7 @@ export const driftLines = ({
     lines.push(
       `The \`model\` and \`effort\` of the agent files do not apply, because ${names(set)} ${set.length > 1 ? "are" : "is"} set. The user can apply them by unsetting ${set.length > 1 ? "them" : "it"}.`,
     );
+  lines.push(...ruleLines(rules));
   return lines;
 };
 

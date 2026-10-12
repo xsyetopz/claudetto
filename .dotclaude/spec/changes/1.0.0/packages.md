@@ -150,7 +150,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Owns: `.dotclaude/spec/changes/1.0.0/evidence/claude-directory.md`.
   Agent: `implementer`, for the reason of P01c.
   Verify: each claim has a source, and each rules answer has one live session in `just sandbox`.
-- [ ] P29 `rules` slice: dotclaude uses `.claude/rules/`.
+- [x] P29 `rules` slice: dotclaude uses `.claude/rules/`.
   The setup and its drift check know each entry of P28, and `trim` and `surface` count rules as a source of context.
   Each slice part that adds guidance for some files only at runtime becomes a `paths:` rule, when P28 shows that a rule can do the same work.
   Deps: P28, P24, P26, P27, because they change the setup.

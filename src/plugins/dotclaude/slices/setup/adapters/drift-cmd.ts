@@ -1,5 +1,6 @@
 // The `drift` command of `dotclaude-setup`: the part of the drift check that a settings file answers.
-// It names the snippet values that the file of the scope lacks and the status line commands of another plugin folder.
+// It names the snippet values that the file of the scope lacks, the status line commands of another plugin folder,
+// and the rule files of `.claude/rules/` with a `paths` front matter that does not parse or a glob that matches no file.
 // The session facts, such as the version of Claude Code, come only from the check at `session.start`.
 
 import fs from "node:fs";
@@ -7,6 +8,7 @@ import { driftLines } from "../domain/drift.ts";
 import type { Json } from "../domain/types.ts";
 import { type Places, settingsFile } from "./files.ts";
 import type { Io } from "./io.ts";
+import { projectRuleProblems } from "./rules-check.ts";
 
 /** Run the `drift` command and return the exit status: 0 for no difference, 1 for a difference, and 2 for a bad call. */
 export const driftCommand = async (
@@ -31,6 +33,7 @@ export const driftCommand = async (
     settings,
     root,
     user: scope === "user" ? settings : undefined,
+    rules: await projectRuleProblems(projectDir),
   });
   io.log(`Target: ${file} (${scope} scope)`);
   io.log(lines.length ? "Differences:" : "No difference from the snippet.");
