@@ -191,7 +191,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P06.
   Owns: the `asks` slice and its tests.
   Verify: `just check`, `just lab`, and a test for each kind of protected file with one change that weakens a check and one that does not.
-- [ ] P14 Handoff cost: one handoff against one compaction on the same session, with `dotclaude-usage`.
+- [x] P14 Handoff cost: one handoff against one compaction on the same session, with `dotclaude-usage`.
   It only reports, in `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.
   Deps: P13.
   Agent: `investigator`.
