@@ -11,7 +11,7 @@ import type {
   Result,
   Scenario,
 } from "./formats.ts";
-import { fail, group, type Line, result, toLines } from "./parse-lines.ts";
+import { fail, group, type Line, result, toLines } from "./lines.ts";
 
 interface Block {
   header: Line;
@@ -144,7 +144,9 @@ const renamesOf = (
 };
 
 /** Parses a capability spec: `### Requirement:` blocks with `#### Scenario:` blocks. */
-export const parseSpec = (text: string): Result<CapabilitySpec, FormatError> => {
+export const parseSpec = (
+  text: string,
+): Result<CapabilitySpec, FormatError> => {
   const parsed = requirementsOf(toLines(text));
   return result({ requirements: parsed.value }, parsed.errors);
 };

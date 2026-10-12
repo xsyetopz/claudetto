@@ -9,7 +9,7 @@ import {
 import {
   parsePackage,
   parseTasks,
-} from "../../../../src/plugins/dotclaude/slices/spec/domain/parse-plan.ts";
+} from "../../../../src/plugins/dotclaude/slices/spec/domain/plan.ts";
 import {
   type Issue,
   validateDelta,
@@ -21,17 +21,22 @@ import {
 } from "../../../../src/plugins/dotclaude/slices/spec/domain/validate.ts";
 import {
   DELTA_TEXT,
+  must,
   PACKAGE_TEXT,
+  packageText,
   SPEC_TEXT,
   TASKS_TEXT,
-  must,
-  packageText,
   withLine,
 } from "./fixtures.ts";
 
 const rules = (issues: Issue[]): string[] => issues.map((i) => i.rule);
 
-const requirement = (name: string, text: string, when = "a", then = "b"): string =>
+const requirement = (
+  name: string,
+  text: string,
+  when = "a",
+  then = "b",
+): string =>
   `### Requirement: ${name}\n${text}\n\n#### Scenario: Run\n- **WHEN** ${when}\n- **THEN** ${then}\n`;
 
 const specOf = (text: string) => must(parseSpec(text));
@@ -51,7 +56,9 @@ test("`validateSpec` passes an EARS sentence with `WHILE` and `IF` forms", () =>
 
 test("`validateSpec` fails a requirement with no `SHALL`", () => {
   const text = requirement("Reader", "The reader gives the state.");
-  expect(rules(validateSpec(specOf(text)))).toStrictEqual(["requirement.no-shall"]);
+  expect(rules(validateSpec(specOf(text)))).toStrictEqual([
+    "requirement.no-shall",
+  ]);
 });
 
 test("`validateSpec` fails a requirement with no scenario", () => {

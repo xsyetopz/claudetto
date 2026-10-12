@@ -3,14 +3,14 @@
 
 import { expect, test } from "bun:test";
 import {
-  parseDelta,
-  parseSpec,
-} from "../../../../src/plugins/dotclaude/slices/spec/domain/parse.ts";
-import {
   applyDelta,
   type DeltaFailure,
 } from "../../../../src/plugins/dotclaude/slices/spec/domain/delta.ts";
 import type { CapabilitySpec } from "../../../../src/plugins/dotclaude/slices/spec/domain/formats.ts";
+import {
+  parseDelta,
+  parseSpec,
+} from "../../../../src/plugins/dotclaude/slices/spec/domain/parse.ts";
 import { must } from "./fixtures.ts";
 
 const block = (name: string, text = "The tool SHALL run."): string =>
@@ -25,9 +25,8 @@ const names = (spec: CapabilitySpec): string[] =>
 
 const deltaOf = (text: string) => must(parseDelta(text));
 
-const failuresOf = (
-  r: ReturnType<typeof applyDelta>,
-): DeltaFailure[] => (r.ok ? [] : r.errors);
+const failuresOf = (r: ReturnType<typeof applyDelta>): DeltaFailure[] =>
+  r.ok ? [] : r.errors;
 
 test("`applyDelta` gives the spec with the `ADDED` requirement at the end", () => {
   const r = applyDelta(base(), deltaOf(`## ADDED\n${block("Gamma")}`));

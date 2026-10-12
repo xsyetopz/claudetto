@@ -3,11 +3,14 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import { parseDelta, parseSpec } from "../../../../src/plugins/dotclaude/slices/spec/domain/parse.ts";
+import {
+  parseDelta,
+  parseSpec,
+} from "../../../../src/plugins/dotclaude/slices/spec/domain/parse.ts";
 import {
   parsePackage,
   parseTasks,
-} from "../../../../src/plugins/dotclaude/slices/spec/domain/parse-plan.ts";
+} from "../../../../src/plugins/dotclaude/slices/spec/domain/plan.ts";
 import { REPO } from "../../../support/repo.ts";
 import {
   DELTA_TEXT,
@@ -111,7 +114,9 @@ test("`parseTasks` reads each task with its `Verify:` line and its state", () =>
 });
 
 test("`parseTasks` gives a task with no `Verify:` line a null verify", () => {
-  const r = parseTasks("- [ ] 1.1 Write the parser\n- [ ] 1.2 Write more\n  Verify: `x`\n");
+  const r = parseTasks(
+    "- [ ] 1.1 Write the parser\n- [ ] 1.2 Write more\n  Verify: `x`\n",
+  );
   expect(r.ok).toBe(true);
   if (!r.ok) return;
   expect(r.value.map((t) => t.verify)).toStrictEqual([null, "`x`"]);
@@ -142,13 +147,13 @@ test("`parsePackage` reads the front matter and the five sections", () => {
     agent: "implementer",
   });
   expect(r.value.sections.Goal).toBe("Write the pure domain code.");
-  expect(r.value.sections.Boundaries).toBe(
-    "- Change only the domain folder.",
-  );
+  expect(r.value.sections.Boundaries).toBe("- Change only the domain folder.");
 });
 
 test("`parsePackage` reads a dep list", () => {
-  const r = parsePackage(withLine(PACKAGE_TEXT, "deps:", "deps: [P01a, \"P01b\"]"));
+  const r = parsePackage(
+    withLine(PACKAGE_TEXT, "deps:", 'deps: [P01a, "P01b"]'),
+  );
   expect(r.ok && r.value.front.deps).toStrictEqual(["P01a", "P01b"]);
 });
 
@@ -160,7 +165,9 @@ test("`parsePackage` gives the line of a missing front matter key", () => {
 });
 
 test("`parsePackage` gives the line of an unknown front matter key", () => {
-  const r = parsePackage(withLine(PACKAGE_TEXT, "agent:", "agent: implementer\nlane: doing"));
+  const r = parsePackage(
+    withLine(PACKAGE_TEXT, "agent:", "agent: implementer\nlane: doing"),
+  );
   expect(lineErrors(r)).toStrictEqual([7]);
 });
 
@@ -193,7 +200,9 @@ test("`parseTasks` reads the real task list `packages.md`", async () => {
   expect(r.ok).toBe(true);
   if (!r.ok) return;
   const p02 = r.value.find((t) => t.id === "P02");
-  expect(p02?.verify).toBe("`just test tests/dotclaude/spec/domain`, on a fixture for each format and each delta rule.");
+  expect(p02?.verify).toBe(
+    "`just test tests/dotclaude/spec/domain`, on a fixture for each format and each delta rule.",
+  );
   const p00 = r.value.find((t) => t.id === "P00");
   expect(p00?.verify).toBeNull();
 });

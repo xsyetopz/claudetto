@@ -121,7 +121,9 @@ export const packageText = (
   );
 
 /** The value of a parse that must pass; a failed parse throws, so the test stops there. */
-export const must = <T>(r: { ok: true; value: T } | { ok: false; errors: unknown[] }): T => {
+export const must = <T>(
+  r: { ok: true; value: T } | { ok: false; errors: unknown[] },
+): T => {
   if (!r.ok) {
     throw new Error(`the parse failed: ${JSON.stringify(r.errors)}`);
   }

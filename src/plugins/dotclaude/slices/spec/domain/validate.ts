@@ -53,18 +53,30 @@ export const validateRequirement = (req: Requirement): Issue[] => {
   }
   if (req.scenarios.length === 0) {
     issues.push(
-      issue("requirement.no-scenario", req.name, "the requirement has no scenario"),
+      issue(
+        "requirement.no-scenario",
+        req.name,
+        "the requirement has no scenario",
+      ),
     );
   }
   for (const scenario of req.scenarios) {
     if (!scenario.whenLines.some((c) => c !== "")) {
       issues.push(
-        issue("scenario.no-when", scenario.name, "the scenario has no WHEN line"),
+        issue(
+          "scenario.no-when",
+          scenario.name,
+          "the scenario has no WHEN line",
+        ),
       );
     }
     if (!scenario.thenLines.some((c) => c !== "")) {
       issues.push(
-        issue("scenario.no-then", scenario.name, "the scenario has no THEN line"),
+        issue(
+          "scenario.no-then",
+          scenario.name,
+          "the scenario has no THEN line",
+        ),
       );
     }
   }
@@ -95,7 +107,9 @@ export const validateTasks = (tasks: Task[]): Issue[] => {
   const issues: Issue[] = [];
   tasks.forEach((task, i) => {
     if (!task.verify) {
-      issues.push(issue("task.no-verify", task.id, "the task has no Verify line"));
+      issues.push(
+        issue("task.no-verify", task.id, "the task has no Verify line"),
+      );
     }
     if (tasks.findIndex((t) => t.id === task.id) !== i) {
       issues.push(issue("task.duplicate-id", task.id, "the id is repeated"));
@@ -120,7 +134,9 @@ export const validatePackage = (pkg: Package): Issue[] => {
   }
   for (const name of PACKAGE_SECTIONS) {
     if (sections[name] === "") {
-      issues.push(issue("package.empty-section", id, `section \`${name}\` is empty`));
+      issues.push(
+        issue("package.empty-section", id, `section \`${name}\` is empty`),
+      );
     }
   }
   if (front.owns.length === 0 || front.owns.some((o) => o === "")) {
@@ -128,10 +144,14 @@ export const validatePackage = (pkg: Package): Issue[] => {
   }
   for (const entry of front.owns) {
     if (WILDCARD.test(entry)) {
-      issues.push(issue("package.owns-wildcard", id, `\`${entry}\` has a wildcard`));
+      issues.push(
+        issue("package.owns-wildcard", id, `\`${entry}\` has a wildcard`),
+      );
     }
     if (entry === "plugins" || entry.startsWith("plugins/")) {
-      issues.push(issue("package.owns-plugins", id, `\`${entry}\` is under plugins`));
+      issues.push(
+        issue("package.owns-plugins", id, `\`${entry}\` is under plugins`),
+      );
     }
   }
   return issues;
@@ -150,7 +170,13 @@ export const validateDeps = (packages: Package[]): Issue[] => {
   for (const pkg of packages) {
     for (const dep of pkg.front.deps) {
       if (!known.has(dep)) {
-        issues.push(issue("plan.dep-missing", pkg.front.id, `dep \`${dep}\` does not exist`));
+        issues.push(
+          issue(
+            "plan.dep-missing",
+            pkg.front.id,
+            `dep \`${dep}\` does not exist`,
+          ),
+        );
       }
     }
   }
@@ -208,7 +234,11 @@ export const validateWave = (packages: Package[]): Issue[] =>
       .slice(i + 1)
       .filter((b) => ownsOverlap(a.front.owns, b.front.owns))
       .map((b) =>
-        issue("wave.owns-overlap", `${a.front.id} ${b.front.id}`, "the owns entries overlap"),
+        issue(
+          "wave.owns-overlap",
+          `${a.front.id} ${b.front.id}`,
+          "the owns entries overlap",
+        ),
       ),
   );
 

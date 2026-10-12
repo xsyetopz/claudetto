@@ -1,7 +1,12 @@
 // The delta rules of one capability: a delta file applied to its spec.
 // Pure: the input spec is not changed, and the result is a new spec or the failures.
 
-import type { CapabilitySpec, DeltaFile, Requirement, Result } from "./formats.ts";
+import type {
+  CapabilitySpec,
+  DeltaFile,
+  Requirement,
+  Result,
+} from "./formats.ts";
 
 export type DeltaSection = "RENAMED" | "REMOVED" | "MODIFIED" | "ADDED";
 
@@ -23,7 +28,8 @@ export const applyDelta = (
 ): Result<CapabilitySpec, DeltaFailure> => {
   const failures: DeltaFailure[] = [];
   let list: Requirement[] = [...spec.requirements];
-  const indexOf = (name: string): number => list.findIndex((r) => r.name === name);
+  const indexOf = (name: string): number =>
+    list.findIndex((r) => r.name === name);
   const fail = (
     section: DeltaSection,
     name: string,

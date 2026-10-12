@@ -10,15 +10,9 @@ import {
   type Result,
   type Task,
 } from "./formats.ts";
-import { fail, group, type Line, result, toLines } from "./parse-lines.ts";
+import { fail, group, type Line, result, toLines } from "./lines.ts";
 
-const FRONT_KEYS: readonly string[] = [
-  "id",
-  "deps",
-  "owns",
-  "verify",
-  "agent",
-];
+const FRONT_KEYS: readonly string[] = ["id", "deps", "owns", "verify", "agent"];
 
 const TASK = /^- \[( |x)\] (\S+) (\S.*)$/;
 const VERIFY = /^\s+Verify:\s*(.*)$/;
@@ -84,7 +78,10 @@ const flowList = (value: string): string[] | null => {
 const frontOf = (
   lines: Line[],
   close: number,
-): { raw: Map<string, { value: string; line: number }>; errors: FormatError[] } => {
+): {
+  raw: Map<string, { value: string; line: number }>;
+  errors: FormatError[];
+} => {
   const errors: FormatError[] = [];
   const raw = new Map<string, { value: string; line: number }>();
   for (const line of lines.slice(1, close)) {
@@ -148,7 +145,10 @@ export const parsePackage = (text: string): Result<Package, FormatError> => {
   const lines = toLines(text);
   const close = lines.findIndex((l, i) => i > 0 && l.text === "---");
   if (lines[0] === undefined || lines[0].text !== "---" || close < 0) {
-    return { ok: false, errors: [fail(1, "no front matter between `---` lines")] };
+    return {
+      ok: false,
+      errors: [fail(1, "no front matter between `---` lines")],
+    };
   }
   const front = frontOf(lines, close);
   const errors: FormatError[] = [...front.errors];
@@ -159,7 +159,8 @@ export const parsePackage = (text: string): Result<Package, FormatError> => {
       errors.push(fail(closeLine, `missing front matter key \`${key}\``));
     }
   }
-  const scalar = (key: string): string => unquote(front.raw.get(key)?.value ?? "");
+  const scalar = (key: string): string =>
+    unquote(front.raw.get(key)?.value ?? "");
   const list = (key: string): string[] => {
     const entry = front.raw.get(key);
     if (entry === undefined) {

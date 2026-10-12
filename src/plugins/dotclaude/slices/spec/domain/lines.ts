@@ -23,7 +23,10 @@ export const fail = (line: number, message: string): FormatError => ({
 });
 
 /** Gives the value, or the errors sorted by line. */
-export const result = <T>(value: T, errors: FormatError[]): Result<T, FormatError> =>
+export const result = <T>(
+  value: T,
+  errors: FormatError[],
+): Result<T, FormatError> =>
   errors.length === 0
     ? { ok: true, value }
     : { ok: false, errors: [...errors].sort((a, b) => a.line - b.line) };

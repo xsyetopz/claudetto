@@ -42,7 +42,7 @@ Critical path: P01a, P01b, P05 and P06, P13, P14, P15, P16.
   Owns: `spec/changes/1.0.0/evidence/inventory.md`.
   Agent: `implementer`, for the reason of P01c.
   Verify: `dotclaude-start --compare` on one start with the switches and one start without them.
-- [ ] P02 Spec formats: the parser, the validator, and the delta rules as pure code in `slices/spec/domain/`.
+- [x] P02 Spec formats: the parser, the validator, and the delta rules as pure code in `slices/spec/domain/`.
   It has no dep, because the types of `state.json` stay in `src/kernel/spec-store.ts` (P01a), and P02 holds only the Markdown formats.
   Owns: `src/plugins/dotclaude/slices/spec/domain/`, `tests/dotclaude/spec/domain/`.
   Verify: `just test tests/dotclaude/spec/domain`, on a fixture for each format and each delta rule.
