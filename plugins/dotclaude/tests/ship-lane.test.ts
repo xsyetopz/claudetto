@@ -9,7 +9,7 @@ import { type Engine, expect, test } from "claude-code/testing";
 const BRIEF = "---\nid: P33\ndeps: [P19]\n---\n\n# P33 Zero token cost";
 
 /** The stubs of one test: the engine answers the spawn, and `process.run` lists each `lane` call. */
-const stub = (on: On, agentId = "a1") => {
+const stub = (on: On, agentId = "a1", exitCode = 0) => {
   const lanes: string[] = [];
   on("agent.spawn", () => ({ model: "claude-sonnet-5-5", agentId }));
   on("turn.complete", (_$, e) => ({ text: e.answer }));
@@ -17,9 +17,9 @@ const stub = (on: On, agentId = "a1") => {
     lanes.push(e.argv.slice(3).join(" "));
     return {
       value: {
-        exitCode: 0,
+        exitCode,
         stdout: "",
-        stderr: "",
+        stderr: exitCode === 0 ? "" : "lane refused",
         isStdoutTruncated: false,
         isStderrTruncated: false,
       },
@@ -40,13 +40,17 @@ const spawn = ($: Engine, prompt: string, subagentType = "implementer") =>
     fork: false,
   });
 
-const end = ($: Engine, agentId: string) =>
+const end = (
+  $: Engine,
+  agentId: string,
+  reason: "answer" | "aborted" | "error" = "answer",
+) =>
   $.turn.complete({
     answer: "done",
     durationMs: 1,
-    isAborted: false,
+    isAborted: reason === "aborted",
     turnId: "t",
-    reason: "answer",
+    reason,
     agentId,
   });
 
@@ -80,4 +84,31 @@ test("the end of another subagent moves no lane", async ($: Engine, on: On) => {
   await spawn($, BRIEF);
   await end($, "other");
   expect(lanes).toEqual(["lane P33 doing"]);
+});
+
+test("an aborted or errored subagent leaves its lane `doing` and logs it", async ($: Engine, on: On) => {
+  const lanes = stub(on);
+  const logs: string[] = [];
+  on("ui.log", (_$, e, next) => (logs.push(e.text), next(e)));
+  await spawn($, BRIEF);
+  await end($, "a1", "aborted");
+  await spawn($, BRIEF.replace("P33", "P34"));
+  await end($, "a1", "error");
+  expect(lanes).toEqual(["lane P33 doing", "lane P34 doing"]);
+  expect(logs.length).toBe(2);
+});
+
+test("a prompt that quotes `id: P12` in its body moves no lane", async ($: Engine, on: On) => {
+  const lanes = stub(on);
+  await spawn($, "Read the brief.\nid: P12\nThen stop.");
+  await spawn($, "---\ntitle: x\n---\nid: P12");
+  expect(lanes).toEqual([]);
+});
+
+test("a `lane` run that exits 1 is logged", async ($: Engine, on: On) => {
+  stub(on, "a1", 1);
+  const logs: string[] = [];
+  on("ui.log", (_$, e, next) => (logs.push(e.text), next(e)));
+  await spawn($, BRIEF);
+  expect(logs.some((t) => t.includes("lane refused"))).toBe(true);
 });

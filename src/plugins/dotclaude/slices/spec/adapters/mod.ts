@@ -30,12 +30,17 @@ const moveLane = async (
   lane: "doing" | "review",
 ): Promise<void> => {
   try {
-    await $.process.run([
+    const run = await $.process.run([
       "bun",
       "--no-env-file",
       `${$.plugin.root}/bin/dotclaude-spec`,
       ...laneArgs(pkg, lane),
     ]);
+    if (run.exitCode !== 0)
+      $.ui.log(
+        `dotclaude-spec lane ${pkg} ${lane} failed with exit status ${run.exitCode}: ${run.stderr.trim()}`,
+        { to: "debug" },
+      );
   } catch {
     $.ui.log(`dotclaude-spec lane ${pkg} ${lane} did not run`, {
       to: "debug",
@@ -53,12 +58,19 @@ export const onSpawn: Handler<"agent.spawn"> = async ($, e, next) => {
   return out;
 };
 
-/** Moves the package of a subagent that ended to `review`. */
+/** Moves the package of a subagent that answered to `review`. Another end leaves it in `doing`. */
 export const onComplete: Handler<"turn.complete"> = async ($, e, next) => {
   const out = await next(e);
   const pkg = e.agentId ? running.get(e.agentId) : undefined;
   if (e.agentId === undefined || pkg === undefined) return out;
   running.delete(e.agentId);
+  if (e.reason !== "answer") {
+    $.ui.log(
+      `${pkg} stays in doing, because the subagent ended with reason ${e.reason}`,
+      { to: "debug" },
+    );
+    return out;
+  }
   await moveLane($, pkg, "review");
   return out;
 };
