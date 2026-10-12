@@ -40,7 +40,9 @@ Problem: the start of a session needs a bound that a check can test.
 
 Choice: `START_TOKENS` in `tools/limits.ts` holds the bound, with the value `9_960`.
 `just measure` runs `tools/measure.ts`, which calls `dotclaude-start` of the plugin `dotclaude-sessions` with `--bound START_TOKENS`.
-`measure.ts` writes no file, because a baseline file would be a format that dotclaude made up (see [D35](Decisions-Settings#d35-no-proprietary-formats)).
+`measure.ts` writes no file.
+The reason was D35, which kept out each format that dotclaude made up.
+1.0.0 reverses D35 ([Decisions-Reversed](Decisions-Reversed#settings)), but `measure.ts` still writes no baseline file.
 
 Evidence:
 
