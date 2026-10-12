@@ -14,7 +14,7 @@ The code is in the `decide` slice (`src/plugins/dotclaude/slices/decide/`).
 | Skills | None |
 | Bin | `dotclaude-decide`, which runs on Bun (`adapters/cli.ts`) |
 | Tool | `mcp__dotclaude__second_opinion`, registered at each session start, with or without the key |
-| Hooks | `session.start` registers the tool. `tool.call` serves the tool. A second `tool.call` adds the pick to `AskUserQuestion`. See [Hooks](Hooks). |
+| Hooks | `session.start` registers the tool. `tool.call` serves the tool. A second `tool.call` adds the pick to `AskUserQuestion`. See [Hooks](Hook-Events). |
 | Options | None for the tool. The only input is the environment variable `TYPESAFE_API_KEY`. |
 
 ## Before you begin
@@ -137,6 +137,6 @@ The `dotclaude-decide` command exits with these codes (`EXIT` in `adapters/cli.t
 
 ## Related pages
 
-- [Hooks](Hooks) lists the hooks of the core plugin.
+- [Hooks](Hook-Events) lists the hooks of the core plugin.
 - [Prompt surface](Prompt-Surface) describes the text that the plugin adds to the prompt.
 - [Decisions](Decisions) gives the choices behind the tool.
