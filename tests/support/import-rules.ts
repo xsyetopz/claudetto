@@ -110,7 +110,7 @@ export const checkModuleGraph = (files: Files): string[] => {
     const code = stripComments(source);
     if (/(?<![\w.$])Bun\b/.test(code))
       bad.push(`${file}: Bun global in the module graph`);
-    for (const m of code.matchAll(/(?<![\w.$])on\(\s*(?!["'])/g))
+    for (const m of code.matchAll(/(?<![\w.$])on\((?!\s*["'])/g))
       bad.push(
         `${file}: on() event name is not a string literal at ${m.index}`,
       );
