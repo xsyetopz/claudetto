@@ -1,15 +1,25 @@
 # dotclaude
 
-dotclaude is a Claude Code plugin for software engineering on official extension points.
-It turns compaction off, sets a 300K context window, asks only before dangerous commands,
-selects a short output style, changes the coding sections of the system prompt,
-and keeps the state of long work in the spec store, `.dotclaude/spec/`, across `/clear`.
-It optimizes for the most quality per unit of usage quota, not for speed.
+dotclaude changes Claude Code through its official extension points: settings, hooks, skills, agents, and an output style.
+It does not patch the Claude Code binary.
+Its goal is the highest quality for the lowest token cost.
 
-[The wiki](https://github.com/xsyetopz/dotclaude/wiki) tells what each part does and why.
-[Core plugin](https://github.com/xsyetopz/dotclaude/wiki/Architecture) lists each part of the core plugin with its file and bound,
-and the [overview](https://github.com/xsyetopz/dotclaude/wiki/Home) links the page of each plugin.
-[Design](https://github.com/xsyetopz/dotclaude/wiki/Design) gives the source of each design claim.
+The [wiki](https://github.com/xsyetopz/dotclaude/wiki) explains each part and the reason for it.
+Start with the [Home](https://github.com/xsyetopz/dotclaude/wiki/Home) page, or read the [Install](https://github.com/xsyetopz/dotclaude/wiki/Install) page for the full setup.
+
+## Plugins
+
+dotclaude is a marketplace with one core plugin and five add-on plugins.
+Each add-on works without the core plugin.
+
+| Plugin | What it gives |
+| --- | --- |
+| `dotclaude` | The core: the settings snippet, the status line, the output style, six agents, six skills, the guard and asks hooks, the spec store, and the `second_opinion` tool. |
+| `dotclaude-codegraph` | The code graph of a project, from the CLI `codegraph`. |
+| `dotclaude-browser` | The `drive-web-browser` skill, and a headless browser search for each `WebSearch` call. |
+| `dotclaude-docs` | The `docs` skill, with current library docs from the CLI `ctx7`. |
+| `dotclaude-sessions` | The `start-cost` and `usage` skills, which measure the session start and the usage. |
+| `dotclaude-lab` | Tools for plugin authors: the sandbox, capture, schema, and eval compare. |
 
 ## Install
 
@@ -18,75 +28,82 @@ and the [overview](https://github.com/xsyetopz/dotclaude/wiki/Home) links the pa
 /plugin install dotclaude@dotclaude
 ```
 
-Requirements: Claude Code 2.1.296, [Bun](https://bun.sh) 1.4.3 or later on `PATH` for the status line and the setup command,
-[Node.js](https://nodejs.org) on `PATH` for the npm installs of the add-ons, and git.
-The hooks module uses the mods API of Claude Code, which can change between releases,
-so this release is tested only on 2.1.296.
+Then run `/dotclaude:setup`, and restart Claude Code.
+The setup skill shows each change to your settings file, and it writes the change after you confirm.
 
-## Setup
+Requirements:
 
-A plugin settings file can set only `agent` and `subagentStatusLine`,
-so dotclaude gives the other keys as a plain [settings snippet](https://github.com/xsyetopz/dotclaude/wiki/Settings-Snippet).
-The `/dotclaude:setup` skill shows each change of the snippet, and it writes the change to the settings file that you pick after your yes.
-You can also copy the keys that you want into your own `settings.json`, and restart Claude Code.
+- Claude Code `2.1.296` or later.
+  dotclaude is tested only on `2.1.296`.
+- `git`.
+- [Bun](https://bun.sh) `1.4.3` or later on `PATH`, for the status line, the setup command, and the `second_opinion` tool.
+- [Node.js](https://nodejs.org) on `PATH`, for the npm installs of the add-ons.
 
-## Parts
+A plugin cannot set permissions, environment variables, or models.
+So the core plugin gives these settings as a [settings snippet](https://github.com/xsyetopz/dotclaude/wiki/Settings-Snippet).
+The setup skill applies the snippet for you.
+You can also copy the keys that you want into your own `settings.json`.
 
-| Part | What it does |
+## What the core plugin changes
+
+| Part | Effect |
 | --- | --- |
-| No compaction | `autoCompactEnabled: false` and `DISABLE_COMPACT=1`, which also turns off `/compact`. |
-| Window | `CLAUDE_CODE_MAX_CONTEXT_TOKENS=300000` and `CLAUDE_CODE_AUTO_COMPACT_WINDOW=300000`. At the limit the session stops, and you run `/clear`. |
-| No auto memory | `autoMemoryEnabled: false`. The spec store holds the state. |
-| Output style | The `outputStyle` key of the snippet selects `dotclaude:Concise`. The style is not forced, so your `outputStyle` setting stays in charge. |
-| Permissions | Normal work passes. `sudo`-like work asks (`soft_deny`). Destructive actions on a database, the system, git, cloud resources, or backups are forbidden always (`hard_deny`), and the `guard` hook denies the literal forms. Deny secret reads. The `asks` hook asks only when a change weakens a check. |
-| Sandbox | Bash runs in the sandbox, with network access only to GitHub and the package registries. |
-| Guard | One hooks module asks before the first call to a GitHub repository of another owner with an AI policy. |
-| Status line | Model, effort, context against the window (yellow at 75%, red at 90%), the 5-hour limit, and the last spec change that is not finished, with its done and total packages. |
-| Agents | `investigator`, `implementer`, `debugger`, `reviewer`, `planner`, `researcher`. |
-| Checks | The CLI `dotclaude-run-checks` runs a batch of check commands with no model turn. |
-| Handoff | At 60% of the window, a hint tells you to run `/handoff`, which writes a handoff file to `.dotclaude/handoff/`. |
-| Skills | `/dotclaude:handoff`, `/dotclaude:hotfix`, `/dotclaude:rules-creator`, `/dotclaude:setup`, `/dotclaude:ship`, and `/dotclaude:spec`. |
+| Compaction | Off. `autoCompactEnabled` is `false`, and `DISABLE_COMPACT` is `1`, which also turns off `/compact`. |
+| Context window | `CLAUDE_CODE_MAX_CONTEXT_TOKENS` and `CLAUDE_CODE_AUTO_COMPACT_WINDOW` are `300000`. A session that reaches the limit stops, and you run `/clear`. |
+| Memory | `autoMemoryEnabled` is `false`. The spec store holds the state instead. |
+| Output style | `outputStyle` is `dotclaude:Concise`. Your own `outputStyle` setting can change it. |
+| Permissions | Normal work passes. Work like `sudo` asks. Destructive actions are denied by `autoMode.hard_deny`. Reads of secret files are denied. |
+| Sandbox | Bash runs in the sandbox. Its network reaches GitHub and the package registries only. |
+| Guard | Asks before the first call of a session to a GitHub repository of another owner that has an AI policy file. |
+| Asks | Asks only when a change weakens a check. It never asks for a read. |
+| Status line | The folder, git, model, effort, context against the window, cost, the 5-hour, 7-day, and spend limits, and the progress of a spec change. The percent turns yellow at `75%` and red at `90%`. |
+| Handoff | With the default `manual` value of `mainHandover`, a hint at `60%` of the window tells you to run `/handoff`. |
+| Checks | The CLI `dotclaude-run-checks` runs a batch of check commands, with no model call. |
 
-The plugin has no options.
-To drop a part, leave its key out of your `settings.json`.
+The core plugin has one option, `mainHandover`.
+Its values are `auto`, `manual`, and `off`, and the default is `manual`.
 
-## Second opinion
+## Agents and models
 
-The core plugin has the `second_opinion` tool, which asks [TypeSafe Jev](https://docs.typesafe.ai/introduction) for probabilities on a decision.
-Export `TYPESAFE_API_KEY` before Claude Code starts.
-Each call sends the data of the decision to the TypeSafe API.
-With no key, or when Jev gives no answer, a small Claude model answers instead, and the result says that the answer is not from Jev.
-See [Second opinion](https://github.com/xsyetopz/dotclaude/wiki/Second-Opinion).
-
-## Models and effort
-
-| Model | Roles | Effort |
+| Agent | Model | Effort |
 | --- | --- | --- |
-| Opus 5.5 | main session, `planner`, `reviewer` | the default of the model, `high` for the two agents |
-| Sonnet 5.5 | `researcher`, `implementer`, `debugger` | `medium`, `debugger` `high` |
-| Haiku 5.5 | `investigator` | `medium` |
+| `planner`, `reviewer` | `claude-opus-5-5` | `high` |
+| `debugger` | `claude-sonnet-5-5` | `high` |
+| `implementer`, `researcher` | `claude-sonnet-5-5` | `medium` |
+| `investigator` | `claude-haiku-5-5` | `medium` |
 
-The settings snippet sets no effort level, so each model keeps its default.
-`maxEffortLevel` is `max`, so `/effort` can go up to `max` for a hard check.
+The main session uses `claude-opus-5-5`, from the settings snippet.
+The `maxEffortLevel` setting is `max`, so `/effort` can go up to `max` for a hard check.
+See [Agents](https://github.com/xsyetopz/dotclaude/wiki/Agents).
+
+The six skills are `/dotclaude:handoff`, `/dotclaude:hotfix`, `/dotclaude:rules-creator`, `/dotclaude:setup`, `/dotclaude:ship`, and `/dotclaude:spec`.
+See [Skills](https://github.com/xsyetopz/dotclaude/wiki/Skills).
 
 ## Long work without compaction
 
-Each turn reads the whole context again, so the size of the context sets the cost of a turn.
+Each model call reads the whole context again, so the size of the context sets the cost of each turn.
 
-- For work of more than one session, start a spec change with the `spec` skill and `dotclaude-spec new <id>`.
-  After `/clear`, `dotclaude-spec next <id>` prints the brief of the next package.
-- Before `/clear`, mark the finished tasks in `change.md` and put the reason and the decisions there too.
-  At 60% of the window, with the default `mainHandover` of `manual`, a hint tells you to run `/handoff`.
-- Change the model only right after `/clear`,
-  because a new model starts a new prompt cache.
-  An effort change keeps the cache.
+- For work that takes more than one session, run the `spec` skill with an id, or run `dotclaude-spec new <id>`.
+- Before `/clear`, run `dotclaude-spec status <id>`.
+  In the fresh session, run `dotclaude-spec next <id>`, which prints the brief of the next package.
+- A model change rebuilds the prompt cache.
+  An effort change keeps the prompt cache.
 
-See [Context bound](https://github.com/xsyetopz/dotclaude/wiki/Context-Bound)
+See [Context and handoff](https://github.com/xsyetopz/dotclaude/wiki/Context-And-Handoff)
 and [Spec store](https://github.com/xsyetopz/dotclaude/wiki/Spec-Store).
+
+## Second opinion
+
+The `second_opinion` tool of the core plugin asks [TypeSafe Jev](https://docs.typesafe.ai/introduction) for a pick and a confidence on a decision.
+Export `TYPESAFE_API_KEY` before Claude Code starts.
+Each call sends the data of the decision to the TypeSafe API.
+With no key, or when Jev gives no answer, a small Claude model answers instead.
+The result says that the answer is not from Jev.
+See [Second opinion](https://github.com/xsyetopz/dotclaude/wiki/Second-Opinion).
 
 ## Add-on plugins
 
-Each add-on works without the core plugin.
+Install each add-on that you need.
 
 ```text
 /plugin install dotclaude-codegraph@dotclaude
@@ -96,19 +113,18 @@ Each add-on works without the core plugin.
 /plugin install dotclaude-lab@dotclaude
 ```
 
-- `dotclaude-codegraph` gives Claude the code graph of a project from the CodeGraph CLI `codegraph`.
-  It needs `codegraph` on `PATH` and a project index from `codegraph init -y`.
-  In an indexed project, it syncs the index and adds one line about the graph at session start,
-  and adds no MCP server.
+- `dotclaude-codegraph` needs the CLI `codegraph` on `PATH`, and an index that `codegraph init -y` builds in the project.
+  It syncs the index at session start, and it adds no MCP server.
   See [Code graph](https://github.com/xsyetopz/dotclaude/wiki/Code-Graph).
-- `dotclaude-browser` has the `drive-web-browser` skill.
-  It uses `agent-browser`, and its `backend` option selects CloakBrowser for sites with bot detection.
-  It also answers each `WebSearch` call with a search in the headless browser.
-- `dotclaude-docs` has the `docs` skill,
-  which gets current library docs with the Context7 CLI `ctx7` and works with no key.
-- `dotclaude-sessions` has the `start-cost` and `usage` skills and two bins.
-  They measure the start of a session and the usage of each run.
-- `dotclaude-lab` has the tools for plugin authors: the sandbox, capture, schema, and eval compare.
+- `dotclaude-browser` uses `agent-browser`.
+  Its `backend` option can select CloakBrowser, for sites with bot detection.
+  See [Browser](https://github.com/xsyetopz/dotclaude/wiki/Browser).
+- `dotclaude-docs` needs no key.
+  See [Library docs](https://github.com/xsyetopz/dotclaude/wiki/Library-Docs).
+- `dotclaude-sessions` measures the start of a session and the usage of each run.
+  See [Sessions](https://github.com/xsyetopz/dotclaude/wiki/Sessions).
+- `dotclaude-lab` is for plugin authors, and it works alone.
+  See [Lab](https://github.com/xsyetopz/dotclaude/wiki/Lab).
 
 ## Update
 
@@ -117,17 +133,21 @@ claude plugin marketplace update dotclaude
 claude plugin update dotclaude@dotclaude
 ```
 
-1. Restart Claude Code, because a running session keeps the old hooks and agents.
-2. Read the new entry in [`CHANGELOG.md`](CHANGELOG.md).
-   Before 1.0, a release can change or remove behavior without a compatibility layer.
-3. Compare your `settings.json` with the [settings snippet](https://github.com/xsyetopz/dotclaude/wiki/Settings-Snippet).
-   The drift check at session start reports some differences.
+Run the `claude plugin update` line again for each add-on that you installed, with its name in place of `dotclaude`.
+Then restart Claude Code, read the [changelog](CHANGELOG.md), and run `/dotclaude:setup` again.
+The status line commands hold the path of the plugin version, so each update needs the new setup run.
 
-To try an unreleased checkout, run `claude --plugin-dir /path/to/dotclaude/plugins/dotclaude`.
+To try an unreleased checkout, run:
+
+```bash
+claude --plugin-dir /path/to/dotclaude/plugins/dotclaude
+```
 
 ## Development
 
-`just check` runs lint, tests, plugin validation, and the hook lab.
+Edit the source in `src/`, and run `just generate`.
+Do not edit `plugins/` by hand.
+`just check` runs the lint, the type check, the check of the generated files, the tests, the validation, and the hook labs.
 `just sandbox` runs Claude Code with this checkout in a separate config.
 See [Development](https://github.com/xsyetopz/dotclaude/wiki/Development)
 and [Sandbox](https://github.com/xsyetopz/dotclaude/wiki/Sandbox).
