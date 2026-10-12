@@ -9,8 +9,8 @@ Each number has a source in the code, in an evidence file, or in a binary fact w
 
 ## D6 Status line
 
-The problem is that the status line shows the session state under the prompt, and it must
-stay small and read no file of Claude Code that the docs do not name.
+The problem is that the status line shows the session state under the prompt.
+It must stay small, and it must read no file of Claude Code that the docs do not name.
 
 The choice is one `statusLine` command, the documented extension point (see the table in
 `.dotclaude/spec/changes/1.0.0/design.md`).
