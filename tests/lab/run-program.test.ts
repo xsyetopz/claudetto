@@ -6,7 +6,7 @@ import { runProgram as core } from "../../plugins/dotclaude/lib/run-program.ts";
 import {
   runProgram as lab,
   type Spawn,
-} from "../../plugins/dotclaude-lab/lib/run-program.ts";
+} from "../../src/plugins/dotclaude-lab/slices/sandbox/adapters/run-program.ts";
 
 const platform = Object.getOwnPropertyDescriptor(
   process,
