@@ -1,7 +1,7 @@
 ---
 id: P33
 deps: [P19, P28, P34]
-owns: [".dotclaude/spec/changes/1.0.0/evidence/zero-token.md", "src/plugins/dotclaude/slices/spec/", "tests/dotclaude/spec/", "src/plugins/dotclaude/slices/setup/", "tests/dotclaude/setup/", "src/plugins/dotclaude-sessions/slices/usage/", "src/plugins/dotclaude-sessions/slices/start-cost/", "tests/sessions/", "src/plugins/dotclaude-lab/slices/eval-compare/", "tests/lab/"]
+owns: [".dotclaude/spec/changes/1.0.0/evidence/zero-token.md", "src/kernel/skill-command.ts", "src/plugins/dotclaude/slices/spec/", "tests/dotclaude/spec/", "src/plugins/dotclaude/slices/setup/", "tests/dotclaude/setup/", "src/plugins/dotclaude-sessions/slices/usage/", "src/plugins/dotclaude-sessions/slices/start-cost/", "tests/sessions/", "src/plugins/dotclaude-lab/slices/eval-compare/", "tests/lab/"]
 verify: just check
 agent: implementer
 ---
