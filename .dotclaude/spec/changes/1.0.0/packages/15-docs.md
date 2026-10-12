@@ -127,7 +127,7 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    - [x] `Design`, `Decisions` and its six group pages, `Decisions-Reversed`
    - [x] `Evidence`, `Evals`, `Development`, `Plugin-Layout`, `Sandbox`, `Release-History`
    - [x] `Undocumented-Reads`
-   - [ ] `Archive`
+   - [x] `Archive`
    - [ ] `Home`, `Install`, `Quickstart`, `Troubleshooting`, `Attributions`, `README.md`, `docs/README.md`, the check of `CHANGELOG.md`
 3. Join the branches, run `just generate`, `bun run lint:md`, and `just check`.
 4. A reviewer pass for each section, then one run that fixes the list.
