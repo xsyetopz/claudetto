@@ -59,3 +59,39 @@ Not candidates:
   It asked before it showed the preview, so the consent was blind.
   It lost the path where the user drops some keys, the global installs of add-on tools, and the stop on a failed step.
   The saving is small, because `/setup` runs once for each install.
+
+## Cost before and after
+
+The moved items are 1, 2, 3, 4, 5 (`usage` and `start-cost` only), 7, and 8.
+Item 6 and the `eval-compare` part of item 5 did not move.
+Items 9 and 10 need no change.
+
+The before counts come from the transcripts of this repository.
+The `dotclaude-usage` CLI reads them, and its `--json` output lists the runs, the calls, and the cost by agent type.
+The CLI does not split a run by token kind, and it does not isolate one model turn by its tool call.
+So each before row counts the model calls that issued the named tool call, with the `usage` field of each request.
+The counts run before the commit of each move, by the time in UTC.
+The after column is 0 model tokens by design.
+No live session measured it.
+
+| Task | Before (runs, median tokens by kind, source) | After (model tokens, test with no model turn) |
+| --- | --- | --- |
+| 1. Lane moves `doing` and `review` | 29 calls that ran `dotclaude-spec lane` in Bash. Median `input` 2, `cache read` 67,178, `cache write` 742, `output` 16. | 0. `src/plugins/dotclaude/slices/spec/lab/ship-lane.test.ts`, "the spawn of an implementer moves its package to `doing`". |
+| 2. `merge` | 4 calls that ran `dotclaude-spec merge`. Median `input` 2, `cache read` 67,572, `cache write` 891, `output` 12. | 0. `tests/dotclaude/spec/cli/merge.test.ts`, "merge merges the branch, runs the generator, commits plugins, and sets the lane done". |
+| 3. `ready` | 56 calls that read a package file. Median `input` 2, `cache read` 11,969, `cache write` 1,153, `output` 124. | 0. `tests/dotclaude/spec/cli/ready.test.ts`, "ready prints the planned packages with done deps and no owns overlap with a busy package". |
+| 4. Checkbox of `packages.md` | 16 `Edit` or `Write` calls on `packages.md`. Median `input` 2, `cache read` 138,711, `cache write` 1,816, `output` 1,388. | 0. `tests/dotclaude/spec/cli/lane.test.ts`, "lane sets the checkbox of the package line: x for done, a space for each other lane". |
+| 5. `usage` and `start-cost` | 0 runs. The transcripts hold no `Skill` call and no `/dotclaude-sessions:usage` or `/start-cost` command. No number. | 0. `src/plugins/dotclaude-sessions/slices/usage/lab/usage.test.ts`, "the command `dotclaude-sessions:usage` shows the output of the CLI". `src/plugins/dotclaude-sessions/slices/start-cost/lab/start-cost.test.ts`, "the command `start-cost` shows the output of the CLI". |
+| 7. Sections of a `hotfix` record | 6 `Edit` or `Write` calls on hotfix files. Median `input` 2, `cache read` 64,909, `cache write` 3,157, `output` 709. | 0. `tests/dotclaude/spec/cli/new-record.test.ts`, "record writes the empty sections of a hotfix in order". |
+| 8. `test-runner` agent | 0 runs. The 431 runs of the CLI list no `test-runner` type, and no `Agent` call names it. No number. | 0. `tests/dotclaude/checks/run.test.ts`, "passing commands exit 0 and print counts, time, and the log file". |
+
+Notes on the before rows:
+
+- The transcripts hold no `ship` skill run.
+  So the item 1 count includes the spec work of this branch, and it is not only the `ship` skill.
+- The `dotclaude-spec` CLI is not in the base commit `d35fa5a6`.
+  So the `lane`, `merge`, and `ready` calls before their commits are the spec work of this branch.
+  Their counts are small, and they are estimates of the old form.
+- The `/usage` command in the transcripts is the built-in command, not the skill.
+- The item 3 count is the model calls that read a package file, not a count of waves.
+- The `dotclaude-usage` run used `--days 400 --runs 1000`.
+  Its count of calls moved while the session wrote, so it read 18,468 calls in the JSON form and 18,471 in the text form.
