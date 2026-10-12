@@ -6,7 +6,6 @@ The decisions behind each principle are in [Decisions](Decisions) and its group 
 [Architecture](Architecture) explains how the parts work together.
 
 The source of the 1.0.0 design is `.dotclaude/spec/changes/1.0.0/change.md` and `design.md`.
-Each code path is relative to the repository root.
 
 ## Why 1.0.0
 
@@ -91,8 +90,7 @@ Layers spread one capability over four folders, so parallel agents conflict on s
 
 How in the code:
 
-A slice has `domain/` for pure code, `ports.ts`, `adapters/`, and `limits.ts`.
-The contract is `src/kernel/slice.ts`.
+A slice has `domain/` for pure code, `ports.ts`, `adapters/`, and `limits.ts`, and its contract is `src/kernel/slice.ts`.
 
 - `biome.json` enforces the import rules.
   A slice imports only `kernel/` and its own folder.
@@ -170,7 +168,7 @@ How in the code:
 
 - `CONTEXT_WINDOW` and `CONTEXT_BLOCK_MARGIN` are in `src/kernel/budget.ts`.
 - The settings snippet sets `DISABLE_COMPACT` to `1` and `autoCompactEnabled` to `false` (`wiki/reference/Settings-Snippet.md`).
-- The `handoff` slice keeps its flow state in memory, and it reads no `state.json` (`src/plugins/dotclaude/slices/handoff/slice.ts`).
+- The `handoff` slice reads no `state.json` (`src/plugins/dotclaude/slices/handoff/slice.ts`).
 - Claude Code 2.1.296 shows a 200K window for the Opus 5.5 model unless `CLAUDE_CODE_AUTO_COMPACT_WINDOW` is set.
   The budget file records this fact, found by reading the bundle.
 
@@ -300,4 +298,3 @@ How in the code:
 
 - `src/kernel/paths.ts` sets `DOTCLAUDE_DIR` to `.dotclaude`.
 - `DOTCLAUDE_LOCAL_PATHS` in the same file lists the paths that git must not track.
-
