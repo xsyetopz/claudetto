@@ -197,6 +197,6 @@ The readers are in `slices/start-cost/domain/` and `slices/usage/domain/`.
 - [Status line](Status-Line)
 - [Core plugin](Architecture)
 - [Drift check](Architecture#drift-check)
-- [Hooks](Hooks)
+- [Hooks](Hook-Events)
 - [Troubleshooting](Troubleshooting)
-- [Claude mods](Claude-Mods)
+- [Claude mods](Request-Build)
