@@ -56,7 +56,7 @@ const countOf =
   };
 
 // A `Bash` command that prints a file, also in one part of a compound command, is denied here, and the `Read` call of the same range runs instead.
-// The deny runs before the `sembr` rewrite, because a denied call is not run.
+// The `sembr` rewrite of the phase `rewrite` runs before this deny of the phase `check`, so the deny checks the command that would run.
 // The session folder is read only for a command that prints a file, because a relative path needs it.
 export const onBashCall: Handler<"tool.call"> = async ($, e, next) => {
   if (e.tool !== "Bash" || !printsOf(e.command, "").length) return next(e);
