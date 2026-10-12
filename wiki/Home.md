@@ -1,55 +1,55 @@
 # Home
 
-dotclaude is an opinionated Claude Code plugin marketplace for software engineering.
-It keeps only the parts that Claude Code does not cover, and it optimizes for the most quality per unit of usage quota, not for speed.
-Since 0.27 the core plugin uses only official extension points: settings, permission rules, the sandbox, one output style, agents, skills, and one hooks module.
-If Claude does something because of dotclaude and you ask "why did you do that?", the answer is in these pages.
+dotclaude is a Claude Code plugin marketplace for software engineering.
+It changes Claude Code with the Mod API, settings, hooks, skills, agents, and output styles, and it does not patch the binary.
+Its goal is the highest intelligence for the lowest token cost.
+This wiki describes dotclaude 1.0.0.
+The binary facts are for Claude Code `2.1.296`, which is the value of `TESTED_VERSION`.
 
 ## What it does
 
-- Gives permission rules and a sandbox in the [settings snippet](Settings-Snippet), so that Claude Code asks before destructive, public, and secret-reading actions.
-- Gives an `ask` rule for each recursive `rm` in the settings snippet (the plugin alone gives none), and asks before the first contact with a repository of another owner that has an AI policy file.
-- Gives settings in the snippet that turn off compaction and set a 300K context window, so that a session stops at the limit and you start fresh with `/clear`.
-- Selects the output style `dotclaude:Concise` (role, tone, and format) with the snippet, and puts the working rules in the system prompt.
-- Gives Claude six agents with a model, an effort, and a turn limit each ([Agents](Agents)).
-  The agents are `reviewer`, `implementer`, `debugger`, `investigator`, `planner`, and `researcher`.
-- Keeps the tasks and the lanes of a change in the [spec store](Spec-Store), so work continues after `/clear` with `dotclaude-spec next`.
-- Shows model, effort, context, the spec change, and the 5-hour limit in a status line.
+- Gives permission rules and a sandbox in the [settings snippet](Settings-Snippet).
+  The rules ask or deny destructive actions, as [Guards](Guards) describes.
+- Gives `ask` rules for recursive `rm` calls in the settings snippet.
+- Turns off auto compaction (`autoCompactEnabled` is `false`), and sets `CLAUDE_CODE_AUTO_COMPACT_WINDOW` and `CLAUDE_CODE_MAX_CONTEXT_TOKENS` to `300000`.
+  See [Context-And-Handoff](Context-And-Handoff).
+- Selects the output style `dotclaude:Concise` with the settings snippet.
+  The style leads with the result and keeps replies short.
+- Changes parts of the built-in system prompt and of the tool descriptions, through the Mod API.
+  See [Prompt-Surface](Prompt-Surface).
+- Gives Claude six agents, each with a model, an effort, and a turn limit: `reviewer`, `implementer`, `debugger`, `investigator`, `planner`, and `researcher`.
+  See [Agents](Agents).
+- Writes the packages and the lanes of a change to the spec store with the `dotclaude-spec` CLI.
+  See [Spec-Store](Spec-Store).
+- Shows the folder, the git state, the spec change, the model and effort, the context, the cost, and the 5-hour limit in a status line.
+  See [Status-Line](Status-Line).
 
 ## The plugins
 
-Each plugin has one reference page.
-The page says what the plugin does, how to install it, and what it holds: skills, bins, hooks, options, and limits.
-Each add-on works without the core plugin.
+The core plugin is `dotclaude`.
+Each add-on is a separate plugin, and each add-on works without the core plugin.
 
 | Plugin | What it does | Reference |
 | --- | --- | --- |
-| `dotclaude` | The core: output style, system prompt rules, agents, guards, status line, handoff, drift check, and a second opinion from TypeSafe Jev (`second_opinion`). | [Core plugin](Architecture), [Second opinion](Second-Opinion) |
-| `dotclaude-codegraph` | Gives Claude the code graph of a project from the `codegraph` CLI. | [Code graph](Code-Graph) |
-| `dotclaude-browser` | Drives a browser and answers `WebSearch` in the headless browser. | [Browser](Browser) |
-| `dotclaude-docs` | Current library docs from Context7. | [Library docs](Library-Docs) |
-| `dotclaude-sessions` | Measures the start of a session and the usage of each run. | [Sessions](Sessions) |
-| `dotclaude-lab` | Tools for plugin authors: sandbox, capture, schema, and eval compare. | [Lab](Lab) |
+| `dotclaude` | The core plugin: the output style, the agents, the guards, the status line, the handoff, the drift check, the spec store, and the second opinion from TypeSafe Jev (`second_opinion`). | [Architecture](Architecture), [Second-Opinion](Second-Opinion) |
+| `dotclaude-codegraph` | Gives Claude the code graph of a project from the CodeGraph CLI `codegraph`. | [Code-Graph](Code-Graph) |
+| `dotclaude-browser` | Drives a browser with `agent-browser`, and answers each `WebSearch` call with a headless browser search. | [Browser](Browser) |
+| `dotclaude-docs` | Gets current library and API docs with the Context7 CLI `ctx7`. | [Library-Docs](Library-Docs) |
+| `dotclaude-sessions` | Measures the start of a session by source, and the usage of each run. | [Sessions](Sessions) |
+| `dotclaude-lab` | Tools for plugin authors: a sandbox for Claude Code, a request capture, the JSON Schema of `settings.json`, and an eval compare. | [Lab](Lab) |
 
-## New in 0.28.0
+The marketplace and the install steps are in [Add-Ons](Add-Ons) and [Install](Install).
 
-- A [system prompt](Prompt-Surface) variant for each model.
-- A [context bound](Context-And-Handoff) for subagents.
-- [Semantic line breaks](Semantic-Line-Breaks) in written text, with no model token.
-- A new [plugin layout](Plugin-Layout), and the plugins `dotclaude-sessions` and `dotclaude-lab`.
-- Evals through `claude plugin eval` ([Evals](Evals)), with a suite of 16 cases in `plugins/dotclaude/evals/` and `just eval` to run it.
-- The [decisions](Decisions) D1 to D35 with their evidence.
-- The [settings snippet](Settings-Snippet) replaces the setup profile.
+## The principles
 
-## The position
+The design principles are on [Design](Design).
+These are five of them.
 
-| Position | What it means |
-| --- | --- |
-| Quality per quota over speed | Usage limits stop work. dotclaude spends quota where it buys quality, and it locks fast mode off. |
-| Quality over quantity | One checked change is worth more than several unchecked changes. Claude reproduces a bug before it fixes it, and it reports what it did not check. |
-| Official points over runtime code | When Claude Code has a setting, a rule, or a hook for a need, dotclaude uses it and writes no runtime code. |
-| Evidence over habit | Each bound comes from a measurement, an official source, or a reverse-read of the Claude Code binary. |
-| The user decides | Rules ask before hard-to-reverse or public actions, and they never approve anything. The setup skill shows every step before it runs. |
+- Only documented extension points.
+- No model call for a check that a script can make.
+- One owner for each bound.
+- Jev decides, and the user approves.
+- Each plugin works alone.
 
 ## Where to read
 
@@ -59,9 +59,9 @@ Each add-on works without the core plugin.
 | [Install](Install) | Install the marketplace and the plugins. |
 | [Architecture](Architecture) | See how the core plugin is built, from `src/` to `plugins/`. |
 | [Guards](Guards) | Learn what asks, what denies, and what the sandbox does. |
-| [Settings snippet](Settings-Snippet) | Copy the keys that Claude Code needs. See also [snippet keys](Settings-Snippet-Keys) and [schema](Settings-Schema). |
-| [Hook events](Hook-Events) | See the events that Claude Code sends, and the map to the dotclaude events. |
-| [Undocumented reads](Undocumented-Reads) | See what dotclaude reads that Claude Code does not document, and how it breaks. |
+| [Settings-Snippet](Settings-Snippet) | Copy the keys that Claude Code needs. See also [Settings-Snippet-Keys](Settings-Snippet-Keys) and [Settings-Schema](Settings-Schema). |
+| [Hook-Events](Hook-Events) | See the events that Claude Code sends, and the map to the dotclaude events. |
+| [Undocumented-Reads](Undocumented-Reads) | See the settings and env vars that the binary reads and the docs do not name. |
 | [Troubleshooting](Troubleshooting) | Fix a symptom. |
 | [Development](Development) and [Sandbox](Sandbox) | Change dotclaude and test a checkout. |
 | [Attributions](Attributions) | See the projects whose ideas dotclaude reimplements. |
@@ -70,22 +70,20 @@ Each add-on works without the core plugin.
 
 | Page | What it holds |
 | --- | --- |
-| [Design](Design) | The 0.27 rebuild, design principles, and rejected alternatives. |
-| [Decisions](Decisions) | The design decisions D1 to D35. |
-| [Usage evidence](Usage-Evidence) | Where one Max 20x week of usage went, and what that means on Pro. |
-| [Usage evidence](Usage-Evidence) | Prices, model fit, and effort. |
-| [Prompt surface](Prompt-Surface) | What a request contains, the simple prompt, and the forced style. |
-| [Eval history](Evals-History) | The eval runs of the 0.4 to 0.28 releases. |
-| [Request build](Request-Build) | The plugin hooks modules of Claude Code, and the gaps. |
-| [Open items](Open-Items) | Work still to measure or decide. |
-| [Release history](Release-History) | What changed in each older release, and why. |
+| [Design](Design) | The principles of dotclaude 1.0.0, and why each is in force. |
+| [Decisions](Decisions) | The design decisions `D1` to `D47`. |
+| [Usage-Evidence](Usage-Evidence) | The plans, the prices, the models, and the usage of one measured week. |
+| [Prompt-Surface](Prompt-Surface) | The output style, the prompt sections, and the tool texts. |
+| [Request-Build](Request-Build) | The system prompt sections, the attachments, and the cache of a request. |
+| [Evals](Evals) | What the evals measure, and the Claude Code version that they need. |
+| [Release-History](Release-History) | What changed in each release, and why. |
 
-The [CHANGELOG](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md) lists the current release.
+The [CHANGELOG](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md) lists each release.
+Its `[Unreleased]` section holds the changes that are not released yet.
 
 ## Source labels
 
-The evidence pages give the proof for each choice, and each fact there has one of these labels.
-A choice with no label is the maintainer's decision, and the page says so.
+The evidence pages label each fact with the source that it comes from.
 
 | Label | Source |
 | --- | --- |
@@ -93,10 +91,8 @@ A choice with no label is the maintainer's decision, and the page says so.
 | binary | read from the installed Claude Code bundle, never patched |
 | capture | a request body that Claude Code sent to a local listener |
 | measured | a run or a transcript scan on the maintainer's machine |
-| reported | user reports, weighed by score and agreement |
+| reported | user reports |
 | inference | a conclusion from the facts above |
 
-The 0.27 facts date from Claude Code 2.1.292.
-The older evidence dates from 2026-09-26 to 2026-10-04 and Claude Code 2.1.283 to 2.1.289.
-Dollar figures are API-equivalent list prices.
-How a subscription weights cache reads against output is not published.
+The binary facts in this wiki are for Claude Code `2.1.296`.
+The extracts of the bundle are in the git-ignored `external/` folder, as [Claude-Code-Internals](Claude-Code-Internals) describes.
