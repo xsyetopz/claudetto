@@ -76,7 +76,7 @@ Each package depends on P01b4.
 - [x] P05 `guard`: `guard` and `reads` in one slice.
 - [x] P06 `asks`: the asks of `adherence`, one file for each ask.
 - [x] P07 `sembr`.
-- [ ] P08 `statusline`: rows of numbers and icons, the color scale, `NO_COLOR`, and the change segment.
+- [x] P08 `statusline`: rows of numbers and icons, the color scale, `NO_COLOR`, and the change segment.
   Verify also: a snapshot for each width and for `NO_COLOR`.
 - [x] P09 `setup`: the `/setup` skill, its CLI, and the drift check.
   When dotclaude runs in a git repository, it adds each runtime path of `.claude/` that git does not ignore, such as `.claude/worktrees/`, to `.git/info/exclude` (the user, 2026-10-12).
@@ -90,12 +90,12 @@ Each package depends on P01b4.
   Verify also: a test for each fallback cause, with a fake `DecisionProvider`.
 - [ ] P20 `surface`: the transforms of the tool descriptions, the agent listing, and the reminders.
   Deps: P01c.
-- [ ] P21 `trim`: the settings, env, and mod rules that turn off each part of the inventory that dotclaude does not need.
+- [x] P21 `trim`: the settings, env, and mod rules that turn off each part of the inventory that dotclaude does not need.
   Deps: P01d.
-- [ ] P22 `styles`: `dotclaude:Concise`, from the built-in Concise text of P01c.
+- [x] P22 `styles`: `dotclaude:Concise`, from the built-in Concise text of P01c.
   Deps: P01c.
   Verify: `just validate`, and a `reviewer` pass on the text.
-- [ ] P23 `prompt` transforms: one transform for each built-in section of P01c, and the test that each transform finds its section.
+- [x] P23 `prompt` transforms: one transform for each built-in section of P01c, and the test that each transform finds its section.
   Deps: P01c.
 - [x] P11a `dotclaude-codegraph` with 1 hook.
 - [x] P11b `dotclaude-browser`.
@@ -110,7 +110,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
 
 ## Wave 3: integration
 
-- [ ] P04 Workflow skills: `/spec`, `/hotfix`, and `/ship`.
+- [x] P04 Workflow skills: `/spec`, `/hotfix`, and `/ship`.
   Deps: P03.
   Owns: `src/plugins/dotclaude/slices/spec/skills/`, `tools/bump-version.ts`, `tools/release.ts`, `tools/update.ts`.
   Verify: `just generate`, `just validate`, and a `reviewer` pass on the texts.
