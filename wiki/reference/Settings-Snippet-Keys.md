@@ -1,39 +1,41 @@
 # Settings snippet keys
 
-This page gives the reason, the scope, and the Claude Code default of each key and `env` entry of the [Settings snippet](Settings-Snippet).
+This page gives each key and `env` entry of the [Settings snippet](Settings-Snippet).
+Each row gives the value, what the key does in Claude Code, and why dotclaude sets it.
 The snippet sets a key only when the Claude Code default does not give the result that dotclaude needs.
-A test checks the keys of the snippet against `schemas/claude-code-settings.json`, so a key that the schema lacks fails the test.
 
-A scope of "Any" means that Claude Code reads the key from user, project, and local settings.
-A scope of "User" means that Claude Code reads the key from user settings and local settings, and ignores it in project settings.
-The scope column comes from the descriptions in the schema.
+The snippet merges the `settings` entries of the slices in `src/plugins/dotclaude/slices/`.
+The `prompt` slice sets most keys and the `env` entries.
+The `trim` slice sets the `env` entries that turn off the built-in parts, and the keys `autoMemoryEnabled` to `syncClaudeAiPlugins`.
+The `statusline` slice sets `statusLine` and `subagentStatusLine`.
+The `styles` slice sets `outputStyle`.
+A test checks the keys of the snippet against `schemas/claude-code-settings.json`, so a key that the schema lacks fails the test.
 
 ## Environment entries
 
-| Entry | Value | Default | Reason |
+| Entry | Value | What it does in Claude Code | Why dotclaude sets it |
 | --- | --- | --- | --- |
-| `CLAUDE_CODE_ATTRIBUTION_HEADER` | `0` | Unset, a version and fingerprint block starts the system prompt | The block adds tokens and no use. |
-| `CLAUDE_CODE_AUTO_COMPACT_WINDOW` | `300000` | The window of the model, 200K for Opus 5.5 | The window that `/context` shows and warns against. |
-| `CLAUDE_CODE_AUTO_CONNECT_IDE` | `false` | Unset, auto-connect to an IDE | The key `autoConnectIde` is in the global config, so the snippet uses the variable. |
-| `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` | `1` | Unset, the advisor tool can be on | Removes the advisor tool and its instructions. |
-| `CLAUDE_CODE_DISABLE_CFC_PROMPT` | `1` | Unset | Removes the Chrome part of the system prompt. |
-| `CLAUDE_CODE_DISABLE_CRON` | `1` | Unset, the Cron tools are on | Removes the Cron tools and `/loop`. |
-| `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` | `1` | Unset, the agents `Explore` and `Plan` are on | Each agent adds a line to each request. |
-| `CLAUDE_CODE_DISABLE_FAST_MODE` | `1` | Unset, fast mode can be on | Fast mode stays off. |
-| `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY` | `1` | Unset, surveys can show | No survey in a session. |
-| `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` | `1` | Unset | No title and no small-model request for a title. |
-| `CLAUDE_CODE_FORK_SUBAGENT` | `0` | Unset | A subagent starts with its own prompt and does not fork the main context. |
-| `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL` | `1` | Unset, the IDE extension installs itself | No install without the user. |
-| `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` | `5` | Unset, no cap | A hard cap on parallel subagents. |
-| `CLAUDE_CODE_MAX_CONTEXT_TOKENS` | `300000` | Unset, the window of the model | The window of a session. It works only with `DISABLE_COMPACT`. |
-| `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` | `1` | Unset, the long prompt | The forced `dotclaude` output style carries the role, the tone, and the format, and the hooks module puts the working rules in the system prompt. |
-| `CLAUDE_CODE_SUBAGENT_MODEL` | `claude-sonnet-5-5` | Unset, the main model | A subagent with no model of its own runs on Sonnet 5.5. |
-| `CLAUDE_CODE_TODO_REMINDER_MODE` | `off` | Unset, a reminder about the task list every 10 turns | No recurring reminder. |
-| `DISABLE_COMPACT` | `1` | Unset, compaction is on | No compaction, and no `/compact`. |
-| `DISABLE_ERROR_REPORTING` | `1` | Unset | No error reports. |
-| `DISABLE_FEEDBACK_COMMAND` | `1` | Unset | No `/feedback` command. |
+| `CLAUDE_CODE_ATTRIBUTION_HEADER` | `0` | Default: a version and fingerprint block starts the system prompt. | The block adds tokens and gives dotclaude no use. |
+| `CLAUDE_CODE_AUTO_COMPACT_WINDOW` | `300000` | Sets the window that automatic compaction works against. Default: the window of the model. | The window that `/context` shows and warns against. |
+| `CLAUDE_CODE_AUTO_CONNECT_IDE` | `false` | Default: the IDE connects by itself. | The global config key `autoConnectIde` is not set by the snippet, so the variable does the work. |
+| `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` | `1` | Removes the advisor tool and its instructions. Default: the tool can be on. | Each tool line and its instructions add tokens to each request. |
+| `CLAUDE_CODE_DISABLE_CFC_PROMPT` | `1` | Removes the Chrome part of the system prompt. | The part is not used. |
+| `CLAUDE_CODE_DISABLE_CRON` | `1` | Removes the Cron tools and `/loop`. Default: on. | No scheduled runs. |
+| `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` | `1` | Removes the built-in agents `Explore` and `Plan`. Default: on. | Each agent adds a line to each request. |
+| `CLAUDE_CODE_DISABLE_FAST_MODE` | `1` | Keeps fast mode off. Default: fast mode can be on. | Fast mode stays off. |
+| `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY` | `1` | Stops the session quality survey. Default: the survey can show. | No survey in a session. |
+| `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` | `1` | Stops the terminal title and its small-model request. Default: on. | No title and no request for one. |
+| `CLAUDE_CODE_FORK_SUBAGENT` | `0` | Default: a subagent forks the main context. | A subagent starts with its own prompt. |
+| `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL` | `1` | Stops the IDE extension from installing itself. Default: it installs. | No install without the user. |
+| `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` | `5` | Caps the subagents that run in parallel. Default: no cap. | A hard cap on parallel subagents. |
+| `CLAUDE_CODE_MAX_CONTEXT_TOKENS` | `300000` | Sets the context window of a session. Default: the window of the model. | The window that dotclaude sets for a session. |
+| `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` | `1` | Uses the short system prompt. Default: the long prompt. | The `dotclaude:Concise` style carries the tone and the format, and the hooks module puts the working rules in the system prompt. |
+| `CLAUDE_CODE_SUBAGENT_MODEL` | `claude-sonnet-5-5` | Sets the model of a subagent that has no model of its own. Default: the main model. | A subagent with no model of its own runs on Sonnet 5.5. |
+| `CLAUDE_CODE_TODO_REMINDER_MODE` | `off` | Default: a recurring reminder about the task list. | No recurring reminder. |
+| `DISABLE_COMPACT` | `1` | Turns off compaction and `/compact`. Default: compaction is on. | No compaction. |
+| `DISABLE_ERROR_REPORTING` | `1` | Default: error reports are sent. | No error reports. |
+| `DISABLE_FEEDBACK_COMMAND` | `1` | Removes the `/feedback` command. Default: the command is there. | No `/feedback` command. |
 
-All env entries have the scope "Any".
 The snippet never sets `CLAUDE_CODE_EFFORT_LEVEL`, `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`, or `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`.
 The first two defeat the `model` and `effort` of the agent files ([Decisions: router and agents](Decisions-Router)).
 The third overrides the `subagentPromptCacheTtl` setting, which the snippet does not set either.
@@ -41,51 +43,53 @@ See [Off switches](Off-Switches#not-in-the-snippet).
 
 ## Settings keys
 
-| Key | Value | Scope | Default | Reason |
-| --- | --- | --- | --- | --- |
-| `autoCompactEnabled` | `false` | Any | `true` | No automatic compaction. |
-| `autoMemoryEnabled` | `false` | Any | `true` | No auto memory. |
-| `includeGitInstructions` | `false` | Any | `true` | About 6.2k characters of git text and the git status snapshot leave the prompt. The `Bash` tool text of `features/surface/data.ts` carries the attribution line. |
-| `model` | `claude-opus-5-5` | Any | The default of the plan | The main model. |
-| `availableModels` | The four models of the roster | Any | Unset, all models | Fable 5.1, Opus 5.5, Sonnet 5.5, and Haiku 5.5. `claude-haiku-4-5` is not in the roster. For a CVP account see [the CVP procedure](#cvp-procedure). |
-| `enforceAvailableModels` | `true` | Any | Unset | `Default` resolves to a model of the list. |
-| `maxEffortLevel` | `max` | Any | Unset | No cap. Each model keeps its effort, and dotclaude never rewrites it. |
-| `enableArtifact` | `false` | Any, a project can only turn it off | On when the feature is available | Removes the Artifact tool from each request. |
-| `enableWorkflows` | `false` | Any | By plan | Removes the Workflow tool from each request. |
-| `promptCacheTtl` | `5m` | Any | Automatic, 1 hour on a subscription within its limits | The cache lifetime of the main conversation is the same on each account. |
-| `disableBundledSkills` | `true` | Any | `false` | Removes the bundled skills from the listing. |
-| `statusLine` | A command that runs `features/statusline/cli.ts`, with `refreshInterval` 1 and `hideVimModeIndicator` true | Any | Unset | The three-column status line. `refreshInterval` keeps the countdowns and the blinking glyph current in an idle session. The line shows `vim.mode`, so the built-in `-- INSERT --` indicator would repeat it. See [Status line](Status-Line). |
-| `subagentStatusLine` | A command that runs `features/statusline/subagent-cli.ts` | Any | Unset, the default rows | One row for each running subagent. |
-| `promptSuggestionEnabled` | `false` | Any | `true` | No background request for suggestions. |
-| `awaySummaryEnabled` | `false` | Any | `true` | No background request for a recap. |
-| `bashOutputMaxChars` | `4000` | Any | `30000` | The lowest value. A longer `Bash` output goes to a file, and Claude gets a preview and the path. `BASH_OUTPUT_MAX_CHARS` in `lib/budget.ts` holds the value. |
-| `spinnerTipsEnabled` | `false` | Any | `true` | No tips in the spinner. |
-| `feedbackSurveyRate` | `0` | Any | Unset, a survey can show | No quality survey. |
-| `feedbackDrafts` | `off` | Any | `notify` | Removes the `SendFeedback` tool. |
-| `fastMode` | `false` | Any | Off | States the default, because the env entry alone is not read on every surface. |
-| `disableAgentView` | `true` | Any | `false` | No agent view and no background daemon. |
-| `disableRemoteControl` | `true` | Any | `false` | No Remote Control. |
-| `syncClaudeAiSkills` | `false` | User | On when the account has synced skills | No `anthropic-skills:*` skill. Project settings do not read it. |
-| `syncClaudeAiPlugins` | `false` | User | On | No plugin sync from claude.ai. Project settings do not read it. |
-| `disableClaudeAiConnectors` | `true` | Any, a `true` in any source wins | `false` | No claude.ai connector server. |
-| `enabledPlugins` | Nine built-in plugins set to false | Any | Each built-in plugin on by its own default | See [Off switches](Off-Switches). |
-| `skillOverrides` | `plugin-authoring` and the six `openspec-*` skills are `name-only` | Any | Unset | Shorter listing line. The six names are `openspec-apply-change`, `openspec-archive-change`, `openspec-explore`, `openspec-propose`, `openspec-sync-specs`, and `openspec-update-change`. |
-| `attribution` | The commit and PR lines | Any | The Claude Code lines | The attribution that the commit and PR text carries. |
-| `sandbox` | On, a retry outside the sandbox allowed, a host list | Any | Off | The sandbox limits files and network of `Bash`. `git fetch`, `git pull`, `git push`, and `gh` run outside it, and they still go through the permission flow. |
-| `permissions` | `disableBypassPermissionsMode`, and the `deny`, `ask`, and `allow` lists | Any | Unset | Risky commands ask, and read-only commands run. The `deny` list holds the groups below. |
+| Key | Value | What it does in Claude Code | Why dotclaude sets it |
+| --- | --- | --- | --- |
+| `$schema` | The URL of `schemas/claude-code-settings.json` on the main branch | Points an editor at the JSON Schema of the settings. | An editor can check the keys of the file. |
+| `outputStyle` | `dotclaude:Concise` | Selects the output style for assistant responses. The style is selected, not forced, so the `outputStyle` of the user can change it. Default: the style of the user. | The `styles` slice ships the concise style. It keeps the coding instructions, because the `prompt` slice changes the coding sections. |
+| `model` | `claude-opus-5-5` | Sets the main model. Default: the model of the plan. | The main model. |
+| `availableModels` | Fable 5.1, Opus 5.5, Sonnet 5.5, and Haiku 5.5 | Lists the models that the user can select. Default: all models. | `claude-haiku-4-5` is not in the roster. For a CVP account see [the CVP procedure](#cvp-procedure). |
+| `enforceAvailableModels` | `true` | When `true`, `Default` resolves to a model of `availableModels`. | `Default` stays on a model of the list. |
+| `maxEffortLevel` | `max` | Sets the highest effort level, and anything above it is clamped. Default: unset. | No cap in practice. Each model keeps its effort, and dotclaude never rewrites it. |
+| `enableArtifact` | `false` | Turns the Artifact tool off. Project and local settings can only turn it off. Default: on when the feature is available. | Removes the Artifact tool from each request. |
+| `enableWorkflows` | `false` | Turns the Workflows feature off. Default: by plan. | Removes the Workflow tool from each request. |
+| `promptCacheTtl` | `5m` | Sets the cache lifetime of the main conversation. Default: automatic, 1 hour on a subscription within its limits. | The lifetime is the same on each account. |
+| `disableBundledSkills` | `true` | Removes the bundled skills and workflows. Built-in slash commands stay typable. Default: the skills are on. | Removes the bundled skills from the listing. |
+| `statusLine` | `type` `command`, the command `bun --no-env-file "<plugin folder>/bin/dotclaude-statusline"`, `padding` `0`, `refreshInterval` `1`, and `hideVimModeIndicator` `true` | Sets the status line command, and hides the built-in vim mode indicator. Default: unset. | The three-column status line. `refreshInterval` keeps the countdowns and the blinking glyph current in an idle session. The line shows `vim.mode`, so the built-in indicator would repeat it. See [Status line](Status-Line). |
+| `subagentStatusLine` | The command `bun --no-env-file "<plugin folder>/bin/dotclaude-statusline" --subagent` | Sets the status line of each subagent. Default: the default rows. | One row for each running subagent. |
+| `autoCompactEnabled` | `false` | Turns automatic compaction off. Default: on. | No automatic compaction. |
+| `autoMemoryEnabled` | `false` | Stops the auto-memory directory of the project from being read or written. Default: on. | No auto memory. |
+| `includeGitInstructions` | `false` | Leaves the built-in commit and PR workflow text out of the system prompt. Default: included. | The git text adds tokens to each request, and `attribution` gives the commit line. |
+| `promptSuggestionEnabled` | `false` | Turns off prompt suggestions. Default: on. | No background request for suggestions. |
+| `awaySummaryEnabled` | `false` | Turns off the session recap that shows after 5 minutes away. Default: on. | No background request for a recap. |
+| `bashOutputMaxChars` | `4000` | Sets how many characters of a successful `Bash` output go inline. Output past this goes to a file. Default: `30000`, and values clamp to 4000 to 128000. | The lowest value. The bound `BASH_OUTPUT_MAX_CHARS` in `src/kernel/budget.ts` holds the same value. |
+| `spinnerTipsEnabled` | `false` | Hides the tips in the spinner. Default: shown. | No tips. |
+| `feedbackSurveyRate` | `0` | Sets the chance that the quality survey shows, from 0 to 1. Default: unset. | No quality survey. |
+| `feedbackDrafts` | `off` | Turns off the `SendFeedback` tool. Default: `notify`. | Removes the tool. |
+| `fastMode` | `false` | Turns fast mode off. Default: off. | Fast mode stays off, with the env entry `CLAUDE_CODE_DISABLE_FAST_MODE`. |
+| `disableAgentView` | `true` | Turns off the agent view, `claude agents`, `--bg`, and the background daemon. Default: `false`. | No agent view and no background daemon. |
+| `disableRemoteControl` | `true` | Turns off Remote Control. Default: `false`. | No Remote Control. |
+| `syncClaudeAiSkills` | `false` | Stops the sync of the skills that you enable on claude.ai. Read in user or managed settings only. Default: on when the account has synced skills. | No `anthropic-skills:*` skill. |
+| `syncClaudeAiPlugins` | `false` | Stops the sync of the plugins that you enable on claude.ai. Read in user or managed settings only. Default: on. | No plugin sync from claude.ai. |
+| `disableClaudeAiConnectors` | `true` | Stops the claude.ai MCP connectors from being fetched. A `true` in any settings source wins. Default: `false`. | No claude.ai connector server. |
+| `enabledPlugins` | Nine built-in plugins set to `false` | Turns on or off each plugin, by its `plugin-id@marketplace-id`. Default: each plugin on by its own default. | See [Off switches](Off-Switches). |
+| `skillOverrides` | `plugin-authoring` set to `name-only` | Lists the skill without its description. Default: unset. | A shorter listing line for `plugin-authoring`. |
+| `attribution` | The commit and PR lines | Sets the attribution text of commits and PRs. Default: the Claude Code lines. | The attribution that the commit and PR text carries. |
+| `sandbox` | On, a retry outside the sandbox allowed, a list of allowed domains | Limits the files and the network of `Bash`. Default: off. | The sandbox limits `Bash`. `git fetch`, `git pull`, `git push`, and `gh` run outside it, and they still go through the permission flow. |
+| `permissions` | `disableBypassPermissionsMode` set to `disable`, and the `deny`, `ask`, and `allow` lists | Sets the rules for each tool call. `deny` blocks, `ask` asks, and `allow` runs without a prompt. Default: unset. | Risky commands ask, and read-only commands run. The `deny` list holds the groups below. |
 
-The `deny` list of `Settings-Snippet` holds these groups.
+The `deny` list of the snippet holds these groups.
 
 | Denied items | Reason |
 | --- | --- |
 | `Read` of secret files, `rm -rf` of `/`, `/*`, `~`, and `~/*`, `mkfs`, and `dd` to a device | Secrets and disk wipes stay out of reach of a tool call. |
 | `EnterPlanMode` and `ExitPlanMode` | Removes two tool lines. The eval of 2026-10-08 showed no loss. |
-| `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, and `TaskUpdate` | Saves about 30 tokens. The eval showed no loss. |
+| `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, and `TaskUpdate` | Removes five tool lines. The eval showed no loss. |
 | `Agent(general-purpose)` | Removes an agent line, and a run of this agent replaced the dotclaude agents ([Usage evidence](Usage-Evidence)). |
 | `Agent(claude-code-guide)` and `Agent(statusline-setup)` | Removes two agent lines from each request. |
 | `mcp__computer-use` | A guard for the case that you enable the opt-in server ([Computer use](Off-Switches#computer-use)). |
-| `ScheduleWakeup` | Removes a tool of about 4.6k characters, and it has no setting ([Prompt surface](Prompt-Surface)). |
-| `ReportFindings` | Removes a tool of about 2.2k characters. `/code-review` gives its findings as text without it ([Prompt surface](Prompt-Surface)). |
+| `ScheduleWakeup` | Removes the tool. It has no setting ([Prompt surface](Prompt-Surface)). |
+| `ReportFindings` | Removes the tool. `/code-review` gives its findings as text without it ([Prompt surface](Prompt-Surface)). |
 
 The status line entries need the absolute path of the plugin folder, because a status line command gets no `${CLAUDE_PLUGIN_ROOT}`.
 dotclaude writes no launcher stub for them.
@@ -116,8 +120,8 @@ The rules are in [The destructive floor](Guards#the-destructive-floor).
 Setup puts `claude-mythos-5-1` in place of `claude-fable-5-1` in `availableModels` when the model catalog of your account offers it.
 Claude Code 2.1.296 caches the catalog that the API serves to the account in `<config dir>/cache/model-catalog/<organizationUuid>-<hash>-<surface>.json`.
 The organization comes from `oauthAccount.organizationUuid` in `.claude.json`.
-The function `isMythosAvailable` of the bundle takes a Mythos row of `catalog.config.models` that is not `disabled` and not in the `deprecated` section, and setup makes the same test.
-No doc covers this file.
+The bundle of 2.1.296 has its own check for a Mythos row of the catalog, which is not `disabled` and not in the `deprecated` section, and setup makes the same test.
+This was found by reading the bundle, and no doc covers this file.
 A missing file, another shape, or a new release that moves the file gives no Mythos, and setup keeps Fable.
 A list that already holds `claude-mythos-5-1` keeps it.
 This read needs no model call, so it replaces the probe below for setup.
@@ -150,9 +154,6 @@ That account was not served by Mythos 5.1, so Fable 5.1 stays.
 ## Retention
 
 The snippet sets no `cleanupPeriodDays`, so the Claude Code default of 30 days applies.
-The 0.27.0 setup wrote 14, and 0.28.0 does not remove it.
-If your `settings.json` still has 14, change or delete it by hand.
-A transcript that the value 14 already deleted cannot come back.
 To keep transcripts longer, set a larger value in your own settings, such as 400.
 To keep none, start Claude Code with `--no-session-persistence`.
 
@@ -167,4 +168,3 @@ dotclaude does not delete a transcript, and does not copy one.
 
 - [Settings snippet](Settings-Snippet)
 - [Off switches](Off-Switches)
-- [Settings schema](Settings-Schema)
