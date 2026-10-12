@@ -141,7 +141,7 @@ This section weighs **reported** experience and the guidance of Anthropic.
 | Opus 5.5 | The default, at `medium` effort, and at `high` for hard work. Users report that it matches or beats Fable 5.1 on coding at a much lower cost. | Nothing named. |
 | Fable 5.1 | A planner or advisor in the main conversation, when Opus 5.5 has not solved the problem. | Subagents and routine work. Users report fast drain of the 5-hour window, whole-file rewrites, and invented tests. 0.20.0 left it out of `availableModels`. |
 | Sonnet 5.5 | Review: `reviewer` at `medium`. | The main agent. |
-| Haiku 5.5 | Reading, scoped work, debugging, and check runs: `investigator`, `implementer`, `debugger`, and `test-runner`. The effort guide says to start at `medium`, and `low` can skip a search or a check. It costs 5 times as much above 100K prompt tokens. | Review, and long prompts. |
+| Haiku 5.5 | Reading: `investigator`. Check runs moved to the CLI `dotclaude-run-checks`, which uses no model. The effort guide says to start at `medium`, and `low` can skip a search or a check. It costs 5 times as much above 100K prompt tokens. | Review, and long prompts. |
 | Haiku 4.5 | Out of the roster since 0.28.0. It supports no effort setting. | Everything. |
 
 ### The advisor

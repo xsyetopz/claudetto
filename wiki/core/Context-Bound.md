@@ -18,7 +18,7 @@ The measures are in [Usage evidence](Usage-Evidence).
 
 ## Bounds
 
-All bounds are in `plugins/dotclaude/features/context/limits.ts`, because only the context feature reads them.
+All bounds are in `plugins/dotclaude/slices/handoff/limits.ts`, because only the context feature reads them.
 Tests pin each copy of a bound in code and config.
 
 | Bound | Value | Use |
