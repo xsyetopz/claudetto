@@ -47,21 +47,28 @@ export type HooksFile = {
 const posix = (p: string) => p.split(path.sep).join(path.posix.sep);
 
 /** `text` with the header that names `source`, in the comment form of the file type. */
-export function withHeader(file: string, source: string, text: string): string {
+export const withHeader = (
+  file: string,
+  source: string,
+  text: string,
+): string => {
   const line = `${GENERATED_MARK} \`${source}\`. Edit the source and run \`just generate\`.`;
   if (file.endsWith(".ts")) return `// ${line}\n${text}`;
   if (!file.endsWith(".md")) return text;
   // A frontmatter starts the file, so the header goes inside it as a YAML comment.
   if (text.startsWith("---\n")) return `---\n# ${line}\n${text.slice(4)}`;
   return `<!-- ${line} -->\n\n${text}`;
-}
+};
 
 /** The text of a `hooks.json` file for `json`, with a one-item `modules` list on one line. */
 export const formatHooks = (json: HooksFile): string =>
   `${JSON.stringify(json, null, 2).replace(/"modules": \[\n\s+("[^"]+")\n\s+\]/, '"modules": [$1]')}\n`;
 
 /** The `hooks.json` object of the source folder `dir`, with the texts of its text files. */
-export async function withTexts(dir: string, text: string): Promise<HooksFile> {
+export const withTexts = async (
+  dir: string,
+  text: string,
+): Promise<HooksFile> => {
   const json = JSON.parse(text) as HooksFile;
   for (const name of fs.readdirSync(dir).sort()) {
     const file = path.join(dir, name);
@@ -82,7 +89,7 @@ export async function withTexts(dir: string, text: string): Promise<HooksFile> {
     prompt.prompt = await textOf(file);
   }
   return json;
-}
+};
 
 /** Each file under `dir`, relative to `dir`, with `/` separators, sorted. */
 const walk = (dir: string): string[] =>
@@ -119,12 +126,12 @@ const literal = (text: string): string =>
   `\`${text.replace(/[\\`]/g, "\\$&").replace(/\$\{/g, "\\${")}\``;
 
 /** The text module of the source folder `dir` of `src`: one constant for each `.md` or `.json` file, in name order. */
-export async function textModule(
+export const textModule = async (
   src: string,
   fragments: string,
   dir: string,
   made: Record<string, string> = {},
-): Promise<string> {
+): Promise<string> => {
   const lines: string[] = [];
   for (const name of fs.readdirSync(path.join(src, dir)).sort()) {
     const source = path.posix.join("src", dir, name);
@@ -155,10 +162,10 @@ export async function textModule(
     );
   }
   return format(path.join(dir), lines.join("\n"));
-}
+};
 
 /** `text` as Biome formats the module `file`. */
-async function format(file: string, text: string): Promise<string> {
+const format = async (file: string, text: string): Promise<string> => {
   const run = Bun.spawn(
     ["bunx", "biome", "format", `--stdin-file-path=${file}`],
     { cwd: REPO, stdin: new Blob([text]), stdout: "pipe", stderr: "pipe" },
@@ -170,10 +177,10 @@ async function format(file: string, text: string): Promise<string> {
   ]);
   if (code !== 0) throw new Error(`biome format ${file}: ${err}`);
   return out;
-}
+};
 
 /** The generated files of the repository `root`, from its `src/` folder. */
-export async function outputs(root: string): Promise<Output[]> {
+export const outputs = async (root: string): Promise<Output[]> => {
   const src = path.join(root, "src");
   const fragments = path.join(src, "fragments");
   const made = await snippetParts(root, await discover(root));
@@ -206,10 +213,13 @@ export async function outputs(root: string): Promise<Output[]> {
     out.push({ file: rel, source, text: withHeader(rel, source, text) });
   }
   return out;
-}
+};
 
 /** The generated files under `plugins/` and `wiki/` of `root` that have no source any more. */
-export async function orphans(root: string, made: Output[]): Promise<string[]> {
+export const orphans = async (
+  root: string,
+  made: Output[],
+): Promise<string[]> => {
   const known = new Set(made.map((o) => o.file));
   const found: string[] = [];
   for (const top of ["plugins", "wiki"])
@@ -220,10 +230,13 @@ export async function orphans(root: string, made: Output[]): Promise<string[]> {
         found.push(file);
     }
   return found;
-}
+};
 
 /** The messages for each file of `made` that differs in `root`, and for each generated file of `root` that has no source. */
-export async function stale(root: string, made: Output[]): Promise<string[]> {
+export const stale = async (
+  root: string,
+  made: Output[],
+): Promise<string[]> => {
   const found: string[] = [];
   for (const o of made) {
     const at = path.join(root, o.file);
@@ -238,4 +251,4 @@ export async function stale(root: string, made: Output[]): Promise<string[]> {
       `${file} has the header of a generated file, but no source in src/.`,
     );
   return found;
-}
+};

@@ -49,12 +49,12 @@ export const textOf = async (file: string): Promise<string> =>
   (await Bun.file(file).text()).replace(/\n+$/, "");
 
 /** `text` with each include and value of the source `source` filled in from `fragments`, or from `made` for a name that `made` gives. */
-export async function fill(
+export const fill = async (
   text: string,
   fragments: string,
   source: string,
   made: Record<string, string> = {},
-): Promise<string> {
+): Promise<string> => {
   const names = [...text.matchAll(INCLUDE)].map((m) => m[1] as string);
   const parts: Record<string, string> = {};
   for (const name of names) {
@@ -80,4 +80,4 @@ export async function fill(
     if (!(name in VALUES)) throw new Error(`${source}: no value {{${name}}}`);
     return VALUES[name] as string;
   });
-}
+};

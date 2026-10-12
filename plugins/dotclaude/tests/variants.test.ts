@@ -19,11 +19,11 @@ const ENGINE: PromptComposeSection[] = [
 // The session id is a variable, so a test can start a new session without a new hook.
 let session = "s1";
 
-function stub(on: On, id = "s1") {
+const stub = (on: On, id = "s1") => {
   session = id;
   on("session.id", () => ({ value: session }));
   on("prompt.compose", () => ({ sections: ENGINE }));
-}
+};
 
 const compose = ($: Engine, model: string, traits: PromptComposeTrait[] = []) =>
   $.prompt.compose({

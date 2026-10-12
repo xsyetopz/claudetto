@@ -93,10 +93,10 @@ export const registerOf = (root: string, p: FoundPlugin): Output[] => {
     ...imports,
     ...(legacy ? ['import { register as legacy } from "./legacy.ts";'] : []),
     "",
-    "export function register(on: On): void {",
+    "export const register = (on: On): void => {",
     ...calls,
     ...(legacy ? ["  legacy(on);"] : []),
-    "}",
+    "};",
     "",
   ].join("\n");
   return [{ file, source, text: withHeader(file, source, text) }];

@@ -7,7 +7,7 @@ import {
 } from "../slices/prompt/adapters/mod.ts";
 import { register as legacy } from "./legacy.ts";
 
-export function register(on: On): void {
+export const register = (on: On): void => {
   // eval: agent.spawn prompt
   on("agent.spawn", h2);
   // eval: prompt.compose prompt
@@ -15,4 +15,4 @@ export function register(on: On): void {
   // eval: prompt.section prompt
   on("prompt.section", { name: "context_management" }, h1);
   legacy(on);
-}
+};

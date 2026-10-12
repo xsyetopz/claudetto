@@ -14,18 +14,18 @@ import { generated, problems } from "../../../tools/generate/outputs.ts";
 import { REPO, tmpDir } from "../../support/repo.ts";
 
 /** A repository root with the files `files`, by path relative to the root. */
-async function root(files: Record<string, string>): Promise<string> {
+const root = async (files: Record<string, string>): Promise<string> => {
   const dir = tmpDir("generate");
   for (const [rel, text] of Object.entries(files))
     await Bun.write(path.join(dir, ...rel.split("/")), text);
   return dir;
-}
+};
 
 /** Writes each generated file of `dir`, as `just generate` does. */
-async function generate(dir: string): Promise<void> {
+const generate = async (dir: string): Promise<void> => {
   for (const o of await outputs(dir))
     await Bun.write(path.join(dir, ...o.file.split("/")), o.text);
-}
+};
 
 const AGENT = (name: string) =>
   `---\nname: ${name}\n---\n\n<rules>\n{{include rule}}\n</rules>\n`;
