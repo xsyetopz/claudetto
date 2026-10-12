@@ -77,10 +77,10 @@ export const slice = { name: "gamma", mod: [
 test("a handler with `configure` gets the `options` that the mod runtime gives to `register`", async () => {
   const dir = await fixtureRoot({
     "src/plugins/p/slices/gamma/adapters/mod.ts":
-      'export const make = (options) => () => options["backend"];\n',
-    "src/plugins/p/slices/gamma/slice.ts": `import { make } from "./adapters/mod.ts";
+      'let backend;\nexport const keep = (options) => { backend = options["backend"]; };\nexport const hook = () => backend;\n',
+    "src/plugins/p/slices/gamma/slice.ts": `import { hook, keep } from "./adapters/mod.ts";
 export const slice = { name: "gamma", mod: [
-  { event: "tool.call", filter: { tool: "WebSearch" }, phase: "answer", configure: make },
+  { event: "tool.call", filter: { tool: "WebSearch" }, phase: "answer", run: hook, configure: keep },
 ] };
 `,
   });
@@ -94,6 +94,11 @@ export const slice = { name: "gamma", mod: [
     { backend: "cloakbrowser" },
   );
   expect(hooks.map((hook) => hook())).toStrictEqual(["cloakbrowser"]);
+  // `claude plugin validate --strict` follows `$` only into a function of `register.ts`, so the hook must be the export itself.
+  const adapter = await import(
+    path.join(dir, "plugins/p/slices/gamma/adapters/mod.ts")
+  );
+  expect(hooks).toStrictEqual([adapter.hook]);
 });
 
 test("a handler that is not a named export of `adapters/mod.ts` is an error that names the slice", async () => {
