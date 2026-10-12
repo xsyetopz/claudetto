@@ -13,6 +13,10 @@ export const slice = {
   mod: [
     {
       event: "session.start",
+      // The tool is registered at each kind of start, so each start has the tool.
+      filter: {
+        source: ["startup", "resume", "clear", "compact", "fork"],
+      },
       phase: "observe",
       run: onSessionStart,
     },
