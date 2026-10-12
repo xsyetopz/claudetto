@@ -70,8 +70,6 @@
         "!tools/bump-version.ts",
         "!tools/release.ts",
         "!tools/update.ts",
-        "!plugins/dotclaude/features/adherence/**",
-        "!tests/dotclaude/adherence/**",
         "!plugins/dotclaude/features/sembr/**",
         "!plugins/dotclaude/tests/sembr.test.ts",
         "!tests/dotclaude/sembr/**",

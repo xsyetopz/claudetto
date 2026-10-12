@@ -87,14 +87,14 @@
     "block": "plugins/dotclaude/tests/ask.test.ts > a deny of the engine stays a deny",
     "false": "plugins/dotclaude/tests/ask.test.ts > an ask of the engine stays when the call reaches no other repository"
   },
-  "tool.check adherence": {
+  "tool.check asks": {
     "requests": 0,
     "tokens": 0,
     "blocks": true,
-    "allow": "plugins/dotclaude/tests/mod.test.ts > a `Write` of a source file gets no ask",
-    "text": "plugins/dotclaude/tests/mod.test.ts > Ask in the module: a `Write` that changes a line of a test file asks",
-    "block": "plugins/dotclaude/tests/mod.test.ts > Ask in the module: a `Write` that changes a line of a test file asks",
-    "false": "plugins/dotclaude/tests/mod.test.ts > a `Write` of a source file gets no ask"
+    "allow": "plugins/dotclaude/tests/asks.test.ts > a `Write` of a source file gets no ask",
+    "text": "plugins/dotclaude/tests/asks.test.ts > a `Write` that changes a line of a test file asks",
+    "block": "plugins/dotclaude/tests/asks.test.ts > a `Write` that changes a line of a test file asks",
+    "false": "plugins/dotclaude/tests/asks.test.ts > a `Write` of a source file gets no ask"
   },
   "PostToolUse hooks/PostToolUse/context.ts": {
     "requests": 0,

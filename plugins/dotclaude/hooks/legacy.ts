@@ -4,25 +4,16 @@
 // the `tool.call` hooks of the `sembr` feature:
 // `Write` and `Edit` put each sentence of a Markdown file on its own line, `Edit` also splits a cross-sentence `old_string`,
 // and `Bash` does the same for the quoted heredoc of `git commit` and `gh pr create`,
-// the `tool.check` ask of the `adherence` feature for a change to a test, a config, a hook, or a settings file,
 // and the surface hooks (`prompt.attachment`, `agent.offer`, `tool.describe`) that cut attachments, agent lines, and tool schemas by exact id.
 // Permission rules and the sandbox of the settings snippet cover the other dangerous calls.
 // The `guard` slice has the file-print deny and the ask for a repository of another owner.
-//
-// The `tool.check` hook only asks, and it keeps a deny of the engine, so it never weakens a rule of the user.
-// The hook has no catch-all on purpose.
-// When it throws after `next` resolved, Claude Code logs the failure and the verdict of the engine stands, so the hook fails open.
-// When it throws before `next`, for example on a file read that rejects, Claude Code skips the hook and the call runs (`research/mod-api-probes.md`, item 10).
-// A `catch` here names the error that it expects, and the others reach that log.
+// The `asks` slice has the asks for a discarding `git` command and for a change to a test, a config, a hook, or a settings file.
 //
 // `claude plugin validate` follows `$` only into a function of this file,
 // and each `$.env.get` call needs a literal name.
 // For this reason, each function that touches `$` is here, and the rules are in `features/*/rules.ts`.
 
-import type { Args, EngineInterface, On } from "claude-code";
-import { FILE_MAX_BYTES } from "../features/adherence/limits.ts";
-import { askReason as adherenceReason } from "../features/adherence/rules.ts";
-import type { Payload } from "../features/adherence/text.ts";
+import type { On } from "claude-code";
 import {
   commandInput,
   editInput,
@@ -34,37 +25,6 @@ import {
   isDropped,
   toolAnswer,
 } from "../features/surface/rules.ts";
-
-/** The tools whose calls the `adherence` checks read. */
-const ADHERENCE_TOOLS = new Set(["Bash", "Write", "Edit", "MultiEdit"]);
-
-/**
- * The text of `file` when it is a regular file of at most `max` bytes, else null.
- * An absent file, a folder, and a link give null, so the check reads nothing.
- */
-async function fileText($: EngineInterface, file: string, max: number) {
-  if (!(await $.fs.exists(file))) return null;
-  const stat = await $.fs.stat(file);
-  if (stat.kind !== "file" || stat.size > max) return null;
-  return $.fs.read(file);
-}
-
-/** The ask reason of the `adherence` checks for the call of `e`, or null. */
-async function adherenceAsk($: EngineInterface, e: Args<"tool.check">) {
-  if (!ADHERENCE_TOOLS.has(e.tool)) return null;
-  const cwd = await $.session.cwd();
-  const root = (await $.env.get("CLAUDE_PROJECT_DIR")) || cwd;
-  const home = (await $.env.get("HOME")) || undefined;
-  // The input of these tools has the fields that the checks read, as `Payload` gives them.
-  return adherenceReason(
-    { cwd, tool_name: e.tool, tool_input: e.input as Payload["tool_input"] },
-    {
-      read: (file) => fileText($, file, FILE_MAX_BYTES),
-      root,
-      home,
-    },
-  );
-}
 
 export const register = (on: On): void => {
   // An unknown attachment type, agent, or tool passes on with no change.
@@ -103,11 +63,4 @@ export const register = (on: On): void => {
   });
   // eval: tool.call Bash sembr
   on("tool.call", { tool: "Bash" }, (_$, e, next) => next(commandInput(e)));
-  // eval: tool.check adherence
-  on("tool.check", { tool: [...ADHERENCE_TOOLS] }, async ($, e, next) => {
-    const verdict = await next(e);
-    if (verdict?.decision === "deny") return verdict;
-    const reason = await adherenceAsk($, e);
-    return reason ? { decision: "ask", reason } : verdict;
-  });
 };
