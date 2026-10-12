@@ -165,4 +165,4 @@ More symptoms are on [Troubleshooting](Troubleshooting).
 ## Next steps
 
 - [Quickstart](Quickstart): see what happens in a first session.
-- [Core plugin](Core-Plugin): see each part of the core plugin.
+- [Core plugin](Architecture): see each part of the core plugin.

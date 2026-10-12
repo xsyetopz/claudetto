@@ -84,5 +84,5 @@ See [Code graph](Code-Graph).
 
 ## Related pages
 
-- [Core plugin](Core-Plugin)
+- [Core plugin](Architecture)
 - [Plugin layout](Plugin-Layout)

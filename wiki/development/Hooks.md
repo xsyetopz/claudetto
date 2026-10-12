@@ -102,7 +102,7 @@ See [Second opinion](Second-Opinion).
 
 ## Related pages
 
-- [Core plugin](Core-Plugin)
+- [Core plugin](Architecture)
 - [Guards](Guards)
 - [Claude mods](Claude-Mods)
 - [Troubleshooting](Troubleshooting)

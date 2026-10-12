@@ -150,7 +150,7 @@ The lab tests in `plugins/dotclaude/tests/surface.test.ts` run the handlers with
 ## Related pages
 
 - [Status line](Status-Line)
-- [Core plugin](Core-Plugin)
+- [Core plugin](Architecture)
 - [Hooks](Hooks)
 - [Troubleshooting](Troubleshooting)
 - [Claude mods](Claude-Mods)

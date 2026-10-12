@@ -58,7 +58,7 @@ Some keys work only in managed settings.
   A key that the schema lacks fails the test and the test names the key.
 - A test (`tests/lab/schema/build.test.ts`) checks that the shipped schema has the keys of 2.1.296.
 - A new Claude Code version needs a new type table and a new run of the script.
-  The drift check reports a version other than the tested one ([Core plugin](Core-Plugin#drift-check)).
+  The drift check reports a version other than the tested one ([Core plugin](Architecture#drift-check)).
 
 ## Related pages
 

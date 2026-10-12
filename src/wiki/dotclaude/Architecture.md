@@ -183,7 +183,7 @@ The steps are these.
 8. `tools/generate/emit/snippet.ts` computes the settings snippet from the `settings` of the slices.
 9. `tools/generate/emit/texts.ts` writes every other file of `src/` to the same path under `plugins/` or `wiki/`.
    So `src/wiki/dotclaude/Architecture.md` gives `wiki/dotclaude/Architecture.md`, and a `src/fragments/` file gives no output.
-   It fills each `{{include NAME}}` line and each `{{NAME}}` value with `tools/generate/emit/fill.ts`.
+   `tools/generate/emit/fill.ts` replaces each include line with a fragment of `src/fragments/`, and each bound name in double braces with its value.
 
 The files under `plugins/` have a header that names the source, except a JSON file, because JSON has no comment.
 A file in `plugins/` that has no source fails the generator.

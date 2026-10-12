@@ -24,7 +24,7 @@ Each add-on works without the core plugin.
 
 | Plugin | What it does | Reference |
 | --- | --- | --- |
-| `dotclaude` | The core: output style, system prompt rules, agents, guards, status line, handoff, drift check, and a second opinion from TypeSafe Jev (`second_opinion`). | [Core plugin](Core-Plugin), [Second opinion](Second-Opinion) |
+| `dotclaude` | The core: output style, system prompt rules, agents, guards, status line, handoff, drift check, and a second opinion from TypeSafe Jev (`second_opinion`). | [Core plugin](Architecture), [Second opinion](Second-Opinion) |
 | `dotclaude-codegraph` | Gives Claude the code graph of a project from the `codegraph` CLI. | [Code graph](Code-Graph) |
 | `dotclaude-browser` | Drives a browser and answers `WebSearch` in the headless browser. | [Browser](Browser) |
 | `dotclaude-docs` | Current library docs from Context7. | [Library docs](Library-Docs) |

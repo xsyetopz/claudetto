@@ -23,7 +23,7 @@ It is the evidence for the hooks module of Claude Code 2.1.288, with the 0.27 us
   See [The built-in guard](#the-built-in-guard-sec-default).
 - The API is early access, so each dotclaude release names one Claude Code version.
   The mods API can change between releases.
-- [Core plugin](Core-Plugin) lists what the module does.
+- [Core plugin](Architecture) lists what the module does.
 
 Labels: **official** (Anthropic docs and files), **binary** (the Claude Code bundle, read only), **measured** (a run on this machine).
 This page quotes only short strings from the bundle, and it gives no bundle code.
@@ -130,7 +130,7 @@ Claude Code refuses a module for one of these reasons (**binary**):
 | --- | --- | --- |
 | The policy ask for a repository of another owner | `tool.check` | The hook calls `next(e)`, returns an engine deny unchanged, and otherwise returns an ask (`plugins/dotclaude/hooks/register.ts`). Lab tests in `plugins/dotclaude/tests/mod.test.ts` cover it. |
 | Replace the `context_management` section of the system prompt | `prompt.section` with the matcher `{ name: "context_management" }` | The hook returns `{ text }` when `DISABLE_COMPACT` is set, and calls `next(e)` otherwise. The text is the same on each call, so the prompt cache stays. Lab tests cover both cases. |
-| Report drift from the settings snippet | `session.start` | The handler appends one note with `$.session.append` when it finds a difference. See [Core plugin](Core-Plugin#drift-check). |
+| Report drift from the settings snippet | `session.start` | The handler appends one note with `$.session.append` when it finds a difference. See [Core plugin](Architecture#drift-check). |
 | Prompt variant, surface cuts, and line breaks | `prompt.compose`, `agent.spawn`, `prompt.attachment`, `agent.offer`, `tool.describe`, `tool.call` | See [System prompt](Prompt-Surface), [Prompt surface](Prompt-Surface), and [Semantic line breaks](Semantic-Line-Breaks). |
 
 - The module has no `.catch`, so a failure gives no ask and the verdict of the engine stands.
@@ -278,6 +278,6 @@ Measured on Claude Code 2.1.292 with `-p --permission-mode auto` in `just sandbo
 ## Related pages
 
 - [Prompt hooks on Stop](Stop-Prompt-Hooks) has the 0.26 history and the 0.28 evidence for the prompt hook on `Stop`.
-- [Core plugin](Core-Plugin) lists what the module does.
+- [Core plugin](Architecture) lists what the module does.
 - [Guards](Guards) tells how the guards ask and deny.
 - [Design](Design) gives the design principles.

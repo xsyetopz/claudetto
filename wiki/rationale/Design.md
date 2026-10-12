@@ -290,4 +290,4 @@ The [settings snippet](Settings-Snippet) sets `promptCacheTtl` to `"5m"`.
 - [Usage evidence](Usage-Evidence)
 - [Usage evidence](Usage-Evidence)
 - [Prompt surface](Prompt-Surface)
-- [Core plugin](Core-Plugin)
+- [Core plugin](Architecture)

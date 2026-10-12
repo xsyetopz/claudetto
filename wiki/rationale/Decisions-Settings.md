@@ -40,7 +40,7 @@ The managed drop-in of the first plan was used for probes only, and 0.28.0 remov
   The cost is about 60 tokens for a description of 190 characters.
 - The doctor became a drift check at session start.
 
-See [Core plugin](Core-Plugin#skills).
+See [Core plugin](Architecture#skills).
 
 ## D10 Schema extraction
 

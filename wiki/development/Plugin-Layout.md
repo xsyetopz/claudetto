@@ -11,7 +11,7 @@ The repository root is the marketplace root.
 
 | Plugin | What it is |
 | --- | --- |
-| `dotclaude` | The core plugin ([Core plugin](Core-Plugin)). |
+| `dotclaude` | The core plugin ([Core plugin](Architecture)). |
 | `dotclaude-codegraph` | Code graph context ([Code graph](Code-Graph)). |
 | `dotclaude-jev` | Second opinion with Jev ([Second opinion](Second-Opinion)). |
 | `dotclaude-browser` | Headless browser and web search replacement ([Browser](Browser)). |
@@ -124,7 +124,7 @@ Tests pin the copies of a bound in code and config, not in prose.
 
 A feature that costs tokens when unused, or that needs an outside tool, is an add-on plugin.
 The plugin is the unit of install and disable, so the user turns the feature off by the plugin.
-A plugin skill keeps its listing line until the whole plugin is off ([Core plugin](Core-Plugin#skills)).
+A plugin skill keeps its listing line until the whole plugin is off ([Core plugin](Architecture#skills)).
 
 - Each add-on works without `dotclaude`.
   It imports nothing from `dotclaude` or from another add-on.
@@ -146,5 +146,5 @@ You can build your own skills or tools from it ([Development](Development)).
 ## Related pages
 
 - [Decisions: layout](Decisions-Layout)
-- [Core plugin](Core-Plugin)
+- [Core plugin](Architecture)
 - [Development](Development)

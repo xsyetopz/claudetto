@@ -7,7 +7,7 @@ and keeps the state of long work in the spec store, `.dotclaude/spec/`, across `
 It optimizes for the most quality per unit of usage quota, not for speed.
 
 [The wiki](https://github.com/xsyetopz/dotclaude/wiki) tells what each part does and why.
-[Core plugin](https://github.com/xsyetopz/dotclaude/wiki/Core-Plugin) lists each part of the core plugin with its file and bound,
+[Core plugin](https://github.com/xsyetopz/dotclaude/wiki/Architecture) lists each part of the core plugin with its file and bound,
 and the [overview](https://github.com/xsyetopz/dotclaude/wiki/Home) links the page of each plugin.
 [Design](https://github.com/xsyetopz/dotclaude/wiki/Design) gives the source of each design claim.
 

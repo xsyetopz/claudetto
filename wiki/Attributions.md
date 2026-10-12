@@ -25,6 +25,6 @@ The [xsyetopz/skills](https://github.com/xsyetopz/skills) collection already cov
 
 ## Related pages
 
-- [Core plugin](Core-Plugin): each part, its event, and its bound.
+- [Core plugin](Architecture): each part, its event, and its bound.
 - [Second opinion](Second-Opinion): the part that uses the `jev` verbs.
 - [Home](Home): the overview.

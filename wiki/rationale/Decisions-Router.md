@@ -41,7 +41,7 @@ The parts that went are the `prompt.submit` and `agent.spawn` classifiers, the `
   These facts are evidence for the user, and not a rule.
 - The snippet never sets `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`, because each defeats the frontmatter.
   In the 2.1.294 bundle, `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` removes `model` from the `Agent` tool schema and drops the model of the agent file.
-  The drift check reports when either variable is set ([Core plugin](Core-Plugin#drift-check)).
+  The drift check reports when either variable is set ([Core plugin](Architecture#drift-check)).
 - The agent files use the full id `claude-haiku-5-5`.
   The `haiku` alias resolves to Haiku 5.5 only on the Anthropic API, and to Haiku 4.5 on Bedrock, Vertex, and Foundry.
 

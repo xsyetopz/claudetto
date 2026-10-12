@@ -17,6 +17,6 @@
       "options": ["auto", "manual", "off"]
     }
   },
-  "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Core-Plugin",
+  "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Architecture",
   "keywords": ["output-style", "agents", "hooks", "statusline"]
 }
