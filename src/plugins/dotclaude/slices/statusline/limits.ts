@@ -1,0 +1,24 @@
+// The bounds of the `statusline` slice, in one place.
+// Tests read these values, so change a bound here and nowhere else.
+
+/** The seconds between two runs of the status line. The countdowns of the limits use it. */
+export const REFRESH_SECONDS = 1;
+
+/** The time that the one `git status` call can take. */
+export const GIT_TIMEOUT_MS = 1_500;
+
+/** The most rows of the main status line. */
+export const MAX_ROWS = 3;
+
+/** The width in columns when `COLUMNS` is not set, and the columns that stay free at the right edge. */
+export const DEFAULT_COLUMNS = 120;
+export const COLUMNS_MARGIN = 4;
+
+/** The most subagent rows. Claude Code shows the rows in the panel, so a long list is no help. */
+export const SUBAGENT_ROWS_MAX = 20;
+
+/** The text between two segments of a row. */
+export const SEGMENT_GAP = "  ";
+
+/** The columns that a subagent row needs for its description before the description shows. */
+export const DESCRIPTION_ROOM_MIN = 8;

@@ -27,26 +27,19 @@
     "allow": "plugins/dotclaude/tests/section.test.ts > another section keeps the text of the engine",
     "text": "plugins/dotclaude/tests/section.test.ts > with `DISABLE_COMPACT`, the `context_management` section changes"
   },
-  "prompt.attachment surface": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/dotclaude/tests/surface.test.ts > an unknown attachment type passes on with no change",
-    "text": "plugins/dotclaude/tests/surface.test.ts > the session context loses the commit list and keeps the other sections"
-  },
   "agent.offer surface": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
-    "allow": "plugins/dotclaude/tests/surface.test.ts > `agent.offer` keeps the other agents, and the dotclaude agents",
-    "text": "plugins/dotclaude/tests/surface.test.ts > `agent.offer` gives the engine answer with no text for an agent that stays"
+    "allow": "plugins/dotclaude/tests/surface.test.ts > `agent.offer` offers an agent that is not dropped",
+    "text": "plugins/dotclaude/tests/surface.test.ts > `agent.offer` leaves a dropped agent out of the listing"
   },
   "tool.describe surface": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
-    "allow": "plugins/dotclaude/tests/surface.test.ts > `tool.describe` does not replace a description that is shorter than the new text",
-    "text": "plugins/dotclaude/tests/surface.test.ts > `tool.describe` shortens `Agent`, `Bash`, and `Read` by name and keeps the rest"
+    "allow": "plugins/dotclaude/tests/surface.test.ts > `tool.describe` passes an unknown tool on with no change",
+    "text": "plugins/dotclaude/tests/surface.test.ts > `tool.describe` replaces the built-in `Bash` description with a shorter one"
   },
   "tool.call guard": {
     "requests": 0,

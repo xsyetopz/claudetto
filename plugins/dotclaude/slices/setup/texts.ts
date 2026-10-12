@@ -174,7 +174,7 @@ export const SNIPPET = {
   bashOutputMaxChars: 4000,
   statusLine: {
     type: "command",
-    command: 'bun --no-env-file "<plugin folder>/features/statusline/cli.ts"',
+    command: 'bun --no-env-file "<plugin folder>/bin/dotclaude-statusline"',
     padding: 0,
     refreshInterval: 1,
     hideVimModeIndicator: true,
@@ -182,7 +182,7 @@ export const SNIPPET = {
   subagentStatusLine: {
     type: "command",
     command:
-      'bun --no-env-file "<plugin folder>/features/statusline/subagent-cli.ts"',
+      'bun --no-env-file "<plugin folder>/bin/dotclaude-statusline" --subagent',
   },
   enabledPlugins: {
     "cc-plugin-agents-md@builtin": false,
@@ -195,6 +195,7 @@ export const SNIPPET = {
     "cc-plugin-tips@builtin": false,
     "cc-plugin-you-should-know@builtin": false,
   },
+  outputStyle: "dotclaude:Concise",
   sandbox: {
     enabled: true,
     allowUnsandboxedCommands: true,

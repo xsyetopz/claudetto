@@ -22,15 +22,6 @@ Do not raise a bound, weaken or skip a test, or edit a check, a config, or a hoo
 Do not run the stopped action another way.
 Such a change hides the defect that the check exists to find.`;
 
-/** From `context-management.md`. */
-export const CONTEXT_MANAGEMENT = `# Context management
-Compaction is off in this session, so no message is summarized or removed.
-When the context reaches its limit, the session stops, and the user starts a fresh session with \`/clear\`.
-Each turn reads the whole context again, so keep long output, such as logs and file dumps, out of it.
-Keep the state of work that needs more than one session in files and commits, such as task checkboxes, because a fresh session starts with only the repository.
-Continue the task until it is done, because the user decides when to clear.
-When you cannot finish, write the state in the repository and tell the user.`;
-
 /** From `counts.md`. */
 export const COUNTS = `Copy each count, such as tasks done or tests passed, from a tool output of this session, because a count that you compute can be wrong.
 Before you count, look for a command of the project that prints the count, in its scripts, its \`bin/\` folder, and its \`README.md\`, and run it.

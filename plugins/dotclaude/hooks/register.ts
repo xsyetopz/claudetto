@@ -11,20 +11,26 @@ import {
 } from "../slices/guard/adapters/mod.ts";
 import {
   onCompose as h5,
-  onContextSection as h6,
+  onSection as h6,
   onSpawn as h7,
 } from "../slices/prompt/adapters/mod.ts";
 import { onToolCall as h8 } from "../slices/sembr/adapters/mod.ts";
 import { onSessionStart as h9 } from "../slices/setup/adapters/mod.ts";
+import {
+  onAgentOffer as h10,
+  onToolDescribe as h11,
+} from "../slices/surface/adapters/mod.ts";
 import { register as legacy } from "./legacy.ts";
 
 export const register = (on: On): void => {
+  // eval: agent.offer surface
+  on("agent.offer", h10);
   // eval: agent.spawn prompt
   on("agent.spawn", h7);
   // eval: prompt.compose prompt
   on("prompt.compose", h5);
   // eval: prompt.section prompt
-  on("prompt.section", { name: "context_management" }, h6);
+  on("prompt.section", h6);
   // eval: session.start decide
   on("session.start", h2);
   // eval: session.start setup
@@ -39,5 +45,7 @@ export const register = (on: On): void => {
   on("tool.check", { tool: ["Bash", "Write", "Edit", "MultiEdit"] }, h0);
   // eval: tool.check guard
   on("tool.check", h4);
+  // eval: tool.describe surface
+  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h11);
   legacy(on);
 };
