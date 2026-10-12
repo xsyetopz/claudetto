@@ -1,4 +1,4 @@
-// Runtime code in `plugins/` is `.ts` with erasable syntax, and a plugin ships no `.js` or `.mjs` file (design D11).
+// Runtime code in `plugins/` is `.ts` with erasable syntax, and a plugin ships no `.js` or `.mjs` file.
 // A `.d.ts` file is allowed only when a manifest names it as its `types`.
 // Generated files that git ignores, such as `.claude-plugin/types/`, are out of scope.
 
@@ -10,7 +10,7 @@ import { REPO, tmpDir } from "./repo.ts";
 const SCRIPT = /\.(?:js|mjs|cjs|mts|cts|jsx|tsx)$|\.d\.ts$/;
 
 /** The `types` paths that the manifest of each plugin names. */
-async function namedTypes(root: string, files: string[]): Promise<string[]> {
+const namedTypes = async (root: string, files: string[]): Promise<string[]> => {
   const named = [];
   for (const f of files) {
     if (!/^plugins\/[^/]+\/\.claude-plugin\/plugin\.json$/.test(f)) continue;
@@ -21,15 +21,15 @@ async function namedTypes(root: string, files: string[]): Promise<string[]> {
     if (types) named.push(path.posix.join(plugin, types));
   }
   return named;
-}
+};
 
 /** The plugin files that break the runtime rule. */
-async function offRuntime(root: string, files: string[]): Promise<string[]> {
+const offRuntime = async (root: string, files: string[]): Promise<string[]> => {
   const allowed = new Set(await namedTypes(root, files));
   return files.filter(
     (f) => f.startsWith("plugins/") && SCRIPT.test(f) && !allowed.has(f),
   );
-}
+};
 
 // A lint of the live repository.
 test("Shipped file: plugins ship no script that is not `.ts`, except the allowed ones", async () => {
@@ -61,17 +61,17 @@ test("a `.js`, a `.mjs`, a `.tsx`, and a `.d.ts` that no manifest names fail, an
   const files = [
     manifest,
     "plugins/p/hooks/register.mjs",
-    "plugins/p/tests/guard.test.ts",
+    "plugins/p/tests/lab.test.ts",
     "plugins/p/types/index.d.ts",
-    "plugins/p/features/x/cli.js",
-    "plugins/p/features/x/rules.ts",
-    "plugins/p/features/x/view.tsx",
+    "plugins/p/slices/x/cli.js",
+    "plugins/p/slices/x/rules.ts",
+    "plugins/p/slices/x/view.tsx",
     "plugins/p/types/extra.d.ts",
   ];
   expect(await offRuntime(root, files)).toStrictEqual([
     "plugins/p/hooks/register.mjs",
-    "plugins/p/features/x/cli.js",
-    "plugins/p/features/x/view.tsx",
+    "plugins/p/slices/x/cli.js",
+    "plugins/p/slices/x/view.tsx",
     "plugins/p/types/extra.d.ts",
   ]);
 });

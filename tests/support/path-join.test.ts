@@ -1,4 +1,4 @@
-// Code in `plugins/` and `tools/` builds paths with `node:path`, `import.meta.dir`, and `Bun.fileURLToPath`, not with a literal `/` join (design D11).
+// Code in `plugins/` and `tools/` builds paths with `node:path`, `import.meta.dir`, and `Bun.fileURLToPath`, not with a literal `/` join (`AGENTS.md`, the hooks module rule).
 // A file in the import graph of a hooks module is out of scope: the mod runtime has no path API, so that file joins with `/`.
 // A text such as `done/total` or a URL is not a path, so the template check finds only an operand with a path name.
 // The hook-lab tests (`plugins/*/tests/`) are out of scope, as in `repoFiles`.
@@ -18,7 +18,7 @@ const JOINS = [
 ];
 
 /** Each line of `files` outside the hooks module graphs that joins a path with a literal `/`, as `file:line: text`. */
-function slashJoins(files: Files): string[] {
+const slashJoins = (files: Files): string[] => {
   const graph = moduleGraph(files);
   const found: string[] = [];
   for (const [file, source] of Object.entries(files)) {
@@ -31,7 +31,7 @@ function slashJoins(files: Files): string[] {
       });
   }
   return found;
-}
+};
 
 test("no file in `plugins/` or `tools/` joins a path with a literal `/`, outside the hooks module graphs", async () => {
   const found = slashJoins(await repoFiles(["plugins", "tools"]));

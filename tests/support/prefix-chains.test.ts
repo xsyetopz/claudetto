@@ -10,7 +10,7 @@ import { REPO } from "./repo.ts";
 const CODE = /\.(?:mjs|cjs|js|ts|py|sh)$/;
 
 /** The groups of sibling code files whose names share a first part, as `folder/prefix*: names`. */
-function prefixChains(files: string[]): string[] {
+const prefixChains = (files: string[]): string[] => {
   const groups = new Map<string, Set<string>>();
   for (const file of files) {
     const dir = path.posix.dirname(file);
@@ -22,7 +22,7 @@ function prefixChains(files: string[]): string[] {
   return [...groups]
     .filter(([, stems]) => stems.size > 1)
     .map(([key, stems]) => `${key}: ${[...stems].sort().join(" ")}`);
-}
+};
 
 // A lint of the live repository.
 test("lint: no folder holds code files whose names share a first part", () => {
@@ -35,9 +35,7 @@ test("lint: no folder holds code files whose names share a first part", () => {
     .toString()
     .split("\n")
     .filter((f) => f && !f.includes("node_modules/"));
-  expect(
-    files.some((f) => f.startsWith("tests/dotclaude/guard/")),
-  ).toBeTruthy();
+  expect(files.includes("tests/support/repo.ts")).toBeTruthy();
   expect(prefixChains(files)).toStrictEqual([]);
 });
 

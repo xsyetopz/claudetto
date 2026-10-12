@@ -24,10 +24,10 @@ type WalkOptions = { skip?: string[]; keep?: (file: string) => boolean };
  * `keep(file)` selects the files to return.
  * A folder that does not exist gives an empty list.
  */
-export function walk(
+export const walk = (
   dir: string,
   { skip = SKIP, keep = () => true }: WalkOptions = {},
-): string[] {
+): string[] => {
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name);
@@ -36,13 +36,12 @@ export function walk(
     }
     return keep(full) ? [full] : [];
   });
-}
+};
 
 /**
  * A new temporary folder whose name starts with `prefix`.
  * `tests/support/tmp-root.ts` moves the temporary folder of the process,
  * and it removes the folder at exit, so a test does not free it.
  */
-export function tmpDir(prefix: string): string {
-  return fs.mkdtempSync(path.join(os.tmpdir(), `${prefix}-`));
-}
+export const tmpDir = (prefix: string): string =>
+  fs.mkdtempSync(path.join(os.tmpdir(), `${prefix}-`));

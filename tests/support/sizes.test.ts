@@ -27,11 +27,11 @@ import { REPO, walk } from "./repo.ts";
 const KB = 1024;
 
 /** A `SKILL.md` text whose `name` and `description` have `meta` bytes together and whose body has `body` bytes. */
-function skill(meta: number, body: number): string {
+const skill = (meta: number, body: number): string => {
   const name = "n";
   const description = "d".repeat(meta - name.length);
   return `---\nname: ${name}\ndescription: ${description}\n---\n${"b".repeat(body)}`;
-}
+};
 const MID_BODY = (SKILL_BODY_LOW_BYTES + SKILL_BODY_HIGH_BYTES) / 2;
 const MID_META = (SKILL_META_LOW_BYTES + SKILL_META_HIGH_BYTES) / 2;
 
@@ -98,10 +98,10 @@ test("the body starts after the frontmatter", () => {
 });
 
 /** The total check, with the metadata of each skill at 300 bytes, so only the sum can fail. */
-function total(count: number) {
+const total = (count: number) => {
   const one = skill(SKILL_META_HIGH_BYTES, MID_BODY);
   return skills(...Array.from({ length: count }, () => one));
-}
+};
 
 test("total skill metadata above 8 KB is reported and does not fail", () => {
   const count =
@@ -152,12 +152,11 @@ test("the first request below 8 KB gives an advisory and does not fail", () => {
 });
 
 /** The files named `name` under `dir`, without `node_modules`, `external`, `.git`, and fixture folders. */
-function find(dir: string, names: string[]): string[] {
-  return walk(dir, {
+const find = (dir: string, names: string[]): string[] =>
+  walk(dir, {
     skip: ["node_modules", "external", ".git", "fixture"],
     keep: (f) => names.includes(path.basename(f)),
   });
-}
 
 // A lint of the live repository.
 test("lint: the files of the repository are within the size targets", async () => {

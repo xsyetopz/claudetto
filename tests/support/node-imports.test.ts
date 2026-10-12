@@ -1,4 +1,4 @@
-// Code in `plugins/`, `tests/`, and `tools/` uses the Bun API where the map of design D28 gives one.
+// Code in `plugins/`, `tests/`, and `tools/` uses the Bun API where the map below gives one.
 // A `node:` module stays only for what Bun 1.4.3 has no API for, such as `node:path` and the folder calls of `node:fs`.
 // `existsSync` and `statSync` stay allowed, because a test cannot tell a file from a folder, and a folder keeps `node:fs`.
 // The hook-lab tests (`plugins/*/tests/`) run in the mod runtime of `claude plugin test`, not in Bun, so they are out of scope.
@@ -54,7 +54,7 @@ const IMPORT =
   /^\s*import\s+(?:type\s+)?([^;'"]*?)\s+from\s+["'](node:[\w/]+)["'];?/gm;
 
 /** The faults of one file: each `node:` import or member that the map gives a Bun API for. */
-function offMap(file: string, source: string): string[] {
+const offMap = (file: string, source: string): string[] => {
   const faults: string[] = [];
   for (const [, clause = "", spec = ""] of source.matchAll(IMPORT)) {
     const whole = WHOLE[spec];
@@ -88,10 +88,10 @@ function offMap(file: string, source: string): string[] {
     }
   }
   return faults;
-}
+};
 
 /** The script files of `plugins/`, `tests/`, and `tools/`, with the `bin/` files that have no extension. */
-async function scripts(): Promise<string[]> {
+const scripts = async (): Promise<string[]> => {
   const files: string[] = [];
   for (const pattern of [
     "{plugins,tests,tools}/**/*.{ts,mjs}",
@@ -106,10 +106,10 @@ async function scripts(): Promise<string[]> {
     }
   }
   return [...new Set(files)].sort();
-}
+};
 
 // A lint of the live repository.
-test("lint: no file imports a `node:` module or member that the map of design D28 gives a Bun API for", async () => {
+test("lint: no file imports a `node:` module or member that the map gives a Bun API for", async () => {
   const faults: string[] = [];
   for (const file of await scripts()) {
     faults.push(...offMap(file, await Bun.file(path.join(REPO, file)).text()));

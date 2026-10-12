@@ -1,4 +1,4 @@
-// Each link in `wiki/` resolves (task 16.4).
+// Each link in `wiki/` resolves.
 // A link without a scheme is a wiki page (`Page` or `Page#anchor`, the form of the published wiki)
 // or a relative path to a file of the repository.
 // An `http` link is out of scope, because the test needs no network.
@@ -20,7 +20,7 @@ for (const page of pages) {
 }
 
 /** The GitHub anchors of the headings of `text`, outside code blocks. */
-function anchors(text: string): Set<string> {
+const anchors = (text: string): Set<string> => {
   const out = new Set<string>();
   let fence = false;
   for (const line of text.split("\n")) {
@@ -36,18 +36,18 @@ function anchors(text: string): Set<string> {
       );
   }
   return out;
-}
+};
 
 /** The link targets of `text`, outside code blocks and spans. */
-function targets(text: string): string[] {
+const targets = (text: string): string[] => {
   const plain = text
     .replace(/^\s*```[\s\S]*?^\s*```/gm, "")
     .replace(/`[^`\n]*`/g, "");
   return [...plain.matchAll(/\]\(([^)\s]+)\)/g)].map((m) => m[1] as string);
-}
+};
 
 /** The broken links of the wiki, as "page: target". */
-async function broken(): Promise<string[]> {
+const broken = async (): Promise<string[]> => {
   const bad = [];
   for (const page of pages) {
     for (const t of targets(await Bun.file(path.join(WIKI, page)).text())) {
@@ -78,7 +78,7 @@ async function broken(): Promise<string[]> {
     }
   }
   return bad;
-}
+};
 
 // A lint of the live wiki.
 test("lint: each link in `wiki/` resolves", async () => {
