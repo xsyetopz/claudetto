@@ -1,76 +1,96 @@
 # Troubleshooting
 
-This page collects the troubleshooting rows of the dotclaude pages.
-Find the plugin or the symptom, and follow the link for the full text.
-A hook that fails does not block a call, so a missing effect is the usual symptom.
-Run `claude --debug` to see the hook log of Claude Code.
+This page lists the symptoms of dotclaude and their causes and fixes.
+Find the plugin, then the symptom.
+Each row names the page with the full description.
+
+The debug log of Claude Code shows what a hook or a plugin did.
 
 ## The core plugin `dotclaude`
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| No ask for a recursive `rm` | The plugin alone gives no `rm` ask, because a plugin cannot ship `permissions`. Merge the `ask` rules of the settings snippet. | [Guards](Guards) |
-| No policy ask for a repository of another owner | The repository has no policy file, belongs to you, or is not on GitHub. `gh` can also be missing or logged out, and then the ask fails open. Install `gh` and log in. | [Contributions](Contributions) |
-| A hook has no effect | Bun 1.4.3 or later is not on `PATH`. The status line, the setup command, the `second_opinion` tool, and the add-on hooks need it, and the core hooks module does not. The call goes on. | [Install](Install) |
-| The status line shows nothing | The `statusLine` command still runs the stub of 0.27.0, or `<plugin folder>` is not replaced. Use the absolute path of the installed plugin folder. The path holds the version, so change it after an update. | [Settings snippet](Settings-Snippet) |
-| The status line has no credits segment or no context breakdown | The data is not documented and can change at a Claude Code release. The breakdown shows only after `/context` ran. | [Undocumented reads](Undocumented-Reads) |
-| A note at session start lists differences from the snippet | The drift check found a difference. Each line gives its fix, and the fix is a step for you. | [Core plugin](Architecture#drift-check) |
-| The drift note says the guard is seated | The machine has managed settings or a Team or Enterprise login. The built-in guard `sec-default` skips the shared sections and the model variants (`prompt.compose`), and the `context_management` text. The other parts work. | [Request build](Request-Build#the-built-in-guard-sec-default) |
-| The `model` and `effort` of an agent file do not apply | `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set. Unset it. | [Agents](Agents) |
-| A `cat` or `sed -n` call is denied | The hook sends the print to `Read`, which gives a short stub for a repeat read. Call `Read` with the file and range in the reason. | [Context bound](Context-And-Handoff) |
-| A Markdown write is denied for a code item | A command, path, or identifier is outside single backticks. Put it in a code span. | [Core plugin](Architecture#the-hook-module) |
-| A `git stash` call is denied in a subagent | The `guard` denies `git stash`, `pop`, and `apply` in a subagent, because `refs/stash` is shared. `git stash drop` and `git stash clear` are forbidden in every session. Commit a WIP instead. | [Guards](Guards) |
-| An edit asks for a skipped test, a lint suppression, or a weaker protected file | The `guard` asks only when a change weakens a check. It never asks for a read. Allow the change only when you want it. Else tell Claude to change the code. | [Guards](Guards) |
-| A destructive command is denied and Claude stops | The `guard` denies the command, and Claude does not run it another way. Run the exact command that Claude gives you with `!` at the start of your prompt. | [Guards](Guards) |
-| A `git push` fails in the sandbox | The push runs outside the sandbox, because the snippet excludes it. Check your git credentials. | [Guards](Guards) |
+| No ask for a recursive `rm` | The plugin cannot set `permissions`, so the `ask` rules of the snippet do not load from the plugin. Run `/dotclaude:setup` to apply the snippet. | [Guards](Guards) |
+| No policy ask for a repository of another owner | The repository has no `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md`, or it belongs to you. The check also reads nothing when `gh` is missing or not logged in, so no ask is shown. Install `gh` and log in to GitHub. | [Contributions](Contributions) |
+| The status line shows nothing | The `<plugin folder>` placeholder of the snippet was not replaced, or the status line runs a dotclaude folder that is not the installed plugin. Run `/dotclaude:setup`. | [Settings-Snippet](Settings-Snippet) |
+| The status line has no credits segment or no context breakdown | dotclaude reads these values from Claude Code data that is not documented. A Claude Code release can change that data. | [Undocumented-Reads](Undocumented-Reads) |
+| A note at session start lists differences from the snippet | The drift check found a difference. The note names each fix, and the user applies it. dotclaude changes no setting. | [Architecture](Architecture#drift-check) |
+| The drift note says the guard is seated | Managed settings exist on this machine. The built-in guard `sec-default` skips the shared sections and the model variants of the system prompt, and the `context_management` text. The other parts of dotclaude still work. | [Request-Build](Request-Build#the-built-in-guard-sec-default) |
+| The drift note says the `model` and `effort` of the agent files do not apply | `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set. Unset it. | [Agents](Agents) |
+| The drift note says a built-in plugin is on | The snippet turns it off with `false` in `enabledPlugins`. Set that entry to `false` in the user settings. | [Settings-Snippet](Settings-Snippet) |
+| The drift note says the skill listing has synced claude.ai skills | Set `syncClaudeAiSkills` to `false` in the user settings. | [Settings-Snippet](Settings-Snippet) |
+| The drift note says Claude Code is not the tested version | A mod event can differ on this version. The note names the tested version. | [Hook-Events](Hook-Events) |
+| The drift note says a rule file has a `paths` problem | The `paths` front matter does not parse, or its braces expand to more than 1000 patterns, or its glob matches no tracked file. Fix the `paths` of that rule file. | [Architecture](Architecture#drift-check) |
+| A `cat` or `sed -n` call is denied | The `guard` denies a print of a file in `Bash`. Use `Read` for the file. `Read` sends a short stub when the same range is read again. | [Context-And-Handoff](Context-And-Handoff) |
+| A `git stash` call is denied in a subagent | The shared checkout and `refs/stash` belong to the main session, so the `guard` denies `git stash` in a subagent. Commit the work in progress instead. | [Guards](Guards) |
+| `git stash drop` or `git stash clear` is denied | The `guard` denies these calls in every session. Keep the stash. | [Guards](Guards) |
+| An edit asks before it goes on | The `asks` slice asks before a call that discards work, adds a skipped test or a lint suppression, or changes a protected file. It never asks for a read. Allow the change only if you want it. Otherwise, tell Claude to change the code. | [Guards](Guards) |
+| A destructive command is denied | The `guard` denies the command. Claude asks you to run the exact command as a `!` command at the start of your prompt. | [Guards](Guards) |
 
-## `dotclaude-codegraph`
-
-| Symptom | Cause and fix | Page |
-| --- | --- | --- |
-| The hooks add nothing | The project has no `.codegraph/codegraph.db`, or `codegraph` is not on `PATH`. Run `bin/dotclaude-codegraph-check`, then `codegraph init -y`. | [Code graph](Code-Graph) |
-| No graph context for a short name | A name under 3 characters gives too many hits, so the hook skips it. | [Code graph](Code-Graph) |
-
-## `dotclaude-browser`
+## The code graph `dotclaude-codegraph`
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| A site blocks `agent-browser` | Claude tells you which page blocked it and asks before it goes on. The steps are `agent-browser read`, a feed or API, CloakBrowser, or opening the page by hand. | [Browser](Browser) |
-| A search fails with "Socket path would be N bytes (max 103)" | The home folder path is too long. Use a shorter home folder. | [Browser](Browser) |
-| `WebSearch` is denied for the `cloakbrowser` backend | The CloakBrowser binary is not under `~/.cloakbrowser/`. Claude tells you and does not switch to plain `agent-browser`. Install CloakBrowser or set the `backend` option to `agent-browser`. | [Browser](Browser) |
+| The hooks add nothing | `codegraph` is not on `PATH`, or the project has no `.codegraph/codegraph.db`. Install `codegraph` with `npm i -g @colbymchenry/codegraph`, run `dotclaude-codegraph-check`, and run `codegraph init -y` in the project. | [Code-Graph](Code-Graph) |
+| The index is out of date | The sync runs after an edit and after a `git` command that changes the tree. A change made outside Claude Code does not sync. Run `codegraph sync -q` by hand. | [Code-Graph](Code-Graph) |
 
-## `second_opinion` in the core plugin
-
-| Symptom | Cause and fix | Page |
-| --- | --- | --- |
-| The result says the variable `TYPESAFE_API_KEY` is not set | The variable was not set when Claude Code started. Export it and restart. Until then, a Claude model answers. | [Second opinion](Second-Opinion#troubleshooting) |
-| The result says the key is not valid | Get a new key. | [Second opinion](Second-Opinion#troubleshooting) |
-| The result says the TypeSafe account has no balance | Add balance to the account. | [Second opinion](Second-Opinion#troubleshooting) |
-| No pick on a question | The question has fewer than 2 options, is a preference, or has a confidence under 0.5. Claude asks you the question in each case. | [Second opinion](Second-Opinion#troubleshooting) |
-
-## `dotclaude-docs`
+## The browser `dotclaude-browser`
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| The `docs` skill fails with a quota error | Set `CONTEXT7_API_KEY` for a higher limit. | [Library docs](Library-Docs) |
+| The skill says `agent-browser` is not installed | Run `npm install -g agent-browser`. | [Browser](Browser) |
+| The skill says the guide is missing | The `agent-browser skills get core` command gave no guide. It can time out, or the version can be too old. Run that command by hand to see its output. | [Browser](Browser) |
+| A site blocks `agent-browser` | Claude tells you which page blocked it, and it asks before it goes on. The steps are `agent-browser read` for the page, a feed, a sitemap, or an API, then CloakBrowser, then opening the page by hand. | [Browser](Browser) |
+| A `WebSearch` call is denied with the CloakBrowser message | The `backend` option is `cloakbrowser`, and no CloakBrowser binary is under `~/.cloakbrowser/`. Install CloakBrowser, or set `backend` to `agent-browser`. | [Browser](Browser) |
+| The search says the built-in `WebSearch` answered | The browser gave no result, because of a bot check, a failed step, or a page with no text. With the `cloakbrowser` backend, the result says so. | [Browser](Browser) |
+| A search fails with a socket path error | The home folder path is too long, and macOS refuses a socket path over 103 bytes. Use a shorter home folder path. | [Browser](Browser) |
 
-## `dotclaude-sessions`
+## The second opinion of the core plugin
+
+The full list of causes is on [Second-Opinion](Second-Opinion#troubleshooting).
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| `No request with usage` | The transcript has no model call yet. | [Sessions](Sessions#troubleshooting) |
+| The result says `TYPESAFE_API_KEY` is not set | The variable was not set when Claude Code started, so Jev was not tried. Export the variable and start Claude Code again. A small Claude model answers until then, and the result says so. | [Second-Opinion](Second-Opinion#troubleshooting) |
+| The result says the key is not valid | Get a new key, and set it in `TYPESAFE_API_KEY`. | [Second-Opinion](Second-Opinion#troubleshooting) |
+| The result says the TypeSafe account has no balance | Add balance to the account. | [Second-Opinion](Second-Opinion#troubleshooting) |
+| The question gets no pick | The tool does not pick for a question with fewer than 2 options, or for a preference, an approval, or a choice that reasonable engineers make either way. Claude asks you. | [Second-Opinion](Second-Opinion#troubleshooting) |
 
-## `dotclaude-lab`
+## The library docs `dotclaude-docs`
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| `just` in a tmux pane stops with "failed to get current directory" | Run `bun <repo>/plugins/dotclaude-lab/bin/dotclaude-sandbox --plugin-dir <repo>/plugins/dotclaude` in the pane. | [Sandbox](Sandbox#troubleshooting) |
-| No login in the sandbox | Run `/login`, or set `CLAUDE_CODE_OAUTH_TOKEN`. | [Sandbox](Sandbox#troubleshooting) |
-| "plugin is locked by managed settings" in the debug log | A managed `enabledPlugins` entry holds the name. Remove it. | [Sandbox](Sandbox#troubleshooting) |
-| `dotclaude-schema` exits with an error that names a version | See the page. | [Lab](Lab#troubleshooting) |
+| The `docs` skill reports a quota error | Set `CONTEXT7_API_KEY`, which raises the limit. | [Library-Docs](Library-Docs) |
+| A `ctx7` call is denied | The skill allows only one form of the call, in its `allowed-tools` entry. Ask the user, and do not change the form. | [Library-Docs](Library-Docs) |
+| `bunx` is not found | Install Bun, and check that `bunx` is on `PATH`. | [Library-Docs](Library-Docs) |
+
+## The sessions `dotclaude-sessions`
+
+| Symptom | Cause and fix | Page |
+| --- | --- | --- |
+| `No request with usage` | The transcript has no model call yet. Send one prompt, then run the command again. | [Sessions](Sessions) |
+| The usage report covers too short a period | The default period is 7 days. Pass `--days N` to `dotclaude-usage`. | [Sessions](Sessions) |
+| The usage report reads the wrong transcripts | Pass `--root DIR` to `dotclaude-usage` to read another transcripts folder. | [Sessions](Sessions) |
+| `dotclaude-start` measures the wrong session | Pass the path of the `.jsonl` file of the session to `dotclaude-start`. | [Sessions](Sessions) |
+
+## The sandbox and the lab `dotclaude-lab`
+
+| Symptom | Cause and fix | Page |
+| --- | --- | --- |
+| `claude` is not found, or the sandbox runs a shell function | The sandbox finds `claude` on `PATH` only. Put the `claude` executable on `PATH`, because a shell function or an alias does not work. | [Sandbox](Sandbox) |
+| No login in the sandbox | Run `/login` inside the sandbox, or set `CLAUDE_CODE_OAUTH_TOKEN`. | [Sandbox](Sandbox) |
+| `claude` finds no prompt in a headless run | Put the prompt before variadic flags such as `--allowedTools`. | [Sandbox](Sandbox) |
+| A headless tool call is denied with "you haven't granted it yet" | List the tool in `--allowedTools`. | [Sandbox](Sandbox) |
+| A `gh api` call fails in the sandbox | `gh` reads its token with the real `HOME`. Use a test that does not need it. | [Sandbox](Sandbox) |
+| The sandbox warns about a `--model` | The model is not in `availableModels` of the sandbox, so Claude Code runs another model. Pass a model from that list. | [Lab](Lab) |
+| The debug log says the plugin is locked | A managed setting locks the plugin name, so Claude Code ignores the `--plugin-dir` copy. Remove the managed `enabledPlugins` entry. | [Sandbox](Sandbox) |
+| `dotclaude-schema` exits with 2 | The command needs `--out DIR`. Pass it. | [Lab](Lab) |
+| `dotclaude-schema` says `claude is not on PATH.` or `--version exited with N` | The command finds no bundle to read the version from. Pass `--bundle FILE` and `--version X.Y.Z`. | [Lab](Lab) |
+| `dotclaude-capture` says the upstream is the address of the proxy | The upstream points to the port of the proxy, so requests would loop. Pass `--upstream URL`, or unset `ANTHROPIC_BASE_URL`. | [Lab](Lab) |
+| `dotclaude-eval-compare` stops at a cost bound | The command adds `--max-cost-usd 5` to each run when the options set no bound. Pass `--max-cost-usd` with a value of your choice. | [Lab](Lab) |
 
 ## Related pages
 
-- [Hook events](Hook-Events)
-- [Undocumented reads](Undocumented-Reads)
+- [Hook-Events](Hook-Events)
+- [Undocumented-Reads](Undocumented-Reads)
 - [Install](Install)

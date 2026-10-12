@@ -97,9 +97,4 @@ That fixture run has no evidence file in this checkout, so the number is the com
 
 ## Troubleshooting
 
-| Symptom | Cause and fix |
-| --- | --- |
-| The hooks add nothing | The project has no `.codegraph/codegraph.db`, or `codegraph` is not on `PATH`. Run `dotclaude-codegraph-check`, then `codegraph init -y`. |
-| The index is out of date | The sync runs after an edit and after a `git` command that changes the tree. Run `codegraph sync -q` by hand after a change made outside Claude Code. |
-
-See also [Troubleshooting](Troubleshooting).
+The symptoms of this plugin and their fixes are on [Troubleshooting](Troubleshooting).

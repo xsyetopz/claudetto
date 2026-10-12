@@ -102,11 +102,4 @@ The browser makes a socket path under the home folder, and macOS refuses a path 
 
 ## Troubleshooting
 
-| Symptom | Cause and fix |
-| --- | --- |
-| The skill says `agent-browser` is not installed | Run `npm install -g agent-browser`. |
-| The skill says the guide is missing | The installed `agent-browser` gave no guide, for example after a timeout or in an old version. Run `agent-browser --help` to see its commands. |
-| A `WebSearch` call is denied with the CloakBrowser message | The `backend` option is `cloakbrowser`, and no binary is at the path above. Install CloakBrowser, or set `backend` to `agent-browser`. |
-| The result says the built-in `WebSearch` answered | The browser gave no results, because of a bot check, a failed step, or a page with no text. The notice names the reason. |
-
-See also [Troubleshooting](Troubleshooting).
+The symptoms of this plugin and their fixes are on [Troubleshooting](Troubleshooting).
