@@ -55,11 +55,15 @@ test("a relative cd joins its folder with the working directory", async () => {
 });
 
 test("a subagent's branch switch reads the checkout of git -C, not of the working directory", async () => {
-  expect(await subagentDeny(`git -C ${q(main)} checkout -b x`, linked)).toContain(
-    `git -C ${q(main)} checkout -b x`,
-  );
-  expect(await subagentDeny(`git -C ${q(linked)} checkout -b x`, main)).toBeNull();
-  expect(await subagentDeny(`git -C ${q(linked)} switch main`, main)).toBeNull();
+  expect(
+    await subagentDeny(`git -C ${q(main)} checkout -b x`, linked),
+  ).toContain(`git -C ${q(main)} checkout -b x`);
+  expect(
+    await subagentDeny(`git -C ${q(linked)} checkout -b x`, main),
+  ).toBeNull();
+  expect(
+    await subagentDeny(`git -C ${q(linked)} switch main`, main),
+  ).toBeNull();
 });
 
 test("a subagent's branch switch reads the checkout of a leading cd, not of the working directory", async () => {
