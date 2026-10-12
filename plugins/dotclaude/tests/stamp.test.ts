@@ -12,13 +12,30 @@ const CONFIG = "/cfg";
 const INSTALLED = `${CONFIG}/plugins/installed_plugins.json`;
 const MANIFEST = "/.claude-plugin/plugin.json";
 const ELSEWHERE = "/elsewhere/dotclaude";
+const PARENT = "/parent/repo";
+const MARKETPLACE = "/.claude-plugin/marketplace.json";
 
-/** The facts of one start: the manifest text, the install entry, and the answer of `git`. */
+/**
+ * The facts of one start: the manifest text, the install entry, the answer of `git`, and the top folder of its repo.
+ * `repo` `root` is a dotclaude checkout, which holds `MARKETPLACE`. `repo` `parent` is a parent repo without it.
+ */
 type Facts = {
   manifest?: string;
   install?: { sha: string; installPath: "root" | "elsewhere" };
+  repo?: "root" | "parent";
   git: { exitCode: number; stdout: string };
 };
+
+/** The answer of one `process.run`. */
+const gitRun = (exitCode: number, stdout: string) => ({
+  value: {
+    exitCode,
+    stdout,
+    stderr: "",
+    isStdoutTruncated: false,
+    isStderrTruncated: false,
+  },
+});
 
 /** The `installed_plugins.json` of the stubs, with one entry for the plugin and its SHA. */
 const installedJson = (installPath: string, gitCommitSha: string) =>
@@ -35,10 +52,13 @@ const installedJson = (installPath: string, gitCommitSha: string) =>
  */
 const stub = (on: On, facts: Facts) => {
   let root = "";
+  const top = () => (facts.repo === "parent" ? PARENT : root);
   mock.env(on, { CLAUDE_CONFIG_DIR: CONFIG });
   on("session.start", (_$, e) => ({ cwd: e.cwd }));
   on("session.id", () => ({ value: "sess-1" }));
   on("fs.read", (_$, e) => {
+    if (facts.repo !== "parent" && e.path === `${root}${MARKETPLACE}`)
+      return { value: "{}" };
     if (e.path.endsWith(MANIFEST)) {
       root = e.path.slice(0, -MANIFEST.length);
       if (facts.manifest === undefined) throw new Error(`no file at ${e.path}`);
@@ -54,15 +74,9 @@ const stub = (on: On, facts: Facts) => {
   on("process.run", (_$, e) => {
     if (!e.argv.includes("rev-parse")) throw new Error(`no run of ${e.argv}`);
     const { exitCode, stdout } = facts.git;
-    return {
-      value: {
-        exitCode,
-        stdout,
-        stderr: "",
-        isStdoutTruncated: false,
-        isStderrTruncated: false,
-      },
-    };
+    if (e.argv.includes("--show-toplevel"))
+      return gitRun(exitCode, exitCode === 0 ? `${top()}\n` : "");
+    return gitRun(exitCode, stdout);
   });
   // The other hooks of `session.start` read these, and a stub keeps their notes out of the record.
   on("settings.read", (_$, e) => ({
@@ -126,6 +140,19 @@ test("no install entry and no `git` repo records `unknown`", async ($: Engine, o
   const session = stub(on, {
     manifest: MANIFEST_1,
     git: { exitCode: 128, stdout: "" },
+  });
+  await start($);
+  expect(records(session)).toMatchObject([
+    { version: "1.0.0", sha: "unknown", shaSource: "unknown" },
+  ]);
+});
+
+test("a parent repository that is not a dotclaude checkout records `unknown`", async ($: Engine, on: On) => {
+  // The parent repo has a HEAD, so only the marketplace check keeps its SHA out of the record.
+  const session = stub(on, {
+    manifest: MANIFEST_1,
+    repo: "parent",
+    git: { exitCode: 0, stdout: "fedcba9\n" },
   });
   await start($);
   expect(records(session)).toMatchObject([

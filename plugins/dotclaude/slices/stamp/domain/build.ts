@@ -63,6 +63,15 @@ export const gitSha = (run: {
 }): string | undefined =>
   run.exitCode === 0 ? shortSha(run.stdout.trim()) : undefined;
 
+/** The top folder that `git rev-parse --show-toplevel` printed, or undefined when it failed or printed nothing. */
+export const gitTop = (run: {
+  exitCode: number | null;
+  stdout: string;
+}): string | undefined => {
+  const top = run.stdout.trim();
+  return run.exitCode === 0 && top !== "" ? top : undefined;
+};
+
 /** The SHA of a stamp and its source: the install record first, then `git`, else `unknown`. */
 export const chooseSha = (
   installed: string | undefined,

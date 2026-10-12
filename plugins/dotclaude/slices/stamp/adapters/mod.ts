@@ -12,6 +12,7 @@ import { formatStamp, type StampRecord } from "../../../kernel/stamp.ts";
 import {
   chooseSha,
   gitSha,
+  gitTop,
   installedSha,
   parseJson,
   versionOf,
@@ -20,6 +21,9 @@ import { GIT_TIMEOUT_MS } from "../limits.ts";
 
 /** The file of Claude Code that records each installed plugin, in `CLAUDE_CONFIG_DIR` or in `~/.claude`. */
 const INSTALLED_FILE = "plugins/installed_plugins.json";
+
+/** The file that marks the top folder of a dotclaude checkout. */
+const MARKETPLACE = ".claude-plugin/marketplace.json";
 
 /**
  * The text of `file`, or undefined when the read fails.
@@ -54,17 +58,33 @@ const installSha = async ($: EngineInterface): Promise<string | undefined> => {
   return installedSha(parseJson(text), $.plugin.root);
 };
 
-/** The short SHA that `git` gives in the plugin root, or undefined when `git` fails or is absent. */
-const gitShaOf = async ($: EngineInterface): Promise<string | undefined> => {
+/** The output of `git rev-parse` with `args` in the plugin root, or undefined when `git` fails or is absent. */
+const revParse = async (
+  $: EngineInterface,
+  args: string[],
+): Promise<{ exitCode: number | null; stdout: string } | undefined> => {
   try {
-    const run = await $.process.run(["git", "rev-parse", "--short", "HEAD"], {
+    return await $.process.run(["git", "rev-parse", ...args], {
       cwd: $.plugin.root,
       timeoutMs: GIT_TIMEOUT_MS,
     });
-    return gitSha(run);
   } catch {
     return undefined;
   }
+};
+
+/**
+ * The short SHA that `git` gives in the plugin root, or undefined.
+ * The plugin root can sit in a parent repository, so `git` gives a SHA only when the top folder
+ * holds `MARKETPLACE`, the mark of a dotclaude checkout.
+ */
+const gitShaOf = async ($: EngineInterface): Promise<string | undefined> => {
+  const top = await revParse($, ["--show-toplevel"]);
+  const folder = top === undefined ? undefined : gitTop(top);
+  if (folder === undefined) return undefined;
+  if ((await readText($, `${folder}/${MARKETPLACE}`)) === undefined) return;
+  const head = await revParse($, ["--short", "HEAD"]);
+  return head === undefined ? undefined : gitSha(head);
 };
 
 /** The record of this session, or undefined when the manifest gives no version. */
