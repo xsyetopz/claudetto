@@ -11,11 +11,6 @@ tests/dotclaude/import-rules.test.ts
 tests/dotclaude/imports.test.ts
 tests/dotclaude/settings-pin.test.ts
 tests/support/
-tools/lab.ts
-tools/limits.ts
-tools/recipes.ts
-tools/sizes.ts
-tools/validate.ts
 
 # P04: the release scripts of `/ship`
 tools/bump-version.ts

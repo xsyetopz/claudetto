@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 // Validates the marketplace and each plugin with `claude plugin validate --strict`,
-// and fails when a repository file is over its line bound (design D18).
+// and fails when a repository file is over its line bound.
+// The bounds and the rule are in `spec/changes/1.0.0/design.md`, "Tests and checks".
 //
 //   bun tools/validate.ts   exit 0 when each manifest, skill, and agent is valid,
 //                           and each file is within its line bound
@@ -24,15 +25,14 @@ const GENERATED = [
   /^\.claude\/commands\/opsx\//,
 ];
 
-function bound(file: string): number {
-  return /\.test\.[^/]+$/.test(file) ? TEST_FILE_MAX_LINES : FILE_MAX_LINES;
-}
+const bound = (file: string): number =>
+  /\.test\.[^/]+$/.test(file) ? TEST_FILE_MAX_LINES : FILE_MAX_LINES;
 
 /** The files under `dir` that are over their bound, as "lines file". */
-export async function overBound(
+export const overBound = async (
   dir: string,
   files: string[],
-): Promise<string[]> {
+): Promise<string[]> => {
   const over = [];
   for (const f of files) {
     if (!TEXT.test(f) || GENERATED.some((g) => g.test(f))) continue;
@@ -43,17 +43,17 @@ export async function overBound(
     if (lines > bound(f)) over.push(`${lines} ${f}`);
   }
   return over;
-}
+};
 
 /** The files that git does not ignore: tracked and untracked, so `external/` and `node_modules/` are out. */
-function visibleFiles(dir: string): string[] {
+const visibleFiles = (dir: string): string[] => {
   const r = Bun.spawnSync(
     ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
     { cwd: dir },
   );
   if (r.exitCode !== 0) throw new Error(`git ls-files failed in ${dir}`);
   return r.stdout.toString().split("\n").filter(Boolean);
-}
+};
 
 if (import.meta.main) {
   const over = await overBound(root, visibleFiles(root));

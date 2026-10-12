@@ -1,5 +1,6 @@
-// The shared parts of the scripts that the `just` recipes run in place of shell-only syntax (design D11).
-// Each script runs its commands with `Bun.$` in the repository folder, so the same recipe runs on Windows, Linux, and macOS.
+// The shared parts of the scripts that the `just` recipes run in place of shell-only syntax.
+// Each script runs its commands with `Bun.$` in the repository folder.
+// So the same recipe runs on Windows, Linux, and macOS.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -33,14 +34,14 @@ class CommandFailed extends Error {
 }
 
 /** Runs `command` in the repository folder, and gives its output. A failure ends the script with the exit code of the command. */
-export async function must(command: Command) {
+export const must = async (command: Command) => {
   const out = await command.cwd(REPO).nothrow();
   if (out.exitCode !== 0) throw new CommandFailed(out.exitCode);
   return out;
-}
+};
 
 /** Runs `command` in the repository folder with no output on the terminal, and gives its standard output. A failure prints the output of the command and ends the script with its exit code. */
-export async function output(command: Command): Promise<string> {
+export const output = async (command: Command): Promise<string> => {
   const out = await command.cwd(REPO).quiet().nothrow();
   if (out.exitCode !== 0) {
     process.stderr.write(out.stdout);
@@ -48,14 +49,14 @@ export async function output(command: Command): Promise<string> {
     throw new CommandFailed(out.exitCode);
   }
   return out.stdout.toString();
-}
+};
 
 /** Runs the body of a script, and exits with the code of a failed command. */
-export async function recipe(body: () => Promise<void>): Promise<void> {
+export const recipe = async (body: () => Promise<void>): Promise<void> => {
   try {
     await body();
   } catch (err) {
     if (!(err instanceof CommandFailed)) throw err;
     process.exit(err.code);
   }
-}
+};

@@ -1,7 +1,6 @@
-// Repository bounds. Only tests and tools read them, so they do not ship in
-// `plugins/` (design D18: shared runtime bounds are in
-// `plugins/dotclaude/lib/budget.ts`, feature bounds in
-// `features/<name>/limits.ts`).
+// Repository bounds, read only by the tests and the tools, so they do not ship in `plugins/`.
+// A shared runtime bound is in `src/kernel/budget.ts`, and a slice bound is in `slices/<s>/limits.ts`.
+// The rule is in `spec/changes/1.0.0/design.md`, "Bounds".
 
 /** Most lines in a file that is not a test. */
 export const FILE_MAX_LINES = 300;
@@ -40,11 +39,10 @@ export const FIRST_REQUEST_LOW_BYTES = 8 * 1024;
 /** Most bytes in the first request, with no tool schemas (16 KB). `just measure` checks it. */
 export const FIRST_REQUEST_HIGH_BYTES = 16 * 1024;
 
-// Start-of-session bound (`tools/measure.ts`, design D4).
+// Start-of-session bound, checked by `tools/measure.ts`.
 
 /**
  * Most tokens in the first request of a dotclaude session (input, cache creation, and cache read).
- * Task 27.5 measured 9,485 tokens in a headless sandbox session of 0.28.0 on Opus 5.5 with the settings snippet,
- * and 9,485 plus 5% headroom, rounded up, is 9,960 (`wiki/core/Prompt-Surface.md`).
+ * A measure of 9,485 tokens in a headless session with the settings snippet, plus 5% headroom, rounded up, is 9,960.
  */
 export const START_TOKENS = 9_960;

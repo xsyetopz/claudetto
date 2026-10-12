@@ -24,7 +24,7 @@ type Entry = { path: string; text: string };
 const bytes = (text: string): number => Buffer.byteLength(text);
 
 /** The frontmatter `name` and `description` and the body of a `SKILL.md` text. */
-export function parseSkill(text: string) {
+export const parseSkill = (text: string) => {
   const match = /^---\n([\s\S]*?)\n---\n?([\s\S]*)$/.exec(text);
   const block = match?.[1] ?? "";
   const field = (key: string) =>
@@ -36,22 +36,22 @@ export function parseSkill(text: string) {
     description: field("description"),
     body: match ? (match[2] as string) : text,
   };
-}
+};
 
 /** The bytes of the frontmatter `name` and `description` of a `SKILL.md` text. */
-export function skillMetaBytes(text: string): number {
+const skillMetaBytes = (text: string): number => {
   const { name, description } = parseSkill(text);
   return bytes(name) + bytes(description);
-}
+};
 
 /** Adds a failure above `high` and an advisory below `low`. */
-function range(
+const range = (
   out: Report,
   label: string,
   size: number,
   low: number,
   high: number,
-) {
+) => {
   if (size > high)
     out.failures.push(
       `${label} is ${size} bytes, ${size - high} above ${high}`,
@@ -60,19 +60,19 @@ function range(
     out.advisories.push(
       `${label} is ${size} bytes, ${low - size} below ${low}`,
     );
-}
+};
 
 /**
  * The failures and advisories for the files of the repository.
  * `claudeMd` and `skills` are lists of `{ path, text }`.
  */
-export function checkSizes({
+export const checkSizes = ({
   claudeMd = [],
   skills = [],
 }: {
   claudeMd?: Entry[];
   skills?: Entry[];
-}): Report {
+}): Report => {
   const out: Report = { failures: [], advisories: [] };
   for (const { path, text } of claudeMd)
     range(out, path, bytes(text), 0, CLAUDE_MD_MAX_BYTES);
@@ -111,10 +111,10 @@ export function checkSizes({
       );
   }
   return out;
-}
+};
 
 /** The failures and advisories for the bytes of the first request, with no tool schemas. */
-export function checkFirstRequestBytes(size: number): Report {
+export const checkFirstRequestBytes = (size: number): Report => {
   const out: Report = { failures: [], advisories: [] };
   range(
     out,
@@ -124,4 +124,4 @@ export function checkFirstRequestBytes(size: number): Report {
     FIRST_REQUEST_HIGH_BYTES,
   );
   return out;
-}
+};
