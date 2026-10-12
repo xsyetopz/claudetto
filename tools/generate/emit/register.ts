@@ -3,6 +3,7 @@
 // and one `on()` call for each handler, with the event and the filter as literals,
 // because `claude plugin validate` and the mod runtime read them only as literals in this file.
 // Each call has the comment `// eval: <event> <slice>` above it, which names its entry in `evals/hooks.json`.
+// The unfiltered `observe` handlers of one event share one call, with one comment line for each handler (`joinedCall`).
 // A handler with `configure` gets the `userConfig` values of the plugin, which the mod runtime gives to `register` as `options`:
 // the register calls each `configure` once with `options`, before the `on()` calls.
 // When the hand-written `plugins/<plugin>/hooks/legacy.ts` of the rebuild list exists, the register calls its `register` last.
@@ -23,6 +24,39 @@ const exportOf = (
     .find((key) => key !== "default" && mod[key] === run);
 
 const compare = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
+
+/** The `on()` call of the handler `e`, with its `// eval:` comment, and `hook`, the name of its alias. */
+const onCall = (e: Entry, hook: string): string => {
+  const filter = filterOf(e);
+  const args = [JSON.stringify(e.handler.event), ...(filter ? [filter] : [])];
+  return [
+    `  // eval: ${e.handler.event} ${e.slice}`,
+    `  on(${[...args, hook].join(", ")});`,
+  ].join("\n");
+};
+
+/**
+ * The one `on()` call of `group`, the unfiltered handlers of one event in their order, nested as two registrations are.
+ * The first handler gets the `next` of the second, which runs the second handler and then the rest of the chain.
+ * Each handler gets the event that the handler before it passed to `next`, or the event of the call.
+ * `Object.assign` keeps the members of `next`, such as `is` and `signal`.
+ * The comment has one `// eval:` line for each handler, so the eval reader finds each id.
+ */
+const joinedCall = (
+  group: readonly Entry[],
+  hookOf: (e: Entry) => string,
+): string => {
+  const event = (group[0] as Entry).handler.event;
+  // The `next` that the handler `i - 1` gets: the handler `i`, with the `next` of the handler `i + 1`.
+  const from = (i: number): string =>
+    i === group.length
+      ? "next"
+      : `Object.assign((ev?: typeof e) => ${hookOf(group[i] as Entry)}($, ev ?? e, ${from(i + 1)}), next)`;
+  return [
+    ...group.map((e) => `  // eval: ${event} ${e.slice}`),
+    `  on(${JSON.stringify(event)}, ($, e, next) => ${hookOf(group[0] as Entry)}($, e, ${from(1)}));`,
+  ].join("\n");
+};
 
 /** The generated `register.ts` of the plugin `p` of `root`, or none when its slices have no mod handler and it has no `legacy.ts`. */
 export const registerOf = async (
@@ -80,15 +114,22 @@ export const registerOf = async (
       ` } from "${path.posix.join("..", "slices", dir, "adapters", "mod.ts")}";`,
     ].join(""),
   );
-  const calls = order(entries).map((e) => {
-    const at = where.get(e) as { dir: string; name: string };
-    const filter = filterOf(e);
-    const args = [JSON.stringify(e.handler.event), ...(filter ? [filter] : [])];
-    const hook = alias.get(`${at.dir}\0${at.name}`) as string;
-    return [
-      `  // eval: ${e.handler.event} ${e.slice}`,
-      `  on(${[...args, hook].join(", ")});`,
-    ].join("\n");
+  const sorted = order(entries);
+  const hookOf = (e: Entry): string =>
+    alias.get(`${where.get(e)?.dir}\0${where.get(e)?.name}`) as string;
+  // The unfiltered handlers of one event that `order` lets share a call: all of them are `observe`.
+  const shared = (e: Entry): boolean =>
+    e.handler.filter === undefined &&
+    sorted.filter(
+      (x) =>
+        x.handler.filter === undefined && x.handler.event === e.handler.event,
+    ).length > 1;
+  const calls = sorted.flatMap((e) => {
+    if (!shared(e)) return [onCall(e, hookOf(e))];
+    const group = sorted.filter(
+      (x) => shared(x) && x.handler.event === e.handler.event,
+    );
+    return group[0] === e ? [joinedCall(group, hookOf)] : [];
   });
   const configured = configures.size > 0;
   const file = `plugins/${p.name}/hooks/register.ts`;

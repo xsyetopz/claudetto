@@ -10,10 +10,17 @@ import type {
   SessionUsage,
 } from "claude-code";
 import { onSessionStart } from "../../../plugins/dotclaude/slices/setup/adapters/mod.ts";
+import { planAutoMode } from "../../../plugins/dotclaude/slices/setup/domain/automode.ts";
 import { snippetFor } from "../../../plugins/dotclaude/slices/setup/domain/merge.ts";
 import { GAP_KEYS_MAX } from "../../../plugins/dotclaude/slices/setup/limits.ts";
 
 const ROOT = "/plugins/dotclaude";
+
+/** The snippet of `current` with the `autoMode` lists that setup writes to the user settings. */
+const applied = (current: unknown, root: string, mythos = false) => ({
+  ...snippetFor(current, root, mythos),
+  ...planAutoMode(current, []),
+});
 const OFF = [
   "cc-plugin-agents-md@builtin",
   "cc-plugin-claude-test@builtin",
@@ -42,6 +49,7 @@ const usageOf = (skillFrontmatter: ContextSkill[]): SessionUsage =>
 
 type Facts = {
   settings?: Record<string, unknown>;
+  user?: Record<string, unknown>;
   policy?: Record<string, unknown>;
   version?: string;
   skills?: ContextSkill[];
@@ -53,7 +61,8 @@ type Facts = {
 
 /** Run the handler with a fake `$` for a session with no drift. Each option changes one fact. Returns the notes it appended. */
 const run = async ({
-  settings = snippetFor({}, ROOT),
+  settings = applied({}, ROOT),
+  user = settings,
   policy = {},
   version = "2.1.296",
   skills = [],
@@ -66,8 +75,10 @@ const run = async ({
   const fake = {
     plugin: { root: ROOT },
     settings: {
-      read: async (o?: { source?: string }) =>
-        o?.source === "policy" ? policy : settings,
+      read: async (o?: { source?: string }) => {
+        if (o?.source === "policy") return policy;
+        return o?.source === "user" ? user : settings;
+      },
     },
     session: {
       version: async () => ({ version }),
@@ -90,6 +101,12 @@ const run = async ({
 
 test("no drift adds no text", async () => {
   expect(await run()).toEqual([]);
+});
+
+test("the `autoMode` lists of the project settings do not count as the user's", async () => {
+  // The merged settings hold the lists, but the user settings do not.
+  const [note] = await run({ user: snippetFor({}, ROOT) });
+  expect(note).toBeTruthy();
 });
 
 test("a built-in plugin that is on again is named", async () => {
@@ -175,7 +192,7 @@ test("a new session with drift still gets its note", async () => {
 test("a settings file without the snippet names the missing values and the setup skill", async () => {
   const [note] = await run({ settings: PROFILE });
   // The missing keys are the snippet keys that `PROFILE` does not hold with the same value, and the built-in plugins have their own line.
-  const want = snippetFor(PROFILE, ROOT);
+  const want = applied(PROFILE, ROOT);
   const have: Record<string, unknown> = PROFILE;
   const missing = Object.keys(want).filter(
     (k) =>
@@ -190,12 +207,12 @@ test("a settings file without the snippet names the missing values and the setup
 
 test("a status line of another plugin version folder is reported as stale", async () => {
   const [note] = await run({
-    settings: snippetFor({}, "/cache/dotclaude/dotclaude/0.27.0"),
+    settings: applied({}, "/cache/dotclaude/dotclaude/0.27.0"),
   });
   expect(note).toContain("`statusLine.command`");
   expect(note).toContain("`subagentStatusLine.command`");
 });
 
 test("a settings file with Mythos in place of Fable has no drift", async () => {
-  expect(await run({ settings: snippetFor({}, ROOT, true) })).toEqual([]);
+  expect(await run({ settings: applied({}, ROOT, true) })).toEqual([]);
 });

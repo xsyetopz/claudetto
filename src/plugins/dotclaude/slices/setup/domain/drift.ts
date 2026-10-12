@@ -3,6 +3,7 @@
 
 import type { ContextSkill, PromptComposeSection, Settings } from "claude-code";
 import { GAP_KEYS_MAX } from "../limits.ts";
+import { planAutoMode } from "./automode.ts";
 import {
   ENGINE_SECTIONS,
   GUARD_SKIPS,
@@ -28,11 +29,18 @@ const STATUS_KEYS = ["statusLine.command", "subagentStatusLine.command"];
  * The key paths of the snippet that `settings` does not have or holds with another value.
  * `root` is the folder of the running plugin, so a status line command of another version is a gap.
  * The built-in plugins have their own line, so their keys are not here.
+ * The `autoMode` lists are checked against `user` only, the user settings, because Claude Code reads them only from there.
+ * `user` is undefined when the check of `autoMode` does not apply, so no `autoMode` gap is reported.
  */
-export const snippetGaps = (settings: Settings, root: string): string[] => {
+export const snippetGaps = (
+  settings: Settings,
+  root: string,
+  user?: Settings,
+): string[] => {
   const changes: Change[] = [];
   const want = snippetFor(settings, root);
   mergeSettings(settings, want, "", changes);
+  if (user) planAutoMode(user, changes);
   // The merged view can repeat or add models, so `availableModels` is a gap only when it lacks a model of the snippet.
   const have: unknown[] = Array.isArray(settings["availableModels"])
     ? settings["availableModels"]
@@ -100,6 +108,7 @@ export const isSeated = (policy: Settings | undefined) =>
  * The lines of the drift check, in a fixed order.
  * The facts are `settings` (merged), `policy` (the managed source), `version`, `skills` (the listing entries), `sections`,
  * and `blocking` (the value of each variable that overrides the agent files).
+ * `user` is the user settings, which hold the `autoMode` lists that count.
  * A fact that the caller could not read is undefined, and it gives no line.
  * The result is empty when nothing differs.
  */
@@ -111,6 +120,7 @@ export const driftLines = ({
   sections,
   blocking = {},
   root,
+  user,
 }: {
   settings?: Settings | undefined;
   policy?: Settings | undefined;
@@ -120,6 +130,8 @@ export const driftLines = ({
   blocking?: Record<string, string | undefined>;
   /** The folder of the running plugin. */
   root?: string;
+  /** The user settings. Claude Code reads the `autoMode` lists only from them. */
+  user?: Settings | undefined;
 }): string[] => {
   const lines: string[] = [];
   if (isSeated(policy))
@@ -137,7 +149,7 @@ export const driftLines = ({
     );
   const gaps =
     settings && root
-      ? snippetGaps(settings, root).filter((k) => !stale.includes(k))
+      ? snippetGaps(settings, root, user).filter((k) => !stale.includes(k))
       : [];
   if (gaps.length) {
     const keys = [...new Set(gaps.map((k) => k.split(".")[0] ?? k))];

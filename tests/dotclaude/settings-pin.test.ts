@@ -12,7 +12,7 @@ import {
   SCHEMA,
   type Settings,
 } from "../support/settings-pin.ts";
-import { validate } from "./fixtures/validate.ts";
+import { validate } from "../support/validate.ts";
 
 const SNIPPET = "wiki/settings/Settings-Snippet.md";
 

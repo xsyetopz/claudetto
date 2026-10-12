@@ -2,7 +2,10 @@
 // The lab test `plugins/dotclaude/tests/drift.test.ts` runs the `session.start` handler.
 
 import { expect, test } from "bun:test";
+import fs from "node:fs";
 import path from "node:path";
+import { driftCommand } from "../../../plugins/dotclaude/slices/setup/adapters/drift-cmd.ts";
+import { planAutoMode } from "../../../plugins/dotclaude/slices/setup/domain/automode.ts";
 import {
   driftLines,
   driftNote,
@@ -19,7 +22,7 @@ import {
   TESTED_VERSION,
 } from "../../../plugins/dotclaude/slices/setup/domain/facts.ts";
 import { snippetFor } from "../../../plugins/dotclaude/slices/setup/domain/merge.ts";
-import { REPO } from "../../support/repo.ts";
+import { REPO, tmpDir } from "../../support/repo.ts";
 
 // Settings that turn off each plugin of `OFF_PLUGINS`, as the settings snippet of the wiki does.
 const profile = {
@@ -97,7 +100,7 @@ test("the note lists each line", () => {
 
 test("the snippet gaps skip a superset of `availableModels`, the built-in plugins, and a status line of another tool", () => {
   const root = "/plugins/dotclaude";
-  const full = snippetFor({}, root);
+  const full = { ...snippetFor({}, root), ...planAutoMode({}, []) };
   const models = full["availableModels"] as string[];
   const settings = {
     ...full,
@@ -110,6 +113,58 @@ test("the snippet gaps skip a superset of `availableModels`, the built-in plugin
   expect(
     snippetGaps({ ...full, availableModels: ["claude-opus-5-5"] }, root),
   ).toStrictEqual(["availableModels"]);
+});
+
+test("the snippet gaps name each `autoMode` list that lacks its entries, and a list with `$defaults` is no gap", () => {
+  const root = "/plugins/dotclaude";
+  const full = { ...snippetFor({}, root), enabledPlugins: {} };
+  expect(snippetGaps(full, root, {})).toStrictEqual([
+    "autoMode.allow",
+    "autoMode.soft_deny",
+    "autoMode.hard_deny",
+    "autoMode.environment",
+  ]);
+  const withLists = { ...full, ...planAutoMode({}, []) };
+  expect(snippetGaps(withLists, root, withLists)).toStrictEqual([]);
+});
+
+test("the snippet gaps skip the `autoMode` lists when no user settings are given", () => {
+  const root = "/plugins/dotclaude";
+  const full = { ...snippetFor({}, root), enabledPlugins: {} };
+  expect(snippetGaps(full, root)).toStrictEqual([]);
+});
+
+test("the `autoMode` lists of the merged settings do not count for the user settings", () => {
+  const root = "/plugins/dotclaude";
+  const full = { ...snippetFor({}, root), enabledPlugins: {} };
+  const merged = { ...full, ...planAutoMode({}, []) };
+  expect(snippetGaps(merged, root, {})).toStrictEqual([
+    "autoMode.allow",
+    "autoMode.soft_deny",
+    "autoMode.hard_deny",
+    "autoMode.environment",
+  ]);
+});
+
+test("the `drift` command reports the `autoMode` lists of the user scope only", async () => {
+  const root = "/plugins/dotclaude";
+  const dir = tmpDir("dc-drift");
+  const places = {
+    configDir: path.join(dir, "config"),
+    projectDir: path.join(dir, "project"),
+    root,
+  };
+  fs.mkdirSync(places.configDir, { recursive: true });
+  fs.mkdirSync(path.join(places.projectDir, ".claude"), { recursive: true });
+  const settings = JSON.stringify({ ...snippetFor({}, root), ...profile });
+  await Bun.write(path.join(places.configDir, "settings.json"), settings);
+  await Bun.write(
+    path.join(places.projectDir, ".claude", "settings.json"),
+    settings,
+  );
+  const io = { log: () => {}, error: () => {} };
+  expect(await driftCommand({ scope: "project" }, places, io)).toBe(0);
+  expect(await driftCommand({ scope: "user" }, places, io)).toBe(1);
 });
 
 test("a 0.27.0 launcher stub in the status line is stale", () => {

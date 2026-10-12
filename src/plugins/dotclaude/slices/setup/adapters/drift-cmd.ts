@@ -27,7 +27,11 @@ export const driftCommand = async (
     io.error(`${file}: ${(err as Error).message}`);
     return 2;
   }
-  const lines = driftLines({ settings, root });
+  const lines = driftLines({
+    settings,
+    root,
+    user: scope === "user" ? settings : undefined,
+  });
   io.log(`Target: ${file} (${scope} scope)`);
   io.log(lines.length ? "Differences:" : "No difference from the snippet.");
   for (const line of lines) io.log(`  ${line}`);

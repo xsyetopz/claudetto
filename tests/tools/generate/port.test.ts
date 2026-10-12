@@ -88,22 +88,54 @@ test("the register calls the `register` of `legacy.ts` after the slice handlers"
   expect(events.length).toBeGreaterThan(1);
 });
 
-test("each `on()` call of the register has the id `<event> <slice>` above it", async () => {
+/** The `// eval:` ids of the block directly above line `i`, in order, for a joined `on()` call with one id per handler. */
+const evalIdsAbove = (lines: string[], i: number): string[] => {
+  const ids: string[] = [];
+  for (let j = i - 1; j >= 0; j--) {
+    const id = /^\s*\/\/ eval: (.+)$/.exec(lines[j] ?? "")?.[1];
+    if (id === undefined) break;
+    ids.unshift(id);
+  }
+  return ids;
+};
+
+/** The ids above each `on()` call of the register of `dir`, in the order of the calls. */
+const registerIds = async (dir: string): Promise<string[]> => {
   const file = "plugins/p/hooks/register.ts";
-  const text = textOf(await generated(await fixtureRoot()), file);
+  const text = textOf(await generated(dir), file);
   expect(moduleHooks({ [file]: text }).faults).toStrictEqual([]);
   const lines = text.split("\n");
-  const ids = lines.flatMap((line, i) =>
-    /^\s*on\(/.test(line)
-      ? [/^\s*\/\/ eval: (.+)$/.exec(lines[i - 1] ?? "")?.[1]]
-      : [],
+  return lines.flatMap((line, i) =>
+    /^\s*on\(/.test(line) ? evalIdsAbove(lines, i) : [],
   );
-  expect(ids).toStrictEqual([
+};
+
+test("each `on()` call of the register has the id `<event> <slice>` above it", async () => {
+  expect(await registerIds(await fixtureRoot())).toStrictEqual([
     "prompt.compose alpha",
     "prompt.compose beta",
     "tool.call beta",
     "tool.call alpha",
     "tool.call beta",
+  ]);
+});
+
+test("a joined `on()` call of two observe slices has the id of each slice above it", async () => {
+  const observe = (name: string): Record<string, string> => ({
+    [`src/plugins/p/slices/${name}/adapters/mod.ts`]:
+      "export const start = (_$: unknown, e: unknown, next: (e: unknown) => unknown) => next(e);\n",
+    [`src/plugins/p/slices/${name}/slice.ts`]: `import { start } from "./adapters/mod.ts";
+export const slice = { name: "${name}", mod: [
+  { event: "session.start", phase: "observe", run: start },
+] };
+`,
+  });
+  const ids = await registerIds(
+    await fixtureRoot({ ...observe("omega"), ...observe("psi") }),
+  );
+  expect(ids.filter((id) => id.startsWith("session.start "))).toStrictEqual([
+    "session.start omega",
+    "session.start psi",
   ]);
 });
 
