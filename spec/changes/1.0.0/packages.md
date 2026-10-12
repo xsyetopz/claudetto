@@ -21,7 +21,7 @@ Critical path: P01a, P01b, P05 and P06, P13, P14, P15, P16.
 
 ## Wave 1: foundation
 
-- [ ] P01a Kernel: `src/kernel/slice.ts` with the phases, `ports.ts`, the split of `src/kernel/` and `src/kernel/node/`, `budget.ts`, and `spec-store.ts` with the store types and the reader.
+- [x] P01a Kernel: `src/kernel/slice.ts` with the phases, `ports.ts`, the split of `src/kernel/` and `src/kernel/node/`, `budget.ts`, and `spec-store.ts` with the store types and the reader.
   Owns: `src/kernel/`, `tests/kernel/`.
   Verify: `just test tests/kernel`.
 - [ ] P01b Generator, proved on one real slice: `tools/generate/` finds the slices and writes `plugin.json`, `hooks.json`, `register.ts`, the launchers, the `kernel/` closure, the texts, and the snippet.

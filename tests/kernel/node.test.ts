@@ -31,7 +31,7 @@ test("`readTail` returns the end of a file and says when it cut the start", asyn
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kernel-tail-"));
   try {
     const file = path.join(dir, "t.txt");
-    fs.writeFileSync(file, "0123456789");
+    await Bun.write(file, "0123456789");
     expect(await readTail(file, 4)).toStrictEqual({
       text: "6789",
       truncated: true,
