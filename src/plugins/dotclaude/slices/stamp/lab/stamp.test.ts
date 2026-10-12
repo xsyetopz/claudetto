@@ -50,7 +50,19 @@ const stub = (on: On, facts: Facts) => {
     }
     throw new Error(`no file at ${e.path}`);
   });
-  on("process.run", () => ({ value: { ...facts.git, stderr: "" } }));
+  on("process.run", (_$, e) => {
+    if (!e.argv.includes("rev-parse")) throw new Error(`no run of ${e.argv}`);
+    const { exitCode, stdout } = facts.git;
+    return {
+      value: {
+        exitCode,
+        stdout,
+        stderr: "",
+        isStdoutTruncated: false,
+        isStderrTruncated: false,
+      },
+    };
+  });
   // The other hooks of `session.start` read these, and a stub keeps their notes out of the record.
   on("settings.read", (_$, e) => ({
     value: e.source === "policy" ? {} : { syncClaudeAiSkills: false },
