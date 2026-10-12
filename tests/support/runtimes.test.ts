@@ -76,14 +76,29 @@ test("a `.js`, a `.mjs`, a `.tsx`, and a `.d.ts` that no manifest names fail, an
   ]);
 });
 
+/**
+ * The `compilerOptions` of the repository config and of the config that it extends, with no type library.
+ * The extended config extends `.claude-plugin/types/tsconfig.json`, which Claude Code writes only when it loads the plugin, so a fresh checkout such as CI does not have it.
+ */
+const ownOptions = async (): Promise<Record<string, unknown>> => {
+  const options = {};
+  for (const file of ["plugins/dotclaude/tsconfig.json", "tsconfig.json"]) {
+    const { compilerOptions } = await Bun.file(path.join(REPO, file)).json();
+    Object.assign(options, compilerOptions);
+  }
+  const {
+    types: _types,
+    typeRoots: _roots,
+    ...rest
+  } = options as Record<string, unknown>;
+  return { ...rest, types: [] };
+};
+
 test("Non-erasable syntax: `bun check` with the config of the repository fails on an `enum` and names the file", async () => {
   const dir = tmpDir("erasable");
   await Bun.write(
     path.join(dir, "tsconfig.json"),
-    JSON.stringify({
-      extends: path.join(REPO, "tsconfig.json"),
-      include: ["*.ts"],
-    }),
+    JSON.stringify({ compilerOptions: await ownOptions(), include: ["*.ts"] }),
   );
   const file = path.join(dir, "kind.ts");
   const check = () =>
