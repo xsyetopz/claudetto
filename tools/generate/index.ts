@@ -12,8 +12,8 @@ import { generated, problems } from "./outputs.ts";
 
 const REPO = path.resolve(import.meta.dir, "../..");
 
-/** A launcher in `bin/` of a plugin, which runs as a program. */
-const LAUNCHER = /^plugins\/[^/]+\/bin\//;
+/** A launcher in `bin/` of a plugin, or a scaffold script of an eval case, which run as programs. */
+const LAUNCHER = /^plugins\/[^/]+\/bin\/|^plugins\/[^/]+\/evals\/.+\.sh$/;
 
 if (process.argv[1] === import.meta.path) {
   const made = await generated(REPO);
