@@ -5,22 +5,23 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
+import { store } from "../../../src/plugins/dotclaude-sessions/slices/start-cost/adapters/store.ts";
 import {
   attachmentSizes,
   firstRequest,
   firstRequestBytes,
   type Snapshot,
   snapshotSizes,
-} from "../../../plugins/dotclaude-sessions/features/start/first.ts";
+} from "../../../src/plugins/dotclaude-sessions/slices/start-cost/domain/first.ts";
 import {
   repeatReads,
   subagentRuns,
   toolResults,
-} from "../../../plugins/dotclaude-sessions/features/start/session.ts";
+} from "../../../src/plugins/dotclaude-sessions/slices/start-cost/domain/session.ts";
 import {
   readEntries,
   type Usage,
-} from "../../../plugins/dotclaude-sessions/lib/transcript.ts";
+} from "../../../src/plugins/dotclaude-sessions/slices/start-cost/domain/transcript.ts";
 import { tmpDir } from "../../support/repo.ts";
 
 const dir = () => tmpDir("readers");
@@ -48,7 +49,7 @@ const back = (id: string, content: unknown) => ({
 const read = async (entries: unknown[]) => {
   const file = path.join(dir(), "s.jsonl");
   await writeJsonl(file, entries);
-  return await readEntries(file);
+  return await readEntries(store, file);
 };
 
 test("the first request is null when the transcript has no usage, and a cut line does not hide the next", async () => {
@@ -121,12 +122,12 @@ test("a session with no subagent folder has no runs, and a run with no request h
   const root = dir();
   const file = path.join(root, "s.jsonl");
   await writeJsonl(file, [reply("a", { input_tokens: 1 })]);
-  expect(await subagentRuns(file)).toStrictEqual([]);
+  expect(await subagentRuns(store, file)).toStrictEqual([]);
   const sub = path.join(root, "s", "subagents");
   await writeJsonl(path.join(sub, "agent-e1.jsonl"), [{ type: "user" }]);
   await writeJsonl(path.join(sub, "agent-e1.notes.txt"), ["not a transcript"]);
   await Bun.write(path.join(sub, "agent-e1.meta.json"), "{ cut");
-  expect(await subagentRuns(file)).toStrictEqual([
+  expect(await subagentRuns(store, file)).toStrictEqual([
     {
       id: "e1",
       agentType: "subagent",
@@ -148,7 +149,7 @@ test("a subagent run counts the first record of each message id and the last req
     reply("r2", { input_tokens: 5, cache_read_input_tokens: 5 }),
     reply("r3", { input_tokens: 0 }),
   ]);
-  const [run] = await subagentRuns(file);
+  const [run] = await subagentRuns(store, file);
   expect(run).toMatchObject({
     requests: 2,
     finalContext: 10,

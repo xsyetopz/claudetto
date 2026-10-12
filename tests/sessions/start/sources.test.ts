@@ -3,19 +3,20 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import { reportOf } from "../../../plugins/dotclaude-sessions/features/start/cli.ts";
+import { store } from "../../../src/plugins/dotclaude-sessions/slices/start-cost/adapters/store.ts";
+import { reportOf } from "../../../src/plugins/dotclaude-sessions/slices/start-cost/domain/report.ts";
 import {
   compareSources,
   nameSource,
   type SourceSize,
   sourceSizes,
   toolSource,
-} from "../../../plugins/dotclaude-sessions/features/start/sources.ts";
+} from "../../../src/plugins/dotclaude-sessions/slices/start-cost/domain/sources.ts";
 import {
   type Attachment,
   type Entry,
   readEntries,
-} from "../../../plugins/dotclaude-sessions/lib/transcript.ts";
+} from "../../../src/plugins/dotclaude-sessions/slices/start-cost/domain/transcript.ts";
 import { PLUGINS, tmpDir } from "../../support/repo.ts";
 import { runBin } from "../spawn.ts";
 
@@ -30,7 +31,7 @@ const request = (input: number): Entry => ({
   message: { id: `m${input}`, usage: { input_tokens: input }, content: [] },
 });
 
-async function write(entries: Entry[]) {
+const write = async (entries: Entry[]) => {
   const dir = tmpDir("start");
   const file = path.join(dir, "s.jsonl");
   await Bun.write(
@@ -38,7 +39,7 @@ async function write(entries: Entry[]) {
     `${entries.map((e) => JSON.stringify(e)).join("\n")}\n`,
   );
   return file;
-}
+};
 
 // A start: the system prompt and two tools, then the listings, then the first request.
 const SKILLS = "- plain: 10 chars.\n- plug:one: more text here.";
@@ -92,7 +93,9 @@ test("the names of a tool, skill, and agent map to a built-in set, a plugin by p
 });
 
 test("the start groups the first request by source, and leaves out a record after the first request", async () => {
-  const rows = chars(sourceSizes(await readEntries(await write(start()))));
+  const rows = chars(
+    sourceSizes(await readEntries(store, await write(start()))),
+  );
   const bash = JSON.stringify({ name: "Bash", description: "b" }).length;
   const mcp = JSON.stringify({
     name: "mcp__files__read",
@@ -121,8 +124,9 @@ test("the start groups the first request by source, and leaves out a record afte
 });
 
 test("the compare mode prints the difference by source, other minus base", async () => {
-  const base = await readEntries(await write(start()));
+  const base = await readEntries(store, await write(start()));
   const other = await readEntries(
+    store,
     await write(
       start([
         att({
@@ -170,8 +174,8 @@ test("the bin prints the compare table, and it needs two readable files", async 
 
 test("the report fails on size only when a bound is given", async () => {
   const file = await write(start());
-  expect((await reportOf(file, undefined)).ok).toBe(true);
-  expect((await reportOf(file, 4)).ok).toBe(false);
+  expect((await reportOf(store, file, undefined)).ok).toBe(true);
+  expect((await reportOf(store, file, 4)).ok).toBe(false);
   const run = (...args: string[]) => runBin(BIN, [file, ...args]);
   expect(run().status).toBe(0);
   expect(run("--bound", "4").status).toBe(1);
