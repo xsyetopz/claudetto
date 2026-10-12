@@ -9,14 +9,14 @@ import {
   REPORT_MAX_WORDS,
   SUBAGENT_CONTEXT_MAX,
   TURNS_LEFT_AT,
-} from "../../../plugins/dotclaude/features/context/limits.ts";
+} from "../../../src/plugins/dotclaude/slices/handoff/limits.ts";
 import {
   BASH_OUTPUT_MAX_CHARS,
   CONTEXT_WINDOW,
   POLICY_FILE_MAX_CHARS,
   POLICY_TIMEOUT_MS,
   USAGE_LEVELS,
-} from "../../../plugins/dotclaude/lib/budget.ts";
+} from "../../../src/kernel/budget.ts";
 import { FILE_MAX_BYTES } from "../../../src/plugins/dotclaude/slices/asks/limits.ts";
 import { MAX_ROWS } from "../../../src/plugins/dotclaude/slices/statusline/limits.ts";
 
