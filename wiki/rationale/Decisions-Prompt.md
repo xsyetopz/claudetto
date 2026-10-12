@@ -96,7 +96,7 @@ Alternatives: no other alternative is recorded in the sources of this decision.
 
 See [Prompt surface](Prompt-Surface) for the rules in the sections and [Prompt variants](Prompt-Variants) for the variants.
 
-## D16 Request capture and the 30K start
+## D16 Request capture and the session start
 
 Problem: the measure of D4 does not show the request that Claude Code sends.
 The start of a session is larger in the capture than in the measure.

@@ -108,7 +108,7 @@ It writes two files:
 - `schemas/claude-code-managed-settings.json`, the keys of `managed-settings.json`, as a reference only, because dotclaude writes no managed settings (see [D2](#d2-no-guard-route-settingsjson-only)).
 
 Code: `src/plugins/dotclaude-lab/slices/schema/domain/build.ts` builds the schema from the bundle text.
-The file names are at line 32, and the version title is at line 79.
+The file names are at lines 30 to 33, and the version title is at line 79.
 The CLI is in `src/plugins/dotclaude-lab/slices/schema/adapters/cli.ts`.
 
 Evidence: the `$comment` of `schemas/claude-code-settings.json` says that the file was extracted from `2.1.296`.
@@ -125,7 +125,7 @@ Choice: three lists.
 Each key is in one list.
 
 1. Forced off, with no quality cost:
-   - the built-in plugins of `OFF_PLUGINS` in `src/plugins/dotclaude/slices/setup/domain/facts.ts`, which are all built-in plugins except `cc-plugin-plugin-authoring`.
+   - the built-in plugins of `OFF_PLUGINS` in `src/plugins/dotclaude/slices/setup/domain/facts.ts`, which are all built-in plugins except `cc-plugin-plugin-authoring` and `cc-plugin-sec-default`.
    - the claude.ai skill and plugin sync and the connectors (`disableClaudeAiConnectors`, `syncClaudeAiSkills`, `syncClaudeAiPlugins`), in `src/plugins/dotclaude/slices/trim/slice.ts`.
    - the feedback and tips switches, fast mode, and the built-in agents.
      See [Off-Switches](Off-Switches).
