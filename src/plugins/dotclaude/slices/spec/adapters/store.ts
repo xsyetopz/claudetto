@@ -18,7 +18,10 @@ export class SpecStore {
   /** The reader of the store: a missing file gives null, and a missing folder gives an empty list. */
   readonly files: FileReader;
 
-  constructor(readonly root: string) {
+  readonly root: string;
+
+  constructor(root: string) {
+    this.root = root;
     this.files = {
       read: (file) => fileReader.read(this.abs(file)),
       list: (dir) => fileReader.list(this.abs(dir)),
