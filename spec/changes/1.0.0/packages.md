@@ -144,7 +144,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P25, because both change the setup.
   Owns: `src/plugins/dotclaude/slices/agents/`, `src/plugins/dotclaude/slices/spec/skills/`, `src/plugins/dotclaude/slices/setup/` (the `worktree` keys), and their tests.
   Verify also: `just validate`, and a test that no text in `src/` tells an agent to run `git worktree add`.
-- [ ] P28 `.claude/` evidence: each file and folder of `.claude/` and `~/.claude/` in Claude Code 2.1.296, with what it does, when Claude Code reads it, its cost at the start of a session, the settings, env vars, and flags that control it, and its source in the docs and the bundle ([change](change.md), decisions, the user, 2026-10-12).
+- [x] P28 `.claude/` evidence: each file and folder of `.claude/` and `~/.claude/` in Claude Code 2.1.296, with what it does, when Claude Code reads it, its cost at the start of a session, the settings, env vars, and flags that control it, and its source in the docs and the bundle ([change](change.md), decisions, the user, 2026-10-12).
   For rules, it also answers: can a plugin ship rules, do subagents and worktrees load them, does `claudeMdExcludes` apply to them, and how do they show in the `prompt.compose` input of the Mod API.
   It writes `spec/changes/1.0.0/evidence/claude-directory.md`, with no built-in text.
   Owns: `spec/changes/1.0.0/evidence/claude-directory.md`.
