@@ -21,7 +21,7 @@ const MARKETPLACE = "/.claude-plugin/marketplace.json";
  */
 type Facts = {
   manifest?: string;
-  install?: { sha: string; installPath: "root" | "elsewhere" };
+  install?: { sha: string; installPath: "root" | "windows" | "elsewhere" };
   repo?: "root" | "parent";
   git: { exitCode: number; stdout: string };
 };
@@ -57,16 +57,21 @@ const stub = (on: On, facts: Facts) => {
   on("session.start", (_$, e) => ({ cwd: e.cwd }));
   on("session.id", () => ({ value: "sess-1" }));
   on("fs.read", (_$, e) => {
-    if (facts.repo !== "parent" && e.path === `${root}${MARKETPLACE}`)
+    // On Windows the engine gives a native path, such as `D:\cfg\plugins\installed_plugins.json`.
+    const file = e.path.replaceAll("\\", "/");
+    if (facts.repo !== "parent" && file === `${root}${MARKETPLACE}`)
       return { value: "{}" };
-    if (e.path.endsWith(MANIFEST)) {
-      root = e.path.slice(0, -MANIFEST.length);
+    if (file.endsWith(MANIFEST)) {
+      root = file.slice(0, -MANIFEST.length);
       if (facts.manifest === undefined) throw new Error(`no file at ${e.path}`);
       return { value: facts.manifest };
     }
-    if (e.path === INSTALLED && facts.install) {
-      const installPath =
-        facts.install.installPath === "root" ? root : ELSEWHERE;
+    if (file.endsWith(INSTALLED) && facts.install) {
+      const installPath = {
+        root,
+        windows: root.replaceAll("/", "\\"),
+        elsewhere: ELSEWHERE,
+      }[facts.install.installPath];
       return { value: installedJson(installPath, facts.install.sha) };
     }
     throw new Error(`no file at ${e.path}`);
@@ -179,4 +184,16 @@ test("a stamp that cannot read the manifest writes no notice and the session sta
   });
   await expect(start($)).resolves.toBeDefined();
   expect(records(session)).toStrictEqual([]);
+});
+
+test("an install entry with Windows separators matches the root", async ($: Engine, on: On) => {
+  const session = stub(on, {
+    manifest: MANIFEST_1,
+    install: { sha: FULL_SHA, installPath: "windows" },
+    git: { exitCode: 0, stdout: "fedcba9\n" },
+  });
+  await start($);
+  expect(records(session)).toMatchObject([
+    { sha: "0123456", shaSource: "install" },
+  ]);
 });

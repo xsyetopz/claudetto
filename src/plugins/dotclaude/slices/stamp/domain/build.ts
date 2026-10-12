@@ -26,9 +26,14 @@ const field = (value: unknown, key: string): unknown =>
     ? (value as Record<string, unknown>)[key]
     : undefined;
 
-/** `value` with its trailing slashes removed, or undefined when it is not text. */
+/**
+ * `value` with forward slashes and no trailing slash, or undefined when it is not text.
+ * A Windows path can come with either separator, so both sides of a compare use this form.
+ */
 const trimmed = (value: unknown): string | undefined =>
-  typeof value === "string" ? value.replace(/\/+$/, "") : undefined;
+  typeof value === "string"
+    ? value.replaceAll("\\", "/").replace(/\/+$/, "")
+    : undefined;
 
 /** The `version` of a parsed `plugin.json`, or undefined when it has none. */
 export const versionOf = (manifest: unknown): string | undefined => {
