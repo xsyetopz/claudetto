@@ -11,7 +11,6 @@ import {
   SUBAGENT_CONTEXT_MAX,
   TURNS_LEFT_AT,
 } from "../../../plugins/dotclaude/features/context/limits.ts";
-import { MAX_ROWS } from "../../../src/plugins/dotclaude/slices/statusline/limits.ts";
 import {
   BASH_OUTPUT_MAX_CHARS,
   CONTEXT_WINDOW,
@@ -19,6 +18,7 @@ import {
   POLICY_TIMEOUT_MS,
   USAGE_LEVELS,
 } from "../../../plugins/dotclaude/lib/budget.ts";
+import { MAX_ROWS } from "../../../src/plugins/dotclaude/slices/statusline/limits.ts";
 
 /** The limits that a source can name as `{{NAME}}`, from the one place in code where each is set. A number has the `300,000` form of the docs. */
 export const VALUES: Record<string, string> = Object.fromEntries(
