@@ -1,14 +1,13 @@
 #!/usr/bin/env -S bun --no-env-file
-// Bump the plugin version by semver in `package.json` and each
-// `plugins/*/.claude-plugin/plugin.json` together, and move the CHANGELOG's [Unreleased] entries under
-// a new dated heading, and point the [unreleased] compare link at the new tag.
+// Bumps the version in `package.json` by semver, moves the CHANGELOG's [Unreleased] entries under
+// a new dated heading, and points the [unreleased] compare link at the new tag (`just bump`).
 //
-//   node tools/bump-version.ts <major|minor|patch|X.Y.Z> [--dry-run] [--root DIR]
+//   bun tools/bump-version.ts <major|minor|patch|X.Y.Z> [--dry-run] [--root DIR]
 //
-// Only the "version" line of each manifest and two CHANGELOG lines change, so
-// formatting and key order stay as they are.
+// Only the "version" line of `package.json` and two CHANGELOG lines change, so formatting and key
+// order stay as they are. `just generate` copies the version into each `plugin.json`, so this tool
+// writes no plugin file.
 
-import fs from "node:fs";
 import path from "node:path";
 
 const SEMVER = /^(\d+)\.(\d+)\.(\d+)$/;
@@ -18,7 +17,8 @@ const UNRELEASED = "## [Unreleased]\n";
 const UNRELEASED_LINK =
   /(^\[unreleased\]:\s*\S+\/compare\/\S*?v)\d+\.\d+\.\d+(\.\.\.HEAD)/im;
 
-export function nextVersion(current: string, level: string): string {
+/** The version after `current` for `level`, which is `major`, `minor`, `patch`, or an exact `X.Y.Z`. */
+export const nextVersion = (current: string, level: string): string => {
   if (SEMVER.test(level)) return level;
   const m = SEMVER.exec(current);
   if (!m) throw new Error(`current version "${current}" is not X.Y.Z`);
@@ -39,37 +39,15 @@ export function nextVersion(current: string, level: string): string {
         `level must be major, minor, patch, or X.Y.Z, not "${level}"`,
       );
   }
-}
+};
 
-/** A manifest that a bump rewrites: its path, its text, and its `version`. */
-type Manifest = { rel: string; file: string; text: string; version: string };
-
-/** The files and new contents a bump writes; throws before anything is written. */
-export async function plan(root: string, level: string, today: string) {
-  const plugins = path.join(root, "plugins");
-  const bundled = fs.existsSync(plugins)
-    ? fs
-        .readdirSync(plugins)
-        .map((name) =>
-          path.join("plugins", name, ".claude-plugin", "plugin.json"),
-        )
-        .filter((rel) => fs.existsSync(path.join(root, rel)))
-    : [];
-  const manifests = await Promise.all(
-    ["package.json", ...bundled].map(async (rel): Promise<Manifest> => {
-      const file = path.join(root, rel);
-      const text = await Bun.file(file).text();
-      const m = VERSION_LINE.exec(text);
-      if (!m) throw new Error(`${rel} has no "version" line`);
-      return { rel, file, text, version: m[2] as string };
-    }),
-  );
-  const versions = new Set(manifests.map((m) => m.version));
-  if (versions.size !== 1)
-    throw new Error(
-      `the manifests disagree (${manifests.map((m) => `${m.rel} ${m.version}`).join(", ")}); fix them first`,
-    );
-  const current = (manifests[0] as Manifest).version;
+/** The files and new contents of a bump; it throws before anything is written. */
+export const plan = async (root: string, level: string, today: string) => {
+  const file = path.join(root, "package.json");
+  const text = await Bun.file(file).text();
+  const m = VERSION_LINE.exec(text);
+  if (!m) throw new Error('package.json has no "version" line');
+  const current = m[2] as string;
   const next = nextVersion(current, level);
   const changelog = path.join(root, "CHANGELOG.md");
   const log = await Bun.file(changelog).text();
@@ -81,10 +59,7 @@ export async function plan(root: string, level: string, today: string) {
     current,
     next,
     writes: [
-      ...manifests.map(({ file, text }) => ({
-        file,
-        text: text.replace(VERSION_LINE, `$1"${next}"`),
-      })),
+      { file, text: text.replace(VERSION_LINE, `$1"${next}"`) },
       {
         file: changelog,
         text: log
@@ -93,10 +68,10 @@ export async function plan(root: string, level: string, today: string) {
       },
     ],
   };
-}
+};
 
-if (import.meta.main) {
-  const args = process.argv.slice(2);
+/** Runs the bump with `args` and returns the exit status. */
+export const main = async (args: string[]): Promise<number> => {
   const at = args.indexOf("--root");
   const root = path.resolve(
     at >= 0 ? (args[at + 1] as string) : path.join(import.meta.dirname, ".."),
@@ -108,21 +83,27 @@ if (import.meta.main) {
     console.error(
       "Usage: bump-version.ts <major|minor|patch|X.Y.Z> [--dry-run] [--root DIR]",
     );
-    process.exit(2);
+    return 2;
   }
   let result: Awaited<ReturnType<typeof plan>>;
   try {
     result = await plan(root, level, new Date().toISOString().slice(0, 10));
   } catch (err) {
     console.error((err as Error).message);
-    process.exit(1);
+    return 1;
   }
   console.log(`${result.current} -> ${result.next}`);
   for (const { file } of result.writes)
     console.log(`  ${path.relative(root, file)}`);
   if (args.includes("--dry-run")) {
     console.log("Dry run: nothing was written.");
-  } else {
-    for (const { file, text } of result.writes) await Bun.write(file, text);
+    return 0;
   }
-}
+  for (const { file, text } of result.writes) await Bun.write(file, text);
+  console.log(
+    "Next: run `just generate`, so each plugin.json has the new version.",
+  );
+  return 0;
+};
+
+if (import.meta.main) process.exitCode = await main(process.argv.slice(2));

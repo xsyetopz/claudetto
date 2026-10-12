@@ -5,10 +5,6 @@
 # The generator fails on a file in `plugins/` that it did not write and that this list does not name.
 # Each package removes its lines, and P16 checks that the list is empty.
 
-# P04: the release scripts of `/ship`
-tools/bump-version.ts
-tools/release.ts
-tools/update.ts
 
 # P11a: `dotclaude-codegraph`
 plugins/dotclaude-codegraph/evals/hooks.json
@@ -65,12 +61,3 @@ plugins/dotclaude/features/surface/
 plugins/dotclaude/tests/surface.test.ts
 src/plugins/dotclaude/features/surface/
 
-# P21: `trim`
-plugins/dotclaude/settings.json
-src/plugins/dotclaude/settings.json
-tests/dotclaude/deferred-tools.test.ts
-tests/dotclaude/plugin-settings.test.ts
-
-# P22: `styles`
-plugins/dotclaude/output-styles/
-src/plugins/dotclaude/output-styles/

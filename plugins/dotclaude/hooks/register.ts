@@ -7,7 +7,7 @@ import {
 } from "../slices/guard/adapters/mod.ts";
 import {
   onCompose as h3,
-  onContextSection as h4,
+  onSection as h4,
   onSpawn as h5,
 } from "../slices/prompt/adapters/mod.ts";
 import { onToolCall as h6 } from "../slices/sembr/adapters/mod.ts";
@@ -20,7 +20,7 @@ export const register = (on: On): void => {
   // eval: prompt.compose prompt
   on("prompt.compose", h3);
   // eval: prompt.section prompt
-  on("prompt.section", { name: "context_management" }, h4);
+  on("prompt.section", h4);
   // eval: session.start setup
   on("session.start", h7);
   // eval: tool.call sembr

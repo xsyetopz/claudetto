@@ -3,19 +3,14 @@
 // its block at the end of a subagent task prompt, and the `context_management` section without compaction.
 
 import type { Slice } from "../../kernel/slice.ts";
-import { onCompose, onContextSection, onSpawn } from "./adapters/mod.ts";
+import { onCompose, onSection, onSpawn } from "./adapters/mod.ts";
 
 export const slice = {
   name: "prompt",
   mod: [
     { event: "prompt.compose", phase: "rewrite", run: onCompose },
     { event: "agent.spawn", phase: "rewrite", run: onSpawn },
-    {
-      event: "prompt.section",
-      filter: { name: "context_management" },
-      phase: "answer",
-      run: onContextSection,
-    },
+    { event: "prompt.section", phase: "answer", run: onSection },
   ],
   settings: {
     $schema:
@@ -24,11 +19,6 @@ export const slice = {
       CLAUDE_CODE_ATTRIBUTION_HEADER: "0",
       CLAUDE_CODE_AUTO_COMPACT_WINDOW: "300000",
       CLAUDE_CODE_AUTO_CONNECT_IDE: "false",
-      CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1",
-      CLAUDE_CODE_DISABLE_CFC_PROMPT: "1",
-      CLAUDE_CODE_DISABLE_CRON: "1",
-      CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS: "1",
-      CLAUDE_CODE_DISABLE_FAST_MODE: "1",
       CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY: "1",
       CLAUDE_CODE_DISABLE_TERMINAL_TITLE: "1",
       CLAUDE_CODE_FORK_SUBAGENT: "0",
@@ -43,8 +33,6 @@ export const slice = {
       DISABLE_FEEDBACK_COMMAND: "1",
     },
     autoCompactEnabled: false,
-    autoMemoryEnabled: false,
-    includeGitInstructions: false,
     model: "claude-opus-5-5",
     availableModels: [
       "claude-opus-5-5",
@@ -64,12 +52,7 @@ export const slice = {
     spinnerTipsEnabled: false,
     feedbackSurveyRate: 0,
     feedbackDrafts: "off",
-    fastMode: false,
-    disableAgentView: true,
     disableRemoteControl: true,
-    syncClaudeAiSkills: false,
-    syncClaudeAiPlugins: false,
-    disableClaudeAiConnectors: true,
     enabledPlugins: {
       "cc-plugin-agents-md@builtin": false,
       "cc-plugin-claude-test@builtin": false,
