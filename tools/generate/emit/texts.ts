@@ -1,8 +1,7 @@
-#!/usr/bin/env -S bun --no-env-file
 // Writes each text that a plugin ships from its source in `src/` (design D12, `just generate`).
 //
-//   bun tools/generate.ts           write each generated file
-//   bun tools/generate.ts --check   exit 1 and name each generated file that differs from its source
+//   bun tools/generate/index.ts           write each generated file
+//   bun tools/generate/index.ts --check   exit 1 and name each generated file that differs from its source
 //
 // `src/` has the layout of the repository: `src/plugins/<name>/agents/x.md` gives `plugins/<name>/agents/x.md`.
 // `src/shared/` holds the parts that more than one file repeats, and gives no file of its own.
@@ -16,23 +15,23 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { FILE_MAX_BYTES } from "../plugins/dotclaude/features/adherence/limits.ts";
+import { FILE_MAX_BYTES } from "../../../plugins/dotclaude/features/adherence/limits.ts";
 import {
   HAIKU_CONTEXT_MAX,
   REPORT_MAX_WORDS,
   SUBAGENT_CONTEXT_MAX,
   TURNS_LEFT_AT,
-} from "../plugins/dotclaude/features/context/limits.ts";
-import { MAX_ROWS } from "../plugins/dotclaude/features/statusline/limits.ts";
+} from "../../../plugins/dotclaude/features/context/limits.ts";
+import { MAX_ROWS } from "../../../plugins/dotclaude/features/statusline/limits.ts";
 import {
   BASH_OUTPUT_MAX_CHARS,
   CONTEXT_WINDOW,
   POLICY_FILE_MAX_CHARS,
   POLICY_TIMEOUT_MS,
   USAGE_LEVELS,
-} from "../plugins/dotclaude/lib/budget.ts";
+} from "../../../plugins/dotclaude/lib/budget.ts";
 
-const REPO = path.resolve(import.meta.dir, "..");
+const REPO = path.resolve(import.meta.dir, "../../..");
 
 /** The limits that a source can name as `{{NAME}}`, from the one place in code where each is set. A number has the `300,000` form of the docs. */
 export const VALUES: Record<string, string> = Object.fromEntries(
@@ -282,19 +281,4 @@ export async function stale(root: string): Promise<string[]> {
       `${file} has the header of a generated file, but no source in src/.`,
     );
   return found;
-}
-
-if (process.argv[1] === import.meta.path) {
-  if (process.argv.includes("--check")) {
-    const found = await stale(REPO);
-    for (const line of found) console.error(line);
-    process.exit(found.length ? 1 : 0);
-  }
-  for (const o of await outputs(REPO)) {
-    const at = path.join(REPO, o.file);
-    if (fs.existsSync(at) && (await Bun.file(at).text()) === o.text) continue;
-    fs.mkdirSync(path.dirname(at), { recursive: true });
-    await Bun.write(at, o.text);
-    console.log(`Wrote ${o.file}`);
-  }
 }

@@ -5,7 +5,7 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { isGenerated } from "../../tools/generate.ts";
+import { isGenerated } from "../../tools/generate/emit/texts.ts";
 import { FILE_MAX_LINES, TEST_FILE_MAX_LINES } from "../../tools/limits.ts";
 import { REPO, tmpDir } from "./repo.ts";
 

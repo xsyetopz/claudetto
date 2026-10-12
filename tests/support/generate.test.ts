@@ -1,10 +1,15 @@
-// Behavior of `tools/generate.ts` (design D12): each text that a plugin ships comes from its source in `src/`.
+// Behavior of `tools/generate/` (design D12): each text that a plugin ships comes from its source in `src/`.
 // Each test that writes files works in its own folder under `TMPDIR`.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { isGenerated, outputs, stale, VALUES } from "../../tools/generate.ts";
+import {
+  isGenerated,
+  outputs,
+  stale,
+  VALUES,
+} from "../../tools/generate/emit/texts.ts";
 import { REPO, tmpDir } from "./repo.ts";
 
 /** A repository root with the files `files`, by path relative to the root. */
