@@ -4,7 +4,6 @@
 // A plugin whose slices have no `settings` entry gives no file.
 
 import path from "node:path";
-import { isDeepStrictEqual } from "node:util";
 import type { FoundPlugin } from "../discover.ts";
 import { formatJson } from "./manifest.ts";
 import type { Output } from "./texts.ts";
@@ -40,7 +39,7 @@ const addAll = (
     } else if (!(key in out)) {
       out[key] = structuredClone(value);
       owners.set(where, slice);
-    } else if (!isDeepStrictEqual(out[key], value))
+    } else if (!Bun.deepEquals(out[key], value, true))
       throw new Error(
         `\`${where}\`: slices ${owners.get(where)} and ${slice} set it to different values. Set it in one slice only.`,
       );
