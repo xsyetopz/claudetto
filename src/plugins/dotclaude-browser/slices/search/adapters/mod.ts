@@ -157,22 +157,28 @@ type PassOn = {
   ): ReturnType<Parameters<Handler<"tool.call">>[2]>;
 }["pass"];
 
+/** The `userConfig` values of the plugin, which the generated `register` gives to `keepOptions` before it registers `onSearch`. */
+let options: PluginOptions = {};
+
+/** Keeps the `userConfig` values of the plugin for `onSearch`. */
+export const keepOptions = (values: PluginOptions): void => {
+  options = values;
+};
+
 /** The `tool.call` handler on `WebSearch`, with the `backend` option of the plugin. */
-export const onSearch =
-  (options: PluginOptions) =>
-  async (
-    $: EngineInterface,
-    e: Parameters<Handler<"tool.call">>[1],
-    next: PassOn,
-  ) => {
-    if (e.tool !== "WebSearch") return next(e);
-    const out = await answer($, e, options);
-    if (!("fallback" in out)) return out;
-    const builtIn = await next(e);
-    if (options?.["backend"] !== "cloakbrowser" || builtIn.deny !== undefined)
-      return builtIn;
-    return {
-      ...builtIn,
-      context: [...(builtIn.context ?? []), fallbackNotice(out.fallback)],
-    };
+export const onSearch = async (
+  $: EngineInterface,
+  e: Parameters<Handler<"tool.call">>[1],
+  next: PassOn,
+) => {
+  if (e.tool !== "WebSearch") return next(e);
+  const out = await answer($, e, options);
+  if (!("fallback" in out)) return out;
+  const builtIn = await next(e);
+  if (options?.["backend"] !== "cloakbrowser" || builtIn.deny !== undefined)
+    return builtIn;
+  return {
+    ...builtIn,
+    context: [...(builtIn.context ?? []), fallbackNotice(out.fallback)],
   };
+};

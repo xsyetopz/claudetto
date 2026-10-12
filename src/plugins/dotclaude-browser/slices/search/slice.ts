@@ -2,7 +2,7 @@
 // The handler reads the `backend` option, so it has `configure`, and the generated `register` passes the option to it.
 
 import type { Slice } from "../../../../kernel/slice.ts";
-import { onSearch } from "./adapters/mod.ts";
+import { keepOptions, onSearch } from "./adapters/mod.ts";
 
 export const slice: Slice = {
   name: "search",
@@ -11,7 +11,8 @@ export const slice: Slice = {
       event: "tool.call",
       filter: { tool: "WebSearch" },
       phase: "answer",
-      configure: onSearch,
+      run: onSearch,
+      configure: keepOptions,
     },
   ],
   userConfig: {
