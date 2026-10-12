@@ -19,7 +19,7 @@ export const generated = async (root: string): Promise<Output[]> => {
     made.push(
       ...(await manifestOf(root, p)),
       ...(await hooksOf(root, p)),
-      ...registerOf(root, p),
+      ...(await registerOf(root, p)),
       ...(await slicesOf(root, p, parts)),
     );
   const sources = new Map<string, string>();

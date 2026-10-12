@@ -57,26 +57,12 @@
     "block": "plugins/dotclaude/tests/print.test.ts > a `Bash` print of a file is denied with the `Read` range",
     "false": "tests/dotclaude/guard/print.test.ts > a command with an edit, a byte count, or another bounded form stays allowed"
   },
-  "tool.call Write sembr": {
+  "tool.call sembr": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
     "allow": "plugins/dotclaude/tests/sembr.test.ts > a `Write` of another file type keeps its content",
     "text": "plugins/dotclaude/tests/sembr.test.ts > a `Write` of a Markdown file gets one sentence on each line"
-  },
-  "tool.call Edit sembr": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/dotclaude/tests/sembr.test.ts > an `Edit` of another file type passes on unchanged",
-    "text": "plugins/dotclaude/tests/sembr.test.ts > an `Edit` rewrites a fused `new_string` of whole lines and keeps `old_string`"
-  },
-  "tool.call Bash sembr": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/dotclaude/tests/sembr.test.ts > a `Bash` call that is not a quoted heredoc commit passes on unchanged",
-    "text": "plugins/dotclaude/tests/sembr.test.ts > a `Bash` commit heredoc is rewritten, with the subject kept"
   },
   "tool.check guard": {
     "requests": 0,
@@ -87,14 +73,14 @@
     "block": "plugins/dotclaude/tests/ask.test.ts > a deny of the engine stays a deny",
     "false": "plugins/dotclaude/tests/ask.test.ts > an ask of the engine stays when the call reaches no other repository"
   },
-  "tool.check adherence": {
+  "tool.check asks": {
     "requests": 0,
     "tokens": 0,
     "blocks": true,
-    "allow": "plugins/dotclaude/tests/mod.test.ts > a `Write` of a source file gets no ask",
-    "text": "plugins/dotclaude/tests/mod.test.ts > Ask in the module: a `Write` that changes a line of a test file asks",
-    "block": "plugins/dotclaude/tests/mod.test.ts > Ask in the module: a `Write` that changes a line of a test file asks",
-    "false": "plugins/dotclaude/tests/mod.test.ts > a `Write` of a source file gets no ask"
+    "allow": "plugins/dotclaude/tests/asks.test.ts > a `Write` of a source file gets no ask",
+    "text": "plugins/dotclaude/tests/asks.test.ts > a `Write` that changes a line of a test file asks",
+    "block": "plugins/dotclaude/tests/asks.test.ts > a `Write` that changes a line of a test file asks",
+    "false": "plugins/dotclaude/tests/asks.test.ts > a `Write` of a source file gets no ask"
   },
   "PostToolUse hooks/PostToolUse/context.ts": {
     "requests": 0,
