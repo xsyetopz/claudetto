@@ -79,11 +79,12 @@ export const main = async (
     "--out",
     path.join(env["TMPDIR"] || os.tmpdir(), "dotclaude-capture"),
   ) as string;
+  const baseUrl = env["ANTHROPIC_BASE_URL"];
   let upstream: string;
   try {
     upstream = resolveUpstream({
       flag: flag("--upstream", null),
-      baseUrl: env["ANTHROPIC_BASE_URL"],
+      ...(baseUrl === undefined ? {} : { baseUrl }),
       port,
     });
   } catch (e) {
