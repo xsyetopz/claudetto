@@ -1,7 +1,7 @@
 ---
 id: P39
 deps: [P33]
-owns: ["src/plugins/dotclaude/slices/attribution/", "tests/dotclaude/attribution/", "src/plugins/dotclaude/slices/surface/texts.ts/tool-bash.md"]
+owns: ["src/plugins/dotclaude/slices/attribution/", "tests/dotclaude/attribution/", "src/plugins/dotclaude/slices/surface/texts.ts/tool-bash.md", "the attribution block of src/plugins/dotclaude/slices/prompt/slice.ts"]
 verify: just check, just lab, and one commit and one PR body in just sandbox that carry the attribution
 agent: implementer
 ---
@@ -19,12 +19,14 @@ A hook adds it, so it does not depend on prompt text.
 - The snippet sets `attribution.commit` and `attribution.pr` (`src/plugins/dotclaude/slices/prompt/slice.ts`).
 - The `trim` slice sets `includeGitInstructions: false`, so the git text of Claude Code, which tells Claude to add those lines, is not in the prompt.
   `surface/texts.ts/tool-bash.md` tells Claude to copy the lines of the system-reminder, but no system-reminder holds them.
-  No commit of the 189 commits from `dotclaude-1-0-0` to `p15` carries a `Co-Authored-By` trailer.
+  The 189 commits from `dotclaude-1-0-0` to `p15` carry no `Co-Authored-By` trailer.
+  The installed 0.28.0 plugin made them, so they show the problem of 0.28.0, which 1.0.0 must not repeat.
 - The `sembr` slice already rewrites the quoted heredoc of `git commit` and `gh pr create` in a `Bash` `tool.call` hook (`slices/sembr/domain/rewrite.ts`).
 - `git commit --trailer "<line>"` adds a trailer to a message from `-m`, `-F`, or a heredoc.
   With the default `trailer.ifexists` of `addIfDifferentNeighbor`, the same trailer next to itself is not added again.
 - The text of the attribution names a model.
   The snippet names `Claude Opus 5.5`, but a subagent can run on Sonnet or Haiku.
+  1.0.0 names the model that made the call, and hard-codes no model name (the user, 2026-10-13).
 
 ## Steps
 
@@ -34,8 +36,10 @@ A hook adds it, so it does not depend on prompt text.
    - A `git commit` call that makes a commit gets `--trailer "<attribution.commit>"`, unless its message already holds that line.
    - A `gh pr create` call with a `--body` gets the `attribution.pr` line at the end of the body, unless the body already holds it.
    - An empty `attribution.commit` or `attribution.pr` turns that part off, as in Claude Code.
-   - If the hook can read the model of the call, the line names that model.
-     Otherwise it uses the setting as it is, and the evidence file says so.
+   - The line names the model of the main session or of the subagent that makes the call, in the default form of Claude Code.
+   - The snippet has no `attribution` block.
+     A value that the user sets stays in force, and an empty value turns that part off.
+   - If the hook cannot find the model of the call, the line says `Claude` in place of the model name and version, such as `Co-Authored-By: Claude <noreply@anthropic.com>` (the user, 2026-10-13).
    - A call that the hook cannot parse runs unchanged.
 3. Remove the attribution rule from `tool-bash.md`, because the hook does the work.
 4. Tests: a lab test for `-m`, `-F`, a heredoc, `--amend`, a message that already holds the line, an empty setting, `gh pr create` with a body, and a call that is not a commit.
