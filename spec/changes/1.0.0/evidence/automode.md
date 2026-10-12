@@ -37,8 +37,22 @@ The rule was `Irreversible Local Destruction`.
 
 So an `environment` entry that says which paths are agent worktrees and Claude Code temp folders can let clause (b) and the named-path case apply, with `$defaults` kept for each other rule (inferred, not tested).
 
+## Sources
+
+- Only the user settings, the `--settings` flag, and the managed settings can set `autoMode` (L319670).
+  Claude Code ignores `autoMode` in the project and local settings, because a repository controls them, and it logs `tengu_settings_auto_mode_rules_untrusted_source_ignored`.
+- The `settings.json` of a plugin accepts only `agent` and `subagentStatusLine` (L323807, inferred for plugins), so a plugin cannot set `autoMode`.
+- So the setup of dotclaude writes `autoMode` to the user settings, as it writes the other keys of its snippet.
+
+## Garbage collection
+
+- `cleanupPeriodDays` keeps chat transcripts for 30 days by default, with a minimum of 1 (L319438, L261144).
+- The cleanup pauses while the settings have errors (L148139), and it skips when no enabled source sets the key and the user settings are off (L192527).
+- `--no-session-persistence` turns off the writes of a session.
+
 ## Open
 
-- Which settings sources can set `autoMode`: user, project, local, managed, or the `settings.json` of a plugin.
 - Whether a permission allow rule skips the classifier in auto mode.
 - Whether Claude Code removes the worktree of an agent with `isolation: worktree` itself, and when it keeps one.
+- What else `cleanupPeriodDays` deletes besides transcripts, and when the cleanup runs.
+- Any cleanup of `/tmp/claude-<uid>/`, the plugin cache, and old versions.
