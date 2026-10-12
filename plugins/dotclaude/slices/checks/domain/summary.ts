@@ -19,6 +19,8 @@ export interface Outcome {
   readonly ms: number;
   readonly counts: Counts | null;
   readonly failures: Failures | null;
+  /** The output lines that the summary prints for a passing command, or `null` when the output is long or blank. */
+  readonly shortOutput: readonly string[] | null;
   readonly logFile: string;
 }
 
@@ -61,6 +63,10 @@ export const renderOutcome = (o: Outcome): string[] => {
     for (const line of o.failures.lines) out.push(`    ${line}`);
     if (o.failures.omitted > 0)
       out.push(`    ... ${o.failures.omitted} more lines in the log`);
+  }
+  if (o.shortOutput) {
+    out.push("  output:");
+    for (const line of o.shortOutput) out.push(`    ${line}`);
   }
   return out;
 };

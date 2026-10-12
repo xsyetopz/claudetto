@@ -8,6 +8,7 @@ import path from "node:path";
 import { processRunner } from "../../../src/kernel/node/process.ts";
 import { CHECKS_DIR } from "../../../src/kernel/paths.ts";
 import { main } from "../../../src/plugins/dotclaude/slices/checks/adapters/cli.ts";
+import { MAX_PASS_OUTPUT_LINES } from "../../../src/plugins/dotclaude/slices/checks/limits.ts";
 
 /** A folder with the fake check scripts `ok.js`, `bad.js`, and `noisy.js`. */
 const project = async (): Promise<string> => {
@@ -47,6 +48,13 @@ const run = async (dir: string, ...commands: string[]) => {
   return { status, out: lines.join("\n"), errors };
 };
 
+/** Write the script `name` in `dir`, which prints `count` lines from `line 0` on. */
+const printing = (dir: string, name: string, count: number): Promise<number> =>
+  Bun.write(
+    path.join(dir, name),
+    `for (let i = 0; i < ${count}; i++) console.log('line ' + i);`,
+  );
+
 const logs = (dir: string): string[] =>
   fs.readdirSync(path.join(dir, CHECKS_DIR)).sort();
 
@@ -58,6 +66,29 @@ test("passing commands exit 0 and print counts, time, and the log file", async (
   expect(r.out).toContain("2 of 2 commands passed");
   expect(logs(dir)).toHaveLength(2);
   expect(r.out).not.toContain("failures:");
+});
+
+test("a passing command with short output shows the output in the summary", async () => {
+  const dir = await project();
+  await printing(dir, "lines.js", MAX_PASS_OUTPUT_LINES);
+  const r = await run(dir, "bun lines.js");
+  expect(r.status).toBe(0);
+  expect(r.out).toContain("  output:");
+  expect(r.out).toContain("    line 0");
+  expect(r.out).toContain(`    line ${MAX_PASS_OUTPUT_LINES - 1}`);
+});
+
+test("a passing command with output over the bound shows no output, and the log keeps it", async () => {
+  const dir = await project();
+  await printing(dir, "lines.js", MAX_PASS_OUTPUT_LINES + 1);
+  const r = await run(dir, "bun lines.js");
+  expect(r.status).toBe(0);
+  expect(r.out).not.toContain("output:");
+  expect(r.out).not.toContain("    line 0");
+  const text = await Bun.file(
+    path.join(dir, CHECKS_DIR, logs(dir)[0] as string),
+  ).text();
+  expect(text).toContain(`line ${MAX_PASS_OUTPUT_LINES}`);
 });
 
 test("one failed command makes the exit status 1 and the later commands still run", async () => {

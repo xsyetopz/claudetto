@@ -9,6 +9,9 @@ export const MAX_LINE_CHARS = 200;
 /** The count of last output lines that the summary prints for a failed command with no failure line. */
 export const TAIL_LINES = 10;
 
+/** The most output lines that the summary prints for a passing command. A longer output stays in the log file. */
+export const MAX_PASS_OUTPUT_LINES = 10;
+
 /** The time that one command may run, in milliseconds. A command over it is killed and counts as failed. */
 export const COMMAND_TIMEOUT_MS = 1_800_000;
 

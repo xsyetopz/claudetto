@@ -13,7 +13,15 @@ export interface Failures {
   readonly omitted: number;
 }
 
-const cut = (line: string): string =>
+/** The lines of `output` with no trailing blanks, and without the blank lines. */
+export const nonBlankLines = (output: string): string[] =>
+  output
+    .split("\n")
+    .map((line) => line.trimEnd())
+    .filter((line) => line.trim() !== "");
+
+/** The line, cut to `MAX_LINE_CHARS` when it is longer. */
+export const cut = (line: string): string =>
   line.length > MAX_LINE_CHARS
     ? `${line.slice(0, MAX_LINE_CHARS - 3)}...`
     : line;
@@ -23,10 +31,7 @@ const cut = (line: string): string =>
  * When no line matches, the last `TAIL_LINES` lines stand for them, because a failed command must show a reason.
  */
 export const failureLines = (output: string): Failures => {
-  const all = output
-    .split("\n")
-    .map((line) => line.trimEnd())
-    .filter((line) => line.trim() !== "");
+  const all = nonBlankLines(output);
   const hits = all.filter((line) => FAILURE_LINE.test(line));
   const chosen = hits.length > 0 ? hits : all.slice(-TAIL_LINES);
   return {

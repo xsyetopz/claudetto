@@ -5,7 +5,8 @@
 // Each argument is one command. The commands run in order, in the folder where the CLI runs.
 // A command of plain words runs with no shell. A command with shell syntax (a pipe, a list, a quote, a glob, `$`) runs through `sh -c`.
 // For each command the CLI prints the exit status, the time, the counts of passed, failed, and skipped tests when the output shows them,
-// and the failure lines. The full output goes to a log file in `CHECKS_DIR`, and the summary names the file.
+// and the failure lines of a failed command. The output of a passing command is printed when it is short, at most `MAX_PASS_OUTPUT_LINES` lines.
+// The full output goes to a log file in `CHECKS_DIR`, and the summary names the file.
 // Exit status: 0 when all commands pass, 1 when any command fails, 2 for a usage error.
 // An argument that starts with `-` is a flag, so the CLI exits 2 before it runs any command.
 
@@ -22,6 +23,7 @@ import type {
 import { flagArg, plainArgv, shellArgv } from "../domain/command.ts";
 import { parseCounts } from "../domain/counts.ts";
 import { failureLines } from "../domain/failures.ts";
+import { passOutput } from "../domain/output.ts";
 import {
   logName,
   type Outcome,
@@ -129,6 +131,7 @@ export const main = async (
       ms,
       counts: parseCounts(output),
       failures: exitCode === 0 ? null : failureLines(output),
+      shortOutput: exitCode === 0 ? passOutput(output) : null,
       logFile,
     };
     outcomes.push(outcome);
