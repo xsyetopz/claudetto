@@ -41,7 +41,11 @@ Bun.plugin({
         const [, root = "", dir = ""] = args.path.match(SLICE_MODULE) ?? [];
         const src = path.join(root, "src");
         return {
-          contents: await textModule(src, path.join(src, "fragments"), dir),
+          // Stub for discovery only: this import runs before the text step makes the snippet, and the slice code never reads the value here.
+          // The text step writes the module with the real snippet.
+          contents: await textModule(src, path.join(src, "fragments"), dir, {
+            "snippet.json": "{}",
+          }),
           loader: "ts",
         };
       },

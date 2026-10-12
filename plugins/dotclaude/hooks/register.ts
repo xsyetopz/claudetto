@@ -5,6 +5,7 @@ import {
   onContextSection as h1,
   onSpawn as h2,
 } from "../slices/prompt/adapters/mod.ts";
+import { onSessionStart as h3 } from "../slices/setup/adapters/mod.ts";
 import { register as legacy } from "./legacy.ts";
 
 export const register = (on: On): void => {
@@ -14,5 +15,7 @@ export const register = (on: On): void => {
   on("prompt.compose", h0);
   // eval: prompt.section prompt
   on("prompt.section", { name: "context_management" }, h1);
+  // eval: session.start setup
+  on("session.start", h3);
   legacy(on);
 };
