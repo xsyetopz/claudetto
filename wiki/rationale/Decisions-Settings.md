@@ -46,7 +46,6 @@ Choice: dotclaude writes no managed settings file, and it runs no `sudo`.
 - It runs at tier `user`, so it gets `prompt.section`, `prompt.compose`, and `prompt.context`.
   The guard is not seated on a machine with no managed settings and no Team or Enterprise login.
 
-
 Alternatives: write a managed drop-in that seats the guard.
 That skips the `prompt.section` handlers at tier `user`, so the prompt text of dotclaude does not reach the request.
 
