@@ -101,7 +101,7 @@ Each package depends on P01b4.
 - [x] P11b `dotclaude-browser`.
 - [x] P11d `dotclaude-docs`.
 - [x] P11e `dotclaude-sessions`.
-- [ ] P12 `dotclaude-lab` with `capture`, `sandbox`, `schema`, and `eval-compare`, and no import of another plugin.
+- [x] P12 `dotclaude-lab` with `capture`, `sandbox`, `schema`, and `eval-compare`, and no import of another plugin.
   `schema` writes the exact keys and values of `settings.json` and `managed-settings.json` that the pinned binary reads, each with a short description ([workflow](workflow.md#settings-schemas)).
   Verify also: a test fails on a key in `schemas/` that the binary does not read.
   Owns also: `tools/eval-variant.ts`, `tools/lock.ts`, `tools/measure.ts`, `tools/sandbox.ts`, `tools/start-run.ts`, and `tools/unsandboxed.ts`.
@@ -139,6 +139,11 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   It first answers the open items of [automode](evidence/automode.md#open) on cleanup.
   Deps: P09.
   Owns: `src/plugins/dotclaude/slices/setup/` (the cleanup keys), `tests/dotclaude/setup/` (the cleanup tests).
+- [ ] P27 `worktrees`: each part of dotclaude that works in a separate checkout uses the worktrees of Claude Code ([change](change.md), decisions, the user, 2026-10-12).
+  It first lists the worktree features of Claude Code 2.1.296 and each place in `src/` and `spec/changes/1.0.0/` that makes or names a worktree of its own, such as `git worktree add` in the `debugger` agent.
+  Deps: P25, because both change the setup.
+  Owns: `src/plugins/dotclaude/slices/agents/`, `src/plugins/dotclaude/slices/spec/skills/`, `src/plugins/dotclaude/slices/setup/` (the `worktree` keys), and their tests.
+  Verify also: `just validate`, and a test that no text in `src/` tells an agent to run `git worktree add`.
 - [ ] P14 Handoff cost: one handoff against one compaction on the same session, with `dotclaude-usage`.
   It only reports, in `spec/changes/1.0.0/evidence/handoff-cost.md`.
   Deps: P13.

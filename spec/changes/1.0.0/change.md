@@ -43,6 +43,7 @@ It gets the highest intelligence for the lowest token cost:
 - The auto mode classifier allows each safe command, and the removal of Claude Code worktrees and Claude Code temp folders is safe.
   A command that leaks env vars or secrets, and each dangerous or destructive system, `git`, or tooling command, goes to ask or deny.
 - dotclaude uses the garbage collection of Claude Code.
+- dotclaude uses the worktrees of Claude Code, such as `isolation: worktree`, `EnterWorktree`, `ExitWorktree`, `--worktree`, and the `worktree` settings, and makes no worktree of its own with `git worktree add`.
 
 ## Scope
 
