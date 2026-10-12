@@ -11,7 +11,6 @@ import {
   CODE_EXTENSIONS,
   DATA_EXTENSIONS,
   HOOK_PATHS,
-  LINE_SHOWN_MAX_CHARS,
   LINT_CONFIG_NAMES,
   RUNNER_CONFIG_NAMES,
   RUST_IGNORE,
@@ -24,6 +23,7 @@ import {
 } from "../limits.ts";
 import { codePart, commentPart } from "./comments.ts";
 import { contentKind } from "./content.ts";
+import { shown } from "./shown.ts";
 import type { Change } from "./text.ts";
 import { added } from "./text.ts";
 
@@ -64,14 +64,6 @@ const hitLines =
   (res: RegExp[], pick: (line: string) => string) =>
   (text: string): string[] =>
     text.split("\n").filter((line) => res.some((re) => re.test(pick(line))));
-
-/** `s` trimmed and cut to `LINE_SHOWN_MAX_CHARS`. */
-export const shown = (s: string): string => {
-  const t = s.trim();
-  return t.length > LINE_SHOWN_MAX_CHARS
-    ? `${t.slice(0, LINE_SHOWN_MAX_CHARS)}...`
-    : t;
-};
 
 /** What a change of a kind of file puts at risk, for the reason that the user reads. */
 const RISK: Record<string, string> = {
