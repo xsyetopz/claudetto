@@ -183,3 +183,35 @@ test("the log folder is in `CLAUDE_PROJECT_DIR`, and the commands run in the cur
   expect(logs(projectDir)).toHaveLength(1);
   expect(fs.existsSync(path.join(cwd, CHECKS_DIR))).toBe(false);
 });
+
+test("an unquoted flag is a usage error with status 2, and no command runs", async () => {
+  const dir = await project();
+  const ran: string[] = [];
+  const errors: string[] = [];
+  const status = await main(["bun", "--version"], dir, {
+    runner: {
+      run: (file, args) => {
+        ran.push([file, ...args].join(" "));
+        return { exitCode: 0, stdout: "", stderr: "" };
+      },
+    },
+    clock: { now: () => 0 },
+    writeLog: async () => {},
+    log: () => {},
+    error: (l) => errors.push(l),
+    windows: false,
+    env: { get: () => undefined },
+  });
+  expect(status).toBe(2);
+  expect(ran).toEqual([]);
+  expect(errors.join("\n")).toContain('dotclaude-run-checks "bun --version"');
+  expect(fs.existsSync(path.join(dir, CHECKS_DIR))).toBe(false);
+});
+
+test("a quoted command with a flag still runs", async () => {
+  const dir = await project();
+  const r = await run(dir, "bun --version");
+  expect(r.status).toBe(0);
+  expect(r.errors).toEqual([]);
+  expect(r.out).toContain("exit 0");
+});

@@ -20,6 +20,10 @@ export const plainArgv = (command: string): Argv | null => {
   return file ? { file, args } : null;
 };
 
+/** The first argument that starts with `-`, which is a flag and not a command, or `undefined`. */
+export const flagArg = (args: readonly string[]): string | undefined =>
+  args.find((a) => a.trim().startsWith("-"));
+
 /** The program and arguments that run `command` through the shell of the platform. */
 export const shellArgv = (command: string, windows: boolean): Argv =>
   windows

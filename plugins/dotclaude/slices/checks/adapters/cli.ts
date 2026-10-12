@@ -8,6 +8,7 @@
 // For each command the CLI prints the exit status, the time, the counts of passed, failed, and skipped tests when the output shows them,
 // and the failure lines. The full output goes to a log file in `CHECKS_DIR`, and the summary names the file.
 // Exit status: 0 when all commands pass, 1 when any command fails, 2 for a usage error.
+// An argument that starts with `-` is a flag, so the CLI exits 2 before it runs any command.
 
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -19,7 +20,7 @@ import type {
   ProcessResult,
   ProcessRunner,
 } from "../../../kernel/ports.ts";
-import { plainArgv, shellArgv } from "../domain/command.ts";
+import { flagArg, plainArgv, shellArgv } from "../domain/command.ts";
 import { parseCounts } from "../domain/counts.ts";
 import { failureLines } from "../domain/failures.ts";
 import {
@@ -100,6 +101,13 @@ export const main = async (
   const commands = args.filter((a) => a.trim() !== "");
   if (commands.length === 0) {
     deps.error(USAGE);
+    return 2;
+  }
+  const flag = flagArg(commands);
+  if (flag !== undefined) {
+    deps.error(
+      `"${flag}" is a flag, not a command. Quote each whole command, such as: dotclaude-run-checks "bun --version"`,
+    );
     return 2;
   }
   const start = new Date(deps.clock.now());
