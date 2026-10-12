@@ -4,7 +4,7 @@ The index of the archived pages.
 
 The archive holds historical text.
 The pages describe the 0.x releases, and they keep the text that the current pages replaced.
-No page in the archive describes 1.0.0 as current.
+A page names 1.0.0 only to say what replaced the old text, as [Decisions-Reversed](Decisions-Reversed) does for each reversed decision.
 For the current behavior, read the pages outside this folder, from [Home](Home).
 
 ## Release pages
