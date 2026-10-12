@@ -98,7 +98,7 @@ Each package depends on P01b4.
 - [ ] P23 `prompt` transforms: one transform for each built-in section of P01c, and the test that each transform finds its section.
   Deps: P01c.
 - [ ] P11a `dotclaude-codegraph` with 1 hook.
-- [ ] P11b `dotclaude-browser`.
+- [x] P11b `dotclaude-browser`.
 - [x] P11d `dotclaude-docs`.
 - [x] P11e `dotclaude-sessions`.
 - [ ] P12 `dotclaude-lab` with `capture`, `sandbox`, `schema`, and `eval-compare`, and no import of another plugin.
