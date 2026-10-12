@@ -1,12 +1,52 @@
 // Writes the code and the texts of each slice of a plugin, its kernel closure, and one launcher for each CLI (design, "Generated tree").
 // `skills/`, `agents/`, and `styles/` of a slice go to `skills/`, `agents/`, and `output-styles/` of the plugin.
 // Each other file of a slice goes to `slices/<s>/`, with each `src/kernel/` import path changed to `kernel/`.
+// A folder `NAME.ts/` of `.md` and `.json` texts gives the module `NAME.ts`, as `emit/texts.ts` does for 0.28.0.
 
 import fs from "node:fs";
 import path from "node:path";
 import { kernelClosure, rewrite } from "../closure.ts";
 import type { FoundPlugin, FoundSlice } from "../discover.ts";
-import { fill, GENERATED_MARK, type Output, withHeader } from "./texts.ts";
+import {
+  fill,
+  GENERATED_MARK,
+  type Output,
+  textModule,
+  withHeader,
+} from "./texts.ts";
+
+/** The module folder of a slice file `rel`, such as `texts.ts` of `texts.ts/doing-tasks.md`. */
+const MODULE_DIR = /^((?:[^/]+\/)*[^/]+\.ts)\/[^/]+$/;
+
+/** The `src/` folder and the module folder of the path `dir`, when `dir` is a module folder in a slice of `src/`. */
+const SLICE_MODULE =
+  /^(.*)[\\/]src[\\/](plugins[\\/][^\\/]+[\\/]slices[\\/].+\.ts)$/;
+
+// `discover.ts` imports each slice from `src/`, where a module folder is still a folder that Bun cannot import.
+// This loader gives Bun the text module of the folder in its place, so the import of a slice runs as in the plugin.
+Bun.plugin({
+  name: "slice text modules",
+  setup: (build) => {
+    build.onResolve({ filter: /^\.{1,2}\/.*\.ts$/ }, (args) => {
+      const dir = path.resolve(path.dirname(args.importer), args.path);
+      return SLICE_MODULE.test(dir) &&
+        fs.statSync(dir, { throwIfNoEntry: false })?.isDirectory()
+        ? { path: dir, namespace: "slice-text-module" }
+        : undefined;
+    });
+    build.onLoad(
+      { filter: /.*/, namespace: "slice-text-module" },
+      async (args) => {
+        const [, root = "", dir = ""] = args.path.match(SLICE_MODULE) ?? [];
+        const src = path.join(root, "src");
+        return {
+          contents: await textModule(src, path.join(src, "shared"), dir),
+          loader: "ts",
+        };
+      },
+    );
+  },
+});
 
 /** The plugin folder of each text folder of a slice. */
 const TEXTS: Readonly<Record<string, string>> = {
@@ -57,7 +97,21 @@ const filesOf = async (
   const abs = path.join(root, s.dir);
   const shared = path.join(root, "src", "shared");
   const out: Output[] = [];
+  const modules = new Set<string>();
   for (const rel of walk(abs)) {
+    const module = TEXTS[rel.split("/")[0] ?? ""]
+      ? undefined
+      : rel.match(MODULE_DIR)?.[1];
+    if (module) {
+      if (modules.has(module)) continue;
+      modules.add(module);
+      const file = `plugins/${p.name}/slices/${s.name}/${module}`;
+      const source = `${path.posix.join(s.dir, module)}/`;
+      const dir = path.posix.relative("src", path.posix.join(s.dir, module));
+      const text = await textModule(path.join(root, "src"), shared, dir);
+      out.push({ file, source, text: withHeader(file, source, text) });
+      continue;
+    }
     const source = path.posix.join(s.dir, rel);
     const from = path.join(abs, rel);
     const [top = "", ...rest] = rel.split("/");

@@ -167,9 +167,11 @@ test("`hooks.json` names the register and groups the classic hooks by event and 
 });
 
 test("a source of `src/` and a slice that make one file are an error", async () => {
-  const dir = await fixtureRoot({ "src/plugins/p/hooks/hooks.json": "{}\n" });
+  const dir = await fixtureRoot({
+    "src/plugins/p/skills/greet/SKILL.md": "---\nname: greet\n---\n",
+  });
   await expect(generated(dir)).rejects.toThrow(
-    /^plugins\/p\/hooks\/hooks\.json /,
+    /^plugins\/p\/skills\/greet\/SKILL\.md /,
   );
 });
 

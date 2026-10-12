@@ -2,7 +2,9 @@
 // It has a named import of each handler from the `adapters/mod.ts` of its slice,
 // and one `on()` call for each handler, with the event and the filter as literals,
 // because `claude plugin validate` and the mod runtime read them only as literals in this file.
+// When the hand-written `plugins/<plugin>/hooks/legacy.ts` of the rebuild list exists, the register calls its `register` last.
 
+import fs from "node:fs";
 import path from "node:path";
 import type { FoundPlugin } from "../discover.ts";
 import { type Entry, filterOf, order } from "../order.ts";
@@ -34,8 +36,11 @@ const wrap = (open: string, items: string[], close: string): string => {
   ].join("\n");
 };
 
-/** The generated `register.ts` of the plugin `p`, or none when its slices have no mod handler. */
-export const registerOf = (p: FoundPlugin): Output[] => {
+/** The generated `register.ts` of the plugin `p` of `root`, or none when its slices have no mod handler and it has no `legacy.ts`. */
+export const registerOf = (root: string, p: FoundPlugin): Output[] => {
+  const legacy = fs.existsSync(
+    path.join(root, "plugins", p.name, "hooks", "legacy.ts"),
+  );
   const where = new Map<Entry, { dir: string; name: string }>();
   const entries: Entry[] = [];
   for (const s of p.slices)
@@ -49,7 +54,7 @@ export const registerOf = (p: FoundPlugin): Output[] => {
       entries.push(e);
       where.set(e, { dir: s.name, name });
     }
-  if (!entries.length) return [];
+  if (!entries.length && !legacy) return [];
   // One alias for each export, numbered in the order of the module paths and the export names,
   // so the imports are already in the order of the import sorter of Biome.
   const pairs = [
@@ -82,9 +87,11 @@ export const registerOf = (p: FoundPlugin): Output[] => {
   const text = [
     'import type { On } from "claude-code";',
     ...imports,
+    ...(legacy ? ['import { register as legacy } from "./legacy.ts";'] : []),
     "",
     "export function register(on: On): void {",
     ...calls,
+    ...(legacy ? ["  legacy(on);"] : []),
     "}",
     "",
   ].join("\n");

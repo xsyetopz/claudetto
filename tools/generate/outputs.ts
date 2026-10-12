@@ -15,8 +15,8 @@ export const generated = async (root: string): Promise<Output[]> => {
   for (const p of await discover(root))
     made.push(
       ...(await manifestOf(root, p)),
-      ...hooksOf(p),
-      ...registerOf(p),
+      ...(await hooksOf(root, p)),
+      ...registerOf(root, p),
       ...(await slicesOf(root, p)),
     );
   const sources = new Map<string, string>();

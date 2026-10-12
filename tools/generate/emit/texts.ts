@@ -6,6 +6,7 @@
 // `src/` has the layout of the repository: `src/plugins/<name>/agents/x.md` gives `plugins/<name>/agents/x.md`.
 // `src/shared/` holds the parts that more than one file repeats, and gives no file of its own.
 // `src/kernel/` and `src/plugins/*/slices/` hold the code of the 1.0.0 slices, and give no file here either.
+// The `hooks.json` of a plugin with a slice gives no file here, because `emit/hooks.ts` writes it from the source and the slices.
 // In a source, a line `{{include NAME}}` gives the text of `src/shared/NAME.md`, `{{include NAME.json}}` the text of `src/shared/NAME.json`, and `{{NAME}}` the value of the limit `NAME` of `VALUES`.
 // A `hooks.json` also gets its texts from the files next to it: `description.txt` and `<Event>.prompt.txt`.
 // A folder `NAME.ts/` gives the module `NAME.ts`, with one constant for each `.md` or `.json` file in it, so that code can import the texts.
@@ -162,6 +163,19 @@ const walk = (dir: string): string[] =>
 const isHookText = (rel: string): boolean =>
   /(?:^|\/)hooks\/(?:description\.txt|[A-Za-z]+\.prompt\.txt)$/.test(rel);
 
+/** True when the source file `rel` is the `hooks.json` of a plugin with a slice, which `emit/hooks.ts` writes. */
+const isSliceHooks = (src: string, rel: string): boolean => {
+  const name = rel.match(/^plugins\/([^/]+)\/hooks\/hooks\.json$/)?.[1];
+  const dir = path.join(src, "plugins", name ?? "", "slices");
+  return (
+    !!name &&
+    fs.existsSync(dir) &&
+    fs
+      .readdirSync(dir)
+      .some((s) => fs.existsSync(path.join(dir, s, "slice.ts")))
+  );
+};
+
 /** The module path and the constant name of a text of a module folder, such as `a/texts.ts/doing-tasks.md`. */
 const MODULE_TEXT = /^(.+\.ts)\/([a-z0-9-]+)\.(?:md|json)$/;
 
@@ -169,8 +183,8 @@ const MODULE_TEXT = /^(.+\.ts)\/([a-z0-9-]+)\.(?:md|json)$/;
 const literal = (text: string): string =>
   `\`${text.replace(/[\\`]/g, "\\$&").replace(/\$\{/g, "\\${")}\``;
 
-/** The text module of the source folder `dir` of `root`: one constant for each `.md` or `.json` file, in name order. */
-async function textModule(
+/** The text module of the source folder `dir` of `src`: one constant for each `.md` or `.json` file, in name order. */
+export async function textModule(
   src: string,
   shared: string,
   dir: string,
@@ -228,7 +242,8 @@ export async function outputs(root: string): Promise<Output[]> {
   const out: Output[] = [];
   const modules = new Set<string>();
   for (const rel of walk(src)) {
-    if (NO_OUTPUT.test(rel) || isHookText(rel)) continue;
+    if (NO_OUTPUT.test(rel) || isHookText(rel) || isSliceHooks(src, rel))
+      continue;
     const module = rel.match(MODULE_TEXT)?.[1];
     if (module) {
       if (modules.has(module)) continue;
