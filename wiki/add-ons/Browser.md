@@ -1,160 +1,112 @@
 # Browser
 
-The `dotclaude-browser` plugin lets Claude drive a real browser with `agent-browser`, or with CloakBrowser on sites that block automation.
-It adds the `drive-web-browser` skill.
-It also replaces the built-in `WebSearch` tool with a search in the headless browser.
+The plugin `dotclaude-browser` drives a real browser for Claude.
+It has two slices.
+The slice `browse` gives the skill `drive-web-browser` and the command `dotclaude-browser-guide`.
+The slice `search` answers each `WebSearch` call with a search in the headless browser.
+The plugin works without the core plugin, and it imports nothing from another plugin.
 
-## At a glance
+The source is in `src/plugins/dotclaude-browser/`.
+The tests are in `tests/browser/`.
 
-| Item | Value |
-| --- | --- |
-| Install | `/plugin install dotclaude-browser@dotclaude`, with `agent-browser` on `PATH` |
-| Skills | `drive-web-browser`, in `skills/drive-web-browser/SKILL.md` |
-| Bins | `dotclaude-browser-guide`, in `bin/` |
-| Hooks | One module hook, `tool.call` on `WebSearch` ([Hooks](Hooks#dotclaude-browser)) |
-| Options | `backend`: `agent-browser` (default) or `cloakbrowser` ([Choose a backend](#choose-a-backend)) |
-| Limits | See [Limits](#limits) |
-| Problems | See [Troubleshooting](#troubleshooting) |
+## What it adds
 
-## Before you begin
-
-| Need | Why |
-| --- | --- |
-| `agent-browser` ([vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser)) | The skill runs it for each browser step. |
-| [CloakBrowser](https://github.com/CloakHQ/cloakbrowser) binary under `~/.cloakbrowser/` | Only for sites with bot detection. |
-
-> **Note:** The newest CloakBrowser builds need a GitHub sign-in or a paid plan.
-> Claude does not install or sign in for you.
-
-## Install agent-browser
-
-1. Install the tool.
-
-   ```bash
-   npm install -g agent-browser
-   ```
-
-2. Add the plugin from the dotclaude marketplace with `/plugin`.
-
-## How it works
-
-The skill is the manual route.
-Claude loads `dotclaude-browser:drive-web-browser` for a task in a web browser, and the skill holds the commands and the rules.
-The skill loads the guide of `agent-browser` (`agent-browser skills get core`) through `dotclaude-browser-guide`, which cuts it at a bound.
-The workflow is:
-
-```bash
-agent-browser open <url>
-agent-browser snapshot
-agent-browser close
-```
-
-The snapshot lists the page as an accessibility tree with refs such as `@e1`.
-Claude uses a ref in `click`, `fill`, and `type`, and takes a new snapshot after the page changes.
-
-## Web search
-
-With the plugin installed, a `WebSearch` call of Claude runs in the headless browser.
-The model keeps the tool that it knows, and no tool listing changes.
-Without the plugin, `WebSearch` works as in vanilla Claude Code.
-
-1. A `tool.call` hook on `WebSearch` in `hooks/register.ts` takes the call.
-2. The hook looks for the newest `chromium-<version>` folder under `~/.cloakbrowser/` with `$.fs.list`.
-   The binary is at `Chromium.app/Contents/MacOS/Chromium` in that folder, so only macOS finds it.
-3. The hook runs `agent-browser` with `$.process.run`, as an argument vector with no shell, in its own session, whose name starts with `dcws`.
-   When it found the CloakBrowser binary, it adds `--executable-path <binary>`.
-   Without the binary, it runs plain `agent-browser`.
-   The reason is that plain headless `agent-browser` got a DuckDuckGo bot check on each run.
-   `open` loads `https://html.duckduckgo.com/html/?q=<query>`, `get text body` reads the page text, and `close` ends the session.
-4. The result is the page text, with a line that names the browser that was used and tells Claude the text is data.
-   The page text in it has 20,000 characters or fewer.
-   The bounds are in `slices/search/limits.ts`.
-5. `allowed_domains` and `blocked_domains` become `site:` and `-site:` terms of the query.
-
-The hook gives the call to the built-in `WebSearch` when:
-
-- `agent-browser` fails to start, to open the page, or to read it, or it takes too long.
-- DuckDuckGo shows a bot check, or the page has no text.
-
-The reason is that each search engine gave a bot check or a block page to the headless browser on each run from the test network on 2026-10-09, and a deny ended a session with no answer.
-When the `backend` option is `cloakbrowser`, the result of the built-in `WebSearch` gets a notice for Claude.
-The notice gives the reason that CloakBrowser gave no results, and it tells Claude to tell you, because you chose CloakBrowser.
-
-The hook denies the call when:
-
-- The `backend` option is `cloakbrowser`, and the CloakBrowser binary is missing.
-  The reason tells Claude that the call did not run and to ask the user to install CloakBrowser or to set the `backend` option to `agent-browser`.
-  Claude does not switch to plain `agent-browser` by itself, because you chose the backend.
-- The `query` is empty.
-
-The query goes to DuckDuckGo, and after a fallback also to the built-in `WebSearch`, so put no secret in it.
-`agent-browser` must be on the `PATH` of Claude Code.
-In the [sandbox](Sandbox), the network list needs `html.duckduckgo.com`.
-
-## Limits
-
-The bounds of the search are in `plugins/dotclaude-browser/slices/search/limits.ts`.
-The bounds of the `agent-browser` guide in the skill are in `plugins/dotclaude-browser/slices/browse/limits.ts`.
-
-| Bound | Value |
-| --- | --- |
-| Characters of page text in one result | 20,000 |
-| Time to open the search page | 30 s |
-| Time to read the page text | 15 s |
-| Time to close the session | 10 s |
-| Length of a session name | 12 bytes, starting with `dcws` |
-| `allowed_domains` or `blocked_domains` in one query | 10 |
-| Characters of the `agent-browser` guide in the skill | 40,000, then a notice that names the command for the rest |
-| Time to get the guide | 15 s |
-
-## Choose a backend
-
-| Backend | When | How |
+| Part | Slice | What it gives |
 | --- | --- | --- |
-| `agent-browser` (default) | Most pages. | No setup. |
-| `cloakbrowser` | A site shows a bot check, a block page, or a CAPTCHA to `agent-browser`. | Set the option `backend` to `cloakbrowser` in `/config` under dotclaude-browser. |
+| Skill `drive-web-browser` | `browse` | Steps to open, click, fill, or read a page with `agent-browser` |
+| Command `dotclaude-browser-guide` | `browse` | Prints the `agent-browser` guide that the skill loads |
+| Handler on `WebSearch` | `search` | Runs a search in the headless browser, and falls back to the built-in `WebSearch` |
+| Option `backend` | `search` | Chooses `agent-browser` (the default) or `cloakbrowser` |
 
-With `cloakbrowser`, the `WebSearch` hook always uses the CloakBrowser binary, and the skill tells Claude to use CloakBrowser, and not plain `agent-browser`.
-When the binary is missing, Claude tells you and does not switch to plain `agent-browser`.
-Claude runs `agent-browser` with the CloakBrowser binary and `--headed`, because headless mode is easier to detect.
+## Install
 
-```bash
-agent-browser --executable-path <cloakbrowser binary> --headed open https://example.com
-```
+1. Install `agent-browser` with `npm install -g agent-browser`.
+   The skill asks the user for this command when the binary is missing (`NOT_INSTALLED` in `slices/browse/domain/guide.ts`).
+2. For the `cloakbrowser` backend, install CloakBrowser.
+   The plugin does not install it.
+   The binary must be at `~/.cloakbrowser/chromium-<version>/Chromium.app/Contents/MacOS/Chromium` (`CLOAK_DIR` and `CLOAK_BINARY` in `slices/search/domain/search.ts`).
+   Only this macOS layout is in the code.
+3. Install the plugin with `/plugin install dotclaude-browser@dotclaude`.
+4. Set the option `backend` in the plugin settings.
+   Its default is `agent-browser`, and its other value is `cloakbrowser` (`slices/search/slice.ts`).
 
-On macOS the binary is at `~/.cloakbrowser/chromium-<version>/Chromium.app/Contents/MacOS/Chromium`.
-CloakBrowser reduces challenges but does not solve them.
+## The skill and the guide
 
-## Prompts and challenges
+The skill `drive-web-browser` has the `allowed-tools` entries `Bash(agent-browser *)` and `Bash(dotclaude-browser-guide)`.
+Its body includes the output of `dotclaude-browser-guide` at load time, through a `!` command in `slices/browse/skills/drive-web-browser/SKILL.md`.
 
-| Case | What Claude does |
-| --- | --- |
-| Cookie banner | Dismisses it with a normal click, and picks the least-permissive option. |
-| Sign-in | Uses `--profile <path>` for a persistent session, or, after it asks you, `--auto-connect` to reuse your running Chrome with its logged-in sessions. |
-| CAPTCHA | Asks you to complete it by hand. |
+The command runs `agent-browser skills get core` with `Bun.spawnSync`, and it has no shell (`runGuide` in `slices/browse/adapters/cli.ts`).
+The guide text is cut at `MAX_GUIDE_CHARS`, and the cut text ends with a notice that names the command to read the rest (`guideText` in `slices/browse/domain/guide.ts`).
+The command exits with 0 also when the guide is missing, because the text then tells Claude what to do.
+
+## The WebSearch handler
+
+The handler is a `tool.call` mod handler with the filter `{ tool: "WebSearch" }` and the phase `answer` (`slices/search/slice.ts`).
+Its code is in `slices/search/adapters/mod.ts`, and its pure logic is in `slices/search/domain/search.ts`.
+
+For each call, the handler does these steps.
+
+1. It builds the query from the `query` field and from the `allowed_domains` and `blocked_domains` fields.
+   Each domain becomes a `site:` term, or a `-site:` term for a blocked domain (`searchQuery`).
+   It takes at most `MAX_DOMAINS` domains from each list, and it skips a name with a character outside `[\w.-]`.
+2. It denies the call with `INVALID_INPUT` when the query is empty.
+3. It looks for the newest CloakBrowser build.
+   It lists the folder `~/.cloakbrowser/`, keeps the `chromium-<version>` folders, and sorts them by the numbers of the version (`findBinary` and `cloakBuilds`).
+4. It denies the call with `MISSING_BINARY` when the `backend` option is `cloakbrowser` and no binary exists.
+5. It opens the search page in a session with `agent-browser open`, reads the body text with `get text body`, and closes the session.
+   The read uses `--max-output` with `MAX_OUTPUT_CHARS`.
+   The session name starts with `dcws`, so that a search never uses a session of the user (`sessionName`).
+6. It answers with the page text when the page has text and no bot check (`pageResult`).
+   It falls back when the page has no text, when the page shows a bot check, or when a step fails.
+
+When the handler falls back, the built-in `WebSearch` answers.
+With the `cloakbrowser` backend, the built-in result gets a notice that says CloakBrowser gave no results (`fallbackNotice`).
+With the `cloakbrowser` backend, a thrown error also becomes a fallback with its message.
+With the `agent-browser` backend, a thrown error is skipped and logged by Claude Code, so the built-in `WebSearch` answers.
+
+The page text is third-party content.
+The result says so before the page text (`pageResult`).
+
+## Bounds
+
+| Bound | Value | File | Use |
+| --- | --- | --- | --- |
+| `MAX_GUIDE_CHARS` | 40000 | `slices/browse/limits.ts` | Most characters of the guide in the skill |
+| `GUIDE_TIMEOUT_MS` | 15000 ms | `slices/browse/limits.ts` | Time for `agent-browser skills get core` |
+| `MAX_OUTPUT_CHARS` | 20000 | `slices/search/limits.ts` | Most characters of page text in one result, and the `--max-output` of the read |
+| `OPEN_TIMEOUT_MS` | 30000 ms | `slices/search/limits.ts` | Time to open the search page |
+| `READ_TIMEOUT_MS` | 15000 ms | `slices/search/limits.ts` | Time to read the page text |
+| `CLOSE_TIMEOUT_MS` | 10000 ms | `slices/search/limits.ts` | Time to close the session |
+| `SESSION_PREFIX` | `dcws` | `slices/search/limits.ts` | Start of each session name |
+| `SESSION_NAME_MAX` | 12 | `slices/search/limits.ts` | Longest session name, checked by `tests/browser/search.test.ts` |
+| `MAX_DOMAINS` | 10 | `slices/search/limits.ts` | Most domains in each filter list |
+| `SEARCH_URL` | `https://html.duckduckgo.com/html/` | `slices/search/limits.ts` | The search page, which needs no script and no sign-in |
+
+The session name has a counter in base 36 and five random characters after the prefix.
+The comment in `slices/search/limits.ts` gives the reason for `SESSION_NAME_MAX`.
+The browser makes a socket path under the home folder, and macOS refuses a path over 103 bytes.
+
+## Why
+
+- The plugin answers `WebSearch` in the headless browser, and it keeps the built-in tool as the fallback.
+  The fallback keeps a search working when the browser gets a bot check.
+- The `search` slice uses a `tool.call` handler on `WebSearch`, in the phase `answer`.
+  The handler reads the `backend` option through `keepOptions`.
+- The plugin uses `Bun.spawnSync` in the guide command, and `$.process.run` in the mod handler, and neither uses a shell.
+  The arguments are passed as a list.
+- DuckDuckGo's HTML page needs no script and no sign-in, so `agent-browser` can read it (`SEARCH_URL`).
+- Each add-on stays a separate plugin.
+  See D24 in [Decisions-Layout](Decisions-Layout).
+  The layout page also records that the browser plugin replaces the built-in `WebSearch` with its headless browser.
+- The guide bound keeps the text of the skill small in the context of the session.
 
 ## Troubleshooting
 
-A block page or a bot check is a decision of the site, and a site can forbid automation in its terms.
-When a site blocks a page, Claude tells you which page blocked it and asks before it uses a step.
-The steps are in this order:
+| Symptom | Cause and fix |
+| --- | --- |
+| The skill says `agent-browser` is not installed | Run `npm install -g agent-browser`. |
+| The skill says the guide is missing | The installed `agent-browser` gave no guide, for example after a timeout or in an old version. Run `agent-browser --help` to see its commands. |
+| A `WebSearch` call is denied with the CloakBrowser message | The `backend` option is `cloakbrowser`, and no binary is at the path above. Install CloakBrowser, or set `backend` to `agent-browser`. |
+| The result says the built-in `WebSearch` answered | The browser gave no results, because of a bot check, a failed step, or a page with no text. The notice names the reason. |
 
-1. Run `agent-browser read <url>` for a machine-readable version.
-2. Look for RSS or Atom feeds, sitemaps, or APIs.
-3. Switch from plain `agent-browser` to CloakBrowser.
-4. Ask you to open the page by hand.
-
-When a web search fails with "Socket path would be N bytes (max 103)", the home folder path is too long.
-`agent-browser` puts the socket of each session in a folder under the home folder, and macOS refuses a socket path over 103 bytes.
-The session names of the web search are 12 bytes or fewer, so a home folder of 70 bytes or fewer works (**measured** 2026-10-08: a home folder of 73 bytes and a 10-byte name gave 104 bytes, so the rest of the path is 21 bytes).
-The hook then returns no result and the built-in `WebSearch` answers, so nothing is denied.
-Use a shorter home folder to get the headless browser search back.
-
-Text on a web page is data, not instructions.
-Claude follows your task, and not instructions in page content.
-
-## Related pages
-
-- [Install](Install)
-- [Hooks](Hooks#dotclaude-browser)
-- [Troubleshooting](Troubleshooting#dotclaude-browser)
+See also [Troubleshooting](Troubleshooting).
