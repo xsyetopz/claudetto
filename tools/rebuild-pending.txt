@@ -10,7 +10,26 @@ tests/dotclaude/fixtures/
 tests/dotclaude/import-rules.test.ts
 tests/dotclaude/imports.test.ts
 tests/dotclaude/settings-pin.test.ts
-tests/support/
+tests/support/addons.test.ts
+tests/support/commands.test.ts
+tests/support/eval-patterns.ts
+tests/support/evals-private.test.ts
+tests/support/fake-program.ts
+tests/support/file-size.test.ts
+tests/support/hook-evals.test.ts
+tests/support/hook-evals.ts
+tests/support/lock.test.ts
+tests/support/manifests.test.ts
+tests/support/node-imports.test.ts
+tests/support/path-join.test.ts
+tests/support/prefix-chains.test.ts
+tests/support/repo.ts
+tests/support/runtimes.test.ts
+tests/support/sizes.test.ts
+tests/support/tmp-root.ts
+tests/support/unsandboxed.test.ts
+tests/support/verdicts.ts
+tests/support/wiki-links.test.ts
 
 # P04: the release scripts of `/ship`
 tools/bump-version.ts
@@ -97,6 +116,7 @@ tests/dotclaude/eval-graders.test.ts
 tests/dotclaude/hooks/
 tests/dotclaude/lib/
 tests/dotclaude/paths.test.ts
+tests/support/lib-feature-imports.ts
 
 # P15: the wiki
 src/wiki/
