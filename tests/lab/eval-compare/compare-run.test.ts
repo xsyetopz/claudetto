@@ -12,7 +12,7 @@ const runBoth = (...args: Parameters<typeof runBothOn>) =>
   withPlatform("linux", () => runBothOn(...args));
 
 /** A fake runner that gives each call the next status and records the folders and the arguments. */
-function fake(...statuses: (number | undefined)[]) {
+const fake = (...statuses: (number | undefined)[]) => {
   const calls: string[] = [];
   const argvs: string[][] = [];
   const lines: string[] = [];
@@ -28,7 +28,7 @@ function fake(...statuses: (number | undefined)[]) {
     },
     log: (line: string) => lines.push(line),
   };
-}
+};
 
 test("two good runs return 0 and point to the comparison of the tables", () => {
   const f = fake(0, 0);

@@ -14,8 +14,12 @@ plugins/dotclaude-browser/evals/hooks.json
 plugins/dotclaude-browser/tsconfig.json
 
 # P12: `dotclaude-lab`
-src/plugins/dotclaude-lab/
-tests/lab/
+tests/lab/eval-variant.test.ts
+tests/lab/fixture-repo.ts
+tests/lab/results-copy.test.ts
+tests/lab/run-program.test.ts
+tests/lab/sandbox/frontmatter.test.ts
+tests/lab/sandbox/login.test.ts
 
 # P13: `handoff`, the 0.28.0 context bound, and the shared 0.28.0 code of the core plugin that the last slice package removes
 plugins/dotclaude/evals/

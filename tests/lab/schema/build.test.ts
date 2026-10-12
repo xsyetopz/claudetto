@@ -35,11 +35,11 @@ type Props = Record<string, Schema>;
 const props = (node: Schema | undefined) => node?.properties as Props;
 
 // The node at a path of property names, so `at(s, "a", "b")` reads `s.properties.a.properties.b`.
-function at(node: Schema | undefined, ...keys: string[]): Schema {
+const at = (node: Schema | undefined, ...keys: string[]): Schema => {
   let found = node;
   for (const key of keys) found = props(found)[key];
   return found as Schema;
-}
+};
 
 // The fixture uses the helper names of the supported version.
 const FIXTURE = [
