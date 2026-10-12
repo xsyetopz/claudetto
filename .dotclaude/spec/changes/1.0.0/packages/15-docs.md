@@ -120,7 +120,7 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    - [x] `Status-Line`, `Semantic-Line-Breaks`, `Contributions`
    - [x] `Prompt-Surface`, `Context-And-Handoff`, `Second-Opinion`, `Claude-Code-Internals`, `Subagents`, `Plugin-Loader`
    - [x] `Code-Graph`, `Browser`, `Library-Docs`, `Sessions`
-   - [ ] `Add-Ons`, `Lab` (a WIP commit is merged, so check it)
+   - [x] `Add-Ons`, `Lab`
    - [ ] `Claude-Code-Internals`, `Request-Build` (with `Claude-Mods`), `Tools-And-Deferral`, `Hook-Events` (with `Hooks`), `Plugin-Loader`
    - [ ] `Settings-Resolution`, `Subagents`, `Compaction-And-Context`, `Undocumented-Reads`
    - [x] `Settings-Snippet`, `Settings-Snippet-Keys`, `Off-Switches`, `Settings-Schema`, `Bounds`, `Request-Build` (with `Claude-Mods`), `Compaction-And-Context`
@@ -151,6 +151,7 @@ P15 does not own them, so they go to P16 or a new package.
 - `design.md` names `ports.ts` in each slice, `adapters/hook.ts`, and `texts/`, and the tree has `ports.ts` in some slices only, no `adapters/hook.ts`, and `texts.ts` files.
 - `slices/asks/weak-limits.ts` holds two bounds that `limits.ts` re-exports.
 - `slices/trim/domain/removed.ts` `REMOVED_PARTS` has no importer.
+- The `dotclaude-lab` slices have no `limits.ts`: `5` in `slices/eval-compare/domain/compare.ts`, `DEPTH_MAX` in `slices/schema/domain/types.ts`, and `SPLIT_CHARS` in `slices/capture/domain/report.ts`, and the `eval` recipe of `justfile` has `--max-cost-usd 5`.
 - Under the load of the full suite, `tests/tools/generate/texts.test.ts` timed out once at 5,000 ms.
 
 ## Acceptance
