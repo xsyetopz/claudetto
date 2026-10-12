@@ -8,14 +8,22 @@ export const STATEMENT_MAX_CHARS = 4_000;
 /** The most nested levels of a JSON value that the config check compares. A deeper value is a value that the check cannot read. */
 export const JSON_DEPTH_MAX = 24;
 
-/** The start of an assertion in a test file. The reader takes the whole statement from here. */
-export const ASSERTION_START = [
-  /\b(?:assert|expect|verify)\w*!?\s*[(.]/,
-  /^[ \t]*assert\b/,
-  /\.should\b/,
-  /\b[tb]\.(?:Error|Errorf|Fatal|Fatalf|Fail|FailNow)\s*\(/,
-  /\braises\s*\(/,
-];
+/**
+ * The text of an added line of a test file that is control flow, a skip, a focus, or a timeout.
+ * The check runs on the line without the inside of its strings and without its comment.
+ * A line like this can stop a test before its asserts, so that an added assert checks nothing.
+ */
+export const TEST_CONTROL = new RegExp(
+  [
+    String.raw`\b(?:if|else|elif|unless|when|return|try|catch|except|finally|switch|for|foreach|each|while|loop|break|continue|exit|and|or)\b`,
+    String.raw`\b(?:skip\w*|only|todo|xfail|pending|ignore\w*|disabled?|should_panic|expectedFailure|cfg\w*)\b`,
+    String.raw`(?<![.\w])(?:fit|xit|xtest|xdescribe|fdescribe)\b`,
+    "timeout|process\\.exit|_exit\\b|\\?|&&|\\|\\|",
+    String.raw`^\}\s*,[^,]*\)\s*;?$`,
+    String.raw`\}\s*,\s*\d[\d_.e]*\s*\)\s*;?$`,
+  ].join("|"),
+  "i",
+);
 
 /** The start of a test in a test file. The check counts the tests, so a removed test shows. */
 export const TEST_DECLARATION = [

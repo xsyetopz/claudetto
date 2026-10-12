@@ -1,0 +1,471 @@
+// Review payloads for the ask on a weaker lint config, runner config, or `tsconfig.json` (package P36).
+// A call asks unless every changed part is an added key at the strictest level, a raised threshold, or a format change.
+// Files are strings and no file is read.
+
+import { expect, test } from "bun:test";
+import { editAsks, writeAsks } from "../calls.ts";
+
+/** `[title, file, text, old, new]` for an `Edit` that must get an ask. */
+type Case = [string, string, string, string, string];
+
+const ASKS: Case[] = [
+  [
+    "biome off",
+    "/w/biome.json",
+    `{"linter":{"rules":{"suspicious":{"noExplicitAny":"error"}}}}`,
+    '"error"',
+    '"off"',
+  ],
+  [
+    "biome off2",
+    "/w/biome.json",
+    `{"linter":{"rules":{"suspicious":{"noExplicitAny":"error"}}}}`,
+    '"error"',
+    '"info"',
+  ],
+  [
+    "biome obj",
+    "/w/biome.json",
+    `{"linter":{"rules":{"suspicious":{"noExplicitAny":"error"}}}}`,
+    '"noExplicitAny":"error"',
+    '"noExplicitAny":{"level":"off"}',
+  ],
+  [
+    "biome enabled false",
+    "/w/biome.json",
+    `{"linter":{"enabled":true,"rules":{"recommended":true}}}`,
+    '"enabled":true',
+    '"enabled":false',
+  ],
+  [
+    "biome recommended false",
+    "/w/biome.json",
+    `{"linter":{"rules":{"recommended":true}}}`,
+    "true",
+    "false",
+  ],
+  [
+    "biome ignore",
+    "/w/biome.json",
+    `{"files":{"includes":["**"]}}`,
+    '["**"]',
+    '["**","!src"]',
+  ],
+  [
+    "eslint empty",
+    "/w/.eslintrc.json",
+    `{"rules":{"no-var":"error","eqeqeq":"error"}}`,
+    '{"no-var":"error","eqeqeq":"error"}',
+    "{}",
+  ],
+  ["eslint 2->0", "/w/.eslintrc.json", `{"rules":{"no-var":2}}`, "2", "0"],
+  [
+    "eslint arr off",
+    "/w/.eslintrc.json",
+    `{"rules":{"no-var":["error"]}}`,
+    '"error"',
+    '"off"',
+  ],
+  [
+    "ruff select",
+    "/w/ruff.toml",
+    `select = ["E","F","B"]\n`,
+    '["E","F","B"]',
+    '["E"]',
+  ],
+  [
+    "ruff ignore add",
+    "/w/ruff.toml",
+    `select = ["E","F"]\nignore = []\n`,
+    "ignore = []",
+    'ignore = ["E","F"]',
+  ],
+  [
+    "pyproject ruff",
+    "/w/pyproject.toml",
+    `[tool.ruff.lint]\nselect = ["E","F","B"]\n`,
+    '["E","F","B"]',
+    '["E"]',
+  ],
+  [
+    "tsconfig strict",
+    "/w/tsconfig.json",
+    `{"compilerOptions":{"strict":true,"noUnusedLocals":true}}`,
+    '"strict":true',
+    '"strict":false',
+  ],
+  [
+    "tsconfig rm",
+    "/w/tsconfig.json",
+    `{"compilerOptions":{"strict":true,"noUnusedLocals":true}}`,
+    ',"noUnusedLocals":true',
+    "",
+  ],
+  [
+    "tsconfig strict null",
+    "/w/tsconfig.json",
+    `{"compilerOptions":{"strict":true}}`,
+    '"strict":true',
+    '"strict":true,"strictNullChecks":false',
+  ],
+  [
+    "tsconfig skipLibCheck",
+    "/w/tsconfig.json",
+    `{"compilerOptions":{"strict":true}}`,
+    '"strict":true',
+    '"strict":true,"noEmitOnError":false,"allowJs":true,"checkJs":false',
+  ],
+  [
+    "tsconfig exclude",
+    "/w/tsconfig.json",
+    `{"include":["src"]}`,
+    '["src"]',
+    "[]",
+  ],
+  [
+    "tsconfig exclude add",
+    "/w/tsconfig.json",
+    `{"include":["src"]}`,
+    '"include":["src"]',
+    '"include":["src"],"exclude":["src"]',
+  ],
+  [
+    "vitest thresh",
+    "/w/vitest.config.ts",
+    "export default { test: { coverage: { thresholds: { lines: 90 } } } };\n",
+    "90",
+    "10",
+  ],
+  [
+    "jest thresh",
+    "/w/jest.config.json",
+    `{"coverageThreshold":{"global":{"lines":90}}}`,
+    "90",
+    "10",
+  ],
+  [
+    "jest ignore",
+    "/w/jest.config.json",
+    `{"a":1}`,
+    '"a":1',
+    '"a":1,"testPathIgnorePatterns":["src"]',
+  ],
+  [
+    "jest ignore ts",
+    "/w/jest.config.ts",
+    "export default { verbose: true };\n",
+    "verbose: true",
+    "verbose: true, testPathIgnorePatterns: ['src']",
+  ],
+  ["bun bail", "/w/bunfig.toml", "[test]\nbail = 1\n", "bail = 1", "bail = 0"],
+  [
+    "bun cov",
+    "/w/bunfig.toml",
+    "[test]\ncoverageThreshold = 0.9\n",
+    "0.9",
+    "0.1",
+  ],
+  [
+    "pytest ini",
+    "/w/pytest.ini",
+    "[pytest]\naddopts = -x\n",
+    "-x",
+    "-x --ignore=tests",
+  ],
+  [
+    "pytest cov",
+    "/w/pytest.ini",
+    "[pytest]\naddopts = --cov-fail-under=90\n",
+    "90",
+    "10",
+  ],
+  [
+    "vitest exclude",
+    "/w/vitest.config.ts",
+    "export default { test: { include: ['src'] } };\n",
+    "include: ['src']",
+    "include: ['src'], exclude: ['src']",
+  ],
+  [
+    "vitest passWithNoTests",
+    "/w/vitest.config.ts",
+    "export default { test: {} };\n",
+    "test: {}",
+    "test: {passWithNoTests: true}",
+  ],
+  [
+    "vitest include empty",
+    "/w/vitest.config.ts",
+    "export default { test: { include: ['src'] } };\n",
+    "['src']",
+    "[]",
+  ],
+  [
+    "bunfig cov",
+    "/w/bunfig.toml",
+    "[test]\ncoverageThreshold = 0.9\n",
+    "0.9",
+    "0.1",
+  ],
+  [
+    "bunfig cov2",
+    "/w/bunfig.toml",
+    "[test]\ncoverageThreshold = { line = 0.9 }\n",
+    "0.9",
+    "0.1",
+  ],
+  [
+    "bunfig cov rm",
+    "/w/bunfig.toml",
+    "[test]\ncoverageThreshold = 0.9\nbail = 1\n",
+    "coverageThreshold = 0.9\n",
+    "",
+  ],
+  [
+    "limits lower",
+    "/w/src/x/limits.ts",
+    "export const MAX = 100;\n",
+    "100",
+    "50",
+  ],
+  [
+    "biome ignore pretty",
+    "/w/biome.json",
+    '{\n  "files": {\n    "includes": ["**"]\n  }\n}\n',
+    '["**"]',
+    '["**", "!src"]',
+  ],
+  [
+    "biome ignore add",
+    "/w/biome.json",
+    '{\n  "files": {\n    "includes": ["**"]\n  }\n}\n',
+    '"includes": ["**"]',
+    '"includes": ["**"],\n    "ignore": ["src"]',
+  ],
+  [
+    "biome overrides",
+    "/w/biome.json",
+    '{\n  "linter": {}\n}\n',
+    '"linter": {}',
+    '"linter": {},\n  "overrides":[{"includes":["**"],"linter":{"enabled":false}}]',
+  ],
+  [
+    "biome disable",
+    "/w/biome.json",
+    '{\n  "linter": {"enabled": true}\n}\n',
+    '"linter": {"enabled": true}',
+    '"linter": {"enabled": true},\n  "formatter":{"enabled":false}',
+  ],
+  [
+    "biome suppress",
+    "/w/biome.json",
+    '{\n  "linter": {"rules":{"a":{"x":"error"}}}\n}\n',
+    '"x":"error"',
+    '"x":"error","y":"off"',
+  ],
+  [
+    "tsconfig strictNull",
+    "/w/tsconfig.json",
+    '{"compilerOptions":{"strict":true}}',
+    '"strict":true',
+    '"strict":true,"noImplicitAny":false',
+  ],
+  [
+    "tsconfig strictNull pretty",
+    "/w/tsconfig.json",
+    '{\n "compilerOptions":{\n "strict":true\n }\n}',
+    '"strict":true',
+    '"strict":true,\n "strictNullChecks":false',
+  ],
+  [
+    "bunfig cov lowered a bit",
+    "/w/bunfig.toml",
+    "[test]\ncoverageThreshold = 0.9\n",
+    "0.9",
+    "0.8",
+  ],
+  [
+    "bunfig cov removed",
+    "/w/bunfig.toml",
+    "[test]\ncoverageThreshold = 0.9\n",
+    "coverageThreshold = 0.9\n",
+    "",
+  ],
+  [
+    "bunfig bail removed",
+    "/w/bunfig.toml",
+    "[test]\nbail = 1\n",
+    "bail = 1\n",
+    "",
+  ],
+  [
+    "bunfig preload",
+    "/w/bunfig.toml",
+    "[test]\nbail = 1\n",
+    "bail = 1",
+    "bail = 1\nskip = true",
+  ],
+  [
+    "biome includes pattern pretty",
+    "/w/biome.jsonc",
+    '{\n  // c\n  "files": {\n    "includes": ["**"]\n  }\n}\n',
+    '"**"',
+    '"**", "!!src"',
+  ],
+  [
+    "biome overrides new",
+    "/w/biome.json",
+    '{"linter":{"enabled":true}}',
+    '{"linter":{"enabled":true}}',
+    '{"linter":{"enabled":true},"overrides":[{"includes":["a"],"linter":{"rules":{"x":"error"}}}]}',
+  ],
+  [
+    "biome new enabled key",
+    "/w/biome.json",
+    '{"linter":{}}',
+    '"linter":{}',
+    '"linter":{},"assist":{"enabled":true}',
+  ],
+  [
+    "biome new warn",
+    "/w/biome.json",
+    '{"linter":{"rules":{"a":{"x":"error"}}}}',
+    '"x":"error"',
+    '"x":"error","y":"warn"',
+  ],
+  [
+    "tsconfig noImplicitAny false",
+    "/w/tsconfig.json",
+    '{"compilerOptions":{"strict":true}}',
+    '"strict":true',
+    '"strict":true,"noImplicitAny":false',
+  ],
+  [
+    "tsconfig skipLibCheck true",
+    "/w/tsconfig.json",
+    '{"compilerOptions":{"strict":true}}',
+    '"strict":true',
+    '"strict":true,"skipLibCheck":true',
+  ],
+  [
+    "tsconfig target changed",
+    "/w/tsconfig.json",
+    '{"compilerOptions":{"target":"es2022"}}',
+    "es2022",
+    "es5",
+  ],
+  [
+    "ruff per-file-ignores header",
+    "/w/ruff.toml",
+    'select = ["E"]\n',
+    'select = ["E"]\n',
+    'select = ["E"]\n[lint.per-file-ignores]\n"a.py" = ["E"]\n',
+  ],
+  [
+    "pytest ini section ignore",
+    "/w/pytest.ini",
+    "[pytest]\naddopts = -x\n",
+    "-x\n",
+    "-x\nnorecursedirs = tests\n",
+  ],
+  [
+    "vitest new import",
+    "/w/vitest.config.ts",
+    "export default { test: { include: ['src'] } };\n",
+    "export",
+    "import x from 'x';\nexport",
+  ],
+];
+
+for (const [title, file, text, old, now] of ASKS)
+  test(`the review payload \`${title}\` gets an ask`, async () => {
+    expect(await editAsks(file, text, old, now)).toBe(true);
+  });
+
+const SAFE: Case[] = [
+  [
+    "biome new rule at error",
+    "/w/biome.json",
+    '{"linter":{"rules":{"suspicious":{"noExplicitAny":"error"}}}}',
+    '"noExplicitAny":"error"',
+    '"noExplicitAny":"error","noDebugger":"error"',
+  ],
+  [
+    "biome rule raised",
+    "/w/biome.json",
+    '{"linter":{"rules":{"a":{"x":"warn"}}}}',
+    '"warn"',
+    '"error"',
+  ],
+  [
+    "tsconfig new strict flag",
+    "/w/tsconfig.json",
+    '{"compilerOptions":{"strict":true}}',
+    '"strict":true',
+    '"strict":true,"noUnusedLocals":true',
+  ],
+  [
+    "tsconfig format",
+    "/w/tsconfig.json",
+    '{"compilerOptions":{"strict":true}}',
+    '{"compilerOptions":{"strict":true}}',
+    '{\n  "compilerOptions": {\n    "strict": true\n  }\n}',
+  ],
+  [
+    "tsconfig comment",
+    "/w/tsconfig.json",
+    '{"compilerOptions":{"strict":true}}',
+    '{"compilerOptions"',
+    '{\n// c\n"compilerOptions"',
+  ],
+  [
+    "bunfig threshold raised",
+    "/w/bunfig.toml",
+    "[test]\ncoverageThreshold = 0.8\n",
+    "0.8",
+    "0.9",
+  ],
+  [
+    "bunfig new threshold",
+    "/w/bunfig.toml",
+    "[test]\nbail = 1\n",
+    "bail = 1",
+    "bail = 1\ncoverageThreshold = 0.9",
+  ],
+  [
+    "vitest comment",
+    "/w/vitest.config.ts",
+    "export default { test: { include: ['src'] } };\n",
+    "export",
+    "// c\nexport",
+  ],
+  [
+    "vitest threshold raised",
+    "/w/vitest.config.ts",
+    "export default { test: { coverage: { thresholds: { lines: 80 } } } };\n",
+    "80",
+    "90",
+  ],
+  [
+    "ruff select grows",
+    "/w/ruff.toml",
+    'select = ["E","F"]\n',
+    '["E","F"]',
+    '["E","F","B"]',
+  ],
+];
+
+for (const [title, file, text, old, now] of SAFE)
+  test(`the safe change \`${title}\` gets no ask`, async () => {
+    expect(await editAsks(file, text, old, now)).toBe(false);
+  });
+
+test("a `Write` that drops a rule from a lint config gets an ask", async () => {
+  expect(
+    await writeAsks(
+      "/w/biome.json",
+      '{"linter":{"rules":{"a":{"x":"error"}}}}',
+      '{"linter":{}}',
+    ),
+  ).toBe(true);
+});
