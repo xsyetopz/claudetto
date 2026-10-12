@@ -195,6 +195,15 @@ test("Hook call with no id: an `on(` call with no `// eval:` comment fails and n
   );
 });
 
+test("a hook call that Biome wraps, with the event name on the next line, has the id of the comment above it", () => {
+  const text =
+    '  // eval: tool.call graph\n  on(\n    "tool.call",\n    { tool: "Bash" },\n    h0,\n  );\n';
+  expect(moduleHooks({ "plugins/p/hooks/register.ts": text })).toStrictEqual({
+    ids: ["tool.call graph"],
+    faults: [],
+  });
+});
+
 test("test names come from each quote form, with escapes removed", () => {
   expect([...testNames(TESTS)]).toStrictEqual([
     "allows",

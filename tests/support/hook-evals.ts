@@ -33,7 +33,7 @@ export const moduleHooks = (
   for (const [file, text] of Object.entries(files)) {
     const lines = text.split("\n");
     lines.forEach((line, i) => {
-      if (!/^\s*on\(\s*"/.test(line)) return;
+      if (!/^\s*on\(\s*(?:"|$)/.test(line)) return;
       const id = /^\s*\/\/ eval: (.+)$/.exec(lines[i - 1] ?? "")?.[1]?.trim();
       if (id) ids.push(id);
       else

@@ -86,7 +86,7 @@ test("a type import of `claude-code` and a `bun:` module pass, and a value impor
 test("rule 6: `node:`, `import()`, and a computed `on()` name in the module graph are violations", () => {
   const files = {
     [`${P}/hooks/register.ts`]:
-      'import { a } from "../features/guard/rules.ts";\nexport function register(on) {\n  on("tool.check", () => {});\n  on(EVENT, () => {});\n}',
+      'import { a } from "../features/guard/rules.ts";\nexport function register(on) {\n  on("tool.check", () => {});\n  on(\n    "tool.call",\n    () => {},\n  );\n  on(EVENT, () => {});\n}',
     [`${P}/features/guard/rules.ts`]:
       'import { b } from "../../lib/b.ts";\nconst m = await import("./x.ts");',
     [`${P}/lib/b.ts`]: 'import fs from "node:fs";',
