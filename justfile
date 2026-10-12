@@ -25,8 +25,8 @@ validate:
 lab:
     bun tools/lab.ts
 
-# The full local gate: lint, the type check, tests, plugin validation, and the hook lab
-check: lint typecheck test validate lab
+# The full local gate: lint, the type check, the generated files, tests, plugin validation, and the hook lab
+check: lint typecheck (generate "--check") test validate lab
 
 # The gate of the CI `check` job: `check` without the type check, because CI has no `.claude-plugin/types/`
 ci: lint test validate lab

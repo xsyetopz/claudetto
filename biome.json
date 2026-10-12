@@ -12,7 +12,9 @@
       "!!**/.agents",
       "!!**/node_modules",
       "!!**/dist",
-      "!!**/*.generated.{js,jsx,mjs,cjs,ts,tsx,mts,cts}"
+      "!!**/*.generated.{js,jsx,mjs,cjs,ts,tsx,mts,cts}",
+      "!src/plugins/dotclaude/lib/snippets.ts/snippet.json",
+      "!src/plugins/dotclaude/lib/snippets.ts/docs-snippet.json"
     ],
     "ignoreUnknown": true
   },

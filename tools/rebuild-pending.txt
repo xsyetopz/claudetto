@@ -88,6 +88,7 @@ tools/start-run.ts
 tools/unsandboxed.ts
 
 # P13: `handoff`, the 0.28.0 context bound, and the shared 0.28.0 code of the core plugin that the last slice package removes
+# `biome.json` skips the include templates `src/plugins/dotclaude/lib/snippets.ts/*.json`, which are not JSON, so P13 also removes those 2 globs.
 plugins/dotclaude/evals/
 plugins/dotclaude/features/context/
 plugins/dotclaude/hooks/PostToolUse/

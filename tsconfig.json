@@ -18,8 +18,14 @@
       "claude-code-mcp",
       "claude-code-tools",
       "node"
-    ]
+    ],
+    "rootDirs": ["src", "."]
   },
   "exclude": ["node_modules"],
-  "include": ["plugins/**/*.ts", "tests/**/*.ts", "tools/**/*.ts"]
+  "include": [
+    "plugins/**/*.ts",
+    "tests/**/*.ts",
+    "tools/**/*.ts",
+    "src/**/*.ts"
+  ]
 }
