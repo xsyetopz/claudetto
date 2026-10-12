@@ -69,7 +69,7 @@ Critical path: P01a, P01b1 to P01b4, P05 and P06, P13, P14, P15, P16.
 
 Each package depends on P01b4.
 
-- [ ] P03 `spec`: the adapters, the `dotclaude-spec` CLI with each command of [workflow](workflow.md#cli), and the files of this change in the format.
+- [x] P03 `spec`: the adapters, the `dotclaude-spec` CLI with each command of [workflow](workflow.md#cli), and the files of this change in the format.
   Deps: P02.
   Owns: the `spec` slice except `domain/` and `skills/`.
   Verify also: `dotclaude-spec validate 1.0.0` passes.

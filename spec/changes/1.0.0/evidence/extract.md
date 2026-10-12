@@ -52,15 +52,15 @@ Neither capture has an output style.
 | --- | --- | --- | --- | --- | --- |
 | section | 29 | 15 | 14 | 25 | 3 |
 | tool | 25 | 25 | 0 | 25 | 7 |
-| style | 1 | 0 | 1 | 1 | 0 |
+| style | 1 | 1 | 0 | 1 | 0 |
 | compaction | 3 (`none`) | 0 | 3 | 3 | 0 |
 | listing | 3 (`none`) | 0 | 3 | 3 | 0 |
 | attachment | 0 | 0 | 0 | 0 | 0 |
 | simple prompt | 2 (`none`) | 0 | 2 | 0 | 0 |
 
 The report has 63 ids.
-The two captures confirm 40 of them: 15 sections and 25 tools.
-The 23 ids that are not confirmed are 14 sections, 1 style, 3 compaction prompts, 3 listings, and 2 simple prompts.
+The captures confirm 41 of them: 15 sections, 25 tools, and 1 style.
+The 22 ids that are not confirmed are 14 sections, 3 compaction prompts, 3 listings, and 2 simple prompts.
 Of the 14 section ids that are not confirmed, 4 have no file: `memory_static`, `brief`, `focus_mode`, and `subagent_steer_delegation`.
 The `Full files` column counts the `.full.txt` files that hold the text of the full session where it differs from the lean session.
 
@@ -134,7 +134,7 @@ The other unconfirmed files have the text of the earlier extract from the bundle
 | tool | `Workflow` | 3502 | 876 | `/Users/krystian/CodeProjects/xsyetopz/dotclaude/external/cc-extract/2.1.296/tool/Workflow.txt` | confirmed |
 | tool | `Write` | 240 | 60 | `/Users/krystian/CodeProjects/xsyetopz/dotclaude/external/cc-extract/2.1.296/tool/Write.txt` | confirmed (lean) |
 | tool | `Write` | 620 | 155 | `/Users/krystian/CodeProjects/xsyetopz/dotclaude/external/cc-extract/2.1.296/tool/Write.full.txt` | confirmed (full) |
-| style | `Concise` | 265 | 66 | `/Users/krystian/CodeProjects/xsyetopz/dotclaude/external/cc-extract/2.1.296/style/Concise.txt` | not confirmed |
+| style | `Concise` | 265 | 66 | `/Users/krystian/CodeProjects/xsyetopz/dotclaude/external/cc-extract/2.1.296/style/Concise.txt` | confirmed (one `-p` request through the capture proxy, with `outputStyle` `Concise` and only an empty test plugin; the body equals the file except one blank line before `# Concise Style Active`) |
 | compaction | `none` | 4287 | 1072 | `/Users/krystian/CodeProjects/xsyetopz/dotclaude/external/cc-extract/2.1.296/compaction/full.txt` | not confirmed |
 | compaction | `none` | 2433 | 608 | `/Users/krystian/CodeProjects/xsyetopz/dotclaude/external/cc-extract/2.1.296/compaction/recent.txt` | not confirmed |
 | compaction | `none` | 384 | 96 | `/Users/krystian/CodeProjects/xsyetopz/dotclaude/external/cc-extract/2.1.296/compaction/entire.txt` | not confirmed |
@@ -214,7 +214,6 @@ The full session did not confirm the other 14 section ids, because each one has 
 
 - Sections `autonomy_append`, `bg-session`, `brook_heron`, `delivering_work_max`, `opus5_reduced_delegation`, `overcorrection`, `task_continuity`, `user_pays`, `willow_tern`, `brief`, `focus_mode`, and `subagent_steer_delegation`: the gate of the section was off in both live sessions.
 - Sections `memory_static` and `env_info`: neither session had the trait `sdk-preset`.
-- Style `Concise`: neither session had an output style.
 - Compaction prompts and listings: the captures do not record these events.
   Their `none` id has no event in the captures.
 - Attachments: the captures do not record `prompt.attachment`.

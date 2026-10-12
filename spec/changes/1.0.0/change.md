@@ -38,6 +38,11 @@ It gets the highest intelligence for the lowest token cost:
 - dotclaude has its own output style `dotclaude:Concise`, based on the built-in Concise style.
 - dotclaude changes the built-in system prompt, tool descriptions, output styles, and other instructions through the Mod API, after an agent extracts them from the bundle.
   Reading the bundle is permitted, and a patch is not.
+- The setup adapts to the account type of the user.
+  Pro is the baseline, and Max 5x, Max 20x, and API-key accounts scale from it, with the same features: for example, more parallel subagents and better model and effort picks.
+- The auto mode classifier allows each safe command, and the removal of Claude Code worktrees and Claude Code temp folders is safe.
+  A command that leaks env vars or secrets, and each dangerous or destructive system, `git`, or tooling command, goes to ask or deny.
+- dotclaude uses the garbage collection of Claude Code.
 
 ## Scope
 
