@@ -8,6 +8,9 @@ export const BUN_MIN = "1.4.3";
 /** The most key paths that the line of missing snippet values names. The line gives the count of the rest. */
 export const GAP_KEYS_MAX = 8;
 
+/** The most lines that the rule problems add to the drift check. The line after them gives the count of the rest. */
+export const RULE_LINES_MAX = 8;
+
 /** The `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` of the Pro baseline and the API key account. It is the pin of the `prompt` slice. */
 export const SUBAGENTS_PRO = 5;
 /** The `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` of the Max 5x account. */

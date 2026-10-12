@@ -15,6 +15,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The spec store keeps its lane changes in an append-only `events.jsonl`, one line for each change, in place of `state.json`.
   The lane of a package is its last line, and `.gitattributes` sets `merge=union` so two branches merge with no conflict.
   The store no longer names the handoff file.
+- The `drift` command of `dotclaude-setup` reports a rule file in `.claude/rules/` whose `paths` front matter does not parse, whose braces expand over 1000 patterns, or whose glob matches no tracked file.
+  The `trim` slice lists the rules with no `paths` as a source of context at the start of a session.
 - The spec store takes the packages of a change from its package files.
   A package with a file and no line in `events.jsonl` is `planned` for `lane`, `status`, `next`, `validate`, and the status line.
 - The `lib/` and `features/` files of each plugin are TypeScript (`.ts`), and `bun check` type-checks them with `noUncheckedIndexedAccess`.
