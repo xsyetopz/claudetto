@@ -33,7 +33,9 @@ This package ports no slice: P01b2 ports `prompt`, P01b3 adds the snippet, and P
   - The gate of step 1 passed on 2026-10-12: `claude plugin validate --strict` gave `✔ Validation passed` on a probe whose `register.ts` imports a handler from a slice file that calls `$.env.get`.
     The `plugin.json` of the probe needed an `author` field.
   - Each `slice.ts` exports `slice`, and each `plugin.ts` exports `plugin`.
-  - The generated `register.ts` imports `slice` of each slice under one name for each slice, and passes each handler by its index, such as `on("prompt.compose", prompt.mod[0].run)`, with the event and the filter as literals.
+  - The generated `register.ts` has the shape of the gate: a named import of each handler from the `adapters/mod.ts` of its slice, such as `import { onCompose as h0 } from "../slices/prompt/adapters/mod.ts"`, and `on("prompt.compose", h0)`, with the event and the filter as literals.
+    The generator imports each `slice.ts`, and finds the named export of `adapters/mod.ts` that is the same function as each `run`.
+    It fails with a message that names the slice when a `run` is not a named export of `adapters/mod.ts` (Jev, confidence 0.20, over an index into the manifest at 0.14).
   - `plugin.json` takes its version from `package.json`, which `just bump` changes already, so `plugin.ts` has no version.
   - `NO_OUTPUT` of the 0.28.0 text step also skips `src/plugins/*/plugin.ts`.
   - A line of `tools/rebuild-pending.txt` that ends with `/` names a folder and each file in it, so the list stays at 300 lines or less.
