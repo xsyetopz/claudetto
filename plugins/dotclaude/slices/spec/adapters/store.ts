@@ -8,6 +8,8 @@ import { fileReader } from "../../../kernel/node/fs.ts";
 import type { FileReader } from "../../../kernel/ports.ts";
 import {
   type ChangeState,
+  type Lane,
+  packageLanes,
   readState,
   SPEC_ROOT,
   statePath,
@@ -44,6 +46,11 @@ export class SpecStore {
   /** The state of the change `id`, or null. It throws an `Error` on a `schema` that it does not know. */
   state(id: string): Promise<ChangeState | null> {
     return readState(this.files, id);
+  }
+
+  /** The lanes of the change `id`: the package files and the lanes of `state`, from `packageLanes`. */
+  lanes(id: string, state: ChangeState): Promise<Record<string, Lane>> {
+    return packageLanes(this.files, id, state);
   }
 
   async writeState(id: string, state: ChangeState): Promise<void> {

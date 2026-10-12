@@ -7,3 +7,13 @@ export const BUN_MIN = "1.4.3";
 
 /** The most key paths that the line of missing snippet values names. The line gives the count of the rest. */
 export const GAP_KEYS_MAX = 8;
+
+/** The `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` of the Pro baseline and the API key account. It is the pin of the `prompt` slice. */
+export const SUBAGENTS_PRO = 5;
+/** The `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` of the Max 5x account. */
+export const SUBAGENTS_MAX_5X = 10;
+/** The `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` of the Max 20x account. */
+export const SUBAGENTS_MAX_20X = 20;
+
+/** The most time, in milliseconds, that `claude auth status --json` may take before setup reads no account. */
+export const AUTH_STATUS_TIMEOUT_MS = 10_000;

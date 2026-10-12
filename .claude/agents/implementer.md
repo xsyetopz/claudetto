@@ -1,0 +1,1 @@
+../../plugins/dotclaude/agents/implementer.md

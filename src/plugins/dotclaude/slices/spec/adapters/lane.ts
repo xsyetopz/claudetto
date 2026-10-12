@@ -42,7 +42,7 @@ const changeOf = async (run: Run, pkg: string): Promise<string | null> => {
   const found: string[] = [];
   for (const id of await run.store.changes()) {
     const state = await run.store.state(id);
-    if (state && pkg in state.lanes) found.push(id);
+    if (state && pkg in (await run.store.lanes(id, state))) found.push(id);
   }
   if (found.length === 1) return found[0] ?? null;
   run.io.error(
@@ -76,6 +76,7 @@ export const laneCommand = async (
   if (id === null) return 1;
   const state = await run.store.state(id);
   if (state === null) return 1;
+  const before = (await run.store.lanes(id, state))[pkg];
   const next: ChangeState = {
     ...state,
     lanes: { ...state.lanes, [pkg]: lane },
@@ -85,6 +86,6 @@ export const laneCommand = async (
     ],
   };
   await run.store.writeState(id, next);
-  run.io.log(`${id}: ${pkg} ${state.lanes[pkg]} -> ${lane}`);
+  run.io.log(`${id}: ${pkg} ${before} -> ${lane}`);
   return 0;
 };
