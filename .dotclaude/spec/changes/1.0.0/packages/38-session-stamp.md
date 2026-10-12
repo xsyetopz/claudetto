@@ -54,6 +54,8 @@ The record costs 0 model tokens.
 - `just check` and `just lab` pass.
 - The evidence file gives the result of the probe, or the reason that it did not run.
 - A request to the model holds no text of the record, by the probe or by the choice of the file.
+  The probe of step 1 shows that the model does not see a `system` notice, in one request (`evidence/session-stamp.md`), so the record is a `system` notice of the `informational` subtype.
+  A run in `just sandbox` with `dotclaude-capture` and two prompts finds no text of the record in either request.
 - `dotclaude-usage` shows the build of a session with a record, and `unknown` for a session without one.
 
 ## Boundaries
