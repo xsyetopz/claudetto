@@ -56,6 +56,8 @@ It gets the highest intelligence for the lowest token cost:
   The lanes come from the log, so each fact is in one place, each change is a one-line diff, and two branches merge with no conflict.
 - dotclaude does each task at zero token cost where it can: a hook, a script, a setting, or a status line command does the work, not a model call or a turn of Claude.
   For example, the lanes of `state.json` change when a package is ticked or merged, with no model call.
+- The subagent runs of dotclaude use the lessons of the Bun port to Rust ([Bun in Rust](https://bun.com/blog/bun-in-rust)), at the scale of a subscription and not of the API.
+  Each step fits one run, one `reviewer` reads only the diff of a package, a subagent cannot run a git command that changes shared state, and few runs go at once.
 - This repository has a project agent `implementer` that links to the 1.0.0 agent of the plugin, on `claude-sonnet-5-5` at `effort: medium`, in place of the installed 0.28.0 agent on Haiku.
 
 ## Scope
