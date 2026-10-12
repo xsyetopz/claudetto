@@ -161,6 +161,7 @@ P15 does not own them, so they go to P16 or a new package.
 - `lane.ts` also writes the `packages.md` checkbox, not only `events.jsonl`.
 - `tests/dotclaude/agents/no-worktree-add.test.ts` checks text, against the test rule of `design.md`.
 - `evidence/zero-token.md` says that `state.json` is the only source, but P34 replaced it with `events.jsonl`.
+- `src/fragments/docs-snippet.json` allows `npx -y ctx7@0.5.14`, but the `docs` skill runs `bunx -y ctx7@latest`, so the rule does not match the command.
 
 ## Stale wiki claims for the reviewer pass
 
