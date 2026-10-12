@@ -130,7 +130,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P09.
   Owns: `src/plugins/dotclaude/slices/setup/` (the tier parts), `tests/dotclaude/setup/` (the tier tests).
   Verify also: a test for each account type, with a fake `claude auth status` output.
-- [ ] P25 `automode`: the setup writes `autoMode` to the user settings, with `$defaults` in each list and one `environment` entry that names the agent worktrees `.claude/worktrees/agent-*` and the Claude Code temp folder `/private/tmp/claude-<uid>/` ([automode](evidence/automode.md)).
+- [x] P25 `automode`: the setup writes `autoMode` to the user settings, with `$defaults` in each list and one `environment` entry that names the agent worktrees `.claude/worktrees/agent-*` and the Claude Code temp folder `/private/tmp/claude-<uid>/` ([automode](evidence/automode.md)).
   The classifier then allows the removal of those paths, and each default deny rule stays.
   Deps: P09.
   Owns: `src/plugins/dotclaude/slices/setup/` (the `autoMode` parts), `tests/dotclaude/setup/` (the `autoMode` tests).
