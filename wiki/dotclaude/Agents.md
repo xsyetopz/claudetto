@@ -1,76 +1,140 @@
 # Agents
 
-dotclaude defines six agents in `plugins/dotclaude/agents/`.
-This page lists the roster, the pins, and the rules for the files.
-The decisions are D12, D13, and D25 in [Decisions](Decisions-Router).
+dotclaude ships six agents in the core plugin.
+Each agent is one Markdown file in `src/plugins/dotclaude/slices/agents/agents/`.
+The build copies each file to `plugins/dotclaude/agents/`, and the copy is generated.
+
+Claude Code starts a subagent from the main session, and it reads the front matter of each file.
+For how Claude Code runs a subagent, see [Subagents](Subagents).
+This page covers only what the dotclaude files set.
 
 ## Roster
 
-| Agent | Work | Model and effort in the file | `maxTurns` |
-| --- | --- | --- | --- |
-| `investigator` | Read-only answers from files, logs, git history, dependency data, or web pages. | Haiku 5.5 `medium` | 31 |
-| `implementer` | One scoped slice: a feature, a fix with a known cause, tests, docs, or a specified bulk change. | Sonnet 5.5 `medium` | 61 |
-| `debugger` | A failure with an unknown cause, or a failed fix. | Sonnet 5.5 `high` | 61 |
-| `planner` | Plans a change across several files before any edit, and writes only the plan. | Opus 5.5 `high` | 41 |
-| `researcher` | Answers from web pages, official docs, specifications, or vendor pages. | Sonnet 5.5 `medium` | 41 |
-| `reviewer` | Read-only review of code, security, an API, a plan, or PR comments. | Opus 5.5 `high` | 41 |
+| Agent | Model | Effort | `maxTurns` | Delegate it for |
+| --- | --- | --- | --- | --- |
+| `investigator` | `claude-haiku-5-5` | `medium` | 31 | Read-only answers from many files, logs, git history, or dependency data. |
+| `implementer` | `claude-sonnet-5-5` | `medium` | 61 | One scoped slice with a known check. |
+| `debugger` | `claude-sonnet-5-5` | `high` | 61 | A failure with an unknown cause, or a fix that failed. |
+| `planner` | `claude-opus-5-5` | `high` | 41 | A plan across several files, before any edit. |
+| `researcher` | `claude-sonnet-5-5` | `medium` | 41 | A claim that must match current web, vendor, or official docs. |
+| `reviewer` | `claude-opus-5-5` | `high` | 41 | A read-only review of code, security, an API design, or a plan. |
 
-- The `test-runner` agent is gone.
-  The CLI `dotclaude-run-checks` runs a batch of check commands with no model turn, and it prints the failures.
-- `web-researcher` does not exist.
-  `researcher` takes the web lookups.
-- No agent has the `Agent` tool, so no agent starts another agent.
-- Each `maxTurns` holds one spare turn for the report.
-  A subagent that reaches `maxTurns` returns no report.
-- At 4 turns left, the `tool.call` hook adds a note that tells the subagent to report now.
-  The bound `TURNS_LEFT_AT` is in `slices/handoff/limits.ts`.
-- In a subagent, a git action that changes the shared checkout or the shared `refs/stash` is denied.
-  The rule is `git.shared-checkout` in `src/kernel/policy/rules/git.ts`, and it is in the `hard_deny` list of the [Guards](Guards) page.
-  `/ship` runs one `reviewer` for each package diff, and `dotclaude-spec runs` gives the number of reviewers that start at once.
-- The file is the only source of the choice.
-  No router rewrites it, and a coordinator can pass `model` and `effort` in an `Agent` call ([Decisions: router and agents](Decisions-Router)).
-- Planning and orchestration stay in the main loop.
-- Fable 5.1 and Mythos 5.1 are in no file.
-  They run only when the user selects them.
-- The `Explore`, `Plan`, `general-purpose`, `claude-code-guide`, and `statusline-setup` agents are off, so the listing holds only these six ([Off switches](Off-Switches#built-in-agents)).
+The model and the effort are the values of each file.
+The main session keeps the model and the effort that the user set, as [Decisions-Router](Decisions-Router) explains in D13.
+
+## Agents in detail
+
+The tool lists come from the front matter of each file.
+A file with no `tools` line gets the tools of the session, and its `disallowedTools` line removes some of them.
+
+- `investigator` answers a question from several sources, and it changes nothing.
+  Its brief gives a lens: `ci`, `history`, or `dependencies`.
+  It may not use `Edit`, `Write`, `NotebookEdit`, `Agent`, `WebFetch`, or `WebSearch`.
+- `implementer` carries out one slice that has a known check.
+  It does not plan.
+  It may use every tool except `Agent`.
+- `debugger` finds the root cause of a failure or a regression, and it makes the smallest fix.
+  It may also measure and speed up a slow path.
+  It may use every tool except `Agent`.
+- `planner` writes a plan under `.dotclaude/spec/`, and it does not edit the code that the plan changes.
+  Its tools are `Read`, `Grep`, `Glob`, `Bash`, `Write`, and `Edit`.
+  It may not use `NotebookEdit` or `Agent`.
+  The folder limit is a rule in the body of the file.
+  The tool list does not enforce it (inference from the front matter).
+- `researcher` answers from web pages and official docs, with exact quotes and sources.
+  Its tools are `Bash`, `Read`, `Grep`, `Glob`, `WebFetch`, and `WebSearch`.
+  It may not use `Edit`, `Write`, `NotebookEdit`, or `Agent`.
+- `reviewer` reviews a change, a plan, an API design, or a trust boundary.
+  Its tools are `Read`, `Grep`, `Glob`, and `Bash`.
+  It may not use `Edit`, `Write`, `NotebookEdit`, or `Agent`.
+
+No agent has the `Agent` tool, so no agent starts another agent.
+The roster test checks this for each file.
+
+The web tools reach `researcher`.
+The file of `debugger` and of `implementer` has no `tools` line, so they inherit the web tools too (inference from the front matter).
+
+## Turn bounds
+
+The bound of each agent is `MAX_TURNS` in `src/plugins/dotclaude/slices/agents/limits.ts`.
+That file is the source.
+The other copies are these:
+
+- The `maxTurns` of each agent file.
+  The roster test checks each file against `turnBound` in `slices/agents/domain/turns.ts`.
+- `AGENT_MAX_TURNS` in `src/plugins/dotclaude/slices/handoff/limits.ts`.
+  The handoff slice reads it to tell a subagent to report.
+  Its test checks that the table has the same agents as the roster.
+
+Claude Code reads `maxTurns` from the front matter.
+Claude Code 2.1.296 rejects a value that is not a positive integer.
+This fact comes from a search of the extracted strings of the 2.1.296 bundle, for the text of the validation message.
+
+### What happens at the limit
+
+The bundle of 2.1.296 has the text for a subagent that stops at its turn limit.
+When it still calls tools and has produced no report, the parent receives its output as partial output, and the output is marked as incomplete.
+So a subagent that reaches `maxTurns` returns no report.
+The trigger is inferred from the text, and the search did not run a live subagent.
+
+### The report-now note
+
+The `tool.call` hook of the handoff slice adds a note when four turns are left.
+The bound `TURNS_LEFT_AT` is in `slices/handoff/limits.ts`.
+The note tells the subagent to commit its work and to report.
+The comment of `TURNS_LEFT_AT` counts two turns for the commit, one for the report, and one spare turn (inference from the comment).
+The note states that a run at its turn limit returns no report.
+
+## Description and body rules
+
+- A description has 300 characters or fewer.
+  `AGENT_DESCRIPTION_MAX_CHARS` in `tools/limits.ts` holds the bound, and the roster test checks it.
+- A description says what the agent does and when to delegate to it.
+- A report has at most `REPORT_MAX_WORDS` words, which is 400 in `slices/handoff/limits.ts`.
+  Each body gets the bound from the `report-size` fragment.
+- Each body gets the search rule from the `search-route` fragment.
+  The rule says to search with `Grep` and then to read the matched range with `Read`.
+- `debugger` and `implementer` fix the code, or they report the failure with its evidence.
+  They do not raise a bound, skip a test, or edit a check, unless the brief says that the user asked.
+- `debugger` does not change a test.
+  When it thinks that a test is wrong, it reports that, and the parent decides.
+
+## Subagent git rule
+
+The rule `git.shared-checkout` in `src/kernel/policy/rules/git.ts` has the tier `subagent`.
+It denies a git action in a subagent that changes the shared checkout of the main session or the shared `refs/stash`.
+The rule's text gives `git checkout`, `git switch`, `git reset`, and `git stash` as examples.
+See [Guards](Guards) for the other rules.
+
+## Surface
+
+The `agent.offer` handler in `slices/surface/adapters/mod.ts` leaves two built-in agent types out of the listing.
+They are `claude-code-guide` and `statusline-setup`.
+The list is `DROPPED_AGENTS` in `slices/surface/domain/agents.ts`.
+dotclaude uses neither type.
 
 ## Pins
 
-The frontmatter of `agents/*.md` is the only source of `model`, `effort`, and `maxTurns`.
-No code list repeats them.
-The roster test in `tests/dotclaude/agents/roster.test.ts` does these checks:
+The tests of the agents pin these facts:
 
-- The agent files are these six names and no other.
-- The `model` and the `effort` of each file are the ones of the table in the test.
-- The `maxTurns` of each file is the turn bound of `turnBound` in `slices/agents/domain/turns.ts`.
+- The six agent files are the six names of the table, and no other file.
+- Each file has the model and the effort of the table.
+- Each `maxTurns` equals `turnBound`.
+- `investigator`, `researcher`, and `reviewer` may not write or edit.
+  `debugger`, `implementer`, and `planner` may write and edit.
+- No agent may use `Agent`.
+- `researcher` may use the web, and `investigator` may not.
+- Each bound is a whole number of at least one.
+  `withinTurnBound` allows the counts from one to the bound.
+- Each description is within `AGENT_DESCRIPTION_MAX_CHARS`.
 
-The test `tests/dotclaude/agents/turns.test.ts` checks that each agent has a whole-number turn bound of at least one, and that the turn count check allows the counts up to the bound.
-
-## Description rules
-
-- A description has 300 characters or fewer.
-  `AGENT_DESCRIPTION_MAX_CHARS` in `tools/limits.ts` holds the bound, because only tests read it.
-- A description says what the agent does and when to delegate to it.
-- A description uses no forceful word.
-- The agent listing goes in each request, so a long description costs tokens for each request.
-
-## Body rules
-
-A subagent does not inherit the output style or the shared sections of the system prompt.
-Each body therefore repeats the rules that matter for its role:
-
-- The scope rule and the verification rule for the role.
-- The read rule: search first with `Grep`, then read the matched range with `Read` and its `offset` and `limit` ([Context bound](Context-Bound)).
-- The report bound `REPORT_MAX_WORDS` (400 words), with the value from `slices/handoff/limits.ts`.
-- The keep-the-work rule and the block rule come in the `agent.spawn` block, and not in the body ([System prompt](System-Prompt#evidence-before-undoing-finished-work)).
-- What to do when a check fails: `debugger` and `implementer` fix the code or report the failure with the evidence.
-  They do not raise a bound, weaken or skip a test, or edit a check, a config, or a hook unless the brief says that the user asked.
-- `debugger` does not change a test.
-  When it thinks that a test is wrong, it reports that with the evidence, and the parent decides.
-- `reviewer` looks for tests of prose, a raised bound, a skipped test, and an edited lint or CI config.
+The tests are in `tests/dotclaude/agents/` and `tests/dotclaude/handoff/context.test.ts`.
 
 ## Related pages
 
-- [Decisions: router and agents](Decisions-Router)
+- [Subagents](Subagents)
+- [Decisions: router and agents](Decisions-Router#d25-agent-roster)
+- [Decisions](Decisions)
 - [Core plugin](Core-Plugin)
 - [Context bound](Context-Bound)
+- [Guards](Guards)
