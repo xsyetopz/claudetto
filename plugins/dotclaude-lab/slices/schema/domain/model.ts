@@ -11,7 +11,13 @@ export type Chain = { head: string; headArgs?: string; calls: Call[] };
 export type TypeTable = Record<string, string>;
 
 // The state of one build: the bundle text, the helper table, and the names in progress.
-export type Ctx = { src: string; types: TypeTable; stack: Set<string> };
+// `defs` holds the end of each definition before the schema, by name, after the first lookup.
+export type Ctx = {
+  src: string;
+  types: TypeTable;
+  stack: Set<string>;
+  defs?: Map<string, number[]>;
+};
 
 // A JSON Schema node. The keys that the slice reads or writes are typed.
 // Any other key of the schema is unknown.
