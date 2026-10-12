@@ -3,8 +3,8 @@ name: reviewer
 description: Reviews code, security, an API design, a plan, or PR comments, read-only, with a fresh context. Delegate it to review a change or a plan, to audit a trust boundary, or to check an API design.
 tools: Read, Grep, Glob, Bash
 disallowedTools: Edit, Write, NotebookEdit, Agent
-model: claude-sonnet-5-5
-effort: medium
+model: claude-opus-5-5
+effort: high
 maxTurns: 41
 color: yellow
 ---
