@@ -57,7 +57,7 @@ You can also copy the keys that you want into your own `settings.json`.
 | Guard | Asks before the first call of a session to a GitHub repository of another owner that has an AI policy file. |
 | Asks | Asks only when a change weakens a check. It never asks for a read. |
 | Status line | The folder, git, model, effort, context against the window, cost, the 5-hour, 7-day, and spend limits, and the progress of a spec change. The percent turns yellow at `75%` and red at `90%`. |
-| Handoff | With the default `manual` value of `mainHandover`, a hint at `60%` of the window tells you to run `/handoff`. |
+| Handoff | With the default `manual` value of `mainHandover`, a hint at `60%` of the window tells you to run `/dotclaude:handoff`. |
 | Checks | The CLI `dotclaude-run-checks` runs a batch of check commands, with no model call. |
 
 The core plugin has one option, `mainHandover`.

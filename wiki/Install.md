@@ -65,11 +65,12 @@ dotclaude-setup settings --scope user --apply
 The scopes are `user` (`~/.claude/settings.json`, the default), `project` (`.claude/settings.json`), and `local` (`.claude/settings.local.json`).
 When `CLAUDE_CONFIG_DIR` is set, the command uses that folder in place of `~/.claude`.
 Run `/dotclaude:setup` again after each update of the plugin, because the status line commands hold the path of the plugin version.
-The merge adds the keys and rules of the snippet, and it keeps your other keys.
+The merge adds the keys and rules of the snippet, and it keeps your other keys, except that it replaces `availableModels`.
 See [Settings snippet](Settings-Snippet) for the keys, and [Settings snippet keys](Settings-Snippet-Keys) for the reason of each key.
 
 After the settings step, the setup skill checks the tools of each installed add-on.
 The check reads the `codegraph` CLI and its index, `agent-browser`, `npx`, and the Bun version.
+The check reads `npx`, not `bunx`, although the `docs` skill of `dotclaude-docs` runs `ctx7` through `bunx` (see the table above).
 The install of a missing CLI runs only after your yes.
 The project step `codegraph init -y` runs only with `dotclaude-setup addons --apply`.
 

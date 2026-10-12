@@ -18,7 +18,7 @@ Add the marketplace first with `/plugin marketplace add xsyetopz/dotclaude` (see
 | `dotclaude-sessions` | The cost of a session start by source, and the usage of a period by run. | `/plugin install dotclaude-sessions@dotclaude` | Bun. The CLIs read the transcripts under `~/.claude/projects`. | [Sessions](Sessions) |
 | `dotclaude-lab` | Tools for plugin authors: a sandbox for Claude Code, a request capture, the JSON Schema of `settings.json`, and an eval compare. | `/plugin install dotclaude-lab@dotclaude` | Bun 1.4.3 or later, and the `claude` executable on `PATH`. The sandbox needs a login token. | [Lab](Lab) |
 
-The commands of each add-on start with `#!/usr/bin/env -S bun`, so Bun must be on `PATH`.
+The commands of the add-ons run on Bun, so Bun must be on `PATH`.
 The `codegraph` and `agent-browser` installs use npm, so Node.js must be on `PATH` (see the table in [Install](Install)).
 
 ## Install one add-on
