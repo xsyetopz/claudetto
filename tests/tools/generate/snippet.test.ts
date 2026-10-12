@@ -2,8 +2,10 @@
 // Each test works in its own copy of the fixture under `TMPDIR`, with a small settings schema in its root.
 
 import { expect, test } from "bun:test";
+import path from "node:path";
 import { discover } from "../../../tools/generate/discover.ts";
 import { snippetOf } from "../../../tools/generate/emit/snippet.ts";
+import { outputs } from "../../../tools/generate/emit/texts.ts";
 import { fixtureRoot } from "./fixture.ts";
 
 type Json = Record<string, unknown>;
@@ -93,4 +95,24 @@ test("the nested objects of two slices merge by key, and a leaf that two slices 
 
 test("a plugin whose slices have no `settings` entry has no snippet", async () => {
   expect(await snippetFor(await fixtureRoot())).toBeNull();
+});
+
+test("the core plugin gets the module `lib/snippets.ts` from the snippet of its slices and the docs fragment, with no source folder", async () => {
+  const dir = await fixtureRoot({
+    "schemas/claude-code-settings.json": schemaWith(ORDER),
+    "src/plugins/dotclaude/slices/gamma/slice.ts": sliceWith(
+      "gamma",
+      '{ model: "m", env: { B: "2", A: "1" } }',
+    ),
+    "src/fragments/docs-snippet.json":
+      '{ "permissions": { "allow": ["x"] } }\n',
+  });
+  const file = "plugins/dotclaude/lib/snippets.ts";
+  const made = (await outputs(dir)).find((o) => o.file === file);
+  if (!made) throw new Error(`the generator wrote no ${file}`);
+  await Bun.write(path.join(dir, file), made.text);
+  const mod = await import(path.join(dir, file));
+  expect(mod.SNIPPET).toStrictEqual({ model: "m", env: { A: "1", B: "2" } });
+  expect(Object.keys(mod.SNIPPET.env)).toStrictEqual(["A", "B"]);
+  expect(mod.DOCS_SNIPPET).toStrictEqual({ permissions: { allow: ["x"] } });
 });

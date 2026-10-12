@@ -125,6 +125,37 @@ const MODULE_TEXT = /^(.+\.ts)\/([a-z0-9-]+)\.(?:md|json)$/;
 const literal = (text: string): string =>
   `\`${text.replace(/[\\`]/g, "\\$&").replace(/\$\{/g, "\\${")}\``;
 
+/** One text of a text module: its file name, the path of its source, and its filled text. */
+type ModuleText = { name: string; source: string; text: string };
+
+/** The text module `file` of `texts`: one constant for each `.md` or `.json` text, in name order. */
+const moduleOf = async (file: string, texts: ModuleText[]): Promise<string> => {
+  const lines: string[] = [];
+  for (const { name, source, text } of texts.toSorted((a, b) =>
+    a.name < b.name ? -1 : 1,
+  )) {
+    const [, base, ext] = name.match(/^([a-z0-9-]+)\.(md|json)$/) ?? [];
+    if (!base)
+      throw new Error(
+        `${source}: a module folder holds only \`.md\` and \`.json\` files`,
+      );
+    const body = text.replace(/\n+$/, "");
+    if (ext === "json") {
+      try {
+        JSON.parse(body);
+      } catch (err) {
+        throw new Error(`${source}: ${(err as Error).message}`);
+      }
+    }
+    lines.push(
+      `/** From \`${name}\`. */`,
+      `export const ${base.toUpperCase().replace(/-/g, "_")} = ${ext === "json" ? body : literal(body)};`,
+      "",
+    );
+  }
+  return format(file, lines.join("\n"));
+};
+
 /** The text module of the source folder `dir` of `src`: one constant for each `.md` or `.json` file, in name order. */
 export const textModule = async (
   src: string,
@@ -132,36 +163,41 @@ export const textModule = async (
   dir: string,
   made: Record<string, string> = {},
 ): Promise<string> => {
-  const lines: string[] = [];
-  for (const name of fs.readdirSync(path.join(src, dir)).sort()) {
+  const texts: ModuleText[] = [];
+  for (const name of fs.readdirSync(path.join(src, dir))) {
     const source = path.posix.join("src", dir, name);
-    const [, base, ext] = name.match(/^([a-z0-9-]+)\.(md|json)$/) ?? [];
-    if (!base)
-      throw new Error(
-        `${source}: a module folder holds only \`.md\` and \`.json\` files`,
-      );
-    const text = (
-      await fill(
-        await Bun.file(path.join(src, dir, name)).text(),
-        fragments,
-        source,
-        made,
-      )
-    ).replace(/\n+$/, "");
-    if (ext === "json") {
-      try {
-        JSON.parse(text);
-      } catch (err) {
-        throw new Error(`${source}: ${(err as Error).message}`);
-      }
-    }
-    lines.push(
-      `/** From \`${name}\`. */`,
-      `export const ${base.toUpperCase().replace(/-/g, "_")} = ${ext === "json" ? text : literal(text)};`,
-      "",
-    );
+    const raw = await Bun.file(path.join(src, dir, name)).text();
+    texts.push({
+      name,
+      source,
+      text: await fill(raw, fragments, source, made),
+    });
   }
-  return format(path.join(dir), lines.join("\n"));
+  return moduleOf(path.join(dir), texts);
+};
+
+/** The module of the settings snippet of the core plugin: `SNIPPET` from the slices, and `DOCS_SNIPPET` from its fragment. */
+const SNIPPET_MODULE = "plugins/dotclaude/lib/snippets.ts";
+const SNIPPET_SOURCE = "src/plugins/dotclaude/slices/";
+
+const snippetModule = async (
+  fragments: string,
+  snippet: string,
+): Promise<Output> => {
+  const docs = "docs-snippet.json";
+  const text = await moduleOf(SNIPPET_MODULE, [
+    { name: "snippet.json", source: SNIPPET_SOURCE, text: snippet },
+    {
+      name: docs,
+      source: `src/fragments/${docs}`,
+      text: await textOf(path.join(fragments, docs)),
+    },
+  ]);
+  return {
+    file: SNIPPET_MODULE,
+    source: SNIPPET_SOURCE,
+    text: withHeader(SNIPPET_MODULE, SNIPPET_SOURCE, text),
+  };
 };
 
 /** `text` as Biome formats the module `file`. */
@@ -212,6 +248,8 @@ export const outputs = async (root: string): Promise<Output[]> => {
       text = formatHooks(await withTexts(path.dirname(from), text));
     out.push({ file: rel, source, text: withHeader(rel, source, text) });
   }
+  const snippet = made["snippet.json"];
+  if (snippet) out.push(await snippetModule(fragments, snippet));
   return out;
 };
 

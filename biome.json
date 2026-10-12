@@ -12,9 +12,7 @@
       "!!**/.agents",
       "!!**/node_modules",
       "!!**/dist",
-      "!!**/*.generated.{js,jsx,mjs,cjs,ts,tsx,mts,cts}",
-      "!src/plugins/dotclaude/lib/snippets.ts/snippet.json",
-      "!src/plugins/dotclaude/lib/snippets.ts/docs-snippet.json"
+      "!!**/*.generated.{js,jsx,mjs,cjs,ts,tsx,mts,cts}"
     ],
     "ignoreUnknown": true
   },
@@ -132,8 +130,7 @@
         "!plugins/dotclaude/tests/mod.test.ts",
         "!plugins/dotclaude/tsconfig.json",
         "!src/plugins/dotclaude/hooks/**",
-        "!src/plugins/dotclaude/lib/**",
-        "!tests/dotclaude/context/**",
+                "!tests/dotclaude/context/**",
         "!tests/dotclaude/errors.test.ts",
         "!tests/dotclaude/eval-graders.test.ts",
         "!tests/dotclaude/hooks/**",
