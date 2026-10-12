@@ -35,13 +35,13 @@ test("lint: each generated file of the repository matches its source", async () 
   expect(found, found.join("\n")).toStrictEqual([]);
 });
 
-test("Generate: a changed shared rule reaches each agent body that repeats it", async () => {
+test("Generate: a changed fragment rule reaches each agent body that repeats it", async () => {
   const dir = await root({
-    "src/shared/rule.md": "Old rule.\n",
+    "src/fragments/rule.md": "Old rule.\n",
     "src/plugins/p/agents/a.md": AGENT("a"),
     "src/plugins/p/agents/b.md": AGENT("b"),
   });
-  await Bun.write(path.join(dir, "src", "shared", "rule.md"), "New rule.\n");
+  await Bun.write(path.join(dir, "src", "fragments", "rule.md"), "New rule.\n");
   for (const o of await outputs(dir)) {
     expect(o.text).toContain("<rules>\nNew rule.\n</rules>");
     expect(o.text).not.toContain("Old rule.");
@@ -60,7 +60,7 @@ test("a value of a limit fills its name, and an unknown name or part is an error
   );
   const part404 = await root({ "src/plugins/p/x.md": "{{include none}}\n" });
   await expect(outputs(part404)).rejects.toThrow(
-    /src\/plugins\/p\/x\.md: no shared part/,
+    /src\/plugins\/p\/x\.md: no fragment/,
   );
 });
 

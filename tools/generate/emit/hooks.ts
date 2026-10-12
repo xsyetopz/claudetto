@@ -32,7 +32,7 @@ const baseOf = async (root: string, p: FoundPlugin): Promise<HooksFile> => {
   if (!fs.existsSync(file)) return {};
   const text = await fill(
     await Bun.file(file).text(),
-    path.join(root, "src", "shared"),
+    path.join(root, "src", "fragments"),
     source,
   );
   return withTexts(path.dirname(file), text);

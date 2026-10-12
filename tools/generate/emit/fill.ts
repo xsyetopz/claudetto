@@ -1,5 +1,5 @@
 // Fills the includes and the values of a source text (design D12, `just generate`).
-// In a source, a line `{{include NAME}}` gives the text of `src/shared/NAME.md`, `{{include NAME.json}}` the text of `src/shared/NAME.json`, and `{{NAME}}` the value of the limit `NAME` of `VALUES`.
+// In a source, a line `{{include NAME}}` gives the text of `src/fragments/NAME.md`, `{{include NAME.json}}` the text of `src/fragments/NAME.json`, and `{{NAME}}` the value of the limit `NAME` of `VALUES`.
 // `{{include snippet.json}}` gives the settings snippet of the core plugin, which `emit/snippet.ts` computes from the slices.
 
 import fs from "node:fs";
@@ -48,10 +48,10 @@ const posix = (p: string) => p.split(path.sep).join(path.posix.sep);
 export const textOf = async (file: string): Promise<string> =>
   (await Bun.file(file).text()).replace(/\n+$/, "");
 
-/** `text` with each include and value of the source `source` filled in from `shared`, or from `made` for a name that `made` gives. */
+/** `text` with each include and value of the source `source` filled in from `fragments`, or from `made` for a name that `made` gives. */
 export async function fill(
   text: string,
-  shared: string,
+  fragments: string,
   source: string,
   made: Record<string, string> = {},
 ): Promise<string> {
@@ -63,12 +63,12 @@ export async function fill(
       continue;
     }
     const file = path.join(
-      shared,
+      fragments,
       name.endsWith(".json") ? name : `${name}.md`,
     );
     if (!fs.existsSync(file))
       throw new Error(
-        `${source}: no shared part ${posix(path.relative(path.dirname(shared), file))}`,
+        `${source}: no fragment ${posix(path.relative(path.dirname(fragments), file))}`,
       );
     parts[name] = await textOf(file);
   }

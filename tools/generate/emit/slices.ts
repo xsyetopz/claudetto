@@ -41,7 +41,7 @@ Bun.plugin({
         const [, root = "", dir = ""] = args.path.match(SLICE_MODULE) ?? [];
         const src = path.join(root, "src");
         return {
-          contents: await textModule(src, path.join(src, "shared"), dir),
+          contents: await textModule(src, path.join(src, "fragments"), dir),
           loader: "ts",
         };
       },
@@ -96,7 +96,7 @@ const filesOf = async (
   s: FoundSlice,
 ): Promise<Output[]> => {
   const abs = path.join(root, s.dir);
-  const shared = path.join(root, "src", "shared");
+  const fragments = path.join(root, "src", "fragments");
   const out: Output[] = [];
   const modules = new Set<string>();
   for (const rel of walk(abs)) {
@@ -109,7 +109,7 @@ const filesOf = async (
       const file = `plugins/${p.name}/slices/${s.name}/${module}`;
       const source = path.posix.join(s.dir, module, path.posix.sep);
       const dir = path.posix.relative("src", path.posix.join(s.dir, module));
-      const text = await textModule(path.join(root, "src"), shared, dir);
+      const text = await textModule(path.join(root, "src"), fragments, dir);
       out.push({ file, source, text: withHeader(file, source, text) });
       continue;
     }
@@ -128,7 +128,7 @@ const filesOf = async (
       out.push({
         file,
         source,
-        text: withHeader(file, source, await fill(text, shared, source)),
+        text: withHeader(file, source, await fill(text, fragments, source)),
       });
       continue;
     }

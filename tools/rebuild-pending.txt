@@ -11,8 +11,7 @@ plugins/dotclaude/tests/mod.test.ts
 src/plugins/dotclaude/hooks/
 tests/dotclaude/hooks/
 
-# P01b3: the settings snippet, and `src/shared/`
-src/shared/
+# P01b3: the settings snippet
 src/plugins/dotclaude/lib/
 tests/dotclaude/settings-pin.test.ts
 
