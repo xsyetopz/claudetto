@@ -49,6 +49,7 @@ const usageOf = (skillFrontmatter: ContextSkill[]): SessionUsage =>
 
 type Facts = {
   settings?: Record<string, unknown>;
+  user?: Record<string, unknown>;
   policy?: Record<string, unknown>;
   version?: string;
   skills?: ContextSkill[];
@@ -61,6 +62,7 @@ type Facts = {
 /** Run the handler with a fake `$` for a session with no drift. Each option changes one fact. Returns the notes it appended. */
 const run = async ({
   settings = applied({}, ROOT),
+  user = settings,
   policy = {},
   version = "2.1.296",
   skills = [],
@@ -73,8 +75,10 @@ const run = async ({
   const fake = {
     plugin: { root: ROOT },
     settings: {
-      read: async (o?: { source?: string }) =>
-        o?.source === "policy" ? policy : settings,
+      read: async (o?: { source?: string }) => {
+        if (o?.source === "policy") return policy;
+        return o?.source === "user" ? user : settings;
+      },
     },
     session: {
       version: async () => ({ version }),
@@ -97,6 +101,12 @@ const run = async ({
 
 test("no drift adds no text", async () => {
   expect(await run()).toEqual([]);
+});
+
+test("the `autoMode` lists of the project settings do not count as the user's", async () => {
+  // The merged settings hold the lists, but the user settings do not.
+  const [note] = await run({ user: snippetFor({}, ROOT) });
+  expect(note).toBeTruthy();
 });
 
 test("a built-in plugin that is on again is named", async () => {

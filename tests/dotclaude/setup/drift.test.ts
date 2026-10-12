@@ -118,20 +118,32 @@ test("the snippet gaps skip a superset of `availableModels`, the built-in plugin
 test("the snippet gaps name each `autoMode` list that lacks its entries, and a list with `$defaults` is no gap", () => {
   const root = "/plugins/dotclaude";
   const full = { ...snippetFor({}, root), enabledPlugins: {} };
-  expect(snippetGaps(full, root)).toStrictEqual([
+  expect(snippetGaps(full, root, {})).toStrictEqual([
     "autoMode.allow",
     "autoMode.soft_deny",
     "autoMode.hard_deny",
     "autoMode.environment",
   ]);
   const withLists = { ...full, ...planAutoMode({}, []) };
-  expect(snippetGaps(withLists, root)).toStrictEqual([]);
+  expect(snippetGaps(withLists, root, withLists)).toStrictEqual([]);
 });
 
-test("the snippet gaps skip the `autoMode` lists when they do not count", () => {
+test("the snippet gaps skip the `autoMode` lists when no user settings are given", () => {
   const root = "/plugins/dotclaude";
   const full = { ...snippetFor({}, root), enabledPlugins: {} };
-  expect(snippetGaps(full, root, false)).toStrictEqual([]);
+  expect(snippetGaps(full, root)).toStrictEqual([]);
+});
+
+test("the `autoMode` lists of the merged settings do not count for the user settings", () => {
+  const root = "/plugins/dotclaude";
+  const full = { ...snippetFor({}, root), enabledPlugins: {} };
+  const merged = { ...full, ...planAutoMode({}, []) };
+  expect(snippetGaps(merged, root, {})).toStrictEqual([
+    "autoMode.allow",
+    "autoMode.soft_deny",
+    "autoMode.hard_deny",
+    "autoMode.environment",
+  ]);
 });
 
 test("the `drift` command reports the `autoMode` lists of the user scope only", async () => {

@@ -27,9 +27,11 @@ const attempt = async <T>(
  * The note of the drift check, or undefined.
  */
 const reportDrift = async ($: EngineInterface): Promise<string | undefined> => {
-  const [settings, policy, version, usage, composed, effort, force] =
+  const [settings, user, policy, version, usage, composed, effort, force] =
     await Promise.all([
       attempt(() => $.settings.read()),
+      // The `autoMode` lists count only in the user settings, so this read is not the merge.
+      attempt(() => $.settings.read({ source: "user" })),
       attempt(() => $.settings.read({ source: "policy" })),
       attempt(() => $.session.version()),
       attempt(() => $.session.usage({ breakdown: "summary" })),
@@ -50,6 +52,7 @@ const reportDrift = async ($: EngineInterface): Promise<string | undefined> => {
         CLAUDE_CODE_SUBAGENT_MODEL_FORCE: force,
       },
       root: $.plugin.root,
+      user,
     }),
   );
   if (note)
