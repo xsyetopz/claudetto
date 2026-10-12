@@ -102,7 +102,7 @@ const changeOf = async (
   }
 };
 
-/** Keeps the last `rate_limits` of `input` in `root`, and writes only when they differ from the saved sample. A failure goes to `deps.error`, and the row stays. */
+/** Keeps the last `rate_limits` of `input` in `root`, and writes only when they differ from the saved sample or the sample is old. A failure goes to `deps.error`, and the row stays. */
 const saveUsage = async (
   root: string,
   input: StatusInput,
@@ -112,7 +112,7 @@ const saveUsage = async (
   if (text === null) return;
   try {
     const saved = await rooted(root, deps.files).read(RATE_LIMITS_FILE);
-    if (!usageChanged(saved, input)) return;
+    if (!usageChanged(saved, input, deps.now())) return;
     await deps.write(path.join(root, RATE_LIMITS_FILE), text);
   } catch (err) {
     deps.error(failureText(err));

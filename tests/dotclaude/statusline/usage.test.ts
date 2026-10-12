@@ -6,6 +6,7 @@ import path from "node:path";
 import { RATE_LIMITS_FILE } from "../../../src/kernel/paths.ts";
 import type { FileReader } from "../../../src/kernel/ports.ts";
 import { main } from "../../../src/plugins/dotclaude/slices/statusline/adapters/cli.ts";
+import { USAGE_REWRITE_MS } from "../../../src/plugins/dotclaude/slices/statusline/limits.ts";
 import { depsFor, NOW, type Run, STATUS } from "./support.ts";
 
 const ROOT = "/work/dotclaude";
@@ -48,7 +49,7 @@ test("the main status line keeps the last `rate_limits` in the runtime file of t
   expect(sample.rate_limits).toStrictEqual(STATUS.rate_limits);
 });
 
-test("a sample with equal `rate_limits` makes no write, though it is older", async () => {
+test("an equal sample with a fresh `savedAt` makes no write", async () => {
   const saved = JSON.stringify({
     savedAt: NOW - 120_000,
     rate_limits: STATUS.rate_limits,
@@ -56,6 +57,25 @@ test("a sample with equal `rate_limits` makes no write, though it is older", asy
   const { writes, run } = await runWith(STATUS, undefined, savedAs(saved));
   expect(writes).toStrictEqual([]);
   expect(run.out.length).toBe(1);
+});
+
+test("an equal sample older than half the usage window is written again", async () => {
+  const saved = JSON.stringify({
+    savedAt: NOW - USAGE_REWRITE_MS - 1,
+    rate_limits: STATUS.rate_limits,
+  });
+  const { writes } = await runWith(STATUS, undefined, savedAs(saved));
+  expect(writes.length).toBe(1);
+  expect(JSON.parse(writes[0]?.[1] ?? "{}").savedAt).toBe(NOW);
+});
+
+test("an equal sample exactly at the rewrite age makes no write", async () => {
+  const saved = JSON.stringify({
+    savedAt: NOW - USAGE_REWRITE_MS,
+    rate_limits: STATUS.rate_limits,
+  });
+  const { writes } = await runWith(STATUS, undefined, savedAs(saved));
+  expect(writes).toStrictEqual([]);
 });
 
 test("a sample with other `rate_limits` is written again", async () => {

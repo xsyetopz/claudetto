@@ -1,6 +1,7 @@
 // The usage sample that the status line keeps in the project, for `dotclaude-spec runs`.
 // The file has the layout of `UsageSample`, and the `spec` slice reads it with its own type.
 
+import { USAGE_REWRITE_MS } from "../limits.ts";
 import type { StatusInput } from "./types.ts";
 
 /** The `rate_limits` of one status object, and the time they were read in milliseconds. */
@@ -16,16 +17,27 @@ export const usageSample = (input: StatusInput, now: number): string | null =>
     : null;
 
 /**
- * True when the `rate_limits` of `input` differ from those of the saved sample `saved`, or when `saved` is not a sample.
- * The time of the sample does not count, so a sample with equal values is not written again.
+ * True when the `rate_limits` of `input` differ from those of the saved sample `saved`, when the sample is older than `USAGE_REWRITE_MS`,
+ * or when `saved` is not a sample.
+ * A sample with equal values and a fresh `savedAt` is not written again, so that the age of the sample stays current.
  */
 export const usageChanged = (
   saved: string | null,
   input: StatusInput,
+  now: number,
 ): boolean => {
   if (saved === null) return true;
   try {
-    const sample = JSON.parse(saved) as { rate_limits?: unknown };
+    const sample = JSON.parse(saved) as {
+      savedAt?: unknown;
+      rate_limits?: unknown;
+    };
+    if (
+      typeof sample.savedAt !== "number" ||
+      now - sample.savedAt > USAGE_REWRITE_MS
+    ) {
+      return true;
+    }
     return (
       JSON.stringify(sample.rate_limits) !== JSON.stringify(input.rate_limits)
     );

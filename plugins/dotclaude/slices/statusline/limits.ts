@@ -11,6 +11,9 @@ export const GIT_TIMEOUT_MS = 1_500;
 /** The most rows of the main status line. */
 export const MAX_ROWS = 3;
 
+/** The age, in milliseconds, of the saved usage sample that the status line rewrites even when the values are equal. It is half of the age that `dotclaude-spec runs` trusts. */
+export const USAGE_REWRITE_MS = 5 * 60 * 1000;
+
 /** The width in columns when `COLUMNS` is not set, and the columns that stay free at the right edge. */
 export const DEFAULT_COLUMNS = 120;
 export const COLUMNS_MARGIN = 4;
