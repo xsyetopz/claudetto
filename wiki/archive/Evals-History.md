@@ -150,7 +150,7 @@ Sonnet costs 60% of the Opus cost per pass or less.
   The eval trace does not record Stop hook output, so the runs do not show it.
 - The role cases are at the ceiling for both models.
   The swap is not tested on hard reviews or hard root causes.
-  A reported private batch of hard tasks found Sonnet 5.5 high lower than Opus 5.5 medium (see [Plans and models](Plans-and-Models)).
+  A reported private batch of hard tasks found Sonnet 5.5 high lower than Opus 5.5 medium (see [Usage evidence](Usage-Evidence)).
 
 ## Agent role cases: `investigator` and `web-researcher`
 
@@ -251,4 +251,4 @@ The case is not written yet.
 - [Evals of 0.28.0](Evals-0.28.0)
 - [Development](Development)
 - [Open items](Open-Items)
-- [Plans and models](Plans-and-Models)
+- [Usage evidence](Usage-Evidence)

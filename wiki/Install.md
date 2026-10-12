@@ -157,7 +157,7 @@ For a separate config, see [Sandbox](Sandbox).
 ## Troubleshooting
 
 A symptom and its fix are on the page of the plugin.
-For a recursive `rm` with no ask, see [Guards](Guards#troubleshooting).
+For a recursive `rm` with no ask, see [Guards](Guards).
 For a missing policy ask, see [Contributions](Contributions).
 For a `second_opinion` answer from a Claude model, see [Second opinion](Second-Opinion#troubleshooting).
 More symptoms are on [Troubleshooting](Troubleshooting).

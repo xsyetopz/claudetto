@@ -20,7 +20,7 @@ Labels: **measured** means a run on this machine, and **reported** means a claim
 | The 300K window | The window is a judgment from reports (rot "around 300-400K" on a 1M window, and "200K is the sweet spot"), not from a measure on this machine (**reported**). | The user | A week of sessions, then a look at where the quality drops and where sessions stop. |
 | Usage report after a week on 0.27 | No week of 0.27 data exists yet. | The next session | Run `just usage --days 7` and compare it with [Usage evidence](Usage-Evidence). |
 | A capability eval suite | 0.28.0 ported a suite of 16 cases to `claude plugin eval` ([Evals of 0.28.0](Evals-0.28.0#ported-suite)). It is not the blind, frozen suite that this item asks for. | The user | A blind, frozen suite written before any run, for long sessions, corrections over several turns, and large repositories. |
-| `implementer` on Opus 5.5 against Sonnet 5.5 | The runs on this machine had different tasks (see [Model fit](Plans-and-Models#model-fit)). The ProjectArchitect Bench A/B is outside evidence on a different harness with a private hard tier. | The user | Run both models on the same tasks. Anthropic recalibrated the effort levels of Sonnet 5.5, so also re-check the `medium` setting of the Sonnet agents. |
+| `implementer` on Opus 5.5 against Sonnet 5.5 | The runs on this machine had different tasks (see [Model fit](Usage-Evidence)). The ProjectArchitect Bench A/B is outside evidence on a different harness with a private hard tier. | The user | Run both models on the same tasks. Anthropic recalibrated the effort levels of Sonnet 5.5, so also re-check the `medium` setting of the Sonnet agents. |
 | Per-turn effort changes in one long-lived process | No data: each effort value in the transcripts of 2026-10-04 and 2026-10-05 is `medium`. | The next session | Measure the changes in one long-lived process. |
 | A Bash read of a directory does not load its `CLAUDE.md` or path-scoped `.claude/rules` files | Open in Claude Code ([#90450](https://github.com/anthropics/claude-code/issues/90450)). Claude Code 2.1.288 loads rules on Write and Edit. | The user (a fix in Claude Code) | A fix in Claude Code. |
 | The model and effort of the agents | The user set them in the `agents/*.md` frontmatter on 2026-10-09 from a router search of the removed eval harness and the effort guide of Anthropic. The `search`, `web`, `bulk`, and `audit` cases did not separate the pairs. The pairs for `debug` and `audit`, and each `medium` that is one step above a tested `low`, are inferred ([Agents](Agents)). | The user | Harder cases for those roles, run with `claude plugin eval` ([Evals](Evals)). |
@@ -67,4 +67,4 @@ Labels: **measured** means a run on this machine, and **reported** means a claim
 - [Usage evidence](Usage-Evidence)
 - [Evals](Evals)
 - [Eval history](Evals-History)
-- [Plans and models](Plans-and-Models)
+- [Usage evidence](Usage-Evidence)

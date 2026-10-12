@@ -6,7 +6,7 @@ Makes dotclaude aware of the Claude plan and cuts the cost of long agent runs.
 0.5.1 stops a `/goal` loop that wasted turns.
 This line requires Claude Code v2.1.283 or later.
 
-> **Note:** [Plans and models](Plans-and-Models) has the research behind this release, which `docs/subscription-tiers.md` held.
+> **Note:** [Usage evidence](Usage-Evidence) has the research behind this release, which `docs/subscription-tiers.md` held.
 > It covers how the Fable limit works, plan names in Claude Code and Codex, prices, dossier findings, and a scan of real session usage.
 
 To update:

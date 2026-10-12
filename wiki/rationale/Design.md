@@ -76,7 +76,7 @@ The CHANGELOG lists what it removed.
 | Principle | What it means |
 | --- | --- |
 | Mechanisms over prose | Prose stays only where no mechanism exists ([Usage evidence](Usage-Evidence#the-measured-week)). |
-| Sized for Pro | Larger plans reach their limits later. 0.27.0 has no plan-specific value ([Plans and models](Plans-and-Models#plan-detection)). |
+| Sized for Pro | Larger plans reach their limits later. 0.27.0 has no plan-specific value ([Usage evidence](Usage-Evidence)). |
 | One owner for each number | `plugins/dotclaude/lib/budget.ts` holds the bounds. Tests pin its copies in code and config, not in prose. |
 | No banned-phrase lists | Claude routes around them with synonyms. The rules name what each behavior does and why. |
 | No hooks that judge tone or architecture | A regex cannot tell a needed abstraction from a speculative one. The system prompt and the reviewer agents cover those. |
@@ -288,6 +288,6 @@ The [settings snippet](Settings-Snippet) sets `promptCacheTtl` to `"5m"`.
 
 - [Decisions](Decisions)
 - [Usage evidence](Usage-Evidence)
-- [Plans and models](Plans-and-Models)
+- [Usage evidence](Usage-Evidence)
 - [Prompt surface](Prompt-Surface)
 - [Core plugin](Core-Plugin)

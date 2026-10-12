@@ -76,7 +76,7 @@ When the context passes the bound of its model, its `tool.call` handler adds a n
 - For each subagent: the requests, the final context, and the total input tokens.
 - For the main session: the tool-result size for each tool, and the count of repeat reads of the same file.
 
-See [Usage evidence](Usage-Evidence#usage-report).
+See [Usage evidence](Usage-Evidence).
 
 ## Related pages
 

@@ -11,7 +11,7 @@ A plugin registers a hook in one of two ways:
 
 A matcher or an `if` limits when a hook runs.
 Each hook fails open: on an error, a timeout, or a missing `bun`, the call goes on and the permission rules and the sandbox still apply.
-No hook sets `onFailure`, so the default `continue` applies ([Guards](Guards#the-auto-mode-classifier)).
+No hook sets `onFailure`, so the default `continue` applies ([Guards](Auto-Mode)).
 The plugins `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab` register no hook.
 
 ## `dotclaude`

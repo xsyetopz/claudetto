@@ -73,7 +73,7 @@ Each add-on works without the core plugin.
 | [Design](Design) | The 0.27 rebuild, design principles, and rejected alternatives. |
 | [Decisions](Decisions) | The design decisions D1 to D35. |
 | [Usage evidence](Usage-Evidence) | Where one Max 20x week of usage went, and what that means on Pro. |
-| [Plans and models](Plans-and-Models) | Prices, model fit, and effort. |
+| [Usage evidence](Usage-Evidence) | Prices, model fit, and effort. |
 | [Prompt surface](Prompt-Surface) | What a request contains, the simple prompt, and the forced style. |
 | [Eval history](Evals-History) | The eval runs of the 0.4 to 0.28 releases. |
 | [Claude mods](Claude-Mods) | The plugin hooks modules of Claude Code, and the gaps. |

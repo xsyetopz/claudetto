@@ -255,4 +255,4 @@ ENABLE_TOOL_SEARCH=true ANTHROPIC_BASE_URL=http://127.0.0.1:18771 \
 
 - [Design](Design)
 - [Claude mods](Claude-Mods)
-- [Plans and models](Plans-and-Models)
+- [Usage evidence](Usage-Evidence)

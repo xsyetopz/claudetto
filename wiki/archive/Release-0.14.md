@@ -60,7 +60,7 @@ A version in parentheses marks a later patch of this line, and an entry with no 
 - Dossier: fixes the cost comparison of Sonnet 5.5 and Opus 5.5 from the Artificial Analysis suite.
   `diff-reviewer` stays on Sonnet 5.5, so a `risk: high` slice still gets two different models as reviewers.
 - `docs/models.md` (0.14.1): listed the supported effort levels for each model and the limits of the check.
-  0.20.0 removed it, and [Plans and models](Plans-and-Models#effort) now has the effort levels.
+  0.20.0 removed it, and [Usage evidence](Usage-Evidence) now has the effort levels.
   Model Fit adds the ProjectArchitect Bench A/B as reported evidence, with its limits.
 
 ## Fixed

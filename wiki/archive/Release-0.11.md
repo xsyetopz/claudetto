@@ -41,7 +41,7 @@ A version in parentheses marks a later patch of this line, and an entry with no 
   - The agent writes only in the files that the brief names, puts scratch files in the system temp folder, and reports defects outside the brief instead of fixing them.
   - In one user test of 35 bug-fix tasks, both models fixed 34.
     Sonnet 5.5 wrote outside its assigned folder 4 times and Opus 5.5 0 times.
-- Model docs (0.11.1): `docs/models.md` and the dossier page that is now [Plans and models](Plans-and-Models) gave this reason, and 0.20.0 removed `docs/models.md`.
+- Model docs (0.11.1): `docs/models.md` and the dossier page that is now [Usage evidence](Usage-Evidence) gave this reason, and 0.20.0 removed `docs/models.md`.
   They also give the reported cost data: Sonnet 5.5 costs less for each task than Opus 5.5 only at `low` and `medium` effort.
   This is why the Sonnet 5.5 agents stay at `medium`.
 
