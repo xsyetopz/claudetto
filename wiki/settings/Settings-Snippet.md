@@ -228,6 +228,7 @@ The same test fails when the block holds a key of the [never-set list](Off-Switc
     "cc-plugin-tips@builtin": false,
     "cc-plugin-you-should-know@builtin": false
   },
+  "outputStyle": "dotclaude:Concise",
   "sandbox": {
     "enabled": true,
     "allowUnsandboxedCommands": true,
