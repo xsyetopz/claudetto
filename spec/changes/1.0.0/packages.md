@@ -139,7 +139,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   It first answers the open items of [automode](evidence/automode.md#open) on cleanup.
   Deps: P09.
   Owns: `src/plugins/dotclaude/slices/setup/` (the cleanup keys), `tests/dotclaude/setup/` (the cleanup tests).
-- [ ] P27 `worktrees`: each part of dotclaude that works in a separate checkout uses the worktrees of Claude Code ([change](change.md), decisions, the user, 2026-10-12).
+- [x] P27 `worktrees`: each part of dotclaude that works in a separate checkout uses the worktrees of Claude Code ([change](change.md), decisions, the user, 2026-10-12).
   It first lists the worktree features of Claude Code 2.1.296 and each place in `src/` and `spec/changes/1.0.0/` that makes or names a worktree of its own, such as `git worktree add` in the `debugger` agent.
   Deps: P25, because both change the setup.
   Owns: `src/plugins/dotclaude/slices/agents/`, `src/plugins/dotclaude/slices/spec/skills/`, `src/plugins/dotclaude/slices/setup/` (the `worktree` keys), and their tests.
@@ -159,7 +159,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P28.
   Owns: `src/plugins/dotclaude/slices/rules/skills/`, `tests/dotclaude/rules/` (the skill tests).
   Verify: `just validate`, and a `reviewer` pass on the text.
-- [ ] P31 Repository rules: each rule of `AGENTS.md` that applies to some files only moves to a `paths:` rule in `.claude/rules/`.
+- [x] P31 Repository rules: each rule of `AGENTS.md` that applies to some files only moves to a `paths:` rule in `.claude/rules/`.
   `AGENTS.md` keeps the rules for each file, and links to `.claude/rules/`, so that a tool that reads only `AGENTS.md` can find them.
   Owns: `AGENTS.md`, `.claude/rules/`, and the tests that pin `AGENTS.md`.
   Verify: `just check`, and a glob check that each `paths:` entry matches at least one file.
