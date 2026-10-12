@@ -2,7 +2,6 @@
 // Each test works in its own copy of the fixture under `TMPDIR`.
 
 import { expect, test } from "bun:test";
-import fs from "node:fs";
 import path from "node:path";
 import { importsOf } from "../../../tools/generate/closure.ts";
 import { isGenerated } from "../../../tools/generate/emit/texts.ts";
@@ -34,14 +33,14 @@ test("the register runs the handlers of one event by phase, then by slice name, 
   const alpha = await copyOf(dir, "alpha");
   const beta = await copyOf(dir, "beta");
   expect(await registered(dir)).toStrictEqual([
-    ["prompt.compose", undefined, alpha.onCompose],
-    ["prompt.compose", undefined, beta.onCompose],
-    ["tool.call", { tool: "Bash" }, beta.onBash],
-    ["tool.call", { tool: "Bash" }, alpha.onBash],
+    ["prompt.compose", undefined, alpha["onCompose"]],
+    ["prompt.compose", undefined, beta["onCompose"]],
+    ["tool.call", { tool: "Bash" }, beta["onBash"]],
+    ["tool.call", { tool: "Bash" }, alpha["onBash"]],
     [
       "tool.call",
       { tool: "Write", input: { file_path: /\.md$/ } },
-      beta.onWrite,
+      beta["onWrite"],
     ],
   ]);
 });
@@ -179,7 +178,7 @@ test("the launcher of a CLI runs the `main` of the slice with the arguments", as
   const made = await generated(dir);
   await write(dir, made);
   const bin = path.join(dir, "plugins/p/bin/p-alpha");
-  expect(isGenerated(fs.readFileSync(bin, "utf8"))).toBeTrue();
+  expect(isGenerated(await Bun.file(bin).text())).toBeTrue();
   const run = Bun.spawnSync(["bun", bin, "x", "y"], { cwd: dir });
   expect(run.exitCode).toBe(2);
 });
