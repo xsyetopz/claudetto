@@ -13,6 +13,13 @@
     "allow": "plugins/dotclaude/tests/variants.test.ts > a spawn on a model with no variant passes the task prompt on unchanged",
     "text": "plugins/dotclaude/tests/variants.test.ts > a spawn on Haiku 5.5 ends the task prompt with its block one time"
   },
+  "session.start decide": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dotclaude/tests/session.test.ts > session start with no key registers `second_opinion` and passes the session on",
+    "text": "plugins/dotclaude/tests/session.test.ts > session start with a key registers the same tool with its input schema"
+  },
   "session.start setup": {
     "requests": 0,
     "tokens": 0,
@@ -49,6 +56,13 @@
     "text": "tests/dotclaude/guard/print.test.ts > `cat F` is denied with the absolute path and no range",
     "block": "plugins/dotclaude/tests/print.test.ts > a `Bash` print of a file is denied with the `Read` range",
     "false": "tests/dotclaude/guard/print.test.ts > a command with an edit, a byte count, or another bounded form stays allowed"
+  },
+  "tool.call decide": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "tests/dotclaude/decide/ask.test.ts > a question with one option or several choices is not sent to Jev",
+    "text": "tests/dotclaude/decide/ask.test.ts > a confident pick of a facts question goes into the picked option"
   },
   "tool.call sembr": {
     "requests": 0,
