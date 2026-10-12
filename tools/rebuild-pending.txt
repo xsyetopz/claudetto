@@ -54,11 +54,6 @@ plugins/dotclaude-browser/
 src/plugins/dotclaude-browser/
 tests/browser/
 
-# P11d: `dotclaude-docs`
-plugins/dotclaude-docs/
-src/plugins/dotclaude-docs/
-tests/docs/
-
 # P11e: `dotclaude-sessions`
 plugins/dotclaude-sessions/
 src/plugins/dotclaude-sessions/
