@@ -4,10 +4,8 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import {
-  findOnPath,
-  sessionStart,
-} from "../../plugins/dotclaude-codegraph/features/graph/cli.ts";
+import { findOnPath } from "../../plugins/dotclaude-codegraph/slices/graph/adapters/codegraph.ts";
+import { sessionStart } from "../../plugins/dotclaude-codegraph/slices/graph/adapters/hook.ts";
 import { tmpDir } from "../support/repo.ts";
 
 const platform = Object.getOwnPropertyDescriptor(process, "platform");
@@ -20,13 +18,13 @@ const onWindows = <T>(fn: () => T): T => {
   }
 };
 
-async function project(): Promise<string> {
+const project = async (): Promise<string> => {
   const dir = tmpDir("codegraph-win");
   fs.mkdirSync(path.join(dir, "bin"));
   fs.mkdirSync(path.join(dir, "project", ".codegraph"), { recursive: true });
   await Bun.write(path.join(dir, "project", ".codegraph", "codegraph.db"), "");
   return dir;
-}
+};
 
 test("with no codegraph on PATH, session start adds nothing on Windows", async () => {
   const dir = await project();

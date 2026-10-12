@@ -36,8 +36,18 @@ test("the marketplace lists the plugins in order, and the entry has the manifest
   expect(entry.description).toBe(manifest.description);
 });
 
-test("the plugin has classic command hooks, no module, and no MCP server", () => {
-  expect(hooks.modules).toBe(undefined);
+test("the plugin has two classic command hooks, one module, and no MCP server", () => {
+  expect(hooks.modules).toStrictEqual(["./register.ts"]);
+  expect(Object.keys(hooks.hooks).sort()).toStrictEqual([
+    "PostToolUse",
+    "SessionStart",
+  ]);
+  expect(
+    Object.values(hooks.hooks)
+      .flat()
+      .flatMap((g) => g.hooks).length,
+  ).toBe(2);
+  expect(fs.existsSync(path.join(PLUGIN, "hooks/register.ts"))).toBe(true);
   expect(fs.existsSync(path.join(PLUGIN, ".mcp.json"))).toBe(false);
   expect(manifest.mcpServers).toBe(undefined);
   for (const group of Object.values(hooks.hooks).flat())
@@ -60,7 +70,7 @@ test("the plugin works alone: a copy of the plugin folder runs its hook with no 
     "session-start",
     { cwd: t.project },
     t.env,
-    path.join(copy, "features/graph/cli.ts"),
+    path.join(copy, "slices/graph/adapters/hook.ts"),
   );
   expect(r.out?.hookSpecificOutput.additionalContext).not.toBe(undefined);
 });

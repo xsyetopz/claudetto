@@ -9,11 +9,11 @@
 // A payload that is not JSON is ignored, and any other error is written to stderr, with exit code 0.
 // The sync after a `git` command is a mod handler in `mod.ts`, so a `Bash` call starts no process here.
 
+import { type HookPayload, parseJson, SESSION_LINE } from "../domain/graph.ts";
 import {
   BACKGROUND_SYNC_TIMEOUT_MS,
   START_SYNC_TIMEOUT_MS,
 } from "../limits.ts";
-import { type HookPayload, parseJson, SESSION_LINE } from "../domain/graph.ts";
 import { codegraph, indexed, rootOf } from "./codegraph.ts";
 
 const context = (hookEventName: string, additionalContext: string) => ({

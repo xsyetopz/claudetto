@@ -78,7 +78,6 @@
         "!plugins/dotclaude/features/statusline/**",
         "!tests/dotclaude/statusline/**",
         "!plugins/dotclaude-codegraph/evals/hooks.json",
-        "!tests/codegraph/**",
         "!plugins/dotclaude-browser/evals/hooks.json",
         "!plugins/dotclaude-browser/tsconfig.json",
         "!plugins/dotclaude-lab/**",

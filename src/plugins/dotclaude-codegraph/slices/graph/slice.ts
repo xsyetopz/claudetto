@@ -3,11 +3,12 @@
 // The sync after a `git` command is a mod handler, because a classic hook with an `if` for each `git` command needs 12 hooks, and one hook without `if` starts a process on each `Bash` call.
 
 import type { Slice } from "../../../../kernel/slice.ts";
-import { TREE_CHANGE } from "./domain/graph.ts";
 import { onTreeChange } from "./adapters/mod.ts";
+import { TREE_CHANGE } from "./domain/graph.ts";
 import { BACKGROUND_SYNC_TIMEOUT_MS } from "./limits.ts";
 
-const HOOK = 'bun --no-env-file "${CLAUDE_PLUGIN_ROOT}/slices/graph/adapters/hook.ts"';
+// The text `${CLAUDE_PLUGIN_ROOT}` stays in the command, and Claude Code fills it in at run time.
+const HOOK = `bun --no-env-file "\${CLAUDE_PLUGIN_ROOT}/slices/graph/adapters/hook.ts"`;
 
 export const slice: Slice = {
   name: "graph",

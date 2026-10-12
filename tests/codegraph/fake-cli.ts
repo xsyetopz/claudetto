@@ -7,7 +7,7 @@ import path from "node:path";
 import { type Env, PLUGINS, tmpDir } from "../support/repo.ts";
 
 const PLUGIN = path.join(PLUGINS, "dotclaude-codegraph");
-export const CLI = path.join(PLUGIN, "features/graph/cli.ts");
+export const CLI = path.join(PLUGIN, "slices/graph/adapters/hook.ts");
 export { PLUGIN };
 
 /** The JSON that a hook prints on stdout, for the fields that the tests read. */
@@ -16,11 +16,11 @@ export type HookOut = {
 };
 
 /** Runs `cmd` with `args` and waits. Gives `{ status, stdout, stderr }` as text, and `status` is the exit code. */
-export function run(
+export const run = (
   cmd: string,
   args: string[],
   { input, ...options }: { input?: string; cwd?: string; env?: Env } = {},
-) {
+) => {
   const r = Bun.spawnSync({
     cmd: [cmd, ...args],
     stdin: input === undefined ? "ignore" : Buffer.from(input),
@@ -33,7 +33,7 @@ export function run(
     stdout: r.stdout.toString(),
     stderr: r.stderr.toString(),
   };
-}
+};
 
 // The fake is a Node script with a launcher: `sh` on POSIX, and `codegraph.cmd` on Windows,
 // where npm installs the real CLI as a `.cmd` file and `PATH` finds no file without an extension.
@@ -46,7 +46,7 @@ if (command === "--version") console.log("9.9.9");
 `;
 
 /** Writes the fake `codegraph` into `bin`, with the launcher of the platform. */
-async function installFake(bin: string) {
+const installFake = async (bin: string) => {
   await Bun.write(path.join(bin, "codegraph.mjs"), FAKE);
   if (process.platform === "win32")
     await Bun.write(
@@ -62,16 +62,16 @@ async function installFake(bin: string) {
     );
     fs.chmodSync(launcher, 0o755);
   }
-}
+};
 
 /** A project folder and a fake CLI folder. `index` makes `.codegraph/codegraph.db`. */
-export async function setUp({
+export const setUp = async ({
   index = true,
   installed = true,
 }: {
   index?: boolean;
   installed?: boolean;
-} = {}) {
+} = {}) => {
   const dir = tmpDir("codegraph");
   const project = path.join(dir, "project");
   const bin = path.join(dir, "bin");
@@ -114,15 +114,15 @@ export async function setUp({
         : [];
     },
   };
-}
+};
 
 /** Runs `cli.mjs mode` with `payload` on stdin, and gives `{ out, status, err }`. `out` is the parsed stdout or null. */
-export function runHook(
+export const runHook = (
   mode: string,
   payload: unknown,
   env: Env,
   script = CLI,
-) {
+) => {
   const r = run(process.execPath, ["--no-env-file", script, mode], {
     input: JSON.stringify(payload),
     // The cwd is a temp folder and not the repository, so the run does not depend on the files of the repository.
@@ -134,7 +134,7 @@ export function runHook(
     status: r.status,
     err: r.stderr,
   };
-}
+};
 
 /** A `Grep` payload for `pattern` in `project`. */
 export const grep = (project: string, pattern: string) => ({
