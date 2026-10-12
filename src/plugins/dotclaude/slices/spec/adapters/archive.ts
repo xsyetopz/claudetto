@@ -1,0 +1,111 @@
+// `dotclaude-spec archive <id>`: applies the deltas of a change to a temporary copy of `spec/specs/`,
+// then replaces `spec/specs/` and moves the change to `archive/`.
+// When one delta fails, nothing changes.
+
+import path from "node:path";
+import { SPEC_ROOT } from "../../../../../kernel/spec-store.ts";
+import { applyDelta } from "../domain/delta.ts";
+import { parseDelta, parseSpec } from "../domain/parse.ts";
+import { validateDelta, validateSpec } from "../domain/validate.ts";
+import { ARCHIVE_DIR, SPECS_DIR } from "../limits.ts";
+import { renderSpec } from "./render.ts";
+import { dateOf, type Run } from "./run.ts";
+
+const TEMP_SPECS = "spec/.specs-new";
+const OLD_SPECS = "spec/.specs-old";
+
+/** The new text of each capability that the deltas change, or the problems that stop the archive. */
+const applyAll = async (
+  run: Run,
+  deltaDir: string,
+): Promise<{ texts: Map<string, string>; problems: string[] }> => {
+  const texts = new Map<string, string>();
+  const problems: string[] = [];
+  for (const name of await run.store.markdown(deltaDir)) {
+    const file = path.posix.join(deltaDir, name);
+    const delta = parseDelta((await run.store.files.read(file)) ?? "");
+    if (!delta.ok) {
+      problems.push(
+        ...delta.errors.map((e) => `${file}:${e.line}: ${e.message}`),
+      );
+      continue;
+    }
+    const issues = validateDelta(delta.value);
+    problems.push(
+      ...issues.map((i) => `${file}: ${i.rule} ${i.subject}: ${i.message}`),
+    );
+    const target = path.posix.join(SPECS_DIR, name);
+    const previous = await run.store.files.read(target);
+    const spec = parseSpec(previous ?? "");
+    if (!spec.ok) {
+      problems.push(
+        ...spec.errors.map((e) => `${target}:${e.line}: ${e.message}`),
+      );
+      continue;
+    }
+    const applied = applyDelta(spec.value, delta.value);
+    if (!applied.ok) {
+      problems.push(
+        ...applied.errors.map(
+          (f) =>
+            `${file}: ${f.section} \`${f.name}\` ${f.reason === "missing" ? "does not exist" : "exists already"}`,
+        ),
+      );
+      continue;
+    }
+    const after = validateSpec(applied.value);
+    problems.push(
+      ...after.map((i) => `${target}: ${i.rule} ${i.subject}: ${i.message}`),
+    );
+    texts.set(
+      name,
+      renderSpec(name.replace(/\.md$/, ""), previous, applied.value),
+    );
+  }
+  return { texts, problems };
+};
+
+export const archiveCommand = async (
+  run: Run,
+  args: string[],
+): Promise<number> => {
+  const [id] = args;
+  if (!id) {
+    run.io.error("Usage: dotclaude-spec archive <id>");
+    return 2;
+  }
+  const dir = path.posix.join(SPEC_ROOT, id);
+  const target = path.posix.join(ARCHIVE_DIR, `${dateOf(run.clock)}-${id}`);
+  if (!run.store.exists(dir) || id === "archive") {
+    run.io.error(`The change \`${id}\` does not exist in \`${SPEC_ROOT}\`.`);
+    return 1;
+  }
+  if (run.store.exists(target)) {
+    run.io.error(`\`${target}\` exists already.`);
+    return 1;
+  }
+  const { texts, problems } = await applyAll(
+    run,
+    path.posix.join(dir, "specs"),
+  );
+  if (problems.length > 0) {
+    for (const line of problems) run.io.error(line);
+    run.io.error(
+      `Nothing changed: ${problems.length} problem${problems.length === 1 ? "" : "s"}.`,
+    );
+    return 1;
+  }
+  run.store.remove(TEMP_SPECS);
+  run.store.remove(OLD_SPECS);
+  if (run.store.exists(SPECS_DIR)) run.store.copyDir(SPECS_DIR, TEMP_SPECS);
+  for (const [name, text] of texts)
+    await run.store.write(path.posix.join(TEMP_SPECS, name), text);
+  if (run.store.exists(SPECS_DIR)) run.store.move(SPECS_DIR, OLD_SPECS);
+  run.store.move(TEMP_SPECS, SPECS_DIR);
+  run.store.move(dir, target);
+  run.store.remove(OLD_SPECS);
+  run.io.log(
+    `${target} (${texts.size} capabilit${texts.size === 1 ? "y" : "ies"} changed)`,
+  );
+  return 0;
+};
