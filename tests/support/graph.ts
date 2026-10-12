@@ -35,7 +35,8 @@ export const parseImports = (source: string): Import[] => {
 };
 
 // The plugin folder of a path: `plugins/<name>`.
-const pluginOf = (file: string): string => file.split("/").slice(0, 2).join("/");
+const pluginOf = (file: string): string =>
+  file.split("/").slice(0, 2).join("/");
 
 // Where a relative import points, or `null` for a `node:` module or a bare package.
 export const resolve = (file: string, spec: string): string | null =>

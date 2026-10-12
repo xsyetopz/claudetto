@@ -1,7 +1,7 @@
 // The import rules of the `lib/` and `features/` folders of the core plugin.
 // `import-rules.ts` runs them in `RULES`, and the folders and this file go away together.
 
-import { edges, type Files, inside, within } from "./import-graph.ts";
+import { edges, type Files, inside, within } from "./graph.ts";
 
 // Rule 1: `lib/` imports only `lib/` by relative path.
 export const checkLib = (files: Files): string[] => {
