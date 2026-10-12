@@ -10,13 +10,16 @@ import { depsFor, type Run, STATUS } from "./support.ts";
 const dir = tmpDir("dc-statusline-change");
 
 /** A project folder with one `state.json` for each entry of `lanes`, keyed by change id. */
-const project = (name: string, changes: Record<string, unknown>): string => {
+const project = async (
+  name: string,
+  changes: Record<string, unknown>,
+): Promise<string> => {
   const root = path.join(dir, name);
   fs.mkdirSync(root, { recursive: true });
   for (const [id, state] of Object.entries(changes)) {
     const folder = path.join(root, "spec", "changes", id);
     fs.mkdirSync(folder, { recursive: true });
-    fs.writeFileSync(path.join(folder, "state.json"), JSON.stringify(state));
+    await Bun.write(path.join(folder, "state.json"), JSON.stringify(state));
   }
   return root;
 };
@@ -42,7 +45,7 @@ const rowsFor = async (root: string): Promise<Run> => {
 };
 
 test("the first row ends with the id and the done count of the active change", async () => {
-  const root = project("active", {
+  const root = await project("active", {
     "0.9.0": state({ P01: "done", P02: "done" }),
     "1.0.0": state({
       P01: "done",
@@ -59,7 +62,7 @@ test("the first row ends with the id and the done count of the active change", a
 });
 
 test("a store where every change is done shows no change segment", async () => {
-  const root = project("all-done", { "1.0.0": state({ P01: "done" }) });
+  const root = await project("all-done",{ "1.0.0": state({ P01: "done" }) });
   const run = await rowsFor(root);
   expect(run.out[0]).not.toContain("◆");
 });
@@ -75,7 +78,7 @@ test("a folder with no store shows no change segment and no error", async () => 
 });
 
 test("a store of another schema shows no change segment, writes the cause to stderr, and keeps the other rows", async () => {
-  const root = project("schema", { "1.0.0": state({ P01: "doing" }, 2) });
+  const root = await project("schema",{ "1.0.0": state({ P01: "doing" }, 2) });
   const run = await rowsFor(root);
   expect(run.status).toBe(0);
   expect(run.err.join("")).toContain("state.json");

@@ -243,8 +243,8 @@ test("a status line of another tool stays, and the preview says so", async () =>
   await writeUser(d, { statusLine: own });
   run(d, ["--apply"]);
   expect((await readUser(d)).statusLine).toStrictEqual(own);
-  expect((await readUser(d)).subagentStatusLine.command).toMatch(
-    /subagent-cli\.ts/,
+  expect((await readUser(d)).subagentStatusLine.command).toBe(
+    `bun --no-env-file "${SLASHED}/bin/dotclaude-statusline" --subagent`,
   );
 });
 
