@@ -123,3 +123,19 @@ The reviewer found no 0.28.0 text in `Context-And-Handoff`, `Guards`, `Status-Li
    Fix: one line that a second, earlier trigger exists and is not examined.
 5. `Compaction-And-Context.md:19` and `:66-67` say "not checked", but the strings show that `CLAUDE_CODE_MAX_CONTEXT_TOKENS` is read only when `DISABLE_COMPACT` is set.
    Fix: give that binary fact with the version.
+
+## `Usage-Evidence`, `Evals`, `Contributions`, and `Semantic-Line-Breaks`
+
+`Contributions` and `Semantic-Line-Breaks` have no finding.
+
+1. `wiki/evidence/Evals.md:120` and `:184` cite D9 for "no adherence gate" and D35 for the removal of the harness.
+   D9 is "Evals through `claude plugin eval`", and 1.0.0 reverses D35.
+   Fix: cite D9 only for "no harness of its own", remove the D35 citation, and remove "no adherence gate" unless a source supports it.
+2. `Usage-Evidence.md:196-204` (the measured week) gives "Opus 5.5 98.7%" next to "`implementer` 30.7%, 155 runs", but `implementer` is Sonnet in 1.0.0, and no `evidence/` file holds the scan.
+   Fix: say which config the week ran under, or remove the table and the ranking that rests on it.
+3. `Usage-Evidence.md:63-72` (prices, "checked on 2026-10-13"): the cache read ratio to base input is 0.025 for Fable, 0.05 for Opus and Sonnet, and 0.10 for Haiku.
+   Fix: check the cache read prices against the official pricing page again.
+4. `Evals.md:5` says that the evals need Claude Code `2.1.269` or later, and no file in the repository holds that value.
+   Fix: keep it only if `external/` backs it.
+5. `wiki/evidence/Evals.md:178` links `Open-Items` as the open items now. `Open-Items` is the state at 0.28.0.
+6. `wiki/rationale/Decisions-Tools.md:78` says "The folder holds 3 cases". 3 cases are in `src/plugins/dotclaude/evals/`, and 9 more are in `slices/*/evals/`. Make the line say which folder, after the rationale fix run merges.
