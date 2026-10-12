@@ -17,6 +17,23 @@ const exportOf = (
     .sort()
     .find((key) => key !== "default" && mod[key] === run);
 
+/** The column bound of the formatter of Biome, which `just lint` runs on `plugins/`. */
+const WIDTH = 80;
+
+const compare = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
+
+/** `open`, the comma list `items`, and `close` on one line, or with one item on each line when the line is longer than `WIDTH`, as Biome formats them. */
+const wrap = (open: string, items: string[], close: string): string => {
+  const line = `${open}${items.join(", ")}${close}`;
+  if (line.length <= WIDTH) return line;
+  const indent = open.match(/^ */)?.[0] ?? "";
+  return [
+    open.trimEnd(),
+    ...items.map((item) => `${indent}  ${item},`),
+    `${indent}${close.trimStart()}`,
+  ].join("\n");
+};
+
 /** The generated `register.ts` of the plugin `p`, or none when its slices have no mod handler. */
 export const registerOf = (p: FoundPlugin): Output[] => {
   const where = new Map<Entry, { dir: string; name: string }>();
@@ -33,16 +50,31 @@ export const registerOf = (p: FoundPlugin): Output[] => {
       where.set(e, { dir: s.name, name });
     }
   if (!entries.length) return [];
-  const imports: string[] = [];
-  const calls: string[] = [];
-  order(entries).forEach((e, i) => {
+  // One alias for each export, numbered in the order of the module paths and the export names,
+  // so the imports are already in the order of the import sorter of Biome.
+  const pairs = [
+    ...new Set([...where.values()].map((w) => `${w.dir}\0${w.name}`)),
+  ]
+    .map((key) => key.split("\0") as [string, string])
+    .sort(([a, x], [b, y]) => compare(a, b) || compare(x, y));
+  const alias = new Map(pairs.map(([d, n], i) => [`${d}\0${n}`, `h${i}`]));
+  const imports = [...new Set(pairs.map(([d]) => d))].map((dir) =>
+    wrap(
+      "import { ",
+      pairs
+        .filter(([d]) => d === dir)
+        .map(([d, n]) => `${n} as ${alias.get(`${d}\0${n}`)}`),
+      ` } from "${path.posix.join("..", "slices", dir, "adapters", "mod.ts")}";`,
+    ),
+  );
+  const calls = order(entries).map((e) => {
     const at = where.get(e) as { dir: string; name: string };
-    imports.push(
-      `import { ${at.name} as h${i} } from "${path.posix.join("..", "slices", at.dir, "adapters", "mod.ts")}";`,
-    );
     const filter = filterOf(e);
-    calls.push(
-      `  on(${JSON.stringify(e.handler.event)}, ${filter ? `${filter}, ` : ""}h${i});`,
+    const args = [JSON.stringify(e.handler.event), ...(filter ? [filter] : [])];
+    return wrap(
+      "  on(",
+      [...args, alias.get(`${at.dir}\0${at.name}`) as string],
+      ");",
     );
   });
   const file = `plugins/${p.name}/hooks/register.ts`;

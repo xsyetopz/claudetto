@@ -1,4 +1,4 @@
-// Behavior of `tools/generate/` (design D12): each text that a plugin ships comes from its source in `src/`.
+// Behavior of the text step of `tools/generate/` (design D12): each text that a plugin ships comes from its source in `src/`.
 // Each test that writes files works in its own folder under `TMPDIR`.
 
 import { expect, test } from "bun:test";
@@ -9,8 +9,9 @@ import {
   outputs,
   stale,
   VALUES,
-} from "../../tools/generate/emit/texts.ts";
-import { REPO, tmpDir } from "./repo.ts";
+} from "../../../tools/generate/emit/texts.ts";
+import { generated, problems } from "../../../tools/generate/outputs.ts";
+import { REPO, tmpDir } from "../../support/repo.ts";
 
 /** A repository root with the files `files`, by path relative to the root. */
 async function root(files: Record<string, string>): Promise<string> {
@@ -30,7 +31,7 @@ const AGENT = (name: string) =>
   `---\nname: ${name}\n---\n\n<rules>\n{{include rule}}\n</rules>\n`;
 
 test("lint: each generated file of the repository matches its source", async () => {
-  const found = await stale(REPO, await outputs(REPO));
+  const found = await problems(REPO, await generated(REPO));
   expect(found, found.join("\n")).toStrictEqual([]);
 });
 
@@ -105,8 +106,6 @@ const NOT_GENERATED: [RegExp, string][] = [
     "Claude Code writes it when it is missing, and the type check reads it",
   ],
 ];
-// The generated JSON files: JSON has no comment, so the list of the generator, and not a header, names their source.
-const GENERATED_JSON = /^plugins\/[^/]+\/(?:hooks\/hooks|settings)\.json$/;
 
 test("Text in the plugin: each Markdown, JSON, and text file under `plugins/` is generated or has a reason", async () => {
   const r = Bun.spawnSync(
@@ -120,7 +119,7 @@ test("Text in the plugin: each Markdown, JSON, and text file under `plugins/` is
     ],
     { cwd: REPO },
   );
-  const made = new Set((await outputs(REPO)).map((o) => o.file));
+  const made = new Set((await generated(REPO)).map((o) => o.file));
   const left: string[] = [];
   for (const file of r.stdout.toString().split("\n")) {
     if (
@@ -130,7 +129,8 @@ test("Text in the plugin: each Markdown, JSON, and text file under `plugins/` is
       continue;
     if (!fs.existsSync(path.join(REPO, file))) continue;
     if (NOT_GENERATED.some(([re]) => re.test(file))) continue;
-    if (GENERATED_JSON.test(file) && made.has(file)) continue;
+    // JSON has no comment, so the list of the generator, and not a header, names the source of a generated JSON file.
+    if (file.endsWith(".json") && made.has(file)) continue;
     if (!isGenerated(await Bun.file(path.join(REPO, file)).text()))
       left.push(file);
   }
