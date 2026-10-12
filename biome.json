@@ -125,7 +125,7 @@
         "!plugins/dotclaude/tests/mod.test.ts",
         "!plugins/dotclaude/tsconfig.json",
         "!src/plugins/dotclaude/hooks/**",
-                "!tests/dotclaude/context/**",
+        "!tests/dotclaude/context/**",
         "!tests/dotclaude/errors.test.ts",
         "!tests/dotclaude/eval-graders.test.ts",
         "!tests/dotclaude/hooks/**",
