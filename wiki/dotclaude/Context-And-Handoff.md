@@ -51,7 +51,7 @@ The note tells the subagent to commit its work and to report now, within `REPORT
 - The hook tells the subagent and does not block it.
   A block would lose the work of the run.
 - Below the bounds, the hook adds nothing.
-- A run that reaches `maxTurns` returns no report.
+- A run that reaches `maxTurns` without a report returns its partial output, marked as incomplete.
   The comment of `TURNS_LEFT_AT` gives the use of the turns: two turns commit the work, one turn writes the report, and one turn is spare.
 
 ## Main session handoff
@@ -61,7 +61,7 @@ The `mainHandover` option has three values, from `MAIN_HANDOVERS`.
 | Value | What the plugin does |
 | --- | --- |
 | `auto` | It writes a handoff file, runs `/clear`, and submits a resume prompt. |
-| `manual` | It adds a hint to run `/handoff`, once for each kind of trigger in an episode. |
+| `manual` | It adds a hint to run `/dotclaude:handoff`, once for each kind of trigger in an episode. |
 | `off` | It does nothing. |
 
 The default is `manual`.

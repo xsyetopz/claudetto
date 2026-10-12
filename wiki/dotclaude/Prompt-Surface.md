@@ -53,19 +53,20 @@ The prompt cache therefore keeps its entries.
 ## Model variants
 
 Each model family gets one variant.
-The family comes from the model id, in `variantKey` in `slices/prompt/domain/apply.ts`.
+The match is by family, in `variantKey` in `slices/prompt/domain/apply.ts`.
+A model id that contains a family word gets that family's variant, whatever its version.
 
-| Key | Models | Model notes |
+| Key | Matches | Model notes |
 | --- | --- | --- |
-| `opus` | Opus 5.5 | One notes section, and the block and evidence lines. |
-| `sonnet` | Sonnet 5.5 | No notes section, and the verify, block, and evidence lines. |
-| `haiku` | Haiku 5.5 | One notes section with the step line, and the verify, step, block, and evidence lines. |
-| `fable` | Fable 5.1, and Mythos 5.1 | One notes section, and the block and evidence lines. |
+| `opus` | The `opus` family | One notes section, and the block and evidence lines. |
+| `sonnet` | The `sonnet` family | No notes section, and the verify, block, and evidence lines. |
+| `haiku` | The `haiku` family | One notes section with the step line, and the verify, step, block, and evidence lines. |
+| `fable` | The `fable` family, and the `mythos` family | One notes section, and the block and evidence lines. |
 
 The variant sections are in `slices/prompt/domain/variants.ts`.
 Mythos 5.1 uses the `fable` variant, because one prompting guide covers both models.
 
-A model that has no key gets no variant.
+A model id that matches no family gets no variant.
 Its sections stay as Claude Code sends them.
 
 The key is chosen at the first `prompt.compose` of a session and kept for the session.
