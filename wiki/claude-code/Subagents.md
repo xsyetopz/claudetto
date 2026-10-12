@@ -99,7 +99,7 @@ This happens in `src/plugins/dotclaude/slices/prompt/adapters/mod.ts` (`onSpawn`
 - The handoff slice warns a subagent before its last turns.
   `TURNS_LEFT_AT` is `4` in `src/plugins/dotclaude/slices/handoff/limits.ts`.
   At that point, `reportNote` in `src/plugins/dotclaude/slices/handoff/domain/context.ts` tells the subagent to commit and report.
-  See [Context-Bound](Context-Bound) for the context bound.
+  See [Context-Bound](Context-And-Handoff) for the context bound.
 
 ## Background runs and the return to the main session
 
