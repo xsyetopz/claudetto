@@ -110,16 +110,23 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    Move the `src/wiki/` sources with their pages.
    Write `_Sidebar.md` and the navigation part of `Home.md` for the map above.
    `just check` passes.
-2. Fill (parallel runs, one branch each, on the skeleton).
-   Each run owns only its pages, and it links other pages by name.
-   - A: `Architecture`, `Guards`, `Agents`, `Skills`, `Spec-Store`.
-   - B: `Prompt-Surface`, `Context-And-Handoff`, `Status-Line`, `Semantic-Line-Breaks`, `Second-Opinion`, `Contributions`.
-   - C: the add-on pages.
-   - D: `Claude-Code-Internals`, `Request-Build`, `Tools-And-Deferral`, `Hook-Events`, `Plugin-Loader`.
-   - E: `Settings-Resolution`, `Subagents`, `Compaction-And-Context`, `Auto-Mode`, `Undocumented-Reads`.
-   - F: the reference and rationale pages.
-   - G: the evidence and development pages, and the archive index.
-   - H: the start pages, `README.md`, `docs/README.md`, and a check of `CHANGELOG.md`.
+2. Fill: one run for each page, on its own branch `p15-page-<Page>`, merged into `p15`.
+   A run of five pages wrote one page before its 61-turn limit, so a run gets one page.
+   A run does not run `bun install` or `just check`.
+   The main session runs `just check` after each merge.
+   A checked box is a page that is merged into `p15`.
+   - [x] `Guards`, `Auto-Mode`, `Handoff-Cost`, `Usage-Evidence` (with `Plans-and-Models`), `Prompt-Variants`
+   - [ ] `Settings-Snippet` (a WIP commit is merged, so check it)
+   - [ ] `Architecture` (with `Core-Plugin`), `Agents`, `Skills`, `Spec-Store`
+   - [ ] `Prompt-Surface` (with `System-Prompt`), `Context-And-Handoff` (with `Context-Bound`), `Second-Opinion`
+   - [ ] `Status-Line`, `Semantic-Line-Breaks`, `Contributions`
+   - [ ] `Add-Ons`, `Code-Graph`, `Browser`, `Library-Docs`, `Sessions`, `Lab`
+   - [ ] `Claude-Code-Internals`, `Request-Build` (with `Claude-Mods`), `Tools-And-Deferral`, `Hook-Events` (with `Hooks`), `Plugin-Loader`
+   - [ ] `Settings-Resolution`, `Subagents`, `Compaction-And-Context`, `Undocumented-Reads`
+   - [ ] `Settings-Snippet-Keys`, `Off-Switches`, `Settings-Schema`, `Bounds`
+   - [ ] `Design`, `Decisions` and its six group pages, `Decisions-Reversed`
+   - [ ] `Evidence`, `Evals`, `Development`, `Plugin-Layout`, `Sandbox`, `Release-History`, `Archive`
+   - [ ] `Home`, `Install`, `Quickstart`, `Troubleshooting`, `Attributions`, `README.md`, `docs/README.md`, the check of `CHANGELOG.md`
 3. Join the branches, run `just generate`, `bun run lint:md`, and `just check`.
 4. A reviewer pass for each section, then one run that fixes the list.
 

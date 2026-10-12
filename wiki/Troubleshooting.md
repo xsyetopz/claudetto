@@ -28,16 +28,16 @@ Run `claude --debug` to see the hook log of Claude Code.
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| The hooks add nothing | The project has no `.codegraph/codegraph.db`, or `codegraph` is not on `PATH`. Run `bin/dotclaude-codegraph-check`, then `codegraph init -y`. | [Code graph](Code-Graph#install) |
-| No graph context for a short name | A name under 3 characters gives too many hits, so the hook skips it. | [Code graph](Code-Graph#limits) |
+| The hooks add nothing | The project has no `.codegraph/codegraph.db`, or `codegraph` is not on `PATH`. Run `bin/dotclaude-codegraph-check`, then `codegraph init -y`. | [Code graph](Code-Graph) |
+| No graph context for a short name | A name under 3 characters gives too many hits, so the hook skips it. | [Code graph](Code-Graph) |
 
 ## `dotclaude-browser`
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| A site blocks `agent-browser` | Claude tells you which page blocked it and asks before it goes on. The steps are `agent-browser read`, a feed or API, CloakBrowser, or opening the page by hand. | [Browser](Browser#troubleshooting) |
-| A search fails with "Socket path would be N bytes (max 103)" | The home folder path is too long. Use a shorter home folder. | [Browser](Browser#troubleshooting) |
-| `WebSearch` is denied for the `cloakbrowser` backend | The CloakBrowser binary is not under `~/.cloakbrowser/`. Claude tells you and does not switch to plain `agent-browser`. Install CloakBrowser or set the `backend` option to `agent-browser`. | [Browser](Browser#choose-a-backend) |
+| A site blocks `agent-browser` | Claude tells you which page blocked it and asks before it goes on. The steps are `agent-browser read`, a feed or API, CloakBrowser, or opening the page by hand. | [Browser](Browser) |
+| A search fails with "Socket path would be N bytes (max 103)" | The home folder path is too long. Use a shorter home folder. | [Browser](Browser) |
+| `WebSearch` is denied for the `cloakbrowser` backend | The CloakBrowser binary is not under `~/.cloakbrowser/`. Claude tells you and does not switch to plain `agent-browser`. Install CloakBrowser or set the `backend` option to `agent-browser`. | [Browser](Browser) |
 
 ## `second_opinion` in the core plugin
 
@@ -52,7 +52,7 @@ Run `claude --debug` to see the hook log of Claude Code.
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| The `docs` skill fails with a quota error | Set `CONTEXT7_API_KEY` for a higher limit. | [Library docs](Library-Docs#rules) |
+| The `docs` skill fails with a quota error | Set `CONTEXT7_API_KEY` for a higher limit. | [Library docs](Library-Docs) |
 
 ## `dotclaude-sessions`
 

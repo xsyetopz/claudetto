@@ -16,7 +16,7 @@ The `second_opinion` tool is part of the core plugin.
 | `gh` on `PATH` | the policy ask of `dotclaude` | Without `gh`, the ask does not run and the call goes on. |
 | `codegraph` on `PATH` | `dotclaude-codegraph` | Run `npm i -g @colbymchenry/codegraph`. The plugin never installs it. |
 | `TYPESAFE_API_KEY` | `dotclaude` (`second_opinion`) | Export it before Claude Code starts. Without it, `second_opinion` answers from a Claude model. |
-| `agent-browser` on `PATH` | `dotclaude-browser` | See [Browser](Browser#install-agent-browser). |
+| `agent-browser` on `PATH` | `dotclaude-browser` | See [Browser](Browser). |
 | `npx` on `PATH` | `dotclaude-docs` | It comes with Node.js. The `docs` skill runs `ctx7` through it. |
 
 The checks of the core hooks module need no Bun and no Node.js, because Claude Code runs them.
