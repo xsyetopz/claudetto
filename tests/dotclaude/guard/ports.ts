@@ -26,6 +26,7 @@ export const bare = tmpDir("dc-guard-ports-bare");
 /** A stub engine for the folder `cwd`, with the `stat` calls recorded in `stats`. */
 export const engineIn = (cwd: string, stats: string[] = []): EngineInterface =>
   ({
+    session: { cwd: async () => cwd },
     fs: {
       stat: async (file: string) => {
         stats.push(file);

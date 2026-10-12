@@ -3,9 +3,10 @@
 // The tier of each id is in `index.ts`, and every id here applies in every session.
 
 import { isForce, isRecursive, positionals } from "./args.ts";
+import { normPath } from "./norm.ts";
 import type { Matcher } from "./types.ts";
 
-/** The folders of the user and of the system, in the spelling that `norm` gives. */
+/** The folders of the user and of the system, in the spelling that `normPath` gives. */
 const ROOTS = new Set([
   "",
   "~",
@@ -33,19 +34,15 @@ const ROOTS = new Set([
 /** The folders of the user and of the system for the permission rule: the root and the home folder only. */
 const PERMISSION_ROOTS = new Set(["", "~", "$HOME", `\${HOME}`]);
 
-/** A path with its trailing `/*`, `/`, and `\` removed, so `/`, `/*`, `~/`, and `C:\` read as `""`, `~`, `~`, and `C:`. */
-const norm = (word: string): string =>
-  word.replace(/\/\*$/, "").replace(/[/\\]+$/, "");
+/** True when `path`, in normal form, is the `.git` folder of a repository, such as `.git`, `./.git`, or `repo/.git/`. */
+const isGitDir = (path: string): boolean =>
+  path === ".git" || path.endsWith("/.git");
 
-/** True when `path` is the `.git` folder of a repository, such as `.git`, `./.git`, or `repo/.git/`. */
-const isGitDir = (path: string): boolean => {
-  const t = path.replace(/\/+$/, "");
-  return t === ".git" || t.endsWith("/.git");
+/** True when a delete target is a system folder, a home folder, the root, or a `.git` folder, after `..` is resolved. */
+const isSystemTarget = (path: string): boolean => {
+  const n = normPath(path);
+  return ROOTS.has(n) || /^~[^/]*$/.test(n) || isGitDir(n);
 };
-
-/** True when a delete target is a system folder, the home folder, the root, or a `.git` folder. */
-const isSystemTarget = (path: string): boolean =>
-  ROOTS.has(norm(path)) || isGitDir(path);
 
 /** The disk tools that run on any disk: the file system makers, `fdisk`, and `parted`. */
 const DISK_TOOLS = new Set(["fdisk", "parted"]);
@@ -65,6 +62,11 @@ export const systemMatchers: Matcher[] = [
       "rm -rf C:\\Windows",
       "rm -rf .git",
       "rm -r -f .git/",
+      "rm -rf $HOME/..",
+      "rm -rf ~user",
+      "rm -rf /..",
+      "rm -rf /usr/./",
+      "rm -rf ~/x/../..",
     ],
     match: async (words) => {
       const [name = "", ...args] = words;
@@ -116,7 +118,7 @@ export const systemMatchers: Matcher[] = [
       return (
         (name === "chmod" || name === "chown") &&
         isRecursive(args) &&
-        positionals(args).some((w) => PERMISSION_ROOTS.has(norm(w)))
+        positionals(args).some((w) => PERMISSION_ROOTS.has(normPath(w)))
       );
     },
   },
