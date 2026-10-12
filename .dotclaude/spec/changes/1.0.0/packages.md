@@ -186,7 +186,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P19, P28, P34.
   Owns: the parts that the list names, and their tests.
   Verify: `just check`, and the token cost of each moved task before and after, with `dotclaude-usage`.
-- [ ] P36 `asks` on weaker checks: the `asks` slice asks only when a change weakens a check, and never for a read ([change](change.md), decisions, the user, 2026-10-12).
+- [x] P36 `asks` on weaker checks: the `asks` slice asks only when a change weakens a check, and never for a read ([change](change.md), decisions, the user, 2026-10-12).
   A change to a protected file that keeps or adds checks gets no ask, for `Edit`, `MultiEdit`, `Write`, and a shell edit in place.
   Deps: P06.
   Owns: the `asks` slice and its tests.
