@@ -28,8 +28,9 @@ The skill runs when the user types its command.
 
 Each `SKILL.md` has a front matter with `name`, `description`, and the keys that the skill needs.
 The keys that the six files use are `disable-model-invocation`, `argument-hint`, and `allowed-tools`.
-The `allowed-tools` value limits the commands and tools of the skill.
-For example, `hotfix` may run `dotclaude-spec record` and `git diff`, and it may not run other commands.
+The `allowed-tools` value pre-approves the commands and tools that it lists, so they run with no prompt.
+It does not deny the other tools.
+For example, `hotfix` pre-approves `dotclaude-spec record` and `git diff`, and the other commands follow the permission rules of the session.
 
 The body has a `<task>` part and a `<procedure>` part, or a `<steps>` part.
 The text `$ARGUMENTS` holds the words that the user types after the command.
