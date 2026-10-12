@@ -24,9 +24,9 @@ Each row gives the number, the title, and the page with the detail.
 | D16 | Request capture and the 30K start | [Prompt](Decisions-Prompt) |
 | D17 | Plugin and marketplace layout | [Layout](Decisions-Layout) |
 | D18 | Separation of concerns, size bounds, bound tiers | [Layout](Decisions-Layout) |
-| D19 | Runtimes | [Layout](Decisions-Layout) |
+| D19 | Runtimes | [Reversed](Decisions-Reversed#layout) |
 | D20 | Remove `dotclaude-modder` | [Layout](Decisions-Layout) |
-| D21 | Hand-off order | [Layout](Decisions-Layout) |
+| D21 | Hand-off order | [Reversed](Decisions-Reversed#layout) |
 | D22 | Context bound for subagents and the main session | [Tools](Decisions-Tools) |
 | D23 | Development frictions | [Layout](Decisions-Layout) |
 | D24 | Add-on plugins stay separate | [Layout](Decisions-Layout) |
