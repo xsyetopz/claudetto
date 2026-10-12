@@ -159,6 +159,74 @@
           }
         }
       }
+    },
+    {
+      "includes": ["**/slices/*/*.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["../**", "!../**/kernel/**"],
+                    "message": "A slice imports only `kernel/` and its own folder."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/slices/*/*/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["../../**", "!../**/kernel/**"],
+                    "message": "A slice imports only `kernel/` and its own folder."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/slices/*/domain/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["../../**", "!../**/kernel/**"],
+                    "message": "A slice imports only `kernel/` and its own folder."
+                  },
+                  {
+                    "group": ["**/adapters/**"],
+                    "message": "Domain code imports no adapter."
+                  },
+                  {
+                    "group": ["**/kernel/node/**"],
+                    "message": "Domain code imports no `kernel/node/`."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   ]
 }

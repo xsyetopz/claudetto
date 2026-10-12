@@ -56,7 +56,7 @@ test("rule 2: a feature importing another feature is a violation", () => {
   ]);
 });
 
-test("rule 3: a cli imports another feature, an entry point imports a hook folder, and a slice imports another slice, `lib`, and a feature", () => {
+test("rule 3: a cli imports another feature, and an entry point imports a hook folder", () => {
   const files = {
     [`${P}/features/reads/cli.ts`]:
       'import { x } from "../setup/rules.ts";\nimport { y } from "../reads/rules.ts";',
@@ -64,16 +64,11 @@ test("rule 3: a cli imports another feature, an entry point imports a hook folde
       'import { a } from "../features/guard/rules.ts";\nimport { b } from "../features/prompt/data.ts";\nimport { c } from "../lib/budget.ts";\nimport { d } from "../skills/setup/scripts/settings.ts";\nimport { e } from "../slices/prompt/adapters/mod.ts";\nimport { f } from "../kernel/slice.ts";\nimport { g } from "./legacy.ts";\nimport { h } from "./other.ts";',
     [`${P}/slices/prompt/slice.ts`]:
       'import { a } from "../../kernel/slice.ts";\nimport { b } from "./adapters/mod.ts";',
-    [`${P}/slices/prompt/adapters/mod.ts`]:
-      'import { a } from "../../../kernel/slice.ts";\nimport { b } from "../domain/apply.ts";\nimport { c } from "../../guard/slice.ts";\nimport { d } from "../../../lib/budget.ts";\nimport { e } from "../../../features/guard/rules.ts";',
   };
   expect(checkEntries(files)).toStrictEqual([
     `${P}/features/reads/cli.ts: cli imports ../setup/rules.ts, another feature`,
     `${P}/hooks/register.ts: entry point imports ../skills/setup/scripts/settings.ts, outside lib, features, slices, and kernel`,
     `${P}/hooks/register.ts: entry point imports ./other.ts, outside lib, features, slices, and kernel`,
-    `${P}/slices/prompt/adapters/mod.ts: slice prompt imports ../../guard/slice.ts, outside kernel and itself`,
-    `${P}/slices/prompt/adapters/mod.ts: slice prompt imports ../../../lib/budget.ts, outside kernel and itself`,
-    `${P}/slices/prompt/adapters/mod.ts: slice prompt imports ../../../features/guard/rules.ts, outside kernel and itself`,
   ]);
 });
 
