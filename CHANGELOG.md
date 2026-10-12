@@ -53,6 +53,24 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The shared prompt names `dotclaude-run-checks`, and it tells the agent to quote each command.
   The CLI exits 2 when an argument starts with `-`.
   The summary of a passing command shows its output when the output has at most 10 lines.
+- The `decide` slice of the core plugin asks Jev for each decision that facts settle.
+  The CLI `dotclaude-decide` calls the TypeSafe API.
+  When the TypeSafe client fails, for example with no key, an invalid key, or no balance, the decision goes to a small Claude model through `$.model.complete`.
+- The `prompt` slice gives each model its own system prompt variant.
+  It adds a block to the end of each subagent task prompt, and it sends a `context_management` section without compaction.
+- The `surface` slice shortens the descriptions of the tools `Agent`, `Bash`, `ListAgents`, and `Read`.
+  It drops some built-in agent types from the agent listing and from dispatch.
+- The `sembr` slice rewrites a Markdown file on `Write` and `Edit`, so each sentence starts on its own line.
+  In `Bash`, it rewrites the quoted text of `git commit` and `gh pr create` in the same way.
+- The output style `dotclaude:Concise` is based on the built-in Concise style.
+- The core plugin has the skills `/setup`, `/spec`, `/hotfix`, `/ship`, `/handoff`, and `/rules-creator`.
+  `/rules-creator` writes the rule files of `.claude/rules/`, with `paths` globs.
+- The `setup` slice reads the account type from `claude auth status --json`.
+  Pro is the baseline, and Max 5x and Max 20x get more parallel subagents and a higher effort.
+- The `setup` slice writes `autoMode` to the user settings, with `$defaults` in each list.
+  The `autoMode.allow` list lets the classifier run the removal of agent worktrees and of the Claude Code temp folder.
+- The `trim` slice turns off 10 built-in parts that no slice of dotclaude uses.
+  Each part has its env var or settings key.
 
 ### Changed
 
@@ -88,6 +106,17 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   Every other change asks.
   A format that the code cannot read asks.
   A shell edit in place, such as `sed -i`, of a protected file asks, because the text after the edit is not known before the command runs.
+- The status line is rebuilt.
+  It shows numbers and Unicode icons, a color scale, and a change segment with the count of done packages.
+  `NO_COLOR` turns off the colors and keeps the icons.
+- The settings snippet lists its top-level keys in the property order of the settings schema.
+  The keys of `env` are in alphabetical order.
+- The core plugin has six agents: `debugger`, `implementer`, `investigator`, `planner`, `researcher`, and `reviewer`.
+  Each agent file sets its own model and effort.
+- dotclaude writes its own files to `.dotclaude/`.
+  The `setup` slice adds the runtime paths of `.claude/` that git does not ignore to `.git/info/exclude`.
+- dotclaude uses the worktrees of Claude Code.
+  No file in `src/` runs `git worktree add`.
 
 ### Removed
 
@@ -95,6 +124,10 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The CLI `dotclaude-run-checks`, run through `Bash`, replaces it.
 - The classic `PreToolUse` hooks of the core plugin, in the `guard` and `surface` slices.
   The hooks module does their checks.
+- The OpenSpec workflow, with the `openspec/` folder and its skills.
+  The spec store and the `/spec` skill replace it.
+- The add-on `dotclaude-jev`.
+  Its decisions go to the `decide` slice of the core plugin.
 
 ## Older Releases
 
