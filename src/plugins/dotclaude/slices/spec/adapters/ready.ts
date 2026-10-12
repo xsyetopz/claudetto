@@ -1,6 +1,7 @@
 // `dotclaude-spec ready [<id>]`: the packages that can start now.
 // A package is ready when its lane is `planned`, each dep is `done`,
 // and its `owns` do not overlap the `owns` of a package in `doing` or `review`.
+// The printed set has no overlap: a package is skipped when its `owns` overlap a package printed before it.
 
 import { ownsOverlap } from "../domain/validate.ts";
 import { readBriefs, readEntries } from "./plan-files.ts";
@@ -25,14 +26,18 @@ export const readyCommand = async (
     const i = order.indexOf(pkg);
     return i < 0 ? order.length : i;
   };
-  const busy = packages.filter((p) =>
-    ["doing", "review"].includes(lanes[p.front.id] ?? ""),
-  );
+  const taken = packages
+    .filter((p) => ["doing", "review"].includes(lanes[p.front.id] ?? ""))
+    .map((p) => p.front.owns);
   const ready = packages
     .filter((p) => lanes[p.front.id] === "planned")
     .filter((p) => p.front.deps.every((d) => lanes[d] === "done"))
-    .filter((p) => !busy.some((b) => ownsOverlap(p.front.owns, b.front.owns)))
-    .sort((a, b) => rank(a.front.id) - rank(b.front.id));
+    .sort((a, b) => rank(a.front.id) - rank(b.front.id))
+    .filter((p) => {
+      if (taken.some((owns) => ownsOverlap(p.front.owns, owns))) return false;
+      taken.push(p.front.owns);
+      return true;
+    });
   if (ready.length === 0) {
     run.io.log(`No package of \`${id}\` is ready.`);
     return 0;

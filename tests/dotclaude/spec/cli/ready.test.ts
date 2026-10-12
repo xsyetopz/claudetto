@@ -41,3 +41,12 @@ test("ready stops on a change that does not exist", async () => {
   const root = await makePlan([{ id: "P01" }]);
   expect((await run(root, "ready", "nope")).code).toBe(1);
 });
+
+test("ready prints only the first of two planned packages whose owns overlap", async () => {
+  const root = await makePlan([
+    { id: "P01", owns: ["src/a/"] },
+    { id: "P02", owns: ["src/a/x.ts"] },
+    { id: "P03", owns: ["src/c/"] },
+  ]);
+  expect((await run(root, "ready", "c1")).out).toStrictEqual(["P01", "P03"]);
+});

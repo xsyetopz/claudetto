@@ -123,3 +123,11 @@ test("lane works in the main checkout and is refused in a linked worktree", asyn
     fs.rmSync(linked, { recursive: true, force: true });
   }
 });
+
+test("lane done ticks only the line of its own id when another id starts with it", async () => {
+  const root = await makePlan([{ id: "P11" }, { id: "P11a" }]);
+  expect((await run(root, "lane", "P11", "done")).code).toBe(0);
+  const list = await read(root, `${CHANGE}/packages.md`);
+  expect(list).toContain("- [x] P11 ");
+  expect(list).toContain("- [ ] P11a ");
+});
