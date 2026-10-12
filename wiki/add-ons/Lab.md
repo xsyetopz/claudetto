@@ -1,28 +1,22 @@
-# Lab: `dotclaude-lab`
+# Lab
 
-The plugin `dotclaude-lab` holds tools for plugin authors.
-It has four bins and one skill.
-It registers no hook and adds no tool.
-It works without the core plugin, and the repository `justfile` calls its bins.
-Nothing in it changes your own Claude Code config.
+The plugin `dotclaude-lab` has tools for plugin authors.
+It has four slices and one check.
+The slice `sandbox` runs Claude Code in a config folder apart from yours (`dotclaude-sandbox`).
+The slice `capture` logs the requests of Claude Code (`dotclaude-capture`).
+The slice `schema` writes the JSON Schema of `settings.json` (`dotclaude-schema`).
+The slice `eval-compare` compares the eval scores of two plugin folders (`dotclaude-eval-compare`).
+The check is the hook lab, which the repository runs with `just lab`.
+The plugin works without the core plugin, and it imports nothing from another plugin.
 
-## At a glance
+The source is in `src/plugins/dotclaude-lab/`.
+The plugin has no `limits.ts` file.
 
-| Item | Value |
-| --- | --- |
-| Install | `/plugin install dotclaude-lab@dotclaude`, with Bun 1.4.3 or later |
-| Skills | `eval-compare`, user-invoked only |
-| Bins | `dotclaude-sandbox`, `dotclaude-capture`, `dotclaude-schema`, and `dotclaude-eval-compare`, in `bin/` |
-| Hooks | None |
-| Options | None. The bins take flags |
-| Limits | `dotclaude-eval-compare` adds `--max-cost-usd 5` for a run that sets no bound |
-| Problems | See [Troubleshooting](#troubleshooting) |
+## Install
 
-## Bins
+Install the plugin with `/plugin install dotclaude-lab@dotclaude`.
 
-### `dotclaude-sandbox`
-
-Runs Claude Code in a config directory apart from your own, so a test cannot change your settings, sessions, or plugins.
+## The sandbox
 
 ```text
 dotclaude-sandbox [--dir DIR] [claude arguments...]
@@ -30,81 +24,82 @@ dotclaude-sandbox [--dir DIR] --clean
 dotclaude-sandbox [--dir DIR] --check-frontmatter ...
 ```
 
-- `--dir DIR` sets the sandbox directory.
-  The default is `dotclaude-sandbox` in the temp folder.
-  The directory holds `config/` (`CLAUDE_CONFIG_DIR`), `project/` (an empty git repository), and `home/` (the `HOME` of `claude`).
-- The bin loads no plugin by itself.
-  Pass `--plugin-dir DIR` once for each plugin folder.
-- `--clean` removes the sandbox.
-- `--check-frontmatter` runs one headless session with a debug log, and exits 1 when the log names an unknown field.
-- The login is `CLAUDE_CODE_OAUTH_TOKEN`, or your own login token, which goes to `claude` in its environment only.
+The sandbox runs Claude Code in a config folder apart from yours.
+A test of a plugin then cannot change your settings, sessions, or installed plugins (the header of `slices/sandbox/adapters/cli.ts`).
+The first form sets up the folder, then runs `claude`.
+The second form removes the folder.
+The third form runs one headless session with a debug log, and prints each line that names an unknown field.
 
-See [Sandbox](Sandbox) for the full guide.
+The sandbox needs a login token.
+It takes the token from `CLAUDE_CODE_OAUTH_TOKEN`, then from the macOS Keychain entry `Claude Code-credentials`, then from `~/.claude/.credentials.json` (`loginToken` in `slices/sandbox/adapters/login.ts`).
+The child process drops the variables that the parent Claude Code session sets for its own tools, because in the sandbox they would join the parent session or fake its state (the comment in `slices/sandbox/adapters/login.ts`).
+The sandbox setup is in `slices/sandbox/adapters/setup.ts`.
+The sandbox run starts from `slices/sandbox/adapters/start-run.ts`.
 
-### `dotclaude-capture`
-
-A local logging proxy for the requests of Claude Code.
+## The capture proxy
 
 ```text
 dotclaude-capture [--port 8787] [--out DIR] [--upstream URL] [--no-count] [--count FILE]
+ANTHROPIC_BASE_URL=http://127.0.0.1:8787 claude
 ```
 
-- `--upstream URL` sets the upstream.
-  Without it, the upstream is `ANTHROPIC_BASE_URL`, then `https://api.anthropic.com`.
-  The proxy stops when the upstream is its own address, because requests would loop.
-- `--out DIR` sets the folder for the request bodies and the report.
-  The default is `dotclaude-capture` in the temp folder.
-- It never writes a request header, because the headers carry the credential.
-- For the first request with tools, it sizes each part with the `count_tokens` endpoint.
-  `--no-count` turns this off, and `--count FILE` sizes `FILE` instead.
+The proxy forwards each request to the upstream, and it writes the body of each `/v1/messages` request to `DIR`.
+The default folder is `$TMPDIR/dotclaude-capture`.
+The default upstream is `https://api.anthropic.com` (`DEFAULT` in `slices/capture/domain/upstream.ts`).
+The proxy accepts a loopback upstream only, which is the set `LOOPBACK` in `slices/capture/domain/upstream.ts`.
+The report sizes a text by section when the text is longer than `SPLIT_CHARS` characters (`slices/capture/domain/report.ts`).
 
-### `dotclaude-schema`
+The types of the capture are in `slices/capture/domain/types.ts`, and the report is in `slices/capture/domain/report.ts`.
 
-Writes the JSON Schema of `settings.json` from the installed Claude Code bundle.
+## The schema writer
 
 ```text
 dotclaude-schema --out DIR [--bundle FILE] [--version X.Y.Z]
 ```
 
-`--out` is required.
-The bin reads the bundle and never changes it.
-See [Settings schema](Settings-Schema).
+The writer reads the installed Claude Code bundle, and it writes the JSON Schema of `settings.json` and of `managed-settings.json`.
+The option `--out` is required, so the command never writes into a folder by chance (the header of `slices/schema/adapters/cli.ts`).
+The managed-only keys are in `MANAGED_ONLY` in `slices/schema/domain/managed.ts`.
+The schema build follows the references of the bundle to a depth of `DEPTH_MAX` levels, and it stops at a loop (`slices/schema/domain/types.ts`).
+The scan of the bundle is in `slices/schema/domain/scan.ts`.
 
-### `dotclaude-eval-compare`
+The repository forbids a patch of the Claude Code CLI binary or its npm package, so the writer only reads the bundle (`CLAUDE.md`).
 
-Runs `claude plugin eval` on two plugin folders, one after the other.
+## The eval compare
 
 ```text
 dotclaude-eval-compare A B [claude plugin eval options...]
 ```
 
-Each run scores a plugin arm against the same no-plugin baseline arm, so the `WITH` column of the two tables shows which folder scores better.
-Each run costs money, so the bin adds `--max-cost-usd 5` when the options set no bound.
-The bin adds no `--scaffold` and no `--allow-tools`, because each one runs the scripts or the tools of a suite as you.
-Add them in the options only for suites that you trust.
-`just eval-variant` adds both, because the suite of this repository needs them.
-The results stay in `evals/results/` of each plugin folder.
-See [Evals](Evals).
+The command runs `claude plugin eval` on the plugin folders `A` and `B`, one after the other.
+Each run scores a plugin arm against the same no-plugin baseline arm (the header of `slices/eval-compare/adapters/cli.ts`).
+The comparison is in `slices/eval-compare/domain/compare.ts`.
+The skill `eval-compare` runs the command.
 
-## Skill
+## The hook lab
 
-`eval-compare` is user-invoked only (`disable-model-invocation: true`), so it has no listing line.
-It confirms the two folders with you, runs `dotclaude-eval-compare`, and compares the `WITH` columns case by case.
-The skill grants no tool, so Claude Code asks you before each run.
-When a run stops at the cost bound, Claude stops and tells you, and it does not raise the bound without you.
+The command `just lab` runs `bun tools/lab.ts`.
+It runs the tests of the hooks module of each plugin, with stubbed Claude Code events.
+The lab tests are in the `lab/` folders of the slices, for example `slices/graph/lab/tree-change.test.ts` in the code-graph plugin.
+Run `just lab` before a live session when a change touches `hooks/register.ts`.
+
+## Why
+
+- The sandbox keeps a test from changing the settings and the sessions of the user.
+- The schema comes from the installed bundle.
+  See D10 in [Decisions-Settings](Decisions-Settings).
+- The evals run through `claude plugin eval`.
+  See D9 in [Decisions-Tools](Decisions-Tools).
+- The reports state measurements.
+  See D27 in [Decisions-Evidence](Decisions-Evidence).
+- Each add-on stays a separate plugin.
+  See D24 in [Decisions-Layout](Decisions-Layout).
 
 ## Troubleshooting
 
-See [Sandbox](Sandbox#troubleshooting) for the sandbox problems, and [Troubleshooting](Troubleshooting#dotclaude-lab) for the list.
-
 | Symptom | Cause and fix |
 | --- | --- |
-| `dotclaude-schema` stops with an error that names a version | The script has no type table for that Claude Code version, and it writes no file. |
-| `dotclaude-eval-compare` prints a usage message and exits 2 | One of the two folders is missing, or it starts with `-`. |
+| The sandbox has no login | Set `CLAUDE_CODE_OAUTH_TOKEN`, or log in to Claude Code so that the token is in the Keychain or in `~/.claude/.credentials.json`. |
+| `dotclaude-schema` needs an output | The command needs `--out DIR`. Pass it. |
 
-## Related pages
-
-- [Sandbox](Sandbox)
-- [Settings schema](Settings-Schema)
-- [Evals](Evals)
-- [Development](Development)
+See also [Troubleshooting](Troubleshooting).
