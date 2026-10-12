@@ -15,7 +15,7 @@ This page lists each layer, what to do when one fires, and how to change one.
 | --- | --- | --- |
 | Permission rules | `permissions` in the [settings snippet](Settings-Snippet), copied by you into your `settings.json` | Deny, ask, and allow lists for tools and commands. |
 | Sandbox | `sandbox` in the same snippet | Runs Bash commands in the Claude Code sandbox, with a list of allowed domains. |
-| Module guard | `src/plugins/dotclaude/slices/guard/` (`slice.ts`, `adapters/mod.ts`, `domain/guard.ts`, `domain/matchers/`) | One `tool.check` handler for the policy ask and the adherence ask. |
+| Module guard | `src/plugins/dotclaude/slices/guard/` (`slice.ts`, `adapters/mod.ts`, `domain/guard.ts`, `domain/matchers/`) | A `tool.call` handler for the destructive floor and the file-print deny, and a `tool.check` handler for the policy ask. The `asks` slice (`src/plugins/dotclaude/slices/asks/`) adds an ask before a call that discards work, skips a test, or changes a protected file. |
 | Destructive floor | The `autoMode` lists in your user settings, and the `guard` hook | Asks for root rights, and forbids destructive work. See [The destructive floor](#the-destructive-floor). |
 
 Deny rules are not a security boundary on their own, so the snippet pairs them with the sandbox ([Design](Design)).
@@ -25,9 +25,12 @@ Deny rules are not a security boundary on their own, so the snippet pairs them w
 | List | What it holds |
 | --- | --- |
 | deny | Reads of secret files, `rm -rf` of `/`, `/*`, `~`, and `~/*`, `mkfs`, `dd` to a device, the `general-purpose`, `claude-code-guide`, and `statusline-setup` agents (`Agent(...)`), the `mcp__computer-use` tools, and the tools `ScheduleWakeup`, `ReportFindings`, `EnterPlanMode`, `ExitPlanMode`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, and `TaskUpdate`. |
-| ask | Force pushes, a recursive `rm`, `git reset --hard`, `git clean`, `git branch -D`, `git checkout --`, `git restore`, piped shells, `sudo`, publishes, `gh pr` and `gh issue` writes, `gh release`, and SQL drops and truncates. |
+| ask | Force pushes, a recursive `rm`, `git reset --hard`, `git clean -f`, `git branch -D`, `git checkout --`, `git restore`, piped shells, `sudo`, publishes, `gh pr` and `gh issue` writes, `gh release`, and SQL drops and truncates. |
 | allow | Read-only `git` and `gh` commands, and the build and test runners (`bun`, `npm`, `pnpm`, `cargo`, `go`, `just`, `make`). |
 
+The floor denies some forms of the ask list before the ask appears.
+It denies `git reset --hard`, `git clean -f`, and `git branch -D` in every session.
+It denies `git checkout --` and `git restore` only for a whole folder.
 The snippet also sets `disableBypassPermissionsMode`, so no mode skips these rules.
 The exact patterns are in the [settings snippet](Settings-Snippet).
 These layers apply only to the keys that you copy, because dotclaude writes no setting.
@@ -140,8 +143,8 @@ See D2 in [Decisions](Decisions-Settings) and [Off switches](Off-Switches#manage
 
 ## The module guard
 
-`slice.ts` registers one `tool.check` handler, `onCheck` in `adapters/mod.ts`.
-It calls the engine first, and it returns a deny of the engine unchanged.
+`slice.ts` registers two handlers from `adapters/mod.ts`: `onBashCall` for `tool.call`, and `onCheck` for `tool.check`.
+`onCheck` calls the engine first, and it returns a deny of the engine unchanged.
 
 | Case | What the module does |
 | --- | --- |
@@ -153,7 +156,7 @@ The module has no `.catch`, so it fails open.
 When `gh` is missing or a call fails, the verdict of the engine stands.
 A call for the policy has a 5-second timeout.
 
-The tests of the module are in `plugins/dotclaude/tests/mod.test.ts`, and `just lab` runs them with stubbed events.
+The lab tests of the module are in `src/plugins/dotclaude/slices/guard/lab/`, and `just lab` runs them with stubbed events.
 No command runs in them.
 See [Development](Development).
 
@@ -174,7 +177,7 @@ An ask of a classic `PreToolUse` hook stops the call in auto mode (**measured**,
   Claude cannot repair a missing `bun`, so the guards fail open, and the permission rules and the sandbox still apply.
   The decision is D31 in `design.md` of the 0.28.0 change.
 
-The `git` ask in `features/adherence/git.ts` and the file-print deny in `features/reads/rules.ts` read commands with the shared reader `lib/shell.ts`.
+The `git` ask in `src/plugins/dotclaude/slices/asks/domain/git.ts` and the file-print deny in `src/plugins/dotclaude/slices/guard/domain/reads.ts` read commands with the shared reader `src/kernel/shell.ts`.
 It splits a command at `;`, `&&`, `||`, `|`, `&`, and newlines, and it reads `$(...)`, backticks, `sh -c`, `bash -c`, and `eval`.
 It strips wrapper commands such as `sudo`, `env`, `nice`, `timeout`, and `xargs`.
 
