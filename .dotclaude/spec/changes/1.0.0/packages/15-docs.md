@@ -130,7 +130,11 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    - [x] `Archive`
    - [x] `Home`, `Install`, `Quickstart`, `Troubleshooting`, `Attributions`, `README.md`, `docs/README.md`, the check of `CHANGELOG.md`
 3. Join the branches, run `just generate`, `bun run lint:md`, and `just check`.
+   - [x] Done on 2026-10-13 at `3433e8f7`: `just generate` changes no file, and `just check` passes.
 4. A reviewer pass for each section, then one run that fixes the list.
+   The sections of the pass: the start pages with `README.md` and `add-ons/`, `dotclaude/`, `claude-code/`, `rationale/` with `Decisions-Reversed`, `reference/` with `evidence/`, and `development/` with `CHANGELOG.md` and a light pass of `archive/`.
+   - [ ] The reviewer pass
+   - [ ] The fix run
 
 ## Findings outside the docs
 
