@@ -10,7 +10,8 @@ Rules of each wave:
   After each merge, the main session runs `just generate` and commits `plugins/`.
 - Two packages of one wave have no overlapping `owns`.
 - A wave starts when each package of the wave before it is `done` and `just check` passes on the merge.
-- Each package removes the 0.28.0 files and tests of its capability, and their lines in `tools/rebuild-pending.txt`.
+- Each package removes the 0.28.0 and 0.29.0 files, tests, and tools of its capability, and their lines in `tools/rebuild-pending.txt`.
+  A tool that [tree](tree.md) keeps by name is rebuilt too, because no 0.28.0 or 0.29.0 code stays (the user, 2026-10-12).
 - Each slice package owns `src/plugins/<plugin>/slices/<s>/` and `tests/<plugin>/<s>/`, has the agent `implementer`, and verifies with `just test tests/<plugin>/<s>` and `just lab`, unless its entry says otherwise.
 
 Critical path: P01a, P01b1 to P01b4, P05 and P06, P13, P14, P15, P16.
@@ -41,7 +42,7 @@ Critical path: P01a, P01b1 to P01b4, P05 and P06, P13, P14, P15, P16.
   Verify: `just test tests/tools` and `just check`.
 - [ ] P01b4 The checks: `useArrowFunction` at `error`, `tools/lint/arrow-functions.grit`, the import overrides, `src` in the lint and the type check, `just generate --check` in `just check`, the file-size rule in `just validate`, `AGENTS.md`, and `GEMINI.md` as a symlink to `AGENTS.md`.
   Deps: P01b3.
-  Owns: `biome.json`, `tools/lint/`, `tools/generate/emit/register.ts`, `tools/validate.ts`, `tools/limits.ts`, `tests/support/`, `package.json`, `tsconfig.json`, `AGENTS.md`, `GEMINI.md`.
+  Owns: `biome.json`, `tools/lint/`, `tools/generate/emit/register.ts`, `tools/validate.ts`, `tools/limits.ts`, `tools/lab.ts`, `tools/recipes.ts`, `tools/sizes.ts`, `tests/support/`, `tests/dotclaude/settings-pin.test.ts`, `package.json`, `tsconfig.json`, `AGENTS.md`, `GEMINI.md`.
   Verify: `just check`, and `bunx biome lint` fails on a fixture with a `function` declaration and on one with a `function` expression.
 - [x] P01c Extract: the full texts and sizes of each built-in system prompt section, tool description, output style, compaction prompt, reminder, and listing of Claude Code 2.1.296, the prompt of `CLAUDE_CODE_SIMPLE` and `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`, and the id that the Mod API gives each part.
   It writes only to `external/cc-extract/2.1.296/`, and its report to `spec/changes/1.0.0/evidence/extract.md`, with no built-in text in the report.
@@ -103,6 +104,7 @@ Each package depends on P01b4.
 - [ ] P12 `dotclaude-lab` with `capture`, `sandbox`, `schema`, and `eval-compare`, and no import of another plugin.
   `schema` writes the exact keys and values of `settings.json` and `managed-settings.json` that the pinned binary reads, each with a short description ([workflow](workflow.md#settings-schemas)).
   Verify also: a test fails on a key in `schemas/` that the binary does not read.
+  Owns also: `tools/eval-variant.ts`, `tools/lock.ts`, `tools/measure.ts`, `tools/sandbox.ts`, `tools/start-run.ts`, and `tools/unsandboxed.ts`.
 
 Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
 
@@ -110,7 +112,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
 
 - [ ] P04 Workflow skills: `/spec`, `/hotfix`, and `/ship`.
   Deps: P03.
-  Owns: `src/plugins/dotclaude/slices/spec/skills/`.
+  Owns: `src/plugins/dotclaude/slices/spec/skills/`, `tools/bump-version.ts`, `tools/release.ts`, `tools/update.ts`.
   Verify: `just generate`, `just validate`, and a `reviewer` pass on the texts.
 - [ ] P13 `handoff`: the triggers, the handoff file, `/clear`, the resume, the `/handoff` skill, and `mainHandover`.
   Deps: P03, P05, P06, P07.
@@ -124,7 +126,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
 
 - [ ] P15 Docs: the wiki, the README, and a new CHANGELOG that starts at 1.0.0, with the numbers of P14.
   Deps: P14.
-  Owns: `wiki/`, `README.md`, `CHANGELOG.md`, `docs/`.
+  Owns: `wiki/`, `README.md`, `CHANGELOG.md`, `docs/`, `tools/wiki.ts`.
   Verify: `bun run lint:md`, and a `reviewer` pass.
 - [ ] P16 Release check: `tools/rebuild-pending.txt` is empty and deleted with its check, a `reviewer` pass on the full diff, `just check`, and one session in `just sandbox` that runs `/spec`, `/ship`, `/hotfix`, a decision, and a handoff.
   Deps: each package above.
