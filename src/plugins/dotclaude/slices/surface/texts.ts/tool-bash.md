@@ -10,5 +10,5 @@ Runs a bash command and returns its output.
 # Git
 - Interactive flags (`-i`) are not supported.
 - Use `gh` for GitHub.
-- Commit or push only when the user asks. If on the default branch, branch first.
-- End commit messages and PR bodies with the attribution lines of the system-reminder, when it has them.
+- Commit or push only when the user asks.
+  If on the default branch, branch first.

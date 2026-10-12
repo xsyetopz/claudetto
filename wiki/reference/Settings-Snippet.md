@@ -74,10 +74,6 @@ A test fails when the block holds a key of the [never-set list](Off-Switches#nev
     "DISABLE_ERROR_REPORTING": "1",
     "DISABLE_FEEDBACK_COMMAND": "1"
   },
-  "attribution": {
-    "commit": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
-    "pr": "🤖 Generated with [Claude Code](https://claude.com/claude-code)"
-  },
   "includeGitInstructions": false,
   "permissions": {
     "disableBypassPermissionsMode": "disable",

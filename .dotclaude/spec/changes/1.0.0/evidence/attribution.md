@@ -54,6 +54,19 @@ Our rule differs from `sro(e)` in one place.
 When the hook cannot name the model, the line says `Claude`,
 as the user decided, and not `Claude Code`.
 
+## Transcript route (P39, checked 2026-10-13): not used
+
+- The transcript file is `~/.claude/projects/<encoded cwd>/<sessionId>.jsonl`.
+  A subagent has `<sessionId>/subagents/agent-<agentId>.jsonl`.
+  On disk, an assistant row has `"model":"<id>"`, for example `claude-opus-5-5` and `claude-haiku-5-5`.
+- The hook can name both files: `$.session.id()`, `$.session.cwd()`, `$.env.get("HOME")`, and `agentId`.
+- The file port fails the tail read.
+  `$.fs.read` reads the whole file, and it rejects a file over 4 MiB.
+  A main-session transcript was 3.8 MB on 2026-10-13, so the read fails soon for a long session.
+- `$.session.messages()` has no model field on `SessionMessage` or `ApiMessage`.
+- Result: the route is not used.
+  The main session uses `$.session.model()`, and a subagent uses `Claude`.
+
 ## Decision
 
 - The commit line is `Co-Authored-By: <name> <noreply@anthropic.com>`.
