@@ -83,6 +83,15 @@ test("record writes a dated file and keeps a second record of the same text", as
   );
 });
 
+test("record writes the empty sections of a hotfix in order", async () => {
+  const root = await makeStore();
+  const r = await run(root, "record", "Fix the crash");
+  const headings = (await read(root, r.out[0] ?? ""))
+    .split("\n")
+    .filter((l) => l.startsWith("## "));
+  expect(headings).toStrictEqual(["## Cause", "## Fix", "## Check"]);
+});
+
 test("record stops with no text", async () => {
   const root = await makeStore();
   expect((await run(root, "record")).code).toBe(2);
