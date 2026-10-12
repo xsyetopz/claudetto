@@ -4,6 +4,7 @@
 // The functions are pure, and the ports of the file system and of the checkout come in through `ctx`.
 
 import { MATCHERS, tierOf } from "./matchers/index.ts";
+import { isAbsPath } from "./matchers/norm.ts";
 import type { Ctx, Kind, Tier } from "./matchers/types.ts";
 import { denyReason } from "./reason.ts";
 import { walk } from "./walk.ts";
@@ -15,7 +16,7 @@ export type GuardCtx = Ctx & { subagent: boolean };
 const under = (kind: Kind, dir: string | undefined): Kind =>
   dir === undefined
     ? kind
-    : (path) => kind(path.startsWith("/") ? path : `${dir}/${path}`);
+    : (path) => kind(isAbsPath(path) ? path : `${dir}/${path}`);
 
 /**
  * The deny reason of `command`, or null when no matcher whose tier applies matches one of its simple commands.

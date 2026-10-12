@@ -6,6 +6,7 @@
 
 import { parse } from "../../../../../kernel/shell.ts";
 import { baseName, stripWrappers } from "../../../../../kernel/wrappers.ts";
+import { isAbsPath } from "./matchers/norm.ts";
 
 /** One simple command: its words, and the folder that `git -C` set for it. */
 export type Simple = { words: string[]; dir: string | undefined };
@@ -21,7 +22,7 @@ const GIT_VALUES = new Set([
 
 /** The folder of `next`, under `base` when `next` is relative. */
 const joinDir = (base: string | undefined, next: string): string =>
-  base === undefined || next.startsWith("/") ? next : `${base}/${next}`;
+  base === undefined || isAbsPath(next) ? next : `${base}/${next}`;
 
 /** The words of `git` after its global options, with the folder of the last `-C`. */
 const gitOf = (argv: string[], dir: string | undefined): Simple => {

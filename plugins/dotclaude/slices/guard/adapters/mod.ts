@@ -19,7 +19,7 @@ import type { Handler } from "../../../kernel/slice.ts";
 import { lineCount } from "../../../kernel/text.ts";
 import { type Count, printReason } from "../domain/deny.ts";
 import { guardReason } from "../domain/guard.ts";
-import { normPath } from "../domain/matchers/norm.ts";
+import { isAbsPath, normPath } from "../domain/matchers/norm.ts";
 import type { PathKind } from "../domain/matchers/types.ts";
 import { askReason, LOGIN_ARGV, linesOf, ORGS_ARGV } from "../domain/owners.ts";
 import { printsOf } from "../domain/reads.ts";
@@ -69,6 +69,7 @@ const kindOf =
 /**
  * True when the folder `dir` (or the session folder when `dir` is unset, and a relative `dir` joins it) is in the main checkout.
  * The walk goes up to the first `.git`: a file means a linked worktree, a folder means the main checkout.
+ * A `\` is read as `/`, so a Windows path walks up like a POSIX one, and the walk ends at the drive root.
  * When no `.git` is found, the folder is not in a repository, and the branch switch stays allowed.
  */
 const isMainCheckout = async (
@@ -77,13 +78,14 @@ const isMainCheckout = async (
 ): Promise<boolean> => {
   const cwd = await $.session.cwd();
   const start =
-    dir === undefined || dir.startsWith("/") ? (dir ?? cwd) : `${cwd}/${dir}`;
-  let at = normPath(start);
+    dir === undefined || isAbsPath(dir) ? (dir ?? cwd) : `${cwd}/${dir}`;
+  let at = normPath(start.replace(/\\/g, "/"));
   for (;;) {
     const kind = await kindOf($)(`${at}/.git`);
     if (kind !== "missing") return kind === "folder";
-    if (at === "") return false;
-    at = at.slice(0, at.lastIndexOf("/"));
+    const cut = at.lastIndexOf("/");
+    if (cut < 0) return false;
+    at = at.slice(0, cut);
   }
 };
 

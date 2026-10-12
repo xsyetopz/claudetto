@@ -5,6 +5,13 @@
 const HOME = /^(~[^/]*|\$HOME|\$\{HOME\})(?=\/|$)/;
 
 /**
+ * True when `word` is absolute: a `/` or `\` root, a UNC path, or a drive root such as `C:\` or `C:/`.
+ * A Windows path has no `/`, so a join with a `/` must check this, not only the first character.
+ */
+export const isAbsPath = (word: string): boolean =>
+  /^(?:[\\/]|[A-Za-z]:[\\/])/.test(word);
+
+/**
  * The normal form of a path word: `""` is the root, `.` is the working directory, and a home word is kept.
  * A `..` that climbs above a home word gives the root, because the folder above the home folders is a system folder.
  */
