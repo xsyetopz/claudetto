@@ -6,7 +6,10 @@
 import type { Slice } from "../../kernel/slice.ts";
 import { onTreeChange } from "./adapters/mod.ts";
 import { TREE_CHANGE } from "./domain/graph.ts";
-import { BACKGROUND_SYNC_TIMEOUT_MS } from "./limits.ts";
+import {
+  BACKGROUND_SYNC_TIMEOUT_MS,
+  SESSION_START_HOOK_TIMEOUT_S,
+} from "./limits.ts";
 
 // The text `${CLAUDE_PLUGIN_ROOT}` stays in the command, and Claude Code fills it in at run time.
 const HOOK = `bun --no-env-file "\${CLAUDE_PLUGIN_ROOT}/slices/graph/adapters/hook.ts"`;
@@ -18,7 +21,7 @@ export const slice: Slice = {
     {
       event: "SessionStart",
       command: `${HOOK} session-start`,
-      timeout: 10,
+      timeout: SESSION_START_HOOK_TIMEOUT_S,
     },
     {
       event: "PostToolUse",
