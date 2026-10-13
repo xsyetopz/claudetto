@@ -4,9 +4,13 @@ import { expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { writeAtomic } from "../../src/kernel/node/fs.ts";
+import { RENAME_TRIES } from "../../src/kernel/budget.ts";
+import { writeAtomic, writeAtomicWith } from "../../src/kernel/node/fs.ts";
 
 const folder = (): string => fs.mkdtempSync(path.join(os.tmpdir(), "atomic-"));
+
+const failure = (code: string): Error =>
+  Object.assign(new Error(`${code}: the file is in use`), { code });
 
 test("`writeAtomic` replaces the text of a file and leaves only that file in its folder", async () => {
   const dir = folder();
@@ -44,3 +48,72 @@ test("`writeAtomic` fails and leaves no temp file when the folder of the file is
   expect(failed).toBe(true);
   expect(fs.readdirSync(dir)).toStrictEqual(["blocker"]);
 });
+
+test("`writeAtomicWith` retries a rename that fails with `EPERM` and then replaces the file", async () => {
+  const dir = folder();
+  const file = path.join(dir, "rate-limits.jsonl");
+  await Bun.write(file, "old");
+  let calls = 0;
+  const rename = async (from: string, to: string): Promise<void> => {
+    calls += 1;
+    if (calls <= 2) throw failure("EPERM");
+    await fs.promises.rename(from, to);
+  };
+  await writeAtomicWith(rename, file, "new");
+  expect(calls).toBe(3);
+  expect(await Bun.file(file).text()).toBe("new");
+  expect(fs.readdirSync(dir)).toStrictEqual(["rate-limits.jsonl"]);
+});
+
+test("`writeAtomicWith` rethrows the error after its last try and removes the temp file", async () => {
+  const dir = folder();
+  const file = path.join(dir, "rate-limits.jsonl");
+  await Bun.write(file, "old");
+  let calls = 0;
+  const rename = async (): Promise<void> => {
+    calls += 1;
+    throw failure("EBUSY");
+  };
+  let caught: unknown;
+  try {
+    await writeAtomicWith(rename, file, "new");
+  } catch (err) {
+    caught = err;
+  }
+  expect((caught as { code?: string }).code).toBe("EBUSY");
+  expect(calls).toBe(RENAME_TRIES);
+  expect(await Bun.file(file).text()).toBe("old");
+  expect(fs.readdirSync(dir)).toStrictEqual(["rate-limits.jsonl"]);
+});
+
+test("`writeAtomicWith` does not retry a rename that fails with another code", async () => {
+  const dir = folder();
+  const file = path.join(dir, "rate-limits.jsonl");
+  let calls = 0;
+  const rename = async (): Promise<void> => {
+    calls += 1;
+    throw failure("ENOENT");
+  };
+  await expect(writeAtomicWith(rename, file, "new")).rejects.toThrow("ENOENT");
+  expect(calls).toBe(1);
+  expect(fs.readdirSync(dir)).toStrictEqual([]);
+});
+
+test.skipIf(process.platform !== "win32")(
+  "`writeAtomic` replaces a file that another process holds open without delete share",
+  async () => {
+    const dir = folder();
+    const file = path.join(dir, "rate-limits.jsonl");
+    await Bun.write(file, "old");
+    const script = `$s = [System.IO.File]::Open('${file.replaceAll("'", "''")}', 'Open', 'Read', 'None'); [Console]::Out.WriteLine('open'); [Console]::Out.Flush(); Start-Sleep -Milliseconds 300; $s.Close()`;
+    const holder = Bun.spawn(["powershell", "-NoProfile", "-Command", script], {
+      stdout: "pipe",
+    });
+    const reader = holder.stdout.getReader();
+    await reader.read();
+    await writeAtomic(file, "new");
+    await holder.exited;
+    expect(await Bun.file(file).text()).toBe("new");
+    expect(fs.readdirSync(dir)).toStrictEqual(["rate-limits.jsonl"]);
+  },
+);

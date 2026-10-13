@@ -58,3 +58,12 @@ export const SHELL_SCAN_MAX_CHARS = 200_000;
  * A git command or a write form needs few words, and the bound keeps the cost linear in the length of the code.
  */
 export const CODE_COMMAND_MAX_WORDS = 32;
+
+/**
+ * The tries of a rename in `writeAtomic`, the first one included.
+ * On Windows, a rename over a file that another process holds open, such as an antivirus, an indexer, or an editor, can fail for a short time.
+ */
+export const RENAME_TRIES = 10;
+
+/** The wait in milliseconds between two tries of a rename in `writeAtomic`, so the total wait is short. */
+export const RENAME_WAIT_MS = 100;
