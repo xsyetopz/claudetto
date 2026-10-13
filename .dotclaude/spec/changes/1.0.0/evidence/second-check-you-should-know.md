@@ -84,10 +84,36 @@ The mod runtime has no test for this case in the lab.
 Not measured live.
 The separate call has the 5000 ms bound and the fork has the 6000 ms bound.
 
+## Live session
+
+The main session ran this check on 2026-10-13, on `p15` after the merge of P06 (`05fe29d3`).
+
+Method:
+
+1. `just generate` changed no file.
+2. `tmux new-session -d -s ysk -x 150 -y 45 "just sandbox-alone plugins/dcc-plugin-you-should-know"` started Claude Code v2.1.296 with this plugin only.
+3. `tmux send-keys` sent each prompt, and `tmux capture-pane -p` read the screen.
+
+Results:
+
+- Prompt 1 asked for `notes.txt` and `cat notes.txt`.
+  The `Write` and `Read` calls ran, and no band showed.
+  This is correct, because the rules of the prompt reply `NONE` for an action with no trade-off.
+- Prompt 2 asked for a `users` table with the password in a plain `TEXT` column.
+  After the turn ended, the band showed above the prompt with `You should know:`, the topic, `[ Give a heads-up ]`, and `[ Dismiss ]`.
+- The hotkey `1` closed the band and filled the prompt with a quote line, `>` and the topic.
+  The user can then add text to the note.
+- The added text and the topic went to the agent as one prompt.
+  The agent changed `users.sql` to an Argon2 hash and repeated a check word from the added text.
+- `onCheck` started the model call with no `await`, and the band showed after the hook returned.
+  So in this session the runtime did not cancel the unawaited call (finding 3).
+  This shows one session only, and the runtime rule stays undocumented.
+
 ## Not verified
 
-- The band look in a real session, and whether it interrupts the root orchestrator.
-- The heads-up press and the context note in a live session.
-  The lab stubs both.
+- Whether the band interrupts the root orchestrator.
+- The heads-up note through the `context` of `tool.call` in a live session.
+  The live press used the prompt fill, and the lab stubs the `context` path.
+- `[ Dismiss ]` and the clear of an ignored band at the next turn, in a live session.
+  The lab tests both.
 - The builtin's 6-step cadence.
-- Finding 3, in a live session.
