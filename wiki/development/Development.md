@@ -190,8 +190,10 @@ The workflows are in `.github/workflows/`.
 
 ## Releases
 
-1. Add each change under the `## [Unreleased]` heading of `CHANGELOG.md`.
-   `just bump` fails when that heading is missing.
+1. Add each change to `CHANGELOG.md`.
+   When the version in `package.json` has no tag yet, it is the release in progress, so add the change under the heading of that version.
+   Otherwise, add the change under the `## [Unreleased]` heading.
+   `just bump` fails when the `## [Unreleased]` heading is missing.
 2. Preview the bump, then bump the version.
    The level is `major`, `minor`, `patch`, or `X.Y.Z`.
 

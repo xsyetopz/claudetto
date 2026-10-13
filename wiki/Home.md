@@ -91,7 +91,8 @@ These are five of them.
 | [Release-History](Release-History) | What changed in each release, and why. |
 
 The [CHANGELOG](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md) lists each release.
-Its `[Unreleased]` section holds the changes that are not released yet.
+The section of the version in `package.json` holds the changes of the release in progress until that version has a tag.
+After the tag, the `[Unreleased]` section holds the new changes.
 
 ## Source Labels
 
