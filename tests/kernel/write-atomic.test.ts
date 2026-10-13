@@ -99,6 +99,46 @@ test("`writeAtomicWith` does not retry a rename that fails with another code", a
   expect(fs.readdirSync(dir)).toStrictEqual([]);
 });
 
+test("`writeAtomicWith` keeps the old text when a rename fails without a retry", async () => {
+  const dir = folder();
+  const file = path.join(dir, "settings.json");
+  await Bun.write(file, "old");
+  const rename = async (): Promise<void> => {
+    throw failure("ENOSPC");
+  };
+  await expect(writeAtomicWith(rename, file, "new")).rejects.toThrow("ENOSPC");
+  expect(await Bun.file(file).text()).toBe("old");
+  expect(fs.readdirSync(dir)).toStrictEqual(["settings.json"]);
+});
+
+test("`writeAtomic` writes through a symlink, so the link stays and the linked file gets the text", async () => {
+  const dir = folder();
+  const real = path.join(dir, "dotfiles-settings.json");
+  const link = path.join(dir, "settings.json");
+  await Bun.write(real, "old");
+  fs.symlinkSync(real, link);
+  await writeAtomic(link, "new");
+  expect(fs.lstatSync(link).isSymbolicLink()).toBe(true);
+  expect(fs.readFileSync(real, "utf8")).toBe("new");
+  expect(fs.readdirSync(dir).sort()).toStrictEqual([
+    "dotfiles-settings.json",
+    "settings.json",
+  ]);
+});
+
+test.skipIf(process.platform === "win32")(
+  "`writeAtomic` keeps the mode of the file it replaces",
+  async () => {
+    const dir = folder();
+    const file = path.join(dir, "settings.json");
+    await Bun.write(file, "old");
+    fs.chmodSync(file, 0o600);
+    await writeAtomic(file, "new");
+    expect(fs.statSync(file).mode & 0o777).toBe(0o600);
+    expect(await Bun.file(file).text()).toBe("new");
+  },
+);
+
 test.skipIf(process.platform !== "win32")(
   "`writeAtomic` replaces a file that another process holds open without delete share",
   async () => {

@@ -365,15 +365,16 @@ test("project and local settings get no `autoMode`", async () => {
     expect((await Bun.file(file).json()).autoMode).toBeUndefined();
 });
 
-test("`--apply` replaces `settings.json` as a whole file, so a hard link to the old file keeps the old text", async () => {
+test("`--apply` writes through a symlinked `settings.json` and keeps the link", async () => {
   const d = sandbox();
-  const old = JSON.stringify({ theme: "dark" });
-  await Bun.write(userFile(d), old);
-  const kept = path.join(d.config, "kept.json");
-  fs.linkSync(userFile(d), kept);
+  const real = path.join(d.config, "dotfiles-settings.json");
+  await Bun.write(real, JSON.stringify({ theme: "dark" }));
+  fs.symlinkSync(real, userFile(d));
   expect(run(d, ["--apply"]).status).toBe(0);
-  expect(await Bun.file(kept).text()).toBe(old);
-  expect((await readUser(d)).env.DISABLE_COMPACT).toBe("1");
+  expect(fs.lstatSync(userFile(d)).isSymbolicLink()).toBe(true);
+  expect(JSON.parse(fs.readFileSync(real, "utf8")).env.DISABLE_COMPACT).toBe(
+    "1",
+  );
 });
 
 test("`--apply` leaves no temp file next to `settings.json`", () => {
