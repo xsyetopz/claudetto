@@ -20,7 +20,7 @@ import {
   FORK_WAIT_MS,
   MAX_REPLY_TOKENS,
 } from "../limits.ts";
-import { bandOf, DISMISS, HEADS_UP } from "./band.ts";
+import { DISMISS, HEADS_UP } from "./band.ts";
 
 /** The session values that `types/index.d.ts` declares. */
 const TURN = { plugin: "dcc-plugin-you-should-know", key: "turn" } as const;
@@ -103,11 +103,23 @@ const notify = async (
   $.ui.invalidate("ui.render");
 };
 
-/** The `ui.render` hook of the band: the topic of the offer, drawn above the prompt. */
+/**
+ * The `ui.render` hook of the band: the topic of the offer, drawn above the prompt.
+ * The band draws the tree that `$.ui.resolve` builds, so the terminal and the desktop surfaces draw the same rows.
+ */
 export const onRender: Handler<"ui.render"> = async ($, e, next) => {
   const { value: offer } = await $.state.get(OFFER);
   if (offer === undefined || offer === null) return next(e);
-  return bandOf($, e, offer.topic);
+  const { Box, Text, Button } = $.ui.resolve(e);
+  return Box({
+    flexDirection: "column",
+    marginTop: 1,
+    children: [
+      Text({ wrap: "wrap", children: `You should know: ${offer.topic}` }),
+      Button({ key: HEADS_UP, label: "Give a heads-up", hotkey: "1" }),
+      Button({ key: DISMISS, label: "Dismiss", hotkey: "0" }),
+    ],
+  });
 };
 
 /** Clears the band, so that no choice of it is drawn again. */
