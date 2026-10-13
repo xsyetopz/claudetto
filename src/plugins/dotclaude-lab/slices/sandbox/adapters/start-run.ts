@@ -49,7 +49,12 @@ const pluginArgs = fs
   )
   .flatMap((d) => ["--plugin-dir", path.join(REPO, "plugins", d.name)]);
 
-run(path.join(LAB, "dotclaude-sandbox"), ["--dir", root, "--clean"]);
+// A folder that is not the sandbox layout is refused, and the session would not be clean.
+if (
+  run(path.join(LAB, "dotclaude-sandbox"), ["--dir", root, "--clean"])
+    .exitCode !== 0
+)
+  process.exit(1);
 
 const proxy = Bun.spawn(
   [

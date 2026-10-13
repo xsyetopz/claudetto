@@ -60,7 +60,12 @@ export const main = async (
     const i = args.indexOf(name);
     return i >= 0 ? args[i + 1] : fallback;
   };
-  const days = Number(opt("--days", "7"));
+  const daysArg = opt("--days", "7") ?? "";
+  const days = /^\d+$/.test(daysArg) ? Number(daysArg) : 0;
+  if (days < 1) {
+    console.error(`--days needs a positive whole number, not "${daysArg}".`);
+    return 2;
+  }
   const configDir =
     env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), ".claude");
   const root = opt("--root", path.join(configDir, "projects")) as string;

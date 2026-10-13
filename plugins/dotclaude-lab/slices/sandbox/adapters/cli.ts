@@ -34,6 +34,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { SANDBOX_TEMP } from "../../../kernel/temp-paths.ts";
+import { cleanRefusal } from "../domain/clean.ts";
 import { report } from "../domain/frontmatter.ts";
 import { cleanEnv, loginToken } from "./login.ts";
 import { runProgram } from "./run-program.ts";
@@ -66,6 +67,13 @@ export const main = async (argv: string[]): Promise<number> => {
     return 0;
   }
   if (args[0] === "--clean") {
+    const isDefault = root === path.resolve(os.tmpdir(), SANDBOX_TEMP);
+    const entries = fs.existsSync(root) ? fs.readdirSync(root) : [];
+    const refusal = cleanRefusal(root, entries, isDefault);
+    if (refusal) {
+      console.error(refusal);
+      return 1;
+    }
     fs.rmSync(root, { recursive: true, force: true });
     console.log(`Removed ${root}`);
     return 0;
