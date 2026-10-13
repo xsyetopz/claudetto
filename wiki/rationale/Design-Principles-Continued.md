@@ -86,10 +86,9 @@ Code that reads an old layout is code to keep.
 **How in the code:**
 
 - `SPEC_SCHEMA` in `src/kernel/spec-store.ts` is the number that the reader accepts.
-- `tools/rebuild-pending.txt` lists the files of the previous release that are still in `plugins/`.
-  `tools/generate/pending.ts` fails on any other file in `plugins/` that it did not write.
-  The list is temporary.
-  It is deleted when the rebuild ends.
+- `tools/generate/stray.ts` fails on each file in `plugins/` that the generator did not write.
+  During the rebuild, the list `tools/rebuild-pending.txt` named the files of the previous release that were still in `plugins/`.
+  P16 ported the last of them and deleted the list.
 
 ### 15. Plain Data, Arrow Functions, and Pure Domain Code
 

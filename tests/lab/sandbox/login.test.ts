@@ -33,7 +33,7 @@ process.stdout.write(JSON.stringify({ claudeAiOauth: { accessToken: t } }));
 
 type Setup = { dir: string; bin: string; home: string; out: string };
 
-async function setUp(): Promise<Setup> {
+const setUp = async (): Promise<Setup> => {
   const dir = tmpDir("lab-sandbox");
   const bin = path.join(dir, "bin");
   const home = path.join(dir, "home");
@@ -45,7 +45,7 @@ async function setUp(): Promise<Setup> {
   ] as const)
     await writeProgram(bin, name, text);
   return { dir, bin, home, out: path.join(dir, "out.json") };
-}
+};
 
 // The token values that the tests set.
 // A failed check must not print a real token, so `shown` gives a value only when it is one of these.
@@ -62,15 +62,15 @@ const shown = (token: string | undefined) =>
     ? token
     : "<a token that no test set>";
 
-async function writeCredentials(home: string, token: string) {
+const writeCredentials = async (home: string, token: string) => {
   await Bun.write(
     path.join(home, ".claude", ".credentials.json"),
     JSON.stringify({ claudeAiOauth: { accessToken: token } }),
   );
-}
+};
 
 /** Runs the tool. `extra` sets or (with `undefined`) removes environment variables. */
-async function run(s: Setup, extra: Env = {}, args: string[] = []) {
+const run = async (s: Setup, extra: Env = {}, args: string[] = []) => {
   const base = withPathFirst(process.env, s.bin);
   // An `extra.PATH` replaces the search path. Windows names it `Path`, so the old key goes first.
   if ("PATH" in extra)
@@ -99,14 +99,13 @@ async function run(s: Setup, extra: Env = {}, args: string[] = []) {
     fs.existsSync(s.out) ? JSON.parse(await Bun.file(s.out).text()) : null
   ) as Seen;
   return { r, seen, sandbox };
-}
+};
 
-function filesUnder(dir: string) {
-  return fs
+const filesUnder = (dir: string) =>
+  fs
     .readdirSync(dir, { recursive: true, withFileTypes: true })
     .filter((e) => e.isFile())
     .map((e) => path.join(e.parentPath, e.name));
-}
 
 test("the env token wins over the Keychain and the credentials file", async () => {
   const s = await setUp();

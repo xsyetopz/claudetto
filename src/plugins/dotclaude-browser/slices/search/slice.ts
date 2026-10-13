@@ -9,6 +9,18 @@ export const slice: Slice = {
   mod: [
     {
       event: "tool.call",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: true,
+        allow:
+          "plugins/dotclaude-browser/tests/web-search.test.ts > a call of another tool is not touched",
+        text: "plugins/dotclaude-browser/tests/web-search.test.ts > when the read gives no text with exit 0, the built-in `WebSearch` answers",
+        block:
+          "plugins/dotclaude-browser/tests/web-search.test.ts > with the `cloakbrowser` backend and no binary, the call is denied and no browser starts",
+        false:
+          "plugins/dotclaude-browser/tests/web-search.test.ts > with the add-on, the result comes from the headless browser",
+      },
       filter: { tool: "WebSearch" },
       phase: "answer",
       run: onSearch,

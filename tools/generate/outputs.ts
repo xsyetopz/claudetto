@@ -9,7 +9,7 @@ import { registerOf } from "./emit/register.ts";
 import { slicesOf } from "./emit/slices.ts";
 import { snippetParts } from "./emit/snippet.ts";
 import { type Output, outputs, stale } from "./emit/texts.ts";
-import { unlisted } from "./pending.ts";
+import { strays } from "./stray.ts";
 
 /** Each generated file of the repository `root`. It throws when two sources make one file. */
 export const generated = async (root: string): Promise<Output[]> => {
@@ -36,13 +36,13 @@ export const generated = async (root: string): Promise<Output[]> => {
   return made;
 };
 
-/** The messages for each file of `root` that differs from `made`, and for each file in `plugins/` that has no source and no line in the rebuild list. */
+/** The messages for each file of `root` that differs from `made`, and for each file in `plugins/` that the generator did not write. */
 export const problems = async (
   root: string,
   made: Output[],
 ): Promise<string[]> => [
   ...(await stale(root, made)),
-  ...(await unlisted(
+  ...(await strays(
     root,
     made.map((o) => o.file),
   )),

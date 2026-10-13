@@ -1,6 +1,6 @@
 // A repository root for the tests of the slice step of `tools/generate/`:
 // a copy of `fixture/` in a new temporary folder, with a `package.json` and a git repository.
-// The git repository lets the rebuild-list check list the files of `plugins/`.
+// The git repository lets the stray-file check list the files of `plugins/`.
 
 import fs from "node:fs";
 import path from "node:path";

@@ -5,7 +5,7 @@ import { expect, test } from "bun:test";
 import path from "node:path";
 import { importsOf } from "../../../tools/generate/closure.ts";
 import { isGenerated } from "../../../tools/generate/emit/texts.ts";
-import { generated, problems } from "../../../tools/generate/outputs.ts";
+import { generated } from "../../../tools/generate/outputs.ts";
 import { fixtureRoot, textOf, VERSION, write } from "./fixture.ts";
 
 type Handler = (...args: unknown[]) => unknown;
@@ -212,22 +212,6 @@ test("a slice that imports a file outside its folder and outside `src/kernel/` i
   await expect(generated(dir)).rejects.toThrow(
     /^src\/plugins\/p\/slices\/alpha\/domain\/bad\.ts: /,
   );
-});
-
-test("a file in `plugins/` with no source fails the check until the rebuild list names it or its folder", async () => {
-  const dir = await fixtureRoot();
-  const made = await generated(dir);
-  await write(dir, made);
-  expect(await problems(dir, made)).toStrictEqual([]);
-  await Bun.write(path.join(dir, "plugins/p/old/stray.md"), "Old.\n");
-  const found = await problems(dir, made);
-  expect(found).toHaveLength(1);
-  expect(found[0]).toStartWith("plugins/p/old/stray.md ");
-  await Bun.write(
-    path.join(dir, "tools/rebuild-pending.txt"),
-    "# P99\nplugins/p/old/\n",
-  );
-  expect(await problems(dir, made)).toStrictEqual([]);
 });
 
 test("the manifest takes the version from `package.json` and the `userConfig` from the slices", async () => {

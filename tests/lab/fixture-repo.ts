@@ -31,28 +31,28 @@ process.exit(Number(process.env.FAKE_EXIT ?? 0));
  * Runs `cmd` with `args` through `Bun.spawnSync`, and gives the exit code and the text output.
  * The shape is the one of `spawnSync` with `encoding: "utf8"`, so each caller reads `status`, `stdout`, and `stderr`.
  */
-export function spawnText(
+export const spawnText = (
   cmd: string,
   args: string[],
   options: { env?: Env; cwd?: string } = {},
-) {
+) => {
   const r = Bun.spawnSync([cmd, ...args], options);
   return {
     status: r.exitCode,
     stdout: r.stdout.toString(),
     stderr: r.stderr.toString(),
   };
-}
+};
 
-export function git(cwd: string, ...args: string[]) {
+export const git = (cwd: string, ...args: string[]) => {
   const r = spawnText("git", ["-C", cwd, ...args]);
   expect(r.status, r.stderr).toBe(0);
   return r.stdout;
-}
+};
 
 /** The repository of a test, with one commit and a branch. A copy of the template, because each `git` call costs most of the time on Windows. */
 let template: string | undefined;
-async function templateRepo() {
+const templateRepo = async () => {
   if (template) return template;
   const repo = path.join(tmpDir("lab-variant-template"), "repo");
   for (const d of [
@@ -86,9 +86,9 @@ async function templateRepo() {
   git(repo, "branch", "feature/x+y");
   template = repo;
   return repo;
-}
+};
 
-export async function setUp(): Promise<Sandbox> {
+export const setUp = async (): Promise<Sandbox> => {
   const dir = tmpDir("lab-variant");
   const repo = path.join(dir, "repo");
   const bin = path.join(dir, "bin");
@@ -97,10 +97,10 @@ export async function setUp(): Promise<Sandbox> {
   fs.cpSync(await templateRepo(), repo, { recursive: true });
   await writeProgram(bin, "claude", FAKE_CLAUDE);
   return { repo, bin, tmp };
-}
+};
 
-export function run(s: Sandbox, ref: string, exit: number) {
-  return spawnText(
+export const run = (s: Sandbox, ref: string, exit: number) =>
+  spawnText(
     process.execPath,
     ["--no-env-file", path.join(s.repo, "tools/eval-variant.ts"), ref],
     {
@@ -111,7 +111,6 @@ export function run(s: Sandbox, ref: string, exit: number) {
       },
     },
   );
-}
 
 export const worktrees = (s: Sandbox) =>
   git(s.repo, "worktree", "list", "--porcelain")

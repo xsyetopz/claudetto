@@ -4,7 +4,7 @@
 //   bun tools/generate/index.ts           write each generated file
 //   bun tools/generate/index.ts --check   exit 1 and name each generated file that differs from its source
 //
-// Both modes also exit 1 and name each file in `plugins/` that has no source and that `tools/rebuild-pending.txt` does not name.
+// Both modes also exit 1 and name each file in `plugins/` that the generator did not write.
 
 import fs from "node:fs";
 import path from "node:path";

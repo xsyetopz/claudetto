@@ -28,8 +28,8 @@ The explanation of the layers that the rebuild replaces is in [Decisions: Layout
 **Evidence:**
 
 - `.dotclaude/spec/changes/1.0.0/change.md`, the section "Why" and the user decisions of 2026-10-12.
-- Status: `tools/rebuild-pending.txt` lists 11 paths that no package has removed or ported yet.
-  P16 checks that the list is empty.
+- Status: the rebuild list `tools/rebuild-pending.txt` named the paths that no package had removed or ported yet.
+  P16 ported the last of them, and deleted the list and its check.
 
 ## D37 Ports and Adapters Inside Vertical Slices
 
