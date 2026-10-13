@@ -55,17 +55,19 @@ export const preflight = async (opts: {
 };
 
 /**
- * Makes the tag of each plan with `tagDir`, in order.
- * When a step fails, it deletes the tags of `plans` that exist now, because the
+ * Makes the tag of each plan with `tagDir`, in order, and then runs `push`.
+ * When a step or the push fails, it deletes the tags of `plans` that exist now, because the
  * preflight showed that none of them existed before this run, and it fails too.
  */
 export const makeTags = async (
   root: string,
   plans: Plan[],
   tagDir: (dir: string) => Promise<void>,
+  push: () => Promise<void> = async () => {},
 ): Promise<void> => {
   try {
     for (const { dir } of plans) await tagDir(dir);
+    await push();
   } catch (err) {
     for (const { tag } of plans) {
       if (await tagExists(root, tag))

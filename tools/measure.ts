@@ -2,7 +2,7 @@
 // Runs `dotclaude-start` of the plugin `dotclaude-sessions` with the start bounds of this repository.
 // The bounds are in `tools/limits.ts`, so the plugin holds no bound of this repository.
 //
-//   node tools/measure.ts [SESSION.jsonl] [dotclaude-start options...]
+//   bun tools/measure.ts [SESSION.jsonl] [dotclaude-start options...]
 
 import path from "node:path";
 import {

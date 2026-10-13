@@ -1,7 +1,6 @@
 // Behavior of the checks that `tools/release.ts` runs before its first tag, and of the rollback of its tags, in a temporary git repository.
 
 import { expect, test } from "bun:test";
-import fs from "node:fs";
 import path from "node:path";
 import { $ } from "bun";
 import {
@@ -9,13 +8,13 @@ import {
   type Plan,
   preflight,
   tagExists,
-} from "../../tools/release-checks.ts";
+} from "../../tools/preflight.ts";
 import { tmpDir } from "../support/repo.ts";
 
 const committedRepo = async (): Promise<string> => {
-  const root = tmpDir("release-checks");
+  const root = tmpDir("preflight");
   await $`git init -q`.cwd(root);
-  fs.writeFileSync(path.join(root, "a.txt"), "a\n");
+  await Bun.write(path.join(root, "a.txt"), "a\n");
   await $`git add a.txt`.cwd(root);
   await $`git -c user.name=t -c user.email=t@example.com -c commit.gpgsign=false commit -qm init`.cwd(
     root,
@@ -35,7 +34,7 @@ test("a clean repository with no tag of the release and matching generated files
 
 test("an uncommitted change stops the preflight", async () => {
   const root = await committedRepo();
-  fs.writeFileSync(path.join(root, "a.txt"), "changed\n");
+  await Bun.write(path.join(root, "a.txt"), "changed\n");
   const problems = await preflight({
     root,
     tags: ["v1-a"],
@@ -46,7 +45,7 @@ test("an uncommitted change stops the preflight", async () => {
 
 test("an untracked file stops the preflight", async () => {
   const root = await committedRepo();
-  fs.writeFileSync(path.join(root, "new.txt"), "new\n");
+  await Bun.write(path.join(root, "new.txt"), "new\n");
   const problems = await preflight({
     root,
     tags: ["v1-a"],
@@ -88,6 +87,27 @@ test("a failed tag step deletes the tags that the run made, and then fails", asy
   };
   await expect(makeTags(root, plans, tagDir)).rejects.toThrow(
     "tag step failed",
+  );
+  expect(await tagExists(root, "t-a")).toBe(false);
+  expect(await tagExists(root, "t-b")).toBe(false);
+});
+
+test("a failed push deletes the tags that the run made, and then fails", async () => {
+  const root = await committedRepo();
+  const plans: Plan[] = [
+    { dir: "plugins/a", tag: "t-a" },
+    { dir: "plugins/b", tag: "t-b" },
+  ];
+  const tagDir = async (dir: string) => {
+    await $`git -c tag.gpgsign=false tag ${dir === "plugins/a" ? "t-a" : "t-b"}`.cwd(
+      root,
+    );
+  };
+  const push = async () => {
+    throw new Error("push failed");
+  };
+  await expect(makeTags(root, plans, tagDir, push)).rejects.toThrow(
+    "push failed",
   );
   expect(await tagExists(root, "t-a")).toBe(false);
   expect(await tagExists(root, "t-b")).toBe(false);

@@ -1,11 +1,11 @@
 // Tags each plugin of `plugins/` at HEAD and pushes all tags in one atomic push (`just release`).
 // Before the first tag, it checks the tree, the generated files, and the tag names, and it stops when one fails.
-// If a tag step fails, it deletes the tags that it made.
+// If a tag step or the push fails, it deletes the tags that it made.
 // With `--dry-run`, it prints the tags and stops.
 
 import { $ } from "bun";
+import { makeTags, type Plan, preflight } from "./preflight.ts";
 import { must, output, pluginDirs, REPO, recipe } from "./recipes.ts";
-import { makeTags, type Plan, preflight } from "./release-checks.ts";
 
 /** True when `bun tools/generate/index.ts --check` (`just generate --check`) passes. */
 const generatedOk = async (): Promise<boolean> =>
@@ -33,8 +33,16 @@ await recipe(async () => {
   }
   console.log(`Tags: ${tags.join(" ")}`);
   if (Bun.argv[2] === "--dry-run") return;
-  await makeTags(REPO, plans, async (dir) => {
-    await must($`claude plugin tag ${dir}`);
-  });
-  await must($`git push --atomic origin ${tags.map((t) => `refs/tags/${t}`)}`);
+  await makeTags(
+    REPO,
+    plans,
+    async (dir) => {
+      await must($`claude plugin tag ${dir}`);
+    },
+    async () => {
+      await must(
+        $`git push --atomic origin ${tags.map((t) => `refs/tags/${t}`)}`,
+      );
+    },
+  );
 });

@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bun --no-env-file
 // Stops an eval run that starts inside the Bash sandbox of Claude Code, before it spends money.
 //
-//   node tools/unsandboxed.ts   exit 0 outside the sandbox, else print the reason and exit 1
+//   bun tools/unsandboxed.ts   exit 0 outside the sandbox, else print the reason and exit 1
 //
 // The sandbox sends the model calls of each child session through its proxy on `localhost`.
 // In the run of 2026-10-10 from `! just eval`, 10 runs stopped on a model call (`api_retry`, or a stream cut off)
