@@ -99,14 +99,54 @@ const cdOf = (argv: string[]): { dir: string | undefined } | null => {
   return { dir: operand === "" || operand === "-" ? undefined : operand };
 };
 
+/** An unquoted `$IFS` or `${IFS...}`, which bash expands to a separator. */
+const IFS_REF = /\$IFS(?![A-Za-z0-9_])|\$\{IFS[^}]*\}/;
+
+/**
+ * The words of `word` that a separator splits, as bash splits an unquoted expansion.
+ * `git${IFS}reset` is `git reset` to bash, so the guard reads it as two words.
+ * A word without the reference stays as it is, so `""` keeps its place.
+ */
+const splitIfs = (word: string): string[] =>
+  IFS_REF.test(word) ? word.split(IFS_REF).filter((w) => w !== "") : [word];
+
+/** `name=value` in an `alias` word. */
+const ALIAS_DEF = /^([A-Za-z_][\w.-]*)=(.*)$/;
+
+/**
+ * The words of `argv` with an alias of this text in place of its name.
+ * `alias` sets the aliases of the text, as the shell snapshot of Claude Code enables `expand_aliases`.
+ * So `alias g=git; g reset --hard` reads as `git reset --hard`.
+ */
+const withAliases = (
+  argv: string[],
+  aliases: Map<string, string[]>,
+): string[] => {
+  if (argv[0] === "alias") {
+    for (const word of argv.slice(1)) {
+      const [, name = "", value = ""] = ALIAS_DEF.exec(word) ?? [];
+      if (name !== "")
+        aliases.set(
+          name,
+          value.split(/\s+/).filter((w) => w !== ""),
+        );
+    }
+    return argv;
+  }
+  const body = aliases.get(argv[0] ?? "");
+  return body === undefined ? argv : [...body, ...argv.slice(1)];
+};
+
 /**
  * The simple commands of a `Bash` text, after `parse` and the unwrapping of each wrapper.
  * A `cd` sets the folder of the commands after it, so `cd <dir> && rm ...` reads `rm` under `<dir>`.
  */
 export const walk = (command: string): Simple[] => {
   const out: Simple[] = [];
+  const aliases = new Map<string, string[]>();
   let dir: string | undefined;
-  for (const argv of parse(command).commands) {
+  for (const parsed of parse(command).commands) {
+    const argv = withAliases(parsed.flatMap(splitIfs), aliases);
     const cd = cdOf(argv);
     if (cd) {
       dir = cd.dir === undefined ? undefined : joinDir(dir, cd.dir);
