@@ -59,17 +59,22 @@ export const refusal = (word: string): string | undefined => {
  * On Windows, npm installs a command such as `claude` as a `.cmd` file, and a `.cmd` file runs only through a shell.
  * That path quotes each word, and it throws an `Error` that names the word and the reason when `refusal` finds one,
  * because quotes do not stop `cmd.exe` from reading `%` and `!` in a word.
- * A `file` with no folder is found by the shell on `PATH` with each extension of `PATHEXT`.
- * An `.exe` file and any other platform run with no shell and no check.
+ * A `file` with no folder is looked up with `find`, and when the lookup gives no `.exe` file, the shell finds it on `PATH` with each extension of `PATHEXT`.
+ * An `.exe` file, a name that the lookup finds as an `.exe` file, and any other platform run with no shell and no check.
  */
 export const runProgram = (
   file: string,
   args: string[],
   options: RunOptions,
   spawn: Spawn = spawnSyncOrNull,
+  find: (name: string) => string | null = Bun.which,
 ): RunResult | null => {
   if (process.platform !== "win32" || /\.exe$/i.test(file))
     return spawn(file, args, options);
+  // A name such as `claude` that `PATH` gives as an `.exe` file runs with no shell, so its words need no check.
+  const found = /[\\/]/.test(file) ? null : find(file);
+  if (found !== null && /\.exe$/i.test(found))
+    return spawn(found, args, options);
   for (const word of [file, ...args]) {
     const why = refusal(word);
     if (why)

@@ -31,7 +31,7 @@ export const refusal = (word: string): string | undefined => {
  * because quotes do not stop `cmd.exe` from reading `%` and `!` in a word.
  * A `file` with no folder is looked up on `PATH` with each extension of `PATHEXT` before the shell runs,
  * because `cmd.exe` prints "is not recognized" and exits 1 for a missing program, not a status of its own.
- * An `.exe` file and any other platform run with no shell and no check.
+ * An `.exe` file, a name that the lookup finds as an `.exe` file, and any other platform run with no shell and no check.
  * `Bun.spawnSync` throws when `file` is missing, so a caller catches that error to treat the program as not found.
  * The lookup throws the same way, so a missing program fails the same on every platform.
  */
@@ -44,8 +44,10 @@ export const runProgram = (
 ) => {
   if (process.platform !== "win32" || /\.exe$/i.test(file))
     return spawn([file, ...args], options);
-  if (!/[\\/]/.test(file) && find(file) === null)
-    throw new Error(`Cannot find ${file} on PATH.`);
+  const found = /[\\/]/.test(file) ? file : find(file);
+  if (found === null) throw new Error(`Cannot find ${file} on PATH.`);
+  // A name such as `sh` or `git` that `PATH` gives as an `.exe` file runs with no shell, so its words need no check.
+  if (/\.exe$/i.test(found)) return spawn([found, ...args], options);
   for (const word of [file, ...args]) {
     const why = refusal(word);
     if (why)

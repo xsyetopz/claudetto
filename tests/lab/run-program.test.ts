@@ -28,10 +28,19 @@ const fakeSpawn =
     return null;
   };
 
+/** A lookup that finds no program on `PATH`, so a name runs through the shell. */
+const notFound = (): null => null;
+
 test("on Windows, the lab runner quotes each word and runs the line through `ComSpec` with `/d /s /c`", () => {
   const seen: unknown[][] = [];
   on("win32", () =>
-    lab("claude", ["plugin", "a b", "it's"], { cwd: "c" }, fakeSpawn(seen)),
+    lab(
+      "claude",
+      ["plugin", "a b", "it's"],
+      { cwd: "c" },
+      fakeSpawn(seen),
+      notFound,
+    ),
   );
   expect(seen).toStrictEqual([
     [
@@ -50,6 +59,15 @@ test("on Windows, an `.exe` file and any file on another platform run without a 
     ["C:\\x\\claude.EXE", ["a"], {}],
     ["claude", ["a b"], { cwd: "c" }],
   ]);
+});
+
+test('on Windows, a name that `PATH` gives as an `.exe` file runs with no shell, also with a `"` in a word', () => {
+  const seen: unknown[][] = [];
+  const exe = "C:\\Users\\u\\.local\\bin\\claude.exe";
+  on("win32", () =>
+    lab("claude", ["-p", 'say "x"'], {}, fakeSpawn(seen), () => exe),
+  );
+  expect(seen).toStrictEqual([[exe, ["-p", 'say "x"'], {}]]);
 });
 
 const REFUSED: [string, string][] = [
@@ -73,7 +91,7 @@ const RUNNERS: {
 }[] = [
   {
     name: "lab",
-    run: (args, seen) => lab("claude", args, {}, fakeSpawn(seen)),
+    run: (args, seen) => lab("claude", args, {}, fakeSpawn(seen), notFound),
     commandLine: (call) => (call[1] as string[]).at(-1),
     plain: [["claude", ["50%"], {}]],
   },
