@@ -40,6 +40,12 @@ test("`windowOf` takes the reported size up to the context window", () => {
   expect(windowOf(undefined)).toBe(CONTEXT_WINDOW);
 });
 
+test("`windowOf` gives the context window for a size that is not a finite number above zero", () => {
+  expect(windowOf(-1)).toBe(CONTEXT_WINDOW);
+  expect(windowOf(Number.NaN)).toBe(CONTEXT_WINDOW);
+  expect(windowOf(Number.POSITIVE_INFINITY)).toBe(CONTEXT_WINDOW);
+});
+
 test("`lineCount` does not count the line after a final newline", () => {
   expect(lineCount("")).toBe(0);
   expect(lineCount("a\nb")).toBe(2);

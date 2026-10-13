@@ -15,10 +15,12 @@ export const CONTEXT_WINDOW = 300_000;
 
 /**
  * The window in tokens that a status object reports, at most `CONTEXT_WINDOW`.
- * An absent or zero `size` gives `CONTEXT_WINDOW`.
+ * A `size` that is absent, not a finite number, or not above zero gives `CONTEXT_WINDOW`.
  */
 export const windowOf = (size: number | null | undefined): number =>
-  Math.min(size || CONTEXT_WINDOW, CONTEXT_WINDOW);
+  typeof size === "number" && Number.isFinite(size) && size > 0
+    ? Math.min(size, CONTEXT_WINDOW)
+    : CONTEXT_WINDOW;
 
 /**
  * The tokens below `CONTEXT_WINDOW` at which the client blocks the next request with `Prompt is too long`:
