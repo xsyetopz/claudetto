@@ -2,7 +2,8 @@
 
 This file records the verdict of each candidate of P06.
 The base is `ad61fb01`.
-The fix commits are `ce6847fd`, `7653bfe9`, and `41f4f012`.
+The fix commits are `ce6847fd`, `7653bfe9`, `41f4f012`, and `1b7093c6` (the symlinked sandbox root).
+The you-should-know fixes are in `5d8e9bce`.
 The you-should-know candidates are in `second-check-you-should-know.md`, which another agent writes.
 
 ## Candidates
@@ -19,6 +20,7 @@ The old code was the `src/` of `1a4538ce`, with the tests of this change.
 | Capture JSONL reader has no torn-line handling | None. The repo has no reader of `report-<n>.jsonl`, `request-<n>.jsonl`, or `error-<n>.txt` in `src/` or `tools/`. The only reader is `tests/lab/capture/proxy.test.ts`, which reads a whole file. | rejected for a reader, since none exists | None. |
 | 200 reply of `count_tokens` whose body is not JSON (`capture/domain/report.ts:196`) | `tests/lab/capture/sizing.test.ts`, 200 reply that is not JSON (passed before) | guard | None. |
 | `dotclaude-sandbox --clean` with a read-only `config/` (mode `555`) | `tests/lab/sandbox/clean.test.ts`, read-only `config/` (failed before with `ENOTEMPTY`) | fixed | `makeWritable` adds the owner bits to each folder before `rmSync`, in `sandbox/adapters/cli.ts`. |
+| `dotclaude-sandbox --clean` with a symlinked root: `statSync`, `chmodSync`, and `readdirSync` follow the link to a folder outside the sandbox | `tests/lab/sandbox/clean.test.ts`, symlinked root (failed before: the command exited 0 and removed the link, and the test stopped at the exit code, so the mode change of the outside folder was not observed, but the code of `makeWritable` follows the link) | fixed | `lstatSync` refuses a symbolic-link root with a message and exit 1, in `sandbox/adapters/cli.ts`. Commit `1b7093c6`. |
 | `claudeMdExcludes`: UNC path with `\` | `tests/dcc-plugin-agents-md/agents.test.ts`, UNC test (passed before) | guard | None. |
 | `claudeMdExcludes`: Windows path with `\` and a glob with `/` | `tests/dcc-plugin-agents-md/agents.test.ts`, drive path test (passed before for the `C:` case) | guard | None. |
 | `claudeMdExcludes`: drive letter in lower case | `tests/dcc-plugin-agents-md/agents.test.ts`, drive path test (failed before for the lower-case case) | fixed | `slashed` lower-cases the drive letter. The basis is that Windows does not tell the case of a drive apart. No Claude Code source in `external/` states this, so the case is `open` for Claude Code itself. |
