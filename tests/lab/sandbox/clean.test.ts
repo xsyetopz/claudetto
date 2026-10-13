@@ -109,3 +109,19 @@ test("`cleanRefusal` refuses a folder without the marker, even when it holds onl
   expect(cleanRefusal("/x", ["config", "home"], false)).not.toBeNull();
   expect(cleanRefusal("/x", [], false)).not.toBeNull();
 });
+
+test("`--clean` removes a sandbox whose `config/` folder is read-only and holds a file", async () => {
+  const root = path.join(scratch, "sandbox");
+  const config = path.join(root, "config");
+  fs.mkdirSync(config, { recursive: true });
+  fs.writeFileSync(path.join(root, ".dotclaude-sandbox"), "");
+  fs.writeFileSync(path.join(config, "state.json"), "{}");
+  fs.chmodSync(config, 0o555);
+  try {
+    const code = await main(["--dir", root, "--clean"]);
+    expect(code).toBe(0);
+    expect(fs.existsSync(root)).toBe(false);
+  } finally {
+    if (fs.existsSync(config)) fs.chmodSync(config, 0o755);
+  }
+});
