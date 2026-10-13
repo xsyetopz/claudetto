@@ -79,3 +79,12 @@
 {"at":"2026-10-13T19:41:22.988Z","package":"P51","state":"verified","sha":"4d481559bd16cae951c307b394584f5eaf4db2aa","verify":{"command":"just check && just lab","exit":0}}
 {"at":"2026-10-13T19:41:29.012Z","package":"P51","state":"approved","verdict":"approve","sha":"4d481559bd16cae951c307b394584f5eaf4db2aa"}
 {"at":"2026-10-13T19:41:32.014Z","package":"P51","state":"done","sha":"4d481559bd16cae951c307b394584f5eaf4db2aa"}
+{"at":"2026-10-13T19:41:38.226Z","package":"P52","state":"doing","sha":"0dee56fd46d04b3d1ad0bd95b4f891b23f4ae495"}
+{"at":"2026-10-13T19:43:54.934Z","package":"P54","state":"doing","sha":"0dee56fd46d04b3d1ad0bd95b4f891b23f4ae495"}
+{"at":"2026-10-13T19:49:09.729Z","package":"P52","state":"verified","sha":"3ff797acc2d76d8298c97af6f634d252ff56baf2","verify":{"command":"just check && bun run lint:md","exit":0}}
+{"at":"2026-10-13T19:50:32.470Z","package":"P54","state":"verified","sha":"3ff797acc2d76d8298c97af6f634d252ff56baf2","verify":{"command":"just check && just lab","exit":0}}
+{"at":"2026-10-13T19:53:25.393Z","package":"P54","state":"doing","verdict":"reject","findings":["a Python statement after the import on one line passes (from m import a, b; pytest = None)","a require default value runs code (const { a, b = jest.mock(\"m\") } = require(\"x\"))","an added name can shadow a test global (expect, test, it, describe, assert, pytest)","an alias on an added name passes (default as expect, b: expect)","an empty old import passes as a subset"],"decision":"fix-code"}
+{"at":"2026-10-13T19:53:25.446Z","package":"P52","state":"doing","verdict":"reject","findings":["Spec-Store-Choices and Spec-Store-Files say each event records the model, but the CLI never writes model","Spec-Store-States: the doing row omits doing in Next states"],"decision":"fix-code"}
+{"at":"2026-10-13T19:58:36.696Z","package":"P52","state":"verified","sha":"52e8b59d7dfc457b84efe502769a98446e1696d9","verify":{"command":"just check && bun run lint:md","exit":0}}
+{"at":"2026-10-13T19:58:36.759Z","package":"P52","state":"approved","verdict":"approve","sha":"52e8b59d7dfc457b84efe502769a98446e1696d9"}
+{"at":"2026-10-13T19:58:39.750Z","package":"P52","state":"done","sha":"52e8b59d7dfc457b84efe502769a98446e1696d9"}

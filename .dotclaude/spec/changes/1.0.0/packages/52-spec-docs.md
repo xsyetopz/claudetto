@@ -9,7 +9,7 @@ owns: ["wiki/dotclaude/Spec-Store.md","wiki/dotclaude/Skills.md","wiki/dotclaude
 satisfies: []
 verify: just check && bun run lint:md
 agent: main session
-status: planned
+status: done
 ---
 
 ## Goal
