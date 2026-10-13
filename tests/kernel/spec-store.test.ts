@@ -8,8 +8,8 @@ import {
   lastLanes,
   packageLanes,
   readEvents,
-  scanEvents,
   SPEC_SCHEMA,
+  scanEvents,
 } from "../../src/kernel/spec-store.ts";
 
 /** A `FileReader` over a map of path to text. A folder is a key of the map that has a `/` after it. */
