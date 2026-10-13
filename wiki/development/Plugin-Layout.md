@@ -25,7 +25,7 @@ The decisions behind the layout are on [Decisions-Layout](Decisions-Layout).
 
 Each file under `plugins/` names its source in a header, except a JSON file.
 A file in `plugins/` that has no source fails `just generate --check`.
-The exception is a file that `tools/rebuild-pending.txt` names.
+`tools/generate/stray.ts` makes this check, and a file that git ignores is not checked.
 
 ## Marketplace and Plugins
 

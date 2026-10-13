@@ -4,7 +4,7 @@
 // The handlers of one slice on one event share one entry, so their `evals` must be equal when more than one names them.
 // A plugin whose hooks name no `evals` gets no file.
 
-import type { HookEvals } from "../../../../src/kernel/slice.ts";
+import type { HookEvals } from "../../../src/kernel/slice.ts";
 import type { FoundPlugin } from "../discover.ts";
 import { order } from "../order.ts";
 import { format, type Output } from "./texts.ts";
