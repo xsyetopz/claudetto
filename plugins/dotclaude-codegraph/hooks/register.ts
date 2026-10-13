@@ -9,7 +9,7 @@ export const register = (on: On): void => {
     {
       tool: "Bash",
       command:
-        /(?:^|[;&|])\s*git(?:\s+(?:-[Cc]\s+(?:[^\s"']|"[^"]*"|'[^']*')+|--(?:git-dir|work-tree|namespace)(?:=|\s+)(?:[^\s"']|"[^"]*"|'[^']*')+|--[a-z][\w-]*|-[pP]))*\s+(?:commit|merge|rebase|pull|checkout|switch|reset|cherry-pick|revert|stash|apply|am)(?:\s|$)/,
+        /(?:^|[;&|])\s*git(?:\s+(?:-[Cc]\s+(?:[^\s"']|"[^"]*"|'[^']*')+|--(?:git-dir|work-tree|namespace)(?:=|\s+)(?:[^\s"']|"[^"]*"|'[^']*')+|--(?!(?:git-dir|work-tree|namespace)(?:=|\s))[a-z][\w-]*|-[pP]))*\s+(?:commit|merge|rebase|pull|checkout|switch|reset|cherry-pick|revert|stash|apply|am)(?:\s|$)/,
     },
     h0,
   );

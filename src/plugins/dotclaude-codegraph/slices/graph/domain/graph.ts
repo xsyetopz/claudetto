@@ -32,7 +32,7 @@ const GIT_WORD = String.raw`(?:[^\s"']|"[^"]*"|'[^']*')+`;
 /**
  * A global option of `git` before its verb: `-C <path>`, `-c <k=v>`, `--git-dir=<p>`, `--git-dir <p>`, `--work-tree`, `--namespace`, or a flag such as `--no-pager` or `-p`.
  */
-const GIT_OPTION = String.raw`(?:-[Cc]\s+${GIT_WORD}|--(?:git-dir|work-tree|namespace)(?:=|\s+)${GIT_WORD}|--[a-z][\w-]*|-[pP])`;
+const GIT_OPTION = String.raw`(?:-[Cc]\s+${GIT_WORD}|--(?:git-dir|work-tree|namespace)(?:=|\s+)${GIT_WORD}|--(?!(?:git-dir|work-tree|namespace)(?:=|\s))[a-z][\w-]*|-[pP])`;
 
 /**
  * A `Bash` command with a `git` command that changes the tree: `commit`, `merge`, `rebase`, `pull`, `checkout`, `switch`, `reset`, `cherry-pick`, `revert`, `stash`, `apply`, or `am`.

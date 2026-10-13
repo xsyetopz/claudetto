@@ -103,6 +103,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ### Changed
 
+- The `Bash` filter of the sync hook in `dotclaude-codegraph` matches each `git` global option in one way only.
+  A `git` command with thousands of `--git-dir` options no longer takes seconds to test.
 - The git segment of the status line keeps the result of `git status` for 3 seconds, so `git` does not run at each refresh of 1 second.
 - The status line reads `workspace.current_dir`, `workspace.project_dir`, and `cwd` only when each is a string that is not empty.
 - The `stamp` slice writes no stamp when the transcript exists but is over the 4 MiB read bound, so a resume of a long session adds no row.
