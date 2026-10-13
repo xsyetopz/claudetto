@@ -10,6 +10,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { writeAtomic } from "../../../kernel/node/fs.ts";
 import * as paths from "../../../kernel/paths.ts";
 import { MYTHOS } from "../domain/merge.ts";
 import { hasDocsAddon, planSettings } from "../domain/settings.ts";
@@ -94,7 +95,7 @@ export const settingsCommand = async (
     return 0;
   }
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  await Bun.write(file, `${JSON.stringify(plan.settings, null, 2)}\n`);
+  await writeAtomic(file, `${JSON.stringify(plan.settings, null, 2)}\n`);
   io.log(
     `\nWrote ${file}. Restart Claude Code for the env and model settings to take effect.`,
   );
