@@ -17,7 +17,8 @@ const REPO_PATTERNS = [
     "g",
   ),
 ];
-const REACH = /\b(?:git\s+clone|gh|curl|wget)\b/;
+const REACH =
+  /\b(?:git\s+(?:clone|fetch|pull|remote\s+add|submodule\s+add)|gh|curl|wget)\b|\bpip\s+install\b[^|;&]*\bgit\+/;
 
 /**
  * The field `name` of a tool input, or undefined when the input is not an object with it.

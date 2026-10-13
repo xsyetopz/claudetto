@@ -17,6 +17,18 @@ test("`reachedRepos` reads `Bash` and `WebFetch` calls", () => {
   expect(bash("gh pr create -R o/r --fill")).toStrictEqual(["o/r"]);
   expect(bash("gh api repos/o/r/issues")).toStrictEqual(["o/r"]);
   expect(bash("cat github.com/o/r.txt")).toStrictEqual([]);
+  expect(bash("git fetch https://github.com/A/b.git")).toStrictEqual(["a/b"]);
+  expect(bash("git pull https://github.com/A/b")).toStrictEqual(["a/b"]);
+  expect(bash("git remote add up https://github.com/A/b")).toStrictEqual([
+    "a/b",
+  ]);
+  expect(
+    bash("git submodule add https://github.com/A/b vendor/b"),
+  ).toStrictEqual(["a/b"]);
+  expect(bash("pip install git+https://github.com/A/b@v1")).toStrictEqual([
+    "a/b",
+  ]);
+  expect(bash("git status https://github.com/A/b")).toStrictEqual([]);
   expect(
     reachedRepos("WebFetch", {
       url: "https://raw.githubusercontent.com/o/r/main/x",
