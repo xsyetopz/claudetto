@@ -38,16 +38,6 @@ export const dirOf = (path: string): string => {
 /** The path and the text of one file, which is all that the skip of a loaded file needs. */
 export type Seen = Pick<Loaded, "path" | "content">;
 
-/** True when `value` has the path and the text of a file. */
-const isSeen = (value: unknown): value is Seen => {
-  const file = fields<"path" | "content">(value);
-  return typeof file.path === "string" && typeof file.content === "string";
-};
-
-/** The files that the store holds, and none of a bad shape. */
-export const seenOf = (value: unknown): Seen[] =>
-  Array.isArray(value) ? value.filter(isSeen) : [];
-
 /** The tier of a file, by its name. The user file is the one exception, and the caller sets it. */
 export const kindOf = (name: string): Kind =>
   name.endsWith("AGENTS.local.md") ? "local" : "project";

@@ -69,7 +69,6 @@ const setup = (on: On, world: World = {}) => {
   const cwd = world.cwd ?? "/p";
   const disk = world.disk ?? [];
   const seen = { walks: 0 };
-  mock.store(on);
   mock.env(on, { CLAUDE_CONFIG_DIR: "/home/u/.claude", ...world.env });
   on("settings.read", () => ({
     value: {
@@ -85,7 +84,7 @@ const setup = (on: On, world: World = {}) => {
   on("prompt.context", (_$, e) => ({ blocks: e.blocks }));
   on("tool.call", () => ({ result: "ok" }));
   on("prompt.mention", () => ({ type: "file" }));
-  on("session.compact", () => ({ messages: [] }));
+  on("session.compact", (_$, e) => ({ messages: e.messages }));
   return seen;
 };
 
@@ -221,7 +220,7 @@ test("a nested file loads on a `Write` to a file in its folder", async ($: Engin
 
 test("a nested file loads on a `Bash` read of a file in its folder", async ($: Engine, on: On) => {
   setup(on, { disk: [SUB] });
-  const out = await $.tool.call({ tool: "Bash", command: "cat sub/x.ts | head -5" });
+  const out = await $.tool.call({ tool: "Bash", command: "cat /p/sub/x.ts | head -5" });
   expect(contexts(out).length).toBe(1);
   expect(contexts(out)[0]).toContain("Sub rules.");
 });
@@ -246,7 +245,10 @@ test("a nested file loads again after a compaction", async ($: Engine, on: On) =
   setup(on, { disk: [SUB] });
   expect(contexts(await $.tool.call({ tool: "Read", file_path: "/p/sub/x.ts" })).length).toBe(1);
   expect((await $.tool.call({ tool: "Read", file_path: "/p/sub/x.ts" })).context).toBeUndefined();
-  await $.session.compact({});
+  await $.session.compact({
+    trigger: "auto",
+    messages: [{ role: "user", text: "Read sub/x.ts.", toolUses: [] }],
+  });
   expect(contexts(await $.tool.call({ tool: "Read", file_path: "/p/sub/x.ts" })).length).toBe(1);
 });
 

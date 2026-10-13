@@ -19,12 +19,21 @@ import {
   readPaths,
   type Rules,
   rulesOf,
-  seenOf,
+  type Seen,
 } from "../domain/agents.ts";
 
-/** The store keys: the files of the start, and the nested files that a call has loaded. */
-const ROOT_KEY = "dcc-plugin-agents-md:root";
-const NESTED_KEY = "dcc-plugin-agents-md:nested";
+/**
+ * The session values: the files of the start, and the nested files that a call has loaded.
+ * They are `$.state` and not `$.store`, because a file loaded in one session must load again in the next session.
+ */
+declare module "claude-code" {
+  interface PluginState {
+    "dcc-plugin-agents-md": { root: Seen[]; nested: Seen[] };
+  }
+}
+
+const ROOT = { plugin: "dcc-plugin-agents-md", key: "root" } as const;
+const NESTED = { plugin: "dcc-plugin-agents-md", key: "nested" } as const;
 
 type Request = Parameters<EngineInterface["fs"]["ancestors"]>[0];
 type Ancestor = Awaited<ReturnType<EngineInterface["fs"]["ancestors"]>>[number];
@@ -115,7 +124,7 @@ export const onContext: Handler<"prompt.context"> = async ($, e, next) => {
     path: file.path,
     content: file.content,
   }));
-  await $.store.set(ROOT_KEY, seen);
+  await $.state.set(ROOT, seen);
   if (fresh.length === 0) return out;
   return {
     ...out,
@@ -142,10 +151,10 @@ const nestedFiles = async ($: EngineInterface, path: string): Promise<Loaded[]> 
   const rules = await readRules($);
   const found = await walk($, { names: [...AGENTS_NAMES], of: path, below });
   const kept = found.filter((file) => !isExcluded(file.path, rules.excludes));
-  const root = seenOf(await $.store.get(ROOT_KEY));
-  const nested = seenOf(await $.store.get(NESTED_KEY));
+  const { value: root = [] } = await $.state.get(ROOT);
+  const { value: nested = [] } = await $.state.get(NESTED);
   const fresh = freshFiles([...root, ...nested], kept);
-  if (fresh.length > 0) await $.store.set(NESTED_KEY, [...nested, ...fresh]);
+  if (fresh.length > 0) await $.state.set(NESTED, [...nested, ...fresh]);
   return fresh;
 };
 
@@ -204,6 +213,6 @@ export const onMention: Handler<"prompt.mention"> = async ($, e, next) => {
  */
 export const onCompact: Handler<"session.compact"> = async ($, e, next) => {
   const out = await next(e);
-  if (out.skip === undefined) await $.store.set(NESTED_KEY, []);
+  if (out.skip === undefined) await $.state.set(NESTED, []);
   return out;
 };
