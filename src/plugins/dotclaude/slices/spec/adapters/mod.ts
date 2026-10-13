@@ -2,8 +2,9 @@
 //
 // `agent.spawn` moves the lane of a package to `doing` when `/ship` starts the `implementer` of the package.
 // `turn.complete` moves the lane to `review` when that subagent ends.
-// Both run `dotclaude-spec lane` with `$.process.run`, in the folder of the main session.
+// Both run `dotclaude-spec lane` with `$.process.run`, in the folder of the main session at the spawn.
 // This is where `lane` works, because it refuses a linked worktree.
+// At the end of a subagent, the session folder is the worktree of the subagent, so the end uses the folder of the spawn.
 //
 // `claude plugin validate` follows `$` only into a function of one file.
 // For this reason, each function that touches `$` is here, and the rules are in `domain/`.
@@ -12,8 +13,8 @@ import type { EngineInterface } from "claude-code";
 import type { Handler } from "../../../../../kernel/slice.ts";
 import { laneArgs, packageOf } from "../domain/ship-lane.ts";
 
-/** The package of each running `implementer`, by its `agentId`. */
-const running = new Map<string, string>();
+/** The package of each running `implementer` and the folder of its spawn, by its `agentId`. */
+const running = new Map<string, { pkg: string; cwd: string }>();
 
 /** Forgets the running subagents. A test calls it between runs. */
 export const resetState = (): void => {
@@ -28,14 +29,18 @@ const moveLane = async (
   $: EngineInterface,
   pkg: string,
   lane: "doing" | "review",
+  cwd: string,
 ): Promise<void> => {
   try {
-    const run = await $.process.run([
-      "bun",
-      "--no-env-file",
-      `${$.plugin.root}/bin/dotclaude-spec`,
-      ...laneArgs(pkg, lane),
-    ]);
+    const run = await $.process.run(
+      [
+        "bun",
+        "--no-env-file",
+        `${$.plugin.root}/bin/dotclaude-spec`,
+        ...laneArgs(pkg, lane),
+      ],
+      { cwd },
+    );
     if (run.exitCode !== 0)
       $.ui.log(
         `dotclaude-spec lane ${pkg} ${lane} failed with exit status ${run.exitCode}: ${run.stderr.trim()}`,
@@ -53,16 +58,18 @@ export const onSpawn: Handler<"agent.spawn"> = async ($, e, next) => {
   const out = await next(e);
   const pkg = packageOf(e.prompt);
   if (pkg === undefined || out.deny !== undefined || !out.agentId) return out;
-  running.set(out.agentId, pkg);
-  await moveLane($, pkg, "doing");
+  const cwd = await $.session.cwd();
+  running.set(out.agentId, { pkg, cwd });
+  await moveLane($, pkg, "doing", cwd);
   return out;
 };
 
 /** Moves the package of a subagent that answered to `review`. Another end leaves it in `doing`. */
 export const onComplete: Handler<"turn.complete"> = async ($, e, next) => {
   const out = await next(e);
-  const pkg = e.agentId ? running.get(e.agentId) : undefined;
-  if (e.agentId === undefined || pkg === undefined) return out;
+  const entry = e.agentId ? running.get(e.agentId) : undefined;
+  if (e.agentId === undefined || entry === undefined) return out;
+  const { pkg, cwd } = entry;
   running.delete(e.agentId);
   if (e.reason !== "answer") {
     $.ui.log(
@@ -71,6 +78,6 @@ export const onComplete: Handler<"turn.complete"> = async ($, e, next) => {
     );
     return out;
   }
-  await moveLane($, pkg, "review");
+  await moveLane($, pkg, "review", cwd);
   return out;
 };

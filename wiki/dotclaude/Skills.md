@@ -202,6 +202,7 @@ The steps:
    When the count is `0`, the skill stops and gives the reset time.
 4. The skill starts one `implementer` agent for each package, with `isolation` set to `worktree`.
    A hook in `src/plugins/dotclaude/slices/spec/adapters/mod.ts` sets the lane to `doing` at the start, and to `review` at the end.
+   Both runs of `dotclaude-spec lane` use the folder of the main session at the start, because `lane` refuses the worktree of the agent.
 5. The skill starts a `reviewer` agent with the package file and the output of `git diff <base>...<branch>`.
    The reviewer does not see the report of the implementer.
 6. A package that fails gets one retry, with the findings.
