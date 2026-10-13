@@ -107,6 +107,9 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The git segment of the status line keeps its cache in a folder of this user, `dotclaude-git-<uid>` in the temp folder, which only the user can write.
   Before, the cache file was in the shared temp folder, so another user could plant a result at its predictable name.
   A folder with another owner, or with group or other mode bits, is no cache, so `git` runs.
+- The `archive` command of `dotclaude-spec` exits with `0` when the archive is done and only the removal of `.dotclaude/spec/.specs-old` fails.
+  It names that folder on the error output, so you remove it by hand.
+  Before, the command exited with `1` and said that the specs were restored, although the archive was done.
 - The `lane` command of `dotclaude-spec` appends its line to `events.jsonl` instead of rewriting the whole log.
   Two lane commands at the same time no longer lose a line.
 - The `archive` command of `dotclaude-spec` refuses to run when `.dotclaude/spec/.specs-old` is left by an earlier archive that stopped.

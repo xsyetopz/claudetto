@@ -3,6 +3,9 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
+import { SPECS_OLD } from "../../../../src/kernel/paths.ts";
+import { archiveCommand } from "../../../../src/plugins/dotclaude/slices/spec/adapters/archive.ts";
+import { SpecStore } from "../../../../src/plugins/dotclaude/slices/spec/adapters/store.ts";
 import {
   DELTA_ADD_BETA,
   DELTA_REMOVE_MISSING,
@@ -98,4 +101,34 @@ test("archive refuses a `.specs-old` that an earlier archive left, and changes n
   expect(r.code).toBe(1);
   expect(r.err.join("\n")).toContain(".specs-old");
   expect(await snapshot(root)).toStrictEqual(before);
+});
+
+test("archive with a `.specs-old` that cannot be removed is done, and leaves that folder", async () => {
+  const root = await makeStore({
+    ".dotclaude/spec/specs/store.md": SPEC,
+    [`${CHANGE}/change.md`]: "# c1\n",
+    [`${CHANGE}/specs/store.md`]: DELTA_ADD_BETA,
+  });
+  class LastRemoveFails extends SpecStore {
+    override remove(rel: string): void {
+      if (rel === SPECS_OLD) throw new Error("the folder is busy");
+      super.remove(rel);
+    }
+  }
+  const err: string[] = [];
+  const code = await archiveCommand(
+    {
+      store: new LastRemoveFails(root),
+      io: { log: () => {}, error: (line) => err.push(line) },
+      clock: { now: () => new Date(`${TODAY}T10:00:00.000Z`) },
+    },
+    ["c1"],
+  );
+  expect(code).toBe(0);
+  expect(has(root, CHANGE)).toBe(false);
+  expect(
+    has(root, `.dotclaude/spec/changes/archive/${TODAY}-c1/change.md`),
+  ).toBe(true);
+  expect(has(root, ".dotclaude/spec/.specs-old/store.md")).toBe(true);
+  expect(err.length).toBe(1);
 });
