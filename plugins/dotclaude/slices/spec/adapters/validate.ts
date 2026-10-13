@@ -96,6 +96,11 @@ const packageProblems = async (
   const entries = await readEntries(store, id);
   const events = await store.events(id);
   const out = failures.flatMap((f) => formatErrors(f.file, f.errors));
+  const torn = await store.tornLine(id);
+  if (torn !== null)
+    out.push(
+      `${path.posix.join(dir, "events.jsonl")}:${torn}: the last line has no line end and is not JSON, so the reader skips it.`,
+    );
   out.push(
     ...packages.flatMap((p) =>
       issueLines(path.posix.join(dir, "packages"), validatePackage(p)),

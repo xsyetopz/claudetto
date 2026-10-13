@@ -10,7 +10,7 @@
 
 ## Wave 2
 
-- [ ] P04 Core plugin: guard, asks, spec, sembr, torn line, shell bound.
+- [x] P04 Core plugin: guard, asks, spec, sembr, torn line, shell bound.
 - [x] P08 Core plugin: statusline arrows and separators.
 - [ ] P09 Core plugin: statusline usage items.
 
