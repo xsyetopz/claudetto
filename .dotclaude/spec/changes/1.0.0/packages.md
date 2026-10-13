@@ -243,7 +243,37 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: none.
   Verify: `just check`, `just lab`, and one session in `just sandbox` that uses each new command.
 
-## Wave 5: agents after the roster
+## Wave 5: spec store schema 2
+
+- [ ] P48 Spec store schema 2: front matter for each file, `REQ-<n>` IDs, clarification markers, the states and gates of `design-spec-2.md`, and events with evidence ([package](packages/48-spec-schema-2.md), [design](design-spec-2.md), the user, 2026-10-13).
+  Deps: none.
+  Verify: `just check`, and `dotclaude-spec validate 1.0.0` passes on the converted store.
+
+## Wave 6: phase commands
+
+- [ ] P49 Phase commands: `dotclaude-spec specify`, `plan`, `implement`, `verify`, `review`, `merge`, `accept`, `archive`, `block`, and `drop`, each with its gate ([package](packages/49-spec-phase-cli.md), the user, 2026-10-13).
+  Deps: P48.
+  Verify: `just check`.
+
+## Wave 7: requirement trace
+
+- [ ] P50 Requirement trace: `dotclaude-spec trace` finds orphan IDs and uncited lines, and `accept` refuses while it finds one ([package](packages/50-spec-trace.md), the user, 2026-10-13).
+  Deps: P48.
+  Verify: `just check`.
+
+## Wave 8: phase skills
+
+- [ ] P51 Phase skills: one slash command for each phase, with the verb of its CLI subcommand, and hooks for schema 2 ([package](packages/51-spec-phase-skills.md), the user, 2026-10-13).
+  Deps: P49, P50.
+  Verify: `just check`, `just lab`, and one session in `just sandbox` that runs a trivial change and a large change from `/dotclaude:specify` to `/dotclaude:archive`.
+
+## Wave 9: spec store docs
+
+- [ ] P52 Spec store docs: the wiki gives the files, IDs, states, gates, and commands of schema 2, with the source of each choice ([package](packages/52-spec-docs.md), the user, 2026-10-13).
+  Deps: P51.
+  Verify: `just check` and `bun run lint:md`.
+
+## Wave 10: agents after the roster
 
 - [ ] P47 Agent prompts: each agent body follows the prompt guidance of Anthropic for its model and prevents the failures of the agent failure dossier ([package](packages/47-agent-prompts.md), the user, 2026-10-13).
   Deps: P42.
@@ -252,7 +282,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P42.
   Verify: `just check`, `just lab`, and one session in `just sandbox` with a stop and a resume.
 
-## Wave 6: release
+## Wave 11: release
 
 - [ ] P45 Wiki agent choices: one page gives each agent choice of 1.0.0 a reason and the alternatives not taken ([package](packages/45-wiki-choices.md), the user, 2026-10-13).
   Deps: P42, P43, P44, P47.

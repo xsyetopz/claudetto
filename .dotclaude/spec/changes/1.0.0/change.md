@@ -100,7 +100,13 @@ It gets the highest intelligence for the lowest token cost:
   Each external source of the research gets a public citation on the wiki page `Attributions` (the user, 2026-10-13).
 - Each phase of the spec flow has one slash command, named with the verb of its phase, such as `/dotclaude:specify`, `plan`, `tasks`, `implement`, `review`, `accept`, and `archive` (the user, 2026-10-13).
   The subcommands of `dotclaude-spec` take the same names, and the CLI gets the renames to match (the user, 2026-10-13).
-  The research decides the final verbs and the count of phases, and `/spec`, `/ship`, and `/hotfix` go away.
+  The research found no state model in `traceSDD`, so the states are the design of dotclaude: `design-spec-2.md`.
+- Jev decided five points of the redesign, because the user gives each decision to Jev (the user, 2026-10-13):
+  - dotclaude has its own states, and each state change has a gate with recorded evidence (confidence 0.98).
+  - No `tasks` phase: the packages of `plan` are the tasks (0.88).
+  - A separate `merge` command merges a package (0.20, not sure, so easy to change).
+  - A small fix is a trivial change on the short path of the same states, and `/hotfix` goes away (0.69).
+  - Code cites the requirement IDs on each non-trivial line, as the `traceSDD` paper measured (0.53).
 
 ## Scope
 
