@@ -10,7 +10,7 @@ import { SPEC_DIR } from "../../../kernel/paths.ts";
 import { gateVerify, verifyTarget } from "../domain/gates.ts";
 import { hasTransition, PACKAGE_TRANSITIONS } from "../domain/states.ts";
 import { parseArgs } from "./args.ts";
-import { exec, gitPath, head, shell } from "./git.ts";
+import { exec, head, isWorktreeOf, shell } from "./git.ts";
 import type { Run } from "./run.ts";
 import {
   movePackage,
@@ -65,8 +65,7 @@ export const verifyCommand = async (
       `The package \`${pkg}\` has no file to read the \`verify\` command from.`,
     );
   const dir = path.resolve(run.store.root, parsed.values["in"] ?? ".");
-  const common = gitPath(dir, "--git-common-dir");
-  if (common === null || common !== gitPath(run.store.root, "--git-common-dir"))
+  if (!isWorktreeOf(dir, run.store.root))
     return stop(
       run,
       `The folder \`${dir}\` is not a worktree of this repository.`,

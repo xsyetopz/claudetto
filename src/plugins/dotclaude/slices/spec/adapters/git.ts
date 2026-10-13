@@ -51,6 +51,12 @@ export const gitPath = (cwd: string, flag: string): string | null => {
     : null;
 };
 
+/** True when `dir` is a worktree of the repository of `root`: both have the same common git folder. */
+export const isWorktreeOf = (dir: string, root: string): boolean => {
+  const common = gitPath(dir, "--git-common-dir");
+  return common !== null && common === gitPath(root, "--git-common-dir");
+};
+
 /** True when `cwd` is in a linked git worktree: its git folder is not the common git folder. */
 export const inLinkedWorktree = (cwd: string): boolean => {
   const dir = gitPath(cwd, "--git-dir");

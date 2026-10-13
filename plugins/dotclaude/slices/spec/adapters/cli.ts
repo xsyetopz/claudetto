@@ -6,7 +6,7 @@
 //   dotclaude-spec implement <package> [--note <text>] [--decision fix-code|revise-spec] [--json]
 //   dotclaude-spec verify <package> [--in <dir>] [--json]
 //   dotclaude-spec accept <id> [--json]
-//   dotclaude-spec trace [<id>] [--json]
+//   dotclaude-spec trace [<id>] [--in <dir>] [--package <p>] [--json]
 //   dotclaude-spec block <package> --note <text> [--json]
 //   dotclaude-spec status [<id>]
 //   dotclaude-spec next [<id>]
@@ -66,7 +66,7 @@ const USAGE = [
   "  ready [<id>]",
   "  merge <package> [<branch>] [--json]",
   "  accept <id> [--json]",
-  "  trace [<id>] [--json]",
+  "  trace [<id>] [--in <dir>] [--package <p>] [--json]",
   "  validate [<id>]",
   "  archive <id> [--json]",
   "  runs",
