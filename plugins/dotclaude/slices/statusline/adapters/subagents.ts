@@ -11,7 +11,7 @@ import type { SubagentInput, Task, TaskRow } from "../domain/types.ts";
 import { ICON } from "../icons.ts";
 import {
   DESCRIPTION_ROOM_MIN,
-  SEGMENT_GAP,
+  ITEM_GAP,
   SUBAGENT_ROWS_MAX,
 } from "../limits.ts";
 import { truncate, width } from "../width.ts";
@@ -60,12 +60,12 @@ export const renderTask = (
       ? paint.dim(`${ICON.time} ${span(now - start)}`)
       : "",
   ].filter(Boolean);
-  const line = parts.join(SEGMENT_GAP);
-  const room = columns - width(line) - width(SEGMENT_GAP);
+  const line = parts.join(ITEM_GAP);
+  const room = columns - width(line) - width(ITEM_GAP);
   const description = (task.description ?? "").replace(/\s+/g, " ").trim();
   if (!description || room <= DESCRIPTION_ROOM_MIN)
     return truncate(line, columns);
-  return `${line}${SEGMENT_GAP}${paint.dim(truncate(description, room))}`;
+  return `${line}${ITEM_GAP}${paint.dim(truncate(description, room))}`;
 };
 
 /** The rows for the running subagents of `input`, at most `SUBAGENT_ROWS_MAX`. `columns` is the width when `input` has none. */

@@ -11,7 +11,7 @@
 ## Wave 2
 
 - [ ] P04 Core plugin: guard, asks, spec, sembr, torn line, shell bound.
-- [ ] P08 Core plugin: statusline arrows and separators.
+- [x] P08 Core plugin: statusline arrows and separators.
 
 ## Wave 3
 
