@@ -9,7 +9,7 @@ owns: ["src/kernel/spec-store.ts","src/kernel/state-events.ts","src/plugins/dotc
 satisfies: []
 verify: just check && plugins/dotclaude/bin/dotclaude-spec validate 1.0.0
 agent: main session
-status: doing
+status: done
 ---
 
 ## Goal
