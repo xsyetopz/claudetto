@@ -6,6 +6,7 @@
 import { $ } from "bun";
 import { makeTags, type Plan, preflight } from "./preflight.ts";
 import { must, output, pluginDirs, REPO, recipe } from "./recipes.ts";
+import { $claude } from "./telemetry.ts";
 
 /** True when `bun tools/generate/index.ts --check` (`just generate --check`) passes. */
 const generatedOk = async (): Promise<boolean> =>
@@ -15,7 +16,7 @@ const generatedOk = async (): Promise<boolean> =>
 await recipe(async () => {
   const plans: Plan[] = [];
   for (const dir of pluginDirs()) {
-    const out = await output($`claude plugin tag --dry-run ${dir}`);
+    const out = await output($claude()`claude plugin tag --dry-run ${dir}`);
     const tag = out.match(/^Tag:\s+(\S+)/m)?.[1];
     if (!tag) {
       console.error(
@@ -37,7 +38,7 @@ await recipe(async () => {
     REPO,
     plans,
     async (dir) => {
-      await must($`claude plugin tag ${dir}`);
+      await must($claude()`claude plugin tag ${dir}`);
     },
     async () => {
       await must(

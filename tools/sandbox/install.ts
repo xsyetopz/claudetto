@@ -5,17 +5,20 @@
 // Then the script starts Claude Code in the sandbox. `just sandbox-installed` starts it again with no new install.
 
 import path from "node:path";
-import { $ } from "bun";
 import { must, REPO, recipe } from "../recipes.ts";
+import { $claude } from "../telemetry.ts";
 
 /** The sandbox folder of the install, apart from `just sandbox` and `just sandbox-alone`. */
 const INSTALL_DIR = "/tmp/dotclaude-sandbox-install";
 
 const bin = path.join("plugins", "dotclaude-lab", "bin", "dotclaude-sandbox");
 
-/** Runs `dotclaude-sandbox` in the install folder with `args`. */
+/**
+ * Runs `dotclaude-sandbox` in the install folder with `args`.
+ * The wrapper starts `claude` itself, so it gets the same telemetry-off env as the `claude` calls.
+ */
 const sandbox = (args: string[]) =>
-  must($`bun ${bin} --dir ${INSTALL_DIR} ${args}`);
+  must($claude()`bun ${bin} --dir ${INSTALL_DIR} ${args}`);
 
 await recipe(async () => {
   const names = Bun.argv.slice(2);

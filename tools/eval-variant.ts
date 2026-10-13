@@ -75,7 +75,13 @@ try {
         "Bash,Write,Edit",
         ...rest,
       ],
-      { stdin: "inherit", stdout: "inherit", stderr: "inherit" },
+      {
+        // The plain env: the telemetry-off env of `$claude` can change the flags that the evals fetch.
+        env: { ...process.env },
+        stdin: "inherit",
+        stdout: "inherit",
+        stderr: "inherit",
+      },
     ).exitCode ?? 1;
 } finally {
   const kept = keepResults(ref);
