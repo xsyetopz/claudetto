@@ -49,7 +49,7 @@ The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 | `SESSION_NAME_MAX` | `12` | `src/plugins/dotclaude-browser/slices/search/limits.ts` | The longest name of a search session, which keeps a socket path under the macOS limit. |
 | `MAX_DOMAINS` | `10` | `src/plugins/dotclaude-browser/slices/search/limits.ts` | The most `allowed_domains` or `blocked_domains` that the query takes. |
 | `QUERY_TIMEOUT_MS` | `2,000` | `src/plugins/dotclaude-codegraph/slices/graph/limits.ts` | The time that `codegraph --version` may take for the check. |
-| `START_SYNC_TIMEOUT_MS` | `8,000` | `src/plugins/dotclaude-codegraph/slices/graph/limits.ts` | The time that the sync at session start may take. |
+| `START_SYNC_TIMEOUT_MS` | `6,000` | `src/plugins/dotclaude-codegraph/slices/graph/limits.ts` | The time that the sync at session start may take. |
 | `BACKGROUND_SYNC_TIMEOUT_MS` | `60,000` | `src/plugins/dotclaude-codegraph/slices/graph/limits.ts` | The time that the background sync after an edit may take. |
 | `GIT_SYNC_TIMEOUT_MS` | `15,000` | `src/plugins/dotclaude-codegraph/slices/graph/limits.ts` | The time that the sync after a `git` command may take. |
 | `MAX_TURNS.debugger` | `61` | `src/plugins/dotclaude/slices/agents/limits.ts` | The most turns of the `debugger` agent before it stops. |
