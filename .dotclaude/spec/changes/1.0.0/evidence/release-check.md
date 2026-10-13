@@ -38,3 +38,22 @@ One session in the sandbox ran `/spec`, `/ship`, `/hotfix`, a decision, and a ha
   It wrote `claude-code-tools/index.d.ts` again from the tools of the sandbox session, which has no `mode` field for `WebSearch`.
   Then `just check` failed in the type check and in the generate check.
   A copy of the type files from the main checkout and the removal of the new `tsconfig.json` files made `just check` pass again.
+
+## Causes and Fixes
+
+- The doubled reply.
+  The text of the `turn.complete` chain starts as the reply, and Claude Code shows a text other than the reply beneath the reply.
+  `withHint` in `src/plugins/dotclaude/slices/handoff/adapters/mod.ts` added the hint to that text, so the reply showed again.
+  The fix sends only the hint.
+  The lab test "with `manual` the hint goes out without the reply, which the user already sees" failed before the fix and passes after it.
+- The lane hook.
+  A second session with `--debug-file` ran `/dotclaude:ship` on a change `add-pow` with one package.
+  The debug log has `dotclaude-spec lane P01 review failed with exit status 1: This is a linked git worktree. Only the main checkout changes a lane.`
+  At the end of a subagent, the session folder is the worktree of the subagent, and `$.process.run` runs there by default.
+  The fix keeps the folder of the main session from the spawn, and passes it as `cwd` to both `lane` runs.
+  The lab test "the end of an implementer in a worktree runs `lane` in the folder of the spawn" failed before the fix and passes after it.
+- `P02` has no `planned` row, because `dotclaude-spec new` writes a row for `P01` only.
+  A package with no row is `planned` for each command, so this is not a defect.
+- A third session with both fixes ran `/dotclaude:ship add-pow`.
+  The hook wrote `P01` `doing` at 03:41:18 and `review` at 03:41:28, and the debug log has no failed `lane` line.
+  The hint showed alone, as `A package of the change is done. Run /handoff to write a handoff file and start a clean session.`
