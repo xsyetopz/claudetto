@@ -103,6 +103,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ### Changed
 
+- The `lane` command of `dotclaude-spec` moves a package from `planned` to `review`, so a package whose `doing` hook failed can still move on.
 - The `Bash` filter of the sync hook in `dotclaude-codegraph` matches each `git` global option in one way only.
   A `git` command with thousands of `--git-dir` options no longer takes seconds to test.
 - The git segment of the status line keeps the result of `git status` for 3 seconds, so `git` does not run at each refresh of 1 second.

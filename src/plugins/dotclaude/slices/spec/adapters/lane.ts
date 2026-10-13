@@ -61,7 +61,7 @@ export const changeOf = async (
  * `done` has no move out: a package that is done stays done.
  */
 const NEXT_LANES: Record<Lane, readonly Lane[]> = {
-  planned: ["doing", "done", "blocked"],
+  planned: ["doing", "review", "done", "blocked"],
   doing: ["review", "done", "blocked"],
   review: ["doing", "done", "blocked"],
   blocked: ["planned", "doing", "done"],

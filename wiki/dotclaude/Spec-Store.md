@@ -114,6 +114,8 @@ Three parts move a lane:
 - The `lane` command adds a line, and it sets the checkbox in `packages.md`.
   It refuses in a linked git worktree, with exit status `1`.
   It also refuses a move out of `done`, and a move to the lane that the package has.
+  A package in `planned` may move to `doing`, `review`, `done`, or `blocked`.
+  The `review` move covers a package whose `doing` hook failed.
   A refused move exits with status `1`, and it adds no line.
 - The mod handler on `agent.spawn` in the `spec` slice moves a package to `doing`.
   It does this when `/ship` starts its `implementer`.
