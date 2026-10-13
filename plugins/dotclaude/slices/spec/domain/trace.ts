@@ -3,6 +3,7 @@
 // Plain data and pure functions only. The adapter reads the diff and the set of known IDs.
 //
 // A citation is `[REQ-<n>]` or `[REQ-<n>, REQ-<m>]` in a comment, on the same line as the code that it covers.
+// A citation in a string or in other code is not a citation.
 // A finding is an orphan (a cited ID that no requirement has) or an uncited line (a non-trivial added line with no citation).
 
 /** One added line of a diff: the file, the line number in the new file, and the text. */
@@ -31,38 +32,156 @@ export interface Counts {
 const CITATION = /\[REQ-(?:0|[1-9]\d*)(?:\s*,\s*REQ-(?:0|[1-9]\d*))*\]/g;
 const ONE_ID = /REQ-(0|[1-9]\d*)/g;
 
-/** The IDs that `text` cites, in order. An ID that the text cites twice is in the list twice. */
+/** The code of a line and its comments, each as text. A comment is not in `code`, and a string is. */
+interface SplitLine {
+  readonly code: string;
+  readonly comment: string;
+}
+
+/** A line that continues a block comment: `*` alone, or `* ` and text. A line that ends like a statement (`* b;`) is code. */
+const BLOCK_MIDDLE = /^\*(?:\s|$)/;
+const STATEMENT_END = /[;{}]$/;
+/** The text before `index` ends a token, so `#` or `--` there starts a comment. */
+const startsToken = (text: string, index: number): boolean =>
+  index === 0 || /\s/.test(text[index - 1] ?? "");
+/** The end of the comment that starts at `from` and closes with `close`, or the end of `text`. */
+const endOf = (text: string, from: number, close: string): number => {
+  const at = text.indexOf(close, from);
+  return at < 0 ? text.length : at + close.length;
+};
+
+/**
+ * Splits `text` into code and comments.
+ * A comment is `//` to the end, `#` or `--` (before a space or the end) to the end, `/* ... *\/`, and `<!-- ... -->`.
+ * A quote opens a string that hides a comment marker.
+ * A line that starts with `*\/` or `-->` closes a comment of an earlier line, and a line with only `* text` is the middle of a block comment.
+ */
+export const splitLine = (text: string): SplitLine => {
+  const line = text.trim();
+  if (BLOCK_MIDDLE.test(line) && !STATEMENT_END.test(line))
+    return { code: "", comment: line };
+  let code = "";
+  let comment = "";
+  let i = 0;
+  const closer = /^(?:\*\/|-->)/.exec(line);
+  if (closer !== null) {
+    comment = closer[0];
+    i = closer[0].length;
+  }
+  const src = closer === null ? text : line;
+  let quote: string | null = null;
+  while (i < src.length) {
+    const c = src[i] ?? "";
+    const two = src.slice(i, i + 2);
+    let end = -1;
+    if (quote !== null) {
+      const step = c === "\\" ? 2 : 1;
+      code += src.slice(i, i + step);
+      if (c === quote) quote = null;
+      i += step;
+      continue;
+    }
+    if (two === "//") end = src.length;
+    else if (two === "/*") end = endOf(src, i + 2, "*/");
+    else if (src.startsWith("<!--", i)) end = endOf(src, i + 4, "-->");
+    else if (
+      c === "#" &&
+      startsToken(src, i) &&
+      /^#(?:[\s!#]|$)/.test(src.slice(i))
+    )
+      end = src.length;
+    else if (
+      two === "--" &&
+      startsToken(src, i) &&
+      /^--(?:\s|$)/.test(src.slice(i))
+    )
+      end = src.length;
+    if (end >= 0) {
+      comment += ` ${src.slice(i, end)}`;
+      code += " ";
+      i = end;
+    } else {
+      if (c === '"' || c === "'" || c === "`") quote = c;
+      code += c;
+      i += 1;
+    }
+  }
+  return { code: code.trim(), comment: comment.trim() };
+};
+
+/** The IDs that the comments of `text` cite, in order. An ID that the text cites twice is in the list twice. */
 export const citedIds = (text: string): number[] =>
-  [...text.matchAll(CITATION)].flatMap((c) =>
+  [...splitLine(text).comment.matchAll(CITATION)].flatMap((c) =>
     [...c[0].matchAll(ONE_ID)].map((m) => Number(m[1])),
   );
 
-/** A line with only a comment: a line, block, HTML, or `#` comment, or the middle or end of a block comment. */
-const COMMENT =
-  /^(?:\/\/|#(?:[\s!#]|$)|\/\*|\*\/|\*(?:\s|$)|<!--|-->|--(?:\s|$))/;
 /** A line with no letter, digit, or underscore: blank, or only brackets and punctuation. */
 const PUNCTUATION = /^[^\p{L}\p{N}_]*$/u;
-/** An import or a re-export: `import ...`, `export {`, `export * from`, `export ... from "m"`, `from m import`, `#include`. */
-const IMPORT =
-  /^(?:import(?:\s|$)|export\s+(?:type\s+)?[*{]|export\b.*\sfrom\s+["']|from\s+\S+\s+import\b|#include\b)/;
+/** A module name in quotes. */
+const QUOTED = `(?:"[^"]*"|'[^']*')`;
+/**
+ * One whole import or re-export statement on one line:
+ * `import ...`, `export {...}`, `export * from "m"`, `export {...} from "m"`, `from m import ...`, and `#include <m>`.
+ * Code after the statement (a second statement on the line) is not trivial.
+ */
+const IMPORT = new RegExp(
+  [
+    String.raw`^import(?:\s[^;]*)?;?$`,
+    String.raw`^export\s+(?:type\s+)?\*(?:\s+as\s+\w+)?\s+from\s+${QUOTED};?$`,
+    String.raw`^export\s+(?:type\s+)?\{[^}]*\}(?:\s+from\s+${QUOTED})?;?$`,
+    String.raw`^from\s+\S+\s+import\s[^;]*$`,
+    String.raw`^#include\s*[<"][^>"]*[>"]$`,
+  ].join("|"),
+);
 /** An import or a re-export that opens a list and does not close it on the same line. */
 const IMPORT_OPEN =
-  /^(?:import(?:\s|$)|export\s+(?:type\s+)?\{|from\s+\S+\s+import\b).*[({]\s*$/;
-/** The line that closes an open import list. */
-const LIST_CLOSE = /^[})]/;
+  /^(?:import(?:\s|$)|export\s+(?:type\s+)?\{|from\s+\S+\s+import\b)[^;]*[({]$/;
+/** The line that closes an open import list, with the `from` of a re-export and nothing else. */
+const LIST_CLOSE = new RegExp(String.raw`^[})]\s*(?:from\s+${QUOTED})?;?$`);
 
 /**
  * True when `text` is a trivial line, which needs no citation.
- * A line is trivial when, without the indent, it is:
+ * `splitLine` removes the comments from the line, and then the line is trivial when the code that is left is:
  * - blank,
- * - a comment only (`//`, `#`, `/*`, `*`, `*\/`, `<!--`, `-->`, or `--`),
  * - only brackets and punctuation (it has no letter, digit, or underscore), or
- * - an import or a re-export (`import`, `export {`, `export * from`, `export ... from`, `from m import`, `#include`).
+ * - one whole import or re-export statement (`import`, `export {`, `export * from`, `export ... from`, `from m import`, `#include`).
+ * A line with only a comment has no code, so it is trivial.
  * The lines inside an import list that spans lines are also trivial. `traceLines` finds them.
  */
 export const isTrivial = (text: string): boolean => {
-  const line = text.trim();
-  return PUNCTUATION.test(line) || COMMENT.test(line) || IMPORT.test(line);
+  const { code } = splitLine(text);
+  return PUNCTUATION.test(code) || IMPORT.test(code);
+};
+
+const ESCAPES: Readonly<Record<string, number>> = {
+  a: 7,
+  b: 8,
+  t: 9,
+  n: 10,
+  v: 11,
+  f: 12,
+  r: 13,
+  '"': 34,
+  "\\": 92,
+};
+
+/** The name of a file in a `+++` line: a C-quoted name with escapes, or a plain name that git may end with a tab. */
+const fileName = (field: string): string => {
+  if (!field.startsWith('"')) return field.split("\t")[0] ?? "";
+  const bytes: number[] = [];
+  for (let i = 1; i < field.length && field[i] !== '"'; i += 1) {
+    const c = field[i] ?? "";
+    const octal = /^[0-7]{3}/.exec(field.slice(i + 1))?.[0];
+    if (c !== "\\") bytes.push(...new TextEncoder().encode(c));
+    else if (octal !== undefined) {
+      bytes.push(Number.parseInt(octal, 8));
+      i += 3;
+    } else {
+      bytes.push(ESCAPES[field[i + 1] ?? ""] ?? 92);
+      i += 1;
+    }
+  }
+  return new TextDecoder().decode(new Uint8Array(bytes));
 };
 
 /** The lines that `diff` adds, from the output of `git diff --unified=0`, with the file and the new line number. */
@@ -76,7 +195,7 @@ export const addedLines = (diff: string): AddedLine[] => {
       inHunk = false;
       file = null;
     } else if (!inHunk && raw.startsWith("+++ ")) {
-      const name = raw.slice(4).split("\t")[0] ?? "";
+      const name = fileName(raw.slice(4));
       file = name.startsWith("b/") ? name.slice(2) : null;
     } else if (raw.startsWith("@@")) {
       inHunk = true;
@@ -89,15 +208,43 @@ export const addedLines = (diff: string): AddedLine[] => {
   return added;
 };
 
-/** True when the trace skips `file`: Markdown, JSON, and lock files. The adapter also skips the files that `.gitattributes` marks generated. */
-export const skipsPath = (file: string): boolean => {
+/**
+ * The file extensions that the trace reads, which are the extensions of source code.
+ * The trace reads no other file (Markdown, JSON, YAML, text, lock files, images, and files with no extension).
+ * The adapter also skips the files that `.gitattributes` marks `linguist-generated`.
+ */
+export const SOURCE_EXTENSIONS: ReadonlySet<string> = new Set([
+  "ts",
+  "tsx",
+  "js",
+  "jsx",
+  "mjs",
+  "cjs",
+  "py",
+  "rs",
+  "go",
+  "java",
+  "kt",
+  "swift",
+  "c",
+  "h",
+  "cpp",
+  "hpp",
+  "cs",
+  "rb",
+  "php",
+  "sh",
+  "zsh",
+  "bash",
+  "lua",
+  "sql",
+]);
+
+/** True when the trace reads `file`: its name ends in the extension of a source file. */
+export const isSourcePath = (file: string): boolean => {
   const name = file.split("/").at(-1) ?? file;
-  return (
-    /\.(?:md|mdx|markdown|json|jsonc|json5|jsonl)$/i.test(name) ||
-    /\.lockb?$/.test(name) ||
-    name === "go.sum" ||
-    name === "pnpm-lock.yaml"
-  );
+  const dot = name.lastIndexOf(".");
+  return dot > 0 && SOURCE_EXTENSIONS.has(name.slice(dot + 1).toLowerCase());
 };
 
 /**
@@ -118,10 +265,10 @@ export const traceLines = (
     const cited = citedIds(l.text);
     for (const id of cited)
       if (!known.has(id)) findings.push({ kind: "orphan", ...place(l), id });
-    const trimmed = l.text.trim();
-    const inList = listOpen;
-    if (inList) listOpen = !LIST_CLOSE.test(trimmed);
-    else listOpen = IMPORT_OPEN.test(trimmed);
+    const { code } = splitLine(l.text);
+    const closing = /^[})]/.test(code);
+    const inList = listOpen && (!closing || LIST_CLOSE.test(code));
+    listOpen = listOpen ? !closing : IMPORT_OPEN.test(code);
     if (!(inList || cited.length > 0 || isTrivial(l.text)))
       findings.push({ kind: "uncited", ...place(l) });
   }

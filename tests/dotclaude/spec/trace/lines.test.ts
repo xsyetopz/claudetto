@@ -5,8 +5,8 @@ import {
   addedLines,
   citedIds,
   countOf,
+  isSourcePath,
   isTrivial,
-  skipsPath,
   traceLines,
 } from "../../../../src/plugins/dotclaude/slices/spec/domain/trace.ts";
 
@@ -17,8 +17,24 @@ describe("citedIds", () => {
   test("reads one ID, a list, and two citations", () => {
     expect(citedIds("x(); // [REQ-12]")).toEqual([12]);
     expect(citedIds("# [REQ-12, REQ-14]")).toEqual([12, 14]);
-    expect(citedIds("[REQ-1] and [REQ-2]")).toEqual([1, 2]);
+    expect(citedIds("// [REQ-1] and [REQ-2]")).toEqual([1, 2]);
   });
+
+  test("reads a citation in a comment, also a block comment before code", () => {
+    expect(citedIds(" * see [REQ-3]")).toEqual([3]);
+    expect(citedIds("/* [REQ-3] */ run();")).toEqual([3]);
+    expect(citedIds("<!-- [REQ-4] -->")).toEqual([4]);
+  });
+
+  test.each([
+    'const s = "[REQ-1]";',
+    "const s = '// [REQ-1]';",
+    "run(`[REQ-1]`);",
+    "[REQ-1]",
+    'x = "a" + "[REQ-1]";',
+  ])("does not read a citation in code: %s", (text) =>
+    expect(citedIds(text)).toEqual([]),
+  );
 
   test.each(["REQ-1", "[REQ-01]", "[REQ-]", "[req-1]", "[REQ-1 REQ-2]"])(
     "does not read %s",
@@ -53,6 +69,11 @@ describe("isTrivial", () => {
     'export { default } from "./a.ts"',
     "from os import path",
     "#include <stdio.h>",
+    "/* a */",
+    "/* a */ }",
+    "} // end",
+    "*/ }",
+    'import { a } from "b"; // [REQ-1]',
   ])("%j is trivial", (text) => expect(isTrivial(text)).toBe(true));
 
   test.each([
@@ -67,6 +88,15 @@ describe("isTrivial", () => {
     "export default a;",
     "if (a) {",
     "x = 1 // trailing comment",
+    "/* a */ run();",
+    "*/ run();",
+    "<!-- x --> <div/>",
+    "* b;",
+    "import x from 'y'; run();",
+    "export const a = \"x from 'y'\";",
+    'import { a } from "b"; run();',
+    "export { a }; run();",
+    "from os import path; run()",
   ])("%j is not trivial", (text) => expect(isTrivial(text)).toBe(false));
 });
 
@@ -105,29 +135,60 @@ describe("addedLines", () => {
     ]);
   });
 
+  test("reads a quoted file name with an escape", () => {
+    const quoted = [
+      'diff --git "a/a\\tb.ts" "b/a\\tb.ts"',
+      "--- /dev/null",
+      '+++ "b/a\\tb.ts"',
+      "@@ -0,0 +1 @@",
+      "+x",
+      'diff --git "a/q\\"r.ts" "b/q\\"r.ts"',
+      "--- /dev/null",
+      '+++ "b/q\\"r.ts"',
+      "@@ -0,0 +1 @@",
+      "+y",
+      "",
+    ].join("\n");
+    expect(addedLines(quoted)).toEqual([
+      { file: "a\tb.ts", line: 1, text: "x" },
+      { file: 'q"r.ts', line: 1, text: "y" },
+    ]);
+  });
+
   test("gives nothing for an empty diff", () => {
     expect(addedLines("")).toEqual([]);
   });
 });
 
-describe("skipsPath", () => {
+describe("isSourcePath", () => {
+  test.each([
+    "a.ts",
+    "x/a.tsx",
+    "a.mjs",
+    "a.py",
+    "a.rs",
+    "a.go",
+    "a.sh",
+    "lock.ts",
+    "src/json.ts",
+    "A.TS",
+    "a.test.js",
+  ])("reads %s", (file) => expect(isSourcePath(file)).toBe(true));
+
   test.each([
     "README.md",
-    "docs/a.MD",
     "package.json",
-    "x/tsconfig.jsonc",
-    "events.jsonl",
     "bun.lock",
-    "bun.lockb",
     "Cargo.lock",
     "go.sum",
     "pnpm-lock.yaml",
-  ])("skips %s", (file) => expect(skipsPath(file)).toBe(true));
-
-  test.each(["a.ts", "lock.ts", "src/json.ts", "a.py", "unlock"])(
-    "reads %s",
-    (file) => expect(skipsPath(file)).toBe(false),
-  );
+    "notes.txt",
+    "a.yml",
+    "image.png",
+    "Makefile",
+    "unlock",
+    ".ts",
+  ])("skips %s", (file) => expect(isSourcePath(file)).toBe(false));
 });
 
 describe("traceLines", () => {
@@ -154,6 +215,28 @@ describe("traceLines", () => {
       ["orphan", 1, 9],
       ["orphan", 2, 8],
     ]);
+  });
+
+  test("a citation in a string is no citation, and an ID in a string is no orphan", () => {
+    const found = traceLines(
+      at('s = "[REQ-1]";', 's = "[REQ-9]"; // [REQ-1]'),
+      known,
+    );
+    expect(found.map((f) => [f.kind, f.line])).toEqual([["uncited", 1]]);
+  });
+
+  test("code after a leading comment needs a citation", () => {
+    expect(
+      traceLines(at("/* a */ run();", "*/ run();"), known).map((f) => f.line),
+    ).toEqual([1, 2]);
+  });
+
+  test("the closing line of an import list that has code after it is uncited", () => {
+    expect(
+      traceLines(at("import {", "  a,", '} from "x"; run();'), known).map(
+        (f) => f.line,
+      ),
+    ).toEqual([3]);
   });
 
   test("the lines inside an import list that spans lines are trivial", () => {
