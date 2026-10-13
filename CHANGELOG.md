@@ -257,6 +257,9 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `claudeMdExcludes` match takes a lower-case drive letter as the same drive.
 - The you-should-know band shows, and a heads-up note reaches the next call of the main agent.
 - The status line gives `⚡`, `✅`, `⭐`, and `❌` two columns, keeps a later item in its column when a middle place is empty, and joins subagent items with ` · `.
+- On Windows, a program that `PATH` gives as an `.exe` file, such as `sh`, `git`, or a native `claude`, runs with no shell.
+  So `dotclaude-run-checks`, the spec commands, and `dotclaude-lab` no longer refuse a word with a `"` for it.
+- On Windows, `dotclaude-spec verify --in` accepts a linked worktree, because the spec commands compare the real paths of the git folders.
 
 ## Older Releases
 
