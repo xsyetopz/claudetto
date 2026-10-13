@@ -50,8 +50,9 @@ export const main = async (argv: string[]): Promise<number> => {
   const dirAt = args.indexOf("--dir");
   let dir = path.join(os.tmpdir(), SANDBOX_TEMP);
   if (dirAt !== -1) {
-    if (!args[dirAt + 1]) {
-      console.error("--dir needs a directory.");
+    const next = args[dirAt + 1];
+    if (!next || next.startsWith("--")) {
+      console.error("--dir needs a directory, not a flag.");
       return 1;
     }
     dir = args[dirAt + 1] as string;

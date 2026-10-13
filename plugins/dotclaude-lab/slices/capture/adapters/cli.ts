@@ -85,7 +85,14 @@ export const main = async (
     const i = args.indexOf(name);
     return i === -1 ? fallback : (args[i + 1] ?? null);
   };
-  const port = Number(flag("--port", "8787"));
+  const portArg = flag("--port", "8787") ?? "";
+  const port = /^\d+$/.test(portArg) ? Number(portArg) : 0;
+  if (port < 1 || port > 65535) {
+    console.error(
+      `capture: --port needs a whole number from 1 to 65535, not "${portArg}".`,
+    );
+    return 2;
+  }
   const out = flag(
     "--out",
     path.join(env["TMPDIR"] || os.tmpdir(), CAPTURE_TEMP),

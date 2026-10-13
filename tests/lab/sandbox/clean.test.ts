@@ -48,6 +48,12 @@ test("`--clean` removes a folder that holds only the sandbox layout", async () =
   expect(fs.existsSync(root)).toBe(false);
 });
 
+test("`--dir` followed by a flag exits 1 and does not take the flag as the folder", async () => {
+  const code = await main(["--dir", "--clean"]);
+
+  expect(code).toBe(1);
+});
+
 test("`cleanRefusal` allows the default folder whatever it holds", () => {
   expect(
     cleanRefusal("/tmp/dotclaude-sandbox", ["notes.txt"], true),

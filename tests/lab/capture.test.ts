@@ -300,6 +300,24 @@ test("a `/v1/messages` body that is not JSON is forwarded unchanged and not save
   }
 });
 
+test("`--port` that is not a whole number from 1 to 65535 stops the proxy with exit 2", () => {
+  const dir = tmpDir("capture-port");
+  for (const port of ["abc", "0", "65536", "-1", "1.5", "--clean"]) {
+    const r = Bun.spawnSync([
+      process.execPath,
+      "--no-env-file",
+      TOOL,
+      "--port",
+      port,
+      "--out",
+      dir,
+      "--upstream",
+      "http://127.0.0.1:9",
+    ]);
+    expect(r.exitCode).toBe(2);
+  }
+});
+
 test("`--count FILE` that is not JSON stops the proxy with exit 1 and names the file", async () => {
   const port = await freePort();
   const dir = tmpDir("capture");
