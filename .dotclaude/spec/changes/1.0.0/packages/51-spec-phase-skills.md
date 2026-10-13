@@ -7,9 +7,9 @@ wave: 8
 deps: ["P49","P50"]
 owns: ["src/plugins/dotclaude/slices/spec/skills/","src/plugins/dotclaude/slices/spec/slice.ts","src/plugins/dotclaude/slices/spec/adapters/mod.ts","src/plugins/dotclaude/slices/spec/domain/ship-lane.ts","src/plugins/dotclaude/slices/spec/lab/"]
 satisfies: []
-verify: just check, just lab, and one session in just sandbox that runs a trivial change and a large change from `/dotclaude:specify` to `/dotclaude:archive`
+verify: just check && just lab
 agent: main session
-status: planned
+status: doing
 ---
 
 ## Goal
