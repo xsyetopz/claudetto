@@ -35,7 +35,7 @@ test("a wide terminal shows three rows of numbers with icons, and `NO_COLOR` kee
     [
       "⌂ dotclaude  ⎇ main ✎2 ↑1 ↓2",
       "◈ Opus 5.5 high ✦  ▤ 45k/300k 15%  $1.23 +300 -20",
-      "◷ 5h 23% 3h12m  ◷ 7d 80% 2d4h",
+      "◷ 5h 23% ▼13% 3h12m  ◷ 7d 80% ▲11% 2d4h",
     ].join("\n"),
   ]);
 });
@@ -46,7 +46,7 @@ test("a narrow terminal drops the segments at the right of a row, and the first 
     [
       "⌂ dotclaude  ⎇ main ✎2 ↑1 ↓2",
       "◈ Opus 5.5 high ✦",
-      "◷ 5h 23% 3h12m",
+      "◷ 5h 23% ▼13% 3h12m",
     ].join("\n"),
   ]);
 });

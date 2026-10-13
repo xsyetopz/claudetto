@@ -8,8 +8,10 @@ import { windowOf } from "../../../../kernel/budget.ts";
 import { parseModel } from "../../../../kernel/model.ts";
 import type { StatusSegment } from "../../../../kernel/slice.ts";
 import { dollars, span, thousands } from "./domain/format.ts";
+import { paceDelta } from "./domain/pace.ts";
 import type { LimitWindow, Status } from "./domain/types.ts";
 import { ICON } from "./icons.ts";
+import { FIVE_HOUR_S, SEVEN_DAY_S } from "./limits.ts";
 
 const asStatus = (status: unknown): Status => status as Status;
 
@@ -104,10 +106,19 @@ const cost: StatusSegment = {
   },
 };
 
-/** One limit window as `◷ 5h 23% 3h12m`: the percent in one of three colors, and the time to the reset. */
+/** The pace arrow: `▼14%` in green for a reserve, `▲12%` in yellow for a deficit, and nothing at the even pace. */
+const paceText = (delta: number | null, status: Status): string => {
+  if (delta === null || delta === 0) return "";
+  return delta < 0
+    ? status.paint.green(` ${ICON.reserve}${-delta}%`)
+    : status.paint.yellow(` ${ICON.deficit}${delta}%`);
+};
+
+/** One limit window as `◷ 5h 23% ▼13% 3h12m`: the percent in one of three colors, the pace arrow, and the time to the reset. */
 const limitText = (
   label: string,
   window: LimitWindow | undefined,
+  spanS: number | null,
   status: Status,
 ): string | null => {
   const used = window?.used_percentage;
@@ -115,17 +126,21 @@ const limitText = (
   const percent = Math.round(used);
   const resetMs = (window?.resets_at ?? 0) * 1000 - status.now;
   const reset = resetMs > 0 ? status.paint.dim(` ${span(resetMs)}`) : "";
-  return `${ICON.limit} ${label} ${status.paint.level(percent)(`${percent}%`)}${reset}`;
+  const delta =
+    spanS === null ? null : paceDelta(window, status.now / 1000, spanS);
+  const pace = paceText(delta, status);
+  return `${ICON.limit} ${label} ${status.paint.level(percent)(`${percent}%`)}${pace}${reset}`;
 };
 
 const limit = (
   id: string,
   label: string,
+  spanS: number | null,
   pick: (status: Status) => LimitWindow | undefined,
 ): StatusSegment => ({
   id,
   row: 2,
-  render: (raw) => limitText(label, pick(asStatus(raw)), asStatus(raw)),
+  render: (raw) => limitText(label, pick(asStatus(raw)), spanS, asStatus(raw)),
 });
 
 /** Each segment of the main status line, in the order of the rows and of the places in a row. */
@@ -136,7 +151,7 @@ export const SEGMENTS: readonly StatusSegment[] = [
   model,
   context,
   cost,
-  limit("limit-5h", "5h", (s) => s.input.rate_limits?.five_hour),
-  limit("limit-7d", "7d", (s) => s.input.rate_limits?.seven_day),
-  limit("limit-spend", "spend", (s) => s.input.rate_limits?.spend_limit),
+  limit("limit-5h", "5h", FIVE_HOUR_S, (s) => s.input.rate_limits?.five_hour),
+  limit("limit-7d", "7d", SEVEN_DAY_S, (s) => s.input.rate_limits?.seven_day),
+  limit("limit-spend", "spend", null, (s) => s.input.rate_limits?.spend_limit),
 ];
