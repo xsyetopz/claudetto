@@ -89,7 +89,7 @@ The countdowns of the limits use this refresh.
 
 ## Usage Sample
 
-The command keeps one file of the last usage, at `RATE_LIMITS_FILE` (`.dotclaude/rate-limits.json`).
+The command keeps one file of the last usage, at `RATE_LIMITS_FILE` (`.dotclaude/rate-limits.jsonl`).
 The file is in the project folder, which is `workspace.project_dir`.
 When that is not set, the folder is `workspace.current_dir`.
 If that is not set either, the folder is the `cwd` field of the status object.

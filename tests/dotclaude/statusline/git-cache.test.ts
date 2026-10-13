@@ -110,6 +110,11 @@ test("the cache file is in the temp folder and does not name the repository path
   expect(cached.length).toBe(1);
   expect(cached[0]?.startsWith(os.tmpdir())).toBe(true);
   expect(cached[0]).not.toContain("/work/dotclaude");
+  // A JSONL file: one record on one line, with a line end.
+  expect(cached[0]?.endsWith(".jsonl")).toBe(true);
+  const text = memory.files.get(cached[0] ?? "") ?? "";
+  expect(text.endsWith("\n")).toBe(true);
+  expect(text.trimEnd()).not.toContain("\n");
 });
 
 /** Runs the status line once with a saved cache `text` for the repository of `STATUS`, and counts the `git` runs. */

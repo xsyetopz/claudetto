@@ -44,7 +44,10 @@ test("the main status line keeps the last `rate_limits` in the runtime file of t
   const { writes } = await runWith(STATUS);
   expect(writes.length).toBe(1);
   const [file, text] = writes[0] ?? ["", ""];
-  expect(file).toBe(path.join(ROOT, RATE_LIMITS_FILE));
+  expect(file).toBe(path.join(ROOT, ".dotclaude", "rate-limits.jsonl"));
+  // A JSONL file: one record on one line, with a line end.
+  expect(text.endsWith("\n")).toBe(true);
+  expect(text.trimEnd()).not.toContain("\n");
   const sample = JSON.parse(text);
   expect(sample.savedAt).toBe(NOW);
   expect(sample.rate_limits).toStrictEqual(STATUS.rate_limits);

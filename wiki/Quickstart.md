@@ -44,7 +44,7 @@ Then the row is cut at its end with `…`.
 
 The status line calls no model and no network.
 It runs no program except `git`.
-It writes the last usage sample to `.dotclaude/rate-limits.json` when the values change.
+It writes the last usage sample to `.dotclaude/rate-limits.jsonl` when the values change.
 See [Status-Line](Status-Line).
 
 ## The Agents

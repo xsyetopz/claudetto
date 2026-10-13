@@ -67,7 +67,7 @@ export const cacheFile = (
     .update(dir)
     .digest("hex")
     .slice(0, 16);
-  return path.join(folder, `dotclaude-git-${key}.json`);
+  return path.join(folder, `dotclaude-git-${key}.jsonl`);
 };
 
 /** True for a count that `parseStatus` can give: a safe integer of zero or more. */
@@ -139,7 +139,7 @@ export const cachedGitState = async (
   if (fresh) return fresh.state;
   const state = runGit(dir, ports.runner);
   try {
-    await ports.write(file, JSON.stringify({ at: now, state }));
+    await ports.write(file, `${JSON.stringify({ at: now, state })}\n`);
   } catch (err) {
     onError(failureText(err));
   }

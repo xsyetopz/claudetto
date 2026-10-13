@@ -23,7 +23,7 @@ Its files import only `src/kernel/` and their own folder.
 The command reads the status object from stdin.
 It reads the active change of the spec store.
 It makes one `git status` call (`GIT_ARGS` in `domain/git.ts`).
-It writes one file of its own, `.dotclaude/rate-limits.json`.
+It writes one file of its own, `.dotclaude/rate-limits.jsonl`.
 That file is the saved usage sample (`RATE_LIMITS_FILE` in `src/kernel/paths.ts`).
 The sample is rewritten only when its values change.
 It is also rewritten when it is older than `USAGE_REWRITE_MS`.

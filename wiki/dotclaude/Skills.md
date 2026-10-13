@@ -214,7 +214,7 @@ The steps:
    It asks the user whether to push and whether to archive the change.
    It does neither until the user answers.
 
-The count of `dotclaude-spec runs` uses the usage sample in `.dotclaude/rate-limits.json`.
+The count of `dotclaude-spec runs` uses the usage sample in `.dotclaude/rate-limits.jsonl`.
 The status line writes that file.
 A sample older than `USAGE_SAMPLE_MAX_MS` allows one run.
 The cap is `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` when it is a positive number.
