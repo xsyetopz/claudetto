@@ -5,13 +5,16 @@
 //   2. `git merge --no-edit <branch>`. On a conflict the command stops, moves no state, and prints the conflicted files.
 //   3. `just generate`, when the project has a `justfile`.
 //   4. The `done` event, and one commit of `plugins/` and the folder of the change.
-// With no branch, `HEAD` of the main checkout must contain the approved SHA, and the command runs only steps 1, 3, and 4.
+// With no branch, `HEAD` of the main checkout must contain the approved SHA, and the command runs only steps 3 and 4.
+// A retry, when `HEAD` already contains the approved SHA, skips steps 1 and 2.
+// Then the tree may hold changes only in `plugins/` and in the folder of the change, and the commit of step 4 holds them.
+// When the commit fails, the log and the package file go back to their state before the move.
 
 import path from "node:path";
 import { gateMerge } from "../domain/gates.ts";
 import { hasTransition, PACKAGE_TRANSITIONS } from "../domain/states.ts";
 import { parseArgs } from "./args.ts";
-import { changeDir } from "./files.ts";
+import { changeDir, readPackages } from "./files.ts";
 import { exec } from "./git.ts";
 import type { Run } from "./run.ts";
 import {
@@ -78,13 +81,28 @@ const branchHead = (run: Run, branch: string): string | null => {
   return verify.out;
 };
 
+/** True when `file` is in the folder `dir`. */
+const within = (dir: string, file: string): boolean =>
+  !path.posix.relative(dir, file).startsWith("..");
+
+/** Gives false with a message when a tracked file outside the folder of the change and `plugins/` differs from `HEAD`. */
+const onlyOwnChanges = (run: Run, id: string, pkg: string): boolean => {
+  const dir = changeDir(id);
+  const others = treeState(run).files.filter(
+    (f) => !within(dir, f) && !within(GENERATED_DIR, f),
+  );
+  if (others.length === 0) return true;
+  run.io.error(
+    `The tree has changes outside \`${dir}\` and \`${GENERATED_DIR}\`: ${others.map((f) => `\`${f}\``).join(", ")}. Commit or undo them first. No state changed for \`${pkg}\`.`,
+  );
+  return false;
+};
+
 /** Commits the folder of the change when it holds the only changes. Gives false with a message when the merge must not start. */
 const settleTree = (run: Run, id: string, pkg: string): boolean => {
   const tree = treeState(run);
   const dir = changeDir(id);
-  const others = tree.files.filter((f) =>
-    path.posix.relative(dir, f).startsWith(".."),
-  );
+  const others = tree.files.filter((f) => !within(dir, f));
   if (tree.staged || others.length > 0) {
     run.io.error(
       `The tree has changes outside \`${dir}\`: ${tree.files.map((f) => `\`${f}\``).join(", ")}. Commit or undo them first. No state changed for \`${pkg}\`.`,
@@ -126,16 +144,19 @@ export const mergeCommand = async (
     "";
   const head = branch === undefined ? undefined : branchHead(run, branch);
   if (head === null) return 1;
+  const contained =
+    sha !== "" &&
+    git(run, ["merge-base", "--is-ancestor", sha, "HEAD"]).code === 0;
   const gate = gateMerge({
     approvedSha: sha,
     ...(head === undefined ? {} : { branchHead: head }),
-    mainContains:
-      sha !== "" &&
-      git(run, ["merge-base", "--is-ancestor", sha, "HEAD"]).code === 0,
+    mainContains: contained,
   });
   if (!gate.ok) return stop(run, gate.reason);
-  if (!settleTree(run, id, pkg)) return 1;
-  if (branch !== undefined) {
+  if (contained) {
+    if (!onlyOwnChanges(run, id, pkg)) return 1;
+  } else if (!settleTree(run, id, pkg)) return 1;
+  if (branch !== undefined && !contained) {
     const merge = git(run, ["merge", "--no-edit", "--end-of-options", branch]);
     if (merge.code !== 0) {
       const files = git(run, ["diff", "--name-only", "--diff-filter=U"])
@@ -160,6 +181,14 @@ export const mergeCommand = async (
       return stop(run, generate.out);
     }
   }
+  const log = path.posix.join(changeDir(id), "events.jsonl");
+  const pkgPath = (await readPackages(run.store, id)).find(
+    (p) => p.id === pkg,
+  )?.path;
+  const saved = {
+    log: await run.store.files.read(log),
+    pkg: pkgPath ? await run.store.files.read(pkgPath) : null,
+  };
   const moved = await movePackage(run, id, pkg, "done", { sha });
   const paths = [
     ...(run.store.exists(GENERATED_DIR) ? [GENERATED_DIR] : []),
@@ -173,7 +202,13 @@ export const mergeCommand = async (
     "--",
     ...paths,
   ]);
-  if (commit.code !== 0) return stop(run, commit.out);
+  if (commit.code !== 0) {
+    git(run, ["reset", "-q", "--", ...paths]);
+    if (saved.log !== null) await run.store.write(log, saved.log);
+    if (pkgPath && saved.pkg !== null)
+      await run.store.write(pkgPath, saved.pkg);
+    return stop(run, commit.out);
+  }
   printMoved(run, "merge", moved, parsed.json);
   return 0;
 };
