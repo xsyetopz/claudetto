@@ -4,18 +4,14 @@
 
 ### Requirement: Atomic settings write
 
-`dotclaude-setup settings --apply` SHALL write the user settings file with `writeAtomic`.
+`dotclaude-setup settings --apply` SHALL write the user settings file with `writeAtomic`, and SHALL keep a symlink and the mode of the file.
 
 #### Scenario: Interrupted write
 
 - **WHEN** the process stops during the write of `settings.json`
 - **THEN** the file holds the old content or the new content, never a part of either
 
-### Requirement: No torn exclude line
+#### Scenario: Symlinked settings file
 
-The exclude step SHALL NOT leave a torn line in `.git/info/exclude` when two runs append at the same time.
-
-#### Scenario: Two runs
-
-- **WHEN** two `dotclaude-setup` runs add runtime paths to the same exclude file
-- **THEN** every line of the file is a whole path
+- **WHEN** `settings.json` is a symlink to a file in another folder
+- **THEN** the symlink stays, and the file that it names gets the new content with its old mode
