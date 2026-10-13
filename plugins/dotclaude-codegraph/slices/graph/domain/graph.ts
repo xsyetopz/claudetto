@@ -27,13 +27,23 @@ export const SESSION_LINE =
   "The default depth of 2 misses some of it. " +
   "`codegraph callers <symbol>` and `codegraph callees <symbol>` list who calls a symbol and what it calls.";
 
+/** One word of an option value, with its quoted parts, such as `"my dir"`. */
+const GIT_WORD = String.raw`(?:[^\s"']|"[^"]*"|'[^']*')+`;
+
+/**
+ * A global option of `git` before its verb: `-C <path>`, `-c <k=v>`, `--git-dir=<p>`, `--git-dir <p>`, `--work-tree`, `--namespace`, or a flag such as `--no-pager` or `-p`.
+ */
+const GIT_OPTION = String.raw`(?:-[Cc]\s+${GIT_WORD}|--(?:git-dir|work-tree|namespace)(?:=|\s+)${GIT_WORD}|--[a-z][\w-]*|-[pP])`;
+
 /**
  * A `Bash` command with a `git` command that changes the tree: `commit`, `merge`, `rebase`, `pull`, `checkout`, `switch`, `reset`, `cherry-pick`, `revert`, `stash`, `apply`, or `am`.
  * The `git` command starts the command or follows `;`, `&`, or `|`, so `cd x && git commit` matches.
+ * Global options before the verb are skipped, so `git -C dir commit` matches too.
  * The mod handler uses it as its filter, so a command of any other kind starts no process.
  */
-export const TREE_CHANGE =
-  /(?:^|[;&|])\s*git\s+(?:commit|merge|rebase|pull|checkout|switch|reset|cherry-pick|revert|stash|apply|am)(?:\s|$)/;
+export const TREE_CHANGE = new RegExp(
+  String.raw`(?:^|[;&|])\s*git(?:\s+${GIT_OPTION})*\s+(?:commit|merge|rebase|pull|checkout|switch|reset|cherry-pick|revert|stash|apply|am)(?:\s|$)`,
+);
 
 /** `text` as a parsed payload, or null when it is not JSON. */
 export const parseJson = (text: string): HookPayload | null => {

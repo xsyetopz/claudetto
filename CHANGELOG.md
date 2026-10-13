@@ -154,6 +154,11 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `prompt` section of the environment no longer describes fast mode, because the `trim` slice turns fast mode off.
 - The `prompt` slice denies `Read` of `.env.development`, `.env.dev`, `.env.staging`, `.env.stage`, `.env.test`, `.env.prod`, `.env.qa`, and `.env.preview`.
   The `.env.example`, `.env.sample`, and `.env.template` files stay readable.
+- The `START_SYNC_TIMEOUT_MS` bound of `dotclaude-codegraph` is 6000 ms, in place of 8000 ms.
+  On Windows the sync also gets `TREE_GRACE_MS`, so the session start stays at least 1 s under its 10 s hook timeout.
+- The `dcc-plugin-you-should-know` check sends only the newest 10 topics of the `<seen>` list, so the input stays bounded.
+- The `TREE_CHANGE` match of `dotclaude-codegraph` accepts a `git` command with global options before its verb.
+  So a command such as `git -C dir commit` syncs the index.
 
 ### Removed
 

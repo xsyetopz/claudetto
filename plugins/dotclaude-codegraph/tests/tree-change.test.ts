@@ -60,6 +60,13 @@ test("each `git` command that changes the tree syncs once", async ($: Engine, on
   expect(seen.runs.length).toBe(11);
 });
 
+test("a `git` command with a global option before its verb syncs once", async ($: Engine, on: On) => {
+  const seen = stub(on);
+  await bash($, "git -C dir commit -m x");
+  await bash($, "git -c user.name=x pull --ff-only");
+  expect(seen.runs.length).toBe(2);
+});
+
 test("a `Bash` call of another command does not reach the hook", async ($: Engine, on: On) => {
   const seen = stub(on);
   for (const command of [

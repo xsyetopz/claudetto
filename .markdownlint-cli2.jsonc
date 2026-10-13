@@ -5,5 +5,12 @@
   // `.agents/` holds the skills that a user installs for this checkout, which git ignores, so their text is not ours to lint.
   // `src/` holds the sources and the shared parts of the generator, and the files that it generates in `plugins/` are linted.
   "globs": ["**/*.md"],
-  "ignores": ["node_modules/**", "external/**", ".claude/**", ".agents/**", "src/**", "plugins/*/evals/results/**"]
+  "ignores": [
+    "node_modules/**",
+    "external/**",
+    ".claude/**",
+    ".agents/**",
+    "src/**",
+    "plugins/*/evals/results/**"
+  ]
 }

@@ -99,7 +99,7 @@ The text then tells the user what to do.
 | Bound | Value | File | Use |
 | --- | --- | --- | --- |
 | `QUERY_TIMEOUT_MS` | 2000 ms | `slices/graph/limits.ts` | `codegraph --version` in the check |
-| `START_SYNC_TIMEOUT_MS` | 8000 ms | `slices/graph/limits.ts` | The sync at session start |
+| `START_SYNC_TIMEOUT_MS` | 6000 ms | `slices/graph/limits.ts` | The sync at session start |
 | `BACKGROUND_SYNC_TIMEOUT_MS` | 60000 ms | `slices/graph/limits.ts` | The sync after an edit, and the hook `timeout` of 60 s |
 | `GIT_SYNC_TIMEOUT_MS` | 15000 ms | `slices/graph/limits.ts` | The sync after a `git` command, which the `git` result waits for |
 | `TREE_GRACE_MS` | 3000 ms | `slices/graph/adapters/codegraph.ts` | Time for `run-tree.ts` to start and end the tree after the limit (Windows only) |

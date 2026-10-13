@@ -189,7 +189,10 @@ The hooks in `hooks/hooks.json` do three things:
 The add-on checks that the CLI is on `PATH` with `findOnPath` in `adapters/codegraph.ts`.
 The bounds are in `slices/graph/limits.ts`.
 `QUERY_TIMEOUT_MS` is 2000.
-`START_SYNC_TIMEOUT_MS` is 8000.
+`START_SYNC_TIMEOUT_MS` was 8000 before version 1.0.0.
+Version 1.0.0 changed it to 6000.
+On Windows the sync also gets `TREE_GRACE_MS` (3000) more, so 8000 plus 3000 ran past the 10 s hook timeout.
+At 6000, the total is 9 s, which leaves each platform at least 1 s under the timeout.
 
 The alternatives are these:
 

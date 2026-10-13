@@ -51,6 +51,7 @@ The sandbox sessions measured these checks:
 | API key | 3,017 ms | 411 of Haiku |
 
 The tool waits at most 5 seconds for a separate call and at most 6 seconds for a fork.
+Each check sends the newest 10 topics that showed, so the input stays bounded.
 A failed or slow call shows no toast, and the change runs.
 
 ## When `CLAUDE_CODE_ATTRIBUTION_HEADER` Is `0`
@@ -60,6 +61,9 @@ The request then carries no billing block and no identity block of Claude Code, 
 
 After a 429, the plugin uses a fork of the main conversation for the rest of the session.
 A fork sends the main request again, so it works.
+The fork has no output bound and no cancel.
+`$.model.fork` takes only `{ prompt }`, so the plugin cannot set a token limit or a timeout on it.
+The plugin stops waiting after 6 seconds, but it cannot stop the request.
 The sandbox session measured this path:
 
 - The first check waited 2,850 ms, because Claude Code tried the separate call 3 times before the 429 stood.

@@ -5,10 +5,9 @@
 import { existsSync, statSync } from "node:fs";
 import { delimiter, join } from "node:path";
 import { type HookPayload, INDEX_PATH } from "../domain/graph.ts";
+import { TREE_GRACE_MS } from "../limits.ts";
 
 const TREE = join(import.meta.dirname, "run-tree.ts");
-// The time that `run-tree.ts` gets to start and to end the tree after the limit.
-const TREE_GRACE_MS = 3000;
 // On Windows npm installs `codegraph` as `codegraph.cmd`, and Node runs a `.cmd` file only through a shell.
 // A shell reads the arguments as text, so an argument with a character outside this set is not run.
 const SHELL_SAFE_ARG = /^[\w$.-]+$/;
