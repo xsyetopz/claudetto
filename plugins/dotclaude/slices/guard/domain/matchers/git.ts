@@ -196,8 +196,8 @@ export const gitMatchers: Matcher[] = [
       return (
         name === "git" &&
         verb === "branch" &&
-        (args.includes("-D") ||
-          (hasFlag(args, "--delete", "-d") && hasFlag(args, "--force", "-f")))
+        (hasShort(args, "D") ||
+          ((hasFlag(args, "--delete") || hasShort(args, "d")) && isForce(args)))
       );
     },
   },

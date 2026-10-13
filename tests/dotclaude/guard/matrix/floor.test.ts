@@ -25,6 +25,9 @@ const FLOOR = [
   "git push origin +main",
   "git push --force-with-lease origin main",
   "git branch -D x",
+  "git branch -Df x",
+  "git branch -fd x",
+  "git branch --delete -f x",
   "git rm -rf .",
   "git rm -r -f src",
   "rm -rf /",
@@ -91,4 +94,10 @@ test("a destructive command in a compound command is denied with the whole comma
   const command = "ls -la && cd src; git reset --hard || echo failed";
   const reason = await mainDeny(command, main);
   expect(reason).toContain(command);
+});
+
+test("a branch delete without force, and a branch list, are allowed in the main session", async () => {
+  for (const command of ["git branch -d merged", "git branch -a", "git branch -f x"]) {
+    expect(await mainDeny(command, main), command).toBeNull();
+  }
 });
