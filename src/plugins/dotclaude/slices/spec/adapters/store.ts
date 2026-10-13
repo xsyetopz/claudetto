@@ -9,25 +9,29 @@ import type { FileReader } from "../../../../../kernel/ports.ts";
 import {
   eventLine,
   eventsPath,
+  isJson,
   type Lane,
   type LaneEvent,
   packageLanes,
   readEvents,
+  scanEvents,
 } from "../../../../../kernel/spec-store.ts";
 
-/** True when `file` is missing or empty, or when its last byte is a line end. It reads that byte only. */
-const endsWithLineEnd = (file: string): boolean => {
-  if (!fs.existsSync(file)) return true;
-  const size = fs.statSync(file).size;
-  if (size === 0) return true;
-  const fd = fs.openSync(file, "r");
-  try {
-    const last = new Uint8Array(1);
-    fs.readSync(fd, last, 0, 1, size - 1);
-    return last[0] === 0x0a;
-  } finally {
-    fs.closeSync(fd);
+/**
+ * Prepares `file` for one append, and gives the text that goes before the new line.
+ * A torn last line, with no line end and not JSON, is cut off, so the new line does not join it.
+ * A last line that is JSON with no line end gets a line end first.
+ */
+const readyForAppend = (file: string): string => {
+  if (!fs.existsSync(file)) return "";
+  const bytes = fs.readFileSync(file);
+  if (bytes.length === 0 || bytes[bytes.length - 1] === 0x0a) return "";
+  const cut = bytes.lastIndexOf(0x0a) + 1;
+  if (cut > 0 && !isJson(bytes.subarray(cut).toString("utf8"))) {
+    fs.truncateSync(file, cut);
+    return "";
   }
+  return "\n";
 };
 
 /** The store under the folder `root`. Each path that a method takes is relative to `root`. */
@@ -70,14 +74,19 @@ export class SpecStore {
     return packageLanes(this.files, id, events);
   }
 
+  /** The line of the torn last line of `events.jsonl` of the change `id`, or null when there is none. */
+  async tornLine(id: string): Promise<number | null> {
+    return (await scanEvents(this.files, id))?.torn ?? null;
+  }
+
   /**
    * Adds one line for `event` to the end of `events.jsonl` of the change `id`, with an append.
-   * A file with no final line end gets one first, so the new line does not join the last line.
+   * A torn last line is cut off first, and a last line with no line end gets one, so the new line starts on its own line.
    */
   async appendEvent(id: string, event: LaneEvent): Promise<void> {
     const file = this.abs(eventsPath(id));
-    const lead = endsWithLineEnd(file) ? "" : "\n";
     fs.mkdirSync(path.dirname(file), { recursive: true });
+    const lead = readyForAppend(file);
     fs.appendFileSync(file, `${lead}${eventLine(event)}`);
   }
 

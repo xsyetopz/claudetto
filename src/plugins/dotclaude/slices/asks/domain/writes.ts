@@ -13,8 +13,9 @@
 // A path with a variable (`$F`) or a glob (`*`, `?`, `[a-z]`, `{a,b}`) is read by its literal part: each variable and glob counts as the name `x`.
 // It asks only when the literal part is a protected path (`tests/*.test.mjs`) and passes `$F` or `src/*.mjs`.
 // A path that code in another language names counts as a write only when the same code has a write word or a redirect (`CODE_WRITE_PARTS`, `CODE_WRITE_WORDS`, `CODE_WRITE_MODES`, `CODE_REDIRECT`), so `YAML.load_file(".github/ci.yml")` gets no ask.
-// A command over the scan bound (`SHELL_SCAN_MAX_CHARS`) gets no write ask here, and the existing behavior applies.
+// A command over the scan bound (`SHELL_SCAN_MAX_CHARS`) gets a write ask, because the guard cannot read the rest of it.
 
+import { SHELL_SCAN_MAX_CHARS } from "../../../../../kernel/budget.ts";
 import { CLAUDE_DIR } from "../../../../../kernel/paths.ts";
 import {
   CODE_REDIRECT,
@@ -151,7 +152,13 @@ export const shellWriteReasons = async (
     command,
     scripts,
   );
-  if (truncated) return [];
+  // The guard cannot read a command over the scan bound, so it asks, as the git guard does.
+  if (truncated)
+    return [
+      `The command is longer than ${SHELL_SCAN_MAX_CHARS} characters, so the write guard cannot read all of it.
+It can write a protected path in the part that it does not read.
+Shorter commands let the guard read each one.`,
+    ];
   const found: Write[] = [
     // Code in another language can write any path that it names, with a shell command or with its own file API.
     // A path counts only when the same code has a write word. A shell command in the code is read below.

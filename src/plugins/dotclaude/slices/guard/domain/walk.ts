@@ -99,20 +99,182 @@ const cdOf = (argv: string[]): { dir: string | undefined } | null => {
   return { dir: operand === "" || operand === "-" ? undefined : operand };
 };
 
+/** A character that marks where bash splits a word, at an unquoted `$IFS`. */
+const SEP = "\u0000";
+
 /**
- * The simple commands of a `Bash` text, after `parse` and the unwrapping of each wrapper.
- * A `cd` sets the folder of the commands after it, so `cd <dir> && rm ...` reads `rm` under `<dir>`.
+ * An `$IFS` reference, or a `${...}` expansion that names `IFS`, which bash may expand to a separator.
+ * It is sticky, so it matches only at the position that `lastIndex` sets.
  */
-export const walk = (command: string): Simple[] => {
+const IFS_REF = /\$\{[^}]*IFS[^}]*\}|\$IFS(?![A-Za-z0-9_])/y;
+
+/**
+ * A positional or special parameter that is empty when the shell has no arguments: `$1` to `$9`, `${10}`, `$@`, `$*`, and `$!`.
+ * The other special parameters, such as `$?` and `$#`, never expand to an empty word, so they stay as written.
+ */
+const EMPTY_REF = /\$(?:[1-9]|\{[1-9]\d*\}|[@*!]|\{[@*!]\})/y;
+
+/**
+ * The text of `command`, with each `$IFS` reference replaced by `SEP`.
+ * A quoted reference stays as it is, because bash does not split inside quotes.
+ * With `all`, a quoted reference is also replaced, which is the reading of a shell that runs the text again.
+ * With `drop`, each empty parameter (see `EMPTY_REF`) is removed, as bash removes it, and is kept otherwise.
+ */
+const markedText = (command: string, all: boolean, drop: boolean): string => {
+  let out = "";
+  let quote: string | null = null;
+  for (let i = 0; i < command.length; i++) {
+    const c = command[i] as string;
+    if (c === "\\" && quote !== "'") {
+      out += command.slice(i, i + 2);
+      i++;
+      continue;
+    }
+    if (c === "$" && (all || quote === null)) {
+      IFS_REF.lastIndex = i;
+      const ref = IFS_REF.exec(command);
+      if (ref) {
+        out += SEP;
+        i += ref[0].length - 1;
+        continue;
+      }
+    }
+    if (c === "$" && drop && (all || quote !== "'")) {
+      EMPTY_REF.lastIndex = i;
+      const empty = EMPTY_REF.exec(command);
+      if (empty) {
+        i += empty[0].length - 1;
+        continue;
+      }
+    }
+    if (quote === null && (c === "'" || c === '"')) quote = c;
+    else if (c === quote) quote = null;
+    out += c;
+  }
+  return out;
+};
+
+/** The words of each parsed command, with each `SEP` read as a separator that splits a word. */
+const commandsOf = (text: string): string[][] =>
+  parse(text).commands.map((argv) =>
+    argv.flatMap((w) =>
+      w.includes(SEP) ? w.split(SEP).filter((part) => part !== "") : [w],
+    ),
+  );
+
+/** `name=value` in an `alias` word, where the value may hold a line end. */
+const ALIAS_DEF = /^([A-Za-z_][\w.-]*)=([\s\S]*)$/;
+
+/** The aliases of a text, by name, with the commands of each body. */
+type Aliases = Map<string, string[][]>;
+
+/**
+ * Applies an `alias` or `unalias` command to `aliases`, and returns true when `argv` is one of them.
+ * A wrapper before the name, such as `command alias`, does not hide it.
+ * `unalias -a` drops every alias.
+ */
+const aliasCmd = (argv: string[], aliases: Aliases): boolean => {
+  const [head, ...rest] = stripWrappers(argv);
+  if (head === "alias") {
+    for (const word of rest) {
+      const [, name = "", value = ""] = ALIAS_DEF.exec(word) ?? [];
+      if (name !== "") aliases.set(name, commandsOf(value));
+    }
+    return true;
+  }
+  if (head !== "unalias") return false;
+  if (rest.includes("-a")) aliases.clear();
+  for (const word of rest) aliases.delete(word);
+  return true;
+};
+
+/**
+ * The commands of `argv` with its head replaced by the alias of that name, again while a new head is an alias.
+ * The words after the name go to the last command of the alias body, as bash puts them there.
+ * A name that is met twice on one chain stops it, as bash stops it.
+ */
+const expandAlias = (
+  argv: string[],
+  aliases: Aliases,
+  seen: Set<string>,
+): string[][] => {
+  const name = argv[0] ?? "";
+  if (!aliases.has(name) || seen.has(name)) return [argv];
+  const body = aliases.get(name) as string[][];
+  const args = argv.slice(1);
+  const cmds =
+    body.length === 0
+      ? [args]
+      : [...body.slice(0, -1), [...(body.at(-1) as string[]), ...args]];
+  const next = new Set([...seen, name]);
+  return cmds.flatMap((cmd) => expandAlias(cmd, aliases, next));
+};
+
+/**
+ * The simple commands of `text` as the shell reads them, with `cd` setting the folder.
+ * The words are the ones that are written, so an alias does not change them here.
+ */
+const rawOf = (text: string): Simple[] => {
   const out: Simple[] = [];
   let dir: string | undefined;
-  for (const argv of parse(command).commands) {
+  for (const argv of commandsOf(text)) {
     const cd = cdOf(argv);
     if (cd) {
       dir = cd.dir === undefined ? undefined : joinDir(dir, cd.dir);
       continue;
     }
     out.push(...unwrap(argv, dir));
+  }
+  return out;
+};
+
+/**
+ * The simple commands of `text` with each alias expanded, from its definition on.
+ * Bash expands an alias only from the next line, so `alias g=git; g reset --hard` runs `g` as a command
+ * that is not found. This reading does not wait for the line end, so the same-line form is also denied.
+ * A deny of the same-line form is the safe side, because the raw words above still hold each written verb.
+ */
+const expandedOf = (text: string): Simple[] => {
+  const out: Simple[] = [];
+  const aliases: Aliases = new Map();
+  let dir: string | undefined;
+  for (const argv of commandsOf(text)) {
+    if (aliasCmd(argv, aliases)) continue;
+    for (const words of expandAlias(argv, aliases, new Set())) {
+      const cd = cdOf(words);
+      if (cd) {
+        dir = cd.dir === undefined ? undefined : joinDir(dir, cd.dir);
+        continue;
+      }
+      if (words !== argv) out.push(...unwrap(words, dir));
+    }
+  }
+  return out;
+};
+
+/** The readings of a text: the quoted split (`all`) and the removal of empty parameters (`drop`). */
+const READINGS: [boolean, boolean][] = [
+  [false, false],
+  [true, false],
+  [false, true],
+  [true, true],
+];
+
+/**
+ * The simple commands of a `Bash` text, after `parse` and the unwrapping of each wrapper.
+ * A `cd` sets the folder of the commands after it, so `cd <dir> && rm ...` reads `rm` under `<dir>`.
+ * Each command is read as it is written, and again with its aliases expanded.
+ * A text with a `$IFS` is read with the quoted split too, because a nested shell reads a quoted text as code.
+ * A text with an empty parameter is also read with that parameter removed, so the readings only add a deny.
+ */
+export const walk = (command: string): Simple[] => {
+  const out: Simple[] = [];
+  const seen = new Set<string>();
+  for (const [all, drop] of READINGS) {
+    const text = markedText(command, all, drop);
+    if (seen.has(text)) continue;
+    seen.add(text);
+    out.push(...rawOf(text), ...expandedOf(text));
   }
   return out;
 };

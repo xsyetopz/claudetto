@@ -4,6 +4,7 @@
 import { expect, test } from "bun:test";
 import { SHELL_SCAN_MAX_CHARS } from "../../../plugins/dotclaude/kernel/budget.ts";
 import type { Io } from "../../../plugins/dotclaude/slices/asks/domain/check.ts";
+import { shellWriteReasons } from "../../../plugins/dotclaude/slices/asks/domain/writes.ts";
 import { filesByPath } from "./stub-fs.ts";
 import type { Verdict } from "./verdicts.ts";
 import { decideAsk as decide } from "./verdicts.ts";
@@ -169,10 +170,12 @@ for (const command of [
     expect(await out(command)).toBe(undefined);
   });
 
-test("a command over the scan bound keeps the existing behavior", async () => {
+test("a command over the scan bound gets a write reason, as the git guard does", async () => {
+  // The git guard also asks on this command, so `out` cannot tell the write guard apart.
   const long = `sed -i x ${TEST} ${"a".repeat(SHELL_SCAN_MAX_CHARS)}`;
-  const o = await out(long);
-  expect(
-    o === undefined || !(o.permissionDecisionReason as string).includes(TEST),
-  ).toBeTruthy();
+  const reasons = await shellWriteReasons(long, "/w", async () => null, {
+    shell: [],
+    code: [],
+  });
+  expect(reasons.length).toBeGreaterThan(0);
 });
