@@ -12,15 +12,13 @@ agent: main session
 status: planned
 ---
 
-# P50 Requirement Trace
-
 ## Goal
 
 `dotclaude-spec trace [<id>]` finds each orphan ID and each uncited line in the diff of a change, and `accept` refuses while it finds one.
 
 ## Context
 
-- The design: `design-spec-2.md`, section Code Citations.
+- The design: `design-spec.md`, section Code Citations.
 - The source: arXiv 2606.30689, sections 6.1, 6.3, and 6.5.
 
 ## Steps

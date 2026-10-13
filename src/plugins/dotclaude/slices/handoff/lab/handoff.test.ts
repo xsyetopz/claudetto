@@ -202,9 +202,9 @@ test(
   },
 );
 
-test("a package that goes to `done` adds the hint", async ($: Engine, on: On) => {
+test("a merge of a package with no branch adds the hint", async ($: Engine, on: On) => {
   stub(on, 10);
-  await bash($, "dotclaude-spec lane P13 done");
+  await bash($, "dotclaude-spec merge P13");
   expect(hasHint(await complete($))).toBe(true);
 });
 
@@ -214,31 +214,31 @@ test("a merge of a package adds the hint", async ($: Engine, on: On) => {
   expect(hasHint(await complete($))).toBe(true);
 });
 
-test("a lane command that fails adds no hint", async ($: Engine, on: On) => {
+test("a merge command that fails adds no hint", async ($: Engine, on: On) => {
   const seen = stub(on, 10);
   seen.toolFails = true;
-  await bash($, "dotclaude-spec lane P13 done");
+  await bash($, "dotclaude-spec merge P13");
   expect(hasHint(await complete($))).toBe(false);
 });
 
-test("the lane text in a quoted argument adds no hint", async ($: Engine, on: On) => {
+test("the merge text in a quoted argument adds no hint", async ($: Engine, on: On) => {
   stub(on, 10);
-  await bash($, 'git commit -m "x; dotclaude-spec lane P1 done"');
-  await bash($, "echo dotclaude-spec lane P1 done");
+  await bash($, 'git commit -m "x; dotclaude-spec merge P1"');
+  await bash($, "echo dotclaude-spec merge P1");
   expect(hasHint(await complete($))).toBe(false);
 });
 
-test("a lane command after `cd` and `&&` adds the hint", async ($: Engine, on: On) => {
+test("a merge command after `cd` and `&&` adds the hint", async ($: Engine, on: On) => {
   stub(on, 10);
-  await bash($, "cd /p && dotclaude-spec lane P13 done");
+  await bash($, "cd /p && dotclaude-spec merge P13");
   expect(hasHint(await complete($))).toBe(true);
 });
 
-test("a lane hint follows a context hint in the same episode", async ($: Engine, on: On) => {
+test("a merge hint follows a context hint in the same episode", async ($: Engine, on: On) => {
   stub(on, 90);
   expect(hasHint(await complete($))).toBe(true);
   expect(hasHint(await complete($))).toBe(false);
-  await bash($, "dotclaude-spec lane P13 done");
+  await bash($, "dotclaude-spec merge P13");
   expect(hasHint(await complete($))).toBe(true);
 });
 

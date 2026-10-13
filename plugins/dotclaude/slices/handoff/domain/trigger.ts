@@ -15,37 +15,36 @@ export const parseHandover = (raw: unknown): MainHandover =>
 
 /**
  * Whether `command` moves a package to `done` in a command position:
- * `dotclaude-spec lane <package> done` or `dotclaude-spec merge <package> <branch>`.
+ * `dotclaude-spec merge <package>` or `dotclaude-spec merge <package> <branch>`.
  * Text in quotes or after `echo` is an argument and not a command.
  */
-export const isLaneDone = (command: string): boolean =>
+export const isMergeDone = (command: string): boolean =>
   commands(command).some((argv) => {
-    const [head, verb, , last, ...extra] = stripWrappers(argv);
+    const [head, verb, pkg, ...extra] = stripWrappers(argv);
     if (head === undefined || baseName(head) !== "dotclaude-spec") return false;
-    if (verb === "lane") return last === "done" && extra.length === 0;
-    return verb === "merge" && last !== undefined && extra.length === 0;
+    return verb === "merge" && pkg !== undefined && extra.length <= 1;
   });
 
 /** The call of a tool that `tool.call` gets, as far as the trigger needs it. */
-export type LaneCall = {
+export type MergeCall = {
   readonly tool: string;
   readonly agentId?: string | undefined;
   readonly command?: string | undefined;
 };
 
-/** The result of the call: a deny or an error means the lane did not change. */
-export type LaneResult = {
+/** The result of the call: a deny or an error means the package did not change. */
+export type MergeResult = {
   readonly deny?: unknown;
   readonly isError?: boolean | undefined;
 };
 
-/** Whether a successful `Bash` call of the main session moved a package to `done`. */
-export const laneDoneCall = (e: LaneCall, out: LaneResult): boolean =>
+/** Whether a successful `Bash` call of the main session merged a package to `done`. */
+export const mergeDoneCall = (e: MergeCall, out: MergeResult): boolean =>
   e.tool === "Bash" &&
   !e.agentId &&
   out.deny === undefined &&
   !out.isError &&
-  isLaneDone(e.command ?? "");
+  isMergeDone(e.command ?? "");
 
 /** Whether the context share `percent` reaches the bound `bound`. An absent share does not. */
 export const overContext = (

@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P09 `setup`
-
 ## Goal
 
 Port the 0.28.0 setup and drift check to the slice `setup`: the user-invoked skill `/setup`, the CLI `dotclaude-setup`, and the drift check.

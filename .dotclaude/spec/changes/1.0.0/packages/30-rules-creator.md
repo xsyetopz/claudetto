@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P30 `/rules-creator` skill
-
 ## Goal
 
 Write the skill `/rules-creator`, based on the `skill-creator` skill of Anthropic.

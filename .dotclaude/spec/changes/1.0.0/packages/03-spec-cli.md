@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P03 `spec` CLI
-
 ## Goal
 
 Write the adapters of the `spec` slice and the CLI `dotclaude-spec`, with each command of the workflow, on the domain code of P02.

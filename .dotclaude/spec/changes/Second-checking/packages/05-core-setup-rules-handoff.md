@@ -1,12 +1,16 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P05
+title: Core plugin: setup, rules, handoff, stamp
+wave: 1
 deps: []
-owns: ["src/plugins/dotclaude/slices/setup/", "src/plugins/dotclaude/slices/rules/", "src/plugins/dotclaude/slices/handoff/", "src/plugins/dotclaude/slices/stamp/", "tests/dotclaude/setup/", "tests/dotclaude/rules/", "tests/dotclaude/handoff/", ".dotclaude/spec/changes/1.0.0/evidence/second-check-core-setup-rules-handoff.md"]
+owns: ["src/plugins/dotclaude/slices/setup/","src/plugins/dotclaude/slices/rules/","src/plugins/dotclaude/slices/handoff/","src/plugins/dotclaude/slices/stamp/","tests/dotclaude/setup/","tests/dotclaude/rules/","tests/dotclaude/handoff/",".dotclaude/spec/changes/1.0.0/evidence/second-check-core-setup-rules-handoff.md"]
+satisfies: []
 verify: just test tests/dotclaude/setup && just lab
 agent: implementer
+status: done
 ---
-
-# P05 Core plugin: setup, rules, handoff, stamp
 
 ## Goal
 

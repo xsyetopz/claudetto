@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P24 `tiers`
-
 ## Goal
 
 The setup reads the account type and scales from Pro as the baseline, with the same features for each account.

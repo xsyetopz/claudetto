@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P28 `.claude/` evidence
-
 ## Goal
 
 Write the evidence of each file and folder of `.claude/` and `~/.claude/` in Claude Code 2.1.296.

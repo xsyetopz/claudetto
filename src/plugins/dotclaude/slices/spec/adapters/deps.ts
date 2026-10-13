@@ -1,16 +1,16 @@
-// `dotclaude-spec deps [<id>] [--json]`: the wave graph of a change, its blocked chains, and its `owns` overlaps.
+// `dotclaude-spec deps [<id>] [--json]`: the wave graph of a change, its blocked chains, its `owns` overlaps, its missing deps, and its cycles.
 // With no id, the command reads the active change.
 
 import {
   blockedChains,
-  type Node,
+  cycleMembers,
+  missingDeps,
   ownsOverlaps,
   wavesOf,
 } from "../domain/deps.ts";
 import { parseArgs } from "./args.ts";
-import { readBriefs, readEntries } from "./plan-files.ts";
+import { iconOf, loadChange } from "./graph.ts";
 import { type Run, resolveId } from "./run.ts";
-import { ICONS } from "./status.ts";
 
 const USAGE = "Usage: dotclaude-spec deps [<id>] [--json]";
 
@@ -25,31 +25,24 @@ export const depsCommand = async (
   }
   const id = await resolveId(run, parsed.words[0]);
   if (id === null) return 1;
-  const lanes = await run.store.lanes(id, (await run.store.events(id)) ?? []);
-  const briefs = new Map(
-    (await readBriefs(run.store, id)).packages.map((p) => [
-      p.front.id,
-      p.front,
-    ]),
-  );
-  const nodes: Node[] = (await readEntries(run.store, id)).map((e) => ({
-    id: e.id,
-    wave: e.wave,
-    deps: briefs.get(e.id)?.deps ?? [],
-    owns: briefs.get(e.id)?.owns ?? [],
-  }));
+  const loaded = await loadChange(run, id);
+  if (loaded === null) return 1;
+  const { states, nodes } = loaded;
+  const depsOf = new Map(nodes.map((n) => [n.id, n.deps]));
   const graph = {
     change: id,
     waves: wavesOf(nodes).map(({ wave, ids }) => ({
       wave,
       packages: ids.map((p) => ({
         id: p,
-        lane: lanes[p],
-        deps: briefs.get(p)?.deps ?? [],
+        state: states[p],
+        deps: depsOf.get(p) ?? [],
       })),
     })),
-    blocked: blockedChains(nodes, lanes),
-    overlaps: ownsOverlaps(nodes, lanes),
+    blocked: blockedChains(nodes, states),
+    overlaps: ownsOverlaps(nodes, states),
+    missing: missingDeps(nodes),
+    cycles: cycleMembers(nodes),
   };
   if (parsed.json) {
     run.io.log(JSON.stringify(graph));
@@ -58,14 +51,18 @@ export const depsCommand = async (
   for (const { wave, packages } of graph.waves) {
     run.io.log(`Wave ${wave}`);
     for (const p of packages) {
-      const icon = p.lane === undefined ? "?" : ICONS[p.lane];
       const deps = p.deps.length > 0 ? ` <- ${p.deps.join(", ")}` : "";
-      run.io.log(`  ${icon} ${p.id}${deps}`);
+      run.io.log(`  ${iconOf(p.state)} ${p.id}${deps}`);
     }
   }
   for (const chain of graph.blocked)
-    run.io.log(`Blocked: ${chain.join(" -> ")} (${lanes[chain.at(-1) ?? ""]})`);
+    run.io.log(
+      `Blocked: ${chain.join(" -> ")} (${states[chain.at(-1) ?? ""]})`,
+    );
   for (const [a, b] of graph.overlaps)
     run.io.log(`Overlap: ${a} and ${b} own the same paths in one wave.`);
+  for (const [pkg, dep] of graph.missing)
+    run.io.log(`Missing: ${pkg} needs ${dep}, which has no file.`);
+  if (graph.cycles.length > 0) run.io.log(`Cycle: ${graph.cycles.join(", ")}`);
   return 0;
 };

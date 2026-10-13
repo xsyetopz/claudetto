@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P34 Spec store events
-
 ## Goal
 
 An append-only `events.jsonl` with one line for each lane change replaces `state.json`.

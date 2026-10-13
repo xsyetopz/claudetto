@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P01b2 The `prompt` slice
-
 ## Goal
 
 Port the `prompt` feature of 0.28.0 to the first real slice, so that the generator of P01b1 writes `plugins/dotclaude/hooks/register.ts`.

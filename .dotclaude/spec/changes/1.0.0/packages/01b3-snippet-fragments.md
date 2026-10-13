@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P01b3 The settings snippet and the fragments
-
 ## Goal
 
 Make the generator write the settings snippet from the `settings` entries of the slices, and move the shared texts of `src/shared/` to `src/fragments/`.

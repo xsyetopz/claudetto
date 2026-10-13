@@ -12,7 +12,7 @@ import {
   STALE_SAMPLE,
   type UsageSample,
 } from "../domain/runs.ts";
-import { gitPath } from "./lane.ts";
+import { gitPath } from "./git.ts";
 import type { Run } from "./run.ts";
 
 /** The project root of `cwd`: the top of its git repository, or `cwd` when git gives none. The status line keeps the sample there. */

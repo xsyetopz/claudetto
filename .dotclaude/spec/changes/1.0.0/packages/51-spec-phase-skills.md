@@ -12,15 +12,13 @@ agent: main session
 status: planned
 ---
 
-# P51 Phase Skills and Hooks
-
 ## Goal
 
 Each phase has one slash command with the verb of its CLI subcommand, and the hooks follow the states of schema 2.
 
 ## Context
 
-- The design: `design-spec-2.md`, sections Commands and Hooks.
+- The design: `design-spec.md`, sections Commands and Hooks.
 - The current skills `spec`, `ship`, and `hotfix` hold the steps that the new skills split.
 
 ## Steps

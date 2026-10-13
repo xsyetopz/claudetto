@@ -1,136 +1,125 @@
-// `show`, `list`, `deps`, and `log`: the read commands of a change and of one package.
+// `show`, `deps`, `ready`, and `log`: one change or package, the wave graph, the ready set, and the events.
 
 import { expect, test } from "bun:test";
-import { run } from "./helpers.ts";
-import { makePlan } from "./plan.ts";
+import { makeChange, run } from "./read-fixture.ts";
 
-const ARCHIVED = ".dotclaude/spec/changes/archive/2026-01-01-old";
+const PACKAGES = [
+  { id: "P1", owns: ["src/a/"], state: "done" },
+  { id: "P2", deps: ["P1"], owns: ["src/b/"], state: "doing" },
+  { id: "P3", deps: ["P1"], owns: ["src/b/x.ts"] },
+  { id: "P4", deps: ["P1"], owns: ["src/d/"] },
+  { id: "P5", deps: ["P2"], owns: ["src/f/"] },
+  { id: "P6", state: "verified", owns: ["src/e/"] },
+  { id: "P7", owns: ["src/e/"] },
+  { id: "P8", deps: ["P1"], owns: ["src/h/"] },
+  { id: "P9", state: "blocked", owns: ["src/i/"] },
+  { id: "P10", deps: ["P1"], owns: ["src/d/y.ts"] },
+];
 
-test("`show <id> <package>` prints the lane, the goal, the deps with their lanes, the owns, and the events", async () => {
-  const root = await makePlan([
-    { id: "P01", lane: "done" },
-    { id: "P02", deps: ["P01"], owns: ["src/b/"] },
-  ]);
-  await run(root, "lane", "P02", "doing");
-  const r = await run(root, "show", "c1", "P02");
+const json = (out: string[]): unknown => JSON.parse(out.join(""));
+
+test("show --json of a change gives its size, status, counts, and package states", async () => {
+  const root = await makeChange(PACKAGES.slice(0, 3));
+  const r = await run(root, "show", "c1", "--json");
   expect(r.code).toBe(0);
-  expect(r.out.slice(0, 5)).toStrictEqual([
-    "P02  doing  (c1)",
-    "Goal of P02.",
-    "Deps: P01 done",
-    "Owns: src/b/",
-    "Verify: just test",
-  ]);
-  expect(r.out.slice(5).map((l) => l.split("  ").slice(1))).toStrictEqual([
-    ["P02", "planned"],
-    ["P02", "doing"],
-  ]);
-});
-
-test("`show --json` gives the package as one object, with at most 5 events", async () => {
-  const root = await makePlan([{ id: "P01", lane: "doing" }]);
-  for (let i = 0; i < 3; i++) {
-    await run(root, "lane", "P01", "blocked", "--note", `b${i}`);
-    await run(root, "lane", "P01", "doing");
-  }
-  const shown = JSON.parse(
-    (await run(root, "show", "c1", "P01", "--json")).out[0] ?? "",
-  );
-  expect(shown).toMatchObject({ change: "c1", package: "P01", lane: "doing" });
-  expect(shown.events).toHaveLength(5);
-  expect(shown.events.at(-1)).toMatchObject({ lane: "doing" });
-});
-
-test("`show <id>` prints the size and the lane of each package, and refuses an unknown package", async () => {
-  const root = await makePlan([{ id: "P01", lane: "done" }, { id: "P02" }]);
-  const r = await run(root, "show", "c1");
-  expect(r.out).toStrictEqual(["◆ c1  large", "P01  done", "P02  planned"]);
-  expect((await run(root, "show", "c1", "P09")).code).toBe(1);
-  expect((await run(root, "show")).code).toBe(2);
-});
-
-test("`list` prints the open and the archived changes with the size and the lane counts", async () => {
-  const root = await makePlan([{ id: "P01", lane: "done" }, { id: "P02" }], {
-    ".dotclaude/spec/changes/m1/change.md": "# m1\n",
-    ".dotclaude/spec/changes/m1/specs/a.md": "# a\n",
-    [`${ARCHIVED}/change.md`]: "# old\n",
-  });
-  const r = await run(root, "list");
-  expect(r.out).toStrictEqual([
-    "open  c1  large  ○ 1  ✓ 1",
-    "open  m1  medium  -",
-    "archived  2026-01-01-old  trivial  -",
-  ]);
-  const rows = JSON.parse((await run(root, "list", "--json")).out[0] ?? "");
-  expect(rows[0]).toStrictEqual({
+  expect(json(r.out)).toStrictEqual({
     id: "c1",
-    archived: false,
     size: "large",
-    lanes: { done: 1, planned: 1 },
+    status: "implementing",
+    states: { done: 1, doing: 1, planned: 1 },
+    packages: [
+      { id: "P1", state: "done" },
+      { id: "P2", state: "doing" },
+      { id: "P3", state: "planned" },
+    ],
   });
 });
 
-test("`deps` prints the waves, a chain that a blocked dep stops, and an `owns` overlap in one wave", async () => {
-  const root = await makePlan([
-    { id: "P01", lane: "blocked", owns: ["src/a/"] },
-    { id: "P02", deps: ["P01"], owns: ["src/a/x.ts"] },
-    { id: "P03", deps: ["P02"], wave: 2, owns: ["src/c/"] },
-  ]);
-  const r = await run(root, "deps", "c1");
-  expect(r.out).toStrictEqual([
-    "Wave 1",
-    "  ✗ P01",
-    "  ○ P02 <- P01",
-    "Wave 2",
-    "  ○ P03 <- P02",
-    "Blocked: P02 -> P01 (blocked)",
-    "Blocked: P03 -> P02 -> P01 (blocked)",
-    "Overlap: P01 and P02 own the same paths in one wave.",
-  ]);
-  const graph = JSON.parse(
-    (await run(root, "deps", "c1", "--json")).out[0] ?? "",
-  );
-  expect(graph.blocked).toStrictEqual([
-    ["P02", "P01"],
-    ["P03", "P02", "P01"],
-  ]);
-  expect(graph.overlaps).toStrictEqual([["P01", "P02"]]);
-});
-
-test("`deps` shows a canceled dep as a stop, and a done or canceled package has no overlap", async () => {
-  const root = await makePlan([
-    { id: "P01", lane: "canceled", owns: ["src/a/"] },
-    { id: "P02", deps: ["P01"], owns: ["src/a/"] },
-  ]);
-  const graph = JSON.parse(
-    (await run(root, "deps", "c1", "--json")).out[0] ?? "",
-  );
-  expect(graph.blocked).toStrictEqual([["P02", "P01"]]);
-  expect(graph.overlaps).toStrictEqual([]);
-});
-
-test("`log` prints each event as one line, and `--package` keeps the events of one package", async () => {
-  const root = await makePlan([{ id: "P01" }, { id: "P02" }]);
-  await run(root, "lane", "P01", "doing");
-  await run(root, "lane", "P01", "blocked", "--note", "waits");
-  const all = await run(root, "log", "c1");
-  expect(all.out).toHaveLength(4);
-  const one = await run(root, "log", "c1", "--package", "P01");
-  expect(one.out.map((l) => l.split("  ").slice(1))).toStrictEqual([
-    ["P01", "planned"],
-    ["P01", "doing"],
-    ["P01", "blocked", "note: waits"],
-  ]);
-  const json = await run(root, "log", "c1", "--package", "P01", "--json");
-  expect(JSON.parse(json.out.at(-1) ?? "")).toMatchObject({
-    lane: "blocked",
-    note: "waits",
+test("show --json of a package gives its goal, deps with states, owns, verify, and events", async () => {
+  const root = await makeChange(PACKAGES.slice(0, 3));
+  const r = await run(root, "show", "c1", "P2", "--json");
+  expect(r.code).toBe(0);
+  expect(json(r.out)).toMatchObject({
+    change: "c1",
+    package: "P2",
+    state: "doing",
+    goal: "Goal of P2.",
+    deps: [{ id: "P1", state: "done" }],
+    owns: ["src/b/"],
+    verify: "just test",
+    events: [{ package: "P2", state: "doing" }],
   });
 });
 
-test("`log` of a change with no `events.jsonl` gives exit 1", async () => {
-  const root = await makePlan([{ id: "P01" }], {
-    ".dotclaude/spec/changes/m1/change.md": "# m1\n",
+test("show exits 1 for a missing package or change, and 2 for wrong arguments", async () => {
+  const root = await makeChange(PACKAGES.slice(0, 3));
+  expect((await run(root, "show", "c1", "P99")).code).toBe(1);
+  expect((await run(root, "show", "nope")).code).toBe(1);
+  expect((await run(root, "show")).code).toBe(2);
+  expect((await run(root, "show", "c1", "P1", "P2")).code).toBe(2);
+});
+
+test("ready prints the planned packages with done deps and no owns overlap with a busy package", async () => {
+  const root = await makeChange(PACKAGES);
+  const r = await run(root, "ready", "c1", "--json");
+  expect(r.code).toBe(0);
+  expect(json(r.out)).toStrictEqual(["P4", "P8"]);
+});
+
+test("ready does not offer two packages whose owns overlap, and gives an empty set when none is ready", async () => {
+  const root = await makeChange([
+    { id: "P1", state: "done" },
+    { id: "P2", deps: ["P1"], owns: ["src/z/"] },
+    { id: "P3", deps: ["P1"], owns: ["src/z/q.ts"] },
+  ]);
+  expect(json((await run(root, "ready", "c1", "--json")).out)).toStrictEqual([
+    "P2",
+  ]);
+  const none = await makeChange([{ id: "P1", state: "doing" }]);
+  const r = await run(none, "ready", "c1", "--json");
+  expect(r.code).toBe(0);
+  expect(json(r.out)).toStrictEqual([]);
+});
+
+test("deps --json gives the waves, blocked chains, overlaps, missing deps, and cycles", async () => {
+  const root = await makeChange([
+    { id: "P1", state: "blocked" },
+    { id: "P2", deps: ["P1"], wave: 2, owns: ["src/a/"] },
+    { id: "P3", deps: ["P9"], wave: 2, owns: ["src/a/b.ts"] },
+    { id: "P4", deps: ["P5"], wave: 3 },
+    { id: "P5", deps: ["P4"], wave: 3 },
+  ]);
+  const r = await run(root, "deps", "c1", "--json");
+  expect(r.code).toBe(0);
+  const graph = json(r.out) as Record<string, unknown>;
+  expect(graph["waves"]).toMatchObject([
+    { wave: 1, packages: [{ id: "P1", state: "blocked", deps: [] }] },
+    { wave: 2, packages: [{ id: "P2" }, { id: "P3" }] },
+    { wave: 3, packages: [{ id: "P4" }, { id: "P5" }] },
+  ]);
+  expect(graph["blocked"]).toStrictEqual([["P2", "P1"]]);
+  expect(graph["overlaps"]).toStrictEqual([["P2", "P3"]]);
+  expect(graph["missing"]).toStrictEqual([["P3", "P9"]]);
+  expect([...(graph["cycles"] as string[])].sort()).toStrictEqual(["P4", "P5"]);
+});
+
+test("log prints one JSON event for each line, and --package keeps the events of one package", async () => {
+  const root = await makeChange(PACKAGES.slice(0, 3));
+  const all = await run(root, "log", "c1", "--json");
+  expect(all.code).toBe(0);
+  expect(all.out.map((l) => JSON.parse(l).state)).toStrictEqual([
+    "implementing",
+    "done",
+    "doing",
+  ]);
+  const one = await run(root, "log", "c1", "--package", "P2", "--json");
+  expect(one.out.map((l) => JSON.parse(l).package)).toStrictEqual(["P2"]);
+});
+
+test("log exits 1 when the change has no log, and 2 for a flag that it does not know", async () => {
+  const root = await makeChange([], {
+    files: { ".dotclaude/spec/changes/bare/change.md": "x" },
   });
-  expect((await run(root, "log", "m1")).code).toBe(1);
+  expect((await run(root, "log", "bare")).code).toBe(1);
+  expect((await run(root, "log", "c1", "--nope")).code).toBe(2);
 });

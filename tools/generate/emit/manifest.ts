@@ -23,8 +23,8 @@ const REPOSITORY = "https://github.com/xsyetopz/dotclaude";
 /** The contract of a plugin, relative to the plugin folder. The text step copies it from `src/plugins/<plugin>/`. */
 const TYPES = "./types/index.d.ts";
 
-/** The column bound of the JSON formatter of Biome, which `just lint` runs on `plugins/`. */
-const WIDTH = 80;
+/** The column bound of the formatter of Biome, which `just lint` runs on `plugins/`. */
+export const WIDTH = 80;
 
 /** `json` as Biome formats it: two-space indents, and an array of scalars on one line when the line fits. */
 export const formatJson = (json: unknown): string =>

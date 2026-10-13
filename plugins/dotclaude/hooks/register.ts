@@ -25,22 +25,19 @@ import {
 } from "../slices/prompt/adapters/mod.ts";
 import { onToolCall as h15 } from "../slices/sembr/adapters/mod.ts";
 import { onSessionStart as h16 } from "../slices/setup/adapters/mod.ts";
+import { onSpawn as h17 } from "../slices/spec/adapters/mod.ts";
+import { onSessionStart as h18 } from "../slices/stamp/adapters/mod.ts";
 import {
-  onComplete as h17,
-  onSpawn as h18,
-} from "../slices/spec/adapters/mod.ts";
-import { onSessionStart as h19 } from "../slices/stamp/adapters/mod.ts";
-import {
-  onAgentOffer as h20,
-  onToolDescribe as h21,
+  onAgentOffer as h19,
+  onToolDescribe as h20,
 } from "../slices/surface/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h7(options);
   // eval: agent.offer surface
-  on("agent.offer", h20);
+  on("agent.offer", h19);
   // eval: agent.spawn spec
-  on("agent.spawn", { subagentType: /(?:^|:)implementer$/ }, h18);
+  on("agent.spawn", { subagentType: /(?:^|:)implementer$/ }, h17);
   // eval: agent.spawn prompt
   on("agent.spawn", h14);
   // eval: prompt.compose prompt
@@ -52,7 +49,7 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: session.start setup
   on("session.start", h16);
   // eval: session.start stamp
-  on("session.start", { isInteractive: [true, false] }, h19);
+  on("session.start", { isInteractive: [true, false] }, h18);
   // eval: skill.prompt handoff
   on("skill.prompt", { skill: /(?:^|:)handoff$/ }, h8);
   // eval: tool.call handoff
@@ -72,11 +69,9 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.check guard
   on("tool.check", h6);
   // eval: tool.describe surface
-  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h21);
+  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h20);
   // eval: turn.complete handoff
   on("turn.complete", h10);
-  // eval: turn.complete spec
-  on("turn.complete", { agentId: /./ }, h17);
   // eval: turn.step handoff
   on("turn.step", { agentId: /./ }, h11);
 };

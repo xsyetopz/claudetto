@@ -12,8 +12,6 @@ agent: main session
 status: canceled
 ---
 
-# P46 Spec Commands
-
 ## Goal
 
 `dotclaude-spec` gives the root and the user the control of OpenSpec and Spec Kitty, with the lanes and packages of dotclaude.

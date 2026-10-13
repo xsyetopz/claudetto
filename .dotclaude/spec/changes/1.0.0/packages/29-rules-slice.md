@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P29 `rules` slice
-
 ## Goal
 
 dotclaude uses `.claude/rules/`.

@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P01d Inventory
-
 ## Goal
 
 List each built-in part of Claude Code 2.1.296 that a setting, an env var, or a mod can turn off or make smaller, with its cost at the start of a session.

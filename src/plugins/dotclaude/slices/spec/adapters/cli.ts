@@ -1,13 +1,16 @@
 // The CLI `dotclaude-spec` of the `spec` slice. The launcher `bin/dotclaude-spec` calls `main`.
 //
-//   dotclaude-spec new <id> [--size trivial|medium|large]
+//   dotclaude-spec specify <id> [--size trivial|medium|large] [--capability <name>] [--json]
+//   dotclaude-spec plan <id> [--json]
+//   dotclaude-spec implement <package> [--note <text>] [--decision fix-code|revise-spec] [--json]
+//   dotclaude-spec verify <package> [--in <dir>] [--json]
+//   dotclaude-spec accept <id> [--json]
+//   dotclaude-spec block <package> --note <text> [--json]
 //   dotclaude-spec status [<id>]
 //   dotclaude-spec next [<id>]
 //   dotclaude-spec show <id> [<package>] [--json]
 //   dotclaude-spec list [--json]
-//   dotclaude-spec lane <package> <lane> [--note <text>] [--json]
 //   dotclaude-spec review <package> approve|reject [--finding <text>]... [--json]
-//   dotclaude-spec retry <package> [--json]
 //   dotclaude-spec drop <package> --reason <text> [--json]
 //   dotclaude-spec deps [<id>] [--json]
 //   dotclaude-spec log [<id>] [--package <package>] [--json]
@@ -15,64 +18,70 @@
 //   dotclaude-spec merge <package> <branch>
 //   dotclaude-spec validate [<id>]
 //   dotclaude-spec archive <id>
-//   dotclaude-spec record <text>
 //   dotclaude-spec runs
 //
 // Every path is relative to the folder where the command runs, which is the root of the repository.
 // A command that reads `events.jsonl` stops with a message on a `schema` that it does not know.
 
+import { acceptCommand } from "./accept.ts";
 import { archiveCommand } from "./archive.ts";
+import { blockCommand } from "./block.ts";
 import { depsCommand } from "./deps.ts";
 import { dropCommand } from "./drop.ts";
+import { implementCommand } from "./implement.ts";
 import { type Clock, consoleIo, type Io, systemClock } from "./io.ts";
-import { laneCommand } from "./lane.ts";
 import { listCommand } from "./list.ts";
 import { logCommand } from "./log.ts";
 import { mergeCommand } from "./merge.ts";
-import { newCommand } from "./new.ts";
+import { planCommand } from "./plan.ts";
 import { readyCommand } from "./ready.ts";
-import { recordCommand } from "./record.ts";
-import { retryCommand } from "./retry.ts";
 import { reviewCommand } from "./review.ts";
 import type { Run } from "./run.ts";
 import { runsCommand } from "./runs.ts";
 import { showCommand } from "./show.ts";
+import { specifyCommand } from "./specify.ts";
 import { nextCommand, statusCommand } from "./status.ts";
 import { SpecStore } from "./store.ts";
 import { validateCommand } from "./validate.ts";
+import { verifyCommand } from "./verify.ts";
 
 const USAGE = [
   "Usage: dotclaude-spec <command>",
-  "  new <id> [--size trivial|medium|large]",
+  "  specify <id> [--size trivial|medium|large] [--capability <name>] [--json]",
+  "  plan <id> [--json]",
+  "  implement <package> [--note <text>] [--decision fix-code|revise-spec] [--json]",
+  "  verify <package> [--in <dir>] [--json]",
   "  status [<id>]",
   "  next [<id>]",
   "  show <id> [<package>] [--json]",
   "  list [--json]",
-  "  lane <package> <lane> [--note <text>] [--json]",
-  "  review <package> approve|reject [--finding <text>]... [--json]",
-  "  retry <package> [--json]",
-  "  drop <package> --reason <text> [--json]",
+  "  review <package> approve|reject [--finding <text>]... [--decision fix-code|revise-spec] [--json]",
+  "  block <package> --note <text> [--json]",
+  "  drop <package|change> --reason <text> [--json]",
   "  deps [<id>] [--json]",
   "  log [<id>] [--package <package>] [--json]",
   "  ready [<id>]",
-  "  merge <package> <branch>",
+  "  merge <package> [<branch>] [--json]",
+  "  accept <id> [--json]",
   "  validate [<id>]",
-  "  archive <id>",
-  "  record <text>",
+  "  archive <id> [--json]",
   "  runs",
 ].join("\n");
 
 const COMMANDS: Readonly<
   Record<string, (run: Run, args: string[]) => number | Promise<number>>
 > = {
-  new: newCommand,
+  specify: specifyCommand,
+  plan: planCommand,
+  implement: implementCommand,
+  verify: verifyCommand,
+  accept: acceptCommand,
+  block: blockCommand,
   status: statusCommand,
   next: nextCommand,
   show: showCommand,
   list: listCommand,
-  lane: laneCommand,
   review: reviewCommand,
-  retry: retryCommand,
   drop: dropCommand,
   deps: depsCommand,
   log: logCommand,
@@ -80,7 +89,6 @@ const COMMANDS: Readonly<
   merge: mergeCommand,
   validate: validateCommand,
   archive: archiveCommand,
-  record: recordCommand,
   runs: runsCommand,
 };
 

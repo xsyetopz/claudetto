@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P02 Spec formats
-
 ## Goal
 
 Write the pure domain code of the spec workflow: the parser, the validator, and the delta rules of the Markdown formats of the spec store.

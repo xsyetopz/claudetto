@@ -12,8 +12,6 @@ agent: implementer
 status: planned
 ---
 
-# P39 Attribution
-
 ## Goal
 
 Each commit and each pull request that Claude makes carries the attribution of Claude Code, at 0 model tokens.

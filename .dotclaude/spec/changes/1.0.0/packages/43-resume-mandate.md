@@ -12,8 +12,6 @@ agent: main session
 status: planned
 ---
 
-# P43 Resume Mandate
-
 ## Goal
 
 The root resumes a stopped agent with `SendMessage`, and it cannot start a new agent for the work of that agent.

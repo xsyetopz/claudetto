@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P36 `asks` on weaker checks
-
 ## Goal
 
 The `asks` slice asks only when a change weakens a check, and never for a read.

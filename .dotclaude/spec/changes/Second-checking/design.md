@@ -1,3 +1,9 @@
+---
+schema: dotclaude-spec/2
+kind: design
+id: Second-checking
+---
+
 # Second-checking: design
 
 ## Context

@@ -1,12 +1,16 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P02
+title: Repo tooling
+wave: 1
 deps: []
-owns: ["tools/", "tests/tools/", "tests/support/", "biome.json", "package.json", "tsconfig.json", "justfile", ".dotclaude/spec/changes/1.0.0/evidence/second-check-repo-tooling.md"]
+owns: ["tools/","tests/tools/","tests/support/","biome.json","package.json","tsconfig.json","justfile",".dotclaude/spec/changes/1.0.0/evidence/second-check-repo-tooling.md"]
+satisfies: []
 verify: just test tests/tools tests/support && just validate
 agent: implementer
+status: done
 ---
-
-# P02 Repo tooling
 
 ## Goal
 

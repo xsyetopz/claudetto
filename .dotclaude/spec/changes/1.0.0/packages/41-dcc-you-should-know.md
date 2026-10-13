@@ -12,8 +12,6 @@ agent: implementer
 status: planned
 ---
 
-# P41 `dcc-plugin-you-should-know`
-
 ## Goal
 
 A new add-on plugin, `dcc-plugin-you-should-know`, tells the user one thing they should know before Claude acts on it, not after.

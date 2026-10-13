@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P33 Zero token cost
-
 ## Goal
 
 dotclaude does each task at zero token cost where it can.

@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P11e `dotclaude-sessions`
-
 ## Goal
 
 Port the add-on `dotclaude-sessions` to two slices, `usage` and `start-cost`, each with a CLI and a user-invoked skill: `/usage` and `/start-cost`.

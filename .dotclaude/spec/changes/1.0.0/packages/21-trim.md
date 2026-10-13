@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P21 `trim`
-
 ## Goal
 
 Write the slice `trim`: the settings, env, and mod rules that turn off each built-in part of the inventory that dotclaude does not need.

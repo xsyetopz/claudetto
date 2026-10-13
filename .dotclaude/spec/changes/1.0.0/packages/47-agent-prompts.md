@@ -12,8 +12,6 @@ agent: main session
 status: planned
 ---
 
-# P47 Agent Prompts
-
 ## Goal
 
 The prompt of each agent follows the prompt guidance of Anthropic for its model, prevents the failures of `external/agent-failure-dossier/`, and uses XML tags in Markdown.

@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P01b4 The checks of the new layout
-
 ## Goal
 
 Add the lint rules and the checks of the 1.0.0 layout to `just check`, change `AGENTS.md` to the new layout, and rebuild the 0.28.0 and 0.29.0 files of the checks.

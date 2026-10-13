@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P12 `dotclaude-lab`
-
 ## Goal
 
 Port the add-on `dotclaude-lab` to four slices, `capture`, `sandbox`, `schema`, and `eval-compare`, each with a CLI, and move the code of the owned `tools/` scripts into the slices.

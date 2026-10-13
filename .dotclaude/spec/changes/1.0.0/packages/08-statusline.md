@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P08 `statusline`
-
 ## Goal
 
 Rebuild the status line as the slice `statusline`, with a CLI for `statusLine` and one for `subagentStatusLine`.

@@ -8,52 +8,10 @@ export interface FormatError {
   message: string;
 }
 
-/** The result of a parser, a validator, or a delta, with a value or the failures. */
+/** The result of a parser or a checker, with a value or the failures. */
 export type Result<T, E> = { ok: true; value: T } | { ok: false; errors: E[] };
 
-export interface Scenario {
-  name: string;
-  /** The body lines after the heading, verbatim, with no blank line at either end. */
-  lines: string[];
-  /** The text of each `WHEN` line. */
-  whenLines: string[];
-  /** The text of each `THEN` line. */
-  thenLines: string[];
-}
-
-export interface Requirement {
-  name: string;
-  /** The body before the first scenario, verbatim, with the sentence that has `SHALL`. */
-  text: string;
-  scenarios: Scenario[];
-}
-
-export interface CapabilitySpec {
-  requirements: Requirement[];
-}
-
-export interface Rename {
-  from: string;
-  to: string;
-}
-
-/** The delta file of one capability, with its four sections. */
-export interface DeltaFile {
-  added: Requirement[];
-  modified: Requirement[];
-  removed: string[];
-  renamed: Rename[];
-}
-
-export interface Task {
-  id: string;
-  text: string;
-  done: boolean;
-  /** The command or the test of the `Verify:` line, or `null` when there is none. */
-  verify: string | null;
-  line: number;
-}
-
+/** The sections of a package brief, in order. */
 export const PACKAGE_SECTIONS = [
   "Goal",
   "Context",
@@ -61,19 +19,3 @@ export const PACKAGE_SECTIONS = [
   "Acceptance",
   "Boundaries",
 ] as const;
-
-export type PackageSection = (typeof PACKAGE_SECTIONS)[number];
-
-export interface PackageFront {
-  id: string;
-  deps: string[];
-  owns: string[];
-  verify: string;
-  agent: string;
-}
-
-export interface Package {
-  front: PackageFront;
-  /** The body of each section, or an empty string when the section is missing. */
-  sections: Record<PackageSection, string>;
-}

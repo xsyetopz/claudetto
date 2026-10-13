@@ -10,8 +10,8 @@
     "requests": 0,
     "tokens": 0,
     "blocks": false,
-    "allow": "plugins/dotclaude/tests/ship-lane.test.ts > a spawn with no brief in its prompt moves no lane",
-    "text": "plugins/dotclaude/tests/ship-lane.test.ts > the spawn of an implementer moves its package to `doing`"
+    "allow": "plugins/dotclaude/tests/ship-lane.test.ts > a spawn with no brief in its prompt runs no command",
+    "text": "plugins/dotclaude/tests/ship-lane.test.ts > the spawn of an implementer runs `implement` for its package"
   },
   "agent.spawn prompt": {
     "requests": 0,
@@ -67,7 +67,7 @@
     "tokens": 0,
     "blocks": false,
     "allow": "plugins/dotclaude/tests/handoff.test.ts > a step of the main session adds no note to a later call",
-    "text": "plugins/dotclaude/tests/handoff.test.ts > a package that goes to `done` adds the hint"
+    "text": "plugins/dotclaude/tests/handoff.test.ts > a merge of a package adds the hint"
   },
   "tool.call attribution": {
     "requests": 0,
@@ -130,13 +130,6 @@
     "blocks": false,
     "allow": "plugins/dotclaude/tests/handoff.test.ts > below the context bound the turn ends with no handoff",
     "text": "plugins/dotclaude/tests/handoff.test.ts > with `manual` a context over the bound adds the hint to run `/handoff`"
-  },
-  "turn.complete spec": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/dotclaude/tests/ship-lane.test.ts > the end of another subagent moves no lane",
-    "text": "plugins/dotclaude/tests/ship-lane.test.ts > the end of an implementer moves its package to `review`"
   },
   "turn.step handoff": {
     "requests": 0,

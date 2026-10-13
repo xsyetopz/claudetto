@@ -12,8 +12,6 @@ agent: implementer
 status: planned
 ---
 
-# P40 `dcc-plugin-agents-md`
-
 ## Goal
 
 A new add-on plugin, `dcc-plugin-agents-md`, gives `AGENTS.md` the same support as `CLAUDE.md`, in each place where Claude Code loads `CLAUDE.md`.

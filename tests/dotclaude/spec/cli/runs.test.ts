@@ -4,7 +4,7 @@ import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
 import { RATE_LIMITS_FILE } from "../../../../src/kernel/paths.ts";
-import { makeStore, run, TODAY } from "./helpers.ts";
+import { makeStore, run, TODAY } from "./read-fixture.ts";
 
 const CAP = "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS";
 const NOW = Date.parse(`${TODAY}T10:00:00.000Z`);

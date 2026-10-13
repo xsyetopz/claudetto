@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P11b `dotclaude-browser`
-
 ## Goal
 
 Port the add-on `dotclaude-browser` to two slices: `search`, with the mod on `WebSearch`, and `browse`, with the CLI `dotclaude-browser-guide` and the skill `drive-web-browser`.

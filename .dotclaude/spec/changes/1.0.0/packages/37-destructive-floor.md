@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P37 Destructive floor
-
 ## Goal
 
 The user narrows the native auto mode classifier, permission system, and sandbox, in the way of macOS.

@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P32 `.dotclaude/`
-
 ## Goal
 
 Each file that dotclaude writes moves to `.dotclaude/` in the project, or to `~/.dotclaude/` for the user.

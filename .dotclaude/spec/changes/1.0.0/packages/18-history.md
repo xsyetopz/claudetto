@@ -12,8 +12,6 @@ agent: implementer
 status: planned
 ---
 
-# P18 History
-
 ## Goal
 
 Delete the tags and the GitHub releases of each older version.

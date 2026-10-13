@@ -1,41 +1,40 @@
-// The hook lab of the lane hooks of the `spec` slice: `claude plugin test plugins/dotclaude` fires `agent.spawn` and `turn.complete` with stubs.
+// The hook lab of the implement hook of the `spec` slice: `claude plugin test plugins/dotclaude` fires `agent.spawn` with stubs.
 // No subagent starts, no command runs, and no model call goes out.
-// The stub of `process.run` is the test's own, so the live `dotclaude-spec lane` and its refusal in a worktree are not tested here.
+// The stub of `process.run` is the test's own, so the live `dotclaude-spec implement` and its refusal in a worktree are not tested here.
 
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
 const BRIEF = "---\nid: P33\ndeps: [P19]\n---\n\n# P33 Zero token cost";
 
-/** The folder of the session. A test changes it to start a subagent in a worktree. */
+/** The folder of the session. */
 const session = { cwd: "/project" };
 
-/** The stubs of one test: the engine answers the spawn, and `process.run` lists each `lane` call and its folder in `folders`. */
+/** The stubs of one test: the engine answers the spawn, and `process.run` lists each `implement` call and its folder in `folders`. */
 const stub = (
   on: On,
   agentId = "a1",
   exitCode = 0,
   folders: (string | undefined)[] = [],
 ) => {
-  const lanes: string[] = [];
+  const runs: string[] = [];
   session.cwd = "/project";
   on("session.cwd", () => ({ value: session.cwd }));
   on("agent.spawn", () => ({ model: "claude-sonnet-5-5", agentId }));
-  on("turn.complete", (_$, e) => ({ text: e.answer }));
   on("process.run", (_$, e) => {
-    lanes.push(e.argv.slice(3).join(" "));
+    runs.push(e.argv.slice(3).join(" "));
     folders.push(e.init?.cwd);
     return {
       value: {
         exitCode,
         stdout: "",
-        stderr: exitCode === 0 ? "" : "lane refused",
+        stderr: exitCode === 0 ? "" : "implement refused",
         isStdoutTruncated: false,
         isStderrTruncated: false,
       },
     };
   });
-  return lanes;
+  return runs;
 };
 
 const spawn = ($: Engine, prompt: string, subagentType = "implementer") =>
@@ -50,84 +49,32 @@ const spawn = ($: Engine, prompt: string, subagentType = "implementer") =>
     fork: false,
   });
 
-const end = (
-  $: Engine,
-  agentId: string,
-  reason: "answer" | "aborted" | "error" = "answer",
-) =>
-  $.turn.complete({
-    answer: "done",
-    durationMs: 1,
-    isAborted: reason === "aborted",
-    turnId: "t",
-    reason,
-    agentId,
-  });
-
-test("the spawn of an implementer moves its package to `doing`", async ($: Engine, on: On) => {
-  const lanes = stub(on);
+test("the spawn of an implementer runs `implement` for its package", async ($: Engine, on: On) => {
+  const runs = stub(on);
   await spawn($, BRIEF);
-  expect(lanes).toEqual(["lane P33 doing"]);
+  expect(runs).toEqual(["implement P33"]);
 });
 
-test("a spawn with no brief in its prompt moves no lane", async ($: Engine, on: On) => {
-  const lanes = stub(on);
+test("a spawn with no brief in its prompt runs no command", async ($: Engine, on: On) => {
+  const runs = stub(on);
   await spawn($, "Read the files.");
-  expect(lanes).toEqual([]);
+  expect(runs).toEqual([]);
 });
 
-test("a spawn of another agent type moves no lane", async ($: Engine, on: On) => {
-  const lanes = stub(on);
+test("a spawn of another agent type runs no command", async ($: Engine, on: On) => {
+  const runs = stub(on);
   await spawn($, BRIEF, "reviewer");
-  expect(lanes).toEqual([]);
+  expect(runs).toEqual([]);
 });
 
-test("the end of an implementer moves its package to `review`", async ($: Engine, on: On) => {
-  const lanes = stub(on);
-  await spawn($, BRIEF);
-  await end($, "a1");
-  expect(lanes).toEqual(["lane P33 doing", "lane P33 review"]);
-});
-
-test("the end of an implementer in a worktree runs `lane` in the folder of the spawn", async ($: Engine, on: On) => {
-  const folders: (string | undefined)[] = [];
-  stub(on, "a1", 0, folders);
-  await spawn($, BRIEF);
-  session.cwd = "/project/.claude/worktrees/agent-a1";
-  await end($, "a1");
-  expect(folders).toEqual(["/project", "/project"]);
-});
-
-test("the end of another subagent moves no lane", async ($: Engine, on: On) => {
-  const lanes = stub(on);
-  await spawn($, BRIEF);
-  await end($, "other");
-  expect(lanes).toEqual(["lane P33 doing"]);
-});
-
-test("an aborted or errored subagent leaves its lane `doing` and logs it", async ($: Engine, on: On) => {
-  const lanes = stub(on);
-  const logs: string[] = [];
-  on("ui.log", (_$, e, next) => {
-    logs.push(e.text);
-    return next(e);
-  });
-  await spawn($, BRIEF);
-  await end($, "a1", "aborted");
-  await spawn($, BRIEF.replace("P33", "P34"));
-  await end($, "a1", "error");
-  expect(lanes).toEqual(["lane P33 doing", "lane P34 doing"]);
-  expect(logs.length).toBe(2);
-});
-
-test("a prompt that quotes `id: P12` in its body moves no lane", async ($: Engine, on: On) => {
-  const lanes = stub(on);
+test("a prompt that quotes `id: P12` in its body runs no command", async ($: Engine, on: On) => {
+  const runs = stub(on);
   await spawn($, "Read the brief.\nid: P12\nThen stop.");
   await spawn($, "---\ntitle: x\n---\nid: P12");
-  expect(lanes).toEqual([]);
+  expect(runs).toEqual([]);
 });
 
-test("a `lane` run that exits 1 is logged", async ($: Engine, on: On) => {
+test("an `implement` run that exits 1 is logged", async ($: Engine, on: On) => {
   stub(on, "a1", 1);
   const logs: string[] = [];
   on("ui.log", (_$, e, next) => {
@@ -135,5 +82,12 @@ test("a `lane` run that exits 1 is logged", async ($: Engine, on: On) => {
     return next(e);
   });
   await spawn($, BRIEF);
-  expect(logs.some((t) => t.includes("lane refused"))).toBe(true);
+  expect(logs.some((t) => t.includes("implement refused"))).toBe(true);
+});
+
+test("the `implement` run uses the folder of the session at the spawn", async ($: Engine, on: On) => {
+  const folders: (string | undefined)[] = [];
+  stub(on, "a1", 0, folders);
+  await spawn($, BRIEF);
+  expect(folders).toEqual(["/project"]);
 });

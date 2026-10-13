@@ -33,7 +33,11 @@ import {
   resumeText,
   writePrompt,
 } from "../domain/text.ts";
-import { laneDoneCall, overContext, parseHandover } from "../domain/trigger.ts";
+import {
+  mergeDoneCall,
+  overContext,
+  parseHandover,
+} from "../domain/trigger.ts";
 import {
   CONTEXT_PERCENT,
   HANDOFF_RETRY_MAX,
@@ -117,7 +121,7 @@ export const onTurnStep: Handler<"turn.step"> = async function* (_$, e, next) {
 /** Adds the report-now note to the result of a tool call of a subagent that nears a bound, and watches for a package that goes to `done`. */
 export const onToolCall: Handler<"tool.call"> = async (_$, e, next) => {
   const out = await next(e);
-  if (laneDoneCall(e, out)) {
+  if (mergeDoneCall(e, out)) {
     wanted = REASON_LANE;
     if (!pending) episode = newEpisode();
   }

@@ -1,3 +1,12 @@
+---
+schema: dotclaude-spec/2
+kind: change
+id: Second-checking
+size: large
+status: implementing
+verify: just check
+---
+
 # Second-checking
 
 ## Why

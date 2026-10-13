@@ -1,31 +1,82 @@
-// `dotclaude-spec drop <package> --reason <text> [--json]`: cancels a package.
-// `canceled` is a terminal lane: the package does not move again, and the done count of the change leaves it out.
-// A package that depends on a canceled package does not become ready, and `deps` shows the chain.
+// `dotclaude-spec drop <package|change> --reason <text> [--json]`: cancels a package, or a change before it is `accepted`.
+// When a folder with the name exists in the store, the name is a change. Otherwise the name is a package.
+// `canceled` is a state that a package does not leave. A package that depends on it does not become ready.
 
+import { gateReason } from "../domain/gates.ts";
+import {
+  CHANGE_TRANSITIONS,
+  hasTransition,
+  PACKAGE_TRANSITIONS,
+} from "../domain/states.ts";
 import { parseArgs } from "./args.ts";
-import { applyMove, printMove, refusedInWorktree } from "./lane.ts";
 import type { Run } from "./run.ts";
+import {
+  changeState,
+  moveChange,
+  movePackage,
+  printMoved,
+  refusedInWorktree,
+  stop,
+  targetOf,
+  usage,
+} from "./transition.ts";
 
-const USAGE = "Usage: dotclaude-spec drop <package> --reason <text> [--json]";
+const USAGE =
+  "Usage: dotclaude-spec drop <package|change> --reason <text> [--json]";
 
 export const dropCommand = async (
   run: Run,
   args: string[],
 ): Promise<number> => {
   const parsed = parseArgs(args, { values: ["reason"] });
-  if (typeof parsed === "string") {
-    run.io.error(parsed);
-    return 2;
+  if (typeof parsed === "string") return usage(run, parsed);
+  const [name, extra] = parsed.words;
+  const { reason } = parsed.values;
+  if (!name || extra !== undefined) return usage(run, USAGE);
+  const gate = gateReason(reason, "drop");
+  if (!gate.ok || reason === undefined)
+    return usage(run, gate.ok ? USAGE : gate.reason);
+  if ((await run.store.changes()).includes(name)) {
+    if (refusedInWorktree(run, "cancels a change")) return 1;
+    const state = changeState((await run.store.events(name)) ?? []);
+    if (
+      !hasTransition(CHANGE_TRANSITIONS, {
+        from: state,
+        command: "drop",
+        to: "canceled",
+      })
+    )
+      return stop(
+        run,
+        `The change \`${name}\` is \`${state}\`, and \`drop\` cannot cancel it.`,
+      );
+    printMoved(
+      run,
+      "drop",
+      await moveChange(run, name, "canceled", { note: reason }),
+      parsed.json,
+    );
+    return 0;
   }
-  const [pkg, extra] = parsed.words;
-  const reason = parsed.values["reason"];
-  if (!pkg || extra !== undefined || reason === undefined) {
-    run.io.error(USAGE);
-    return 2;
-  }
-  if (refusedInWorktree(run, "changes a lane")) return 1;
-  const move = await applyMove(run, pkg, "canceled", { note: reason });
-  if (move === null) return 1;
-  printMove(run, move, parsed.json);
+  const target = await targetOf(run, name, "cancels a package");
+  if (target === null) return 1;
+  const { id, state } = target;
+  if (
+    !hasTransition(PACKAGE_TRANSITIONS, {
+      from: state,
+      command: "drop",
+      to: "canceled",
+    })
+  )
+    return stop(
+      run,
+      `The package \`${name}\` is \`${state}\`, and \`drop\` cannot cancel it.`,
+    );
+  printMoved(
+    run,
+    "drop",
+    await movePackage(run, id, name, "canceled", { note: reason }),
+    parsed.json,
+  );
   return 0;
 };

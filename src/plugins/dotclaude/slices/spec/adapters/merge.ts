@@ -1,84 +1,44 @@
-// `dotclaude-spec merge <package> <branch>`: merges the branch of a package that passed review.
-// The steps are the steps of `/ship`:
-//   0. The lane of the package must be `review` with an `approve` from `dotclaude-spec review`,
-//      and the branch must be a commit that is not the current branch.
-//      The tree must hold no change except the store files of the change, which the command commits first.
-//   1. `git merge --no-edit <branch>`. On a conflict the command stops, sets no lane, and prints the conflicted files.
-//   2. `just generate`, when the project has a `justfile`.
-//   3. The lane of the package becomes `done`.
-//   4. One commit of `plugins/` and the store files of the change, and nothing else.
-// Only the main checkout merges, as only the main checkout changes a lane.
+// `dotclaude-spec merge <package> [<branch>] [--json]`: merges the work of an `approved` package and moves it to `done`.
+// With a branch, the head of the branch must be the approved SHA. Then the command runs, in this order:
+//   1. The store files of the change are committed. The tree must hold no other change.
+//   2. `git merge --no-edit <branch>`. On a conflict the command stops, moves no state, and prints the conflicted files.
+//   3. `just generate`, when the project has a `justfile`.
+//   4. The `done` event, and one commit of `plugins/` and the folder of the change.
+// With no branch, `HEAD` of the main checkout must contain the approved SHA, and the command runs only steps 1, 3, and 4.
 
 import path from "node:path";
-import { runProgram } from "../../../../../kernel/node/process.ts";
-import { SPEC_ROOT } from "../../../../../kernel/paths.ts";
-import { approved, eventsOf } from "../domain/events.ts";
-import { changeOf, inLinkedWorktree, moveLane } from "./lane.ts";
+import { gateMerge } from "../domain/gates.ts";
+import { hasTransition, PACKAGE_TRANSITIONS } from "../domain/states.ts";
+import { parseArgs } from "./args.ts";
+import { changeDir } from "./files.ts";
+import { exec } from "./git.ts";
 import type { Run } from "./run.ts";
+import {
+  movePackage,
+  printMoved,
+  stop,
+  targetOf,
+  usage,
+} from "./transition.ts";
+
+const USAGE = "Usage: dotclaude-spec merge <package> [<branch>] [--json]";
 
 const GENERATED_DIR = "plugins";
 
-interface Result {
-  code: number;
-  out: string;
-  /** The standard output with no trim, for the output that has meaning in its blanks. */
-  stdout: string;
-}
+/** Runs git with `args` in the root of the store. */
+const git = (run: Run, args: string[]) => exec(run.store.root, "git", args);
 
-/** Runs `file` with `args` in the root of the store. A program that is not found gives code 127. */
-const exec = (run: Run, file: string, args: string[]): Result => {
-  try {
-    const r = runProgram(file, args, {
-      cwd: run.store.root,
-      stdin: "ignore",
-      stdout: "pipe",
-      stderr: "pipe",
-      timeout: 600_000,
-    });
-    return {
-      code: r.exitCode ?? 1,
-      stdout: r.stdout?.toString() ?? "",
-      out: `${r.stdout?.toString() ?? ""}${r.stderr?.toString() ?? ""}`.trim(),
-    };
-  } catch (err) {
-    return {
-      code: 127,
-      stdout: "",
-      out: err instanceof Error ? err.message : String(err),
-    };
-  }
-};
-
-/** The files that the merge left in conflict. */
-const conflicted = (run: Run): string[] =>
-  exec(run, "git", ["diff", "--name-only", "--diff-filter=U"])
-    .out.split("\n")
-    .filter((f) => f !== "");
-
-/** True when the project has a generator: a `justfile` in the root. */
-const hasGenerator = (run: Run): boolean => run.store.exists("justfile");
-
-/** The store files of the change `id` that the lane commands write, relative to the root of the store. */
-const storeFiles = (id: string): string[] =>
-  ["events.jsonl", "packages.md"].map((f) => path.posix.join(SPEC_ROOT, id, f));
-
-interface Tree {
-  staged: boolean;
-  /** The tracked files that differ from `HEAD`, relative to the root of the store. */
-  files: string[];
-}
-
-/** The tracked files that changed, and whether any change is staged. Untracked files do not count. */
-const treeState = (run: Run): Tree => {
-  const prefix = exec(run, "git", ["rev-parse", "--show-prefix"]).out;
-  const status = exec(run, "git", [
+/** The tracked files that differ from `HEAD`, relative to the root of the store, and whether any change is staged. */
+const treeState = (run: Run): { staged: boolean; files: string[] } => {
+  const prefix = git(run, ["rev-parse", "--show-prefix"]).out;
+  const status = git(run, [
     "status",
     "--porcelain",
     "-z",
     "--untracked-files=no",
   ]);
   const tokens = status.stdout.split("\0").filter((t) => t !== "");
-  const tree: Tree = { staged: false, files: [] };
+  const tree = { staged: false, files: [] as string[] };
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i] ?? "";
     const index = token[0] ?? " ";
@@ -92,13 +52,13 @@ const treeState = (run: Run): Tree => {
   return tree;
 };
 
-/** Gives a message and false when `branch` is not a commit that the merge can use. */
-const branchUsable = (run: Run, branch: string): boolean => {
+/** The SHA of the commit that `branch` names, or null with a message when `branch` is not a commit the merge can use. */
+const branchHead = (run: Run, branch: string): string | null => {
   if (branch.startsWith("-")) {
     run.io.error(`The branch \`${branch}\` starts with a dash.`);
-    return false;
+    return null;
   }
-  const verify = exec(run, "git", [
+  const verify = git(run, [
     "rev-parse",
     "--verify",
     "--quiet",
@@ -107,39 +67,37 @@ const branchUsable = (run: Run, branch: string): boolean => {
   ]);
   if (verify.code !== 0) {
     run.io.error(`The branch \`${branch}\` is not a commit.`);
-    return false;
+    return null;
   }
-  const current = exec(run, "git", [
-    "symbolic-ref",
-    "--quiet",
-    "--short",
-    "HEAD",
-  ]);
+  const current = git(run, ["symbolic-ref", "--quiet", "--short", "HEAD"]);
   if (current.code === 0 && current.out === branch) {
     run.io.error(`The branch \`${branch}\` is the current branch.`);
-    return false;
+    return null;
   }
-  return true;
+  return verify.out;
 };
 
-/** Commits the store files of the change when they are the only changes. Gives false with a message when the merge must not start. */
+/** Commits the folder of the change when it holds the only changes. Gives false with a message when the merge must not start. */
 const settleTree = (run: Run, id: string, pkg: string): boolean => {
   const tree = treeState(run);
-  const mine = storeFiles(id);
-  const others = tree.files.filter((f) => !mine.includes(f));
+  const dir = changeDir(id);
+  const others = tree.files.filter((f) =>
+    path.posix.relative(dir, f).startsWith(".."),
+  );
   if (tree.staged || others.length > 0) {
     run.io.error(
-      `The tree has changes outside the lane files of \`${id}\`: ${tree.files.map((f) => `\`${f}\``).join(", ")}. Commit or undo them first. No lane changed for \`${pkg}\`.`,
+      `The tree has changes outside \`${dir}\`: ${tree.files.map((f) => `\`${f}\``).join(", ")}. Commit or undo them first. No state changed for \`${pkg}\`.`,
     );
     return false;
   }
   if (tree.files.length === 0) return true;
-  const commit = exec(run, "git", [
+  git(run, ["add", "--", dir]);
+  const commit = git(run, [
     "commit",
     "-m",
-    `dotclaude-spec: lanes of ${id}`,
+    `dotclaude-spec: states of ${id}`,
     "--",
-    ...mine,
+    dir,
   ]);
   if (commit.code !== 0) run.io.error(commit.out);
   return commit.code === 0;
@@ -149,77 +107,72 @@ export const mergeCommand = async (
   run: Run,
   args: string[],
 ): Promise<number> => {
-  const [pkg, branch] = args;
-  if (!pkg || !branch) {
-    run.io.error("Usage: dotclaude-spec merge <package> <branch>");
-    return 2;
-  }
-  if (inLinkedWorktree(run.store.root)) {
-    run.io.error(
-      "This is a linked git worktree. Only the main checkout merges a package.",
+  const parsed = parseArgs(args);
+  if (typeof parsed === "string") return usage(run, parsed);
+  const [pkg, branch, extra] = parsed.words;
+  if (!pkg || extra !== undefined) return usage(run, USAGE);
+  const target = await targetOf(run, pkg, "merges a package");
+  if (target === null) return 1;
+  const { id, events, state } = target;
+  const step = { from: state, command: "merge", to: "done" } as const;
+  if (!hasTransition(PACKAGE_TRANSITIONS, step))
+    return stop(
+      run,
+      `The package \`${pkg}\` is \`${state}\`. Only an \`approved\` package merges.`,
     );
-    return 1;
-  }
-  const id = await changeOf(run, pkg);
-  if (id === null) return 1;
-  const events = await run.store.events(id);
-  const lane = events ? (await run.store.lanes(id, events))[pkg] : undefined;
-  if (lane !== "review") {
-    run.io.error(
-      `The lane of \`${pkg}\` is \`${lane}\`. Only a package in \`review\` merges.`,
-    );
-    return 1;
-  }
-  if (!approved(eventsOf(events ?? [], pkg))) {
-    run.io.error(
-      `The review of \`${pkg}\` has no \`approve\`. Run \`dotclaude-spec review ${pkg} approve\` after the review passes.`,
-    );
-    return 1;
-  }
-  if (!branchUsable(run, branch) || !settleTree(run, id, pkg)) return 1;
-
-  const merge = exec(run, "git", [
-    "merge",
-    "--no-edit",
-    "--end-of-options",
-    branch,
-  ]);
-  if (merge.code !== 0) {
-    const files = conflicted(run);
-    if (files.length > 0) {
-      run.io.error(`The merge of \`${branch}\` has conflicts in these files:`);
-      for (const file of files) run.io.error(file);
-    } else run.io.error(merge.out);
-    return 1;
-  }
-
-  if (hasGenerator(run)) {
-    const generate = exec(run, "just", ["generate"]);
-    if (generate.code !== 0) {
-      run.io.error(
-        `\`just generate\` failed after the merge of \`${branch}\`. The lane of \`${pkg}\` is the same.`,
-      );
-      run.io.error(generate.out);
+  const sha =
+    events.findLast((e) => e.package === pkg && e.verdict === "approve")?.sha ??
+    "";
+  const head = branch === undefined ? undefined : branchHead(run, branch);
+  if (head === null) return 1;
+  const gate = gateMerge({
+    approvedSha: sha,
+    ...(head === undefined ? {} : { branchHead: head }),
+    mainContains:
+      sha !== "" &&
+      git(run, ["merge-base", "--is-ancestor", sha, "HEAD"]).code === 0,
+  });
+  if (!gate.ok) return stop(run, gate.reason);
+  if (!settleTree(run, id, pkg)) return 1;
+  if (branch !== undefined) {
+    const merge = git(run, ["merge", "--no-edit", "--end-of-options", branch]);
+    if (merge.code !== 0) {
+      const files = git(run, ["diff", "--name-only", "--diff-filter=U"])
+        .out.split("\n")
+        .filter((f) => f !== "");
+      if (files.length === 0) run.io.error(merge.out);
+      else {
+        run.io.error(
+          `The merge of \`${branch}\` has conflicts in these files:`,
+        );
+        for (const file of files) run.io.error(file);
+      }
       return 1;
     }
   }
-  const moved = await moveLane(run, pkg, "done");
-  if (moved !== 0) return moved;
+  if (run.store.exists("justfile")) {
+    const generate = exec(run.store.root, "just", ["generate"]);
+    if (generate.code !== 0) {
+      run.io.error(
+        `\`just generate\` failed after the merge. The state of \`${pkg}\` is the same.`,
+      );
+      return stop(run, generate.out);
+    }
+  }
+  const moved = await movePackage(run, id, pkg, "done", { sha });
   const paths = [
     ...(run.store.exists(GENERATED_DIR) ? [GENERATED_DIR] : []),
-    ...storeFiles(id),
+    changeDir(id),
   ];
-  exec(run, "git", ["add", "--", ...paths]);
-  const commit = exec(run, "git", [
+  git(run, ["add", "--", ...paths]);
+  const commit = git(run, [
     "commit",
     "-m",
-    `dotclaude-spec: \`${pkg}\` done after the merge of \`${branch}\``,
+    `dotclaude-spec: \`${pkg}\` done${branch === undefined ? "" : ` after the merge of \`${branch}\``}`,
     "--",
     ...paths,
   ]);
-  if (commit.code !== 0) {
-    run.io.error(commit.out);
-    return 1;
-  }
+  if (commit.code !== 0) return stop(run, commit.out);
+  printMoved(run, "merge", moved, parsed.json);
   return 0;
 };

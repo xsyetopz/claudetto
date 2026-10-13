@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P22 `styles`
-
 ## Goal
 
 Write the output style `dotclaude:Concise`, based on the built-in `Concise` style of Claude Code 2.1.296, and make it the `outputStyle` of the settings snippet.

@@ -1,12 +1,16 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P03
+title: Core plugin: prompt and agents
+wave: 1
 deps: []
-owns: ["src/plugins/dotclaude/plugin.ts", "src/plugins/dotclaude/slices/prompt/", "src/plugins/dotclaude/slices/agents/", "src/plugins/dotclaude/slices/styles/", "src/plugins/dotclaude/slices/surface/", "src/plugins/dotclaude/slices/attribution/", "src/plugins/dotclaude/slices/trim/", "src/plugins/dotclaude/slices/decide/", "src/plugins/dotclaude/slices/checks/", "src/plugins/dotclaude/evals/", "tests/dotclaude/prompt/", "tests/dotclaude/agents/", "tests/dotclaude/styles/", "tests/dotclaude/surface/", "tests/dotclaude/attribution/", "tests/dotclaude/trim/", "tests/dotclaude/decide/", "tests/dotclaude/checks/", "tests/dotclaude/evals/", "tests/dotclaude/settings-pin.test.ts", "tests/dotclaude/imports.test.ts", "tests/dotclaude/import-rules.test.ts", ".dotclaude/spec/changes/1.0.0/evidence/second-check-core-prompt-agents.md"]
+owns: ["src/plugins/dotclaude/plugin.ts","src/plugins/dotclaude/slices/prompt/","src/plugins/dotclaude/slices/agents/","src/plugins/dotclaude/slices/styles/","src/plugins/dotclaude/slices/surface/","src/plugins/dotclaude/slices/attribution/","src/plugins/dotclaude/slices/trim/","src/plugins/dotclaude/slices/decide/","src/plugins/dotclaude/slices/checks/","src/plugins/dotclaude/evals/","tests/dotclaude/prompt/","tests/dotclaude/agents/","tests/dotclaude/styles/","tests/dotclaude/surface/","tests/dotclaude/attribution/","tests/dotclaude/trim/","tests/dotclaude/decide/","tests/dotclaude/checks/","tests/dotclaude/evals/","tests/dotclaude/settings-pin.test.ts","tests/dotclaude/imports.test.ts","tests/dotclaude/import-rules.test.ts",".dotclaude/spec/changes/1.0.0/evidence/second-check-core-prompt-agents.md"]
+satisfies: []
 verify: just test tests/dotclaude/prompt && just lab
 agent: implementer
+status: done
 ---
-
-# P03 Core plugin: prompt and agents
 
 ## Goal
 

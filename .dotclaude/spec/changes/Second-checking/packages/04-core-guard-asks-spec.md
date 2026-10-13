@@ -1,12 +1,16 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P04
+title: Core plugin: guard, asks, spec, sembr
+wave: 2
 deps: ["P01"]
-owns: ["src/plugins/dotclaude/slices/guard/", "src/plugins/dotclaude/slices/asks/", "src/plugins/dotclaude/slices/spec/", "src/plugins/dotclaude/slices/sembr/", "src/kernel/spec-store.ts", "tests/kernel/spec-store.test.ts", "tests/dotclaude/guard/", "tests/dotclaude/asks/", "tests/dotclaude/spec/", "tests/dotclaude/sembr/", ".dotclaude/spec/changes/1.0.0/evidence/second-check-core-guard-asks-spec.md"]
+owns: ["src/plugins/dotclaude/slices/guard/","src/plugins/dotclaude/slices/asks/","src/plugins/dotclaude/slices/spec/","src/plugins/dotclaude/slices/sembr/","src/kernel/spec-store.ts","tests/kernel/spec-store.test.ts","tests/dotclaude/guard/","tests/dotclaude/asks/","tests/dotclaude/spec/","tests/dotclaude/sembr/",".dotclaude/spec/changes/1.0.0/evidence/second-check-core-guard-asks-spec.md"]
+satisfies: []
 verify: just test tests/dotclaude/guard tests/dotclaude/asks tests/dotclaude/spec tests/kernel && just lab
 agent: implementer
+status: done
 ---
-
-# P04 Core plugin: guard, asks, spec, sembr
 
 ## Goal
 

@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P35 Worker lessons
-
 ## Goal
 
 The subagent runs of dotclaude use the lessons of the Bun port to Rust, at the scale of a subscription and not of the API.

@@ -12,8 +12,6 @@ agent: investigator
 status: done
 ---
 
-# P14 Handoff cost
-
 ## Goal
 
 Measure the cost of one handoff against one compaction on the same session, with `dotclaude-usage`, and write the numbers to `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.

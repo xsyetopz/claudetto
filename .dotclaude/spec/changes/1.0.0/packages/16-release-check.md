@@ -12,8 +12,6 @@ agent: implementer
 status: planned
 ---
 
-# P16 Release check
-
 ## Goal
 
 Check the release of 1.0.0: `tools/rebuild-pending.txt` is empty, and its check is deleted with it.

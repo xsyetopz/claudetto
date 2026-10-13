@@ -1,18 +1,20 @@
-// Tests of the spec store reader, with a fake `FileReader` and no file on disk.
+// Tests of the event reader and of the package states, with a fake `FileReader` and no file on disk.
 
 import { expect, test } from "bun:test";
 import type { FileReader } from "../../src/kernel/ports.ts";
 import {
   activeProgress,
+  eventLine,
+  eventsHeader,
   eventsPath,
-  lastLanes,
-  packageLanes,
+  lastStates,
+  packageStates,
   readEvents,
   SPEC_SCHEMA,
+  type StateEvent,
   scanEvents,
 } from "../../src/kernel/spec-store.ts";
 
-/** A `FileReader` over a map of path to text. A folder is a key of the map that has a `/` after it. */
 const fakeFiles = (files: Record<string, string>): FileReader => ({
   read: async (file) => files[file] ?? null,
   list: async (dir) => {
@@ -24,121 +26,131 @@ const fakeFiles = (files: Record<string, string>): FileReader => ({
   },
 });
 
-/** The text of an `events.jsonl` with one line for each package of `lanes`, and the schema `schema`. */
-const eventsText = (lanes: Record<string, string>, schema = SPEC_SCHEMA) =>
-  [
-    { schema },
-    ...Object.entries(lanes).map(([pkg, lane]) => ({
-      at: "2026-01-01T00:00:00.000Z",
-      package: pkg,
-      lane,
-    })),
-  ]
-    .map((line) => JSON.stringify(line))
-    .join("\n");
-
-test("`readEvents` gives the lines of a change with a known schema", async () => {
-  const files = fakeFiles({
-    [eventsPath("1.0.0")]: eventsText({ "01a": "done", "01b": "doing" }),
-  });
-  expect(await readEvents(files, "1.0.0")).toStrictEqual([
-    { at: "2026-01-01T00:00:00.000Z", package: "01a", lane: "done" },
-    { at: "2026-01-01T00:00:00.000Z", package: "01b", lane: "doing" },
-  ]);
+const event = (state: string, extra: Partial<StateEvent> = {}): StateEvent => ({
+  at: "2026-01-01T00:00:00.000Z",
+  package: "P1",
+  state,
+  ...extra,
 });
 
-test("`readEvents` gives null for a change with no `events.jsonl`", async () => {
-  expect(await readEvents(fakeFiles({}), "1.0.0")).toBe(null);
-});
+const withLog = (text: string): FileReader =>
+  fakeFiles({ [eventsPath("c1")]: text });
 
-test("`readEvents` stops with an error that names the file when the schema is unknown", async () => {
-  const file = eventsPath("1.0.0");
-  const files = fakeFiles({ [file]: eventsText({ "01a": "done" }, 2) });
-  await expect(readEvents(files, "1.0.0")).rejects.toThrow(file);
-});
-
-test("`readEvents` names the file and the line of a line that is not JSON", async () => {
-  const file = eventsPath("1.0.0");
-  const text = `${eventsText({ "01a": "done" })}\n{"at":\n`;
-  const files = fakeFiles({ [file]: text });
-  await expect(readEvents(files, "1.0.0")).rejects.toThrow(`${file}:3`);
-});
-
-test("`readEvents` skips a torn last line with no line end, and `scanEvents` gives its line", async () => {
-  const file = eventsPath("1.0.0");
-  const text = `${eventsText({ "01a": "done" })}\n{"at":`;
-  const files = fakeFiles({ [file]: text });
-  const scan = await scanEvents(files, "1.0.0");
-  expect(scan?.events.map((e) => e.package)).toStrictEqual(["01a"]);
-  expect(scan?.torn).toBe(3);
-  expect((await readEvents(files, "1.0.0"))?.length).toBe(1);
-});
-
-test("`scanEvents` gives no torn line when the last line is JSON with no line end", async () => {
-  const file = eventsPath("1.0.0");
-  const files = fakeFiles({ [file]: `${eventsText({ "01a": "done" })}` });
-  expect((await scanEvents(files, "1.0.0"))?.torn).toBe(null);
-});
-
-test("the lanes of a log equal the last line of each package", async () => {
-  const at = "2026-01-01T00:00:00.000Z";
-  const lines = [
-    { at, package: "P01", lane: "planned" },
-    { at, package: "P02", lane: "planned" },
-    { at, package: "P01", lane: "doing" },
-    { at, package: "P02", lane: "doing" },
-    { at, package: "P01", lane: "done" },
-    { at, package: "P02", lane: "blocked" },
-    { at, package: "P02", lane: "doing" },
-  ] as const;
-  const text = [{ schema: SPEC_SCHEMA }, ...lines]
-    .map((line) => JSON.stringify(line))
-    .join("\n");
-  const files = fakeFiles({ [eventsPath("1.0.0")]: text });
-  const events = (await readEvents(files, "1.0.0")) ?? [];
-  expect(lastLanes(events)).toStrictEqual({ P01: "done", P02: "doing" });
-  expect(await packageLanes(files, "1.0.0", events)).toStrictEqual({
-    P01: "done",
-    P02: "doing",
-  });
-});
-
-test("`activeProgress` counts the done packages of the last change that is not done", async () => {
-  const files = fakeFiles({
-    [eventsPath("0.9.0")]: eventsText({ a: "planned" }),
-    [eventsPath("1.0.0")]: eventsText({
-      "01a": "done",
-      "01b": "done",
-      "01c": "review",
-      "01d": "planned",
+test("the header and the lines round-trip through the reader", async () => {
+  const events = [
+    event("doing"),
+    event("verified", {
+      sha: "abc",
+      verify: { command: "just check", exit: 0 },
     }),
+    { at: "2026-01-02T00:00:00.000Z", state: "implementing" },
+  ];
+  const text = eventsHeader() + events.map(eventLine).join("");
+  expect(await readEvents(withLog(text), "c1")).toEqual(events);
+});
+
+test("a change with no log gives null", async () => {
+  expect(await readEvents(fakeFiles({}), "c1")).toBeNull();
+  expect(await scanEvents(fakeFiles({}), "c1")).toBeNull();
+});
+
+test("a header with another schema throws, and the message names the file", async () => {
+  for (const schema of [1, 3, "2"]) {
+    const text = `${JSON.stringify({ schema })}\n`;
+    await expect(readEvents(withLog(text), "c1")).rejects.toThrow(
+      eventsPath("c1"),
+    );
+  }
+});
+
+test("a log with no header throws", async () => {
+  const text = eventLine(event("doing"));
+  await expect(readEvents(withLog(text), "c1")).rejects.toThrow();
+});
+
+test("a torn last line is skipped and its line number is reported", async () => {
+  const text = `${eventsHeader()}${eventLine(event("doing"))}{"at":"2026-01`;
+  expect(await scanEvents(withLog(text), "c1")).toEqual({
+    events: [event("doing")],
+    torn: 3,
+  });
+});
+
+test("a bad line that is not the last line throws", async () => {
+  const text = `${eventsHeader()}{"at":\n${eventLine(event("doing"))}`;
+  await expect(readEvents(withLog(text), "c1")).rejects.toThrow();
+});
+
+test("a complete last line with a line end is never torn", async () => {
+  const text = eventsHeader() + eventLine(event("doing"));
+  expect((await scanEvents(withLog(text), "c1"))?.torn).toBeNull();
+});
+
+test("the schema number is 2 and the header line carries it", () => {
+  expect(SPEC_SCHEMA).toBe(2);
+  expect(JSON.parse(eventsHeader())).toEqual({ schema: 2 });
+});
+
+const logOf = (states: Record<string, string>): string =>
+  eventsHeader() +
+  Object.entries(states)
+    .map(([pkg, state]) => eventLine(event(state, { package: pkg })))
+    .join("");
+
+const CHANGE = ".dotclaude/spec/changes/1.0.0";
+
+const store = fakeFiles({
+  [eventsPath("1.0.0")]: logOf({ P01: "done", P99: "doing" }),
+  [`${CHANGE}/packages/01-a.md`]: "---\nid: P01\n---\n",
+  [`${CHANGE}/packages/24-tiers.md`]: "---\nid: P24\n---\n",
+});
+
+test("the state of a package is its last event", () => {
+  expect(
+    lastStates([
+      event("doing"),
+      event("verified"),
+      { at: "2026-01-01T00:00:00.000Z", state: "planned" },
+    ]),
+  ).toStrictEqual({ P1: "verified" });
+});
+
+test("`packageStates` adds a package with a file as planned and keeps a state with no file", async () => {
+  const events = [
+    event("done", { package: "P01" }),
+    event("doing", { package: "P99" }),
+  ];
+  expect(await packageStates(store, "1.0.0", events)).toStrictEqual({
+    P01: "done",
+    P99: "doing",
+    P24: "planned",
+  });
+});
+
+test("`activeProgress` counts a package that has a file and no event", async () => {
+  expect(await activeProgress(store)).toStrictEqual({
+    id: "1.0.0",
+    done: 1,
+    total: 3,
+  });
+});
+
+test("`activeProgress` gives null when every change is done or none has a log", async () => {
+  expect(await activeProgress(fakeFiles({}))).toBeNull();
+  const done = fakeFiles({
+    [eventsPath("a")]: logOf({ P1: "done", P2: "canceled" }),
+  });
+  expect(await activeProgress(done)).toBeNull();
+});
+
+test("`activeProgress` leaves a canceled package out of the total and takes the last open change", async () => {
+  const files = fakeFiles({
+    [eventsPath("a")]: logOf({ P1: "doing" }),
+    [eventsPath("b")]: logOf({ P1: "done", P2: "canceled", P3: "planned" }),
   });
   expect(await activeProgress(files)).toStrictEqual({
-    id: "1.0.0",
-    done: 2,
-    total: 4,
-  });
-});
-
-test("`activeProgress` gives null when every change is done or none has an events log", async () => {
-  const done = fakeFiles({
-    [eventsPath("1.0.0")]: eventsText({ "01a": "done" }),
-  });
-  expect(await activeProgress(done)).toBe(null);
-  expect(await activeProgress(fakeFiles({}))).toBe(null);
-});
-
-test("`activeProgress` leaves a canceled package out of the total, and a change with only done and canceled packages is not active", async () => {
-  const open = fakeFiles({
-    [eventsPath("1.0.0")]: eventsText({ a: "done", b: "canceled", c: "doing" }),
-  });
-  expect(await activeProgress(open)).toStrictEqual({
-    id: "1.0.0",
+    id: "b",
     done: 1,
     total: 2,
   });
-  const closed = fakeFiles({
-    [eventsPath("1.0.0")]: eventsText({ a: "done", b: "canceled" }),
-  });
-  expect(await activeProgress(closed)).toBe(null);
 });

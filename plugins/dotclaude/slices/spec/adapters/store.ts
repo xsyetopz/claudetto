@@ -11,10 +11,9 @@ import {
   eventLine,
   eventsPath,
   isJson,
-  type Lane,
-  type LaneEvent,
-  packageLanes,
+  packageStates,
   readEvents,
+  type StateEvent,
   scanEvents,
 } from "../../../kernel/spec-store.ts";
 
@@ -42,6 +41,9 @@ export class SpecStore {
 
   readonly root: string;
 
+  /** The last append for each file, so appends at once run one after the other, in call order. */
+  private readonly appends = new Map<string, Promise<void>>();
+
   constructor(root: string) {
     this.root = root;
     this.files = {
@@ -62,17 +64,17 @@ export class SpecStore {
     await Bun.write(this.abs(rel), text);
   }
 
-  /** The lane events of the change `id`, or null. It throws an `Error` on a `schema` that it does not know. */
-  events(id: string): Promise<readonly LaneEvent[] | null> {
+  /** The state events of the change `id`, or null. It throws an `Error` on a `schema` that it does not know. */
+  events(id: string): Promise<readonly StateEvent[] | null> {
     return readEvents(this.files, id);
   }
 
-  /** The lanes of the change `id`: the package files and the last lines of `events`, from `packageLanes`. */
-  lanes(
+  /** The states of the packages of the change `id`: the package files and the last lines of `events`, from `packageStates`. */
+  states(
     id: string,
-    events: readonly LaneEvent[],
-  ): Promise<Record<string, Lane>> {
-    return packageLanes(this.files, id, events);
+    events: readonly StateEvent[],
+  ): Promise<Record<string, string>> {
+    return packageStates(this.files, id, events);
   }
 
   /** The line of the torn last line of `events.jsonl` of the change `id`, or null when there is none. */
@@ -84,11 +86,19 @@ export class SpecStore {
    * Adds one line for `event` to the end of `events.jsonl` of the change `id`, with an append.
    * A torn last line is cut off first, and a last line with no line end gets one, so the new line starts on its own line.
    */
-  async appendEvent(id: string, event: LaneEvent): Promise<void> {
+  appendEvent(id: string, event: StateEvent): Promise<void> {
     const file = this.abs(eventsPath(id));
-    fs.mkdirSync(path.dirname(file), { recursive: true });
-    const lead = await readyForAppend(file);
-    fs.appendFileSync(file, `${lead}${eventLine(event)}`);
+    const run = async (): Promise<void> => {
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      const lead = await readyForAppend(file);
+      fs.appendFileSync(file, `${lead}${eventLine(event)}`);
+    };
+    const done = (this.appends.get(file) ?? Promise.resolve()).then(run, run);
+    this.appends.set(
+      file,
+      done.catch(() => undefined),
+    );
+    return done;
   }
 
   /** The ids of the open changes, in order. The archive is not a change. */
@@ -106,6 +116,11 @@ export class SpecStore {
   /** The `.md` files of a folder, in order. */
   async markdown(dir: string): Promise<string[]> {
     return (await this.files.list(dir)).filter((n) => n.endsWith(".md")).sort();
+  }
+
+  /** Makes the folder `rel` and its parents. It throws when a path part is a file. */
+  makeDir(rel: string): void {
+    fs.mkdirSync(this.abs(rel), { recursive: true });
   }
 
   copyDir(from: string, to: string): void {

@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P13 `handoff`
-
 ## Goal
 
 Port the handoff of 0.28.0 to the slice `handoff`: the triggers, the handoff file, `/clear`, the resume, the `/handoff` skill, and `mainHandover`.

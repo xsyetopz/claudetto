@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P27 `worktrees`
-
 ## Goal
 
 Each part of dotclaude that works in a separate checkout uses the worktrees of Claude Code.

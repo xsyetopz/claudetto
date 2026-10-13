@@ -12,8 +12,6 @@ agent: main session
 status: planned
 ---
 
-# P45 Wiki: Agent Choices
-
 ## Goal
 
 One wiki page gives each choice of 1.0.0 about the agents a short reason, and the alternatives that dotclaude did not take, with the reason for each.

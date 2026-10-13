@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P26 Garbage collection
-
 ## Goal
 
 dotclaude uses the cleanup of Claude Code, such as `cleanupPeriodDays`.

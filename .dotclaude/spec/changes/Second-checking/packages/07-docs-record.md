@@ -1,12 +1,16 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P07
-deps: ["P01", "P02", "P03", "P04", "P05", "P06", "P08", "P09"]
-owns: ["CHANGELOG.md", "README.md", "docs/", "wiki/", "src/wiki/", ".dotclaude/spec/changes/1.0.0/evidence/second-check-summary.md"]
+title: Record, changelog, generate, full check
+wave: 3
+deps: ["P01","P02","P03","P04","P05","P06","P08","P09"]
+owns: ["CHANGELOG.md","README.md","docs/","wiki/","src/wiki/",".dotclaude/spec/changes/1.0.0/evidence/second-check-summary.md"]
+satisfies: []
 verify: just check
 agent: implementer
+status: done
 ---
-
-# P07 Record, changelog, generate, full check
 
 ## Goal
 

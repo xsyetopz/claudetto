@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P05 `guard`
-
 ## Goal
 
 Port the 0.28.0 features `guard` and `reads` to one slice `guard`, with the same behavior.

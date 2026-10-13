@@ -3,43 +3,50 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { read, run } from "./helpers.ts";
-import { CHANGE, makePlan } from "./plan.ts";
+import { run } from "./read-fixture.ts";
+import {
+  CHANGES,
+  eventsOf,
+  file,
+  git,
+  phase,
+  pkgFile,
+  plannedChange,
+  write,
+} from "./run-phase.ts";
 
-const git = (cwd: string, ...args: string[]): void => {
-  const r = Bun.spawnSync(
-    ["git", "-c", "user.name=t", "-c", "user.email=t@t", ...args],
-    { cwd },
+test("two packages started on two branches merge with no conflict and keep both events", async () => {
+  const root = await plannedChange();
+  await write(
+    root,
+    pkgFile("c1", "P2"),
+    (await file(root, pkgFile("c1"))).replace(/^id: P1$/m, "id: P2"),
   );
-  if (r.exitCode !== 0) {
-    throw new Error(`git ${args.join(" ")}: ${r.stderr.toString()}`);
-  }
-};
-
-test("two appends on two branches merge with no conflict and keep both lines", async () => {
-  const root = await makePlan([{ id: "P01" }, { id: "P02" }]);
   fs.copyFileSync(
     path.join(import.meta.dir, "../../../../.gitattributes"),
     path.join(root, ".gitattributes"),
   );
-  git(root, "init", "-q", "-b", "main");
   git(root, "add", "-A");
-  git(root, "commit", "-q", "-m", "init");
+  git(root, "commit", "-q", "-m", "plan");
 
   git(root, "checkout", "-q", "-b", "side");
-  expect((await run(root, "lane", "P02", "doing")).code).toBe(0);
-  git(root, "commit", "-q", "-am", "side");
+  expect((await phase(root, "implement", "P2")).code).toBe(0);
+  git(root, "add", "-A");
+  git(root, "commit", "-q", "-m", "side");
 
   git(root, "checkout", "-q", "main");
-  expect((await run(root, "lane", "P01", "doing")).code).toBe(0);
-  git(root, "commit", "-q", "-am", "main");
+  expect((await phase(root, "implement", "P1")).code).toBe(0);
+  git(root, "add", "-A");
+  git(root, "commit", "-q", "-m", "main");
 
   git(root, "merge", "-q", "--no-edit", "side");
-  const lines = (await read(root, `${CHANGE}/events.jsonl`))
-    .trim()
-    .split("\n")
-    .map((line) => JSON.parse(line) as { package: string; lane: string });
-  const doing = lines.filter((l) => l.lane === "doing").map((l) => l.package);
-  expect(doing.sort()).toStrictEqual(["P01", "P02"]);
-  expect((await run(root, "status", "c1")).out).toContain("● P02 doing");
+  const doing = (await eventsOf(root, "c1"))
+    .filter((e) => e["state"] === "doing")
+    .map((e) => e["package"]);
+  expect(doing.sort()).toEqual(["P1", "P2"]);
+  expect((await file(root, `${CHANGES}/c1/events.jsonl`)).split("\n")[0]).toBe(
+    '{"schema":2}',
+  );
+  const status = await run(root, "status", "c1", "--json");
+  expect(JSON.parse(status.out.join("")).states).toMatchObject({ doing: 2 });
 });

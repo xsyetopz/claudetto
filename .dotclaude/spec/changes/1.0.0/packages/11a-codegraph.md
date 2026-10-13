@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P11a `dotclaude-codegraph`
-
 ## Goal
 
 Port the add-on `dotclaude-codegraph` to one slice `graph`, with a CLI, the `SessionStart` note, and the fewest classic `PostToolUse` hooks that keep its cost low.

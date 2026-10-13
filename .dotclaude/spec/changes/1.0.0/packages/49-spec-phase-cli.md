@@ -7,12 +7,10 @@ wave: 6
 deps: ["P48"]
 owns: ["src/kernel/spec-store.ts","src/kernel/state-events.ts","src/plugins/dotclaude/slices/spec/","src/plugins/dotclaude/slices/statusline/","src/plugins/dotclaude/slices/handoff/domain/trigger.ts","tests/kernel/","tests/dotclaude/spec/","tests/dotclaude/statusline/",".dotclaude/spec/changes/1.0.0/"]
 satisfies: []
-verify: just check, and `dotclaude-spec validate 1.0.0` passes on the converted store
+verify: just check && plugins/dotclaude/bin/dotclaude-spec validate 1.0.0
 agent: main session
 status: doing
 ---
-
-# P49 Phase Commands of `dotclaude-spec`
 
 ## Goal
 
@@ -20,7 +18,7 @@ status: doing
 
 ## Context
 
-- The design: `design-spec-2.md`, sections Package States, Change States, and Commands.
+- The design: `design-spec.md`, sections Package States, Change States, and Commands.
 - The commands of P46 are the base: `show`, `list`, `deps`, `log`, `review`, and `drop`.
 
 ## Steps

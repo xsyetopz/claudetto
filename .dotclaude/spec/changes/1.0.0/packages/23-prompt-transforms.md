@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P23 `prompt` transforms
-
 ## Goal
 
 Give the `prompt` slice one transform for each confirmed built-in section of the system prompt of Claude Code 2.1.296.

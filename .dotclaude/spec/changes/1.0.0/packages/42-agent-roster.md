@@ -12,8 +12,6 @@ agent: main session
 status: done
 ---
 
-# P42 Agent Roster and No Turn Limit
-
 ## Goal
 
 Each agent runs on the model and effort that the user decided, and no agent has a `maxTurns`.

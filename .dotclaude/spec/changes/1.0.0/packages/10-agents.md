@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P10 `agents`
-
 ## Goal
 
 Move the agents of dotclaude to the slice `agents`, as the seven agents of the table in `workflow.md`, each with a fixed model and effort, and an `agent.spawn` handler that applies the turn bound of a subagent.

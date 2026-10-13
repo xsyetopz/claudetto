@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P07 `sembr`
-
 ## Goal
 
 Port the 0.28.0 feature `sembr` to the slice `sembr`, with the same behavior.

@@ -1,12 +1,16 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P01
+title: Kernel
+wave: 1
 deps: []
-owns: ["src/kernel/", "src/fragments/", "tests/kernel/", ".dotclaude/spec/changes/1.0.0/evidence/second-check-kernel.md"]
+owns: ["src/kernel/","src/fragments/","tests/kernel/",".dotclaude/spec/changes/1.0.0/evidence/second-check-kernel.md"]
+satisfies: []
 verify: just test tests/kernel
 agent: implementer
+status: done
 ---
-
-# P01 Kernel
 
 ## Goal
 

@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P25 `automode`
-
 ## Goal
 
 The setup writes `autoMode` to the user settings, with `$defaults` in each list and one `environment` entry.

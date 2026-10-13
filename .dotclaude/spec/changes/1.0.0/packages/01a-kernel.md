@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P01a Kernel
-
 ## Goal
 
 Write `src/kernel/`: the shared code that each slice and each CLI of the 1.0.0 rebuild imports.

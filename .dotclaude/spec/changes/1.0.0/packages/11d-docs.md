@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P11d `dotclaude-docs`
-
 ## Goal
 
 Port the add-on `dotclaude-docs` to one slice `docs` with the skill `docs`, which gets the docs of a library from Context7 with `ctx7`.

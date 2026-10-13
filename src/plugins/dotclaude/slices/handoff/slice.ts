@@ -39,7 +39,7 @@ export const slice = {
         blocks: false,
         allow: `${LAB} > a step of the main session adds no note to a later call`,
         // The lab cannot mark a `tool.call` as a subagent call, so the note is tested in `tests/dotclaude/handoff/context.test.ts`.
-        text: `${LAB} > a package that goes to \`done\` adds the hint`,
+        text: `${LAB} > a merge of a package adds the hint`,
       },
       // The filter matches each call, because the mod runtime refuses a `tool.call` handler with no filter.
       filter: { tool: /./ },

@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P11 OpenSpec removal
-
 ## Goal
 
 Remove OpenSpec from the repository, because the spec workflow of dotclaude (`spec/`) replaces it.

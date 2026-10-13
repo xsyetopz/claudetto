@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P06 `asks`
-
 ## Goal
 
 Port the asks of the 0.28.0 feature `adherence` to the slice `asks`, with one domain file for each ask, and the same behavior.

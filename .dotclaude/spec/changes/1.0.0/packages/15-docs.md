@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P15 Docs
-
 ## Goal
 
 Rebuild the docs for 1.0.0: the wiki, the README, and the `CHANGELOG.md`, with the numbers of P14.

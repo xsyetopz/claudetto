@@ -1,57 +1,71 @@
-// `dotclaude-spec review <package> approve|reject [--finding <text>]... [--json]`: the verdict of a review.
-// The package must be in `review`.
-// `approve` adds a verdict event and keeps the lane `review`, and `merge` then takes the package.
-// `reject` needs one finding or more, and moves the package to `doing` with the findings.
-// Only the main checkout records a verdict, as only the main checkout changes a lane.
+// `dotclaude-spec review <package> approve|reject [--finding <text>]... [--decision fix-code|revise-spec] [--json]`.
+// `approve` moves a `verified` package to `approved` and records the SHA of its last `verify` event.
+// `reject` needs a `--finding` and a `--decision`, and moves the package back to `doing`.
 
-import {
-  type Lane,
-  VERDICTS,
-  type Verdict,
-} from "../../../../../kernel/spec-store.ts";
+import { eventsOf, lastVerify } from "../domain/events.ts";
+import { gateApprove, gateReject } from "../domain/gates.ts";
 import { parseArgs } from "./args.ts";
-import { applyMove, printMove, refusedInWorktree } from "./lane.ts";
 import type { Run } from "./run.ts";
+import {
+  evidence,
+  isDecision,
+  movePackage,
+  printMoved,
+  stop,
+  targetOf,
+  usage,
+} from "./transition.ts";
 
-const USAGE = `Usage: dotclaude-spec review <package> <${VERDICTS.join("|")}> [--finding <text>]... [--json]`;
-
-const isVerdict = (value: string): value is Verdict =>
-  (VERDICTS as readonly string[]).includes(value);
+const USAGE =
+  "Usage: dotclaude-spec review <package> approve|reject [--finding <text>]... [--decision fix-code|revise-spec] [--json]";
 
 export const reviewCommand = async (
   run: Run,
   args: string[],
 ): Promise<number> => {
-  const parsed = parseArgs(args, { lists: ["finding"] });
-  if (typeof parsed === "string") {
-    run.io.error(parsed);
-    return 2;
-  }
+  const parsed = parseArgs(args, { values: ["decision"], lists: ["finding"] });
+  if (typeof parsed === "string") return usage(run, parsed);
   const [pkg, verdict, extra] = parsed.words;
-  if (!pkg || !verdict || !isVerdict(verdict) || extra !== undefined) {
-    run.io.error(USAGE);
-    return 2;
-  }
+  const { decision } = parsed.values;
   const findings = parsed.lists["finding"] ?? [];
-  if (verdict === "reject" && findings.length === 0) {
-    run.io.error(
-      "A `reject` needs the defects. Run it again with one `--finding <text>` for each defect.",
+  if (
+    !pkg ||
+    (verdict !== "approve" && verdict !== "reject") ||
+    extra !== undefined
+  )
+    return usage(run, USAGE);
+  if (decision !== undefined && !isDecision(decision))
+    return usage(run, "The decision is `fix-code` or `revise-spec`.");
+  const target = await targetOf(run, pkg, "records a review");
+  if (target === null) return 1;
+  const { id, events, state } = target;
+  if (state !== "verified")
+    return stop(
+      run,
+      `The package \`${pkg}\` is \`${state}\`, and only a \`verified\` package is reviewed.`,
     );
-    return 2;
+  if (verdict === "reject") {
+    const gate = gateReject({
+      findings,
+      ...evidence({ decision: isDecision(decision) ? decision : undefined }),
+    });
+    if (!gate.ok) return stop(run, gate.reason);
+    const moved = await movePackage(run, id, pkg, "doing", {
+      verdict,
+      findings,
+      ...(isDecision(decision) ? { decision } : {}),
+    });
+    printMoved(run, "review", moved, parsed.json);
+    return 0;
   }
-  if (refusedInWorktree(run, "records a verdict")) return 1;
-  const lane: Lane = verdict === "approve" ? "review" : "doing";
-  const move = await applyMove(
-    run,
-    pkg,
-    lane,
-    { verdict, ...(findings.length > 0 ? { findings } : {}) },
-    (before) =>
-      before === "review"
-        ? null
-        : `The lane of \`${pkg}\` is \`${before}\`. Only a package in \`review\` gets a verdict.`,
-  );
-  if (move === null) return 1;
-  printMove(run, move, parsed.json);
+  const sha = lastVerify(eventsOf(events, pkg))?.sha;
+  const gate = gateApprove({ verifySha: sha, approveSha: sha ?? "" });
+  if (!gate.ok || sha === undefined)
+    return stop(
+      run,
+      gate.ok ? "The package has no `verify` event." : gate.reason,
+    );
+  const moved = await movePackage(run, id, pkg, "approved", { verdict, sha });
+  printMoved(run, "review", moved, parsed.json);
   return 0;
 };

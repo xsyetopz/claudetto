@@ -1,12 +1,16 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P09
+title: Core plugin: statusline usage items
+wave: 2
 deps: ["P08"]
-owns: ["src/plugins/dotclaude/slices/statusline/", "tests/dotclaude/statusline/", ".dotclaude/spec/changes/1.0.0/evidence/second-check-statusline-usage.md"]
+owns: ["src/plugins/dotclaude/slices/statusline/","tests/dotclaude/statusline/",".dotclaude/spec/changes/1.0.0/evidence/second-check-statusline-usage.md"]
+satisfies: []
 verify: just test tests/dotclaude/statusline && just lab
 agent: implementer
+status: done
 ---
-
-# P09 Core plugin: statusline usage items
 
 ## Goal
 

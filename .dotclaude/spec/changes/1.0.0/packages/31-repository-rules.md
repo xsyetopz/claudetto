@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P31 Repository rules
-
 ## Goal
 
 Each rule of `AGENTS.md` that applies to some files only moves to a `paths:` rule in `.claude/rules/`.

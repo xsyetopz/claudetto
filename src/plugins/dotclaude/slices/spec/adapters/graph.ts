@@ -1,0 +1,69 @@
+// The read model that the read commands share: the events, the states, and the package files of one change.
+
+import type { StateEvent } from "../../../../../kernel/spec-store.ts";
+import type { Node } from "../domain/deps.ts";
+import { PACKAGE_STATES, type PackageState } from "../domain/states.ts";
+import { type PackageFile, readPackages } from "./files.ts";
+import type { Run } from "./run.ts";
+
+/** The icon of each package state. */
+export const ICONS: Readonly<Record<PackageState, string>> = {
+  planned: "○",
+  doing: "●",
+  verified: "◐",
+  approved: "◑",
+  blocked: "✗",
+  done: "✓",
+  canceled: "⊘",
+};
+
+/** The icon of `state`, or `?` for a state that is not a package state. */
+export const iconOf = (state: string | undefined): string =>
+  (PACKAGE_STATES as readonly (string | undefined)[]).includes(state)
+    ? ICONS[state as PackageState]
+    : "?";
+
+/** The events, the states, and the package files of one change. */
+export interface Loaded {
+  readonly events: readonly StateEvent[];
+  readonly states: Record<string, string>;
+  readonly packages: readonly PackageFile[];
+  readonly nodes: readonly Node[];
+}
+
+/** The count of packages in each state of `states`. A state with no package is not a key. */
+export const countStates = (
+  states: Readonly<Record<string, string>>,
+): Record<string, number> => {
+  const counts: Record<string, number> = {};
+  for (const state of Object.values(states))
+    counts[state] = (counts[state] ?? 0) + 1;
+  return counts;
+};
+
+/**
+ * Reads the change `id`, which is relative to the store root of the specs.
+ * It writes a message and gives null when the change has no `events.jsonl`.
+ */
+export const loadChange = async (
+  run: Run,
+  id: string,
+): Promise<Loaded | null> => {
+  const events = await run.store.events(id);
+  if (events === null) {
+    run.io.error(`The change \`${id}\` has no \`events.jsonl\`.`);
+    return null;
+  }
+  const packages = await readPackages(run.store, id);
+  return {
+    events,
+    states: await run.store.states(id, events),
+    packages,
+    nodes: packages.map((p) => ({
+      id: p.id,
+      wave: p.wave,
+      deps: p.deps,
+      owns: p.owns,
+    })),
+  };
+};

@@ -10,7 +10,9 @@ import path from "node:path";
 import { kernelClosure, rewrite } from "../closure.ts";
 import type { FoundPlugin, FoundSlice } from "../discover.ts";
 import { fill } from "./fill.ts";
+import { WIDTH } from "./manifest.ts";
 import {
+  format,
   GENERATED_MARK,
   type Output,
   textModule,
@@ -94,6 +96,22 @@ const launcherOf = (root: string, p: FoundPlugin, s: FoundSlice): Output[] => {
   return [{ file: `plugins/${p.name}/bin/${s.slice.cli.bin}`, source, text }];
 };
 
+/** An import or export over several lines, with its names and its path. */
+const WRAPPED = /^(import|export)( type)? \{\n([^}]*)\n\} from "([^"]+)";$/gm;
+
+/**
+ * Whether `code` has a wrapped import or export that fits on one line.
+ * A shorter `kernel/` path can make it fit, and then Biome puts it on one line, so only such a file goes through Biome again.
+ */
+const folds = (code: string): boolean =>
+  [...code.matchAll(WRAPPED)].some(([, kind, type = "", names = "", from]) => {
+    const list = names
+      .split("\n")
+      .map((n) => n.trim().replace(/,$/, ""))
+      .join(", ");
+    return `${kind}${type} { ${list} } from "${from}";`.length <= WIDTH;
+  });
+
 /** The files of the slice `s` of the plugin `p` in the plugin. A text module can include each part of `made`, such as `snippet.json`. */
 const filesOf = async (
   root: string,
@@ -149,9 +167,11 @@ const filesOf = async (
       continue;
     }
     const file = `plugins/${p.name}/slices/${s.name}/${rel}`;
-    const code = rel.endsWith(".ts")
+    const moved = rel.endsWith(".ts")
       ? rewrite(root, p.name, abs, from, path.join(root, file), text)
       : text;
+    const code =
+      moved !== text && folds(moved) ? await format(file, moved) : moved;
     out.push({ file, source, text: withHeader(file, source, code) });
   }
   return out;

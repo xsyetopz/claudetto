@@ -12,8 +12,6 @@ agent: main session
 status: done
 ---
 
-# P44 Advisor Opt-In
-
 ## Goal
 
 The built-in advisor works when a user picks it, and it costs no token when the user does not.

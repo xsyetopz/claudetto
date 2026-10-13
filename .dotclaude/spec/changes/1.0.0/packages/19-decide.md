@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P19 `decide`
-
 ## Goal
 
 Move the `dotclaude-jev` add-on into the slice `decide` of the core plugin, and remove the add-on.

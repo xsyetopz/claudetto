@@ -12,8 +12,6 @@ agent: implementer
 status: doing
 ---
 
-# P38 Session stamp
-
 ## Goal
 
 Each session records the dotclaude version and the short commit SHA of the build.

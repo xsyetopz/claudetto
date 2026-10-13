@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P20 `surface`
-
 ## Goal
 
 Port the 0.28.0 feature `surface` to the slice `surface`, as one transform for each tool description, agent listing, and reminder that it changes.

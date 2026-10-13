@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P01c Extract
-
 ## Goal
 
 Extract from the Claude Code 2.1.296 bundle the full text and the size of each built-in text that a mod can change, with the id that the Mod API gives it.

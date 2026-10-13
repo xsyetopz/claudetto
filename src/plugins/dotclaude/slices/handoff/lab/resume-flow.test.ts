@@ -1,4 +1,4 @@
-// The hook lab of the handoff flow: a retry that writes a new path, and a lane `done` in the `off` mode.
+// The hook lab of the handoff flow: a retry that writes a new path, and a merge to `done` in the `off` mode.
 // Like `handoff.test.ts`, it fires the events with stubs, and no command runs and no model call goes out.
 
 import type { On } from "claude-code";
@@ -117,7 +117,7 @@ test(
     const seen = stub(on, 10);
     await $.tool.call({
       tool: "Bash",
-      command: "dotclaude-spec lane P01 done",
+      command: "dotclaude-spec merge P01",
     });
     await complete($);
     expect(seen.prompts).toEqual([]);

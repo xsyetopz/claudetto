@@ -12,8 +12,6 @@ agent: implementer
 status: done
 ---
 
-# P01b1 Generator core
-
 ## Goal
 
 Write the core of the generator `tools/generate/`, which makes `plugins/` from the slices in `src/`.

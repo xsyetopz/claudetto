@@ -12,15 +12,13 @@ agent: main session
 status: planned
 ---
 
-# P52 Spec Store Docs
-
 ## Goal
 
 The wiki tells a reader the files, the IDs, the states, the gates, and the commands of schema 2, and gives the source of each choice.
 
 ## Context
 
-- The design: `design-spec-2.md`.
+- The design: `design-spec.md`.
 - The research: `docs/research/spec-driven/01-sdd-sources.md`, and the sources on the wiki page `Attributions`.
 
 ## Steps

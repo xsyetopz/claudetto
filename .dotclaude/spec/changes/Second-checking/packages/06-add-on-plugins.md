@@ -1,12 +1,16 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P06
+title: Add-on plugins and lab
+wave: 1
 deps: []
-owns: ["src/plugins/dotclaude-codegraph/", "src/plugins/dotclaude-browser/", "src/plugins/dotclaude-docs/", "src/plugins/dotclaude-sessions/", "src/plugins/dotclaude-lab/", "src/plugins/dcc-plugin-agents-md/", "src/plugins/dcc-plugin-you-should-know/", "tests/browser/", "tests/codegraph/", "tests/docs/", "tests/sessions/", "tests/lab/", "tests/dcc-plugin-agents-md/", "tests/dcc-plugin-you-should-know/", ".dotclaude/spec/changes/1.0.0/evidence/second-check-add-on-plugins.md", ".dotclaude/spec/changes/1.0.0/evidence/second-check-you-should-know.md"]
+owns: ["src/plugins/dotclaude-codegraph/","src/plugins/dotclaude-browser/","src/plugins/dotclaude-docs/","src/plugins/dotclaude-sessions/","src/plugins/dotclaude-lab/","src/plugins/dcc-plugin-agents-md/","src/plugins/dcc-plugin-you-should-know/","tests/browser/","tests/codegraph/","tests/docs/","tests/sessions/","tests/lab/","tests/dcc-plugin-agents-md/","tests/dcc-plugin-you-should-know/",".dotclaude/spec/changes/1.0.0/evidence/second-check-add-on-plugins.md",".dotclaude/spec/changes/1.0.0/evidence/second-check-you-should-know.md"]
+satisfies: []
 verify: just test tests/sessions tests/lab tests/dcc-plugin-agents-md tests/dcc-plugin-you-should-know && just lab
 agent: implementer
+status: done
 ---
-
-# P06 Add-on plugins and lab
 
 ## Goal
 
