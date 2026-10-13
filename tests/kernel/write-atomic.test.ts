@@ -12,6 +12,29 @@ const folder = (): string => fs.mkdtempSync(path.join(os.tmpdir(), "atomic-"));
 const failure = (code: string): Error =>
   Object.assign(new Error(`${code}: the file is in use`), { code });
 
+/**
+ * The script of a Windows child that opens the file of its last argument for read with no share, prints `open`, and closes the file after 300 ms.
+ * It prints `failed` and the Windows error code when the open fails.
+ */
+const HOLD_WITHOUT_SHARE = `
+import { dlopen, FFIType, ptr } from "bun:ffi";
+const { symbols: k } = dlopen("kernel32.dll", {
+  CreateFileW: { args: ["ptr", "u32", "u32", "ptr", "u32", "u32", "ptr"], returns: FFIType.i64 },
+  CloseHandle: { args: [FFIType.i64], returns: FFIType.bool },
+  GetLastError: { args: [], returns: FFIType.u32 },
+});
+const name = Buffer.from(process.argv.at(-1) + "\\0", "utf16le");
+const GENERIC_READ = 0x80000000, OPEN_EXISTING = 3, FILE_ATTRIBUTE_NORMAL = 0x80;
+const handle = k.CreateFileW(ptr(name), GENERIC_READ, 0, null, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, null);
+if (handle === -1n) {
+  console.log("failed " + k.GetLastError());
+  process.exit(1);
+}
+console.log("open");
+await Bun.sleep(300);
+k.CloseHandle(handle);
+`;
+
 test("`writeAtomic` replaces the text of a file and leaves only that file in its folder", async () => {
   const dir = folder();
   const file = path.join(dir, "rate-limits.jsonl");
@@ -145,12 +168,15 @@ test.skipIf(process.platform !== "win32")(
     const dir = folder();
     const file = path.join(dir, "rate-limits.jsonl");
     await Bun.write(file, "old");
-    const script = `$s = [System.IO.File]::Open('${file.replaceAll("'", "''")}', 'Open', 'Read', 'None'); [Console]::Out.WriteLine('open'); [Console]::Out.Flush(); Start-Sleep -Milliseconds 300; $s.Close()`;
-    const holder = Bun.spawn(["powershell", "-NoProfile", "-Command", script], {
-      stdout: "pipe",
-    });
+    // A `bun` child opens the file with `CreateFileW` and the share mode 0, which also denies delete.
+    // It starts in a fraction of the time of `powershell`, whose start alone came near the test timeout on CI.
+    const holder = Bun.spawn(
+      [process.execPath, "-e", HOLD_WITHOUT_SHARE, file],
+      { stdout: "pipe" },
+    );
     const reader = holder.stdout.getReader();
-    await reader.read();
+    const first = await reader.read();
+    expect(new TextDecoder().decode(first.value).trim()).toBe("open");
     await writeAtomic(file, "new");
     await holder.exited;
     expect(await Bun.file(file).text()).toBe("new");
