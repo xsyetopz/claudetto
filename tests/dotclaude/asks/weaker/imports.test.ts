@@ -142,3 +142,114 @@ test("an edit that adds a name and a changed assert gets an ask", async () => {
   const now = `${was.replace("add", "add, mul")}${BODY.replace("toBe(3)", "toBe(4)")}`;
   expect(await editAsks(TS, text, text, now)).toBe(true);
 });
+
+const HIDING: [string, string, string, string][] = [
+  [
+    "a Python statement after the name",
+    PY,
+    "from m import a",
+    "from m import a, b; expect = id",
+  ],
+  [
+    "a Python `pytest` reset after the name",
+    PY,
+    "from m import a",
+    "from m import a, b; pytest = None",
+  ],
+  [
+    "a Python `raise` after the name",
+    PY,
+    "from m import a",
+    "from m import a, b; raise SystemExit",
+  ],
+  [
+    "a `require` default with `jest.mock`",
+    "/w/tests/a.test.js",
+    'const { a } = require("x");',
+    'const { a, b = jest.mock("m") } = require("x");',
+  ],
+  [
+    "a `require` default with `process.exit`",
+    "/w/tests/a.test.js",
+    'const { a } = require("x");',
+    'const { a, b = process.exit(0) } = require("x");',
+  ],
+  [
+    "a default alias of `expect`",
+    TS,
+    'import { a } from "x";',
+    'import { a, default as expect } from "x";',
+  ],
+  [
+    "a `type` name",
+    TS,
+    'import { a } from "x";',
+    'import { a, type expect } from "x";',
+  ],
+  [
+    "a `require` alias of `expect`",
+    "/w/tests/a.test.js",
+    'const { a } = require("x");',
+    'const { a, b: expect } = require("x");',
+  ],
+  [
+    "an empty old import",
+    TS,
+    'import {} from "x";',
+    'import { expect } from "x";',
+  ],
+  [
+    "an empty old Python-free `require`",
+    "/w/tests/a.test.js",
+    'const {} = require("x");',
+    'const { b } = require("x");',
+  ],
+];
+
+for (const g of [
+  "expect",
+  "test",
+  "it",
+  "describe",
+  "assert",
+  "beforeEach",
+  "afterEach",
+  "beforeAll",
+  "afterAll",
+  "vi",
+  "jest",
+  "mock",
+])
+  HIDING.push([
+    `an added test global \`${g}\``,
+    TS,
+    'import { add } from "./math.ts";',
+    `import { add, ${g} } from "./math.ts";`,
+  ]);
+for (const g of ["pytest", "unittest", "TestCase", "skip", "mock", "patch"])
+  HIDING.push([
+    `an added Python test global \`${g}\``,
+    PY,
+    "from m import a",
+    `from m import a, ${g}`,
+  ]);
+
+for (const [name, file, was, now] of HIDING)
+  test(`${name} in an import gets an ask`, async () => {
+    const body = file.endsWith(".py") ? PY_BODY : BODY;
+    expect(await editAsks(file, was + body, was, now)).toBe(true);
+  });
+
+test("two equal import lines that both gain a test global get an ask", async () => {
+  const was = 'import { a } from "x";';
+  const text = `${was}\n${was}${BODY}`;
+  const now = 'import { a, expect } from "x";\nimport { a, test } from "x";';
+  expect(await editAsks(TS, text, `${was}\n${was}`, now)).toBe(true);
+});
+
+test("two equal import lines that both gain a plain name get no ask", async () => {
+  const was = 'import { a } from "x";';
+  const text = `${was}\n${was}${BODY}`;
+  const now = 'import { a, b } from "x";\nimport { a, c } from "x";';
+  expect(await editAsks(TS, text, `${was}\n${was}`, now)).toBe(false);
+});

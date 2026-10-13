@@ -2,7 +2,12 @@
 // The import lines that a call changes only by more names (package P54), as pure functions.
 // Such a change is safe in a test file: no name goes away, and the module and the form stay.
 
-import { MULTI_LINE_IMPORTS, NAME_LIST_IMPORTS } from "../limits.ts";
+import {
+  MULTI_LINE_IMPORTS,
+  NAME_LIST_IMPORTS,
+  PLAIN_NAME,
+  TEST_GLOBAL_NAMES,
+} from "../limits.ts";
 import { addedAt, textOf } from "./linediff.ts";
 import { squeeze } from "./scan.ts";
 
@@ -13,20 +18,24 @@ export const joinImports = (code: string): string =>
     code,
   );
 
-/** The split of an import line with a name list into its frame and its names, or undefined. */
+/**
+ * The split of an import line with a name list into its frame and its names, or undefined.
+ * Each name must be a plain identifier, so an alias, a default value, or a statement gives undefined.
+ */
 const importParts = (line: string): [string, Set<string>] | undefined => {
   for (const re of NAME_LIST_IMPORTS) {
     const m = re.exec(textOf(line).trim());
-    if (m)
-      return [
-        `${line.slice(0, line.length - textOf(line).length)}${squeeze(`${m[1]}|${m[3]}`)}`,
-        new Set(
-          (m[2] as string)
-            .split(",")
-            .map((n) => squeeze(n.trim()))
-            .filter(Boolean),
-        ),
-      ];
+    if (!m) continue;
+    const names = (m[2] as string)
+      .split(",")
+      .map((n) => squeeze(n.trim()))
+      .filter(Boolean);
+    if (names.length === 0 || !names.every((n) => PLAIN_NAME.test(n)))
+      return undefined;
+    return [
+      `${line.slice(0, line.length - textOf(line).length)}${squeeze(`${m[1]}|${m[3]}`)}`,
+      new Set(names),
+    ];
   }
   return undefined;
 };
@@ -50,7 +59,8 @@ export const withoutAddedNames = (
         !dropNow.has(k) &&
         next !== undefined &&
         next[0] === old[0] &&
-        [...old[1]].every((n) => next[1].has(n))
+        [...old[1]].every((n) => next[1].has(n)) &&
+        [...next[1]].every((n) => old[1].has(n) || !TEST_GLOBAL_NAMES.has(n))
       );
     });
     if (j === undefined) continue;

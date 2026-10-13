@@ -54,6 +54,30 @@ export const NAME_LIST_IMPORTS = [
   /^(from\s+[\w.]+\s+import\s+\(?)([^()*]*)(\)?)$/,
 ];
 
+/** The names that a test file uses as test globals. An import that adds one of them asks, because it can shadow the global. */
+export const TEST_GLOBAL_NAMES = new Set([
+  "expect",
+  "test",
+  "it",
+  "describe",
+  "assert",
+  "beforeEach",
+  "afterEach",
+  "beforeAll",
+  "afterAll",
+  "vi",
+  "jest",
+  "mock",
+  "pytest",
+  "unittest",
+  "TestCase",
+  "skip",
+  "patch",
+]);
+
+/** The form of one plain name in the name list of an import. */
+export const PLAIN_NAME = /^[A-Za-z_$][\w$]*$/;
+
 /** The joined multi-line forms of an import with a name list: the text is cut to one line before the check. */
 export const MULTI_LINE_IMPORTS = [
   /^import\s+(?:type\s+)?\{[^{}]*\}\s*from/gm,
