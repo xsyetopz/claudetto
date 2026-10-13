@@ -16,6 +16,8 @@ export const ICON = {
   added: "+",
   removed: "-",
   limit: "◷",
+  reset: "↻",
+  runout: "⏵",
   change: "◆",
   agent: "●",
   time: "◔",

@@ -51,6 +51,8 @@ export type Status = {
   change: Progress | null;
   now: number;
   paint: Paint;
+  /** True when the times use the countdown of 1.0.0, such as `3h12m`, in place of the clock. */
+  compact: boolean;
 };
 
 /** One running subagent, as the subagent status line gets it. */

@@ -39,24 +39,23 @@ const startsOf = (widths: readonly number[]): number[] => {
 };
 
 /**
- * The texts of a row joined by `ITEM_GAP`, each place at its column.
- * A place with no text keeps its column as blank space, so the later items stay in their columns.
+ * The texts of a row, each place at its column, with `ITEM_GAP` just before every item after the first.
+ * A place with no text keeps its column as blank space, and the gap before the next item stays next to that item.
  */
 const joinRow = (
   cells: readonly (string | null)[],
   widths: readonly number[],
 ): string => {
   const starts = startsOf(widths);
+  const gap = width(ITEM_GAP);
   const shown = cells.flatMap((cell, place) =>
     cell ? [{ text: cell, place }] : [],
   );
   let out = "";
   shown.forEach(({ text, place }, index) => {
-    out += " ".repeat((starts[place] ?? 0) - width(out));
-    const last = index === shown.length - 1;
-    out += last
-      ? text
-      : text + " ".repeat((widths[place] ?? 0) - width(text)) + ITEM_GAP;
+    const at = (starts[place] ?? 0) - (index > 0 ? gap : 0);
+    out += " ".repeat(at - width(out));
+    out += index > 0 ? ITEM_GAP + text : text;
   });
   return out;
 };
@@ -71,29 +70,53 @@ export const fitRow = (texts: readonly string[], columns: number): string => {
   return truncate(kept.join(ITEM_GAP), columns);
 };
 
-/**
- * The rows of the status line for `status`: the rows in the order of their number, at most `MAX_ROWS`, each fitted to `columns`.
- * The places of the rows line up when every aligned row fits `columns`.
- * When one aligned row does not fit, no row of the block is aligned, and each row is joined and fitted on its own.
- * A row with no text is out.
- */
-export const renderRows = (
+/** The rows of `segments` for `status`, in the order of their number, at most `MAX_ROWS`. A row with no text is out. */
+const rowsOf = (
   segments: readonly StatusSegment[],
   status: unknown,
-  columns: number,
-): string[] => {
-  const rows = [...new Set(segments.map((segment) => segment.row))]
+): (string | null)[][] =>
+  [...new Set(segments.map((segment) => segment.row))]
     .sort((a, b) => a - b)
     .map((row) => cellsOf(segments, row, status))
     .filter((cells) => cells.some(Boolean))
     .slice(0, MAX_ROWS);
+
+/** The texts of the places of a row that have text, in their order. */
+const itemsOf = (cells: readonly (string | null)[]): string[] =>
+  cells.filter((cell): cell is string => cell !== null);
+
+/** True when each row keeps every item at `columns`, when its items are joined by `ITEM_GAP` with no padding. */
+const keepsItems = (
+  rows: readonly (readonly (string | null)[])[],
+  columns: number,
+): boolean =>
+  rows.every((cells) => width(itemsOf(cells).join(ITEM_GAP)) <= columns);
+
+/**
+ * The rows of the status line, at most `MAX_ROWS`, each fitted to `columns`.
+ * The plans are tried in order: the rows of `segments`, then the rows of `fallback`, the one-row placement of 1.0.0.
+ * Each placement is tried with the full times, then with the countdown times, which are shorter.
+ * The first plan that keeps every item at `columns` is used.
+ * When no plan does, the last plan is used, and its rows drop items at the right.
+ * The places of the rows line up when every aligned row fits `columns`.
+ * When one aligned row does not fit, no row of the block is aligned, and each row is joined and fitted on its own.
+ */
+export const renderRows = (
+  segments: readonly StatusSegment[],
+  fallback: readonly StatusSegment[],
+  statusOf: (compact: boolean) => unknown,
+  columns: number,
+): string[] => {
+  const plans = [segments, fallback].flatMap((layout) =>
+    [false, true].map((compact) => () => rowsOf(layout, statusOf(compact))),
+  );
+  let rows: (string | null)[][] = [];
+  for (const plan of plans) {
+    rows = plan();
+    if (keepsItems(rows, columns)) break;
+  }
   const widths = columnsOf(rows);
   const aligned = rows.map((cells) => joinRow(cells, widths));
   if (aligned.every((text) => width(text) <= columns)) return aligned;
-  return rows.map((cells) =>
-    fitRow(
-      cells.filter((cell): cell is string => cell !== null),
-      columns,
-    ),
-  );
+  return rows.map((cells) => fitRow(itemsOf(cells), columns));
 };

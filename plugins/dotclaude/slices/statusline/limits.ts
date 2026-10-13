@@ -2,6 +2,8 @@
 // The bounds of the `statusline` slice, in one place.
 // Tests read these values, so change a bound here and nowhere else.
 
+import { USAGE_LEVELS } from "../../kernel/budget.ts";
+
 /** The seconds between two runs of the status line. The countdowns of the limits use it. */
 export const REFRESH_SECONDS = 1;
 
@@ -35,6 +37,17 @@ export const SEVEN_DAY_S = 7 * 24 * 60 * 60;
 
 /** The part of a limit window that must pass before its pace arrow shows. */
 export const PACE_MIN_FRACTION = 0.03;
+
+/** The projected use at the end of a window, in percent, from which the percent is yellow. It is the first level of `USAGE_LEVELS`. */
+export const PROJECTED_WARN = USAGE_LEVELS[0];
+
+/** The projected use at the end of a window, in percent, above which the percent is red. A projection above it is a run-out before the reset. */
+export const PROJECTED_RUNOUT = 100;
+
+/** The columns of the fields of a limit window: the percent, the pace arrow, and the run-out time. The fields keep the windows of two rows in one column. */
+export const PERCENT_FIELD = 4;
+export const ARROW_FIELD = 5;
+export const RUNOUT_FIELD = 14;
 
 /** The columns that a subagent row needs for its description before the description shows. */
 export const DESCRIPTION_ROOM_MIN = 8;
