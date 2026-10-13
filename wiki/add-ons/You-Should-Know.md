@@ -46,7 +46,8 @@ The tool starts the call and does not wait for it, so a check adds no wait befor
 
 Each check is a separate call to Haiku, with your prompt and the pending action, and no transcript.
 The output is one sentence or `NONE`, about 4 to 50 tokens.
-The sandbox sessions measured these checks:
+The sandbox sessions measured these checks on the earlier design, which showed a toast.
+The band has not been timed, so the waits below are not measured on the band:
 
 | Account | Wait of One Check | Input Tokens of One Check |
 | --- | --- | --- |
@@ -82,7 +83,8 @@ The core plugin does not set `CLAUDE_CODE_ATTRIBUTION_HEADER=0`.
 - The cost of a session does not show the cost of its checks, because the cache state of the main requests differs between runs.
 - Each number above comes from one or two sandbox sessions with `claude-sonnet-5-5` and one short edit.
 
-The evidence is in `.dotclaude/spec/changes/1.0.0/evidence/you-should-know.md`.
+The evidence of the earlier design is in `.dotclaude/spec/changes/1.0.0/evidence/you-should-know.md`.
+The live check of the band is in `.dotclaude/spec/changes/1.0.0/evidence/second-check-you-should-know.md`.
 
 ## Related Pages
 
