@@ -10,6 +10,11 @@ export const PARTS: readonly Part[] = [
     anchor: /^ - Claude Code is available as a CLI.*$/gm,
     text: " - Claude Code runs as a CLI, a desktop app, a web app, and IDE extensions.",
   },
+  {
+    // The `trim` slice turns fast mode off, so the line about `/fast` goes, with its line break.
+    anchor: /^ - Fast mode for Claude Code.*\n/gm,
+    text: "",
+  },
 ];
 
 export const transform = (text: string): string => applyParts(text, PARTS);
