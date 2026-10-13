@@ -135,7 +135,7 @@ const escapeXml = (s: string) =>
 
 /**
  * The ask reason for a call that reaches `repo` of another owner, or undefined when it has no policy file.
- * `texts` holds the text of each file of `POLICY_FILES`, or null.
+ * `texts` holds the text of each file of `POLICY_FILES`, or `null`.
  * The text comes from another owner, so `escapeXml` stops it from closing its tag.
  */
 export const policyReason = (

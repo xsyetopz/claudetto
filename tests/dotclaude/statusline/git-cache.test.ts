@@ -13,7 +13,7 @@ import {
 } from "../../../src/plugins/dotclaude/slices/statusline/limits.ts";
 import { depsFor, GIT_TEXT, NOW, type Run, STATUS } from "./support.ts";
 
-/** A fake of the files of a run: `write` stores the text, and `read` gives it back, or null for a missing file. */
+/** A fake of the files of a run: `write` stores the text, and `read` gives it back, or `null` for a missing file. */
 const memoryFiles = () => {
   const files = new Map<string, string>();
   return {

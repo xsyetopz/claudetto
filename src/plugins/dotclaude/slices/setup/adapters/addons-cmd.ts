@@ -13,7 +13,7 @@ import type { Io } from "./io.ts";
 
 /**
  * The first line of the `--version` output of `program`, without the program name that some tools print first,
- * or null when it does not run.
+ * or `null` when it does not run.
  */
 const versionOf = (program: string): string | null => {
   let r: ReturnType<typeof runProgram>;

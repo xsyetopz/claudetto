@@ -1,7 +1,7 @@
 // The shell reader of the `attribution` hook: it splits a `Bash` command into simple commands, and each simple command into words.
 // A word keeps its raw text, quotes included, and its span in the command, so a rule can insert text at a span.
 // The reader knows the quotes, the escapes, the separators, and the heredoc operator, and no `git` or `gh` rule.
-// It returns null for a command it cannot read, such as an unclosed quote or a heredoc with no closing line,
+// It returns `null` for a command it cannot read, such as an unclosed quote or a heredoc with no closing line,
 // so the caller runs that command unchanged.
 
 /** A word of a simple command: its raw text, and the start and the end of the word in the command. */
@@ -13,7 +13,7 @@ type Heredoc = { delimiter: string; strip: boolean };
 /** A heredoc operator at a position, read with a sticky match. */
 const OPERATOR = /<<(-?)[ \t]*(?:'([^'\n]+)'|"([^"\n]+)"|([A-Za-z_][\w-]*))/y;
 
-/** The index after the closing line of a heredoc body that starts at `from`, or null when no line closes it. */
+/** The index after the closing line of a heredoc body that starts at `from`, or `null` when no line closes it. */
 const bodyEnd = (
   command: string,
   from: number,

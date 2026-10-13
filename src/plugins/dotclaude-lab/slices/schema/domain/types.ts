@@ -180,7 +180,7 @@ const lazySchema = (args: string, ctx: Ctx, depth: number): Schema => {
 };
 
 // The expression that builds the schema `name`, from `function name(){return u({...})}`
-// or `name=f(()=>u({...}))`. Returns null when the definition is not an object or a record.
+// or `name=f(()=>u({...}))`. Returns `null` when the definition is not an object or a record.
 // The bundle reuses short names in other modules, so the last definition before the schema is the one it uses.
 // A definition of another shape, such as a wrapper call, gives null, and not an earlier definition of the same name.
 export const findDefinition = (

@@ -39,7 +39,7 @@ export type BudgetVerdict = { ok: boolean; message: string };
 const utf8 = new TextEncoder();
 const byteLength = (text: string): number => utf8.encode(text).length;
 
-/** The tokens of the first request, from its API usage, or null when the transcript has no request. */
+/** The tokens of the first request, from its API usage, or `null` when the transcript has no request. */
 export const firstRequest = (entries: Entry[]): Tokens | null => {
   const usage = requestsOf(entries)[0]?.usage;
   if (!usage) return null;
@@ -116,7 +116,7 @@ const textBytes = (value: unknown): number => {
 };
 
 /**
- * The bytes of the text of the first request with no tool schemas, or null when the transcript has no snapshot.
+ * The bytes of the text of the first request with no tool schemas, or `null` when the transcript has no snapshot.
  * It is the system blocks of the first snapshot plus the attachments (environment, output style, hook context, and listings)
  * that come before the first user entry that is not a meta entry.
  * The transcript has no request body, so this is an estimate from the records.

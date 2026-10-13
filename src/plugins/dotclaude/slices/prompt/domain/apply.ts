@@ -29,7 +29,7 @@ export const KNOWN_SECTIONS = [
 ];
 
 /**
- * The variant key of a model id or alias (`claude-haiku-5-5`, `haiku`), or null for a model with no variant.
+ * The variant key of a model id or alias (`claude-haiku-5-5`, `haiku`), or `null` for a model with no variant.
  * Mythos 5.1 gets the Fable variant, because one prompting guide covers both models.
  */
 export const variantKey = (model: unknown): VariantKey | null => {

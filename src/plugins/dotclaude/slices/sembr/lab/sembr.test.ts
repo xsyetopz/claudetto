@@ -16,7 +16,7 @@ type Seen = {
   command?: string;
 };
 
-/** `file` is the text that `fs.read` answers, or null to leave the read to the real file system, which has no `notes.md`. */
+/** `file` is the text that `fs.read` answers, or `null` to leave the read to the real file system, which has no `notes.md`. */
 const engine = (
   on: On,
   { file, seen }: { file: string | null; seen: Seen[] },

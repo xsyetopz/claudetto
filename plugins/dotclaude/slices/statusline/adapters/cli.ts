@@ -52,7 +52,7 @@ const defaults = (): Deps => ({
   error: (text) => process.stderr.write(text),
 });
 
-/** The object in `text`, or null for text that is not a JSON object. */
+/** The object in `text`, or `null` for text that is not a JSON object. */
 export const parseInput = <T extends object>(text: string): T | null => {
   try {
     const value: unknown = JSON.parse(text);
@@ -103,7 +103,7 @@ const saveUsage = async (
 const columnsOf = (deps: Deps): number =>
   (Number(deps.env["COLUMNS"]) || DEFAULT_COLUMNS) - COLUMNS_MARGIN;
 
-/** `value` when it is a non-empty string, otherwise null. A status object can hold a number or null in a folder field. */
+/** `value` when it is a non-empty string, otherwise null. A status object can hold a number or `null` in a folder field. */
 const textOf = (value: unknown): string | null =>
   typeof value === "string" && value !== "" ? value : null;
 

@@ -25,7 +25,7 @@ export const rewriteContent = (content: unknown) => {
 
 /**
  * The `new_string` of an `Edit` after the rewrite, or undefined when it stays.
- * `file` is the text of the file before the edit, or null when it does not exist.
+ * `file` is the text of the file before the edit, or `null` when it does not exist.
  * The rewrite applies only when `new_string` starts and ends at line bounds of the file.
  * The split runs on the whole file after the edit, so a fence or a table around the lines keeps them.
  */
@@ -152,7 +152,7 @@ export const writeInput = (e: WriteCall) => {
 
 /**
  * The `tool.call` input of an `Edit` after the repair of `old_string` and the rewrite of `new_string`.
- * `file` is the text of the file, or null when it cannot be read.
+ * `file` is the text of the file, or `null` when it cannot be read.
  * A path that is not Markdown, and an edit that needs no change, give `e` itself.
  */
 export const editInput = (e: EditCall, file: string | null) => {

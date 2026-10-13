@@ -90,7 +90,7 @@ const unwrap = (argv: string[], dir: string | undefined): Simple[] => {
 };
 
 /**
- * The operand of a `cd` command, or null when `argv` is not a `cd`.
+ * The operand of a `cd` command, or `null` when `argv` is not a `cd`.
  * An empty operand, or `-`, gives `undefined`: the folder is then unknown, and the working directory stands.
  */
 const cdOf = (argv: string[]): { dir: string | undefined } | null => {

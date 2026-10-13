@@ -19,7 +19,7 @@ const under = (kind: Kind, dir: string | undefined): Kind =>
     : (path) => kind(isAbsPath(path) ? path : `${dir}/${path}`);
 
 /**
- * The deny reason of `command`, or null when no matcher whose tier applies matches one of its simple commands.
+ * The deny reason of `command`, or `null` when no matcher whose tier applies matches one of its simple commands.
  * A matcher of an unknown id has the `floor` tier, so it applies in every session.
  */
 export const guardReason = async (

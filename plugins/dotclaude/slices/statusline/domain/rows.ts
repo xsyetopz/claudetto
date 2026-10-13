@@ -7,7 +7,7 @@ import type { StatusSegment } from "../../../kernel/slice.ts";
 import { ITEM_GAP, MAX_ROWS } from "../limits.ts";
 import { truncate, width } from "../width.ts";
 
-/** The text of each segment of one row, by its place in the row. A segment that renders null or nothing has a null place. */
+/** The text of each segment of one row, by its place in the row. A segment that renders `null` or nothing has a `null` place. */
 const cellsOf = (
   segments: readonly StatusSegment[],
   row: number,

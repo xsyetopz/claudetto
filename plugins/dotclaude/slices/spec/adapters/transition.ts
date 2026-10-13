@@ -78,7 +78,7 @@ export const refusedInWorktree = (run: Run, doing: string): boolean => {
 };
 
 /**
- * The id of the one change that has the package `pkg`, or null with a message.
+ * The id of the one change that has the package `pkg`, or `null` with a message.
  * When more than one change has it, a change where the package is closed drops out, because a closed package does not move.
  */
 export const changeOf = async (
@@ -117,7 +117,7 @@ export interface Target {
   readonly file: PackageFile | undefined;
 }
 
-/** The facts of the package `pkg`, or null after a message. It also refuses in a linked worktree, where `doing` names what the command does. */
+/** The facts of the package `pkg`, or `null` after a message. It also refuses in a linked worktree, where `doing` names what the command does. */
 export const targetOf = async (
   run: Run,
   pkg: string,

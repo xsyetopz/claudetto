@@ -36,9 +36,9 @@ export const windowRuns = (
 };
 
 /**
- * The time, in seconds, when the runs of a wave become more than 0 again, or null.
+ * The time, in seconds, when the runs of a wave become more than 0 again, or `null`.
  * It is the latest reset of the windows that give 0 runs, because each of them must reset.
- * It is null when no window gives 0 runs, or when one of them has no reset time.
+ * It is `null` when no window gives 0 runs, or when one of them has no reset time.
  */
 export const resetOf = (
   cap: number,

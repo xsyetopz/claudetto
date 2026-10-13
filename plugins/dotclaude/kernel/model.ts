@@ -9,7 +9,7 @@ export type ModelId = {
 };
 
 /**
- * The family, major, and minor version of a Claude model id, or null for any other id.
+ * The family, major, and minor version of a Claude model id, or `null` for any other id.
  * `claude-opus-5-5` gives `{ family: "opus", major: 5, minor: 5 }`.
  * An id with no minor version, such as `claude-haiku-5`, gives `minor: null`.
  * A date suffix, such as `-20251001`, is not a minor version.

@@ -97,7 +97,7 @@ export const readPackages = async (
   );
 };
 
-/** `change.md` of the change `id`, or null when the file is missing. */
+/** `change.md` of the change `id`, or `null` when the file is missing. */
 export const readChange = async (
   store: SpecStore,
   id: string,

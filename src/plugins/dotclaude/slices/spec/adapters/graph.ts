@@ -43,7 +43,7 @@ export const countStates = (
 
 /**
  * Reads the change `id`, which is relative to the store root of the specs.
- * It writes a message and gives null when the change has no `events.jsonl`.
+ * It writes a message and gives `null` when the change has no `events.jsonl`.
  */
 export const loadChange = async (
   run: Run,

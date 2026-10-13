@@ -62,7 +62,7 @@ export const exists = async (store: Store, file: string): Promise<boolean> => {
   }
 };
 
-/** The newest main transcript of the project folder `dir`, or null when it has none. */
+/** The newest main transcript of the project folder `dir`, or `null` when it has none. */
 export const newestSession = async (
   store: Store,
   dir: string,

@@ -7,7 +7,7 @@
 import { resolve } from "./paths.ts";
 import { generated, type Print, printsOf } from "./reads.ts";
 
-/** The line count of `file`: null when it cannot be read, and `Infinity` when it is too large to read. */
+/** The line count of `file`: `null` when it cannot be read, and `Infinity` when it is too large to read. */
 export type Count = (file: string) => Promise<number | null>;
 
 /** The deny reason that names the `Read` call. `file` is absolute. */
@@ -26,7 +26,7 @@ export const denyReason = (
   ].join("\n");
 };
 
-/** The deny reason of a file print, or null for a file that cannot be read or has no lines. */
+/** The deny reason of a file print, or `null` for a file that cannot be read or has no lines. */
 const printDeny = async (
   print: Print,
   file: string,
@@ -43,7 +43,7 @@ const printDeny = async (
 };
 
 /**
- * The deny reason for the first print of a file in a `Bash` command, or null.
+ * The deny reason for the first print of a file in a `Bash` command, or `null`.
  * `cwd` is the folder of a relative path. A generated file gets null, so the command stays allowed.
  */
 export const printReason = async (

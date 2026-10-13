@@ -38,7 +38,7 @@ const realTarget = async (file: string): Promise<string> => {
   }
 };
 
-/** The permission bits of `file`, or null when nothing exists at it. */
+/** The permission bits of `file`, or `null` when nothing exists at it. */
 const modeOf = async (file: string): Promise<number | null> => {
   try {
     return (await fs.stat(file)).mode & 0o7777;

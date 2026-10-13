@@ -99,7 +99,7 @@ const SAFE_GIT = [
   'echo "git stash"',
 ];
 
-/** The deny of `command` run by a subagent in `cwd`, or null when it stays allowed. */
+/** The deny of `command` run by a subagent in `cwd`, or `null` when it stays allowed. */
 const subagentDeny = (command: string, cwd: string) =>
   onBashCall(engineIn(cwd), bash(command, "a1"), passes);
 

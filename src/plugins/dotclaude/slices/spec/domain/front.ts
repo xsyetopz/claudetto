@@ -53,7 +53,7 @@ export type Front = Record<string, FrontValue>;
 
 const FRONT_LINE = /^([a-z]+):(?:\s+(.*))?$/;
 
-/** The value of one front matter line: a JSON list, a JSON string, or the raw text. Gives null when the JSON is not valid. */
+/** The value of one front matter line: a JSON list, a JSON string, or the raw text. Gives `null` when the JSON is not valid. */
 const frontValue = (raw: string): FrontValue | null => {
   if (raw.startsWith("[")) {
     const list: unknown = parseJson(raw);

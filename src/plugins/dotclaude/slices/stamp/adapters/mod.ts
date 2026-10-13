@@ -71,7 +71,7 @@ const transcriptPath = async (
 };
 
 /**
- * The newest stamp of the transcript of this session, or null when the transcript exists and its read fails.
+ * The newest stamp of the transcript of this session, or `null` when the transcript exists and its read fails.
  * A missing transcript, or no config folder, gives no stamp, so the session is new and gets one.
  * `fs.read` rejects a file over 4 MiB, so a long session has a transcript that exists and cannot be read, and no stamp is written for it.
  */

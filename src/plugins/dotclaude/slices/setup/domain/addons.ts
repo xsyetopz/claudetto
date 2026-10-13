@@ -30,7 +30,7 @@ export type AddonFacts = {
   projectDir: string;
   /** The Bun version. */
   bun: string;
-  /** The version text of `program`, or null when it does not run. */
+  /** The version text of `program`, or `null` when it does not run. */
   version: (program: string) => string | null;
   /** True when the index of `dotclaude-codegraph` exists in the project. */
   indexBuilt: boolean;

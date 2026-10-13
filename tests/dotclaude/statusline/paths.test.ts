@@ -13,7 +13,7 @@ const renderOf = async (input: unknown): Promise<Run> => {
   return run;
 };
 
-test("a `current_dir` that is null and a `cwd` that is a number fall back to the folder of the process, with no error", async () => {
+test("a `current_dir` that is `null` and a `cwd` that is a number fall back to the folder of the process, with no error", async () => {
   const run = await renderOf({
     ...STATUS,
     workspace: { current_dir: null, project_dir: null },

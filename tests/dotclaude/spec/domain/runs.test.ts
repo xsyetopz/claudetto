@@ -65,7 +65,7 @@ test("`windowRuns` gives at least one run while a window is below 100 percent us
   expect(windowRuns(5, open(100), NOW)).toBe(0);
 });
 
-test("`resetOf` gives the latest reset of the full windows, and null when no window is full", () => {
+test("`resetOf` gives the latest reset of the full windows, and `null` when no window is full", () => {
   const later = { used_percentage: 100, resets_at: SECONDS + 7200 };
   const sooner = { used_percentage: 100, resets_at: SECONDS + 3600 };
   expect(

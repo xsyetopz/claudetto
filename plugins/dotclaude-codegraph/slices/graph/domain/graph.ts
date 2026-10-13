@@ -45,7 +45,7 @@ export const TREE_CHANGE = new RegExp(
   String.raw`(?:^|[;&|])\s*git(?:\s+${GIT_OPTION})*\s+(?:commit|merge|rebase|pull|checkout|switch|reset|cherry-pick|revert|stash|apply|am)(?:\s|$)`,
 );
 
-/** `text` as a parsed payload, or null when it is not JSON. */
+/** `text` as a parsed payload, or `null` when it is not JSON. */
 export const parseJson = (text: string): HookPayload | null => {
   try {
     return JSON.parse(text);

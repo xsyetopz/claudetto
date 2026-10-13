@@ -14,7 +14,7 @@ type Heredoc = { delimiter: string; strip: boolean };
 /** A heredoc operator at a position, read with a sticky match. */
 const OPERATOR = /<<(-?)[ \t]*(?:'([^'\n]+)'|"([^"\n]+)"|([A-Za-z_][\w-]*))/y;
 
-/** The index after the closing line of a heredoc body that starts at `from`, or null when no line closes it. */
+/** The index after the closing line of a heredoc body that starts at `from`, or `null` when no line closes it. */
 const bodyEnd = (
   command: string,
   from: number,

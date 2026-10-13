@@ -28,7 +28,7 @@ export const requirementsSection = (text: string): string => {
 
 /**
  * The text of `specs/<capability>.md` after the merge of `body`, the requirement sections of a change.
- * `previous` is the current text of the spec, or null for a new spec, and `fresh` is the text to start from when there is none.
+ * `previous` is the current text of the spec, or `null` for a new spec, and `fresh` is the text to start from when there is none.
  * It gives the errors when a requirement of `body` has an ID that `previous` has already.
  */
 export const mergeRequirements = (

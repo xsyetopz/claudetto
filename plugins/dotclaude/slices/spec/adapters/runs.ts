@@ -20,7 +20,7 @@ import type { Run } from "./run.ts";
 const projectRoot = (cwd: string): string =>
   gitPath(cwd, "--show-toplevel") ?? cwd;
 
-/** The usage sample of the project, or null when the status line has kept none. A corrupt or unreadable file gives a stale sample. */
+/** The usage sample of the project, or `null` when the status line has kept none. A corrupt or unreadable file gives a stale sample. */
 const sampleOf = async (root: string): Promise<UsageSample | null> => {
   try {
     return parseSample(

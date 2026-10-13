@@ -29,7 +29,7 @@ interface Saved {
 
 /**
  * The folder of the cache of this user in `root`: `dotclaude-git-<uid>`, made with mode `0700` when it is missing.
- * It gives null when the folder exists with another owner, with group or other mode bits, or as a link.
+ * It gives `null` when the folder exists with another owner, with group or other mode bits, or as a link.
  * With no user id (`null`), as on Windows, the folder is `dotclaude-git`, because the temp folder there is a folder of this user, and mode bits do not apply.
  */
 export const cacheFolderOf = (
@@ -56,7 +56,7 @@ export const cacheFolderOf = (
   }
 };
 
-/** The cache file of the repository at `dir`, in the cache folder of this user, or null when that folder is not safe to use. */
+/** The cache file of the repository at `dir`, in the cache folder of this user, or `null` when that folder is not safe to use. */
 export const cacheFile = (
   dir: string,
   root: string = os.tmpdir(),
@@ -81,7 +81,7 @@ const isBranch = (value: unknown): boolean =>
   value.length > 0 &&
   [...value].every((c) => c.charCodeAt(0) >= 0x20 && c.charCodeAt(0) !== 0x7f);
 
-/** True for a state that `parseStatus` can give, or null for a failed `git` run. */
+/** True for a state that `parseStatus` can give, or `null` for a failed `git` run. */
 const isState = (value: unknown): boolean => {
   if (value === null) return true;
   if (typeof value !== "object") return false;
@@ -94,7 +94,7 @@ const isState = (value: unknown): boolean => {
   );
 };
 
-/** The saved result in `text`, or null for a missing or damaged file. */
+/** The saved result in `text`, or `null` for a missing or damaged file. */
 const parseSaved = (text: string | null): Saved | null => {
   if (text === null) return null;
   try {
@@ -106,7 +106,7 @@ const parseSaved = (text: string | null): Saved | null => {
   }
 };
 
-/** The git state of `dir`, or null when `git` is missing, fails, finds no repository, or does not answer in time. */
+/** The git state of `dir`, or `null` when `git` is missing, fails, finds no repository, or does not answer in time. */
 const runGit = (dir: string, runner: ProcessRunner): GitState | null => {
   try {
     const result = runner.run("git", GIT_ARGS, {

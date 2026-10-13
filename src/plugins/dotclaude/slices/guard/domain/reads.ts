@@ -43,7 +43,7 @@ export const words = (command: unknown): string[] | null => {
 type Part = { text: string; piped: boolean };
 
 /**
- * The parts of `command` split on `;`, `&&`, `||`, `|`, `&`, and new lines outside quotes, or null when it has a heredoc or an open quote.
+ * The parts of `command` split on `;`, `&&`, `||`, `|`, `&`, and new lines outside quotes, or `null` when it has a heredoc or an open quote.
  * A comment is not a part. A `&` of a redirect, such as `2>&1` or `&>`, does not split.
  */
 const parts = (command: string): Part[] | null => {
@@ -102,7 +102,7 @@ const countedPrint = (cmd: string, args: string[]): Print | null => {
   return { file, tail: count };
 };
 
-/** The print that `argv` makes: `{ file, offset, limit }` (offset and limit may be absent, `tail` has `tail: n`), or null. */
+/** The print that `argv` makes: `{ file, offset, limit }` (offset and limit may be absent, `tail` has `tail: n`), or `null`. */
 export const printOf = (argv: string[]): Print | null => {
   const [cmd, ...args] = argv;
   if (

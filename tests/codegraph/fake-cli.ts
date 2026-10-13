@@ -116,7 +116,7 @@ export const setUp = async ({
   };
 };
 
-/** Runs `cli.mjs mode` with `payload` on stdin, and gives `{ out, status, err }`. `out` is the parsed stdout or null. */
+/** Runs `cli.mjs mode` with `payload` on stdin, and gives `{ out, status, err }`. `out` is the parsed stdout or `null`. */
 export const runHook = (
   mode: string,
   payload: unknown,

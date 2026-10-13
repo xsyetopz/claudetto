@@ -68,9 +68,9 @@ export const isJson = (text: string): boolean => {
 };
 
 /**
- * The state events of the change `id` and the line of a torn last line, or null when the change has no `events.jsonl`.
+ * The state events of the change `id` and the line of a torn last line, or `null` when the change has no `events.jsonl`.
  * A torn last line has no line end and is not JSON, as a crash in the middle of an append leaves it.
- * The scan skips a torn last line and gives its line number in `torn`, or null when there is none.
+ * The scan skips a torn last line and gives its line number in `torn`, or `null` when there is none.
  * The scan throws an `Error` that names the file when the header has a `schema` other than `SPEC_SCHEMA`.
  * It throws an `Error` that names the file and the line when a line that is not torn is not JSON.
  */
@@ -107,7 +107,7 @@ export const scanEvents = async (
 };
 
 /**
- * The state events of the change `id`, in the order of the log, or null when the change has no `events.jsonl`.
+ * The state events of the change `id`, in the order of the log, or `null` when the change has no `events.jsonl`.
  * The reader skips a torn last line, as `scanEvents` does, and throws the errors of `scanEvents`.
  */
 export const readEvents = async (
@@ -129,7 +129,7 @@ export const lastStates = (
   return states;
 };
 
-/** The id in the front matter of a package file, or null when the file has none. */
+/** The id in the front matter of a package file, or `null` when the file has none. */
 const packageId = (text: string): string | null => {
   const front = /^---\r?\n([\s\S]*?)\r?\n---/.exec(text)?.[1] ?? "";
   const id = /^id:\s*["']?([^\s"']+)["']?\s*$/m.exec(front)?.[1];
@@ -168,7 +168,7 @@ export type Progress = {
 
 /**
  * The active change and its counts: the last change, in the order of its id, that has a package which is not `done`.
- * It gives null when every change is done, or when no change has an `events.jsonl`.
+ * It gives `null` when every change is done, or when no change has an `events.jsonl`.
  */
 export const activeProgress = async (
   files: FileReader,

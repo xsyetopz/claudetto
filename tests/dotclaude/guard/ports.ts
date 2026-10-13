@@ -52,7 +52,7 @@ export const bash = (command: string, agentId?: string) => ({
 /** A call that reaches the guard: the engine would run it, so `next` answers `ok`. */
 export const passes = (() => ({ result: "ok" })) as never;
 
-/** The deny text of `command` from the main session in `cwd`, or null when it stays allowed. */
+/** The deny text of `command` from the main session in `cwd`, or `null` when it stays allowed. */
 export const mainDeny = async (
   command: string,
   cwd: string,
@@ -61,7 +61,7 @@ export const mainDeny = async (
   return "deny" in out ? (out.deny ?? null) : null;
 };
 
-/** The deny text of `command` from a subagent in `cwd`, or null when it stays allowed. */
+/** The deny text of `command` from a subagent in `cwd`, or `null` when it stays allowed. */
 export const subagentDeny = async (
   command: string,
   cwd: string,

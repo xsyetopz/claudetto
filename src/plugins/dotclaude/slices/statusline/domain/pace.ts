@@ -9,12 +9,12 @@ export type Pace = {
   readonly delta: number;
   /** The use projected to the end of the window, in percent, at the rate so far. */
   readonly projected: number;
-  /** The time in seconds at which the use reaches 100% at this rate, or null when the use lasts to the reset. */
+  /** The time in seconds at which the use reaches 100% at this rate, or `null` when the use lasts to the reset. */
   readonly runOutAt: number | null;
 };
 
 /**
- * The pace of `window` at `nowS` for a window of `spanS` seconds, or null while it is too early.
+ * The pace of `window` at `nowS` for a window of `spanS` seconds, or `null` while it is too early.
  * The run-out time is set only when the use runs out before the reset.
  */
 export const paceOf = (
@@ -40,7 +40,7 @@ export const paceOf = (
 };
 
 /**
- * The pace of `window` at `nowS` for a window of `spanS` seconds, in points of percent, or null while it is too early.
+ * The pace of `window` at `nowS` for a window of `spanS` seconds, in points of percent, or `null` while it is too early.
  * A positive value is a deficit, which is a use above the even pace. A negative value is a reserve, which is a use below it.
  */
 export const paceDelta = (

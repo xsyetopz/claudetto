@@ -20,7 +20,7 @@ export type Verdict = {
 /** The `code` values of a file that is absent or not a readable file. */
 const UNREADABLE = ["ENOENT", "ENOTDIR", "EISDIR", "EACCES"];
 
-/** The text of `file` up to `max` bytes, or null when it is absent, larger than `max`, or unreadable. */
+/** The text of `file` up to `max` bytes, or `null` when it is absent, larger than `max`, or unreadable. */
 export const readText = async (
   file: string,
   max: number = FILE_MAX_BYTES,

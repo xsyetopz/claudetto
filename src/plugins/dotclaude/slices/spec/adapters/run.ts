@@ -19,7 +19,7 @@ export const dateOf = (clock: Clock): string =>
 
 /**
  * The change `id`, or the active change when `id` is missing.
- * It writes a message and gives null when the change does not exist, or when no change is open.
+ * It writes a message and gives `null` when the change does not exist, or when no change is open.
  */
 export const resolveId = async (
   run: Run,

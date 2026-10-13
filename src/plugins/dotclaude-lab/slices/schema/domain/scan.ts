@@ -91,7 +91,7 @@ const walk = (src: string, from: number, visit: Visit): number | null => {
   return null;
 };
 
-// The index of the bracket that closes the one at `open`, or null.
+// The index of the bracket that closes the one at `open`, or `null`.
 export const matchClose = (src: string, open: number): number | null =>
   walk(src, open, (_i, c, depth) => CLOSE.includes(c) && depth === 0);
 
@@ -122,7 +122,7 @@ export const exprEnd = (src: string, from: number): number => {
   return stop ?? src.length;
 };
 
-// The body of the settings object (without braces), or null.
+// The body of the settings object (without braces), or `null`.
 export const findSchemaBody = (src: string): string | null => {
   const start = src.indexOf(ANCHOR);
   if (start < 0) return null;

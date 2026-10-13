@@ -31,7 +31,7 @@ const engineIn = (cwd: string, stats: string[]): EngineInterface =>
     },
   }) as unknown as EngineInterface;
 
-/** The deny text of `command` from a subagent in `cwd`, or null when it stays allowed, and the `stat` calls. */
+/** The deny text of `command` from a subagent in `cwd`, or `null` when it stays allowed, and the `stat` calls. */
 const subagentIn = async (command: string, cwd: string) => {
   const stats: string[] = [];
   const out = await onBashCall(

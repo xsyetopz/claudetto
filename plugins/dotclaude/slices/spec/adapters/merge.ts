@@ -60,7 +60,7 @@ const treeState = (run: Run): { files: string[]; stagedFiles: string[] } => {
   return tree;
 };
 
-/** The SHA of the commit that `branch` names, or null with a message when `branch` is not a commit the merge can use. */
+/** The SHA of the commit that `branch` names, or `null` with a message when `branch` is not a commit the merge can use. */
 const branchHead = (run: Run, branch: string): string | null => {
   if (branch.startsWith("-")) {
     run.io.error(`The branch \`${branch}\` starts with a dash.`);

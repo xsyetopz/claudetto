@@ -6,7 +6,7 @@ import type { Store } from "../ports.ts";
 import type { Entry } from "./types.ts";
 
 /**
- * `maxTurns` of an agent type (`name` or `plugin:name`), from `<agentsDir>/<name>.md`, or null.
+ * `maxTurns` of an agent type (`name` or `plugin:name`), from `<agentsDir>/<name>.md`, or `null`.
  * With no `agentsDir`, no agent has a limit.
  */
 export const maxTurns = async (

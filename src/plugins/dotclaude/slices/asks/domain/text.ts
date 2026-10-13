@@ -1,5 +1,5 @@
 // The text that a `Write`, `Edit`, or `MultiEdit` call adds to a file, as pure functions.
-// `read(file)` gives the text of a file, or null when the file is absent or too large.
+// `read(file)` gives the text of a file, or `null` when the file is absent or too large.
 
 import { resolve } from "./paths.ts";
 
@@ -27,7 +27,7 @@ type Edit = {
   replace_all?: boolean;
 };
 
-/** The text of a file, or null when the file is absent or not read. */
+/** The text of a file, or `null` when the file is absent or not read. */
 export type Reader = (file: string) => Promise<string | null>;
 
 /** The effect of a file call, as `change` gives it. */
@@ -43,8 +43,8 @@ export const FILE_TOOLS = new Set(["Write", "Edit", "MultiEdit"]);
 
 /**
  * The effect of a file call: `{ file, before, after, fragment }`.
- * `file` is the absolute path, `before` the text of the file now (null when absent),
- * and `after` the text of the file after the call (null when the call does not apply to `before`).
+ * `file` is the absolute path, `before` the text of the file now (`null` when absent),
+ * and `after` the text of the file after the call (`null` when the call does not apply to `before`).
  * `fragment` is the text that the call writes, and the checks use it when `after` is null.
  */
 export const change = async (

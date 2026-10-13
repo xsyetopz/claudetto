@@ -77,7 +77,7 @@ const parseFile = (text: string | null): Parsed => {
 
 /**
  * True when a hook config above `rel` names `rel` as a script in a `command`.
- * `read(file)` gives the text of an absolute path or null, and `root` is the project folder.
+ * `read(file)` gives the text of an absolute path or `null`, and `root` is the project folder.
  */
 export const namedByHooks = async (
   rel: string,

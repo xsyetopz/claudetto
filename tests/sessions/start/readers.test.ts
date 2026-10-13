@@ -53,7 +53,7 @@ const read = async (entries: unknown[]) => {
   return await readEntries(store, file);
 };
 
-test("the first request is null when the transcript has no usage, and a cut line does not hide the next", async () => {
+test("the first request is `null` when the transcript has no usage, and a cut line does not hide the next", async () => {
   expect(firstRequest(await read([{ type: "user", message: {} }]))).toBe(null);
   const entries = await read([
     '{"type":"assistant","message":{"id":"a","usa',
@@ -68,7 +68,7 @@ test("the first request is null when the transcript has no usage, and a cut line
   });
 });
 
-test("the snapshot falls back to the first snapshot when none has tools, and is null with none", async () => {
+test("the snapshot falls back to the first snapshot when none has tools, and is `null` with none", async () => {
   expect(snapshotSizes(await read([{ type: "user" }]))).toBe(null);
   const snap = snapshotSizes(
     await read([
@@ -106,7 +106,7 @@ test("attachment sizes leave out the snapshot and list the largest type first", 
   ]);
 });
 
-test("the first request text stops at the first user entry that is not meta, and is null without a snapshot", async () => {
+test("the first request text stops at the first user entry that is not meta, and is `null` without a snapshot", async () => {
   const entries = await read([
     { attachment: { type: "prompt_snapshot", systemPrompt: ["abcd"] } },
     { attachment: { type: "env", cwd: "/p" } },

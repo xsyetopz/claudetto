@@ -135,7 +135,7 @@ test("`activeProgress` counts a package that has a file and no event", async () 
   });
 });
 
-test("`activeProgress` gives null when every change is done or none has a log", async () => {
+test("`activeProgress` gives `null` when every change is done or none has a log", async () => {
   expect(await activeProgress(fakeFiles({}))).toBeNull();
   const done = fakeFiles({
     [eventsPath("a")]: logOf({ P1: "done", P2: "canceled" }),

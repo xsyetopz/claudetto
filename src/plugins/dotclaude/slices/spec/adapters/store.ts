@@ -63,7 +63,7 @@ export class SpecStore {
     await Bun.write(this.abs(rel), text);
   }
 
-  /** The state events of the change `id`, or null. It throws an `Error` on a `schema` that it does not know. */
+  /** The state events of the change `id`, or `null`. It throws an `Error` on a `schema` that it does not know. */
   events(id: string): Promise<readonly StateEvent[] | null> {
     return readEvents(this.files, id);
   }
@@ -76,7 +76,7 @@ export class SpecStore {
     return packageStates(this.files, id, events);
   }
 
-  /** The line of the torn last line of `events.jsonl` of the change `id`, or null when there is none. */
+  /** The line of the torn last line of `events.jsonl` of the change `id`, or `null` when there is none. */
   async tornLine(id: string): Promise<number | null> {
     return (await scanEvents(this.files, id))?.torn ?? null;
   }

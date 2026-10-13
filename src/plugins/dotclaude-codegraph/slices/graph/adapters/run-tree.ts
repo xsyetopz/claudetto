@@ -29,7 +29,7 @@ export const taskkill = (pid: number | undefined, run: FixedRun = runFixed) =>
 
 /**
  * Runs `command` with `args`. At `timeout` ms it calls `kill(pid)`, which must end the tree.
- * Gives `{ status, stdout, timedOut, error }`. `status` is null after a timeout.
+ * Gives `{ status, stdout, timedOut, error }`. `status` is `null` after a timeout.
  */
 export interface RunTreeOptions {
   command: string;

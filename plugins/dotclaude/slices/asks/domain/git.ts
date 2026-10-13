@@ -25,7 +25,7 @@ const VALUE_OPTIONS = new Set([
 ]);
 
 /**
- * The git subcommand of `argv` and its arguments, or null when the command is not git.
+ * The git subcommand of `argv` and its arguments, or `null` when the command is not git.
  * `sub` is `""` when `xargs` gives the subcommand from its input.
  */
 export const gitCall = (argv: string[]): GitCall | null => {

@@ -10,7 +10,7 @@ import { READ_MAX_BYTES } from "../../../plugins/dotclaude/slices/guard/limits.t
 import { rethrowUnless, UNREADABLE } from "../../../src/kernel/errors.ts";
 import { lineCount } from "../../../src/kernel/text.ts";
 
-/** The count of lines in `file`, null when it cannot be read, or `Infinity` when it is over `READ_MAX_BYTES`. */
+/** The count of lines in `file`, `null` when it cannot be read, or `Infinity` when it is over `READ_MAX_BYTES`. */
 export const readLines: Count = async (file) => {
   try {
     const bytes = Bun.file(file);
@@ -22,7 +22,7 @@ export const readLines: Count = async (file) => {
   }
 };
 
-/** The deny reason for `command` run in `cwd`, or null. `count` gives the lines of a file. */
+/** The deny reason for `command` run in `cwd`, or `null`. `count` gives the lines of a file. */
 export const denyOf = (
   command: string,
   cwd: string,

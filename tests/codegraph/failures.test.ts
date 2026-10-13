@@ -41,7 +41,7 @@ test("a crash of the hook is written to stderr, and the exit code stays 0", asyn
   expect(r.stderr).toMatch(/TypeError/);
 });
 
-test("`parseJson` gives null for text that is not JSON and throws any other error", () => {
+test("`parseJson` gives `null` for text that is not JSON and throws any other error", () => {
   expect(parseJson("not json")).toBe(null);
   expect<unknown>(parseJson('{"a":1}')).toStrictEqual({ a: 1 });
   expect(() => parseJson(Symbol("x") as unknown as string)).toThrow(TypeError);

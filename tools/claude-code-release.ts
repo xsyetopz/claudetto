@@ -26,7 +26,7 @@ const SEMVER =
 // The version after `@anthropic-ai/claude-code@` in a `bun add` or `npm install` line.
 const PIN = /@anthropic-ai\/claude-code@(\d[0-9A-Za-z.+-]*)/;
 
-/** A SemVer version, or null when `text` is not one. The build metadata is dropped. */
+/** A SemVer version, or `null` when `text` is not one. The build metadata is dropped. */
 export const parseVersion = (text: string): Version | null => {
   const m = SEMVER.exec(text.trim());
   if (!m) return null;

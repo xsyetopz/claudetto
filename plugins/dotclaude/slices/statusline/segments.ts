@@ -23,7 +23,7 @@ import { width } from "./width.ts";
 
 const asStatus = (status: unknown): Status => status as Status;
 
-/** `Opus 5.5`, from the id of the model, or null for an id that is not a Claude model. */
+/** `Opus 5.5`, from the id of the model, or `null` for an id that is not a Claude model. */
 const modelName = (id: string | undefined): string | null => {
   const m = parseModel(id);
   if (!m) return null;

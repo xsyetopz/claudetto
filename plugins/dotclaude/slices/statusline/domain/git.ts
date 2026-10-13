@@ -6,7 +6,7 @@ import type { GitState } from "./types.ts";
 /** The arguments of the one `git` call. */
 export const GIT_ARGS = ["status", "--porcelain=v2", "-b"] as const;
 
-/** The state in `text`, or null when `text` has no branch. A detached head shows its short object name. */
+/** The state in `text`, or `null` when `text` has no branch. A detached head shows its short object name. */
 export const parseStatus = (text: string): GitState | null => {
   let branch: string | null = null;
   let oid: string | null = null;

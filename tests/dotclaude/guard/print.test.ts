@@ -8,7 +8,7 @@ import { denyOf } from "./support.ts";
 const CWD = "/work/app";
 // The print rule gives a path with `/` only, on every platform, as `domain/paths.ts` does.
 const FILE = "/work/app/docs/design.md";
-/** The deny reason of `command`, or null when the command stays allowed. */
+/** The deny reason of `command`, or `null` when the command stays allowed. */
 const run = (command: string, count: Count = async () => 100) =>
   denyOf(command, CWD, count);
 const reason = async (command: string, count?: Count) =>

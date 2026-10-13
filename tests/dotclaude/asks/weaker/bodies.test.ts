@@ -303,7 +303,7 @@ test("an added test and an added assert get no ask", async () => {
 
 test("a title with a control word gets no ask", async () => {
   const title =
-    'test("returns null if the input is empty or skipped", () => {\n  expect(h()).toBe(null);\n});\n';
+    'test("returns `null` if the input is empty or skipped", () => {\n  expect(h()).toBe(null);\n});\n';
   expect(await editAsks(T, TS, '\ntest("b"', `\n${title}\ntest("b"`)).toBe(
     false,
   );

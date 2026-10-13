@@ -32,7 +32,7 @@ import { printsOf } from "../domain/reads.ts";
 import { READ_MAX_BYTES } from "../limits.ts";
 
 /**
- * The stdout of `argv`, or null when it exits with a code other than 0.
+ * The stdout of `argv`, or `null` when it exits with a code other than 0.
  * A run that throws is not caught: Claude Code logs it and the verdict of the engine stands.
  */
 const output = async ($: EngineInterface, argv: readonly string[]) => {

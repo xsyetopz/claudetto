@@ -10,7 +10,7 @@ export type UsageSample = {
   rate_limits: NonNullable<StatusInput["rate_limits"]>;
 };
 
-/** The text of the usage sample of `input`, or null when the status object has no `rate_limits`. */
+/** The text of the usage sample of `input`, or `null` when the status object has no `rate_limits`. */
 export const usageSample = (input: StatusInput, now: number): string | null =>
   input.rate_limits
     ? `${JSON.stringify({ savedAt: now, rate_limits: input.rate_limits })}\n`
