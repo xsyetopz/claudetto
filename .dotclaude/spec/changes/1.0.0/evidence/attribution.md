@@ -83,3 +83,33 @@ as the user decided, and not `Claude Code`.
 
 - Commits that have no `Co-Authored-By` trailer came from the installed 0.28.0 plugin, not from the 1.0.0 code.
   The 1.0.0 code adds the trailer only through this hook.
+
+## Sandbox Check, 2026-10-13
+
+Two headless sessions ran from the main session in `just sandbox`, on the subscription of the user, with `--model claude-haiku-5-5` and `--allowedTools Bash`.
+A guard stopped the same run in a subagent worktree, so the main session ran it (the user, 2026-10-13).
+
+Method:
+
+1. `mktemp -d` made a temp folder with a throwaway git repository, `throwaway/`, which held one commit.
+2. A stub `gh` script first on `PATH` wrote its arguments to `gh-calls.txt`, and printed a fake PR URL.
+   It did not call GitHub, and the run pushed nothing.
+3. `bun plugins/dotclaude-lab/bin/dotclaude-capture --port 8797 --out DIR --no-count` captured each request, with `ANTHROPIC_BASE_URL=http://127.0.0.1:8797`.
+4. The prompt told Claude to append a line to `notes.txt`, commit it with `git commit -m`, and run `gh pr create --title ... --body ...`.
+5. A script parsed each captured request, and searched the `system`, the `tools`, the user text, and the tool blocks for `Co-Authored-By`, `Generated with [Claude Code]`, and `noreply@anthropic.com`.
+
+| Run | Settings | Commit message | PR body | Requests with attribution text |
+| --- | --- | --- | --- | --- |
+| 1 | The sandbox config, with no snippet | `Add b`, then `Co-Authored-By: Claude Haiku 5.5 <noreply@anthropic.com>` | `Adds the line b.`, then `🤖 Generated with [Claude Code](https://claude.com/claude-code)` | 7 of 8, in a user text block |
+| 2 | `--settings` with `{"includeGitInstructions": false}` | `Add c`, then `Co-Authored-By: Claude Haiku 5.5 <noreply@anthropic.com>` | `Adds the line c.`, then `🤖 Generated with [Claude Code](https://claude.com/claude-code)` | 0 of 5 |
+
+- In run 1, the attribution text is a `system-reminder` that starts with "Attribution for git commits and pull requests you create from here on".
+  No file in `src/` or `plugins/` holds that text, so it is the git text of Claude Code.
+  It shows because the sandbox config does not hold the snippet, and the `trim` slice sets `includeGitInstructions: false` only through the snippet.
+- In run 2, no request holds attribution text.
+  The model wrote `git commit -m 'Add c'` and `gh pr create --title 'Add c' --body 'Adds the line c.'`, with no attribution.
+  So the `tool.call` hook added both lines, and no prompt text told the model about them.
+- The name `Claude Haiku 5.5` comes from the parsed model id.
+  The alias `haiku` does not parse, and gives `Claude`.
+
+Result: each point of the acceptance passes.
