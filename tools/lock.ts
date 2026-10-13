@@ -2,7 +2,7 @@
 // Lets only one eval run of the checkout run at a time.
 // Two runs at the same time cost twice, and they write over the logs and results of each other.
 //
-//   node tools/lock.ts COMMAND [ARGS...]   run the command while the lock is held
+//   bun tools/lock.ts COMMAND [ARGS...]   run the command while the lock is held
 //
 // The lock is a file in `plugins/dotclaude/evals/results/`, which git ignores.
 // It holds the process id and the start time of the run that has it.
@@ -59,7 +59,7 @@ export const takeLock = async (
 if (process.argv[1] === import.meta.path) {
   const [command, ...args] = process.argv.slice(2);
   if (!command) {
-    console.error("Usage: node tools/lock.ts COMMAND [ARGS...]");
+    console.error("Usage: bun tools/lock.ts COMMAND [ARGS...]");
     process.exit(2);
   }
   const lock = await takeLock(LOCK);

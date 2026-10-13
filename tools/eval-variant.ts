@@ -4,7 +4,7 @@
 // Both runs have the same no-plugin baseline arm.
 // The script makes the worktree and calls `dotclaude-eval-compare` on the two plugin folders.
 //
-//   node tools/eval-variant.ts REF [claude plugin eval options...]
+//   bun tools/eval-variant.ts REF [claude plugin eval options...]
 //
 // REF is a branch, a tag, or a commit that holds the variant, such as the style without the evidence line.
 // The variant is checked out in a temporary `git worktree`, which the script removes at the end.
@@ -27,7 +27,7 @@ const COMPARE = path.join(
 );
 const [ref, ...rest] = process.argv.slice(2);
 if (!ref) {
-  console.error("Usage: node tools/eval-variant.ts REF [eval options...]");
+  console.error("Usage: bun tools/eval-variant.ts REF [eval options...]");
   process.exit(2);
 }
 const tree = fs.mkdtempSync(
