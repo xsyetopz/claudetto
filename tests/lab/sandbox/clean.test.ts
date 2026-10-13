@@ -6,6 +6,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { main } from "../../../src/plugins/dotclaude-lab/slices/sandbox/adapters/cli.ts";
+import { setUp } from "../../../src/plugins/dotclaude-lab/slices/sandbox/adapters/setup.ts";
 import { cleanRefusal } from "../../../src/plugins/dotclaude-lab/slices/sandbox/domain/clean.ts";
 
 let scratch = "";
@@ -37,10 +38,36 @@ test("`--clean` refuses a folder that holds a sub-folder outside the layout", as
   expect(fs.existsSync(path.join(root, "src"))).toBe(true);
 });
 
-test("`--clean` removes a folder that holds only the sandbox layout", async () => {
+test("`--clean` refuses a folder that holds only `config/` and `project/` and no marker", async () => {
+  const root = path.join(scratch, "work");
+  fs.mkdirSync(path.join(root, "config"), { recursive: true });
+  fs.mkdirSync(path.join(root, "project"), { recursive: true });
+
+  const code = await main(["--dir", root, "--clean"]);
+
+  expect(code).not.toBe(0);
+  expect(fs.existsSync(path.join(root, "config"))).toBe(true);
+  expect(fs.existsSync(path.join(root, "project"))).toBe(true);
+});
+
+test("`--clean` refuses an empty folder that is not the default", async () => {
+  const root = path.join(scratch, "mount");
+  fs.mkdirSync(root);
+
+  const code = await main(["--dir", root, "--clean"]);
+
+  expect(code).not.toBe(0);
+  expect(fs.existsSync(root)).toBe(true);
+});
+
+test("`--clean` removes a folder that the setup made", async () => {
   const root = path.join(scratch, "sandbox");
-  for (const name of ["config", "project", "home"])
-    fs.mkdirSync(path.join(root, name), { recursive: true });
+  await setUp({
+    root,
+    config: path.join(root, "config"),
+    home: path.join(root, "home"),
+    project: path.join(root, "project"),
+  });
 
   const code = await main(["--dir", root, "--clean"]);
 
@@ -60,9 +87,16 @@ test("`cleanRefusal` allows the default folder whatever it holds", () => {
   ).toBeNull();
 });
 
-test("`cleanRefusal` allows a folder that holds only the layout, and names the foreign entries", () => {
-  expect(cleanRefusal("/x", ["config", "home"], false)).toBeNull();
+test("`cleanRefusal` allows a folder that holds the layout and the marker, and names the foreign entries", () => {
+  expect(
+    cleanRefusal("/x", ["config", "home", ".dotclaude-sandbox"], false),
+  ).toBeNull();
   expect(cleanRefusal("/x", ["config", "README.md"], false)).toContain(
     "README.md",
   );
+});
+
+test("`cleanRefusal` refuses a folder without the marker, even when it holds only the layout", () => {
+  expect(cleanRefusal("/x", ["config", "home"], false)).not.toBeNull();
+  expect(cleanRefusal("/x", [], false)).not.toBeNull();
 });

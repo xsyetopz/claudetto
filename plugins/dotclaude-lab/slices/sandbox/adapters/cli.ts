@@ -100,7 +100,7 @@ export const main = async (argv: string[]): Promise<number> => {
     ];
   }
 
-  await setUp({ config, home, project });
+  await setUp({ root, config, home, project });
   const claude = Bun.which("claude");
   if (!claude) {
     console.error("claude is not on PATH. Put the claude executable on PATH.");

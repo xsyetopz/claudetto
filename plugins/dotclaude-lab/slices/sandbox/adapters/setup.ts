@@ -3,11 +3,13 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { SANDBOX_MARKER } from "../domain/clean.ts";
 import { readJson } from "./json.ts";
 import { spawnSyncOrNull } from "./run-program.ts";
 
-/** The folders of the sandbox. */
+/** The folders of the sandbox, and the folder `root` that holds them. */
 export interface SandboxDirs {
+  root: string;
   config: string;
   home: string;
   project: string;
@@ -20,12 +22,15 @@ interface ClaudeState {
   projects?: Record<string, object>;
 }
 
-/** Creates `config/`, `home/`, and `project/` (a git repository) in `root`, and trusts the project. */
+/** Creates `config/`, `home/`, and `project/` (a git repository) in `root`, writes the marker, and trusts the project. */
 export const setUp = async ({
+  root,
   config,
   home,
   project,
 }: SandboxDirs): Promise<void> => {
+  fs.mkdirSync(root, { recursive: true });
+  await Bun.write(path.join(root, SANDBOX_MARKER), "");
   fs.mkdirSync(config, { recursive: true });
   fs.mkdirSync(home, { recursive: true });
   if (!fs.existsSync(path.join(project, ".git"))) {

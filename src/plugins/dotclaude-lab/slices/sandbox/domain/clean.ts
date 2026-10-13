@@ -1,9 +1,12 @@
 // The guard of `dotclaude-sandbox --clean`, which removes a folder with all its contents.
-// The sandbox writes only `config/`, `project/`, and `home/` into its folder.
+// The sandbox writes only `config/`, `project/`, `home/`, and the marker into its folder.
 // `setUp` writes `.claude.json` inside `config/`, and the debug log goes to the temp folder.
 
 /** The only entries that the sandbox writes into its folder. */
 export const SANDBOX_LAYOUT: readonly string[] = ["config", "project", "home"];
+
+/** The file that `setUp` writes into the sandbox folder. A folder without it was not made by the sandbox. */
+export const SANDBOX_MARKER = ".dotclaude-sandbox";
 
 /**
  * Returns why `--clean` must not remove the folder, or `null` when it may.
@@ -15,7 +18,12 @@ export const cleanRefusal = (
   isDefault: boolean,
 ): string | null => {
   if (isDefault) return null;
-  const foreign = entries.filter((e) => !SANDBOX_LAYOUT.includes(e));
-  if (foreign.length === 0) return null;
-  return `Refusing to remove ${root}: it holds ${foreign.join(", ")}, which is not the sandbox layout. Use the default sandbox folder, or remove this folder by hand.`;
+  const foreign = entries.filter(
+    (e) => e !== SANDBOX_MARKER && !SANDBOX_LAYOUT.includes(e),
+  );
+  if (foreign.length > 0)
+    return `Refusing to remove ${root}: it holds ${foreign.join(", ")}, which is not the sandbox layout. Use the default sandbox folder, or remove this folder by hand.`;
+  if (!entries.includes(SANDBOX_MARKER))
+    return `Refusing to remove ${root}: the sandbox did not make this folder, because it has no ${SANDBOX_MARKER} file. Remove this folder by hand if you do not need it.`;
+  return null;
 };

@@ -4,6 +4,7 @@
 import { expect, test } from "bun:test";
 import os from "node:os";
 import { main } from "../../../src/plugins/dotclaude/slices/statusline/adapters/cli.ts";
+import { cacheFile } from "../../../src/plugins/dotclaude/slices/statusline/adapters/git-cache.ts";
 import {
   GIT_CACHE_MS,
   REFRESH_SECONDS,
@@ -107,4 +108,55 @@ test("the cache file is in the temp folder and does not name the repository path
   expect(cached.length).toBe(1);
   expect(cached[0]?.startsWith(os.tmpdir())).toBe(true);
   expect(cached[0]).not.toContain("/work/dotclaude");
+});
+
+/** Runs the status line once with a saved cache `text` for the repository of `STATUS`, and counts the `git` runs. */
+const runWithSaved = async (
+  text: string,
+): Promise<{ gitRuns: number; out: string }> => {
+  const memory = memoryFiles();
+  memory.files.set(cacheFile(STATUS.workspace.current_dir), text);
+  let gitRuns = 0;
+  const runner = {
+    run: () => {
+      gitRuns++;
+      return { exitCode: 0, stdout: GIT_TEXT, stderr: "" };
+    },
+  };
+  const run: Run = { status: -1, out: [], err: [] };
+  await main(
+    [],
+    depsFor(STATUS, run, {
+      env: { COLUMNS: "124", NO_COLOR: "1" },
+      now: () => NOW,
+      files: memory.reader,
+      write: memory.write,
+      runner,
+    }),
+  );
+  return { gitRuns, out: run.out.join("\n") };
+};
+
+test("a cache file with a wrong field type is no cache, and `git` runs", async () => {
+  const saved = JSON.stringify({
+    at: NOW,
+    state: { branch: 7, dirty: 0, ahead: 0, behind: 0 },
+  });
+  const { gitRuns } = await runWithSaved(saved);
+  expect(gitRuns).toBe(1);
+});
+
+test("a cache file whose branch holds terminal escape codes is no cache, and `git` runs", async () => {
+  const forged = JSON.stringify({
+    at: NOW,
+    state: {
+      branch: "\u001b]0;pwned\u0007main",
+      dirty: 0,
+      ahead: 0,
+      behind: 0,
+    },
+  });
+  const { gitRuns, out } = await runWithSaved(forged);
+  expect(gitRuns).toBe(1);
+  expect(out).not.toContain("\u001b");
 });

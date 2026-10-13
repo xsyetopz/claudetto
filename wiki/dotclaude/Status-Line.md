@@ -28,6 +28,7 @@ The rows are set in `segments.ts`, and each segment has a row number.
   The call stops after `GIT_TIMEOUT_MS`, which is `1_500` milliseconds.
   The segment keeps the result of the call for `GIT_CACHE_MS`, which is `3_000` milliseconds, in a file in the temp folder for each repository.
   So `git` runs at most once in three refreshes, and a commit shows in 3 seconds or less.
+  A saved result with a field of the wrong type, or a branch name with a control character, is no cache, so `git` runs.
 - The change segment shows the id and the done and total count of the active change.
   It reads the spec store through `activeProgress` in `src/kernel/spec-store.ts`.
 - The model segment shows a name from the model id, such as `Opus 5.5`.

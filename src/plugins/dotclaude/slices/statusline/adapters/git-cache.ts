@@ -33,14 +33,35 @@ export const cacheFile = (dir: string): string => {
   return path.join(os.tmpdir(), `dotclaude-git-${key}.json`);
 };
 
+/** True for a count that `parseStatus` can give: a safe integer of zero or more. */
+const isCount = (value: unknown): boolean =>
+  Number.isSafeInteger(value) && (value as number) >= 0;
+
+/** True for a branch name without a control character, such as the escape code of a terminal. */
+const isBranch = (value: unknown): boolean =>
+  typeof value === "string" &&
+  value.length > 0 &&
+  [...value].every((c) => c.charCodeAt(0) >= 0x20 && c.charCodeAt(0) !== 0x7f);
+
+/** True for a state that `parseStatus` can give, or null for a failed `git` run. */
+const isState = (value: unknown): boolean => {
+  if (value === null) return true;
+  if (typeof value !== "object") return false;
+  const state = value as Record<keyof GitState, unknown>;
+  return (
+    isBranch(state.branch) &&
+    isCount(state.dirty) &&
+    isCount(state.ahead) &&
+    isCount(state.behind)
+  );
+};
+
 /** The saved result in `text`, or null for a missing or damaged file. */
 const parseSaved = (text: string | null): Saved | null => {
   if (text === null) return null;
   try {
     const value = JSON.parse(text);
-    const valid =
-      typeof value?.at === "number" &&
-      (value.state === null || typeof value.state === "object");
+    const valid = typeof value?.at === "number" && isState(value.state);
     return valid ? (value as Saved) : null;
   } catch {
     return null;
