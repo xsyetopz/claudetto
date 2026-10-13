@@ -2,6 +2,11 @@
 // Request sizing for `dotclaude-capture`: split a request into parts and count each
 // part with the `count_tokens` endpoint. The CLI writes the result.
 
+import {
+  COUNT_ATTEMPTS,
+  COUNT_BACKOFF_MS,
+  MAX_PART_COUNTS,
+} from "../limits.ts";
 import type {
   Block,
   Body,
@@ -13,6 +18,7 @@ import type {
   Sizing,
   Swap,
   Tool,
+  Wait,
 } from "./types.ts";
 
 /** The label of one content block: its type and its first words. */
@@ -159,23 +165,36 @@ const FIXES: Record<string, Fix> = {
   },
 };
 
+const pause: Wait = (ms) => new Promise((done) => setTimeout(done, ms));
+
+/** One `count_tokens` call. An HTTP 429 is retried with a doubling wait, up to `COUNT_ATTEMPTS` attempts. */
 const countTokens = async (
   upstream: string,
   body: Body,
   headers: Record<string, string>,
   query: string,
+  wait: Wait,
 ): Promise<number> => {
-  const res = await fetch(`${upstream}/v1/messages/count_tokens${query}`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(countable(body)),
-  });
-  const json = (await res.json()) as CountReply;
+  const send = () =>
+    fetch(`${upstream}/v1/messages/count_tokens${query}`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(countable(body)),
+    });
+  let res = await send();
+  for (
+    let delay = COUNT_BACKOFF_MS, tries = 1;
+    res.status === 429 && tries < COUNT_ATTEMPTS;
+    delay *= 2, tries++
+  ) {
+    await wait(delay);
+    res = await send();
+  }
+  // The text is read before the status, so a reply that is not JSON keeps its status.
+  const text = await res.text();
   if (!res.ok)
-    throw new Error(
-      `count_tokens ${res.status}: ${JSON.stringify(json).slice(0, 300)}`,
-    );
-  return json.input_tokens;
+    throw new Error(`count_tokens ${res.status}: ${text.slice(0, 300)}`);
+  return (JSON.parse(text) as CountReply).input_tokens;
 };
 
 /** The fixes that `count_tokens` needs for this body, and the count with them. */
@@ -184,6 +203,7 @@ const fixesFor = async (
   body: Body,
   headers: Record<string, string>,
   query: string,
+  wait: Wait,
 ): Promise<{ used: string[]; full: number }> => {
   const used: string[] = [];
   const errors: string[] = [];
@@ -191,7 +211,10 @@ const fixesFor = async (
     if (name) used.push(name);
     const fixed = used.reduce((b, f) => (FIXES[f] as Fix)(b), body);
     try {
-      return { used, full: await countTokens(upstream, fixed, headers, query) };
+      return {
+        used,
+        full: await countTokens(upstream, fixed, headers, query, wait),
+      };
     } catch (e) {
       errors.push(String(e));
     }
@@ -199,31 +222,45 @@ const fixesFor = async (
   throw new Error(errors.join("\n"));
 };
 
-/** Sizes one request: the full count, then the count without each part. */
+/**
+ * Sizes one request: the full count, then the count without each part.
+ * `wait` sleeps between the attempts of a 429 retry; the tests pass a fake.
+ */
 export const sizeRequest = async (
   upstream: string,
   body: Body,
   headers: Record<string, string>,
   query: string,
+  wait: Wait = pause,
 ): Promise<Sizing> => {
-  const { used, full } = await fixesFor(upstream, body, headers, query);
+  const { used, full } = await fixesFor(upstream, body, headers, query, wait);
   const fix = (b: Body): Body => used.reduce((x, f) => (FIXES[f] as Fix)(x), b);
   const rows: Row[] = [];
-  for (const part of parts(body)) {
-    const without = await countTokens(
-      upstream,
-      fix(part.without()),
-      headers,
-      query,
-    );
-    rows.push({
-      kind: part.kind,
-      name: part.name,
-      chars: part.chars,
-      tokens: full - without,
-    });
+  for (const [i, part] of parts(body).entries()) {
+    const row = { kind: part.kind, name: part.name, chars: part.chars };
+    if (i >= MAX_PART_COUNTS) {
+      rows.push({
+        ...row,
+        tokens: null,
+        note: `not counted: past the bound of ${MAX_PART_COUNTS} parts`,
+      });
+      continue;
+    }
+    try {
+      const without = await countTokens(
+        upstream,
+        fix(part.without()),
+        headers,
+        query,
+        wait,
+      );
+      rows.push({ ...row, tokens: full - without, note: null });
+    } catch (e) {
+      // One failed count leaves the size of this part unknown, and the other parts still count.
+      rows.push({ ...row, tokens: null, note: `count failed: ${String(e)}` });
+    }
   }
-  const sum = rows.reduce((s, r) => s + r.tokens, 0);
+  const sum = rows.reduce((s, r) => s + (r.tokens ?? 0), 0);
   return {
     model: body.model,
     fixes: used,
@@ -234,13 +271,20 @@ export const sizeRequest = async (
   };
 };
 
-/** The lines that the CLI prints for a sizing, the largest part first. */
-export const sizingLines = (n: string, s: Sizing): string[] => [
-  `\nrequest ${n}: ${s.full} tokens by count_tokens, parts ${s.parts}, rest ${s.rest}`,
-  ...[...s.rows]
-    .sort((a, b) => b.tokens - a.tokens)
-    .map(
-      (r) =>
-        `${String(r.tokens).padStart(6)}  ${String(r.chars).padStart(6)}c  ${r.kind}  ${r.name}`,
-    ),
-];
+/**
+ * The lines that the CLI prints for a sizing, the largest part first.
+ * A part with no count shows `?` and its note, and the header counts those parts.
+ */
+export const sizingLines = (n: string, s: Sizing): string[] => {
+  const uncounted = s.rows.filter((r) => r.tokens === null).length;
+  const header = `\nrequest ${n}: ${s.full} tokens by count_tokens, parts ${s.parts}, rest ${s.rest}`;
+  return [
+    uncounted ? `${header}, ${uncounted} parts not counted` : header,
+    ...[...s.rows]
+      .sort((a, b) => (b.tokens ?? -1) - (a.tokens ?? -1))
+      .map(
+        (r) =>
+          `${(r.tokens === null ? "?" : String(r.tokens)).padStart(6)}  ${String(r.chars).padStart(6)}c  ${r.kind}  ${r.name}${r.note ? `  (${r.note})` : ""}`,
+      ),
+  ];
+};

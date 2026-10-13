@@ -43,6 +43,9 @@ export type Fix = (body: Body) => Body;
 /** A function that returns the request with one part removed. */
 export type Swap = (next: Block | null) => Body;
 
+/** A wait of `ms` milliseconds. The tests pass a wait that returns at once. */
+export type Wait = (ms: number) => Promise<void>;
+
 /** One part of a request, with the function that returns the request without it. */
 export type Part = {
   kind: string;
@@ -51,12 +54,16 @@ export type Part = {
   without: () => Body;
 };
 
-/** One row of the report: the tokens that one part costs. */
+/**
+ * One row of the report: the tokens that one part costs.
+ * `tokens` is `null` when the part is not counted, and `note` gives the reason.
+ */
 export type Row = {
   kind: string;
   name: string | undefined;
   chars: number;
-  tokens: number;
+  tokens: number | null;
+  note: string | null;
 };
 
 /** The sizing of one request: the full count, the fixes in use, and each part. */
