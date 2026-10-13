@@ -55,7 +55,8 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
   The user approves the use of their login in `just sandbox` and `just sandbox-alone` for this work (the user, 2026-10-13).
   When a guard stops a sandbox session in a subagent, run that session from the main session (the user, 2026-10-13).
   Write the results, with the method, to the evidence file of the package.
-- Add CHANGELOG entries under `[Unreleased]`.
+- Add CHANGELOG entries under the section of the version in the manifests when that version has no tag yet, because it is the release in progress.
+  Otherwise add them under `[Unreleased]`.
   Change versions with `just bump`.
 - Write public docs in `wiki/`, and run `just wiki` to publish them.
   `docs/README.md` only links to the wiki.
