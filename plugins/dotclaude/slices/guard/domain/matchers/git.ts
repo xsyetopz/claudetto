@@ -221,6 +221,9 @@ const gitMatchersAsWritten: Matcher[] = [
       "git push origin --delete main",
       "git push -d origin main",
       "git push --mirror origin",
+      "git push --force --all origin",
+      "git push --force --tags origin",
+      "git push --force --all origin feature",
       "git push --force",
       "git push -f origin HEAD",
     ],
@@ -238,12 +241,14 @@ const gitMatchersAsWritten: Matcher[] = [
         hasShort(args, "d") ||
         refs.some((w) => w.startsWith(":"));
       // A force push with no ref, or with `HEAD`, moves the branch that `HEAD` names, which may be a default branch.
+      // A force push with `--all` or `--tags` moves every branch or tag, so it is denied with any ref.
       const [, ref] = refs;
       const headOrNone = ref === undefined || ref.replace(/^\+/, "") === "HEAD";
+      const everyRef = hasFlag(args, "--all") || hasFlag(args, "--tags");
       return (
         hasFlag(args, "--mirror") ||
         (refs.some(isDefaultRef) && (forced || deletes)) ||
-        (forced && headOrNone)
+        (forced && (headOrNone || everyRef))
       );
     },
   },

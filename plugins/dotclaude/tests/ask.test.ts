@@ -96,15 +96,24 @@ test("a failed policy fetch is read again at the next call", async ($: Engine, o
 
 /** The answers of the three policy files of `repo`, when none of them exists. */
 const noPolicy = (repo: string) =>
-  Object.fromEntries(POLICY_FILES.map((file) => [policyOf(repo, file), MISSING]));
+  Object.fromEntries(
+    POLICY_FILES.map((file) => [policyOf(repo, file), MISSING]),
+  );
 
 test("a repository whose policy files are all missing is cached, so its next call reads nothing", async ($: Engine, on: On) => {
   const calls = stub(on, { [LOGIN]: "me\n", ...noPolicy("nobody/empty") });
-  const url = { tool: "WebFetch", input: { url: "https://github.com/nobody/empty" } };
+  const url = {
+    tool: "WebFetch",
+    input: { url: "https://github.com/nobody/empty" },
+  };
   expect((await $.tool.check(url)).decision).toBe("allow");
-  expect(calls.filter((c) => c.includes("repos/nobody/empty/"))).toHaveLength(3);
+  expect(calls.filter((c) => c.includes("repos/nobody/empty/"))).toHaveLength(
+    3,
+  );
   expect((await $.tool.check(url)).decision).toBe("allow");
-  expect(calls.filter((c) => c.includes("repos/nobody/empty/"))).toHaveLength(3);
+  expect(calls.filter((c) => c.includes("repos/nobody/empty/"))).toHaveLength(
+    3,
+  );
 });
 
 test("a repository of the user, or one with no policy, keeps the verdict", async ($: Engine, on: On) => {
