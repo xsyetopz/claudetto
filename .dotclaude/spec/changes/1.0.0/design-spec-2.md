@@ -56,10 +56,10 @@ Each Markdown file of the store starts with front matter that has `schema: dotcl
 
 | State | Next states | Command | Gate |
 | --- | --- | --- | --- |
-| `planned` | `doing`, `blocked`, `canceled` | `implement <package>` | The change is `planned`, each dep is `done`, and no marker is open. |
+| `planned` | `doing`, `blocked`, `canceled` | `implement <package>` | The change is `planned` or `implementing`, each dep is `done`, and no marker is open. |
 | `doing` | `verified`, `blocked`, `canceled` | `verify <package>` | The `verify` command of the package exits with `0` at the head of its branch, and the event records the command, the exit status, and the SHA. |
-| `verified` | `approved`, `doing` | `review <package> approve`, or `reject --finding <text>...` | `approve` records the SHA of the verify event. `reject` needs a finding and a `--decision fix-code` or `--decision revise-spec`. |
-| `approved` | `done` | `merge <package> [<branch>]` | The head of the branch is the approved SHA. With no branch, `HEAD` of the main checkout contains that SHA. |
+| `verified` | `approved`, `doing`, `blocked`, `canceled` | `review <package> approve`, or `reject --finding <text>...` | `approve` records the SHA of the verify event. `reject` needs a finding and a `--decision fix-code` or `--decision revise-spec`. |
+| `approved` | `done`, `blocked`, `canceled` | `merge <package> [<branch>]` | The head of the branch is the approved SHA. With no branch, `HEAD` of the main checkout contains that SHA. |
 | `blocked` | `doing`, `canceled` | `implement <package> --note <text>` | A note. |
 | `done`, `canceled` | none | none | none |
 
@@ -67,6 +67,8 @@ Each Markdown file of the store starts with front matter that has `schema: dotcl
   The next `implement <package>` then needs `--decision fix-code` or `--decision revise-spec`.
 - `block <package> --note <text>` moves an open package to `blocked`.
 - `drop <package> --reason <text>` moves an open package to `canceled`.
+- An open package is a package that is not `done` or `canceled`.
+- `drop <id> --reason <text>` cancels a change before it is `accepted`.
 
 ## Change States
 
