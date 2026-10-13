@@ -21,7 +21,13 @@ import { type Count, printReason } from "../domain/deny.ts";
 import { guardReason } from "../domain/guard.ts";
 import { isAbsPath, normPath } from "../domain/matchers/norm.ts";
 import type { PathKind } from "../domain/matchers/types.ts";
-import { askReason, LOGIN_ARGV, linesOf, ORGS_ARGV } from "../domain/owners.ts";
+import {
+  askReason,
+  LOGIN_ARGV,
+  linesOf,
+  ORGS_ARGV,
+  type PolicyRead,
+} from "../domain/owners.ts";
 import { printsOf } from "../domain/reads.ts";
 import { READ_MAX_BYTES } from "../limits.ts";
 
@@ -32,6 +38,19 @@ import { READ_MAX_BYTES } from "../limits.ts";
 const output = async ($: EngineInterface, argv: readonly string[]) => {
   const r = await $.process.run(argv, { timeoutMs: POLICY_TIMEOUT_MS });
   return r.exitCode === 0 ? r.stdout : null;
+};
+
+// A `gh api` call that exits 1 with `HTTP 404` on stderr names a file that does not exist.
+const readOf = async (
+  $: EngineInterface,
+  argv: readonly string[],
+): Promise<PolicyRead> => {
+  const r = await $.process.run(argv, { timeoutMs: POLICY_TIMEOUT_MS });
+  if (r.exitCode === 0) return { status: "text", text: r.stdout };
+  if (r.exitCode === 1 && r.stderr.includes("HTTP 404")) {
+    return { status: "missing" };
+  }
+  return { status: "failed" };
 };
 
 // The logins of the user and the organizations where the user is an admin.
@@ -130,7 +149,7 @@ export const onCheck: Handler<"tool.check"> = async ($, e, next) => {
   }
   const own = await askReason(e.tool, e.input, {
     seen,
-    run: (argv) => output($, argv),
+    run: (argv) => readOf($, argv),
     owners: () => ownersOf($),
   });
   if (!own) return verdict;

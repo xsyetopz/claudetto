@@ -9,30 +9,40 @@ import { type Engine, expect, mock, test } from "claude-code/testing";
 const done = (
   exitCode: number,
   stdout: string,
+  stderr = "",
 ): { value: ProcessRunResult } => ({
   value: {
     exitCode,
     stdout,
-    stderr: "",
+    stderr,
     isStdoutTruncated: false,
     isStderrTruncated: false,
   },
 });
 
+/** The answer of a policy file that does not exist: exit 1 with `HTTP 404` on stderr. */
+const MISSING = Symbol("missing");
+
 const LOGIN = "gh config get user -h github.com";
 const ORGS =
   'gh api user/memberships/orgs --paginate --jq .[] | select(.role == "admin" and .state == "active") | .organization.login';
-const POLICY = (repo: string) =>
-  `gh api -H Accept: application/vnd.github.raw+json repos/${repo}/contents/CLAUDE.md`;
+const policyOf = (repo: string, file: string) =>
+  `gh api -H Accept: application/vnd.github.raw+json repos/${repo}/contents/${file}`;
+const POLICY = (repo: string) => policyOf(repo, "CLAUDE.md");
+const POLICY_FILES = ["CLAUDE.md", "AGENTS.md", "AI_POLICY.md"];
 
 /**
  * Stubs for one test: the verdict of the engine, the session, and `gh` output by argument list.
- * An answer that is a list gives its next item for each call, and `null` is a failed call.
+ * An answer that is a list gives its next item for each call, `null` is a failed call,
+ * and `MISSING` is a file that does not exist.
  * The result lists the `gh` calls in order.
  */
 const stub = (
   on: On,
-  answers: Record<string, string | null | (string | null)[]> = {},
+  answers: Record<
+    string,
+    string | null | typeof MISSING | (string | null | typeof MISSING)[]
+  > = {},
   verdict: { decision: "allow" | "ask" | "deny"; reason?: string } = {
     decision: "allow",
   },
@@ -47,6 +57,7 @@ const stub = (
     const list = answers[key];
     const out = Array.isArray(list) ? list.shift() : list;
     calls.push(key);
+    if (out === MISSING) return done(1, "", "gh: Not Found (HTTP 404)");
     return out === undefined || out === null ? done(1, "") : done(0, out);
   });
   return calls;
@@ -80,6 +91,28 @@ test("a failed policy fetch is read again at the next call", async ($: Engine, o
   const next = await bash($, "gh repo view other/lib");
   expect(next.decision).toBe("ask");
   expect(calls.filter((c) => c === POLICY("other/lib"))).toHaveLength(2);
+});
+
+/** The answers of the three policy files of `repo`, when none of them exists. */
+const noPolicy = (repo: string) =>
+  Object.fromEntries(
+    POLICY_FILES.map((file) => [policyOf(repo, file), MISSING]),
+  );
+
+test("a repository whose policy files are all missing is cached, so its next call reads nothing", async ($: Engine, on: On) => {
+  const calls = stub(on, { [LOGIN]: "me\n", ...noPolicy("nobody/empty") });
+  const url = {
+    tool: "WebFetch",
+    input: { url: "https://github.com/nobody/empty" },
+  };
+  expect((await $.tool.check(url)).decision).toBe("allow");
+  expect(calls.filter((c) => c.includes("repos/nobody/empty/"))).toHaveLength(
+    3,
+  );
+  expect((await $.tool.check(url)).decision).toBe("allow");
+  expect(calls.filter((c) => c.includes("repos/nobody/empty/"))).toHaveLength(
+    3,
+  );
 });
 
 test("a repository of the user, or one with no policy, keeps the verdict", async ($: Engine, on: On) => {
