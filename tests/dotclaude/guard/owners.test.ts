@@ -29,6 +29,24 @@ test("`reachedRepos` reads `Bash` and `WebFetch` calls", () => {
   expect(bash("pip install git+https://github.com/A/b@v1")).toStrictEqual([
     "a/b",
   ]);
+  expect(bash("git -C /x fetch https://github.com/o/r")).toStrictEqual(["o/r"]);
+  expect(bash("git -c k=v pull https://github.com/o/r")).toStrictEqual(["o/r"]);
+  expect(bash("git --git-dir=D fetch https://github.com/o/r")).toStrictEqual([
+    "o/r",
+  ]);
+  expect(
+    bash("git -C d submodule add https://github.com/o/r vendor/r"),
+  ).toStrictEqual(["o/r"]);
+  expect(bash("git -C d clone https://github.com/o/r")).toStrictEqual(["o/r"]);
+  expect(bash("pip3 install git+https://github.com/o/r")).toStrictEqual([
+    "o/r",
+  ]);
+  expect(
+    bash("python -m pip install git+https://github.com/o/r"),
+  ).toStrictEqual(["o/r"]);
+  expect(bash("uv pip install git+https://github.com/o/r")).toStrictEqual([
+    "o/r",
+  ]);
   expect(bash("git status https://github.com/A/b")).toStrictEqual([]);
   expect(
     reachedRepos("WebFetch", {

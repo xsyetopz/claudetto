@@ -54,6 +54,8 @@ A matcher with no catalog entry gets `floor`.
 The `floor` tier applies in every session.
 The `subagent` tier applies only when the call has an `agentId`.
 The only `subagent` rule is `git.shared-checkout`.
+The `git.force-push-default` rule counts `--force-with-lease` as a force push, the same as `--force`.
+So a push with `--force-with-lease` to the default branch, or with no ref, `HEAD`, `--all`, or `--tags`, is denied.
 It keeps a subagent out of the shared checkout and `refs/stash`.
 
 #### The Print Deny

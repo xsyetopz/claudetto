@@ -97,6 +97,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `guard` hook denies a delete of the default branch, a mirror push, and a force push with no ref.
 - The `guard` hook denies a force push with `--all` or `--tags` and a ref (`git.force-push-default`).
   It names the default-branch and mirror pushes in the rule of the default branch.
+- The `guard` hook counts `--force-with-lease` as a force push, as it counts `--force` (`git.force-push-default`).
 - The `guard` hook reads a forced branch delete in a short-flag cluster, such as `-Df` and `-fd`.
 - The `guard` hook denies a destructive git command whose name a substitution writes, such as `$(echo git) reset --hard`.
 - The `guard` owners check reaches the repositories of `git fetch`, `git pull`, `git remote add`, `git submodule add`, and `pip install git+URL`.
@@ -193,6 +194,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   Before, it asked once for each repository in a session.
 - The `guard` owners check keeps a repository whose policy files are all missing for the session, so it does not read them again.
   A failed read of a policy file is not kept, and the next call reads it again.
+- The `guard` owners check reads the repository of a `git` command with options before its verb, such as `git -C dir fetch URL` or `git -c k=v pull URL`.
+  It also reads an install of `git+URL` with `pip3`, which the check missed before.
 
 ### Removed
 
