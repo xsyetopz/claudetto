@@ -102,3 +102,84 @@ test("a quoted $IFS stays one argument of git, and the command is allowed", asyn
   const out = await onBashCall(engineIn(main), bash(command), passes);
   expect("deny" in out).toBe(false);
 });
+
+/**
+ * An `alias` that a wrapper or a spelled-out name hides from the alias reader.
+ * Bash sets `g` on the first line and runs `git reset --hard` on the next line.
+ */
+const ALIAS_WRAPPED = [
+  "command alias g=git\ng reset --hard",
+  "builtin alias g=git\ng reset --hard",
+  "al\\ias g=git\ng reset --hard",
+];
+
+test("an alias set behind a wrapper or a spelled-out name still denies a guarded git verb", async () => {
+  const allowed: string[] = [];
+  for (const command of ALIAS_WRAPPED) {
+    const out = await onBashCall(engineIn(main), bash(command), passes);
+    if (!("deny" in out)) allowed.push(command);
+  }
+  expect(allowed).toStrictEqual([]);
+});
+
+/**
+ * An alias body with a command separator runs two commands, and the use of the alias
+ * gives its arguments to the last one, so the git verb follows the separator.
+ */
+const ALIAS_BODY = [
+  "alias g='true; git'\ng reset --hard",
+  "alias g='echo; git'\ng reset --hard",
+  "alias g='true && git'\ng reset --hard",
+  "alias g='false || git'\ng reset --hard",
+  "alias g='true | git'\ng reset --hard",
+];
+
+test("an alias body with a separator still denies a guarded git verb", async () => {
+  const allowed: string[] = [];
+  for (const command of ALIAS_BODY) {
+    const out = await onBashCall(engineIn(main), bash(command), passes);
+    if (!("deny" in out)) allowed.push(command);
+  }
+  expect(allowed).toStrictEqual([]);
+});
+
+/**
+ * A positional or special parameter that is empty when the shell has no arguments.
+ * Bash removes it from the word, so `git$9 reset` runs `git reset`.
+ * The first form already denies on `33280fe9`, because its verb word is unknown.
+ */
+const EMPTY_PARAM = [
+  "git$9 reset --hard",
+  "$9 git reset --hard",
+  "git$@ reset --hard",
+  "git$* reset --hard",
+  "git$IFS$9reset --hard",
+];
+
+test("an empty positional or special parameter does not hide a guarded git verb", async () => {
+  const allowed: string[] = [];
+  for (const command of EMPTY_PARAM) {
+    const out = await onBashCall(engineIn(main), bash(command), passes);
+    if (!("deny" in out)) allowed.push(command);
+  }
+  expect(allowed).toStrictEqual([]);
+});
+
+test("a normal command near each alias, parameter, and quote fix is allowed", async () => {
+  const denied: string[] = [];
+  for (const command of [
+    "alias ll='ls -l'\nll",
+    "alias ll='ls -l'",
+    "alias g='true; git'",
+    "command ls",
+    "command alias ll='ls -l'\nll",
+    "echo $9",
+    "echo $9 $1",
+    "git commit -m 'a; b'",
+    "git commit -m '$9'",
+  ]) {
+    const out = await onBashCall(engineIn(main), bash(command), passes);
+    if ("deny" in out) denied.push(command);
+  }
+  expect(denied).toStrictEqual([]);
+});

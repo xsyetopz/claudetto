@@ -109,11 +109,18 @@ const SEP = "\u0000";
 const IFS_REF = /\$\{[^}]*IFS[^}]*\}|\$IFS(?![A-Za-z0-9_])/y;
 
 /**
+ * A positional or special parameter that is empty when the shell has no arguments: `$1` to `$9`, `${10}`, `$@`, `$*`, and `$!`.
+ * The other special parameters, such as `$?` and `$#`, never expand to an empty word, so they stay as written.
+ */
+const EMPTY_REF = /\$(?:[1-9]|\{[1-9]\d*\}|[@*!]|\{[@*!]\})/y;
+
+/**
  * The text of `command`, with each `$IFS` reference replaced by `SEP`.
  * A quoted reference stays as it is, because bash does not split inside quotes.
  * With `all`, a quoted reference is also replaced, which is the reading of a shell that runs the text again.
+ * With `drop`, each empty parameter (see `EMPTY_REF`) is removed, as bash removes it, and is kept otherwise.
  */
-const markedText = (command: string, all: boolean): string => {
+const markedText = (command: string, all: boolean, drop: boolean): string => {
   let out = "";
   let quote: string | null = null;
   for (let i = 0; i < command.length; i++) {
@@ -132,6 +139,14 @@ const markedText = (command: string, all: boolean): string => {
         continue;
       }
     }
+    if (c === "$" && drop && (all || quote !== "'")) {
+      EMPTY_REF.lastIndex = i;
+      const empty = EMPTY_REF.exec(command);
+      if (empty) {
+        i += empty[0].length - 1;
+        continue;
+      }
+    }
     if (quote === null && (c === "'" || c === '"')) quote = c;
     else if (c === quote) quote = null;
     out += c;
@@ -147,50 +162,52 @@ const commandsOf = (text: string): string[][] =>
     ),
   );
 
-/** `name=value` in an `alias` word. */
-const ALIAS_DEF = /^([A-Za-z_][\w.-]*)=(.*)$/;
+/** `name=value` in an `alias` word, where the value may hold a line end. */
+const ALIAS_DEF = /^([A-Za-z_][\w.-]*)=([\s\S]*)$/;
 
-/** The aliases of a text, by name, with the words of each body. */
-type Aliases = Map<string, string[]>;
+/** The aliases of a text, by name, with the commands of each body. */
+type Aliases = Map<string, string[][]>;
 
 /**
  * Applies an `alias` or `unalias` command to `aliases`, and returns true when `argv` is one of them.
+ * A wrapper before the name, such as `command alias`, does not hide it.
  * `unalias -a` drops every alias.
  */
 const aliasCmd = (argv: string[], aliases: Aliases): boolean => {
-  if (argv[0] === "alias") {
-    for (const word of argv.slice(1)) {
+  const [head, ...rest] = stripWrappers(argv);
+  if (head === "alias") {
+    for (const word of rest) {
       const [, name = "", value = ""] = ALIAS_DEF.exec(word) ?? [];
-      if (name !== "")
-        aliases.set(
-          name,
-          value.split(/\s+/).filter((w) => w !== ""),
-        );
+      if (name !== "") aliases.set(name, commandsOf(value));
     }
     return true;
   }
-  if (argv[0] !== "unalias") return false;
-  if (argv.includes("-a")) aliases.clear();
-  for (const word of argv.slice(1)) aliases.delete(word);
+  if (head !== "unalias") return false;
+  if (rest.includes("-a")) aliases.clear();
+  for (const word of rest) aliases.delete(word);
   return true;
 };
 
 /**
- * The words of `argv` with its head replaced by the alias of that name, again while the new head is an alias.
- * A name that is met twice stops the chain, as bash stops it.
+ * The commands of `argv` with its head replaced by the alias of that name, again while a new head is an alias.
+ * The words after the name go to the last command of the alias body, as bash puts them there.
+ * A name that is met twice on one chain stops it, as bash stops it.
  */
-const expandAlias = (argv: string[], aliases: Aliases): string[] => {
-  let words = argv;
-  const seen = new Set<string>();
-  while (
-    words[0] !== undefined &&
-    aliases.has(words[0]) &&
-    !seen.has(words[0])
-  ) {
-    seen.add(words[0]);
-    words = [...(aliases.get(words[0]) as string[]), ...words.slice(1)];
-  }
-  return words;
+const expandAlias = (
+  argv: string[],
+  aliases: Aliases,
+  seen: Set<string>,
+): string[][] => {
+  const name = argv[0] ?? "";
+  if (!aliases.has(name) || seen.has(name)) return [argv];
+  const body = aliases.get(name) as string[][];
+  const args = argv.slice(1);
+  const cmds =
+    body.length === 0
+      ? [args]
+      : [...body.slice(0, -1), [...(body.at(-1) as string[]), ...args]];
+  const next = new Set([...seen, name]);
+  return cmds.flatMap((cmd) => expandAlias(cmd, aliases, next));
 };
 
 /**
@@ -223,32 +240,41 @@ const expandedOf = (text: string): Simple[] => {
   let dir: string | undefined;
   for (const argv of commandsOf(text)) {
     if (aliasCmd(argv, aliases)) continue;
-    const words = expandAlias(argv, aliases);
-    const cd = cdOf(words);
-    if (cd) {
-      dir = cd.dir === undefined ? undefined : joinDir(dir, cd.dir);
-      continue;
+    for (const words of expandAlias(argv, aliases, new Set())) {
+      const cd = cdOf(words);
+      if (cd) {
+        dir = cd.dir === undefined ? undefined : joinDir(dir, cd.dir);
+        continue;
+      }
+      if (words !== argv) out.push(...unwrap(words, dir));
     }
-    if (words !== argv) out.push(...unwrap(words, dir));
   }
   return out;
 };
 
+/** The readings of a text: the quoted split (`all`) and the removal of empty parameters (`drop`). */
+const READINGS: [boolean, boolean][] = [
+  [false, false],
+  [true, false],
+  [false, true],
+  [true, true],
+];
+
 /**
  * The simple commands of a `Bash` text, after `parse` and the unwrapping of each wrapper.
  * A `cd` sets the folder of the commands after it, so `cd <dir> && rm ...` reads `rm` under `<dir>`.
- * Each command is read as it is written, and again with its aliases expanded when the text sets one.
+ * Each command is read as it is written, and again with its aliases expanded.
  * A text with a `$IFS` is read with the quoted split too, because a nested shell reads a quoted text as code.
+ * A text with an empty parameter is also read with that parameter removed, so the readings only add a deny.
  */
 export const walk = (command: string): Simple[] => {
   const out: Simple[] = [];
   const seen = new Set<string>();
-  for (const all of [false, true]) {
-    const text = markedText(command, all);
+  for (const [all, drop] of READINGS) {
+    const text = markedText(command, all, drop);
     if (seen.has(text)) continue;
     seen.add(text);
-    out.push(...rawOf(text));
-    if (command.includes("alias")) out.push(...expandedOf(text));
+    out.push(...rawOf(text), ...expandedOf(text));
   }
   return out;
 };
