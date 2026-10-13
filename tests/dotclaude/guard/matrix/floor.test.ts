@@ -3,7 +3,7 @@
 // The commands are strings for `onBashCall`, and no command runs.
 
 import { expect, test } from "bun:test";
-import { main, mainDeny, subagentDeny } from "../ports.ts";
+import { linked, main, mainDeny, subagentDeny } from "../ports.ts";
 
 /** The destructive commands of the floor, in their plain form. */
 const FLOOR = [
@@ -145,6 +145,8 @@ const UNREADABLE = [
   "$(echo git) -C . reset --hard",
   "`echo git` clean -fd",
   "$(echo git) $(echo reset) --hard",
+  '"$(echo git)" push --force origin main',
+  "$(echo git) push --force origin main",
 ];
 
 test("a command whose name a substitution wrote is denied, through each wrapper with a single-quoted script", async () => {
@@ -166,5 +168,21 @@ test("a command whose name is unreadable, with no git verb after it, is allowed"
     "$(which ls) src",
   ]) {
     expect(await mainDeny(command, main), command).toBeNull();
+  }
+});
+
+test("a command whose name has literal text next to a substitution is not read as `git`", async () => {
+  for (const command of ["$(pwd)/build.sh", "`pwd`/build.sh"]) {
+    expect(await mainDeny(command, main), command).toBeNull();
+    expect(await subagentDeny(command, main), command).toBeNull();
+  }
+});
+
+test("a git command whose name a substitution wrote keeps its `-C` folder, so the main checkout is read from a linked worktree", async () => {
+  const command = `$(echo git) -C ${main} switch feature`;
+  for (const form of formsOf(command).filter(
+    (f) => !/^(bash -c|eval) "/.test(f),
+  )) {
+    expect(await subagentDeny(form, linked), form).not.toBeNull();
   }
 });
