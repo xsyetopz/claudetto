@@ -12,7 +12,7 @@ export const PR_LINE =
 export type Lines = { commit: string; pr: string };
 
 /** An id of a model, such as `claude-sonnet-5-5`, with its family and its version. */
-const MODEL_ID = /^claude-([a-z]+)-(\d+)-(\d+)(?:-\d{8})?$/;
+const MODEL_ID = /^claude-([a-z]+)-(\d+)(?:-(\d{1,2}))?(?:-\d{8})?$/;
 
 /**
  * The name of a model as Claude Code shows it, such as `Claude Sonnet 5.5`.
@@ -25,9 +25,9 @@ export const modelName = (model: string | undefined): string => {
     .replace(/\[1m\]$/, "");
   const found = MODEL_ID.exec(id);
   if (!found) return "Claude";
-  const [, family = "", major = "", minor = ""] = found;
+  const [, family = "", major = "", minor] = found;
   const name = family.charAt(0).toUpperCase() + family.slice(1);
-  return `Claude ${name} ${major}.${minor}`;
+  return `Claude ${name} ${minor === undefined ? major : `${major}.${minor}`}`;
 };
 
 /** The fields of the merged settings that the attribution reads. */

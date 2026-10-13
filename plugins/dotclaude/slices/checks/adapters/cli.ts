@@ -100,11 +100,11 @@ export const main = async (
   cwd: string = process.cwd(),
   deps: Deps = defaults(),
 ): Promise<number> => {
-  const commands = args.filter((a) => a.trim() !== "");
-  if (commands.length === 0) {
+  if (args.length === 0 || args.some((a) => a.trim() === "")) {
     deps.error(USAGE);
     return 2;
   }
+  const commands = args;
   const flag = flagArg(commands);
   if (flag !== undefined) {
     deps.error(

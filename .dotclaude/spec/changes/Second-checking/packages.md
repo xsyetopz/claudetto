@@ -4,7 +4,7 @@
 
 - [x] P01 Kernel: spec-store reader, writeAtomic, shell bound.
 - [ ] P02 Repo tooling: generator ownership overlap, release and validate checks.
-- [ ] P03 Core plugin: prompt, agents, styles, surface, attribution, trim, decide.
+- [x] P03 Core plugin: prompt, agents, styles, surface, attribution, trim, decide.
 - [x] P05 Core plugin: setup, rules, handoff, stamp.
 - [ ] P06 Add-on plugins and lab.
 
