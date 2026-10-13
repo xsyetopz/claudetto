@@ -155,15 +155,21 @@ test("a cache file with a wrong field type is no cache, and `git` runs", async (
   expect(gitRuns).toBe(1);
 });
 
-test("a cache folder with group or other mode bits is no cache folder", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "git-cache-"));
-  const folder = path.join(root, `dotclaude-git-${process.getuid?.()}`);
-  fs.mkdirSync(folder);
-  fs.chmodSync(folder, 0o755);
-  expect(cacheFile(STATUS.workspace.current_dir, root)).toBeNull();
-});
+/** The mode bits of a folder exist on POSIX only, so a test of them does not run on Windows. */
+const posixTest = test.skipIf(process.platform === "win32");
 
-test("a missing cache folder is made with mode `0700` and used", () => {
+posixTest(
+  "a cache folder with group or other mode bits is no cache folder",
+  () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "git-cache-"));
+    const folder = path.join(root, `dotclaude-git-${process.getuid?.()}`);
+    fs.mkdirSync(folder);
+    fs.chmodSync(folder, 0o755);
+    expect(cacheFile(STATUS.workspace.current_dir, root)).toBeNull();
+  },
+);
+
+posixTest("a missing cache folder is made with mode `0700` and used", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "git-cache-"));
   const file = cacheFile(STATUS.workspace.current_dir, root);
   const folder = path.dirname(file ?? "");

@@ -32,7 +32,9 @@ const runWith = async (
       ...(files ? { files } : {}),
       write: async (file, text) => {
         // The git cache also writes, so only the usage sample is recorded here.
-        if (file.endsWith(RATE_LIMITS_FILE)) writes.push([file, text]);
+        // `path.join` writes the file with `\` on Windows, so the name is compared in that form.
+        if (file.endsWith(path.normalize(RATE_LIMITS_FILE)))
+          writes.push([file, text]);
         await write(file, text);
       },
     }),
