@@ -8,7 +8,7 @@ The spec workflow, the handoff, the agents, the status line, and the settings ar
 | --- | --- | --- | --- |
 | `dotclaude` | `/spec`, `/hotfix`, `/ship`, `/handoff`, `/setup` | none | `dotclaude-spec` CLI, the mods, the status line, 7 agents, the output style |
 | `dotclaude-codegraph` | none | none | 1 classic `PostToolUse` hook, a CLI, a `SessionStart` note |
-| `dotclaude-browser` | none | `drive-web-browser` | a mod on `WebSearch`, a CLI |
+| `dotclaude-browser` | none | `browse` | a mod on `WebSearch`, a CLI |
 | `dotclaude-jev` | none | none | a mod with the custom tool `second_opinion` |
 | `dotclaude-docs` | none | `docs` | `ctx7` |
 | `dotclaude-sessions` | `/usage`, `/start-cost` | none | CLIs |

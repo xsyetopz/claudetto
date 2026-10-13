@@ -73,7 +73,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   In `Bash`, it rewrites the quoted text of `git commit` and `gh pr create` in the same way.
 - The output style `dotclaude:Concise` is based on the built-in Concise style.
 - The core plugin has the skills `/setup`, `/spec`, `/hotfix`, `/ship`, `/handoff`, and `/rules-creator`.
-  `/rules-creator` writes the rule files of `.claude/rules/`, with `paths` globs.
+  `/rules-creator` writes the rule files of `.claude/rules/`, with `paths` globs, and the skill `drive-web-browser` of `dotclaude-browser` is now `browse`, the name of its slice.
 - The `setup` slice reads the account type from `claude auth status --json`.
   Pro is the baseline, and Max 5x and Max 20x get more parallel subagents and a higher effort.
 - The `setup` slice writes `autoMode` to the user settings, with `$defaults` in each list.

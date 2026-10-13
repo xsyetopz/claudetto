@@ -4,7 +4,7 @@ The plugin `dotclaude-browser` drives a real browser for Claude.
 Read this page to set up the browser, or to learn how the `WebSearch` handler works and when it falls back.
 
 The plugin has two slices.
-The slice `browse` gives the skill `drive-web-browser` and the command `dotclaude-browser-guide`.
+The slice `browse` gives the skill `browse` and the command `dotclaude-browser-guide`.
 The slice `search` answers each `WebSearch` call with a search in the headless browser.
 The plugin works without the core plugin.
 It imports nothing from another plugin.
@@ -16,7 +16,7 @@ The tests are in `tests/browser/`.
 
 | Part | Slice | What it gives |
 | --- | --- | --- |
-| Skill `drive-web-browser` | `browse` | Steps to open, click, fill, or read a page with `agent-browser` |
+| Skill `browse` | `browse` | Steps to open, click, fill, or read a page with `agent-browser` |
 | Command `dotclaude-browser-guide` | `browse` | Prints the `agent-browser` guide that the skill loads |
 | Handler on `WebSearch` | `search` | Runs a search in the headless browser, and falls back to the built-in `WebSearch` |
 | Option `backend` | `search` | Chooses `agent-browser` (the default) or `cloakbrowser` |
@@ -36,8 +36,8 @@ The tests are in `tests/browser/`.
 
 ## The Skill and the Guide
 
-The skill `drive-web-browser` has the `allowed-tools` entries `Bash(agent-browser *)` and `Bash(dotclaude-browser-guide)`.
-Its body includes the output of `dotclaude-browser-guide` at load time, through a `!` command in `slices/browse/skills/drive-web-browser/SKILL.md`.
+The skill `browse` has the `allowed-tools` entries `Bash(agent-browser *)` and `Bash(dotclaude-browser-guide)`.
+Its body includes the output of `dotclaude-browser-guide` at load time, through a `!` command in `slices/browse/skills/browse/SKILL.md`.
 
 The command runs `agent-browser skills get core` with `Bun.spawnSync`.
 It has no shell (`runGuide` in `slices/browse/adapters/cli.ts`).

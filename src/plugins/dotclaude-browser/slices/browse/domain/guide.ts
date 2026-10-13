@@ -1,4 +1,4 @@
-// The `agent-browser` guide that the `drive-web-browser` skill loads.
+// The `agent-browser` guide that the `browse` skill loads.
 
 import { MAX_GUIDE_CHARS } from "../limits.ts";
 

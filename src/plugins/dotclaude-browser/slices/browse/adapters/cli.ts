@@ -1,4 +1,4 @@
-// The command `dotclaude-browser-guide`: it prints the `agent-browser` guide for the `drive-web-browser` skill.
+// The command `dotclaude-browser-guide`: it prints the `agent-browser` guide for the `browse` skill.
 // It runs `agent-browser skills get core` and cuts the output at the bound of `limits.ts`.
 
 import { GUIDE_COMMAND, type GuideRun, guideText } from "../domain/guide.ts";

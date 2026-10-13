@@ -174,7 +174,7 @@ src/plugins/dotclaude-codegraph/slices/graph/
 
 src/plugins/dotclaude-browser/slices/
 ├── search/  slice.ts · limits.ts · domain/ · adapters/mod.ts   # WebSearch
-└── browse/  slice.ts · adapters/cli.ts · skills/drive-web-browser/
+└── browse/  slice.ts · adapters/cli.ts · skills/browse/
 
 src/plugins/dotclaude-docs/slices/docs/
 └── slice.ts · skills/docs/

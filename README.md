@@ -16,7 +16,7 @@ Each add-on works without the core plugin.
 | --- | --- |
 | `dotclaude` | The core: the settings snippet, the status line, the output style, six agents, six skills, the guard and asks hooks, the spec store, and the `second_opinion` tool. |
 | `dotclaude-codegraph` | The code graph of a project, from the CLI `codegraph`. |
-| `dotclaude-browser` | The `drive-web-browser` skill, and a headless browser search for each `WebSearch` call. |
+| `dotclaude-browser` | The `browse` skill, and a headless browser search for each `WebSearch` call. |
 | `dotclaude-docs` | The `docs` skill, with current library docs from the CLI `ctx7`. |
 | `dotclaude-sessions` | The `start-cost` and `usage` skills, which measure the session start and the usage. |
 | `dotclaude-lab` | Tools for plugin authors: the sandbox, capture, schema, and eval compare. |

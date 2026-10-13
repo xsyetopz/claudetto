@@ -1,4 +1,4 @@
-// The bounds of the `agent-browser` guide in the `drive-web-browser` skill.
+// The bounds of the `agent-browser` guide in the `browse` skill.
 
 /**
  * The most characters of the guide in the skill.

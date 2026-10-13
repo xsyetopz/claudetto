@@ -126,7 +126,7 @@ See [Code graph](Code-Graph).
 /plugin install dotclaude-browser@dotclaude
 ```
 
-The plugin loads the `drive-web-browser` skill.
+The plugin loads the `browse` skill.
 It also replaces the built-in `WebSearch` with a search in the headless browser.
 It uses `agent-browser` by default.
 To run `agent-browser` with the CloakBrowser binary on sites with bot detection, set the `backend` option to `cloakbrowser`.

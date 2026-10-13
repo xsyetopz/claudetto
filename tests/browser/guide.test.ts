@@ -1,4 +1,4 @@
-// dotclaude-browser: the `drive-web-browser` skill loads the `agent-browser` guide through the bin `dotclaude-browser-guide`.
+// dotclaude-browser: the `browse` skill loads the `agent-browser` guide through the bin `dotclaude-browser-guide`.
 // The bin test runs with a `PATH` of one empty folder, so no `agent-browser` runs.
 
 import { expect, test } from "bun:test";
@@ -16,10 +16,7 @@ import { MAX_GUIDE_CHARS } from "../../plugins/dotclaude-browser/slices/browse/l
 import { PLUGINS } from "../support/repo.ts";
 
 const BIN = path.join(PLUGINS, "dotclaude-browser/bin/dotclaude-browser-guide");
-const SKILL = path.join(
-  PLUGINS,
-  "dotclaude-browser/skills/drive-web-browser/SKILL.md",
-);
+const SKILL = path.join(PLUGINS, "dotclaude-browser/skills/browse/SKILL.md");
 
 test("a guide in the bound passes with no change", () => {
   expect(guideText({ status: 0, stdout: "# core\nopen" })).toBe("# core\nopen");
