@@ -54,7 +54,7 @@ const rowsFor = async (root: string): Promise<Run> => {
   return run;
 };
 
-test("the first row ends with the id and the done count of the active change", async () => {
+test("the first row shows the id and the done count of the active change", async () => {
   const root = await project("active", {
     "0.9.0": state({ P01: "done", P02: "done" }),
     "1.0.0": state({
@@ -68,7 +68,9 @@ test("the first row ends with the id and the done count of the active change", a
   });
   const run = await rowsFor(root);
   expect(run.err).toStrictEqual([]);
-  expect((run.out[0] ?? "").split("\n")[0]).toMatch(/ · ◆ 1\.0\.0 4\/6$/);
+  expect((run.out[0] ?? "").split("\n")[0]).toMatch(
+    / · ◆ 1\.0\.0 4\/6 *( ·|$)/,
+  );
 });
 
 test("a store where every change is done shows no change segment", async () => {

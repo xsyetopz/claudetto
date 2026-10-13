@@ -22,7 +22,7 @@ import { renderRows } from "../domain/rows.ts";
 import type { Status, StatusInput, SubagentInput } from "../domain/types.ts";
 import { usageChanged, usageSample } from "../domain/usage.ts";
 import { COLUMNS_MARGIN, DEFAULT_COLUMNS } from "../limits.ts";
-import { SEGMENTS } from "../segments.ts";
+import { SEGMENTS, SEGMENTS_ONE_ROW } from "../segments.ts";
 import { cachedGitState } from "./git-cache.ts";
 import { taskRows } from "./subagents.ts";
 
@@ -120,8 +120,14 @@ const mainLine = async (text: string, deps: Deps): Promise<string> => {
     change: await changeOf(root, deps),
     now: deps.now(),
     paint: paintOf(!colorOff(deps.env)),
+    compact: false,
   };
-  return renderRows(SEGMENTS, status, columnsOf(deps)).join("\n");
+  return renderRows(
+    SEGMENTS,
+    SEGMENTS_ONE_ROW,
+    (compact) => ({ ...status, compact }),
+    columnsOf(deps),
+  ).join("\n");
 };
 
 const subagentLines = (text: string, deps: Deps): string[] =>

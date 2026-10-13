@@ -17,6 +17,27 @@ export const span = (ms: number): string => {
   return `${Math.floor(hours / 24)}d${hours % 24}h`;
 };
 
+/**
+ * A time in seconds as a clock, such as `1:50pm`, when it is within 24 hours of `nowMs`, and as a date with the time, such as `Oct 19 at 7am`, when it is later.
+ * The date and the time are formatted apart, because ICU versions join them with ` at ` or with `, `.
+ */
+export const clock = (sec: number, nowMs: number): string => {
+  const d = new Date(sec * 1000);
+  const time = d
+    .toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: d.getMinutes() === 0 ? undefined : "2-digit",
+      hour12: true,
+    })
+    .replace(/[ \u00a0\u202f]([AP]M)/i, (_, meridiem: string) =>
+      meridiem.toLowerCase(),
+    );
+  if (sec * 1000 - nowMs <= 24 * 3600_000) return time;
+  const date: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
+  if (d.getFullYear() !== new Date(nowMs).getFullYear()) date.year = "numeric";
+  return `${d.toLocaleDateString("en-US", date)} at ${time}`;
+};
+
 /** The last part of a folder path, for either separator. */
 export const baseName = (dir: string): string => {
   const parts = dir.split(/[\\/]/).filter(Boolean);

@@ -1,17 +1,24 @@
 // The segments of the main status line, in three rows.
-// Row 0 is the place: folder, git, and the active change.
-// Row 1 is the session: model, context, and cost.
-// Row 2 is the limits.
-// Each value is a number with an icon, and a percent has one of three colors.
+// Row 0 is the place: folder, git, the active change, and the `7d` window.
+// Row 1 is the session: model, context, cost, and the `5h` window.
+// Row 2 is the spend limit.
+// Each value is a number with an icon, and a percent has the color of its projected use.
 
 import { windowOf } from "../../../../kernel/budget.ts";
 import { parseModel } from "../../../../kernel/model.ts";
 import type { StatusSegment } from "../../../../kernel/slice.ts";
-import { dollars, span, thousands } from "./domain/format.ts";
-import { paceDelta } from "./domain/pace.ts";
+import { clock, dollars, span, thousands } from "./domain/format.ts";
+import { paceOf } from "./domain/pace.ts";
 import type { LimitWindow, Status } from "./domain/types.ts";
 import { ICON } from "./icons.ts";
-import { FIVE_HOUR_S, SEVEN_DAY_S } from "./limits.ts";
+import {
+  ARROW_FIELD,
+  FIVE_HOUR_S,
+  PERCENT_FIELD,
+  RUNOUT_FIELD,
+  SEVEN_DAY_S,
+} from "./limits.ts";
+import { width } from "./width.ts";
 
 const asStatus = (status: unknown): Status => status as Status;
 
@@ -107,14 +114,26 @@ const cost: StatusSegment = {
 };
 
 /** The pace arrow: `▼14%` in green for a reserve, `▲12%` in yellow for a deficit, and nothing at the even pace. */
-const paceText = (delta: number | null, status: Status): string => {
+const arrowText = (delta: number | null, status: Status): string => {
   if (delta === null || delta === 0) return "";
   return delta < 0
-    ? status.paint.green(` ${ICON.reserve}${-delta}%`)
-    : status.paint.yellow(` ${ICON.deficit}${delta}%`);
+    ? status.paint.green(`${ICON.reserve}${-delta}%`)
+    : status.paint.yellow(`${ICON.deficit}${delta}%`);
 };
 
-/** One limit window as `◷ 5h 23% ▼13% 3h12m`: the percent in one of three colors, the pace arrow, and the time to the reset. */
+/** A time of a window: the clock, or with `compact`, the countdown from `now`. */
+const timeOf = (sec: number, status: Status): string =>
+  status.compact ? span(sec * 1000 - status.now) : clock(sec, status.now);
+
+/** The text padded with spaces on the right to `columns`, so that a field keeps its column. */
+const fieldOf = (text: string, columns: number): string =>
+  text + " ".repeat(Math.max(0, columns - width(text)));
+
+/**
+ * One limit window as `◷ 5h 23% ▼13%  ↻1:50pm`.
+ * The percent has the color of its projected use, or of its raw use before the pace shows.
+ * The arrow, the run-out time, and the reset fill fixed fields, so the windows of two rows align field by field.
+ */
 const limitText = (
   label: string,
   window: LimitWindow | undefined,
@@ -124,26 +143,54 @@ const limitText = (
   const used = window?.used_percentage;
   if (typeof used !== "number" || !Number.isFinite(used)) return null;
   const percent = Math.round(used);
-  const resetMs = (window?.resets_at ?? 0) * 1000 - status.now;
-  const reset = resetMs > 0 ? status.paint.dim(` ${span(resetMs)}`) : "";
-  const delta =
-    spanS === null ? null : paceDelta(window, status.now / 1000, spanS);
-  const pace = paceText(delta, status);
-  return `${ICON.limit} ${label} ${status.paint.level(percent)(`${percent}%`)}${pace}${reset}`;
+  const pace = spanS === null ? null : paceOf(window, status.now / 1000, spanS);
+  const style = pace
+    ? status.paint.projected(pace.projected)
+    : status.paint.level(percent);
+  const figure = style(`${percent}%`);
+  const runOutAt = pace?.runOutAt ?? null;
+  const runOut =
+    runOutAt === null
+      ? ""
+      : status.paint.red(`${ICON.runout}${timeOf(runOutAt, status)}`);
+  const resetsAt = window?.resets_at ?? 0;
+  const reset =
+    resetsAt * 1000 > status.now
+      ? status.paint.dim(`${ICON.reset}${timeOf(resetsAt, status)}`)
+      : "";
+  const pad = status.compact
+    ? ""
+    : " ".repeat(PERCENT_FIELD - width(`${percent}%`));
+  const head = `${ICON.limit} ${label} ${pad}${figure}`;
+  const arrow = arrowText(pace?.delta ?? null, status);
+  if (status.compact)
+    return [head, arrow, runOut, reset].filter(Boolean).join(" ");
+  return [
+    head,
+    fieldOf(arrow, ARROW_FIELD),
+    fieldOf(runOut, RUNOUT_FIELD),
+    reset,
+  ]
+    .join(" ")
+    .trimEnd();
 };
 
 const limit = (
   id: string,
   label: string,
+  row: number,
   spanS: number | null,
   pick: (status: Status) => LimitWindow | undefined,
 ): StatusSegment => ({
   id,
-  row: 2,
+  row,
   render: (raw) => limitText(label, pick(asStatus(raw)), spanS, asStatus(raw)),
 });
 
-/** Each segment of the main status line, in the order of the rows and of the places in a row. */
+/**
+ * Each segment of the main status line, in the order of the rows and of the places in a row.
+ * The order of `5h` before `7d` is the order of the one-row placement, `SEGMENTS_ONE_ROW`.
+ */
 export const SEGMENTS: readonly StatusSegment[] = [
   folder,
   git,
@@ -151,7 +198,36 @@ export const SEGMENTS: readonly StatusSegment[] = [
   model,
   context,
   cost,
-  limit("limit-5h", "5h", FIVE_HOUR_S, (s) => s.input.rate_limits?.five_hour),
-  limit("limit-7d", "7d", SEVEN_DAY_S, (s) => s.input.rate_limits?.seven_day),
-  limit("limit-spend", "spend", null, (s) => s.input.rate_limits?.spend_limit),
+  limit(
+    "limit-5h",
+    "5h",
+    1,
+    FIVE_HOUR_S,
+    (s) => s.input.rate_limits?.five_hour,
+  ),
+  limit(
+    "limit-7d",
+    "7d",
+    0,
+    SEVEN_DAY_S,
+    (s) => s.input.rate_limits?.seven_day,
+  ),
+  limit(
+    "limit-spend",
+    "spend",
+    2,
+    null,
+    (s) => s.input.rate_limits?.spend_limit,
+  ),
 ];
+
+const USAGE_IDS: readonly string[] = ["limit-5h", "limit-7d"];
+
+/**
+ * The placement of 1.0.0: the `5h` and `7d` windows share row 2 with the spend limit.
+ * The rows use it when the two-row placement drops an item at the width.
+ */
+export const SEGMENTS_ONE_ROW: readonly StatusSegment[] = SEGMENTS.map(
+  (segment) =>
+    USAGE_IDS.includes(segment.id) ? { ...segment, row: 2 } : segment,
+);
