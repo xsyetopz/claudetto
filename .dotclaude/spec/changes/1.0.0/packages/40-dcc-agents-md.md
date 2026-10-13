@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P40
+title: `dcc-plugin-agents-md`
+wave: 4
 deps: []
-owns: ["src/plugins/dcc-plugin-agents-md/", "tests/dcc-plugin-agents-md/", "the dcc-plugin-agents-md entry of .claude-plugin/marketplace.json", "src/wiki/add-ons/Agents-Md.md", "evidence/agents-md.md"]
+owns: ["src/plugins/dcc-plugin-agents-md/","tests/dcc-plugin-agents-md/","the dcc-plugin-agents-md entry of .claude-plugin/marketplace.json","src/wiki/add-ons/Agents-Md.md","evidence/agents-md.md"]
+satisfies: []
 verify: just check, just lab, and one session in just sandbox that loads each supported AGENTS file
 agent: implementer
+status: planned
 ---
 
 # P40 `dcc-plugin-agents-md`

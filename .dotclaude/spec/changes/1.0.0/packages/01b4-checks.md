@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P01b4
-deps: [P01b3]
-owns: ["biome.json", "tools/lint/", "tools/generate/emit/register.ts", "tools/validate.ts", "tools/limits.ts", "tools/lab.ts", "tools/recipes.ts", "tools/sizes.ts", "tests/support/", "tests/dotclaude/settings-pin.test.ts", "package.json", "tsconfig.json", "AGENTS.md", "GEMINI.md"]
+title: The checks of the new layout
+wave: 1
+deps: ["P01b3"]
+owns: ["biome.json","tools/lint/","tools/generate/emit/register.ts","tools/validate.ts","tools/limits.ts","tools/lab.ts","tools/recipes.ts","tools/sizes.ts","tests/support/","tests/dotclaude/settings-pin.test.ts","package.json","tsconfig.json","AGENTS.md","GEMINI.md"]
+satisfies: []
 verify: just check
 agent: implementer
+status: done
 ---
 
 # P01b4 The checks of the new layout

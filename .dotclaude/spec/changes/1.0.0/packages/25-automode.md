@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P25
-deps: [P09]
-owns: ["src/plugins/dotclaude/slices/setup/domain/automode.ts", "src/plugins/dotclaude/slices/setup/texts.ts/automode.json", "src/plugins/dotclaude/slices/setup/adapters/settings-cmd.ts", "tests/dotclaude/setup/settings.test.ts"]
+title: `automode`
+wave: 3
+deps: ["P09"]
+owns: ["src/plugins/dotclaude/slices/setup/domain/automode.ts","src/plugins/dotclaude/slices/setup/texts.ts/automode.json","src/plugins/dotclaude/slices/setup/adapters/settings-cmd.ts","tests/dotclaude/setup/settings.test.ts"]
+satisfies: []
 verify: just test tests/dotclaude/setup && just lab
 agent: implementer
+status: done
 ---
 
 # P25 `automode`

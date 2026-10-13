@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P21
-deps: [P01d]
-owns: ["src/plugins/dotclaude/slices/trim/", "tests/dotclaude/trim/"]
+title: `trim`
+wave: 2
+deps: ["P01d"]
+owns: ["src/plugins/dotclaude/slices/trim/","tests/dotclaude/trim/"]
+satisfies: []
 verify: just test tests/dotclaude/trim && just lab && just check
 agent: implementer
+status: done
 ---
 
 # P21 `trim`

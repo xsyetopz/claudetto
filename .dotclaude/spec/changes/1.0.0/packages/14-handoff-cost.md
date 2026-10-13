@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P14
-deps: [P13]
+title: Handoff cost
+wave: 3
+deps: ["P13"]
 owns: [".dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md"]
+satisfies: []
 verify: just test tests/dotclaude/handoff && just lab
 agent: investigator
+status: done
 ---
 
 # P14 Handoff cost

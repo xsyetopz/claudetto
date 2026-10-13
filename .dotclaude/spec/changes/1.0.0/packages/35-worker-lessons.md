@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P35
-deps: [P13, P33]
-owns: [".dotclaude/spec/changes/1.0.0/evidence/worker-lessons.md", "src/plugins/dotclaude/slices/guard/", "tests/dotclaude/guard/", "src/plugins/dotclaude/slices/agents/", "tests/dotclaude/agents/", "src/plugins/dotclaude/slices/spec/skills/ship/", "src/plugins/dotclaude/slices/handoff/limits.ts", "src/plugins/dotclaude/slices/statusline/", "tests/dotclaude/statusline/"]
+title: Worker lessons
+wave: 4
+deps: ["P13","P33"]
+owns: [".dotclaude/spec/changes/1.0.0/evidence/worker-lessons.md","src/plugins/dotclaude/slices/guard/","tests/dotclaude/guard/","src/plugins/dotclaude/slices/agents/","tests/dotclaude/agents/","src/plugins/dotclaude/slices/spec/skills/ship/","src/plugins/dotclaude/slices/handoff/limits.ts","src/plugins/dotclaude/slices/statusline/","tests/dotclaude/statusline/"]
+satisfies: []
 verify: just check
 agent: implementer
+status: done
 ---
 
 # P35 Worker lessons

@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P09
-deps: [P01b4]
-owns: ["src/plugins/dotclaude/slices/setup/", "tests/dotclaude/setup/"]
+title: `setup`
+wave: 2
+deps: ["P01b4"]
+owns: ["src/plugins/dotclaude/slices/setup/","tests/dotclaude/setup/"]
+satisfies: []
 verify: just test tests/dotclaude/setup && just lab && just check
 agent: implementer
+status: done
 ---
 
 # P09 `setup`

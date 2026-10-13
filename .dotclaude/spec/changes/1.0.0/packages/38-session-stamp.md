@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P38
-deps: [P33]
-owns: ["src/kernel/stamp.ts", "tests/kernel/stamp.test.ts", "src/plugins/dotclaude/slices/stamp/", "tests/dotclaude/stamp/", "src/plugins/dotclaude-sessions/", "tests/dotclaude-sessions/", ".dotclaude/spec/changes/1.0.0/evidence/session-stamp.md"]
+title: Session stamp
+wave: 4
+deps: ["P33"]
+owns: ["src/kernel/stamp.ts","tests/kernel/stamp.test.ts","src/plugins/dotclaude/slices/stamp/","tests/dotclaude/stamp/","src/plugins/dotclaude-sessions/","tests/dotclaude-sessions/",".dotclaude/spec/changes/1.0.0/evidence/session-stamp.md"]
+satisfies: []
 verify: just check, just lab, and the probe of step 1 with its output in the evidence file
 agent: implementer
+status: doing
 ---
 
 # P38 Session stamp

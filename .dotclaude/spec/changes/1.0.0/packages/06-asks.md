@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P06
-deps: [P01b4]
-owns: ["src/plugins/dotclaude/slices/asks/", "tests/dotclaude/asks/"]
+title: `asks`
+wave: 2
+deps: ["P01b4"]
+owns: ["src/plugins/dotclaude/slices/asks/","tests/dotclaude/asks/"]
+satisfies: []
 verify: just test tests/dotclaude/asks && just lab && just check
 agent: implementer
+status: done
 ---
 
 # P06 `asks`

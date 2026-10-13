@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P34
-deps: [P32]
-owns: ["src/kernel/spec-store.ts", "src/plugins/dotclaude/slices/spec/adapters/", ".gitattributes", "tests/kernel/", "tests/dotclaude/spec/cli/"]
+title: Spec store events
+wave: 3
+deps: ["P32"]
+owns: ["src/kernel/spec-store.ts","src/plugins/dotclaude/slices/spec/adapters/",".gitattributes","tests/kernel/","tests/dotclaude/spec/cli/"]
+satisfies: []
 verify: just check
 agent: implementer
+status: done
 ---
 
 # P34 Spec store events

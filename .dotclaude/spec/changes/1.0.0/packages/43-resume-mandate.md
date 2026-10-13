@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P43
-deps: [P42]
-owns: ["src/plugins/dotclaude/slices/agents/hooks/", "src/plugins/dotclaude/slices/agents/lab/", "tests/dotclaude/agents/resume.test.ts", "evidence/resume-mandate.md"]
+title: Resume Mandate
+wave: 10
+deps: ["P42"]
+owns: ["src/plugins/dotclaude/slices/agents/hooks/","src/plugins/dotclaude/slices/agents/lab/","tests/dotclaude/agents/resume.test.ts","evidence/resume-mandate.md"]
+satisfies: []
 verify: just check, just lab, and one session in just sandbox where an agent stops without a report and the root resumes it
 agent: main session
+status: planned
 ---
 
 # P43 Resume Mandate

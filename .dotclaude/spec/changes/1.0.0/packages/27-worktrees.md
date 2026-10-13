@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P27
-deps: [P25]
-owns: ["src/plugins/dotclaude/slices/setup/domain/worktree.ts", "tests/dotclaude/setup/worktree.test.ts", "src/plugins/dotclaude/slices/agents/", "src/plugins/dotclaude/slices/spec/skills/", "tests/dotclaude/agents/", "tests/dotclaude/spec/"]
+title: `worktrees`
+wave: 3
+deps: ["P25"]
+owns: ["src/plugins/dotclaude/slices/setup/domain/worktree.ts","tests/dotclaude/setup/worktree.test.ts","src/plugins/dotclaude/slices/agents/","src/plugins/dotclaude/slices/spec/skills/","tests/dotclaude/agents/","tests/dotclaude/spec/"]
+satisfies: []
 verify: just test tests/dotclaude/setup && just lab && just validate
 agent: implementer
+status: done
 ---
 
 # P27 `worktrees`

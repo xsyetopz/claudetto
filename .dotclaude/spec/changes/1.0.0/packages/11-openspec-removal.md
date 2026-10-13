@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P11
-deps: [P01b4]
-owns: ["openspec/", ".claude/skills/"]
+title: OpenSpec removal
+wave: 1
+deps: ["P01b4"]
+owns: ["openspec/",".claude/skills/"]
+satisfies: []
 verify: just check
 agent: implementer
+status: done
 ---
 
 # P11 OpenSpec removal

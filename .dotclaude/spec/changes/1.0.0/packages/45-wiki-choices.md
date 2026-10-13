@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P45
-deps: [P42, P43, P44, P47]
-owns: ["src/wiki/dotclaude/Agent-Choices.md", "wiki/_Sidebar.md", "docs/research/agents-models/"]
+title: Wiki: Agent Choices
+wave: 11
+deps: ["P42","P43","P44","P47"]
+owns: ["src/wiki/dotclaude/Agent-Choices.md","wiki/_Sidebar.md","docs/research/agents-models/"]
+satisfies: []
 verify: just check and bun run lint:md
 agent: main session
+status: planned
 ---
 
 # P45 Wiki: Agent Choices

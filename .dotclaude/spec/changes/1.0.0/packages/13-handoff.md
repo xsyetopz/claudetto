@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P13
-deps: [P03, P05, P06, P07, P32]
-owns: ["src/plugins/dotclaude/slices/handoff/", "tests/dotclaude/handoff/", "src/plugins/dotclaude/hooks/", "src/kernel/slice.ts", "tools/generate/"]
+title: `handoff`
+wave: 3
+deps: ["P03","P05","P06","P07","P32"]
+owns: ["src/plugins/dotclaude/slices/handoff/","tests/dotclaude/handoff/","src/plugins/dotclaude/hooks/","src/kernel/slice.ts","tools/generate/"]
+satisfies: []
 verify: just test tests/dotclaude/handoff && just lab
 agent: implementer
+status: done
 ---
 
 # P13 `handoff`

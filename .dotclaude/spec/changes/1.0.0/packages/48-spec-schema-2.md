@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P48
+title: Spec Store Schema 2
+wave: 5
 deps: []
-owns: ["src/kernel/spec-store-2.ts", "src/plugins/dotclaude/slices/spec/domain/v2/", "src/plugins/dotclaude/slices/spec/templates/v2.ts", "src/plugins/dotclaude/slices/spec/limits.ts", "tests/kernel/spec-store-2.test.ts", "tests/dotclaude/spec/v2/"]
+owns: ["src/kernel/spec-store-2.ts","src/plugins/dotclaude/slices/spec/domain/v2/","src/plugins/dotclaude/slices/spec/templates/v2.ts","src/plugins/dotclaude/slices/spec/limits.ts","tests/kernel/spec-store-2.test.ts","tests/dotclaude/spec/v2/"]
+satisfies: []
 verify: just check
 agent: main session
+status: done
 ---
 
 # P48 Spec Store Schema 2

@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P39
-deps: [P33]
-owns: ["src/plugins/dotclaude/slices/attribution/", "tests/dotclaude/attribution/", "src/plugins/dotclaude/slices/surface/texts.ts/tool-bash.md", "the attribution block of src/plugins/dotclaude/slices/prompt/slice.ts"]
+title: Attribution
+wave: 4
+deps: ["P33"]
+owns: ["src/plugins/dotclaude/slices/attribution/","tests/dotclaude/attribution/","src/plugins/dotclaude/slices/surface/texts.ts/tool-bash.md","the attribution block of src/plugins/dotclaude/slices/prompt/slice.ts"]
+satisfies: []
 verify: just check, just lab, and one commit and one PR body in just sandbox that carry the attribution
 agent: implementer
+status: planned
 ---
 
 # P39 Attribution

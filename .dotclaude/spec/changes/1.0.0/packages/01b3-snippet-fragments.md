@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P01b3
-deps: [P01b2]
-owns: ["tools/generate/emit/snippet.ts", "src/shared/", "src/fragments/"]
+title: The settings snippet and the fragments
+wave: 1
+deps: ["P01b2"]
+owns: ["tools/generate/emit/snippet.ts","src/shared/","src/fragments/"]
+satisfies: []
 verify: just test tests/tools && just check
 agent: implementer
+status: done
 ---
 
 # P01b3 The settings snippet and the fragments

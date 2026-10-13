@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P02
+title: Spec formats
+wave: 1
 deps: []
-owns: ["src/plugins/dotclaude/slices/spec/domain/", "tests/dotclaude/spec/domain/"]
+owns: ["src/plugins/dotclaude/slices/spec/domain/","tests/dotclaude/spec/domain/"]
+satisfies: []
 verify: just test tests/dotclaude/spec/domain
 agent: implementer
+status: done
 ---
 
 # P02 Spec formats

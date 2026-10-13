@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P18
-deps: [P16]
-owns: []
+title: History
+wave: 11
+deps: ["P16"]
+owns: [".dotclaude/spec/changes/1.0.0/packages/18-history.md"]
+satisfies: []
 verify: the user approves each deletion before it runs
 agent: implementer
+status: planned
 ---
 
 # P18 History

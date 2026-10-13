@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P47
-deps: [P42]
-owns: ["the body of the agent files in src/plugins/dotclaude/slices/agents/agents/", "the delegation text of src/plugins/dotclaude/slices/prompt/", "tests/dotclaude/agents/prompts.test.ts", "evidence/agent-prompts.md"]
+title: Agent Prompts
+wave: 10
+deps: ["P42"]
+owns: ["the body of the agent files in src/plugins/dotclaude/slices/agents/agents/","the delegation text of src/plugins/dotclaude/slices/prompt/","tests/dotclaude/agents/prompts.test.ts","evidence/agent-prompts.md"]
+satisfies: []
 verify: just check, just lab, and one session in just sandbox for each agent with a task of its kind
 agent: main session
+status: planned
 ---
 
 # P47 Agent Prompts

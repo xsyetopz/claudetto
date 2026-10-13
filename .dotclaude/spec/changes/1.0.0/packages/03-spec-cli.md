@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P03
-deps: [P02]
-owns: ["src/plugins/dotclaude/slices/spec/slice.ts", "src/plugins/dotclaude/slices/spec/limits.ts", "src/plugins/dotclaude/slices/spec/adapters/", "src/plugins/dotclaude/slices/spec/templates/", "tests/dotclaude/spec/cli/", ".dotclaude/spec/changes/1.0.0/state.json"]
+title: `spec` CLI
+wave: 2
+deps: ["P02"]
+owns: ["src/plugins/dotclaude/slices/spec/slice.ts","src/plugins/dotclaude/slices/spec/limits.ts","src/plugins/dotclaude/slices/spec/adapters/","src/plugins/dotclaude/slices/spec/templates/","tests/dotclaude/spec/cli/",".dotclaude/spec/changes/1.0.0/state.json"]
+satisfies: []
 verify: just test tests/dotclaude/spec && just check && plugins/dotclaude/bin/dotclaude-spec validate 1.0.0
 agent: implementer
+status: done
 ---
 
 # P03 `spec` CLI

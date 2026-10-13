@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P31
+title: Repository rules
+wave: 3
 deps: []
-owns: ["AGENTS.md", ".claude/rules/", "tests/support/sizes.test.ts", "tests/dotclaude/import-rules.test.ts"]
+owns: ["AGENTS.md",".claude/rules/","tests/support/sizes.test.ts","tests/dotclaude/import-rules.test.ts"]
+satisfies: []
 verify: just check, and a glob check that each paths entry matches at least one file
 agent: implementer
+status: done
 ---
 
 # P31 Repository rules

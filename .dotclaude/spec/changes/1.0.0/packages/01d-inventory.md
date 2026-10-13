@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P01d
+title: Inventory
+wave: 1
 deps: []
 owns: [".dotclaude/spec/changes/1.0.0/evidence/inventory.md"]
+satisfies: []
 verify: dotclaude-start --compare on one start with the switches and one start without them
 agent: implementer
+status: done
 ---
 
 # P01d Inventory

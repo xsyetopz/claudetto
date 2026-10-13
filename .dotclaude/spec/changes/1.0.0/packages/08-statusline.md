@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P08
-deps: [P01b4]
-owns: ["src/plugins/dotclaude/slices/statusline/", "tests/dotclaude/statusline/"]
+title: `statusline`
+wave: 2
+deps: ["P01b4"]
+owns: ["src/plugins/dotclaude/slices/statusline/","tests/dotclaude/statusline/"]
+satisfies: []
 verify: just test tests/dotclaude/statusline && just lab && just check
 agent: implementer
+status: done
 ---
 
 # P08 `statusline`

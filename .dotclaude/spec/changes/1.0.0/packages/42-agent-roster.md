@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P42
+title: Agent Roster and No Turn Limit
+wave: 4
 deps: []
-owns: ["src/plugins/dotclaude/slices/agents/limits.ts", "src/plugins/dotclaude/slices/agents/domain/", "src/plugins/dotclaude/slices/agents/slice.ts", "the frontmatter of the agent files in src/plugins/dotclaude/slices/agents/agents/", "the subagent turn note of src/plugins/dotclaude/slices/handoff/", "tests/dotclaude/agents/", "tests/dotclaude/handoff/context.test.ts", "the turn rows of src/wiki/reference/Bounds.md and src/wiki/dotclaude/Architecture.md", "tools/generate/emit/fill.ts"]
+owns: ["src/plugins/dotclaude/slices/agents/limits.ts","src/plugins/dotclaude/slices/agents/domain/","src/plugins/dotclaude/slices/agents/slice.ts","the frontmatter of the agent files in src/plugins/dotclaude/slices/agents/agents/","the subagent turn note of src/plugins/dotclaude/slices/handoff/","tests/dotclaude/agents/","tests/dotclaude/handoff/context.test.ts","the turn rows of src/wiki/reference/Bounds.md and src/wiki/dotclaude/Architecture.md","tools/generate/emit/fill.ts"]
+satisfies: []
 verify: just check, just lab, and one session in just sandbox that starts each agent once
 agent: main session
+status: done
 ---
 
 # P42 Agent Roster and No Turn Limit

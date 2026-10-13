@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P19
-deps: [P01b4]
-owns: ["src/plugins/dotclaude/slices/decide/", "tests/dotclaude/decide/", "src/plugins/dotclaude-jev/", "tests/jev/"]
+title: `decide`
+wave: 2
+deps: ["P01b4"]
+owns: ["src/plugins/dotclaude/slices/decide/","tests/dotclaude/decide/","src/plugins/dotclaude-jev/","tests/jev/"]
+satisfies: []
 verify: just test tests/dotclaude/decide && just lab && just check
 agent: implementer
+status: done
 ---
 
 # P19 `decide`

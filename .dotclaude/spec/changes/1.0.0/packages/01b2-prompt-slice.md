@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P01b2
-deps: [P01b1]
-owns: ["src/plugins/dotclaude/plugin.ts", "src/plugins/dotclaude/slices/prompt/", "tests/dotclaude/prompt/"]
+title: The `prompt` slice
+wave: 1
+deps: ["P01b1"]
+owns: ["src/plugins/dotclaude/plugin.ts","src/plugins/dotclaude/slices/prompt/","tests/dotclaude/prompt/"]
+satisfies: []
 verify: just test tests/dotclaude/prompt && just lab && just check
 agent: implementer
+status: done
 ---
 
 # P01b2 The `prompt` slice

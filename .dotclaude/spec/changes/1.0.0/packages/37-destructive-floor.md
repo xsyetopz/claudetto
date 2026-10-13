@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P37
-deps: [P25, P35]
-owns: [".dotclaude/spec/changes/1.0.0/evidence/destructive-floor.md", "src/kernel/policy/", "tests/kernel/policy.test.ts", "src/plugins/dotclaude/slices/setup/domain/automode.ts", "src/plugins/dotclaude/slices/prompt/texts.ts/tools.md", "tests/dotclaude/setup/floor.test.ts", "tests/dotclaude/setup/settings.test.ts"]
+title: Destructive floor
+wave: 3
+deps: ["P25","P35"]
+owns: [".dotclaude/spec/changes/1.0.0/evidence/destructive-floor.md","src/kernel/policy/","tests/kernel/policy.test.ts","src/plugins/dotclaude/slices/setup/domain/automode.ts","src/plugins/dotclaude/slices/prompt/texts.ts/tools.md","tests/dotclaude/setup/floor.test.ts","tests/dotclaude/setup/settings.test.ts"]
+satisfies: []
 verify: just check
 agent: implementer
+status: done
 ---
 
 # P37 Destructive floor
@@ -39,7 +45,7 @@ The user can still run such a command with a `!` command.
    `tests/dotclaude/setup/floor.test.ts` checks the written lists, a declined block, and a second run.
 4. Run `claude auto-mode critique` on the new block, with a temp settings file, and write the output to the evidence file.
 
-## Extension
+### Extension
 
 - A new category: add `src/kernel/policy/rules/<category>.ts` that exports a `readonly PolicyRule[]`.
 - Then add one line to `src/kernel/policy/index.ts`, which spreads the new list into `POLICY_RULES`.

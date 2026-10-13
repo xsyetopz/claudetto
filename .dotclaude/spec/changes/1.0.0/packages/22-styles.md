@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P22
-deps: [P01c]
-owns: ["src/plugins/dotclaude/slices/styles/", "tests/dotclaude/styles/"]
+title: `styles`
+wave: 2
+deps: ["P01c"]
+owns: ["src/plugins/dotclaude/slices/styles/","tests/dotclaude/styles/"]
+satisfies: []
 verify: just validate && just check
 agent: implementer
+status: done
 ---
 
 # P22 `styles`

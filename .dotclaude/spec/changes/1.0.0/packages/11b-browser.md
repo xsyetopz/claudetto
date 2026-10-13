@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P11b
-deps: [P01b4]
-owns: ["src/plugins/dotclaude-browser/", "tests/browser/"]
+title: `dotclaude-browser`
+wave: 2
+deps: ["P01b4"]
+owns: ["src/plugins/dotclaude-browser/","tests/browser/"]
+satisfies: []
 verify: just test tests/browser && just lab && just check
 agent: implementer
+status: done
 ---
 
 # P11b `dotclaude-browser`

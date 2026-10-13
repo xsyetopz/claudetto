@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P11a
-deps: [P01b4]
-owns: ["src/plugins/dotclaude-codegraph/", "tests/codegraph/"]
+title: `dotclaude-codegraph`
+wave: 2
+deps: ["P01b4"]
+owns: ["src/plugins/dotclaude-codegraph/","tests/codegraph/"]
+satisfies: []
 verify: just test tests/codegraph && just lab && just check
 agent: implementer
+status: done
 ---
 
 # P11a `dotclaude-codegraph`

@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P24
-deps: [P09]
-owns: ["src/plugins/dotclaude/slices/setup/domain/facts.ts", "tests/dotclaude/setup/tiers.test.ts"]
+title: `tiers`
+wave: 3
+deps: ["P09"]
+owns: ["src/plugins/dotclaude/slices/setup/domain/facts.ts","tests/dotclaude/setup/tiers.test.ts"]
+satisfies: []
 verify: just test tests/dotclaude/setup && just lab
 agent: implementer
+status: done
 ---
 
 # P24 `tiers`

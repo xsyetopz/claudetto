@@ -1,3 +1,9 @@
+---
+schema: dotclaude-spec/2
+kind: design
+id: 1.0.0
+---
+
 # 1.0.0 design: architecture
 
 The spec workflow, the handoff, the agents, the status line, and the settings are in [workflow](workflow.md).

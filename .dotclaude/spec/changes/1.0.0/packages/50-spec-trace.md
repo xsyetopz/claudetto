@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P50
-deps: [P48]
-owns: ["src/plugins/dotclaude/slices/spec/adapters/trace.ts", "src/plugins/dotclaude/slices/spec/domain/trace.ts", "tests/dotclaude/spec/trace/"]
+title: Requirement Trace
+wave: 7
+deps: ["P48"]
+owns: ["src/plugins/dotclaude/slices/spec/adapters/trace.ts","src/plugins/dotclaude/slices/spec/domain/trace.ts","tests/dotclaude/spec/trace/"]
+satisfies: []
 verify: just check
 agent: main session
+status: planned
 ---
 
 # P50 Requirement Trace

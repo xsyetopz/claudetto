@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P10
-deps: [P01b4]
-owns: ["src/plugins/dotclaude/slices/agents/", "tests/dotclaude/agents/"]
+title: `agents`
+wave: 2
+deps: ["P01b4"]
+owns: ["src/plugins/dotclaude/slices/agents/","tests/dotclaude/agents/"]
+satisfies: []
 verify: just test tests/dotclaude/agents && just lab && just validate && just check
 agent: implementer
+status: done
 ---
 
 # P10 `agents`

@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P05
-deps: [P01b4]
-owns: ["src/plugins/dotclaude/slices/guard/", "tests/dotclaude/guard/"]
+title: `guard`
+wave: 2
+deps: ["P01b4"]
+owns: ["src/plugins/dotclaude/slices/guard/","tests/dotclaude/guard/"]
+satisfies: []
 verify: just test tests/dotclaude/guard && just lab && just check
 agent: implementer
+status: done
 ---
 
 # P05 `guard`

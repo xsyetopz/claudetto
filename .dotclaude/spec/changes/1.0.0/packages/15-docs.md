@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P15
-deps: [P14, P33, P35, P36]
-owns: ["wiki/", "src/wiki/", "README.md", "CHANGELOG.md", "docs/", "tools/wiki.ts", ".claude-plugin/marketplace.json"]
+title: Docs
+wave: 4
+deps: ["P14","P33","P35","P36"]
+owns: ["wiki/","src/wiki/","README.md","CHANGELOG.md","docs/","tools/wiki.ts",".claude-plugin/marketplace.json"]
+satisfies: []
 verify: bun run lint:md, just check, and a reviewer pass
 agent: implementer
+status: done
 ---
 
 # P15 Docs
@@ -15,7 +21,7 @@ The wiki is easy to navigate and correct against the code.
 It gives the rationale of each design choice.
 It shows how dotclaude works on Claude Code, and how the Claude Code `2.1.296` binary works.
 
-## Decisions (2026-10-13)
+### Decisions (2026-10-13)
 
 The user delegates each decision to Jev, except a push to `main`.
 
@@ -47,7 +53,7 @@ The user delegates each decision to Jev, except a push to `main`.
 - A run needs the git-ignored `.claude-plugin/types` folders (`.claude-plugin/types`, `plugins/dotclaude/.claude-plugin/types`, `plugins/dotclaude-browser/.claude-plugin/types`) for `just check`.
   It copies them from the main checkout and does not commit them.
 
-## Page map
+### Page map
 
 A page name is the file name.
 The old pages in brackets merge into the new page and are deleted.
@@ -136,7 +142,7 @@ Archive (`wiki/archive/`): `Archive` (index), the release pages, `Archive-0.28`,
    - [x] The reviewer pass, with the findings in `evidence/p15-review.md`
    - [x] The fix runs: `p15-fix-start`, `p15-fix-rationale`, `p15-fix-reference`, `p15-fix-dotclaude`, `p15-fix-claude-code`, `p15-fix-evidence`, then item 6 of the last review section
 
-## Findings outside the docs
+### Findings outside the docs
 
 The page runs found these in code and config.
 P15 does not own them, so they go to P16 or a new package.
@@ -172,7 +178,7 @@ P15 does not own them, so they go to P16 or a new package.
 - The comment of `src/kernel/budget.ts` on `CLAUDE_CODE_MAX_CONTEXT_TOKENS` says that Claude Code reads it only with `DISABLE_COMPACT`, but the `2.1.296` strings also read it as the window of a model id that is not a `claude-` id.
 - Claude Code `2.1.296` lists `hooksModules` as an `earlyAccess` flag. No source shows that the core hooks module runs without early access.
 
-## Stale wiki claims for the reviewer pass
+### Stale wiki claims for the reviewer pass
 
 The page runs found these outside their own pages.
 

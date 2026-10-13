@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P29
-deps: [P28, P24, P26, P27]
-owns: ["src/plugins/dotclaude/slices/rules/domain/", "src/plugins/dotclaude/slices/rules/adapters/", "src/plugins/dotclaude/slices/rules/slice.ts", "src/plugins/dotclaude/slices/setup/domain/drift.ts", "src/plugins/dotclaude/slices/setup/adapters/mod.ts", "tests/dotclaude/setup/rules.test.ts", "src/plugins/dotclaude/slices/trim/domain/", "src/plugins/dotclaude/slices/surface/adapters/mod.ts", "src/plugins/dotclaude/slices/surface/domain/tools.ts", "tests/dotclaude/rules/domain/", "tests/dotclaude/trim/", "tests/dotclaude/surface/"]
+title: `rules` slice
+wave: 3
+deps: ["P28","P24","P26","P27"]
+owns: ["src/plugins/dotclaude/slices/rules/domain/","src/plugins/dotclaude/slices/rules/adapters/","src/plugins/dotclaude/slices/rules/slice.ts","src/plugins/dotclaude/slices/setup/domain/drift.ts","src/plugins/dotclaude/slices/setup/adapters/mod.ts","tests/dotclaude/setup/rules.test.ts","src/plugins/dotclaude/slices/trim/domain/","src/plugins/dotclaude/slices/surface/adapters/mod.ts","src/plugins/dotclaude/slices/surface/domain/tools.ts","tests/dotclaude/rules/domain/","tests/dotclaude/trim/","tests/dotclaude/surface/"]
+satisfies: []
 verify: just test tests/dotclaude/rules && just lab
 agent: implementer
+status: done
 ---
 
 # P29 `rules` slice

@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P52
-deps: [P51]
-owns: ["wiki/dotclaude/Spec-Store.md", "src/wiki/dotclaude/Architecture.md", "src/wiki/reference/Bounds.md", "wiki/Attributions.md", "README.md", "CHANGELOG.md"]
+title: Spec Store Docs
+wave: 9
+deps: ["P51"]
+owns: ["wiki/dotclaude/Spec-Store.md","src/wiki/dotclaude/Architecture.md","src/wiki/reference/Bounds.md","wiki/Attributions.md","README.md","CHANGELOG.md"]
+satisfies: []
 verify: just check and bun run lint:md
 agent: main session
+status: planned
 ---
 
 # P52 Spec Store Docs

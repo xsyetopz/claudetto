@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P07
-deps: [P01b4]
-owns: ["src/plugins/dotclaude/slices/sembr/", "tests/dotclaude/sembr/"]
+title: `sembr`
+wave: 2
+deps: ["P01b4"]
+owns: ["src/plugins/dotclaude/slices/sembr/","tests/dotclaude/sembr/"]
+satisfies: []
 verify: just test tests/dotclaude/sembr && just lab && just check
 agent: implementer
+status: done
 ---
 
 # P07 `sembr`

@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P49
-deps: [P48]
-owns: ["src/kernel/spec-store.ts", "src/kernel/state-events.ts", "src/plugins/dotclaude/slices/spec/", "src/plugins/dotclaude/slices/statusline/", "src/plugins/dotclaude/slices/handoff/domain/trigger.ts", "tests/kernel/", "tests/dotclaude/spec/", "tests/dotclaude/statusline/", ".dotclaude/spec/changes/1.0.0/"]
+title: Phase Commands of `dotclaude-spec`
+wave: 6
+deps: ["P48"]
+owns: ["src/kernel/spec-store.ts","src/kernel/state-events.ts","src/plugins/dotclaude/slices/spec/","src/plugins/dotclaude/slices/statusline/","src/plugins/dotclaude/slices/handoff/domain/trigger.ts","tests/kernel/","tests/dotclaude/spec/","tests/dotclaude/statusline/",".dotclaude/spec/changes/1.0.0/"]
+satisfies: []
 verify: just check, and `dotclaude-spec validate 1.0.0` passes on the converted store
 agent: main session
+status: doing
 ---
 
 # P49 Phase Commands of `dotclaude-spec`

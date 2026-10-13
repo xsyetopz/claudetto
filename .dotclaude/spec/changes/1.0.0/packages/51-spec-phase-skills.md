@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P51
-deps: [P49, P50]
-owns: ["src/plugins/dotclaude/slices/spec/skills/", "src/plugins/dotclaude/slices/spec/slice.ts", "src/plugins/dotclaude/slices/spec/adapters/mod.ts", "src/plugins/dotclaude/slices/spec/domain/ship-lane.ts", "src/plugins/dotclaude/slices/spec/lab/"]
+title: Phase Skills and Hooks
+wave: 8
+deps: ["P49","P50"]
+owns: ["src/plugins/dotclaude/slices/spec/skills/","src/plugins/dotclaude/slices/spec/slice.ts","src/plugins/dotclaude/slices/spec/adapters/mod.ts","src/plugins/dotclaude/slices/spec/domain/ship-lane.ts","src/plugins/dotclaude/slices/spec/lab/"]
+satisfies: []
 verify: just check, just lab, and one session in just sandbox that runs a trivial change and a large change from `/dotclaude:specify` to `/dotclaude:archive`
 agent: main session
+status: planned
 ---
 
 # P51 Phase Skills and Hooks

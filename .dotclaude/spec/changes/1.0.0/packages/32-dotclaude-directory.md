@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P32
-deps: [P28, P24, P26, P27]
-owns: ["src/kernel/paths.ts", "src/plugins/dotclaude/slices/asks/domain/paths.ts", "src/plugins/dotclaude/slices/asks/domain/writes.ts", "src/plugins/dotclaude/slices/asks/domain/content.ts", "src/plugins/dotclaude/slices/asks/domain/hooks.ts", "src/plugins/dotclaude/slices/asks/limits.ts", "src/plugins/dotclaude/slices/setup/domain/exclude.ts", "src/plugins/dotclaude/slices/setup/adapters/exclude-step.ts", "src/plugins/dotclaude/slices/setup/adapters/files.ts", "src/plugins/dotclaude/slices/setup/adapters/cli.ts", "src/plugins/dotclaude/slices/setup/skills/setup/SKILL.md", "tests/dotclaude/setup/exclude.test.ts", "tests/dotclaude/asks/"]
+title: `.dotclaude/`
+wave: 3
+deps: ["P28","P24","P26","P27"]
+owns: ["src/kernel/paths.ts","src/plugins/dotclaude/slices/asks/domain/paths.ts","src/plugins/dotclaude/slices/asks/domain/writes.ts","src/plugins/dotclaude/slices/asks/domain/content.ts","src/plugins/dotclaude/slices/asks/domain/hooks.ts","src/plugins/dotclaude/slices/asks/limits.ts","src/plugins/dotclaude/slices/setup/domain/exclude.ts","src/plugins/dotclaude/slices/setup/adapters/exclude-step.ts","src/plugins/dotclaude/slices/setup/adapters/files.ts","src/plugins/dotclaude/slices/setup/adapters/cli.ts","src/plugins/dotclaude/slices/setup/skills/setup/SKILL.md","tests/dotclaude/setup/exclude.test.ts","tests/dotclaude/asks/"]
+satisfies: []
 verify: just check
 agent: implementer
+status: done
 ---
 
 # P32 `.dotclaude/`

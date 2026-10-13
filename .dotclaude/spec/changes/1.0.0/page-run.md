@@ -1,6 +1,6 @@
 # P15 page run
 
-The rules of one run that writes one wiki page for P15 ([package](15-docs.md)).
+The rules of one run that writes one wiki page for P15 ([package](packages/15-docs.md)).
 A run has a limit of about 60 turns.
 Runs that read for too long wrote no page, so keep to the turn budget.
 
@@ -35,7 +35,7 @@ The main session runs them after the merge.
 - A page answers: what it does, how it works with code paths, the bounds by name, value, and file, and why, with a link to the decision in `Decisions` or its group pages when one exists.
 - Give a number only with a source.
 - Mark inference as inference.
-- Facts about the Claude Code binary: see "Decisions" in [the package](15-docs.md).
+- Facts about the Claude Code binary: see "Decisions" in [the package](packages/15-docs.md).
   Name the version `2.1.296` and how the fact was found, in your own words, with no bundle code and no long verbatim prompt text.
   The extracts are in the main checkout under `/Users/krystian/CodeProjects/xsyetopz/dotclaude/external/`, because the worktree has no `external/`.
 - At most 300 lines.

@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P30
-deps: [P28]
-owns: ["src/plugins/dotclaude/slices/rules/skills/", "tests/dotclaude/rules/skills.test.ts"]
+title: `/rules-creator` skill
+wave: 3
+deps: ["P28"]
+owns: ["src/plugins/dotclaude/slices/rules/skills/","tests/dotclaude/rules/skills.test.ts"]
+satisfies: []
 verify: just validate
 agent: implementer
+status: done
 ---
 
 # P30 `/rules-creator` skill

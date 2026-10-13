@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P11e
-deps: [P01b4]
-owns: ["src/plugins/dotclaude-sessions/", "tests/sessions/"]
+title: `dotclaude-sessions`
+wave: 2
+deps: ["P01b4"]
+owns: ["src/plugins/dotclaude-sessions/","tests/sessions/"]
+satisfies: []
 verify: just test tests/sessions && just check
 agent: implementer
+status: done
 ---
 
 # P11e `dotclaude-sessions`

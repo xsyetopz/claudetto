@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P23
-deps: [P01c]
-owns: ["src/plugins/dotclaude/slices/prompt/transforms/", "src/plugins/dotclaude/slices/prompt/domain/", "src/plugins/dotclaude/slices/prompt/adapters/", "src/plugins/dotclaude/slices/prompt/lab/", "tests/dotclaude/prompt/"]
+title: `prompt` transforms
+wave: 2
+deps: ["P01c"]
+owns: ["src/plugins/dotclaude/slices/prompt/transforms/","src/plugins/dotclaude/slices/prompt/domain/","src/plugins/dotclaude/slices/prompt/adapters/","src/plugins/dotclaude/slices/prompt/lab/","tests/dotclaude/prompt/"]
+satisfies: []
 verify: just test tests/dotclaude/prompt && just lab && just check
 agent: implementer
+status: done
 ---
 
 # P23 `prompt` transforms

@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P11d
-deps: [P01b4]
-owns: ["src/plugins/dotclaude-docs/", "tests/docs/"]
+title: `dotclaude-docs`
+wave: 2
+deps: ["P01b4"]
+owns: ["src/plugins/dotclaude-docs/","tests/docs/"]
+satisfies: []
 verify: just test tests/docs && just check
 agent: implementer
+status: done
 ---
 
 # P11d `dotclaude-docs`

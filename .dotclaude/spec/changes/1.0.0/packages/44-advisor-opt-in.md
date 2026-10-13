@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P44
+title: Advisor Opt-In
+wave: 4
 deps: []
-owns: ["the advisor entries of src/plugins/dotclaude/slices/trim/", "the advisor step of src/plugins/dotclaude/slices/setup/", "tests/dotclaude/trim/", "tests/dotclaude/setup/", "evidence/advisor.md"]
+owns: ["the advisor entries of src/plugins/dotclaude/slices/trim/","the advisor step of src/plugins/dotclaude/slices/setup/","tests/dotclaude/trim/","tests/dotclaude/setup/","evidence/advisor.md"]
+satisfies: []
 verify: just check, just lab, and one session in just sandbox-install where /dotclaude:setup sets advisorModel only after the user asks
 agent: main session
+status: done
 ---
 
 # P44 Advisor Opt-In

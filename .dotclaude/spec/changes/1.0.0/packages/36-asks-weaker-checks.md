@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P36
-deps: [P06]
-owns: ["src/plugins/dotclaude/slices/asks/", "tests/dotclaude/asks/"]
+title: `asks` on weaker checks
+wave: 3
+deps: ["P06"]
+owns: ["src/plugins/dotclaude/slices/asks/","tests/dotclaude/asks/"]
+satisfies: []
 verify: just check
 agent: implementer
+status: done
 ---
 
 # P36 `asks` on weaker checks

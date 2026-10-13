@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P20
-deps: [P01c]
-owns: ["src/plugins/dotclaude/slices/surface/", "tests/dotclaude/surface/"]
+title: `surface`
+wave: 2
+deps: ["P01c"]
+owns: ["src/plugins/dotclaude/slices/surface/","tests/dotclaude/surface/"]
+satisfies: []
 verify: just test tests/dotclaude/surface && just lab && just check
 agent: implementer
+status: done
 ---
 
 # P20 `surface`

@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P01b1
-deps: [P01a]
-owns: ["tools/generate/", "tools/generate.ts", "tools/rebuild-pending.txt", "tests/tools/", "tests/support/generate.test.ts", "justfile"]
+title: Generator core
+wave: 1
+deps: ["P01a"]
+owns: ["tools/generate/","tools/generate.ts","tools/rebuild-pending.txt","tests/tools/","tests/support/generate.test.ts","justfile"]
+satisfies: []
 verify: just test tests/tools && just check
 agent: implementer
+status: done
 ---
 
 # P01b1 Generator core

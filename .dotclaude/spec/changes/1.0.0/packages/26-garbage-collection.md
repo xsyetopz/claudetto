@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P26
-deps: [P09]
-owns: ["src/plugins/dotclaude/slices/setup/domain/settings.ts", "tests/dotclaude/setup/cleanup.test.ts"]
+title: Garbage collection
+wave: 3
+deps: ["P09"]
+owns: ["src/plugins/dotclaude/slices/setup/domain/settings.ts","tests/dotclaude/setup/cleanup.test.ts"]
+satisfies: []
 verify: just test tests/dotclaude/setup && just lab
 agent: implementer
+status: done
 ---
 
 # P26 Garbage collection

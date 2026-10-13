@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P12
-deps: [P01b4]
-owns: ["src/plugins/dotclaude-lab/", "tests/lab/", "tools/eval-variant.ts", "tools/lock.ts", "tools/measure.ts", "tools/sandbox.ts", "tools/start-run.ts", "tools/unsandboxed.ts"]
+title: `dotclaude-lab`
+wave: 2
+deps: ["P01b4"]
+owns: ["src/plugins/dotclaude-lab/","tests/lab/","tools/eval-variant.ts","tools/lock.ts","tools/measure.ts","tools/sandbox.ts","tools/start-run.ts","tools/unsandboxed.ts"]
+satisfies: []
 verify: just test tests/lab && just check
 agent: implementer
+status: done
 ---
 
 # P12 `dotclaude-lab`

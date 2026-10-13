@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P01c
+title: Extract
+wave: 1
 deps: []
-owns: ["external/cc-extract/", ".dotclaude/spec/changes/1.0.0/evidence/extract.md"]
+owns: ["external/cc-extract/",".dotclaude/spec/changes/1.0.0/evidence/extract.md"]
+satisfies: []
 verify: each id of the report is in the prompt.compose or tool.describe input of one live session in just sandbox
 agent: implementer
+status: done
 ---
 
 # P01c Extract

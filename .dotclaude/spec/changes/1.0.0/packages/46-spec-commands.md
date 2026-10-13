@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P46
+title: Spec Commands
+wave: 4
 deps: []
-owns: ["src/plugins/dotclaude/slices/spec/", "src/kernel/spec-store.ts", "tests/dotclaude/spec/", "tests/kernel/spec-store.test.ts"]
+owns: ["src/plugins/dotclaude/slices/spec/","src/kernel/spec-store.ts","tests/dotclaude/spec/","tests/kernel/spec-store.test.ts"]
+satisfies: []
 verify: just check, just lab, and one session in just sandbox that uses each new command
 agent: main session
+status: canceled
 ---
 
 # P46 Spec Commands

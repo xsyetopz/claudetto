@@ -1,9 +1,15 @@
 ---
+schema: dotclaude-spec/2
+kind: package
 id: P28
+title: `.claude/` evidence
+wave: 3
 deps: []
 owns: [".dotclaude/spec/changes/1.0.0/evidence/claude-directory.md"]
+satisfies: []
 verify: each claim has a source, and each rules answer has one live session in just sandbox
 agent: implementer
+status: done
 ---
 
 # P28 `.claude/` evidence

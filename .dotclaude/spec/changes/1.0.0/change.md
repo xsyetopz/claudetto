@@ -1,3 +1,12 @@
+---
+schema: dotclaude-spec/2
+kind: change
+id: 1.0.0
+size: large
+status: implementing
+verify: just check
+---
+
 # 1.0.0: full rebuild
 
 ## Why
