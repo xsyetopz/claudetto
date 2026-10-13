@@ -1,15 +1,16 @@
 // `dotclaude-spec merge <package> [<branch>] [--json]`: merges the work of an `approved` package and moves it to `done`.
 // With a branch, the head of the branch must be the approved SHA. Then the command runs, in this order:
-//   1. The store files of the change are committed. The tree must hold no other change.
+//   1. The store files of the change are committed. The tree may hold uncommitted files of other changes under the store, and the command leaves them as they are. It holds no other change.
 //   2. `git merge --no-edit <branch>`. On a conflict the command stops, moves no state, and prints the conflicted files.
 //   3. `just generate`, when the project has a `justfile`.
 //   4. The `done` event, and one commit of `plugins/` and the folder of the change.
 // With no branch, `HEAD` of the main checkout must contain the approved SHA, and the command runs only steps 3 and 4.
 // A retry, when `HEAD` already contains the approved SHA, skips steps 1 and 2.
-// Then the tree may hold changes only in `plugins/` and in the folder of the change, and the commit of step 4 holds them.
+// Then the tree may hold changes only in `plugins/`, in the store, and in the folder of the change, and the commit of step 4 holds only `plugins/` and the folder of the change.
 // When the commit fails, the log and the package file go back to their state before the move.
 
 import path from "node:path";
+import { SPEC_ROOT } from "../../../../../kernel/paths.ts";
 import { gateMerge } from "../domain/gates.ts";
 import { hasTransition, PACKAGE_TRANSITIONS } from "../domain/states.ts";
 import { parseArgs } from "./args.ts";
@@ -31,8 +32,8 @@ const GENERATED_DIR = "plugins";
 /** Runs git with `args` in the root of the store. */
 const git = (run: Run, args: string[]) => exec(run.store.root, "git", args);
 
-/** The tracked files that differ from `HEAD`, relative to the root of the store, and whether any change is staged. */
-const treeState = (run: Run): { staged: boolean; files: string[] } => {
+/** The tracked files that differ from `HEAD`, relative to the root of the store, and which of them are staged. */
+const treeState = (run: Run): { files: string[]; stagedFiles: string[] } => {
   const prefix = git(run, ["rev-parse", "--show-prefix"]).out;
   const status = git(run, [
     "status",
@@ -41,16 +42,19 @@ const treeState = (run: Run): { staged: boolean; files: string[] } => {
     "--untracked-files=no",
   ]);
   const tokens = status.stdout.split("\0").filter((t) => t !== "");
-  const tree = { staged: false, files: [] as string[] };
+  const tree = {
+    files: [] as string[],
+    stagedFiles: [] as string[],
+  };
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i] ?? "";
     const index = token[0] ?? " ";
-    if (index !== " ") tree.staged = true;
     if (index === "R" || index === "C") i++;
-    const file = token.slice(3);
-    tree.files.push(
-      prefix && file.startsWith(prefix) ? file.slice(prefix.length) : file,
-    );
+    const raw = token.slice(3);
+    const file =
+      prefix && raw.startsWith(prefix) ? raw.slice(prefix.length) : raw;
+    tree.files.push(file);
+    if (index !== " ") tree.stagedFiles.push(file);
   }
   return tree;
 };
@@ -88,7 +92,8 @@ const within = (dir: string, file: string): boolean =>
 const onlyOwnChanges = (run: Run, id: string, pkg: string): boolean => {
   const dir = changeDir(id);
   const others = treeState(run).files.filter(
-    (f) => !within(dir, f) && !within(GENERATED_DIR, f),
+    (f) =>
+      !within(dir, f) && !within(GENERATED_DIR, f) && !within(SPEC_ROOT, f),
   );
   if (others.length === 0) return true;
   run.io.error(
@@ -101,14 +106,15 @@ const onlyOwnChanges = (run: Run, id: string, pkg: string): boolean => {
 const settleTree = (run: Run, id: string, pkg: string): boolean => {
   const tree = treeState(run);
   const dir = changeDir(id);
-  const others = tree.files.filter((f) => !within(dir, f));
-  if (tree.staged || others.length > 0) {
+  const foreign = tree.files.filter((f) => !within(SPEC_ROOT, f));
+  const stagedOutside = tree.stagedFiles.filter((f) => !within(SPEC_ROOT, f));
+  if (foreign.length > 0 || stagedOutside.length > 0) {
     run.io.error(
-      `The tree has changes outside \`${dir}\`: ${tree.files.map((f) => `\`${f}\``).join(", ")}. Commit or undo them first. No state changed for \`${pkg}\`.`,
+      `The tree has changes outside \`${dir}\` and the other changes of \`${SPEC_ROOT}\`: ${tree.files.map((f) => `\`${f}\``).join(", ")}. Commit or undo them first. No state changed for \`${pkg}\`.`,
     );
     return false;
   }
-  if (tree.files.length === 0) return true;
+  if (!tree.files.some((f) => within(dir, f))) return true;
   git(run, ["add", "--", dir]);
   const commit = git(run, [
     "commit",
