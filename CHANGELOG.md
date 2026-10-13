@@ -211,6 +211,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The substitutions in that body are still commands, so a destructive command in one is denied.
 - The `guard` owners check reads the repository of a `git` command with options before its verb, such as `git -C dir fetch URL` or `git -c k=v pull URL`.
   It also reads an install of `git+URL` with `pip3`, which the check missed before.
+- The `guard` reads a command whose name is only a substitution, such as `$(echo git) fetch URL` or `` `echo git` reset --hard ``, as `git` when a git verb follows the name.
+  The owners check reads the repository of such a fetch, and a `git -C dir` folder of such a command stays in force for the matchers.
 - The `--clean` of `dotclaude-sandbox` removes a folder other than the default one only when the sandbox made it.
   The setup writes a `.dotclaude-sandbox` marker into the folder, and `--clean` refuses a folder without it.
   A folder that an older sandbox made has no marker, so remove it by hand.

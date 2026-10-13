@@ -1,29 +1,46 @@
-/** The verbs that the matchers below read, so a word of one of them after an unreadable name shows a git call. */
+/**
+ * The verbs that the matchers below read, and the verbs that fetch a repository (`owners.ts`).
+ * A word of one of them after an unreadable name shows a git call.
+ */
 const GIT_VERBS = new Set([
   "branch",
   "checkout",
   "clean",
+  "clone",
+  "fetch",
   "filter-branch",
   "gc",
+  "pull",
   "push",
   "reflog",
+  "remote",
   "reset",
   "restore",
   "rm",
   "stash",
+  "submodule",
   "switch",
   "worktree",
 ]);
 
 /**
- * The words that the git matchers read.
+ * The index of the git verb in `words`, when the name of `words` is unreadable, or -1.
  * The walker gives a command name that a substitution wrote as `""`, as in `$(echo git) reset --hard`.
  * Such a name reads as `git` when a later word is a git verb, or a word that the hook cannot read.
- * The words before that verb, such as `-C .`, are dropped, as `walk.ts` drops them for `git`.
- * A name followed by option words only, such as `$(which ls) -la`, stays unreadable, and no git matcher applies.
+ * A name followed by option words only, such as `$(which ls) -la`, has no verb, so it stays unreadable.
+ */
+export const gitVerbAt = (words: readonly string[]): number =>
+  words[0] !== ""
+    ? -1
+    : words.findIndex((w, i) => i > 0 && (GIT_VERBS.has(w) || w === ""));
+
+/**
+ * The words that the git matchers read.
+ * An unreadable name with a git verb after it reads as `git` from that verb on, as `gitVerbAt` finds it.
+ * The words before that verb, such as `-C .`, are dropped here, and `walk.ts` keeps their `-C` folder.
+ * No git matcher applies to a name that has no verb after it.
  */
 export const gitWords = (words: readonly string[]): readonly string[] => {
-  if (words[0] !== "") return words;
-  const at = words.findIndex((w, i) => i > 0 && (GIT_VERBS.has(w) || w === ""));
+  const at = gitVerbAt(words);
   return at < 0 ? words : ["git", ...words.slice(at)];
 };

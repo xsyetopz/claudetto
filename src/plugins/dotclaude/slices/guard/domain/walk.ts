@@ -7,6 +7,7 @@
 import { parse } from "../../../../../kernel/shell.ts";
 import { baseName, stripWrappers } from "../../../../../kernel/wrappers.ts";
 import { isAbsPath } from "./matchers/norm.ts";
+import { gitVerbAt } from "./matchers/words.ts";
 
 /** One simple command: its words, and the folder that `git -C` set for it. */
 export type Simple = { words: string[]; dir: string | undefined };
@@ -36,6 +37,32 @@ const gitOf = (argv: string[], dir: string | undefined): Simple => {
   return { words: ["git", ...rest], dir: folder };
 };
 
+/** The folder that each `-C` in `words` sets, under `dir`, for a command whose name is unreadable. */
+const cFolder = (
+  words: string[],
+  dir: string | undefined,
+): string | undefined =>
+  words.reduce<string | undefined>(
+    (folder, w, i) =>
+      w === "-C" ? joinDir(folder, words[i + 1] ?? "") : folder,
+    dir,
+  );
+
+/**
+ * The command whose name a substitution wrote, read as `git` when a git verb follows it (see `gitVerbAt`).
+ * The words before the verb are dropped, and their `-C` folder is kept, as for `git`.
+ */
+const unreadableOf = (rest: string[], dir: string | undefined): Simple[] => {
+  const at = gitVerbAt(["", ...rest]);
+  if (at < 0) return [{ words: ["", ...rest], dir }];
+  return [
+    {
+      words: ["git", ...rest.slice(at - 1)],
+      dir: cFolder(rest.slice(0, at - 1), dir),
+    },
+  ];
+};
+
 /** The commands of `find` that run under `-exec` or `-execdir`, up to the `;` or `+` that ends each one. */
 const execOf = (rest: string[], dir: string | undefined): Simple[] => {
   const out: Simple[] = [];
@@ -53,6 +80,7 @@ const execOf = (rest: string[], dir: string | undefined): Simple[] => {
 const unwrap = (argv: string[], dir: string | undefined): Simple[] => {
   const [head, ...rest] = stripWrappers(argv);
   if (head === undefined) return [];
+  if (head === "") return unreadableOf(rest, dir);
   const name = baseName(head);
   if (name === "git") return [gitOf([name, ...rest], dir)];
   if (name === "find")

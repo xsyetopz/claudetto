@@ -46,6 +46,10 @@ It runs each matcher from `MATCHERS` in `domain/matchers/index.ts`.
 The matchers are the `git.ts` and `system.ts` matchers of `domain/matchers/`.
 The first matcher that matches gives the deny reason from `domain/reason.ts`.
 
+A command whose name is only a substitution, such as `$(echo git) reset --hard`, has no readable name.
+When a git verb follows that name, `walk.ts` reads the command as `git`, for the matchers and for the owners check.
+A name with literal text next to the substitution, such as `$(pwd)/build.sh`, is not read as `git`.
+
 The tier of each matcher comes from the rule catalog in `src/kernel/policy/`.
 The catalog has one file for each category: `rules/git.ts`, `rules/system.ts`, `rules/database.ts`, `rules/cloud.ts`, and `rules/backups.ts`.
 `tierOf` in `domain/matchers/index.ts` gives `subagent` for a rule that the catalog marks `subagent`.
