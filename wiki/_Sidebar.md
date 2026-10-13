@@ -24,6 +24,7 @@
   - [Sessions](Sessions)
   - [Lab](Lab)
   - [AGENTS.md](Agents-Md)
+  - [You should know](You-Should-Know)
 - How Claude Code works
   - [Internals](Claude-Code-Internals)
   - [Request build](Request-Build)

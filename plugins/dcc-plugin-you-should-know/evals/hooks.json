@@ -1,0 +1,17 @@
+{
+  "tool.check notice": {
+    "requests": 1,
+    "tokens": 2400,
+    "blocks": false,
+    "eval": "notice",
+    "allow": "plugins/dcc-plugin-you-should-know/tests/notice.test.ts > a call that gives no topic shows no toast",
+    "text": "plugins/dcc-plugin-you-should-know/tests/notice.test.ts > the first changing call of a turn shows the topic as a toast"
+  },
+  "turn.start notice": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dcc-plugin-you-should-know/tests/notice.test.ts > a read gets no check",
+    "text": "plugins/dcc-plugin-you-should-know/tests/notice.test.ts > the first changing call of a turn shows the topic as a toast"
+  }
+}

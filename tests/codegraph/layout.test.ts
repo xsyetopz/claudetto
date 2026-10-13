@@ -23,6 +23,7 @@ const ORDER = [
   "dotclaude-sessions",
   "dotclaude-lab",
   "dcc-plugin-agents-md",
+  "dcc-plugin-you-should-know",
 ];
 
 test("the marketplace lists the plugins in order, and the entry has the manifest description", async () => {

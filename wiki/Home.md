@@ -38,6 +38,7 @@ Each add-on is a separate plugin, and each add-on works without the core plugin.
 | `dotclaude-sessions` | Measures the start of a session by source, and the usage of each run. | [Sessions](Sessions) |
 | `dotclaude-lab` | Tools for plugin authors: a sandbox for Claude Code, a request capture, the JSON Schema of `settings.json`, and an eval compare. | [Lab](Lab) |
 | `dcc-plugin-agents-md` | Loads `AGENTS.md` files where Claude Code loads `CLAUDE.md`. | [Agents-Md](Agents-Md) |
+| `dcc-plugin-you-should-know` | Opt-in. Shows one thing to know before Claude changes something. | [You-Should-Know](You-Should-Know) |
 
 The marketplace and the install steps are in [Add-Ons](Add-Ons) and [Install](Install).
 

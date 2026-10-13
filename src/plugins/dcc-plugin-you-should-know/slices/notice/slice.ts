@@ -1,0 +1,42 @@
+// The manifest of the slice `notice`: the start of a turn, and one check before the first call of a turn that changes something.
+// The check is a mod handler on `tool.check`, because that event comes before the tool runs, and its toast does not change the verdict.
+// The `tool.check` filter names the four tools that can change something, so a call to any other tool runs no handler.
+
+import type { Slice } from "../../../../kernel/slice.ts";
+import { onCheck, onTurnStart } from "./adapters/mod.ts";
+
+const LAB = "plugins/dcc-plugin-you-should-know/tests/notice.test.ts";
+
+export const slice = {
+  name: "notice",
+  mod: [
+    {
+      event: "turn.start",
+      phase: "observe",
+      run: onTurnStart,
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow: `${LAB} > a read gets no check`,
+        text: `${LAB} > the first changing call of a turn shows the topic as a toast`,
+      },
+    },
+    {
+      event: "tool.check",
+      filter: { tool: ["Edit", "Write", "NotebookEdit", "Bash"] },
+      phase: "observe",
+      run: onCheck,
+      // The tokens are the bound of one separate call: about 9,000 characters of input at `MAX_INPUT_CHARS`, and `MAX_REPLY_TOKENS`.
+      // A fork reads the conversation too, mostly from the cache. Not measured.
+      evals: {
+        requests: 1,
+        tokens: 2400,
+        blocks: false,
+        eval: "notice",
+        allow: `${LAB} > a call that gives no topic shows no toast`,
+        text: `${LAB} > the first changing call of a turn shows the topic as a toast`,
+      },
+    },
+  ],
+} satisfies Slice;

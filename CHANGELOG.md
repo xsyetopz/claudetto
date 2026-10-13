@@ -86,6 +86,12 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   A nested file loads once in a session, when Claude reads or changes a file in its folder, or when the user mentions such a file, and it loads again after a compaction.
   It skips a file that a `CLAUDE` file already loads, and `claudeMdExcludes` applies to it.
   The token cost against the same text in `CLAUDE.md` is not measured yet.
+- The opt-in add-on plugin `dcc-plugin-you-should-know` shows one thing that the user should know before Claude changes something, in place of the built-in `cc-plugin-you-should-know`.
+  It checks the first `Edit`, `Write`, `NotebookEdit`, or changing `Bash` call of each turn in `tool.check`, shows a topic as a toast, and does not stop or change the call.
+  With an API key it makes one Haiku call with the prompt and the pending action, and no transcript.
+  A subscription gets HTTP 429 on that call, so after a 429 the plugin forks the main conversation for the rest of the session.
+  A failed or slow call, a call of a subagent, and a topic that showed already give no toast.
+  The cost and the wait of one real check are not measured yet.
 
 ### Changed
 

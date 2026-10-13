@@ -70,3 +70,32 @@ The probe ran one `$.model.complete` call (`haiku`, `maxTokens: 16`) and one `$.
 - With an API key, both calls work in about 1 second.
   The session with the key cost $0.0011 (`total_cost_usd`), and nearly all of it is the main call.
 - Not measured: the resolved model id of the hook call, and the tokens of `classify`, which returns no usage.
+
+## Third probe, 2026-10-13: `$.model.fork`
+
+The probe ran one `$.model.fork({ prompt: "Reply with the word OK and nothing else." })` in a `turn.complete` hook, after the main reply, on the subscription of the user.
+
+- The fork answered `OK` in 1005 ms.
+- Its usage: 20 input tokens, 4 output tokens, 13,532 cache read tokens, and 3,174 cache write tokens.
+- So a subscription can use `$.model.fork` from a hook, while `$.model.complete` and `$.model.classify` get HTTP 429.
+
+## Step 1 of the build, 2026-10-13
+
+The sources are the lines of `plugins/dotclaude/.claude-plugin/types/claude-code/index.d.ts`.
+
+- `tool.check` fires "when the engine decides whether a tool call may run", before the tool runs and before the mode settles an ask (line 3964).
+  So a toast from a `tool.check` hook is drawn before the tool runs, and before a permission dialog.
+  Not verified in an interactive session: the order on the screen of the toast and the tool output.
+- A fork sends "the main thread's last request again" with the prompt after it (line 2629).
+  In `tool.check`, the last request is the one whose response holds the pending tool call, so the fork does not see that call.
+  So the fork prompt gives the pending action, and it does not give the conversation.
+- A fork gives `nothing-to-fork` before the first response and after `/clear` (line 2636).
+  The first tool call of a session comes after a response, so `nothing-to-fork` is rare in `tool.check`.
+- A toast stays for 4 seconds by default (line 2438), so the plugin gives `timeoutMs: 12000`, for one sentence.
+
+## Not measured yet
+
+- The cost and the wait of one real check on each path.
+  The bound of the separate call is about 2,400 tokens: about 9,000 characters of input and 120 output tokens.
+  A fork reads the conversation, mostly from the cache, so its cost grows with the conversation.
+  The measurement needs one session in `just sandbox` on each path.

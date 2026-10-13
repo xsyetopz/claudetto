@@ -47,6 +47,12 @@
       "source": "./plugins/dcc-plugin-agents-md",
       "description": "Loads `AGENTS.md` files where Claude Code loads `CLAUDE.md`: the user folder, each ancestor of the working directory, nested folders on each read or edit, and the folders of `permissions.additionalDirectories`. Skips a file that a `CLAUDE` file already loads.",
       "category": "productivity"
+    },
+    {
+      "name": "dcc-plugin-you-should-know",
+      "source": "./plugins/dcc-plugin-you-should-know",
+      "description": "Shows one thing that you should know before Claude changes something, as a toast that does not stop the change. Opt-in. Makes at most one model call per turn: a Haiku call with an API key, and a fork of the conversation on a subscription.",
+      "category": "productivity"
     }
   ]
 }

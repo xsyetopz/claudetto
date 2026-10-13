@@ -9,7 +9,7 @@ Start with the [Home](https://github.com/xsyetopz/dotclaude/wiki/Home) page, or 
 
 ## Plugins
 
-dotclaude is a marketplace with one core plugin and six add-on plugins.
+dotclaude is a marketplace with one core plugin and seven add-on plugins.
 Each add-on works without the core plugin.
 
 | Plugin | What it gives |
@@ -21,6 +21,7 @@ Each add-on works without the core plugin.
 | `dotclaude-sessions` | The `start-cost` and `usage` skills, which measure the session start and the usage. |
 | `dotclaude-lab` | Tools for plugin authors: the sandbox, capture, schema, and eval compare. |
 | `dcc-plugin-agents-md` | Loads `AGENTS.md` files where Claude Code loads `CLAUDE.md`, in place of the built-in `cc-plugin-agents-md`. |
+| `dcc-plugin-you-should-know` | Opt-in. Shows one thing to know before Claude changes something, in place of the built-in `cc-plugin-you-should-know`. |
 
 ## Install
 
@@ -113,6 +114,7 @@ Install each add-on that you need.
 /plugin install dotclaude-sessions@dotclaude
 /plugin install dotclaude-lab@dotclaude
 /plugin install dcc-plugin-agents-md@dotclaude
+/plugin install dcc-plugin-you-should-know@dotclaude
 ```
 
 - `dotclaude-codegraph` needs the CLI `codegraph` on `PATH`, and an index that `codegraph init -y` builds in the project.
@@ -129,6 +131,9 @@ Install each add-on that you need.
   See [Lab](https://github.com/xsyetopz/dotclaude/wiki/Lab).
 - `dcc-plugin-agents-md` replaces the built-in `cc-plugin-agents-md`, so turn the built-in plugin off.
   See [AGENTS.md](https://github.com/xsyetopz/dotclaude/wiki/Agents-Md).
+- `dcc-plugin-you-should-know` is opt-in, because each check makes one model call: a Haiku call with an API key, and a fork of the conversation on a subscription.
+  It replaces the built-in `cc-plugin-you-should-know`, so turn the built-in plugin off.
+  See [You should know](https://github.com/xsyetopz/dotclaude/wiki/You-Should-Know).
 
 ## Update
 
