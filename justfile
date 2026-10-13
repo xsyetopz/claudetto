@@ -72,9 +72,10 @@ bump level *flags:
 release *flags:
     bun tools/release.ts "$@"
 
-# Write the settings schemas of the installed Claude Code to schemas/; extra arguments go to dotclaude-schema (--bundle FILE, --version X.Y.Z)
+# Write the settings schemas of the installed Claude Code to schemas/ and format them with Biome; extra arguments go to dotclaude-schema (--bundle FILE, --version X.Y.Z)
 schema *args:
     bun plugins/dotclaude-lab/bin/dotclaude-schema --out schemas "$@"
+    bunx biome format --write schemas
 
 # Write each text that a plugin ships from its source in src/; add --check to name each generated file that differs from its source
 generate *flags:
