@@ -35,16 +35,28 @@ test("a glob that names another folder does not match", () => {
 
 test("a UNC path with `\\` matches a glob with `\\` or `/` and a glob with `**`", () => {
   expect(
-    isExcluded("\\\\server\\share\\p\\AGENTS.md", ["\\\\server\\share\\p\\AGENTS.md"]),
+    isExcluded("\\\\server\\share\\p\\AGENTS.md", [
+      "\\\\server\\share\\p\\AGENTS.md",
+    ]),
   ).toBe(true);
   expect(
-    isExcluded("\\\\server\\share\\p\\AGENTS.md", ["//server/share/p/AGENTS.md"]),
+    isExcluded("\\\\server\\share\\p\\AGENTS.md", [
+      "//server/share/p/AGENTS.md",
+    ]),
   ).toBe(true);
-  expect(isExcluded("\\\\server\\share\\legacy\\AGENTS.md", ["**/legacy/AGENTS.md"])).toBe(true);
+  expect(
+    isExcluded("\\\\server\\share\\legacy\\AGENTS.md", ["**/legacy/AGENTS.md"]),
+  ).toBe(true);
 });
 
 test("a drive path with `\\` matches a glob with `/` and a drive letter in lower case", () => {
-  expect(isExcluded("C:\\repo\\legacy\\AGENTS.md", ["C:/repo/**/AGENTS.md"])).toBe(true);
-  expect(isExcluded("c:\\repo\\legacy\\AGENTS.md", ["C:/repo/**/AGENTS.md"])).toBe(true);
-  expect(isExcluded("C:\\repo\\legacy\\AGENTS.md", ["c:/repo/**/AGENTS.md"])).toBe(true);
+  expect(
+    isExcluded("C:\\repo\\legacy\\AGENTS.md", ["C:/repo/**/AGENTS.md"]),
+  ).toBe(true);
+  expect(
+    isExcluded("c:\\repo\\legacy\\AGENTS.md", ["C:/repo/**/AGENTS.md"]),
+  ).toBe(true);
+  expect(
+    isExcluded("C:\\repo\\legacy\\AGENTS.md", ["c:/repo/**/AGENTS.md"]),
+  ).toBe(true);
 });

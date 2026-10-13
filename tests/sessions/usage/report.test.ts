@@ -12,12 +12,12 @@ import {
   quantile,
   tokens,
 } from "../../../src/plugins/dotclaude-sessions/slices/usage/domain/parse.ts";
+import { installedSkills } from "../../../src/plugins/dotclaude-sessions/slices/usage/domain/runs.ts";
 import {
   agentType,
   type Entry,
   type Usage,
 } from "../../../src/plugins/dotclaude-sessions/slices/usage/domain/transcript.ts";
-import { installedSkills } from "../../../src/plugins/dotclaude-sessions/slices/usage/domain/runs.ts";
 import {
   reserve,
   turnsFromText,
@@ -344,9 +344,15 @@ test("a meta file or an installed-plugins file that is `null` gives the defaults
   const root = tmpDir("usage-null");
   const file = path.join(root, "p", "subagents", "agent-n.jsonl");
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(path.join(root, "p", "subagents", "agent-n.meta.json"), "null");
+  fs.writeFileSync(
+    path.join(root, "p", "subagents", "agent-n.meta.json"),
+    "null",
+  );
   expect(await agentType(store, file)).toBe("subagent");
   fs.mkdirSync(path.join(root, "plugins"));
-  fs.writeFileSync(path.join(root, "plugins", "installed_plugins.json"), "null");
+  fs.writeFileSync(
+    path.join(root, "plugins", "installed_plugins.json"),
+    "null",
+  );
   expect(await installedSkills(store, root)).toStrictEqual([]);
 });
