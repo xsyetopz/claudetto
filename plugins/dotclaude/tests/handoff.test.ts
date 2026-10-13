@@ -80,9 +80,10 @@ const stub = (on: On, percent: number) => {
 const complete = (
   $: Engine,
   reason: "answer" | "aborted" | "error" = "answer",
+  answer = "done",
 ) =>
   $.turn.complete({
-    answer: "done",
+    answer,
     durationMs: 1,
     isAborted: reason === "aborted",
     turnId: "t",
@@ -113,6 +114,14 @@ test("with `manual` a context over the bound adds the hint to run `/handoff`", a
   stub(on, 90);
   const out = await complete($);
   expect(hasHint(out)).toBe(true);
+});
+
+test("with `manual` the hint goes out without the reply, which the user already sees", async ($: Engine, on: On) => {
+  stub(on, 90);
+  const out = await complete($, "answer", "The reply of the turn.");
+  expect(out.text).toBe(
+    "The context is at 90 percent. Run `/handoff` to write a handoff file and start a clean session.",
+  );
 });
 
 test(

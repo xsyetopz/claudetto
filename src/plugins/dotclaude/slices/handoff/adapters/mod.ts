@@ -174,14 +174,21 @@ const triggerOf = async ($: EngineInterface): Promise<Trigger | undefined> => {
     : undefined;
 };
 
-/** Adds the `manual` hint of `trigger` to `out`, once for each kind of trigger in an episode. */
+/**
+ * Adds the `manual` hint of `trigger` to `out`, once for each kind of trigger in an episode.
+ * The text that the chain passes down is the answer itself, which the user sees already,
+ * so the hint replaces that text and does not repeat it.
+ */
 const withHint = (
   out: TurnCompleteResult,
   trigger: Trigger,
+  answer: string,
 ): TurnCompleteResult => {
   if (episode.hinted.has(trigger.kind)) return out;
   episode.hinted.add(trigger.kind);
-  return { ...out, text: `${out.text}\n\n${manualHint(trigger.reason)}` };
+  const beneath = out.text === answer ? "" : out.text;
+  const hint = manualHint(trigger.reason);
+  return { ...out, text: beneath ? `${beneath}\n\n${hint}` : hint };
 };
 
 /**
@@ -235,7 +242,7 @@ const settle = async (
     return out;
   }
   episode.over = true;
-  return withHint(out, { kind: "no-file", reason: REASON_NO_FILE });
+  return withHint(out, { kind: "no-file", reason: REASON_NO_FILE }, e.answer);
 };
 
 /** Runs the handoff at the end of a turn of the main session. */
@@ -258,7 +265,7 @@ export const onTurnComplete: Handler<"turn.complete"> = async ($, e, next) => {
   }
   if (mode === "manual") {
     wanted = undefined;
-    return withHint(out, trigger);
+    return withHint(out, trigger, e.answer);
   }
   if (episode.over) return out;
   await startWrite($, []);

@@ -136,6 +136,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `handoff` slice resumes a handoff file that Claude writes at the first path after a retry.
   A file at any path of the handoff counts as the written file.
 - With `mainHandover` set to `off`, the handoff clears a lane `done` request, so a later change to `auto` does not start a handoff for it.
+- The `manual` hint of the `handoff` slice shows only the hint beneath the reply.
+  Before, the hint carried a second copy of the reply, because the text of the `turn.complete` chain starts as the reply.
 - The `slices/` and `kernel/` files of each plugin are TypeScript (`.ts`), and `bun check` type-checks them with `noUncheckedIndexedAccess`.
 - The core hooks module is `hooks/register.ts`.
   The check that denies a `Bash` command that only prints a file runs in its `tool.call` hook, and the checks that ask before an edit run in its `tool.check` hook.
