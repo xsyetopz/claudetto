@@ -85,15 +85,19 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   It loads the file of the user folder, `AGENTS.md`, `.claude/AGENTS.md`, and `AGENTS.local.md` in each ancestor of the working directory, and the files of `permissions.additionalDirectories` under `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD`.
   A nested file loads once in a session, when Claude reads or changes a file in its folder, or when the user mentions such a file, and it loads again after a compaction.
   It skips a file that a `CLAUDE` file already loads, and `claudeMdExcludes` applies to it.
-  The token cost against the same text in `CLAUDE.md` is not measured yet.
+  The files of the start cost 17 tokens less than the same text in `CLAUDE` files, and each nested file costs 7 tokens more, because Claude Code puts a prefix before the context of a hook.
 - The opt-in add-on plugin `dcc-plugin-you-should-know` shows one thing that the user should know before Claude changes something, in place of the built-in `cc-plugin-you-should-know`.
   It checks the first `Edit`, `Write`, `NotebookEdit`, or changing `Bash` call of each turn in `tool.check`, shows a topic as a toast, and does not stop or change the call.
-  With an API key it makes one Haiku call with the prompt and the pending action, and no transcript.
-  A subscription gets HTTP 429 on that call, so after a 429 the plugin forks the main conversation for the rest of the session.
+  It makes one Haiku call with the prompt and the pending action, and no transcript, in about 2 to 3 seconds and about 410 input tokens.
+  After an HTTP 429 it forks the main conversation for the rest of the session.
   A failed or slow call, a call of a subagent, and a topic that showed already give no toast.
-  The cost and the wait of one real check are not measured yet.
 
 ### Changed
+
+- The `prompt` slice of the core plugin no longer sets `CLAUDE_CODE_ATTRIBUTION_HEADER=0`.
+  With that value, a `$.model.complete` call from a hook carries no billing block and no identity block of Claude Code, and a subscription refuses it with HTTP 429.
+  The evidence is in `.dotclaude/spec/changes/1.0.0/evidence/you-should-know.md`.
+  Remove the key from the `env` of your `settings.json` if `/dotclaude:setup` wrote it there.
 
 - The spec store keeps its lane changes in an append-only `events.jsonl`, one line for each change, in place of `state.json`.
   The lane of a package is its last line, and `.gitattributes` sets `merge=union` so two branches merge with no conflict.

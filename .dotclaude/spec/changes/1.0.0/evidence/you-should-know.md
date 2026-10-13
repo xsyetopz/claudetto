@@ -93,9 +93,59 @@ The sources are the lines of `plugins/dotclaude/.claude-plugin/types/claude-code
   The first tool call of a session comes after a response, so `nothing-to-fork` is rare in `tool.check`.
 - A toast stays for 4 seconds by default (line 2438), so the plugin gives `timeoutMs: 12000`, for one sentence.
 
-## Not measured yet
+## The Cause of the HTTP 429, 2026-10-13
 
-- The cost and the wait of one real check on each path.
-  The bound of the separate call is about 2,400 tokens: about 9,000 characters of input and 120 output tokens.
-  A fork reads the conversation, mostly from the cache, so its cost grows with the conversation.
-  The measurement needs one session in `just sandbox` on each path.
+The 429 does not come from the subscription.
+It comes from `CLAUDE_CODE_ATTRIBUTION_HEADER=0`, which the `prompt` slice of the core plugin set, and which the settings of the user held.
+
+Each probe below ran one `$.model.complete` call (`haiku`) in a `session.start` hook, on the subscription of the user, with `claude -p "Reply with OK."`.
+
+| Config | Result |
+| --- | --- |
+| The real config of the user (`--no-session-persistence`) | HTTP 429 `rate_limit`, 2,462 ms |
+| A clean sandbox config | Answered, 819 ms |
+| A clean sandbox config with all the settings of the user | HTTP 429 |
+| A clean sandbox config with only the `env` of the user | HTTP 429 |
+| A clean sandbox config with only `CLAUDE_CODE_ATTRIBUTION_HEADER=0` | HTTP 429, 2,548 ms |
+| A clean sandbox config with each other `env` key alone | Answered, 737 to 974 ms |
+| `CLAUDE_CODE_ATTRIBUTION_HEADER=0`, and the call gives `system: "You are a Claude agent, built on Anthropic's Claude Agent SDK."` | Answered, 864 ms |
+
+The captured request bodies show why:
+
+- With the header on, the `system` of a `$.model.complete` request starts with the block `x-anthropic-billing-header: cc_version=...; cc_entrypoint=sdk-cli;`.
+- With the header off, the request has no such block and no identity block of Claude Code.
+  The type file says that a completion has "the CLI's identity block" (line 2602), but the captured request has none.
+- The main request with the header off starts with the identity block `You are a Claude agent, built on Anthropic's Claude Agent SDK.`, so the main calls work.
+- A fork sends the main request again, with its identity block, so a fork works.
+
+Inference: on a subscription, the API accepts a request only when it carries the billing block or the identity block of Claude Code.
+A separate call from a hook with the header off carries neither, so the API refuses it with 429.
+The earlier variable test missed the cause, because the sandbox removes each variable that has the same value as the `env` of the settings of the user.
+
+Decision (the user, 2026-10-13): the attribution header stays on, so the core plugin no longer sets `CLAUDE_CODE_ATTRIBUTION_HEADER=0`.
+The plugin keeps the switch to a fork after a 429, for a user who sets the variable.
+
+## Sandbox Sessions, 2026-10-13
+
+Each session ran headless in a sandbox config with only `plugins/dcc-plugin-you-should-know` and `cc-plugin-you-should-know@builtin` off, with `claude-sonnet-5-5`.
+The prompt asked for one edit of `src/retry.mjs`.
+The debug log gives the wait of each hook call, and the `count_tokens` API counted the captured requests.
+
+| Path | Model call | Wait of the check | Tokens of the call | Topic |
+| --- | --- | --- | --- | --- |
+| Subscription, header on | `$.model.complete` on `claude-haiku-5-5` | 2,430 ms, and 2,216 ms in a second run | 412 input | Yes, both runs |
+| API key, header on | `$.model.complete` on `claude-haiku-5-5` | 3,017 ms | 411 input | `NONE` |
+| Subscription, `CLAUDE_CODE_ATTRIBUTION_HEADER=0` | 3 tries of `$.model.complete` that got 429, then `$.model.fork` (772 ms) | 2,850 ms | 16,731 input on `claude-sonnet-5-5`, nearly all of it a cache read of the conversation | `NONE` |
+
+- The engine tried the separate call 3 times before the 429 stood, so the switch costs about 2 seconds one time in a session.
+- The output of a call is one sentence or `NONE`, about 4 to 50 tokens.
+- The cost of the session does not show the cost of the check, because the cache state of the main requests differs between runs.
+
+## Interactive Session, 2026-10-13
+
+One session ran in the TUI in `tmux`, on the subscription with the header on, with the prompt to make `retry` try forever with no delay.
+
+- The toast showed at 01:14:05.283, with the topic "This makes `retry` loop forever with no delay and silently discard every error, ...".
+- Claude Code wrote `src/retry.mjs` at 01:14:05.306, 23 ms after the toast.
+- A frame of the screen shows the toast at the top right, over the transcript.
+  So the notice shows before the action that it is about.

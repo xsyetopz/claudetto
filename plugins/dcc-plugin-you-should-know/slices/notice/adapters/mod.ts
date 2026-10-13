@@ -27,7 +27,7 @@ const TURN = { plugin: "dcc-plugin-you-should-know", key: "turn" } as const;
 const PATH = { plugin: "dcc-plugin-you-should-know", key: "path" } as const;
 const SHOWN = { plugin: "dcc-plugin-you-should-know", key: "shown" } as const;
 
-/** The HTTP status that a subscription gets for a separate call from a hook. */
+/** The HTTP status that a subscription gets for a separate call from a hook when `CLAUDE_CODE_ATTRIBUTION_HEADER` is `0`. */
 const TOO_MANY_REQUESTS = 429;
 
 /** The `turn.start` hook: a new turn is not checked yet. A turn with no typed prompt keeps the prompt of the turn before it. */
