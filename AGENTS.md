@@ -51,6 +51,9 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
   A patch violates Anthropic's terms of service.
   Use only documented extension points.
   Reading the bundle for evidence is permitted.
+- Run the sandbox sessions and the measurements of a package yourself, and do not give them to the user.
+  The user approves the use of their login in `just sandbox` and `just sandbox-alone` for this work (the user, 2026-10-13).
+  Write the results, with the method, to the evidence file of the package.
 - Add CHANGELOG entries under `[Unreleased]`.
   Change versions with `just bump`.
 - Write public docs in `wiki/`, and run `just wiki` to publish them.
