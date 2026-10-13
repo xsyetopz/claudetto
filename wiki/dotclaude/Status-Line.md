@@ -42,8 +42,13 @@ The rows are set in `segments.ts`, and each segment has a row number.
 - The context segment shows the input tokens of the window, the window size, and the percent.
 - The cost segment shows the total cost in dollars.
   It adds the lines added and removed when either count is above zero.
-- A limit segment shows the percent used and the time to the reset.
-  A reset time shows only when it is in the future.
+- A limit segment shows the percent used, a pace arrow, and the time to the reset.
+  The pace arrow is `▼` in green when the window has reserve, and `▲` in yellow when it has a deficit.
+  The reset time has the `↻` glyph before it, and it shows only when it is in the future.
+  It is a clock time where it fits, such as `↻3:12pm`, and a countdown, such as `↻3h12m`, where it does not.
+  A run-out time, with the `⏵` glyph in red, shows only when the use reaches 100% before the reset at the current rate.
+- The `5h` and `7d` windows take one row each where two rows fit, and they share one row when they do not.
+  The places of the rows start in the same columns.
 
 The plugin omits each segment that has no value.
 The icons are single-column characters from `icons.ts`.
@@ -56,6 +61,12 @@ A percent at or above `90` is red.
 A percent at or above `75` is yellow.
 Any other percent is green.
 
+The percent of a limit window takes its color from the projected use at the end of the window.
+A projected use above `PROJECTED_RUNOUT`, which is `100`, is red.
+A projected use from `PROJECTED_WARN` up to `100` is yellow.
+Any other projected use is green.
+Before `PACE_MIN_FRACTION` (`0.03`) of the window has passed, the raw percent sets the color.
+
 `NO_COLOR` disables each color, and the icons stay.
 The variable counts as set when it is not empty.
 
@@ -65,9 +76,10 @@ The width is the `COLUMNS` variable.
 When `COLUMNS` is not set, the width is `DEFAULT_COLUMNS` (`120`).
 The status line keeps `COLUMNS_MARGIN` (`4`) columns free at the right edge.
 
-`fitRow` in `domain/rows.ts` joins the segments of a row with `SEGMENT_GAP`, which is two spaces.
-When the row is too wide, the segments at the right go first.
-When one segment is still too wide, the row cuts it.
+`fitRow` in `domain/rows.ts` joins the items of a row with `ITEM_GAP`, which is ` · `.
+When the row is too wide, the items at the right go first.
+When one item is still too wide, the row cuts it.
+The columns of the places drop together when one row does not fit, so no row keeps its own alignment.
 
 ## Main Command
 
@@ -115,6 +127,7 @@ It writes at most `SUBAGENT_ROWS_MAX` rows, which is `20`.
 
 Each row shows the agent type, without the plugin prefix, and the description.
 The description shows only when `DESCRIPTION_ROOM_MIN` (`8`) columns are free for it.
+The items of a row are joined with `ITEM_GAP`, as in the main status line.
 
 ## Settings
 
