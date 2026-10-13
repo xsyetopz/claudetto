@@ -19,6 +19,7 @@ import {
   toolResults,
 } from "../../../src/plugins/dotclaude-sessions/slices/start-cost/domain/session.ts";
 import {
+  agentType,
   readEntries,
   type Usage,
 } from "../../../src/plugins/dotclaude-sessions/slices/start-cost/domain/transcript.ts";
@@ -206,4 +207,12 @@ test("the list of most-read files holds at most five names", async () => {
   expect(rr.reads).toBe(14);
   expect(rr.repeats).toBe(7);
   expect(rr.most.length).toBe(5);
+});
+
+test("a subagent meta file that is `null` gives the default subagent type and does not throw", async () => {
+  const root = tmpDir("start-null");
+  const file = path.join(root, "p", "subagents", "agent-n.jsonl");
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(path.join(root, "p", "subagents", "agent-n.meta.json"), "null");
+  expect(await agentType(store, file)).toBe("subagent");
 });
