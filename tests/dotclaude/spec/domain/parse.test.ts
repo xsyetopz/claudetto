@@ -36,11 +36,19 @@ test("`parseSpec` reads the requirements, their sentences, and their scenarios",
   expect(reader?.scenarios).toStrictEqual([
     {
       name: "Known schema",
+      lines: [
+        "- **WHEN** the file has schema 1",
+        "- **THEN** the reader gives the state",
+      ],
       whenLines: ["the file has schema 1"],
       thenLines: ["the reader gives the state"],
     },
     {
       name: "Unknown schema",
+      lines: [
+        "- **WHEN** the file has schema 2",
+        "- **THEN** the reader stops with an error that names the file",
+      ],
       whenLines: ["the file has schema 2"],
       thenLines: ["the reader stops with an error that names the file"],
     },

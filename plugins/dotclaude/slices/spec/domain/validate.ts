@@ -29,7 +29,8 @@ export type IssueRule =
   | "plan.dep-missing"
   | "plan.dep-cycle"
   | "wave.owns-overlap"
-  | "plan.checkbox-lane";
+  | "plan.checkbox-lane"
+  | "plan.event-no-package";
 
 /** One failed check, with the rule that it broke and the name of the item that broke it. */
 export interface Issue {
@@ -246,6 +247,21 @@ export const validateWave = (packages: Package[]): Issue[] =>
 
 export const ownsOverlap = (a: string[], b: string[]): boolean =>
   a.some((x) => b.some((y) => x.startsWith(y) || y.startsWith(x)));
+
+/** Checks that each package with a lane in `events.jsonl` has a brief in `packages/`. */
+export const validateEvents = (
+  eventPackages: readonly string[],
+  briefPackages: readonly string[],
+): Issue[] =>
+  [...new Set(eventPackages)]
+    .filter((pkg) => !briefPackages.includes(pkg))
+    .map((pkg) =>
+      issue(
+        "plan.event-no-package",
+        pkg,
+        "the log has a lane for a package with no file in `packages/`",
+      ),
+    );
 
 /** Checks that the checkbox of each package in the list agrees with its lane: `[x]` when `done`, `[ ]` otherwise. */
 export const validateCheckboxes = (

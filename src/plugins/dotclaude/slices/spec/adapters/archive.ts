@@ -13,6 +13,7 @@ import {
 import { applyDelta } from "../domain/delta.ts";
 import { parseDelta, parseSpec } from "../domain/parse.ts";
 import { validateDelta, validateSpec } from "../domain/validate.ts";
+import { CHANGE_ID } from "../limits.ts";
 import { renderSpec } from "./render.ts";
 import { dateOf, type Run } from "./run.ts";
 
@@ -67,6 +68,27 @@ const applyAll = async (
   return { texts, problems };
 };
 
+/**
+ * Puts the new `specs/` in place, and moves the change to `target`.
+ * When a later step fails, the old `specs/` comes back, and the new one goes.
+ */
+const swap = (run: Run, dir: string, target: string): void => {
+  const hadSpecs = run.store.exists(SPECS_DIR);
+  let installed = false;
+  try {
+    if (hadSpecs) run.store.move(SPECS_DIR, SPECS_OLD);
+    run.store.move(SPECS_TEMP, SPECS_DIR);
+    installed = true;
+    run.store.move(dir, target);
+  } catch (error) {
+    if (installed) run.store.remove(SPECS_DIR);
+    if (hadSpecs && run.store.exists(SPECS_OLD))
+      run.store.move(SPECS_OLD, SPECS_DIR);
+    throw error;
+  }
+  run.store.remove(SPECS_OLD);
+};
+
 export const archiveCommand = async (
   run: Run,
   args: string[],
@@ -76,9 +98,13 @@ export const archiveCommand = async (
     run.io.error("Usage: dotclaude-spec archive <id>");
     return 2;
   }
+  if (!CHANGE_ID.test(id)) {
+    run.io.error(`The id \`${id}\` is not a change id.`);
+    return 1;
+  }
   const dir = path.posix.join(SPEC_ROOT, id);
   const target = path.posix.join(ARCHIVE_DIR, `${dateOf(run.clock)}-${id}`);
-  if (!run.store.exists(dir) || id === "archive") {
+  if (!run.store.exists(dir)) {
     run.io.error(`The change \`${id}\` does not exist in \`${SPEC_ROOT}\`.`);
     return 1;
   }
@@ -102,10 +128,14 @@ export const archiveCommand = async (
   if (run.store.exists(SPECS_DIR)) run.store.copyDir(SPECS_DIR, SPECS_TEMP);
   for (const [name, text] of texts)
     await run.store.write(path.posix.join(SPECS_TEMP, name), text);
-  if (run.store.exists(SPECS_DIR)) run.store.move(SPECS_DIR, SPECS_OLD);
-  run.store.move(SPECS_TEMP, SPECS_DIR);
-  run.store.move(dir, target);
-  run.store.remove(SPECS_OLD);
+  try {
+    swap(run, dir, target);
+  } catch (error) {
+    run.io.error(
+      `The archive of \`${id}\` failed, and \`${SPECS_DIR}\` is restored: ${(error as Error).message}`,
+    );
+    return 1;
+  }
   run.io.log(
     `${target} (${texts.size} capabilit${texts.size === 1 ? "y" : "ies"} changed)`,
   );

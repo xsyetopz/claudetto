@@ -6,6 +6,7 @@ import type { ProcessOptions, ProcessRunner } from "../ports.ts";
 /** The options of `runProgram` that its callers give to `Bun.spawnSync`. */
 export type ProgramOptions = {
   cwd?: string;
+  env?: NodeJS.ProcessEnv;
   timeout?: number;
   stdin?: "ignore" | "pipe" | "inherit";
   stdout?: "pipe" | "ignore" | "inherit";

@@ -3,7 +3,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { main } from "../../../../src/plugins/dotclaude/slices/spec/adapters/cli.ts";
+import { main } from "../../../../plugins/dotclaude/slices/spec/adapters/cli.ts";
 
 export const TODAY = "2026-10-12";
 

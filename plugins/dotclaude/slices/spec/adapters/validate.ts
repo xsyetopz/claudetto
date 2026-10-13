@@ -12,6 +12,7 @@ import {
   validateCheckboxes,
   validateDelta,
   validateDeps,
+  validateEvents,
   validatePackage,
   validateSpec,
   validateTasks,
@@ -112,6 +113,15 @@ const packageProblems = async (
   );
   const lanes = events ? await store.lanes(id, events) : {};
   const open = (pkg: Package): boolean => lanes[pkg.front.id] !== "done";
+  out.push(
+    ...issueLines(
+      path.posix.join(dir, "events.jsonl"),
+      validateEvents(
+        (events ?? []).map((e) => e.package),
+        packages.map((p) => p.front.id),
+      ),
+    ),
+  );
   out.push(
     ...issueLines(
       path.posix.join(dir, "packages.md"),

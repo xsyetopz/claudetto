@@ -52,10 +52,51 @@ test("lane sets the checkbox of the package line: x for done, a space for each o
   expect(await boxes()).toStrictEqual(["- [ ]", "- [ ]"]);
   await run(root, "lane", "P01", "doing");
   expect(await boxes()).toStrictEqual(["- [ ]", "- [ ]"]);
-  await run(root, "lane", "P01", "done");
-  expect(await boxes()).toStrictEqual(["- [x]", "- [ ]"]);
   await run(root, "lane", "P01", "blocked");
   expect(await boxes()).toStrictEqual(["- [ ]", "- [ ]"]);
+  await run(root, "lane", "P01", "done");
+  expect(await boxes()).toStrictEqual(["- [x]", "- [ ]"]);
+});
+
+test("lane refuses a move out of done, and the log keeps its lines", async () => {
+  const root = await makePlan([{ id: "P01" }]);
+  expect((await run(root, "lane", "P01", "done")).code).toBe(0);
+  const before = await read(root, `${CHANGE}/events.jsonl`);
+  const r = await run(root, "lane", "P01", "doing");
+  expect(r.code).toBe(1);
+  expect(r.err.join("\n")).toContain("`P01` is in `done`");
+  expect(await read(root, `${CHANGE}/events.jsonl`)).toBe(before);
+});
+
+test("lane refuses a move to the lane that the package has", async () => {
+  const root = await makePlan([{ id: "P01" }]);
+  expect((await run(root, "lane", "P01", "doing")).code).toBe(0);
+  const r = await run(root, "lane", "P01", "doing");
+  expect(r.code).toBe(1);
+  expect(r.err.join("\n")).toContain("already in `doing`");
+});
+
+test("lane adds its line on a new line when the log has no final line end", async () => {
+  const root = await makeStore({
+    [`${CHANGE}/events.jsonl`]: eventsText({ P01: "planned" }).trimEnd(),
+  });
+  expect((await run(root, "lane", "P01", "doing")).code).toBe(0);
+  const lines = (await read(root, `${CHANGE}/events.jsonl`)).trim().split("\n");
+  expect(
+    lines.map((l) => JSON.parse(l) as { lane?: string }).at(-1),
+  ).toMatchObject({
+    lane: "doing",
+  });
+  expect(lines).toHaveLength(3);
+});
+
+test("lane names the file and the line of a log line that is not JSON", async () => {
+  const root = await makeStore({
+    [`${CHANGE}/events.jsonl`]: `${eventsText({ P01: "planned" })}{"package":\n`,
+  });
+  const r = await run(root, "lane", "P01", "doing");
+  expect(r.code).toBe(1);
+  expect(r.err.join("\n")).toContain(`${CHANGE}/events.jsonl:3:`);
 });
 
 test("lane stops on a bad lane, a missing argument, and an unknown package", async () => {

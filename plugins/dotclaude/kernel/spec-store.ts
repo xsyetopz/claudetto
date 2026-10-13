@@ -48,9 +48,19 @@ export const eventsHeader = (): string =>
 export const eventLine = (event: LaneEvent): string =>
   `${JSON.stringify(event)}\n`;
 
+/** Parses one line of `file`, and names the file and the line when the line is not JSON. */
+const parseLine = (file: string, line: number, text: string): unknown => {
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error(`${file}:${line}: this line is not JSON.`);
+  }
+};
+
 /**
  * The lane events of the change `id`, in the order of the log, or null when the change has no `events.jsonl`.
  * The reader throws an `Error` that names the file when the header has a `schema` other than `SPEC_SCHEMA`.
+ * It throws an `Error` that names the file and the line when a line is not JSON.
  */
 export const readEvents = async (
   files: FileReader,
@@ -59,13 +69,18 @@ export const readEvents = async (
   const file = eventsPath(id);
   const text = await files.read(file);
   if (text === null) return null;
-  const [head = "", ...rest] = text.split("\n").filter((line) => line.trim());
-  const header = JSON.parse(head || "{}") as Partial<EventsHeader>;
+  const [head, ...rest] = text
+    .split("\n")
+    .map((raw, i) => ({ raw, line: i + 1 }))
+    .filter(({ raw }) => raw.trim() !== "");
+  const header = (
+    head ? parseLine(file, head.line, head.raw) : {}
+  ) as Partial<EventsHeader>;
   if (header.schema !== SPEC_SCHEMA)
     throw new Error(
       `${file} has schema ${String(header.schema)}, which this version does not read.`,
     );
-  return rest.map((line) => JSON.parse(line) as LaneEvent);
+  return rest.map(({ raw, line }) => parseLine(file, line, raw) as LaneEvent);
 };
 
 /** The lane of each package in `events`: the last line of the package, in the order of the first line. */
