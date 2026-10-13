@@ -255,31 +255,23 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ### Fixed
 
-- The guard denies a git verb that an alias hides, such as `alias g=git` followed by `g reset --hard`, and the `command` or `builtin` form of an alias.
-  It also denies an alias whose body has `;`, `&&`, `||`, or `|`.
+- The guard denies a git verb that an alias hides, such as `alias g=git` followed by `g reset --hard`.
 - The guard splits a word at an unquoted `$IFS`, so `git${IFS}reset${IFS}--hard` is denied.
-  A quoted `$IFS` stays one argument, so `git commit -m '$IFS'` keeps its `-m`.
-- The guard denies a guarded verb that an empty positional or special parameter hides, such as `git$9 reset --hard` and `git$@ reset --hard`.
-- The write guard asks on a command over the shell scan bound, as the git guard already does.
-- A torn last line of `events.jsonl` no longer makes `status` and the other readers of a change fail.
-  The reader skips the line and names its line number, and an append removes the torn line first.
-- The settings write of `setup --apply` keeps a symlinked `settings.json` and the mode of the file.
-  It also skips an unreadable catalog file, which before stopped the run with `ENOENT`.
-- `writeAtomic` retries a rename on Windows when the target is open, and it keeps the symlink and the mode of the file that it replaces.
-- The `claude` calls of `tools/` send no telemetry to Datadog.
-  Each call builds its environment when it runs, so a change of `process.env` reaches it.
-- `ci` gates `generate --check`, and `bump` checks each target before it writes.
-- `dotclaude-sandbox --clean` removes a `config/` folder that is read-only, and it refuses a symlinked sandbox root with exit 1.
+  A quoted `$IFS` stays one argument.
+- The guard denies a verb that an empty positional or special parameter hides, such as `git$9 reset --hard`.
+  The write guard asks on a command over the shell scan bound, as the git guard does.
+- A torn last line of `events.jsonl` no longer makes `status` and the other readers fail, and an append removes it first.
+- `setup --apply` and `writeAtomic` keep a symlink and the mode of the file, and `writeAtomic` retries a Windows rename over an open file.
+  The settings write also skips an unreadable catalog file, which before stopped the run with `ENOENT`.
+- The `claude` calls of `tools/` send no telemetry to Datadog, `ci` gates `generate --check`, and `bump` checks each target before it writes.
+- `dotclaude-sandbox --clean` removes a read-only `config/` folder, and it refuses a symlinked sandbox root with exit 1.
 - `dotclaude-run-checks ""` gives a usage error with exit 2, and it no longer runs one command.
-- The attribution adds the model line to each `git commit` and `gh pr create` of a chain, and to a `git` command with an option before `commit`, such as `git --no-pager commit`.
-  It names `Claude Sonnet 4` for `claude-sonnet-4-20250514`, not `Claude Sonnet 4.20250514`.
-- The session readers of `usage` and `start-cost` skip a `null` line, a `null` meta file, and a `null` installed-plugins file, and they no longer throw.
+- The attribution adds the model line to each command of a chain and to `git --no-pager commit`.
+  It names `Claude Sonnet 4` for `claude-sonnet-4-20250514`.
+- The session readers of `usage` and `start-cost` skip a `null` line, meta file, or installed-plugins file.
 - The `claudeMdExcludes` match takes a lower-case drive letter as the same drive.
 - The you-should-know band shows, and a heads-up note reaches the next call of the main agent.
-  The tool does not wait for a model call that is slower than its bound.
-- The status line gives `⚡`, `✅`, `⭐`, and `❌` two columns, and it keeps a later item in its column when a middle place is empty.
-- The subagent rows join their items with ` · `, as the main status line does.
-- The clock time of the status line keeps `PM` after a narrow no-break space.
+- The status line gives `⚡`, `✅`, `⭐`, and `❌` two columns, keeps a later item in its column when a middle place is empty, and joins subagent items with ` · `.
 
 ## Older Releases
 
