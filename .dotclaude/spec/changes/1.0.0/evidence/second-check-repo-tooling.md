@@ -9,7 +9,7 @@ The run of `just test tests/tools tests/support && just validate` passed with 16
 
 | Candidate | Test | Verdict | Fix commit |
 | --- | --- | --- | --- |
-| Telemetry of the `claude` calls of `tools/` (datadog calls under the sandbox) | `tests/tools/telemetry-env.test.ts` | open: the error path has a cited gate (`DISABLE_ERROR_REPORTING`), the event path has none | this commit |
+| Telemetry of the `claude` calls of `tools/` (datadog calls under the sandbox) | `tests/tools/telemetry-env.test.ts` | confirmed: the error path is gated by `DISABLE_ERROR_REPORTING` and the event path by `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` | this commit |
 | The env of `$claude` is built once at import | `tests/tools/telemetry-env.test.ts` | confirmed: a change of `process.env` after the import is lost | this commit |
 | A `claude` command outside the helper | `tests/tools/bypass-scan.test.ts` | confirmed: the old test checked only the helper, so a `claude` command outside it passed | this commit |
 | `check` and `ci` differ by `generate --check` | `tests/tools/justfile-gate.test.ts` | confirmed | `366f2a50` |
@@ -34,13 +34,17 @@ Notes on the rows:
     `env.md:42` lists `DISABLE_ERROR_REPORTING`.
     `iDe()` calls `zfo()` (byte 20421487), which enqueues to the Datadog sender (byte 20421728).
   - Event path, `uPt()` at byte 20417140: it returns when the provider is not `firstParty`, and it uses `initializeDatadog` (byte 20416050).
-    `Nbs()` also calls `Uy()` and `Ie()`, and `initializeDatadog` calls `Uy()` and `ARs()`.
-    The bodies of `Uy()` and `ARs()` in this chunk were not traced, so no env gate is cited for this path.
+    `initializeDatadog` returns false when `Uy()` or `ARs()` is true.
+    `Uy()` (byte 15227601) is `u() || eo() !== null || MV() || l()`.
+    `MV()` (byte 13083100) is `FMt() !== "default"`, and `FMt()` leaves `default` when `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`, `DISABLE_TELEMETRY`, or `DO_NOT_TRACK` is set.
+    Each of `Uy`, `FMt`, and this `MV` has one definition in the bundle (`grep -c`).
+    So `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` gates the event path.
+    The main session read these offsets after the retry.
   - The reporter at byte 13084960 returns on `DISABLE_ERROR_REPORTING` or `At()`, but it dispatches to a local store, not to Datadog.
   - The Datadog host is `http-intake.logs.us5.datadoghq.com` (byte 20403805).
-  - Verdict: `open`.
-    The error path is gated by `DISABLE_ERROR_REPORTING`, which `CLAUDE_ENV` sets.
-    The event path has no cited gate, so the claim that the env stops the Datadog calls is not confirmed.
+  - Verdict: `confirmed` from the bundle.
+    The error path is gated by `DISABLE_ERROR_REPORTING`, and the event path by `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`, and `CLAUDE_ENV` sets both.
+    A sandbox run that shows no denied call to the Datadog host is the live check.
     The sandbox run that gave the 9 calls was not repeated in this package.
   - `DISABLE_TELEMETRY` (`env.md:44`) feeds `FMt()`, but no Datadog path that it gates is cited, so `CLAUDE_ENV` does not set it.
 - Per-call env: `$claude` is now a function, so each call reads `process.env` again.

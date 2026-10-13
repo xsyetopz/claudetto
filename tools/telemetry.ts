@@ -7,10 +7,9 @@
 // The Datadog error path is `iDe()` (byte 20428914), which returns when `Nbs()` (byte 20400699) is false.
 // `Nbs()` returns when `DISABLE_ERROR_REPORTING` is set (byte 20400729). `iDe()` calls `zfo()` (byte 20421487), which enqueues to the sender.
 // The Datadog host is `http-intake.logs.us5.datadoghq.com` (byte 20403805).
-// The event path is `uPt()` (byte 20417140). Its gates are the provider check and `initializeDatadog` (byte 20416050).
-// No documented env var gates that path in the trace so far, so that verdict is open.
-// `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` stays in the env, but no Datadog gate is cited for it yet.
-// `DISABLE_TELEMETRY` is not set, because no Datadog path that it gates is cited.
+// The event path is `uPt()` (byte 20417140), and it sends only after `initializeDatadog` (byte 20416050) is true.
+// `initializeDatadog` is false when `Uy()` (byte 15227601) is true, and `Uy()` calls `MV()` (byte 13083100), which is `FMt() !== "default"`.
+// So `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` stops the event path, and `DISABLE_ERROR_REPORTING` stops the error path.
 // A script runs its `claude` commands through `$claude()`, so no call of `tools/` leaves the vars out.
 
 import { $ } from "bun";
