@@ -2,7 +2,9 @@
 // The clock, the files, and the `git` runner are fakes, so that no file is written and no `git` runs.
 
 import { expect, test } from "bun:test";
+import fs from "node:fs";
 import os from "node:os";
+import path from "node:path";
 import { main } from "../../../src/plugins/dotclaude/slices/statusline/adapters/cli.ts";
 import { cacheFile } from "../../../src/plugins/dotclaude/slices/statusline/adapters/git-cache.ts";
 import {
@@ -115,7 +117,9 @@ const runWithSaved = async (
   text: string,
 ): Promise<{ gitRuns: number; out: string }> => {
   const memory = memoryFiles();
-  memory.files.set(cacheFile(STATUS.workspace.current_dir), text);
+  const file = cacheFile(STATUS.workspace.current_dir);
+  if (file === null) throw new Error("the test needs a cache folder");
+  memory.files.set(file, text);
   let gitRuns = 0;
   const runner = {
     run: () => {
@@ -144,6 +148,22 @@ test("a cache file with a wrong field type is no cache, and `git` runs", async (
   });
   const { gitRuns } = await runWithSaved(saved);
   expect(gitRuns).toBe(1);
+});
+
+test("a cache folder with group or other mode bits is no cache folder", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "git-cache-"));
+  const folder = path.join(root, `dotclaude-git-${process.getuid?.()}`);
+  fs.mkdirSync(folder);
+  fs.chmodSync(folder, 0o755);
+  expect(cacheFile(STATUS.workspace.current_dir, root)).toBeNull();
+});
+
+test("a missing cache folder is made with mode `0700` and used", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "git-cache-"));
+  const file = cacheFile(STATUS.workspace.current_dir, root);
+  const folder = path.dirname(file ?? "");
+  expect(path.dirname(folder)).toBe(root);
+  expect(fs.statSync(folder).mode & 0o777).toBe(0o700);
 });
 
 test("a cache file whose branch holds terminal escape codes is no cache, and `git` runs", async () => {
