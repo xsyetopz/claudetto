@@ -5,16 +5,16 @@ import { expect, test } from "bun:test";
 import {
   sizeRequest,
   sizingLines,
-} from "../../src/plugins/dotclaude-lab/slices/capture/domain/report.ts";
+} from "../../../src/plugins/dotclaude-lab/slices/capture/domain/report.ts";
 import type {
   Body,
   Wait,
-} from "../../src/plugins/dotclaude-lab/slices/capture/domain/types.ts";
+} from "../../../src/plugins/dotclaude-lab/slices/capture/domain/types.ts";
 import {
   COUNT_ATTEMPTS,
   COUNT_BACKOFF_MS,
   MAX_PART_COUNTS,
-} from "../../src/plugins/dotclaude-lab/slices/capture/limits.ts";
+} from "../../../src/plugins/dotclaude-lab/slices/capture/limits.ts";
 
 /** The reply of the fake server to one call: its status and its body text. */
 type Reply = { status: number; text: string };

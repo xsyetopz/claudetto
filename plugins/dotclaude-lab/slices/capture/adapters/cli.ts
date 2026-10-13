@@ -115,7 +115,7 @@ export const main = async (
   let recounted: Body | null = null;
   if (recount !== null) {
     try {
-      recounted = JSON.parse(fs.readFileSync(recount, "utf8")) as Body;
+      recounted = (await Bun.file(recount).json()) as Body;
     } catch (e) {
       console.error(
         `capture: cannot read ${recount} as a JSON request: ${(e as Error).message}`,

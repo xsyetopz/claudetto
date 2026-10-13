@@ -4,15 +4,15 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { parts } from "../../src/plugins/dotclaude-lab/slices/capture/domain/report.ts";
+import { parts } from "../../../src/plugins/dotclaude-lab/slices/capture/domain/report.ts";
 import type {
   Block,
   Body,
   Message,
   Part,
-} from "../../src/plugins/dotclaude-lab/slices/capture/domain/types.ts";
-import { resolveUpstream } from "../../src/plugins/dotclaude-lab/slices/capture/domain/upstream.ts";
-import { PLUGINS, tmpDir } from "../support/repo.ts";
+} from "../../../src/plugins/dotclaude-lab/slices/capture/domain/types.ts";
+import { resolveUpstream } from "../../../src/plugins/dotclaude-lab/slices/capture/domain/upstream.ts";
+import { PLUGINS, tmpDir } from "../../support/repo.ts";
 
 const TOOL = path.join(PLUGINS, "dotclaude-lab", "bin", "dotclaude-capture");
 
@@ -322,7 +322,7 @@ test("`--count FILE` that is not JSON stops the proxy with exit 1 and names the 
   const port = await freePort();
   const dir = tmpDir("capture");
   const file = path.join(dir, "request.json");
-  fs.writeFileSync(file, "{ not json");
+  await Bun.write(file, "{ not json");
   const r = Bun.spawnSync([
     process.execPath,
     "--no-env-file",

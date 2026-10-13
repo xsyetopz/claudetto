@@ -19,12 +19,12 @@ afterEach(() => {
 test("`--clean` refuses a folder that holds a file outside the sandbox layout", async () => {
   const root = path.join(scratch, "work");
   fs.mkdirSync(path.join(root, "config"), { recursive: true });
-  fs.writeFileSync(path.join(root, "notes.txt"), "keep me");
+  await Bun.write(path.join(root, "notes.txt"), "keep me");
 
   const code = await main(["--dir", root, "--clean"]);
 
   expect(code).not.toBe(0);
-  expect(fs.readFileSync(path.join(root, "notes.txt"), "utf8")).toBe("keep me");
+  expect(await Bun.file(path.join(root, "notes.txt")).text()).toBe("keep me");
 });
 
 test("`--clean` refuses a folder that holds a sub-folder outside the layout", async () => {
