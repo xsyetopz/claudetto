@@ -1,4 +1,4 @@
-# You should know
+# You Should Know
 
 The plugin `dcc-plugin-you-should-know` shows one thing that you should know before Claude changes something.
 It shows the thing as a toast, and the change runs as usual.
@@ -16,7 +16,7 @@ The one slice is `notice`, and its hooks are in `slices/notice/adapters/mod.ts`.
 1. Install the plugin with `/plugin install dcc-plugin-you-should-know@dotclaude`.
 2. Turn off the built-in plugin `cc-plugin-you-should-know@builtin` in `/plugin`.
 
-## When it checks
+## When It Checks
 
 The plugin checks the first call of each turn that changes something:
 an `Edit`, a `Write`, a `NotebookEdit`, or a `Bash` command that is not a read.
@@ -33,27 +33,51 @@ a trade-off that you possibly do not see, a design decision that has effects lat
 Most checks give none, and then no toast shows.
 A topic that showed in the session does not show again.
 
-## What a check costs
+In a TUI session, the toast showed 23 ms before Claude Code wrote the file.
+So the notice shows before the action that it is about.
+
+## What a Check Costs
 
 The plugin makes at most one model call per turn.
 The tool waits for the call, so a check adds its wait before the tool runs.
 
-| Account | Model call | Cost of one check | Wait |
-| --- | --- | --- | --- |
-| API key | A separate call to Haiku, with your prompt and the pending action, and no transcript | At most about 2,400 tokens of Haiku | About 1 second, at most 5 seconds |
-| Subscription | A fork of the main conversation, on the main model | The conversation as a cache read, plus the prompt and the answer, against your usage limits | About 1 second, at most 6 seconds |
+Each check is a separate call to Haiku, with your prompt and the pending action, and no transcript.
+The output is one sentence or `NONE`, about 4 to 50 tokens.
+The sandbox sessions measured these checks:
 
-A subscription gets HTTP 429 on a separate call from a hook.
-So the plugin tries the separate call first, and after a 429 it uses a fork for the rest of the session.
-The first check of a session on a subscription waits for the 429, about 2.5 seconds.
-When Claude Code lets a subscription make separate calls from a hook, the separate call works on a subscription too.
+| Account | Wait of One Check | Input Tokens of One Check |
+| --- | --- | --- |
+| Subscription | 2,216 ms and 2,430 ms | 412 of Haiku, against your usage limits |
+| API key | 3,017 ms | 411 of Haiku |
 
+The tool waits at most 5 seconds for a separate call and at most 6 seconds for a fork.
 A failed or slow call shows no toast, and the change runs.
+
+## When `CLAUDE_CODE_ATTRIBUTION_HEADER` Is `0`
+
+On a subscription, a separate call from a hook gets HTTP 429 when `CLAUDE_CODE_ATTRIBUTION_HEADER` is `0`.
+The request then carries no billing block and no identity block of Claude Code, so the API refuses it.
+
+After a 429, the plugin uses a fork of the main conversation for the rest of the session.
+A fork sends the main request again, so it works.
+The sandbox session measured this path:
+
+- The first check waited 2,850 ms, because Claude Code tried the separate call 3 times before the 429 stood.
+- The fork read 16,731 input tokens on the main model, nearly all of them a cache read of the conversation.
+
+So a fork costs much more than a separate call.
+Keep the attribution header on to get the cheaper check.
+The core plugin does not set `CLAUDE_CODE_ATTRIBUTION_HEADER=0`.
 
 ## Limits
 
 - The toast is for you only, and Claude does not see it.
-- The cost and the wait of one real check on each account are not measured yet.
-  The numbers above come from the bounds of the plugin and from probes with a short prompt.
+- The cost of a session does not show the cost of its checks, because the cache state of the main requests differs between runs.
+- Each number above comes from one or two sandbox sessions with `claude-sonnet-5-5` and one short edit.
 
 The evidence is in `.dotclaude/spec/changes/1.0.0/evidence/you-should-know.md`.
+
+## Related Pages
+
+- [AGENTS.md](Agents-Md): the other plugin that replaces a built-in plugin.
+- [Add-On Plugins](Add-Ons): the list of the add-on plugins.

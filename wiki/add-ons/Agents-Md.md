@@ -14,7 +14,7 @@ The one slice is `agents`, and its hooks are in `slices/agents/adapters/mod.ts`.
 
 The plugin needs no key and no tool on `PATH`.
 
-## The files that it loads
+## The Files That It Loads
 
 | Place | Files | When |
 | --- | --- | --- |
@@ -26,7 +26,7 @@ The plugin needs no key and no tool on `PATH`.
 A file at the start goes into the instruction files, as a `CLAUDE.md` file does.
 A nested file goes into the result of the tool call or the mention, as one block of context.
 
-## No file loads twice
+## No File Loads Twice
 
 - The plugin skips a file that the instruction files already hold, by its path or by the same trimmed text.
   So a file that a `CLAUDE` file imports or links to does not load again.
@@ -36,11 +36,29 @@ A nested file goes into the result of the tool call or the mention, as one block
   A new session loads each file again.
 - `claudeMdExcludes` applies to the `AGENTS` files too.
 
+## What the Files Cost
+
+A sandbox session loaded 5 `AGENTS` files, and then loaded the same text as `CLAUDE` files.
+The `count_tokens` API counted the requests.
+
+| Files | As `AGENTS` Files | As `CLAUDE` Files |
+| --- | --- | --- |
+| The files of the start, in the first request | 16,772 tokens | 16,789 tokens |
+| One nested file | 73 tokens | 66 tokens |
+
+So the files of the start cost 17 tokens less than `CLAUDE` files.
+Each nested file costs 7 tokens more than a nested `CLAUDE.md`.
+Claude Code puts the prefix `tool.call hook additional context:` before the context of a hook, and the plugin cannot remove it.
+
 ## Limits
 
 - The mods API does not show the `--add-dir` folders of the CLI.
   The plugin reads only `permissions.additionalDirectories` from the settings.
 - The plugin fails open: a failed read loads no file and does not change the tool call.
-- The token cost of an `AGENTS.md` against the same text in `CLAUDE.md` is not measured yet.
 
 The evidence is in `.dotclaude/spec/changes/1.0.0/evidence/agents-md.md`.
+
+## Related Pages
+
+- [You Should Know](You-Should-Know): the next add-on page.
+- [Add-On Plugins](Add-Ons): the list of the add-on plugins.
