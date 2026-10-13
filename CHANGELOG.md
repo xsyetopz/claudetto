@@ -146,6 +146,11 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `dotclaude-usage` report prices each call by the model version, from the pricing page of 2026-10-13.
   It adds the Mythos models and the two prompt tiers of Haiku 5.5, and the cache read of Sonnet 5.5 is $0.10.
   A version that is not in the table gets the prices of the newest version of its family.
+- The `START_SYNC_TIMEOUT_MS` bound of `dotclaude-codegraph` is 6000 ms, in place of 8000 ms.
+  On Windows the sync also gets `TREE_GRACE_MS`, so the session start stays at least 1 s under its 10 s hook timeout.
+- The `dcc-plugin-you-should-know` check sends only the newest 10 topics of the `<seen>` list, so the input stays bounded.
+- The `TREE_CHANGE` match of `dotclaude-codegraph` accepts a `git` command with global options before its verb.
+  So a command such as `git -C dir commit` syncs the index.
 
 ### Removed
 
