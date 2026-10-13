@@ -1,7 +1,10 @@
 # You Should Know
 
 The plugin `dcc-plugin-you-should-know` shows one thing that you should know before Claude changes something.
-It shows the thing as a toast, and the change runs as usual.
+It shows the thing in a band above the prompt, and the change runs as usual.
+The band has two choices.
+`1` gives a heads-up: it fills the prompt with the topic, so that you can add to the note, and the note goes to the next call of the main agent, once.
+`0` dismisses the band.
 It replaces the built-in plugin `cc-plugin-you-should-know`, which shows its notice after Claude acts.
 It works without the core plugin, and it imports nothing from another plugin.
 
@@ -30,16 +33,16 @@ These calls get no check:
 
 The model gives one topic of three kinds, or none:
 a trade-off that you possibly do not see, a design decision that has effects later, or an edge case that is not clear.
-Most checks give none, and then no toast shows.
+Most checks give none, and then no band shows.
 A topic that showed in the session does not show again.
 
-In a TUI session, the toast showed 23 ms before Claude Code wrote the file.
-So the notice shows before the action that it is about.
+In a TUI session, the band showed above the prompt after the turn ended.
+The band does not stop the action that it is about.
 
 ## What a Check Costs
 
 The plugin makes at most one model call per turn.
-The tool waits for the call, so a check adds its wait before the tool runs.
+The tool starts the call and does not wait for it, so a check adds no wait before the tool runs.
 
 Each check is a separate call to Haiku, with your prompt and the pending action, and no transcript.
 The output is one sentence or `NONE`, about 4 to 50 tokens.
@@ -50,9 +53,9 @@ The sandbox sessions measured these checks:
 | Subscription | 2,216 ms and 2,430 ms | 412 of Haiku, against your usage limits |
 | API key | 3,017 ms | 411 of Haiku |
 
-The tool waits at most 5 seconds for a separate call and at most 6 seconds for a fork.
+The tool does not wait for a separate call or a fork.
 Each check sends the newest 10 topics that showed, so the input stays bounded.
-A failed or slow call shows no toast, and the change runs.
+A failed call shows no band, and the change runs.
 
 ## When `CLAUDE_CODE_ATTRIBUTION_HEADER` Is `0`
 
@@ -63,7 +66,7 @@ After a 429, the plugin uses a fork of the main conversation for the rest of the
 A fork sends the main request again, so it works.
 The fork has no output bound and no cancel.
 `$.model.fork` takes only `{ prompt }`, so the plugin cannot set a token limit or a timeout on it.
-The plugin stops waiting after 6 seconds, but it cannot stop the request.
+The plugin does not wait for the request, but it cannot stop the request.
 The sandbox session measured this path:
 
 - The first check waited 2,850 ms, because Claude Code tried the separate call 3 times before the 429 stood.
@@ -75,7 +78,7 @@ The core plugin does not set `CLAUDE_CODE_ATTRIBUTION_HEADER=0`.
 
 ## Limits
 
-- The toast is for you only, and Claude does not see it.
+- The band is for you, and Claude sees a note only after you choose `1`.
 - The cost of a session does not show the cost of its checks, because the cache state of the main requests differs between runs.
 - Each number above comes from one or two sandbox sessions with `claude-sonnet-5-5` and one short edit.
 
