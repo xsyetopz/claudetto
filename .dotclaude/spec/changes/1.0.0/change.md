@@ -96,6 +96,11 @@ It gets the highest intelligence for the lowest token cost:
   With an `advisorModel`, each request of the root and of each subagent has about 1,358 tokens more, so `/dotclaude:setup` sets it only when the user asks.
 - The wiki gives each choice of 1.0.0 a short reason and the alternatives that dotclaude did not take, with the reason for each.
   `docs/` holds the research of this repository, and `just wiki` does not publish it (the user, 2026-10-13).
+- The spec system of 1.0.0 changes with no compatibility, from the research in `/tmp/claude-sdd-research/report.md`, with a focus on `traceSDD`: file types, formats, Markdown front matter, and states (the user, 2026-10-13).
+  Each external source of the research gets a public citation on the wiki page `Attributions` (the user, 2026-10-13).
+- Each phase of the spec flow has one slash command, named with the verb of its phase, such as `/dotclaude:specify`, `plan`, `tasks`, `implement`, `review`, `accept`, and `archive` (the user, 2026-10-13).
+  The subcommands of `dotclaude-spec` take the same names, and the CLI gets the renames to match (the user, 2026-10-13).
+  The research decides the final verbs and the count of phases, and `/spec`, `/ship`, and `/hotfix` go away.
 
 ## Scope
 
