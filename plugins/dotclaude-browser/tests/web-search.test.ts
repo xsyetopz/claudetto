@@ -4,7 +4,12 @@
 // No browser runs, no session starts, and no network call goes out.
 // The `process.run` stub is the test's own, so the live engine and the live browser are not tested.
 
-import type { On, ProcessRunResult } from "claude-code";
+import type {
+  On,
+  ProcessRunResult,
+  ToolCallArgs,
+  ToolNamed,
+} from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
 type Run = Pick<ProcessRunResult, "exitCode" | "stdout" | "stderr">;
@@ -64,10 +69,18 @@ const stub = (
   return runs;
 };
 
+/**
+ * The input of a `tool.call`.
+ * Claude Code writes the tool types from the session that loads the plugin, and `mode` of `WebSearch` is in the types of some sessions only.
+ * The assertion fits both, and the lab does not read `mode`.
+ */
+type CallInput = ToolCallArgs & ToolNamed<"WebSearch">;
+
 const search = (
   $: Engine,
   input: SearchInput = { query: "bun latest release" },
-) => $.tool.call({ tool: "WebSearch", mode: "standard", ...input });
+) =>
+  $.tool.call({ tool: "WebSearch", mode: "standard", ...input } as CallInput);
 
 /** The result of a search that the tool answered: a deny or an error fails the test. */
 const answered = (out: Awaited<ReturnType<typeof search>>) => {

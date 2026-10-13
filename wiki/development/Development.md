@@ -127,6 +127,12 @@ See [Design](Design) for the design principles.
   Git ignores these folders.
   `just check` needs them.
   CI does not.
+- Claude Code writes the types again at each load, from the tools of that session.
+  The tools can differ between sessions.
+  For example, `WebSearch` had a `mode` field in one session of Claude Code `2.1.296` and none in another session with other env vars.
+  So a test gives no field that only some sessions have, or it uses a type that fits both shapes, such as `search` in `src/plugins/dotclaude-browser/slices/search/lab/web-search.test.ts`.
+- Claude Code also writes a `tsconfig.json` into each plugin folder that has none.
+  Git ignores these files, so the check of the generated files does not report them.
 
 ## Test in Your Config
 

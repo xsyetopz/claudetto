@@ -26,7 +26,7 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
 - `bun run lint:md` lints the Markdown files.
   Headings and code blocks have a 100-column bound.
 - `just sandbox` runs Claude Code with this checkout in a separate config.
-  Read `wiki/plugins/Sandbox.md` first.
+  Read `wiki/development/Sandbox.md` first.
 
 ## Rules
 

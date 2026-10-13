@@ -228,6 +228,10 @@ Then read that file.
    `--clean` of a folder other than the default one refuses a folder without the marker.
    A folder that an older sandbox made has no marker, so remove it by hand.
 
+A sandbox session also writes into your checkout.
+Claude Code writes `.claude-plugin/types/` and a `tsconfig.json` into each plugin folder that it loads, and git ignores them.
+See [Types](Development#types).
+
 The sandbox of `just sandbox` keeps its sessions and settings until you remove it.
 That lets you continue a test.
 But an old sandbox can hide a first-run problem.
