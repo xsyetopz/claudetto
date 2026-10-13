@@ -18,10 +18,11 @@ In scope:
 - Six review areas with disjoint paths: `kernel`, `repo-tooling`, `core-prompt-agents`, `core-guard-asks-spec`, `core-setup-rules-handoff`, `add-on-plugins`.
 - A last package for the docs, the changelog, `just generate`, and `just check`.
 - Four requests of the user (2026-10-13), each in the package that owns its paths:
-  the reserve and deficit arrows of the `5h` and `7d` status line rows, which 0.28.0 had (P04),
-  ` · ` between the items of the status line, with aligned columns where the width permits (P04),
+  the reserve and deficit arrows of the `5h` and `7d` status line rows, which 0.28.0 had (P08),
+  ` · ` between the items of the status line, with aligned columns where the width permits (P08),
   the notice of `dcc-plugin-you-should-know`, which did not pop up and did not let the user expand the note (P06),
   and the calls of `just validate` and `just lab` to `http-intake.logs.us5.datadoghq.com`, which the sandbox denied (P02).
+- Three decisions of the user (2026-10-13) on the open candidates of P01: repair a torn last line of `events.jsonl` (P04), make the write asks fail closed on a truncated command (P04), and retry the Windows rename of `writeAtomic`, with a test that the Windows CI runs (P01).
 
 Out of scope:
 
@@ -35,14 +36,16 @@ A candidate that no test can show is recorded in `evidence/` as rejected, with t
 
 ## Tasks
 
-- [ ] T1 Second-check the kernel: the JSONL reader of the spec store, `writeAtomic` on Windows, the shell output bound.
+- [ ] T1 Second-check the kernel: the JSONL reader of the spec store, the shell output bound, and a retry of the Windows rename of `writeAtomic`.
   Verify: `just test tests/kernel`
 - [ ] T2 Second-check the repo tooling: the overlap of `owns` between the generator and the register emitter, and the release and validate checks, and stop the telemetry calls of the `claude` CLI that the tools start.
   Verify: `just test tests/tools tests/support && just validate`
 - [ ] T3 Second-check the prompt, agents, styles, surface, attribution, trim, decide, and checks slices and the evals of the core plugin.
   Verify: `just test tests/dotclaude/prompt && just lab`
-- [ ] T4 Second-check the guard, asks, spec, sembr, and statusline slices: path separators, substitutions, JSON parse of stdin and cache. Restore the pace arrows and add the ` · ` separators of the status line.
-  Verify: `just test tests/dotclaude/guard tests/dotclaude/statusline && just lab`
+- [ ] T4 Second-check the guard, asks, spec, and sembr slices: path separators and substitutions. Repair a torn last line of `events.jsonl`, and make the write asks fail closed on a truncated command.
+  Verify: `just test tests/dotclaude/guard tests/dotclaude/asks tests/dotclaude/spec tests/kernel && just lab`
+- [ ] T8 Restore the pace arrows of the status line, add the ` · ` separators, and check the parse of stdin and of the git cache.
+  Verify: `just test tests/dotclaude/statusline && just lab`
 - [ ] T5 Second-check the setup, rules, handoff, and stamp slices: the atomic settings write and the exclude append.
   Verify: `just test tests/dotclaude/setup && just lab`
 - [ ] T6 Second-check the add-on plugins: the usage parser of `dotclaude-sessions`, the lab capture report, and the two `dcc-plugin-*` plugins. Make the you-should-know notice pop up and let the user expand it, as the builtin plugin does.

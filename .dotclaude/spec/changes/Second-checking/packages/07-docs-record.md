@@ -1,6 +1,6 @@
 ---
 id: P07
-deps: ["P01", "P02", "P03", "P04", "P05", "P06"]
+deps: ["P01", "P02", "P03", "P04", "P05", "P06", "P08"]
 owns: ["CHANGELOG.md", "README.md", "docs/", "wiki/", "src/wiki/", ".dotclaude/spec/changes/1.0.0/evidence/second-check-summary.md"]
 verify: just check
 agent: implementer

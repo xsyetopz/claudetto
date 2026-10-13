@@ -1,7 +1,7 @@
 ---
 id: P06
 deps: []
-owns: ["src/plugins/dotclaude-codegraph/", "src/plugins/dotclaude-browser/", "src/plugins/dotclaude-docs/", "src/plugins/dotclaude-sessions/", "src/plugins/dotclaude-lab/", "src/plugins/dcc-plugin-agents-md/", "src/plugins/dcc-plugin-you-should-know/", "tests/browser/", "tests/codegraph/", "tests/docs/", "tests/sessions/", "tests/lab/", "tests/dcc-plugin-agents-md/", "tests/dcc-plugin-you-should-know/", ".dotclaude/spec/changes/1.0.0/evidence/second-check-add-on-plugins.md"]
+owns: ["src/plugins/dotclaude-codegraph/", "src/plugins/dotclaude-browser/", "src/plugins/dotclaude-docs/", "src/plugins/dotclaude-sessions/", "src/plugins/dotclaude-lab/", "src/plugins/dcc-plugin-agents-md/", "src/plugins/dcc-plugin-you-should-know/", "tests/browser/", "tests/codegraph/", "tests/docs/", "tests/sessions/", "tests/lab/", "tests/dcc-plugin-agents-md/", "tests/dcc-plugin-you-should-know/", ".dotclaude/spec/changes/1.0.0/evidence/second-check-add-on-plugins.md", ".dotclaude/spec/changes/1.0.0/evidence/second-check-you-should-know.md"]
 verify: just test tests/sessions tests/lab tests/dcc-plugin-agents-md tests/dcc-plugin-you-should-know && just lab
 agent: implementer
 ---
@@ -19,6 +19,7 @@ Make the usage parser, the lab capture, and the two dcc plugins tolerate odd inp
 - `tests/lab/capture` 9 failures (`proxy.test.ts`, `sizing.test.ts`), `EADDRINUSE` on port 0 in the sandbox. A run outside the sandbox gave 109 pass, 0 fail, so these are a sandbox limit; record that in the evidence file. Do not skip or mock.
 - `dcc-plugin-agents-md` (commit `d0fb523b`): `claudeMdExcludes` matched with `/`; test a Windows path with `\`, a drive letter in lower case, and a UNC path.
 - Report of the user from a 1.0.0 sandbox: the notice of `dcc-plugin-you-should-know` did not pop up, and did not let the user expand the note to give the agent a heads-up. Find how the builtin `cc-plugin-you-should-know@builtin` (Claude Code 2.1.287 and later) shows its notice and changes the TUI: search `external/cc-2.1.296/strings.txt` and `external/cc-extract/` with `grep -o` and a short bound, and search `external/2026-10-02/export-What is your experience with the new cc-plugin-you-should-know@builtin plugin*.jsonl` for user reports. Read `.dotclaude/spec/changes/1.0.0/evidence/you-should-know.md` and `src/plugins/dcc-plugin-you-should-know/`. Use only documented extension points of the mod runtime (`$.*` of `types/index.d.ts`), never a patch of the CLI. Write the cause and the fix in the evidence file; when the mod runtime has no extension point for a part, record it as `open` with the evidence.
+- Details of the user (2026-10-13): our notice pops in the top-right corner as a truncated "click me to copy as image to clipboard" element (a `$.ui.toast`), and the builtin does not do that. The builtin often arrived too late and did not interrupt the root orchestrator. Match the surface and the heads-up flow of the builtin, make the notice arrive in time, and make the heads-up reach the main agent in its current turn, at a lower cost than the builtin. This item has its own evidence file, `.dotclaude/spec/changes/1.0.0/evidence/second-check-you-should-know.md`.
 
 ## Steps
 
