@@ -76,7 +76,7 @@ The events column names the events that the slice declares in `mod`, in its `sli
 | `rules` | The skill `rules-creator`. | None |
 | `sembr` | Rewrites a `tool.call` on a Markdown file so that each sentence starts a line. | `tool.call` |
 | `setup` | The skill `setup`, the CLI `dotclaude-setup`, and the drift check. | `session.start` |
-| `spec` | The CLI `dotclaude-spec`, which writes the spec store, and the handlers that move a package lane for `ship`. | `agent.spawn`, `turn.complete` |
+| `spec` | The CLI `dotclaude-spec`, which writes the spec store, the handler that starts a package at `implement`, and the seven phase skills. | `agent.spawn` |
 | `stamp` | Appends the dotclaude version and the short build SHA to the transcript at a session start, as a `system` notice, when the transcript has no stamp of that build yet. | `session.start` |
 | `statusline` | The CLI `dotclaude-statusline` and its segments. | None |
 | `styles` | The output style `dotclaude:Concise`. | None |
@@ -155,18 +155,22 @@ The section ids, the plugin names, and the version are data that Claude Code doe
 
 ## Skills
 
-The core plugin ships six skills.
+The core plugin ships ten skills.
 Each one is user-invoked, with `disable-model-invocation: true`.
 So it has no listing line in a request.
 
 | Entry | What it does |
 | --- | --- |
+| `/dotclaude:accept` | Moves a change to `accepted` when the trace finds no orphan and no uncited line. |
+| `/dotclaude:archive` | Merges the requirements of an accepted change into the specs. |
 | `/dotclaude:handoff` | Writes a handoff file, then starts a clean session that reads it. |
-| `/dotclaude:hotfix` | Fixes a defect with a known cause, then runs the check and writes a record with `dotclaude-spec record`. |
+| `/dotclaude:implement` | Starts one implementer for each ready package, then runs `verify`. |
+| `/dotclaude:merge` | Merges the branch of an approved package and moves it to `done`. |
+| `/dotclaude:plan` | Splits a specified change into packages and moves it to `planned`. |
+| `/dotclaude:review` | Starts one reviewer for each verified package and records the verdict. |
 | `/dotclaude:rules-creator` | Creates and improves rule files in `.claude/rules/`. |
 | `/dotclaude:setup` | Applies the settings snippet and checks the tools of the installed add-ons. |
-| `/dotclaude:ship` | Runs the open packages of a large change, with one implementer for each package in a worktree. |
-| `/dotclaude:spec` | Sizes a request, then starts a change in the spec store with `dotclaude-spec new`. |
+| `/dotclaude:specify` | Writes the requirements of a change and runs its gate. |
 
 A skill has a `name` and a `description` of 150 to 300 bytes together.
 The bounds are `SKILL_META_LOW_BYTES` and `SKILL_META_HIGH_BYTES` in `tools/limits.ts`.

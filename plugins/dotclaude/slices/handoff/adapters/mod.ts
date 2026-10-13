@@ -34,9 +34,9 @@ import {
   writePrompt,
 } from "../domain/text.ts";
 import {
-  mergeDoneCall,
   overContext,
   parseHandover,
+  phaseDoneCall,
 } from "../domain/trigger.ts";
 import {
   CONTEXT_PERCENT,
@@ -118,10 +118,10 @@ export const onTurnStep: Handler<"turn.step"> = async function* (_$, e, next) {
   return result;
 };
 
-/** Adds the report-now note to the result of a tool call of a subagent that nears a bound, and watches for a package that goes to `done`. */
+/** Adds the report-now note to the result of a tool call of a subagent that nears a bound, and watches for a merge or an accept. */
 export const onToolCall: Handler<"tool.call"> = async (_$, e, next) => {
   const out = await next(e);
-  if (mergeDoneCall(e, out)) {
+  if (phaseDoneCall(e, out)) {
     wanted = REASON_LANE;
     if (!pending) episode = newEpisode();
   }

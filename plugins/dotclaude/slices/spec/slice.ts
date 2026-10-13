@@ -5,7 +5,7 @@
 import type { Slice } from "../../kernel/slice.ts";
 import { onSpawn } from "./adapters/mod.ts";
 
-const LAB = "plugins/dotclaude/tests/ship-lane.test.ts";
+const LAB = "plugins/dotclaude/tests/implement-brief.test.ts";
 
 export const slice = {
   name: "spec",

@@ -10,7 +10,7 @@
 // For this reason, each function that touches `$` is here, and the rules are in `domain/`.
 
 import type { Handler } from "../../../kernel/slice.ts";
-import { implementArgs, packageOf } from "../domain/ship-lane.ts";
+import { implementArgs, packageOf } from "../domain/implement-brief.ts";
 
 /**
  * Runs `dotclaude-spec implement` for the package of an `implementer` prompt once the subagent started.

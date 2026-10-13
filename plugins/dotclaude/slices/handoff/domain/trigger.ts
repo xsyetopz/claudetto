@@ -18,7 +18,7 @@ export const parseHandover = (raw: unknown): MainHandover =>
  * `dotclaude-spec merge <package>` or `dotclaude-spec merge <package> <branch>`.
  * Text in quotes or after `echo` is an argument and not a command.
  */
-export const isMergeDone = (command: string): boolean =>
+export const isPhaseDone = (command: string): boolean =>
   commands(command).some((argv) => {
     const [head, verb, pkg, ...extra] = stripWrappers(argv);
     if (head === undefined || baseName(head) !== "dotclaude-spec") return false;
@@ -26,25 +26,25 @@ export const isMergeDone = (command: string): boolean =>
   });
 
 /** The call of a tool that `tool.call` gets, as far as the trigger needs it. */
-export type MergeCall = {
+export type PhaseCall = {
   readonly tool: string;
   readonly agentId?: string | undefined;
   readonly command?: string | undefined;
 };
 
 /** The result of the call: a deny or an error means the package did not change. */
-export type MergeResult = {
+export type PhaseResult = {
   readonly deny?: unknown;
   readonly isError?: boolean | undefined;
 };
 
-/** Whether a successful `Bash` call of the main session merged a package to `done`. */
-export const mergeDoneCall = (e: MergeCall, out: MergeResult): boolean =>
+/** Whether a successful `Bash` call of the main session ended a merge or an accept. */
+export const phaseDoneCall = (e: PhaseCall, out: PhaseResult): boolean =>
   e.tool === "Bash" &&
   !e.agentId &&
   out.deny === undefined &&
   !out.isError &&
-  isMergeDone(e.command ?? "");
+  isPhaseDone(e.command ?? "");
 
 /** Whether the context share `percent` reaches the bound `bound`. An absent share does not. */
 export const overContext = (

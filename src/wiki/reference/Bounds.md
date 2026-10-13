@@ -91,7 +91,6 @@ The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 | `USAGE_SAMPLE_MAX_MS` | `600,000` | `src/plugins/dotclaude/slices/spec/limits.ts` | The most age of the usage sample that `dotclaude-spec runs` trusts. |
 | `SHOW_EVENTS_MAX` | `5` | `src/plugins/dotclaude/slices/spec/limits.ts` | The most events of one package that `dotclaude-spec show` prints, from the last. |
 | `SUBAGENTS_DEFAULT` | `20` | `src/plugins/dotclaude/slices/spec/limits.ts` | The cap on subagents that Claude Code uses when `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is unset. |
-| `HOTFIX_SLUG_MAX` | `40` | `src/plugins/dotclaude/slices/spec/limits.ts` | The most characters of the file name of a hotfix record, without the date. |
 | `REFRESH_SECONDS` | `1` | `src/plugins/dotclaude/slices/statusline/limits.ts` | The seconds between two runs of the status line. |
 | `GIT_TIMEOUT_MS` | `1,500` | `src/plugins/dotclaude/slices/statusline/limits.ts` | The time that the one `git status` call can take. |
 | `MAX_ROWS` | `{{MAX_ROWS}}` | `src/plugins/dotclaude/slices/statusline/limits.ts` | The most rows of the main status line. |

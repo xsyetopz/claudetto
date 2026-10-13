@@ -10,8 +10,8 @@
     "requests": 0,
     "tokens": 0,
     "blocks": false,
-    "allow": "plugins/dotclaude/tests/ship-lane.test.ts > a spawn with no brief in its prompt runs no command",
-    "text": "plugins/dotclaude/tests/ship-lane.test.ts > the spawn of an implementer runs `implement` for its package"
+    "allow": "plugins/dotclaude/tests/implement-brief.test.ts > a spawn with no brief in its prompt runs no command",
+    "text": "plugins/dotclaude/tests/implement-brief.test.ts > the spawn of an implementer runs `implement` for its package"
   },
   "agent.spawn prompt": {
     "requests": 0,

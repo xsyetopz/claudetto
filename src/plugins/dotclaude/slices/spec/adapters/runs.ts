@@ -1,4 +1,4 @@
-// `dotclaude-spec runs`: prints the number of agent runs that a wave of `/ship` may start now.
+// `dotclaude-spec runs`: prints the number of agent runs that a wave of `/dotclaude:implement` or `/dotclaude:review` may start now.
 // When the count is 0, a second line gives the time when the runs become more than 0.
 
 import path from "node:path";
