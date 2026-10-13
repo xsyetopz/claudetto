@@ -13,7 +13,7 @@
 // With `--count FILE`, it sizes FILE instead, with the credential of the first
 // request that comes in.
 // The difference is the token cost of that part, wrappers included.
-// The report goes to DIR/report-<n>.json and to stdout.
+// The report goes to DIR/report-<n>.jsonl and to stdout.
 // The upstream is `--upstream URL`, else `ANTHROPIC_BASE_URL`, else https://api.anthropic.com.
 // The proxy stops when the upstream is its own address, because requests would loop.
 // A test sets `--upstream` to a local fake server.
@@ -49,7 +49,7 @@ const parseBody = (raw: Buffer): Body | null => {
   }
 };
 
-/** Sizes one request, writes DIR/report-<n>.json, and prints the lines. */
+/** Sizes one request, writes DIR/report-<n>.jsonl, and prints the lines. */
 const sizeTo = async (
   upstream: string,
   out: string,
@@ -65,8 +65,8 @@ const sizeTo = async (
     query,
   );
   await Bun.write(
-    path.join(out, `report-${n}.json`),
-    `${JSON.stringify(sizing, null, 2)}\n`,
+    path.join(out, `report-${n}.jsonl`),
+    `${JSON.stringify(sizing)}\n`,
   );
   for (const line of sizingLines(n, sizing)) console.log(line);
 };
@@ -166,8 +166,8 @@ export const main = async (
       else {
         const n = `${run}-${++seen}`;
         await Bun.write(
-          path.join(out, `request-${n}.json`),
-          `${JSON.stringify(body, null, 2)}\n`,
+          path.join(out, `request-${n}.jsonl`),
+          `${JSON.stringify(body)}\n`,
         );
         console.log(
           `request ${n}: ${body.model}, ${raw.byteLength} bytes, saved`,

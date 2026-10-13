@@ -127,8 +127,12 @@ test("the proxy saves the body of each `/v1/messages` request, writes no header,
     expect(got.headers["x-custom"]).toBe(undefined);
 
     const files = fs.readdirSync(out);
-    const saved = files.filter((f) => /^request-.*\.json$/.test(f));
+    const saved = files.filter((f) => /^request-.*\.jsonl$/.test(f));
     expect(saved.length, files.join(", ")).toBe(1);
+    // A JSONL file: one record on one line, with a line end.
+    const line = await Bun.file(path.join(out, saved[0] as string)).text();
+    expect(line.endsWith("\n")).toBe(true);
+    expect(line.trimEnd()).not.toContain("\n");
     expect(
       JSON.parse(await Bun.file(path.join(out, saved[0] as string)).text()),
     ).toStrictEqual(body);

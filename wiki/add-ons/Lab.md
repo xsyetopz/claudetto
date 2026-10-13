@@ -113,7 +113,7 @@ ANTHROPIC_BASE_URL=http://127.0.0.1:8787 ENABLE_TOOL_SEARCH=true claude
 ```
 
 The proxy forwards each request to the upstream.
-It writes the body of each `/v1/messages` request to `DIR`.
+It writes the body of each `/v1/messages` request to `DIR/request-<n>.jsonl`, as one JSON line.
 The default folder is `dotclaude-capture` in the system temp folder (`CAPTURE_TEMP` in `src/kernel/temp-paths.ts`).
 The default port is 8787.
 `--port` takes a whole number from 1 to 65535.
@@ -143,7 +143,7 @@ Another value exits 2 with a message.
   The proxy does not save it, and it does not size it.
 - With `--count FILE`, the proxy sizes `FILE` instead.
   It uses the credential of the first request.
-- The report goes to `DIR/report-<n>.json` and to standard output.
+- The report goes to `DIR/report-<n>.jsonl` and to standard output.
 
 The repository runs the proxy with `just capture`.
 

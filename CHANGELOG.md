@@ -103,6 +103,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `guard` hook reads a forced branch delete in a short-flag cluster, such as `-Df` and `-fd`.
 - The `guard` hook denies a destructive git command whose name a substitution writes, such as `$(echo git) reset --hard`.
 - The `guard` owners check reaches the repositories of `git fetch`, `git pull`, `git remote add`, `git submodule add`, and `pip install git+URL`.
+- `just sandbox-install [PLUGIN...]` installs plugins of this checkout into a new sandbox config with `claude plugin marketplace add` and `claude plugin install`, as a user installs them.
+  `just sandbox-installed` starts that sandbox again with no new install.
 
 ### Changed
 
@@ -222,6 +224,12 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   A folder that an older sandbox made has no marker, so remove it by hand.
 - The git cache of the `statusline` slice treats a saved result with a field of the wrong type, or a branch name with a control character, as no cache.
   The `git` call runs again, and its result replaces the saved file.
+- `--clean` of `dotclaude-sandbox` exits 0 for a folder that does not exist, so the first run of `just sandbox-alone` does not fail.
+- The files that only code reads are JSONL, with one record on one line: the usage sample `.dotclaude/rate-limits.jsonl`, the git cache `dotclaude-git-<key>.jsonl`, and the `request-<n>.jsonl` and `report-<n>.jsonl` files of `dotclaude-capture`.
+  The old `.dotclaude/rate-limits.json` is not read, so remove it.
+- The `agents` lab tests of `dcc-plugin-agents-md` pass on Windows.
+  The engine resolves `of` and `below` of `fs.ancestors` before the stub gets them, so the stub reads a path with a drive and `\` in the form of its fake disk.
+- `tools/sandbox.ts` is now `tools/sandbox/run.ts`, next to `tools/sandbox/install.ts`.
 
 ### Removed
 

@@ -39,6 +39,14 @@ const resolveIn = (cwd: string, path: string): string => {
   return path.startsWith("/") ? path : `${cwd}/${path}`;
 };
 
+/**
+ * A path of a request in the form of the fake disk.
+ * The engine resolves `of` and `below` against the real working directory before the stub gets them.
+ * On Windows, `/p/a.ts` then comes as `D:\p\a.ts`, so the drive goes and each `\` becomes `/`.
+ */
+const diskPath = (path: string): string =>
+  path.replace(/^[A-Za-z]:/, "").replaceAll("\\", "/");
+
 /** True when `dir` is `of` or one of its ancestors. */
 const isAncestor = (dir: string, of: string): boolean =>
   dir === "/" || dir === of || of.startsWith(`${dir}/`);
@@ -49,8 +57,10 @@ const walkDisk = (
   cwd: string,
   req: FsAncestorsRequest,
 ): FsAncestor[] => {
-  const target = req.of === undefined ? cwd : dirOf(resolveIn(cwd, req.of));
-  const below = req.below === undefined ? undefined : resolveIn(cwd, req.below);
+  const target =
+    req.of === undefined ? cwd : dirOf(resolveIn(cwd, diskPath(req.of)));
+  const below =
+    req.below === undefined ? undefined : resolveIn(cwd, diskPath(req.below));
   const inside = (dir: string): boolean =>
     below === undefined || (dir !== below && isAncestor(below, dir));
   return disk
