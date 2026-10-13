@@ -365,6 +365,15 @@ test("project and local settings get no `autoMode`", async () => {
     expect((await Bun.file(file).json()).autoMode).toBeUndefined();
 });
 
+test("`--apply` replaces a scalar `env` and a scalar `permissions` of the user with the objects of the snippet", async () => {
+  const d = sandbox();
+  await writeUser(d, { env: "on", permissions: "on" });
+  expect(run(d, ["--apply"]).status).toBe(0);
+  const user = await readUser(d);
+  expect(user.env.DISABLE_COMPACT).toBe("1");
+  expect(user.permissions.disableBypassPermissionsMode).toBe("disable");
+});
+
 test("`--apply` writes through a symlinked `settings.json` and keeps the link", async () => {
   const d = sandbox();
   const real = path.join(d.config, "dotfiles-settings.json");
