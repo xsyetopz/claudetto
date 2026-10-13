@@ -3,11 +3,13 @@
 # Architecture
 
 This page is the map of dotclaude 1.0.0.
-It covers the kernel, the slices of the core plugin `dotclaude`, the one hook module, the 11 events, the path from `src/` to `plugins/`, and the seven add-on plugins.
-The core plugin is the reference for the parts that you copy from the settings snippet too.
+It is for a contributor who edits the code, the slices, or the generated files.
+It covers the kernel, the slices of the core plugin `dotclaude`, and the one hook module.
+It also covers the 11 events, the path from `src/` to `plugins/`, and the seven add-on plugins.
+The core plugin is also the reference for the parts that you copy from the settings snippet.
 The Claude Code side of each event is on [Hook-Events](Hook-Events).
 
-## Folder map
+## Folder Map
 
 dotclaude has three folders of code.
 
@@ -17,9 +19,10 @@ dotclaude has three folders of code.
   Claude Code loads these folders.
   Do not edit them by hand.
 
-## Parts of a slice
+## Parts of a Slice
 
-Each slice has one `slice.ts`, which names what the slice adds to its plugin.
+Each slice has one `slice.ts`.
+It names what the slice adds to its plugin.
 The other parts depend on the slice.
 
 - `domain/` holds the logic of the slice.
@@ -27,7 +30,8 @@ The other parts depend on the slice.
 - `limits.ts` holds the bounds of the slice.
 - The ports are the interfaces that the domain needs.
   The shared ports are in `src/kernel/ports.ts`.
-- `lab/` holds the hook lab tests, and `skills/` holds the skill files.
+- `lab/` holds the hook lab tests.
+  `skills/` holds the skill files.
 
 The contract of a slice is in `src/kernel/slice.ts`.
 A mod handler has an `event`, an optional `filter`, a `phase`, and a `run` function.
@@ -41,7 +45,7 @@ The phases run in this order: `observe`, `normalize`, `rewrite`, `check`, and `a
 | `src/kernel/budget.ts` | The shared runtime bounds, such as `CONTEXT_WINDOW` and `BASH_OUTPUT_MAX_CHARS`. |
 | `src/kernel/paths.ts` | The paths of the files that dotclaude reads or writes. It has no import. |
 | `src/kernel/temp-paths.ts` | The names of the scratch folders in the temp folder. |
-| `src/kernel/errors.ts` | The error policy. A `catch` names the errors that it expects, and passes the others on. |
+| `src/kernel/errors.ts` | The error policy. A `catch` names the errors that it expects, and it passes the others on. |
 | `src/kernel/model.ts` | The parts of a Claude model id. |
 | `src/kernel/ports.ts` | The interfaces that a CLI or a test replaces with an adapter or a fake. |
 | `src/kernel/node/` | The adapters of the Node and Bun runtimes, such as `fs.ts`, `hook-io.ts`, and `process.ts`. |
@@ -51,10 +55,12 @@ The phases run in this order: `observe`, `normalize`, `rewrite`, `check`, and `a
 | `src/kernel/spec-store.ts` | The format and the reader of the spec store file `events.jsonl`. Only the `spec` slice writes it. |
 | `src/kernel/skill-command.ts` | The rules of a mod handler that answers a skill command by running its CLI. |
 
-A hooks module imports only the kernel files that have no `node:` import, because a hooks module has no `Bun` and no `node:` module.
-The generator copies each kernel file that a plugin imports into the plugin, so each plugin has its own copy.
+A hooks module imports only the kernel files that have no `node:` import.
+A hooks module has no `Bun` and no `node:` module.
+The generator copies each kernel file that a plugin imports into the plugin.
+So each plugin has its own copy.
 
-## Slices of the core plugin
+## Slices of the Core Plugin
 
 The core plugin has 17 slices.
 The events column names the events that the slice declares in `mod`, in its `slice.ts`.
@@ -82,10 +88,11 @@ The events column names the events that the slice declares in `mod`, in its `sli
 The `statusline` slice and the `styles` slice declare no mod handler.
 Their parts go to Claude Code as a status line command and an output style.
 
-## The 11 events
+## The 11 Events
 
 The core plugin uses 11 events.
-Each event has one or more mod handlers, and each handler names its phase.
+Each event has one or more mod handlers.
+Each handler names its phase.
 
 | Event | Slice and phase |
 | --- | --- |
@@ -105,14 +112,16 @@ The 19 mod handlers of the core plugin become 19 `on()` calls in one file.
 The generator writes that file as `plugins/dotclaude/hooks/register.ts`.
 It sorts the calls by event, then by phase, then by slice name, then by filter, in `tools/generate/order.ts`.
 
-### Known open point: the filter of a `tool.call` handler
+### Known Open Point: the Filter of a `tool.call` Handler
 
 `tools/generate/order.ts` and the `handoff` slice say that the mod runtime refuses a handler that has no filter.
-The `guard` slice has one `tool.call` handler with no filter, and `register.ts` registers it next to filtered handlers.
+The `guard` slice has one `tool.call` handler with no filter.
+`register.ts` registers it next to filtered handlers.
 This page does not state the refusal as a fact.
-A run of the runtime settles it, and [Hook-Events](Hook-Events) gives the Claude Code side.
+A run of the runtime settles it.
+[Hook-Events](Hook-Events) gives the Claude Code side.
 
-## The hook module
+## The Hook Module
 
 The core plugin has one hook module, `plugins/dotclaude/hooks/register.ts`.
 It is generated, so do not edit it.
@@ -125,10 +134,11 @@ The file `plugins/dotclaude/hooks/hooks.json` lists only the module:
 The core plugin has no classic command hook.
 The checks that the module runs are on [Guards](Guards).
 
-## Drift check
+## Drift Check
 
 The `session.start` handler of the `setup` slice compares the active settings with the settings snippet.
-It appends one note to the conversation only when it finds a difference, and the note asks Claude to tell you.
+It appends one note to the conversation only when it finds a difference.
+The note asks Claude to tell you.
 It changes no setting.
 
 | Difference | Line of the note |
@@ -139,14 +149,17 @@ It changes no setting.
 | The policy source of the settings has a key. | Reports that the guard is seated, and names the parts that it skips. |
 | `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set. | Reports that the `model` and `effort` of the agent files do not apply. |
 
-A fact that cannot be read gives no line, so a failed read cannot make a false report.
+A fact that cannot be read gives no line.
+So a failed read cannot make a false report.
 The tested version is `TESTED_VERSION` in `src/plugins/dotclaude/slices/setup/domain/facts.ts`.
-The section ids, the plugin names, and the version are data that Claude Code does not document, as [Undocumented-Reads](Undocumented-Reads) explains.
+The section ids, the plugin names, and the version are data that Claude Code does not document.
+[Undocumented-Reads](Undocumented-Reads) explains this.
 
 ## Skills
 
 The core plugin ships six skills.
-Each one is user-invoked, with `disable-model-invocation: true`, so it has no listing line in a request.
+Each one is user-invoked, with `disable-model-invocation: true`.
+So it has no listing line in a request.
 
 | Entry | What it does |
 | --- | --- |
@@ -154,12 +167,13 @@ Each one is user-invoked, with `disable-model-invocation: true`, so it has no li
 | `/dotclaude:hotfix` | Fixes a defect with a known cause, then runs the check and writes a record with `dotclaude-spec record`. |
 | `/dotclaude:rules-creator` | Creates and improves rule files in `.claude/rules/`. |
 | `/dotclaude:setup` | Applies the settings snippet and checks the tools of the installed add-ons. |
-| `/dotclaude:ship` | Runs the open packages of a large change, one implementer for each package in a worktree. |
+| `/dotclaude:ship` | Runs the open packages of a large change, with one implementer for each package in a worktree. |
 | `/dotclaude:spec` | Sizes a request, then starts a change in the spec store with `dotclaude-spec new`. |
 
 A skill has a `name` and a `description` of 150 to 300 bytes together.
 The bounds are `SKILL_META_LOW_BYTES` and `SKILL_META_HIGH_BYTES` in `tools/limits.ts`.
-A skill above 300 bytes fails the size check, and a skill below 150 bytes gives only an advisory.
+A skill above 300 bytes fails the size check.
+A skill below 150 bytes gives only an advisory.
 
 ## Limits
 
@@ -179,35 +193,46 @@ The shared bounds are in `src/kernel/budget.ts`.
 | Size of a file that the `asks` checks read | 1,000,000 bytes | `src/plugins/dotclaude/slices/asks/limits.ts` |
 | Rows of the status line | 3 | `src/plugins/dotclaude/slices/statusline/limits.ts` |
 
-The size of the first request is bounded in `tools/limits.ts` (`FIRST_REQUEST_LOW_BYTES` to `FIRST_REQUEST_HIGH_BYTES`).
+The size of the first request is bounded in `tools/limits.ts`.
+The bounds are `FIRST_REQUEST_LOW_BYTES` to `FIRST_REQUEST_HIGH_BYTES`.
 The [Plugin-Layout](Plugin-Layout#bound-tiers) page explains the tiers.
 
 ## From `src/` to `plugins/`
 
 `just generate` runs `bun tools/generate/index.ts`.
-It writes a generated file only when the content differs, and `just generate --check` exits 1 and names each file that differs.
-The steps are these.
+It writes a generated file only when the content differs.
+`just generate --check` exits 1 and names each file that differs.
+The steps are these:
 
 1. `tools/generate/discover.ts` finds each `src/plugins/<plugin>/slices/<s>/slice.ts`, the `plugin.ts` of each plugin, and each `adapters/mod.ts`.
-2. `tools/generate/order.ts` orders the mod handlers, and refuses two handlers of one slice with the same event, filter, and phase.
+2. `tools/generate/order.ts` orders the mod handlers.
+   It refuses two handlers of one slice with the same event, filter, and phase.
 3. `tools/generate/emit/register.ts` writes `hooks/register.ts`.
-4. `tools/generate/emit/hooks.ts` writes `hooks/hooks.json`, and `tools/generate/emit/evals.ts` writes `evals/hooks.json`.
-5. `tools/generate/emit/manifest.ts` writes `.claude-plugin/plugin.json` from `plugin.ts`, and takes the version from `package.json`.
-6. `tools/generate/emit/slices.ts` copies the skills, agents, styles, lab tests, and evals of each slice to the plugin folder, and writes one launcher for each CLI.
+4. `tools/generate/emit/hooks.ts` writes `hooks/hooks.json`.
+   `tools/generate/emit/evals.ts` writes `evals/hooks.json`.
+5. `tools/generate/emit/manifest.ts` writes `.claude-plugin/plugin.json` from `plugin.ts`.
+   It takes the version from `package.json`.
+6. `tools/generate/emit/slices.ts` copies the skills, agents, styles, lab tests, and evals of each slice to the plugin folder.
+   It also writes one launcher for each CLI.
 7. `tools/generate/closure.ts` copies each kernel file that a plugin imports to `plugins/<plugin>/kernel/`.
 8. `tools/generate/emit/snippet.ts` computes the settings snippet from the `settings` of the slices.
 9. `tools/generate/emit/texts.ts` writes every other file of `src/` to the same path under `plugins/` or `wiki/`.
-   So `src/wiki/dotclaude/Architecture.md` gives `wiki/dotclaude/Architecture.md`, and a `src/fragments/` file gives no output.
-   `tools/generate/emit/fill.ts` replaces each include line with a fragment of `src/fragments/`, and each bound name in double braces with its value.
+   So `src/wiki/dotclaude/Architecture.md` gives `wiki/dotclaude/Architecture.md`.
+   A `src/fragments/` file gives no output.
+   `tools/generate/emit/fill.ts` replaces each include line with a fragment of `src/fragments/`.
+   It also replaces each bound name in double braces with its value.
 
-The files under `plugins/` have a header that names the source, except a JSON file, because JSON has no comment.
+The files under `plugins/` have a header that names the source.
+A JSON file has no header, because JSON has no comment.
 A file in `plugins/` that has no source fails the generator.
-The check `just check` runs `just generate --check`, so a change in `src/` needs `just generate` before the commit.
+The check `just check` runs `just generate --check`.
+So a change in `src/` needs `just generate` before the commit.
 
-## Add-on plugins
+## Add-On Plugins
 
 Seven add-on plugins sit next to the core plugin.
-Each one has its own tree under `src/plugins/<name>/`, and works without the core plugin.
+Each one has its own tree under `src/plugins/<name>/`.
+Each one works without the core plugin.
 
 | Plugin | Slices | What it does |
 | --- | --- | --- |
@@ -220,18 +245,19 @@ Each one has its own tree under `src/plugins/<name>/`, and works without the cor
 | `dcc-plugin-you-should-know` | `notice` | Opt-in. Shows one thing to know before the first change of a turn. See [You-Should-Know](You-Should-Know). |
 
 The add-ons import nothing from each other, and nothing from `dotclaude`.
-Each one imports only the kernel and the `claude-code` types, and the generator copies the kernel files into the plugin.
+Each one imports only the kernel and the `claude-code` types.
+The generator copies the kernel files into the plugin.
 The overview of the add-ons is on [Add-Ons](Add-Ons).
 
-## Related pages
+## Related Pages
 
-- [Guards](Guards)
-- [Agents](Agents)
-- [Skills](Skills)
-- [Spec-Store](Spec-Store)
-- [Prompt-Surface](Prompt-Surface)
-- [Status-Line](Status-Line)
-- [Settings-Snippet](Settings-Snippet)
-- [Bounds](Bounds)
-- [Plugin-Layout](Plugin-Layout)
-- [Decisions](Decisions)
+- [Guards](Guards): the checks that the hook module runs.
+- [Agents](Agents): the six agent files.
+- [Skills](Skills): the six skills of the core plugin.
+- [Spec-Store](Spec-Store): the store of each change.
+- [Prompt-Surface](Prompt-Surface): the text that the plugin adds to the prompt.
+- [Status-Line](Status-Line): the status line of the session.
+- [Settings-Snippet](Settings-Snippet): the settings keys.
+- [Bounds](Bounds): all the bounds of the repository.
+- [Plugin-Layout](Plugin-Layout): the layout of the plugins.
+- [Decisions](Decisions): the decisions behind the layout.

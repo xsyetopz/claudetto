@@ -1,8 +1,10 @@
-# Evals history
+# Evals History
 
-This page holds the per-version eval runs and the compaction bench.
+This record covers the per-version eval runs and the compaction bench.
+Read it when a current figure needs its older source.
 0.27.0 removed the eval suite, the Evals page, and `evals/`, so these runs are history.
-0.28.0 removed the harness of the later suite (`tools/eval/` and `evals/`), the old `just eval` recipe of that harness, and its report files.
+0.28.0 removed the harness of the later suite (`tools/eval/` and `evals/`).
+It also removed the old `just eval` recipe of that harness and its report files.
 The current evals use `claude plugin eval` ([Evals](Evals)).
 The 0.27 checks are `just check` and the hook lab ([Development](Development)).
 Labels: **measured** means a run on this machine, and **reported** means a claim from a user.
@@ -18,7 +20,7 @@ Labels: **measured** means a run on this machine, and **reported** means a claim
 | 0.17.1 re-run | `reviewer` and `debugger` moved to Sonnet 5.5. |
 | Agent role cases | Written, not measured. |
 
-## Compaction: fast-compact against `/compact`
+## Compaction: Fast-Compact Against `/compact`
 
 0.19.0 removed the fast-compact integration.
 Users report that Jev compacts badly.
@@ -43,7 +45,8 @@ The replay of 5 real compactions found 70 needed tokens.
 | fast-compact rule | 58 (83%) | 12 (17%) | none | 72% to 91% of characters |
 
 - fast-compact is not a replacement for compaction.
-  It trims only old tool output, so every later turn re-reads 72% to 91% of the context.
+  It trims only old tool output.
+  So every later turn re-reads 72% to 91% of the context.
 - It keeps 83% of the needed tokens, against 40% for the built-in summary.
 - For usage, built-in compaction wins by far.
   Each extra read costs a few thousand tokens, against about 750k extra on every turn.
@@ -54,7 +57,8 @@ The replay of 5 real compactions found 70 needed tokens.
 Compact while the cache is warm.
 After the TTL expires, compaction re-reads the whole conversation without the cache (**reported**).
 The 200k `autoCompactWindow` of that time compacted during an active turn.
-The setup profile of 0.20.0 set 150k, and 0.28.0 removed the profile.
+The setup profile of 0.20.0 set 150k.
+0.28.0 removed the profile.
 
 ## Results for 0.4.0
 
@@ -67,7 +71,7 @@ These runs used the old `evals/` suite, Claude Code 2.1.283, and Opus 5.5 as age
   27 of 30 cases passed every trial in both arms.
 - The one regression was an edit-guard bug, which 0.4.0 fixed.
 
-## Model and effort sweep for 0.17.1
+## Model and Effort Sweep for 0.17.1
 
 **Measured:** the 8 `t*` cases, 3 trials per arm, dotclaude only, Claude Code 2.1.287, and a Sonnet 5.5 judge.
 Effort came from `CLAUDE_CODE_EFFORT_LEVEL`.
@@ -89,7 +93,7 @@ The summary file went with the removed harness.
 - 3 trials give wide intervals.
   The arms from Sonnet 5.5 low to Opus 5.5 xhigh do not differ significantly.
 
-## Longer Opus and Sonnet run for 0.17.1
+## Longer Opus and Sonnet Run for 0.17.1
 
 **Measured:** the 11 cases, with the 3 role cases, 10 trials per arm, dotclaude only, Claude Code 2.1.287, and a Sonnet 5.5 judge.
 The summary file went with the removed harness.
@@ -110,11 +114,12 @@ The summary file went with the removed harness.
 - The first `t5-debug` oracle failed 3 right fixes that added a test.
   The oracle now fails only when a line of `client.test.mjs` is removed or changed.
 - The run found a stop-hook bug.
-  `node --test` was not a check, so 64 of 200 code replies answered a false "no check ran" note.
+  `node --test` was not a check.
+  So 64 of 200 code replies answered a false "no check ran" note.
   0.17.1 fixes it.
   The extra turns make the costs a little high in every arm.
 
-## Re-run and model swap for 0.17.1
+## Re-Run and Model Swap for 0.17.1
 
 **Measured:** the same 11 cases and arms after the fixes above.
 The summary file went with the removed harness.
@@ -152,7 +157,7 @@ Sonnet costs 60% of the Opus cost per pass or less.
   The swap is not tested on hard reviews or hard root causes.
   A reported private batch of hard tasks found Sonnet 5.5 high lower than Opus 5.5 medium (see [Usage evidence](Usage-Evidence)).
 
-## Agent role cases: `investigator` and `web-researcher`
+## Agent Role Cases: `investigator` and `web-researcher`
 
 **Not measured yet:** the cases exist, and no run has used them.
 Both agents moved from Opus 5.5 to Sonnet 5.5 at `medium` after 0.19.0, without a role case.
@@ -174,7 +179,8 @@ The cases let the same rule check the move.
 
 The removed recipe `just eval-agent <model> <effort> [runs]` ran both cases.
 The main conversation stays on Opus 5.5 (`--model opus`).
-`CLAUDE_CODE_SUBAGENT_MODEL` sets the model of the agent, and `CLAUDE_CODE_EFFORT_LEVEL` sets the effort, as in the 0.17.1 sweep.
+`CLAUDE_CODE_SUBAGENT_MODEL` sets the model of the agent.
+`CLAUDE_CODE_EFFORT_LEVEL` sets the effort, as in the 0.17.1 sweep.
 The recipe then ran an oracle script and a report script, which are removed.
 
 | Arm | Removed command | Old setting of |
@@ -193,9 +199,11 @@ The recipe then ran an oracle script and a report script, which are removed.
 - The estimate comes from `0.17.1-rerun`, where `t4-delegate` cost $0.23 per trial.
   Thus about $0.25 to $0.40 per trial, and about $20 to $32 for 4 arms, 2 cases, and 10 trials.
 
-## Final tree of 0.28.0
+## Final Tree of 0.28.0
 
-The run of 2026-10-09 used all 12 cases of the main suite on Sonnet 5.5, with 3 runs for each case and arm (72 runs, 1.83 USD, no faults and no time-outs).
+The run of 2026-10-09 used all 12 cases of the main suite on Sonnet 5.5.
+It ran 3 runs for each case and arm, 72 runs in total.
+The run cost 1.83 USD and had no faults and no time-outs.
 
 | Measure | dotclaude | vanilla | Interval of the difference |
 | --- | --- | --- | --- |
@@ -209,12 +217,15 @@ The run of 2026-10-09 used all 12 cases of the main suite on Sonnet 5.5, with 3 
 | cost | 0.023 | 0.028 | -0.01 to 0 |
 
 No rate of dotclaude is worse than vanilla.
-A dotclaude run takes 4.5 seconds and 0.8 turns more, and the interval shows both.
+A dotclaude run takes 4.5 seconds and 0.8 turns more.
+The interval shows both.
 
-## Router table of 0.28.0
+## Router Table of 0.28.0
 
-The router search of 2026-10-09 (5.1 USD) used 3 cases for each class, with 9 paired runs for each pair.
-The table of the removed `features/router/data.mjs` comes from this report and from the effort guide of Anthropic (decision of the user 2026-10-09).
+The router search of 2026-10-09 cost 5.1 USD.
+It used 3 cases for each class, with 9 paired runs for each pair.
+The table of the removed `features/router/data.mjs` comes from this report.
+It also comes from the effort guide of Anthropic (decision of the user 2026-10-09).
 
 | Class | Reference | Cheapest pair with no loss | Table |
 | --- | --- | --- | --- |
@@ -229,16 +240,19 @@ The table of the removed `features/router/data.mjs` comes from this report and f
 | `plan` | Opus 5.5 `high` | Haiku 5.5 `low` | Haiku 5.5 `medium` |
 | `orchestration` | Opus 5.5 `medium` | Haiku 5.5 `low` | Haiku 5.5 `medium` |
 
-- The effort guide tells Haiku 5.5 to start at `medium` for agentic work, and says that at `low` it can skip a search, stop early, or skip a check.
+- The effort guide tells Haiku 5.5 to start at `medium` for agentic work.
+  It says that at `low`, Haiku 5.5 can skip a search, stop early, or skip a check.
   Thus a Haiku 5.5 row is at `medium` or above, except `tests`, which copies output.
 - Each Haiku 5.5 pair lost on `review`, at each effort.
-  The `audit` cases do not separate the pairs (task 11.12), so `audit` stays on the review model, at `high`.
-- The `plan` reference and its cheapest pair both resolved 0.667, which points to a fault in a case, not in a model (not verified).
+  The `audit` cases do not separate the pairs (task 11.12).
+  So `audit` stays on the review model, at `high`.
+- The `plan` reference and its cheapest pair both resolved 0.667.
+  That result suggests a fault in a case, not in a model (not verified).
 - The rows above the measured pair are inferred, not measured.
   One more router search on the final table measures them.
 - The main loop keeps its model and takes only an effort: `high` for `plan`, `review`, and `debug`, and `medium` for other prompts.
 
-## Planned: compatibility rule
+## Planned: Compatibility Rule
 
 A state-based eval for the working rule that keeps an old name only for a named consumer.
 The task is a rename in a fixture project at a version before 1.0.
@@ -246,9 +260,10 @@ The oracle is the `git diff`.
 It must show no alias and no re-export of the old name.
 The case is not written yet.
 
-## Related pages
+## Related Pages
 
+- [Archive](Archive)
 - [Evals of 0.28.0](Evals-0.28.0)
 - [Development](Development)
-- [Open items](Open-Items)
-- [Usage evidence](Usage-Evidence)
+- [Open Items](Open-Items)
+- [Usage Evidence](Usage-Evidence)

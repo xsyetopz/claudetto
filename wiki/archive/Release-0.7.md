@@ -1,31 +1,39 @@
 # Release 0.7
 
+This page records the notes of the `0.7` release.
+
 Released 2026-09-28.
-Cuts usage that a measured week of real sessions showed.
-Adds a context budget for subagents and makes subagents run in the foreground.
-Removes Codex support, the general workflow skills, and the CodeGraph hooks, because each cost more than it gave.
+This release cuts usage that a measured week of real sessions showed.
+It adds a context budget for subagents and makes subagents run in the foreground.
+It removes Codex support, the general workflow skills, and the CodeGraph hooks.
+Each of these cost more than it gave.
 
 > **Note:** The limits suit Pro and Plus and apply on every plan.
 > Larger plans only reach the limits later.
-> [Usage evidence](Usage-Evidence) has the measurements that `docs/pro-first-usage.md` held.
+> [Usage Evidence](Usage-Evidence) has the measurements that `docs/pro-first-usage.md` held.
 
 ## Added
 
 - `docs/pro-first-usage.md`: where the Max 20x week of this machine went, what that means for Pro, and the Codex quota and dossier findings.
   It also gives the case for and against the GPT-5.6 models.
-- Subagent context budget: once the context of an agent passes 150k tokens, the hook refuses its tool calls, and its next action is its report.
-  - A fork starts with the context of its parent, so it gets 50k tokens of growth instead.
+- Subagent context budget: once the context of an agent passes 150k tokens, the hook refuses its tool calls.
+  Its next action is its report.
+  - A fork starts with the context of its parent.
+    So it gets 50k tokens of growth instead.
   - In the measured week, 83% of `implementer` cost and 85% of `general-purpose` cost came from calls above 100k tokens.
   - The hook is now `enforce-agent-budget.mjs`, still under the `turn_limit_handoff` option.
   - Subagents learn the limit at start.
 - `general-purpose` refusal (part of `subagent_guidance`): refuses these agents and points to the dotclaude agent for the job.
   They were 17.5% of the measured week: 83 explicit calls, mostly implementation slices with no turn limit.
-  With forks off, a call without `subagent_type` spawns `general-purpose`, so the hook refuses that call too.
-- Foreground subagents: the same hook sets `run_in_background: false`, and the settings profile sets `CLAUDE_CODE_FORK_SUBAGENT=false`, because fork mode forces every subagent into the background.
+  With forks off, a call without `subagent_type` spawns `general-purpose`.
+  So the hook refuses that call too.
+- Foreground subagents: the same hook sets `run_in_background: false`.
+  The settings profile sets `CLAUDE_CODE_FORK_SUBAGENT=false`, because fork mode forces every subagent into the background.
   - A background agent woke the main conversation when it finished, once for its report and once for its task notification.
     This happened in 501 of 861 main turns in the measured week and caused 20.6% of cost.
   - A foreground agent returns its report in the turn that spawned it.
-  - Agents that one message spawns still run together, and the main session waits while they run.
+  - Agents that one message spawns still run together.
+    The main session waits while they run.
 - `scripts/usage-report.mjs`: reports where the last N days of Claude Code usage went.
   - API-equivalent cost by agent type
   - the share from calls with context past 150k tokens
@@ -37,12 +45,14 @@ Removes Codex support, the general workflow skills, and the CodeGraph hooks, bec
 
 ## Changed
 
-- Mid-message skills: a `/dotclaude:` skill typed mid-message runs through the Skill tool.
+- Mid-message skills: a `/dotclaude:` skill typed mid-message runs through the `Skill` tool.
   Before, the hook pasted the skill body into the context.
-  The skill now loads the way Claude Code loads it (forks, `!` commands, model and tool settings), and a large skill is no longer cut at 9.5 KB.
+  The skill now loads the way Claude Code loads it, with forks, `!` commands, and model and tool settings.
+  A large skill is no longer cut at 9.5 KB.
   It costs one extra call per mid-message skill.
 - Optional profile: the settings profile turns off built-in Claude Code features that cost context or turns, from `profiles/optional.json`.
-  The profile applies each feature unless you skip it with `--skip`, and the profile stamp covers both files.
+  The profile applies each feature unless you skip it with `--skip`.
+  The profile stamp covers both files.
   - the Artifact, Workflow, `ScheduleWakeup`, cron, and ReportFindings tools (about 46 KB on every request together)
   - the advisor
   - the Explore and Plan agents
@@ -53,11 +63,14 @@ Removes Codex support, the general workflow skills, and the CodeGraph hooks, bec
 - Output style: makes the main conversation the default place to work.
   Claude delegates only output that would flood the context, or parallel slices that the user asks for.
 - `AskUserQuestion`: the settings profile no longer denies it.
-  Its 4.9 KB per request is about $2 a week of cached reads at the measured volume, and a structured question is worth that.
-  `apply-settings` does not remove old denies, so remove `"AskUserQuestion"` from `permissions.deny` in `~/.claude/settings.json` yourself.
+  Its 4.9 KB per request is about $2 a week of cached reads at the measured volume.
+  A structured question is worth that.
+  `apply-settings` does not remove old denies.
+  So remove `"AskUserQuestion"` from `permissions.deny` in `~/.claude/settings.json` yourself.
 - Compaction: the settings profile compacts at 200k tokens on every plan, where it was 400k on Max 20x.
   Run `/dotclaude:apply-settings-profile` to apply it.
-  The session note asks for a handoff past about 200k on every plan, and the output style says 200k instead of 400k.
+  The session note asks for a handoff past about 200k on every plan.
+  The output style says 200k instead of 400k.
 - Agent cap: the settings profile runs 3 subagents at once, and 3 agents at once in a workflow.
   It was 6.
 - Stale-profile check: session start detects a stale settings profile with one stamp instead of a check per release.
@@ -69,7 +82,7 @@ Removes Codex support, the general workflow skills, and the CodeGraph hooks, bec
 ## Removed
 
 - Codex support: the `codex-worker` and `codex-reviewer` agents, the `codex-fanout` skill, and Codex setup (`skills/setup-integrations/codex/`, `configure-codex.mjs`, `build-codex-catalog.mjs`).
-  Also the `codex_delegation` and `allowed_codex_models` options, the Codex Bash-guard rules, and every other Codex mention across the hooks, output style, and settings profile.
+  Also the `codex_delegation` and `allowed_codex_models` options, the Codex `Bash`-guard rules, and every other Codex mention across the hooks, output style, and settings profile.
   - Reason: a second model source cost more to maintain than it gave.
     Delegation also spent Claude turns that forwarded briefs to GPT-6 workers and reviewed their diffs.
   - If you ran `/dotclaude:setup-integrations codex`, you may remove the files that it wrote under `$CODEX_HOME` (usually `~/.codex/`):
@@ -87,13 +100,19 @@ Removes Codex support, the general workflow skills, and the CodeGraph hooks, bec
   - If your `env` still holds `ANTHROPIC_DEFAULT_SONNET_MODEL=claude-opus-5-5` from 0.4.0, remove it yourself.
     Otherwise every `sonnet` agent runs on Opus 5.5.
   - The script no longer removes `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` from 0.2.0 either.
-    Claude Code 2.1.283 still reads it, so the earlier claim that it had no effect was wrong.
+    Claude Code 2.1.283 still reads it.
+    So the earlier claim that it had no effect was wrong.
 - CodeGraph hooks and the `codegraph_hint` option: the session-start note and the per-prompt symbol list repeated what the CodeGraph section already says.
   `codegraph install` writes that section into `~/.claude/CLAUDE.md`.
-  The setup skill now checks for that section, and it still tells you to remove the global `codegraph prompt-hook` entry.
+  The setup skill now checks for that section.
+  It still tells you to remove the global `codegraph prompt-hook` entry.
 
 ## Fixed
 
 - Skill names in pasted text: a `/dotclaude:` skill name inside pasted text or a `>` quote no longer loads that skill.
 
-Previous: [Release 0.6](Release-0.6) · Next: [Release 0.8](Release-0.8)
+## Related Pages
+
+- Previous: [Release 0.6](Release-0.6)
+- Next: [Release 0.8](Release-0.8)
+- [Archive](Archive): the index of the archived pages.

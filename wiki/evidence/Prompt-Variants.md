@@ -1,12 +1,13 @@
-# Prompt variants
+# Prompt Variants
 
 This page gives the system prompt variants of dotclaude 1.0.0.
+Read it to learn which prompt each model gets, and how the prompt size is bounded.
 It gives the model of each variant, the verification line of each subagent block, and the size bounds of the first request.
 It also gives the gap in the compact prompt.
 Source labels are in [Home](Home).
-The rules that every model shares are on the page [Prompt surface](Prompt-Surface).
+The rules that every model shares are on the page [prompt surface](Prompt-Surface).
 
-## The variants
+## The Variants
 
 The `prompt` slice holds one variant for each model family.
 The source is `src/plugins/dotclaude/slices/prompt/domain/variants.ts`.
@@ -27,9 +28,10 @@ The source is `src/plugins/dotclaude/slices/prompt/domain/variants.ts`.
   The mapping is in `src/plugins/dotclaude/slices/prompt/domain/apply.ts`.
 - The variant of each model is set in `VARIANTS`, in the same file.
 
-## When the variant is chosen
+## When the Variant Is Chosen
 
-- The `prompt.compose` hook chooses the variant at the first compose of a session, and it keeps that variant.
+- The `prompt.compose` hook chooses the variant at the first compose of a session.
+  It keeps that variant.
   The code is in `src/plugins/dotclaude/slices/prompt/adapters/mod.ts`.
 - A model switch with `/model` does not change the prompt bytes.
   A changed system prompt would break the prompt cache.
@@ -40,7 +42,7 @@ The source is `src/plugins/dotclaude/slices/prompt/domain/variants.ts`.
   The block line says that a failing check, a lint rule, a test, a bound, and a hook each stop the work.
   The evidence line asks for a new check before Claude undoes finished work because of a claim of fault.
 
-## Size of the first request
+## Size of the First Request
 
 The first request has a token bound, `START_TOKENS` (9,960 tokens) in `tools/limits.ts`.
 `tools/measure.ts` passes it to `dotclaude-start` as `--bound`.
@@ -54,9 +56,15 @@ A size above the high bound fails the check.
 A size below the low bound is reported.
 In this page, 1 KB is 1,024 bytes.
 
-## The compact prompt gap
+## The Compact Prompt Gap
 
 The `prompt.compose` and `prompt.section` hooks do not reach the compact prompt of Claude Code.
 The [settings snippet](Settings-Snippet) limits compaction instead.
-The snippet sets `DISABLE_COMPACT` to `1`, and it sets `autoCompactEnabled` to `false`.
-The session then stops at the context limit, and the user starts a fresh session with `/clear`.
+The snippet sets `DISABLE_COMPACT` to `1`.
+It also sets `autoCompactEnabled` to `false`.
+The session then stops at the context limit.
+The user starts a fresh session with `/clear`.
+
+## Related Pages
+
+- [Evidence](Evidence): the index of the evidence pages and their source files.

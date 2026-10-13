@@ -1,8 +1,12 @@
-# Spec store
+# Spec Store
+
+This page describes the spec store, which keeps the state of each change.
+It is for a user who starts or resumes a change, and for a contributor who edits the `spec` slice.
 
 The spec store keeps the state of a change in the repository.
 A change has its reason, its tasks, its delta files, and, for a large change, its packages and a lane log.
-A fresh session reads these files again, so the work continues after `/clear`.
+A fresh session reads these files again.
+So the work continues after `/clear`.
 The reason for the store is in [Decisions-Tools](Decisions-Tools), decision D11.
 
 The store is the folder `.dotclaude/spec/`, and git tracks it.
@@ -43,9 +47,10 @@ The folder `specs/` does not exist in this checkout yet.
 The `archive` command creates it when the first change is archived.
 
 The id of a change is the name of its folder.
-It uses letters, digits, `.`, `_`, and `-`, and it is not `archive`.
+It uses letters, digits, `.`, `_`, and `-`.
+It is not `archive`.
 
-## Task and delta files
+## Task and Delta Files
 
 Each task in `change.md` is a line `- [ ] <id> <text>`.
 Put a `Verify:` line below it, indented.
@@ -55,14 +60,17 @@ The `Verify:` line names a command or a test that shows that the task is done.
 A delta file has the sections `## ADDED`, `## MODIFIED`, `## REMOVED`, and `## RENAMED`.
 A `RENAMED` section has `FROM:` and `TO:` lines.
 Each requirement is a heading `### Requirement: <name>`, with one sentence that has `SHALL`.
-Each requirement has one or more scenarios, as `#### Scenario: <name>`, with a `WHEN` line and a `THEN` line.
-`validate` fails on a requirement without `SHALL`, and on a scenario without `WHEN` or `THEN`.
+Each requirement has one or more scenarios, as `#### Scenario: <name>`.
+Each scenario has a `WHEN` line and a `THEN` line.
+`validate` fails on a requirement without `SHALL`.
+It also fails on a scenario without `WHEN` or `THEN`.
 
 `archive` applies each delta file to the file of the same name in `specs/`.
-A delta fails when it does not apply, such as an `ADDED` requirement that exists already.
+A delta fails when it does not apply.
+An example is an `ADDED` requirement that exists already.
 When one delta fails, `archive` changes nothing.
 
-## Package files
+## Package Files
 
 Each package has a file `packages/NN-<slug>.md`, which is the brief of one agent.
 The front matter has the keys `id`, `deps`, `owns`, `verify`, and `agent`.
@@ -72,18 +80,20 @@ The body has the sections `## Goal`, `## Context`, `## Steps`, `## Acceptance`, 
 Each `owns` entry is a folder prefix or a file path, with no wildcard.
 No `owns` entry is under `plugins/`, because `plugins/` is generated.
 `validate` checks these rules, with the rules `package.owns-wildcard` and `package.owns-plugins`.
-It also checks that each `deps` entry names a package, with `plan.dep-missing`, and that no dep cycle exists, with `plan.dep-cycle`.
+It also checks that each `deps` entry names a package, with `plan.dep-missing`.
+It checks that no dep cycle exists, with `plan.dep-cycle`.
 
 `packages.md` lists each package under a heading `## Wave <n>`, as `- [ ] <id> <name>`.
 The packages before the first heading are in wave 0.
-Two open packages of one wave have no `owns` entries that overlap, where one entry is a prefix of the other.
+Two open packages of one wave have no overlapping `owns` entries.
+One entry overlaps another when it is a prefix of the other.
 `validate` reports an overlap with the rule `wave.owns-overlap`.
 
 The checkbox of a package is `[x]` when its lane is `done`, and `[ ]` for each other lane.
 Only `dotclaude-spec lane` sets the checkbox.
 `validate` reports a checkbox that differs from its lane, with the rule `plan.checkbox-lane`.
 
-## Lanes and events.jsonl
+## Lanes and `events.jsonl`
 
 `events.jsonl` is an append-only log.
 Its first line is a header, `{"schema":1}`.
@@ -97,10 +107,12 @@ The number is `SPEC_SCHEMA` in `src/kernel/spec-store.ts`.
 
 Three parts move a lane:
 
-- The `lane` command, which adds a line and sets the checkbox in `packages.md`.
+- The `lane` command adds a line, and it sets the checkbox in `packages.md`.
   It refuses in a linked git worktree, with exit status `1`.
-- The mod handler on `agent.spawn` in the `spec` slice, which moves a package to `doing` when `/ship` starts its `implementer`.
-- The mod handler on `turn.complete` in the same slice, which moves it to `review` when that `implementer` ends with the reason `answer`.
+- The mod handler on `agent.spawn` in the `spec` slice moves a package to `doing`.
+  It does this when `/ship` starts its `implementer`.
+- The mod handler on `turn.complete` in the same slice moves a package to `review`.
+  It does this when that `implementer` ends with the reason `answer`.
   Another end leaves the package in `doing`.
 
 The `merge` command sets the lane `done`.
@@ -113,7 +125,7 @@ Two branches that append lines to the log merge with no conflict.
 
 | Command | What it does |
 | --- | --- |
-| `dotclaude-spec new <id> [--size trivial\|medium\|large]` | Writes the files of the size. It fails when the change exists already. |
+| `dotclaude-spec new <id> [--size trivial\|medium\|large]` | Writes the files of the size. It fails when the change already exists. |
 | `dotclaude-spec status [<id>]` | Prints the count of done packages, the count of each lane, and the lane of each package. |
 | `dotclaude-spec next [<id>]` | Prints the brief of the first package in `packages.md` that is `planned` or `doing`, and whose deps are all `done`. |
 | `dotclaude-spec lane <package> <lane>` | Moves a package to a lane, and adds one line to `events.jsonl`. |
@@ -126,11 +138,12 @@ Two branches that append lines to the log merge with no conflict.
 
 When the id is missing, `status`, `next`, and `ready` use the active change.
 The active change is the last change, in the order of its id, that has a package which is not `done`.
-The command exits with status `2` for a usage error, and with status `1` for a failed command.
+The command exits with status `2` for a usage error.
+It exits with status `1` for a failed command.
 Run `dotclaude-spec` with no argument to print the usage.
 
 `merge` stops with no change when the tree holds another change.
-It commits the lane files of the change first, then merges the branch.
+It commits the lane files of the change first, and then it merges the branch.
 It runs `just generate` when the project has a `justfile`.
 On a conflict, it stops, sets no lane, and prints each conflicted file.
 
@@ -138,40 +151,47 @@ On a conflict, it stops, sets no lane, and prints each conflicted file.
 The cap is the value of `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, when it is a plain number of at least `1`.
 Otherwise the cap is `SUBAGENTS_DEFAULT`.
 A sample older than `USAGE_SAMPLE_MAX_MS` allows one run.
-Each limit window with a known usage allows its share of the cap, and at least one run, unless the window is full.
+Each limit window with a known usage allows its share of the cap.
+It also allows at least one run, unless the window is full.
 When the count is `0`, a second line prints the reset time, when it is known.
 
-## Work across /clear
+## Work Across `/clear`
 
 1. Run the `spec` skill with the id of the change and a size.
-   The skill fills the files, and it ends when `dotclaude-spec validate <id>` passes.
+   The skill fills the files.
+   It ends when `dotclaude-spec validate <id>` passes.
    It does not start the work.
 2. For a medium change, the `Verify:` commands show when the work is done.
    For a large change, run `/ship <id>`.
 3. `/ship` runs the open packages in the order of their deps.
    It runs `ready` to pick the packages, and `runs` to limit the agents of a wave.
-   It starts an `implementer` agent for each package, in its own worktree, and a `reviewer` agent for each diff.
+   It starts an `implementer` agent for each package, in its own worktree.
+   It starts a `reviewer` agent for each diff.
    The reviewer sees the brief and the diff, and it does not change a file.
    A package that fails gets one retry.
-   The main session merges each package that passes, and it asks the user before a push or an archive.
+   The main session merges each package that passes.
+   It asks the user before a push or an archive.
 4. Before `/clear`, run `dotclaude-spec status <id>`.
-   The state is in the lane log, so a fresh session needs no handoff file.
+   The state is in the lane log.
+   So a fresh session needs no handoff file.
 5. In the fresh session, run `dotclaude-spec next <id>`.
    It prints the brief of the next package, and the work continues there.
    The `handoff` slice runs the same command when it resumes a session.
-   See [Context-And-Handoff](Context-And-Handoff).
+   See [Context and Handoff](Context-And-Handoff).
 6. When all the work is done, run `dotclaude-spec archive <id>`.
-   The change moves to `changes/archive/<date>-<id>/`, where `<date>` is the UTC date of the run.
+   The change moves to `changes/archive/<date>-<id>/`.
+   `<date>` is the UTC date of the run.
 
 ## Hotfixes
 
 A defect with a known cause does not need a change.
 The `hotfix` skill fixes the defect, runs the check, and runs `dotclaude-spec record` with a text.
 The record has the sections `## Cause`, `## Fix`, and `## Check`.
-Its file name is the date, then the text in lowercase words joined with `-`, cut at `HOTFIX_SLUG_MAX` characters.
+Its file name is the date, then the text in lowercase words joined with `-`.
+The text is cut at `HOTFIX_SLUG_MAX` characters.
 A second record on the same day gets the suffix `-2`, and so on.
 
-## Zero token cost
+## Zero Token Cost
 
 These parts run with no model call:
 
@@ -185,8 +205,9 @@ These parts cost tokens:
 - The `/spec`, `/ship`, and `/hotfix` skills, which the model runs.
 - The `implementer`, `reviewer`, and `planner` agents.
 - The handoff that can follow a lane change to `done`.
-  The `handoff` slice can submit a prompt to Claude, and each prompt starts a model turn.
-  See [Context-And-Handoff](Context-And-Handoff).
+  The `handoff` slice can submit a prompt to Claude.
+  Each prompt starts a model turn.
+  See [Context and Handoff](Context-And-Handoff).
 
 ## Bounds
 
@@ -201,10 +222,10 @@ These parts cost tokens:
 | `SPEC_SCHEMA` | 1 | `src/kernel/spec-store.ts` |
 | `LANES` | `planned`, `doing`, `review`, `done`, `blocked` | `src/kernel/spec-store.ts` |
 
-## Related pages
+## Related Pages
 
-- [Architecture](Architecture)
-- [Agents](Agents)
-- [Skills](Skills)
-- [Status line](Status-Line)
-- [Decisions-Tools](Decisions-Tools)
+- [Architecture](Architecture): the slices and the layout of the core plugin.
+- [Agents](Agents): the agents that start the packages.
+- [Skills](Skills): the skills that start and fill a change.
+- [Status Line](Status-Line): the status line segment of the active change.
+- [Decisions-Tools](Decisions-Tools): the decision behind the store.

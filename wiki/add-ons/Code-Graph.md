@@ -1,20 +1,32 @@
-# Code graph
+# Code Graph
 
 The plugin `dotclaude-codegraph` gives Claude the code graph of a project.
 It runs the `codegraph` CLI of the CodeGraph project.
 It adds no MCP server.
-It works without the core plugin, and it imports nothing from another plugin.
+It works without the core plugin.
+It imports nothing from another plugin.
+Read this page to use the code graph of a project.
+Read it also to learn when the plugin runs a command.
 
-The source is in `src/plugins/dotclaude-codegraph/`, and its one slice is `graph`.
+The source is in `src/plugins/dotclaude-codegraph/`.
+Its one slice is `graph`.
 
-## What it adds
+## What It Adds
 
-- The command `dotclaude-codegraph-check`, which prints whether `codegraph` is on `PATH` and whether the project has an index.
-- A `SessionStart` hook that syncs the index and adds one line about the graph commands.
-- A `PostToolUse` hook that syncs the index after an `Edit`, a `Write`, a `MultiEdit`, or a `NotebookEdit`.
-- A `tool.call` handler that syncs the index after a `Bash` command with a `git` command that changes the tree.
+The plugin adds these parts:
 
-The plugin has no skill, no `userConfig`, and no Claude Code setting.
+- The command `dotclaude-codegraph-check`.
+  It prints whether `codegraph` is on `PATH` and whether the project has an index.
+- A `SessionStart` hook.
+  It syncs the index and adds one line about the graph commands.
+- A `PostToolUse` hook.
+  It syncs the index after an `Edit`, a `Write`, a `MultiEdit`, or a `NotebookEdit`.
+- A `tool.call` handler.
+  It syncs the index after a `Bash` command with a `git` command that changes the tree.
+
+The plugin has no skill.
+It has no `userConfig`.
+It has no Claude Code setting.
 
 ## Install
 
@@ -23,20 +35,30 @@ The plugin has no skill, no `userConfig`, and no Claude Code setting.
    When `codegraph` is missing, the check prints this command (`INSTALL_COMMAND` in `slices/graph/domain/graph.ts`).
 2. Build the index once in the project with `codegraph init -y`.
    The index is the file `.codegraph/codegraph.db` (`INDEX_PATH` in `slices/graph/domain/graph.ts`).
-   The plugin never runs `codegraph init`, because the command changes user files (see the header of `slices/graph/adapters/codegraph.ts`).
+   The plugin never runs `codegraph init`.
+   That command changes user files.
+   See the header of `slices/graph/adapters/codegraph.ts`.
 3. Install the plugin with `/plugin install dotclaude-codegraph@dotclaude`.
 
 The hooks run only in a project that has the index file.
 In another project, they run no command and add no text.
 
-The CLI keeps its telemetry in the home folder, `~/.codegraph/` (see the comment in `slices/graph/adapters/codegraph.ts`).
-The plugin does not run `codegraph telemetry`, so the setting stays as the user left it.
+## Telemetry
 
-## How it works
+The CLI keeps its telemetry in the home folder, `~/.codegraph/`.
+See the comment in `slices/graph/adapters/codegraph.ts`.
+The plugin does not run `codegraph telemetry`.
+The setting stays as the user left it.
+
+## How It Works
 
 Both classic hooks run `slices/graph/adapters/hook.ts` with Bun.
 The first argument selects the mode, `session-start` or `sync`.
-The project folder comes from `CLAUDE_PROJECT_DIR`, then from the `cwd` of the hook payload, then from the process folder (`rootOf` in `slices/graph/adapters/codegraph.ts`).
+The project folder comes from the first of these sources that has a value (`rootOf` in `slices/graph/adapters/codegraph.ts`):
+
+1. `CLAUDE_PROJECT_DIR`.
+2. The `cwd` of the hook payload.
+3. The process folder.
 
 | Trigger | Source | Timeout | What it runs |
 | --- | --- | --- | --- |
@@ -45,22 +67,32 @@ The project folder comes from `CLAUDE_PROJECT_DIR`, then from the `cwd` of the h
 | `Bash` call with a `git` command that changes the tree | Mod handler `onTreeChange` in `slices/graph/adapters/mod.ts` | 15 s | `codegraph sync -q` |
 
 - The `SessionStart` hook adds `SESSION_LINE` when the project has an index and the CLI is present.
-  It adds the line also when the sync fails for another reason, such as a timeout or a non-zero exit.
-- The `PostToolUse` hook is async, so the session does not wait for the sync.
+  It also adds the line when the sync fails for another reason, such as a timeout or a non-zero exit.
+- The `PostToolUse` hook is async.
+  The session does not wait for the sync.
 - The `git` handler runs the command first.
   It syncs only when the call is not denied.
-  A missing `codegraph` or a timeout leaves the index as it is, and the next sync catches up.
+  A missing `codegraph` or a timeout leaves the index as it is.
+  The next sync catches up.
 - The git commands that start a sync are `commit`, `merge`, `rebase`, `pull`, `checkout`, `switch`, `reset`, `cherry-pick`, `revert`, `stash`, `apply`, and `am`.
   The pattern is `TREE_CHANGE` in `slices/graph/domain/graph.ts`.
-  The mod runtime tests the pattern in process, so a `Bash` call of another kind starts no process.
+  The mod runtime tests the pattern in process.
+  A `Bash` call of another kind starts no process.
 - The hooks never deny or ask.
 
-On Windows, npm installs `codegraph` as `codegraph.cmd`, which runs only through a shell.
-The runner then starts the command through `slices/graph/adapters/run-tree.ts`, which ends the process tree at the time limit.
+## Windows
+
+On Windows, npm installs `codegraph` as `codegraph.cmd`.
+That file runs only through a shell.
+The runner then starts the command through `slices/graph/adapters/run-tree.ts`.
+That runner ends the process tree at the time limit.
 It also accepts only arguments that match `SHELL_SAFE_ARG` in `slices/graph/adapters/codegraph.ts`.
 
+## The Check
+
 The check text is built by `checkLines` in `slices/graph/domain/graph.ts`.
-The check exits with 0 also when the CLI is missing, because the text then tells the user what to do.
+The check exits with 0 also when the CLI is missing.
+The text then tells the user what to do.
 
 ## Bounds
 
@@ -76,10 +108,14 @@ The `SessionStart` hook has a `timeout` of 10 s in `slices/graph/slice.ts`.
 That value is larger than `START_SYNC_TIMEOUT_MS`.
 The `PostToolUse` hook `timeout` is `BACKGROUND_SYNC_TIMEOUT_MS` divided by 1000, which is 60 s.
 
+## The Session Line
+
 The line that `SessionStart` adds is `SESSION_LINE` in `slices/graph/domain/graph.ts`.
 It names `codegraph impact <symbol> -d 5`.
-The comment there says that `impact` has a default depth of 2, and that a run on a comparison fixture missed 2 of 8 affected functions at that depth.
-That fixture run has no evidence file in this checkout, so the number is the comment's claim.
+The comment there says that `impact` has a default depth of 2.
+The comment also says that a run on a comparison fixture missed 2 of 8 affected functions at that depth.
+That fixture run has no evidence file in this checkout.
+The number is the comment's claim.
 
 ## Why
 
@@ -89,12 +125,16 @@ That fixture run has no evidence file in this checkout, so the number is the com
   A classic hook for each `git` command needs 12 hooks with an `if`.
   One hook without `if` starts a process on each `Bash` call.
   The source is the comment in `slices/graph/slice.ts`.
-- The plugin uses the CLI and no MCP server, and it runs only where `.codegraph/` exists.
+- The plugin uses the CLI and no MCP server.
+  It runs only where `.codegraph/` exists.
   See D26 in [Decisions-Tools](Decisions-Tools).
 - Each add-on stays a separate plugin.
   See D24 in [Decisions-Layout](Decisions-Layout).
-- The plugin never runs `codegraph install` or `codegraph init`, because they change user files.
+- The plugin never runs `codegraph install` or `codegraph init`.
+  Those commands change user files.
 
-## Troubleshooting
+## Related Pages
 
-The symptoms of this plugin and their fixes are on [Troubleshooting](Troubleshooting).
+- [Troubleshooting](Troubleshooting): the symptoms of this plugin and their fixes.
+- [Browser](Browser): the next add-on page.
+- [Add-On Plugins](Add-Ons): the list of the add-on plugins.

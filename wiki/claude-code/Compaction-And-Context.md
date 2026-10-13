@@ -1,11 +1,13 @@
-# Compaction and context
+# Compaction and Context
 
-This page says what fills the context of Claude Code, when it compacts the context, and what a compaction keeps.
+This page describes what fills the context of Claude Code, when it compacts the context, and what a compaction keeps.
+Read it if you tune the context settings of dotclaude.
 It covers Claude Code `2.1.296`.
-Each fact from the binary comes from a search of its strings, or from the official docs, and the section says which.
+Each fact from the binary comes from a search of its strings, or from the official docs.
+The page names the source of each fact.
 Each inference is marked as inference.
 
-## Window sizes
+## Window Sizes
 
 - The default window is 200,000 tokens.
   Source: the default window constant in the `2.1.296` strings.
@@ -14,13 +16,15 @@ Each inference is marked as inference.
 - `CLAUDE_CODE_DISABLE_1M_CONTEXT` turns off the 1M choice.
   Source: the `2.1.296` strings.
 - `claude-sonnet-5-5` had a window of 1,000,000 tokens in the measurement of 2026-10-12.
-  Source: [Handoff-Cost](Handoff-Cost).
-- The comment on `CONTEXT_WINDOW` in `src/kernel/budget.ts` says that Claude Code `2.1.296` warns against a 200K window for `claude-opus-5-5` unless `CLAUDE_CODE_AUTO_COMPACT_WINDOW` is set.
-  I did not confirm this comment in the `2.1.296` strings.
-  The strings have a warning for an unknown model id that names `CLAUDE_CODE_MAX_CONTEXT_TOKENS` and `CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT`.
+  Source: [Handoff Cost](Handoff-Cost).
+- The comment on `CONTEXT_WINDOW` in `src/kernel/budget.ts` says that Claude Code `2.1.296` warns against a 200K window for `claude-opus-5-5`.
+  It warns unless `CLAUDE_CODE_AUTO_COMPACT_WINDOW` is set.
+  I did not check this comment in the `2.1.296` strings.
+  The strings have a warning for an unknown model id.
+  That warning names `CLAUDE_CODE_MAX_CONTEXT_TOKENS` and `CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT`.
 - The sizes of the other models are not settled, so this page gives no others.
 
-## What fills the context
+## What Fills the Context
 
 The official docs list these items, in the order that a session loads them.
 
@@ -29,7 +33,7 @@ The official docs list these items, in the order that a session loads them.
 - Auto memory, which is the first 200 lines or 25 KB of `MEMORY.md`.
 - Environment information, such as the working directory and the platform.
 - The names of MCP tools.
-  The schemas stay deferred until a tool search loads them, by default.
+  By default, the schemas stay deferred until a tool search loads them.
 - The one-line descriptions of the skills.
   The body of a skill loads only when Claude uses it.
 - The messages of the conversation, the tool calls, the tool output, and the file reads.
@@ -37,7 +41,7 @@ The official docs list these items, in the order that a session loads them.
 The docs give a token count for some items as an illustration.
 This page does not repeat those counts, because they are not measured.
 
-## When auto-compaction starts
+## When Auto-Compaction Starts
 
 The threshold is the effective window minus 13,000 tokens.
 The effective window is the window minus the smaller of the output limit and 20,000 tokens.
@@ -49,14 +53,16 @@ The threshold is an inference from these two formulas, and I did not measure it.
 - `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` sets a percentage of the effective window from 0 to 100.
   The threshold is then the lower of that value and the default threshold.
 - The `2.1.296` strings also have a second threshold, from a field named `precomputeBufferFraction`.
-  It is the window minus a fraction of the window, and the trigger takes the lower of that value and the threshold above, so it can fire earlier.
+  It is the window minus a fraction of the window.
+  The trigger takes the lower of that value and the threshold above, so it can fire earlier.
   The fraction comes from a model table.
   This page does not examine that second threshold.
 - The next request is blocked at the effective window minus 3,000 tokens.
   With the default output limit, that is the window minus 23,000 tokens (inference).
-  `CONTEXT_BLOCK_MARGIN` in `src/kernel/budget.ts` has the same value, 23,000, and gives 20,000 plus 3,000 as its source.
+  `CONTEXT_BLOCK_MARGIN` in `src/kernel/budget.ts` has the same value, 23,000.
+  Its source is 20,000 plus 3,000.
 
-### Settings and env vars
+### Settings and Env Vars
 
 | Name | Kind | Effect | Source |
 | --- | --- | --- | --- |
@@ -68,14 +74,20 @@ The threshold is an inference from these two formulas, and I did not measure it.
 | `DISABLE_COMPACT` | env var | Turns off auto-compaction and `/compact`. | `2.1.296` strings, `dossier/cc-2.1.296/env.md` |
 | `CLAUDE_CODE_MAX_CONTEXT_TOKENS` | env var | Sets the window of the model, with `DISABLE_COMPACT` or as a fallback for an unrecognized model id. | `2.1.296` strings, `dossier/cc-2.1.296/env.md` |
 
-The `2.1.296` strings read `CLAUDE_CODE_MAX_CONTEXT_TOKENS` in two places, found with a search of `external/cc-2.1.296/strings.txt` for the name and its nearby code.
+The `2.1.296` strings read `CLAUDE_CODE_MAX_CONTEXT_TOKENS` in two places.
+A search of `external/cc-2.1.296/strings.txt` for the name and its nearby code found both.
 One read sets the window only when `DISABLE_COMPACT` is set.
-The other read is a fallback for a model id that the name check does not take as a `claude-` id, after the model table and the 1M checks, and it does not need `DISABLE_COMPACT`.
-So the `src/kernel/budget.ts` comment, which says that Claude Code honors the variable only with `DISABLE_COMPACT`, is incomplete for `2.1.296`.
+The other read is a fallback for a model id.
+The name check does not take that id as a `claude-` id.
+The fallback runs after the model table and the 1M checks.
+It does not need `DISABLE_COMPACT`.
+So the comment in `src/kernel/budget.ts` is incomplete for `2.1.296`.
+That comment says that Claude Code honors the variable only with `DISABLE_COMPACT`.
 
-## What a compaction keeps and drops
+## What a Compaction Keeps and Drops
 
-A compaction asks the model for a summary of the conversation, and the summary replaces the earlier messages.
+A compaction asks the model for a summary of the conversation.
+The summary replaces the earlier messages.
 The summary prompt in the `2.1.296` strings asks for these sections.
 
 1. The primary request and intent.
@@ -88,7 +100,7 @@ The summary prompt in the `2.1.296` strings asks for these sections.
 8. The current work.
 9. The next step.
 
-The binary also has two variants of this prompt.
+The binary has two variants of this prompt.
 
 - A partial summary covers only the recent messages.
   The earlier messages stay intact.
@@ -116,21 +128,27 @@ The messages, the tool output, and the file contents that are not re-read leave 
 
 ## Context in dotclaude
 
-- The settings snippet sets `DISABLE_COMPACT` to `1`, `autoCompactEnabled` to `false`, and `CLAUDE_CODE_AUTO_COMPACT_WINDOW` and `CLAUDE_CODE_MAX_CONTEXT_TOKENS` to `300000`.
-  Source: `src/plugins/dotclaude/slices/prompt/slice.ts`, and [Settings-Snippet](Settings-Snippet).
+- The settings snippet sets `DISABLE_COMPACT` to `1`.
+  It sets `autoCompactEnabled` to `false`.
+  It sets `CLAUDE_CODE_AUTO_COMPACT_WINDOW` and `CLAUDE_CODE_MAX_CONTEXT_TOKENS` to `300000`.
+  Source: `src/plugins/dotclaude/slices/prompt/slice.ts`, and the [settings snippet](Settings-Snippet).
 - With compaction off, a session that reaches its limit stops.
   It does not compact, so it loses its state.
   Source: the comment on `CONTEXT_WINDOW` in `src/kernel/budget.ts`.
 - The prompt text of the `context_management` section says that the conversation is summarized.
-  The prompt slice replaces that text with a note that compaction is off, and it does so only when `DISABLE_COMPACT` is set.
+  The prompt slice replaces that text with a note that compaction is off.
+  It does so only when `DISABLE_COMPACT` is set.
   Source: `src/plugins/dotclaude/slices/prompt/transforms/context_management.ts` and `src/plugins/dotclaude/slices/prompt/adapters/mod.ts`.
 - The handoff is the alternative to a compaction.
-  The `handoff` slice writes the state of the work to a file, the user runs `/clear`, and the next session reads the file.
-  See [Context-And-Handoff](Context-And-Handoff).
+  The `handoff` slice writes the state of the work to a file.
+  The user runs `/clear`, and the next session reads the file.
+  See [Context and Handoff](Context-And-Handoff).
 - One measured run on 2026-10-12 compared the two.
-  A handoff cost $0.0630, and a compaction with its follow-up turn cost $0.2288, at the API list price.
+  A handoff cost $0.0630.
+  A compaction with its follow-up turn cost $0.2288.
+  Both costs are at the API list price.
   The run used one session of about 81,000 tokens, so it has no spread.
-  See [Handoff-Cost](Handoff-Cost).
+  See [Handoff Cost](Handoff-Cost).
 - The bounds of the context of a subagent are in [Context-Bound](Context-And-Handoff).
 
 ## Sources
@@ -141,8 +159,13 @@ The messages, the tool output, and the file contents that are not re-read leave 
 - The official docs page "Explore the context window" at `code.claude.com/docs/en/context-window`, read on 2026-10-13.
 - The kernel constants in `src/kernel/budget.ts`, and the snippet in `src/plugins/dotclaude/slices/prompt/slice.ts`.
 
-## Not settled
+## Not Settled
 
 - The window of each model, except the three cases above.
 - The threshold for a model whose output limit is below 20,000 tokens.
 - The exact content that a compaction keeps, which only the docs describe.
+
+## Related Pages
+
+- [Context and Handoff](Context-And-Handoff)
+- [Auto Mode](Auto-Mode)

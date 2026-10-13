@@ -1,6 +1,7 @@
 # Decisions
 
-This page lists the design decisions of dotclaude 1.0.0.
+This page is the index of the design decisions of dotclaude 1.0.0.
+Read it to find the page that holds the detail of a decision.
 Each row gives the number, the title, and the page with the detail.
 A row of a reversed decision also links its section in [Decisions-Reversed](Decisions-Reversed).
 [Design](Design) holds the principles and the history.
@@ -36,11 +37,11 @@ A row of a reversed decision also links its section in [Decisions-Reversed](Deci
 | D27 | Measured facts over model reports | [Evidence](Decisions-Evidence), reversed in part in [Decisions-Reversed](Decisions-Reversed#evidence) |
 | D28 | Compliance by checks, not by prose | [Prompt](Decisions-Prompt), item 2 reversed in [Decisions-Reversed](Decisions-Reversed#prompt) |
 | D29 | Semantic line breaks | [Evidence](Decisions-Evidence) |
-| D30 | Hold correct work under an unsupported claim | [Evidence](Decisions-Evidence) |
+| D30 | Hold work that is right under an unsupported claim | [Evidence](Decisions-Evidence) |
 | D31 | Guard hooks fail open (`onFailure`) | [Guards](Guards) |
-| D32 | Usage awareness, back in 1.0.0 as the saved sample and the context trigger | [Context bound](Context-And-Handoff) |
-| D33 | Three-column status line | [Status line](Status-Line) |
-| D34 | Adherence by checks in code, with no new judge (now the `asks` slice) | [Core plugin](Architecture) |
+| D32 | Usage awareness, back in 1.0.0 as the saved sample and the context trigger | [Context Bound](Context-And-Handoff) |
+| D33 | Three-column status line | [Status Line](Status-Line) |
+| D34 | Adherence by checks in code, with no new judge (now the `asks` slice) | [Core Plugin](Architecture) |
 | D35 | No proprietary formats | [Reversed](Decisions-Reversed#settings) |
 | D36 | Rebuild with no 0.28.0 or 0.29.0 code | [Architecture](Decisions-Architecture) |
 | D37 | Ports and adapters inside vertical slices | [Architecture](Decisions-Architecture) |
@@ -58,12 +59,13 @@ A row of a reversed decision also links its section in [Decisions-Reversed](Deci
 ## Sources
 
 The decisions of 1.0.0 come from the change folder `.dotclaude/spec/changes/1.0.0/`.
-The file `change.md` holds the decisions of the user, and the file `design.md` holds the architecture.
+The file `change.md` holds the decisions of the user.
+The file `design.md` holds the architecture.
 D1 to D35 came from the design of the 0.28.0 change.
 Some group pages cite the probes of the 0.28.0 work.
 
-## Related pages
+## Related Pages
 
 - [Design](Design)
-- [Plugin layout](Plugin-Layout)
-- [Open items at 0.28.0](Open-Items), an archive page of the state at 0.28.0, not of 1.0.0
+- [Plugin Layout](Plugin-Layout)
+- [Open Items at 0.28.0](Open-Items), an archive page of the state at 0.28.0, not of 1.0.0

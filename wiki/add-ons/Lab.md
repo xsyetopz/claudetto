@@ -1,19 +1,24 @@
 # Lab
 
 The plugin `dotclaude-lab` has tools for plugin authors.
-It has four slices, and each slice has one command.
+Read this page if you write or test a plugin, or if you build the settings schema.
+
+The plugin has four slices, and each slice has one command.
 The slice `sandbox` runs Claude Code in a config folder apart from yours (`dotclaude-sandbox`).
 The slice `capture` logs the requests of Claude Code and sizes their parts (`dotclaude-capture`).
 The slice `schema` writes the JSON Schema of `settings.json` (`dotclaude-schema`).
 The slice `eval-compare` compares the eval scores of two plugin folders (`dotclaude-eval-compare`).
-The plugin has no hook and no `lab/` test, so the hook lab of `just lab` runs nothing for it.
-The plugin works without the core plugin, and it imports nothing from another plugin.
+The plugin has no hook and no `lab/` test.
+The hook lab of `just lab` runs nothing for it.
+The plugin works without the core plugin.
+It imports nothing from another plugin.
 
 The source is in `src/plugins/dotclaude-lab/`.
-The folder `plugins/dotclaude-lab/` is generated, so do not edit it by hand.
+The folder `plugins/dotclaude-lab/` is generated.
+Do not edit it by hand.
 The plugin has no `limits.ts` file.
 
-## What it adds
+## What It Adds
 
 - Four commands on `PATH`, one for each slice: `dotclaude-sandbox`, `dotclaude-capture`, `dotclaude-schema`, and `dotclaude-eval-compare`.
 - The skill `/eval-compare`, which runs `dotclaude-eval-compare`.
@@ -24,13 +29,15 @@ The plugin has no `limits.ts` file.
 
 1. Install the plugin with `/plugin install dotclaude-lab@dotclaude`.
 2. Make sure that these tools are ready:
-   - Bun 1.4.3 or later, because the commands are Bun scripts (the shebang of each file in `bin/`).
+   - Bun 1.4.3 or later.
+     The commands are Bun scripts (the shebang of each file in `bin/`).
    - The `claude` executable on `PATH`.
      The sandbox and `dotclaude-eval-compare` need it.
      `dotclaude-schema` needs it when you do not pass `--bundle`.
-   - A login token for the sandbox (see the sandbox section).
+   - A login token for the sandbox.
+     See the Login Token section on this page.
 
-## The sandbox
+## The Sandbox
 
 ```text
 dotclaude-sandbox [--dir DIR] [claude arguments...]
@@ -47,7 +54,8 @@ A test of a plugin then cannot change your settings, sessions, or installed plug
 - The second form removes the folder.
 - The third form adds `--debug-file` and `-p "Reply with OK."` to the call.
   It prints each line of the debug log that names an unknown field.
-  It exits 1 when the session fails, and when the log names a field.
+  It exits 1 when the session fails.
+  It also exits 1 when the log names a field.
 
 The `--dir DIR` option sets the folder.
 The default is `dotclaude-sandbox` in the system temp folder (`SANDBOX_TEMP` in `src/kernel/temp-paths.ts`).
@@ -56,17 +64,19 @@ The folder holds three parts:
 - `config/`, which is `CLAUDE_CONFIG_DIR`.
   The setup marks onboarding as done, and it trusts `project/` (`setUp` in `slices/sandbox/adapters/setup.ts`).
 - `project/`, an empty git repository that is the working directory.
-- `home/`, which is the `HOME` of Claude Code, so a setup script that changes shell files changes only the sandbox.
+- `home/`, which is the `HOME` of Claude Code.
+  A setup script that changes shell files changes only the sandbox.
 
 A managed setting can lock a plugin name.
-Then Claude Code ignores the `--plugin-dir` copy, and the debug log says that the plugin is locked by managed settings (the header of `slices/sandbox/adapters/cli.ts`).
+Then Claude Code ignores the `--plugin-dir` copy.
+The debug log says that managed settings lock the plugin (the header of `slices/sandbox/adapters/cli.ts`).
 
 `claude` must be on `PATH` as an executable.
 A shell function or an alias does not work.
 
-### Login token
+### Login Token
 
-The command reads the token in this order (`loginToken` in `slices/sandbox/adapters/login.ts`):
+The command reads the token from these sources, in this order (`loginToken` in `slices/sandbox/adapters/login.ts`):
 
 1. The variable `CLAUDE_CODE_OAUTH_TOKEN`.
 2. On macOS, the Keychain entry `Claude Code-credentials`.
@@ -74,22 +84,24 @@ The command reads the token in this order (`loginToken` in `slices/sandbox/adapt
 
 The token goes only into the environment of the child process.
 The command does not write the token to disk or print it.
-If no token is found, the command still runs, and it says so.
+If no token is found, the command still runs.
+It says so.
 
-### The child environment
+### The Child Environment
 
 The child process drops the variables that the parent Claude Code session sets for its own tools (`SESSION_VARS` and `SESSION_PREFIXES` in `slices/sandbox/adapters/login.ts`).
 In the sandbox, they would join the parent session or fake its state.
-It also drops each variable that your own settings `env` sets to the same value.
+The child process also drops each variable that your own settings `env` sets to the same value.
 A value that you pass for the sandbox on the command line stays.
 
-### The model check
+### The Model Check
 
 Claude Code gives no error for a `--model` that the sandbox does not list.
 The session then runs on another model.
-So the command reads `availableModels` of the sandbox, and it warns when the model is not in that list (`slices/sandbox/adapters/cli.ts`).
+So the command reads `availableModels` of the sandbox.
+It warns when the model is not in that list (`slices/sandbox/adapters/cli.ts`).
 
-## The capture proxy
+## The Capture Proxy
 
 ```text
 dotclaude-capture [--port 8787] [--out DIR] [--upstream URL] [--no-count] [--count FILE]
@@ -103,34 +115,41 @@ The default port is 8787.
 
 - The proxy never writes a request header, because the headers carry the credential.
   It sends upstream only the headers that match `PASS` in `slices/capture/adapters/cli.ts`.
-- The upstream is the `--upstream` flag, then `ANTHROPIC_BASE_URL`, then `https://api.anthropic.com`.
+- The proxy takes the upstream from the first of these sources that is set:
+  1. The `--upstream` flag.
+  2. `ANTHROPIC_BASE_URL`.
+  3. `https://api.anthropic.com`.
   The default is `DEFAULT` in `slices/capture/domain/upstream.ts`.
 - The proxy refuses an upstream that is its own address, because the requests would loop.
   The check looks at the host names in `LOOPBACK` (`127.0.0.1`, `localhost`, and `[::1]`) with the port of the proxy.
   It does not limit the upstream to a loopback address.
 - For the first `/v1/messages` request with tools, the proxy sizes each part with the `count_tokens` endpoint.
-  It counts the full request, then the request without one tool, one block, or one section of a long text.
+  It counts the full request.
+  Then it counts the request without one tool, one block, or one section of a long text.
   The difference is the token cost of that part, with its wrapper.
 - A text longer than `SPLIT_CHARS` characters is sized by section (`slices/capture/domain/report.ts`).
-- With `--count FILE`, the proxy sizes `FILE` instead, with the credential of the first request.
+- With `--count FILE`, the proxy sizes `FILE` instead.
+  It uses the credential of the first request.
 - The report goes to `DIR/report-<n>.json` and to standard output.
 
 The repository runs the proxy with `just capture`.
 
-## The schema writer
+## The Schema Writer
 
 ```text
 dotclaude-schema --out DIR [--bundle FILE] [--version X.Y.Z]
 ```
 
-The writer reads the installed Claude Code bundle, and it writes two files to `DIR`:
+The writer reads the installed Claude Code bundle.
+It writes two files to `DIR`:
 
 - `claude-code-settings.json`, the schema of `settings.json`.
 - `claude-code-managed-settings.json`, the schema of `managed-settings.json`.
 
 The file names are in `slices/schema/domain/build.ts`.
 
-- The option `--out` is required, and the command exits 2 without it, so it never writes into a folder by chance (`slices/schema/adapters/cli.ts`).
+- The option `--out` is required.
+  The command exits 2 without it, so it never writes into a folder by chance (`slices/schema/adapters/cli.ts`).
 - Without `--bundle`, the command reads the file that `claude` on `PATH` resolves to.
 - Without `--version`, the command takes the version from the name of the bundle, or from the output of `--version`.
 - The writer reads the bundle and never changes it.
@@ -143,7 +162,7 @@ The file names are in `slices/schema/domain/build.ts`.
 
 The repository writes the schemas to `schemas/` with `just schema`.
 
-## The eval compare
+## The Eval Compare
 
 ```text
 dotclaude-eval-compare A B [claude plugin eval options...]
@@ -160,14 +179,16 @@ So the two tables show which plugin folder scores better.
 - The verdict is built in `slices/eval-compare/domain/compare.ts`.
 
 Each run costs money.
-The skill `/eval-compare` asks you to confirm the two folders before it runs the command.
+The skill `/eval-compare` asks you to check the two folders before it runs the command.
 The skill finds each folder by its `.claude-plugin/plugin.json` file and its `evals/` folder (`SKILL.md`).
 
-## The hook lab
+## The Hook Lab
 
 The command `just lab` runs `bun tools/lab.ts`.
 That script runs `claude plugin test` on each plugin folder that has a `tests/` folder.
-The hook lab tests of a slice are in its `lab/` folder, and the generator copies them to the `tests/` folder of the plugin (the comment in `tools/generate/emit/slices.ts`).
+The hook lab tests of a slice are in its `lab/` folder.
+The generator copies them to the `tests/` folder of the plugin (the comment in `tools/generate/emit/slices.ts`).
+
 Run `just lab` before a live session when a change touches `hooks/register.ts`.
 The plugin `dotclaude-lab` has no `tests/` folder, so the script skips it.
 
@@ -180,7 +201,8 @@ The plugin `dotclaude-lab` has no `tests/` folder, so the script skips it.
 | `--max-cost-usd` | 5 USD for each run | `slices/eval-compare/domain/compare.ts` | The default cost bound of `dotclaude-eval-compare` |
 | `START_TOKENS` | 9,960 tokens | `tools/limits.ts` | The bound of the start measure that `just start-run` runs (`tools/measure.ts`) |
 
-The value 5 of `--max-cost-usd` is written in the domain file, and it is not in a `limits.ts` file.
+The value 5 of `--max-cost-usd` is written in the domain file.
+It is not in a `limits.ts` file.
 
 ## Why
 
@@ -195,8 +217,8 @@ The value 5 of `--max-cost-usd` is written in the domain file, and it is not in 
 - Each add-on stays a separate plugin.
   See D24 in [Decisions-Layout](Decisions-Layout).
 
-## Troubleshooting
+## Related Pages
 
-The symptoms of the sandbox and the lab, and their fixes, are on [Troubleshooting](Troubleshooting).
-
-See also [Troubleshooting](Troubleshooting), and the index [Add-Ons](Add-Ons).
+- [Troubleshooting](Troubleshooting): the symptoms of the sandbox and the lab, and their fixes.
+- [Settings Schema](Settings-Schema): the schema that the schema writer builds.
+- [Add-On Plugins](Add-Ons): the list of the add-on plugins.

@@ -1,7 +1,9 @@
-# Settings schema
+# Settings Schema
 
+This page tells maintainers how the settings schema is made and how an editor uses it.
 The JSON Schema of `settings.json` and `managed-settings.json` is made by dotclaude.
-It comes from the bundle of the installed Claude Code, and not from the public schema.
+dotclaude takes its source from the bundle of the installed Claude Code.
+It does not take the source from the public schema.
 The build code says that the public schema lacks some keys, such as `syncClaudeAiSkills`.
 The decision is D10 in [Decisions-Settings](Decisions-Settings).
 How Claude Code merges its settings files is in [Settings resolution](Settings-Resolution).
@@ -41,7 +43,7 @@ On success, the command prints the version, the number of top-level keys of the 
 A failure exits with status 1 and a message that names the version.
 The build finishes before any file is written, so a failed build writes no file.
 
-## How the build works
+## How the Build Works
 
 The code paths run in this order.
 
@@ -58,9 +60,10 @@ The code paths run in this order.
    A key is required when its helper is in the table and no call in its chain is `optional`, `catch`, `default`, or `nullish`.
 5. The same file follows a plain call to another helper, such as a named object, up to 8 levels (`DEPTH_MAX`).
    It stops at a loop, and it does not follow a name that the bundle defines more than once.
-6. `slices/schema/domain/descriptions.ts` gives a fallback text for `attribution`, `sandbox`, and `spellcheck`.
+6. `slices/schema/domain/descriptions.ts` gives fallback text for `attribution`, `sandbox`, and `spellcheck`.
    The fallback is used only when the bundle has no description for the key.
-7. `slices/schema/domain/managed.ts` removes the managed-only keys from the user file, and it marks them with `x-managed-only` in the managed file.
+7. `slices/schema/domain/managed.ts` removes the managed-only keys from the user file.
+   It marks them with `x-managed-only` in the managed file.
 8. `slices/schema/domain/spans.ts` puts the code items of the descriptions in backticks.
 
 ## Contents for 2.1.296
@@ -79,7 +82,7 @@ The build test in `tests/lab/schema/build.test.ts` checks that the managed file 
 They are `syncClaudeAiSkills`, `syncClaudeAiPlugins`, `prependPlugins`, `appendPlugins`, `skillOverrides`, and `disableClaudeAiConnectors`.
 `prependPlugins` and `appendPlugins` are managed-only, so the user schema lacks them.
 
-## Managed-only keys
+## Managed-Only Keys
 
 - The user schema leaves out the managed-only keys.
   Its root sets `additionalProperties` to `false`, so a user file that holds such a key fails this schema.
@@ -87,10 +90,11 @@ They are `syncClaudeAiSkills`, `syncClaudeAiPlugins`, `prependPlugins`, `appendP
 - The keys are found by phrase match on the descriptions, in `MANAGED_ONLY` in `managed.ts`.
   A new description that uses another phrase is not marked, so its key stays in the user schema.
 
-## Use in an editor
+## Use in an Editor
 
 Set the `$schema` key of a JSON file to the path of the schema file.
-This is the JSON Schema keyword, and an editor that supports it checks the file and shows the descriptions.
+This is the JSON Schema keyword.
+An editor that supports it checks the file and shows the descriptions.
 This page does not test the editor behavior.
 
 ```json
@@ -99,10 +103,11 @@ This page does not test the editor behavior.
 }
 ```
 
-A relative path in `$schema` resolves from the file that holds it, which is inference from the JSON Schema rules.
+A relative path in `$schema` resolves from the file that holds it.
+This is an inference from the JSON Schema rules.
 Use an absolute path or a URL for a file outside the repository.
 
-## Tests and pins
+## Tests and Pins
 
 - `tests/dotclaude/settings-pin.test.ts` checks the JSON blocks of the [settings snippet](Settings-Snippet) against the user schema.
   A key that the schema lacks fails the test, and the test names the key.
@@ -116,9 +121,12 @@ Use an absolute path or a URL for a file outside the repository.
 ## Limits
 
 - The type table `TYPES` in `slices/schema/domain/types.ts` has 10 helper names for `2.1.296` only.
-  The helper names change with each build, and the comment in the file says that the names come from the bundle of that version.
+  The helper names change with each build.
+  The comment in the file says that the names come from the bundle of that version.
 - A version without a table fails the build.
-  To support a new version, add its table to `TYPES`, then run `just schema`.
+  To support a new version, follow these steps.
+  1. Add its table to `TYPES`.
+  2. Run `just schema`.
 - A helper that is not in the table gives an empty schema, which accepts any value, and its key is not required.
 - The descriptions of the three fallback keys are text that a person wrote.
   The fallback applies only when the bundle has no description for the key.
@@ -127,11 +135,11 @@ Use an absolute path or a URL for a file outside the repository.
 - The timing of a build, about 0.2 s, is from a comment in `types.ts`.
   This page did not measure it.
 
-## Related pages
+## Related Pages
 
-- [Settings resolution](Settings-Resolution)
-- [Claude Code internals](Claude-Code-Internals)
-- [Settings snippet](Settings-Snippet)
-- [Settings snippet keys](Settings-Snippet-Keys)
-- [Off switches](Off-Switches)
+- [Settings Resolution](Settings-Resolution)
+- [Claude Code Internals](Claude-Code-Internals)
+- [Settings Snippet](Settings-Snippet)
+- [Settings Snippet Keys](Settings-Snippet-Keys)
+- [Off Switches](Off-Switches)
 - [Lab](Lab)

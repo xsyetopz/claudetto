@@ -1,10 +1,11 @@
 # Evidence
 
-The index of the evidence pages.
+This page is the index of the evidence pages.
+Read it to find the page and the source file of a measurement.
 Each row gives what the page measures, its date, its Claude Code version, and its source file.
-A date or a version that the page does not state is marked "not stated".
+If a page does not state a date or a version, the row says "not stated".
 
-## Measurement pages
+## Measurement Pages
 
 | Page | What it measures | Date | Claude Code version | Source file |
 | --- | --- | --- | --- | --- |
@@ -13,7 +14,7 @@ A date or a version that the page does not state is marked "not stated".
 | [Prompt-Variants](Prompt-Variants) | The system prompt variant of each model family, the verification line of each subagent block, and the size bounds of the first request | Not stated | Not stated | `wiki/evidence/Prompt-Variants.md`, with the variants in `src/plugins/dotclaude/slices/prompt/domain/variants.ts` |
 | [Evals](Evals) | The suite of 12 cases, how to run it, and where its current results are | Newest full run 2026-10-10 | `2.1.296` for the runs | `wiki/evidence/Evals.md`, with the cases in `src/plugins/dotclaude/evals/` and `src/plugins/dotclaude/slices/*/evals/` |
 
-## Evidence files
+## Evidence Files
 
 The records below are in `.dotclaude/spec/changes/1.0.0/evidence/`.
 They are inputs to the pages above and to the design.
@@ -43,5 +44,10 @@ When a record has no date in its text, the date is the date of its commit.
   Date 2026-10-12, Claude Code `2.1.296`.
 - `worker-lessons.md`: the lessons of the Bun port to Rust, which P35 uses.
   Dates 2026-10-12 and 2026-10-13, version not stated.
-- `zero-token.md`: the tasks that dotclaude 1.0.0 gives to Claude, and that a hook, a script, a setting, or a status line command can do, the P33 list.
+- `zero-token.md`: the tasks that dotclaude 1.0.0 gives to Claude.
+  The P33 list holds those tasks that a hook, a script, a setting, or a status line command can do.
   Date 2026-10-12, version not stated.
+
+## Related Pages
+
+- [Handoff-Cost](Handoff-Cost): the first measurement page to read after this index.
