@@ -213,6 +213,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   It also reads an install of `git+URL` with `pip3`, which the check missed before.
 - The `guard` reads a command whose name is only a substitution, such as `$(echo git) fetch URL` or `` `echo git` reset --hard ``, as `git` when a git verb follows the name.
   The owners check reads the repository of such a fetch, and a `git -C dir` folder of such a command stays in force for the matchers.
+- The `guard` denies a system command whose name is only a substitution, such as `$(which rm) -rf /` or `$(which chmod) -R 777 /`.
+  Each system rule that reads more than the name reads such a name as its tool, so the rule denies when the other words fit it.
 - The `--clean` of `dotclaude-sandbox` removes a folder other than the default one only when the sandbox made it.
   The setup writes a `.dotclaude-sandbox` marker into the folder, and `--clean` refuses a folder without it.
   A folder that an older sandbox made has no marker, so remove it by hand.

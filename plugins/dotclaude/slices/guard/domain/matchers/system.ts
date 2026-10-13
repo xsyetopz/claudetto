@@ -2,6 +2,8 @@
 // The literal matchers of the system: a recursive delete, a disk erase, a recursive permission change, and a security setting.
 // Each entry has a catalog id, examples, and a `match` on the words of one command.
 // The tier of each id is in `index.ts`, and every id here applies in every session.
+// A command name that a substitution wrote, as in `$(which rm) -rf /`, is `""` and can be any tool.
+// So a rule that reads more than the name reads `""` as its tool, and denies when the other words fit.
 
 import { isForce, isRecursive, positionals } from "./args.ts";
 import { normPath } from "./norm.ts";
@@ -45,6 +47,10 @@ const isSystemTarget = (path: string): boolean => {
   return ROOTS.has(n) || /^~[^/]*$/.test(n) || isGitDir(n);
 };
 
+/** True when `name` is one of `tools`, or the unreadable name `""` that can be each of them. */
+const isTool = (name: string, ...tools: string[]): boolean =>
+  name === "" || tools.includes(name);
+
 /** The disk tools that run on any disk: the file system makers, `fdisk`, and `parted`. */
 const DISK_TOOLS = new Set(["fdisk", "parted"]);
 
@@ -68,11 +74,12 @@ export const systemMatchers: Matcher[] = [
       "rm -rf /..",
       "rm -rf /usr/./",
       "rm -rf ~/x/../..",
+      "$(which rm) -rf /",
     ],
     match: async (words) => {
       const [name = "", ...args] = words;
       return (
-        name === "rm" &&
+        isTool(name, "rm") &&
         isRecursive(args) &&
         isForce(args) &&
         positionals(args).some(isSystemTarget)
@@ -89,19 +96,26 @@ export const systemMatchers: Matcher[] = [
       "diskutil partitionDisk disk2 GPT JHFS+ X 100%",
       "diskutil zeroDisk disk2",
       "dd if=/dev/zero of=/dev/sda bs=1M",
+      "$(which dd) if=/dev/zero of=/dev/sda",
+      "$(which diskutil) eraseDisk JHFS+ X /dev/disk2",
       "fdisk /dev/sda",
       "parted /dev/sda mklabel gpt",
     ],
     match: async (words) => {
       const [name = "", verb = "", ...args] = words;
       if (name.startsWith("mkfs")) return true;
-      if (name === "diskutil")
-        return (
-          verb.startsWith("erase") ||
+      if (
+        isTool(name, "diskutil") &&
+        (verb.startsWith("erase") ||
           verb === "partitionDisk" ||
-          verb === "zeroDisk"
-        );
-      if (name === "dd") return args.some((a) => /^of=\/dev\//.test(a));
+          verb === "zeroDisk")
+      )
+        return true;
+      if (
+        isTool(name, "dd") &&
+        [verb, ...args].some((a) => /^of=\/dev\//.test(a))
+      )
+        return true;
       return DISK_TOOLS.has(name);
     },
   },
@@ -113,11 +127,12 @@ export const systemMatchers: Matcher[] = [
       "chmod -R 755 $HOME",
       "chown -R root /",
       "chown -R user ~/",
+      "$(which chmod) -R 777 /",
     ],
     match: async (words) => {
       const [name = "", ...args] = words;
       return (
-        (name === "chmod" || name === "chown") &&
+        isTool(name, "chmod", "chown") &&
         isRecursive(args) &&
         positionals(args).some((w) => PERMISSION_ROOTS.has(normPath(w)))
       );
@@ -130,13 +145,16 @@ export const systemMatchers: Matcher[] = [
       "spctl --master-disable",
       "security delete-generic-password -s login",
       "security delete-keychain login.keychain",
+      "$(which csrutil) disable",
+      "$(which spctl) --master-disable",
+      "$(which security) delete-keychain login.keychain",
     ],
     match: async (words) => {
       const [name = "", ...args] = words;
-      if (name === "csrutil") return args[0] === "disable";
-      if (name === "spctl") return args.includes("--master-disable");
-      if (name === "security") return (args[0] ?? "").startsWith("delete-");
-      return false;
+      if (isTool(name, "csrutil") && args[0] === "disable") return true;
+      if (isTool(name, "spctl") && args.includes("--master-disable"))
+        return true;
+      return isTool(name, "security") && (args[0] ?? "").startsWith("delete-");
     },
   },
 ];

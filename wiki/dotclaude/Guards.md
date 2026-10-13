@@ -49,6 +49,9 @@ The first matcher that matches gives the deny reason from `domain/reason.ts`.
 A command whose name is only a substitution, such as `$(echo git) reset --hard`, has no readable name.
 When a git verb follows that name, `walk.ts` reads the command as `git`, for the matchers and for the owners check.
 A name with literal text next to the substitution, such as `$(pwd)/build.sh`, is not read as `git`.
+Each `system.ts` matcher that reads more than the name reads such a name as its tool.
+So `$(which rm) -rf /` is denied, and `$(which rm) -r /` is also denied, because its words also fit the permission rule.
+A rule that reads the name alone, such as `fdisk`, cannot read such a name.
 
 The tier of each matcher comes from the rule catalog in `src/kernel/policy/`.
 The catalog has one file for each category: `rules/git.ts`, `rules/system.ts`, `rules/database.ts`, `rules/cloud.ts`, and `rules/backups.ts`.

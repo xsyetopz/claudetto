@@ -171,6 +171,42 @@ test("a command whose name is unreadable, with no git verb after it, is allowed"
   }
 });
 
+/** The system commands whose name a substitution wrote. */
+const UNREADABLE_SYSTEM = [
+  "$(which rm) -rf /",
+  "`which rm` -rf ~",
+  '"$(which rm)" -r -f $HOME',
+  "$(which chmod) -R 777 /",
+  "$(which dd) if=/dev/zero of=/dev/sda",
+  "$(which diskutil) eraseDisk JHFS+ X /dev/disk2",
+  "$(which csrutil) disable",
+  "$(which spctl) --master-disable",
+  "$(which security) delete-keychain login.keychain",
+];
+
+test("a system command whose name a substitution wrote is denied, through each wrapper with a single-quoted script", async () => {
+  for (const base of UNREADABLE_SYSTEM) {
+    for (const command of formsOf(base).filter(
+      (f) => !/^(bash -c|eval) "/.test(f),
+    )) {
+      expect(await mainDeny(command, main), command).not.toBeNull();
+      expect(await subagentDeny(command, main), command).not.toBeNull();
+    }
+  }
+});
+
+test("a command whose name is unreadable, with words that fit no system rule, is allowed", async () => {
+  for (const command of [
+    "$(which rm) -rf build",
+    "$(which rm) -f /tmp/x.log",
+    "$(which chmod) -R 755 src",
+    "$(which dd) if=a of=b",
+    "$(which tool) disable-cache",
+  ]) {
+    expect(await mainDeny(command, main), command).toBeNull();
+  }
+});
+
 test("a command whose name has literal text next to a substitution is not read as `git`", async () => {
   for (const command of ["$(pwd)/build.sh", "`pwd`/build.sh"]) {
     expect(await mainDeny(command, main), command).toBeNull();
