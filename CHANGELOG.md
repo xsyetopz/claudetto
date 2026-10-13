@@ -79,6 +79,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `stamp` slice of the core plugin appends the dotclaude version and the short build SHA to each session at its start, as a `system` notice.
   The SHA comes from `installed_plugins.json`, or from `git` when the plugin root is a dotclaude checkout, else it is `unknown`.
   The notice costs no model token.
+  A resume on the same build adds no notice, and a resume on a new build adds one.
 - The `dotclaude-usage` report shows the build of each session, and the cost of each build.
   A session with no stamp row shows `unknown`.
 - The add-on plugin `dcc-plugin-agents-md` loads `AGENTS.md` files where Claude Code loads `CLAUDE.md`, in place of the built-in `cc-plugin-agents-md`.

@@ -125,3 +125,20 @@ test("each session shows its own build, from its stamp row", async () => {
     c: "unknown",
   });
 });
+
+test("a session with two stamp rows shows the build of its first row", async () => {
+  const root = tmpDir("usage");
+  // A resume on a new build adds a second row, and the session keeps the build it started on.
+  const entries = session("claude-sonnet-5-5", stampOf("1.0.0", "0123456"));
+  entries.splice(1, 0, {
+    type: "system",
+    subtype: "informational",
+    timestamp: AT,
+    content: formatStamp(stampOf("1.1.0", "fedcba9")),
+  });
+  await write(root, "a", entries);
+  const { builds } = run(root);
+  expect(builds.latest.map((s) => [s.id, s.build])).toStrictEqual([
+    ["a", "1.0.0 0123456"],
+  ]);
+});
