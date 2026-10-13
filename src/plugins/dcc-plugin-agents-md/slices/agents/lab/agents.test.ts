@@ -3,11 +3,20 @@
 // The hooks sit above the stubs of the engine, and the stubs answer the file walk from one fake disk.
 // No file is read from the real disk, and no Claude Code session runs.
 
-import type { FsAncestor, FsAncestorsRequest, InstructionFile, On } from "claude-code";
+import type {
+  FsAncestor,
+  FsAncestorsRequest,
+  InstructionFile,
+  On,
+} from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
 /** One file of the fake disk: the folder it is in, the name it is looked for by, and its text. */
-type Disk = { readonly dir: string; readonly name: string; readonly content: string };
+type Disk = {
+  readonly dir: string;
+  readonly name: string;
+  readonly content: string;
+};
 
 /** The world of one test. A value left out takes the default of the test folder. */
 type World = {
@@ -17,9 +26,11 @@ type World = {
   readonly excludes?: readonly string[];
   readonly dirs?: readonly string[];
   readonly env?: Readonly<Record<string, string>>;
+  readonly skipCompact?: boolean;
 };
 
-const dirOf = (path: string): string => path.slice(0, path.lastIndexOf("/")) || "/";
+const dirOf = (path: string): string =>
+  path.slice(0, path.lastIndexOf("/")) || "/";
 
 /** A path as the engine resolves it: `.` is the working directory, and a relative path is under it. */
 const resolveIn = (cwd: string, path: string): string => {
@@ -84,13 +95,18 @@ const setup = (on: On, world: World = {}) => {
   on("prompt.context", (_$, e) => ({ blocks: e.blocks }));
   on("tool.call", () => ({ result: "ok" }));
   on("prompt.mention", () => ({ type: "file" }));
-  on("session.compact", (_$, e) => ({ messages: e.messages }));
+  on("session.compact", (_$, e) =>
+    world.skipCompact
+      ? { skip: "Skipped by the test." }
+      : { messages: e.messages },
+  );
   return seen;
 };
 
 /** The files that the start hook adds to the engine's own list, with the list the hook returns. */
 const started = async ($: Engine, instructionFiles: InstructionFile[] = []) =>
-  (await $.prompt.context({ blocks: [], instructionFiles })).instructionFiles ?? [];
+  (await $.prompt.context({ blocks: [], instructionFiles })).instructionFiles ??
+  [];
 
 const paths = (files: readonly { readonly path: string }[]): string[] =>
   files.map((file) => file.path);
@@ -100,7 +116,11 @@ const contexts = (out: {
 }): string[] => [...(out.context ?? [])];
 
 const SUB: Disk = { dir: "/p/sub", name: "AGENTS.md", content: "Sub rules." };
-const OTHER: Disk = { dir: "/p/other", name: "AGENTS.md", content: "Other rules." };
+const OTHER: Disk = {
+  dir: "/p/other",
+  name: "AGENTS.md",
+  content: "Other rules.",
+};
 
 test("the user file, the project and `.claude/` files, and `AGENTS.local.md` load with their tiers", async ($: Engine, on: On) => {
   setup(on, {
@@ -122,7 +142,9 @@ test("the user file, the project and `.claude/` files, and `AGENTS.local.md` loa
 });
 
 test("a file that the engine loaded keeps its place and is not loaded again", async ($: Engine, on: On) => {
-  setup(on, { disk: [{ dir: "/p", name: "AGENTS.md", content: "Project rules." }] });
+  setup(on, {
+    disk: [{ dir: "/p", name: "AGENTS.md", content: "Project rules." }],
+  });
   const files = await started($, [
     { path: "/p/AGENTS.md", kind: "project", content: "Project rules." },
   ]);
@@ -130,7 +152,9 @@ test("a file that the engine loaded keeps its place and is not loaded again", as
 });
 
 test("a file with the same text as a loaded file is not loaded", async ($: Engine, on: On) => {
-  setup(on, { disk: [{ dir: "/p", name: "AGENTS.md", content: "Same text." }] });
+  setup(on, {
+    disk: [{ dir: "/p", name: "AGENTS.md", content: "Same text." }],
+  });
   const files = await started($, [
     { path: "/p/CLAUDE.md", kind: "project", content: "Same text." },
   ]);
@@ -138,7 +162,9 @@ test("a file with the same text as a loaded file is not loaded", async ($: Engin
 });
 
 test("a file that a `CLAUDE` file imports loads once", async ($: Engine, on: On) => {
-  setup(on, { disk: [{ dir: "/p", name: "AGENTS.md", content: "Imported rules." }] });
+  setup(on, {
+    disk: [{ dir: "/p", name: "AGENTS.md", content: "Imported rules." }],
+  });
   const files = await started($, [
     { path: "/p/CLAUDE.md", kind: "project", content: "@AGENTS.md" },
     {
@@ -164,7 +190,11 @@ test("a file that `claudeMdExcludes` matches is not loaded", async ($: Engine, o
   expect(paths(files)).toStrictEqual(["/p/AGENTS.local.md"]);
 });
 
-const EXTRA: Disk = { dir: "/extra", name: ".claude/AGENTS.md", content: "Extra rules." };
+const EXTRA: Disk = {
+  dir: "/extra",
+  name: ".claude/AGENTS.md",
+  content: "Extra rules.",
+};
 
 test("the folders of the added directories stay unloaded without their variable", async ($: Engine, on: On) => {
   setup(on, { dirs: ["/extra"], disk: [EXTRA] });
@@ -181,7 +211,9 @@ test("the folders of the added directories load with their variable", async ($: 
 });
 
 test("a rewrite of `claudeMd` above the hook adds no file and walks no folder", async ($: Engine, on: On) => {
-  const seen = setup(on, { disk: [{ dir: "/p", name: "AGENTS.md", content: "Project." }] });
+  const seen = setup(on, {
+    disk: [{ dir: "/p", name: "AGENTS.md", content: "Project." }],
+  });
   const out = await $.prompt.context({ blocks: [] });
   expect(out.instructionFiles).toBeUndefined();
   expect(seen.walks).toBe(0);
@@ -220,7 +252,10 @@ test("a nested file loads on a `Write` to a file in its folder", async ($: Engin
 
 test("a nested file loads on a `Bash` read of a file in its folder", async ($: Engine, on: On) => {
   setup(on, { disk: [SUB] });
-  const out = await $.tool.call({ tool: "Bash", command: "cat /p/sub/x.ts | head -5" });
+  const out = await $.tool.call({
+    tool: "Bash",
+    command: "cat /p/sub/x.ts | head -5",
+  });
   expect(contexts(out).length).toBe(1);
   expect(contexts(out)[0]).toContain("Sub rules.");
 });
@@ -243,13 +278,21 @@ test("a nested file loads on a mention of a file in its folder", async ($: Engin
 
 test("a nested file loads again after a compaction", async ($: Engine, on: On) => {
   setup(on, { disk: [SUB] });
-  expect(contexts(await $.tool.call({ tool: "Read", file_path: "/p/sub/x.ts" })).length).toBe(1);
-  expect((await $.tool.call({ tool: "Read", file_path: "/p/sub/x.ts" })).context).toBeUndefined();
+  expect(
+    contexts(await $.tool.call({ tool: "Read", file_path: "/p/sub/x.ts" }))
+      .length,
+  ).toBe(1);
+  expect(
+    (await $.tool.call({ tool: "Read", file_path: "/p/sub/x.ts" })).context,
+  ).toBeUndefined();
   await $.session.compact({
     trigger: "auto",
     messages: [{ role: "user", text: "Read sub/x.ts.", toolUses: [] }],
   });
-  expect(contexts(await $.tool.call({ tool: "Read", file_path: "/p/sub/x.ts" })).length).toBe(1);
+  expect(
+    contexts(await $.tool.call({ tool: "Read", file_path: "/p/sub/x.ts" }))
+      .length,
+  ).toBe(1);
 });
 
 test("a nested file below the session root loads after a shell `cd` into a subfolder", async ($: Engine, on: On) => {
@@ -257,4 +300,28 @@ test("a nested file below the session root loads after a shell `cd` into a subfo
   const out = await $.tool.call({ tool: "Read", file_path: "/p/other/y.ts" });
   expect(contexts(out).length).toBe(1);
   expect(contexts(out)[0]).toContain("/p/other/AGENTS.md");
+});
+
+test("a mention of a file in a folder with no `AGENTS` file adds no context", async ($: Engine, on: On) => {
+  setup(on, { disk: [SUB] });
+  const out = await $.prompt.mention({
+    mention: "other/y.ts",
+    path: "/p/other/y.ts",
+  });
+  expect(out.context).toBeUndefined();
+});
+
+test("a compaction that a hook skips keeps the dedupe of the nested files", async ($: Engine, on: On) => {
+  setup(on, { disk: [SUB], skipCompact: true });
+  expect(
+    contexts(await $.tool.call({ tool: "Read", file_path: "/p/sub/x.ts" }))
+      .length,
+  ).toBe(1);
+  await $.session.compact({
+    trigger: "auto",
+    messages: [{ role: "user", text: "Read sub/x.ts.", toolUses: [] }],
+  });
+  expect(
+    (await $.tool.call({ tool: "Read", file_path: "/p/sub/x.ts" })).context,
+  ).toBeUndefined();
 });

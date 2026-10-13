@@ -1,7 +1,7 @@
 # Architecture
 
 This page is the map of dotclaude 1.0.0.
-It covers the kernel, the slices of the core plugin `dotclaude`, the one hook module, the 11 events, the path from `src/` to `plugins/`, and the five add-on plugins.
+It covers the kernel, the slices of the core plugin `dotclaude`, the one hook module, the 11 events, the path from `src/` to `plugins/`, and the six add-on plugins.
 The core plugin is the reference for the parts that you copy from the settings snippet too.
 The Claude Code side of each event is on [Hook-Events](Hook-Events).
 
@@ -204,7 +204,7 @@ The check `just check` runs `just generate --check`, so a change in `src/` needs
 
 ## Add-on plugins
 
-Five add-on plugins sit next to the core plugin.
+Six add-on plugins sit next to the core plugin.
 Each one has its own tree under `src/plugins/<name>/`, and works without the core plugin.
 
 | Plugin | Slices | What it does |
@@ -214,6 +214,7 @@ Each one has its own tree under `src/plugins/<name>/`, and works without the cor
 | `dotclaude-docs` | `docs` | Gets the current docs of a library with the `ctx7` CLI. See [Library-Docs](Library-Docs). |
 | `dotclaude-sessions` | `start-cost`, `usage` | Measures Claude Code sessions from their transcripts. See [Sessions](Sessions). |
 | `dotclaude-lab` | `capture`, `eval-compare`, `sandbox`, `schema` | Has tools for plugin authors. See [Lab](Lab). |
+| `dcc-plugin-agents-md` | `agents` | Loads `AGENTS.md` files where Claude Code loads `CLAUDE.md`. See [Agents-Md](Agents-Md). |
 
 The add-ons import nothing from each other, and nothing from `dotclaude`.
 Each one imports only the kernel and the `claude-code` types, and the generator copies the kernel files into the plugin.

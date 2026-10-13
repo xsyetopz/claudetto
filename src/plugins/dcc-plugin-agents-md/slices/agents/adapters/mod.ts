@@ -9,15 +9,15 @@ import {
   AGENTS_NAMES,
   dirOf,
   type Fields,
-  freshFiles,
   type Found,
+  freshFiles,
   isExcluded,
-  kindOf,
   type Kind,
+  kindOf,
   type Loaded,
   nestedText,
-  readPaths,
   type Rules,
+  readPaths,
   rulesOf,
   type Seen,
 } from "../domain/agents.ts";
@@ -83,7 +83,10 @@ const configDir = async ($: EngineInterface): Promise<string | undefined> => {
 };
 
 /** The `AGENTS` files of the user folder, of each ancestor of the working directory, and of each added folder. */
-const startFiles = async ($: EngineInterface, rules: Rules): Promise<Found[]> => {
+const startFiles = async (
+  $: EngineInterface,
+  rules: Rules,
+): Promise<Found[]> => {
   const found: Found[] = [];
   const dir = await configDir($);
   if (dir) {
@@ -96,7 +99,9 @@ const startFiles = async ($: EngineInterface, rules: Rules): Promise<Found[]> =>
     );
   }
   found.push(...(await walk($, { names: [...AGENTS_NAMES] })));
-  if ((await $.env.get("CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD")) === "1") {
+  if (
+    (await $.env.get("CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD")) === "1"
+  ) {
     for (const added of rules.dirs) {
       found.push(
         ...(await walk($, {
@@ -145,7 +150,10 @@ const rootOf = async ($: EngineInterface): Promise<string | undefined> => {
 };
 
 /** The `AGENTS` files of the folders below the session root that hold `path`, with the files that they import. */
-const nestedFiles = async ($: EngineInterface, path: string): Promise<Loaded[]> => {
+const nestedFiles = async (
+  $: EngineInterface,
+  path: string,
+): Promise<Loaded[]> => {
   const below = await rootOf($);
   if (below === undefined) return [];
   const rules = await readRules($);
@@ -159,7 +167,10 @@ const nestedFiles = async ($: EngineInterface, path: string): Promise<Loaded[]> 
 };
 
 /** The `context` entries of the nested files of the paths of a call. */
-const contextFor = async ($: EngineInterface, paths: readonly string[]): Promise<string[]> => {
+const contextFor = async (
+  $: EngineInterface,
+  paths: readonly string[],
+): Promise<string[]> => {
   const texts: string[] = [];
   for (const path of paths) {
     for (const file of await nestedFiles($, path)) texts.push(nestedText(file));
@@ -171,7 +182,8 @@ const contextFor = async ($: EngineInterface, paths: readonly string[]): Promise
 const pathsOf = (
   e: { readonly tool: string } & Fields<"command" | "file_path">,
 ): string[] => {
-  if (e.tool === "Bash") return typeof e.command === "string" ? readPaths(e.command) : [];
+  if (e.tool === "Bash")
+    return typeof e.command === "string" ? readPaths(e.command) : [];
   return typeof e.file_path === "string" ? [e.file_path] : [];
 };
 

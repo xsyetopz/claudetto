@@ -5,7 +5,7 @@ Each add-on is a separate plugin, so you install and remove each one by itself.
 Each add-on works without the core plugin, and it imports nothing from another plugin.
 See D24 in [Decisions-Layout](Decisions-Layout).
 
-The marketplace lists the five add-ons in `.claude-plugin/marketplace.json`.
+The marketplace lists the six add-ons in `.claude-plugin/marketplace.json`.
 Add the marketplace first with `/plugin marketplace add xsyetopz/dotclaude` (see [Install](Install)).
 
 ## The add-ons
@@ -17,6 +17,7 @@ Add the marketplace first with `/plugin marketplace add xsyetopz/dotclaude` (see
 | `dotclaude-docs` | The current docs of a library, from Context7 through the `ctx7` CLI. | `/plugin install dotclaude-docs@dotclaude` | Bun on `PATH`, for `bunx`. No key is needed for the free quota. | [Library-Docs](Library-Docs) |
 | `dotclaude-sessions` | The cost of a session start by source, and the usage of a period by run. | `/plugin install dotclaude-sessions@dotclaude` | Bun. The CLIs read the transcripts under `~/.claude/projects`. | [Sessions](Sessions) |
 | `dotclaude-lab` | Tools for plugin authors: a sandbox for Claude Code, a request capture, the JSON Schema of `settings.json`, and an eval compare. | `/plugin install dotclaude-lab@dotclaude` | Bun 1.4.3 or later, and the `claude` executable on `PATH`. The sandbox needs a login token. | [Lab](Lab) |
+| `dcc-plugin-agents-md` | `AGENTS.md` files in the places of `CLAUDE.md`, in place of the built-in `cc-plugin-agents-md`. | `/plugin install dcc-plugin-agents-md@dotclaude` | Nothing. Turn off `cc-plugin-agents-md@builtin`. | [Agents-Md](Agents-Md) |
 
 The commands of the add-ons run on Bun, so Bun must be on `PATH`.
 The `codegraph` and `agent-browser` installs use npm, so Node.js must be on `PATH` (see the table in [Install](Install)).

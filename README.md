@@ -9,7 +9,7 @@ Start with the [Home](https://github.com/xsyetopz/dotclaude/wiki/Home) page, or 
 
 ## Plugins
 
-dotclaude is a marketplace with one core plugin and five add-on plugins.
+dotclaude is a marketplace with one core plugin and six add-on plugins.
 Each add-on works without the core plugin.
 
 | Plugin | What it gives |
@@ -20,6 +20,7 @@ Each add-on works without the core plugin.
 | `dotclaude-docs` | The `docs` skill, with current library docs from the CLI `ctx7`. |
 | `dotclaude-sessions` | The `start-cost` and `usage` skills, which measure the session start and the usage. |
 | `dotclaude-lab` | Tools for plugin authors: the sandbox, capture, schema, and eval compare. |
+| `dcc-plugin-agents-md` | Loads `AGENTS.md` files where Claude Code loads `CLAUDE.md`, in place of the built-in `cc-plugin-agents-md`. |
 
 ## Install
 
@@ -111,6 +112,7 @@ Install each add-on that you need.
 /plugin install dotclaude-docs@dotclaude
 /plugin install dotclaude-sessions@dotclaude
 /plugin install dotclaude-lab@dotclaude
+/plugin install dcc-plugin-agents-md@dotclaude
 ```
 
 - `dotclaude-codegraph` needs the CLI `codegraph` on `PATH`, and an index that `codegraph init -y` builds in the project.
@@ -125,6 +127,8 @@ Install each add-on that you need.
   See [Sessions](https://github.com/xsyetopz/dotclaude/wiki/Sessions).
 - `dotclaude-lab` is for plugin authors, and it works alone.
   See [Lab](https://github.com/xsyetopz/dotclaude/wiki/Lab).
+- `dcc-plugin-agents-md` replaces the built-in `cc-plugin-agents-md`, so turn the built-in plugin off.
+  See [AGENTS.md](https://github.com/xsyetopz/dotclaude/wiki/Agents-Md).
 
 ## Update
 

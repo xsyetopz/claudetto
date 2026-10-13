@@ -2,7 +2,7 @@
 
 A Claude Code plugin marketplace in ESM.
 Code that needs Python is Python, and the tests and `tools/` run on Bun 1.4.3 or later, with `bun install` for the dev dependencies.
-The core plugin is in `plugins/dotclaude/`, next to five add-on plugins: `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab`.
+The core plugin is in `plugins/dotclaude/`, next to six add-on plugins: `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-docs`, `dotclaude-sessions`, `dotclaude-lab`, and `dcc-plugin-agents-md`.
 Each add-on plugin works without the core plugin, so it imports nothing from another plugin.
 Only `plugins/` ships to users.
 `tests/` has one folder for each plugin, with `tests/dotclaude/<slice>/` for each slice of the core plugin.

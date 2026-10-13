@@ -23,6 +23,7 @@
   - [Library docs](Library-Docs)
   - [Sessions](Sessions)
   - [Lab](Lab)
+  - [AGENTS.md](Agents-Md)
 - How Claude Code works
   - [Internals](Claude-Code-Internals)
   - [Request build](Request-Build)

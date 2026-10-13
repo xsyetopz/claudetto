@@ -81,6 +81,11 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The notice costs no model token.
 - The `dotclaude-usage` report shows the build of each session, and the cost of each build.
   A session with no stamp row shows `unknown`.
+- The add-on plugin `dcc-plugin-agents-md` loads `AGENTS.md` files where Claude Code loads `CLAUDE.md`, in place of the built-in `cc-plugin-agents-md`.
+  It loads the file of the user folder, `AGENTS.md`, `.claude/AGENTS.md`, and `AGENTS.local.md` in each ancestor of the working directory, and the files of `permissions.additionalDirectories` under `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD`.
+  A nested file loads once in a session, when Claude reads or changes a file in its folder, or when the user mentions such a file, and it loads again after a compaction.
+  It skips a file that a `CLAUDE` file already loads, and `claudeMdExcludes` applies to it.
+  The token cost against the same text in `CLAUDE.md` is not measured yet.
 
 ### Changed
 

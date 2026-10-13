@@ -1,0 +1,30 @@
+{
+  "prompt.context agents": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dcc-plugin-agents-md/tests/agents.test.ts > a file that the engine loaded keeps its place and is not loaded again",
+    "text": "plugins/dcc-plugin-agents-md/tests/agents.test.ts > the user file, the project and `.claude/` files, and `AGENTS.local.md` load with their tiers"
+  },
+  "prompt.mention agents": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dcc-plugin-agents-md/tests/agents.test.ts > a mention of a file in a folder with no `AGENTS` file adds no context",
+    "text": "plugins/dcc-plugin-agents-md/tests/agents.test.ts > a nested file loads on a mention of a file in its folder"
+  },
+  "session.compact agents": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dcc-plugin-agents-md/tests/agents.test.ts > a compaction that a hook skips keeps the dedupe of the nested files",
+    "text": "plugins/dcc-plugin-agents-md/tests/agents.test.ts > a nested file loads again after a compaction"
+  },
+  "tool.call agents": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/dcc-plugin-agents-md/tests/agents.test.ts > a `Bash` command that reads no file loads no nested file",
+    "text": "plugins/dcc-plugin-agents-md/tests/agents.test.ts > a nested file loads on a `Read` of a file in its folder, once"
+  }
+}
