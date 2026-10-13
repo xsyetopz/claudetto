@@ -93,8 +93,22 @@ test("two markers on one line and on two lines are all found", () => {
   ]);
 });
 
-test("a marker in fenced code is found too", () => {
-  expect(markersOf("```\n[NEEDS CLARIFICATION: x]\n```\n").length).toBe(1);
+test("a marker in fenced code is not found", () => {
+  expect(markersOf("```\n[NEEDS CLARIFICATION: x]\n```\n")).toEqual([]);
+  expect(
+    markersOf("~~~md\n[NEEDS CLARIFICATION: x]\n~~~\n[NEEDS CLARIFICATION: y]"),
+  ).toEqual([{ line: 4, question: "y" }]);
+});
+
+test("a marker in an inline code span is not found", () => {
+  expect(markersOf("quote `[NEEDS CLARIFICATION: x]` here")).toEqual([]);
+  expect(markersOf("quote ``a ` [NEEDS CLARIFICATION: x]`` here")).toEqual([]);
+});
+
+test("a marker beside an inline code span is found", () => {
+  expect(
+    markersOf("`code` [NEEDS CLARIFICATION: real] `[NEEDS CLARIFICATION: x]`"),
+  ).toEqual([{ line: 1, question: "real" }]);
 });
 
 test("text that is not a marker is not found", () => {

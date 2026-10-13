@@ -73,14 +73,26 @@ export interface Marker {
   readonly question: string;
 }
 
-/** The open markers of `text`, in the order of the lines. */
-export const markersOf = (text: string): Marker[] =>
-  toLines(text).flatMap((line) =>
-    [...line.text.matchAll(MARKER)].map((m) => ({
-      line: line.line,
-      question: group(m, 1).trim(),
-    })),
+/** An inline code span: a run of backticks, the code, and a closing run of the same length. */
+const CODE_SPAN = /(`+)(.+?)(?<!`)\1(?!`)/g;
+
+/**
+ * The open markers of `text`, in the order of the lines.
+ * A marker counts only in prose, so a marker in an inline code span or in a fenced code block is text.
+ */
+export const markersOf = (text: string): Marker[] => {
+  const lines = toLines(text);
+  const fenced = fenceMask(lines);
+  return lines.flatMap((line, i) =>
+    fenced[i]
+      ? []
+      : [
+          ...line.text
+            .replace(CODE_SPAN, (s) => " ".repeat(s.length))
+            .matchAll(MARKER),
+        ].map((m) => ({ line: line.line, question: group(m, 1).trim() })),
   );
+};
 
 /** The coverage of the requirements `ids` by the `satisfies` lists of the packages `satisfied`. */
 export interface Coverage {
