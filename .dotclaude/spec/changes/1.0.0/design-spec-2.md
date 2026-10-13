@@ -126,4 +126,4 @@ The slash command and the CLI subcommand of a phase have the same verb.
 ## The Store of This Repository
 
 `.dotclaude/spec/changes/1.0.0/` is in schema 1.
-P48 converts it once, with a script under `tools/` that P48 deletes after the run.
+P48 writes the conversion as a pure function, and P49 runs it once on this store when it switches the CLI to schema 2.

@@ -1,7 +1,7 @@
 ---
 id: P51
 deps: [P49, P50]
-owns: ["src/plugins/dotclaude/slices/spec/skills/", "src/plugins/dotclaude/slices/spec/slice.ts", "src/plugins/dotclaude/slices/spec/adapters/mod.ts", "src/plugins/dotclaude/slices/spec/domain/ship-lane.ts", "src/plugins/dotclaude/slices/spec/lab/", "src/plugins/dotclaude/slices/handoff/domain/trigger.ts", "src/plugins/dotclaude/slices/statusline/"]
+owns: ["src/plugins/dotclaude/slices/spec/skills/", "src/plugins/dotclaude/slices/spec/slice.ts", "src/plugins/dotclaude/slices/spec/adapters/mod.ts", "src/plugins/dotclaude/slices/spec/domain/ship-lane.ts", "src/plugins/dotclaude/slices/spec/lab/"]
 verify: just check, just lab, and one session in just sandbox that runs a trivial change and a large change from `/dotclaude:specify` to `/dotclaude:archive`
 agent: main session
 ---
@@ -26,7 +26,6 @@ Each phase has one slash command with the verb of its CLI subcommand, and the ho
 4. `/dotclaude:review` starts one `reviewer` for each `verified` package, and records `approve`, or `reject` with the findings and a decision.
 5. Remove the skills `spec`, `ship`, and `hotfix`.
 6. Remove the `turn.complete` move to `review`, and keep the `agent.spawn` move to `doing`.
-7. Update the handoff trigger and the status line to the commands and the states of schema 2.
 
 ## Acceptance
 
