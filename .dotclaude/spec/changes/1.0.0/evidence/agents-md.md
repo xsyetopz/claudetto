@@ -20,13 +20,29 @@ The type file is `plugins/dotclaude/.claude-plugin/types/claude-code/index.d.ts`
   Only `permissions.additionalDirectories` from settings is reachable.
   The gap stays open, and the wiki page of the add-on records it.
 
+## Sandbox Session, 2026-10-13
+
+One headless session ran in a sandbox config with only `plugins/dcc-plugin-agents-md` and `cc-plugin-agents-md@builtin` off, on the subscription of the user, with `claude-sonnet-5-5`.
+A control session ran with the same texts in `CLAUDE` files and no plugin.
+Each file held one marker line, and the prompt read `sub/a.ts` and then `sub/b.ts`.
+A capture proxy wrote each request body, and the `count_tokens` API counted the tokens.
+
+- The plugin loaded the 5 files: the user file, `AGENTS.md`, `.claude/AGENTS.md`, `AGENTS.local.md`, and `sub/AGENTS.md`.
+- Each marker shows one time in each request.
+  The nested file loaded one time, although Claude read two files in its folder.
+- The first request has 16,772 tokens with the plugin and 16,789 tokens with the `CLAUDE` files.
+  So the files of the start cost 17 tokens less than the same text in `CLAUDE` files.
+- The nested file costs 73 tokens with the plugin and 66 tokens as a nested `CLAUDE.md`.
+  The 7 more tokens are the prefix `tool.call hook additional context: ` that the engine adds to the `context` of a `tool.call` hook.
+  The plugin cannot remove the prefix.
+  `prompt.attachment` rewrites only the attachments that the engine makes, so it cannot add a nested file.
+- The session cost $0.0725 with the plugin and $0.0333 for the control.
+  The two totals do not compare, because the cache state and the number of requests differ.
+
 ## Not verified in this run
 
 - The label, cache, and compaction handling of a `prompt.context` entry are not verified against the engine.
   The facts above cover only the render of such an entry.
-- The token cost of one `AGENTS.md` at the start and on each later turn is not measured.
-  The coordinator measures it in `just sandbox` after the merge.
-  Token cost: not measured.
 
 ## Decisions that the facts support
 
