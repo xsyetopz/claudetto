@@ -33,7 +33,7 @@ A capture proxy wrote each request body, and the `count_tokens` API counted the 
 - The first request has 16,772 tokens with the plugin and 16,789 tokens with the `CLAUDE` files.
   So the files of the start cost 17 tokens less than the same text in `CLAUDE` files.
 - The nested file costs 73 tokens with the plugin and 66 tokens as a nested `CLAUDE.md`.
-  The 7 more tokens are the prefix `tool.call hook additional context: ` that the engine adds to the `context` of a `tool.call` hook.
+  The 7 more tokens are the prefix `tool.call hook additional context:` and a space, which the engine adds to the `context` of a `tool.call` hook.
   The plugin cannot remove the prefix.
   `prompt.attachment` rewrites only the attachments that the engine makes, so it cannot add a nested file.
 - The session cost $0.0725 with the plugin and $0.0333 for the control.
