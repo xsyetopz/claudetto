@@ -92,10 +92,10 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   It skips a file that a `CLAUDE` file already loads, and `claudeMdExcludes` applies to it.
   The files of the start cost 17 tokens less than the same text in `CLAUDE` files, and each nested file costs 7 tokens more, because Claude Code puts a prefix before the context of a hook.
 - The opt-in add-on plugin `dcc-plugin-you-should-know` shows one thing that the user should know before Claude changes something, in place of the built-in `cc-plugin-you-should-know`.
-  It checks the first `Edit`, `Write`, `NotebookEdit`, or changing `Bash` call of each turn in `tool.check`, shows a topic as a toast, and does not stop or change the call.
+  It checks the first `Edit`, `Write`, `NotebookEdit`, or changing `Bash` call of each turn in `tool.check`, and it does not stop or change the call.
+  It shows the topic in a band above the prompt, with a heads-up that fills the prompt for a note to the next call of the main agent, and a dismiss.
   It makes one Haiku call with the prompt and the pending action, and no transcript, in about 2 to 3 seconds and about 410 input tokens.
-  After an HTTP 429 it forks the main conversation for the rest of the session.
-  A failed or slow call, a call of a subagent, and a topic that showed already give no toast.
+  After an HTTP 429 it forks the main conversation for the rest of the session, and a failed or slow call, a subagent call, or a topic that showed already gives no band.
 - The `guard` hook denies a delete of the default branch, a mirror push, and a force push with no ref.
 - The `guard` hook denies a force push with `--all` or `--tags` and a ref (`git.force-push-default`).
   It names the default-branch and mirror pushes in the rule of the default branch.
@@ -231,6 +231,9 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The engine resolves `of` and `below` of `fs.ancestors` before the stub gets them, so the stub reads a path with a drive and `\` in the form of its fake disk.
 - `tools/sandbox.ts` is now `tools/sandbox/run.ts`, next to `tools/sandbox/install.ts`.
 - `dcc-plugin-agents-md` reads each `\` of a path and of a `claudeMdExcludes` glob as `/`, as Claude Code does, so an exclude such as `**/legacy/AGENTS.md` matches on Windows.
+- The status line aligns the items of each row in columns and joins them with ` · `.
+  Each limit window shows a pace arrow, `▼` in green for a reserve and `▲` in yellow for a deficit, and a red `⏵` run-out time shows only when the use reaches 100% before the reset.
+  The `5h` and `7d` windows take one row each where two rows fit, and the reset time has `↻` before it.
 
 ### Removed
 
@@ -242,6 +245,24 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The spec store and the `/spec` skill replace it.
 - The add-on `dotclaude-jev`.
   Its decisions go to the `decide` slice of the core plugin.
+
+### Fixed
+
+- The guard denies a git verb that an alias, an unquoted `$IFS`, or an empty positional or special parameter hides, such as `alias g=git`, `git${IFS}reset${IFS}--hard`, or `git$9 reset --hard`.
+  A quoted `$IFS` stays one argument.
+  The write guard asks on a command over the shell scan bound, as the git guard does.
+- A torn last line of `events.jsonl` no longer makes `status` and the other readers fail, and an append removes it first.
+- `setup --apply` and `writeAtomic` keep a symlink and the mode of the file, and `writeAtomic` retries a Windows rename over an open file.
+  The settings write also skips an unreadable catalog file, which before stopped the run with `ENOENT`.
+- The `claude` calls of `tools/` send no telemetry to Datadog, `ci` gates `generate --check`, and `bump` checks each target before it writes.
+- `dotclaude-sandbox --clean` removes a read-only `config/` folder, and it refuses a symlinked sandbox root with exit 1.
+- `dotclaude-run-checks ""` gives a usage error with exit 2, and it no longer runs one command.
+- The attribution adds the model line to each command of a chain and to `git --no-pager commit`.
+  It names `Claude Sonnet 4` for `claude-sonnet-4-20250514`.
+- The session readers of `usage` and `start-cost` skip a `null` line, meta file, or installed-plugins file.
+- The `claudeMdExcludes` match takes a lower-case drive letter as the same drive.
+- The you-should-know band shows, and a heads-up note reaches the next call of the main agent.
+- The status line gives `⚡`, `✅`, `⭐`, and `❌` two columns, keeps a later item in its column when a middle place is empty, and joins subagent items with ` · `.
 
 ## Older Releases
 
