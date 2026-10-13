@@ -73,6 +73,10 @@ A delta fails when it does not apply.
 An example is an `ADDED` requirement that exists already.
 When one delta fails, `archive` changes nothing.
 
+When the archive is done, and only the removal of `.dotclaude/spec/.specs-old` fails, `archive` exits with `0`.
+It names that folder on the error output.
+Remove that folder by hand, because the next `archive` refuses to run while it exists.
+
 ## Package Files
 
 Each package has a file `packages/NN-<slug>.md`, which is the brief of one agent.

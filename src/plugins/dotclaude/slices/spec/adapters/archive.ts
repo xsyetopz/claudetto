@@ -86,7 +86,6 @@ const swap = (run: Run, dir: string, target: string): void => {
       run.store.move(SPECS_OLD, SPECS_DIR);
     throw error;
   }
-  run.store.remove(SPECS_OLD);
 };
 
 export const archiveCommand = async (
@@ -144,5 +143,12 @@ export const archiveCommand = async (
   run.io.log(
     `${target} (${texts.size} capabilit${texts.size === 1 ? "y" : "ies"} changed)`,
   );
+  try {
+    run.store.remove(SPECS_OLD);
+  } catch (error) {
+    run.io.error(
+      `The archive of \`${id}\` is done, but \`${SPECS_OLD}\` is left, and you must remove it by hand: ${(error as Error).message}`,
+    );
+  }
   return 0;
 };

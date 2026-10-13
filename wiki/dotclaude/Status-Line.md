@@ -26,7 +26,10 @@ The rows are set in `segments.ts`, and each segment has a row number.
 - The git segment shows the branch, the dirty files, and the commits ahead and behind.
   It runs one `git` call, `status --porcelain=v2 -b` (`GIT_ARGS` in `domain/git.ts`).
   The call stops after `GIT_TIMEOUT_MS`, which is `1_500` milliseconds.
-  The segment keeps the result of the call for `GIT_CACHE_MS`, which is `3_000` milliseconds, in a file in the temp folder for each repository.
+  The segment keeps the result of the call for `GIT_CACHE_MS`, which is `3_000` milliseconds, in a file for each repository.
+  The files are in the folder `dotclaude-git-<uid>` of the temp folder.
+  The folder is made with mode `0700`.
+  A folder with another owner, or with group or other mode bits, is not used, so `git` runs at each refresh.
   So `git` runs at most once in three refreshes, and a commit shows in 3 seconds or less.
   A saved result with a field of the wrong type, or a branch name with a control character, is no cache, so `git` runs.
 - The change segment shows the id and the done and total count of the active change.
