@@ -16,6 +16,22 @@ Where the source states no license, the row says `not stated`.
 | CodeGraph CLI `codegraph` from `@colbymchenry/codegraph` | [colbymchenry/codegraph](https://github.com/colbymchenry/codegraph) | MIT | The `dotclaude-codegraph` plugin runs `codegraph` to sync the index and to read the code graph. |
 | `jev` CLI by pedramamini | [gist](https://gist.github.com/pedramamini/014676fa8684d91bf7000f4623701ada) | MIT, as the gist README states | An idea. The verbs are short: `yes`, `pick`, and `ask`. Keys replace list positions. The `dotclaude-decide` command of the core plugin has these verbs. The TypeSafe API gives the answers. The gist also has a rating verb, which 1.0.0 does not use. |
 
+## Research for the Spec Store
+
+These works are the research for the redesign of the spec store of 1.0.0.
+dotclaude cites them and copies no text from them.
+The redesign is a plan, so this table says what each work gives the plan, and not what dotclaude ships.
+
+| Work | Link | License | What the plan of 1.0.0 takes from it |
+| --- | --- | --- | --- |
+| Bruno Claudino, Ruizhe Xing, Yuanhao Zuo, Tyler Menezes, Anita Sarma, Kostadin Damevski, and Zixuan Feng, "The EPIC Framework for Spec-Driven Development", 2026 | [arXiv:2610.07534](https://arxiv.org/abs/2610.07534) | CC BY 4.0 | Gates that a tool checks before a state change, a blocking clarification marker, and the practices of a good spec. |
+| Deepak Babu Piskala, "Spec-Driven Development: From Code to Contract in the Age of AI Coding Assistants", 2026 | [arXiv:2602.00180](https://arxiv.org/abs/2602.00180) | CC BY 4.0 | The phases specify, plan, implement, and validate, and the choice to fix the code or to change the spec after a failed check. |
+| Subham Panda, "Citation Discipline in Spec-Driven Development: A Cross-Model Empirical Study of Output Determinism and Automated Hallucination Detection in LLM-Generated Code", 2026 | [arXiv:2606.30689](https://arxiv.org/abs/2606.30689) | CC BY 4.0 | `traceSDD`: stable requirement IDs, and a check that finds IDs in the code with no requirement in the spec. |
+| Vu Hung Nguyen and Thanh Nguyen, "SDAD: Spec-Driven Agentic Development for the AI-Native SDLC", 2026 | [arXiv:2608.20341](https://arxiv.org/abs/2608.20341) | CC BY-SA 4.0 | Human merge authority, and a provenance log of each step. |
+| Jessica Diaz, Joaquin Gayoso, Andrea Cimminio, and Jorge Perez, "Spec-Driven Development for Agentic Software Engineering: Harnessing Human-Agent Teamwork", 2026 | [arXiv:2609.00252](https://arxiv.org/abs/2609.00252) | arXiv non-exclusive distribution license 1.0 | An evidence pack for each change. |
+| Srinivas Rao Marri, "Constitutional Spec-Driven Development: Enforcing Security by Construction in AI-Assisted Code Generation", 2026 | [arXiv:2602.02584](https://arxiv.org/abs/2602.02584) | CC BY 4.0 | A brief that holds only the requirements of its package, and spec text as untrusted input. |
+| Jimmy Song, "YAML to Markdown: Exploring Specification Driven Development and AI-Native Paradigms", 2025 | [jimmysong.io](https://jimmysong.io/blog/from-yaml-to-markdown-devops-vs-collabops/) | CC BY 4.0, as the page footer states | Markdown as the format that people and agents both read. |
+
 ## CloakBrowser Terms
 
 The CloakBrowser binary has its own terms.
