@@ -218,7 +218,7 @@ describe("verify", () => {
     const root = await packageIn("doing", "c1", "test -f marker.txt");
     expect((await phase(root, "verify", "P1")).code).toBe(1);
     const wt = linkedWorktree(root, "feat");
-    const sha = commitFile(wt, "marker.txt");
+    const sha = await commitFile(wt, "marker.txt");
     const r = await phase(root, "verify", "P1", "--in", wt, "--json");
     expect(r.code).toBe(0);
     expect(r.json["sha"]).toBe(sha);
@@ -270,7 +270,7 @@ describe("review", () => {
       "fix-code",
     );
     await phase(root, "implement", "P1", "--decision", "fix-code");
-    const sha = commitFile(root, "new.txt");
+    const sha = await commitFile(root, "new.txt");
     await phase(root, "verify", "P1");
     const r = await phase(root, "review", "P1", "approve", "--json");
     expect(r.code).toBe(0);

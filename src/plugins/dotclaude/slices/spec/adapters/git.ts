@@ -1,5 +1,6 @@
 // The git and shell calls of the phase commands: one program run in a folder, with its exit code and its output.
 
+import fs from "node:fs";
 import path from "node:path";
 import { runProgram } from "../../../../../kernel/node/process.ts";
 
@@ -43,12 +44,15 @@ export const exec = (cwd: string, file: string, args: string[]): Outcome => {
 export const shell = (cwd: string, command: string): Outcome =>
   exec(cwd, "sh", ["-c", command]);
 
-/** The path that `git rev-parse flag` gives in `cwd`, as an absolute path, or null when git gives none. */
+/**
+ * The path that `git rev-parse flag` gives in `cwd`, as an absolute real path, or `null` when git gives none.
+ * The real path makes two paths comparable on Windows, where git can give a short `8.3` name, a long name, or `/` separators for one folder.
+ */
 export const gitPath = (cwd: string, flag: string): string | null => {
   const r = exec(cwd, "git", ["rev-parse", flag]);
-  return r.code === 0 && r.stdout.trim()
-    ? path.resolve(cwd, r.stdout.trim())
-    : null;
+  if (r.code !== 0 || !r.stdout.trim()) return null;
+  const at = path.resolve(cwd, r.stdout.trim());
+  return fs.existsSync(at) ? fs.realpathSync.native(at) : at;
 };
 
 /** True when `dir` is a worktree of the repository of `root`: both have the same common git folder. */

@@ -6,7 +6,7 @@ import { commitFile, file, packageIn, phase } from "./run-phase.ts";
 
 test("accept passes with uncited code", async () => {
   const root = await packageIn("done");
-  commitFile(root, "src/a.ts", "run();\n");
+  await commitFile(root, "src/a.ts", "run();\n");
   expect((await phase(root, "accept", "c1")).code).toBe(0);
   expect(
     /^status: (.*)$/m.exec(

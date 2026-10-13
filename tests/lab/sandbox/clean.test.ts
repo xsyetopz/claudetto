@@ -133,6 +133,9 @@ test("`--clean` refuses a symlinked root and leaves the folder that the link poi
   await Bun.write(path.join(outside, ".dotclaude-sandbox"), "");
   fs.chmodSync(path.join(outside, "config"), 0o555);
   fs.chmodSync(outside, 0o555);
+  // Windows reads a read-only folder as `0o444`, so the test compares with the mode that `chmod` gave.
+  const modeOf = (dir: string): number => fs.statSync(dir).mode & 0o777;
+  const before = [modeOf(outside), modeOf(path.join(outside, "config"))];
   const link = path.join(scratch, "link");
   fs.symlinkSync(outside, link);
 
@@ -141,8 +144,9 @@ test("`--clean` refuses a symlinked root and leaves the folder that the link poi
 
     expect(code).not.toBe(0);
     expect(fs.lstatSync(link).isSymbolicLink()).toBe(true);
-    expect(fs.statSync(outside).mode & 0o777).toBe(0o555);
-    expect(fs.statSync(path.join(outside, "config")).mode & 0o777).toBe(0o555);
+    expect([modeOf(outside), modeOf(path.join(outside, "config"))]).toEqual(
+      before,
+    );
   } finally {
     fs.chmodSync(path.join(outside, "config"), 0o755);
     fs.chmodSync(outside, 0o755);

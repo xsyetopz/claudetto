@@ -75,8 +75,12 @@ export const linkedWorktree = (root: string, branch: string): string => {
 };
 
 /** Adds a commit with the file `rel` to the repository `cwd`. It gives the new SHA. */
-export const commitFile = (cwd: string, rel: string, text = "x\n"): string => {
-  write(cwd, rel, text);
+export const commitFile = async (
+  cwd: string,
+  rel: string,
+  text = "x\n",
+): Promise<string> => {
+  await write(cwd, rel, text);
   git(cwd, "add", "--", rel);
   git(cwd, "commit", "-q", "-m", `add ${rel}`);
   return git(cwd, "rev-parse", "HEAD");

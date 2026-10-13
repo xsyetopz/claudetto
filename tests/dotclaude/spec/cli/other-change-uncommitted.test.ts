@@ -21,7 +21,7 @@ const withOtherChange = async (): Promise<string> => {
   git(root, "add", "--", `${CHANGES}/c2`);
   git(root, "commit", "-q", "-m", "c2", "--", `${CHANGES}/c2`);
   git(root, "checkout", "-q", "-b", "feat");
-  commitFile(root, "feature.txt");
+  await commitFile(root, "feature.txt");
   await phase(root, "implement", "P1");
   await phase(root, "verify", "P1");
   await phase(root, "review", "P1", "approve");
@@ -53,7 +53,7 @@ describe("merge with an uncommitted write of another change", () => {
   test("refuses with a reason when the branch changes the same file, and leaves no half merge", async () => {
     const root = await withOtherChange();
     git(root, "checkout", "-q", "feat");
-    commitFile(root, `${CHANGES}/c2/clash.md`, "from the branch\n");
+    await commitFile(root, `${CHANGES}/c2/clash.md`, "from the branch\n");
     git(root, "checkout", "-q", "main");
     await write(root, `${CHANGES}/c2/clash.md`, "mine\n");
     const r = await phase(root, "merge", "P1", "feat");

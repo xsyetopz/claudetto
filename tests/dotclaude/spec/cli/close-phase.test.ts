@@ -28,7 +28,7 @@ const changeStatus = async (root: string): Promise<string> =>
 const approvedOnBranch = async (): Promise<{ root: string; sha: string }> => {
   const root = await plannedChange("c1", "test -f feature.txt");
   git(root, "checkout", "-q", "-b", "feat");
-  const sha = commitFile(root, "feature.txt");
+  const sha = await commitFile(root, "feature.txt");
   await phase(root, "implement", "P1");
   await phase(root, "verify", "P1");
   await phase(root, "review", "P1", "approve");
@@ -107,7 +107,7 @@ describe("merge", () => {
   test("a branch head with another SHA is refused and nothing changes", async () => {
     const { root } = await approvedOnBranch();
     git(root, "checkout", "-q", "feat");
-    commitFile(root, "later.txt");
+    await commitFile(root, "later.txt");
     git(root, "checkout", "-q", "main");
     const main = git(root, "rev-parse", "HEAD");
     const events = (await eventsOf(root, "c1")).length;
@@ -136,7 +136,7 @@ describe("merge", () => {
 
   test("a change in a tracked file outside the change folder is refused", async () => {
     const root = await packageIn("approved");
-    commitFile(root, "a.txt");
+    await commitFile(root, "a.txt");
     await write(root, "a.txt", "changed\n");
     const head = git(root, "rev-parse", "HEAD");
     expect((await phase(root, "merge", "P1")).code).toBe(1);
@@ -147,7 +147,7 @@ describe("merge", () => {
 
   test("a staged change is refused", async () => {
     const root = await packageIn("approved");
-    commitFile(root, "a.txt");
+    await commitFile(root, "a.txt");
     await write(root, "a.txt", "changed\n");
     git(root, "add", "a.txt");
     expect((await phase(root, "merge", "P1")).code).toBe(1);
@@ -157,12 +157,12 @@ describe("merge", () => {
   test("a conflict is refused and the package stays approved", async () => {
     const root = await plannedChange("c1", "test -f a.txt");
     git(root, "checkout", "-q", "-b", "feat");
-    commitFile(root, "a.txt", "feat\n");
+    await commitFile(root, "a.txt", "feat\n");
     await phase(root, "implement", "P1");
     await phase(root, "verify", "P1");
     await phase(root, "review", "P1", "approve");
     git(root, "checkout", "-q", "main");
-    commitFile(root, "a.txt", "main\n");
+    await commitFile(root, "a.txt", "main\n");
     const r = await phase(root, "merge", "P1", "feat");
     expect(r.code).toBe(1);
     expect(r.err.join("\n")).toContain("a.txt");

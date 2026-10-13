@@ -25,7 +25,7 @@ const status = (root: string): Promise<string> =>
 const withGenerate = async (): Promise<string> => {
   const root = await plannedChange("c1", "test -f feature.txt");
   git(root, "checkout", "-q", "-b", "feat");
-  commitFile(root, "feature.txt");
+  await commitFile(root, "feature.txt");
   await phase(root, "implement", "P1");
   await phase(root, "verify", "P1");
   await phase(root, "review", "P1", "approve");
