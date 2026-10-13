@@ -15,6 +15,7 @@ import { reviewCommand } from "../../../../src/plugins/dotclaude/slices/spec/ada
 import type { Run } from "../../../../src/plugins/dotclaude/slices/spec/adapters/run.ts";
 import { specifyCommand } from "../../../../src/plugins/dotclaude/slices/spec/adapters/specify.ts";
 import { SpecStore } from "../../../../src/plugins/dotclaude/slices/spec/adapters/store.ts";
+import { traceCommand } from "../../../../src/plugins/dotclaude/slices/spec/adapters/trace.ts";
 import { verifyCommand } from "../../../../src/plugins/dotclaude/slices/spec/adapters/verify.ts";
 
 const COMMANDS: Readonly<
@@ -27,6 +28,7 @@ const COMMANDS: Readonly<
   review: reviewCommand,
   merge: mergeCommand,
   accept: acceptCommand,
+  trace: traceCommand,
   archive: archiveCommand,
   block: blockCommand,
   drop: dropCommand,

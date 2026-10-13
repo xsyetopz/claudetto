@@ -5,6 +5,7 @@
 //   dotclaude-spec implement <package> [--note <text>] [--decision fix-code|revise-spec] [--json]
 //   dotclaude-spec verify <package> [--in <dir>] [--json]
 //   dotclaude-spec accept <id> [--json]
+//   dotclaude-spec trace [<id>] [--json]
 //   dotclaude-spec block <package> --note <text> [--json]
 //   dotclaude-spec status [<id>]
 //   dotclaude-spec next [<id>]
@@ -42,6 +43,7 @@ import { showCommand } from "./show.ts";
 import { specifyCommand } from "./specify.ts";
 import { nextCommand, statusCommand } from "./status.ts";
 import { SpecStore } from "./store.ts";
+import { traceCommand } from "./trace.ts";
 import { validateCommand } from "./validate.ts";
 import { verifyCommand } from "./verify.ts";
 
@@ -63,6 +65,7 @@ const USAGE = [
   "  ready [<id>]",
   "  merge <package> [<branch>] [--json]",
   "  accept <id> [--json]",
+  "  trace [<id>] [--json]",
   "  validate [<id>]",
   "  archive <id> [--json]",
   "  runs",
@@ -87,6 +90,7 @@ const COMMANDS: Readonly<
   log: logCommand,
   ready: readyCommand,
   merge: mergeCommand,
+  trace: traceCommand,
   validate: validateCommand,
   archive: archiveCommand,
   runs: runsCommand,

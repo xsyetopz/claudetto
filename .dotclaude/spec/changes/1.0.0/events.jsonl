@@ -69,3 +69,4 @@
 {"at":"2026-10-13T18:40:21.126Z","package":"P49","state":"verified","sha":"a887f40474c6f778e13f85678f96148e7c6a9be7","verify":{"command":"just check && plugins/dotclaude/bin/dotclaude-spec validate 1.0.0","exit":0}}
 {"at":"2026-10-13T18:40:25.986Z","package":"P49","state":"approved","verdict":"approve","sha":"a887f40474c6f778e13f85678f96148e7c6a9be7"}
 {"at":"2026-10-13T18:40:29.179Z","package":"P49","state":"done","sha":"a887f40474c6f778e13f85678f96148e7c6a9be7"}
+{"at":"2026-10-13T18:43:08.126Z","package":"P50","state":"doing"}

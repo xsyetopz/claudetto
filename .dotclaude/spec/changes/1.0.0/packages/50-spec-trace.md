@@ -9,7 +9,7 @@ owns: ["src/plugins/dotclaude/slices/spec/adapters/trace.ts","src/plugins/dotcla
 satisfies: []
 verify: just check
 agent: main session
-status: planned
+status: doing
 ---
 
 ## Goal
