@@ -9,7 +9,7 @@ owns: ["src/plugins/dotclaude/slices/asks/","tests/dotclaude/asks/"]
 satisfies: []
 verify: just check && just lab
 agent: main session
-status: doing
+status: done
 ---
 
 ## Goal
