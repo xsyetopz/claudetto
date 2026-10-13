@@ -15,13 +15,18 @@ import { FILE_MAX_LINES, TEST_FILE_MAX_LINES } from "./limits.ts";
 const root = join(import.meta.dir, "..");
 const plugins = join(root, "plugins");
 
-const TEXT = /\.(?:mjs|cjs|js|ts|json|jsonc|md|mdx|py|sh|toml|ya?ml|txt)$/;
+const TEXT =
+  /(?:\.(?:mjs|cjs|js|ts|json|jsonc|md|mdx|py|sh|toml|ya?ml|txt|grit)|(?:^|\/)justfile)$/;
 // Files that a tool writes: the settings schemas of `just schema` and lock
 // files.
 const GENERATED = [
   /^schemas\//,
   /(?:^|\/)(?:package-lock\.json|pnpm-lock\.yaml)$/,
 ];
+// The folders whose files `just generate` writes. Only a file here may carry
+// the generated header and be out of the bound, so a hand-written copy of the
+// header stays bounded.
+const GENERATED_DIRS = [/^plugins\//, /^schemas\//];
 
 const bound = (file: string): number =>
   /\.test\.[^/]+$/.test(file) ? TEST_FILE_MAX_LINES : FILE_MAX_LINES;
@@ -36,7 +41,7 @@ export const overBound = async (
     if (!TEXT.test(f) || GENERATED.some((g) => g.test(f))) continue;
     if (!fs.existsSync(path.join(dir, f))) continue;
     const text = await Bun.file(path.join(dir, f)).text();
-    if (isGenerated(text)) continue;
+    if (GENERATED_DIRS.some((g) => g.test(f)) && isGenerated(text)) continue;
     const lines = text.split("\n").length - (text.endsWith("\n") ? 1 : 0);
     if (lines > bound(f)) over.push(`${lines} ${f}`);
   }
