@@ -80,6 +80,14 @@ test("a git command that does not change the tree, and other commands, do not fi
     expect(TREE_CHANGE.test(command), command).toBe(false);
 });
 
+test("a 50 KB `git` command with repeated `--git-dir` options fails within a time bound", () => {
+  const command = `git ${"--git-dir ".repeat(5000)}status`;
+  const started = Date.now();
+  const matched = TREE_CHANGE.test(command);
+  expect(Date.now() - started).toBeLessThan(500);
+  expect(matched).toBe(false);
+});
+
 test("every sync hook is async with a time limit that covers the bound of the CLI call", () => {
   for (const hook of PostToolUse.flatMap((g) => g.hooks)) {
     expect(hook.async).toBe(true);

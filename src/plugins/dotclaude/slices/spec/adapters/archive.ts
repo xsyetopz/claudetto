@@ -112,6 +112,12 @@ export const archiveCommand = async (
     run.io.error(`\`${target}\` exists already.`);
     return 1;
   }
+  if (run.store.exists(SPECS_OLD)) {
+    run.io.error(
+      `\`${SPECS_OLD}\` is left by an earlier archive that stopped, and it may hold the old \`${SPECS_DIR}\`. Check it, and remove it by hand before the archive.`,
+    );
+    return 1;
+  }
   const { texts, problems } = await applyAll(
     run,
     path.posix.join(dir, "specs"),
@@ -124,7 +130,6 @@ export const archiveCommand = async (
     return 1;
   }
   run.store.remove(SPECS_TEMP);
-  run.store.remove(SPECS_OLD);
   if (run.store.exists(SPECS_DIR)) run.store.copyDir(SPECS_DIR, SPECS_TEMP);
   for (const [name, text] of texts)
     await run.store.write(path.posix.join(SPECS_TEMP, name), text);

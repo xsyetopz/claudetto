@@ -76,6 +76,13 @@ test("lane refuses a move to the lane that the package has", async () => {
   expect(r.err.join("\n")).toContain("already in `doing`");
 });
 
+test("lane moves a package from planned to review when its doing hook failed", async () => {
+  const root = await makePlan([{ id: "P01" }]);
+  const r = await run(root, "lane", "P01", "review");
+  expect(r.code).toBe(0);
+  expect((await stateOf(root)).lanes).toStrictEqual({ P01: "review" });
+});
+
 test("lane adds its line on a new line when the log has no final line end", async () => {
   const root = await makeStore({
     [`${CHANGE}/events.jsonl`]: eventsText({ P01: "planned" }).trimEnd(),

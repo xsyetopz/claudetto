@@ -86,3 +86,16 @@ test("archive stops on a missing change, a missing id, and an archive of the sam
   expect((await run(root, "archive", "c1")).code).toBe(1);
   expect(await snapshot(root)).toStrictEqual(before);
 });
+
+test("archive refuses a `.specs-old` that an earlier archive left, and changes no file", async () => {
+  const root = await makeStore({
+    ".dotclaude/spec/specs/store.md": SPEC,
+    ".dotclaude/spec/.specs-old/store.md": SPEC,
+    [`${CHANGE}/specs/store.md`]: DELTA_ADD_BETA,
+  });
+  const before = await snapshot(root);
+  const r = await run(root, "archive", "c1");
+  expect(r.code).toBe(1);
+  expect(r.err.join("\n")).toContain(".specs-old");
+  expect(await snapshot(root)).toStrictEqual(before);
+});

@@ -104,6 +104,13 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ### Changed
 
+- The `lane` command of `dotclaude-spec` appends its line to `events.jsonl` instead of rewriting the whole log.
+  Two lane commands at the same time no longer lose a line.
+- The `archive` command of `dotclaude-spec` refuses to run when `.dotclaude/spec/.specs-old` is left by an earlier archive that stopped.
+  Before, the command deleted that folder, which can hold the only copy of the old specs.
+- The `lane` command of `dotclaude-spec` moves a package from `planned` to `review`, so a package whose `doing` hook failed can still move on.
+- The `Bash` filter of the sync hook in `dotclaude-codegraph` matches each `git` global option in one way only.
+  A `git` command with thousands of `--git-dir` options no longer takes seconds to test.
 - The git segment of the status line keeps the result of `git status` for 3 seconds, so `git` does not run at each refresh of 1 second.
 - The status line reads `workspace.current_dir`, `workspace.project_dir`, and `cwd` only when each is a string that is not empty.
 - The `stamp` slice writes no stamp when the transcript exists but is over the 4 MiB read bound, so a resume of a long session adds no row.
