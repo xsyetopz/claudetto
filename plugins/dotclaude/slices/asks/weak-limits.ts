@@ -34,10 +34,32 @@ export const TEST_HIDING_CALL = new RegExp(
   [
     String.raw`\bpytest\.importorskip\s*\(`,
     String.raw`\bmock\.module\s*\(`,
+    String.raw`\b(?:jest|vi)\.(?:mock|doMock|unstable_mockModule)\s*\(`,
+    String.raw`\bmock\.patch\b`,
+    String.raw`@(?:\w+\.)*patch\b`,
     String.raw`\bglobalThis\.\w+\s*=(?![=>])`,
     String.raw`\bexpect\.assertions\s*\(\s*0\s*\)`,
   ].join("|"),
 );
+
+/**
+ * The forms of an import line that has a name list, as the key part and the names.
+ * A line of one of these forms may add names (package P54).
+ * Group 1 is the part before the names, group 2 is the names, and group 3 is the part after them.
+ * A line with a default or namespace import, or with a `*`, has no such form.
+ */
+export const NAME_LIST_IMPORTS = [
+  /^(import\s+(?:type\s+)?\{)([^{}]*)(\}\s*from\s*["'][^"']+["']\s*;?)$/,
+  /^((?:const|let|var)\s*\{)([^{}]*)(\}\s*=\s*require\(\s*["'][^"']+["']\s*\)\s*;?)$/,
+  /^(from\s+[\w.]+\s+import\s+\(?)([^()*]*)(\)?)$/,
+];
+
+/** The joined multi-line forms of an import with a name list: the text is cut to one line before the check. */
+export const MULTI_LINE_IMPORTS = [
+  /^import\s+(?:type\s+)?\{[^{}]*\}\s*from/gm,
+  /^(?:const|let|var)\s*\{[^{}]*\}\s*=\s*require/gm,
+  /^from\s+[\w.]+\s+import\s*\([^()]*\)/gm,
+];
 
 /** The start of a Python assignment of a lambda. An added one at module level asks. */
 export const PY_LAMBDA_ASSIGN = /^[A-Za-z_]\w*\s*=\s*lambda\b/;
