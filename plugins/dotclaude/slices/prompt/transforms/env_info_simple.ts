@@ -11,8 +11,9 @@ export const PARTS: readonly Part[] = [
     text: " - Claude Code runs as a CLI, a desktop app, a web app, and IDE extensions.",
   },
   {
-    // The `trim` slice turns fast mode off, so the line about `/fast` goes, with its line break.
-    anchor: /^ - Fast mode for Claude Code.*\n/gm,
+    // The `trim` slice turns fast mode off, so the line about `/fast` goes, with the line break before it.
+    // The line is the last line of the section, so no line break follows it.
+    anchor: /(?:\n|^) - Fast mode for Claude Code.*$/gm,
     text: "",
   },
 ];

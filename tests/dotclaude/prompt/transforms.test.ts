@@ -55,3 +55,9 @@ test("the transform of `env_info_simple` drops the fast-mode line and keeps the 
     " - Platform: darwin\n - Shell: zsh\n",
   );
 });
+
+test("the transform of `env_info_simple` drops the fast-mode line when it is the last line of the section", () => {
+  const text =
+    " - Platform: darwin\n - Fast mode for Claude Code uses the same model with faster output. It can be toggled with /fast.";
+  expect(transformText("env_info_simple", text)).toBe(" - Platform: darwin");
+});
