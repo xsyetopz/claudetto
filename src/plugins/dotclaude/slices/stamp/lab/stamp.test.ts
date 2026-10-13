@@ -52,6 +52,14 @@ const installedJson = (installPath: string, gitCommitSha: string) =>
   });
 
 /**
+ * True when an `fs` call is on the transcript.
+ * On Windows the engine gives a native path, such as `D:\cfg\projects\-work-app\sess-1.jsonl`, so the drive goes for the compare.
+ * The root of the plugin keeps its drive, because it comes from the real path of the manifest.
+ */
+const isTranscript = (file: string): boolean =>
+  file.replace(/^[A-Za-z]:/, "") === TRANSCRIPT;
+
+/**
  * Stubs for one start. A path that the facts do not give fails to read, as `$.fs.read` rejects a missing file.
  * The root of the plugin is the part of the `plugin.json` path before `MANIFEST`.
  */
@@ -80,14 +88,14 @@ const stub = (on: On, facts: Facts) => {
       }[facts.install.installPath];
       return { value: installedJson(installPath, facts.install.sha) };
     }
-    if (file === TRANSCRIPT && facts.transcript !== undefined)
+    if (isTranscript(file) && facts.transcript !== undefined)
       return { value: facts.transcript };
     throw new Error(`no file at ${e.path}`);
   });
   on("fs.exists", (_$, e) => {
     const file = e.path.replaceAll("\\", "/");
     const present =
-      file === TRANSCRIPT &&
+      isTranscript(file) &&
       (facts.transcript !== undefined || facts.oversized === true);
     return { value: present };
   });
