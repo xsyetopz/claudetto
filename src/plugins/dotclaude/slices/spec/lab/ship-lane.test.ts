@@ -7,13 +7,24 @@ import { type Engine, expect, test } from "claude-code/testing";
 
 const BRIEF = "---\nid: P33\ndeps: [P19]\n---\n\n# P33 Zero token cost";
 
-/** The stubs of one test: the engine answers the spawn, and `process.run` lists each `lane` call. */
-const stub = (on: On, agentId = "a1", exitCode = 0) => {
+/** The folder of the session. A test changes it to start a subagent in a worktree. */
+const session = { cwd: "/project" };
+
+/** The stubs of one test: the engine answers the spawn, and `process.run` lists each `lane` call and its folder in `folders`. */
+const stub = (
+  on: On,
+  agentId = "a1",
+  exitCode = 0,
+  folders: (string | undefined)[] = [],
+) => {
   const lanes: string[] = [];
+  session.cwd = "/project";
+  on("session.cwd", () => ({ value: session.cwd }));
   on("agent.spawn", () => ({ model: "claude-sonnet-5-5", agentId }));
   on("turn.complete", (_$, e) => ({ text: e.answer }));
   on("process.run", (_$, e) => {
     lanes.push(e.argv.slice(3).join(" "));
+    folders.push(e.init?.cwd);
     return {
       value: {
         exitCode,
@@ -76,6 +87,15 @@ test("the end of an implementer moves its package to `review`", async ($: Engine
   await spawn($, BRIEF);
   await end($, "a1");
   expect(lanes).toEqual(["lane P33 doing", "lane P33 review"]);
+});
+
+test("the end of an implementer in a worktree runs `lane` in the folder of the spawn", async ($: Engine, on: On) => {
+  const folders: (string | undefined)[] = [];
+  stub(on, "a1", 0, folders);
+  await spawn($, BRIEF);
+  session.cwd = "/project/.claude/worktrees/agent-a1";
+  await end($, "a1");
+  expect(folders).toEqual(["/project", "/project"]);
 });
 
 test("the end of another subagent moves no lane", async ($: Engine, on: On) => {
