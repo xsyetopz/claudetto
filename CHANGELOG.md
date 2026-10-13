@@ -103,6 +103,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ### Changed
 
+- The `lane` command of `dotclaude-spec` appends its line to `events.jsonl` instead of rewriting the whole log.
+  Two lane commands at the same time no longer lose a line.
 - The `archive` command of `dotclaude-spec` refuses to run when `.dotclaude/spec/.specs-old` is left by an earlier archive that stopped.
   Before, the command deleted that folder, which can hold the only copy of the old specs.
 - The `lane` command of `dotclaude-spec` moves a package from `planned` to `review`, so a package whose `doing` hook failed can still move on.

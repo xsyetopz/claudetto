@@ -16,6 +16,21 @@ import {
   readEvents,
 } from "../../../kernel/spec-store.ts";
 
+/** True when `file` is missing or empty, or when its last byte is a line end. It reads that byte only. */
+const endsWithLineEnd = (file: string): boolean => {
+  if (!fs.existsSync(file)) return true;
+  const size = fs.statSync(file).size;
+  if (size === 0) return true;
+  const fd = fs.openSync(file, "r");
+  try {
+    const last = new Uint8Array(1);
+    fs.readSync(fd, last, 0, 1, size - 1);
+    return last[0] === 0x0a;
+  } finally {
+    fs.closeSync(fd);
+  }
+};
+
 /** The store under the folder `root`. Each path that a method takes is relative to `root`. */
 export class SpecStore {
   /** The reader of the store: a missing file gives null, and a missing folder gives an empty list. */
@@ -57,14 +72,14 @@ export class SpecStore {
   }
 
   /**
-   * Adds one line for `event` to the end of `events.jsonl` of the change `id`.
+   * Adds one line for `event` to the end of `events.jsonl` of the change `id`, with an append.
    * A file with no final line end gets one first, so the new line does not join the last line.
    */
   async appendEvent(id: string, event: LaneEvent): Promise<void> {
-    const file = eventsPath(id);
-    const text = (await this.files.read(file)) ?? "";
-    const lead = text === "" || text.endsWith("\n") ? "" : "\n";
-    await this.write(file, `${text}${lead}${eventLine(event)}`);
+    const file = this.abs(eventsPath(id));
+    const lead = endsWithLineEnd(file) ? "" : "\n";
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.appendFileSync(file, `${lead}${eventLine(event)}`);
   }
 
   /** The ids of the open changes, in order. The archive is not a change. */
