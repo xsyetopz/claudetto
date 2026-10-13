@@ -55,6 +55,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The command puts `system.privilege` in `soft_deny`.
 - The `guard` hook denies the literal destructive forms of git, the system, and the disk in every session.
   A stopped agent stops, and it asks the user to run the exact command with `!`.
+- The `guard` hook reads a command substitution inside a git command, so it denies `git $(echo reset) --hard`, `git $(echo reset)--hard`, and `bash -c "git $(echo reset) --hard"`.
+  The shell reader keeps the source text of the substitution in its word.
 - The shared prompt names `dotclaude-run-checks`, and it tells the agent to quote each command.
   The CLI exits 2 when an argument starts with `-`.
   The summary of a passing command shows its output when the output has at most 10 lines.

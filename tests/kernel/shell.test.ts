@@ -17,6 +17,41 @@ test("`words` removes quotes and backslashes, also inside a word", () => {
   expect(words("")).toStrictEqual([]);
 });
 
+test("a substitution in a double-quoted script keeps its source text in the script", () => {
+  expect(commands(`bash -c "git $(echo reset) --hard"`)).toContainEqual([
+    "bash",
+    "-c",
+    "git $(echo reset) --hard",
+  ]);
+  expect(commands(`bash -c "git $(echo reset) --hard"`)).toContainEqual([
+    "git",
+    "",
+    "--hard",
+  ]);
+  expect(commands(`git "$(echo reset)" --hard`)).toContainEqual([
+    "git",
+    "",
+    "--hard",
+  ]);
+  expect(commands(`git $(echo reset)--hard`)).toContainEqual([
+    "git",
+    "$(echo reset)--hard",
+  ]);
+});
+
+test("a substitution that is harmless in a double-quoted script keeps its decision", () => {
+  expect(commands(`bash -c "echo $(date)"`)).toContainEqual([
+    "bash",
+    "-c",
+    "echo $(date)",
+  ]);
+  expect(commands(`rm -rf $(pwd)/build`)).toContainEqual([
+    "rm",
+    "-rf",
+    "$(pwd)/build",
+  ]);
+});
+
 test("`commands` splits on every operator and a newline", () => {
   expect(commands(`git commit -m "a b" && echo 'c d'; ls | wc`)).toStrictEqual([
     ["git", "commit", "-m", "a b"],

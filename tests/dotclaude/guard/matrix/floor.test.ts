@@ -68,6 +68,9 @@ const SPELLINGS = [
   "git -C . reset --hard",
   "git -c core.x=y reset --hard",
   "find . -maxdepth 0 -exec git reset --hard \\;",
+  "git $(echo reset) --hard",
+  "git $(echo reset)--hard",
+  'git "$(echo reset)" --hard',
 ];
 
 /** The forms of one command: the plain text, and the text through each wrapper that runs another command. */
