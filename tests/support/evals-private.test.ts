@@ -1,6 +1,7 @@
-// The eval cases ship in `plugins/dotclaude/evals/` and nowhere else.
+// The eval cases ship in the `evals/` folder of each plugin and nowhere else.
 // No other file of `plugins/` names a case, a grader, or `case.yaml`,
 // so the text of a case does not leak into the context of the agent under test.
+// So the name of each case and each grader is unique in `plugins/`.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
@@ -8,11 +9,20 @@ import path from "node:path";
 import { parse } from "yaml";
 import { PLUGINS, walk } from "./repo.ts";
 
-const EVALS = path.join(PLUGINS, "dotclaude", "evals");
 const SKIP = ["node_modules", ".git"];
 const files = (dir: string): string[] => walk(dir, { skip: SKIP });
 
-const cases = files(EVALS).filter((p) => p.endsWith(`${path.sep}case.yaml`));
+/** The `evals/` folder of each plugin that has one. */
+const EVALS = fs
+  .readdirSync(PLUGINS)
+  .map((plugin) => path.join(PLUGINS, plugin, "evals"))
+  .filter((dir) => fs.existsSync(dir));
+const inEvals = (p: string): boolean =>
+  EVALS.some((dir) => p.startsWith(dir + path.sep));
+
+const cases = EVALS.flatMap(files).filter((p) =>
+  p.endsWith(`${path.sep}case.yaml`),
+);
 const names = (
   await Promise.all(
     cases.map(async (file) => {
@@ -25,7 +35,7 @@ const names = (
   )
 ).flat();
 const outside = files(PLUGINS).filter(
-  (p) => !p.startsWith(EVALS + path.sep) && !fs.lstatSync(p).isSymbolicLink(),
+  (p) => !inEvals(p) && !fs.lstatSync(p).isSymbolicLink(),
 );
 
 test("the eval folder holds cases", () => {
@@ -34,7 +44,7 @@ test("the eval folder holds cases", () => {
 
 test("a case file sits only in the eval folder", () => {
   const stray = files(PLUGINS).filter(
-    (p) => path.basename(p) === "case.yaml" && !p.startsWith(EVALS + path.sep),
+    (p) => path.basename(p) === "case.yaml" && !inEvals(p),
   );
   expect(stray).toStrictEqual([]);
 });

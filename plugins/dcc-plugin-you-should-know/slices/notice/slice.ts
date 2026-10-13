@@ -34,7 +34,7 @@ export const slice = {
         requests: 1,
         tokens: 2400,
         blocks: false,
-        eval: "notice",
+        eval: "you-should-know-notice",
         allow: `${LAB} > a call that gives no topic shows no toast`,
         text: `${LAB} > the first changing call of a turn shows the topic as a toast`,
       },
