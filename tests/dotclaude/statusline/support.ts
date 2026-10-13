@@ -1,10 +1,16 @@
 // The fakes and fixtures of the tests of the `statusline` slice.
 
-import { fileReader } from "../../../src/kernel/node/fs.ts";
+import type { FileReader } from "../../../src/kernel/ports.ts";
 import type { Deps } from "../../../src/plugins/dotclaude/slices/statusline/adapters/cli.ts";
 
 /** A fixed clock: 2026-10-12T12:00:00Z in milliseconds. */
 export const NOW = Date.UTC(2026, 9, 12, 12, 0, 0);
+
+/** A `FileReader` with no file, so that no test reads the real temp folder or the real project. */
+export const noFiles: FileReader = {
+  read: async () => null,
+  list: async () => [],
+};
 
 /** The status object of a session with every field that a segment reads. */
 export const STATUS = {
@@ -55,7 +61,7 @@ export const depsFor = (
   env: { COLUMNS: "124" },
   now: () => NOW,
   cwd: "/work/dotclaude",
-  files: fileReader,
+  files: noFiles,
   write: async () => {},
   runner: {
     run: () => ({ exitCode: 0, stdout: GIT_TEXT, stderr: "" }),

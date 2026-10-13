@@ -18,17 +18,12 @@ import type { FileReader, ProcessRunner } from "../../../../../kernel/ports.ts";
 import { activeProgress } from "../../../../../kernel/spec-store.ts";
 import { colorOff, paintOf } from "../color.ts";
 import { baseName } from "../domain/format.ts";
-import { GIT_ARGS, parseStatus } from "../domain/git.ts";
 import { renderRows } from "../domain/rows.ts";
-import type {
-  GitState,
-  Status,
-  StatusInput,
-  SubagentInput,
-} from "../domain/types.ts";
+import type { Status, StatusInput, SubagentInput } from "../domain/types.ts";
 import { usageChanged, usageSample } from "../domain/usage.ts";
-import { COLUMNS_MARGIN, DEFAULT_COLUMNS, GIT_TIMEOUT_MS } from "../limits.ts";
+import { COLUMNS_MARGIN, DEFAULT_COLUMNS } from "../limits.ts";
 import { SEGMENTS } from "../segments.ts";
+import { cachedGitState } from "./git-cache.ts";
 import { taskRows } from "./subagents.ts";
 
 /** The ports of `main`. A test gives fakes. */
@@ -74,19 +69,6 @@ const rooted = (root: string, files: FileReader): FileReader => ({
   list: (dir) => files.list(path.join(root, dir)),
 });
 
-/** The git state of `dir`, or null when `git` is missing, fails, finds no repository, or does not answer in time. */
-const gitState = (dir: string, runner: ProcessRunner): GitState | null => {
-  try {
-    const result = runner.run("git", GIT_ARGS, {
-      cwd: dir,
-      timeout: GIT_TIMEOUT_MS,
-    });
-    return result.exitCode === 0 ? parseStatus(result.stdout) : null;
-  } catch {
-    return null;
-  }
-};
-
 /** The active change of the spec store in `root`. A store that cannot be read gives null, and the cause goes to `deps.error`. */
 const changeOf = async (
   root: string,
@@ -120,16 +102,21 @@ const saveUsage = async (
 const columnsOf = (deps: Deps): number =>
   (Number(deps.env["COLUMNS"]) || DEFAULT_COLUMNS) - COLUMNS_MARGIN;
 
+/** `value` when it is a non-empty string, otherwise null. A status object can hold a number or null in a folder field. */
+const textOf = (value: unknown): string | null =>
+  typeof value === "string" && value !== "" ? value : null;
+
 const mainLine = async (text: string, deps: Deps): Promise<string> => {
   const input = parseInput<StatusInput>(text);
   if (!input) return "";
-  const dir = input.workspace?.current_dir || input.cwd || deps.cwd;
-  const root = input.workspace?.project_dir || dir;
+  const dir =
+    textOf(input.workspace?.current_dir) ?? textOf(input.cwd) ?? deps.cwd;
+  const root = textOf(input.workspace?.project_dir) ?? dir;
   await saveUsage(root, input, deps);
   const status: Status = {
     input,
     folder: baseName(dir),
-    git: gitState(dir, deps.runner),
+    git: await cachedGitState(dir, deps, deps.error),
     change: await changeOf(root, deps),
     now: deps.now(),
     paint: paintOf(!colorOff(deps.env)),

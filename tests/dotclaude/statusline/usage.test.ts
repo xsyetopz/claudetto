@@ -31,7 +31,8 @@ const runWith = async (
       env: { COLUMNS: "124", NO_COLOR: "1" },
       ...(files ? { files } : {}),
       write: async (file, text) => {
-        writes.push([file, text]);
+        // The git cache also writes, so only the usage sample is recorded here.
+        if (file.endsWith(RATE_LIMITS_FILE)) writes.push([file, text]);
         await write(file, text);
       },
     }),
