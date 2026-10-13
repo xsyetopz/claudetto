@@ -159,3 +159,15 @@ test("the status rule passes when the status equals the last state", () => {
   expect(statusRule("draft", [], undefined, "draft").ok).toBe(true);
   expect(statusRule("planned", [], undefined, "draft").ok).toBe(false);
 });
+
+test("a code span inside a marker keeps its question text", () => {
+  expect(markersOf("[NEEDS CLARIFICATION: does `x` or `y` apply?]")).toEqual([
+    { line: 1, question: "does `x` or `y` apply?" },
+  ]);
+});
+
+test("a lone backtick inside a marker does not hide it", () => {
+  expect(
+    markersOf("[NEEDS CLARIFICATION: why the ` mark?] then `code`"),
+  ).toEqual([{ line: 1, question: "why the ` mark?" }]);
+});

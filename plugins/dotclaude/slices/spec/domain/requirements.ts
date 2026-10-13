@@ -9,8 +9,6 @@ import { fail, fenceMask, group, toLines } from "./lines.ts";
 const REQ_HEADING = /^### REQ-(0|[1-9]\d*): (\S.*)$/;
 /** A line that starts a requirement heading, so a malformed one is an error and not text. */
 const REQ_START = /^###\s+REQ\b/;
-/** An open question: `[NEEDS CLARIFICATION: <question>]`. */
-const MARKER = /\[NEEDS CLARIFICATION:([^\]]*)\]/g;
 
 /** One requirement of a file: its number, its name, and the line of its heading. */
 export interface Requirement {
@@ -76,21 +74,40 @@ export interface Marker {
 /** An inline code span: a run of backticks, the code, and a closing run of the same length. */
 const CODE_SPAN = /(`+)(.+?)(?<!`)\1(?!`)/g;
 
+/** The start of an open marker. */
+const MARKER_START = /\[NEEDS CLARIFICATION:/g;
+/** A whole open marker, read from its start with the `y` flag. */
+const MARKER_AT = /\[NEEDS CLARIFICATION:([^\]]*)\]/y;
+
+/**
+ * The open markers of one line of prose.
+ * The line with its code spans blanked decides where a marker starts, and the original line gives the question.
+ */
+const markersInLine = (text: string, line: number): Marker[] => {
+  const blanked = text.replace(CODE_SPAN, (s) => " ".repeat(s.length));
+  const found: Marker[] = [];
+  let end = 0;
+  for (const start of blanked.matchAll(MARKER_START)) {
+    if (start.index < end) continue;
+    MARKER_AT.lastIndex = start.index;
+    const m = MARKER_AT.exec(text);
+    if (m === null) continue;
+    end = MARKER_AT.lastIndex;
+    found.push({ line, question: group(m, 1).trim() });
+  }
+  return found;
+};
+
 /**
  * The open markers of `text`, in the order of the lines.
  * A marker counts only in prose, so a marker in an inline code span or in a fenced code block is text.
+ * A code span inside a marker is part of its question.
  */
 export const markersOf = (text: string): Marker[] => {
   const lines = toLines(text);
   const fenced = fenceMask(lines);
   return lines.flatMap((line, i) =>
-    fenced[i]
-      ? []
-      : [
-          ...line.text
-            .replace(CODE_SPAN, (s) => " ".repeat(s.length))
-            .matchAll(MARKER),
-        ].map((m) => ({ line: line.line, question: group(m, 1).trim() })),
+    fenced[i] ? [] : markersInLine(line.text, line.line),
   );
 };
 
