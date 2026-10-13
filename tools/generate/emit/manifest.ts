@@ -1,6 +1,8 @@
 // Writes `plugins/<plugin>/.claude-plugin/plugin.json` from `plugin.ts` and the `userConfig` of each slice (design, "Generated tree").
 // The version comes from `package.json`, which `just bump` changes, so `plugin.ts` has no version.
+// A plugin with `src/plugins/<plugin>/types/index.d.ts` names it as `types`, the contract that declares its `$.state` keys.
 
+import fs from "node:fs";
 import path from "node:path";
 import type { UserConfigOption } from "../../../src/kernel/slice.ts";
 import type { FoundPlugin } from "../discover.ts";
@@ -18,6 +20,8 @@ export interface PluginManifest {
 const SCHEMA = "https://www.schemastore.org/claude-code-plugin-manifest.json";
 const AUTHOR = { name: "xsyetopz" };
 const REPOSITORY = "https://github.com/xsyetopz/dotclaude";
+/** The contract of a plugin, relative to the plugin folder. The text step copies it from `src/plugins/<plugin>/`. */
+const TYPES = "./types/index.d.ts";
 
 /** The column bound of the JSON formatter of Biome, which `just lint` runs on `plugins/`. */
 const WIDTH = 80;
@@ -66,6 +70,7 @@ export const manifestOf = async (
     path.join(root, "package.json"),
   ).json()) as { version: string };
   const { description, keywords, homepage } = p.manifest;
+  const types = fs.existsSync(path.join(root, "src/plugins", p.name, TYPES));
   const json = {
     $schema: SCHEMA,
     name: p.name,
@@ -77,6 +82,7 @@ export const manifestOf = async (
     ...(config ? { userConfig: config } : {}),
     ...(homepage ? { homepage } : {}),
     ...(keywords ? { keywords } : {}),
+    ...(types ? { types: TYPES } : {}),
   };
   return [
     {

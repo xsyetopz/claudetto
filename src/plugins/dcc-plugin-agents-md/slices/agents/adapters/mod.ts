@@ -19,19 +19,9 @@ import {
   type Rules,
   readPaths,
   rulesOf,
-  type Seen,
 } from "../domain/agents.ts";
 
-/**
- * The session values: the files of the start, and the nested files that a call has loaded.
- * They are `$.state` and not `$.store`, because a file loaded in one session must load again in the next session.
- */
-declare module "claude-code" {
-  interface PluginState {
-    "dcc-plugin-agents-md": { root: Seen[]; nested: Seen[] };
-  }
-}
-
+/** The session values that `types/index.d.ts` declares: the files of the start, and the nested files that a call has loaded. */
 const ROOT = { plugin: "dcc-plugin-agents-md", key: "root" } as const;
 const NESTED = { plugin: "dcc-plugin-agents-md", key: "nested" } as const;
 

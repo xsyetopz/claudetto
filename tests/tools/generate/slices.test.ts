@@ -239,6 +239,22 @@ test("the manifest takes the version from `package.json` and the `userConfig` fr
   expect(json.userConfig.mode.options).toStrictEqual(["a", "b"]);
 });
 
+test("the manifest names the contract of a plugin that has one, and the contract is copied", async () => {
+  const contract = "export type PSeen = string;\n";
+  const made = await generated(
+    await fixtureRoot({ "src/plugins/p/types/index.d.ts": contract }),
+  );
+  const json = JSON.parse(textOf(made, "plugins/p/.claude-plugin/plugin.json"));
+  expect(json.types).toBe("./types/index.d.ts");
+  expect(textOf(made, "plugins/p/types/index.d.ts")).toEndWith(contract);
+});
+
+test("the manifest of a plugin with no contract names no `types`", async () => {
+  const made = await generated(await fixtureRoot());
+  const json = JSON.parse(textOf(made, "plugins/p/.claude-plugin/plugin.json"));
+  expect(json.types).toBeUndefined();
+});
+
 test("`hooks.json` names the register and groups the classic hooks by event and matcher", async () => {
   const made = await generated(await fixtureRoot());
   const json = JSON.parse(textOf(made, "plugins/p/hooks/hooks.json"));

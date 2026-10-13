@@ -9,5 +9,6 @@
   "repository": "https://github.com/xsyetopz/dotclaude",
   "license": "MIT",
   "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Agents-Md",
-  "keywords": ["agents-md", "agents", "instructions", "claude-md", "memory"]
+  "keywords": ["agents-md", "agents", "instructions", "claude-md", "memory"],
+  "types": "./types/index.d.ts"
 }
