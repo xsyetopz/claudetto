@@ -2,7 +2,13 @@
 // The pure rules of the session stamp: the version, the SHA, and the choice between the two sources.
 // The reads of the files and the `git` call are in `adapters/mod.ts`, so this file imports no adapter.
 
-import { type ShaSource, UNKNOWN_SHA } from "../../../kernel/stamp.ts";
+import {
+  parseStamp,
+  type ShaSource,
+  STAMP_PREFIX,
+  type StampRecord,
+  UNKNOWN_SHA,
+} from "../../../kernel/stamp.ts";
 
 /** A SHA as `git` writes it in lowercase hex, from four characters to the full forty. */
 const SHA = /^[0-9a-f]{4,40}$/;
@@ -76,6 +82,40 @@ export const gitTop = (run: {
   const top = run.stdout.trim();
   return run.exitCode === 0 && top !== "" ? top : undefined;
 };
+
+/** The folder of a session's transcripts for the working directory `cwd`: each character that is not a letter or a digit becomes `-`. */
+export const projectFolder = (cwd: string): string =>
+  cwd.replace(/[^a-zA-Z0-9]/g, "-");
+
+/**
+ * The newest stamp row of a transcript text, or undefined when it holds none.
+ * Only a `system` row counts, as `dotclaude-usage` reads it, and a line that is not JSON gives nothing.
+ */
+export const newestStamp = (
+  text: string | undefined,
+): StampRecord | undefined => {
+  if (text === undefined) return undefined;
+  let newest: StampRecord | undefined;
+  for (const line of text.split("\n")) {
+    if (!line.includes(STAMP_PREFIX)) continue;
+    const row = parseJson(line);
+    if (field(row, "type") !== "system") continue;
+    newest = parseStamp(field(row, "content")) ?? newest;
+  }
+  return newest;
+};
+
+/**
+ * Whether a session needs a stamp row for `record`: it has no row yet, or its newest row has another version or SHA.
+ * A resume on the same build therefore adds no row, and a resume on a new build adds one.
+ */
+export const needsStamp = (
+  newest: StampRecord | undefined,
+  record: Pick<StampRecord, "version" | "sha">,
+): boolean =>
+  newest === undefined ||
+  newest.version !== record.version ||
+  newest.sha !== record.sha;
 
 /** The SHA of a stamp and its source: the install record first, then `git`, else `unknown`. */
 export const chooseSha = (

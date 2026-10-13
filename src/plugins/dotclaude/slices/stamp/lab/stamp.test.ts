@@ -13,6 +13,8 @@ const MANIFEST = "/.claude-plugin/plugin.json";
 const ELSEWHERE = "/elsewhere/dotclaude";
 const PARENT = "/parent/repo";
 const MARKETPLACE = "/.claude-plugin/marketplace.json";
+const CWD = "/work/app";
+const TRANSCRIPT = `${CONFIG}/projects/-work-app/sess-1.jsonl`;
 
 /**
  * The facts of one start: the manifest text, the install entry, the answer of `git`, and the top folder of its repo.
@@ -23,6 +25,8 @@ type Facts = {
   install?: { sha: string; installPath: "root" | "windows" | "elsewhere" };
   repo?: "root" | "parent";
   git: { exitCode: number; stdout: string };
+  /** The text of the transcript of the session, when the file exists. */
+  transcript?: string;
 };
 
 /** The answer of one `process.run`. */
@@ -55,6 +59,7 @@ const stub = (on: On, facts: Facts) => {
   mock.env(on, { CLAUDE_CONFIG_DIR: CONFIG });
   on("session.start", (_$, e) => ({ cwd: e.cwd }));
   on("session.id", () => ({ value: "sess-1" }));
+  on("session.cwd", () => ({ value: CWD }));
   on("fs.read", (_$, e) => {
     // On Windows the engine gives a native path, such as `D:\cfg\plugins\installed_plugins.json`.
     const file = e.path.replaceAll("\\", "/");
@@ -73,6 +78,8 @@ const stub = (on: On, facts: Facts) => {
       }[facts.install.installPath];
       return { value: installedJson(installPath, facts.install.sha) };
     }
+    if (file === TRANSCRIPT && facts.transcript !== undefined)
+      return { value: facts.transcript };
     throw new Error(`no file at ${e.path}`);
   });
   on("process.run", (_$, e) => {
@@ -194,5 +201,63 @@ test("an install entry with Windows separators matches the root", async ($: Engi
   await start($);
   expect(records(session)).toMatchObject([
     { sha: "0123456", shaSource: "install" },
+  ]);
+});
+
+/** A transcript line of a stamp row, as Claude Code keeps it: a `system` row whose `content` is the stamp text. */
+const stampLine = (version: string, sha: string) =>
+  JSON.stringify({
+    type: "system",
+    subtype: "informational",
+    content: `dotclaude build stamp: ${JSON.stringify({
+      version,
+      sha,
+      shaSource: "git",
+      sessionId: "sess-1",
+      at: "2026-10-13T00:00:00.000Z",
+    })}`,
+  });
+
+/** The install record gives the SHA `0123456` for this build, and the manifest gives version `1.0.0`. */
+const CURRENT = {
+  manifest: MANIFEST_1,
+  install: { sha: FULL_SHA, installPath: "root" as const },
+  git: { exitCode: 0, stdout: "fedcba9\n" },
+};
+
+test("a session whose transcript holds no stamp row appends one", async ($: Engine, on: On) => {
+  const session = stub(on, {
+    ...CURRENT,
+    transcript: `${JSON.stringify({ type: "user", message: { content: "hi" } })}\n`,
+  });
+  await start($);
+  expect(records(session)).toMatchObject([
+    { version: "1.0.0", sha: "0123456" },
+  ]);
+});
+
+test("a resumed session whose newest stamp row has the same build appends no stamp", async ($: Engine, on: On) => {
+  const session = stub(on, {
+    ...CURRENT,
+    transcript: [
+      stampLine("1.0.0", "fedcba9"),
+      stampLine("1.0.0", "0123456"),
+    ].join("\n"),
+  });
+  await start($);
+  expect(records(session)).toStrictEqual([]);
+});
+
+test("a resumed session whose newest stamp row has another build appends a stamp", async ($: Engine, on: On) => {
+  const session = stub(on, {
+    ...CURRENT,
+    transcript: [
+      stampLine("1.0.0", "0123456"),
+      stampLine("1.0.0", "fedcba9"),
+    ].join("\n"),
+  });
+  await start($);
+  expect(records(session)).toMatchObject([
+    { version: "1.0.0", sha: "0123456" },
   ]);
 });

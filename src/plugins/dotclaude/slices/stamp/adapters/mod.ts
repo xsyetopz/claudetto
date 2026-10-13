@@ -1,6 +1,7 @@
 // The mod handler of the `stamp` slice: `session.start` appends the build of the session as a `system` notice (P38).
-// It reads `plugin.json` and `installed_plugins.json` of Claude Code, and runs `git` only when no install entry gives a SHA.
-// It reads each file only and never writes one.
+// It reads `plugin.json`, `installed_plugins.json`, and the transcript of the session, and runs `git` only when no install entry gives a SHA.
+// It appends a notice only when the transcript holds no stamp yet, or its newest stamp has another build, so a resume on the same build adds no row.
+// It reads each file only and never writes one, apart from the notice that `session.append` writes.
 // A missing install record is the normal case of `--plugin-dir`, so it gives no SHA and `git` runs instead.
 // A failed read of `plugin.json` gives no version, so the session gets no stamp.
 // The hook never throws, so a stamp cannot stop a session.
@@ -13,7 +14,10 @@ import {
   gitSha,
   gitTop,
   installedSha,
+  needsStamp,
+  newestStamp,
   parseJson,
+  projectFolder,
   versionOf,
 } from "../domain/build.ts";
 import { GIT_TIMEOUT_MS } from "../limits.ts";
@@ -39,14 +43,35 @@ const readText = async (
   }
 };
 
+/** The config folder of Claude Code: `CLAUDE_CONFIG_DIR`, else `~/.claude`, or undefined when neither is set. */
+const configDir = async ($: EngineInterface): Promise<string | undefined> => {
+  const configured = await $.env.get("CLAUDE_CONFIG_DIR");
+  if (configured) return configured;
+  const home = await $.env.get("HOME");
+  return home ? `${home}/.claude` : undefined;
+};
+
 /** The path of `installed_plugins.json`, or undefined when neither `CLAUDE_CONFIG_DIR` nor `HOME` is set. */
 const installedPath = async (
   $: EngineInterface,
 ): Promise<string | undefined> => {
-  const configured = await $.env.get("CLAUDE_CONFIG_DIR");
-  if (configured) return `${configured}/${INSTALLED_FILE}`;
-  const home = await $.env.get("HOME");
-  return home ? `${home}/.claude/${INSTALLED_FILE}` : undefined;
+  const dir = await configDir($);
+  return dir === undefined ? undefined : `${dir}/${INSTALLED_FILE}`;
+};
+
+/**
+ * The text of the transcript of this session, or undefined when the file is missing or the read fails.
+ * Claude Code keeps it under `projects/`, in the folder of the working directory.
+ * `fs.read` rejects a file over 4 MiB, so a larger transcript gives no text, and the stamp is written.
+ */
+const transcriptText = async (
+  $: EngineInterface,
+  sessionId: string,
+): Promise<string | undefined> => {
+  const dir = await configDir($);
+  if (dir === undefined) return undefined;
+  const folder = projectFolder(await $.session.cwd());
+  return readText($, `${dir}/projects/${folder}/${sessionId}.jsonl`);
 };
 
 /** The short SHA of this plugin in the install record, or undefined. */
@@ -106,10 +131,12 @@ const recordOf = async (
   };
 };
 
-/** Appends the stamp, and does nothing when a read gives no version. */
+/** Appends the stamp, and does nothing when a read gives no version or the newest stamp has the same build. */
 const stamp = async ($: EngineInterface): Promise<void> => {
   const record = await recordOf($);
   if (record === undefined) return;
+  const newest = newestStamp(await transcriptText($, record.sessionId));
+  if (!needsStamp(newest, record)) return;
   await $.session.append({
     message: {
       type: "system",

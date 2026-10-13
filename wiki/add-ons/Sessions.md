@@ -65,11 +65,11 @@ It covers these parts (the header of `slices/usage/adapters/cli.ts`):
 - The main sessions by Claude Code entrypoint, and the usage-limit hits.
 - The `Skill` tool calls by skill, and the skills that the period did not call.
 - The tool results that enter the main context of each session.
-- The build of each main session.
-  The build is its `version` and its short `sha`, from its stamp row.
+- The build of each main session with model calls in the period.
+  The build is its `version` and its short `sha`, from the first stamp row of its transcript.
   The report also gives the cost of each build.
   A session with no stamp row shows `unknown`.
-  The slice `stamp` of the core plugin writes the stamp row at each session start.
+  The slice `stamp` of the core plugin writes a stamp row at a session start when the transcript has none, or when its newest row has another build.
 
 ```text
 dotclaude-usage [--days 7] [--root DIR] [--runs 20] [--window N] [--agents-dir DIR] [--json]
