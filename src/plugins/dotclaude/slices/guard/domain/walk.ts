@@ -99,29 +99,65 @@ const cdOf = (argv: string[]): { dir: string | undefined } | null => {
   return { dir: operand === "" || operand === "-" ? undefined : operand };
 };
 
-/** An unquoted `$IFS` or `${IFS...}`, which bash expands to a separator. */
-const IFS_REF = /\$IFS(?![A-Za-z0-9_])|\$\{IFS[^}]*\}/;
+/** A character that marks where bash splits a word, at an unquoted `$IFS`. */
+const SEP = "\u0000";
 
 /**
- * The words of `word` that a separator splits, as bash splits an unquoted expansion.
- * `git${IFS}reset` is `git reset` to bash, so the guard reads it as two words.
- * A word without the reference stays as it is, so `""` keeps its place.
+ * An `$IFS` reference, or a `${...}` expansion that names `IFS`, which bash may expand to a separator.
+ * It is sticky, so it matches only at the position that `lastIndex` sets.
  */
-const splitIfs = (word: string): string[] =>
-  IFS_REF.test(word) ? word.split(IFS_REF).filter((w) => w !== "") : [word];
+const IFS_REF = /\$\{[^}]*IFS[^}]*\}|\$IFS(?![A-Za-z0-9_])/y;
+
+/**
+ * The text of `command`, with each `$IFS` reference replaced by `SEP`.
+ * A quoted reference stays as it is, because bash does not split inside quotes.
+ * With `all`, a quoted reference is also replaced, which is the reading of a shell that runs the text again.
+ */
+const markedText = (command: string, all: boolean): string => {
+  let out = "";
+  let quote: string | null = null;
+  for (let i = 0; i < command.length; i++) {
+    const c = command[i] as string;
+    if (c === "\\" && quote !== "'") {
+      out += command.slice(i, i + 2);
+      i++;
+      continue;
+    }
+    if (c === "$" && (all || quote === null)) {
+      IFS_REF.lastIndex = i;
+      const ref = IFS_REF.exec(command);
+      if (ref) {
+        out += SEP;
+        i += ref[0].length - 1;
+        continue;
+      }
+    }
+    if (quote === null && (c === "'" || c === '"')) quote = c;
+    else if (c === quote) quote = null;
+    out += c;
+  }
+  return out;
+};
+
+/** The words of each parsed command, with each `SEP` read as a separator that splits a word. */
+const commandsOf = (text: string): string[][] =>
+  parse(text).commands.map((argv) =>
+    argv.flatMap((w) =>
+      w.includes(SEP) ? w.split(SEP).filter((part) => part !== "") : [w],
+    ),
+  );
 
 /** `name=value` in an `alias` word. */
 const ALIAS_DEF = /^([A-Za-z_][\w.-]*)=(.*)$/;
 
+/** The aliases of a text, by name, with the words of each body. */
+type Aliases = Map<string, string[]>;
+
 /**
- * The words of `argv` with an alias of this text in place of its name.
- * `alias` sets the aliases of the text, as the shell snapshot of Claude Code enables `expand_aliases`.
- * So `alias g=git; g reset --hard` reads as `git reset --hard`.
+ * Applies an `alias` or `unalias` command to `aliases`, and returns true when `argv` is one of them.
+ * `unalias -a` drops every alias.
  */
-const withAliases = (
-  argv: string[],
-  aliases: Map<string, string[]>,
-): string[] => {
+const aliasCmd = (argv: string[], aliases: Aliases): boolean => {
   if (argv[0] === "alias") {
     for (const word of argv.slice(1)) {
       const [, name = "", value = ""] = ALIAS_DEF.exec(word) ?? [];
@@ -131,28 +167,88 @@ const withAliases = (
           value.split(/\s+/).filter((w) => w !== ""),
         );
     }
-    return argv;
+    return true;
   }
-  const body = aliases.get(argv[0] ?? "");
-  return body === undefined ? argv : [...body, ...argv.slice(1)];
+  if (argv[0] !== "unalias") return false;
+  if (argv.includes("-a")) aliases.clear();
+  for (const word of argv.slice(1)) aliases.delete(word);
+  return true;
 };
 
 /**
- * The simple commands of a `Bash` text, after `parse` and the unwrapping of each wrapper.
- * A `cd` sets the folder of the commands after it, so `cd <dir> && rm ...` reads `rm` under `<dir>`.
+ * The words of `argv` with its head replaced by the alias of that name, again while the new head is an alias.
+ * A name that is met twice stops the chain, as bash stops it.
  */
-export const walk = (command: string): Simple[] => {
+const expandAlias = (argv: string[], aliases: Aliases): string[] => {
+  let words = argv;
+  const seen = new Set<string>();
+  while (
+    words[0] !== undefined &&
+    aliases.has(words[0]) &&
+    !seen.has(words[0])
+  ) {
+    seen.add(words[0]);
+    words = [...(aliases.get(words[0]) as string[]), ...words.slice(1)];
+  }
+  return words;
+};
+
+/**
+ * The simple commands of `text` as the shell reads them, with `cd` setting the folder.
+ * The words are the ones that are written, so an alias does not change them here.
+ */
+const rawOf = (text: string): Simple[] => {
   const out: Simple[] = [];
-  const aliases = new Map<string, string[]>();
   let dir: string | undefined;
-  for (const parsed of parse(command).commands) {
-    const argv = withAliases(parsed.flatMap(splitIfs), aliases);
+  for (const argv of commandsOf(text)) {
     const cd = cdOf(argv);
     if (cd) {
       dir = cd.dir === undefined ? undefined : joinDir(dir, cd.dir);
       continue;
     }
     out.push(...unwrap(argv, dir));
+  }
+  return out;
+};
+
+/**
+ * The simple commands of `text` with each alias expanded, from its definition on.
+ * Bash expands an alias only from the next line, so `alias g=git; g reset --hard` runs `g` as a command
+ * that is not found. This reading does not wait for the line end, so the same-line form is also denied.
+ * A deny of the same-line form is the safe side, because the raw words above still hold each written verb.
+ */
+const expandedOf = (text: string): Simple[] => {
+  const out: Simple[] = [];
+  const aliases: Aliases = new Map();
+  let dir: string | undefined;
+  for (const argv of commandsOf(text)) {
+    if (aliasCmd(argv, aliases)) continue;
+    const words = expandAlias(argv, aliases);
+    const cd = cdOf(words);
+    if (cd) {
+      dir = cd.dir === undefined ? undefined : joinDir(dir, cd.dir);
+      continue;
+    }
+    if (words !== argv) out.push(...unwrap(words, dir));
+  }
+  return out;
+};
+
+/**
+ * The simple commands of a `Bash` text, after `parse` and the unwrapping of each wrapper.
+ * A `cd` sets the folder of the commands after it, so `cd <dir> && rm ...` reads `rm` under `<dir>`.
+ * Each command is read as it is written, and again with its aliases expanded when the text sets one.
+ * A text with a `$IFS` is read with the quoted split too, because a nested shell reads a quoted text as code.
+ */
+export const walk = (command: string): Simple[] => {
+  const out: Simple[] = [];
+  const seen = new Set<string>();
+  for (const all of [false, true]) {
+    const text = markedText(command, all);
+    if (seen.has(text)) continue;
+    seen.add(text);
+    out.push(...rawOf(text));
+    if (command.includes("alias")) out.push(...expandedOf(text));
   }
   return out;
 };

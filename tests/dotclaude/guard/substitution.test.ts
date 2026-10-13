@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { EngineInterface } from "claude-code";
 import { onBashCall } from "../../../src/plugins/dotclaude/slices/guard/adapters/mod.ts";
+import { walk } from "../../../src/plugins/dotclaude/slices/guard/domain/walk.ts";
 import { tmpDir } from "../../support/repo.ts";
 
 /** A checkout with a `.git` folder, which is the main checkout of a repository. */
@@ -64,4 +65,40 @@ test("a destructive git command in a hidden form is denied in the main session",
     if (!("deny" in out)) allowed.push(command);
   }
   expect(allowed).toStrictEqual([]);
+});
+
+/**
+ * The forms that bash runs as a guarded git verb, which an alias or a nested split hides from a plain read.
+ * An alias on the same line as its use does not expand in bash, and the raw words still hold the verb.
+ */
+const ALIAS_AND_SPLIT = [
+  "alias git=echo; git reset --hard",
+  "alias git=echo; unalias git; git reset --hard",
+  "alias git=echo; unalias -a; git reset --hard",
+  "alias g=git\ng reset --hard",
+  "alias g=git; g reset --hard",
+  "alias b=git\nalias a=b\na reset --hard",
+  "git$" + "{x:-$IFS}reset --hard",
+  "bash -c 'git$" + "{IFS}reset --hard'",
+];
+
+test("an alias or a nested split that hides a guarded git verb is denied in the main session", async () => {
+  const allowed: string[] = [];
+  for (const command of ALIAS_AND_SPLIT) {
+    const out = await onBashCall(engineIn(main), bash(command), passes);
+    if (!("deny" in out)) allowed.push(command);
+  }
+  expect(allowed).toStrictEqual([]);
+});
+
+test("a quoted $IFS stays one argument of git, and the command is allowed", async () => {
+  const command = "git commit -m '$IFS'";
+  expect(walk(command)[0]?.words).toStrictEqual([
+    "git",
+    "commit",
+    "-m",
+    "$IFS",
+  ]);
+  const out = await onBashCall(engineIn(main), bash(command), passes);
+  expect("deny" in out).toBe(false);
 });
