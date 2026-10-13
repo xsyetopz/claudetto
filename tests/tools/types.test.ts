@@ -13,7 +13,7 @@ const CONFIG = path.join("plugins", "q", "tsconfig.json");
 
 /** A main worktree with the plugin `plugins/q`, its Claude Code types, and its `tsconfig.json`, and a linked worktree of it. */
 const repoWithWorktree = async (): Promise<{ main: string; wt: string }> => {
-  const main = fs.realpathSync(tmpDir("types-main"));
+  const main = fs.realpathSync.native(tmpDir("types-main"));
   await $`git init -q`.cwd(main);
   await Bun.write(path.join(main, ".gitignore"), "tsconfig.json\ntypes/\n");
   await Bun.write(path.join(main, "plugins", "q", "a.txt"), "a\n");
@@ -23,14 +23,14 @@ const repoWithWorktree = async (): Promise<{ main: string; wt: string }> => {
   );
   await Bun.write(path.join(main, INDEX), "declare const x: 1;\n");
   await Bun.write(path.join(main, CONFIG), "{}\n");
-  const wt = path.join(fs.realpathSync(tmpDir("types-wt")), "wt");
+  const wt = path.join(fs.realpathSync.native(tmpDir("types-wt")), "wt");
   await $`git worktree add -q --detach ${wt}`.cwd(main);
   return { main, wt };
 };
 
 test("a linked worktree names its main worktree, and the main worktree names none", async () => {
   const { main, wt } = await repoWithWorktree();
-  expect(fs.realpathSync((await mainWorktree(wt)) ?? "")).toBe(main);
+  expect(fs.realpathSync.native((await mainWorktree(wt)) ?? "")).toBe(main);
   expect(await mainWorktree(main)).toBeNull();
 });
 
