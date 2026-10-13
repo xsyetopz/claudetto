@@ -1,0 +1,31 @@
+// `dotclaude-spec drop <package> --reason <text> [--json]`: cancels a package.
+// `canceled` is a terminal lane: the package does not move again, and the done count of the change leaves it out.
+// A package that depends on a canceled package does not become ready, and `deps` shows the chain.
+
+import { parseArgs } from "./args.ts";
+import { applyMove, printMove, refusedInWorktree } from "./lane.ts";
+import type { Run } from "./run.ts";
+
+const USAGE = "Usage: dotclaude-spec drop <package> --reason <text> [--json]";
+
+export const dropCommand = async (
+  run: Run,
+  args: string[],
+): Promise<number> => {
+  const parsed = parseArgs(args, { values: ["reason"] });
+  if (typeof parsed === "string") {
+    run.io.error(parsed);
+    return 2;
+  }
+  const [pkg, extra] = parsed.words;
+  const reason = parsed.values["reason"];
+  if (!pkg || extra !== undefined || reason === undefined) {
+    run.io.error(USAGE);
+    return 2;
+  }
+  if (refusedInWorktree(run, "changes a lane")) return 1;
+  const move = await applyMove(run, pkg, "canceled", { note: reason });
+  if (move === null) return 1;
+  printMove(run, move, parsed.json);
+  return 0;
+};

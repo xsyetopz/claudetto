@@ -29,7 +29,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   A call of a subagent, or a model with no name and version, gets the name `Claude`.
   The `attribution` setting of the user stays in force, an empty value turns its part off, and `includeCoAuthoredBy: false` turns both parts off when no `attribution` setting is set.
   The text of `tool-bash.md` no longer asks Claude to copy the lines.
-- The `dotclaude-spec` commands `ready` and `merge` do two steps of `/ship` with no model call.
+- The `dotclaude-spec` commands `ready` and `merge` do two steps of `/ship` with no model call, `merge` takes only a package with an `approve` of `review`, and `show`, `list`, `retry`, `drop`, `deps`, `log`, and `lane --note` read and move packages, each with `--json`.
   `ready <id>` prints the packages that can start, with no overlap of `owns` between them, and `merge <package> <branch>` needs the package in `review`, commits the lane files, merges the branch, runs `just generate`, sets the lane `done`, and commits `plugins/` with the lane files.
   `lane` also sets the checkbox of the package line in `packages.md`, `validate` reports a checkbox that does not agree with the lane, and `record` writes the empty sections of a hotfix record.
 - The `spec` slice moves the lane of a package with no model call.
@@ -189,8 +189,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The settings snippet lists its top-level keys in the property order of the settings schema.
   The keys of `env` are in alphabetical order.
 - The core plugin has six agents: `debugger`, `implementer`, `investigator`, `planner`, `researcher`, and `reviewer`.
-  Each agent file sets its own model and effort, and no agent has a `maxTurns`, because a run that reaches its turn limit returns no report.
-  The `debugger` runs on Opus 5.5 at `medium` effort.
+  Each agent file sets its own model and effort, `debugger` runs on Opus 5.5 at `medium`, and no agent has a `maxTurns`, because a run at its turn limit returns no report.
 - dotclaude writes its own files to `.dotclaude/`.
   The `setup` slice adds the runtime paths of `.claude/` that git does not ignore to `.git/info/exclude`.
 - dotclaude uses the worktrees of Claude Code.

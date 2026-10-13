@@ -13,23 +13,46 @@ export const EVENTS_FILE = "events.jsonl";
 /** The `schema` number of `events.jsonl` that this version reads. Another number stops the reader. */
 export const SPEC_SCHEMA = 1;
 
-/** The lanes of a package, from the first to the last. */
-export const LANES = ["planned", "doing", "review", "done", "blocked"] as const;
+/** The lanes of a package, from the first to the last. `canceled` is the lane of a dropped package. */
+export const LANES = [
+  "planned",
+  "doing",
+  "review",
+  "done",
+  "blocked",
+  "canceled",
+] as const;
 
 /** One lane of a package, from `LANES`. */
 export type Lane = (typeof LANES)[number];
 
-/** One entry of the event log: a package that moved to a lane at a time. */
+/** The lanes that a package does not leave. */
+export const CLOSED_LANES: readonly Lane[] = ["done", "canceled"];
+
+/** The verdicts of a review. */
+export const VERDICTS = ["approve", "reject"] as const;
+
+/** One verdict of a review, from `VERDICTS`. */
+export type Verdict = (typeof VERDICTS)[number];
+
+/**
+ * One entry of the event log: a package that moved to a lane at a time.
+ * A `note` gives the reason of the move, and a `verdict` with its `findings` records a review.
+ * An `approve` keeps the lane `review`, so its line has the lane that the package had.
+ */
 export type LaneEvent = {
   readonly at: string;
   readonly package: string;
   readonly lane: Lane;
+  readonly note?: string;
+  readonly verdict?: Verdict;
+  readonly findings?: readonly string[];
 };
 
 /** The first line of `events.jsonl`. */
 export type EventsHeader = { readonly schema: typeof SPEC_SCHEMA };
 
-/** The done and total counts of the active change, for a segment such as `◆ 1.0.0 4/13`. */
+/** The done and total counts of the active change, for a segment such as `◆ 1.0.0 4/13`. A `canceled` package is not in the total. */
 export type Progress = {
   readonly id: string;
   readonly done: number;
@@ -166,7 +189,9 @@ export const activeProgress = async (
   for (const id of (await files.list(SPEC_ROOT)).sort()) {
     const events = await readEvents(files, id);
     if (!events) continue;
-    const lanes = Object.values(await packageLanes(files, id, events));
+    const lanes = Object.values(await packageLanes(files, id, events)).filter(
+      (lane) => lane !== "canceled",
+    );
     const done = lanes.filter((lane) => lane === "done").length;
     if (done < lanes.length) active = { id, done, total: lanes.length };
   }

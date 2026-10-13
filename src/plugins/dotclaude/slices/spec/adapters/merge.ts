@@ -1,6 +1,7 @@
 // `dotclaude-spec merge <package> <branch>`: merges the branch of a package that passed review.
 // The steps are the steps of `/ship`:
-//   0. The lane of the package must be `review`, and the branch must be a commit that is not the current branch.
+//   0. The lane of the package must be `review` with an `approve` from `dotclaude-spec review`,
+//      and the branch must be a commit that is not the current branch.
 //      The tree must hold no change except the store files of the change, which the command commits first.
 //   1. `git merge --no-edit <branch>`. On a conflict the command stops, sets no lane, and prints the conflicted files.
 //   2. `just generate`, when the project has a `justfile`.
@@ -11,6 +12,7 @@
 import path from "node:path";
 import { runProgram } from "../../../../../kernel/node/process.ts";
 import { SPEC_ROOT } from "../../../../../kernel/paths.ts";
+import { approved, eventsOf } from "../domain/events.ts";
 import { changeOf, inLinkedWorktree, moveLane } from "./lane.ts";
 import type { Run } from "./run.ts";
 
@@ -165,6 +167,12 @@ export const mergeCommand = async (
   if (lane !== "review") {
     run.io.error(
       `The lane of \`${pkg}\` is \`${lane}\`. Only a package in \`review\` merges.`,
+    );
+    return 1;
+  }
+  if (!approved(eventsOf(events ?? [], pkg))) {
+    run.io.error(
+      `The review of \`${pkg}\` has no \`approve\`. Run \`dotclaude-spec review ${pkg} approve\` after the review passes.`,
     );
     return 1;
   }

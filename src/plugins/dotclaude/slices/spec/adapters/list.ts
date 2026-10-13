@@ -1,0 +1,104 @@
+// `dotclaude-spec list [--json]`: the open and the archived changes, with the size and the lane counts of each.
+// The size comes from the files of the change: `packages.md` is `large`, `specs/` is `medium`, and else `trivial`.
+
+import fs from "node:fs";
+import path from "node:path";
+import { ARCHIVE_DIR, SPEC_ROOT } from "../../../../../kernel/paths.ts";
+import { LANES, type Lane } from "../../../../../kernel/spec-store.ts";
+import type { Size } from "../limits.ts";
+import { parseArgs } from "./args.ts";
+import type { Run } from "./run.ts";
+import { ICONS } from "./status.ts";
+
+/** One change of the list. */
+export interface ChangeRow {
+  readonly id: string;
+  readonly archived: boolean;
+  readonly size: Size;
+  /** The count of packages in each lane. A change with no `events.jsonl` has no counts. */
+  readonly lanes: Partial<Record<Lane, number>>;
+}
+
+/** The size of the change in the folder `dir`, from its files. */
+export const sizeOf = (run: Run, dir: string): Size => {
+  if (run.store.exists(path.posix.join(dir, "packages.md"))) return "large";
+  if (run.store.exists(path.posix.join(dir, "specs"))) return "medium";
+  return "trivial";
+};
+
+/** The count of packages in each lane of the change `id`, where `id` is relative to `SPEC_ROOT`. */
+export const laneCounts = async (
+  run: Run,
+  id: string,
+): Promise<Partial<Record<Lane, number>>> => {
+  const events = await run.store.events(id);
+  if (events === null) return {};
+  const counts: Partial<Record<Lane, number>> = {};
+  for (const lane of Object.values(await run.store.lanes(id, events)))
+    counts[lane] = (counts[lane] ?? 0) + 1;
+  return counts;
+};
+
+const rowOf = async (
+  run: Run,
+  id: string,
+  archived: boolean,
+): Promise<ChangeRow> => {
+  const rel = archived
+    ? path.posix.join(path.posix.basename(ARCHIVE_DIR), id)
+    : id;
+  return {
+    id,
+    archived,
+    size: sizeOf(run, path.posix.join(SPEC_ROOT, rel)),
+    lanes: await laneCounts(run, rel),
+  };
+};
+
+/** The text of the counts of one change, such as `✓ 4  ● 1`, or `-` when it has none. */
+const countsText = (lanes: ChangeRow["lanes"]): string =>
+  LANES.filter((lane) => lanes[lane])
+    .map((lane) => `${ICONS[lane]} ${lanes[lane]}`)
+    .join("  ") || "-";
+
+export const listCommand = async (
+  run: Run,
+  args: string[],
+): Promise<number> => {
+  const parsed = parseArgs(args);
+  if (typeof parsed === "string" || parsed.words.length > 0) {
+    run.io.error(
+      typeof parsed === "string"
+        ? parsed
+        : "Usage: dotclaude-spec list [--json]",
+    );
+    return 2;
+  }
+  const archived = (await run.store.files.list(ARCHIVE_DIR))
+    .filter((name) => !name.startsWith("."))
+    .filter((name) =>
+      fs
+        .statSync(run.store.abs(path.posix.join(ARCHIVE_DIR, name)))
+        .isDirectory(),
+    )
+    .sort();
+  const rows = [
+    ...(await Promise.all(
+      (await run.store.changes()).map((id) => rowOf(run, id, false)),
+    )),
+    ...(await Promise.all(archived.map((id) => rowOf(run, id, true)))),
+  ];
+  if (parsed.json) {
+    run.io.log(JSON.stringify(rows));
+    return 0;
+  }
+  if (rows.length === 0) {
+    run.io.log(`No change is in \`${SPEC_ROOT}\`.`);
+    return 0;
+  }
+  for (const row of rows)
+    run.io.log(
+      `${row.archived ? "archived" : "open"}  ${row.id}  ${row.size}  ${countsText(row.lanes)}`,
+    );
+  return 0;
+};

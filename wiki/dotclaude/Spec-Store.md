@@ -105,8 +105,11 @@ Only `dotclaude-spec lane` sets the checkbox.
 `events.jsonl` is an append-only log.
 Its first line is a header, `{"schema":1}`.
 Each next line is one lane change, such as `{"at":"<time>","package":"P01","lane":"doing"}`.
-The lanes are `planned`, `doing`, `review`, `done`, and `blocked`.
+The lanes are `planned`, `doing`, `review`, `done`, `blocked`, and `canceled`.
+`done` and `canceled` are terminal: a package in them does not move again.
+The done count of a change, in `status` and in the status line, leaves out each `canceled` package.
 The lane of a package is the lane on its last line.
+A line can also have a `note`, the reason of the move, and a `verdict`, `approve` or `reject`, with its `findings`.
 A package with a file in `packages/` and no line is `planned`.
 `validate` fails on a line for a package with no file in `packages/`, with the rule `plan.event-no-package`.
 
@@ -117,7 +120,10 @@ Three parts move a lane:
 
 - The `lane` command adds a line, and it sets the checkbox in `packages.md`.
   It refuses in a linked git worktree, with exit status `1`.
-  It also refuses a move out of `done`, and a move to the lane that the package has.
+  It also refuses a move out of `done` or `canceled`, and a move to the lane that the package has.
+  A move to `blocked` and a move back need `--note <text>`.
+  A move back goes to `planned`, or from `review` to `doing`.
+  The `lane` command does not move a package to `canceled`, because `drop` does that with a reason.
   A package in `planned` may move to `doing`, `review`, `done`, or `blocked`.
   The `review` move covers a package whose `doing` hook failed.
   A refused move exits with status `1`, and it adds no line.
@@ -127,8 +133,13 @@ Three parts move a lane:
   It does this when that `implementer` ends with the reason `answer`.
   Another end leaves the package in `doing`.
 
-The `merge` command sets the lane `done`.
-`/ship` sets the lane `blocked` when the retry of a package fails.
+The `review` command records the verdict of a review on a package in `review`.
+`approve` keeps the lane `review`.
+`reject` needs one `--finding` or more, and moves the package to `doing`.
+The `merge` command takes only a package whose last verdict is `approve`, with no move to `doing` after it, and sets the lane `done`.
+`/ship` sets the lane `blocked`, with a note, when the retry of a package fails.
+The `retry` command moves a package in `review` or `blocked` to `doing`, and prints its stored findings and the note of its block.
+The `drop` command moves a package to `canceled`, with its reason as the note.
 
 The file `.gitattributes` sets `merge=union` for `events.jsonl`.
 Two branches that append lines to the log merge with no conflict.
@@ -140,16 +151,25 @@ Two branches that append lines to the log merge with no conflict.
 | `dotclaude-spec new <id> [--size trivial\|medium\|large]` | Writes the files of the size. It fails when the change already exists. |
 | `dotclaude-spec status [<id>]` | Prints the count of done packages, the count of each lane, and the lane of each package. |
 | `dotclaude-spec next [<id>]` | Prints the brief of the first package in `packages.md` that is `planned` or `doing`, and whose deps are all `done`. |
-| `dotclaude-spec lane <package> <lane>` | Moves a package to a lane, and adds one line to `events.jsonl`. |
+| `dotclaude-spec show <id> [<package>]` | Prints the size and the lanes of a change, or the lane, the goal, the deps, the `owns`, the `verify`, and the last 5 events of one package. |
+| `dotclaude-spec list` | Prints each open and archived change, with its size and the count of each lane. |
+| `dotclaude-spec lane <package> <lane> [--note <text>]` | Moves a package to a lane, and adds one line to `events.jsonl`. |
+| `dotclaude-spec review <package> approve\|reject [--finding <text>]...` | Records the verdict of a review. `reject` moves the package to `doing`. |
+| `dotclaude-spec retry <package>` | Moves a package in `review` or `blocked` to `doing`, and prints its findings. |
+| `dotclaude-spec drop <package> --reason <text>` | Moves a package to `canceled`. |
+| `dotclaude-spec deps [<id>]` | Prints the packages of each wave with their deps, each chain that a `blocked` or `canceled` dep stops, and each `owns` overlap in one wave. |
+| `dotclaude-spec log [<id>] [--package <package>]` | Prints the events of a change, one line for each event. |
 | `dotclaude-spec ready [<id>]` | Prints the id of each package that can start now, in the order of `packages.md`. |
 | `dotclaude-spec runs` | Prints the number of agent runs that a wave of `/ship` may start now. |
-| `dotclaude-spec merge <package> <branch>` | Merges the branch of a package in the `review` lane, and sets the lane `done`. |
+| `dotclaude-spec merge <package> <branch>` | Merges the branch of a package in the `review` lane with an `approve`, and sets the lane `done`. |
 | `dotclaude-spec validate [<id>]` | Checks the capability specs, the tasks, the delta files, and the packages. |
 | `dotclaude-spec archive <id>` | Applies the deltas, and moves the change to `changes/archive/`. |
 | `dotclaude-spec record <text>` | Writes the record of a hotfix in `hotfixes/`. |
 
-When the id is missing, `status`, `next`, and `ready` use the active change.
-The active change is the last change, in the order of its id, that has a package which is not `done`.
+When the id is missing, `status`, `next`, `ready`, `deps`, and `log` use the active change.
+The active change is the last change, in the order of its id, that has a package which is not `done` or `canceled`.
+Each command from `show` to `log` in the table takes `--json`, and then prints JSON in place of the text.
+`lane`, `review`, `retry`, `drop`, and `merge` run only in the main checkout.
 The command exits with status `2` for a usage error.
 It exits with status `1` for a failed command.
 Run `dotclaude-spec` with no argument to print the usage.
@@ -232,7 +252,8 @@ These parts cost tokens:
 | `HOTFIX_SLUG_MAX` | 40 | `src/plugins/dotclaude/slices/spec/limits.ts` |
 | `CHANGE_ID` | letters, digits, `.`, `_`, `-`, not `archive` | `src/plugins/dotclaude/slices/spec/limits.ts` |
 | `SPEC_SCHEMA` | 1 | `src/kernel/spec-store.ts` |
-| `LANES` | `planned`, `doing`, `review`, `done`, `blocked` | `src/kernel/spec-store.ts` |
+| `SHOW_EVENTS_MAX` | 5 | `src/plugins/dotclaude/slices/spec/limits.ts` |
+| `LANES` | `planned`, `doing`, `review`, `done`, `blocked`, `canceled` | `src/kernel/spec-store.ts` |
 
 ## Related Pages
 

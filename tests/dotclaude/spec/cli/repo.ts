@@ -1,5 +1,6 @@
 // Helpers of the `merge` tests: a git repository with a plan, a generator, and a branch.
 
+import fs from "node:fs";
 import path from "node:path";
 import { read } from "./helpers.ts";
 import { CHANGE, makePlan } from "./plan.ts";
@@ -28,6 +29,11 @@ export const makeRepo = async (justfile = JUSTFILE): Promise<string> => {
       "shared.txt": "base\n",
       "plugins/out.txt": "base\n",
     },
+  );
+  // `merge` takes only a package with an `approve`, so the review of `P01` has one.
+  fs.appendFileSync(
+    path.join(root, CHANGE, "events.jsonl"),
+    `${JSON.stringify({ at: "2026-01-01T00:00:01.000Z", package: "P01", lane: "review", verdict: "approve" })}\n`,
   );
   git(root, "init", "-q", "-b", "main");
   // A runner can set `core.autocrlf`, and then a merge writes CRLF into the files.

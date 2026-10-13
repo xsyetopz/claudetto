@@ -52,7 +52,7 @@ test("lane sets the checkbox of the package line: x for done, a space for each o
   expect(await boxes()).toStrictEqual(["- [ ]", "- [ ]"]);
   await run(root, "lane", "P01", "doing");
   expect(await boxes()).toStrictEqual(["- [ ]", "- [ ]"]);
-  await run(root, "lane", "P01", "blocked");
+  await run(root, "lane", "P01", "blocked", "--note", "waits for P02");
   expect(await boxes()).toStrictEqual(["- [ ]", "- [ ]"]);
   await run(root, "lane", "P01", "done");
   expect(await boxes()).toStrictEqual(["- [x]", "- [ ]"]);

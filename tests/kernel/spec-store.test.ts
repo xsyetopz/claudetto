@@ -127,3 +127,18 @@ test("`activeProgress` gives null when every change is done or none has an event
   expect(await activeProgress(done)).toBe(null);
   expect(await activeProgress(fakeFiles({}))).toBe(null);
 });
+
+test("`activeProgress` leaves a canceled package out of the total, and a change with only done and canceled packages is not active", async () => {
+  const open = fakeFiles({
+    [eventsPath("1.0.0")]: eventsText({ a: "done", b: "canceled", c: "doing" }),
+  });
+  expect(await activeProgress(open)).toStrictEqual({
+    id: "1.0.0",
+    done: 1,
+    total: 2,
+  });
+  const closed = fakeFiles({
+    [eventsPath("1.0.0")]: eventsText({ a: "done", b: "canceled" }),
+  });
+  expect(await activeProgress(closed)).toBe(null);
+});

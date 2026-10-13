@@ -1,0 +1,71 @@
+// `dotclaude-spec deps [<id>] [--json]`: the wave graph of a change, its blocked chains, and its `owns` overlaps.
+// With no id, the command reads the active change.
+
+import {
+  blockedChains,
+  type Node,
+  ownsOverlaps,
+  wavesOf,
+} from "../domain/deps.ts";
+import { parseArgs } from "./args.ts";
+import { readBriefs, readEntries } from "./plan-files.ts";
+import { type Run, resolveId } from "./run.ts";
+import { ICONS } from "./status.ts";
+
+const USAGE = "Usage: dotclaude-spec deps [<id>] [--json]";
+
+export const depsCommand = async (
+  run: Run,
+  args: string[],
+): Promise<number> => {
+  const parsed = parseArgs(args);
+  if (typeof parsed === "string" || parsed.words.length > 1) {
+    run.io.error(typeof parsed === "string" ? parsed : USAGE);
+    return 2;
+  }
+  const id = await resolveId(run, parsed.words[0]);
+  if (id === null) return 1;
+  const lanes = await run.store.lanes(id, (await run.store.events(id)) ?? []);
+  const briefs = new Map(
+    (await readBriefs(run.store, id)).packages.map((p) => [
+      p.front.id,
+      p.front,
+    ]),
+  );
+  const nodes: Node[] = (await readEntries(run.store, id)).map((e) => ({
+    id: e.id,
+    wave: e.wave,
+    deps: briefs.get(e.id)?.deps ?? [],
+    owns: briefs.get(e.id)?.owns ?? [],
+  }));
+  const graph = {
+    change: id,
+    waves: wavesOf(nodes).map(({ wave, ids }) => ({
+      wave,
+      packages: ids.map((p) => ({
+        id: p,
+        lane: lanes[p],
+        deps: briefs.get(p)?.deps ?? [],
+      })),
+    })),
+    blocked: blockedChains(nodes, lanes),
+    overlaps: ownsOverlaps(nodes, lanes),
+  };
+  if (parsed.json) {
+    run.io.log(JSON.stringify(graph));
+    return 0;
+  }
+  for (const { wave, packages } of graph.waves) {
+    run.io.log(`Wave ${wave}`);
+    for (const p of packages) {
+      const icon = p.lane === undefined ? "?" : ICONS[p.lane];
+      const deps = p.deps.length > 0 ? ` <- ${p.deps.join(", ")}` : "";
+      run.io.log(`  ${icon} ${p.id}${deps}`);
+    }
+  }
+  for (const chain of graph.blocked)
+    run.io.log(`Blocked: ${chain.join(" -> ")} (${lanes[chain.at(-1) ?? ""]})`);
+  for (const [a, b] of graph.overlaps)
+    run.io.log(`Overlap: ${a} and ${b} own the same paths in one wave.`);
+  return 0;
+};

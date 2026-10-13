@@ -11,6 +11,7 @@ export const ICONS: Readonly<Record<Lane, string>> = {
   review: "◐",
   done: "✓",
   blocked: "✗",
+  canceled: "⊘",
 };
 
 /** Prints the counts and the lane of each package of the change. */
@@ -28,7 +29,7 @@ export const statusCommand = async (
   const packages = Object.entries(await run.store.lanes(id, events));
   const count = (lane: Lane): number =>
     packages.filter(([, l]) => l === lane).length;
-  run.io.log(`◆ ${id} ${count("done")}/${packages.length}`);
+  run.io.log(`◆ ${id} ${count("done")}/${packages.length - count("canceled")}`);
   run.io.log(LANES.map((lane) => `${ICONS[lane]} ${count(lane)}`).join("  "));
   for (const [name, lane] of packages) {
     run.io.log(`${ICONS[lane]} ${name} ${lane}`);

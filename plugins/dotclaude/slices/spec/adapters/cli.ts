@@ -4,7 +4,14 @@
 //   dotclaude-spec new <id> [--size trivial|medium|large]
 //   dotclaude-spec status [<id>]
 //   dotclaude-spec next [<id>]
-//   dotclaude-spec lane <package> <lane>
+//   dotclaude-spec show <id> [<package>] [--json]
+//   dotclaude-spec list [--json]
+//   dotclaude-spec lane <package> <lane> [--note <text>] [--json]
+//   dotclaude-spec review <package> approve|reject [--finding <text>]... [--json]
+//   dotclaude-spec retry <package> [--json]
+//   dotclaude-spec drop <package> --reason <text> [--json]
+//   dotclaude-spec deps [<id>] [--json]
+//   dotclaude-spec log [<id>] [--package <package>] [--json]
 //   dotclaude-spec ready [<id>]
 //   dotclaude-spec merge <package> <branch>
 //   dotclaude-spec validate [<id>]
@@ -16,20 +23,45 @@
 // A command that reads `events.jsonl` stops with a message on a `schema` that it does not know.
 
 import { archiveCommand } from "./archive.ts";
+import { depsCommand } from "./deps.ts";
+import { dropCommand } from "./drop.ts";
 import { type Clock, consoleIo, type Io, systemClock } from "./io.ts";
 import { laneCommand } from "./lane.ts";
+import { listCommand } from "./list.ts";
+import { logCommand } from "./log.ts";
 import { mergeCommand } from "./merge.ts";
 import { newCommand } from "./new.ts";
 import { readyCommand } from "./ready.ts";
 import { recordCommand } from "./record.ts";
+import { retryCommand } from "./retry.ts";
+import { reviewCommand } from "./review.ts";
 import type { Run } from "./run.ts";
 import { runsCommand } from "./runs.ts";
+import { showCommand } from "./show.ts";
 import { nextCommand, statusCommand } from "./status.ts";
 import { SpecStore } from "./store.ts";
 import { validateCommand } from "./validate.ts";
 
-const USAGE =
-  "Usage: dotclaude-spec new <id> [--size trivial|medium|large] | status [<id>] | next [<id>] | lane <package> <lane> | ready [<id>] | merge <package> <branch> | validate [<id>] | archive <id> | record <text> | runs";
+const USAGE = [
+  "Usage: dotclaude-spec <command>",
+  "  new <id> [--size trivial|medium|large]",
+  "  status [<id>]",
+  "  next [<id>]",
+  "  show <id> [<package>] [--json]",
+  "  list [--json]",
+  "  lane <package> <lane> [--note <text>] [--json]",
+  "  review <package> approve|reject [--finding <text>]... [--json]",
+  "  retry <package> [--json]",
+  "  drop <package> --reason <text> [--json]",
+  "  deps [<id>] [--json]",
+  "  log [<id>] [--package <package>] [--json]",
+  "  ready [<id>]",
+  "  merge <package> <branch>",
+  "  validate [<id>]",
+  "  archive <id>",
+  "  record <text>",
+  "  runs",
+].join("\n");
 
 const COMMANDS: Readonly<
   Record<string, (run: Run, args: string[]) => number | Promise<number>>
@@ -37,7 +69,14 @@ const COMMANDS: Readonly<
   new: newCommand,
   status: statusCommand,
   next: nextCommand,
+  show: showCommand,
+  list: listCommand,
   lane: laneCommand,
+  review: reviewCommand,
+  retry: retryCommand,
+  drop: dropCommand,
+  deps: depsCommand,
+  log: logCommand,
   ready: readyCommand,
   merge: mergeCommand,
   validate: validateCommand,
