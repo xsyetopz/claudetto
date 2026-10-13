@@ -32,8 +32,15 @@ const NOTE = { plugin: "dcc-plugin-you-should-know", key: "note" } as const;
 /** The HTTP status that a subscription gets for a separate call from a hook when `CLAUDE_CODE_ATTRIBUTION_HEADER` is `0`. */
 const TOO_MANY_REQUESTS = 429;
 
+/** Clears the band, so that no choice of it is drawn again. */
+const clearOffer = async ($: EngineInterface): Promise<void> => {
+  await $.state.set(OFFER, null);
+  $.ui.invalidate("ui.render");
+};
+
 /**
- * The `turn.start` hook: a new turn is not checked yet, and a heads-up of the turn before it is dropped.
+ * The `turn.start` hook: a new turn is not checked yet, and a band of the turn before it is dropped.
+ * A heads-up note stays until the main agent reads it once.
  * A turn with no typed prompt keeps the prompt of the turn before it.
  */
 export const onTurnStart: Handler<"turn.start"> = async ($, e, next) => {
@@ -44,7 +51,7 @@ export const onTurnStart: Handler<"turn.start"> = async ($, e, next) => {
     prompt: e.text || (last?.prompt ?? ""),
     checked: false,
   });
-  await $.state.set(NOTE, null);
+  await clearOffer($);
   return out;
 };
 
@@ -88,9 +95,13 @@ const answerFor = async (
   return forkAnswer($, forkPrompt(action, shown));
 };
 
-/** Shows the topic of the pending action, if the model gives one that did not show in this session. */
+/**
+ * Shows the topic of the pending action, if the model gives one that did not show in this session.
+ * A verdict that arrives after its turn ended shows no band.
+ */
 const notify = async (
   $: EngineInterface,
+  turnId: string,
   request: string,
   action: string,
 ): Promise<void> => {
@@ -98,10 +109,19 @@ const notify = async (
   const answer = await answerFor($, request, action, shown);
   const topic = answer === undefined ? undefined : topicOf(answer);
   if (topic === undefined || isRepeat(topic, shown)) return;
+  const { value: now } = await $.state.get(TURN);
+  if (now?.id !== turnId) return;
   await $.state.set(SHOWN, [...shown, topic]);
   await $.state.set(OFFER, { topic });
   $.ui.invalidate("ui.render");
 };
+
+/**
+ * The closure at the end of the `ui.press` chain of a band button.
+ * The `ui.press` hooks of this slice do the work, so the closure does nothing.
+ * The engine requires a `Button` to hold a closure, and the render hook must not skip without it.
+ */
+const pressed = (): void => {};
 
 /**
  * The `ui.render` hook of the band: the topic of the offer, drawn above the prompt.
@@ -109,23 +129,23 @@ const notify = async (
  */
 export const onRender: Handler<"ui.render"> = async ($, e, next) => {
   const { value: offer } = await $.state.get(OFFER);
-  if (offer === undefined || offer === null) return next(e);
+  if (e.props.hasSurvey || offer === undefined || offer === null)
+    return next(e);
   const { Box, Text, Button } = $.ui.resolve(e);
   return Box({
     flexDirection: "column",
     marginTop: 1,
     children: [
       Text({ wrap: "wrap", children: `You should know: ${offer.topic}` }),
-      Button({ key: HEADS_UP, label: "Give a heads-up", hotkey: "1" }),
-      Button({ key: DISMISS, label: "Dismiss", hotkey: "0" }),
+      Button({
+        key: HEADS_UP,
+        label: "Give a heads-up",
+        hotkey: "1",
+        onPress: pressed,
+      }),
+      Button({ key: DISMISS, label: "Dismiss", hotkey: "0", onPress: pressed }),
     ],
   });
-};
-
-/** Clears the band, so that no choice of it is drawn again. */
-const clearOffer = async ($: EngineInterface): Promise<void> => {
-  await $.state.set(OFFER, null);
-  $.ui.invalidate("ui.render");
 };
 
 /**
@@ -152,7 +172,7 @@ export const onHeadsUpContext: Handler<"tool.call"> = async ($, e, next) => {
   const { value: note } = await $.state.get(NOTE);
   if (note === undefined || note === null) return out;
   await $.state.set(NOTE, null);
-  return { ...out, context: [note] };
+  return { ...out, context: [...(out.context ?? []), note] };
 };
 
 /** The `ui.press` hook of the dismiss choice: the band goes, and the topic stays in the session's seen list. */
@@ -163,6 +183,7 @@ export const onDismiss: Handler<"ui.press"> = async ($, e, next) => {
 
 /**
  * The `tool.check` hook: the first call of a turn that changes something gets one check, and the call runs as the verdict says.
+ * The model call is not awaited, so the tool does not wait for it: the band comes when the verdict does.
  * A query, a call of a subagent, a denied call, and a read get no check.
  */
 export const onCheck: Handler<"tool.check"> = async ($, e, next) => {
@@ -173,7 +194,11 @@ export const onCheck: Handler<"tool.check"> = async ($, e, next) => {
     const { value: turn } = await $.state.get(TURN);
     if (turn === undefined || turn.checked) return out;
     await $.state.set(TURN, { ...turn, checked: true });
-    await notify($, turn.prompt, actionOf(e.tool, e.input));
+    void notify($, turn.id, turn.prompt, actionOf(e.tool, e.input)).catch(
+      () => {
+        // A failed check shows no notice. The call goes on with its verdict.
+      },
+    );
   } catch {
     // A failed check shows no notice. The call goes on with its verdict.
   }
