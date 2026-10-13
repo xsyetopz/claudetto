@@ -8,6 +8,7 @@ import type { Handler } from "../../../../../kernel/slice.ts";
 import {
   AGENTS_NAMES,
   dirOf,
+  type Fields,
   freshFiles,
   type Found,
   isExcluded,
@@ -147,7 +148,9 @@ const contextFor = async ($: EngineInterface, paths: readonly string[]): Promise
 };
 
 /** The paths of a `Read`, `Edit`, or `Write` call, or the file operands of a `Bash` read. */
-const pathsOf = (e: { tool: string; [key: string]: unknown }): string[] => {
+const pathsOf = (
+  e: { readonly tool: string } & Fields<"command" | "file_path">,
+): string[] => {
   if (e.tool === "Bash") return typeof e.command === "string" ? readPaths(e.command) : [];
   return typeof e.file_path === "string" ? [e.file_path] : [];
 };

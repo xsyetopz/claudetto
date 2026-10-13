@@ -40,7 +40,7 @@ export type Seen = Pick<Loaded, "path" | "content">;
 
 /** True when `value` has the path and the text of a file. */
 const isSeen = (value: unknown): value is Seen => {
-  const file = record(value);
+  const file = fields<"path" | "content">(value);
   return typeof file.path === "string" && typeof file.content === "string";
 };
 
@@ -90,17 +90,20 @@ const strings = (value: unknown): string[] =>
     ? value.filter((item): item is string => typeof item === "string")
     : [];
 
-const record = (value: unknown): Record<string, unknown> =>
-  typeof value === "object" && value !== null
-    ? (value as Record<string, unknown>)
-    : {};
+/** The named fields of a value that may be an object. A value that is not an object has none. */
+export type Fields<K extends string> = { readonly [P in K]?: unknown };
+
+const fields = <K extends string>(value: unknown): Fields<K> =>
+  typeof value === "object" && value !== null ? (value as Fields<K>) : {};
 
 /** The rules that the plugin takes from the settings it reads. A missing key is an empty list. */
 export const rulesOf = (settings: unknown): Rules => {
-  const root = record(settings);
+  const root = fields<"claudeMdExcludes" | "permissions">(settings);
   return {
     excludes: strings(root.claudeMdExcludes),
-    dirs: strings(record(root.permissions).additionalDirectories),
+    dirs: strings(
+      fields<"additionalDirectories">(root.permissions).additionalDirectories,
+    ),
   };
 };
 
