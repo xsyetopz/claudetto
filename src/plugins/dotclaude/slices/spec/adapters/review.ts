@@ -58,13 +58,11 @@ export const reviewCommand = async (
     printMoved(run, "review", moved, parsed.json);
     return 0;
   }
-  const sha = lastVerify(eventsOf(events, pkg))?.sha;
-  const gate = gateApprove({ verifySha: sha, approveSha: sha ?? "" });
+  const verified = lastVerify(eventsOf(events, pkg));
+  const gate = gateApprove({ verify: verified });
+  const sha = verified?.sha;
   if (!gate.ok || sha === undefined)
-    return stop(
-      run,
-      gate.ok ? "The package has no `verify` event." : gate.reason,
-    );
+    return stop(run, gate.ok ? "The `verify` event has no SHA." : gate.reason);
   const moved = await movePackage(run, id, pkg, "approved", { verdict, sha });
   printMoved(run, "review", moved, parsed.json);
   return 0;

@@ -126,6 +126,13 @@ export const targetOf = async (
   const id = await changeOf(run, pkg);
   if (id === null) return null;
   const events = (await run.store.events(id)) ?? [];
+  const change = changeState(events);
+  if (change !== "planned" && change !== "implementing") {
+    run.io.error(
+      `The change \`${id}\` is \`${change}\`, and a command on its package \`${pkg}\` needs \`planned\` or \`implementing\`.`,
+    );
+    return null;
+  }
   const states = await run.store.states(id, events);
   const state = states[pkg] ?? "planned";
   if (!isPackageState(state)) {

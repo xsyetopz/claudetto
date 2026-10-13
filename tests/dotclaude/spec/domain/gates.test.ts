@@ -53,11 +53,26 @@ test("implement from blocked needs a note", () => {
   );
 });
 
-test("implement from doing needs a decision", () => {
-  const doing = { ...base, from: "doing" } as const;
+const at = "2026-10-13T10:00:00.000Z";
+const failedVerify = [
+  { at, package: "P1", state: "doing", verify: { command: "x", exit: 1 } },
+];
+const rejected = [{ at, package: "P1", state: "doing", verdict: "reject" }];
+
+test("implement from doing needs a failed verify or a reject, and a decision", () => {
+  const doing = { ...base, from: "doing", events: failedVerify } as const;
   expect(ok(gateImplement(doing))).toBe(false);
   expect(ok(gateImplement({ ...doing, decision: "fix-code" }))).toBe(true);
   expect(ok(gateImplement({ ...doing, decision: "revise-spec" }))).toBe(true);
+  const after = { ...doing, events: rejected, decision: "fix-code" } as const;
+  expect(ok(gateImplement(after))).toBe(true);
+});
+
+test("implement from doing with a decision and no failed verify or reject is refused", () => {
+  const doing = { ...base, from: "doing", decision: "fix-code" } as const;
+  expect(ok(gateImplement(doing))).toBe(false);
+  const started = [{ at, package: "P1", state: "doing" }];
+  expect(ok(gateImplement({ ...doing, events: started }))).toBe(false);
 });
 
 test("verify needs a command, an integer exit, and the head of the branch", () => {
@@ -75,12 +90,18 @@ test("verify moves to verified on exit 0 and stays in doing otherwise", () => {
   expect(verifyTarget(1)).toBe("doing");
 });
 
-test("approve records the SHA of the last verify event", () => {
-  expect(ok(gateApprove({ verifySha: "a1", approveSha: "a1" }))).toBe(true);
-  expect(ok(gateApprove({ verifySha: "a1", approveSha: "b2" }))).toBe(false);
-  expect(ok(gateApprove({ verifySha: undefined, approveSha: "a1" }))).toBe(
-    false,
-  );
+test("approve needs a last verify event with the exit status 0 and a SHA", () => {
+  const verify = (exit: number, sha?: string) => ({
+    at,
+    package: "P1",
+    state: "verified",
+    verify: { command: "x", exit },
+    ...(sha === undefined ? {} : { sha }),
+  });
+  expect(ok(gateApprove({ verify: verify(0, "a1") }))).toBe(true);
+  expect(ok(gateApprove({ verify: verify(0) }))).toBe(false);
+  expect(ok(gateApprove({ verify: verify(1, "a1") }))).toBe(false);
+  expect(ok(gateApprove({ verify: undefined }))).toBe(false);
 });
 
 test("reject needs a finding and a decision", () => {

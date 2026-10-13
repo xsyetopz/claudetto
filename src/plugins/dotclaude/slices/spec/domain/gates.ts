@@ -2,6 +2,8 @@
 // A gate runs no process and reads no file: the caller gives the exit status, the SHAs, and the branch facts.
 // Plain data and pure functions only.
 
+import type { StateEvent } from "../../../../../kernel/spec-store.ts";
+import { verifyFailed } from "./events.ts";
 import type { ChangeState, PackageState } from "./states.ts";
 
 /** The result of a gate: `ok`, or the reason that the transition is refused. */
@@ -23,6 +25,8 @@ export interface ImplementFacts {
   readonly depsDone: boolean;
   /** The number of `[NEEDS CLARIFICATION: ...]` markers that are open in the change. */
   readonly openMarkers: number;
+  /** The events of the package, in the order of the log. */
+  readonly events?: readonly StateEvent[];
   readonly note?: string;
   readonly decision?: "fix-code" | "revise-spec";
 }
@@ -31,17 +35,23 @@ export interface ImplementFacts {
  * The gate of `implement`.
  * From `planned`, the change must be `planned` or `implementing`, each dependency must be `done`, and no marker may be open.
  * From `blocked`, a note is needed.
- * From `doing`, after a failed `verify`, a `decision` is needed.
+ * From `doing`, the last event of the package must be a failed `verify` or a `reject`, and a `decision` is needed.
  */
 export const gateImplement = (facts: ImplementFacts): GateResult => {
   if (facts.from === "blocked")
     return facts.note?.trim()
       ? PASS
       : refuse("`implement` from `blocked` needs a `--note`.");
-  if (facts.from === "doing")
+  if (facts.from === "doing") {
+    const events = facts.events ?? [];
+    if (!verifyFailed(events) && events.at(-1)?.verdict !== "reject")
+      return refuse(
+        "`implement` from `doing` needs a failed `verify` or a `reject` as the last event of the package.",
+      );
     return facts.decision !== undefined
       ? PASS
       : refuse("`implement` after a failed `verify` needs a `--decision`.");
+  }
   if (facts.change !== "planned" && facts.change !== "implementing")
     return refuse("The change must be `planned` or `implementing`.");
   if (!facts.depsDone) return refuse("Each dependency must be `done`.");
@@ -75,17 +85,18 @@ export const gateVerify = (facts: VerifyFacts): GateResult => {
 export const verifyTarget = (exit: number): PackageState =>
   exit === 0 ? "verified" : "doing";
 
-/** The facts of `review <package> approve`: the SHA of the last `verify` event, and the SHA of the approval. */
+/** The facts of `review <package> approve`: the last `verify` event of the package, or undefined when it has none. */
 export interface ApproveFacts {
-  readonly verifySha: string | undefined;
-  readonly approveSha: string;
+  readonly verify: StateEvent | undefined;
 }
 
-/** The gate of `approve`: the approval records the SHA of the last `verify` event. */
+/** The gate of `approve`: the last `verify` event must have the exit status `0` and a SHA, which the approval records. */
 export const gateApprove = (facts: ApproveFacts): GateResult =>
-  facts.verifySha !== undefined && facts.verifySha === facts.approveSha
+  facts.verify?.verify?.exit === 0 && (facts.verify.sha ?? "") !== ""
     ? PASS
-    : refuse("`approve` must record the SHA of the last `verify` event.");
+    : refuse(
+        "`approve` needs a last `verify` event with the exit status `0` and a SHA.",
+      );
 
 /** The facts of `reject`: the findings and the decision. */
 export interface RejectFacts {

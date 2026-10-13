@@ -91,7 +91,7 @@ describe("implement", () => {
     const root = await plannedChange();
     await phase(root, "drop", "c1", "--reason", "no");
     expect((await phase(root, "implement", "P1")).code).toBe(1);
-    expect(await status(root)).toBe("planned");
+    expect(await status(root)).toBe("canceled");
   });
 
   test("a done package, and an unknown package, are refused", async () => {
@@ -434,7 +434,7 @@ describe("drop", () => {
       note: "stop",
     });
     expect(await frontKey(root, changeFile("c1"), "status")).toBe("canceled");
-    expect(await status(root)).toBe("planned");
+    expect(await status(root)).toBe("canceled");
   });
 
   test("a canceled change cannot be dropped again", async () => {

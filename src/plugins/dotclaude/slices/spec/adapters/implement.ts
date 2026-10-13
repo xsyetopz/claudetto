@@ -3,6 +3,7 @@
 // From `blocked`, a `--note` is needed. From `doing`, after a failed `verify` or a `reject`, a `--decision` is needed.
 // The first `implement` of a package moves the change from `planned` to `implementing`.
 
+import { eventsOf } from "../domain/events.ts";
 import { gateImplement } from "../domain/gates.ts";
 import { hasTransition, PACKAGE_TRANSITIONS } from "../domain/states.ts";
 import { parseArgs } from "./args.ts";
@@ -49,6 +50,7 @@ export const implementCommand = async (
     change,
     depsDone: (file?.deps ?? []).every((dep) => states[dep] === "done"),
     openMarkers: await openMarkers(run.store, id),
+    events: eventsOf(events, pkg),
     ...evidence({
       note,
       decision: isDecision(decision) ? decision : undefined,
