@@ -3,6 +3,7 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
+import { fileReader } from "../../../src/kernel/node/fs.ts";
 import { main } from "../../../src/plugins/dotclaude/slices/statusline/adapters/cli.ts";
 import { tmpDir } from "../../support/repo.ts";
 import { depsFor, type Run, STATUS } from "./support.ts";
@@ -45,7 +46,10 @@ const rowsFor = async (root: string): Promise<Run> => {
   };
   run.status = await main(
     [],
-    depsFor(input, run, { env: { COLUMNS: "124", NO_COLOR: "1" } }),
+    depsFor(input, run, {
+      env: { COLUMNS: "124", NO_COLOR: "1" },
+      files: fileReader,
+    }),
   );
   return run;
 };

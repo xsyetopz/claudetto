@@ -54,8 +54,13 @@ It gives the causes of two findings of the sandbox check, the decision, and the 
 
 - `$.fs.read` rejects a file over 4 MiB.
   The largest local transcript is 3.85 MB, and none is over 4 MiB.
-  A larger transcript gives no text, so the stamp is written at each start, as before.
-  The first-row rule of the report keeps that duplicate out of the build.
+  The stamp now calls `$.fs.exists` before it reads.
+  A transcript that exists and cannot be read gives no stamp, so a long session gets no new row at each resume.
+  A missing transcript, as in a new session, still gets a stamp.
+- With neither `CLAUDE_CONFIG_DIR` nor `HOME` set, the code cannot find the transcript.
+  It takes the missing-transcript path, so the stamp is written at each start.
+  This is kept on purpose, because the code has no folder to read.
+  The fix does not change this case.
 - The project-folder rule is not measured on Windows.
 - The live check below ran the resume on one build.
 

@@ -28,6 +28,8 @@ type Facts = {
   git: { exitCode: number; stdout: string };
   /** The text of the transcript of the session, when the file exists. */
   transcript?: string;
+  /** The transcript exists, but `fs.read` rejects it, as it does for a file over 4 MiB. */
+  oversized?: boolean;
 };
 
 /** The answer of one `process.run`. */
@@ -82,6 +84,13 @@ const stub = (on: On, facts: Facts) => {
     if (file === TRANSCRIPT && facts.transcript !== undefined)
       return { value: facts.transcript };
     throw new Error(`no file at ${e.path}`);
+  });
+  on("fs.exists", (_$, e) => {
+    const file = e.path.replaceAll("\\", "/");
+    const present =
+      file === TRANSCRIPT &&
+      (facts.transcript !== undefined || facts.oversized === true);
+    return { value: present };
   });
   on("process.run", (_$, e) => {
     if (!e.argv.includes("rev-parse")) throw new Error(`no run of ${e.argv}`);
@@ -257,6 +266,21 @@ test("a resumed session whose newest stamp row has another build appends a stamp
       stampLine("1.0.0", "fedcba9"),
     ].join("\n"),
   });
+  await start($);
+  expect(records(session)).toMatchObject([
+    { version: "1.0.0", sha: "0123456" },
+  ]);
+});
+
+test("a resumed session whose transcript is over 4 MiB appends no stamp", async ($: Engine, on: On) => {
+  // `fs.read` rejects the file, but `fs.exists` finds it, so its stamps cannot be read and no stamp is written.
+  const session = stub(on, { ...CURRENT, oversized: true });
+  await start($);
+  expect(records(session)).toStrictEqual([]);
+});
+
+test("a new session with no transcript file appends a stamp", async ($: Engine, on: On) => {
+  const session = stub(on, CURRENT);
   await start($);
   expect(records(session)).toMatchObject([
     { version: "1.0.0", sha: "0123456" },

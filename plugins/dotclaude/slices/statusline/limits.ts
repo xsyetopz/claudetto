@@ -8,6 +8,9 @@ export const REFRESH_SECONDS = 1;
 /** The time that the one `git status` call can take. */
 export const GIT_TIMEOUT_MS = 1_500;
 
+/** The time, in milliseconds, that a `git status` result stays in the cache of the git segment. The status line runs every `REFRESH_SECONDS`, so a 3-second window runs `git` at most once in three refreshes, and a commit or an edit shows within 3 seconds. A shorter window saves less `git` time, and a longer one shows a stale branch for longer. */
+export const GIT_CACHE_MS = 3_000;
+
 /** The most rows of the main status line. */
 export const MAX_ROWS = 3;
 
