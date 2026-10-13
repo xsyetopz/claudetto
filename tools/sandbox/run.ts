@@ -2,7 +2,7 @@
 // The arguments of this script go to `dotclaude-sandbox` before the plugin folders.
 
 import path from "node:path";
-import { has, pluginDirs, REPO } from "./recipes.ts";
+import { has, pluginDirs, REPO } from "../recipes.ts";
 
 const dirs = pluginDirs()
   .filter((dir) => has(dir, ".claude-plugin", "plugin.json"))

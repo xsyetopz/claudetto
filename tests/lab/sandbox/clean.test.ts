@@ -50,6 +50,15 @@ test("`--clean` refuses a folder that holds only `config/` and `project/` and no
   expect(fs.existsSync(path.join(root, "project"))).toBe(true);
 });
 
+test("`--clean` of a missing folder exits 0 and makes no folder", async () => {
+  const root = path.join(scratch, "missing");
+
+  const code = await main(["--dir", root, "--clean"]);
+
+  expect(code).toBe(0);
+  expect(fs.existsSync(root)).toBe(false);
+});
+
 test("`--clean` refuses an empty folder that is not the default", async () => {
   const root = path.join(scratch, "mount");
   fs.mkdirSync(root);

@@ -17,11 +17,13 @@ Use it to see a hook, the status line, or an agent work in a real session before
 | --- | --- | --- |
 | `just sandbox` | `dotclaude-sandbox` in the temp folder, kept until you clean it | Each folder of `plugins/` that has `.claude-plugin/plugin.json` |
 | `just sandbox-alone PLUGIN` | `/tmp/dotclaude-sandbox-alone`, removed and made again on each run | Only `PLUGIN` |
+| `just sandbox-install [PLUGIN...]` | `/tmp/dotclaude-sandbox-install`, removed and made again on each run | Each `PLUGIN`, or `dotclaude` when you give none, installed from this checkout |
+| `just sandbox-installed [ARGS]` | `/tmp/dotclaude-sandbox-install`, kept | The plugins that `just sandbox-install` installed |
 | `just sandbox-clean` | Removes the temp folder of `just sandbox` | None |
 
 - Arguments after `just sandbox` or `just sandbox-alone PLUGIN` go to `claude`.
   For example, `just sandbox -p "prompt"` runs one headless turn and prints the reply.
-- `just sandbox` runs `tools/sandbox.ts`.
+- `just sandbox` runs `tools/sandbox/run.ts`.
   That script runs `plugins/dotclaude-lab/bin/dotclaude-sandbox`.
 - `just sandbox-alone` runs the same bin two times.
   The first run removes the folder.
@@ -30,6 +32,25 @@ Use it to see a hook, the status line, or an agent work in a real session before
   You can also run `bun plugins/dotclaude-lab/bin/dotclaude-sandbox --plugin-dir plugins/dotclaude-docs` in its place.
 - `just debug-agents` runs one headless session with a debug log.
   The command fails when the log names an unknown frontmatter field.
+
+## Test an Install
+
+`just sandbox` and `just sandbox-alone` load the plugin folders with `--plugin-dir`.
+A user installs the plugins from the marketplace instead.
+`just sandbox-install` tests that path before a release:
+
+1. Run `just sandbox-install`, or name the plugins, such as `just sandbox-install dotclaude dotclaude-docs`.
+   The script removes the folder, and it runs `claude plugin marketplace add` with this checkout.
+   Then it runs `claude plugin install NAME@dotclaude` for each plugin, and it starts Claude Code.
+2. In the session, run `/dotclaude:setup`, then `/exit`.
+3. Run `just sandbox-installed` to start the session again with the settings of the setup.
+   Add `--continue` to continue the last session.
+
+- Claude Code reads each plugin of a local marketplace from its folder in the checkout.
+  So after `just generate`, an edit takes effect at the next session start or at `/reload-plugins`.
+  `claude plugin update` says that it has nothing to update.
+- The install does not fetch from GitHub.
+  That step runs only for a marketplace that a user adds from GitHub.
 
 ## Where the Sandbox Lives
 
@@ -227,6 +248,7 @@ Then read that file.
    The setup writes the marker into each folder that it makes.
    `--clean` of a folder other than the default one refuses a folder without the marker.
    A folder that an older sandbox made has no marker, so remove it by hand.
+4. For `just sandbox-install`, run `bun plugins/dotclaude-lab/bin/dotclaude-sandbox --dir /tmp/dotclaude-sandbox-install --clean`.
 
 A sandbox session also writes into your checkout.
 Claude Code writes `.claude-plugin/types/` and a `tsconfig.json` into each plugin folder that it loads, and git ignores them.

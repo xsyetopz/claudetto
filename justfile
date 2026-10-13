@@ -33,12 +33,20 @@ ci: lint test validate lab
 
 # Run Claude Code with the plugins of this checkout, in a sandbox config apart from yours; extra arguments go to claude
 sandbox *args:
-    bun tools/sandbox.ts "$@"
+    bun tools/sandbox/run.ts "$@"
 
 # Run Claude Code with only the plugin folder PLUGIN, in a new sandbox config with no settings, apart from `just sandbox`; extra arguments go to claude (-p "prompt")
 sandbox-alone plugin *args:
     bun plugins/dotclaude-lab/bin/dotclaude-sandbox --dir /tmp/dotclaude-sandbox-alone --clean
     bun plugins/dotclaude-lab/bin/dotclaude-sandbox --dir /tmp/dotclaude-sandbox-alone --plugin-dir "$@"
+
+# Install plugins of this checkout (default: dotclaude) into a new sandbox config with `claude plugin install`, as a user installs them, then run Claude Code there
+sandbox-install *plugins:
+    bun tools/sandbox/install.ts "$@"
+
+# Run Claude Code again in the sandbox config of `just sandbox-install`, with no new install; extra arguments go to claude (--continue)
+sandbox-installed *args:
+    bun plugins/dotclaude-lab/bin/dotclaude-sandbox --dir /tmp/dotclaude-sandbox-install "$@"
 
 # Remove the sandbox config and project
 sandbox-clean:
@@ -93,7 +101,7 @@ eval-variant ref *args:
 
 # Run one headless sandbox session with a debug log, and fail when the log names an unknown frontmatter field
 debug-agents:
-    bun tools/sandbox.ts --check-frontmatter
+    bun tools/sandbox/run.ts --check-frontmatter
 
 # Capture and measure the start of a clean sandbox session: send one prompt, then type /exit; extra arguments go to the script (--port N, --dir DIR)
 start-run *args:

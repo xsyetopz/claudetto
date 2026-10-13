@@ -68,8 +68,13 @@ export const main = async (argv: string[]): Promise<number> => {
     return 0;
   }
   if (args[0] === "--clean") {
+    // A missing folder has nothing to remove, so `just sandbox-alone` runs on its first use.
+    if (!fs.existsSync(root)) {
+      console.log(`Nothing to remove: ${root} does not exist.`);
+      return 0;
+    }
     const isDefault = root === path.resolve(os.tmpdir(), SANDBOX_TEMP);
-    const entries = fs.existsSync(root) ? fs.readdirSync(root) : [];
+    const entries = fs.readdirSync(root);
     const refusal = cleanRefusal(root, entries, isDefault);
     if (refusal) {
       console.error(refusal);

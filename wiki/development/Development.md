@@ -34,6 +34,8 @@ Each recipe runs from the repository root.
 | `just ci` | Runs lint, test, check, and lab. It is the gate of the CI `check` job. |
 | `just sandbox [ARGS]` | Runs Claude Code with this checkout as its plugin, in a separate config. See [Sandbox](Sandbox). |
 | `just sandbox-alone PLUGIN [ARGS]` | Runs Claude Code with only the plugin folder `PLUGIN`, in a new config with no settings. |
+| `just sandbox-install [PLUGIN...]` | Installs plugins of this checkout with `claude plugin install` into a new config, as a user installs them, then runs Claude Code there. |
+| `just sandbox-installed [ARGS]` | Runs Claude Code again in the config of `just sandbox-install`, with no new install. |
 | `just sandbox-clean` | Removes the sandbox config and project. |
 | `just capture [ARGS]` | Logs the requests of Claude Code through a local proxy, and sizes the first request. |
 | `just measure [SESSION.jsonl]` | Sizes the start of a session, and exits 1 above the start bounds of `tools/limits.ts`. |
