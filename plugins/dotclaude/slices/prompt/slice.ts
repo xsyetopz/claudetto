@@ -52,7 +52,6 @@ export const slice = {
     $schema:
       "https://raw.githubusercontent.com/xsyetopz/dotclaude/main/schemas/claude-code-settings.json",
     env: {
-      CLAUDE_CODE_ATTRIBUTION_HEADER: "0",
       CLAUDE_CODE_AUTO_COMPACT_WINDOW: "300000",
       CLAUDE_CODE_AUTO_CONNECT_IDE: "false",
       CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY: "1",

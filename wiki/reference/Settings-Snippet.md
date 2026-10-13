@@ -53,7 +53,6 @@ A test fails when the block holds a key of the [never-set list](Off-Switches#nev
   "syncClaudeAiSkills": false,
   "syncClaudeAiPlugins": false,
   "env": {
-    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
     "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000",
     "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
     "CLAUDE_CODE_DISABLE_ADVISOR_TOOL": "1",
