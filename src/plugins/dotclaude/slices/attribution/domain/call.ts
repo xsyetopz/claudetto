@@ -83,7 +83,8 @@ const bodyEdit = (word: Word, line: string): Edit | undefined => {
 
 /**
  * The command after the attribution, or undefined when no part of it changes.
- * A line that the command already holds is not added again, and an empty line is off.
+ * A line that the part of the command for the same commit or pull request already holds is not added again, and an empty line is off.
+ * That part runs from the first word of the command to the first word of the next command, so a chain gives each commit its own line.
  * `--trailer` goes right after `commit`, so it comes before any heredoc or message option.
  */
 export const attributeCommand = (
@@ -93,14 +94,17 @@ export const attributeCommand = (
   const commands = simpleCommands(command);
   if (commands === null) return undefined;
   const edits: Edit[] = [];
-  for (const words of commands) {
+  for (const [i, words] of commands.entries()) {
+    const from = words[0]?.start ?? 0;
+    const to = commands[i + 1]?.[0]?.start ?? command.length;
+    const part = command.slice(from, to);
     const commit = commitWord(words);
-    if (commit && lines.commit && !command.includes(lines.commit)) {
+    if (commit && lines.commit && !part.includes(lines.commit)) {
       const text = ` --trailer "${inDouble(lines.commit)}"`;
       edits.push({ from: commit.end, to: commit.end, text });
     }
     const body = bodyWord(words);
-    if (body && lines.pr && !command.includes(lines.pr)) {
+    if (body && lines.pr && !part.includes(lines.pr)) {
       const edit = bodyEdit(body, lines.pr);
       if (edit) edits.push(edit);
     }

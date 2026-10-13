@@ -148,6 +148,14 @@ test("no command is a usage error with status 2 and no log file", async () => {
   expect(fs.existsSync(path.join(dir, CHECKS_DIR))).toBe(false);
 });
 
+test("an empty argument is a usage error with status 2, and no command runs", async () => {
+  const dir = await project();
+  const r = await run(dir, "", "bun ok.js");
+  expect(r.status).toBe(2);
+  expect(r.out).toBe("");
+  expect(fs.existsSync(path.join(dir, CHECKS_DIR))).toBe(false);
+});
+
 test("two runs in the same second write two log files", async () => {
   const dir = await project();
   await run(dir, "bun ok.js");

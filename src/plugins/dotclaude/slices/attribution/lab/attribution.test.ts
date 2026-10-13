@@ -66,6 +66,30 @@ test("a message that already holds the trailer keeps its command", async ($: Eng
   expect(seen[0]).toBe(command);
 });
 
+test("a chain whose first commit holds the trailer still gives the trailer to the second commit", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash(
+    $,
+    `git commit -m "Fix it.\n\n${TRAILER}" && git commit -m "Next."`,
+  );
+  expect(seen[0]).toBe(
+    `git commit -m "Fix it.\n\n${TRAILER}" && git commit --trailer "${TRAILER}" -m "Next."`,
+  );
+});
+
+test("a chain whose first pull request holds the line still gives the line to the second one", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash(
+    $,
+    `gh pr create --body "A.\n\n${PR}" && gh pr create --body "B."`,
+  );
+  expect(seen[0]).toBe(
+    `gh pr create --body "A.\n\n${PR}" && gh pr create --body "B.\n\n${PR}"`,
+  );
+});
+
 test("an empty `commit` setting turns the commit line off", async ($: Engine, on: On) => {
   const seen: string[] = [];
   engine(on, { seen, settings: { attribution: { commit: "" } } });
