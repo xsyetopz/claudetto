@@ -277,3 +277,65 @@ test("the proxy stops with an error when `ANTHROPIC_BASE_URL` is its own address
   );
   expect(r.exitCode).toBe(1);
 });
+
+test("a `/v1/messages` body that is not JSON is forwarded unchanged and not saved", async () => {
+  const up = await fakeUpstream();
+  const out = tmpDir("capture");
+  const { child, base } = await startProxy(up.url, out);
+  try {
+    const res = await fetch(`${base}/v1/messages`, {
+      method: "POST",
+      headers: { "content-type": "text/plain" },
+      body: "this is not JSON {",
+    });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toStrictEqual({ ok: true });
+    expect((up.seen[0] as Seen).body).toBe("this is not JSON {");
+    expect(
+      fs.readdirSync(out).filter((f) => f.startsWith("request-")),
+    ).toStrictEqual([]);
+  } finally {
+    child.kill();
+    up.server.stop();
+  }
+});
+
+test("`--port` that is not a whole number from 1 to 65535 stops the proxy with exit 2", () => {
+  const dir = tmpDir("capture-port");
+  for (const port of ["abc", "0", "65536", "-1", "1.5", "--clean"]) {
+    const r = Bun.spawnSync([
+      process.execPath,
+      "--no-env-file",
+      TOOL,
+      "--port",
+      port,
+      "--out",
+      dir,
+      "--upstream",
+      "http://127.0.0.1:9",
+    ]);
+    expect(r.exitCode).toBe(2);
+  }
+});
+
+test("`--count FILE` that is not JSON stops the proxy with exit 1 and names the file", async () => {
+  const port = await freePort();
+  const dir = tmpDir("capture");
+  const file = path.join(dir, "request.json");
+  fs.writeFileSync(file, "{ not json");
+  const r = Bun.spawnSync([
+    process.execPath,
+    "--no-env-file",
+    TOOL,
+    "--port",
+    String(port),
+    "--out",
+    dir,
+    "--upstream",
+    "http://127.0.0.1:9",
+    "--count",
+    file,
+  ]);
+  expect(r.exitCode).toBe(1);
+  expect(Buffer.from(r.stderr).toString("utf8")).toContain(file);
+});

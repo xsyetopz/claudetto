@@ -275,9 +275,9 @@ test("`--days` drops the old calls of a file that was written lately", async () 
   expect(r.output.messages).toBe(1);
 });
 
-test("a window with no transcript gives an empty report", async () => {
-  const root = await fixture();
-  const r = run(root, "--days", "0.001");
+test("a window with no transcript gives an empty report", () => {
+  // `--days` takes whole days, so the empty folder is the window with no transcript.
+  const r = run(tmpDir("usage-empty"), "--days", "1");
   expect(r.total).toBe(0);
   expect(r.byAgent).toStrictEqual([]);
   expect(r.cacheHitRate.all).toBe(null);

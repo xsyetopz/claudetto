@@ -1,0 +1,10 @@
+// The bounds of the `dotclaude-capture` sizing of a request.
+
+/** The most parts of one request that get a `count_tokens` call. The parts past it are not counted. */
+export const MAX_PART_COUNTS = 64;
+
+/** The most attempts of one `count_tokens` call when the endpoint answers HTTP 429. */
+export const COUNT_ATTEMPTS = 4;
+
+/** The wait in milliseconds before the second attempt. Each later wait is twice the one before. */
+export const COUNT_BACKOFF_MS = 500;

@@ -40,6 +40,15 @@ const passHeaders = (headers: Headers): Headers => {
   return kept;
 };
 
+/** The body as JSON, or `null` when it is not JSON. */
+const parseBody = (raw: Buffer): Body | null => {
+  try {
+    return JSON.parse(raw.toString("utf8")) as Body;
+  } catch {
+    return null;
+  }
+};
+
 /** Sizes one request, writes DIR/report-<n>.json, and prints the lines. */
 const sizeTo = async (
   upstream: string,
@@ -75,7 +84,14 @@ export const main = async (
     const i = args.indexOf(name);
     return i === -1 ? fallback : (args[i + 1] ?? null);
   };
-  const port = Number(flag("--port", "8787"));
+  const portArg = flag("--port", "8787") ?? "";
+  const port = /^\d+$/.test(portArg) ? Number(portArg) : 0;
+  if (port < 1 || port > 65535) {
+    console.error(
+      `capture: --port needs a whole number from 1 to 65535, not "${portArg}".`,
+    );
+    return 2;
+  }
   const out = flag(
     "--out",
     path.join(env["TMPDIR"] || os.tmpdir(), CAPTURE_TEMP),
@@ -94,6 +110,18 @@ export const main = async (
   }
   const count = !args.includes("--no-count");
   const recount = flag("--count", null);
+  // The file is read before the proxy listens, so a file that is not JSON stops the run.
+  let recounted: Body | null = null;
+  if (recount !== null) {
+    try {
+      recounted = JSON.parse(fs.readFileSync(recount, "utf8")) as Body;
+    } catch (e) {
+      console.error(
+        `capture: cannot read ${recount} as a JSON request: ${(e as Error).message}`,
+      );
+      return 1;
+    }
+  }
   fs.mkdirSync(out, { recursive: true });
 
   // Each run numbers its files from a new stamp, so a run never overwrites another.
@@ -117,39 +145,45 @@ export const main = async (
       req.method === "GET" || req.method === "HEAD"
         ? undefined
         : Buffer.from(await req.arrayBuffer());
-    if (recount && !counted && raw) {
+    if (recounted && !counted && raw) {
       counted = true;
-      const body = JSON.parse(await Bun.file(recount).text()) as Body;
       sizeTo(
         upstream,
         out,
         `${run}-file`,
-        body,
+        recounted,
         passHeaders(req.headers),
         url.search,
       ).catch(fail(`${run}-file`));
     }
+    // A body that is not JSON is forwarded unchanged, and only its save and its sizing are skipped.
     if (url.pathname === "/v1/messages" && raw) {
-      const n = `${run}-${++seen}`;
-      const body = JSON.parse(raw.toString("utf8")) as Body;
-      await Bun.write(
-        path.join(out, `request-${n}.json`),
-        `${JSON.stringify(body, null, 2)}\n`,
-      );
-      console.log(
-        `request ${n}: ${body.model}, ${raw.byteLength} bytes, saved`,
-      );
-      // The main loop sends the first request with tools.
-      if (count && !counted && body.tools?.length) {
-        counted = true;
-        sizeTo(
-          upstream,
-          out,
-          n,
-          body,
-          passHeaders(req.headers),
-          url.search,
-        ).catch(fail(n));
+      const body = parseBody(raw);
+      if (body === null)
+        console.error(
+          "capture: a /v1/messages body is not JSON, so it is forwarded and not saved.",
+        );
+      else {
+        const n = `${run}-${++seen}`;
+        await Bun.write(
+          path.join(out, `request-${n}.json`),
+          `${JSON.stringify(body, null, 2)}\n`,
+        );
+        console.log(
+          `request ${n}: ${body.model}, ${raw.byteLength} bytes, saved`,
+        );
+        // The main loop sends the first request with tools.
+        if (count && !counted && body.tools?.length) {
+          counted = true;
+          sizeTo(
+            upstream,
+            out,
+            n,
+            body,
+            passHeaders(req.headers),
+            url.search,
+          ).catch(fail(n));
+        }
       }
     }
     // A client that goes away, such as an Esc in Claude Code, ends the upstream request too.

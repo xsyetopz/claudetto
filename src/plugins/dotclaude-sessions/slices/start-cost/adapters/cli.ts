@@ -57,6 +57,14 @@ export const main = async (
     return 0;
   }
   const valued = ["--bound", "--text-min", "--text-max"];
+  for (const name of valued) {
+    const at = args.indexOf(name);
+    const value = at < 0 ? "" : (args[at + 1] ?? "");
+    if (at >= 0 && !/^\d+$/.test(value)) {
+      console.error(`${name} needs a whole number, not "${value}".`);
+      return 2;
+    }
+  }
   const root = env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), ".claude");
   const file =
     args.find(
