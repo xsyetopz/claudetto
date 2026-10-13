@@ -166,6 +166,20 @@ test("a missing cache folder is made with mode `0700` and used", () => {
   expect(fs.statSync(folder).mode & 0o777).toBe(0o700);
 });
 
+test("with no user id, as on Windows, the cache folder is `dotclaude-git` in the temp folder", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "git-cache-"));
+  const file = cacheFile(STATUS.workspace.current_dir, root, null);
+  expect(file === null ? null : path.dirname(file)).toBe(
+    path.join(root, "dotclaude-git"),
+  );
+});
+
+test("with no user id, a link in place of the cache folder is no cache folder", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "git-cache-"));
+  fs.symlinkSync(root, path.join(root, "dotclaude-git"));
+  expect(cacheFile(STATUS.workspace.current_dir, root, null)).toBeNull();
+});
+
 test("a cache file whose branch holds terminal escape codes is no cache, and `git` runs", async () => {
   const forged = JSON.stringify({
     at: NOW,

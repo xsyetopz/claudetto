@@ -104,7 +104,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ### Changed
 
-- The git segment of the status line keeps its cache in a folder of this user, `dotclaude-git-<uid>` in the temp folder, which only the user can write.
+- The git segment of the status line keeps its cache in a folder of this user, `dotclaude-git-<uid>` in the temp folder, which only the user can write, or `dotclaude-git` when no user id exists, as on Windows.
   Before, the cache file was in the shared temp folder, so another user could plant a result at its predictable name.
   A folder with another owner, or with group or other mode bits, is no cache, so `git` runs.
 - The `archive` command of `dotclaude-spec` exits with `0` when the archive is done and only the removal of `.dotclaude/spec/.specs-old` fails.

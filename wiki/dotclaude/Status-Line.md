@@ -30,6 +30,8 @@ The rows are set in `segments.ts`, and each segment has a row number.
   The files are in the folder `dotclaude-git-<uid>` of the temp folder.
   The folder is made with mode `0700`.
   A folder with another owner, or with group or other mode bits, is not used, so `git` runs at each refresh.
+  With no user id, as on Windows, the folder is `dotclaude-git`, because the temp folder there is a folder of the user.
+  A link in place of the folder is not used.
   So `git` runs at most once in three refreshes, and a commit shows in 3 seconds or less.
   A saved result with a field of the wrong type, or a branch name with a control character, is no cache, so `git` runs.
 - The change segment shows the id and the done and total count of the active change.
