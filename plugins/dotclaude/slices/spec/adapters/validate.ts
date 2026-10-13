@@ -146,7 +146,7 @@ const packageProblems = async (
   return out;
 };
 
-/** The problems of a package ID that more than one open change has. With `only`, only the IDs of that change. */
+/** The problems of a package ID that more than one change has as an open package. With `only`, only the IDs of that change. */
 const sharedIdProblems = async (
   store: SpecStore,
   only: string | undefined,
@@ -156,8 +156,10 @@ const sharedIdProblems = async (
     const events = await store.events(id).catch(() => null);
     if (events && isClosed(lastState(events, undefined, CHANGE_INITIAL)))
       continue;
+    const states = events ? await store.states(id, events) : {};
     for (const p of await readPackages(store, id))
-      owners.set(p.id, [...(owners.get(p.id) ?? []), id]);
+      if (!isClosed(states[p.id] ?? PACKAGE_INITIAL))
+        owners.set(p.id, [...(owners.get(p.id) ?? []), id]);
   }
   return [...owners]
     .filter(
@@ -165,7 +167,7 @@ const sharedIdProblems = async (
     )
     .map(
       ([pkg, ids]) =>
-        `${SPEC_ROOT}: the package \`${pkg}\` is in these open changes: ${ids.join(", ")}.`,
+        `${SPEC_ROOT}: the package \`${pkg}\` is open in these changes: ${ids.join(", ")}.`,
     );
 };
 
