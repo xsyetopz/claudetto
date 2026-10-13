@@ -236,7 +236,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
 - [ ] P42 Agent roster: `debugger` moves to Opus 5.5 `medium`, and no agent has a `maxTurns` ([package](packages/42-agent-roster.md), decisions, the user, 2026-10-13).
   Deps: none.
   Verify: `just check`, `just lab`, and one session in `just sandbox` that starts each agent once.
-- [ ] P44 Advisor opt-in: the `trim` slice stops turning off the advisor, and `/dotclaude:setup` sets `advisorModel` only when the user asks ([package](packages/44-advisor-opt-in.md), [evidence](evidence/advisor.md), the user, 2026-10-13).
+- [x] P44 Advisor opt-in: the `trim` slice stops turning off the advisor, and `/dotclaude:setup` sets `advisorModel` only when the user asks ([package](packages/44-advisor-opt-in.md), [evidence](evidence/advisor.md), the user, 2026-10-13).
   Deps: none.
   Verify: `just check`, `just lab`, and one session in `just sandbox-install`.
 - [ ] P46 Spec commands: `show`, `list`, `lane --note`, `review`, `retry`, `drop`, `deps`, and `log` ([package](packages/46-spec-commands.md), the user, 2026-10-13).
