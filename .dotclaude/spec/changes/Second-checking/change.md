@@ -23,6 +23,7 @@ In scope:
   the notice of `dcc-plugin-you-should-know`, which did not pop up and did not let the user expand the note (P06),
   and the calls of `just validate` and `just lab` to `http-intake.logs.us5.datadoghq.com`, which the sandbox denied (P02).
 - Three decisions of the user (2026-10-13) on the open candidates of P01: repair a torn last line of `events.jsonl` (P04), make the write asks fail closed on a truncated command (P04), and retry the Windows rename of `writeAtomic`, with a test that the Windows CI runs (P01).
+- Four answers of the user (2026-10-13) on the status line (P09): `↻` before the reset time, the run-out clock `⏵`, two rows for `5h` and `7d` where the layout fits, and percent colors from the projected use. The usage bars stay out.
 
 Out of scope:
 
@@ -45,6 +46,8 @@ A candidate that no test can show is recorded in `evidence/` as rejected, with t
 - [ ] T4 Second-check the guard, asks, spec, and sembr slices: path separators and substitutions. Repair a torn last line of `events.jsonl`, and make the write asks fail closed on a truncated command.
   Verify: `just test tests/dotclaude/guard tests/dotclaude/asks tests/dotclaude/spec tests/kernel && just lab`
 - [ ] T8 Restore the pace arrows of the status line, add the ` · ` separators, and check the parse of stdin and of the git cache.
+  Verify: `just test tests/dotclaude/statusline && just lab`
+- [ ] T9 Put back `↻` and the run-out clock `⏵` of the usage windows, put `5h` and `7d` on two rows where the layout fits, and color each percent by its projected use at the end of the window.
   Verify: `just test tests/dotclaude/statusline && just lab`
 - [ ] T5 Second-check the setup, rules, handoff, and stamp slices: the atomic settings write and the exclude append.
   Verify: `just test tests/dotclaude/setup && just lab`
