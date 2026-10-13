@@ -30,7 +30,7 @@ const modeOf = (dir: string, file: string): number =>
   fs.statSync(path.join(dir, file)).mode & 0o777;
 
 test("a launcher and an eval script with no `+x` get one message each, and a text file gets none", async () => {
-  const found = modeProblems(await rootWithText(), MADE);
+  const found = modeProblems(await rootWithText(), MADE, "linux");
   expect(found).toHaveLength(2);
   expect(found.some((line) => line.startsWith("plugins/q/bin/tool "))).toBe(
     true,
@@ -38,6 +38,20 @@ test("a launcher and an eval script with no `+x` get one message each, and a tex
   expect(
     found.some((line) => line.startsWith("plugins/q/evals/case/setup.sh ")),
   ).toBe(true);
+});
+
+test("on Windows, the check reads `+x` from the git index, so only a program with the index mode `100644` gets a message", async () => {
+  const dir = await rootWithText();
+  const git = (...args: string[]): void => {
+    const run = Bun.spawnSync(["git", ...args], { cwd: dir });
+    if (run.exitCode !== 0) throw new Error(`git ${args.join(" ")} failed`);
+  };
+  git("init", "--quiet");
+  git("add", "--chmod=-x", "--", "plugins");
+  git("update-index", "--chmod=+x", "--", "plugins/q/bin/tool");
+  const found = modeProblems(dir, MADE, "win32");
+  expect(found).toHaveLength(1);
+  expect(found[0]).toStartWith("plugins/q/evals/case/setup.sh ");
 });
 
 // Windows has no POSIX mode bits, so `chmod` cannot set 755, and `modeOf` reads 644 there.
