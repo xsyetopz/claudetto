@@ -12,8 +12,8 @@ The hook lab is `just lab`.
 | --- | --- | --- | --- |
 | Put `↻` before the reset time. | `limit-rows.test.ts`, the test with the glyph `↻` before the time. `clock.test.ts`, the clock forms. `narrow-rows.test.ts`, the countdown at 60 columns. | Pass. | The clock form (`↻3:12pm`, `↻Oct 14 at 4pm`) where it fits. The countdown (`↻3h12m`) where it does not. |
 | Put the run-out clock `⏵` back. | `runout.test.ts`, the run-out time after the arrow, the time of 100% at the current rate, and the three cases with no run-out time. | Pass. | The run-out time shows only when the use reaches 100% before the reset. It is `⏵` in red, after the pace arrow. |
-| Color the percent by the projected use. | `usage-color.test.ts`, five tests. | Pass. | Green when the projection stays below `PROJECTED_WARN` (75). Yellow from 75. Red above `PROJECTED_RUNOUT` (100). |
-| Use the raw percent early in the window. | `usage-color.test.ts`, the two early-window tests. | Pass. | Before `PACE_MIN_FRACTION` (3%) of the window has passed, the raw percent gives the color. |
+| Color the percent by the projected use. | `projected-color.test.ts`, five tests. | Pass. | Green when the projection stays below `PROJECTED_WARN` (75). Yellow from 75. Red above `PROJECTED_RUNOUT` (100). |
+| Use the raw percent early in the window. | `projected-color.test.ts`, the two early-window tests. | Pass. | Before `PACE_MIN_FRACTION` (3%) of the window has passed, the raw percent gives the color. |
 | Put `5h` and `7d` on two rows, aligned by field. | `limit-rows.test.ts`, three tests. | Pass. | At 124 columns, `7d` shares the folder row and `5h` shares the model row. The label, percent, arrow, `⏵`, and `↻` start in one column. |
 | Keep one row when two rows do not fit. | `narrow-rows.test.ts`, the test at 60 columns. | Pass. | At 60 columns, both windows stay in one row with countdown times. |
 
@@ -35,7 +35,7 @@ This check did not run them again.
 
 - Nine tests fail.
 - `clock.test.ts` and `runout.test.ts` fail on import, because `clock` and `paceOf` do not exist on base.
-- Two tests in `usage-color.test.ts` fail.
+- Two tests in `projected-color.test.ts` fail.
 - The early-window tests and the 124-column clock test of `narrow-rows.test.ts` pass on base, so they guard the behavior and do not show a change.
 
 ## Other changes in the commit
