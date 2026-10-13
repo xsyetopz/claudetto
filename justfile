@@ -13,8 +13,9 @@ lint:
     bun run lint
     bun run lint:md
 
-# Type-check each `.ts` file and the core hooks module (`bun check`, erasable syntax only)
+# Type-check each `.ts` file and the core hooks module (`bun check`, erasable syntax only); a linked worktree first gets the Claude Code types of the main worktree
 typecheck:
+    bun tools/types.ts
     bun run typecheck
 
 # Validate the plugin manifest, skills, and agents

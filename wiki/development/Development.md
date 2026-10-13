@@ -129,6 +129,11 @@ See [Design](Design) for the design principles.
   Git ignores these folders.
   `just check` needs them.
   CI does not.
+- A session with `-p` loads the plugins but does not write the types.
+  So a new clone gets them only from an interactive session.
+- A linked worktree has no types.
+  `just typecheck` runs `tools/types.ts` first, which copies each `.claude-plugin/types/` folder and plugin `tsconfig.json` that the worktree lacks from the main worktree.
+  When `plugins/dotclaude/.claude-plugin/types/tsconfig.json` is still missing, the script stops the type check and tells you to start an interactive session.
 - Claude Code writes the types again at each load, from the tools of that session.
   The tools can differ between sessions.
   For example, `WebSearch` had a `mode` field in one session of Claude Code `2.1.296` and none in another session with other env vars.
