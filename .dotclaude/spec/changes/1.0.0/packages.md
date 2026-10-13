@@ -223,16 +223,16 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: P33, because the hook replaces prompt text.
   Owns: the `attribution` slice, its tests, `evidence/attribution.md`, and the attribution rule of `surface/texts.ts/tool-bash.md`.
   Verify: `just check`, `just lab`, and one commit and one PR body in `just sandbox` that carry the attribution.
-- [ ] P40 `dcc-plugin-agents-md`: a new add-on gives `AGENTS.md` the support of `CLAUDE.md` in each of its places, at the token cost of the same text in `CLAUDE.md` ([package](packages/40-dcc-agents-md.md), decisions, the user, 2026-10-13).
+- [x] P40 `dcc-plugin-agents-md`: a new add-on gives `AGENTS.md` the support of `CLAUDE.md` in each of its places, at the token cost of the same text in `CLAUDE.md` ([package](packages/40-dcc-agents-md.md), decisions, the user, 2026-10-13).
   Deps: none.
   Owns: `src/plugins/dcc-plugin-agents-md/`, its tests, its marketplace entry and wiki page, and `evidence/agents-md.md`.
   Verify: `just check`, `just lab`, and one session in `just sandbox` that loads each supported `AGENTS` file.
-- [ ] P41 `dcc-plugin-you-should-know`: a new add-on shows one thing that the user should know before Claude acts on it, at one model call per turn at most: a small Haiku call with an API key, and a fork of the conversation on a subscription ([package](packages/41-dcc-you-should-know.md), decisions, the user, 2026-10-13).
+  Each nested `AGENTS` file costs 7 tokens more than a nested `CLAUDE.md`, and the wiki page says so (the user accepts it, 2026-10-13).
+- [x] P41 `dcc-plugin-you-should-know`: a new add-on shows one thing that the user should know before Claude acts on it, at one model call per turn at most: a small Haiku call, and a fork of the conversation only after an HTTP 429 ([package](packages/41-dcc-you-should-know.md), decisions, the user, 2026-10-13).
   Deps: none.
   Owns: `src/plugins/dcc-plugin-you-should-know/`, its tests, its marketplace entry and wiki page, and `evidence/you-should-know.md`.
   Verify: `just check`, `just lab`, and one session in `just sandbox` where a notice shows before the action that it is about.
-  A subscription gets HTTP 429 on `$.model.complete` and `$.model.classify` from a hook, and `$.model.fork` works, so the plugin uses `complete` with an API key and `fork` on a subscription ([evidence](evidence/you-should-know.md), the user, 2026-10-13).
-- [ ] P16 Release check: `tools/rebuild-pending.txt` is empty and deleted with its check, a `reviewer` pass on the full diff, `just check`, and one session in `just sandbox` that runs `/spec`, `/ship`, `/hotfix`, a decision, and a handoff.
+  The HTTP 429 on a subscription came from `CLAUDE_CODE_ATTRIBUTION_HEADER=0`, so the plugin uses `complete` on each account, and `fork` only after a 429 ([evidence](evidence/you-should-know.md), the user, 2026-10-13).- [ ] P16 Release check: `tools/rebuild-pending.txt` is empty and deleted with its check, a `reviewer` pass on the full diff, `just check`, and one session in `just sandbox` that runs `/spec`, `/ship`, `/hotfix`, a decision, and a handoff.
   Deps: each package above.
   Verify: the user approves the version 1.0.0 and the push.
 - [ ] P18 History: delete the tags and the GitHub releases of each older version.

@@ -131,7 +131,7 @@ Install each add-on that you need.
   See [Lab](https://github.com/xsyetopz/dotclaude/wiki/Lab).
 - `dcc-plugin-agents-md` replaces the built-in `cc-plugin-agents-md`, so turn the built-in plugin off.
   See [AGENTS.md](https://github.com/xsyetopz/dotclaude/wiki/Agents-Md).
-- `dcc-plugin-you-should-know` is opt-in, because each check makes one model call: a Haiku call with an API key, and a fork of the conversation on a subscription.
+- `dcc-plugin-you-should-know` is opt-in, because each check makes one Haiku call, on an API key or a subscription.
   It replaces the built-in `cc-plugin-you-should-know`, so turn the built-in plugin off.
   See [You should know](https://github.com/xsyetopz/dotclaude/wiki/You-Should-Know).
 
