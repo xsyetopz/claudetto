@@ -130,6 +130,19 @@ test("lane stops when two changes have the package", async () => {
   expect((await stateOf(root)).lanes["P01"]).toBe("planned");
 });
 
+test("lane moves the package of the one change where it is not done, when another change has it done", async () => {
+  const root = await makePlan([{ id: "P01" }]);
+  const other = await makePlan([{ id: "P01" }]);
+  expect((await run(other, "lane", "P01", "done")).code).toBe(0);
+  const done = path.join(root, ".dotclaude/spec/changes/c0");
+  fs.cpSync(path.join(other, CHANGE), done, { recursive: true });
+  const before = fs.readFileSync(path.join(done, "events.jsonl"), "utf8");
+  const r = await run(root, "lane", "P01", "doing");
+  expect(r.code).toBe(0);
+  expect((await stateOf(root)).lanes["P01"]).toBe("doing");
+  expect(fs.readFileSync(path.join(done, "events.jsonl"), "utf8")).toBe(before);
+});
+
 test("lane stops on a log with a schema that it does not know", async () => {
   const root = await makeStore({
     [`${CHANGE}/events.jsonl`]: eventsText({ P01: "planned" }, 2),

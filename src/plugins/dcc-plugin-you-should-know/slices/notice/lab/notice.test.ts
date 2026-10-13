@@ -1,4 +1,6 @@
 // Lab tests of the `notice` slice: the check of the first changing call of a turn, the switch to a fork after HTTP 429, and the calls that get no notice.
+// The band above the prompt is not in these tests: `just lab` cannot mount `AbovePrompt` or read the state of a plugin.
+// So each test asserts that the notice never comes out as a toast, and the model calls and verdicts.
 // The hooks sit above the stubs of the engine: the stubs answer the verdict, the model calls, and the clock, and record each toast.
 // No model call goes out, and no Claude Code session runs.
 
@@ -38,7 +40,7 @@ type World = {
   readonly decision?: ToolCheckDecision;
 };
 
-/** What the stubs saw: the prompts of each model call, and each toast. */
+/** What the stubs saw: the prompts of each model call, and each toast that the plugin raised, which must stay empty. */
 type Seen = { complete: string[]; fork: string[]; toasts: string[] };
 
 /** Stubs for one test. A model call past the end of its list answers `NONE`. */
@@ -86,11 +88,11 @@ const EDIT = {
 const TOPIC =
   "Ten tries with no delay can hit the rate limit of the API faster.";
 
-test("the first changing call of a turn shows the topic as a toast", async ($: Engine, on: On) => {
+test("the first changing call of a turn draws no toast", async ($: Engine, on: On) => {
   const { seen } = setup(on, { complete: [answered(TOPIC)] });
   await turn($, "Raise the tries to 10.", "t1");
   expect((await check($, "Edit", EDIT)).decision).toBe("allow");
-  expect(seen.toasts).toStrictEqual([TOPIC]);
+  expect(seen.toasts).toStrictEqual([]);
   expect(seen.complete[0]).toContain("Raise the tries to 10.");
   expect(seen.complete[0]).toContain("/p/src/retry.mjs");
   expect(seen.fork).toStrictEqual([]);
@@ -128,7 +130,7 @@ test("the next turn gets its own check", async ($: Engine, on: On) => {
   await turn($, "Now the delay.", "t2");
   await check($, "Edit", EDIT);
   expect(seen.complete.length).toBe(2);
-  expect(seen.toasts).toStrictEqual([TOPIC]);
+  expect(seen.toasts).toStrictEqual([]);
 });
 
 test("a call of a subagent gets no check", async ($: Engine, on: On) => {
@@ -149,7 +151,7 @@ test("a call that asks keeps its verdict and gets the check", async ($: Engine, 
   const { seen } = setup(on, { complete: [answered(TOPIC)], decision: "ask" });
   await turn($, "Raise the tries.", "t1");
   expect((await check($, "Edit", EDIT)).decision).toBe("ask");
-  expect(seen.toasts).toStrictEqual([TOPIC]);
+  expect(seen.toasts).toStrictEqual([]);
 });
 
 test("an HTTP 429 on the separate call switches the check to a fork", async ($: Engine, on: On) => {
@@ -162,7 +164,7 @@ test("an HTTP 429 on the separate call switches the check to a fork", async ($: 
   expect(seen.complete.length).toBe(1);
   expect(seen.fork.length).toBe(1);
   expect(seen.fork[0]).toContain("/p/src/retry.mjs");
-  expect(seen.toasts).toStrictEqual([TOPIC]);
+  expect(seen.toasts).toStrictEqual([]);
 });
 
 test("after a switch, the rest of the session uses only the fork", async ($: Engine, on: On) => {
@@ -176,10 +178,10 @@ test("after a switch, the rest of the session uses only the fork", async ($: Eng
   await check($, "Edit", EDIT);
   expect(seen.complete.length).toBe(1);
   expect(seen.fork.length).toBe(2);
-  expect(seen.toasts).toStrictEqual([TOPIC]);
+  expect(seen.toasts).toStrictEqual([]);
 });
 
-test("a fork with nothing to fork shows no toast", async ($: Engine, on: On) => {
+test("a fork with nothing to fork draws no toast", async ($: Engine, on: On) => {
   const nothing = {
     isAnswered: false as const,
     reason: "nothing-to-fork" as const,
@@ -191,7 +193,7 @@ test("a fork with nothing to fork shows no toast", async ($: Engine, on: On) => 
   expect(seen.toasts).toStrictEqual([]);
 });
 
-test("a fork slower than its bound shows no toast, and the call goes on", async ($: Engine, on: On) => {
+test("a fork slower than its bound draws no toast, and the call goes on", async ($: Engine, on: On) => {
   const { seen, clock } = setup(on, {
     complete: [failed(429)],
     fork: ["never"],
@@ -203,17 +205,17 @@ test("a fork slower than its bound shows no toast, and the call goes on", async 
   expect(seen.toasts).toStrictEqual([]);
 });
 
-test("a failed separate call shows no toast and does not switch to a fork", async ($: Engine, on: On) => {
+test("a failed separate call draws no toast and does not switch to a fork", async ($: Engine, on: On) => {
   const { seen } = setup(on, { complete: [failed(500), answered(TOPIC)] });
   await turn($, "Raise the tries.", "t1");
   await check($, "Edit", EDIT);
   await turn($, "Now the delay.", "t2");
   await check($, "Edit", EDIT);
   expect(seen.fork).toStrictEqual([]);
-  expect(seen.toasts).toStrictEqual([TOPIC]);
+  expect(seen.toasts).toStrictEqual([]);
 });
 
-test("a topic that showed in the session does not show again", async ($: Engine, on: On) => {
+test("a topic that showed in the session is not asked again", async ($: Engine, on: On) => {
   const { seen } = setup(on, {
     complete: [answered(TOPIC), answered(`${TOPIC.toLowerCase()}`)],
   });
@@ -221,11 +223,11 @@ test("a topic that showed in the session does not show again", async ($: Engine,
   await check($, "Edit", EDIT);
   await turn($, "Raise them more.", "t2");
   await check($, "Edit", EDIT);
-  expect(seen.toasts).toStrictEqual([TOPIC]);
+  expect(seen.toasts).toStrictEqual([]);
   expect(seen.complete[1]).toContain(TOPIC);
 });
 
-test("a topic older than the seen bound still does not show again", async ($: Engine, on: On) => {
+test("a topic older than the seen bound still is not asked again", async ($: Engine, on: On) => {
   const topics = Array.from({ length: 12 }, (_, i) => `Topic ${i}.`);
   const { seen } = setup(on, {
     complete: [...topics.map((t) => answered(t)), answered(topics[0] ?? "")],
@@ -236,10 +238,10 @@ test("a topic older than the seen bound still does not show again", async ($: En
   }
   await turn($, "Again.", "t-last");
   await check($, "Edit", EDIT);
-  expect(seen.toasts).toStrictEqual(topics);
+  expect(seen.toasts).toStrictEqual([]);
 });
 
-test("a call that gives no topic shows no toast", async ($: Engine, on: On) => {
+test("a call that gives no topic draws no toast", async ($: Engine, on: On) => {
   const { seen } = setup(on, { complete: [answered("NONE")] });
   await turn($, "Raise the tries.", "t1");
   await check($, "Edit", EDIT);

@@ -8,6 +8,7 @@ import {
   actionOf,
   completePrompt,
   forkPrompt,
+  headsUpNote,
   isChange,
   isRepeat,
   SYSTEM,
@@ -18,18 +19,23 @@ import {
   COMPLETE_TIMEOUT_MS,
   FORK_WAIT_MS,
   MAX_REPLY_TOKENS,
-  TOAST_MS,
 } from "../limits.ts";
+import { DISMISS, HEADS_UP } from "./band.ts";
 
 /** The session values that `types/index.d.ts` declares. */
 const TURN = { plugin: "dcc-plugin-you-should-know", key: "turn" } as const;
 const PATH = { plugin: "dcc-plugin-you-should-know", key: "path" } as const;
 const SHOWN = { plugin: "dcc-plugin-you-should-know", key: "shown" } as const;
+const OFFER = { plugin: "dcc-plugin-you-should-know", key: "offer" } as const;
+const NOTE = { plugin: "dcc-plugin-you-should-know", key: "note" } as const;
 
 /** The HTTP status that a subscription gets for a separate call from a hook when `CLAUDE_CODE_ATTRIBUTION_HEADER` is `0`. */
 const TOO_MANY_REQUESTS = 429;
 
-/** The `turn.start` hook: a new turn is not checked yet. A turn with no typed prompt keeps the prompt of the turn before it. */
+/**
+ * The `turn.start` hook: a new turn is not checked yet, and a heads-up of the turn before it is dropped.
+ * A turn with no typed prompt keeps the prompt of the turn before it.
+ */
 export const onTurnStart: Handler<"turn.start"> = async ($, e, next) => {
   const out = await next(e);
   const { value: last } = await $.state.get(TURN);
@@ -38,6 +44,7 @@ export const onTurnStart: Handler<"turn.start"> = async ($, e, next) => {
     prompt: e.text || (last?.prompt ?? ""),
     checked: false,
   });
+  await $.state.set(NOTE, null);
   return out;
 };
 
@@ -92,7 +99,66 @@ const notify = async (
   const topic = answer === undefined ? undefined : topicOf(answer);
   if (topic === undefined || isRepeat(topic, shown)) return;
   await $.state.set(SHOWN, [...shown, topic]);
-  $.ui.toast(topic, { timeoutMs: TOAST_MS });
+  await $.state.set(OFFER, { topic });
+  $.ui.invalidate("ui.render");
+};
+
+/**
+ * The `ui.render` hook of the band: the topic of the offer, drawn above the prompt.
+ * The band draws the tree that `$.ui.resolve` builds, so the terminal and the desktop surfaces draw the same rows.
+ */
+export const onRender: Handler<"ui.render"> = async ($, e, next) => {
+  const { value: offer } = await $.state.get(OFFER);
+  if (offer === undefined || offer === null) return next(e);
+  const { Box, Text, Button } = $.ui.resolve(e);
+  return Box({
+    flexDirection: "column",
+    marginTop: 1,
+    children: [
+      Text({ wrap: "wrap", children: `You should know: ${offer.topic}` }),
+      Button({ key: HEADS_UP, label: "Give a heads-up", hotkey: "1" }),
+      Button({ key: DISMISS, label: "Dismiss", hotkey: "0" }),
+    ],
+  });
+};
+
+/** Clears the band, so that no choice of it is drawn again. */
+const clearOffer = async ($: EngineInterface): Promise<void> => {
+  await $.state.set(OFFER, null);
+  $.ui.invalidate("ui.render");
+};
+
+/**
+ * The `ui.press` hook of the heads-up choice: the topic goes into the prompt box, quoted, and the person adds the heads-up there.
+ * The same heads-up waits for the next call of the main agent, which reads it in the running turn (`onHeadsUpContext`).
+ */
+export const onHeadsUp: Handler<"ui.press"> = async ($, e, next) => {
+  const { value: offer } = await $.state.get(OFFER);
+  await clearOffer($);
+  if (offer !== undefined && offer !== null) {
+    await $.prompt.fill({ text: `> ${offer.topic}\n`, mode: "insert" });
+    await $.state.set(NOTE, headsUpNote(offer.topic));
+  }
+  return next(e);
+};
+
+/**
+ * The `tool.call` hook of a heads-up: the next call of the main agent that runs gets the note after its result, once.
+ * A call of a subagent, and a denied call, get no note, so the note waits for a call that ran.
+ */
+export const onHeadsUpContext: Handler<"tool.call"> = async ($, e, next) => {
+  const out = await next(e);
+  if (e.agentId !== undefined || out.result === undefined) return out;
+  const { value: note } = await $.state.get(NOTE);
+  if (note === undefined || note === null) return out;
+  await $.state.set(NOTE, null);
+  return { ...out, context: [note] };
+};
+
+/** The `ui.press` hook of the dismiss choice: the band goes, and the topic stays in the session's seen list. */
+export const onDismiss: Handler<"ui.press"> = async ($, e, next) => {
+  await clearOffer($);
+  return next(e);
 };
 
 /**
