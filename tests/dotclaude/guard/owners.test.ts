@@ -60,9 +60,7 @@ test("a failed policy fetch leaves the repository unchecked, so the next call as
   const input = { command: "gh repo view other/lib" };
   expect(await askReason("Bash", input, ctx)).toBe(undefined);
   failing = false;
-  expect(await askReason("Bash", input, ctx)).toContain(
-    "No AI pull requests.",
-  );
+  expect(await askReason("Bash", input, ctx)).toContain("No AI pull requests.");
 });
 
 test("a denied ask asks again on the same call, so it never runs silently", async () => {

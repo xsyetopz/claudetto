@@ -97,7 +97,41 @@ test("a destructive command in a compound command is denied with the whole comma
 });
 
 test("a branch delete without force, and a branch list, are allowed in the main session", async () => {
-  for (const command of ["git branch -d merged", "git branch -a", "git branch -f x"]) {
+  for (const command of [
+    "git branch -d merged",
+    "git branch -a",
+    "git branch -f x",
+  ]) {
+    expect(await mainDeny(command, main), command).toBeNull();
+  }
+});
+
+/** The commands whose name a substitution wrote, which read as `git`. */
+const UNREADABLE = [
+  "$(echo git) reset --hard",
+  "$(echo git) -C . reset --hard",
+  "`echo git` clean -fd",
+  "$(echo git) $(echo reset) --hard",
+];
+
+test("a command whose name a substitution wrote is denied, through each wrapper with a single-quoted script", async () => {
+  for (const base of UNREADABLE) {
+    // The shell reader splits a substitution in a double-quoted script, so `bash -c "..."` and `eval "..."` are not tested here.
+    for (const command of formsOf(base).filter(
+      (f) => !/^(bash -c|eval) "/.test(f),
+    )) {
+      expect(await mainDeny(command, main), command).not.toBeNull();
+      expect(await subagentDeny(command, main), command).not.toBeNull();
+    }
+  }
+});
+
+test("a command whose name is unreadable, with no git verb after it, is allowed", async () => {
+  for (const command of [
+    "$(which ls) -la",
+    "`which ls` -la",
+    "$(which ls) src",
+  ]) {
     expect(await mainDeny(command, main), command).toBeNull();
   }
 });

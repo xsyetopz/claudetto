@@ -79,7 +79,39 @@ const destOf = (word: string): string =>
     .pop()
     ?.replace(/^refs\/heads\//, "") ?? "";
 
-export const gitMatchers: Matcher[] = [
+/** The verbs that the matchers below read, so a word of one of them after an unreadable name shows a git call. */
+const GIT_VERBS = new Set([
+  "branch",
+  "checkout",
+  "clean",
+  "filter-branch",
+  "gc",
+  "push",
+  "reflog",
+  "reset",
+  "restore",
+  "rm",
+  "stash",
+  "switch",
+  "worktree",
+]);
+
+/**
+ * The words that the git matchers read.
+ * The walker gives a command name that a substitution wrote as `""`, as in `$(echo git) reset --hard`.
+ * Such a name reads as `git` when a later word is a git verb, or a word that the hook cannot read.
+ * The words before that verb, such as `-C .`, are dropped, as `walk.ts` drops them for `git`.
+ * A name followed by option words only, such as `$(which ls) -la`, stays unreadable, and no git matcher applies.
+ */
+const gitWords = (words: readonly string[]): readonly string[] => {
+  if (words[0] !== "") return words;
+  const at = words.findIndex(
+    (w, i) => i > 0 && (GIT_VERBS.has(w) || w === ""),
+  );
+  return at < 0 ? words : ["git", ...words.slice(at)];
+};
+
+const gitMatchersAsWritten: Matcher[] = [
   {
     id: "git.discard-uncommitted",
     examples: [
@@ -100,6 +132,7 @@ export const gitMatchers: Matcher[] = [
       "git rm -rf .",
       "git rm -r -f src/",
       "git $(echo reset) --hard",
+      "$(echo git) reset --hard",
     ],
     match: async (words, ctx) => {
       const [name, verb, ...args] = words;
@@ -232,3 +265,9 @@ export const gitMatchers: Matcher[] = [
     },
   },
 ];
+
+/** The git matchers, each reading the words of `gitWords`. */
+export const gitMatchers: Matcher[] = gitMatchersAsWritten.map((m) => ({
+  ...m,
+  match: (words, ctx) => m.match(gitWords(words), ctx),
+}));
