@@ -1,6 +1,8 @@
 // `events.jsonl` faults: a line that is not JSON, a schema that is not known, a torn last line, and a package that two changes have.
 
 import { describe, expect, test } from "bun:test";
+import fs from "node:fs";
+import path from "node:path";
 import { run } from "./read-fixture.ts";
 import {
   CHANGES,
@@ -57,6 +59,19 @@ describe("a package that two changes have", () => {
     const root = await plannedChange("c1");
     await phase(root, "specify", "c2", "--size", "trivial");
     await phase(root, "specify", "c2");
+    // `specify` gives c2 the package `P2`, so the test renames it to `P1` to make the clash.
+    const dir = `${CHANGES}/c2`;
+    const text = (await file(root, `${dir}/packages/P2.md`)).replace(
+      "id: P2",
+      "id: P1",
+    );
+    fs.rmSync(path.join(root, `${dir}/packages/P2.md`));
+    await write(root, `${dir}/packages/P1.md`, text);
+    await write(
+      root,
+      `${dir}/events.jsonl`,
+      (await file(root, `${dir}/events.jsonl`)).replaceAll("P2", "P1"),
+    );
     git(root, "add", "-A");
     return root;
   };

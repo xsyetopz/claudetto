@@ -4,13 +4,14 @@
 
 import path from "node:path";
 import { SPEC_ROOT, SPECS_DIR } from "../../../../../kernel/paths.ts";
-import type { StateEvent } from "../../../../../kernel/spec-store.ts";
+import { isClosed, type StateEvent } from "../../../../../kernel/spec-store.ts";
 import { cycleMembers, missingDeps, ownsOverlaps } from "../domain/deps.ts";
 import type { FormatError } from "../domain/formats.ts";
 import { checkFront, type FrontKind } from "../domain/front.ts";
 import { duplicateIds, requirementsOf } from "../domain/requirements.ts";
 import {
   CHANGE_INITIAL,
+  lastState,
   PACKAGE_INITIAL,
   statusRule,
 } from "../domain/status.ts";
@@ -144,6 +145,29 @@ const packageProblems = async (
   return out;
 };
 
+/** The problems of a package ID that more than one open change has. With `only`, only the IDs of that change. */
+const sharedIdProblems = async (
+  store: SpecStore,
+  only: string | undefined,
+): Promise<string[]> => {
+  const owners = new Map<string, string[]>();
+  for (const id of await store.changes()) {
+    const events = await store.events(id).catch(() => null);
+    if (events && isClosed(lastState(events, undefined, CHANGE_INITIAL)))
+      continue;
+    for (const p of await readPackages(store, id))
+      owners.set(p.id, [...(owners.get(p.id) ?? []), id]);
+  }
+  return [...owners]
+    .filter(
+      ([, ids]) => ids.length > 1 && (only === undefined || ids.includes(only)),
+    )
+    .map(
+      ([pkg, ids]) =>
+        `${SPEC_ROOT}: the package \`${pkg}\` is in these open changes: ${ids.join(", ")}.`,
+    );
+};
+
 export const validateCommand = async (
   run: Run,
   args: string[],
@@ -164,6 +188,7 @@ export const validateCommand = async (
       ...(await packageProblems(run.store, id)),
     );
   }
+  problems.push(...(await sharedIdProblems(run.store, only)));
   for (const line of problems) run.io.error(line);
   run.io.log(
     problems.length === 0
