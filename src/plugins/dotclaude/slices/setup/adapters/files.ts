@@ -59,9 +59,15 @@ export const mythosInCatalog = async (
   } catch {
     return false;
   }
-  const newest = files
-    .map((f) => path.join(catalogDir, f))
-    .sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs)[0];
+  const dated = files.flatMap((f) => {
+    const file = path.join(catalogDir, f);
+    try {
+      return [{ file, mtime: fs.statSync(file).mtimeMs }];
+    } catch {
+      return [];
+    }
+  });
+  const newest = dated.sort((a, b) => b.mtime - a.mtime)[0]?.file;
   if (!newest) return false;
   try {
     return mythosOffered(JSON.parse(await Bun.file(newest).text()));
