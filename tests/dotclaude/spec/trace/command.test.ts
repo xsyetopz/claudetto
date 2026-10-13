@@ -3,10 +3,12 @@
 import { describe, expect, test } from "bun:test";
 import {
   commitFile,
+  eventsOf,
   file,
   git,
   packageIn,
   phase,
+  plannedChange,
   write,
 } from "../cli/run-phase.ts";
 
@@ -24,6 +26,7 @@ const implementedAt = async (root: string, at: string, sha?: string) => {
       )
         return l;
       const e = { ...JSON.parse(l), at };
+      e.sha = undefined;
       if (sha !== undefined && e.package === "P1") e.sha = sha;
       return JSON.stringify(e);
     })
@@ -150,13 +153,75 @@ describe("trace", () => {
     ).toEqual(["src/new.ts"]);
   });
 
-  test("a commit before the implement event is not read", async () => {
+  test("with no commit after the event and no sha, the trace refuses", async () => {
     const root = await packageIn("doing");
     commitFile(root, "src/old.ts", "old();\n");
     await implementedAt(root, "2999-01-01T00:00:00.000Z");
     const r = await traced(root, "--json");
+    expect(r.code).toBe(1);
+    expect(r.out).toEqual([]);
+    expect(r.err.length).toBeGreaterThan(0);
+  });
+
+  test("a change with no implement event is refused", async () => {
+    const root = await plannedChange("c1");
+    const r = await traced(root);
+    expect(r.code).toBe(1);
+    expect(r.out).toEqual([]);
+    expect(r.err.length).toBeGreaterThan(0);
+  });
+
+  test("a sha that is no commit is refused and does not crash", async () => {
+    const root = await packageIn("doing");
+    commitFile(root, "src/a.ts", "run();\n");
+    await implementedAt(root, "2000-01-01T00:00:00.000Z", "0".repeat(40));
+    const r = await traced(root);
+    expect(r.code).toBe(1);
+    expect(r.out).toEqual([]);
+    expect(r.err.length).toBeGreaterThan(0);
+  });
+
+  test("implement records HEAD as the sha of the move to doing", async () => {
+    const root = await plannedChange("c1");
+    const before = git(root, "rev-parse", "HEAD");
+    await phase(root, "implement", "P1");
+    const moved = (await eventsOf(root, "c1")).find(
+      (e) => e["package"] === "P1" && e["state"] === "doing",
+    );
+    expect(moved?.["sha"]).toBe(before);
+  });
+
+  test("the sha gives the base when the event time is after every commit", async () => {
+    const root = await packageIn("doing");
+    commitFile(root, "src/a.ts", "run();\n");
+    const text = (await file(root, EVENTS)).replaceAll(
+      "2026-10-13T10:00:00.000Z",
+      "2999-01-01T00:00:00.000Z",
+    );
+    await write(root, EVENTS, text);
+    const r = await traced(root, "--json");
+    expect(r.code).toBe(1);
+    expect(r.json).toMatchObject({ findings: [{ file: "src/a.ts", line: 1 }] });
+  });
+
+  test("a file that is not source code is not read", async () => {
+    const root = await packageIn("doing");
+    for (const rel of ["notes.txt", "ci.yml", "Makefile"])
+      await write(root, rel, "words and more\n");
+    git(root, "add", "-A");
+    git(root, "commit", "-q", "-m", "other files");
+    const r = await traced(root);
+    expect(r.out.join("\n")).not.toContain("words");
     expect(r.code).toBe(0);
-    expect(r.json).toMatchObject({ base: null, findings: [] });
+  });
+
+  test("a source file with a tab in its name is read", async () => {
+    const root = await packageIn("doing");
+    commitFile(root, "src/a\tb.ts", "run();\n");
+    const r = await traced(root, "--json");
+    expect(r.json).toMatchObject({
+      findings: [{ file: "src/a\tb.ts", line: 1 }],
+    });
   });
 
   test("a change that does not exist is refused", async () => {

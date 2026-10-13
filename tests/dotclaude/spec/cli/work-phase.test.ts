@@ -30,6 +30,7 @@ const changeStates = async (root: string): Promise<unknown[]> =>
 describe("implement", () => {
   test("starts a planned package and moves the change to implementing", async () => {
     const root = await plannedChange();
+    const head = git(root, "rev-parse", "HEAD");
     const r = await phase(root, "implement", "P1", "--json");
     expect(r.code).toBe(0);
     expect(r.json).toEqual({
@@ -38,6 +39,7 @@ describe("implement", () => {
       package: "P1",
       from: "planned",
       to: "doing",
+      sha: head,
     });
     expect(await status(root)).toBe("doing");
     expect(await frontKey(root, changeFile("c1"), "status")).toBe(

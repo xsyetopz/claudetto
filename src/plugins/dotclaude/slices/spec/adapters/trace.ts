@@ -1,14 +1,14 @@
 // `dotclaude-spec trace [<id>] [--json]`: finds each orphan ID and each uncited line in the diff of a change.
-// The diff is `git diff <base>..HEAD`. The base is the SHA of the first `implement` event of the change.
-// An `implement` event has no `sha` yet, so the base is then the parent of the first commit after the time of the event.
-// With no commit after that time, nothing is added since `implement`, and the trace finds nothing.
-// The trace skips Markdown, JSON, lock files, and each file that `.gitattributes` marks `linguist-generated`.
+// The diff is `git diff <base>..HEAD`. The base is the `sha` of the first `doing` event of the change, which `implement` records.
+// An event with no `sha` gives the parent of the first commit after the time of the event.
+// A change with no base is an error, and not a clean trace: the trace refuses, and so does `accept`.
+// The trace reads only source files, and skips each file that `.gitattributes` marks `linguist-generated`.
 
 import type { StateEvent } from "../../../../../kernel/spec-store.ts";
 import {
   addedLines,
   type Finding,
-  skipsPath,
+  isSourcePath,
   traceLines,
 } from "../domain/trace.ts";
 import { parseArgs } from "./args.ts";
@@ -22,40 +22,28 @@ const USAGE = "Usage: dotclaude-spec trace [<id>] [--json]";
 /** The files that `git check-attr` gets in one call. */
 const CHECK_CHUNK = 100;
 
-/** The result of one trace: the base and the findings. */
-export interface TraceResult {
-  /** The commit or tree that the diff starts at, or null when nothing was added since `implement`. */
-  readonly base: string | null;
-  readonly findings: Finding[];
-}
+/** The result of one trace: the base and the findings, or the reason that the trace has no base. */
+export type TraceResult =
+  | { readonly ok: true; readonly base: string; readonly findings: Finding[] }
+  | { readonly ok: false; readonly reason: string };
 
-/**
- * The first event that `implement` wrote: the first `doing` package event, or else the first `implementing` change event.
- * One `implement` call writes both events, and the `sha` is on the package event.
- */
+/** The first `doing` event of the change: the move of the first package from `planned`, where `implement` records the `sha`. */
 const firstImplement = (
   events: readonly StateEvent[],
-): StateEvent | undefined =>
-  events.find((e) => e.state === "doing") ??
-  events.find((e) => e.state === "implementing");
+): StateEvent | undefined => events.find((e) => e.state === "doing");
 
 /** The tree that has no file, for a diff from a root commit. */
 const emptyTree = (cwd: string): string =>
   exec(cwd, "git", ["hash-object", "-t", "tree", "/dev/null"]).out;
 
-/**
- * The base of the diff of a change.
- * The `sha` of the first `implement` event, or else the parent of the first commit after its time (the empty tree for a root commit).
- * It gives null when the change has no `implement` event, or no commit came after it.
- */
-export const baseOf = (
-  cwd: string,
-  events: readonly StateEvent[],
-): string | null => {
-  const first = firstImplement(events);
-  if (first === undefined) return null;
-  if (first.sha !== undefined) return first.sha;
-  const seconds = Math.floor(Date.parse(first.at) / 1000);
+/** True when `sha` names a commit in the repository. */
+const isCommit = (cwd: string, sha: string): boolean =>
+  exec(cwd, "git", ["rev-parse", "--verify", "--quiet", `${sha}^{commit}`])
+    .code === 0;
+
+/** The parent of the first commit after `at` (the empty tree for a root commit), or null when no commit came after it. */
+const baseByTime = (cwd: string, at: string): string | null => {
+  const seconds = Math.floor(Date.parse(at) / 1000);
   if (Number.isNaN(seconds)) return null;
   const log = exec(cwd, "git", [
     "rev-list",
@@ -72,6 +60,36 @@ export const baseOf = (
     `${commit}^`,
   ]);
   return parent.code === 0 ? parent.stdout.trim() : emptyTree(cwd);
+};
+
+/**
+ * The base of the diff of a change, or the reason that it has none.
+ * The base is the `sha` of the first `doing` event.
+ * Only an event with no `sha` gives the parent of the first commit after its time.
+ * No `doing` event, a `sha` that is no commit, and no commit after the time each give a reason.
+ */
+export const baseOf = (
+  cwd: string,
+  events: readonly StateEvent[],
+): { base: string } | { reason: string } => {
+  const first = firstImplement(events);
+  if (first === undefined)
+    return {
+      reason: "The change has no `implement` event, so it has no base.",
+    };
+  if (first.sha !== undefined)
+    return isCommit(cwd, first.sha)
+      ? { base: first.sha }
+      : {
+          reason: `The \`sha\` \`${first.sha}\` of the \`implement\` event is no commit.`,
+        };
+  const base = baseByTime(cwd, first.at);
+  return base === null
+    ? {
+        reason:
+          "The first `implement` event has no `sha`, and no commit came after its time, so the change has no base.",
+      }
+    : { base };
 };
 
 /** The files of `files` that `.gitattributes` marks `linguist-generated`. */
@@ -99,8 +117,9 @@ export const traceChange = async (
   events: readonly StateEvent[],
 ): Promise<TraceResult> => {
   const cwd = run.store.root;
-  const base = baseOf(cwd, events);
-  if (base === null) return { base, findings: [] };
+  const found = baseOf(cwd, events);
+  if ("reason" in found) return { ok: false, reason: found.reason };
+  const { base } = found;
   const diff = exec(cwd, "git", [
     "-c",
     "core.quotePath=false",
@@ -112,10 +131,11 @@ export const traceChange = async (
     `${base}..HEAD`,
   ]);
   if (diff.code !== 0) throw new Error(`git diff failed: ${diff.out}`);
-  const read = addedLines(diff.stdout).filter((l) => !skipsPath(l.file));
+  const read = addedLines(diff.stdout).filter((l) => isSourcePath(l.file));
   const generated = generatedFiles(cwd, [...new Set(read.map((l) => l.file))]);
   const known = new Set(await usedRequirementNumbers(run.store));
   return {
+    ok: true,
     base,
     findings: traceLines(
       read.filter((l) => !generated.has(l.file)),
@@ -142,7 +162,9 @@ export const traceCommand = async (
   if (id === null) return 1;
   const events = await run.store.events(id);
   if (events === null) return stop(run, `The change \`${id}\` does not exist.`);
-  const { base, findings } = await traceChange(run, events);
+  const traced = await traceChange(run, events);
+  if (!traced.ok) return stop(run, traced.reason);
+  const { base, findings } = traced;
   if (parsed.json)
     run.io.log(
       JSON.stringify({ command: "trace", change: id, base, findings }),

@@ -49,9 +49,11 @@ export const acceptCommand = async (
   const packages = Object.values(await run.store.states(id, events));
   if (packages.length === 0)
     return stop(run, `The change \`${id}\` has no package.`);
+  const traced = await traceChange(run, events);
+  if (!traced.ok) return stop(run, traced.reason);
   const gate = gateAccept({
     packages: packages.filter(isPackageState),
-    ...countOf((await traceChange(run, events)).findings),
+    ...countOf(traced.findings),
   });
   if (!gate.ok) return stop(run, gate.reason);
   printMoved(run, "accept", await moveChange(run, id, "accepted"), parsed.json);

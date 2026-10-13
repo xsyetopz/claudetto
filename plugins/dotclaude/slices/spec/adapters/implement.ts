@@ -3,12 +3,14 @@
 // From `planned`, the change must be `planned` or `implementing`, each dep must be `done`, and no marker may be open.
 // From `blocked`, a `--note` is needed. From `doing`, after a failed `verify` or a `reject`, a `--decision` is needed.
 // The first `implement` of a package moves the change from `planned` to `implementing`.
+// The move from `planned` records `sha` = `HEAD` on the event, and the trace of the change starts at the first such `sha`.
 
 import { eventsOf } from "../domain/events.ts";
 import { gateImplement } from "../domain/gates.ts";
 import { hasTransition, PACKAGE_TRANSITIONS } from "../domain/states.ts";
 import { parseArgs } from "./args.ts";
 import { openMarkers } from "./files.ts";
+import { head } from "./git.ts";
 import type { Run } from "./run.ts";
 import {
   changeState,
@@ -64,7 +66,11 @@ export const implementCommand = async (
     id,
     pkg,
     "doing",
-    evidence({ note, decision: isDecision(decision) ? decision : undefined }),
+    evidence({
+      note,
+      decision: isDecision(decision) ? decision : undefined,
+      sha: state === "planned" ? head(run.store.root) || undefined : undefined,
+    }),
   );
   printMoved(run, "implement", moved, parsed.json);
   return 0;
