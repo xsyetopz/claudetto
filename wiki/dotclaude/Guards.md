@@ -74,14 +74,17 @@ So the deny checks the command that would run.
 `onCheck` calls `next` first.
 A deny of the engine stays a deny.
 Then `askReason` in `domain/owners.ts` reads each GitHub repository in the tool input.
-It asks only once for each repository in each session.
-The `checked` map in `adapters/mod.ts` keeps this record.
 The ask applies when the repository has another owner than the user.
 The user is the login and the organizations from `gh`.
 Each `gh` call has `POLICY_TIMEOUT_MS`, which is `5_000` in `src/kernel/budget.ts`.
 The ask applies when the repository has one of the policy files in `POLICY_FILES`: `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md`.
 Each file text is cut at `POLICY_FILE_MAX_CHARS`, which is `2_000` in `src/kernel/budget.ts`.
-A failed `gh` call runs again at the next check.
+A repository with a policy file gets the ask at each call that reaches it.
+It is not kept.
+A repository whose policy files are all missing is kept for the session in the `checked` map in `adapters/mod.ts`.
+The guard does not read that repository again in the session.
+A failed `gh` call is not kept.
+So the next check reads the repository again.
 
 The guard adds its ask before the ask of `next`.
 So the ask of another slice stays.

@@ -41,7 +41,7 @@ export const GIT_RULES: readonly PolicyRule[] = [
     tier: "floor",
     category: "git",
     prose: withAnyRoute(
-      "A force push, or any push that rewrites history, to a shared or default branch, such as `main` or `master`.",
+      "A force push, or any push that rewrites history, to a shared or default branch, such as `main` or `master`, a delete of the default branch, a `git push --mirror`, a force push with `--all` or `--tags`, or a force push with no ref.",
     ),
   },
   {

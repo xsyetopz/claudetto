@@ -24,7 +24,25 @@ const FLOOR = [
   "git push -fu origin main",
   "git push origin +main",
   "git push --force-with-lease origin main",
+  "git push origin :main",
+  "git push origin --delete main",
+  "git push -d origin main",
+  "git push --mirror",
+  "git push --mirror origin",
+  "git push --force --all origin",
+  "git push --force --tags origin",
+  "git push --force --all origin feature",
+  "git push --force",
+  "git push -f",
+  "git push --force-with-lease",
+  "git push --force origin",
+  "git push -f origin HEAD",
+  "git push --force-with-lease origin HEAD",
+  "git push origin +HEAD",
   "git branch -D x",
+  "git branch -Df x",
+  "git branch -fd x",
+  "git branch --delete -f x",
   "git rm -rf .",
   "git rm -r -f src",
   "rm -rf /",
@@ -91,4 +109,59 @@ test("a destructive command in a compound command is denied with the whole comma
   const command = "ls -la && cd src; git reset --hard || echo failed";
   const reason = await mainDeny(command, main);
   expect(reason).toContain(command);
+});
+
+test("a force push of a named feature branch, a push, and a delete of a feature branch are allowed in the main session", async () => {
+  for (const command of [
+    "git push --force origin feature",
+    "git push -f origin feature",
+    "git push --force-with-lease origin feature",
+    "git push origin +feature",
+    "git push origin feature",
+    "git push origin :feature",
+    "git push origin --delete feature",
+    "git push -d origin feature",
+  ]) {
+    expect(await mainDeny(command, main), command).toBeNull();
+  }
+});
+
+test("a branch delete without force, and a branch list, are allowed in the main session", async () => {
+  for (const command of [
+    "git branch -d merged",
+    "git branch -a",
+    "git branch -f x",
+  ]) {
+    expect(await mainDeny(command, main), command).toBeNull();
+  }
+});
+
+/** The commands whose name a substitution wrote, which read as `git`. */
+const UNREADABLE = [
+  "$(echo git) reset --hard",
+  "$(echo git) -C . reset --hard",
+  "`echo git` clean -fd",
+  "$(echo git) $(echo reset) --hard",
+];
+
+test("a command whose name a substitution wrote is denied, through each wrapper with a single-quoted script", async () => {
+  for (const base of UNREADABLE) {
+    // The shell reader splits a substitution in a double-quoted script, so `bash -c "..."` and `eval "..."` are not tested here.
+    for (const command of formsOf(base).filter(
+      (f) => !/^(bash -c|eval) "/.test(f),
+    )) {
+      expect(await mainDeny(command, main), command).not.toBeNull();
+      expect(await subagentDeny(command, main), command).not.toBeNull();
+    }
+  }
+});
+
+test("a command whose name is unreadable, with no git verb after it, is allowed", async () => {
+  for (const command of [
+    "$(which ls) -la",
+    "`which ls` -la",
+    "$(which ls) src",
+  ]) {
+    expect(await mainDeny(command, main), command).toBeNull();
+  }
 });

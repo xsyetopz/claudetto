@@ -92,6 +92,12 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   It makes one Haiku call with the prompt and the pending action, and no transcript, in about 2 to 3 seconds and about 410 input tokens.
   After an HTTP 429 it forks the main conversation for the rest of the session.
   A failed or slow call, a call of a subagent, and a topic that showed already give no toast.
+- The `guard` hook denies a delete of the default branch, a mirror push, and a force push with no ref.
+- The `guard` hook denies a force push with `--all` or `--tags` and a ref (`git.force-push-default`).
+  It names the default-branch and mirror pushes in the rule of the default branch.
+- The `guard` hook reads a forced branch delete in a short-flag cluster, such as `-Df` and `-fd`.
+- The `guard` hook denies a destructive git command whose name a substitution writes, such as `$(echo git) reset --hard`.
+- The `guard` owners check reaches the repositories of `git fetch`, `git pull`, `git remote add`, `git submodule add`, and `pip install git+URL`.
 
 ### Changed
 
@@ -164,6 +170,10 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `dcc-plugin-you-should-know` check sends only the newest 10 topics of the `<seen>` list, so the input stays bounded.
 - The `TREE_CHANGE` match of `dotclaude-codegraph` accepts a `git` command with global options before its verb.
   So a command such as `git -C dir commit` syncs the index.
+- The `guard` owners check asks again at each call that reaches a repository with a policy file.
+  Before, it asked once for each repository in a session.
+- The `guard` owners check keeps a repository whose policy files are all missing for the session, so it does not read them again.
+  A failed read of a policy file is not kept, and the next call reads it again.
 
 ### Removed
 

@@ -57,8 +57,7 @@ test("rm with --cached only unstages, so it is allowed", async () => {
   await allowed("git rm --cached docs");
 });
 
-test("a force push with no branch and a push of another branch are allowed", async () => {
-  await allowed("git push --force");
+test("a force push of a feature branch and a push of another branch are allowed", async () => {
   await allowed("git push origin +feature");
   await allowed("git push -u origin feature");
 });

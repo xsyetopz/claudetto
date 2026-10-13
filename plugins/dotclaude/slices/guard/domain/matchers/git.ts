@@ -13,6 +13,7 @@ import {
   splitDashes,
 } from "./args.ts";
 import type { Ctx, Matcher } from "./types.ts";
+import { gitWords } from "./words.ts";
 
 /** A subcommand word of `git` that the hook can read: letters, digits, and dashes only. */
 const LITERAL = /^[A-Za-z][\w-]*$/;
@@ -23,8 +24,16 @@ const CHECKOUT_VALUES = ["-b", "-B", "--orphan", "--conflict"];
 const RESTORE_VALUES = ["-s", "--source"];
 /** The options of `stash` that take a value. */
 const STASH_VALUES = ["-m", "--message"];
-/** The branches that a force push must not change. */
+/** The branches that a force push or a delete must not change. */
 const DEFAULT_BRANCHES = new Set(["main", "master"]);
+/** The options of `push` that take a value. */
+const PUSH_VALUES = [
+  "--receive-pack",
+  "--exec",
+  "-o",
+  "--push-option",
+  "--repo",
+];
 
 /** The paths of `restore`: the words after `--`, or each word when there is no `--`. */
 const restorePaths = (args: string[]): string[] => {
@@ -79,7 +88,11 @@ const destOf = (word: string): string =>
     .pop()
     ?.replace(/^refs\/heads\//, "") ?? "";
 
-export const gitMatchers: Matcher[] = [
+/** True when a push word names a default branch, as `main`, `:main`, or `+main` does. */
+const isDefaultRef = (word: string): boolean =>
+  DEFAULT_BRANCHES.has(destOf(word));
+
+const gitMatchersAsWritten: Matcher[] = [
   {
     id: "git.discard-uncommitted",
     examples: [
@@ -100,6 +113,7 @@ export const gitMatchers: Matcher[] = [
       "git rm -rf .",
       "git rm -r -f src/",
       "git $(echo reset) --hard",
+      "$(echo git) reset --hard",
     ],
     match: async (words, ctx) => {
       const [name, verb, ...args] = words;
@@ -174,17 +188,38 @@ export const gitMatchers: Matcher[] = [
       "git push --force-with-lease origin main",
       "git push origin +main",
       "git push -fu origin main",
+      "git push origin :main",
+      "git push origin --delete main",
+      "git push -d origin main",
+      "git push --mirror origin",
+      "git push --force --all origin",
+      "git push --force --tags origin",
+      "git push --force --all origin feature",
+      "git push --force",
+      "git push -f origin HEAD",
     ],
     match: async (words) => {
       const [name, verb, ...args] = words;
       if (name !== "git" || verb !== "push") return false;
-      // `-f` may sit in a cluster, such as `-fu`. A force push with no branch, such as `git push --force`, is not denied here: the classifier covers it.
+      // `-f` may sit in a cluster, such as `-fu`. The words after the remote are the refs.
+      const refs = positionals(args, PUSH_VALUES);
       const forced =
         isForce(args) ||
         args.some((a) => a.startsWith("--force")) ||
         args.some((a) => a.startsWith("+"));
+      const deletes =
+        hasFlag(args, "--delete") ||
+        hasShort(args, "d") ||
+        refs.some((w) => w.startsWith(":"));
+      // A force push with no ref, or with `HEAD`, moves the branch that `HEAD` names, which may be a default branch.
+      // A force push with `--all` or `--tags` moves every branch or tag, so it is denied with any ref.
+      const [, ref] = refs;
+      const headOrNone = ref === undefined || ref.replace(/^\+/, "") === "HEAD";
+      const everyRef = hasFlag(args, "--all") || hasFlag(args, "--tags");
       return (
-        forced && positionals(args).some((w) => DEFAULT_BRANCHES.has(destOf(w)))
+        hasFlag(args, "--mirror") ||
+        (refs.some(isDefaultRef) && (forced || deletes)) ||
+        (forced && (headOrNone || everyRef))
       );
     },
   },
@@ -196,8 +231,8 @@ export const gitMatchers: Matcher[] = [
       return (
         name === "git" &&
         verb === "branch" &&
-        (args.includes("-D") ||
-          (hasFlag(args, "--delete", "-d") && hasFlag(args, "--force", "-f")))
+        (hasShort(args, "D") ||
+          ((hasFlag(args, "--delete") || hasShort(args, "d")) && isForce(args)))
       );
     },
   },
@@ -232,3 +267,9 @@ export const gitMatchers: Matcher[] = [
     },
   },
 ];
+
+/** The git matchers, each reading the words of `gitWords`. */
+export const gitMatchers: Matcher[] = gitMatchersAsWritten.map((m) => ({
+  ...m,
+  match: (words, ctx) => m.match(gitWords(words), ctx),
+}));

@@ -34,7 +34,7 @@ export const slice = {
         blocks: true,
         allow:
           "plugins/dotclaude/tests/ask.test.ts > a repository of the user, or one with no policy, keeps the verdict",
-        text: "plugins/dotclaude/tests/ask.test.ts > the first call to a repository of another owner with a policy asks once",
+        text: "plugins/dotclaude/tests/ask.test.ts > a call to a repository of another owner with a policy asks on each call",
         block:
           "plugins/dotclaude/tests/ask.test.ts > a deny of the engine stays a deny",
         false:

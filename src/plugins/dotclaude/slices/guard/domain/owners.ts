@@ -17,7 +17,8 @@ const REPO_PATTERNS = [
     "g",
   ),
 ];
-const REACH = /\b(?:git\s+clone|gh|curl|wget)\b/;
+const REACH =
+  /\b(?:git\s+(?:clone|fetch|pull|remote\s+add|submodule\s+add)|gh|curl|wget)\b|\bpip\s+install\b[^|;&]*\bgit\+/;
 
 /**
  * The field `name` of a tool input, or undefined when the input is not an object with it.
@@ -119,18 +120,29 @@ ${tags.join("\n")}`;
 };
 
 /**
+ * The result of a read of a policy file:
+ * `text` when the file exists, `missing` when the host answers 404, and `failed` for any other failure.
+ */
+export type PolicyRead =
+  | { readonly status: "text"; readonly text: string }
+  | { readonly status: "missing" }
+  | { readonly status: "failed" };
+
+/**
  * The ask reason for a call of `tool` with `input`, or undefined.
  * `ctx` gives the I/O of the caller:
- * `run(argv)` resolves to the stdout of a command or null,
+ * `run(argv)` resolves to a `PolicyRead`,
  * `owners()` resolves to the logins of the user and of the organizations where the user is an admin,
- * and `seen` is the set of repositories that this session checked.
+ * and `seen` is the set of repositories whose policy files are all missing.
+ * A repository with a policy is not added to `seen`, so each call that reaches it asks again.
+ * A failed read is not added either, so the next call reads it again.
  */
 export const askReason = async (
   tool: string,
   input: unknown,
   ctx: {
     seen: Set<string>;
-    run: (argv: string[]) => Promise<string | null>;
+    run: (argv: string[]) => Promise<PolicyRead>;
     owners: () => Promise<string[]>;
   },
 ): Promise<string | undefined> => {
@@ -138,13 +150,14 @@ export const askReason = async (
   if (!repos.length) return undefined;
   const mine = await ctx.owners();
   for (const repo of repos) {
-    ctx.seen.add(repo);
     if (ownRepo(repo, mine)) continue;
-    const texts = await Promise.all(
+    const reads = await Promise.all(
       POLICY_FILES.map((file) => ctx.run(policyArgv(repo, file))),
     );
+    const texts = reads.map((r) => (r.status === "text" ? r.text : null));
     const reason = policyReason(repo, texts);
     if (reason) return reason;
+    if (reads.every((r) => r.status === "missing")) ctx.seen.add(repo);
   }
   return undefined;
 };
