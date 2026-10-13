@@ -59,6 +59,8 @@ It gets the highest intelligence for the lowest token cost:
   They copy no code of the built-ins.
   `AGENTS.md` gets the support of `CLAUDE.md` in each of its places.
   A notice of `dcc-plugin-you-should-know` shows as a toast before the action and does not stop it.
+  `dcc-plugin-you-should-know` is opt-in.
+  With an API key it makes a separate Haiku call, and on a subscription it forks the main conversation, until Claude Code lets a subscription make separate calls from a hook.
   The line names the model that made the call, and no model name is hard-coded.
   When no model is found, the line says `Claude` in place of the model name and version.
 - dotclaude uses the garbage collection of Claude Code.

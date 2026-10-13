@@ -227,13 +227,11 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: none.
   Owns: `src/plugins/dcc-plugin-agents-md/`, its tests, its marketplace entry and wiki page, and `evidence/agents-md.md`.
   Verify: `just check`, `just lab`, and one session in `just sandbox` that loads each supported `AGENTS` file.
-- [ ] P41 `dcc-plugin-you-should-know`: a new add-on shows one thing that the user should know before Claude acts on it, at one small Haiku call per turn at most ([package](packages/41-dcc-you-should-know.md), decisions, the user, 2026-10-13).
+- [ ] P41 `dcc-plugin-you-should-know`: a new add-on shows one thing that the user should know before Claude acts on it, at one model call per turn at most: a small Haiku call with an API key, and a fork of the conversation on a subscription ([package](packages/41-dcc-you-should-know.md), decisions, the user, 2026-10-13).
   Deps: none.
   Owns: `src/plugins/dcc-plugin-you-should-know/`, its tests, its marketplace entry and wiki page, and `evidence/you-should-know.md`.
   Verify: `just check`, `just lab`, and one session in `just sandbox` where a notice shows before the action that it is about.
-  On hold (the user, 2026-10-13): each `$.model.complete` and `$.model.classify` call from a hook got HTTP 429 `rate_limit` on a subscription account, while the main calls worked ([evidence](evidence/you-should-know.md)).
-  The probe runs once more later.
-  If the calls then work, the build goes on as planned, and else the user decides again.
+  A subscription gets HTTP 429 on `$.model.complete` and `$.model.classify` from a hook, and `$.model.fork` works, so the plugin uses `complete` with an API key and `fork` on a subscription ([evidence](evidence/you-should-know.md), the user, 2026-10-13).
 - [ ] P16 Release check: `tools/rebuild-pending.txt` is empty and deleted with its check, a `reviewer` pass on the full diff, `just check`, and one session in `just sandbox` that runs `/spec`, `/ship`, `/hotfix`, a decision, and a handoff.
   Deps: each package above.
   Verify: the user approves the version 1.0.0 and the push.
