@@ -24,6 +24,18 @@ const FLOOR = [
   "git push -fu origin main",
   "git push origin +main",
   "git push --force-with-lease origin main",
+  "git push origin :main",
+  "git push origin --delete main",
+  "git push -d origin main",
+  "git push --mirror",
+  "git push --mirror origin",
+  "git push --force",
+  "git push -f",
+  "git push --force-with-lease",
+  "git push --force origin",
+  "git push -f origin HEAD",
+  "git push --force-with-lease origin HEAD",
+  "git push origin +HEAD",
   "git branch -D x",
   "git branch -Df x",
   "git branch -fd x",
@@ -94,6 +106,21 @@ test("a destructive command in a compound command is denied with the whole comma
   const command = "ls -la && cd src; git reset --hard || echo failed";
   const reason = await mainDeny(command, main);
   expect(reason).toContain(command);
+});
+
+test("a force push of a named feature branch, a push, and a delete of a feature branch are allowed in the main session", async () => {
+  for (const command of [
+    "git push --force origin feature",
+    "git push -f origin feature",
+    "git push --force-with-lease origin feature",
+    "git push origin +feature",
+    "git push origin feature",
+    "git push origin :feature",
+    "git push origin --delete feature",
+    "git push -d origin feature",
+  ]) {
+    expect(await mainDeny(command, main), command).toBeNull();
+  }
 });
 
 test("a branch delete without force, and a branch list, are allowed in the main session", async () => {
