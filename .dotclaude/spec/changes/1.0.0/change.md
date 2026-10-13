@@ -55,6 +55,10 @@ It gets the highest intelligence for the lowest token cost:
   The record costs 0 model tokens.
   It goes into the transcript only if Claude does not see it there, and else into a file of `.dotclaude/` keyed by the session id.
 - Each commit and each pull request that Claude makes carries the attribution of Claude Code, and a hook adds it, not prompt text (the user, 2026-10-13).
+- The built-in plugins `cc-plugin-agents-md` and `cc-plugin-you-should-know` stay off, and two new add-ons replace them at zero or low token cost: `dcc-plugin-agents-md` and `dcc-plugin-you-should-know` (the user, 2026-10-13).
+  They copy no code of the built-ins.
+  `AGENTS.md` gets the support of `CLAUDE.md` in each of its places.
+  A notice of `dcc-plugin-you-should-know` shows as a toast before the action and does not stop it.
   The line names the model that made the call, and no model name is hard-coded.
   When no model is found, the line says `Claude` in place of the model name and version.
 - dotclaude uses the garbage collection of Claude Code.
