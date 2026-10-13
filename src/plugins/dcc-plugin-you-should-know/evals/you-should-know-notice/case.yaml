@@ -1,0 +1,17 @@
+schema_version: "1.1"
+name: tries-edit-runs
+description: "One edit in a turn. The check of the edit runs before it, and the edit still runs."
+runs: 1
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 6
+  timeout_seconds: 300
+  allowed_tools: [Read, Edit]
+  prompt: |-
+    In `src/retry.mjs`, change the number of tries from 3 to 10.
+graders:
+  - type: regex
+    name: "edit-ran-after-check"
+    target: { source: file, path: "src/retry.mjs" }
+    pattern: "TRIES\\s*=\\s*10"

@@ -1,0 +1,37 @@
+// The context that each command of `dotclaude-spec` takes, and the choice of the change.
+
+import path from "node:path";
+import { SPEC_ROOT } from "../../../../../kernel/paths.ts";
+import { activeProgress } from "../../../../../kernel/spec-store.ts";
+import type { Clock, Io } from "./io.ts";
+import type { SpecStore } from "./store.ts";
+
+/** What a command needs: the store, the output, and the clock. */
+export interface Run {
+  store: SpecStore;
+  io: Io;
+  clock: Clock;
+}
+
+/** The date of the clock as `YYYY-MM-DD`. */
+export const dateOf = (clock: Clock): string =>
+  clock.now().toISOString().slice(0, 10);
+
+/**
+ * The change `id`, or the active change when `id` is missing.
+ * It writes a message and gives `null` when the change does not exist, or when no change is open.
+ */
+export const resolveId = async (
+  run: Run,
+  id: string | undefined,
+): Promise<string | null> => {
+  if (id !== undefined) {
+    if (run.store.exists(path.posix.join(SPEC_ROOT, id))) return id;
+    run.io.error(`The change \`${id}\` does not exist in \`${SPEC_ROOT}\`.`);
+    return null;
+  }
+  const active = await activeProgress(run.store.files);
+  if (active) return active.id;
+  run.io.error("No change is open. Give the id of a change.");
+  return null;
+};

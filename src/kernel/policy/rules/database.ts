@@ -1,0 +1,51 @@
+// The database rules of the destructive floor.
+
+import { withAnyRoute } from "../route.ts";
+import type { PolicyRule } from "../types.ts";
+
+export const DATABASE_RULES: readonly PolicyRule[] = [
+  {
+    id: "db.drop",
+    tier: "floor",
+    category: "database",
+    prose: withAnyRoute(
+      "A command that drops a database, a schema, or a table, such as `DROP DATABASE`, `DROP SCHEMA`, `DROP TABLE`, or `dropdb`.",
+    ),
+  },
+  {
+    id: "db.truncate",
+    tier: "floor",
+    category: "database",
+    prose: withAnyRoute("A `TRUNCATE` of a table."),
+  },
+  {
+    id: "db.unscoped-write",
+    tier: "floor",
+    category: "database",
+    prose: withAnyRoute(
+      "A `DELETE` or an `UPDATE` with no `WHERE` clause, which changes every row of a table.",
+    ),
+  },
+  {
+    id: "db.reset",
+    tier: "floor",
+    category: "database",
+    prose: withAnyRoute(
+      "A migrate reset, or a forced schema push, that drops data.",
+    ),
+  },
+  {
+    id: "db.flush",
+    tier: "floor",
+    category: "database",
+    prose: withAnyRoute("A `FLUSHALL` or a `FLUSHDB` of a key-value store."),
+  },
+  {
+    id: "db.delete-files",
+    tier: "floor",
+    category: "database",
+    prose: withAnyRoute(
+      "A delete of a database file, or of the data folder of a database server.",
+    ),
+  },
+];

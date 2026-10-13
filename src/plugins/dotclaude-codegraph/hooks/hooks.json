@@ -1,0 +1,3 @@
+{
+  "description": "dotclaude-codegraph: `slices/graph/adapters/hook.ts` syncs the CodeGraph index at session start and adds one line about the graph, and syncs the index in the background after an `Edit`, a `Write`, or a `git` command that changes the tree. Each hook runs only in a project with a `.codegraph/` index."
+}

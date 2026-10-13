@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Builds the fixture in the empty workspace.
+# Needs the flag `--scaffold`.
+set -euo pipefail
+mkdir -p data
+awk 'BEGIN { for (i = 1; i <= 14500; i++) { if (i == 6150) print "audit code is KX-7731"; else printf "2026-01-01T00:00:%02d row %06d status=ok payload=abcdefghijklmnopqrstuv\n", i % 60, i } }' > data/big.log
+printf '{\n  "type": "module"\n}\n' > package.json

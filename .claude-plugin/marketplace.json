@@ -4,24 +4,18 @@
   "owner": {
     "name": "xsyetopz"
   },
-  "description": "Lists the dotclaude plugin and its optional code-graph, Jev, browser, docs, sessions, and lab plugins.",
+  "description": "Lists the dotclaude plugin and its optional code-graph, browser, docs, sessions, and lab plugins.",
   "plugins": [
     {
       "name": "dotclaude",
       "source": "./plugins/dotclaude",
-      "description": "Adds a lean output style, five role agents, and a status line command. Adds hooks that ask before work on a repo with an AI policy, check edits and `git` calls, bound the context of subagents, and check Markdown line breaks and drift. Sets up OpenSpec.",
+      "description": "Adds a lean output style, six role agents, and a status line command. Adds hooks that ask before work on a repo with an AI policy, check edits and `git` calls, bound the context of subagents, and check Markdown line breaks and drift.",
       "category": "productivity"
     },
     {
       "name": "dotclaude-codegraph",
       "source": "./plugins/dotclaude-codegraph",
-      "description": "Gives Claude the code graph of a project from the CodeGraph CLI `codegraph`. Syncs the index, and adds callers and definitions to `Grep` and `Glob` calls.",
-      "category": "productivity"
-    },
-    {
-      "name": "dotclaude-jev",
-      "source": "./plugins/dotclaude-jev",
-      "description": "Adds a second-opinion tool that asks TypeSafe Jev, a decision model, about a decision. With no `TYPESAFE_API_KEY`, the plugin registers no tool.",
+      "description": "Gives Claude the code graph of a project from the CodeGraph CLI `codegraph`. Syncs the index at session start, after an edit, and after a `git` command that changes the tree. Adds one line about the graph commands at session start.",
       "category": "productivity"
     },
     {
@@ -46,6 +40,18 @@
       "name": "dotclaude-lab",
       "source": "./plugins/dotclaude-lab",
       "description": "Tools for plugin authors. Runs Claude Code in a sandbox, captures and sizes the requests, writes the JSON Schema of `settings.json`, and compares the eval scores of two plugin folders.",
+      "category": "productivity"
+    },
+    {
+      "name": "dcc-plugin-agents-md",
+      "source": "./plugins/dcc-plugin-agents-md",
+      "description": "Loads `AGENTS.md` files where Claude Code loads `CLAUDE.md`: the user folder, each ancestor of the working directory, nested folders on each read or edit, and the folders of `permissions.additionalDirectories`. Skips a file that a `CLAUDE` file already loads.",
+      "category": "productivity"
+    },
+    {
+      "name": "dcc-plugin-you-should-know",
+      "source": "./plugins/dcc-plugin-you-should-know",
+      "description": "Shows one thing that you should know before Claude changes something, in a band above the prompt that does not stop the change. Opt-in. Makes at most one model call per turn: a Haiku call, or a fork of the conversation when the Haiku call gets HTTP 429.",
       "category": "productivity"
     }
   ]

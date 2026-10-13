@@ -1,0 +1,41 @@
+// The transform of each confirmed built-in section of Claude Code 2.1.296, keyed by the section id.
+// The ids come from `.dotclaude/spec/changes/1.0.0/evidence/extract.md`, and each file here holds one transform.
+
+import * as actionCaution from "./action_caution.ts";
+import * as actions from "./actions.ts";
+import * as communication from "./communication.ts";
+import * as contextManagement from "./context_management.ts";
+import * as doingTasks from "./doing_tasks.ts";
+import * as envInfoSimple from "./env_info_simple.ts";
+import * as intro from "./intro.ts";
+import * as leanBody from "./lean_body.ts";
+import * as memory from "./memory.ts";
+import type { Transform } from "./parts.ts";
+import * as pronouns from "./pronouns.ts";
+import * as sessionGuidance from "./session_guidance.ts";
+import * as system from "./system.ts";
+import * as tone from "./tone.ts";
+import * as tools from "./tools.ts";
+import * as totalTokens from "./total_tokens.ts";
+
+/** The transform of each section id. A section with no id here passes on unchanged. */
+export const TRANSFORMS: ReadonlyMap<string, Transform> = new Map<
+  string,
+  Transform
+>([
+  ["action_caution", actionCaution.transform],
+  ["actions", actions.transform],
+  ["communication", communication.transform],
+  ["context_management", contextManagement.transform],
+  ["doing_tasks", doingTasks.transform],
+  ["env_info_simple", envInfoSimple.transform],
+  ["intro", intro.transform],
+  ["lean_body", leanBody.transform],
+  ["memory", memory.transform],
+  ["pronouns", pronouns.transform],
+  ["session_guidance", sessionGuidance.transform],
+  ["system", system.transform],
+  ["tone", tone.transform],
+  ["tools", tools.transform],
+  ["total_tokens", totalTokens.transform],
+]);

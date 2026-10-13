@@ -1,0 +1,51 @@
+// `dotclaude-spec block <package> --note <text> [--json]`: moves an open package to `blocked`.
+// `implement <package> --note <text>` starts it again.
+
+import { gateReason } from "../domain/gates.ts";
+import { hasTransition, PACKAGE_TRANSITIONS } from "../domain/states.ts";
+import { parseArgs } from "./args.ts";
+import type { Run } from "./run.ts";
+import {
+  movePackage,
+  printMoved,
+  stop,
+  targetOf,
+  usage,
+} from "./transition.ts";
+
+const USAGE = "Usage: dotclaude-spec block <package> --note <text> [--json]";
+
+export const blockCommand = async (
+  run: Run,
+  args: string[],
+): Promise<number> => {
+  const parsed = parseArgs(args, { values: ["note"] });
+  if (typeof parsed === "string") return usage(run, parsed);
+  const [pkg, extra] = parsed.words;
+  const { note } = parsed.values;
+  if (!pkg || extra !== undefined) return usage(run, USAGE);
+  const gate = gateReason(note, "block");
+  if (!gate.ok || note === undefined)
+    return usage(run, gate.ok ? USAGE : gate.reason);
+  const target = await targetOf(run, pkg, "blocks a package");
+  if (target === null) return 1;
+  const { id, state } = target;
+  if (
+    !hasTransition(PACKAGE_TRANSITIONS, {
+      from: state,
+      command: "block",
+      to: "blocked",
+    })
+  )
+    return stop(
+      run,
+      `The package \`${pkg}\` is \`${state}\`, and \`block\` cannot move it.`,
+    );
+  printMoved(
+    run,
+    "block",
+    await movePackage(run, id, pkg, "blocked", { note }),
+    parsed.json,
+  );
+  return 0;
+};

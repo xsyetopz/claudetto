@@ -1,0 +1,38 @@
+// The mod handler of the `spec` slice. It makes no model call, so `requests` is 0.
+//
+// `agent.spawn` runs `dotclaude-spec implement <package>` when `/dotclaude:implement` starts the `implementer` of a package.
+// The command appends the `doing` event, in the folder of the main session at the spawn.
+// This is where `implement` works, because it refuses a linked worktree.
+// The hook does not move a package out of `doing`: the phase commands `verify` and `review` do that.
+//
+// `claude plugin validate` follows `$` only into a function of one file.
+// For this reason, each function that touches `$` is here, and the rules are in `domain/`.
+
+import type { Handler } from "../../../../../kernel/slice.ts";
+import { implementArgs, packageOf } from "../domain/implement-brief.ts";
+
+/**
+ * Runs `dotclaude-spec implement` for the package of an `implementer` prompt once the subagent started.
+ * A failed run changes nothing, and the skill still names the command.
+ * The catch has no narrower test, because `$.process.run` documents no error type.
+ */
+export const onSpawn: Handler<"agent.spawn"> = async ($, e, next) => {
+  const out = await next(e);
+  const pkg = packageOf(e.prompt);
+  if (pkg === undefined || out.deny !== undefined || !out.agentId) return out;
+  const args = implementArgs(pkg);
+  try {
+    const run = await $.process.run(
+      ["bun", "--no-env-file", `${$.plugin.root}/bin/dotclaude-spec`, ...args],
+      { cwd: await $.session.cwd() },
+    );
+    if (run.exitCode !== 0)
+      $.ui.log(
+        `dotclaude-spec ${args.join(" ")} failed with exit status ${run.exitCode}: ${run.stderr.trim()}`,
+        { to: "debug" },
+      );
+  } catch {
+    $.ui.log(`dotclaude-spec ${args.join(" ")} did not run`, { to: "debug" });
+  }
+  return out;
+};

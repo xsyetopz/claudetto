@@ -10,6 +10,7 @@
     "includes": [
       "**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,json,jsonc}",
       "!!**/.agents",
+      "!**/slices/*/*.ts/*.json",
       "!!**/node_modules",
       "!!**/dist",
       "!!**/*.generated.{js,jsx,mjs,cjs,ts,tsx,mts,cts}"
@@ -33,7 +34,7 @@
     "rules": {
       "preset": "recommended",
       "complexity": {
-        "useLiteralKeys": "error"
+        "useLiteralKeys": "off"
       }
     },
     "domains": {
@@ -61,5 +62,86 @@
     "linter": {
       "enabled": true
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["**"],
+      "plugins": ["./tools/lint/arrow-functions.grit"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "useArrowFunction": "error"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/slices/*/*.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["../**", "!../**/kernel/**"],
+                    "message": "A slice imports only `kernel/` and its own folder."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/slices/*/*/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["../../**", "!../**/kernel/**"],
+                    "message": "A slice imports only `kernel/` and its own folder."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/slices/*/domain/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["../../**", "!../**/kernel/**"],
+                    "message": "A slice imports only `kernel/` and its own folder."
+                  },
+                  {
+                    "group": ["**/adapters/**"],
+                    "message": "Domain code imports no adapter."
+                  },
+                  {
+                    "group": ["**/kernel/node/**"],
+                    "message": "Domain code imports no `kernel/node/`."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

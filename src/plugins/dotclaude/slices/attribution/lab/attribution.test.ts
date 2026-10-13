@@ -1,0 +1,291 @@
+// Lab tests of the `attribution` `tool.call` handler on `Bash` (design D39).
+// `session.model` and `settings.read` are stubbed, and the stub of `tool.call` records the command that reaches the engine.
+// The module runs with all its handlers, so a heredoc commit also passes the `sembr` rewrite.
+
+import type { On } from "claude-code";
+import { type Engine, expect, test } from "claude-code/testing";
+
+const TRAILER = "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>";
+const PR = "🤖 Generated with [Claude Code](https://claude.com/claude-code)";
+
+/** The stub of the main-loop model, the merged settings, and the recorded commands. */
+const engine = (
+  on: On,
+  {
+    model = "claude-opus-5-5",
+    settings = {},
+    seen,
+  }: { model?: string; settings?: Record<string, unknown>; seen: string[] },
+) => {
+  on("session.model", () => ({ value: model }));
+  on("settings.read", () => ({ value: settings }));
+  on("tool.call", (_$, e) => {
+    if (e.tool === "Bash") seen.push(e.command);
+    return { result: "ok" };
+  });
+};
+
+const bash = ($: Engine, command: string, agentId?: string) =>
+  $.tool.call({ tool: "Bash", command, ...(agentId ? { agentId } : {}) });
+
+test("a `git commit -m` gets the trailer of the main model, before the message", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash($, 'git commit -m "Fix it."');
+  expect(seen[0]).toBe(`git commit --trailer "${TRAILER}" -m "Fix it."`);
+});
+
+test("a `git commit -F` gets the trailer before the file option", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash($, "git commit -F msg.txt");
+  expect(seen[0]).toBe(`git commit --trailer "${TRAILER}" -F msg.txt`);
+});
+
+test("a `git commit` with a heredoc gets the trailer before the heredoc", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash($, "git commit -F - <<'EOF'\nFix it.\nEOF");
+  expect(seen[0]).toBe(
+    `git commit --trailer "${TRAILER}" -F - <<'EOF'\nFix it.\nEOF`,
+  );
+});
+
+test("a `git commit --amend` gets the trailer too, because it makes a commit", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash($, "git commit --amend --no-edit");
+  expect(seen[0]).toBe(`git commit --trailer "${TRAILER}" --amend --no-edit`);
+});
+
+test("a message that already holds the trailer keeps its command", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  const command = `git commit -m "Fix it.\n\n${TRAILER}"`;
+  await bash($, command);
+  expect(seen[0]).toBe(command);
+});
+
+test("a chain whose first commit holds the trailer still gives the trailer to the second commit", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash(
+    $,
+    `git commit -m "Fix it.\n\n${TRAILER}" && git commit -m "Next."`,
+  );
+  expect(seen[0]).toBe(
+    `git commit -m "Fix it.\n\n${TRAILER}" && git commit --trailer "${TRAILER}" -m "Next."`,
+  );
+});
+
+test("a chain whose first pull request holds the line still gives the line to the second one", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash(
+    $,
+    `gh pr create --body "A.\n\n${PR}" && gh pr create --body "B."`,
+  );
+  expect(seen[0]).toBe(
+    `gh pr create --body "A.\n\n${PR}" && gh pr create --body "B.\n\n${PR}"`,
+  );
+});
+
+test("an empty `commit` setting turns the commit line off", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen, settings: { attribution: { commit: "" } } });
+  await bash($, 'git commit -m "Fix it."');
+  expect(seen[0]).toBe('git commit -m "Fix it."');
+});
+
+test("`includeCoAuthoredBy: false` turns both lines off", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen, settings: { includeCoAuthoredBy: false } });
+  await bash($, 'git commit -m "Fix it." && gh pr create --body "Text."');
+  expect(seen[0]).toBe(
+    'git commit -m "Fix it." && gh pr create --body "Text."',
+  );
+});
+
+test("a user `attribution` line stays in force, with the model not named", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  const line = "Co-Authored-By: Team <team@example.com>";
+  engine(on, { seen, settings: { attribution: { commit: line } } });
+  await bash($, 'git commit -m "Fix it."');
+  expect(seen[0]).toBe(`git commit --trailer "${line}" -m "Fix it."`);
+});
+
+test("a `gh pr create` with a quoted body gets the pull request line at its end", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash($, 'gh pr create --title "Fix" --body "Text."');
+  expect(seen[0]).toBe(`gh pr create --title "Fix" --body "Text.\n\n${PR}"`);
+});
+
+test("a `gh pr create` with a heredoc body gets the pull request line before the closing line", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash(
+    $,
+    `gh pr create --title "Fix" --body "$(cat <<'EOF'\nText.\nEOF\n)"`,
+  );
+  expect(seen[0]).toBe(
+    `gh pr create --title "Fix" --body "$(cat <<'EOF'\nText.\n\n${PR}\nEOF\n)"`,
+  );
+});
+
+test("an empty `pr` setting turns the pull request line off", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen, settings: { attribution: { pr: "" } } });
+  await bash($, 'gh pr create --body "Text."');
+  expect(seen[0]).toBe('gh pr create --body "Text."');
+});
+
+test("a call that is not a commit or a pull request keeps its command", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  for (const command of [
+    "git status",
+    "git commit --dry-run -m x",
+    'echo "git commit -m x"',
+    "git log --grep commit",
+  ])
+    await bash($, command);
+  expect(seen).toStrictEqual([
+    "git status",
+    "git commit --dry-run -m x",
+    'echo "git commit -m x"',
+    "git log --grep commit",
+  ]);
+});
+
+test("a model that has no name and version gives the `Claude` fallback", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen, model: "opus" });
+  await bash($, 'git commit -m "Fix it."');
+  expect(seen[0]).toBe(
+    'git commit --trailer "Co-Authored-By: Claude <noreply@anthropic.com>" -m "Fix it."',
+  );
+});
+
+test("a commit of a subagent names `Claude`, because the model of a subagent is not read", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen, model: "claude-haiku-5-5" });
+  await bash($, 'git commit -m "Fix it."', "agent-1");
+  expect(seen[0]).toBe(
+    'git commit --trailer "Co-Authored-By: Claude <noreply@anthropic.com>" -m "Fix it."',
+  );
+});
+
+test("a heredoc commit gets the trailer and the `sembr` rewrite of its body", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash(
+    $,
+    `git commit -m "$(cat <<'EOF'\nFix it. Now it works.\n\nRead the file. Then edit it.\nEOF\n)"`,
+  );
+  expect(seen[0]).toBe(
+    `git commit --trailer "${TRAILER}" -m "$(cat <<'EOF'\nFix it. Now it works.\n\nRead the file.\nThen edit it.\nEOF\n)"`,
+  );
+});
+
+test("a command the shell reader cannot read keeps its command", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash($, 'git commit -m "Fix it.');
+  expect(seen[0]).toBe('git commit -m "Fix it.');
+});
+
+test("a model id with a one-digit major version and a date suffix names the major version only", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen, model: "claude-sonnet-4-20250514" });
+  await bash($, 'git commit -m "Fix it."');
+  expect(seen[0]).toBe(
+    'git commit --trailer "Co-Authored-By: Claude Sonnet 4 <noreply@anthropic.com>" -m "Fix it."',
+  );
+});
+
+test("a model id with a minor version and a `[1m]` suffix names both versions", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen, model: "claude-opus-4-1-20250805[1m]" });
+  await bash($, 'git commit -m "Fix it."');
+  expect(seen[0]).toBe(
+    'git commit --trailer "Co-Authored-By: Claude Opus 4.1 <noreply@anthropic.com>" -m "Fix it."',
+  );
+});
+
+test("a model id with no version and a `[1m]` suffix gives the `Claude` fallback", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen, model: "claude-opus[1m]" });
+  await bash($, 'git commit -m "Fix it."');
+  expect(seen[0]).toBe(
+    'git commit --trailer "Co-Authored-By: Claude <noreply@anthropic.com>" -m "Fix it."',
+  );
+});
+
+test("a `git --no-pager commit` gets the trailer after the subcommand", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash($, 'git --no-pager commit -m "Fix it."');
+  expect(seen[0]).toBe(
+    `git --no-pager commit --trailer "${TRAILER}" -m "Fix it."`,
+  );
+});
+
+test("a `git` option with a value before the subcommand gets the trailer", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash($, 'git --git-dir=.git -P commit -m "A."');
+  await bash($, 'git --git-dir .git --work-tree . commit -m "B."');
+  expect(seen).toStrictEqual([
+    `git --git-dir=.git -P commit --trailer "${TRAILER}" -m "A."`,
+    `git --git-dir .git --work-tree . commit --trailer "${TRAILER}" -m "B."`,
+  ]);
+});
+
+test("a `git` command with another verb keeps its command", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  for (const command of ["git --no-pager log", "git -C repo status"])
+    await bash($, command);
+  expect(seen).toStrictEqual(["git --no-pager log", "git -C repo status"]);
+});
+
+test("a `git commit` with a user trailer before `-m` keeps that trailer and gets the model line first", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash(
+    $,
+    'git commit --trailer "Signed-off-by: A <a@a.io>" -m "Fix it."',
+  );
+  expect(seen[0]).toBe(
+    `git commit --trailer "${TRAILER}" --trailer "Signed-off-by: A <a@a.io>" -m "Fix it."`,
+  );
+});
+
+test("a message with another `Co-Authored-By` gets the model line too", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  const other = "Co-Authored-By: Someone <s@example.com>";
+  await bash($, `git commit -m "Fix it.\n\n${other}"`);
+  expect(seen[0]).toBe(
+    `git commit --trailer "${TRAILER}" -m "Fix it.\n\n${other}"`,
+  );
+});
+
+test("an `echo` into a file, then `git commit -F`, gets the model line on the commit only", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash($, 'echo "$TRAILER" > msg && git commit -F msg');
+  expect(seen[0]).toBe(
+    `echo "$TRAILER" > msg && git commit --trailer "${TRAILER}" -F msg`,
+  );
+});
+
+test("a commit and then `git commit --amend --no-edit` gets the model line on each commit", async ($: Engine, on: On) => {
+  const seen: string[] = [];
+  engine(on, { seen });
+  await bash($, 'git commit -m "Fix it." && git commit --amend --no-edit');
+  expect(seen[0]).toBe(
+    `git commit --trailer "${TRAILER}" -m "Fix it." && git commit --trailer "${TRAILER}" --amend --no-edit`,
+  );
+});

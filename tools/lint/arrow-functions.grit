@@ -1,0 +1,8 @@
+language js;
+
+function_declaration() as $decl where {
+  register_diagnostic(
+    span = $decl,
+    message = "Write the function as an arrow function: `export const f = (a: A): B => ...`."
+  )
+}

@@ -1,4 +1,0 @@
-{
-  "description": "dotclaude-jev: register the second-opinion tool of Jev, and add the Jev pick to each `AskUserQuestion` question that facts decide",
-  "modules": ["./register.mjs"]
-}

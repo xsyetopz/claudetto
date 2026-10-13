@@ -1,0 +1,24 @@
+// The manifest of the `trim` slice: the settings and env entries that turn off each built-in part that dotclaude removes.
+// The parts and their switches are listed in `domain/removed.ts`.
+// The keys come from the `prompt` slice, so each key has one owner, and the settings merge fails on two owners with different values.
+
+import type { Slice } from "../../../../kernel/slice.ts";
+
+export const slice = {
+  name: "trim",
+  settings: {
+    env: {
+      CLAUDE_CODE_DISABLE_CFC_PROMPT: "1",
+      CLAUDE_CODE_DISABLE_CRON: "1",
+      CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS: "1",
+      CLAUDE_CODE_DISABLE_FAST_MODE: "1",
+    },
+    autoMemoryEnabled: false,
+    includeGitInstructions: false,
+    fastMode: false,
+    disableAgentView: true,
+    disableClaudeAiConnectors: true,
+    syncClaudeAiSkills: false,
+    syncClaudeAiPlugins: false,
+  },
+} satisfies Slice;

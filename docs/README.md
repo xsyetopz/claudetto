@@ -1,10 +1,9 @@
 # dotclaude Documentation
 
 The documentation is in the [dotclaude wiki](https://github.com/xsyetopz/dotclaude/wiki).
-The source of the wiki pages is in [`wiki/`](../wiki) in this repository.
 
-- Use: [Core plugin](https://github.com/xsyetopz/dotclaude/wiki/Core-Plugin), [OpenSpec](https://github.com/xsyetopz/dotclaude/wiki/OpenSpec), [Contributions](https://github.com/xsyetopz/dotclaude/wiki/Contributions)
+- Use: [Core plugin](https://github.com/xsyetopz/dotclaude/wiki/Architecture), [Spec store](https://github.com/xsyetopz/dotclaude/wiki/Spec-Store), [Contributions](https://github.com/xsyetopz/dotclaude/wiki/Contributions)
 - Develop: [Development](https://github.com/xsyetopz/dotclaude/wiki/Development), [Sandbox](https://github.com/xsyetopz/dotclaude/wiki/Sandbox)
-- Evidence: [Design](https://github.com/xsyetopz/dotclaude/wiki/Design), [Usage evidence](https://github.com/xsyetopz/dotclaude/wiki/Usage-Evidence), [Plans and models](https://github.com/xsyetopz/dotclaude/wiki/Plans-and-Models), [Prompt surface](https://github.com/xsyetopz/dotclaude/wiki/Prompt-Surface), [Eval history](https://github.com/xsyetopz/dotclaude/wiki/Evals-History), [Claude mods](https://github.com/xsyetopz/dotclaude/wiki/Claude-Mods), [Open items](https://github.com/xsyetopz/dotclaude/wiki/Open-Items)
-- History: [Release history](https://github.com/xsyetopz/dotclaude/wiki/Release-History)
+- Evidence: [Design](https://github.com/xsyetopz/dotclaude/wiki/Design), [Usage evidence](https://github.com/xsyetopz/dotclaude/wiki/Usage-Evidence), [Prompt surface](https://github.com/xsyetopz/dotclaude/wiki/Prompt-Surface), [Request build](https://github.com/xsyetopz/dotclaude/wiki/Request-Build)
+- History: [Release history](https://github.com/xsyetopz/dotclaude/wiki/Release-History), [Eval history](https://github.com/xsyetopz/dotclaude/wiki/Evals-History), [Open items](https://github.com/xsyetopz/dotclaude/wiki/Open-Items), open at `0.28.0`
 - Other: [Attributions](https://github.com/xsyetopz/dotclaude/wiki/Attributions)

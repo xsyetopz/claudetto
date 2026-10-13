@@ -12,63 +12,42 @@ concurrency:
 
 jobs:
   # The local gate without the type check: lint, tests, validation, and the hook lab.
-  # `tsc` needs `.claude-plugin/types/`, which Claude Code writes only when an interactive session loads the plugin,
+  # `bun check` needs `.claude-plugin/types/`, which Claude Code writes only when an interactive session loads the plugin,
   # so the type check runs only in the local `just check`.
+  # Each recipe runs through a Bun script, so the same gate runs on Windows, Linux, and macOS.
   check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      # pnpm from `packageManager`, Node from `.node-version`, and the locked dev dependencies.
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
-        with:
-          cache: true
-          require-lockfile: true
-      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4
-        with:
-          just-version: 1.58.0
-      # The version in `TESTED_VERSION` of `plugins/dotclaude/features/drift/data.mjs`.
-      # `pnpm/setup` installs its own Node, so the global bin folder of its `npm` is not on `PATH` yet.
-      - run: |
-          npm install --global @anthropic-ai/claude-code@2.1.296
-          echo "$(npm prefix --global)/bin" >> "$GITHUB_PATH"
-      - run: claude --version
-      - run: git config --global user.email ci@example.com && git config --global user.name ci
-      - run: just ci
-
-  # The tests on the other operating systems.
-  test:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
-    defaults:
-      run:
-        shell: bash
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
+      # Bun from `packageManager`, and the locked dev dependencies.
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          cache: true
-          require-lockfile: true
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4
+        with:
+          just-version: 1.58.0
+      # The version in `TESTED_VERSION` of `src/plugins/dotclaude/slices/setup/domain/facts.ts`.
+      - run: bun add --global @anthropic-ai/claude-code@2.1.296
+      - run: claude --version
       - run: git config --global user.email ci@example.com && git config --global user.name ci
-      - run: pnpm test
+      - run: just ci
 
   # The one check to require in branch protection: it fails unless every
   # matrix job succeeded, including when one was cancelled or skipped.
   all-green:
     if: always()
-    needs: [check, test]
+    needs: [check]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - env:
           CHECK: ${{ needs.check.result }}
-          TEST: ${{ needs.test.result }}
-        run: test "$CHECK" = success && test "$TEST" = success
+        run: test "$CHECK" = success

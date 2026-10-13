@@ -1,0 +1,159 @@
+// The literal matchers of the system: a recursive delete, a disk erase, a recursive permission change, and a security setting.
+// Each entry has a catalog id, examples, and a `match` on the words of one command.
+// The tier of each id is in `index.ts`, and every id here applies in every session.
+// A command name that a substitution wrote, as in `$(which rm) -rf /`, is `""` and can be any tool.
+// So a rule that reads more than the name reads `""` as its tool, and denies when the other words fit.
+
+import { isForce, isRecursive, positionals } from "./args.ts";
+import { normPath } from "./norm.ts";
+import type { Matcher } from "./types.ts";
+
+/** The folders of the user and of the system, in the spelling that `normPath` gives. */
+const ROOTS = new Set([
+  "",
+  "~",
+  "$HOME",
+  `\${HOME}`,
+  "/System",
+  "/usr",
+  "/etc",
+  "/bin",
+  "/sbin",
+  "/lib",
+  "/lib64",
+  "/boot",
+  "/opt",
+  "/var",
+  "/private",
+  "/Library",
+  "/Applications",
+  "/Users",
+  "/home",
+  "C:",
+  "C:\\Windows",
+]);
+
+/** The folders of the user and of the system for the permission rule: the root and the home folder only. */
+const PERMISSION_ROOTS = new Set(["", "~", "$HOME", `\${HOME}`]);
+
+/** True when `path`, in normal form, is the `.git` folder of a repository, such as `.git`, `./.git`, or `repo/.git/`. */
+const isGitDir = (path: string): boolean =>
+  path === ".git" || path.endsWith("/.git");
+
+/** True when a delete target is a system folder, a home folder, the root, or a `.git` folder, after `..` is resolved. */
+const isSystemTarget = (path: string): boolean => {
+  const n = normPath(path);
+  return ROOTS.has(n) || /^~[^/]*$/.test(n) || isGitDir(n);
+};
+
+/** True when `name` is one of `tools`, or the unreadable name `""` that can be each of them. */
+const isTool = (name: string, ...tools: string[]): boolean =>
+  name === "" || tools.includes(name);
+
+/** The disk tools that run on any disk: the file system makers, `fdisk`, and `parted`. */
+const DISK_TOOLS = new Set(["fdisk", "parted"]);
+
+export const systemMatchers: Matcher[] = [
+  {
+    id: "system.recursive-delete",
+    examples: [
+      "rm -rf /",
+      "rm -fr /*",
+      "rm -r -f ~",
+      "rm -Rf ~/",
+      "rm --recursive --force $HOME",
+      'rm -rf "$HOME"',
+      "rm -rf /usr",
+      "rm -rf /etc/",
+      "rm -rf C:\\Windows",
+      "rm -rf .git",
+      "rm -r -f .git/",
+      "rm -rf $HOME/..",
+      "rm -rf ~user",
+      "rm -rf /..",
+      "rm -rf /usr/./",
+      "rm -rf ~/x/../..",
+      "$(which rm) -rf /",
+    ],
+    match: async (words) => {
+      const [name = "", ...args] = words;
+      return (
+        isTool(name, "rm") &&
+        isRecursive(args) &&
+        isForce(args) &&
+        positionals(args).some(isSystemTarget)
+      );
+    },
+  },
+  {
+    id: "system.disk",
+    examples: [
+      "mkfs.ext4 /dev/sdb1",
+      "mkfs -t ext4 /dev/sdb1",
+      "diskutil eraseDisk JHFS+ X /dev/disk2",
+      "diskutil eraseVolume APFS X disk3",
+      "diskutil partitionDisk disk2 GPT JHFS+ X 100%",
+      "diskutil zeroDisk disk2",
+      "dd if=/dev/zero of=/dev/sda bs=1M",
+      "$(which dd) if=/dev/zero of=/dev/sda",
+      "$(which diskutil) eraseDisk JHFS+ X /dev/disk2",
+      "fdisk /dev/sda",
+      "parted /dev/sda mklabel gpt",
+    ],
+    match: async (words) => {
+      const [name = "", verb = "", ...args] = words;
+      if (name.startsWith("mkfs")) return true;
+      if (
+        isTool(name, "diskutil") &&
+        (verb.startsWith("erase") ||
+          verb === "partitionDisk" ||
+          verb === "zeroDisk")
+      )
+        return true;
+      if (
+        isTool(name, "dd") &&
+        [verb, ...args].some((a) => /^of=\/dev\//.test(a))
+      )
+        return true;
+      return DISK_TOOLS.has(name);
+    },
+  },
+  {
+    id: "system.permissions",
+    examples: [
+      "chmod -R 777 /",
+      "chmod --recursive 755 ~",
+      "chmod -R 755 $HOME",
+      "chown -R root /",
+      "chown -R user ~/",
+      "$(which chmod) -R 777 /",
+    ],
+    match: async (words) => {
+      const [name = "", ...args] = words;
+      return (
+        isTool(name, "chmod", "chown") &&
+        isRecursive(args) &&
+        positionals(args).some((w) => PERMISSION_ROOTS.has(normPath(w)))
+      );
+    },
+  },
+  {
+    id: "system.security",
+    examples: [
+      "csrutil disable",
+      "spctl --master-disable",
+      "security delete-generic-password -s login",
+      "security delete-keychain login.keychain",
+      "$(which csrutil) disable",
+      "$(which spctl) --master-disable",
+      "$(which security) delete-keychain login.keychain",
+    ],
+    match: async (words) => {
+      const [name = "", ...args] = words;
+      if (isTool(name, "csrutil") && args[0] === "disable") return true;
+      if (isTool(name, "spctl") && args.includes("--master-disable"))
+        return true;
+      return isTool(name, "security") && (args[0] ?? "").startsWith("delete-");
+    },
+  },
+];

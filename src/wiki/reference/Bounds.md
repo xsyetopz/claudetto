@@ -1,0 +1,134 @@
+# Bounds
+
+This page tells maintainers each bound, its value, and its file.
+The values come from the code.
+A value in a placeholder is filled from the code when `just generate` runs.
+
+## Where a New Bound Goes
+
+A new bound goes in the tier of its reader.
+Each bound has one owner, and tests pin the copies of a bound in code and config.
+
+- A shared runtime bound goes in `src/kernel/budget.ts`.
+  Inference: use this tier when the shipped code of more than one slice reads the bound.
+- A slice bound goes in `src/plugins/<plugin>/slices/<slice>/limits.ts`.
+  Use this tier when one slice reads the bound.
+- A repository bound goes in `tools/limits.ts`.
+  Use this tier when only the tests and the tools read the bound, so it does not ship.
+
+The rule for each tier is in `CLAUDE.md`.
+The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
+
+## Shared Runtime Bounds
+
+| Name | Value | File | Purpose |
+| --- | --- | --- | --- |
+| `CONTEXT_WINDOW` | `{{CONTEXT_WINDOW}}` | `src/kernel/budget.ts` | The context window in tokens, which the settings snippet sets for Claude Code. |
+| `CONTEXT_BLOCK_MARGIN` | `23,000` | `src/kernel/budget.ts` | The tokens below the window at which the client blocks the next request as too long. |
+| `USAGE_LEVELS` (low) | `{{USAGE_LEVEL_LOW}}` | `src/kernel/budget.ts` | The percent of the window at which the status line shows the context in yellow. |
+| `USAGE_LEVELS` (high) | `{{USAGE_LEVEL_HIGH}}` | `src/kernel/budget.ts` | The percent of the window at which the status line shows the context in red. |
+| `BASH_OUTPUT_MAX_CHARS` | `{{BASH_OUTPUT_MAX_CHARS}}` | `src/kernel/budget.ts` | The characters of a successful `Bash` output that Claude gets inline. |
+| `COMMAND_OUTPUT_MAX_CHARS` | `20,000` | `src/kernel/budget.ts` | The characters of a skill command output that shows with no model turn. |
+| `POLICY_TIMEOUT_MS` | `{{POLICY_TIMEOUT_MS}}` | `src/kernel/budget.ts` | The time for one `gh` call of the policy guard. |
+| `POLICY_FILE_MAX_CHARS` | `{{POLICY_FILE_MAX_CHARS}}` | `src/kernel/budget.ts` | The characters of one policy file in the ask prompt. |
+| `SHELL_SCAN_MAX_CHARS` | `200,000` | `src/kernel/budget.ts` | The most characters that `commands` in `src/kernel/shell.ts` reads in one command. |
+| `CODE_COMMAND_MAX_WORDS` | `32` | `src/kernel/budget.ts` | The most words of one command that a code reader reads from code in another language. |
+
+## Slice Bounds
+
+| Name | Value | File | Purpose |
+| --- | --- | --- | --- |
+| `MAX_GUIDE_CHARS` | `40,000` | `src/plugins/dotclaude-browser/slices/browse/limits.ts` | The most characters of the `agent-browser` guide in the skill. |
+| `GUIDE_TIMEOUT_MS` | `15,000` | `src/plugins/dotclaude-browser/slices/browse/limits.ts` | The time that `agent-browser skills get core` may take. |
+| `MAX_OUTPUT_CHARS` | `20,000` | `src/plugins/dotclaude-browser/slices/search/limits.ts` | The most characters of page text in one search result. |
+| `OPEN_TIMEOUT_MS` | `30,000` | `src/plugins/dotclaude-browser/slices/search/limits.ts` | The time that the browser may take to open the search page. |
+| `READ_TIMEOUT_MS` | `15,000` | `src/plugins/dotclaude-browser/slices/search/limits.ts` | The time that the browser may take to read the page text. |
+| `CLOSE_TIMEOUT_MS` | `10,000` | `src/plugins/dotclaude-browser/slices/search/limits.ts` | The time that the browser may take to close. |
+| `SESSION_NAME_MAX` | `12` | `src/plugins/dotclaude-browser/slices/search/limits.ts` | The longest name of a search session, which keeps a socket path under the macOS limit. |
+| `MAX_DOMAINS` | `10` | `src/plugins/dotclaude-browser/slices/search/limits.ts` | The most `allowed_domains` or `blocked_domains` that the query takes. |
+| `QUERY_TIMEOUT_MS` | `2,000` | `src/plugins/dotclaude-codegraph/slices/graph/limits.ts` | The time that `codegraph --version` may take for the check. |
+| `START_SYNC_TIMEOUT_MS` | `6,000` | `src/plugins/dotclaude-codegraph/slices/graph/limits.ts` | The time that the sync at session start may take. |
+| `BACKGROUND_SYNC_TIMEOUT_MS` | `60,000` | `src/plugins/dotclaude-codegraph/slices/graph/limits.ts` | The time that the background sync after an edit may take. |
+| `GIT_SYNC_TIMEOUT_MS` | `15,000` | `src/plugins/dotclaude-codegraph/slices/graph/limits.ts` | The time that the sync after a `git` command may take. |
+| `FILE_MAX_BYTES` | `{{FILE_MAX_BYTES}}` | `src/plugins/dotclaude/slices/asks/limits.ts` | The largest file in bytes that a check reads to compare the text before and after a call. |
+| `SCAN_MAX_CHARS` | `200,000` | `src/plugins/dotclaude/slices/asks/limits.ts` | The most characters of text that a check scans for banned patterns. |
+| `ITEMS_SHOWN_MAX` | `8` | `src/plugins/dotclaude/slices/asks/limits.ts` | The most reasons that the write ask of one `Bash` command gives. |
+| `SCRIPT_FILES_MAX` | `8` | `src/plugins/dotclaude/slices/asks/limits.ts` | The most script files of one `Bash` command that the git ask and the write ask read. |
+| `LINE_SHOWN_MAX_CHARS` | `80` | `src/plugins/dotclaude/slices/asks/limits.ts` | The most characters of a changed line that an ask reason shows. |
+| `STATEMENT_MAX_CHARS` | `4,000` | `src/plugins/dotclaude/slices/asks/weak-limits.ts` | The most characters of one statement that the reader of code text scans. |
+| `JSON_DEPTH_MAX` | `24` | `src/plugins/dotclaude/slices/asks/weak-limits.ts` | The most nested levels of a JSON value that the config check compares. |
+| `MAX_FAILURE_LINES` | `40` | `src/plugins/dotclaude/slices/checks/limits.ts` | The most failure lines that the summary of one command prints. |
+| `MAX_LINE_CHARS` | `200` | `src/plugins/dotclaude/slices/checks/limits.ts` | The most characters of one failure line before it is cut. |
+| `TAIL_LINES` | `10` | `src/plugins/dotclaude/slices/checks/limits.ts` | The last output lines that the summary prints for a failed command with no failure line. |
+| `MAX_PASS_OUTPUT_LINES` | `10` | `src/plugins/dotclaude/slices/checks/limits.ts` | The most output lines that the summary prints for a passing command. |
+| `COMMAND_TIMEOUT_MS` | `1,800,000` | `src/plugins/dotclaude/slices/checks/limits.ts` | The time that one command may run before it is killed and counts as failed. |
+| `RUN_ID_LENGTH` | `8` | `src/plugins/dotclaude/slices/checks/limits.ts` | The characters of the random part of a log file name. |
+| `JEV_TIMEOUT_MS` | `45,000` | `src/plugins/dotclaude/slices/decide/limits.ts` | The most time that the hook waits for one run of the TypeSafe client. |
+| `TRIES` | `3` | `src/plugins/dotclaude/slices/decide/limits.ts` | The tries of the TypeSafe client on a 429 or a 529 reply. |
+| `BACKOFF_MS` | `1,000` | `src/plugins/dotclaude/slices/decide/limits.ts` | The first wait before a retry, which doubles for each later wait. |
+| `ATTEMPT_TIMEOUT_MS` | `12,000` | `src/plugins/dotclaude/slices/decide/limits.ts` | The timeout of one try of the TypeSafe client. |
+| `ERROR_BODY_MAX` | `200` | `src/plugins/dotclaude/slices/decide/limits.ts` | The most characters of an error body of the TypeSafe API that the client keeps. |
+| `FALLBACK_TIMEOUT_MS` | `30,000` | `src/plugins/dotclaude/slices/decide/limits.ts` | The time limit of one fallback completion. |
+| `FALLBACK_MAX_TOKENS` | `512` | `src/plugins/dotclaude/slices/decide/limits.ts` | The token cap of one fallback reply. |
+| `MIN_OPTIONS` | `2` | `src/plugins/dotclaude/slices/decide/limits.ts` | The fewest options of a `pick` question. |
+| `MAX_OPTIONS` | `255` | `src/plugins/dotclaude/slices/decide/limits.ts` | The most options of a `pick` question. |
+| `MIN_CONFIDENCE` | `0.5` | `src/plugins/dotclaude/slices/decide/limits.ts` | The confidence under which a Jev answer says that Jev is not sure. |
+| `YES_NO_UNSURE_BAND` | `0.2` | `src/plugins/dotclaude/slices/decide/limits.ts` | The distance from 0.5 under which a yes or no answer says that Jev is not sure. |
+| `READ_MAX_BYTES` | `4,194,304` | `src/plugins/dotclaude/slices/guard/limits.ts` | The size of the largest file that `$.fs.read` reads, which is 4 MiB. |
+| `SUBAGENT_CONTEXT_MAX` | `{{SUBAGENT_CONTEXT_MAX}}` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The context of a subagent in tokens, from which the hook tells it to report now. |
+| `HAIKU_CONTEXT_MAX` | `{{HAIKU_CONTEXT_MAX}}` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The context of a Haiku 5.5 subagent in tokens, from which the hook tells it to report. |
+| `REPORT_MAX_WORDS` | `{{REPORT_MAX_WORDS}}` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The most words in the final report of an agent. |
+| `CONTEXT_PERCENT` | `60` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The share of the context window in percent, at which the main session starts a handoff. |
+| `HANDOFF_WAIT_TURNS` | `2` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The turns of the main session that a handoff waits for its file before it counts as not written. |
+| `HANDOFF_RETRY_MAX` | `1` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The times that the hook submits the write prompt again for one trigger when no file appears. |
+| `BUN_MIN` | `1.4.3` | `src/plugins/dotclaude/slices/setup/limits.ts` | The lowest Bun version that the CLIs, hooks, and bins of the plugins need. |
+| `GAP_KEYS_MAX` | `8` | `src/plugins/dotclaude/slices/setup/limits.ts` | The most key paths that the line of missing snippet values names. |
+| `RULE_LINES_MAX` | `8` | `src/plugins/dotclaude/slices/setup/limits.ts` | The most lines that the rule problems add to the drift check. |
+| `SUBAGENTS_PRO` | `5` | `src/plugins/dotclaude/slices/setup/limits.ts` | The `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` of the Pro baseline and the API key account. |
+| `SUBAGENTS_MAX_5X` | `10` | `src/plugins/dotclaude/slices/setup/limits.ts` | The `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` of the Max 5x account. |
+| `SUBAGENTS_MAX_20X` | `20` | `src/plugins/dotclaude/slices/setup/limits.ts` | The `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` of the Max 20x account. |
+| `AUTH_STATUS_TIMEOUT_MS` | `10,000` | `src/plugins/dotclaude/slices/setup/limits.ts` | The time that `claude auth status --json` may take before setup reads no account. |
+| `USAGE_SAMPLE_MAX_MS` | `600,000` | `src/plugins/dotclaude/slices/spec/limits.ts` | The most age of the usage sample that `dotclaude-spec runs` trusts. |
+| `SHOW_EVENTS_MAX` | `5` | `src/plugins/dotclaude/slices/spec/limits.ts` | The most events of one package that `dotclaude-spec show` prints, from the last. |
+| `SUBAGENTS_DEFAULT` | `20` | `src/plugins/dotclaude/slices/spec/limits.ts` | The cap on subagents that Claude Code uses when `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is unset. |
+| `REFRESH_SECONDS` | `1` | `src/plugins/dotclaude/slices/statusline/limits.ts` | The seconds between two runs of the status line. |
+| `GIT_TIMEOUT_MS` | `1,500` | `src/plugins/dotclaude/slices/statusline/limits.ts` | The time that the one `git status` call can take. |
+| `MAX_ROWS` | `{{MAX_ROWS}}` | `src/plugins/dotclaude/slices/statusline/limits.ts` | The most rows of the main status line. |
+| `USAGE_REWRITE_MS` | `300,000` | `src/plugins/dotclaude/slices/statusline/limits.ts` | The age of the saved usage sample that the status line rewrites even when the values are equal. |
+| `DEFAULT_COLUMNS` | `120` | `src/plugins/dotclaude/slices/statusline/limits.ts` | The width in columns when `COLUMNS` is not set. |
+| `COLUMNS_MARGIN` | `4` | `src/plugins/dotclaude/slices/statusline/limits.ts` | The columns that stay free at the right edge. |
+| `SUBAGENT_ROWS_MAX` | `20` | `src/plugins/dotclaude/slices/statusline/limits.ts` | The most subagent rows in the status line. |
+| `DESCRIPTION_ROOM_MIN` | `8` | `src/plugins/dotclaude/slices/statusline/limits.ts` | The columns that a subagent row needs for its description before the description shows. |
+
+## Repository Bounds
+
+| Name | Value | File | Purpose |
+| --- | --- | --- | --- |
+| `FILE_MAX_LINES` | `300` | `tools/limits.ts` | The most lines in a file that is not a test. |
+| `TEST_FILE_MAX_LINES` | `500` | `tools/limits.ts` | The most lines in a test file. |
+| `WORKTREE_TEST_TIMEOUT_MS` | `15,000` | `tools/limits.ts` | The time for one test that makes a `git worktree`. |
+| `AGENT_DESCRIPTION_MAX_CHARS` | `300` | `tools/limits.ts` | The most characters in the `description` of an agent file. |
+| `CLAUDE_MD_MAX_BYTES` | `6,144` | `tools/limits.ts` | The most bytes in a `CLAUDE.md` or `AGENTS.md` file. |
+| `SKILL_META_LOW_BYTES` | `150` | `tools/limits.ts` | The fewest bytes in the `name` and `description` of one skill. |
+| `SKILL_META_HIGH_BYTES` | `300` | `tools/limits.ts` | The most bytes in the `name` and `description` of one skill. |
+| `SKILL_META_TOTAL_LOW_BYTES` | `5,120` | `tools/limits.ts` | The fewest bytes of skill metadata in all skills together. |
+| `SKILL_META_TOTAL_HIGH_BYTES` | `8,192` | `tools/limits.ts` | The target for the skill metadata of all skills together. A larger sum is reported. |
+| `SKILL_META_TOTAL_MAX_BYTES` | `15,360` | `tools/limits.ts` | The ceiling for the skill metadata of all skills together. A larger sum fails. |
+| `SKILL_BODY_LOW_BYTES` | `2,048` | `tools/limits.ts` | The fewest bytes in a `SKILL.md` body. |
+| `SKILL_BODY_HIGH_BYTES` | `8,192` | `tools/limits.ts` | The most bytes in a `SKILL.md` body. |
+| `FIRST_REQUEST_LOW_BYTES` | `8,192` | `tools/limits.ts` | The fewest bytes in the first request, with no tool schemas. |
+| `FIRST_REQUEST_HIGH_BYTES` | `16,384` | `tools/limits.ts` | The most bytes in the first request, with no tool schemas. |
+| `START_TOKENS` | `9,960` | `tools/limits.ts` | The most tokens in the first request of a dotclaude session. |
+
+## Source of the Binary Facts
+
+Three shared bounds depend on the Claude Code `2.1.296` binary: `CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `BASH_OUTPUT_MAX_CHARS`.
+The range of `bashOutputMaxChars` (4,000 to 128,000) comes from the `2.1.296` settings table of a local dossier.
+The dossier is not in the repository.
+The other two values come from code comments that cite the `2.1.296` bundle.
+
+## Related Pages
+
+- [Settings Snippet](Settings-Snippet) gives the settings that use `CONTEXT_WINDOW`.
+- [Context and Handoff](Context-And-Handoff) explains the handoff bounds.
+- [Decisions Layout](Decisions-Layout) gives the choice of the bound tiers.

@@ -147,7 +147,31 @@
       "additionalProperties": {},
       "description": "Environment variables to set for Claude Code sessions"
     },
-    "attribution": {},
+    "attribution": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "commit": {
+              "type": "string",
+              "description": "Attribution text for git commits, including any trailers. Empty string hides attribution."
+            },
+            "pr": {
+              "type": "string",
+              "description": "Attribution text for pull request descriptions. Empty string hides attribution."
+            },
+            "sessionUrl": {
+              "type": "boolean",
+              "description": "Whether to append the claude.ai session link to commits and PRs created from web or Remote Control sessions (default: `true`). Set to `false` to omit the Claude-Session trailer and PR-body link."
+            }
+          }
+        }
+      ],
+      "description": "Customize attribution text for commits and PRs. Each field defaults to the standard Claude Code attribution if not set. Set to `false` to hide all attribution, the same as `{ \"commit\": \"\", \"pr\": \"\", \"sessionUrl\": false }`. Setting it to `true` is the same as leaving it out. Older Claude Code versions reject `true` or `false` here, so use the object form in settings files shared across versions."
+    },
     "includeCoAuthoredBy": {
       "type": "boolean",
       "description": "Deprecated: Use attribution instead. Whether to include Claude's co-authored by attribution in commits and PRs (defaults to `true`)"
@@ -276,11 +300,13 @@
     },
     "managedMcpServers": {
       "type": "object",
-      "additionalProperties": {}
+      "additionalProperties": {},
+      "description": "MCP servers the organization provides to every user, keyed by server name, each with the `.mcp.json` entry shape; only `http` and `sse` servers are accepted (nothing that names a program to run, no ${VAR} references). Honored from managed settings only; users cannot remove them, `deniedMcpServers` still applies, and they need no `allowedMcpServers` entry. Not read in Claude Desktop's Code tab on a third-party deployment or in Cowork sessions, where Claude Desktop supplies and locks the session's MCP servers itself."
     },
     "allowedMcpServers": {
       "type": "array",
-      "items": {}
+      "items": {},
+      "description": "Enterprise allowlist of the MCP servers users may use. Governs servers users add (user, project and local config, `--mcp-config`, agent frontmatter, plugins, claude.ai connectors); servers the organization itself delivers (`managedMcpServers`, and `managed-mcp.json` entries that use no ${VAR} expansion) are allowed without being listed; a `managed-mcp.json` entry that uses ${VAR} expansion is still checked against this list. If undefined, all servers are allowed. If empty array, users can use no servers of their own. Denylist takes precedence - if a server is on both lists, it is denied."
     },
     "deniedMcpServers": {
       "type": "array",
@@ -495,6 +521,17 @@
       "description": "Controls how the managed settings sources compose. `first-wins` (default): the highest-priority source present (server-managed > MDM (managed plist / HKLM) > `managed-settings.json`) is the managed tier alone. `merge`: every present source deep-merges with fixed precedence server-managed > MDM > `managed-settings.json` — scalars take the highest source's value (a restrictive boolean or enum — the allowManaged*Only locks, the disable* switches, the sandbox lock family — takes the strictest value any source sets) and arrays union, except `fallbackModel`, the restriction allowlists `allowedMcpServers`, allowedProviders, `availableModels`, `strictKnownMarketplaces` and `allowedChannelPlugins`, and `sandbox.credentials.awsPairs` and `sandbox.ripgrep` (the highest source that sets one owns it whole), `modelOverrides` (the whole map of the highest source that sets it, dropped when that source sits below the one that sets `availableModels`), `managedMcpServers` (server names union; a name set by two sources takes the higher source's whole entry), and the keys taken from the highest source only: the auth pins `forceLoginOrgUUID`, `forceLoginMethod`, `forceLoginGatewayUrl` and gatewayInternalNetworks, the credential helpers `apiKeyHelper`, `awsAuthRefresh`, `awsCredentialExport`, `gcpAuthRefresh`, `otelHeadersHelper` and `proxyAuthHelper`, `modelPicker`, `permissions.defaultMode`, `parentSettingsBehavior` and the policyHelper configuration (env keeps its own per-key union). Honored only from the highest-priority source present; enable it only when every lower source is admin-controlled, since lower sources then contribute entries such as `permissions.allow`. HKCU and `--managed-settings` never take part in the merge."
     },
     "forceLoginOrgUUID": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ],
       "description": "Organization UUID to require for OAuth login. Accepts a single UUID string or an array of UUIDs (any one is permitted). When set in managed settings, login fails if the authenticated account does not belong to a listed organization."
     },
     "otelHeadersHelper": {
@@ -717,7 +754,8 @@
           "additionalProperties": false,
           "description": "Custom ripgrep configuration for bundled ripgrep support. Only honored from user, managed/policy, or CLI (`--settings`) settings — project settings (`.claude/settings.json` and `.claude/settings.local.json`) are ignored."
         }
-      }
+      },
+      "description": "Settings for the sandbox that runs Bash commands: whether it is on, and its file and network rules."
     },
     "feedbackSurveyRate": {
       "type": "number",
@@ -795,7 +833,8 @@
           "type": "string",
           "description": "Color of misspelled words (they are also underlined): a terminal color name such as `red` or `magenta`, `#rrggbb`, `rgb(r,g,b)`, `ansi256(n)` or `ansi:<name>`. Default: the theme's error color"
         }
-      }
+      },
+      "description": "Spell checking of the prompt input: whether it is on, and which spell checker it uses."
     },
     "terminalTitleFromRename": {
       "type": "boolean",
@@ -891,13 +930,49 @@
             "type": "object",
             "additionalProperties": {
               "type": "object",
-              "additionalProperties": {}
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              }
             },
             "description": "User configuration values for MCP servers keyed by server name"
           },
           "options": {
             "type": "object",
-            "additionalProperties": {},
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            },
             "description": "Non-sensitive option values from plugin manifest userConfig, keyed by option name. Sensitive values go to secure storage instead."
           }
         },
@@ -964,6 +1039,14 @@
       "description": "Reduce or disable animations for accessibility (spinner shimmer, flash effects, etc.)"
     },
     "timeFormat": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ],
       "description": "Clock format for times shown in the UI: `auto` (default, follows the locale), `12-hour`, `24-hour`, `24-hour-utc` (`18:05Z`), or a strftime pattern such as `%H:%M` (any value containing `%`; other values read as `auto`). A pattern replaces the time everywhere; message timestamps show only the pattern, so include %Y-%m-%d for the date. `/config` offers the presets; a pattern is set here."
     },
     "timeZone": {
@@ -1068,6 +1151,14 @@
       "description": "Glob patterns or absolute paths of `CLAUDE.md` files to exclude from loading. Patterns are matched against absolute file paths using picomatch. Only applies to User, Project, and Local memory types (Managed/policy files cannot be excluded). Examples: `/home/user/monorepo/CLAUDE.md`, `**/code/CLAUDE.md`, `**/some-dir/.claude/rules/**`"
     },
     "theme": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ],
       "description": "Color theme for the UI"
     },
     "editorMode": {

@@ -1,15 +1,19 @@
 # Release 0.3
 
+This page records the notes of the `0.3` release.
+
 Released 2026-09-26.
 Limits usage and cuts prompt size.
-Caps effort and workflow size, replaces the heavy CodeGraph prompt hook with a light one, and replaces the built-in Codex instructions with dotclaude templates.
+This release caps effort and workflow size.
+It replaces the heavy CodeGraph prompt hook with a light one.
+It replaces the built-in Codex instructions with dotclaude templates.
 This line requires Claude Code v2.1.283 or later.
 
 To update:
 
 1. Restart Claude Code.
-1. Run `/dotclaude:apply-settings-profile` again.
-1. If you use the Codex agents, run `/dotclaude:setup-integrations codex` again.
+2. Run `/dotclaude:apply-settings-profile` again.
+3. If you use the Codex agents, run `/dotclaude:setup-integrations codex` again.
 
 ## Added
 
@@ -23,12 +27,13 @@ To update:
 - `install-managed.mjs`: an optional lock that you run with `sudo` in your own terminal.
   - It writes `managed-settings.d/50-dotclaude.json` with the effort cap, fast mode off, and the model list.
   - It never touches `managed-settings.json`.
-  - It checks the file before it moves the file into place, and asks before it replaces a different file.
+  - It checks the file before it moves the file into place.
+  - It asks before it replaces a different file.
   - It keeps backups outside the drop-in directory.
 - Skills anywhere in a message: `/dotclaude:<skill>` works anywhere in a message.
-  When the command is not at the start, a UserPromptSubmit hook injects the skill with the rest of the message as `$ARGUMENTS`.
+  When the command is not at the start, a `UserPromptSubmit` hook injects the skill with the rest of the message as `$ARGUMENTS`.
   For a skill that must run as a command, the hook tells Claude how to start it.
-- PostModelSwitch hook: gives the Fable 5.1 note to a session that switches to Fable, and retracts it on a switch away.
+- `PostModelSwitch` hook: gives the Fable 5.1 note to a session that switches to Fable, and retracts it on a switch away.
   The session-start note alone missed those sessions, because the `model` field is not always present there.
 - Codex prompt replacement: `/dotclaude:setup-integrations codex` builds three model catalogs.
   They are `dotclaude-catalog-interactive.json`, `dotclaude-catalog-worker.json`, and `dotclaude-catalog-review.json`.
@@ -43,14 +48,15 @@ To update:
 ## Changed
 
 - CodeGraph prompt context: a light dotclaude hook, on with `codegraph_hint`, replaces `codegraph prompt-hook`.
-  That command injects up to 9 KB of explored source on any prompt with a word such as "how" or "call", including task notifications and subagent hand-backs.
+  That command injects up to 9 KB of explored source on any prompt with a word such as "how" or "call".
+  This includes task notifications and subagent hand-backs.
   - For prompts you type, the hook looks up the code-shaped names in them (camelCase, snake_case, `name(`, `a.b`) with `codegraph query`.
     It lists only the names that the index has, as name, kind, and file:line.
     Claude calls `codegraph_explore` for the source when it needs it.
   - The setup skill tells you to remove the global `codegraph prompt-hook` entry that `codegraph install` adds.
 - `web-researcher`: runs on Opus 5.5 at low effort, with `maxTurns` 60, instead of Haiku 4.5.
   - It backs each "exists" or "does not exist" claim with the source line that it read.
-  - It gets raw pages instead of WebFetch summaries.
+  - It gets raw pages instead of `WebFetch` summaries.
   - It reports as soon as the question has an answer.
 - Skill loading: Claude can load `recap`, `challenge`, `blind-spots`, and `lessons-learned` when you ask for what they do.
   `polish`, `troubleshoot`, `fresh-eyes`, `review-code-changes`, and `apply-settings-profile` still run only when you name them.
@@ -64,7 +70,8 @@ To update:
 - Staleness notice: the session-start notice also checks for the effort cap.
   It looks at user, project, and local settings, and at managed settings and their drop-ins.
 - Codex worker profile: drops `compact_prompt`, which has no effect with remote compaction on GPT-6.
-  Its `developer_instructions` now match the worker template: Claude lists assumptions instead of stopping to ask.
+  Its `developer_instructions` now match the worker template.
+  Claude lists assumptions instead of stopping to ask.
 - `verify-before-stop` gate: counts these commands as check runs.
   - `bun run validate` (and the `validate` scripts of other package managers)
   - `claude plugin validate`
@@ -72,7 +79,8 @@ To update:
 - Codex load check: runs `codex -p <profile> debug prompt-input` for both profiles.
 - Test command: `bun test ./tests/` replaces `bun test tests/` in `package.json` and CI.
   The bare form is a path filter that also found tests under ignored directories.
-- Markdown lint: the Markdown passes markdownlint, and the shared rules moved to `.markdownlint.jsonc`.
+- Markdown lint: the Markdown passes markdownlint.
+  The shared rules moved to `.markdownlint.jsonc`.
   - Prompt files in `agents/`, `skills/`, `output-styles/`, and `evals/` are exempt from the 80-column limit and keep their step numbers.
   - Two skills had a code fence directly after an XML tag, which Markdown read as part of the tag.
     A blank line now separates them.
@@ -89,8 +97,13 @@ To update:
 
 - Stop gate: it counted any quoted string in inline interpreter code as an edited file.
   A regex literal, or a file that the script only read, counted as an edit and caused "Code changed … no test ran".
-  Now the gate records only the path argument of an actual write call, and paths after a `cd` resolve against that directory.
+  Now the gate records only the path argument of an actual write call.
+  A path after a `cd` resolves against that directory.
 - Guard tests: they failed inside a session with the dotclaude profile applied, because `ANTHROPIC_DEFAULT_SONNET_MODEL` leaked into alias resolution.
   The tests now clear the model alias variables.
 
-Previous: [Release 0.1 and 0.2](Release-0.1-0.2) · Next: [Release 0.4](Release-0.4)
+## Related Pages
+
+- Previous: [Release 0.1 and 0.2](Release-0.1-0.2)
+- Next: [Release 0.4](Release-0.4)
+- [Archive](Archive): the index of the archived pages.

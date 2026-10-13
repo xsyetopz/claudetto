@@ -1,0 +1,248 @@
+// The bounds of the `adherence` checks (design D34), in one place.
+
+import {
+  CLAUDE_HOOKS_DIR,
+  PROJECT_LOCAL_SETTINGS,
+  PROJECT_SETTINGS,
+} from "../../../../kernel/paths.ts";
+
+// The bounds and word lists of the ask on a weaker check are in `weak-limits.ts`, so that each file stays short.
+export * from "./weak-limits.ts";
+
+/** The largest file in bytes that a check reads to compare the text before and after a call. A larger file counts as unread. */
+export const FILE_MAX_BYTES = 1_000_000;
+
+/** The most characters of text that a check scans for banned patterns. A longer text passes unchecked. */
+export const SCAN_MAX_CHARS = 200_000;
+
+/** The most reasons that the write ask of one `Bash` command gives (`shellwrites.ts`). */
+export const ITEMS_SHOWN_MAX = 8;
+
+/** The most script files of one `Bash` command that the git ask and the write ask read (`scripts.ts`). */
+export const SCRIPT_FILES_MAX = 8;
+
+/** The most characters of a changed line that an ask reason shows. A longer line is cut. */
+export const LINE_SHOWN_MAX_CHARS = 80;
+
+// The file lists of the ask for a change that can hide a defect (decision H5), in one place.
+// A list is data and not a bound. Each regular expression runs on a path with `/` separators.
+
+/** The file names of a lint config or a type-check config, matched on the last path part. */
+export const LINT_CONFIG_NAMES = [
+  /^biome\.jsonc?$/,
+  /^\.eslintrc(?:\..+)?$/,
+  /^\.eslintignore$/,
+  /^eslint\.config\..+$/,
+  /^[jt]sconfig(?:\..+)?\.json$/,
+  /^\.?ruff\.toml$/,
+  /^\.markdownlint.*$/,
+  /^markdownlint-cli2\..+$/,
+  /^\.prettierrc(?:\..+)?$/,
+  /^prettier\.config\..+$/,
+  /^\.?stylelintrc(?:\..+)?$/,
+  /^stylelint\.config\..+$/,
+  /^\.?mypy\.ini$/,
+  /^pyrightconfig\.json$/,
+  /^\.flake8$/,
+  /^\.pylintrc$/,
+  /^\.?(?:clippy|rustfmt)\.toml$/,
+  /^\.golangci\..+$/,
+  /^\.shellcheckrc$/,
+  /^\.rubocop\.yml$/,
+  /^\.oxlintrc\.jsonc?$/,
+];
+
+/** The file names of a check runner config, matched on the last path part. */
+export const RUNNER_CONFIG_NAMES = [
+  /^(?:vitest|jest)\.config\..+$/,
+  /^pytest\.ini$/,
+  /^tox\.ini$/,
+  /^\.coveragerc$/,
+  /^bunfig\.toml$/,
+];
+
+/** The file names of a build file with recipes or targets, matched on the last path part. */
+export const RECIPE_FILE_NAMES = /^(?:\.?justfile|makefile|gnumakefile)$/i;
+
+/** The names of a recipe or target that runs a check. A change inside such a recipe asks. */
+export const CHECK_RECIPE = /check|lint|test/i;
+
+/** The folders of a CI file outside `.github`. A file under one of them counts. */
+export const CI_FOLDERS = [".circleci", ".buildkite"];
+
+/** The paths of a CI file under `.github`. Other files there, such as an issue template, do not count. */
+export const CI_GITHUB_PATHS = [
+  /(?:^|\/)\.github\/(?:workflows|actions)\/./,
+  /(?:^|\/)\.github\/dependabot\.ya?ml$/,
+];
+
+/** The file names of a CI file, matched on the last path part. */
+export const CI_NAMES = [
+  /^\.gitlab-ci\.ya?ml$/,
+  /^Jenkinsfile$/,
+  /^azure-pipelines\.ya?ml$/,
+  /^bitbucket-pipelines\.ya?ml$/,
+  /^\.travis\.ya?ml$/,
+  /^\.drone\.ya?ml$/,
+];
+
+/** The paths of a hook file, matched on the whole path. A script that a `hooks.json` names is found in `hookscripts.ts`. */
+export const HOOK_PATHS = [
+  /(?:^|\/)hooks\/(?:hooks\.json|register\.mjs|[^/]+\.txt)$/,
+  new RegExp(`(?:^|/)${CLAUDE_HOOKS_DIR.replaceAll(".", "\\.")}/.`),
+  /(?:^|\/)\.husky\/[^/]+$/,
+  /(?:^|\/)\.pre-commit-config\.ya?ml$/,
+];
+
+/** The paths, from the project root, of the project settings files whose `hooks` value names hook scripts. */
+export const SETTINGS_HOOK_FILES = [PROJECT_SETTINGS, PROJECT_LOCAL_SETTINGS];
+
+/** The path of a plugin manifest from the plugin folder. Its inline `hooks` value names hook scripts. */
+export const PLUGIN_MANIFEST = ".claude-plugin/plugin.json";
+
+/** The file names of a test file, matched on the last path part, besides a file in a test folder (see `TEST_FOLDER`). */
+export const TEST_NAMES = [/\.(?:test|spec)\.[^/]+$/, /^test_.+\.py$/];
+
+/** The file names of a test file with the suffix `_test` or `_spec`. It counts with any extension but a data or doc extension (`DATA_EXTENSIONS`), so `lint_test.txt` is not a test file. */
+export const TEST_SUFFIX_NAME = /_(?:test|spec)\.[^/]+$/;
+
+/** The data and doc extensions. A file with the suffix `_test` or `_spec` and such an extension is not a test file. */
+export const DATA_EXTENSIONS =
+  /\.(?:txt|log|json|jsonl|md|csv|ya?ml|toml|xml|html|out)$/;
+
+/** The folder names of a test folder, in any letter case. */
+export const TEST_FOLDER = /^(?:tests?|__tests__)$/i;
+
+/** The names of a `package.json` script that run a check. A change of such a script asks. */
+export const CHECK_SCRIPT = /lint|test|check/;
+
+/** The code file extensions where an added inline lint suppression asks. */
+export const CODE_EXTENSIONS =
+  /\.(?:[cm]?[jt]sx?|py|rs|go|java|kt|swift|rb|php|cs|c|cc|cpp|h|hpp|sh)$/;
+
+/** The text of an added skipped or focused test in a test file. It counts only in code and not in a string or a regex literal. */
+export const SKIPPED_TEST = [
+  /\b(?:test|it|describe|suite|context)\.(?:skip|only)\b/,
+  /\b(?:test|it|describe)\.todo\s*\(/,
+  /\.skipIf\b/,
+  /\b(?:xit|xtest|xdescribe)\s*\(/,
+  /\bt\.[sS]kip\w*\s*\(/,
+  /\bthis\.skip\s*\(/,
+  /(?:^|[{,])\s*skip\s*:\s*(?!false\b|-?\d|$)\S/,
+  /(?:^|[{,])\s*todo\s*:\s*(?:true\b|["'`])/,
+  /@pytest\.mark\.(?:skip|skipif|xfail)\b/,
+  /@unittest\.skip/,
+  /\bpytest\.skip\s*\(/,
+  /@(?:Disabled|Ignore)\b/,
+];
+
+/** The text of an ignored Rust test. It asks in a `.rs` file at any path. */
+export const RUST_IGNORE = [/#\[ignore\b/];
+
+/** The text of an added inline lint suppression in a code file. It counts only in a comment. */
+export const SUPPRESSION = [
+  /\bbiome-ignore\b/,
+  /\beslint-disable\b/,
+  /@ts-(?:ignore|expect-error|nocheck)\b/,
+  /\bnoqa\b/,
+  /\btype:\s*ignore\b/,
+  /\b(?:pyright|pylint|mypy):\s*(?:ignore|disable)/,
+  /\bnolint/i,
+  /\brubocop:\s*disable\b/,
+  /\bshellcheck\s+disable\b/,
+];
+
+/** The text of an added lint suppression that is an attribute and not a comment. It counts in code and not in a string. */
+export const SUPPRESSION_ATTRIBUTE = [
+  /^\s*#!?\[(?:allow|expect)\(/,
+  /(?:^|\s)@Suppress(?:Warnings)?\(/,
+];
+
+/** The file names of a limits or budget file, matched on the last path part. */
+export const LIMIT_FILE_NAME = /^(?:limits|budget)\.[^/]+$/;
+
+// The `Bash` write forms of the ask for a write to a protected file (task 29.9), in one place.
+// A command name is matched on its base name, after the wrapper commands such as `sudo` and `env`.
+// A write form that is not in these lists gets no ask: `xargs` input, `dd of=`, `rsync`, `curl -o`, `python -c` writes, and a `find -exec` command other than `SHELL_REMOVES`.
+// A target under `/dev` or under a variable other than `CLAUDE_PROJECT_DIR` or `HOME` gets no ask.
+// A target outside the project root or under `~` gets only the ask for a kind from the path alone (not a test file or a limits file).
+// For a test file or a limits file, a write that only adds (a new file, `>>`, or `tee -a`) gets no ask, the same as a `Write` of a new file.
+
+/** The editors that write a file in place with the flag `-i` (`-i.bak`, `-pi`, `-Ei`, or `--in-place`). Each operand but the script is a target. */
+export const SHELL_IN_PLACE = ["sed", "gsed", "perl"];
+
+/** The commands whose operands are all output files: `tee` and `tee -a`. */
+export const SHELL_TEE = ["tee"];
+
+/** The commands that write the last operand, or the `-t` folder: `cp` and `install`. The source is read only. */
+export const SHELL_COPIES = ["cp", "install"];
+
+/** The commands that write the last operand and remove each source, so every operand is a target. */
+export const SHELL_MOVES = ["mv"];
+
+/** The commands that remove or empty each operand. Under `-r`, a folder operand counts as each file in it. */
+export const SHELL_REMOVES = ["rm", "unlink", "truncate"];
+
+/** The commands that replace the last operand with a link when the flag `-f` or `--force` is set. */
+export const SHELL_LINKS = ["ln"];
+
+/** The `git` subcommands that remove files from the work tree. `--cached` removes from the index only, so it gets no ask. */
+export const SHELL_GIT_REMOVES = ["rm"];
+
+/** The `git` subcommands that move files like `mv`. */
+export const SHELL_GIT_MOVES = ["mv"];
+
+/** The commands that remove files found by a search. The `-name` and `-path` values joined with the start paths show the targets, or the start paths when there is no such filter. */
+export const SHELL_FIND = ["find"];
+
+/** The `git` subcommands that overwrite a file of the work tree from the index or a commit. */
+export const SHELL_GIT_RESTORES = ["checkout", "restore"];
+
+// The write words of code in another language, for the ask for a path that the code names.
+// The code is read as words (`codeWords`), so a word such as `File.write` or `fs.rmSync` is one word.
+// A path that the code names counts as a write only when the same code has one of these.
+
+/** The parts of a word of code that show a write, matched in any case: `write_text`, `writeFileSync`, `json.dump`, `shutil.copy`, the open flags `os.O_WRONLY` and `File::WRONLY`, and `inplace=True`. */
+export const CODE_WRITE_PARTS =
+  "write dump save unlink remove rename replace move copy delete truncate rmtree chmod chown symlink append mkdir makedirs rmdir touch utime wronly rdwr o_creat ::creat inplace".split(
+    " ",
+  );
+
+/** The write words that are a whole word, or a whole part of a dotted word (`fs.rmSync`, `FileUtils.rm_rf`). A part such as `rm` would match too many words. */
+export const CODE_WRITE_WORDS =
+  "rm rmSync rm_f rm_r rm_rf cp cpSync cp_r mv ln_s to_csv to_json".split(" ");
+
+/** The open modes that write, as a whole word: `open(p, "w")`, `File.open(p, "a")`. The words of code have no quotes. */
+export const CODE_WRITE_MODES =
+  "w wb wt w+ w+b wb+ a ab at a+ a+b ab+ r+ r+b rb+ x xb x+".split(" ");
+
+/** A redirect in code, such as awk `print > "f"` or Perl `open(F, ">f")`. The words of code drop `>`, so the check reads the text. `->`, `=>`, and `>=` do not count. The Perl read-write open `+<` counts. */
+export const CODE_REDIRECT = /(?<![-=>])>>?(?!=)|\+</;
+
+/**
+ * The options of each command that take a value, so the value is not an operand.
+ * `letters` are the short options with a value, `suffix` are the short options with an optional attached value (`sed -i.bak`),
+ * and `long` are the long options with a value.
+ */
+export const SHELL_OPTIONS: Record<
+  string,
+  { letters: string; suffix: string; long: string[] }
+> = {
+  sed: {
+    letters: "efl",
+    suffix: "i",
+    long: ["expression", "file", "line-length"],
+  },
+  perl: { letters: "eEIMm", suffix: "i", long: [] },
+  cp: { letters: "tS", suffix: "", long: ["target-directory", "suffix"] },
+  mv: { letters: "tS", suffix: "", long: ["target-directory", "suffix"] },
+  install: {
+    letters: "tSmog",
+    suffix: "",
+    long: ["target-directory", "suffix", "mode", "owner", "group"],
+  },
+  ln: { letters: "tS", suffix: "", long: ["target-directory", "suffix"] },
+  truncate: { letters: "sr", suffix: "", long: ["size", "reference"] },
+  restore: { letters: "s", suffix: "", long: ["source"] },
+  checkout: { letters: "bB", suffix: "", long: ["orphan"] },
+};

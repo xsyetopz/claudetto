@@ -1,0 +1,96 @@
+%% dotclaude 1.0.0 architecture: ports and adapters in vertical slices, with a generated composition root.
+%% Solid arrows: calls and data at run time. Dotted arrows: build time.
+flowchart TB
+  subgraph BUILD["Build time (repository only)"]
+    direction LR
+    SRC["src/<br/>kernel/ · plugins/&lt;p&gt;/plugin.ts · plugins/&lt;p&gt;/slices/&lt;s&gt;/"]
+    GEN["tools/generate/<br/>discover · order handlers · copy kernel closure · emit"]
+    TESTS["tests/<br/>kernel/ · architecture/ · &lt;plugin&gt;/&lt;slice&gt;/"]
+    SRC -.-> GEN
+    TESTS -.->|"check generated = source"| GEN
+  end
+
+  subgraph CC["Claude Code 2.1.x (not patched)"]
+    direction TB
+    MODAPI["Mod API<br/>prompt.compose · prompt.section · tool.describe<br/>tool.call · tool.check · agent.spawn · agent.offer<br/>session.start · turn.step · turn.complete<br/>$.command.run · $.prompt.submit · $.session.usage"]
+    CLASSIC["Classic hooks<br/>SessionStart · PostToolUse"]
+    SL["statusLine command"]
+    LOAD["Loaders<br/>skills · agents · output styles · settings · userConfig"]
+    MODEL["Model calls<br/>main session · subagents"]
+  end
+
+  subgraph CORE["Plugin dotclaude (core)"]
+    direction TB
+    ROOT["hooks/register.ts<br/>composition root (generated)<br/>one literal on() for each handler"]
+    subgraph PIPE["Mod chain of each event, by phase<br/>observe → normalize → rewrite → check → answer"]
+      direction LR
+      PROMPT["prompt<br/>system prompt transforms"]
+      SURFACE["surface<br/>tool, agent, reminder transforms"]
+      TRIM["trim<br/>off switches · tool removal"]
+      SEMBR["sembr<br/>rewrite Write and Edit"]
+      GUARD["guard<br/>reads · deny rules"]
+      ASKS["asks<br/>ask before risky edits"]
+      DECIDE["decide<br/>decisions API"]
+      HANDOFF["handoff<br/>handoff · /clear · resume"]
+    end
+    SPEC["spec<br/>dotclaude-spec CLI · /spec /hotfix /ship"]
+    STATUS["statusline<br/>numbers · icons · NO_COLOR"]
+    SETUP["setup<br/>/setup · drift check · snippet"]
+    AGENTS["agents<br/>7 fixed agents"]
+    STYLES["styles<br/>dotclaude:Concise"]
+    KERNEL["kernel/ (generated copy)<br/>slice contract · ports · budget · spec-store · shell · text"]
+  end
+
+  subgraph STORE["Project files"]
+    direction LR
+    SPECS[".dotclaude/spec/specs/*.md<br/>truth"]
+    CHANGES[".dotclaude/spec/changes/&lt;id&gt;/<br/>change · deltas · packages · events.jsonl · handoff.md"]
+    SETTINGS[".claude/settings.json<br/>snippet in schema order"]
+  end
+
+  subgraph EXT["Outside services"]
+    direction LR
+    JEV["TypeSafe Jev API"]
+    SMALL["Small Claude model<br/>fallback decision"]
+  end
+
+  subgraph ADDONS["Add-ons (each works alone, imports no other plugin)"]
+    direction LR
+    CG["dotclaude-codegraph<br/>1 hook · CLI"]
+    BR["dotclaude-browser<br/>WebSearch mod · skill · CLI"]
+    DOCS["dotclaude-docs<br/>skill · ctx7"]
+    SES["dotclaude-sessions<br/>/usage · /start-cost"]
+    LAB["dotclaude-lab<br/>capture · sandbox · schema · eval-compare"]
+  end
+
+  GEN -.->|"writes plugins/"| CORE
+  GEN -.->|"writes plugins/"| ADDONS
+
+  MODAPI --> ROOT
+  ROOT --> PIPE
+  CLASSIC --> SETUP
+  SL --> STATUS
+  LOAD --> AGENTS
+  LOAD --> STYLES
+  LOAD --> SPEC
+  LOAD --> SETUP
+
+  PIPE --> KERNEL
+  SPEC --> KERNEL
+  STATUS --> KERNEL
+
+  SPEC -->|"writes"| CHANGES
+  SPEC -->|"archive applies deltas"| SPECS
+  STATUS -->|"reads via spec-store"| CHANGES
+  HANDOFF -->|"reads via spec-store, writes handoff.md"| CHANGES
+  SETUP -->|"merges"| SETTINGS
+
+  DECIDE -->|"key valid, balance"| JEV
+  DECIDE -->|"no key, invalid, no balance"| SMALL
+  HANDOFF -->|"$.command.run clear, $.prompt.submit"| MODAPI
+  SPEC -->|"/ship spawns implementer, reviewer"| MODEL
+  AGENTS --> MODEL
+
+  CLASSIC --> CG
+  MODAPI --> BR
+  LAB -->|"proxy logs requests"| MODEL

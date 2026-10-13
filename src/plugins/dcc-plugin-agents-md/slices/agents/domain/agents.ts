@@ -1,0 +1,147 @@
+// The pure rules of `dcc-plugin-agents-md`: the names of the files, the globs of `claudeMdExcludes`, the paths of a read command, and the skip of a loaded file.
+// This file has no `node:` import and no use of `Bun`, because Claude Code runs it in the mod runtime.
+// Paths use `/`, and a `\` is read as a separator too, so that a Windows path works.
+
+/** The names that the plugin looks for in each folder, relative to the folder. */
+export const AGENTS_NAMES = [
+  "AGENTS.md",
+  "AGENTS.local.md",
+  ".claude/AGENTS.md",
+] as const;
+
+/** The tier of a loaded file. */
+export type Kind = "user" | "project" | "local";
+
+/** One loaded file: its absolute path, its tier, and its text as loaded. */
+export type Loaded = {
+  readonly path: string;
+  readonly kind: Kind;
+  readonly content: string;
+};
+
+/** A file that the engine's loader read, with the files its `@` imports brought in. */
+export type Found = Loaded & { readonly imported: readonly string[] };
+
+/** The settings that the plugin reads: the globs of `claudeMdExcludes`, and the folders of `permissions.additionalDirectories`. */
+export type Rules = {
+  readonly excludes: readonly string[];
+  readonly dirs: readonly string[];
+};
+
+/** The folder of a path: `/` for a file at the root, `.` for a name with no folder. */
+export const dirOf = (path: string): string => {
+  const at = Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\"));
+  if (at < 0) return ".";
+  return at === 0 ? "/" : path.slice(0, at);
+};
+
+/** The path and the text of one file, which is all that the skip of a loaded file needs. */
+export type Seen = Pick<Loaded, "path" | "content">;
+
+/** The tier of a file, by its name. The user file is the one exception, and the caller sets it. */
+export const kindOf = (name: string): Kind =>
+  name.endsWith("AGENTS.local.md") ? "local" : "project";
+
+/**
+ * A glob of `claudeMdExcludes` as a regular expression on an absolute path.
+ * `**` crosses folders, `*` stops at a `/`, and `?` is one character that is not a `/`.
+ */
+export const globToRegExp = (glob: string): RegExp => {
+  let out = "";
+  for (let i = 0; i < glob.length; i++) {
+    const c = glob.charAt(i);
+    if (c === "*" && glob.charAt(i + 1) === "*") {
+      if (glob.charAt(i + 2) === "/") {
+        out += "(?:.*/)?";
+        i += 2;
+      } else {
+        out += ".*";
+        i += 1;
+      }
+    } else if (c === "*") {
+      out += "[^/]*";
+    } else if (c === "?") {
+      out += "[^/]";
+    } else {
+      out += c.replace(/[.+^${}()|[\]\\]/g, "\\$&");
+    }
+  }
+  return new RegExp(`^${out}$`);
+};
+
+/** A path or a glob with each `\` as `/`, and a drive letter in lower case, because Windows does not tell the case apart. */
+const slashed = (text: string): string =>
+  text
+    .replaceAll("\\", "/")
+    .replace(/^[A-Za-z]:/, (drive) => drive.toLowerCase());
+
+/**
+ * True when one glob of `excludes` matches the absolute `path`.
+ * As in Claude Code, each `\` of the path and of the globs is a `/` for the match, so a Windows path matches a glob with `/`.
+ */
+export const isExcluded = (
+  path: string,
+  excludes: readonly string[],
+): boolean =>
+  excludes.some((glob) => globToRegExp(slashed(glob)).test(slashed(path)));
+
+const strings = (value: unknown): string[] =>
+  Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : [];
+
+/** The named fields of a value that may be an object. A value that is not an object has none. */
+export type Fields<K extends string> = { readonly [P in K]?: unknown };
+
+const fields = <K extends string>(value: unknown): Fields<K> =>
+  typeof value === "object" && value !== null ? (value as Fields<K>) : {};
+
+/** The rules that the plugin takes from the settings it reads. A missing key is an empty list. */
+export const rulesOf = (settings: unknown): Rules => {
+  const root = fields<"claudeMdExcludes" | "permissions">(settings);
+  return {
+    excludes: strings(root.claudeMdExcludes),
+    dirs: strings(
+      fields<"additionalDirectories">(root.permissions).additionalDirectories,
+    ),
+  };
+};
+
+const READERS = new Set(["cat", "head", "tail", "less", "more", "bat", "nl"]);
+
+const unquote = (word: string): string => word.replace(/^(["'])(.*)\1$/, "$2");
+
+/** The file operands of a `Bash` read such as `cat a.ts | head -5`. Each segment of a pipe or a list counts. */
+export const readPaths = (command: string): string[] =>
+  command.split(/&&|\|\||[;|]/).flatMap((segment) => {
+    const [name, ...args] = segment.trim().split(/\s+/).map(unquote);
+    if (name === undefined || !READERS.has(name)) return [];
+    return args.filter((arg) => arg !== "" && !arg.startsWith("-"));
+  });
+
+/**
+ * The files of `found` that load now: a path that `known` holds is skipped, a text that `known` holds is skipped,
+ * and so is a file that an earlier file of `found` imported.
+ * A file that a `CLAUDE` file imports has its path in `known`, so a link or an import loads it once.
+ */
+export const freshFiles = (
+  known: readonly Pick<Loaded, "path" | "content">[],
+  found: readonly Found[],
+): Loaded[] => {
+  const paths = new Set(known.map((file) => file.path));
+  const texts = new Set(known.map((file) => file.content.trim()));
+  const fresh: Loaded[] = [];
+  for (const file of found) {
+    const text = file.content.trim();
+    if (paths.has(file.path) || texts.has(text)) continue;
+    paths.add(file.path);
+    texts.add(text);
+    for (const path of file.imported) paths.add(path);
+    fresh.push({ path: file.path, kind: file.kind, content: file.content });
+  }
+  return fresh;
+};
+
+/** The text that a `prompt.mention` or `tool.call` `context` entry carries for one nested file. */
+export const nestedText = (file: Loaded): string =>
+  `Contents of ${file.path}:\n\n${file.content}`;

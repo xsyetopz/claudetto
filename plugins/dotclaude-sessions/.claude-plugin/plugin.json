@@ -1,7 +1,7 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "dotclaude-sessions",
-  "version": "0.28.0",
+  "version": "1.0.0",
   "description": "Measures the start of a Claude Code session by source, and the usage of each run: model calls, context that each call reads again, and skills that a period did not use.",
   "author": {
     "name": "xsyetopz"

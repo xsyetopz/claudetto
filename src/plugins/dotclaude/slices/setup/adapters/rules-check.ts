@@ -1,0 +1,49 @@
+// The rule files of the drift check: it reads `.claude/rules/` of the project and the tracked files.
+// The check costs no tokens, because a script runs it and no model call is made.
+// The logic is `checkRule` in the kernel, and this file gives it the YAML parser and the glob matcher of Bun.
+
+import fs from "node:fs";
+import path from "node:path";
+import { checkRule, type RuleProblem } from "../../../../../kernel/rules.ts";
+
+/** The tracked files and the untracked files that the ignore rules keep, relative to `cwd`. Empty when `cwd` is not a git repository. */
+const listFiles = (cwd: string): string[] => {
+  const r = Bun.spawnSync(
+    ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+    { cwd },
+  );
+  return r.exitCode === 0
+    ? r.stdout.toString().split("\n").filter(Boolean)
+    : [];
+};
+
+/** The `.md` files under `dir`, sorted. */
+const ruleFiles = (dir: string): string[] =>
+  fs.existsSync(dir)
+    ? [...new Bun.Glob("**/*.md").scanSync({ cwd: dir })].sort()
+    : [];
+
+/** The problems of the rule files in `.claude/rules/` of `projectDir`. */
+export const projectRuleProblems = async (
+  projectDir: string,
+): Promise<RuleProblem[]> => {
+  const dir = path.join(projectDir, ".claude", "rules");
+  const names = ruleFiles(dir);
+  if (names.length === 0) return [];
+  const files = listFiles(projectDir);
+  const problems: RuleProblem[] = [];
+  for (const name of names) {
+    const text = await Bun.file(path.join(dir, name)).text();
+    problems.push(
+      ...checkRule(
+        // The rule path is a project path, with `/` on each OS.
+        path.posix.join(".claude", "rules", ...name.split(path.sep)),
+        text,
+        files,
+        (yaml) => Bun.YAML.parse(yaml),
+        (glob, file) => new Bun.Glob(glob).match(file),
+      ),
+    );
+  }
+  return problems;
+};

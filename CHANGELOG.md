@@ -10,264 +10,262 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ## [Unreleased]
 
-## [0.28.0] - 2026-10-09
+## [1.0.0] - 2026-10-13
 
 ### Added
 
-- `just typecheck` runs `tsc --noEmit` on the lab tests and on the core hooks module, and `just check` runs it after the lint.
-  The lab tests use the types of the mods API in place of `any`.
-- The `WebSearch` hook of `dotclaude-browser` runs `agent-browser` with the newest CloakBrowser binary in `~/.cloakbrowser/` when one is present, because plain headless `agent-browser` got a bot check from DuckDuckGo.
-  The `backend` option `cloakbrowser` now needs that binary and no longer denies each search.
-- The status line has 3 columns when the terminal has about 130 columns.
-  The left column shows the session, the middle column shows the context, and the right column shows the 5-hour, 7-day, and Fable windows.
-  A narrower terminal keeps the row packing.
-  After the user runs `/context`, the middle column shows the exact rows of the newest table, and the messages are the total minus them.
-  Before that, it shows only the free tokens.
-  The Fable window comes from the usage cache of Claude Code, and it is hidden when that cache is older than 1 hour.
-- The status line has segments for the context, the cache, and each usage limit with its pace and reset credits.
-- The add-on plugin `dotclaude-codegraph` gives Claude the code graph of a project from the CodeGraph CLI `codegraph`.
-  It works without the core plugin, and it runs only in a project that has a `.codegraph/` index.
-  At session start, it syncs the index and adds one line that names `impact` and `callers`.
-  At a `Grep` or `Glob` call for a name, it adds the definition and the callers of that name.
-  After an edit, a write, or a git command that changes the tree, it syncs the index in the background.
-  Install it with `claude plugin install dotclaude-codegraph@dotclaude`, and install the CLI and run `codegraph init` yourself.
-- The add-on plugin `dotclaude-docs` gets current library docs with the Context7 CLI `ctx7`.
-  It works without the core plugin and with no key.
-- The add-on plugin `dotclaude-sessions` measures your sessions, for each user of Claude Code.
-  `dotclaude-start` gives the start of a session by source: the built-in parts, each plugin, each MCP server, `CLAUDE.md` and memory, the output style, and the system prompt.
-  `dotclaude-start --compare BASE OTHER` gives the difference between a start without a plugin and a start with it.
-  `dotclaude-usage` gives the model calls of each run, the context that each call reads again, and the skills that the period did not use.
-  Its header says `API-equivalent at list prices, not a subscription bill`.
-  The skills `start-cost` and `usage` tell Claude to run them.
-- The add-on plugin `dotclaude-lab` is for plugin authors.
-  `dotclaude-sandbox` runs Claude Code in a config apart from yours, and `--check-frontmatter` fails when the debug log names an unknown frontmatter field.
-  `dotclaude-capture` logs the requests of Claude Code through a local proxy and sizes the first one, `dotclaude-schema` writes the JSON Schema of `settings.json`, and `dotclaude-eval-compare` runs `claude plugin eval` on two plugin folders.
-  The skill `eval-compare` tells Claude how to compare the plugin arms.
-- `dotclaude-browser` answers each `WebSearch` call with a search in the headless browser.
-- `dotclaude-jev` adds a second-opinion tool that asks TypeSafe Jev about a decision.
-  With no `TYPESAFE_API_KEY`, the plugin registers no tool, so it costs no tokens.
-  The retries of the client end before the 45 s kill of the hooks module, and each bound is in `features/jev/limits.mjs`.
-  The question gives each option at least one fact for it and one fact against it, and no lean of the user, the notes, or the team.
-  The question of `AskUserQuestion` always goes to you with the pick of Jev, also when Jev is sure, and Claude never skips it.
-  The fallback result tells Claude to answer from its own check and to tell you that no second opinion was available.
-  The error text of the API that goes to Claude is cut to 200 characters (`ERROR_BODY_MAX`).
-- The core plugin has one route for the system prompt.
-  The rules that every model shares are system prompt sections in `features/prompt/shared.mjs`, and `prompt.compose` puts them before the model notes.
-  The output style holds only the role, the tone, and the format, because Claude Code sends an output style as a message in the conversation and not in the system prompt.
-  A kept eval trace showed the style as an `output_style_instructions` attachment, and with the rules in it the plugin arm scored like the no-plugin baseline on `facts-release-scope` and `report-count`.
-  The prompt variants hold only the text of one model, such as the step line of Haiku 5.5, and the block that a subagent gets at spawn.
-  The Sonnet and Haiku variants no longer repeat the verification rule, and the Fable variant no longer repeats the extras rule, because the shared sections hold both.
-  Mythos 5.1 gets the Fable variant, because one prompting guide covers both models.
-  The evidence line tells Claude to run a new check before it undoes finished work because of a claim of fault, also when the user tells it to delete the work.
-  The `doing_tasks` section tells Claude that a manifest version with no tag is the release in progress, so its changelog entries go in the section of that version.
-  The `counts` section tells Claude to copy each count from a tool output and to look first for a project command that prints it.
-  The `Bash` tool text tells Claude to end commit messages and pull request text with the attribution text of the session.
-- The source of the wiki in `wiki/` is grouped in folders.
-  The page names and the page URLs are unchanged, because a GitHub wiki addresses a page by its bare name.
-- The hooks module cuts the prompt surface with the handlers `prompt.attachment` and `tool.describe`.
-  They shorten the `sandbox_instructions` and `auto_mode` texts and the descriptions of large tools, and they defer `AskUserQuestion` and `ListAgents`.
-  With `sandbox.allowUnsandboxedCommands` set to `true`, the short sandbox text keeps the rule that a run outside the sandbox needs an approval.
-  The short `Agent` tool text does not name `SendMessage`, because the output style tells Claude to start a new subagent for more work.
-- A subagent that reaches its context bound gets a message to report now.
-- A subagent with 2 turns left before its `maxTurns` gets a message to report now, in the same note as the context message when both apply.
-- Hooks check the rules of a project that code can check.
-  They ask before `git stash`, `git reset`, and a `git checkout` or `git restore` of a path.
-  They ask before a change to an existing line of a test file or a limits file.
-  They deny a Markdown write or a commit message with a code item outside a code span.
-  They deny text that claims an approval of the user when no prompt of the user gives one.
-  They also ask before an edit of a lint or type-check config, a check runner config, a CI file, or a hook file (`hooks/hooks.json`, `hooks/register.mjs`, a `hooks/*.txt` text, `.claude/hooks/`, a script that a `hooks.json` command names, the inline `hooks` of `plugin.json`, `.husky/`, and `.pre-commit-config.yaml`), the keys `hooks`, `permissions`, `disableAllHooks`, `enabledPlugins`, and `sandbox` of `.claude/settings*.json`, the linter sections of `pyproject.toml` and `setup.cfg`, a check script of `package.json`, and a check recipe of a `justfile` or `Makefile`, and before an added skipped or focused test (`.skip`, `.only`, and `.todo`) or an added inline lint suppression.
-  A `Bash` write to such a file also asks, and so does a `Bash` write to a test file, a limits file, a settings file, or a recipe file (`sed -i`, `perl -i`, `>`, `>>`, `tee`, `cp`, `mv`, `install`, `rm`, `unlink`, `truncate`, `ln -f`, `git checkout --`, `git restore`, `git rm`, `git mv`, and `find` with `-delete` or `-exec rm`).
-  A `Bash` write that only adds to a test file or a limits file gets no ask, the same as a `Write` of a new file.
-  A path under `/dev` or under a variable other than `CLAUDE_PROJECT_DIR` or `HOME` gets no ask.
-  A path under `~` or outside the project root gets the ask for a lint config, a runner config, a CI file, a hook file, a settings file, and a recipe file, and not for a test file or a limits file.
-  A `Bash` write to `pyproject.toml`, `setup.cfg`, or `package.json` gets no ask.
-  Each ask reason is written for you and says why the change can hide a defect.
-- A `Read` rule hook denies a `Bash` command that only prints a file (`cat`, `sed`, `head`) and gives the `Read` call instead.
-- Semantic line breaks: a written Markdown file and the quoted heredoc of `git commit` and `gh pr create` get one sentence on each line.
-- A prompt hook on `Stop` blocks one time a message that calls a part done when no passing check shows it.
-  It also blocks one time a message that starts with agreement, praise, thanks, or an apology in place of the state, in any language, or that changes an earlier answer with no evidence.
-  It also blocks one time a message that says the agent raised a bound, weakened or skipped a test, or edited a check or a config so that a check passes, when you did not ask for it.
-  It never runs on `SubagentStop`.
-  Sonnet 5.5 judges the message, and the prompt asks for the JSON answer first, because an evaluator that wrote prose made Claude Code send the hook prompt back to the session as feedback.
-  The prompt also tells the session agent to send its report again when the prompt comes back to it as `Stop hook feedback`.
-- A drift check at `SessionStart` tells Claude about these differences:
-  a built-in plugin that is on again, a synced claude.ai skill, a Claude Code version other than the tested one, a system prompt section that dotclaude does not know, an env var that overrides the `model` and `effort` of the agents, and managed settings that seat the guard of Claude Code.
-- `schemas/claude-code-settings.json` and `schemas/claude-code-managed-settings.json` hold the settings schemas of Claude Code 2.1.296, and `dotclaude-schema` of the plugin `dotclaude-lab` builds them.
-  The version is in the standard `$comment` keyword at the root of each file, such as `Extracted from Claude Code 2.1.296`.
-  It is in no file name and in no made-up key, so the `$schema` link stays the same after an update.
-  The generator puts the code items of each description in single backticks, so an editor shows them as code.
-  The generator takes the last definition before the schema for a reused short name, so `hooks` and `sandbox.credentials.sigv4` carry no wrong shape.
-- The core plugin has a `settings.json` at its root, which holds only keys that Claude Code reads from a plugin.
-  Today it sets no key.
-  A test checks it against the generated schema and fails on a key that a plugin must not set.
-- The `setup` skill merges the settings snippet into the settings file that you pick, after you see each change and agree.
-  Without it, 0.28.0 applied none of the snippet: compaction stayed on, the full system prompt stayed, and the status line, the permission rules, and the sandbox were not set.
-  The snippet ships in `lib/snippet.mjs`, which setup and the drift check share, and a test keeps it equal to the wiki page `Settings-Snippet`.
-  The status line commands get the absolute path of the installed plugin folder, so run setup again after each plugin update.
-  When `dotclaude-docs` is installed, the merge adds its allow rule and domain, and `availableModels` gets `claude-mythos-5-1` in place of `claude-fable-5-1` when the cached model catalog of the account offers it.
-  Then setup checks the `openspec` CLI, offers the install, and runs `openspec init --tools claude`, `openspec config set delivery skills`, and `openspec update` after you agree.
-  Last, setup checks the tools of each installed add-on (`codegraph` and its index, `agent-browser`, `npx`, `TYPESAFE_API_KEY`, and Node.js), offers each missing global install, and runs `codegraph init -y` after you agree.
-  It never asks for the Jev key or writes it.
-- The drift note at session start reports the values of the snippet that the settings do not have, and a status line command that runs another plugin folder or a 0.27.0 stub, with `/dotclaude:setup` as the fix.
-- The format of the evals is the suite format of `claude plugin eval`, which Claude Code owns.
-  The 14 cases are in `plugins/dotclaude/evals/`, because the command reads cases only from a folder inside the plugin.
-  `just eval` runs them with no published report and a cost limit.
-  The first run on 2026-10-09 scored 1 on the plugin arm in 13 of 14 cases (`wiki/evals/Evals-0.28.0.md`).
-  The graders on `Edit` and `Write` now match the protected path only after `file_path`, and the `Bash` graders match whole words only.
-- The output style and the agents `debugger`, `implementer`, `reviewer`, and `test-runner` tell Claude to read a tool, a command, or a convention from the project before it chooses one.
-  The files to read are the build and task files of the project, the config files of its tools, and `CLAUDE.md`, in any language, and Claude names the file that it read.
-  A subagent saw `biome.json` and chose Prettier, although the project runs `biome ci`.
-- The output style tells Claude that background work of a stopped subagent still runs, so Claude waits for its notification and does not start the same work again.
-  It also tells Claude that a check that fails, such as a process list that the sandbox stops, shows nothing about the state that it checks.
-- For contributors: the `description` and the `Stop` prompt of `hooks.json` come from `description.txt` and `Stop.prompt.txt` next to it, with one sentence on each line.
-  `just hook-text` writes them into `hooks.json`, and a test fails when the two differ.
-- `just eval` and `just eval-variant` run under a lock (`tools/lock.mjs`), so a second eval run cannot start while one is in progress.
-- The output style tells Claude to copy each count in a report from a tool output, and the eval case `report-count` checks it.
-  A count of lines or items in a file or an output is a computed count, so Claude runs a command of the project or `grep -c` to get it, and it adds no count of its own next to a copied count.
-- The output style tells Claude to read the scope of the work from the state of the project: the branch, the tags, the version, and the open plans.
-  For example, a changelog entry for a version that is bumped and not tagged goes in the section of that version, and the eval case `facts-release-scope` checks it.
-- The output style and the `implementer` agent tell Claude that a test checks what the code does, such as a decision, an exit status, a file, or a value that a message carries, and not the words of a message, a doc, or a comment.
-  When the user gives a rule about text, Claude follows it when it writes, and does not make a test of it.
-  The `reviewer` agent looks for tests of prose, a raised bound, a skipped test, and an edited lint or CI config.
-- The output style has a `<blocks>` section, and the block of each subagent has a short form of it.
-  A failing check, a lint rule, a test, a bound, a hook, and a permission rule each stop the work for a reason.
-  Claude changes the work to fit the block or asks you, and it does not raise a bound, weaken or skip a test, or edit a check, a config, or a hook so that a check passes, unless you ask.
-- The agents `debugger` and `implementer` say what to do when a check fails: fix the code, or report the failure with the evidence.
-  The `debugger` agent no longer changes a test, and it reports a test that it thinks is wrong to the parent.
-- `dotclaude-browser` tells Claude to ask you before it passes a blocked page and before `--auto-connect`.
-  With the `cloakbrowser` backend and no binary, Claude tells you and does not switch to plain `agent-browser`.
-- The skills `docs` and `eval-compare` tell Claude to stop and tell you when it reaches the bound of 3 `ctx7` calls or the cost bound of a run.
-  Claude does not raise the bound or fill the gap from memory.
+- The `handoff` slice of the core plugin ports the handoff of 0.28.0 to the hooks module and a CLI `dotclaude-handoff`.
+  The handoff file goes to `.dotclaude/handoff/`.
+  The `/handoff` skill names the file, and the `turn.complete` hook runs `/clear` and the resume prompt.
+  The option `mainHandover` is `manual` by default, and it takes `auto` and `off`.
+  A `tool.call` hook adds a report-now note to a subagent that is over its context bound.
+  The `turn.complete` hook runs the resume only after an `answer` turn, waits at most `HANDOFF_WAIT_TURNS` turns for the file, submits the write prompt once more, and then gives the `manual` hint.
+  A `dotclaude-spec merge` or `accept` also counts as a package that is done, and quoted text does not.
+  On one session, a handoff against a compaction of the same session cost $0.0630 against $0.2288, took 9.1 s against 23.2 s, and left 18,487 tokens of context at the last call against 28,418 at the first call of the follow-up.
+  Each side is one run.
+  The measurement is in `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.
+- The `attribution` slice of the core plugin adds the attribution to each `git commit` and each `gh pr create` that Claude makes, with no model call.
+  A `tool.call` hook adds a `--trailer` with `Co-Authored-By` and the model of the main loop, such as `Claude Opus 5.5`, and it adds the Claude Code footer to a pull request body.
+  A call of a subagent, or a model with no name and version, gets the name `Claude`.
+  The `attribution` setting of the user stays in force, an empty value turns its part off, and `includeCoAuthoredBy: false` turns both parts off when no `attribution` setting is set.
+  The text of `tool-bash.md` no longer asks Claude to copy the lines.
+- The spec store has schema 2, with no compatibility with schema 1, and `/dotclaude:specify`, `plan`, `implement`, `review`, `merge`, `accept`, and `archive` replace `/spec`, `/ship`, and `/hotfix`, each with a `dotclaude-spec` subcommand of the same name.
+  A change has the states `draft`, `specified`, `planned`, `implementing`, `accepted`, `archived`, and `canceled`, and a package has `planned`, `doing`, `verified`, `approved`, `done`, `blocked`, and `canceled`, each with a gate that the CLI checks and an event that records the evidence.
+  `block` and `drop` replace `lane`, `verify` runs the `verify` command of a package, `review` records `approve` or `reject` with a finding and a decision, `ready` prints the packages that can start, `merge` needs an `approved` package, and `packages.md`, `new`, `retry`, `record`, and `hotfixes/` go away.
+  A small fix is a trivial change.
+- The `spec` slice moves a package with no model call.
+  An `agent.spawn` hook runs `dotclaude-spec implement <package>` when `/dotclaude:implement` starts the `implementer` of the package, and no `turn.complete` hook moves a package, because `/dotclaude:implement` runs `verify` after the agent ends.
+  The hook finds the package in the `id:` line of the brief in the prompt.
+- The plugin `dotclaude-sessions` answers the typed commands `/dotclaude-sessions:usage` and `/start-cost` with a `command.run` hook.
+  The hook runs the CLI and shows its output with no model turn.
+  Arguments that need a shell go to the skill.
+- The CLI `dotclaude-run-checks` of the new `checks` slice runs a batch of check commands in order, with no model turn.
+  For each command it prints the exit status, the time, the counts of passed, failed, and skipped tests (`bun test`, `vitest`, `jest`, `pytest`, `cargo test`, `go test`), and the failure lines.
+  The full output goes to a log file in `.dotclaude/checks/`, and the exit status is 1 when any command fails.
+  A command of plain words runs with no shell, and a command with shell syntax runs through `sh -c`.
+- The workflow `claude.yml` answers an `@claude` mention with `anthropics/claude-code-action`.
+- The workflow `eval-new-claude-code.yml` runs `just eval` one time for each release of `anthropics/claude-code` that is higher than the version of `ci.yml`.
+  Both workflows need the secret `CLAUDE_CODE_OAUTH_TOKEN`, and they skip when it is empty.
+- The `handoff` slice gives a subagent a report note at 4 turns left.
+  The note tells the subagent to commit its work first, and then to report.
+  In a subagent, the `guard` hook denies a git command that changes the shared checkout or `refs/stash` (`git.shared-checkout`).
+- The `/dotclaude:review` skill runs one `reviewer` on the diff of each verified package, with no implementer report.
+  `/dotclaude:implement` and `/dotclaude:review` start with `dotclaude-spec runs`.
+  It counts the runs against the tier cap that `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` sets, and against the `five_hour` and `seven_day` windows.
+  The status line writes `.dotclaude/rate-limits.json` atomically.
+- The `dotclaude-setup settings --apply` command writes `autoMode.hard_deny` rules to the user settings only.
+  The rules come from the catalog in `src/kernel/policy/`, and `$defaults` stays in place.
+  The command puts `system.privilege` in `soft_deny`.
+- The `guard` hook denies the literal destructive forms of git, the system, and the disk in every session.
+  A stopped agent stops, and it asks the user to run the exact command with `!`.
+- The `guard` hook reads a command substitution inside a git command, so it denies `git $(echo reset) --hard`, `git $(echo reset)--hard`, and `bash -c "git $(echo reset) --hard"`.
+  The shell reader keeps the source text of the substitution in its word.
+- The shared prompt names `dotclaude-run-checks`, and it tells the agent to quote each command.
+  The CLI exits 2 when an argument starts with `-`.
+  The summary of a passing command shows its output when the output has at most 10 lines.
+- The `decide` slice of the core plugin asks Jev for each decision that facts settle.
+  The CLI `dotclaude-decide` calls the TypeSafe API.
+  When the TypeSafe client fails, for example with no key, an invalid key, or no balance, the decision goes to a small Claude model through `$.model.complete`.
+- The `prompt` slice gives each model its own system prompt variant.
+  It adds a block to the end of each subagent task prompt, and it sends a `context_management` section without compaction.
+- The `surface` slice shortens the descriptions of the tools `Agent`, `Bash`, `ListAgents`, and `Read`.
+  It drops some built-in agent types from the agent listing and from dispatch.
+- The `sembr` slice rewrites a Markdown file on `Write` and `Edit`, so each sentence starts on its own line.
+  In `Bash`, it rewrites the quoted text of `git commit` and `gh pr create` in the same way.
+- The output style `dotclaude:Concise` is based on the built-in Concise style.
+- The core plugin has the skills `/setup`, `/handoff`, `/rules-creator`, and the spec phases `/specify`, `/plan`, `/implement`, `/review`, `/merge`, `/accept`, and `/archive`.
+  `/rules-creator` writes the rule files of `.claude/rules/`, with `paths` globs, and the skill `drive-web-browser` of `dotclaude-browser` is now `browse`, the name of its slice.
+- The `setup` slice reads the account type from `claude auth status --json`.
+  Pro is the baseline, and Max 5x and Max 20x get more parallel subagents and a higher effort.
+- The `setup` slice writes `autoMode` to the user settings, with `$defaults` in each list.
+  The `autoMode.allow` list lets the classifier run the removal of agent worktrees and of the Claude Code temp folder.
+- The `trim` slice turns off 9 built-in parts that no slice of dotclaude uses, each with its env var or settings key.
+  The advisor tool stays on, because with no `advisorModel` it adds no token, and `dotclaude-setup settings --advisor` sets `advisorModel` only when the user asks.
+- The `stamp` slice of the core plugin appends the dotclaude version and the short build SHA to each session at its start, as a `system` notice.
+  The SHA comes from `installed_plugins.json`, or from `git` when the plugin root is a dotclaude checkout, else it is `unknown`.
+  The notice costs no model token.
+  A resume on the same build adds no notice, and a resume on a new build adds one.
+- The `dotclaude-usage` report shows the build of each session, and the cost of each build.
+  A session with no stamp row shows `unknown`.
+- The add-on plugin `dcc-plugin-agents-md` loads `AGENTS.md` files where Claude Code loads `CLAUDE.md`, in place of the built-in `cc-plugin-agents-md`.
+  It loads the file of the user folder, `AGENTS.md`, `.claude/AGENTS.md`, and `AGENTS.local.md` in each ancestor of the working directory, and the files of `permissions.additionalDirectories` under `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD`.
+  A nested file loads once in a session, when Claude reads or changes a file in its folder, or when the user mentions such a file, and it loads again after a compaction.
+  It skips a file that a `CLAUDE` file already loads, and `claudeMdExcludes` applies to it.
+  The files of the start cost 17 tokens less than the same text in `CLAUDE` files, and each nested file costs 7 tokens more, because Claude Code puts a prefix before the context of a hook.
+- The opt-in add-on plugin `dcc-plugin-you-should-know` shows one thing that the user should know before Claude changes something, in place of the built-in `cc-plugin-you-should-know`.
+  It checks the first `Edit`, `Write`, `NotebookEdit`, or changing `Bash` call of each turn in `tool.check`, and it does not stop or change the call.
+  It shows the topic in a band above the prompt, with a heads-up that fills the prompt for a note to the next call of the main agent, and a dismiss.
+  It makes one Haiku call with the prompt and the pending action, and no transcript, in about 2 to 3 seconds and about 410 input tokens.
+  After an HTTP 429 it forks the main conversation for the rest of the session, and a failed or slow call, a subagent call, or a topic that showed already gives no band.
+- The `guard` hook denies a delete of the default branch, a mirror push, and a force push with no ref.
+- The `guard` hook denies a force push with `--all` or `--tags` and a ref (`git.force-push-default`).
+  It names the default-branch and mirror pushes in the rule of the default branch.
+- The `guard` hook counts `--force-with-lease` as a force push, as it counts `--force` (`git.force-push-default`).
+- The `guard` hook reads a forced branch delete in a short-flag cluster, such as `-Df` and `-fd`.
+- The `guard` hook denies a destructive git command whose name a substitution writes, such as `$(echo git) reset --hard`.
+- The `guard` owners check reaches the repositories of `git fetch`, `git pull`, `git remote add`, `git submodule add`, and `pip install git+URL`.
+- `just sandbox-install [PLUGIN...]` installs plugins of this checkout into a new sandbox config with `claude plugin marketplace add` and `claude plugin install`, as a user installs them.
+  `just sandbox-installed` starts that sandbox again with no new install.
 
 ### Changed
 
-- The eval cases guard a protected file with a file-state `regex` grader (`kept-<path>`) on its final content, and not with a `Bash` text grader, because command text cannot tell a write from a read.
-  `just eval` always passes `--keep-temp`, so each run keeps its sandbox and `trace.jsonl`.
-- `just eval` and `just eval-variant` stop before the first run when they run in the Bash sandbox of Claude Code, such as with `! just eval`.
-  In the sandbox, the model calls of the runs go through its proxy, and runs stopped on a model call until the 600 s timeout of the case.
-- The git ask and the write ask also read a quoted heredoc as commands when a loop, `xargs`, or a shell runs its lines, such as `bash -c "$c"` in a `while read` loop, `| sh`, `source /dev/stdin`, or `sh -c "$(cat)"`.
-  They also read a here-string given to a shell, and a git subcommand from a variable or from `xargs` gets the git ask.
-  Before, a `git stash` in the brief of the `test-runner` script got no ask.
-- The git ask and the write ask read code in any language that a program other than the shell runs, such as `python3 - <<'EOF'`, `node -e '...'`, or a heredoc written to a file that `python3` then runs.
-  They have no parser for the language, and they read the words of the code, so `os.system("git stash")` gets the git ask, and a protected path that the code names gets the write ask.
-- The git ask and the write ask read the script file that a command runs, such as `python3 x.py` or `bash run.sh`, except in a test run.
-  A shell script is read as shell, and a file in another language gives an ask only for the commands in it.
-- `dotclaude-eval-compare` adds no `--scaffold` and no `--allow-tools Bash,Write,Edit`, because each one runs the scripts or the tools of a suite as the user.
-  Add them in the options for suites that you trust.
-  `just eval-variant` adds both for the suite of this repository.
-  The `eval-compare` skill no longer grants `Bash(dotclaude-eval-compare *)`, so Claude Code asks you before each run.
-  A bound in the form `--max-cost-usd=N` is kept, and no second bound is added.
-- With the `backend` option `cloakbrowser`, a `WebSearch` that falls back to the built-in tool gives Claude a notice with the reason, such as a bot check.
-  The notice tells Claude to tell you.
-- The `drive-web-browser` skill loads the `agent-browser` guide through the new bin `dotclaude-browser-guide`, which cuts the guide at 40,000 characters and names the command for the rest.
-  A timeout or a failed run gives its reason, and only a missing binary gives the install text.
-- The eval cases `destructive-ask`, `big-file-subagent`, and `library-docs` no longer name the graded behavior in the prompt.
-  `destructive-ask` now asks the agent to free disk space in a project whose large files are a customer export and a database, and it no longer needs a question, because a report with no delete is also correct.
-  `report-count` no longer names its script in `tasks.md`.
-- The wiki has the shape of the Claude Code docs: an overview, a quickstart, a reference page for each plugin, `Hooks`, `Troubleshooting`, and `Undocumented-Reads`, which gives the source of each read of undocumented data and how it breaks.
-  The old release pages are in `wiki/archive/`.
-- CI runs `just check` with Claude Code 2.1.296, and `just lab` runs the lab of each plugin that has a `tests/` folder.
-  The repository has `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, issue and pull request templates, and `dependabot.yml`.
-- Each plugin manifest has `$schema`, `keywords`, and `homepage`, and its description is the same text as in the marketplace.
-  The `backend` option of `dotclaude-browser` lists its values, `agent-browser` and `cloakbrowser`.
-- The lab bins take flags in place of custom env vars: `dotclaude-sandbox --dir DIR` (also `--clean` and `tools/start-run.mjs`) and `dotclaude-capture --upstream URL`.
-  `dotclaude-sandbox` finds `claude` on `PATH` only, and the capture proxy reads `ANTHROPIC_BASE_URL` when `--upstream` is not set.
-- For contributors: the sandbox, the request capture, the settings schema, the start measure, and the usage report moved from `tools/` into `dotclaude-lab` and `dotclaude-sessions`.
-  `just sandbox` gives `--plugin-dir` for each plugin of the checkout, and `DOTCLAUDE_SANDBOX_PLUGINS` is removed.
-  `dotclaude-sandbox` makes each `--plugin-dir` absolute, because `claude` runs in the sandbox project and skips a relative folder.
-  `just measure` passes the start bounds of `tools/limits.mjs` to `dotclaude-start`, and the usage report no longer reads `verdicts.jsonl`.
-  `just debug-agents` runs `dotclaude-sandbox --check-frontmatter`.
-- For contributors: the tests are in one folder for each feature, such as `tests/dotclaude/guard/`, in place of file names with a shared prefix.
-- When the headless browser of `dotclaude-browser` fails or gets no search results, such as a bot check, the built-in `WebSearch` answers the call.
-  Before, the hook denied the call, and a session could end with no answer.
-- The size bounds that equaled the current file size are gone (`STYLE_MAX_BYTES`, `VARIANT_MAX_BYTES`, and `SKILL_DESCRIPTION_MAX_CHARS`), and size targets in `tools/limits.mjs` replace them: `CLAUDE.md` at most 6 KB, skill metadata of 150 to 300 bytes for each skill, and skill bodies of 2 KB to 8 KB.
-  The skill metadata of all skills has a target of 5 KB to 8 KB and a ceiling of 15 KB, and the first request has a target of 8 KB to 16 KB.
-  A size above a high bound fails, and a size below a low bound is reported.
-- The output style is shorter.
-  It asks for reports that start with the result, name each item exactly, give numbers before and after a change, and say which claims are not verified.
-- dotclaude is tested on Claude Code 2.1.296, and the minimum version is 2.1.296, because the settings schemas are of that version.
-  The `intro` section of the system prompt has one text since 2.1.295, and `CLAUDE_CODE_INTRO_FRAME` is gone.
-- The core plugin has five agents: `debugger`, `implementer`, `investigator`, `reviewer`, and `test-runner`.
-  Each agent has a `maxTurns` value, a `model`, and an `effort` in its frontmatter, and `web-researcher` is merged into `investigator`.
-- The core plugin follows the plugin layout of the Claude Code docs.
-  `hooks/register.mjs` is the one hooks module, `features/<name>/` holds the code of each part, and `lib/` holds the shared code.
-- Each file has 300 lines or fewer, and each test file 500 lines or fewer.
-  A test fails on a file over its bound.
-- Runtime JavaScript in `plugins/` is `.mjs` on Node.
-  A test fails on another script type, except the hook-lab `.test.ts` files.
-- For contributors: `just measure` sizes the start of a session and prints the figures, `just capture` logs and sizes the requests of Claude Code, and `just schema` writes the settings schemas.
-  `just start-run` captures and measures the start of a clean sandbox session in one command, `just debug-agents` fails when the debug log names an unknown frontmatter field, `just eval-variant REF` runs the eval cases on the checkout and on a variant at a git ref, and `just eval` takes eval options such as `--case NAME`.
-  `just eval-variant` copies the results of the variant arm to `plugins/dotclaude/evals/results/variant-REF-TIMESTAMP/` before it removes the worktree.
-- For contributors: pnpm installs the pinned toolchain (Biome, markdownlint-cli2, and TypeScript) from `pnpm-lock.yaml`, `.node-version` pins Node 22.18, and `just lint` and CI also lint the Markdown.
-- For contributors: the repository has no Bun.
-  The tests run with `node --test` (`just test` or `pnpm test`), the scripts of `tools/` run on Node, and `pnpm` installs the `yaml` parser that the eval-case test reads `case.yaml` with.
-- `just schema` reads Claude Code 2.1.296 only.
-  The tables of older versions are removed, because each build renames the minified helpers.
-  The schema check of a definition now reads the object and record helpers from the table, so a lazy record such as `env` keeps its `object` type.
-- Each `catch` in `plugins/` now names the error that it expects, such as `ENOENT` or `SyntaxError`, and passes the others on.
-  A classic hook that crashes still lets the call go on, and it writes the error to stderr.
-  The guard of `dotclaude` no longer keeps an empty list of GitHub owners for the session after a failed `gh` call, and it asks `gh` again at the next check.
-- Windows: `codegraph`, `openspec`, and `claude` start through `cmd.exe` when they are `.cmd` files.
-  An argument with `%`, `!`, `"`, a line break, or an end `\` is refused there, because `cmd.exe` expands `%` before it reads quotes.
-  A missing `codegraph` adds no session line, `dotclaude-sandbox` sets `USERPROFILE` for the child, and `readTail` returns `null` for a folder.
-- CI runs `just ci`, which is `just check` without the type check, because Claude Code writes `.claude-plugin/types/` only when an interactive session loads the plugin.
+- The git segment of the status line keeps its cache in a folder of this user, `dotclaude-git-<uid>` in the temp folder, which only the user can write, or `dotclaude-git` when no user id exists, as on Windows.
+  Before, the cache file was in the shared temp folder, so another user could plant a result at its predictable name.
+  A folder with another owner, or with group or other mode bits, is no cache, so `git` runs.
+- The `archive` command of `dotclaude-spec` exits with `0` when the archive is done and only the removal of `.dotclaude/spec/.specs-old` fails.
+  It names that folder on the error output, so you remove it by hand.
+  Before, the command exited with `1` and said that the specs were restored, although the archive was done.
+- The `archive` command of `dotclaude-spec` refuses to run when `.dotclaude/spec/.specs-old` is left by an earlier archive that stopped.
+  Before, the command deleted that folder, which can hold the only copy of the old specs.
+- The `Bash` filter of the sync hook in `dotclaude-codegraph` matches each `git` global option in one way only.
+  A `git` command with thousands of `--git-dir` options no longer takes seconds to test.
+- The git segment of the status line keeps the result of `git status` for 3 seconds, so `git` does not run at each refresh of 1 second.
+- The status line reads `workspace.current_dir`, `workspace.project_dir`, and `cwd` only when each is a string that is not empty.
+- The `stamp` slice writes no stamp when the transcript exists but is over the 4 MiB read bound, so a resume of a long session adds no row.
+- The `dotclaude-usage` options `--runs` and `--window` take a whole number of at least 1, as `--days` does.
+  Another value exits 2 with a message.
+- The `dotclaude-sandbox` option `--dir` refuses a value that starts with `--`, so `--dir --clean` exits 1 and does not take `--clean` as the folder.
+- The `dotclaude-capture` option `--port` takes a whole number from 1 to 65535.
+  Another value exits 2 with a message.
+- The `prompt` slice of the core plugin no longer sets `CLAUDE_CODE_ATTRIBUTION_HEADER=0`.
+  With that value, a `$.model.complete` call from a hook carries no billing block and no identity block of Claude Code, and a subscription refuses it with HTTP 429.
+  The evidence is in `.dotclaude/spec/changes/1.0.0/evidence/you-should-know.md`.
+  Remove the key from the `env` of your `settings.json` if `/dotclaude:setup` wrote it there.
+
+- The spec store keeps its state changes in an append-only `events.jsonl`, one line for each change, in place of `state.json`.
+  The state of a package is its last line, and `.gitattributes` sets `merge=union` so two branches merge with no conflict.
+  The store no longer names the handoff file.
+- The `drift` command of `dotclaude-setup` reports a rule file in `.claude/rules/` whose `paths` front matter does not parse, whose braces expand over 1000 patterns, or whose glob matches no tracked file.
+  The `trim` slice lists the rules with no `paths` as a source of context at the start of a session.
+- The `drift` command of `dotclaude-setup` writes nothing.
+  The count of runtime paths that `dotclaude-setup` adds to `.git/info/exclude` no longer counts the header line.
+- The spec store takes the packages of a change from its package files.
+  A package with a file and no line in `events.jsonl` is `planned` for `status`, `next`, `validate`, and the status line.
+- The spec parse keeps the text of each delta file as written.
+  The `AND` clauses, the lines that start with `#` in a fenced block, the blank lines, and the indentation stay in place.
+- `dotclaude-spec archive` rejects an id that fails the `CHANGE_ID` rule, and it puts the old `specs/` back when a later step fails.
+- A line of `events.jsonl` that is not JSON makes the reader name the file and the line.
+  A new line starts on its own line when the last line of the log has no line end.
+- `dotclaude-spec validate` reports `plan.event-no-package` for an event line of a package with no file in `packages/`.
+- The `handoff` slice resumes a handoff file that Claude writes at the first path after a retry.
+  A file at any path of the handoff counts as the written file.
+- With `mainHandover` set to `off`, the handoff clears a package-done request, so a later change to `auto` does not start a handoff for it.
+- The `manual` hint of the `handoff` slice shows only the hint beneath the reply.
+  Before, the hint carried a second copy of the reply, because the text of the `turn.complete` chain starts as the reply.
+- The `slices/` and `kernel/` files of each plugin are TypeScript (`.ts`), and `bun check` type-checks them with `noUncheckedIndexedAccess`.
+- The core hooks module is `hooks/register.ts`.
+  The check that denies a `Bash` command that only prints a file runs in its `tool.call` hook, and the checks that ask before an edit run in its `tool.check` hook.
+  So a `Bash`, `Write`, or `Edit` call no longer starts a Bun process for these checks.
+- The print check denies a print of a file over 4 MiB by its size, because the hooks module cannot read a file that large.
+- The add-on step of `setup` checks the Bun version for `dotclaude-sessions` and `dotclaude-lab`, and names Bun 1.4.3 when it is older.
+  It checked Node.js 22.18 before, but the bins of these plugins run on Bun.
+- The write ask for code in another language, such as `ruby -e` or `python3 -c`, counts a path that the code names only when the same code has a write word (`File.write`, `json.dump`, `os.remove`, an open mode `"w"`, or a `>` redirect).
+  A command such as `ruby -e 'YAML.load_file(".github/workflows/check.yml")'` that only reads the path no longer asks.
+- The `asks` slice never asks for a read.
+  A new file gets no ask.
+  A change to a protected file asks unless every changed part is on the safe list of its kind.
+  The safe list of each kind is:
+  - A test file: a format or comment change, a move of lines, a rename of a test title, and an added line that holds no control flow, skip, focus, timeout, or hidden test.
+  - A limits file: a change that keeps every bound and changes no other code.
+  - A lint config or a runner config: a format or comment change, a move with the same content, an added key with the strictest value, an added entry in a list of rules or files, a raised level or threshold, and a strict flag that goes to `true`.
+    A new `select`, `include`, or `only` key asks.
+    A config in JavaScript or TypeScript gets the same check on its tokens.
+  - A CI file: a format or comment change, a move of lines, a change of a `name` key, and an added step or job with no risky key or failure-hiding command.
+  - A hook file: a format change, an added hook, and a change of `description`.
+  - A hook script: a format or comment change, an added blank line or comment, a stricter `set` line in a shell script, and a `"use strict"` line in a JavaScript or TypeScript file.
+  - A settings file: a format change, an added `deny` or `ask` rule, a removed `allow` rule, and a plugin that goes on in `enabledPlugins`.
+  Every other change asks.
+  A format that the code cannot read asks.
+  A shell edit in place, such as `sed -i`, of a protected file asks, because the text after the edit is not known before the command runs.
+- The status line is rebuilt.
+  It shows numbers and Unicode icons, a color scale, and a change segment with the count of done packages.
+  `NO_COLOR` turns off the colors and keeps the icons.
+- The settings snippet lists its top-level keys in the property order of the settings schema.
+  The keys of `env` are in alphabetical order.
+- The core plugin has six agents: `debugger`, `implementer`, `investigator`, `planner`, `researcher`, and `reviewer`.
+  Each agent file sets its own model and effort, `debugger` runs on Opus 5.5 at `medium`, and no agent has a `maxTurns`, because a run at its turn limit returns no report.
+- dotclaude writes its own files to `.dotclaude/`.
+  The `setup` slice adds the runtime paths of `.claude/` that git does not ignore to `.git/info/exclude`.
+- dotclaude uses the worktrees of Claude Code.
+  No file in `src/` runs `git worktree add`.
+- The `dotclaude-usage` report prices each call by the model version, from the pricing page of 2026-10-13.
+  It adds the Mythos models and the two prompt tiers of Haiku 5.5, and the cache read of Sonnet 5.5 is $0.10.
+  A version that is not in the table gets the prices of the newest version of its family.
+- The `prompt` memory section no longer names the plan and task tools, which the `prompt` slice denies.
+  The text of `tool-agent.md` tells Claude to always set `subagent_type`, because `Agent(general-purpose)` is denied.
+- The `prompt` section of the environment no longer describes fast mode, because the `trim` slice turns fast mode off.
+- The `prompt` slice denies `Read` of `.env.development`, `.env.dev`, `.env.staging`, `.env.stage`, `.env.test`, `.env.prod`, `.env.qa`, and `.env.preview`.
+  The `.env.example`, `.env.sample`, and `.env.template` files stay readable.
+- The `START_SYNC_TIMEOUT_MS` bound of `dotclaude-codegraph` is 6000 ms, in place of 8000 ms.
+  On Windows the sync also gets `TREE_GRACE_MS`, so the session start stays at least 1 s under its 10 s hook timeout.
+- The `dcc-plugin-you-should-know` check sends only the newest 10 topics of the `<seen>` list, so the input stays bounded.
+- The `TREE_CHANGE` match of `dotclaude-codegraph` accepts a `git` command with global options before its verb.
+  So a command such as `git -C dir commit` syncs the index.
+- The `guard` owners check asks again at each call that reaches a repository with a policy file.
+  Before, it asked once for each repository in a session.
+- The `guard` owners check keeps a repository whose policy files are all missing for the session, so it does not read them again.
+  A failed read of a policy file is not kept, and the next call reads it again.
+- The shell reader of the core plugin no longer reads the text of an unquoted heredoc body as a command.
+  The substitutions in that body are still commands, so a destructive command in one is denied.
+- The `guard` owners check reads the repository of a `git` command with options before its verb, such as `git -C dir fetch URL` or `git -c k=v pull URL`.
+  It also reads an install of `git+URL` with `pip3`, which the check missed before.
+- The `guard` reads a command whose name is only a substitution, such as `$(echo git) fetch URL` or `` `echo git` reset --hard ``, as `git` when a git verb follows the name.
+  The owners check reads the repository of such a fetch, and a `git -C dir` folder of such a command stays in force for the matchers.
+- The `guard` denies a system command whose name is only a substitution, such as `$(which rm) -rf /` or `$(which chmod) -R 777 /`.
+  Each system rule that reads more than the name reads such a name as its tool, so the rule denies when the other words fit it.
+- The `--clean` of `dotclaude-sandbox` removes a folder other than the default one only when the sandbox made it.
+  The setup writes a `.dotclaude-sandbox` marker into the folder, and `--clean` refuses a folder without it.
+  A folder that an older sandbox made has no marker, so remove it by hand.
+- The git cache of the `statusline` slice treats a saved result with a field of the wrong type, or a branch name with a control character, as no cache.
+  The `git` call runs again, and its result replaces the saved file.
+- `--clean` of `dotclaude-sandbox` exits 0 for a folder that does not exist, so the first run of `just sandbox-alone` does not fail.
+- The files that only code reads are JSONL, with one record on one line: the usage sample `.dotclaude/rate-limits.jsonl`, the git cache `dotclaude-git-<key>.jsonl`, and the `request-<n>.jsonl` and `report-<n>.jsonl` files of `dotclaude-capture`.
+  The old `.dotclaude/rate-limits.json` is not read, so remove it.
+- The `agents` lab tests of `dcc-plugin-agents-md` pass on Windows.
+  The engine resolves `of` and `below` of `fs.ancestors` before the stub gets them, so the stub reads a path with a drive and `\` in the form of its fake disk.
+- `tools/sandbox.ts` is now `tools/sandbox/run.ts`, next to `tools/sandbox/install.ts`.
+- `dcc-plugin-agents-md` reads each `\` of a path and of a `claudeMdExcludes` glob as `/`, as Claude Code does, so an exclude such as `**/legacy/AGENTS.md` matches on Windows.
+- The status line aligns the items of each row in columns and joins them with ` · `.
+  Each limit window shows a pace arrow, `▼` in green for a reserve and `▲` in yellow for a deficit, and a red `⏵` run-out time shows only when the use reaches 100% before the reset.
+  The `5h` and `7d` windows take one row each where two rows fit, and the reset time has `↻` before it.
 
 ### Removed
 
-- The `dotclaude-modder` plugin left the marketplace, because dotclaude is a set of general software-engineering roles.
-  Uninstall it with `claude plugin uninstall dotclaude-modder@dotclaude`.
-- dotclaude uses no proprietary format.
-  A format is proprietary when dotclaude defines it and no surface of Claude Code reads or defines it.
-  dotclaude takes only what Claude Code provides: settings, env vars, hooks and the other documented extension points, and the files that Claude Code owns.
-  A feature that must write its own file so that a later call reads it back is not built.
-  The next entries list what this rule removed against 0.27.0.
-  There is no migration, no compatibility shim, and no reader for an old file.
-- The settings profile file `templates/settings.json`, the diff, and `--with <item>` with its eval-gated items are gone.
-  Setup also lost the backup of each written file, the migration of 0.26 keys, the CVP gate, the `--move-managed` option, the managed drop-in `templates/managed-settings.json` and its `sudo cp` command, the language server hints, and the launcher stub of the status line.
-  `lib/never-set.mjs` is gone, and a test holds the list of keys that must stay unset.
-  The settings snippet in the wiki (`wiki/settings/Settings-Snippet.md`) replaces the profile, and setup applies it.
-- The file of project rules for the Tier 2 checks, the router with its table of models and efforts, and the router `PreToolUse` hook are gone.
-  The `model` and `effort` of each agent are in its frontmatter.
-- The status line no longer shows a burn rate, the slow-read cache, or the estimates of the memory, skills, and agents parts, because each one needed a state file.
-- The usage state file and the notes at a usage limit are gone.
-- The context markers, the handoff carry after `/clear`, and the stop records are gone, and the next session start no longer names a stop.
-- The `handoff` skill and the notes in `.claude/handoffs/` are gone.
-- The main-session context note is removed, because compaction is off and the output style covers it.
-- The guard keeps no per-session state file.
-  The classic hook for auto mode is gone, and the hooks module asks for a GitHub repository of another owner.
-- The `rm` ask is now `ask` permission rules for a recursive `rm` in the settings snippet, with the sandbox.
-  The `rm` parser and its classic hook are gone.
-  The `git` ask, which now also reads `timeout`, `env -i`, `nice`, and `xargs` before `git`, and the file-print deny share one shell reader, `lib/shell.mjs`.
-- Auto-fix at `Stop`, `DOTCLAUDE_AUTOFIX`, and the `autofix` item are gone.
-- The `sembr-chat.jsonl` log of chat lines is gone.
-- `sembr` runs only in the hooks module: `tool.call` handlers on `Write`, `Edit`, and `Bash` replace the classic `PreToolUse` hook `features/sembr/cli.mjs`.
-  The classic hooks `reads`, `adherence`, and `context` share one stdin reader and one `hookSpecificOutput` builder in `lib/hook-io.mjs`.
-- `tools/baseline.json` is gone, and `just measure` writes no file.
-- The eval harness is gone: `tools/eval/`, `evals/`, and `just eval`.
-  The `adherence` suite and the other cases go with it.
-- The copies of the schemas of Claude Code 2.1.293 and 2.1.294 are gone, and the `x-claude-code-version` key is gone from the schema files.
-- Files from earlier versions stay on your machine, and no code of dotclaude deletes them.
-  You can delete each one.
-  - `<config dir>/settings.json.dotclaude-backup-<time>` and the same name for `<config dir>/CLAUDE.md`, `.claude/settings.json`, and `.claude/settings.local.json`, where `<config dir>` is `~/.claude` or `CLAUDE_CONFIG_DIR`.
-    Setup 0.27.0 wrote them next to a file before it changed the file, and it kept the newest three for each file.
-  - `<config dir>/dotclaude/statusline.mjs`, the launcher stub of the status line.
-    A `statusLine` setting that runs it prints nothing now, because the script it looks for is gone.
-    Remove that setting or set the status line again.
-  - `<config dir>/dotclaude/subagents.mjs`, the launcher stub of 0.26 that setup 0.27.0 removed only when it ran.
-  - `${CLAUDE_PLUGIN_DATA}/auto-mode-guard/<session id>.json`, the guard state of the classic hook of 0.27.0.
-    The hook wrote it into the system temp folder, in `auto-mode-guard/`, when `CLAUDE_PLUGIN_DATA` was not set.
-  - `.claude/handoffs/<slug>.md` in a project, the notes of the `handoff` skill of 0.27.0 and the hooks of 0.26.
-  - `/Library/Application Support/ClaudeCode/managed-settings.json` on macOS, `/etc/claude-code/managed-settings.json` on Linux, and `C:\Program Files\ClaudeCode\managed-settings.json` on Windows.
-    Setup 0.27.0 only printed the `sudo cp` command for it, so the file exists only if you ran that command.
-    Delete it with `sudo rm`, and the drift check stops reporting a seated guard.
-  - `~/.universal-modder/` (or the folder in `UM_HOME`) and `%LOCALAPPDATA%\universal-modder`, the backups, downloads, and knowledge cache of the removed `dotclaude-modder` plugin.
-  - The keys that setup 0.27.0 merged into your settings stay in your settings files.
-    Keep or remove each one yourself.
+- The `test-runner` agent of the core plugin.
+  The CLI `dotclaude-run-checks`, run through `Bash`, replaces it.
+- The classic `PreToolUse` hooks of the core plugin, in the `guard` and `surface` slices.
+  The hooks module does their checks.
+- The OpenSpec workflow, with the `openspec/` folder and its skills.
+  The spec store and the `/spec` skill replace it.
+- The add-on `dotclaude-jev`.
+  Its decisions go to the `decide` slice of the core plugin.
+
+### Fixed
+
+- The guard denies a git verb that an alias, an unquoted `$IFS`, or an empty positional or special parameter hides, such as `alias g=git`, `git${IFS}reset${IFS}--hard`, or `git$9 reset --hard`.
+  A quoted `$IFS` stays one argument.
+  The write guard asks on a command over the shell scan bound, as the git guard does.
+- A torn last line of `events.jsonl` no longer makes `status` and the other readers fail, and an append removes it first.
+- `setup --apply` and `writeAtomic` keep a symlink and the mode of the file, and `writeAtomic` retries a Windows rename over an open file.
+  The settings write also skips an unreadable catalog file, which before stopped the run with `ENOENT`.
+- The `claude` calls of `tools/` send no telemetry to Datadog, `ci` gates `generate --check`, and `bump` checks each target before it writes.
+- `dotclaude-sandbox --clean` removes a read-only `config/` folder, and it refuses a symlinked sandbox root with exit 1.
+- `dotclaude-run-checks ""` gives a usage error with exit 2, and it no longer runs one command.
+- The attribution adds the model line to each command of a chain and to `git --no-pager commit`.
+  It names `Claude Sonnet 4` for `claude-sonnet-4-20250514`.
+- The session readers of `usage` and `start-cost` skip a `null` line, meta file, or installed-plugins file.
+- The `claudeMdExcludes` match takes a lower-case drive letter as the same drive.
+- The you-should-know band shows, and a heads-up note reaches the next call of the main agent.
+- The status line gives `⚡`, `✅`, `⭐`, and `❌` two columns, keeps a later item in its column when a middle place is empty, and joins subagent items with ` · `.
+- On Windows, a program that `PATH` gives as an `.exe` file, such as `sh`, `git`, or a native `claude`, runs with no shell.
+  So `dotclaude-run-checks`, the spec commands, and `dotclaude-lab` no longer refuse a word with a `"` for it.
+- On Windows, `dotclaude-spec verify --in` accepts a linked worktree, because the spec commands compare the real paths of the git folders.
 
 ## Older Releases
 
 | Series | Releases |
 | --- | --- |
+| [0.28](https://github.com/xsyetopz/dotclaude/wiki/Release-0.28) | 0.28.0 |
 | [0.27](https://github.com/xsyetopz/dotclaude/wiki/Release-0.27) | 0.27.0 |
 | [0.26](https://github.com/xsyetopz/dotclaude/wiki/Release-0.26) | 0.26.0 |
 | [0.25](https://github.com/xsyetopz/dotclaude/wiki/Release-0.25) | 0.25.1, 0.25.0 |
@@ -296,4 +294,4 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 | [0.1 and 0.2](https://github.com/xsyetopz/dotclaude/wiki/Release-0.1-0.2) | 0.2.0, 0.1.0 |
 
 [unreleased]:
-  https://github.com/xsyetopz/dotclaude/compare/dotclaude--v0.28.0...HEAD
+  https://github.com/xsyetopz/dotclaude/compare/dotclaude--v1.0.0...HEAD

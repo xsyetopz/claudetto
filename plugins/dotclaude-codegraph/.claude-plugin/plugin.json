@@ -1,8 +1,8 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "dotclaude-codegraph",
-  "version": "0.28.0",
-  "description": "Gives Claude the code graph of a project from the CodeGraph CLI `codegraph`. Syncs the index, and adds callers and definitions to `Grep` and `Glob` calls.",
+  "version": "1.0.0",
+  "description": "Gives Claude the code graph of a project from the CodeGraph CLI `codegraph`. Syncs the index at session start, after an edit, and after a `git` command that changes the tree. Adds one line about the graph commands at session start.",
   "author": {
     "name": "xsyetopz"
   },

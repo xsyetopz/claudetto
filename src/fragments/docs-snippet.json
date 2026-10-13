@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(dotclaude-docs:docs)",
+      "Bash(CTX7_TELEMETRY_DISABLED=1 npx -y ctx7@0.5.14 *)"
+    ]
+  },
+  "sandbox": {
+    "network": { "allowedDomains": ["context7.com", "registry.npmjs.org"] }
+  }
+}

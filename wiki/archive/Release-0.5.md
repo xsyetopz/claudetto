@@ -1,26 +1,31 @@
 # Release 0.5
 
+This page records the notes of the `0.5` release, with its patch `0.5.1`.
+
 Released 2026-09-26 (0.5.0) and 2026-09-27 (0.5.1).
 Makes dotclaude aware of the Claude plan and cuts the cost of long agent runs.
-0.5.0 puts Sonnet 5 back on the cheaper agents, and adds plan notes, turn-limit handoff, and usage notes.
-0.5.1 stops a `/goal` loop that wasted turns.
+`0.5.0` puts Sonnet 5 back on the cheaper agents.
+It also adds plan notes, turn-limit handoff, and usage notes.
+`0.5.1` stops a `/goal` loop that wasted turns.
 This line requires Claude Code v2.1.283 or later.
 
-> **Note:** [Plans and models](Plans-and-Models) has the research behind this release, which `docs/subscription-tiers.md` held.
+> **Note:** [Usage Evidence](Usage-Evidence) has the research behind this release.
+> The research was held in `docs/subscription-tiers.md`.
 > It covers how the Fable limit works, plan names in Claude Code and Codex, prices, dossier findings, and a scan of real session usage.
 
 To update:
 
 1. Restart Claude Code.
-1. Run `/dotclaude:apply-settings-profile` again.
+2. Run `/dotclaude:apply-settings-profile` again.
    It adds Sonnet 5 to `availableModels`, replaces the Sonnet deny with Fable denies, and removes the 0.4.0 mapping of `sonnet` to Opus 5.5.
-1. If you set `allowed_models` yourself, add `claude-sonnet-5` to it.
-1. If you use the Codex agents, run `/dotclaude:setup-integrations codex` again.
+3. If you set `allowed_models` yourself, add `claude-sonnet-5` to it.
+4. If you use the Codex agents, run `/dotclaude:setup-integrations codex` again.
 
 ## Added
 
 - Claude plan awareness: the `claude_plan` option (default `auto`) reads the plan from the account that Claude Code caches in `~/.claude.json`.
-  It uses `organizationType`, the rate-limit tier, `billingType`, and `hasExtraUsageEnabled`, and it never touches the token.
+  It uses `organizationType`, the rate-limit tier, `billingType`, and `hasExtraUsageEnabled`.
+  It never touches the token.
   - Plans: `pro`, `max_5x`, `max_20x`, `team_standard`, `team_premium`, `enterprise`, `api`.
   - A session-start note says what the plan means for model choice:
     - Max and premium seats: Fable draws up to 50% of the same weekly limit as every other model.
@@ -44,8 +49,9 @@ To update:
 - Message prefix: each message that dotclaude shows to Claude or the user starts with `[dotclaude]`.
 - Goal loop guard (0.5.1, `goal_loop_guard`, on by default): a `/goal` with an unmet condition no longer burns turns after Claude has been told to stop.
   - Reason: Claude Code's goal check blocks every stop.
-    In one session, Claude replied "I'm staying stopped" to 9 blocks in a row until Claude Code gave up, and each round re-read about 710k tokens of context.
-  - A new Stop hook ends the turn after two goal blocks in a row with no tool call between them.
+    In one session, Claude replied "I'm staying stopped" to 9 blocks in a row until Claude Code gave up.
+    Each round re-read about 710k tokens of context.
+  - A new `Stop` hook ends the turn after two goal blocks in a row with no tool call between them.
     Claude Code then pauses the goal.
     The note names `/goal <new condition>` to change the goal, `/goal clear` to end it, and a message to resume.
   - The output style tells Claude to propose a replacement condition with `ProposeGoal` when a goal no longer matches the user's request.
@@ -61,7 +67,8 @@ To update:
   The built-in `general-purpose`, `Explore`, and `Plan` agents run on it.
 - `mechanical-worker`, `test-runner`, `docs-writer`: `mechanical-worker` and `test-runner` run on Sonnet 5 at low effort, and `docs-writer` at medium effort.
   They were Opus 5.5 at low effort.
-  Sonnet 5 costs half as much as Opus 5.5 for input, output, and cache writes, and cache reads cost the same on both.
+  Sonnet 5 costs half as much as Opus 5.5 for input, output, and cache writes.
+  Cache reads cost the same on both.
 - Fable: denied as a subagent model on every plan.
   A fresh Fable context costs about $0.47 API-equivalent before any work, measured with `claude -p`.
 - Pro and standard Team: with extra usage off, the model lock and the profile's `availableModels` leave Fable out.
@@ -77,4 +84,8 @@ To update:
   - Free and Go do not delegate to Codex.
   - The GPT-5.6 models stay out of the defaults, because they cost about twice the credits of their GPT-6 counterparts.
 
-Previous: [Release 0.4](Release-0.4) · Next: [Release 0.6](Release-0.6)
+## Related Pages
+
+- Previous: [Release 0.4](Release-0.4)
+- Next: [Release 0.6](Release-0.6)
+- [Archive](Archive): the index of the archived pages.

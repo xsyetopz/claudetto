@@ -1,13 +1,22 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "dotclaude",
-  "version": "0.28.0",
-  "description": "Adds a lean output style, five role agents, and a status line command. Adds hooks that ask before work on a repo with an AI policy, check edits and `git` calls, bound the context of subagents, and check Markdown line breaks and drift. Sets up OpenSpec.",
+  "version": "1.0.0",
+  "description": "Adds a lean output style, six role agents, and a status line command. Adds hooks that ask before work on a repo with an AI policy, check edits and `git` calls, bound the context of subagents, and check Markdown line breaks and drift.",
   "author": {
     "name": "xsyetopz"
   },
   "repository": "https://github.com/xsyetopz/dotclaude",
   "license": "MIT",
-  "keywords": ["output-style", "agents", "hooks", "statusline", "openspec"],
-  "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Core-Plugin"
+  "userConfig": {
+    "mainHandover": {
+      "type": "string",
+      "title": "Main session handover",
+      "description": "Use `auto` to write a handoff file, run `/clear`, and resume when the context is near its bound or a package is done. Use `manual` to get a hint to run `/handoff`. Use `off` for neither.",
+      "default": "manual",
+      "options": ["auto", "manual", "off"]
+    }
+  },
+  "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Architecture",
+  "keywords": ["output-style", "agents", "hooks", "statusline"]
 }

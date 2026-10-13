@@ -1,0 +1,273 @@
+// The mod handlers of the `handoff` slice. Every handler makes no model call, so `requests` is 0.
+//
+// `turn.step` keeps the context of each subagent.
+// `tool.call` adds the report-now note to the result of a subagent that nears a bound.
+// The same `tool.call` handler sets the trigger when a package goes to `done`.
+// `skill.prompt` starts the handoff of `/handoff`.
+// `turn.complete` runs the handoff: it checks the triggers, submits the write prompt,
+// and then, on the next `turn.complete`, runs `/clear` and submits the resume prompt.
+//
+// The slice keeps its flow state in this module, not in `state.json` and not in the store.
+//
+// `claude plugin validate` follows `$` only into a function of one file.
+// For this reason, each function that touches `$` is here, and the rules are in `domain/`.
+
+import type {
+  EngineInterface,
+  PluginOptions,
+  TurnCompleteInput,
+  TurnCompleteResult,
+} from "claude-code";
+import type { Handler } from "../../../../../kernel/slice.ts";
+import {
+  type AgentState,
+  contextTokens,
+  reportNote,
+} from "../domain/context.ts";
+import {
+  manualHint,
+  REASON_LANE,
+  REASON_NO_FILE,
+  reasonContext,
+  resumeText,
+  writePrompt,
+} from "../domain/text.ts";
+import {
+  overContext,
+  parseHandover,
+  phaseDoneCall,
+} from "../domain/trigger.ts";
+import {
+  CONTEXT_PERCENT,
+  HANDOFF_RETRY_MAX,
+  HANDOFF_WAIT_TURNS,
+  type MainHandover,
+} from "../limits.ts";
+
+/** The state of each subagent by its `agentId`. */
+const agents = new Map<string, AgentState>();
+
+/** The `userConfig` values of the plugin, which the generated `register` gives to `keepOptions`. */
+let options: PluginOptions = {};
+
+/** The reason of a trigger that fired and has no handoff yet, or undefined. */
+let wanted: string | undefined;
+
+/**
+ * The handoff files that this handoff asked Claude to write, and how many turns ended since, or undefined.
+ * A retry adds a path, so a file at any of these paths counts as the written handoff.
+ */
+let pending: { readonly files: readonly string[]; waited: number } | undefined;
+
+/** The state of one trigger episode, which ends when no trigger is active or a handoff runs. */
+type Episode = {
+  /** The kinds of trigger whose `manual` hint went to the user. */
+  hinted: Set<string>;
+  /** The times that the write prompt went out again. */
+  retries: number;
+  /** Whether the handoff of this episode ended with no resume, so no handoff starts again. */
+  over: boolean;
+};
+
+const newEpisode = (): Episode => ({
+  hinted: new Set(),
+  retries: 0,
+  over: false,
+});
+
+let episode = newEpisode();
+
+/** Keeps the `userConfig` values of the plugin for the handlers. */
+export const keepOptions = (values: PluginOptions): void => {
+  options = values;
+};
+
+/** Forgets the flow state. A test calls it between runs. */
+export const resetState = (): void => {
+  agents.clear();
+  wanted = undefined;
+  pending = undefined;
+  episode = newEpisode();
+  options = {};
+};
+
+/** Runs the CLI `bin/<name>` of this plugin and gives its status and text. */
+const runBin = async (
+  $: EngineInterface,
+  name: string,
+  args: string[],
+): Promise<{ ok: boolean; text: string }> => {
+  const run = await $.process.run([
+    "bun",
+    "--no-env-file",
+    `${$.plugin.root}/bin/${name}`,
+    ...args,
+  ]);
+  return { ok: run.exitCode === 0, text: run.stdout.trim() };
+};
+
+/** The usage of each subagent step: its context and its model. */
+export const onTurnStep: Handler<"turn.step"> = async function* (_$, e, next) {
+  const result = yield* next(e);
+  if (e.agentId && result.usage)
+    agents.set(e.agentId, {
+      tokens: contextTokens(result.usage),
+      model: result.usage.model,
+    });
+  return result;
+};
+
+/** Adds the report-now note to the result of a tool call of a subagent that nears a bound, and watches for a merge or an accept. */
+export const onToolCall: Handler<"tool.call"> = async (_$, e, next) => {
+  const out = await next(e);
+  if (phaseDoneCall(e, out)) {
+    wanted = REASON_LANE;
+    if (!pending) episode = newEpisode();
+  }
+  const state = e.agentId ? agents.get(e.agentId) : undefined;
+  if (!state || out.deny !== undefined) return out;
+  const note = reportNote(state);
+  return note ? { ...out, context: [...(out.context ?? []), note] } : out;
+};
+
+/** Starts the handoff of `/handoff`: names the file in the skill text and expects the file at the next `turn.complete`. */
+export const onSkill: Handler<"skill.prompt"> = async ($, e, next) => {
+  const out = await next(e);
+  if (parseHandover(options["mainHandover"]) === "off") return out;
+  const path = await runBin($, "dotclaude-handoff", ["path"]);
+  if (!path.ok) return out;
+  pending = { files: [path.text], waited: 0 };
+  episode = newEpisode();
+  return {
+    ...out,
+    text: `${out.text}\n\nThe handoff file is \`${path.text}\`.`,
+  };
+};
+
+/**
+ * Clears the session and submits the resume prompt when the newest handoff file is one of `files`.
+ * Gives whether it did.
+ */
+const resume = async (
+  $: EngineInterface,
+  files: readonly string[],
+): Promise<boolean> => {
+  const newest = await runBin($, "dotclaude-handoff", ["newest"]);
+  if (!newest.ok || !files.includes(newest.text)) return false;
+  const next = await runBin($, "dotclaude-spec", ["next"]);
+  await $.command.run({ command: "clear" });
+  await $.prompt.submit({
+    text: resumeText(newest.text, next.ok ? next.text : ""),
+  });
+  return true;
+};
+
+/** A trigger that fired for the main session: its kind and its reason text. */
+type Trigger = { readonly kind: string; readonly reason: string };
+
+/** The trigger that fired for the main session, or undefined. */
+const triggerOf = async ($: EngineInterface): Promise<Trigger | undefined> => {
+  if (wanted) return { kind: "lane", reason: wanted };
+  const { context } = await $.session.usage();
+  return overContext(context.percent, CONTEXT_PERCENT)
+    ? { kind: "context", reason: reasonContext(context.percent ?? 0) }
+    : undefined;
+};
+
+/**
+ * Adds the `manual` hint of `trigger` to `out`, once for each kind of trigger in an episode.
+ * The text that the chain passes down is the answer itself, which the user sees already,
+ * so the hint replaces that text and does not repeat it.
+ */
+const withHint = (
+  out: TurnCompleteResult,
+  trigger: Trigger,
+  answer: string,
+): TurnCompleteResult => {
+  if (episode.hinted.has(trigger.kind)) return out;
+  episode.hinted.add(trigger.kind);
+  const beneath = out.text === answer ? "" : out.text;
+  const hint = manualHint(trigger.reason);
+  return { ...out, text: beneath ? `${beneath}\n\n${hint}` : hint };
+};
+
+/**
+ * Asks Claude to write the handoff file, at a new path, and keeps the paths of `files` as well.
+ * A failed `path` call starts nothing.
+ */
+const startWrite = async (
+  $: EngineInterface,
+  files: readonly string[],
+): Promise<void> => {
+  const path = await runBin($, "dotclaude-handoff", ["path"]);
+  if (!path.ok) return;
+  pending = { files: [...files, path.text], waited: 0 };
+  wanted = undefined;
+  await $.prompt.submit({ text: writePrompt(path.text) });
+};
+
+/**
+ * Ends a turn while a write prompt is out.
+ * Only an `answer` turn can be the write turn that wrote the file.
+ * A turn that ends with another reason drops the handoff, and none starts again in this episode.
+ * When the file is not there after `HANDOFF_WAIT_TURNS` turns, the prompt goes out once more,
+ * and then the `manual` hint goes to the user.
+ */
+const settle = async (
+  $: EngineInterface,
+  e: TurnCompleteInput,
+  out: TurnCompleteResult,
+  mode: MainHandover,
+): Promise<TurnCompleteResult> => {
+  const current = pending as NonNullable<typeof pending>;
+  if (e.reason !== "answer") {
+    pending = undefined;
+    wanted = undefined;
+    episode.over = true;
+    return out;
+  }
+  if (await resume($, current.files)) {
+    pending = undefined;
+    wanted = undefined;
+    episode = newEpisode();
+    return out;
+  }
+  current.waited += 1;
+  if (current.waited < HANDOFF_WAIT_TURNS) return out;
+  pending = undefined;
+  wanted = undefined;
+  if (mode === "auto" && episode.retries < HANDOFF_RETRY_MAX) {
+    episode.retries += 1;
+    await startWrite($, current.files);
+    return out;
+  }
+  episode.over = true;
+  return withHint(out, { kind: "no-file", reason: REASON_NO_FILE }, e.answer);
+};
+
+/** Runs the handoff at the end of a turn of the main session. */
+export const onTurnComplete: Handler<"turn.complete"> = async ($, e, next) => {
+  const out = await next(e);
+  if (e.agentId) {
+    agents.delete(e.agentId);
+    return out;
+  }
+  const mode = parseHandover(options["mainHandover"]);
+  if (pending) return settle($, e, out, mode);
+  if (mode === "off") {
+    wanted = undefined;
+    return out;
+  }
+  const trigger = await triggerOf($);
+  if (!trigger) {
+    episode = newEpisode();
+    return out;
+  }
+  if (mode === "manual") {
+    wanted = undefined;
+    return withHint(out, trigger, e.answer);
+  }
+  if (episode.over) return out;
+  await startWrite($, []);
+  return out;
+};

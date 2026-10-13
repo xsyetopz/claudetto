@@ -1,0 +1,92 @@
+# You Should Know
+
+The plugin `dcc-plugin-you-should-know` shows one thing that you should know before Claude changes something.
+It shows the thing in a band above the prompt, and the change runs as usual.
+The band has two choices.
+`1` gives a heads-up: it fills the prompt with the topic, so that you can add to the note, and the note goes to the next call of the main agent, once.
+`0` dismisses the band.
+It replaces the built-in plugin `cc-plugin-you-should-know`, which shows its notice after Claude acts.
+It works without the core plugin, and it imports nothing from another plugin.
+
+The plugin is opt-in.
+The setup of dotclaude does not turn it on, because each check costs a model call.
+
+The source is in `src/plugins/dcc-plugin-you-should-know/`.
+The one slice is `notice`, and its hooks are in `slices/notice/adapters/mod.ts`.
+
+## Install
+
+1. Install the plugin with `/plugin install dcc-plugin-you-should-know@dotclaude`.
+2. Turn off the built-in plugin `cc-plugin-you-should-know@builtin` in `/plugin`.
+
+## When It Checks
+
+The plugin checks the first call of each turn that changes something:
+an `Edit`, a `Write`, a `NotebookEdit`, or a `Bash` command that is not a read.
+
+These calls get no check:
+
+- a read, such as `Read` or `cat a.txt`
+- the second and each later changing call of the same turn
+- a call of a subagent
+- a call that the permission rules deny
+
+The model gives one topic of three kinds, or none:
+a trade-off that you possibly do not see, a design decision that has effects later, or an edge case that is not clear.
+Most checks give none, and then no band shows.
+A topic that showed in the session does not show again.
+
+In a TUI session, the band showed above the prompt after the turn ended.
+The band does not stop the action that it is about.
+
+## What a Check Costs
+
+The plugin makes at most one model call per turn.
+The tool starts the call and does not wait for it, so a check adds no wait before the tool runs.
+
+Each check is a separate call to Haiku, with your prompt and the pending action, and no transcript.
+The output is one sentence or `NONE`, about 4 to 50 tokens.
+The sandbox sessions measured these checks on the earlier design, which showed a toast.
+The band has not been timed, so the waits below are not measured on the band:
+
+| Account | Wait of One Check | Input Tokens of One Check |
+| --- | --- | --- |
+| Subscription | 2,216 ms and 2,430 ms | 412 of Haiku, against your usage limits |
+| API key | 3,017 ms | 411 of Haiku |
+
+The tool does not wait for a separate call or a fork.
+Each check sends the newest 10 topics that showed, so the input stays bounded.
+A failed call shows no band, and the change runs.
+
+## When `CLAUDE_CODE_ATTRIBUTION_HEADER` Is `0`
+
+On a subscription, a separate call from a hook gets HTTP 429 when `CLAUDE_CODE_ATTRIBUTION_HEADER` is `0`.
+The request then carries no billing block and no identity block of Claude Code, so the API refuses it.
+
+After a 429, the plugin uses a fork of the main conversation for the rest of the session.
+A fork sends the main request again, so it works.
+The fork has no output bound and no cancel.
+`$.model.fork` takes only `{ prompt }`, so the plugin cannot set a token limit or a timeout on it.
+The plugin does not wait for the request, but it cannot stop the request.
+The sandbox session measured this path:
+
+- The first check waited 2,850 ms, because Claude Code tried the separate call 3 times before the 429 stood.
+- The fork read 16,731 input tokens on the main model, nearly all of them a cache read of the conversation.
+
+So a fork costs much more than a separate call.
+Keep the attribution header on to get the cheaper check.
+The core plugin does not set `CLAUDE_CODE_ATTRIBUTION_HEADER=0`.
+
+## Limits
+
+- The band is for you, and Claude sees a note only after you choose `1`.
+- The cost of a session does not show the cost of its checks, because the cache state of the main requests differs between runs.
+- Each number above comes from one or two sandbox sessions with `claude-sonnet-5-5` and one short edit.
+
+The evidence of the earlier design is in `.dotclaude/spec/changes/1.0.0/evidence/you-should-know.md`.
+The live check of the band is in `.dotclaude/spec/changes/1.0.0/evidence/second-check-you-should-know.md`.
+
+## Related Pages
+
+- [AGENTS.md](Agents-Md): the other plugin that replaces a built-in plugin.
+- [Add-On Plugins](Add-Ons): the list of the add-on plugins.

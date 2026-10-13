@@ -1,0 +1,141 @@
+name: eval-new-claude-code
+
+# Runs the plugin evals of the core plugin when `anthropics/claude-code` has a release higher than the version in `ci.yml`.
+# The evals cost money, so each release tag runs once: a cache entry named for the tag marks the run.
+# The entry is saved after the evals run, even when they fail, so a failed tag is not run again each day.
+# Run the workflow with `force` to run a tag again.
+# It never runs on a pull request, so no fork can start a paid run.
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Run the evals of the latest release tag again, even when a run for it is marked"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# One run at a time, so a schedule and a manual run do not spend twice.
+concurrency:
+  group: eval-new-claude-code
+  cancel-in-progress: false
+
+jobs:
+  # Finds the latest release tag and decides whether the evals run for it.
+  latest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+      version: ${{ steps.tag.outputs.version }}
+      newer: ${{ steps.compare.outputs.newer }}
+      run: ${{ steps.decide.outputs.run }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="$(gh release view -R anthropics/claude-code --json tagName --jq .tagName)"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+      # The version that `ci.yml` installs is the tested version: `tools/claude-code-release.ts` reads it from there.
+      - id: compare
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: bun tools/claude-code-release.ts "$TAG"
+      - id: cache
+        if: steps.compare.outputs.newer == 'true'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/claude-code-eval-done.txt
+          key: claude-code-eval-${{ steps.tag.outputs.tag }}
+          lookup-only: true
+      - id: decide
+        env:
+          NEWER: ${{ steps.compare.outputs.newer }}
+          HIT: ${{ steps.cache.outputs.cache-hit }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          if [ "$NEWER" = "true" ] && { [ "$FORCE" = "true" ] || [ "$HIT" != "true" ]; }; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  # Runs only for a newer release, and only when the release has no run yet.
+  evaluate:
+    needs: latest
+    if: needs.latest.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # `secrets` cannot appear in a job `if`, so the presence of the token is read in a step.
+      - id: secret
+        env:
+          OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -n "$OAUTH_TOKEN" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.secret.outputs.present == 'true'
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - if: steps.secret.outputs.present == 'true'
+        run: bun install --frozen-lockfile
+      - if: steps.secret.outputs.present == 'true'
+        uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4
+        with:
+          just-version: 1.58.0
+      # The release of this run, not the tested version, so the evals test the new release.
+      - if: steps.secret.outputs.present == 'true'
+        env:
+          VERSION: ${{ needs.latest.outputs.version }}
+        run: |
+          bun add --global "@anthropic-ai/claude-code@$VERSION"
+      - if: steps.secret.outputs.present == 'true'
+        env:
+          VERSION: ${{ needs.latest.outputs.version }}
+        run: |
+          installed="$(claude --version | cut -d ' ' -f 1)"
+          test "$installed" = "$VERSION" || { echo "installed $installed, expected $VERSION"; exit 1; }
+      - if: steps.secret.outputs.present == 'true'
+        run: git config --global user.email ci@example.com && git config --global user.name ci
+      # The recipe `eval` runs `claude plugin eval` on the core plugin, with the cost bound `--max-cost-usd` of the recipe.
+      # The JSON result goes to a file, which the artifact step uploads.
+      - id: eval
+        if: steps.secret.outputs.present == 'true'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: just eval --trust-plugin --json "$RUNNER_TEMP/claude-code-eval.json"
+      - if: always() && steps.secret.outputs.present == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: claude-code-eval-${{ needs.latest.outputs.tag }}
+          path: ${{ runner.temp }}/claude-code-eval.json
+          if-no-files-found: warn
+      # Marks the tag after the evals ran, so the daily schedule does not run it again. A failed eval is marked too.
+      # A run that stops before the evals, such as an install of a version that npm does not have yet, is not marked, so the next day tries again.
+      - if: always() && (steps.eval.outcome == 'success' || steps.eval.outcome == 'failure')
+        env:
+          TAG: ${{ needs.latest.outputs.tag }}
+        run: echo "$TAG" > "$RUNNER_TEMP/claude-code-eval-done.txt"
+      - if: always() && (steps.eval.outcome == 'success' || steps.eval.outcome == 'failure')
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/claude-code-eval-done.txt
+          key: claude-code-eval-${{ needs.latest.outputs.tag }}

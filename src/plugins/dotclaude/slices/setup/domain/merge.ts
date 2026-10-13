@@ -1,0 +1,157 @@
+// The merge of the settings snippet (`SNIPPET` of `texts.ts`) into settings.
+// `dotclaude-setup` writes the result, and the drift check reads only the change lines.
+// This file is in the import graph of the hooks module, so it has no `node:` import.
+
+import { SNIPPET as WIKI_SNIPPET } from "../texts.ts";
+import type { Change, Json } from "./types.ts";
+
+/** The text in the snippet that setup replaces with the plugin folder. */
+export const PLUGIN_FOLDER = "<plugin folder>";
+
+/** The model of the snippet that an account with Mythos access can replace. */
+export const FABLE = "claude-fable-5-1";
+/** The model that takes the place of `FABLE` when the account has it. */
+export const MYTHOS = "claude-mythos-5-1";
+
+/** The snippet, with no `$schema`, because that key names the schema of the wiki block and is not a setting to merge. */
+const { $schema: _schema, ...settingsOnly } = WIKI_SNIPPET as Json;
+export const SNIPPET: Json = settingsOnly;
+
+/** The arrays that take the entries of the snippet, and do not gain them. */
+const REPLACED = new Set(["availableModels"]);
+
+/** The status line keys of the snippet. */
+const STATUS_LINES = ["statusLine", "subagentStatusLine"];
+
+/**
+ * True when `command` runs a status line of dotclaude: the `bin/dotclaude-statusline` launcher or the script of a plugin folder,
+ * or a launcher stub in `<config dir>/dotclaude/` of 0.26 or 0.27.0.
+ */
+export const isOurStatusLine = (command: string): boolean =>
+  /[\\/]bin[\\/]dotclaude-statusline(?:["'\s]|$)/.test(command) ||
+  /[\\/]features[\\/]statusline[\\/]/.test(command) ||
+  /[\\/]dotclaude[\\/](?:statusline|subagent-statusline|subagents)\.mjs/.test(
+    command,
+  );
+
+export const isObject = (v: unknown): v is Json =>
+  v !== null && typeof v === "object" && !Array.isArray(v);
+
+/** The `command` of the object at `key` of `settings`, or undefined. */
+export const commandOf = (settings: unknown, key: string): unknown => {
+  const entry = isObject(settings) ? settings[key] : undefined;
+  return isObject(entry) ? entry["command"] : undefined;
+};
+
+const show = (v: unknown) => (v === undefined ? "(unset)" : JSON.stringify(v));
+
+/**
+ * `root` in one form on each platform: forward slashes, which Node and the shell of Claude Code take on Windows too.
+ */
+export const slashRoot = (root: string): string => root.replaceAll("\\", "/");
+
+/**
+ * `value` with each `PLUGIN_FOLDER` in a string replaced by `root` in the form of `slashRoot`.
+ */
+export const fillPluginFolder = <T>(value: T, root: string): T => {
+  if (typeof value === "string")
+    return value.replaceAll(PLUGIN_FOLDER, slashRoot(root)) as T;
+  if (Array.isArray(value))
+    return value.map((v: unknown) => fillPluginFolder(v, root)) as T;
+  if (!isObject(value)) return value;
+  return Object.fromEntries(
+    Object.entries(value).map(([k, v]) => [k, fillPluginFolder(v, root)]),
+  ) as T;
+};
+
+/**
+ * `snippet` merged into `current`, and one change line for each key path that differs.
+ * Objects merge key by key, arrays gain the missing entries, and scalars take the snippet value.
+ * Keys of `current` that the snippet does not name stay.
+ * A value of `current` that is not an object, where the snippet has an object, gets its own change line.
+ */
+export const mergeSettings = (
+  current: unknown,
+  snippet: Json,
+  keyPath = "",
+  changes: Change[] = [],
+): { settings: Json; changes: Change[] } => {
+  const out: Json = isObject(current) ? { ...current } : {};
+  for (const [key, value] of Object.entries(snippet)) {
+    const where = keyPath ? `${keyPath}.${key}` : key;
+    const existing = out[key];
+    if (isObject(value)) {
+      if (existing !== undefined && !isObject(existing))
+        changes.push({
+          key: where,
+          line: `${where}: ${show(existing)} -> (an object)`,
+        });
+      out[key] = mergeSettings(existing, value, where, changes).settings;
+    } else if (Array.isArray(value)) {
+      const had = Array.isArray(existing) ? existing : [];
+      const next = REPLACED.has(where)
+        ? value
+        : [...had, ...value.filter((v) => !had.includes(v))];
+      if (JSON.stringify(had) !== JSON.stringify(next))
+        changes.push({
+          key: where,
+          line: `${where}: ${show(existing)} -> ${show(next)}`,
+        });
+      out[key] = next;
+    } else if (JSON.stringify(existing) !== JSON.stringify(value)) {
+      changes.push({
+        key: where,
+        line: `${where}: ${show(existing)} -> ${show(value)}`,
+      });
+      out[key] = value;
+    }
+  }
+  return { settings: out, changes };
+};
+
+/**
+ * `snippet` with `MYTHOS` in place of `FABLE` in `availableModels`,
+ * when `mythos` is true or `current` already lists `MYTHOS`.
+ * The replace of `availableModels` then keeps the Mythos access of the user.
+ */
+export const withMythos = (
+  snippet: Json,
+  current: unknown,
+  mythos: boolean,
+): Json => {
+  const models = snippet["availableModels"];
+  const had = isObject(current) ? current["availableModels"] : undefined;
+  const keep = mythos || (Array.isArray(had) && had.includes(MYTHOS));
+  if (!keep || !Array.isArray(models)) return snippet;
+  return {
+    ...snippet,
+    availableModels: models.map((m) => (m === FABLE ? MYTHOS : m)),
+  };
+};
+
+/**
+ * The status line keys of `current` whose command runs another tool.
+ * Setup keeps them, and the drift check does not report them.
+ */
+export const foreignStatusLines = (current: unknown): string[] =>
+  STATUS_LINES.filter((key) => {
+    const command = commandOf(current, key);
+    return typeof command === "string" && !isOurStatusLine(command);
+  });
+
+/**
+ * The snippet for `current`: `root` in the status line commands, the Mythos choice of `withMythos`,
+ * and no status line key that `foreignStatusLines` names or that `skipStatusLines` drops.
+ */
+export const snippetFor = (
+  current: unknown,
+  root: string,
+  mythos = false,
+  skipStatusLines = false,
+): Json => {
+  const drop = skipStatusLines ? STATUS_LINES : foreignStatusLines(current);
+  const filled = withMythos(fillPluginFolder(SNIPPET, root), current, mythos);
+  return Object.fromEntries(
+    Object.entries(filled).filter(([key]) => !drop.includes(key)),
+  );
+};
