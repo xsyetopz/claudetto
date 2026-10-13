@@ -16,4 +16,4 @@
 
 ## Wave 3
 
-- [ ] P07 Record, changelog, generate, full check.
+- [x] P07 Record, changelog, generate, full check.
