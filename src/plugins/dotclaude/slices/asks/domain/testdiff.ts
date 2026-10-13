@@ -19,7 +19,9 @@ import {
   TEST_OPEN_END,
   TEST_SAFE_START,
 } from "../limits.ts";
+import { joinImports, withoutAddedNames } from "./imports.ts";
 import { flatten, readJson } from "./jsondiff.ts";
+import { addedAt, textOf } from "./linediff.ts";
 import { missing, normal, squeeze, statementAt, uncommented } from "./scan.ts";
 import { shown } from "./shown.ts";
 
@@ -41,16 +43,13 @@ const identity = (line: string): string => {
 
 /** The lines of code in `text`: no comment, no blank line, and one space for each run of spaces. Python keeps its indent. */
 const codeLines = (text: string, hash: boolean, indent: boolean): string[] =>
-  uncommented(text, hash)
+  joinImports(uncommented(text, hash))
     .split("\n")
     .filter((line) => line.trim() !== "")
     .map((line) => {
       const body = squeeze(line);
       return indent ? `${line.length - line.trimStart().length}|${body}` : body;
     });
-
-/** The text of a line without the indent mark of `codeLines`. */
-const textOf = (line: string): string => line.replace(/^\d+\|/, "");
 
 /** True when a line has control flow, a skip, a focus, or a timeout. */
 const controls = (line: string): boolean =>
@@ -80,17 +79,6 @@ const controlMoved = (was: string[], now: string[]): boolean => {
     );
   const known = pairs(was);
   return [...pairs(now)].some((p) => !known.has(p));
-};
-
-/** The indices of the lines of `now` that `was` does not hold, with one match for each line of `was`. */
-const addedAt = (was: string[], now: string[]): number[] => {
-  const left = new Map<string, number>();
-  for (const item of was) left.set(item, (left.get(item) ?? 0) + 1);
-  return now.flatMap((item, i) => {
-    const n = left.get(item) ?? 0;
-    if (n) left.set(item, n - 1);
-    return n === 0 ? [i] : [];
-  });
 };
 
 /** The indent of a line of `codeLines` in Python form, which starts with the indent and a `|`. */
@@ -170,7 +158,7 @@ export const testWeaker = (
     codeLines(before, hash, python),
     codeLines(after, hash, python),
   ];
-  const [a, b] = [was.map(identity), now.map(identity)];
+  const [a, b] = withoutAddedNames(was.map(identity), now.map(identity));
   const lost = missing(a, b)[0];
   if (lost !== undefined)
     return `It removes or changes the line \`${shown(textOf(lost))}\`.`;
