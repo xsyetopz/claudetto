@@ -2,6 +2,7 @@
 // `NO_COLOR` (no-color.org) turns off each color. The icons stay.
 
 import { USAGE_LEVELS } from "../../../../kernel/budget.ts";
+import { PROJECTED_RUNOUT, PROJECTED_WARN } from "./limits.ts";
 
 /** A function that wraps text in a style. */
 export type Style = (text: string) => string;
@@ -15,6 +16,8 @@ export type Paint = {
   readonly red: Style;
   /** The style of the step for `percent`: green below the first level, yellow below the second, and red from the second. */
   readonly level: (percent: number) => Style;
+  /** The style of a limit whose use projects to `projected` percent at the end of its window: green below the warn level, yellow from it, and red above 100%. */
+  readonly projected: (projected: number) => Style;
 };
 
 const wrap =
@@ -44,5 +47,11 @@ export const paintOf = (color: boolean): Paint => {
     red,
     level: (percent) =>
       percent >= alarm ? red : percent >= warn ? yellow : green,
+    projected: (projected) =>
+      projected > PROJECTED_RUNOUT
+        ? red
+        : projected >= PROJECTED_WARN
+          ? yellow
+          : green,
   };
 };

@@ -27,15 +27,14 @@ const render = async (
   return run;
 };
 
-test("a wide terminal shows three rows of numbers with icons, and `NO_COLOR` keeps each icon", async () => {
+test("a wide terminal shows two rows of numbers with icons, and `NO_COLOR` keeps each icon", async () => {
   const run = await render(124, { NO_COLOR: "1" });
   expect(run.status).toBe(0);
   expect(run.err).toStrictEqual([]);
   expect(run.out).toStrictEqual([
     [
-      "⌂ dotclaude         · ⎇ main ✎2 ↑1 ↓2",
-      "◈ Opus 5.5 high ✦   · ▤ 45k/300k 15%     · $1.23 +300 -20",
-      "◷ 5h 23% ▼13% 3h12m · ◷ 7d 80% ▲11% 2d4h",
+      "⌂ dotclaude       · ⎇ main ✎2 ↑1 ↓2                  · ◷ 7d  80% ▲11%  ⏵Oct 13 at 5pm ↻Oct 14 at 4pm",
+      "◈ Opus 5.5 high ✦ · ▤ 45k/300k 15%  · $1.23 +300 -20 · ◷ 5h  23% ▼13%                 ↻3:12pm",
     ].join("\n"),
   ]);
 });
@@ -43,14 +42,14 @@ test("a wide terminal shows three rows of numbers with icons, and `NO_COLOR` kee
 test("a narrow terminal drops the segments at the right of a row, and the first segment stays", async () => {
   const run = await render(32, { NO_COLOR: "1" });
   expect(run.out).toStrictEqual([
-    ["⌂ dotclaude", "◈ Opus 5.5 high ✦", "◷ 5h 23% ▼13% 3h12m"].join("\n"),
+    ["⌂ dotclaude", "◈ Opus 5.5 high ✦", "◷ 5h  23% ▼13% ↻3h12m"].join("\n"),
   ]);
 });
 
 test("a very narrow terminal cuts the first segment with `…`", async () => {
   const run = await render(14, { NO_COLOR: "1" });
   const rows = (run.out[0] ?? "").split("\n");
-  expect(rows).toStrictEqual(["⌂ dotclau…", "◈ Opus 5.…", "◷ 5h 23% …"]);
+  expect(rows).toStrictEqual(["⌂ dotclau…", "◈ Opus 5.…", "◷ 5h  23%…"]);
   for (const row of rows) expect(width(row)).toBeLessThanOrEqual(10);
 });
 

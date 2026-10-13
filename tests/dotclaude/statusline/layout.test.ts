@@ -37,7 +37,8 @@ const separatorColumn = (line: string): number => line.indexOf(" · ");
 test("the items of a row are joined by ` · `", async () => {
   const rows = await rowsAt(200);
   expect(rows[1]).toContain(" · ▤ 45k/300k 15% ");
-  expect(rows[2]).toContain("3h12m · ◷ 7d");
+  expect(rows[0]).toContain(" · ◷ 7d");
+  expect(rows[1]).toContain("+300 -20 · ◷ 5h");
 });
 
 test("the first separator of each row is in the same column when the row fits", async () => {
@@ -45,41 +46,31 @@ test("the first separator of each row is in the same column when the row fits", 
   const columns = rows.map(separatorColumn);
   expect(columns[0]).toBeGreaterThan(0);
   expect(columns[1]).toBe(columns[0]);
-  expect(columns[2]).toBe(columns[0]);
 });
 
 test("the rows drop the alignment together when one row does not fit", async () => {
-  // Four columns are kept free at the right edge, so 60 columns leave 56 for the rows.
-  // The aligned row 1 is 57 columns wide, so rows 0 and 2 also show without the padding.
+  // The aligned block is wider than 60 columns, so the rows are joined without the alignment.
+  // The one-row placement with the countdown times keeps every item at 60 columns.
   const rows = await rowsAt(60);
   expect(rows[0]).toBe("⌂ dotclaude · ⎇ main ✎2 ↑1 ↓2");
   expect(rows[1]).toBe("◈ Opus 5.5 high ✦ · ▤ 45k/300k 15% · $1.23 +300 -20");
-  expect(rows[2]).toBe("◷ 5h 23% ▼13% 3h12m · ◷ 7d 80% ▲11% 2d4h");
+  expect(rows[2]).toBe("◷ 5h  23% ▼13% ↻3h12m · ◷ 7d  80% ▲11% ⏵1d5h ↻2d4h");
 });
 
 test("a row with an empty middle place keeps its later item in its column, with color codes", async () => {
-  // The `7d` place of row 2 is empty, so the `spend` item keeps the column of the cost in row 1.
-  const limits = STATUS.rate_limits;
-  const spend = {
-    used_percentage: 40,
-    resets_at: STATUS.rate_limits.five_hour.resets_at,
-  };
-  const rows = await rowsOf({
-    ...STATUS,
-    rate_limits: { five_hour: limits.five_hour, spend_limit: spend },
-  });
-  expect(columnOf(rows[2] ?? "", "◷ spend")).toBe(
-    columnOf(rows[1] ?? "", "$1.23"),
-  );
+  // The `change` place of row 0 is empty, so the `7d` item keeps the column of the `5h` item in row 1.
+  const rows = await rowsOf(STATUS);
+  expect(columnOf(rows[0] ?? "", "◷ 7d")).toBe(columnOf(rows[1] ?? "", "◷ 5h"));
 });
 
 test("a row with fewer items keeps each item in its column", async () => {
-  // The `5h` place of row 2 is empty, so the `7d` item keeps the column of the context in row 1.
+  // The `5h` item is absent, so the `7d` item keeps the column that it has with both windows.
+  const full = await rowsOf(STATUS);
   const rows = await rowsOf({
     ...STATUS,
     rate_limits: { seven_day: STATUS.rate_limits.seven_day },
   });
-  expect(columnOf(rows[2] ?? "", "◷ 7d")).toBe(columnOf(rows[1] ?? "", "▤"));
+  expect(columnOf(rows[0] ?? "", "◷ 7d")).toBe(columnOf(full[0] ?? "", "◷ 7d"));
 });
 
 test("a wide glyph in the folder name keeps the items of the rows in their columns", async () => {

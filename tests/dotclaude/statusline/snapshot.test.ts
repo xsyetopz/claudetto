@@ -19,9 +19,8 @@ const render = async (
 
 test("the rows at 124 columns with `NO_COLOR`", async () => {
   expect(await render(124, { NO_COLOR: "1" })).toMatchInlineSnapshot(`
-    "⌂ dotclaude         · ⎇ main ✎2 ↑1 ↓2
-    ◈ Opus 5.5 high ✦   · ▤ 45k/300k 15%     · $1.23 +300 -20
-    ◷ 5h 23% ▼13% 3h12m · ◷ 7d 80% ▲11% 2d4h"
+    "⌂ dotclaude       · ⎇ main ✎2 ↑1 ↓2                  · ◷ 7d  80% ▲11%  ⏵Oct 13 at 5pm ↻Oct 14 at 4pm
+    ◈ Opus 5.5 high ✦ · ▤ 45k/300k 15%  · $1.23 +300 -20 · ◷ 5h  23% ▼13%                 ↻3:12pm"
   `);
 });
 
@@ -29,7 +28,7 @@ test("the rows at 60 columns with `NO_COLOR`", async () => {
   expect(await render(60, { NO_COLOR: "1" })).toMatchInlineSnapshot(`
     "⌂ dotclaude · ⎇ main ✎2 ↑1 ↓2
     ◈ Opus 5.5 high ✦ · ▤ 45k/300k 15% · $1.23 +300 -20
-    ◷ 5h 23% ▼13% 3h12m · ◷ 7d 80% ▲11% 2d4h"
+    ◷ 5h  23% ▼13% ↻3h12m · ◷ 7d  80% ▲11% ⏵1d5h ↻2d4h"
   `);
 });
 
@@ -37,7 +36,7 @@ test("the rows at 32 columns with `NO_COLOR`", async () => {
   expect(await render(32, { NO_COLOR: "1" })).toMatchInlineSnapshot(`
     "⌂ dotclaude
     ◈ Opus 5.5 high ✦
-    ◷ 5h 23% ▼13% 3h12m"
+    ◷ 5h  23% ▼13% ↻3h12m"
   `);
 });
 
@@ -45,14 +44,13 @@ test("the rows at 14 columns with `NO_COLOR`", async () => {
   expect(await render(14, { NO_COLOR: "1" })).toMatchInlineSnapshot(`
     "⌂ dotclau…
     ◈ Opus 5.…
-    ◷ 5h 23% …"
+    ◷ 5h  23%…"
   `);
 });
 
 test("the rows at 124 columns with color", async () => {
   expect(await render(124)).toMatchInlineSnapshot(`
-    "\x1B[1m⌂ dotclaude\x1B[0m         · ⎇ main \x1B[33m✎2\x1B[0m \x1B[32m↑1\x1B[0m \x1B[31m↓2\x1B[0m
-    \x1B[1m◈ Opus 5.5\x1B[0m\x1B[2m high\x1B[0m ✦   · \x1B[32m▤ 45k/300k 15%\x1B[0m     · \x1B[2m$1.23\x1B[0m \x1B[32m+300\x1B[0m \x1B[31m-20\x1B[0m
-    ◷ 5h \x1B[32m23%\x1B[0m\x1B[32m ▼13%\x1B[0m\x1B[2m 3h12m\x1B[0m · ◷ 7d \x1B[33m80%\x1B[0m\x1B[33m ▲11%\x1B[0m\x1B[2m 2d4h\x1B[0m"
+    "\x1B[1m⌂ dotclaude\x1B[0m       · ⎇ main \x1B[33m✎2\x1B[0m \x1B[32m↑1\x1B[0m \x1B[31m↓2\x1B[0m                  · ◷ 7d  \x1B[31m80%\x1B[0m \x1B[33m▲11%\x1B[0m  \x1B[31m⏵Oct 13 at 5pm\x1B[0m \x1B[2m↻Oct 14 at 4pm\x1B[0m
+    \x1B[1m◈ Opus 5.5\x1B[0m\x1B[2m high\x1B[0m ✦ · \x1B[32m▤ 45k/300k 15%\x1B[0m  · \x1B[2m$1.23\x1B[0m \x1B[32m+300\x1B[0m \x1B[31m-20\x1B[0m · ◷ 5h  \x1B[32m23%\x1B[0m \x1B[32m▼13%\x1B[0m                 \x1B[2m↻3:12pm\x1B[0m"
   `);
 });
