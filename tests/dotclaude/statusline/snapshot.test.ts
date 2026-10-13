@@ -27,7 +27,7 @@ test("the rows at 124 columns with `NO_COLOR`", async () => {
 
 test("the rows at 60 columns with `NO_COLOR`", async () => {
   expect(await render(60, { NO_COLOR: "1" })).toMatchInlineSnapshot(`
-    "⌂ dotclaude         · ⎇ main ✎2 ↑1 ↓2
+    "⌂ dotclaude · ⎇ main ✎2 ↑1 ↓2
     ◈ Opus 5.5 high ✦ · ▤ 45k/300k 15% · $1.23 +300 -20
     ◷ 5h 23% ▼13% 3h12m · ◷ 7d 80% ▲11% 2d4h"
   `);

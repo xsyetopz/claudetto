@@ -1,5 +1,6 @@
 // The rows of the main status line: the segments of a row, aligned in columns, joined, and fitted to the width.
-// A segment keeps its place in its row, so the places of the rows line up. A row that does not fit is joined without the alignment.
+// A segment keeps its place in its row, and an empty place keeps its column, so the places of the rows line up.
+// When one row does not fit the width, every row of the block is joined without the alignment.
 
 import type { StatusSegment } from "../../../../../kernel/slice.ts";
 import { ITEM_GAP, MAX_ROWS } from "../limits.ts";
@@ -25,20 +26,38 @@ const columnsOf = (rows: readonly (readonly (string | null)[])[]): number[] => {
   return widths;
 };
 
-/** The texts of a row joined by `ITEM_GAP`, each text but the last padded to the width of its place. */
+/** The column where each place starts: the widths of the places before it, each with one `ITEM_GAP`. */
+const startsOf = (widths: readonly number[]): number[] => {
+  const gap = width(ITEM_GAP);
+  let start = 0;
+  return widths.map((columns) => {
+    const at = start;
+    start += columns + gap;
+    return at;
+  });
+};
+
+/**
+ * The texts of a row joined by `ITEM_GAP`, each place at its column.
+ * A place with no text keeps its column as blank space, so the later items stay in their columns.
+ */
 const joinRow = (
   cells: readonly (string | null)[],
   widths: readonly number[],
 ): string => {
+  const starts = startsOf(widths);
   const shown = cells.flatMap((cell, place) =>
     cell ? [{ text: cell, place }] : [],
   );
-  return shown
-    .map(({ text, place }, index) => {
-      if (index === shown.length - 1) return text;
-      return text + " ".repeat((widths[place] ?? 0) - width(text));
-    })
-    .join(ITEM_GAP);
+  let out = "";
+  shown.forEach(({ text, place }, index) => {
+    out += " ".repeat((starts[place] ?? 0) - width(out));
+    const last = index === shown.length - 1;
+    out += last
+      ? text
+      : text + " ".repeat((widths[place] ?? 0) - width(text)) + ITEM_GAP;
+  });
+  return out;
 };
 
 /**
@@ -53,7 +72,8 @@ export const fitRow = (texts: readonly string[], columns: number): string => {
 
 /**
  * The rows of the status line for `status`: the rows in the order of their number, at most `MAX_ROWS`, each fitted to `columns`.
- * The places of the rows line up when the aligned row fits `columns`, and the row is joined without the alignment when it does not.
+ * The places of the rows line up when every aligned row fits `columns`.
+ * When one aligned row does not fit, no row of the block is aligned, and each row is joined and fitted on its own.
  * A row with no text is out.
  */
 export const renderRows = (
@@ -67,10 +87,12 @@ export const renderRows = (
     .filter((cells) => cells.some(Boolean))
     .slice(0, MAX_ROWS);
   const widths = columnsOf(rows);
-  return rows.map((cells) => {
-    const aligned = joinRow(cells, widths);
-    if (width(aligned) <= columns) return aligned;
-    const texts = cells.filter((cell): cell is string => cell !== null);
-    return fitRow(texts, columns);
-  });
+  const aligned = rows.map((cells) => joinRow(cells, widths));
+  if (aligned.every((text) => width(text) <= columns)) return aligned;
+  return rows.map((cells) =>
+    fitRow(
+      cells.filter((cell): cell is string => cell !== null),
+      columns,
+    ),
+  );
 };
