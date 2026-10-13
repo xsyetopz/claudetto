@@ -9,7 +9,7 @@ owns: ["src/plugins/dotclaude/slices/spec/","tests/dotclaude/spec/",".dotclaude/
 satisfies: []
 verify: just check
 agent: main session
-status: planned
+status: done
 ---
 
 ## Goal
