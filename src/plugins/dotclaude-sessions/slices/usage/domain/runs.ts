@@ -108,7 +108,7 @@ const parsePlugins = (
   text: string,
 ): Record<string, { installPath?: unknown }[] | undefined> => {
   try {
-    return JSON.parse(text).plugins;
+    return JSON.parse(text)?.plugins;
   } catch (err) {
     rethrowUnless(err, "SyntaxError");
     return {};

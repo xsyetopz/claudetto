@@ -6,11 +6,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { store } from "../../../src/plugins/dotclaude-sessions/slices/usage/adapters/store.ts";
 import {
+  briefSize,
   callCost,
   median,
   quantile,
   tokens,
 } from "../../../src/plugins/dotclaude-sessions/slices/usage/domain/parse.ts";
+import { installedSkills } from "../../../src/plugins/dotclaude-sessions/slices/usage/domain/runs.ts";
 import {
   agentType,
   type Entry,
@@ -321,4 +323,36 @@ test("`--days` skips a file that nothing has written since the window began", as
     30,
   );
   expect(run(root, "--days", "7").total).toBe(0);
+});
+
+test("the brief reader skips a `null`, a number, and an array line, and reads the prompt after them", async () => {
+  const prompt = JSON.stringify({
+    type: "user",
+    message: { content: "- read src/a.ts\n- write src/b.ts" },
+  });
+  const store = {
+    read: async () => `null\n5\n[]\n${prompt}`,
+    list: async () => [],
+  };
+  expect(await briefSize(store, "s.jsonl")).toStrictEqual({
+    files: 2,
+    items: 2,
+  });
+});
+
+test("a meta file or an installed-plugins file that is `null` gives the defaults and does not throw", async () => {
+  const root = tmpDir("usage-null");
+  const file = path.join(root, "p", "subagents", "agent-n.jsonl");
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(
+    path.join(root, "p", "subagents", "agent-n.meta.json"),
+    "null",
+  );
+  expect(await agentType(store, file)).toBe("subagent");
+  fs.mkdirSync(path.join(root, "plugins"));
+  fs.writeFileSync(
+    path.join(root, "plugins", "installed_plugins.json"),
+    "null",
+  );
+  expect(await installedSkills(store, root)).toStrictEqual([]);
 });

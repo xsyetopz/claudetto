@@ -8,6 +8,7 @@ import {
   actionOf,
   completePrompt,
   forkPrompt,
+  headsUpNote,
   isChange,
   isRepeat,
   SYSTEM,
@@ -18,18 +19,30 @@ import {
   COMPLETE_TIMEOUT_MS,
   FORK_WAIT_MS,
   MAX_REPLY_TOKENS,
-  TOAST_MS,
 } from "../limits.ts";
+import { DISMISS, HEADS_UP } from "./band.ts";
 
 /** The session values that `types/index.d.ts` declares. */
 const TURN = { plugin: "dcc-plugin-you-should-know", key: "turn" } as const;
 const PATH = { plugin: "dcc-plugin-you-should-know", key: "path" } as const;
 const SHOWN = { plugin: "dcc-plugin-you-should-know", key: "shown" } as const;
+const OFFER = { plugin: "dcc-plugin-you-should-know", key: "offer" } as const;
+const NOTE = { plugin: "dcc-plugin-you-should-know", key: "note" } as const;
 
 /** The HTTP status that a subscription gets for a separate call from a hook when `CLAUDE_CODE_ATTRIBUTION_HEADER` is `0`. */
 const TOO_MANY_REQUESTS = 429;
 
-/** The `turn.start` hook: a new turn is not checked yet. A turn with no typed prompt keeps the prompt of the turn before it. */
+/** Clears the band, so that no choice of it is drawn again. */
+const clearOffer = async ($: EngineInterface): Promise<void> => {
+  await $.state.set(OFFER, null);
+  $.ui.invalidate("ui.render");
+};
+
+/**
+ * The `turn.start` hook: a new turn is not checked yet, and a band of the turn before it is dropped.
+ * A heads-up note stays until the main agent reads it once.
+ * A turn with no typed prompt keeps the prompt of the turn before it.
+ */
 export const onTurnStart: Handler<"turn.start"> = async ($, e, next) => {
   const out = await next(e);
   const { value: last } = await $.state.get(TURN);
@@ -38,6 +51,7 @@ export const onTurnStart: Handler<"turn.start"> = async ($, e, next) => {
     prompt: e.text || (last?.prompt ?? ""),
     checked: false,
   });
+  await clearOffer($);
   return out;
 };
 
@@ -81,9 +95,13 @@ const answerFor = async (
   return forkAnswer($, forkPrompt(action, shown));
 };
 
-/** Shows the topic of the pending action, if the model gives one that did not show in this session. */
+/**
+ * Shows the topic of the pending action, if the model gives one that did not show in this session.
+ * A verdict that arrives after its turn ended shows no band.
+ */
 const notify = async (
   $: EngineInterface,
+  turnId: string,
   request: string,
   action: string,
 ): Promise<void> => {
@@ -91,12 +109,81 @@ const notify = async (
   const answer = await answerFor($, request, action, shown);
   const topic = answer === undefined ? undefined : topicOf(answer);
   if (topic === undefined || isRepeat(topic, shown)) return;
+  const { value: now } = await $.state.get(TURN);
+  if (now?.id !== turnId) return;
   await $.state.set(SHOWN, [...shown, topic]);
-  $.ui.toast(topic, { timeoutMs: TOAST_MS });
+  await $.state.set(OFFER, { topic });
+  $.ui.invalidate("ui.render");
+};
+
+/**
+ * The closure at the end of the `ui.press` chain of a band button.
+ * The `ui.press` hooks of this slice do the work, so the closure does nothing.
+ * The engine requires a `Button` to hold a closure, and the render hook must not skip without it.
+ */
+const pressed = (): void => {};
+
+/**
+ * The `ui.render` hook of the band: the topic of the offer, drawn above the prompt.
+ * The band draws the tree that `$.ui.resolve` builds, so the terminal and the desktop surfaces draw the same rows.
+ */
+export const onRender: Handler<"ui.render"> = async ($, e, next) => {
+  const { value: offer } = await $.state.get(OFFER);
+  if (e.props.hasSurvey || offer === undefined || offer === null)
+    return next(e);
+  const { Box, Text, Button } = $.ui.resolve(e);
+  return Box({
+    flexDirection: "column",
+    marginTop: 1,
+    children: [
+      Text({ wrap: "wrap", children: `You should know: ${offer.topic}` }),
+      Button({
+        key: HEADS_UP,
+        label: "Give a heads-up",
+        hotkey: "1",
+        onPress: pressed,
+      }),
+      Button({ key: DISMISS, label: "Dismiss", hotkey: "0", onPress: pressed }),
+    ],
+  });
+};
+
+/**
+ * The `ui.press` hook of the heads-up choice: the topic goes into the prompt box, quoted, and the person adds the heads-up there.
+ * The same heads-up waits for the next call of the main agent, which reads it in the running turn (`onHeadsUpContext`).
+ */
+export const onHeadsUp: Handler<"ui.press"> = async ($, e, next) => {
+  const { value: offer } = await $.state.get(OFFER);
+  await clearOffer($);
+  if (offer !== undefined && offer !== null) {
+    await $.prompt.fill({ text: `> ${offer.topic}\n`, mode: "insert" });
+    await $.state.set(NOTE, headsUpNote(offer.topic));
+  }
+  return next(e);
+};
+
+/**
+ * The `tool.call` hook of a heads-up: the next call of the main agent that runs gets the note after its result, once.
+ * A call of a subagent, and a denied call, get no note, so the note waits for a call that ran.
+ */
+export const onHeadsUpContext: Handler<"tool.call"> = async ($, e, next) => {
+  const out = await next(e);
+  if (e.agentId !== undefined || out.result === undefined) return out;
+  const { value: note } = await $.state.get(NOTE);
+  if (note === undefined || note === null) return out;
+  await $.state.set(NOTE, null);
+  return { ...out, context: [...(out.context ?? []), note] };
+};
+
+/** The `ui.press` hook of the dismiss choice: the band goes, and the topic stays in the session's seen list. */
+export const onDismiss: Handler<"ui.press"> = async ($, e, next) => {
+  await clearOffer($);
+  return next(e);
 };
 
 /**
  * The `tool.check` hook: the first call of a turn that changes something gets one check, and the call runs as the verdict says.
+ * The model call is not awaited, so the tool does not wait for it: the band comes when the verdict does.
  * A query, a call of a subagent, a denied call, and a read get no check.
  */
 export const onCheck: Handler<"tool.check"> = async ($, e, next) => {
@@ -107,7 +194,11 @@ export const onCheck: Handler<"tool.check"> = async ($, e, next) => {
     const { value: turn } = await $.state.get(TURN);
     if (turn === undefined || turn.checked) return out;
     await $.state.set(TURN, { ...turn, checked: true });
-    await notify($, turn.prompt, actionOf(e.tool, e.input));
+    void notify($, turn.id, turn.prompt, actionOf(e.tool, e.input)).catch(
+      () => {
+        // A failed check shows no notice. The call goes on with its verdict.
+      },
+    );
   } catch {
     // A failed check shows no notice. The call goes on with its verdict.
   }

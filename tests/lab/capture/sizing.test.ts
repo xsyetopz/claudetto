@@ -151,3 +151,26 @@ test("one part that fails does not fail the whole report", async () => {
     up.stop();
   }
 });
+
+test("a 200 reply whose body is not JSON never gives a count, for the full count or a part", async () => {
+  // Every call answers 200 with HTML, so no count can be read from any reply.
+  const html = { status: 200, text: "<html>proxy page</html>" };
+  const up = countServer(() => html);
+  const { wait } = fakeWait();
+  try {
+    await expect(
+      sizeRequest(up.url, toolsRequest(1), {}, "", wait),
+    ).rejects.toThrow();
+  } finally {
+    up.stop();
+  }
+  // A part that gets the same reply after a good full count has no count.
+  const part = countServer((n) => (n === 1 ? null : html));
+  try {
+    const sizing = await sizeRequest(part.url, toolsRequest(1), {}, "", wait);
+    expect(sizing.rows[0]?.tokens).toBeNull();
+    expect(sizing.parts).toBe(0);
+  } finally {
+    part.stop();
+  }
+});

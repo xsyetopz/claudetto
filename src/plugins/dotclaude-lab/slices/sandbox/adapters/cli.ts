@@ -42,6 +42,16 @@ import { absolutePluginDirs, availableModels, setUp } from "./setup.ts";
 const USAGE =
   "Usage: dotclaude-sandbox [--dir DIR] [--check-frontmatter] [--plugin-dir DIR]... [claude arguments...]\n       dotclaude-sandbox [--dir DIR] --clean";
 
+/**
+ * Adds the owner's read, write, and search bits to each folder under `dir`.
+ * A folder without the write bit keeps its files, so `rmSync` cannot remove them.
+ */
+const makeWritable = (dir: string): void => {
+  fs.chmodSync(dir, fs.statSync(dir).mode | 0o700);
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true }))
+    if (entry.isDirectory()) makeWritable(path.join(dir, entry.name));
+};
+
 /** Runs the command with `argv`, and returns the exit code. */
 export const main = async (argv: string[]): Promise<number> => {
   const args = [...argv];
@@ -68,9 +78,17 @@ export const main = async (argv: string[]): Promise<number> => {
   }
   if (args[0] === "--clean") {
     // A missing folder has nothing to remove, so `just sandbox-alone` runs on its first use.
-    if (!fs.existsSync(root)) {
+    const rootStat = fs.lstatSync(root, { throwIfNoEntry: false });
+    if (!rootStat) {
       console.log(`Nothing to remove: ${root} does not exist.`);
       return 0;
+    }
+    // A symlink would make `makeWritable` and `readdirSync` act on the folder it points to.
+    if (rootStat.isSymbolicLink()) {
+      console.error(
+        `Refusing to remove ${root}: it is a symbolic link. Remove the link by hand, or pass the folder itself.`,
+      );
+      return 1;
     }
     const isDefault = root === path.resolve(os.tmpdir(), SANDBOX_TEMP);
     const entries = fs.readdirSync(root);
@@ -79,6 +97,7 @@ export const main = async (argv: string[]): Promise<number> => {
       console.error(refusal);
       return 1;
     }
+    makeWritable(root);
     fs.rmSync(root, { recursive: true, force: true });
     console.log(`Removed ${root}`);
     return 0;

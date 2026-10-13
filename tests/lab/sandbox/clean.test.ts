@@ -109,3 +109,42 @@ test("`cleanRefusal` refuses a folder without the marker, even when it holds onl
   expect(cleanRefusal("/x", ["config", "home"], false)).not.toBeNull();
   expect(cleanRefusal("/x", [], false)).not.toBeNull();
 });
+
+test("`--clean` removes a sandbox whose `config/` folder is read-only and holds a file", async () => {
+  const root = path.join(scratch, "sandbox");
+  const config = path.join(root, "config");
+  fs.mkdirSync(config, { recursive: true });
+  fs.writeFileSync(path.join(root, ".dotclaude-sandbox"), "");
+  fs.writeFileSync(path.join(config, "state.json"), "{}");
+  fs.chmodSync(config, 0o555);
+  try {
+    const code = await main(["--dir", root, "--clean"]);
+    expect(code).toBe(0);
+    expect(fs.existsSync(root)).toBe(false);
+  } finally {
+    if (fs.existsSync(config)) fs.chmodSync(config, 0o755);
+  }
+});
+
+test("`--clean` refuses a symlinked root and leaves the folder that the link points to", async () => {
+  const outside = path.join(scratch, "outside");
+  fs.mkdirSync(path.join(outside, "config"), { recursive: true });
+  fs.mkdirSync(path.join(outside, "project"), { recursive: true });
+  fs.writeFileSync(path.join(outside, ".dotclaude-sandbox"), "");
+  fs.chmodSync(path.join(outside, "config"), 0o555);
+  fs.chmodSync(outside, 0o555);
+  const link = path.join(scratch, "link");
+  fs.symlinkSync(outside, link);
+
+  try {
+    const code = await main(["--dir", link, "--clean"]);
+
+    expect(code).not.toBe(0);
+    expect(fs.lstatSync(link).isSymbolicLink()).toBe(true);
+    expect(fs.statSync(outside).mode & 0o777).toBe(0o555);
+    expect(fs.statSync(path.join(outside, "config")).mode & 0o777).toBe(0o555);
+  } finally {
+    fs.chmodSync(path.join(outside, "config"), 0o755);
+    fs.chmodSync(outside, 0o755);
+  }
+});

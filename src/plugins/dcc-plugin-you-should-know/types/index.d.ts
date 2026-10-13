@@ -11,6 +11,14 @@ export type YouShouldKnowTurn = {
 /** The model path of the checks: a separate call, or a fork after the separate call got HTTP 429. */
 export type YouShouldKnowPath = "complete" | "fork";
 
+/** The topic in the band above the prompt, until the person presses a choice. `null` when no band shows. */
+export type YouShouldKnowOffer = {
+  topic: string;
+} | null;
+
+/** The heads-up of the person, until the next call of the main agent in the running turn reads it. `null` when none waits. */
+export type YouShouldKnowNote = string | null;
+
 declare module "claude-code" {
   interface PluginState {
     "dcc-plugin-you-should-know": {
@@ -18,6 +26,8 @@ declare module "claude-code" {
       path: YouShouldKnowPath;
       /** The topics that showed in this session. */
       shown: string[];
+      offer: YouShouldKnowOffer;
+      note: YouShouldKnowNote;
     };
   }
 }
