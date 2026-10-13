@@ -10,10 +10,6 @@ export const PARTS: readonly Part[] = [
     anchor: /^ - Claude Code is available as a CLI.*$/gm,
     text: " - Claude Code runs as a CLI, a desktop app, a web app, and IDE extensions.",
   },
-  {
-    anchor: /^ - Fast mode for Claude Code.*$/gm,
-    text: " - Fast mode uses Claude Opus with faster output. Toggle it with `/fast`.",
-  },
 ];
 
 export const transform = (text: string): string => applyParts(text, PARTS);
