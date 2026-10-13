@@ -285,3 +285,19 @@ This section gives the causes of two findings of the sandbox check, the decision
 just sandbox --model haiku --continue -p "Reply with the word ok." --debug-file <temp>/p38-resume.log
 grep -c -F 'dotclaude build stamp' <temp>/dotclaude-sandbox/config/projects/<project>/<session>.jsonl
 ```
+
+### Live Check From the Main Session, 2026-10-13
+
+The main session ran three starts of one session in a new `just sandbox --dir` folder, on build `64f29fd`, with `--model haiku` and `-p "Reply with the word ok."`.
+The first start had no flag, and the second and third starts had `--continue`.
+
+| Start | Stamp rows in the transcript |
+| --- | --- |
+| 1, new session | 1 |
+| 2, `--continue` | 1 |
+| 3, `--continue` | 1 |
+
+- The sandbox folder held one main transcript, with 4 `user` rows and 4 `assistant` rows, so each `--continue` start resumed the same session.
+- The one row is `dotclaude build stamp: {"version":"0.28.0","sha":"64f29fd","shaSource":"git",...}`.
+
+Result: a resume on the same build adds no row.
