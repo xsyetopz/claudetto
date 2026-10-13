@@ -232,7 +232,8 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Deps: none.
   Owns: `src/plugins/dcc-plugin-you-should-know/`, its tests, its marketplace entry and wiki page, and `evidence/you-should-know.md`.
   Verify: `just check`, `just lab`, and one session in `just sandbox` where a notice shows before the action that it is about.
-  The HTTP 429 on a subscription came from `CLAUDE_CODE_ATTRIBUTION_HEADER=0`, so the plugin uses `complete` on each account, and `fork` only after a 429 ([evidence](evidence/you-should-know.md), the user, 2026-10-13).- [ ] P16 Release check: `tools/rebuild-pending.txt` is empty and deleted with its check, a `reviewer` pass on the full diff, `just check`, and one session in `just sandbox` that runs `/spec`, `/ship`, `/hotfix`, a decision, and a handoff.
+  The HTTP 429 on a subscription came from `CLAUDE_CODE_ATTRIBUTION_HEADER=0`, so the plugin uses `complete` on each account, and `fork` only after a 429 ([evidence](evidence/you-should-know.md), the user, 2026-10-13).
+- [ ] P16 Release check: `tools/rebuild-pending.txt` is empty and deleted with its check, a `reviewer` pass on the full diff, `just check`, and one session in `just sandbox` that runs `/spec`, `/ship`, `/hotfix`, a decision, and a handoff.
   Deps: each package above.
   Verify: the user approves the version 1.0.0 and the push.
 - [ ] P18 History: delete the tags and the GitHub releases of each older version.
