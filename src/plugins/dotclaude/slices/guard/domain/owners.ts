@@ -123,7 +123,9 @@ ${tags.join("\n")}`;
  * `ctx` gives the I/O of the caller:
  * `run(argv)` resolves to the stdout of a command or null,
  * `owners()` resolves to the logins of the user and of the organizations where the user is an admin,
- * and `seen` is the set of repositories that this session checked.
+ * and `seen` is the set of repositories whose policy files were read and had no text.
+ * A repository with a policy is not added to `seen`, so each call that reaches it asks again.
+ * A failed read is not added either, so the next call reads it again.
  */
 export const askReason = async (
   tool: string,
@@ -138,13 +140,13 @@ export const askReason = async (
   if (!repos.length) return undefined;
   const mine = await ctx.owners();
   for (const repo of repos) {
-    ctx.seen.add(repo);
     if (ownRepo(repo, mine)) continue;
     const texts = await Promise.all(
       POLICY_FILES.map((file) => ctx.run(policyArgv(repo, file))),
     );
     const reason = policyReason(repo, texts);
     if (reason) return reason;
+    if (texts.some((t) => t !== null)) ctx.seen.add(repo);
   }
   return undefined;
 };

@@ -45,7 +45,7 @@ const ownersOf = async ($: EngineInterface) => {
   return found;
 };
 
-// The repositories that this process checked, for each session.
+// The repositories of each session whose policy files were read and had no text.
 const checked = new Map<string, Set<string>>();
 
 /**
