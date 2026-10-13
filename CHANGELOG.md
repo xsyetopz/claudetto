@@ -10,10 +10,6 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ## [Unreleased]
 
-### Fixed
-
-- `dotclaude-spec merge` accepts uncommitted files of other changes in the store, and does not commit them.
-
 ## [1.0.0] - 2026-10-13
 
 ### Added
