@@ -12,6 +12,25 @@ process.env["TMPDIR"] = root;
 // On Windows, `os.tmpdir()` reads `TEMP` and `TMP`, not `TMPDIR`.
 process.env["TEMP"] = root;
 process.env["TMP"] = root;
-// `bun test` does not emit a `process` `exit` event, so `afterAll` removes the folder.
+/** The script of the child that waits until the process `pid` exits and then removes the folder `dir`. */
+const REMOVE_AFTER_EXIT = `
+const [dir, pid] = process.argv.slice(-2);
+const alive = () => { try { process.kill(Number(pid), 0); return true; } catch { return false; } };
+while (alive()) await Bun.sleep(50);
+require("node:fs").rmSync(dir, { recursive: true, force: true, maxRetries: 5 });
+`;
+
+// `bun test` does not emit a `process` `exit` event, so `afterAll` starts the removal.
 // The hook runs once, after the last test file of the process.
-afterAll(() => fs.rmSync(root, { recursive: true, force: true }));
+// A remove of thousands of files takes more than the hook timeout on Windows, and it fails on a file that this process still holds open.
+// So a detached child removes the folder after this process exits, and the hook returns at once.
+afterAll(() => {
+  try {
+    Bun.spawn(
+      [process.execPath, "-e", REMOVE_AFTER_EXIT, root, String(process.pid)],
+      { stdio: ["ignore", "ignore", "ignore"], detached: true },
+    ).unref();
+  } catch {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
