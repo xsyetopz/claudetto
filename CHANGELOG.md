@@ -193,6 +193,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   Before, it asked once for each repository in a session.
 - The `guard` owners check keeps a repository whose policy files are all missing for the session, so it does not read them again.
   A failed read of a policy file is not kept, and the next call reads it again.
+- The shell reader of the core plugin no longer reads the text of an unquoted heredoc body as a command.
+  The substitutions in that body are still commands, so a destructive command in one is denied.
 
 ### Removed
 

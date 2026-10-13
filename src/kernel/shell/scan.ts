@@ -79,7 +79,9 @@ export const scan = (
   const end = (f: Frame) => {
     push(f);
     while (f.line.length && RESERVED.has(f.line[0] as string)) f.line.shift();
-    if (f.line.length) emit(f.line);
+    // The text of an unquoted heredoc body is data, so only its substitutions are commands.
+    // The text of an unquoted heredoc body is data, so only its substitutions are commands.
+    if (f.line.length && !f.body) emit(f.line);
     f.line = [];
     f.outs = [];
   };
@@ -115,7 +117,7 @@ export const scan = (
         open(f, ")", i);
         i++;
       } else if (c === "`") open(f, "`", i);
-      else f.word += c;
+      else f.word = (f.word ?? "") + c;
     } else if (c === "`") {
       if (f.closer === "`") close(f, i);
       else open(f, "`", i);

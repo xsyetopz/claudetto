@@ -86,6 +86,18 @@ test("`commands` skips heredoc bodies and keeps the command after them", () => {
   expect(commands(undefined)).toStrictEqual([]);
 });
 
+test("`commands` reads the substitutions of an unquoted heredoc body and not its text", () => {
+  expect(commands("cat <<EOF\nhi there $(echo x)\nEOF\n")).toStrictEqual([
+    ["cat"],
+    ["echo", "x"],
+  ]);
+  expect(commands("cat <<EOF\n`echo z`\nEOF\n")).toStrictEqual([
+    ["cat"],
+    ["echo", "z"],
+  ]);
+  expect(commands("cat <<EOF\nhi there\nEOF\n")).toStrictEqual([["cat"]]);
+});
+
 test("a quoted heredoc is read as a script when the command runs a script that the reader cannot see", () => {
   const has = (text: string, cmd: string) =>
     commands(text).some((c) => c.join(" ") === cmd);
