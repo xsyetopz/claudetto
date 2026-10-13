@@ -19,7 +19,7 @@ The states and the names of the commands are the design of dotclaude, because th
 | A package is `verified` only after its `verify` command exits with `0`. | EPIC, section 4.2.1. `traceSDD`, section 4.4: made-up content can pass tests, so a test alone is not enough, and a human review follows. | A package that the agent marks as done. |
 | The marker `[NEEDS CLARIFICATION: ...]` blocks the move to `doing`. | EPIC, section 4.1. | Open questions in free text, with no gate. |
 | A failed `verify` or a `reject` needs `fix-code` or `revise-spec`. | Piskala, section III.D. | A second try with no recorded reason. |
-| Each event records the SHA, the verify result, and the model. | SDAD: provenance log. Diaz and others: evidence pack. | A log with the state only. |
+| Each event records the SHA and the verify result. | SDAD: provenance log. Diaz and others: evidence pack. | A log with the state only. |
 | Stable `REQ-<n>` IDs, and `satisfies` in each package. | `traceSDD`: stable requirement IDs. | IDs that follow the position in a list. |
 | The `plan` gate checks that each requirement is in a package. | `traceSDD` and EPIC: a requirement with no work is a gap. | A plan that nobody compares with the requirements. |
 | A brief holds only the requirements of its package. | Marri: context slicing. The result is from one study. | The whole spec in the context of each agent. |

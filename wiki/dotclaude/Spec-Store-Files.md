@@ -64,7 +64,7 @@ Each line after it is one state change:
 ```
 
 - `package` is absent on the event of a change.
-- The optional keys are `sha`, `verify`, `verdict`, `findings`, `decision`, `note`, and `model`.
+- The optional keys are `sha`, `verify`, `verdict`, `findings`, `decision`, and `note`.
 - `verify` holds the command and the exit status.
   `decision` is `fix-code` or `revise-spec`.
 - A failed `verify` adds an event with its exit status, and the package stays `doing`.

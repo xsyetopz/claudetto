@@ -17,7 +17,7 @@ A linked worktree can run `verify`, but not the other commands that change a sta
 | State | Next states | Command | Gate |
 | --- | --- | --- | --- |
 | `planned` | `doing`, `blocked`, `canceled` | `implement <package>` | The change is `planned` or `implementing`, each dep is `done`, and no marker is open. |
-| `doing` | `verified`, `blocked`, `canceled` | `verify <package>` | The `verify` command of the package exits with `0` at the head of its branch. The event records the command, the exit status, and the SHA. |
+| `doing` | `doing`, `verified`, `blocked`, `canceled` | `verify <package>` | The `verify` command of the package exits with `0` at the head of its branch. The event records the command, the exit status, and the SHA. |
 | `verified` | `approved`, `doing`, `blocked`, `canceled` | `review <package> approve`, or `reject --finding <text>...` | `approve` records the SHA of the verify event. `reject` needs a finding and a `--decision`. |
 | `approved` | `done`, `blocked`, `canceled` | `merge <package> [<branch>]` | The head of the branch is the approved SHA. With no branch, `HEAD` of the main checkout contains that SHA. |
 | `blocked` | `doing`, `canceled` | `implement <package> --note <text>` | A note. |
