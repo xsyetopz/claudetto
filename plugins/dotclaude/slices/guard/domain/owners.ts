@@ -4,6 +4,7 @@
 // `adapters/mod.ts` reads the session and runs `gh`, then passes the data here.
 
 import { POLICY_FILE_MAX_CHARS } from "../../../kernel/budget.ts";
+import { walk } from "./walk.ts";
 
 const NAME = "([A-Za-z0-9_.-]+)";
 const REPO_PATTERNS = [
@@ -18,8 +19,49 @@ const REPO_PATTERNS = [
     "g",
   ),
 ];
-const REACH =
-  /\b(?:git\s+(?:clone|fetch|pull|remote\s+add|submodule\s+add)|gh|curl|wget)\b|\bpip\s+install\b[^|;&]*\bgit\+/;
+/** The commands that name a repository in their text, read as raw text: `gh`, `curl`, and `wget`. */
+const RAW_REACH = /\b(?:gh|curl|wget)\b/;
+
+/** The `git` verbs that fetch a repository from the URL in their words. */
+const GIT_FETCH = new Set(["clone", "fetch", "pull"]);
+
+/** A word that runs a Python installer, as in `pip3`, `pip`, or `pip3.12`. */
+const PIP = /^pip[\d.]*$/;
+
+/**
+ * True when one parsed command fetches a repository: `git` with a fetching verb,
+ * or a pip installer (`pip`, `python -m pip`, `uv pip`) with a `git+` URL after `install`.
+ */
+const fetchesRepo = (words: string[]): boolean => {
+  const [name, verb, sub] = words;
+  if (name === "git")
+    return (
+      GIT_FETCH.has(verb ?? "") ||
+      (verb === "remote" && sub === "add") ||
+      (verb === "submodule" && sub === "add")
+    );
+  return words.some(
+    (w, i) =>
+      PIP.test(w) &&
+      words[i + 1] === "install" &&
+      words.slice(i + 2).some((x) => x.includes("git+")),
+  );
+};
+
+/**
+ * The text that the repository patterns read in a `Bash` command.
+ * `gh`, `curl`, and `wget` keep the raw command, as before.
+ * Other commands are read as the words of each parsed command that fetches a repository,
+ * so the verb is the name of the command and the options before it do not hide it.
+ */
+const bashText = (command: string): string =>
+  RAW_REACH.test(command)
+    ? command
+    : walk(command)
+        .map(({ words }) => words)
+        .filter(fetchesRepo)
+        .map((words) => words.join(" "))
+        .join("\n");
 
 /**
  * The field `name` of a tool input, or undefined when the input is not an object with it.
@@ -37,8 +79,8 @@ export const reachedRepos = (tool: string, input: unknown): string[] => {
   const text =
     tool === "WebFetch"
       ? String(fieldOf(input, "url") ?? "")
-      : tool === "Bash" && REACH.test(command)
-        ? command
+      : tool === "Bash"
+        ? bashText(command)
         : "";
   const repos = REPO_PATTERNS.flatMap((re) => [...text.matchAll(re)]).map(
     ([, owner, name = ""]) =>

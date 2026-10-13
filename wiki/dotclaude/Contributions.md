@@ -16,7 +16,9 @@ A failed read is not kept, so the next call reads the repository again.
 The policy files are the ones in `POLICY_FILES` in `src/plugins/dotclaude/slices/guard/domain/owners.ts`: `CLAUDE.md`, `AGENTS.md`, and `AI_POLICY.md`.
 The ask covers these calls, which `reachedRepos` finds:
 
-- Bash: `git clone`, `gh`, `curl`, or `wget` on the repository.
+- Bash: `git clone`, `git fetch`, `git pull`, `git remote add`, or `git submodule add` on the repository, with any global option before the verb, such as `git -C dir fetch URL`.
+- Bash: `pip`, `pip3`, `python -m pip`, or `uv pip install` of a `git+URL` on the repository.
+- Bash: `gh`, `curl`, or `wget` on the repository.
 - `WebFetch` of a page of the repository.
 
 The steps are:
