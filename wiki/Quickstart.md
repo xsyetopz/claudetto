@@ -70,24 +70,24 @@ See [Agents](Agents).
 
 The spec store is the folder `.dotclaude/spec/`, which the repository tracks.
 A change has its own folder under `.dotclaude/spec/changes/`.
-Its lane log, `events.jsonl`, moves each package between the lanes `planned`, `doing`, `review`, `done`, and `blocked`.
+Its log, `events.jsonl`, records each state change of the change and of its packages.
 
-To start a change, run `/dotclaude:spec <change-id>`.
-The skill starts the change with `dotclaude-spec new`.
-It fills the files of the change, and it checks them with `dotclaude-spec validate`.
-The skill does not start the work.
-See [Spec-Store](Spec-Store).
+To start a change, run `/dotclaude:specify <change-id>`.
+The skill starts the change with `dotclaude-spec specify`, and it fills the requirements.
+The next phases are `/dotclaude:plan`, `/dotclaude:implement`, `/dotclaude:review`, `/dotclaude:merge`, `/dotclaude:accept`, and `/dotclaude:archive`.
+Each phase moves the change or a package to the next state.
+See [Spec-Store](Spec-Store) for the files, the states, and the gates.
 
 The context has a bound of 300K tokens.
 Claude Code does not compact it.
 At 60% of the window, the default `mainHandover` value of `manual` gives you a hint to run `/dotclaude:handoff`.
-The hint also comes when a package moves to `done`.
+The hint also comes when a `merge` or an `accept` finishes.
 The skill writes a handoff file to `.dotclaude/handoff/`, with the goal, the state, the next step, and the constraints.
 Then it starts a clean session that reads the file.
 See [Context-And-Handoff](Context-And-Handoff).
 
 Without a handoff, run `/clear`, and then `dotclaude-spec next <change-id>`.
-The command shows the next package from the lane log.
+The command shows the next package from the log.
 
 ## The Guards
 
@@ -121,5 +121,5 @@ See [Contributions](Contributions).
 
 - [Guards](Guards): what asks, what denies, and what the sandbox limits.
 - [Context-And-Handoff](Context-And-Handoff): how a session ends before the bound.
-- [Spec-Store](Spec-Store): the tasks and the lane log of a change.
+- [Spec-Store](Spec-Store): the files, the states, and the log of a change.
 - [Troubleshooting](Troubleshooting): what to check when a part does not show.

@@ -101,7 +101,7 @@ Each handler names its phase.
 | `prompt.section` | `prompt` (`answer`) |
 | `agent.spawn` | `prompt` (`rewrite`), `spec` (`observe`) |
 | `turn.step` | `handoff` (`observe`) |
-| `turn.complete` | `handoff` (`observe`), `spec` (`observe`) |
+| `turn.complete` | `handoff` (`observe`) |
 | `skill.prompt` | `handoff` (`rewrite`) |
 | `tool.describe` | `surface` (`answer`) |
 | `agent.offer` | `surface` (`answer`) |
@@ -161,7 +161,7 @@ So it has no listing line in a request.
 
 | Entry | What it does |
 | --- | --- |
-| `/dotclaude:accept` | Moves a change to `accepted` when the trace finds no orphan and no uncited line. |
+| `/dotclaude:accept` | Moves a change to `accepted` when each package is `done` or `canceled`. |
 | `/dotclaude:archive` | Merges the requirements of an accepted change into the specs. |
 | `/dotclaude:handoff` | Writes a handoff file, then starts a clean session that reads it. |
 | `/dotclaude:implement` | Starts one implementer for each ready package, then runs `verify`. |
@@ -254,7 +254,7 @@ The overview of the add-ons is on [Add-Ons](Add-Ons).
 
 - [Guards](Guards): the checks that the hook module runs.
 - [Agents](Agents): the six agent files.
-- [Skills](Skills): the six skills of the core plugin.
+- [Skills](Skills): the ten skills of the core plugin.
 - [Spec-Store](Spec-Store): the store of each change.
 - [Prompt-Surface](Prompt-Surface): the text that the plugin adds to the prompt.
 - [Status-Line](Status-Line): the status line of the session.

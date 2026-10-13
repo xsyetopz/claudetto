@@ -27,7 +27,7 @@ dotclaude does the following:
   See [Prompt-Surface](Prompt-Surface).
 - Gives Claude six agents, each with a model, an effort, and a turn limit: `reviewer`, `implementer`, `debugger`, `investigator`, `planner`, and `researcher`.
   See [Agents](Agents).
-- Writes the packages and the lanes of a change to the spec store with the `dotclaude-spec` CLI.
+- Writes the packages and the states of a change to the spec store with the `dotclaude-spec` CLI.
   See [Spec-Store](Spec-Store).
 - Shows the folder, the git state, the spec change, the model and effort, the context, the cost, and the 5-hour limit.
   It shows them in a status line.

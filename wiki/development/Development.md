@@ -146,13 +146,14 @@ See [Design](Design) for the design principles.
    claude --plugin-dir /path/to/dotclaude/plugins/dotclaude
    ```
 
-## The `/ship` Skill
+## The `/dotclaude:implement` Skill
 
-The `/ship` skill (`plugins/dotclaude/skills/ship/SKILL.md`) runs the open packages of a large change in waves.
+The `/dotclaude:implement` skill (`plugins/dotclaude/skills/implement/SKILL.md`) runs the ready packages of a change in waves.
 Each package has one `implementer` agent in its own worktree.
 Before each wave, run `dotclaude-spec runs`.
 It prints how many agent runs the wave may start.
-The spec format is on the [Spec-Store](Spec-Store) page.
+The next phases are `/dotclaude:review`, `/dotclaude:merge`, `/dotclaude:accept`, and `/dotclaude:archive`.
+The files and the states are on the [Spec-Store](Spec-Store) page.
 
 ## Evals
 

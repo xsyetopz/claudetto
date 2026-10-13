@@ -82,9 +82,9 @@ This is an inference from `change.md`.
 
 **How in the code:**
 
-- `dotclaude-spec lane` appends one line to `events.jsonl`.
-  It also sets the package checkbox in `packages.md`.
-  No model call runs (`src/plugins/dotclaude/slices/spec/adapters/lane.ts`).
+- Each `dotclaude-spec` command that changes a state appends one line to `events.jsonl`, after its gate passes.
+  No model call runs (`src/plugins/dotclaude/slices/spec/adapters/transition.ts`).
+  Schema 2 replaced the `lane` command of schema 1 with these commands, and it removed `packages.md`.
 - The `asks` slice is a `check` mod handler (`src/plugins/dotclaude/slices/asks/slice.ts`).
 
 ### 4. Ports and Adapters in Vertical Slices

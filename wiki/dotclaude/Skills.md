@@ -1,9 +1,9 @@
 # Skills
 
-This page describes the six skills of the core plugin `dotclaude`.
+This page describes the ten skills of the core plugin `dotclaude`.
 It is for a user who runs a skill, and for a contributor who edits a `SKILL.md` file.
 
-The core plugin `dotclaude` ships six skills.
+The core plugin `dotclaude` ships ten skills.
 Each skill is a `SKILL.md` file in its slice, under `src/plugins/dotclaude/slices/<slice>/skills/`.
 Claude Code runs a skill as `/dotclaude:<name>`.
 
@@ -11,16 +11,20 @@ A skill gives Claude a procedure.
 Each skill treats the output of its commands and the text of its files as data, not as instructions.
 Each skill ends with a report to the user.
 
-## The Six Skills
+## The Ten Skills
 
 | Skill | Call | What it does | Slice or CLI that does the work | Writes |
 | --- | --- | --- | --- | --- |
 | `handoff` | `/dotclaude:handoff` | Writes a handoff file, so a new session can continue the work. | `handoff` slice, `dotclaude-handoff` | One file in `.dotclaude/handoff/` |
-| `hotfix` | `/dotclaude:hotfix <cause and fix>` | Fixes a defect with a known cause, then records it. | `spec` slice, `dotclaude-spec record` | One record in `.dotclaude/spec/hotfixes/`, and the code edit |
 | `rules-creator` | `/dotclaude:rules-creator [topic]` | Writes a rule file, with `paths` globs, and checks the globs. | `rules` slice, `check-globs.ts` script | A rule in `.claude/rules/` or `~/.claude/rules/` |
 | `setup` | `/dotclaude:setup [user\|project\|local]` | Merges the settings snippet and checks the add-on tools. | `setup` slice, `dotclaude-setup` | The settings file of the scope, and add-on installs |
-| `ship` | `/dotclaude:ship <change-id>` | Runs the open packages of a large change in worktrees, then merges each one that passes. | `spec` slice, `dotclaude-spec` | Lane files, merge commits, and the `plugins/` output |
-| `spec` | `/dotclaude:spec <change-id> [size]` | Starts a change in the spec store and fills its files. | `spec` slice, `dotclaude-spec new` and `validate` | Files in `.dotclaude/spec/changes/<change-id>/` |
+| `specify` | `/dotclaude:specify <change-id> [size]` | Writes the requirements of a change and runs the gate. | `spec` slice, `dotclaude-spec specify` | Files in `.dotclaude/spec/changes/<change-id>/` |
+| `plan` | `/dotclaude:plan <change-id>` | Splits a large change into package briefs. | `spec` slice, `dotclaude-spec plan` | Files in `packages/` |
+| `implement` | `/dotclaude:implement <change-id>` | Runs the ready packages in worktrees, then verifies each one. | `spec` slice, `dotclaude-spec implement` and `verify` | Events, and the code of each package |
+| `review` | `/dotclaude:review <change-id>` | Reviews each verified package and records the verdict. | `spec` slice, `dotclaude-spec review` | Events |
+| `merge` | `/dotclaude:merge <package> [branch]` | Merges the branch of an approved package. | `spec` slice, `dotclaude-spec merge` | A merge commit, and the `plugins/` output |
+| `accept` | `/dotclaude:accept <change-id>` | Accepts a change when each package is done or canceled. | `spec` slice, `dotclaude-spec accept` | Events |
+| `archive` | `/dotclaude:archive <change-id>` | Merges the requirements into `specs/` and archives the change. | `spec` slice, `dotclaude-spec archive` | Files in `specs/` and `changes/archive/` |
 
 Each skill sets `disable-model-invocation: true` in its front matter.
 The name of that key says that Claude does not start the skill by itself.
@@ -30,10 +34,10 @@ The skill runs when the user types its command.
 ## How a Skill Is Built
 
 Each `SKILL.md` has a front matter with `name`, `description`, and the keys that the skill needs.
-The keys that the six files use are `disable-model-invocation`, `argument-hint`, and `allowed-tools`.
+The keys that the ten files use are `disable-model-invocation`, `argument-hint`, and `allowed-tools`.
 The `allowed-tools` value pre-approves the commands and tools that it lists, so they run with no prompt.
 It does not deny the other tools.
-For example, `hotfix` pre-approves `dotclaude-spec record` and `git diff`.
+For example, `review` pre-approves `dotclaude-spec *` and `git diff *`.
 The other commands follow the permission rules of the session.
 
 The body has a `<task>` part and a `<procedure>` part, or a `<steps>` part.
@@ -63,38 +67,13 @@ The steps:
    In `manual` mode, the mod shows a hint to the user instead.
 
 The mod also finds a trigger without the skill.
-The trigger fires when the context of the main session passes `CONTEXT_PERCENT`, or when a package goes to `done`.
+The trigger fires when the context of the main session passes `CONTEXT_PERCENT`, or when a `merge` or an `accept` finishes.
 The `mainHandover` option sets the mode: `auto`, `manual`, or `off`.
 The default is `manual`, as `DEFAULT_MAIN_HANDOVER` sets it.
 For the cost of a handoff, see [Context and Handoff](Context-And-Handoff).
 
 The file has the name that `handoffName` makes from the time, in `.dotclaude/handoff/`.
 The CLI writes no file.
-
-## `hotfix`
-
-Call `/dotclaude:hotfix <cause and fix in one line>`.
-Use it when the cause is known and the fix is small.
-Use `/dotclaude:spec` instead when the fix changes more than one capability, changes a file format, or needs more than one agent.
-Start the `debugger` agent when the cause is not known.
-
-The steps:
-
-1. The skill checks that the fit is right.
-   When the argument is empty, it asks the user for the cause.
-2. It reads each file of the cause with `Read`, `Glob`, and `Grep`.
-3. It makes the smallest edit with `Edit`, and it shows each changed line.
-4. It runs the test of the file or the check of the project.
-   After two failed checks, it stops and gives the output of each check.
-5. It runs `dotclaude-spec record <text>`.
-   The command writes `.dotclaude/spec/hotfixes/<date>-<slug>.md`.
-   The slug has lowercase words joined with `-`.
-   The slug is at most `HOTFIX_SLUG_MAX` characters.
-   A name that exists gets `-2`, `-3`, and so on.
-6. The skill fills the empty sections `## Cause`, `## Fix`, and `## Check`.
-
-The skill does not commit.
-It commits only when the user asks.
 
 ## `setup`
 
@@ -146,76 +125,38 @@ When a command fails, the skill shows the error line.
 It does not do the step another way.
 At the end, the skill tells the user to restart Claude Code.
 
-## `spec`
+## The Phase Skills
 
-Call `/dotclaude:spec <change-id> [trivial|medium|large]`.
-The skill starts a change in the spec store, which is the folder `.dotclaude/spec/`.
-The skill ends when `dotclaude-spec validate <change-id>` passes.
-It does not start the work.
-For the store, see [Spec Store](Spec-Store).
+The seven phase skills are `specify`, `plan`, `implement`, `review`, `merge`, `accept`, and `archive`.
+Each skill has the same verb as its `dotclaude-spec` subcommand, and each moves a change or a package to the next state.
+Each CLI gate checks the move, and a skill stops when a gate refuses.
+For the files, the IDs, the states, and the gates, see [Spec Store](Spec-Store).
 
-The id uses letters, digits, `.`, `_`, and `-`.
-The id `archive` is not valid.
-When the size is missing, the skill picks it from the table below.
-The default size of the CLI is `medium`.
+The order of the skills is this:
 
-| Size | Use it when | Files that `dotclaude-spec new` writes |
-| --- | --- | --- |
-| `trivial` | One edit has a command that shows it is done. | `change.md` |
-| `medium` | A change touches one or more capabilities. | `change.md` and `specs/capability.md` |
-| `large` | Several agents do different parts. | The medium files, `design.md`, `packages.md`, `packages/01-first.md`, and the events file |
+1. `/dotclaude:specify <change-id> [trivial|medium|large]` writes the requirements and runs the gate of `dotclaude-spec specify`.
+   The skill asks the user about each `[NEEDS CLARIFICATION]` marker.
+   A large change ends in `specified`.
+   A trivial or medium change ends in `planned`, with one package `P1`.
+2. `/dotclaude:plan <change-id>` splits a `specified` large change into package briefs.
+   It runs `dotclaude-spec plan`, and the change goes to `planned`.
+3. `/dotclaude:implement <change-id>` starts one `implementer` agent in a worktree for each ready package.
+   After each agent ends, it runs `dotclaude-spec verify`, and the package goes to `verified`.
+4. `/dotclaude:review <change-id>` starts one `reviewer` agent for each `verified` package.
+   The main session checks each defect, and it records `approve` or `reject` with `dotclaude-spec review`.
+   A reject needs a finding and a decision of `fix-code` or `revise-spec`.
+5. `/dotclaude:merge <package> [<branch>]` merges an `approved` package with `dotclaude-spec merge`, and the package goes to `done`.
+6. `/dotclaude:accept <change-id>` runs `dotclaude-spec accept`.
+   The gate needs each package `done` or `canceled`.
+7. `/dotclaude:archive <change-id>` merges the requirements into `.dotclaude/spec/specs/` with `dotclaude-spec archive`.
 
-The steps:
-
-1. The skill runs `dotclaude-spec new <id> --size <size>`.
-   The command stops with status `1` when the change exists.
-2. It fills `change.md` with the reason, the scope, and the tasks.
-   Each task is `- [ ] <id> <text>`, with a `Verify:` line below it.
-   `validate` fails on a task with no `Verify:` line.
-3. For a medium or large change, it renames `specs/capability.md` to `specs/<capability>.md`.
-   It uses `## ADDED`, `## MODIFIED`, or `## REMOVED`, with `### Requirement:` and `#### Scenario:` blocks.
-4. For a large change, the skill starts the `planner` agent, which writes `design.md`.
-   It starts the `reviewer` agent on that file.
-   The skill writes one file for each package.
-   The front matter of each file has the keys `id`, `deps`, `owns`, `verify`, and `agent`.
-5. It runs `dotclaude-spec validate <id>` and fixes each problem that the command names.
-   The skill does not change the rules of `validate`.
-
-For a large change, the next step is `/dotclaude:ship <change-id>`.
-
-## `ship`
-
-Call `/dotclaude:ship <change-id>`.
-Run it in the main checkout, because `dotclaude-spec lane` stops in a linked worktree.
-The skill runs the open packages of one large change, in the order of their `deps`.
-The main session reviews, merges, and moves the lane of each package.
-
-The steps:
-
-1. The skill runs `git worktree list`, `git status`, `dotclaude-spec validate <id>`, and `dotclaude-spec status <id>`.
-2. `dotclaude-spec ready <id>` prints each package in the lane `planned`.
-   The `deps` of each package are all `done`.
-   Its `owns` do not overlap a package that runs.
-3. `dotclaude-spec runs` prints how many agents may start now.
-   The count comes from the subagent cap and from the usage sample.
-   The skill starts no more agents than the count.
-   When the count is `0`, the skill stops and gives the reset time.
-4. The skill starts one `implementer` agent for each package, with `isolation` set to `worktree`.
-   A hook in `src/plugins/dotclaude/slices/spec/adapters/mod.ts` sets the lane to `doing` at the start, and to `review` at the end.
-   Both runs of `dotclaude-spec lane` use the folder of the main session at the start, because `lane` refuses the worktree of the agent.
-5. The skill starts a `reviewer` agent with the package file and the output of `git diff <base>...<branch>`.
-   The reviewer does not see the report of the implementer.
-6. A package that fails gets one retry, with the findings.
-   When the retry fails, the lane is `blocked`, and the other packages continue.
-7. `dotclaude-spec merge <package> <branch>` runs in the main checkout.
-   The command commits the lane files, merges the branch, runs `just generate`, sets the lane to `done`, and commits `plugins/`.
-   It makes no change and stops when the tree holds another change, or when the merge has a conflict.
-8. When each package is `done`, the skill runs `validate`, the project check, and `status`.
-   It asks the user whether to push and whether to archive the change.
-   It does neither until the user answers.
-
-The count of `dotclaude-spec runs` uses the usage sample in `.dotclaude/rate-limits.jsonl`.
-The status line writes that file.
+Run `implement`, `review`, and `merge` in the main checkout, because `dotclaude-spec` refuses to move a state in a linked worktree.
+The `agent.spawn` hook in `src/plugins/dotclaude/slices/spec/adapters/mod.ts` runs `implement <package>` when `implement` starts an `implementer`.
+No `turn.complete` hook moves a package.
+The skill `implement` runs `verify` after the agent ends.
+The skills `implement` and `review` run `dotclaude-spec runs` first.
+It prints how many agents may start now.
+The count comes from the subagent cap and from the usage sample in `.dotclaude/rate-limits.jsonl`.
 A sample older than `USAGE_SAMPLE_MAX_MS` allows one run.
 The cap is `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` when it is a positive number.
 Otherwise, the cap is `SUBAGENTS_DEFAULT`.
@@ -270,7 +211,7 @@ The bounds that the skills use, with their file:
 | `SKILL_META_TOTAL_MAX_BYTES` | 15 KB | `tools/limits.ts` |
 | `SKILL_BODY_LOW_BYTES` | 2 KB | `tools/limits.ts` |
 | `SKILL_BODY_HIGH_BYTES` | 8 KB | `tools/limits.ts` |
-| `HOTFIX_SLUG_MAX` | 40 characters | `slices/spec/limits.ts` |
+| `SHOW_EVENTS_MAX` | 5 | `slices/spec/limits.ts` |
 | `DEFAULT_SIZE` | `medium` | `slices/spec/limits.ts` |
 | `USAGE_SAMPLE_MAX_MS` | 10 minutes | `slices/spec/limits.ts` |
 | `SUBAGENTS_DEFAULT` | 20 | `slices/spec/limits.ts` |
@@ -288,8 +229,8 @@ The page [Bounds](Bounds) lists all the bounds of the repository.
 
 ## Related Pages
 
-- [Spec Store](Spec-Store): the folder that `spec`, `hotfix`, and `ship` write.
+- [Spec Store](Spec-Store): the folder that the phase skills write.
 - [Context and Handoff](Context-And-Handoff): the `handoff` slice and the context bound.
-- [Agents](Agents): the agents that `spec` and `ship` start.
+- [Agents](Agents): the agents that the phase skills start.
 - [Architecture](Architecture): the slices and the path from `src/` to `plugins/`.
 - [Decisions](Decisions): the decisions behind each skill.

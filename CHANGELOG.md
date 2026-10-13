@@ -20,7 +20,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The option `mainHandover` is `manual` by default, and it takes `auto` and `off`.
   A `tool.call` hook adds a report-now note to a subagent that is over its context bound.
   The `turn.complete` hook runs the resume only after an `answer` turn, waits at most `HANDOFF_WAIT_TURNS` turns for the file, submits the write prompt once more, and then gives the `manual` hint.
-  A `dotclaude-spec merge` also counts as a package that is done, and quoted text does not.
+  A `dotclaude-spec merge` or `accept` also counts as a package that is done, and quoted text does not.
   On one session, a handoff against a compaction of the same session cost $0.0630 against $0.2288, took 9.1 s against 23.2 s, and left 18,487 tokens of context at the last call against 28,418 at the first call of the follow-up.
   Each side is one run.
   The measurement is in `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.
@@ -29,12 +29,13 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   A call of a subagent, or a model with no name and version, gets the name `Claude`.
   The `attribution` setting of the user stays in force, an empty value turns its part off, and `includeCoAuthoredBy: false` turns both parts off when no `attribution` setting is set.
   The text of `tool-bash.md` no longer asks Claude to copy the lines.
-- The `dotclaude-spec` commands `ready` and `merge` do two steps of `/ship` with no model call, `merge` takes only a package with an `approve` of `review`, and `show`, `list`, `retry`, `drop`, `deps`, `log`, and `lane --note` read and move packages, each with `--json`.
-  `ready <id>` prints the packages that can start, with no overlap of `owns` between them, and `merge <package> <branch>` needs the package in `review`, commits the lane files, merges the branch, runs `just generate`, sets the lane `done`, and commits `plugins/` with the lane files.
-  `lane` also sets the checkbox of the package line in `packages.md`, `validate` reports a checkbox that does not agree with the lane, and `record` writes the empty sections of a hotfix record.
-- The `spec` slice moves the lane of a package with no model call.
-  An `agent.spawn` hook runs `dotclaude-spec lane <package> doing` when `/ship` starts the `implementer` of the package, and a `turn.complete` hook runs `lane <package> review` when that subagent ends.
-  The hooks find the package in the `id:` line of the brief in the prompt, and run `lane` in the folder of the main session at the spawn, where `lane` works.
+- The spec store has schema 2, with no compatibility with schema 1, and `/dotclaude:specify`, `plan`, `implement`, `review`, `merge`, `accept`, and `archive` replace `/spec`, `/ship`, and `/hotfix`, each with a `dotclaude-spec` subcommand of the same name.
+  A change has the states `draft`, `specified`, `planned`, `implementing`, `accepted`, `archived`, and `canceled`, and a package has `planned`, `doing`, `verified`, `approved`, `done`, `blocked`, and `canceled`, each with a gate that the CLI checks and an event that records the evidence.
+  `block` and `drop` replace `lane`, `verify` runs the `verify` command of a package, `review` records `approve` or `reject` with a finding and a decision, `ready` prints the packages that can start, `merge` needs an `approved` package, and `packages.md`, `new`, `retry`, `record`, and `hotfixes/` go away.
+  A small fix is a trivial change.
+- The `spec` slice moves a package with no model call.
+  An `agent.spawn` hook runs `dotclaude-spec implement <package>` when `/dotclaude:implement` starts the `implementer` of the package, and no `turn.complete` hook moves a package, because `/dotclaude:implement` runs `verify` after the agent ends.
+  The hook finds the package in the `id:` line of the brief in the prompt.
 - The plugin `dotclaude-sessions` answers the typed commands `/dotclaude-sessions:usage` and `/start-cost` with a `command.run` hook.
   The hook runs the CLI and shows its output with no model turn.
   Arguments that need a shell go to the skill.
@@ -48,8 +49,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `handoff` slice gives a subagent a report note at 4 turns left.
   The note tells the subagent to commit its work first, and then to report.
   In a subagent, the `guard` hook denies a git command that changes the shared checkout or `refs/stash` (`git.shared-checkout`).
-- The `/ship` skill runs one `reviewer` on the diff of each package, with no implementer report.
-  Each wave starts with `dotclaude-spec runs`.
+- The `/dotclaude:review` skill runs one `reviewer` on the diff of each verified package, with no implementer report.
+  `/dotclaude:implement` and `/dotclaude:review` start with `dotclaude-spec runs`.
   It counts the runs against the tier cap that `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` sets, and against the `five_hour` and `seven_day` windows.
   The status line writes `.dotclaude/rate-limits.json` atomically.
 - The `dotclaude-setup settings --apply` command writes `autoMode.hard_deny` rules to the user settings only.
@@ -72,7 +73,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `sembr` slice rewrites a Markdown file on `Write` and `Edit`, so each sentence starts on its own line.
   In `Bash`, it rewrites the quoted text of `git commit` and `gh pr create` in the same way.
 - The output style `dotclaude:Concise` is based on the built-in Concise style.
-- The core plugin has the skills `/setup`, `/spec`, `/hotfix`, `/ship`, `/handoff`, and `/rules-creator`.
+- The core plugin has the skills `/setup`, `/handoff`, `/rules-creator`, and the spec phases `/specify`, `/plan`, `/implement`, `/review`, `/merge`, `/accept`, and `/archive`.
   `/rules-creator` writes the rule files of `.claude/rules/`, with `paths` globs, and the skill `drive-web-browser` of `dotclaude-browser` is now `browse`, the name of its slice.
 - The `setup` slice reads the account type from `claude auth status --json`.
   Pro is the baseline, and Max 5x and Max 20x get more parallel subagents and a higher effort.
@@ -114,11 +115,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `archive` command of `dotclaude-spec` exits with `0` when the archive is done and only the removal of `.dotclaude/spec/.specs-old` fails.
   It names that folder on the error output, so you remove it by hand.
   Before, the command exited with `1` and said that the specs were restored, although the archive was done.
-- The `lane` command of `dotclaude-spec` appends its line to `events.jsonl` instead of rewriting the whole log.
-  Two lane commands at the same time no longer lose a line.
 - The `archive` command of `dotclaude-spec` refuses to run when `.dotclaude/spec/.specs-old` is left by an earlier archive that stopped.
   Before, the command deleted that folder, which can hold the only copy of the old specs.
-- The `lane` command of `dotclaude-spec` moves a package from `planned` to `review`, so a package whose `doing` hook failed can still move on.
 - The `Bash` filter of the sync hook in `dotclaude-codegraph` matches each `git` global option in one way only.
   A `git` command with thousands of `--git-dir` options no longer takes seconds to test.
 - The git segment of the status line keeps the result of `git status` for 3 seconds, so `git` does not run at each refresh of 1 second.
@@ -134,30 +132,26 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The evidence is in `.dotclaude/spec/changes/1.0.0/evidence/you-should-know.md`.
   Remove the key from the `env` of your `settings.json` if `/dotclaude:setup` wrote it there.
 
-- The spec store keeps its lane changes in an append-only `events.jsonl`, one line for each change, in place of `state.json`.
-  The lane of a package is its last line, and `.gitattributes` sets `merge=union` so two branches merge with no conflict.
+- The spec store keeps its state changes in an append-only `events.jsonl`, one line for each change, in place of `state.json`.
+  The state of a package is its last line, and `.gitattributes` sets `merge=union` so two branches merge with no conflict.
   The store no longer names the handoff file.
 - The `drift` command of `dotclaude-setup` reports a rule file in `.claude/rules/` whose `paths` front matter does not parse, whose braces expand over 1000 patterns, or whose glob matches no tracked file.
   The `trim` slice lists the rules with no `paths` as a source of context at the start of a session.
 - The `drift` command of `dotclaude-setup` writes nothing.
   The count of runtime paths that `dotclaude-setup` adds to `.git/info/exclude` no longer counts the header line.
 - The spec store takes the packages of a change from its package files.
-  A package with a file and no line in `events.jsonl` is `planned` for `lane`, `status`, `next`, `validate`, and the status line.
+  A package with a file and no line in `events.jsonl` is `planned` for `status`, `next`, `validate`, and the status line.
 - The spec parse keeps the text of each delta file as written.
   The `AND` clauses, the lines that start with `#` in a fenced block, the blank lines, and the indentation stay in place.
 - `dotclaude-spec archive` rejects an id that fails the `CHANGE_ID` rule, and it puts the old `specs/` back when a later step fails.
-- `dotclaude-spec lane` refuses a move out of `done`, and a move to the lane that the package has.
-  A refused move exits with status `1`, and it adds no line to `events.jsonl`.
 - A line of `events.jsonl` that is not JSON makes the reader name the file and the line.
   A new line starts on its own line when the last line of the log has no line end.
-- `dotclaude-spec validate` reports `plan.event-no-package` for a lane line of a package with no file in `packages/`.
+- `dotclaude-spec validate` reports `plan.event-no-package` for an event line of a package with no file in `packages/`.
 - The `handoff` slice resumes a handoff file that Claude writes at the first path after a retry.
   A file at any path of the handoff counts as the written file.
-- With `mainHandover` set to `off`, the handoff clears a lane `done` request, so a later change to `auto` does not start a handoff for it.
+- With `mainHandover` set to `off`, the handoff clears a package-done request, so a later change to `auto` does not start a handoff for it.
 - The `manual` hint of the `handoff` slice shows only the hint beneath the reply.
   Before, the hint carried a second copy of the reply, because the text of the `turn.complete` chain starts as the reply.
-- The `turn.complete` lane hook of the `spec` slice runs `lane <package> review` in the folder of the spawn.
-  Before, it ran in the folder of the ended subagent, which is a linked worktree, so `lane` refused the move.
 - The `slices/` and `kernel/` files of each plugin are TypeScript (`.ts`), and `bun check` type-checks them with `noUncheckedIndexedAccess`.
 - The core hooks module is `hooks/register.ts`.
   The check that denies a `Bash` command that only prints a file runs in its `tool.call` hook, and the checks that ask before an edit run in its `tool.check` hook.

@@ -14,7 +14,7 @@ Each add-on works without the core plugin.
 
 | Plugin | What it gives |
 | --- | --- |
-| `dotclaude` | The core: the settings snippet, the status line, the output style, six agents, six skills, the guard and asks hooks, the spec store, and the `second_opinion` tool. |
+| `dotclaude` | The core: the settings snippet, the status line, the output style, six agents, ten skills, the guard and asks hooks, the spec store, and the `second_opinion` tool. |
 | `dotclaude-codegraph` | The code graph of a project, from the CLI `codegraph`. |
 | `dotclaude-browser` | The `browse` skill, and a headless browser search for each `WebSearch` call. |
 | `dotclaude-docs` | The `docs` skill, with current library docs from the CLI `ctx7`. |
@@ -78,14 +78,14 @@ The main session uses `claude-opus-5-5`, from the settings snippet.
 The `maxEffortLevel` setting is `max`, so `/effort` can go up to `max` for a hard check.
 See [Agents](https://github.com/xsyetopz/dotclaude/wiki/Agents).
 
-The six skills are `/dotclaude:handoff`, `/dotclaude:hotfix`, `/dotclaude:rules-creator`, `/dotclaude:setup`, `/dotclaude:ship`, and `/dotclaude:spec`.
+The ten skills are `/dotclaude:handoff`, `/dotclaude:rules-creator`, `/dotclaude:setup`, and the seven spec phases `/dotclaude:specify`, `/dotclaude:plan`, `/dotclaude:implement`, `/dotclaude:review`, `/dotclaude:merge`, `/dotclaude:accept`, and `/dotclaude:archive`.
 See [Skills](https://github.com/xsyetopz/dotclaude/wiki/Skills).
 
 ## Long work without compaction
 
 Each model call reads the whole context again, so the size of the context sets the cost of each turn.
 
-- For work that takes more than one session, run the `spec` skill with an id, or run `dotclaude-spec new <id>`.
+- For work that takes more than one session, run `/dotclaude:specify <id>`, or run `dotclaude-spec specify <id>`.
 - Before `/clear`, run `dotclaude-spec status <id>`.
   In the fresh session, run `dotclaude-spec next <id>`, which prints the brief of the next package.
 - A model change rebuilds the prompt cache.

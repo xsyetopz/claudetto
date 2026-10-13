@@ -132,7 +132,7 @@ This happens in `src/plugins/dotclaude/slices/prompt/adapters/mod.ts` (`onSpawn`
   The transform is `src/plugins/dotclaude/slices/surface/transforms/Agent.ts`.
 - `ListAgents` is deferred, and the two dropped agent types are omitted, as described above.
 - `agent.spawn` appends the model block of a variant to the task prompt of a subagent.
-  The `spec` slice uses the same event to move a package lane to `doing` when `/ship` starts an implementer.
+  The `spec` slice uses the same event to run `dotclaude-spec implement` for a package when `/dotclaude:implement` starts an implementer.
 - Each agent file sets its model, effort, `maxTurns`, and tools.
   See [Agents](Agents) for the roster and the pins.
 - The bounds of a subagent context are in `src/plugins/dotclaude/slices/handoff/limits.ts`.

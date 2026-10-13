@@ -19,7 +19,7 @@ Check that each tool in the table is ready for the plugins that you install.
 | Need | For | Note |
 | --- | --- | --- |
 | Claude Code 2.1.296 or later | all plugins | |
-| git | `dotclaude` | The checks of `git` calls and the spec lanes use `git`. |
+| git | `dotclaude` | The checks of `git` calls and the spec store commands use `git`. |
 | [Bun](https://bun.sh) 1.4.3 or later on `PATH` | the setup command, the status line, the `second_opinion` CLI `dotclaude-decide`, the hooks of `dotclaude-codegraph`, the bins of `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-sessions`, and `dotclaude-lab`. The `docs` skill of `dotclaude-docs` also needs Bun, because it runs `ctx7` through `bunx`. | Without Bun, the setup command does not run, the status line does not run, and `second_opinion` answers from a Claude model. |
 | [Node.js](https://nodejs.org) on `PATH` | the npm installs of `codegraph` and `agent-browser` | Without Node.js, the npm installs do not run. |
 | `gh` on `PATH` | the policy ask of `dotclaude` | Without `gh`, the ask does not run. The call continues. |

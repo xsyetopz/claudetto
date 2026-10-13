@@ -109,7 +109,8 @@ The change does not record another option.
 
 The choice is the spec store under `.dotclaude/spec/changes/`.
 It comes with the `dotclaude-spec` CLI.
-It also comes with the skills `/spec`, `/hotfix`, `/ship`, and `/handoff`.
+It also came with the skills `/spec`, `/hotfix`, `/ship`, and `/handoff`.
+Schema 2 replaced `/spec`, `/hotfix`, and `/ship` with the phase skills `/dotclaude:specify`, `plan`, `implement`, `review`, `merge`, `accept`, and `archive`.
 The store is in the `spec` slice.
 The types that the other slices read are in `src/kernel/spec-store.ts`.
 
@@ -118,11 +119,11 @@ The types that the other slices read are in `src/kernel/spec-store.ts`.
 - Status: `openspec/` is absent at `dbbf41eb`.
   No file under `src`, `tests`, or `tools` names OpenSpec.
 - `plugins/dotclaude/bin/dotclaude-spec` is the CLI launcher.
-- The spec workflow is on [Spec Store](Spec-Store).
+- The spec workflow of schema 2 is on [Spec Store](Spec-Store).
 
 ## D41 An Append-Only Event Log in Place of `state.json`
 
-The lanes of one change are a map that a JSON file holds.
+The lanes of schema 1 were a map that a JSON file holds.
 Two branches that move lanes in that file conflict.
 A checkbox has two states, and a lane has five.
 So the checkboxes of `packages.md` cannot hold the lanes.
@@ -130,8 +131,9 @@ So the checkboxes of `packages.md` cannot hold the lanes.
 
 The choice is `events.jsonl`.
 It has a header line with the `schema` number.
-It has one line for each lane change.
-The lane of a package is the last line of that package.
+It has one line for each state change.
+Schema 2 keeps this log, and it replaced the lanes with the package states.
+The state of a package is the last line of that package.
 `.gitattributes` sets `merge=union` for `.dotclaude/spec/changes/*/events.jsonl`.
 So two appends from two branches merge with no conflict.
 
@@ -144,7 +146,7 @@ The change file records no other option.
 - `.gitattributes` has the `merge=union` rule.
 - P34 requires a test for two appends that merge with no conflict.
   This page does not run that test.
-- The format is on [Spec Store](Spec-Store#lanes-and-eventsjsonl).
+- The format of schema 2 is on [Spec Store](Spec-Store).
 
 ## D42 Zero Token Cost Where a Hook, a Script, or a CLI Can Do the Work
 
@@ -153,9 +155,11 @@ Each call reads the context again.
 So the step costs cache reads and output tokens.
 
 The choice is to move each such task to a hook, a script, a setting, or a status-line command.
-The lane change is an example.
-The `agent.spawn` and `turn.complete` mod handlers in `src/plugins/dotclaude/slices/spec/adapters/mod.ts` run `dotclaude-spec lane`.
-They make no model call.
+A state change is an example.
+In schema 1, the `agent.spawn` and `turn.complete` mod handlers ran the `lane` command.
+Schema 2 replaced `lane` with `implement`, `verify`, and `block`, and no `turn.complete` hook moves a package.
+The `agent.spawn` handler in `src/plugins/dotclaude/slices/spec/adapters/mod.ts` still runs `implement <package>`.
+It makes no model call.
 The task list is P33 in `packages.md`, with 10 rows in `zero-token.md`.
 
 **Alternatives:** Keep each step in the skill text, for Claude to run.
@@ -173,7 +177,7 @@ The task list is P33 in `packages.md`, with 10 rows in `zero-token.md`.
 - `dotclaude-usage` gives the measured counts that P33 asks for.
   The repository has no measured total for the whole of P33.
 
-The page on [Spec Store](Spec-Store#zero-token-cost) gives the lane part.
+The page on [Spec Store](Spec-Store) gives the state part.
 
 ## D43 `asks` Only on a Weaker Check or Discarded Work
 

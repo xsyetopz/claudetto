@@ -101,7 +101,7 @@ See [Evals](Evals).
 
 ## D11 Spec Store
 
-The problem is that the work needs a record of each change and its lanes.
+The problem is that the work needs a record of each change and its states.
 Two branches must be able to merge that record with no conflict.
 
 The choice is the folder `.dotclaude/spec/changes/`.
@@ -117,7 +117,7 @@ So setup installs and runs nothing for it.
 The alternatives are `state.json` and OpenSpec.
 The log replaces `state.json`, because two branches conflict on it.
 1.0.0 does not use OpenSpec.
-The lanes come from the log, so a lane change is a one-line diff (`change.md`, the spec store decision).
+The states come from the log, so a state change is a one-line diff (`change.md`, the spec store decision).
 
 See [Spec Store](Spec-Store).
 

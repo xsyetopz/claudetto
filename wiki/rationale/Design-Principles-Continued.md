@@ -60,7 +60,7 @@ Approvals and preferences stay with the user.
 ### 13. A Spec Store That Appends
 
 **What:** The spec workflow is part of the core plugin.
-The lanes of a change come from an append-only `events.jsonl`.
+The states of a change come from an append-only `events.jsonl`.
 The log has one line for each change.
 
 **Why:** One fact is in one place.

@@ -20,17 +20,18 @@ Where the source states no license, the row says `not stated`.
 
 These works are the research for the redesign of the spec store of 1.0.0.
 dotclaude cites them and copies no text from them.
-The redesign is a plan, so this table says what each work gives the plan, and not what dotclaude ships.
+The last column says what dotclaude uses from each work.
+[Spec Store Choices](Spec-Store-Choices) gives the choices and the alternatives that dotclaude did not take.
 
-| Work | Link | License | What the plan of 1.0.0 takes from it |
+| Work | Link | License | What dotclaude uses |
 | --- | --- | --- | --- |
-| Bruno Claudino, Ruizhe Xing, Yuanhao Zuo, Tyler Menezes, Anita Sarma, Kostadin Damevski, and Zixuan Feng, "The EPIC Framework for Spec-Driven Development", 2026 | [arXiv:2610.07534](https://arxiv.org/abs/2610.07534) | CC BY 4.0 | Gates that a tool checks before a state change, a blocking clarification marker, and the practices of a good spec. |
-| Deepak Babu Piskala, "Spec-Driven Development: From Code to Contract in the Age of AI Coding Assistants", 2026 | [arXiv:2602.00180](https://arxiv.org/abs/2602.00180) | CC BY 4.0 | The phases specify, plan, implement, and validate, and the choice to fix the code or to change the spec after a failed check. |
-| Subham Panda, "Citation Discipline in Spec-Driven Development: A Cross-Model Empirical Study of Output Determinism and Automated Hallucination Detection in LLM-Generated Code", 2026 | [arXiv:2606.30689](https://arxiv.org/abs/2606.30689) | CC BY 4.0 | `traceSDD`: stable requirement IDs, and a check that finds IDs in the code with no requirement in the spec. |
-| Vu Hung Nguyen and Thanh Nguyen, "SDAD: Spec-Driven Agentic Development for the AI-Native SDLC", 2026 | [arXiv:2608.20341](https://arxiv.org/abs/2608.20341) | CC BY-SA 4.0 | Human merge authority, and a provenance log of each step. |
-| Jessica Diaz, Joaquin Gayoso, Andrea Cimminio, and Jorge Perez, "Spec-Driven Development for Agentic Software Engineering: Harnessing Human-Agent Teamwork", 2026 | [arXiv:2609.00252](https://arxiv.org/abs/2609.00252) | arXiv non-exclusive distribution license 1.0 | An evidence pack for each change. |
-| Srinivas Rao Marri, "Constitutional Spec-Driven Development: Enforcing Security by Construction in AI-Assisted Code Generation", 2026 | [arXiv:2602.02584](https://arxiv.org/abs/2602.02584) | CC BY 4.0 | A brief that holds only the requirements of its package, and spec text as untrusted input. |
-| Jimmy Song, "YAML to Markdown: Exploring Specification Driven Development and AI-Native Paradigms", 2025 | [jimmysong.io](https://jimmysong.io/blog/from-yaml-to-markdown-devops-vs-collabops/) | CC BY 4.0, as the page footer states | Markdown as the format that people and agents both read. |
+| Bruno Claudino, Ruizhe Xing, Yuanhao Zuo, Tyler Menezes, Anita Sarma, Kostadin Damevski, and Zixuan Feng, "The EPIC Framework for Spec-Driven Development", 2026 | [arXiv:2610.07534](https://arxiv.org/abs/2610.07534) | CC BY 4.0 | Gates that the CLI checks before a state change, and the marker `[NEEDS CLARIFICATION: ...]` that blocks `implement`. |
+| Deepak Babu Piskala, "Spec-Driven Development: From Code to Contract in the Age of AI Coding Assistants", 2026 | [arXiv:2602.00180](https://arxiv.org/abs/2602.00180) | CC BY 4.0 | The phases specify, plan, and implement, and the `--decision fix-code` or `--decision revise-spec` after a failed `verify`. |
+| Subham Panda, "Citation Discipline in Spec-Driven Development: A Cross-Model Empirical Study of Output Determinism and Automated Hallucination Detection in LLM-Generated Code", 2026 | [arXiv:2606.30689](https://arxiv.org/abs/2606.30689) | CC BY 4.0 | Stable `REQ-<n>` IDs and `satisfies`. dotclaude does not take the per-line citations of `traceSDD`, and the reason is on [Spec Store Choices](Spec-Store-Choices#per-line-citations). |
+| Vu Hung Nguyen and Thanh Nguyen, "SDAD: Spec-Driven Agentic Development for the AI-Native SDLC", 2026 | [arXiv:2608.20341](https://arxiv.org/abs/2608.20341) | CC BY-SA 4.0 | Human merge authority, with the SHA of the approval in `approve` and `merge`, and the event log of each step. |
+| Jessica Diaz, Joaquin Gayoso, Andrea Cimminio, and Jorge Perez, "Spec-Driven Development for Agentic Software Engineering: Harnessing Human-Agent Teamwork", 2026 | [arXiv:2609.00252](https://arxiv.org/abs/2609.00252) | arXiv non-exclusive distribution license 1.0 | The evidence in each event, such as the command, the exit status, and the SHA. |
+| Srinivas Rao Marri, "Constitutional Spec-Driven Development: Enforcing Security by Construction in AI-Assisted Code Generation", 2026 | [arXiv:2602.02584](https://arxiv.org/abs/2602.02584) | CC BY 4.0 | A brief that holds only the requirements of its package. |
+| Jimmy Song, "YAML to Markdown: Exploring Specification Driven Development and AI-Native Paradigms", 2025 | [jimmysong.io](https://jimmysong.io/blog/from-yaml-to-markdown-devops-vs-collabops/) | CC BY 4.0, as the page footer states | Markdown with front matter as the format of the store. |
 
 ## CloakBrowser Terms
 
