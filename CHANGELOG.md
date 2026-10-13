@@ -121,8 +121,21 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The store no longer names the handoff file.
 - The `drift` command of `dotclaude-setup` reports a rule file in `.claude/rules/` whose `paths` front matter does not parse, whose braces expand over 1000 patterns, or whose glob matches no tracked file.
   The `trim` slice lists the rules with no `paths` as a source of context at the start of a session.
+- The `drift` command of `dotclaude-setup` writes nothing.
+  The count of runtime paths that `dotclaude-setup` adds to `.git/info/exclude` no longer counts the header line.
 - The spec store takes the packages of a change from its package files.
   A package with a file and no line in `events.jsonl` is `planned` for `lane`, `status`, `next`, `validate`, and the status line.
+- The spec parse keeps the text of each delta file as written.
+  The `AND` clauses, the lines that start with `#` in a fenced block, the blank lines, and the indentation stay in place.
+- `dotclaude-spec archive` rejects an id that fails the `CHANGE_ID` rule, and it puts the old `specs/` back when a later step fails.
+- `dotclaude-spec lane` refuses a move out of `done`, and a move to the lane that the package has.
+  A refused move exits with status `1`, and it adds no line to `events.jsonl`.
+- A line of `events.jsonl` that is not JSON makes the reader name the file and the line.
+  A new line starts on its own line when the last line of the log has no line end.
+- `dotclaude-spec validate` reports `plan.event-no-package` for a lane line of a package with no file in `packages/`.
+- The `handoff` slice resumes a handoff file that Claude writes at the first path after a retry.
+  A file at any path of the handoff counts as the written file.
+- With `mainHandover` set to `off`, the handoff clears a lane `done` request, so a later change to `auto` does not start a handoff for it.
 - The `slices/` and `kernel/` files of each plugin are TypeScript (`.ts`), and `bun check` type-checks them with `noUncheckedIndexedAccess`.
 - The core hooks module is `hooks/register.ts`.
   The check that denies a `Bash` command that only prints a file runs in its `tool.call` hook, and the checks that ask before an edit run in its `tool.check` hook.
