@@ -3,7 +3,7 @@
 // From `planned`, the change must be `planned` or `implementing`, each dep must be `done`, and no marker may be open.
 // From `blocked`, a `--note` is needed. From `doing`, after a failed `verify` or a `reject`, a `--decision` is needed.
 // The first `implement` of a package moves the change from `planned` to `implementing`.
-// The move from `planned` records `sha` = `HEAD` on the event, and the trace of the change starts at the first such `sha`.
+// The move from `planned` records `sha` = `HEAD` on the event.
 
 import { eventsOf } from "../domain/events.ts";
 import { gateImplement } from "../domain/gates.ts";

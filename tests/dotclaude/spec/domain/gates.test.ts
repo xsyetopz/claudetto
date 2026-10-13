@@ -149,20 +149,9 @@ test("plan needs valid packages, full coverage, and known IDs", () => {
   expect(ok(gatePlan({ ...facts, unknown: ["REQ-9"] }))).toBe(false);
 });
 
-test("accept needs each package closed and a clean trace", () => {
-  const facts = {
-    packages: ["done", "canceled"] as const,
-    orphans: 0,
-    uncited: 0,
-  };
-  expect(ok(gateAccept({ ...facts, packages: [...facts.packages] }))).toBe(
-    true,
-  );
-  expect(ok(gateAccept({ ...facts, packages: ["done", "approved"] }))).toBe(
-    false,
-  );
-  expect(ok(gateAccept({ ...facts, packages: [], orphans: 1 }))).toBe(false);
-  expect(ok(gateAccept({ ...facts, packages: [], uncited: 1 }))).toBe(false);
+test("accept needs each package closed", () => {
+  expect(ok(gateAccept({ packages: ["done", "canceled"] }))).toBe(true);
+  expect(ok(gateAccept({ packages: ["done", "approved"] }))).toBe(false);
 });
 
 test("archive needs an accepted change", () => {

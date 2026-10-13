@@ -8,9 +8,8 @@ The decisions are in `change.md`, decisions, 2026-10-13.
 
 - Each state change has a gate that the CLI checks, and the event of the change records its evidence.
   Source: EPIC (arXiv 2610.07534), section 4.2.1: agents declare incomplete work finished, and mechanized checks are the blockers.
-- Each requirement has a stable ID, and code cites the ID of its requirement on each non-trivial line.
-  Source: `traceSDD` (arXiv 2606.30689), sections 6.1 and 6.3.
-  Cost: per-line citations make the output less deterministic (section 5.2.1), so the plan accepts that cost for the orphan check.
+- Each requirement has a stable ID, and code cites no requirement.
+  Source: `traceSDD` (arXiv 2606.30689), Table 1 (see Code Citations).
 - The research defines no states, so the states are the design of dotclaude.
 - `events.jsonl` is the record of each state.
   The `status` key in the front matter of a file is a copy that only the CLI writes, so a reader sees the state in the file.
@@ -44,13 +43,15 @@ Each Markdown file of the store starts with front matter that has `schema: dotcl
 
 ## Code Citations
 
-- Each non-trivial line that a package adds or changes has a comment with the IDs of its requirements, such as `// [REQ-12]` or `# [REQ-12, REQ-14]`.
-- A line is trivial when it is blank, a comment only, an import, or only brackets and punctuation.
-- `dotclaude-spec trace` checks two things on the diff of a change, from its base commit to `HEAD`:
-  - An orphan is a cited ID that no requirement has.
-  - An uncited line is a non-trivial added line with no citation.
-- The check reads only source files.
-  It skips Markdown, JSON, lock files, and each path that `.gitattributes` marks `linguist-generated`.
+- dotclaude does not use code citations.
+  Code has no comment with the ID of a requirement.
+- The reason: the uncited form gives more consistent output (the user, 2026-10-13).
+  In arXiv 2606.30689, Table 1, the mean LSS of the uncited condition is higher than the cited one.
+  It is 0.745 against 0.535 for Claude, and 0.644 against 0.510 for GLM.
+- The cost: the orphan check needs citations, so the detection of a made-up `REQ` ID in code is 0%.
+  With citations it is 86.4% for Claude and 88.0% for GLM (Table 3).
+- dotclaude keeps the stable IDs, `satisfies`, and the `[NEEDS CLARIFICATION: ...]` marker.
+  The `reviewer` checks that the code does what each requirement in `satisfies` says.
 
 ## Package States
 
@@ -78,7 +79,7 @@ Each Markdown file of the store starts with front matter that has `schema: dotcl
 | `specified` | `specify <id>` on a change that exists | Each requirement has a valid ID, and no `[NEEDS CLARIFICATION]` marker remains. |
 | `planned` | `plan <id>` | Each package passes its format check, each `REQ` of the change is in the `satisfies` of a package, and each `satisfies` ID exists. |
 | `implementing` | the first `implement` of a package | none |
-| `accepted` | `accept <id>` | Each package is `done` or `canceled`, and `trace` finds no orphan and no uncited line. |
+| `accepted` | `accept <id>` | Each package is `done` or `canceled`. |
 | `archived` | `archive <id>` | The change is `accepted`. The deltas go into `specs/`. |
 | `canceled` | `drop <id> --reason <text>` | A reason. |
 
@@ -109,7 +110,7 @@ The slash command and the CLI subcommand of a phase have the same verb.
 | Implement | `/dotclaude:implement` | `dotclaude-spec implement`, `verify` |
 | Review | `/dotclaude:review` | `dotclaude-spec review` |
 | Merge | `/dotclaude:merge` | `dotclaude-spec merge` |
-| Accept | `/dotclaude:accept` | `dotclaude-spec accept`, `trace` |
+| Accept | `/dotclaude:accept` | `dotclaude-spec accept` |
 | Archive | `/dotclaude:archive` | `dotclaude-spec archive` |
 
 - The utilities stay: `status`, `show`, `list`, `deps`, `log`, `validate`, `ready`, and `runs`.

@@ -1,5 +1,5 @@
 // `dotclaude-spec accept <id> [--json]`: moves an `implementing` change to `accepted`.
-// Each package must be `done` or `canceled`, and `trace` must find no orphan and no uncited line.
+// Each package must be `done` or `canceled`.
 
 import { gateAccept } from "../domain/change-gates.ts";
 import {
@@ -7,10 +7,8 @@ import {
   hasTransition,
   isPackageState,
 } from "../domain/states.ts";
-import { countOf } from "../domain/trace.ts";
 import { parseArgs } from "./args.ts";
 import type { Run } from "./run.ts";
-import { traceChange } from "./trace.ts";
 import {
   changeState,
   moveChange,
@@ -48,12 +46,7 @@ export const acceptCommand = async (
   const packages = Object.values(await run.store.states(id, events));
   if (packages.length === 0)
     return stop(run, `The change \`${id}\` has no package.`);
-  const traced = await traceChange(run, events);
-  if (!traced.ok) return stop(run, traced.reason);
-  const gate = gateAccept({
-    packages: packages.filter(isPackageState),
-    ...countOf(traced.findings),
-  });
+  const gate = gateAccept({ packages: packages.filter(isPackageState) });
   if (!gate.ok) return stop(run, gate.reason);
   printMoved(run, "accept", await moveChange(run, id, "accepted"), parsed.json);
   return 0;
