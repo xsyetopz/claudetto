@@ -13,8 +13,8 @@ afterEach(() => {
 });
 
 test("a `claude` call of `tools/` gives its child the telemetry-off env", async () => {
-  for (const name of Object.keys(CLAUDE_ENV))
-    expect(await printed(name)).toBe(CLAUDE_ENV[name]);
+  for (const [name, value] of Object.entries(CLAUDE_ENV))
+    expect(await printed(name)).toBe(value);
 
   expect(await printed("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC")).toBe("1");
   expect(await printed("DISABLE_ERROR_REPORTING")).toBe("1");

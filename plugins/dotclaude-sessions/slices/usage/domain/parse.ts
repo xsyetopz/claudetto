@@ -3,7 +3,7 @@
 
 import { rethrowUnless } from "../../../kernel/errors.ts";
 import { parseModel } from "../../../kernel/model.ts";
-import type { Store } from "../ports.ts";
+import type { FileReader } from "../../../kernel/ports.ts";
 import type {
   Block,
   BriefSize,
@@ -109,7 +109,7 @@ type Row = {
 
 /** The files and list items of the first user prompt of the transcript `file`. */
 export const briefSize = async (
-  store: Store,
+  store: FileReader,
   file: string,
 ): Promise<BriefSize> => {
   for (const line of ((await store.read(file)) ?? "").split("\n")) {

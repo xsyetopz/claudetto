@@ -8,15 +8,19 @@ import { paceOf } from "../../../src/plugins/dotclaude/slices/statusline/domain/
 import { FIVE_HOUR_S } from "../../../src/plugins/dotclaude/slices/statusline/limits.ts";
 import { depsFor, NOW, type Run, STATUS } from "./support.ts";
 
-/** The status object with only the `5h` window, used at `used` percent, with `leftS` seconds to the reset. */
+/** The `5h` window, used at `used` percent, with `leftS` seconds to the reset. */
+const fiveHour = (used: number, leftS = 3 * 3600 + 12 * 60) => ({
+  used_percentage: used,
+  resets_at: NOW / 1000 + leftS,
+});
+
+/** The status object with only the `5h` window of `fiveHour`. */
 const fiveHourInput = (
   used: number,
-  leftS = 3 * 3600 + 12 * 60,
+  leftS?: number,
 ): Record<string, unknown> => ({
   ...STATUS,
-  rate_limits: {
-    five_hour: { used_percentage: used, resets_at: NOW / 1000 + leftS },
-  },
+  rate_limits: { five_hour: fiveHour(used, leftS) },
 });
 
 /** The plain output of `main` for `input`, with no color. */
@@ -38,10 +42,7 @@ test("the run-out time shows after the arrow when the use runs out before the re
 
 test("the run-out time is the time at which the use reaches 100% at the current rate", () => {
   // 50% used in 36% of the window reaches 100% after 36% of the window times 50 / 50, which is 6480 s.
-  const window = fiveHourInput(50).rate_limits as {
-    five_hour: { used_percentage: number; resets_at: number };
-  };
-  const pace = paceOf(window.five_hour, NOW / 1000, FIVE_HOUR_S);
+  const pace = paceOf(fiveHour(50), NOW / 1000, FIVE_HOUR_S);
   expect(pace?.runOutAt).toBeCloseTo(NOW / 1000 + 6480, 3);
 });
 

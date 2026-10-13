@@ -113,14 +113,21 @@ const mountBand = ($: Engine, hasSurvey = false) =>
     plugin: PLUGIN,
     surface: "terminal",
     component: "AbovePrompt",
-    props: { hasSurvey, isWorking: false, maxRows: 20 },
+    props: {
+      hasSurvey,
+      isWorking: false,
+      maxRows: 20,
+      bodyColumns: 80,
+      scroll: { offset: 0, bodyRows: 20 },
+      view: {},
+    },
   });
 
 /** A call of `Edit` through the chain of `tool.call`, with the note context that the plugin adds. */
 const callEdit = ($: Engine, agentId?: string) =>
   $.tool.call({
     tool: "Edit",
-    input: EDIT,
+    ...EDIT,
     ...(agentId === undefined ? {} : { agentId }),
   });
 

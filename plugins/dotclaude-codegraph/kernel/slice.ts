@@ -61,7 +61,11 @@ export interface ModHandler<E extends EventName = EventName> {
   readonly event: E;
   readonly filter?: EventFilter<E>;
   readonly phase: Phase;
-  readonly run: Handler<E>;
+  /**
+   * The hook. A hook with a `filter` can take the event that the filter narrows, as `MatchedHook` of the mod API types it.
+   * The generated `register.ts` gives the hook and the filter to `on()`, and the compiler checks the pair there.
+   */
+  readonly run: Handler<E> | ((...args: never[]) => unknown);
   readonly configure?: Configure;
   /** The eval kinds of the hook. One entry covers each handler of the slice on the same event. */
   readonly evals?: HookEvals;

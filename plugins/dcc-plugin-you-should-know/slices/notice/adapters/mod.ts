@@ -3,7 +3,11 @@
 // Each `$` call is in this file, because `$` is not followed across an import.
 // The check fails open: a failed or slow model call shows no notice, and the verdict of the call never changes.
 
-import type { EngineInterface, ModelForkResult } from "claude-code";
+import type {
+  EngineInterface,
+  MatchedHook,
+  ModelForkResult,
+} from "claude-code";
 import type { Handler } from "../../../kernel/slice.ts";
 import {
   actionOf,
@@ -128,7 +132,10 @@ const pressed = (): void => {};
  * The `ui.render` hook of the band: the topic of the offer, drawn above the prompt.
  * The band draws the tree that `$.ui.resolve` builds, so the terminal and the desktop surfaces draw the same rows.
  */
-export const onRender: Handler<"ui.render"> = async ($, e, next) => {
+export const onRender: MatchedHook<
+  "ui.render",
+  { component: "AbovePrompt" }
+> = async ($, e, next) => {
   const { value: offer } = await $.state.get(OFFER);
   if (e.props.hasSurvey || offer === undefined || offer === null)
     return next(e);
