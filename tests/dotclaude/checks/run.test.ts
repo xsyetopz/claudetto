@@ -141,7 +141,10 @@ test("a quoted argument with two spaces reaches the program in one piece", async
 
 test("an assignment before the program runs through the shell and sets the variable", async () => {
   const dir = await project();
-  const r = await run(dir, "GREETING=hi bun -e 'console.log(process.env.GREETING)'");
+  const r = await run(
+    dir,
+    "GREETING=hi bun -e 'console.log(process.env.GREETING)'",
+  );
   expect(r.status).toBe(0);
   expect(r.out).toContain("    hi");
 });

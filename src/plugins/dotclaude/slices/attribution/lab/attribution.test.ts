@@ -226,7 +226,9 @@ test("a `git --no-pager commit` gets the trailer after the subcommand", async ($
   const seen: string[] = [];
   engine(on, { seen });
   await bash($, 'git --no-pager commit -m "Fix it."');
-  expect(seen[0]).toBe(`git --no-pager commit --trailer "${TRAILER}" -m "Fix it."`);
+  expect(seen[0]).toBe(
+    `git --no-pager commit --trailer "${TRAILER}" -m "Fix it."`,
+  );
 });
 
 test("a `git` option with a value before the subcommand gets the trailer", async ($: Engine, on: On) => {
@@ -243,14 +245,18 @@ test("a `git` option with a value before the subcommand gets the trailer", async
 test("a `git` command with another verb keeps its command", async ($: Engine, on: On) => {
   const seen: string[] = [];
   engine(on, { seen });
-  for (const command of ["git --no-pager log", "git -C repo status"]) await bash($, command);
+  for (const command of ["git --no-pager log", "git -C repo status"])
+    await bash($, command);
   expect(seen).toStrictEqual(["git --no-pager log", "git -C repo status"]);
 });
 
 test("a `git commit` with a user trailer before `-m` keeps that trailer and gets the model line first", async ($: Engine, on: On) => {
   const seen: string[] = [];
   engine(on, { seen });
-  await bash($, 'git commit --trailer "Signed-off-by: A <a@a.io>" -m "Fix it."');
+  await bash(
+    $,
+    'git commit --trailer "Signed-off-by: A <a@a.io>" -m "Fix it."',
+  );
   expect(seen[0]).toBe(
     `git commit --trailer "${TRAILER}" --trailer "Signed-off-by: A <a@a.io>" -m "Fix it."`,
   );
@@ -261,14 +267,18 @@ test("a message with another `Co-Authored-By` gets the model line too", async ($
   engine(on, { seen });
   const other = "Co-Authored-By: Someone <s@example.com>";
   await bash($, `git commit -m "Fix it.\n\n${other}"`);
-  expect(seen[0]).toBe(`git commit --trailer "${TRAILER}" -m "Fix it.\n\n${other}"`);
+  expect(seen[0]).toBe(
+    `git commit --trailer "${TRAILER}" -m "Fix it.\n\n${other}"`,
+  );
 });
 
 test("an `echo` into a file, then `git commit -F`, gets the model line on the commit only", async ($: Engine, on: On) => {
   const seen: string[] = [];
   engine(on, { seen });
   await bash($, 'echo "$TRAILER" > msg && git commit -F msg');
-  expect(seen[0]).toBe(`echo "$TRAILER" > msg && git commit --trailer "${TRAILER}" -F msg`);
+  expect(seen[0]).toBe(
+    `echo "$TRAILER" > msg && git commit --trailer "${TRAILER}" -F msg`,
+  );
 });
 
 test("a commit and then `git commit --amend --no-edit` gets the model line on each commit", async ($: Engine, on: On) => {
