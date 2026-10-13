@@ -18,6 +18,13 @@ export const slice: Slice = {
       event: "SessionStart",
       command: `${HOOK} session-start`,
       timeout: 10,
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow: "tests/codegraph/session.test.ts > a project with no index: no hook runs a command or adds text",
+        text: "tests/codegraph/session.test.ts > session start in an indexed project syncs and adds one line with the commands for callers, callees, and impact",
+      },
     },
     {
       event: "PostToolUse",
@@ -25,11 +32,25 @@ export const slice: Slice = {
       command: `${HOOK} sync`,
       async: true,
       timeout: BACKGROUND_SYNC_TIMEOUT_MS / 1000,
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow: "tests/codegraph/sync.test.ts > the sync of a project with no index, or with no CLI, runs nothing and exits 0",
+        text: "tests/codegraph/sync.test.ts > the command of a picked hook syncs an indexed project and prints nothing",
+      },
     },
   ],
   mod: [
     {
       event: "tool.call",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow: "plugins/dotclaude-codegraph/tests/tree-change.test.ts > a `Bash` call of another command does not reach the hook",
+        text: "plugins/dotclaude-codegraph/tests/tree-change.test.ts > a `git commit` call syncs an indexed project",
+      },
       filter: { tool: "Bash", command: TREE_CHANGE },
       phase: "observe",
       run: onTreeChange,

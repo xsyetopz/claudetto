@@ -65,20 +65,7 @@
   },
   "overrides": [
     {
-      "includes": [
-        "**",
-        "!plugins/dotclaude-codegraph/evals/hooks.json",
-        "!plugins/dotclaude-browser/evals/hooks.json",
-        "!plugins/dotclaude-browser/tsconfig.json",
-        "!tests/lab/eval-variant.test.ts",
-        "!tests/lab/fixture-repo.ts",
-        "!tests/lab/results-copy.test.ts",
-        "!tests/lab/sandbox/frontmatter.test.ts",
-        "!tests/lab/sandbox/login.test.ts",
-        "!plugins/dotclaude/tsconfig.json",
-        "!src/wiki/**",
-        "!tools/wiki.ts"
-      ],
+      "includes": ["**"],
       "plugins": ["./tools/lint/arrow-functions.grit"],
       "linter": {
         "rules": {

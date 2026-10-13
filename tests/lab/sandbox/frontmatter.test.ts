@@ -25,13 +25,13 @@ process.exit(Number(process.env.FAKE_EXIT ?? 0));
 
 type Setup = { dir: string; claude: string; out: string };
 
-async function setUp(): Promise<Setup> {
+const setUp = async (): Promise<Setup> => {
   const dir = tmpDir("lab-frontmatter");
   const claude = await writeProgram(dir, "claude", FAKE_CLAUDE);
   return { dir, claude, out: path.join(dir, "out.json") };
-}
+};
 
-function run(s: Setup, env: Env, lab = LAB) {
+const run = (s: Setup, env: Env, lab = LAB) => {
   const r = spawnText(
     process.execPath,
     [
@@ -50,7 +50,7 @@ function run(s: Setup, env: Env, lab = LAB) {
     },
   );
   return r;
-}
+};
 
 test("a log with no unknown-field line passes", async () => {
   const s = await setUp();
