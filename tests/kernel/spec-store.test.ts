@@ -8,6 +8,7 @@ import {
   lastLanes,
   packageLanes,
   readEvents,
+  scanEvents,
   SPEC_SCHEMA,
 } from "../../src/kernel/spec-store.ts";
 
@@ -61,6 +62,22 @@ test("`readEvents` names the file and the line of a line that is not JSON", asyn
   const text = `${eventsText({ "01a": "done" })}\n{"at":\n`;
   const files = fakeFiles({ [file]: text });
   await expect(readEvents(files, "1.0.0")).rejects.toThrow(`${file}:3`);
+});
+
+test("`readEvents` skips a torn last line with no line end, and `scanEvents` gives its line", async () => {
+  const file = eventsPath("1.0.0");
+  const text = `${eventsText({ "01a": "done" })}\n{"at":`;
+  const files = fakeFiles({ [file]: text });
+  const scan = await scanEvents(files, "1.0.0");
+  expect(scan?.events.map((e) => e.package)).toStrictEqual(["01a"]);
+  expect(scan?.torn).toBe(3);
+  expect((await readEvents(files, "1.0.0"))?.length).toBe(1);
+});
+
+test("`scanEvents` gives no torn line when the last line is JSON with no line end", async () => {
+  const file = eventsPath("1.0.0");
+  const files = fakeFiles({ [file]: `${eventsText({ "01a": "done" })}` });
+  expect((await scanEvents(files, "1.0.0"))?.torn).toBe(null);
 });
 
 test("the lanes of a log equal the last line of each package", async () => {

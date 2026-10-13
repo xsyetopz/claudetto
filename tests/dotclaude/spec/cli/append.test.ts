@@ -22,3 +22,14 @@ test("two appends at once keep both lines, in order", async () => {
     lines.slice(2).map((l) => (JSON.parse(l) as { package: string }).package),
   ).toStrictEqual(["P02", "P03"]);
 });
+
+test("an append after a torn last line removes the torn line first", async () => {
+  const root = await makeStore({
+    [`${CHANGE}/events.jsonl`]: `${eventsText({ P01: "planned" })}{"at":"2026`,
+  });
+  const store = new SpecStore(root);
+  await store.appendEvent("c1", { at: AT, package: "P02", lane: "doing" });
+  const lines = (await read(root, `${CHANGE}/events.jsonl`)).trim().split("\n");
+  expect(lines).toHaveLength(3);
+  expect(lines.map((l) => (JSON.parse(l) as { at: string }).at)).toContain(AT);
+});

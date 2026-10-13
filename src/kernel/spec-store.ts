@@ -56,15 +56,30 @@ const parseLine = (file: string, line: number, text: string): unknown => {
   }
 };
 
+/** True when `text` is one JSON value. */
+export const isJson =(text: string): boolean => {
+  try {
+    JSON.parse(text);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 /**
- * The lane events of the change `id`, in the order of the log, or null when the change has no `events.jsonl`.
- * The reader throws an `Error` that names the file when the header has a `schema` other than `SPEC_SCHEMA`.
- * It throws an `Error` that names the file and the line when a line is not JSON.
+ * The lane events of the change `id` and the line of a torn last line, or null when the change has no `events.jsonl`.
+ * A torn last line has no line end and is not JSON, as a crash in the middle of an append leaves it.
+ * The scan skips a torn last line and gives its line number in `torn`, or null when there is none.
+ * The scan throws an `Error` that names the file when the header has a `schema` other than `SPEC_SCHEMA`.
+ * It throws an `Error` that names the file and the line when a line that is not torn is not JSON.
  */
-export const readEvents = async (
+export const scanEvents = async (
   files: FileReader,
   id: string,
-): Promise<readonly LaneEvent[] | null> => {
+): Promise<{
+  readonly events: readonly LaneEvent[];
+  readonly torn: number | null;
+} | null> => {
   const file = eventsPath(id);
   const text = await files.read(file);
   if (text === null) return null;
@@ -79,8 +94,26 @@ export const readEvents = async (
     throw new Error(
       `${file} has schema ${String(header.schema)}, which this version does not read.`,
     );
-  return rest.map(({ raw, line }) => parseLine(file, line, raw) as LaneEvent);
+  const last = rest.at(-1);
+  const open = !text.endsWith("\n");
+  const events: LaneEvent[] = [];
+  for (const entry of rest) {
+    if (entry === last && open && !isJson(entry.raw))
+      return { events, torn: entry.line };
+    events.push(parseLine(file, entry.line, entry.raw) as LaneEvent);
+  }
+  return { events, torn: null };
 };
+
+/**
+ * The lane events of the change `id`, in the order of the log, or null when the change has no `events.jsonl`.
+ * The reader skips a torn last line, as `scanEvents` does, and throws the errors of `scanEvents`.
+ */
+export const readEvents = async (
+  files: FileReader,
+  id: string,
+): Promise<readonly LaneEvent[] | null> =>
+  (await scanEvents(files, id))?.events ?? null;
 
 /** The lane of each package in `events`: the last line of the package, in the order of the first line. */
 export const lastLanes = (
