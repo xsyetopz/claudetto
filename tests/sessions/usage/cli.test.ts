@@ -27,6 +27,36 @@ test("`dotclaude-usage` exits 2 for a `--days` that is not a positive whole numb
   }
 });
 
+test("`dotclaude-usage` exits 2 for a `--runs` that is not a positive whole number", () => {
+  const root = tmpDir("usage-runs");
+  for (const runs of ["abc", "0", "-3", "1.5"]) {
+    const out = runBin(USAGE_BIN, ["--root", root, "--runs", runs]);
+    expect(out.status).toBe(2);
+  }
+});
+
+test("`dotclaude-usage` exits 2 for a `--window` that is not a positive whole number", () => {
+  const root = tmpDir("usage-window");
+  for (const window of ["abc", "0", "-3", "1.5"]) {
+    const out = runBin(USAGE_BIN, ["--root", root, "--window", window]);
+    expect(out.status).toBe(2);
+  }
+});
+
+test("`dotclaude-usage` exits 0 for a `--runs` and a `--window` that are positive whole numbers", () => {
+  const root = path.join(tmpDir("usage-valid"), "projects");
+  const out = runBin(USAGE_BIN, [
+    "--root",
+    root,
+    "--runs",
+    "5",
+    "--window",
+    "200000",
+    "--json",
+  ]);
+  expect(out.status).toBe(0);
+});
+
 test("`dotclaude-usage` treats an absent `--root` as no sessions and exits 0", () => {
   const root = path.join(tmpDir("usage-absent"), "projects");
   const out = runBin(USAGE_BIN, ["--root", root, "--json"]);

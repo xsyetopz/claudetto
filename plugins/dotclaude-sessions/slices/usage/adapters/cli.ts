@@ -47,6 +47,10 @@ Reports where Claude Code usage went, from the session transcripts.
 --agents-dir DIR Read maxTurns from DIR/<agent>.md to compare the briefs of runs that hit the turn limit.
 --json           Print the report as JSON.`;
 
+/** Returns the whole number in `raw` when it is at least 1, else 0. */
+const positiveArg = (raw: string): number =>
+  /^\d+$/.test(raw) && Number(raw) >= 1 ? Number(raw) : 0;
+
 /** Runs the bin with `args`, prints to stdout, and returns the exit code. */
 export const main = async (
   args: string[],
@@ -61,21 +65,34 @@ export const main = async (
     return i >= 0 ? args[i + 1] : fallback;
   };
   const daysArg = opt("--days", "7") ?? "";
-  const days = /^\d+$/.test(daysArg) ? Number(daysArg) : 0;
+  const days = positiveArg(daysArg);
   if (days < 1) {
     console.error(`--days needs a positive whole number, not "${daysArg}".`);
+    return 2;
+  }
+  const runsArg = opt("--runs", "20") ?? "";
+  const runLimit = positiveArg(runsArg);
+  if (runLimit < 1) {
+    console.error(`--runs needs a positive whole number, not "${runsArg}".`);
+    return 2;
+  }
+  const windowArg = args.includes("--window") ? (opt("--window") ?? "") : null;
+  const window = windowArg === null ? null : positiveArg(windowArg);
+  if (window !== null && window < 1) {
+    console.error(
+      `--window needs a positive whole number, not "${windowArg}".`,
+    );
     return 2;
   }
   const configDir =
     env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), ".claude");
   const root = opt("--root", path.join(configDir, "projects")) as string;
-  const window = opt("--window") ? Number(opt("--window")) : null;
   const r = await report(
     store,
     root,
     new Date(Date.now() - days * 86_400_000),
     {
-      runLimit: Number(opt("--runs", "20")),
+      runLimit,
       agentsDir: opt("--agents-dir", null),
       window,
       configDir,
