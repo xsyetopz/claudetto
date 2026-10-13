@@ -22,6 +22,14 @@ test("validate fails on a torn last line of the log and names its file and line"
   expect(r.err.join("\n")).toContain("events.jsonl:3");
 });
 
+test("status reads a change whose log ends in a torn line", async () => {
+  const root = await makePlan([{ id: "P01" }], {
+    [`${CHANGE}/events.jsonl`]: `${eventsText({ P01: "planned" })}{"at":"2026`,
+  });
+  const r = await run(root, "status", "c1");
+  expect(r.code).toBe(0);
+});
+
 test("validate fails on a brief with an empty section and names the package", async () => {
   const bad = brief("P01", [], ["src/a/"]).replace(
     /## Acceptance[\s\S]*?(?=## Boundaries)/,
