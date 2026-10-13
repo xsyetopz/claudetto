@@ -68,7 +68,7 @@ test("the first row ends with the id and the done count of the active change", a
   });
   const run = await rowsFor(root);
   expect(run.err).toStrictEqual([]);
-  expect((run.out[0] ?? "").split("\n")[0]).toMatch(/ {2}◆ 1\.0\.0 4\/6$/);
+  expect((run.out[0] ?? "").split("\n")[0]).toMatch(/ · ◆ 1\.0\.0 4\/6$/);
 });
 
 test("a store where every change is done shows no change segment", async () => {

@@ -33,9 +33,9 @@ test("a wide terminal shows three rows of numbers with icons, and `NO_COLOR` kee
   expect(run.err).toStrictEqual([]);
   expect(run.out).toStrictEqual([
     [
-      "⌂ dotclaude  ⎇ main ✎2 ↑1 ↓2",
-      "◈ Opus 5.5 high ✦  ▤ 45k/300k 15%  $1.23 +300 -20",
-      "◷ 5h 23% ▼13% 3h12m  ◷ 7d 80% ▲11% 2d4h",
+      "⌂ dotclaude         · ⎇ main ✎2 ↑1 ↓2",
+      "◈ Opus 5.5 high ✦   · ▤ 45k/300k 15%     · $1.23 +300 -20",
+      "◷ 5h 23% ▼13% 3h12m · ◷ 7d 80% ▲11% 2d4h",
     ].join("\n"),
   ]);
 });
@@ -44,7 +44,7 @@ test("a narrow terminal drops the segments at the right of a row, and the first 
   const run = await render(32, { NO_COLOR: "1" });
   expect(run.out).toStrictEqual([
     [
-      "⌂ dotclaude  ⎇ main ✎2 ↑1 ↓2",
+      "⌂ dotclaude",
       "◈ Opus 5.5 high ✦",
       "◷ 5h 23% ▼13% 3h12m",
     ].join("\n"),
@@ -98,7 +98,7 @@ test("a session with no git repository, no cost, and no limits shows the segment
     }),
   );
   expect(run.out).toStrictEqual([
-    ["⌂ solo", "◈ Custom  ▤ 0k/300k 0%"].join("\n"),
+    ["⌂ solo", "◈ Custom · ▤ 0k/300k 0%"].join("\n"),
   ]);
 });
 

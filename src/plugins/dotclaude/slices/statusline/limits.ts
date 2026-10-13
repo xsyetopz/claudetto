@@ -26,6 +26,9 @@ export const SUBAGENT_ROWS_MAX = 20;
 /** The text between two segments of a row. */
 export const SEGMENT_GAP = "  ";
 
+/** The text between two items of a row of the main status line. */
+export const ITEM_GAP = " · ";
+
 /** The length, in seconds, of the `5h` window of a limit. */
 export const FIVE_HOUR_S = 5 * 60 * 60;
 
