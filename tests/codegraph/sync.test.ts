@@ -52,6 +52,21 @@ test("each git command that changes the tree fits the filter of the mod hook", (
     expect(TREE_CHANGE.test(`git ${sub}`), sub).toBe(true);
 });
 
+test("a git command with global options before its verb fits the filter", () => {
+  for (const command of [
+    "git -C dir commit -m x",
+    "git -c user.name=x pull --ff-only",
+    "git --git-dir=/p/.git --work-tree=/p commit -m x",
+    "git --no-pager -C 'my dir' merge main",
+    "git -c user.name=\"A B\" rebase main",
+  ])
+    expect(TREE_CHANGE.test(command), command).toBe(true);
+});
+
+test("a git command with global options before a read verb does not fit the filter", () => {
+  expect(TREE_CHANGE.test("git -C dir log --oneline")).toBe(false);
+});
+
 test("a git command that does not change the tree, and other commands, do not fit the filter", () => {
   for (const command of [
     "git status",
