@@ -35,6 +35,7 @@ A nested file goes into the result of the tool call or the mention, as one block
   After a compaction, the nested file loads again on the next read, because the compaction removed its text.
   A new session loads each file again.
 - `claudeMdExcludes` applies to the `AGENTS` files too.
+  As in Claude Code, each `\` of a path and of a glob is a `/` for the match, so a glob with `/` also matches a Windows path.
 
 ## What the Files Cost
 

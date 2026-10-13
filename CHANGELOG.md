@@ -230,6 +230,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `agents` lab tests of `dcc-plugin-agents-md` pass on Windows.
   The engine resolves `of` and `below` of `fs.ancestors` before the stub gets them, so the stub reads a path with a drive and `\` in the form of its fake disk.
 - `tools/sandbox.ts` is now `tools/sandbox/run.ts`, next to `tools/sandbox/install.ts`.
+- `dcc-plugin-agents-md` reads each `\` of a path and of a `claudeMdExcludes` glob as `/`, as Claude Code does, so an exclude such as `**/legacy/AGENTS.md` matches on Windows.
 
 ### Removed
 

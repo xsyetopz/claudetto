@@ -70,11 +70,18 @@ export const globToRegExp = (glob: string): RegExp => {
   return new RegExp(`^${out}$`);
 };
 
-/** True when one glob of `excludes` matches the absolute `path`. */
+/** A path or a glob with each `\` as `/`. */
+const slashed = (text: string): string => text.replaceAll("\\", "/");
+
+/**
+ * True when one glob of `excludes` matches the absolute `path`.
+ * As in Claude Code, each `\` of the path and of the globs is a `/` for the match, so a Windows path matches a glob with `/`.
+ */
 export const isExcluded = (
   path: string,
   excludes: readonly string[],
-): boolean => excludes.some((glob) => globToRegExp(glob).test(path));
+): boolean =>
+  excludes.some((glob) => globToRegExp(slashed(glob)).test(slashed(path)));
 
 const strings = (value: unknown): string[] =>
   Array.isArray(value)
