@@ -169,10 +169,8 @@ for (const command of [
     expect(await out(command)).toBe(undefined);
   });
 
-test("a command over the scan bound keeps the existing behavior", async () => {
+test("a command over the scan bound gets a write ask, as the git guard does", async () => {
   const long = `sed -i x ${TEST} ${"a".repeat(SHELL_SCAN_MAX_CHARS)}`;
   const o = await out(long);
-  expect(
-    o === undefined || !(o.permissionDecisionReason as string).includes(TEST),
-  ).toBeTruthy();
+  expect(o?.permissionDecision).toBe("ask");
 });
