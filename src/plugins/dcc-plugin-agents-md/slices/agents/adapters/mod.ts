@@ -172,3 +172,13 @@ export const onMention: Handler<"prompt.mention"> = async ($, e, next) => {
   if (texts.length === 0) return out;
   return { ...out, context: [...(out.context ?? []), ...texts] };
 };
+
+/**
+ * The `session.compact` hook: a compaction removes the nested texts from the transcript, so the dedupe of them ends.
+ * A compaction that a hook skips keeps the transcript, so the dedupe stays.
+ */
+export const onCompact: Handler<"session.compact"> = async ($, e, next) => {
+  const out = await next(e);
+  if (out.skip === undefined) await $.store.set(NESTED_KEY, []);
+  return out;
+};
