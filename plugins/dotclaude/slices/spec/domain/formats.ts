@@ -13,6 +13,8 @@ export type Result<T, E> = { ok: true; value: T } | { ok: false; errors: E[] };
 
 export interface Scenario {
   name: string;
+  /** The body lines after the heading, verbatim, with no blank line at either end. */
+  lines: string[];
   /** The text of each `WHEN` line. */
   whenLines: string[];
   /** The text of each `THEN` line. */
@@ -21,7 +23,7 @@ export interface Scenario {
 
 export interface Requirement {
   name: string;
-  /** The body before the first scenario, with the sentence that has `SHALL`. */
+  /** The body before the first scenario, verbatim, with the sentence that has `SHALL`. */
   text: string;
   scenarios: Scenario[];
 }

@@ -15,6 +15,36 @@ export const toLines = (text: string): Line[] =>
     line: i + 1,
   }));
 
+const FENCE = /^\s*(`{3,}|~{3,})/;
+
+/**
+ * Marks each line that is in a fenced code block, with its opening and closing fence lines.
+ * A line that is marked is not a heading, so a `#` line in a fence is text.
+ */
+export const fenceMask = (lines: readonly Line[]): boolean[] => {
+  let open = "";
+  return lines.map((line) => {
+    const mark = FENCE.exec(line.text)?.[1] ?? "";
+    if (open !== "") {
+      if (mark !== "" && mark[0] === open[0] && mark.length >= open.length)
+        if (line.text.trim() === mark) open = "";
+      return true;
+    }
+    if (mark === "") return false;
+    open = mark;
+    return true;
+  });
+};
+
+/** The lines without the blank lines at either end. The lines keep their text and their indent. */
+export const trimBlank = (lines: readonly string[]): string[] => {
+  const first = lines.findIndex((l) => l.trim() !== "");
+  if (first < 0) return [];
+  let last = lines.length - 1;
+  while (lines[last]?.trim() === "") last -= 1;
+  return lines.slice(first, last + 1);
+};
+
 /** The text of one group of a match, or `""` when the group did not take part. */
 export const group = (m: RegExpExecArray, i: number): string => m[i] ?? "";
 

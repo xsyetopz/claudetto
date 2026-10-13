@@ -57,6 +57,31 @@ export const changeOf = async (
   return null;
 };
 
+/**
+ * The lanes that a package in each lane may move to.
+ * `done` has no move out: a package that is done stays done.
+ */
+const NEXT_LANES: Record<Lane, readonly Lane[]> = {
+  planned: ["doing", "done", "blocked"],
+  doing: ["review", "done", "blocked"],
+  review: ["doing", "done", "blocked"],
+  blocked: ["planned", "doing", "done"],
+  done: [],
+};
+
+/** The message of a move that `NEXT_LANES` does not allow, or null when the move is allowed. */
+export const refusedMove = (
+  pkg: string,
+  before: Lane | undefined,
+  lane: Lane,
+): string | null => {
+  if (before === undefined) return null;
+  if (NEXT_LANES[before].includes(lane)) return null;
+  return before === lane
+    ? `The package \`${pkg}\` is already in \`${lane}\`.`
+    : `The package \`${pkg}\` is in \`${before}\`, and it cannot move to \`${lane}\`.`;
+};
+
 /** Appends the event of the move to `events.jsonl`, and sets the checkbox in `packages.md`. Gives the exit status. */
 export const moveLane = async (
   run: Run,
@@ -68,7 +93,12 @@ export const moveLane = async (
   const events = await run.store.events(id);
   if (events === null) return 1;
   const before = (await run.store.lanes(id, events))[pkg];
-  run.store.appendEvent(id, {
+  const refused = refusedMove(pkg, before, lane);
+  if (refused !== null) {
+    run.io.error(refused);
+    return 1;
+  }
+  await run.store.appendEvent(id, {
     at: run.clock.now().toISOString(),
     package: pkg,
     lane,

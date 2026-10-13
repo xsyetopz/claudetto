@@ -50,8 +50,11 @@ let options: PluginOptions = {};
 /** The reason of a trigger that fired and has no handoff yet, or undefined. */
 let wanted: string | undefined;
 
-/** The handoff file that Claude was asked to write, and how many turns ended since, or undefined. */
-let pending: { readonly file: string; waited: number } | undefined;
+/**
+ * The handoff files that this handoff asked Claude to write, and how many turns ended since, or undefined.
+ * A retry adds a path, so a file at any of these paths counts as the written handoff.
+ */
+let pending: { readonly files: readonly string[]; waited: number } | undefined;
 
 /** The state of one trigger episode, which ends when no trigger is active or a handoff runs. */
 type Episode = {
@@ -134,7 +137,7 @@ export const onSkill: Handler<"skill.prompt"> = async ($, e, next) => {
   if (parseHandover(options["mainHandover"]) === "off") return out;
   const path = await runBin($, "dotclaude-handoff", ["path"]);
   if (!path.ok) return out;
-  pending = { file: path.text, waited: 0 };
+  pending = { files: [path.text], waited: 0 };
   episode = newEpisode();
   return {
     ...out,
@@ -142,13 +145,21 @@ export const onSkill: Handler<"skill.prompt"> = async ($, e, next) => {
   };
 };
 
-/** Clears the session and submits the resume prompt when the file exists. Gives whether it did. */
-const resume = async ($: EngineInterface, file: string): Promise<boolean> => {
+/**
+ * Clears the session and submits the resume prompt when the newest handoff file is one of `files`.
+ * Gives whether it did.
+ */
+const resume = async (
+  $: EngineInterface,
+  files: readonly string[],
+): Promise<boolean> => {
   const newest = await runBin($, "dotclaude-handoff", ["newest"]);
-  if (!newest.ok || newest.text !== file) return false;
+  if (!newest.ok || !files.includes(newest.text)) return false;
   const next = await runBin($, "dotclaude-spec", ["next"]);
   await $.command.run({ command: "clear" });
-  await $.prompt.submit({ text: resumeText(file, next.ok ? next.text : "") });
+  await $.prompt.submit({
+    text: resumeText(newest.text, next.ok ? next.text : ""),
+  });
   return true;
 };
 
@@ -174,11 +185,17 @@ const withHint = (
   return { ...out, text: `${out.text}\n\n${manualHint(trigger.reason)}` };
 };
 
-/** Asks Claude to write the handoff file. A failed `path` call starts nothing. */
-const startWrite = async ($: EngineInterface): Promise<void> => {
+/**
+ * Asks Claude to write the handoff file, at a new path, and keeps the paths of `files` as well.
+ * A failed `path` call starts nothing.
+ */
+const startWrite = async (
+  $: EngineInterface,
+  files: readonly string[],
+): Promise<void> => {
   const path = await runBin($, "dotclaude-handoff", ["path"]);
   if (!path.ok) return;
-  pending = { file: path.text, waited: 0 };
+  pending = { files: [...files, path.text], waited: 0 };
   wanted = undefined;
   await $.prompt.submit({ text: writePrompt(path.text) });
 };
@@ -203,7 +220,7 @@ const settle = async (
     episode.over = true;
     return out;
   }
-  if (await resume($, current.file)) {
+  if (await resume($, current.files)) {
     pending = undefined;
     wanted = undefined;
     episode = newEpisode();
@@ -215,7 +232,7 @@ const settle = async (
   wanted = undefined;
   if (mode === "auto" && episode.retries < HANDOFF_RETRY_MAX) {
     episode.retries += 1;
-    await startWrite($);
+    await startWrite($, current.files);
     return out;
   }
   episode.over = true;
@@ -231,7 +248,10 @@ export const onTurnComplete: Handler<"turn.complete"> = async ($, e, next) => {
   }
   const mode = parseHandover(options["mainHandover"]);
   if (pending) return settle($, e, out, mode);
-  if (mode === "off") return out;
+  if (mode === "off") {
+    wanted = undefined;
+    return out;
+  }
   const trigger = await triggerOf($);
   if (!trigger) {
     episode = newEpisode();
@@ -242,6 +262,6 @@ export const onTurnComplete: Handler<"turn.complete"> = async ($, e, next) => {
     return withHint(out, trigger);
   }
   if (episode.over) return out;
-  await startWrite($);
+  await startWrite($, []);
   return out;
 };

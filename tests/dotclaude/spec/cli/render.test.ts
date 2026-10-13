@@ -63,7 +63,14 @@ test("a render of a new capability has the title and the requirements heading", 
       {
         name: "Alpha",
         text: "The store SHALL keep alpha.",
-        scenarios: [{ name: "Keep", whenLines: ["a"], thenLines: ["b"] }],
+        scenarios: [
+          {
+            name: "Keep",
+            lines: ["- **WHEN** a", "- **THEN** b"],
+            whenLines: ["a"],
+            thenLines: ["b"],
+          },
+        ],
       },
     ],
   });

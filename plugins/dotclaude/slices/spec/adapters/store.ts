@@ -56,9 +56,15 @@ export class SpecStore {
     return packageLanes(this.files, id, events);
   }
 
-  /** Adds one line for `event` to the end of `events.jsonl` of the change `id`. */
-  appendEvent(id: string, event: LaneEvent): void {
-    fs.appendFileSync(this.abs(eventsPath(id)), eventLine(event));
+  /**
+   * Adds one line for `event` to the end of `events.jsonl` of the change `id`.
+   * A file with no final line end gets one first, so the new line does not join the last line.
+   */
+  async appendEvent(id: string, event: LaneEvent): Promise<void> {
+    const file = eventsPath(id);
+    const text = (await this.files.read(file)) ?? "";
+    const lead = text === "" || text.endsWith("\n") ? "" : "\n";
+    await this.write(file, `${text}${lead}${eventLine(event)}`);
   }
 
   /** The ids of the open changes, in order. The archive is not a change. */

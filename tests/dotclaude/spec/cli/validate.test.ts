@@ -1,7 +1,7 @@
 // `validate`: a valid plan, a failing brief, overlapping `owns`, and a bad dep.
 
 import { expect, test } from "bun:test";
-import { brief, run } from "./helpers.ts";
+import { brief, eventsText, run } from "./helpers.ts";
 import { CHANGE, makePlan } from "./plan.ts";
 
 test("validate passes on a valid plan", async () => {
@@ -78,6 +78,15 @@ test("validate fails on a checkbox that does not agree with the lane", async () 
     { id: "P02", lane: "review", owns: ["src/b/"] },
   ]);
   expect((await run(agree, "validate", "c1")).code).toBe(0);
+});
+
+test("validate fails on an event whose package has no brief", async () => {
+  const root = await makePlan([{ id: "P01", owns: ["src/a/"] }], {
+    [`${CHANGE}/events.jsonl`]: eventsText({ P01: "planned", P09: "planned" }),
+  });
+  const r = await run(root, "validate", "c1");
+  expect(r.code).toBe(1);
+  expect(r.err.join("\n")).toContain("plan.event-no-package");
 });
 
 test("validate stops on a change that does not exist", async () => {
