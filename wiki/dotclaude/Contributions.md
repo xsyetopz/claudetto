@@ -9,8 +9,10 @@ The `guard` slice asks before Claude reaches the project of another owner.
 
 ## The Policy Ask
 
-The `guard` slice asks once for each repository in a session.
-It asks when Claude reaches a GitHub repository of another owner that has a policy file.
+The `guard` slice asks when Claude reaches a GitHub repository of another owner that has a policy file.
+It asks at each call that reaches the repository.
+A repository whose policy files are all missing is not read again in the session.
+A failed read is not kept, so the next call reads the repository again.
 The policy files are the ones in `POLICY_FILES` in `src/plugins/dotclaude/slices/guard/domain/owners.ts`: `CLAUDE.md`, `AGENTS.md`, and `AI_POLICY.md`.
 The ask covers these calls, which `reachedRepos` finds:
 
