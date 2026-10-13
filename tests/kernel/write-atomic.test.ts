@@ -17,6 +17,20 @@ test("`writeAtomic` replaces the text of a file and leaves only that file in its
   expect(fs.readdirSync(dir)).toStrictEqual(["rate-limits.jsonl"]);
 });
 
+test("`writeAtomic` fails and leaves no temp file when the rename onto the file fails", async () => {
+  const dir = folder();
+  const target = path.join(dir, "settings.json");
+  fs.mkdirSync(target);
+  let failed = false;
+  try {
+    await writeAtomic(target, "new");
+  } catch {
+    failed = true;
+  }
+  expect(failed).toBe(true);
+  expect(fs.readdirSync(dir)).toStrictEqual(["settings.json"]);
+});
+
 test("`writeAtomic` fails and leaves no temp file when the folder of the file is not a folder", async () => {
   const dir = folder();
   const blocker = path.join(dir, "blocker");
