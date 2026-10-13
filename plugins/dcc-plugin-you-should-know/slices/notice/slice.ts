@@ -17,6 +17,14 @@ import {
 
 const LAB = "plugins/dcc-plugin-you-should-know/tests/notice.test.ts";
 const PLUGIN = "dcc-plugin-you-should-know";
+// The two choices of the band share one entry in `evals/hooks.json`, so they share these kinds.
+const PRESS_EVALS = {
+  requests: 0,
+  tokens: 0,
+  blocks: false,
+  allow: `${LAB} > dismiss clears the band and writes no note`,
+  text: `${LAB} > a heads-up stays in the session until the main agent reads it once`,
+};
 
 export const slice = {
   name: "notice",
@@ -54,23 +62,39 @@ export const slice = {
       filter: { component: "AbovePrompt" },
       phase: "answer",
       run: onRender,
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow: `${LAB} > a call that gives no topic shows no band`,
+        text: `${LAB} > the first changing call of a turn shows the topic in the band`,
+      },
     },
     {
       event: "ui.press",
       filter: { plugin: PLUGIN, element: HEADS_UP },
       phase: "observe",
       run: onHeadsUp,
+      evals: PRESS_EVALS,
     },
     {
       event: "ui.press",
       filter: { plugin: PLUGIN, element: DISMISS },
       phase: "observe",
       run: onDismiss,
+      evals: PRESS_EVALS,
     },
     {
       event: "tool.call",
       phase: "observe",
       run: onHeadsUpContext,
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow: `${LAB} > a subagent's call takes no heads-up note, and the main agent's call does`,
+        text: `${LAB} > a heads-up stays in the session until the main agent reads it once`,
+      },
     },
   ],
 } satisfies Slice;
