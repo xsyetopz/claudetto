@@ -23,10 +23,7 @@ export const COLUMNS_MARGIN = 4;
 /** The most subagent rows. Claude Code shows the rows in the panel, so a long list is no help. */
 export const SUBAGENT_ROWS_MAX = 20;
 
-/** The text between two segments of a row. */
-export const SEGMENT_GAP = "  ";
-
-/** The text between two items of a row of the main status line. */
+/** The text between two items of a row of the main status line and of a subagent row. */
 export const ITEM_GAP = " · ";
 
 /** The length, in seconds, of the `5h` window of a limit. */
