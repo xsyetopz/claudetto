@@ -193,6 +193,9 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   Before, it asked once for each repository in a session.
 - The `guard` owners check keeps a repository whose policy files are all missing for the session, so it does not read them again.
   A failed read of a policy file is not kept, and the next call reads it again.
+- The `--clean` of `dotclaude-sandbox` removes a folder other than the default one only when the sandbox made it.
+  The setup writes a `.dotclaude-sandbox` marker into the folder, and `--clean` refuses a folder without it.
+  A folder that an older sandbox made has no marker, so remove it by hand.
 
 ### Removed
 

@@ -221,9 +221,12 @@ Then read that file.
 1. Stop each `tmux` session that you started.
 2. Run `just sandbox-clean`.
    It removes the whole `dotclaude-sandbox` folder.
-   That folder holds `config/`, `project/`, and `home/`.
+   That folder holds `config/`, `project/`, `home/`, and the `.dotclaude-sandbox` marker.
 3. For `just sandbox-alone`, run `just sandbox-alone PLUGIN` again.
    Or remove `/tmp/dotclaude-sandbox-alone` with `bun plugins/dotclaude-lab/bin/dotclaude-sandbox --dir /tmp/dotclaude-sandbox-alone --clean`.
+   The setup writes the marker into each folder that it makes.
+   `--clean` of a folder other than the default one refuses a folder without the marker.
+   A folder that an older sandbox made has no marker, so remove it by hand.
 
 The sandbox of `just sandbox` keeps its sessions and settings until you remove it.
 That lets you continue a test.
