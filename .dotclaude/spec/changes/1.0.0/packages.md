@@ -245,7 +245,7 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
 
 ## Wave 5: spec store schema 2
 
-- [ ] P48 Spec store schema 2: front matter for each file, `REQ-<n>` IDs, clarification markers, the states and gates of `design-spec-2.md`, and events with evidence ([package](packages/48-spec-schema-2.md), [design](design-spec-2.md), the user, 2026-10-13).
+- [x] P48 Spec store schema 2: front matter for each file, `REQ-<n>` IDs, clarification markers, the states and gates of `design-spec-2.md`, and events with evidence ([package](packages/48-spec-schema-2.md), [design](design-spec-2.md), the user, 2026-10-13).
   Deps: none.
   Verify: `just check`.
 

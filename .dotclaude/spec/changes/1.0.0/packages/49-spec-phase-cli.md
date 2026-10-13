@@ -1,7 +1,7 @@
 ---
 id: P49
 deps: [P48]
-owns: ["src/kernel/spec-store.ts", "src/plugins/dotclaude/slices/spec/", "src/plugins/dotclaude/slices/statusline/", "src/plugins/dotclaude/slices/handoff/domain/trigger.ts", "tests/kernel/", "tests/dotclaude/spec/", "tests/dotclaude/statusline/", ".dotclaude/spec/changes/1.0.0/"]
+owns: ["src/kernel/spec-store.ts", "src/kernel/state-events.ts", "src/plugins/dotclaude/slices/spec/", "src/plugins/dotclaude/slices/statusline/", "src/plugins/dotclaude/slices/handoff/domain/trigger.ts", "tests/kernel/", "tests/dotclaude/spec/", "tests/dotclaude/statusline/", ".dotclaude/spec/changes/1.0.0/"]
 verify: just check, and `dotclaude-spec validate 1.0.0` passes on the converted store
 agent: main session
 ---
@@ -28,6 +28,9 @@ agent: main session
 7. Each command that changes a state writes the `status` key of the file of the change or of the package.
 8. Switch each reader of the store to schema 2, including the status line and the handoff trigger, and remove the code and the tests of schema 1.
 9. Convert `.dotclaude/spec/changes/1.0.0/` with the conversion of P48, and fix the 15 problems that `validate 1.0.0` reports today.
+10. Replace schema 1 in place, with no second copy and no version in a name (the user, 2026-10-13).
+    Move `domain/v2/*` into `domain/`, `templates/v2.ts` into `templates/`, and `src/kernel/state-events.ts` into `src/kernel/spec-store.ts`, and remove each `V2` or `2` suffix.
+11. Remove `convert.ts` and its tests after step 9, because schema 2 has no compatibility with schema 1.
 
 ## Acceptance
 
@@ -35,5 +38,7 @@ agent: main session
 - `dotclaude-spec validate 1.0.0` passes, and each package keeps its state.
 
 ## Boundaries
+
+- No file, folder, type, or constant has `v1`, `v2`, or a schema number in its name.
 
 - Do not write `trace`, because P50 owns it.
