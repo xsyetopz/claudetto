@@ -101,10 +101,6 @@ const NOT_GENERATED: [RegExp, string][] = [
     /^plugins\/[^/]+\/\.claude-plugin\/plugin\.json$/,
     "`just bump` writes the version, and `claude plugin validate --strict` refuses a header key",
   ],
-  [
-    /^plugins\/[^/]+\/tsconfig\.json$/,
-    "Claude Code writes it when it is missing, and the type check reads it",
-  ],
 ];
 
 test("Text in the plugin: each Markdown, JSON, and text file under `plugins/` is generated or has a reason", async () => {

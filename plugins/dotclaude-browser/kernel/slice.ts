@@ -74,6 +74,8 @@ export interface ClassicHook {
   readonly command: string;
   readonly timeout?: number;
   readonly async?: boolean;
+  /** The eval kinds of the hook. Its id is the event and the command, without the `bun` launcher and the plugin root. */
+  readonly evals?: HookEvals;
 }
 
 /** One segment of the status line. The `row` is the row of the status line that holds it. */
