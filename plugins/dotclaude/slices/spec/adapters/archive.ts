@@ -2,7 +2,8 @@
 // `dotclaude-spec archive <id> [--json]`: merges the requirements of an `accepted` change into `specs/` and moves the change to `archive/`.
 // Each `requirements/<capability>.md` adds its requirement sections to `specs/<capability>.md`.
 // A trivial change adds its `## Requirements` section to `specs/<id>.md`.
-// When one requirement has an ID that its spec has already, nothing changes.
+// When one requirement has an ID that its spec has already, or two blocks of the change have the same ID, nothing changes.
+// A step that fails puts back each file that an earlier step wrote, so a retry works.
 
 import path from "node:path";
 import { ARCHIVE_DIR, SPECS_DIR } from "../../../kernel/paths.ts";
@@ -12,6 +13,7 @@ import {
   requirementsSection,
 } from "../domain/capability.ts";
 import { gateArchive } from "../domain/change-gates.ts";
+import { duplicateIds, requirementsOf } from "../domain/requirements.ts";
 import { CHANGE_ID } from "../limits.ts";
 import { SPEC } from "../templates/files.ts";
 import { parseArgs } from "./args.ts";
@@ -72,8 +74,13 @@ export const archiveCommand = async (
     return stop(run, `\`${ARCHIVE_DIR}\` is not a folder.`);
   }
   const texts = new Map<string, string>();
-  const problems: string[] = [];
-  for (const [capability, body] of await bodies(run, id)) {
+  const found = await bodies(run, id);
+  const problems = duplicateIds(
+    [...found.values()].flatMap((body) =>
+      requirementsOf(body).requirements.map((r) => r.id),
+    ),
+  ).map((dup) => `\`REQ-${dup}\` is in the requirements of the change twice`);
+  for (const [capability, body] of found) {
     const file = path.posix.join(SPECS_DIR, `${capability}.md`);
     const merged = mergeRequirements(
       await run.store.files.read(file),
@@ -88,14 +95,31 @@ export const archiveCommand = async (
     for (const line of problems) run.io.error(line);
     return stop(run, `Nothing changed: ${problems.length} problem(s).`);
   }
-  for (const [file, text] of texts) await run.store.write(file, text);
-  const moved = await moveChange(run, id, "archived");
-  run.store.move(changeDir(id), target);
-  printMoved(
-    run,
-    "archive",
-    { ...moved, specs: [...texts.keys()] } as typeof moved,
-    parsed.json,
-  );
-  return 0;
+  const kept = new Map<string, string | null>();
+  for (const file of [
+    ...texts.keys(),
+    path.posix.join(changeDir(id), "events.jsonl"),
+    path.posix.join(changeDir(id), "change.md"),
+  ])
+    kept.set(file, await run.store.files.read(file));
+  try {
+    for (const [file, text] of texts) await run.store.write(file, text);
+    const moved = await moveChange(run, id, "archived");
+    run.store.move(changeDir(id), target);
+    printMoved(
+      run,
+      "archive",
+      { ...moved, specs: [...texts.keys()] } as typeof moved,
+      parsed.json,
+    );
+    return 0;
+  } catch (error) {
+    for (const [file, text] of kept)
+      if (text === null) run.store.remove(file);
+      else await run.store.write(file, text);
+    return stop(
+      run,
+      `The archive of \`${id}\` failed: ${error instanceof Error ? error.message : String(error)} Nothing changed.`,
+    );
+  }
 };
