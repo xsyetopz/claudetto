@@ -103,3 +103,119 @@ This probe shows that the model does not see it, so the `stamp` slice appends a 
 A `user` row with `isMeta` set is not a choice, because the request holds the drift note, which is such a row.
 The probe captured one request only.
 The tests of the slice cannot check the request, so a check in `just sandbox` with `dotclaude-capture` and two prompts is part of the acceptance of P38.
+
+## Sandbox Check, 2026-10-13
+
+This section records the last acceptance check of P38.
+The check runs one session with two prompts in `just sandbox`.
+The proxy is `dotclaude-capture`, and the model is `haiku`.
+
+## Result
+
+- Point 1 passes.
+  The transcript holds the stamp row.
+- Point 2 passes.
+  No captured request body holds the text of the record.
+- Point 3 passes.
+  `dotclaude-usage` shows the build `0.28.0 3fc4e0e` for the session.
+  It shows `unknown` for a session with no record.
+
+The build is version `0.28.0` with the short SHA `3fc4e0e`.
+That SHA is the head of the branch `p15`.
+The run used Claude Code `2.1.296`.
+
+## Method
+
+1. Start the proxy with `--no-count`.
+   The flag stops the sizing requests to the `count_tokens` endpoint.
+2. Run the first prompt in `just sandbox` through the proxy.
+3. Run the second prompt with `--continue`.
+   Claude Code resumes the session of the first prompt, so both prompts share one session id.
+4. Search the transcript of the session for the stamp row.
+5. Search each captured request body for the text of the record.
+6. Run `dotclaude-usage` with `CLAUDE_CONFIG_DIR` set to the sandbox config.
+7. Run `just sandbox-alone` with `plugins/dotclaude-sessions`.
+   That plugin set has no core plugin, so it writes no record.
+   Then run `dotclaude-usage` on its config.
+
+Commands, where `<check>` is `<temp>/p38-check-2026-10-13` and `<temp>` is the system temp folder:
+
+```text
+bun plugins/dotclaude-lab/bin/dotclaude-capture --port 8787 --out <check>/capture --no-count
+ANTHROPIC_BASE_URL=http://127.0.0.1:8787 ENABLE_TOOL_SEARCH=true \
+  just sandbox --model haiku -p "Reply with the word ok." --debug-file <check>/debug-1.log
+ANTHROPIC_BASE_URL=http://127.0.0.1:8787 ENABLE_TOOL_SEARCH=true \
+  just sandbox --model haiku --continue -p "Reply with the word yes." \
+  --debug-file <check>/debug-2.log
+grep -n 'dotclaude build stamp' <temp>/dotclaude-sandbox/config/projects/<project>/<session>.jsonl
+grep -c -F 'dotclaude build stamp' <check>/capture/request-*.json
+CLAUDE_CONFIG_DIR=<temp>/dotclaude-sandbox/config \
+  bun plugins/dotclaude-sessions/bin/dotclaude-usage --days 1 --json
+just sandbox-alone plugins/dotclaude-sessions --model haiku -p "Reply with the word ok."
+CLAUDE_CONFIG_DIR=/tmp/dotclaude-sandbox-alone/config \
+  bun plugins/dotclaude-sessions/bin/dotclaude-usage --days 1 --json
+```
+
+- The grep for each text of point 2 runs with its own pattern.
+  The patterns are `0.28.0`, `3fc4e0e`, `shaSource`, and `"informational"`.
+- The code block breaks some lines for width.
+  Each command is one line in the shell.
+
+## Point 1: the transcript holds the stamp row
+
+The session has the id `616c6432-743d-49d6-bc88-ca84641b1ed9`.
+Its transcript holds two stamp rows, at lines 3 and 27.
+Line 3 comes from the first start.
+Line 27 comes from the start of the `--continue` run.
+
+Line 3 has these fields outside `content`:
+`type` is `system`, `subtype` is `informational`, `isMeta` is `false`, and `level` is `info`.
+Its `sessionId` is the id of the session, and its `version` is `2.1.296`.
+
+The `content` value of line 3 is below.
+The code block breaks the value for width.
+The transcript holds the value on one line.
+
+```text
+"content":"dotclaude build stamp: {\"version\":\"0.28.0\",\"sha\":\"3fc4e0e\",
+\"shaSource\":\"git\",\"sessionId\":\"616c6432-743d-49d6-bc88-ca84641b1ed9\",
+\"at\":\"2026-10-13T01:47:57.832Z\"}"
+```
+
+The value of line 27 has the same version and SHA.
+Its `at` is `2026-10-13T01:48:12.201Z`.
+
+## Point 2: no request body holds the record
+
+- The session sent two requests.
+  The bodies are `request-2026-10-13T01-47-52-409Z-1.json`, with 58542 bytes, and `request-2026-10-13T01-47-52-409Z-2.json`, with 60131 bytes.
+- The search for `dotclaude build stamp` finds no match in either body.
+- The search for `0.28.0`, `3fc4e0e`, `shaSource`, and `"informational"` finds no match in either body.
+- The session id appears once in each body.
+  That id is not text of the record.
+- The second body holds the prompt `yes`, and it holds the prompt `ok` too.
+  So the second body is the request after the second record.
+  The model did not see the record in that request.
+
+## Point 3: the usage report
+
+- With `CLAUDE_CONFIG_DIR` set to the sandbox config, `builds.byBuild` holds `0.28.0 3fc4e0e` for one session.
+  The session `616c6432-743d-49d6-bc88-ca84641b1ed9` has the build `0.28.0 3fc4e0e` in `builds.latest`.
+- The other nine sessions of the sandbox folder show the build `unknown`.
+- A session from `just sandbox-alone plugins/dotclaude-sessions`, with the id `1fc73ffa-855e-4ced-ae05-b06e5e04d1c7`, holds no stamp row.
+  It shows the build `unknown`.
+
+## Findings
+
+- The record is written at each start of a session.
+  A `--continue` run adds a second row to the same transcript.
+  The package text does not say whether a resume adds a row.
+- The session `0ce1dc74-0168-415e-a4e2-a11c8f6e44d6` holds 11 stamp rows and no assistant row.
+  It was made by an earlier run, not by this check.
+  `dotclaude-usage` does not list it, and the cause was not traced.
+
+## Gaps
+
+- The check runs one session, two prompts, and one model.
+- The `just sandbox` folder held transcripts from earlier runs, so the check reads only the session of this check.
+  The check does not run `just sandbox-clean`, because that removes those transcripts.
