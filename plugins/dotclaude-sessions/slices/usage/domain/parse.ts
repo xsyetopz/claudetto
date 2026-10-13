@@ -113,13 +113,14 @@ export const briefSize = async (
   file: string,
 ): Promise<BriefSize> => {
   for (const line of ((await store.read(file)) ?? "").split("\n")) {
-    let entry: Row;
+    let entry: Row | null;
     try {
       entry = JSON.parse(line);
     } catch (err) {
       rethrowUnless(err, "SyntaxError");
       continue;
     }
+    if (entry === null || typeof entry !== "object") continue;
     if (entry.type !== "user") continue;
     const c = entry.message?.content;
     const text = (

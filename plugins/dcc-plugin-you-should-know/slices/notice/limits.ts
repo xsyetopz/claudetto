@@ -26,8 +26,5 @@ export const MAX_INPUT_CHARS = 4000;
  */
 export const MAX_SEEN_TOPICS = 10;
 
-/** The most characters of a topic in the toast. */
+/** The most characters of a topic in the band. */
 export const MAX_TOPIC_CHARS = 400;
-
-/** How long a toast stays, so that the user can read one sentence. */
-export const TOAST_MS = 12000;

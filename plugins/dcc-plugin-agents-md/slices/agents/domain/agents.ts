@@ -70,8 +70,11 @@ export const globToRegExp = (glob: string): RegExp => {
   return new RegExp(`^${out}$`);
 };
 
-/** A path or a glob with each `\` as `/`. */
-const slashed = (text: string): string => text.replaceAll("\\", "/");
+/** A path or a glob with each `\` as `/`, and a drive letter in lower case, because Windows does not tell the case apart. */
+const slashed = (text: string): string =>
+  text
+    .replaceAll("\\", "/")
+    .replace(/^[A-Za-z]:/, (drive) => drive.toLowerCase());
 
 /**
  * True when one glob of `excludes` matches the absolute `path`.

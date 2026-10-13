@@ -192,3 +192,8 @@ const keyOf = (topic: string): string =>
 /** True when `topic` showed in the session already. */
 export const isRepeat = (topic: string, shown: readonly string[]): boolean =>
   shown.some((old) => keyOf(old) === keyOf(topic));
+
+/** The text that the main agent reads after a tool result, when the person gives a heads-up on a topic. */
+export const headsUpNote = (topic: string): string =>
+  `The person gave a heads-up about the change you are making: ${topic}
+Take this into account for the rest of this turn.`;

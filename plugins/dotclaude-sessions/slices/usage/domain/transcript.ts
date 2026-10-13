@@ -111,8 +111,8 @@ export const agentType = async (
   // A run with no meta file has the default type.
   if (text === null) return "subagent";
   try {
-    const meta = JSON.parse(text) as { agentType?: string };
-    return meta.agentType || "subagent";
+    const meta = JSON.parse(text) as { agentType?: string } | null;
+    return meta?.agentType || "subagent";
   } catch (err) {
     rethrowUnless(err, "SyntaxError");
     return "subagent";

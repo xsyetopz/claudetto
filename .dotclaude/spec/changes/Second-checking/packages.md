@@ -6,7 +6,7 @@
 - [x] P02 Repo tooling: generator ownership overlap, release and validate checks.
 - [x] P03 Core plugin: prompt, agents, styles, surface, attribution, trim, decide.
 - [x] P05 Core plugin: setup, rules, handoff, stamp.
-- [ ] P06 Add-on plugins and lab.
+- [x] P06 Add-on plugins and lab.
 
 ## Wave 2
 
