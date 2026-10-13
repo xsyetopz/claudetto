@@ -5,7 +5,6 @@ tools: Read, Grep, Glob, Bash
 disallowedTools: Edit, Write, NotebookEdit, Agent
 model: claude-opus-5-5
 effort: high
-maxTurns: 41
 color: yellow
 ---
 

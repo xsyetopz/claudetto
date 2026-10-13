@@ -1,12 +1,9 @@
-// Tests of the agent files of the core plugin: the six agents of the table, their model, effort, and turn bound, and the tools that each may call.
+// Tests of the agent files of the core plugin: the six agents of the table, their model and effort, and the tools that each may call.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import {
-  AGENT_NAMES,
-  turnBound,
-} from "../../../src/plugins/dotclaude/slices/agents/domain/turns.ts";
+import { slice } from "../../../src/plugins/dotclaude/slices/agents/slice.ts";
 import { AGENT_DESCRIPTION_MAX_CHARS } from "../../../tools/limits.ts";
 import { REPO } from "../../support/repo.ts";
 
@@ -17,7 +14,7 @@ const OPUS = "claude-opus-5-5";
 
 /** The model and the effort of each agent of the table in `workflow.md`. */
 const TABLE: Record<string, { model: string; effort: string }> = {
-  debugger: { model: SONNET, effort: "high" },
+  debugger: { model: OPUS, effort: "medium" },
   implementer: { model: SONNET, effort: "medium" },
   investigator: { model: HAIKU, effort: "medium" },
   planner: { model: OPUS, effort: "high" },
@@ -73,7 +70,9 @@ const mayCall = (
 test("the agent files are the six agents of the table, and no other", async () => {
   const list = await agents();
   expect(list.map((a) => a.name)).toStrictEqual(Object.keys(TABLE).sort());
-  expect<string[]>([...AGENT_NAMES]).toStrictEqual(Object.keys(TABLE).sort());
+  expect([...(slice.agents ?? [])].sort()).toStrictEqual(
+    Object.keys(TABLE).sort(),
+  );
   for (const a of list) expect(a.fm["name"], a.name).toBe(a.name);
 });
 
@@ -84,12 +83,9 @@ test("each agent file has the model and the effort of the table", async () => {
   }
 });
 
-test("each agent file has the turn bound of `domain/turns.ts` as its `maxTurns`", async () => {
-  for (const a of await agents()) {
-    expect(Number(a.fm["maxTurns"]), a.name).toBe(
-      turnBound(a.name as (typeof AGENT_NAMES)[number]),
-    );
-  }
+test("no agent file has a `maxTurns`, because a run at its turn limit returns no report", async () => {
+  for (const a of await agents())
+    expect(a.fm, a.name).not.toHaveProperty("maxTurns");
 });
 
 test("the read-only agents cannot write or edit, and the others can", async () => {

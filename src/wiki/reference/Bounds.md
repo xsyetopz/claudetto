@@ -50,12 +50,6 @@ The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 | `START_SYNC_TIMEOUT_MS` | `6,000` | `src/plugins/dotclaude-codegraph/slices/graph/limits.ts` | The time that the sync at session start may take. |
 | `BACKGROUND_SYNC_TIMEOUT_MS` | `60,000` | `src/plugins/dotclaude-codegraph/slices/graph/limits.ts` | The time that the background sync after an edit may take. |
 | `GIT_SYNC_TIMEOUT_MS` | `15,000` | `src/plugins/dotclaude-codegraph/slices/graph/limits.ts` | The time that the sync after a `git` command may take. |
-| `MAX_TURNS.debugger` | `61` | `src/plugins/dotclaude/slices/agents/limits.ts` | The most turns of the `debugger` agent before it stops. |
-| `MAX_TURNS.implementer` | `61` | `src/plugins/dotclaude/slices/agents/limits.ts` | The most turns of the `implementer` agent before it stops. |
-| `MAX_TURNS.investigator` | `31` | `src/plugins/dotclaude/slices/agents/limits.ts` | The most turns of the `investigator` agent before it stops. |
-| `MAX_TURNS.planner` | `41` | `src/plugins/dotclaude/slices/agents/limits.ts` | The most turns of the `planner` agent before it stops. |
-| `MAX_TURNS.researcher` | `41` | `src/plugins/dotclaude/slices/agents/limits.ts` | The most turns of the `researcher` agent before it stops. |
-| `MAX_TURNS.reviewer` | `41` | `src/plugins/dotclaude/slices/agents/limits.ts` | The most turns of the `reviewer` agent before it stops. |
 | `FILE_MAX_BYTES` | `{{FILE_MAX_BYTES}}` | `src/plugins/dotclaude/slices/asks/limits.ts` | The largest file in bytes that a check reads to compare the text before and after a call. |
 | `SCAN_MAX_CHARS` | `200,000` | `src/plugins/dotclaude/slices/asks/limits.ts` | The most characters of text that a check scans for banned patterns. |
 | `ITEMS_SHOWN_MAX` | `8` | `src/plugins/dotclaude/slices/asks/limits.ts` | The most reasons that the write ask of one `Bash` command gives. |
@@ -83,12 +77,10 @@ The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 | `READ_MAX_BYTES` | `4,194,304` | `src/plugins/dotclaude/slices/guard/limits.ts` | The size of the largest file that `$.fs.read` reads, which is 4 MiB. |
 | `SUBAGENT_CONTEXT_MAX` | `{{SUBAGENT_CONTEXT_MAX}}` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The context of a subagent in tokens, from which the hook tells it to report now. |
 | `HAIKU_CONTEXT_MAX` | `{{HAIKU_CONTEXT_MAX}}` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The context of a Haiku 5.5 subagent in tokens, from which the hook tells it to report. |
-| `TURNS_LEFT_AT` | `{{TURNS_LEFT_AT}}` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The turns left of a subagent, at which the hook tells it to report now. |
 | `REPORT_MAX_WORDS` | `{{REPORT_MAX_WORDS}}` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The most words in the final report of an agent. |
 | `CONTEXT_PERCENT` | `60` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The share of the context window in percent, at which the main session starts a handoff. |
 | `HANDOFF_WAIT_TURNS` | `2` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The turns of the main session that a handoff waits for its file before it counts as not written. |
 | `HANDOFF_RETRY_MAX` | `1` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The times that the hook submits the write prompt again for one trigger when no file appears. |
-| `AGENT_MAX_TURNS` | `31` to `61` | `src/plugins/dotclaude/slices/handoff/limits.ts` | The `maxTurns` of each agent type, one value per agent, which a test pins to the agent files. |
 | `BUN_MIN` | `1.4.3` | `src/plugins/dotclaude/slices/setup/limits.ts` | The lowest Bun version that the CLIs, hooks, and bins of the plugins need. |
 | `GAP_KEYS_MAX` | `8` | `src/plugins/dotclaude/slices/setup/limits.ts` | The most key paths that the line of missing snippet values names. |
 | `RULE_LINES_MAX` | `8` | `src/plugins/dotclaude/slices/setup/limits.ts` | The most lines that the rule problems add to the drift check. |

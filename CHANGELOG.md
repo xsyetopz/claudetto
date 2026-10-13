@@ -18,7 +18,7 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
   The handoff file goes to `.dotclaude/handoff/`.
   The `/handoff` skill names the file, and the `turn.complete` hook runs `/clear` and the resume prompt.
   The option `mainHandover` is `manual` by default, and it takes `auto` and `off`.
-  A `tool.call` hook adds a report-now note to a subagent that nears its context bound or its `maxTurns`.
+  A `tool.call` hook adds a report-now note to a subagent that is over its context bound.
   The `turn.complete` hook runs the resume only after an `answer` turn, waits at most `HANDOFF_WAIT_TURNS` turns for the file, submits the write prompt once more, and then gives the `manual` hint.
   A `dotclaude-spec merge` also counts as a package that is done, and quoted text does not.
   On one session, a handoff against a compaction of the same session cost $0.0630 against $0.2288, took 9.1 s against 23.2 s, and left 18,487 tokens of context at the last call against 28,418 at the first call of the follow-up.
@@ -189,7 +189,8 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The settings snippet lists its top-level keys in the property order of the settings schema.
   The keys of `env` are in alphabetical order.
 - The core plugin has six agents: `debugger`, `implementer`, `investigator`, `planner`, `researcher`, and `reviewer`.
-  Each agent file sets its own model and effort.
+  Each agent file sets its own model and effort, and no agent has a `maxTurns`, because a run that reaches its turn limit returns no report.
+  The `debugger` runs on Opus 5.5 at `medium` effort.
 - dotclaude writes its own files to `.dotclaude/`.
   The `setup` slice adds the runtime paths of `.claude/` that git does not ignore to `.git/info/exclude`.
 - dotclaude uses the worktrees of Claude Code.

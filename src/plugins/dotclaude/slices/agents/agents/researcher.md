@@ -5,7 +5,6 @@ tools: Bash, Read, Grep, Glob, WebFetch, WebSearch
 disallowedTools: Edit, Write, NotebookEdit, Agent
 model: claude-sonnet-5-5
 effort: medium
-maxTurns: 41
 color: blue
 ---
 

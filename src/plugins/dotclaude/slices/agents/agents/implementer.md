@@ -4,7 +4,6 @@ description: Implements one scoped slice with a known check: a feature, a fix wi
 disallowedTools: Agent
 model: claude-sonnet-5-5
 effort: medium
-maxTurns: 61
 isolation: worktree
 color: green
 ---

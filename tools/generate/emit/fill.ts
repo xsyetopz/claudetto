@@ -16,7 +16,6 @@ import {
   HAIKU_CONTEXT_MAX,
   REPORT_MAX_WORDS,
   SUBAGENT_CONTEXT_MAX,
-  TURNS_LEFT_AT,
 } from "../../../src/plugins/dotclaude/slices/handoff/limits.ts";
 import { MAX_ROWS } from "../../../src/plugins/dotclaude/slices/statusline/limits.ts";
 
@@ -32,7 +31,6 @@ export const VALUES: Record<string, string> = Object.fromEntries(
     POLICY_TIMEOUT_MS,
     REPORT_MAX_WORDS,
     SUBAGENT_CONTEXT_MAX,
-    TURNS_LEFT_AT,
     USAGE_LEVEL_LOW: USAGE_LEVELS[0],
     USAGE_LEVEL_HIGH: USAGE_LEVELS[1],
   }).map(([name, value]) => [name, value.toLocaleString("en-US")]),

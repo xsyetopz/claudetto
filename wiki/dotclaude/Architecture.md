@@ -67,7 +67,7 @@ The events column names the events that the slice declares in `mod`, in its `sli
 
 | Slice | What it does | Events |
 | --- | --- | --- |
-| `agents` | Holds the six agent files, with the model, the effort, and the `maxTurns` of each. | None |
+| `agents` | Holds the six agent files, with the model and the effort of each. | None |
 | `asks` | Asks before a change to a protected file, a git call that discards work, or an added skipped test or lint suppression. | `tool.check` |
 | `attribution` | Adds the `Co-Authored-By` line to a `git commit` and the footer to a `gh pr create` body, with the model of the main loop. | `tool.call` |
 | `checks` | The CLI `dotclaude-run-checks`, which runs check commands with no model turn. | None |
@@ -188,7 +188,6 @@ The shared bounds are in `src/kernel/budget.ts`.
 | Policy `gh` call | 5,000 ms | `src/kernel/budget.ts` (`POLICY_TIMEOUT_MS`) |
 | Policy text in the ask | 2,000 characters | `src/kernel/budget.ts` (`POLICY_FILE_MAX_CHARS`) |
 | Subagent context | 100,000 tokens, and 85,000 for Haiku 5.5 | `src/plugins/dotclaude/slices/handoff/limits.ts` |
-| Subagent turns left at the note | 4 | `src/plugins/dotclaude/slices/handoff/limits.ts` (`TURNS_LEFT_AT`) |
 | Subagent report | 400 words | `src/plugins/dotclaude/slices/handoff/limits.ts` (`REPORT_MAX_WORDS`) |
 | Size of a file that the `asks` checks read | 1,000,000 bytes | `src/plugins/dotclaude/slices/asks/limits.ts` |
 | Rows of the status line | 3 | `src/plugins/dotclaude/slices/statusline/limits.ts` |

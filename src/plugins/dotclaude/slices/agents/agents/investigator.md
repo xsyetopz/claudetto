@@ -5,7 +5,6 @@ tools: Bash, Read, Grep, Glob
 disallowedTools: Edit, Write, NotebookEdit, Agent, WebFetch, WebSearch
 model: claude-haiku-5-5
 effort: medium
-maxTurns: 31
 color: purple
 ---
 

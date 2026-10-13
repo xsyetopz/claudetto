@@ -1,6 +1,6 @@
 // The mod handlers of the `handoff` slice. Every handler makes no model call, so `requests` is 0.
 //
-// `turn.step` keeps the context and the turn count of each subagent.
+// `turn.step` keeps the context of each subagent.
 // `tool.call` adds the report-now note to the result of a subagent that nears a bound.
 // The same `tool.call` handler sets the trigger when a package goes to `done`.
 // `skill.prompt` starts the handoff of `/handoff`.
@@ -102,22 +102,19 @@ const runBin = async (
   return { ok: run.exitCode === 0, text: run.stdout.trim() };
 };
 
-/** The usage of each subagent step: its context, its model, and its turn count. */
+/** The usage of each subagent step: its context and its model. */
 export const onTurnStep: Handler<"turn.step"> = async function* (_$, e, next) {
   const result = yield* next(e);
-  if (e.agentId && result.usage) {
-    const before = agents.get(e.agentId);
+  if (e.agentId && result.usage)
     agents.set(e.agentId, {
       tokens: contextTokens(result.usage),
       model: result.usage.model,
-      turns: (before?.turns ?? 0) + 1,
     });
-  }
   return result;
 };
 
 /** Adds the report-now note to the result of a tool call of a subagent that nears a bound, and watches for a package that goes to `done`. */
-export const onToolCall: Handler<"tool.call"> = async ($, e, next) => {
+export const onToolCall: Handler<"tool.call"> = async (_$, e, next) => {
   const out = await next(e);
   if (laneDoneCall(e, out)) {
     wanted = REASON_LANE;
@@ -125,8 +122,7 @@ export const onToolCall: Handler<"tool.call"> = async ($, e, next) => {
   }
   const state = e.agentId ? agents.get(e.agentId) : undefined;
   if (!state || out.deny !== undefined) return out;
-  const type = (await $.agent.list()).find((row) => row.id === e.agentId)?.type;
-  const note = reportNote(state, type);
+  const note = reportNote(state);
   return note ? { ...out, context: [...(out.context ?? []), note] } : out;
 };
 
