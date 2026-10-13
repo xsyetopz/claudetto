@@ -10,8 +10,9 @@ export const PARTS: readonly Part[] = [
     text: " - Claude Code runs as a CLI, a desktop app, a web app, and IDE extensions.",
   },
   {
-    anchor: /^ - Fast mode for Claude Code.*$/gm,
-    text: " - Fast mode uses Claude Opus with faster output. Toggle it with `/fast`.",
+    // The `trim` slice turns fast mode off, so the line about `/fast` goes, with its line break.
+    anchor: /^ - Fast mode for Claude Code.*\n/gm,
+    text: "",
   },
 ];
 

@@ -1,6 +1,6 @@
 Starts an agent for a multi-step task.
 The agent types are in the `<system-reminder>` messages.
-Set `subagent_type`, or the general-purpose agent runs.
+Always set `subagent_type`.
 
 Use it when the reads would fill your context, or when parallel work shares little context.
 Do a small task yourself.

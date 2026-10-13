@@ -118,15 +118,15 @@ export const PARTS: readonly Part[] = [
   },
   {
     anchor: /^Memory is one of several persistence.*$/gm,
-    text: "Memory holds facts for future conversations. Use a plan, or tasks, for the work of this conversation.",
+    text: "Memory holds facts for future conversations. For the work of this conversation, keep the steps in your replies.",
   },
   {
     anchor: /^- When to use or update a plan.*$/gm,
-    text: "- Use a plan for a non-trivial change that needs alignment. Update the plan when the approach changes.",
+    text: "- For a non-trivial change that needs alignment, state the approach first. Update the approach when it changes.",
   },
   {
     anchor: /^- When to use or update tasks.*$/gm,
-    text: "- Use tasks to track the steps of the current work.",
+    text: "- Track the steps of the current work in your replies.",
   },
 ];
 

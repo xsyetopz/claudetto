@@ -146,6 +146,11 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 - The `dotclaude-usage` report prices each call by the model version, from the pricing page of 2026-10-13.
   It adds the Mythos models and the two prompt tiers of Haiku 5.5, and the cache read of Sonnet 5.5 is $0.10.
   A version that is not in the table gets the prices of the newest version of its family.
+- The `prompt` memory section no longer names the plan and task tools, which the `prompt` slice denies.
+  The text of `tool-agent.md` tells Claude to always set `subagent_type`, because `Agent(general-purpose)` is denied.
+- The `prompt` section of the environment no longer describes fast mode, because the `trim` slice turns fast mode off.
+- The `prompt` slice denies `Read` of `.env.development`, `.env.dev`, `.env.staging`, `.env.stage`, `.env.test`, `.env.prod`, `.env.qa`, and `.env.preview`.
+  The `.env.example`, `.env.sample`, and `.env.template` files stay readable.
 
 ### Removed
 

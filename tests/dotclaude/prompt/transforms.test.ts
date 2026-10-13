@@ -47,3 +47,11 @@ test("the transform of `total_tokens` keeps the text", () => {
   const text = "<total_tokens>15000000 tokens left</total_tokens>";
   expect(transformText("total_tokens", text)).toBe(text);
 });
+
+test("the transform of `env_info_simple` drops the fast-mode line and keeps the lines around it", () => {
+  const text =
+    " - Platform: darwin\n - Fast mode for Claude Code uses the same model with faster output. It can be toggled with /fast.\n - Shell: zsh\n";
+  expect(transformText("env_info_simple", text)).toBe(
+    " - Platform: darwin\n - Shell: zsh\n",
+  );
+});
