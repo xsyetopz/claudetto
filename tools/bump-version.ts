@@ -8,6 +8,7 @@
 // order stay as they are. `just generate` copies the version into each `plugin.json`, so this tool
 // writes no plugin file.
 
+import fs from "node:fs";
 import path from "node:path";
 
 const SEMVER = /^(\d+)\.(\d+)\.(\d+)$/;
@@ -70,6 +71,16 @@ export const plan = async (root: string, level: string, today: string) => {
   };
 };
 
+/** True when the process may write `file`. */
+const writable = (file: string): boolean => {
+  try {
+    fs.accessSync(file, fs.constants.W_OK);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 /** Runs the bump with `args` and returns the exit status. */
 export const main = async (args: string[]): Promise<number> => {
   const at = args.indexOf("--root");
@@ -98,6 +109,13 @@ export const main = async (args: string[]): Promise<number> => {
   if (args.includes("--dry-run")) {
     console.log("Dry run: nothing was written.");
     return 0;
+  }
+  const blocked = result.writes.find(({ file }) => !writable(file));
+  if (blocked) {
+    console.error(
+      `Cannot write ${path.relative(root, blocked.file)}, so nothing was changed.`,
+    );
+    return 1;
   }
   for (const { file, text } of result.writes) await Bun.write(file, text);
   console.log(

@@ -29,7 +29,7 @@ lab:
 check: lint typecheck (generate "--check") test validate lab
 
 # The gate of the CI `check` job: `check` without the type check, because CI has no `.claude-plugin/types/`
-ci: lint test validate lab
+ci: lint (generate "--check") test validate lab
 
 # Run Claude Code with the plugins of this checkout, in a sandbox config apart from yours; extra arguments go to claude
 sandbox *args:
