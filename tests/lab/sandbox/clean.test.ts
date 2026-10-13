@@ -114,8 +114,8 @@ test("`--clean` removes a sandbox whose `config/` folder is read-only and holds 
   const root = path.join(scratch, "sandbox");
   const config = path.join(root, "config");
   fs.mkdirSync(config, { recursive: true });
-  fs.writeFileSync(path.join(root, ".dotclaude-sandbox"), "");
-  fs.writeFileSync(path.join(config, "state.json"), "{}");
+  await Bun.write(path.join(root, ".dotclaude-sandbox"), "");
+  await Bun.write(path.join(config, "state.json"), "{}");
   fs.chmodSync(config, 0o555);
   try {
     const code = await main(["--dir", root, "--clean"]);
@@ -130,7 +130,7 @@ test("`--clean` refuses a symlinked root and leaves the folder that the link poi
   const outside = path.join(scratch, "outside");
   fs.mkdirSync(path.join(outside, "config"), { recursive: true });
   fs.mkdirSync(path.join(outside, "project"), { recursive: true });
-  fs.writeFileSync(path.join(outside, ".dotclaude-sandbox"), "");
+  await Bun.write(path.join(outside, ".dotclaude-sandbox"), "");
   fs.chmodSync(path.join(outside, "config"), 0o555);
   fs.chmodSync(outside, 0o555);
   const link = path.join(scratch, "link");

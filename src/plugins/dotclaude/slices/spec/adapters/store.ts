@@ -22,12 +22,12 @@ import {
  * A torn last line, with no line end and not JSON, is cut off, so the new line does not join it.
  * A last line that is JSON with no line end gets a line end first.
  */
-const readyForAppend = (file: string): string => {
+const readyForAppend = async (file: string): Promise<string> => {
   if (!fs.existsSync(file)) return "";
-  const bytes = fs.readFileSync(file);
+  const bytes = await Bun.file(file).bytes();
   if (bytes.length === 0 || bytes[bytes.length - 1] === 0x0a) return "";
   const cut = bytes.lastIndexOf(0x0a) + 1;
-  if (cut > 0 && !isJson(bytes.subarray(cut).toString("utf8"))) {
+  if (cut > 0 && !isJson(new TextDecoder().decode(bytes.subarray(cut)))) {
     fs.truncateSync(file, cut);
     return "";
   }
@@ -86,7 +86,7 @@ export class SpecStore {
   async appendEvent(id: string, event: LaneEvent): Promise<void> {
     const file = this.abs(eventsPath(id));
     fs.mkdirSync(path.dirname(file), { recursive: true });
-    const lead = readyForAppend(file);
+    const lead = await readyForAppend(file);
     fs.appendFileSync(file, `${lead}${eventLine(event)}`);
   }
 

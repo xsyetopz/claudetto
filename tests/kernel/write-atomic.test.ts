@@ -119,7 +119,7 @@ test("`writeAtomic` writes through a symlink, so the link stays and the linked f
   fs.symlinkSync(real, link);
   await writeAtomic(link, "new");
   expect(fs.lstatSync(link).isSymbolicLink()).toBe(true);
-  expect(fs.readFileSync(real, "utf8")).toBe("new");
+  expect(await Bun.file(real).text()).toBe("new");
   expect(fs.readdirSync(dir).sort()).toStrictEqual([
     "dotfiles-settings.json",
     "settings.json",

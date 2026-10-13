@@ -381,9 +381,8 @@ test("`--apply` writes through a symlinked `settings.json` and keeps the link", 
   fs.symlinkSync(real, userFile(d));
   expect(run(d, ["--apply"]).status).toBe(0);
   expect(fs.lstatSync(userFile(d)).isSymbolicLink()).toBe(true);
-  expect(JSON.parse(fs.readFileSync(real, "utf8")).env.DISABLE_COMPACT).toBe(
-    "1",
-  );
+  const written = JSON.parse(await Bun.file(real).text());
+  expect(written.env.DISABLE_COMPACT).toBe("1");
 });
 
 test("`--apply` leaves no temp file next to `settings.json`", () => {

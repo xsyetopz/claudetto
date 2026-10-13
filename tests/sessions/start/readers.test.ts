@@ -213,7 +213,7 @@ test("a subagent meta file that is `null` gives the default subagent type and do
   const root = tmpDir("start-null");
   const file = path.join(root, "p", "subagents", "agent-n.jsonl");
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(
+  await Bun.write(
     path.join(root, "p", "subagents", "agent-n.meta.json"),
     "null",
   );

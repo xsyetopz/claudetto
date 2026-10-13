@@ -344,15 +344,12 @@ test("a meta file or an installed-plugins file that is `null` gives the defaults
   const root = tmpDir("usage-null");
   const file = path.join(root, "p", "subagents", "agent-n.jsonl");
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(
+  await Bun.write(
     path.join(root, "p", "subagents", "agent-n.meta.json"),
     "null",
   );
   expect(await agentType(store, file)).toBe("subagent");
   fs.mkdirSync(path.join(root, "plugins"));
-  fs.writeFileSync(
-    path.join(root, "plugins", "installed_plugins.json"),
-    "null",
-  );
+  await Bun.write(path.join(root, "plugins", "installed_plugins.json"), "null");
   expect(await installedSkills(store, root)).toStrictEqual([]);
 });

@@ -136,11 +136,11 @@ test("lane moves the package of the one change where it is not done, when anothe
   expect((await run(other, "lane", "P01", "done")).code).toBe(0);
   const done = path.join(root, ".dotclaude/spec/changes/c0");
   fs.cpSync(path.join(other, CHANGE), done, { recursive: true });
-  const before = fs.readFileSync(path.join(done, "events.jsonl"), "utf8");
+  const before = await Bun.file(path.join(done, "events.jsonl")).text();
   const r = await run(root, "lane", "P01", "doing");
   expect(r.code).toBe(0);
   expect((await stateOf(root)).lanes["P01"]).toBe("doing");
-  expect(fs.readFileSync(path.join(done, "events.jsonl"), "utf8")).toBe(before);
+  expect(await Bun.file(path.join(done, "events.jsonl")).text()).toBe(before);
 });
 
 test("lane stops on a log with a schema that it does not know", async () => {
