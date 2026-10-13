@@ -87,7 +87,9 @@ const stub = (on: On, facts: Facts) => {
   });
   on("fs.exists", (_$, e) => {
     const file = e.path.replaceAll("\\", "/");
-    const present = file === TRANSCRIPT && (facts.transcript !== undefined || facts.oversized === true);
+    const present =
+      file === TRANSCRIPT &&
+      (facts.transcript !== undefined || facts.oversized === true);
     return { value: present };
   });
   on("process.run", (_$, e) => {

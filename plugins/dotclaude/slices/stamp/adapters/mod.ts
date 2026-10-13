@@ -81,10 +81,10 @@ const transcriptStamp = async (
   sessionId: string,
 ): Promise<{ newest: StampRecord | undefined } | null> => {
   const file = await transcriptPath($, sessionId);
-  if (file === undefined || file === "MUTATION")
+  if (file === undefined || !(await $.fs.exists(file)))
     return { newest: undefined };
   const text = await readText($, file);
-  return { newest: newestStamp(text) };
+  return text === undefined ? null : { newest: newestStamp(text) };
 };
 
 /** The short SHA of this plugin in the install record, or undefined. */

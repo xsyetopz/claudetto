@@ -2,7 +2,6 @@
 // The status line runs every `REFRESH_SECONDS`, so the cache keeps the `git` call from running on each refresh.
 // The file name holds a hash of the repository path, so the path itself is not in the temp folder.
 
-import { createHash } from "node:crypto";
 import os from "node:os";
 import path from "node:path";
 import { failureText } from "../../../../../kernel/node/hook-io.ts";
@@ -27,7 +26,10 @@ interface Saved {
 
 /** The cache file of the repository at `dir`. */
 export const cacheFile = (dir: string): string => {
-  const key = createHash("sha256").update(dir).digest("hex").slice(0, 16);
+  const key = new Bun.CryptoHasher("sha256")
+    .update(dir)
+    .digest("hex")
+    .slice(0, 16);
   return path.join(os.tmpdir(), `dotclaude-git-${key}.json`);
 };
 
