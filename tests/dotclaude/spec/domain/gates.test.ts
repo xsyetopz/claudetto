@@ -57,7 +57,9 @@ const at = "2026-10-13T10:00:00.000Z";
 const failedVerify = [
   { at, package: "P1", state: "doing", verify: { command: "x", exit: 1 } },
 ];
-const rejected = [{ at, package: "P1", state: "doing", verdict: "reject" }];
+const rejected = [
+  { at, package: "P1", state: "doing", verdict: "reject" as const },
+];
 
 test("implement from doing needs a failed verify or a reject, and a decision", () => {
   const doing = { ...base, from: "doing", events: failedVerify } as const;

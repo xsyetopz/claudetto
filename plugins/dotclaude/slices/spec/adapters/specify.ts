@@ -3,7 +3,8 @@
 // On an id that is free, it creates the change in `draft`: `change.md`, `events.jsonl`, and the files of its size.
 //   trivial: the requirements are in `change.md`. medium: `requirements/<capability>.md`. large: also `design.md`.
 // On a change that exists, it checks the gate: each requirement has a valid ID, and no marker is open.
-//   A trivial or medium change then gets the package `P1` and goes on to `planned`. A large change stops at `specified`.
+//   A trivial or medium change then gets the next `P` number that no open change and no archived change uses.
+//   It goes on to `planned`. A large change stops at `specified`.
 // The `REQ-1` of a template becomes the next free ID of the store.
 
 import path from "node:path";
@@ -31,6 +32,7 @@ import {
   openMarkers,
   readChange,
   requirementSources,
+  usedPackageNumbers,
   usedRequirementNumbers,
 } from "./files.ts";
 import type { Run } from "./run.ts";
@@ -84,9 +86,10 @@ const create = async (
   return { change: id, from: "none", to: "draft" };
 };
 
-/** The text of the package `P1` of a short-path change: it satisfies each requirement and has the `verify` of the change. */
+/** The text of the package `pkg` of a short-path change: it satisfies each requirement and has the `verify` of the change. */
 const shortPackage = (
   id: string,
+  pkg: string,
   satisfies: string[],
   verify: string,
 ): string => {
@@ -96,7 +99,7 @@ const shortPackage = (
     renderFront("package", {
       schema: FRONT_SCHEMA,
       kind: "package",
-      id: "P1",
+      id: pkg,
       title,
       wave: "1",
       deps: [],
@@ -174,9 +177,14 @@ export const specifyCommand = async (
     openMarkers: await openMarkers(run.store, id),
   });
   if (!gate.ok) return stop(run, gate.reason);
-  const file = path.posix.join(changeDir(id), "packages", "P1.md");
-  if (short && run.store.exists(file))
-    return stop(run, `\`${file}\` exists already.`);
+  const packages = path.posix.join(changeDir(id), "packages");
+  if (short && (await run.store.markdown(packages)).length > 0)
+    return stop(
+      run,
+      `\`${packages}\` has a package file, and it exists already.`,
+    );
+  const pkg = `P${Math.max(0, ...(await usedPackageNumbers(run.store))) + 1}`;
+  const file = path.posix.join(packages, `${pkg}.md`);
   const first =
     state === "draft" ? await moveChange(run, id, "specified") : undefined;
   if (!short) {
@@ -192,6 +200,7 @@ export const specifyCommand = async (
     file,
     shortPackage(
       id,
+      pkg,
       found.flatMap((r) => r.requirements.map((q) => `REQ-${q.id}`)),
       change.verify,
     ),

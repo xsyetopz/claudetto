@@ -155,6 +155,14 @@ export const requirementSources = (sources: readonly Source[]): Source[] =>
     (s) => s.path.includes("/requirements/") || s.path.endsWith("/change.md"),
   );
 
+/** The folders of the open changes and of the archived changes. */
+const changeFolders = async (store: SpecStore): Promise<string[]> => [
+  ...(await store.changes()).map(changeDir),
+  ...(await store.files.list(ARCHIVE_DIR)).map((n) =>
+    path.posix.join(ARCHIVE_DIR, n),
+  ),
+];
+
 /** The numbers of the requirement IDs in `specs/`, in each open change, and in the archive. A new ID must be greater than all of them. */
 export const usedRequirementNumbers = async (
   store: SpecStore,
@@ -165,17 +173,36 @@ export const usedRequirementNumbers = async (
   };
   for (const name of await store.markdown(SPECS_DIR))
     add(await store.files.read(path.posix.join(SPECS_DIR, name)));
-  const folders = [
-    ...(await store.changes()).map(changeDir),
-    ...(await store.files.list(ARCHIVE_DIR)).map((n) =>
-      path.posix.join(ARCHIVE_DIR, n),
-    ),
-  ];
+  const folders = await changeFolders(store);
   for (const dir of folders) {
     add(await store.files.read(path.posix.join(dir, "change.md")));
     const req = path.posix.join(dir, "requirements");
     for (const name of await store.markdown(req))
       add(await store.files.read(path.posix.join(req, name)));
+  }
+  return numbers;
+};
+
+/** The numbers of the package IDs `P<n>` that the open changes and the archive use, in a file name or in an event. */
+export const usedPackageNumbers = async (
+  store: SpecStore,
+): Promise<number[]> => {
+  const numbers: number[] = [];
+  const add = (name: string | undefined): void => {
+    const n = /^P(\d+)(?:\.md)?$/.exec(name ?? "")?.[1];
+    if (n !== undefined) numbers.push(Number(n));
+  };
+  const folders = await changeFolders(store);
+  for (const dir of folders) {
+    for (const name of await store.markdown(path.posix.join(dir, "packages")))
+      add(name);
+    const events = await store.files.read(path.posix.join(dir, "events.jsonl"));
+    for (const line of (events ?? "").split("\n"))
+      try {
+        add((JSON.parse(line) as { package?: string }).package);
+      } catch {
+        // A header, a blank line, or a torn line names no package.
+      }
   }
   return numbers;
 };

@@ -30,16 +30,21 @@ describe("a command on an open package in a change that is not open", () => {
     ["approved", ["merge", "P1"]],
     ["doing", ["block", "P1", "--note", "n"]],
     ["doing", ["drop", "P1", "--reason", "r"]],
-  ] as const)("%s package: %p is refused", async (state, args) => {
-    const root =
-      state === "planned" ? await plannedChange() : await packageIn(state);
-    append(root, { at: "2026-10-13T10:00:00.000Z", state: "canceled" });
-    const before = await file(root, LOG);
-    const r = await phase(root, ...args);
-    expect(r.code).toBe(1);
-    expect(r.err.join("\n")).toContain("canceled");
-    expect(await file(root, LOG)).toBe(before);
-  });
+  ] as [string, string[]][])(
+    "%s package: %p is refused",
+    async (state, args) => {
+      const root =
+        state === "planned"
+          ? await plannedChange()
+          : await packageIn(state as "doing" | "verified" | "approved");
+      append(root, { at: "2026-10-13T10:00:00.000Z", state: "canceled" });
+      const before = await file(root, LOG);
+      const r = await phase(root, args[0] as string, ...args.slice(1));
+      expect(r.code).toBe(1);
+      expect(r.err.join("\n")).toContain("canceled");
+      expect(await file(root, LOG)).toBe(before);
+    },
+  );
 });
 
 describe("approve reads the last verify event", () => {
