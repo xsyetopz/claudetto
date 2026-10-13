@@ -57,7 +57,7 @@ const parseLine = (file: string, line: number, text: string): unknown => {
 };
 
 /** True when `text` is one JSON value. */
-export const isJson =(text: string): boolean => {
+export const isJson = (text: string): boolean => {
   try {
     JSON.parse(text);
     return true;
