@@ -100,7 +100,9 @@ test("a release whose tag steps all succeed keeps its tags", async () => {
     { dir: "plugins/b", tag: "t-b" },
   ];
   const tagDir = async (dir: string) => {
-    await $`git -c tag.gpgsign=false tag ${dir === "plugins/a" ? "t-a" : "t-b"}`.cwd(root);
+    await $`git -c tag.gpgsign=false tag ${dir === "plugins/a" ? "t-a" : "t-b"}`.cwd(
+      root,
+    );
   };
   await makeTags(root, plans, tagDir);
   expect(await tagExists(root, "t-a")).toBe(true);
