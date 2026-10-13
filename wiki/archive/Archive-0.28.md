@@ -1,34 +1,34 @@
-# Archive: 0.27 and 0.28 text
+# Archive: 0.27 and 0.28 Text
 
 This page keeps the text that described behavior of the 0.27 and 0.28 releases.
 Current pages do not describe these parts.
 The [Release History](Release-History) page has the notes of each older release.
 
-## The 0.27 and 0.28 rebuilds
+## The 0.27 and 0.28 Rebuilds
 
 0.27.0 rebuilt the core plugin from an empty tree and removed most 0.26 parts.
 0.28.0 removed the setup profile with its diff and backups, the router table, the usage state file, the handoff notes, and the `dotclaude-modder` plugin.
 The settings snippet replaced the setup profile.
 
-## Update notes for 0.28.0
+## Update Notes for 0.28.0
 
 - Files that 0.27.0 wrote stay on your machine, such as the stub `statusline.mjs` and the `<file>.dotclaude-backup-<time>` files.
 - The `statusLine` command of 0.27.0 runs the stub, which shows nothing.
-  Replace the command with the path of the installed plugin folder, and delete the stub and the backups by hand.
+  Replace the command with the path of the installed plugin folder, and remove the stub and the backups by hand.
 
-## Usage notes
+## Usage Notes
 
 - The setup profile of 0.20 to 0.27 denied `Agent(general-purpose)`.
 - The 0.27.0 profile set `cleanupPeriodDays` to 14, so Claude Code removed old transcripts.
-- 0.28.0 brought the search context back in the add-on `dotclaude-codegraph`, with a `PreToolUse` hook on `Grep|Glob`.
+- 0.28.0 restored the search context in the add-on `dotclaude-codegraph`, with a `PreToolUse` hook on `Grep|Glob`.
   Claude Code 2.1.296 has no `Grep` or `Glob` tool, so that hook is gone.
 
-## Removed browser note
+## Removed Browser Note
 
 The `recognize-captcha` skill and the offline `ddddocr-rs` OCR no longer exist in the browser plugin.
-The CHANGELOG removed them in 0.20.0, because CloakBrowser keeps most CAPTCHAs away.
+The CHANGELOG removed them in 0.20.0, because CloakBrowser avoids most CAPTCHAs.
 
-## The CLI against the LSP tool
+## The CLI Against the LSP Tool
 
 Task 17.1 of the change `dotclaude-0-28-0` compared the CLI with the built-in LSP tool.
 The reason was the rule that the plugin does not add runtime code for a feature that Claude Code has.
@@ -66,3 +66,11 @@ What the result showed:
   It missed `summary` and `main`, which are three calls away.
   The `SessionStart` line gave `-d 5` for this reason.
 - One run for each arm is not a rate.
+
+## Related Pages
+
+- [Archive](Archive)
+- [Release 0.28](Release-0.28)
+- [Decisions Reversed](Decisions-Reversed)
+- [Open Items](Open-Items)
+- [Stop Prompt Hooks](Stop-Prompt-Hooks)

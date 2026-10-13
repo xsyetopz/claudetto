@@ -2,11 +2,11 @@
 
 # Bounds
 
-Each bound, its value, and its file.
+This page tells maintainers each bound, its value, and its file.
 The values come from the code.
 A value in a placeholder is filled from the code when `just generate` runs.
 
-## Where a new bound goes
+## Where a New Bound Goes
 
 A new bound goes in the tier of its reader.
 Each bound has one owner, and tests pin the copies of a bound in code and config.
@@ -21,7 +21,7 @@ Each bound has one owner, and tests pin the copies of a bound in code and config
 The rule for each tier is in `CLAUDE.md`.
 The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 
-## Shared runtime bounds
+## Shared Runtime Bounds
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
@@ -36,7 +36,7 @@ The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 | `SHELL_SCAN_MAX_CHARS` | `200,000` | `src/kernel/budget.ts` | The most characters that `commands` in `src/kernel/shell.ts` reads in one command. |
 | `CODE_COMMAND_MAX_WORDS` | `32` | `src/kernel/budget.ts` | The most words of one command that a code reader reads from code in another language. |
 
-## Slice bounds
+## Slice Bounds
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
@@ -110,7 +110,7 @@ The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 | `SUBAGENT_ROWS_MAX` | `20` | `src/plugins/dotclaude/slices/statusline/limits.ts` | The most subagent rows in the status line. |
 | `DESCRIPTION_ROOM_MIN` | `8` | `src/plugins/dotclaude/slices/statusline/limits.ts` | The columns that a subagent row needs for its description before the description shows. |
 
-## Repository bounds
+## Repository Bounds
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
@@ -130,15 +130,15 @@ The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 | `FIRST_REQUEST_HIGH_BYTES` | `16,384` | `tools/limits.ts` | The most bytes in the first request, with no tool schemas. |
 | `START_TOKENS` | `9,960` | `tools/limits.ts` | The most tokens in the first request of a dotclaude session. |
 
-## Source of the binary facts
+## Source of the Binary Facts
 
 Three shared bounds depend on the Claude Code `2.1.296` binary: `CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `BASH_OUTPUT_MAX_CHARS`.
 The range of `bashOutputMaxChars` (4,000 to 128,000) comes from the `2.1.296` settings table of a local dossier.
 The dossier is not in the repository.
 The other two values come from code comments that cite the `2.1.296` bundle.
 
-## Related pages
+## Related Pages
 
-- [Settings-Snippet](Settings-Snippet) gives the settings that use `CONTEXT_WINDOW`.
-- [Context-And-Handoff](Context-And-Handoff) explains the handoff bounds.
-- [Decisions-Layout](Decisions-Layout) gives the choice of the bound tiers.
+- [Settings Snippet](Settings-Snippet) gives the settings that use `CONTEXT_WINDOW`.
+- [Context and Handoff](Context-And-Handoff) explains the handoff bounds.
+- [Decisions Layout](Decisions-Layout) gives the choice of the bound tiers.

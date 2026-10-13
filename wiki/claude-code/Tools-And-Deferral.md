@@ -1,35 +1,20 @@
-# Tools and deferral
+# Tools and Deferral
 
-How Claude Code `2.1.296` loads its tools, which of them are deferred, and what dotclaude changes in their descriptions.
+This page says how Claude Code `2.1.296` loads its tools, which of them are deferred, and what dotclaude changes in their descriptions.
+Read it if you change a tool description, or if a tool schema is missing from a request.
 
-## What it does
+## What It Does
 
 Each request to the model carries a tool list.
 A tool in the list has a name, a description, and an input schema.
 Some tools send all three in every request.
-A deferred tool sends only its name, and Claude loads its schema with `ToolSearch` when it needs the tool.
+A deferred tool sends only its name.
+Claude loads its schema with `ToolSearch` when it needs the tool.
 
 The tool part is one of the larger parts of a request.
 In the captured start of a session, it is about half of the request tokens.
 
-## Sources
-
-- The `2.1.296` binary, through the extract in `external/cc-extract/2.1.296/`.
-  The folder `tool/` holds the text of 25 built-in tools.
-  Seven of them also have a `.full.txt` variant.
-  The folder `listing/` holds the lists of agent types and skills.
-  Its file `deferred_tools.txt` holds only the header of the deferred-tool notice, with no tool names.
-- The dossier `external/dossier/cc-2.1.296/tools.md`.
-  It reads the deferral flags and the list filter from the bundle.
-  Some of its rows are marked "unverified".
-- Two captured API requests of `2.1.296`, in `external/capture/vanilla/` and `external/capture/snippet/`.
-  Both requests name the model `claude-sonnet-5-5`.
-  The token counts come from the capture reports in the same folders.
-- The official docs, at the [tools reference](https://code.claude.com/docs/en/tools-reference) and in the [MCP guide](https://code.claude.com/docs/en/mcp).
-  The docs list tools, such as `PowerShell`, that the `2.1.296` extract does not have.
-  This page does not use the docs for a fact about `2.1.296`.
-
-## Built-in tools of 2.1.296
+## Built-In Tools of 2.1.296
 
 The captured vanilla request sends 11 tools with their full schema.
 These are `Agent`, `Bash`, `Edit`, `ListAgents`, `Read`, `ReportFindings`, `ScheduleWakeup`, `Skill`, `ToolSearch`, `Workflow`, and `Write`.
@@ -44,19 +29,20 @@ The dossier marks these tools as deferred:
 - `SendMessage`, `SendFile`, `FetchInboxMessage`, `PublishPlugin`, `ProposeGoal`, and `DesignSync`.
 - `EndConversation`, and the self-hosted runner tools.
 
-The dossier says a tool is deferred when its `shouldDefer` flag is set, or when it is an MCP tool.
+The dossier says a tool is deferred when its `shouldDefer` flag is `true`, or when it is an MCP tool.
 It removes a tool from the list when a permission deny rule names it.
 A bare `permissions.deny` name therefore hides the tool.
 
-The dossier does not settle these points:
+The dossier does not answer these points:
 
 - It marks `Glob` and `Grep` as loaded by default.
   Neither is in the captured vanilla request.
-- Several rows of the dossier are "unverified", and they stay unverified here.
+- Several rows of the dossier are "unverified".
+  This page does not confirm them.
 - The extract does not list the names of the deferred tools.
-  The deferred set on this page therefore comes from the dossier, and not from a listing of the binary.
+  The deferred set on this page therefore comes from the dossier, not from a listing of the binary.
 
-## How ToolSearch loads a schema
+## How `ToolSearch` Loads a Schema
 
 The captured `ToolSearch` description matches the extract `tool/ToolSearch.txt` byte for byte.
 From that text, the load works in four steps.
@@ -71,25 +57,26 @@ The captured `ToolSearch` schema has two required fields.
 They are `query` and `max_results`, and `max_results` defaults to 5.
 The schema sets `additionalProperties` to false.
 
-The placeholder `DeferredToolPlaceholder` has `defer_loading` set to true, and its description says that Claude must never call it.
+The placeholder `DeferredToolPlaceholder` sets `defer_loading` to `true`.
+Its description says that Claude must never call it.
 It costs 93 tokens in both captures.
 The capture does not show which setting made the placeholder appear.
 
-The official docs add the switch for tool search.
+The official docs describe the switch for tool search.
 The variable `ENABLE_TOOL_SEARCH` takes these values:
 
 | Value | Effect |
 | --- | --- |
-| unset | MCP tools are deferred. Tool search falls back to upfront loading when `ANTHROPIC_BASE_URL` points to a host other than the first party. |
+| unset | MCP tools are deferred. Tool search loads tools upfront when `ANTHROPIC_BASE_URL` points to a host other than the first party. |
 | `true` | MCP tools are deferred. |
 | `auto` | Tools load upfront while their definitions stay under 10% of the context window. |
 | `auto:N` | The same as `auto`, with the percentage `N` from 0 to 100. |
 | `false` | All MCP tools load upfront. |
 
-The deny rule `ToolSearch` turns the tool off.
+The deny rule `ToolSearch` disables the tool.
 When tool search is off, the docs say that Claude uses `WaitForMcpServers` instead.
 
-## MCP and plugin tools
+## MCP and Plugin Tools
 
 MCP tools join the same list as the built-in tools.
 By default, the official docs say that their definitions are deferred.
@@ -98,7 +85,7 @@ A tool from a server that a plugin bundles has the form `mcp__plugin_<plugin>_<s
 Each character outside `A-Z`, `a-z`, `0-9`, `_`, and `-` becomes `_`.
 
 The docs give two ways to load an MCP tool upfront.
-A server author sets `anthropic/alwaysLoad` to true in the tool `_meta`.
+A server author sets `anthropic/alwaysLoad` to `true` in the tool `_meta`.
 A configuration sets `alwaysLoad` for a whole server.
 A configuration value of `false` keeps all tools of a server deferred.
 
@@ -106,9 +93,9 @@ The captured snippet request sends one MCP tool, `mcp__dotclaude-jev__second_opi
 It costs 530 tokens.
 The capture does not record the server settings.
 Inference: this tool loads upfront, through one of the two settings above, or through the state of tool search in that run.
-This is not settled.
+This is not confirmed.
 
-## Size of the tool part
+## Size of the Tool Part
 
 The sizes come from the capture reports, which count each part of the request with the token counter.
 The dossier's three-run comparison used a one-line prompt.
@@ -122,22 +109,25 @@ The captures do not record their prompt, so this page does not assume one.
 The counts come from `external/capture/*/report-*.json`.
 The whole-request counts match the figures in `external/dossier/cc-2.1.296/tool-costs.md`.
 That dossier file says it is "not measured", but its three-run comparison has the same counts.
-The two runs differ in more than the tools, so the share of each run is a figure for that run only.
+The two runs differ in more than the tools.
+So the share of each run is a figure for that run only.
 
-## What dotclaude changes in tool descriptions
+## What dotclaude Changes in Tool Descriptions
 
 The `surface` slice of the core plugin changes four tools.
 Its source is `src/plugins/dotclaude/slices/surface/`.
 
 - `slice.ts` names the four tools in the filter of the `tool.describe` event: `Agent`, `Bash`, `Read`, and `ListAgents`.
-- `adapters/mod.ts` calls the engine answer first.
+- `adapters/mod.ts` first gets the engine answer.
   It then applies the rule of `domain/tools.ts`.
 - The rule replaces a built-in description only when the replacement is shorter.
-- The rule sets `isDeferred` to true for a deferred tool, and it never sets it to false.
-- A tool that no transform names passes on with no change.
+- The rule sets `isDeferred` to `true` for a deferred tool.
+  It never sets `isDeferred` to `false`.
+- A tool that no transform names passes through unchanged.
 
 The shorter texts are in `slices/surface/texts.ts/`.
-They are written by dotclaude, and they are not copies of the built-in texts.
+dotclaude wrote them.
+They are not copies of the built-in texts.
 
 | Tool | Built-in text, captured | dotclaude text | Change |
 | --- | ---: | ---: | --- |
@@ -158,15 +148,36 @@ The token counts of the two runs show the effect.
 The four changed tools save 1,362 tokens together.
 The other seven tool texts have the same bytes in both runs.
 Inference: the four changed tools cause the whole difference in the tool part.
-The runs differ in other ways too, so this is not a measured effect of the surface alone.
+The runs differ in other ways too.
+So this is not a measured effect of the surface alone.
 
-For the full set of prompt cuts, see [Prompt-Surface](Prompt-Surface).
-For how a request is built, see [Request-Build](Request-Build).
+## Sources
 
-## Open points
+- The `2.1.296` binary, through the extract in `external/cc-extract/2.1.296/`.
+  The folder `tool/` holds the text of 25 built-in tools.
+  Seven of them also have a `.full.txt` variant.
+  The folder `listing/` holds the lists of agent types and skills.
+  Its file `deferred_tools.txt` holds only the header of the deferred-tool notice, with no tool names.
+- The dossier `external/dossier/cc-2.1.296/tools.md`.
+  It reads the deferral flags and the list filter from the bundle.
+  Some of its rows are marked "unverified".
+- Two captured API requests of `2.1.296`, in `external/capture/vanilla/` and `external/capture/snippet/`.
+  Both requests name the model `claude-sonnet-5-5`.
+  The token counts come from the capture reports in the same folders.
+- The official docs, at the [tools reference](https://code.claude.com/docs/en/tools-reference) and in the [MCP guide](https://code.claude.com/docs/en/mcp).
+  The docs list tools, such as `PowerShell`, that the `2.1.296` extract does not have.
+  This page does not use the docs for a fact about `2.1.296`.
 
-- `Glob` and `Grep` are marked loaded in the dossier, but the captured vanilla request does not send them.
+## Open Points
+
+- `Glob` and `Grep` are marked loaded in the dossier.
+  The captured vanilla request does not send them.
 - The captured snippet request sends the MCP tool with its full schema.
   The capture does not show why it is not deferred.
 - The extract has no list of the deferred tool names.
-- The dossier rows marked "unverified" are not checked.
+- The dossier rows marked "unverified" are not confirmed.
+
+## Related Pages
+
+- [Prompt Surface](Prompt-Surface): the full set of prompt cuts.
+- [Request Build](Request-Build): how a request is built.

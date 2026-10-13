@@ -1,22 +1,31 @@
-# Semantic line breaks
+# Semantic Line Breaks
+
+This page explains how dotclaude puts each sentence on its own line.
+It covers the `sembr` slice, which rewrites the text that Claude writes to a file or to a command.
+It is for a contributor who edits the `sembr` slice or who checks a rewrite.
 
 dotclaude puts each sentence of the text that Claude writes on its own line.
-The `sembr` slice does this before the call runs, so the fix costs no model token.
+The `sembr` slice does this before the call runs.
+So the fix costs no model token.
 The code is in `src/plugins/dotclaude/slices/sembr/`.
 The rationale is in [Decisions](Decisions).
 
-## Why a program and not a rule
+## Why a Program and Not a Rule
 
 - A semantic line break puts each sentence on its own line.
-  The rendered output does not change, and a diff shows which sentence changed.
-- Claude joins sentences on one line in files and commits, although `CLAUDE.md` asks for one sentence on each line.
-- A rule in prose did not hold, so a program makes the text correct.
+  The rendered output does not change.
+  A diff shows which sentence changed.
+- Claude joins sentences on one line in files and commits.
+  `CLAUDE.md` asks for one sentence on each line.
+- A rule in prose did not hold.
+  So a program fixes the text.
   The `check` phase of the `guard` slice is described in [Guards](Guards).
-- The hook rewrites the input of the call, and it never rewrites the file after the write.
+- The hook rewrites the input of the call.
+  It never rewrites the file after the write.
   A rewrite after the write can make the next `Edit` fail with `File has been modified since read`.
   This is an inference from the bundle text, and it was not run.
 
-## Where it runs
+## Where It Runs
 
 `slice.ts` declares one `tool.call` handler with the filter `Write`, `Edit`, and `Bash`.
 The phase is `rewrite`, so the handler runs before the `check` phase of the `guard` slice.
@@ -25,19 +34,19 @@ The phase is `rewrite`, so the handler runs before the `check` phase of the `gua
 | Tool | Rule | Function |
 | --- | --- | --- |
 | `Write` | Rewrites `content` of a Markdown file. | `writeInput` |
-| `Edit` | Repairs `old_string` when it crosses a sentence end, and rewrites `new_string`. | `editInput`, `repairEdit`, `rewriteEdit` |
+| `Edit` | Fixes `old_string` when it crosses a sentence end, and rewrites `new_string`. | `editInput`, `repairEdit`, `rewriteEdit` |
 | `Bash` | Rewrites the quoted heredoc of `git commit` and `gh pr create`. | `commandInput`, `rewriteCommand` |
 
 The rules are pure functions in `domain/rewrite.ts`.
 They import only `domain/split.ts` and the kernel.
 
-## Which files change
+## Which Files Change
 
 `isMarkdown` in `src/kernel/text.ts` checks the path.
 It is true for a path that ends in `.md` or `.mdx`, in any letter case.
-A file of another type passes on with no change.
+A file of another type passes through with no change.
 
-## The formatter
+## The Formatter
 
 `sembr` in `domain/split.ts` is pure string code with no import.
 It only splits lines, and it never joins them.
@@ -54,7 +63,8 @@ So an existing break stays, and a second run gives the same text.
 ## Edit
 
 - `adapters/mod.ts` checks the file with `$.fs.exists` first.
-  A file that does not exist passes on as `null`, and the `Edit` runs as written.
+  A file that does not exist makes the handler return `null`.
+  The `Edit` then runs as written.
 - `repairEdit` runs when `old_string` is not in the file as written, and its split form is in the file.
   The handler then splits both strings and calls `next`.
 - `rewriteEdit` changes `new_string` only when the edit starts and ends at line bounds of the file.
@@ -76,9 +86,11 @@ When an output line would equal the heredoc delimiter, the command stays unchang
 ## Failure
 
 A rule that throws is a defect.
-The handler lets the error reach Claude Code, which logs it, skips the hook, and runs the call as written.
+The handler lets the error reach Claude Code.
+Claude Code logs the error, skips the hook, and runs the call as written.
 The hook does not decide the permission, so the normal permission flow stays.
-A write still asks for approval, and `gh pr create` still asks before it publishes.
+A write still asks for approval.
+`gh pr create` still asks before it publishes.
 
 The hook prints no `additionalContext` and no `systemMessage`.
 So the rewrite adds no token to the model context.
@@ -86,11 +98,11 @@ So the rewrite adds no token to the model context.
 ## Chat
 
 dotclaude does not rewrite the chat reply.
-A probe of a `session.append` handler showed that the handler changed the stored rows and the display.
+A probe of a `session.append` handler showed that the handler changed the stored rows and the shown text.
 The handler also fired once for each content block of a reply.
 The rewrite also changed the `result` text of `claude -p --output-format json`.
 
-## Related pages
+## Related Pages
 
-- [Guards](Guards)
-- [Prompt-Surface](Prompt-Surface)
+- [Guards](Guards): the checks that run after this rewrite.
+- [Prompt-Surface](Prompt-Surface): the text that the plugin adds to the prompt.

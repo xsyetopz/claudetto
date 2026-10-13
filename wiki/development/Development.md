@@ -1,6 +1,7 @@
 # Development
 
 This page is for contributors.
+Read it before you change the repository.
 It shows the needs, the commands, the layout rules, and the steps to test, release, and publish a change.
 
 ## Needs
@@ -29,8 +30,8 @@ Each recipe runs from the repository root.
 | `just typecheck` | Runs `bun check` with `tsconfig.json`, which checks each `.ts` file and the core hooks module. |
 | `just validate` | Runs `tools/validate.ts`, which runs `claude plugin validate --strict` and checks the file size bounds. |
 | `just lab` | Runs `tools/lab.ts`, which runs `claude plugin test` on each plugin with a `tests/` folder. |
-| `just check` | Runs lint, typecheck, `generate --check`, test, validate, and lab. It must pass before a change is done. |
-| `just ci` | Runs lint, test, validate, and lab. It is the gate of the CI `check` job. |
+| `just check` | Runs lint, typecheck, `generate --check`, test, check, and lab. It must pass before a change is done. |
+| `just ci` | Runs lint, test, check, and lab. It is the gate of the CI `check` job. |
 | `just sandbox [ARGS]` | Runs Claude Code with this checkout as its plugin, in a separate config. See [Sandbox](Sandbox). |
 | `just sandbox-alone PLUGIN [ARGS]` | Runs Claude Code with only the plugin folder `PLUGIN`, in a new config with no settings. |
 | `just sandbox-clean` | Removes the sandbox config and project. |
@@ -50,10 +51,12 @@ Each recipe runs from the repository root.
 
 `just check` is the local gate.
 `just ci` is the same gate without the type check and without `generate --check`.
-CI has no type check, because Claude Code writes the `.claude-plugin/types/` folder only when an interactive session loads a plugin.
+CI has no type check.
+Claude Code writes the `.claude-plugin/types/` folder only when an interactive session loads a plugin.
 
 `just measure` is not part of `just check` or `just ci`.
-It exits 1 when the first request is above `START_TOKENS` in `tools/limits.ts`, or when its text is outside the `FIRST_REQUEST_LOW_BYTES` and `FIRST_REQUEST_HIGH_BYTES` range.
+It exits 1 when the first request is above `START_TOKENS` in `tools/limits.ts`.
+It also exits 1 when its text is outside the `FIRST_REQUEST_LOW_BYTES` and `FIRST_REQUEST_HIGH_BYTES` range.
 
 ```bash
 just check                                     # must pass before a change is done
@@ -62,13 +65,14 @@ just usage --days 7                            # where your usage went
 bun run lint:md                                # lint Markdown
 ```
 
-## Size bounds
+## Size Bounds
 
 The size bounds are in `tools/limits.ts`.
 `FILE_MAX_LINES` is 300, and `TEST_FILE_MAX_LINES` is 500.
 `just validate` fails when a file is above its bound.
 Split a larger file into files that each hold one concern.
-A Markdown file has the same 300-line bound, and its headings and code blocks have a 100-column bound.
+A Markdown file has the same 300-line bound.
+Its headings and code blocks have a 100-column bound.
 See [Bounds](Bounds) for each bound, its value, and its file.
 
 ## Tests
@@ -83,18 +87,20 @@ See [Bounds](Bounds) for each bound, its value, and its file.
 | `tests/support/` | The helpers of the tests, and the repository checks, such as `file-size.test.ts` and `wiki-links.test.ts`. |
 | `tests/tools/` | The tests of the scripts in `tools/`. |
 
-### The hook lab
+### The Hook Lab
 
 `just lab` runs `tools/lab.ts`.
 It runs `claude plugin test` on each plugin folder under `plugins/` that has a `tests/` folder.
 In this checkout, these are `dotclaude`, `dotclaude-browser`, `dotclaude-codegraph`, and `dotclaude-sessions`.
-Each test file fires events at a hooks module and stubs the reads of that module.
+Each test file fires events at a hooks module.
+It stubs the reads of that module.
 Test each change to `hooks/register.ts` in the lab before a live session.
 
-## Layout rules
+## Layout Rules
 
 The source of each plugin is in `src/`.
-The `plugins/` folder holds the output of `just generate`, and only `plugins/` ships to users.
+The `plugins/` folder holds the output of `just generate`.
+Only `plugins/` ships to users.
 Do not edit `plugins/` by hand.
 
 | Rule | Meaning |
@@ -106,9 +112,12 @@ Do not edit `plugins/` by hand.
 | No Node or Bun import in the hooks module | A file in the import graph of `hooks/register.ts` has no `node:` import and no `bun:` import. Claude Code runs that module in its own runtime. |
 | No patch of Claude Code | Never patch the Claude Code CLI binary or its npm package. Reading the bundle for evidence is allowed. |
 
-*Why:* a number with two owners drifts, and the drift shows up as two bounds that disagree.
-The import rules keep each part small, and keep its failure local.
-See [Plugin-Layout](Plugin-Layout) for the folders of each plugin, and [Design](Design) for the design principles.
+*Why:* a number with two owners drifts.
+The drift shows up as two bounds that disagree.
+The import rules keep each part small.
+They also keep each failure local.
+See [Plugin-Layout](Plugin-Layout) for the folders of each plugin.
+See [Design](Design) for the design principles.
 
 ## Types
 
@@ -116,9 +125,10 @@ See [Plugin-Layout](Plugin-Layout) for the folders of each plugin, and [Design](
   It extends `plugins/dotclaude/tsconfig.json`.
 - Claude Code writes the `.claude-plugin/types/` folders when it loads a plugin from your checkout, such as in `just sandbox`.
   Git ignores these folders.
-  `just check` needs them, and CI does not.
+  `just check` needs them.
+  CI does not.
 
-## Test in your config
+## Test in Your Config
 
 1. Run `just sandbox` to use a separate config.
    A test then does not change your own setup.
@@ -128,7 +138,7 @@ See [Plugin-Layout](Plugin-Layout) for the folders of each plugin, and [Design](
    claude --plugin-dir /path/to/dotclaude/plugins/dotclaude
    ```
 
-## The `/ship` skill
+## The `/ship` Skill
 
 The `/ship` skill (`plugins/dotclaude/skills/ship/SKILL.md`) runs the open packages of a large change in waves.
 Each package has one `implementer` agent in its own worktree.
@@ -140,10 +150,11 @@ The spec format is on the [Spec-Store](Spec-Store) page.
 
 `just eval` runs `claude plugin eval` on the suite in `plugins/dotclaude/evals/`.
 It tests the checkout, and not the installed copy.
-`--max-cost-usd 5` bounds its cost, and a lock stops a second run while one is in progress.
+`--max-cost-usd 5` bounds its cost.
+A lock stops a second run while one is in progress.
 The suite format and the results are on the [Evals](Evals) page.
 
-## Continuous integration
+## Continuous Integration
 
 The workflows are in `.github/workflows/`.
 
@@ -183,7 +194,8 @@ The workflows are in `.github/workflows/`.
    ```
 
    Commit before you tag.
-   `claude plugin tag` checks that each `plugin.json` agrees with its marketplace entry, and it stops on a dirty working tree.
+   `claude plugin tag` checks that each `plugin.json` agrees with its marketplace entry.
+   It stops on a dirty working tree.
 4. Preview the tags, then tag and push.
 
    ```bash
@@ -193,23 +205,25 @@ The workflows are in `.github/workflows/`.
 
 - `just bump` moves the `[Unreleased]` entries under a dated heading.
 - `just release` runs `claude plugin tag` on each plugin under `plugins/`.
-  It checks all plugins before it makes a tag, so a bad manifest stops the release with no tag made.
+  It checks all plugins before it makes a tag.
+  So a bad manifest stops the release with no tag made.
 - It then pushes all tags to `origin` in one atomic push.
 
 ## Wiki
 
 1. Edit a page in `wiki/`.
-   The test `tests/support/wiki-links.test.ts` checks that each link resolves, and that each page name is unique.
+   The test `tests/support/wiki-links.test.ts` checks that each link resolves.
+   It also checks that each page name is unique.
    Some pages are generated from `src/wiki/`, such as [Bounds](Bounds).
    Edit the source there, then run `just generate`.
 2. Run `just wiki` to publish the folder to the GitHub wiki.
 
 > **Note:** The wiki repository exists only after the first page is made in the GitHub web UI.
 
-## Next steps
+## Related Pages
 
 - [Sandbox](Sandbox) explains the separate config.
 - [Plugin-Layout](Plugin-Layout) maps the folders of each plugin.
-- [Hooks](Hook-Events) lists the hook events.
+- [Hook Events](Hook-Events) lists the hook events.
 - [Design](Design) gives the design principles.
 - [Decisions](Decisions) lists the decisions in force.

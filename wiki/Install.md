@@ -1,6 +1,9 @@
 # Install
 
-Add the dotclaude marketplace, then install each plugin that you want.
+This page tells you how to add the dotclaude marketplace and install each plugin.
+It is for users who run Claude Code and want dotclaude.
+Read it before [Quickstart](Quickstart).
+
 The core plugin is `dotclaude`.
 `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-docs`, `dotclaude-sessions`, and `dotclaude-lab` are optional add-ons.
 Each add-on works without the core plugin.
@@ -9,29 +12,32 @@ The `second_opinion` tool is part of the core plugin.
 The commands on this page are for Claude Code `2.1.296`.
 That is the minimum version, from `TESTED_VERSION` in `src/plugins/dotclaude/slices/setup/domain/facts.ts`.
 
-## Before you begin
+## Before You Begin
+
+Check that each tool in the table is ready for the plugins that you install.
 
 | Need | For | Note |
 | --- | --- | --- |
 | Claude Code 2.1.296 or later | all plugins | |
 | git | `dotclaude` | The checks of `git` calls and the spec lanes use `git`. |
-| [Bun](https://bun.sh) 1.4.3 or later on `PATH` | the setup command, the status line, the `second_opinion` CLI `dotclaude-decide`, the hooks of `dotclaude-codegraph`, the bins of `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-sessions`, and `dotclaude-lab`, and the `docs` skill of `dotclaude-docs`, which runs `ctx7` through `bunx` | Without Bun, the setup command does not run, the status line does not run, and `second_opinion` answers from a Claude model. |
+| [Bun](https://bun.sh) 1.4.3 or later on `PATH` | the setup command, the status line, the `second_opinion` CLI `dotclaude-decide`, the hooks of `dotclaude-codegraph`, the bins of `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-sessions`, and `dotclaude-lab`. The `docs` skill of `dotclaude-docs` also needs Bun, because it runs `ctx7` through `bunx`. | Without Bun, the setup command does not run, the status line does not run, and `second_opinion` answers from a Claude model. |
 | [Node.js](https://nodejs.org) on `PATH` | the npm installs of `codegraph` and `agent-browser` | Without Node.js, the npm installs do not run. |
-| `gh` on `PATH` | the policy ask of `dotclaude` | Without `gh`, the ask does not run, and the call goes on. |
-| `codegraph` on `PATH` | `dotclaude-codegraph` | Run `npm i -g @colbymchenry/codegraph`. The setup command offers this install, and runs it only after your yes. |
-| `TYPESAFE_API_KEY` | `dotclaude` (`second_opinion`) | Export it before Claude Code starts. Without it, `second_opinion` answers from a Claude model. |
+| `gh` on `PATH` | the policy ask of `dotclaude` | Without `gh`, the ask does not run. The call continues. |
+| `codegraph` on `PATH` | `dotclaude-codegraph` | Run `npm i -g @colbymchenry/codegraph`. The setup command offers this install. It runs the install only after you say yes. |
+| `TYPESAFE_API_KEY` | `dotclaude` (`second_opinion`) | Export it before Claude Code begins. Without it, `second_opinion` answers from a Claude model. |
 | `agent-browser` on `PATH` | `dotclaude-browser` | See [Browser](Browser). |
 
 The checks of the core hooks module need no Bun and no Node.js, because the core plugin loads them as a hooks module.
 The core plugin's `hooks.json` names only `register.ts`.
 
 On a machine with managed settings, or with a Team or Enterprise login, Claude Code loads the built-in guard `sec-default`.
-A user cannot turn it off.
-In a measurement on Claude Code `2.1.292`, the guard bypassed the `prompt.section` hook of dotclaude, so the `context_management` text did not reach the prompt.
+A user cannot disable it.
+In a measurement on Claude Code `2.1.292`, the guard bypassed the `prompt.section` hook of dotclaude.
+The `context_management` text did not reach the prompt.
 The `tool.check` hook and the classic `PreToolUse` hook still ran.
 See [Request build](Request-Build#the-built-in-guard-sec-default).
 
-## Install the core plugin
+## Install the Core Plugin
 
 1. Add the marketplace.
 
@@ -55,8 +61,9 @@ A plugin cannot set permissions, environment variables, or models.
 Claude Code applies only `agent` and `subagentStatusLine` from a plugin settings file.
 Without the [settings snippet](Settings-Snippet), compaction stays on, the full system prompt stays, and the status line, the permission rules, and the sandbox are not set.
 
-The setup skill runs the preview of each change first, and it writes nothing until you say yes.
-The skill runs this command for the scope that you pick:
+The setup skill previews each change first.
+It writes nothing until you say yes.
+The skill runs this command for the scope that you choose:
 
 ```bash
 dotclaude-setup settings --scope user --apply
@@ -65,19 +72,21 @@ dotclaude-setup settings --scope user --apply
 The scopes are `user` (`~/.claude/settings.json`, the default), `project` (`.claude/settings.json`), and `local` (`.claude/settings.local.json`).
 When `CLAUDE_CONFIG_DIR` is set, the command uses that folder in place of `~/.claude`.
 Run `/dotclaude:setup` again after each update of the plugin, because the status line commands hold the path of the plugin version.
-The merge adds the keys and rules of the snippet, and it keeps your other keys, except that it replaces `availableModels`.
-See [Settings snippet](Settings-Snippet) for the keys, and [Settings snippet keys](Settings-Snippet-Keys) for the reason of each key.
+The merge adds the keys and rules of the snippet.
+It keeps your other keys, except `availableModels`, which it replaces.
+See [Settings snippet](Settings-Snippet) for the keys.
+See [Settings snippet keys](Settings-Snippet-Keys) for the reason of each key.
 
 After the settings step, the setup skill checks the tools of each installed add-on.
 The check reads the `codegraph` CLI and its index, `agent-browser`, `npx`, and the Bun version.
 The check reads `npx`, not `bunx`, although the `docs` skill of `dotclaude-docs` runs `ctx7` through `bunx` (see the table above).
-The install of a missing CLI runs only after your yes.
+The setup skill installs a missing CLI only after you say yes.
 The project step `codegraph init -y` runs only with `dotclaude-setup addons --apply`.
 
-## Enable the second opinion
+## Enable the Second Opinion
 
 The `second_opinion` tool is part of the core plugin, so it needs no separate install.
-To use TypeSafe Jev, export the key before Claude Code starts.
+To use TypeSafe Jev, export the key before Claude Code begins.
 
 ```bash
 export TYPESAFE_API_KEY=<your key>
@@ -87,24 +96,31 @@ Each call sends the question, the options, and the state of the decision to the 
 Without a key, or when Jev gives no answer, a small Claude model answers.
 See [Second opinion](Second-Opinion).
 
-## Install the code-graph plugin
+## Install the Code-Graph Plugin
 
-```text
-/plugin install dotclaude-codegraph@dotclaude
-```
+1. Install the plugin.
+
+   ```text
+   /plugin install dotclaude-codegraph@dotclaude
+   ```
+
+2. Install the CLI.
+
+   ```bash
+   npm i -g @colbymchenry/codegraph
+   ```
+
+3. Build the index once in the project.
+
+   ```bash
+   codegraph init -y
+   ```
 
 The plugin works only in a project that has an index.
-Install the CLI, then build the index once in the project.
-
-```bash
-npm i -g @colbymchenry/codegraph
-codegraph init -y
-```
-
 The plugin does not change the telemetry setting of the CLI.
 See [Code graph](Code-Graph).
 
-## Install the browser plugin
+## Install the Browser Plugin
 
 ```text
 /plugin install dotclaude-browser@dotclaude
@@ -114,10 +130,10 @@ The plugin loads the `drive-web-browser` skill.
 It also replaces the built-in `WebSearch` with a search in the headless browser.
 It uses `agent-browser` by default.
 To run `agent-browser` with the CloakBrowser binary on sites with bot detection, set the `backend` option to `cloakbrowser`.
-Run `/plugin configure dotclaude-browser` to set it.
+Run `/plugin configure dotclaude-browser` to set the option.
 See [Browser](Browser).
 
-## Install the other add-ons
+## Install the Other Add-Ons
 
 ```text
 /plugin install dotclaude-docs@dotclaude
@@ -143,7 +159,8 @@ The `docs` skill uses `CONTEXT7_API_KEY` only to raise the quota limit.
    claude plugin update dotclaude@dotclaude
    ```
 
-   For each add-on that you installed, run one more `claude plugin update` line, with the name of the add-on in place of `dotclaude`:
+   For each add-on that you installed, run one more `claude plugin update` command.
+   Replace `dotclaude` with the name of the add-on:
 
    ```bash
    claude plugin update dotclaude-codegraph@dotclaude
@@ -158,7 +175,7 @@ The `docs` skill uses `CONTEXT7_API_KEY` only to raise the quota limit.
 3. Read the new entry in the [CHANGELOG](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md).
 4. Run `/dotclaude:setup` again.
    The status line commands hold the path of the plugin version, so each update needs a new run.
-   The drift check at session start reports the differences that remain.
+   The drift check reports the differences that remain when a session begins.
 
 ## Uninstall
 
@@ -180,13 +197,15 @@ The `docs` skill uses `CONTEXT7_API_KEY` only to raise the quota limit.
    ```
 
 3. Remove the keys of the settings snippet by hand.
-   The setup command has no command that removes them.
-   The `statusLine` and `subagentStatusLine` keys hold the path of the plugin folder, so remove them first.
+   The setup command does not remove them.
+   Remove the `statusLine` and `subagentStatusLine` keys first.
+   These keys hold the path of the plugin folder.
    See [Settings snippet](Settings-Snippet).
 
-## Try an unreleased checkout
+## Try an Unreleased Checkout
 
-Claude Code 2.1.296 has the `--plugin-dir <path>` flag, which loads a plugin folder for one session.
+Claude Code `2.1.296` has the `--plugin-dir <path>` flag.
+The flag loads a plugin folder for one session.
 
 ```bash
 claude --plugin-dir /path/to/dotclaude/plugins/dotclaude
@@ -194,7 +213,7 @@ claude --plugin-dir /path/to/dotclaude/plugins/dotclaude
 
 For a separate config, see [Sandbox](Sandbox).
 
-## Next steps
+## Related Pages
 
 - [Quickstart](Quickstart): see what happens in a first session.
 - [Troubleshooting](Troubleshooting): find the fix for a symptom.

@@ -1,10 +1,11 @@
-# Off switches
+# Off Switches
 
-This page lists each switch that turns off a part of dotclaude or of Claude Code that dotclaude relies on.
+This page tells maintainers and users which switches disable a part of dotclaude or of Claude Code.
+It lists each switch that disables a part of dotclaude or of Claude Code that dotclaude relies on.
 For each switch, it gives the effect and the code that sets or reads it.
 Paths start at `src/plugins/dotclaude/` unless they say otherwise.
 
-There are four ways to turn off a part:
+There are four ways to disable a part:
 
 - A `DOTCLAUDE_` variable.
   The code reads none, so there are none.
@@ -18,16 +19,16 @@ Without `--apply`, the command prints the changes and writes nothing.
 
 The Claude Code facts refer to version `2.1.296`, which is `TESTED_VERSION` in `slices/setup/domain/facts.ts`.
 The key names match `schemas/claude-code-settings.json`.
-An effect that comes from the name of a key, and not from a test, is marked "from the name".
-An effect that comes from the research on 2.1.293 is marked "not re-checked".
+An effect that comes from the name of a key, and not from a test, is marked `from the name`.
+An effect that comes from the research on 2.1.293 is marked `not re-checked`.
 
-## DOTCLAUDE variables
+## DOTCLAUDE Variables
 
 The code reads no `DOTCLAUDE_` variable.
 `DOTCLAUDE_DIR` in `src/kernel/paths.ts` is the name of the `.dotclaude` folder, not an env var.
-So no `DOTCLAUDE_` variable turns off a part of dotclaude.
+So no `DOTCLAUDE_` variable disables a part of dotclaude.
 
-## Env entries of the snippet
+## Env Entries of the Snippet
 
 Claude Code reads each entry in this table.
 dotclaude reads `DISABLE_COMPACT`, which this table lists.
@@ -56,7 +57,7 @@ The reasons for the `trim` entries are in `slices/trim/domain/removed.ts`.
 `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` set to `1` is not an off switch.
 It replaces the built-in system prompt with the prompt of the `prompt` slice, so it has no row here.
 
-## Settings keys of the snippet
+## Settings Keys of the Snippet
 
 Claude Code reads each key in this table.
 The drift check reads each key as described in [Env entries of the snippet](#env-entries-of-the-snippet).
@@ -84,7 +85,7 @@ The drift check reads each key as described in [Env entries of the snippet](#env
 The reasons for the `trim` switches are in `slices/trim/domain/removed.ts`.
 No shipped code imports that list, so the keys above are set in the slice files only.
 
-## Denied tools and agents
+## Denied Tools and Agents
 
 The `permissions.deny` list of `slices/prompt/slice.ts` removes these tools and agents from the model.
 
@@ -100,19 +101,19 @@ The `permissions.deny` list of `slices/prompt/slice.ts` removes these tools and 
 
 The other `permissions.deny` and `permissions.ask` entries are safety rules, not switches.
 
-## Built-in agents
+## Built-In Agents
 
-The snippet turns off the built-in agents `Explore` and `Plan` with `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`.
-It turns off `general-purpose`, `claude-code-guide`, and `statusline-setup` with one `permissions.deny` entry each.
+The snippet disables the built-in agents `Explore` and `Plan` with `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`.
+It disables `general-purpose`, `claude-code-guide`, and `statusline-setup` with one `permissions.deny` entry each.
 The six dotclaude agents take the work of the built-in agents, see [Agents](Agents).
 
-## Computer use
+## Computer Use
 
 The `computer-use` MCP server is opt-in in Claude Code.
 The research on 2.1.293 found that Claude Code starts it only when the project key `enabledMcpServers` holds `computer-use` (not re-checked on 2.1.296).
 The deny entry `mcp__computer-use` is a guard for the case that you enable the server.
 
-## Built-in plugins
+## Built-In Plugins
 
 The snippet sets these entries of `enabledPlugins` to `false`:
 
@@ -127,19 +128,19 @@ The snippet sets these entries of `enabledPlugins` to `false`:
 - `cc-plugin-you-should-know@builtin`
 
 `OFF_PLUGINS` in `slices/setup/domain/facts.ts` holds this list.
-`pluginsOn` in `slices/setup/domain/drift.ts` reports each plugin of the list that the settings still turn on.
-`cc-plugin-plugin-authoring@builtin` is not in the list, so the snippet leaves it on.
+`pluginsOn` in `slices/setup/domain/drift.ts` reports each plugin of the list that the settings still enable.
+`cc-plugin-plugin-authoring@builtin` is not in the list, so the snippet leaves it enabled.
 
-## Add-ons and the core plugin
+## Add-Ons and the Core Plugin
 
-To turn off a dotclaude add-on, disable it with `/plugin`, or set `enabledPlugins` for `<name>@dotclaude` to `false` in user settings.
+To disable a dotclaude add-on, disable it with `/plugin`, or set `enabledPlugins` for `<name>@dotclaude` to `false` in user settings.
 The add-on step of `setup` reads that entry in `installedAddons` (`slices/setup/domain/addons.ts`).
 It skips each add-on whose entry is `false`, so it plans no tools for that add-on.
 Claude Code stops loading the parts of a disabled plugin (Claude Code behavior, not re-checked on 2.1.296).
 
 The core plugin `dotclaude` is not in that list, so the `setup` step reads no entry for it.
 
-## skillOverrides
+## `skillOverrides`
 
 The snippet sets one entry of `skillOverrides`: `plugin-authoring` set to `name-only`.
 It is in `slices/prompt/slice.ts`.
@@ -149,21 +150,21 @@ This is not re-checked on 2.1.296.
 See [Decisions-Settings](Decisions-Settings), decision D5.
 To check the effect, run `/context` in `just sandbox`.
 
-## Managed settings
+## Managed Settings
 
 No code in `src/plugins/dotclaude/` writes a managed settings file.
 Without managed settings, the guard `cc-plugin-sec-default` is not seated, and dotclaude runs at tier `user`.
-An installed mod with a `tool.check` hook can then turn a content deny rule into an allow (research on 2.1.293).
+An installed mod with a `tool.check` hook can then change a content deny rule into an allow (research on 2.1.293).
 A path deny and a whole-tool deny stay enforced.
 See [Decisions-Settings](Decisions-Settings), decision D14.
 
-## Not in the snippet
+## Not in the Snippet
 
 The snippet sets none of the items that might cost quality, and no code reads them.
 The reasons and the eval are in [Decisions-Settings](Decisions-Settings) and [Evals](Evals).
 Set one by hand in your own settings at your own risk.
 
-## Never set
+## Never Set
 
 The snippet never sets these entries.
 The lists are in `tests/support/settings-pin.ts`, as `NEVER_SET_KEYS` and `NEVER_SET_ENV`.
@@ -192,3 +193,8 @@ The tests `tests/dotclaude/settings-pin.test.ts` and `tests/dotclaude/trim/setti
 | `CLAUDE_CODE_SKIP_PLUGIN_MCP_SERVERS` | any | Drops the MCP servers of plugins. |
 | `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` | any | Removes beta features. |
 | `DISABLE_INTERLEAVED_THINKING` | any | Removes thinking between tool calls. |
+
+## Related Pages
+
+Read [Settings schema](Settings-Schema) next.
+It describes the JSON Schema of the settings keys.

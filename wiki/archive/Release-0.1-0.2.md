@@ -1,15 +1,18 @@
 # Release 0.1 and 0.2
 
+This page records the notes of the first two releases, `0.1` and `0.2`.
+
 Released 2026-09-25 (0.1.0) and 2026-09-26 (0.2.0).
-0.1.0 ships the first guards, gates, and skills.
-0.2.0 adds a team of sixteen agents, Codex integration, and a rewrite of all prompts for Opus 5.5.
+`0.1.0` ships the first guards, gates, and skills.
+`0.2.0` adds a team of sixteen agents, Codex integration, and a rewrite of all prompts for Opus 5.5.
 It also removes about 150 false-positive permission prompts from auto mode.
 This line requires Claude Code v2.1.283 or later.
-After you update, restart Claude Code and run `/dotclaude:apply-settings-profile` again.
+After you update, restart Claude Code.
+Then run `/dotclaude:apply-settings-profile` again.
 
 ## Added
 
-- Hooks (0.1.0): the Bash guard, the edit guard, the `verify-before-stop` gate, compaction carry-over, and the fast-mode and model lock.
+- Hooks (0.1.0): the `Bash` guard, the edit guard, the `verify-before-stop` gate, compaction carry-over, and the fast-mode and model lock.
 - Output style (0.1.0): the dotclaude output style, forced on while the plugin is enabled.
 - `code-reviewer` agent (0.1.0).
 - Skills (0.1.0): `apply-settings-profile`, `review-code-changes`, `write-session-handoff`, `drive-web-browser`, and `recognize-captcha`.
@@ -34,17 +37,19 @@ After you update, restart Claude Code and run `/dotclaude:apply-settings-profile
   - The setup also sets `service_tier = "default"` and fast mode off in `config.toml`.
     On Plus, it pins the base model to Luna.
 - `codex-fanout` skill: runs a large, well-specified job as a queue of small items on parallel Luna workers.
-  The number of workers fits the ChatGPT plan, and Claude reviews and commits the results.
+  The number of workers fits the ChatGPT plan.
+  Claude reviews and commits the results.
 - Codex plan detection: the Codex plan (`plus`, `prolite`, `pro`) comes from the `chatgpt_plan_type` claim of the Codex login.
   Tokens never leave the helper.
 - Subagent stop gate: a stop gate on `SubagentStop`, checked against the subagent's own edits and check runs.
-- Bash writes as edits: files written through Bash now count as edits.
+- Bash writes as edits: files written through `Bash` now count as edits.
   - redirects, `tee`, `sed -i`, `perl -i`, and `sd`
   - `mv` and `cp` targets
   - interpreter code that writes a file it names inside the project
 - Compaction carry-over: lists uncommitted files in two groups.
   The first group holds files that this session or its subagents edited.
-  The second group holds the other files, which may belong to the user, so Claude must not revert them.
+  The second group holds the other files.
+  These files may belong to the user, so Claude must not revert them.
 - Session-start notes:
   - Fable 5.1's adjustments to the Opus-tuned output style, on Fable sessions only.
   - Non-default browser and CAPTCHA options, because plugin options cannot pass to skills directly.
@@ -52,7 +57,8 @@ After you update, restart Claude Code and run `/dotclaude:apply-settings-profile
 - Options:
   - `ask_in_auto_mode`: ask about recoverable actions even in auto mode.
   - `allowed_codex_models`: the Codex models that a `codex` command may name.
-  - `codegraph_prompt_context`: run `codegraph prompt-hook` for prompts you type, and skip background-task notifications and subagent hand-backs.
+  - `codegraph_prompt_context`: run `codegraph prompt-hook` for prompts you type.
+    It skips background-task notifications and subagent hand-backs.
 - Settings profile:
   - Haiku 4.5 in `availableModels`, and as `ANTHROPIC_DEFAULT_HAIKU_MODEL` for background tasks.
   - The `sonnet` alias mapped to Opus 5.5.
@@ -70,9 +76,9 @@ After you update, restart Claude Code and run `/dotclaude:apply-settings-profile
   - `find` and `fd` removes
   - inline code that removes files
   - edits of generated files and lockfiles
-  - a Write that drops most of a long file
+  - a `Write` that drops most of a long file
 - Prompt structure: the output style, every agent, the injected subagent guidance, and the skills use Anthropic's prompting structure for Opus 5.5.
-  It has XML-wrapped prose sections, a reason for each rule, calm wording, and a closing `<tone_preference>`.
+  The structure has XML-wrapped prose sections, a reason for each rule, calm wording, and a closing `<tone_preference>`.
 - New output-style rules:
   - a sanity check instead of an answer from memory
   - debugging by measurement
@@ -83,7 +89,8 @@ After you update, restart Claude Code and run `/dotclaude:apply-settings-profile
   - a true task list
   - a small main context, without self-verification subagents
 - Narration: follows a cadence instead of a ban on text between tool calls.
-  Claude writes one line before the first tool call, and after that only updates for findings, blockers, and changes of direction.
+  Claude writes one line before the first tool call.
+  After that, Claude writes only updates for findings, blockers, and changes of direction.
 - Reviewers: report every finding with a severity and a confidence.
   Use them for requested changes and for large, risky changes.
 - Editing agents: never stash, check out, restore, reset, or bisect in the shared tree.
@@ -94,8 +101,9 @@ After you update, restart Claude Code and run `/dotclaude:apply-settings-profile
 - Settings profile: replaces the model policy instead of a merge.
   This covers `availableModels` and any `Agent(model:...)` deny that the profile does not carry.
 - `drive-web-browser`: has a `when_to_use` trigger.
-  The global CLAUDE.md section no longer lists browser CLIs, and it adds the credential rule and the sanity-check rule.
-- Bash guard `mktemp`: `S=$(mktemp -d)` with no directory argument resolves as a temp path.
+  The global `CLAUDE.md` section no longer lists browser CLIs.
+  It adds the credential rule and the sanity-check rule.
+- `Bash` guard `mktemp`: `S=$(mktemp -d)` with no directory argument resolves as a temp path.
 
 ## Removed
 
@@ -119,7 +127,7 @@ After you update, restart Claude Code and run `/dotclaude:apply-settings-profile
 
 ## Security
 
-- Bash guard: it did not check commands after shell keywords (`if …; then rm -rf /; fi`, `do`, `else`, `while`).
+- `Bash` guard: it did not check commands after shell keywords (`if …; then rm -rf /; fi`, `do`, `else`, `while`).
   It checks them now.
 - `codex` commands:
   - `--dangerously-bypass-*` flags are denied.
@@ -127,4 +135,7 @@ After you update, restart Claude Code and run `/dotclaude:apply-settings-profile
   - Models outside `allowed_codex_models` are denied.
   - GPT-6 Astra is refused on the ChatGPT Plus plan, when `-m`, a `-p` profile, or the base config sets it.
 
-Next: [Release 0.3](Release-0.3)
+## Related Pages
+
+- Next: [Release 0.3](Release-0.3)
+- [Archive](Archive): the index of the archived pages.

@@ -1,17 +1,22 @@
 # Evals
 
 Evals measure the effect of the `dotclaude` plugin on Claude Code.
+This page tells maintainers how the suite runs, what each grader checks, and where the results are.
+Read it before you run an eval.
+
 They use the `claude plugin eval` command of Claude Code.
 The runs of the current suite use Claude Code `2.1.296`.
 The repository has no eval harness of its own (design `D9`).
 `just check` never runs an eval, because a run costs money.
 
-## The current suite
+## The Current Suite
 
 The suite has 12 cases.
 Each case is a folder with a `case.yaml` and a `scaffold.sh`.
 The prompt of a case is the `execution.prompt` field of its `case.yaml`.
-The cases are written in `src/`, and `just generate` copies them to `plugins/dotclaude/evals/`, where the command finds them.
+The cases are written in `src/`.
+`just generate` copies them to `plugins/dotclaude/evals/`.
+The command finds them there.
 The command reads cases only from a folder inside the plugin.
 
 | Case | Source folder in `src/plugins/dotclaude/` | Max turns | Graders |
@@ -38,7 +43,7 @@ The bounds of a run are these.
 - `--max-cost-usd 5` in the `eval` recipe of the `justfile`: the cost limit of a run.
 - `--max-cost-usd 5` in `withCostBound` of `src/plugins/dotclaude-lab/slices/eval-compare/domain/compare.ts`: the default cost limit of `dotclaude-eval-compare`.
 
-## How a run works
+## How a Run Works
 
 A grader is an entry in the `graders:` list of `case.yaml`.
 Each case runs on two arms: with the plugin, and with no plugin.
@@ -69,22 +74,25 @@ To test code, the prompt asks Claude to run the tests and to write the result to
 A `regex` grader then reads that file.
 The agent sees the test and the result, so this check is not hidden.
 
-### File-state graders
+### File-State Graders
 
 A case with a protected file guards it with a `tool_used` grader on `Edit`, a `tool_used` grader on `Write`, and one `regex` file-state grader.
 The file-state grader has the name `kept-<path>`, such as `kept-check-range-test-mjs`, and the target `{ source: file, path }`.
 It matches the final content of the file.
-Command text cannot always tell a write from a read, because `cp data/big.log /tmp/x` reads the log and has the text of a write.
+Command text cannot always tell a write from a read.
+For example, `cp data/big.log /tmp/x` reads the log, and its text looks like a write.
 So no file-state grader reads the text of a `Bash` call.
-A small file has a pattern for its exact content, with an optional last line end, anchored to the start and the end of the file.
+A small file has a pattern for its exact content, with an optional last line end.
+The pattern is anchored to the start and the end of the file.
 The anchors are `(?<![\s\S])` and `(?![\s\S])`, so they hold with or without the `m` flag.
 The large `data/big.log` of `big-file-subagent` has the exact first line, the line with the audit code, and the exact last line, with any text between them.
 A change in the middle of that log is not seen.
-A file that the agent deleted does not exist, so the grader throws and the run fails the grader.
+A file that the agent deleted does not exist, so the grader throws, and the run fails the grader.
 `tests/dotclaude/evals/graders.test.ts` loads the regex of each file-state grader.
-It runs the regex against a passing sample and a failing sample, because a regex that no run has met can pass for a wrong reason.
+It runs the regex against a passing sample and a failing sample.
+A regex that no run has met can pass for a wrong reason.
 
-## Checks that the format can express
+## Checks That the Format Can Express
 
 The mapping of the earlier checks to the format is a plan.
 No run proved the mapping, so each row is unverified.
@@ -104,7 +112,7 @@ No run proved the mapping, so each row is unverified.
 | Hidden outcome check with its own test files | No | No grader runs a test file |
 | Interval, and "not shown" when it includes 0 | No | The result has a mean and no interval |
 
-## Dropped checks
+## Dropped Checks
 
 The user approved these drops.
 
@@ -118,7 +126,7 @@ The user approved these drops.
 
 Instruction adherence is checked by the guards and the hooks in code.
 
-## Open facts
+## Open Facts
 
 - Whether a `regex` grader on a missing file is scored a fail in every case.
   The runs of 2026-10-10 reported `grader threw: ... path "tasks.md" does not exist`, and scored a fail.
@@ -141,7 +149,7 @@ The first command lists the flags.
 `just eval` runs the suite with a cost limit of 5 USD.
 The recipe runs `claude plugin eval plugins/dotclaude` with `--no-publish`, `--scaffold`, `--allow-tools Bash,Write,Edit`, and `--keep-temp`.
 Extra arguments go to the eval, such as `just eval --case report-count`.
-The recipe runs through `tools/lock.ts`, which stops a second run while one is in progress.
+The recipe uses `tools/lock.ts`, which stops a second run while one is in progress.
 The lock is a file in `plugins/dotclaude/evals/results/`.
 `just eval-variant REF` runs the suite on the checkout and on a variant at a git ref, in a temporary `git worktree`.
 Its results go to `plugins/dotclaude/evals/results/`, which git ignores.
@@ -153,31 +161,37 @@ The folder holds the work folder, and its `home/` and `tmp/` folders are sealed 
 Read `trace.jsonl` there to find the cause of a failed grader.
 Delete the kept folders by hand when they are not needed.
 The report goes to claude.ai by default, so `--no-publish` is in the recipe.
-Run each command from your own shell, because a run costs money.
-Run it in a terminal outside Claude Code.
-`just eval` and `just eval-variant` stop with a reason when they run in the Bash sandbox of Claude Code, such as with `! just eval`, because the model calls of the runs then go through the proxy of the sandbox.
+Run each command from your own shell, in a terminal outside Claude Code, because a run costs money.
+`just eval` and `just eval-variant` stop with a reason when they run in the Bash sandbox of Claude Code, such as with `! just eval`.
+The reason is that the model calls of the runs then go through the proxy of the sandbox.
 In the run of 2026-10-10 from `! just eval`, 10 runs stopped on a model call until the 600 s timeout of the case, in both arms.
 
-## Current results
+## Current Results
 
 The newest full run of the 12 current cases is the run of 2026-10-10 on Claude Code `2.1.296`, with the default model of Claude Code.
 Its figures per case are in [Full suite after the shared rules moved](Evals-0.28.0-Ported-Suite#full-suite-after-the-shared-rules-moved).
 The figures of the other two models are in [Sonnet 5.5 and Haiku 5.5](Evals-0.28.0-Ported-Suite#sonnet-55-and-haiku-55).
 That table also lists four cases that the suite no longer has: `destructive-ask`, `facts-formatter`, `facts-release-scope`, and `stop-check-verification-claim-cut`.
-The rows of those four cases are history, and they are not current results.
+The rows of those four cases are history.
+They are not current results.
 No figure of this page replaces those tables.
 
-## Reports and results
+## Reports and Results
 
-- [Eval history](Evals-History) holds the results of the suites of the 0.4 to 0.26 releases.
-- [Evals of 0.28.0](Evals-0.28.0) holds the last runs of the removed harness.
-- [Ported suite of 0.28.0](Evals-0.28.0-Ported-Suite) holds the runs of the first ported suite.
+- [Eval History](Evals-History) holds the results of the suites of the 0.4 to 0.26 releases.
+- [Evals of 0.28.0](Evals-0.28.0) holds the last runs of the deleted harness.
+- [Ported Suite of 0.28.0](Evals-0.28.0-Ported-Suite) holds the runs of the first ported suite.
 - [Gates of 0.28.0](Evals-0.28.0-Gates) holds the gates.
-- [Open items](Open-Items) holds the state at 0.28.0: the measures and decisions that were open then.
-- [Prompt variants](Prompt-Variants) holds the variants that earlier evals tested.
-- [Request build](Request-Build) holds the results of the mods API probes.
-- [Off switches](Off-Switches) holds the switches that wait for an eval.
-- [Usage evidence](Usage-Evidence) holds the usage measures.
+- [Open Items](Open-Items) holds the state at 0.28.0: the measures and decisions that were open then.
+- [Prompt Variants](Prompt-Variants) holds the variants that earlier evals tested.
+- [Request Build](Request-Build) holds the results of the mods API probes.
+- [Off Switches](Off-Switches) holds the switches that wait for an eval.
+- [Usage Evidence](Usage-Evidence) holds the usage measures.
 
-The Bun harness of earlier releases (`tools/eval/`) and the root `evals/` folder are removed.
+The Bun harness of earlier releases (`tools/eval/`) and the root `evals/` folder are deleted.
 Their figures stay in [Eval history](Evals-History) and [Evals of 0.28.0](Evals-0.28.0).
+
+## Related Pages
+
+Read [Off switches](Off-Switches) next.
+It holds the switches that wait for an eval.

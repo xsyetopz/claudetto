@@ -1,17 +1,19 @@
-# Settings snippet keys
+# Settings Snippet Keys
 
-This page gives each key and `env` entry of the [Settings snippet](Settings-Snippet).
+This page tells maintainers why each key of the snippet is set.
+It gives each key and `env` entry of the [Settings snippet](Settings-Snippet).
 Each row gives the value, what the key does in Claude Code, and why dotclaude sets it.
 The snippet sets a key only when the Claude Code default does not give the result that dotclaude needs.
 
 The snippet merges the `settings` entries of the slices in `src/plugins/dotclaude/slices/`.
 The `prompt` slice sets most keys and the `env` entries.
-The `trim` slice sets the `env` entries that turn off the built-in parts, and the keys `autoMemoryEnabled` to `syncClaudeAiPlugins`.
+The `trim` slice sets the `env` entries that disable the built-in parts, and the keys `autoMemoryEnabled` to `syncClaudeAiPlugins`.
 The `statusline` slice sets `statusLine` and `subagentStatusLine`.
 The `styles` slice sets `outputStyle`.
-A test checks the keys of the snippet against `schemas/claude-code-settings.json`, so a key that the schema lacks fails the test.
+A test checks the keys of the snippet against `schemas/claude-code-settings.json`.
+So a key that the schema lacks fails the test.
 
-## Environment entries
+## Environment Entries
 
 | Entry | Value | What it does in Claude Code | Why dotclaude sets it |
 | --- | --- | --- | --- |
@@ -32,7 +34,7 @@ A test checks the keys of the snippet against `schemas/claude-code-settings.json
 | `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` | `1` | Uses the short system prompt. Default: the long prompt. | The `dotclaude:Concise` style carries the tone and the format, and the hooks module puts the working rules in the system prompt. |
 | `CLAUDE_CODE_SUBAGENT_MODEL` | `claude-sonnet-5-5` | Sets the model of a subagent that has no model of its own. Default: the main model. | A subagent with no model of its own runs on Sonnet 5.5. |
 | `CLAUDE_CODE_TODO_REMINDER_MODE` | `off` | Default: a recurring reminder about the task list. | No recurring reminder. |
-| `DISABLE_COMPACT` | `1` | Turns off compaction and `/compact`. Default: compaction is on. | No compaction. |
+| `DISABLE_COMPACT` | `1` | Disables compaction and `/compact`. Default: compaction is on. | No compaction. |
 | `DISABLE_ERROR_REPORTING` | `1` | Default: error reports are sent. | No error reports. |
 | `DISABLE_FEEDBACK_COMMAND` | `1` | Removes the `/feedback` command. Default: the command is there. | No `/feedback` command. |
 
@@ -41,7 +43,7 @@ The first two defeat the `model` and `effort` of the agent files ([Decisions: ro
 The third overrides the `subagentPromptCacheTtl` setting, which the snippet does not set either.
 See [Off switches](Off-Switches#not-in-the-snippet).
 
-## Settings keys
+## Settings Keys
 
 | Key | Value | What it does in Claude Code | Why dotclaude sets it |
 | --- | --- | --- | --- |
@@ -51,28 +53,28 @@ See [Off switches](Off-Switches#not-in-the-snippet).
 | `availableModels` | Fable 5.1, Opus 5.5, Sonnet 5.5, and Haiku 5.5 | Lists the models that the user can select. Default: all models. | `claude-haiku-4-5` is not in the roster. For a CVP account see [the CVP procedure](#cvp-procedure). |
 | `enforceAvailableModels` | `true` | When `true`, `Default` resolves to a model of `availableModels`. | `Default` stays on a model of the list. |
 | `maxEffortLevel` | `max` | Sets the highest effort level, and anything above it is clamped. Default: unset. | No cap in practice. Each model keeps its effort, and dotclaude never rewrites it. |
-| `enableArtifact` | `false` | Turns the Artifact tool off. Project and local settings can only turn it off. Default: on when the feature is available. | Removes the Artifact tool from each request. |
-| `enableWorkflows` | `false` | Turns the Workflows feature off. Default: by plan. | Removes the Workflow tool from each request. |
+| `enableArtifact` | `false` | Disables the Artifact tool. Project and local settings can only disable it. Default: on when the feature is available. | Removes the Artifact tool from each request. |
+| `enableWorkflows` | `false` | Disables the Workflows feature. Default: by plan. | Removes the Workflow tool from each request. |
 | `promptCacheTtl` | `5m` | Sets the cache lifetime of the main conversation. Default: automatic, 1 hour on a subscription within its limits. | The lifetime is the same on each account. |
 | `disableBundledSkills` | `true` | Removes the bundled skills and workflows. Built-in slash commands stay typable. Default: the skills are on. | Removes the bundled skills from the listing. |
 | `statusLine` | `type` `command`, the command `bun --no-env-file "<plugin folder>/bin/dotclaude-statusline"`, `padding` `0`, `refreshInterval` `1`, and `hideVimModeIndicator` `true` | Sets the status line command, and hides the built-in vim mode indicator. Default: unset. | The three-column status line. `refreshInterval` keeps the countdowns and the blinking glyph current in an idle session. The line shows `vim.mode`, so the built-in indicator would repeat it. See [Status line](Status-Line). |
 | `subagentStatusLine` | The command `bun --no-env-file "<plugin folder>/bin/dotclaude-statusline" --subagent` | Sets the status line of each subagent. Default: the default rows. | One row for each running subagent. |
-| `autoCompactEnabled` | `false` | Turns automatic compaction off. Default: on. | No automatic compaction. |
+| `autoCompactEnabled` | `false` | Disables automatic compaction. Default: on. | No automatic compaction. |
 | `autoMemoryEnabled` | `false` | Stops the auto-memory directory of the project from being read or written. Default: on. | No auto memory. |
-| `includeGitInstructions` | `false` | Leaves the built-in commit and PR workflow text out of the system prompt. Default: included. | The git text adds tokens to each request, and `attribution` gives the commit line. |
-| `promptSuggestionEnabled` | `false` | Turns off prompt suggestions. Default: on. | No background request for suggestions. |
-| `awaySummaryEnabled` | `false` | Turns off the session recap that shows after 5 minutes away. Default: on. | No background request for a recap. |
+| `includeGitInstructions` | `false` | Excludes the built-in commit and PR workflow text from the system prompt. Default: included. | The git text adds tokens to each request, and `attribution` gives the commit line. |
+| `promptSuggestionEnabled` | `false` | Disables prompt suggestions. Default: on. | No background request for suggestions. |
+| `awaySummaryEnabled` | `false` | Disables the session recap that shows after 5 minutes away. Default: on. | No background request for a recap. |
 | `bashOutputMaxChars` | `4000` | Sets how many characters of a successful `Bash` output go inline. Output past this goes to a file. Default: `30000`, and values clamp to 4000 to 128000. | The lowest value. The bound `BASH_OUTPUT_MAX_CHARS` in `src/kernel/budget.ts` holds the same value. |
 | `spinnerTipsEnabled` | `false` | Hides the tips in the spinner. Default: shown. | No tips. |
 | `feedbackSurveyRate` | `0` | Sets the chance that the quality survey shows, from 0 to 1. Default: unset. | No quality survey. |
-| `feedbackDrafts` | `off` | Turns off the `SendFeedback` tool. Default: `notify`. | Removes the tool. |
-| `fastMode` | `false` | Turns fast mode off. Default: off. | Fast mode stays off, with the env entry `CLAUDE_CODE_DISABLE_FAST_MODE`. |
-| `disableAgentView` | `true` | Turns off the agent view, `claude agents`, `--bg`, and the background daemon. Default: `false`. | No agent view and no background daemon. |
-| `disableRemoteControl` | `true` | Turns off Remote Control. Default: `false`. | No Remote Control. |
+| `feedbackDrafts` | `off` | Disables the `SendFeedback` tool. Default: `notify`. | Removes the tool. |
+| `fastMode` | `false` | Disables fast mode. Default: off. | Fast mode stays off, with the env entry `CLAUDE_CODE_DISABLE_FAST_MODE`. |
+| `disableAgentView` | `true` | Disables the agent view, `claude agents`, `--bg`, and the background daemon. Default: `false`. | No agent view and no background daemon. |
+| `disableRemoteControl` | `true` | Disables Remote Control. Default: `false`. | No Remote Control. |
 | `syncClaudeAiSkills` | `false` | Stops the sync of the skills that you enable on claude.ai. Read in user or managed settings only. Default: on when the account has synced skills. | No `anthropic-skills:*` skill. |
 | `syncClaudeAiPlugins` | `false` | Stops the sync of the plugins that you enable on claude.ai. Read in user or managed settings only. Default: on. | No plugin sync from claude.ai. |
 | `disableClaudeAiConnectors` | `true` | Stops the claude.ai MCP connectors from being fetched. A `true` in any settings source wins. Default: `false`. | No claude.ai connector server. |
-| `enabledPlugins` | Nine built-in plugins set to `false` | Turns on or off each plugin, by its `plugin-id@marketplace-id`. Default: each plugin on by its own default. | See [Off switches](Off-Switches). |
+| `enabledPlugins` | Nine built-in plugins set to `false` | Enables or disables each plugin, by its `plugin-id@marketplace-id`. Default: each plugin on by its own default. | See [Off switches](Off-Switches). |
 | `skillOverrides` | `plugin-authoring` set to `name-only` | Asks Claude Code to list the skill by name only, not re-checked on `2.1.296` ([Off switches](Off-Switches#skilloverrides)). Default: unset. | A shorter listing line for `plugin-authoring`. |
 | `attribution` | The commit and PR lines | Sets the attribution text of commits and PRs. Default: the Claude Code lines. | The attribution that the commit and PR text carries. |
 | `sandbox` | On, a retry outside the sandbox allowed, a list of allowed domains | Limits the files and the network of `Bash`. Default: off. | The sandbox limits `Bash`. `git fetch`, `git pull`, `git push`, and `gh` run outside it, and they still go through the permission flow. |
@@ -91,9 +93,10 @@ The `deny` list of the snippet holds these groups.
 | `ScheduleWakeup` | Removes the tool. It has no setting ([Prompt surface](Prompt-Surface)). |
 | `ReportFindings` | Removes the tool. `/code-review` gives its findings as text without it ([Prompt surface](Prompt-Surface)). |
 
-The status line entries need the absolute path of the plugin folder, because a status line command gets no `${CLAUDE_PLUGIN_ROOT}`.
+The status line entries need the absolute path of the plugin folder.
+A status line command receives no `${CLAUDE_PLUGIN_ROOT}`.
 
-## Auto mode lists
+## Auto Mode Lists
 
 The snippet does not hold the `autoMode` lists.
 Setup writes them to the user settings, because Claude Code reads `autoMode` only from there.
@@ -106,7 +109,7 @@ Setup writes them to the user settings, because Claude Code reads `autoMode` onl
 Each list starts with `$defaults`, which takes the built-in list of Claude Code.
 The rules are in [The destructive floor](Guards#the-destructive-floor).
 
-## Keys that the snippet does not set
+## Keys That the Snippet Does Not Set
 
 - `cleanupPeriodDays`: see [Retention](#retention).
 - `enableAllProjectMcpServers`: the value `false` equals the default.
@@ -114,18 +117,20 @@ The rules are in [The destructive floor](Guards#the-destructive-floor).
 - The keys of the never-set list and the items without a gate: see [Off switches](Off-Switches).
 - `managed-settings.json`: dotclaude writes no managed file, see [Off switches](Off-Switches#managed-settings).
 
-## Mythos detection
+## Mythos Detection
 
 Setup puts `claude-mythos-5-1` in place of `claude-fable-5-1` in `availableModels` when the model catalog of your account offers it.
 Claude Code 2.1.296 caches the catalog that the API serves to the account in `<config dir>/cache/model-catalog/<organizationUuid>-<hash>-<surface>.json`.
 The organization comes from `oauthAccount.organizationUuid` in `.claude.json`.
-The bundle of 2.1.296 has its own check for a Mythos row of the catalog, which is not `disabled` and not in the `deprecated` section, and setup makes the same test.
+The bundle of 2.1.296 has its own check for a Mythos row of the catalog.
+The row is not `disabled`, and it is not in the `deprecated` section.
+Setup makes the same test.
 This was found by reading the bundle, and no doc covers this file.
 A missing file, another shape, or a new release that moves the file gives no Mythos, and setup keeps Fable.
 A list that already holds `claude-mythos-5-1` keeps it.
 This read needs no model call, so it replaces the probe below for setup.
 
-## CVP procedure
+## CVP Procedure
 
 An account in the Cyber Verification Program (CVP) can call `claude-mythos-5-1` in place of `claude-fable-5-1`.
 An answer alone grants nothing, so a probe call must show that Mythos 5.1 serves the account.
@@ -159,11 +164,12 @@ To keep none, start Claude Code with `--no-session-persistence`.
 ### Issue 41458
 
 Issue #41458 of Claude Code reports that a large `cleanupPeriodDays` value was not honored.
-So a transcript can be deleted although the setting asks for a long retention.
+So Claude Code can remove a transcript although the setting asks for a long retention.
 Copy each transcript that you need from `~/.claude/projects/` to a safe place.
-dotclaude does not delete a transcript, and does not copy one.
+dotclaude does not remove a transcript.
+It does not copy one either.
 
-## Related pages
+## Related Pages
 
-- [Settings snippet](Settings-Snippet)
-- [Off switches](Off-Switches)
+- [Settings Snippet](Settings-Snippet)
+- [Off Switches](Off-Switches)
