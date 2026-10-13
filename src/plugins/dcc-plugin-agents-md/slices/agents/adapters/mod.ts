@@ -126,10 +126,21 @@ export const onContext: Handler<"prompt.context"> = async ($, e, next) => {
   };
 };
 
-/** The `AGENTS` files of the folders below the working directory that hold `path`, with the files that they import. */
+/** The session root, which bounds the nested walk. A failed read gives none, so no nested file loads. */
+const rootOf = async ($: EngineInterface): Promise<string | undefined> => {
+  try {
+    return await $.session.root();
+  } catch {
+    return undefined;
+  }
+};
+
+/** The `AGENTS` files of the folders below the session root that hold `path`, with the files that they import. */
 const nestedFiles = async ($: EngineInterface, path: string): Promise<Loaded[]> => {
+  const below = await rootOf($);
+  if (below === undefined) return [];
   const rules = await readRules($);
-  const found = await walk($, { names: [...AGENTS_NAMES], of: path, below: "." });
+  const found = await walk($, { names: [...AGENTS_NAMES], of: path, below });
   const kept = found.filter((file) => !isExcluded(file.path, rules.excludes));
   const root = seenOf(await $.store.get(ROOT_KEY));
   const nested = seenOf(await $.store.get(NESTED_KEY));
@@ -155,8 +166,22 @@ const pathsOf = (
   return typeof e.file_path === "string" ? [e.file_path] : [];
 };
 
+/**
+ * The `next` of a `tool.call` hook with a filter. A method signature makes its parameter bivariant, because the generated `register`
+ * gives `next` the narrow type of the filter and does not narrow the handler type.
+ */
+type PassOn = {
+  pass(
+    e: Parameters<Parameters<Handler<"tool.call">>[2]>[0],
+  ): ReturnType<Parameters<Handler<"tool.call">>[2]>;
+}["pass"];
+
 /** The `tool.call` hook: a call on a file in a nested folder adds the `AGENTS` files of that folder to the result. */
-export const onToolCall: Handler<"tool.call"> = async ($, e, next) => {
+export const onToolCall = async (
+  $: EngineInterface,
+  e: Parameters<Handler<"tool.call">>[1],
+  next: PassOn,
+) => {
   const out = await next(e);
   if (out.deny !== undefined) return out;
   const texts = await contextFor($, pathsOf(e));
