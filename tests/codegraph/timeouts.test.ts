@@ -2,12 +2,12 @@
 // On Windows the sync also waits for the grace of `run-tree.ts`, so that total is the one that must fit.
 
 import { expect, test } from "bun:test";
-import { slice } from "../../plugins/dotclaude-codegraph/slices/graph/slice.ts";
 import {
   SESSION_START_HOOK_TIMEOUT_S,
   START_SYNC_TIMEOUT_MS,
   TREE_GRACE_MS,
 } from "../../plugins/dotclaude-codegraph/slices/graph/limits.ts";
+import { slice } from "../../plugins/dotclaude-codegraph/slices/graph/slice.ts";
 
 const SAFETY_MS = 1000;
 

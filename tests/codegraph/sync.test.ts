@@ -58,7 +58,7 @@ test("a git command with global options before its verb fits the filter", () => 
     "git -c user.name=x pull --ff-only",
     "git --git-dir=/p/.git --work-tree=/p commit -m x",
     "git --no-pager -C 'my dir' merge main",
-    "git -c user.name=\"A B\" rebase main",
+    'git -c user.name="A B" rebase main',
   ])
     expect(TREE_CHANGE.test(command), command).toBe(true);
 });
