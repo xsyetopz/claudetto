@@ -49,6 +49,7 @@ The `archive` command creates it when the first change is archived.
 The id of a change is the name of its folder.
 It uses letters, digits, `.`, `_`, and `-`.
 It is not `archive`.
+`archive <id>` rejects an id that does not follow this rule, and it changes nothing.
 
 ## Task and Delta Files
 
@@ -62,6 +63,8 @@ A `RENAMED` section has `FROM:` and `TO:` lines.
 Each requirement is a heading `### Requirement: <name>`, with one sentence that has `SHALL`.
 Each requirement has one or more scenarios, as `#### Scenario: <name>`.
 Each scenario has a `WHEN` line and a `THEN` line.
+An `AND` line after a `WHEN` or a `THEN` line belongs to that scenario.
+The spec store keeps each `AND` line as you write it, with its text and its indentation.
 `validate` fails on a requirement without `SHALL`.
 It also fails on a scenario without `WHEN` or `THEN`.
 
@@ -101,6 +104,7 @@ Each next line is one lane change, such as `{"at":"<time>","package":"P01","lane
 The lanes are `planned`, `doing`, `review`, `done`, and `blocked`.
 The lane of a package is the lane on its last line.
 A package with a file in `packages/` and no line is `planned`.
+`validate` fails on a line for a package with no file in `packages/`, with the rule `plan.event-no-package`.
 
 The reader stops with an error that names the file when the `schema` is not `1`.
 The number is `SPEC_SCHEMA` in `src/kernel/spec-store.ts`.
@@ -109,6 +113,8 @@ Three parts move a lane:
 
 - The `lane` command adds a line, and it sets the checkbox in `packages.md`.
   It refuses in a linked git worktree, with exit status `1`.
+  It also refuses a move out of `done`, and a move to the lane that the package has.
+  A refused move exits with status `1`, and it adds no line.
 - The mod handler on `agent.spawn` in the `spec` slice moves a package to `doing`.
   It does this when `/ship` starts its `implementer`.
 - The mod handler on `turn.complete` in the same slice moves a package to `review`.
