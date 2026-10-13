@@ -223,6 +223,21 @@ test("a settings file that is not valid JSON exits 1 and stays the same", async 
   expect(await Bun.file(userFile(d)).text()).toBe("{ not json");
 });
 
+test("a settings file with a byte order mark keeps its keys", async () => {
+  const d = sandbox();
+  await Bun.write(userFile(d), `﻿${JSON.stringify({ theme: "dark" })}`);
+  expect(run(d, ["--apply"]).status).toBe(0);
+  expect((await readUser(d)).theme).toBe("dark");
+});
+
+test("a settings file with a comment exits 1 and stays the same", async () => {
+  const d = sandbox();
+  const text = `{\n  // kept by the user\n  "theme": "dark"\n}\n`;
+  await Bun.write(userFile(d), text);
+  expect(run(d, ["--apply"]).status).toBe(1);
+  expect(await Bun.file(userFile(d)).text()).toBe(text);
+});
+
 test("a scalar of the snippet replaces the value of the user, and the change line names the key", () => {
   const { settings, changes } = mergeSettings(
     { model: "claude-sonnet-5-5" },
@@ -348,4 +363,41 @@ test("project and local settings get no `autoMode`", async () => {
     path.join(d.project, ".claude/settings.local.json"),
   ])
     expect((await Bun.file(file).json()).autoMode).toBeUndefined();
+});
+
+test("`--apply` replaces `settings.json` as a whole file, so a hard link to the old file keeps the old text", async () => {
+  const d = sandbox();
+  const old = JSON.stringify({ theme: "dark" });
+  await Bun.write(userFile(d), old);
+  const kept = path.join(d.config, "kept.json");
+  fs.linkSync(userFile(d), kept);
+  expect(run(d, ["--apply"]).status).toBe(0);
+  expect(await Bun.file(kept).text()).toBe(old);
+  expect((await readUser(d)).env.DISABLE_COMPACT).toBe("1");
+});
+
+test("`--apply` leaves no temp file next to `settings.json`", () => {
+  const d = sandbox();
+  expect(run(d, ["--apply"]).status).toBe(0);
+  expect(fs.readdirSync(d.config)).toStrictEqual(["settings.json"]);
+});
+
+for (const text of ["[]", "null"])
+  test(`a settings file whose top level is \`${text}\` exits 1 and stays the same`, async () => {
+    const d = sandbox();
+    await Bun.write(userFile(d), text);
+    expect(run(d, ["--apply"]).status).toBe(1);
+    expect(await Bun.file(userFile(d)).text()).toBe(text);
+  });
+
+test("a catalog entry that is a dangling link does not stop setup", async () => {
+  const d = sandbox();
+  await catalog(d, []);
+  const dir = path.join(d.config, "cache/model-catalog");
+  fs.symlinkSync(
+    path.join(d.config, "missing"),
+    path.join(dir, `${ORG}-gone.json`),
+  );
+  expect(run(d, ["--apply"]).status).toBe(0);
+  expect(await hasMythos(d)).toBe(false);
 });

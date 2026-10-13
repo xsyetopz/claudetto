@@ -186,3 +186,20 @@ test("the status output and its token are not printed", async () => {
   expect(r.status).toBe(0);
   expect(r.stdout + r.stderr).not.toContain("sk-test");
 });
+
+// Output that is not one JSON object gives the no-login account, and setup still runs.
+const UNREADABLE_STATUS: [string, string][] = [
+  ["empty", ""],
+  ["torn", '{"loggedIn": tr'],
+  ["an array", "[1, 2]"],
+  ["null", "null"],
+  ["a number", "5"],
+];
+
+for (const [name, text] of UNREADABLE_STATUS)
+  test(`a \`claude auth status\` output that is ${name} gives no picks and does not stop setup`, async () => {
+    const d = await sandbox(text, 0);
+    const r = run(d, { CLAUDE_CODE_RATE_LIMIT_TIER: RATE_TIER_MAX_20X });
+    expect(r.status, r.stderr).toBe(0);
+    expect((await readUser(d))["effortLevel"]).toBeUndefined();
+  });
