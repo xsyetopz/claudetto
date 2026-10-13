@@ -23,7 +23,7 @@ Check that each tool in the table is ready for the plugins that you install.
 | [Bun](https://bun.sh) 1.4.3 or later on `PATH` | the setup command, the status line, the `second_opinion` CLI `dotclaude-decide`, the hooks of `dotclaude-codegraph`, the bins of `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-sessions`, and `dotclaude-lab`. The `docs` skill of `dotclaude-docs` also needs Bun, because it runs `ctx7` through `bunx`. | Without Bun, the setup command does not run, the status line does not run, and `second_opinion` answers from a Claude model. |
 | [Node.js](https://nodejs.org) on `PATH` | the npm installs of `codegraph` and `agent-browser` | Without Node.js, the npm installs do not run. |
 | `gh` on `PATH` | the policy ask of `dotclaude` | Without `gh`, the ask does not run. The call continues. |
-| `codegraph` on `PATH` | `dotclaude-codegraph` | Run `npm i -g @colbymchenry/codegraph`. The setup command offers this install. It runs the install only after you say yes. |
+| `codegraph` on `PATH` | `dotclaude-codegraph` | Run `bun i -g @colbymchenry/codegraph`. The setup command offers this install. It runs the install only after you say yes. |
 | `TYPESAFE_API_KEY` | `dotclaude` (`second_opinion`) | Export it before Claude Code begins. Without it, `second_opinion` answers from a Claude model. |
 | `agent-browser` on `PATH` | `dotclaude-browser` | See [Browser](Browser). |
 
@@ -107,7 +107,7 @@ See [Second opinion](Second-Opinion).
 2. Install the CLI.
 
    ```bash
-   npm i -g @colbymchenry/codegraph
+   bun i -g @colbymchenry/codegraph
    ```
 
 3. Build the index once in the project.

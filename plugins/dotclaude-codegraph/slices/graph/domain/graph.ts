@@ -8,7 +8,7 @@ export interface HookPayload {
 }
 
 /** The install command that the check prints. The add-on never runs it. */
-export const INSTALL_COMMAND = "npm i -g @colbymchenry/codegraph";
+export const INSTALL_COMMAND = "bun i -g @colbymchenry/codegraph";
 
 /** The command that builds the first index. It is the opt-in of a project. */
 export const INIT_COMMAND = "codegraph init -y";

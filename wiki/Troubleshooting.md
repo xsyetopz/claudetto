@@ -32,7 +32,7 @@ The debug log of Claude Code shows what a hook or a plugin did.
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| The hooks add nothing | `codegraph` is not on `PATH`, or the project has no `.codegraph/codegraph.db`. Install `codegraph` with `npm i -g @colbymchenry/codegraph`, run `dotclaude-codegraph-check`, and run `codegraph init -y` in the project. | [Code-Graph](Code-Graph) |
+| The hooks add nothing | `codegraph` is not on `PATH`, or the project has no `.codegraph/codegraph.db`. Install `codegraph` with `bun i -g @colbymchenry/codegraph`, run `dotclaude-codegraph-check`, and run `codegraph init -y` in the project. | [Code-Graph](Code-Graph) |
 | The index is out of date | The sync runs after an edit and after a `git` command that changes the tree. A change made outside Claude Code does not sync. Run `codegraph sync -q` by hand. | [Code-Graph](Code-Graph) |
 
 ## The Browser `dotclaude-browser`

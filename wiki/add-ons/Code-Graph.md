@@ -30,7 +30,7 @@ It has no Claude Code setting.
 
 ## Install
 
-1. Install the CLI with `npm i -g @colbymchenry/codegraph`.
+1. Install the CLI with `bun i -g @colbymchenry/codegraph`.
    The plugin never installs the CLI.
    When `codegraph` is missing, the check prints this command (`INSTALL_COMMAND` in `slices/graph/domain/graph.ts`).
 2. Build the index once in the project with `codegraph init -y`.

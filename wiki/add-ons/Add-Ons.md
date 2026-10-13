@@ -18,7 +18,7 @@ See [Install](Install) for details.
 
 | Plugin | What it adds | Install | Needs | Page |
 | --- | --- | --- | --- | --- |
-| `dotclaude-codegraph` | The code graph of a project, from the `codegraph` CLI. The graph syncs after edits and after `git` commands that change the tree. | `/plugin install dotclaude-codegraph@dotclaude` | Bun, the `codegraph` CLI (`npm i -g @colbymchenry/codegraph`), and a project index (`codegraph init -y`). | [Code Graph](Code-Graph) |
+| `dotclaude-codegraph` | The code graph of a project, from the `codegraph` CLI. The graph syncs after edits and after `git` commands that change the tree. | `/plugin install dotclaude-codegraph@dotclaude` | Bun, the `codegraph` CLI (`bun i -g @colbymchenry/codegraph`), and a project index (`codegraph init -y`). | [Code Graph](Code-Graph) |
 | `dotclaude-browser` | A browser that Claude drives with `agent-browser`. The `WebSearch` answers come from a headless browser. | `/plugin install dotclaude-browser@dotclaude` | Bun, `agent-browser` (`npm install -g agent-browser`). The `cloakbrowser` backend also needs the CloakBrowser binary. | [Browser](Browser) |
 | `dotclaude-docs` | The current docs of a library, from Context7 through the `ctx7` CLI. | `/plugin install dotclaude-docs@dotclaude` | Bun on `PATH`, for `bunx`. No key is needed for the free quota. | [Library Docs](Library-Docs) |
 | `dotclaude-sessions` | The cost of a session start by source, and the usage of a period by run. | `/plugin install dotclaude-sessions@dotclaude` | Bun. The CLIs read the transcripts under `~/.claude/projects`. | [Sessions](Sessions) |
