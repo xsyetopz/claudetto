@@ -5,9 +5,9 @@ id: P52
 title: Spec Store Docs
 wave: 9
 deps: ["P51"]
-owns: ["wiki/dotclaude/Spec-Store.md","src/wiki/dotclaude/Architecture.md","src/wiki/reference/Bounds.md","wiki/Attributions.md","README.md","CHANGELOG.md"]
+owns: ["wiki/dotclaude/Spec-Store.md","wiki/dotclaude/Skills.md","wiki/dotclaude/Architecture.md","wiki/Quickstart.md","wiki/claude-code/Subagents.md","wiki/development/Development.md","wiki/rationale/Decisions-Architecture.md","wiki/rationale/Design.md","src/wiki/dotclaude/Architecture.md","src/wiki/reference/Bounds.md","wiki/Attributions.md","README.md","CHANGELOG.md"]
 satisfies: []
-verify: just check and bun run lint:md
+verify: just check && bun run lint:md
 agent: main session
 status: planned
 ---
