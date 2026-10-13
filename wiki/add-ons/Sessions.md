@@ -84,6 +84,12 @@ dotclaude-usage [--days 7] [--root DIR] [--runs 20] [--window N] [--agents-dir D
 | `--agents-dir DIR` | Reads `maxTurns` from `DIR/<agent>.md`, to compare the briefs of runs that hit the turn limit. |
 | `--json` | Prints the report as JSON. |
 
+The options `--days`, `--runs`, and `--window` take a whole number of at least 1.
+Another value exits 2 with a message.
+A `--days`, `--runs`, or `--window` that has no value also exits 2.
+When the transcripts folder is absent, the report is empty, and the command exits 0.
+An absent folder is not an error.
+
 The skill `usage` allows `Bash(dotclaude-usage *)`.
 The command `/usage` runs the CLI in the handler `onUsage` (`slices/usage/adapters/mod.ts`).
 

@@ -95,6 +95,11 @@ The [Release History](https://github.com/xsyetopz/dotclaude/wiki/Release-History
 
 ### Changed
 
+- The `dotclaude-usage` options `--runs` and `--window` take a whole number of at least 1, as `--days` does.
+  Another value exits 2 with a message.
+- The `dotclaude-sandbox` option `--dir` refuses a value that starts with `--`, so `--dir --clean` exits 1 and does not take `--clean` as the folder.
+- The `dotclaude-capture` option `--port` takes a whole number from 1 to 65535.
+  Another value exits 2 with a message.
 - The `prompt` slice of the core plugin no longer sets `CLAUDE_CODE_ATTRIBUTION_HEADER=0`.
   With that value, a `$.model.complete` call from a hook carries no billing block and no identity block of Claude Code, and a subscription refuses it with HTTP 429.
   The evidence is in `.dotclaude/spec/changes/1.0.0/evidence/you-should-know.md`.

@@ -52,12 +52,16 @@ A test of a plugin then cannot change your settings, sessions, or installed plug
   The command loads no plugin by itself.
   Pass `--plugin-dir DIR` once for each plugin folder.
 - The second form removes the folder.
+  It refuses a folder that holds an entry outside the layout, and it exits 1 with the names of those entries.
+  The default folder is always allowed (`cleanRefusal` in `slices/sandbox/domain/clean.ts`).
 - The third form adds `--debug-file` and `-p "Reply with OK."` to the call.
   It prints each line of the debug log that names an unknown field.
   It exits 1 when the session fails.
   It also exits 1 when the log names a field.
 
 The `--dir DIR` option sets the folder.
+A value that starts with `--` is refused.
+`--dir --clean` exits 1 with a message, and it does not take `--clean` as the folder.
 The default is `dotclaude-sandbox` in the system temp folder (`SANDBOX_TEMP` in `src/kernel/temp-paths.ts`).
 The folder holds three parts:
 
@@ -112,6 +116,8 @@ The proxy forwards each request to the upstream.
 It writes the body of each `/v1/messages` request to `DIR`.
 The default folder is `dotclaude-capture` in the system temp folder (`CAPTURE_TEMP` in `src/kernel/temp-paths.ts`).
 The default port is 8787.
+`--port` takes a whole number from 1 to 65535.
+Another value exits 2 with a message.
 
 - The proxy never writes a request header, because the headers carry the credential.
   It sends upstream only the headers that match `PASS` in `slices/capture/adapters/cli.ts`.
@@ -128,6 +134,13 @@ The default port is 8787.
   Then it counts the request without one tool, one block, or one section of a long text.
   The difference is the token cost of that part, with its wrapper.
 - A text longer than `SPLIT_CHARS` characters is sized by section (`slices/capture/domain/report.ts`).
+- At most `MAX_PART_COUNTS` parts (64) of one request get a `count_tokens` call.
+  The report lists each later part with no token count and a note that it is past the bound.
+- A `count_tokens` call that gets HTTP 429 is retried.
+  The proxy makes up to `COUNT_ATTEMPTS` attempts (4), waits `COUNT_BACKOFF_MS` (500 ms) before the second attempt, and doubles the wait before each later attempt.
+  These bounds are in `slices/capture/limits.ts`.
+- A `/v1/messages` body that is not JSON is forwarded unchanged.
+  The proxy does not save it, and it does not size it.
 - With `--count FILE`, the proxy sizes `FILE` instead.
   It uses the credential of the first request.
 - The report goes to `DIR/report-<n>.json` and to standard output.
@@ -197,6 +210,9 @@ The plugin `dotclaude-lab` has no `tests/` folder, so the script skips it.
 | Bound | Value | File | Use |
 | --- | --- | --- | --- |
 | `SPLIT_CHARS` | 2000 characters | `slices/capture/domain/report.ts` | A longer text is sized by section |
+| `MAX_PART_COUNTS` | 64 parts | `slices/capture/limits.ts` | The parts past it are not counted |
+| `COUNT_ATTEMPTS` | 4 attempts | `slices/capture/limits.ts` | A `count_tokens` call that gets HTTP 429 is retried |
+| `COUNT_BACKOFF_MS` | 500 ms | `slices/capture/limits.ts` | The wait before the second attempt, doubled after each attempt |
 | `DEPTH_MAX` | 8 levels | `slices/schema/domain/types.ts` | The reference depth of the schema build |
 | `--max-cost-usd` | 5 USD for each run | `slices/eval-compare/domain/compare.ts` | The default cost bound of `dotclaude-eval-compare` |
 | `START_TOKENS` | 9,960 tokens | `tools/limits.ts` | The bound of the start measure that `just start-run` runs (`tools/measure.ts`) |
