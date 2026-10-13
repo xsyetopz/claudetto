@@ -18,6 +18,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { CLAUDE_ENV } from "./telemetry.ts";
 
 const REPO = path.resolve(import.meta.dirname, "..");
 // The comparison itself is the `dotclaude-lab` command. This script adds the git worktree.
@@ -75,7 +76,12 @@ try {
         "Bash,Write,Edit",
         ...rest,
       ],
-      { stdin: "inherit", stdout: "inherit", stderr: "inherit" },
+      {
+        env: { ...process.env, ...CLAUDE_ENV },
+        stdin: "inherit",
+        stdout: "inherit",
+        stderr: "inherit",
+      },
     ).exitCode ?? 1;
 } finally {
   const kept = keepResults(ref);
