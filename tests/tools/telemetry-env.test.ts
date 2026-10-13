@@ -1,15 +1,29 @@
 // The `claude` shell of `tools/telemetry.ts` gives each child process the env that stops the telemetry of Claude Code.
 // The test reads the env of a child process of that shell, and it does not run `claude`.
 
-import { expect, test } from "bun:test";
-import { CLAUDE_ENV, $claude } from "../../tools/telemetry.ts";
+import { afterEach, expect, test } from "bun:test";
+import { $claude, CLAUDE_ENV } from "../../tools/telemetry.ts";
+
+const PROBE = "DOTCLAUDE_TEST_PROBE_ENV";
+const printed = (name: string) =>
+  $claude()`sh -c ${`printf %s "$${name}"`}`.quiet().text();
+
+afterEach(() => {
+  delete process.env[PROBE];
+});
 
 test("a `claude` call of `tools/` gives its child the telemetry-off env", async () => {
-  const out =
-    await $claude`sh -c 'printf %s "$CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"'`
-      .quiet()
-      .text();
+  for (const name of Object.keys(CLAUDE_ENV))
+    expect(await printed(name)).toBe(CLAUDE_ENV[name]);
 
-  expect(out).toBe(CLAUDE_ENV["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"]);
-  expect(out).toBe("1");
+  expect(await printed("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC")).toBe("1");
+  expect(await printed("DISABLE_ERROR_REPORTING")).toBe("1");
+});
+
+test("a change of `process.env` after the import reaches the next `claude` call", async () => {
+  process.env[PROBE] = "first";
+  expect(await printed(PROBE)).toBe("first");
+
+  process.env[PROBE] = "second";
+  expect(await printed(PROBE)).toBe("second");
 });

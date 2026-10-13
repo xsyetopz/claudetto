@@ -23,17 +23,36 @@ afterEach(() => {
   fs.rmSync(root, { recursive: true, force: true });
 });
 
-test("a CHANGELOG that cannot be written leaves package.json unchanged", async () => {
-  fs.chmodSync(path.join(root, "CHANGELOG.md"), 0o444);
+// `W_OK` passes for root, so a read-only file is writable for root and this test cannot fail there.
+test.skipIf(process.getuid?.() === 0)(
+  "a CHANGELOG that cannot be written leaves package.json unchanged",
+  async () => {
+    fs.chmodSync(path.join(root, "CHANGELOG.md"), 0o444);
+    const errors: string[] = [];
+    const logError = console.error;
+    console.error = (...parts: unknown[]) => {
+      errors.push(parts.join(" "));
+    };
+    let status = -1;
+    try {
+      status = await main(["patch", "--root", root]);
+    } finally {
+      console.error = logError;
+    }
 
-  const status = await main(["patch", "--root", root]).catch(() => 1);
-
-  expect(status).not.toBe(0);
-  expect(await Bun.file(path.join(root, "package.json")).text()).toBe(PACKAGE);
-  expect(await Bun.file(path.join(root, "CHANGELOG.md")).text()).toBe(
-    CHANGELOG,
-  );
-});
+    // The run fails for the read-only reason, and its message names the file.
+    expect(status).toBe(1);
+    expect(errors).toEqual([
+      "Cannot write CHANGELOG.md, so nothing was changed.",
+    ]);
+    expect(await Bun.file(path.join(root, "package.json")).text()).toBe(
+      PACKAGE,
+    );
+    expect(await Bun.file(path.join(root, "CHANGELOG.md")).text()).toBe(
+      CHANGELOG,
+    );
+  },
+);
 
 test("a pre-release target is refused, so no pre-release version is written", () => {
   expect(() => nextVersion("1.0.0", "1.1.0-rc.1")).toThrow();

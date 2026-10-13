@@ -1,18 +1,28 @@
 // The `claude` CLI as the scripts of `tools/` run it: `claude` with the env that stops its telemetry.
-// `FMt()` in the bundle returns `essential-traffic` when `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` is set
-// (`external/cc-2.1.296/strings.txt`, byte 13082831).
-// `At()` tests that mode (byte 13083051), and the error reporter returns early when `At()` is true
-// (byte 13085285). The reporter posts to `http-intake.logs.us5.datadoghq.com`
-// (`external/cc-2.1.296/strings.txt`, byte 20403775).
-// `external/dossier/cc-2.1.296/env.md` lists it as a documented variable.
-// A script runs its `claude` commands through `$claude`, so no call of `tools/` leaves the variable out.
+// Each var is documented in `external/dossier/cc-2.1.296/env.md`.
+// The offsets are bytes of `external/cc-2.1.296/strings.txt`.
+// `FMt()` (byte 13082831) returns `essential-traffic` when `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` is set (byte 13082841).
+// `At()` (byte 13083051) tests that mode. The error reporter at byte 13084960 checks it with `DISABLE_ERROR_REPORTING`,
+// but that reporter dispatches to a local store, not to Datadog.
+// The Datadog error path is `iDe()` (byte 20428914), which returns when `Nbs()` (byte 20400699) is false.
+// `Nbs()` returns when `DISABLE_ERROR_REPORTING` is set (byte 20400729). `iDe()` calls `zfo()` (byte 20421487), which enqueues to the sender.
+// The Datadog host is `http-intake.logs.us5.datadoghq.com` (byte 20403805).
+// The event path is `uPt()` (byte 20417140). Its gates are the provider check and `initializeDatadog` (byte 20416050).
+// No documented env var gates that path in the trace so far, so that verdict is open.
+// `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` stays in the env, but no Datadog gate is cited for it yet.
+// `DISABLE_TELEMETRY` is not set, because no Datadog path that it gates is cited.
+// A script runs its `claude` commands through `$claude()`, so no call of `tools/` leaves the vars out.
 
 import { $ } from "bun";
 
 /** The env that each `claude` call of `tools/` adds to the env of the process. */
 export const CLAUDE_ENV: Readonly<Record<string, string>> = {
   CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1",
+  DISABLE_ERROR_REPORTING: "1",
 };
 
-/** The `Bun.$` shell that runs its commands with `CLAUDE_ENV`. */
-export const $claude = $.env({ ...process.env, ...CLAUDE_ENV });
+/**
+ * The `Bun.$` shell that runs its commands with `CLAUDE_ENV`.
+ * It reads `process.env` at each call, so a change of `HOME` or `CLAUDE_CONFIG_DIR` reaches the child.
+ */
+export const $claude = (): typeof $ => $.env({ ...process.env, ...CLAUDE_ENV });

@@ -8,9 +8,9 @@
 
 import fs, { readdirSync } from "node:fs";
 import path, { join } from "node:path";
-import { $claude } from "./telemetry.ts";
 import { isGenerated } from "./generate/emit/texts.ts";
 import { FILE_MAX_LINES, TEST_FILE_MAX_LINES } from "./limits.ts";
+import { $claude } from "./telemetry.ts";
 
 const root = join(import.meta.dir, "..");
 const plugins = join(root, "plugins");
@@ -64,9 +64,9 @@ if (import.meta.main) {
     for (const line of over) console.error(`over the line bound: ${line}`);
     process.exit(1);
   }
-  await $claude`claude plugin validate --strict ${root}`;
+  await $claude()`claude plugin validate --strict ${root}`;
   for (const entry of readdirSync(plugins, { withFileTypes: true })) {
     if (entry.isDirectory())
-      await $claude`claude plugin validate --strict ${join(plugins, entry.name)}`;
+      await $claude()`claude plugin validate --strict ${join(plugins, entry.name)}`;
   }
 }

@@ -3,13 +3,15 @@
 The check ran on `ad61fb01`, then on the fix commits of this package.
 Each `file:line` was read in the worktree before it was written here.
 Claims about the Claude Code bundle come from `external/cc-2.1.296/strings.txt`, and each byte offset was read with `dd`.
-The run of `just test tests/tools tests/support && just validate` passed with 166 pass and 0 fail.
+The run of `just test tests/tools tests/support && just validate` passed with 169 pass and 0 fail, and `just validate` exited 0.
 
 ## Candidates
 
 | Candidate | Test | Verdict | Fix commit |
 | --- | --- | --- | --- |
-| Telemetry of the `claude` calls of `tools/` (datadog calls under the sandbox) | `tests/tools/telemetry-env.test.ts` | confirmed | `4c63f6e6` |
+| Telemetry of the `claude` calls of `tools/` (datadog calls under the sandbox) | `tests/tools/telemetry-env.test.ts` | open: the error path has a cited gate (`DISABLE_ERROR_REPORTING`), the event path has none | this commit |
+| The env of `$claude` is built once at import | `tests/tools/telemetry-env.test.ts` | confirmed: a change of `process.env` after the import is lost | this commit |
+| A `claude` command outside the helper | `tests/tools/bypass-scan.test.ts` | confirmed: the old test checked only the helper, so a `claude` command outside it passed | this commit |
 | `check` and `ci` differ by `generate --check` | `tests/tools/justfile-gate.test.ts` | confirmed | `366f2a50` |
 | `ci` has no type check | none | rejected: a decision of the repo, see the note below | none |
 | `tools/generate/` has three packages in one overlap (spec text) | none | open, for the parent: the tool works as designed, the text overlaps | none |
@@ -23,12 +25,33 @@ The run of `just test tests/tools tests/support && just validate` passed with 16
 
 Notes on the rows:
 
-- Telemetry: `tools/telemetry.ts:1-6` cites the bundle.
-  `FMt()` is at byte 13082831, `At()` at 13083051, the error-reporter gate at 13085285, and the datadog URL at 20403775.
-  `external/dossier/cc-2.1.296/env.md:54` lists `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`.
-  The interactive `Bun.spawn` of `tools/sandbox/run.ts` and `tools/sandbox/install.ts:30` keeps the user env on purpose.
+- Telemetry, the trace in `external/cc-2.1.296/strings.txt` (each offset read with `dd` or `grep -b`):
+  - `FMt()` at byte 13082831 returns `essential-traffic` for `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` (read at 13082841).
+    `At()` at 13083051 tests that mode.
+    `external/dossier/cc-2.1.296/env.md:54` lists the var.
+  - Error path, `iDe()` at byte 20428914: it returns when `Nbs()` (byte 20400699) is false.
+    `Nbs()` returns when `DISABLE_ERROR_REPORTING` is set (byte 20400729), so this path has a cited gate.
+    `env.md:42` lists `DISABLE_ERROR_REPORTING`.
+    `iDe()` calls `zfo()` (byte 20421487), which enqueues to the Datadog sender (byte 20421728).
+  - Event path, `uPt()` at byte 20417140: it returns when the provider is not `firstParty`, and it uses `initializeDatadog` (byte 20416050).
+    `Nbs()` also calls `Uy()` and `Ie()`, and `initializeDatadog` calls `Uy()` and `ARs()`.
+    The bodies of `Uy()` and `ARs()` in this chunk were not traced, so no env gate is cited for this path.
+  - The reporter at byte 13084960 returns on `DISABLE_ERROR_REPORTING` or `At()`, but it dispatches to a local store, not to Datadog.
+  - The Datadog host is `http-intake.logs.us5.datadoghq.com` (byte 20403805).
+  - Verdict: `open`.
+    The error path is gated by `DISABLE_ERROR_REPORTING`, which `CLAUDE_ENV` sets.
+    The event path has no cited gate, so the claim that the env stops the Datadog calls is not confirmed.
+    The sandbox run that gave the 9 calls was not repeated in this package.
+  - `DISABLE_TELEMETRY` (`env.md:44`) feeds `FMt()`, but no Datadog path that it gates is cited, so `CLAUDE_ENV` does not set it.
+- Per-call env: `$claude` is now a function, so each call reads `process.env` again.
+  `tests/tools/telemetry-env.test.ts` changes `process.env` after the import and reads the child.
+- Scan: `tests/tools/bypass-scan.test.ts` strips comments with `Bun.Transpiler`, then flags a `claude` command that does not use `$claude()`.
+  Its allow list has `sandbox/run.ts`, `sandbox/install.ts`, and `eval-variant.ts`, and the reasons are in the file.
+  No file of the allow list runs `claude` today, so the list is a reserve.
+- `eval-variant.ts` spawns the eval comparison on the plain env, because the telemetry-off env can change the flags that the evals fetch.
+  The choice is recorded here, and the test of the helper does not cover this spawn.
 - `ci`: `justfile:31` says CI has no `.claude-plugin/types/`, so the type check stays out of `ci`.
-  The test `tests/tools/justfile-gate.test.ts` pins only the `generate --check` step.
+  The test `tests/tools/justfile-gate.test.ts` pins that `ci` runs the `generate --check` step, and that `ci` equals `check` minus `typecheck`.
 - Overlap: `src/plugins/dotclaude/slices/spec/adapters/ready.ts:3-4` skips a package whose `owns` overlap a printed package.
   `src/plugins/dotclaude/slices/spec/domain/validate.ts:228-241` refuses an overlap in one wave.
   The packages `01b1-generator-core.md`, `01b2-prompt-slice.md`, and P13 each name `tools/generate/`.
@@ -37,6 +60,10 @@ Notes on the rows:
   `tools/bump-version.ts:39-41` refuses a level that is not `major`, `minor`, `patch`, or `X.Y.Z`.
   `tools/preflight.ts:32-41` refuses a dirty tree.
 - Read-only target: `tools/bump-version.ts` checks each target with `W_OK` before the first write.
+  This is a pre-check only.
+  A race between the check and a write, or a write that fails after the first target, is not rolled back.
+  The test skips when the process is root, because `W_OK` passes for root.
+  It asserts exit status 1 and the message that names `CHANGELOG.md`.
 - `--clean` entry: `src/plugins/dotclaude-lab/slices/sandbox/adapters/cli.ts:69-70` returns 0 for a missing folder.
   The `555` row comes from the earlier run and was not run again in this check.
   Its fix is outside `owns`, so P06 owns it.

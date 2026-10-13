@@ -110,6 +110,7 @@ export const main = async (args: string[]): Promise<number> => {
     console.log("Dry run: nothing was written.");
     return 0;
   }
+  // A pre-check: a race or a failed second write is not rolled back.
   const blocked = result.writes.find(({ file }) => !writable(file));
   if (blocked) {
     console.error(
