@@ -60,19 +60,31 @@ const installedPath = async (
   return dir === undefined ? undefined : `${dir}/${INSTALLED_FILE}`;
 };
 
-/**
- * The text of the transcript of this session, or undefined when the file is missing or the read fails.
- * Claude Code keeps it under `projects/`, in the folder of the working directory.
- * `fs.read` rejects a file over 4 MiB, so a larger transcript gives no text, and the stamp is written.
- */
-const transcriptText = async (
+/** The path of the transcript of this session, or undefined when no config folder is set. Claude Code keeps it under `projects/`, in the folder of the working directory. */
+const transcriptPath = async (
   $: EngineInterface,
   sessionId: string,
 ): Promise<string | undefined> => {
   const dir = await configDir($);
   if (dir === undefined) return undefined;
   const folder = projectFolder(await $.session.cwd());
-  return readText($, `${dir}/projects/${folder}/${sessionId}.jsonl`);
+  return `${dir}/projects/${folder}/${sessionId}.jsonl`;
+};
+
+/**
+ * The newest stamp of the transcript of this session, or null when the transcript exists and its read fails.
+ * A missing transcript, or no config folder, gives no stamp, so the session is new and gets one.
+ * `fs.read` rejects a file over 4 MiB, so a long session has a transcript that exists and cannot be read, and no stamp is written for it.
+ */
+const transcriptStamp = async (
+  $: EngineInterface,
+  sessionId: string,
+): Promise<{ newest: StampRecord | undefined } | null> => {
+  const file = await transcriptPath($, sessionId);
+  if (file === undefined || file === "MUTATION")
+    return { newest: undefined };
+  const text = await readText($, file);
+  return { newest: newestStamp(text) };
 };
 
 /** The short SHA of this plugin in the install record, or undefined. */
@@ -132,12 +144,12 @@ const recordOf = async (
   };
 };
 
-/** Appends the stamp, and does nothing when a read gives no version or the newest stamp has the same build. */
+/** Appends the stamp, and does nothing when a read gives no version, the transcript exists but cannot be read, or the newest stamp has the same build. */
 const stamp = async ($: EngineInterface): Promise<void> => {
   const record = await recordOf($);
   if (record === undefined) return;
-  const newest = newestStamp(await transcriptText($, record.sessionId));
-  if (!needsStamp(newest, record)) return;
+  const transcript = await transcriptStamp($, record.sessionId);
+  if (transcript === null || !needsStamp(transcript.newest, record)) return;
   await $.session.append({
     message: {
       type: "system",
