@@ -54,7 +54,7 @@ test("the rows drop the alignment together when one row does not fit", async () 
   const rows = await rowsAt(60);
   expect(rows[0]).toBe("⌂ dotclaude · ⎇ main ✎2 ↑1 ↓2");
   expect(rows[1]).toBe("◈ Opus 5.5 high ✦ · ▤ 45k/300k 15% · $1.23 +300 -20");
-  expect(rows[2]).toBe("◷ 5h  23% ▼13% ↻3h12m · ◷ 7d  80% ▲11% ⏵1d5h ↻2d4h");
+  expect(rows[2]).toBe("◷ 5h 23% ▼13% ↻3h12m · ◷ 7d 80% ▲11% ⏵1d5h ↻2d4h");
 });
 
 test("a row with an empty middle place keeps its later item in its column, with color codes", async () => {
@@ -71,6 +71,22 @@ test("a row with fewer items keeps each item in its column", async () => {
     rate_limits: { seven_day: STATUS.rate_limits.seven_day },
   });
   expect(columnOf(rows[0] ?? "", "◷ 7d")).toBe(columnOf(full[0] ?? "", "◷ 7d"));
+});
+
+test("`spend` alone on row 2 starts in the column of the first place of rows 0 and 1", async () => {
+  // Row 2 holds only `spend`, so it is the first place of that row, in the column of the folder and of the model.
+  const rows = await rowsOf({
+    ...STATUS,
+    rate_limits: {
+      ...STATUS.rate_limits,
+      spend_limit: {
+        used_percentage: 40,
+        resets_at: STATUS.rate_limits.five_hour.resets_at,
+      },
+    },
+  });
+  expect(columnOf(rows[2] ?? "", "◷ spend")).toBe(columnOf(rows[0] ?? "", "⌂"));
+  expect(columnOf(rows[2] ?? "", "◷ spend")).toBe(columnOf(rows[1] ?? "", "◈"));
 });
 
 test("a wide glyph in the folder name keeps the items of the rows in their columns", async () => {

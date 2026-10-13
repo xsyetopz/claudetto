@@ -28,7 +28,7 @@ test("the rows at 60 columns with `NO_COLOR`", async () => {
   expect(await render(60, { NO_COLOR: "1" })).toMatchInlineSnapshot(`
     "⌂ dotclaude · ⎇ main ✎2 ↑1 ↓2
     ◈ Opus 5.5 high ✦ · ▤ 45k/300k 15% · $1.23 +300 -20
-    ◷ 5h  23% ▼13% ↻3h12m · ◷ 7d  80% ▲11% ⏵1d5h ↻2d4h"
+    ◷ 5h 23% ▼13% ↻3h12m · ◷ 7d 80% ▲11% ⏵1d5h ↻2d4h"
   `);
 });
 
@@ -36,7 +36,7 @@ test("the rows at 32 columns with `NO_COLOR`", async () => {
   expect(await render(32, { NO_COLOR: "1" })).toMatchInlineSnapshot(`
     "⌂ dotclaude
     ◈ Opus 5.5 high ✦
-    ◷ 5h  23% ▼13% ↻3h12m"
+    ◷ 5h 23% ▼13% ↻3h12m"
   `);
 });
 
@@ -44,7 +44,7 @@ test("the rows at 14 columns with `NO_COLOR`", async () => {
   expect(await render(14, { NO_COLOR: "1" })).toMatchInlineSnapshot(`
     "⌂ dotclau…
     ◈ Opus 5.…
-    ◷ 5h  23%…"
+    ◷ 5h 23% …"
   `);
 });
 

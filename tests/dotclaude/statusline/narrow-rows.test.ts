@@ -33,6 +33,11 @@ test("at 124 columns the reset time shows the clock, as it does at 0.28.0", asyn
   expect(rows[0]).toMatch(/↻[A-Z][a-z]{2} \d{1,2} at \d{1,2}(:\d{2})?[ap]m/);
 });
 
+test("in compact mode the percent of a limit has one space before it, with no field padding", async () => {
+  const text = (await rowsAt(STATUS, 60)).join("\n");
+  expect(text).toContain("◷ 5h 23%");
+});
+
 test("a separator with an empty place before the next item sits next to that item", async () => {
   const row0 = (await rowsAt(STATUS, 124))[0] ?? "";
   expect(row0).toContain(" · ◷ 7d");

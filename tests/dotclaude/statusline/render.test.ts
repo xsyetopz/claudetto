@@ -42,14 +42,14 @@ test("a wide terminal shows two rows of numbers with icons, and `NO_COLOR` keeps
 test("a narrow terminal drops the segments at the right of a row, and the first segment stays", async () => {
   const run = await render(32, { NO_COLOR: "1" });
   expect(run.out).toStrictEqual([
-    ["⌂ dotclaude", "◈ Opus 5.5 high ✦", "◷ 5h  23% ▼13% ↻3h12m"].join("\n"),
+    ["⌂ dotclaude", "◈ Opus 5.5 high ✦", "◷ 5h 23% ▼13% ↻3h12m"].join("\n"),
   ]);
 });
 
 test("a very narrow terminal cuts the first segment with `…`", async () => {
   const run = await render(14, { NO_COLOR: "1" });
   const rows = (run.out[0] ?? "").split("\n");
-  expect(rows).toStrictEqual(["⌂ dotclau…", "◈ Opus 5.…", "◷ 5h  23%…"]);
+  expect(rows).toStrictEqual(["⌂ dotclau…", "◈ Opus 5.…", "◷ 5h 23% …"]);
   for (const row of rows) expect(width(row)).toBeLessThanOrEqual(10);
 });
 

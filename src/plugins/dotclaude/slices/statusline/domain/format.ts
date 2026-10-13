@@ -29,7 +29,9 @@ export const clock = (sec: number, nowMs: number): string => {
       minute: d.getMinutes() === 0 ? undefined : "2-digit",
       hour12: true,
     })
-    .replace(/ ([AP]M)/i, (_, meridiem: string) => meridiem.toLowerCase());
+    .replace(/[ \u00a0\u202f]([AP]M)/i, (_, meridiem: string) =>
+      meridiem.toLowerCase(),
+    );
   if (sec * 1000 - nowMs <= 24 * 3600_000) return time;
   const date: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
   if (d.getFullYear() !== new Date(nowMs).getFullYear()) date.year = "numeric";

@@ -158,7 +158,10 @@ const limitText = (
     resetsAt * 1000 > status.now
       ? status.paint.dim(`${ICON.reset}${timeOf(resetsAt, status)}`)
       : "";
-  const head = `${ICON.limit} ${label} ${" ".repeat(PERCENT_FIELD - width(`${percent}%`))}${figure}`;
+  const pad = status.compact
+    ? ""
+    : " ".repeat(PERCENT_FIELD - width(`${percent}%`));
+  const head = `${ICON.limit} ${label} ${pad}${figure}`;
   const arrow = arrowText(pace?.delta ?? null, status);
   if (status.compact)
     return [head, arrow, runOut, reset].filter(Boolean).join(" ");

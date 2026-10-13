@@ -107,12 +107,13 @@ export const renderRows = (
   columns: number,
 ): string[] => {
   const plans = [segments, fallback].flatMap((layout) =>
-    [false, true].map((compact) => rowsOf(layout, statusOf(compact))),
+    [false, true].map((compact) => () => rowsOf(layout, statusOf(compact))),
   );
-  const rows =
-    plans.find((plan) => keepsItems(plan, columns)) ??
-    plans[plans.length - 1] ??
-    [];
+  let rows: (string | null)[][] = [];
+  for (const plan of plans) {
+    rows = plan();
+    if (keepsItems(rows, columns)) break;
+  }
   const widths = columnsOf(rows);
   const aligned = rows.map((cells) => joinRow(cells, widths));
   if (aligned.every((text) => width(text) <= columns)) return aligned;

@@ -24,7 +24,8 @@ The bounds of the answers are in `limits.ts`.
 
 `renderRows` in `domain/rows.ts` tries four plans in order.
 The plans are two rows with clock times, two rows with countdown times, one row with clock times, and one row with countdown times.
-It uses the first plan that keeps every item.
+It builds one plan at a time, and it uses the first plan that keeps every item.
+The later plans are not built or rendered.
 The reason is the width rule of the acceptance: a row that does not fit drops the alignment, not an item.
 
 ## Fail before the change
@@ -42,6 +43,28 @@ This check did not run them again.
 - The test for a separator with an empty place before the next item is `a separator with an empty place before the next item sits next to that item`.
   It is in `narrow-rows.test.ts`, not in `layout.test.ts` as the implementer report says.
 - Old tests changed: `pace.test.ts` (6 expectations, with a fixed 4-column percent field), `change.test.ts` (the end anchor), `layout.test.ts` (4 tests), `snapshot.test.ts` (5 inline snapshots), and `render.test.ts` (3 expectations).
+
+## Review findings of P09
+
+Each row is one finding of the review of `ea2f6bb4`.
+The fail-before results come from a run of the new test on the code before the fix.
+
+| Finding | Test | Fix | Fail before |
+| --- | --- | --- | --- |
+| The meridiem after U+202F or U+00A0 stays `PM` (ICU 72 and later). | `clock.test.ts`, the two tests with a stubbed `toLocaleTimeString`. | `domain/format.ts` matches `[   ]` before the meridiem. | Both fail. |
+| `renderRows` renders all four plans on each run. | `rows.test.ts`, the test that counts the calls of `statusOf` and the renders. | `domain/rows.ts` builds one plan at a time and stops at the first plan that keeps every item. | Fails. `statusOf` is called four times. |
+| Compact mode pads the percent to four columns. | `narrow-rows.test.ts`, the compact test that expects `◷ 5h 23%`. | `segments.ts` adds no padding before the percent in compact mode. | Fails. The output has two spaces. |
+| The end anchor of the `change` test is lost. | `change.test.ts`, the first row ends with the id and the count. | The expectation is a pattern with the end anchor. The padding spaces before ` · ` are allowed, because the column of the item pads it. | Not a fail-before test. The anchor checks the code before and after. |
+| The reset time is dropped from the `5h` assertions of `pace.test.ts`. | `render.test.ts` at 124 columns (`◷ 5h  23% ▼13%` with `↻3:12pm`), and `layout.test.ts` (`◷ 5h 23% ▼13% ↻3h12m`). | None. Another test pins the reset next to `5h`, so the assertions of `pace.test.ts` stay as they are. | Not applicable. |
+| The `spend` column test is deleted. | `layout.test.ts`, the test that `spend` alone on row 2 starts in the column of the first place of rows 0 and 1. | None. The test pins the placement of the code. | Not a fail-before test. The placement does not change. |
+
+The compact snapshots and expectations changed because the padding of compact mode is gone.
+These are `snapshot.test.ts` (three inline snapshots), `layout.test.ts` (one row), and `render.test.ts` (two expectations).
+The wide snapshot at 124 columns does not change.
+
+The run-out clock `⏵` is always red on purpose.
+It shows only when the projection is above 100%, which is the red band of the percent colors.
+0.28.0 used yellow below `USAGE_LEVELS[0]`, so the color of the clock changes from 0.28.0 on purpose.
 
 ## Rows before and after
 
@@ -85,13 +108,21 @@ After, at 60 columns (`ea2f6bb4`):
 ◷ 5h  23% ▼13% ↻3h12m · ◷ 7d  80% ▲11% ⏵1d5h ↻2d4h
 ```
 
+After the review fix, at 60 columns:
+
+```text
+⌂ dotclaude · ⎇ main ✎2 ↑1 ↓2
+◈ Opus 5.5 high ✦ · ▤ 45k/300k 15% · $1.23 +300 -20
+◷ 5h 23% ▼13% ↻3h12m · ◷ 7d 80% ▲11% ⏵1d5h ↻2d4h
+```
+
 Colors after, at 60 columns: `7d` `80%` red, and `5h` `23%` green.
 The 60-column colors come from a render with the same input as the 124-column sample.
 
 ## Results
 
-- `just test tests/dotclaude/statusline` passes 88 tests, with 0 failures, on `ea2f6bb4`.
-- `just lab` exits with 0, and its 8 tests pass.
+- `just test tests/dotclaude/statusline` passes 93 tests, with 0 failures, after the review fix.
+- `just lab` exits with 0, and all of its suites pass with 0 failures.
 
 ## Not checked in this file
 
@@ -101,8 +132,5 @@ The 60-column colors come from a render with the same input as the 124-column sa
 
 ## Notes for the reviewer
 
-- The change to `change.test.ts` removes the end anchor of the expectation.
-  The first row no longer has to end with the id and the count.
-  The test now passes when the text is anywhere in the row, so it checks less than before.
 - In `domain/rows.ts`, when no plan keeps every item, the last plan drops items at the right.
   The acceptance does not cover this case.
