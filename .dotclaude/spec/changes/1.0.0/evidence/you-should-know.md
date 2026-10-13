@@ -51,3 +51,22 @@ call of the same session succeeded.
 `classify` is a wrapper over `complete`, and it rejects instead of returning a status.
 Revisit the choice when a probe gets a reply, so that the usage, the resolved model id,
 and the timing can be measured.
+
+## Second probe, 2026-10-13
+
+A scratch plugin loads its hooks module only when `hooks/hooks.json` lists it, as `{ "modules": ["./register.ts"], "hooks": {} }`.
+A `hooks/register.ts` with no `hooks.json` entry is not loaded, and the debug log shows only "Loaded inline plugin".
+
+The probe ran one `$.model.complete` call (`haiku`, `maxTokens: 16`) and one `$.model.classify` call (`haiku`) in a `session.start` hook, with `claude -p "Reply with OK." --model claude-haiku-5-5 --plugin-dir <scratch>`.
+
+| Auth | `complete` | `classify` |
+| --- | --- | --- |
+| Subscription login of the user | HTTP 429 `rate_limit`, 2705 ms, 0 tokens | HTTP 429 `rate_limit`, 2420 ms |
+| `ANTHROPIC_API_KEY`, in a new `CLAUDE_CONFIG_DIR` | answered `OK`, 1038 ms, 21 input and 4 output tokens | answered `no`, 935 ms |
+
+- On a subscription, each model call from a hook gets HTTP 429, also more than 30 minutes after the first probe.
+  The main calls of the same session work.
+  So the limit applies to calls from hooks on a subscription, and it is not a passing limit.
+- With an API key, both calls work in about 1 second.
+  The session with the key cost $0.0011 (`total_cost_usd`), and nearly all of it is the main call.
+- Not measured: the resolved model id of the hook call, and the tokens of `classify`, which returns no usage.
