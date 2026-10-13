@@ -5,6 +5,7 @@
 // The status line commands get the absolute path of the plugin folder, because a status line command gets no `${CLAUDE_PLUGIN_ROOT}`.
 // The path holds the plugin version, so run setup again after each plugin update.
 // The tier picks follow the account that `claude auth status --json` names, and an account with no login gets none.
+// With `--advisor`, it sets `advisorModel` to the top model of `availableModels`, because the user asked for the advisor.
 
 import fs from "node:fs";
 import os from "node:os";
@@ -29,7 +30,11 @@ const readSettings = async (file: string): Promise<unknown> =>
 
 /** Run the `settings` command and return the exit status. */
 export const settingsCommand = async (
-  { scope, apply }: { scope: string; apply: boolean },
+  {
+    scope,
+    apply,
+    advisor = false,
+  }: { scope: string; apply: boolean; advisor?: boolean },
   places: Places,
   env: NodeJS.ProcessEnv,
   io: Io,
@@ -66,6 +71,7 @@ export const settingsCommand = async (
       skipStatusLines: scope === "project",
       autoMode: scope === "user",
       picks: picksOf(tier),
+      advisor,
     });
   } catch (err) {
     io.error(`${file}: ${(err as Error).message} Nothing changed.`);
@@ -76,6 +82,10 @@ export const settingsCommand = async (
   if (withDocs) io.log("Adds the lines for the `dotclaude-docs` add-on.");
   if (mythos) io.log(`The model catalog of the account offers ${MYTHOS}.`);
   io.log(`Account tier: ${tier}.`);
+  if (advisor)
+    io.log(
+      `Sets advisorModel to ${plan.settings["advisorModel"]}. Each request of the session and of each subagent then has about 1,358 tokens more, and each advisor call sends the whole history of the agent to the advisor model.`,
+    );
   if (scope === "project")
     io.log(
       "Project settings get no status line, because its command holds an absolute path of this computer. Run setup with the user or local scope for it.",

@@ -8,7 +8,6 @@ export const slice = {
   name: "trim",
   settings: {
     env: {
-      CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1",
       CLAUDE_CODE_DISABLE_CFC_PROMPT: "1",
       CLAUDE_CODE_DISABLE_CRON: "1",
       CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS: "1",

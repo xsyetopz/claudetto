@@ -188,6 +188,30 @@ test("without Mythos, `availableModels` takes the list of the snippet", async ()
   );
 });
 
+test("the snippet neither turns off the advisor nor sets an `advisorModel`", () => {
+  const env = (SNIPPET["env"] ?? {}) as Json;
+  expect(Object.hasOwn(env, "CLAUDE_CODE_DISABLE_ADVISOR_TOOL")).toBe(false);
+  expect(Object.hasOwn(SNIPPET, "advisorModel")).toBe(false);
+});
+
+test("`--apply` without `--advisor` keeps the `advisorModel` of the user", async () => {
+  const d = sandbox();
+  await writeUser(d, { advisorModel: "opus" });
+  run(d, ["--apply"]);
+  expect((await readUser(d)).advisorModel).toBe("opus");
+});
+
+test("`--advisor` sets `advisorModel` to Fable, or to Mythos when the list holds it", async () => {
+  const fable = sandbox();
+  const r = run(fable, ["--advisor", "--apply"]);
+  expect(r.stdout).toMatch(/advisorModel/);
+  expect((await readUser(fable)).advisorModel).toBe(FABLE);
+  const mythos = sandbox();
+  await writeUser(mythos, { availableModels: [MYTHOS] });
+  run(mythos, ["--advisor", "--apply"]);
+  expect((await readUser(mythos)).advisorModel).toBe(MYTHOS);
+});
+
 test("an installed `dotclaude-docs` adds its allow rule and domain", async () => {
   const d = sandbox();
   fs.mkdirSync(path.join(d.config, "plugins"));

@@ -77,3 +77,17 @@ Claude Code 2.1.296, `external/cc-2.1.296/strings.txt`:
   This run made no advisor call.
 - Whether `fable` as the advisor works on a subscription.
   Users in the thread report errors with a Fable advisor, and open issues of Claude Code report failures above about 100K tokens.
+
+## A Full Model ID
+
+- Method: a fifth sandbox arm with `{"advisorModel":"claude-fable-5-1"}`, one headless turn through `just capture --out /tmp/advisor-cap-5`.
+- Result: the request of `claude-opus-5-5` had the advisor tool with the model `claude-fable-5-1`.
+- So `advisorModel` takes a full model ID, and `dotclaude-setup settings --advisor` writes the top model of `availableModels`: `claude-mythos-5-1` when the list holds it, else `claude-fable-5-1`.
+
+## The Check of P44
+
+- Method: `dotclaude-setup settings --apply` with `CLAUDE_CONFIG_DIR=/tmp/advisor-arm-F/config`, one headless turn through `just capture --out /tmp/advisor-cap-6`, then `dotclaude-setup settings --advisor --apply`, and one more turn.
+  The setup CLI ran directly, not through `/dotclaude:setup` in `just sandbox-install`, because the skill only runs this CLI.
+- Before `--advisor`: the settings had no `advisorModel` and no `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`, and the request had no advisor tool.
+- `--advisor` printed `advisorModel: (unset) -> "claude-fable-5-1"` and the cost line.
+- After `--advisor`: the request had the advisor tool with the model `claude-fable-5-1`.

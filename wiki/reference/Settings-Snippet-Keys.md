@@ -19,7 +19,6 @@ So a key that the schema lacks fails the test.
 | --- | --- | --- | --- |
 | `CLAUDE_CODE_AUTO_COMPACT_WINDOW` | `300000` | Sets the window that automatic compaction works against. Default: the window of the model. | The window that `/context` shows and warns against. |
 | `CLAUDE_CODE_AUTO_CONNECT_IDE` | `false` | Default: the IDE connects by itself. | The global config key `autoConnectIde` is not set by the snippet, so the variable does the work. |
-| `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` | `1` | Removes the advisor tool and its instructions. Default: the tool can be on. | Each tool line and its instructions add tokens to each request. |
 | `CLAUDE_CODE_DISABLE_CFC_PROMPT` | `1` | Removes the Chrome part of the system prompt. | The part is not used. |
 | `CLAUDE_CODE_DISABLE_CRON` | `1` | Removes the Cron tools and `/loop`. Default: on. | No scheduled runs. |
 | `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` | `1` | Removes the built-in agents `Explore` and `Plan`. Default: on. | Each agent adds a line to each request. |
@@ -113,6 +112,11 @@ The rules are in [The destructive floor](Guards#the-destructive-floor).
 - `cleanupPeriodDays`: see [Retention](#retention).
 - `enableAllProjectMcpServers`: the value `false` equals the default.
 - `effortLevel`: each model keeps its default.
+- `advisorModel`: the advisor is opt-in.
+  With no `advisorModel`, the advisor tool adds no token.
+  With one, each request of the session and of each subagent has about 1,358 tokens more, in a measurement on Claude Code 2.1.296.
+  `/dotclaude:setup` sets it to the top model of `availableModels` only when you ask for the advisor.
+  `/advisor` also changes it.
 - The keys of the never-set list and the items without a gate: see [Off switches](Off-Switches).
 - `managed-settings.json`: dotclaude writes no managed file, see [Off switches](Off-Switches#managed-settings).
 

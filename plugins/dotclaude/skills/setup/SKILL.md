@@ -59,6 +59,10 @@ The command `dotclaude-setup` writes nothing without `--apply`, so run the previ
    When the user wants to drop some keys, apply nothing, and tell the user to copy the keys that they want from the wiki page `Settings-Snippet`.
    Ask one question for the add-on installs and steps, when the preview lists them.
    A global install changes the computer of the user, so run it only after a yes.
+   Ask one question for the advisor: off (recommended) or on.
+   Tell the user that the advisor tool lets the model ask a stronger model during a turn.
+   Also tell the user that each request of the session and of each subagent then has about 1,358 tokens more, and that each advisor call sends the whole history of the agent to the advisor model.
+   The user can change it later with this skill or with `/advisor`.
    If the user declines a question, run nothing for it.
 
 5. Run each command that the user picked:
@@ -68,6 +72,8 @@ The command `dotclaude-setup` writes nothing without `--apply`, so run the previ
    dotclaude-setup addons --apply
    ```
 
+   When the user turned the advisor on, add `--advisor` to the `settings` command.
+   It sets `advisorModel` to the top model of `availableModels`.
    Run each add-on install that the user picked as the preview gives it.
    A second run changes nothing.
    If the user declines a permission prompt, stop, because a block is the decision of the user.

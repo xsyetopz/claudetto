@@ -4,6 +4,7 @@
 import { DOCS_SNIPPET } from "../texts.ts";
 import { planAutoMode } from "./automode.ts";
 import {
+  FABLE,
   foreignStatusLines,
   isObject,
   MYTHOS,
@@ -62,6 +63,14 @@ export type SettingsOptions = {
   autoMode?: boolean;
   /** Merges the tier picks of `picksOf` after the snippet. Setup writes none when the account has no login. */
   picks?: Json | undefined;
+  /** Sets `advisorModel` to `advisorOf` the merged settings. Setup sets it only when the user asks, because each request then has about 1,358 tokens more. */
+  advisor?: boolean;
+};
+
+/** The model for `advisorModel`: `MYTHOS` when `availableModels` of `settings` holds it, else `FABLE`. */
+export const advisorOf = (settings: Json): string => {
+  const list = settings["availableModels"];
+  return Array.isArray(list) && list.includes(MYTHOS) ? MYTHOS : FABLE;
 };
 
 /**
@@ -78,6 +87,7 @@ export const planSettings = (
     skipStatusLines = false,
     autoMode = false,
     picks,
+    advisor = false,
   }: SettingsOptions,
 ): { settings: Json; changes: string[]; kept: string[] } => {
   if (!isObject(current)) throw new Error("The settings are not an object.");
@@ -97,6 +107,13 @@ export const planSettings = (
     ).settings;
   if (picks) settings = mergeSettings(settings, picks, "", changes).settings;
   if (autoMode) settings = planAutoMode(settings, changes);
+  if (advisor)
+    settings = mergeSettings(
+      settings,
+      { advisorModel: advisorOf(settings) },
+      "",
+      changes,
+    ).settings;
   return {
     settings,
     changes: changes.map((c) => c.line),

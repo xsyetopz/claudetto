@@ -46,7 +46,6 @@ The drift check in `slices/setup/domain/drift.ts` compares every entry of the sn
 | `DISABLE_COMPACT` set to `1` | No automatic summary of the context. dotclaude reads it in `slices/prompt/adapters/mod.ts` (`onSection`). The `context_management` section changes only when the entry is set to a value other than `0` or `false`. | `slices/prompt/slice.ts` |
 | `DISABLE_ERROR_REPORTING` set to `1` | No error report. | `slices/prompt/slice.ts` |
 | `DISABLE_FEEDBACK_COMMAND` set to `1` | No `/feedback` command. | `slices/prompt/slice.ts` |
-| `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` set to `1` | Removes the advisor tool. | `slices/trim/slice.ts` |
 | `CLAUDE_CODE_DISABLE_CFC_PROMPT` set to `1` | Removes the CFC part of the prompt. | `slices/trim/slice.ts` |
 | `CLAUDE_CODE_DISABLE_CRON` set to `1` | Removes the cron tools and `/loop`. | `slices/trim/slice.ts` |
 | `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` set to `1` | Removes the Explore and Plan agents. | `slices/trim/slice.ts` |

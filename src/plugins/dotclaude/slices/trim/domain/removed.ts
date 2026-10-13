@@ -15,11 +15,6 @@ export interface RemovedPart {
 /** The built-in parts that the `trim` slice turns off. */
 export const REMOVED_PARTS: readonly RemovedPart[] = [
   {
-    part: "Advisor tool",
-    switches: ["CLAUDE_CODE_DISABLE_ADVISOR_TOOL"],
-    reason: "No slice of dotclaude calls the advisor tool.",
-  },
-  {
     part: "CFC prompt",
     switches: ["CLAUDE_CODE_DISABLE_CFC_PROMPT"],
     reason: "No slice of dotclaude uses the CFC prompt.",

@@ -56,7 +56,6 @@ A test fails when the block holds a key of the [never-set list](Off-Switches#nev
   "env": {
     "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000",
     "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
-    "CLAUDE_CODE_DISABLE_ADVISOR_TOOL": "1",
     "CLAUDE_CODE_DISABLE_CFC_PROMPT": "1",
     "CLAUDE_CODE_DISABLE_CRON": "1",
     "CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS": "1",
