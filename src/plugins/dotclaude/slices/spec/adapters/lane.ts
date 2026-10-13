@@ -37,17 +37,25 @@ export const inLinkedWorktree = (cwd: string): boolean => {
 const isLane = (value: string): value is Lane =>
   (LANES as readonly string[]).includes(value);
 
-/** The id of the one change whose `events.jsonl` has the package, or null with a message. */
+/**
+ * The id of the one change whose `events.jsonl` has the package, or null with a message.
+ * When more than one change has it, a change where the package is `done` drops out, because a done package does not move.
+ */
 export const changeOf = async (
   run: Run,
   pkg: string,
 ): Promise<string | null> => {
   const found: string[] = [];
+  const open: string[] = [];
   for (const id of await run.store.changes()) {
     const events = await run.store.events(id);
-    if (events && pkg in (await run.store.lanes(id, events))) found.push(id);
+    const lane = events ? (await run.store.lanes(id, events))[pkg] : undefined;
+    if (lane === undefined) continue;
+    found.push(id);
+    if (lane !== "done") open.push(id);
   }
   if (found.length === 1) return found[0] ?? null;
+  if (open.length === 1) return open[0] ?? null;
   run.io.error(
     found.length === 0
       ? `No change has the package \`${pkg}\`.`

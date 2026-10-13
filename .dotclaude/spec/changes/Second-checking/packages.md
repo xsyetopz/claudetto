@@ -2,7 +2,7 @@
 
 ## Wave 1
 
-- [ ] P01 Kernel: spec-store reader, writeAtomic, shell bound.
+- [x] P01 Kernel: spec-store reader, writeAtomic, shell bound.
 - [ ] P02 Repo tooling: generator ownership overlap, release and validate checks.
 - [ ] P03 Core plugin: prompt, agents, styles, surface, attribution, trim, decide.
 - [ ] P05 Core plugin: setup, rules, handoff, stamp.
@@ -10,7 +10,8 @@
 
 ## Wave 2
 
-- [ ] P04 Core plugin: guard, asks, spec, sembr, statusline.
+- [ ] P04 Core plugin: guard, asks, spec, sembr, torn line, shell bound.
+- [ ] P08 Core plugin: statusline arrows and separators.
 
 ## Wave 3
 

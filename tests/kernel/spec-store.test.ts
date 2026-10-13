@@ -56,6 +56,13 @@ test("`readEvents` stops with an error that names the file when the schema is un
   await expect(readEvents(files, "1.0.0")).rejects.toThrow(file);
 });
 
+test("`readEvents` names the file and the line of a line that is not JSON", async () => {
+  const file = eventsPath("1.0.0");
+  const text = `${eventsText({ "01a": "done" })}\n{"at":\n`;
+  const files = fakeFiles({ [file]: text });
+  await expect(readEvents(files, "1.0.0")).rejects.toThrow(`${file}:3`);
+});
+
 test("the lanes of a log equal the last line of each package", async () => {
   const at = "2026-01-01T00:00:00.000Z";
   const lines = [

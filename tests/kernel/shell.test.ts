@@ -2,8 +2,15 @@
 // No command runs.
 
 import { expect, test } from "bun:test";
-import { commands, words } from "../../src/kernel/shell.ts";
+import { SHELL_SCAN_MAX_CHARS } from "../../src/kernel/budget.ts";
+import { commands, parse, words } from "../../src/kernel/shell.ts";
 import { stripWrappers } from "../../src/kernel/wrappers.ts";
+
+test("`parse` gives `truncated` only for a text over the scan bound", () => {
+  const word = "a";
+  expect(parse(word.repeat(SHELL_SCAN_MAX_CHARS)).truncated).toBe(false);
+  expect(parse(word.repeat(SHELL_SCAN_MAX_CHARS + 1)).truncated).toBe(true);
+});
 
 test("`words` removes quotes and backslashes, also inside a word", () => {
   expect(words(`git commit -m "a b" 'c d'`)).toStrictEqual([
