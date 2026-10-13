@@ -132,6 +132,42 @@ test("a command with shell syntax runs through the shell", async () => {
   expect(r.out).toContain("5 passed, 1 failed, 0 skipped");
 });
 
+test("a quoted argument with two spaces reaches the program in one piece", async () => {
+  const dir = await project();
+  const r = await run(dir, `bun -e 'console.log("two  spaces")'`);
+  expect(r.status).toBe(0);
+  expect(r.out).toContain("    two  spaces");
+});
+
+test("an assignment before the program runs through the shell and sets the variable", async () => {
+  const dir = await project();
+  const r = await run(dir, "GREETING=hi bun -e 'console.log(process.env.GREETING)'");
+  expect(r.status).toBe(0);
+  expect(r.out).toContain("    hi");
+});
+
+test("a passing command that prints no final newline still gives its counts", async () => {
+  const dir = await project();
+  await Bun.write(
+    path.join(dir, "nonl.js"),
+    "process.stdout.write(' 3 pass\\n 0 fail');",
+  );
+  const r = await run(dir, "bun nonl.js");
+  expect(r.status).toBe(0);
+  expect(r.out).toContain("3 passed, 0 failed, 0 skipped");
+});
+
+test("a failing command that prints no final newline keeps its last failure line", async () => {
+  const dir = await project();
+  await Bun.write(
+    path.join(dir, "nonl-bad.js"),
+    "process.stdout.write('error: no final newline'); process.exit(1);",
+  );
+  const r = await run(dir, "bun nonl-bad.js");
+  expect(r.status).toBe(1);
+  expect(r.out).toContain("error: no final newline");
+});
+
 test("a program that does not exist fails with status 127", async () => {
   const dir = await project();
   const r = await run(dir, "no-such-program-dotclaude --flag");
