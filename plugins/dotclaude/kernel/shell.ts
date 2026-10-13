@@ -3,38 +3,19 @@
 // It cannot run the shell, so it reads only the syntax that decides which command runs:
 // words, quotes, the operators between simple commands, nested scripts, and the wrapper commands.
 // Text that another program runs as code is in the `code` list of `parse`, for the code reader of a slice.
-// The functions are pure and import only `budget.ts`, `shellkinds.ts`, and `wrappers.ts`.
+// The scan of the text is in `shell/scan.ts`.
+// The functions are pure and import only `budget.ts`, `shell/scan.ts`, `shellkinds.ts`, and `wrappers.ts`.
 
 import { SHELL_SCAN_MAX_CHARS } from "./budget.ts";
+import { scan } from "./shell/scan.ts";
 import {
   bodyKind,
   hiddenLevel,
-  RESERVED,
   readsScript,
   runsCode,
   scriptOf,
 } from "./shellkinds.ts";
 import { stripWrappers } from "./wrappers.ts";
-
-/** A frame of the scan: one `$(`, backtick, or parenthesis, with the words of its command so far. */
-type Frame = {
-  closer: string | null;
-  body: boolean;
-  line: string[];
-  word: string | null;
-  quote: string | null;
-  skip: string | false;
-  heredocs: Heredoc[];
-  outs: string[];
-};
-
-/** A heredoc that the scan reads after the end of its line. */
-type Heredoc = {
-  delimiter: string;
-  quoted: boolean;
-  head: string[];
-  outs: string[];
-};
 
 /** A text that `parse` scans later, with the words of its heredoc when it has one. */
 type Queued = { text: string; body: boolean };
@@ -58,146 +39,6 @@ export const words = (text: unknown): string[] =>
   [...String(text).matchAll(/(?:'[^']*'|"[^"]*"|\\.|[^\s'"\\])+/g)].map((m) =>
     m[0].replace(/'([^']*)'|"([^"]*)"|\\(.)/g, (_, a, b, c) => a ?? b ?? c),
   );
-
-const frame = (closer: string | null, body = false): Frame => ({
-  closer,
-  body,
-  line: [],
-  word: null,
-  quote: null,
-  skip: false,
-  heredocs: [],
-  outs: [],
-});
-
-/**
- * One pass over `text` with a stack of frames, one for each `$(`, backtick, and parenthesis.
- * `emit(argv)` gets each simple command.
- * `redirect(op, target, line)` gets each redirection operator with the word after it and the words of its command so far.
- * `heredoc(doc, quoted, head, outs)` gets each heredoc body with the words of its command and the output targets of that command.
- */
-const scan = (
-  text: string,
-  emit: (argv: string[]) => void,
-  body: boolean,
-  redirect: (op: string, target: string, line: string[]) => void,
-  heredoc: (
-    doc: string,
-    quoted: boolean,
-    head: string[],
-    outs: string[],
-  ) => void,
-): void => {
-  const first = frame(null, body);
-  if (body) first.quote = '"';
-  const stack = [first];
-  const push = (f: Frame) => {
-    if (f.word !== null) {
-      if (f.skip) {
-        redirect(f.skip, f.word, f.line);
-        if (f.skip.includes(">")) f.outs.push(f.word);
-      } else f.line.push(f.word);
-      f.skip = false;
-    }
-    f.word = null;
-  };
-  const end = (f: Frame) => {
-    push(f);
-    while (f.line.length && RESERVED.has(f.line[0] as string)) f.line.shift();
-    if (f.line.length) emit(f.line);
-    f.line = [];
-    f.outs = [];
-  };
-  const open = (f: Frame, closer: string) => {
-    f.word ??= "";
-    stack.push(frame(closer));
-  };
-  const close = (f: Frame) => {
-    end(f);
-    stack.pop();
-  };
-  for (let i = 0; i < text.length; i++) {
-    const f = stack.at(-1) as Frame;
-    const c = text[i] as string;
-    if (c === "\\" && i + 1 < text.length && f.quote !== "'") {
-      const n = text[++i] as string;
-      if (n === "\n") continue;
-      f.word =
-        (f.word ?? "") + (f.quote && !'$`"\\'.includes(n) ? "\\" : "") + n;
-    } else if (f.quote === "'") {
-      if (c === "'") f.quote = null;
-      else f.word += c;
-    } else if (f.quote === '"') {
-      if (c === '"' && !f.body) f.quote = null;
-      else if (c === "$" && text[i + 1] === "(") {
-        open(f, ")");
-        i++;
-      } else if (c === "`") open(f, "`");
-      else f.word += c;
-    } else if (c === "`") {
-      if (f.closer === "`") close(f);
-      else open(f, "`");
-    } else if (c === "$" && text[i + 1] === "(") {
-      open(f, ")");
-      i++;
-    } else if (c === "'" || c === '"') {
-      f.quote = c;
-      f.word ??= "";
-    } else if (c === "#" && f.word === null) {
-      const nl = text.indexOf("\n", i);
-      i = nl < 0 ? text.length : nl - 1;
-    } else if (c === "<" && text[i + 1] === "<" && text[i + 2] !== "<") {
-      const m = /^<<-?\s*(\\?)(["']?)([A-Za-z_]\w*)\2/.exec(
-        text.slice(i, i + 200),
-      );
-      if (m)
-        f.heredocs.push({
-          delimiter: m[3] as string,
-          quoted: !!(m[1] || m[2]),
-          head: [...f.line],
-          outs: f.outs,
-        });
-      i += m ? m[0].length - 1 : 1;
-      push(f);
-    } else if (c === "<" || c === ">") {
-      if (f.word !== null && /^\d+$/.test(f.word)) f.word = null;
-      push(f);
-      const from = i;
-      while ("<>".includes(text[i + 1] ?? " ")) i++;
-      if ("&|".includes(text[i + 1] ?? " ")) i++;
-      f.skip = text.slice(from, i + 1);
-    } else if (c === "\n") {
-      end(f);
-      let pos = i + 1;
-      for (const { delimiter, quoted, head, outs } of f.heredocs.splice(0)) {
-        const start = pos;
-        let stop = pos;
-        while (pos < text.length) {
-          const nl = text.indexOf("\n", pos);
-          const line = text.slice(pos, nl < 0 ? text.length : nl);
-          const next = nl < 0 ? text.length : nl + 1;
-          if (line.trim() === delimiter) break;
-          pos = stop = next;
-        }
-        const doc = text.slice(start, stop);
-        if (stop > start) heredoc(doc, quoted, head, outs);
-        const nl = text.indexOf("\n", pos);
-        pos = nl < 0 ? text.length : nl + 1;
-      }
-      i = pos - 1;
-    } else if (c === "(") {
-      end(f);
-      f.skip = false;
-      stack.push(frame(")"));
-    } else if (c === ")") {
-      if (f.closer === ")") close(f);
-      else end(f);
-    } else if (";&|".includes(c)) end(f);
-    else if (/\s/.test(c)) push(f);
-    else f.word = (f.word ?? "") + c;
-  }
-  while (stack.length) end(stack.pop() as Frame);
-};
 
 /**
  * The simple commands of `text` as lists of words, and whether the scan stopped at `SHELL_SCAN_MAX_CHARS`.
