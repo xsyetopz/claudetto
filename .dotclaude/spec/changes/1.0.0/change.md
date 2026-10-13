@@ -82,6 +82,20 @@ It gets the highest intelligence for the lowest token cost:
 - The subagent runs of dotclaude use the lessons of the Bun port to Rust ([Bun in Rust](https://bun.com/blog/bun-in-rust)), at the scale of a subscription and not of the API.
   Each step fits one run, one `reviewer` reads only the diff of a package, a subagent cannot run a git command that changes shared state, and few runs go at once.
 - This repository has a project agent `implementer` that links to the 1.0.0 agent of the plugin, on `claude-sonnet-5-5` at `effort: medium`, in place of the installed 0.28.0 agent on Haiku.
+- The root session is the orchestrator, and each subagent is a worker that cannot start a subagent (the user, 2026-10-13).
+- The agents and their models (the user, 2026-10-13, from the reports in `docs/research/agents-models/`):
+  `planner` and `reviewer` on Opus 5.5 `high`, `debugger` on Opus 5.5 `medium`, `implementer` and `researcher` on Sonnet 5.5 `medium`, and `investigator` on Haiku 5.5 `medium` for code search only.
+  No subagent runs on Fable 5.1 or Mythos 5.1.
+  When the same check of an `implementer` fails two times, the root sends the work again with `model: opus`.
+  The `investigator` quotes only the numbers that a tool returned.
+- No agent has a `maxTurns` (the user, 2026-10-13).
+- The prompt of each agent follows the prompt guidance of Anthropic for its model, the failures of `external/agent-failure-dossier/`, and the style of XML tags in Markdown (the user, 2026-10-13).
+- The root resumes a stopped agent with `SendMessage` and never starts a new agent for its work, and a hook enforces this with no escape (the user, 2026-10-13).
+- The advisor tool is opt-in (the user, 2026-10-13, [evidence](evidence/advisor.md)).
+  With no `advisorModel`, it adds no token, so the `trim` slice does not turn it off.
+  With an `advisorModel`, each request of the root and of each subagent has about 1,358 tokens more, so `/dotclaude:setup` sets it only when the user asks.
+- The wiki gives each choice of 1.0.0 a short reason and the alternatives that dotclaude did not take, with the reason for each.
+  `docs/` holds the research of this repository, and `just wiki` does not publish it (the user, 2026-10-13).
 
 ## Scope
 

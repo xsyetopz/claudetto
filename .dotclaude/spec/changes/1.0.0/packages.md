@@ -233,6 +233,30 @@ Each add-on package owns `src/plugins/<plugin>/` and `tests/<short name>/`.
   Owns: `src/plugins/dcc-plugin-you-should-know/`, its tests, its marketplace entry and wiki page, and `evidence/you-should-know.md`.
   Verify: `just check`, `just lab`, and one session in `just sandbox` where a notice shows before the action that it is about.
   The HTTP 429 on a subscription came from `CLAUDE_CODE_ATTRIBUTION_HEADER=0`, so the plugin uses `complete` on each account, and `fork` only after a 429 ([evidence](evidence/you-should-know.md), the user, 2026-10-13).
+- [ ] P42 Agent roster: `debugger` moves to Opus 5.5 `medium`, and no agent has a `maxTurns` ([package](packages/42-agent-roster.md), decisions, the user, 2026-10-13).
+  Deps: none.
+  Verify: `just check`, `just lab`, and one session in `just sandbox` that starts each agent once.
+- [ ] P44 Advisor opt-in: the `trim` slice stops turning off the advisor, and `/dotclaude:setup` sets `advisorModel` only when the user asks ([package](packages/44-advisor-opt-in.md), [evidence](evidence/advisor.md), the user, 2026-10-13).
+  Deps: none.
+  Verify: `just check`, `just lab`, and one session in `just sandbox-install`.
+- [ ] P46 Spec commands: `show`, `list`, `lane --note`, `review`, `retry`, `drop`, `deps`, and `log` ([package](packages/46-spec-commands.md), the user, 2026-10-13).
+  Deps: none.
+  Verify: `just check`, `just lab`, and one session in `just sandbox` that uses each new command.
+
+## Wave 5: agents after the roster
+
+- [ ] P47 Agent prompts: each agent body follows the prompt guidance of Anthropic for its model and prevents the failures of the agent failure dossier ([package](packages/47-agent-prompts.md), the user, 2026-10-13).
+  Deps: P42.
+  Verify: `just check`, `just lab`, and one session in `just sandbox` for each agent.
+- [ ] P43 Resume mandate: a hook refuses a new agent while a stopped agent is not resumed ([package](packages/43-resume-mandate.md), the user, 2026-10-13).
+  Deps: P42.
+  Verify: `just check`, `just lab`, and one session in `just sandbox` with a stop and a resume.
+
+## Wave 6: release
+
+- [ ] P45 Wiki agent choices: one page gives each agent choice of 1.0.0 a reason and the alternatives not taken ([package](packages/45-wiki-choices.md), the user, 2026-10-13).
+  Deps: P42, P43, P44, P47.
+  Verify: `just check` and `bun run lint:md`.
 - [ ] P16 Release check: `tools/rebuild-pending.txt` is empty and deleted with its check, a `reviewer` pass on the full diff, `just check`, and one session in `just sandbox` that runs `/spec`, `/ship`, `/hotfix`, a decision, and a handoff.
   Deps: each package above.
   Verify: the user approves the version 1.0.0 and the push.
