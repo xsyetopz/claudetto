@@ -4,11 +4,16 @@
 import { expect, test } from "bun:test";
 import {
   actionOf,
+  completePrompt,
+  forkPrompt,
   isBashRead,
   isChange,
   isRepeat,
   topicOf,
 } from "../../src/plugins/dcc-plugin-you-should-know/slices/notice/domain/notice.ts";
+
+/** Twenty-five topics, the oldest first. */
+const MANY = Array.from({ length: 25 }, (_, i) => `Topic ${i}.`);
 
 test("a `Bash` command of read programs only is a read", () => {
   for (const command of [
@@ -72,4 +77,17 @@ test("a topic with other case or punctuation is a repeat", () => {
   expect(
     isRepeat("The retry has no delay.", ["The cache keeps old data."]),
   ).toBeFalse();
+});
+
+test("the seen list of a separate call holds only the newest topics", () => {
+  const prompt = completePrompt("Raise the tries.", "Tool: Edit", MANY);
+  expect(prompt).toContain("Topic 24.");
+  expect(prompt).toContain("Topic 15.");
+  expect(prompt).not.toContain("Topic 14.");
+});
+
+test("the seen list of a fork holds only the newest topics", () => {
+  const prompt = forkPrompt("Tool: Edit", MANY);
+  expect(prompt).toContain("Topic 24.");
+  expect(prompt).not.toContain("Topic 14.");
 });

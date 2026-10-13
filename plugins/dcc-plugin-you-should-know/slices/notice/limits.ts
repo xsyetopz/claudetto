@@ -19,6 +19,13 @@ export const FORK_WAIT_MS = 6000;
 /** The most characters of the prompt of the user and of the pending action in one call. */
 export const MAX_INPUT_CHARS = 4000;
 
+/**
+ * The most topics of the `<seen>` list in one prompt, the newest first to drop.
+ * Ten topics of 400 characters at most is 4000 characters, the same as `MAX_INPUT_CHARS`.
+ * The repeat check still reads every topic of the session.
+ */
+export const MAX_SEEN_TOPICS = 10;
+
 /** The most characters of a topic in the toast. */
 export const MAX_TOPIC_CHARS = 400;
 

@@ -225,6 +225,20 @@ test("a topic that showed in the session does not show again", async ($: Engine,
   expect(seen.complete[1]).toContain(TOPIC);
 });
 
+test("a topic older than the seen bound still does not show again", async ($: Engine, on: On) => {
+  const topics = Array.from({ length: 12 }, (_, i) => `Topic ${i}.`);
+  const { seen } = setup(on, {
+    complete: [...topics.map((t) => answered(t)), answered(topics[0] ?? "")],
+  });
+  for (const i of topics.keys()) {
+    await turn($, `Request ${i}.`, `t${i}`);
+    await check($, "Edit", EDIT);
+  }
+  await turn($, "Again.", "t-last");
+  await check($, "Edit", EDIT);
+  expect(seen.toasts).toStrictEqual(topics);
+});
+
 test("a call that gives no topic shows no toast", async ($: Engine, on: On) => {
   const { seen } = setup(on, { complete: [answered("NONE")] });
   await turn($, "Raise the tries.", "t1");
