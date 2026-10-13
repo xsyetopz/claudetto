@@ -8,8 +8,16 @@ import { simpleCommands, type Word } from "./shell.ts";
 /** A text change of the command: the span `from` to `to` becomes `text`, with offsets in the command. */
 type Edit = { from: number; to: number; text: string };
 
-/** The options of `git` that take a value before the subcommand. */
-const GIT_WITH_VALUE = new Set(["-C", "-c"]);
+/** The options of `git` that take a value in the next word, before the subcommand. */
+const GIT_WITH_VALUE = new Set([
+  "-C",
+  "-c",
+  "--git-dir",
+  "--work-tree",
+  "--namespace",
+  "--super-prefix",
+  "--config-env",
+]);
 /** The options of `git commit` that make no commit. */
 const NO_COMMIT = new Set(["--dry-run", "--no-commit", "-h", "--help"]);
 /** An assignment before a command, such as `FOO=1`. */
@@ -26,7 +34,8 @@ const commitWord = (words: Word[]): Word | undefined => {
   while (i < words.length && ASSIGNMENT.test(words[i]?.raw ?? "")) i++;
   if (words[i]?.raw !== "git") return undefined;
   i++;
-  while (GIT_WITH_VALUE.has(words[i]?.raw ?? "")) i += 2;
+  while (words[i]?.raw.startsWith("-"))
+    i += GIT_WITH_VALUE.has(words[i]?.raw ?? "") ? 2 : 1;
   const word = words[i];
   if (word?.raw !== "commit") return undefined;
   if (words.slice(i + 1).some((w) => NO_COMMIT.has(w.raw))) return undefined;
