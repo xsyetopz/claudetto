@@ -70,3 +70,8 @@
 {"at":"2026-10-13T18:40:25.986Z","package":"P49","state":"approved","verdict":"approve","sha":"a887f40474c6f778e13f85678f96148e7c6a9be7"}
 {"at":"2026-10-13T18:40:29.179Z","package":"P49","state":"done","sha":"a887f40474c6f778e13f85678f96148e7c6a9be7"}
 {"at":"2026-10-13T18:43:08.126Z","package":"P50","state":"doing"}
+{"at":"2026-10-13T18:49:21.931Z","package":"P50","state":"verified","sha":"2ad2abbb7c4f3139fb6a5f27c3afdae87a024f79","verify":{"command":"just check","exit":0}}
+{"at":"2026-10-13T18:51:24.317Z","package":"P50","state":"doing","verdict":"reject","findings":["accept passes when trace finds no base","the base by commit time is fragile; implement records no SHA","isTrivial counts code after a closing comment, and export lines with ' from ' in a string","a citation outside a comment counts","the skip list is a blacklist, and the design says source files only","markersOf damages and hides markers with backticks"],"decision":"fix-code"}
+{"at":"2026-10-13T18:59:38.547Z","package":"P50","state":"verified","sha":"6f50f306f5a4fde886833b4cd53db3c4f4e8173a","verify":{"command":"just check","exit":0}}
+{"at":"2026-10-13T18:59:57.676Z","package":"P50","state":"approved","verdict":"approve","sha":"6f50f306f5a4fde886833b4cd53db3c4f4e8173a"}
+{"at":"2026-10-13T19:00:00.707Z","package":"P50","state":"done","sha":"6f50f306f5a4fde886833b4cd53db3c4f4e8173a"}
