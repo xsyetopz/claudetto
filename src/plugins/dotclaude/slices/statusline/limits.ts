@@ -23,8 +23,17 @@ export const COLUMNS_MARGIN = 4;
 /** The most subagent rows. Claude Code shows the rows in the panel, so a long list is no help. */
 export const SUBAGENT_ROWS_MAX = 20;
 
-/** The text between two segments of a row. */
-export const SEGMENT_GAP = "  ";
+/** The text between two items of a row of the main status line and of a subagent row. */
+export const ITEM_GAP = " · ";
+
+/** The length, in seconds, of the `5h` window of a limit. */
+export const FIVE_HOUR_S = 5 * 60 * 60;
+
+/** The length, in seconds, of the `7d` window of a limit. */
+export const SEVEN_DAY_S = 7 * 24 * 60 * 60;
+
+/** The part of a limit window that must pass before its pace arrow shows. */
+export const PACE_MIN_FRACTION = 0.03;
 
 /** The columns that a subagent row needs for its description before the description shows. */
 export const DESCRIPTION_ROOM_MIN = 8;

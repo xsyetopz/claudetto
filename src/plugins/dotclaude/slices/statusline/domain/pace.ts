@@ -1,0 +1,24 @@
+// The pace of a limit window: the used percentage minus the elapsed percentage of the window.
+
+import { PACE_MIN_FRACTION } from "../limits.ts";
+import type { LimitWindow } from "./types.ts";
+
+/**
+ * The pace of `window` at `nowS` for a window of `spanS` seconds, in points of percent, or null while it is too early.
+ * A positive value is a deficit, which is a use above the even pace. A negative value is a reserve, which is a use below it.
+ */
+export const paceDelta = (
+  window: LimitWindow | undefined,
+  nowS: number,
+  spanS: number,
+): number | null => {
+  const used = window?.used_percentage;
+  const resetsAt = window?.resets_at;
+  if (typeof used !== "number" || !Number.isFinite(used)) return null;
+  if (typeof resetsAt !== "number") return null;
+  const left = resetsAt - nowS;
+  if (!(left >= 0 && left <= spanS)) return null;
+  const elapsed = (spanS - left) / spanS;
+  if (elapsed < PACE_MIN_FRACTION) return null;
+  return Math.round(used - 100 * elapsed);
+};

@@ -155,6 +155,14 @@ test("a cache file with a wrong field type is no cache, and `git` runs", async (
   expect(gitRuns).toBe(1);
 });
 
+test("a torn, empty, or non-object cache file is no cache, and the status line still shows", async () => {
+  for (const damaged of ["", '{"at":', "null", "5", "[]"]) {
+    const { gitRuns, out } = await runWithSaved(damaged);
+    expect(gitRuns).toBe(1);
+    expect(out).toContain("⌂ dotclaude");
+  }
+});
+
 /** The mode bits of a folder exist on POSIX only, so a test of them does not run on Windows. */
 const posixTest = test.skipIf(process.platform === "win32");
 

@@ -37,7 +37,7 @@ test("a running task gives one JSON row with its id and a line of numbers", asyn
     {
       id: "t1",
       content:
-        "● builder (implementer) sonnet 5.5 high  ▤ 60k/300k 20%  ◔ 3m  Rebuild the status line",
+        "● builder (implementer) sonnet 5.5 high · ▤ 60k/300k 20% · ◔ 3m · Rebuild the status line",
     },
   ]);
 });

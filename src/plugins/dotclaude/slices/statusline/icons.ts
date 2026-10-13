@@ -8,6 +8,8 @@ export const ICON = {
   ahead: "↑",
   behind: "↓",
   model: "◈",
+  deficit: "▲",
+  reserve: "▼",
   thinking: "✦",
   context: "▤",
   added: "+",
