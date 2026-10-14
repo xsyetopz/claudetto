@@ -9,7 +9,7 @@ owns: ["src/plugins/dcc-plugin-agents-md/","tests/dcc-plugin-agents-md/","the dc
 satisfies: []
 verify: just check && just lab
 agent: implementer
-status: verified
+status: done
 ---
 
 ## Goal
