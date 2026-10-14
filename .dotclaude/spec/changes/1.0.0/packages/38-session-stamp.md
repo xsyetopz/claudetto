@@ -9,7 +9,7 @@ owns: ["src/kernel/stamp.ts","tests/kernel/stamp.test.ts","src/plugins/dotclaude
 satisfies: []
 verify: just check && just lab
 agent: implementer
-status: verified
+status: done
 ---
 
 ## Goal
