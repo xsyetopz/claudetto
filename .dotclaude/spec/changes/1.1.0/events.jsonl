@@ -1,0 +1,13 @@
+{"schema":2}
+{"at":"2026-10-14T12:00:00.000Z","state":"draft"}
+{"at":"2026-10-14T00:54:42.609Z","state":"specified"}
+{"at":"2026-10-14T00:54:45.973Z","state":"planned"}
+{"at":"2026-10-14T00:54:53.426Z","package":"P63","state":"canceled","note":"user 2026-10-14: questions are fixed by prompting only"}
+{"at":"2026-10-14T00:54:53.508Z","package":"P65","state":"canceled","note":"user 2026-10-14: openers are fixed by prompting only"}
+{"at":"2026-10-14T00:54:53.592Z","package":"P71","state":"canceled","note":"D2: no agent has maxTurns"}
+{"at":"2026-10-14T00:54:53.675Z","package":"P73","state":"canceled","note":"D6: origin tags and role-aware text only"}
+{"at":"2026-10-14T01:20:08.963Z","state":"implementing"}
+{"at":"2026-10-14T01:20:08.974Z","package":"P55","state":"doing","sha":"878726620d8e200b9715b85cd654ab5e40aceeea"}
+{"at":"2026-10-14T01:22:54.772Z","package":"P55","state":"verified","sha":"878726620d8e200b9715b85cd654ab5e40aceeea","verify":{"command":"plugins/dotclaude/bin/dotclaude-spec validate && plugins/dotclaude/bin/dotclaude-spec status","exit":0}}
+{"at":"2026-10-14T01:23:00.071Z","package":"P55","state":"approved","verdict":"approve","sha":"878726620d8e200b9715b85cd654ab5e40aceeea"}
+{"at":"2026-10-14T01:23:03.045Z","package":"P55","state":"done","sha":"878726620d8e200b9715b85cd654ab5e40aceeea"}
