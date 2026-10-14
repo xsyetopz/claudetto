@@ -9,7 +9,7 @@ owns: ["src/plugins/dcc-plugin-you-should-know/","tests/dcc-plugin-you-should-kn
 satisfies: []
 verify: just check && just lab
 agent: implementer
-status: verified
+status: done
 ---
 
 ## Goal
