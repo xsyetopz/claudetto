@@ -9,7 +9,7 @@ owns: ["src/plugins/dotclaude/slices/attribution/","tests/dotclaude/attribution/
 satisfies: []
 verify: just check && just lab
 agent: implementer
-status: verified
+status: done
 ---
 
 ## Goal
