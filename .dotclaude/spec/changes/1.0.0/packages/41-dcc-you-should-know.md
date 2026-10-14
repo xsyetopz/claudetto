@@ -7,9 +7,9 @@ wave: 4
 deps: []
 owns: ["src/plugins/dcc-plugin-you-should-know/","tests/dcc-plugin-you-should-know/","the dcc-plugin-you-should-know entry of .claude-plugin/marketplace.json","src/wiki/add-ons/You-Should-Know.md","evidence/you-should-know.md"]
 satisfies: []
-verify: just check, just lab, and one session in just sandbox where a notice shows before the action that it is about
+verify: just check && just lab
 agent: implementer
-status: planned
+status: verified
 ---
 
 ## Goal

@@ -95,3 +95,19 @@
 {"at":"2026-10-13T20:05:01.892Z","package":"P53","state":"verified","sha":"3b2987d9f981cebff3cc608e268fd3f2f81321aa","verify":{"command":"just check","exit":0}}
 {"at":"2026-10-13T20:05:01.955Z","package":"P53","state":"approved","verdict":"approve","sha":"3b2987d9f981cebff3cc608e268fd3f2f81321aa"}
 {"at":"2026-10-13T20:05:04.947Z","package":"P53","state":"done","sha":"3b2987d9f981cebff3cc608e268fd3f2f81321aa"}
+{"at":"2026-10-14T00:59:31.903Z","package":"P16","state":"doing","note":"P55 close-out, D9 approved by the user 2026-10-14","sha":"765e6954941b978bec344f572f283c61e0b1a3bf"}
+{"at":"2026-10-14T00:59:32.013Z","package":"P39","state":"doing","note":"P55 close-out, D9 approved by the user 2026-10-14","sha":"765e6954941b978bec344f572f283c61e0b1a3bf"}
+{"at":"2026-10-14T00:59:32.111Z","package":"P40","state":"doing","note":"P55 close-out, D9 approved by the user 2026-10-14","sha":"765e6954941b978bec344f572f283c61e0b1a3bf"}
+{"at":"2026-10-14T00:59:32.209Z","package":"P41","state":"doing","note":"P55 close-out, D9 approved by the user 2026-10-14","sha":"765e6954941b978bec344f572f283c61e0b1a3bf"}
+{"at":"2026-10-14T01:00:52.756Z","package":"P16","state":"doing","sha":"765e6954941b978bec344f572f283c61e0b1a3bf","verify":{"command":"just check","exit":1},"note":"The command left changes outside `.dotclaude/spec`: wiki/_Sidebar.md, wiki/claude-code/Undocumented-Reads.md, wiki/claude-code/Undocumented-Settings.md."}
+{"at":"2026-10-14T01:02:24.423Z","package":"P38","state":"doing","sha":"765e6954941b978bec344f572f283c61e0b1a3bf","verify":{"command":"just check && just lab","exit":1},"note":"The command left changes outside `.dotclaude/spec`: wiki/_Sidebar.md, wiki/claude-code/Undocumented-Reads.md, wiki/claude-code/Undocumented-Settings.md."}
+{"at":"2026-10-14T01:03:53.834Z","package":"P39","state":"doing","sha":"765e6954941b978bec344f572f283c61e0b1a3bf","verify":{"command":"just check && just lab","exit":1},"note":"The command left changes outside `.dotclaude/spec`: wiki/_Sidebar.md, wiki/claude-code/Undocumented-Reads.md, wiki/claude-code/Undocumented-Settings.md."}
+{"at":"2026-10-14T01:05:19.160Z","package":"P40","state":"doing","sha":"765e6954941b978bec344f572f283c61e0b1a3bf","verify":{"command":"just check && just lab","exit":1},"note":"The command left changes outside `.dotclaude/spec`: wiki/_Sidebar.md, wiki/claude-code/Undocumented-Reads.md, wiki/claude-code/Undocumented-Settings.md."}
+{"at":"2026-10-14T01:06:47.418Z","package":"P41","state":"doing","sha":"765e6954941b978bec344f572f283c61e0b1a3bf","verify":{"command":"just check && just lab","exit":1},"note":"The command left changes outside `.dotclaude/spec`: wiki/_Sidebar.md, wiki/claude-code/Undocumented-Reads.md, wiki/claude-code/Undocumented-Settings.md."}
+{"at":"2026-10-14T01:10:50.829Z","package":"P16","state":"verified","sha":"765e6954941b978bec344f572f283c61e0b1a3bf","verify":{"command":"just check","exit":0}}
+{"at":"2026-10-14T01:12:45.922Z","package":"P38","state":"verified","sha":"765e6954941b978bec344f572f283c61e0b1a3bf","verify":{"command":"just check && just lab","exit":0}}
+{"at":"2026-10-14T01:14:14.526Z","package":"P39","state":"verified","sha":"765e6954941b978bec344f572f283c61e0b1a3bf","verify":{"command":"just check && just lab","exit":0}}
+{"at":"2026-10-14T01:15:58.879Z","package":"P40","state":"verified","sha":"765e6954941b978bec344f572f283c61e0b1a3bf","verify":{"command":"just check && just lab","exit":0}}
+{"at":"2026-10-14T01:17:22.570Z","package":"P41","state":"verified","sha":"765e6954941b978bec344f572f283c61e0b1a3bf","verify":{"command":"just check && just lab","exit":0}}
+{"at":"2026-10-14T01:17:44.735Z","package":"P16","state":"approved","verdict":"approve","sha":"765e6954941b978bec344f572f283c61e0b1a3bf"}
+{"at":"2026-10-14T01:18:36.153Z","package":"P16","state":"done","sha":"765e6954941b978bec344f572f283c61e0b1a3bf"}
