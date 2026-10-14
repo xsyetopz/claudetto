@@ -119,3 +119,7 @@
 {"at":"2026-10-14T01:18:49.602Z","package":"P40","state":"done","sha":"765e6954941b978bec344f572f283c61e0b1a3bf"}
 {"at":"2026-10-14T01:18:49.796Z","package":"P41","state":"approved","verdict":"approve","sha":"765e6954941b978bec344f572f283c61e0b1a3bf"}
 {"at":"2026-10-14T01:18:53.565Z","package":"P41","state":"done","sha":"765e6954941b978bec344f572f283c61e0b1a3bf"}
+{"at":"2026-10-14T01:18:59.504Z","package":"P18","state":"canceled","note":"moved to 1.1.0 P78"}
+{"at":"2026-10-14T01:18:59.653Z","package":"P43","state":"canceled","note":"moved to 1.1.0 P79"}
+{"at":"2026-10-14T01:18:59.749Z","package":"P45","state":"canceled","note":"moved to 1.1.0 P81"}
+{"at":"2026-10-14T01:18:59.939Z","package":"P47","state":"canceled","note":"moved to 1.1.0 P80"}

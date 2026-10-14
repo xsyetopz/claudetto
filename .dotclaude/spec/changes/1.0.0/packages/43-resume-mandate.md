@@ -9,7 +9,7 @@ owns: ["src/plugins/dotclaude/slices/agents/hooks/","src/plugins/dotclaude/slice
 satisfies: []
 verify: just check, just lab, and one session in just sandbox where an agent stops without a report and the root resumes it
 agent: main session
-status: planned
+status: canceled
 ---
 
 ## Goal

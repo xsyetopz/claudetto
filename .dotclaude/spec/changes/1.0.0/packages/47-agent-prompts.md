@@ -9,7 +9,7 @@ owns: ["the body of the agent files in src/plugins/dotclaude/slices/agents/agent
 satisfies: []
 verify: just check, just lab, and one session in just sandbox for each agent with a task of its kind
 agent: main session
-status: planned
+status: canceled
 ---
 
 ## Goal

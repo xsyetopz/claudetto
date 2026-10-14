@@ -3,7 +3,7 @@ schema: dotclaude-spec/2
 kind: change
 id: Second-checking
 size: large
-status: implementing
+status: archived
 verify: just check
 ---
 

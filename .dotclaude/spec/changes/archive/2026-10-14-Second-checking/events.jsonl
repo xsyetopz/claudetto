@@ -28,3 +28,5 @@
 {"at":"2026-10-13T15:02:27.676Z","package":"P07","state":"doing"}
 {"at":"2026-10-13T15:17:41.775Z","package":"P07","state":"verified","note":"Converted from schema 1, which had no verify record (no SHA, no exit status)."}
 {"at":"2026-10-13T15:17:44.878Z","package":"P07","state":"done"}
+{"at":"2026-10-14T01:19:27.810Z","state":"accepted"}
+{"at":"2026-10-14T01:19:27.885Z","state":"archived"}

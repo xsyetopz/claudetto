@@ -9,7 +9,7 @@ owns: ["src/wiki/dotclaude/Agent-Choices.md","wiki/_Sidebar.md","docs/research/a
 satisfies: []
 verify: just check and bun run lint:md
 agent: main session
-status: planned
+status: canceled
 ---
 
 ## Goal

@@ -9,7 +9,7 @@ owns: [".dotclaude/spec/changes/1.0.0/packages/18-history.md"]
 satisfies: []
 verify: the user approves each deletion before it runs
 agent: implementer
-status: planned
+status: canceled
 ---
 
 ## Goal
