@@ -9,7 +9,7 @@ owns: [".dotclaude/spec/changes/1.1.0/evidence/injected-instructions.md"]
 satisfies: ["REQ-10","REQ-18"]
 verify: test -s .dotclaude/spec/changes/1.1.0/evidence/injected-instructions.md && bun run lint:md
 agent: researcher
-status: planned
+status: verified
 ---
 
 ## Goal

@@ -242,8 +242,8 @@ P141 writes the evidence file of REQ-9 with each ID, its package, and each ID th
 | 2 | P109 to P134 |
 | 3 | P56, P57, P60, P61, P66, P68, P72, P74, P75, P135, P139, P144 to P146, P157 |
 | 4 | P62, P64, P67, P69, P79, P80, P142, P143, P150, P152, P153, P158 |
-| 5 | P70, P76, P77, P140, P147 to P149, P159 |
-| 6 | P81, P137, P138, P141, P151, P155, P156 |
+| 5 | P70, P76, P77, P140, P147 to P149, P159, P165 |
+| 6 | P81, P137, P138, P141, P151, P155, P156, P161 to P164 |
 | 7 | P82 |
 
 No two open packages of one wave own the same path.

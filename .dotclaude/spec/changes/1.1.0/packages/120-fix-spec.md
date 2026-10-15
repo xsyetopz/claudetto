@@ -21,6 +21,17 @@ Each confirmed finding of P94 has a test that fails before the fix and passes af
 - The findings: `.dotclaude/spec/changes/1.1.0/evidence/review-spec.md` (P94).
 - The known defects in `design.md`, "Review wave": `status` in a subfolder, a `done` package with no verify record, and `states.ts:73`.
 - The bounds: the `limits.ts` of the slice, `src/kernel/budget.ts`, and `tools/limits.ts`.
+- Two defects of `merge` from the OpenJoystickDriver session of 2026-10-14 (transcript `76529e5a`, line 274).
+  No command in this repository has confirmed them yet, so write the failing test first:
+  - `adapters/merge.ts:180` runs `just generate` when a `justfile` exists, but it does not check that the recipe exists.
+    A project with a `justfile` and no `generate` recipe cannot merge a package.
+  - `adapters/merge.ts:202` runs `git add` on the folder of the change, and the commit fails when `.gitignore` ignores `/.dotclaude/`.
+    Git says "pathspec ... did not match any file(s) known to git", and `merge` moves the state back, so the package cannot get to `done`.
+- The `just generate` defect repeats in the later OpenJoystickDriver sessions `6c3752d7` (lines 161 and 169) and `44b42f2b` (lines 83 and 152), with "error: justfile does not contain recipe `generate`".
+  The git merge lands, but `merge` writes no `done` event.
+  The model then wrote the `done` events by hand with a script (`44b42f2b` line 168, and `6c3752d7` line 187 for P9, P2, P15, and P13), which goes around the store.
+- In `6c3752d7` line 142, `review` refused with "This is a linked git worktree.
+  Only the main checkout records a review", and the model told the user to run `!` commands (lines 137 and 144).
 
 ## Steps
 

@@ -291,6 +291,8 @@ Each part that Claude Code adds MUST have its override points, documented or not
 dotclaude MUST use an undocumented override point when it makes a part smaller, and the wiki MUST document each undocumented point that the search finds, also one that dotclaude does not use (the user, 2026-10-14).
 A budget value is a decision of REQ-25.
 
+REQ-28 and REQ-29 are in [agent-runs](requirements/agent-runs.md).
+
 ## Evidence
 
 The evidence of each item is in [design](design.md), with the file and line of each fact.

@@ -23,6 +23,10 @@ A signed `git commit` with ssh or gpg works in the sandbox when the key is in an
 - The session error: `Couldn't load public key ~/.ssh/id_ed25519.pub` and `failed to write commit object`.
 - `schemas/claude-code-settings.json`: `sandbox.filesystem.allowRead` re-allows a path inside a `denyRead` region, and `sandbox.network.allowUnixSockets` is macOS only.
 - The design and D4: `design.md`, "Signed commits".
+- dotclaude session `ef21d7f2` of 2026-10-14: the `implementer` agents of P75 and P160 could not commit in their worktrees for the same reason, and correctly did not turn off signing.
+  The main session made the commits `ab5cf6a9` and `4e09b17f` outside the sandbox, with the approval of the user.
+  An earlier agent commit, `953a359d` (P72), has no signature (`%G?` gives `N`).
+  `ssh-add -l` in the sandbox gave `Operation not permitted`, so `allowRead` of the public key alone does not give a signature.
 
 ## Steps
 

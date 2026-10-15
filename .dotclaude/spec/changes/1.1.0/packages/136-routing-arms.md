@@ -9,7 +9,7 @@ owns: [".dotclaude/spec/changes/1.1.0/evidence/routing-arms.md"]
 satisfies: ["REQ-14","REQ-18"]
 verify: test -s .dotclaude/spec/changes/1.1.0/evidence/routing-arms.md && bun run lint:md
 agent: main session
-status: planned
+status: blocked
 ---
 
 ## Goal

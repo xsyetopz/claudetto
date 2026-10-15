@@ -35,6 +35,10 @@ When usage is normal, no note goes, so the cost is zero tokens.
   It reads the sample through a mod API or through `$.process.run` of a bin, as `runBin` does (`handoff/adapters/mod.ts:99-107`).
 - `design.md`, "Context facts in Claude Code 2.1.296", and D13 and D14.
 - `.claude/rules/ste-messages.md` and the prose rule of `design.md`.
+- dotclaude session `ef21d7f2` of 2026-10-14: each of 8 subagent runs (2 `implementer` and 6 `researcher` or `investigator`) stopped with its task partly done, at 88K to 116K subagent tokens.
+  Each report named the context bound, which is the report-now note of `handoff/domain/context.ts:41` over `SUBAGENT_CONTEXT_MAX` `100_000` (`handoff/limits.ts:8`).
+  The main session then started a new run for each open part, and 2 implementer runs left their work uncommitted and untested.
+  The note says "Commit your work first", but an agent in the sandbox cannot sign a commit (P60).
 
 ## Steps
 

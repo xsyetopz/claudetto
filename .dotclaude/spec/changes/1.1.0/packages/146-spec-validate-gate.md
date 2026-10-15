@@ -21,6 +21,8 @@ status: planned
 - `spec/adapters/validate.ts:173-201`: the checks of the formats, the states, the deps, and the `owns` only.
 - `spec/adapters/plan.ts:47-57` and `spec/domain/change-gates.ts:26-44`: `coverageOf` and `gatePlan`.
 - The agent of session `d87f7ed2` wrote its own `check.ts` and reported "plan gate: PASS" (`design.md`, "Spec CLI").
+- `validate` accepts a `verify:` field that is prose and not a command.
+  P78 has `verify: the user approves each deletion, then git tag --list shows no tag of a version before 1.0.0`, and `dotclaude-spec verify P78` gave `sh: the: command not found` (session `ef21d7f2`, 2026-10-14).
 
 ## Steps
 

@@ -9,7 +9,7 @@ owns: [".dotclaude/spec/changes/1.1.0/evidence/context-budget.md","tools/limits.
 satisfies: ["REQ-27"]
 verify: just test tests/tools/context-budget.test.ts && bun run lint:md
 agent: implementer
-status: planned
+status: verified
 ---
 
 ## Goal

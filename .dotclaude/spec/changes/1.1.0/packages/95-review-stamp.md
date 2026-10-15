@@ -9,7 +9,7 @@ owns: [".dotclaude/spec/changes/1.1.0/evidence/review-stamp.md"]
 satisfies: ["REQ-13"]
 verify: test -s .dotclaude/spec/changes/1.1.0/evidence/review-stamp.md && bun run lint:md
 agent: reviewer
-status: planned
+status: verified
 ---
 
 ## Goal

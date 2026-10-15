@@ -9,7 +9,7 @@ owns: ["src/plugins/dotclaude/slices/release/","tests/dotclaude/release/"]
 satisfies: ["REQ-9"]
 verify: just test tests/dotclaude/release && just lab
 agent: implementer
-status: planned
+status: verified
 ---
 
 ## Goal

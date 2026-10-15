@@ -9,7 +9,7 @@ owns: ["src/plugins/dotclaude/slices/depcheck/","tests/dotclaude/depcheck/"]
 satisfies: ["REQ-9"]
 verify: just test tests/dotclaude/depcheck && just lab
 agent: implementer
-status: planned
+status: verified
 ---
 
 ## Goal

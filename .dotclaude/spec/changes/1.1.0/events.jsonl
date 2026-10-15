@@ -11,3 +11,77 @@
 {"at":"2026-10-14T01:22:54.772Z","package":"P55","state":"verified","sha":"878726620d8e200b9715b85cd654ab5e40aceeea","verify":{"command":"plugins/dotclaude/bin/dotclaude-spec validate && plugins/dotclaude/bin/dotclaude-spec status","exit":0}}
 {"at":"2026-10-14T01:23:00.071Z","package":"P55","state":"approved","verdict":"approve","sha":"878726620d8e200b9715b85cd654ab5e40aceeea"}
 {"at":"2026-10-14T01:23:03.045Z","package":"P55","state":"done","sha":"878726620d8e200b9715b85cd654ab5e40aceeea"}
+{"at":"2026-10-14T01:32:02.295Z","package":"P58","state":"doing","note":"Survey done in the main session, evidence/injected-instructions.md","sha":"d9406ebba2a80a471a202210559a194c893993ac"}
+{"at":"2026-10-14T01:32:04.062Z","package":"P58","state":"verified","sha":"d9406ebba2a80a471a202210559a194c893993ac","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/injected-instructions.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T01:33:22.680Z","package":"P83","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:33:22.775Z","package":"P84","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:33:22.882Z","package":"P85","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:33:22.973Z","package":"P86","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:37:25.194Z","package":"P87","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:37:25.281Z","package":"P88","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:37:25.375Z","package":"P89","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:38:28.846Z","package":"P59","state":"doing","note":"main session, bundle and types read","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:38:30.744Z","package":"P59","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/ysk-api.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T01:38:32.575Z","package":"P83","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-agents.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T01:38:34.381Z","package":"P84","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-asks.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T01:38:36.178Z","package":"P85","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-attribution.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T01:41:36.424Z","package":"P90","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:41:36.517Z","package":"P91","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:41:46.151Z","package":"P92","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:43:09.663Z","package":"P93","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:43:14.965Z","package":"P86","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-checks.md && bun run lint:md","exit":1}}
+{"at":"2026-10-14T01:43:16.830Z","package":"P87","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-decide.md && bun run lint:md","exit":1}}
+{"at":"2026-10-14T01:43:18.640Z","package":"P88","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-guard.md && bun run lint:md","exit":1}}
+{"at":"2026-10-14T01:43:20.500Z","package":"P89","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-handoff.md && bun run lint:md","exit":1}}
+{"at":"2026-10-14T01:43:31.273Z","package":"P86","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-checks.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T01:43:33.104Z","package":"P87","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-decide.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T01:43:34.947Z","package":"P88","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-guard.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T01:43:36.756Z","package":"P89","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-handoff.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T01:45:09.413Z","package":"P94","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:45:09.502Z","package":"P95","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:45:48.391Z","package":"P92","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-sembr.md && bun run lint:md","exit":1}}
+{"at":"2026-10-14T01:45:56.648Z","package":"P96","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:46:18.238Z","package":"P92","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-sembr.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T01:46:20.121Z","package":"P91","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-rules.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T01:46:43.022Z","package":"P97","state":"doing","note":"reviewer run from the main session","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T01:46:46.073Z","package":"P90","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-prompt.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:27:47.093Z","package":"P94","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-spec.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:28:28.135Z","package":"P93","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-setup.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:29:11.899Z","package":"P98","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T02:29:11.991Z","package":"P99","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T02:30:10.060Z","package":"P97","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-styles.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:30:12.011Z","package":"P96","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-statusline.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:32:06.373Z","package":"P99","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-trim.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:32:38.825Z","package":"P95","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-stamp.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:33:07.438Z","package":"P100","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T02:33:07.537Z","package":"P101","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T02:33:42.548Z","package":"P98","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-surface.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:33:55.787Z","package":"P102","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T02:39:25.913Z","package":"P101","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-you-should-know.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:39:38.578Z","package":"P103","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T02:41:46.710Z","package":"P102","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-browser.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:41:59.081Z","package":"P104","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T02:46:41.797Z","package":"P104","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-docs.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:46:55.192Z","package":"P105","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T02:49:52.710Z","package":"P103","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-codegraph.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:50:05.418Z","package":"P106","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T02:50:11.631Z","package":"P105","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-lab.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:50:26.354Z","package":"P107","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T02:50:59.033Z","package":"P100","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-agents-md.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:51:12.796Z","package":"P108","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T02:51:58.531Z","package":"P72","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T02:54:35.140Z","package":"P106","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-sessions.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:57:25.158Z","package":"P108","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-tools.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T02:57:31.387Z","package":"P107","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -s .dotclaude/spec/changes/1.1.0/evidence/review-kernel.md && bun run lint:md","exit":0}}
+{"at":"2026-10-14T03:01:50.265Z","package":"P72","state":"verified","sha":"953a359dd340974753d6cb2174ef60cfdd4f16a7","verify":{"command":"just test tests/dotclaude/release && just lab","exit":0}}
+{"at":"2026-10-14T03:05:18.393Z","package":"P78","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T03:05:31.435Z","package":"P78","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"the user approves each deletion, then git tag --list shows no tag of a version before 1.0.0","exit":127}}
+{"at":"2026-10-14T03:05:41.562Z","package":"P78","state":"doing","decision":"revise-spec"}
+{"at":"2026-10-14T03:06:02.838Z","package":"P136","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T03:06:02.930Z","package":"P136","state":"blocked","note":"Step 1 stop: only delegation-related-grouped and delegation-related-split name an agent, both run investigator only, and no case runs researcher. Both are 4 file lookups in a 7-file scaffold, so each arm can score full marks and the cases cannot separate the arms. More cases are needed (harder investigator cases and researcher cases). No paid run was started. The user approved a 50 USD bound on 2026-10-14 for when cases exist."}
+{"at":"2026-10-14T03:06:19.982Z","package":"P75","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T03:06:20.078Z","package":"P160","state":"doing","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd"}
+{"at":"2026-10-14T03:25:20.262Z","package":"P75","state":"doing","sha":"5c1fd0e023e2800a6231a10f90d1e9826ca0d8b5","verify":{"command":"just test tests/dotclaude/depcheck && just lab","exit":1},"note":"The command left changes outside `.dotclaude/spec`: .claude/agents/implementer.md."}
+{"at":"2026-10-14T03:26:59.724Z","package":"P75","state":"verified","sha":"5c1fd0e023e2800a6231a10f90d1e9826ca0d8b5","verify":{"command":"just test tests/dotclaude/depcheck && just lab","exit":0}}
+{"at":"2026-10-14T08:15:49.803Z","package":"P160","state":"verified","sha":"56db9513c30d38ed3a8f7365996df76df6234645","verify":{"command":"just test tests/tools/context-budget.test.ts && bun run lint:md","exit":0}}
+{"at":"2026-10-14T08:25:01.588Z","package":"P78","state":"verified","sha":"76dc06d70f75c083d2884dbcede75f0edeb70dfd","verify":{"command":"test -z \"$(git tag --list | grep -v -- '--v1\\.')\"","exit":0}}

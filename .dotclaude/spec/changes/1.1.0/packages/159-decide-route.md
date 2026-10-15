@@ -28,6 +28,12 @@ No fallback model gives a pick in place of Jev.
 - The tool description of `second_opinion`: a neutral question, one fact for and one against each option, and no lean.
 - The prose rule of `design.md`: a hook acts only on structured facts.
   The choice to ask Jev is a behavior of the model, so the prompt fixes it, and `just eval` measures it.
+- dotclaude session `ef21d7f2` of 2026-10-14 repeats the defect with `second_opinion` available.
+  Claude put the route of 2 stopped packages (P75, P160) to the user 3 times: as plain text "Which option do you want for P75?", as "Still needed from you", and before that the commit route with `AskUserQuestion`.
+  The user said: "No. Ask Jev, then do what Jev says.
+  Stop asking user for things that you can do yourself", and "that's ALSO a 1.0.0 problem that 1.1.0 should fix".
+  After that, Claude asked Jev, and Jev gave `split` (0.49).
+  The approvals in that session (the deletion of tags and a cost bound) stayed with the user, as REQ-25 says.
 
 ## Steps
 

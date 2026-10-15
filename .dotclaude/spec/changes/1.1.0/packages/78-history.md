@@ -7,9 +7,9 @@ wave: 1
 deps: []
 owns: [".dotclaude/spec/changes/1.1.0/evidence/history.md"]
 satisfies: ["REQ-11"]
-verify: the user approves each deletion, then git tag --list shows no tag of a version before 1.0.0
+verify: test -z "$(git tag --list | grep -v -- '--v1\.')"
 agent: main session
-status: planned
+status: verified
 ---
 
 ## Goal
