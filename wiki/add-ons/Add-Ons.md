@@ -13,7 +13,7 @@ See D24 in [Decisions-Layout](Decisions-Layout).
 ## The Add-Ons
 
 The marketplace lists the seven add-ons in `.claude-plugin/marketplace.json`.
-Add the marketplace first with `/plugin marketplace add xsyetopz/dotclaude`.
+Add the marketplace first with `/plugin marketplace add xsyetopz/claudetto`.
 See [Install](Install) for details.
 
 | Plugin | What it adds | Install | Needs | Page |

@@ -42,7 +42,7 @@ See [Request build](Request-Build#the-built-in-guard-sec-default).
 1. Add the marketplace.
 
    ```text
-   /plugin marketplace add xsyetopz/dotclaude
+   /plugin marketplace add xsyetopz/claudetto
    ```
 
 2. Install the plugin.
@@ -172,7 +172,7 @@ The `docs` skill uses `CONTEXT7_API_KEY` only to raise the quota limit.
 
 2. Restart Claude Code.
    The help of `claude plugin update` says that a restart applies the update.
-3. Read the new entry in the [CHANGELOG](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md).
+3. Read the new entry in the [CHANGELOG](https://github.com/xsyetopz/claudetto/blob/main/CHANGELOG.md).
 4. Run `/dotclaude:setup` again.
    The status line commands hold the path of the plugin version, so each update needs a new run.
    The drift check reports the differences that remain when a session begins.

@@ -244,7 +244,7 @@ They describe Claude Code `2.1.287` and later.
 - The module does not see the sections of `prompt.compose` in one call.
   So the core plugin uses `prompt.section` for one section.
 
-The events that dotclaude uses are on [Architecture](Architecture#the-11-events).
+The events that dotclaude uses are on [Architecture](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#the-11-events).
 
 ## The Built-In Guard (`sec-default`)
 
@@ -274,7 +274,7 @@ So the guard decides on a machine that has its own managed settings.
 
 - [Prompt Surface](Prompt-Surface) has the sizes of the tools and the tool transforms.
 - [Prompt Variants](Prompt-Variants) has the system prompt variants of the core plugin.
-- [Architecture](Architecture#the-hook-module) describes what the hooks module does.
+- [Architecture](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#the-hook-module) describes what the hooks module does.
 - [Compaction and Context](Compaction-And-Context) has the `context_management` section.
 - [Tools and Deferral](Tools-And-Deferral) has the deferred tools.
 - [Claude Code Internals](Claude-Code-Internals) has the scope and the version of the facts.

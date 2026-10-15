@@ -90,7 +90,7 @@ These are five of them.
 | [Evals](Evals) | What the evals measure, and the Claude Code version that they need. |
 | [Release-History](Release-History) | What changed in each release, and why. |
 
-The [CHANGELOG](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md) lists each release.
+The [CHANGELOG](https://github.com/xsyetopz/claudetto/blob/main/CHANGELOG.md) lists each release.
 The section of the version in `package.json` holds the changes of the release in progress until that version has a tag.
 After the tag, the `[Unreleased]` section holds the new changes.
 

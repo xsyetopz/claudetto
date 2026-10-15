@@ -8,7 +8,7 @@ Released 2026-10-07.
 The core plugin is built again from an empty tree.
 It uses only the documented extension points of Claude Code 2.1.292.
 These are a settings profile, a forced output style, one hooks module, agents, and skills.
-The [Design](https://github.com/xsyetopz/dotclaude/wiki/Design) page gives the source of each decision.
+The [Design](https://github.com/xsyetopz/claudetto/wiki/Design) page gives the source of each decision.
 
 ## Migration from 0.26
 

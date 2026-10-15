@@ -106,7 +106,7 @@ See [Off Switches](Off-Switches).
 Inference: each model-invocable skill costs a listing line in each request.
 So the core skills stay user-invoked.
 
-See [Architecture](Architecture#skills).
+See [Architecture](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#skills).
 
 ## D10 Schema Extraction
 

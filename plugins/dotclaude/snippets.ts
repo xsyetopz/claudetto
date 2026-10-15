@@ -15,7 +15,7 @@ export const DOCS_SNIPPET = {
 /** From `snippet.json`. */
 export const SNIPPET = {
   $schema:
-    "https://raw.githubusercontent.com/xsyetopz/dotclaude/main/schemas/claude-code-settings.json",
+    "https://raw.githubusercontent.com/xsyetopz/claudetto/main/schemas/claude-code-settings.json",
   syncClaudeAiSkills: false,
   syncClaudeAiPlugins: false,
   env: {

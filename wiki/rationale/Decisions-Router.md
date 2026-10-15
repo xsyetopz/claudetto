@@ -76,7 +76,7 @@ So the fallback applies to none of them.
 
 **Forced variables:** The snippet never sets `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`.
 Each one overrides the front matter.
-The drift check reports when either variable is set ([Architecture](Architecture#drift-check)).
+The drift check reports when either variable is set ([Architecture](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#drift-check)).
 Binary fact, Claude Code 2.1.296: the bundle reads `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`.
 When it is set, the coordinator text of the bundle says that the `model` parameter is ignored.
 This was found by a text search of `external/cc-2.1.296/strings.txt`.

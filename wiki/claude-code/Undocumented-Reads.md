@@ -218,7 +218,7 @@ The readers are in `slices/start-cost/domain/` and `slices/usage/domain/`.
 
 - [Status Line](Status-Line)
 - [Core Plugin](Architecture)
-- [Drift Check](Architecture#drift-check)
+- [Drift Check](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#drift-check)
 - [Hook Events](Hook-Events)
 - [Troubleshooting](Troubleshooting)
 - [Request Build](Request-Build)

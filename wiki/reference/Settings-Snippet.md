@@ -50,7 +50,7 @@ A test fails when the block holds a key of the [never-set list](Off-Switches#nev
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/xsyetopz/dotclaude/main/schemas/claude-code-settings.json",
+  "$schema": "https://raw.githubusercontent.com/xsyetopz/claudetto/main/schemas/claude-code-settings.json",
   "syncClaudeAiSkills": false,
   "syncClaudeAiPlugins": false,
   "env": {

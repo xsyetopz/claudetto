@@ -60,7 +60,7 @@ src/plugins/<plugin>/evals/          eval cases of the plugin, when it has some
 
 The core plugin has 15 slices.
 Each add-on has one to four slices.
-The list of slices is in [Architecture](Architecture#slices-of-the-core-plugin).
+The list of slices is in [Architecture](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#slices-of-the-core-plugin).
 You do not edit a list of slices, because the generator finds each `slice.ts`.
 
 ### The Parts of a Slice
@@ -127,7 +127,7 @@ So a file in the folder ships even if the field is missing.
 8. Run `just generate`, which writes the files under `plugins/`.
    Commit the source and the generated files together.
    `just check` then runs `just generate --check`, and it fails on a difference.
-9. Update the slice table in [Architecture](Architecture#slices-of-the-core-plugin) by hand.
+9. Update the slice table in [Architecture](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#slices-of-the-core-plugin) by hand.
 
 The generator fails with a message on each of these errors:
 

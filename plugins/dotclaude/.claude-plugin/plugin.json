@@ -6,7 +6,7 @@
   "author": {
     "name": "xsyetopz"
   },
-  "repository": "https://github.com/xsyetopz/dotclaude",
+  "repository": "https://github.com/xsyetopz/claudetto",
   "license": "MIT",
   "userConfig": {
     "mainHandover": {
@@ -17,6 +17,6 @@
       "options": ["auto", "manual", "off"]
     }
   },
-  "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Architecture",
+  "homepage": "https://github.com/xsyetopz/claudetto/wiki/Architecture",
   "keywords": ["output-style", "agents", "hooks", "statusline"]
 }

@@ -6,7 +6,7 @@
   "author": {
     "name": "xsyetopz"
   },
-  "repository": "https://github.com/xsyetopz/dotclaude",
+  "repository": "https://github.com/xsyetopz/claudetto",
   "license": "MIT",
   "userConfig": {
     "backend": {
@@ -17,6 +17,6 @@
       "options": ["agent-browser", "cloakbrowser"]
     }
   },
-  "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Browser",
+  "homepage": "https://github.com/xsyetopz/claudetto/wiki/Browser",
   "keywords": ["browser", "agent-browser", "cloakbrowser", "web-search"]
 }

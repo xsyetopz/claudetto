@@ -115,7 +115,7 @@ Use an absolute path or a URL for a file outside the repository.
   It also tests the scanner and the type mapping on fixtures.
 - `tests/lab/schema/bundle.test.ts` checks the shipped keys against the bundle of the installed `claude`.
 - `tests/dotclaude/setup/drift.test.ts` checks that the version in the `$comment` is the tested version.
-  A new Claude Code version fails this test until the type table and the files are updated ([Drift check](Architecture#drift-check)).
+  A new Claude Code version fails this test until the type table and the files are updated ([Drift check](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#drift-check)).
 - `just validate` skips the files of `schemas/` in its line-count check, because they are generated (`tools/validate.ts`).
 
 ## Limits

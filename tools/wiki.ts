@@ -7,7 +7,7 @@ import path from "node:path";
 import { $ } from "bun";
 import { must, output, REPO, recipe } from "./recipes.ts";
 
-const WIKI = "https://github.com/xsyetopz/dotclaude.wiki.git";
+const WIKI = "https://github.com/xsyetopz/claudetto.wiki.git";
 
 await recipe(async () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "dotclaude-wiki-"));

@@ -11,7 +11,7 @@ Only `plugins/` ships to users.
 `src/` holds the source of each plugin, the shared kernel, and each text that a plugin ships, such as the agents, the skills, and `hooks.json`.
 Edit the source in `src/` and run `just generate`, because a test fails when a generated file differs from its source.
 Do not edit `plugins/` by hand.
-Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/dotclaude/wiki), with its source in `wiki/`.
+Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/claudetto/wiki), with its source in `wiki/`.
 
 The rules that apply to some files only are in [`.claude/rules/`](.claude/rules/).
 Each of those rules has a `paths:` list, and Claude Code loads the rule when Claude works on a matching file.
@@ -55,6 +55,9 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
   The user approves the use of their login in `just sandbox` and `just sandbox-alone` for this work (the user, 2026-10-13).
   When a guard stops a sandbox session in a subagent, run that session from the main session (the user, 2026-10-13).
   Write the results, with the method, to the evidence file of the package.
+- Ask the user before each new paid run, such as an eval, a sandbox session, a handover test, or a model call (the user, 2026-10-15).
+  Give the expected cost and the current weekly share with the question.
+  This applies also to the sandbox sessions that the rule above approves.
 - Add CHANGELOG entries under the section of the version in the manifests when that version has no tag yet, because it is the release in progress.
   Otherwise add them under `[Unreleased]`.
   Change versions with `just bump`.

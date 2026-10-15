@@ -19,7 +19,7 @@ export interface PluginManifest {
 
 const SCHEMA = "https://www.schemastore.org/claude-code-plugin-manifest.json";
 const AUTHOR = { name: "xsyetopz" };
-const REPOSITORY = "https://github.com/xsyetopz/dotclaude";
+const REPOSITORY = "https://github.com/xsyetopz/claudetto";
 /** The contract of a plugin, relative to the plugin folder. The text step copies it from `src/plugins/<plugin>/`. */
 const TYPES = "./types/index.d.ts";
 

@@ -5,7 +5,7 @@ Read it when you need the notes of a release.
 
 ## 1.0.0
 
-The notes of 1.0.0 are in [CHANGELOG.md](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md), under `[1.0.0]`.
+The notes of 1.0.0 are in [CHANGELOG.md](https://github.com/xsyetopz/claudetto/blob/main/CHANGELOG.md), under `[1.0.0]`.
 1.0.0 has no tag yet, so its section holds the changes of the release in progress.
 `just bump` changes the version in `package.json`.
 `just generate` copies that version to each `plugin.json`.

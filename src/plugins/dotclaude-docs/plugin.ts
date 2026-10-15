@@ -5,5 +5,5 @@ export const plugin = {
   description:
     "Gets current library and API docs with the Context7 CLI `ctx7`. Works with no key.",
   keywords: ["docs", "context7", "ctx7", "libraries"],
-  homepage: "https://github.com/xsyetopz/dotclaude/wiki/Library-Docs",
+  homepage: "https://github.com/xsyetopz/claudetto/wiki/Library-Docs",
 };

@@ -98,7 +98,7 @@ The design rules this out for a check before or after a tool call.
 
 - `plugins/dotclaude/hooks/hooks.json` and `plugins/dotclaude-sessions/hooks/hooks.json` name one module each.
 - `plugins/dotclaude-codegraph/hooks/hooks.json` has `SessionStart` and `PostToolUse` entries with the `command` type.
-- The hook events are on [Architecture](Architecture#the-hook-module) and [Hook Events](Hook-Events).
+- The hook events are on [Architecture](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#the-hook-module) and [Hook Events](Hook-Events).
 
 ## D40 Spec Store in Place of OpenSpec
 

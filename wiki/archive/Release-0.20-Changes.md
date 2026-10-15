@@ -78,7 +78,7 @@ The additions and the removals are on [Release 0.20](Release-0.20).
 
 ### Documentation and Setup
 
-- The documentation moved to the [GitHub wiki](https://github.com/xsyetopz/dotclaude/wiki) (0.20.6).
+- The documentation moved to the [GitHub wiki](https://github.com/xsyetopz/claudetto/wiki) (0.20.6).
   The page source is in `wiki/`.
   `just wiki` publishes it.
   `docs/README.md` now only links to the wiki pages.

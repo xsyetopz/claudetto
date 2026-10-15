@@ -6,5 +6,5 @@ export const plugin = {
   description:
     "Drives a browser with `agent-browser`, or with CloakBrowser on sites with bot detection. Answers each `WebSearch` call with a search in the headless browser. With the `cloakbrowser` backend, `WebSearch` needs the CloakBrowser binary.",
   keywords: ["browser", "agent-browser", "cloakbrowser", "web-search"],
-  homepage: "https://github.com/xsyetopz/dotclaude/wiki/Browser",
+  homepage: "https://github.com/xsyetopz/claudetto/wiki/Browser",
 };

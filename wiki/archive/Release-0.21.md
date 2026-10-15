@@ -62,5 +62,5 @@ A compaction with a handoff note now stops, and the user continues after `/clear
 ## Related Pages
 
 - Previous: [Release 0.20](Release-0.20)
-- Next: [Current Changelog](https://github.com/xsyetopz/dotclaude/blob/main/CHANGELOG.md)
+- Next: [Current Changelog](https://github.com/xsyetopz/claudetto/blob/main/CHANGELOG.md)
 - [Archive](Archive): the index of the archived pages.

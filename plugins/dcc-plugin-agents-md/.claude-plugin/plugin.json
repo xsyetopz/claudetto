@@ -6,9 +6,9 @@
   "author": {
     "name": "xsyetopz"
   },
-  "repository": "https://github.com/xsyetopz/dotclaude",
+  "repository": "https://github.com/xsyetopz/claudetto",
   "license": "MIT",
-  "homepage": "https://github.com/xsyetopz/dotclaude/wiki/Agents-Md",
+  "homepage": "https://github.com/xsyetopz/claudetto/wiki/Agents-Md",
   "keywords": ["agents-md", "agents", "instructions", "claude-md", "memory"],
   "types": "./types/index.d.ts"
 }

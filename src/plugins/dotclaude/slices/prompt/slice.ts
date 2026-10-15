@@ -49,7 +49,7 @@ export const slice = {
   ],
   settings: {
     $schema:
-      "https://raw.githubusercontent.com/xsyetopz/dotclaude/main/schemas/claude-code-settings.json",
+      "https://raw.githubusercontent.com/xsyetopz/claudetto/main/schemas/claude-code-settings.json",
     env: {
       CLAUDE_CODE_AUTO_COMPACT_WINDOW: "300000",
       CLAUDE_CODE_AUTO_CONNECT_IDE: "false",

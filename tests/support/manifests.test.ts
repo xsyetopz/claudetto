@@ -57,7 +57,7 @@ for (const name of NAMES) {
       "keywords",
     ).toBeTruthy();
     expect(manifest.homepage).toMatch(
-      /^https:\/\/github\.com\/xsyetopz\/dotclaude/,
+      /^https:\/\/github\.com\/xsyetopz\/claudetto/,
     );
   });
 }
