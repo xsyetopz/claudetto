@@ -1,0 +1,110 @@
+// The rules for a call that changes something: which tool calls change a file, and which `Bash` commands only read.
+// This file has no `node:` import and no use of `Bun`, because Claude Code runs it in the mod runtime.
+
+import { GIT_VALUE_OPTIONS } from "../../../../../kernel/gitopts.ts";
+import { parse } from "../../../../../kernel/shell.ts";
+import { baseName, stripWrappers } from "../../../../../kernel/wrappers.ts";
+
+/** The tools that always change a file. */
+const CHANGE_TOOLS = new Set(["Edit", "Write", "NotebookEdit"]);
+
+/** The programs that only read, with any arguments. */
+const READS = new Set([
+  "cat",
+  "head",
+  "tail",
+  "less",
+  "more",
+  "ls",
+  "tree",
+  "pwd",
+  "echo",
+  "printf",
+  "wc",
+  "file",
+  "stat",
+  "du",
+  "df",
+  "grep",
+  "egrep",
+  "diff",
+  "cmp",
+  "jq",
+  "which",
+  "date",
+  "true",
+  "cd",
+]);
+
+/** The `git` subcommands that only read. */
+const GIT_READS = new Set([
+  "status",
+  "log",
+  "diff",
+  "show",
+  "blame",
+  "grep",
+  "ls-files",
+  "ls-tree",
+  "rev-parse",
+  "describe",
+  "shortlog",
+  "cat-file",
+]);
+
+/** The options that make `find` run or delete something. */
+const FIND_ACTIONS =
+  /^-(?:exec|execdir|ok|okdir|delete|fprint|fprint0|fprintf|fls)$/;
+
+/** The index in `rest` of the `git` subcommand, after the global options and their values, or undefined. */
+const gitVerbAt = (rest: string[]): number | undefined => {
+  let i = 0;
+  while ((rest[i] ?? "").startsWith("-"))
+    i += GIT_VALUE_OPTIONS.has(rest[i] as string) ? 2 : 1;
+  return i < rest.length ? i : undefined;
+};
+
+/** True when the simple command `argv` only reads. */
+const isReadCommand = (argv: string[]): boolean => {
+  const [head, ...rest] = stripWrappers(argv);
+  if (head === undefined) return true;
+  const name = baseName(head);
+  if (READS.has(name)) return true;
+  if (name === "find") return !rest.some((word) => FIND_ACTIONS.test(word));
+  if (name === "sed")
+    return !rest.some((word) => /^-[a-zA-Z]*i|^--in-place/.test(word));
+  // `rg --pre` runs a program on each file.
+  if (name === "rg") return !rest.some((word) => /^--pre(?:=|$)/.test(word));
+  // `git diff --output` and the same option of `git log` and `git show` write a file.
+  if (name === "git") {
+    const verb = gitVerbAt(rest);
+    return (
+      verb !== undefined &&
+      GIT_READS.has(rest[verb] as string) &&
+      !rest.some((word) => /^--output(?:=|$)/.test(word))
+    );
+  }
+  return false;
+};
+
+/** True when the `Bash` command `command` only reads: each simple command reads, and no output goes to a file. */
+export const isBashRead = (command: string): boolean => {
+  const parsed = parse(command);
+  if (parsed.truncated || parsed.code.length > 0) return false;
+  if (parsed.redirects.some((r) => r.target !== "/dev/null")) return false;
+  return parsed.commands.every(isReadCommand);
+};
+
+/** The named fields of a tool input that may be an object. */
+export type Input = { readonly [key: string]: unknown };
+
+export const inputOf = (input: unknown): Input =>
+  typeof input === "object" && input !== null ? (input as Input) : {};
+
+/** True when a call of `tool` with `input` changes something: an edit, a write, or a `Bash` command that is not a read. */
+export const isChange = (tool: string, input: unknown): boolean => {
+  if (CHANGE_TOOLS.has(tool)) return true;
+  if (tool !== "Bash") return false;
+  const { command } = inputOf(input);
+  return typeof command === "string" && !isBashRead(command);
+};

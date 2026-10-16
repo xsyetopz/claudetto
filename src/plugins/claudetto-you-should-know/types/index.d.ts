@@ -1,0 +1,35 @@
+// The contract of `claudetto-you-should-know`: the `$.state` values of the session, which `claude plugin validate` reads.
+// The values last for one session, so a new session tries the separate call again and can show each topic again.
+
+/** The turn in progress: its id, the prompt of the user, and whether a call of the turn was checked. */
+export type YouShouldKnowTurn = {
+  id: string;
+  prompt: string;
+  checked: boolean;
+};
+
+/** The model path of the checks: a separate call, or a fork after the separate call got HTTP 429. */
+export type YouShouldKnowPath = "complete" | "fork";
+
+/** The topic in the band above the prompt, until the person presses a choice. `null` when no band shows. */
+export type YouShouldKnowOffer = {
+  topic: string;
+} | null;
+
+/** The note for the main agent, until its next tool result carries it. A heads-up of the person on a screen, or the topic itself with no screen. `null` when none waits. */
+export type YouShouldKnowNote = string | null;
+
+declare module "claude-code" {
+  interface PluginState {
+    "claudetto-you-should-know": {
+      turn: YouShouldKnowTurn;
+      path: YouShouldKnowPath;
+      /** True when the cached value `tengu_jolly_dewdrop` of the account is `true`. The add-on makes no check otherwise. */
+      active: boolean;
+      /** The topics that showed in this session, each with the id that the model gave. */
+      shown: { id: string; topic: string }[];
+      offer: YouShouldKnowOffer;
+      note: YouShouldKnowNote;
+    };
+  }
+}
