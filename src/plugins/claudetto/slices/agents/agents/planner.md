@@ -4,6 +4,7 @@ description: Plans a change across several files before any edit, and writes the
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: claude-haiku-5-5
 effort: xhigh
+maxTurns: 30
 color: cyan
 ---
 

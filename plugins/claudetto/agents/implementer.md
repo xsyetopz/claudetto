@@ -5,6 +5,7 @@ description: Implements one scoped slice with a known check: a feature, a fix wi
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: claude-haiku-5-5
 effort: xhigh
+maxTurns: 60
 isolation: worktree
 color: green
 ---

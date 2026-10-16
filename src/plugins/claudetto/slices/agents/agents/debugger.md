@@ -4,6 +4,7 @@ description: Finds the root cause of a failure or regression and makes the small
 tools: Read, Grep, Glob, Bash, Write, Edit, EnterWorktree, ExitWorktree
 model: claude-opus-5-5
 effort: medium
+maxTurns: 50
 color: orange
 ---
 

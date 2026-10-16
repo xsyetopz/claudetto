@@ -4,6 +4,7 @@ description: Answers a question from web pages, official docs, specifications, o
 tools: Bash, Read, Grep, Glob, WebFetch, WebSearch
 model: claude-haiku-5-5
 effort: xhigh
+maxTurns: 30
 color: blue
 ---
 

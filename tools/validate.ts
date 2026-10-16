@@ -8,6 +8,10 @@
 
 import fs, { readdirSync } from "node:fs";
 import path, { join } from "node:path";
+import {
+  AGENT_EFFORT_FLOOR,
+  AGENT_EFFORTS,
+} from "../src/plugins/claudetto/slices/agents/limits.ts";
 import { isGenerated } from "./generate/emit/texts.ts";
 import { FILE_MAX_LINES, TEST_FILE_MAX_LINES } from "./limits.ts";
 import { $claude } from "./telemetry.ts";
@@ -51,6 +55,48 @@ export const overBound = async (
   return over;
 };
 
+/** The `key: value` lines of the frontmatter of an agent file. */
+const frontMatter = (text: string): Record<string, string> => {
+  const lines = text.split("\n");
+  if (lines[0] !== "---") return {};
+  const end = lines.indexOf("---", 1);
+  return Object.fromEntries(
+    lines
+      .slice(1, end < 0 ? 1 : end)
+      .filter((line) => line.includes(":"))
+      .map((line) => [
+        line.slice(0, line.indexOf(":")),
+        line.slice(line.indexOf(":") + 1).trim(),
+      ]),
+  );
+};
+
+/**
+ * The faults of an agent file: an `effort` below the floor or absent, and a `maxTurns` that is not a positive integer.
+ * The floor is `AGENT_EFFORT_FLOOR`, because Sonnet 5.5 and Haiku 5.5 skip checks at `low`.
+ */
+export const agentFaults = (name: string, text: string): string[] => {
+  const fm = frontMatter(text);
+  const faults: string[] = [];
+  const rank = AGENT_EFFORTS.indexOf(fm["effort"] as never);
+  if (rank < AGENT_EFFORTS.indexOf(AGENT_EFFORT_FLOOR))
+    faults.push(
+      `${name}: effort is ${fm["effort"] ?? "absent"}, below ${AGENT_EFFORT_FLOOR}`,
+    );
+  const turns = Number(fm["maxTurns"]);
+  if (!Number.isInteger(turns) || turns < 1)
+    faults.push(`${name}: maxTurns is not a positive integer`);
+  return faults;
+};
+
+/** The faults of each agent file under the `agents/` folder of each plugin in `dir`. */
+const agentFaultsIn = async (dir: string): Promise<string[]> => {
+  const faults: string[] = [];
+  for (const file of new Bun.Glob("*/agents/*.md").scanSync(dir))
+    faults.push(...agentFaults(file, await Bun.file(join(dir, file)).text()));
+  return faults;
+};
+
 /** The files that git does not ignore: tracked and untracked, so `external/` and `node_modules/` are out. */
 const visibleFiles = (dir: string): string[] => {
   const r = Bun.spawnSync(
@@ -65,6 +111,11 @@ if (import.meta.main) {
   const over = await overBound(root, visibleFiles(root));
   if (over.length) {
     for (const line of over) console.error(`over the line bound: ${line}`);
+    process.exit(1);
+  }
+  const weak = await agentFaultsIn(plugins);
+  if (weak.length) {
+    for (const line of weak) console.error(`agent fault: ${line}`);
     process.exit(1);
   }
   await $claude()`claude plugin validate --strict ${root}`;

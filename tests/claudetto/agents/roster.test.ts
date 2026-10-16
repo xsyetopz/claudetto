@@ -190,11 +190,6 @@ test("the planner writes only in the change folder of MiniSpec", async () => {
   expect(planner?.text).not.toContain(".claudetto/spec");
 });
 
-test("no agent file has a `maxTurns`, because a run at its turn limit returns no report", async () => {
-  for (const a of await agents())
-    expect(a.fm, a.name).not.toHaveProperty("maxTurns");
-});
-
 test("the read-only agents cannot write or edit, and the others can", async () => {
   const byName = Object.fromEntries((await agents()).map((a) => [a.name, a]));
   for (const name of ["investigator", "researcher", "reviewer"]) {

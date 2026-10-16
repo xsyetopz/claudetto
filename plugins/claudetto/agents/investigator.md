@@ -5,6 +5,7 @@ description: Answers a question from several files, logs, git history, or depend
 tools: Bash, Read, Grep, Glob
 model: claude-haiku-5-5
 effort: xhigh
+maxTurns: 30
 color: purple
 ---
 

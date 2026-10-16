@@ -5,6 +5,7 @@ description: Reviews code, security, an API design, a plan, or PR comments, read
 tools: Read, Grep, Glob, Bash
 model: claude-opus-5-5
 effort: medium
+maxTurns: 30
 color: yellow
 ---
 
