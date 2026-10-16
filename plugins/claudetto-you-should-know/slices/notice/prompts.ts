@@ -64,7 +64,6 @@ Only three kinds of things count:
 Most actions have none of these.
 A preview of a saved output, and a result that was cleared, is not the whole result.
 Do not say that a file or a result is cut short, empty, or missing because of a preview.
-Do not repeat a topic that the user saw.
 The seen list gives each topic as "id: sentence".
 Give the topic an "id": 2 to 6 English words in lowercase ASCII, joined with "-", that name the subject of the topic.
 The id does not depend on the wording or on the language of the sentence.
