@@ -1,6 +1,5 @@
 // The text that the CLI prints for each command, and the name of a log file.
 
-import type { Counts } from "./counts.ts";
 import type { Failures } from "./failures.ts";
 
 /** Why a command ended with no exit code: a signal, or the time bound. */
@@ -16,7 +15,6 @@ export interface Outcome {
   /** Why the command ended with no exit code, or `null` when it has one. */
   readonly stop: Stop | null;
   readonly ms: number;
-  readonly counts: Counts | null;
   readonly failures: Failures | null;
   /** The output lines that the summary prints for a passing command, or `null` when the output is long or blank. */
   readonly shortOutput: readonly string[] | null;
@@ -49,19 +47,16 @@ const exitText = (o: Outcome): string => {
 /** The lines to print for one command. */
 export const renderOutcome = (o: Outcome): string[] => {
   const status = passed(o) ? "PASS" : "FAIL";
-  const counts = o.counts
-    ? ` | ${o.counts.passed} passed, ${o.counts.failed} failed, ${o.counts.skipped} skipped`
-    : "";
   const out = [
     `${status} $ ${o.command}`,
-    `  ${exitText(o)} | ${seconds(o.ms)}${counts}`,
+    `  ${exitText(o)} | ${seconds(o.ms)}`,
     `  log: ${o.logFile}`,
   ];
   if (o.failures && o.failures.lines.length > 0) {
-    out.push("  failures:");
-    for (const line of o.failures.lines) out.push(`    ${line}`);
+    out.push("  last lines of the output:");
     if (o.failures.omitted > 0)
-      out.push(`    ... ${o.failures.omitted} more lines in the log`);
+      out.push(`    ... ${o.failures.omitted} earlier lines in the log`);
+    for (const line of o.failures.lines) out.push(`    ${line}`);
   }
   if (o.shortOutput) {
     out.push("  output:");
