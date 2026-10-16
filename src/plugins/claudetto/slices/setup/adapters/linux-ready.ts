@@ -2,7 +2,9 @@
 // and the settings that turn the filter off. `domain/linux-sandbox.ts` holds the lookup rules and their sources.
 // Each check agrees with the engine, which is the sandbox runtime inside Claude Code 2.1.301.
 // The native Claude Code binary embeds the helper: it opens `/proc/self/exe` as fd 3 and sets `applyPath` and `argv0` itself.
-// So the check passes for a `claude` on `PATH` that resolves to an ELF file, and else only for a helper file that the engine finds on disk.
+// So the check passes for a `claude` that resolves to an ELF file, and else only for a helper file that the engine finds on disk.
+// The `claude` is the running copy in `CLAUDE_CODE_EXECPATH`, which Claude Code sets in the env of its `Bash` calls,
+// and the `claude` on `PATH` only when the env has no such copy, such as in a terminal.
 
 import fs from "node:fs";
 import os from "node:os";
@@ -67,16 +69,20 @@ export const thisProbe = (): LinuxProbe => ({
       ),
 });
 
+/** The env var in which Claude Code puts the path of its running copy. */
+const EXECPATH = "CLAUDE_CODE_EXECPATH";
+
 /**
- * True when the `claude` on `PATH` is the native build, which embeds the helper.
+ * True when the `claude` that runs the session is the native build, which embeds the helper.
  * The npm build runs `cli.js`, a text file, and needs the helper on disk.
  */
 const nativeClaude = async (
   env: NodeJS.ProcessEnv,
   probe: LinuxProbe,
 ): Promise<boolean> => {
-  const found = Bun.which("claude", { PATH: env["PATH"] ?? "" });
-  if (found === null) return false;
+  const found =
+    env[EXECPATH] || Bun.which("claude", { PATH: env["PATH"] ?? "" });
+  if (!found) return false;
   try {
     return await probe.isElf(fs.realpathSync(found));
   } catch {

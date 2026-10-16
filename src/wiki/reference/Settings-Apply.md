@@ -93,7 +93,8 @@ Run `/claudetto:setup sandbox` in the checkout.
 - On Linux and WSL2, the seccomp filter is required, because the filter blocks Unix sockets.
   Without it, a sandboxed command can reach the socket of `ssh-agent`.
   On WSL2, it can also start a Windows program, such as `git.exe` or `gh.exe`, which has the Windows credentials.
-  The native build of Claude Code embeds the helper, so setup passes when the `claude` on `PATH` is an ELF file.
+  The native build of Claude Code embeds the helper, so setup passes when the running `claude` is an ELF file.
+  The running copy is the one in `CLAUDE_CODE_EXECPATH`, and else the `claude` on `PATH`.
   For the npm build, setup looks for the helper as Claude Code does: the file in `sandbox.seccomp.applyPath`, and then `vendor/seccomp/<arch>/apply-seccomp` in a global install of `@anthropic-ai/sandbox-runtime`.
   The arch is `x64` or `arm64`, and the filter has no other build.
   When the helper is missing, setup writes nothing and gives `npm install -g @anthropic-ai/sandbox-runtime`.

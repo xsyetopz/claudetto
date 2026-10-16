@@ -126,7 +126,7 @@ These facts give the form:
   The engine opens `/proc/self/exe` as fd 3 and passes `{applyPath: "/proc/self/fd/3", argv0: "apply-seccomp"}` itself (the macOS dump at line 237588 has the gate off).
   In a container, `@anthropic-ai/claude-code-linux-arm64@2.1.301` run with `exec -a apply-seccomp` printed `Usage: apply-seccomp <command> [args...]`.
   With `--privileged`, the same call ran `echo`, and `socket(AF_UNIX)` failed with `EPERM`.
-  So setup passes the check when the `claude` on `PATH` resolves to an ELF file.
+  So setup passes the check when the running `claude` resolves to an ELF file: `CLAUDE_CODE_EXECPATH`, which Claude Code sets in the env of a `Bash` call, and else the `claude` on `PATH`.
   The npm build runs `cli.js` and still needs the helper on disk.
   No live sandboxed `Bash` call ran, because that needs a login.
 - `sandbox.network.allowAllUnixSockets: true` makes the engine skip the filter (`[Sandbox Linux] Skipping seccomp filter - allowAllUnixSockets is enabled`, line 239865).

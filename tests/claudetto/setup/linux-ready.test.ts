@@ -212,6 +212,22 @@ test("a native `claude` on `PATH` passes the check with no helper on disk, and t
   ).toBe(false);
 });
 
+test("the running `claude` in `CLAUDE_CODE_EXECPATH` decides the check, not the `claude` on `PATH`", async () => {
+  const w = await world();
+  await writeProgram(w.env.PATH, "claude", "");
+  const running = path.join(w.dir, "running-claude");
+  await Bun.write(running, "");
+  const elfOnly = (file: string) => ({
+    ...probeOf(() => false),
+    isElf: async (f: string) => f === fs.realpathSync(file),
+  });
+  const env = { ...w.env, CLAUDE_CODE_EXECPATH: running };
+  expect(await linuxReady(cfg, env, w.io, elfOnly(running))).toBe(true);
+  const onPath = path.join(w.env.PATH, "claude");
+  expect(await linuxReady(cfg, env, w.io, elfOnly(onPath))).toBe(false);
+  expect(await linuxReady(cfg, w.env, w.io, elfOnly(onPath))).toBe(true);
+});
+
 test("the probe reads the ELF magic number of a file", async () => {
   const dir = tmpDir("dc-elf");
   const elf = path.join(dir, "elf");
