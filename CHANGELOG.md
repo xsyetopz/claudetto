@@ -100,6 +100,7 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 - The `repostate` slice gives the git state at the start of a session.
   It asks before an edit of `[Unreleased]` in `CHANGELOG.md` when the manifests name a version with no tag, and before a package command that names a package that the registry does not have.
   It marks a served model that differs from the requested model with `$.ui.status`.
+- The `corrections` slice adds the last 5 list items of `.claudetto/corrections.md` to the context of each prompt that the user writes.
 - Each agent has a `maxTurns`, and `just validate` fails on an agent with an `effort` below `medium`.
 
 ### Changed

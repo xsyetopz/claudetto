@@ -54,7 +54,7 @@
   },
   "classic.Stop turngate": {
     "requests": 1,
-    "tokens": 1500,
+    "tokens": 2500,
     "blocks": true,
     "allow": "plugins/claudetto/tests/turngate.test.ts > when each background task ended, the task part passes",
     "text": "plugins/claudetto/tests/turngate.test.ts > a block sends only the reason, with no line of the rubric",
@@ -73,7 +73,7 @@
   },
   "classic.SubagentStop turngate": {
     "requests": 1,
-    "tokens": 1500,
+    "tokens": 2500,
     "blocks": true,
     "allow": "plugins/claudetto/tests/turngate.test.ts > when each background task ended, the task part passes",
     "text": "plugins/claudetto/tests/turngate.test.ts > a block sends only the reason, with no line of the rubric",
@@ -117,12 +117,26 @@
     "allow": "plugins/claudetto/tests/section.test.ts > another section keeps the text of the engine",
     "text": "plugins/claudetto/tests/section.test.ts > with the handoff on, the `context_management` section says that a handoff carries the work"
   },
+  "prompt.submit turngate": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/claudetto/tests/context.test.ts > the judge gets the last user prompt and the earlier reply",
+    "text": "plugins/claudetto/tests/context.test.ts > a prompt that the user did not write is not the request"
+  },
   "prompt.submit attribution": {
     "requests": 0,
     "tokens": 70,
     "blocks": false,
     "allow": "plugins/claudetto/tests/attribution.test.ts > a second prompt with the same lines gets no reminder",
     "text": "plugins/claudetto/tests/attribution.test.ts > the first prompt gets the reminder with the trailer of the main model"
+  },
+  "prompt.submit corrections": {
+    "requests": 0,
+    "tokens": 420,
+    "blocks": false,
+    "allow": "plugins/claudetto/tests/corrections.test.ts > a project with no corrections file adds no context",
+    "text": "plugins/claudetto/tests/corrections.test.ts > a prompt of the user gets the last items of the corrections file as context"
   },
   "session.append prompt": {
     "requests": 0,
@@ -287,6 +301,15 @@
     "text": "plugins/claudetto/tests/repostate.test.ts > an edit of `[Unreleased]` for a version with no tag asks and names the version",
     "block": "plugins/claudetto/tests/repostate.test.ts > `bun add left-padx` asks when the registry has no such package",
     "false": "plugins/claudetto/tests/repostate.test.ts > `bun add left-padx` gets no ask when the registry has the package"
+  },
+  "tool.check turngate": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": true,
+    "allow": "plugins/claudetto/tests/jobs.test.ts > a job that `wait` ends passes",
+    "text": "plugins/claudetto/tests/jobs.test.ts > the deny reason names `run_in_background` and the PID",
+    "block": "plugins/claudetto/tests/jobs.test.ts > a `nohup` job is denied",
+    "false": "plugins/claudetto/tests/jobs.test.ts > a `kill` by PID passes"
   },
   "tool.describe surface": {
     "requests": 0,

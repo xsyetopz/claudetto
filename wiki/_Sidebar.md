@@ -25,6 +25,7 @@
   - [Turn Gate](Turn-Gate)
   - [Read Gates](Read-Gates)
   - [Repo State](Repo-State)
+  - [Corrections](Corrections)
 - Add-On Plugins
   - [Add-On Plugins](Add-Ons)
   - [Code Graph](Code-Graph)

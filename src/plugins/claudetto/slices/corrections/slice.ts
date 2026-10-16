@@ -1,0 +1,35 @@
+// The manifest of the `corrections` slice: the `prompt.submit` hook that adds the corrections file of the project to each prompt of the user (gap I02).
+// The file is `.claudetto/corrections.md`, and the user writes it: one item for each correction, as a Markdown list.
+// The phase is `rewrite`, because the hook adds context to the prompt.
+//
+// The filter is needed, because the generator refuses two `prompt.submit` hooks with no filter in one plugin,
+// and the `attribution` slice has one.
+// A prompt that the user wrote comes from the terminal, the bridge, or the SDK host.
+
+import type { Slice } from "../../../../kernel/slice.ts";
+import { onSubmit } from "./adapters/mod.ts";
+import { CORRECTIONS_TOKENS } from "./limits.ts";
+
+const LAB = "plugins/claudetto/tests/corrections.test.ts";
+
+export const slice = {
+  name: "corrections",
+  ladder: "mod: the `prompt.submit` hook",
+  mod: [
+    {
+      event: "prompt.submit",
+      evals: {
+        requests: 0,
+        tokens: CORRECTIONS_TOKENS,
+        blocks: false,
+        allow: `${LAB} > a project with no corrections file adds no context`,
+        text: `${LAB} > a prompt of the user gets the last items of the corrections file as context`,
+      },
+      filter: {
+        origin: [{ kind: "composer" }, { kind: "bridge" }, { kind: "sdk" }],
+      },
+      phase: "rewrite",
+      run: onSubmit,
+    },
+  ],
+} satisfies Slice;

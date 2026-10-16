@@ -41,7 +41,7 @@ flowchart TB
     SL[statusline] --- AG[agents] --- ST[styles]
     GU[guard] --- AS[asks] --- CH[checks]
     AT[attribution] --- SB[sembr] --- DE[decide]
-    SE[setup] --- GC[gc] --- WT[worktree] --- UC[usercheck] --- TG[turngate] --- RD[reads] --- RS[repostate]
+    SE[setup] --- GC[gc] --- WT[worktree] --- UC[usercheck] --- TG[turngate] --- RD[reads] --- RS[repostate] --- CO[corrections]
   end
   subgraph addons["add-ons, each works alone"]
     direction LR
@@ -78,9 +78,10 @@ The capability of each slice:
 | `gc` | `output-gc` | Mod API and a classic `SessionEnd` hook |
 | `worktree` | `worktree-hooks` | Classic `WorktreeCreate` and `WorktreeRemove` hooks |
 | `usercheck` | `user-check` | Mod API (`classic.PermissionDenied`, `classic.Stop`) |
-| `turngate` | `turn-gate` | Mod API (`tool.call`, `turn.complete`, `classic.Stop`, `classic.SubagentStop`) |
+| `turngate` | `turn-gate` | Mod API (`prompt.submit`, `tool.check`, `tool.call`, `turn.complete`, `classic.Stop`, `classic.SubagentStop`) |
 | `reads` | `read-gates` | Mod API (`tool.call`) |
 | `repostate` | `ground-gates` | Mod API (`classic.SessionStart`, `tool.check`, `turn.complete`) |
+| `corrections` | `corrections` | Mod API (`prompt.submit`) |
 
 The rungs in this table are the targets.
 Each slice gets its ladder line in the work on 0.1.0, and a slice goes down a rung only with a test or a lab run.
@@ -188,6 +189,7 @@ src/
         statusline/  agents/  styles/  guard/  asks/
         checks/  attribution/  sembr/  decide/  setup/  gc/
         worktree/  usercheck/  turngate/  reads/  repostate/
+        corrections/
     claudetto-you-should-know/  slices/notice/
     claudetto-browser/          slices/browse/  slices/search/
     claudetto-codegraph/        slices/graph/
