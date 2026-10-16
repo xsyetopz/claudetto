@@ -10,7 +10,7 @@ The register has two V1 rows: V1 of Claude Code 2.1.300 and V1 of the user setti
 | --- | --- |
 | S1 | 6.1 |
 | S2 | 7.1 |
-| S3 | 2.1 removes the `handoff` slice, and in 3.1 the handover enters as a compaction message |
+| S3 | 2.1 removes the `handoff` slice, and in 3.1 the handoff enters as a compaction message |
 | S4 | 8.6 |
 | S5 | 8.5 |
 | S6 | 8.5 |

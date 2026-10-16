@@ -15,6 +15,21 @@ The runner SHALL run each check of the batch and give, for each check, the comma
 - **WHEN** a batch of 3 checks runs and the second fails
 - **THEN** the result names the second check, its exit code, and the tail of its output, and the third check still runs
 
+### Requirement: The exit code decides, not the words of the output
+
+The runner SHALL decide pass or fail from the exit code only.
+For a failed check, the runner SHALL show the last lines of the output, up to a fixed bound, and SHALL NOT choose lines or give counts from the words of the output.
+
+#### Scenario: A passing test that logs an error
+
+- **WHEN** a check exits with code 0 and its output has the word `error`
+- **THEN** the check passes
+
+#### Scenario: A failed check in another language
+
+- **WHEN** a check fails and its output is in Polish or Japanese
+- **THEN** the result shows the last lines of the output, the same as for English output
+
 ### Requirement: The guard applies to each check
 
 Each command of a batch SHALL pass the same guard and asks as a `Bash` call.

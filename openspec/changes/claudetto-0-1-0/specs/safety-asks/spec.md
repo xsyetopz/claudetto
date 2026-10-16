@@ -25,6 +25,17 @@ The check SHALL apply to a test file of any size.
 - **WHEN** Claude adds `.skip` to a test in a test file larger than the read bound
 - **THEN** the user gets an ask
 
+### Requirement: Ask before a check is changed
+
+An edit of a script of `package.json`, or of a recipe of a `justfile` or `Makefile`, that is a check SHALL get an ask.
+A script or a recipe is a check when it runs a known check program or another check, or has a documented entry name (`test`, `check`).
+The decision SHALL NOT depend on the words of the name, and a config key SHALL match only by the documented name of a tool.
+
+#### Scenario: A script with a name in Polish
+
+- **WHEN** Claude edits the script `sprawdz` of `package.json` that runs `eslint .`
+- **THEN** the user gets an ask
+
 ### Requirement: Protected files
 
 An edit of a file that holds a bound or a gate of the project SHALL get an ask.

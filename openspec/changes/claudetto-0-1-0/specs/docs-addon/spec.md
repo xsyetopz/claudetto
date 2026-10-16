@@ -17,11 +17,16 @@ By default, the add-on SHALL give a skill that runs a pinned version of `ctx7`, 
 
 ### Requirement: Opt-in MCP server
 
-When the user turns the MCP option on, the add-on SHALL install and set up the `context7` MCP server.
+The add-on SHALL ship no MCP server, and its docs SHALL give the `claude mcp add` command that adds the `context7` MCP server.
 
-#### Scenario: MCP option on
+#### Scenario: No server by default
 
-- **WHEN** the user turns the MCP option on and starts a new session
+- **WHEN** a session starts with the add-on
+- **THEN** the debug log has no MCP error of the add-on, and the tool list has no `context7` tool
+
+#### Scenario: Server added
+
+- **WHEN** the user runs the `claude mcp add` command of the docs and starts a new session
 - **THEN** the `context7` MCP tools are in the tool list
 
 ### Requirement: Docs of the project version

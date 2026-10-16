@@ -13,18 +13,21 @@ The user locked a clean restart as `claudetto` 0.1.0 on 2026-10-14, with no comp
   The core plugin is `claudetto`, and each add-on is `claudetto-<name>`.
   The first tag is `0.1.0-alpha.1`.
   No setting, file, or command of dotclaude 1.0.0 stays compatible.
-- **BREAKING**: The minimum Claude Code version is 2.1.300, because the handover depends on the `session.compact` behavior of 2.1.300 (V2).
+- **BREAKING**: The minimum Claude Code version is 2.1.301 (the user, 2026-10-15).
+  The handoff depends on the `session.compact` behavior of 2.1.300 (V2).
 - The build stays generator-style: a small hand-written source in `src/`, and generated shipped files in `plugins/`.
   Each feature uses the decision ladder of the user: the Mod API, then a classic hook, then a built-in part of Claude Code, then nothing.
-- Handover replaces compaction as the default, with an auto handover and a manual handover.
+- Handoff replaces compaction as the default, with an auto handoff and a manual handoff.
   Compaction becomes an opt-in profile.
 - The `spec` slice and its binary go.
   MiniSpec, a lightweight SDD workflow built from skills, Markdown files, and the `minispec` CLI, replaces them.
   The CLI follows <https://clig.dev/> and keeps no event log.
-  Its file layout is near the layout of OpenSpec, and it keeps the state of a change across a handover.
+  Its file layout is near the layout of OpenSpec, and it keeps the state of a change across a handoff.
 - The guard, the status line, the prompt, the trim, the setup, and the agents are rebuilt to fix their faults.
 - `asks`, `attribution`, `checks`, `decide`, `sembr`, `styles`, and `surface` carry over with the fixes of their review rows.
 - New: `gc`, a garbage collector for the outputs of Claude itself.
+- New: the turn gate at `Stop` and `SubagentStop`, and the ground gates for the git state, packages, rejected calls, and reads of an unchanged file.
+  They close the gaps of the agent failure dossier ([Failure Gaps of 0.1.0](../../../wiki/evidence/Failure-Gaps-0.1.0.md)).
 - **BREAKING**: These 1.0.0 features are left behind:
   - `rules` (Jev pick, by the grant of the user)
   - `stamp` in the core (Jev pick with neutral wording; the sessions add-on decides whether it records the version)
@@ -40,7 +43,7 @@ The marks and their reasons are in [features.md](features.md).
 ### New Capabilities
 
 - `plugin-generator`: the generator-style build, the decision ladder, the version pin, and the rule that no plugin imports another plugin.
-- `handover`: the auto handover as compaction, the manual handover, and the opt-in compaction profile.
+- `handoff`: the auto handoff as compaction, the manual handoff, and the opt-in compaction profile.
 - `prompt-profile`: the system prompt override for each model and the subagent block.
 - `context-trim`: the switches that turn off built-in parts, and the shorter or deferred tool descriptions.
 - `status-line`: the main and subagent status lines from the Claude Code input.
@@ -52,7 +55,7 @@ The marks and their reasons are in [features.md](features.md).
 - `decision-api`: the opt-in second opinion through Jev or a small Claude model.
 - `semantic-breaks`: the rewrite of Markdown, commit, and PR text to semantic line breaks.
 - `settings-setup`: the settings profile, the git excludes, and the drift check.
-- `minispec`: MiniSpec, the lightweight spec-driven workflow with the `minispec` CLI, which works with the handover.
+- `minispec`: MiniSpec, the lightweight spec-driven workflow with the `minispec` CLI, which works with the handoff.
 - `output-style`: the concise output style.
 - `output-gc`: the record and the sweep of the outputs of Claude.
 - `ysk-notice`: the YSK add-on with the built-in flow, also in `-p`, gated on `tengu_jolly_dewdrop`.
@@ -61,6 +64,8 @@ The marks and their reasons are in [features.md](features.md).
 - `docs-addon`: the `ctx7` CLI and skill, and the opt-in `context7` MCP server.
 - `lab-tools`: the logging proxy, the eval comparison, the sandbox, and the settings schema builder.
 - `session-awareness`: the start cost, the usage, and the subscription and rate-limit awareness.
+- `turn-gate`: the block of a stop while a background task runs, and the opt-in judge of the last reply.
+- `ground-gates`: the git state at the start, the package check, the deny of a rejected call, the read dedup, and the served-model mark.
 
 ### Modified Capabilities
 

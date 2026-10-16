@@ -1,7 +1,7 @@
 # Review Findings of dotclaude 1.0.0
 
 This file is a part of [the fault register](faults.md).
-It holds the 138 confirmed findings of the 26 review files in `.dotclaude/spec/changes/1.1.0/evidence/review-<slice>.md`.
+It holds the 138 confirmed findings of the 26 review files in `.dotclaude/spec/changes/1.1.0/evidence/review-<slice>.md` at commit `71dd6215`.
 Each row has the slice, the title of the finding as the review gives it, and the first cite of the finding.
 The source of each row is dotclaude.
 

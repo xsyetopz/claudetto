@@ -16,6 +16,16 @@ Code blocks, front matter, and tables SHALL stay unchanged.
 - **WHEN** Claude writes a Markdown paragraph with two sentences on one line
 - **THEN** the written file has each sentence on its own line
 
+### Requirement: Sentence ends in each language
+
+The sentence ends SHALL come from the Unicode sentence rules (`Intl.Segmenter`), and not from a word list or a rule about capital letters.
+A runtime without `Intl.Segmenter` SHALL get no break.
+
+#### Scenario: Polish and Japanese text
+
+- **WHEN** Claude writes a paragraph with a capital letter such as `Ż` after a sentence end, or a Japanese sentence end `。`
+- **THEN** the written file has each sentence on its own line
+
 ### Requirement: Edits of list items and quotes
 
 The repair of an `Edit` `old_string` SHALL work on a list item and on a quote line.

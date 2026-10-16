@@ -54,7 +54,7 @@ Evidence tags:
 | --- | --- | --- | --- |
 | S10 | The status line divides by a 300k window, but Claude Code gives the percentage against the model window. | `src/kernel/budget.ts:14, 20-23`, `src/plugins/dotclaude/slices/statusline/segments.ts:90-95` | `run` (`statusLine.command` capture): `context_window_size` 1000000. `binary (strings.txt:324264, 332626)`. `kg` `statusline-field:context_window.context_window_size`, `statusline-field:context_window.used_percentage`, `env:CLAUDE_CODE_MAX_CONTEXT_TOKENS`, `env:CLAUDE_CODE_AUTO_COMPACT_WINDOW`, `env:DISABLE_COMPACT` |
 | L1 | Sessions end with "Prompt is too long", because no compaction runs. | `src/plugins/dotclaude/slices/prompt/slice.ts:54, 61, 65` set the 300k window and `DISABLE_COMPACT=1` | `logs (7f9af63f:1100, d9133bf3:1050-1095, ef21d7f2:1308-1325)`: 10 rows in 3 sessions. `kg` `env:CLAUDE_CODE_AUTO_COMPACT_WINDOW`, `setting:autoCompactEnabled`, `env:DISABLE_COMPACT` |
-| U8 | No handover at 91 percent. | The handoff design | `logs (7f9af63f:789)`. The hint fired at 63 percent, and the file was not written (`7f9af63f:1085`) |
+| U8 | No handoff at 91 percent. | The handoff design | `logs (7f9af63f:789)`. The hint fired at 63 percent, and the file was not written (`7f9af63f:1085`) |
 
 The L1 fault is older than 1.0.0.
 The 0.28.x logs have 14 "Prompt is too long" stops in 10 of 43 sessions (`external/agent-failure-dossier/08-session-log-corpus.md`).
@@ -109,7 +109,7 @@ These faults come from Claude Code 2.1.299, its defaults, or its docs.
 | N6 | The default `claude-md-or-agents-md` loads only `CLAUDE.md` when both files exist. Project settings cannot change it. | `run` (`notes/rules-styles-2.md`), `docs (docs/memory.md:394)`, `kg` `file-format:AGENTS.md`, `builtin-plugin:cc-plugin-agents-md` |
 | N7 | An `autoMode` list with no `$defaults` replaces the built-in entries, and only user, flag, and managed settings set `autoMode`. | `run` (`notes/permissions-5.md`: 72 `soft_deny` became 1), `binary (strings.txt:323562)`, `kg` `setting:autoMode`, `permission-form:autoMode` |
 | N11 | A plugin agent type is `<plugin>:<name>`, so a plugin agent cannot replace a built-in agent. | `binary (strings.txt:332810, 333059, 331123)`, `docs (docs/sub-agents.md:716-729)`, `kg` `env:CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`, `agent:Explore`, `agent:Plan`, `permission-form:Agent(name)`, `file-format:agents/*.md` |
-| E8 | The `WebSearch` mode note (423 chars) has no switch except `CLAUDE_CODE_REMOVE_PROMPT_STRINGS`. | `logs (context-budget.md)`, `kg` `tool:WebSearch`, `env:CLAUDE_CODE_REMOVE_PROMPT_STRINGS` |
+| E8 | The `WebSearch` mode note (423 chars) has no documented switch. `CLAUDE_CODE_REMOVE_PROMPT_STRINGS` does not reach it, because Claude Code adds it as its own system block (`M2n`). Only the undocumented `CLAUDE_CODE_WEB_SEARCH_FAST_ARG` removes it, together with the `mode` parameter, so claudetto keeps it. | `logs (context-budget.md)`, `kg` `tool:WebSearch`, `env:CLAUDE_CODE_REMOVE_PROMPT_STRINGS` |
 
 ## Claude Code 2.1.300
 
@@ -120,10 +120,10 @@ The inventory is `external/cc-diff-299-300/inventory.md`, and the live checks ar
 | Id | Change | Effect on `claudetto` | Evidence |
 | --- | --- | --- | --- |
 | V1 | A hook's `updatedInput` is checked against the tool's input schema. Unknown keys are dropped, and a wrong type refuses the call. | No dotclaude 1.0.0 hook sends `updatedInput` (only the type in `src/kernel/node/hook-io.ts:16`). A `claudetto` rewrite must send the whole input with the right types. | `binary (strings.txt:333013)`, `run` (live check 2), `kg` `hook-event:PreToolUse`, `hook-event:PermissionRequest` |
-| V2 | `$.model.fork` sends the transcript as the main thread last sent it, so a `session.compact` hook does not see the newest tool result in the fork. | The handover as compaction must keep the tail from the last tool use (`scratch/v110/handover-eval-300.md`). | `run` (runs `p4`, `p5`), `binary (types-2.1.300.d.ts:6979)` |
+| V2 | `$.model.fork` sends the transcript as the main thread last sent it, so a `session.compact` hook does not see the newest tool result in the fork. | The handoff as compaction must keep the tail from the last tool use (`scratch/v110/handoff-eval-300.md`). | `run` (runs `p4`, `p5`), `binary (types-2.1.300.d.ts:6979)` |
 | V3 | Plugin `WorktreeCreate` and `WorktreeRemove` hooks now run for `--worktree`. | S4 and S8 can use a plugin worktree hook. dotclaude 1.0.0 has none. | `binary (strings.txt:358419)`, `kg` `hook-event:WorktreeCreate` |
 | V4 | The `effort_cost_index` changed. Haiku `xhigh` is 2.03, and Opus `max` is 3.44. | The effort sweep runs on 2.1.300 only. | `binary (strings.txt:324694)`, `inventory.md` |
-| V5 | New mod events `prompt.change` and `ui.view`. | Input for the YSK band and the handover UI. Not used yet. | `binary (types-2.1.300.d.ts:4246, 7164)`, `kg` `mod-event:prompt.change`, `mod-event:ui.view` |
+| V5 | New mod events `prompt.change` and `ui.view`. | Input for the YSK band and the handoff UI. Not used yet. | `binary (types-2.1.300.d.ts:4246, 7164)`, `kg` `mod-event:prompt.change`, `mod-event:ui.view` |
 | V6 | The prompt extract `cc-2.1.300/cc-extract-2.1.300/` is a copy of 2.1.299, and its rendered `system_block2.txt` is stale. | The `prompt` rebuild must use the live block, not the extract. | `run` (live check 1, `live/extract-check/system_block2.diff`) |
 | V7 | An agent hook honors its `model`, and `SessionEnd` runs when a session with a background command is interrupted. | No change needed. An agent hook on `Stop` did not fire in `-p`. Two causes are possible: the `auto` permission mode, or the first run in a new config folder. Task 1.10 finds the cause and fixes it. | `run` (live checks 3 and 4) |
 
@@ -160,8 +160,8 @@ The user decided these points on 2026-10-14 (`external/cc-2.1.299/scratch/v110/f
 - S5: SSH commit signing in the sandbox is accepted.
 - U10: `Glob` and `Grep` come back through the CLI flag.
 - N5: `claudetto` uses `session.identity`.
-- U8: handover is the default, with auto-handover and manual handover, and compaction is an opt-in config.
-  The auto-handover needs a safety margin below the hard stop, and a check that the file exists before the clear.
+- U8: handoff is the default, with auto-handoff and manual handoff, and compaction is an opt-in config.
+  The auto-handoff needs a safety margin below the hard stop, and a check that the file exists before the clear.
 - C1: lint ignores `.dotclaude/`.
 - C2, C3, and N2 are explained to the user, and they stay faults or design input for the rebuild.
 - N6: `cc-plugin-agents-md` stays off, because the core loader reads a `CLAUDE.md` symlink.

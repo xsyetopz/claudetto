@@ -5,7 +5,7 @@
 MiniSpec is the spec-driven workflow of `claudetto`.
 It takes ideas from OpenSpec, Spec Kitty, and SpecKit, and its file layout is near the layout of OpenSpec.
 It is built from skills, Markdown files, and one CLI that follows <https://clig.dev/>, tuned for Claude Code and the Claude 5.1 and 5.5 models.
-It works with the handover, so a long change keeps its state across a handover.
+It works with the handoff, so a long change keeps its state across a handoff.
 
 ## ADDED Requirements
 
@@ -37,14 +37,14 @@ The `minispec` CLI SHALL follow the Command Line Interface Guidelines at <https:
 
 ### Requirement: CLI prompts and errors
 
-Following <https://clig.dev/>, the `minispec` CLI SHALL ask no question when stdin is not a terminal, and each prompt SHALL have a flag.
+Following <https://clig.dev/>, the `minispec` CLI SHALL ask no question, because an answer is a word of one language, and each confirmation SHALL be a flag.
 An error SHALL say what went wrong and what to do next.
 A command that changes files SHALL say what it changed and the next command to run.
 
-#### Scenario: No terminal
+#### Scenario: No confirmation flag
 
-- **WHEN** Claude runs `minispec archive add-export` with no terminal and no `--yes`
-- **THEN** the CLI asks nothing, fails, and names the `--yes` flag
+- **WHEN** Claude runs `minispec archive add-export` without `--yes`
+- **THEN** the CLI asks nothing, fails with exit code 2, and names the `--yes` flag
 
 ### Requirement: File layout
 
@@ -66,6 +66,16 @@ A done change SHALL move to `minispec/changes/archive/<date>-<name>/`, and its s
 
 - **WHEN** a change is done and the user archives it
 - **THEN** the change folder moves under `minispec/changes/archive/`, and `minispec/specs/` holds the merged requirements
+
+### Requirement: Spec format
+
+A spec file and a delta file SHALL use the fixed labels of the format, such as `### Requirement:` and `#### Scenario:`.
+`minispec validate` SHALL check the structure of these labels and SHALL NOT read the words of a requirement, so a spec in any language is valid.
+
+#### Scenario: A spec in Polish
+
+- **WHEN** a requirement has a statement line in Polish and a `#### Scenario:` block
+- **THEN** `minispec validate` reports no issue for it
 
 ### Requirement: Size tiers
 
@@ -105,22 +115,22 @@ Claude SHALL mark a task done in `tasks.md` only after its check ran and passed.
 - **WHEN** a task says "check that it works"
 - **THEN** Claude reports that the task has no runnable check and does not mark it done
 
-### Requirement: State for the handover
+### Requirement: State for the handoff
 
 The checked tasks in `tasks.md` SHALL be the record of the done work of a change.
-When a handover runs during a change, the handover SHALL name the change folder and the next open task.
-The handover SHALL treat each checked task as done and verified, and the next part of the session SHALL NOT run the check of a checked task again unless the user asks.
-The handover file of a change SHALL be `minispec/changes/<name>/handover.md`.
+When a handoff runs during a change, the handoff SHALL name the change folder and the next open task.
+The handoff SHALL treat each checked task as done and verified, and the next part of the session SHALL NOT run the check of a checked task again unless the user asks.
+The handoff file of a change SHALL be `minispec/changes/<name>/handoff.md`.
 
-#### Scenario: A handover in the middle of a change
+#### Scenario: A handoff in the middle of a change
 
-- **WHEN** a handover runs while tasks 1.1 to 1.3 of `add-export` are checked
-- **THEN** the handover names `minispec/changes/add-export/` and task 1.4, and the session goes on with task 1.4
+- **WHEN** a handoff runs while tasks 1.1 to 1.3 of `add-export` are checked
+- **THEN** the handoff names `minispec/changes/add-export/` and task 1.4, and the session goes on with task 1.4
 
 #### Scenario: No active change
 
-- **WHEN** a handover runs and no change is active
-- **THEN** the handover file goes to the default place of the handover
+- **WHEN** a handoff runs and no change is active
+- **THEN** the handoff file goes to the default place of the handoff
 
 ### Requirement: Back to planning
 

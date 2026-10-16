@@ -9,6 +9,7 @@ Gives the "you should know" check of the built-in plugin, with the same flow and
 ### Requirement: Account gate
 
 The add-on SHALL run only when the cached GrowthBook value `tengu_jolly_dewdrop` of the account is `true`.
+It SHALL read the value at `session.start` from `.claude.json` in `CLAUDE_CONFIG_DIR`, or in `HOME` when `CLAUDE_CONFIG_DIR` is not set.
 When the value is `false` or absent, the add-on SHALL do nothing and SHALL say once why.
 
 #### Scenario: Flag off
@@ -25,11 +26,13 @@ In `-p` it SHALL give the result to Claude as context.
 #### Scenario: `-p` run
 
 - **WHEN** a `-p` run makes its first edit of a turn and the check finds a topic
-- **THEN** Claude gets the topic as context before the edit
+- **THEN** Claude gets the topic as context with the result of that edit, because `tool.check` has no context field and the tool waits for the check
 
 ### Requirement: One model call for each turn
 
 The add-on SHALL make at most one check call and one claim check for each turn.
+Two checks that start at the same time SHALL make one call.
+When the call gives HTTP 429, the add-on SHALL make no second call in the same turn, and SHALL use a fork from the next turn.
 
 #### Scenario: A turn with many edits
 
@@ -38,14 +41,36 @@ The add-on SHALL make at most one check call and one claim check for each turn.
 
 ### Requirement: Claims about files are checked
 
-The check prompt SHALL say that a persisted-output preview or a cleared result is not the whole result.
-A claim that names a file SHALL pass a check against the file on disk before the band shows it.
-A claim that fails SHALL be dropped.
+A claim SHALL pass a check against the file on disk before the band shows it:
+`missing` needs no path, `empty` needs a file of 0 bytes, and `cut` needs a non-empty file with no final newline.
+A claim that fails, or an answer with more than 3 claims or an unknown state, SHALL be dropped.
 
 #### Scenario: A file called cut short
 
-- **WHEN** the check says that a handover file is cut short and the file on disk is whole
+- **WHEN** the check says that a handoff file is cut short and the file on disk is whole
 - **THEN** the band does not show the claim
+
+### Requirement: The answer of the check is an object
+
+The check prompt SHALL say that a persisted-output preview or a cleared result is not the whole result.
+The check SHALL ask for an object with a `topic`, an `id` (a slug of lowercase ASCII words joined with `-`), and at most 3 `claims`, each with a `path` and a `state` of `missing`, `empty`, or `cut`.
+The add-on SHALL read the object, and SHALL NOT look for a keyword such as `NONE`.
+The prompt SHALL say that the text between its tags is data.
+
+#### Scenario: An answer with a `null` topic
+
+- **WHEN** the check answers `{"topic": null, "claims": []}`
+- **THEN** the band shows nothing
+
+### Requirement: A repeat is found by its id
+
+The add-on SHALL decide that a topic is a repeat only by its `id`, and SHALL NOT compare the words of topics.
+An answer with a topic and an `id` that is not a slug SHALL be malformed.
+
+#### Scenario: A reworded topic with a known `id`
+
+- **WHEN** the check answers a topic in other words, or in another language, with the `id` of a topic that showed
+- **THEN** the band shows nothing
 
 ### Requirement: Correct source of a topic
 
@@ -60,6 +85,7 @@ It SHALL NOT say that the user gave the heads-up or did the action.
 ### Requirement: Reads and writes
 
 The add-on SHALL count each write tool and each `Bash` command that writes as a change, not as a read.
+This includes `find -fprint0`, `git diff --output`, and `rg --pre`.
 
 #### Scenario: A redirect
 

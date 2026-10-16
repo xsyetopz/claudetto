@@ -34,7 +34,8 @@ No Opus agent SHALL have an effort above `high`.
 
 ### Requirement: Write scope of the planner
 
-The `planner` SHALL write only inside the MiniSpec change folder.
+The `planner` SHALL write only inside a MiniSpec change folder, `minispec/changes/<name>/`.
+A `tool.call` hook SHALL deny a `Write` or an `Edit` of the `planner` for any other path.
 
 #### Scenario: The planner writes a source file
 
@@ -53,9 +54,25 @@ A subagent over its report bound SHALL get one note to report now, not a note on
 ### Requirement: Work stays with the agent
 
 An agent SHALL NOT push a decision or a command to the user that the agent can settle from the code, the docs, or a check.
-An agent SHALL ask a question of the user only through `AskUserQuestion`.
+A subagent cannot ask the user, so it SHALL give each decision that is the user's, with the options and one fact for each, to its caller in its report.
+The caller SHALL ask the user through `AskUserQuestion`.
 
 #### Scenario: A question in plain text
 
 - **WHEN** an agent eval transcript ends with a question in plain text
 - **THEN** the eval grades the run as failed
+
+### Requirement: An effort floor and a turn bound
+
+Each agent SHALL have an `effort` of `medium` or more, because Sonnet 5.5 and Haiku 5.5 skip checks at `low`.
+Each agent SHALL have a bound on its turns: `maxTurns` in the frontmatter when a plugin agent accepts it, else a count in the `turn.step` handler.
+
+#### Scenario: A new agent at `low`
+
+- **WHEN** an agent file sets `effort: low`
+- **THEN** `just validate` fails and names the agent
+
+#### Scenario: The turn bound
+
+- **WHEN** an agent reaches its bound of turns
+- **THEN** the agent ends, and its caller gets a report that names the bound

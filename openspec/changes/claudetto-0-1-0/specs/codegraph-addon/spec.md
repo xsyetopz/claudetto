@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Gives Claude the code graph of a project through the `codegraph` CLI and a lightweight skill by default, with an opt-in MCP server, so that exploration uses less context.
+Gives Claude the code graph of a project through the `codegraph` CLI and a lightweight skill by default, with an opt-in MCP server that the user adds with Claude Code, so that exploration uses less context.
 
 ## ADDED Requirements
 
@@ -17,11 +17,19 @@ By default, the add-on SHALL give a skill that uses the `codegraph` CLI, and SHA
 
 ### Requirement: Opt-in MCP server
 
-When the user turns the MCP option on, the add-on SHALL install and set up the `codegraph` MCP server through `bunx`.
+The add-on SHALL ship no MCP definition, because Claude Code starts each MCP server of a plugin.
+The add-on SHALL give the user the command `claude mcp add --scope user codegraph -- bunx @colbymchenry/codegraph@1.6.0 serve --mcp` in its skill and its page, and the add-on SHALL install nothing itself.
+
+The command `claudetto-codegraph-check --mcp` SHALL print that command and `claude mcp remove codegraph --scope user`, and SHALL run neither.
+
+#### Scenario: MCP commands printed
+
+- **WHEN** the user runs `claudetto-codegraph-check --mcp`
+- **THEN** the output has the add command and the remove command, and no `codegraph` command runs
 
 #### Scenario: MCP option on
 
-- **WHEN** the user turns the MCP option on and starts a new session
+- **WHEN** the user runs that command and starts a new session
 - **THEN** the `codegraph` MCP tools are in the tool list
 
 ### Requirement: Index stays in sync

@@ -16,6 +16,22 @@ CloakBrowser SHALL run only when the user chooses it in a setting.
 - **WHEN** the add-on is installed with no backend setting
 - **THEN** no search uses CloakBrowser
 
+### Requirement: No plain browser search
+
+With the default backend, the handler SHALL pass each `WebSearch` call to the built-in `WebSearch` and start no browser.
+Each search engine gives the plain headless browser a bot check, a captcha, or no results, and CloakBrowser gets results (`external/cc-2.1.299/scratch/v110/websearch-301.md`).
+
+#### Scenario: Default backend
+
+- **WHEN** the backend setting is `agent-browser` and Claude calls `WebSearch`
+- **THEN** the built-in `WebSearch` answers
+- **AND** no browser starts
+
+#### Scenario: CloakBrowser backend
+
+- **WHEN** the backend setting is `cloakbrowser`, the rules allow `WebSearch`, and the CloakBrowser binary exists
+- **THEN** the search runs in CloakBrowser
+
 ### Requirement: Permission check of `WebSearch`
 
 A search through the backend SHALL pass the permission rules of `WebSearch`.

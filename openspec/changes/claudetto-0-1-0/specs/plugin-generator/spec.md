@@ -21,6 +21,22 @@ The prose (prompts, skill bodies, hook logic) SHALL stay hand-written.
 - **WHEN** the generator runs on an unchanged source
 - **THEN** no file in `plugins/` changes
 
+### Requirement: Prompt texts in files
+
+Each text of a slice that goes to Claude or to the user SHALL be a `.md` or `.json` file in the `prompts/` folder of the slice, and the generator SHALL write the module `prompts.ts` from it.
+A `{{name}}` part SHALL become a parameter of the export, and a `{{NAME}}` part SHALL get the value of a bound at generate time.
+The parts of the prompt transforms SHALL stay in code, next to their anchors.
+
+#### Scenario: A text with a parameter
+
+- **WHEN** `prompts/deny-reason.md` holds `{{command}}`
+- **THEN** `prompts.ts` exports `DENY_REASON` as a function of `command` that gives the text with the value in place
+
+#### Scenario: A bound with no value
+
+- **WHEN** a text names a `{{NAME}}` that no bound gives
+- **THEN** the generator fails and names the source file
+
 ### Requirement: Committed outputs only
 
 Each file that ships SHALL be committed.
@@ -68,13 +84,14 @@ Shared code SHALL come from the kernel, and the generator SHALL copy it into eac
 
 ### Requirement: Pinned Claude Code version
 
-`claudetto` SHALL declare a minimum Claude Code version of 2.1.300 and a tested version.
-At session start, a lower version SHALL get one short notice that names the minimum version.
+`claudetto` SHALL be built for Claude Code 2.1.301 or later (the user, 2026-10-15).
+The docs SHALL state this version, CI SHALL install it, and the files of `schemas/` SHALL come from its bundle.
+The code SHALL have no check of the Claude Code version at run time, and no part for an older version.
 
-#### Scenario: An old Claude Code
+#### Scenario: The version is in the docs and in CI
 
-- **WHEN** a session starts on Claude Code 2.1.299
-- **THEN** the user sees one notice that `claudetto` needs 2.1.300 or later
+- **WHEN** a reader opens the `claudetto` overview page, or CI installs Claude Code
+- **THEN** the page states 2.1.301 or later, and CI installs 2.1.301
 
 ### Requirement: Bounds in one place
 

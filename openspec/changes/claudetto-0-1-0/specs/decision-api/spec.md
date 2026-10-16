@@ -8,12 +8,19 @@ Gives Claude an opt-in second opinion on a choice, through Jev or a small Claude
 
 ### Requirement: Opt-in
 
-The Jev backend SHALL be off until the user turns it on.
-With Jev off, no data SHALL go to the Jev API.
+The decision API SHALL be off until the user turns it on.
+The `decide` option SHALL have the values `off`, `claude`, and `jev`, and its default SHALL be `off`.
+With `off`, the plugin SHALL register no `pick` tool and SHALL make no model call and no Jev request.
+Only the value `jev` with a Jev key SHALL send data to the Jev API.
 
 #### Scenario: Default install
 
 - **WHEN** the core plugin is installed with no `decide` setting
+- **THEN** no `pick` tool exists, and no model call and no request to the Jev API goes out
+
+#### Scenario: Claude chosen
+
+- **WHEN** the user sets `decide` to `claude`
 - **THEN** a `pick` call uses the small Claude model, and no request goes to the Jev API
 
 ### Requirement: Pick with confidence
@@ -33,6 +40,7 @@ A `pick` call SHALL take a question, the facts, and two or more options with dis
 ### Requirement: Errors are not lost
 
 When the backend fails, the CLI SHALL give the error with a non-zero exit code.
+The result of a failed `pick` call SHALL keep the text of the error.
 
 #### Scenario: The backend is down
 

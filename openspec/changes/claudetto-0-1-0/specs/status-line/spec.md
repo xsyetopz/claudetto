@@ -16,9 +16,9 @@ It SHALL NOT divide by a fixed window.
 - **WHEN** the input has `context_window_size` 1000000 and `used_percentage` 12
 - **THEN** the segment shows 12 percent of 1M
 
-### Requirement: Handover distance
+### Requirement: Handoff distance
 
-The status line SHALL show how far the context is from the handover trigger, or from the compaction threshold when the compaction profile is on.
+The status line SHALL show how far the context is from the handoff trigger, or from the compaction threshold when the compaction profile is on.
 
 #### Scenario: Near the trigger
 
@@ -98,6 +98,11 @@ A failed `git` call SHALL show as an error state, not as "no repository".
 
 - **WHEN** `git` exits with an error in a repository
 - **THEN** the branch segment shows an error mark, not an empty value
+
+#### Scenario: A folder with no repository, in any language
+
+- **WHEN** `git` exits with 128 and `git rev-parse --git-dir` exits with a non-zero code, and the message of `git` is in Polish
+- **THEN** the branch segment shows nothing and no error
 
 ### Requirement: Subagent status line
 

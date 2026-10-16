@@ -25,9 +25,26 @@ Each variant SHALL keep the rules of the `intro` section of the built-in prompt.
 - **WHEN** a variant has no text for a rule of the built-in `intro` section
 - **THEN** the prompt test fails and names the rule
 
+### Requirement: A missed anchor is logged
+
+The `prompt` slice SHALL write one debug log line for each anchor of a transform that finds nothing in the built-in text of its section.
+The line SHALL name the section and the anchor, and the part SHALL stay as Claude Code wrote it.
+
+#### Scenario: The built-in text changed
+
+- **WHEN** the `env_info_simple` section has no line about fast mode
+- **THEN** the section keeps its text
+- **AND** one debug log line names `env_info_simple` and the anchor of the fast-mode line
+
+#### Scenario: Each anchor finds its part
+
+- **WHEN** each anchor of the transform finds its part
+- **THEN** the slice writes no debug log line
+
 ### Requirement: Model of a spawn
 
 A subagent spawned with no `model` SHALL get the block of the model that runs it, not the block of the parent model.
+This SHALL apply to each agent, from each source of agents, and with `CLAUDE_CODE_SUBAGENT_MODEL`.
 
 #### Scenario: Spawn with no model
 
@@ -37,13 +54,13 @@ A subagent spawned with no `model` SHALL get the block of the model that runs it
 ### Requirement: Compaction gate
 
 The prompt SHALL agree with the compaction state.
-With the handover on, no text SHALL say that the context is compacted.
+With the handoff on, no text SHALL say that the context is compacted.
 With the compaction profile on, no text SHALL say that the context is handed over.
 
 #### Scenario: Compaction profile on
 
 - **WHEN** the compaction profile is on
-- **THEN** the system prompt has no handover text
+- **THEN** the system prompt has no handoff text
 
 ### Requirement: No setting that equals the default
 
