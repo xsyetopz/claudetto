@@ -1,7 +1,7 @@
 // Tests of the `sembr` formatter (spec semantic-line-breaks).
 
 import { expect, test } from "bun:test";
-import { sembr } from "../../../src/plugins/dotclaude/slices/sembr/domain/split.ts";
+import { sembr } from "../../../src/plugins/claudetto/slices/sembr/domain/split.ts";
 
 test("splits after a sentence end", () => {
   expect(sembr("Read the file. Then edit it! Why? Because.")).toBe(
@@ -9,16 +9,27 @@ test("splits after a sentence end", () => {
   );
 });
 
-test("keeps abbreviations, initials, and version numbers", () => {
+test("keeps version numbers and a sentence end before a lower case letter", () => {
   for (const text of [
-    "Use a tool, e.g. Bun for tests.",
-    "That is, i.e. node and bun",
-    "Use A. Smith as the name",
-    "It is version 1.2. Next",
-    "Tools vs. Hooks stay apart",
-    "Apples, etc. Pears",
+    "It is version 1.2 and 3.4.5 now",
+    "Use a tool, e.g. bun for tests.",
+    "Tools vs. hooks stay apart",
+    "Przykład np. żółw i inne",
   ])
     expect(sembr(text)).toBe(text);
+});
+
+test("splits text in other languages and scripts", () => {
+  expect(sembr("Żółw śpi. Łódź jest duża. Õun on hea.")).toBe(
+    "Żółw śpi.\nŁódź jest duża.\nÕun on hea.",
+  );
+  expect(sembr("Это раз. Это два! Это три?")).toBe(
+    "Это раз.\nЭто два!\nЭто три?",
+  );
+  expect(sembr("これは文です。次の文です。")).toBe(
+    "これは文です。\n次の文です。",
+  );
+  expect(sembr("I said no. Then I left.")).toBe("I said no.\nThen I left.");
 });
 
 test("keeps code fences, front matter, tables, headings, and definitions", () => {
