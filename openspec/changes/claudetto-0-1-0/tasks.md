@@ -275,6 +275,16 @@ The tasks of the add-ons are in [tasks-addons.md](tasks-addons.md).
   Check: `just test` passes a test where a second run sees the lock.
 - [x] 21.11 Run the full gate again.
   Check: `just check` and `just docker check` pass.
+- [x] 21.12 Deny a `Bash` command that starts a process that Claude Code does not track, or that stops processes by a pattern (`I17`).
+  Check: `just lab` passes the `jobs` tests of `turngate`.
+- [x] 21.13 Give the judge the request and the earlier reply, judge each reply that is not empty, and add the `defer` and `cave` faults (`I04`, `I06`, `I13`).
+  Check: `just lab` passes the `context` tests of `turngate`.
+- [x] 21.14 Keep the last prompts of the user and the changed files in the handoff text (`I03`).
+  Check: `just lab` passes the `kept` tests of `handoff`.
+- [x] 21.15 Add the `corrections` slice (`I02`).
+  Check: `just lab` passes the `corrections` tests.
+- [ ] 21.16 Run one live session in a Linux container with `just sandbox-linux`, and record the result in D51.
+  Check: the recipe gives the verdict `blocked`, and D51 has the method and the result.
 
 ## Workflow follow-up
 

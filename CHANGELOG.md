@@ -21,7 +21,9 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 - The `handoff` slice replaces compaction with a handoff:
   a fork writes the handoff file, and the next session starts from it.
   It has a manual handoff command, a ground check of the values of the handoff, and the `compaction` option.
-- The `prompt` slice gives one prompt variant for each model, built from the live block of Claude Code 2.1.301.
+  The handoff files are in `.claudetto/handoffs/`.
+  The handoff text ends with the last 3 prompts of the user, word for word, and the files that the session changed, which come from the messages and not from the model.
+- The `prompt` slice gives one prompt variant for each model, built from the live block of Claude Code 2.1.302.
   The first request is smaller by about 2,000 to 2,500 tokens for each model.
 - The `minispec` slice and CLI: a lightweight spec workflow with `new`, `list`, `show`, `status`, `validate`, and `archive`.
 - The `gc` slice records the outputs of a session and sweeps them at session start, at session end, and with a dry-run command.
@@ -66,10 +68,9 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
   The skill runs that command only after the user approves it.
   On Linux and WSL2 the seccomp filter helper of `@anthropic-ai/sandbox-runtime` is also required, and `sandbox.network.allowAllUnixSockets: true` is refused, because without the filter a sandboxed command can reach the `ssh-agent` socket or a Windows program.
   The test run uses the `bwrap` that Claude Code uses (`sandbox.bwrapPath`, else `PATH`), and on AppArmor restriction the message gives the profile for its real path.
+  The check of the native build reads the running `claude` from `CLAUDE_CODE_EXECPATH`, and the `claude` on `PATH` only when that env var is not set.
   On native Windows and WSL1, it writes nothing and tells why.
 - The drift notice of `/claudetto:setup` shows in the transcript with `$.ui.log` and is not sent to the model.
-  The check of the native build reads the running `claude` from `CLAUDE_CODE_EXECPATH`, and the `claude` on `PATH` only when that env var is not set.
-  The check of the native build reads the running `claude` from `CLAUDE_CODE_EXECPATH`, and the `claude` on `PATH` only when that env var is not set.
   In an eval run, the model added the notice to its reply of the task.
 - The wiki page [Engine Facts](https://github.com/xsyetopz/claudetto/wiki/Decisions-Engine) gives the facts of Claude Code behind these choices, so that a contributor does not replace them.
 - The `claudetto-docs` add-on docs give the `claude mcp add` command for the `context7` MCP server.
@@ -80,11 +81,11 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 - The `claudetto-sessions` commands show the account of a managed install.
 - The `claudetto-sessions` add-on keeps the plugin version of each session, and the usage report counts the sessions by plugin version.
 - The `setup` skill gives the shell alias that starts Claude Code with `--allowedTools Glob,Grep`.
+- `just sandbox-linux` runs one live session of Claude Code on `haiku` in a Linux container, and checks that a sandboxed `Bash` call cannot reach a Unix socket (D51).
+  The login of the host goes to the container on stdin, and no file of the host gets it.
 - `just docker` runs a recipe of the `justfile` (default `check`) in a container with at most 4 CPUs,
   so that the checks do not take each CPU of the host.
 - The `usercheck` slice: after a permission check denies a call, the `Stop` hook blocks one time a reply that has no `!` command, and it names the denied calls.
-- `just sandbox-linux` runs one live session of Claude Code on `haiku` in a Linux container, and checks that a sandboxed `Bash` call cannot reach a Unix socket (D51).
-  The login of the host goes to the container on stdin, and no file of the host gets it.
   It finds a `!` command from the Markdown syntax of the reply, so it works in each language, and it makes no model call.
 - The `asks` slice asks before a call of `bunx`, `npx`, `pnpm dlx`, `yarn dlx`, `bun x`, or `npm exec` that runs a check tool that is not in `node_modules`, such as `bunx eslint` or `npx tsc`.
   The call downloads the tool, and it checks nothing of the project.
@@ -92,15 +93,18 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
   For `tsc`, the reason states the installed `bun --version` and names `bun check` for Bun 1.4.3 or later (D56).
 - The `turngate` slice checks the end of each turn and of each subagent.
   It blocks a stop while a background task runs, with no model call.
-  A judge on Sonnet then reads the reply and a summary of the tool calls, and blocks a claim with no check after the last edit, a promise of work that the turn did not do, and an opener that is an apology or an agreement.
+  A judge on Sonnet then reads the last prompt of the user, the end of the earlier reply, the reply, and a summary of the tool calls.
+  It blocks a claim with no check after the last edit, a promise of work that the turn did not do, an opener that is an apology or an agreement, a step that the agent gives to the user with no block (`defer`), and a change of position with no new evidence (`cave`).
+  It judges each reply that is not empty, also in a turn with no tool calls.
+  A `tool.check` hook denies a `Bash` command with a lone `&` and no `wait`, with `nohup`, `setsid`, or `disown`, or with a stop of processes by a pattern, because Claude Code does not track such a process.
   The judge reads the reply in its own language, it blocks at most 2 times in a turn, and the block text holds only the reason.
   The `judge` option turns the judge off.
   One judge call used about 800 input tokens and 11 to 68 output tokens.
+- The `corrections` slice adds the last 5 list items of `.claudetto/corrections.md` to the context of each prompt that the user writes.
 - The `reads` slice keeps a rejected call rejected, denies a read of an unchanged range that is in the context, and asks for a new read after a rejected write.
 - The `repostate` slice gives the git state at the start of a session.
   It asks before an edit of `[Unreleased]` in `CHANGELOG.md` when the manifests name a version with no tag, and before a package command that names a package that the registry does not have.
   It marks a served model that differs from the requested model with `$.ui.status`.
-- The `corrections` slice adds the last 5 list items of `.claudetto/corrections.md` to the context of each prompt that the user writes.
 - Each agent has a `maxTurns`, and `just validate` fails on an agent with an `effort` below `medium`.
 
 ### Changed

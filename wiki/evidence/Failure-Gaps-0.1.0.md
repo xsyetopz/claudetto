@@ -18,26 +18,26 @@ The paths are under `src/plugins/claudetto/slices/`.
 | ID | Issue | State | Mechanism in 0.1.0, or the gap |
 | --- | --- | --- | --- |
 | I01 | Ungrounded defaults | Done | `repostate`: the git state at the start, and an ask before an edit of `[Unreleased]` for a version with no tag |
-| I02 | Instruction decay | Partial | `sembr/slice.ts:16-19`, the `commit-msg` hook in `attribution/slice.ts:22-79`, and the rule lint in `src/kernel/rules.ts` |
-| I03 | Context rot | Mostly done | The handoff (`handoff/slice.ts:41`, `handoff/domain/ground.ts`) and `autoCompactWindow` (`handoff/slice.ts:118`) |
-| I04 | False completion | Mostly done | `turngate`: the judge at `Stop` and `SubagentStop` blocks a claim with no check. A turn with no tool calls is not judged. |
+| I02 | Instruction decay | Done | `corrections`: the last items of `.claudetto/corrections.md` go into the context of each prompt of the user. Also `sembr`, the `commit-msg` hook of `attribution`, and the rule lint in `src/kernel/rules.ts` |
+| I03 | Context rot | Done | The handoff (`handoff/domain/ground.ts`) keeps the last prompts of the user word for word and the changed files (`handoff/domain/kept.ts`). Also `autoCompactWindow` |
+| I04 | False completion | Done | `turngate`: the judge at `Stop` and `SubagentStop` blocks a claim with no check. It judges each reply that is not empty, also in a turn with no tool calls, and it gets the request and the earlier reply. |
 | I05 | Specification gaming | Done | The `asks` slice |
-| I06 | Sycophancy | Partial | `second_opinion` in `decide/slice.ts:17-55`, which is off, and the `opener` fault of the `turngate` judge |
+| I06 | Sycophancy | Done | The `opener` and `cave` faults of the `turngate` judge. `cave` is a change of position with no new evidence after the user disagrees. Also `second_opinion` of `decide`, which is off |
 | I07 | Destructive actions | Done | `guard`, the policy rules, and `isolation: worktree` of `implementer`. The ban in `debugger.md:24` is only a prompt. |
 | I08 | Hallucinated packages | Done | `repostate`: an ask before a package that is not in the lockfile and that the registry does not have |
-| I10 | Trust boundaries | Partial | The snippet sets `allowUnsandboxedCommands: true` (`prompt/slice.ts:126`). |
+| I10 | Trust boundaries | Partial | The snippet sets `allowUnsandboxedCommands: true` (`prompt/slice.ts:126`). The user keeps this value (the user, 2026-10-16). |
 | I11 | Delegation | Done | Each agent has `maxTurns` from `agents/limits.ts`, and a plugin agent accepts the key (see the answers below). |
-| I13 | Over-deferral | Partial | `usercheck/adapters/mod.ts:33-41` |
+| I13 | Over-deferral | Done | The `defer` fault of the `turngate` judge: a step or a decision that the agent can do itself, with no block named. Also `usercheck/adapters/mod.ts` |
 | I14 | Consent drift | Done | `reads`: a call of the same tool with the same input as a rejected call gets a deny in the same session. |
 | I16 | Invalid measurement | Done | `eval-compare` fails an arm whose baseline is at the maximum on each case. |
-| I17 | Background jobs | Partial | `turngate` blocks a stop while a background task runs, and `tools/lock.ts` writes the PID and the owner of each long check. A child process that the harness does not track stays a gap. |
+| I17 | Background jobs | Done | `turngate` blocks a stop while a background task runs, and denies a `Bash` command with a lone `&` and no `wait`, `nohup`, `setsid`, `disown`, or a stop of processes by a pattern (`turngate/domain/jobs.ts`). `tools/lock.ts` writes the PID and the owner of each long check. |
 | I18 | Harness and environment | Done | `reads`: a re-read after a rejected write. `repostate`: a mark for a served model that differs from the requested model |
 | Reads | A read of an unchanged file again | Done | `reads`: a deny of a read of an unchanged range that is in the context. The built-in dedup covers only the same range (D60). |
 
 The issues `I09`, `I12`, and `I15` have no row, because the comparison found no new mechanism for them.
 
 Before task group 21, the largest gaps were the end-of-turn gate (`I04`, `I06`, `I13`, `I17`) and the git state (`I01`).
-The states above are the states after task group 21.
+The states above are the states after task group 21 and the fixes of 2026-10-17.
 
 ## Case: The Shell That Waited 2 Hours
 
@@ -47,7 +47,7 @@ On 2026-10-16, a `Bash` call of a subagent ran `cat > <file>` with no input.
 The sandbox blocked `ps`, so the main session reported the state as unknown.
 A local session has no time limit on a background `Bash` command (D59 in [Engine Facts](Decisions-Engine)).
 The `background_tasks` check of the turn gate finds such a task when the harness tracks it.
-A child process that the harness does not track stays a gap of `I17`.
+The `tool.check` hook of the turn gate now denies a command that starts a process that the harness does not track, so the fix of `I17` is a tracked task with `run_in_background: true`.
 
 ## Constraints
 
@@ -69,11 +69,13 @@ It has two parts, and the first part costs nothing.
    The reason gives the ID and the description of each such task, and tells Claude to wait for it or to stop it with `TaskStop`.
    No model call runs.
 2. **The judge.**
-   A small model reads the last reply and a summary of the tool calls of the turn.
-   It answers whether the reply claims work that no check of the turn shows, promises work that the turn did not do, or opens with an apology or with agreement.
+   A small model reads the last prompt of the user, the end of the earlier reply, the last reply, and a summary of the tool calls of the turn.
+   It answers whether the reply claims work that no check of the turn shows, promises work that the turn did not do, opens with an apology or with agreement, gives the user a step that the agent can do (`defer`), or gives up a position with no new evidence (`cave`).
    The rubric comes from the texts in [Model Guidance](Model-Guidance), not from a word list.
    The judge is on by default, and the user can turn it off (the user, 2026-10-16).
    Each judge call costs money, so the setup and the docs give the measured cost of one call from [The Cost of One Judge Call](#the-cost-of-one-judge-call).
+
+A `tool.check` hook of the same slice denies a `Bash` command that starts a process that the harness does not track, or that stops processes by a pattern.
 
 The gate keeps its own count of blocks in each turn, and it stops after 2 continuations.
 The harness cap of 8 blocks stays as a second bound.
@@ -87,7 +89,7 @@ The new judge fixes each of its three failures:
 | --- | --- | --- |
 | The same false claim passed after a block in 2 of 3 runs | The prompt answered `ok` when `stop_hook_active` was `true` | The gate does not use `stop_hook_active` as a pass. It judges each stop, and its own count of 2 continuations stops a loop. |
 | Each block sent the whole judge prompt to Claude | Claude Code puts the hook `prompt` into the `Stop hook feedback` text | The judge runs in the hooks module (D39), and the hook returns only the reason of the judge. The gate uses no `type: "prompt"` hook. |
-| Each turn cost about 6,914 more input tokens | The prompt hook sends the whole transcript | The judge gets only `last_assistant_message` and the summary of the tool calls of the turn. It runs only when the turn has a reply that is not a question. |
+| Each turn cost about 6,914 more input tokens | The prompt hook sends the whole transcript | The judge gets only `last_assistant_message`, the summary of the tool calls of the turn, the last prompt of the user, and the end of the earlier reply. It runs only when the turn has a reply that is not empty. |
 
 Each fix needs a lab test, and the cost needs a measured figure before the gate ships on.
 The judge model is not Haiku for a check of work, because of the Haiku 5.5 card (§6.2.3).
@@ -150,7 +152,8 @@ The cost uses the list prices on [Usage Evidence](Usage-Evidence#prices): $2 for
 - `total_cost_usd` was $0.00603, and `modelUsage` named only `claude-haiku-5-5`.
   So the session total leaves out the judge, and the cost figure comes from the `usage` of the judge (D63).
 - A call reads no cache, so each call pays the full input price.
-- `JUDGE_TOKENS` stays at 1,500, because a long reply and a summary of 60 calls make a larger prompt than this session.
+- `JUDGE_TOKENS` was 1,500 at the time of this session, because a long reply and a summary of 60 calls make a larger prompt than this session.
+  On 2026-10-17 it became 2,500, because the request and the earlier reply add at most about 1,000 tokens.
 
 ## Answers of the Checks at No Cost
 
