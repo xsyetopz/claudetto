@@ -15,8 +15,8 @@ export const JUDGE_TIMEOUT_MS = 30_000;
 /** The token cap of one judge reply. */
 export const JUDGE_MAX_TOKENS = 1024;
 
-/** The input and output tokens of one judge call, for `evals/hooks.json`. Task 21.6 measures the real figure. */
-export const JUDGE_TOKENS = 1500;
+/** The input and output tokens of one judge call, for `evals/hooks.json`. Task 21.6 measured about 900 with no request and no earlier reply, and the two add at most about 1,000. */
+export const JUDGE_TOKENS = 2500;
 
 /** The most tool calls of one turn that the summary of the judge names. The summary gives the count of the others. */
 export const MAX_CALLS = 60;
@@ -32,6 +32,12 @@ export const REPLY_HEAD_CHARS = 2000;
 
 /** The most characters of the end of the reply that the judge gets. */
 export const REPLY_TAIL_CHARS = 6000;
+
+/** The most characters of the end of the last user prompt that the judge gets. */
+export const REQUEST_CHARS = 2000;
+
+/** The most characters of the end of the earlier reply that the judge gets. */
+export const EARLIER_CHARS = 2000;
 
 /** The most background tasks that one block reason names. The reason gives the count of the others. */
 export const MAX_NAMED_TASKS = 5;

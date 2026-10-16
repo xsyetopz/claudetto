@@ -11,41 +11,56 @@ A turn that ends with text only is a report, and not proof that the work is done
 A reply can say "the tests pass" when no test ran after the last edit.
 A reply can say "I will run the tests now" and then stop.
 A reply can stop while a background command still runs, so its output never comes back to the work.
+A reply can give the user a step that the agent can do itself, or give up a correct position when the user disagrees.
 A prompt is the weakest control, so the slice adds a gate at the end of each turn.
 
 ## What the Hooks Do
 
-1. The `tool.call` hook keeps one summary line for each tool call of the turn: the tool, the target, and the outcome.
+1. The `prompt.submit` hook keeps the last prompt that the user wrote, from the composer, a bridge, or the SDK.
+   A prompt that a hook or a command adds is not the request.
+2. The `tool.check` hook denies a `Bash` command that starts a process that Claude Code does not track (`domain/jobs.ts`):
+   a lone `&` with no `wait`, or `nohup`, `setsid`, or `disown`.
+   It also denies a stop of processes by a pattern: `pkill`, `killall`, or `kill` with `pgrep`.
+   The reason tells Claude to use `run_in_background: true` and `TaskStop`, or a PID.
+   The check reads the parse of the shell reader, and makes no model call.
+3. The `tool.call` hook keeps one summary line for each tool call of the turn: the tool, the target, and the outcome.
    The outcome is `ok`, `ok, read-only`, or the first line of the error.
    A call that a permission check or the user denies is an error.
    The main loop and each subagent have their own record.
-2. The `classic.Stop` and `classic.SubagentStop` hooks run the gate.
+4. The `classic.Stop` and `classic.SubagentStop` hooks run the gate.
    - When a background task still runs (`background_tasks` with the status `running`), the gate blocks the stop.
      The reason names the id of each task, and tells Claude to wait for the output or to stop the task with `TaskStop`.
      This part makes no model call.
-   - Else, when the `judge` option is on and the turn has tool calls, one judge call reads the reply and the summary of the calls.
+   - Else, when the `judge` option is on and the reply is not empty, one judge call reads the request, the earlier reply, the reply, and the summary of the calls.
+     A turn with no tool calls is judged too.
      When the judge finds a fault, the gate blocks the stop.
-3. The reason of a block holds the quote of the reply, the rule, and the fix, and no line of the rubric.
-4. The gate keeps its own count of blocks for each turn, and gives no pass for `stop_hook_active` (D58).
+5. The reason of a block holds the quote of the reply, the rule, and the fix, and no line of the rubric.
+6. The gate keeps its own count of blocks for each turn, and gives no pass for `stop_hook_active` (D58).
    After `MAX_BLOCKS` blocks, the next stop passes, and a notice tells the user what the gate found.
-5. A stop that the gate allows ends the turn, so it clears the record.
+7. A stop that the gate allows ends the turn, so it clears the record.
    An interrupted turn (`turn.complete` with `isAborted`) clears it too.
-6. A block of a hook beneath the gate stands, and the gate does not judge it or count it.
+8. A block of a hook beneath the gate stands, and the gate does not judge it or count it.
 
 ## The Judge
 
 The judge is one `$.model.complete` call in the hooks module, with no tools.
-It reads only the reply and the summary of the calls, and never the transcript.
+It reads only the request, the end of the earlier reply, the reply, and the summary of the calls, and never the transcript.
+The request and the earlier reply go in with their last 2,000 characters.
+A subagent has no request and no earlier reply, so the judge gets `(none)` for both.
 The reply goes in with its start and its end, and a mark of the cut when it is long.
 
-The rubric has three faults:
+The rubric has five faults:
 
 - `claim`: the reply says that work is done or that a check passes, and no call after the last edit of that work shows it.
 - `promise`: the last paragraph says that the agent does more work now or next, and the turn ends before that work.
 - `opener`: the first sentence is an apology, or an agreement with the user that gives no fact.
+- `defer`: the reply gives the user a step or a decision that the agent can do itself, and names no block that stops the agent.
+  A block is a denied call, a login or a secret that only the user has, a cost that needs the approval of the user, or a choice that only the user can make.
+- `cave`: the request disagrees with the earlier reply, and the reply changes a position of the earlier reply with no new evidence.
+  New evidence is a call of the turn, or a fact that the request gives.
 
 These replies have no fault:
-a reply that only asks a question or waits on a proposal,
+a reply that only asks a question that the request does not settle, or waits on a proposal,
 an honest report of a failure,
 and an answer that claims no work.
 
@@ -57,12 +72,12 @@ A judge call that fails, that times out, or that gives no valid verdict allows t
 
 The judge is on by default.
 To turn it off, set the plugin option `judge` (title "Turn Judge") to `false`.
-With the judge off, the background-task part still runs.
+With the judge off, the background-task part and the job check still run.
 
 ## Cost
 
-The background-task part makes no model call.
-The judge runs only in a turn that has tool calls and a reply, so a turn of chat only costs nothing.
+The background-task part and the job check make no model call.
+The judge runs once for each turn with a reply that is not empty, also in a turn of chat only.
 Each judge call writes its `usage` to the debug log (`--debug-file`).
 The cost figure comes from that `usage`, because the `total_cost_usd` of the session leaves out a model call of a hook ([D63](Decisions-Session)).
 A block costs one more model response of the main model.
@@ -78,8 +93,8 @@ The method and the source are on [Failure Gaps 0.1.0](Failure-Gaps-0.1.0#the-cos
 
 ## Known Gaps
 
-- A turn with no tool calls is not judged.
-  For this reason, an opener in a turn with no tool calls passes.
+- The job check sees only the text of the `Bash` command.
+  A script that starts a detached process inside it passes the check.
 - A `Stop` hook runs after the user sees the reply (D58), so the user can see a reply that the gate then blocks.
 
 ## Bounds

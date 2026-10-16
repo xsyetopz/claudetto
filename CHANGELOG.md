@@ -69,6 +69,7 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
   On native Windows and WSL1, it writes nothing and tells why.
 - The drift notice of `/claudetto:setup` shows in the transcript with `$.ui.log` and is not sent to the model.
   The check of the native build reads the running `claude` from `CLAUDE_CODE_EXECPATH`, and the `claude` on `PATH` only when that env var is not set.
+  The check of the native build reads the running `claude` from `CLAUDE_CODE_EXECPATH`, and the `claude` on `PATH` only when that env var is not set.
   In an eval run, the model added the notice to its reply of the task.
 - The wiki page [Engine Facts](https://github.com/xsyetopz/claudetto/wiki/Decisions-Engine) gives the facts of Claude Code behind these choices, so that a contributor does not replace them.
 - The `claudetto-docs` add-on docs give the `claude mcp add` command for the `context7` MCP server.

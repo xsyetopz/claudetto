@@ -1,17 +1,21 @@
 // The judge of the turn gate: its request, the parse of its verdict, and the block reason.
-// The judge reads only the reply and the summary of the tool calls, never the transcript.
+// The judge reads only the reply, the summary of the tool calls, the last user prompt, and the end of the earlier reply, never the transcript.
 // The block reason holds the quote, the rule, and the fix, and no line of the rubric.
 
 import {
+  EARLIER_CHARS,
   MAX_QUOTE_CHARS,
   REPLY_HEAD_CHARS,
   REPLY_TAIL_CHARS,
+  REQUEST_CHARS,
 } from "../limits.ts";
 import {
   JUDGE_PROMPT,
   JUDGE_REASON,
   JUDGE_SYSTEM,
+  RULE_CAVE,
   RULE_CLAIM,
+  RULE_DEFER,
   RULE_OPENER,
   RULE_PROMISE,
 } from "../prompts.ts";
@@ -22,6 +26,8 @@ const RULES = {
   claim: RULE_CLAIM,
   promise: RULE_PROMISE,
   opener: RULE_OPENER,
+  defer: RULE_DEFER,
+  cave: RULE_CAVE,
 } as const;
 
 export type Fault = keyof typeof RULES;
@@ -38,13 +44,33 @@ export const replyExcerpt = (reply: string): string => {
   return `${reply.slice(0, REPLY_HEAD_CHARS)}\n[… ${cut} characters cut …]\n${reply.slice(-REPLY_TAIL_CHARS)}`;
 };
 
+/** The last `max` characters of `text`, with a mark of the cut, or `(none)` for an empty text. */
+const tail = (text: string, max: number): string => {
+  if (text.trim() === "") return "(none)";
+  return text.length <= max
+    ? text
+    : `[… ${text.length - max} characters cut …]\n${text.slice(-max)}`;
+};
+
+/** What the judge reads beside the reply: the last user prompt and the reply of the turn before it, empty when there is none. */
+export interface Context {
+  readonly request: string;
+  readonly earlier: string;
+}
+
 /** The system prompt and the user prompt of one judge call. */
 export const judgeRequest = (
   reply: string,
   calls: readonly CallLine[],
+  context: Context = { request: "", earlier: "" },
 ): { system: string; prompt: string } => ({
   system: JUDGE_SYSTEM,
-  prompt: JUDGE_PROMPT({ reply: replyExcerpt(reply), calls: summary(calls) }),
+  prompt: JUDGE_PROMPT({
+    request: tail(context.request, REQUEST_CHARS),
+    earlier: tail(context.earlier, EARLIER_CHARS),
+    reply: replyExcerpt(reply),
+    calls: calls.length > 0 ? summary(calls) : "(no tool calls)",
+  }),
 });
 
 const isFault = (value: unknown): value is Fault =>

@@ -1,12 +1,15 @@
 // The manifest of the slice `turngate`: the gate at the end of each turn, at `Stop` and at `SubagentStop`.
 // A text-only end of a turn is a report and not proof that the work is done.
 // A background task that still runs blocks the stop, and a judge model checks the reply against the tool calls of the turn.
+// A `Bash` command that starts a job that Claude Code does not track, or that stops processes by a pattern, is denied.
 
 import type { Slice } from "../../../../kernel/slice.ts";
 import {
   keepOptions,
+  onCheck,
   onStop,
   onSubagentStop,
+  onSubmit,
   onToolCall,
   onTurnAborted,
 } from "./adapters/mod.ts";
@@ -14,8 +17,10 @@ import { JUDGE_TOKENS } from "./limits.ts";
 import { OPTION_DESCRIPTION } from "./prompts.ts";
 
 const LAB = "plugins/claudetto/tests/turngate.test.ts";
+const JOBS_LAB = "plugins/claudetto/tests/jobs.test.ts";
+const CONTEXT_LAB = "plugins/claudetto/tests/context.test.ts";
 
-/** The eval kinds of the two stop hooks. The judge adds one model request to a turn with tool calls. */
+/** The eval kinds of the two stop hooks. The judge adds one model request to a turn with a reply. */
 const stopEvals = {
   requests: 1,
   tokens: JUDGE_TOKENS,
@@ -45,6 +50,37 @@ export const slice = {
       filter: { tool: /./ },
       phase: "observe",
       run: onToolCall,
+    },
+    {
+      event: "prompt.submit",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow: `${CONTEXT_LAB} > the judge gets the last user prompt and the earlier reply`,
+        text: `${CONTEXT_LAB} > a prompt that the user did not write is not the request`,
+      },
+      // A prompt that the user wrote: at the terminal, through the bridge, or from the SDK host.
+      filter: {
+        origin: [{ kind: "composer" }, { kind: "bridge" }, { kind: "sdk" }],
+      },
+      phase: "observe",
+      run: onSubmit,
+    },
+    {
+      event: "tool.check",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: true,
+        allow: `${JOBS_LAB} > a job that \`wait\` ends passes`,
+        text: `${JOBS_LAB} > the deny reason names \`run_in_background\` and the PID`,
+        block: `${JOBS_LAB} > a \`nohup\` job is denied`,
+        false: `${JOBS_LAB} > a \`kill\` by PID passes`,
+      },
+      filter: { tool: ["Bash"] },
+      phase: "check",
+      run: onCheck,
     },
     {
       event: "turn.complete",

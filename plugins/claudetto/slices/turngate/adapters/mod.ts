@@ -4,10 +4,12 @@
 // `tool.call` keeps a summary line of each call, for each agent: the main loop, and each subagent by its `agentId`.
 // `classic.Stop` and `classic.SubagentStop` run the gate:
 // a background task that still runs blocks the stop with no model call,
-// and else, when the turn has tool calls and the `judge` option is on, one `$.model.complete` call judges the reply.
+// and else, when the turn has a reply and the `judge` option is on, one `$.model.complete` call judges the reply.
+// For the main loop, the judge also gets the last prompt of the user from `prompt.submit` and the reply of the stop before it.
 // The gate keeps its own count of blocks in each turn, and gives no pass for `stop_hook_active` (D58).
 // A stop that the gate allows ends the turn, so it clears the record of the agent. A turn that the user interrupts clears it too.
 // The cost comes from the `usage` of the judge result, because the session total leaves out a model call of a hook (D63).
+// `tool.check` denies a `Bash` command that starts a job that Claude Code does not track, or that stops processes by a pattern (`domain/jobs.ts`).
 //
 // `claude plugin validate` follows `$` only into a function of one file.
 // For this reason, each function that touches `$` is here, and the rules are in `domain/`.
@@ -15,7 +17,13 @@
 import type { EngineInterface, PluginOptions } from "claude-code";
 import type { Handler } from "../../../kernel/slice.ts";
 import { type CallLine, callLine } from "../domain/calls.ts";
-import { judgeReason, judgeRequest, parseVerdict } from "../domain/judge.ts";
+import { jobsReason } from "../domain/jobs.ts";
+import {
+  type Context,
+  judgeReason,
+  judgeRequest,
+  parseVerdict,
+} from "../domain/judge.ts";
 import {
   runningTasks,
   type TaskSummary,
@@ -39,6 +47,9 @@ interface Turn {
 
 /** The record of each agent, by `agentId`, with `""` for the main loop. */
 const turns = new Map<string, Turn>();
+
+/** The last prompt of the user, and the reply of the last stop that the gate allowed, for the main loop. */
+const main: { request: string; earlier: string } = { request: "", earlier: "" };
 
 /** The `judge` option, which the generated `register` sets once with `keepOptions`. It is on by default. */
 const kept: { judge: boolean } = { judge: true };
@@ -67,6 +78,20 @@ export const onToolCall: Handler<"tool.call"> = async (_$, e, next) => {
   return out;
 };
 
+export const onCheck: Handler<"tool.check"> = async (_$, e, next) => {
+  const verdict = await next(e);
+  if (verdict?.decision === "deny") return verdict;
+  const reason = jobsReason((e.input as { command?: unknown }).command);
+  return reason === undefined ? verdict : { decision: "deny", reason };
+};
+
+export const onSubmit: Handler<"prompt.submit"> = async (_$, e, next) => {
+  const out = await next(e);
+  // The filter of `slice.ts` passes only a prompt that the user wrote.
+  if (out.drop === undefined) main.request = e.text;
+  return out;
+};
+
 export const onTurnAborted: Handler<"turn.complete"> = async (_$, e, next) => {
   turns.delete(e.agentId ?? "");
   return next(e);
@@ -77,8 +102,9 @@ const judge = async (
   $: EngineInterface,
   reply: string,
   calls: readonly CallLine[],
+  context: Context,
 ): Promise<string | undefined> => {
-  const request = judgeRequest(reply, calls);
+  const request = judgeRequest(reply, calls, context);
   let r: Awaited<ReturnType<EngineInterface["model"]["complete"]>>;
   try {
     r = await $.model.complete({
@@ -139,14 +165,20 @@ const gate = async (
   const reason =
     tasks.length > 0
       ? tasksReason(tasks)
-      : kept.judge && turn.calls.length > 0 && reply.trim() !== ""
-        ? await judge($, reply, turn.calls)
+      : kept.judge && reply.trim() !== ""
+        ? await judge(
+            $,
+            reply,
+            turn.calls,
+            key === "" ? main : { request: "", earlier: "" },
+          )
         : undefined;
   if (reason !== undefined && turn.blocks < MAX_BLOCKS) {
     turn.blocks += 1;
     return reason;
   }
   if (reason !== undefined) $.ui.log(NOTICE_CAP({ reason }));
+  if (key === "") main.earlier = reply;
   turns.delete(key);
   return undefined;
 };

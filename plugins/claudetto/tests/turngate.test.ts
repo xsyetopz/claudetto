@@ -176,12 +176,12 @@ test("the judge gets the summary of the tool calls of the turn", async ($: Engin
   expect(prompt).not.toContain("new_string");
 });
 
-test("a turn with no tool calls makes no judge call", async ($: Engine, on: On) => {
+test("a turn with no tool calls is judged with an empty list", async ($: Engine, on: On) => {
   const seen = setup(on, { judge: answered(CLAIM) });
   await fresh($);
   const out = await stop($, "Done. All tests pass.");
-  expect(out.block).toBeUndefined();
-  expect(seen.requests.length).toBe(0);
+  expect(out.block).toContain("All tests pass.");
+  expect(seen.requests[0]?.prompt).toContain("(no tool calls)");
 });
 
 test("a claim after one block is blocked again", async ($: Engine, on: On) => {
@@ -221,7 +221,7 @@ test("when each background task ended, the task part passes", async ($: Engine, 
     task("b2", "failed"),
   ]);
   expect(out.block).toBeUndefined();
-  expect(seen.requests.length).toBe(0);
+  expect(seen.requests.length).toBe(1);
 });
 
 const off = { options: { judge: false } };
@@ -264,8 +264,8 @@ test("an interrupted turn clears the tool calls", async ($: Engine, on: On) => {
   await fresh($);
   await edit($);
   await fresh($);
-  expect((await stop($, "All tests pass.")).block).toBeUndefined();
-  expect(seen.requests.length).toBe(0);
+  await stop($, "All tests pass.");
+  expect(seen.requests[0]?.prompt).toContain("(no tool calls)");
 });
 
 test("a subagent stop with a running task is blocked", async ($: Engine, on: On) => {
@@ -296,6 +296,6 @@ test("a subagent is judged on its own calls only", async ($: Engine, on: On) => 
     agent_transcript_path: "/t/a2.jsonl",
     last_assistant_message: "All tests pass.",
   });
-  expect(out.block).toBeUndefined();
-  expect(seen.requests.length).toBe(0);
+  expect(out.block).not.toBeUndefined();
+  expect(seen.requests[0]?.prompt).toContain("(no tool calls)");
 });
