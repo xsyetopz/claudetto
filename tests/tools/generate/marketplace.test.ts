@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { discover } from "../../../tools/generate/discover.ts";
 import { marketplaceOf } from "../../../tools/generate/emit/marketplace.ts";
+import { outputs } from "../../../tools/generate/emit/texts.ts";
 import { fixtureRoot, textOf, VERSION } from "./fixture.ts";
 
 const source = (plugins: string[]): string =>
@@ -28,6 +29,12 @@ test("the marketplace file lists each plugin with its source, its description, a
   expect(json.plugins[0].description).toBe(
     "A fixture plugin. It has two sentences.",
   );
+});
+
+test("`src/marketplace.ts` gives no copy at the root", async () => {
+  const dir = await fixtureRoot({ "src/marketplace.ts": source(["p"]) });
+  const files = (await outputs(dir)).map((o) => o.file);
+  expect(files).not.toContain("marketplace.ts");
 });
 
 test("a plugin with no `description.md` is an error that names the file", async () => {
