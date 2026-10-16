@@ -128,7 +128,7 @@ These facts give the form:
   With `--privileged`, the same call ran `echo`, and `socket(AF_UNIX)` failed with `EPERM`.
   So setup passes the check when the running `claude` resolves to an ELF file: `CLAUDE_CODE_EXECPATH`, which Claude Code sets in the env of a `Bash` call, and else the `claude` on `PATH`.
   The npm build runs `cli.js` and still needs the helper on disk.
-  No live sandboxed `Bash` call ran, because that needs a login.
+  In a live session of `just sandbox-linux` on 2026-10-17 (the native `claude-code-linux-arm64@2.1.302` on `haiku`, 0.0031 USD), the control call with no sandbox got `pong` from `SSH_AUTH_SOCK`, and the sandboxed `Bash` call to `socat` failed with `socket(1, 1, 0): Operation not permitted`, so the verdict is `blocked`.
 - `sandbox.network.allowAllUnixSockets: true` makes the engine skip the filter (`[Sandbox Linux] Skipping seccomp filter - allowAllUnixSockets is enabled`, line 239865).
   Setup refuses and names the file, and does not set the key to `false`, because a managed or user choice is not setup's to change.
 - The `bwrap` of the test run is the one the engine runs: `sandbox.bwrapPath` ("used directly instead of resolving bwrap via PATH", line 303670) or `bwrap` from `PATH`.

@@ -283,7 +283,7 @@ The tasks of the add-ons are in [tasks-addons.md](tasks-addons.md).
   Check: `just lab` passes the `kept` tests of `handoff`.
 - [x] 21.15 Add the `corrections` slice (`I02`).
   Check: `just lab` passes the `corrections` tests.
-- [ ] 21.16 Run one live session in a Linux container with `just sandbox-linux`, and record the result in D51.
+- [x] 21.16 Run one live session in a Linux container with `just sandbox-linux`, and record the result in D51.
   Check: the recipe gives the verdict `blocked`, and D51 has the method and the result.
 
 ## Workflow follow-up
