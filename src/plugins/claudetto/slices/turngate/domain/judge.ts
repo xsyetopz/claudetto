@@ -1,0 +1,86 @@
+// The judge of the turn gate: its request, the parse of its verdict, and the block reason.
+// The judge reads only the reply and the summary of the tool calls, never the transcript.
+// The block reason holds the quote, the rule, and the fix, and no line of the rubric.
+
+import {
+  MAX_QUOTE_CHARS,
+  REPLY_HEAD_CHARS,
+  REPLY_TAIL_CHARS,
+} from "../limits.ts";
+import {
+  JUDGE_PROMPT,
+  JUDGE_REASON,
+  JUDGE_SYSTEM,
+  RULE_CLAIM,
+  RULE_OPENER,
+  RULE_PROMISE,
+} from "../prompts.ts";
+import { type CallLine, summary } from "./calls.ts";
+
+/** The faults of the rubric, and the rule text of each in the block reason. */
+const RULES = {
+  claim: RULE_CLAIM,
+  promise: RULE_PROMISE,
+  opener: RULE_OPENER,
+} as const;
+
+export type Fault = keyof typeof RULES;
+
+/** What the judge decided: no fault, or a fault with its quote and its fix. */
+export type Verdict =
+  | { readonly fault: "none" }
+  | { readonly fault: Fault; readonly quote: string; readonly fix: string };
+
+/** The reply as the judge gets it: the start and the end, with a mark of the cut. */
+export const replyExcerpt = (reply: string): string => {
+  if (reply.length <= REPLY_HEAD_CHARS + REPLY_TAIL_CHARS) return reply;
+  const cut = reply.length - REPLY_HEAD_CHARS - REPLY_TAIL_CHARS;
+  return `${reply.slice(0, REPLY_HEAD_CHARS)}\n[… ${cut} characters cut …]\n${reply.slice(-REPLY_TAIL_CHARS)}`;
+};
+
+/** The system prompt and the user prompt of one judge call. */
+export const judgeRequest = (
+  reply: string,
+  calls: readonly CallLine[],
+): { system: string; prompt: string } => ({
+  system: JUDGE_SYSTEM,
+  prompt: JUDGE_PROMPT({ reply: replyExcerpt(reply), calls: summary(calls) }),
+});
+
+const isFault = (value: unknown): value is Fault =>
+  typeof value === "string" && Object.hasOwn(RULES, value);
+
+/**
+ * The verdict in the text of the judge, or `undefined` when the text has no valid verdict.
+ * The text is JSON, so the parse takes the span from the first `{` to the last `}`.
+ */
+export const parseVerdict = (text: string): Verdict | undefined => {
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start < 0 || end < start) return undefined;
+  let value: unknown;
+  try {
+    value = JSON.parse(text.slice(start, end + 1));
+  } catch {
+    return undefined;
+  }
+  if (typeof value !== "object" || value === null) return undefined;
+  const v = value as Record<string, unknown>;
+  if (v["fault"] === "none") return { fault: "none" };
+  if (!isFault(v["fault"])) return undefined;
+  const quote = typeof v["quote"] === "string" ? v["quote"].trim() : "";
+  const fix = typeof v["fix"] === "string" ? v["fix"].trim() : "";
+  if (!quote || !fix) return undefined;
+  return { fault: v["fault"], quote, fix };
+};
+
+/** The block reason of a verdict with a fault. */
+export const judgeReason = (v: Exclude<Verdict, { fault: "none" }>): string =>
+  JUDGE_REASON({
+    quote:
+      v.quote.length > MAX_QUOTE_CHARS
+        ? `${v.quote.slice(0, MAX_QUOTE_CHARS)}…`
+        : v.quote,
+    rule: RULES[v.fault],
+    fix: v.fix,
+  });

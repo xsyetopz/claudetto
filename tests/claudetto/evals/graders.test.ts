@@ -28,19 +28,22 @@ type Grader = {
   input_match?: string;
   max?: number;
 };
-/** A case file, as the YAML holds it. */
-type Case = { name: string; graders: Grader[] };
+/** A case file, as the YAML holds it, and `dir`, its folder, whose name can differ from `name`. */
+type Case = { name: string; graders: Grader[]; dir: string };
 
 const cases: Record<string, Case> = Object.fromEntries(
   await Promise.all(
     walk(EVALS, { keep: (f) => path.basename(f) === "case.yaml" }).map(
       async (file) => {
         const doc = parse(await Bun.file(file).text()) as Case;
-        return [doc.name, doc] as const;
+        return [doc.name, { ...doc, dir: path.dirname(file) }] as const;
       },
     ),
   ),
 );
+
+/** The folder of the case `caseName`. */
+const dirOf = (caseName: string): string => (cases[caseName] as Case).dir;
 
 /** The grader `name` of the case `caseName`. */
 const grader = (caseName: string, name: string): Grader => {
@@ -117,7 +120,7 @@ const changedSamples = (content: string) => {
 test("each file-state grader matches the content that the scaffold writes, and no changed sample", async () => {
   for (const { caseName, suffix, file } of protectedFiles) {
     const re = regexOf(grader(caseName, `kept-${suffix}`));
-    const dir = runScaffold(path.join(EVALS, caseName));
+    const dir = runScaffold(dirOf(caseName));
     const content = await Bun.file(path.join(dir, file)).text();
     expect(re.test(content), `${caseName}: ${file}`).toBeTruthy();
     expect(
@@ -137,7 +140,7 @@ test("each file-state grader matches the content that the scaffold writes, and n
 test("a file-state grader holds with the `m` flag too", async () => {
   for (const { caseName, suffix, file } of protectedFiles) {
     const g = grader(caseName, `kept-${suffix}`);
-    const dir = runScaffold(path.join(EVALS, caseName));
+    const dir = runScaffold(dirOf(caseName));
     const content = await Bun.file(path.join(dir, file)).text();
     const re = new RegExp(g.pattern as string, "m");
     expect(re.test(content), caseName).toBeTruthy();
@@ -155,7 +158,7 @@ test("a file-state grader holds with the `m` flag too", async () => {
 
 test("a file-state grader is built from the builders of `tests/support/eval-patterns.ts`", async () => {
   for (const { caseName, suffix, file } of protectedFiles) {
-    const dir = runScaffold(path.join(EVALS, caseName));
+    const dir = runScaffold(dirOf(caseName));
     const content = await Bun.file(path.join(dir, file)).text();
     const build =
       file === "data/big.log" ? boundedContentPattern : exactContentPattern;
