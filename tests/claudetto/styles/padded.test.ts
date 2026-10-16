@@ -1,0 +1,51 @@
+// The test plugin in `padded/` holds two cases for the judge `plain-reply`: a padded reply and a plain reply.
+// A paid run of them shows that the judge fails a padded reply and passes a plain one (`wiki/evidence/Evals-0.1.0.md`).
+// This test keeps the judge of the test plugin equal to the judge of each style case, so the run covers the shipped judge.
+
+import { expect, test } from "bun:test";
+import path from "node:path";
+import { parse } from "yaml";
+import { REPO, walk } from "../../support/repo.ts";
+
+type Case = {
+  name: string;
+  graders: { name: string; type: string; focus?: string; criteria?: string }[];
+};
+
+const STYLE_EVALS = path.join(
+  REPO,
+  "src/plugins/claudetto/slices/styles/evals",
+);
+const PADDED_EVALS = path.join(import.meta.dir, "padded/evals");
+
+const load = async (dir: string): Promise<Case[]> =>
+  Promise.all(
+    walk(dir, { keep: (f) => path.basename(f) === "case.yaml" }).map(
+      async (f) => parse(await Bun.file(f).text()) as Case,
+    ),
+  );
+
+const judgeOf = (c: Case) => c.graders.find((g) => g.name === "plain-reply");
+
+test("the test plugin has the padded case and the plain case", async () => {
+  const names = (await load(PADDED_EVALS)).map((c) => c.name).sort();
+  expect(names).toEqual(["padded-reply", "plain-control"]);
+});
+
+test("each case of the test plugin has only the judge `plain-reply`", async () => {
+  for (const c of await load(PADDED_EVALS))
+    expect(c.graders.map((g) => g.name)).toEqual(["plain-reply"]);
+});
+
+test("the judge `plain-reply` is the same in each style case and in the test plugin", async () => {
+  const style = await load(STYLE_EVALS);
+  expect(style.length).toBe(4);
+  const judges = [...style, ...(await load(PADDED_EVALS))].map((c) => {
+    const g = judgeOf(c);
+    expect(g, c.name).toBeTruthy();
+    return { type: g?.type, focus: g?.focus, criteria: g?.criteria };
+  });
+  for (const j of judges) expect(j).toStrictEqual(judges[0] as typeof j);
+  expect(judges[0]?.type).toBe("llm");
+  expect(judges[0]?.focus).toBe("last_message");
+});

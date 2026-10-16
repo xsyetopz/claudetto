@@ -11,6 +11,7 @@ __pycache__/
 .env
 
 /plugins/claudetto/evals/results/
+/tests/claudetto/styles/padded/evals/results/
 
 # Claude Code writes a `tsconfig.json` into a plugin folder that has none when a session loads the plugin, such as in `just sandbox`.
 # Only the core plugin has a `tsconfig.json` from `src/`.

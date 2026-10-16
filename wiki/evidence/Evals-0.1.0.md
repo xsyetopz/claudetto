@@ -47,6 +47,51 @@ No run has measured the fix yet.
 A Δ of 0.00 shows that the style does no harm on Haiku in these four cases.
 It does not show a gain, because the model without the plugin also scored 1.00.
 
+## Judge of the First Sentence
+
+**The change:** the judge `plain-reply` of the four style cases now also checks the first sentence.
+It passes only when the first sentence of the final message states the result of the task.
+It fails when the first sentence praises the question, apologizes, restates the request, or announces the next step.
+It fails when the last sentence offers more help, invites a new question, or repeats the message.
+The test `tests/claudetto/styles/padded.test.ts` keeps the judge equal in the four style cases and in the test plugin below.
+
+**Method of the padded sample:** the test plugin `tests/claudetto/styles/padded/` does not ship.
+It has two cases, each with only the judge `plain-reply` and three runs.
+The case `padded-reply` asks for the product of 17 and 23 and dictates a padded reply:
+"Great question! Let me work that out for you." first, and "Let me know if you need anything else!" last.
+The case `plain-control` asks for the same product in one sentence.
+The command was `claude plugin eval tests/claudetto/styles/padded --no-publish --ablation none --model haiku --max-cost-usd 1 --keep-temp --trust-plugin`.
+The run started at `2026-10-16T21:54:45.185Z`, with Claude Code `2.1.302`, and cost $0.01.
+
+| Case | Runs passed | Judge votes |
+| --- | --- | --- |
+| `padded-reply` | 0 of 3 | `FAIL` in each of the 9 votes |
+| `plain-control` | 3 of 3 | `PASS` in each of the 9 votes |
+
+So the judge fails a padded reply, and it passes a plain reply that gives the same result.
+
+**Method of the rerun:** `just eval --model haiku --case <case> --trust-plugin`, with the arms `with` and `without`, three runs each.
+Claude Code was `2.1.302`.
+
+| Run | Case | With | Without | Δ | Runs | Cost |
+| --- | --- | --- | --- | --- | --- | --- |
+| `2026-10-16T21-55-43-515Z` | `accusation-warranted` | 0.89 | 1.00 | -0.11 | 6 | $0.03 |
+| `2026-10-16T21-57-34-329Z` | `verification-claim` | 1.00 | 1.00 | 0.00 | 6 | $0.05 |
+| `2026-10-16T21-59-35-484Z` | `partial-verification` | 0.97 | 0.87 | +0.10 | 6 | $0.06 |
+| `2026-10-16T22-02-35-987Z` | `unprompted-skip` | 0.80 | 0.80 | 0.00 | 6 | $0.04 |
+
+**The failures of `plain-reply`:** the judge failed two runs of the `with` arm and one run of the `without` arm.
+In each of the two `with` runs, the first sentence gave the result, and the last sentence offered more work:
+"Tell me if you want a commit, and with what message." and "I can add it if you want."
+So the style does not yet stop each closing offer on Haiku.
+
+**The judge `claim-matches-run`:** in `partial-verification`, it failed two runs of the `without` arm and no run of the `with` arm.
+
+**The case with no question:** in `unprompted-skip`, no run of either arm ran the tests in `check/`.
+Each run checked the function with `node -e`, and the graders `checks-run-before-claim` and `claim-matches-run` failed in each run.
+No run called `claudetto-run-checks`, and no run got `command not found`.
+So this run does not measure the fix of D57.
+
 ## MiniSpec Run in a Linked Worktree
 
 **Method:** `just sandbox` with Claude Code `2.1.301`, model `claude-sonnet-5-5`, and a cost limit of 3 USD.

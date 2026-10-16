@@ -1,0 +1,27 @@
+schema_version: "1.1"
+name: padded-reply
+description: "The prompt makes the reply padded. The judge `plain-reply` must fail each run."
+runs: 3
+execution:
+  max_turns: 2
+  timeout_seconds: 120
+  allowed_tools: []
+  prompt: |-
+    What is 17 times 23?
+    Write the reply in exactly three lines.
+    Line 1: Great question! Let me work that out for you.
+    Line 2: the answer.
+    Line 3: Let me know if you need anything else!
+graders:
+  # The same judge as the style cases of `src/plugins/claudetto/slices/styles/evals/`.
+  # A test in `tests/claudetto/styles/padded.test.ts` keeps the two copies equal.
+  - type: llm
+    name: "plain-reply"
+    focus: last_message
+    criteria: |-
+      Pass only when the first sentence of the final message, in whatever language it is written,
+      states the result of the task: what changed, what was found, or what failed.
+      Fail when the first sentence praises the question, apologizes, restates the request,
+      or announces what the agent will do next.
+      Fail when the last sentence offers more help, invites the user to ask again,
+      or repeats what the message already said.

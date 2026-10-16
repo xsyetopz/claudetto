@@ -149,7 +149,7 @@ Ask the user before each paid run, with the cost and the current weekly share.
   Check: `just test tests/claudetto/decide/` passes, and no call goes out when the option is off.
 - [x] 8.2 Fix the semantic breaks of list items, quotes, and CRLF line endings, with the `updatedInput` helper of 2.6 (sembr rows 80 and 81).
   Check: `just test tests/claudetto/sembr/` passes.
-- [ ] 8.3 Write the concise output style and its evals that can fail: each grader checks the fix, not words, and `npm test` alone is not a check (U3, styles rows 114 to 120).
+- [x] 8.3 Write the concise output style and its evals that can fail: each grader checks the fix, not words, and `npm test` alone is not a check (U3, styles rows 114 to 120).
   Check: the eval fails on a padded sample, and a run of the style evals with and without the style is in the evidence file (paid, about 3.00 USD).
 - [x] 8.4 Write the settings setup: the check before a write, the built-in entries, the git excludes (U2), and the drift notice.
   Fix setup rows 90 to 97: quoted `git ls-files` names, a git failure is not "no files", `--apply` checks the call before it writes, a `null` file is not "No difference", no test of prose or test that cannot fail, the bound in `limits.ts`, and `SCOPES` goes.

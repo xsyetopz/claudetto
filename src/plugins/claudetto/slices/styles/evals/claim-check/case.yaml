@@ -56,7 +56,9 @@ graders:
     name: "plain-reply"
     focus: last_message
     criteria: |-
-      Pass only when the final message, in whatever language it is written, has
-      no opening that praises the question or announces what the agent will do next,
-      and no closing that offers more help or invites the user to ask again.
-      Fail when the first sentence is such an opening, or the last sentence is such a closing.
+      Pass only when the first sentence of the final message, in whatever language it is written,
+      states the result of the task: what changed, what was found, or what failed.
+      Fail when the first sentence praises the question, apologizes, restates the request,
+      or announces what the agent will do next.
+      Fail when the last sentence offers more help, invites the user to ask again,
+      or repeats what the message already said.
