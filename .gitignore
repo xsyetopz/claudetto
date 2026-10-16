@@ -10,17 +10,16 @@ __pycache__/
 
 .env
 
-/plugins/dotclaude/evals/results/
+/plugins/claudetto/evals/results/
 
 # Claude Code writes a `tsconfig.json` into a plugin folder that has none when a session loads the plugin, such as in `just sandbox`.
 # Only the core plugin has a `tsconfig.json` from `src/`.
 /plugins/*/tsconfig.json
-!/plugins/dotclaude/tsconfig.json
+!/plugins/claudetto/tsconfig.json
 
 node_modules/
 /.claude/worktrees/
 /.agents/
 /.claude/skills/claude-api
 /skills-lock.json
-
-.dotclaude/rate-limits.jsonl
+.dotclaude/

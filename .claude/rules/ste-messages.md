@@ -2,7 +2,7 @@
 paths:
   - "src/**/agents/*.md"
   - "src/**/skills/**/*.md"
-  - "src/**/texts.ts/*.md"
+  - "src/**/prompts/*.md"
   - "src/**/domain/**/*.ts"
 ---
 

@@ -21,9 +21,9 @@ Title Case is the Chicago style of the industry:
 - Write the prepositions of four letters or less in lowercase, such as `of`, `in`, `on`, `at`, `to`, `by`, `for`, `from`, `with`, `into`, `onto`, `over`, `via`, and `per`.
   Also write `as` and the infinitive `to` in lowercase.
 - Capitalize each part of a hyphenated word, such as `Add-On` and `Read-Only`.
-- Do not change a code span, a file name, a version, or a product name, such as `dotclaude`, `bun`, and `iOS`.
+- Do not change a code span, a file name, a version, or a product name, such as `claudetto`, `bun`, and `iOS`.
 
-For example, write `## Install the Core Plugin`, `` ## The Spec Store and `/dotclaude:handoff` ``, and `- [Context and Handoff](Context-And-Handoff)`.
+For example, write `## Install the Core Plugin`, `` ## The Hooks Module and `register.ts` ``, and `- [Context and Handoff](Context-And-Handoff)`.
 Write a prose link in a sentence, such as "see [the settings snippet](Settings-Snippet)", in the case of the sentence.
 
 The test in `tests/support/wiki-links.test.ts` makes the anchors in lowercase, so a change of case keeps each `Page#anchor` link valid.

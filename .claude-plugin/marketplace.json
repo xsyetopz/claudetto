@@ -1,56 +1,53 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-marketplace.json",
-  "name": "dotclaude",
+  "name": "claudetto",
   "owner": {
     "name": "xsyetopz"
   },
-  "description": "Lists the dotclaude plugin and its optional code-graph, browser, docs, sessions, and lab plugins.",
+  "description": "Lists the claudetto plugin and its optional code-graph, browser, docs, sessions, lab, and you-should-know plugins.",
+  "metadata": {
+    "version": "0.1.0-alpha.1"
+  },
   "plugins": [
     {
-      "name": "dotclaude",
-      "source": "./plugins/dotclaude",
-      "description": "Adds a lean output style, six role agents, and a status line command. Adds hooks that ask before work on a repo with an AI policy, check edits and `git` calls, bound the context of subagents, and check Markdown line breaks and drift.",
+      "name": "claudetto",
+      "source": "./plugins/claudetto",
+      "description": "Adds a lean output style, six role agents, and a status line command. Adds hooks that check edits and `git` calls, bound the context of subagents, and check Markdown line breaks and drift.",
       "category": "productivity"
     },
     {
-      "name": "dotclaude-codegraph",
-      "source": "./plugins/dotclaude-codegraph",
+      "name": "claudetto-codegraph",
+      "source": "./plugins/claudetto-codegraph",
       "description": "Gives Claude the code graph of a project from the CodeGraph CLI `codegraph`. Syncs the index at session start, after an edit, and after a `git` command that changes the tree. Adds one line about the graph commands at session start.",
       "category": "productivity"
     },
     {
-      "name": "dotclaude-browser",
-      "source": "./plugins/dotclaude-browser",
-      "description": "Drives a browser with `agent-browser`, or with CloakBrowser on sites with bot detection. Answers each `WebSearch` call with a search in the headless browser. With the `cloakbrowser` backend, `WebSearch` needs the CloakBrowser binary.",
+      "name": "claudetto-browser",
+      "source": "./plugins/claudetto-browser",
+      "description": "Drives a browser with `agent-browser`, or with CloakBrowser on sites with bot detection when the user chooses it. With the `cloakbrowser` backend, answers each `WebSearch` call that the permission rules allow with a search in CloakBrowser, and needs its binary.",
       "category": "productivity"
     },
     {
-      "name": "dotclaude-docs",
-      "source": "./plugins/dotclaude-docs",
+      "name": "claudetto-docs",
+      "source": "./plugins/claudetto-docs",
       "description": "Gets current library and API docs with the Context7 CLI `ctx7`. Works with no key.",
       "category": "productivity"
     },
     {
-      "name": "dotclaude-sessions",
-      "source": "./plugins/dotclaude-sessions",
+      "name": "claudetto-sessions",
+      "source": "./plugins/claudetto-sessions",
       "description": "Measures the start of a Claude Code session by source, and the usage of each run: model calls, context that each call reads again, and skills that a period did not use.",
       "category": "productivity"
     },
     {
-      "name": "dotclaude-lab",
-      "source": "./plugins/dotclaude-lab",
+      "name": "claudetto-lab",
+      "source": "./plugins/claudetto-lab",
       "description": "Tools for plugin authors. Runs Claude Code in a sandbox, captures and sizes the requests, writes the JSON Schema of `settings.json`, and compares the eval scores of two plugin folders.",
       "category": "productivity"
     },
     {
-      "name": "dcc-plugin-agents-md",
-      "source": "./plugins/dcc-plugin-agents-md",
-      "description": "Loads `AGENTS.md` files where Claude Code loads `CLAUDE.md`: the user folder, each ancestor of the working directory, nested folders on each read or edit, and the folders of `permissions.additionalDirectories`. Skips a file that a `CLAUDE` file already loads.",
-      "category": "productivity"
-    },
-    {
-      "name": "dcc-plugin-you-should-know",
-      "source": "./plugins/dcc-plugin-you-should-know",
+      "name": "claudetto-you-should-know",
+      "source": "./plugins/claudetto-you-should-know",
       "description": "Shows one thing that you should know before Claude changes something, in a band above the prompt that does not stop the change. Opt-in. Makes at most one model call per turn: a Haiku call, or a fork of the conversation when the Haiku call gets HTTP 429.",
       "category": "productivity"
     }

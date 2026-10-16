@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a defect in a dotclaude plugin
+description: Report a defect in a claudetto plugin
 labels: [bug]
 body:
   - type: input
@@ -7,14 +7,14 @@ body:
     attributes:
       label: Claude Code version
       description: The output of `claude --version`.
-      placeholder: 2.1.296
+      placeholder: 2.1.301
     validations:
       required: true
   - type: input
     id: plugin
     attributes:
       label: Plugin and version
-      description: The plugin name and its version, for example `dotclaude` 0.28.0.
+      description: The plugin name and its version, for example `claudetto` 0.28.0.
     validations:
       required: true
   - type: textarea
