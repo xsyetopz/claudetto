@@ -28,6 +28,12 @@
       "title": "AI Policy Gate",
       "description": "When on, claudetto reads the AI policy of each repository that is not yours before Claude pushes or writes to GitHub there, and blocks those actions when the policy forbids AI tools. Local edits and commits stay allowed.",
       "default": true
+    },
+    "judge": {
+      "type": "boolean",
+      "title": "Turn Judge",
+      "description": "On: a model checks the end of each turn that has tool calls, and blocks a claim that no call shows. Each check is one Sonnet call of about 900 tokens.",
+      "default": true
     }
   },
   "homepage": "https://github.com/xsyetopz/claudetto/wiki/Architecture",

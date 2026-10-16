@@ -17,10 +17,12 @@ const plugins = join(root, "plugins");
 
 const TEXT =
   /(?:\.(?:mjs|cjs|js|ts|json|jsonc|md|mdx|py|sh|toml|ya?ml|txt|grit)|(?:^|\/)justfile)$/;
-// Files that a tool writes: the settings schemas of `just schema`, the skills
-// of `openspec init` (the user, 2026-10-15), and lock files.
+// Files that a tool writes: the settings schemas of `just schema`, the eval
+// manifests of `just generate`, which are JSON and cannot hold the generated
+// header, the skills of `openspec init` (the user, 2026-10-15), and lock files.
 const GENERATED = [
   /^schemas\//,
+  /^plugins\/[^/]+\/evals\/hooks\.json$/,
   /^\.claude\/skills\/openspec-[^/]+\//,
   /(?:^|\/)(?:package-lock\.json|pnpm-lock\.yaml)$/,
 ];

@@ -48,15 +48,28 @@ import {
   onSection as h32,
   onSpawn as h33,
 } from "../slices/prompt/adapters/mod.ts";
-import { onToolCall as h34 } from "../slices/sembr/adapters/mod.ts";
-import { onSessionStart as h35 } from "../slices/setup/adapters/mod.ts";
+import { onToolCall as h34 } from "../slices/reads/adapters/mod.ts";
 import {
-  onAgentOffer as h36,
-  onToolDescribe as h37,
+  onCheck as h35,
+  onStart as h36,
+  onTurnComplete as h37,
+} from "../slices/repostate/adapters/mod.ts";
+import { onToolCall as h38 } from "../slices/sembr/adapters/mod.ts";
+import { onSessionStart as h39 } from "../slices/setup/adapters/mod.ts";
+import {
+  onAgentOffer as h40,
+  onToolDescribe as h41,
 } from "../slices/surface/adapters/mod.ts";
 import {
-  onPermissionDenied as h38,
-  onStop as h39,
+  keepOptions as h42,
+  onStop as h43,
+  onSubagentStop as h44,
+  onToolCall as h45,
+  onTurnAborted as h46,
+} from "../slices/turngate/adapters/mod.ts";
+import {
+  onPermissionDenied as h47,
+  onStop as h48,
 } from "../slices/usercheck/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
@@ -64,16 +77,23 @@ export const register = (on: On, options: PluginOptions): void => {
   h17(options);
   h23(options);
   h29(options);
+  h42(options);
   // eval: agent.offer surface
-  on("agent.offer", h36);
+  on("agent.offer", h40);
   // eval: agent.spawn attribution
   on("agent.spawn", { fork: false }, h6);
   // eval: agent.spawn prompt
   on("agent.spawn", h33);
   // eval: classic.PermissionDenied usercheck
-  on("classic.PermissionDenied", h38);
+  on("classic.PermissionDenied", h47);
+  // eval: classic.SessionStart repostate
+  on("classic.SessionStart", h36);
+  // eval: classic.Stop turngate
+  on("classic.Stop", { stop_hook_active: [true, false] }, h43);
   // eval: classic.Stop usercheck
-  on("classic.Stop", h39);
+  on("classic.Stop", h48);
+  // eval: classic.SubagentStop turngate
+  on("classic.SubagentStop", h44);
   // eval: command.run gc
   on("command.run", { command: "claudetto:gc" }, h12);
   // eval: command.run handoff
@@ -105,13 +125,15 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: session.start policy
   on("session.start", { isInteractive: [true, false] }, h28);
   // eval: session.start setup
-  on("session.start", h35);
+  on("session.start", h39);
   // eval: tool.call gc
   on("tool.call", { tool: ["Bash", "Write"] }, h15);
+  // eval: tool.call turngate
+  on("tool.call", { tool: /./ }, h45);
   // eval: tool.call decide
   on("tool.call", { tool: ["AskUserQuestion"] }, h9);
   // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h34);
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h38);
   // eval: tool.call agents
   on("tool.call", h0);
   // eval: tool.call attribution
@@ -124,6 +146,8 @@ export const register = (on: On, options: PluginOptions): void => {
   on("tool.call", { tool: /^(?:Edit|Write|NotebookEdit|Bash|mcp__.+)$/ }, h24);
   // eval: tool.call policy
   on("tool.call", { tool: /^Bash$/ }, h26);
+  // eval: tool.call reads
+  on("tool.call", { tool: /./ }, h34);
   // eval: tool.call decide
   on("tool.call", { tool: /^mcp__claudetto__second_opinion$/ }, h10);
   // eval: tool.call policy
@@ -132,8 +156,14 @@ export const register = (on: On, options: PluginOptions): void => {
   on("tool.check", { tool: ["Bash", "Write", "Edit", "MultiEdit"] }, h2);
   // eval: tool.check policy
   on("tool.check", { tool: /^(?:Edit|Write|NotebookEdit|Bash|mcp__.+)$/ }, h25);
+  // eval: tool.check repostate
+  on("tool.check", { tool: ["Bash", "Write", "Edit", "MultiEdit"] }, h35);
   // eval: tool.describe surface
-  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h37);
+  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h41);
+  // eval: turn.complete repostate
+  on("turn.complete", h37);
+  // eval: turn.complete turngate
+  on("turn.complete", { isAborted: true }, h46);
   // eval: turn.step agents
   on("turn.step", h1);
 };

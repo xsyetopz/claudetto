@@ -45,6 +45,23 @@
     "allow": "plugins/claudetto/tests/usercheck.test.ts > with no denied call, the stop passes",
     "text": "plugins/claudetto/tests/usercheck.test.ts > after a denied call, a reply with no `!` command gets one block that names the call"
   },
+  "classic.SessionStart repostate": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/claudetto/tests/repostate.test.ts > a folder with no git gives no context",
+    "text": "plugins/claudetto/tests/repostate.test.ts > a version with no tag gives a context that says that the version has no tag"
+  },
+  "classic.Stop turngate": {
+    "requests": 1,
+    "tokens": 1500,
+    "blocks": true,
+    "allow": "plugins/claudetto/tests/turngate.test.ts > when each background task ended, the task part passes",
+    "text": "plugins/claudetto/tests/turngate.test.ts > a block sends only the reason, with no line of the rubric",
+    "block": "plugins/claudetto/tests/turngate.test.ts > a claim with no check after the last edit is blocked",
+    "false": "plugins/claudetto/tests/turngate.test.ts > a reply that only asks a question passes",
+    "eval": "claim-check"
+  },
   "classic.Stop usercheck": {
     "requests": 0,
     "tokens": 0,
@@ -53,6 +70,16 @@
     "text": "plugins/claudetto/tests/usercheck.test.ts > after a denied call, a reply with no `!` command gets one block that names the call",
     "block": "plugins/claudetto/tests/usercheck.test.ts > after a denied call, a reply with no `!` command gets one block that names the call",
     "false": "plugins/claudetto/tests/usercheck.test.ts > a stop after a block passes, so the block comes one time"
+  },
+  "classic.SubagentStop turngate": {
+    "requests": 1,
+    "tokens": 1500,
+    "blocks": true,
+    "allow": "plugins/claudetto/tests/turngate.test.ts > when each background task ended, the task part passes",
+    "text": "plugins/claudetto/tests/turngate.test.ts > a block sends only the reason, with no line of the rubric",
+    "block": "plugins/claudetto/tests/turngate.test.ts > a subagent stop with a running task is blocked",
+    "false": "plugins/claudetto/tests/turngate.test.ts > a reply that only asks a question passes",
+    "eval": "claim-check"
   },
   "command.run gc": {
     "requests": 0,
@@ -168,6 +195,13 @@
     "allow": "plugins/claudetto/tests/gc.test.ts > a `Bash` call that makes no output writes no record",
     "text": "plugins/claudetto/tests/gc.test.ts > `mktemp -d` writes a record with the path and the session id"
   },
+  "tool.call turngate": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/claudetto/tests/turngate.test.ts > the judge gets the summary of the tool calls of the turn",
+    "text": "plugins/claudetto/tests/turngate.test.ts > the judge gets the summary of the tool calls of the turn"
+  },
   "tool.call decide": {
     "requests": 0,
     "tokens": 0,
@@ -218,6 +252,15 @@
     "block": "plugins/claudetto/tests/policy.test.ts > a forbidden verdict denies a push, a GitHub write, and an MCP write",
     "false": "plugins/claudetto/tests/policy.test.ts > a read of a forbidden repository stays allowed"
   },
+  "tool.call reads": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": true,
+    "allow": "plugins/claudetto/tests/reads.test.ts > a read of a changed file runs",
+    "text": "plugins/claudetto/tests/reads.test.ts > a full read after the same full read is denied, and the reason gives the path and the range",
+    "block": "plugins/claudetto/tests/reads.test.ts > a call that the user rejected is denied when it comes again with the same input",
+    "false": "plugins/claudetto/tests/reads.test.ts > a call with another input runs after a rejection"
+  },
   "tool.check asks": {
     "requests": 0,
     "tokens": 0,
@@ -236,12 +279,35 @@
     "block": "plugins/claudetto/tests/consent.test.ts > a silent verdict asks the user before each push",
     "false": "plugins/claudetto/tests/consent.test.ts > an edit never asks, also in a repository with a silent verdict"
   },
+  "tool.check repostate": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": true,
+    "allow": "plugins/claudetto/tests/repostate.test.ts > an edit of `[Unreleased]` for a version with a tag gets no ask",
+    "text": "plugins/claudetto/tests/repostate.test.ts > an edit of `[Unreleased]` for a version with no tag asks and names the version",
+    "block": "plugins/claudetto/tests/repostate.test.ts > `bun add left-padx` asks when the registry has no such package",
+    "false": "plugins/claudetto/tests/repostate.test.ts > `bun add left-padx` gets no ask when the registry has the package"
+  },
   "tool.describe surface": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
     "allow": "plugins/claudetto/tests/surface.test.ts > `tool.describe` passes an unknown tool on with no change",
     "text": "plugins/claudetto/tests/surface.test.ts > `tool.describe` replaces the built-in `Bash` description with a shorter one"
+  },
+  "turn.complete repostate": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/claudetto/tests/repostate.test.ts > a response from the requested model leaves the status line clear",
+    "text": "plugins/claudetto/tests/repostate.test.ts > a response from another model shows the mark and the served model"
+  },
+  "turn.complete turngate": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/claudetto/tests/turngate.test.ts > an interrupted turn clears the tool calls",
+    "text": "plugins/claudetto/tests/turngate.test.ts > an interrupted turn clears the tool calls"
   },
   "turn.step agents": {
     "requests": 0,
