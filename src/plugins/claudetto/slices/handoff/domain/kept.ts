@@ -1,0 +1,75 @@
+// The facts that the handoff file keeps with no model call:
+// the last user messages word for word, and the files that the session changed.
+// The model of the handoff can drop a rule of the user or a changed file, and this part does not depend on it.
+// The first user message is not kept here, because the new context keeps it (`compact.ts`, `headText`),
+// and after an earlier handoff it holds that handoff.
+// The functions are pure and import only `limits.ts` and `prompts.ts`.
+
+import type { SessionMessage } from "claude-code";
+import {
+  KEPT_FILES_MAX,
+  KEPT_PROMPT_CHARS_MAX,
+  KEPT_PROMPTS_MAX,
+} from "../limits.ts";
+import { KEPT_FILES, KEPT_PROMPTS } from "../prompts.ts";
+
+/** The tools that change a file, with the input key of the path. */
+const EDITS: Record<string, string> = {
+  Write: "file_path",
+  Edit: "file_path",
+  MultiEdit: "file_path",
+  NotebookEdit: "notebook_path",
+};
+
+/** The text of each user message after the first that is not a tool result, cut to `KEPT_PROMPT_CHARS_MAX` characters. */
+export const keptPrompts = (messages: readonly SessionMessage[]): string[] =>
+  messages
+    .filter((m) => m.role === "user" && m.text.trim() !== "")
+    .filter((m) => (m.toolResults ?? []).length === 0)
+    .slice(1)
+    .slice(-KEPT_PROMPTS_MAX)
+    .map((m) =>
+      m.text.length > KEPT_PROMPT_CHARS_MAX
+        ? `${m.text.slice(0, KEPT_PROMPT_CHARS_MAX)}...`
+        : m.text,
+    );
+
+/** Each path that a tool of `EDITS` got, one time, in the order of its last change, at most `KEPT_FILES_MAX` from the end. */
+export const keptFiles = (messages: readonly SessionMessage[]): string[] => {
+  const paths: string[] = [];
+  for (const use of messages.flatMap((m) => m.toolUses)) {
+    const key = EDITS[use.tool];
+    const value = key === undefined ? undefined : use.input?.[key];
+    if (typeof value !== "string") continue;
+    const at = paths.indexOf(value);
+    if (at !== -1) paths.splice(at, 1);
+    paths.push(value);
+  }
+  return paths.slice(-KEPT_FILES_MAX);
+};
+
+/** A quote of `text`: each line starts with `> `. */
+const quote = (text: string): string =>
+  text
+    .split("\n")
+    .map((line) => (line === "" ? ">" : `> ${line}`))
+    .join("\n");
+
+/** `text` with the kept user messages and the changed files of `messages` at its end. With neither, `text` stays as it is. */
+export const withKept = (
+  text: string,
+  messages: readonly SessionMessage[],
+): string => {
+  const prompts = keptPrompts(messages);
+  const files = keptFiles(messages);
+  const parts = [
+    ...(prompts.length === 0
+      ? []
+      : [KEPT_PROMPTS({ prompts: prompts.map(quote).join("\n\n") })]),
+    ...(files.length === 0
+      ? []
+      : [KEPT_FILES({ files: files.map((f) => `- \`${f}\``).join("\n") })]),
+  ];
+  if (parts.length === 0) return text;
+  return [text.trimEnd(), ...parts].join("\n\n").concat("\n");
+};

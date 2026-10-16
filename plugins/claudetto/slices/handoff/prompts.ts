@@ -64,6 +64,20 @@ The result of each \`RAN\` step is in the messages after this handoff.
 When a fact decides the final answer, you can confirm it with the smallest call that shows it, such as a \`Read\` with \`limit\` 1, and not with the full step.
 Continue from the next step.`;
 
+/** From `src/plugins/claudetto/slices/handoff/prompts/kept-files.md`. */
+export const KEPT_FILES = (v: {
+  files: string;
+}): string => `The files that this session changed with \`Write\`, \`Edit\`, \`MultiEdit\`, or \`NotebookEdit\`:
+
+${v.files}`;
+
+/** From `src/plugins/claudetto/slices/handoff/prompts/kept-prompts.md`. */
+export const KEPT_PROMPTS = (v: {
+  prompts: string;
+}): string => `The last messages of the user before this handoff, word for word:
+
+${v.prompts}`;
+
 /** From `src/plugins/claudetto/slices/handoff/prompts/labeled-lines-intro.md`. */
 export const LABELED_LINES_INTRO = `These results show only part of their lines.
 These are the labeled lines of each of them, after its call.

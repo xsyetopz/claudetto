@@ -29,6 +29,7 @@
 // `$.session.compact` is not available in `-p`, and `/compact` runs the `session.compact` hook in each mode.
 // Before each handoff, the ground check looks for each value in backticks in the messages of the session,
 // and the handed message warns about each value that is not there (`domain/ground.ts`).
+// The file keeps the last user messages word for word and the changed files too, with no model call (`domain/kept.ts`).
 //
 // `session.start` registers `/handoff-setup` too, and its handlers are in `setup.ts`.
 //
@@ -56,6 +57,7 @@ import {
 } from "../domain/compact.ts";
 import { digestPrompt } from "../domain/digest.ts";
 import { missingValues, missLine } from "../domain/ground.ts";
+import { withKept } from "../domain/kept.ts";
 import { isAppended, isGuardSeated, managedNotice } from "../domain/managed.ts";
 import {
   handoffMarkdown,
@@ -171,7 +173,7 @@ const compacted = async (
   const change = await openChangeOf($);
   const path = handoffPath(new Date(), change);
   const written = handoffMarkdown(reply);
-  const text = withChange(written, change);
+  const text = withKept(withChange(written, change), messages);
   const kept = compactedMessages(
     messages,
     handedText(path, text, ungrounded($, written, messages)),
@@ -256,10 +258,10 @@ const handedFile = async ($: EngineInterface): Promise<Handed | null> => {
   const change = await openChangeOf($);
   const path = handoffPath(new Date(), change);
   const written = handoffMarkdown(fork.text);
-  const text = withChange(written, change);
-  if (!(await isWritten($, path, text))) return null;
-  // When the messages fail to read, the check has nothing to look in, so it gives no warning.
+  // When the messages fail to read, the file keeps no messages, and the check has nothing to look in, so it gives no warning.
   const messages = await $.session.messages().catch(() => null);
+  const text = withKept(withChange(written, change), messages ?? []);
+  if (!(await isWritten($, path, text))) return null;
   const missing = messages === null ? [] : ungrounded($, written, messages);
   return { path, text: handedText(path, text, missing) };
 };

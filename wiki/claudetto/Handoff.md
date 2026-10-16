@@ -18,6 +18,14 @@ After a handoff, the context holds 2 parts:
 
 An image or an attachment of the first user message does not stay.
 
+The handoff text ends with 2 kept parts, which `claudetto` writes from the messages and not from the model:
+
+- The last 3 prompts of the user, word for word, after the first prompt.
+  Each prompt is cut at 1,500 characters.
+- The files that the session changed with `Write`, `Edit`, `MultiEdit`, or `NotebookEdit`, at most 20, in the order of the last change.
+
+So a correction of the user in a late prompt and the list of the changed files do not depend on the summary of the model.
+
 The tail keeps each newest tool call with its result, so the model does not run a done step again.
 The fork does not see the results of the tail, so the handoff marks each tail call `RAN`, not `DONE`, and states no result for it.
 When the last reply has no tool use, the turn has ended, and there is no tail.

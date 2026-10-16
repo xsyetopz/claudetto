@@ -21,3 +21,12 @@ export const CHARS_PER_TOKEN = 4;
 
 /** The fewest characters of a value in backticks that the ground check looks for (`handoff-edge-300.md`). */
 export const GROUND_VALUE_CHARS_MIN = 4;
+
+/** The most user messages that the handoff file keeps word for word, from the end of the session (`domain/kept.ts`). */
+export const KEPT_PROMPTS_MAX = 3;
+
+/** The most characters of one kept user message. */
+export const KEPT_PROMPT_CHARS_MAX = 1500;
+
+/** The most paths of changed files that the handoff file keeps, from the end of the session. */
+export const KEPT_FILES_MAX = 20;
