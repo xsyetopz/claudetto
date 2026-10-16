@@ -1,0 +1,1 @@
+Use `off` for no second opinion, `claude` for a small Claude model, or `jev` for Jev (it needs `TYPESAFE_API_KEY`, and the question goes to the TypeSafe API). Claude can use the second opinion only when this is not `off`.

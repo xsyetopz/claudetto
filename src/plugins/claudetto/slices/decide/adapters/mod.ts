@@ -1,0 +1,107 @@
+// The mod handlers of the `decide` slice. The `decide` option is `off` by default, and then no handler sends a call.
+// `session.start` registers the tool when the option is `claude` or `jev`.
+// `tool.call` serves the tool: it tries Jev when the option is `jev` and the key is set, and the fallback model when Jev gives no answer.
+// A second `tool.call` handler adds the pick of Jev to each `AskUserQuestion` question that facts decide.
+//
+// `claude plugin validate` follows `$` only into a function of one file,
+// and each `$.env.get` call needs a literal name.
+// For this reason, each function that touches `$` is here, and the rules are in `domain/` and in the adapters.
+
+import type { EngineInterface, MatchedHook, PluginOptions } from "claude-code";
+import type { Handler } from "../../../../../kernel/slice.ts";
+import { type Mode, modeOf } from "../domain/mode.ts";
+import type { CliCall } from "../domain/request.ts";
+import { parseInput } from "../domain/request.ts";
+import { route } from "../domain/route.ts";
+import { resultText } from "../domain/text.ts";
+import { toolSpec } from "../domain/tool.ts";
+import {
+  FALLBACK_MAX_TOKENS,
+  FALLBACK_MODEL,
+  FALLBACK_TIMEOUT_MS,
+  JEV_TIMEOUT_MS,
+} from "../limits.ts";
+import { pickQuestions } from "./ask.ts";
+import { type Completion, createFallback } from "./fallback.ts";
+import { type CliRun, createJev } from "./jev.ts";
+
+/** Runs the CLI `claudetto-decide` with the key in its environment, never in the arguments. */
+const runCli = async (
+  $: EngineInterface,
+  key: string,
+  call: CliCall,
+): Promise<CliRun> => {
+  const run = await $.process.run(
+    [
+      "bun",
+      "--no-env-file",
+      `${$.plugin.root}/bin/claudetto-decide`,
+      ...call.args,
+    ],
+    {
+      env: { TYPESAFE_API_KEY: key },
+      timeoutMs: JEV_TIMEOUT_MS,
+      ...(call.stdin === undefined ? {} : { stdin: call.stdin }),
+    },
+  );
+  return { exitCode: run.exitCode, stdout: run.stdout, stderr: run.stderr };
+};
+
+/** One completion with the fallback model, which answers for Claude and not for Jev. */
+const complete = async (
+  $: EngineInterface,
+  prompt: { system: string; prompt: string },
+): Promise<Completion> => {
+  const reply = await $.model.complete({
+    model: FALLBACK_MODEL,
+    system: prompt.system,
+    prompt: prompt.prompt,
+    maxTokens: FALLBACK_MAX_TOKENS,
+    effort: "low",
+    timeoutMs: FALLBACK_TIMEOUT_MS,
+  });
+  return reply.isAnswered
+    ? { isAnswered: true, text: reply.text }
+    : { isAnswered: false };
+};
+
+/** The mode of the `decide` option, which the generated `register` sets once with `keepOptions`. */
+const kept: { mode: Mode } = { mode: "off" };
+
+/** Keeps the mode from the `userConfig` values of the plugin for the hooks of the slice. */
+export const keepOptions = (options: PluginOptions): void => {
+  kept.mode = modeOf(options);
+};
+
+// With the option off, the session has no tool, so the tool costs no tokens. A failure here reaches the log of Claude Code.
+export const onSessionStart: Handler<"session.start"> = async ($, e, next) => {
+  if (kept.mode !== "off") await $.tool.register(toolSpec());
+  return next(e);
+};
+
+export const onSecondOpinion: Handler<"tool.call"> = async ($, e) => {
+  // An MCP tool gets its arguments as the fields of `e`, next to `tool` and `tool_use_id`.
+  const parsed = parseInput(e);
+  if (!parsed.ok) return { result: parsed.error };
+  const key = kept.mode === "jev" ? await $.env.get("TYPESAFE_API_KEY") : "";
+  const jev = key ? createJev((call) => runCli($, key, call)) : undefined;
+  const fallback = createFallback((prompt) => complete($, prompt));
+  return { result: resultText(await route(jev, fallback, parsed.request)) };
+};
+
+/** The hook for `AskUserQuestion`, with `e` narrowed to that tool by the filter of `slice.ts`. */
+export type AskHook = MatchedHook<
+  "tool.call",
+  { readonly tool: readonly ["AskUserQuestion"] }
+>;
+
+/** The `AskUserQuestion` call with the pick of Jev in each facts question. With the option not `jev`, or with no key, the call passes unchanged. */
+export const onAskUserQuestion: AskHook = async ($, e, next) => {
+  if (kept.mode !== "jev") return next(e);
+  const key = await $.env.get("TYPESAFE_API_KEY");
+  if (!key) return next(e);
+  const questions = await pickQuestions(e.questions, (call) =>
+    runCli($, key, call),
+  );
+  return next(questions === undefined ? e : { ...e, questions });
+};
