@@ -1,0 +1,35 @@
+{
+  "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "claudetto",
+  "version": "0.1.0-alpha.1",
+  "description": "Adds a lean output style, six role agents, and a status line command. Adds hooks that check edits and `git` calls, bound the context of subagents, and check Markdown line breaks and drift.",
+  "author": {
+    "name": "xsyetopz"
+  },
+  "repository": "https://github.com/xsyetopz/claudetto",
+  "license": "MIT",
+  "userConfig": {
+    "decide": {
+      "type": "string",
+      "title": "Second Opinion",
+      "description": "Use `off` for no second opinion, `claude` for a small Claude model, or `jev` for Jev (it needs `TYPESAFE_API_KEY`, and the question goes to the TypeSafe API). Claude can use the second opinion only when this is not `off`.",
+      "default": "off",
+      "options": ["off", "claude", "jev"]
+    },
+    "compaction": {
+      "type": "string",
+      "title": "Compaction",
+      "description": "Use `handoff` to write a handoff file in place of the compaction summary, or `built-in` for the compaction of Claude Code.",
+      "default": "handoff",
+      "options": ["handoff", "built-in"]
+    },
+    "aiPolicy": {
+      "type": "boolean",
+      "title": "AI Policy Gate",
+      "description": "When on, claudetto reads the AI policy of each repository that is not yours before Claude pushes or writes to GitHub there, and blocks those actions when the policy forbids AI tools. Local edits and commits stay allowed.",
+      "default": true
+    }
+  },
+  "homepage": "https://github.com/xsyetopz/claudetto/wiki/Architecture",
+  "keywords": ["output-style", "agents", "hooks", "statusline"]
+}

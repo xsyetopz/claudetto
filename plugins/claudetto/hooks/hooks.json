@@ -1,0 +1,27 @@
+{
+  "modules": ["./register.ts"],
+  "hooks": {
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/slices/worktree/adapters/run.ts\" create",
+            "timeout": 120
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/slices/worktree/adapters/run.ts\" remove",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}
