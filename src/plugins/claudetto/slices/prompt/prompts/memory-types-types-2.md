@@ -1,0 +1,2 @@
+- Do not save code patterns, file paths, git history, fixes, or what CLAUDE.md records. The code and git show them.
+- Do not save ephemeral task details or in-progress state.

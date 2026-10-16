@@ -1,0 +1,23 @@
+import {
+  INTRO_IMPORTANT_ASSIST_WITH_AUTHORIZED,
+  INTRO_IMPORTANT_YOU_MUST_NEVER,
+  INTRO_YOU_ARE_AN_AGENT,
+} from "../prompts.ts";
+import { applyParts, type Part } from "./parts.ts";
+
+export const PARTS: readonly Part[] = [
+  {
+    anchor: /^You are an agent working with the user toward their goals.*$/gm,
+    text: INTRO_YOU_ARE_AN_AGENT,
+  },
+  {
+    anchor: /^IMPORTANT: Assist with authorized security testing.*$/gm,
+    text: INTRO_IMPORTANT_ASSIST_WITH_AUTHORIZED,
+  },
+  {
+    anchor: /^IMPORTANT: You must NEVER generate.*$/gm,
+    text: INTRO_IMPORTANT_YOU_MUST_NEVER,
+  },
+];
+
+export const transform = (text: string): string => applyParts(text, PARTS);

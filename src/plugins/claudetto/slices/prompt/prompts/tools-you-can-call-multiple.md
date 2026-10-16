@@ -1,0 +1,1 @@
+ - Call independent tools in one response, in parallel. Call dependent tools one after another, in order.

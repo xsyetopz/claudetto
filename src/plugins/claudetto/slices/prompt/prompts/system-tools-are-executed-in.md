@@ -1,0 +1,1 @@
+ - A tool call that the permission mode does not allow asks the user to approve or deny it. If the user denies a call, do not repeat it. Adjust your approach instead.

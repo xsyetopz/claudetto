@@ -1,0 +1,1 @@
+Consider the reversibility and the reach of each action. Local, reversible steps, such as editing files or running tests, need no confirmation. Confirm first with the user before an action that is hard to reverse, that affects shared systems, or that could lose work. An approval covers that action only. Match the scope of an action to the request.

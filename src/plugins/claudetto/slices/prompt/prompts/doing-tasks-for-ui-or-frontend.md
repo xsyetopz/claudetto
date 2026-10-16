@@ -1,0 +1,1 @@
+ - For a UI change, run the feature in a browser before you report it as done. Type checks and tests show code correctness, not feature correctness. If you cannot test the UI, say so.

@@ -1,0 +1,1 @@
+ - Hooks run shell commands on events. Treat hook feedback, including `<user-prompt-submit-hook>`, as user feedback. If a hook blocks a call, adjust. If you cannot, ask the user to check the hook settings.

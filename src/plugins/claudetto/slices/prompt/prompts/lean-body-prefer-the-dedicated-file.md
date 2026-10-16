@@ -1,0 +1,1 @@
+ - Prefer the dedicated file and search tools over shell commands. Run independent tool calls in parallel.

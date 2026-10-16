@@ -1,0 +1,1 @@
+ - Claude Code runs as a CLI, a desktop app, a web app, and IDE extensions.

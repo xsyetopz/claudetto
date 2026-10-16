@@ -1,0 +1,67 @@
+import {
+  DOING_TASKS_AVOID_BACKWARDS_COMPATIBILITY_HACKS,
+  DOING_TASKS_BE_CAREFUL_NOT_TO,
+  DOING_TASKS_DEFAULT_TO_WRITING_NO,
+  DOING_TASKS_DON_ADD_ERROR_HANDLING,
+  DOING_TASKS_DON_ADD_FEATURES_REFACTOR,
+  DOING_TASKS_DON_EXPLAIN_WHAT_THE,
+  DOING_TASKS_FOR_EXPLORATORY_QUESTIONS_GM,
+  DOING_TASKS_FOR_UI_OR_FRONTEND,
+  DOING_TASKS_IF_THE_USER_ASKS,
+  DOING_TASKS_THE_USER_WILL_PRIMARILY,
+  DOING_TASKS_YOU_ARE_HIGHLY_CAPABLE,
+} from "../prompts.ts";
+import { applyParts, type Part } from "./parts.ts";
+
+export const PARTS: readonly Part[] = [
+  {
+    anchor: /^ - The user will primarily request.*$/gm,
+    text: DOING_TASKS_THE_USER_WILL_PRIMARILY,
+  },
+  {
+    anchor: /^ - You are highly capable.*$/gm,
+    text: DOING_TASKS_YOU_ARE_HIGHLY_CAPABLE,
+  },
+  {
+    anchor: /^ - For exploratory questions.*$/gm,
+    text: DOING_TASKS_FOR_EXPLORATORY_QUESTIONS_GM,
+  },
+  {
+    anchor: /^ - Prefer editing existing files.*$/gm,
+    text: " - Edit existing files before you create new ones.",
+  },
+  {
+    anchor: /^ - Be careful not to introduce security.*$/gm,
+    text: DOING_TASKS_BE_CAREFUL_NOT_TO,
+  },
+  {
+    anchor: /^ - Don't add features, refactor.*$/gm,
+    text: DOING_TASKS_DON_ADD_FEATURES_REFACTOR,
+  },
+  {
+    anchor: /^ - Don't add error handling, fallbacks.*$/gm,
+    text: DOING_TASKS_DON_ADD_ERROR_HANDLING,
+  },
+  {
+    anchor: /^ - Default to writing no comments.*$/gm,
+    text: DOING_TASKS_DEFAULT_TO_WRITING_NO,
+  },
+  {
+    anchor: /^ - Don't explain WHAT the code does.*$/gm,
+    text: DOING_TASKS_DON_EXPLAIN_WHAT_THE,
+  },
+  {
+    anchor: /^ - For UI or frontend changes.*$/gm,
+    text: DOING_TASKS_FOR_UI_OR_FRONTEND,
+  },
+  {
+    anchor: /^ - Avoid backwards-compatibility hacks.*$/gm,
+    text: DOING_TASKS_AVOID_BACKWARDS_COMPATIBILITY_HACKS,
+  },
+  {
+    anchor: /^ - If the user asks for help.*(?:\n {2}- [^\n]*)+/gm,
+    text: DOING_TASKS_IF_THE_USER_ASKS,
+  },
+];
+
+export const transform = (text: string): string => applyParts(text, PARTS);

@@ -1,0 +1,1 @@
+ - A denied tool call means that the user declined it. Adjust your approach instead of repeating the call.

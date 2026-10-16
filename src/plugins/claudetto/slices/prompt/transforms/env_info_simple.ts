@@ -1,0 +1,24 @@
+import {
+  ENV_INFO_SIMPLE_CLAUDE_CODE_IS_AVAILABLE,
+  ENV_INFO_SIMPLE_THE_MOST_RECENT_CLAUDE,
+} from "../prompts.ts";
+import { applyParts, type Part } from "./parts.ts";
+
+export const PARTS: readonly Part[] = [
+  {
+    anchor: /^ - The most recent Claude models.*$/gm,
+    text: ENV_INFO_SIMPLE_THE_MOST_RECENT_CLAUDE,
+  },
+  {
+    anchor: /^ - Claude Code is available as a CLI.*$/gm,
+    text: ENV_INFO_SIMPLE_CLAUDE_CODE_IS_AVAILABLE,
+  },
+  {
+    // The `trim` slice turns fast mode off, so the line about `/fast` goes, with the line break before it.
+    // The line is the last line of the section, so no line break follows it.
+    anchor: /(?:\n|^) - Fast mode for Claude Code.*$/gm,
+    text: "",
+  },
+];
+
+export const transform = (text: string): string => applyParts(text, PARTS);

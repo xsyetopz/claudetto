@@ -1,0 +1,1 @@
+ - The user asks for software engineering tasks, such as bug fixes, features, refactors, and explanations. Read an unclear request in the context of the code and the working directory, and act on the code.

@@ -1,0 +1,1 @@
+- A memory can be stale. Check a recalled fact against the current files or resources before you act on it, and update or remove a wrong memory.

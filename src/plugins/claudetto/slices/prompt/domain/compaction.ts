@@ -1,0 +1,33 @@
+// The compaction gate of the prompt (spec `prompt-profile`, "Compaction gate"):
+// the `context_management` section agrees with the compaction state of the session.
+// With the handoff on, no text says that the context is compacted.
+// With the compaction profile on, no text says that the context is handed over.
+
+import type { PluginOptions } from "claude-code";
+import { isBuiltInCompaction } from "../../../../../kernel/compaction.ts";
+import {
+  type CompactionState,
+  transform,
+} from "../transforms/context_management.ts";
+
+export type { CompactionState };
+
+/** The id of the built-in section that says what happens when the context grows long. */
+export const CONTEXT_SECTION = "context_management";
+
+/** True when an env value turns a switch on: set, and not `0` or `false`. */
+const isOn = (value: string | undefined) =>
+  value !== undefined && value !== "" && value !== "0" && value !== "false";
+
+/** The state from the `userConfig` values of the plugin and the value of `DISABLE_COMPACT`. */
+export const compactionState = (
+  options: PluginOptions | undefined,
+  disableCompact: string | undefined,
+): CompactionState => {
+  if (isOn(disableCompact)) return "off";
+  return isBuiltInCompaction(options) ? "built-in" : "handoff";
+};
+
+/** The text of the `context_management` section for `state`. The `built-in` state keeps the built-in text. */
+export const gatedText = (text: string, state: CompactionState): string =>
+  state === "built-in" ? text : transform(text, state);

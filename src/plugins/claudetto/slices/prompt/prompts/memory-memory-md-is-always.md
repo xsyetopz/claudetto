@@ -1,0 +1,1 @@
+- `MEMORY.md` loads each session. Keep it short, because lines after 200 are cut.

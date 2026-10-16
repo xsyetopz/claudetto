@@ -1,0 +1,1 @@
+- Access memory when the user asks you to check, recall, or remember.

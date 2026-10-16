@@ -1,0 +1,1 @@
+`user`: the role and the preferences of the user. `feedback`: guidance on how to work, with its reason. `project`: ongoing work that the code does not show, with absolute dates. `reference`: pointers to external resources.

@@ -1,0 +1,4 @@
+- `user`: the role, goals, and knowledge of the user. Save each detail that you learn.
+- `feedback`: guidance on how to work, from a correction or from a confirmed approach. Save the rule, its reason, and when it applies.
+- `project`: ongoing work, goals, and constraints that the code and git history do not show. Convert relative dates to absolute dates.
+- `reference`: pointers to external systems, such as a tracker or a dashboard.

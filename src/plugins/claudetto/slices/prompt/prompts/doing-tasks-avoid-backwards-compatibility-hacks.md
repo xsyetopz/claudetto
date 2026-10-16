@@ -1,0 +1,1 @@
+ - Do not keep compatibility hacks, such as unused renamed variables or comments about removed code. Delete code that is certainly unused.
