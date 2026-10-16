@@ -1,0 +1,53 @@
+// The bounds of the `repostate` slice, in one place.
+
+/** The longest time in milliseconds that one `git` command of the slice may run. */
+export const GIT_TIMEOUT_MS = 5_000;
+
+/** The longest time in milliseconds that the registry check of the package ask waits for an answer. */
+export const REGISTRY_TIMEOUT_MS = 4_000;
+
+/** The registry that the package ask asks, with no trailing slash. */
+export const REGISTRY_URL = "https://registry.npmjs.org";
+
+/** The largest file in bytes that the slice reads: a manifest, a lockfile, or `CHANGELOG.md`. A larger file counts as unread. */
+export const FILE_MAX_BYTES = 5_000_000;
+
+/** The files of the project that hold its version, in the order in which the first one with a version wins. */
+export const MANIFESTS = ["package.json", ".claude-plugin/plugin.json"];
+
+/** The lockfiles of the package managers that the package ask knows. */
+export const LOCKFILES = [
+  "bun.lock",
+  "package-lock.json",
+  "pnpm-lock.yaml",
+  "yarn.lock",
+  "npm-shrinkwrap.json",
+];
+
+/** The package managers that the package ask knows, with the words that add a package. `bun install pkg` is not a form of `bun`, so only `npm`, `pnpm`, and `yarn` list `install`. */
+export const ADD_WORDS: Readonly<Record<string, readonly string[]>> = {
+  bun: ["add", "a"],
+  npm: ["install", "i", "add"],
+  pnpm: ["add", "install", "i"],
+  yarn: ["add"],
+};
+
+/** The options of an add command that take the next word as a value, so the value is not a package. */
+export const VALUE_OPTIONS = new Set([
+  "--registry",
+  "--cwd",
+  "-C",
+  "--filter",
+  "-F",
+  "--workspace",
+  "-w",
+  "--prefix",
+  "--tag",
+  "--cache",
+]);
+
+/** The most package names that one command checks. A longer list checks the first ones. */
+export const PACKAGES_MAX = 8;
+
+/** The file of the changelog that the ask watches, and the heading of its open section. */
+export const CHANGELOG_FILE = "CHANGELOG.md";

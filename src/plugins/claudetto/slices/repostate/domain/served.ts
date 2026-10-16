@@ -1,0 +1,16 @@
+// The pure part of the served-model mark: the model of the last response against the model that the session requested.
+// The id is compared by its parts (family, major, and minor version), so a date suffix is no difference.
+
+import { parseModel } from "../../../../../kernel/model.ts";
+import { SERVED_MARK } from "../prompts.ts";
+
+/** True when both ids are Claude model ids and they name different models. An id that is not a Claude id gives `false`, because the parts cannot be compared. */
+export const isSubstitute = (requested: string, served: string): boolean => {
+  const [a, b] = [parseModel(requested), parseModel(served)];
+  if (!(a && b)) return false;
+  return a.family !== b.family || a.major !== b.major || a.minor !== b.minor;
+};
+
+/** The mark for the status line. */
+export const servedMark = (requested: string, served: string): string =>
+  SERVED_MARK({ requested, served });
