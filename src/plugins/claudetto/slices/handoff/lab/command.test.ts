@@ -108,7 +108,7 @@ test("on a terminal, the command writes the handoff, clears the chat, and submit
   expect(out.text).toBeUndefined();
   expect(seen[0]).toBe("status Writing the handoff…");
   expect(seen[1]).toMatch(
-    /^write \.claudetto\/handoff\/handoff-\d{8}T\d{6}Z\.md$/,
+    /^write \.claudetto\/handoffs\/handoff-\d{8}T\d{6}Z\.md$/,
   );
   expect(seen[2]).toBe("status none");
   expect(seen[3]).toBe("timer 0");

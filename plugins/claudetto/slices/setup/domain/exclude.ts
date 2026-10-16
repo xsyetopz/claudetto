@@ -7,7 +7,7 @@ import { GIT_EXCLUDE_PATTERNS } from "../../../kernel/paths.ts";
 /** The comment line above the lines that setup adds. */
 export const EXCLUDE_HEADER = "# claudetto-runtime";
 
-/** The patterns of the runtime paths. Claude Code writes most of the `.claude/` ones itself, and `.claudetto/handoff/` holds local files of claudetto. */
+/** The patterns of the runtime paths. Claude Code writes most of the `.claude/` ones itself, and `.claudetto/handoffs/` holds local files of claudetto. */
 export const RUNTIME_PATTERNS = GIT_EXCLUDE_PATTERNS;
 
 /** The path of a pattern that `git check-ignore` can test: the pattern without its `**` and `/` start. */

@@ -114,7 +114,7 @@ const compact = (
 test("an auto compaction gives one user message with the first user message and the handoff, and the tail", async ($: Engine, on: On) => {
   const { result, seen } = await compact($, on);
   const [path, text] = seen.writes[0] ?? [];
-  expect(path).toMatch(/\/\.claudetto\/handoff\/handoff-\d{8}T\d{6}Z\.md$/);
+  expect(path).toMatch(/\/\.claudetto\/handoffs\/handoff-\d{8}T\d{6}Z\.md$/);
   expect(text).toBe(`${HANDOFF}\n`);
   const out = result.messages ?? [];
   expect(out.map((m) => m.handle)).toEqual([undefined, "h3", "h4"]);

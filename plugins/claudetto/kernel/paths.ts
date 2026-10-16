@@ -29,7 +29,10 @@ export const PROJECT_LOCAL_SETTINGS = `${CLAUDE_DIR}/${LOCAL_SETTINGS_FILE}`;
 export const CLAUDE_HOOKS_DIR = `${CLAUDE_DIR}/hooks`;
 
 /** The folder of the handoff files, from the project root, when no MiniSpec change is active. One checkout owns them. */
-export const HANDOFF_DIR = `${CLAUDETTO_DIR}/handoff`;
+export const HANDOFF_DIR = `${CLAUDETTO_DIR}/handoffs`;
+
+/** The corrections file of a project, from the project root, which the user writes and the `corrections` slice adds to each prompt. */
+export const CORRECTIONS_FILE = `${CLAUDETTO_DIR}/corrections.md`;
 
 /** The folder of the MiniSpec changes, from the project root. The folder `archive` in it holds the finished changes. */
 export const CHANGES_DIR = "minispec/changes";
@@ -60,7 +63,7 @@ export const CLAUDE_LOCAL_PATHS = [
 
 /** The paths in `.claudetto/` that git must not track. */
 export const CLAUDETTO_LOCAL_PATHS = [
-  "handoff/",
+  "handoffs/",
   "checks/",
   "sandbox-stop.json",
 ] as const;

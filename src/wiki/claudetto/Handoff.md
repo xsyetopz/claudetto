@@ -28,7 +28,7 @@ The tail keeps each newest tool call with its result, so the model does not run 
 The fork does not see the results of the tail, so the handoff marks each tail call `RAN`, not `DONE`, and states no result for it.
 When the last reply has no tool use, the turn has ended, and there is no tail.
 
-The handoff is also a file in `.claudetto/handoff/`, with a name such as `handoff-20261016T120000Z.md`.
+The handoff is also a file in `.claudetto/handoffs/`, with a name such as `handoff-20261016T120000Z.md`.
 The handoff message names the file, so you and the model can read it again.
 
 When a [MiniSpec](MiniSpec) change has an open task, the handoff goes to `minispec/changes/<name>/handoff.md` in its place.

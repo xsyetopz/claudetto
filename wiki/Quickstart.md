@@ -71,7 +71,7 @@ See [MiniSpec](MiniSpec).
 Claude Code does not compact the context in the default setup.
 At 225,000 tokens of the 300,000 window, the handoff writes a file with the goal, the state, and the next step.
 For Haiku the trigger is 100,000 tokens.
-The file goes to `minispec/changes/<name>/handoff.md` when a change is open, and else to `.claudetto/handoff/`.
+The file goes to `minispec/changes/<name>/handoff.md` when a change is open, and else to `.claudetto/handoffs/`.
 Then a clean session reads the file.
 Run `/handoff` to start it by hand.
 See [Handoff](Handoff).

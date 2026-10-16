@@ -110,7 +110,7 @@ Each worktree has its own `minispec/changes/`.
 
 When a change has an open task, the handoff goes to `minispec/changes/<name>/handoff.md`.
 It names the change folder and the next open task.
-With no open change, the handoff goes to `.claudetto/handoff/`.
+With no open change, the handoff goes to `.claudetto/handoffs/`.
 
 The status line shows the same change and task.
 See [Status Line](Status-Line).

@@ -111,7 +111,7 @@ test("a change with all tasks checked and the archive folder are not active, so 
   });
   await handedOver($);
   expect(seen.writes[0]?.path).toMatch(
-    /\.claudetto\/handoff\/handoff-\d{8}T\d{6}Z\.md$/,
+    /\.claudetto\/handoffs\/handoff-\d{8}T\d{6}Z\.md$/,
   );
   expect(seen.writes[0]?.text).not.toContain("MiniSpec change");
 });
@@ -119,5 +119,5 @@ test("a change with all tasks checked and the archive folder are not active, so 
 test("a missing change folder gives the default place", async ($: Engine, on: On) => {
   const seen = engine(on, { tasks: {}, listing: [] });
   await handedOver($);
-  expect(seen.writes[0]?.path).toMatch(/\.claudetto\/handoff\//);
+  expect(seen.writes[0]?.path).toMatch(/\.claudetto\/handoffs\//);
 });
