@@ -9,7 +9,7 @@ The core plugin is `claudetto`.
 Each add-on works without the core plugin.
 The `second_opinion` tool is part of the core plugin, and it is off by default.
 
-The commands on this page are for Claude Code 2.1.301.
+The commands on this page are for Claude Code 2.1.302.
 That is the minimum version (`MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts`).
 
 ## Before You Begin
@@ -18,7 +18,7 @@ Check that each tool in the table is ready for the plugins that you install.
 
 | Need | For | Note |
 | --- | --- | --- |
-| Claude Code 2.1.301 or later | all plugins | |
+| Claude Code 2.1.302 or later | all plugins | |
 | git | `claudetto` | The status line, the worktree hooks, and the setup use `git`. |
 | [Bun](https://bun.sh) 1.4.3 or later on `PATH` | the setup command, the status line, the `minispec` CLI, the CLI `claudetto-decide`, the hooks and bins of `claudetto-codegraph`, and the bins of `claudetto-browser`, `claudetto-sessions`, and `claudetto-lab`. The `docs` skill of `claudetto-docs` also needs Bun, because it runs `ctx7` through `bunx`. | Without Bun, the setup command does not run and the status line does not run. |
 | [Node.js](https://nodejs.org) on `PATH` | the npm installs of `codegraph` and `agent-browser`, which the setup command offers | Without Node.js, the npm installs do not run. |
@@ -211,7 +211,7 @@ The `docs` skill uses `CONTEXT7_API_KEY` only to raise the quota limit.
 
 ## Try an Unreleased Checkout
 
-Claude Code `2.1.301` has the `--plugin-dir <path>` flag.
+Claude Code `2.1.302` has the `--plugin-dir <path>` flag.
 The flag loads a plugin folder for one session.
 
 ```bash

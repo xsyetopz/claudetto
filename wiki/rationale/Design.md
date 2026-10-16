@@ -19,7 +19,7 @@ dotclaude 1.0.0 had faults that the restart removes:
 - Its guard denied good commands.
 - Its spec workflow spent tool calls on an event log and a binary.
 
-Claude Code 2.1.301 gives the extension points that fix these faults without a patch of the binary.
+Claude Code 2.1.302 gives the extension points that fix these faults without a patch of the binary.
 The reasons and the list of faults are in `openspec/changes/claudetto-0-1-0/proposal.md` and `faults.md`.
 
 The goal is a full customization of Claude Code through its extension points.
@@ -196,7 +196,7 @@ The decision and its evidence are in `openspec/changes/claudetto-0-1-0/design.md
 - `CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `HANDOFF_TRIGGER_TOKENS` are in `src/kernel/budget.ts`.
 - The `handoff` slice registers a `session.compact` hook with the phase `answer` (`src/plugins/claudetto/slices/handoff/slice.ts`).
 - The trigger comes from the built-in `autoCompactWindow` and `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`.
-- Claude Code 2.1.301 caps the window of some models, such as Opus 5.5, at 200K without `autoCompactWindow`.
+- Claude Code 2.1.302 caps the window of some models, such as Opus 5.5, at 200K without `autoCompactWindow`.
   The budget file records this fact, found by reading the bundle.
 
 ## Related Pages

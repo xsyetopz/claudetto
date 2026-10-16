@@ -16,8 +16,8 @@ Ask the user before each paid run, with the cost and the current weekly share.
   Check: `just test tests/kernel/ladder.test.ts` passes, and fails when one line is removed.
 - [x] 1.4 Copy the kernel parts that each add-on uses into the add-on (D8), and add a test that no add-on imports from another plugin.
   Check: `just test tests/kernel/imports.test.ts` passes.
-- [x] 1.5 Build for Claude Code 2.1.301 or later: the docs state it, CI installs it, and the code has no runtime version check.
-  Check: `.github/workflows/ci.yml` installs `2.1.301`, `wiki/Install.md` names it, and no code in `src/` compares the Claude Code version.
+- [x] 1.5 Build for Claude Code 2.1.302 or later: the docs state it, CI installs it, and the code has no runtime version check.
+  Check: `.github/workflows/ci.yml` installs `2.1.302`, `wiki/Install.md` names it, and no code in `src/` compares the Claude Code version.
 - [x] 1.6 Add the `claudetto` overview page to `src/wiki/`.
   Check: `bun run lint:md` passes.
 - [x] 1.7 Change the `homepage` test in `tests/support/manifests.test.ts` to the `claudetto` repository, so that the 8 tests that the rename broke pass.

@@ -20,7 +20,7 @@ export const ENV_DEFAULTS: Readonly<Record<string, Value>> = {
   CLAUDE_CODE_DISABLE_FAST_MODE: "0",
   CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY: "0",
   CLAUDE_CODE_DISABLE_TERMINAL_TITLE: "0",
-  // Fork mode is on in interactive sessions only, so no value has the effect of no entry.
+  // Fork mode is on by default in 2.1.302, and `0` turns it off, so no value has the effect of no entry.
   CLAUDE_CODE_FORK_SUBAGENT: null,
   CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL: "0",
   CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: "20",

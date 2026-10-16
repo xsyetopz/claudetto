@@ -223,7 +223,7 @@ The guard already denies a `Bash` command part that only prints a file, so `Read
   → A setting uses them only with a test that pins the behavior.
 - [The agent sweep has one run for each setting]
   → The results file calls the ranking a rough guide, and the cheaper setting wins a tie.
-- [The minimum version 2.1.301 excludes older installs]
+- [The minimum version 2.1.302 excludes older installs]
   → The docs and the README state the version, and the code has no runtime check of it (the user, 2026-10-15).
 - [The judge costs a model call at each stop]
   → The setup and the docs state the measured cost of one judge call, and the user can turn the judge off.

@@ -73,7 +73,7 @@ Both are in `src/plugins/claudetto/slices/prompt/adapters/mod.ts`.
 - Each claudetto agent file sets `maxTurns`, from 30 for a read-only role to 60 for the implementer.
   The values are in `AGENT_MAX_TURNS` in `src/plugins/claudetto/slices/agents/limits.ts`.
   The test `tests/claudetto/agents/max-turns.test.ts` pins them.
-  Claude Code `2.1.301` accepts `maxTurns` in a plugin agent.
+  Claude Code `2.1.302` accepts `maxTurns` in a plugin agent.
 - The `agents` slice also bounds the context of a subagent.
   The `turn.step` hook records the context of each subagent, and the next `tool.call` hook adds a report-now note when the context is over its bound.
   The note is `reportNote` in `src/plugins/claudetto/slices/agents/domain/report.ts`.

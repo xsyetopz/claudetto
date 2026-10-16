@@ -11,7 +11,7 @@ It changes Claude Code through the Mod API, settings, hooks, skills, agents, and
 It does not patch the binary.
 Its goal is the highest quality for the lowest token cost.
 `claudetto` 0.1.0 is the restart of the earlier plugin `dotclaude` 1.0.0, with a new name and no compatibility with it.
-`claudetto` needs Claude Code 2.1.301 or later.
+`claudetto` needs Claude Code 2.1.302 or later.
 
 `claudetto` does the following:
 

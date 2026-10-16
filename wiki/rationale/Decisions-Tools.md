@@ -123,7 +123,7 @@ The parts are these:
 7. `bashOutputMaxChars` at 16000.
    `BASH_OUTPUT_MAX_CHARS` in `src/kernel/budget.ts` gives the value.
    `slices/prompt/slice.ts` sets it in the settings.
-   The settings schema of Claude Code 2.1.301 clamps the key to a range of 4000 to 128000, with a default of 30000.
+   The settings schema of Claude Code 2.1.302 clamps the key to a range of 4000 to 128000, with a default of 30000.
    An output above the cap goes to a file.
    Claude gets a preview and the path.
    The comment of `BASH_OUTPUT_MAX_CHARS` says that 16000 brings 196 of 240 saved outputs inline.

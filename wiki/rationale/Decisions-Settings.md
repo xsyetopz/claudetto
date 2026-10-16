@@ -6,7 +6,7 @@ The index is [Decisions](Decisions).
 
 Each decision has the problem, the choice, the alternatives, and the evidence.
 Claims about the Claude Code binary cite the version `2.1.296`, unless the text says otherwise.
-The minimum version of claudetto 0.1.0 is Claude Code 2.1.301, and these claims are not measured again on it.
+The minimum version of claudetto 0.1.0 is Claude Code 2.1.302, and these claims are not measured again on it.
 
 ## D1 Rule of Least Power
 
@@ -128,7 +128,7 @@ The file names have no version, so the `$schema` links stay the same.
 The CLI is in `src/plugins/claudetto-lab/slices/schema/adapters/cli.ts`.
 `just schema` runs it.
 
-**Evidence:** The `$comment` of `schemas/claude-code-settings.json` says that the file was extracted from Claude Code `2.1.301`.
+**Evidence:** The `$comment` of `schemas/claude-code-settings.json` says that the file was extracted from Claude Code `2.1.302`.
 
 See [Settings Schema](Settings-Schema).
 

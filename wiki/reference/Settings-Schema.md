@@ -19,7 +19,7 @@ Git tracks both files.
   claudetto writes no managed file, so this file is a reference only ([Off Switches](Off-Switches#managed-settings)).
 
 The file names have no version.
-The version is in the root `$comment`, which reads `Extracted from Claude Code 2.1.301` for the current files, and in `title`.
+The version is in the root `$comment`, which reads `Extracted from Claude Code 2.1.302` for the current files, and in `title`.
 The names stay the same after an update, so a `$schema` path to these files does not change.
 
 ## Run
@@ -66,7 +66,7 @@ The code paths run in this order.
    It marks them with `x-managed-only` in the managed file.
 8. `slices/schema/domain/spans.ts` puts the code items of the descriptions in backticks.
 
-## Contents for 2.1.301
+## Contents for 2.1.302
 
 These counts come from the shipped files.
 

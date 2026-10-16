@@ -188,7 +188,7 @@ The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 | `WORKTREE_TEST_TIMEOUT_MS` | `15,000` | `tools/limits.ts` | The time for one test that makes a `git worktree`. |
 | `GIT_REPO_TEST_TIMEOUT_MS` | `15,000` | `tools/limits.ts` | The time for one test that starts many `git` processes. |
 | `BUNDLE_SCAN_TIMEOUT_MS` | `60,000` | `tools/limits.ts` | The time for one test that scans the bundle of the installed `claude`. |
-| `MIN_CLAUDE_CODE_VERSION` | `2.1.301` | `tools/limits.ts` | The lowest Claude Code version that claudetto is built for. |
+| `MIN_CLAUDE_CODE_VERSION` | `2.1.302` | `tools/limits.ts` | The lowest Claude Code version that claudetto is built for. |
 | `DOCKER_CPUS` | `4` | `tools/limits.ts` | The CPUs of the container of `just docker`. |
 | `EVAL_MAX_COST_USD` | `5` | `tools/limits.ts` | The most US dollars for one `just eval` run. |
 | `CODE_TEXT_MAX_CHARS` | `60` | `tools/limits.ts` | The most characters in one text in the code of a plugin or of the kernel. |
@@ -207,11 +207,11 @@ The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 
 ## Source of the Binary Facts
 
-Three shared bounds depend on the Claude Code `2.1.301` binary: `CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `BASH_OUTPUT_MAX_CHARS`.
-The range of `bashOutputMaxChars` (4,000 to 128,000) comes from the description of the key in the `2.1.301` settings schema.
-`CONTEXT_BLOCK_MARGIN` is the output reserve of 20,000 tokens plus 3,000 tokens of the `2.1.301` bundle.
-The `2.1.301` bundle caps the window of some models at 200,000 tokens, so the settings snippet sets `CONTEXT_WINDOW` in `autoCompactWindow`.
-The `2.1.301` bundle starts the auto compaction at `min(floor(E × pct / 100), E − 13000)`, with `E` the window less `COMPACT_OUTPUT_RESERVE`.
+Three shared bounds depend on the Claude Code `2.1.302` binary: `CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `BASH_OUTPUT_MAX_CHARS`.
+The range of `bashOutputMaxChars` (4,000 to 128,000) comes from the description of the key in the `2.1.302` settings schema.
+`CONTEXT_BLOCK_MARGIN` is the output reserve of 20,000 tokens plus 3,000 tokens of the `2.1.302` bundle.
+The `2.1.302` bundle caps the window of some models at 200,000 tokens, so the settings snippet sets `CONTEXT_WINDOW` in `autoCompactWindow`.
+The `2.1.302` bundle starts the auto compaction at `min(floor(E × pct / 100), E − 13000)`, with `E` the window less `COMPACT_OUTPUT_RESERVE`.
 `AUTOCOMPACT_PCT` and `HAIKU_AUTOCOMPACT_WINDOW` come from this formula.
 
 ## Related Pages

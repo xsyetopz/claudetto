@@ -13,7 +13,7 @@ The user locked a clean restart as `claudetto` 0.1.0 on 2026-10-14, with no comp
   The core plugin is `claudetto`, and each add-on is `claudetto-<name>`.
   The first tag is `0.1.0-alpha.1`.
   No setting, file, or command of dotclaude 1.0.0 stays compatible.
-- **BREAKING**: The minimum Claude Code version is 2.1.301 (the user, 2026-10-15).
+- **BREAKING**: The minimum Claude Code version is 2.1.302 (the user, 2026-10-17).
   The handoff depends on the `session.compact` behavior of 2.1.300 (V2).
 - The build stays generator-style: a small hand-written source in `src/`, and generated shipped files in `plugins/`.
   Each feature uses the decision ladder of the user: the Mod API, then a classic hook, then a built-in part of Claude Code, then nothing.

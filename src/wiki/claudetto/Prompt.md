@@ -35,7 +35,7 @@ Its sections get only the transforms of `prompt.section`.
 The slice chooses the variant at the first `prompt.compose` of a session and keeps it.
 A model switch does not change the system prompt, because a changed system prompt breaks the prompt cache.
 
-The `intro` section starts from the `lean_body` text that Claude Code 2.1.301 sends (`domain/live-block.ts`).
+The `intro` section starts from the `lean_body` text that Claude Code 2.1.302 sends (`domain/live-block.ts`).
 A test fails when a line of that text has no transform.
 
 ## Transforms

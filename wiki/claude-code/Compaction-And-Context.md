@@ -17,7 +17,7 @@ Each inference is marked as inference.
   Source: the `2.1.296` strings.
 - `claude-sonnet-5-5` had a window of 1,000,000 tokens in the measurement of 2026-10-12.
   Source: [Handoff Cost](Handoff-Cost).
-- The comment on `CONTEXT_WINDOW` in `src/kernel/budget.ts` says that Claude Code `2.1.301` warns against a 200K window for `claude-opus-5-5`.
+- The comment on `CONTEXT_WINDOW` in `src/kernel/budget.ts` says that Claude Code `2.1.302` warns against a 200K window for `claude-opus-5-5`.
   It warns unless `autoCompactWindow` is set.
   I did not check this comment in the `2.1.296` strings.
   The strings have a warning for an unknown model id.
@@ -134,7 +134,7 @@ The messages, the tool output, and the file contents that are not re-read leave 
   It sets `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` to `80.3571`.
   Source: the [settings snippet](Settings-Snippet), and the constants in `src/kernel/budget.ts`.
 - The percent and the window put the start of the auto compaction at 225,000 tokens for a 300,000-token window.
-  The comment on `AUTOCOMPACT_PCT` in `src/kernel/budget.ts` gives the formula (Claude Code `2.1.301` bundle).
+  The comment on `AUTOCOMPACT_PCT` in `src/kernel/budget.ts` gives the formula (Claude Code `2.1.302` bundle).
   The snippet does not set `DISABLE_COMPACT`.
 - The prompt text of the `context_management` section says that the conversation is summarized.
   The prompt slice replaces that text with a text that agrees with the compaction state of the session.

@@ -84,14 +84,14 @@ Shared code SHALL come from the kernel, and the generator SHALL copy it into eac
 
 ### Requirement: Pinned Claude Code version
 
-`claudetto` SHALL be built for Claude Code 2.1.301 or later (the user, 2026-10-15).
+`claudetto` SHALL be built for Claude Code 2.1.302 or later (the user, 2026-10-15).
 The docs SHALL state this version, CI SHALL install it, and the files of `schemas/` SHALL come from its bundle.
 The code SHALL have no check of the Claude Code version at run time, and no part for an older version.
 
 #### Scenario: The version is in the docs and in CI
 
 - **WHEN** a reader opens the `claudetto` overview page, or CI installs Claude Code
-- **THEN** the page states 2.1.301 or later, and CI installs 2.1.301
+- **THEN** the page states 2.1.302 or later, and CI installs 2.1.302
 
 ### Requirement: Bounds in one place
 

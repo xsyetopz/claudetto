@@ -39,7 +39,7 @@ Do not mark it done before `just check` and the Linux tests in `just docker chec
 
 1. Task 21.1: the open checks at no cost, in `just lab`.
    The answers decide how 21.3, 21.4, and 21.7 read their inputs.
-   To see how a hook works, read the bundle of Claude Code `2.1.301`, and do not patch it.
+   To see how a hook works, read the bundle of Claude Code `2.1.302`, and do not patch it.
 2. Task 21.2: make `just check` pass.
 3. Tasks 21.3 to 21.5, 21.7 to 21.10.
 4. Task 21.6: ask the user before the paid run, with the expected cost and the weekly share.

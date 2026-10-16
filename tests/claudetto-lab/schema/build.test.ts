@@ -23,7 +23,7 @@ import { REPO, tmpDir } from "../../support/repo.ts";
 import { validate } from "../../support/validate.ts";
 import { spawnText } from "../fixture-repo.ts";
 
-const VERSION = "2.1.301";
+const VERSION = "2.1.302";
 const shipped = async (kind: "user" | "managed") =>
   JSON.parse(
     await Bun.file(path.join(REPO, "schemas", schemaFiles()[kind])).text(),

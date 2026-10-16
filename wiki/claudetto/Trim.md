@@ -9,7 +9,7 @@ It is for a user who wants to know why a tool or a text is not in the session, a
 
 The `trim` slice sets the env vars and the settings keys that remove parts that no slice of `claudetto` uses.
 Each part is in `REMOVED_PARTS` in `src/plugins/claudetto/slices/trim/domain/removed.ts`, with its reason.
-Each switch was checked against Claude Code 2.1.301: the first request loses the text of the part, or a line of the bundle reads the switch.
+Each switch was checked against Claude Code 2.1.302: the first request loses the text of the part, or a line of the bundle reads the switch.
 A switch that has no effect does not ship.
 
 ## Removed Parts

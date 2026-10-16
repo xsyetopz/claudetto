@@ -14,7 +14,7 @@ It shows the needs, the commands, the layout rules, and the steps to test, relea
 - Run `bun install` in the repository root.
   It installs the dev dependencies that `bun.lock` pins.
   These are `@biomejs/biome` 2.5.15, `markdownlint-cli2` 0.23.3, `bun-types` 1.4.3, `@types/node` 26.6.5, and `yaml` 2.9.1.
-- Install Claude Code 2.1.301 or later.
+- Install Claude Code 2.1.302 or later.
   `MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts` sets the minimum, and CI installs that version.
   The recipes `sandbox`, `validate`, `lab`, `eval`, and `release` call the `claude` command.
 
@@ -175,7 +175,7 @@ The workflows are in `.github/workflows/`.
 
 - `ci.yml` runs on each push and each pull request.
   Its `check` job runs `just ci` on Ubuntu, macOS, and Windows.
-  It installs `Bun` from `package.json`, `just` 1.58.0, and Claude Code 2.1.301.
+  It installs `Bun` from `package.json`, `just` 1.58.0, and Claude Code 2.1.302.
   Its `all-green` job is the one to require in branch protection.
 - `claude.yml` answers an `@claude` mention in an issue, a review comment, or a review, with `anthropics/claude-code-action`.
   It answers only users with write access to the repository.

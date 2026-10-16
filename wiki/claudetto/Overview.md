@@ -26,7 +26,7 @@ It does not patch the Claude Code binary or its npm package.
 
 ## The Minimum Claude Code Version
 
-`claudetto` is built for Claude Code 2.1.301 or later.
+`claudetto` is built for Claude Code 2.1.302 or later.
 
 ## The Plugins
 

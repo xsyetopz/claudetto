@@ -17,7 +17,7 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 
 ### Added
 
-- `claudetto` needs Claude Code 2.1.301 or later.
+- `claudetto` needs Claude Code 2.1.302 or later.
 - The `handoff` slice replaces compaction with a handoff:
   a fork writes the handoff file, and the next session starts from it.
   It has a manual handoff command, a ground check of the values of the handoff, and the `compaction` option.

@@ -6,7 +6,7 @@ Read it before you run an eval.
 
 They use the `claude plugin eval` command of Claude Code.
 The figures in the archive pages come from runs on Claude Code `2.1.296`.
-No full run of the suite exists on `2.1.301`, the minimum version of claudetto 0.1.0.
+No full run of the suite exists on `2.1.302`, the minimum version of claudetto 0.1.0.
 The repository has no eval harness of its own (design `D9`, see [Decisions Tools](Decisions-Tools)).
 `just check` never runs an eval, because a run costs money.
 

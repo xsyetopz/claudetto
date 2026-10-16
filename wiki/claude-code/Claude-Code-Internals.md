@@ -19,12 +19,12 @@ Where the docs and the binary differ, this section gives the binary, and it name
 
 - The facts of this section were extracted from Claude Code `2.1.296`, unless a page names another version.
   A page that gives a later version names it in the text.
-- The minimum Claude Code for claudetto is `2.1.301`.
+- The minimum Claude Code for claudetto is `2.1.302`.
   The constant `MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts` holds it.
 - Two checks follow the constant:
   - The CI job in `.github/workflows/ci.yml` installs the same version.
   - The test `tests/tools/claude-code-release.test.ts` pins that job to the constant.
-- `src/kernel/budget.ts` names `2.1.301` in comments, where a bound comes from the bundle of that version.
+- `src/kernel/budget.ts` names `2.1.302` in comments, where a bound comes from the bundle of that version.
   A change of the minimum version therefore needs a check of those comments too.
 
 ## Where the Binary Lives
@@ -41,7 +41,7 @@ The label of a fact names its kind, as the [Home](Home) page explains.
 
 - **`binary`**: the text of the bundle.
   The bundle is the JavaScript that the installed binary holds.
-  A text dump of its strings is the file `external/cc-<version>/strings.txt`, such as `external/cc-2.1.301/strings.txt`.
+  A text dump of its strings is the file `external/cc-<version>/strings.txt`, such as `external/cc-2.1.302/strings.txt`.
   The `strings` command made the dump.
   The repository has no recipe for that dump.
   To repeat it, run `strings` on the binary and write the output to a file in a folder of your own (inference).
