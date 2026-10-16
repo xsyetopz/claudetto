@@ -59,6 +59,10 @@ sandbox-install *plugins:
 sandbox-installed *args:
     bun plugins/claudetto-lab/bin/claudetto-sandbox --dir /tmp/claudetto-sandbox-install "$@"
 
+# Run one live session of Claude Code in a Linux container, to check that the seccomp helper blocks a Unix socket in a sandboxed `Bash` call; the login of the host goes to the container on stdin, and the session costs money
+sandbox-linux:
+    bun tools/sandbox/linux/run.ts
+
 # Remove the sandbox config and project
 sandbox-clean:
     bun plugins/claudetto-lab/bin/claudetto-sandbox --clean

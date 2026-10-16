@@ -81,6 +81,8 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 - `just docker` runs a recipe of the `justfile` (default `check`) in a container with at most 4 CPUs,
   so that the checks do not take each CPU of the host.
 - The `usercheck` slice: after a permission check denies a call, the `Stop` hook blocks one time a reply that has no `!` command, and it names the denied calls.
+- `just sandbox-linux` runs one live session of Claude Code on `haiku` in a Linux container, and checks that a sandboxed `Bash` call cannot reach a Unix socket (D51).
+  The login of the host goes to the container on stdin, and no file of the host gets it.
   It finds a `!` command from the Markdown syntax of the reply, so it works in each language, and it makes no model call.
 - The `asks` slice asks before a call of `bunx`, `npx`, `pnpm dlx`, `yarn dlx`, `bun x`, or `npm exec` that runs a check tool that is not in `node_modules`, such as `bunx eslint` or `npx tsc`.
   The call downloads the tool, and it checks nothing of the project.

@@ -67,3 +67,13 @@ export const FIRST_REQUEST_HIGH_BYTES = 16 * 1024;
  * A measure of 9,485 tokens in a headless session with the settings snippet, plus 5% headroom, rounded up, is 9,960.
  */
 export const START_TOKENS = 9_960;
+
+// Bounds of `just sandbox-linux`, checked by `tools/sandbox/linux/run.ts`.
+
+/**
+ * Fewest minutes of life of the access token before `just sandbox-linux` sends the login to its container.
+ * A token near its expiry makes Claude Code in the container refresh it, and the refresh token of the host then fails.
+ */
+export const LINUX_TOKEN_MIN_MINUTES = 30;
+/** The model of the one session of `just sandbox-linux`, which only runs one `Bash` call. */
+export const LINUX_SESSION_MODEL = "haiku";
