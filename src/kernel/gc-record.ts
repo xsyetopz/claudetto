@@ -1,0 +1,75 @@
+// The record format of the outputs that a session makes outside the project.
+// The `gc` slice writes and sweeps these records, and the `worktree` hooks write a record for each worktree they make.
+// A hooks module imports this file, so it has no `node:` import, no `bun:` import, and no `Bun`.
+
+import { GC_RECORDS_MAX } from "./budget.ts";
+
+/** The kind of an output. */
+export type Kind = "temp" | "worktree" | "copy" | "config" | "scratch" | "task";
+
+/** One recorded output. */
+export interface GcRecord {
+  readonly path: string;
+  readonly kind: Kind;
+  readonly session: string;
+  /** The time of the record, in milliseconds since the Unix epoch. */
+  readonly time: number;
+  /** The folder where the session ran. It gives the worktree folder of the project. */
+  readonly cwd: string;
+  /** The size in bytes, when the hook knows it. */
+  readonly size?: number;
+}
+
+const KINDS: readonly string[] = [
+  "temp",
+  "worktree",
+  "copy",
+  "config",
+  "scratch",
+  "task",
+];
+
+/** The folder of the record files, from the home folder. */
+export const gcDirOf = (home: string): string => `${home}/.claudetto/gc`;
+
+/** The text of a record file for `records`: JSON, one record in each line. */
+export const serialize = (records: readonly GcRecord[]): string =>
+  `[\n${records.map((r) => `  ${JSON.stringify(r)}`).join(",\n")}\n]\n`;
+
+/** True when `value` has the shape of a record. */
+const isRecord = (value: unknown): value is GcRecord => {
+  if (typeof value !== "object" || value === null) return false;
+  const r = value as Record<string, unknown>;
+  return (
+    typeof r["path"] === "string" &&
+    typeof r["session"] === "string" &&
+    typeof r["cwd"] === "string" &&
+    typeof r["time"] === "number" &&
+    typeof r["kind"] === "string" &&
+    KINDS.includes(r["kind"])
+  );
+};
+
+/** The records in the text of a record file. A text that is not JSON gives no record, and an entry of a wrong shape is left out. */
+export const parseRecords = (text: string): GcRecord[] => {
+  try {
+    const data: unknown = JSON.parse(text);
+    return Array.isArray(data) ? data.filter(isRecord) : [];
+  } catch {
+    return [];
+  }
+};
+
+/** `records` with `added` after them, one record for each path, and at most `GC_RECORDS_MAX` records (the oldest go first). */
+export const withOutputs = (
+  records: readonly GcRecord[],
+  added: readonly GcRecord[],
+): GcRecord[] => {
+  const known = new Set(records.map((r) => r.path));
+  const fresh = added.filter((r) => {
+    if (known.has(r.path)) return false;
+    known.add(r.path);
+    return true;
+  });
+  return [...records, ...fresh].slice(-GC_RECORDS_MAX);
+};

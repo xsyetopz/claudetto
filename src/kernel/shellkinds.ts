@@ -138,16 +138,19 @@ export const bodyKind = (
 /**
  * How much of the held text `argv` can run as a script that the reader cannot see.
  * 2 for a script from the input or a substitution (`| sh`, `source /dev/stdin`, `sh -c "$(cat)"`): each held body.
- * 1 for a script in a variable or from `xargs` (`bash -c "$c"`, `eval "$c"`, `$c`): each `"feed"` body. 0 for none.
+ * 1 for a script in a variable or from `xargs` (`bash -c "$c"`, `eval "$c"`, `$c`), or a name that a substitution wrote (`$(echo git)`, which the scan gives as `""`): each `"feed"` body.
+ * 0 for none.
  */
 export const hiddenLevel = (
   argv: string[],
   script: string | undefined,
 ): number => {
-  const name = baseName(stripWrappers(argv)[0] ?? "");
+  const first = stripWrappers(argv)[0];
+  const name = baseName(first ?? "");
   if (readsScript(argv) || name === "source" || name === "." || script === "")
     return 2;
   // `xargs -I{} sh -c '{}'` puts each line of its input into the script.
   const fed = script !== undefined && argv.some((w) => XARGS.test(w));
-  return fed || script?.includes("$") || name.startsWith("$") ? 1 : 0;
+  const unreadable = first === "" || name.startsWith("$");
+  return fed || script?.includes("$") || unreadable ? 1 : 0;
 };

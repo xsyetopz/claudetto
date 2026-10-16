@@ -1,21 +1,23 @@
 // The checks of rule files (`.claude/rules/*.md`) that need no model: the `paths` front matter, the brace budget, and the rules in the context.
 // The functions are pure, so a hooks module and a CLI share them.
 // The caller gives the YAML parser and the glob matcher, because a hooks module has no `Bun` and no `node:` module.
-// The script of the `/rules-creator` skill has its own copy of this logic, because a script in a shipped skill cannot import the kernel.
 
-/** Most expanded patterns that one rule can have (the budget of Claude Code). */
-export const MAX_PATTERNS = 1000;
+import { MAX_PATTERNS } from "./budget.ts";
+import { rethrowUnless } from "./errors.ts";
 
-/** A YAML parser. It throws when the text is not valid YAML. */
+/**
+ * A YAML parser. It throws a `SyntaxError` (`Bun.YAML.parse`) or a `YAMLParseError` (the `yaml` package)
+ * when the text is not valid YAML.
+ */
 export type ParseYaml = (text: string) => unknown;
 
 /** A glob matcher: whether `file` (relative to the project) matches `glob`. */
 export type MatchGlob = (glob: string, file: string) => boolean;
 
-/** One problem of a rule. `yaml`: the front matter does not parse. `budget`: the braces expand over the budget. `no-match`: `glob` matches no file. */
+/** One problem of a rule. `yaml`: the front matter does not parse. `budget`: the braces expand over the budget. `no-match`: `glob` matches no file. `git`: the list of files failed, so no glob could be checked. */
 export type RuleProblem = {
   readonly rule: string;
-  readonly kind: "yaml" | "budget" | "no-match";
+  readonly kind: "yaml" | "budget" | "no-match" | "git";
   readonly glob?: string;
   readonly count?: number;
 };
@@ -76,7 +78,8 @@ export const checkRule = (
   let front: unknown;
   try {
     front = parse(head);
-  } catch {
+  } catch (err) {
+    rethrowUnless(err, "SyntaxError", "YAMLParseError");
     return [{ rule, kind: "yaml" }];
   }
   const globs = pathsOf(front);
@@ -88,25 +91,3 @@ export const checkRule = (
       problems.push({ rule, kind: "no-match", glob });
   return problems;
 };
-
-/** A memory file of the context: the entry of `usage.context.breakdown`. */
-export type MemoryFile = {
-  readonly path: string;
-  readonly type: string;
-  readonly tokens: number;
-};
-
-/** Whether `path` is a file of a `.claude/rules/` folder. */
-export const isRulePath = (path: string): boolean =>
-  /(^|[\\/])\.claude[\\/]rules[\\/]/.test(path);
-
-/**
- * The rule files in the memory files of the context.
- * Claude Code loads at the start only a rule with no `paths`, so these are the rules that cost tokens in every session.
- */
-export const startRules = (files: readonly MemoryFile[] = []): MemoryFile[] =>
-  files.filter((f) => isRulePath(f.path));
-
-/** The tokens of the rules at the start. */
-export const startRuleTokens = (files: readonly MemoryFile[] = []): number =>
-  startRules(files).reduce((n, f) => n + f.tokens, 0);

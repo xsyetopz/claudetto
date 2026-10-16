@@ -1,4 +1,4 @@
-// The shared glue of the classic command hooks of dotclaude.
+// The shared glue of the classic command hooks of claudetto.
 // Only a classic command hook imports this file, never `hooks/register.ts`, because the hooks module runs with no Node.
 // A hook gives `runHook` a decide function, and `runHook` reads the JSON payload from stdin and prints the output.
 // A payload that is not JSON prints nothing, so the call goes on and the permission flow of Claude Code decides.
@@ -33,7 +33,7 @@ type HookIO = {
 
 /** The text that a hook writes to stderr for the unexpected error `err`. */
 export const failureText = (err: unknown): string =>
-  `dotclaude hook failed: ${(err as Error | null | undefined)?.stack ?? err}\n`;
+  `claudetto hook failed: ${(err as Error | null | undefined)?.stack ?? err}\n`;
 
 /** The parsed JSON of `text`, or undefined for text that is not JSON. */
 const parse = (text: string): unknown => {

@@ -28,6 +28,12 @@ test("`parseModel` reads family, major, and minor, and ignores a date suffix", (
   });
 });
 
+test("`parseModel` marks the family of an unknown model id as `unknown`", () => {
+  for (const id of ["claude-unknown-9", "claude-zeta-9-1"])
+    expect(parseModel(id)?.family).toBe("unknown");
+  expect(parseModel("claude-mythos-5")?.family).toBe("mythos");
+});
+
 test("`parseModel` gives null for an id that is not a Claude model id", () => {
   for (const id of ["gpt-4", "opus", "", undefined, null])
     expect(parseModel(id)).toBe(null);

@@ -1,8 +1,8 @@
-// The one shell reader of dotclaude, for the guards in the slices.
+// The one shell reader of claudetto, for the guards in the slices.
 // It cannot run the shell, so it reads only the syntax that decides which command runs:
 // words, quotes, the operators between simple commands, nested scripts, and the wrapper commands.
 // Text that another program runs as code is in the `code` list of `parse`, for the code reader of a slice.
-// The scan of the text is in `shell/scan.ts`.
+// The scan of the text is in `shell/scan.ts`, and the word splitter is in `shell/words.ts`.
 // The functions are pure and import only `budget.ts`, `shell/scan.ts`, `shellkinds.ts`, and `wrappers.ts`.
 
 import { SHELL_SCAN_MAX_CHARS } from "./budget.ts";
@@ -32,12 +32,6 @@ export type ParseResult = {
   code: string[];
   truncated: boolean;
 };
-
-/** The words of one shell segment, with quotes and backslashes removed, also inside a word (`r''m`, `\rm`). */
-export const words = (text: unknown): string[] =>
-  [...String(text).matchAll(/(?:'[^']*'|"[^"]*"|\\.|[^\s'"\\])+/g)].map((m) =>
-    m[0].replace(/'([^']*)'|"([^"]*)"|\\(.)/g, (_, a, b, c) => a ?? b ?? c),
-  );
 
 /**
  * The simple commands of `text` as lists of words, and whether the scan stopped at `SHELL_SCAN_MAX_CHARS`.

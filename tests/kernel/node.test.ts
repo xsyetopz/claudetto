@@ -1,10 +1,11 @@
-// Tests of the Node and Bun adapters: `readTail`, `runHook`, and the output builders.
+// Tests of the Node and Bun adapters: `fileReader`, `readTail`, `runHook`, and the output builders.
 // An injected reader and writer replace stdin and stdout.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { fileReader } from "../../src/kernel/node/fs.ts";
 import {
   postToolUse,
   preToolUse,
@@ -136,3 +137,38 @@ test("the `PostToolUse` builder gives `additionalContext`", () => {
     },
   });
 });
+
+test("`fileReader` gives `null` and `[]` for a path that names no file", async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "reader-"));
+  await Bun.write(path.join(dir, "a.txt"), "a");
+  expect(await fileReader.read(path.join(dir, "missing"))).toBeNull();
+  expect(await fileReader.read(path.join(dir, "a.txt", "b"))).toBeNull();
+  expect(await fileReader.list(path.join(dir, "missing"))).toStrictEqual([]);
+  fs.rmSync(dir, { recursive: true });
+});
+
+// Root can read a folder with mode `000`, so the test cannot fail for root.
+test.skipIf(process.getuid?.() === 0)(
+  "`fileReader` rejects a read error, which is not an absent file",
+  async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "reader-"));
+    const locked = path.join(dir, "locked");
+    fs.mkdirSync(locked);
+    await Bun.write(path.join(locked, "a.txt"), "a");
+    fs.chmodSync(locked, 0o000);
+    try {
+      await expect(fileReader.list(locked)).rejects.toMatchObject({
+        code: "EACCES",
+      });
+      await expect(
+        fileReader.read(path.join(locked, "a.txt")),
+      ).rejects.toMatchObject({ code: "EACCES" });
+      await expect(fileReader.read(dir)).rejects.toMatchObject({
+        code: "EISDIR",
+      });
+    } finally {
+      fs.chmodSync(locked, 0o700);
+      fs.rmSync(dir, { recursive: true });
+    }
+  },
+);

@@ -1,0 +1,65 @@
+// The `pre-push` hook of git that stops a push to a repository that the AI policy gate has not cleared.
+// `/claudetto:setup` puts the script in the `env` of the settings as a config-based hook of git 2.54 or later, like the `commit-msg` hook.
+// An older git ignores these keys, so the hook then does nothing, and only the `tool.call` gate and the `tool.check` ask stay.
+// The script runs in each push of the shells of Claude Code, also a push from a script, an alias, a link, or a subshell, and it gets the real URL of the remote.
+// It checks a push only while `AGENT_ENV` is set, which is during a `Bash` call of Claude.
+// It reads files that the `policy` slice writes, in plain text, so that a POSIX shell needs no `jq`:
+// the login in `login`, the organizations that the user owns in `orgs`, the verdict of each repository in `flat/<safe key>`, and a consent token in `consent/<session>/<safe key>`.
+// A hooks module imports this file, so it has no `node:` import, no `bun:` import, and no `Bun`.
+
+import { PUSH_TOKEN_TTL_S } from "../budget.ts";
+import { CLAUDETTO_DIR } from "../paths.ts";
+import {
+  NOTE_CONSENT,
+  NOTE_FORBIDDEN,
+  NOTE_UNKNOWN,
+  SCRIPT,
+} from "./prompts.ts";
+
+/** The name of the hook in the git config, which must not be the name of a git event. */
+export const PUSH_HOOK_NAME = "claudetto-policy";
+
+/**
+ * The env var that the `policy` slice sets with `$.env.set` while a `Bash` call of Claude runs, and removes after it.
+ * The hook checks a push only when the var is set, so a `!` command of the user, which runs with no `tool.call` event, passes.
+ */
+export const AGENT_ENV = "CLAUDETTO_AGENT_CALL";
+
+/** The store folder of the `policy` slice, under the home folder. The `setup` slice reads the verdicts there too. */
+export const STORE_DIR = `${CLAUDETTO_DIR}/policy`;
+
+/** The file under the store folder that holds the login of the user. */
+export const LOGIN_FILE = "login";
+
+/** The file under the store folder that holds the GitHub organizations that the user owns, one login on each line. */
+export const ORGS_FILE = "orgs";
+
+/** The folder under the store folder that holds the verdict of each repository as one word. */
+export const FLAT_DIR = "flat";
+
+/** The folder under the store folder that holds the consent tokens, one folder for each session. */
+export const CONSENT_DIR = "consent";
+
+/** The file name of a repository key. The script does the same with `tr -cs 'a-z0-9.-' '_'`. */
+export const safeOf = (key: string): string =>
+  key.replace(/[^a-z0-9.-]+/g, "_");
+
+/** The folder name of a session id. The script does the same with `tr -cs 'a-zA-Z0-9.-' '_'`. */
+export const sessionDirOf = (id: string): string =>
+  id.replace(/[^a-zA-Z0-9.-]+/g, "_");
+
+/** The marker that stands for the key in a note, until the script text gets its shell variable. */
+const MARK = "\u0000";
+
+/** A note as the text of a heredoc: each `` ` `` and `$` is escaped, and the marker becomes `$key`. */
+const heredoc = (note: string): string =>
+  note.replace(/[\\`$]/g, "\\$&").replaceAll(MARK, "$key");
+
+/** The script of the hook, as one shell command: a function `f` that git calls with the remote name and the URL. */
+export const pushHookScript = (): string =>
+  SCRIPT({
+    ttl: String(PUSH_TOKEN_TTL_S),
+    consent: heredoc(NOTE_CONSENT({ repo: MARK })),
+    forbidden: heredoc(NOTE_FORBIDDEN({ repo: MARK })),
+    unknown: heredoc(NOTE_UNKNOWN({ repo: MARK })),
+  });

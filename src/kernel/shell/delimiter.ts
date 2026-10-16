@@ -1,0 +1,35 @@
+// The heredoc delimiter after `<<` or `<<-`, for the scan of `scan.ts`.
+// The function is pure and imports nothing.
+
+/** The characters that end an unquoted word. */
+const ENDS = /[\s;&|<>()]/;
+
+/**
+ * The delimiter word that starts at `text[at]`, after blanks: its text with quotes and backslashes removed,
+ * true when a part of it is quoted (`E"OF"`, `\EOF`), and the index after it.
+ * The shell does not expand the body of a heredoc with a quoted delimiter.
+ * Null when no word is there.
+ */
+export const delimiterAt = (
+  text: string,
+  at: number,
+): { word: string; quoted: boolean; end: number } | null => {
+  let i = at;
+  while (text[i] === " " || text[i] === "\t") i++;
+  let word = "";
+  let quoted = false;
+  for (; i < text.length && !ENDS.test(text[i] as string); i++) {
+    const c = text[i] as string;
+    if (c === "\\" && i + 1 < text.length) {
+      quoted = true;
+      word += text[++i];
+    } else if (c === "'" || c === '"') {
+      quoted = true;
+      const close = text.indexOf(c, i + 1);
+      const stop = close < 0 ? text.length : close;
+      word += text.slice(i + 1, stop);
+      i = stop;
+    } else word += c;
+  }
+  return word || quoted ? { word, quoted, end: i } : null;
+};

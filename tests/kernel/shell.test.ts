@@ -2,8 +2,13 @@
 // No command runs.
 
 import { expect, test } from "bun:test";
-import { SHELL_SCAN_MAX_CHARS } from "../../src/kernel/budget.ts";
-import { commands, parse, words } from "../../src/kernel/shell.ts";
+import {
+  BRACE_WORDS_MAX,
+  SHELL_SCAN_MAX_CHARS,
+} from "../../src/kernel/budget.ts";
+import { words } from "../../src/kernel/shell/words.ts";
+import { commands, parse } from "../../src/kernel/shell.ts";
+import { hiddenLevel } from "../../src/kernel/shellkinds.ts";
 import { stripWrappers } from "../../src/kernel/wrappers.ts";
 
 test("`parse` gives `truncated` only for a text over the scan bound", () => {
@@ -152,4 +157,111 @@ test("`stripWrappers` keeps a command that is not a wrapper", () => {
   ]);
   expect(stripWrappers(["sudo"])).toStrictEqual([]);
   expect(stripWrappers([])).toStrictEqual([]);
+});
+
+// The parser holes F1 to F5 of the kernel review, one or more tests for each hole.
+
+const RESET = ["git", "reset", "--hard"];
+
+/** The commands of `text` with their wrappers removed. */
+const stripped = (text: string): string[][] =>
+  commands(text).map(stripWrappers);
+
+test("F1: `env -S` gives the words of its value as the command", () => {
+  expect(stripped("env -S 'git reset --hard'")).toEqual([RESET]);
+  expect(stripped("env -S 'cat a.txt'")).toEqual([["cat", "a.txt"]]);
+  expect(stripped("env --split-string='git reset --hard'")).toEqual([RESET]);
+  expect(stripped("env -S'A=1 git reset --hard'")).toEqual([RESET]);
+});
+
+test("F1: the BSD `env -P` takes a path, which is not the command", () => {
+  expect(stripped("env -P /usr/bin git reset --hard")).toEqual([RESET]);
+});
+
+test("F2: an escaped quote in an ANSI-C quote does not end it", () => {
+  const all = commands("echo $'a\\'b'; git reset --hard");
+  expect(all).toEqual([["echo", "a'b"], RESET]);
+});
+
+test("F2: the escapes of an ANSI-C quote are decoded", () => {
+  expect(commands("$'\\x67it' reset --hard")).toEqual([RESET]);
+  expect(commands("$'\\147\\151t' reset --hard")).toEqual([RESET]);
+  expect(commands("$'\\u0067it' reset --hard")).toEqual([RESET]);
+  expect(commands("echo $'a\\nb'")).toEqual([["echo", "a\nb"]]);
+  expect(commands("echo $'\\q'")).toEqual([["echo", "\\q"]]);
+});
+
+test("F2: a `\\0` drops the rest of the ANSI-C quote", () => {
+  expect(commands("$'git\\0x' reset --hard")).toEqual([RESET]);
+});
+
+test("F2: `$'` in double quotes is plain text", () => {
+  expect(commands(`echo "$'a"; git reset --hard`)).toEqual([
+    ["echo", "$'a"],
+    RESET,
+  ]);
+});
+
+test("F3: a heredoc delimiter with a quote inside it ends at its whole word", () => {
+  const text = 'cat <<E"OF"\nx\nEOF\ngit reset --hard';
+  expect(commands(text)).toContainEqual(RESET);
+});
+
+test("F3: the delimiters `\\EOF`, `'END-X'`, and `<<- EOF` are read whole", () => {
+  expect(commands("cat <<\\EOF\n$(rm a)\nEOF\nls")).toEqual([["cat"], ["ls"]]);
+  expect(commands("cat <<'END-X'\nx\nEND-X\nls")).toEqual([["cat"], ["ls"]]);
+  expect(commands("cat <<- EOF\n\tx\n\tEOF\nls")).toEqual([["cat"], ["ls"]]);
+});
+
+test("F3: the body of an unquoted delimiter is still expanded", () => {
+  expect(commands("cat <<EOF\n$(rm a)\nEOF")).toContainEqual(["rm", "a"]);
+});
+
+test("F4: `noglob`, `coproc`, and `caffeinate -i` are wrappers", () => {
+  for (const wrapper of ["noglob", "coproc", "caffeinate -i"])
+    expect(stripped(`${wrapper} git reset --hard`)).toEqual([RESET]);
+  expect(stripped("caffeinate -t 60 git reset --hard")).toEqual([RESET]);
+  expect(stripWrappers(["coproc", "N", "{", ...RESET])).toEqual(RESET);
+});
+
+test("F5: a name that a substitution wrote is unreadable, as a `$c` name is", () => {
+  const [, argv] = commands("$(echo git) reset --hard");
+  expect(argv).toEqual(["", "reset", "--hard"]);
+  expect(hiddenLevel(argv as string[], undefined)).toBe(
+    hiddenLevel(["$c", "reset", "--hard"], undefined),
+  );
+  expect(hiddenLevel(["A=b"], undefined)).toBe(0);
+});
+
+test("F5: the name of an unreadable command runs a held `while read` body", () => {
+  const text =
+    "while read c; do $(echo eval) $c; done <<'X'\ngit reset --hard\nX";
+  expect(commands(text)).toContainEqual(RESET);
+});
+
+test("F5: an unquoted brace group expands to its words", () => {
+  expect(commands("{git,reset,--hard}")).toEqual([RESET]);
+  expect(commands("rm a{1..3}")).toEqual([["rm", "a1", "a2", "a3"]]);
+  expect(commands("echo {a,b{c,d}}x")).toEqual([["echo", "ax", "bcx", "bdx"]]);
+  expect(commands("echo {01..03..2} {c..a}")).toEqual([
+    ["echo", "01", "03", "c", "b", "a"],
+  ]);
+});
+
+test("F5: a quoted brace, `${`, and a group with no comma do not expand", () => {
+  expect(commands("echo '{a,b}' \\{a,b}")).toEqual([
+    ["echo", "{a,b}", "{a,b}"],
+  ]);
+  expect(commands(`echo \${a,b} {a} {}`)).toEqual([
+    ["echo", `\${a,b}`, "{a}", "{}"],
+  ]);
+  expect(commands("{ git reset --hard; }")).toEqual([RESET]);
+});
+
+test("F5: a word that expands to more than `BRACE_WORDS_MAX` words is unreadable", () => {
+  const text = `{1..${BRACE_WORDS_MAX + 1}} reset --hard`;
+  expect(commands(text)).toEqual([["", "reset", "--hard"]]);
+  expect(parse(`echo {1..${BRACE_WORDS_MAX}}`).commands[0]).toHaveLength(
+    BRACE_WORDS_MAX + 1,
+  );
 });

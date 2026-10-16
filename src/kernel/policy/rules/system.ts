@@ -1,5 +1,12 @@
 // The system rules of the destructive floor, and the ask rule for root privileges.
 
+import {
+  SYSTEM_DISK,
+  SYSTEM_PERMISSIONS,
+  SYSTEM_PRIVILEGE,
+  SYSTEM_RECURSIVE_DELETE,
+  SYSTEM_SECURITY,
+} from "../prompts.ts";
 import { withAnyRoute } from "../route.ts";
 import type { PolicyRule } from "../types.ts";
 
@@ -8,39 +15,30 @@ export const SYSTEM_RULES: readonly PolicyRule[] = [
     id: "system.recursive-delete",
     tier: "floor",
     category: "system",
-    prose: withAnyRoute(
-      "A recursive delete or overwrite of `/`, of the home folder, or of a system folder, such as `/System`, `/usr`, `/etc`, or `/Library`.",
-    ),
+    prose: withAnyRoute(SYSTEM_RECURSIVE_DELETE),
   },
   {
     id: "system.disk",
     tier: "floor",
     category: "system",
-    prose: withAnyRoute(
-      "A disk erase, format, or partition, and a `dd` or any other write to a device file, such as `/dev/disk*`.",
-    ),
+    prose: withAnyRoute(SYSTEM_DISK),
   },
   {
     id: "system.permissions",
     tier: "floor",
     category: "system",
-    prose: withAnyRoute(
-      "A recursive `chmod` or `chown` of a system folder or of the home folder.",
-    ),
+    prose: withAnyRoute(SYSTEM_PERMISSIONS),
   },
   {
     id: "system.security",
     tier: "floor",
     category: "system",
-    prose: withAnyRoute(
-      "A change that disables system security, such as SIP, Gatekeeper, the firewall, or the checks of code signing.",
-    ),
+    prose: withAnyRoute(SYSTEM_SECURITY),
   },
   {
     id: "system.privilege",
     tier: "ask",
     category: "system",
-    prose:
-      "A command that runs with root privileges, such as `sudo` or `doas`, or that installs software for every user. Ask the user first.",
+    prose: SYSTEM_PRIVILEGE,
   },
 ];

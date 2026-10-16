@@ -1,7 +1,10 @@
 // The scan of `shell.ts`: one pass over a text with a stack of frames, one for each substitution, parenthesis, and backtick.
-// The function is pure and imports only `shellkinds.ts`.
+// The function is pure and imports only `shellkinds.ts` and the files of this folder.
 
 import { RESERVED } from "../shellkinds.ts";
+import { ansiEscape } from "./ansi-c.ts";
+import { expandBraces } from "./braces.ts";
+import { delimiterAt } from "./delimiter.ts";
 
 /** A frame of the scan: one `$(`, backtick, or parenthesis, with the words of its command so far. */
 type Frame = {
@@ -15,6 +18,7 @@ type Frame = {
   outs: string[];
   start: number | null;
   raws: string[];
+  marks: number[];
 };
 
 /** A heredoc that the scan reads after the end of its line. */
@@ -24,6 +28,11 @@ type Heredoc = {
   head: string[];
   outs: string[];
 };
+
+/** The quote states of an ANSI-C quote (`$'...'`): the text, and the text after a `\0`, which the shell drops. */
+const ANSI = "$'";
+const ANSI_DROP = "$'\0";
+const ansi = (f: Frame): boolean => f.quote === ANSI || f.quote === ANSI_DROP;
 
 const frame = (
   closer: string | null,
@@ -40,6 +49,7 @@ const frame = (
   outs: [],
   start,
   raws: [],
+  marks: [],
 });
 
 /**
@@ -70,16 +80,17 @@ export const scan = (
       if (f.skip) {
         redirect(f.skip, w, f.line);
         if (f.skip.includes(">")) f.outs.push(w);
-      } else f.line.push(w);
+      } else if (w && f.marks.length) f.line.push(...expandBraces(w, f.marks));
+      else f.line.push(w);
       f.skip = false;
     }
     f.word = null;
     f.raws = [];
+    f.marks = [];
   };
   const end = (f: Frame) => {
     push(f);
     while (f.line.length && RESERVED.has(f.line[0] as string)) f.line.shift();
-    // The text of an unquoted heredoc body is data, so only its substitutions are commands.
     // The text of an unquoted heredoc body is data, so only its substitutions are commands.
     if (f.line.length && !f.body) emit(f.line);
     f.line = [];
@@ -103,7 +114,7 @@ export const scan = (
   for (let i = 0; i < text.length; i++) {
     const f = stack.at(-1) as Frame;
     const c = text[i] as string;
-    if (c === "\\" && i + 1 < text.length && f.quote !== "'") {
+    if (c === "\\" && i + 1 < text.length && f.quote !== "'" && !ansi(f)) {
       const n = text[++i] as string;
       if (n === "\n") continue;
       f.word =
@@ -111,6 +122,15 @@ export const scan = (
     } else if (f.quote === "'") {
       if (c === "'") f.quote = null;
       else f.word += c;
+    } else if (ansi(f)) {
+      // A `\0` ends the text of the quote, so the characters after it up to the quote are dropped.
+      if (c === "'") f.quote = null;
+      else if (c === "\\" && i + 1 < text.length) {
+        const { char, last } = ansiEscape(text, i + 1);
+        i = last;
+        if (char === "\0") f.quote = ANSI_DROP;
+        else if (f.quote === ANSI) f.word += char;
+      } else if (f.quote === ANSI) f.word += c;
     } else if (f.quote === '"') {
       if (c === '"' && !f.body) f.quote = null;
       else if (c === "$" && text[i + 1] === "(") {
@@ -124,6 +144,10 @@ export const scan = (
     } else if (c === "$" && text[i + 1] === "(") {
       open(f, ")", i);
       i++;
+    } else if (c === "$" && text[i + 1] === "'") {
+      f.quote = ANSI;
+      f.word ??= "";
+      i++;
     } else if (c === "'" || c === '"') {
       f.quote = c;
       f.word ??= "";
@@ -131,17 +155,16 @@ export const scan = (
       const nl = text.indexOf("\n", i);
       i = nl < 0 ? text.length : nl - 1;
     } else if (c === "<" && text[i + 1] === "<" && text[i + 2] !== "<") {
-      const m = /^<<-?\s*(\\?)(["']?)([A-Za-z_]\w*)\2/.exec(
-        text.slice(i, i + 200),
-      );
-      if (m)
+      const at = text[i + 2] === "-" ? i + 3 : i + 2;
+      const d = delimiterAt(text, at);
+      if (d)
         f.heredocs.push({
-          delimiter: m[3] as string,
-          quoted: !!(m[1] || m[2]),
+          delimiter: d.word,
+          quoted: d.quoted,
           head: [...f.line],
           outs: f.outs,
         });
-      i += m ? m[0].length - 1 : 1;
+      i = (d ? d.end : at) - 1;
       push(f);
     } else if (c === "<" || c === ">") {
       if (f.word !== null && /^\d+$/.test(f.word)) f.word = null;
@@ -178,7 +201,12 @@ export const scan = (
       else end(f);
     } else if (";&|".includes(c)) end(f);
     else if (/\s/.test(c)) push(f);
-    else f.word = (f.word ?? "") + c;
+    else {
+      // An unquoted brace or comma can expand, except the brace of `${`.
+      if ("{,}".includes(c) && !(c === "{" && text[i - 1] === "$"))
+        f.marks.push((f.word ?? "").length);
+      f.word = (f.word ?? "") + c;
+    }
   }
   while (stack.length) {
     const top = stack.pop() as Frame;

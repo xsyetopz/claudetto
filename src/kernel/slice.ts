@@ -88,7 +88,7 @@ export interface StatusSegment {
   readonly render: (status: unknown) => string | null;
 }
 
-/** One `userConfig` field of a plugin manifest, such as the `backend` of `dotclaude-browser`. */
+/** One `userConfig` field of a plugin manifest, such as the `backend` of `claudetto-browser`. */
 export interface UserConfigOption {
   readonly type: "string" | "number" | "boolean";
   readonly title: string;
@@ -97,16 +97,26 @@ export interface UserConfigOption {
   readonly options?: readonly string[];
 }
 
+/**
+ * The rungs of the decision ladder (design D2), from the highest to the lowest.
+ * `built-in` covers each built-in part of Claude Code: a setting, an env var, a flag,
+ * and a plugin part that no hook replaces, such as a skill, an agent, an output style, or a `bin/` command.
+ */
+export const RUNGS = ["mod", "classic", "built-in", "none"] as const;
+
+/** The ladder line of a slice: its rung, and why no higher rung can do the work. */
+export type Ladder = `${(typeof RUNGS)[number]}: ${string}`;
+
 /** The manifest of one slice: the name, and each part that the slice adds to the plugin. */
 export interface Slice {
   readonly name: string;
+  readonly ladder: Ladder;
   readonly mod?: readonly ModHandler[];
   readonly hooks?: readonly ClassicHook[];
   readonly cli?: { readonly bin: string };
   readonly segments?: readonly StatusSegment[];
   readonly skills?: readonly string[];
   readonly agents?: readonly string[];
-  readonly outputStyles?: readonly string[];
   readonly userConfig?: Readonly<Record<string, UserConfigOption>>;
   readonly settings?: Readonly<Record<string, unknown>>;
 }

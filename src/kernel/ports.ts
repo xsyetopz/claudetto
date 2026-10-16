@@ -5,6 +5,8 @@
 export interface ProcessOptions {
   readonly cwd?: string;
   readonly timeout?: number;
+  /** The environment of the process, in place of the one of the caller. */
+  readonly env?: Readonly<Record<string, string | undefined>>;
 }
 
 /** The result of a process run, with the output as text. */
@@ -20,6 +22,7 @@ export interface ProcessResult {
 
 /**
  * Reads files and folders. A missing file gives `null`, and a missing folder gives an empty list.
+ * Any other error, such as `EACCES` or `EISDIR`, rejects.
  * Each read is async, because the mod runtime reads files only async (`$.fs.read`).
  */
 export interface FileReader {

@@ -1,0 +1,1 @@
+The same action is blocked when it is reached through any wrapper, encoding, or indirection, such as `bash -c`, `eval`, a variable, a built string such as `'b'+'un'`, a script such as `python -c`, or a tool such as a database client.

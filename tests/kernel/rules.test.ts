@@ -1,17 +1,10 @@
-// The rule checks of the kernel: the `paths` front matter, the brace budget, and the rules in the context.
+// The rule checks of the kernel: the `paths` front matter, the brace budget.
 
 import { expect, test } from "bun:test";
+import path from "node:path";
 import { parse } from "yaml";
-import {
-  checkRule,
-  expansions,
-  frontOf,
-  MAX_PATTERNS,
-  pathsOf,
-  startRules,
-  startRuleTokens,
-} from "../../src/kernel/rules.ts";
-import { expansions as scriptExpansions } from "../../src/plugins/dotclaude/slices/rules/skills/rules-creator/scripts/check-globs.ts";
+import { MAX_PATTERNS } from "../../src/kernel/budget.ts";
+import { checkRule, frontOf, pathsOf } from "../../src/kernel/rules.ts";
 
 const match = (glob: string, file: string) => new Bun.Glob(glob).match(file);
 const files = ["src/a.ts", "docs/b.md"];
@@ -26,6 +19,34 @@ test("a `paths` YAML that does not parse is a `yaml` problem and no glob problem
   expect(check(rule("paths: [unclosed"))).toStrictEqual([
     { rule: "r.md", kind: "yaml" },
   ]);
+});
+
+test("a `SyntaxError` of `Bun.YAML.parse` is a `yaml` problem", () => {
+  const text = rule("paths: [unclosed");
+  const problems = checkRule("r.md", text, files, Bun.YAML.parse, match);
+  expect(problems).toStrictEqual([{ rule: "r.md", kind: "yaml" }]);
+});
+
+test("a parser error that is not a YAML error is thrown again", () => {
+  const broken = () => {
+    throw new TypeError("parser bug");
+  };
+  const text = rule("paths: []");
+  expect(() => checkRule("r.md", text, files, broken, match)).toThrow(
+    TypeError,
+  );
+});
+
+test("no file of `src/kernel/` other than `budget.ts` exports a number", async () => {
+  const numeric = /^export const [A-Z_]+ = [\d_]+;/m;
+  const outside: string[] = [];
+  for await (const f of new Bun.Glob("**/*.ts").scan({ cwd: "src/kernel" }))
+    if (
+      f !== "budget.ts" &&
+      numeric.test(await Bun.file(path.join("src/kernel", f)).text())
+    )
+      outside.push(f);
+  expect(outside).toStrictEqual([]);
 });
 
 test("a glob that matches no file is a `no-match` problem, and a glob that matches is not", () => {
@@ -49,26 +70,7 @@ test("braces over the budget are a `budget` problem with the count", () => {
   );
 });
 
-test("`expansions` agrees with the copy in the script of the `/rules-creator` skill", () => {
-  for (const glob of ["a", "{a,b}", "{a,b}/{c,d,e}", "{a,{b,c}}x", "}{"])
-    expect(expansions(glob)).toBe(scriptExpansions(glob));
-});
-
 test("`frontOf` returns the text between the first two fences", () => {
   expect(frontOf("---\na: 1\n---\nbody")).toBe("a: 1");
   expect(frontOf("body")).toBeUndefined();
-});
-
-test("the rules at the start are the memory files of a `.claude/rules/` folder", () => {
-  const memory = [
-    { path: "/p/CLAUDE.md", type: "Project", tokens: 100 },
-    { path: "/p/.claude/rules/a.md", type: "Project", tokens: 20 },
-    { path: "/home/u/.claude/rules/b.md", type: "User", tokens: 5 },
-    { path: "/p/docs/rules/c.md", type: "Project", tokens: 7 },
-  ];
-  expect(startRules(memory).map((f) => f.path)).toStrictEqual([
-    "/p/.claude/rules/a.md",
-    "/home/u/.claude/rules/b.md",
-  ]);
-  expect(startRuleTokens(memory)).toBe(25);
 });

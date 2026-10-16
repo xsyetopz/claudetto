@@ -2,7 +2,7 @@
 
 import fs from "node:fs/promises";
 import { RENAME_TRIES, RENAME_WAIT_MS } from "../budget.ts";
-import { isExpected, rethrowUnless, UNREADABLE } from "../errors.ts";
+import { ABSENT, isExpected, rethrowUnless } from "../errors.ts";
 import type { FileReader } from "../ports.ts";
 
 /** The `code` values of a rename that fails for a short time while another process holds the target open, on Windows. */
@@ -82,7 +82,7 @@ export const fileReader: FileReader = {
     try {
       return await Bun.file(file).text();
     } catch (err) {
-      rethrowUnless(err, ...UNREADABLE);
+      rethrowUnless(err, ...ABSENT);
       return null;
     }
   },
@@ -90,7 +90,7 @@ export const fileReader: FileReader = {
     try {
       return await fs.readdir(dir);
     } catch (err) {
-      rethrowUnless(err, ...UNREADABLE);
+      rethrowUnless(err, ...ABSENT);
       return [];
     }
   },

@@ -1,6 +1,12 @@
 // Runs a program that npm or an installer put on `PATH`, on every platform.
 
 import type { ProcessOptions, ProcessRunner } from "../ports.ts";
+import {
+  REFUSE_BACKSLASH,
+  REFUSE_EXPANDS,
+  REFUSE_LINE_BREAK,
+  REFUSE_QUOTE,
+} from "./prompts.ts";
 
 /** The options of `runProgram` that its callers give to `Bun.spawnSync`. */
 export type ProgramOptions = {
@@ -14,13 +20,10 @@ export type ProgramOptions = {
 
 /** Why a shell cannot take `word` as one safe word on Windows, or `undefined` when it can. */
 export const refusal = (word: string): string | undefined => {
-  if (/[%!]/.test(word))
-    return "it has `%` or `!`, which `cmd.exe` expands before it reads quotes";
-  if (word.includes('"')) return 'it has a `"`, which ends the quote';
-  if (/[\r\n\0]/.test(word))
-    return "it has a line break or a NUL, which cuts the command line";
-  if (word.endsWith("\\"))
-    return "it ends in `\\`, which joins it to the next word";
+  if (/[%!]/.test(word)) return REFUSE_EXPANDS;
+  if (word.includes('"')) return REFUSE_QUOTE;
+  if (/[\r\n\0]/.test(word)) return REFUSE_LINE_BREAK;
+  if (word.endsWith("\\")) return REFUSE_BACKSLASH;
   return undefined;
 };
 
