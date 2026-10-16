@@ -253,27 +253,27 @@ The tasks of the add-ons are in [tasks-addons.md](tasks-addons.md).
 
 ## 21. Turn Gate, Ground Gates, and the Open Work
 
-- [ ] 21.1 Answer the open checks of `Failure-Gaps-0.1.0` in the lab, at no cost, and record each answer on that page.
-  Check: `just lab` passes a test for each answer.
-- [ ] 21.2 Make `just check` pass with the seccomp work of `setup`, and fix the conflict of `sandbox-cmd.test.ts:217` with the seccomp check.
+- [x] 21.1 Answer the open checks of `Failure-Gaps-0.1.0` in the lab, at no cost, and record each answer on that page.
+  Check: `just lab` passes a test for each answer about a hook, and `just test` passes a test for each answer about the plugin loader.
+- [x] 21.2 Make `just check` pass with the seccomp work of `setup`, and fix the conflict of `sandbox-cmd.test.ts:217` with the seccomp check.
   Check: `just check` passes, and `just docker check` passes the Linux tests of `setup`.
-- [ ] 21.3 Add the background-task part of the turn gate.
+- [x] 21.3 Add the background-task part of the turn gate.
   Check: `just lab` passes a test for each scenario of `turn-gate`, with no model call.
-- [ ] 21.4 Add the judge, its cap of 2, and the reason-only block text.
+- [x] 21.4 Add the judge, its cap of 2, and the reason-only block text.
   Check: `just lab` passes the `turn-gate` scenarios with a stubbed judge, and a test fails when the gate passes on `stop_hook_active`.
-- [ ] 21.5 Move each prohibition list of the prompts into the rubric of the judge, or delete it.
+- [x] 21.5 Move each prohibition list of the prompts into the rubric of the judge, or delete it.
   Check: `just test` passes, and the `prompt` tests compare the prompts with the list on `Failure-Gaps-0.1.0`.
-- [ ] 21.6 Measure the cost of one judge call, after the user approves the paid run.
+- [x] 21.6 Measure the cost of one judge call, after the user approves the paid run.
   Check: the evidence page has the method and the figures.
-- [ ] 21.7 Add the read gate, the deny of a rejected call, and the re-read after a rejected write.
+- [x] 21.7 Add the read gate, the deny of a rejected call, and the re-read after a rejected write.
   Check: `just lab` passes a test for each scenario of `ground-gates`.
-- [ ] 21.8 Add the git state at the start, the `[Unreleased]` ask, the package ask, and the served-model mark.
+- [x] 21.8 Add the git state at the start, the `[Unreleased]` ask, the package ask, and the served-model mark.
   Check: `just test` and `just lab` pass a test for each scenario of `ground-gates`.
-- [ ] 21.9 Add the effort floor and the turn bound of the agents, and the baseline check of `eval-compare`.
+- [x] 21.9 Add the effort floor and the turn bound of the agents, and the baseline check of `eval-compare`.
   Check: `just validate` fails on an agent at `low`, and `just test tests/claudetto-lab/` passes.
-- [ ] 21.10 Write a lock file with the PID and the owner for each long check run (`I17`).
+- [x] 21.10 Write a lock file with the PID and the owner for each long check run (`I17`).
   Check: `just test` passes a test where a second run sees the lock.
-- [ ] 21.11 Run the full gate again.
+- [x] 21.11 Run the full gate again.
   Check: `just check` and `just docker check` pass.
 
 ## Workflow follow-up

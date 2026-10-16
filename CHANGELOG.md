@@ -86,6 +86,17 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
   The call downloads the tool, and it checks nothing of the project.
   A download of another tool, such as `npx create-vite`, gets no ask.
   For `tsc`, the reason states the installed `bun --version` and names `bun check` for Bun 1.4.3 or later (D56).
+- The `turngate` slice checks the end of each turn and of each subagent.
+  It blocks a stop while a background task runs, with no model call.
+  A judge on Sonnet then reads the reply and a summary of the tool calls, and blocks a claim with no check after the last edit, a promise of work that the turn did not do, and an opener that is an apology or an agreement.
+  The judge reads the reply in its own language, it blocks at most 2 times in a turn, and the block text holds only the reason.
+  The `judge` option turns the judge off.
+  One judge call used about 800 input tokens and 11 to 68 output tokens.
+- The `reads` slice keeps a rejected call rejected, denies a read of an unchanged range that is in the context, and asks for a new read after a rejected write.
+- The `repostate` slice gives the git state at the start of a session.
+  It asks before an edit of `[Unreleased]` in `CHANGELOG.md` when the manifests name a version with no tag, and before a package command that names a package that the registry does not have.
+  It marks a served model that differs from the requested model with `$.ui.status`.
+- Each agent has a `maxTurns`, and `just validate` fails on an agent with an `effort` below `medium`.
 
 ### Changed
 
@@ -113,6 +124,9 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 - The `claudetto-docs` add-on pins `ctx7` 0.6.1, uses the version of the project, and allows only the read subcommands.
 - The `claudetto-you-should-know` add-on runs only when Claude Code turns its gate on.
 - The eval comparison of the `claudetto-lab` add-on fails an arm that exits 0 with no valid result, and it names the arm and the reason.
+  It also fails an arm whose baseline score is at the maximum on each case, because then no gain can show.
+- The prompts have no prohibition list.
+  A test finds a paragraph with 3 or more prohibitions.
 - The sandbox tool of the `claudetto-lab` add-on fails when the debug log shows no loaded plugin.
 - `start-run` is a repository tool in `tools/start-run.ts`, not a part of the `claudetto-lab` add-on.
 - The usage report of the `claudetto-sessions` add-on counts turns and calls apart, and it names the Claude Code versions of the transcript.

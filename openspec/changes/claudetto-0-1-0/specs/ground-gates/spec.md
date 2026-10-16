@@ -52,7 +52,6 @@ The plugin SHALL keep a hash of the `tool_input` of each call that the user reje
 
 The plugin SHALL keep, for each agent, the path, the `mtime`, the size, and the line ranges of each `Read`.
 When the file did not change, and earlier reads cover the new range, the plugin SHALL deny the `Read`, and the reason SHALL give the path and the earlier range.
-A handoff, a compaction, or the clear of old tool results SHALL empty the record.
 
 #### Scenario: A full read after the same full read
 
@@ -67,6 +66,21 @@ A handoff, a compaction, or the clear of old tool results SHALL empty the record
 #### Scenario: A changed file
 
 - **WHEN** the `mtime` of the file changed after the last read
+- **THEN** the read runs
+
+### Requirement: The read gate checks that the earlier result is in the context
+
+The plugin SHALL deny a covered read only when the `tool_result` of the earlier read is in `$.session.messages({ as: "api" })`, and its content is not `[Old tool result content cleared]`.
+The plugin SHALL deny a covered read only one time, because no hook sees the server edit `clear_tool_uses`.
+
+#### Scenario: A cleared result
+
+- **WHEN** the `tool_result` of the earlier read holds `[Old tool result content cleared]`
+- **THEN** the read runs
+
+#### Scenario: A repeat after a deny
+
+- **WHEN** a covered read was denied, and Claude asks for the same read again
 - **THEN** the read runs
 
 #### Scenario: After a handoff
