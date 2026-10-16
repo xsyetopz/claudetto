@@ -1,0 +1,57 @@
+// The manifest of the files that `WorktreeCreate` copied from the main checkout.
+// It is a JSON file in the git folder of the worktree, so it lives as long as the worktree and `git` never counts it as a file of a session.
+// Each entry maps a relative path to the hash of its content at the copy.
+// `WorktreeRemove` treats an ignored file as a copy only when its hash still equals the entry.
+
+import fs from "node:fs";
+import path from "node:path";
+import { git } from "./git.ts";
+
+const MANIFEST = "claudetto-copied.json";
+
+/** The hash of the file or link at `file`, or `null` when it is gone or is not a file. */
+export const hashOf = async (file: string): Promise<string | null> => {
+  try {
+    const st = fs.lstatSync(file);
+    const hash = new Bun.CryptoHasher("sha256");
+    if (st.isSymbolicLink()) hash.update(`link:${fs.readlinkSync(file)}`);
+    else if (st.isFile()) hash.update(await Bun.file(file).bytes());
+    else return null;
+    return hash.digest("hex");
+  } catch {
+    return null;
+  }
+};
+
+/** The path of the manifest of the worktree `dir`, or `null` when `git` gives no git folder. */
+const manifestPath = (dir: string): string | null => {
+  const r = git(dir, ["rev-parse", "--absolute-git-dir"]);
+  return r.ok && r.out.trim() !== "" ? path.join(r.out.trim(), MANIFEST) : null;
+};
+
+/** Writes the manifest of the copies `hashes` for the worktree `dir`. */
+export const writeCopied = async (
+  dir: string,
+  hashes: Record<string, string>,
+): Promise<void> => {
+  const file = manifestPath(dir);
+  if (file) await Bun.write(file, JSON.stringify(hashes));
+};
+
+/** The files of the worktree `dir` that are still unchanged copies. A missing or broken manifest gives an empty set. */
+export const unchangedCopies = async (dir: string): Promise<Set<string>> => {
+  const same = new Set<string>();
+  const file = manifestPath(dir);
+  if (!file || !fs.existsSync(file)) return same;
+  try {
+    const data = JSON.parse(await Bun.file(file).text()) as Record<
+      string,
+      unknown
+    >;
+    for (const [rel, hash] of Object.entries(data))
+      if ((await hashOf(path.join(dir, rel))) === hash) same.add(rel);
+  } catch {
+    // A broken manifest keeps the worktree, because no file is then known as a copy.
+  }
+  return same;
+};

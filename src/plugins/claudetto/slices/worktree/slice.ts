@@ -1,0 +1,51 @@
+// The manifest of the slice `worktree`: the classic hooks `WorktreeCreate` and `WorktreeRemove`.
+// A `WorktreeCreate` hook replaces the creation of Claude Code, so the hook makes the git worktree from `HEAD` and copies the files of `.worktreeinclude`.
+
+import type { Slice } from "../../../../kernel/slice.ts";
+import { HOOK_TIMEOUT_S } from "./limits.ts";
+
+// The text `${CLAUDE_PLUGIN_ROOT}` stays in the command, and Claude Code fills it in at run time.
+// biome-ignore lint/plugin: a hook command, which Claude Code runs as written
+const HOOK = `bun --no-env-file "\${CLAUDE_PLUGIN_ROOT}/slices/worktree/adapters/run.ts"`;
+
+export const slice: Slice = {
+  name: "worktree",
+  ladder:
+    "classic: the two events run `git` on Bun, and `WorktreeCreate` has no mod event",
+  hooks: [
+    {
+      event: "WorktreeCreate",
+      command: `${HOOK} create`,
+      timeout: HOOK_TIMEOUT_S,
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: true,
+        allow:
+          "tests/claudetto/worktree/create.test.ts > a worktree starts from `HEAD` with the files of `.worktreeinclude`",
+        text: "tests/claudetto/worktree/create.test.ts > the hook prints the path of the new worktree",
+        block:
+          "tests/claudetto/worktree/create.test.ts > a name with a path part fails with a reason and makes no worktree",
+        false:
+          "tests/claudetto/worktree/create.test.ts > a folder with no repository fails with a reason",
+      },
+    },
+    {
+      event: "WorktreeRemove",
+      command: `${HOOK} remove`,
+      timeout: HOOK_TIMEOUT_S,
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: true,
+        allow:
+          "tests/claudetto/worktree/remove.test.ts > a worktree with only copied files is removed",
+        text: "tests/claudetto/worktree/remove.test.ts > a worktree with a file of a session stays and the reason names the file",
+        block:
+          "tests/claudetto/worktree/remove.test.ts > an ignored file that a session made keeps the worktree",
+        false:
+          "tests/claudetto/worktree/remove.test.ts > a worktree that is already gone gives exit 0",
+      },
+    },
+  ],
+};
