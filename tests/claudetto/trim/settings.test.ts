@@ -1,8 +1,8 @@
 // The settings of the `trim` slice: they set no banned env name and no never-set entry.
-// The ban list is the one of the removed `tests/dotclaude/deferred-tools.test.ts`.
+// The ban list is the one of the removed `tests/claudetto/deferred-tools.test.ts`.
 
 import { expect, test } from "bun:test";
-import { slice } from "../../../src/plugins/dotclaude/slices/trim/slice.ts";
+import { slice } from "../../../plugins/claudetto/slices/trim/slice.ts";
 import type { Env } from "../../support/repo.ts";
 import { neverSetViolations } from "../../support/settings-pin.ts";
 
