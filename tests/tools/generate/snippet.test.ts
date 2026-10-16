@@ -101,14 +101,14 @@ test("a plugin whose slices have no `settings` entry has no snippet", async () =
 test("the core plugin gets the module `snippets.ts` from the snippet of its slices and the docs fragment, with no source folder", async () => {
   const dir = await fixtureRoot({
     "schemas/claude-code-settings.json": schemaWith(ORDER),
-    "src/plugins/dotclaude/slices/gamma/slice.ts": sliceWith(
+    "src/plugins/claudetto/slices/gamma/slice.ts": sliceWith(
       "gamma",
       '{ model: "m", env: { B: "2", A: "1" } }',
     ),
     "src/fragments/docs-snippet.json":
       '{ "permissions": { "allow": ["x"] } }\n',
   });
-  const file = "plugins/dotclaude/snippets.ts";
+  const file = "plugins/claudetto/snippets.ts";
   const made = (await outputs(dir)).find((o) => o.file === file);
   if (!made) throw new Error(`the generator wrote no ${file}`);
   await Bun.write(path.join(dir, file), made.text);
@@ -121,15 +121,15 @@ test("the core plugin gets the module `snippets.ts` from the snippet of its slic
 test("a text module of a slice of the core plugin can include the snippet", async () => {
   const dir = await fixtureRoot({
     "schemas/claude-code-settings.json": schemaWith(ORDER),
-    "src/plugins/dotclaude/slices/gamma/slice.ts": sliceWith(
+    "src/plugins/claudetto/slices/gamma/slice.ts": sliceWith(
       "gamma",
       '{ model: "m" }',
     ),
-    "src/plugins/dotclaude/slices/gamma/texts.ts/snippet.json":
+    "src/plugins/claudetto/slices/gamma/prompts/snippet.json":
       "{{include snippet.json}}\n",
     "src/fragments/docs-snippet.json": "{}\n",
   });
-  const file = "plugins/dotclaude/slices/gamma/texts.ts";
+  const file = "plugins/claudetto/slices/gamma/prompts.ts";
   const made = (await generated(dir)).find((o) => o.file === file);
   if (!made) throw new Error(`the generator wrote no ${file}`);
   await Bun.write(path.join(dir, file), made.text);

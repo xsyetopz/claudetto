@@ -4,7 +4,10 @@
 import fs from "node:fs";
 import path from "node:path";
 
-/** The files in `plugins/` of the git repository `root` that git does not ignore. */
+/**
+ * The files in `plugins/` of the git repository `root` that git does not ignore.
+ * `-z` gives each name as it is, because git quotes a name with a non-ASCII character in the plain output.
+ */
 const pluginFiles = (root: string): string[] => {
   const run = Bun.spawnSync(
     [
@@ -13,6 +16,7 @@ const pluginFiles = (root: string): string[] => {
       "--cached",
       "--others",
       "--exclude-standard",
+      "-z",
       "--",
       "plugins",
     ],
@@ -24,7 +28,7 @@ const pluginFiles = (root: string): string[] => {
     );
   return run.stdout
     .toString()
-    .split("\n")
+    .split("\0")
     .filter((file) => file !== "" && fs.existsSync(path.join(root, file)));
 };
 

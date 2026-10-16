@@ -5,6 +5,7 @@ import { discover } from "./discover.ts";
 import { evalsOf } from "./emit/evals.ts";
 import { hooksOf } from "./emit/hooks.ts";
 import { manifestOf } from "./emit/manifest.ts";
+import { marketplaceOf } from "./emit/marketplace.ts";
 import { registerOf } from "./emit/register.ts";
 import { slicesOf } from "./emit/slices.ts";
 import { snippetParts } from "./emit/snippet.ts";
@@ -16,6 +17,7 @@ export const generated = async (root: string): Promise<Output[]> => {
   const made = await outputs(root);
   const plugins = await discover(root);
   const parts = await snippetParts(root, plugins);
+  made.push(...(await marketplaceOf(root, plugins)));
   for (const p of plugins)
     made.push(
       ...(await manifestOf(root, p)),

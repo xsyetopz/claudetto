@@ -303,3 +303,22 @@ test("an eval case of a slice and an eval case of the plugin go to `evals/` of t
   );
   expect(made.some((o) => o.file.includes("slices/alpha/evals"))).toBe(false);
 });
+
+test("text in a string, a template, or a comment that looks like an import is not an import", async () => {
+  const lines = [
+    "export const A = 'import x from \"../../../shared.ts\"';",
+    `export const B = \`import("../../../shared.ts") \${A}\`;`,
+    '// import y from "../../../shared.ts"',
+    '/* export { z } from "../../../shared.ts" */',
+    "",
+  ].join("\n");
+  const dir = await fixtureRoot({
+    "src/plugins/p/shared.ts": "export const S = 1;\n",
+    "src/plugins/p/slices/alpha/domain/quoted.ts": lines,
+  });
+  const made = await generated(dir);
+  expect(textOf(made, "plugins/p/slices/alpha/domain/quoted.ts")).toEndWith(
+    lines,
+  );
+  expect(importsOf("/x/quoted.ts", lines)).toStrictEqual([]);
+});

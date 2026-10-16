@@ -10,7 +10,7 @@ import { must, output, REPO, recipe } from "./recipes.ts";
 const WIKI = "https://github.com/xsyetopz/claudetto.wiki.git";
 
 await recipe(async () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "dotclaude-wiki-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "claudetto-wiki-"));
   try {
     await must($`git clone --quiet ${WIKI} ${tmp}`);
     // As `rsync --delete --exclude .git`: remove each entry but `.git`, then copy `wiki/`.
@@ -26,7 +26,7 @@ await recipe(async () => {
     }
     const head = (await output($`git rev-parse --short HEAD`)).trim();
     await must(
-      $`git -C ${tmp} commit --quiet -m ${`Sync wiki from dotclaude ${head}`}`,
+      $`git -C ${tmp} commit --quiet -m ${`Sync wiki from claudetto ${head}`}`,
     );
     await must($`git -C ${tmp} push --quiet origin HEAD`);
   } finally {

@@ -1,14 +1,8 @@
 // The `claude` CLI as the scripts of `tools/` run it: `claude` with the env that stops its telemetry.
-// Each var is documented in `external/dossier/cc-2.1.296/env.md`.
-// The offsets are bytes of `external/cc-2.1.296/strings.txt`.
-// `FMt()` (byte 13082831) returns `essential-traffic` when `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` is set (byte 13082841).
-// `At()` (byte 13083051) tests that mode. The error reporter at byte 13084960 checks it with `DISABLE_ERROR_REPORTING`,
-// but that reporter dispatches to a local store, not to Datadog.
-// The Datadog error path is `iDe()` (byte 20428914), which returns when `Nbs()` (byte 20400699) is false.
-// `Nbs()` returns when `DISABLE_ERROR_REPORTING` is set (byte 20400729). `iDe()` calls `zfo()` (byte 20421487), which enqueues to the sender.
-// The Datadog host is `http-intake.logs.us5.datadoghq.com` (byte 20403805).
-// The event path is `uPt()` (byte 20417140), and it sends only after `initializeDatadog` (byte 20416050) is true.
-// `initializeDatadog` is false when `Uy()` (byte 15227601) is true, and `Uy()` calls `MV()` (byte 13083100), which is `FMt() !== "default"`.
+// The facts are from the bundle of Claude Code 2.1.301 (`external/cc-2.1.301/strings.txt`).
+// `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` sets the traffic mode to `essential-traffic`.
+// The Datadog event path (`http-intake.logs.us5.datadoghq.com`) sends only after `initializeDatadog`, which is false when the mode is not `default`.
+// The error reporter returns when `DISABLE_ERROR_REPORTING` is set or the mode is `essential-traffic`.
 // So `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` stops the event path, and `DISABLE_ERROR_REPORTING` stops the error path.
 // A script runs its `claude` commands through `$claude()`, so no call of `tools/` leaves the vars out.
 

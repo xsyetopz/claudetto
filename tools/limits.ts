@@ -1,6 +1,6 @@
 // Repository bounds, read only by the tests and the tools, so they do not ship in `plugins/`.
 // A shared runtime bound is in `src/kernel/budget.ts`, and a slice bound is in `slices/<s>/limits.ts`.
-// The rule is in `.dotclaude/spec/changes/1.0.0/design.md`, "Bounds".
+// The rule is in `CLAUDE.md`, "Rules", and the wiki page `Bounds` lists each bound.
 
 /** Most lines in a file that is not a test. */
 export const FILE_MAX_LINES = 300;
@@ -10,6 +10,23 @@ export const TEST_FILE_MAX_LINES = 500;
 export const WORKTREE_TEST_TIMEOUT_MS = 15_000;
 /** Most milliseconds for one test that starts many `git` processes, because a `merge` test on a Windows runner took more than the 5,000 ms of `bunfig.toml`. */
 export const GIT_REPO_TEST_TIMEOUT_MS = 15_000;
+/** Most milliseconds for one test that scans the bundle of the installed `claude`, which took 15 s under the CPU cap of `just docker`. */
+export const BUNDLE_SCAN_TIMEOUT_MS = 60_000;
+
+/** The lowest Claude Code version that claudetto is built for. `ci.yml` installs it, and the files of `schemas/` come from its bundle. */
+export const MIN_CLAUDE_CODE_VERSION = "2.1.301";
+
+/** The CPUs of the container of `just docker`, so a check does not take each CPU of the host. */
+export const DOCKER_CPUS = 4;
+
+/** Most US dollars for one `just eval` run, which the `eval` recipe of the `justfile` passes as `--max-cost-usd`. */
+export const EVAL_MAX_COST_USD = 5;
+
+/**
+ * Most characters in one text in the code of a plugin or of the kernel: a string literal, or the sum of the fixed parts of a template literal.
+ * A longer text goes to a `prompts/` folder. `tools/lint/prose-in-code.grit` holds the copies.
+ */
+export const CODE_TEXT_MAX_CHARS = 60;
 
 /** Most characters in the `description` of an agent file, because the listing of agents goes into each request. */
 export const AGENT_DESCRIPTION_MAX_CHARS = 300;
@@ -46,7 +63,7 @@ export const FIRST_REQUEST_HIGH_BYTES = 16 * 1024;
 // Start-of-session bound, checked by `tools/measure.ts`.
 
 /**
- * Most tokens in the first request of a dotclaude session (input, cache creation, and cache read).
+ * Most tokens in the first request of a claudetto session (input, cache creation, and cache read).
  * A measure of 9,485 tokens in a headless session with the settings snippet, plus 5% headroom, rounded up, is 9,960.
  */
 export const START_TOKENS = 9_960;

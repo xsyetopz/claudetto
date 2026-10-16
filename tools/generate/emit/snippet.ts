@@ -9,7 +9,7 @@ import type { FoundPlugin } from "../discover.ts";
 import { formatJson } from "./manifest.ts";
 
 /** The plugin whose snippet the texts of `src/` include as `snippet.json`. */
-const CORE = "dotclaude";
+const CORE = "claudetto";
 
 /** The schema whose top-level properties give the order of the keys of the snippet. */
 const SCHEMA = "schemas/claude-code-settings.json";

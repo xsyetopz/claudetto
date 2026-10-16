@@ -1,6 +1,6 @@
 // Behavior of the parts of `tools/generate/` that the port of 0.28.0 needs (P01b2):
-// a module folder of texts in a slice, and the `hooks.json` source of a plugin with slices.
-// Also the `// eval:` id of each generated `on()` call, and the hook lab tests of a slice in `tests/` of the plugin.
+// a module folder of texts in a slice or in a kernel folder, and the `hooks.json` source of a plugin with slices.
+// Also the `// eval:` id of each generated `on()` call, and the hook lab tests of a slice in `tests/` of the plugin, with their imports.
 // Each test works in its own copy of the fixture under `TMPDIR`.
 
 import { expect, test } from "bun:test";
@@ -9,11 +9,11 @@ import { generated } from "../../../tools/generate/outputs.ts";
 import { moduleHooks } from "../../support/hook-evals.ts";
 import { fixtureRoot, textOf, write } from "./fixture.ts";
 
-/** A slice `gamma` whose handler answers with the text of `texts.ts/greeting.md`. */
+/** A slice `gamma` whose handler answers with the text of `prompts/greeting.md`. */
 const GAMMA = {
-  "src/plugins/p/slices/gamma/texts.ts/greeting.md": "Hello `you`.\n",
+  "src/plugins/p/slices/gamma/prompts/greeting.md": "Hello `you`.\n",
   "src/plugins/p/slices/gamma/adapters/mod.ts":
-    'import { GREETING } from "../texts.ts";\nexport const onSection = () => ({ text: GREETING });\n',
+    'import { GREETING } from "../prompts.ts";\nexport const onSection = () => ({ text: GREETING });\n',
   "src/plugins/p/slices/gamma/slice.ts": `import { onSection } from "./adapters/mod.ts";
 export const slice = { name: "gamma", mod: [
   { event: "prompt.section", phase: "answer", run: onSection },
@@ -25,9 +25,9 @@ test("a module folder of a slice gives one text module in the copy, and the fold
   const dir = await fixtureRoot(GAMMA);
   const made = await generated(dir);
   const files = made.map((o) => o.file);
-  expect(files).toContain("plugins/p/slices/gamma/texts.ts");
+  expect(files).toContain("plugins/p/slices/gamma/prompts.ts");
   expect(
-    files.filter((f) => f.startsWith("plugins/p/slices/gamma/texts.ts/")),
+    files.filter((f) => f.startsWith("plugins/p/slices/gamma/prompts/")),
   ).toStrictEqual([]);
   await write(dir, made);
   const mod = await import(
@@ -141,4 +141,42 @@ test("the hook lab tests of a slice go to `tests/` of the plugin, and not to the
   expect(
     made.filter((o) => o.file.startsWith("plugins/p/slices/gamma/lab/")),
   ).toStrictEqual([]);
+});
+
+test("a hook lab test that imports the prompt module of its slice imports the module in the copy of the slice", async () => {
+  const lab =
+    'import { test } from "claude-code/testing";\nimport { GREETING } from "../prompts.ts";\ntest("runs", () => GREETING);\n';
+  const dir = await fixtureRoot({
+    ...GAMMA,
+    "src/plugins/p/slices/gamma/lab/gamma.test.ts": lab,
+  });
+  const text = textOf(await generated(dir), "plugins/p/tests/gamma.test.ts");
+  expect(text).toContain('from "../slices/gamma/prompts.ts"');
+  expect(text).not.toContain('from "../prompts.ts"');
+});
+
+test("a kernel folder with a `prompts/` folder gives one text module in the kernel copy, and the folder is not copied", async () => {
+  const dir = await fixtureRoot({
+    "src/kernel/notes/prompts/note.md": "A kernel note.\n",
+    "src/kernel/notes/note.ts":
+      'import { NOTE } from "./prompts.ts";\nexport const note = () => NOTE;\n',
+    "src/plugins/p/slices/delta/adapters/mod.ts":
+      'import { note } from "../../../../../kernel/notes/note.ts";\nexport const onSection = () => ({ text: note() });\n',
+    "src/plugins/p/slices/delta/slice.ts": `import { onSection } from "./adapters/mod.ts";
+export const slice = { name: "delta", mod: [
+  { event: "prompt.section", phase: "answer", run: onSection },
+] };
+`,
+  });
+  const made = await generated(dir);
+  const files = made.map((o) => o.file);
+  expect(files).toContain("plugins/p/kernel/notes/prompts.ts");
+  expect(
+    files.filter((f) => f.startsWith("plugins/p/kernel/notes/prompts/")),
+  ).toStrictEqual([]);
+  await write(dir, made);
+  const mod = await import(
+    path.join(dir, "plugins/p/slices/delta/adapters/mod.ts")
+  );
+  expect(mod.onSection()).toStrictEqual({ text: "A kernel note." });
 });

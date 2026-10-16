@@ -2,8 +2,8 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import { TESTED_VERSION } from "../../plugins/dotclaude/slices/setup/domain/facts.ts";
 import { isNewer, pinnedVersion } from "../../tools/claude-code-release.ts";
+import { MIN_CLAUDE_CODE_VERSION } from "../../tools/limits.ts";
 
 const CI = path.join(import.meta.dir, "../../.github/workflows/ci.yml");
 
@@ -46,9 +46,9 @@ test("text that is not a SemVer version throws, so a bad tag does not pass as ne
   expect(() => isNewer("2.1.297", "2.1")).toThrow("not a SemVer version");
 });
 
-test("the version that `ci.yml` installs is the tested version of the plugin", async () => {
+test("the version that `ci.yml` installs is the minimum version of the plugin", async () => {
   const pinned = pinnedVersion(await Bun.file(CI).text());
-  expect(pinned).toBe(TESTED_VERSION);
+  expect(pinned).toBe(MIN_CLAUDE_CODE_VERSION);
 });
 
 test("a `ci.yml` text without a pin throws", () => {

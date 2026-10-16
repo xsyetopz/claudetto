@@ -2,6 +2,7 @@
 // Before the first tag, it checks the tree, the generated files, and the tag names, and it stops when one fails.
 // If a tag step or the push fails, it deletes the tags that it made.
 // With `--dry-run`, it prints the tags and stops.
+// Any other argument stops it before the first command, so a mistyped dry run cannot make or push a tag.
 
 import { $ } from "bun";
 import { makeTags, type Plan, preflight } from "./preflight.ts";
@@ -13,7 +14,15 @@ const generatedOk = async (): Promise<boolean> =>
   (await $`bun tools/generate/index.ts --check`.cwd(REPO).nothrow())
     .exitCode === 0;
 
-await recipe(async () => {
+const USAGE = "Usage: bun tools/release.ts [--dry-run]";
+
+/** True for `--dry-run`, false for no argument, and null for any other argument list. */
+export const dryRunOf = (args: string[]): boolean | null => {
+  if (args.length === 0) return false;
+  return args.length === 1 && args[0] === "--dry-run" ? true : null;
+};
+
+const release = async (dryRun: boolean): Promise<void> => {
   const plans: Plan[] = [];
   for (const dir of pluginDirs()) {
     const out = await output($claude()`claude plugin tag --dry-run ${dir}`);
@@ -33,7 +42,7 @@ await recipe(async () => {
     process.exit(1);
   }
   console.log(`Tags: ${tags.join(" ")}`);
-  if (Bun.argv[2] === "--dry-run") return;
+  if (dryRun) return;
   await makeTags(
     REPO,
     plans,
@@ -46,4 +55,13 @@ await recipe(async () => {
       );
     },
   );
-});
+};
+
+if (import.meta.main) {
+  const dryRun = dryRunOf(Bun.argv.slice(2));
+  if (dryRun === null) {
+    console.error(USAGE);
+    process.exit(2);
+  }
+  await recipe(() => release(dryRun));
+}

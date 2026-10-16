@@ -13,7 +13,7 @@ const WRITTEN = [path.join(".claude-plugin", "types"), "tsconfig.json"];
 /** The types that the root `tsconfig.json` reads, relative to the repository. */
 const NEEDED = path.join(
   "plugins",
-  "dotclaude",
+  "claudetto",
   ".claude-plugin",
   "types",
   "tsconfig.json",

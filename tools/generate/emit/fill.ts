@@ -1,5 +1,6 @@
 // Fills the includes and the values of a source text (design, "Generated tree").
-// In a source, a line `{{include NAME}}` gives the text of `src/fragments/NAME.md`, `{{include NAME.json}}` the text of `src/fragments/NAME.json`, and `{{NAME}}` the value of the limit `NAME` of `VALUES`.
+// In a source, a line `{{include NAME}}` gives the text of `src/fragments/NAME.md`, `{{include NAME.json}}` the text of `src/fragments/NAME.json`, and `{{NAME}}` the value of the limit `NAME` of `values`.
+// The default `values` is `VALUES`, and the text of a slice prompt gets the limits of its slice too (`emit/prompts.ts`).
 // `{{include snippet.json}}` gives the settings snippet of the core plugin, which `emit/snippet.ts` computes from the slices.
 
 import fs from "node:fs";
@@ -7,17 +8,15 @@ import path from "node:path";
 import {
   BASH_OUTPUT_MAX_CHARS,
   CONTEXT_WINDOW,
-  POLICY_FILE_MAX_CHARS,
-  POLICY_TIMEOUT_MS,
   USAGE_LEVELS,
 } from "../../../src/kernel/budget.ts";
-import { FILE_MAX_BYTES } from "../../../src/plugins/dotclaude/slices/asks/limits.ts";
 import {
   HAIKU_CONTEXT_MAX,
   REPORT_MAX_WORDS,
   SUBAGENT_CONTEXT_MAX,
-} from "../../../src/plugins/dotclaude/slices/handoff/limits.ts";
-import { MAX_ROWS } from "../../../src/plugins/dotclaude/slices/statusline/limits.ts";
+} from "../../../src/plugins/claudetto/slices/agents/limits.ts";
+import { FILE_MAX_BYTES } from "../../../src/plugins/claudetto/slices/asks/limits.ts";
+import { MAX_ROWS } from "../../../src/plugins/claudetto/slices/statusline/limits.ts";
 
 /** The limits that a source can name as `{{NAME}}`, from the one place in code where each is set. A number has the `300,000` form of the docs. */
 export const VALUES: Record<string, string> = Object.fromEntries(
@@ -25,10 +24,8 @@ export const VALUES: Record<string, string> = Object.fromEntries(
     BASH_OUTPUT_MAX_CHARS,
     CONTEXT_WINDOW,
     FILE_MAX_BYTES,
-    HAIKU_CONTEXT_MAX,
     MAX_ROWS,
-    POLICY_FILE_MAX_CHARS,
-    POLICY_TIMEOUT_MS,
+    HAIKU_CONTEXT_MAX,
     REPORT_MAX_WORDS,
     SUBAGENT_CONTEXT_MAX,
     USAGE_LEVEL_LOW: USAGE_LEVELS[0],
@@ -46,12 +43,13 @@ const posix = (p: string) => p.split(path.sep).join(path.posix.sep);
 export const textOf = async (file: string): Promise<string> =>
   (await Bun.file(file).text()).replace(/\n+$/, "");
 
-/** `text` with each include and value of the source `source` filled in from `fragments`, or from `made` for a name that `made` gives. */
+/** `text` with each include and value of the source `source` filled in from `fragments`, or from `made` for a name that `made` gives, and from `values`. */
 export const fill = async (
   text: string,
   fragments: string,
   source: string,
   made: Record<string, string> = {},
+  values: Record<string, string> = VALUES,
 ): Promise<string> => {
   const names = [...text.matchAll(INCLUDE)].map((m) => m[1] as string);
   const parts: Record<string, string> = {};
@@ -75,7 +73,7 @@ export const fill = async (
     (_m, name: string) => parts[name] as string,
   );
   return included.replace(VALUE, (_m, name: string) => {
-    if (!(name in VALUES)) throw new Error(`${source}: no value {{${name}}}`);
-    return VALUES[name] as string;
+    if (!(name in values)) throw new Error(`${source}: no value {{${name}}}`);
+    return values[name] as string;
   });
 };

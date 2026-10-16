@@ -8,13 +8,17 @@ import type { UserConfigOption } from "../../../src/kernel/slice.ts";
 import type { FoundPlugin } from "../discover.ts";
 import type { Output } from "./texts.ts";
 
-/** The manifest data of one plugin, which its `src/plugins/<plugin>/plugin.ts` exports as `plugin`. */
-export interface PluginManifest {
+/** The manifest data that `src/plugins/<plugin>/plugin.ts` exports as `plugin`. */
+export interface PluginData {
   /** The name of the plugin folder. */
   readonly name: string;
-  readonly description: string;
   readonly keywords?: readonly string[];
   readonly homepage?: string;
+}
+
+/** The manifest data of one plugin, with the description from `src/plugins/<plugin>/description.md`. */
+export interface PluginManifest extends PluginData {
+  readonly description: string;
 }
 
 const SCHEMA = "https://www.schemastore.org/claude-code-plugin-manifest.json";

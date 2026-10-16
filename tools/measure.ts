@@ -1,8 +1,8 @@
 #!/usr/bin/env -S bun --no-env-file
-// Runs `dotclaude-start` of the plugin `dotclaude-sessions` with the start bounds of this repository.
+// Runs `claudetto-start` of the plugin `claudetto-sessions` with the start bounds of this repository.
 // The bounds are in `tools/limits.ts`, so the plugin holds no bound of this repository.
 //
-//   bun tools/measure.ts [SESSION.jsonl] [dotclaude-start options...]
+//   bun tools/measure.ts [SESSION.jsonl] [claudetto-start options...]
 
 import path from "node:path";
 import {
@@ -13,7 +13,7 @@ import {
 
 const BIN = path.join(
   import.meta.dirname,
-  "../plugins/dotclaude-sessions/bin/dotclaude-start",
+  "../plugins/claudetto-sessions/bin/claudetto-start",
 );
 const bounds = [
   "--bound",

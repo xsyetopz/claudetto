@@ -7,7 +7,8 @@
 import type { HookEvals } from "../../../src/kernel/slice.ts";
 import type { FoundPlugin } from "../discover.ts";
 import { order } from "../order.ts";
-import { format, type Output } from "./texts.ts";
+import { format } from "./format.ts";
+import type { Output } from "./texts.ts";
 
 /** The id of a classic hook: its command, with the `bun` launcher and the plugin root removed. */
 export const commandId = (command: string): string =>

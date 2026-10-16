@@ -69,7 +69,7 @@ def apply(settings: dict) -> list[str]:
 
     plugins = settings.setdefault("enabledPlugins", {})
     for name in sorted(plugins):
-        if name.endswith("@dotclaude") and plugins[name]:
+        if name.endswith("@claudetto") and plugins[name]:
             plugins[name] = False
             changes.append(f"enabledPlugins.{name} = false")
     for name in BUILTIN_ON:

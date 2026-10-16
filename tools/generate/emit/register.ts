@@ -9,7 +9,8 @@
 import path from "node:path";
 import type { FoundPlugin } from "../discover.ts";
 import { type Entry, filterOf, order } from "../order.ts";
-import { format, type Output, withHeader } from "./texts.ts";
+import { format } from "./format.ts";
+import { type Output, withHeader } from "./texts.ts";
 
 /** The named export of `mod` that is the function `run`, or `undefined` when no export is `run`. */
 const exportOf = (

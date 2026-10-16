@@ -3,13 +3,13 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "dotclaude",
+      "name": "claudetto",
       "devDependencies": {
-        "@biomejs/biome": "2.5.15",
+        "@biomejs/biome": "^2.5.15",
         "@types/node": "^26.6.5",
-        "bun-types": "1.4.3",
-        "markdownlint-cli2": "0.23.3",
-        "yaml": "2.9.1",
+        "bun-types": "^1.4.3",
+        "markdownlint-cli2": "^0.23.3",
+        "yaml": "^2.9.1",
       },
     },
   },

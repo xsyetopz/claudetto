@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // Validates the marketplace and each plugin with `claude plugin validate --strict`,
 // and fails when a repository file is over its line bound.
-// The bounds and the rule are in `.dotclaude/spec/changes/1.0.0/design.md`, "Tests and checks".
+// The bounds and the rule are in `CLAUDE.md`, "Rules".
 //
 //   bun tools/validate.ts   exit 0 when each manifest, skill, and agent is valid,
 //                           and each file is within its line bound
@@ -17,10 +17,11 @@ const plugins = join(root, "plugins");
 
 const TEXT =
   /(?:\.(?:mjs|cjs|js|ts|json|jsonc|md|mdx|py|sh|toml|ya?ml|txt|grit)|(?:^|\/)justfile)$/;
-// Files that a tool writes: the settings schemas of `just schema` and lock
-// files.
+// Files that a tool writes: the settings schemas of `just schema`, the skills
+// of `openspec init` (the user, 2026-10-15), and lock files.
 const GENERATED = [
   /^schemas\//,
+  /^\.claude\/skills\/openspec-[^/]+\//,
   /(?:^|\/)(?:package-lock\.json|pnpm-lock\.yaml)$/,
 ];
 // The folders whose files `just generate` writes. Only a file here may carry

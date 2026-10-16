@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$comment": "Extracted from Claude Code 2.1.296",
+  "$comment": "Extracted from Claude Code 2.1.301",
   "type": "object",
   "properties": {
     "$schema": {
@@ -344,6 +344,11 @@
       "description": "Enterprise denylist of MCP servers that are explicitly blocked. If a server is on the denylist, it will be blocked across all scopes including enterprise. Denylist takes precedence over allowlist - if a server is on both lists, it is denied."
     },
     "hooks": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {}
+      },
       "description": "Custom commands to run before/after tool executions"
     },
     "worktree": {
@@ -617,7 +622,7 @@
     },
     "managedSourcesBehavior": {
       "enum": ["first-wins", "merge"],
-      "description": "Controls how the managed settings sources compose. `first-wins` (default): the highest-priority source present (server-managed > MDM (managed plist / HKLM) > `managed-settings.json`) is the managed tier alone. `merge`: every present source deep-merges with fixed precedence server-managed > MDM > `managed-settings.json` — scalars take the highest source's value (a restrictive boolean or enum — the allowManaged*Only locks, the disable* switches, the sandbox lock family — takes the strictest value any source sets) and arrays union, except `fallbackModel`, the restriction allowlists `allowedMcpServers`, `allowedProviders`, `availableModels`, `strictKnownMarketplaces` and `allowedChannelPlugins`, and `sandbox.credentials.awsPairs` and `sandbox.ripgrep` (the highest source that sets one owns it whole), `modelOverrides` (the whole map of the highest source that sets it, dropped when that source sits below the one that sets `availableModels`), `managedMcpServers` (server names union; a name set by two sources takes the higher source's whole entry), and the keys taken from the highest source only: the auth pins `forceLoginOrgUUID`, `forceLoginMethod`, `forceLoginGatewayUrl` and `gatewayInternalNetworks`, the credential helpers `apiKeyHelper`, `awsAuthRefresh`, `awsCredentialExport`, `gcpAuthRefresh`, `otelHeadersHelper` and `proxyAuthHelper`, `modelPicker`, `permissions.defaultMode`, `parentSettingsBehavior` and the `policyHelper` configuration (env keeps its own per-key union). Honored only from the highest-priority source present; enable it only when every lower source is admin-controlled, since lower sources then contribute entries such as `permissions.allow`. HKCU and `--managed-settings` never take part in the merge."
+      "description": "Controls how the managed settings sources compose. `first-wins` (default): the highest-priority source present (server-managed > MDM (managed plist / HKLM) > `managed-settings.json`) is the managed tier alone. `merge`: every present source deep-merges with fixed precedence server-managed > MDM > `managed-settings.json` — scalars take the highest source's value (a restrictive boolean or enum — the allowManaged*Only locks, the disable* switches, the sandbox lock family — takes the strictest value any source sets) and arrays union, except `fallbackModel`, the restriction allowlists `allowedMcpServers`, `allowedProviders`, `availableModels`, `strictKnownMarketplaces` and `allowedChannelPlugins`, and `sandbox.credentials.awsPairs` and `sandbox.ripgrep` (the highest source that sets one owns it whole), `modelOverrides` (the whole map of the highest source that sets it, dropped when that source sits below the one that sets `availableModels`), `managedMcpServers` (server names union; a name set by two sources takes the higher source's whole entry), and the keys taken from the highest source only: the auth pins `forceLoginOrgUUID`, `forceLoginMethod`, `forceLoginGatewayUrl` and `gatewayInternalNetworks`, the credential helpers `apiKeyHelper`, `awsAuthRefresh`, `awsCredentialExport`, `gcpAuthRefresh`, `otelHeadersHelper` and `proxyAuthHelper`, `modelPicker`, `permissions.defaultMode`, `parentSettingsBehavior` and the `policyHelper` configuration (env keeps its own per-key union). In both modes, a `forceLoginOrgUUID`, or a `forceLoginMethod` of claudeai or console, that this machine's own MDM policy or managed settings file sets applies ahead of server-managed settings. Honored only from the highest-priority source present; enable it only when every lower source is admin-controlled, since lower sources then contribute entries such as `permissions.allow`. HKCU and `--managed-settings` never take part in the merge."
     },
     "forceLoginOrgUUID": {
       "anyOf": [
@@ -1416,5 +1421,5 @@
     }
   },
   "additionalProperties": false,
-  "title": "Claude Code 2.1.296 managed-settings.json"
+  "title": "Claude Code 2.1.301 managed-settings.json"
 }

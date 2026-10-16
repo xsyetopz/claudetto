@@ -1,5 +1,5 @@
 {
-  "extends": "./plugins/dotclaude/tsconfig.json",
+  "extends": "./plugins/claudetto/tsconfig.json",
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "allowJs": true,
@@ -10,7 +10,7 @@
     "typeRoots": [
       "./node_modules",
       "./node_modules/@types",
-      "./plugins/dotclaude/.claude-plugin/types"
+      "./plugins/claudetto/.claude-plugin/types"
     ],
     "types": [
       "bun-types",
@@ -19,7 +19,7 @@
       "claude-code-tools",
       "node"
     ],
-    "rootDirs": ["src", "."]
+    "rootDirs": ["src", ".", "plugins/claudetto"]
   },
   "exclude": ["node_modules"],
   "include": [

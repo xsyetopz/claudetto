@@ -54,10 +54,58 @@ test.skipIf(process.getuid?.() === 0)(
   },
 );
 
-test("a pre-release target is refused, so no pre-release version is written", () => {
-  expect(() => nextVersion("1.0.0", "1.1.0-rc.1")).toThrow();
+test("an exact pre-release target is the next version", () => {
+  expect(nextVersion("1.0.0", "0.1.0-alpha.1")).toBe("0.1.0-alpha.1");
+});
+
+test("a malformed pre-release target is refused", () => {
+  expect(() => nextVersion("1.0.0", "0.1.0-")).toThrow();
+  expect(() => nextVersion("1.0.0", "0.1.0-alpha..1")).toThrow();
+});
+
+test("a bump from a pre-release version moves the compare link", async () => {
+  await Bun.write(
+    path.join(root, "package.json"),
+    '{\n  "version": "0.1.0-alpha.1"\n}\n',
+  );
+  await Bun.write(
+    path.join(root, "CHANGELOG.md"),
+    CHANGELOG.replace("v1.0.0...", "v0.1.0-alpha.1..."),
+  );
+  expect(await main(["0.1.0-alpha.2", "--root", root])).toBe(0);
+  expect(await Bun.file(path.join(root, "CHANGELOG.md")).text()).toContain(
+    "compare/v0.1.0-alpha.2...HEAD",
+  );
 });
 
 test("a pre-release current version is refused", () => {
   expect(() => nextVersion("1.0.0-rc.1", "patch")).toThrow();
+});
+
+test("a mistyped dry run writes no file and shows the usage (review row 125)", async () => {
+  const logError = console.error;
+  console.error = () => {};
+  try {
+    expect(await main(["minor", "--dryrun", "--root", root])).toBe(2);
+    expect(await main(["minor", "x", "--dry-run", "--root", root])).toBe(2);
+  } finally {
+    console.error = logError;
+  }
+  expect(await Bun.file(path.join(root, "package.json")).text()).toBe(PACKAGE);
+});
+
+test("`--root` with no folder is a usage error that names `--root`, and nothing changes", async () => {
+  const errors: string[] = [];
+  const logError = console.error;
+  console.error = (...parts: unknown[]) => {
+    errors.push(parts.join(" "));
+  };
+  let status = -1;
+  try {
+    status = await main(["patch", "--root"]);
+  } finally {
+    console.error = logError;
+  }
+  expect(status).toBe(2);
+  expect(errors.join("\n")).toContain("--root needs a folder");
 });

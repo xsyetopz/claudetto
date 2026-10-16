@@ -4,7 +4,7 @@
 import { afterEach, expect, test } from "bun:test";
 import { $claude, CLAUDE_ENV } from "../../tools/telemetry.ts";
 
-const PROBE = "DOTCLAUDE_TEST_PROBE_ENV";
+const PROBE = "CLAUDETTO_TEST_PROBE_ENV";
 const printed = (name: string) =>
   $claude()`sh -c ${`printf %s "$${name}"`}`.quiet().text();
 

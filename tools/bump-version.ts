@@ -2,7 +2,7 @@
 // Bumps the version in `package.json` by semver, moves the CHANGELOG's [Unreleased] entries under
 // a new dated heading, and points the [unreleased] compare link at the new tag (`just bump`).
 //
-//   bun tools/bump-version.ts <major|minor|patch|X.Y.Z> [--dry-run] [--root DIR]
+//   bun tools/bump-version.ts <major|minor|patch|X.Y.Z[-PRE]> [--dry-run] [--root DIR]
 //
 // Only the "version" line of `package.json` and two CHANGELOG lines change, so formatting and key
 // order stay as they are. `just generate` copies the version into each `plugin.json`, so this tool
@@ -12,15 +12,17 @@ import fs from "node:fs";
 import path from "node:path";
 
 const SEMVER = /^(\d+)\.(\d+)\.(\d+)$/;
+// An exact target can have a pre-release part, such as `0.1.0-alpha.1`.
+const TARGET = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z]+(?:\.[0-9A-Za-z]+)*)?$/;
 const VERSION_LINE = /^(\s*"version":\s*)"([^"]*)"/m;
 const UNRELEASED = "## [Unreleased]\n";
 // The version in the `[unreleased]: .../compare/<prefix>vX.Y.Z...HEAD` link.
 const UNRELEASED_LINK =
-  /(^\[unreleased\]:\s*\S+\/compare\/\S*?v)\d+\.\d+\.\d+(\.\.\.HEAD)/im;
+  /(^\[unreleased\]:\s*\S+\/compare\/\S*?v)\d+\.\d+\.\d+(?:-[0-9A-Za-z.]+)?(\.\.\.HEAD)/im;
 
-/** The version after `current` for `level`, which is `major`, `minor`, `patch`, or an exact `X.Y.Z`. */
+/** The version after `current` for `level`, which is `major`, `minor`, `patch`, or an exact `X.Y.Z` with an optional pre-release part. */
 export const nextVersion = (current: string, level: string): string => {
-  if (SEMVER.test(level)) return level;
+  if (TARGET.test(level)) return level;
   const m = SEMVER.exec(current);
   if (!m) throw new Error(`current version "${current}" is not X.Y.Z`);
   const [major, minor, patch] = m.slice(1).map(Number) as [
@@ -37,7 +39,7 @@ export const nextVersion = (current: string, level: string): string => {
       return `${major}.${minor}.${patch + 1}`;
     default:
       throw new Error(
-        `level must be major, minor, patch, or X.Y.Z, not "${level}"`,
+        `level must be major, minor, patch, X.Y.Z, or X.Y.Z-PRE, not "${level}"`,
       );
   }
 };
@@ -84,15 +86,18 @@ const writable = (file: string): boolean => {
 /** Runs the bump with `args` and returns the exit status. */
 export const main = async (args: string[]): Promise<number> => {
   const at = args.indexOf("--root");
-  const root = path.resolve(
-    at >= 0 ? (args[at + 1] as string) : path.join(import.meta.dirname, ".."),
-  );
-  const level = args.find(
-    (a, i) => !a.startsWith("--") && args[i - 1] !== "--root",
-  );
-  if (!level) {
+  const given = at >= 0 ? args[at + 1] : undefined;
+  if (at >= 0 && (given === undefined || given.startsWith("--"))) {
+    console.error("--root needs a folder, as in `--root DIR`.");
+    return 2;
+  }
+  const root = path.resolve(given ?? path.join(import.meta.dirname, ".."));
+  const rest = args.filter((_a, i) => i !== at && i !== at + 1);
+  const level = rest.find((a) => !a.startsWith("--"));
+  const unknown = rest.filter((a) => a !== level && a !== "--dry-run");
+  if (!level || unknown.length > 0) {
     console.error(
-      "Usage: bump-version.ts <major|minor|patch|X.Y.Z> [--dry-run] [--root DIR]",
+      "Usage: bump-version.ts <major|minor|patch|X.Y.Z[-PRE]> [--dry-run] [--root DIR]",
     );
     return 2;
   }

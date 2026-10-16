@@ -1,54 +1,49 @@
 // Writes the code and the texts of each slice of a plugin, its kernel closure, and one launcher for each CLI (design, "Generated tree").
 // `skills/`, `agents/`, and `styles/` of a slice go to `skills/`, `agents/`, and `output-styles/` of the plugin.
-// The hook lab tests in `lab/` of a slice go to `tests/` of the plugin, where `claude plugin test` finds them.
+// The hook lab tests in `lab/` of a slice go to `tests/` of the plugin, where `claude plugin test` finds them, with each import path changed to the copy.
 // The eval cases in `evals/<case>/` of a slice go to `evals/<case>/` of the plugin, where the eval runner finds them.
 // Each other file of a slice goes to `slices/<s>/`, with each `src/kernel/` import path changed to `kernel/`.
-// A folder `NAME.ts/` of `.md` and `.json` texts gives the module `NAME.ts`, as `emit/texts.ts` does for 0.28.0.
+// The `prompts/` folder of a slice gives the module `slices/<s>/prompts.ts` (`emit/prompts.ts`), and a `prompts/` folder of `src/kernel/` gives a module in `kernel/` the same way.
 
 import fs from "node:fs";
 import path from "node:path";
-import { kernelClosure, rewrite } from "../closure.ts";
+import { isPromptModule, kernelClosure, rewrite } from "../closure.ts";
 import type { FoundPlugin, FoundSlice } from "../discover.ts";
 import { fill } from "./fill.ts";
+import { format } from "./format.ts";
 import { WIDTH } from "./manifest.ts";
-import {
-  format,
-  GENERATED_MARK,
-  type Output,
-  textModule,
-  withHeader,
-} from "./texts.ts";
+import { PROMPTS, PROMPTS_MODULE, promptModule } from "./prompts.ts";
+import { GENERATED_MARK, type Output, withHeader } from "./texts.ts";
 
-/** The module folder of a slice file `rel`, such as `texts.ts` of `texts.ts/doing-tasks.md`. */
-const MODULE_DIR = /^((?:[^/]+\/)*[^/]+\.ts)\/[^/]+$/;
+/** The repository root of the path `file`, when `file` is the prompt module of a slice or of a kernel folder of `src/`. */
+const SOURCE_PROMPTS =
+  /^(.*)[\\/]src[\\/](?:plugins[\\/][^\\/]+[\\/]slices[\\/][^\\/]+|kernel(?:[\\/][^\\/]+)*)[\\/]prompts\.ts$/;
 
-/** The `src/` folder and the module folder of the path `dir`, when `dir` is a module folder in a slice of `src/`. */
-const SLICE_MODULE =
-  /^(.*)[\\/]src[\\/](plugins[\\/][^\\/]+[\\/]slices[\\/].+\.ts)$/;
-
-// `discover.ts` imports each slice from `src/`, where a module folder is still a folder that Bun cannot import.
-// This loader gives Bun the text module of the folder in its place, so the import of a slice runs as in the plugin.
+// `discover.ts` imports each slice from `src/`, where each `prompts.ts` is still the folder `prompts/`.
+// This loader gives Bun the prompt module of the folder in its place, so the import of a slice runs as in the plugin.
 Bun.plugin({
-  name: "slice text modules",
+  name: "slice prompt modules",
   setup: (build) => {
-    build.onResolve({ filter: /^\.{1,2}\/.*\.ts$/ }, (args) => {
-      const dir = path.resolve(path.dirname(args.importer), args.path);
-      return SLICE_MODULE.test(dir) &&
-        fs.statSync(dir, { throwIfNoEntry: false })?.isDirectory()
-        ? { path: dir, namespace: "slice-text-module" }
+    build.onResolve({ filter: /^\.{1,2}\/(?:.*\/)?prompts\.ts$/ }, (args) => {
+      const file = path.resolve(path.dirname(args.importer), args.path);
+      return SOURCE_PROMPTS.test(file) &&
+        fs.existsSync(path.join(path.dirname(file), PROMPTS))
+        ? { path: file, namespace: "slice-prompt-module" }
         : undefined;
     });
     build.onLoad(
-      { filter: /.*/, namespace: "slice-text-module" },
+      { filter: /.*/, namespace: "slice-prompt-module" },
       async (args) => {
-        const [, root = "", dir = ""] = args.path.match(SLICE_MODULE) ?? [];
-        const src = path.join(root, "src");
+        const [, root = ""] = args.path.match(SOURCE_PROMPTS) ?? [];
         return {
           // Stub for discovery only: this import runs before the text step makes the snippet, and the slice code never reads the value here.
           // The text step writes the module with the real snippet.
-          contents: await textModule(src, path.join(src, "fragments"), dir, {
-            "snippet.json": "{}",
-          }),
+          contents: await promptModule(
+            root,
+            path.dirname(args.path),
+            { "snippet.json": "{}" },
+            false,
+          ),
           loader: "ts",
         };
       },
@@ -122,26 +117,14 @@ const filesOf = async (
   const abs = path.join(root, s.dir);
   const fragments = path.join(root, "src", "fragments");
   const out: Output[] = [];
-  const modules = new Set<string>();
+  if (fs.existsSync(path.join(abs, PROMPTS))) {
+    const file = `plugins/${p.name}/slices/${s.name}/${PROMPTS_MODULE}`;
+    const source = path.posix.join(s.dir, PROMPTS, path.posix.sep);
+    const text = await promptModule(root, abs, made);
+    out.push({ file, source, text: withHeader(file, source, text) });
+  }
   for (const rel of walk(abs)) {
-    const module = TEXTS[rel.split("/")[0] ?? ""]
-      ? undefined
-      : rel.match(MODULE_DIR)?.[1];
-    if (module) {
-      if (modules.has(module)) continue;
-      modules.add(module);
-      const file = `plugins/${p.name}/slices/${s.name}/${module}`;
-      const source = path.posix.join(s.dir, module, path.posix.sep);
-      const dir = path.posix.relative("src", path.posix.join(s.dir, module));
-      const text = await textModule(
-        path.join(root, "src"),
-        fragments,
-        dir,
-        made,
-      );
-      out.push({ file, source, text: withHeader(file, source, text) });
-      continue;
-    }
+    if (rel.startsWith(`${PROMPTS}/`)) continue;
     const source = path.posix.join(s.dir, rel);
     const from = path.join(abs, rel);
     const [top = "", ...rest] = rel.split("/");
@@ -149,7 +132,10 @@ const filesOf = async (
     const folder = TEXTS[top];
     if (top === "lab" && rest.length) {
       const file = path.posix.join("plugins", p.name, "tests", ...rest);
-      out.push({ file, source, text: withHeader(file, source, text) });
+      const moved = rel.endsWith(".ts")
+        ? rewrite(root, p.name, abs, from, path.join(root, file), text)
+        : text;
+      out.push({ file, source, text: withHeader(file, source, moved) });
       continue;
     }
     if (top === "evals" && rest.length) {
@@ -185,8 +171,12 @@ export const slicesOf = async (
 ): Promise<Output[]> => {
   const out: Output[] = [];
   const code: string[] = [];
-  for (const s of p.slices) {
-    out.push(...(await filesOf(root, p, s, made)), ...launcherOf(root, p, s));
+  // The slices run at the same time, because each Biome run of a slice waits on a process of its own.
+  const files = await Promise.all(
+    p.slices.map((s) => filesOf(root, p, s, made)),
+  );
+  for (const [i, s] of p.slices.entries()) {
+    out.push(...(files[i] ?? []), ...launcherOf(root, p, s));
     code.push(
       ...walk(path.join(root, s.dir))
         .filter((rel) => rel.endsWith(".ts") && !TEXTS[rel.split("/")[0] ?? ""])
@@ -196,7 +186,14 @@ export const slicesOf = async (
   for (const rel of await kernelClosure(root, code)) {
     const file = `plugins/${p.name}/kernel/${rel}`;
     const source = `src/kernel/${rel}`;
-    const text = await Bun.file(path.join(root, source)).text();
+    const from = path.join(root, source);
+    if (isPromptModule(from)) {
+      const folder = path.posix.join(path.posix.dirname(source), PROMPTS, "/");
+      const text = await promptModule(root, path.dirname(from), made);
+      out.push({ file, source: folder, text: withHeader(file, folder, text) });
+      continue;
+    }
+    const text = await Bun.file(from).text();
     out.push({ file, source, text: withHeader(file, source, text) });
   }
   return out;

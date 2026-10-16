@@ -38,3 +38,10 @@ test("the generator fails on a stray file in `plugins/`, and passes once the fil
   fs.rmSync(path.join(dir, "plugins/p/old"), { recursive: true });
   expect(await problems(dir, made)).toStrictEqual([]);
 });
+
+test("an untracked file with a non-ASCII name in `plugins/` gets one message that names it", async () => {
+  const dir = await fixtureRoot({ "plugins/ünï.md": "Stray.\n" });
+  const found = await strays(dir, []);
+  expect(found).toHaveLength(1);
+  expect(found[0]).toStartWith("plugins/ünï.md ");
+});

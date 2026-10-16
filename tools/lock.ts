@@ -4,11 +4,19 @@
 //
 //   bun tools/lock.ts COMMAND [ARGS...]   run the command while the lock is held
 //
-// The lock is a file in `plugins/dotclaude/evals/results/`, which git ignores.
-// It holds the process id and the start time of the run that has it.
-// A lock whose process is gone is stale, and the next run takes it.
-// When the check of the process fails for any other reason, the lock counts as held,
+// The lock is a file in `plugins/claudetto/evals/results/`, which git ignores.
+// It holds the process id and the start time of the run that has it,
+// and then the process id of the command that the run started.
+// The lock holds while one of the two processes lives, so a stopped run does not free the lock of its paid command.
+// A lock whose processes are all gone is stale, and the next run takes it.
+// When the check of a process fails for any other reason, the lock counts as held,
 // because a failed check does not show that the run is gone.
+//
+// Each change of the lock file is one atomic step, so two runs cannot both take it:
+// - A run takes the lock with a hard link of its own full file, which fails when the lock exists.
+// - A run removes a stale lock only while it holds `<lock>.break`, which it takes with a hard link, and only when the text is still the stale text that it read.
+//   A run that finds `<lock>.break` counts the lock as held.
+// - A run changes its lock with a rename over it, and releases it only when the text is still its own.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -16,8 +24,14 @@ import path from "node:path";
 const REPO = path.resolve(import.meta.dir, "..");
 export const LOCK = path.join(
   REPO,
-  "plugins/dotclaude/evals/results/.eval.lock",
+  "plugins/claudetto/evals/results/.eval.lock",
 );
+
+/** A lock that this run holds. `hold` adds the process id of the command that the run started. */
+export interface Lock {
+  readonly release: () => Promise<void>;
+  readonly hold: (child: number) => Promise<void>;
+}
 
 /** True unless the process is certainly gone (`ESRCH`). */
 const isAlive = (pid: number): boolean => {
@@ -29,56 +43,123 @@ const isAlive = (pid: number): boolean => {
   }
 };
 
+/** The process ids in the text of a lock. The start time is not a number, so it is not one of them. */
+export const pidsOf = (text: string): number[] =>
+  text
+    .split(/\s+/)
+    .filter((part) => /^\d+$/.test(part))
+    .map(Number);
+
+/** The text of `file`, or null when it does not exist. */
+const readText = async (file: string): Promise<string | null> => {
+  try {
+    return await Bun.file(file).text();
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw e;
+  }
+};
+
+/**
+ * Removes the stale lock `file` when its text is still `seen`, and says whether this run could try.
+ * Only the run that holds `<file>.break` removes a stale lock, so no run removes a lock that another run took after the read of `seen`.
+ */
+const removeStale = async (
+  file: string,
+  seen: string,
+  own: string,
+): Promise<boolean> => {
+  const brk = `${file}.break`;
+  try {
+    fs.linkSync(own, brk);
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "EEXIST") return false;
+    throw e;
+  }
+  try {
+    if ((await readText(file)) === seen) fs.rmSync(file, { force: true });
+  } finally {
+    fs.rmSync(brk, { force: true });
+  }
+  return true;
+};
+
+/** The lock of `file`, which this run took with the text `text`. */
+const held = (file: string, pid: number, text: string): Lock => {
+  let mine = text;
+  return {
+    release: async () => {
+      if ((await readText(file)) === mine) fs.rmSync(file, { force: true });
+    },
+    hold: async (child) => {
+      const next = `${mine.trimEnd()} ${child}\n`;
+      const temp = `${file}.${pid}`;
+      await Bun.write(temp, next);
+      fs.renameSync(temp, file);
+      mine = next;
+    },
+  };
+};
+
 /** Takes the lock, or gives the holder when another live run has it. */
 export const takeLock = async (
   file: string,
   pid: number = process.pid,
-): Promise<{ release: () => void } | { holder: string }> => {
+): Promise<Lock | { holder: string }> => {
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  for (let i = 0; i < 2; i++) {
-    try {
-      // `wx` fails with `EEXIST` when the lock is held, which `Bun.write` cannot ask for.
-      const fd = fs.openSync(file, "wx");
+  const text = `${pid} ${new Date().toISOString()}\n`;
+  const own = `${file}.${pid}`;
+  await Bun.write(own, text);
+  try {
+    for (let i = 0; i < 2; i++) {
       try {
-        fs.writeSync(fd, `${pid} ${new Date().toISOString()}\n`);
-      } finally {
-        fs.closeSync(fd);
+        fs.linkSync(own, file);
+        return held(file, pid, text);
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== "EEXIST") throw e;
       }
-      return { release: () => fs.rmSync(file, { force: true }) };
-    } catch (e) {
-      if ((e as NodeJS.ErrnoException).code !== "EEXIST") throw e;
+      const holder = await readText(file);
+      if (holder === null) continue;
+      if (pidsOf(holder).some(isAlive)) return { holder: holder.trim() };
+      if (!(await removeStale(file, holder, own)))
+        return { holder: holder.trim() };
     }
-    const holder = (await Bun.file(file).text()).trim();
-    const other = Number.parseInt(holder, 10);
-    if (Number.isInteger(other) && isAlive(other)) return { holder };
-    fs.rmSync(file, { force: true });
+    return { holder: ((await readText(file)) ?? "").trim() };
+  } finally {
+    fs.rmSync(own, { force: true });
   }
-  return { holder: (await Bun.file(file).text()).trim() };
+};
+
+/** Runs `argv` while this run holds the lock `file`, and returns the exit code. */
+export const runLocked = async (
+  file: string,
+  argv: string[],
+): Promise<number> => {
+  const lock = await takeLock(file);
+  if ("holder" in lock) {
+    console.error(
+      `An eval run is in progress (process and start: ${lock.holder}).\nWait for it to end, and do not start a second run.\nIf no run is in progress, remove ${file} and ${file}.break.`,
+    );
+    return 1;
+  }
+  try {
+    const child = Bun.spawn(argv, {
+      stdin: "inherit",
+      stdout: "inherit",
+      stderr: "inherit",
+    });
+    await lock.hold(child.pid);
+    return (await child.exited) ?? 1;
+  } finally {
+    await lock.release();
+  }
 };
 
 if (process.argv[1] === import.meta.path) {
-  const [command, ...args] = process.argv.slice(2);
-  if (!command) {
+  const argv = process.argv.slice(2);
+  if (argv.length === 0) {
     console.error("Usage: bun tools/lock.ts COMMAND [ARGS...]");
     process.exit(2);
   }
-  const lock = await takeLock(LOCK);
-  if ("holder" in lock) {
-    console.error(
-      `An eval run is in progress (process and start: ${lock.holder}).\nWait for it to end, and do not start a second run.\nIf no run is in progress, remove ${LOCK}.`,
-    );
-    process.exit(1);
-  }
-  let status = 1;
-  try {
-    status =
-      Bun.spawnSync([command, ...args], {
-        stdin: "inherit",
-        stdout: "inherit",
-        stderr: "inherit",
-      }).exitCode ?? 1;
-  } finally {
-    lock.release();
-  }
-  process.exit(status);
+  process.exit(await runLocked(LOCK, argv));
 }

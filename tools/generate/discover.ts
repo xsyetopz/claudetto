@@ -1,11 +1,11 @@
 // Finds each slice of the repository (design, "Generated tree"):
 // each `src/plugins/<plugin>/slices/<s>/slice.ts`, so no list of slices exists to edit.
-// It also reads the `plugin.ts` of each plugin, and the `adapters/mod.ts` of each slice with mod handlers.
+// It also reads the `plugin.ts` and the `description.md` of each plugin, and the `adapters/mod.ts` of each slice with mod handlers.
 
 import fs from "node:fs";
 import path from "node:path";
 import type { Slice } from "../../src/kernel/slice.ts";
-import type { PluginManifest } from "./emit/manifest.ts";
+import type { PluginData, PluginManifest } from "./emit/manifest.ts";
 
 /** One slice that the generator found. */
 export interface FoundSlice {
@@ -58,6 +58,22 @@ const readSlice = async (
   return { name, dir, slice, mod };
 };
 
+/**
+ * The text of `description.md` of the plugin `name` in `base`, with each line break as a space.
+ * The file has one sentence on each line, and the manifest has the description on one line.
+ */
+const descriptionOf = async (base: string, name: string): Promise<string> => {
+  const file = path.join(base, name, "description.md");
+  if (!fs.existsSync(file))
+    throw new Error(
+      `src/plugins/${name}/description.md: write the description of the plugin in this file`,
+    );
+  return (await Bun.file(file).text())
+    .trim()
+    .split(/\s*\n\s*/)
+    .join(" ");
+};
+
 /** Each plugin of `src/plugins/` of the repository `root` that has a `plugin.ts` or a slice. */
 export const discover = async (root: string): Promise<FoundPlugin[]> => {
   const base = path.join(root, "src", "plugins");
@@ -69,13 +85,17 @@ export const discover = async (root: string): Promise<FoundPlugin[]> => {
       if (one) slices.push(one);
     }
     const file = path.join(base, name, "plugin.ts");
-    const manifest = fs.existsSync(file)
-      ? ((await import(file)).plugin as PluginManifest | undefined)
+    const data = fs.existsSync(file)
+      ? ((await import(file)).plugin as PluginData | undefined)
       : undefined;
-    if (fs.existsSync(file) && manifest?.name !== name)
+    if (fs.existsSync(file) && data?.name !== name)
       throw new Error(
         `src/plugins/${name}/plugin.ts: export a \`plugin\` whose name is the folder name "${name}"`,
       );
+    const manifest = data && {
+      ...data,
+      description: await descriptionOf(base, name),
+    };
     if (manifest) found.push({ name, manifest, slices });
     else if (slices.length) found.push({ name, slices });
   }

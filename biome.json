@@ -10,7 +10,7 @@
     "includes": [
       "**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,json,jsonc}",
       "!!**/.agents",
-      "!**/slices/*/*.ts/*.json",
+      "!**/slices/*/prompts/*.json",
       "!!**/node_modules",
       "!!**/dist",
       "!!**/*.generated.{js,jsx,mjs,cjs,ts,tsx,mts,cts}"
@@ -74,6 +74,16 @@
           }
         }
       }
+    },
+    {
+      "includes": [
+        "src/plugins/**/*.ts",
+        "src/kernel/**/*.ts",
+        "plugins/**/*.ts",
+        "!**/prompts.ts",
+        "!plugins/*/snippets.ts"
+      ],
+      "plugins": ["./tools/lint/prose-in-code.grit"]
     },
     {
       "includes": ["**/slices/*/*.ts"],

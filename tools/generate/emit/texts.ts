@@ -9,18 +9,15 @@
 // The `hooks.json` of a plugin with a slice gives no file here, because `emit/hooks.ts` writes it from the source and the slices.
 // `emit/fill.ts` fills the `{{include NAME}}` lines and the `{{NAME}}` values of a source.
 // A `hooks.json` also gets its texts from the files next to it: `description.txt` and `<Event>.prompt.txt`.
-// A folder `NAME.ts/` gives the module `NAME.ts`, with one constant for each `.md` or `.json` file in it, so that code can import the texts.
-// The constant of `doing-tasks.md` is `DOING_TASKS`, a `.json` file gives an object, and the module holds no logic.
-// Biome formats each generated module, so the lint of `plugins/` passes on it.
+// The `prompts/` folder of a slice gives its module `prompts.ts` (`emit/prompts.ts`).
 // Each generated file starts with a header that names its source, except a JSON file, because JSON has no comment.
 
 import fs from "node:fs";
 import path from "node:path";
 import { discover } from "../discover.ts";
 import { fill, textOf } from "./fill.ts";
+import { moduleOf } from "./prompts.ts";
 import { snippetParts } from "./snippet.ts";
-
-const REPO = path.resolve(import.meta.dir, "../../..");
 
 const PROMPT_FILE = /^([A-Za-z]+)\.prompt\.txt$/;
 const NO_OUTPUT =
@@ -126,67 +123,9 @@ const isSliceHooks = (src: string, rel: string): boolean => {
   );
 };
 
-/** The module path and the constant name of a text of a module folder, such as `a/texts.ts/doing-tasks.md`. */
-const MODULE_TEXT = /^(.+\.ts)\/([a-z0-9-]+)\.(?:md|json)$/;
-
-/** `text` as a template literal that gives the same string. */
-const literal = (text: string): string =>
-  `\`${text.replace(/[\\`]/g, "\\$&").replace(/\$\{/g, "\\${")}\``;
-
-/** One text of a text module: its file name, the path of its source, and its filled text. */
-type ModuleText = { name: string; source: string; text: string };
-
-/** The text module `file` of `texts`: one constant for each `.md` or `.json` text, in name order. */
-const moduleOf = async (file: string, texts: ModuleText[]): Promise<string> => {
-  const lines: string[] = [];
-  for (const { name, source, text } of texts.toSorted((a, b) =>
-    a.name < b.name ? -1 : 1,
-  )) {
-    const [, base, ext] = name.match(/^([a-z0-9-]+)\.(md|json)$/) ?? [];
-    if (!base)
-      throw new Error(
-        `${source}: a module folder holds only \`.md\` and \`.json\` files`,
-      );
-    const body = text.replace(/\n+$/, "");
-    if (ext === "json") {
-      try {
-        JSON.parse(body);
-      } catch (err) {
-        throw new Error(`${source}: ${(err as Error).message}`);
-      }
-    }
-    lines.push(
-      `/** From \`${name}\`. */`,
-      `export const ${base.toUpperCase().replace(/-/g, "_")} = ${ext === "json" ? body : literal(body)};`,
-      "",
-    );
-  }
-  return format(file, lines.join("\n"));
-};
-
-/** The text module of the source folder `dir` of `src`: one constant for each `.md` or `.json` file, in name order. */
-export const textModule = async (
-  src: string,
-  fragments: string,
-  dir: string,
-  made: Record<string, string> = {},
-): Promise<string> => {
-  const texts: ModuleText[] = [];
-  for (const name of fs.readdirSync(path.join(src, dir))) {
-    const source = path.posix.join("src", dir, name);
-    const raw = await Bun.file(path.join(src, dir, name)).text();
-    texts.push({
-      name,
-      source,
-      text: await fill(raw, fragments, source, made),
-    });
-  }
-  return moduleOf(path.join(dir), texts);
-};
-
 /** The module of the settings snippet of the core plugin: `SNIPPET` from the slices, and `DOCS_SNIPPET` from its fragment. */
-const SNIPPET_MODULE = "plugins/dotclaude/snippets.ts";
-const SNIPPET_SOURCE = "src/plugins/dotclaude/slices/";
+const SNIPPET_MODULE = "plugins/claudetto/snippets.ts";
+const SNIPPET_SOURCE = "src/plugins/claudetto/slices/";
 
 const snippetModule = async (
   fragments: string,
@@ -208,47 +147,15 @@ const snippetModule = async (
   };
 };
 
-/** `text` as Biome formats the module `file`. */
-export const format = async (file: string, text: string): Promise<string> => {
-  const run = Bun.spawn(
-    ["bunx", "biome", "format", `--stdin-file-path=${file}`],
-    { cwd: REPO, stdin: new Blob([text]), stdout: "pipe", stderr: "pipe" },
-  );
-  const [out, err, code] = await Promise.all([
-    new Response(run.stdout).text(),
-    new Response(run.stderr).text(),
-    run.exited,
-  ]);
-  if (code !== 0) throw new Error(`biome format ${file}: ${err}`);
-  return out;
-};
-
 /** The generated files of the repository `root`, from its `src/` folder. */
 export const outputs = async (root: string): Promise<Output[]> => {
   const src = path.join(root, "src");
   const fragments = path.join(src, "fragments");
   const made = await snippetParts(root, await discover(root));
   const out: Output[] = [];
-  const modules = new Set<string>();
   for (const rel of walk(src)) {
     if (NO_OUTPUT.test(rel) || isHookText(rel) || isSliceHooks(src, rel))
       continue;
-    const module = rel.match(MODULE_TEXT)?.[1];
-    if (module) {
-      if (modules.has(module)) continue;
-      modules.add(module);
-      const source = `src/${module}/`;
-      out.push({
-        file: module,
-        source,
-        text: withHeader(
-          module,
-          source,
-          await textModule(src, fragments, module, made),
-        ),
-      });
-      continue;
-    }
     const source = `src/${rel}`;
     const from = path.join(src, rel);
     let text = await fill(await Bun.file(from).text(), fragments, source, made);

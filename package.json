@@ -1,6 +1,6 @@
 {
-  "name": "dotclaude",
-  "version": "1.0.0",
+  "name": "claudetto",
+  "version": "0.1.0-alpha.1",
   "private": true,
   "description": "A very opinionated Claude Code plugin designed by a Rustacean",
   "type": "module",
