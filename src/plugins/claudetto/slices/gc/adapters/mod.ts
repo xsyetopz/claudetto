@@ -1,0 +1,145 @@
+// The mod handlers of the `gc` slice (design D6).
+// `tool.call` records each output that a `Bash` or `Write` call makes, in the record file of the session.
+// `session.start` and `session.end` run the sweep of the CLI `claudetto-gc`, and `command.run` answers the typed command `/claudetto:gc`.
+// The sweep itself runs in the CLI, because the hooks module has no `node:` import and cannot remove a folder.
+//
+// `claude plugin validate` follows `$` only into a function of one file,
+// and each `$.env.get` call needs a literal name.
+// For this reason, each function that touches `$` is here, and the rules are in `domain/`.
+
+import type { EngineInterface, MatchedHook } from "claude-code";
+import {
+  failedText,
+  outputOf,
+  wordsOf,
+} from "../../../../../kernel/skill-command.ts";
+import type { Handler } from "../../../../../kernel/slice.ts";
+import {
+  type BashResultPaths,
+  type GcRecord,
+  gcDirOf,
+  mayMakeOutput,
+  type Output,
+  outputOfWrite,
+  outputsOfBash,
+  parseRecords,
+  serialize,
+  taskOutputsOf,
+  withOutputs,
+} from "../domain/record.ts";
+import {
+  COMMAND_TIMEOUT_MS,
+  END_SWEEP_MARGIN_MS,
+  END_SWEEP_TIMEOUT_MS,
+  START_SWEEP_TIMEOUT_MS,
+} from "../limits.ts";
+
+/** The hook for `Bash` and `Write`, with `e` narrowed to them. */
+export type GcHook = MatchedHook<
+  "tool.call",
+  { readonly tool: readonly ["Bash", "Write"] }
+>;
+
+/** The home folder, from `HOME` or, on Windows, `USERPROFILE`. */
+const homeOf = async ($: EngineInterface): Promise<string | undefined> =>
+  (await $.env.get("HOME")) ?? (await $.env.get("USERPROFILE"));
+
+/**
+ * The tail of the writes to the record files.
+ * Two `tool.call` events of one session can run at the same time, and each write reads the file first.
+ * A write waits for the one before it, so no write loses the records of another.
+ */
+let writes: Promise<void> = Promise.resolve();
+
+/** Adds `outputs` to the record file of the session, after each write that started before. */
+const record = (
+  $: EngineInterface,
+  outputs: readonly Output[],
+): Promise<void> => {
+  const next = writes.then(() => recordNow($, outputs));
+  // A failed write must not stop the later ones.
+  writes = next.catch(() => undefined);
+  return next;
+};
+
+/** Adds `outputs` to the record file of the session. */
+const recordNow = async (
+  $: EngineInterface,
+  outputs: readonly Output[],
+): Promise<void> => {
+  const home = await homeOf($);
+  if (home === undefined || outputs.length === 0) return;
+  const session = await $.session.id();
+  const cwd = await $.session.cwd();
+  const time = await $.clock.now();
+  const file = `${gcDirOf(home)}/${session}.json`;
+  const old = (await $.fs.exists(file)) ? await $.fs.read(file) : "";
+  const added: GcRecord[] = outputs.map((o) => ({ ...o, session, cwd, time }));
+  await $.fs.write(file, serialize(withOutputs(parseRecords(old), added)));
+};
+
+/** Runs `claudetto-gc` with `args`. */
+const runGc = (
+  $: EngineInterface,
+  args: readonly string[],
+  timeoutMs: number,
+) =>
+  $.process.run(
+    ["bun", "--no-env-file", `${$.plugin.root}/bin/claudetto-gc`, ...args],
+    { timeoutMs },
+  );
+
+export const onToolCall: GcHook = async ($, e, next) => {
+  const out = await next(e);
+  if (out.deny !== undefined) return out;
+  if (e.tool === "Write") {
+    const temp = await $.env.get("TMPDIR");
+    const found = outputOfWrite(e.file_path, temp === undefined ? [] : [temp]);
+    await record($, found === undefined ? [] : [found]);
+  } else {
+    const result = out.result as
+      | ({ stdout?: unknown } & BashResultPaths)
+      | undefined;
+    const stdout = typeof result?.stdout === "string" ? result.stdout : "";
+    const temp = await $.env.get("TMPDIR");
+    const made = mayMakeOutput(e.command)
+      ? outputsOfBash(
+          e.command,
+          stdout,
+          await $.session.cwd(),
+          temp === undefined ? [] : [temp],
+        )
+      : [];
+    await record($, [...made, ...taskOutputsOf(result)]);
+  }
+  return out;
+};
+
+/** Sweeps at session start. The text of the sweep goes to the debug log. */
+export const onSessionStart: Handler<"session.start"> = async ($, e, next) => {
+  const started = await next(e);
+  const run = await runGc($, [], START_SWEEP_TIMEOUT_MS);
+  $.ui.log(run.stdout.trim() || run.stderr.trim(), { to: "debug" });
+  return started;
+};
+
+/** Sweeps at session end, within the budget that the end of a session leaves. The session itself does not count as live. */
+export const onSessionEnd: Handler<"session.end"> = async ($, e, next) => {
+  const left = next.budget.remainingMs - END_SWEEP_MARGIN_MS;
+  const timeoutMs = Math.max(1, Math.min(END_SWEEP_TIMEOUT_MS, left));
+  const run = await runGc($, ["--ending", e.sessionId], timeoutMs);
+  $.ui.log(run.stdout.trim() || run.stderr.trim(), { to: "debug" });
+  return next(e);
+};
+
+/** Runs `claudetto-gc` with the words of the typed command and shows its output, with no model turn. */
+export const onGcCommand: Handler<"command.run"> = async ($, e, next) => {
+  const words = wordsOf(e.args);
+  if (words === undefined) return next(e);
+  try {
+    return { text: outputOf(await runGc($, words, COMMAND_TIMEOUT_MS)) };
+  } catch (error) {
+    // The catch has no narrower test, because `$.process.run` documents no error type.
+    return { text: failedText("claudetto-gc", error) };
+  }
+};
