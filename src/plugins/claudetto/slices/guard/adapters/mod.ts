@@ -1,0 +1,92 @@
+// The mod handler of the `guard` slice:
+// `tool.call` on `Bash` denies a destructive command (the floor of `domain/guard.ts`), also in a subagent's call,
+// and denies a command that only prints a file and names the `Read` call (design D22).
+//
+// The guard only denies what the floor names, and it keeps a deny of the engine, so it never weakens a rule of the user.
+// The hook has no catch-all on purpose.
+// When it throws, Claude Code logs the failure and skips the hook, so the call runs.
+// A `catch` here names the error that it expects, and the others reach that log.
+//
+// `claude plugin validate` follows `$` only into a function of one file,
+// so each function that touches `$` is here, and the rules are in `domain/`.
+
+import type { EngineInterface, MatchedHook } from "claude-code";
+import { lineCount } from "../../../../../kernel/text.ts";
+import { type Count, printReason } from "../domain/deny.ts";
+import { guardReason } from "../domain/guard.ts";
+import { isAbsPath, normPath } from "../domain/matchers/norm.ts";
+import type { PathKind } from "../domain/matchers/types.ts";
+import { printsOf } from "../domain/reads.ts";
+import { READ_MAX_BYTES } from "../limits.ts";
+
+/**
+ * What a path is for the matchers: `missing` for `ENOENT`, and a folder for any other file system error (fail closed).
+ * A link that leads nowhere, or another kind, reads as a folder, so a matcher does not take it for a file.
+ */
+const kindOf =
+  ($: EngineInterface) =>
+  async (path: string): Promise<PathKind> => {
+    try {
+      const stat = await $.fs.stat(path);
+      return stat.kind === "file" ? "file" : "folder";
+    } catch (err) {
+      return (err as { code?: string }).code === "ENOENT"
+        ? "missing"
+        : "folder";
+    }
+  };
+
+/**
+ * True when the folder `dir` (or the session folder when `dir` is unset, and a relative `dir` joins it) is in the main checkout.
+ * The walk goes up to the first `.git`: a file means a linked worktree, a folder means the main checkout.
+ * A `\` is read as `/`, so a Windows path walks up like a POSIX one, and the walk ends at the drive root.
+ * When no `.git` is found, the folder is not in a repository, and the branch switch stays allowed.
+ */
+const isMainCheckout = async (
+  $: EngineInterface,
+  dir?: string,
+): Promise<boolean> => {
+  const cwd = await $.session.cwd();
+  const start =
+    dir === undefined || isAbsPath(dir) ? (dir ?? cwd) : `${cwd}/${dir}`;
+  let at = normPath(start.replace(/\\/g, "/"));
+  for (;;) {
+    const kind = await kindOf($)(`${at}/.git`);
+    if (kind !== "missing") return kind === "folder";
+    const cut = at.lastIndexOf("/");
+    if (cut < 0) return false;
+    at = at.slice(0, cut);
+  }
+};
+
+/** The line count of a file for the print rule: `Infinity` when it is too large to read. */
+const countOf =
+  ($: EngineInterface): Count =>
+  async (file) => {
+    if (!(await $.fs.exists(file))) return null;
+    const stat = await $.fs.stat(file);
+    if (stat.kind !== "file") return null;
+    if (stat.size > READ_MAX_BYTES) return Infinity;
+    return lineCount(await $.fs.read(file));
+  };
+
+// The destructive floor denies a `Bash` command in every session, and the shared-checkout rule denies more in a subagent (`e.agentId`).
+// A `Bash` command is denied as a print only when each part of it prints a file, and the `Read` call of the same range runs instead.
+// A compound command with a part that does other work runs.
+// The `sembr` rewrite of the phase `rewrite` runs before this deny of the phase `check`, so the deny checks the command that would run.
+// The session folder is read only for a command that prints a file, because a relative path needs it.
+/** The `tool.call` hook with the `Bash` filter. */
+type BashHook = MatchedHook<"tool.call", { readonly tool: readonly ["Bash"] }>;
+
+export const onBashCall: BashHook = async ($, e, next) => {
+  const floor = await guardReason(e.command, {
+    kind: kindOf($),
+    isMainCheckout: (dir) => isMainCheckout($, dir),
+    subagent: Boolean(e.agentId),
+  });
+  if (floor) return { deny: floor };
+  if (!printsOf(e.command, "").length) return next(e);
+  const cwd = await $.session.cwd();
+  const deny = await printReason(e.command, cwd, countOf($));
+  return deny ? { deny } : next(e);
+};

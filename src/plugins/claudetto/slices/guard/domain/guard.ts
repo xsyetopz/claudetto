@@ -1,0 +1,49 @@
+// The destructive floor of the `guard` slice: the first matcher of a command whose tier applies gives the deny reason.
+// The `floor` tier applies in every session, and the `subagent` tier only in a subagent.
+// A batch of `claudetto-run-checks` gets the floor on each of its commands.
+// The functions are pure, and the ports of the file system and of the checkout come in through `ctx`.
+
+import { RUN_CHECKS_BIN } from "../../../../../kernel/paths.ts";
+import { MATCHERS, tierOf } from "./matchers/index.ts";
+import { isAbsPath } from "./matchers/norm.ts";
+import type { Ctx, Kind, Tier } from "./matchers/types.ts";
+import { denyReason } from "./reason.ts";
+import { walk } from "./walk.ts";
+
+/** The context of a command: the ports of `Ctx`, and whether the caller is a subagent. */
+export type GuardCtx = Ctx & { subagent: boolean };
+
+/** The lookup of a path under `dir`, when `dir` is set and the path is relative. */
+const under = (kind: Kind, dir: string | undefined): Kind =>
+  dir === undefined
+    ? kind
+    : (path) => kind(isAbsPath(path) ? path : `${dir}/${path}`);
+
+/**
+ * The deny reason of `command`, or `null` when no matcher whose tier applies matches one of its simple commands.
+ * A matcher of an unknown id has the `floor` tier, so it applies in every session.
+ */
+export const guardReason = async (
+  command: string,
+  ctx: GuardCtx,
+): Promise<string | null> => {
+  for (const simple of walk(command)) {
+    const scoped: Ctx = {
+      kind: under(ctx.kind, simple.dir),
+      isMainCheckout: () => ctx.isMainCheckout(simple.dir),
+    };
+    for (const matcher of MATCHERS) {
+      const tier: Tier = tierOf(matcher.id);
+      if (tier === "subagent" && !ctx.subagent) continue;
+      if (await matcher.match(simple.words, scoped))
+        return denyReason({ tier, command, subagent: ctx.subagent });
+    }
+    // Each argument of a batch is a command that the runner runs, so it meets the same floor as a `Bash` call.
+    if (simple.words[0] === RUN_CHECKS_BIN)
+      for (const check of simple.words.slice(1)) {
+        const reason = await guardReason(check, ctx);
+        if (reason) return reason;
+      }
+  }
+  return null;
+};
