@@ -1,0 +1,42 @@
+// The bounds of the web search feature.
+
+/** The most characters of page text in one result. */
+export const MAX_OUTPUT_CHARS = 20000;
+
+/** How long the browser may take to open the search page. */
+export const OPEN_TIMEOUT_MS = 30000;
+
+/** How long the browser may take to read the page text. */
+export const READ_TIMEOUT_MS = 15000;
+
+/** How long the browser may take to close. */
+export const CLOSE_TIMEOUT_MS = 10000;
+
+/** The start of the name of a search session, so that a search never touches a session of the user. */
+export const SESSION_PREFIX = "cbws";
+
+/** The characters of the counter in a session name, in base 36. The counter makes the names of parallel searches differ. */
+export const SESSION_COUNTER_CHARS = 2;
+
+/** The characters of the random part of a session name, in base 36. */
+export const SESSION_RANDOM_CHARS = 5;
+
+/**
+ * The longest session name.
+ * The browser puts a socket named for the session in a folder under the home folder,
+ * and macOS refuses a socket path over 103 bytes.
+ */
+export const SESSION_NAME_MAX = 12;
+
+/** The search page. The HTML form of DuckDuckGo needs no script and no sign-in. */
+export const SEARCH_URL = "https://html.duckduckgo.com/html/";
+
+/**
+ * The element of the search page that holds the results.
+ * Its text has no menus of regions and dates, which take about 1,000 characters of the whole page.
+ * The bot check page has no such element, so a missing element is the sign of a bot check, in each language of the page.
+ */
+export const RESULTS_SELECTOR = "#links";
+
+/** The most `allowed_domains` or `blocked_domains` that the query takes. */
+export const MAX_DOMAINS = 10;

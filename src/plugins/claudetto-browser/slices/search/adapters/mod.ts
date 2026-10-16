@@ -1,0 +1,199 @@
+// The mod handler of the `search` slice: with the `backend` option `cloakbrowser`, a `tool.call` on `WebSearch` answers with a search in CloakBrowser.
+// With the default backend `agent-browser`, the call passes to the built-in `WebSearch` with no browser run,
+// because each search engine gives a bot check or no results to the plain headless browser (`websearch-301.md`).
+// It runs `agent-browser` with `--executable-path` as a child process with `$.process.run`, with no shell.
+// It asks `$.tool.check` first, and searches only when the permission rules allow `WebSearch`.
+// Otherwise it calls `next`, and Claude Code applies the rule: a deny stops the call, and an ask shows the dialog.
+// When the browser fails, throws, or the page has no results, the built-in `WebSearch` runs, and its result gets a notice with the reason.
+// A failed close goes to the log with `$.ui.log`.
+// Each `$` call is in this file, because `$` is not followed across an import.
+
+import type {
+  BuiltinToolCallInput,
+  EngineInterface,
+  PluginOptions,
+} from "claude-code";
+import type { Handler } from "../../../../../kernel/slice.ts";
+import {
+  CLOAK_DIR,
+  cloakBinaryPath,
+  cloakBuilds,
+  failure,
+  missingBinary,
+  pageResult,
+  searchNotices,
+  searchQuery,
+  searchResult,
+  searchUrl,
+  sessionName,
+  steps,
+} from "../domain/search.ts";
+import {
+  CLOSE_TIMEOUT_MS,
+  OPEN_TIMEOUT_MS,
+  READ_TIMEOUT_MS,
+  RESULTS_SELECTOR,
+} from "../limits.ts";
+import { CLOSE_FAILED, FALLBACK_NOTICE, INVALID_INPUT } from "../prompts.ts";
+
+/** The `WebSearch` tool call that the hook reads. */
+type SearchCall = Extract<BuiltinToolCallInput, { tool: "WebSearch" }>;
+
+/** The answer of a page read: its text, or the reason that there is none. */
+type PageRead = { reason: string } | { text: string };
+
+/** The answer of `webSearch` and `answer`: a deny, a fallback, or a result. */
+type Outcome =
+  | { deny: string }
+  | { fallback: string }
+  | { passOn: true }
+  | { result: ReturnType<typeof searchResult> };
+
+/** Opens the search page and reads the text of its results element. Gives `{ text }` or `{ reason }`. */
+const readPage = async (
+  $: EngineInterface,
+  url: string,
+  session: string,
+  binary: string,
+): Promise<PageRead> => {
+  const cmd = steps(url, session, binary);
+  const open = await $.process.run(cmd.open, { timeoutMs: OPEN_TIMEOUT_MS });
+  const opened = failure(open, "Opening the search page");
+  if (opened) return { reason: opened };
+  const results = await $.process.run(cmd.results, {
+    timeoutMs: READ_TIMEOUT_MS,
+  });
+  if (results.exitCode === 0) return { text: results.stdout };
+  return {
+    reason: `${failure(results, `Reading the results element \`${RESULTS_SELECTOR}\``)} A bot check page has no results element.`,
+  };
+};
+
+/**
+ * Closes the session of the search, and logs a failed close.
+ * Each search has its own session name, so no later search reuses a session that did not close.
+ * The catch has no narrower test, because `$.process.run` documents no error type.
+ */
+const closeSession = async (
+  $: EngineInterface,
+  url: string,
+  session: string,
+  binary: string,
+): Promise<void> => {
+  let problem: string | null;
+  try {
+    const { close } = steps(url, session, binary);
+    problem = failure(
+      await $.process.run(close, { timeoutMs: CLOSE_TIMEOUT_MS }),
+      "Closing the browser",
+    );
+  } catch (error) {
+    problem = `Closing the browser threw: ${(error as { message?: unknown } | null)?.message ?? error}`;
+  }
+  if (problem) $.ui.log(CLOSE_FAILED({ session, problem }));
+};
+
+/** The path of the newest CloakBrowser binary, or `null` when there is none. */
+const findBinary = async ($: EngineInterface): Promise<string | null> => {
+  const home = await $.env.get("HOME");
+  if (!home) return null;
+  const dir = `${home}/${CLOAK_DIR}`;
+  // No folder of builds: there is no binary.
+  // `$.fs.list` documents no error code for a missing folder, so the check asks `$.fs.exists` first.
+  // A failed list reaches the log of Claude Code, and the built-in `WebSearch` answers.
+  if (!(await $.fs.exists(dir))) return null;
+  for (const build of cloakBuilds(await $.fs.list(dir))) {
+    const path = cloakBinaryPath(home, build);
+    if (await $.fs.exists(path)) return path;
+  }
+  return null;
+};
+
+/** A search result, a deny, `{ passOn }` when the rules do not allow the call, or `{ fallback }` with the reason that the browser gave no results. */
+const webSearch = async (
+  $: EngineInterface,
+  e: SearchCall,
+): Promise<Outcome> => {
+  const query = searchQuery(e);
+  if (!query) return { deny: INVALID_INPUT };
+  const checked = await $.tool.check({
+    tool: "WebSearch",
+    input: {
+      query: e.query,
+      allowed_domains: e.allowed_domains,
+      blocked_domains: e.blocked_domains,
+    },
+  });
+  if (checked.decision !== "allow") return { passOn: true };
+  const binary = await findBinary($);
+  if (!binary) return { deny: missingBinary() };
+  const url = searchUrl(query);
+  const session = sessionName();
+  const startedAt = Date.now();
+  let page: PageRead;
+  try {
+    page = await readPage($, url, session, binary);
+  } finally {
+    await closeSession($, url, session, binary);
+  }
+  if ("reason" in page) return { fallback: page.reason };
+  const answer = pageResult(e.query, page.text, searchNotices(e));
+  if ("reason" in answer) return { fallback: answer.reason };
+  return { result: searchResult(e.query, answer.text, startedAt) };
+};
+
+/**
+ * The answer of `webSearch`.
+ * A throw, such as a timeout of `$.process.run`, is a `{ fallback }` with its message, so that the notice reaches Claude.
+ * The catch has no narrower test, because `$.process.run` and `$.fs.list` document no error type.
+ */
+const answer = async ($: EngineInterface, e: SearchCall): Promise<Outcome> => {
+  try {
+    return await webSearch($, e);
+  } catch (error) {
+    // The cast reads `message` as the old code did, with no check of the type.
+    const thrown = error as { message?: unknown } | null | undefined;
+    return { fallback: `The search failed: ${thrown?.message ?? error}` };
+  }
+};
+
+/**
+ * The `next` of a `tool.call` hook, with a method signature so that its parameter is bivariant.
+ * The generated `register` passes this handler to `on` with the filter `{ tool: "WebSearch" }`, which gives `next` the narrow type of that tool.
+ * The generator does not narrow the handler type, so the method signature lets both `next` types fit.
+ */
+type PassOn = {
+  pass(
+    e: Parameters<Parameters<Handler<"tool.call">>[2]>[0],
+  ): ReturnType<Parameters<Handler<"tool.call">>[2]>;
+}["pass"];
+
+/** The `userConfig` values of the plugin, which the generated `register` gives to `keepOptions` before it registers `onSearch`. */
+let options: PluginOptions = {};
+
+/** Keeps the `userConfig` values of the plugin for `onSearch`. */
+export const keepOptions = (values: PluginOptions): void => {
+  options = values;
+};
+
+/** The `tool.call` handler on `WebSearch`, with the `backend` option of the plugin. */
+export const onSearch = async (
+  $: EngineInterface,
+  e: Parameters<Handler<"tool.call">>[1],
+  next: PassOn,
+) => {
+  if (e.tool !== "WebSearch" || options?.["backend"] !== "cloakbrowser")
+    return next(e);
+  const out = await answer($, e);
+  if ("passOn" in out) return next(e);
+  if (!("fallback" in out)) return out;
+  const builtIn = await next(e);
+  if (builtIn.deny !== undefined) return builtIn;
+  return {
+    ...builtIn,
+    context: [
+      ...(builtIn.context ?? []),
+      FALLBACK_NOTICE({ reason: out.fallback }),
+    ],
+  };
+};

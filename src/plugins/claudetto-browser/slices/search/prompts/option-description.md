@@ -1,0 +1,1 @@
+Use `agent-browser` (the default), or `cloakbrowser` for sites with bot detection. CloakBrowser runs only when you choose it here. It runs through `agent-browser` with its own Chromium binary. Only `cloakbrowser` answers `WebSearch` with a browser search, because search engines give the plain browser a bot check. With `agent-browser`, the built-in `WebSearch` answers.
