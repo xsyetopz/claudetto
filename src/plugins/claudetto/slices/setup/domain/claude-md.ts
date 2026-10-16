@@ -1,0 +1,138 @@
+// The `CLAUDE.md` step of setup, as pure functions: the managed block, and the merge of the block into the text of a file.
+// The block sits between two stable markers.
+// A second run replaces only the block, so each byte of the text outside the markers stays.
+// The CLI reads and writes the files.
+
+import {
+  CLAUDE_MD_BASE,
+  CLAUDE_MD_BROKEN_NO_BEGIN,
+  CLAUDE_MD_BROKEN_NO_END,
+  CLAUDE_MD_BROKEN_ORDER,
+  CLAUDE_MD_BROKEN_REPEAT,
+  CLAUDE_MD_BROWSER,
+  CLAUDE_MD_CODEGRAPH,
+  CLAUDE_MD_DOCS,
+  CLAUDE_MD_NOTE,
+} from "../prompts.ts";
+
+/** The line that opens the managed block. */
+export const BEGIN_MARKER = "<!-- claudetto:begin -->";
+/** The line that closes the managed block. */
+export const END_MARKER = "<!-- claudetto:end -->";
+
+/** The text of the section of each add-on that needs project instructions. */
+const ADDON_SECTIONS: Record<string, string> = {
+  "claudetto-codegraph": CLAUDE_MD_CODEGRAPH,
+  "claudetto-docs": CLAUDE_MD_DOCS,
+  "claudetto-browser": CLAUDE_MD_BROWSER,
+};
+
+/**
+ * The managed block, markers included, with no final newline.
+ * It holds the base rules and the section of each add-on of `addons` that has one.
+ * The order of the sections does not depend on the order of `addons`.
+ */
+export const claudeMdBlock = (addons: readonly string[]): string => {
+  const sections = Object.keys(ADDON_SECTIONS)
+    .filter((name) => addons.includes(name))
+    .map((name) => ADDON_SECTIONS[name] as string);
+  return [
+    BEGIN_MARKER,
+    CLAUDE_MD_NOTE,
+    "",
+    ...[CLAUDE_MD_BASE, ...sections].flatMap((s, i) => [
+      ...(i > 0 ? [""] : []),
+      s.trim(),
+    ]),
+    END_MARKER,
+  ].join("\n");
+};
+
+/** The way that the markers of a file are broken. */
+export type BrokenKind = "no-end" | "no-begin" | "order" | "repeat";
+
+/** The message of a broken file, with `file` filled in. */
+export const brokenMessage = (kind: BrokenKind, file: string): string =>
+  ({
+    "no-end": CLAUDE_MD_BROKEN_NO_END,
+    "no-begin": CLAUDE_MD_BROKEN_NO_BEGIN,
+    order: CLAUDE_MD_BROKEN_ORDER,
+    repeat: CLAUDE_MD_BROKEN_REPEAT,
+  })[kind]({ file });
+
+/** The result of `planClaudeMd`. `text` is the new content of the file. */
+export type ClaudeMdPlan =
+  | { status: "created" | "updated" | "same"; text: string; diff: string[] }
+  | { status: "broken"; kind: BrokenKind };
+
+/** The start of each occurrence of `needle` in `text`. */
+const positions = (text: string, needle: string): number[] => {
+  const out: number[] = [];
+  for (let i = text.indexOf(needle); i >= 0; i = text.indexOf(needle, i + 1))
+    out.push(i);
+  return out;
+};
+
+/**
+ * The diff lines of the change from `before` to `after`, as `- ` and `+ ` lines.
+ * The lines that both have at the start and at the end are left out, because only the block changes.
+ */
+export const blockDiff = (before: string, after: string): string[] => {
+  const a = before === "" ? [] : before.split("\n");
+  const b = after === "" ? [] : after.split("\n");
+  let head = 0;
+  while (head < a.length && head < b.length && a[head] === b[head]) head += 1;
+  let tail = 0;
+  while (
+    tail < a.length - head &&
+    tail < b.length - head &&
+    a[a.length - 1 - tail] === b[b.length - 1 - tail]
+  )
+    tail += 1;
+  return [
+    ...a.slice(head, a.length - tail).map((l) => `- ${l}`),
+    ...b.slice(head, b.length - tail).map((l) => `+ ${l}`),
+  ];
+};
+
+/**
+ * The file text after the merge of `block` into `current`, the text of the file now, or `undefined` when the file is missing.
+ * A file with no markers gets the block at its end, after one empty line.
+ * A file with one pair of markers in order gets the text between them, and the markers, replaced.
+ * Any other marker layout is `broken`, and the plan has no text, so the caller writes nothing.
+ */
+export const planClaudeMd = (
+  current: string | undefined,
+  block: string,
+): ClaudeMdPlan => {
+  if (current === undefined)
+    return {
+      status: "created",
+      text: `${block}\n`,
+      diff: blockDiff("", block),
+    };
+  const begins = positions(current, BEGIN_MARKER);
+  const ends = positions(current, END_MARKER);
+  if (begins.length > 1 || ends.length > 1)
+    return { status: "broken", kind: "repeat" };
+  const [begin] = begins;
+  const [end] = ends;
+  if (begin === undefined && end === undefined) {
+    const lead = current === "" ? "" : current.endsWith("\n") ? "\n" : "\n\n";
+    return {
+      status: "updated",
+      text: `${current}${lead}${block}\n`,
+      diff: blockDiff("", block),
+    };
+  }
+  if (begin === undefined) return { status: "broken", kind: "no-begin" };
+  if (end === undefined) return { status: "broken", kind: "no-end" };
+  if (end < begin) return { status: "broken", kind: "order" };
+  const stop = end + END_MARKER.length;
+  const text = `${current.slice(0, begin)}${block}${current.slice(stop)}`;
+  return {
+    status: text === current ? "same" : "updated",
+    text,
+    diff: blockDiff(current.slice(begin, stop), block),
+  };
+};

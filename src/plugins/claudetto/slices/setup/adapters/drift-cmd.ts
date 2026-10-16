@@ -1,0 +1,50 @@
+// The `drift` command of `claudetto-setup`: the part of the drift check that a settings file answers.
+// It names the snippet values that the file of the scope lacks, the status line commands of another plugin folder,
+// and the rule files of `.claude/rules/` with a `paths` front matter that does not parse or a glob that matches no file.
+// The session facts, such as the version of Claude Code, come only from the check at `session.start`.
+
+import fs from "node:fs";
+import { driftLines } from "../domain/drift.ts";
+import { isObject } from "../domain/merge.ts";
+import type { Json } from "../domain/types.ts";
+import { DRIFT_NONE, UNKNOWN_SCOPE } from "../prompts.ts";
+import { type Places, settingsFile } from "./files.ts";
+import type { Io } from "./io.ts";
+import { projectRuleProblems } from "./rules-check.ts";
+
+/** Run the `drift` command and return the exit status: 0 for no difference, 1 for a difference, and 2 for a bad call. */
+export const driftCommand = async (
+  { scope }: { scope: string },
+  { configDir, projectDir, root }: Places,
+  io: Io,
+): Promise<number> => {
+  const file = settingsFile(scope, configDir, projectDir);
+  if (!file) {
+    io.error(UNKNOWN_SCOPE({ scope }));
+    return 2;
+  }
+  let settings: Json = {};
+  try {
+    if (fs.existsSync(file)) {
+      const parsed: unknown = JSON.parse(await Bun.file(file).text());
+      // A file that holds `null` has no settings yet, and the check then names each snippet value as missing.
+      if (parsed !== null && !isObject(parsed))
+        throw new Error("The settings are not an object.");
+      settings = parsed ?? {};
+    }
+  } catch (err) {
+    io.error(`${file}: ${(err as Error).message}`);
+    return 2;
+  }
+  const lines = driftLines({
+    settings,
+    root,
+    user: scope === "user" ? settings : undefined,
+    rules: await projectRuleProblems(projectDir),
+    agentSocket: process.env["SSH_AUTH_SOCK"],
+  });
+  io.log(`Target: ${file} (${scope} scope)`);
+  io.log(lines.length ? "Differences:" : DRIFT_NONE);
+  for (const line of lines) io.log(`  ${line}`);
+  return lines.length ? 1 : 0;
+};

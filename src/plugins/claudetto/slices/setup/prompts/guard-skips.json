@@ -1,0 +1,4 @@
+[
+  "the shared sections and the model variants of the system prompt (`prompt.compose`)",
+  "the `context_management` text (`prompt.section`)"
+]
