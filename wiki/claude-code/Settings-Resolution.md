@@ -1,7 +1,7 @@
 # Settings Resolution
 
 This page says how Claude Code 2.1.296 finds, orders, and merges its settings.
-It also says what the dotclaude settings snippet sets, and how `/dotclaude:setup` merges it.
+It also says what the claudetto settings snippet sets, and how `/claudetto:setup` merges it.
 Read it if you edit a settings file, or if you need to know which file sets a key.
 
 ## Source Labels
@@ -100,12 +100,12 @@ Source: official docs, and the same paths are in the binary 2.1.296.
 - An `env` block in a settings file is an ordinary key.
   It follows the same levels as the other keys.
   Source: official docs.
-- After `/dotclaude:setup` writes the `env` and model keys, the command tells you to restart Claude Code.
+- After `/claudetto:setup` writes the `env` and model keys, the command tells you to restart Claude Code.
   Source: the printed message of the setup command (see [How Setup Merges the Snippet](#how-setup-merges-the-snippet)).
 - A shell export of a variable overrides the same key in a settings file, for each pair that the docs name.
   Source: official docs.
 
-The snippet sets 20 `env` entries, such as `CLAUDE_CODE_DISABLE_CRON` and `DISABLE_COMPACT`.
+The snippet sets 13 `env` entries, such as `CLAUDE_CODE_DISABLE_CRON` and `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`.
 Source: the `env` block of the snippet.
 The [Settings Snippet Keys](Settings-Snippet-Keys) page gives each entry, its value, and its reason.
 The [Undocumented Reads](Undocumented-Reads) page lists the env vars that the binary reads and the docs do not name.
@@ -129,7 +129,7 @@ Source: official docs, and the binary 2.1.296 has the same two-key list.
 
 ### The `styles` Slice
 
-The `styles` slice in `src/plugins/dotclaude/slices/styles/slice.ts` sets `settings: { outputStyle: "dotclaude:Concise" }`.
+The `styles` slice in `src/plugins/claudetto/slices/styles/slice.ts` sets `settings: { outputStyle: "claudetto:Concise" }`.
 By the rule above, Claude Code drops `outputStyle` from a plugin.
 So this plugin setting has no effect (official docs and binary 2.1.296).
 The output style comes from the snippet instead, which writes `outputStyle` into a settings file.
@@ -141,15 +141,15 @@ This page does not change it.
 
 The snippet is the JSON of [Settings Snippet](Settings-Snippet).
 It sets top-level keys, such as `model`, `permissions`, `outputStyle`, `sandbox`, and `statusLine`, and an `env` block.
-The snippet sets a key only when the Claude Code default does not give the result that dotclaude needs.
+The snippet sets a key only when the Claude Code default does not give the result that claudetto needs.
 The reason for each key is on [Settings Snippet Keys](Settings-Snippet-Keys).
 
-Source: the snippet in `src/plugins/dotclaude/slices/setup/texts.ts`, with the `$schema` key removed before the merge.
+Source: the `settings` entries of the slices in `src/plugins/claudetto/slices/`, which `just generate` writes into [Settings Snippet](Settings-Snippet), with the `$schema` key removed before the merge.
 
 ## How Setup Merges the Snippet
 
-The `/dotclaude:setup` skill runs the `settings` command of `dotclaude-setup`.
-The code is in `src/plugins/dotclaude/slices/setup/adapters/settings-cmd.ts` and `src/plugins/dotclaude/slices/setup/domain/merge.ts`.
+The `/claudetto:setup` skill runs the `settings` command of `claudetto-setup`.
+The code is in `src/plugins/claudetto/slices/setup/adapters/settings-cmd.ts` and `src/plugins/claudetto/slices/setup/domain/merge.ts`.
 
 - The scope picks the file: `user`, `project`, or `local`.
   An unknown scope fails with exit status 2.
@@ -169,9 +169,9 @@ The code is in `src/plugins/dotclaude/slices/setup/adapters/settings-cmd.ts` and
   The command prints `Kept your <key>` for each kept key.
 - When the model catalog of the account offers `claude-mythos-5-1`, that model replaces `claude-fable-5-1` in `availableModels`.
   A list that already holds the Mythos model keeps it.
-- With the `dotclaude-docs` add-on installed, the command adds the lines of that add-on.
+- With the `claudetto-docs` add-on installed, the command adds the lines of that add-on.
 
-Inference: the merge of an object key follows the dotclaude code, not the Claude Code rule.
+Inference: the merge of an object key follows the claudetto code, not the Claude Code rule.
 The Claude Code rule is not confirmed (see [How Values Merge](#how-values-merge)).
 
 After a write, restart Claude Code.

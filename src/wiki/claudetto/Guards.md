@@ -1,0 +1,101 @@
+# Guards
+
+This page describes the `guard`, `asks`, `checks`, and `attribution` slices of the core plugin `claudetto`.
+It is for a contributor who edits a rule, and for a user who wants to know why Claude asks, stops, or changes a call.
+The slices deny, ask, or rewrite a `Bash` call in four cases.
+The call would do a destructive act, discard work, print a file, or make a commit.
+
+## What It Does
+
+A session has three layers that guard a call: the permission rules, the sandbox, and the hook module.
+The hook module covers the cases that a rule cannot match.
+It never weakens a rule of the user.
+A hook can ask, or it can keep a deny of the engine, but it never allows a call that the engine denies.
+
+## The Destructive Floor
+
+`guardReason` in `slices/guard/domain/guard.ts` walks each simple command of a `Bash` call with the kernel shell reader.
+Each matcher in `domain/matchers/` gives a deny reason for a command that is destructive in each session.
+The tier of a matcher comes from the rule catalog in `src/kernel/policy/`.
+A `git` global option with a separate value, such as `-C repo`, is an option and not the verb.
+So `git -C repo status` is not denied.
+
+## The Print Deny
+
+The guard denies a `Bash` call only when each part of it only prints a file.
+`cat F` and `sed -n 1,90p F` are such parts.
+A part that does other work, such as `ls`, a pipe into `grep`, or a `cd` with a build, makes the call stay allowed.
+The deny names the `Read` call with the same range.
+A file over `READ_MAX_BYTES` is denied by its size.
+
+## The Asks
+
+The `asks` slice asks before a call that discards work, weakens a test, or changes a protected file.
+
+- A `git` call that discards work, such as `git reset --hard` or `git checkout -- bun.lock`, gets an ask with the reason.
+  The guard does not deny `git checkout -- bun.lock`.
+- A change that skips a test, weakens an assertion, or adds a lint suppression gets an ask.
+  This applies to a test file of any size.
+  A test file over `FILE_MAX_BYTES` gets an ask, because the slice cannot read it.
+- A change to a script of `package.json` or to a recipe of a `justfile` or `Makefile` gets an ask when the script or recipe is a check.
+  The slice reads what the script runs, such as `eslint`, `pytest`, `bun test`, `tsc --noEmit`, `bun check`, `bun test --check`, or a script that it calls.
+  It reads the name only for the documented entry names `test` and `check`, so a name in any language works.
+- A call of `bunx`, `npx`, `pnpm dlx`, `yarn dlx`, `bun x`, or `npm exec` gets an ask when it runs a check tool that the project does not have.
+  A check tool is `tsc`, or a program that the check script ask above knows, such as `eslint` or `biome check`.
+  A download of another tool, such as `npx create-vite` or the `ctx7` of `claudetto-docs`, gets no ask.
+  The project has the tool when `node_modules/.bin` has the program, or `node_modules` has the package.
+  When `-p` or `--package` names packages, `node_modules` must have each of them.
+  The call downloads the tool from npm, and it checks nothing of the project.
+  For `tsc`, the reason states the installed `bun --version`, and names `bun check` for Bun 1.4.3 or later (D56).
+- A change to a config that lowers a coverage threshold or adds to an ignore list gets an ask.
+  The slice knows these keys by the documented names of the tools, such as `fail_under` and `ignorePatterns`.
+  It never matches a part of a key, so a key that it does not know gets an ask, not a pass.
+- Each `limits` file and `budget` file is a protected file, such as `limits.ts` and `weak-limits.ts`.
+- A command whose name the reader cannot read, such as `$cmd arg`, gets an ask.
+
+The policy ask for a repository of another owner does not exist.
+The plugin sends no `gh` call for it.
+
+## The Check Runner
+
+`claudetto-run-checks` runs a batch of checks with one call and gives one result.
+The result has the command, the exit code, and the tail of the output of each check.
+A check that fails does not stop the later checks.
+
+- The guard and the asks apply to each check.
+  A denied check does not run, and the result of the call names the check and the reason.
+  The hooks read the arguments of `claudetto-run-checks` for this, because a slice does not import another slice.
+- A check runs as `bash -o pipefail -c`, so a failed command in a pipe fails the check.
+- The check runs in its own process group.
+  A timeout of `COMMAND_TIMEOUT_MS` stops the check and all its child processes.
+- The exit code decides if a check passes.
+  The runner reads no word of the output, because the words depend on the language of the tool.
+  For a failed check, the result shows the last `MAX_FAILURE_LINES` lines of the output, and the log file holds the rest.
+  The runner gives no count of passed and failed tests, because no runner gives one in a form that a program can read without its text.
+
+## The Attribution
+
+The `attribution` slice does not rewrite a `Bash` call.
+It makes sure that Claude follows the attribution lines of the settings, and the user can turn each part off.
+A reminder in the context tells Claude the commit line and the pull request line, as Claude Code does.
+The commit line names the model with the model parser of the kernel, such as `Claude Sonnet 5.5` for `claude-sonnet-5-5`.
+A model id that the parser does not read gives `Claude`.
+A `commit-msg` hook of git checks each commit that Claude makes, as [Commit Check](Commit-Check) describes.
+The slice denies a `git commit` that skips the hook, with the kernel shell reader.
+After a `gh pr create` or `gh pr edit`, it reads the body of the pull request and tells Claude to add a missing line.
+A write of a pull request body through a GitHub MCP tool is denied before the call when the body lacks the line.
+
+## Failure Behavior
+
+The adapters have no catch-all on purpose.
+When a handler throws before `next`, Claude Code skips the hook, and the call runs.
+When a handler throws after `next`, the verdict of the engine stands.
+
+## Related Pages
+
+- [Overview](Overview): the plugins and their parts.
+- [Commit Check](Commit-Check): the commit hook, the bypass deny, and the pull request check.
+- [AI Policy](AI-Policy): the check of the AI policy of another owner before a push, a `gh` write, or a network write.
+- [Architecture](Architecture): the slices and the kernel.
+- [Bounds](Bounds): the bounds of the slices.
+- [Settings Snippet](Settings-Snippet): the `permissions` keys and the `autoMode` lists.

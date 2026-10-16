@@ -114,23 +114,22 @@ The blocking rule was `Irreversible Local Destruction`.
   It allows the delete of a named path that the agent worked with.
 - `Unverifiable Deletion Target` blocks `rm -rf` of a variable whose value the transcript does not show.
 
-Source: the case is in `.dotclaude/spec/changes/1.0.0/evidence/automode.md`.
 An entry in `environment` that names the agent worktrees and the Claude Code temp folders could let the clause apply.
 This is inference, and no test ran it.
 
-## What dotclaude Writes
+## What claudetto Writes
 
 Setup writes to the user settings only.
-The setup code states this in `src/plugins/dotclaude/slices/setup/domain/automode.ts`.
+The setup code states this in `src/plugins/claudetto/slices/setup/domain/automode.ts`.
 For each of the four keys, setup adds `$defaults` first.
-Then it adds the rules of the dotclaude catalog.
+Then it adds the rules of the claudetto catalog.
 
 - The `ask` rules go to `soft_deny`.
 - The `floor` and `subagent` rules go to `hard_deny`.
 - The two allow rules go to `allow`.
   They cover the removal of an agent worktree and the cleanup of the Claude Code temp folder.
 
-The texts are in `src/plugins/dotclaude/slices/setup/texts.ts/automode.json`.
+The texts are in `src/plugins/claudetto/slices/setup/texts.ts/automode.json`.
 
 The destructive floor is described on the [Guards](Guards) page.
 The [settings snippet](Settings-Snippet) shows the settings that setup writes.

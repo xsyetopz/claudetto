@@ -2,9 +2,8 @@
 
 # Architecture
 
-This page is the map of `claudetto`, the restart of dotclaude.
-It gives the target architecture for 0.1.0 and the rules for the releases after it.
-`claudetto` 0.1.0 is not built yet, so this page describes the plan, not the shipped code.
+This page is the map of `claudetto` 0.1.0, and it gives the rules for the releases after it.
+The [Overview](Overview) tells how `claudetto` replaces the earlier plugin.
 The decisions and their reasons are in the OpenSpec change `openspec/changes/claudetto-0-1-0/` of the repository, in `design.md`.
 
 ## Layers
@@ -24,7 +23,7 @@ The rules of the layers:
 
 - A slice never imports another slice.
   Slices share data only through a file layout that the kernel names in `src/kernel/paths.ts`.
-  For example, the handover reads `minispec/changes/<name>/tasks.md` and does not import the `minispec` slice.
+  For example, the handoff reads `minispec/changes/<name>/tasks.md` and does not import the `minispec` slice.
 - A hooks module has no `node:` import and no `Bun`, so a mod handler imports only the pure kernel.
 - A plugin never imports another plugin (decision D8 of `design.md`).
   The generator copies each kernel file that a plugin uses into that plugin.
@@ -37,12 +36,12 @@ flowchart TB
   K["src/kernel/<br/>shared, copied into each plugin"]
   subgraph core["claudetto (core)"]
     direction LR
-    HO[handover] --- MS[minispec]
+    HO[handoff] --- MS[minispec]
     PR[prompt] --- TR[trim] --- SU[surface]
     SL[statusline] --- AG[agents] --- ST[styles]
     GU[guard] --- AS[asks] --- CH[checks]
     AT[attribution] --- SB[sembr] --- DE[decide]
-    SE[setup] --- GC[gc]
+    SE[setup] --- GC[gc] --- WT[worktree] --- UC[usercheck]
   end
   subgraph addons["add-ons, each works alone"]
     direction LR
@@ -51,7 +50,7 @@ flowchart TB
     C["claudetto-codegraph<br/>graph"]
     D["claudetto-docs<br/>docs"]
     L["claudetto-lab<br/>capture, eval-compare,<br/>sandbox, schema"]
-    S["claudetto-sessions<br/>start-cost, usage,<br/>limits, identity"]
+    S["claudetto-sessions<br/>awareness, start-cost,<br/>usage"]
   end
   K --> core
   K --> addons
@@ -62,7 +61,7 @@ The capability of each slice:
 
 | Slice | Capability | Rung of the ladder |
 | --- | --- | --- |
-| `handover` | `handover` | Mod API (`session.compact`, `$.model.fork`) |
+| `handoff` | `handoff` | Mod API (`session.compact`, `$.model.fork`) |
 | `minispec` | `minispec` | Skills and the `minispec` CLI |
 | `prompt` | `prompt-profile` | Mod API |
 | `trim`, `surface` | `context-trim` | Built-in settings and env vars, then the Mod API |
@@ -77,6 +76,8 @@ The capability of each slice:
 | `decide` | `decision-api` | A CLI, opt-in |
 | `setup` | `settings-setup` | A skill and a CLI |
 | `gc` | `output-gc` | Mod API and a classic `SessionEnd` hook |
+| `worktree` | `worktree-hooks` | Classic `WorktreeCreate` and `WorktreeRemove` hooks |
+| `usercheck` | `user-check` | Mod API (`classic.PermissionDenied`, `classic.Stop`) |
 
 The rungs in this table are the targets.
 Each slice gets its ladder line in the work on 0.1.0, and a slice goes down a rung only with a test or a lab run.
@@ -108,19 +109,19 @@ flowchart LR
 `just check` fails when a file in `plugins/` differs from the output of the generator.
 Only `plugins/` and the marketplace file ship to users.
 
-## Handover flow
+## Handoff flow
 
 ```mermaid
 sequenceDiagram
   participant CC as Claude Code
-  participant H as handover slice
+  participant H as handoff slice
   participant F as $.model.fork
-  participant FS as handover file
+  participant FS as handoff file
   CC->>H: session.compact (auto or manual, main thread)
-  alt subagent, compaction profile, or below 2.1.300
+  alt subagent or compaction profile
     H->>CC: next(e)
   else
-    H->>F: handover prompt
+    H->>F: handoff prompt
     F-->>H: reply with DONE steps and quoted values
     alt nothing-to-fork, empty reply, or API error
       H->>CC: next(e)
@@ -131,16 +132,16 @@ sequenceDiagram
         H->>CC: next(e)
       else
         H->>H: ground check of quoted values
-        H->>CC: first user message, handover message, tail
+        H->>CC: first user message and handoff in one message, tail
       end
     end
   end
 ```
 
 The tail holds each message from the last assistant message with a tool use, so the newest tool result stays in the context (`p4`, `p5`).
-The ground check adds a warning to the handover message for each quoted value that is not in the messages of the session.
+The ground check adds a warning to the handoff message for each quoted value that is not in the messages of the session.
 
-## MiniSpec and the handover
+## MiniSpec and the handoff
 
 ```mermaid
 flowchart LR
@@ -152,7 +153,7 @@ flowchart LR
   P2 --> IM
   IM -- "check passed" --> CK["[x] in tasks.md"]
   CK --> IM
-  IM -- "context full" --> HF["handover.md<br/>in change folder"]
+  IM -- "context full" --> HF["handoff.md<br/>in change folder"]
   HF -- "next open task" --> IM
   IM --> RV["review by another agent"]
   RV --> AR["minispec archive"]
@@ -168,7 +169,7 @@ The names of slices and files can change in the work, but the layers and their r
 src/
   kernel/
     slice.ts            slice contract, phases, ladder line type
-    budget.ts           shared runtime bounds (handover triggers)
+    budget.ts           shared runtime bounds (handoff triggers)
     paths.ts            file layout that slices share
     errors.ts  model.ts  ports.ts  text.ts  temp-paths.ts
     shell.ts  shellkinds.ts  wrappers.ts  shell/
@@ -180,15 +181,16 @@ src/
       plugin.ts
       agents/  output-styles/
       slices/
-        handover/  minispec/  prompt/  trim/  surface/
+        handoff/  minispec/  prompt/  trim/  surface/
         statusline/  agents/  styles/  guard/  asks/
         checks/  attribution/  sembr/  decide/  setup/  gc/
+        worktree/  usercheck/
     claudetto-you-should-know/  slices/notice/
     claudetto-browser/          slices/browse/  slices/search/
     claudetto-codegraph/        slices/graph/
     claudetto-docs/             slices/docs/
     claudetto-lab/              slices/capture/  eval-compare/  sandbox/  schema/
-    claudetto-sessions/         slices/start-cost/  usage/  limits/  identity/
+    claudetto-sessions/         slices/awareness/  start-cost/  usage/
   wiki/                 source of the claudetto wiki pages
 tools/
   generate/  validate.ts  limits.ts  lab.ts  sandbox/  wiki.ts  bump-version.ts
@@ -219,9 +221,6 @@ slices/<s>/
   skills/       skill files, when the slice has any
 ```
 
-The slices `rules`, `stamp`, `spec`, and `handoff` of dotclaude 1.0.0 go.
-`handover` replaces `handoff`, and `minispec` replaces `spec`.
-
 ## Long term
 
 The rules that keep the architecture stable after 0.1.0:
@@ -233,13 +232,13 @@ The rules that keep the architecture stable after 0.1.0:
   When a new release gives a higher rung, such as a Mod API event for a feature that uses a classic hook, the slice moves up with a lab test.
   When a release removes a rung, the slice moves down, and the lab test shows the reason.
 - **The minimum Claude Code version moves only with the lab.**
-  A bump of the pin needs `just lab` and the handover eval on the new version.
+  A bump of the pin needs `just lab` and the handoff eval on the new version.
 - **Bounds live in one place.**
   Shared bounds go to `src/kernel/budget.ts`, slice bounds to `slices/<s>/limits.ts`, and repository bounds to `tools/limits.ts`.
 - **Shared state is a file layout, not an import.**
   When two slices need the same data, the kernel names the path, and each slice reads the file.
   This keeps a slice removable: remove its folder and its line in `plugin.ts`, and the other slices still build.
 - **Each measured claim has an evidence file.**
-  A change to the handover prompt, the ground check, or the trigger runs the handover eval again before it merges.
+  A change to the handoff prompt, the ground check, or the trigger runs the handoff eval again before it merges.
 - **Self-improvement goes through settings and the repository.**
   A user changes `claudetto` through its settings or a pull request, not through the plugin cache, which updates overwrite.

@@ -6,7 +6,7 @@ Use it to see a hook, the status line, or an agent work in a real session before
 
 ## Why a Sandbox
 
-- `claude --plugin-dir plugins/dotclaude` in your own setup loads the checkout next to your installed dotclaude, your settings, and your sessions.
+- `claude --plugin-dir plugins/claudetto` in your own setup loads the checkout next to your installed `claudetto`, your settings, and your sessions.
 - A test there can change your settings files and write to your session history.
 - The sandbox has its own `CLAUDE_CONFIG_DIR` and `HOME`.
   So a test changes only the sandbox.
@@ -15,21 +15,21 @@ Use it to see a hook, the status line, or an agent work in a real session before
 
 | Command | Config | Plugins loaded |
 | --- | --- | --- |
-| `just sandbox` | `dotclaude-sandbox` in the temp folder, kept until you clean it | Each folder of `plugins/` that has `.claude-plugin/plugin.json` |
-| `just sandbox-alone PLUGIN` | `/tmp/dotclaude-sandbox-alone`, removed and made again on each run | Only `PLUGIN` |
-| `just sandbox-install [PLUGIN...]` | `/tmp/dotclaude-sandbox-install`, removed and made again on each run | Each `PLUGIN`, or `dotclaude` when you give none, installed from this checkout |
-| `just sandbox-installed [ARGS]` | `/tmp/dotclaude-sandbox-install`, kept | The plugins that `just sandbox-install` installed |
+| `just sandbox` | `claudetto-sandbox` in the temp folder, kept until you clean it | Each folder of `plugins/` that has `.claude-plugin/plugin.json` |
+| `just sandbox-alone PLUGIN` | `/tmp/claudetto-sandbox-alone`, removed and made again on each run | Only `PLUGIN` |
+| `just sandbox-install [PLUGIN...]` | `/tmp/claudetto-sandbox-install`, removed and made again on each run | Each `PLUGIN`, or `claudetto` when you give none, installed from this checkout |
+| `just sandbox-installed [ARGS]` | `/tmp/claudetto-sandbox-install`, kept | The plugins that `just sandbox-install` installed |
 | `just sandbox-clean` | Removes the temp folder of `just sandbox` | None |
 
 - Arguments after `just sandbox` or `just sandbox-alone PLUGIN` go to `claude`.
   For example, `just sandbox -p "prompt"` runs one headless turn and prints the reply.
 - `just sandbox` runs `tools/sandbox/run.ts`.
-  That script runs `plugins/dotclaude-lab/bin/dotclaude-sandbox`.
+  That script runs `plugins/claudetto-lab/bin/claudetto-sandbox`.
 - `just sandbox-alone` runs the same bin two times.
   The first run removes the folder.
   The second run starts `claude` with `--plugin-dir PLUGIN` and your arguments.
-- To test an add-on with no core plugin, run `just sandbox-alone plugins/dotclaude-docs`.
-  You can also run `bun plugins/dotclaude-lab/bin/dotclaude-sandbox --plugin-dir plugins/dotclaude-docs` in its place.
+- To test an add-on with no core plugin, run `just sandbox-alone plugins/claudetto-docs`.
+  You can also run `bun plugins/claudetto-lab/bin/claudetto-sandbox --plugin-dir plugins/claudetto-docs` in its place.
 - `just debug-agents` runs one headless session with a debug log.
   The command fails when the log names an unknown frontmatter field.
 
@@ -39,10 +39,10 @@ Use it to see a hook, the status line, or an agent work in a real session before
 A user installs the plugins from the marketplace instead.
 `just sandbox-install` tests that path before a release:
 
-1. Run `just sandbox-install`, or name the plugins, such as `just sandbox-install dotclaude dotclaude-docs`.
+1. Run `just sandbox-install`, or name the plugins, such as `just sandbox-install claudetto claudetto-docs`.
    The script removes the folder, and it runs `claude plugin marketplace add` with this checkout.
-   Then it runs `claude plugin install NAME@dotclaude` for each plugin, and it starts Claude Code.
-2. In the session, run `/dotclaude:setup`, then `/exit`.
+   Then it runs `claude plugin install NAME@claudetto` for each plugin, and it starts Claude Code.
+2. In the session, run `/claudetto:setup`, then `/exit`.
 3. Run `just sandbox-installed` to start the session again with the settings of the setup.
    Add `--continue` to continue the last session.
 
@@ -62,7 +62,7 @@ The sandbox folder has three parts:
 | `project/` | An empty git repository. It is the working directory of `claude`. |
 | `home/` | The `HOME` of `claude`. |
 
-- The default folder is `dotclaude-sandbox` in the system temp folder.
+- The default folder is `claudetto-sandbox` in the system temp folder.
   Use `--dir DIR` to choose another folder.
 - The script creates `project/` only when it has no `.git` folder.
   It runs `git init` there.
@@ -93,17 +93,12 @@ The script does these steps before it starts `claude`:
 5. It sets `CLAUDE_CONFIG_DIR` and `HOME` for `claude`.
    It runs `claude` in `project/`.
 
-- The `gh` login of your machine does not apply in the sandbox.
-  `gh` reads its config from `HOME`.
-  So a policy test in [Contributions](Contributions) sees no login name.
 - `gh` reads its token from the keychain with the real `HOME`.
   So a `gh api` call can fail in the sandbox.
-  A failed `gh` call gives no owner.
-  So the policy ask does not show, and the next check tries again.
 - The script finds `claude` on `PATH` only.
   A shell function or an alias does not work.
   The native installer keeps each version at `~/.local/share/claude/versions/<version>`.
-  This path holds for version `2.1.296` on macOS, as the native installer of that version left it.
+  This path held for Claude Code `2.1.296` on macOS, as the native installer of that version left it.
 
 ### Managed Settings
 
@@ -160,8 +155,8 @@ Use it for hook behavior that the reply shows.
   A variadic flag takes all the arguments after it.
   Then `claude` finds no prompt.
 - Add `--allowedTools 'Bash(cat:*)'` when the test needs a tool without a permission prompt.
-- The binary of Claude Code 2.1.296 has the text "you haven't granted it yet".
-  It shows that text for a tool that needs approval and has no grant.
+- The binary of Claude Code `2.1.296` had the text "you haven't granted it yet".
+  It showed that text for a tool that needs approval and has no grant.
   Inference: a headless run cannot answer a prompt, so each tool that `--allowedTools` does not list is denied.
 - List each tool that the test needs before the run.
   For example, use `--allowedTools 'Bash' 'Write' 'Edit'`.
@@ -193,7 +188,7 @@ Run a capture session to record the requests of an agent session and of its sand
 
 1. In a terminal, run `just capture`.
    It listens on port `8787` by default.
-   It writes to `$TMPDIR/dotclaude-capture`.
+   It writes to `$TMPDIR/claudetto-capture`.
 2. In a second terminal, start the agent session with the proxy:
 
    ```bash
@@ -226,11 +221,11 @@ Send one prompt, then type `/exit`.
 ## Status Line Commands
 
 To test the status line script without a session, give it input on stdin.
-The script is `plugins/dotclaude/bin/dotclaude-statusline`.
+The script is `plugins/claudetto/bin/claudetto-statusline`.
 Read the fields of the input in the script, and in the status line docs of Claude Code, before you write the input.
 
 ```bash
-echo '<input JSON>' | bun plugins/dotclaude/bin/dotclaude-statusline
+echo '<input JSON>' | bun plugins/claudetto/bin/claudetto-statusline
 ```
 
 To see the input that Claude Code gives to the status line, set a status line command in `config/settings.json`.
@@ -241,14 +236,14 @@ Then read that file.
 
 1. Stop each `tmux` session that you started.
 2. Run `just sandbox-clean`.
-   It removes the whole `dotclaude-sandbox` folder.
-   That folder holds `config/`, `project/`, `home/`, and the `.dotclaude-sandbox` marker.
+   It removes the whole `claudetto-sandbox` folder.
+   That folder holds `config/`, `project/`, `home/`, and the `.claudetto-sandbox` marker.
 3. For `just sandbox-alone`, run `just sandbox-alone PLUGIN` again.
-   Or remove `/tmp/dotclaude-sandbox-alone` with `bun plugins/dotclaude-lab/bin/dotclaude-sandbox --dir /tmp/dotclaude-sandbox-alone --clean`.
+   Or remove `/tmp/claudetto-sandbox-alone` with `bun plugins/claudetto-lab/bin/claudetto-sandbox --dir /tmp/claudetto-sandbox-alone --clean`.
    The setup writes the marker into each folder that it makes.
    `--clean` of a folder other than the default one refuses a folder without the marker.
    A folder that an older sandbox made has no marker, so remove it by hand.
-4. For `just sandbox-install`, run `bun plugins/dotclaude-lab/bin/dotclaude-sandbox --dir /tmp/dotclaude-sandbox-install --clean`.
+4. For `just sandbox-install`, run `bun plugins/claudetto-lab/bin/claudetto-sandbox --dir /tmp/claudetto-sandbox-install --clean`.
 
 A sandbox session also writes into your checkout.
 Claude Code writes `.claude-plugin/types/` and a `tsconfig.json` into each plugin folder that it loads, and git ignores them.

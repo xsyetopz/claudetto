@@ -1,47 +1,59 @@
 # Evals
 
-Evals measure the effect of the `dotclaude` plugin on Claude Code.
+Evals measure the effect of the `claudetto` plugin on Claude Code.
 This page tells maintainers how the suite runs, what each grader checks, and where the results are.
 Read it before you run an eval.
 
 They use the `claude plugin eval` command of Claude Code.
-The runs of the current suite use Claude Code `2.1.296`.
-The repository has no eval harness of its own (design `D9`).
+The figures in the archive pages come from runs on Claude Code `2.1.296`.
+No full run of the suite exists on `2.1.301`, the minimum version of claudetto 0.1.0.
+The repository has no eval harness of its own (design `D9`, see [Decisions Tools](Decisions-Tools)).
 `just check` never runs an eval, because a run costs money.
 
 ## The Current Suite
 
-The suite has 12 cases.
+The suite has 16 cases.
+14 cases are in the core plugin `claudetto`, and 1 case is in the add-on `claudetto-you-should-know`.
 Each case is a folder with a `case.yaml` and a `scaffold.sh`.
 The prompt of a case is the `execution.prompt` field of its `case.yaml`.
 The cases are written in `src/`.
-`just generate` copies them to `plugins/dotclaude/evals/`.
-The command finds them there.
+`just generate` copies them to `plugins/claudetto/evals/`, and the case of the add-on to `plugins/claudetto-you-should-know/evals/`.
 The command reads cases only from a folder inside the plugin.
 
-| Case | Source folder in `src/plugins/dotclaude/` | Max turns | Graders |
+| Case | Source folder in `src/plugins/` | Max turns | Graders |
 | --- | --- | ---: | --- |
-| `bugfix-range` | `evals/bugfix-range/` | 20 | 2 `regex`, 2 `tool_used` |
-| `feature-slugify` | `evals/feature-slugify/` | 20 | 3 `regex`, 2 `tool_used` |
-| `library-docs` | `evals/library-docs/` | 20 | 5 `regex`, 2 `tool_used` |
-| `big-file-subagent` | `slices/agents/evals/` | 30 | 2 `regex`, 3 `tool_used` |
-| `delegation-related-grouped` | `slices/agents/evals/` | 25 | 4 `regex`, 1 `tool_used` |
-| `delegation-related-split` | `slices/agents/evals/` | 25 | 4 `regex`, 1 `tool_used` |
-| `accusation-subagent` | `slices/prompt/evals/` | 25 | 3 `regex`, 4 `tool_used` |
-| `accusation-user` | `slices/prompt/evals/` | 25 | 3 `regex`, 5 `tool_used` |
-| `false-alarm-sum` | `slices/prompt/evals/` | 20 | 3 `regex`, 4 `tool_used` |
-| `report-count` | `slices/prompt/evals/` | 15 | 2 `regex`, 1 `tool_used`, 1 `llm` |
-| `accusation-warranted` | `slices/styles/evals/` | 20 | 2 `regex` |
-| `verification-claim` | `slices/styles/evals/` | 20 | 3 `regex`, 3 `tool_used` |
+| `bugfix-range` | `claudetto/evals/` | 20 | 2 `regex`, 2 `tool_used` |
+| `feature-slugify` | `claudetto/evals/` | 20 | 3 `regex`, 2 `tool_used` |
+| `library-docs` | `claudetto/evals/` | 20 | 5 `regex`, 2 `tool_used` |
+| `big-file-subagent` | `claudetto/slices/agents/evals/` | 30 | 3 `regex`, 4 `tool_used` |
+| `delegation-related-grouped` | `claudetto/slices/agents/evals/` | 25 | 5 `regex`, 3 `tool_used` |
+| `delegation-related-split` | `claudetto/slices/agents/evals/` | 25 | 5 `regex`, 3 `tool_used` |
+| `handoff` | `claudetto/slices/handoff/evals/` | 20 | 2 `regex`, 3 `tool_used` |
+| `accusation-subagent` | `claudetto/slices/prompt/evals/` | 25 | 3 `regex`, 4 `tool_used` |
+| `accusation-user` | `claudetto/slices/prompt/evals/` | 25 | 3 `regex`, 5 `tool_used` |
+| `false-alarm-sum` | `claudetto/slices/prompt/evals/` | 20 | 3 `regex`, 4 `tool_used` |
+| `report-count` | `claudetto/slices/prompt/evals/` | 15 | 2 `regex`, 1 `tool_used`, 1 `llm` |
+| `accusation-warranted` | `claudetto/slices/styles/evals/` | 20 | 4 `regex` |
+| `verification-claim` | `claudetto/slices/styles/evals/` | 20 | 4 `regex`, 3 `tool_used`, 1 `llm` |
+| `partial-verification` | `claudetto/slices/styles/evals/` | 20 | 3 `regex`, 5 `tool_used`, 2 `llm` |
+| `unprompted-skip` | `claudetto/slices/styles/evals/` | 20 | 3 `regex`, 5 `tool_used`, 2 `llm` |
+| `you-should-know-notice` | `claudetto-you-should-know/evals/` | 6 | 1 `regex` |
 
-Each case has `runs: 3` and `timeout_seconds: 600` in its `case.yaml`.
+The `name` field of the `handoff` case is `five-reads-codeword`, and the `name` of `you-should-know-notice` is `tries-edit-runs`.
+The `handoff` case sets `model: haiku` and `timeout_seconds: 900`.
+It checks that an auto compaction in the middle of a task keeps the done steps and the exact values ([Handoff](Handoff)).
+The `you-should-know-notice` case has `runs: 1` and `timeout_seconds: 300`.
+It checks that an edit still runs after the check of the add-on ([You Should Know](You-Should-Know)).
+The command `just eval` runs the folder `plugins/claudetto` only, so the add-on case needs its own `claude plugin eval plugins/claudetto-you-should-know` run.
+
+The other 13 cases of the core plugin have `runs: 3` and `timeout_seconds: 600` in their `case.yaml`.
 The bounds of a run are these.
 
-- `runs` in `case.yaml`: 3 runs for each case, on each arm.
-- `execution.timeout_seconds` in `case.yaml`: 600 seconds for each case.
-- `execution.max_turns` in `case.yaml`: 15 to 30 turns, by case.
+- `runs` in `case.yaml`: 3 runs for each case, on each arm (1 run for `you-should-know-notice`).
+- `execution.timeout_seconds` in `case.yaml`: 600 seconds for most cases, 900 for `handoff`, and 300 for `you-should-know-notice`.
+- `execution.max_turns` in `case.yaml`: 6 to 30 turns, by case.
 - `--max-cost-usd 5` in the `eval` recipe of the `justfile`: the cost limit of a run.
-- `--max-cost-usd 5` in `withCostBound` of `src/plugins/dotclaude-lab/slices/eval-compare/domain/compare.ts`: the default cost limit of `dotclaude-eval-compare`.
+- `--max-cost-usd 5` in `withCostBound` of `src/plugins/claudetto-lab/slices/eval-compare/domain/compare.ts`: the default cost limit of `claudetto-eval-compare`.
 
 ## How a Run Works
 
@@ -66,7 +78,7 @@ The format has six grader kinds.
 | `llm` | A judge model gives a pass in 2 of 3 votes | Paid |
 | `baseline` | The judge finds the run at least as good as a reference transcript | Paid |
 
-The current cases use `regex`, `tool_used`, and one `llm` grader.
+The current cases use `regex`, `tool_used`, and two `llm` graders.
 No current case uses `tool_order`, `file_exists`, or `baseline`.
 
 No grader runs a command or a test file.
@@ -88,7 +100,7 @@ The anchors are `(?<![\s\S])` and `(?![\s\S])`, so they hold with or without the
 The large `data/big.log` of `big-file-subagent` has the exact first line, the line with the audit code, and the exact last line, with any text between them.
 A change in the middle of that log is not seen.
 A file that the agent deleted does not exist, so the grader throws, and the run fails the grader.
-`tests/dotclaude/evals/graders.test.ts` loads the regex of each file-state grader.
+`tests/claudetto/evals/graders.test.ts` loads the regex of each file-state grader.
 It runs the regex against a passing sample and a failing sample.
 A regex that no run has met can pass for a wrong reason.
 
@@ -140,21 +152,23 @@ Instruction adherence is checked by the guards and the hooks in code.
 
 ```sh
 claude plugin eval --help
-just eval
-just eval --case report-count
-just eval-variant REF
+just eval --model haiku
+just eval --model haiku --case report-count
+just eval-variant REF --model haiku
 ```
 
 The first command lists the flags.
 `just eval` runs the suite with a cost limit of 5 USD.
-The recipe runs `claude plugin eval plugins/dotclaude` with `--no-publish`, `--scaffold`, `--allow-tools Bash,Write,Edit`, and `--keep-temp`.
-Extra arguments go to the eval, such as `just eval --case report-count`.
+The recipe stops with a message when `--model` is missing, because without it the eval uses the model of the session, which can cost many times more.
+The recipe runs `claude plugin eval plugins/claudetto` with `--no-publish`, `--scaffold`, `--allow-tools Bash,Write,Edit`, and `--keep-temp`.
+Extra arguments go to the eval, such as `just eval --model haiku --case report-count`.
 The recipe uses `tools/lock.ts`, which stops a second run while one is in progress.
-The lock is a file in `plugins/dotclaude/evals/results/`.
+The lock is a file in `plugins/claudetto/evals/results/`.
 `just eval-variant REF` runs the suite on the checkout and on a variant at a git ref, in a temporary `git worktree`.
-Its results go to `plugins/dotclaude/evals/results/`, which git ignores.
-The `dotclaude-lab` plugin ships the `dotclaude-eval-compare` CLI and the `/eval-compare` skill.
-They run `claude plugin eval` on two plugin folders, one after the other.
+It needs `--model` too.
+Its results go to `plugins/claudetto/evals/results/`, which git ignores.
+The `claudetto-lab` add-on ships the `claudetto-eval-compare` CLI and the `eval-compare` skill.
+They run `claude plugin eval` on two plugin folders, one after the other ([Lab](Lab)).
 
 Each eval prints `kept temp: /private/tmp/e-XXXX` for each run.
 The folder holds the work folder, and its `home/` and `tmp/` folders are sealed with mode 000.
@@ -168,16 +182,21 @@ In the run of 2026-10-10 from `! just eval`, 10 runs stopped on a model call unt
 
 ## Current Results
 
-The newest full run of the 12 current cases is the run of 2026-10-10 on Claude Code `2.1.296`, with the default model of Claude Code.
+No full run of the 15 current cases is recorded.
+The runs of single cases on `2.1.301` are in [Evals of 0.1.0](Evals-0.1.0).
+The newest full run is the run of 2026-10-10 on Claude Code `2.1.296`, with the default model of Claude Code.
+It ran the 12 cases of dotclaude 1.0.0.
 Its figures per case are in [Full suite after the shared rules moved](Evals-0.28.0-Ported-Suite#full-suite-after-the-shared-rules-moved).
 The figures of the other two models are in [Sonnet 5.5 and Haiku 5.5](Evals-0.28.0-Ported-Suite#sonnet-55-and-haiku-55).
 That table also lists four cases that the suite no longer has: `destructive-ask`, `facts-formatter`, `facts-release-scope`, and `stop-check-verification-claim-cut`.
 The rows of those four cases are history.
 They are not current results.
+The cases `handoff` and `you-should-know-notice` have no row there.
 No figure of this page replaces those tables.
 
 ## Reports and Results
 
+- [Evals of 0.1.0](Evals-0.1.0) holds the paid runs of claudetto 0.1.0.
 - [Eval History](Evals-History) holds the results of the suites of the 0.4 to 0.26 releases.
 - [Evals of 0.28.0](Evals-0.28.0) holds the last runs of the deleted harness.
 - [Ported Suite of 0.28.0](Evals-0.28.0-Ported-Suite) holds the runs of the first ported suite.
@@ -189,9 +208,9 @@ No figure of this page replaces those tables.
 - [Usage Evidence](Usage-Evidence) holds the usage measures.
 
 The Bun harness of earlier releases (`tools/eval/`) and the root `evals/` folder are deleted.
-Their figures stay in [Eval history](Evals-History) and [Evals of 0.28.0](Evals-0.28.0).
+Their figures stay in [Evals History](Evals-History) and [Evals of 0.28.0](Evals-0.28.0).
 
 ## Related Pages
 
-Read [Off switches](Off-Switches) next.
-It holds the switches that wait for an eval.
+- [Off Switches](Off-Switches): the switches that wait for an eval.
+- [Evidence](Evidence): the index of the evidence pages.

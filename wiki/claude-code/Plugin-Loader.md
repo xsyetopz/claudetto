@@ -19,8 +19,8 @@ A marketplace is a folder or a repository with `.claude-plugin/marketplace.json`
 The file has a `name`, an `owner`, and a `plugins` array.
 Each plugin entry has a `name` and a `source`.
 
-The repository marketplace is `dotclaude`.
-Its entries list the core plugin and five add-on plugins.
+The repository marketplace is `claudetto`.
+Its entries list the core plugin `claudetto` and six add-on plugins.
 
 `claude plugin marketplace add` registers a marketplace.
 The docs show a GitHub `owner/repo` and a local path as arguments.
@@ -34,7 +34,7 @@ The binary contains that variable name.
 
 ## Install a Plugin
 
-The install id is the entry name, an `@`, and the marketplace name, as in `dotclaude@dotclaude`.
+The install id is the entry name, an `@`, and the marketplace name, as in `claudetto@claudetto`.
 An install runs these steps, according to the docs.
 
 1. For a `name@marketplace` install, Claude Code refreshes that marketplace first.
@@ -65,11 +65,11 @@ The manifest is `.claude-plugin/plugin.json`.
 It is optional, but `name` is the only required key.
 Component folders go at the plugin root, not inside `.claude-plugin/`.
 
-| Key | What it loads or does | Use in dotclaude |
+| Key | What it loads or does | Use in claudetto |
 | :- | :- | :- |
-| `name` | The namespace of every component | `dotclaude` |
-| `version` | Pins users to the cached copy until the value changes | `0.28.0` |
-| `userConfig` | Values that Claude Code prompts for when the plugin is enabled | `mainHandover` |
+| `name` | The namespace of every component | `claudetto` |
+| `version` | Pins users to the cached copy until the value changes | `0.1.0-alpha.1` |
+| `userConfig` | Values that Claude Code prompts for when the plugin is enabled | `decide` and `compaction` in the core plugin |
 | `skills` | Adds directories to the default `skills/` scan | Not set |
 | `commands` | Replaces the default `commands/` scan | Not set |
 | `agents` | Replaces the default `agents/` scan | Not set |
@@ -107,8 +107,8 @@ The binary has a pattern that matches a command under `${CLAUDE_PLUGIN_ROOT}/bin
 That pattern supports the docs.
 It does not prove the `PATH` behavior alone.
 
-dotclaude uses the default locations of `skills/`, `agents/`, `output-styles/`, `hooks/`, and `bin/`.
-Its `bin/` holds six files: `dotclaude-decide`, `dotclaude-handoff`, `dotclaude-run-checks`, `dotclaude-setup`, `dotclaude-spec`, and `dotclaude-statusline`.
+claudetto uses the default locations of `skills/`, `agents/`, `output-styles/`, `hooks/`, and `bin/`.
+The `bin/` folder of the core plugin holds six files: `claudetto-decide`, `claudetto-gc`, `claudetto-run-checks`, `claudetto-setup`, `claudetto-statusline`, and `minispec`.
 
 A component path must start with `./`.
 It must stay inside the plugin root, and it must exist.
@@ -150,28 +150,28 @@ The binary contains the marker name.
 The version decides an update.
 The manifest `version` comes first.
 Then the entry `version` decides, and then the commit SHA or file digest of the source.
-dotclaude sets `version` in its manifest.
+Each claudetto plugin sets `version` in its manifest.
 So a user keeps the cached copy until that string changes.
 That is inference from the docs, not a test.
 
 ## Hook Module
 
-The dotclaude `hooks/hooks.json` has no `hooks` key.
-It has one key, `modules`, with one path: `"modules": ["./register.ts"]`.
+The `hooks/hooks.json` of a claudetto plugin has the key `modules` with one path: `"modules": ["./register.ts"]`.
 
 The official mods reference defines this form.
 A hooks module is a file that exports `register(on, options)`.
 Each `on(event, handler)` call registers a handler for one event.
 `options` holds the `userConfig` values with defaults filled in.
 
-dotclaude generates `plugins/dotclaude/hooks/register.ts` from the slices in `src/`.
+claudetto generates `plugins/claudetto/hooks/register.ts` from the slices in `src/`.
 `just generate` writes it, so do not edit it by hand.
-The events, and the eleven dotclaude events, are in [Hook Events](Hook-Events).
+The events, and the 14 claudetto events, are in [Hook Events](Hook-Events).
 The path from `src/` to `plugins/` is in [Architecture](Architecture).
 
 The `modules` form and the `hooks` form can appear in one file.
-The codegraph plugin uses both forms.
-The core plugin uses only `modules`.
+The `claudetto-codegraph` plugin uses both forms.
+The core plugin uses both forms too, with the `hooks` form for `WorktreeCreate` and `WorktreeRemove`.
+The other add-on plugins use only `modules`.
 
 ## Check a Plugin
 
@@ -194,7 +194,7 @@ It checks that each `plugin.json` description equals its marketplace entry.
 It checks the `$schema`, the `keywords`, and the `homepage`.
 
 `tests/support/plugin-hooks-exist.test.ts` reads only the `hooks` key of `hooks/hooks.json`.
-For dotclaude, that key is absent, so the test checks no command.
+It checks the commands of `claudetto` and `claudetto-codegraph`, because only those two plugins have that key.
 It does not check that `register.ts` exists.
 
 ## Limits of This Page

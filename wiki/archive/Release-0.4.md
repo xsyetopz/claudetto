@@ -51,7 +51,7 @@ To update:
   - the paired difference with and without the plugin
 - `docs/evals.md` (later the Evals page, removed in 0.27): how both eval suites were built, the 0.4.0 results with their intervals.
   It also covers what they do not show and what the next round needs.
-- `docs/claude-code-prompt-surface.md` (now [Prompt Surface](Prompt-Surface)): what Claude Code 2.1.283 sends per request, what each customization lever changes, and `policyHelper` output fields that the docs do not cover.
+- `docs/claude-code-prompt-surface.md` (now [Prompt](Prompt)): what Claude Code 2.1.283 sends per request, what each customization lever changes, and `policyHelper` output fields that the docs do not cover.
 
 ## Changed
 

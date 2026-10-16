@@ -1,51 +1,45 @@
 # Quickstart
 
-This page shows what you see in your first session with dotclaude 1.0.0.
+This page shows what you see in your first session with `claudetto`.
 It is for users who finished [Install](Install).
 The install steps are not repeated here.
 
-The core plugin `dotclaude` adds an output style, six agents, a status line, and hooks.
+The core plugin `claudetto` adds an output style, six agents, a status line, and hooks.
 The hooks ask, deny, and check.
 See [Architecture](Architecture) for the parts.
 
 ## What You See at Session Start
 
-After you apply the [settings snippet](Settings-Snippet) with `/dotclaude:setup`, you see these parts.
+After you apply the [settings snippet](Settings-Snippet) with `/claudetto:setup`, you see these parts.
 
 - The status line, with the parts in the next section.
-- The output style `dotclaude:Concise`.
+- The output style `claudetto:Concise`.
   It sets how Claude writes its replies.
-  See [Prompt-Surface](Prompt-Surface).
+  See [Prompt](Prompt).
 - A drift note, when the active settings differ from the snippet.
 
 Claude receives the drift note at session start.
 The note lists each difference.
 It states that the user has not seen the difference.
-Some lines name `/dotclaude:setup` as the fix.
+Some lines name `/claudetto:setup` as the fix.
 When no difference exists, the note is not added.
-See [Settings-Snippet](Settings-Snippet) for the keys of the snippet.
+See [Settings Snippet](Settings-Snippet) for the keys of the snippet.
 
 ## The Status Line
 
 The status line has up to three rows.
 
-- The first row shows the folder, the git branch with the counts of changed, ahead, and behind files, and the active change as `id done/total`.
-- The second row shows the model, the context against the 300K window, and the cost with the lines added and removed.
-- The third row shows the 5h and 7d usage windows and the spend limit, each with the time to its reset.
+- The first row shows the folder, the git state, the pull request, the active change as `◆ name 4/13 ▸5.1`, and the 7-day limit.
+- The second row shows the model, the context, the cost with the lines added and removed, and the 5-hour limit.
+  The number after `⇥` in the context is the distance to the handoff trigger.
+- The third row shows the spend limit and the prompt cache.
 
-The context part is yellow at 75% of the window and red at 90%.
-The usage parts use the same colors.
-The active change is the last change in the order of its id that has a package that is not `done`.
-
+The colors follow the theme of Claude Code, and `NO_COLOR` turns the color off.
 The width comes from the `COLUMNS` env var.
 When `COLUMNS` is unset, the width is 120 columns, and 4 columns stay free at the right edge.
-When a row is too wide, its segments at the right drop first.
-Then the row is cut at its end with `…`.
-
 The status line calls no model and no network.
 It runs no program except `git`.
-It writes the last usage sample to `.dotclaude/rate-limits.jsonl` when the values change.
-See [Status-Line](Status-Line).
+See [Status Line](Status-Line).
 
 ## The Agents
 
@@ -56,38 +50,31 @@ Claude starts an agent with the `Agent` tool, when a task fits the agent.
   It is read-only.
 - `researcher` answers from web pages and official docs, with quotes and sources.
   It is read-only.
-- `planner` plans a change across files, and it writes the plan only under `.dotclaude/spec/`.
+- `planner` plans a change across files, and it writes the plan only under `minispec/changes/<name>/`.
 - `implementer` implements one scoped slice with a known check, in its own worktree.
 - `debugger` finds the root cause of a failure, and it makes the smallest fix.
 - `reviewer` reviews code, a plan, or a design.
   It is read-only.
 
 No agent runs the tests.
-The `checks` slice has the `dotclaude-run-checks` CLI, which replaces a test-runner agent.
+The `checks` slice has the `claudetto-run-checks` CLI, which replaces a test-runner agent.
 See [Agents](Agents).
 
-## The Spec Store and `/dotclaude:handoff`
+## MiniSpec and the Handoff
 
-The spec store is the folder `.dotclaude/spec/`, which the repository tracks.
-A change has its own folder under `.dotclaude/spec/changes/`.
-Its log, `events.jsonl`, records each state change of the change and of its packages.
+MiniSpec keeps a plan in files in your project.
+The folder `minispec/specs/` holds the specs, and the folder `minispec/changes/` holds one folder for each open change.
+Run `/claudetto:minispec` to plan a change, `/claudetto:minispec-apply` to do its tasks, and `/claudetto:minispec-review` to review it.
+The `minispec` CLI reads and updates the same files.
+See [MiniSpec](MiniSpec).
 
-To start a change, run `/dotclaude:specify <change-id>`.
-The skill starts the change with `dotclaude-spec specify`, and it fills the requirements.
-The next phases are `/dotclaude:plan`, `/dotclaude:implement`, `/dotclaude:review`, `/dotclaude:merge`, `/dotclaude:accept`, and `/dotclaude:archive`.
-Each phase moves the change or a package to the next state.
-See [Spec-Store](Spec-Store) for the files, the states, and the gates.
-
-The context has a bound of 300K tokens.
-Claude Code does not compact it.
-At 60% of the window, the default `mainHandover` value of `manual` gives you a hint to run `/dotclaude:handoff`.
-The hint also comes when a `merge` or an `accept` finishes.
-The skill writes a handoff file to `.dotclaude/handoff/`, with the goal, the state, the next step, and the constraints.
-Then it starts a clean session that reads the file.
-See [Context-And-Handoff](Context-And-Handoff).
-
-Without a handoff, run `/clear`, and then `dotclaude-spec next <change-id>`.
-The command shows the next package from the log.
+Claude Code does not compact the context in the default setup.
+At 225,000 tokens of the 300,000 window, the handoff writes a file with the goal, the state, and the next step.
+For Haiku the trigger is 100,000 tokens.
+The file goes to `minispec/changes/<name>/handoff.md` when a change is open, and else to `.claudetto/handoff/`.
+Then a clean session reads the file.
+Run `/handoff` to start it by hand.
+See [Handoff](Handoff).
 
 ## The Guards
 
@@ -95,6 +82,7 @@ The permission rules, the sandbox, and the hook module guard each call.
 See [Guards](Guards) for the full list.
 
 The settings snippet makes Claude Code ask you first for these commands.
+It also asks for a force push, `git reset --hard`, and other commands that discard work.
 
 - A package publish, such as `npm publish` or `cargo publish`.
 - A write to a pull request or an issue, such as `gh pr create` or `gh issue comment`.
@@ -112,14 +100,9 @@ Claude stops, and it does not try the action another way.
 The denial gives you the exact command in a block.
 Run that command yourself with `!` at the start of your prompt, if you want the action.
 
-Claude runs `git clone`, `gh`, `curl`, or `wget` on a repository of another owner, or it fetches a page of that repository.
-If the repository has a `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md` file, the guard asks once per session and per repository.
-The ask shows the text of each policy file, truncated at 2,000 characters.
-See [Contributions](Contributions).
-
 ## Related Pages
 
 - [Guards](Guards): what asks, what denies, and what the sandbox limits.
-- [Context-And-Handoff](Context-And-Handoff): how a session ends before the bound.
-- [Spec-Store](Spec-Store): the files, the states, and the log of a change.
+- [Handoff](Handoff): how a session ends before the bound.
+- [MiniSpec](MiniSpec): the files and the tasks of a change.
 - [Troubleshooting](Troubleshooting): what to check when a part does not show.

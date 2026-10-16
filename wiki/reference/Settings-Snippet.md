@@ -2,49 +2,12 @@
 
 # Settings Snippet
 
-This page tells users how to apply the settings that dotclaude needs.
+This page tells users how to apply the settings that claudetto needs.
 The page gives the settings as a JSON block in the format of Claude Code settings.
 The `settings` entries of each slice make the snippet, and `just generate` writes it into this page.
 A test checks each key against `schemas/claude-code-settings.json`.
 The reason, the effect in Claude Code, and the default of each key are on [Settings snippet keys](Settings-Snippet-Keys).
-
-## Apply It with Setup
-
-1. Run `/dotclaude:setup`.
-2. Pick the scope: `user`, `project`, or `local`.
-3. Read the list of changes, and approve the write.
-
-The `settings` command of setup prints the changes, and it writes them only with `--apply`.
-A failed read of the settings file writes nothing.
-The merge adds keys and rules, and keeps your other keys.
-It replaces the `availableModels` list.
-A status line of another tool stays.
-The project scope gets no status line, because the command holds the path of one computer.
-Setup writes the `autoMode` lists of the [destructive floor](Guards#the-destructive-floor) to the user scope only.
-The project and local scopes get none.
-Setup makes no backup, so the list of changes is the record.
-
-The status line commands get the absolute path of the plugin folder.
-That path holds the plugin version, so run setup again after each plugin update.
-
-When the model catalog of your account offers Mythos, setup puts `claude-mythos-5-1` in place of `claude-fable-5-1`.
-See [Mythos detection](Settings-Snippet-Keys#mythos-detection).
-
-When `dotclaude-docs` is installed, the merge also adds the [lines for the `dotclaude-docs` add-on](#lines-for-the-dotclaude-docs-add-on).
-
-## Copy It by Hand
-
-1. Copy the keys that you want into `~/.claude/settings.json` (user scope).
-2. Replace `<plugin folder>` in `statusLine` and `subagentStatusLine` with the absolute path of the plugin folder, or delete both keys.
-   The commands are `bun --no-env-file "<plugin folder>/bin/dotclaude-statusline"` for `statusLine`, and the same command with `--subagent` for `subagentStatusLine`.
-   A status line command gets no `${CLAUDE_PLUGIN_ROOT}`, so the path must be absolute.
-   The path holds the version, so change the two commands again after each plugin update.
-3. Replace `claude-fable-5-1` with `claude-mythos-5-1` only if your account has Mythos.
-   See [Mythos detection](Settings-Snippet-Keys#mythos-detection) and [the CVP procedure](Settings-Snippet-Keys#cvp-procedure).
-4. Restart Claude Code.
-
-The snippet sets a key only when the Claude Code default does not give the result that dotclaude needs.
-A test fails when the block holds a key of the [never-set list](Off-Switches#never-set).
+To apply the snippet with setup or by hand, see [Settings Apply](Settings-Apply).
 
 ## The Snippet
 
@@ -54,9 +17,8 @@ A test fails when the block holds a key of the [never-set list](Off-Switches#nev
   "syncClaudeAiSkills": false,
   "syncClaudeAiPlugins": false,
   "env": {
-    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80.3571",
     "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
-    "CLAUDE_CODE_DISABLE_CFC_PROMPT": "1",
     "CLAUDE_CODE_DISABLE_CRON": "1",
     "CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS": "1",
     "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
@@ -64,12 +26,8 @@ A test fails when the block holds a key of the [never-set list](Off-Switches#nev
     "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1",
     "CLAUDE_CODE_FORK_SUBAGENT": "0",
     "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "1",
-    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "5",
-    "CLAUDE_CODE_MAX_CONTEXT_TOKENS": "300000",
-    "CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT": "1",
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "2",
     "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-5-5",
-    "CLAUDE_CODE_TODO_REMINDER_MODE": "off",
-    "DISABLE_COMPACT": "1",
     "DISABLE_ERROR_REPORTING": "1",
     "DISABLE_FEEDBACK_COMMAND": "1"
   },
@@ -160,6 +118,8 @@ A test fails when the block holds a key of the [never-set list](Off-Switches#nev
       "Bash(* truncate table *)"
     ],
     "allow": [
+      "Glob",
+      "Grep",
       "Bash(git status *)",
       "Bash(git diff *)",
       "Bash(git log *)",
@@ -204,21 +164,23 @@ A test fails when the block holds a key of the [never-set list](Off-Switches#nev
     "plugin-authoring": "name-only"
   },
   "disableBundledSkills": true,
-  "disableAgentView": true,
+  "worktree": {
+    "baseRef": "head"
+  },
   "disableRemoteControl": true,
   "enableArtifact": false,
   "enableWorkflows": false,
-  "bashOutputMaxChars": 4000,
+  "bashOutputMaxChars": 16000,
   "statusLine": {
     "type": "command",
-    "command": "bun --no-env-file \"<plugin folder>/bin/dotclaude-statusline\"",
+    "command": "bun --no-env-file \"<plugin folder>/bin/claudetto-statusline\"",
     "padding": 0,
     "refreshInterval": 1,
     "hideVimModeIndicator": true
   },
   "subagentStatusLine": {
     "type": "command",
-    "command": "bun --no-env-file \"<plugin folder>/bin/dotclaude-statusline\" --subagent"
+    "command": "bun --no-env-file \"<plugin folder>/bin/claudetto-statusline\" --subagent"
   },
   "enabledPlugins": {
     "cc-plugin-agents-md@builtin": false,
@@ -231,7 +193,7 @@ A test fails when the block holds a key of the [never-set list](Off-Switches#nev
     "cc-plugin-tips@builtin": false,
     "cc-plugin-you-should-know@builtin": false
   },
-  "outputStyle": "dotclaude:Concise",
+  "outputStyle": "claudetto:Concise",
   "sandbox": {
     "enabled": true,
     "allowUnsandboxedCommands": true,
@@ -249,18 +211,30 @@ A test fails when the block holds a key of the [never-set list](Off-Switches#nev
         "index.crates.io",
         "proxy.golang.org"
       ]
+    },
+    "filesystem": {
+      "allowWrite": [
+        "~/.bun/install/cache",
+        "~/.npm",
+        "~/.cache/pip",
+        "~/.cargo/registry",
+        "~/go/pkg/mod"
+      ]
     }
   },
   "feedbackSurveyRate": 0,
   "feedbackDrafts": "off",
   "spinnerTipsEnabled": false,
   "promptCacheTtl": "5m",
-  "maxEffortLevel": "max",
-  "fastMode": false,
+  "modelSettings": {
+    "claude-haiku-5-5": {
+      "autoCompactWindow": 144444
+    }
+  },
+  "autoCompactWindow": 300000,
   "promptSuggestionEnabled": false,
   "awaySummaryEnabled": false,
-  "autoMemoryEnabled": false,
-  "autoCompactEnabled": false
+  "autoMemoryEnabled": false
 }
 ```
 
@@ -272,28 +246,11 @@ An extra ask is acceptable.
 The rules do not stop a write outside the allowed folders.
 The sandbox limits the writes of `Bash`.
 
-## Lines for the `dotclaude-docs` Add-On
-
-Add these lines only when you install `dotclaude-docs` ([Library docs](Library-Docs)).
-Merge them into the `permissions.allow` list and the `sandbox.network.allowedDomains` list above.
-
-```json
-{
-  "permissions": {
-    "allow": [
-      "Skill(dotclaude-docs:docs)",
-      "Bash(CTX7_TELEMETRY_DISABLED=1 npx -y ctx7@0.5.14 *)"
-    ]
-  },
-  "sandbox": {
-    "network": { "allowedDomains": ["context7.com", "registry.npmjs.org"] }
-  }
-}
-```
-
 ## Related Pages
 
+- [Settings Apply](Settings-Apply)
 - [Settings Snippet Keys](Settings-Snippet-Keys)
+- [Settings Snippet Docs](Settings-Snippet-Docs)
 - [Off Switches](Off-Switches)
 - [Settings Schema](Settings-Schema)
 - [Install](Install)

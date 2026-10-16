@@ -5,10 +5,10 @@ This page answers four questions about the request of Claude Code `2.1.296`:
 - What does one request contain?
 - In what order does the system prompt put its sections?
 - How does an output style change the prompt?
-- Where are the cache breakpoints, and where does dotclaude change the request?
+- Where are the cache breakpoints, and where does claudetto change the request?
 
 The page also covers the plugin hooks modules.
-Read it if you change the prompt, the cache, or the hooks of dotclaude.
+Read it if you change the prompt, the cache, or the hooks of claudetto.
 
 ## Sources and Labels
 
@@ -136,9 +136,10 @@ The shorter prompt has no such section, so the field has no effect there (**`off
 The engine uses the lean form when `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is `1`.
 It uses the full form when it is `0` (**`binary`**, `2.1.296`).
 The env var `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0` selects the full prompt on each model (**`official`**).
+The snippet of `claudetto` does not set this env var.
 When the style has no coding instructions, the section `doing_tasks` is `null` (**`binary`**, `inferred` from the same gate).
 
-The shipped style is described under [dotclaude changes](#where-dotclaude-changes-the-request) below.
+The shipped style is described under [claudetto changes](#where-claudetto-changes-the-request) below.
 An example of a built-in style is `Concise`.
 It has 265 bytes in one capture of `2.1.296` (**`capture`**).
 
@@ -156,13 +157,13 @@ The captures show the text in the first user message:
 - A block with the project instructions, 4794 bytes, that starts with a `<system-reminder>` tag.
 - A block with a note about how to answer questions, 555 bytes.
 - A block with the attribution rule for commits and pull requests, 585 bytes.
-- In a dotclaude session, a block with the drift note of the settings snippet, 873 bytes.
+- In a claudetto session, a block with the drift note of the settings snippet, 873 bytes.
   The `session.start` hook of the core plugin adds it (**`capture`**, see [Architecture](Architecture)).
 
 The bundle has the text of a plan mode reminder and of a `TodoWrite` reminder.
 Their types are `plan_mode` and `todo_reminder` (**`binary`**).
 The mapping from each text to its type is not confirmed (**`binary`**).
-The `prompt` slice of dotclaude sets `CLAUDE_CODE_TODO_REMINDER_MODE` to `off` (**`source`**, `src/plugins/dotclaude/slices/prompt/slice.ts`).
+The snippet of `claudetto` does not set `CLAUDE_CODE_TODO_REMINDER_MODE`.
 This page does not measure the effect on the reminder.
 
 ## Cache Breakpoints
@@ -188,31 +189,32 @@ The captures show these markers (**`capture`**):
 
 This page does not measure the cache hits.
 
-## Where dotclaude Changes the Request
+## Where claudetto Changes the Request
 
 The changes are in the sources of the plugin and in its settings snippet.
 
-- The `styles` slice ships the style `Concise` (`src/plugins/dotclaude/slices/styles/slice.ts`).
-  Its source is `src/plugins/dotclaude/slices/styles/styles/Concise.md`.
-  The built file is `plugins/dotclaude/output-styles/Concise.md`.
+- The `styles` slice ships the style `Concise` (`src/plugins/claudetto/slices/styles/slice.ts`).
+  Its source is `src/plugins/claudetto/slices/styles/styles/Concise.md`.
+  The built file is `plugins/claudetto/output-styles/Concise.md`.
   The style has `keep-coding-instructions: true`, so the coding section stays.
   The style sets no `force-for-plugin`, so the user's `outputStyle` setting still decides.
-- The settings snippet selects `dotclaude:Concise` through the key `outputStyle`.
-- The `prompt` slice has three hooks (**`source`**, `src/plugins/dotclaude/slices/prompt/slice.ts`).
+- The settings snippet selects `claudetto:Concise` through the key `outputStyle`.
+- The `prompt` slice has four hooks (**`source`**, `src/plugins/claudetto/slices/prompt/slice.ts`).
   - `prompt.compose` applies the section transforms.
     It adds the model variant block once per session.
     The variant is chosen at the first call of the session and kept, so a model switch does not change the prompt.
-  - `agent.spawn` adds a block to the end of the task prompt of a subagent.
-  - `prompt.section` answers the section `context_management` with other text, when `DISABLE_COMPACT` is set.
+  - `agent.spawn` keeps the model of a subagent.
+  - `session.append` adds the model block to the end of the task of a subagent.
+  - `prompt.section` answers the section `context_management` with other text, when the handoff is on or `DISABLE_COMPACT` is set.
     The text is the same on each call, so the cache stays.
-- The settings of the `prompt` slice set these env vars: `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` to `1`, `DISABLE_COMPACT` to `1`, and `CLAUDE_CODE_TODO_REMINDER_MODE` to `off`.
-  They do not set `CLAUDE_CODE_ATTRIBUTION_HEADER`, so the billing block stays at the start of the system prompt.
+- The snippet does not set `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`, `DISABLE_COMPACT`, or `CLAUDE_CODE_TODO_REMINDER_MODE`.
+  It does not set `CLAUDE_CODE_ATTRIBUTION_HEADER`, so the billing block stays at the start of the system prompt.
   With `CLAUDE_CODE_ATTRIBUTION_HEADER` set to `0`, a captured request has no billing block (**`capture`**).
   Then a model call from a hook on a subscription gets HTTP 429, because it has no billing block and no identity block of Claude Code.
   See [You Should Know](You-Should-Know).
 - The `surface` slice shortens the tool texts, or defers a tool.
-  The tests confirm that each transform finds its text in the extract (`tests/dotclaude/surface/extract.test.ts`).
-  See [Prompt Surface](Prompt-Surface) for the sizes of the tool texts.
+  The tests confirm that each transform finds its text in the extract (`tests/claudetto/surface/extract.test.ts`).
+  See [Prompt](Prompt) for the sizes of the tool texts.
 
 The `prompt.section` hook does not run when the built-in guard `sec-default` loads (see below).
 
@@ -232,7 +234,7 @@ They describe Claude Code `2.1.287` and later.
 - The API is early access.
   It may change between releases (**`official`**).
 - The chain order is the managed settings hooks, then the modules, then the other settings hooks (**`official`**).
-- The module has no `.catch` in dotclaude.
+- The module has no `.catch` in claudetto.
   So a failure gives no ask, and the verdict of the engine stands.
   An action that throws is skipped.
   Its error is not logged (**`binary`**).
@@ -244,7 +246,7 @@ They describe Claude Code `2.1.287` and later.
 - The module does not see the sections of `prompt.compose` in one call.
   So the core plugin uses `prompt.section` for one section.
 
-The events that dotclaude uses are on [Architecture](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#the-11-events).
+The events that claudetto uses are on [Hook Events](Hook-Events#the-14-claudetto-events).
 
 ## The Built-In Guard (`sec-default`)
 
@@ -261,20 +263,20 @@ The rules that matter here are these (**`official`**).
 
 On a machine with managed settings and `sec-default` loaded (**`measured`**, `2.1.292`):
 
-- The debug log said that the `prompt.section` hook of dotclaude was bypassed.
+- The debug log said that the `prompt.section` hook of claudetto was bypassed.
   So the replacement of `context_management` did not reach the prompt.
 - The `tool.check` hook still ran, and its `ask` reached the user.
 - The classic `PreToolUse` command hook of the plugin still ran.
 
 A managed drop-in that sets `prependPlugins` without the guard let the `prompt.section` hook run (**`measured`**, `2.1.293`).
-dotclaude ships no managed settings file.
+claudetto ships no managed settings file.
 So the guard decides on a machine that has its own managed settings.
 
 ## Related Pages
 
-- [Prompt Surface](Prompt-Surface) has the sizes of the tools and the tool transforms.
+- [Prompt](Prompt) has the sizes of the tools and the tool transforms.
 - [Prompt Variants](Prompt-Variants) has the system prompt variants of the core plugin.
-- [Architecture](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#the-hook-module) describes what the hooks module does.
+- [Hook Events](Hook-Events#hooks-module) describes what the hooks module does.
 - [Compaction and Context](Compaction-And-Context) has the `context_management` section.
 - [Tools and Deferral](Tools-And-Deferral) has the deferred tools.
 - [Claude Code Internals](Claude-Code-Internals) has the scope and the version of the facts.

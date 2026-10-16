@@ -10,7 +10,7 @@ The decisions in force are in [Decisions](Decisions).
   A feature whose later call reads a file that the feature wrote is not built.
   Reason: the user decided on 2026-10-12 that `.dotclaude/` holds dotclaude's own files, with an append-only `events.jsonl` for the spec store, and that `/handoff` returns.
   This also reverses the handoff clause of D5.
-  Source: `.dotclaude/spec/changes/1.0.0/change.md` (Decisions of the user, 2026-10-12, and Scope), and `.dotclaude/spec/changes/1.0.0/packages/34-spec-events.md`.
+  Source: `.dotclaude/spec/changes/1.0.0/change.md` (Decisions of the user, 2026-10-12, and Scope), and `.dotclaude/spec/changes/1.0.0/packages/34-spec-events.md`, at commit `44e74425`.
 
 ## Prompt
 
@@ -29,11 +29,11 @@ The decisions in force are in [Decisions](Decisions).
 
 - D25, number: the old choice was five agents.
   The 1.0.0 choice is a fixed set of six agents.
-  The reason is the 1.0.0 scope of `.dotclaude/spec/changes/1.0.0/change.md` (section Scope).
+  The reason is the 1.0.0 scope of `.dotclaude/spec/changes/1.0.0/change.md` at commit `44e74425` (section Scope).
   The scope drops the `test-runner` agent, which item 8 of `evidence/zero-token.md` replaces with a CLI.
 - D25, planning: the old choice kept planning in the main loop.
   The 1.0.0 choice adds the `planner` agent (Opus, `high`, writes only under `spec/`).
-  The reason is the Agents table of `.dotclaude/spec/changes/1.0.0/workflow.md`.
+  The reason is the Agents table of `.dotclaude/spec/changes/1.0.0/workflow.md` at commit `44e74425`.
 
 ## Tools
 
@@ -56,7 +56,7 @@ The decisions in force are in [Decisions](Decisions).
 - D21 Hand-off order.
   Old choice: the 0.28.0 plan ended in a hand-off, with a preparation group that ran a live patch of settings before the 0.28.0 work.
   Reason: 1.0.0 discards the 0.28.0 plan.
-  Source: `.dotclaude/spec/changes/1.0.0/change.md`, "Decisions of the user", the first item.
+  Source: `.dotclaude/spec/changes/1.0.0/change.md` at commit `44e74425`, "Decisions of the user", the first item.
 
 ## Evidence
 

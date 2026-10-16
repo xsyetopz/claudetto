@@ -1,11 +1,16 @@
 # Handoff Cost
 
-This page gives the cost of one `/dotclaude:handoff` and the cost of one `/compact`.
+This page gives the cost of one `/dotclaude:handoff` of dotclaude 1.0.0 and the cost of one `/compact`.
 Both runs start from the same session.
 Read it to compare the two costs, and the sources of each number.
 The source of the numbers is the measurement of 2026-10-12, with Claude Code `2.1.296`.
-The record is `.dotclaude/spec/changes/1.0.0/evidence/handoff-cost.md`.
 The index of the evidence is [Evidence](Evidence).
+
+The command `/dotclaude:handoff` is history.
+claudetto 0.1.0 has a `handoff` slice that works another way.
+The slice runs at each compaction, and its command `/claudetto:handoff` starts one by hand ([Handoff](Handoff)).
+The figures below are not a measure of that slice.
+See `openspec/changes/claudetto-0-1-0/design.md` for the new design.
 
 ## What the Numbers Compare
 
@@ -23,12 +28,12 @@ The index of the evidence is [Evidence](Evidence).
 - Date: 2026-10-12, from 17:32 UTC to 17:34 UTC.
 - Claude Code: `2.1.296`, from `claude --version`.
 - Model: `claude-sonnet-5-5`, with a context window of 1,000,000 tokens, as the record names it.
-- Checkout: branch `dotclaude-1-0-0`, tip `627d1d22`.
+- Checkout: commit `627d1d22` of dotclaude 1.0.0.
 - Each run used `just sandbox`, with a new sandbox from `just sandbox-clean`.
-- The project of the sandbox held a copy of the `asks`, `decide`, `guard`, and `handoff` slices, with the tests removed, in one commit.
+- The project of the sandbox held a copy of the `asks`, `decide`, `guard`, and `handoff` slices of dotclaude 1.0.0, with the tests removed, in one commit.
 - The sandbox had no `config/settings.json`.
-  So `mainHandover` had its default, `manual`.
-  The default is `DEFAULT_MAIN_HANDOVER` in `src/plugins/dotclaude/slices/handoff/limits.ts`.
+  So `mainHandoff` had its default, `manual`.
+  The default is `DEFAULT_MAIN_HANDOFF` in `src/plugins/dotclaude/slices/handoff/limits.ts` of dotclaude 1.0.0.
 - Four `claude` runs ran in total:
   - One base run.
   - One handoff fork.
@@ -125,4 +130,5 @@ The compaction fork received the follow-up `Continue the work.`
 
 ## Related Pages
 
-- [Usage-Evidence](Usage-Evidence): the plans, prices, and usage of dotclaude 1.0.0 over one measured week.
+- [Usage Evidence](Usage-Evidence): the plans, prices, and usage over one measured week.
+- [Handoff](Handoff): the handoff of claudetto 0.1.0.

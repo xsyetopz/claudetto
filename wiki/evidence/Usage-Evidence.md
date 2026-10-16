@@ -1,7 +1,7 @@
 # Usage Evidence
 
-This page gives the facts about the plans, the prices, the models, and the usage of dotclaude 1.0.0.
-It also gives the measurements of one heavy week and what they mean.
+This page gives the facts about the plans, the prices, the models, and the usage of claudetto 0.1.0.
+It also gives the measurements of one heavy week of dotclaude 0.x and what they mean.
 Read it to learn what drives the usage, and which values are measured.
 The source of each number is named in its row or line.
 Source labels are official, binary, measured, reported, and inference.
@@ -12,43 +12,44 @@ Source labels are official, binary, measured, reported, and inference.
 - Three things drive the usage: the context per turn, the subagent fan-out, and the `general-purpose` agent.
   The model choice is not one of them.
 - Turns set the cost, not tool calls.
-- dotclaude 1.0.0 does not detect the plan for its policy.
+- claudetto 0.1.0 does not detect the plan for its policy.
   Setup picks an effort and a subagent cap from the account tier only.
-- dotclaude 1.0.0 does not use `opusplan`.
+- claudetto 0.1.0 does not use `opusplan`.
 
-## Models and Efforts of 1.0.0
+## Models and Efforts of 0.1.0
 
 Each agent sets its model and effort in its frontmatter.
-The source is `src/plugins/dotclaude/slices/agents/agents/*.md`.
+The source is `src/plugins/claudetto/slices/agents/agents/*.md`.
+The basis of the values is the big sweep (D7), as [Agents](Agents) and [Decisions Router](Decisions-Router) tell.
 
 | Agent | Model | Effort |
 | --- | --- | --- |
-| `planner` | `claude-opus-5-5` | `high` |
+| `debugger` | `claude-opus-5-5` | `high` |
 | `reviewer` | `claude-opus-5-5` | `high` |
-| `debugger` | `claude-sonnet-5-5` | `high` |
-| `researcher` | `claude-sonnet-5-5` | `medium` |
-| `implementer` | `claude-sonnet-5-5` | `medium` |
-| `investigator` | `claude-haiku-5-5` | `medium` |
+| `planner` | `claude-haiku-5-5` | `xhigh` |
+| `researcher` | `claude-haiku-5-5` | `xhigh` |
+| `implementer` | `claude-haiku-5-5` | `xhigh` |
+| `investigator` | `claude-haiku-5-5` | `xhigh` |
 
-The settings snippet sets these values, from `src/plugins/dotclaude/slices/prompt/slice.ts`.
+The settings snippet sets these values ([Settings Snippet](Settings-Snippet)).
 
 - `model` is `claude-opus-5-5`.
 - `CLAUDE_CODE_SUBAGENT_MODEL` is `claude-sonnet-5-5`.
   An agent file that names its own model overrides it.
-- `maxEffortLevel` is `max`.
-  The snippet sets no `effortLevel`.
+  Each agent file names its model, so no agent uses it.
 - `promptCacheTtl` is `5m`.
-  The snippet sets no `subagentPromptCacheTtl`.
+  The snippet sets no `effortLevel`, no `maxEffortLevel`, and no `subagentPromptCacheTtl`.
   It also sets no `advisorModel`.
 - `availableModels` lists `claude-opus-5-5`, `claude-sonnet-5-5`, `claude-haiku-5-5`, and `claude-fable-5-1`.
 - The variable `CLAUDE_CODE_EFFORT_LEVEL` overrides the `effort` of the agent files.
-  Its name is in `src/plugins/dotclaude/slices/setup/domain/facts.ts`.
+  The `setup` slice reports it when it is set.
+  Its name is in `src/plugins/claudetto/slices/setup/domain/facts.ts`.
 
 ## Account Tiers and Setup Picks
 
 Setup reads `claude auth status --json` and the rate limit tier.
 It then writes an effort and a subagent cap for each account.
-The source is `src/plugins/dotclaude/slices/setup/domain/tiers.ts`.
+The source is `src/plugins/claudetto/slices/setup/domain/tiers.ts`.
 
 | Account | `effortLevel` | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` |
 | --- | --- | --- |
@@ -57,7 +58,8 @@ The source is `src/plugins/dotclaude/slices/setup/domain/tiers.ts`.
 | Max 20x | `xhigh` | `SUBAGENTS_MAX_20X` |
 | API key | `high` | `SUBAGENTS_PRO` |
 
-The subagent caps are in `src/plugins/dotclaude/slices/setup/limits.ts`.
+The subagent caps are in `src/plugins/claudetto/slices/setup/limits.ts`.
+The values are 2 for Pro and an API key, 4 for Max 5x, and 7 for Max 20x.
 Setup does not set the plan mode agents or the usage warnings.
 Claude Code scales them by tier.
 The account with no login gets no pick.
@@ -77,7 +79,8 @@ Source: `https://platform.claude.com/docs/en/about-claude/pricing`.
 | Haiku 5.5 (prompts over 100,000 tokens) | $0.50 | $0.625 | $0.05 | $2.50 |
 
 - The Haiku 5.5 price rises above 100,000 prompt tokens.
-  The investigator agent is the only Haiku 5.5 agent of 1.0.0.
+  Four of the six agents of 0.1.0 run on Haiku 5.5, so a long task of them can reach the higher price.
+  The long-prompt price is derived from the table, and claudetto has no rule that moves a task to another model.
 - The Sonnet 5.5 cache read is $0.10 per million tokens on this page.
   An older text of this wiki gave $0.20.
   That value is stale.
@@ -106,19 +109,19 @@ Each model has at most the remaining share of the weekly limit.
   It lives 5 minutes on usage credits or an API key.
   Subagents use 5 minutes (official, as the old text of this page cited it, not checked again in this run).
 - A prompt after the TTL, and a `/compact` after it, write the whole context again.
-  dotclaude 1.0.0 sets `promptCacheTtl` to `5m`.
+  claudetto 0.1.0 sets `promptCacheTtl` to `5m`.
 - From Claude Code `2.1.287`, the `SessionStart` input for `resume` and `fork` has `prompt_cache_likely_expired` (binary, not checked again in this run).
 
 ## Effort
 
 - Claude Code defaults Opus 5.5 and Sonnet 5.5 to `medium` (official, not checked again in this run).
-- dotclaude does not set a top-level `effortLevel` in the snippet.
+- claudetto does not set a top-level `effortLevel` in the snippet.
   The setup picks of the account tiers set it, as shown above.
 - No hook event fires on an effort change (binary).
 
 ## Opusplan
 
-dotclaude 1.0.0 does not use `opusplan`.
+claudetto 0.1.0 does not use `opusplan`.
 Nothing in `src/` names it.
 `opusplan` switches the model when plan mode starts and ends.
 A model switch loses the prompt cache (official).
@@ -130,10 +133,10 @@ The figures come from a scan of the local transcripts (measured).
 The repository does not hold that scan.
 The transcripts start on 09-25, so the figures are a lower bound.
 
-The week ran under a 0.x config, not under 1.0.0.
+The week ran under a dotclaude 0.x config, not under dotclaude 1.0.0 or claudetto 0.1.0.
 Most of the week ran before 0.5.0 moved `implementer` to Sonnet 5, so the `implementer` row ran mostly on Opus 5.5.
 The source is the 0.26 text of this page, in git commit `af3071f4` (`wiki/Usage-Evidence.md`, line 22).
-The figures show the 0.x config, and they do not describe the 1.0.0 agents of the table above.
+The figures show the 0.x config, and they do not describe the agents of the table above.
 
 | Measure | Value |
 | --- | --- |
@@ -154,14 +157,15 @@ Three things drive the usage.
 2. **Subagent fan-out.**
    Each fresh subagent writes about 14k tokens to the cache before its first tool call.
    Its 5-minute cache expires while it waits on long builds.
-3. **`general-purpose` in place of dotclaude agents.**
-   The settings snippet denies `Agent(general-purpose)` in `src/plugins/dotclaude/slices/prompt/slice.ts`.
+3. **`general-purpose` in place of the claudetto agents.**
+   The settings snippet denies `Agent(general-purpose)` ([Settings Snippet](Settings-Snippet)).
    The denial is a setting.
    It is not a proof that the habit stopped.
 
 ## The Delegation Share
 
-`just usage` runs `plugins/dotclaude-sessions/bin/dotclaude-usage`.
+`just usage` runs `plugins/claudetto-sessions/bin/claudetto-usage`.
+It is the `usage` skill of the `claudetto-sessions` add-on ([Sessions](Sessions)).
 It repeats the scan on any machine.
 It reports the sessions by entrypoint, the skill calls, the delegation share, and the latest subagent runs.
 
@@ -192,7 +196,7 @@ So the number of turns sets the cost.
   The settings snippet does not set `cleanupPeriodDays`.
   See [settings snippet keys](Settings-Snippet-Keys).
 
-## Tools That dotclaude Does Not Use
+## Tools That claudetto Does Not Use
 
 | Tool | Reason |
 | --- | --- |
@@ -203,13 +207,16 @@ So the number of turns sets the cost.
 ## Measuring a Session
 
 `just measure` runs `tools/measure.ts`.
-It reads a session transcript and prints where the context went.
-It reports the first request of the session, each subagent, and the repeat reads of the same file.
-The measures that led to the context bounds are in [context and handoff](Context-And-Handoff).
+It calls `claudetto-start` of the `claudetto-sessions` add-on with the start bounds of `tools/limits.ts`.
+`just start-run` captures and measures a clean sandbox session in one command.
+The bounds are in [Bounds](Bounds).
 
 ## Related Pages
 
 - [Plugin Layout](Plugin-Layout)
+- [Sessions](Sessions)
+- [Bounds](Bounds)
+- [Decisions Router](Decisions-Router)
 - [Agents](Agents)
 - [Settings Snippet](Settings-Snippet)
 - [Evidence](Evidence)

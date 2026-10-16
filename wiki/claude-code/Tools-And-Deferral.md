@@ -1,6 +1,6 @@
 # Tools and Deferral
 
-This page says how Claude Code `2.1.296` loads its tools, which of them are deferred, and what dotclaude changes in their descriptions.
+This page says how Claude Code `2.1.296` loads its tools, which of them are deferred, and what claudetto changes in their descriptions.
 Read it if you change a tool description, or if a tool schema is missing from a request.
 
 ## What It Does
@@ -90,6 +90,8 @@ A configuration sets `alwaysLoad` for a whole server.
 A configuration value of `false` keeps all tools of a server deferred.
 
 The captured snippet request sends one MCP tool, `mcp__dotclaude-jev__second_opinion`, with its full schema.
+The capture is from dotclaude 1.0.0.
+The Jev server of that version had the name `dotclaude-jev`.
 It costs 530 tokens.
 The capture does not record the server settings.
 Inference: this tool loads upfront, through one of the two settings above, or through the state of tool search in that run.
@@ -104,7 +106,7 @@ The captures do not record their prompt, so this page does not assume one.
 | Run | Tools | Placeholder | Tool part | Whole request | Share |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | vanilla | 10,133 for 11 tools | 93 | 10,226 | 18,253 | 56% |
-| snippet, dotclaude plugins on | 9,301 for 11 tools, including 530 for the MCP tool | 93 | 9,394 | 19,906 | 47% |
+| snippet, dotclaude 1.0.0 plugins on | 9,301 for 11 tools, including 530 for the MCP tool | 93 | 9,394 | 19,906 | 47% |
 
 The counts come from `external/capture/*/report-*.json`.
 The whole-request counts match the figures in `external/dossier/cc-2.1.296/tool-costs.md`.
@@ -112,10 +114,10 @@ That dossier file says it is "not measured", but its three-run comparison has th
 The two runs differ in more than the tools.
 So the share of each run is a figure for that run only.
 
-## What dotclaude Changes in Tool Descriptions
+## What claudetto Changes in Tool Descriptions
 
 The `surface` slice of the core plugin changes four tools.
-Its source is `src/plugins/dotclaude/slices/surface/`.
+Its source is `src/plugins/claudetto/slices/surface/`.
 
 - `slice.ts` names the four tools in the filter of the `tool.describe` event: `Agent`, `Bash`, `Read`, and `ListAgents`.
 - `adapters/mod.ts` first gets the engine answer.
@@ -126,17 +128,19 @@ Its source is `src/plugins/dotclaude/slices/surface/`.
 - A tool that no transform names passes through unchanged.
 
 The shorter texts are in `slices/surface/texts.ts/`.
-dotclaude wrote them.
+claudetto wrote them.
 They are not copies of the built-in texts.
 
-| Tool | Built-in text, captured | dotclaude text | Change |
+| Tool | Built-in text, captured | Text of dotclaude 1.0.0 | Change |
 | --- | ---: | ---: | --- |
 | `Agent` | 2,906 characters | 937 bytes, `tool-agent.md` | shorter |
 | `Bash` | 1,492 characters | 850 bytes, `tool-bash.md` | shorter |
 | `Read` | 790 characters | 428 bytes, `tool-read.md` | shorter |
 | `ListAgents` | 777 characters | no text | deferred, text kept |
 
-The token counts of the two runs show the effect.
+The sizes in the table are from the capture of dotclaude 1.0.0.
+The current texts in `slices/surface/texts.ts/` are 909 bytes (`tool-agent.md`), 568 bytes (`tool-bash.md`), and 428 bytes (`tool-read.md`).
+The token counts of the two captured runs show the effect.
 
 | Tool | Vanilla tokens | Snippet tokens |
 | --- | ---: | ---: |
@@ -153,7 +157,9 @@ So this is not a measured effect of the surface alone.
 
 ## Sources
 
-- The `2.1.296` binary, through the extract in `external/cc-extract/2.1.296/`.
+- The `2.1.296` binary, through an extract of its strings.
+  The folder of that extract is gone.
+  The extract of `2.1.299` is in `external/cc-2.1.299/cc-extract-2.1.299/`, and it has the same folder names.
   The folder `tool/` holds the text of 25 built-in tools.
   Seven of them also have a `.full.txt` variant.
   The folder `listing/` holds the lists of agent types and skills.
@@ -179,5 +185,5 @@ So this is not a measured effect of the surface alone.
 
 ## Related Pages
 
-- [Prompt Surface](Prompt-Surface): the full set of prompt cuts.
+- [Prompt](Prompt): the full set of prompt cuts.
 - [Request Build](Request-Build): how a request is built.

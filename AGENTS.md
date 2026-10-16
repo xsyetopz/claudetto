@@ -2,10 +2,10 @@
 
 A Claude Code plugin marketplace in ESM.
 Code that needs Python is Python, and the tests and `tools/` run on Bun 1.4.3 or later, with `bun install` for the dev dependencies.
-The core plugin is in `plugins/dotclaude/`, next to seven add-on plugins: `dotclaude-codegraph`, `dotclaude-browser`, `dotclaude-docs`, `dotclaude-sessions`, `dotclaude-lab`, `dcc-plugin-agents-md`, and `dcc-plugin-you-should-know`.
+The core plugin is in `plugins/claudetto/`, next to six add-on plugins: `claudetto-codegraph`, `claudetto-browser`, `claudetto-docs`, `claudetto-sessions`, `claudetto-lab`, and `claudetto-you-should-know`.
 Each add-on plugin works without the core plugin, so it imports nothing from another plugin.
 Only `plugins/` ships to users.
-`tests/` has one folder for each plugin, with `tests/dotclaude/<slice>/` for each slice of the core plugin.
+`tests/` has one folder for each plugin, with `tests/claudetto/<slice>/` for each slice of the core plugin.
 `tests/kernel/` tests `src/kernel/`, and `tests/support/` holds the helpers of the tests.
 `tools/` holds the repository scripts.
 `src/` holds the source of each plugin, the shared kernel, and each text that a plugin ships, such as the agents, the skills, and `hooks.json`.
@@ -20,7 +20,11 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
 
 - `just check` runs lint, the type check, the check of the generated files, tests, validation, and the hook labs.
   It must pass before done.
-- `just test tests/dotclaude/guard/rules.test.ts` runs one test file with `bun test`.
+- `just docker check` runs `just check` in a container on OrbStack or Docker, with at most `DOCKER_CPUS` CPUs (`tools/limits.ts`).
+  `just docker test tests/claudetto/guard/rules.test.ts` runs one recipe the same way.
+  Use it for the checks, so that they do not take each CPU of the host.
+  The sandbox sessions and the paid runs use the login of the host, so they do not run in the container.
+- `just test tests/claudetto/guard/rules.test.ts` runs one test file with `bun test`.
 - `just lab` runs the hook lab of each plugin: the tests of its hooks module with stubbed Claude Code events.
   Test each change to `hooks/register.ts` there before a live session.
 - `bun run lint:md` lints the Markdown files.
@@ -31,7 +35,7 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
 ## Rules
 
 - Use the env vars of Claude Code and flags.
-  Add a dotclaude env var only when neither can do the work, and give it the prefix `DOTCLAUDE_`.
+  Add a claudetto env var only when neither can do the work, and give it the prefix `CLAUDETTO_`.
 - Keep each file at 300 lines or less, and each test file at 500 lines or less, which `just validate` checks.
   Split a larger file into files that each hold one concern, and split a long `.md` file into linked parts.
   Generated files, such as `schemas/`, are out of scope.
@@ -55,7 +59,7 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
   The user approves the use of their login in `just sandbox` and `just sandbox-alone` for this work (the user, 2026-10-13).
   When a guard stops a sandbox session in a subagent, run that session from the main session (the user, 2026-10-13).
   Write the results, with the method, to the evidence file of the package.
-- Ask the user before each new paid run, such as an eval, a sandbox session, a handover test, or a model call (the user, 2026-10-15).
+- Ask the user before each new paid run, such as an eval, a sandbox session, a handoff test, or a model call (the user, 2026-10-15).
   Give the expected cost and the current weekly share with the question.
   This applies also to the sandbox sessions that the rule above approves.
 - Add CHANGELOG entries under the section of the version in the manifests when that version has no tag yet, because it is the release in progress.

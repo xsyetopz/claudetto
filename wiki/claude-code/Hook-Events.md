@@ -1,7 +1,7 @@
 # Hook Events
 
 This page lists the hook events of Claude Code.
-It explains how a plugin registers a hook for them, and how the 11 dotclaude events map to them.
+It explains how a plugin registers a hook for them, and how the 14 claudetto events map to them.
 Read it if you write or test a hook.
 The page also states how a hook fails.
 The architecture of the plugin is in [Architecture](Architecture).
@@ -65,30 +65,37 @@ The "Returns" column lists only the fields that an event adds to the base fields
 | `WorktreeCreate` | A git worktree is created. | `name` | `worktreePath`. |
 | `WorktreeRemove` | A git worktree is removed. | `worktree_path` | Base only. |
 
-## The 11 dotclaude Events
+## The 14 claudetto Events
 
-The dotclaude hooks module handles 11 events of its own.
-The `slice.ts` files of `src/plugins/dotclaude/slices/` declare them, not `src/kernel/`.
-No source uses `prompt.attachment`, although the type file names it.
+The hooks module of the core plugin `claudetto` handles 14 events of its own.
+The `slice.ts` files of `src/plugins/claudetto/slices/` declare them, not `src/kernel/`.
+The add-on plugins declare more events, such as `turn.start`, `ui.render`, `ui.press`, and `session.measure`.
+The type file names `prompt.attachment`, but no source uses it.
 
-The map below relates each dotclaude event to a Claude Code event.
+The map below relates each claudetto event to a Claude Code event.
 The relation is by the time of firing, which the type file describes.
 It is not a one-to-one equivalent.
 So the match is "partial" or "none" when the events differ.
 
-| dotclaude event | Declared in | Claude Code event | Match |
+| claudetto event | Declared in | Claude Code event | Match |
 | --- | --- | --- | --- |
-| `session.start` | `decide`, `setup` | `SessionStart` | Partial. The dotclaude event runs once for each plugin load, before the first prompt. |
-| `tool.call` | `decide`, `guard`, `sembr`, `handoff` | `PreToolUse` | Partial. The dotclaude event runs the `PreToolUse` hooks beneath it. |
-| `tool.check` | `asks`, `guard` | `PermissionRequest` | Partial. The dotclaude event runs after `PreToolUse`, before the mode settles an ask. |
+| `session.start` | `decide`, `gc`, `handoff`, `setup` | `SessionStart` | Partial. The claudetto event runs once for each plugin load, before the first prompt. |
+| `session.end` | `gc` | `SessionEnd` | Partial. |
+| `session.append` | `prompt` | none | None. |
+| `session.compact` | `handoff` | `PreCompact` | Partial. The type file names the trigger values. |
+| `plugin.register` | `handoff` | none | None. |
+| `command.run` | `gc`, `handoff` | `UserPromptExpansion` | Partial. The claudetto event answers a slash command with text. |
+| `tool.call` | `agents`, `attribution`, `decide`, `gc`, `guard`, `sembr` | `PreToolUse` | Partial. The claudetto event runs the `PreToolUse` hooks beneath it. |
+| `tool.check` | `asks` | `PermissionRequest` | Partial. The claudetto event runs after `PreToolUse`, before the mode settles an ask. |
+| `tool.describe` | `surface` | none | None. |
 | `prompt.compose` | `prompt` | none | None. |
 | `prompt.section` | `prompt` | none | None. |
-| `agent.spawn` | `prompt`, `spec` | `SubagentStart` | Partial. The dotclaude event can deny a subagent, and `SubagentStart` returns only `additionalContext`. |
+| `agent.spawn` | `prompt` | `SubagentStart` | Partial. The claudetto event can deny a subagent, and `SubagentStart` returns only `additionalContext`. |
 | `agent.offer` | `surface` | none | None. |
-| `tool.describe` | `surface` | none | None. |
-| `turn.complete` | `spec`, `handoff` | `Stop` | Partial. |
-| `turn.step` | `handoff` | none | None. It runs before each model request. |
-| `skill.prompt` | `handoff` | `UserPromptExpansion` | Partial. `expansion_type` names slash commands and MCP prompts, not skills. |
+| `turn.step` | `agents` | none | None. It runs before each model request. |
+
+The `worktree` slice has no mod event.
+It registers the command hooks `WorktreeCreate` and `WorktreeRemove` in `hooks.json`.
 
 ## Registration Kinds
 
@@ -98,7 +105,7 @@ A plugin registers a hook in one of two ways.
 
 A hooks module is a file, such as `hooks/register.ts`, that Claude Code runs in its own mod runtime.
 The `hooks.json` file names it with `modules`, for example `{"modules": ["./register.ts"]}`.
-The module handles the dotclaude events and the mod events of the type file, with `on`.
+The module handles the claudetto events and the mod events of the type file, with `on`.
 The type file gives this form as an example: `on("tool.check", { tool: "Read" }, handler)`.
 The module must not import `node:` or `bun:`.
 It must not use `Bun`, because Claude Code runs it with neither Node.js nor Bun.
@@ -110,8 +117,8 @@ A command hook is an entry under `hooks` in `hooks.json`.
 The entry is keyed by a Claude Code event name.
 Each entry has a `type` of `command`, a `command`, and a `timeout` in seconds.
 It can also have a `matcher` and an `async` flag.
-The `dotclaude-codegraph` plugin uses this form.
-For example, it uses it for `SessionStart` with `bun --no-env-file` and a script path under `${CLAUDE_PLUGIN_ROOT}`.
+The `claudetto-codegraph` plugin and the `worktree` slice use this form.
+For example, `claudetto-codegraph` uses it for `SessionStart` with `bun --no-env-file` and a script path under `${CLAUDE_PLUGIN_ROOT}`.
 
 The command reads the event payload as JSON from stdin.
 It writes a JSON object to stdout with a `hookSpecificOutput` field.
@@ -120,7 +127,7 @@ A command hook needs Bun on `PATH` for the `bun` command.
 
 ## Fail-Open Rule
 
-A dotclaude hook fails open.
+A claudetto hook fails open.
 On an error, the call goes on.
 The permission rules and the sandbox still apply.
 This follows the design in [Decisions](Decisions) (D31).
@@ -139,6 +146,7 @@ This follows the design in [Decisions](Decisions) (D31).
 ## Test the Hooks
 
 - `just lab` runs `claude plugin test` on each plugin that has a `tests/` folder.
+  The tests run the hooks module with stubbed Claude Code events.
   The run stops at the first plugin that fails.
 - `just test` runs `bun test` with the arguments that you give it.
 - See [Development](Development) for the other checks.

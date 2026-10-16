@@ -1,41 +1,39 @@
 # Troubleshooting
 
-This page is for users who see a symptom in dotclaude.
+This page is for users who see a symptom in `claudetto`.
 It lists each symptom with its cause and fix.
 Find the plugin, then find the symptom.
 Each row names the page with the full description.
 
 The debug log of Claude Code shows what a hook or a plugin did.
 
-## The Core Plugin `dotclaude`
+## The Core Plugin `claudetto`
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| No ask for a recursive `rm` | The plugin cannot set `permissions`, so the `ask` rules of the snippet do not load from the plugin. Run `/dotclaude:setup` to apply the snippet. | [Guards](Guards) |
-| No policy ask for a repository of another owner | The repository has no `CLAUDE.md`, `AGENTS.md`, or `AI_POLICY.md`, or it belongs to you. The check also reads nothing when `gh` is missing or not authenticated, so no ask is shown. Install `gh`, then authenticate it with GitHub. | [Contributions](Contributions) |
-| The status line shows nothing | The snippet still has the `<plugin folder>` placeholder, or the status line runs a dotclaude folder that is not the installed plugin. Run `/dotclaude:setup`. | [Settings-Snippet](Settings-Snippet) |
-| The status line has no credits segment or no context breakdown | dotclaude reads these values from Claude Code data that is not documented. A Claude Code release can change that data. | [Undocumented-Reads](Undocumented-Reads) |
-| A note at session start lists differences from the snippet | The drift check found a difference. The note names each fix, and the user applies it. dotclaude changes no setting. | [Architecture](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#drift-check) |
-| The drift note says the guard is seated | Managed settings exist on this machine. The built-in guard `sec-default` skips the shared sections and the model variants of the system prompt, and the `context_management` text. The other parts of dotclaude still work. | [Request-Build](Request-Build#the-built-in-guard-sec-default) |
+| No ask for a recursive `rm` | The plugin cannot set `permissions`, so the `ask` rules of the snippet do not load from the plugin. Run `/claudetto:setup` to apply the snippet. | [Guards](Guards) |
+| The status line shows nothing | The snippet still has the `<plugin folder>` placeholder, or the status line runs a folder of `claudetto` that is not the installed plugin. Run `/claudetto:setup`. | [Settings Snippet](Settings-Snippet) |
+| The status line has no credits segment or no context breakdown | `claudetto` reads these values from Claude Code data that is not documented. A Claude Code release can change that data. | [Undocumented Reads](Undocumented-Reads) |
+| A note at session start lists differences from the snippet | The drift check found a difference. The note names each fix, and the user applies it. `claudetto` changes no setting. | [Settings Apply](Settings-Apply) |
+| The drift note says the guard is seated | Managed settings exist on this machine. The built-in guard `sec-default` skips the shared sections and the model variants of the system prompt, and the `context_management` text. The other parts of `claudetto` still work. | [Request Build](Request-Build#the-built-in-guard-sec-default) |
 | The drift note says the `model` and `effort` of the agent files do not apply | `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set. Unset it. | [Agents](Agents) |
-| The drift note says a built-in plugin is on | The snippet sets the entry to `false` in `enabledPlugins`. Set that entry to `false` in the user settings. | [Settings-Snippet](Settings-Snippet) |
-| The drift note says the skill listing has synced claude.ai skills | Set `syncClaudeAiSkills` to `false` in the user settings. | [Settings-Snippet](Settings-Snippet) |
-| The drift note says Claude Code is not the tested version | A mod event can differ on this version. The note names the tested version. | [Hook-Events](Hook-Events) |
-| The drift note says a rule file has a `paths` problem | The `paths` front matter does not parse, or its braces expand to more than 1000 patterns, or its glob matches no tracked file. Fix the `paths` of that rule file. | [Architecture](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#drift-check) |
-| A `cat` or `sed -n` call is denied | The `guard` denies a print of a file in `Bash`. Use `Read` for the file. `Read` sends a short stub when the same range is read again. | [Context-And-Handoff](Context-And-Handoff) |
+| The drift note says a built-in plugin is on | The snippet sets the entry to `false` in `enabledPlugins`. Set that entry to `false` in the user settings. | [Settings Snippet](Settings-Snippet) |
+| The drift note says the skill listing has synced claude.ai skills | Set `syncClaudeAiSkills` to `false` in the user settings. | [Settings Snippet](Settings-Snippet) |
+| The drift note says a rule file has a `paths` problem | The `paths` front matter does not parse, or its braces expand to more than 1000 patterns, or its glob matches no tracked file. Fix the `paths` of that rule file. | [Settings Apply](Settings-Apply) |
+| A `cat` or `sed -n` call is denied | The `guard` denies a print of a file in `Bash`. Use `Read` for the file. `Read` sends a short stub when the same range is read again. | [Guards](Guards) |
 | A `git stash` call is denied in a subagent | The shared checkout and `refs/stash` belong to the main session, so the `guard` denies `git stash` in a subagent. Commit the work in progress instead. | [Guards](Guards) |
 | `git stash drop` or `git stash clear` is denied | The `guard` denies these calls in every session. Keep the stash. | [Guards](Guards) |
 | An edit asks before it goes on | The `asks` slice asks before a call that discards work, adds a skipped test or a lint suppression, or changes a protected file. It never asks for a read. Allow the change only if you want it. Otherwise, tell Claude to change the code. | [Guards](Guards) |
 | A destructive command is denied | The `guard` denies the command. Claude asks you to run the exact command as a `!` command at the start of your prompt. | [Guards](Guards) |
 
-## The Code Graph `dotclaude-codegraph`
+## The Code Graph `claudetto-codegraph`
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| The hooks add nothing | `codegraph` is not on `PATH`, or the project has no `.codegraph/codegraph.db`. Install `codegraph` with `bun i -g @colbymchenry/codegraph`, run `dotclaude-codegraph-check`, and run `codegraph init -y` in the project. | [Code-Graph](Code-Graph) |
-| The index is out of date | The sync runs after an edit and after a `git` command that changes the tree. A change made outside Claude Code does not sync. Run `codegraph sync -q` by hand. | [Code-Graph](Code-Graph) |
+| The hooks add nothing | `codegraph` is not on `PATH`, or the project has no `.codegraph/codegraph.db`. Install `codegraph` with `bun i -g @colbymchenry/codegraph`, run `claudetto-codegraph-check`, and run `codegraph init -y` in the project. | [Code Graph](Code-Graph) |
+| The index is out of date | The sync runs after an edit and after a `git` command that changes the tree. A change made outside Claude Code does not sync. Run `codegraph sync -q` by hand. | [Code Graph](Code-Graph) |
 
-## The Browser `dotclaude-browser`
+## The Browser `claudetto-browser`
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
@@ -48,33 +46,35 @@ The debug log of Claude Code shows what a hook or a plugin did.
 
 ## The Second Opinion of the Core Plugin
 
-The full list of causes is on [Second-Opinion](Second-Opinion#troubleshooting).
+The option `decide` is `off` by default.
+Run `/plugin configure claudetto` to set it.
+The full list of causes is on [Decision API](Decision-API).
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| The result says `TYPESAFE_API_KEY` is not set | The variable was not set when Claude Code started, so Jev was not tried. Export the variable and start Claude Code again. A small Claude model answers until then, and the result says so. | [Second-Opinion](Second-Opinion#troubleshooting) |
-| The result says the key is not valid | Get a new key, and set it in `TYPESAFE_API_KEY`. | [Second-Opinion](Second-Opinion#troubleshooting) |
-| The result says the TypeSafe account has no balance | Add balance to the account. | [Second-Opinion](Second-Opinion#troubleshooting) |
-| The question gets no pick | The tool does not pick for a question with fewer than 2 options. It does not pick for a preference, an approval, or a choice that reasonable engineers make either way. Claude asks you. | [Second-Opinion](Second-Opinion#troubleshooting) |
+| The result says `TYPESAFE_API_KEY` is not set | The option `decide` is `jev`, and the variable was not set when Claude Code started, so Jev was not tried. Export the variable and start Claude Code again. A small Claude model answers until then, and the result says so. | [Decision API](Decision-API) |
+| The result says the key is not valid | Get a new key, and set it in `TYPESAFE_API_KEY`. | [Decision API](Decision-API) |
+| The result says the TypeSafe account has no balance | Add balance to the account. | [Decision API](Decision-API) |
+| The question gets no pick | The tool does not pick for a question with fewer than 2 options. It does not pick for a preference, an approval, or a choice that reasonable engineers make either way. Claude asks you. | [Decision API](Decision-API) |
 
-## The Library Docs `dotclaude-docs`
+## The Library Docs `claudetto-docs`
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| The `docs` skill reports a quota error | Set `CONTEXT7_API_KEY`, which raises the limit. | [Library-Docs](Library-Docs) |
-| A `ctx7` call is denied | The skill allows only one form of the call, in its `allowed-tools` entry. Ask the user, and do not change the form. | [Library-Docs](Library-Docs) |
-| `bunx` is not found | Install Bun, and check that `bunx` is on `PATH`. | [Library-Docs](Library-Docs) |
+| The `docs` skill reports a quota error | Set `CONTEXT7_API_KEY`, which raises the limit. | [Library Docs](Library-Docs) |
+| A `ctx7` call is denied | The skill allows only one form of the call, in its `allowed-tools` entry. Ask the user, and do not change the form. | [Library Docs](Library-Docs) |
+| `bunx` is not found | Install Bun, and check that `bunx` is on `PATH`. | [Library Docs](Library-Docs) |
 
-## The Sessions `dotclaude-sessions`
+## The Sessions `claudetto-sessions`
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
 | `No request with usage` | The transcript has no model call yet. Send one prompt, then run the command again. | [Sessions](Sessions) |
-| The usage report covers too short a period | The default period is 7 days. Pass `--days N` to `dotclaude-usage`. | [Sessions](Sessions) |
-| The usage report reads the wrong transcripts | Pass `--root DIR` to `dotclaude-usage` to read another transcripts folder. | [Sessions](Sessions) |
-| `dotclaude-start` measures the wrong session | Pass the path of the `.jsonl` file of the session to `dotclaude-start`. | [Sessions](Sessions) |
+| The usage report covers too short a period | The default period is 7 days. Pass `--days N` to `claudetto-usage`. | [Sessions](Sessions) |
+| The usage report reads the wrong transcripts | Pass `--root DIR` to `claudetto-usage` to read another transcripts folder. | [Sessions](Sessions) |
+| `claudetto-start` measures the wrong session | Pass the path of the `.jsonl` file of the session to `claudetto-start`. | [Sessions](Sessions) |
 
-## The Sandbox and the Lab `dotclaude-lab`
+## The Sandbox and the Lab `claudetto-lab`
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
@@ -85,13 +85,13 @@ The full list of causes is on [Second-Opinion](Second-Opinion#troubleshooting).
 | A `gh api` call fails in the sandbox | `gh` reads its token with the real `HOME`. Use a test that does not need it. | [Sandbox](Sandbox) |
 | The sandbox warns about a `--model` | The model is not in `availableModels` of the sandbox, so Claude Code runs another model. Pass a model from that list. | [Lab](Lab) |
 | The debug log says the plugin is locked | A managed setting locks the plugin name, so Claude Code ignores the `--plugin-dir` copy. Remove the managed `enabledPlugins` entry. | [Sandbox](Sandbox) |
-| `dotclaude-schema` exits with 2 | The command needs `--out DIR`. Pass it. | [Lab](Lab) |
-| `dotclaude-schema` says `claude is not on PATH.` or `--version exited with N` | The command finds no bundle to read the version from. Pass `--bundle FILE` and `--version X.Y.Z`. | [Lab](Lab) |
-| `dotclaude-capture` says the upstream is the address of the proxy | The upstream points to the port of the proxy, so requests would loop. Pass `--upstream URL`, or unset `ANTHROPIC_BASE_URL`. | [Lab](Lab) |
-| `dotclaude-eval-compare` stops at a cost bound | The command adds `--max-cost-usd 5` to each run when the options set no bound. Pass `--max-cost-usd` with a value of your choice. | [Lab](Lab) |
+| `claudetto-schema` exits with 2 | The command needs `--out DIR`. Pass it. | [Lab](Lab) |
+| `claudetto-schema` says `claude is not on PATH.` or `--version exited with N` | The command finds no bundle to read the version from. Pass `--bundle FILE` and `--version X.Y.Z`. | [Lab](Lab) |
+| `claudetto-capture` says the upstream is the address of the proxy | The upstream points to the port of the proxy, so requests would loop. Pass `--upstream URL`, or unset `ANTHROPIC_BASE_URL`. | [Lab](Lab) |
+| `claudetto-eval-compare` stops at a cost bound | The command adds `--max-cost-usd 5` to each run when the options set no bound. Pass `--max-cost-usd` with a value of your choice. | [Lab](Lab) |
 
 ## Related Pages
 
-- [Hook-Events](Hook-Events): see the events that Claude Code sends, and the map to the dotclaude events.
-- [Undocumented-Reads](Undocumented-Reads): see the settings and env vars that the binary reads and the docs do not name.
-- [Install](Install): install dotclaude again, if a part is missing.
+- [Hook Events](Hook-Events): see the events that Claude Code sends, and the map to the `claudetto` events.
+- [Undocumented Reads](Undocumented-Reads): see the settings and env vars that the binary reads and the docs do not name.
+- [Install](Install): install `claudetto` again, if a part is missing.

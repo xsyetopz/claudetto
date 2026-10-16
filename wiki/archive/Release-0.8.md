@@ -79,7 +79,7 @@ Each patch is dated 2026-09-28.
   Run `apply-settings` again to add it.
 - `AGENTS.md` (0.8.2): gives coding agents the commands and rules of the repository.
   `CLAUDE.md` and `GEMINI.md` are symlinks to it.
-- Prompt surface doc (0.8.0): `docs/claude-code-prompt-surface.md`, now part of [Prompt Surface](Prompt-Surface), records the text of the lean prompt that `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` selects.
+- Prompt surface doc (0.8.0): `docs/claude-code-prompt-surface.md`, now part of [Prompt](Prompt), records the text of the lean prompt that `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` selects.
   It also records the conditions for each part.
 - Two letters that list gaps for xsyetopz/skills (0.8.0), both local files of the maintainer that were never in the repository:
   - `docs/letter-to-skills-developer.txt` lists dossier gaps that belong in skills.

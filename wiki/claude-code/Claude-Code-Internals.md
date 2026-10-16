@@ -1,7 +1,7 @@
 # Claude Code Internals
 
 This section describes how Claude Code works.
-Read it if you maintain dotclaude, because it covers the facts that dotclaude depends on.
+Read it if you maintain claudetto, because it covers the facts that claudetto depends on.
 It does not replace the official docs of Claude Code.
 Where the docs and the binary differ, this section gives the binary, and it names the source.
 
@@ -17,22 +17,20 @@ Where the docs and the binary differ, this section gives the binary, and it name
 
 ## Version
 
-- The version of this section is `2.1.296`.
-- The constant `TESTED_VERSION` in `src/plugins/dotclaude/slices/setup/domain/facts.ts` holds that version.
-- Three checks follow the constant:
+- The facts of this section were extracted from Claude Code `2.1.296`, unless a page names another version.
+  A page that gives a later version names it in the text.
+- The minimum Claude Code for claudetto is `2.1.301`.
+  The constant `MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts` holds it.
+- Two checks follow the constant:
   - The CI job in `.github/workflows/ci.yml` installs the same version.
-    The test `tests/tools/claude-code-release.test.ts` pins that job to the constant.
-  - The schema `$comment` in the test `tests/dotclaude/setup/drift.test.ts` names the constant.
-  - The drift check in `src/plugins/dotclaude/slices/setup/domain/drift.ts` warns when the installed version differs from the constant.
-- `src/kernel/budget.ts` does not import `TESTED_VERSION`.
-  It names `2.1.296` only in comments, on `CONTEXT_WINDOW` and `CONTEXT_BLOCK_MARGIN`.
-  A change of the version therefore needs an edit of those comments too.
+  - The test `tests/tools/claude-code-release.test.ts` pins that job to the constant.
+- `src/kernel/budget.ts` names `2.1.301` in comments, where a bound comes from the bundle of that version.
+  A change of the minimum version therefore needs a check of those comments too.
 
 ## Where the Binary Lives
 
 - The native installer keeps each version at `~/.local/share/claude/versions/<version>`, as [Sandbox](Sandbox) states.
-- On the maintainer's machine, the folder holds the binaries `2.1.295` and `2.1.296`.
-- The `dotclaude-schema` command reads the file that `claude` on `PATH` resolves to.
+- The `claudetto-schema` command reads the file that `claude` on `PATH` resolves to.
   It reads another file when `--bundle FILE` names one.
   See [Lab](Lab).
 
@@ -43,15 +41,14 @@ The label of a fact names its kind, as the [Home](Home) page explains.
 
 - **`binary`**: the text of the bundle.
   The bundle is the JavaScript that the installed binary holds.
-  A text dump of its strings is the file `external/cc-2.1.296/strings.txt`.
+  A text dump of its strings is the file `external/cc-<version>/strings.txt`, such as `external/cc-2.1.301/strings.txt`.
   The `strings` command made the dump.
-  The change record of 1.0.0 names it in `.dotclaude/spec/changes/1.0.0/evidence/inventory.md`.
   The repository has no recipe for that dump.
   To repeat it, run `strings` on the binary and write the output to a file in a folder of your own (inference).
   Search the dump with `grep -n` and read a line range.
-  Do not print the whole file, because it is about 59 MB.
+  Do not print the whole file, because it is about 60 MB.
 - **`extract`**: the text of each part of the built-in prompt, cut from the bundle.
-  The folder `external/cc-extract/2.1.296/` holds them, with one subfolder for each kind:
+  The folder `external/cc-2.1.299/cc-extract-2.1.299/` holds the extract of `2.1.299`, with one subfolder for each kind:
   - `section/` holds each section of the system prompt, as `<id>.txt`.
     Some ids also have a `<id>.full.txt` file.
   - `tool/` holds the description of each built-in tool, as `<Tool>.txt`.
@@ -60,7 +57,7 @@ The label of a fact names its kind, as the [Home](Home) page explains.
   - `style/` holds the built-in output styles, such as `Concise.txt`.
   - `listing/` holds the agent types, the skills, and the deferred tools, as `agent_types.txt`, `skills.txt`, and `deferred_tools.txt`.
 - **`capture`**: the request body that Claude Code sent to a local listener.
-  The command `just capture` starts a logging proxy with `bun plugins/dotclaude-lab/bin/dotclaude-capture`.
+  The command `just capture` starts a logging proxy with `bun plugins/claudetto-lab/bin/claudetto-capture`.
   The proxy writes each request body to a folder in the temp folder.
   It never writes a header, because a header carries the credential.
   For the first request with tools, it also sizes each part with the `count_tokens` endpoint.
@@ -69,22 +66,10 @@ The label of a fact names its kind, as the [Home](Home) page explains.
 - **`measured`**: a count from a run or from a transcript on the maintainer's machine.
   The command `just measure` sizes the start of a session from a transcript.
 
-The `dotclaude-schema` command reads the settings schema out of the bundle.
+The `claudetto-schema` command reads the settings schema out of the bundle.
 Run `just schema` to write the schema files into `schemas/`.
 The command never changes the bundle.
 The decision is in [Decisions Settings](Decisions-Settings), under D10.
-
-## Extract Tests
-
-Two test files check the extracts against the code:
-
-- `tests/dotclaude/prompt/extract.test.ts` runs each prompt transform against the section files.
-- `tests/dotclaude/surface/extract.test.ts` checks that each surface transform finds its built-in tool text.
-
-Both tests read `external/`, which git ignores.
-When the folder is absent, both tests skip.
-So CI runs neither test on real text.
-A checkout with `external/` runs both.
 
 ## Rule: Read, Never Patch
 
@@ -108,7 +93,7 @@ The pages of this section use the labels of the [Home](Home) page.
 
 - [Request Build](Request-Build): the system prompt sections, the attachments, and the cache.
 - [Tools and Deferral](Tools-And-Deferral): the built-in tools, and which of them Claude Code defers.
-- [Hook Events](Hook-Events): the hook events, their payloads, and the map to the 11 dotclaude events.
+- [Hook Events](Hook-Events): the hook events, their payloads, and the map to the 14 claudetto events.
 - [Plugin Loader](Plugin-Loader): how Claude Code finds and loads a plugin.
 - [Settings Resolution](Settings-Resolution): how Claude Code merges the settings files and the env vars.
 - [Subagents](Subagents): how Claude Code starts a subagent.

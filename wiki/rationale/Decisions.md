@@ -1,10 +1,21 @@
 # Decisions
 
-This page is the index of the design decisions of dotclaude 1.0.0.
+This page is the index of the design decisions of claudetto.
 Read it to find the page that holds the detail of a decision.
 Each row gives the number, the title, and the page with the detail.
-A row of a reversed decision also links its section in [Decisions-Reversed](Decisions-Reversed).
-[Design](Design) holds the principles and the history.
+[Design](Design) holds the principles.
+
+The ids `D1` to `D47` come from dotclaude 1.0.0 and stay as they were.
+The ids from `D48` are new in claudetto 0.1.0.
+[Engine Facts](Decisions-Engine) holds the facts of the engine that a change must not break.
+A missing id is a removed decision.
+The removed ids are `D7`, `D11`, `D19`, `D20`, `D21`, `D32`, `D33`, `D35`, `D36`, `D40`, and `D41`.
+They described the removed design of dotclaude 1.0.0, such as the spec store, the append-only event log, and `/dotclaude:handoff`.
+A kept decision whose basis changed in 0.1.0 says so in its section and points to `openspec/changes/claudetto-0-1-0/design.md`.
+
+The restart has its own list of decisions in `openspec/changes/claudetto-0-1-0/design.md`.
+Its numbers `D1`, `D2`, `D8`, and the others are not the numbers on this page.
+This page always writes "(D3 there)" when it cites that file.
 
 | Decision | Title | Page |
 | --- | --- | --- |
@@ -14,58 +25,48 @@ A row of a reversed decision also links its section in [Decisions-Reversed](Deci
 | D4 | Measured budget | [Prompt](Decisions-Prompt) |
 | D5 | Who invokes what | [Settings](Decisions-Settings) |
 | D6 | Status line | [Tools](Decisions-Tools) |
-| D7 | Auto-fix hook (removed) | [Tools](Decisions-Reversed#tools) |
 | D8 | Context7 skill | [Tools](Decisions-Tools) |
 | D9 | Evals through `claude plugin eval` | [Tools](Decisions-Tools) |
 | D10 | Schema extraction | [Settings](Decisions-Settings) |
-| D11 | Spec store | [Tools](Decisions-Tools) |
 | D12 | Agent frontmatter search | [Router](Decisions-Router) |
 | D13 | No router, the main loop keeps the session choice | [Router](Decisions-Router) |
 | D14 | Off switches | [Settings](Decisions-Settings) |
-| D15 | dotclaude owns the system prompt | [Prompt](Decisions-Prompt) |
+| D15 | claudetto owns the system prompt | [Prompt](Decisions-Prompt) |
 | D16 | Request capture and the session start | [Prompt](Decisions-Prompt) |
 | D17 | Plugin and marketplace layout | [Layout](Decisions-Layout) |
 | D18 | Separation of concerns, size bounds, and bound tiers | [Layout](Decisions-Layout) |
-| D19 | Runtimes | [Reversed](Decisions-Reversed#layout) |
-| D20 | Remove `dotclaude-modder` | [Layout](Decisions-Layout) |
-| D21 | Hand-off order | [Reversed](Decisions-Reversed#layout) |
 | D22 | Context bound for subagents and the main session | [Tools](Decisions-Tools) |
 | D23 | Development frictions | [Layout](Decisions-Layout) |
 | D24 | Add-on plugins stay separate | [Layout](Decisions-Layout) |
-| D25 | Agent roster | [Router](Decisions-Router), reversed in part in [Decisions-Reversed](Decisions-Reversed#router) |
+| D25 | Agent roster | [Router](Decisions-Router) |
 | D26 | Code graph through the CodeGraph CLI | [Tools](Decisions-Tools) |
-| D27 | Measured facts over model reports | [Evidence](Decisions-Evidence), reversed in part in [Decisions-Reversed](Decisions-Reversed#evidence) |
-| D28 | Compliance by checks, not by prose | [Prompt](Decisions-Prompt), item 2 reversed in [Decisions-Reversed](Decisions-Reversed#prompt) |
+| D27 | Measured facts over model reports | [Evidence](Decisions-Evidence) |
+| D28 | Compliance by checks, not by prose | [Prompt](Decisions-Prompt) |
 | D29 | Semantic line breaks | [Evidence](Decisions-Evidence) |
 | D30 | Hold work that is right under an unsupported claim | [Evidence](Decisions-Evidence) |
-| D31 | Guard hooks fail open (`onFailure`) | [Guards](Guards) |
-| D32 | Usage awareness, back in 1.0.0 as the saved sample and the context trigger | [Context Bound](Context-And-Handoff) |
-| D33 | Three-column status line | [Status Line](Status-Line) |
-| D34 | Adherence by checks in code, with no new judge (now the `asks` slice) | [Core Plugin](Architecture) |
-| D35 | No proprietary formats | [Reversed](Decisions-Reversed#settings) |
-| D36 | Rebuild with no 0.28.0 or 0.29.0 code | [Architecture](Decisions-Architecture) |
+| D31 | Guard hooks fail open | [Hook Events](Hook-Events) |
+| D34 | Adherence by checks in code, with no new judge (now the `asks` slice, see D43) | [Architecture](Decisions-Architecture) |
 | D37 | Ports and adapters inside vertical slices | [Architecture](Decisions-Architecture) |
 | D38 | A generated composition root | [Architecture](Decisions-Architecture) |
 | D39 | One hook module in place of classic command hooks | [Architecture](Decisions-Architecture) |
-| D40 | Spec store in place of OpenSpec | [Architecture](Decisions-Architecture) |
-| D41 | An append-only event log in place of `state.json` | [Architecture](Decisions-Architecture) |
 | D42 | Zero token cost where a hook, a script, or a CLI can do the work | [Architecture](Decisions-Architecture) |
 | D43 | `asks` only on a weaker check or discarded work | [Architecture](Decisions-Architecture) |
 | D44 | Jev is a slice of the core plugin, with a small model as the fallback | [Architecture](Decisions-Architecture) |
 | D45 | Add-ons import nothing from the core plugin or from each other | [Architecture](Decisions-Architecture) |
 | D46 | Bounds in three tiers | [Architecture](Decisions-Architecture) |
 | D47 | Arrow functions, plain data, and classes only for state | [Architecture](Decisions-Architecture) |
-
-## Sources
-
-The decisions of 1.0.0 come from the change folder `.dotclaude/spec/changes/1.0.0/`.
-The file `change.md` holds the decisions of the user.
-The file `design.md` holds the architecture.
-D1 to D35 came from the design of the 0.28.0 change.
-Some group pages cite the probes of the 0.28.0 work.
+| D48 | User notices through `$.ui.log`, not a transcript row | [Engine Facts](Decisions-Engine) |
+| D49 | No catch-all in a hook that calls `next` first | [Engine Facts](Decisions-Engine) |
+| D50 | A marker in `$.env` for each `Bash` call of Claude | [Engine Facts](Decisions-Engine) |
+| D51 | The sandbox is the hard stop, and setup writes it | [Engine Facts](Decisions-Engine) |
+| D52 | Each adapter keeps its own `$` calls | [Engine Facts](Decisions-Engine) |
+| D53 | A plugin verdict only makes a call stricter | [Engine Facts](Decisions-Engine) |
+| D54 | The attribution reminder in place of `includeGitInstructions` | [Engine Facts](Decisions-Engine) |
+| D55 | No session-wide env through `CLAUDE_ENV_FILE` | [Engine Facts](Decisions-Engine) |
+| D56 | Toolchain facts come from the environment, not from model memory | [Engine Facts](Decisions-Engine) |
+| D57 | A plugin `bin/` command is named by its path, not by its bare name | [Engine Facts](Decisions-Engine) |
 
 ## Related Pages
 
 - [Design](Design)
 - [Plugin Layout](Plugin-Layout)
-- [Open Items at 0.28.0](Open-Items), an archive page of the state at 0.28.0, not of 1.0.0

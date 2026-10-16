@@ -3,18 +3,17 @@
 This page holds the decisions D3, D4, D15, D16, and D28.
 Read it to learn why the system prompt, the start budget, and the request capture have the shape that they have.
 The index is [Decisions](Decisions).
-The reversed parts of these decisions are in [Decisions-Reversed](Decisions-Reversed#prompt).
 
 ## D3 Tool-Description and Section Cuts by Id
 
 **Problem:** The start of a session sends the built-in tool descriptions, the built-in agent list, and the built-in sections of the system prompt.
-Some of that text does not help dotclaude.
+Some of that text does not help claudetto.
 
 **Choice:** The mods of the `surface` and `prompt` slices answer by exact id.
 The lab tests of each slice check the handlers.
 Each handler has a lab test.
 
-- `tool.describe` (`src/plugins/dotclaude/slices/surface/adapters/mod.ts`) replaces the description of `Agent`, `Bash`, and `Read` when the new text is shorter.
+- `tool.describe` (`src/plugins/claudetto/slices/surface/adapters/mod.ts`) replaces the description of `Agent`, `Bash`, and `Read` when the new text is shorter.
   The rule is in `toolAnswer` in `slices/surface/domain/tools.ts`.
 - `ListAgents` is deferred behind `ToolSearch`.
   `toolAnswer` sets `isDeferred` to `true`.
@@ -23,20 +22,20 @@ Each handler has a lab test.
   The list is `DROPPED_AGENTS` in `slices/surface/domain/agents.ts`.
 - `prompt.section` (`slices/prompt/adapters/mod.ts`) answers only the ids that have a transform in `slices/prompt/transforms/`.
   An unknown id passes on unchanged.
-- The `context_management` section gets its transform only when `DISABLE_COMPACT` is set to a value other than `0` or `false`.
+- The `context_management` section has no entry in `transforms/`.
+  `slices/prompt/domain/compaction.ts` gives its text for the compaction state of the session.
   The section says that the context is summarized.
-  So it stays unchanged when compaction runs.
+  So it stays unchanged when the built-in compaction runs.
+  With the handoff on, or with `DISABLE_COMPACT` set to a value other than `0` or `false`, the text agrees with that state.
 
 **Open points:**
 
-- No code in `src/` cuts `session_context` or `prompt.context`.
-  A cut of either needs an eval with no loss before it ships.
-- `prompt.attachment` is not used by any source file.
-  The attachment cut in the older text of this decision has no code.
+- No code in `src/` cuts `session_context`, `prompt.context`, or `prompt.attachment`.
+  A cut of any of them needs an eval with no loss before it ships.
 
 **Alternatives:** No other alternative is recorded in the sources of this decision.
 
-See [Prompt Surface](Prompt-Surface).
+See [Prompt](Prompt).
 
 ## D4 Measured Budget
 
@@ -44,11 +43,9 @@ See [Prompt Surface](Prompt-Surface).
 
 **Choice:** `START_TOKENS` in `tools/limits.ts` holds the bound, with the value `9_960`.
 `just measure` runs `tools/measure.ts`.
-That script calls `dotclaude-start` of the plugin `dotclaude-sessions` with `--bound START_TOKENS`.
-`measure.ts` writes no file.
-The reason was D35, which kept out each format that dotclaude made up.
-1.0.0 reverses D35 ([Decisions-Reversed](Decisions-Reversed#settings)).
-But `measure.ts` still writes no baseline file.
+That script calls `claudetto-start` of the plugin `claudetto-sessions` with `--bound START_TOKENS`.
+`just start-run` captures and measures a clean sandbox session in one command.
+`measure.ts` writes no baseline file.
 
 **Evidence:**
 
@@ -64,7 +61,7 @@ But `measure.ts` still writes no baseline file.
 The capture of D16 shows the request, but no decision yet explains the gap.
 The bound stays at `9_960` until the gap is settled.
 
-## D15 dotclaude Owns the System Prompt
+## D15 claudetto Owns the System Prompt
 
 **Problem:** Claude Code sends its own system prompt sections.
 The same rules are needed for each model.
@@ -72,7 +69,8 @@ The same rules are needed for each model.
 **Choice:** The `prompt` slice replaces the Claude Code sections with its shared sections.
 It adds one variant for the model of the session.
 The shared sections are in `slices/prompt/domain/variants.ts` as `SHARED_SECTIONS`.
-Their order is `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, and `counts`.
+Their order is `intro`, `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, and `counts`.
+The `intro` section is the transformed `lean_body` section of Claude Code, because a variant replaces `lean_body`.
 Each variant holds a model name, optional model notes, and a block for a subagent.
 
 - The variants are `opus` (Opus 5.5), `sonnet` (Sonnet 5.5), `haiku` (Haiku 5.5), and `fable` (Fable 5.1).
@@ -100,17 +98,17 @@ The sections hold these rules:
   All three are in the shared sections.
 - The `tools` section tells the model to delegate a read only when it is larger than the start cost of a subagent.
   When the user asks for a subagent, use one.
-- The attribution line replaces the git instructions that the settings snippet turns off.
+- The `attribution` slice does not rewrite a `git commit` or a `gh pr create`.
+  It sends a reminder with the lines, a `commit-msg` hook of git rejects a commit without the commit line, and a check of the pull request body tells Claude to add a missing line (D39).
 
 **Open point:** The rule "no rule text in two places" does not hold.
 The verification rule is in the shared `verification` section.
-The subagent block of Sonnet 5.5 and Haiku 5.5 repeats it, because a subagent does not get the shared sections.
-The output style `slices/styles/styles/Concise.md` also repeats the verification rule.
+The subagent block of Sonnet 5.5 and Haiku 5.5 repeats it (`VERIFY_LINE`), because a subagent does not get the shared sections.
 This page does not change that repeat.
 
 **Alternatives:** No other alternative is recorded in the sources of this decision.
 
-See [Prompt Surface](Prompt-Surface) for the rules in the sections.
+See [Prompt](Prompt) for the rules in the sections.
 See [Prompt Variants](Prompt-Variants) for the variants.
 
 ## D16 Request Capture and the Session Start
@@ -118,8 +116,8 @@ See [Prompt Variants](Prompt-Variants) for the variants.
 **Problem:** The measure of D4 does not show the request that Claude Code sends.
 The start of a session is larger in the capture than in the measure.
 
-**Choice:** `dotclaude-capture` is a local logging proxy.
-Its code is in `src/plugins/dotclaude-lab/slices/capture/adapters/cli.ts`.
+**Choice:** `claudetto-capture` is a local logging proxy.
+Its code is in `src/plugins/claudetto-lab/slices/capture/adapters/cli.ts`.
 Claude Code reaches it through `ANTHROPIC_BASE_URL`.
 The proxy records the body of each request.
 The proxy forwards to `--upstream URL`.
@@ -128,7 +126,7 @@ If that is not set either, it forwards to `https://api.anthropic.com`.
 The capture splits the first request into system blocks, tool schemas, and messages.
 
 - A capture run sets `ENABLE_TOOL_SEARCH=true`.
-  The binary of Claude Code, version `2.1.296`, turns tool search off when the base URL is not a first-party host.
+  The binary of Claude Code, version `2.1.296` (history, when the capture was built), turns tool search off when the base URL is not a first-party host.
   The fact is found by reading the text strings of that binary, which is allowed for evidence.
   Its message names `ENABLE_TOOL_SEARCH=true` as the fix.
 - The agent sandbox can block a local port.
@@ -153,19 +151,13 @@ Some of them fail in practice.
 **Choice:** A rule that a program can check goes to a hook, a lint rule in `just check`, or an eval measure.
 
 1. A rule that a program can check moves to a hook, a lint in `just check`, or an eval measure.
-   Item 1 is kept.
-2. This item is reversed.
-   The auto-mode guard file is gone from `src/`.
-   Auto mode uses the native classifier and the `autoMode.hard_deny` rules that [Auto Mode](Auto-Mode) describes.
-   The reversed text is in [Decisions-Reversed](Decisions-Reversed#prompt).
-3. The old eval harness had measures for repeat reads, recaps, and chat lines with more than one sentence.
-   The harness is gone.
-   But `just eval` runs `claude plugin eval` on the plugin.
-   The format of that command has no measure for repeat reads, recaps, or chat lines.
-   So no gate checks them.
-   Item 3 is kept with this correction.
+2. The auto-mode guard file of dotclaude 1.0.0 is gone from `src/`.
+   Auto mode uses the native classifier and the `autoMode` lists that [Auto Mode](Auto-Mode) describes.
+   The `setup` slice writes those lists (`slices/setup/domain/automode.ts`).
+3. `just eval` runs `claude plugin eval` on the plugin, with the cases in the `evals/` folders of the slices.
+   The cases have no measure for repeat reads, recaps, or chat lines with more than one sentence.
+   So no gate checks those rules.
 4. `CLAUDE.md` says that chat replies are in the scope of the line-break rule.
-   Item 4 is kept.
 
 **Open points:**
 
@@ -176,9 +168,10 @@ Some of them fail in practice.
 
 ## Related Pages
 
-- [Prompt Surface](Prompt-Surface)
+- [Prompt](Prompt)
 - [Prompt Variants](Prompt-Variants)
 - [Settings Snippet](Settings-Snippet)
-- [Semantic Line Breaks](Semantic-Line-Breaks)
+- [Semantic Breaks](Semantic-Breaks)
 - [Sandbox](Sandbox)
 - [Auto Mode](Auto-Mode)
+- [Decisions](Decisions)

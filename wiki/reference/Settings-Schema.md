@@ -1,13 +1,13 @@
 # Settings Schema
 
 This page tells maintainers how the settings schema is made and how an editor uses it.
-The JSON Schema of `settings.json` and `managed-settings.json` is made by dotclaude.
-dotclaude takes its source from the bundle of the installed Claude Code.
+The JSON Schema of `settings.json` and `managed-settings.json` is made by claudetto.
+The command takes its source from the bundle of the installed Claude Code.
 It does not take the source from the public schema.
 The build code says that the public schema lacks some keys, such as `syncClaudeAiSkills`.
 The decision is D10 in [Decisions-Settings](Decisions-Settings).
-How Claude Code merges its settings files is in [Settings resolution](Settings-Resolution).
-How the bundle is found and what it holds is in [Claude Code internals](Claude-Code-Internals).
+How Claude Code merges its settings files is in [Settings Resolution](Settings-Resolution).
+How the bundle is found and what it holds is in [Claude Code Internals](Claude-Code-Internals).
 
 ## Files
 
@@ -16,18 +16,18 @@ Git tracks both files.
 
 - `schemas/claude-code-settings.json` is the schema of a user `settings.json`.
 - `schemas/claude-code-managed-settings.json` is the schema of a `managed-settings.json`.
-  dotclaude writes no managed file, so this file is a reference only ([Off switches](Off-Switches#managed-settings)).
+  claudetto writes no managed file, so this file is a reference only ([Off Switches](Off-Switches#managed-settings)).
 
 The file names have no version.
-The version is in the root `$comment`, which reads `Extracted from Claude Code 2.1.296` for the current files, and in `title`.
+The version is in the root `$comment`, which reads `Extracted from Claude Code 2.1.301` for the current files, and in `title`.
 The names stay the same after an update, so a `$schema` path to these files does not change.
 
 ## Run
 
-`just schema` runs `bun plugins/dotclaude-lab/bin/dotclaude-schema --out schemas`.
+`just schema` runs `bun plugins/claudetto-lab/bin/claudetto-schema --out schemas`.
 Extra arguments go to the command.
 The recipe is in `justfile`.
-The command is part of the plugin `dotclaude-lab`, and its usage is in [Lab](Lab#the-schema-writer).
+The command is part of the plugin `claudetto-lab`, and its usage is in [Lab](Lab#the-schema-writer).
 
 - `--out DIR` is required.
   Without it, the command exits with status 2 and writes nothing.
@@ -49,15 +49,15 @@ The code paths run in this order.
 
 1. `slices/schema/adapters/cli.ts` (`main`) reads the arguments and the bundle, and it writes the files.
    It does no build work.
-2. `slices/schema/domain/build.ts` (`buildSchemas`) takes the type table of the version from `TYPES`.
-   It finds the settings object, maps each key, and checks that each top-level key has a description.
+2. `slices/schema/domain/build.ts` (`buildSchemas`) finds the settings object, maps each key, and checks that each top-level key has a description.
+   It stops when no key has a type, because then the bundle has no definition of the type helpers.
 3. `slices/schema/domain/scan.ts` (`findSchemaBody`, `parseEntries`) finds the settings object in the bundle text.
    It matches brackets, and it skips strings, template literals, regex literals, and comments.
 4. `slices/schema/domain/types.ts` (`typeSchema`) maps each type chain to JSON Schema.
    A chain is a helper call, such as the one for a string or an object, with method calls after it.
    `describe` gives the description, and `min`, `max`, and `int` give the bounds and the integer type.
    `passthrough` on an object leaves extra keys allowed, and any other object sets `additionalProperties` to `false`.
-   A key is required when its helper is in the table and no call in its chain is `optional`, `catch`, `default`, or `nullish`.
+   A key is required when its helper is known and no call in its chain is `optional`, `catch`, `default`, or `nullish`.
 5. The same file follows a plain call to another helper, such as a named object, up to 8 levels (`DEPTH_MAX`).
    It stops at a loop, and it does not follow a name that the bundle defines more than once.
 6. `slices/schema/domain/descriptions.ts` gives fallback text for `attribution`, `sandbox`, and `spellcheck`.
@@ -66,7 +66,7 @@ The code paths run in this order.
    It marks them with `x-managed-only` in the managed file.
 8. `slices/schema/domain/spans.ts` puts the code items of the descriptions in backticks.
 
-## Contents for 2.1.296
+## Contents for 2.1.301
 
 These counts come from the shipped files.
 
@@ -78,7 +78,7 @@ These counts come from the shipped files.
   It takes a value of any type.
 - `$schema` is a key of the user schema, typed as a string, so a `settings.json` may hold it.
 
-The build test in `tests/lab/schema/build.test.ts` checks that the managed file has six keys, each with a description.
+The build test in `tests/claudetto-lab/schema/build.test.ts` checks that the managed file has six keys, each with a description.
 They are `syncClaudeAiSkills`, `syncClaudeAiPlugins`, `prependPlugins`, `appendPlugins`, `skillOverrides`, and `disableClaudeAiConnectors`.
 `prependPlugins` and `appendPlugins` are managed-only, so the user schema lacks them.
 
@@ -99,7 +99,7 @@ This page does not test the editor behavior.
 
 ```json
 {
-  "$schema": "/absolute/path/to/dotclaude/schemas/claude-code-settings.json"
+  "$schema": "/absolute/path/to/claudetto/schemas/claude-code-settings.json"
 }
 ```
 
@@ -109,25 +109,21 @@ Use an absolute path or a URL for a file outside the repository.
 
 ## Tests and Pins
 
-- `tests/dotclaude/settings-pin.test.ts` checks the JSON blocks of the [settings snippet](Settings-Snippet) against the user schema.
+- `tests/claudetto/settings-pin.test.ts` checks the JSON blocks of the [settings snippet](Settings-Snippet) against the user schema.
   A key that the schema lacks fails the test, and the test names the key.
-- `tests/lab/schema/build.test.ts` checks the six managed keys listed above and the root `$comment`.
+- `tests/claudetto-lab/schema/build.test.ts` checks the six managed keys listed above and the root `$comment`.
   It also tests the scanner and the type mapping on fixtures.
-- `tests/lab/schema/bundle.test.ts` checks the shipped keys against the bundle of the installed `claude`.
-- `tests/dotclaude/setup/drift.test.ts` checks that the version in the `$comment` is the tested version.
-  A new Claude Code version fails this test until the type table and the files are updated ([Drift check](https://github.com/xsyetopz/claudetto/blob/dotclaude--v1.0.0/wiki/dotclaude/Architecture.md#drift-check)).
+- `tests/claudetto-lab/schema/bundle.test.ts` checks the shipped keys against the bundle of the installed `claude`.
+- `tests/claudetto/setup/drift.test.ts` checks that the version in the `$comment` is `MIN_CLAUDE_CODE_VERSION`.
+  A new minimum version fails this test until the files are made again with `just schema`.
 - `just validate` skips the files of `schemas/` in its line-count check, because they are generated (`tools/validate.ts`).
 
 ## Limits
 
-- The type table `TYPES` in `slices/schema/domain/types.ts` has 10 helper names for `2.1.296` only.
-  The helper names change with each build.
-  The comment in the file says that the names come from the bundle of that version.
-- A version without a table fails the build.
-  To support a new version, follow these steps.
-  1. Add its table to `TYPES`.
-  2. Run `just schema`.
-- A helper that is not in the table gives an empty schema, which accepts any value, and its key is not required.
+- The helper names change with each build, so `slices/schema/domain/helpers.ts` (`kindOf`) reads the meaning of each helper from the bundle.
+  A helper is resolved in the module of the settings object, or in the module whose `export{...}` list holds all the names that the settings module imports from one path.
+  The meaning is the zod `type:"..."` tag in the body of the helper, or in the body of the factory that the helper calls.
+- A helper with no known tag gives an empty schema, which accepts any value, and its key is not required.
 - The descriptions of the three fallback keys are text that a person wrote.
   The fallback applies only when the bundle has no description for the key.
 - The code items of a description follow the rules in `spans.ts`.

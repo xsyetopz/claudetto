@@ -1,0 +1,147 @@
+# Code Graph
+
+The plugin `claudetto-codegraph` gives Claude the code graph of a project.
+It runs the `codegraph` CLI of the CodeGraph project, and it ships a skill that tells Claude how.
+It starts no MCP server.
+It works without the core plugin.
+It imports nothing from another plugin.
+Read this page to use the code graph of a project.
+Read it also to learn when the plugin runs a command.
+
+The source is in `src/plugins/claudetto-codegraph/`.
+Its one slice is `graph`.
+
+## What It Adds
+
+- The skill `codegraph`.
+  It lists the read-only `codegraph` commands that Claude can use.
+- The command `claudetto-codegraph-check`.
+  It prints whether `codegraph` is on `PATH`, whether the CLI works, and whether the project has an index.
+  With `--mcp`, it prints the commands of the [MCP server option](#the-mcp-server-option).
+- A `SessionStart` hook.
+  It syncs the index and adds one line about the graph commands.
+- A `PostToolUse` hook.
+  It syncs the index after an `Edit`, a `Write`, a `MultiEdit`, or a `NotebookEdit`.
+- A `tool.call` handler.
+  It syncs the index after a `Bash` command with a `git` command that changes the tree.
+
+The plugin has no `userConfig` and no Claude Code setting.
+
+## Install
+
+1. Install the CLI with `bun i -g @colbymchenry/codegraph`.
+   The plugin never installs the CLI.
+   When `codegraph` is missing, the check prints this command (`INSTALL_COMMAND` in `slices/graph/domain/graph.ts`).
+2. Build the index once in the project with `codegraph init -y`.
+   The index is the file `.codegraph/codegraph.db` (`INDEX_PATH`).
+   The plugin never runs `codegraph init`, because that command changes user files.
+3. Install the plugin with `/plugin install claudetto-codegraph@claudetto`.
+
+The hooks run only in a project that has the index file.
+In another project, they run no command and add no text.
+
+## The MCP Server Option
+
+The plugin ships no MCP definition, because Claude Code starts each MCP server of a plugin.
+To use the MCP server, run this command with Claude Code (`MCP_ADD_COMMAND` in `slices/graph/domain/graph.ts`):
+
+```sh
+claude mcp add --scope user codegraph -- bunx @colbymchenry/codegraph@1.6.0 serve --mcp
+```
+
+The plugin installs nothing for this option.
+Without the command, the tool list has no `codegraph` MCP tool.
+`claudetto-codegraph-check --mcp` prints the add command and the remove command, `claude mcp remove codegraph --scope user`.
+It runs neither command.
+
+## Telemetry
+
+The CLI keeps its telemetry in the home folder, `~/.codegraph/`.
+The plugin does not run `codegraph telemetry`.
+The setting stays as the user left it.
+
+## How It Works
+
+Both classic hooks run `slices/graph/adapters/hook.ts` with Bun.
+The first argument selects the mode: `session-start`, `sync`, or `sync-git`.
+The project folder comes from `CLAUDE_PROJECT_DIR`, then from the `cwd` of the hook payload, then from the process folder (`rootOf`).
+
+| Trigger | Source | Hook timeout | What it runs |
+| --- | --- | --- | --- |
+| `SessionStart` | Classic hook, mode `session-start` | 10 s | `codegraph sync -q`, then adds the text of `prompts/session-line.md` |
+| `PostToolUse` after an edit tool | Classic hook, mode `sync`, `"async": true` | 64 s | `codegraph sync -q` |
+| `Bash` call with a `git` command that changes the tree | Mod handler `onTreeChange` in `slices/graph/adapters/mod.ts` | `GIT_RUN_TIMEOUT_MS` | `hook.ts sync-git`, which runs `codegraph sync -q` |
+
+- One sync runs at a time in one project.
+  Each sync takes the lock file `.codegraph/claudetto-sync.lock` (`slices/graph/adapters/lock.ts`).
+  A caller that finds the lock held writes the mark `.codegraph/claudetto-sync.pending` and ends.
+  The holder runs one more sync while a mark exists and time remains, so the index holds each edit.
+  A lock older than `LOCK_STALE_MS` is removed.
+- The `PostToolUse` hook is async, so the session does not wait for the sync.
+  The output of an async hook is not shown, so a failed background sync is silent.
+- The `git` handler runs the command first.
+  It syncs only when the call is not denied.
+- The `git` handler reads the command with the shell parser of the kernel (`changesTree` in `slices/graph/domain/graph.ts`).
+  It sees through wrappers such as `env GIT_DIR=.git git checkout main`, and it skips the global options of `git`.
+  The verbs are `commit`, `merge`, `rebase`, `pull`, `checkout`, `switch`, `reset`, `cherry-pick`, `revert`, `apply`, and `am`.
+  `stash` counts only with no sub-command, with a flag, or with `push`, `save`, `pop`, `apply`, or `branch`.
+  A `Bash` call of another kind starts no process.
+- The hooks never deny or ask.
+
+## A Failed CLI Is Not a Missing CLI
+
+`codegraph` is missing only when the start of the process fails with `ENOENT`.
+Any other failure, such as a non-zero exit or a timeout, shows as an error with the first part of its `stderr` (`ERROR_TEXT_MAX_CHARS`).
+The check prints that error, not the install hint.
+At session start, a failed sync adds `The sync at session start failed: <detail>.` (`prompts/session-sync-failed.md`) to the text of `prompts/session-line.md`.
+The check exits with 0 in each case.
+
+## Windows
+
+On Windows, npm installs `codegraph` as `codegraph.cmd`.
+That file runs only through a shell.
+The runner then starts the command through `slices/graph/adapters/run-tree.ts`.
+That runner ends the process tree at the time limit.
+It accepts only arguments that match `SHELL_SAFE_ARG` in `slices/graph/adapters/codegraph.ts`.
+
+## Bounds
+
+All bounds are in `slices/graph/limits.ts`.
+
+| Bound | Value | Use |
+| --- | --- | --- |
+| `QUERY_TIMEOUT_MS` | 2000 ms | `codegraph --version` in the check |
+| `START_SYNC_TIMEOUT_MS` | 6000 ms | The sync at session start |
+| `SESSION_START_HOOK_TIMEOUT_S` | 10 s | The hook timeout at session start |
+| `BACKGROUND_SYNC_TIMEOUT_MS` | 60000 ms | The sync after an edit |
+| `TREE_GRACE_MS` | 3000 ms | Time for `run-tree.ts` to end the tree after the limit |
+| `HOOK_MARGIN_MS` | 1000 ms | Margin between a sync and its hook timeout |
+| `BACKGROUND_HOOK_TIMEOUT_S` | 64 s | The hook timeout after an edit, which covers the sync, the grace, and the margin |
+| `LOCK_STALE_MS` | 64000 ms | Age at which a lock is stale |
+| `MIN_CATCH_UP_MS` | 2000 ms | Least time left for one more sync by the lock holder |
+| `ERROR_TEXT_MAX_CHARS` | 300 | Length of the error detail |
+| `GIT_SYNC_TIMEOUT_MS` | 15000 ms | The sync after a `git` command |
+| `GIT_RUN_TIMEOUT_MS` | 19000 ms | The run of `hook.ts sync-git`, which covers the sync, the grace, and the margin |
+
+## The Session Line
+
+The line that `SessionStart` adds is the text of `prompts/session-line.md` in `slices/graph/`.
+It names `codegraph impact <symbol> -d 5`, because the default depth of 2 misses some affected code.
+
+## Why
+
+- The `SessionStart` hook and the edit hook are classic hooks.
+  They run `codegraph` on Bun with the Windows handling of `slices/graph/adapters/codegraph.ts`.
+- The `git` sync is a mod handler.
+  A classic hook for each `git` command needs 12 hooks with an `if`.
+  One classic hook without `if` starts a process on each `Bash` call.
+- The skill uses the CLI, and the MCP server is the user's choice.
+  The CLI costs no tool definitions in the context.
+- Each add-on stays a separate plugin.
+- The plugin never runs `codegraph install` or `codegraph init`.
+
+## Related Pages
+
+- [Troubleshooting](Troubleshooting): the symptoms of this plugin and their fixes.
+- [Browser](Browser): the next add-on page.
+- [Add-On Plugins](Add-Ons): the list of the add-on plugins.

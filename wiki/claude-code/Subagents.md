@@ -1,6 +1,6 @@
 # Subagents
 
-This page says how Claude Code runs a subagent, for `2.1.296`, and what dotclaude changes.
+This page says how Claude Code runs a subagent, for `2.1.296`, and what claudetto changes.
 Read it if you write an agent file, or if you change the code that acts on subagents.
 
 ## How a Subagent Starts
@@ -35,10 +35,12 @@ For a subagent that is not a fork, the official documentation lists these parts:
 - The tools of the main session, built-in and MCP, narrowed by the `tools` allowlist and the `disallowedTools` denylist.
   Some tools are always removed, such as `AskUserQuestion`.
 
-dotclaude sets the system prompt through the agent body.
+claudetto sets the system prompt through the agent body.
 The `prompt` slice comment says that a subagent gets its system prompt from its agent body.
-So the model block of a variant goes to the end of the task prompt instead.
-This happens in `src/plugins/dotclaude/slices/prompt/adapters/mod.ts` (`onSpawn`), for the `agent.spawn` event.
+So the model block of a variant goes to the end of the task row of the subagent instead.
+The call of `agent.spawn` has no model when the agent file chooses it, so `onSpawn` reads the model from the result of `next(e)`.
+Then `onAppend` writes the block into the task row, for the `session.append` event.
+Both are in `src/plugins/claudetto/slices/prompt/adapters/mod.ts`.
 
 ## The Agent Listing and Its Cost
 
@@ -48,15 +50,15 @@ This happens in `src/plugins/dotclaude/slices/prompt/adapters/mod.ts` (`onSpawn`
   Claude uses the description to decide when to delegate.
 - The documentation shows a startup warning when the descriptions of the non-built-in subagents exceed `15,000` tokens in total.
   All subagents still load.
-- dotclaude has six agent files in `src/plugins/dotclaude/slices/agents/agents/`.
+- claudetto has six agent files in `src/plugins/claudetto/slices/agents/agents/`.
   This run did not measure the tokens of their descriptions.
   The cost of those descriptions is not confirmed here.
-- dotclaude drops two built-in agent types from the listing and from dispatch.
+- claudetto drops two built-in agent types from the listing and from dispatch.
   They are `claude-code-guide` and `statusline-setup`.
-  The `agent.offer` handler in `src/plugins/dotclaude/slices/surface/adapters/mod.ts` handles these two types.
-  The list is in `src/plugins/dotclaude/slices/surface/domain/agents.ts`.
-- dotclaude defers the `ListAgents` tool behind `ToolSearch`.
-  Its transform is in `src/plugins/dotclaude/slices/surface/transforms/ListAgents.ts`.
+  The `agent.offer` handler in `src/plugins/claudetto/slices/surface/adapters/mod.ts` handles these two types.
+  The list is in `src/plugins/claudetto/slices/surface/domain/agents.ts`.
+- claudetto defers the `ListAgents` tool behind `ToolSearch`.
+  Its transform is in `src/plugins/claudetto/slices/surface/transforms/ListAgents.ts`.
   Its schema loads only when the model asks for the tool by name.
 
 ## `maxTurns` and the Turn Limit
@@ -68,26 +70,12 @@ This happens in `src/plugins/dotclaude/slices/prompt/adapters/mod.ts` (`onSpawn`
   The `2.1.296` binary has the partial-output wording for this case.
 - The main session can resume the subagent to continue the work.
   (Official documentation.)
-- dotclaude sets `maxTurns` in the front matter of each agent file.
-  The values are in `src/plugins/dotclaude/slices/agents/limits.ts` (`MAX_TURNS`).
-  A test pins each value to its agent file.
-
-| Agent | `maxTurns` | Source |
-| --- | ---: | --- |
-| `investigator` | `31` | `agents/limits.ts` |
-| `planner` | `41` | `agents/limits.ts` |
-| `researcher` | `41` | `agents/limits.ts` |
-| `reviewer` | `41` | `agents/limits.ts` |
-| `implementer` | `61` | `agents/limits.ts` |
-| `debugger` | `61` | `agents/limits.ts` |
-
-- The `agent.spawn` event takes no turn bound.
-  So the bound reaches Claude Code only through the front matter of the agent file.
-  The comment in `src/plugins/dotclaude/slices/agents/domain/turns.ts` says this.
-- The handoff slice warns a subagent before its last turns.
-  `TURNS_LEFT_AT` is `4` in `src/plugins/dotclaude/slices/handoff/limits.ts`.
-  At that point, `reportNote` in `src/plugins/dotclaude/slices/handoff/domain/context.ts` tells the subagent to commit and report.
-  See [Context and Handoff](Context-And-Handoff) for the context bound.
+- claudetto sets no `maxTurns` in the front matter of an agent file.
+  The test `tests/claudetto/agents/roster.test.ts` checks this, because a run that stops at its turn limit returns no report.
+- The `agents` slice bounds the context of a subagent instead.
+  The `turn.step` hook records the context of each subagent, and the next `tool.call` hook adds a report-now note when the context is over its bound.
+  The note is `reportNote` in `src/plugins/claudetto/slices/agents/domain/report.ts`.
+  See [Agents](Agents) and [Handoff](Handoff) for the context bound.
 
 ## Background Runs and the Return to the Main Session
 
@@ -101,7 +89,7 @@ This happens in `src/plugins/dotclaude/slices/prompt/adapters/mod.ts` (`onSpawn`
   This does not match the fork-mode rule of the documentation.
   This run did not confirm which rule applies to an interactive session.
 - The environment variable `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` set to `1` forces the foreground.
-  This is an environment variable of Claude Code, not of dotclaude.
+  This is an environment variable of Claude Code, not of claudetto.
 - A foreground subagent blocks the main session.
   A background subagent runs at the same time as the main session.
   Background subagents get a smaller built-in tool set.
@@ -122,20 +110,19 @@ This happens in `src/plugins/dotclaude/slices/prompt/adapters/mod.ts` (`onSpawn`
   Otherwise the tool result returns its path and its branch.
 - `Bash` commands run inside the worktree.
   A command that resolves to the main checkout fails with an error.
-- dotclaude sets `isolation: worktree` on `implementer` only.
-  The file is `src/plugins/dotclaude/slices/agents/agents/implementer.md`.
+- claudetto sets `isolation: worktree` on `implementer` only.
+  The file is `src/plugins/claudetto/slices/agents/agents/implementer.md`.
 
-## What dotclaude Changes
+## What claudetto Changes
 
 - The `Agent` tool description is shorter.
   The `surface` slice replaces the built-in text only when the new text is shorter.
-  The transform is `src/plugins/dotclaude/slices/surface/transforms/Agent.ts`.
+  The transform is `src/plugins/claudetto/slices/surface/transforms/Agent.ts`.
 - `ListAgents` is deferred, and the two dropped agent types are omitted, as described above.
-- `agent.spawn` appends the model block of a variant to the task prompt of a subagent.
-  The `spec` slice uses the same event to run `dotclaude-spec implement` for a package when `/dotclaude:implement` starts an implementer.
-- Each agent file sets its model, effort, `maxTurns`, and tools.
+- `agent.spawn` and `session.append` add the model block of a variant to the task row of a subagent.
+- Each agent file sets its model, effort, and tools.
   See [Agents](Agents) for the roster and the pins.
-- The bounds of a subagent context are in `src/plugins/dotclaude/slices/handoff/limits.ts`.
+- The bounds of a subagent context are in `src/plugins/claudetto/slices/agents/limits.ts`.
   `SUBAGENT_CONTEXT_MAX` is `100_000` tokens.
   `HAIKU_CONTEXT_MAX` is `85_000` tokens for Haiku 5.5, and it applies to the `investigator`.
   `REPORT_MAX_WORDS` is `400`.
@@ -147,27 +134,28 @@ This happens in `src/plugins/dotclaude/slices/prompt/adapters/mod.ts` (`onSpawn`
   I read it on 2026-10-13.
   The page does not state a default `maxTurns`.
 - The `Agent` tool text of the `2.1.296` binary, in the git-ignored `external/cc-extract/2.1.296/tool/` folder.
-  The agent-type listing in `external/cc-extract/2.1.296/listing/` holds only its headers.
+  That folder is gone, and the extract of `2.1.299` is in `external/cc-2.1.299/cc-extract-2.1.299/`.
+  The agent-type listing in the `listing/` folder held only its headers.
   It names no built-in agent type.
   So this page does not confirm the count of built-in types.
 - The turn-limit wording of the binary string table.
   The table has a partial-output message for a run that stops at its turn limit.
   This page does not copy that text.
-- The code of dotclaude that acts on subagents, read at the base commit `6e2e4278`.
+- The code of claudetto that acts on subagents, read in the checkout of 2026-10-16.
 
 ## Open Points
 
 - The default `maxTurns` is not confirmed.
-  The documentation does not state it, and the agent files always set it.
-- The cost of the agent listing for the six dotclaude agents is not measured.
+  The documentation does not state it, and the agent files set none.
+- The cost of the agent listing for the six claudetto agents is not measured.
   A measurement needs the `start-cost` skill, which this run did not use.
 - The background default is not confirmed for an interactive session.
   See the section above.
-- The `Haiku 5.5` cost claim in the comment of `handoff/limits.ts` is not confirmed in this run.
+- The `Haiku 5.5` cost claim in the comment of `agents/limits.ts` is not confirmed in this run.
 
 ## Related Pages
 
 - [Agents](Agents): the roster of the agent files, and their pins.
-- [Context and Handoff](Context-And-Handoff): the context bound of a subagent.
+- [Handoff](Handoff): the context bound of a subagent.
 - [Tools and Deferral](Tools-And-Deferral): how Claude Code loads and defers the tools.
 - [Decisions Router](Decisions-Router): the reasons for the bounds of a subagent.

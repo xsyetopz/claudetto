@@ -1,0 +1,283 @@
+# Decisions: Engine Facts
+
+This page holds the decisions D48 to D57.
+Each decision rests on a fact of the Claude Code engine that the code alone does not show.
+Read this page before you change one of the code paths below.
+A change that looks simpler can break a fact that a test cannot see, such as a note that leaks into a reply of the model.
+The index is [Decisions](Decisions).
+
+## Rules for Contributors
+
+- Do not replace a choice on this page with a different mechanism without new evidence.
+  Write the new evidence into the decision, and change the decision in the same commit.
+- When you find a fact of the engine that saves model tokens, or that costs no model tokens, add it to this page.
+  Give the source: a page of the docs, a line of the types file, a line of the bundle, or a measured run.
+- The types file is `.claude-plugin/types/claude-code/index.d.ts`.
+  The bundle files are in `external/`, which git ignores, so a bundle line is evidence for a reader with that folder.
+
+## Channels That Cost No Model Tokens
+
+A text that the model reads costs input tokens on each later turn, and it can change the reply.
+A text that only the user reads costs no model tokens.
+The table gives each channel that claudetto uses.
+
+| Channel | The model reads it | Use |
+| --- | --- | --- |
+| `$.ui.log` | No | A notice for the user, such as the drift notice of `/claudetto:setup` (D48) |
+| The status line command | No | Live figures, such as the context share and the rate limits |
+| A `command.run` handler | No | A command with a fixed output, such as `claudetto-usage` (D42) |
+| A git hook | No | A check of each commit or push, such as the `commit-msg` and `pre-push` hooks |
+| A key in `settings.json` | No | A behavior that Claude Code has, such as `sandbox` (D51) |
+| `$.session.append` with a `user` row | Yes | Only a text that the model must act on |
+| A `prompt.submit` rewrite | Yes | Only a short reminder that the model must follow, such as the attribution reminder (D54) |
+
+## D48 User Notices Through `$.ui.log`, Not a Transcript Row
+
+**Problem:** The session-start drift notice of the `setup` slice was a `user` row from `$.session.append`.
+The model read the row as a part of the task.
+In the eval case `accusation-warranted` (Haiku, run `2026-10-16T16-28-11-485Z`), the reply of the task had the settings diff appended: 56 missing snippet values and 9 built-in plugins.
+The reply then ended with "Tell me if you want either of those done."
+The judge `plain-reply` failed all three runs, and the score with the plugin was 0.89 against 1.00 without it.
+
+**Choice:** `reportDrift` in `src/plugins/claudetto/slices/setup/adapters/mod.ts` calls `$.ui.log`.
+The types file says that `$.ui.log` "appends one line to the transcript, drawn like a system notice (dim; not sent to the model)".
+A `-p` or SDK host receives the line as `ui_log`.
+
+**Alternatives:** A `user` row with words that tell the model to ignore it.
+It still costs tokens on each turn, and the model can still act on it.
+
+**Evidence:** The trace `out/trace.jsonl` of the failed run.
+The tests `tests/claudetto/setup/session-start.test.ts` and `src/plugins/claudetto/slices/setup/lab/drift.test.ts` check that the notice goes to `ui.log` and that no row goes to the session.
+
+## D49 No Catch-All in a Hook That Calls `next` First
+
+**Problem:** A `catch` around the whole `tool.check` hook of the `asks` slice looks safe.
+But it can hide an error, and it can replace a verdict of another slice.
+
+**Choice:** The hook has no catch-all.
+The docs page [Handle a hook that fails](https://code.claude.com/docs/en/plugins/mods/events) says:
+"It failed after `next` resolved: that result stands".
+So when the hook throws after `next`, Claude Code logs the error and keeps the verdict of `next`, such as the `ask` of the `policy` slice.
+A `catch` names only the error that it expects.
+
+**Alternatives:** A catch-all that returns the verdict of `next`.
+It gives the same verdict, and it hides the error from the log.
+
+**Evidence:** The header comment of `src/plugins/claudetto/slices/asks/adapters/mod.ts`.
+
+## D50 A Marker in `$.env` for Each `Bash` Call of Claude
+
+**Problem:** The `pre-push` hook of git must check only the pushes of Claude.
+A push that the user types with `!` must pass.
+
+**Choice:** The `tool.call` handler in `src/plugins/claudetto/slices/policy/adapters/mark.ts` sets `CLAUDETTO_AGENT_CALL` with `$.env.set` before the command, and removes it after.
+These facts make this the only working form:
+
+- A `!` command does not go through `tool.call` or `tool.check` (`external/cc-2.1.299/strings.txt` line 353895).
+  So a handler sees only the calls of Claude.
+- No built-in env var marks a command as a command of Claude (`strings.txt` line 329022).
+- The types file says that `$.env` is the environment "every Bash child" inherits.
+  So git and its hooks see the marker.
+- A prefix such as `CLAUDETTO_AGENT_CALL=1 git push` in the command text breaks the `Bash(...)` allow rules of the user.
+  Claude Code removes an env-var prefix for an `allow` match only when the name is on a fixed safe list (`external/cc-2.1.299/notes/permissions.md`, lines 76 to 79).
+- `CLAUDE_ENV_FILE` exists only for a `SessionStart` command hook (`docs/hooks.md`), and it sets a value for the whole session.
+
+A command that sets or removes the marker is denied (`changesMarker` in `src/plugins/claudetto/slices/policy/adapters/deny.ts`).
+When a step fails, the marker stays set, so the hook checks more pushes and not fewer.
+
+**Alternatives:** A command-text rewrite, which breaks the allow rules.
+A consent env var that Claude sets, which Claude can also set without consent.
+
+**Evidence:** The tests of the `policy` slice in `tests/claudetto/policy/`.
+
+## D51 The Sandbox Is the Hard Stop, and Setup Writes It
+
+**Problem:** In a checkout that the user does not own, `mark.ts` blanks `GH_TOKEN` and `GITHUB_TOKEN`.
+That is a soft barrier.
+A script can still read the saved login of `gh`, the keychain, or an SSH key.
+
+**Choice:** `/claudetto:setup sandbox` writes the stop into `.claude/settings.local.json`, and `--remove` restores the file.
+These facts give the form:
+
+- A plugin cannot set `sandbox`.
+  Of the `settings` of a plugin, "only `agent` and `subagentStatusLine` take effect" (`docs/plugins_manifest-reference.md`).
+- With `failIfUnavailable: false`, the default, a missing sandbox gives only a warning, and the commands run unsandboxed.
+  So the stop sets `failIfUnavailable: true` and `allowUnsandboxedCommands: false`.
+- The engine marks `sandbox.enabled` and `sandbox.failIfUnavailable` as restrictive keys (`strings.txt` of 2.1.301).
+- On Linux and WSL2, the sandbox needs `bwrap` and `socat`.
+  With `failIfUnavailable: true` and no such tool, Claude Code does not start.
+  So setup checks the tools first, and writes nothing when one is missing.
+  AppArmor can stop an installed `bwrap`, such as on Ubuntu 24.04 and later.
+  So setup also runs `bwrap` one time, and writes nothing when the run fails.
+- The seccomp filter is required for the hard stop on Linux and WSL2.
+  It blocks `socket(AF_UNIX, ...)`.
+  Without it, a command reaches the `ssh-agent` socket, and on WSL2 a Windows binary (`cmd.exe`, `git.exe`) goes to the Windows host over a Unix socket.
+  Claude Code only warns when it is missing (`seccomp not available - unix socket access not restricted`, and `[Sandbox Linux] apply-seccomp binary not available - unix socket blocking disabled`, line 239865 of `strings.txt`).
+  The lookup of the engine is in `src/sandbox/generate-seccomp-filter.ts` of `anthropics/sandbox-runtime` on GitHub.
+  The order is `sandbox.seccomp.applyPath` if the file exists, the `vendor/seccomp/<arch>/apply-seccomp` folders next to the bundle, and then the global install from `npm root -g` and five fixed folders.
+  The arch is `x64` or `arm64` (`ia32` has `socketcall()`, which the filter cannot inspect).
+  The strings show the same messages (`[SeccompFilter] ...`, lines 236898 to 236938), the `/sandbox` dependency text (lines 288877 to 288881), and `sandbox.seccomp.applyPath` and `argv0` (lines 303661 to 303674).
+  With `argv0`, `applyPath` is used as it is, and the lookup is skipped (`getLinuxDependencyStatus`).
+  Setup does the same lookup, and so it passes only for a helper file that the engine finds on disk, or for an explicit `argv0` with `applyPath`.
+  The native Linux binary embeds the helper, and the engine uses it with no `npm` install (checked on 2026-10-16).
+  In the Linux build, the gate is `Bun.isStandaloneExecutable`.
+  The engine opens `/proc/self/exe` as fd 3 and passes `{applyPath: "/proc/self/fd/3", argv0: "apply-seccomp"}` itself (the macOS dump at line 237588 has the gate off).
+  In a container, `@anthropic-ai/claude-code-linux-arm64@2.1.301` run with `exec -a apply-seccomp` printed `Usage: apply-seccomp <command> [args...]`.
+  With `--privileged`, the same call ran `echo`, and `socket(AF_UNIX)` failed with `EPERM`.
+  So setup passes the check when the `claude` on `PATH` resolves to an ELF file.
+  The npm build runs `cli.js` and still needs the helper on disk.
+  No live sandboxed `Bash` call ran, because that needs a login.
+- `sandbox.network.allowAllUnixSockets: true` makes the engine skip the filter (`[Sandbox Linux] Skipping seccomp filter - allowAllUnixSockets is enabled`, line 239865).
+  Setup refuses and names the file, and does not set the key to `false`, because a managed or user choice is not setup's to change.
+- The `bwrap` of the test run is the one the engine runs: `sandbox.bwrapPath` ("used directly instead of resolving bwrap via PATH", line 303670) or `bwrap` from `PATH`.
+  The engine errors when `bwrapPath` is not executable and does not fall back to `PATH`, so setup does the same.
+  The AppArmor profile of the sandbox page names `/usr/bin/bwrap`, so it does not cover a Homebrew `bwrap`.
+  Setup prints the profile with the real path of the `bwrap`, only when `kernel.apparmor_restrict_unprivileged_userns` is 1.
+  The test run has `--proc /proc` as the engine has, and the error `Can't mount proc` marks an unprivileged container, for which the page names `sandbox.enableWeakerNestedSandbox`.
+  Setup does not set that key, because it weakens the sandbox.
+
+**Alternatives:** A `tool.check` deny of each network command.
+A script can reach the network in many forms, so a deny list is never complete.
+
+**Evidence:** [AI Policy](AI-Policy) and [Settings Apply](Settings-Apply) give the limits, such as MCP writes and `excludedCommands`.
+
+## D52 Each Adapter Keeps Its Own `$` Calls
+
+**Problem:** A shared helper that calls `$` looks like less code.
+
+**Choice:** Each function that touches `$` is in the adapter file that uses it.
+`claude plugin validate` follows `$` only into a function of one file, and each `$.env` call needs a literal name.
+A shared helper makes the validation fail.
+
+**Evidence:** The header comments of `mark.ts` and of `src/plugins/claudetto/slices/asks/adapters/mod.ts`.
+
+## D53 A Plugin Verdict Only Makes a Call Stricter
+
+**Problem:** A slice can return `allow`, and a reader can think that it approves a call that a rule of the user asks for.
+
+**Choice:** No slice uses `allow` to make a call less strict.
+The engine orders the verdicts `deny`, `ask`, `allow`, and the verdict of a plugin is final unless the engine is stricter (function `zZr`, `strings.txt` line 333358).
+An `ask` from a hook prompts in auto mode, and in a session that cannot prompt the call is denied (`docs/hooks.md`).
+
+**Evidence:** D43 in [Architecture](Decisions-Architecture), and the `asks` handler, which keeps a `deny` of `next`.
+
+## D54 The Attribution Reminder in Place of `includeGitInstructions`
+
+**Problem:** The snippet sets `includeGitInstructions: false`, because the built-in git instructions are long.
+That key also removes the attribution reminder, so Claude stops adding the attribution lines.
+
+**Choice:** The `attribution` slice sends only the reminder.
+The `prompt.submit` rewrite adds it to the main loop, `session.compact` sends it again after a compaction, and the `agent.spawn` rewrite adds it to a subagent.
+The text in `prompts/reminder.md` has 196 characters.
+The estimate is about 60 to 70 tokens with the commit line, at about 4 characters for each token.
+This figure is not measured.
+The `commit-msg` hook of git (git 2.54 or later) and the bypass deny check the result at no model cost.
+
+**Evidence:** `src/plugins/claudetto/slices/attribution/slice.ts` and [Commit Check](Commit-Check).
+
+## D55 No Session-Wide Env Through `CLAUDE_ENV_FILE`
+
+**Problem:** `CLAUDE_ENV_FILE` looks like the documented way to set an env var.
+
+**Choice:** claudetto uses `$.env` in the hooks module.
+`CLAUDE_ENV_FILE` is only for a `SessionStart` command hook (`docs/hooks.md`), and claudetto has one hooks module in place of command hooks (D39).
+A value in that file also holds for the whole session, and a marker must hold only for one call (D50).
+
+## D56 Toolchain Facts Come From the Environment, Not From Model Memory
+
+**Problem:** A model picks a toolchain command from what it remembers, and the memory is old.
+In a sandbox run on Claude Code 2.1.301 and Bun 1.4.3, the `reviewer` agent ran `bunx tsc --noEmit -p .` in a project with no `typescript` package.
+`bunx` downloaded `typescript` from npm, and it checked nothing of the project.
+Bun 1.4.3 has `bun check`, which reads `tsconfig.json` and needs no `typescript` package ([release notes](https://bun.com/blog/bun-v1.4.3)).
+
+**Choice:** Where claudetto already acts, it gives the model a fact that it reads from the environment: an installed version from the binary, or a file of the project.
+It never gives a toolchain choice that it infers.
+The `asks` slice gives an `ask` for a `bunx`, `npx`, `pnpm dlx`, `yarn dlx`, `bun x`, or `npm exec` call of a check tool that `node_modules` does not have, such as `bunx eslint`.
+A download of another tool, such as `npx create-vite` or the `ctx7` of `claudetto-docs`, gets no ask, because it is not a check and an ask is a deny in a session that cannot prompt.
+For `tsc`, the reason states `bun --version` and names `bun check` when the version is 1.4.3 or later.
+The slice runs `bun --version` only on a `tsc` hit, so a call with no hit costs no process and no text.
+The verdict is `ask` and not `deny`, because a download can be what the user wants, and a plugin verdict only makes a call stricter (D53).
+In a session that cannot prompt, an `ask` is a deny, and the model still reads the reason.
+The shared prompt does not tell the model about `bunx` or `npx`, because such a line costs about 55 tokens in each request.
+The texts of the `reviewer`, `implementer`, `debugger`, and `planner` agents tell it, because an agent text goes only into the requests of that agent.
+These lines also cover what the `ask` cannot see, such as a check that skips the recipe of a `justfile`.
+The check commands of the `asks` slice know `bun check`, `bun test --check`, `bun run --check`, and `bun build --check`.
+A test or a fixture that names a version of a tool uses the version that is current, with its source in a comment.
+
+**Evidence:** `src/plugins/claudetto/slices/asks/domain/download.ts`, `tests/claudetto/asks/download.test.ts`, and `bun check` run in a temp project with Bun 1.4.3.
+
+## D57 A Plugin `bin/` Command Is Named by Its Path, Not by Its Bare Name
+
+**Problem:** The `bin/` folder of a plugin is "on the Bash tool's `PATH` while the plugin is enabled" (`docs/plugins_manifest-reference.md`).
+In an eval run of `unprompted-skip` on Claude Code 2.1.301, the model ran `claudetto-run-checks "node --test check/split.test.mjs"` as the shared prompt told it.
+The shell answered `Exit code 127` and `command not found: claudetto-run-checks`, and the model then ran the command itself.
+The plugin was loaded: the `init` row had `claudetto@inline`, its slash commands, and its MCP server.
+
+**Choice:** Claude Code adds the `bin/` folders only to the shell snapshot, so the `PATH` of a Bash call has them only when the call sources the snapshot.
+The bundle shows the path: `xco` lists the `bin/` folder of each enabled plugin, `W6r` writes `export PATH=...` with those folders into the snapshot file,
+and `buildExecCommand` runs `source <snapshot> 2>/dev/null || true` before each command.
+A snapshot that is missing, or a read of it that fails, gives no error and no `bin/` folder.
+In `claude plugin eval`, the sandbox settings of the run have the config folder in `denyRead`, and the snapshot sits in `shell-snapshots/` of that folder.
+So the source fails with no message in that sandbox.
+claudetto does not rely on `PATH` for a command that the model must run.
+The `prompt` slice builds the `tools` section from `$.plugin.root` in the `prompt.compose` handler, so the section names `<root>/bin/claudetto-run-checks`, quoted when the path has a space.
+The `guard` and `asks` slices read the base name of the command, so a call by path meets the same rules as a call by name.
+A path in the shared prompt is the same for each turn of a session, so it keeps the prompt cache.
+
+**Evidence:** `external/cc-2.1.301/strings.txt` (`xco`, `W6r`, `yAn`), the trace and `settings.json` of the kept eval run, `tests/claudetto/prompt/variants.test.ts`, and `src/plugins/claudetto/slices/prompt/lab/variants.test.ts`.
+The cause in `claude plugin eval` follows from the `denyRead` list and the bundle, and no debug log of that run exists to confirm it.
+
+## D58 `Stop` Sees the Reply After the User and Gives the Background Tasks
+
+**Problem:** A gate at the end of a turn must know what it can stop and what it can read.
+
+**Choice:** The turn gate reads the input of `Stop` and `SubagentStop`: `stop_hook_active`, `last_assistant_message`, `background_tasks`, and `session_crons`.
+An entry of `background_tasks` has `id`, `type`, `status`, `description`, and `command`.
+A `Stop` hook runs after Claude Code shows the reply, so no hook can keep an opener or an apology from the user.
+The gate keeps its own count of blocks, because the harness ends a turn only after 8 blocks (`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`).
+The gate does not pass a stop for `stop_hook_active` alone, because that rule let a false claim pass on its retry ([Stop Prompt Hooks](Stop-Prompt-Hooks)).
+A `type: "prompt"` hook puts its whole prompt into the block text, so the judge runs in the hooks module and returns only its reason.
+
+**Evidence:** the [hooks guide](https://code.claude.com/docs/en/hooks-guide), the [Opus 5.5 prompting guide](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5), and [Stop Prompt Hooks](Stop-Prompt-Hooks).
+No lab test shows yet that a mod handler on `Stop` gets `background_tasks`.
+
+## D59 A Local Background Command Has No Time Limit
+
+**Problem:** A background `Bash` command that waits for input runs until a person stops it.
+
+**Choice:** In a local terminal session, a background `Bash` command has no time limit.
+An unattended run gets 30 minutes by default and 2 hours at most, and `-p` with a text prompt gets 10 minutes.
+The `timeout` of a background command applies only where such a limit exists.
+`BASH_MAX_TIMEOUT_MS` and `BASH_DEFAULT_TIMEOUT_MS` can only make a limit longer.
+`TaskStop` stops a task by its ID, and on a wrong ID it lists the tasks that run.
+A background command of a foreground subagent stops when that subagent ends.
+So the turn gate blocks a stop while a background task runs, and does not rely on a time limit.
+
+**Evidence:** the [tools reference](https://code.claude.com/docs/en/tools-reference).
+On 2026-10-16, a shell of a subagent ran `cat > <file>` with no input for more than 2 hours, until the user stopped it.
+
+## D60 The Built-In Read Dedup Covers Only the Same Range
+
+**Problem:** Claude reads a file again when the file did not change, and each read adds the file to the context again.
+
+**Choice:** `Read` of Claude Code `2.1.301` returns the stub `file_unchanged` ("Unchanged since last read") only when all of these hold:
+
+- the record of the agent has the same path, with the same `offset` and `limit`;
+- the earlier read was not a partial view, and its content is in the context;
+- the `mtime` of the file is the same.
+
+The flag `tengu_read_dedup_killswitch`, a remote call, or the clear of old tool results after an idle gap turns the dedup off.
+A subagent starts with a copy of the record of its parent, with the entries from the context of the parent taken out.
+A read of another range, or a full read after a partial read, gets the full content again.
+So claudetto adds a gate on `Read` that denies a read when earlier reads of the same unchanged file cover the new range.
+
+**Evidence:** `external/cc-2.1.301/strings.txt`: the `Read` call (`tengu_file_read_dedup`, `tengu_file_read_reread`), the `dedupUnchangedReads` getter, and the subagent context (`stripSeededFromContext`).
+No lab test shows yet that a mod handler of `Read` can read the `mtime` of a file.
+
+## Related Pages
+
+- [Decisions](Decisions)
+- [Architecture](Decisions-Architecture)
+- [AI Policy](AI-Policy)
+- [Commit Check](Commit-Check)
+- [Hook Events](Hook-Events)

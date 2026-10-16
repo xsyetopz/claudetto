@@ -1,6 +1,6 @@
 # Design: Principles, Continued
 
-This page gives the design principles 10 to 18 of dotclaude 1.0.0.
+This page gives the design principles 10 to 18 of claudetto 0.1.0.
 Read it after [Design](Design), which gives principles 1 to 9.
 Each principle gives what it is, why it holds, and how the code applies it.
 
@@ -19,8 +19,8 @@ This is an inference.
 
 **How in the code:**
 
-- The rule is in the header of `src/plugins/dotclaude/slices/asks/slice.ts`.
-- `src/plugins/dotclaude/slices/asks/limits.ts` lists the protected paths.
+- The rule is in the header of `src/plugins/claudetto/slices/asks/slice.ts`.
+- `src/plugins/claudetto/slices/asks/limits.ts` lists the protected paths.
   Examples are the lint config, the runner config, the CI paths, and the hook paths.
 
 ### 11. A Floor That the Auto Mode Cannot Pass
@@ -30,65 +30,69 @@ Risky but recoverable work needs the user.
 Each destructive action is forbidden, also when the user asks for it.
 The user can still run such a command with a `!` command.
 
-**Why:** The user chose this on 2026-10-12 (`change.md`).
+**Why:** The user chose this on 2026-10-12.
 
 **How in the code:**
 
 - Setup writes the `autoMode` part to the user settings only.
-  Claude Code reads it only there (`src/plugins/dotclaude/slices/setup/domain/automode.ts`).
-- The forbidden actions are in the `autoMode.hard_deny` list of `src/plugins/dotclaude/slices/setup/texts.ts/automode.json`.
+  Claude Code reads it only there (`src/plugins/claudetto/slices/setup/domain/automode.ts`).
+- The forbidden actions are in the `autoMode.hard_deny` list.
+  Setup builds the list from `src/plugins/claudetto/slices/setup/texts.ts/automode.json` and the `floor` and `subagent` rules of the catalog.
 - When the floor stops an action, the agent does not try another way.
-  The rule is in `src/plugins/dotclaude/slices/prompt/texts.ts/blocks.md`.
+  The rule is in `src/plugins/claudetto/slices/prompt/texts.ts/blocks.md`.
 
-### 12. Jev Decides, and the User Approves
+### 12. Jev Decides When the User Turns It On
 
-**What:** Each decision that facts settle goes to Jev by default.
+**What:** A decision that facts settle can go to Jev.
 A small Claude model answers when Jev gives no answer.
 Approvals and preferences stay with the user.
 
-**Why:** The user chose this on 2026-10-12 (`change.md`).
+**Why:** The user chose this on 2026-10-12.
+The basis changed in 0.1.0.
+dotclaude 1.0.0 sent such decisions to Jev by default.
+In 0.1.0 the `decide` option is `off` by default, because the default sent text to an external service that the user did not choose.
+The decision is D5 in `openspec/changes/claudetto-0-1-0/design.md`.
 
 **How in the code:**
 
-- `src/plugins/dotclaude/slices/decide/adapters/jev.ts` and `adapters/fallback.ts` implement one provider port.
+- The options are `off`, `claude`, and `jev` (`src/plugins/claudetto/slices/decide/domain/mode.ts`).
+  With `off`, the slice registers no tool and makes no call.
+- `src/plugins/claudetto/slices/decide/adapters/jev.ts` and `adapters/fallback.ts` implement one provider port.
   The port is in `ports.ts`.
 - `ports.ts` names each reason that Jev gives no answer.
   The reasons are `no-key`, `invalid-key`, `no-balance`, `usage`, and `failed`.
-- A question with one option, or with a few choices, is not sent to Jev (`tests/dotclaude/decide/ask.test.ts`).
-- `JEV_TIMEOUT_MS` is `45_000` in `src/plugins/dotclaude/slices/decide/limits.ts`.
+- A question with one option, or with a few choices, is not sent to Jev (`tests/claudetto/decide/ask.test.ts`).
+- `JEV_TIMEOUT_MS` is `45_000` in `src/plugins/claudetto/slices/decide/limits.ts`.
 
-### 13. A Spec Store That Appends
+### 13. A Change Record in Checked Tasks
 
-**What:** The spec workflow is part of the core plugin.
-The states of a change come from an append-only `events.jsonl`.
-The log has one line for each change.
+**What:** The MiniSpec workflow is part of the core plugin.
+The state of a change is in its `tasks.md`, where each checked task is a done task.
+The `minispec` CLI keeps no log.
 
 **Why:** One fact is in one place.
-A change is a one-line diff.
-Two branches merge with no conflict (`change.md`).
+The handoff reads the state of a change from `tasks.md`, so a session can go on after a handoff.
+The spec store of dotclaude 1.0.0 kept an append-only event log.
+That log and its binary spent tool calls on each step.
+The decision is D4 in `openspec/changes/claudetto-0-1-0/design.md`.
 
 **How in the code:**
 
-- `src/kernel/spec-store.ts` holds the types of the store.
-  The `spec` slice, the status line, and the handoff read them.
-- Only the `spec` slice writes the store.
-- The commands are on [Spec Store](Spec-Store).
+- `src/kernel/change.ts` holds the rules that read the task state.
+  The `minispec` CLI and the handoff share them, and neither imports the other.
+- The commands are on [MiniSpec](MiniSpec).
 
-### 14. A Schema Number and No Legacy Code
+### 14. No Legacy Code
 
-**What:** Each file format has a `schema` number.
-A reader stops with a message on a number that it does not know.
-It does not convert an older file.
+**What:** claudetto 0.1.0 has no compatibility layer for the settings, files, or commands of dotclaude 1.0.0.
+A file in `plugins/` has a source in `src/`.
 
-**Why:** 1.0.0 has no migration from an older version and no shim (`change.md`).
-Code that reads an old layout is code to keep.
+**Why:** Code that reads an old layout is code to keep.
+The restart is clean, and no setting carries over.
 
 **How in the code:**
 
-- `SPEC_SCHEMA` in `src/kernel/spec-store.ts` is the number that the reader accepts.
 - `tools/generate/stray.ts` fails on each file in `plugins/` that the generator did not write.
-  During the rebuild, the list `tools/rebuild-pending.txt` named the files of the previous release that were still in `plugins/`.
-  P16 ported the last of them and deleted the list.
 
 ### 15. Plain Data, Arrow Functions, and Pure Domain Code
 
@@ -97,7 +101,7 @@ Plain data and pure functions are the default.
 A class holds state across calls.
 An interface names a port.
 
-**Why:** A pure function needs no stub in a test (`design.md`).
+**Why:** A pure function needs no stub in a test.
 
 **How in the code:**
 
@@ -107,17 +111,19 @@ An interface names a port.
 
 ### 16. Claude Code Owns the Worktrees and the Cleanup
 
-**What:** dotclaude uses the worktrees of Claude Code, such as `isolation: worktree`.
+**What:** claudetto uses the worktrees of Claude Code, such as `isolation: worktree`.
 It also uses the garbage collection of Claude Code.
-dotclaude makes no worktree with `git worktree add`.
+claudetto makes no worktree with `git worktree add`.
 
 **Why:** Claude Code already does this work.
-So dotclaude keeps no cleanup code (`change.md`).
+So claudetto keeps no cleanup code for worktrees.
+The `gc` slice sweeps only the outputs of Claude itself, inside the roots that it names.
 
 **How in the code:**
 
-- The `implementer` agent sets `isolation: worktree` (`src/plugins/dotclaude/slices/agents/agents/implementer.md`).
-- The guard matches `git gc --prune=now` (`src/plugins/dotclaude/slices/guard/domain/matchers/git.ts`).
+- The `implementer` agent sets `isolation: worktree` (`src/plugins/claudetto/slices/agents/agents/implementer.md`).
+- The guard matches `git gc --prune=now` (`src/plugins/claudetto/slices/guard/domain/matchers/git.ts`).
+- `tests/claudetto/agents/no-worktree-add.test.ts` checks the first rule.
 
 ### 17. Few Subagents, Each with a Bound
 
@@ -129,29 +135,28 @@ The scale is that of a subscription.
 
 **How in the code:**
 
-- dotclaude has six agents: `debugger`, `implementer`, `investigator`, `planner`, `researcher`, and `reviewer`.
+- claudetto has six agents: `debugger`, `implementer`, `investigator`, `planner`, `researcher`, and `reviewer`.
   Each agent file has a fixed model and effort.
-- Each agent file holds the `maxTurns` of `MAX_TURNS` (`src/plugins/dotclaude/slices/agents/limits.ts`).
-  The values are 61 for `debugger` and `implementer`.
-  They are 41 for `planner`, `researcher`, and `reviewer`.
-  They are 31 for `investigator`.
-- `reviewer` sets `disallowedTools: Edit, Write, NotebookEdit, Agent`.
+- No agent file has a `maxTurns`, because a run at its turn limit returns no report (`tests/claudetto/agents/roster.test.ts`).
+  The bound is a context bound instead.
+  `SUBAGENT_CONTEXT_MAX` is `100_000` tokens, and `HAIKU_CONTEXT_MAX` is `85_000` tokens (`src/plugins/claudetto/slices/agents/limits.ts`).
+  Over its bound, a subagent gets a note to report now, with a report of `REPORT_MAX_WORDS` words or fewer.
+- `reviewer` has the tools `Read`, `Grep`, `Glob`, and `Bash`, so it has no `Edit` and no `Write`.
 - Not in the code: the rule that a reviewer reads only the diff of a package.
-  Also not in the code: the rule that a subagent cannot run a git command that changes shared state.
 
-### 18. Own Files in `.dotclaude/`
+### 18. Own Files in `.claudetto/`
 
-**What:** dotclaude writes its own files to `.dotclaude/`.
+**What:** claudetto writes its own files to `.claudetto/`.
 The layout is based on `.claude/`.
 It keeps `.claude/` for the files that Claude Code reads.
 
 **Why:** Claude Code reads `.claude/`.
-So dotclaude's own files would confuse that reading (`change.md`).
+So the own files of claudetto would confuse that reading.
 
 **How in the code:**
 
-- `src/kernel/paths.ts` sets `DOTCLAUDE_DIR` to `.dotclaude`.
-- `DOTCLAUDE_LOCAL_PATHS` in the same file lists the paths that git must not track.
+- `src/kernel/paths.ts` sets `CLAUDETTO_DIR` to `.claudetto`.
+- `CLAUDETTO_LOCAL_PATHS` in the same file lists the paths that git must not track.
 
 ## Related Pages
 

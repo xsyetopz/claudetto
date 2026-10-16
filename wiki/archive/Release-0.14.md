@@ -11,7 +11,7 @@ An entry with no version comes from 0.14.0.
 
 ## Added
 
-- Contribution guard (in the `Bash` guard, see [Contributions](Contributions)): covers `git commit`, `git push`, and `gh pr`, `gh issue`, and `gh discussion` writes.
+- Contribution guard (in the `Bash` guard, see [Guards](Guards#the-asks)): covers `git commit`, `git push`, and `gh pr`, `gh issue`, and `gh discussion` writes.
   It also covers `gh api` writes and GraphQL mutations that post content.
   - It denies a contribution to a project that forbids AI work.
     The catalog comes from `open-source-ai-contribution-policies` by melissawm (183 projects, 101 forbid).

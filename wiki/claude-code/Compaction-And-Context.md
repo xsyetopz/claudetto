@@ -1,7 +1,7 @@
 # Compaction and Context
 
 This page describes what fills the context of Claude Code, when it compacts the context, and what a compaction keeps.
-Read it if you tune the context settings of dotclaude.
+Read it if you tune the context settings of claudetto.
 It covers Claude Code `2.1.296`.
 Each fact from the binary comes from a search of its strings, or from the official docs.
 The page names the source of each fact.
@@ -17,8 +17,8 @@ Each inference is marked as inference.
   Source: the `2.1.296` strings.
 - `claude-sonnet-5-5` had a window of 1,000,000 tokens in the measurement of 2026-10-12.
   Source: [Handoff Cost](Handoff-Cost).
-- The comment on `CONTEXT_WINDOW` in `src/kernel/budget.ts` says that Claude Code `2.1.296` warns against a 200K window for `claude-opus-5-5`.
-  It warns unless `CLAUDE_CODE_AUTO_COMPACT_WINDOW` is set.
+- The comment on `CONTEXT_WINDOW` in `src/kernel/budget.ts` says that Claude Code `2.1.301` warns against a 200K window for `claude-opus-5-5`.
+  It warns unless `autoCompactWindow` is set.
   I did not check this comment in the `2.1.296` strings.
   The strings have a warning for an unknown model id.
   That warning names `CLAUDE_CODE_MAX_CONTEXT_TOKENS` and `CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT`.
@@ -49,7 +49,8 @@ Source: the threshold function and the 20,000 constant in the `2.1.296` strings.
 The threshold is an inference from these two formulas, and I did not measure it.
 
 - With a 200,000-token window and an output limit of at least 20,000 tokens, the threshold is 167,000 tokens (inference).
-- With the 300,000-token window of the dotclaude snippet, the threshold is 267,000 tokens (inference).
+- With the 300,000-token window of the claudetto snippet, the threshold is 267,000 tokens (inference).
+  The snippet also sets `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, which gives a lower threshold (see the section "Context in claudetto").
 - `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` sets a percentage of the effective window from 0 to 100.
   The threshold is then the lower of that value and the default threshold.
 - The `2.1.296` strings also have a second threshold, from a field named `precomputeBufferFraction`.
@@ -126,38 +127,38 @@ The messages, the tool output, and the file contents that are not re-read leave 
 - `/compact` keeps a summary of the conversation.
   `/clear` keeps nothing of it (inference from the two commands).
 
-## Context in dotclaude
+## Context in claudetto
 
-- The settings snippet sets `DISABLE_COMPACT` to `1`.
-  It sets `autoCompactEnabled` to `false`.
-  It sets `CLAUDE_CODE_AUTO_COMPACT_WINDOW` and `CLAUDE_CODE_MAX_CONTEXT_TOKENS` to `300000`.
-  Source: `src/plugins/dotclaude/slices/prompt/slice.ts`, and the [settings snippet](Settings-Snippet).
-- With compaction off, a session that reaches its limit stops.
-  It does not compact, so it loses its state.
-  Source: the comment on `CONTEXT_WINDOW` in `src/kernel/budget.ts`.
+- The settings snippet sets `autoCompactWindow` to `300000`.
+  It sets `autoCompactWindow` to `144444` for `claude-haiku-5-5` in `modelSettings`.
+  It sets `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` to `80.3571`.
+  Source: the [settings snippet](Settings-Snippet), and the constants in `src/kernel/budget.ts`.
+- The percent and the window put the start of the auto compaction at 225,000 tokens for a 300,000-token window.
+  The comment on `AUTOCOMPACT_PCT` in `src/kernel/budget.ts` gives the formula (Claude Code `2.1.301` bundle).
+  The snippet does not set `DISABLE_COMPACT`.
 - The prompt text of the `context_management` section says that the conversation is summarized.
-  The prompt slice replaces that text with a note that compaction is off.
-  It does so only when `DISABLE_COMPACT` is set.
-  Source: `src/plugins/dotclaude/slices/prompt/transforms/context_management.ts` and `src/plugins/dotclaude/slices/prompt/adapters/mod.ts`.
-- The handoff is the alternative to a compaction.
-  The `handoff` slice writes the state of the work to a file.
-  The user runs `/clear`, and the next session reads the file.
-  See [Context and Handoff](Context-And-Handoff).
-- One measured run on 2026-10-12 compared the two.
+  The prompt slice replaces that text with a text that agrees with the compaction state of the session.
+  The states are `handoff`, `built-in`, and `off` (`DISABLE_COMPACT` is on).
+  Source: `src/plugins/claudetto/slices/prompt/domain/compaction.ts`, `src/plugins/claudetto/slices/prompt/transforms/context_management.ts`, and the [Prompt](Prompt) page.
+- The handoff is the alternative to the summary of a compaction.
+  The `handoff` slice writes the state of the work to a file when the compaction starts.
+  The handoff replaces the summary, and the next turns read the file.
+  See [Handoff](Handoff).
+- One measured run on 2026-10-12 compared the two, with the old `/dotclaude:handoff` of dotclaude 1.0.0.
   A handoff cost $0.0630.
   A compaction with its follow-up turn cost $0.2288.
   Both costs are at the API list price.
   The run used one session of about 81,000 tokens, so it has no spread.
   See [Handoff Cost](Handoff-Cost).
-- The bounds of the context of a subagent are in [Context-Bound](Context-And-Handoff).
+- The bounds of the context of a subagent are in [Handoff](Handoff).
 
 ## Sources
 
 - The `2.1.296` strings, searched with `grep` for the names and the constants above.
-- The extracts of the compaction prompts in `external/cc-extract/2.1.296/compaction/`.
+- The extracts of the compaction prompts in `external/cc-2.1.299/cc-extract-2.1.299/compaction/`.
 - The dossier of the binary, `external/dossier/cc-2.1.296/env.md` and `settings.md`.
 - The official docs page "Explore the context window" at `code.claude.com/docs/en/context-window`, read on 2026-10-13.
-- The kernel constants in `src/kernel/budget.ts`, and the snippet in `src/plugins/dotclaude/slices/prompt/slice.ts`.
+- The kernel constants in `src/kernel/budget.ts`, and the [settings snippet](Settings-Snippet).
 
 ## Not Settled
 
@@ -167,5 +168,5 @@ The messages, the tool output, and the file contents that are not re-read leave 
 
 ## Related Pages
 
-- [Context and Handoff](Context-And-Handoff)
+- [Handoff](Handoff)
 - [Auto Mode](Auto-Mode)

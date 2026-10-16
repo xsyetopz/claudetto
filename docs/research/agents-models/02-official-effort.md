@@ -87,17 +87,6 @@ All quotes are one sentence at most.
 
 ## Implications for the dotclaude agents
 
-Each row is a recommendation, tied to a source.
-
-| Agent | Model | Effort | Basis |
-| --- | --- | --- | --- |
-| planner | opus-5-5 | `high` | Hard reasoning, S1 `high` row. Default `medium` is the cheaper option, so sweep (S3). |
-| reviewer | opus-5-5 | `high` | Verification work, S4 `high` row. |
-| implementer | sonnet-5-5 | `medium` | S1: `medium` for well-specified tasks. Raise to `high` per call for large packages. |
-| debugger | sonnet-5-5 | `high` | S4: bug fixing in an existing codebase. |
-| researcher | sonnet-5-5 | `medium` | S3: flat research curves. `low` is a candidate. |
-| investigator | haiku-5-5 | `medium` | S1: start at `medium`. `low` risks skipped searches. |
-
 - Keep the current effort values. No source asks for a change in any of the six.
 - The 5 implementer failures on 2026-10-13 are a turn limit and a context limit, not an effort issue.
   Lower effort would cut tool calls and so delay the limit, but at a quality cost (S1, S3).
