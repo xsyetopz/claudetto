@@ -8,7 +8,7 @@ cat > package.json <<'EOF'
 }
 EOF
 cat > README.md <<'EOF'
-# age
+# Date tools
 EOF
 mkdir -p src
 cat > src/age.mjs <<'EOF'

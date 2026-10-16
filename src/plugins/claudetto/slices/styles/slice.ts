@@ -1,4 +1,4 @@
-// The manifest of the `styles` slice: the output style `dotclaude:Concise`, which the settings snippet selects.
+// The manifest of the `styles` slice: the output style `claudetto:Concise`, which the settings snippet selects.
 // The style keeps the coding instructions, because the `prompt` slice changes the coding sections,
 // and a style without them sets the section `doing_tasks` to `null`.
 // The style sets no `force-for-plugin`, so the `outputStyle` setting of the user stays in charge.
@@ -7,6 +7,7 @@ import type { Slice } from "../../../../kernel/slice.ts";
 
 export const slice: Slice = {
   name: "styles",
-  outputStyles: ["Concise"],
-  settings: { outputStyle: "dotclaude:Concise" },
+  ladder:
+    "built-in: a plugin output style, because no hook defines an output style",
+  settings: { outputStyle: "claudetto:Concise" },
 };

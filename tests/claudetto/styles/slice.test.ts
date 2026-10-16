@@ -2,12 +2,12 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import { slice } from "../../../src/plugins/dotclaude/slices/styles/slice.ts";
+import { slice } from "../../../src/plugins/claudetto/slices/styles/slice.ts";
 import { REPO } from "../../support/repo.ts";
 
 const STYLE = path.join(
   REPO,
-  "src/plugins/dotclaude/slices/styles/styles/Concise.md",
+  "src/plugins/claudetto/slices/styles/styles/Concise.md",
 );
 
 const frontMatterName = (text: string): string | undefined =>
@@ -19,12 +19,16 @@ const frontMatterName = (text: string): string | undefined =>
     .trim();
 
 test("the settings snippet selects the style of the slice", () => {
-  expect(slice.settings).toEqual({ outputStyle: "dotclaude:Concise" });
+  expect(slice.settings).toEqual({ outputStyle: "claudetto:Concise" });
 });
 
-test("the slice ships the style file whose name is the style name", async () => {
-  expect(slice.outputStyles).toEqual(["Concise"]);
+test("the style file has the name that the settings snippet selects", async () => {
   const name = frontMatterName(await Bun.file(STYLE).text());
   expect(name).toBe("Concise");
-  expect(slice.settings).toEqual({ outputStyle: `dotclaude:${name}` });
+  expect(slice.settings).toEqual({ outputStyle: `claudetto:${name}` });
+});
+
+test("the style keeps the coding instructions of Claude Code", async () => {
+  const front = (await Bun.file(STYLE).text()).split("\n---")[0] ?? "";
+  expect(front.split("\n")).toContain("keep-coding-instructions: true");
 });

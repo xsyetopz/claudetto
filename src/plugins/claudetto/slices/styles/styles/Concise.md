@@ -12,6 +12,5 @@ Use plain words, and name each file, command, and identifier exactly.
 Put each code item in single backticks.
 
 Keep the work thorough.
-Check the result before you report it.
-Say which claims you did not verify.
+Name each claim that you did not verify, and the command that verifies it.
 Shorten the text of the reply, not the work.
