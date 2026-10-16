@@ -1,0 +1,255 @@
+// The check on a weaker hook file or settings file (package P36), as pure functions.
+// A change gets no ask only when every changed part is safe:
+// a change of format or comments only, a move with the same content,
+// an added hook (a new entry with its matcher and command), an added `deny` or `ask` permission rule, a removed `allow` rule,
+// a change of `description` in a hooks file, or a plugin that goes on in `enabledPlugins`,
+// and, in a hook script, an added line on its safe list: a blank line, a comment, a stricter `set` line in a shell script,
+// or a `"use strict"` line in a JavaScript or TypeScript file. Every other added code line asks, in any position.
+// Every other change asks: a removed or changed hook, matcher, command, or timeout, a removed `deny` or `ask` rule,
+// an added `allow` rule, `disableAllHooks`, a changed `permissions.defaultMode`, a changed `model`, an added or changed `env` key,
+// and any key that the code does not know.
+// A format that the code cannot read asks. The check on a CI file is in `cidiff.ts`.
+
+import {
+  CODE_CONFIG_FILE,
+  HASH_COMMENT_FILE,
+  PERMISSION_ALLOW_KEYS,
+  PERMISSION_DENY_KEYS,
+  SHELL_SCRIPT,
+  SHELL_SHEBANG,
+  STRICT_SCRIPT_LINE,
+  USE_STRICT_LINE,
+} from "../limits.ts";
+import {
+  ENTRY_ADDED,
+  HOOK_CHANGED,
+  HOOK_LINE_ADDED,
+  HOOK_LINE_LOST,
+  HOOK_SCRIPT_MOVED,
+  KEY_ADDED,
+  KEY_CHANGED,
+  KEY_REMOVED,
+  PLUGIN_OFF,
+  RULE_REMOVED,
+} from "../prompts.ts";
+import { ciWeaker } from "./cidiff.ts";
+import { canonical } from "./confmap.ts";
+import { isObj, type Obj, readJson, UNREADABLE } from "./jsondiff.ts";
+import { missing, squeeze, uncommented } from "./scan.ts";
+import { shown } from "./shown.ts";
+
+/** One hook of a hooks value: the event, the group without its hooks (the matcher), the whole hook, and the text to show. */
+type Hook = { event: string; group: string; hook: string; label: string };
+
+const hookKey = (h: Hook): string => JSON.stringify([h.event, h.group, h.hook]);
+
+/** The hooks of a `hooks` value, or undefined when the value has a shape that the check cannot read. */
+const hooksOf = (value: unknown): Hook[] | undefined => {
+  if (value === undefined) return [];
+  if (!isObj(value)) return undefined;
+  const out: Hook[] = [];
+  for (const [event, groups] of Object.entries(value)) {
+    if (!Array.isArray(groups)) return undefined;
+    for (const group of groups) {
+      if (!isObj(group) || !Array.isArray(group["hooks"] ?? []))
+        return undefined;
+      const rest = Object.fromEntries(
+        Object.entries(group).filter(([k]) => k !== "hooks"),
+      );
+      for (const hook of (group["hooks"] ?? []) as unknown[])
+        out.push({
+          event,
+          group: canonical(rest),
+          hook: canonical(hook),
+          label:
+            isObj(hook) && typeof hook["command"] === "string"
+              ? hook["command"]
+              : canonical(hook),
+        });
+    }
+  }
+  return out;
+};
+
+/** What the change of a hooks value takes from the hooks: a hook that is gone or changed. An added hook is safe. */
+const hooksWeaker = (was: unknown, now: unknown): string | undefined => {
+  const [a, b] = [hooksOf(was), hooksOf(now)];
+  if (a === undefined || b === undefined) return UNREADABLE;
+  const lost = missing(a.map(hookKey), b.map(hookKey))[0];
+  const hook = a.find((h) => hookKey(h) === lost);
+  return hook === undefined
+    ? undefined
+    : HOOK_CHANGED({ label: shown(hook.label), event: hook.event });
+};
+
+/** What a change of the value at `key` is, or undefined when the value is the same. */
+const keyChange = (
+  key: string,
+  was: unknown,
+  now: unknown,
+): string | undefined => {
+  if (canonical(was) === canonical(now)) return undefined;
+  if (was === undefined) return KEY_ADDED({ key });
+  if (now === undefined) return KEY_REMOVED({ key });
+  return KEY_CHANGED({ key });
+};
+
+/** The keys of two objects, each once. */
+const keysOf = (a: Obj, b: Obj): string[] => [
+  ...new Set([...Object.keys(a), ...Object.keys(b)]),
+];
+
+/** The JSON object of `text`, or undefined when the text is not a JSON object. A blank text is an empty object. */
+const objectOf = (text: string): Obj | undefined => {
+  const v = text.trim() === "" ? {} : readJson(text);
+  return isObj(v) ? v : undefined;
+};
+
+/** The entries of the list at `key` of `obj`, as JSON texts. */
+const entries = (obj: Obj, key: string): string[] =>
+  Array.isArray(obj[key]) ? obj[key].map((v) => JSON.stringify(v)) : [];
+
+/** What the change of the `permissions` value does, or undefined. */
+const permissionsWeaker = (was: unknown, now: unknown): string | undefined => {
+  if (!isObj(was) || !isObj(now)) return keyChange("permissions", was, now);
+  for (const key of keysOf(was, now)) {
+    const listed = PERMISSION_DENY_KEYS.includes(key)
+      ? "deny"
+      : PERMISSION_ALLOW_KEYS.includes(key)
+        ? "allow"
+        : undefined;
+    const lists = [was[key], now[key]].every(
+      (v) => v === undefined || Array.isArray(v),
+    );
+    if (listed === undefined || !lists) {
+      const found = keyChange(`permissions.${key}`, was[key], now[key]);
+      if (found) return found;
+    } else if (listed === "deny") {
+      const gone = missing(entries(was, key), entries(now, key))[0];
+      if (gone !== undefined) return RULE_REMOVED({ key, rule: shown(gone) });
+    } else {
+      const gained = missing(entries(now, key), entries(was, key))[0];
+      if (gained !== undefined)
+        return ENTRY_ADDED({ key, entry: shown(gained) });
+    }
+  }
+  return undefined;
+};
+
+/** The flags of an `enabledPlugins` value, or undefined when the value has another shape. */
+const flagsOf = (value: unknown): Record<string, unknown> | undefined =>
+  value === undefined
+    ? {}
+    : isObj(value) && Object.values(value).every((v) => typeof v === "boolean")
+      ? value
+      : undefined;
+
+/** What the change of the `enabledPlugins` value does, or undefined. A plugin that is on and goes off adds no check. */
+const pluginsWeaker = (was: unknown, now: unknown): string | undefined => {
+  const [a, b] = [flagsOf(was), flagsOf(now)];
+  if (a === undefined || b === undefined)
+    return keyChange("enabledPlugins", was, now);
+  const off = Object.keys(a).find((k) => a[k] === true && b[k] !== true);
+  return off === undefined ? undefined : PLUGIN_OFF({ plugin: off });
+};
+
+/** What a call takes from a `.claude/settings*.json` file, or undefined. A text that is not a JSON object asks. */
+export const settingsWeaker = (
+  before: string,
+  after: string,
+): string | undefined => {
+  const [was, now] = [objectOf(before), objectOf(after)];
+  if (!was || !now) return UNREADABLE;
+  for (const key of keysOf(was, now)) {
+    const found =
+      key === "hooks"
+        ? hooksWeaker(was[key], now[key])
+        : key === "permissions"
+          ? permissionsWeaker(was[key], now[key])
+          : key === "enabledPlugins"
+            ? pluginsWeaker(was[key], now[key])
+            : keyChange(key, was[key], now[key]);
+    if (found) return found;
+  }
+  return undefined;
+};
+
+/** The code lines of a script: the first line if it is a `#!` line, then the lines without comments, trimmed and squeezed. */
+const scriptLines = (text: string, hash: boolean): string[] => {
+  const first = text.startsWith("#!")
+    ? [(text.split("\n")[0] as string).trim()]
+    : [];
+  const rest = uncommented(text, hash)
+    .split("\n")
+    .map(squeeze)
+    .filter((l) => l !== "");
+  return [...first, ...rest];
+};
+
+/**
+ * What a call takes from a hook script, or undefined.
+ * The old lines must stay, in the same order.
+ * An added code line must be on the safe list of its kind: a stricter `set` line in a shell script,
+ * and a `"use strict"` line in a JavaScript file. Every other added code line asks, in any position.
+ */
+const scriptWeaker = (
+  rel: string,
+  before: string,
+  after: string,
+): string | undefined => {
+  const shell =
+    SHELL_SCRIPT.test(rel) ||
+    [before, after].some((t) =>
+      SHELL_SHEBANG.test((t.split("\n")[0] ?? "").trim()),
+    );
+  const hash =
+    shell || HASH_COMMENT_FILE.test(rel) || /(?:^|\/)\.husky\//.test(rel);
+  const [old, next] = [scriptLines(before, hash), scriptLines(after, hash)];
+  const safe = shell
+    ? [STRICT_SCRIPT_LINE]
+    : CODE_CONFIG_FILE.test(rel)
+      ? [USE_STRICT_LINE]
+      : [];
+  const fresh: number[] = [];
+  let kept = 0;
+  next.forEach((line, i) => {
+    if (kept < old.length && line === old[kept]) kept++;
+    else fresh.push(i);
+  });
+  if (kept < old.length) {
+    const lost = missing(old, next)[0];
+    return lost === undefined
+      ? HOOK_SCRIPT_MOVED
+      : HOOK_LINE_LOST({ line: shown(lost) });
+  }
+  for (const i of fresh) {
+    const line = next[i] as string;
+    if (!safe.some((re) => re.test(line)))
+      return HOOK_LINE_ADDED({ line: shown(line) });
+  }
+  return undefined;
+};
+
+/** What a call takes from a hooks config such as `hooks.json`, or from a hook script, or undefined. */
+export const hookFileWeaker = (
+  rel: string,
+  before: string,
+  after: string,
+): string | undefined => {
+  const [was, now] = [objectOf(before), objectOf(after)];
+  if (was && now) {
+    for (const key of keysOf(was, now)) {
+      const found =
+        key === "hooks"
+          ? hooksWeaker(was[key], now[key])
+          : key === "description"
+            ? undefined
+            : keyChange(key, was[key], now[key]);
+      if (found) return found;
+    }
+    return undefined;
+  }
+  if (/\.ya?ml$/.test(rel)) return ciWeaker(rel, before, after);
+  if (/\.jsonc?$/.test(rel)) return UNREADABLE;
+  return scriptWeaker(rel, before, after);
+};
