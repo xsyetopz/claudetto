@@ -17,7 +17,7 @@ type Manifest = {
 /** The entries of the marketplace that the tests read. */
 type Marketplace = { plugins: { name: string; description?: string }[] };
 
-/** The `backend` option of the `dotclaude-browser` manifest. */
+/** The `backend` option of the `claudetto-browser` manifest. */
 type BrowserManifest = {
   userConfig: { backend: { options: string[] } };
 };
@@ -57,14 +57,14 @@ for (const name of NAMES) {
       "keywords",
     ).toBeTruthy();
     expect(manifest.homepage).toMatch(
-      /^https:\/\/github\.com\/xsyetopz\/claudetto/,
+      /^https:\/\/github\.com\/xsyetopz\/claudetto(?:\/|$)/,
     );
   });
 }
 
-test("`dotclaude-browser` lists the allowed values of `backend`", async () => {
+test("`claudetto-browser` lists the allowed values of `backend`", async () => {
   const manifest = await readJson<BrowserManifest>(
-    path.join(PLUGINS, "dotclaude-browser", ".claude-plugin", "plugin.json"),
+    path.join(PLUGINS, "claudetto-browser", ".claude-plugin", "plugin.json"),
   );
   expect(manifest.userConfig.backend.options).toStrictEqual([
     "agent-browser",

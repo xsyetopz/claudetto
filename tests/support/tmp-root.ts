@@ -7,7 +7,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), "dotclaude-tests-"));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), "claudetto-tests-"));
 process.env["TMPDIR"] = root;
 // On Windows, `os.tmpdir()` reads `TEMP` and `TMP`, not `TMPDIR`.
 process.env["TEMP"] = root;

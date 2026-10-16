@@ -1,4 +1,4 @@
-// The hook evals of each plugin (spec `hook-evals`, the "Generated tree" section of `.dotclaude/spec/changes/1.0.0/design.md`).
+// The hook evals of each plugin (`wiki/development/Plugin-Layout.md`).
 // `evals/hooks.json` of a plugin names each hook by its id, the hook-lab test of each case kind, and the model requests and tokens that the hook adds to each turn.
 // A hook in a hooks module has its id in a `// eval: <id>` comment on the line above its `on(` call.
 // A call that joins several hooks has one such comment for each hook, in the lines above it.
@@ -82,10 +82,12 @@ export const graderNames = (text: string): Set<string> => {
   );
 };
 
-/** The names of the `test(` calls in a test file, from a string literal. */
+/** The names of the `test(` calls in a test file, from a string literal, with line comments before the name skipped. */
 export const testNames = (text: string): Set<string> => {
   const names = new Set<string>();
-  for (const m of text.matchAll(/\btest\(\s*(["'`])((?:\\.|(?!\1)[^\\])*)\1/g))
+  for (const m of text.matchAll(
+    /\btest\((?:\s|\/\/[^\n]*\n)*(["'`])((?:\\.|(?!\1)[^\\])*)\1/g,
+  ))
     names.add((m[2] as string).replace(/\\(.)/g, "$1"));
   return names;
 };

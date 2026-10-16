@@ -1,7 +1,7 @@
-// The regex source of the file-state graders in `plugins/dotclaude/evals/*/case.yaml`.
+// The regex source of the file-state graders in `plugins/claudetto/evals/*/case.yaml`.
 // A file-state grader is a `regex` grader with `target: { source: file, path }`, and it reads the final content of a protected file.
 // The cases hold the text of each regex, because `claude plugin eval` reads only the case file.
-// `tests/dotclaude/evals/graders.test.ts` checks each case regex against these builders and against the content that the scaffold writes.
+// `tests/claudetto/evals/graders.test.ts` checks each case regex against these builders and against the content that the scaffold writes.
 
 import fs from "node:fs";
 import os from "node:os";
@@ -59,4 +59,14 @@ export const runScaffold = (caseDir: string): string => {
     );
   scaffolds.set(caseDir, cwd);
   return cwd;
+};
+
+/**
+ * The regex source of an answer line: the line of question `n` names `file` and no other path under `src/`.
+ * A list of all files on one line, or the same list under each number, does not match.
+ * Use it with the `m` flag.
+ */
+export const answerLinePattern = (n: number, file: string): string => {
+  const other = String.raw`(?:(?!src/)[^\n])*`;
+  return String.raw`^[\s|*>-]*${n}[.):|*]*\s${other}${escapeRegex(file)}${other}$`;
 };

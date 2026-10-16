@@ -4,7 +4,7 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { SNIPPET } from "../../plugins/dotclaude/snippets.ts";
+import { SNIPPET } from "../../plugins/claudetto/snippets.ts";
 import { REPO, tmpDir } from "./repo.ts";
 
 const PACKAGE_MANAGER = "bun@1.4.3";
@@ -110,14 +110,14 @@ test("with the `bunfig.toml` of the repository, Bun loads no `.env` file", async
     path.join(REPO, "bunfig.toml"),
     path.join(dir, "bunfig.toml"),
   );
-  await Bun.write(path.join(dir, ".env"), "DOTCLAUDE_PROBE=loaded\n");
+  await Bun.write(path.join(dir, ".env"), "CLAUDETTO_PROBE=loaded\n");
   const env = { ...process.env };
-  delete env["DOTCLAUDE_PROBE"];
+  delete env["CLAUDETTO_PROBE"];
   const r = Bun.spawnSync(
     [
       process.execPath,
       "-e",
-      "process.stdout.write(process.env.DOTCLAUDE_PROBE ?? 'unset')",
+      "process.stdout.write(process.env.CLAUDETTO_PROBE ?? 'unset')",
     ],
     { cwd: dir, env },
   );

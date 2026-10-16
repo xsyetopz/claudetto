@@ -56,5 +56,5 @@ export const edges = (files: Files): Edge[] => {
 export const inside = (file: string, target: string): boolean =>
   target === pluginOf(file) || target.startsWith(`${pluginOf(file)}/`);
 
-// The part of a path under its plugin: `slices/reads/slice.ts` gives `slices/reads/slice.ts`, under `plugins/dotclaude/`.
+// The part of a path under its plugin: `slices/reads/slice.ts` gives `slices/reads/slice.ts`, under `plugins/claudetto/`.
 export const within = (file: string): string[] => file.split("/").slice(2);

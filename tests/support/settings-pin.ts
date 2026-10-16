@@ -1,5 +1,5 @@
-// The never-set settings of dotclaude, and the check of a settings object against the generated schema and that list.
-// `tests/dotclaude/settings-pin.test.ts` pins the wiki snippet with them, and `tests/dotclaude/plugin-settings.test.ts` pins the plugin file.
+// The never-set settings of claudetto, and the check of a settings object against the generated schema and that list.
+// `tests/claudetto/settings-pin.test.ts` pins the wiki snippet with them, and `tests/claudetto/plugin-settings.test.ts` pins the plugin file.
 // The never-set list lives here, because `lib/` ships to users and only the tests read it.
 // The wiki page `Off-Switches` lists the same entries.
 
@@ -75,11 +75,6 @@ export const NEVER_SET_ENV = [
     name: "MAX_THINKING_TOKENS",
     value: null,
     reason: "forces a thinking budget",
-  },
-  {
-    name: "CLAUDE_CODE_REMOVE_PROMPT_STRINGS",
-    value: null,
-    reason: "removes text of the system prompt",
   },
   {
     name: "CLAUDE_CODE_DISABLE_WEB_FETCH",

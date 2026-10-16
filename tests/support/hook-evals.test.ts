@@ -1,4 +1,4 @@
-// Each hook of each plugin has its eval cases (spec `hook-evals`, the "Generated tree" section of `.dotclaude/spec/changes/1.0.0/design.md`).
+// Each hook of each plugin has its eval cases (`wiki/development/Plugin-Layout.md`).
 // The rules are in `hook-evals.ts`, and the fixtures work in their own folder under `TMPDIR`.
 
 import { expect, test } from "bun:test";
@@ -51,7 +51,7 @@ const root = async (files: Record<string, string>): Promise<string> => {
   return dir;
 };
 
-const LAB = "plugins/p/tests/lab.test.ts";
+const LAB = "plugins/p/tests/claudetto-lab.test.ts";
 const CASE = "plugins/p/evals/stop/case.yaml";
 const STOP_CASE = `name: stop
 graders:
@@ -211,6 +211,12 @@ test("test names come from each quote form, with escapes removed", () => {
     "blocks",
     "passes a correct message",
   ]);
+});
+
+test("a line comment between `test(` and the name, such as a `biome-ignore`, does not hide the name", () => {
+  const text =
+    'test(\n  // biome-ignore lint/plugin: a test name\n  "a long name",\n  () => {},\n);\n';
+  expect([...testNames(text)]).toStrictEqual(["a long name"]);
 });
 
 test("a call that joins hooks has the id of each `// eval:` line above it", () => {

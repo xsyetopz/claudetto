@@ -61,7 +61,7 @@ test("a `.js`, a `.mjs`, a `.tsx`, and a `.d.ts` that no manifest names fail, an
   const files = [
     manifest,
     "plugins/p/hooks/register.mjs",
-    "plugins/p/tests/lab.test.ts",
+    "plugins/p/tests/claudetto-lab.test.ts",
     "plugins/p/types/index.d.ts",
     "plugins/p/slices/x/cli.js",
     "plugins/p/slices/x/rules.ts",
@@ -82,7 +82,7 @@ test("a `.js`, a `.mjs`, a `.tsx`, and a `.d.ts` that no manifest names fail, an
  */
 const ownOptions = async (): Promise<Record<string, unknown>> => {
   const options = {};
-  for (const file of ["plugins/dotclaude/tsconfig.json", "tsconfig.json"]) {
+  for (const file of ["plugins/claudetto/tsconfig.json", "tsconfig.json"]) {
     const { compilerOptions } = await Bun.file(path.join(REPO, file)).json();
     Object.assign(options, compilerOptions);
   }

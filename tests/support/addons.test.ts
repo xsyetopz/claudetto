@@ -1,5 +1,5 @@
 // Each add-on plugin installs and works without the core plugin,
-// so no add-on file names a path in `plugins/dotclaude/` or the old operating spec.
+// so no add-on file names a path in `plugins/claudetto/` or the old operating spec.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
@@ -8,7 +8,7 @@ import { PLUGINS, walk } from "./repo.ts";
 
 const ADDONS = fs
   .readdirSync(PLUGINS)
-  .filter((name) => name.startsWith("dotclaude-"));
+  .filter((name) => name.startsWith("claudetto-"));
 const TEXT = /\.(?:mjs|js|ts|json|md)$/;
 
 test("the add-ons exist", () => {
@@ -21,7 +21,7 @@ for (const addon of ADDONS) {
       keep: (f) => TEXT.test(f),
     })) {
       const text = await Bun.file(file).text();
-      expect(text, file).not.toMatch(/\.\.\/dotclaude\/|plugins\/dotclaude\//);
+      expect(text, file).not.toMatch(/\.\.\/claudetto\/|plugins\/claudetto\//);
     }
   });
 }

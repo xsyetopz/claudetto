@@ -1,4 +1,5 @@
-// Each file that a command hook of a `hooks.json` names exists in its plugin.
+// Each file that a command hook of a `hooks.json` names exists in its plugin,
+// and no `Stop` hook is an agent hook (V7, `live-checks.md` check 6).
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
@@ -40,3 +41,15 @@ test.each(withHooks)(
     }
   },
 );
+
+// The result of a `-p` run does not count the model call of a `Stop` agent hook
+// in `total_cost_usd` or `modelUsage`, so an eval cannot see its cost.
+test.each(withHooks)("no `Stop` hook of %s is an agent hook", async (name) => {
+  const config: Hooks = await Bun.file(
+    path.join(PLUGINS, name, "hooks/hooks.json"),
+  ).json();
+  const types = (config.hooks?.["Stop"] ?? [])
+    .flatMap((group) => group.hooks)
+    .map((hook) => hook.type);
+  expect(types).not.toContain("agent");
+});
