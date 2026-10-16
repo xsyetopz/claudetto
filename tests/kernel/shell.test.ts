@@ -265,3 +265,22 @@ test("F5: a word that expands to more than `BRACE_WORDS_MAX` words is unreadable
     BRACE_WORDS_MAX + 1,
   );
 });
+
+test("`parse` lists each command that a lone `&` puts in the background", () => {
+  expect(parse("sleep 9 &").background).toStrictEqual([["sleep", "9"]]);
+  expect(parse("a& b; wait").background).toStrictEqual([["a"]]);
+  expect(parse("x=$(a &)").background).toStrictEqual([["a"]]);
+  expect(parse("(a; b) &").background).toStrictEqual([[]]);
+});
+
+test("`parse` gives no background job for `&&`, `&>`, `|&`, `>&`, a quote, or a heredoc body", () => {
+  for (const text of [
+    "a && b",
+    "a &> f",
+    "a |& b",
+    "a >&2",
+    "echo 'a &'",
+    "cat <<E\nx &\nE",
+  ])
+    expect(parse(text).background).toStrictEqual([]);
+});

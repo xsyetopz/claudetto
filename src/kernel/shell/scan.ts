@@ -57,6 +57,8 @@ const frame = (
  * `emit(argv)` gets each simple command.
  * `redirect(op, target, line)` gets each redirection operator with the word after it and the words of its command so far.
  * `heredoc(doc, quoted, head, outs)` gets each heredoc body with the words of its command and the output targets of that command.
+ * `background(line)` gets the words of each command that a lone `&` ends, and an empty list after a group such as `(a; b) &`.
+ * The `&` of `&&`, `&>`, `|&`, and `>&` does not start a background job.
  */
 export const scan = (
   text: string,
@@ -69,6 +71,7 @@ export const scan = (
     head: string[],
     outs: string[],
   ) => void,
+  background: (line: string[]) => void = () => {},
 ): void => {
   const first = frame(null, body);
   if (body) first.quote = '"';
@@ -199,8 +202,18 @@ export const scan = (
     } else if (c === ")") {
       if (f.closer === ")") close(f, i);
       else end(f);
-    } else if (";&|".includes(c)) end(f);
-    else if (/\s/.test(c)) push(f);
+    } else if (";&|".includes(c)) {
+      if (
+        c === "&" &&
+        !f.body &&
+        !"&>".includes(text[i + 1] ?? " ") &&
+        !"&|".includes(text[i - 1] ?? " ")
+      ) {
+        push(f);
+        background([...f.line]);
+      }
+      end(f);
+    } else if (/\s/.test(c)) push(f);
     else {
       // An unquoted brace or comma can expand, except the brace of `${`.
       if ("{,}".includes(c) && !(c === "{" && text[i - 1] === "$"))

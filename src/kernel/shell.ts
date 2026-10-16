@@ -30,6 +30,7 @@ export type ParseResult = {
   commands: string[][];
   redirects: Redirect[];
   code: string[];
+  background: string[][];
   truncated: boolean;
 };
 
@@ -46,12 +47,14 @@ export type ParseResult = {
  * and a heredoc body that a data command writes to a file that such a program names, or to its standard output when the text runs such a program.
  * `redirects` lists the operator and the target word of each output redirection (`>`, `>>`, `>|`), except a file descriptor such as the `1` of `2>&1`.
  * The `&` of `&>` ends the command before it, so its operator is `>`.
+ * `background` lists the words of each command that a lone `&` puts in the background, as `scan` gives them.
  * The cost grows with the length of `text`, because one pass with a stack finds the substitutions.
  */
 export const parse = (text: unknown): ParseResult => {
   const out: string[][] = [];
   const redirects: Redirect[] = [];
   const code: string[] = [];
+  const background: string[][] = [];
   const redirect = (op: string, target: string, line: string[]) => {
     if (op.startsWith(">") && !/^(?:\d+|-)$/.test(target))
       redirects.push({ op, target });
@@ -106,8 +109,8 @@ export const parse = (text: unknown): ParseResult => {
     seen.add(key);
     scanned += next.length;
     if (scanned > SHELL_SCAN_MAX_CHARS)
-      return { commands: out, redirects, code, truncated: true };
-    scan(next, emit, body, redirect, heredoc);
+      return { commands: out, redirects, code, background, truncated: true };
+    scan(next, emit, body, redirect, heredoc, (line) => background.push(line));
   }
   // A data body is code when a program reads the file that it is written to, or its standard output.
   const programs = out.filter(runsCode);
@@ -118,7 +121,7 @@ export const parse = (text: unknown): ParseResult => {
         : programs.length > 0
     )
       code.push(doc);
-  return { commands: out, redirects, code, truncated: false };
+  return { commands: out, redirects, code, background, truncated: false };
 };
 
 /** The simple commands of `text`, as `parse` reads them. */
