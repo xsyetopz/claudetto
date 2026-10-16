@@ -26,7 +26,7 @@ fs.mkdirSync(results, { recursive: true });
 await Bun.write(path.join(results, "run.txt"), plugin);
 const json = process.argv.indexOf("--json");
 if (json !== -1)
-  await Bun.write(process.argv[json + 1], JSON.stringify({ partial: false, suite: { plugins: [{ name: "p" }] }, cases: [{ aggregates: { score: 1 } }] }));
+  await Bun.write(process.argv[json + 1], JSON.stringify({ partial: false, suite: { plugins: [{ name: "p" }] }, cases: [{ aggregates: { score: 1, scoreWithout: 0.5 } }] }));
 process.exit(Number(process.env.FAKE_EXIT ?? 0));
 })();
 `;

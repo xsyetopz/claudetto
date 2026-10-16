@@ -6,6 +6,7 @@ import { runBoth as runBothOn } from "../../../plugins/claudetto-lab/slices/eval
 import type { RunResult } from "../../../plugins/claudetto-lab/slices/eval-compare/adapters/run-program.ts";
 import {
   armProblem,
+  baselineProblem,
   withCostBound,
 } from "../../../plugins/claudetto-lab/slices/eval-compare/domain/compare.ts";
 
@@ -26,7 +27,7 @@ const GOOD = JSON.stringify({
   schemaVersion: 1,
   partial: false,
   suite: { plugins: [{ name: "p", path: "/p" }] },
-  cases: [{ aggregates: { score: 1 } }],
+  cases: [{ aggregates: { score: 1, scoreWithout: 0.5 } }],
 });
 
 /**
@@ -156,4 +157,29 @@ test("`armProblem` names each way that a result is not valid", async () => {
       }),
     ),
   ).toBe(null);
+});
+
+test("a baseline at the maximum on each case fails the comparison and names the arm", async () => {
+  const ceiling = JSON.stringify({
+    cases: [{ aggregates: { score: 1, scoreWithout: 1 } }],
+  });
+  const f = fake([0, 0], [GOOD, ceiling]);
+  expect(await runBoth("a", "b", [], f.spawn, f.log)).toBe(1);
+  const out = f.lines.join("\n");
+  expect(out).toMatch(/Arm B has no usable baseline: .*no gain can show/);
+  expect(out).not.toMatch(/Arm A (failed|has)/);
+  expect(out).not.toMatch(/Compare the WITH column/);
+});
+
+test("`baselineProblem` accepts one case below the maximum and names a missing score", () => {
+  const doc = (...without: (number | undefined)[]) =>
+    JSON.stringify({
+      cases: without.map((w) => ({
+        aggregates: { score: 1, scoreWithout: w },
+      })),
+    });
+  expect(baselineProblem(doc(1, 0.67))).toBe(null);
+  expect(baselineProblem(doc(1, 1))).toMatch(/maximum/);
+  expect(baselineProblem(doc(0.5, undefined))).toMatch(/no baseline score/);
+  expect(baselineProblem(null)).toBe(null);
 });

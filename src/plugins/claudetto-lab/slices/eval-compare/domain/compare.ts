@@ -46,8 +46,11 @@ const NOT_LOADED = new Set([
 type Doc = {
   partial?: unknown;
   suite?: { plugins?: { name?: unknown; problem?: unknown }[] };
-  cases?: { aggregates?: { score?: unknown } }[];
+  cases?: { aggregates?: { score?: unknown; scoreWithout?: unknown } }[];
 };
+
+/** The highest score of a case. A baseline at this score leaves no room for a gain. */
+const MAX_SCORE = 1;
 
 /**
  * The reason that the `--json` result of an arm is not valid, or `null` when it is valid.
@@ -84,8 +87,25 @@ export const armProblem = (result: string | null): string | null => {
 };
 
 /**
+ * The reason that the baseline of an arm cannot show a gain, or `null` when it can.
+ * The baseline is the `scoreWithout` of each case, which is the score with no plugin.
+ * A gain needs at least one case where the baseline scores below the maximum.
+ */
+export const baselineProblem = (result: string | null): string | null => {
+  if (result === null) return null;
+  const cases = (JSON.parse(result) as Doc).cases ?? [];
+  const scores = cases.map((c) => c.aggregates?.scoreWithout);
+  if (!scores.every((s) => Number.isFinite(s as number | undefined)))
+    return "a case in its result has no baseline score";
+  if ((scores as number[]).every((s) => s >= MAX_SCORE))
+    return "its baseline is at the maximum, so no gain can show";
+  return null;
+};
+
+/**
  * The verdict of the two arms. Both exit codes must be `0` and both results valid.
  * A run that exits with `0` and has no valid result still fails the comparison.
+ * An arm whose baseline scores the maximum on each case fails it too, because no gain shows.
  */
 export const verdict = (x: Arm, y: Arm): Verdict => {
   const failed = (
@@ -97,7 +117,9 @@ export const verdict = (x: Arm, y: Arm): Verdict => {
     if (arm.code !== 0)
       return [`Arm ${name} failed with exit code ${arm.code}.`];
     const problem = armProblem(arm.result);
-    return problem ? [`Arm ${name} has no valid result: ${problem}.`] : [];
+    if (problem) return [`Arm ${name} has no valid result: ${problem}.`];
+    const base = baselineProblem(arm.result);
+    return base ? [`Arm ${name} has no usable baseline: ${base}.`] : [];
   });
   if (failed.length === 0)
     return {
