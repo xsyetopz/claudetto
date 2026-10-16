@@ -1,0 +1,251 @@
+// The segments of the main status line, in three rows.
+// Row 0 is the place: folder, git with the pull request, the active change, and the `7d` window.
+// Row 1 is the session: model, context, cost, and the `5h` window.
+// Row 2 is the spend limit and the prompt cache.
+// Each value is a number with an icon, and a state has the color of the theme: normal, warning, or limit.
+// A field that the input does not have gives no segment, and a field with a wrong type shows the error mark.
+
+import {
+  HAIKU_HANDOFF_TRIGGER_TOKENS,
+  HANDOFF_TRIGGER_TOKENS,
+} from "../../../../kernel/budget.ts";
+import { parseModel } from "../../../../kernel/model.ts";
+import type { StatusSegment } from "../../../../kernel/slice.ts";
+import { dollars, span, thousands, windowText } from "./domain/format.ts";
+import type { Change, Status } from "./domain/types.ts";
+import { ICON } from "./icons.ts";
+import { asStatus, limit } from "./limit-segment.ts";
+import { FIVE_HOUR_S, SEVEN_DAY_S, TRIGGER_WARN_FRACTION } from "./limits.ts";
+
+/** True for a finite number. */
+const isNumber = (value: unknown): value is number =>
+  typeof value === "number" && Number.isFinite(value);
+
+/** `Opus 5.5`, from the id of the model, or `null` for an id that is not a known Claude model. */
+const modelName = (id: string | undefined): string | null => {
+  const m = parseModel(id);
+  if (!m || m.family === "unknown") return null;
+  const family = m.family.charAt(0).toUpperCase() + m.family.slice(1);
+  return `${family} ${m.major}${m.minor === null ? "" : `.${m.minor}`}`;
+};
+
+const folder: StatusSegment = {
+  id: "folder",
+  row: 0,
+  render: (raw) => {
+    const { folder: name, paint } = asStatus(raw);
+    return name ? paint.bold(`${ICON.folder} ${name}`) : null;
+  },
+};
+
+/** The pull request as `⇄ #12 approved`, in the color of its review state. A wrong number shows the error mark. */
+const prText = (status: Status): string | null => {
+  const request = status.input.pr;
+  if (!request) return null;
+  const style = status.paint.review(request.review_state);
+  if (!isNumber(request.number)) return style(`${ICON.pr} ${ICON.error}`);
+  const mark = request.kind === "mr" ? "!" : "#";
+  const state = request.review_state ? ` ${request.review_state}` : "";
+  return style(`${ICON.pr} ${mark}${request.number}${state}`);
+};
+
+/** The branch with its counts, or the error mark when `git` failed. */
+const gitText = (status: Status): string | null => {
+  const { git: state, paint } = status;
+  if (!state) return null;
+  if ("error" in state) return paint.limit(`${ICON.git} ${ICON.error}`);
+  const parts = [
+    paint.branch(`${ICON.git} ${state.branch}`),
+    state.dirty > 0 ? paint.warn(`${ICON.dirty}${state.dirty}`) : "",
+    state.ahead > 0 ? paint.ok(`${ICON.ahead}${state.ahead}`) : "",
+    state.behind > 0 ? paint.limit(`${ICON.behind}${state.behind}`) : "",
+  ];
+  return parts.filter(Boolean).join(" ");
+};
+
+/** The repository: the branch and the pull request of the session, in one place so the rows keep their columns. */
+const git: StatusSegment = {
+  id: "git",
+  row: 0,
+  render: (raw) => {
+    const status = asStatus(raw);
+    const text = [gitText(status), prText(status)].filter(Boolean).join(" ");
+    return text || null;
+  },
+};
+
+/** The text of the active change: its name and its MiniSpec state. */
+const changeText = (change: Change, status: Status): string => {
+  const { paint } = status;
+  const head = `${ICON.change} ${change.name}`;
+  switch (change.state) {
+    case "planning":
+      return paint.dim(`${head} planning`);
+    case "open":
+      return paint.dim(
+        `${head} ${change.done}/${change.total} ${ICON.next}${change.next}`,
+      );
+    case "done":
+      return paint.ok(`${head} ${change.total}/${change.total} ${ICON.done}`);
+    case "error":
+      return paint.limit(`${head} ${ICON.error}`);
+  }
+};
+
+const changeSegment: StatusSegment = {
+  id: "change",
+  row: 0,
+  render: (raw) => {
+    const status = asStatus(raw);
+    return status.change ? changeText(status.change, status) : null;
+  },
+};
+
+const model: StatusSegment = {
+  id: "model",
+  row: 1,
+  render: (raw) => {
+    const { input, paint } = asStatus(raw);
+    const name = modelName(input.model?.id) ?? input.model?.display_name;
+    if (!name) return null;
+    const level = input.effort?.level;
+    const effort =
+      input.effort === undefined
+        ? ""
+        : typeof level === "string"
+          ? paint.dim(` ${level}`)
+          : ` ${paint.limit(ICON.error)}`;
+    const thinking = input.thinking?.enabled ? ` ${ICON.thinking}` : "";
+    return `${paint.model(`${ICON.model} ${name}`)}${effort}${thinking}`;
+  },
+};
+
+/** The context in tokens at which the handoff (or the compaction) starts for the model `id`. */
+const triggerOf = (id: string | undefined): number =>
+  parseModel(id)?.family === "haiku"
+    ? HAIKU_HANDOFF_TRIGGER_TOKENS
+    : HANDOFF_TRIGGER_TOKENS;
+
+/**
+ * The context as `▤ 12% of 1M ⇥180k`: the percent and the window that Claude Code gives, and the tokens left to the handoff trigger.
+ * With the `built-in` compaction, the trigger is the compaction threshold.
+ * The color is the warning color within `TRIGGER_WARN_FRACTION` of the trigger, and the limit color from the trigger.
+ */
+const context: StatusSegment = {
+  id: "context",
+  row: 1,
+  render: (raw) => {
+    const { input, paint, compaction } = asStatus(raw);
+    const window = input.context_window;
+    const used = window?.used_percentage;
+    if (used === undefined || used === null) return null;
+    if (!isNumber(used)) return paint.limit(`${ICON.context} ${ICON.error}`);
+    const percent = Math.round(used);
+    const size = window?.context_window_size;
+    const of = isNumber(size) && size > 0 ? ` of ${windowText(size)}` : "";
+    const tokens = window?.total_input_tokens;
+    if (!isNumber(tokens))
+      return paint.level(percent)(`${ICON.context} ${percent}%${of}`);
+    const trigger = triggerOf(input.model?.id);
+    const left = trigger - tokens;
+    const style =
+      left <= 0
+        ? paint.limit
+        : left <= trigger * TRIGGER_WARN_FRACTION
+          ? paint.warn
+          : paint.ok;
+    const icon = compaction ? ICON.compaction : ICON.handoff;
+    const distance = left <= 0 ? "now" : thousands(left);
+    return style(`${ICON.context} ${percent}%${of} ${icon}${distance}`);
+  },
+};
+
+const cost: StatusSegment = {
+  id: "cost",
+  row: 1,
+  render: (raw) => {
+    const { input, paint } = asStatus(raw);
+    const usd = input.cost?.total_cost_usd;
+    if (usd === undefined) return null;
+    if (!isNumber(usd)) return paint.limit(ICON.error);
+    const added = input.cost?.total_lines_added ?? 0;
+    const removed = input.cost?.total_lines_removed ?? 0;
+    const lines =
+      added || removed
+        ? ` ${paint.ok(`${ICON.added}${added}`)} ${paint.limit(`${ICON.removed}${removed}`)}`
+        : "";
+    return `${paint.dim(dollars(usd))}${lines}`;
+  },
+};
+
+/**
+ * The prompt cache: `⌁ 4m12s` while it is warm, counting down to `expires_at`, and `⌁ cold +120k` when it is cold.
+ * The number after `cold` is the tokens that the next request caches again.
+ * A provider that reports no cache tokens (`caching_observed` is `false`) gives no segment.
+ */
+const cache: StatusSegment = {
+  id: "cache",
+  row: 2,
+  render: (raw) => {
+    const { input, paint, now } = asStatus(raw);
+    const state = input.prompt_cache;
+    if (!state || state.caching_observed === false) return null;
+    if (typeof state.warm !== "boolean")
+      return paint.limit(`${ICON.cache} ${ICON.error}`);
+    if (state.warm) {
+      const left = isNumber(state.expires_at)
+        ? span(state.expires_at * 1000 - now)
+        : "warm";
+      return paint.ok(`${ICON.cache} ${left}`);
+    }
+    const recache = state.recache_tokens_if_cold;
+    const tokens = isNumber(recache) ? ` +${thousands(recache)}` : "";
+    return paint.inactive(`${ICON.cache} cold${tokens}`);
+  },
+};
+
+/**
+ * Each segment of the main status line, in the order of the rows and of the places in a row.
+ * The order of `5h` before `7d` is the order of the one-row placement, `SEGMENTS_ONE_ROW`.
+ */
+export const SEGMENTS: readonly StatusSegment[] = [
+  folder,
+  git,
+  changeSegment,
+  model,
+  context,
+  cost,
+  limit(
+    "limit-5h",
+    "5h",
+    1,
+    FIVE_HOUR_S,
+    (s) => s.input.rate_limits?.five_hour,
+  ),
+  limit(
+    "limit-7d",
+    "7d",
+    0,
+    SEVEN_DAY_S,
+    (s) => s.input.rate_limits?.seven_day,
+  ),
+  limit(
+    "limit-spend",
+    "spend",
+    2,
+    null,
+    (s) => s.input.rate_limits?.spend_limit,
+  ),
+  cache,
+];
+
+const USAGE_IDS: readonly string[] = ["limit-5h", "limit-7d"];
+
+/**
+ * The placement of 1.0.0: the `5h` and `7d` windows share row 2 with the cache and the spend limit.
+ * The rows use it when the two-row placement drops an item at the width.
+ */
+export const SEGMENTS_ONE_ROW: readonly StatusSegment[] = SEGMENTS.map(
+  (segment) =>
+    USAGE_IDS.includes(segment.id) ? { ...segment, row: 2 } : segment,
+);

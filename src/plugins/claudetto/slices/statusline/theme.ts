@@ -1,0 +1,77 @@
+// The colors of the status line, from the built-in themes of Claude Code 2.1.301.
+// The `theme` key of the config of Claude Code names the theme.
+// A role of the status line takes the color of one key of the theme:
+// `ok` is `success`, `warn` is `warning`, `limit` is `error`, `inactive` is `inactive`, `branch` is `merged`, and `model` is `claude`.
+// A color is the parameter text of an SGR sequence, such as `38;2;78;186;101` or `32`.
+
+/** The roles of the status line that have a color. */
+export type Role = "ok" | "warn" | "limit" | "inactive" | "branch" | "model";
+
+/** The color of each role. */
+export type Theme = Readonly<Record<Role, string>>;
+
+/** The SGR parameters of a 24-bit color. */
+const rgb = (r: number, g: number, b: number): string => `38;2;${r};${g};${b}`;
+
+const LIGHT: Theme = {
+  ok: rgb(44, 122, 57),
+  warn: rgb(150, 108, 30),
+  limit: rgb(171, 43, 63),
+  inactive: rgb(102, 102, 102),
+  branch: rgb(135, 0, 255),
+  model: rgb(215, 119, 87),
+};
+
+const DARK: Theme = {
+  ok: rgb(78, 186, 101),
+  warn: rgb(255, 193, 7),
+  limit: rgb(255, 107, 128),
+  inactive: rgb(153, 153, 153),
+  branch: rgb(175, 135, 255),
+  model: rgb(215, 119, 87),
+};
+
+const LIGHT_DALTONIZED: Theme = {
+  ok: rgb(0, 102, 153),
+  warn: rgb(255, 153, 0),
+  limit: rgb(204, 0, 0),
+  inactive: rgb(102, 102, 102),
+  branch: rgb(135, 0, 255),
+  model: rgb(255, 153, 51),
+};
+
+const DARK_DALTONIZED: Theme = {
+  ok: rgb(51, 153, 255),
+  warn: rgb(255, 204, 0),
+  limit: rgb(255, 102, 102),
+  inactive: rgb(153, 153, 153),
+  branch: rgb(175, 135, 255),
+  model: rgb(255, 153, 51),
+};
+
+/** The 16 ANSI colors, with ANSI 35 (magenta) for the branch. */
+const ANSI: Theme = {
+  ok: "32",
+  warn: "33",
+  limit: "31",
+  inactive: "90",
+  branch: "35",
+  model: "91",
+};
+
+/** The theme of Claude Code that applies when the config names none, or names a theme that this list does not have. */
+export const DEFAULT_THEME = "dark";
+
+const THEMES: Readonly<Record<string, Theme>> = {
+  light: LIGHT,
+  dark: DARK,
+  "light-daltonized": LIGHT_DALTONIZED,
+  "dark-daltonized": DARK_DALTONIZED,
+  "light-ansi": ANSI,
+  "dark-ansi": ANSI,
+};
+
+/** The colors of the theme `name`, or of `DEFAULT_THEME` for a name that is not a built-in theme, such as `auto` or `custom:x`. */
+export const themeOf = (name: string | null): Theme =>
+  (name === null ? undefined : THEMES[name]) ??
+  (THEMES[DEFAULT_THEME] as Theme);

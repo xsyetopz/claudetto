@@ -1,0 +1,90 @@
+// The rows of `subagentStatusLine`: one JSON row for each running subagent.
+// A row has the name, the agent type, the model and effort, the context against its window, and the run time.
+// The description fills the room that is left.
+
+import { parseModel } from "../../../../../kernel/model.ts";
+import type { Paint } from "../color.ts";
+import { span, thousands } from "../domain/format.ts";
+import type { SubagentInput, Task, TaskRow } from "../domain/types.ts";
+import { ICON } from "../icons.ts";
+import {
+  DESCRIPTION_ROOM_MIN,
+  ITEM_GAP,
+  SUBAGENT_ROWS_MAX,
+} from "../limits.ts";
+import { truncate, width } from "../width.ts";
+
+/** `opus 5.5`, from the id of the model. The id of an unknown model and any other text stay as they are. */
+const shortModel = (id: string): string => {
+  const m = parseModel(id);
+  return m && m.family !== "unknown"
+    ? `${m.family} ${m.major}${m.minor === null ? "" : `.${m.minor}`}`
+    : id;
+};
+
+/** The start time of `task` in milliseconds, or NaN when it has none. */
+const startOf = (task: Task): number =>
+  typeof task.startTime === "number"
+    ? task.startTime
+    : Date.parse(task.startTime ?? "");
+
+/** The text of one row for `task`, at most `columns` wide. */
+export const renderTask = (
+  task: Task,
+  now: number,
+  columns: number,
+  paint: Paint,
+): string => {
+  // The agent type has a plugin prefix for a plugin agent.
+  const agentType = task.agentType?.replace(/^[^:]+:/, "");
+  const name = task.name || agentType || "agent";
+  const tokens = task.tokenCount ?? 0;
+  const size = task.contextWindowSize;
+  const sized = typeof size === "number" && Number.isFinite(size) && size > 0;
+  const percent = sized ? Math.round((tokens / size) * 100) : 0;
+  const start = startOf(task);
+  const model = task.model
+    ? ` ${paint.dim(`${shortModel(task.model)}${task.effort ? ` ${task.effort}` : ""}`)}`
+    : "";
+  const type =
+    agentType && agentType !== name ? paint.dim(` (${agentType})`) : "";
+  const parts = [
+    `${ICON.agent} ${paint.bold(name)}${type}${model}`,
+    tokens > 0
+      ? paint.level(percent)(
+          sized
+            ? `${ICON.context} ${thousands(tokens)}/${thousands(size)} ${percent}%`
+            : `${ICON.context} ${thousands(tokens)}`,
+        )
+      : "",
+    Number.isFinite(start)
+      ? paint.dim(`${ICON.time} ${span(now - start)}`)
+      : "",
+  ].filter(Boolean);
+  const line = parts.join(ITEM_GAP);
+  const room = columns - width(line) - width(ITEM_GAP);
+  const description = (task.description ?? "").replace(/\s+/g, " ").trim();
+  if (!description || room <= DESCRIPTION_ROOM_MIN)
+    return truncate(line, columns);
+  return `${line}${ITEM_GAP}${paint.dim(truncate(description, room))}`;
+};
+
+/** The rows for the running subagents of `input`, at most `SUBAGENT_ROWS_MAX`. `columns` is the width when `input` has none. */
+export const taskRows = (
+  input: SubagentInput,
+  now: number,
+  columns: number,
+  paint: Paint,
+): TaskRow[] => {
+  const wide = Number(input.columns) || columns;
+  return (Array.isArray(input.tasks) ? input.tasks : [])
+    .filter(
+      (task): task is Task & { id: string } =>
+        Boolean(task?.id) && (!task.status || task.status === "running"),
+    )
+    .slice(0, SUBAGENT_ROWS_MAX)
+    .map((task) => ({
+      id: task.id,
+      content: renderTask(task, now, wide, paint),
+    }));
+};

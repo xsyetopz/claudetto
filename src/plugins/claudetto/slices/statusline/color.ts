@@ -1,0 +1,86 @@
+// The color of the status line: one style for each role of the theme, the steps of a percent, and `NO_COLOR`.
+// `NO_COLOR` (no-color.org) turns off each color. The icons stay.
+
+import { USAGE_LEVELS } from "../../../../kernel/budget.ts";
+import { PROJECTED_RUNOUT, PROJECTED_WARN } from "./limits.ts";
+import type { Theme } from "./theme.ts";
+
+/** A function that wraps text in a style. */
+export type Style = (text: string) => string;
+
+/** The review state of a pull request, as the status object gives it. */
+export type ReviewState =
+  | "approved"
+  | "pending"
+  | "changes_requested"
+  | "draft";
+
+/** The styles of the status line. With no color, each style gives its text back. */
+export type Paint = {
+  readonly bold: Style;
+  readonly dim: Style;
+  /** The state normal. */
+  readonly ok: Style;
+  /** The state warning. */
+  readonly warn: Style;
+  /** The state limit. */
+  readonly limit: Style;
+  /** A cold prompt cache. */
+  readonly inactive: Style;
+  readonly branch: Style;
+  readonly model: Style;
+  /** The style of the step for `percent`: normal below the first level, warning below the second, and limit from the second. */
+  readonly level: (percent: number) => Style;
+  /** The style of a limit whose use projects to `projected` percent at the end of its window: normal below the warn level, warning from it, and limit above 100%. */
+  readonly projected: (projected: number) => Style;
+  /** The style of the review state of a pull request. A state that is not known has the style of `pending`. */
+  readonly review: (state: unknown) => Style;
+};
+
+const wrap =
+  (parameters: string): Style =>
+  (text) =>
+    `\u001b[${parameters}m${text}\u001b[0m`;
+
+const plain: Style = (text) => text;
+
+/** True when the environment asks for no color: `NO_COLOR` is set and not empty. */
+export const colorOff = (
+  env: Readonly<Record<string, string | undefined>>,
+): boolean => (env["NO_COLOR"] ?? "") !== "";
+
+/** The styles for `theme`, or the styles that add nothing for `null`. */
+export const paintOf = (theme: Theme | null): Paint => {
+  const style = (parameters: string | undefined): Style =>
+    theme === null || parameters === undefined ? plain : wrap(parameters);
+  const ok = style(theme?.ok);
+  const warn = style(theme?.warn);
+  const limit = style(theme?.limit);
+  const inactive = style(theme?.inactive);
+  const [warnAt, alarmAt] = USAGE_LEVELS;
+  const reviews: Readonly<Record<ReviewState, Style>> = {
+    approved: ok,
+    pending: warn,
+    changes_requested: limit,
+    draft: inactive,
+  };
+  return {
+    bold: style("1"),
+    dim: style("2"),
+    ok,
+    warn,
+    limit,
+    inactive,
+    branch: style(theme?.branch),
+    model: style(theme?.model),
+    level: (percent) =>
+      percent >= alarmAt ? limit : percent >= warnAt ? warn : ok,
+    projected: (projected) =>
+      projected > PROJECTED_RUNOUT
+        ? limit
+        : projected >= PROJECTED_WARN
+          ? warn
+          : ok,
+    review: (state) => reviews[state as ReviewState] ?? warn,
+  };
+};

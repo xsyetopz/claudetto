@@ -1,0 +1,31 @@
+// The Unicode icons of the status line.
+// The status line shows a number after an icon and draws no bar.
+
+export const ICON = {
+  folder: "⌂",
+  git: "⎇",
+  dirty: "✎",
+  ahead: "↑",
+  behind: "↓",
+  model: "◈",
+  deficit: "▲",
+  reserve: "▼",
+  thinking: "✦",
+  context: "▤",
+  added: "+",
+  removed: "-",
+  limit: "◷",
+  reset: "↻",
+  runout: "⏵",
+  change: "◆",
+  agent: "●",
+  time: "◔",
+  ellipsis: "…",
+  error: "✗",
+  handoff: "⇥",
+  compaction: "⇲",
+  cache: "⌁",
+  pr: "⇄",
+  done: "✓",
+  next: "▸",
+} as const;

@@ -1,0 +1,30 @@
+// The manifest of the `statusline` slice: the CLI `claudetto-statusline`, its segments, and the settings `statusLine` and `subagentStatusLine`.
+// The commands hold `<plugin folder>`, which `/claudetto:setup` replaces with the folder of the installed plugin.
+// The `bin/` folder of a plugin is not on the `PATH` of a status line, so the commands name the launcher by its path.
+
+import type { Slice } from "../../../../kernel/slice.ts";
+import { REFRESH_SECONDS } from "./limits.ts";
+import { SEGMENTS } from "./segments.ts";
+
+export const slice = {
+  name: "statusline",
+  ladder:
+    "built-in: the `statusLine` and `subagentStatusLine` settings, because Claude Code runs the status line as their command",
+  cli: { bin: "claudetto-statusline" },
+  segments: SEGMENTS,
+  settings: {
+    statusLine: {
+      type: "command",
+      command: 'bun --no-env-file "<plugin folder>/bin/claudetto-statusline"',
+      padding: 0,
+      refreshInterval: REFRESH_SECONDS,
+      hideVimModeIndicator: true,
+    },
+    subagentStatusLine: {
+      type: "command",
+      command:
+        // biome-ignore lint/plugin: a status line command, which Claude Code runs as written
+        'bun --no-env-file "<plugin folder>/bin/claudetto-statusline" --subagent',
+    },
+  },
+} satisfies Slice;
