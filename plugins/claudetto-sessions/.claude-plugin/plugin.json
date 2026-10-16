@@ -1,0 +1,14 @@
+{
+  "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "claudetto-sessions",
+  "version": "0.1.0-alpha.1",
+  "description": "Measures the start of a Claude Code session by source, and the usage of each run: model calls, context that each call reads again, and skills that a period did not use.",
+  "author": {
+    "name": "xsyetopz"
+  },
+  "repository": "https://github.com/xsyetopz/claudetto",
+  "license": "MIT",
+  "homepage": "https://github.com/xsyetopz/claudetto/wiki/Sessions",
+  "keywords": ["sessions", "usage", "measurement", "context"],
+  "types": "./types/index.d.ts"
+}

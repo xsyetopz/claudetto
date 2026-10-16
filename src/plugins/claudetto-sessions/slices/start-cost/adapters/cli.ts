@@ -1,0 +1,90 @@
+// What a session sent at its start, and where its context went, from a transcript.
+// The `claudetto-start` bin calls `main`.
+//
+// Prints the tokens of the first request, the characters of each source, the size of each tool, system block, and attachment,
+// the requests and context of each subagent, the tool-result size of each tool of the main session, and the repeat file reads.
+// Exits 1 when the first request is above `--bound N`, or its text is above `--text-max N`, or the transcript has no snapshot to measure for `--text-max`.
+// `--text-min N` only advises, so it never changes the exit code.
+// Exits 2 when the transcript has no model call, because no bound applies to it.
+// With no bound, it never fails on size.
+// `--compare BASE.jsonl OTHER.jsonl` prints the difference of two starts by source, such as a session without a plugin and one with it.
+// With no file, it reads the newest main transcript of this checkout.
+
+import os from "node:os";
+import path from "node:path";
+import {
+  compareText,
+  exists,
+  newestSession,
+  reportOf,
+} from "../domain/report.ts";
+import { USAGE } from "../prompts.ts";
+import { store } from "./store.ts";
+
+/** The exit code of each end of a report. */
+const STATUS = { ok: 0, over: 1, "no-data": 2 } as const;
+
+const number = (args: string[], name: string): number | undefined => {
+  const at = args.indexOf(name);
+  return at < 0 ? undefined : Number(args[at + 1]);
+};
+
+/** Runs the bin with `args`, prints to stdout and stderr, and returns the exit code. */
+export const main = async (
+  args: string[],
+  cwd: string = process.cwd(),
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<number> => {
+  if (args.includes("--help") || args.includes("-h")) {
+    console.log(USAGE);
+    return 0;
+  }
+  const compareAt = args.indexOf("--compare");
+  if (compareAt >= 0) {
+    const files = args.slice(compareAt + 1, compareAt + 3);
+    const found = await Promise.all(files.map((f) => exists(store, f)));
+    if (files.length < 2 || !found.every(Boolean)) {
+      console.error("Give two transcript paths: --compare BASE OTHER.");
+      return 2;
+    }
+    console.log(
+      await compareText(store, files[0] as string, files[1] as string),
+    );
+    return 0;
+  }
+  const valued = ["--bound", "--text-min", "--text-max"];
+  for (const name of valued) {
+    const at = args.indexOf(name);
+    const value = at < 0 ? "" : (args[at + 1] ?? "");
+    if (at >= 0 && !/^\d+$/.test(value)) {
+      console.error(`${name} needs a whole number, not "${value}".`);
+      return 2;
+    }
+  }
+  const root = env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), ".claude");
+  const file =
+    args.find(
+      (a, i) => !a.startsWith("--") && !valued.includes(args[i - 1] as string),
+    ) ??
+    (await newestSession(
+      store,
+      path.join(root, "projects", cwd.replace(/[^A-Za-z0-9]/g, "-")),
+    ));
+  if (!file || !(await exists(store, file))) {
+    console.error(
+      "No transcript found. Give the path of a session .jsonl file.",
+    );
+    return 2;
+  }
+  const { text, status } = await reportOf(
+    store,
+    file,
+    number(args, "--bound"),
+    {
+      textMin: number(args, "--text-min"),
+      textMax: number(args, "--text-max"),
+    },
+  );
+  console.log(text);
+  return STATUS[status];
+};

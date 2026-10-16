@@ -1,0 +1,121 @@
+// Reads of a Claude Code transcript (`~/.claude/projects/<folder>/<session>.jsonl`).
+// The `usage` slice has its own copy of these shapes and readers, because a slice imports only `kernel/` and its own folder.
+
+import path from "node:path";
+import { rethrowUnless } from "../../../../../kernel/errors.ts";
+import type { Store } from "../ports.ts";
+
+/** The token counts of one API request, as the transcript records them. */
+export type Usage = {
+  input_tokens?: number;
+  output_tokens?: number;
+  cache_creation_input_tokens?: number;
+  cache_read_input_tokens?: number;
+  cache_creation?: {
+    ephemeral_5m_input_tokens?: number;
+    ephemeral_1h_input_tokens?: number;
+  } | null;
+  iterations?: Iteration[];
+};
+
+/** An entry of `usage.iterations`. An advisor call has the `advisor_message` type. */
+export type Iteration = Usage & { type?: string; model?: string };
+
+/** The `message` of a transcript line: its request id, its usage, and its content blocks. */
+export type Message = {
+  id?: string;
+  model?: string;
+  usage?: Usage;
+  content?: Block[] | string;
+  stop_reason?: string | null;
+};
+
+/** An `attachment` of a transcript line. Its fields depend on its `type`. */
+export type Attachment = {
+  type: string;
+  tools?: { name: string; description?: string }[];
+  systemPrompt?: unknown[];
+  content?: unknown;
+  addedLines?: string[];
+  builtInTypes?: string[];
+  names?: string[];
+  hookEvent?: string;
+  files?: unknown;
+  style?: unknown;
+  [key: string]: unknown;
+};
+
+/** One parsed line of a transcript, such as a user, assistant, or attachment record. A line such as a `summary` record has no `timestamp`. */
+export type Entry = {
+  type?: string;
+  subtype?: string;
+  content?: unknown;
+  timestamp?: string;
+  entrypoint?: string;
+  /** The Claude Code version that wrote the line. */
+  version?: string;
+  isMeta?: boolean;
+  error?: string;
+  origin?: { kind?: string };
+  toolUseResult?: { agentId?: string };
+  message?: Message;
+  attachment?: Attachment;
+  [key: string]: unknown;
+};
+
+/** A content block of a message, such as a `text`, `tool_use`, or `tool_result` block, or a tool call. */
+export type Block = {
+  type?: string;
+  text?: string;
+  id?: string;
+  name?: string;
+  input?: {
+    file_path?: string;
+    command?: string;
+    skill?: string;
+    description?: string;
+    message?: unknown;
+  };
+  tool_use_id?: string;
+  content?: unknown;
+};
+
+/** The parsed lines of the transcript text `text`. A line that is not a JSON object is left out. */
+export const parseEntries = (text: string): Entry[] => {
+  const entries: Entry[] = [];
+  for (const line of text.split("\n")) {
+    try {
+      const entry = JSON.parse(line) as unknown;
+      if (entry !== null && typeof entry === "object")
+        entries.push(entry as Entry);
+    } catch (err) {
+      // A blank or a cut line has no entry.
+      rethrowUnless(err, "SyntaxError");
+    }
+  }
+  return entries;
+};
+
+/** The parsed lines of the transcript `file`. A missing file has no entries. */
+export const readEntries = async (
+  store: Store,
+  file: string,
+): Promise<Entry[]> => parseEntries((await store.read(file)) ?? "");
+
+/** The `agentType` of the transcript `file` from its `.meta.json`, `subagent` when it has none, and `main` for a file outside a `subagents` folder. */
+export const agentType = async (
+  store: Store,
+  file: string,
+): Promise<string> => {
+  if (!file.includes(`${path.sep}subagents${path.sep}`)) return "main";
+  const text = await store.read(file.replace(/\.jsonl$/, ".meta.json"));
+  // A run with no meta file has the default type.
+  if (text === null) return "subagent";
+  try {
+    const meta = JSON.parse(text) as { agentType?: string } | null;
+    return meta?.agentType || "subagent";
+  } catch (err) {
+    rethrowUnless(err, "SyntaxError");
+    return "subagent";
+  }
+};

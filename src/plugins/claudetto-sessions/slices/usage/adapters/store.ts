@@ -1,0 +1,20 @@
+// The `Store` of Node for the `claudetto-usage` CLI: the `FileReader` of the kernel, plus a recursive list and a modification time.
+
+import fs from "node:fs/promises";
+import { rethrowUnless } from "../../../../../kernel/errors.ts";
+import { fileReader } from "../../../../../kernel/node/fs.ts";
+import type { Store } from "../ports.ts";
+
+export const store: Store = {
+  ...fileReader,
+  // A missing folder gives no files, because a fresh install has no `projects` folder yet.
+  tree: async (root) => {
+    try {
+      return await fs.readdir(root, { recursive: true });
+    } catch (err) {
+      rethrowUnless(err, "ENOENT");
+      return [];
+    }
+  },
+  mtime: async (file) => (await fs.stat(file)).mtimeMs,
+};

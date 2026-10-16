@@ -1,0 +1,11 @@
+// The pure part of the rate-limit note: which window is near its limit.
+
+/** The window that the Claude Code API names for the seven-day limit. */
+const WEEKLY = "seven_day";
+
+/** The part of a rate-limit window that the note reads. */
+export type Window = { kind: string; percentUsed: number };
+
+/** The share of the seven-day window, or undefined when the last response reported none. */
+export const weeklyPercent = (windows: readonly Window[]): number | undefined =>
+  windows.find((w) => w.kind === WEEKLY)?.percentUsed;
