@@ -6,7 +6,7 @@ paths:
 ---
 
 These choices rest on facts of Claude Code that no test shows.
-Do not replace one without new evidence, and record the evidence in `src/wiki/rationale/Decisions-Engine.md` (D48 to D60) in the same change.
+Do not replace one without new evidence, and record the evidence in `src/wiki/rationale/Decisions-Engine.md` (D48 to D61) or `src/wiki/rationale/Decisions-Session.md` (from D62) in the same change.
 
 - A notice for the user goes through `$.ui.log`, which the model does not read.
   A `user` row from `$.session.append` goes to the model, and it can leak into a reply (D48).
@@ -23,5 +23,8 @@ Do not replace one without new evidence, and record the evidence in `src/wiki/ra
 - A `Stop` hook runs after the user sees the reply, and the turn gate keeps its own count of blocks, with no pass for `stop_hook_active` alone (D58).
 - A local background `Bash` command has no time limit (D59).
 - The built-in read dedup covers only a read of the same range (D60).
+- A `tool.call` hook wraps the permission dialog, so `next(e)` returns a rejection as `isError: true` with `result` equal to `User rejected tool use` (D61).
+- `classic.SessionStart` `additionalContext` gives facts to the model at the start, `turn.complete` `usage.model` is the served model, and `$.http.fetch` has no timeout option, so a hook races it with `$.clock.sleep` (D62 in `src/wiki/rationale/Decisions-Session.md`).
+- The judge of the turn gate measures its cost from the `usage` of its own `$.model.complete` result, because `total_cost_usd` leaves out a model call of a hook (D63).
 
 When you find a fact of the engine that saves model tokens or costs none, add it to that page with its source.

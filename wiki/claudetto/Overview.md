@@ -72,6 +72,15 @@ Each add-on works without the core plugin.
 - **User checks.**
   A hook that asks for the exact `!` command when a check that only the user can run stays open after a denied call.
   See [User Checks](User-Checks).
+- **Turn gate.**
+  A gate at the end of each turn that blocks a stop while a background task runs, and a judge that blocks a claim with no check after the last edit.
+  See [Turn Gate](Turn-Gate).
+- **Read gates.**
+  Gates that keep a rejected call rejected, deny a read of an unchanged range that is in the context, and ask for a new read after a rejected write.
+  See [Read Gates](Read-Gates).
+- **Repo state.**
+  The git state at the start, an ask before an edit of `[Unreleased]` for a version with no tag, an ask before a package that the registry lacks, and a mark for a served model that differs from the requested one.
+  See [Repo State](Repo-State).
 - **Status line.**
   The main and subagent status lines from the input of Claude Code.
   See [Status Line](Status-Line).

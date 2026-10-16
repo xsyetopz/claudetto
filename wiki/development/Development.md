@@ -57,6 +57,13 @@ Each recipe runs from the repository root.
 CI has no type check.
 Claude Code writes the `.claude-plugin/types/` folder only when an interactive session loads a plugin.
 
+`just check` and `just docker` run under the `check` lock of `tools/lock.ts`, so only one check runs in a checkout at a time.
+The lock file is `node_modules/.cache/claudetto/.check.lock`.
+It holds the PID, the start time, and the owner of the run, and then the PID of the command.
+A second run exits with `75` (`HELD_CODE`), and a fault of the lock exits with `70` (`TOOL_ERROR_CODE`), so neither code is a result of the check.
+To stop a run, stop the process of a PID in the lock file, and no other process.
+A container has its own `node_modules/` volume, so a check in a container has its own lock.
+
 `just measure` is not part of `just check` or `just ci`.
 It exits 1 when the first request is above `START_TOKENS` in `tools/limits.ts`.
 It also exits 1 when its text is outside the `FIRST_REQUEST_LOW_BYTES` and `FIRST_REQUEST_HIGH_BYTES` range.

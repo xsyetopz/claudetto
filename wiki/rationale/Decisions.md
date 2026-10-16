@@ -65,6 +65,12 @@ This page always writes "(D3 there)" when it cites that file.
 | D55 | No session-wide env through `CLAUDE_ENV_FILE` | [Engine Facts](Decisions-Engine) |
 | D56 | Toolchain facts come from the environment, not from model memory | [Engine Facts](Decisions-Engine) |
 | D57 | A plugin `bin/` command is named by its path, not by its bare name | [Engine Facts](Decisions-Engine) |
+| D58 | `Stop` sees the reply after the user and gives the background tasks | [Engine Facts](Decisions-Engine) |
+| D59 | A local background command has no time limit | [Engine Facts](Decisions-Engine) |
+| D60 | The built-in read dedup covers only the same range | [Engine Facts](Decisions-Engine) |
+| D61 | A `tool.call` hook sees the outcome of the permission dialog | [Engine Facts](Decisions-Engine) |
+| D62 | Start context, served model, and fetch timeout come from three documented points | [Session Facts](Decisions-Session) |
+| D63 | The cost of the judge comes from its own `usage` | [Session Facts](Decisions-Session) |
 
 ## Related Pages
 

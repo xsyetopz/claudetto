@@ -22,6 +22,9 @@
   - [Decision API](Decision-API)
   - [Worktrees](Worktrees)
   - [User Checks](User-Checks)
+  - [Turn Gate](Turn-Gate)
+  - [Read Gates](Read-Gates)
+  - [Repo State](Repo-State)
 - Add-On Plugins
   - [Add-On Plugins](Add-Ons)
   - [Code Graph](Code-Graph)
@@ -59,6 +62,7 @@
     - [Layout](Decisions-Layout)
     - [Evidence](Decisions-Evidence)
     - [Engine Facts](Decisions-Engine)
+    - [Session Facts](Decisions-Session)
     - [Architecture](Decisions-Architecture)
 - Evidence
   - [Evidence](Evidence)

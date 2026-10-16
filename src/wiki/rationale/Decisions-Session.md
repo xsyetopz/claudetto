@@ -1,0 +1,39 @@
+# Decisions: Session Facts
+
+This page holds the decisions of the engine facts that follow [Engine Facts](Decisions-Engine), from D62.
+Each decision rests on a fact of the Claude Code engine that the code alone does not show.
+Read it before you change the slice `repostate` or the slice `turngate`.
+The index is [Decisions](Decisions).
+
+## D62 Start Context, Served Model, and Fetch Timeout Come From Three Documented Points
+
+**Problem:** the slice `repostate` needs to give facts to the model at the start, to find the model that served a response, and to bound a registry request.
+
+**Choice:**
+`classic.SessionStart` returns `additionalContext`, which the engine adds to the context of the session.
+The served model is `usage.model` of `turn.complete`, and the requested model is `$.session.model()`.
+The status-line command gets no served model, so the mark goes through `$.ui.status`.
+`$.http.fetch` has no timeout option, so the hook races the request with `$.clock.sleep(ms, { signal: next.signal })`, and the `signal` ends the wait when the dispatch ends.
+A request that loses the race, fails, or answers with a status other than `2xx`, `404`, or `410` is no answer, so the hook asks nothing and writes a notice with `$.ui.log`.
+
+**Evidence:** the types of the mod API in `.claude-plugin/types/claude-code/index.d.ts`: `TurnUsage.model`, `SleepOptions.signal`, and the `HttpInit` type with no timeout field.
+The lab test `repostate.test.ts` runs each case with stubs.
+
+## D63 The Cost of the Judge Comes From Its Own `usage`
+
+**Problem:** the turn gate makes one model call in a hook, and its cost must be measured.
+
+**Choice:**
+Each judge call writes the `usage` of its `$.model.complete` result to the debug log with `$.ui.log`.
+The cost figure of the judge comes from that `usage`, and never from the `total_cost_usd` of the session.
+
+**Evidence:** in all 4 runs of task 1.10, the `result` message did not count the model call of a hook in `total_cost_usd` (V7, `Failure-Gaps-0.1.0`).
+`ModelCompleteResult.usage` in the types of the mod API gives the tokens of one call.
+The lab test `turngate.test.ts` checks that the usage goes to the debug log.
+
+## Related Pages
+
+- [Engine Facts](Decisions-Engine)
+- [Repo State](Repo-State)
+- [Turn Gate](Turn-Gate)
+- [Decisions](Decisions)

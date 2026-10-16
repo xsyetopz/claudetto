@@ -70,9 +70,11 @@ Both are in `src/plugins/claudetto/slices/prompt/adapters/mod.ts`.
   The `2.1.296` binary has the partial-output wording for this case.
 - The main session can resume the subagent to continue the work.
   (Official documentation.)
-- claudetto sets no `maxTurns` in the front matter of an agent file.
-  The test `tests/claudetto/agents/roster.test.ts` checks this, because a run that stops at its turn limit returns no report.
-- The `agents` slice bounds the context of a subagent instead.
+- Each claudetto agent file sets `maxTurns`, from 30 for a read-only role to 60 for the implementer.
+  The values are in `AGENT_MAX_TURNS` in `src/plugins/claudetto/slices/agents/limits.ts`.
+  The test `tests/claudetto/agents/max-turns.test.ts` pins them.
+  Claude Code `2.1.301` accepts `maxTurns` in a plugin agent.
+- The `agents` slice also bounds the context of a subagent.
   The `turn.step` hook records the context of each subagent, and the next `tool.call` hook adds a report-now note when the context is over its bound.
   The note is `reportNote` in `src/plugins/claudetto/slices/agents/domain/report.ts`.
   See [Agents](Agents) and [Handoff](Handoff) for the context bound.

@@ -2,11 +2,11 @@
 
 # Decisions: Engine Facts
 
-This page holds the decisions D48 to D57.
-Each decision rests on a fact of the Claude Code engine that the code alone does not show.
+This page holds the decisions D48 to D61.
+Each rests on a fact of the Claude Code engine that the code alone does not show.
 Read this page before you change one of the code paths below.
-A change that looks simpler can break a fact that a test cannot see, such as a note that leaks into a reply of the model.
-The index is [Decisions](Decisions).
+A change that looks simpler can break a fact that a test cannot see.
+The later decisions are on [Session Facts](Decisions-Session).
 
 ## Rules for Contributors
 
@@ -275,6 +275,21 @@ So claudetto adds a gate on `Read` that denies a read when earlier reads of the 
 
 **Evidence:** `external/cc-2.1.301/strings.txt`: the `Read` call (`tengu_file_read_dedup`, `tengu_file_read_reread`), the `dedupUnchangedReads` getter, and the subagent context (`stripSeededFromContext`).
 No lab test shows yet that a mod handler of `Read` can read the `mtime` of a file.
+
+## D61 A `tool.call` Hook Sees the Outcome of the Permission Dialog
+
+**Problem:** claudetto must know that the user rejected a call, so that the call stays rejected in the session.
+The event `classic.PermissionDenied` does not tell it, because the engine dispatches it only for a denial of the auto-mode classifier.
+
+**Choice:** a `tool.call` hook wraps the permission check, its dialog, and the tool.
+So `await next(e)` returns the outcome of a rejection in the dialog.
+That outcome has `isError: true` and `result` equal to `User rejected tool use`.
+The engine writes that text as `toolUseResult` of the `tool_result` row, together with `toolDenialKind: "user-rejected"`.
+The test is an exact compare of `result` with this constant, and it matches no words.
+The constant is `REJECTED_RESULT` in `slices/reads/domain/rejected.ts`.
+claudetto treats a denial of the auto-mode classifier as no rejection of the user, because the spec `ground-gates` names the rejection of the user.
+
+**Evidence:** `external/cc-2.1.301/strings.txt`: the constant `fht="User rejected tool use"` next to the message of the rejection (`pS`), the check `e.toolUseResult===fht` on a `tool_result` row with `is_error`, and the list of the denial kinds (`user-rejected`, `permission-rule`, `automode-blocked`, `interrupted`), and `ToolCallResult` in the mod API types: `result` of an errored call is "what the transcript stored for the errored call".
 
 ## Related Pages
 
