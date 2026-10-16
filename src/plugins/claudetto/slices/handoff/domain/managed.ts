@@ -1,0 +1,57 @@
+// The rules of the managed-environments notice (spec `handoff`, "Managed environments").
+// On a managed machine, the built-in guard `cc-plugin-sec-default@builtin` is seated outermost,
+// and it hands `session.compact` straight to the `append` tier, so a plugin that a person installs does not get it
+// (`handoff-managed-300.md`).
+// The guard is seated when the managed settings have a key, a managed MCP file exists,
+// or the organization is Team or Enterprise.
+// When the managed `prependPlugins` is set, the guard is seated only when that list names it.
+// The mod API does not show the managed MCP file, so that case gives no notice.
+// The functions are pure, and the adapter reads the facts.
+
+import { MANAGED_NOTICE } from "../prompts.ts";
+
+/** The ids of the guard: the current id, and the id of the releases before its rename. */
+const GUARD_IDS = ["cc-plugin-sec-default@builtin", "sec-default@builtin"];
+
+/** A plan of the organization that seats the guard, such as `claude_team` or `claude_enterprise` in `oauthAccount.organizationType`. */
+const SEATING_PLAN = /(^|_)(team|enterprise)$/;
+
+/** The marketplace of `claudetto`, which the plugin id names after the `@`. */
+const MARKETPLACE = "claudetto";
+
+/** The managed settings, as `$.settings.read({ source: "policy" })` gives them. */
+type Policy = Readonly<Record<string, unknown>> | undefined;
+
+/** The ids in the list `key` of the managed settings, or `undefined` when the key is not a list. */
+const listed = (policy: Policy, key: string): string[] | undefined => {
+  const value = policy?.[key];
+  return Array.isArray(value)
+    ? value.filter((id): id is string => typeof id === "string")
+    : undefined;
+};
+
+/** True when the guard is seated, from the managed settings and the plan of the organization. */
+export const isGuardSeated = (policy: Policy, plan: string | undefined) => {
+  const prepended = listed(policy, "prependPlugins");
+  if (prepended !== undefined)
+    return prepended.some((id) => GUARD_IDS.includes(id));
+  return (
+    Object.keys(policy ?? {}).length > 0 ||
+    (plan !== undefined && SEATING_PLAN.test(plan))
+  );
+};
+
+/** True when the managed `appendPlugins` lists the plugin `name`, with any marketplace. */
+export const isAppended = (policy: Policy, name: string) =>
+  (listed(policy, "appendPlugins") ?? []).some(
+    (id) => id.split("@")[0] === name,
+  );
+
+/** The plugin id of the plugin `name` in the marketplace of `claudetto`. */
+export const pluginId = (name: string) => `${name}@${MARKETPLACE}`;
+
+/** The notice that the handoff is off, with the managed settings entries that turn it on and the command of the setup help. */
+export const managedNotice = (name: string) => {
+  const id = pluginId(name);
+  return MANAGED_NOTICE({ id });
+};

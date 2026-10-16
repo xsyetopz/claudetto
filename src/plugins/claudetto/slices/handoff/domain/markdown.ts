@@ -1,0 +1,47 @@
+// The Markdown form of a handoff file, so that the file passes the Markdown lint of the repository (fault C1).
+// The model writes the text, so the function repairs the faults that a short handoff can have:
+// trailing spaces and tabs, `*` and `+` items, a line that is only emphasis, a list with no blank line around it,
+// a blank line between two quote lines, and more than one blank line.
+// The function is pure and imports only `prompts.ts`.
+
+import { WRITTEN_NOTICE } from "../prompts.ts";
+
+const BULLET = /^(\s*)[*+](?=\s)/;
+const ITEM = /^(?:[-*+]|\d+[.)])\s/;
+const EMPHASIS_ONLY = /^(\*\*|__|\*|_)([^*_]+)\1$/;
+
+/** One line with no trailing space, no tab, a `-` item marker, and no emphasis that is the whole line. */
+const lineOf = (line: string): string => {
+  const plain = line.trimEnd().replaceAll("\t", "  ").replace(BULLET, "$1-");
+  return plain.replace(EMPHASIS_ONLY, "$2");
+};
+
+/** The text of the handoff file: `text` with the repairs, and one newline at its end. */
+export const handoffMarkdown = (text: string): string => {
+  const out: string[] = [];
+  let inList = false;
+  for (const line of text.replace(/\r\n?/g, "\n").split("\n").map(lineOf)) {
+    const prev = out.at(-1);
+    if (line === "") {
+      if (prev !== "" && prev !== undefined) out.push(line);
+      inList = false;
+      continue;
+    }
+    // A blank line between two quote lines splits the quote (MD028), so it becomes an empty quote line.
+    if (line.startsWith(">") && prev === "" && out.at(-2)?.startsWith(">"))
+      out[out.length - 1] = ">";
+    // An indented line in a list is a part of its item.
+    const listed: boolean =
+      ITEM.test(line.trimStart()) || (inList && /^\s/.test(line));
+    if (prev !== undefined && prev !== "" && listed !== inList) out.push("");
+    inList = listed;
+    out.push(line);
+  }
+  return `${out.join("\n").trimEnd()}\n`;
+};
+
+/** The status line on a terminal while the handoff is written, in place of the spinner of the compaction. */
+export const PROGRESS_TEXT = "Writing the handoff…";
+
+/** The notice in the transcript of a terminal after the handoff is written to `path`. */
+export const writtenNotice = (path: string): string => WRITTEN_NOTICE({ path });

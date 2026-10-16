@@ -1,0 +1,165 @@
+// Lab tests of the managed setup help `/handoff-setup` of the `handoff` slice (spec `handoff`, "Managed setup help").
+// The stubs answer a macOS machine: the folders that show the OS, the managed settings file, the managed settings,
+// the MDM profiles, and the plan of the organization in the state file of Claude Code.
+// Inline plugins in the `user` tier show the other plugins that hook `session.compact`, for the warning before a new file.
+
+import type { On } from "claude-code";
+import { type Engine, expect, test } from "claude-code/testing";
+import { NEW_FILE_WARNING } from "../prompts.ts";
+
+const DIR = "/Library/Application Support/ClaudeCode";
+const FILE = `${DIR}/managed-settings.json`;
+const STATE = "/home/u/.claude.json";
+
+/** What the stubs answer: the managed settings file, the managed settings, the plan, and the MDM profile. */
+type World = {
+  file?: Record<string, unknown>;
+  policy?: Record<string, unknown>;
+  plan?: string;
+  mdm?: boolean;
+  /** The text of the managed settings file, in place of `file`. */
+  raw?: string;
+};
+
+/** The stubs for `world`. */
+const engine = (on: On, world: World = {}) => {
+  const files: Record<string, string> = {
+    [STATE]: JSON.stringify({
+      oauthAccount: world.plan ? { organizationType: world.plan } : {},
+    }),
+  };
+  if (world.file) files[FILE] = JSON.stringify(world.file);
+  if (world.raw !== undefined) files[FILE] = world.raw;
+  if (world.mdm)
+    files["/Library/Managed Preferences/com.anthropic.claudecode.plist"] = "";
+  on("fs.exists", (_$, e) => ({
+    value: e.path === "/System/Library" || e.path in files,
+  }));
+  on("fs.read", (_$, e) => {
+    const text = files[e.path];
+    if (text === undefined) throw new Error("missing");
+    return { value: text };
+  });
+  on("settings.read", (_$, e) => ({
+    value: e.source === "policy" ? (world.policy ?? world.file ?? {}) : {},
+  }));
+  on("env.get", (_$, e) => ({ value: { HOME: "/home/u", USER: "u" }[e.name] }));
+};
+
+const setup = async ($: Engine) =>
+  (
+    await $.command.run({
+      command: "handoff-setup",
+      args: "",
+      origin: { kind: "composer" },
+      presentation: { isFullscreen: false, columns: 80 },
+    })
+  ).text ?? "";
+
+/** The `! sudo` lines of `text`. */
+const sudoLines = (text: string) =>
+  text.split("\n").filter((line) => line.startsWith("! sudo "));
+
+/** An inline plugin in the `user` tier that hooks `session.compact`. */
+const summarizer = {
+  name: "summarizer",
+  register(on: On) {
+    on("session.compact", (_$, e, next) => next(e));
+  },
+};
+
+/** An inline plugin in the `user` tier that hooks only `tool.call`. */
+const linter = {
+  name: "linter",
+  register(on: On) {
+    on("tool.call", (_$, e, next) => next(e));
+  },
+};
+
+test(
+  // biome-ignore lint/plugin: a test name
+  "no file gives the new file, the warning with the other plugin, and one `! sudo` command",
+  { plugins: [summarizer] },
+  async ($: Engine, on: On) => {
+    engine(on);
+    const text = await setup($);
+    expect(text).toContain(`creates ${FILE}`);
+    expect(text).toContain(
+      '"appendPlugins": [\n    "claudetto@claudetto"\n  ]',
+    );
+    expect(text).toContain(NEW_FILE_WARNING);
+    expect(text).toContain("`summarizer`");
+    const lines = sudoLines(text);
+    expect(lines).toHaveLength(1);
+    expect(lines[0]).toContain(`'${DIR}'`);
+    expect(lines[0]).toContain(
+      // biome-ignore lint/plugin: test input data
+      `'{"appendPlugins":["claudetto@claudetto"],"enabledPlugins":{"claudetto@claudetto":true}}'`,
+    );
+  },
+);
+
+test(
+  "a plugin with no `session.compact` hook is not named",
+  { plugins: [linter] },
+  async ($: Engine, on: On) => {
+    engine(on);
+    const text = await setup($);
+    expect(text).toContain("Warning:");
+    expect(text).not.toContain("`linter`");
+  },
+);
+
+// biome-ignore lint/plugin: a test name
+test("a file gives the merged content with each key kept, no warning, and one `! sudo` command", async ($: Engine, on: On) => {
+  engine(on, {
+    file: {
+      permissions: { deny: ["Bash(rm:*)"] },
+      appendPlugins: ["audit@corp"],
+      enabledPlugins: { "audit@corp": true },
+    },
+  });
+  const text = await setup($);
+  expect(text).not.toContain("Warning:");
+  const lines = sudoLines(text);
+  expect(lines).toHaveLength(1);
+  expect(lines[0]).toContain(
+    // biome-ignore lint/plugin: test input data
+    `'{"permissions":{"deny":["Bash(rm:*)"]},"appendPlugins":["audit@corp","claudetto@claudetto"],"enabledPlugins":{"audit@corp":true,"claudetto@claudetto":true}}'`,
+  );
+});
+
+// biome-ignore lint/plugin: a test name
+test("server-managed settings give no `sudo` command and the admin text", async ($: Engine, on: On) => {
+  engine(on, {
+    policy: { permissions: { deny: [] } },
+    plan: "claude_enterprise",
+  });
+  const text = await setup($);
+  expect(text).not.toContain("sudo");
+  expect(text).toContain("Ask the admin");
+});
+
+test("an MDM profile gives no `sudo` command and the admin text", async ($: Engine, on: On) => {
+  engine(on, { file: { model: "x" }, mdm: true });
+  const text = await setup($);
+  expect(text).not.toContain("sudo");
+  expect(text).toContain("Ask the admin");
+});
+
+// biome-ignore lint/plugin: a test name
+test("a managed key that the file does not have gives no `sudo` command", async ($: Engine, on: On) => {
+  engine(on, {
+    file: { model: "x" },
+    policy: { model: "x", env: { A: "1" } },
+    plan: "claude_max",
+  });
+  expect(await setup($)).not.toContain("sudo");
+});
+
+test("a file that is not JSON gives an error and no `sudo` command", async ($: Engine, on: On) => {
+  engine(on, { raw: "{" });
+  const text = await setup($);
+  expect(text).toContain("cannot read the facts");
+  expect(text).not.toContain("! sudo");
+});
