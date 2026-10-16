@@ -4,7 +4,14 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { pidsOf, takeLock } from "../../tools/lock.ts";
+import {
+  HELD_CODE,
+  LOCKS,
+  pidsOf,
+  runLocked,
+  TOOL_ERROR_CODE,
+  takeLock,
+} from "../../tools/lock.ts";
 import { REPO } from "../support/repo.ts";
 
 const lockIn = (): string =>
@@ -110,4 +117,48 @@ process.exit(await runLocked(${JSON.stringify(file)}, [process.execPath, "-e", "
   } finally {
     process.kill(child, "SIGTERM");
   }
+});
+
+test("the lock file holds the PID and the owner, and a second run sees both (I17)", async () => {
+  const file = lockIn();
+  const first = await takeLock(file, process.pid, "check");
+  if (!("release" in first)) throw new Error("the lock has a holder");
+  const text = await Bun.file(file).text();
+  expect(text).toMatch(new RegExp(`^${process.pid} \\S+ check\n$`));
+  const second = await takeLock(file, 4242, "eval");
+  if (!("holder" in second)) throw new Error("the second run took the lock");
+  expect(second.holder).toMatch(/ check$/);
+  await first.release();
+});
+
+test("the locks of `eval` and `check` are two files", () => {
+  expect(Object.keys(LOCKS).sort()).toStrictEqual(["check", "eval"]);
+  expect(LOCKS["check"]).not.toBe(LOCKS["eval"]);
+});
+
+test("a run that finds the lock held exits with `HELD_CODE`, and the command does not run", async () => {
+  const file = lockIn();
+  const first = await takeLock(file, process.pid, "check");
+  if (!("release" in first)) throw new Error("the lock has a holder");
+  const mark = `${file}.ran`;
+  const code = await runLocked(file, ["touch", mark], "check");
+  expect(code).toBe(HELD_CODE);
+  expect(fs.existsSync(mark)).toBe(false);
+  await first.release();
+});
+
+test("a command that cannot start is a tool error, not a result, and the lock is freed", async () => {
+  const file = lockIn();
+  const code = await runLocked(file, ["/no/such/command-claudetto"], "check");
+  expect(code).toBe(TOOL_ERROR_CODE);
+  expect(fs.existsSync(file)).toBe(false);
+});
+
+test("a command that fails keeps its own exit code", async () => {
+  const code = await runLocked(
+    lockIn(),
+    [process.execPath, "-e", "process.exit(3)"],
+    "check",
+  );
+  expect(code).toBe(3);
 });

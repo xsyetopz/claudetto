@@ -1,4 +1,4 @@
-// The `ci` recipe runs the same gate as `check`, except the type check, which CI skips on purpose.
+// The `ci` recipe runs the same gate as `gate`, which `check` runs under a lock, except the type check, which CI skips on purpose.
 // The steps are the words after the colon of each recipe line.
 
 import { expect, test } from "bun:test";
@@ -17,7 +17,7 @@ const steps = (recipe: string): string[] => {
 };
 
 test("`ci` runs each step of `check` except the type check", () => {
-  expect(steps("ci")).toEqual(steps("check").filter((s) => s !== "typecheck"));
+  expect(steps("ci")).toEqual(steps("gate").filter((s) => s !== "typecheck"));
 });
 
 test("`ci` runs the generated-file check", () => {

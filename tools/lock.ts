@@ -1,12 +1,17 @@
 #!/usr/bin/env -S bun --no-env-file
-// Lets only one eval run of the checkout run at a time.
+// Lets only one long run of the checkout run at a time: a paid eval, or a check (`just check`, `just docker`).
 // Two runs at the same time cost twice, and they write over the logs and results of each other.
 //
-//   bun tools/lock.ts COMMAND [ARGS...]   run the command while the lock is held
+//   bun tools/lock.ts [--name eval|check] COMMAND [ARGS...]   run the command while the lock is held
 //
-// The lock is a file in `plugins/claudetto/evals/results/`, which git ignores.
-// It holds the process id and the start time of the run that has it,
+// The `eval` lock (default) is a file in `plugins/claudetto/evals/results/`, which git ignores.
+// The `check` lock is a file in `node_modules/.cache/`, which git ignores.
+// The folder `node_modules/` of a container is a volume, so a check in a container has its own lock.
+// A lock holds the process id, the start time, and the owner (the name) of the run that has it,
 // and then the process id of the command that the run started.
+// A tool error (the lock or the start of the command fails) ends with `TOOL_ERROR_CODE`, which is not an exit code of the command,
+// and a lock that another run holds ends with `HELD_CODE`, so neither one is a negative result of the command.
+// To stop a run, stop the process of its PID in the lock file, and no other process.
 // The lock holds while one of the two processes lives, so a stopped run does not free the lock of its paid command.
 // A lock whose processes are all gone is stale, and the next run takes it.
 // When the check of a process fails for any other reason, the lock counts as held,
@@ -26,6 +31,15 @@ export const LOCK = path.join(
   REPO,
   "plugins/claudetto/evals/results/.eval.lock",
 );
+/** The lock files by name. The name is also the owner in the lock file. */
+export const LOCKS: Record<string, string> = {
+  eval: LOCK,
+  check: path.join(REPO, "node_modules/.cache/claudetto/.check.lock"),
+};
+/** The exit code when another run holds the lock (`EX_TEMPFAIL`). */
+export const HELD_CODE = 75;
+/** The exit code when the lock or the start of the command fails (`EX_SOFTWARE`). It is not a result of the command. */
+export const TOOL_ERROR_CODE = 70;
 
 /** A lock that this run holds. `hold` adds the process id of the command that the run started. */
 export interface Lock {
@@ -105,9 +119,10 @@ const held = (file: string, pid: number, text: string): Lock => {
 export const takeLock = async (
   file: string,
   pid: number = process.pid,
+  owner = "eval",
 ): Promise<Lock | { holder: string }> => {
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  const text = `${pid} ${new Date().toISOString()}\n`;
+  const text = `${pid} ${new Date().toISOString()} ${owner}\n`;
   const own = `${file}.${pid}`;
   await Bun.write(own, text);
   try {
@@ -130,17 +145,29 @@ export const takeLock = async (
   }
 };
 
-/** Runs `argv` while this run holds the lock `file`, and returns the exit code. */
+/**
+ * Runs `argv` while this run holds the lock `file` for `owner`, and returns the exit code.
+ * It returns `HELD_CODE` when another run holds the lock, and `TOOL_ERROR_CODE` when the lock or the start of the command fails.
+ */
 export const runLocked = async (
   file: string,
   argv: string[],
+  owner = "eval",
 ): Promise<number> => {
-  const lock = await takeLock(file);
+  let lock: Awaited<ReturnType<typeof takeLock>>;
+  try {
+    lock = await takeLock(file, process.pid, owner);
+  } catch (e) {
+    console.error(
+      `The lock failed: ${(e as Error).message}\nThis is a tool error, not a result of the command, and the command did not run.`,
+    );
+    return TOOL_ERROR_CODE;
+  }
   if ("holder" in lock) {
     console.error(
-      `An eval run is in progress (process and start: ${lock.holder}).\nWait for it to end, and do not start a second run.\nIf no run is in progress, remove ${file} and ${file}.break.`,
+      `A run is in progress (process, start, owner, and command process: ${lock.holder}).\nWait for it to end, and do not start a second run.\nIf no run is in progress, remove ${file} and ${file}.break.\nTo stop the run, stop its process by the PID in the lock file.`,
     );
-    return 1;
+    return HELD_CODE;
   }
   try {
     const child = Bun.spawn(argv, {
@@ -150,16 +177,29 @@ export const runLocked = async (
     });
     await lock.hold(child.pid);
     return (await child.exited) ?? 1;
+  } catch (e) {
+    console.error(
+      `The command did not start: ${(e as Error).message}\nThis is a tool error, not a result of the command.`,
+    );
+    return TOOL_ERROR_CODE;
   } finally {
     await lock.release();
   }
 };
 
 if (process.argv[1] === import.meta.path) {
-  const argv = process.argv.slice(2);
-  if (argv.length === 0) {
-    console.error("Usage: bun tools/lock.ts COMMAND [ARGS...]");
+  let argv = process.argv.slice(2);
+  let name = "eval";
+  if (argv[0] === "--name") {
+    name = argv[1] ?? "";
+    argv = argv.slice(2);
+  }
+  const file = LOCKS[name];
+  if (file === undefined || argv.length === 0) {
+    console.error(
+      "Usage: bun tools/lock.ts [--name eval|check] COMMAND [ARGS...]",
+    );
     process.exit(2);
   }
-  process.exit(await runLocked(LOCK, argv));
+  process.exit(await runLocked(file, argv, name));
 }

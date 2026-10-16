@@ -29,10 +29,15 @@ lab:
 
 # Run a recipe (default: check) in an OrbStack or Docker container with `DOCKER_CPUS` of `tools/limits.ts`; the repository is mounted, and `node_modules` is a volume of the container
 docker *args:
-    bun tools/docker.ts "$@"
+    bun tools/lock.ts --name check bun tools/docker.ts "$@"
 
 # The full local gate: lint, the type check, the generated files, tests, plugin validation, and the hook lab
-check: lint typecheck (generate "--check") test validate lab
+check:
+    bun tools/lock.ts --name check just gate
+
+# The steps of `check`, with no lock; `ci` lists the same steps, and `check` holds the lock of the run
+[private]
+gate: lint typecheck (generate "--check") test validate lab
 
 # The gate of the CI `check` job: `check` without the type check, because CI has no `.claude-plugin/types/`
 ci: lint (generate "--check") test validate lab
