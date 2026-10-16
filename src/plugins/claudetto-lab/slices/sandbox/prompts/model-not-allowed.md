@@ -1,0 +1,1 @@
+--model {{model}} is not in availableModels of the sandbox ({{allowed}}), so Claude Code runs another model.

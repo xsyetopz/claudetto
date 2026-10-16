@@ -1,0 +1,13 @@
+{
+  "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "claudetto-lab",
+  "version": "0.1.0-alpha.1",
+  "description": "Tools for plugin authors. Runs Claude Code in a sandbox, captures and sizes the requests, writes the JSON Schema of `settings.json`, and compares the eval scores of two plugin folders.",
+  "author": {
+    "name": "xsyetopz"
+  },
+  "repository": "https://github.com/xsyetopz/claudetto",
+  "license": "MIT",
+  "homepage": "https://github.com/xsyetopz/claudetto/wiki/Lab",
+  "keywords": ["sandbox", "capture", "schema", "evals"]
+}
