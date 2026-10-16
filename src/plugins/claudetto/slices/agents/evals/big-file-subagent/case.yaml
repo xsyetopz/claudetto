@@ -1,0 +1,56 @@
+schema_version: "1.1"
+name: big-file-subagent
+description: "Find a value in a 1 MB log through a subagent. The scaffold generates the log. Port of big-file-subagent."
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Bash, Write, Edit, Agent]
+  prompt: |-
+    `data/big.log` has about 1 MB of rows.
+    Use one investigator subagent to find the audit code in it, and write the code in `ANSWER.md`.
+graders:
+  - type: regex
+    name: "audit-code-written"
+    target: { source: file, path: "ANSWER.md" }
+    pattern: "KX-7731"
+  - type: tool_used
+    name: "subagent-used"
+    tool: Agent
+    input_match: '"subagent_type":"(?:claudetto:)?investigator"'
+    min: 1
+  - type: tool_used
+    name: "no-other-agent-type"
+    tool: Agent
+    input_match: '"subagent_type":"(?!(?:claudetto:)?investigator")'
+    min: 0
+    max: 0
+  - type: tool_used
+    name: "edit-spares-data-big-log"
+    tool: Edit
+    input_match: "file_path\\W+[^\"]*data/big\\.log"
+    min: 0
+    max: 0
+  - type: tool_used
+    name: "write-spares-data-big-log"
+    tool: Write
+    input_match: "file_path\\W+[^\"]*data/big\\.log"
+    min: 0
+    max: 0
+  - type: regex
+    name: "kept-data-big-log"
+    target: { source: file, path: "data/big.log" }
+    # The log has 1 MB, so the pattern holds its first line, the line with the audit code, and its last line.
+    # A change in the middle is not seen, and that is the pragmatic bound: a full match of 1 MB costs more than the case is worth.
+    pattern: '(?<![\s\S])2026-01-01T00:00:01 row 000001 status=ok payload=abcdefghijklmnopqrstuv\n[\s\S]*\naudit code is KX-7731\n[\s\S]*\n2026-01-01T00:00:40 row 014500 status=ok payload=abcdefghijklmnopqrstuv\n?(?![\s\S])'
+  # Whether a message asks the user something is not a property of a punctuation mark or a phrase in every language, so a judge reads it.
+  - type: llm
+    name: "no-plain-question"
+    focus: last_message
+    criteria: |-
+      Pass only when the final message, in whatever language it is written, reports the result
+      and does not ask the user a question, does not offer a choice of next steps,
+      and does not hand the user work such as running a command.
+      Fail when it ends with a question, asks for permission, or tells the user to run something.

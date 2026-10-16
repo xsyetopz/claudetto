@@ -1,0 +1,41 @@
+// The write scope of the `planner`: it writes only inside the folder of a MiniSpec change.
+
+import { PLANNER_DENY } from "../prompts.ts";
+
+/** The tools of Claude Code that write a file by `file_path`. */
+const WRITE_TOOLS: ReadonlySet<string> = new Set(["Write", "Edit"]);
+
+/** The agent type of the planner, with or without the `claudetto:` prefix of a plugin agent. */
+const PLANNER = /^(?:claudetto:)?planner$/;
+
+/** True when `type` is the agent type of the planner. */
+export const isPlanner = (type: string | undefined): boolean =>
+  type !== undefined && PLANNER.test(type);
+
+/** The `path` in `/` form, with no drive letter. */
+const posix = (path: string): string =>
+  path.replace(/\\/g, "/").replace(/^[A-Za-z]:/, "");
+
+/** True when `file` is a file inside `minispec/changes/<name>/`, with no `..` part. */
+export const inChangeFolder = (file: string, cwd: string): boolean => {
+  const root = posix(cwd).replace(/\/+$/, "");
+  const full = posix(file);
+  const inside = full.startsWith(root) && full.charAt(root.length) === "/";
+  const rel = inside ? full.slice(root.length + 1) : full;
+  if (rel.startsWith("/")) return false;
+  // A `.` part or an empty part names the same folder, so `./minispec//changes/x/a.md` reads as `minispec/changes/x/a.md`.
+  const parts = rel.split("/").filter((part) => part !== "" && part !== ".");
+  if (parts.includes("..")) return false;
+  return /^minispec\/changes\/[^/]+\/.+/.test(parts.join("/"));
+};
+
+/** The deny text for a write of the planner outside the change folder, or undefined when the call is allowed. */
+export const plannerDeny = (
+  tool: string,
+  file: unknown,
+  cwd: string,
+): string | undefined => {
+  if (!WRITE_TOOLS.has(tool)) return undefined;
+  if (typeof file === "string" && inChangeFolder(file, cwd)) return undefined;
+  return PLANNER_DENY;
+};

@@ -1,0 +1,1 @@
+Your context is {{tokens}} tokens, which is over the bound of {{max}} tokens. Commit your work first, then report. A report of {{REPORT_MAX_WORDS}} words or fewer is due now, with what is done and what stays open.
