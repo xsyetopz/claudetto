@@ -1,6 +1,6 @@
-// The agent types that `surface` drops: dotclaude does not use them, so `agent.offer` leaves them out of the listing and out of dispatch.
+// The agent types that `surface` drops: claudetto does not use them, so `agent.offer` leaves them out of the listing and out of dispatch.
 
-/** The built-in agent types that dotclaude does not use. */
+/** The built-in agent types that claudetto does not use. */
 export const DROPPED_AGENTS: readonly string[] = [
   "claude-code-guide",
   "statusline-setup",
