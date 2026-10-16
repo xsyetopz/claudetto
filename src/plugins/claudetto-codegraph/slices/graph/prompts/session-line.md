@@ -1,0 +1,1 @@
+This project has a code graph. `codegraph impact <symbol> -d 5` lists the code that a change to a symbol affects. The default depth of 2 misses some of it. `codegraph callers <symbol>` and `codegraph callees <symbol>` list who calls a symbol and what it calls.

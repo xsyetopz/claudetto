@@ -1,0 +1,13 @@
+{
+  "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "claudetto-codegraph",
+  "version": "0.1.0-alpha.1",
+  "description": "Gives Claude the code graph of a project from the CodeGraph CLI `codegraph`. Syncs the index at session start, after an edit, and after a `git` command that changes the tree. Adds one line about the graph commands at session start.",
+  "author": {
+    "name": "xsyetopz"
+  },
+  "repository": "https://github.com/xsyetopz/claudetto",
+  "license": "MIT",
+  "homepage": "https://github.com/xsyetopz/claudetto/wiki/Code-Graph",
+  "keywords": ["codegraph", "code-graph", "search", "index"]
+}

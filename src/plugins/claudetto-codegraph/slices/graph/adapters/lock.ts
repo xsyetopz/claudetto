@@ -1,0 +1,92 @@
+// The one-at-a-time sync of an index, for the classic hooks of the add-on. It runs on Bun.
+// Each caller first leaves a `pending` mark, then tries to take the `lock` file with an exclusive create.
+// The caller that holds the lock syncs once for each mark that it removes, so the sync after the last edit starts after that edit.
+// A caller that finds the lock held leaves its mark and ends, because the holder syncs for it.
+// A lock older than `LOCK_STALE_MS` belongs to a dead process, so the next caller removes it.
+
+import { closeSync, existsSync, openSync, statSync } from "node:fs";
+import { join } from "node:path";
+import { LOCK_STALE_MS, MIN_CATCH_UP_MS } from "../limits.ts";
+import { codegraph, type Result } from "./codegraph.ts";
+
+const LOCK = ".codegraph/claudetto-sync.lock";
+const PENDING = ".codegraph/claudetto-sync.pending";
+
+/** True when `err` is a Node error with the code `code`. */
+const hasCode = (err: unknown, code: string): boolean =>
+  (err as NodeJS.ErrnoException | undefined)?.code === code;
+
+/** Removes `file`, and says whether it was there. */
+const take = async (file: string): Promise<boolean> => {
+  try {
+    await Bun.file(file).delete();
+    return true;
+  } catch (err) {
+    if (hasCode(err, "ENOENT")) return false;
+    throw err;
+  }
+};
+
+/** Creates `file` and says whether this call made it. An existing file gives false. */
+const create = (file: string): boolean => {
+  try {
+    closeSync(openSync(file, "wx"));
+    return true;
+  } catch (err) {
+    if (hasCode(err, "EEXIST")) return false;
+    throw err;
+  }
+};
+
+/** Takes the lock, or says that another caller holds it. A stale lock is removed first. */
+const acquire = async (file: string): Promise<boolean> => {
+  if (create(file)) return true;
+  try {
+    if (Date.now() - statSync(file).mtimeMs <= LOCK_STALE_MS) return false;
+  } catch (err) {
+    if (!hasCode(err, "ENOENT")) throw err;
+  }
+  await take(file);
+  return create(file);
+};
+
+/** What `syncOnce` did: it ran `codegraph sync`, or another caller holds the lock and will sync for this caller. */
+export type SyncOutcome = { ran: Result } | { ran: undefined };
+
+/**
+ * Syncs the index of `root` with no other sync at the same time.
+ * Gives the result of the first sync that this call ran, or `{ ran: undefined }` when another caller holds the lock.
+ * The call runs a further sync only while a mark is left and at least `MIN_CATCH_UP_MS` of `budgetMs` remains.
+ * A mark that stays belongs to the next caller.
+ */
+export const syncOnce = async (
+  root: string,
+  env: NodeJS.ProcessEnv,
+  budgetMs: number,
+): Promise<SyncOutcome> => {
+  const lock = join(root, LOCK);
+  const pending = join(root, PENDING);
+  const end = Date.now() + budgetMs;
+  let first: Result | undefined;
+  await Bun.write(pending, "");
+  do {
+    if (!(await acquire(lock))) break;
+    try {
+      while (
+        existsSync(pending) &&
+        (first === undefined || end - Date.now() >= MIN_CATCH_UP_MS)
+      ) {
+        if (!(await take(pending))) continue;
+        const result = codegraph(["sync", "-q"], {
+          root,
+          env,
+          timeout: Math.max(end - Date.now(), 1),
+        });
+        first ??= result;
+      }
+    } finally {
+      await take(lock);
+    }
+  } while (existsSync(pending) && end - Date.now() >= MIN_CATCH_UP_MS);
+  return { ran: first };
+};
