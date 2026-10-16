@@ -1,0 +1,265 @@
+// The programs and the verbs that only read, by a fixed allowlist.
+// A command that is not in the list is not read-only, so a new program is blocked in a forbidden checkout until it is listed here.
+// The list holds names and flags. It never reads a policy text.
+
+import { isDynamic } from "./paths.ts";
+
+/** Programs that read files and write nothing, whatever their flags. */
+const READ_PROGRAMS: ReadonlySet<string> = new Set([
+  "cat",
+  "ls",
+  "head",
+  "tail",
+  "grep",
+  "egrep",
+  "fgrep",
+  "wc",
+  "diff",
+  "file",
+  "stat",
+  "jq",
+  "echo",
+  "pwd",
+  "printf",
+  "cut",
+  "tr",
+  "basename",
+  "dirname",
+  "realpath",
+  "readlink",
+  "which",
+  "du",
+  "df",
+  "id",
+  "whoami",
+  "uname",
+  "test",
+  "[",
+  "nl",
+  "od",
+  "column",
+  "fold",
+  "sha256sum",
+  "shasum",
+  "md5sum",
+  "cmp",
+  "comm",
+  "true",
+  "false",
+]);
+
+/** Programs that read, with flags that write or run a program. The flags are denied. */
+const READ_WITH_DENIED: Readonly<Record<string, readonly string[]>> = {
+  find: [
+    "-delete",
+    "-exec",
+    "-execdir",
+    "-ok",
+    "-okdir",
+    "-fprint",
+    "-fprint0",
+    "-fprintf",
+    "-fls",
+  ],
+  rg: ["--pre", "--pre-glob", "--hostname-bin"],
+  sort: ["-o", "--output"],
+  tree: ["-o"],
+  date: ["-s", "--set"],
+};
+
+/** The `git` verbs that read. */
+const GIT_READS: ReadonlySet<string> = new Set([
+  "status",
+  "log",
+  "show",
+  "diff",
+  "blame",
+  "rev-parse",
+  "ls-files",
+  "ls-tree",
+  "grep",
+  "describe",
+  "shortlog",
+  "cat-file",
+  "rev-list",
+  "merge-base",
+  "name-rev",
+  "for-each-ref",
+  "show-ref",
+  "show-branch",
+  "count-objects",
+  "whatchanged",
+  "ls-remote",
+  "var",
+  "version",
+  "help",
+]);
+
+/** The flags of `git` that write a file or run a program. */
+const GIT_DENIED = [
+  "--output",
+  "--ext-diff",
+  "--textconv",
+  "--open-files-in-pager",
+  "-O",
+  "--exec",
+];
+
+/** The flags that `git branch` may have and stay a read. */
+const BRANCH_FLAGS: ReadonlySet<string> = new Set([
+  "--list",
+  "-l",
+  "-a",
+  "-r",
+  "-v",
+  "-vv",
+  "--show-current",
+  "--all",
+  "--remotes",
+  "--verbose",
+]);
+
+/** `git` verbs that read only with a given first argument, by verb. An empty entry means "no argument" also reads. */
+const GIT_SUBVERBS: Readonly<Record<string, readonly string[]>> = {
+  remote: ["-v", "--verbose", "get-url"],
+  config: ["--get", "--get-all", "--get-regexp", "--list", "-l"],
+  tag: ["-l", "--list", "-n"],
+  stash: ["list", "show"],
+  reflog: ["show"],
+  worktree: ["list"],
+  submodule: ["status"],
+};
+
+/** The verbs of `gh` that read, in any group. */
+const GH_READ_VERBS: ReadonlySet<string> = new Set([
+  "view",
+  "list",
+  "status",
+  "diff",
+  "checks",
+  "get",
+  "check",
+]);
+
+/** The groups of `gh` that only read. */
+const GH_READ_GROUPS: ReadonlySet<string> = new Set([
+  "search",
+  "status",
+  "help",
+  "version",
+]);
+
+/** The words of a `git` call after its global options, with `-C` and its value removed. `undefined` when `-c` is there. */
+const gitWords = (words: string[]): string[] | undefined => {
+  const out: string[] = [];
+  for (let i = 1; i < words.length; i++) {
+    const w = words[i] as string;
+    if (out.length === 0 && w === "-C") i++;
+    else if (out.length === 0 && (w === "-c" || w.startsWith("--config-env")))
+      return undefined;
+    else if (out.length === 0 && (w === "--git-dir" || w === "--work-tree"))
+      i++;
+    else out.push(w);
+  }
+  return out;
+};
+
+const gitReads = (words: string[]): boolean => {
+  const rest = gitWords(words);
+  if (rest === undefined) return false;
+  const verb = rest[0];
+  if (verb === undefined || verb === "--version" || verb === "--help")
+    return true;
+  const args = rest.slice(1);
+  if (
+    args.some((a) =>
+      GIT_DENIED.some(
+        (d) =>
+          a === d ||
+          a.startsWith(`${d}=`) ||
+          (d === "-O" && a.startsWith("-O")),
+      ),
+    )
+  )
+    return false;
+  if (GIT_READS.has(verb)) return true;
+  if (verb === "branch") return args.every((a) => BRANCH_FLAGS.has(a));
+  const subs = GIT_SUBVERBS[verb];
+  if (subs === undefined) return false;
+  return args.length === 0
+    ? verb === "remote" || verb === "tag" || verb === "reflog"
+    : subs.includes(args[0] as string);
+};
+
+/** True when a `gh api` call has a flag that sends data, or a method other than `GET` or `HEAD`. */
+export const ghApiWrites = (words: string[]): boolean => {
+  for (let i = 0; i < words.length; i++) {
+    const w = words[i] as string;
+    const long = w.startsWith("--");
+    if (
+      w === "--method" ||
+      w === "-X" ||
+      w.startsWith("--method=") ||
+      (!long && w.startsWith("-X"))
+    ) {
+      const v = w.includes("=")
+        ? w.slice(w.indexOf("=") + 1)
+        : w.length > 2 && !long
+          ? w.slice(2)
+          : (words[i + 1] ?? "");
+      if (!["GET", "HEAD"].includes(v.toUpperCase())) return true;
+    }
+    if (
+      w === "--input" ||
+      w.startsWith("--input=") ||
+      w.startsWith("--field") ||
+      w.startsWith("--raw-field")
+    )
+      return true;
+    if (!long && /^-[a-zA-Z]*[fF]/.test(w)) return true;
+  }
+  return false;
+};
+
+/** True when a `gh` call only reads. Any group or verb that is not listed writes. */
+export const ghReads = (words: string[]): boolean => {
+  const group = words[1];
+  if (group === undefined || group.startsWith("-") || GH_READ_GROUPS.has(group))
+    return true;
+  if (group === "api") return !ghApiWrites(words);
+  if (group === "auth") return words[2] === "status";
+  const verb = words[2];
+  return verb !== undefined && GH_READ_VERBS.has(verb);
+};
+
+/** The `gh` verbs that change only the local checkout or the account of the user, not an upstream repository. */
+const GH_LOCAL_VERBS: ReadonlySet<string> = new Set([
+  "checkout",
+  "clone",
+  "fork",
+]);
+
+/** The `gh` groups that change only the local setup. */
+const GH_LOCAL_GROUPS: ReadonlySet<string> = new Set([
+  "auth",
+  "config",
+  "alias",
+  "completion",
+  "extension",
+]);
+
+/** True when a `gh` call that writes does not touch an upstream repository. */
+export const ghLocal = (words: string[]): boolean =>
+  GH_LOCAL_GROUPS.has(words[1] ?? "") || GH_LOCAL_VERBS.has(words[2] ?? "");
+
+/** True when `words` is a simple command that only reads. The head is the program name with no folder. */
+export const readsOnly = (head: string, words: string[]): boolean => {
+  if (head === "git" || head === "gh") {
+    if (words.some(isDynamic)) return false;
+    return head === "git" ? gitReads(words) : ghReads(words);
+  }
+  const denied = READ_WITH_DENIED[head];
+  if (denied !== undefined)
+    return !words.slice(1).some((w) => denied.includes(w) || isDynamic(w));
+  return READ_PROGRAMS.has(head);
+};

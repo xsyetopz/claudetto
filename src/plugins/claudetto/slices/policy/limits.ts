@@ -1,0 +1,10 @@
+// The bounds of the `policy` slice, in one place.
+
+/** The most policy files that one source (a checkout, or the `.github` repository of an owner) gives. */
+export const FILES_MAX = 40;
+
+/** The time that one `git` or `gh` call may take, in milliseconds. */
+export const PROCESS_TIMEOUT_MS = 20_000;
+
+/** The fewest characters that a `quote` has after the white space is normalized. A shorter quote proves too little. */
+export const QUOTE_MIN_CHARS = 8;

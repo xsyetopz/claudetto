@@ -1,0 +1,128 @@
+// The gathering of the policy files of a target: the checkout or the repository on GitHub, the `.github` repository of the owner,
+// and the parent repository when the target is a fork.
+// A file that is not on disk is written to the cache folder, so that Claude can read every file with `Read`.
+// The functions take callbacks, because the `$` calls are in `mod.ts`.
+
+import { discover, type Entry, type Reader } from "../domain/discover.ts";
+import { keyOf, type Repo } from "../domain/remote.ts";
+import { hashOf } from "../domain/verdict.ts";
+import { parentOf, type Run, type Target } from "./target.ts";
+
+/** A policy file for Claude: `name` is its place in the check, `shown` is the path that Claude reads. */
+export type Shown = { name: string; shown: string; text: string };
+
+/** The files of a target, the notes about what is missing, and the hash of the files. */
+export type Gathered = {
+  target: Target;
+  files: Shown[];
+  notes: string[];
+  hash: string;
+};
+
+/** What the gathering needs from the engine. */
+export type Deps = {
+  run: Run;
+  local: (root: string) => Reader;
+  /** Writes a cache file, and gives the path. `undefined` when there is no place to write. */
+  cache: (
+    key: string,
+    source: string,
+    path: string,
+    text: string,
+  ) => Promise<string | undefined>;
+};
+
+/** True when a failed `gh api` call means that the file or the repository is absent. */
+const isMissing = (r: { stderr: string }): boolean => r.stderr.includes("404");
+
+const apiPath = (repo: Repo, path: string): string =>
+  `repos/${repo.owner}/${repo.name}/contents${path === "" ? "" : `/${path.split("/").map(encodeURIComponent).join("/")}`}`;
+
+/** A reader over the contents API of GitHub. */
+const remoteReader = (run: Run, repo: Repo): Reader => ({
+  list: async (dir) => {
+    const r = await run(["gh", "api", apiPath(repo, dir)]);
+    if (r.exitCode !== 0) {
+      if (isMissing(r)) return [];
+      throw new Error(r.stderr);
+    }
+    const items = JSON.parse(r.stdout) as { name?: unknown; type?: unknown }[];
+    return items.flatMap((i): Entry[] =>
+      typeof i.name === "string"
+        ? [
+            {
+              name: i.name,
+              kind:
+                i.type === "file" ? "file" : i.type === "dir" ? "dir" : "other",
+            },
+          ]
+        : [],
+    );
+  },
+  read: async (path) => {
+    const r = await run([
+      "gh",
+      "api",
+      "-H",
+      "Accept: application/vnd.github.raw",
+      apiPath(repo, path),
+    ]);
+    if (r.exitCode === 0) return r.stdout;
+    if (isMissing(r)) return undefined;
+    throw new Error(r.stderr);
+  },
+});
+
+/** One source of files: a label, and a reader. A local source needs no cache. */
+type Source = { label: string; reader: Reader; root: string | undefined };
+
+/** The sources of a target, in the order that Claude reads them. */
+const sourcesOf = async (deps: Deps, target: Target): Promise<Source[]> => {
+  const out: Source[] = [];
+  const remote = (repo: Repo) =>
+    out.push({
+      label: keyOf(repo),
+      reader: remoteReader(deps.run, repo),
+      root: undefined,
+    });
+  // The `.github` repository of an owner holds the default files of each repository of the owner.
+  const shared = (repo: Repo) => {
+    if (repo.host === "github.com" && repo.name !== ".github")
+      remote({ ...repo, name: ".github" });
+  };
+  if (target.root !== undefined)
+    out.push({
+      label: target.key,
+      reader: deps.local(target.root),
+      root: target.root,
+    });
+  else if (target.repo.host === "github.com") remote(target.repo);
+  shared(target.repo);
+  const parent = await parentOf(deps.run, target.repo);
+  if (parent !== undefined) {
+    remote(parent);
+    shared(parent);
+  }
+  return out;
+};
+
+/** Gathers the policy files of `target`. */
+export const gather = async (deps: Deps, target: Target): Promise<Gathered> => {
+  const files: Shown[] = [];
+  const notes: string[] = [];
+  for (const source of await sourcesOf(deps, target)) {
+    const found = await discover(source.reader);
+    if (found.unread.length > 0)
+      notes.push(`${source.label}: ${found.unread.join(", ")}`);
+    for (const f of found.files) {
+      const shown =
+        source.root !== undefined
+          ? `${source.root}/${f.path}`
+          : await deps.cache(target.key, source.label, f.path, f.text);
+      if (shown === undefined) notes.push(`${source.label}/${f.path}`);
+      else
+        files.push({ name: `${source.label}:${f.path}`, shown, text: f.text });
+    }
+  }
+  return { target, files, notes, hash: hashOf(files) };
+};

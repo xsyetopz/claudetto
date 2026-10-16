@@ -1,0 +1,1 @@
+When on, claudetto reads the AI policy of each repository that is not yours before Claude pushes or writes to GitHub there, and blocks those actions when the policy forbids AI tools. Local edits and commits stay allowed.
