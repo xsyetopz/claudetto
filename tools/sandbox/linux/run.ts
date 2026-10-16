@@ -80,7 +80,7 @@ await recipe(async () => {
     console.log(`control, with no sandbox: ${control.trim()}`);
     for (const c of session.commands) console.log(`Bash command: ${c}`);
     for (const r of session.results) console.log(`tool result: ${r.trim()}`);
-    console.log("sandbox lines of the debug log:");
+    console.log("sandbox lines of stderr (`SRT_DEBUG`):");
     console.log(
       (await read(out, "sandbox.txt")).split("\n").slice(0, 20).join("\n"),
     );

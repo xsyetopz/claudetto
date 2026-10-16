@@ -17,8 +17,9 @@ sleep 1
 export SSH_AUTH_SOCK=/work/agent.sock
 echo | socat - UNIX-CONNECT:/work/agent.sock >/out/control.txt 2>&1 || true
 readlink -f "$(command -v claude)" >/out/claude.txt
-CLAUDE_CONFIG_DIR=/cfg claude -p "$PROMPT" \
+# The sandbox engine logs only when `SRT_DEBUG` is set, and it logs `[SandboxDebug] ...` to stderr, not to `--debug-file`.
+SRT_DEBUG=1 CLAUDE_CONFIG_DIR=/cfg claude -p "$PROMPT" \
   --model "$MODEL" --max-turns 3 --allowedTools Bash \
-  --output-format stream-json --verbose --debug-file /tmp/debug.log \
+  --output-format stream-json --verbose \
   >/out/out.jsonl 2>/out/stderr.txt || true
-grep -iE 'seccomp|sandbox linux|bwrap' /tmp/debug.log >/out/sandbox.txt || true
+grep -iE 'seccomp|sandbox linux|bwrap' /out/stderr.txt >/out/sandbox.txt || true
