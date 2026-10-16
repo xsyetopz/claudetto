@@ -1,0 +1,66 @@
+// The attribution reminder: the text that Claude Code 2.1.299 sends, and 2.1.301 sends the same text when `includeGitInstructions` is on.
+// The `trim` slice turns that setting off, and with it the reminder, so this slice sends the same text.
+// The model writes the lines into the message, so no command text is read.
+// The source is the reminder builder of the bundle (`external/cc-2.1.299/strings.txt`, unchanged in `external/cc-2.1.301/strings.txt`).
+
+import {
+  COMMIT_ITEM,
+  PR_ITEM,
+  REMINDER,
+  REMINDER_OFF,
+  RULE_MANAGED,
+  RULE_SPLIT,
+  RULE_USER,
+} from "../prompts.ts";
+import type { Lines } from "./lines.ts";
+
+/** Which lines come from the `attribution` object of the managed settings. */
+export type Managed = { commit: boolean; pr: boolean };
+
+/** True for each line that the managed settings set to a text that is not empty, as Claude Code reads them. */
+export const managedOf = (policy: { attribution?: unknown }): Managed => {
+  const a = policy.attribution;
+  const field = (key: "commit" | "pr") =>
+    typeof a === "object" && a !== null && Boolean(Reflect.get(a, key));
+  return { commit: field("commit"), pr: field("pr") };
+};
+
+/** A line with each `<` that opens a `system-reminder` tag escaped, so the line cannot end the reminder. */
+const escaped = (line: string): string =>
+  line.replaceAll(/<(?=\s*(?:\/\s*)?system-reminder\b)/gi, "&lt;");
+
+/** The clause that says whose rule wins, for the lines that are on. */
+const ruleOf = (lines: Lines, managed: Managed): string => {
+  const commit = Boolean(lines.commit) && managed.commit;
+  const pr = Boolean(lines.pr) && managed.pr;
+  if (commit === Boolean(lines.commit) && pr === Boolean(lines.pr))
+    return RULE_MANAGED;
+  if (!commit && !pr) return RULE_USER;
+  return commit
+    ? RULE_SPLIT({ managed: "commit", other: "pull request" })
+    : RULE_SPLIT({ managed: "pull request", other: "commit" });
+};
+
+/** The text of the reminder for `lines`. */
+export const reminderText = (lines: Lines, managed: Managed): string => {
+  const items = [
+    lines.commit ? COMMIT_ITEM({ line: escaped(lines.commit) }) : "",
+    lines.pr ? PR_ITEM({ line: escaped(lines.pr) }) : "",
+  ].filter(Boolean);
+  if (items.length === 0) return REMINDER_OFF;
+  return REMINDER({ rule: ruleOf(lines, managed), items: items.join("\n") });
+};
+
+/**
+ * The reminder to send now, or `undefined` when the model already has it.
+ * `last` is the reminder that the conversation holds, and Claude Code sends no reminder before the first line that is on.
+ */
+export const reminderToSend = (
+  lines: Lines,
+  managed: Managed,
+  last: string | undefined,
+): string | undefined => {
+  if (last === undefined && !lines.commit && !lines.pr) return undefined;
+  const text = reminderText(lines, managed);
+  return text === last ? undefined : text;
+};

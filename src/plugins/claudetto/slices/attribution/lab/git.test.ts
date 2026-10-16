@@ -1,0 +1,214 @@
+// Lab tests of the `tool.call` hooks of the `attribution` slice: the bypass deny of `git commit` and the check of a pull request body.
+// `settings.read` and `process.run` are stubbed, and the core result of the call is a stub too.
+// The file is self-contained, because `just generate` copies it to `tests/` of the plugin, where it cannot import a relative file.
+
+import type { On } from "claude-code";
+import { type Engine, expect, mock, test } from "claude-code/testing";
+
+const COMMIT = "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>";
+// biome-ignore lint/plugin: test input data
+const PR = "🤖 Generated with [Claude Code](https://claude.com/claude-code)";
+
+type World = {
+  settings?: Record<string, unknown>;
+  /** The `stdout` of `gh pr view`, or the exit code when it fails. */
+  view?: { stdout: string; exitCode?: number };
+  /** The output of the `Bash` call. */
+  text?: string;
+};
+
+/** The stubs of `world`, and what reached them: the commands that ran and the `gh` argument vectors. */
+const engine = (on: On, world: World) => {
+  const seen = { commands: [] as string[], runs: [] as string[][] };
+  mock.env(on, { HOME: "/home/me" });
+  on("settings.read", () => ({ value: world.settings ?? {} }));
+  on("tool.call", (_$, e) => {
+    if (e.tool === "Bash") seen.commands.push(e.command);
+    return { result: { stdout: "", stderr: "" }, text: world.text ?? "" };
+  });
+  on("session.id", () => ({ value: "sess-1" }));
+  on("session.cwd", () => ({ value: "/work/app" }));
+  on("clock.now", () => ({ value: 1_000_000 }));
+  on("fs.exists", () => ({ value: false }));
+  on("fs.read", () => ({ value: "" }));
+  on("fs.write", () => ({ value: undefined }));
+  on("process.run", (_$, e) => {
+    // The bundle holds the hooks of other slices too, and their commands are not the test's concern.
+    if (e.argv[1] === "pr") seen.runs.push([...e.argv]);
+    return {
+      value: {
+        exitCode: world.view?.exitCode ?? 0,
+        stdout: world.view?.stdout ?? "",
+        stderr: "",
+        isStdoutTruncated: false,
+        isStderrTruncated: false,
+      },
+    };
+  });
+  return seen;
+};
+
+const bash = ($: Engine, command: string) =>
+  $.tool.call({ tool: "Bash", command });
+
+const body = (text: string) => ({ stdout: JSON.stringify({ body: text }) });
+
+test("a commit without a bypass passes", async ($: Engine, on: On) => {
+  const seen = engine(on, {});
+  const out = await bash($, 'git commit -m "Fix it"');
+  expect(out.deny).toBeUndefined();
+  expect(seen.commands).toHaveLength(1);
+});
+
+test("`git commit --no-verify` is denied", async ($: Engine, on: On) => {
+  const seen = engine(on, {});
+  const out = await bash($, 'git commit --no-verify -m "Fix it"');
+  expect(out.deny).toContain("--no-verify");
+  expect(seen.commands).toHaveLength(0);
+});
+
+// biome-ignore lint/plugin: a test name
+test("`-n` is denied alone and in a cluster, and `-m -n` is a message", async ($: Engine, on: On) => {
+  engine(on, {});
+  for (const command of ["git commit -n", "git -C app commit -anm x"])
+    expect((await bash($, command)).deny).toBeDefined();
+  expect((await bash($, "git commit -m -n")).deny).toBeUndefined();
+  expect((await bash($, "git commit -mn")).deny).toBeUndefined();
+});
+
+test("a git config override of the hooks on a commit is denied", async ($: Engine, on: On) => {
+  engine(on, {});
+  for (const command of [
+    "git -c core.hooksPath=/dev/null commit -m x",
+    "git -c hook.claudetto-attribution.enabled=false commit -m x",
+  ])
+    expect((await bash($, command)).deny).toContain("git config");
+});
+
+test("an env assignment of the git config on a commit is denied", async ($: Engine, on: On) => {
+  engine(on, {});
+  for (const command of [
+    "GIT_CONFIG_COUNT=0 git commit -m x",
+    "env GIT_CONFIG_GLOBAL=/dev/null git commit -m x",
+    "export GIT_CONFIG_NOSYSTEM=1 && git commit -m x",
+  ])
+    expect((await bash($, command)).deny).toContain("env");
+  expect((await bash($, "GIT_CONFIG_COUNT=0 git status")).deny).toBeUndefined();
+});
+
+// biome-ignore lint/plugin: a test name
+test("a change of the git config variables beside a commit is denied", async ($: Engine, on: On) => {
+  engine(on, {});
+  for (const command of [
+    "unset GIT_CONFIG_COUNT; git commit -m x",
+    "declare -x GIT_CONFIG_COUNT=0; git commit -m x",
+    "env -u GIT_CONFIG_COUNT git commit -m x",
+    "env -i git commit -m x",
+    // biome-ignore lint/plugin: test input data
+    "git --config-env=hook.claudetto-attribution.enabled=V commit -m x",
+  ])
+    expect((await bash($, command)).deny).toBeDefined();
+  expect((await bash($, "unset GIT_CONFIG_COUNT")).deny).toBeUndefined();
+});
+
+test("`git commit-tree` is denied", async ($: Engine, on: On) => {
+  engine(on, {});
+  expect((await bash($, "git commit-tree T -m x")).deny).toContain(
+    "git commit-tree",
+  );
+});
+
+test("with the commit line off, `--no-verify` passes", async ($: Engine, on: On) => {
+  engine(on, { settings: { attribution: { commit: "" } } });
+  expect((await bash($, "git commit --no-verify -m x")).deny).toBeUndefined();
+  expect((await bash($, "git commit-tree T")).deny).toBeUndefined();
+});
+
+// biome-ignore lint/plugin: a test name
+test("a pull request without the line gets a note after `gh pr create`", async ($: Engine, on: On) => {
+  const seen = engine(on, {
+    text: "https://github.com/o/r/pull/7\n",
+    view: body("Adds the fix."),
+  });
+  const out = await bash($, 'gh pr create --title T --body "Adds the fix."');
+  expect(seen.runs[0]).toEqual([
+    "gh",
+    "pr",
+    "view",
+    "https://github.com/o/r/pull/7",
+    "--json",
+    "body",
+  ]);
+  expect(out.context?.[0]).toContain("gh pr edit --body-file");
+  expect(out.context?.[0]).toContain(PR);
+});
+
+test("a pull request body with the line gets no note", async ($: Engine, on: On) => {
+  engine(on, { view: body(`Adds the fix.\n\n${PR}\n`) });
+  const out = await bash($, "gh pr edit 7 --body-file b.md");
+  expect(out.context).toBeUndefined();
+});
+
+test("`gh pr edit` reads the pull request that it names", async ($: Engine, on: On) => {
+  const seen = engine(on, { view: body("x") });
+  await bash($, "gh pr edit 7 --title T");
+  expect(seen.runs[0]).toEqual(["gh", "pr", "view", "7", "--json", "body"]);
+});
+
+test("a failed `gh pr view` adds no note", async ($: Engine, on: On) => {
+  engine(on, { view: { stdout: "", exitCode: 1 } });
+  expect((await bash($, "gh pr edit 7 --title T")).context).toBeUndefined();
+});
+
+test("with the pull request line off, no `gh` command runs", async ($: Engine, on: On) => {
+  const seen = engine(on, { settings: { attribution: { pr: "" } } });
+  await bash($, "gh pr create --title T");
+  expect(seen.runs).toEqual([]);
+});
+
+// biome-ignore lint/plugin: a test name
+test("a command that is not a pull request write runs no `gh` command", async ($: Engine, on: On) => {
+  const seen = engine(on, {});
+  await bash($, "gh pr view 7 && gh pr list");
+  expect(seen.runs).toEqual([]);
+});
+
+const mcp = ($: Engine, tool: string, input: Record<string, unknown>) =>
+  $.tool.call({ tool, ...input } as never);
+
+test("a GitHub MCP pull request body without the line is denied", async ($: Engine, on: On) => {
+  engine(on, {});
+  const out = await mcp($, "mcp__github__create_pull_request", {
+    title: "T",
+    body: "Adds the fix.",
+  });
+  expect(out.deny).toContain(PR);
+});
+
+test("a GitHub MCP pull request body with the line passes", async ($: Engine, on: On) => {
+  engine(on, {});
+  const out = await mcp($, "mcp__github__update_pull_request", {
+    body: `Adds the fix.\n\n${PR}`,
+  });
+  expect(out.deny).toBeUndefined();
+});
+
+test("an update with no body and a tool of another kind pass", async ($: Engine, on: On) => {
+  engine(on, {});
+  const update = await mcp($, "mcp__github__update_pull_request", {
+    title: "T",
+  });
+  const review = await mcp($, "mcp__github__add_pull_request_review_comment", {
+    body: "Looks good.",
+  });
+  expect(update.deny).toBeUndefined();
+  expect(review.deny).toBeUndefined();
+});
+
+test("the commit line stays out of the pull request check", async ($: Engine, on: On) => {
+  engine(on, { settings: { attribution: { pr: "" } } });
+  const out = await mcp($, "mcp__github__create_pull_request", {
+    body: COMMIT,
+  });
+  expect(out.deny).toBeUndefined();
+});
