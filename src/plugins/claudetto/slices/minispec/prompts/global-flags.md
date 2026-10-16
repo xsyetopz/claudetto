@@ -1,0 +1,3 @@
+--json        print JSON on stdout, for a program
+--no-color    turn color off. NO_COLOR does the same
+-h, --help    print help

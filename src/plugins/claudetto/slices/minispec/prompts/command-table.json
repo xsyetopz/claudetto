@@ -1,0 +1,44 @@
+{
+  "new": {
+    "usage": "minispec new <name> [--tier medium|big|large] [--capability <name>]",
+    "summary": "Create the change folder `minispec/changes/<name>/` with the files of the tier.",
+    "flags": [
+      "--tier <tier>         medium (default): proposal and tasks. big or large: also a design and a spec.",
+      "--capability <name>   the capability of the spec of a big or large change. The default is the change name."
+    ],
+    "examples": [
+      "minispec new add-export",
+      "minispec new add-export --tier big --capability export"
+    ]
+  },
+  "list": {
+    "usage": "minispec list [--specs] [--json]",
+    "summary": "List the changes in progress, or the specs with --specs.",
+    "flags": ["--specs   list the specs in `minispec/specs/`."],
+    "examples": ["minispec list", "minispec list --specs --json"]
+  },
+  "show": {
+    "usage": "minispec show <name> [--json]",
+    "summary": "Print the files of a change, or the spec of a capability.",
+    "flags": [],
+    "examples": ["minispec show add-export", "minispec show export --json"]
+  },
+  "status": {
+    "usage": "minispec status [<name>] [--json]",
+    "summary": "Give the task counts of a change and its next open task. With no name, use the change in progress.",
+    "flags": [],
+    "examples": ["minispec status", "minispec status add-export --json"]
+  },
+  "validate": {
+    "usage": "minispec validate [<name>] [--json]",
+    "summary": "Check a change or a spec. With no name, check each change and each spec. A check in a task must be a command.",
+    "flags": [],
+    "examples": ["minispec validate add-export", "minispec validate --json"]
+  },
+  "archive": {
+    "usage": "minispec archive <name> [--yes] [--json]",
+    "summary": "Merge the spec deltas of a done change into `minispec/specs/`, and move the change to `minispec/changes/archive/`.",
+    "flags": ["--yes, -y   confirm the archive. The command fails without it."],
+    "examples": ["minispec archive add-export --yes"]
+  }
+}

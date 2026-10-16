@@ -1,0 +1,82 @@
+// The tasks of a change, read from the text of `tasks.md` (spec `minispec`, "Verification is a command, not prose").
+// A task is a line `- [ ] 1.1 text` or `- [x] 1.1 text` at the start of a line.
+// The lines after it that start with a space belong to the task.
+// The check of a task is a command in a code span or in a fenced block after `Check:`.
+// A check in prose has no code span and no block, so it is not a command and the task has no runnable check.
+
+import { TASK_LINE } from "../../../../../kernel/change.ts";
+import {
+  TASK_CHECK_MISSING,
+  TASK_CHECK_PROSE,
+  TASK_DUPLICATE,
+  TASK_NONE,
+} from "../prompts.ts";
+
+export interface Task {
+  readonly id: string;
+  readonly text: string;
+  readonly done: boolean;
+  /** The command of the check, or `null` when the task has no check or the check is prose. */
+  readonly check: string | null;
+  /** True when the task has a `Check:` field, whether it is a command or prose. */
+  readonly hasCheckField: boolean;
+}
+
+const CHECK_SPAN = /Check:\s*`([^`\n]+)`/;
+const CHECK_BLOCK = /Check:\s*\n\s*```[\w-]*\n([\s\S]*?)\n\s*```/;
+const CHECK_FIELD = /(?:^|\n)\s*Check:/;
+
+/** The command of the check in the body of a task, or `null`. */
+const checkOf = (body: string): string | null => {
+  const span = CHECK_SPAN.exec(body)?.[1]?.trim();
+  if (span) return span;
+  const block = CHECK_BLOCK.exec(body)?.[1]?.trim();
+  return block || null;
+};
+
+/** The tasks of `text`, in order. */
+export const parseTasks = (text: string): Task[] => {
+  const tasks: Task[] = [];
+  let current: { id: string; done: boolean; lines: string[] } | null = null;
+  const close = () => {
+    if (current === null) return;
+    const body = current.lines.join("\n");
+    tasks.push({
+      id: current.id,
+      text: (current.lines[0] ?? "").replace(/^- \[[ xX]\] \S+\s*/, ""),
+      done: current.done,
+      check: checkOf(body),
+      hasCheckField: CHECK_FIELD.test(`\n${body}`),
+    });
+    current = null;
+  };
+  for (const line of text.split("\n")) {
+    const m = TASK_LINE.exec(line);
+    if (m) {
+      close();
+      current = { id: m[2] ?? "", done: m[1] !== " ", lines: [line] };
+    } else if (current !== null && /^\s/.test(line)) current.lines.push(line);
+    else close();
+  }
+  close();
+  return tasks;
+};
+
+/** The issues of the tasks in `text`: no task, a duplicate id, and a task with no check that is a command. */
+export const taskIssues = (text: string): string[] => {
+  const tasks = parseTasks(text);
+  if (tasks.length === 0) return [TASK_NONE];
+  const issues: string[] = [];
+  const seen = new Set<string>();
+  for (const t of tasks) {
+    if (seen.has(t.id)) issues.push(TASK_DUPLICATE({ id: t.id }));
+    seen.add(t.id);
+    if (t.check !== null) continue;
+    issues.push(
+      t.hasCheckField
+        ? TASK_CHECK_PROSE({ id: t.id })
+        : TASK_CHECK_MISSING({ id: t.id }),
+    );
+  }
+  return issues;
+};

@@ -1,0 +1,46 @@
+// The shared types of the `minispec` slice.
+
+import type { Tier } from "./tiers.ts";
+
+/** What a command gives back: the exit code, the text for stdout, and the text for stderr. The CLI prints it. */
+export interface Reply {
+  readonly code: number;
+  readonly out: string;
+  readonly err: string;
+}
+
+/** The exit codes of the CLI. */
+export const EXIT = { ok: 0, failed: 1, usage: 2 } as const;
+
+/** One problem that `validate` found: the file, what is wrong, and what to do next. */
+export interface Issue {
+  readonly file: string;
+  readonly message: string;
+}
+
+/** The ports that the commands use for files. A fake gives the files with no disk. */
+export interface Store {
+  read(file: string): Promise<string | null>;
+  list(dir: string): Promise<string[]>;
+  write(file: string, text: string): Promise<void>;
+  exists(file: string): Promise<boolean>;
+  move(from: string, to: string): Promise<void>;
+}
+
+/** The facts of a run that the commands need besides the files. */
+export interface Context {
+  readonly store: Store;
+  /** The project root: the folder with `minispec/`, or else the root of the git checkout or worktree. */
+  readonly root: string;
+  /** The date of today as `YYYY-MM-DD`. */
+  readonly today: string;
+}
+
+/** The parsed options that the commands share. */
+export interface Options {
+  readonly json: boolean;
+  readonly yes: boolean;
+  readonly tier: Tier | null;
+  readonly capability: string | null;
+  readonly specs: boolean;
+}
