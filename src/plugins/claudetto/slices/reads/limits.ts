@@ -1,0 +1,10 @@
+// The bounds of the `reads` slice, in one place.
+
+/** The lines that one `Read` gives when the call sets no `limit`, and the most lines that one `Read` counts. */
+export const READ_DEFAULT_LINES = 2000;
+
+/** The most earlier reads that the record of one file keeps. The record drops the oldest read first. */
+export const MAX_SEEN_READS = 64;
+
+/** The most files, rejected calls, and files to read again that one session keeps. The oldest goes first. */
+export const MAX_REMEMBERED = 500;
