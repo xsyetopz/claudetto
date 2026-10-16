@@ -3,11 +3,14 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
+import { report } from "../../../src/plugins/claudetto-sessions/slices/usage/domain/report.ts";
+import { textOf } from "../../../src/plugins/claudetto-sessions/slices/usage/domain/text.ts";
 import {
   manifestVersion,
   recordOf,
   withSession,
 } from "../../../src/plugins/claudetto-sessions/slices/usage/domain/versions.ts";
+import type { Store } from "../../../src/plugins/claudetto-sessions/slices/usage/ports.ts";
 import { PLUGINS, tmpDir } from "../../support/repo.ts";
 import { runBin } from "../spawn.ts";
 
@@ -86,4 +89,21 @@ test("`--plugin-versions` exits 2 for a value that is not a JSON object", async 
   const root = await fixture([]);
   for (const value of ["[]", "{", "3"])
     expect(usage(root, "--plugin-versions", value).status).toBe(2);
+});
+
+test("the plugin version line puts the largest count first, whatever the order of the files on disk", async () => {
+  const empty = {
+    read: async () => null,
+    list: async () => [],
+    tree: async () => [],
+    mtime: async () => Date.now(),
+  } as unknown as Store;
+  const r = await report(empty, "/r", new Date(0), { configDir: "/nowhere" });
+  // On Linux, the session outside the record can come first on disk, so its count comes first in the object.
+  const line = textOf(
+    { ...r, pluginVersions: { "not recorded": 1, "0.1.0": 2 } },
+    1,
+    null,
+  ).find((l) => l.startsWith("Plugin versions"));
+  expect(line).toBe("Plugin versions of the sessions: 0.1.0 2, not recorded 1");
 });

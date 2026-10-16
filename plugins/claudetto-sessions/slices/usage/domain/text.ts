@@ -82,8 +82,10 @@ export const textOf = (
       withoutCalls: String(f.without.calls),
     }),
   );
+  // The largest count comes first, then the keys in order, so the line does not depend on the order of the files on disk.
   const list = (counts: Record<string, number>) =>
     Object.entries(counts)
+      .sort(([a, m], [b, n]) => n - m || (a < b ? -1 : a > b ? 1 : 0))
       .map(([key, count]) => `${key} ${count}`)
       .join(", ") || "-";
   out.push(
