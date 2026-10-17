@@ -20,7 +20,7 @@ Do not replace one without new evidence, and record the evidence in `src/wiki/ra
 - claudetto uses no `CLAUDE_ENV_FILE` (D55).
 - A text for the model that names a toolchain command or version gives a fact that claudetto reads (`bun --version`, a file of the project), and never a choice from memory (D56).
 - A text for the model names a `bin/` command of a plugin by its path under `$.plugin.root`, because the `PATH` has the `bin/` folders only through the shell snapshot, which a sandbox can block (D57).
-- A `Stop` hook runs after the user sees the reply, and the turn gate keeps its own count of blocks, with no pass for `stop_hook_active` alone (D58).
+- A `Stop` hook runs after the user sees the reply, and the judge of the turn gate gives no pass for `stop_hook_active` alone, with the 8-continuation cap of Claude Code as its bound (D58).
 - A local background `Bash` command has no time limit (D59).
 - The built-in read dedup covers only a read of the same range (D60).
 - A `tool.call` hook wraps the permission dialog, so `next(e)` returns a rejection as `isError: true` with `result` equal to `User rejected tool use` (D61).

@@ -9,6 +9,7 @@ import type {
   ModelForkResult,
 } from "claude-code";
 import type { Handler } from "../../../kernel/slice.ts";
+import { oneLine } from "../../../kernel/text.ts";
 import {
   actionOf,
   completePrompt,
@@ -294,6 +295,6 @@ export const onStart: Handler<"session.start"> = async ($, e, next) => {
         );
   const isOn = isFlagOn(file);
   await $.state.set(ACTIVE, isOn);
-  if (!isOn) $.ui.log(OFF_NOTICE({ plugin: $.plugin.name }));
+  if (!isOn) $.ui.log(oneLine(OFF_NOTICE({ plugin: $.plugin.name })));
   return started;
 };

@@ -15,6 +15,9 @@ import { tmpDir } from "../../support/repo.ts";
 const LINE = "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>";
 const SESSION = "sess-1";
 
+/** The env of a `Bash` call of Claude: the session id, and the mark that the `policy` slice sets for the call. */
+const CLAUDE = { CLAUDE_CODE_SESSION_ID: SESSION, CLAUDETTO_AGENT_CALL: "1" };
+
 const git = Bun.spawnSync(["git", "--version"]).stdout.toString();
 const [major = 0, minor = 0] = (git.match(/(\d+)\.(\d+)/) ?? [])
   .slice(1)
@@ -72,51 +75,56 @@ when("a commit with no session variable passes", async () => {
   expect(commit("Fix it.").code).toBe(0);
 });
 
+when(
+  "a commit of a `!` command of the user, with the session id and no mark, passes",
+  async () => {
+    const commit = await world({ main: LINE });
+    const out = commit("Fix it.", { CLAUDE_CODE_SESSION_ID: SESSION });
+    expect(out.code).toBe(0);
+  },
+);
+
 when("a message that ends with the line passes", async () => {
   const commit = await world({ main: LINE });
-  const out = commit(`Fix it.\n\n${LINE}`, { CLAUDE_CODE_SESSION_ID: SESSION });
+  const out = commit(`Fix it.\n\n${LINE}`, CLAUDE);
   expect(out.code).toBe(0);
 });
 
 when("the line before a `Signed-off-by` trailer passes", async () => {
   const commit = await world({ main: LINE });
   const message = `Fix it.\n\n${LINE}\nSigned-off-by: T <t@example.com>`;
-  expect(commit(message, { CLAUDE_CODE_SESSION_ID: SESSION }).code).toBe(0);
+  expect(commit(message, CLAUDE).code).toBe(0);
 });
 
 when("a message with no line is rejected with a note", async () => {
   const commit = await world({ main: LINE });
-  const out = commit("Fix it.", { CLAUDE_CODE_SESSION_ID: SESSION });
+  const out = commit("Fix it.", CLAUDE);
   expect(out.code).not.toBe(0);
   expect(out.err).toContain(LINE);
 });
 
 when("a session with no recorded line passes", async () => {
   const commit = await world();
-  const out = commit("Fix it.", { CLAUDE_CODE_SESSION_ID: SESSION });
+  const out = commit("Fix it.", CLAUDE);
   expect(out.code).toBe(0);
 });
 
 when("a session with an empty record passes", async () => {
   const commit = await world({ main: "" });
-  const out = commit("Fix it.", { CLAUDE_CODE_SESSION_ID: SESSION });
+  const out = commit("Fix it.", CLAUDE);
   expect(out.code).toBe(0);
 });
 
 when("the line of a subagent passes", async () => {
   const other = "Co-Authored-By: Claude Haiku 5.5 <noreply@anthropic.com>";
   const commit = await world({ main: LINE, "agent-haiku": other });
-  const out = commit(`Fix it.\n\n${other}`, {
-    CLAUDE_CODE_SESSION_ID: SESSION,
-  });
+  const out = commit(`Fix it.\n\n${other}`, CLAUDE);
   expect(out.code).toBe(0);
 });
 
 when("a line that is only part of the last line is rejected", async () => {
   const commit = await world({ main: LINE });
-  const out = commit(`Fix it.\n\nNote: ${LINE}`, {
-    CLAUDE_CODE_SESSION_ID: SESSION,
-  });
+  const out = commit(`Fix it.\n\nNote: ${LINE}`, CLAUDE);
   expect(out.code).not.toBe(0);
 });
 
@@ -124,7 +132,7 @@ const OFF: [string, string][] = [[`hook.${HOOK_NAME}.enabled`, "false"]];
 
 when("a repository that turns the hook off still gets the check", async () => {
   const commit = await world({ main: LINE }, OFF);
-  const out = commit("Fix it.", { CLAUDE_CODE_SESSION_ID: SESSION });
+  const out = commit("Fix it.", CLAUDE);
   expect(out.code).not.toBe(0);
 });
 
@@ -134,7 +142,7 @@ when(
     const commit = await world({ main: LINE }, [
       ["hook.commit-msg.enabled", "false"],
     ]);
-    const out = commit("Fix it.", { CLAUDE_CODE_SESSION_ID: SESSION });
+    const out = commit("Fix it.", CLAUDE);
     expect(out.code).not.toBe(0);
   },
 );
@@ -144,7 +152,7 @@ when("a repository that turns off both still gets the check", async () => {
     ...OFF,
     ["hook.commit-msg.enabled", "false"],
   ]);
-  const out = commit("Fix it.", { CLAUDE_CODE_SESSION_ID: SESSION });
+  const out = commit("Fix it.", CLAUDE);
   expect(out.code).not.toBe(0);
 });
 
@@ -154,7 +162,7 @@ when(
     const commit = await world({ main: LINE }, [
       [`hook.${HOOK_NAME}.command`, "true"],
     ]);
-    const out = commit("Fix it.", { CLAUDE_CODE_SESSION_ID: SESSION });
+    const out = commit("Fix it.", CLAUDE);
     expect(out.code).not.toBe(0);
   },
 );
@@ -165,7 +173,7 @@ when(
     const commit = await world({ main: LINE }, [
       [`hook.${HOOK_NAME}.event`, "post-commit"],
     ]);
-    const out = commit("Fix it.", { CLAUDE_CODE_SESSION_ID: SESSION });
+    const out = commit("Fix it.", CLAUDE);
     expect(out.code).not.toBe(0);
   },
 );

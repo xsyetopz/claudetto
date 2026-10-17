@@ -177,7 +177,8 @@ export const showCommand = async (
 /** The status of a change: counts, the next task with its check, and the files. */
 const statusOf = (c: Loaded) => {
   const counts = countTasks(c.tasks ?? "");
-  const next = parseTasks(c.tasks ?? "").find((t) => !t.done) ?? null;
+  const next =
+    parseTasks(c.tasks ?? "").find((t) => t.id === counts.next) ?? null;
   const state =
     counts.total === 0 ? "planning" : counts.next === null ? "done" : "open";
   return {

@@ -284,3 +284,22 @@ test("`parse` gives no background job for `&&`, `&>`, `|&`, `>&`, a quote, or a 
   ])
     expect(parse(text).background).toStrictEqual([]);
 });
+
+test("D35: the words of `$(( ))` are not a command, and each `$( )` in it is", () => {
+  expect(
+    commands(
+      "echo $(( $(date +%s) - $(stat -Lf %m $d/a) )); cat $d/b | tail -3",
+    ),
+  ).toStrictEqual([
+    ["date", "+%s"],
+    ["stat", "-Lf", "%m", "$d/a"],
+    ["echo", ""],
+    ["cat", "$d/b"],
+    ["tail", "-3"],
+  ]);
+  expect(commands(`echo "$(( (1 + 2) * 3 ))"`)).toStrictEqual([["echo", ""]]);
+});
+
+test("D35: a `$((` with no matching `))` is a substitution that holds a subshell", () => {
+  expect(commands("echo $((rm -rf ~) )")).toContainEqual(["rm", "-rf", "~"]);
+});

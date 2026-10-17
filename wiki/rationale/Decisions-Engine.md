@@ -236,8 +236,8 @@ The cause in `claude plugin eval` follows from the `denyRead` list and the bundl
 **Choice:** The turn gate reads the input of `Stop` and `SubagentStop`: `stop_hook_active`, `last_assistant_message`, `background_tasks`, and `session_crons`.
 An entry of `background_tasks` has `id`, `type`, `status`, `description`, and `command`.
 A `Stop` hook runs after Claude Code shows the reply, so no hook can keep an opener or an apology from the user.
-The gate keeps its own count of blocks, because the harness ends a turn only after 8 blocks (`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`).
-The gate does not pass a stop for `stop_hook_active` alone, because that rule let a false claim pass on its retry ([Stop Prompt Hooks](Stop-Prompt-Hooks)).
+The judge does not pass a stop for `stop_hook_active` alone, because that rule let a false claim pass on its retry ([Stop Prompt Hooks](Stop-Prompt-Hooks)).
+The cap of 8 continuations in a row of the harness (`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`) bounds the blocks of the judge, and a running background task gives one notice and no block, because a turn cannot make it end (D32 of `release-0-2-0`, the user, 2026-10-17).
 A `type: "prompt"` hook puts its whole prompt into the block text, so the judge runs in the hooks module and returns only its reason.
 
 **Evidence:** the [hooks guide](https://code.claude.com/docs/en/hooks-guide), the [Opus 5.5 prompting guide](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5), and [Stop Prompt Hooks](Stop-Prompt-Hooks).

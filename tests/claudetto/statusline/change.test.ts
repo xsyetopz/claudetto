@@ -106,3 +106,14 @@ test("`changeOf` counts only the lines that start with a task box", () => {
     next: "1.1",
   });
 });
+
+test("the next task is the first open task after the last checked task, so a change that starts at group 2 shows its progress", () => {
+  const tasks =
+    "- [ ] 1.1 a\n- [ ] 1.2 b\n- [x] 2.1 c\n- [x] 2.2 d\n- [ ] 2.3 e\n- [ ] 3.1 f\n";
+  expect(changeOf("x", tasks)).toMatchObject({ done: 2, next: "2.3" });
+});
+
+test("when no open task follows the last checked task, the next task is the first open task", () => {
+  const tasks = "- [ ] 1.1 a\n- [ ] 1.2 b\n- [x] 2.1 c\n";
+  expect(changeOf("x", tasks)).toMatchObject({ done: 1, next: "1.1" });
+});

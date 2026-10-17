@@ -21,23 +21,23 @@ A prompt is the weakest control, so the slice adds a gate at the end of each tur
 2. The `tool.check` hook denies a `Bash` command that starts a process that Claude Code does not track (`domain/jobs.ts`):
    a lone `&` with no `wait`, or `nohup`, `setsid`, or `disown`.
    It also denies a stop of processes by a pattern: `pkill`, `killall`, or `kill` with `pgrep`.
-   The reason tells Claude to use `run_in_background: true` and `TaskStop`, or a PID.
+   The reason tells Claude to use `run_in_background: true` or a PID, and names `TaskStop` only when the session has that tool.
    The check reads the parse of the shell reader, and makes no model call.
 3. The `tool.call` hook keeps one summary line for each tool call of the turn: the tool, the target, and the outcome.
+   The target of a command is its first line and the end of its last line, so a check at the end of a heredoc or a chain shows (D22).
    The outcome is `ok`, `ok, read-only`, or the first line of the error.
    A call that a permission check or the user denies is an error.
    The main loop and each subagent have their own record.
 4. The `classic.Stop` and `classic.SubagentStop` hooks run the gate.
-   - When a background task still runs (`background_tasks` with the status `running`), the gate blocks the stop.
-     The reason names the id of each task, and tells Claude to wait for the output or to stop the task with `TaskStop`.
-     This part makes no model call.
-   - Else, when the `judge` option is on and the reply is not empty, one judge call reads the request, the earlier reply, the reply, and the summary of the calls.
+   - When the `judge` option is on and the reply is not empty, one judge call reads the request, the earlier reply, the reply, and the summary of the calls.
      A turn with no tool calls is judged too.
      When the judge finds a fault, the gate blocks the stop.
+   - A background task that still runs (`background_tasks` with the status `running`) does not block the stop, because a turn cannot make it end (D32).
+     When the reply names no running task by its id or its description, the gate gives their count once as `additionalContext`, with no model call.
 5. The reason of a block holds the quote of the reply, the rule, and the fix, and no line of the rubric.
-6. The gate keeps its own count of blocks for each turn, and gives no pass for `stop_hook_active` (D58).
-   After `MAX_BLOCKS` blocks, the next stop passes, and a notice tells the user what the gate found.
-7. A stop that the gate allows ends the turn, so it clears the record.
+6. The judge gives no pass for `stop_hook_active` (D58), and the cap of 8 continuations of Claude Code bounds its blocks.
+   The notice of the running tasks does not come again on a stop with `stop_hook_active`.
+7. A stop with no block and no notice ends the turn, so it clears the record.
    An interrupted turn (`turn.complete` with `isAborted`) clears it too.
 8. A block of a hook beneath the gate stands, and the gate does not judge it or count it.
 
@@ -101,7 +101,6 @@ The method and the source are on [Failure Gaps 0.1.0](Failure-Gaps-0.1.0#the-cos
 
 | Bound | Value | File | Use |
 | --- | --- | --- | --- |
-| `MAX_BLOCKS` | 2 | `slices/turngate/limits.ts` | Most blocks of the gate in one turn |
 | `JUDGE_MODEL` | `sonnet` | `slices/turngate/limits.ts` | The model of the judge |
 | `JUDGE_EFFORT` | `medium` | `slices/turngate/limits.ts` | The effort of the judge |
 | `JUDGE_TIMEOUT_MS` | 30,000 | `slices/turngate/limits.ts` | Most time of one judge call |

@@ -49,4 +49,5 @@ Put a performance concern, a suspected bug, and behavior that the brief does not
 
 <report_format>
 Give the assumptions, the **Outside the brief** list, the changed files, the check results, and each check that you did not run.
+{{include report-file}}
 </report_format>

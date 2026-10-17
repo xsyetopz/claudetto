@@ -11,6 +11,7 @@ The user can turn the line off with \`attribution.commit\` set to an empty strin
 
 /** From `src/kernel/commit-hook/prompts/script.md`. */
 export const SCRIPT = (v: { note: string }): string => `f() {
+  [ -n "\${CLAUDETTO_AGENT_CALL:-}" ] || return 0
   [ -n "\${CLAUDE_CODE_SESSION_ID:-}" ] || return 0
   dir="\${HOME:-}/.claudetto/attribution/$CLAUDE_CODE_SESSION_ID"
   [ -d "$dir" ] || return 0

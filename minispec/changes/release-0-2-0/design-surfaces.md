@@ -100,3 +100,52 @@ Jev picked `project-root` at confidence 0.74.
 
 - Alternative: the git root of the current folder.
   Rejected, because a resume from the project root may not find the file, and a folder outside git has no root.
+
+### D51. Setup writes no block in the global `CLAUDE.md`
+
+- Facts: the block of `/claudetto:setup` has five parts, `claude-md-base.md`, `claude-md-codegraph.md`, `claude-md-docs.md`, `claude-md-browser.md` and `claude-md-note.md` in `slices/setup/prompts/`, with `222` words in total, and it loads on each turn of each project.
+- The Claude Code 101 lesson of the Anthropic Academy says the global file "applies across all your projects", and is the place for "your personal preferences".
+  It says to start with no file, so that it stays "compact and focused on only the necessary information".
+- Each part already has a surface that loads only when it applies:
+  - Code graph: `codegraph install` (codegraph `1.6.0`) writes the MCP server entry, the permissions, and its own short block between `<!-- CODEGRAPH_START -->` and `<!-- CODEGRAPH_END -->` in `~/.claude/CLAUDE.md`.
+    The MCP server instructions reach the main agent, and the block reaches the subagents, which do not get the MCP instructions.
+    Its source says that subagents used codegraph in "~1 of 9 runs" with no block, and "consistently with it" (`dist/installer/instructions-template.d.ts`, vendor measure).
+    The block is conditional ("in repositories indexed by…"), so a project with no index gets no false claim.
+  - Library docs and browser: the descriptions of the `docs` and `browse` skills.
+  - Working rules: the system prompt of D17.
+- Decision: setup writes no global block.
+  It moves each rule to the surface above, and on its next run, it removes the block between its own markers, after the user's yes (D10).
+  Text outside the markers stays.
+- Setup runs `codegraph install --target claude --location global` after the user's yes, in place of its own code graph text.
+  Its rule "Do not run `codegraph install`" (`slices/setup/skills/setup/SKILL.md:61`) goes, and so does the contradiction between `claude-md-codegraph.md` ("run `codegraph init -y` first") and the `codegraph` skill ("Do not run `codegraph init` yourself").
+- Each part of `claudetto-codegraph` that `codegraph install` already gives (the skill text, the `SessionStart` line) is measured against the install alone, and removed when it adds nothing.
+- A rule that a subagent needs goes into the prompt of that agent, because a subagent gets the instructions file but not the `SessionStart` context or the MCP instructions.
+- The `andrej-karpathy-skills` repository (MIT) is a model for the rewrite of D17, not text to copy.
+  It holds four principles in `358` words, each with a short test, such as "Every changed line should trace directly to the user's request".
+  This supports goals with a test in place of long rule lists, which agrees with the user's note that narrow coding instructions can give worse results.
+
+### D52. Title Case for Markdown headings, by a check
+
+- Each Markdown heading uses Title Case.
+  Articles, coordinating conjunctions, and prepositions of any length stay in lower case, but not as the first or the last word, and inline code does not change (Chicago style).
+  So the label of D36 is "What I Need from You".
+  APA style capitalizes each word of four letters or more, and claudetto does not follow it.
+- A hook after a `Write` or `Edit` of a `.md` file reads its headings, and only on a fault returns the headings in the right form to the model.
+  It costs no tokens when the headings are right.
+- This repository adds a custom rule to `.markdownlint-cli2.jsonc`, and one pass fixes each heading that is wrong now.
+  The list of minor words is in one file, which the hook and the rule share by a copy that a test pins.
+- Not in the system prompt or the output style, because both load on each turn, and a rule with no check is followed less reliably.
+  The output style also shapes replies, not files.
+- Jev: `hook-plus-lint (confidence 1.00)`, against a line in the system prompt and against a line in the output style.
+
+### D56. A reply button on each message of Claude
+
+- The user asked for a Discord-style reply: pick a message of Claude, and answer it with that message quoted.
+- The mods API of 2.1.302 has what this needs, with no change to Claude Code:
+  - `AssistantMessage` is a render site with the message id and its text, in the terminal, the Desktop app, and the VS Code extension (`plugins_mods_reference.md:235`).
+  - A `ui.render` hook keeps the drawing of Claude Code when it puts the result of `await next(e)` among its own children (`plugins/mods/interface.md`, read on 2026-10-17).
+  - A `Button` and the `ui.press` event take the press, and `$.prompt` has `fill` (`plugins_mods_reference.md:208`).
+- Decision: a small mod adds a `Reply` button under each message of Claude.
+  A press fills the prompt with the first lines of that message as a `>` quote and puts the cursor after it, so the user types the answer.
+- Not verified: what `$.prompt.fill` does with text that the user has already typed, and whether a terminal user can reach the button with no mouse.
+  Task 2.4 reads both from the docs and the bundle first, and adds a `/reply` command with a `Select` of the last messages when the button cannot be reached by keys.

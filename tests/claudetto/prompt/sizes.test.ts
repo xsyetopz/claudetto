@@ -51,7 +51,8 @@ const TEXT_PINS: Readonly<Record<string, [text: string, pin: number]>> = {
     await Bun.file(path.join(PLUGIN, "output-styles/Concise.md")).text(),
     1156,
   ],
-  "`Agent` description": [TOOL_AGENT, 908],
+  // The brief line of D33 replaced a line of 48 bytes with one of 124 bytes (the user, 2026-10-17).
+  "`Agent` description": [TOOL_AGENT, 984],
   "`Bash` description": [TOOL_BASH, 746],
   "`Read` description": [TOOL_READ, 427],
 };

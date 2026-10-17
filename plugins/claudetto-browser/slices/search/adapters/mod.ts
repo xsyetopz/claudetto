@@ -15,6 +15,7 @@ import type {
   PluginOptions,
 } from "claude-code";
 import type { Handler } from "../../../kernel/slice.ts";
+import { oneLine } from "../../../kernel/text.ts";
 import {
   CLOAK_DIR,
   cloakBinaryPath,
@@ -91,7 +92,7 @@ const closeSession = async (
   } catch (error) {
     problem = `Closing the browser threw: ${(error as { message?: unknown } | null)?.message ?? error}`;
   }
-  if (problem) $.ui.log(CLOSE_FAILED({ session, problem }));
+  if (problem) $.ui.log(oneLine(CLOSE_FAILED({ session, problem })));
 };
 
 /** The path of the newest CloakBrowser binary, or `null` when there is none. */

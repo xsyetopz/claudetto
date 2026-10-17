@@ -15,26 +15,37 @@ import {
 } from "../../../plugins/claudetto/slices/turngate/domain/judge.ts";
 import {
   runningTasks,
-  tasksReason,
+  tasksNotice,
 } from "../../../plugins/claudetto/slices/turngate/domain/tasks.ts";
 import {
   MAX_CALLS,
-  MAX_NAMED_TASKS,
   MAX_QUOTE_CHARS,
-  MAX_TARGET_CHARS,
   REPLY_HEAD_CHARS,
   REPLY_TAIL_CHARS,
+  TARGET_PART_CHARS,
 } from "../../../plugins/claudetto/slices/turngate/limits.ts";
 
-test("the target of a call is its first named input field, cut to one line", () => {
-  expect(targetOf({ command: "bun test\necho done", file_path: "/a" })).toBe(
-    "bun test",
-  );
+test("the target of a call is its first named input field", () => {
+  expect(targetOf({ command: "bun test", file_path: "/a" })).toBe("bun test");
   expect(targetOf({ file_path: "/p/a.ts" })).toBe("/p/a.ts");
   expect(targetOf({ content: "x" })).toBe("");
-  expect(targetOf({ command: "x".repeat(MAX_TARGET_CHARS + 5) }).length).toBe(
-    MAX_TARGET_CHARS + 1,
+});
+
+// D22: a check at the end of a heredoc or a long `&&` chain is in the summary.
+test("the target of a command is its first and its last line, each cut to the bound", () => {
+  const heredoc =
+    "cat > a.ts <<'EOF'\nexport const a = 1;\nEOF\nbun test tests/a.test.ts";
+  expect(targetOf({ command: heredoc })).toBe(
+    "cat > a.ts <<'EOF' … bun test tests/a.test.ts",
   );
+  const head = "a".repeat(TARGET_PART_CHARS);
+  const chain = `${head}${"b".repeat(TARGET_PART_CHARS)} && bun test`;
+  expect(targetOf({ command: chain })).toBe(
+    `${head}… … …${chain.slice(-TARGET_PART_CHARS)}`,
+  );
+  expect(chain.slice(-TARGET_PART_CHARS).endsWith("&& bun test")).toBe(true);
+  const short = "x".repeat(TARGET_PART_CHARS * 2);
+  expect(targetOf({ command: short })).toBe(short);
 });
 
 test("a deny and an error are errors in the line, and a read-only call keeps its mark", () => {
@@ -113,21 +124,24 @@ test("the block reason holds the cut quote and the fix", () => {
   expect(reason).toContain("Run it now.");
 });
 
-test("only running tasks count, and the reason names at most the bound", () => {
-  const tasks = Array.from({ length: MAX_NAMED_TASKS + 2 }, (_, i) => ({
-    id: `b${i}`,
-    status: "running",
-    description: "watch",
-  }));
+test("only running tasks count, and the notice gives their count unless the reply names each one", () => {
+  const tasks = [
+    { id: "b0", status: "running", description: "watch" },
+    { id: "b1", status: "running", description: "bun run build" },
+  ];
   expect(
     runningTasks([...tasks, { id: "x", status: "completed", description: "" }])
       .length,
-  ).toBe(tasks.length);
+  ).toBe(2);
   expect(runningTasks(undefined)).toEqual([]);
-  const reason = tasksReason(tasks);
-  expect(reason).toContain("- `b0`: watch");
-  expect(reason).not.toContain(`\`b${MAX_NAMED_TASKS}\``);
-  expect(reason).toContain("and 2 more");
+  expect(tasksNotice(tasks, "Done.")).toContain("2 background tasks are");
+  expect(tasksNotice(tasks.slice(0, 1), "Done.")).toContain(
+    "1 background task is",
+  );
+  expect(tasksNotice(tasks, "`b0` and `bun run build` still run.")).toBe(
+    undefined,
+  );
+  expect(tasksNotice([], "Done.")).toBe(undefined);
 });
 
 // `Failure-Gaps-0.1.0`, "Answers of the Checks at No Cost": a plugin `hooks.json` accepts `type: "prompt"` and `type: "agent"`, and the gate uses neither, because the old judge on `Stop` put its whole prompt into the block text.

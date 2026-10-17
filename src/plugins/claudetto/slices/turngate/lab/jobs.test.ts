@@ -5,8 +5,11 @@
 import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-/** Stubs for the hooks of other slices on the same calls. */
-const setup = (on: On) => {
+/** Stubs for the hooks of other slices on the same calls. The session has the tools of `tools`. */
+const setup = (on: On, tools: readonly string[] = ["Bash", "TaskStop"]) => {
+  on("tool.list", () => ({
+    value: tools.map((name) => ({ name, description: "", mcp: false })),
+  }));
   mock.env(on, { HOME: "/home/u" });
   on("fs.exists", () => ({ value: false }));
   on("tool.check", () => ({ decision: "allow" as const }));
@@ -64,4 +67,18 @@ test("the deny reason names `run_in_background` and the PID", async ($: Engine, 
   expect(reason).toContain("`run_in_background: true`");
   expect(reason).toContain("PID");
   expect(reason).toContain("a job of a lone `&` with no `wait`");
+});
+
+test("the deny reason names `TaskStop` when the session has it", async ($: Engine, on: On) => {
+  setup(on);
+  const out = await bash($, "sleep 30 &");
+  expect(out?.decision === "deny" ? out.reason : "").toContain("`TaskStop`");
+});
+
+test("with no `TaskStop` tool, the deny reason names none", async ($: Engine, on: On) => {
+  setup(on, ["Bash"]);
+  const out = await bash($, "sleep 30 &");
+  const reason = out?.decision === "deny" ? out.reason : "";
+  expect(reason).toContain("`run_in_background: true`");
+  expect(reason).not.toContain("TaskStop");
 });

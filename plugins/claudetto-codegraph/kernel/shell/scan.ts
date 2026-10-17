@@ -20,6 +20,7 @@ type Frame = {
   start: number | null;
   raws: string[];
   marks: number[];
+  depth: number;
 };
 
 /** A heredoc that the scan reads after the end of its line. */
@@ -51,7 +52,28 @@ const frame = (
   start,
   raws: [],
   marks: [],
+  depth: 0,
 });
+
+/** The closer of an arithmetic frame (`$(( ))`), whose words are not a command. */
+const ARITH = "))";
+
+/**
+ * True when the `$((` at `at` is arithmetic: its parentheses match up to a `))`.
+ * A quote, a backtick, or a backslash before that point gives false, so the text keeps the stricter reading of a substitution.
+ * The shell reads `$((cmd) )` as a substitution that holds a subshell, and so does this check.
+ */
+const arithmeticAt = (text: string, at: number): boolean => {
+  let depth = 0;
+  for (let j = at + 3; j < text.length; j++) {
+    const c = text[j] as string;
+    if ("'\"`\\".includes(c)) return false;
+    if (c === "(") depth++;
+    else if (c === ")" && depth) depth--;
+    else if (c === ")") return text[j + 1] === ")";
+  }
+  return false;
+};
 
 /**
  * One pass over `text` with a stack of frames, one for each `$(`, backtick, and parenthesis.
@@ -109,6 +131,16 @@ export const scan = (
     f.word ??= "";
     stack.push(frame(closer, false, at));
   };
+  // A `$(` opens a substitution, and a `$((` with a matching `))` opens an arithmetic frame.
+  const openDollar = (f: Frame, at: number): number => {
+    if (text[at + 2] !== "(" || !arithmeticAt(text, at)) {
+      open(f, ")", at);
+      return at + 1;
+    }
+    f.word ??= "";
+    stack.push(frame(ARITH, true, at));
+    return at + 2;
+  };
   const close = (f: Frame, at: number) => {
     end(f);
     stack.pop();
@@ -123,6 +155,12 @@ export const scan = (
       if (n === "\n") continue;
       f.word =
         (f.word ?? "") + (f.quote && !'$`"\\'.includes(n) ? "\\" : "") + n;
+    } else if (f.closer === ARITH) {
+      // Only the substitutions of an arithmetic text are commands.
+      if (c === "$" && text[i + 1] === "(") i = openDollar(f, i);
+      else if (c === "(") f.depth++;
+      else if (c === ")" && f.depth) f.depth--;
+      else if (c === ")") close(f, ++i);
     } else if (f.quote === "'") {
       if (c === "'") f.quote = null;
       else f.word += c;
@@ -137,18 +175,14 @@ export const scan = (
       } else if (f.quote === ANSI) f.word += c;
     } else if (f.quote === '"') {
       if (c === '"' && !f.body) f.quote = null;
-      else if (c === "$" && text[i + 1] === "(") {
-        open(f, ")", i);
-        i++;
-      } else if (c === "`") open(f, "`", i);
+      else if (c === "$" && text[i + 1] === "(") i = openDollar(f, i);
+      else if (c === "`") open(f, "`", i);
       else f.word = (f.word ?? "") + c;
     } else if (c === "`") {
       if (f.closer === "`") close(f, i);
       else open(f, "`", i);
-    } else if (c === "$" && text[i + 1] === "(") {
-      open(f, ")", i);
-      i++;
-    } else if (c === "$" && text[i + 1] === "'") {
+    } else if (c === "$" && text[i + 1] === "(") i = openDollar(f, i);
+    else if (c === "$" && text[i + 1] === "'") {
       f.quote = ANSI;
       f.word ??= "";
       i++;

@@ -192,25 +192,67 @@ test("a claim after one block is blocked again", async ($: Engine, on: On) => {
   expect((await stop($, "All tests pass.", true)).block).not.toBeUndefined();
 });
 
-test("after the cap of blocks, the next stop passes with a notice", async ($: Engine, on: On) => {
+// D58: a pass on `stop_hook_active` let a retry repeat a false claim, so the judge blocks at each stop, and the cap of Claude Code bounds it.
+// biome-ignore lint/plugin: a test name
+test("a false claim is blocked at each stop, with no cap of the gate", async ($: Engine, on: On) => {
   const seen = setup(on, { judge: answered(CLAIM) });
   await fresh($);
   await edit($);
-  await stop($, "All tests pass.");
-  await stop($, "All tests pass.", true);
-  const out = await stop($, "All tests pass.", true);
-  expect(out.block).toBeUndefined();
-  expect(seen.logs.join("\n")).toContain("All tests pass.");
+  for (const active of [false, true, true])
+    expect((await stop($, "All tests pass.", active)).block).toContain(
+      "All tests pass.",
+    );
+  expect(seen.logs).toEqual([]);
 });
 
-test("a running task blocks the stop with no judge call", async ($: Engine, on: On) => {
-  const seen = setup(on, { judge: answered(CLAIM) });
+// D32: a turn cannot end a running task, so the gate does not block for it.
+// biome-ignore lint/plugin: a test name
+test("a running task does not block, and a reply that does not name it gets one notice with the count", async ($: Engine, on: On) => {
+  const seen = setup(on);
   await fresh($);
   await edit($);
   const out = await stop($, "Done.", false, [task("b7x2", "running")]);
-  expect(out.block).toContain("`b7x2`");
-  expect(out.block).toContain("`TaskStop`");
-  expect(seen.requests.length).toBe(0);
+  expect(out.block).toBeUndefined();
+  expect(out.additionalContext).toHaveLength(1);
+  expect(out.additionalContext?.[0]).toContain("1 background task");
+  expect(seen.requests.length).toBe(1);
+});
+
+// biome-ignore lint/plugin: a test name
+test("with `stop_hook_active`, the notice of the running tasks does not come again", async ($: Engine, on: On) => {
+  setup(on);
+  await fresh($);
+  const out = await stop($, "Done.", true, [task("b7x2", "running")]);
+  expect(out.block).toBeUndefined();
+  expect(out.additionalContext ?? []).toEqual([]);
+});
+
+test("a reply that names each running task gets no notice", async ($: Engine, on: On) => {
+  setup(on);
+  await fresh($);
+  const reply =
+    // biome-ignore lint/plugin: test input data
+    "The watch task `b7x2` still runs, and I read its output when it ends.";
+  const out = await stop($, reply, false, [task("b7x2", "running")]);
+  expect(out.block).toBeUndefined();
+  expect(out.additionalContext ?? []).toEqual([]);
+});
+
+// biome-ignore lint/plugin: a test name
+test("the judge reads the reply from `last_assistant_message`, not from the transcript", async ($: Engine, on: On) => {
+  const seen = setup(on);
+  on("fs.read", () => {
+    throw new Error("the transcript is not read");
+  });
+  await fresh($);
+  await $.classic.Stop({
+    session_id: "s",
+    transcript_path: "/t/s.jsonl",
+    stop_hook_active: false,
+    last_assistant_message: "The retry count is 10 now.",
+    background_tasks: [],
+  });
+  expect(seen.requests[0]?.prompt).toContain("The retry count is 10 now.");
 });
 
 test("when each background task ended, the task part passes", async ($: Engine, on: On) => {
@@ -235,7 +277,8 @@ test(
     await edit($);
     expect((await stop($, "All tests pass.")).block).toBeUndefined();
     const out = await stop($, "Done.", false, [task("b9", "running")]);
-    expect(out.block).toContain("`b9`");
+    expect(out.block).toBeUndefined();
+    expect(out.additionalContext?.[0]).toContain("1 background task");
     expect(seen.requests.length).toBe(0);
   },
 );
@@ -249,6 +292,9 @@ test("a judge timeout allows the stop and logs the timeout", async ($: Engine, o
   const out = await stop($, "All tests pass.");
   expect(out.block).toBeUndefined();
   expect(seen.logs.join("\n")).toContain("timeout after");
+  expect(
+    seen.logs.filter((l) => l.includes("\n") || l.includes("claudetto")),
+  ).toEqual([]);
 });
 
 test("the judge usage goes to the debug log", async ($: Engine, on: On) => {
@@ -268,7 +314,7 @@ test("an interrupted turn clears the tool calls", async ($: Engine, on: On) => {
   expect(seen.requests[0]?.prompt).toContain("(no tool calls)");
 });
 
-test("a subagent stop with a running task is blocked", async ($: Engine, on: On) => {
+test("a subagent stop with a running task is not blocked", async ($: Engine, on: On) => {
   setup(on);
   await fresh($, "a1");
   const out = await $.classic.SubagentStop({
@@ -280,7 +326,8 @@ test("a subagent stop with a running task is blocked", async ($: Engine, on: On)
     last_assistant_message: "Done.",
     background_tasks: [task("b3", "running")],
   });
-  expect(out.block).toContain("`b3`");
+  expect(out.block).toBeUndefined();
+  expect(out.additionalContext?.[0]).toContain("1 background task");
 });
 
 test("a subagent is judged on its own calls only", async ($: Engine, on: On) => {

@@ -5,7 +5,7 @@
 
 import { type ParseResult, parse } from "../../../../../kernel/shell.ts";
 import { baseName, stripWrappers } from "../../../../../kernel/wrappers.ts";
-import { JOBS_REASON } from "../prompts.ts";
+import { JOBS_REASON, JOBS_STOP } from "../prompts.ts";
 
 /** The commands that detach a process from the shell of the call. */
 const DETACH = new Set(["nohup", "setsid", "disown"]);
@@ -43,10 +43,19 @@ export const jobFaults = (parsed: ParseResult): string[] => {
   return faults;
 };
 
-/** The deny reason for `command`, or `undefined` when it starts no untracked job and stops no process by a pattern. */
-export const jobsReason = (command: unknown): string | undefined => {
-  const faults = jobFaults(parse(command));
-  return faults.length === 0
-    ? undefined
-    : JOBS_REASON({ faults: faults.map((f) => `- ${f}`).join("\n") });
-};
+/** The faults of `command`, a raw `Bash` input. */
+export const commandFaults = (command: unknown): string[] =>
+  jobFaults(parse(command));
+
+/**
+ * The deny reason for the faults of a command.
+ * It names `TaskStop` only when the session has that tool, because a settings rule can deny it (D32).
+ */
+export const jobsReason = (
+  faults: readonly string[],
+  hasTaskStop: boolean,
+): string =>
+  JOBS_REASON({
+    faults: faults.map((f) => `- ${f}`).join("\n"),
+    stop: hasTaskStop ? ` ${JOBS_STOP}` : "",
+  });

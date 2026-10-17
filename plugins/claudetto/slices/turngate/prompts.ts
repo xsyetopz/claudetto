@@ -2,11 +2,15 @@
 /** From `src/plugins/claudetto/slices/turngate/prompts/jobs-reason.md`. */
 export const JOBS_REASON = (v: {
   faults: string;
+  stop: string;
 }): string => `The command has a process that Claude Code does not track:
 ${v.faults}
 Claude Code cannot wait for such a process, show its output, or stop it at the end of the turn.
-To run a long command, give the \`Bash\` call \`run_in_background: true\`, and stop it with \`TaskStop\`.
+To run a long command, give the \`Bash\` call \`run_in_background: true\`.${v.stop}
 To stop a process that you started, use its PID, and not a pattern of \`pkill\`, \`killall\`, or \`pgrep\`.`;
+
+/** From `src/plugins/claudetto/slices/turngate/prompts/jobs-stop.md`. */
+export const JOBS_STOP = `Stop it with \`TaskStop\`.`;
 
 /** From `src/plugins/claudetto/slices/turngate/prompts/judge-prompt.md`. */
 export const JUDGE_PROMPT = (v: {
@@ -78,13 +82,9 @@ With a fault, give \`{"fault":"claim","quote":"…","fix":"…"}\`, with \`claim
 \`quote\` holds the exact words of the reply that have the fault, at most 30 words.
 \`fix\` holds one sentence: the check to run or the work to do, with the command or the file when the list names it.`;
 
-/** From `src/plugins/claudetto/slices/turngate/prompts/notice-cap.md`. */
-export const NOTICE_CAP = (v: { reason: string }): string =>
-  `claudetto turn gate: the gate blocked this turn 2 times, so it allowed this stop. Its last reason: ${v.reason}`;
-
 /** From `src/plugins/claudetto/slices/turngate/prompts/notice-failed.md`. */
 export const NOTICE_FAILED = (v: { cause: string }): string =>
-  `claudetto turn gate: the judge gave no verdict (${v.cause}), so the gate allowed this stop.`;
+  `turn gate: the judge gave no verdict (${v.cause}), so the gate allowed this stop.`;
 
 /** From `src/plugins/claudetto/slices/turngate/prompts/notice-usage.md`. */
 export const NOTICE_USAGE = (v: {
@@ -115,11 +115,9 @@ export const RULE_OPENER = `The reply starts with an apology or an agreement, an
 /** From `src/plugins/claudetto/slices/turngate/prompts/rule-promise.md`. */
 export const RULE_PROMISE = `The reply says that you do this work, and the turn ends before the work.`;
 
-/** From `src/plugins/claudetto/slices/turngate/prompts/tasks-reason.md`. */
-export const TASKS_REASON = (v: {
-  tasks: string;
-  more: string;
-}): string => `These background tasks still run:
-${v.tasks}${v.more}
-The work of the turn is not done while they run.
-Wait for each task and read its output, or stop it with \`TaskStop\`.`;
+/** From `src/plugins/claudetto/slices/turngate/prompts/tasks-notice.md`. */
+export const TASKS_NOTICE = (v: {
+  what: string;
+}): string => `${v.what} still running, and the reply does not say so.
+Claude Code continues the session with a notice when each task ends, so read its output then.
+Tell the user in the reply which work still runs.`;

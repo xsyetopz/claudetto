@@ -1,0 +1,33 @@
+// Lab tests of the `tool.call` hook on `Bash` of the `guard` slice: a read-only command with `$(( ))` passes (design D35).
+// The command is the one that the guard denied in the facts of `design-handoff.md`.
+// No command runs.
+
+import type { On } from "claude-code";
+import { type Engine, expect, test } from "claude-code/testing";
+
+const FACTS =
+  // biome-ignore lint/plugin: a captured command of the facts
+  "d=/tmp/t; echo $(( $(date +%s) - $(stat -Lf %m $d/a.output) )); cat $d/b.output 2>&1 | tail -3";
+
+const stub = (on: On) => {
+  on("tool.call", () => ({ result: "ok" }));
+  on("session.cwd", () => ({ value: "/p" }));
+  on("fs.exists", () => ({ value: false }));
+};
+
+const denyOf = async ($: Engine, command: string) => {
+  const out = await $.tool.call({ tool: "Bash", command });
+  return "deny" in out ? out.deny : undefined;
+};
+
+test("the read-only command of the facts passes", async ($: Engine, on: On) => {
+  stub(on);
+  expect(await denyOf($, FACTS)).toBeUndefined();
+});
+
+test("a `git reset --hard` inside `$(( ))` is still denied", async ($: Engine, on: On) => {
+  stub(on);
+  expect(typeof (await denyOf($, "echo $(( $(git reset --hard) + 1 ))"))).toBe(
+    "string",
+  );
+});

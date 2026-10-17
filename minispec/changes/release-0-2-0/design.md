@@ -250,6 +250,7 @@ D32 to D36, the handoffs, are in [`design-handoff.md`](design-handoff.md).
 D37 and D38, the solo build and the bar of a stable release, are in [`design-release.md`](design-release.md).
 D39 to D42, the redo of each part from first principles, are in [`design-redo.md`](design-redo.md).
 D43 and D44, the sandbox with no prompts and the cleanup of Claude's own files, are in [`design-sandbox.md`](design-sandbox.md).
+D53 to D55, the least code, the prompt practices for each model, and the examples, are in [`design-prompts.md`](design-prompts.md).
 
 ## Risks
 

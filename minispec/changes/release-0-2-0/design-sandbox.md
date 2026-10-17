@@ -35,6 +35,10 @@ Read on 2026-10-17 from `code.claude.com/docs/en/` (`permission-modes.md`, `perm
 - The `guard` hook keeps only the forms that a rule cannot match: `sh -c`, `bash -c`, `eval`, and a program by path, such as `/usr/bin/git`.
   It parses each form by D35, and the corpus is its lab.
 - The asks of `asks` for a call that discards work become these deny rules, and the asks for content checks stay (D12).
+- A tool that needs more than the sandbox gives, such as Docker, which talks to its daemon through a socket, gets the narrowest exception that a test shows to work.
+  First `sandbox.network.allowUnixSockets` with the path of the socket, which keeps the command in the sandbox.
+  Only when that fails, an `excludedCommands` entry for that tool alone, such as `docker *`, with an allow rule, which runs it outside the sandbox.
+  `just docker check` of this project is the first case, and setup offers the exception only when the project uses the tool.
 
 - Alternative: `bypassPermissions` with the same rules.
   Rejected, because the docs scope it to containers and VMs, and it lets the `Edit` tool write to `.git` and `.claude` with no prompt.

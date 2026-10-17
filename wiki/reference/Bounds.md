@@ -162,18 +162,16 @@ The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 | `HOOK_TIMEOUT_S` | `120` | `src/plugins/claudetto/slices/worktree/limits.ts` | The hook timeout of `WorktreeCreate` and `WorktreeRemove`, in seconds. |
 | `MAX_NAMED_CALLS` | `5` | `src/plugins/claudetto/slices/usercheck/limits.ts` | The most denied calls that one block reason of the `Stop` hook names. |
 | `MAX_CALL_CHARS` | `200` | `src/plugins/claudetto/slices/usercheck/limits.ts` | The most characters of one denied call in the block reason. |
-| `MAX_BLOCKS` | `2` | `src/plugins/claudetto/slices/turngate/limits.ts` | The most blocks of the turn gate in one turn. The next stop passes with a notice. |
 | `JUDGE_MODEL` | `sonnet` | `src/plugins/claudetto/slices/turngate/limits.ts` | The model of the judge call. |
 | `JUDGE_EFFORT` | `medium` | `src/plugins/claudetto/slices/turngate/limits.ts` | The effort of the judge call. |
 | `JUDGE_TIMEOUT_MS` | `30,000` | `src/plugins/claudetto/slices/turngate/limits.ts` | The time that one judge call may take before the gate allows the stop. |
 | `JUDGE_MAX_TOKENS` | `1,024` | `src/plugins/claudetto/slices/turngate/limits.ts` | The most output tokens of one judge call. |
 | `JUDGE_TOKENS` | `1,500` | `src/plugins/claudetto/slices/turngate/limits.ts` | The estimate of the tokens of one judge call in the eval manifest. |
 | `MAX_CALLS` | `60` | `src/plugins/claudetto/slices/turngate/limits.ts` | The most tool calls in the summary that the judge reads, from the end of the turn. |
-| `MAX_TARGET_CHARS` | `160` | `src/plugins/claudetto/slices/turngate/limits.ts` | The most characters of the target of one call in the summary. |
+| `TARGET_PART_CHARS` | `80` | `src/plugins/claudetto/slices/turngate/limits.ts` | The most characters of the first line and of the end of the last line of the target of one call in the summary (D22). |
 | `MAX_ERROR_CHARS` | `160` | `src/plugins/claudetto/slices/turngate/limits.ts` | The most characters of the error of one call in the summary. |
 | `REPLY_HEAD_CHARS` | `2,000` | `src/plugins/claudetto/slices/turngate/limits.ts` | The characters from the start of a long reply that the judge reads. |
 | `REPLY_TAIL_CHARS` | `6,000` | `src/plugins/claudetto/slices/turngate/limits.ts` | The characters from the end of a long reply that the judge reads. |
-| `MAX_NAMED_TASKS` | `5` | `src/plugins/claudetto/slices/turngate/limits.ts` | The most running background tasks that one block reason names. |
 | `MAX_QUOTE_CHARS` | `300` | `src/plugins/claudetto/slices/turngate/limits.ts` | The most characters of the quote of the reply in a block reason. |
 | `MAX_AGENTS` | `64` | `src/plugins/claudetto/slices/turngate/limits.ts` | The most agents whose tool calls the gate keeps at one time. |
 | `READ_DEFAULT_LINES` | `2,000` | `src/plugins/claudetto/slices/reads/limits.ts` | The lines that one `Read` gives when the call sets no `limit`, and the most lines that one `Read` counts. |

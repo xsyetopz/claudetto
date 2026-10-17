@@ -56,4 +56,6 @@ Do not end your report with a question, and do not hand the user a command that 
 
 <report_format>
 Give the assumptions, the **Outside the brief** list, the changed files, the check results, and each check that you did not run.
+Put bulk output, such as a long list, a table, or a log, in a file in the temp folder, and give its path in your report, because the report holds only the summary.
+Keep each file that your report names when you delete your scratch files.
 </report_format>

@@ -6,8 +6,60 @@ Write the test of a task before its code, and see it fail first.
 A red check matches the failure text that the task expects, not only a nonzero exit (D24).
 Run a fast check of the changed files after each change of behavior, and the full `just check` once at the end of each group (D7).
 The main session does each task itself, with no subagent and no worktree (D37).
-Do group 3 first, then the other groups in order, because each compaction of the build uses the handoff and the stop gate (D37).
+Do group 3 first, then the other groups in order, so group 3 is the first section, because each compaction of the build uses the handoff and the stop gate (D37).
 The release is stable: each row of `findings.md` is closed before the tag (D38).
+
+## 3. Turn gate notice
+
+- [x] 3.1 Add a test that the cap notice of the turn gate is one line with `claudetto` at most once, and see it fail.
+  Check: `! just test tests/claudetto/turngate/notice.test.ts`
+- [x] 3.2 Add a line fold `oneLine` in `src/kernel/text.ts`, and use it for each `$.ui.log` text that goes to the transcript, and drop the `claudetto` prefix of `prompts/notice-cap.md` and `prompts/notice-failed.md`.
+  The test also covers the failed-judge notice, which stays after task 3.5.
+  The count of open tasks goes to the notice of task 3.5, because task 3.5 removes `MAX_BLOCKS` and the cap notice with it.
+  Check: `just test tests/claudetto/turngate/notice.test.ts && just lab`
+- [x] 3.3 Add a lab test that the job deny reason of the turn gate names `TaskStop` only when `$.tool.list()` has the tool, then fix the gate.
+  A session on 2026-10-17 had no `TaskStop`, the sandbox refused `kill`, and the gate blocked the same tasks three times.
+  Task 3.5 removes the block for running tasks, so the repeated block of that session needs no test here.
+  Also test that a `Bash` call that edits a file and then runs the check counts as a check after the edit, because the gate blocked such a call in the same session.
+  The cause: `targetOf` in `slices/turngate/domain/calls.ts:37` gives the judge only the first line of the command, cut to `MAX_TARGET_CHARS` (160), so a check at the end of a heredoc or a long `&&` chain is not in the summary.
+  Fix it by D22 (`design-surfaces.md`): the target is the first and the last line of the command, each cut to 80 characters.
+  Check: `just test tests/claudetto/turngate && just lab`
+
+- [x] 3.4 Add a lab test that a compaction in a session whose shell is in a subfolder writes the handoff under the project root, and see it fail, then resolve `HANDOFF_DIR` against `CLAUDE_PROJECT_DIR` by D23, and move the handoff of this change out of `minispec/changes/release-0-2-0/.claudetto/`.
+  Check: `just lab && test ! -e minispec/changes/release-0-2-0/.claudetto`
+
+- [x] 3.5 Add lab tests of the stop gate: no block for a running background task, one `additionalContext` notice with the count when the reply does not name the tasks, no second notice when `stop_hook_active` is `true`, a block of a repeated false claim also when `stop_hook_active` is `true` (D58), and the reply read from `last_assistant_message`, and see them fail, then change the gate and remove `MAX_BLOCKS` and its cap notice (D32).
+  The user kept D58 for the judge on 2026-10-17, so the 8-continuation cap of Claude Code bounds the blocks of the judge.
+  Check: `just test tests/claudetto/turngate && just lab`
+- [x] 3.6 Add a guard lab case for the command of the facts of `design-handoff.md`, with `$(( ))`, `$( )`, and a pipe, that must pass, and a kernel test that the words of `$(( ))` are not a command, and see them fail, then fix the walk at the cause (D35).
+  Check: `just test tests/claudetto/guard && just lab`
+- [x] 3.7 Count the guard denies of read-only commands in the transcripts of other projects, read-only, add each one as a lab case, and write the count and the method to `wiki/evidence/Usage-Evidence.md` (D35).
+  Check: `just lab && just test tests/claudetto/guard`
+- [x] 3.8 Add a test that each agent prompt and each delegation text of claudetto gives an objective, an output format, the tools, and the limits, and asks for bulk output in a file, and see it fail, then change the texts (D33).
+  Check: `just generate && just test tests/claudetto/agents`
+- [ ] 3.9 Add a test that each `!` command that a hook gives has the exact command and one line of reason, then change the hook texts (D36).
+  Check: `just generate && just test tests/claudetto && just lab`
+- [ ] 3.10 Add a lab test that a second compaction gives one handoff that keeps the open decisions of the first and drops its closed steps, and that the next context holds one handoff, and see it fail, then change the handoff (D46).
+  The test also runs markdownlint on the written handoff, because the handoff of this change gave `MD028` (blank line inside blockquote) between two quoted user messages.
+  Check: `just test tests/claudetto/handoff && just lab`
+- [ ] 3.11 Add a lab test that a compaction after the cache TTL writes the handoff with no model call, and that a compaction on a warm cache forks the cached prefix, and see it fail, then change the handoff (D47).
+  Check: `just test tests/claudetto/handoff && just lab`
+- [ ] 3.12 Add a test that the done list of a handoff holds only checked tasks of `tasks.md` and passed checks, also when the model text says that a step is done, and see it fail, then fix the handoff (D48).
+  Check: `just test tests/claudetto/handoff`
+- [ ] 3.13 Add a lab test that a cold handoff copies the open decisions of `design.md` in a MiniSpec change, and of `.claudetto/progress.md` in other work, with no model call, and see it fail, then change the handoff, and add the one line of D50 to the always-loaded text.
+  Check: `just generate && just test tests/claudetto/handoff && just lab`
+- [ ] 3.14 Add a test that each agent prompt and each delegation text asks for the full output of a failed check in a file, and see it fail, then change the texts (D33).
+  Check: `just generate && just test tests/claudetto/agents`
+- [ ] 3.15 Add a test that `src/plugins/claudetto/slices/styles/styles/Concise.md` asks for a numbered "What I Need from You" list only on a turn that needs the user, with an example from claudetto's work, and see it fail, then change the style (D36).
+  Check: `just generate && just test tests/claudetto/styles`
+  Then run an eval of the two forms of D36, the list only when needed and the full rule with "Nothing needed from you right now", at 10 runs each, and keep the form that D36 picks.
+  This is a paid run: ask the user first, with the expected cost and the weekly share.
+- [ ] 3.16 Ask the user before the paid run, with the cost and the weekly share, then measure the automatic compaction against the handoff on one recorded session: cost, time, tokens after, and whether the next turn takes the next open task with no done step run again.
+  Write the results and the method to `wiki/evidence/Handoff-Cost.md` (D46, D47).
+  Check: `grep -q 'D46' wiki/evidence/Handoff-Cost.md && bun run lint:md`
+- [ ] 3.17 Add a lab test that a `Bash` command that removes or moves a project `.claudetto` folder, such as `rmdir minispec/changes/c/.claudetto`, passes the `policy` gate, and that a write in `~/.claudetto/policy/` is still denied, and see it fail, then make `touchesStore` of `slices/policy/domain/paths.ts` match only the store under the home folder.
+  On 2026-10-17 the gate denied the move of task 3.4 as a write of the verdict store, because `touchesStore` takes each folder named `.claudetto` as the store.
+  Check: `just test tests/claudetto/policy && just lab`
 
 ## 1. Version and evidence
 
@@ -31,33 +83,8 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just generate && just test tests/claudetto-you-should-know && just lab && test $(find src/plugins/claudetto-you-should-know -name '*.ts' | xargs cat | wc -l) -lt 1607`
 - [ ] 2.3 Remove each mention of `dotclaude` from the tracked files, the eval results included.
   Check: `! git grep -qi dotclaude`
-
-## 3. Turn gate notice
-
-- [ ] 3.1 Add a test that the cap notice of the turn gate is one line with `claudetto` at most once, and see it fail.
-  Check: `! just test tests/claudetto/turngate/notice.test.ts`
-- [ ] 3.2 Add a line fold in `src/kernel/text.ts` for each `$.ui.log` text, drop the prefix in `prompts/notice-cap.md`, and give the count of open tasks in place of the full reason.
-  Check: `just test tests/claudetto/turngate/notice.test.ts && just lab`
-- [ ] 3.3 Add a test that the turn gate does not block a second time for the same set of open tasks after the reply has reported them, and that its reason names `TaskStop` only when the session has the tool, then fix the gate.
-  A session on 2026-10-17 had no `TaskStop`, the sandbox refused `kill`, and the gate blocked the same tasks three times.
-  Also test that a `Bash` call that edits a file and then runs the check counts as a check after the edit, because the gate blocked such a call in the same session.
-  The cause: `targetOf` in `slices/turngate/domain/calls.ts:37` gives the judge only the first line of the command, cut to `MAX_TARGET_CHARS` (160), so a check at the end of a heredoc or a long `&&` chain is not in the summary.
-  Fix it by D22 (`design-surfaces.md`): the target is the first and the last line of the command, each cut to 80 characters.
-  Check: `just test tests/claudetto/turngate && just lab`
-
-- [ ] 3.4 Add a lab test that a compaction in a session whose shell is in a subfolder writes the handoff under the project root, and see it fail, then resolve `HANDOFF_DIR` against `CLAUDE_PROJECT_DIR` by D23, and move the handoff of this change out of `minispec/changes/release-0-2-0/.claudetto/`.
-  Check: `just lab && test ! -e minispec/changes/release-0-2-0/.claudetto`
-
-- [ ] 3.5 Add lab tests of the stop gate: no block for a running background task, one `additionalContext` notice with the count when the reply does not name the tasks, no second block when `stop_hook_active` is `true`, and the reply read from `last_assistant_message`, and see them fail, then change the gate and remove `MAX_BLOCKS` (D32).
-  Check: `just test tests/claudetto/turngate && just lab`
-- [ ] 3.6 Add a guard lab case for the command of the facts of `design-handoff.md`, with `$(( ))`, `$( )`, and a pipe, that must pass, and a test that a matcher with an empty name matches no tool, and see them fail, then fix the walk and the matcher at the cause (D35).
-  Check: `just test tests/claudetto/guard && just lab`
-- [ ] 3.7 Count the guard denies of read-only commands in the transcripts of other projects, read-only, add each one as a lab case, and write the count and the method to `wiki/evidence/Usage-Evidence.md` (D35).
-  Check: `just lab && just test tests/claudetto/guard`
-- [ ] 3.8 Add a test that each agent prompt and each delegation text of claudetto gives an objective, an output format, the tools, and the limits, and asks for bulk output in a file, and see it fail, then change the texts (D33).
-  Check: `just generate && just test tests/claudetto/agents`
-- [ ] 3.9 Add a test that each `!` command that a hook gives has the exact command and one line of reason, then change the hook texts (D36).
-  Check: `just generate && just test tests/claudetto && just lab`
+- [ ] 2.4 Read how `$.prompt.fill` treats typed text and how a terminal user presses a `Button` with keys, then add a lab test that a press of the `Reply` button under a message of Claude fills the prompt with that message as a `>` quote, and see it fail, then add the mod (D56).
+  Check: `just generate && just lab`
 
 ## 4. Agent caps and roster
 
@@ -101,15 +128,29 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `test -s src/wiki/reference/Texts.md && bun run lint:md`
 - [ ] 6.3 Audit each text of 6.2 by `.claude/skills/claude-api/shared/prompt-audit.md` for the model that reads it, and write the report with `file:line` to `minispec/changes/release-0-2-0/prompt-audit.md`.
   Check: `test -s minispec/changes/release-0-2-0/prompt-audit.md`
-- [ ] 6.4 Rewrite each text by the audit and D17: goals and limits, no step lists, no rule that a hook enforces, a fast check of the changed files after each change of behavior, the full checks once for each finished part, and none for an edit that changes no behavior (D7).
+- [ ] 6.4 Rewrite each text by the audit, D17, and the practices of `design-prompts.md` for the model that reads it (D54): goals and limits, no step lists, no rule that a hook enforces, a fast check of the changed files after each change of behavior, the full checks once for each finished part, and none for an edit that changes no behavior (D7).
   Each text tells the model to report a gap or a blocker and not to work around it (D26).
   Add a `tool.describe` transform for each built-in tool whose text the audit shortens or fixes.
   Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles tests/claudetto/surface && bun run lint:md`
-- [ ] 6.5 Cut the CLAUDE.md block of the setup, the MCP tool descriptions, the MCP server instructions, and the skill and agent descriptions to the words that a model needs to pick them.
+- [ ] 6.5 Remove the global `CLAUDE.md` block of the setup by D51, with a test that setup writes no block and removes its own block after a yes, and leaves the text outside the markers, and see it fail first.
+  Then cut the MCP tool descriptions, the MCP server instructions, and the skill and agent descriptions to the words that a model needs to pick them.
   Check: `just generate && just test tests/claudetto/setup && just validate`
 - [ ] 6.6 Measure the start of a fresh session with `just start-run` and `just measure`, and run the evals of group 11 on each cut text, and put back each cut that lowers a score (D26).
   This is a paid sandbox session: ask the user first, with the expected cost and the weekly share.
   Check: `just measure`
+- [ ] 6.7 Add a lab test that a `Write` of a `.md` file with a heading that is not in Title Case gets the right form back, and that a right heading gets no message, and a test of the custom markdownlint rule, and see them fail, then add the hook and the rule, and fix each heading of the repository (D52).
+  Check: `just generate && just lab && bun run lint:md`
+- [ ] 6.8 Add a test that the system prompt holds the rule of D53 and the output style holds the line of D54 on corrections, and see it fail, then add both texts, and replace the rule of `slices/prompt/prompts/doing-tasks.md:24` with the three tiers of D54 on pushback.
+  Add eval cases for each tier: a repeat with no reason gets a hold and a request for the reason, a harm that facts settle gets no compliance, an explicit override goes on and is recorded, and a choice of taste goes on with no pushback.
+  Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles`
+- [ ] 6.9 Add a test that setup runs `codegraph install --target claude --location global` after a yes, and that no setup text or `codegraph` skill text tells the agent not to run it, and see it fail, then change setup and the skill (D51).
+  Measure each part of `claudetto-codegraph` against `codegraph install` alone, and remove each part that adds nothing, with the result in `wiki/evidence/Usage-Evidence.md`.
+  Check: `just generate && just test tests/claudetto/setup tests/claudetto-codegraph && just lab`
+- [ ] 6.10 Add an eval case for D53: a task with a known short solution, with the added lines of each run against the reference, at 10 runs.
+  This is a paid run: ask the user first, with the expected cost and the weekly share.
+  Check: `just validate`
+- [ ] 6.11 Add each RED of the table in `design-prompts.md` as a fixture that a test or an eval case catches, and each GREEN as the example of its shipped text, and add the D54 line on a missing tool to the system prompt, and see the tests fail first (D55).
+  Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles tests/claudetto/turngate && just lab`
 
 ## 7. Cache and setup
 
@@ -142,6 +183,8 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just test tests/claudetto/setup`
 - [ ] 7.13 Cut the `guard` hook to the forms that a rule cannot match (`sh -c`, `bash -c`, `eval`, and a program by path), with the corpus as its lab, and move each ask of `asks` for a call that discards work to the deny rules of 7.11 (D43, D35).
   Check: `just test tests/claudetto/guard tests/claudetto/asks && just lab`
+- [ ] 7.14 Run `just docker check` with the sandbox of D43, and when it fails, add the Docker socket to `sandbox.network.allowUnixSockets`, or else an `excludedCommands` entry for `docker *` alone, with a setup test that offers it only for a project that uses Docker (D43).
+  Check: `just docker check && just test tests/claudetto/setup`
 
 ## 8. MiniSpec format
 
@@ -194,6 +237,8 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just check`
 - [ ] 10.15 Apply D41 to each part, and pin the line count of each part in `tools/limits.ts` (D40, D41).
   Check: `just validate`
+- [ ] 10.16 Add lab tests that `awareness` gives one note for each limit of the account (five-hour, seven-day, `spend_limit`) when its share crosses a bound, no text below the bound, and no tool call or model call, and see them fail, then extend the hook (D45).
+  Check: `just test tests/claudetto-sessions && just lab`
 
 ## 11. Evals
 

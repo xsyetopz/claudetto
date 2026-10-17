@@ -14,3 +14,14 @@ export const lineCount = (text: string): number =>
  */
 export const isMarkdown = (file: unknown): boolean =>
   typeof file === "string" && /\.mdx?$/i.test(file);
+
+/**
+ * `text` as one line: each line break becomes ` · `, and empty lines go.
+ * A `ui.log` line of Claude Code draws a line break as a bad glyph (D5).
+ */
+export const oneLine = (text: string): string =>
+  text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line !== "")
+    .join(" · ");

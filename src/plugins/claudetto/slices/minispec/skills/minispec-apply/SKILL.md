@@ -14,7 +14,7 @@ Each checked task is done and verified, so do not run its check again unless the
 <procedure>
 
 1. Find the state.
-   Read `tasks.md`: the checked tasks are done, and the first open task is next.
+   Read `tasks.md`: the checked tasks are done, and the first open task after the last checked task is next.
    After a handoff, the handoff file `minispec/changes/<name>/handoff.md` names the same task.
    Run `minispec status <name>` only when `tasks.md` is not clear.
 2. Read the files that the task needs: `proposal.md`, the spec, and `design.md` when they exist.

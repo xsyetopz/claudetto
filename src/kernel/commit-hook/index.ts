@@ -1,6 +1,7 @@
 // The `commit-msg` hook of git that checks the attribution line of a commit that Claude Code makes.
 // `/claudetto:setup` puts the script in the `env` of the settings as a config-based hook of git 2.54 or later (`hook.<name>.event` and `hook.<name>.command`).
 // An older git ignores these keys, so the check then passes with no output.
+// It checks a commit only while `CLAUDETTO_AGENT_CALL` is set, which is during a `Bash` call of Claude, so a `!` command of the user passes, as in the push hook.
 // The `attribution` slice writes the lines that the script accepts, one file for each model, in `ATTRIBUTION_DIR` of the home folder.
 // A hooks module imports this file, so it has no `node:` import, no `bun:` import, and no `Bun`.
 

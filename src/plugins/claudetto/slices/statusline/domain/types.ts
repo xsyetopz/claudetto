@@ -67,7 +67,7 @@ export type GitFault = { error: string };
 export type Change =
   /** No task yet: the change is in planning. */
   | { readonly name: string; readonly state: "planning" }
-  /** Some task is open. `next` is the id of the first open task. */
+  /** Some task is open. `next` is the id of the first open task after the last checked task. */
   | {
       readonly name: string;
       readonly state: "open";

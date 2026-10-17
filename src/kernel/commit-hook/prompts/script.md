@@ -1,4 +1,5 @@
 f() {
+  [ -n "${CLAUDETTO_AGENT_CALL:-}" ] || return 0
   [ -n "${CLAUDE_CODE_SESSION_ID:-}" ] || return 0
   dir="${HOME:-}/.claudetto/attribution/$CLAUDE_CODE_SESSION_ID"
   [ -d "$dir" ] || return 0

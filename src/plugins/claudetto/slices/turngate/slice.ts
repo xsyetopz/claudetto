@@ -1,6 +1,6 @@
 // The manifest of the slice `turngate`: the gate at the end of each turn, at `Stop` and at `SubagentStop`.
 // A text-only end of a turn is a report and not proof that the work is done.
-// A background task that still runs blocks the stop, and a judge model checks the reply against the tool calls of the turn.
+// A judge model checks the reply against the tool calls of the turn, and a background task that still runs gives a notice and no block.
 // A `Bash` command that starts a job that Claude Code does not track, or that stops processes by a pattern, is denied.
 
 import type { Slice } from "../../../../kernel/slice.ts";
@@ -108,7 +108,7 @@ export const slice = {
       event: "classic.SubagentStop",
       evals: {
         ...stopEvals,
-        block: `${LAB} > a subagent stop with a running task is blocked`,
+        block: `${LAB} > a subagent is judged on its own calls only`,
       },
       phase: "check",
       run: onSubagentStop,

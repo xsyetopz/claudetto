@@ -16,6 +16,7 @@
 
 import type { EngineInterface } from "claude-code";
 import type { Handler } from "../../../../../kernel/slice.ts";
+import { oneLine } from "../../../../../kernel/text.ts";
 import {
   changelogReason,
   changesUnreleased,
@@ -192,7 +193,7 @@ const packageAsk = async (
     if (missing.length > 0) reasons.push(packageReason(add, missing, lockfile));
   }
   for (const [name, cause] of unreached)
-    $.ui.log(registryNotice([name], cause));
+    $.ui.log(oneLine(registryNotice([name], cause)));
   return reasons.length > 0 ? reasons.join("\n\n") : null;
 };
 

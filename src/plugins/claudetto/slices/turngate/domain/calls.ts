@@ -2,7 +2,7 @@
 // Each line gives the tool, the target, and the outcome: `ok`, `ok, read-only`, or the first line of the error.
 // The order of the lines is the order of the calls, so the judge sees whether a check ran after the last edit.
 
-import { MAX_CALLS, MAX_ERROR_CHARS, MAX_TARGET_CHARS } from "../limits.ts";
+import { MAX_CALLS, MAX_ERROR_CHARS, TARGET_PART_CHARS } from "../limits.ts";
 
 /** One tool call of a turn, as the summary gives it. */
 export interface CallLine {
@@ -33,12 +33,36 @@ const clip = (text: string, max: number): string => {
   return line.length > max ? `${line.slice(0, max)}…` : line;
 };
 
+/**
+ * `text` as a target: the first line cut to `TARGET_PART_CHARS`, ` … `, and the end of the last line, so that a check at the end of a heredoc or a long chain shows (D22).
+ * A one-line text that fits in both parts stays whole.
+ */
+const headTail = (text: string): string => {
+  const lines = text
+    .trim()
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l !== "");
+  const first = lines[0] ?? "";
+  const last = lines[lines.length - 1] ?? "";
+  if (lines.length === 1 && first.length <= TARGET_PART_CHARS * 2) return first;
+  const head =
+    first.length > TARGET_PART_CHARS
+      ? `${first.slice(0, TARGET_PART_CHARS)}…`
+      : first;
+  const tail =
+    last.length > TARGET_PART_CHARS
+      ? `…${last.slice(-TARGET_PART_CHARS)}`
+      : last;
+  return `${head} … ${tail}`;
+};
+
 /** The target of a call: the first input field of `TARGET_KEYS` that is a string. */
 export const targetOf = (input: Readonly<Record<string, unknown>>): string => {
   for (const key of TARGET_KEYS) {
     const value = input[key];
     if (typeof value === "string" && value.trim() !== "")
-      return clip(value, MAX_TARGET_CHARS);
+      return headTail(value);
   }
   return "";
 };

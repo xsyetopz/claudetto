@@ -1,79 +1,55 @@
-MiniSpec change: `minispec/changes/release-0-1-0-alpha-2/`.
-Next open task: `1.1` in `tasks.md`.
+MiniSpec change: `minispec/changes/release-0-2-0/`.
+Next open task: `3.9` in `tasks.md`.
 Each checked task is done and verified, so do not run its check again unless the user asks.
 
-- Task: audit claudetto's architecture and how far its code and structure can shrink while staying maintainable, then add the findings to the plan `minispec/changes/release-0-1-0-alpha-2/` (plan only, no code). The user also asks whether generated files (`plugins/`) should be excluded from lint and formatting.
-- DONE: lines by folder: `src/plugins 38782 lines 965 files`, `plugins/claudetto 34527 lines 428 files` (generated), `tests/claudetto 18125 lines 184 files`, `wiki 13076 lines 117 files`, `src/wiki 2829 lines 33 files`, `docs 1997 lines 20 files` (`CLAUDE.md` says `docs/README.md` only links to the wiki).
-- DONE: largest slices by code lines: `asks 3915` (89 files), `setup 2748` (117 files), `claudetto-sessions 2633`, `policy 2504`, `claudetto-lab 2275`, `statusline 1532`, `guard 1269`, `minispec 1227`, `handoff 1167`, `decide 1092`.
-- DONE: in projects other than claudetto (`transcripts: 256`), these slices' messages appeared 0 times: `asks`, `worktree`, `minispec`, `usercheck`, `agents`. `reads` appeared 4 times, `turngate` 34, `handoff` 44.
-- DONE: the `worktree` slice duplicates built-ins: `.worktreeinclude` ("Gitignored files to copy into new worktrees") and `worktree.baseRef: "head"`.
-- DONE: plan faults found: D12 and D13 are missing from `design.md`, though tasks 10.1 and 10.2 cite D13. D6 says to set `promptCacheTtl` to `1h`, which contradicts D18 (remove the key).
-- DONE: `minispec validate release-0-1-0-alpha-2` gave `Valid: release-0-1-0-alpha-2.`. `git status --short minispec/` gave `?? minispec/`. The user's settings now have `cap: 10`, `effortLevel: high` and `promptCacheTtl: 1h`.
-- RAN, result after this handoff: Bash that lists the biome, markdownlint, prettier and editorconfig configs and their include and ignore globs, and greps the `generate` and `check` recipes.
-- Next: answer the lint question from that result. Then ask Jev about each trim candidate:
-  - remove `worktree` and set `worktree.baseRef: "head"`
-  - `asks` vs permission `ask` rules on `Edit(...)`
-  - `guard`
-  - `includeGitInstructions` vs the `attribution` and `repostate` slices
-  - remove `corrections`
-  - merge `trim`, `surface` and `prompt`
-  - consolidate `setup`
-  - remove `docs/`
-  - one wiki source instead of two
-- Then: write D12 and D13 (the audit), fix D6, add the tasks, run `minispec validate release-0-1-0-alpha-2`, and report starting with the outcome.
+- Task: write `/goal` plans outside the repo, in `/Users/krystian/CodeProjects/xsyetopz/claudetto-0.2.0/`, so you can trim claudetto 0.2.0 in vanilla Claude Code. Use `bun`/`bunx` and `uv`/`pipx` only.
+- DONE: wrote `GOAL.md` (the trim), `SPEC-WORKFLOW.md` (OpenSpec, Spec Kit, and BMAD merged on OpenSpec schemas, with presets `task`, `story`, and `epic`), and `BUILTINS.md` (built-ins inventory plus a `goal` slice that replaces `/goal`).
+- DONE: the goal lines check only the final turn and use `just docker check`. Line lengths: `GOAL goal chars: 470`, `SPEC-WORKFLOW goal chars: 413`, `BUILTINS goal chars: 351`. The `docker` recipe exists: `31:docker *args:`.
+- DONE: the lint before the last `just docker check` edits printed `Linting: 3 files` and `Summary: 0 issues in 0 files`.
+- DONE: built-in counts from `strings.txt`: `commands: 98`, 12 `cc-plugin-*` ids, at least 76 attachment kinds. The built-in `/goal` is a Stop hook of type `prompt` (`P6n`).
+- DONE: the repo has no code changes. The backup is `stash@{0}: before slice cut 2026-10-17`.
+- Error seen earlier: claudetto's guard blocked a wait loop with `claudetto forbids this destructive action.`
+- RAN, result after this handoff: `bunx markdownlint-cli2 --config ../claudetto/.markdownlint.jsonc GOAL.md SPEC-WORKFLOW.md BUILTINS.md` in `/Users/krystian/CodeProjects/xsyetopz/claudetto-0.2.0`.
+- Next: report that lint result to you as the first sentence.
 
 The last messages of the user before this handoff, word for word:
 
-> current `/context` in this session:
+> > - Replay the transcripts of past sessions in `~/.claude/projects/` (no m
+> odel call) and count the false denies.
 >
-> ````text
+> claudetto-sessions was actually meant for something like analysing user's .claude/ systems, but if CC contains a built-in skill/command for that, then there's no need, or a plugin.
 >
+> otherwise a lightweight skill with some scripts may just be enough.
+
+> Here is a note offered by a side agent:
 >
-> <pasted_content id="8486">
-> ❯ /context
->   ⎿  Context Usage
->      ⛁ ⛁ ⛁ ⛁ ⛀ ⛀ ⛀ ⛁ ⛀ ⛁   Opus 5.5
->      ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   claude-opus-5-5
->      ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   87.7k/300k tokens (29%)
->      ⛁ ⛀ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶
->      ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   Estimated usage by category
->      ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ System prompt: 6.4k tokens (2.1%)
->      ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ System tools: 7.4k tokens (2.5%)
->      ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ MCP tools: 1.1k tokens (0.4%)
->      ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛝   ⛁ MCP server instructions: 760 tokens (0.3%)
->      ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝   ⛁ Custom agents: 729 tokens (0.2%)
->                            ⛁ Memory files: 2.3k tokens (0.8%)
->                            ⛁ Skills: 1.1k tokens (0.4%)
->                            ⛁ Messages: 67.8k tokens (22.6%)
->                            ⛶ Free space: 179.3k (59.8%)
->                            ⛝ Autocompact buffer: 33k tokens (11.0%)
+> > Heads up · The `/goal` checker only reads the chat, and this long run will likely get compacted, which may hide the early check results the goal line asks for.
+> >
+> > **Long `/goal` runs may hide early proof**
+> > * With **`/goal`**, a separate checker keeps Claude working until it can see in the chat that your goal line is met.
+> > * The trim plan has 10 steps, so the chat will very likely get **compacted** (squashed into a summary) along the way, probably more than once.
+> > * The goal line asks for proof that is shown early: the line count from before step 1, and the output of each step's check. After a squash, that output may be gone from the chat.
+> > * If the checker can't see it, the run may keep going, redo steps, or never finish. This is likely, but not confirmed.
+> > * **Consider making the goal line only ask for things that can be checked at the end**, such as one final `just check` and the folder listings.
 >
->      Auto-compact window: 300k tokens
+> the built-in `/goal` is also rather limited, so if a mod could replace with one that is effective, efficient, and actually controllable in many ways, that will be 0.2.0's item, too.
 >
->      MCP tools · /mcp (loaded on-demand)
->      └ 21 tools · 1.1k tokens
+> it needs to see how many built-ins can be replaced/disabled.
+
+> Here is a note offered by a side agent:
 >
->      Custom agents · .claude/agents/
->      └ 10 agents · 729 tokens
->
->      Memory files · /memory
->      └ 2 files · 2.3k tokens
->
->      Skills · /skills
->      └ 9 skills · 1.1k tokens
-> </pasted_content id="8486">
->
-> ````
->
-> so, tes, you're going to need to really dig into claudetto's heavy optimizations for the claude code 2.1.302 harness, for 3 different sub tiers + API users.
->
-> Any surface you can modify, without ever modifying the CLI harness code, you will take ...
->
-> Anything else? user did the manual patching.
->
-> also get a full audit of architecture, and see how much the LOC itself, and structure, could be trimmed down, while still being maintainable and rock-solid.
+> > Heads up · In this sandbox, 12 tests always fail because they can't start a local server, so a `/goal` that waits for `just check` to pass may never end.
+> >
+> > **The trim `/goal` may never finish in the sandbox**
+> > * The `/goal` line in the plan counts the work as done only when **`just check` passes**. `just check` runs all the tests.
+> > * Earlier in this session, a full test run inside Claude Code's **sandbox** had **12 failures**, all "Failed to start server". The sandbox here doesn't let commands open a local network port, and those tests need one.
+> > * If your vanilla install also uses the sandbox, those 12 tests keep failing no matter how good the trim is. The goal checker would then keep Claude working and spending tokens.
+> > * **Before you start the run**, do one of these:
+> > * set `sandbox.network.allowLocalBinding: true` in your settings;
+> > * or change the goal line to use `just docker check`, which runs the checks in a container.
 
 The files that this session changed with `Write`, `Edit`, `MultiEdit`, or `NotebookEdit`:
 
-- `/Users/krystian/CodeProjects/xsyetopz/claudetto/minispec/changes/release-0-1-0-alpha-2/tasks.md`
-- `/Users/krystian/CodeProjects/xsyetopz/claudetto/minispec/changes/release-0-1-0-alpha-2/design-surfaces.md`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto-0.2.0/GOAL.md`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto-0.2.0/SPEC-WORKFLOW.md`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto-0.2.0/BUILTINS.md`

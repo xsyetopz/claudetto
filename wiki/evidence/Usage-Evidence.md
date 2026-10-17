@@ -181,6 +181,24 @@ So the number of turns sets the cost.
   The same calls in sequence take one turn each.
 - Claude Code has no general tool that runs several tools in one call (binary).
 
+## Guard Denies of Read-Only Commands
+
+The guard must deny only a command that discards work (D35).
+A deny of a read-only command is a false positive, and this section gives their count.
+
+1. A script read each `.jsonl` transcript under `~/.claude/projects/` of each project except claudetto, read-only.
+2. It matched each `tool_result` of a `Bash` call that holds the deny text of the guard (`claudetto forbids this destructive action` or `claudetto forbids this command in a subagent`) to the command of its `tool_use`.
+3. Each command that changes no file of the project became a must-pass case in `slices/guard/lab/transcripts.test.ts`, with the project folder replaced by `/p`.
+
+- measured, 2026-10-17: 11 guard denies in 511 transcripts of 6 projects.
+- measured, 2026-10-17: 10 of the 11 denies were read-only commands: prints, searches, and check scripts that got destructive commands only as string data.
+  All 10 came from an earlier checkout of the claudetto source, where the work tested the guard itself.
+  The guard of this release allows each of them (measured), so earlier builds of the guard gave these denies (inference).
+- measured, 2026-10-17: the other deny, a `git rm -qf` in an unrelated project, discards work, so the deny was right.
+- measured, 2026-10-17: the unrelated projects had 0 false denies.
+  This sample is small, and most of its denies come from the work on the guard, so it does not show the false-positive rate of normal use.
+- measured, 2026-10-17: the read-only command of `design-handoff.md`, with `$(( ))`, was denied in this project, and the shell scan of this release reads `$(( ))` as arithmetic, so it passes.
+
 ## Community Claims
 
 - True: `/compact` reads the whole conversation to write its summary.

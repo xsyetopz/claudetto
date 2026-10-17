@@ -119,3 +119,17 @@ test("`localDate` gives the local date, also when the UTC date is another day", 
     else process.env["TZ"] = zone;
   }
 });
+
+test("`status` names the first open task after the last checked task as the next task", async () => {
+  const files = project({
+    "minispec/changes/a/proposal.md": PROPOSAL,
+    "minispec/changes/a/tasks.md":
+      "# Tasks\n\n- [ ] 1.1 a\n  Check: `true`\n- [x] 2.1 b\n  Check: `true`\n- [ ] 2.2 c\n  Check: `true`\n",
+  });
+  const status = await run(
+    ["status", "a", "--json"],
+    async () => context(files),
+    PIPE,
+  );
+  expect(JSON.parse(status.out).next.id).toBe("2.2");
+});

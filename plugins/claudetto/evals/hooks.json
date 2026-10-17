@@ -77,7 +77,7 @@
     "blocks": true,
     "allow": "plugins/claudetto/tests/turngate.test.ts > when each background task ended, the task part passes",
     "text": "plugins/claudetto/tests/turngate.test.ts > a block sends only the reason, with no line of the rubric",
-    "block": "plugins/claudetto/tests/turngate.test.ts > a subagent stop with a running task is blocked",
+    "block": "plugins/claudetto/tests/turngate.test.ts > a subagent is judged on its own calls only",
     "false": "plugins/claudetto/tests/turngate.test.ts > a reply that only asks a question passes",
     "eval": "claim-check"
   },

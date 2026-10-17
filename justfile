@@ -4,10 +4,10 @@ set positional-arguments
 default:
     @just --list
 
-# Run the test suite with `bun test`; a file argument runs that file in place of all of them, and an option goes to bun test (-t RE). It generates `plugins/` first, because many tests import the generated copy, such as each `prompts.ts`
+# Run the test suite with `bun test`; a file argument runs that file in place of all of them, and an option goes to bun test (-t RE). It generates `plugins/` first, because many tests import the generated copy, such as each `prompts.ts`. A test run is not a Claude Code session, so the session id does not reach the commit hook of the session
 test *args:
     bun tools/generate/index.ts
-    bun test "$@"
+    env -u CLAUDE_CODE_SESSION_ID bun test "$@"
 
 # Lint the code (Biome) and the Markdown (markdownlint-cli2)
 lint:

@@ -7,33 +7,43 @@ import { CHANGE_HANDOFF_FILE, CHANGES_DIR } from "./paths.ts";
 /** A task line starts a line: `- [ ] 1.1 text` or `- [x] 1.1 text`. The group 1 is the mark, and the group 2 is the id. */
 export const TASK_LINE = /^- \[([ xX])\] (\S+)/;
 
-/** The count of checked tasks, the count of all tasks, and the id of the first open task or `null`. */
+/** The count of checked tasks, the count of all tasks, and the id of the next open task or `null`. */
 export interface TaskCounts {
   readonly done: number;
   readonly total: number;
   readonly next: string | null;
 }
 
-/** The counts of the tasks in `tasks`, the text of a `tasks.md`. */
+/**
+ * The counts of the tasks in `tasks`, the text of a `tasks.md`.
+ * The next task is the first open task after the last checked task, because a change can start at a later group.
+ * When no open task follows the last checked task, it is the first open task.
+ */
 export const countTasks = (tasks: string): TaskCounts => {
   let done = 0;
   let total = 0;
-  let next: string | null = null;
+  let first: string | null = null;
+  let after: string | null = null;
   for (const line of tasks.split("\n")) {
     const m = TASK_LINE.exec(line);
     if (!m) continue;
     total++;
-    if (m[1] === " ") next ??= m[2] ?? "";
-    else done++;
+    if (m[1] !== " ") {
+      done++;
+      after = null;
+    } else {
+      first ??= m[2] ?? "";
+      after ??= m[2] ?? "";
+    }
   }
-  return { done, total, next };
+  return { done, total, next: after ?? first };
 };
 
 /** The path of the handoff file of the change `name`, from the project root. */
 export const changeHandoffPath = (name: string): string =>
   `${CHANGES_DIR}/${name}/${CHANGE_HANDOFF_FILE}`;
 
-/** The change in progress: its name and its first open task. */
+/** The change in progress: its name and its next open task. */
 export interface OpenChange {
   readonly name: string;
   readonly next: string;

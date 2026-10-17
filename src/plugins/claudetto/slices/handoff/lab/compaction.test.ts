@@ -8,7 +8,7 @@ import type {
   On,
   SessionMessage,
 } from "claude-code";
-import { type Engine, expect, test } from "claude-code/testing";
+import { type Engine, expect, mock, test } from "claude-code/testing";
 import { FIRST_MESSAGE } from "../prompts.ts";
 
 const HANDOFF =
@@ -344,4 +344,15 @@ test("the cut of a reply in two assistant messages keeps the last tool use and r
   const out = result.messages ?? [];
   expect(out.map((m) => m.handle)).toEqual([undefined, "s2", undefined]);
   expect(out[2]?.toolResults?.map((r) => r.tool_use_id)).toEqual(["r2"]);
+});
+
+// D23: a shell in a subfolder does not move the handoff, which goes under the project root.
+test("a compaction with the shell in a subfolder writes the handoff under the project root", async ($: Engine, on: On) => {
+  mock.env(on, { CLAUDE_PROJECT_DIR: "/p" });
+  on("session.cwd", () => ({ value: "/p/minispec/changes/c" }));
+  const { seen } = await compact($, on);
+  const [path] = seen.writes[0] ?? [];
+  expect(path).toMatch(
+    /^\/p\/\.claudetto\/handoffs\/handoff-\d{8}T\d{6}Z\.md$/,
+  );
 });

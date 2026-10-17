@@ -1,8 +1,5 @@
 // The bounds of the `turngate` slice, in one place.
 
-/** The most blocks of the gate in one turn. The next stop passes, with a notice to the user. */
-export const MAX_BLOCKS = 2;
-
 /** The model of the judge. It is not Haiku, because the Haiku 5.5 card reports more false completion claims (§6.2.3). */
 export const JUDGE_MODEL = "sonnet";
 
@@ -21,8 +18,8 @@ export const JUDGE_TOKENS = 2500;
 /** The most tool calls of one turn that the summary of the judge names. The summary gives the count of the others. */
 export const MAX_CALLS = 60;
 
-/** The most characters of the target of one tool call in the summary. */
-export const MAX_TARGET_CHARS = 160;
+/** The most characters of the first line and of the end of the last line of a target, which the summary joins with ` … ` (D22). */
+export const TARGET_PART_CHARS = 80;
 
 /** The most characters of the error of one tool call in the summary. */
 export const MAX_ERROR_CHARS = 160;
@@ -38,9 +35,6 @@ export const REQUEST_CHARS = 2000;
 
 /** The most characters of the end of the earlier reply that the judge gets. */
 export const EARLIER_CHARS = 2000;
-
-/** The most background tasks that one block reason names. The reason gives the count of the others. */
-export const MAX_NAMED_TASKS = 5;
 
 /** The most characters of the quote of the judge in the block reason. */
 export const MAX_QUOTE_CHARS = 300;

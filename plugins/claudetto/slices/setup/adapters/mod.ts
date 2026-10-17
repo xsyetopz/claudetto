@@ -7,6 +7,7 @@
 // A fact that fails to read gives no line, so a failure cannot make a false report.
 
 import type { EngineInterface, Hook } from "claude-code";
+import { oneLine } from "../../../kernel/text.ts";
 import { driftLines, driftNote } from "../domain/drift.ts";
 import { GIT_TIMEOUT_MS } from "../limits.ts";
 import { addExcludes } from "./hook-exclude.ts";
@@ -56,7 +57,7 @@ const reportDrift = async ($: EngineInterface): Promise<string | undefined> => {
       agentSocket: socket,
     }),
   );
-  if (note) $.ui.log(note);
+  if (note) $.ui.log(oneLine(note));
   return note;
 };
 
