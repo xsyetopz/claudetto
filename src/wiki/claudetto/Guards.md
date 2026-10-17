@@ -36,6 +36,16 @@ The `asks` slice asks before a call that discards work, weakens a test, or chang
   The guard does not deny `git checkout -- bun.lock`.
 - A change that skips a test, weakens an assertion, or adds a lint suppression gets an ask.
   This applies to a test file of any size.
+- A change to a test file that exists gets an ask when a line of code goes away or changes.
+  A move of lines, a rename of a test title, and a change of format or comments get no ask.
+- A change that only adds lines of code to a test file that exists goes to a small judge model, `TEST_JUDGE_MODEL`.
+  The model reads the added lines in any language, and the call gets an ask when an added line makes a test weaker, such as a skip or an early return.
+  When the model gives no verdict in `TEST_JUDGE_TIMEOUT_MS`, the call gets an ask, because an unknown change never passes.
+  The reason of that ask tells Claude that a new test in a new test file needs no check.
+  A new test file makes no model call.
+  The hooks module keeps at most `TEST_JUDGE_CACHE_ENTRIES` verdicts, so the same diff again in a session makes no new model call.
+  To turn the judge off, set the plugin option `testJudge` (title "Test Judge") to `false`.
+  With the judge off, an added line gets no check, and a lost or changed line still gets an ask.
   A test file over `FILE_MAX_BYTES` gets an ask, because the slice cannot read it.
 - A change to a script of `package.json` or to a recipe of a `justfile` or `Makefile` gets an ask when the script or recipe is a check.
   The slice reads what the script runs, such as `eslint`, `pytest`, `bun test`, `tsc --noEmit`, `bun check`, `bun test --check`, or a script that it calls.

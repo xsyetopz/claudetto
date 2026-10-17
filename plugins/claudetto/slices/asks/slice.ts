@@ -3,9 +3,12 @@
 // the ask before a call that discards work, adds a skipped test or a lint suppression, or changes a protected file (design D34).
 // A read never asks. A change to a protected file asks unless every changed part is on the safe list of its kind.
 // A write from `Bash` to a protected file, such as `sed -i`, asks.
+// A call that adds lines of code to a test file that exists makes one call of a small judge model, unless the `testJudge` option is off.
 
 import type { Slice } from "../../kernel/slice.ts";
-import { onCheck } from "./adapters/mod.ts";
+import { keepOptions, onCheck } from "./adapters/mod.ts";
+import { TEST_JUDGE_TOKENS } from "./limits.ts";
+import { OPTION_DESCRIPTION } from "./prompts.ts";
 
 export const slice = {
   name: "asks",
@@ -14,8 +17,9 @@ export const slice = {
     {
       event: "tool.check",
       evals: {
-        requests: 0,
-        tokens: 0,
+        requests: 1,
+        tokens: TEST_JUDGE_TOKENS,
+        eval: "test-judge",
         blocks: true,
         allow:
           "plugins/claudetto/tests/asks.test.ts > a `Write` of a source file gets no ask",
@@ -28,6 +32,15 @@ export const slice = {
       filter: { tool: ["Bash", "Write", "Edit", "MultiEdit"] },
       phase: "check",
       run: onCheck,
+      configure: keepOptions,
     },
   ],
+  userConfig: {
+    testJudge: {
+      type: "boolean",
+      title: "Test Judge",
+      description: OPTION_DESCRIPTION,
+      default: true,
+    },
+  },
 } satisfies Slice;

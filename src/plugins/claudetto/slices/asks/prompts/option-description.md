@@ -1,0 +1,1 @@
+On: a small model reads the lines that a call adds to a test file that exists, and an added line that makes a test weaker asks. Each check is one Haiku call of at most about {{TEST_JUDGE_TOKENS}} tokens. Off: the added lines get no check, and a lost or changed line still asks.

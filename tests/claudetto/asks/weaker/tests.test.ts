@@ -1,9 +1,10 @@
-// The ask on a weaker test file (package P36): a call asks only when a test, an assert, or an `expect` is removed or changed.
-// A call that adds a test, renames a test, changes the format, or moves a test gets no ask.
+// The ask on a weaker test file (package P36): a call asks when a test, an assert, or an `expect` is removed or changed.
+// A call that renames a test, changes the format, or moves a test gets no ask.
+// A call that adds lines goes to the test judge. These tests give the judge only where they name it, so the other calls make no model call.
 // Files are strings and no file is read.
 
 import { expect, test } from "bun:test";
-import { asks, editAsks, write, writeAsks } from "../calls.ts";
+import { asks, editAsks, editJudged, write, writeAsks } from "../calls.ts";
 
 const FILE = "/w/tests/a.test.mjs";
 const SRC = `import { f, g } from "../src/a.mjs";
@@ -62,6 +63,56 @@ test("an added test gets no ask", async () => {
     false,
   );
   expect(await writeAsks(FILE, SRC, `${SRC}\n${add}`)).toBe(false);
+});
+
+test("a test added above an old test gets no ask, also with a body that is not an assert start", async () => {
+  const node = `test("a", () => {
+  const parts = f(1);
+  assert.equal(parts, 1);
+});
+`;
+  const old = 'test("a", () => {';
+  const add = 'test("c", () => {\n  assert.deepEqual(f(2), [2]);\n});\n\n';
+  expect(await editAsks(FILE, node, old, `${add}${old}`)).toBe(false);
+  expect(await writeAsks(FILE, node, node.replace(old, `${add}${old}`))).toBe(
+    false,
+  );
+});
+
+test("an added `assert` method call in an old test gets no ask", async () => {
+  const node = 'test("a", () => {\n  assert.equal(f(1), 1);\n});\n';
+  const one = "  assert.equal(f(1), 1);\n";
+  for (const line of [
+    "  assert.equal(f(2), 2);\n",
+    "  assert.deepEqual(g(), [1]);\n",
+    "  assert.strict.equal(f(3), 3);\n",
+    "  t.assert.ok(f(4));\n",
+  ])
+    expect(await editAsks(FILE, node, one, `${one}${line}`)).toBe(false);
+});
+
+test("an added `assert` method call with an assignment goes to the test judge", async () => {
+  const node = 'test("a", () => {\n  assert.equal(f(1), 1);\n});\n';
+  const one = "  assert.equal(f(1), 1);\n";
+  const line = "  assert.equal = () => {};\n";
+  expect(await editJudged(FILE, node, one, `${one}${line}`, line)).toBe(true);
+});
+
+test("an added assert outside each test block goes to the test judge", async () => {
+  const node = 'test("a", () => {\n  assert.equal(f(1), 1);\n});\n';
+  for (const line of ["expect(f(2)).toBe(2);\n", "assert.equal(f(2), 2);\n"])
+    expect(await editJudged(FILE, node, node, `${node}${line}`, line)).toBe(
+      true,
+    );
+});
+
+test("a test added above an old test that changes the old test gets an ask", async () => {
+  const add = 'test("c", () => {\n  expect(h()).toBe(3);\n});\n\n';
+  const now = SRC.replace('test("a"', `${add}test("a"`).replace(
+    "toBe(1)",
+    "toBe(3)",
+  );
+  expect(await writeAsks(FILE, SRC, now)).toBe(true);
 });
 
 test("a renamed test gets no ask", async () => {

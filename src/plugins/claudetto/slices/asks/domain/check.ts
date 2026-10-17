@@ -7,16 +7,19 @@ import { RUN_CHECKS_BIN } from "../../../../../kernel/paths.ts";
 import { parse } from "../../../../../kernel/shell.ts";
 import { baseName, stripWrappers } from "../../../../../kernel/wrappers.ts";
 import { SCAN_MAX_CHARS } from "../limits.ts";
+import { WEAKER_FINDING } from "../prompts.ts";
 import { downloadReason, type Facts } from "./download.ts";
 import { gitReason } from "./git.ts";
 import { namedByHooks } from "./hooks.ts";
-import { contentReasons, skipReasons } from "./kinds.ts";
+import { contentReasons, isTestPath, skipReasons } from "./kinds.ts";
 import { relative } from "./paths.ts";
 import type { Scripts } from "./scripts.ts";
 import { scriptTexts } from "./scripts.ts";
+import { addsCode } from "./testdiff.ts";
+import { type Complete, judgeAdded } from "./testjudge.ts";
 import type { LargeCheck, Payload, Reader } from "./text.ts";
-import { change, FILE_TOOLS } from "./text.ts";
-import { weakerReasons } from "./weaker.ts";
+import { type Change, change, FILE_TOOLS } from "./text.ts";
+import { TEST_FILE_LABEL, weakerReasons } from "./weaker.ts";
 import { shellWriteReasons } from "./writes.ts";
 
 /** The reads and the folders of the checks. `home` is the home folder, when the environment has one. */
@@ -27,6 +30,8 @@ export type Io = {
   home?: string | undefined;
   /** The facts of the environment for the download ask. Without it, that ask stays silent. */
   facts?: Facts;
+  /** The model call of the test judge. Without it, the lines that a call adds to a test file get no check. */
+  complete?: Complete;
 };
 
 /** The reasons of a call: `ask` lists the texts that Claude Code shows before the call runs. */
@@ -61,6 +66,18 @@ const bashChecks = async (
   return out;
 };
 
+/** The finding of the test judge, as a list of at most one string. It runs only when the rules of `testdiff.ts` find no lost line and an added line of code. */
+const judged = async (rel: string, ch: Change, io: Io): Promise<string[]> => {
+  const { before, after } = ch;
+  if (!io.complete || !isTestPath(rel) || before === null || after === null)
+    return [];
+  if (!addsCode(rel, before, after)) return [];
+  const found = await judgeAdded(rel, before, after, io.complete);
+  return found === undefined
+    ? []
+    : [WEAKER_FINDING({ rel, label: TEST_FILE_LABEL, found })];
+};
+
 /** The checks of a `Write`, `Edit`, or `MultiEdit` call. */
 const fileChecks = async (payload: Payload, io: Io): Promise<Reasons> => {
   const ch = await change(payload, io.read, io.large);
@@ -68,7 +85,9 @@ const fileChecks = async (payload: Payload, io: Io): Promise<Reasons> => {
   const rel = relative(root, ch.file);
   const out: Reasons = { ask: [] };
   const named = await namedByHooks(rel, root, io.read);
-  out.ask.push(...weakerReasons(rel, ch, named));
+  const weaker = weakerReasons(rel, ch, named);
+  out.ask.push(...weaker);
+  if (weaker.length === 0) out.ask.push(...(await judged(rel, ch, io)));
   const text = ch.after ?? ch.fragment;
   if (text.length > SCAN_MAX_CHARS) {
     // The skipped-test and suppression checks work one line at a time, so they run on a long text too.

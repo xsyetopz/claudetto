@@ -4,7 +4,7 @@
 // The hook sits above the stub of the engine, so the stub answers `next(e)`, and the stubs of `fs` answer the reads.
 // No command runs, no session starts, and no network call goes out.
 
-import type { On } from "claude-code";
+import type { ModelCompleteResult, On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
 type Verdict = { decision: "allow" | "ask" | "deny"; reason?: string };
@@ -127,3 +127,87 @@ test("`bunx tsc` with no local `tsc` asks", async ($: Engine, on: On) => {
   expect(out.reason).toContain("bun check");
   expect(out.reason).toContain("1.4.3");
 });
+
+/** Stubs the test judge with the answer `text`. Gives the prompt of each call and each debug log. */
+const judge = (
+  on: On,
+  text: string,
+): { prompts: string[]; debug: string[] } => {
+  const seen = { prompts: [] as string[], debug: [] as string[] };
+  const value: ModelCompleteResult = {
+    isAnswered: true,
+    text,
+    usage: {
+      input_tokens: 700,
+      output_tokens: 20,
+      cache_read_input_tokens: 0,
+      cache_creation_input_tokens: 0,
+    },
+  };
+  on("model.complete", (_$, e) => {
+    seen.prompts.push(e.prompt);
+    return { value };
+  });
+  on("ui.log", (_$, e) => {
+    if (e.to === "debug") seen.debug.push(e.text);
+    return { value: undefined };
+  });
+  return seen;
+};
+
+/** A `Write` that adds the line `expect(n).toBe(n)` to the test file. The hooks module keeps each verdict by its diff, so each test gives its own `n`. */
+const addTest = ($: Engine, n: number) =>
+  $.tool.check({
+    tool: "Write",
+    input: {
+      file_path: TEST_FILE,
+      content: `expect(1).toBe(1)\nexpect(${n}).toBe(${n})\n`,
+    },
+  });
+
+test("a safe verdict of the test judge gets no ask", async ($: Engine, on: On) => {
+  stub(on);
+  project(on, { [TEST_FILE]: "expect(1).toBe(1)\n" });
+  const seen = judge(on, '{"weaker":false}');
+  const out = await addTest($, 2);
+  expect(out.decision).toBe("allow");
+  expect(seen.prompts.length).toBe(1);
+  expect(seen.prompts[0]).toContain("+ expect(2).toBe(2)");
+  expect(seen.debug.join("\n")).toContain("input 700");
+  expect((await addTest($, 2)).decision).toBe("allow");
+  expect(seen.prompts.length).toBe(1);
+});
+
+test("a weaker verdict of the test judge asks with its reason", async ($: Engine, on: On) => {
+  stub(on);
+  project(on, { [TEST_FILE]: "expect(1).toBe(1)\n" });
+  judge(
+    on,
+    JSON.stringify({ weaker: true, line: "expect(3)", why: "It is a test." }),
+  );
+  const out = await addTest($, 3);
+  expect(out.decision).toBe("ask");
+  expect(out.reason).toContain("It is a test.");
+});
+
+test("a reply of the test judge that is not a verdict asks", async ($: Engine, on: On) => {
+  stub(on);
+  project(on, { [TEST_FILE]: "expect(1).toBe(1)\n" });
+  judge(on, "fine");
+  const out = await addTest($, 4);
+  expect(out.decision).toBe("ask");
+  expect(out.reason).toContain("new test file");
+});
+
+test(
+  "with the test judge off, an added line gets no model call",
+  { options: { testJudge: false } },
+  async ($: Engine, on: On) => {
+    stub(on);
+    project(on, { [TEST_FILE]: "expect(1).toBe(1)\n" });
+    const seen = judge(on, "fine");
+    expect((await addTest($, 5)).decision).toBe("allow");
+    expect((await changeTest($)).decision).toBe("ask");
+    expect(seen.prompts.length).toBe(0);
+  },
+);

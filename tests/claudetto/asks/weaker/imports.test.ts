@@ -3,7 +3,7 @@
 // Files are strings and no file is read.
 
 import { expect, test } from "bun:test";
-import { editAsks } from "../calls.ts";
+import { editAsks, editJudged } from "../calls.ts";
 
 const TS = "/w/tests/a.test.ts";
 const PY = "/w/tests/test_a.py";
@@ -125,15 +125,14 @@ const MOCKS: [string, string, string][] = [
 ];
 
 for (const [name, file, line] of MOCKS)
-  test(`an import edit that adds ${name} gets an ask`, async () => {
+  test(`an import edit that adds ${name} goes to the test judge`, async () => {
     const py = file.endsWith(".py");
     const was = py ? "from m import a" : 'import { add } from "./math.ts";';
     const now = py
       ? `from m import a, b\n${line}`
       : `${was.replace("add", "add, mul")}\n${line}`;
-    expect(await editAsks(file, was + (py ? PY_BODY : BODY), was, now)).toBe(
-      true,
-    );
+    const text = was + (py ? PY_BODY : BODY);
+    expect(await editJudged(file, text, was, now, line)).toBe(true);
   });
 
 test("an edit that adds a name and a changed assert gets an ask", async () => {

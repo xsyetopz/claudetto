@@ -11,12 +11,34 @@
 // `claude plugin validate` follows `$` only into a function of one file,
 // and each `$.env.get` call needs a literal name.
 // For this reason, each function that touches `$` is here, and the rules are in `domain/`.
+// The test judge makes one `$.model.complete` call, and its cost comes from the `usage` of the result (D63).
+// The `testJudge` option turns the judge off, and a verdict for a diff that the session already judged makes no new call.
 
-import type { EngineInterface } from "claude-code";
+import type { EngineInterface, PluginOptions } from "claude-code";
 import type { Handler } from "../../../kernel/slice.ts";
 import { askReason } from "../domain/check.ts";
+import { type Reply, remembered } from "../domain/testjudge.ts";
 import type { Payload } from "../domain/text.ts";
-import { FILE_MAX_BYTES, VERSION_RUN_TIMEOUT_MS } from "../limits.ts";
+import {
+  FILE_MAX_BYTES,
+  TEST_JUDGE_CACHE_ENTRIES,
+  TEST_JUDGE_MAX_TOKENS,
+  TEST_JUDGE_MODEL,
+  TEST_JUDGE_TIMEOUT_MS,
+  VERSION_RUN_TIMEOUT_MS,
+} from "../limits.ts";
+import { NOTICE_JUDGE_USAGE } from "../prompts.ts";
+
+/** The `testJudge` option, which the generated `register` sets once with `keepOptions`. It is on by default. */
+const kept: { testJudge: boolean } = { testJudge: true };
+
+/** Keeps the `testJudge` option from the `userConfig` values of the plugin. */
+export const keepOptions = (options: PluginOptions): void => {
+  kept.testJudge = options["testJudge"] !== false;
+};
+
+/** The verdicts of the test judge, by request, for each call of this hooks module. */
+const verdicts = new Map<string, Reply>();
 
 /**
  * The text of `file` when it is a regular file of at most `max` bytes, else null.
@@ -48,6 +70,45 @@ const bunVersion = async ($: EngineInterface): Promise<string | null> => {
   }
 };
 
+/**
+ * One call of the test judge: the text of the reply, or the cause when the model gives no answer.
+ * The engine rejects only a request that it does not send, so a rejection is a cause too.
+ */
+const complete = async (
+  $: EngineInterface,
+  request: { system: string; prompt: string },
+): Promise<Reply> => {
+  let r: Awaited<ReturnType<EngineInterface["model"]["complete"]>>;
+  try {
+    r = await $.model.complete({
+      model: TEST_JUDGE_MODEL,
+      ...request,
+      maxTokens: TEST_JUDGE_MAX_TOKENS,
+      effort: "low",
+      timeoutMs: TEST_JUDGE_TIMEOUT_MS,
+    });
+  } catch (err) {
+    return { cause: String(err) };
+  }
+  $.ui.log(
+    NOTICE_JUDGE_USAGE({
+      model: TEST_JUDGE_MODEL,
+      input: String(r.usage.input_tokens),
+      cacheRead: String(r.usage.cache_read_input_tokens),
+      cacheWrite: String(r.usage.cache_creation_input_tokens),
+      output: String(r.usage.output_tokens),
+    }),
+    { to: "debug" },
+  );
+  if (r.isAnswered) return { text: r.text };
+  return {
+    cause:
+      r.reason === "aborted"
+        ? `timeout after ${TEST_JUDGE_TIMEOUT_MS} ms`
+        : r.reason,
+  };
+};
+
 // The ask reason of `asks` comes first, then the ask reason of `next`, so the ask of another slice stays.
 export const onCheck: Handler<"tool.check"> = async ($, e, next) => {
   const verdict = await next(e);
@@ -68,6 +129,13 @@ export const onCheck: Handler<"tool.check"> = async ($, e, next) => {
       root,
       home,
       facts,
+      ...(kept.testJudge && {
+        complete: remembered(
+          (request) => complete($, request),
+          verdicts,
+          TEST_JUDGE_CACHE_ENTRIES,
+        ),
+      }),
     },
   );
   if (!own) return verdict;

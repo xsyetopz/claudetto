@@ -246,3 +246,27 @@ export const SHELL_OPTIONS: Record<
   restore: { letters: "s", suffix: "", long: ["source"] },
   checkout: { letters: "bB", suffix: "", long: ["orphan"] },
 };
+
+/** The model of the judge of the lines that a call adds to a test file. A small model keeps the cost of each test edit low. */
+export const TEST_JUDGE_MODEL = "haiku";
+
+/** The time limit of one call of the test judge, in milliseconds. A test edit waits for it, so it is shorter than the limit of the turn gate. */
+export const TEST_JUDGE_TIMEOUT_MS = 15_000;
+
+/** The token cap of one reply of the test judge. The reply is one short JSON object. */
+export const TEST_JUDGE_MAX_TOKENS = 256;
+
+/** The most characters of the file text that the test judge gets. A longer text gets an ask with no model call. */
+export const TEST_JUDGE_MAX_CHARS = 16_000;
+
+/** The lines before and after each added line that the test judge gets, when the whole file is longer than `TEST_JUDGE_MAX_CHARS`. */
+export const TEST_JUDGE_CONTEXT_LINES = 8;
+
+/** The most characters of the reason of the test judge that an ask shows. A longer reason is cut. */
+export const TEST_JUDGE_WHY_MAX_CHARS = 300;
+
+/** The input and output tokens of one call of the test judge, for `evals/hooks.json`: the system prompt and at most `TEST_JUDGE_MAX_CHARS` characters of file text. One call of a diff with one added test used 663 tokens (`wiki/evidence/Evals-0.1.0.md`). */
+export const TEST_JUDGE_TOKENS = 5000;
+
+/** The most verdicts of the test judge that the hooks module keeps, by request. A repeat of the same diff in a session makes no new model call. */
+export const TEST_JUDGE_CACHE_ENTRIES = 64;

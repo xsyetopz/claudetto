@@ -4,183 +4,187 @@ import {
   onToolCall as h0,
   onTurnStep as h1,
 } from "../slices/agents/adapters/mod.ts";
-import { onCheck as h2 } from "../slices/asks/adapters/mod.ts";
 import {
-  onBash as h3,
-  onCompact as h4,
-  onPullRequestTool as h5,
-  onSpawn as h6,
-  onSubmit as h7,
+  keepOptions as h2,
+  onCheck as h3,
+} from "../slices/asks/adapters/mod.ts";
+import {
+  onBash as h4,
+  onCompact as h5,
+  onPullRequestTool as h6,
+  onSpawn as h7,
+  onSubmit as h8,
 } from "../slices/attribution/adapters/mod.ts";
-import { onSubmit as h8 } from "../slices/corrections/adapters/mod.ts";
+import { onSubmit as h9 } from "../slices/corrections/adapters/mod.ts";
 import {
-  keepOptions as h9,
-  onAskUserQuestion as h10,
-  onSecondOpinion as h11,
-  onSessionStart as h12,
+  keepOptions as h10,
+  onAskUserQuestion as h11,
+  onSecondOpinion as h12,
+  onSessionStart as h13,
 } from "../slices/decide/adapters/mod.ts";
 import {
-  onGcCommand as h13,
-  onSessionEnd as h14,
-  onSessionStart as h15,
-  onToolCall as h16,
+  onGcCommand as h14,
+  onSessionEnd as h15,
+  onSessionStart as h16,
+  onToolCall as h17,
 } from "../slices/gc/adapters/mod.ts";
-import { onBashCall as h17 } from "../slices/guard/adapters/mod.ts";
+import { onBashCall as h18 } from "../slices/guard/adapters/mod.ts";
 import {
-  keepOptions as h18,
-  onCommand as h19,
-  onCompact as h20,
-  onPluginRegister as h21,
-  onSetup as h22,
-  onStart as h23,
+  keepOptions as h19,
+  onCommand as h20,
+  onCompact as h21,
+  onPluginRegister as h22,
+  onSetup as h23,
+  onStart as h24,
 } from "../slices/handoff/adapters/mod.ts";
 import {
-  keepOptions as h24,
-  onCall as h25,
-  onCheck as h26,
-  onMark as h27,
-  onPolicyTool as h28,
-  onSessionStart as h29,
+  keepOptions as h25,
+  onCall as h26,
+  onCheck as h27,
+  onMark as h28,
+  onPolicyTool as h29,
+  onSessionStart as h30,
 } from "../slices/policy/adapters/mod.ts";
 import {
-  keepOptions as h30,
-  onAppend as h31,
-  onCompose as h32,
-  onSection as h33,
-  onSpawn as h34,
+  keepOptions as h31,
+  onAppend as h32,
+  onCompose as h33,
+  onSection as h34,
+  onSpawn as h35,
 } from "../slices/prompt/adapters/mod.ts";
-import { onToolCall as h35 } from "../slices/reads/adapters/mod.ts";
+import { onToolCall as h36 } from "../slices/reads/adapters/mod.ts";
 import {
-  onCheck as h36,
-  onStart as h37,
-  onTurnComplete as h38,
+  onCheck as h37,
+  onStart as h38,
+  onTurnComplete as h39,
 } from "../slices/repostate/adapters/mod.ts";
-import { onToolCall as h39 } from "../slices/sembr/adapters/mod.ts";
-import { onSessionStart as h40 } from "../slices/setup/adapters/mod.ts";
+import { onToolCall as h40 } from "../slices/sembr/adapters/mod.ts";
+import { onSessionStart as h41 } from "../slices/setup/adapters/mod.ts";
 import {
-  onAgentOffer as h41,
-  onToolDescribe as h42,
+  onAgentOffer as h42,
+  onToolDescribe as h43,
 } from "../slices/surface/adapters/mod.ts";
 import {
-  keepOptions as h43,
-  onCheck as h44,
-  onStop as h45,
-  onSubagentStop as h46,
-  onSubmit as h47,
-  onToolCall as h48,
-  onTurnAborted as h49,
+  keepOptions as h44,
+  onCheck as h45,
+  onStop as h46,
+  onSubagentStop as h47,
+  onSubmit as h48,
+  onToolCall as h49,
+  onTurnAborted as h50,
 } from "../slices/turngate/adapters/mod.ts";
 import {
-  onPermissionDenied as h50,
-  onStop as h51,
+  onPermissionDenied as h51,
+  onStop as h52,
 } from "../slices/usercheck/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
-  h9(options);
-  h18(options);
-  h24(options);
-  h30(options);
-  h43(options);
+  h2(options);
+  h10(options);
+  h19(options);
+  h25(options);
+  h31(options);
+  h44(options);
   // eval: agent.offer surface
-  on("agent.offer", h41);
+  on("agent.offer", h42);
   // eval: agent.spawn attribution
-  on("agent.spawn", { fork: false }, h6);
+  on("agent.spawn", { fork: false }, h7);
   // eval: agent.spawn prompt
-  on("agent.spawn", h34);
+  on("agent.spawn", h35);
   // eval: classic.PermissionDenied usercheck
-  on("classic.PermissionDenied", h50);
+  on("classic.PermissionDenied", h51);
   // eval: classic.SessionStart repostate
-  on("classic.SessionStart", h37);
+  on("classic.SessionStart", h38);
   // eval: classic.Stop turngate
-  on("classic.Stop", { stop_hook_active: [true, false] }, h45);
+  on("classic.Stop", { stop_hook_active: [true, false] }, h46);
   // eval: classic.Stop usercheck
-  on("classic.Stop", h51);
+  on("classic.Stop", h52);
   // eval: classic.SubagentStop turngate
-  on("classic.SubagentStop", h46);
+  on("classic.SubagentStop", h47);
   // eval: command.run gc
-  on("command.run", { command: "claudetto:gc" }, h13);
+  on("command.run", { command: "claudetto:gc" }, h14);
   // eval: command.run handoff
-  on("command.run", { command: "handoff" }, h19);
+  on("command.run", { command: "handoff" }, h20);
   // eval: command.run handoff
-  on("command.run", { command: "handoff-setup" }, h22);
+  on("command.run", { command: "handoff-setup" }, h23);
   // eval: plugin.register handoff
-  on("plugin.register", h21);
+  on("plugin.register", h22);
   // eval: prompt.compose prompt
-  on("prompt.compose", h32);
+  on("prompt.compose", h33);
   // eval: prompt.section prompt
-  on("prompt.section", h33);
+  on("prompt.section", h34);
   // eval: prompt.submit turngate
   on(
     "prompt.submit",
     { origin: [{ kind: "composer" }, { kind: "bridge" }, { kind: "sdk" }] },
-    h47,
+    h48,
   );
   // eval: prompt.submit attribution
-  on("prompt.submit", h7);
+  on("prompt.submit", h8);
   // eval: prompt.submit corrections
   on(
     "prompt.submit",
     { origin: [{ kind: "composer" }, { kind: "bridge" }, { kind: "sdk" }] },
-    h8,
+    h9,
   );
   // eval: session.append prompt
-  on("session.append", h31);
+  on("session.append", h32);
   // eval: session.compact attribution
-  on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h4);
+  on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h5);
   // eval: session.compact handoff
-  on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h20);
+  on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h21);
   // eval: session.end gc
-  on("session.end", h14);
+  on("session.end", h15);
   // eval: session.start decide
-  on("session.start", { isInteractive: [true, false] }, h12);
+  on("session.start", { isInteractive: [true, false] }, h13);
   // eval: session.start gc
-  on("session.start", { isInteractive: [true, false] }, h15);
+  on("session.start", { isInteractive: [true, false] }, h16);
   // eval: session.start handoff
-  on("session.start", { isInteractive: [true, false] }, h23);
+  on("session.start", { isInteractive: [true, false] }, h24);
   // eval: session.start policy
-  on("session.start", { isInteractive: [true, false] }, h29);
+  on("session.start", { isInteractive: [true, false] }, h30);
   // eval: session.start setup
-  on("session.start", h40);
+  on("session.start", h41);
   // eval: tool.call gc
-  on("tool.call", { tool: ["Bash", "Write"] }, h16);
+  on("tool.call", { tool: ["Bash", "Write"] }, h17);
   // eval: tool.call turngate
-  on("tool.call", { tool: /./ }, h48);
+  on("tool.call", { tool: /./ }, h49);
   // eval: tool.call decide
-  on("tool.call", { tool: ["AskUserQuestion"] }, h10);
+  on("tool.call", { tool: ["AskUserQuestion"] }, h11);
   // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h39);
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h40);
   // eval: tool.call agents
   on("tool.call", h0);
   // eval: tool.call attribution
-  on("tool.call", { tool: /^mcp__.+__(?:create|update)_pull_request$/ }, h5);
+  on("tool.call", { tool: /^mcp__.+__(?:create|update)_pull_request$/ }, h6);
   // eval: tool.call attribution
-  on("tool.call", { tool: ["Bash"] }, h3);
+  on("tool.call", { tool: ["Bash"] }, h4);
   // eval: tool.call guard
-  on("tool.call", { tool: ["Bash"] }, h17);
+  on("tool.call", { tool: ["Bash"] }, h18);
   // eval: tool.call policy
-  on("tool.call", { tool: /^(?:Edit|Write|NotebookEdit|Bash|mcp__.+)$/ }, h25);
+  on("tool.call", { tool: /^(?:Edit|Write|NotebookEdit|Bash|mcp__.+)$/ }, h26);
   // eval: tool.call policy
-  on("tool.call", { tool: /^Bash$/ }, h27);
+  on("tool.call", { tool: /^Bash$/ }, h28);
   // eval: tool.call reads
-  on("tool.call", { tool: /./ }, h35);
+  on("tool.call", { tool: /./ }, h36);
   // eval: tool.call decide
-  on("tool.call", { tool: /^mcp__claudetto__second_opinion$/ }, h11);
+  on("tool.call", { tool: /^mcp__claudetto__second_opinion$/ }, h12);
   // eval: tool.call policy
-  on("tool.call", { tool: /^mcp__claudetto__ai_policy$/ }, h28);
+  on("tool.call", { tool: /^mcp__claudetto__ai_policy$/ }, h29);
   // eval: tool.check asks
-  on("tool.check", { tool: ["Bash", "Write", "Edit", "MultiEdit"] }, h2);
+  on("tool.check", { tool: ["Bash", "Write", "Edit", "MultiEdit"] }, h3);
   // eval: tool.check policy
-  on("tool.check", { tool: /^(?:Edit|Write|NotebookEdit|Bash|mcp__.+)$/ }, h26);
+  on("tool.check", { tool: /^(?:Edit|Write|NotebookEdit|Bash|mcp__.+)$/ }, h27);
   // eval: tool.check repostate
-  on("tool.check", { tool: ["Bash", "Write", "Edit", "MultiEdit"] }, h36);
+  on("tool.check", { tool: ["Bash", "Write", "Edit", "MultiEdit"] }, h37);
   // eval: tool.check turngate
-  on("tool.check", { tool: ["Bash"] }, h44);
+  on("tool.check", { tool: ["Bash"] }, h45);
   // eval: tool.describe surface
-  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h42);
+  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h43);
   // eval: turn.complete repostate
-  on("turn.complete", h38);
+  on("turn.complete", h39);
   // eval: turn.complete turngate
-  on("turn.complete", { isAborted: true }, h49);
+  on("turn.complete", { isAborted: true }, h50);
   // eval: turn.step agents
   on("turn.step", h1);
 };

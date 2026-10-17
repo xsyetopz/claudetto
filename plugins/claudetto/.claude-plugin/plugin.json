@@ -9,6 +9,12 @@
   "repository": "https://github.com/xsyetopz/claudetto",
   "license": "MIT",
   "userConfig": {
+    "testJudge": {
+      "type": "boolean",
+      "title": "Test Judge",
+      "description": "On: a small model reads the lines that a call adds to a test file that exists, and an added line that makes a test weaker asks. Each check is one Haiku call of at most about 5,000 tokens. Off: the added lines get no check, and a lost or changed line still asks.",
+      "default": true
+    },
     "decide": {
       "type": "string",
       "title": "Second Opinion",

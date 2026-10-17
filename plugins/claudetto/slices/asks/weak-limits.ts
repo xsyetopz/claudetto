@@ -10,41 +10,6 @@ export const STATEMENT_MAX_CHARS = 4_000;
 export const JSON_DEPTH_MAX = 24;
 
 /**
- * The text of an added line of a test file that is control flow, a skip, a focus, or a timeout.
- * The check runs on the line without the inside of its strings and without its comment.
- * A line like this can stop a test before its asserts, so that an added assert checks nothing.
- */
-export const TEST_CONTROL = new RegExp(
-  [
-    // biome-ignore lint/plugin: a word list that code matches
-    String.raw`\b(?:if|else|elif|unless|when|return|try|catch|except|finally|switch|for|foreach|each|while|loop|break|continue|exit|and|or)\b`,
-    // biome-ignore lint/plugin: a word list that code matches
-    String.raw`\b(?:skip\w*|only|todo|xfail|pending|ignore\w*|disabled?|should_panic|expectedFailure|cfg\w*)\b`,
-    String.raw`(?<![.\w])(?:fit|xit|xtest|xdescribe|fdescribe)\b`,
-    "timeout|_exit\\b|\\?|&&|\\|\\|",
-    String.raw`^\}\s*,[^,]*\)\s*;?$`,
-    String.raw`\}\s*,\s*\d[\d_.e]*\s*\)\s*;?$`,
-  ].join("|"),
-  "i",
-);
-
-/**
- * The calls in an added line of a test file that hide a test: a runtime skip, a mocked module, a global assignment, or an assert count of zero.
- * An added line with one of them asks in any position, also in a new test block.
- */
-export const TEST_HIDING_CALL = new RegExp(
-  [
-    String.raw`\bpytest\.importorskip\s*\(`,
-    String.raw`\bmock\.module\s*\(`,
-    String.raw`\b(?:jest|vi)\.(?:mock|doMock|unstable_mockModule)\s*\(`,
-    String.raw`\bmock\.patch\b`,
-    String.raw`@(?:\w+\.)*patch\b`,
-    String.raw`\bglobalThis\.\w+\s*=(?![=>])`,
-    String.raw`\bexpect\.assertions\s*\(\s*0\s*\)`,
-  ].join("|"),
-);
-
-/**
  * The forms of an import line that has a name list, as the key part and the names.
  * A line of one of these forms may add names (package P54).
  * Group 1 is the part before the names, group 2 is the names, and group 3 is the part after them.
@@ -86,9 +51,6 @@ export const MULTI_LINE_IMPORTS = [
   /^(?:const|let|var)\s*\{[^{}]*\}\s*=\s*require/gm,
   /^from\s+[\w.]+\s+import\s*\([^()]*\)/gm,
 ];
-
-/** The start of a Python assignment of a lambda. An added one at module level asks. */
-export const PY_LAMBDA_ASSIGN = /^[A-Za-z_]\w*\s*=\s*lambda\b/;
 
 /** The start of a test in a test file. The check counts the tests, so a removed test shows. */
 export const TEST_DECLARATION = [
@@ -269,13 +231,6 @@ export const PYPROJECT_SECTIONS =
 /** The sections of `setup.cfg` that hold a linter, type-check, test, or security config. */
 export const SETUP_CFG_SECTIONS =
   /^(?:flake8|mypy|pylint(?:\..+)?|pycodestyle|pydocstyle|isort|bandit|codespell|vulture|pyflakes|coverage(?::.+)?|tool:pytest|pytest)$/;
-
-/** The start of an added line of a test file that asserts, such as `expect(`, `assert`, a Go `t.Errorf(`, or a `describe` block. */
-export const TEST_SAFE_START =
-  /^(?:await\s+)?(?:(?:self|this|t)\.)?(?:expect|assert\w*!?|should|describe|suite|context|Error|Errorf|Fatal|Fatalf)\s*\(|^assert\s/;
-
-/** The end of an added test declaration that opens a block or a list, such as `{`, `:`, or `]` for a Rust attribute. */
-export const TEST_OPEN_END = /[{:\]]\s*$/;
 
 /** The entries of a list that take files or rules away. */
 export const NEGATED_ENTRY = /^[!-]/;

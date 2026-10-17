@@ -6,6 +6,7 @@ import type {
   Payload,
   ToolInput,
 } from "../../../plugins/claudetto/slices/asks/domain/text.ts";
+import { editJudged } from "./calls.ts";
 import { filesByPath } from "./stub-fs.ts";
 import type { Verdict } from "./verdicts.ts";
 import { decideAsk as decide } from "./verdicts.ts";
@@ -188,17 +189,17 @@ for (const line of [
 test("a `Write` of a new test file with a skipped test gets an ask", async () => {
   asks(await write(TEST, 'test.skip("a", () => {});'), "src/a.test.mjs");
 });
-test("a module-level assert added to an existing test file gets an ask", async () => {
-  asks(
-    await edit(TEST, "// end", "assert.ok(f());\n// end", { [TEST]: "// end" }),
-    "src/a.test.mjs",
-  );
+test("a module-level assert added to an existing test file goes to the test judge", async () => {
+  const line = "assert.ok(f());";
+  expect(
+    await editJudged(TEST, "// end", "// end", `${line}\n// end`, line),
+  ).toBe(true);
 });
-test("a module-level assert beside a skipped test that the file holds gets an ask", async () => {
+test("a module-level assert beside a skipped test that the file holds goes to the test judge", async () => {
   const src = 'test.skip("a", () => {});\n// end';
-  asks(
-    await edit(TEST, "// end", "assert.ok(f());\n// end", { [TEST]: src }),
-    "src/a.test.mjs",
+  const line = "assert.ok(f());";
+  expect(await editJudged(TEST, src, "// end", `${line}\n// end`, line)).toBe(
+    true,
   );
 });
 test(".only in a source file that is not a test gets no ask", async () => {

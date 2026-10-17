@@ -33,10 +33,10 @@ const description = async (file: string) =>
   /^description:\s*(.*)$/m.exec(await Bun.file(file).text())?.[1] ?? "";
 
 const VARIANT_PINS: Readonly<Record<VariantKey, number>> = {
-  opus: 7428,
-  sonnet: 7201,
-  haiku: 7320,
-  fable: 7335,
+  opus: 8933,
+  sonnet: 8706,
+  haiku: 8825,
+  fable: 8840,
 };
 
 const BLOCK_PINS: Readonly<Record<VariantKey, number>> = {
@@ -49,7 +49,7 @@ const BLOCK_PINS: Readonly<Record<VariantKey, number>> = {
 const TEXT_PINS: Readonly<Record<string, [text: string, pin: number]>> = {
   "output style `Concise`": [
     await Bun.file(path.join(PLUGIN, "output-styles/Concise.md")).text(),
-    839,
+    1156,
   ],
   "`Agent` description": [TOOL_AGENT, 908],
   "`Bash` description": [TOOL_BASH, 746],

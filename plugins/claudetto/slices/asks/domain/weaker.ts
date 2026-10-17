@@ -29,6 +29,9 @@ type Kind = {
   weaker: (rel: string, before: string, after: string) => string | undefined;
 };
 
+/** The label of a test file in a reason. */
+export const TEST_FILE_LABEL = "a test file";
+
 const LINT: Kind = { label: "a lint config file", weaker: configWeaker };
 const BY_PATH_KIND: Record<string, Kind> = {
   "a lint config file": LINT,
@@ -48,7 +51,7 @@ const BY_PATH_KIND: Record<string, Kind> = {
 const kindOf = (rel: string, named: boolean): Kind | undefined => {
   const parts = rel.split("/");
   const name = parts.at(-1) as string;
-  if (isTestPath(rel)) return { label: "a test file", weaker: testWeaker };
+  if (isTestPath(rel)) return { label: TEST_FILE_LABEL, weaker: testWeaker };
   if (LIMIT_FILE_NAME.test(name))
     return { label: "a limits file", weaker: limitsWeaker };
   if (parts.at(-2) === CLAUDE_DIR && /^settings.*\.json$/.test(name))

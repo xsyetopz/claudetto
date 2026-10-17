@@ -7,6 +7,7 @@ import type {
   ToolInput,
 } from "../../../plugins/claudetto/slices/asks/domain/text.ts";
 import { SCAN_MAX_CHARS } from "../../../plugins/claudetto/slices/asks/limits.ts";
+import { editJudged } from "./calls.ts";
 import { filesByPath } from "./stub-fs.ts";
 import type { Verdict } from "./verdicts.ts";
 import { decideAsk as decide } from "./verdicts.ts";
@@ -198,10 +199,12 @@ for (const rel of [
     asks(await edit(file, "a", "b", { [file]: "a" }), rel);
   });
 }
-test("a `skip` key with a number value in a test file gets an ask", async () => {
+test("a `skip` key with a number value in a test file goes to the test judge", async () => {
+  const line = "const q = { skip: 2, take: 5 };";
+  const file = "/w/src/a.test.mjs";
   expect(
-    await addLine("src/a.test.mjs", "const q = { skip: 2, take: 5 };"),
-  ).not.toBe(undefined);
+    await editJudged(file, "// end", "// end", `${line}\n// end`, line),
+  ).toBe(true);
 });
 for (const line of [
   "const re = /biome-ignore/;",

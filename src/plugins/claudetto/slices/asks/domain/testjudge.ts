@@ -1,0 +1,134 @@
+// The judge of the lines that a call adds to a test file that exists (package P36), as pure functions.
+// The rules of `testdiff.ts` read no word of a test framework, so a small model reads the meaning of each added line, in any language.
+// The judge only makes a verdict stricter (D53).
+// When the model gives no verdict, the call asks, because an unknown change never passes.
+// The adapter makes the model call, and this file builds the request, parses the reply, and gives the reason.
+
+import {
+  TEST_JUDGE_CONTEXT_LINES,
+  TEST_JUDGE_MAX_CHARS,
+  TEST_JUDGE_WHY_MAX_CHARS,
+} from "../limits.ts";
+import {
+  TEST_JUDGE_PROMPT,
+  TEST_JUDGE_SYSTEM,
+  TEST_LINE_JUDGED,
+  TEST_LINE_UNJUDGED,
+} from "../prompts.ts";
+import { addedAt } from "./linediff.ts";
+import { squeeze } from "./scan.ts";
+import { shown } from "./shown.ts";
+
+/** The reply of one model call: its text, or the cause when the model gave no answer. */
+export type Reply = { readonly text: string } | { readonly cause: string };
+
+/** One model call with a system prompt and a user prompt. */
+export type Complete = (request: {
+  system: string;
+  prompt: string;
+}) => Promise<Reply>;
+
+/** What the judge decided, or `undefined` when the reply is not a verdict. */
+type Verdict = { weaker: false } | { weaker: true; line: string; why: string };
+
+/** The text of `after` with `+` before each added line, and the lines far from each added line cut when the text is long. */
+export const marked = (before: string, after: string): string => {
+  const now = after.split("\n");
+  const added = new Set(
+    addedAt(before.split("\n").map(squeeze), now.map(squeeze)),
+  );
+  const lines = now.map((l, i) => `${added.has(i) ? "+" : " "} ${l}`);
+  const whole = lines.join("\n");
+  if (whole.length <= TEST_JUDGE_MAX_CHARS) return whole;
+  const near = (i: number) =>
+    [...added].some((a) => Math.abs(a - i) <= TEST_JUDGE_CONTEXT_LINES);
+  const out: string[] = [];
+  let cut = 0;
+  lines.forEach((line, i) => {
+    if (near(i)) {
+      if (cut) out.push(`[… ${cut} lines …]`);
+      cut = 0;
+      out.push(line);
+    } else cut++;
+  });
+  if (cut) out.push(`[… ${cut} lines …]`);
+  return out.join("\n");
+};
+
+/** The request of one judge call, or `undefined` when the marked text is over `TEST_JUDGE_MAX_CHARS`. */
+export const judgeRequest = (
+  rel: string,
+  before: string,
+  after: string,
+): { system: string; prompt: string } | undefined => {
+  const text = marked(before, after);
+  return text.length > TEST_JUDGE_MAX_CHARS
+    ? undefined
+    : { system: TEST_JUDGE_SYSTEM, prompt: TEST_JUDGE_PROMPT({ rel, text }) };
+};
+
+/** The verdict in the text of the judge. The text is JSON, so the parse takes the span from the first `{` to the last `}`. */
+export const parseVerdict = (text: string): Verdict | undefined => {
+  const [start, end] = [text.indexOf("{"), text.lastIndexOf("}")];
+  if (start < 0 || end < start) return undefined;
+  let value: unknown;
+  try {
+    value = JSON.parse(text.slice(start, end + 1));
+  } catch {
+    return undefined;
+  }
+  if (typeof value !== "object" || value === null) return undefined;
+  const v = value as Record<string, unknown>;
+  if (v["weaker"] === false) return { weaker: false };
+  if (v["weaker"] !== true) return undefined;
+  const line = typeof v["line"] === "string" ? v["line"].trim() : "";
+  const why = typeof v["why"] === "string" ? v["why"].trim() : "";
+  return line && why ? { weaker: true, line, why } : undefined;
+};
+
+/** The finding of the judge for a call that adds code to a test file, or `undefined` when no added line makes a test weaker. */
+export const judgeAdded = async (
+  rel: string,
+  before: string,
+  after: string,
+  complete: Complete,
+): Promise<string | undefined> => {
+  const request = judgeRequest(rel, before, after);
+  if (request === undefined)
+    return TEST_LINE_UNJUDGED({
+      cause: `the text is over ${TEST_JUDGE_MAX_CHARS} characters`,
+    });
+  const reply = await complete(request);
+  if ("cause" in reply) return TEST_LINE_UNJUDGED({ cause: reply.cause });
+  const verdict = parseVerdict(reply.text);
+  if (verdict === undefined)
+    return TEST_LINE_UNJUDGED({ cause: "the reply is not a verdict" });
+  if (!verdict.weaker) return undefined;
+  const why =
+    verdict.why.length > TEST_JUDGE_WHY_MAX_CHARS
+      ? `${verdict.why.slice(0, TEST_JUDGE_WHY_MAX_CHARS)}…`
+      : verdict.why;
+  return TEST_LINE_JUDGED({ line: shown(verdict.line), why });
+};
+
+/**
+ * A `Complete` that keeps each reply that is a verdict in `kept`, by its request, so the same diff makes one model call.
+ * A reply that is not a verdict is not kept, so the next call tries the model again.
+ * `kept` holds at most `max` replies, and the oldest goes first.
+ */
+export const remembered =
+  (complete: Complete, kept: Map<string, Reply>, max: number): Complete =>
+  async (request) => {
+    const key = `${request.system}\n${request.prompt}`;
+    const found = kept.get(key);
+    if (found) return found;
+    const reply = await complete(request);
+    if (!("text" in reply) || parseVerdict(reply.text) === undefined)
+      return reply;
+    if (kept.size >= max) {
+      const oldest = kept.keys().next().value;
+      if (oldest !== undefined) kept.delete(oldest);
+    }
+    kept.set(key, reply);
+    return reply;
+  };

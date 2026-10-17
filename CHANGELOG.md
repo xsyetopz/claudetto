@@ -128,7 +128,19 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
   The `Concise` output style asks for the command that verifies each claim that is not verified.
 - The `Concise` output style is a short `<reply_style>` block of 705 bytes that says what to do, not what to avoid.
   It keeps `keep-coding-instructions: true`, because a model with no prompt variant gets its coding rules only from that field.
-- The `doing_tasks` section of the prompt tells Claude to do the `tasks.md` of a MiniSpec change in order, and to mark a task done only after its check passes.
+  Claude and the user work for one result, code that is right.
+  The tone of Claude is free, and the tone of the user is not a topic.
+  Strong words of the user about a problem tell Claude the severity of the problem.
+- The `doing_tasks` section of the prompt tells Claude to do the `tasks.md` of a MiniSpec change in order, to write the test of each task before its code, and to mark a task done only after its check passes.
+- A fix of a defect that no test covers starts with a test that fails on the defect.
+  The test goes into the tests of the project, or into a new file for the test runner of the language when the project has no tests, and not into `$TMPDIR`.
+  The test is a part of the fix, so Claude adds it with no offer.
+  The style evals allow a new test after the original test of the covering file, and the skipped export test stays as it was.
+- Claude decides an extra and does not offer it to the user.
+  The order is Jev, then the small Claude model of `second_opinion`, then Claude from the facts of the project, then the user.
+  Claude checks each answer before it uses it, and it chooses the approach that still works when the project grows.
+  The user chooses from options that Claude gives with the need that each one fits.
+  When the answer of the user does not settle it, Claude chooses the option that is easiest to change later.
 - The `verification` section tells Claude to find the checks of the project before the first claim, and to run each check that covers the change.
 - After a block of the turn gate, Claude gives the result first and then only the new facts, because the user already read the reply before it.
 - The judge `plain-reply` of the style evals passes a last sentence that names an extra as a fact, or that asks for an input that only the user has.
@@ -172,6 +184,14 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 
 ### Fixed
 
+- The `asks` slice no longer asks before an edit that only adds lines to a test file that exists, such as a new test above an old test or an `assert.equal(…)` call.
+  The old check had a list of safe added lines for each language, so an added line such as `assert.deepEqual(…)` asked.
+  In the `dontAsk` mode of the evals, this ask was a denial of the test that comes before a fix.
+  A small judge model, `haiku`, now reads the added lines in any language, and asks when an added line makes a test weaker.
+  When the model gives no verdict in 15 seconds, the call asks, and the reason tells Claude that a new test in a new test file needs no check.
+  The eval case `test-judge` fixes a defect that no test covers, so the new test goes into the test file that exists.
+  The same diff again in a session uses the kept verdict and makes no new model call.
+  The plugin option `testJudge` (title "Test Judge") turns the judge off.
 - The shared prompt now names `claudetto-run-checks` by its path under the plugin root, such as `<root>/bin/claudetto-run-checks`.
   The bare name failed with `command not found` (exit code 127) in a sandbox that blocks the read of the shell snapshot, which carries the `bin/` folders of the plugins in `PATH` (D57).
 - A signed commit works in the sandbox through the ssh-agent:

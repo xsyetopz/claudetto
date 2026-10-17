@@ -276,8 +276,9 @@
     "false": "plugins/claudetto/tests/reads.test.ts > a call with another input runs after a rejection"
   },
   "tool.check asks": {
-    "requests": 0,
-    "tokens": 0,
+    "requests": 1,
+    "tokens": 5000,
+    "eval": "test-judge",
     "blocks": true,
     "allow": "plugins/claudetto/tests/asks.test.ts > a `Write` of a source file gets no ask",
     "text": "plugins/claudetto/tests/asks.test.ts > a `Write` that changes a line of a test file asks",

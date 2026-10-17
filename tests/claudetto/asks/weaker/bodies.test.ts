@@ -1,10 +1,10 @@
 // Review payloads for the ask on a weaker test file (package P36).
-// A call asks when it changes or removes a line of a test file, or adds control flow, a skip, a focus, or a timeout.
-// A call that only adds tests and asserts gets no ask.
+// A call asks when it changes or removes a line of a test file.
+// A call that adds lines goes to the test judge, which a stub answers here, so no model call goes out.
 // Files are strings and no file is read.
 
 import { expect, test } from "bun:test";
-import { editAsks, writeAsks } from "../calls.ts";
+import { editAsks, editJudged, writeAsks, writeJudged } from "../calls.ts";
 
 const T = "/w/src/a.test.ts";
 const TS = `import {test,expect} from "bun:test";
@@ -106,20 +106,6 @@ const ASKS: Case[] = [
     "t.Log()",
   ],
   [
-    "if false",
-    QT,
-    QS,
-    "  expect(x).toBe(1);",
-    "  if (false) {\n    expect(x).toBe(1);\n  }",
-  ],
-  [
-    "return early",
-    QT,
-    QS,
-    "  expect(x).toBe(1);",
-    "  return;\n  expect(x).toBe(1);",
-  ],
-  [
     "expect cond",
     QT,
     QS,
@@ -160,13 +146,6 @@ const ASKS: Case[] = [
     "@unittest.skip('x')\ndef test_a",
   ],
   [
-    "py return",
-    "/w/test_a.py",
-    "def test_a():\n    assert x == 1\n",
-    "    assert x == 1",
-    "    return\n    assert x == 1",
-  ],
-  [
     "py assert or true",
     "/w/test_a.py",
     "def test_a():\n    assert x == 1\n",
@@ -184,13 +163,6 @@ const ASKS: Case[] = [
   ["ts xtest", QT, QS, 'test("a"', 'xit("a"'],
   ["ts rename helper", QT, QS, 'test("a", () => {', "const a = () => {"],
   [
-    "rust cfg",
-    "/w/tests/a.rs",
-    "#[test]\nfn a(){ assert_eq!(1,1); }\n",
-    "#[test]",
-    "#[test]\n#[cfg(any())]",
-  ],
-  [
     "go rename",
     "/w/a_test.go",
     "func TestA(t *testing.T){\n\tif x!=1 { t.Fatal() }\n}\n",
@@ -202,6 +174,43 @@ const ASKS: Case[] = [
 for (const [title, file, text, old, now] of ASKS)
   test(`the review payload \`${title}\` gets an ask`, async () => {
     expect(await editAsks(file, text, old, now)).toBe(true);
+  });
+
+/** `[title, file, text, old, new]` for an `Edit` that only adds lines, so it goes to the test judge. */
+const JUDGED: Case[] = [
+  [
+    "if false",
+    QT,
+    QS,
+    "  expect(x).toBe(1);",
+    "  if (false) {\n    expect(x).toBe(1);\n  }",
+  ],
+  [
+    "return early",
+    QT,
+    QS,
+    "  expect(x).toBe(1);",
+    "  return;\n  expect(x).toBe(1);",
+  ],
+  [
+    "py return",
+    "/w/test_a.py",
+    "def test_a():\n    assert x == 1\n",
+    "    assert x == 1",
+    "    return\n    assert x == 1",
+  ],
+  [
+    "rust cfg",
+    "/w/tests/a.rs",
+    "#[test]\nfn a(){ assert_eq!(1,1); }\n",
+    "#[test]",
+    "#[test]\n#[cfg(any())]",
+  ],
+];
+
+for (const [title, file, text, old, now] of JUDGED)
+  test(`the review payload \`${title}\` goes to the test judge`, async () => {
+    expect(await editJudged(file, text, old, now)).toBe(true);
   });
 
 test("a `Write` with fewer asserts gets an ask", async () => {
@@ -216,7 +225,7 @@ test("a `Write` with fewer asserts gets an ask", async () => {
 
 const NEW = 'test("c", () => {\n  expect(h()).toBe(3);\n});\n';
 
-/** `[title, added text]` for an `Edit` that adds the text before the test `b`, and must get an ask. */
+/** `[title, added text]` for an `Edit` that adds the text before the test `b`, so it goes to the test judge. */
 const ADDED: [string, string][] = [
   [
     "a new test with `if`",
@@ -259,10 +268,10 @@ const ADDED: [string, string][] = [
 ];
 
 for (const [title, added] of ADDED)
-  test(`${title} gets an ask`, async () => {
-    expect(await editAsks(T, TS, '\ntest("b"', `\n${added}\ntest("b"`)).toBe(
-      true,
-    );
+  test(`${title} goes to the test judge`, async () => {
+    expect(
+      await editJudged(T, TS, '\ntest("b"', `\n${added}\ntest("b"`, added),
+    ).toBe(true);
   });
 
 const PY = "/w/tests/test_a.py";
@@ -275,15 +284,15 @@ for (const added of [
   "\n@pytest.mark.skip\ndef test_b():\n    assert y == 2\n",
   "\ndef test_b():\n    pytest.skip('x')\n    assert y == 2\n",
 ])
-  test(`a new Python test with control flow gets an ask: ${JSON.stringify(added)}`, async () => {
-    expect(await writeAsks(PY, PYS, PYS + added)).toBe(true);
+  test(`a new Python test with control flow goes to the test judge: ${JSON.stringify(added)}`, async () => {
+    expect(await writeJudged(PY, PYS, PYS + added, added)).toBe(true);
   });
 
-test("a `cfg` attribute on an added Rust test gets an ask", async () => {
+test("a `cfg` attribute on an added Rust test goes to the test judge", async () => {
   const rs = "/w/tests/a.rs";
   const text = "#[test]\nfn a() { assert_eq!(1, 1); }\n";
   const more = "#[cfg(any())]\n#[test]\nfn b() { assert_eq!(2, 2); }\n";
-  expect(await writeAsks(rs, text, `${text}${more}`)).toBe(true);
+  expect(await writeJudged(rs, text, `${text}${more}`, more)).toBe(true);
 });
 
 test("an added test and an added assert get no ask", async () => {

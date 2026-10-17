@@ -7,6 +7,7 @@ import type {
   ToolInput,
 } from "../../../plugins/claudetto/slices/asks/domain/text.ts";
 import { SCAN_MAX_CHARS } from "../../../plugins/claudetto/slices/asks/limits.ts";
+import { editJudged } from "./calls.ts";
 import { filesByPath } from "./stub-fs.ts";
 import type { Verdict } from "./verdicts.ts";
 import { decideAsk as decide } from "./verdicts.ts";
@@ -192,8 +193,11 @@ for (const line of [
   'it("a", { skip: false }, f);',
   "const re = /it\\.skip|xit\\(/; const t = `t.Skip()`;",
 ]) {
-  test(`the line \`${line}\` in a test file gets an ask, as it holds a skip word`, async () => {
-    asks(await addLine("src/a.test.mjs", line), "src/a.test.mjs");
+  test(`the line \`${line}\` in a test file goes to the test judge, as it holds a skip word`, async () => {
+    const file = "/w/src/a.test.mjs";
+    expect(
+      await editJudged(file, "// end", "// end", `${line}\n// end`, line),
+    ).toBe(true);
   });
 }
 for (const line of ['const s = "test.skip(x)";', "const s = 'it.only';"]) {

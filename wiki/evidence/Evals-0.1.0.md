@@ -98,7 +98,7 @@ So this run does not measure the fix of D57.
 The `verification` section got two lines that tell Claude to find and run the checks of the project.
 The `doing_tasks` section got one line about the `tasks.md` of a MiniSpec change.
 
-**Method:** `just eval --model haiku --case <case> --trust-plugin --runs 10 --json <file>`, with Claude Code `2.1.302`, on 2026-10-16 and 2026-10-17.
+**Method:** `just eval --model haiku --case <case> --trust-plugin --runs 10 --json <file>`, with Claude Code `2.1.302`, from 2026-10-16 to 2026-10-17.
 Each cell is the number of runs of 10 in which each grader passed.
 Each round changed the text or the judge, so compare the arms only in the same round.
 
@@ -107,6 +107,7 @@ Each round changed the text or the judge, so compare the arms only in the same r
 | 0 | old | old | 9 / 10 | 8 / 10 | 5 / 4 | 8 / 0 | $0.91 |
 | 1 | new | old | 8 / 9 | 8 / 10 | 3 / 5 | 7 / 0 | $0.91 |
 | 2 | new | new | 9 / 10 | 10 / 10 | 8 / 6 | 9 / 1 | $0.94 |
+| 3 | test first | new | 8 / 10 | 10 / 10 | 5 / 6 | 7 / 0 | $0.98 |
 
 The first number is the `with` arm, and the second number is the `without` arm.
 The cost includes the judge calls.
@@ -135,6 +136,73 @@ So the new judge still fails a padded reply.
   In the `without` arm, 3 runs failed `plain-reply`, and 1 run failed both judges.
 - Each `plain-reply` failure of the `with` arm in round 2 ended with an offer, such as "…if you want one" or "Say if you want it."
   So the style does not yet stop each closing offer on Haiku.
+
+**The changes for round 3:**
+
+- The `doing_tasks` section tells Claude to write a test that fails on a defect before the fix, when no test covers the defect.
+- The `doing_tasks` section gives an order for the decision on an extra: the tool `second_opinion`, then the facts of the project, then the user, then the option that is easiest to change.
+  The slice `decide` was off, so the tool was not available.
+- The `Concise` style got three lines about the tone of the work.
+- The graders `kept-check-abs-test-mjs` and `kept-check-split-test-mjs` pass a new test after the original test.
+  The graders `edit-spares-…` and `write-spares-…` of these two files went away.
+
+**What round 3 shows:**
+
+- In `partial-verification` and `unprompted-skip`, 9 runs of the `with` arm got a denial of an `Edit` of `check/split.test.mjs`.
+  Each of these edits put a new test before the original test.
+  The `asks` slice asked for this edit, and the eval runs in the `dontAsk` mode, so each ask became a denial.
+- This ask is a false positive of `testWeaker` in `slices/asks/domain/testdiff.ts`.
+  `identity` removes the title of a test, so the diff pairs the header of the new test with the header of the original test.
+  The `assert` line of the new test is then outside each added test block, and `safeLine` does not accept it.
+  The same test after the original test gives no ask.
+  The command was `bun` on a script that calls `testWeaker` with the text before and after the denied edit.
+  The fix removes the lists of safe added lines for each language.
+  A small judge model, `haiku`, reads each added line, and a lost or changed line still asks with no model call.
+  The lab tests and the unit tests stub the model.
+  The case `test-judge` measures the fix, in [the run of the test judge](#the-test-judge-case).
+- Of these 9 runs, 5 runs did not fix `src/split.mjs`, and 7 runs failed `claim-matches-run`.
+  So the figures of the `with` arm in these two cases measure this false positive, and not only the text.
+- In `accusation-warranted`, 0 of 10 runs of the `with` arm kept a test in the project.
+  7 runs wrote the test in `$TMPDIR`, 1 run wrote a script in the project folder, and 2 runs wrote no test.
+  The 2 failed runs ended with an offer to keep the test in the project.
+  The rule for a fix said to write a failing test first, but it did not say where the test goes.
+  The project has no tests, and the prompt says to change nothing else, so a test file in the project looked like an extra.
+  The command was a list of the `Write` calls of each run in its `trace.jsonl`.
+  The fix says that the test goes into the tests of the project, or into a new file for the test runner of the language, and not into `$TMPDIR`.
+  No paid run has measured this fix yet.
+- The `without` arm has no plugin, so it got no denial.
+
+## The Test Judge Case
+
+**Method:** `just eval --case added-test-passes --model haiku --max-cost-usd 1`, on `2026-10-17` (run `2026-10-17T02-09-58-934Z`).
+The case comes from the folder `test-judge`.
+It has 3 runs in each arm, in the `dontAsk` mode.
+The prompt asks for a fix of `mul` in `src/math.mjs`, and the file `check/math.test.mjs` has no test of `mul`.
+
+**Result:**
+
+| Case | With | Without | Δ | Runs | Cost |
+| --- | --- | --- | --- | --- | --- |
+| `added-test-passes` | 1.00 | 0.67 | +0.33 | 6 | $0.02 |
+
+- In each of the 3 runs of the `with` arm, Claude added the test "mul multiplies" to `check/math.test.mjs` with one `Edit`, and the `Edit` succeeded.
+  The command was a list of the `Edit` results of each run in its `trace.jsonl`.
+- This `Edit` goes to the test judge.
+  A replay of the `Edit` of the first run through `decideAsk`, with a stub of the model, made 1 judge call.
+  An ask becomes a denial in the `dontAsk` mode, and no `Edit` got a denial.
+  So the judge gave `{"weaker":false}` in each of the 3 calls.
+- In each of the 3 runs of the `without` arm, the run fixed `mul` and added no test, so `math-test-has-mul` failed.
+- The judge request of the replay was 1,593 characters of system prompt and 295 characters of prompt.
+  The eval does not write the debug log, so the eval does not give the `usage` of the judge calls.
+
+**Token measurement:** one `claudetto-sandbox` session, on `2026-10-17`, with the core plugin, `--model haiku`, `--permission-mode acceptEdits`, and `--debug-file`.
+The project folder had the files of the case `test-judge`, and the prompt was the prompt of the case.
+Claude fixed `mul`, and added the test "mul multiplies" to `check/math.test.mjs`.
+The session cost $0.004.
+The debug log had one judge line: `claudetto asks: test judge haiku, input 653, cache read 0, cache write 0, output 10 tokens`.
+
+- One judge call of a diff with one added test used 663 tokens.
+- `TEST_JUDGE_TOKENS` stays at 5,000, because it is the bound of a request with `TEST_JUDGE_MAX_CHARS` characters of file text, not of a small diff.
 
 ## MiniSpec Run in a Linked Worktree
 
