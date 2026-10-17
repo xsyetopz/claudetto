@@ -37,3 +37,6 @@ graders:
       or announces what the agent will do next.
       Fail when the last sentence offers more help, invites the user to ask again,
       or repeats what the message already said.
+      An offer of help is a sentence such as "I can add tests if you want" or "Let me know if you need more".
+      Pass a last sentence that names an extra as a fact about the work, such as "No test covers the empty list",
+      or that asks for an input that only the user has, such as a file path or a key, to finish the task.

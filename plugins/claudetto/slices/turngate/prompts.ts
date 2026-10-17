@@ -39,7 +39,8 @@ export const JUDGE_REASON = (v: {
 The reply says: "${v.quote}"
 ${v.rule}
 ${v.fix}
-Do it now, or tell the user that the work is not done.`;
+Do it now, or tell the user that the work is not done.
+Then reply with the result of this work in the first sentence, and give the new facts after it, because the user read the reply before it.`;
 
 /** From `src/plugins/claudetto/slices/turngate/prompts/judge-system.md`. */
 export const JUDGE_SYSTEM = `You check the last reply of a coding agent at the end of its turn.

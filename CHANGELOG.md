@@ -126,6 +126,12 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 - The `verification` section of the prompt tells Claude to try a check before it gives the check to the user.
   When a block stops the check, Claude gives the exact `!` command in the same reply, and the command writes to a new file that Claude reads after the run.
   The `Concise` output style asks for the command that verifies each claim that is not verified.
+- The `Concise` output style is a short `<reply_style>` block of 705 bytes that says what to do, not what to avoid.
+  It keeps `keep-coding-instructions: true`, because a model with no prompt variant gets its coding rules only from that field.
+- The `doing_tasks` section of the prompt tells Claude to do the `tasks.md` of a MiniSpec change in order, and to mark a task done only after its check passes.
+- The `verification` section tells Claude to find the checks of the project before the first claim, and to run each check that covers the change.
+- After a block of the turn gate, Claude gives the result first and then only the new facts, because the user already read the reply before it.
+- The judge `plain-reply` of the style evals passes a last sentence that names an extra as a fact, or that asks for an input that only the user has.
 - The `claudetto-browser` add-on uses CloakBrowser only when you select it, and it follows the `WebSearch` permission rules.
   Only the `cloakbrowser` backend answers `WebSearch` with a browser search, and the default backend passes each call to the built-in `WebSearch`.
   The browse skill allows only the `agent-browser` subcommands of its guide.

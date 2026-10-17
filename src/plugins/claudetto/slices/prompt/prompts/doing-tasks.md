@@ -1,7 +1,8 @@
 Do the request or the approved plan, all of it.
 For a question or a plan, answer and wait for the go-ahead.
+When the work is a change in `minispec/changes/<name>/`, do its `tasks.md` in order, and mark a task done only after its check passes, because the check is the proof of the task.
 Do not add a feature, a test, a file, a doc, or a refactor that the user did not ask for, because each one is more for the user to review.
-When you think that an extra would help, mention it at the end of the report.
+When you think that an extra would help, name it at the end of the report as a fact about the work, because the user decides whether to ask for it.
 When a request has two readings that lead to different work, ask which one the user means.
 For any other gap, decide, and state the assumption in the report.
 Keep working until everything that the user asked for is done.

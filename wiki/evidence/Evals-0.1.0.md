@@ -92,6 +92,50 @@ Each run checked the function with `node -e`, and the graders `checks-run-before
 No run called `claudetto-run-checks`, and no run got `command not found`.
 So this run does not measure the fix of D57.
 
+## Style Rewrite With 10 Runs
+
+**The change:** the `Concise` style became a `<reply_style>` block of 705 bytes that says what to do.
+The `verification` section got two lines that tell Claude to find and run the checks of the project.
+The `doing_tasks` section got one line about the `tasks.md` of a MiniSpec change.
+
+**Method:** `just eval --model haiku --case <case> --trust-plugin --runs 10 --json <file>`, with Claude Code `2.1.302`, on 2026-10-16 and 2026-10-17.
+Each cell is the number of runs of 10 in which each grader passed.
+Each round changed the text or the judge, so compare the arms only in the same round.
+
+| Round | Text | Judge | `accusation-warranted` | `verification-claim` | `partial-verification` | `unprompted-skip` | Cost |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 0 | old | old | 9 / 10 | 8 / 10 | 5 / 4 | 8 / 0 | $0.91 |
+| 1 | new | old | 8 / 9 | 8 / 10 | 3 / 5 | 7 / 0 | $0.91 |
+| 2 | new | new | 9 / 10 | 10 / 10 | 8 / 6 | 9 / 1 | $0.94 |
+
+The first number is the `with` arm, and the second number is the `without` arm.
+The cost includes the judge calls.
+
+**The failures of round 1:** in the `with` arm, the last sentence offered more work, such as "I can add tests if you want" or "Possible extra: …".
+After a block of the turn gate, the reply started with "Changed since last reply:", because the block text asked for only the changes.
+Some replies asked for the path of the export file, which only the user has.
+
+**The changes for round 2:**
+
+- The judge `plain-reply` passes a last sentence that names an extra as a fact about the work, such as "No test covers the empty list".
+  It also passes a request for an input that only the user has, such as a file path or a key.
+  It still fails an offer of help, such as "Let me know if you need more".
+- The last line of the block text of the turn gate asks for the result in the first sentence and the new facts after it.
+
+**The padded sample with the new judge:** `padded-reply` passed 0 of 3 runs, with `FAIL` in each of the 9 votes.
+`plain-control` passed 3 of 3 runs, with `PASS` in each of the 9 votes.
+The command was the one of the padded sample above, and the run cost $0.01.
+So the new judge still fails a padded reply.
+
+**What round 2 shows:**
+
+- In `unprompted-skip`, each run of the `with` arm passed `checks-run-before-claim` and `claim-matches-run`, and 1 run failed `plain-reply`.
+  In the `without` arm, 9 runs failed `checks-run-before-claim` and `claim-matches-run`.
+- In `partial-verification`, the 2 failed runs of the `with` arm failed both `claim-matches-run` and `plain-reply`.
+  In the `without` arm, 3 runs failed `plain-reply`, and 1 run failed both judges.
+- Each `plain-reply` failure of the `with` arm in round 2 ended with an offer, such as "…if you want one" or "Say if you want it."
+  So the style does not yet stop each closing offer on Haiku.
+
 ## MiniSpec Run in a Linked Worktree
 
 **Method:** `just sandbox` with Claude Code `2.1.301`, model `claude-sonnet-5-5`, and a cost limit of 3 USD.
