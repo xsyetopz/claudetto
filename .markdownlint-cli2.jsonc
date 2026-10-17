@@ -7,8 +7,7 @@
     "external/**",
     ".claude/**",
     ".agents/**",
-    ".claudetto/**",
-    ".dotclaude/**",
+    "**/.claudetto/**",
     "src/**",
     "plugins/*/evals/results/**"
   ]
