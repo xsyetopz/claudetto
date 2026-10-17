@@ -72,15 +72,11 @@ const writeCredentials = async (home: string, token: string) => {
 /** Runs the tool. `extra` sets or (with `undefined`) removes environment variables. */
 const run = async (s: Setup, extra: Env = {}, args: string[] = []) => {
   const base = withPathFirst(process.env, s.bin);
-  // An `extra.PATH` replaces the search path. Windows names it `Path`, so the old key goes first.
-  if ("PATH" in extra)
-    for (const key of Object.keys(base))
-      if (key.toUpperCase() === "PATH") delete base[key];
+  // An `extra.PATH` replaces the search path.
+  if ("PATH" in extra) delete base["PATH"];
   const env: Env = {
     ...base,
     HOME: s.home,
-    // Windows finds the home folder in `USERPROFILE`.
-    USERPROFILE: s.home,
     FAKE_OUT: s.out,
     ...extra,
   };
@@ -165,8 +161,6 @@ test("the config is in the sandbox folder, not in the real ~/.claude", async () 
   const config = path.join(path.resolve(sandbox), "config");
   expect(seen.env["CLAUDE_CONFIG_DIR"]).toBe(config);
   expect(seen.env["HOME"]).toBe(path.join(path.resolve(sandbox), "home"));
-  if (process.platform === "win32")
-    expect(seen.env["USERPROFILE"]).toBe(seen.env["HOME"]);
   expect(fs.existsSync(path.join(config, ".claude.json"))).toBeTruthy();
   expect(config.startsWith(process.env["TMPDIR"] as string)).toBeTruthy();
   expect(!config.startsWith(path.join(REAL_HOME, ".claude"))).toBeTruthy();

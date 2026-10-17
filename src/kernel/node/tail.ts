@@ -14,7 +14,7 @@ export const readTail = async (
   const bun = Bun.file(file);
   try {
     const stat = await bun.stat();
-    // Windows opens a folder without an error, and POSIX gives `EISDIR` on the read.
+    // A folder opens without an error, and the read gives `EISDIR`.
     if (stat.isDirectory()) return null;
     const size = stat.size;
     const length = Math.min(size, max);

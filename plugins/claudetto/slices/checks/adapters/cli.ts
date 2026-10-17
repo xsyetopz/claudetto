@@ -47,12 +47,8 @@ export interface CheckRunner {
   ): ProcessResult | Promise<ProcessResult>;
 }
 
-/** Ends the process group of `pid`: the check and each child that it started. On Windows `taskkill /T` ends the tree. */
-const killGroup = (pid: number, windows: boolean): void => {
-  if (windows) {
-    Bun.spawnSync(["taskkill", "/T", "/F", "/PID", String(pid)]);
-    return;
-  }
+/** Ends the process group of `pid`: the check and each child that it started. */
+const killGroup = (pid: number): void => {
   try {
     process.kill(-pid, "SIGKILL");
   } catch (err) {
@@ -71,7 +67,7 @@ export const groupRunner: CheckRunner = {
       ...(options.cwd === undefined ? {} : { cwd: options.cwd }),
       stdout: "pipe",
       stderr: "pipe",
-      detached: process.platform !== "win32",
+      detached: true,
     });
     let timedOut = false;
     const timer =
@@ -79,7 +75,7 @@ export const groupRunner: CheckRunner = {
         ? undefined
         : setTimeout(() => {
             timedOut = true;
-            killGroup(proc.pid, process.platform === "win32");
+            killGroup(proc.pid);
           }, options.timeout);
     const [stdout, stderr, exitCode] = await Promise.all([
       new Response(proc.stdout).text(),
@@ -105,7 +101,6 @@ export interface Deps {
   readonly writeLog: (file: string, text: string) => Promise<void>;
   readonly log: (line: string) => void;
   readonly error: (line: string) => void;
-  readonly windows: boolean;
 }
 
 const defaults = (): Deps => ({
@@ -118,7 +113,6 @@ const defaults = (): Deps => ({
   },
   log: (line) => console.log(line),
   error: (line) => console.error(line),
-  windows: process.platform === "win32",
 });
 
 /** Why a run ended with no exit code: the time bound, or else the signal that ended it. */
@@ -134,7 +128,7 @@ const execute = async (
   cwd: string,
   deps: Deps,
 ): Promise<{ exitCode: number | null; output: string; stop: Stop | null }> => {
-  const argv = plainArgv(command) ?? shellArgv(command, deps.windows);
+  const argv = plainArgv(command) ?? shellArgv(command);
   try {
     const r = await deps.runner.run(argv.file, argv.args, {
       cwd,

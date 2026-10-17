@@ -174,7 +174,7 @@ The suite format and the results are on the [Evals](Evals) page.
 The workflows are in `.github/workflows/`.
 
 - `ci.yml` runs on each push and each pull request.
-  Its `check` job runs `just ci` on Ubuntu, macOS, and Windows.
+  Its `check` job runs `just ci` on Ubuntu and macOS.
   It installs `Bun` from `package.json`, `just` 1.58.0, and Claude Code 2.1.302.
   Its `all-green` job is the one to require in branch protection.
 - `claude.yml` answers an `@claude` mention in an issue, a review comment, or a review, with `anthropics/claude-code-action`.

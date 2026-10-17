@@ -19,7 +19,6 @@ import {
 import { tmpDir } from "../support/repo.ts";
 
 const dir = tmpDir("sessions-errors");
-// On Windows a link has a kind, so a loop to a folder needs `"dir"`, or the link reads as a file.
 const loopTo = (file: string, kind?: "dir") => fs.symlinkSync(file, file, kind);
 
 test("`rethrowUnless` returns for a listed code or name and throws the rest", async () => {

@@ -7,14 +7,8 @@ export const QUERY_TIMEOUT_MS = 2000;
 /** The hook timeout of `SessionStart`, in seconds, as `slice.ts` gives it to Claude Code. */
 export const SESSION_START_HOOK_TIMEOUT_S = 10;
 
-/**
- * How long the sync at session start may run.
- * On Windows the sync also gets `TREE_GRACE_MS` more, so the total is 9 s, which is 1 s under the hook timeout.
- */
+/** How long the sync at session start may run. With `HOOK_MARGIN_MS` the total is 7 s, which is 3 s under the hook timeout. */
 export const START_SYNC_TIMEOUT_MS = 6000;
-
-/** The time that `run-tree.ts` gets to start and to end the process tree after the limit on Windows. */
-export const TREE_GRACE_MS = 3000;
 
 /** The time that a hook timeout keeps free after the last wait of its command, so Claude Code never ends a sync that still runs. */
 export const HOOK_MARGIN_MS = 1000;
@@ -24,15 +18,14 @@ export const BACKGROUND_SYNC_TIMEOUT_MS = 60000;
 
 /**
  * The hook timeout of the sync after an edit, in seconds.
- * It covers `BACKGROUND_SYNC_TIMEOUT_MS`, the Windows `TREE_GRACE_MS`, and `HOOK_MARGIN_MS`.
+ * It covers `BACKGROUND_SYNC_TIMEOUT_MS` and `HOOK_MARGIN_MS`.
  */
 export const BACKGROUND_HOOK_TIMEOUT_S = Math.ceil(
-  (BACKGROUND_SYNC_TIMEOUT_MS + TREE_GRACE_MS + HOOK_MARGIN_MS) / 1000,
+  (BACKGROUND_SYNC_TIMEOUT_MS + HOOK_MARGIN_MS) / 1000,
 );
 
-/** The age at which a sync lock counts as left by a dead process. It is longer than the longest sync with its grace. */
-export const LOCK_STALE_MS =
-  BACKGROUND_SYNC_TIMEOUT_MS + TREE_GRACE_MS + HOOK_MARGIN_MS;
+/** The age at which a sync lock counts as left by a dead process. It is longer than the longest sync. */
+export const LOCK_STALE_MS = BACKGROUND_SYNC_TIMEOUT_MS + HOOK_MARGIN_MS;
 
 /** The shortest time that a catch-up sync in the same run needs. With less time left, the run leaves the work to the next run. */
 export const MIN_CATCH_UP_MS = 2000;
@@ -43,6 +36,5 @@ export const ERROR_TEXT_MAX_CHARS = 300;
 /** How long the sync after a `git` command may run. The `git` result waits for it, so it is shorter. */
 export const GIT_SYNC_TIMEOUT_MS = 15000;
 
-/** How long the mod handler waits for the process of the sync after a `git` command. It covers the sync, the Windows grace, and the margin. */
-export const GIT_RUN_TIMEOUT_MS =
-  GIT_SYNC_TIMEOUT_MS + TREE_GRACE_MS + HOOK_MARGIN_MS;
+/** How long the mod handler waits for the process of the sync after a `git` command. It covers the sync and the margin. */
+export const GIT_RUN_TIMEOUT_MS = GIT_SYNC_TIMEOUT_MS + HOOK_MARGIN_MS;

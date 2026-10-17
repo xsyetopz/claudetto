@@ -10,17 +10,7 @@ import {
   withCostBound,
 } from "../../../plugins/claudetto-lab/slices/eval-compare/domain/compare.ts";
 
-// The fake runner reads the arguments as an array, which `runProgram` passes except on Windows, where it passes a command line.
-// The Windows form is pinned in `tests/claudetto-lab/run-program.test.ts`.
-const runBoth = async (...args: Parameters<typeof runBothOn>) => {
-  const platform = Object.getOwnPropertyDescriptor(process, "platform");
-  Object.defineProperty(process, "platform", { value: "linux" });
-  try {
-    return await runBothOn(...args);
-  } finally {
-    Object.defineProperty(process, "platform", platform as PropertyDescriptor);
-  }
-};
+const runBoth = runBothOn;
 
 /** A valid result document: one case with a score, and a plugin that loaded. */
 const GOOD = JSON.stringify({

@@ -26,10 +26,10 @@ export const flagArg = (args: readonly string[]): string | undefined =>
   args.find((a) => a.trim().startsWith("-"));
 
 /**
- * The program and arguments that run `command` through the shell of the platform.
+ * The program and arguments that run `command` through `bash`.
  * `bash -o pipefail` makes a pipe fail when any part of it fails, so `bun test | tail -5` fails when `bun test` fails.
  */
-export const shellArgv = (command: string, windows: boolean): Argv =>
-  windows
-    ? { file: "cmd.exe", args: ["/d", "/s", "/c", command] }
-    : { file: "bash", args: ["-o", "pipefail", "-c", command] };
+export const shellArgv = (command: string): Argv => ({
+  file: "bash",
+  args: ["-o", "pipefail", "-c", command],
+});

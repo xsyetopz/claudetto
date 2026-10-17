@@ -90,7 +90,7 @@ export const CODE_COMMAND_MAX_WORDS = 32;
 
 /**
  * The tries of a rename in `writeAtomic`, the first one included.
- * On Windows, a rename over a file that another process holds open, such as an antivirus, an indexer, or an editor, can fail for a short time.
+ * On a Windows file system, such as `/mnt/c` on WSL, a rename over a file that another process holds open, such as an antivirus, an indexer, or an editor, can fail for a short time.
  */
 export const RENAME_TRIES = 10;
 

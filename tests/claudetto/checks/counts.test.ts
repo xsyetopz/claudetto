@@ -67,7 +67,7 @@ test("plain words run with no shell, and shell syntax needs one", () => {
     expect(needsShell(c), c).toBe(true);
     expect(plainArgv(c), c).toBeNull();
   }
-  expect(shellArgv("a | b", false)).toStrictEqual({
+  expect(shellArgv("a | b")).toStrictEqual({
     file: "bash",
     args: ["-o", "pipefail", "-c", "a | b"],
   });

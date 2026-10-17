@@ -162,7 +162,7 @@ The hard stop has these costs in that checkout:
   So setup checks them first and writes nothing when one is missing.
   It also writes nothing when `sandbox.network.allowAllUnixSockets` is `true`, or when a test run of the `bwrap` that Claude Code uses fails.
   It gives the install command, and `/claudetto:setup sandbox` runs it only after your approval.
-  Native Windows and WSL1 have no sandbox, so setup writes nothing there.
+  WSL1 has no sandbox, so setup writes nothing there.
 
 The hard stop does not cover a command that you type at the `!` prompt, an MCP tool, or a hook, because they run outside the sandbox.
 The gate of this slice still checks the MCP tools.

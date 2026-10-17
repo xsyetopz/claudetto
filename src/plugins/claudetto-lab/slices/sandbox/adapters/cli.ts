@@ -42,7 +42,7 @@ import {
   USAGE,
 } from "../prompts.ts";
 import { cleanEnv, loginToken } from "./login.ts";
-import { runProgram } from "./run-program.ts";
+import { spawnSyncOrNull } from "./run-program.ts";
 import { absolutePluginDirs, availableModels, setUp } from "./setup.ts";
 
 /**
@@ -137,8 +137,6 @@ export const main = async (argv: string[]): Promise<number> => {
     CLAUDE_CONFIG_DIR: config,
     HOME: home,
   };
-  // On Windows, Node and Claude Code find the home folder in `USERPROFILE`.
-  if (process.platform === "win32") env["USERPROFILE"] = home;
   delete env["ZDOTDIR"];
   delete env["XDG_CONFIG_HOME"];
   const token = await loginToken();
@@ -156,16 +154,11 @@ export const main = async (argv: string[]): Promise<number> => {
     )
       console.error(MODEL_NOT_ALLOWED({ model, allowed: allowed.join(", ") }));
   }
-  let r: ReturnType<typeof runProgram>;
-  try {
-    r = runProgram(claude, rest, { cwd: project, env, stdio: "inherit" });
-  } catch (err) {
-    // A word that a Windows shell cannot take safely, such as a prompt with `%`.
-    console.error(
-      `${(err as Error).message} Change that argument and run the command again.`,
-    );
-    return 1;
-  }
+  const r = spawnSyncOrNull(claude, rest, {
+    cwd: project,
+    env,
+    stdio: "inherit",
+  });
   if (!check) return r?.exitCode ?? 1;
 
   if (r?.exitCode !== 0) {

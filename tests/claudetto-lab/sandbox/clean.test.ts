@@ -133,7 +133,7 @@ test("`--clean` refuses a symlinked root and leaves the folder that the link poi
   await Bun.write(path.join(outside, ".claudetto-sandbox"), "");
   fs.chmodSync(path.join(outside, "config"), 0o555);
   fs.chmodSync(outside, 0o555);
-  // Windows reads a read-only folder as `0o444`, so the test compares with the mode that `chmod` gave.
+  // The test compares with the mode that `chmod` gave.
   const modeOf = (dir: string): number => fs.statSync(dir).mode & 0o777;
   const before = [modeOf(outside), modeOf(path.join(outside, "config"))];
   const link = path.join(scratch, "link");

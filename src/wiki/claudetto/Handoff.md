@@ -133,7 +133,6 @@ so each plugin that is not in `appendPlugins` loses the compaction hook.
 When an organization manages Claude Code, it gives no command and tells you to ask the admin.
 An organization manages Claude Code when the login is Team or Enterprise, an MDM profile exists,
 or the managed settings have a key that the file does not have.
-On Windows, it gives the content and no command.
 
 `claudetto` cannot see a managed MCP file, so in that case it shows no notice.
 

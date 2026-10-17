@@ -29,7 +29,7 @@ test("a cat print of a too large file is denied", async () => {
 test("the read helper denies a file over `READ_MAX_BYTES` by its size", async () => {
   const file = path.join(tmpDir("reads-large"), "big.txt");
   await Bun.write(file, "a\n".repeat(READ_MAX_BYTES / 2 + 1));
-  // A native Windows path has `\` and `~` (in `RUNNER~1`), which the print rule does not read as a simple command.
+  // The name is relative to `cwd`, so the print rule reads it as a simple command.
   const reason = await denyOf("tail -n 3 big.txt", path.dirname(file));
   expect(reason).toContain(toSlash(file));
   expect(reason).not.toContain("`offset`");

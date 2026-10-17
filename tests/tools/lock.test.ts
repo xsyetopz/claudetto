@@ -55,11 +55,9 @@ test("a lock whose process is gone is stale, and the next run takes it", async (
 
 test("a lock of another user's live process counts as held", async () => {
   // Process 1 is alive, and a signal to it fails with `EPERM`, not `ESRCH`.
-  // On Windows the live process of the system is 4.
   const file = lockIn();
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  const system = process.platform === "win32" ? 4 : 1;
-  await Bun.write(file, `${system} 2026-10-10T00:00:00.000Z\n`);
+  await Bun.write(file, `1 2026-10-10T00:00:00.000Z\n`);
   expect("holder" in (await takeLock(file, 4242))).toBeTruthy();
 });
 

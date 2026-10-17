@@ -98,14 +98,6 @@ The check prints that error, not the install hint.
 At session start, a failed sync adds `The sync at session start failed: <detail>.` (`prompts/session-sync-failed.md`) to the text of `prompts/session-line.md`.
 The check exits with 0 in each case.
 
-## Windows
-
-On Windows, npm installs `codegraph` as `codegraph.cmd`.
-That file runs only through a shell.
-The runner then starts the command through `slices/graph/adapters/run-tree.ts`.
-That runner ends the process tree at the time limit.
-It accepts only arguments that match `SHELL_SAFE_ARG` in `slices/graph/adapters/codegraph.ts`.
-
 ## Bounds
 
 All bounds are in `slices/graph/limits.ts`.
@@ -116,14 +108,13 @@ All bounds are in `slices/graph/limits.ts`.
 | `START_SYNC_TIMEOUT_MS` | 6000 ms | The sync at session start |
 | `SESSION_START_HOOK_TIMEOUT_S` | 10 s | The hook timeout at session start |
 | `BACKGROUND_SYNC_TIMEOUT_MS` | 60000 ms | The sync after an edit |
-| `TREE_GRACE_MS` | 3000 ms | Time for `run-tree.ts` to end the tree after the limit |
 | `HOOK_MARGIN_MS` | 1000 ms | Margin between a sync and its hook timeout |
-| `BACKGROUND_HOOK_TIMEOUT_S` | 64 s | The hook timeout after an edit, which covers the sync, the grace, and the margin |
-| `LOCK_STALE_MS` | 64000 ms | Age at which a lock is stale |
+| `BACKGROUND_HOOK_TIMEOUT_S` | 61 s | The hook timeout after an edit, which covers the sync and the margin |
+| `LOCK_STALE_MS` | 61000 ms | Age at which a lock is stale |
 | `MIN_CATCH_UP_MS` | 2000 ms | Least time left for one more sync by the lock holder |
 | `ERROR_TEXT_MAX_CHARS` | 300 | Length of the error detail |
 | `GIT_SYNC_TIMEOUT_MS` | 15000 ms | The sync after a `git` command |
-| `GIT_RUN_TIMEOUT_MS` | 19000 ms | The run of `hook.ts sync-git`, which covers the sync, the grace, and the margin |
+| `GIT_RUN_TIMEOUT_MS` | 16000 ms | The run of `hook.ts sync-git`, which covers the sync and the margin |
 
 ## The Session Line
 
@@ -133,7 +124,7 @@ It names `codegraph impact <symbol> -d 5`, because the default depth of 2 misses
 ## Why
 
 - The `SessionStart` hook and the edit hook are classic hooks.
-  They run `codegraph` on Bun with the Windows handling of `slices/graph/adapters/codegraph.ts`.
+  They run `codegraph` on Bun.
 - The `git` sync is a mod handler.
   A classic hook for each `git` command needs 12 hooks with an `if`.
   One classic hook without `if` starts a process on each `Bash` call.

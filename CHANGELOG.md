@@ -69,7 +69,7 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
   On Linux and WSL2 the seccomp filter helper of `@anthropic-ai/sandbox-runtime` is also required, and `sandbox.network.allowAllUnixSockets: true` is refused, because without the filter a sandboxed command can reach the `ssh-agent` socket or a Windows program.
   The test run uses the `bwrap` that Claude Code uses (`sandbox.bwrapPath`, else `PATH`), and on AppArmor restriction the message gives the profile for its real path.
   The check of the native build reads the running `claude` from `CLAUDE_CODE_EXECPATH`, and the `claude` on `PATH` only when that env var is not set.
-  On native Windows and WSL1, it writes nothing and tells why.
+  On WSL1, it writes nothing and tells why.
 - The drift notice of `/claudetto:setup` shows in the transcript with `$.ui.log` and is not sent to the model.
   In an eval run, the model added the notice to its reply of the task.
 - The wiki page [Engine Facts](https://github.com/xsyetopz/claudetto/wiki/Decisions-Engine) gives the facts of Claude Code behind these choices, so that a contributor does not replace them.
@@ -181,6 +181,11 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 - The text fallback of the subagent id in the usage scan of `claudetto-sessions`, which read `agentId:` from the text of a tool result.
 - Each setting and env entry that equals the default of Claude Code.
 - The trim entries that had no effect on the request: `disableAgentView`, `CLAUDE_CODE_REMOVE_PROMPT_STRINGS`, and `CLAUDE_CODE_DISABLE_CFC_PROMPT`.
+- The support of native Windows.
+  The plugins run on Linux, macOS, and WSL.
+  The code that only native Windows reaches is gone, such as the `cmd.exe` launch of a `.cmd` program, `taskkill`, and `run-tree.ts` of `claudetto-codegraph`.
+  The guards keep the Windows paths, such as `C:\Windows`, because a command on WSL can start a Windows program.
+  CI runs on Ubuntu and macOS.
 
 ### Fixed
 

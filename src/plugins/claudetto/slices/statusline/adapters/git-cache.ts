@@ -34,16 +34,12 @@ interface Saved {
 /**
  * The folder of the cache of this user in `root`: `claudetto-git-<uid>`, made with mode `0700` when it is missing.
  * It gives `null` when the folder exists with another owner, with group or other mode bits, or as a link.
- * With no user id (`null`), as on Windows, the folder is `claudetto-git`, because the temp folder there is a folder of this user, and mode bits do not apply.
  */
 export const cacheFolderOf = (
   root: string,
-  uid: number | null = process.getuid?.() ?? null,
+  uid: number = os.userInfo().uid,
 ): string | null => {
-  const dir = path.join(
-    root,
-    uid === null ? "claudetto-git" : `claudetto-git-${uid}`,
-  );
+  const dir = path.join(root, `claudetto-git-${uid}`);
   try {
     fs.mkdirSync(dir, { mode: 0o700 });
   } catch (err) {
@@ -52,8 +48,7 @@ export const cacheFolderOf = (
   try {
     const stat = fs.lstatSync(dir);
     const own =
-      stat.isDirectory() &&
-      (uid === null || (stat.uid === uid && (stat.mode & 0o077) === 0));
+      stat.isDirectory() && stat.uid === uid && (stat.mode & 0o077) === 0;
     return own ? dir : null;
   } catch {
     return null;
@@ -64,7 +59,7 @@ export const cacheFolderOf = (
 export const cacheFile = (
   dir: string,
   root: string = os.tmpdir(),
-  uid: number | null = process.getuid?.() ?? null,
+  uid: number = os.userInfo().uid,
 ): string | null => {
   const folder = cacheFolderOf(root, uid);
   if (folder === null) return null;

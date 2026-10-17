@@ -19,10 +19,9 @@ const stub = (on: On, verdict: Verdict = { decision: "allow" }): void => {
 /** Stubs the file system with `texts`: each path of `texts` is a file with that text. Gives each path that an `fs` event got. */
 const project = (on: On, texts: Record<string, string> = {}): string[] => {
   const seen: string[] = [];
-  // On Windows the engine can give a path with `\` and a drive letter, so the key drops both.
   const key = (p: string) => {
     seen.push(p);
-    return p.replace(/\\/g, "/").replace(/^[A-Za-z]:/, "");
+    return p;
   };
   on("fs.exists", (_$, e) => ({ value: key(e.path) in texts }));
   on("fs.stat", (_$, e) => ({

@@ -74,11 +74,8 @@ test("Linux with no known package manager gives no install command", () => {
   });
 });
 
-test("native Windows, WSL1, and another platform are not supported", () => {
+test("WSL1, and another platform are not supported", () => {
   const all = on("bwrap", "socat", "apt-get");
-  expect(
-    sandboxToolsOf({ platform: "win32", release: "10.0" }, all),
-  ).toStrictEqual({ kind: "unsupported", why: "windows" });
   expect(sandboxToolsOf(WSL1, all)).toStrictEqual({
     kind: "unsupported",
     why: "wsl1",

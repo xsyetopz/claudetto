@@ -25,9 +25,8 @@ or {
 } where {
   // The `ladder` line and the `evals` test references of `slice.ts` are fields of the slice contract (`src/kernel/slice.ts`) that never ship as text.
   // The rule finds them by their place in the code, not by their words.
-  // The path can use `/` or `\`, because Biome gives a Windows path with `\`.
   not and {
-    $filename <: r".*[/\\]slice\.ts",
+    $filename <: r".*/slice\.ts",
     $text <: within JsPropertyObjectMember(name=r"ladder|evals")
   },
   register_diagnostic(

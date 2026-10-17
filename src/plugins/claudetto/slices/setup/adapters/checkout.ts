@@ -62,7 +62,7 @@ export const verdictOf = async (
   repo: Repo,
   env: NodeJS.ProcessEnv,
 ): Promise<string | undefined> => {
-  const home = env["HOME"] ?? env["USERPROFILE"];
+  const home = env["HOME"];
   if (!home) return undefined;
   const file = path.join(home, STORE_DIR, FLAT_DIR, safeOf(keyOf(repo)));
   try {

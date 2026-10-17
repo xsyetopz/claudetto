@@ -32,8 +32,7 @@ const scaffolds = new Map<string, string>();
 
 /**
  * Runs the `scaffold.sh` of `caseDir` in a fresh folder under `os.tmpdir()` and returns the folder.
- * The run happens once for each `caseDir` in a process, because a bash start costs most of the time on Windows,
- * and the tests only read the folder.
+ * The run happens once for each `caseDir` in a process, because the tests only read the folder.
  * A test must not change or remove it. `tmp-root.ts` removes it at exit.
  */
 export const runScaffold = (caseDir: string): string => {
@@ -45,10 +44,6 @@ export const runScaffold = (caseDir: string): string => {
     env: {
       PATH: process.env["PATH"],
       HOME: cwd,
-      // Bash on Windows cannot start without the Windows folder.
-      ...(process.env["SYSTEMROOT"] && {
-        SYSTEMROOT: process.env["SYSTEMROOT"],
-      }),
       GIT_CONFIG_GLOBAL: "/dev/null",
       GIT_CONFIG_NOSYSTEM: "1",
     },

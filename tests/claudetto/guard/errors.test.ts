@@ -13,7 +13,7 @@ const loop = path.join(dir, "loop");
 fs.symlinkSync(loop, loop);
 
 test("the print check allows a file that is absent and throws for any other read error", async () => {
-  // The name is relative to `cwd`. A Windows path has backslashes and a short name with `~`, and the rule reads both as not simple.
+  // The name is relative to `cwd`.
   const tail = (file: string) =>
     denyOf(`tail -n 5 ${path.basename(file)}`, dir);
   expect(await tail(absent)).toBe(null);

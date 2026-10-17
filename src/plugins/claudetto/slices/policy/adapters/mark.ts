@@ -24,7 +24,7 @@ const diskOf = ($: EngineInterface): StoreFs => ({
 });
 
 const homeOf = async ($: EngineInterface): Promise<string | undefined> =>
-  (await $.env.get("HOME")) ?? (await $.env.get("USERPROFILE"));
+  $.env.get("HOME");
 
 /** Runs a program on the host. A program that cannot start gives `NOT_RUN`. */
 const runOf =

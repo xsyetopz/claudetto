@@ -49,7 +49,6 @@ import {
   SANDBOX_PLATFORM,
   SANDBOX_STOP,
   SANDBOX_TOOLS_MISSING,
-  SANDBOX_WINDOWS,
   SANDBOX_WROTE,
   SANDBOX_WSL1,
   SETTINGS_FAILED,
@@ -94,8 +93,7 @@ const toolsReady = async (
   if (tools.kind === "ready")
     return host.platform !== "linux" || linuxReady(cfg, env, io, probe);
   if (tools.kind === "unsupported") {
-    if (tools.why === "windows") io.log(SANDBOX_WINDOWS);
-    else if (tools.why === "wsl1") io.log(SANDBOX_WSL1);
+    if (tools.why === "wsl1") io.log(SANDBOX_WSL1);
     else io.log(SANDBOX_PLATFORM({ platform: host.platform }));
     return false;
   }

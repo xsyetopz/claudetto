@@ -381,12 +381,6 @@ The hard stop does not change a setting that you chose.
 Remove the setting or set it to \`false\`, and then run \`/claudetto:setup sandbox\` again.
 Nothing changed.`;
 
-/** From `src/plugins/claudetto/slices/setup/prompts/sandbox-windows.md`. */
-export const SANDBOX_WINDOWS = `The sandbox of Claude Code does not run on native Windows, so the hard stop cannot apply here.
-With \`sandbox.failIfUnavailable\`, Claude Code does not start in this checkout.
-To use the hard stop, run Claude Code in a WSL2 distribution.
-Nothing changed.`;
-
 /** From `src/plugins/claudetto/slices/setup/prompts/sandbox-wrote.md`. */
 export const SANDBOX_WROTE = (v: { file: string }): string =>
   `Wrote ${v.file}. Restart Claude Code in this checkout for the sandbox settings to take effect.`;

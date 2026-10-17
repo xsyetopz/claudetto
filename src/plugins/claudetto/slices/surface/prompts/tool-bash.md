@@ -1,5 +1,4 @@
 Runs a bash command and returns its output.
-{windows}
 
 - The working directory persists between calls. Use absolute paths, because `cd` in a compound command can cause a permission prompt. Shell state does not persist.
 - The output goes to you and not reliably to the user.

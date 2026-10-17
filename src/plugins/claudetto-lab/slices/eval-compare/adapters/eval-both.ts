@@ -5,7 +5,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { type Arm, armHeading, evalArgs, verdict } from "../domain/compare.ts";
-import { runProgram, type Spawn, spawnSyncOrNull } from "./run-program.ts";
+import { type Spawn, spawnSyncOrNull } from "./run-program.ts";
 
 /**
  * Runs the eval on one plugin folder with `--json FILE`.
@@ -16,22 +16,10 @@ const evalOf = async (
   opts: string[],
   json: string,
   spawn: Spawn,
-  log: (line: string) => void,
 ): Promise<Arm> => {
-  let code: number;
-  try {
-    code =
-      runProgram(
-        "claude",
-        evalArgs(plugin, opts, json),
-        { stdio: "inherit" },
-        spawn,
-      )?.exitCode ?? 1;
-  } catch (err) {
-    // A word that a Windows shell cannot take safely: say why, and count the run as failed.
-    log((err as Error).message);
-    code = 1;
-  }
+  const code =
+    spawn("claude", evalArgs(plugin, opts, json), { stdio: "inherit" })
+      ?.exitCode ?? 1;
   const file = Bun.file(json);
   const result = (await file.exists()) ? await file.text() : null;
   return { code, result };
@@ -54,9 +42,9 @@ export const runBoth = async (
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "claudetto-eval-"));
   try {
     log(armHeading("A", first));
-    const x = await evalOf(first, rest, path.join(dir, "a.json"), spawn, log);
+    const x = await evalOf(first, rest, path.join(dir, "a.json"), spawn);
     log(armHeading("B", second));
-    const y = await evalOf(second, rest, path.join(dir, "b.json"), spawn, log);
+    const y = await evalOf(second, rest, path.join(dir, "b.json"), spawn);
     const result = verdict(x, y);
     for (const line of result.lines) log(line);
     return result.code;

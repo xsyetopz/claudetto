@@ -54,7 +54,7 @@ export const git = (cwd: string, ...args: string[]) => {
   return r.stdout;
 };
 
-/** The repository of a test, with one commit and a branch. A copy of the template, because each `git` call costs most of the time on Windows. */
+/** The repository of a test, with one commit and a branch. A copy of the template, because each `git` call costs most of the time. */
 let template: string | undefined;
 const templateRepo = async () => {
   if (template) return template;

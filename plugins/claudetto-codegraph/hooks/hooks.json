@@ -20,7 +20,7 @@
           {
             "type": "command",
             "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/slices/graph/adapters/hook.ts\" sync",
-            "timeout": 64,
+            "timeout": 61,
             "async": true
           }
         ]

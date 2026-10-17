@@ -35,8 +35,7 @@ export const run = (
   };
 };
 
-// The fake is a Node script with a launcher: `sh` on POSIX, and `codegraph.cmd` on Windows,
-// where npm installs the real CLI as a `.cmd` file and `PATH` finds no file without an extension.
+// The fake is a Node script with a launcher: `sh`.
 // `FAKE_EXIT` makes it exit with that code after it writes `FAKE_STDERR` to stderr.
 // `FAKE_SLEEP_MS` makes `sync` wait, and then log `end`, so a test can see two syncs overlap.
 const FAKE = `import fs from "node:fs";
@@ -56,23 +55,16 @@ if (command === "sync" && process.env.FAKE_SLEEP_MS) {
 }
 `;
 
-/** Writes the fake `codegraph` into `bin`, with the launcher of the platform. */
+/** Writes the fake `codegraph` into `bin`, with the `sh` launcher. */
 const installFake = async (bin: string) => {
   await Bun.write(path.join(bin, "codegraph.mjs"), FAKE);
-  if (process.platform === "win32")
-    await Bun.write(
-      path.join(bin, "codegraph.cmd"),
-      `@"${process.execPath}" "${path.join(bin, "codegraph.mjs")}" %*\r\n`,
-    );
-  else {
-    // `Bun.write` has no `mode`, so the launcher gets its execute bit from `chmodSync`.
-    const launcher = path.join(bin, "codegraph");
-    await Bun.write(
-      launcher,
-      `#!/bin/sh\nexec "${process.execPath}" "$0.mjs" "$@"\n`,
-    );
-    fs.chmodSync(launcher, 0o755);
-  }
+  // `Bun.write` has no `mode`, so the launcher gets its execute bit from `chmodSync`.
+  const launcher = path.join(bin, "codegraph");
+  await Bun.write(
+    launcher,
+    `#!/bin/sh\nexec "${process.execPath}" "$0.mjs" "$@"\n`,
+  );
+  fs.chmodSync(launcher, 0o755);
 };
 
 /** A project folder and a fake CLI folder. `index` makes `.codegraph/codegraph.db`. */
@@ -95,23 +87,17 @@ export const setUp = async ({
   if (installed) await installFake(bin);
   // The child process needs more than `PATH` in its environment, so the base is the test environment
   // without the variables of a parent Claude Code session.
-  // On Windows the variable is `Path`, and a second key `PATH` would be a duplicate, so the base drops both.
   const base = Object.fromEntries(
     Object.entries(process.env).filter(
-      ([k]) => !k.startsWith("CLAUDE_") && k.toUpperCase() !== "PATH",
+      ([k]) => !k.startsWith("CLAUDE_") && k !== "PATH",
     ),
   );
-  // Windows needs its system folder on `PATH` for `cmd.exe`.
-  const system =
-    process.platform === "win32"
-      ? [`${process.env["SystemRoot"]}\\System32`]
-      : ["/usr/bin", "/bin"];
+  const system = ["/usr/bin", "/bin"];
   const env = {
     ...base,
     PATH: [bin, ...system].join(path.delimiter),
     FAKE_DIR: dir,
     HOME: dir,
-    USERPROFILE: dir,
   };
   return {
     dir,
@@ -121,7 +107,7 @@ export const setUp = async ({
     log: async () => {
       const file = path.join(dir, "log");
       return fs.existsSync(file)
-        ? (await Bun.file(file).text()).trim().split(/\r?\n/)
+        ? (await Bun.file(file).text()).trim().split("\n")
         : [];
     },
   };

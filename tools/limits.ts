@@ -6,9 +6,9 @@
 export const FILE_MAX_LINES = 300;
 /** Most lines in a test file (`*.test.*`). */
 export const TEST_FILE_MAX_LINES = 500;
-/** Most milliseconds for one test that makes a `git worktree`, because worktree creation on a Windows runner took more than the 5,000 ms of `bunfig.toml`. */
+/** Most milliseconds for one test that makes a `git worktree`, because worktree creation on a slow runner can take more than the 5,000 ms of `bunfig.toml`. */
 export const WORKTREE_TEST_TIMEOUT_MS = 15_000;
-/** Most milliseconds for one test that starts many `git` processes, because a `merge` test on a Windows runner took more than the 5,000 ms of `bunfig.toml`. */
+/** Most milliseconds for one test that starts many `git` processes, because a `merge` test on a slow runner can take more than the 5,000 ms of `bunfig.toml`. */
 export const GIT_REPO_TEST_TIMEOUT_MS = 15_000;
 /** Most milliseconds for one test that scans the bundle of the installed `claude`, which took 15 s under the CPU cap of `just docker`. */
 export const BUNDLE_SCAN_TIMEOUT_MS = 60_000;

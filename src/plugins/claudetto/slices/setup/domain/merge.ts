@@ -46,16 +46,11 @@ export const commandOf = (settings: unknown, key: string): unknown => {
 const show = (v: unknown) => (v === undefined ? "(unset)" : JSON.stringify(v));
 
 /**
- * `root` in one form on each platform: forward slashes, which Node and the shell of Claude Code take on Windows too.
- */
-export const slashRoot = (root: string): string => root.replaceAll("\\", "/");
-
-/**
- * `value` with each `PLUGIN_FOLDER` in a string replaced by `root` in the form of `slashRoot`.
+ * `value` with each `PLUGIN_FOLDER` in a string replaced by `root`.
  */
 export const fillPluginFolder = <T>(value: T, root: string): T => {
   if (typeof value === "string")
-    return value.replaceAll(PLUGIN_FOLDER, slashRoot(root)) as T;
+    return value.replaceAll(PLUGIN_FOLDER, root) as T;
   if (Array.isArray(value))
     return value.map((v: unknown) => fillPluginFolder(v, root)) as T;
   if (!isObject(value)) return value;

@@ -157,12 +157,11 @@ The hooks in `hooks/hooks.json` do three things:
 - They sync the index after an `Edit`, `Write`, `MultiEdit`, or `NotebookEdit`.
 - They sync the index after a `git` command that changes the tree (a mod handler in `adapters/mod.ts`).
 
-The add-on checks that the CLI is on `PATH` with `findOnPath` in `adapters/codegraph.ts`.
+The add-on runs `codegraph` by its name, and a missing CLI gives `ENOENT` in `adapters/codegraph.ts`.
 The bounds are in `slices/graph/limits.ts`.
 `QUERY_TIMEOUT_MS` is 2000.
 `START_SYNC_TIMEOUT_MS` is 6000.
-On Windows the sync also gets `TREE_GRACE_MS` (3000) more, so an earlier value of 8000 plus 3000 ran past the 10 s hook timeout (`SESSION_START_HOOK_TIMEOUT_S`).
-At 6000, the total is 9 s, which leaves each platform at least 1 s under the timeout.
+With `HOOK_MARGIN_MS` (1000), the total is 7 s, which is 3 s under the 10 s hook timeout (`SESSION_START_HOOK_TIMEOUT_S`).
 
 The alternatives are these:
 

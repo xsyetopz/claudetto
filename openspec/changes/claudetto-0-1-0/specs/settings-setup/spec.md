@@ -201,7 +201,7 @@ It SHALL write nothing when the platform has no sandbox or a program or the secc
 
 #### Scenario: A platform with no sandbox
 
-- **WHEN** the user runs `claudetto-setup sandbox --apply` on native Windows or WSL1
+- **WHEN** the user runs `claudetto-setup sandbox --apply` on WSL1
 - **THEN** no file changes and the output tells why
 
 #### Scenario: Remove

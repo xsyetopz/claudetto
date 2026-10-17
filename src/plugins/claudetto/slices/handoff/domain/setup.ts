@@ -12,7 +12,6 @@ import {
   ALREADY_LISTED,
   NEW_FILE_WARNING,
   OTHERS_LOST,
-  SETUP_ADMIN_SHELL,
   SETUP_CREATE,
   SETUP_RUN_COMMAND,
   SETUP_UPDATE,
@@ -23,7 +22,6 @@ import { isAppended, pluginId } from "./managed.ts";
 export const MANAGED_DIRS = {
   darwin: "/Library/Application Support/ClaudeCode",
   linux: "/etc/claude-code",
-  win32: "C:\\Program Files\\ClaudeCode",
 } as const;
 
 /** The OS of the machine, as a key of `MANAGED_DIRS`. */
@@ -32,9 +30,9 @@ export type Os = keyof typeof MANAGED_DIRS;
 /** The name of the managed settings file in its folder. */
 export const MANAGED_FILE = "managed-settings.json";
 
-/** The path of the managed settings file on `os`, with the separator of that OS. */
+/** The path of the managed settings file on `os`, */
 export const managedPath = (os: Os): string =>
-  `${MANAGED_DIRS[os]}${os === "win32" ? "\\" : "/"}${MANAGED_FILE}`;
+  `${MANAGED_DIRS[os]}/${MANAGED_FILE}`;
 
 /** The MDM profiles of Claude Code on macOS for the user `user`: the profile of the user and the profile of the device. */
 export const mdmProfiles = (user: string | undefined): string[] => [
@@ -121,11 +119,9 @@ export const setupHelp = (m: Machine, name: string): string => {
   ];
   if (m.file === undefined) lines.push(newFileWarning(m.others), "");
   lines.push(
-    m.os === "win32"
-      ? SETUP_ADMIN_SHELL
-      : SETUP_RUN_COMMAND({
-          command: sudoCommand(dir, JSON.stringify(merged)),
-        }),
+    SETUP_RUN_COMMAND({
+      command: sudoCommand(dir, JSON.stringify(merged)),
+    }),
   );
   return lines.join("\n");
 };

@@ -29,8 +29,6 @@ test("the filter of the `tool.describe` handler lists the ids of the transforms"
 const BUILT_IN_BASH = [
   "Executes a bash command and returns its output.",
   "",
-  "This tool runs Git Bash (POSIX sh), not cmd.exe or PowerShell.",
-  "",
   "- Command output is displayed to you, not reliably to the user.",
   "- `timeout` is in milliseconds: default 30000, max 90000 for a foreground command.",
   "- `run_in_background` runs the command detached. No `&` needed.",
@@ -42,7 +40,6 @@ const BUILT_IN_BASH = [
 test("the `Bash` text copies each part that Claude Code computes from the built-in text", () => {
   const text = bashText(`${BUILT_IN_BASH}\n${"x".repeat(4000)}`);
   expect(text).toContain("default 30000, max 90000 for a foreground command.");
-  expect(text).toContain("This tool runs Git Bash (POSIX sh)");
   expect(text).toContain("- `run_in_background` runs the command detached.");
   expect(text).toContain(
     "# Machines\n- When this session lists another machine",
@@ -52,6 +49,6 @@ test("the `Bash` text copies each part that Claude Code computes from the built-
 
 test("the `Bash` text removes each slot that has no part in the built-in text", () => {
   const text = bashText("Executes a bash command and returns its output.");
-  expect(text).not.toMatch(/\{\w+\}|timeout|Git Bash|# Machines/);
+  expect(text).not.toMatch(/\{\w+\}|timeout|# Machines/);
   expect(text).toContain("# Git");
 });

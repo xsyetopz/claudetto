@@ -41,19 +41,6 @@ const sandbox = async (ids: string[]) => {
   return d;
 };
 
-const windows =
-  process.platform === "win32"
-    ? {
-        SystemRoot: process.env["SystemRoot"],
-        ComSpec: process.env["ComSpec"],
-        PATHEXT: process.env["PATHEXT"],
-      }
-    : {};
-const system =
-  process.platform === "win32"
-    ? [`${process.env["SystemRoot"]}\\System32`]
-    : [];
-
 const run = (d: Sandbox, args: string[], env: Env = {}) => {
   const r = Bun.spawnSync(
     [process.execPath, "--no-env-file", SCRIPT, "addons", ...args],
@@ -61,9 +48,8 @@ const run = (d: Sandbox, args: string[], env: Env = {}) => {
       env: {
         CLAUDE_CONFIG_DIR: d.config,
         CLAUDE_PROJECT_DIR: d.project,
-        PATH: [d.stub, ...system].join(path.delimiter),
+        PATH: [d.stub].join(path.delimiter),
         STUB_DIR: d.stub,
-        ...windows,
         ...env,
       },
     },

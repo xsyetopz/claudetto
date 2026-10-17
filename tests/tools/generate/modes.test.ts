@@ -30,7 +30,7 @@ const modeOf = (dir: string, file: string): number =>
   fs.statSync(path.join(dir, file)).mode & 0o777;
 
 test("a launcher and an eval script with no `+x` get one message each, and a text file gets none", async () => {
-  const found = modeProblems(await rootWithText(), MADE, "linux");
+  const found = modeProblems(await rootWithText(), MADE);
   expect(found).toHaveLength(2);
   expect(found.some((line) => line.startsWith("plugins/q/bin/tool "))).toBe(
     true,
@@ -40,29 +40,11 @@ test("a launcher and an eval script with no `+x` get one message each, and a tex
   ).toBe(true);
 });
 
-test("on Windows, the check reads `+x` from the git index, so only a program with the index mode `100644` gets a message", async () => {
+test("the write sets the mode 755 on a program whose text did not change", async () => {
   const dir = await rootWithText();
-  const git = (...args: string[]): void => {
-    const run = Bun.spawnSync(["git", ...args], { cwd: dir });
-    if (run.exitCode !== 0) throw new Error(`git ${args.join(" ")} failed`);
-  };
-  git("init", "--quiet");
-  git("add", "--chmod=-x", "--", "plugins");
-  git("update-index", "--chmod=+x", "--", "plugins/q/bin/tool");
-  const found = modeProblems(dir, MADE, "win32");
-  expect(found).toHaveLength(1);
-  expect(found[0]).toStartWith("plugins/q/evals/case/setup.sh ");
+  setModes(dir, MADE);
+  expect(modeOf(dir, "plugins/q/bin/tool")).toBe(0o755);
+  expect(modeOf(dir, "plugins/q/evals/case/setup.sh")).toBe(0o755);
+  expect(modeOf(dir, "plugins/q/skills/a/SKILL.md")).toBe(0o644);
+  expect(modeProblems(dir, MADE)).toEqual([]);
 });
-
-// Windows has no POSIX mode bits, so `chmod` cannot set 755, and `modeOf` reads 644 there.
-test.skipIf(process.platform === "win32")(
-  "the write sets the mode 755 on a program whose text did not change",
-  async () => {
-    const dir = await rootWithText();
-    setModes(dir, MADE);
-    expect(modeOf(dir, "plugins/q/bin/tool")).toBe(0o755);
-    expect(modeOf(dir, "plugins/q/evals/case/setup.sh")).toBe(0o755);
-    expect(modeOf(dir, "plugins/q/skills/a/SKILL.md")).toBe(0o644);
-    expect(modeProblems(dir, MADE)).toEqual([]);
-  },
-);

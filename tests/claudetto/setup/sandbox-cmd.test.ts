@@ -1,7 +1,6 @@
 // Runs of `claudetto-setup sandbox` in a temporary checkout, with a fake `gh` and a temporary home folder for the policy store.
 // No run writes the real `~/.claude` or `~/.claudetto`, and no run connects to GitHub.
 // A run in a child process checks the programs of the sandbox on the real platform, so fake `bwrap` and `socat` are on its `PATH`.
-// Native Windows has no sandbox, so there a child process that reaches the hard stop writes nothing, and those tests do not run.
 // The in-process runs give the platform, and they test the prerequisite check on each platform.
 
 import { expect, test } from "bun:test";
@@ -98,49 +97,40 @@ const storeVerdict = (d: Box, key: string, verdict: string) =>
 
 const EXTERNAL = "git@github.com:upstream/tool.git";
 
-/** A test of a child process that reaches the hard stop, which native Windows refuses. */
-const stopTest = test.skipIf(process.platform === "win32");
+test("a preview of an external checkout writes nothing and gives the costs", async () => {
+  const d = await box(EXTERNAL, "me");
+  const r = run(d, []);
+  expect(r.status, r.err).toBe(0);
+  expect(r.out).toContain(
+    "`github.com/upstream/tool` is an external repository",
+  );
+  expect(r.out).toContain("The costs of the hard stop");
+  expect(r.out).toContain("Dry run.");
+  expect(fs.existsSync(localFile(d))).toBe(false);
+});
 
-stopTest(
-  "a preview of an external checkout writes nothing and gives the costs",
-  async () => {
-    const d = await box(EXTERNAL, "me");
-    const r = run(d, []);
-    expect(r.status, r.err).toBe(0);
-    expect(r.out).toContain(
-      "`github.com/upstream/tool` is an external repository",
-    );
-    expect(r.out).toContain("The costs of the hard stop");
-    expect(r.out).toContain("Dry run.");
-    expect(fs.existsSync(localFile(d))).toBe(false);
-  },
-);
-
-stopTest(
-  "an external checkout with the verdict `forbidden` gets the hard stop in the local settings",
-  async () => {
-    const d = await box(EXTERNAL, "me");
-    await storeVerdict(d, "github.com/upstream/tool", "forbidden");
-    await Bun.write(localFile(d), JSON.stringify({ model: "opus" }));
-    const r = run(d, ["--apply"]);
-    expect(r.status, r.err).toBe(0);
-    expect(r.out).toContain("verdict is `forbidden`");
-    expect(await readLocal(d)).toStrictEqual({
-      model: "opus",
-      sandbox: {
-        enabled: true,
-        failIfUnavailable: true,
-        allowUnsandboxedCommands: false,
-        network: { deniedDomains: ["github.com", "*.github.com"] },
-      },
-    });
-    const exclude = await Bun.file(
-      path.join(d.project, ".git/info/exclude"),
-    ).text();
-    expect(exclude).toContain("**/.claude/settings.local.json");
-    expect(exclude).toContain("**/.claudetto/sandbox-stop.json");
-  },
-);
+test("an external checkout with the verdict `forbidden` gets the hard stop in the local settings", async () => {
+  const d = await box(EXTERNAL, "me");
+  await storeVerdict(d, "github.com/upstream/tool", "forbidden");
+  await Bun.write(localFile(d), JSON.stringify({ model: "opus" }));
+  const r = run(d, ["--apply"]);
+  expect(r.status, r.err).toBe(0);
+  expect(r.out).toContain("verdict is `forbidden`");
+  expect(await readLocal(d)).toStrictEqual({
+    model: "opus",
+    sandbox: {
+      enabled: true,
+      failIfUnavailable: true,
+      allowUnsandboxedCommands: false,
+      network: { deniedDomains: ["github.com", "*.github.com"] },
+    },
+  });
+  const exclude = await Bun.file(
+    path.join(d.project, ".git/info/exclude"),
+  ).text();
+  expect(exclude).toContain("**/.claude/settings.local.json");
+  expect(exclude).toContain("**/.claudetto/sandbox-stop.json");
+});
 
 test("a checkout of the user writes nothing and says why", async () => {
   const d = await box("https://github.com/Me/tool.git", "me");
@@ -165,17 +155,14 @@ test("a checkout with no origin writes nothing and says why", async () => {
   expect(fs.existsSync(localFile(d))).toBe(false);
 });
 
-stopTest(
-  "with no `gh` login, a checkout of any owner is external",
-  async () => {
-    const d = await box("https://github.com/me/tool.git");
-    const r = run(d, ["--apply"]);
-    expect(r.status, r.err).toBe(0);
-    expect((await readLocal(d)).sandbox.enabled).toBe(true);
-  },
-);
+test("with no `gh` login, a checkout of any owner is external", async () => {
+  const d = await box("https://github.com/me/tool.git");
+  const r = run(d, ["--apply"]);
+  expect(r.status, r.err).toBe(0);
+  expect((await readLocal(d)).sandbox.enabled).toBe(true);
+});
 
-stopTest("a second run changes nothing", async () => {
+test("a second run changes nothing", async () => {
   const d = await box(EXTERNAL, "me");
   run(d, ["--apply"]);
   const first = await Bun.file(localFile(d)).text();
@@ -184,22 +171,19 @@ stopTest("a second run changes nothing", async () => {
   expect(await Bun.file(localFile(d)).text()).toBe(first);
 });
 
-stopTest(
-  "the remove mode takes out only what the run wrote, and deletes the record",
-  async () => {
-    const d = await box(EXTERNAL, "me");
-    const before = {
-      model: "opus",
-      sandbox: { enabled: false, network: { deniedDomains: ["evil.example"] } },
-    };
-    await Bun.write(localFile(d), JSON.stringify(before));
-    run(d, ["--apply"]);
-    const r = run(d, ["--remove", "--apply"]);
-    expect(r.status, r.err).toBe(0);
-    expect(await readLocal(d)).toStrictEqual(before);
-    expect(fs.existsSync(recordFile(d))).toBe(false);
-  },
-);
+test("the remove mode takes out only what the run wrote, and deletes the record", async () => {
+  const d = await box(EXTERNAL, "me");
+  const before = {
+    model: "opus",
+    sandbox: { enabled: false, network: { deniedDomains: ["evil.example"] } },
+  };
+  await Bun.write(localFile(d), JSON.stringify(before));
+  run(d, ["--apply"]);
+  const r = run(d, ["--remove", "--apply"]);
+  expect(r.status, r.err).toBe(0);
+  expect(await readLocal(d)).toStrictEqual(before);
+  expect(fs.existsSync(recordFile(d))).toBe(false);
+});
 
 test("the remove mode with no record writes nothing", async () => {
   const d = await box(EXTERNAL, "me");
@@ -208,7 +192,7 @@ test("the remove mode with no record writes nothing", async () => {
   expect(fs.existsSync(localFile(d))).toBe(false);
 });
 
-stopTest("an excluded command in the user settings gets a note", async () => {
+test("an excluded command in the user settings gets a note", async () => {
   const d = await box(EXTERNAL, "me");
   await Bun.write(
     path.join(d.config, "settings.json"),
@@ -326,14 +310,8 @@ test("on Linux with a `bwrap` that fails its test run, the apply writes nothing 
   expect(fs.existsSync(recordFile(d))).toBe(false);
 });
 
-test("on native Windows and on WSL1, the apply writes nothing and says why", async () => {
+test("on WSL1, the apply writes nothing and says why", async () => {
   const d = await box(EXTERNAL, "me");
-  const windows = await runOn(d, { platform: "win32", release: "10.0" }, [
-    "bwrap",
-    "socat",
-  ]);
-  expect(windows.status).toBe(1);
-  expect(windows.out).toContain("does not run on native Windows");
   const wsl1 = { platform: "linux", release: "4.4.0-19041-Microsoft" };
   const old = await runOn(d, wsl1, ["bwrap", "socat"]);
   expect(old.status).toBe(1);

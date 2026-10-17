@@ -16,18 +16,6 @@ export const NO_UNKNOWN_FIELD = `No unknown frontmatter field.`;
 export const NOTHING_TO_REMOVE = (v: { root: string }): string =>
   `Nothing to remove: ${v.root} does not exist.`;
 
-/** From `src/plugins/claudetto-lab/slices/sandbox/prompts/refusal-backslash.md`. */
-export const REFUSAL_BACKSLASH = `it ends in \`\\\`, which joins it to the next word`;
-
-/** From `src/plugins/claudetto-lab/slices/sandbox/prompts/refusal-line-break.md`. */
-export const REFUSAL_LINE_BREAK = `it has a line break or a NUL, which cuts the command line`;
-
-/** From `src/plugins/claudetto-lab/slices/sandbox/prompts/refusal-percent-bang.md`. */
-export const REFUSAL_PERCENT_BANG = `it has \`%\` or \`!\`, which \`cmd.exe\` expands before it reads quotes`;
-
-/** From `src/plugins/claudetto-lab/slices/sandbox/prompts/refusal-quote.md`. */
-export const REFUSAL_QUOTE = `it has a \`"\`, which ends the quote`;
-
 /** From `src/plugins/claudetto-lab/slices/sandbox/prompts/refuse-foreign.md`. */
 export const REFUSE_FOREIGN = (v: { root: string; foreign: string }): string =>
   `Refusing to remove ${v.root}: it holds ${v.foreign}, which is not the sandbox layout. Use the default sandbox folder, or remove this folder by hand.`;

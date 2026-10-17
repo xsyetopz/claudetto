@@ -86,12 +86,12 @@ Run `/claudetto:setup sandbox` in the checkout.
   The [sandbox page of Claude Code](https://code.claude.com/docs/en/sandboxing) gives the prerequisites.
   macOS needs no program, because the sandbox uses Seatbelt, which is a part of macOS.
   Linux and WSL2 need `bwrap` (the package `bubblewrap`), `socat`, and the seccomp filter helper `apply-seccomp`.
-  Native Windows and WSL1 have no sandbox.
+  WSL1 has no sandbox.
 - When a program is missing, it writes nothing, names the program, and prints the install command for the package manager that it finds: `apt-get`, `dnf`, `pacman`, `zypper`, `apk`, or `brew`.
   With no known package manager, it names the packages.
   `/claudetto:setup sandbox` shows you the command and runs it only after your approval, because the command uses `sudo` and changes the system.
   Then it runs the `sandbox` command again.
-- On native Windows or WSL1, it writes nothing and tells why.
+- On WSL1, it writes nothing and tells why.
 - On Linux and WSL2, the seccomp filter is required, because the filter blocks Unix sockets.
   Without it, a sandboxed command can reach the socket of `ssh-agent`.
   On WSL2, it can also start a Windows program, such as `git.exe` or `gh.exe`, which has the Windows credentials.

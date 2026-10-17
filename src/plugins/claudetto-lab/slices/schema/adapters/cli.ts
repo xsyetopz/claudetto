@@ -25,9 +25,7 @@ const opt = (argv: string[], name: string): string | undefined => {
 
 /**
  * The bundle of the `claude` on `PATH`.
- * Bun links a global bin as a symlink on POSIX, but as an `.exe` launcher on Windows.
- * The launcher holds no bundle, and the `bin/claude.exe` of the main package is a placeholder that `postinstall` replaces,
- * so a global Bun install uses the binary of the platform package,
+ * A global Bun install uses the binary of the platform package,
  * which is `install/global/node_modules/@anthropic-ai/claude-code-<platform>-<arch>/` beside `bin`.
  */
 export const installedBundle = (): string => {
@@ -41,7 +39,7 @@ export const installedBundle = (): string => {
     "node_modules",
     "@anthropic-ai",
     `claude-code-${process.platform}-${process.arch}`,
-    process.platform === "win32" ? "claude.exe" : "claude",
+    "claude",
   );
   return fs.existsSync(platformBin) ? platformBin : fs.realpathSync(bin);
 };

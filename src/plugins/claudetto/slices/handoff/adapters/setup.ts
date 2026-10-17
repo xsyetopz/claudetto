@@ -40,11 +40,9 @@ export const onPluginRegister: Handler<"plugin.register"> = ($, e, next) => {
   return next(e);
 };
 
-/** The OS of the machine, from a folder that only that OS has. */
-const osOf = async ($: EngineInterface): Promise<Os> => {
-  if (await $.fs.exists("/System/Library")) return "darwin";
-  return (await $.fs.exists("/etc")) ? "linux" : "win32";
-};
+/** The OS of the machine: macOS when `/System/Library` exists, else Linux (WSL included). */
+const osOf = async ($: EngineInterface): Promise<Os> =>
+  (await $.fs.exists("/System/Library")) ? "darwin" : "linux";
 
 /** True when an MDM profile of Claude Code exists. Only macOS has one that a file shows. */
 const hasMdm = async ($: EngineInterface, os: Os) => {

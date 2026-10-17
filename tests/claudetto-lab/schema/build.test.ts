@@ -325,30 +325,27 @@ test("the shipped schema has nested keys, and marks the managed-only keys", asyn
   );
 });
 
-test.skipIf(process.platform === "win32")(
-  "a bundle whose `--version` exits non-zero fails the command and writes no file",
-  async () => {
-    const dir = tmpDir("schema-test");
-    try {
-      // The file is a shell script, so `--version` exits 3, and it holds the schema, so the build alone would pass.
-      const bundle = path.join(dir, "bundle");
-      const out = path.join(dir, "out");
-      await Bun.write(bundle, `#!/bin/sh\n# ${FIXTURE}\nexit 3\n`);
-      fs.chmodSync(bundle, 0o755);
-      const run = spawnText(process.execPath, [
-        path.join(REPO, "plugins/claudetto-lab/bin/claudetto-schema"),
-        "--bundle",
-        bundle,
-        "--out",
-        out,
-      ]);
-      expect(run.status).not.toBe(0);
-      expect(fs.existsSync(out)).toBe(false);
-    } finally {
-      fs.rmSync(dir, { recursive: true, force: true });
-    }
-  },
-);
+test("a bundle whose `--version` exits non-zero fails the command and writes no file", async () => {
+  const dir = tmpDir("schema-test");
+  try {
+    // The file is a shell script, so `--version` exits 3, and it holds the schema, so the build alone would pass.
+    const bundle = path.join(dir, "bundle");
+    const out = path.join(dir, "out");
+    await Bun.write(bundle, `#!/bin/sh\n# ${FIXTURE}\nexit 3\n`);
+    fs.chmodSync(bundle, 0o755);
+    const run = spawnText(process.execPath, [
+      path.join(REPO, "plugins/claudetto-lab/bin/claudetto-schema"),
+      "--bundle",
+      bundle,
+      "--out",
+      out,
+    ]);
+    expect(run.status).not.toBe(0);
+    expect(fs.existsSync(out)).toBe(false);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
 
 test("a managed-only key in the user settings fails", async () => {
   expect(validate({ prependPlugins: [] }, await shipped("user"))).toStrictEqual(

@@ -1,5 +1,5 @@
 // The prerequisites of the sandbox of Claude Code, for each platform, from https://code.claude.com/docs/en/sandboxing:
-// "The sandbox runs on macOS, Linux, and WSL2. On native Windows, Claude Code runs commands unsandboxed."
+// "The sandbox runs on macOS, Linux, and WSL2."
 // "macOS: sandboxing uses the built-in Seatbelt framework", so macOS needs no program.
 // "Linux and WSL2: the sandbox relies on `bubblewrap` and `socat`."
 // The page gives `sudo apt-get install bubblewrap socat` (Ubuntu/Debian) and `sudo dnf install bubblewrap socat` (Fedora).
@@ -31,7 +31,7 @@ const MANAGERS: readonly { program: string; install: string }[] = [
 ];
 
 /** Why the sandbox cannot run on the host. */
-export type Unsupported = "windows" | "wsl1" | "other";
+export type Unsupported = "wsl1" | "other";
 
 /** The state of the prerequisites of the sandbox on the host. */
 export type ToolsCase =
@@ -56,7 +56,6 @@ export const sandboxToolsOf = (
   has: (program: string) => boolean,
 ): ToolsCase => {
   if (host.platform === "darwin") return { kind: "ready" };
-  if (host.platform === "win32") return { kind: "unsupported", why: "windows" };
   if (host.platform !== "linux") return { kind: "unsupported", why: "other" };
   if (isWsl(host.release) && !isWsl2(host.release))
     return { kind: "unsupported", why: "wsl1" };

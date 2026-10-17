@@ -41,9 +41,9 @@ export type GcHook = MatchedHook<
   { readonly tool: readonly ["Bash", "Write"] }
 >;
 
-/** The home folder, from `HOME` or, on Windows, `USERPROFILE`. */
+/** The home folder, from `HOME`. */
 const homeOf = async ($: EngineInterface): Promise<string | undefined> =>
-  (await $.env.get("HOME")) ?? (await $.env.get("USERPROFILE"));
+  $.env.get("HOME");
 
 /**
  * The tail of the writes to the record files.

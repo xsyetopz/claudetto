@@ -1,6 +1,6 @@
 // A stub file system for the adherence tests. `files` maps a path to its text.
-// The hook resolves a path with `node:path`, and on Windows `/w/a.mjs` becomes `D:\w\a.mjs`.
-// The stub resolves its keys in the same way, so a test names a file in the POSIX form on each platform.
+// The hook resolves a path with `node:path`.
+// The stub resolves its keys in the same way, so a key and a path of the hook match.
 
 import path from "node:path";
 

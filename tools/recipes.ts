@@ -1,6 +1,6 @@
 // The shared parts of the scripts that the `just` recipes run in place of shell-only syntax.
 // Each script runs its commands with `Bun.$` in the repository folder.
-// So the same recipe runs on Windows, Linux, and macOS.
+// So the same recipe runs on Linux and macOS.
 
 import fs from "node:fs";
 import path from "node:path";

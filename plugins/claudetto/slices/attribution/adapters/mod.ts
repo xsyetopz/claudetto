@@ -44,7 +44,7 @@ const record = (
   line: string,
 ): Promise<unknown> =>
   quiet(async () => {
-    const home = (await $.env.get("HOME")) ?? (await $.env.get("USERPROFILE"));
+    const home = await $.env.get("HOME");
     if (home === undefined) return;
     const dir = recordDir(home, session);
     const path = `${dir}/${file}`;

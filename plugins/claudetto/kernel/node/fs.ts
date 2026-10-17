@@ -6,7 +6,7 @@ import { RENAME_TRIES, RENAME_WAIT_MS } from "../budget.ts";
 import { ABSENT, isExpected, rethrowUnless } from "../errors.ts";
 import type { FileReader } from "../ports.ts";
 
-/** The `code` values of a rename that fails for a short time while another process holds the target open, on Windows. */
+/** The `code` values of a rename that fails for a short time while another process holds the target open, on a Windows file system such as `/mnt/c` on WSL. */
 const BUSY_RENAME = ["EPERM", "EACCES", "EBUSY"];
 
 type Rename = (from: string, to: string) => Promise<void>;

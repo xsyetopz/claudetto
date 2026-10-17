@@ -215,7 +215,6 @@ test("a command whose name has literal text next to a substitution is not read a
 });
 
 test("a git command whose name a substitution wrote keeps its `-C` folder, so the main checkout is read from a linked worktree", async () => {
-  // The quotes keep each `\` of a Windows path, which the shell reads as an escape outside quotes.
   const command = `$(echo git) -C "${main}" switch feature`;
   for (const form of formsOf(command).filter(
     (f) => !/^(bash -c|eval) "/.test(f),

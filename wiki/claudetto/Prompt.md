@@ -83,7 +83,7 @@ The `surface` slice gives shorter descriptions for these tools:
 
 A description replaces the built-in one only when it is shorter.
 The built-in `Bash` text has values that Claude Code computes for each run:
-the Windows note, the timeouts, the background line, and the `# Machines` section.
+the timeouts, the background line, and the `# Machines` section.
 The `Bash` text of `claudetto` copies each of these parts from the built-in text, so a value such as `BASH_DEFAULT_TIMEOUT_MS` stays correct.
 
 ## Size

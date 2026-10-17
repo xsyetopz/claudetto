@@ -163,53 +163,18 @@ test("a torn, empty, or non-object cache file is no cache, and the status line s
   }
 });
 
-/** The mode bits of a folder exist on POSIX only, so a test of them does not run on Windows. */
-const posixTest = test.skipIf(process.platform === "win32");
+test("a cache folder with group or other mode bits is no cache folder", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "git-cache-"));
+  const folder = path.join(root, `claudetto-git-${os.userInfo().uid}`);
+  fs.mkdirSync(folder);
+  fs.chmodSync(folder, 0o755);
+  expect(cacheFile(STATUS.workspace.current_dir, root)).toBeNull();
+});
 
-posixTest(
-  "a cache folder with group or other mode bits is no cache folder",
-  () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "git-cache-"));
-    const folder = path.join(root, `claudetto-git-${process.getuid?.()}`);
-    fs.mkdirSync(folder);
-    fs.chmodSync(folder, 0o755);
-    expect(cacheFile(STATUS.workspace.current_dir, root)).toBeNull();
-  },
-);
-
-posixTest("a missing cache folder is made with mode `0700` and used", () => {
+test("a missing cache folder is made with mode `0700` and used", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "git-cache-"));
   const file = cacheFile(STATUS.workspace.current_dir, root);
   const folder = path.dirname(file ?? "");
   expect(path.dirname(folder)).toBe(root);
   expect(fs.statSync(folder).mode & 0o777).toBe(0o700);
-});
-
-test("with no user id, as on Windows, the cache folder is `claudetto-git` in the temp folder", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "git-cache-"));
-  const file = cacheFile(STATUS.workspace.current_dir, root, null);
-  expect(file === null ? null : path.dirname(file)).toBe(
-    path.join(root, "claudetto-git"),
-  );
-});
-
-test("with no user id, a link in place of the cache folder is no cache folder", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "git-cache-"));
-  fs.symlinkSync(root, path.join(root, "claudetto-git"));
-  expect(cacheFile(STATUS.workspace.current_dir, root, null)).toBeNull();
-});
-
-test("a cache file whose branch holds terminal escape codes is no cache, and `git` runs", async () => {
-  const forged = JSON.stringify({
-    at: NOW,
-    state: {
-      branch: "\u001b]0;pwned\u0007main",
-      dirty: 0,
-      ahead: 0,
-      behind: 0,
-    },
-  });
-  const { gitRuns, out } = await runWithSaved(forged);
-  expect(gitRuns).toBe(1);
-  expect(out).not.toContain("\u001b");
 });

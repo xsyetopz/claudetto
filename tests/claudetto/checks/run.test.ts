@@ -57,7 +57,6 @@ const portsOf = (
     },
     log: (l) => lines.push(l),
     error: (l) => errors.push(l),
-    windows: false,
     env: { get: () => undefined },
     ...over,
   };
@@ -233,17 +232,13 @@ test("two runs in the same second write two log files", async () => {
   expect(logs(dir)).toHaveLength(2);
 });
 
-// Windows has no POSIX signals, so a command cannot end by `kill -9` there, and the run gives status 0.
-test.skipIf(process.platform === "win32")(
-  "a command killed by a signal gives the signal and no failure lines",
-  async () => {
-    const dir = await project();
-    const [o] = await check(dir, "kill -9 $$");
-    expect(o?.exitCode).toBeNull();
-    expect(o?.stop).toStrictEqual({ kind: "signal", name: "SIGKILL" });
-    expect(o?.failures?.lines).toStrictEqual([]);
-  },
-);
+test("a command killed by a signal gives the signal and no failure lines", async () => {
+  const dir = await project();
+  const [o] = await check(dir, "kill -9 $$");
+  expect(o?.exitCode).toBeNull();
+  expect(o?.stop).toStrictEqual({ kind: "signal", name: "SIGKILL" });
+  expect(o?.failures?.lines).toStrictEqual([]);
+});
 
 test("a command over the time bound gives a timeout stop with the bound", async () => {
   // A fake runner: the real runner needs the whole time bound to time out.
@@ -281,23 +276,20 @@ const alive = (pid: number): boolean => {
   }
 };
 
-test.skipIf(process.platform === "win32")(
-  "a timeout ends the check and each child process of it",
-  async () => {
-    const dir = await project();
-    const pidFile = path.join(dir, "child.pid");
-    const script = `bun -e 'setInterval(() => {}, 1000)' & echo $! > ${pidFile}; wait`;
-    const r = await groupRunner.run("bash", ["-c", script], {
-      cwd: dir,
-      timeout: 1000,
-    });
-    expect(r.timedOut).toBe(true);
-    const pid = Number((await Bun.file(pidFile).text()).trim());
-    expect(pid).toBeGreaterThan(0);
-    for (let i = 0; i < 40 && alive(pid); i++) await Bun.sleep(50);
-    expect(alive(pid)).toBe(false);
-  },
-);
+test("a timeout ends the check and each child process of it", async () => {
+  const dir = await project();
+  const pidFile = path.join(dir, "child.pid");
+  const script = `bun -e 'setInterval(() => {}, 1000)' & echo $! > ${pidFile}; wait`;
+  const r = await groupRunner.run("bash", ["-c", script], {
+    cwd: dir,
+    timeout: 1000,
+  });
+  expect(r.timedOut).toBe(true);
+  const pid = Number((await Bun.file(pidFile).text()).trim());
+  expect(pid).toBeGreaterThan(0);
+  for (let i = 0; i < 40 && alive(pid); i++) await Bun.sleep(50);
+  expect(alive(pid)).toBe(false);
+});
 
 test("the log folder is in `CLAUDE_PROJECT_DIR`, and the commands run in the current folder", async () => {
   const cwd = await project();

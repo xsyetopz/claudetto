@@ -14,7 +14,7 @@ fs.mkdirSync(path.join(root, "only-root"), { recursive: true });
 await Bun.write(path.join(root, "file.txt"), "x\n");
 fs.mkdirSync(path.join(root, "sub", "inner"), { recursive: true });
 
-/** `p` in single quotes, so that the `\` of a Windows path stays in the path, as in Bash. */
+/** `p` in single quotes, so that the shell reads it as one word. */
 const q = (p: string): string => `'${p}'`;
 
 /** The deny of `command` in the main session, which must hold the exact command. */

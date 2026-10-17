@@ -9,10 +9,9 @@ import { type Engine, expect, test } from "claude-code/testing";
 /** Stubs the engine answer, the session, and the file system: each path of `texts` is a file with that text. */
 const project = (on: On, texts: Record<string, string> = {}): string[] => {
   const seen: string[] = [];
-  // On Windows the engine can give a path with `\` and a drive letter, so the key drops both.
   const key = (p: string) => {
     seen.push(p);
-    return p.replace(/\\/g, "/").replace(/^[A-Za-z]:/, "");
+    return p;
   };
   on("tool.call", () => ({ result: "ok" }));
   on("session.cwd", () => ({ value: "/p" }));

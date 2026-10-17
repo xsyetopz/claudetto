@@ -3,14 +3,13 @@
 // The description replaces the built-in text only when the replacement is shorter (`domain/tools.ts`).
 // The text is a shorter form that claudetto writes, not a copy of the built-in text.
 // Claude Code computes some parts of its text for each run (strings.txt:23239513 of 2.1.301):
-// the Windows note, the timeouts, the background line, and the `# Machines` section.
+// the timeouts, the background line, and the `# Machines` section.
 // Each `{slot}` line of the text gets that part from the built-in text, and a slot with no part is removed.
 
 import { TOOL_BASH } from "../prompts.ts";
 
 /** The pattern of each part that Claude Code computes, in the built-in text. */
 const SLOTS: Readonly<Record<string, RegExp>> = {
-  windows: /^This tool runs Git Bash.*$/m,
   timeout: /^- `timeout` is in milliseconds.*$/m,
   background: /^- `run_in_background`.*$/m,
   machines: /^# Machines\n[\s\S]*$/m,
