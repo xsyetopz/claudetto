@@ -2,54 +2,38 @@ MiniSpec change: `minispec/changes/release-0-2-0/`.
 Next open task: `3.9` in `tasks.md`.
 Each checked task is done and verified, so do not run its check again unless the user asks.
 
-- Task: write `/goal` plans outside the repo, in `/Users/krystian/CodeProjects/xsyetopz/claudetto-0.2.0/`, so you can trim claudetto 0.2.0 in vanilla Claude Code. Use `bun`/`bunx` and `uv`/`pipx` only.
-- DONE: wrote `GOAL.md` (the trim), `SPEC-WORKFLOW.md` (OpenSpec, Spec Kit, and BMAD merged on OpenSpec schemas, with presets `task`, `story`, and `epic`), and `BUILTINS.md` (built-ins inventory plus a `goal` slice that replaces `/goal`).
-- DONE: the goal lines check only the final turn and use `just docker check`. Line lengths: `GOAL goal chars: 470`, `SPEC-WORKFLOW goal chars: 413`, `BUILTINS goal chars: 351`. The `docker` recipe exists: `31:docker *args:`.
-- DONE: the lint before the last `just docker check` edits printed `Linting: 3 files` and `Summary: 0 issues in 0 files`.
-- DONE: built-in counts from `strings.txt`: `commands: 98`, 12 `cc-plugin-*` ids, at least 76 attachment kinds. The built-in `/goal` is a Stop hook of type `prompt` (`P6n`).
-- DONE: the repo has no code changes. The backup is `stash@{0}: before slice cut 2026-10-17`.
-- Error seen earlier: claudetto's guard blocked a wait loop with `claudetto forbids this destructive action.`
-- RAN, result after this handoff: `bunx markdownlint-cli2 --config ../claudetto/.markdownlint.jsonc GOAL.md SPEC-WORKFLOW.md BUILTINS.md` in `/Users/krystian/CodeProjects/xsyetopz/claudetto-0.2.0`.
-- Next: report that lint result to you as the first sentence.
+- Task: write a script in the repo, on branch `feat/0.2.0` of the main checkout, that changes only the `settings.json` of a vanilla install. It sets auto mode (the user picked `` `auto` (Recommended) ``) and adds a tiny Jev hook for `AskUserQuestion` decisions. It adds no claudetto and no other changes.
+- DONE: committed ``a0f32cab evals: measure the built-in advisor against the `advise` probe tool`` on `feat/advise`. Then left the worktree with `ExitWorktree` `keep`, and committed `bd689f03 release-0-2-0: do the tasks 3.1 to 3.8 of the plan` on `feat/0.2.0`. Only `?? .claudetto/` is left uncommitted.
+- DONE: facts from the 2.1.302 binary. `defaultMode` takes `"bypassPermissions","plan","dontAsk","auto"`. `skipAutoPermissionPrompt` is described as `Whether the user has accepted the auto mode opt-in dialog`.
+- DONE: the Jev design comes from `src/plugins/claudetto/slices/decide/`. It does a POST to `https://api.typesafe.ai/v1/systemone` with `model: "jev-latest"`, `Bearer ${TYPESAFE_API_KEY}`, and a body of `{state, model, questions}`. It asks `kind_<i>` (facts or preference) and `pick_<i>` choice questions. It adds `Jev picks this option (confidence {{confidence}}).` to the picked option when both answers have `MIN_CONFIDENCE = 0.5`. `ATTEMPT_TIMEOUT_MS = 12_000`.
+- DONE: the plan is a pure module `tools/yolo/settings.ts` (`applyYolo`, `HOOK_MARK`) and `tools/yolo/jev.ts` (`askBody`, `withPicks`, `hookOutput`). Plus the entry scripts `tools/yolo/setup.ts` (the `CLAUDE_CONFIG_DIR` or `~/.claude` folder, a backup, and printed changes) and `tools/yolo/jev-ask.ts`. The hook `PreToolUse` on the matcher `AskUserQuestion` returns `updatedInput` with `permissionDecision` `ask`. It doesn't write the key to settings.
+- Errors seen: `this command runs a string through complete, which can't be verified to stay inside the worktree` and `fatal: Unable to create '.../index.lock': File exists.`. The second one was fixed by removing the stale lock.
+- RAN, result after this handoff: Write `tests/tools/yolo/settings.test.ts`.
+- RAN, result after this handoff: Write `tests/tools/yolo/jev.test.ts`.
+- RAN, result after this handoff: `just test tests/tools/yolo`, run to see the new tests fail.
+- Next: write `tools/yolo/{settings,jev,setup,jev-ask}.ts` until the tests pass. Then run lint, the type check, `tests/support/node-imports.test.ts`, and `prefix-chains.test.ts`, and test `setup.ts` against a temp `CLAUDE_CONFIG_DIR`.
 
 The last messages of the user before this handoff, word for word:
 
-> > - Replay the transcripts of past sessions in `~/.claude/projects/` (no m
-> odel call) and count the false denies.
+> <bash-stdout>(Bash completed with no output)</bash-stdout><bash-stderr></bash-stderr>
 >
-> claudetto-sessions was actually meant for something like analysing user's .claude/ systems, but if CC contains a built-in skill/command for that, then there's no need, or a plugin.
+> commit current changes.
 >
-> otherwise a lightweight skill with some scripts may just be enough.
-
-> Here is a note offered by a side agent:
->
-> > Heads up · The `/goal` checker only reads the chat, and this long run will likely get compacted, which may hide the early check results the goal line asks for.
-> >
-> > **Long `/goal` runs may hide early proof**
-> > * With **`/goal`**, a separate checker keeps Claude working until it can see in the chat that your goal line is met.
-> > * The trim plan has 10 steps, so the chat will very likely get **compacted** (squashed into a summary) along the way, probably more than once.
-> > * The goal line asks for proof that is shown early: the line count from before step 1, and the output of each step's check. After a squash, that output may be gone from the chat.
-> > * If the checker can't see it, the run may keep going, redo steps, or never finish. This is likely, but not confirmed.
-> > * **Consider making the goal line only ask for things that can be checked at the end**, such as one final `just check` and the folder listings.
->
-> the built-in `/goal` is also rather limited, so if a mod could replace with one that is effective, efficient, and actually controllable in many ways, that will be 0.2.0's item, too.
->
-> it needs to see how many built-ins can be replaced/disabled.
-
-> Here is a note offered by a side agent:
->
-> > Heads up · In this sandbox, 12 tests always fail because they can't start a local server, so a `/goal` that waits for `just check` to pass may never end.
-> >
-> > **The trim `/goal` may never finish in the sandbox**
-> > * The `/goal` line in the plan counts the work as done only when **`just check` passes**. `just check` runs all the tests.
-> > * Earlier in this session, a full test run inside Claude Code's **sandbox** had **12 failures**, all "Failed to start server". The sandbox here doesn't let commands open a local network port, and those tests need one.
-> > * If your vanilla install also uses the sandbox, those 12 tests keep failing no matter how good the trim is. The goal checker would then keep Claude working and spending tokens.
-> > * **Before you start the run**, do one of these:
-> > * set `sandbox.network.allowLocalBinding: true` in your settings;
-> > * or change the goal line to use `just docker check`, which runs the checks in a container.
+> also, for user's vanilla install, user need s aquick script in this repo branch, that only configures a vanilla install's settings.json without actually doing anything else. no claudetto or things like that, just settings.json changes, and a tiny Jev integration for decisions, and bypass permissions, of course. a YOLO mode with auto.mode.
 
 The files that this session changed with `Write`, `Edit`, `MultiEdit`, or `NotebookEdit`:
 
-- `/Users/krystian/CodeProjects/xsyetopz/claudetto-0.2.0/GOAL.md`
-- `/Users/krystian/CodeProjects/xsyetopz/claudetto-0.2.0/SPEC-WORKFLOW.md`
-- `/Users/krystian/CodeProjects/xsyetopz/claudetto-0.2.0/BUILTINS.md`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto/.claude/worktrees/advise/tools/evals/advisor/runner/arms.ts`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto/.claude/worktrees/advise/tools/evals/advisor/runner/trace.ts`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto/.claude/worktrees/advise/tests/tools/advisor-runner.test.ts`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto/.claude/worktrees/advise/wiki/evidence/Evidence.md`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto/.claude/worktrees/advise/wiki/_Sidebar.md`
+- `/tmp/claude-501/bunpath/a.hidden.mjs`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto/.claude/worktrees/advise/tests/tools/advisor/hidden.test.ts`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto/.claude/worktrees/advise/tools/evals/advisor/runner/main.ts`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto/.claude/worktrees/advise/.gitignore`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto/.claude/worktrees/advise/wiki/evidence/Advisor.md`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto/.claude/worktrees/advise/.claudetto/commit-msg.txt`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto/.claudetto/commit-msg.txt`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto/tests/tools/yolo/settings.test.ts`
+- `/Users/krystian/CodeProjects/xsyetopz/claudetto/tests/tools/yolo/jev.test.ts`

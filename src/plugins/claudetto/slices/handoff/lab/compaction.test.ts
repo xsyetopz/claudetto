@@ -347,6 +347,7 @@ test("the cut of a reply in two assistant messages keeps the last tool use and r
 });
 
 // D23: a shell in a subfolder does not move the handoff, which goes under the project root.
+// biome-ignore lint/plugin: a test name
 test("a compaction with the shell in a subfolder writes the handoff under the project root", async ($: Engine, on: On) => {
   mock.env(on, { CLAUDE_PROJECT_DIR: "/p" });
   on("session.cwd", () => ({ value: "/p/minispec/changes/c" }));
