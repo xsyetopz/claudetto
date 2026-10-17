@@ -27,7 +27,7 @@ Each add-on works without the core plugin.
 ```bash
 # --- CLI -----------------------------
 claude plugin marketplace add xsyetopz/claudetto
-claude plugininstall claudetto@claudetto
+claude plugin install claudetto@claudetto
 
 # --- TUI -----------------------------
 /plugin marketplace add xsyetopz/claudetto
@@ -173,4 +173,4 @@ and [Sandbox](https://github.com/xsyetopz/claudetto/wiki/Sandbox).
 
 ## License
 
-[MIT](LICENSE).
+[MIT](LICENSE)
