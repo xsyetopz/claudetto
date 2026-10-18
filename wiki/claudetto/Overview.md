@@ -59,8 +59,8 @@ Each add-on works without the core plugin.
   A deny of a command part that only prints a file.
 - **Prompt and context.**
   A system prompt for each model, and the switches that turn off built-in parts that `claudetto` does not use.
-- **Second opinion.**
-  An opt-in tool that settles a choice with a small Claude model or Jev.
+- **Jev pick.**
+  An opt-in hook that adds the pick of Jev to an `AskUserQuestion` question that facts settle.
   It is off by default.
   See [Decision API](Decision-API).
 - **Semantic breaks and output style.**

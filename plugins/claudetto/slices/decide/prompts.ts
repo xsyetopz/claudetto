@@ -16,24 +16,6 @@ export const ASK_NOTE = (v: { confidence: string }): string =>
 export const ASK_PICK = (v: { index: string }): string =>
   `Which option is the best answer to question ${v.index}?`;
 
-/** From `src/plugins/claudetto/slices/decide/prompts/cause-failed.md`. */
-export const CAUSE_FAILED = `The call to Jev failed.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/cause-invalid-key.md`. */
-export const CAUSE_INVALID_KEY = `The key in \`TYPESAFE_API_KEY\` is not valid.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/cause-model-failed.md`. */
-export const CAUSE_MODEL_FAILED = `The fallback model gave no answer.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/cause-no-balance.md`. */
-export const CAUSE_NO_BALANCE = `The TypeSafe account has no balance.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/cause-no-key.md`. */
-export const CAUSE_NO_KEY = `The variable \`TYPESAFE_API_KEY\` is not set, so Jev was not tried.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/cause-usage.md`. */
-export const CAUSE_USAGE = `The request to Jev was not valid.`;
-
 /** From `src/plugins/claudetto/slices/decide/prompts/error-ask-questions.md`. */
 export const ERROR_ASK_QUESTIONS = (v: { usage: string }): string =>
   `\`ask\` needs \`questions\` in the JSON. ${v.usage}`;
@@ -45,20 +27,8 @@ export const ERROR_ASK_STDIN = (v: { usage: string }): string =>
 /** From `src/plugins/claudetto/slices/decide/prompts/error-no-key.md`. */
 export const ERROR_NO_KEY = `The variable \`TYPESAFE_API_KEY\` is not set. Set it before Claude Code starts.`;
 
-/** From `src/plugins/claudetto/slices/decide/prompts/error-option-duplicate.md`. */
-export const ERROR_OPTION_DUPLICATE = `Two options have the same \`key\`. Give each option a \`key\` that no other option has.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/error-option-invalid.md`. */
-export const ERROR_OPTION_INVALID = `An option \`key\` is empty or has an \`=\` character, or a \`description\` is not text. Give each option a \`key\` with text and no \`=\`.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/error-options-count.md`. */
-export const ERROR_OPTIONS_COUNT = `A pick needs 2 to 255 \`options\`. Give each option as an object with a \`key\`.`;
-
 /** From `src/plugins/claudetto/slices/decide/prompts/error-pick-options.md`. */
 export const ERROR_PICK_OPTIONS = `\`pick\` needs 2 to 255 options, each as \`key\` or \`key=description\`.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/error-question-empty.md`. */
-export const ERROR_QUESTION_EMPTY = `The \`question\` is empty. Give a \`question\` that has text.`;
 
 /** From `src/plugins/claudetto/slices/decide/prompts/error-question-missing.md`. */
 export const ERROR_QUESTION_MISSING = (v: { usage: string }): string =>
@@ -68,70 +38,11 @@ export const ERROR_QUESTION_MISSING = (v: { usage: string }): string =>
 export const ERROR_VERB = (v: { verb: string; usage: string }): string =>
   `The verb \`${v.verb}\` is not known. ${v.usage}`;
 
-/** From `src/plugins/claudetto/slices/decide/prompts/fallback-system.md`. */
-export const FALLBACK_SYSTEM = `You answer one decision question for a coding agent.
-Use only the facts in the state, and do not add facts.
-Reply with one JSON object and no other text.
-The object has the fields \`choice\`, \`confidence\`, and \`reason\`.
-For a yes or no question, \`choice\` is \`yes\` or \`no\`.
-For a question with options, \`choice\` is the key of your pick.
-\`confidence\` is a number from 0 to 1, the probability that your choice is right.
-\`reason\` is one sentence with the reason.`;
-
 /** From `src/plugins/claudetto/slices/decide/prompts/option-description.md`. */
-export const OPTION_DESCRIPTION = `Use \`off\` for no second opinion, \`claude\` for a small Claude model, or \`jev\` for Jev (it needs \`TYPESAFE_API_KEY\`, and the question goes to the TypeSafe API). Claude can use the second opinion only when this is not \`off\`.`;
+export const OPTION_DESCRIPTION = `Use \`off\` for no pick, or \`jev\` for Jev (it needs \`TYPESAFE_API_KEY\`, and the question goes to the TypeSafe API). With \`jev\`, Jev picks an option of each \`AskUserQuestion\` question that facts decide.`;
 
 /** From `src/plugins/claudetto/slices/decide/prompts/pick-unsure.md`. */
 export const PICK_UNSURE = `The confidence is under 0.5, so Jev is not sure.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/result-fallback.md`. */
-export const RESULT_FALLBACK = (v: {
-  why: string;
-  text: string;
-}): string => `Jev gave no answer. ${v.why}
-A small Claude model answered instead. That answer is not from Jev.
-Tell the user that the answer is from a Claude model, and give the reason.
-${v.text}`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/result-jev.md`. */
-export const RESULT_JEV = (v: { text: string }): string => `Jev answered:
-${v.text}`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/result-none.md`. */
-export const RESULT_NONE = (v: {
-  why: string;
-}): string => `Jev gave no answer. ${v.why}
-The fallback model gave no answer either.
-Answer from your own check of the evidence, and tell the user that no second opinion was available.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/tool-description.md`. */
-export const TOOL_DESCRIPTION = `Asks Jev, a decision model, for a second opinion on a choice that facts can settle.
-Use it for a close call or a technical choice, and when the user asks for a second opinion.
-Do not use it for goals, preferences, or approvals, because only the user decides those.
-Jev returns a pick and a confidence from 0 to 1.
-The question, the options, and the state go to the TypeSafe API, so put no secret and no personal data in them.
-Keep the question neutral, because a leading question gets the answer that it leads to.
-Give each option with one fact for it and one fact against it.
-Leave out the lean of the user, the notes, or the team, because Jev judges the facts only.
-The tool puts the options in a random order.
-When Jev gives no answer, the tool uses a small Claude model, and it says so in its result.
-When you do not follow the pick, tell the user and give the reason.
-Ask it before you ask the user to choose between options that facts can settle.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/tool-option-description.md`. */
-export const TOOL_OPTION_DESCRIPTION = `What the option is, with the evidence for and against it.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/tool-option-key.md`. */
-export const TOOL_OPTION_KEY = `A short name of the option.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/tool-options.md`. */
-export const TOOL_OPTIONS = `Every option. Leave it out for a yes or no question.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/tool-question.md`. */
-export const TOOL_QUESTION = `The decision to check, as a neutral question.`;
-
-/** From `src/plugins/claudetto/slices/decide/prompts/tool-state.md`. */
-export const TOOL_STATE = `The facts that the decision depends on, such as a diff, a log, or a plan.`;
 
 /** From `src/plugins/claudetto/slices/decide/prompts/usage.md`. */
 export const USAGE = `Use \`claudetto-decide yes|pick [--json] [--state <- | text>] [--] "<question>" [options]\`, or \`claudetto-decide ask\` with JSON on stdin.`;

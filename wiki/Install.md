@@ -7,7 +7,7 @@ Read it before [Quickstart](Quickstart).
 The core plugin is `claudetto`.
 `claudetto-codegraph`, `claudetto-browser`, `claudetto-docs`, `claudetto-sessions`, `claudetto-lab`, and `claudetto-you-should-know` are optional add-ons.
 Each add-on works without the core plugin.
-The `second_opinion` tool is part of the core plugin, and it is off by default.
+The Jev pick of `AskUserQuestion` is part of the core plugin, and it is off by default.
 
 The commands on this page are for Claude Code 2.1.302.
 That is the minimum version (`MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts`).
@@ -23,7 +23,7 @@ Check that each tool in the table is ready for the plugins that you install.
 | [Bun](https://bun.sh) 1.4.3 or later on `PATH` | the setup command, the status line, the `minispec` CLI, the CLI `claudetto-decide`, the hooks and bins of `claudetto-codegraph`, and the bins of `claudetto-browser`, `claudetto-sessions`, and `claudetto-lab`. The `docs` skill of `claudetto-docs` also needs Bun, because it runs `ctx7` through `bunx`. | Without Bun, the setup command does not run and the status line does not run. |
 | [Node.js](https://nodejs.org) on `PATH` | the npm installs of `codegraph` and `agent-browser`, which the setup command offers | Without Node.js, the npm installs do not run. |
 | `codegraph` on `PATH` | `claudetto-codegraph` | Run `bun i -g @colbymchenry/codegraph`. The setup command offers this install. It runs the install only after you say yes. |
-| `TYPESAFE_API_KEY` | `claudetto` (`second_opinion` with the option `jev`) | Export it before Claude Code begins. Without it, the option `jev` gives an error. |
+| `TYPESAFE_API_KEY` | `claudetto` (the Jev pick with the option `jev`) | Export it before Claude Code begins. Without it, the option `jev` gives an error. |
 | `agent-browser` on `PATH` | `claudetto-browser` | See [Browser](Browser). |
 
 The checks of the core hooks module need no Bun and no Node.js, because the core plugin loads them as a hooks module.
@@ -81,20 +81,19 @@ The check reads the `codegraph` CLI and its index, `agent-browser`, `bunx`, and 
 The setup skill installs a missing CLI only after you say yes.
 The project step `codegraph init -y` runs only with `claudetto-setup addons --apply`.
 
-## Enable the Second Opinion
+## Enable the Jev Pick
 
-The `second_opinion` tool is part of the core plugin, so it needs no separate install.
+The Jev pick is part of the core plugin, so it needs no separate install.
 It is off by default.
 Run `/plugin configure claudetto` to set the option `decide`.
-The value `claude` lets a small Claude model answer.
-The value `jev` lets TypeSafe Jev answer, and it needs the key.
+The value `jev` lets TypeSafe Jev pick, and it needs the key.
 Export the key before Claude Code begins.
 
 ```bash
 export TYPESAFE_API_KEY=<your key>
 ```
 
-With the value `jev`, each call sends the question, the options, and the state of the decision to the TypeSafe API.
+With the value `jev`, each pick sends the question and the options to the TypeSafe API.
 See [Decision API](Decision-API).
 
 ## Install the Code Graph Plugin

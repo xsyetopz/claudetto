@@ -2,8 +2,10 @@
 // A confident pick goes into the option, and every other case leaves the question as Claude sent it.
 
 import { expect, test } from "bun:test";
-import { pickQuestions } from "../../../plugins/claudetto/slices/decide/adapters/ask.ts";
-import type { CliRun } from "../../../plugins/claudetto/slices/decide/adapters/jev.ts";
+import {
+  type CliRun,
+  pickQuestions,
+} from "../../../plugins/claudetto/slices/decide/adapters/ask.ts";
 import type { AskQuestion } from "../../../plugins/claudetto/slices/decide/domain/ask.ts";
 import type { CliCall } from "../../../plugins/claudetto/slices/decide/domain/request.ts";
 import { MIN_CONFIDENCE } from "../../../plugins/claudetto/slices/decide/limits.ts";

@@ -10,9 +10,7 @@ A row with `none recorded` has no evidence in the repository, so it is a candida
 | --- | --- | --- | --- |
 | `claudetto/advise` | `advise tool` | none recorded | The built-in advisor gives the user the control of the model and the bounds. |
 | `claudetto/advise` | `advise caps` | none recorded | The user drops the tool. |
-| `claudetto/decide` | `second_opinion tool` | none recorded | The user drops `second_opinion`. |
 | `claudetto/decide` | `AskUserQuestion pick` | The user had to answer a choice that the project or Jev settles (trim design, decision 9). | Claude settles such a choice from the project with no hook. |
-| `claudetto/decide` | `small model fallback` | Jev gave no answer for some causes (trim design, decision 11). | Jev always answers. |
 | `claudetto/goal` | `goal loop` | The built-in evaluator reads only the conversation, so it cannot run a check (trim design). | The built-in `/goal` runs checks. |
 | `claudetto/goal` | `goal stop` | none recorded | The built-in `/goal` has the same stops. |
 | `claudetto/goal` | `ProposeGoal deny` | none recorded | The built-in `/goal` is removed. |

@@ -142,22 +142,20 @@ Inference: a core slice needs no add-on install before a workflow can ask a deci
 
 The basis changed in 0.1.0.
 Jev is no longer the default.
-The `decide` option is `off` by default, and the user turns on `claude` or `jev`.
+The `decide` option is `off` by default, and the user turns on `jev`.
 The decision is D5 in `openspec/changes/claudetto-0-1-0/design.md`.
 
 The choice is the `decide` slice in `src/plugins/claudetto/slices/decide/`.
-With the option `jev`, Jev runs through the `claudetto-decide` CLI with `--json` and through the `second_opinion` tool.
-When Jev gives no answer, the fallback calls `$.model.complete` with the model `haiku`.
-A result names the cause, such as `no-key`, `invalid-key`, or `no-balance`.
-The fallback reply says that a Claude model answered, and that Jev did not.
+With the option `jev`, Jev runs through the `claudetto-decide` CLI and picks an option of each `AskUserQuestion` question that facts settle.
+Release 0.2.0 removed the `second_opinion` tool and the fallback model, because the controls page lists them with no incident.
+When Jev gives no pick, the question stays as Claude asked it.
 
 **Alternatives:** Keep the add-on `dotclaude-jev`, which dotclaude 1.0.0 removed.
-Or keep it with no fallback.
+Or keep it with the `second_opinion` tool and the fallback model, which release 0.2.0 removed.
 
 **Evidence:**
 
-- `src/plugins/claudetto/slices/decide/ports.ts` has the `Cause` type.
-  `domain/route.ts` tries Jev first when the key is set, and it goes to the fallback with the cause when Jev gives no answer.
+- `src/plugins/claudetto/slices/decide/adapters/ask.ts` sends the questions to Jev, and it leaves a question as Claude asked it when Jev gives no pick.
 - `src/plugins/claudetto/slices/decide/limits.ts` has `JEV_TIMEOUT_MS` of 45 seconds.
   It has `TRIES` of 3, and `ATTEMPT_TIMEOUT_MS` of 12 seconds.
   The limits file says that a test pins that the tries fit in the timeout.

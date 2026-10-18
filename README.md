@@ -14,7 +14,7 @@ Each add-on works without the core plugin.
 
 | Plugin | What it gives |
 | --- | --- |
-| `claudetto` | The core: the settings snippet, the status line, the output style, the `setup` skill, the `/handoff` command, the `guard`, `ground`, and `sembr` hooks, the tailored prompt, and the `second_opinion` tool. |
+| `claudetto` | The core: the settings snippet, the status line, the output style, the `setup` skill, the `/handoff` command, the `guard`, `ground`, and `sembr` hooks, the tailored prompt, and the Jev pick of `AskUserQuestion`. |
 | `claudetto-codegraph` | The code graph of a project, from the CLI `codegraph`. |
 | `claudetto-browser` | The `browse` skill, and a headless browser search for each `WebSearch` call. |
 | `claudetto-docs` | The `docs` skill, with current library docs from the CLI `ctx7`. |
@@ -41,7 +41,7 @@ Requirements:
 - Claude Code `2.1.302` or later.
   claudetto is tested only on `2.1.302`.
 - `git`.
-- [Bun](https://bun.sh) `1.4.3` or later on `PATH`, for the status line, the setup command, and the `second_opinion` tool.
+- [Bun](https://bun.sh) `1.4.3` or later on `PATH`, for the status line, the setup command, and the Jev pick of `AskUserQuestion`.
 - [Node.js](https://nodejs.org) on `PATH`, for the npm installs of the add-ons.
 
 A plugin cannot set permissions, environment variables, or models.
@@ -82,14 +82,13 @@ An effort change keeps the prompt cache.
 
 See [Context and handoff](https://github.com/xsyetopz/claudetto/wiki/Context-And-Handoff).
 
-## Second Opinion
+## Jev Pick
 
-The `second_opinion` tool of the core plugin asks [TypeSafe Jev](https://docs.typesafe.ai/introduction) for a pick and a confidence on a decision.
+With the option `decide` set to `jev`, the core plugin asks [TypeSafe Jev](https://docs.typesafe.ai/introduction) for a pick and a confidence on each `AskUserQuestion` question that facts settle.
 Export `TYPESAFE_API_KEY` before Claude Code starts.
-Each call sends the data of the decision to the TypeSafe API.
-With no key, or when Jev gives no answer, a small Claude model answers instead.
-The result says that the answer is not from Jev.
-See [Second opinion](https://github.com/xsyetopz/claudetto/wiki/Second-Opinion).
+Each pick sends the question and the options to the TypeSafe API.
+When Jev gives no pick, the question stays as Claude asked it.
+See [Decision API](https://github.com/xsyetopz/claudetto/wiki/Decision-API).
 
 ## Add-On Plugins
 

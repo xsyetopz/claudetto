@@ -18,15 +18,6 @@ export const ATTEMPT_TIMEOUT_MS = 12_000;
 /** The most characters of an error body of the TypeSafe API that the client keeps. */
 export const ERROR_BODY_MAX = 200;
 
-/** The model of the fallback completion, which the `$.model.complete` call names. */
-export const FALLBACK_MODEL = "haiku";
-
-/** The time limit of one fallback completion, in milliseconds. */
-export const FALLBACK_TIMEOUT_MS = 30_000;
-
-/** The token cap of one fallback reply. */
-export const FALLBACK_MAX_TOKENS = 512;
-
 /** The fewest options of a `pick` question. */
 export const MIN_OPTIONS = 2;
 

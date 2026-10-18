@@ -5,7 +5,6 @@
 // The question text stays as Claude sent it, because the answers come back keyed by that text.
 
 import { MIN_CONFIDENCE, MIN_OPTIONS } from "../limits.ts";
-import type { Answer } from "../ports.ts";
 import {
   ASK_KIND,
   ASK_KIND_FACTS,
@@ -13,6 +12,7 @@ import {
   ASK_NOTE,
   ASK_PICK,
 } from "../prompts.ts";
+import type { Answer } from "./request.ts";
 
 const KIND = {
   type: "choice",

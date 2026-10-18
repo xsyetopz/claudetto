@@ -169,9 +169,6 @@ At each call:
 3. It asks a stronger model with `$.model.complete`, with `model`, `effort`, `maxTokens`, and `timeoutMs`, and with a cache mark on the part that stays the same.
 4. It gives the advice to Claude as the tool result, with the model name and the token counts from `usage`.
 
-A question with a fixed set of options goes to `second_opinion` of `decide` (Jev, then the fallback model), not to `advise`.
-The tool text of `advise` says so.
-
 ### Controls of the Advisor
 
 | Control | Default | Effect |

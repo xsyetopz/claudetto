@@ -44,7 +44,7 @@ The debug log of Claude Code shows what a hook or a plugin did.
 | The search says the built-in `WebSearch` answered | The browser gave no result, because of a bot check, a failed step, or a page with no text. With the `cloakbrowser` backend, the result says so. | [Browser](Browser) |
 | A search fails with a socket path error | The home folder path is too long, and macOS refuses a socket path over 103 bytes. Use a shorter home folder path. | [Browser](Browser) |
 
-## The Second Opinion of the Core Plugin
+## The Jev Pick of the Core Plugin
 
 The option `decide` is `off` by default.
 Run `/plugin configure claudetto` to set it.
@@ -52,10 +52,9 @@ The full list of causes is on [Decision API](Decision-API).
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| The result says `TYPESAFE_API_KEY` is not set | The option `decide` is `jev`, and the variable was not set when Claude Code started, so Jev was not tried. Export the variable and start Claude Code again. A small Claude model answers until then, and the result says so. | [Decision API](Decision-API) |
-| The result says the key is not valid | Get a new key, and set it in `TYPESAFE_API_KEY`. | [Decision API](Decision-API) |
-| The result says the TypeSafe account has no balance | Add balance to the account. | [Decision API](Decision-API) |
-| The question gets no pick | The tool does not pick for a question with fewer than 2 options. It does not pick for a preference, an approval, or a choice that reasonable engineers make either way. Claude asks you. | [Decision API](Decision-API) |
+| A question has no pick of Jev | The option `decide` is `off`, or `TYPESAFE_API_KEY` was not set when Claude Code started. Set the option, export the variable, and start Claude Code again. | [Decision API](Decision-API) |
+| A question has no pick, and the key is set | The key is not valid, the account has no balance, or Jev gave no pick. The hook then leaves the question as Claude asked it. | [Decision API](Decision-API) |
+| The question gets no pick | The hook does not pick for a question with fewer than 2 options. It does not pick for a preference, an approval, or a choice that reasonable engineers make either way. Claude asks you. | [Decision API](Decision-API) |
 
 ## The Library Docs `claudetto-docs`
 
