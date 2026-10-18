@@ -82,6 +82,9 @@ Each add-on works without the core plugin.
 - **Status line.**
   The main and subagent status lines from the input of Claude Code.
   See [Status Line](Status-Line).
+- **Reply button.**
+  A `Reply` button under each message of Claude.
+  A press puts the first lines of that message in the prompt box as a `>` quote, at the cursor, so the text that you typed stays.
 
 ## Related Pages
 
