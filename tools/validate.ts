@@ -8,7 +8,7 @@
 
 import { readdirSync } from "node:fs";
 import path, { join } from "node:path";
-import { replyOnlyCasesIn } from "./eval-checks.ts";
+import { replyOnlyCasesIn } from "./case-checks.ts";
 import { discover } from "./generate/discover.ts";
 import "./generate/emit/slices.ts"; // registers the loader that discovery needs for the `prompts.ts` modules
 import { isGenerated } from "./generate/emit/texts.ts";

@@ -2,7 +2,7 @@
 
 import { expect, test } from "bun:test";
 import { join } from "node:path";
-import { replyOnlyCases, replyOnlyCasesIn } from "../../tools/eval-checks.ts";
+import { replyOnlyCases, replyOnlyCasesIn } from "../../tools/case-checks.ts";
 
 const reply = { type: "regex", name: "r", pattern: "done" };
 const judge = { type: "llm", name: "j", criteria: "x" };
