@@ -108,7 +108,7 @@ export const handedText = (
  * the turn has ended with an assistant reply, or no assistant message after the first one has a tool use.
  * The tail starts at the first of the assistant messages before the last tool use, which are the blocks of one reply.
  */
-export const tailStart = (messages: readonly SessionMessage[]): number => {
+const tailStart = (messages: readonly SessionMessage[]): number => {
   const last = messages.at(-1);
   if (last?.role === "assistant" && last.toolUses.length === 0)
     return messages.length;
@@ -147,7 +147,7 @@ const contextTokens = (messages: readonly SessionMessage[]): number =>
   messages.reduce((sum, message) => sum + messageTokens(message), 0);
 
 /** The text of the one user message after a compaction: the text of the first user message `first`, then `handed`. */
-export const headText = (first: string, handed: string): string =>
+const headText = (first: string, handed: string): string =>
   first === "" ? handed : FIRST_MESSAGE({ first, handed });
 
 /**

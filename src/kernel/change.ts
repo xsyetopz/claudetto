@@ -1,4 +1,4 @@
-// The task state of a openspec change, read from the text of its `tasks.md`.
+// The task state of an openspec change, read from the text of its `tasks.md`.
 // The handoff and the statusline share these rules.
 // The file has no import beyond `paths.ts`, so the module graph of a hooks module can use it.
 

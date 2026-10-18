@@ -1,4 +1,4 @@
-// Lab tests of the handoff with an active openspec change .
+// Lab tests of the handoff with an active openspec change.
 // The stubs answer the listing of `openspec/changes/`, the `tasks.md` files, the fork, and the write.
 // With an open change, the handoff goes to `handoff.md` in the change folder and names the next open task.
 // With no open change, it goes to the default place.

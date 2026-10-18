@@ -14,7 +14,7 @@ import { GROUND_VALUE_CHARS_MIN } from "../limits.ts";
 import { GROUND_WARNING } from "../prompts.ts";
 
 /** The values in backticks of `text`, each one time, from the pairs of backticks of each line. */
-export const quotedValues = (text: string): string[] => {
+const quotedValues = (text: string): string[] => {
   const values = text.split("\n").flatMap((line) => {
     const parts = line.split("`");
     // An odd part is in a pair when a backtick follows it, and the last part follows the last backtick.

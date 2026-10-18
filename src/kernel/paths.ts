@@ -33,7 +33,7 @@ export const HANDOFF_DIR = `${CLAUDETTO_DIR}/handoffs`;
 /** The folder of the openspec changes, from the project root. The folder `archive` in it holds the finished changes. */
 export const CHANGES_DIR = "openspec/changes";
 
-/** The name of the handoff file inside a openspec change folder. */
+/** The name of the handoff file inside an openspec change folder. */
 export const CHANGE_HANDOFF_FILE = "handoff.md";
 
 /** The runtime paths in `.claude/` that git must not track. Claude Code writes the first ones, and the last one is a local file. */

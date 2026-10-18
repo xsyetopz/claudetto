@@ -1,8 +1,8 @@
 // The mod handler of the `handoff` slice: the `session.compact` hook of the main thread (design D3, spec `handoff`).
 // A fork writes the handoff, the hook writes it to a file and checks it with `$.fs.stat`,
 // and the hook gives back the first user message, the handoff message, and the tail in place of the summary.
-// When the new context is not below the trigger of the session model, there is nothing to fork (such as after a resume),
-// the model gives no handoff, `$.session.model` fails, or the file is missing or empty, `next(e)` runs the built-in compaction.
+// `next(e)` runs the built-in compaction when: the new context is not below the trigger of the session model,
+// there is nothing to fork (such as after a resume), the model gives no handoff, `$.session.model` fails, or the file is missing or empty.
 // A subagent compaction passes on with no change, and the filter has the trigger `plugin` of `$.session.compact` too.
 // On a terminal, a status line shows while the handoff is written, and a notice names the file. In `-p` the hooks draw nothing.
 // With the `compaction` option `built-in`, each compaction goes to Claude Code unchanged and `/handoff` is not registered.
@@ -141,8 +141,9 @@ const compacted = async (
   messages: readonly SessionMessage[],
 ): Promise<{ messages: SessionMessage[]; path: string } | null> => {
   const reply = await handoffText($, forkPrompt(messages));
+  if (reply === null) return null;
   const model = await $.session.model().catch(() => null);
-  if (reply === null || model === null) return null;
+  if (model === null) return null;
   const { path, text } = await fileOf($, reply);
   const kept = compactedMessages(
     messages,
