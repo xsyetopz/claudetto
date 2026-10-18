@@ -24,7 +24,7 @@ Evidence from `external/2026-10-17/` (untrusted, used as leads):
 
 ## Decisions
 
-### D1. Rewrite `claudetto-you-should-know` to Match the Built-in, with No Telemetry
+### D1. Rewrite `claudetto-you-should-know` to Match the Built-In, with No Telemetry
 
 The built-in `cc-plugin-you-should-know` needs feature-flag fetching (`external/cc-2.1.302/docs/env.md:587`), and D31 turns that off.
 The user wants the built-in look and behavior with no telemetry, and chose a rewrite on 2026-10-17.
@@ -209,7 +209,7 @@ Task 4.7 records the method and the numbers in `wiki/evidence/Usage-Evidence.md`
 - Alternative: lower caps to save weekly usage.
   Rejected, because the cap does not change the cost of the work, only its speed.
 
-### D15. Each Built-in Tool Is on or Off by Need, with a Measure
+### D15. Each Built-In Tool Is on or Off by Need, with a Measure
 
 The settings snippet denies `TaskStop`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`, `EnterPlanMode`, `ExitPlanMode`, `ScheduleWakeup`, and `ReportFindings` (`src/plugins/claudetto/slices/prompt/slice.ts:173`-`182`).
 The turn gate tells the model to stop a task with `TaskStop` (`slices/turngate/prompts/tasks-reason.md:4`), so the two parts of claudetto disagree, and a session on 2026-10-17 could not stop its own background task.

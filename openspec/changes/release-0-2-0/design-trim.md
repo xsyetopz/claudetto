@@ -29,7 +29,7 @@ Each pick came from Jev on 2026-10-17, unless the decision says otherwise.
 
 ## Decisions
 
-### D12. Remove Each Slice That a Built-in Does, and Shrink Each Slice That a Rule Can Do
+### D12. Remove Each Slice That a Built-In Does, and Shrink Each Slice That a Rule Can Do
 
 - Remove `worktree`, at confidence 0.94.
   Its `WorktreeCreate` hook replaces the creation of Claude Code, so `worktree.baseRef: "head"` of the snippet (D11) has no effect while the hook is on.

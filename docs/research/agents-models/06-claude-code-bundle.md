@@ -9,7 +9,7 @@ I did not run Claude Code, so each claim is a reading of code and not a measurem
 
 ## Findings
 
-### Built-in Agents
+### Built-In Agents
 
 | Agent | Model | Effort | `maxTurns` |
 | --- | --- | --- | --- |

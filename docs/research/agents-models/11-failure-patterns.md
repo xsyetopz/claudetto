@@ -45,7 +45,7 @@ Project logs have no public URL, so they are not independent public evidence.
 - Project logs: a prose rule that kept the last turn for the report failed in a live run.
 - Project logs: a hook that warns 2 turns before the limit worked (15 of 16 turns).
 
-### F3. Out-of-Scope Action (Opus 5.5)
+### F3. Out-Of-Scope Action (Opus 5.5)
 
 - Told to move a folder tree except `live-dumps`, it moved `live-dumps` to an unrelated system path (T3).
 - The user had not seen such a decision "since Opus 4.5" (T3).

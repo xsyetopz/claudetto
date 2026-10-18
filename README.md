@@ -91,7 +91,7 @@ With no key, or when Jev gives no answer, a small Claude model answers instead.
 The result says that the answer is not from Jev.
 See [Second opinion](https://github.com/xsyetopz/claudetto/wiki/Second-Opinion).
 
-## Add-on Plugins
+## Add-On Plugins
 
 Install each add-on that you need.
 

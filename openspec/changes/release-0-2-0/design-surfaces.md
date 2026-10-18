@@ -132,7 +132,7 @@ Jev picked `project-root` at confidence 0.74.
   APA style capitalizes each word of four letters or more, and claudetto does not follow it.
 - The `sembr` rewrite of a `Write` or `Edit` of a `.md` file fixes each heading in place, so the file is written right.
   No message goes to the model, and it costs no tokens.
-  A minor word after the first part of a hyphenated word stays in lower case, such as `End-to-End`.
+  Each part of a hyphenated word is capitalized, such as `Add-On`, which is the one exception to Chicago, because `.claude/rules/wiki.md` says so.
   A name of a tool or a slice goes in backticks, because the rule does not change inline code.
 - This repository adds the custom rule `tools/lint/title-case.ts` to `.markdownlint-cli2.jsonc`, and one pass fixes each heading that was wrong.
   The list of minor words is in one file, `slices/sembr/domain/title.ts`, which the hook and the rule both import.

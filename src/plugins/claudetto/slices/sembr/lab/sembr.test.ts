@@ -220,7 +220,7 @@ test("a `Write` of a Markdown file gets Title Case in each heading and keeps a r
     doc(
       "# What I Need from You",
       "## Install the Core Plugin",
-      "## The `hooks.json` File of an Add-on",
+      "## The `hooks.json` File of an Add-On",
       "> ## A Quoted Heading",
       fence,
     ),

@@ -89,10 +89,8 @@ const word = (token: string, edge: boolean): string => {
   const lower = core.toLowerCase();
   if (parts.length === 1 && core !== "A" && MINOR_WORDS.has(lower) && !edge)
     return head + lower + tail;
-  // A minor word after the first part of a hyphenated word stays in lower case, such as `End-to-End`.
-  const fixed = parts.map((p, i) =>
-    i > 0 && MINOR_WORDS.has(p.toLowerCase()) ? p.toLowerCase() : upper(p),
-  );
+  // Each part of a hyphenated word is capitalized, such as `Add-On` (the one exception to Chicago, per `wiki.md`).
+  const fixed = parts.map(upper);
   return head + fixed.join("-") + tail;
 };
 

@@ -52,7 +52,7 @@
   Set `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` to `1` to force one model on every subagent (v2.1.257 or later).
   The `Mythos` name does not appear in the part of the model page that I read.
 
-### Built-in Subagents and Delegation
+### Built-In Subagents and Delegation
 
 - `Explore` is read-only and runs on the main model, with exceptions for Fable/Mythos and some providers. (Subagents page.)
 - `Plan` is read-only and inherits the main model. (Subagents page.)

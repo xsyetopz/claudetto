@@ -11,10 +11,10 @@ test.each([
   ["the end of the road", "The End of the Road"],
   ["Look in", "Look In"],
   ["Set up: a plan for it", "Set Up: A Plan for It"],
-  ["Read-only add-on", "Read-Only Add-on"],
+  ["Read-only add-on", "Read-Only Add-On"],
   ["Use of `bun` on iOS", "Use of `bun` on iOS"],
   ["Phase A and B", "Phase A and B"],
-  ["end-to-end and out-of-scope", "End-to-End and Out-of-Scope"],
+  ["end-to-end and out-of-scope", "End-To-End and Out-Of-Scope"],
   ["see [the docs](url)", "See [the Docs](url)"],
   ["D25. an eval must fail", "D25. An Eval Must Fail"],
 ])("`%s` becomes `%s`", (from, to) => {

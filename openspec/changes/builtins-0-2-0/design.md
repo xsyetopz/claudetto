@@ -14,7 +14,7 @@ Part 3 replaces the built-in advisor with an advisor that the user controls.
 The plan openspec/changes/builtins-0-2-0 is done when the final turn shows these, run after the last commit on feat/0.2.0: `bun tools/builtins.ts --check` exits 0; `just test tests/claudetto/goal tests/claudetto/advise` exits 0; `just lab` exits 0; `just docker check` exits 0; `git status --short -- src tools tests plugins wiki` is empty.
 ```
 
-## What the Built-in `/goal` Is (2.1.302)
+## What the Built-In `/goal` Is (2.1.302)
 
 From `external/cc-2.1.302/strings.txt`:
 
@@ -126,7 +126,7 @@ The defaults are a proposal of Claude, not a choice of the user.
 - The next turn gets only the failing checks, not a restatement of the goal.
 - The proof is in the state file, so Claude does not need to print each output again for the judge.
 
-### The Built-in Parts That the Engine Turns Off
+### The Built-In Parts That the Engine Turns Off
 
 - The `/goal` command of Claude Code: `command.run` answers `goal`, so the built-in one does not run.
 - The `ProposeGoal` tool: `permissions.deny`, or `tool.call` with `{ deny }`, with the text that names `/goal`.
@@ -149,7 +149,7 @@ The defaults are a proposal of Claude, not a choice of the user.
 
 ## Part 3: The Advisor
 
-### What the Built-in Advisor Is (2.1.302)
+### What the Built-In Advisor Is (2.1.302)
 
 - A server tool: the API runs it inside the request, so the engine runs nothing for it (`types-2.1.302.d.ts:14192-14203`).
 - No `tool.check`, `tool.call`, or `tool.describe` hook, and no `PreToolUse` hook, can refuse, rewrite, or answer it (`types-2.1.302.d.ts:14216-14222`).
@@ -184,7 +184,7 @@ The tool text of `advise` says so.
 The default is `builtin` until the paid run of "Out of scope" shows that `advise` is as good or better.
 A change of the default is one line.
 
-### What the Replacement Gives That the Built-in Does Not
+### What the Replacement Gives That the Built-In Does Not
 
 - The user picks the model, the effort, and the context, and sets a bound on the cost.
 - Each call goes through the hooks of claudetto, so the cost shows in the status line, and the handoff can name the advice.
