@@ -6,119 +6,119 @@ The levers of the group are on the page [Builtins](Builtins).
 
 | Name | Group | Bytes | Verdict | Reason | Bytes saved or added |
 | --- | --- | ---: | --- | --- | ---: |
-| `account_memory_recall` | attachments | - | todo | - | - |
-| `advisor_stripped` | attachments | - | todo | - | - |
-| `advisor_tool` | attachments | - | todo | - | - |
-| `agent_listing_delta` | attachments | 405 | todo | - | - |
-| `agent_mention` | attachments | 134 | todo | - | - |
-| `already_read_file` | attachments | 8 | todo | - | - |
-| `artifact_opening_prefetch` | attachments | 6 | todo | - | - |
-| `async_hook_response` | attachments | 95 | todo | - | - |
-| `async_hook_response_batch` | attachments | 47 | todo | - | - |
-| `at_mention_reference` | attachments | 847 | todo | - | - |
-| `attention_budget` | attachments | - | todo | - | - |
-| `auto_mode` | attachments | 3209 | todo | - | - |
-| `auto_mode_exit` | attachments | 310 | todo | - | - |
-| `bash_output_audience_note` | attachments | 153 | todo | - | - |
-| `batching_reminder` | attachments | - | todo | - | - |
-| `batching_reminder_sent` | attachments | - | todo | - | - |
-| `budget_usd` | attachments | 28 | todo | - | - |
-| `command_permissions` | attachments | - | todo | - | - |
-| `compact_file_reference` | attachments | 139 | todo | - | - |
-| `context_efficiency` | attachments | - | todo | - | - |
-| `context_sections` | attachments | 5 | todo | - | - |
-| `coordinator_context` | attachments | 143 | todo | - | - |
-| `cowork_memory_context` | attachments | 270 | todo | - | - |
-| `credential_org` | attachments | - | todo | - | - |
-| `critical_system_reminder` | attachments | - | todo | - | - |
-| `date` | attachments | 57 | todo | - | - |
-| `date_change` | attachments | 114 | todo | - | - |
-| `deferred_tools_delta` | attachments | 55138 | todo | - | - |
-| `deferred_tools_record` | attachments | - | todo | - | - |
-| `diagnostics` | attachments | - | todo | - | - |
-| `dir_sync_notice` | attachments | - | todo | - | - |
-| `directory` | attachments | 93 | todo | - | - |
-| `dynamic_skill` | attachments | 64 | todo | - | - |
-| `edited_image_file` | attachments | - | todo | - | - |
-| `edited_text_file` | attachments | 366 | todo | - | - |
-| `elapsed_time_reminder` | attachments | - | todo | - | - |
-| `environment` | attachments | 330 | todo | - | - |
-| `file` | attachments | 992 | todo | - | - |
-| `fork_briefing` | attachments | 6 | todo | - | - |
-| `goal_status` | attachments | 284 | todo | - | - |
-| `hook_additional_context` | attachments | 46 | todo | - | - |
-| `hook_blocking_error` | attachments | 59 | todo | - | - |
-| `hook_cancelled` | attachments | 121 | todo | - | - |
-| `hook_deferred_tool` | attachments | 58 | todo | - | - |
-| `hook_error_during_execution` | attachments | 29 | todo | - | - |
-| `hook_non_blocking_error` | attachments | 40 | todo | - | - |
-| `hook_permission_decision` | attachments | 27 | todo | - | - |
-| `hook_plugin_listing` | attachments | - | todo | - | - |
-| `hook_stopped_continuation` | attachments | 51 | todo | - | - |
-| `hook_success` | attachments | 62 | todo | - | - |
-| `hook_system_message` | attachments | 14 | todo | - | - |
-| `inlined_image_paths` | attachments | 6 | todo | - | - |
-| `instructions` | attachments | 1332 | todo | - | - |
-| `invoked_skills` | attachments | 722 | todo | - | - |
-| `language` | attachments | 89 | todo | - | - |
-| `max_turns_reached` | attachments | - | todo | - | - |
-| `mcp_dropped_tools_delta` | attachments | 515 | todo | - | - |
-| `mcp_instructions_delta` | attachments | 332 | todo | - | - |
-| `mcp_resource` | attachments | 357 | todo | - | - |
-| `memory_update` | attachments | 286 | todo | - | - |
-| `model` | attachments | 125 | todo | - | - |
-| `nested_memory` | attachments | 15 | todo | - | - |
-| `opened_file_in_ide` | attachments | 89 | todo | - | - |
-| `output_limit_note` | attachments | - | todo | - | - |
-| `output_style` | attachments | 169 | todo | - | - |
-| `output_style_instructions` | attachments | - | todo | - | - |
-| `output_token_usage` | attachments | 45 | todo | - | - |
-| `pdf_reference` | attachments | 2041 | todo | - | - |
-| `peer_mention` | attachments | - | todo | - | - |
-| `plan_file_reference` | attachments | 178 | todo | - | - |
-| `plan_mode` | attachments | 23 | todo | - | - |
-| `plan_mode_exit` | attachments | 157 | todo | - | - |
-| `plan_mode_reentry` | attachments | 948 | todo | - | - |
-| `poll_events` | attachments | 53 | todo | - | - |
-| `prefix_delta` | attachments | 6 | todo | - | - |
-| `proactivity` | attachments | - | todo | - | - |
-| `prompt_render_point` | attachments | - | todo | - | - |
-| `prompt_snapshot` | attachments | - | todo | - | - |
-| `queued_command` | attachments | 83 | todo | - | - |
-| `read_truncation_notice` | attachments | - | todo | - | - |
-| `relevant_memories` | attachments | 327 | todo | - | - |
-| `remote_session_change` | attachments | - | todo | - | - |
-| `sandbox_instructions` | attachments | 6 | todo | - | - |
-| `secondary_reminder` | attachments | - | todo | - | - |
-| `secondary_reminder_sent` | attachments | - | todo | - | - |
-| `selected_lines_in_diff` | attachments | 121 | todo | - | - |
-| `selected_lines_in_ide` | attachments | 92 | todo | - | - |
-| `session_context` | attachments | 67 | todo | - | - |
-| `session_cron_carry` | attachments | - | todo | - | - |
-| `session_settings` | attachments | - | todo | - | - |
-| `silent_turn_reminder` | attachments | - | todo | - | - |
-| `skill_listing` | attachments | 64 | todo | - | - |
-| `skill_mention` | attachments | 206 | todo | - | - |
-| `structured_output` | attachments | - | todo | - | - |
-| `task_reminder` | attachments | 438 | todo | - | - |
-| `task_status` | attachments | 741 | todo | - | - |
-| `team_context` | attachments | - | todo | - | - |
-| `teammate_mailbox` | attachments | - | todo | - | - |
-| `teammate_shutdown_batch` | attachments | 49 | todo | - | - |
-| `thinking_drop` | attachments | - | todo | - | - |
-| `thinking_stripped` | attachments | - | todo | - | - |
-| `thread_state` | attachments | - | todo | - | - |
-| `todo_reminder` | attachments | 444 | todo | - | - |
-| `token_usage` | attachments | 26 | todo | - | - |
-| `tool_host_result_lines` | attachments | 7 | todo | - | - |
-| `tool_hosts_correction` | attachments | 1 | todo | - | - |
-| `tool_hosts_notice` | attachments | 47868 | todo | - | - |
-| `tool_search_usage_reminder` | attachments | 405 | todo | - | - |
-| `total_tokens_reminder` | attachments | - | todo | - | - |
-| `ultra_effort_enter` | attachments | 431 | todo | - | - |
-| `ultra_effort_exit` | attachments | 79 | todo | - | - |
-| `ultrathink_effort` | attachments | 128 | todo | - | - |
-| `unknown_command_fallback` | attachments | - | todo | - | - |
-| `withheld_memory` | attachments | 51 | todo | - | - |
-| `workflow_keyword_request` | attachments | 143 | todo | - | - |
-| `workflow_size_guideline_change` | attachments | - | todo | - | - |
+| `account_memory_recall` | attachments | - | keep | memory content, never turned off | - |
+| `advisor_stripped` | attachments | - | keep | marker with no model text, so nothing to remove | - |
+| `advisor_tool` | attachments | - | replace | part 3 replaces the advisor, and no hook can rewrite a server tool | - |
+| `agent_listing_delta` | attachments | 405 | keep | lists agent types the model can call | - |
+| `agent_mention` | attachments | 134 | keep | user-supplied context or file content, never turned off | - |
+| `already_read_file` | attachments | 8 | keep | user-supplied context or file content, never turned off | - |
+| `artifact_opening_prefetch` | attachments | 6 | off | `enableArtifact` is false | 6 |
+| `async_hook_response` | attachments | 95 | keep | hook output, never turned off | - |
+| `async_hook_response_batch` | attachments | 47 | keep | hook output, never turned off | - |
+| `at_mention_reference` | attachments | 847 | keep | user-supplied context or file content, never turned off | - |
+| `attention_budget` | attachments | - | keep | flag-gated nudge with no text found, so no measured gain | - |
+| `auto_mode` | attachments | 3209 | keep | permission and safety text of auto mode | - |
+| `auto_mode_exit` | attachments | 310 | keep | permission text that ends auto mode | - |
+| `bash_output_audience_note` | attachments | 153 | keep | diagnostic, safety, or limit text, never turned off | - |
+| `batching_reminder` | attachments | - | keep | flag-gated nudge with no text found, so no measured gain | - |
+| `batching_reminder_sent` | attachments | - | keep | flag-gated nudge with no text found, so no measured gain | - |
+| `budget_usd` | attachments | 28 | keep | counter of 28 bytes, budget awareness | - |
+| `command_permissions` | attachments | - | keep | diagnostic, safety, or limit text, never turned off | - |
+| `compact_file_reference` | attachments | 139 | keep | user-supplied context or file content, never turned off | - |
+| `context_efficiency` | attachments | - | keep | flag-gated nudge with no text found, so no measured gain | - |
+| `context_sections` | attachments | 5 | keep | session state or marker that the engine needs | - |
+| `coordinator_context` | attachments | 143 | keep | team or fork state, and claudetto does not turn off that feature | - |
+| `cowork_memory_context` | attachments | 270 | keep | memory content, never turned off | - |
+| `credential_org` | attachments | - | keep | session state or marker that the engine needs | - |
+| `critical_system_reminder` | attachments | - | keep | diagnostic, safety, or limit text, never turned off | - |
+| `date` | attachments | 57 | keep | date, never turned off | - |
+| `date_change` | attachments | 114 | keep | date, never turned off | - |
+| `deferred_tools_delta` | attachments | 55138 | keep | lists deferred tool names for `ToolSearch`, real size is about 2000 bytes per session start | - |
+| `deferred_tools_record` | attachments | - | keep | session state or marker that the engine needs | - |
+| `diagnostics` | attachments | - | keep | diagnostic, safety, or limit text, never turned off | - |
+| `dir_sync_notice` | attachments | - | keep | session state or marker that the engine needs | - |
+| `directory` | attachments | 93 | keep | user-supplied context or file content, never turned off | - |
+| `dynamic_skill` | attachments | 64 | keep | user-supplied context or file content, never turned off | - |
+| `edited_image_file` | attachments | - | keep | user-supplied context or file content, never turned off | - |
+| `edited_text_file` | attachments | 366 | keep | user-supplied context or file content, never turned off | - |
+| `elapsed_time_reminder` | attachments | - | keep | flag-gated nudge with no text found, so no measured gain | - |
+| `environment` | attachments | 330 | keep | session state or marker that the engine needs | - |
+| `file` | attachments | 992 | keep | user-supplied context or file content, never turned off | - |
+| `fork_briefing` | attachments | 6 | keep | team or fork state, and claudetto does not turn off that feature | - |
+| `goal_status` | attachments | 284 | off | the goal engine of part 2 gives its own status text | 284 |
+| `hook_additional_context` | attachments | 46 | keep | hook output, never turned off | - |
+| `hook_blocking_error` | attachments | 59 | keep | hook output, never turned off | - |
+| `hook_cancelled` | attachments | 121 | keep | hook output, never turned off | - |
+| `hook_deferred_tool` | attachments | 58 | keep | hook output, never turned off | - |
+| `hook_error_during_execution` | attachments | 29 | keep | hook output, never turned off | - |
+| `hook_non_blocking_error` | attachments | 40 | keep | hook output, never turned off | - |
+| `hook_permission_decision` | attachments | 27 | keep | hook output, never turned off | - |
+| `hook_plugin_listing` | attachments | - | keep | hook output, never turned off | - |
+| `hook_stopped_continuation` | attachments | 51 | keep | hook output, never turned off | - |
+| `hook_success` | attachments | 62 | keep | hook output, never turned off | - |
+| `hook_system_message` | attachments | 14 | keep | hook output, never turned off | - |
+| `inlined_image_paths` | attachments | 6 | keep | user-supplied context or file content, never turned off | - |
+| `instructions` | attachments | 1332 | keep | CLAUDE.md content, never turned off | - |
+| `invoked_skills` | attachments | 722 | keep | user-supplied context or file content, never turned off | - |
+| `language` | attachments | 89 | keep | session state or marker that the engine needs | - |
+| `max_turns_reached` | attachments | - | keep | diagnostic, safety, or limit text, never turned off | - |
+| `mcp_dropped_tools_delta` | attachments | 515 | keep | diagnostic of MCP tools that were dropped | - |
+| `mcp_instructions_delta` | attachments | 332 | keep | instructions of MCP servers that the user enabled | - |
+| `mcp_resource` | attachments | 357 | keep | user-supplied context or file content, never turned off | - |
+| `memory_update` | attachments | 286 | keep | memory content, never turned off | - |
+| `model` | attachments | 125 | keep | session state or marker that the engine needs | - |
+| `nested_memory` | attachments | 15 | keep | CLAUDE.md content, never turned off | - |
+| `opened_file_in_ide` | attachments | 89 | keep | user-supplied context or file content, never turned off | - |
+| `output_limit_note` | attachments | - | keep | diagnostic, safety, or limit text, never turned off | - |
+| `output_style` | attachments | 169 | keep | style that the user chose | - |
+| `output_style_instructions` | attachments | - | keep | diagnostic, safety, or limit text, never turned off | - |
+| `output_token_usage` | attachments | 45 | keep | counter of 45 bytes, no lever makes it better | - |
+| `pdf_reference` | attachments | 2041 | keep | user-supplied context or file content, never turned off | - |
+| `peer_mention` | attachments | - | keep | user-supplied context or file content, never turned off | - |
+| `plan_file_reference` | attachments | 178 | keep | carries the plan content that the model needs | - |
+| `plan_mode` | attachments | 23 | keep | safety text of plan mode, which the user can still enter | - |
+| `plan_mode_exit` | attachments | 157 | keep | tells the model that edits are allowed again | - |
+| `plan_mode_reentry` | attachments | 948 | keep | plan mode text, and the user can still enter it | - |
+| `poll_events` | attachments | 53 | keep | team or fork state, and claudetto does not turn off that feature | - |
+| `prefix_delta` | attachments | 6 | keep | session state or marker that the engine needs | - |
+| `proactivity` | attachments | - | keep | flag-gated nudge with no text found, so no measured gain | - |
+| `prompt_render_point` | attachments | - | keep | session state or marker that the engine needs | - |
+| `prompt_snapshot` | attachments | - | keep | session state or marker that the engine needs | - |
+| `queued_command` | attachments | 83 | keep | user-supplied context or file content, never turned off | - |
+| `read_truncation_notice` | attachments | - | keep | diagnostic, safety, or limit text, never turned off | - |
+| `relevant_memories` | attachments | 327 | keep | memory content, never turned off | - |
+| `remote_session_change` | attachments | - | keep | session state or marker that the engine needs | - |
+| `sandbox_instructions` | attachments | 6 | keep | diagnostic, safety, or limit text, never turned off | - |
+| `secondary_reminder` | attachments | - | keep | flag-gated nudge with no text found, so no measured gain | - |
+| `secondary_reminder_sent` | attachments | - | keep | flag-gated nudge with no text found, so no measured gain | - |
+| `selected_lines_in_diff` | attachments | 121 | keep | user-supplied context or file content, never turned off | - |
+| `selected_lines_in_ide` | attachments | 92 | keep | user-supplied context or file content, never turned off | - |
+| `session_context` | attachments | 67 | keep | session state or marker that the engine needs | - |
+| `session_cron_carry` | attachments | - | off | `CLAUDE_CODE_DISABLE_CRON=1` removes cron tools | 0 |
+| `session_settings` | attachments | - | keep | session state or marker that the engine needs | - |
+| `silent_turn_reminder` | attachments | - | keep | flag-gated nudge with no text found, so no measured gain | - |
+| `skill_listing` | attachments | 64 | keep | user-supplied context or file content, never turned off | - |
+| `skill_mention` | attachments | 206 | keep | user-supplied context or file content, never turned off | - |
+| `structured_output` | attachments | - | keep | diagnostic, safety, or limit text, never turned off | - |
+| `task_reminder` | attachments | 438 | off | `Task*` tools are denied, so the nudge points at tools the model lacks | 438 |
+| `task_status` | attachments | 741 | keep | status of background tasks that the model needs | - |
+| `team_context` | attachments | - | keep | team or fork state, and claudetto does not turn off that feature | - |
+| `teammate_mailbox` | attachments | - | keep | team or fork state, and claudetto does not turn off that feature | - |
+| `teammate_shutdown_batch` | attachments | 49 | keep | team or fork state, and claudetto does not turn off that feature | - |
+| `thinking_drop` | attachments | - | keep | session state or marker that the engine needs | - |
+| `thinking_stripped` | attachments | - | keep | session state or marker that the engine needs | - |
+| `thread_state` | attachments | - | keep | session state or marker that the engine needs | - |
+| `todo_reminder` | attachments | 444 | keep | nudge, but it carries the todo list, and `TodoWrite` use is not checked | - |
+| `token_usage` | attachments | 26 | keep | counter of 26 bytes, no lever makes it better | - |
+| `tool_host_result_lines` | attachments | 7 | keep | session state or marker that the engine needs | - |
+| `tool_hosts_correction` | attachments | 1 | keep | session state or marker that the engine needs | - |
+| `tool_hosts_notice` | attachments | 47868 | off | fires only for computer-use tool hosts, and `mcp__computer-use` is denied | 300 |
+| `tool_search_usage_reminder` | attachments | 405 | keep | names tools whose schemas are not loaded, needed for discovery | - |
+| `total_tokens_reminder` | attachments | - | keep | counter that follows the token budget setting | - |
+| `ultra_effort_enter` | attachments | 431 | keep | effort mode that the user chose | - |
+| `ultra_effort_exit` | attachments | 79 | keep | effort mode that the user chose | - |
+| `ultrathink_effort` | attachments | 128 | keep | user keyword that sets the effort | - |
+| `unknown_command_fallback` | attachments | - | keep | diagnostic, safety, or limit text, never turned off | - |
+| `withheld_memory` | attachments | 51 | keep | memory notice, never turned off | - |
+| `workflow_keyword_request` | attachments | 143 | off | `enableWorkflows` is false, so the keyword nudge is useless | 143 |
+| `workflow_size_guideline_change` | attachments | - | keep | flag-gated nudge with no text found, so no measured gain | - |

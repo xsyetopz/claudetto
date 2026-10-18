@@ -6,88 +6,88 @@ The levers of the group are on the page [Builtins](Builtins).
 
 | Name | Group | Bytes | Verdict | Reason | Bytes saved or added |
 | --- | --- | ---: | --- | --- | ---: |
-| `Agent` | tools | 17696 | todo | - | - |
-| `AppifactRepl` | tools | 8148 | todo | - | - |
-| `Artifact` | tools | 0 | todo | - | - |
-| `ArtifactCheck` | tools | 0 | todo | - | - |
-| `ArtifactComments` | tools | 0 | todo | - | - |
-| `ArtifactData` | tools | 0 | todo | - | - |
-| `AskUserQuestion` | tools | 4408 | todo | - | - |
-| `Bash` | tools | 3761 | todo | - | - |
-| `ClaudeDesign` | tools | 2 | todo | - | - |
-| `CronCreate` | tools | 446 | todo | - | - |
-| `CronDelete` | tools | 280 | todo | - | - |
-| `CronList` | tools | 179 | todo | - | - |
-| `DesignSync` | tools | 8116 | todo | - | - |
-| `Edit` | tools | 24 | todo | - | - |
-| `EndConversation` | tools | 8796 | todo | - | - |
-| `EnterPlanMode` | tools | 89 | todo | - | - |
-| `EnterWorktree` | tools | 3366 | todo | - | - |
-| `ExitPlanMode` | tools | 51 | todo | - | - |
-| `ExitWorktree` | tools | 2046 | todo | - | - |
-| `FetchInboxMessage` | tools | 4031 | todo | - | - |
-| `GetTask` | tools | 1948 | todo | - | - |
-| `Glob` | tools | 294 | todo | - | - |
-| `Grep` | tools | 2778 | todo | - | - |
-| `LSP` | tools | 2472 | todo | - | - |
-| `ListAgents` | tools | 0 | todo | - | - |
-| `ListConnectors` | tools | 5 | todo | - | - |
-| `ListMcpResourcesTool` | tools | 649 | todo | - | - |
-| `Monitor` | tools | 0 | todo | - | - |
-| `NotebookEdit` | tools | 707 | todo | - | - |
-| `ObserverReport` | tools | 942 | todo | - | - |
-| `OfferChromeSetup` | tools | 1083 | todo | - | - |
-| `Poll` | tools | 335 | todo | - | - |
-| `PowerShell` | tools | 45 | todo | - | - |
-| `Projects` | tools | 10352 | todo | - | - |
-| `ProposeGoal` | tools | 1537 | todo | - | - |
-| `PublishPlugin` | tools | 145 | todo | - | - |
-| `PushNotification` | tools | 122 | todo | - | - |
-| `Read` | tools | 2011 | todo | - | - |
-| `ReadMcpResourceDirTool` | tools | 772 | todo | - | - |
-| `ReadMcpResourceTool` | tools | 485 | todo | - | - |
-| `ReadNotifications` | tools | 1930 | todo | - | - |
-| `RefreshMcpTools` | tools | 1457 | todo | - | - |
-| `RemoteTrigger` | tools | 3060 | todo | - | - |
-| `ReportFindings` | tools | 1148 | todo | - | - |
-| `ScheduleWakeup` | tools | 225 | todo | - | - |
-| `SearchMcpRegistry` | tools | 1276 | todo | - | - |
-| `SendFeedback` | tools | 3824 | todo | - | - |
-| `SendFile` | tools | 1201 | todo | - | - |
-| `SendMessage` | tools | 5368 | todo | - | - |
-| `SendUserFile` | tools | 20 | todo | - | - |
-| `SendUserMessage` | tools | 386 | todo | - | - |
-| `ShareOnboardingGuide` | tools | 22 | todo | - | - |
-| `ShowOnboardingRolePicker` | tools | 943 | todo | - | - |
-| `Skill` | tools | 15 | todo | - | - |
-| `StructuredOutput` | tools | 226 | todo | - | - |
-| `SubagentHandback` | tools | 0 | todo | - | - |
-| `SuggestConnectors` | tools | 0 | todo | - | - |
-| `SuggestPluginInstall` | tools | 455 | todo | - | - |
-| `SuggestSkills` | tools | 1453 | todo | - | - |
-| `TaskCreate` | tools | 2418 | todo | - | - |
-| `TaskGet` | tools | 753 | todo | - | - |
-| `TaskList` | tools | 1646 | todo | - | - |
-| `TaskStop` | tools | 1191 | todo | - | - |
-| `TaskUpdate` | tools | 2272 | todo | - | - |
-| `TestingPermission` | tools | 129 | todo | - | - |
-| `TodoWrite` | tools | 269 | todo | - | - |
-| `ToolSearch` | tools | 0 | todo | - | - |
-| `WaitForMcpServers` | tools | 1316 | todo | - | - |
-| `WebFetch` | tools | 1143 | todo | - | - |
-| `WebSearch` | tools | 8045 | todo | - | - |
-| `Workflow` | tools | 208 | todo | - | - |
-| `Write` | tools | 730 | todo | - | - |
-| `memory_list` | tools | 672 | todo | - | - |
-| `memory_read` | tools | 186 | todo | - | - |
-| `memory_write` | tools | 1250 | todo | - | - |
-| `propose_skills` | tools | 1178 | todo | - | - |
-| `self_hosted_runner_get_pool` | tools | 54 | todo | - | - |
-| `self_hosted_runner_list_runners` | tools | 336 | todo | - | - |
-| `self_hosted_runner_list_secrets` | tools | 776 | todo | - | - |
-| `self_hosted_runner_list_sessions` | tools | 80 | todo | - | - |
-| `self_hosted_runner_read_health` | tools | 396 | todo | - | - |
-| `self_hosted_runner_read_metrics` | tools | 418 | todo | - | - |
-| `self_hosted_runner_requeue_session` | tools | 1092 | todo | - | - |
-| `self_hosted_runner_spawn_local` | tools | 984 | todo | - | - |
-| `self_hosted_runner_tail_log` | tools | 582 | todo | - | - |
+| `Agent` | tools | 17696 | replace | `tool.describe` swaps the description for the shorter `TOOL_AGENT`. | 17696 |
+| `AppifactRepl` | tools | 8148 | keep | not offered in a coding session: design or artifact mode only | - |
+| `Artifact` | tools | 0 | keep | not offered in a coding session: `enableArtifact` is false | - |
+| `ArtifactCheck` | tools | 0 | keep | not offered in a coding session: `enableArtifact` is false | - |
+| `ArtifactComments` | tools | 0 | keep | not offered in a coding session: `enableArtifact` is false | - |
+| `ArtifactData` | tools | 0 | keep | not offered in a coding session: `enableArtifact` is false | - |
+| `AskUserQuestion` | tools | 4408 | keep | Core tool, `decide` rewrites it only when the option is `jev`. | - |
+| `Bash` | tools | 3761 | keep | Core coding tool, no lever makes it better. | - |
+| `ClaudeDesign` | tools | 2 | keep | not offered in a coding session: design mode only | - |
+| `CronCreate` | tools | 446 | off | Off by `CLAUDE_CODE_DISABLE_CRON`. | 446 |
+| `CronDelete` | tools | 280 | off | Off by `CLAUDE_CODE_DISABLE_CRON`. | 280 |
+| `CronList` | tools | 179 | off | Off by `CLAUDE_CODE_DISABLE_CRON`. | 179 |
+| `DesignSync` | tools | 8116 | keep | not offered in a coding session: design mode only | - |
+| `Edit` | tools | 24 | keep | Core coding tool, no lever makes it better. | - |
+| `EndConversation` | tools | 8796 | keep | not offered in a coding session: feature-gated, not verified in the bundle | - |
+| `EnterPlanMode` | tools | 89 | off | Already in `permissions.deny` of `prompt/slice.ts`. | 89 |
+| `EnterWorktree` | tools | 3366 | keep | Core coding tool, no lever makes it better. | - |
+| `ExitPlanMode` | tools | 51 | off | Already in `permissions.deny` of `prompt/slice.ts`. | 51 |
+| `ExitWorktree` | tools | 2046 | keep | Core coding tool, no lever makes it better. | - |
+| `FetchInboxMessage` | tools | 4031 | keep | not offered in a coding session: inbox or remote-session feature gate | - |
+| `GetTask` | tools | 1948 | keep | not offered in a coding session: feature-gated, not verified in the bundle | - |
+| `Glob` | tools | 294 | keep | Core coding tool, no lever makes it better. | - |
+| `Grep` | tools | 2778 | keep | Core coding tool, no lever makes it better. | - |
+| `LSP` | tools | 2472 | keep | Core coding tool, no lever makes it better. | - |
+| `ListAgents` | tools | 0 | replace | `tool.describe` sets `isDeferred`, so the tool is not in the base prompt. | - |
+| `ListConnectors` | tools | 5 | keep | not offered in a coding session: connector gate of claude.ai | - |
+| `ListMcpResourcesTool` | tools | 649 | keep | Offered only when an MCP server gives resources, small. | - |
+| `Monitor` | tools | 0 | keep | Core coding tool, no lever makes it better. | - |
+| `NotebookEdit` | tools | 707 | keep | Core coding tool, no lever makes it better. | - |
+| `ObserverReport` | tools | 942 | keep | not offered in a coding session: observer mode only | - |
+| `OfferChromeSetup` | tools | 1083 | keep | not offered in a coding session: chrome setup flow only | - |
+| `Poll` | tools | 335 | keep | not offered in a coding session: feature-gated, not verified in the bundle | - |
+| `PowerShell` | tools | 45 | keep | Not offered on macOS or Linux: Windows gate. | - |
+| `Projects` | tools | 10352 | keep | not offered in a coding session: claude.ai projects gate | - |
+| `ProposeGoal` | tools | 1537 | off | The goal engine of part 2 takes its place. | 1537 |
+| `PublishPlugin` | tools | 145 | keep | not offered in a coding session: plugin publish gate | - |
+| `PushNotification` | tools | 122 | keep | not offered in a coding session: needs a mobile or remote gate | - |
+| `Read` | tools | 2011 | keep | Core coding tool, no lever makes it better. | - |
+| `ReadMcpResourceDirTool` | tools | 772 | keep | Offered only when an MCP server gives resources, small. | - |
+| `ReadMcpResourceTool` | tools | 485 | keep | Offered only when an MCP server gives resources, small. | - |
+| `ReadNotifications` | tools | 1930 | keep | not offered in a coding session: notification feature gate | - |
+| `RefreshMcpTools` | tools | 1457 | keep | not offered in a coding session: MCP refresh gate | - |
+| `RemoteTrigger` | tools | 3060 | keep | not offered in a coding session: remote trigger gate, tied to the `schedule` skill | - |
+| `ReportFindings` | tools | 1148 | off | Already in `permissions.deny` of `prompt/slice.ts`. | 1148 |
+| `ScheduleWakeup` | tools | 225 | off | Already in `permissions.deny` of `prompt/slice.ts`. | 225 |
+| `SearchMcpRegistry` | tools | 1276 | keep | not offered in a coding session: MCP registry gate | - |
+| `SendFeedback` | tools | 3824 | keep | not offered in a coding session: feedback gate (`feedbackDrafts` is off) | - |
+| `SendFile` | tools | 1201 | keep | not offered in a coding session: remote-session gate | - |
+| `SendMessage` | tools | 5368 | keep | Core coding tool, no lever makes it better. | - |
+| `SendUserFile` | tools | 20 | keep | not offered in a coding session: remote-session gate | - |
+| `SendUserMessage` | tools | 386 | keep | not offered in a coding session: brief or assistant mode only | - |
+| `ShareOnboardingGuide` | tools | 22 | keep | not offered in a coding session: onboarding mode only | - |
+| `ShowOnboardingRolePicker` | tools | 943 | keep | not offered in a coding session: onboarding mode only | - |
+| `Skill` | tools | 15 | keep | Core coding tool, no lever makes it better. | - |
+| `StructuredOutput` | tools | 226 | keep | Needed for `--json-schema` runs, tiny. | - |
+| `SubagentHandback` | tools | 0 | keep | Needed to end a subagent, text is 0 bytes. | - |
+| `SuggestConnectors` | tools | 0 | keep | not offered in a coding session: connector gate of claude.ai | - |
+| `SuggestPluginInstall` | tools | 455 | keep | not offered in a coding session: plugin suggestion gate | - |
+| `SuggestSkills` | tools | 1453 | keep | not offered in a coding session: skill suggestion gate | - |
+| `TaskCreate` | tools | 2418 | off | Already in `permissions.deny` of `prompt/slice.ts`. | 2418 |
+| `TaskGet` | tools | 753 | off | Already in `permissions.deny` of `prompt/slice.ts`. | 753 |
+| `TaskList` | tools | 1646 | off | Already in `permissions.deny` of `prompt/slice.ts`. | 1646 |
+| `TaskStop` | tools | 1191 | off | Already in `permissions.deny` of `prompt/slice.ts`. | 1191 |
+| `TaskUpdate` | tools | 2272 | off | Already in `permissions.deny` of `prompt/slice.ts`. | 2272 |
+| `TestingPermission` | tools | 129 | keep | not offered in a coding session: test builds only | - |
+| `TodoWrite` | tools | 269 | keep | Core coding tool, no lever makes it better. | - |
+| `ToolSearch` | tools | 0 | keep | Core coding tool, no lever makes it better. | - |
+| `WaitForMcpServers` | tools | 1316 | keep | not offered in a coding session: MCP wait gate | - |
+| `WebFetch` | tools | 1143 | keep | Core coding tool, no lever makes it better. | - |
+| `WebSearch` | tools | 8045 | replace | `browser/search` answers it in place of the built-in. | 8045 |
+| `Workflow` | tools | 208 | keep | not offered in a coding session: `enableWorkflows` is false | - |
+| `Write` | tools | 730 | keep | Core coding tool, no lever makes it better. | - |
+| `memory_list` | tools | 672 | keep | not offered in a coding session: memory-store feature gate | - |
+| `memory_read` | tools | 186 | keep | not offered in a coding session: memory-store feature gate | - |
+| `memory_write` | tools | 1250 | keep | not offered in a coding session: memory-store feature gate | - |
+| `propose_skills` | tools | 1178 | keep | not offered in a coding session: skill suggestion gate | - |
+| `self_hosted_runner_get_pool` | tools | 54 | keep | not offered in a coding session: self-hosted runner mode only | - |
+| `self_hosted_runner_list_runners` | tools | 336 | keep | not offered in a coding session: self-hosted runner mode only | - |
+| `self_hosted_runner_list_secrets` | tools | 776 | keep | not offered in a coding session: self-hosted runner mode only | - |
+| `self_hosted_runner_list_sessions` | tools | 80 | keep | not offered in a coding session: self-hosted runner mode only | - |
+| `self_hosted_runner_read_health` | tools | 396 | keep | not offered in a coding session: self-hosted runner mode only | - |
+| `self_hosted_runner_read_metrics` | tools | 418 | keep | not offered in a coding session: self-hosted runner mode only | - |
+| `self_hosted_runner_requeue_session` | tools | 1092 | keep | not offered in a coding session: self-hosted runner mode only | - |
+| `self_hosted_runner_spawn_local` | tools | 984 | keep | not offered in a coding session: self-hosted runner mode only | - |
+| `self_hosted_runner_tail_log` | tools | 582 | keep | not offered in a coding session: self-hosted runner mode only | - |

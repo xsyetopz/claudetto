@@ -6,112 +6,112 @@ The levers of the group are on the page [Builtins](Builtins).
 
 | Name | Group | Bytes | Verdict | Reason | Bytes saved or added |
 | --- | --- | ---: | --- | --- | ---: |
-| `/add-dir` | commands | 33 | todo | - | - |
+| `/add-dir` | commands | 33 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
 | `/advisor` | commands | 50 | replace | Part 3 of `builtins-0-2-0`: an advisor that the user controls. | - |
-| `/agents` | commands | 81 | todo | - | - |
-| `/artifacts` | commands | 52 | todo | - | - |
-| `/auto-mode-setup` | commands | 195 | todo | - | - |
-| `/autocompact` | commands | 68 | todo | - | - |
-| `/autofix-pr` | commands | 60 | todo | - | - |
-| `/background` | commands | 65 | todo | - | - |
-| `/branch` | commands | 63 | todo | - | - |
-| `/brief` | commands | 22 | todo | - | - |
-| `/btw` | commands | 78 | todo | - | - |
-| `/bug` | commands | 47 | todo | - | - |
-| `/cd` | commands | 50 | todo | - | - |
-| `/chrome` | commands | 30 | todo | - | - |
-| `/claim-credit` | commands | 44 | todo | - | - |
-| `/clear` | commands | 101 | todo | - | - |
-| `/cloud-plugins` | commands | 69 | todo | - | - |
-| `/color` | commands | 41 | todo | - | - |
-| `/commit-push-pr` | commands | 71 | todo | - | - |
-| `/compact` | commands | 98 | todo | - | - |
-| `/config` | commands | 29 | todo | - | - |
-| `/context` | commands | 54 | todo | - | - |
-| `/copy` | commands | 72 | todo | - | - |
-| `/daemon` | commands | 39 | todo | - | - |
-| `/design-consent` | commands | 49 | todo | - | - |
-| `/design-login` | commands | 75 | todo | - | - |
-| `/design-revoke` | commands | 50 | todo | - | - |
-| `/desktop` | commands | 46 | todo | - | - |
-| `/diff` | commands | 46 | todo | - | - |
-| `/effort` | commands | 32 | todo | - | - |
-| `/exit` | commands | - | todo | - | - |
-| `/export` | commands | 64 | todo | - | - |
-| `/extra-usage` | commands | 25 | todo | - | - |
-| `/fast` | commands | 45 | todo | - | - |
-| `/feedback` | commands | 50 | todo | - | - |
-| `/focus` | commands | 66 | todo | - | - |
-| `/fork` | commands | 82 | todo | - | - |
+| `/agents` | commands | 81 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/artifacts` | commands | 52 | off | `enableArtifact` is `false`, so the command has no use. | 52 |
+| `/auto-mode-setup` | commands | 195 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/autocompact` | commands | 68 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/autofix-pr` | commands | 60 | off | A cloud PR monitor that claudetto does not use. | 60 |
+| `/background` | commands | 65 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/branch` | commands | 63 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/brief` | commands | 22 | off | claudetto sets its own output style in `styles`, so the brief toggle has no use. | 22 |
+| `/btw` | commands | 78 | keep | Already hidden and disabled in this build. | - |
+| `/bug` | commands | 47 | off | `DISABLE_FEEDBACK_COMMAND` is set, so the feedback path is off. | 47 |
+| `/cd` | commands | 50 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/chrome` | commands | 30 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/claim-credit` | commands | 44 | off | A promo for credits. | 44 |
+| `/clear` | commands | 101 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/cloud-plugins` | commands | 69 | off | Only for cloud sessions, which claudetto does not use. | 69 |
+| `/color` | commands | 41 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/commit-push-pr` | commands | 71 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/compact` | commands | 98 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/config` | commands | 29 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/context` | commands | 54 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/copy` | commands | 72 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/daemon` | commands | 39 | off | Background services and routines that nothing in claudetto needs. | 39 |
+| `/design-consent` | commands | 49 | off | Design product feature, and `design` skills are off. | 49 |
+| `/design-login` | commands | 75 | off | Design product feature, and `design` skills are off. | 75 |
+| `/design-revoke` | commands | 50 | off | Design product feature, and `design` skills are off. | 50 |
+| `/desktop` | commands | 46 | off | Hands the session to Claude Desktop, which claudetto does not use. | 46 |
+| `/diff` | commands | 46 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/effort` | commands | 32 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/exit` | commands | - | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/export` | commands | 64 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/extra-usage` | commands | 25 | off | Old alias of `/usage-credits`. | 25 |
+| `/fast` | commands | 45 | off | `CLAUDE_CODE_DISABLE_FAST_MODE` is set, so fast mode is off. | 45 |
+| `/feedback` | commands | 50 | off | `DISABLE_FEEDBACK_COMMAND` is set, so the feedback path is off. | 50 |
+| `/focus` | commands | 66 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/fork` | commands | 82 | keep | Already hidden. Useful for coding. | - |
 | `/goal` | commands | 61 | replace | Part 2 of `builtins-0-2-0`: the goal engine keeps the name and the form. | - |
-| `/heapdump` | commands | 84 | todo | - | - |
-| `/help` | commands | 38 | todo | - | - |
-| `/hooks` | commands | 46 | todo | - | - |
-| `/ide` | commands | 45 | todo | - | - |
-| `/import` | commands | 75 | todo | - | - |
-| `/init` | commands | 33 | todo | - | - |
-| `/insights` | commands | 53 | todo | - | - |
-| `/install` | commands | 41 | todo | - | - |
-| `/install-github-app` | commands | 86 | todo | - | - |
-| `/install-slack-app` | commands | 69 | todo | - | - |
-| `/keybindings` | commands | 33 | todo | - | - |
-| `/limit-reset` | commands | 44 | todo | - | - |
-| `/list-agents` | commands | 68 | todo | - | - |
-| `/login` | commands | 77 | todo | - | - |
-| `/logout` | commands | 77 | todo | - | - |
-| `/loops` | commands | 36 | todo | - | - |
-| `/low-priority` | commands | 83 | todo | - | - |
-| `/mcp` | commands | 74 | todo | - | - |
-| `/memory` | commands | 46 | todo | - | - |
-| `/mobile` | commands | 60 | todo | - | - |
-| `/model` | commands | 54 | todo | - | - |
-| `/output-style` | commands | 42 | todo | - | - |
-| `/passes` | commands | 43 | todo | - | - |
-| `/pause-memory` | commands | 38 | todo | - | - |
-| `/permissions` | commands | 63 | todo | - | - |
-| `/plan` | commands | 69 | todo | - | - |
-| `/plugin` | commands | 35 | todo | - | - |
-| `/powerup` | commands | 69 | todo | - | - |
-| `/privacy-settings` | commands | 43 | todo | - | - |
-| `/pro-trial-expired` | commands | 59 | todo | - | - |
-| `/radio` | commands | 31 | todo | - | - |
-| `/rate-limit-options` | commands | 39 | todo | - | - |
-| `/recap` | commands | 37 | todo | - | - |
-| `/release-notes` | commands | 24 | todo | - | - |
-| `/reload-plugins` | commands | 63 | todo | - | - |
-| `/reload-skills` | commands | 59 | todo | - | - |
-| `/remote-control` | commands | 39 | todo | - | - |
-| `/remote-env` | commands | 47 | todo | - | - |
-| `/rename` | commands | 37 | todo | - | - |
-| `/restart` | commands | 64 | todo | - | - |
-| `/resume` | commands | 64 | todo | - | - |
-| `/rewind` | commands | 56 | todo | - | - |
-| `/sandbox` | commands | 30 | todo | - | - |
-| `/scroll-speed` | commands | 31 | todo | - | - |
-| `/session` | commands | 34 | todo | - | - |
-| `/setup-bedrock` | commands | 64 | todo | - | - |
-| `/setup-vertex` | commands | 75 | todo | - | - |
-| `/skill-doctor` | commands | 75 | todo | - | - |
-| `/skills` | commands | 21 | todo | - | - |
-| `/status` | commands | 94 | todo | - | - |
-| `/statusline` | commands | 35 | todo | - | - |
-| `/stickers` | commands | 26 | todo | - | - |
-| `/stop` | commands | 62 | todo | - | - |
-| `/subtask` | commands | 76 | todo | - | - |
-| `/tasks` | commands | 52 | todo | - | - |
-| `/team-onboarding` | commands | 63 | todo | - | - |
-| `/teleport` | commands | 60 | todo | - | - |
-| `/terminal-setup` | commands | - | todo | - | - |
-| `/theme` | commands | 36 | todo | - | - |
-| `/tui` | commands | 71 | todo | - | - |
-| `/ultraplan` | commands | 57 | todo | - | - |
-| `/ultrareview` | commands | 34 | todo | - | - |
-| `/upgrade` | commands | 51 | todo | - | - |
-| `/usage` | commands | 89 | todo | - | - |
-| `/usage-credits` | commands | 76 | todo | - | - |
-| `/version` | commands | 74 | todo | - | - |
-| `/voice` | commands | 31 | todo | - | - |
-| `/web-setup` | commands | 46 | todo | - | - |
-| `/wellbeing` | commands | 57 | todo | - | - |
-| `/workflow-launch-exec` | commands | 93 | todo | - | - |
-| `/workflows` | commands | 38 | todo | - | - |
+| `/heapdump` | commands | 84 | off | An internal debug command. | 84 |
+| `/help` | commands | 38 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/hooks` | commands | 46 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/ide` | commands | 45 | off | IDE auto connect and auto install are off in `prompt`. | 45 |
+| `/import` | commands | 75 | off | Imports the config of other agents. claudetto owns the settings. | 75 |
+| `/init` | commands | 33 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/insights` | commands | 53 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/install` | commands | 41 | off | Native build installer. The user installs Claude Code once. | 41 |
+| `/install-github-app` | commands | 86 | off | Product setup that claudetto does not need. | 86 |
+| `/install-slack-app` | commands | 69 | off | Product setup that claudetto does not need. | 69 |
+| `/keybindings` | commands | 33 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/limit-reset` | commands | 44 | off | A promo for a limit reset. | 44 |
+| `/list-agents` | commands | 68 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/login` | commands | 77 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/logout` | commands | 77 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/loops` | commands | 36 | off | `CLAUDE_CODE_DISABLE_CRON` is set, so loops are off. | 36 |
+| `/low-priority` | commands | 83 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/mcp` | commands | 74 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/memory` | commands | 46 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/mobile` | commands | 60 | off | A promo for the mobile app. | 60 |
+| `/model` | commands | 54 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/output-style` | commands | 42 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/passes` | commands | 43 | off | A promo for guest passes. | 43 |
+| `/pause-memory` | commands | 38 | off | `autoMemoryEnabled` is `false`, so there is no memory to pause. | 38 |
+| `/permissions` | commands | 63 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/plan` | commands | 69 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/plugin` | commands | 35 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/powerup` | commands | 69 | off | Interactive lessons, a promo. claudetto has docs in the wiki. | 69 |
+| `/privacy-settings` | commands | 43 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/pro-trial-expired` | commands | 59 | off | A UI for an expired trial, not a command to type. | 59 |
+| `/radio` | commands | 31 | off | A promo for lo-fi radio. | 31 |
+| `/rate-limit-options` | commands | 39 | off | A UI for a rate limit, not a command to type. | 39 |
+| `/recap` | commands | 37 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/release-notes` | commands | 24 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/reload-plugins` | commands | 63 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/reload-skills` | commands | 59 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/remote-control` | commands | 39 | off | `disableRemoteControl` is `true`. | 39 |
+| `/remote-env` | commands | 47 | off | Only for cloud agents, which claudetto does not use. | 47 |
+| `/rename` | commands | 37 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/restart` | commands | 64 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/resume` | commands | 64 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/rewind` | commands | 56 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/sandbox` | commands | 30 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/scroll-speed` | commands | 31 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/session` | commands | 34 | off | Cloud session URL and QR code. Not used. | 34 |
+| `/setup-bedrock` | commands | 64 | off | Provider setup that claudetto does not need. | 64 |
+| `/setup-vertex` | commands | 75 | off | Provider setup that claudetto does not need. | 75 |
+| `/skill-doctor` | commands | 75 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/skills` | commands | 21 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/status` | commands | 94 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/statusline` | commands | 35 | off | Needs the `statusline-setup` agent, which claudetto denies. `statusline` slice owns the line. | 35 |
+| `/stickers` | commands | 26 | off | A promo for stickers. | 26 |
+| `/stop` | commands | 62 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/subtask` | commands | 76 | keep | Already hidden. Useful for coding. | - |
+| `/tasks` | commands | 52 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/team-onboarding` | commands | 63 | off | A guide from usage for a team, a promo. | 63 |
+| `/teleport` | commands | 60 | off | Moves the session to the cloud, which claudetto does not use. | 60 |
+| `/terminal-setup` | commands | - | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/theme` | commands | 36 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/tui` | commands | 71 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/ultraplan` | commands | 57 | off | A cloud plan feature that claudetto does not use. | 57 |
+| `/ultrareview` | commands | 34 | off | A cloud paid review. `/review` stays. | 34 |
+| `/upgrade` | commands | 51 | off | A promo to upgrade the plan. | 51 |
+| `/usage` | commands | 89 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/usage-credits` | commands | 76 | off | A promo for usage credits. | 76 |
+| `/version` | commands | 74 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
+| `/voice` | commands | 31 | off | Voice mode that claudetto does not use. | 31 |
+| `/web-setup` | commands | 46 | off | Setup for cloud sessions, which claudetto does not use. | 46 |
+| `/wellbeing` | commands | 57 | off | Break reminders that nothing needs. | 57 |
+| `/workflow-launch-exec` | commands | 93 | off | For server-launched sessions only. | 93 |
+| `/workflows` | commands | 38 | off | `enableWorkflows` is `false`, so the command has no use. | 38 |
