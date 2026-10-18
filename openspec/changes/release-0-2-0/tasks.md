@@ -130,7 +130,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `grep -q START_TOKENS tools/limits.ts && just test`
 - [x] 6.2 List each point where claudetto can override or add a text in 2.1.302 (tool descriptions, system prompt blocks, output styles, skills, MCP texts, the `CLAUDE.md` block, hook messages), with the model that reads each text, in `src/wiki/reference/Texts.md`. (closed: obsolete: `tools/builtins.ts` and the generated `Builtins` pages list each text point)
   Check: `test -s src/wiki/reference/Texts.md && bun run lint:md`
-- [ ] 6.3 Audit each text of 6.2 by `.claude/skills/claude-api/shared/prompt-audit.md` for the model that reads it, and write the report with `file:line` to `openspec/changes/release-0-2-0/prompt-audit.md`.
+- [x] 6.3 Audit each text of 6.2 by `.claude/skills/claude-api/shared/prompt-audit.md` for the model that reads it, and write the report with `file:line` to `openspec/changes/release-0-2-0/prompt-audit.md`.
   Check: `test -s openspec/changes/release-0-2-0/prompt-audit.md`
 - [ ] 6.4 Rewrite each text by the audit, D17, and the practices of `design-prompts.md` for the model that reads it (D54): goals and limits, no step lists, no rule that a hook enforces, a fast check of the changed files after each change of behavior, the full checks once for each finished part, and none for an edit that changes no behavior (D7).
   Each text tells the model to report a gap or a blocker and not to work around it (D26).
