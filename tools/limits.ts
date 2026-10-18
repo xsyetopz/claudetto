@@ -80,10 +80,10 @@ export const SHORT_FILE_MIN_LINES = 15;
 export const PART_LINE_PINS: Record<string, number> = {
   "src/kernel": 1633,
   "src/plugins/claudetto-browser": 639,
-  "src/plugins/claudetto-codegraph": 654,
+  "src/plugins/claudetto-codegraph": 658,
   "src/plugins/claudetto-docs": 32,
   "src/plugins/claudetto-lab": 1896,
-  "src/plugins/claudetto-sessions": 252,
+  "src/plugins/claudetto-sessions": 257,
   "src/plugins/claudetto/slices/advise": 352,
   "src/plugins/claudetto/slices/decide": 1216,
   "src/plugins/claudetto/slices/goal": 625,
@@ -94,7 +94,7 @@ export const PART_LINE_PINS: Record<string, number> = {
   "src/plugins/claudetto/slices/sembr": 521,
   "src/plugins/claudetto/slices/setup": 354,
   "src/plugins/claudetto/slices/spec": 11,
-  "src/plugins/claudetto/slices/statusline": 1209,
+  "src/plugins/claudetto/slices/statusline": 1216,
   "src/plugins/claudetto/slices/styles": 13,
   tools: 5104,
 };

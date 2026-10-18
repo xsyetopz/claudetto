@@ -108,3 +108,9 @@ test("`replay` with a missing projects folder fails with a message", () => {
 test("`replay` without a module fails", () => {
   expect(run("replay.ts").status).toBe(2);
 });
+
+test("`replay` with `--help` prints the usage and exits 0", () => {
+  const r = run("replay.ts", "--help");
+  expect(r.status).toBe(0);
+  expect(r.out).toContain("Usage: bun replay.ts HOOK_MODULE");
+});

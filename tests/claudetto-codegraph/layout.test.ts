@@ -127,6 +127,14 @@ test("an unknown argument exits 2 with the usage line, and runs no `codegraph` c
   expect(await t.log()).toStrictEqual([]);
 });
 
+test("`--help` prints the usage line and exits 0", async () => {
+  const t = await setUp();
+  const r = check(t.env, t.project, ["--help"]);
+  expect(r.status).toBe(0);
+  expect(r.stdout).toContain("Usage: claudetto-codegraph-check [--mcp]");
+  expect(await t.log()).toStrictEqual([]);
+});
+
 test("a default install ships the skill and no MCP server, and the skill gives the MCP command", async () => {
   expect(slice.skills).toStrictEqual(["codegraph"]);
   const skill = await Bun.file(

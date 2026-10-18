@@ -14,8 +14,13 @@ import path from "node:path";
 
 const [module, dir = path.join(os.homedir(), ".claude", "projects")] =
   Bun.argv.slice(2);
+const USAGE = "Usage: bun replay.ts HOOK_MODULE [PROJECTS_DIR]";
+if (module === "--help") {
+  console.log(USAGE);
+  process.exit(0);
+}
 if (!module) {
-  console.error("Usage: bun replay.ts HOOK_MODULE [PROJECTS_DIR]");
+  console.error(USAGE);
   process.exit(2);
 }
 if (!fs.existsSync(dir)) {

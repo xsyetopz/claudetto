@@ -35,10 +35,14 @@ export const check = (root: string, env: NodeJS.ProcessEnv): string[] => {
 
 const USAGE = "Usage: claudetto-codegraph-check [--mcp]";
 
-/** Prints the check for the current folder, or the MCP lines with `--mcp`. Returns the exit code, which is 0 also when the CLI is missing, because the text then tells the user what to do, and 2 for an unknown argument. */
+/** Prints the check for the current folder, or the MCP lines with `--mcp`. Returns the exit code, which is 0 also when the CLI is missing, because the text then tells the user what to do, 0 for `--help`, and 2 for an unknown argument. */
 export const main = (argv: readonly string[]): number => {
   if (argv.length === 1 && argv[0] === "--mcp") {
     console.log(mcpLines().join("\n"));
+    return 0;
+  }
+  if (argv.length === 1 && argv[0] === "--help") {
+    console.log(USAGE);
     return 0;
   }
   if (argv.length > 0) {
