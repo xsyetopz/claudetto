@@ -179,9 +179,9 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just generate && just test tests/claudetto/setup tests/claudetto/prompt`
 - [x] 7.9 Measure from the transcripts the share of helper cache writes that follow a gap of more than 5 minutes, with the method in `wiki/evidence/Usage-Evidence.md`, and set `subagentPromptCacheTtl` to `1h` only when the rewrites that it saves cost more than the higher price of each write (D18). (closed: obsolete: trim-0-2-0 keeps the 5-minute subagent cache)
   Check: `grep -q subagentPromptCacheTtl wiki/evidence/Usage-Evidence.md`
-- [ ] 7.10 Write the command corpus of D43 in `tests/claudetto/guard/corpus/`: each destructive git form that must be denied, and each safe form that must pass, from the transcripts of other projects and the safe forms of D43.
+- [x] 7.10 Write the command corpus of D43 in `tests/claudetto/guard/corpus/`: each destructive git form that must be denied, and each safe form that must pass, from the transcripts of other projects and the safe forms of D43.
   Check: `test -n "$(ls tests/claudetto/guard/corpus/)"`
-- [ ] 7.11 Add a test that matches the corpus against the `permissions.deny` rules of the snippet by the matching of `permissions.md` (whole command, `*`, and each subcommand of a compound command), and see it fail, then write the exact deny rules (D43).
+- [x] 7.11 Add a test that matches the corpus against the `permissions.deny` rules of the snippet by the matching of `permissions.md` (whole command, `*`, and each subcommand of a compound command), and see it fail, then write the exact deny rules (D43).
   Check: `just test tests/claudetto/setup tests/claudetto/guard`
 - [x] 7.12 Add a test that the snippet sets `sandbox.enabled`, `autoAllowBashIfSandboxed: true`, `allowUnsandboxedCommands: false`, `permissions.defaultMode: "acceptEdits"`, and the allow rules of the safe tools of `Tools.md`, and see it fail, then change the snippet (D43). (closed: obsolete: `acceptEdits` conflicts with trim-0-2-0 decision 1 (auto mode))
   Check: `just test tests/claudetto/setup`
