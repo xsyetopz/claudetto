@@ -18,7 +18,7 @@ Each add-on works without the core plugin.
 | `claudetto-codegraph` | The code graph of a project, from the CLI `codegraph`. |
 | `claudetto-browser` | The `browse` skill, and a headless browser search for each `WebSearch` call. |
 | `claudetto-docs` | The `docs` skill, with current library docs from the CLI `ctx7`. |
-| `claudetto-sessions` | The `start-cost` and `usage` skills, which measure the session start and the usage. |
+| `claudetto-sessions` | The `sessions` skill, with scripts that audit the setup and replay a hook on past transcripts. |
 | `claudetto-lab` | Tools for plugin authors: the sandbox, capture, schema, and eval compare. |
 | `claudetto-you-should-know` | Opt-in. Shows one thing to know before Claude changes something, in place of the built-in `cc-plugin-you-should-know`. |
 

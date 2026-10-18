@@ -71,14 +71,6 @@ sandbox-clean:
 capture *args:
     bun plugins/claudetto-lab/bin/claudetto-capture "$@"
 
-# Size the start of a session by source from a transcript, and fail above the start bounds of tools/limits.ts; extra arguments go to claudetto-start (a .jsonl path, --compare BASE OTHER)
-measure *args:
-    bun tools/measure.ts "$@"
-
-# Where your Claude Code usage went; extra arguments go to claudetto-usage (--days N, --runs N, --json)
-usage *args:
-    bun plugins/claudetto-sessions/bin/claudetto-usage "$@"
-
 # Publish wiki/ to the GitHub wiki; the wiki repository exists only after its first page is made in the web UI
 wiki:
     bun tools/wiki.ts
@@ -120,6 +112,3 @@ eval-variant ref *args:
 debug-agents:
     bun tools/sandbox/run.ts --check-frontmatter
 
-# Capture and measure the start of a clean sandbox session: send one prompt, then type /exit; extra arguments go to the script (--port N, --dir DIR)
-start-run *args:
-    bun tools/start-run.ts "$@"

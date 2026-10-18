@@ -1,1 +1,1 @@
-Measures the start of a Claude Code session by source, and the usage of each run: model calls, context that each call reads again, and skills that a period did not use.
+Reads the setup of Claude Code and past transcripts with two scripts: an audit of settings, plugins, hooks, and the bytes that load at session start, and a replay of a hook on past tool calls.

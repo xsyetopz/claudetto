@@ -55,18 +55,10 @@ export const SKILL_BODY_LOW_BYTES = 2 * 1024;
 /** Most bytes in a `SKILL.md` body (8 KB). */
 export const SKILL_BODY_HIGH_BYTES = 8 * 1024;
 
-/** Fewest bytes in the first request, with no tool schemas (8 KB, where 1 KB is 1,024 bytes). `just measure` checks it. */
+/** Fewest bytes in the first request, with no tool schemas (8 KB, where 1 KB is 1,024 bytes). */
 export const FIRST_REQUEST_LOW_BYTES = 8 * 1024;
-/** Most bytes in the first request, with no tool schemas (16 KB). `just measure` checks it. */
+/** Most bytes in the first request, with no tool schemas (16 KB). */
 export const FIRST_REQUEST_HIGH_BYTES = 16 * 1024;
-
-// Start-of-session bound, checked by `tools/measure.ts`.
-
-/**
- * Most tokens in the first request of a claudetto session (input, cache creation, and cache read).
- * A measure of 9,485 tokens in a headless session with the settings snippet, plus 5% headroom, rounded up, is 9,960.
- */
-export const START_TOKENS = 9_960;
 
 // Bounds of `just sandbox-linux`, checked by `tools/sandbox/linux/run.ts`.
 

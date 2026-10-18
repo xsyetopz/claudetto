@@ -1,7 +1,0 @@
-// The bounds of the `usage` slice.
-
-/** The time that the `claudetto-usage` CLI may take, in milliseconds. It reads each transcript of the period. */
-export const TIMEOUT_MS = 120_000;
-
-/** The most sessions that the plugin version record keeps. A new session drops the oldest one. */
-export const VERSION_RECORD_MAX = 500;

@@ -3,6 +3,6 @@
 
 export const plugin = {
   name: "claudetto-sessions",
-  keywords: ["sessions", "usage", "measurement", "context"],
+  keywords: ["sessions", "audit", "replay", "transcripts"],
   homepage: "https://github.com/xsyetopz/claudetto/wiki/Sessions",
 };
