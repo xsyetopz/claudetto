@@ -11,7 +11,7 @@ Recalled facts can be out of date, so the docs are the source.
 </task>
 
 <procedure>
-`ctx7` is not on `PATH`, and `bunx` gets it, so start at step 1 and do not look for an installed `ctx7`.
+`ctx7` is not on `PATH`, and `bunx` gets it, so do not look for an installed `ctx7`.
 Run each `ctx7` call in one of these exact forms, because the permission rules of the skill allow only these two read subcommands.
 Do not run another `ctx7` subcommand, such as `setup`, `login`, or `upgrade`, because they write files or change the account.
 If Claude Code denies a call, ask the user, and do not change the form to get past the rule.
@@ -21,16 +21,12 @@ CTX7_TELEMETRY_DISABLED=1 bunx -y ctx7@0.6.1 library <name> "<topic>"
 CTX7_TELEMETRY_DISABLED=1 bunx -y ctx7@0.6.1 docs <library id> "<topic>"
 ```
 
-1. Find the version of the library that the project uses.
-   Read the manifest and the lockfile of the project, for example `package.json` and `bun.lock`.
-   Skip this step when the project does not name a version.
-2. Run `library` with the library name and the topic.
-   Pick the library ID from the result, for example `/vercel/next.js`.
-   Skip this step when the user gave the ID.
-3. Add the project version to the ID when the `Versions` line of the result lists it, for example `/colinhacks/zod/v4.6.5`.
-   When the list does not have that version, use the nearest listed version of the same major version, and tell the user.
-4. Run `docs` with the library ID and a query on one concept.
-5. Answer from the docs, and name the library ID that you used.
+The goal is the docs of the version of the library that the project uses, named by its library ID.
+Find that version in the manifest and the lockfile of the project, if they name one.
+Run `library` for the ID, for example `/vercel/next.js`, unless the user gave it.
+Add the version to the ID when the `Versions` line lists it, for example `/colinhacks/zod/v4.6.5`.
+When the list does not have it, use the nearest listed version of the same major version, and tell the user.
+Run `docs` with the ID and a query on one concept, and answer from the docs with the library ID that you used.
 </procedure>
 
 <constraints>

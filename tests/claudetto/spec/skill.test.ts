@@ -27,7 +27,7 @@ test.each([
 });
 
 test("the skill `spec` copies only what is missing and never overwrites", () => {
-  expect(skill).toContain("Never overwrite a file.");
+  expect(skill).toContain("Never overwrite a file, because");
   expect(skill).toContain(
     "to `openspec/schemas/<preset>` only when that folder is missing",
   );

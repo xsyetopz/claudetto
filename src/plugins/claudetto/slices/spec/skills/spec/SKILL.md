@@ -10,7 +10,7 @@ Do no other workflow step.
 
 ## Setup
 
-Never overwrite a file.
+Never overwrite a file, because the user may have changed it.
 
 - If `openspec/` is missing, run `bunx @fission-ai/openspec init --tools claude --profile core`.
 - For each folder `${CLAUDE_SKILL_DIR}/schemas/<preset>`, copy it to `openspec/schemas/<preset>` only when that folder is missing.
