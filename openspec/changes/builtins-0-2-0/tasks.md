@@ -13,4 +13,4 @@ The `Check:` of each task is in its part of `design.md`.
 
 ## 3. Advisor
 
-- [ ] 3.1 Do the steps of part 3.
+- [x] 3.1 Do the steps of part 3.
