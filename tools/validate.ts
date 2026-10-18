@@ -8,6 +8,7 @@
 
 import { readdirSync } from "node:fs";
 import path, { join } from "node:path";
+import { replyOnlyCasesIn } from "./eval-checks.ts";
 import { discover } from "./generate/discover.ts";
 import "./generate/emit/slices.ts"; // registers the loader that discovery needs for the `prompts.ts` modules
 import { isGenerated } from "./generate/emit/texts.ts";
@@ -96,6 +97,9 @@ if (import.meta.main) {
     ...shortFiles(present, linesOf),
     ...thinFolders(present),
     ...missingControls(await discover(root)),
+    ...(await replyOnlyCasesIn(root)).map(
+      (f) => `${f}: no check of a file or a tool call (D25)`,
+    ),
   ];
   if (parts.length) {
     for (const line of parts) console.error(`part rule: ${line}`);
