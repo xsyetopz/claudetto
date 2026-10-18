@@ -8,14 +8,19 @@ import { BASH_OUTPUT_MAX_CHARS } from "../../../../kernel/budget.ts";
 import type { Slice } from "../../../../kernel/slice.ts";
 import {
   keepOptions,
+  onAgentOffer,
+  onAttachment,
+  onCommandDescribe,
   onSection,
   onSpawn,
   onToolDescribe,
 } from "./adapters/mod.ts";
+import { OFF_AGENTS, OFF_ATTACHMENTS, OFF_COMMANDS } from "./domain/off.ts";
 
 export const slice = {
   name: "prompt",
-  ladder: "mod: the `prompt.section`, `agent.spawn`, and `tool.describe` hooks",
+  ladder:
+    "mod: the `prompt.section`, `agent.spawn`, `tool.describe`, `prompt.attachment`, `command.describe`, and `agent.offer` hooks",
   mod: [
     {
       event: "prompt.section",
@@ -58,6 +63,48 @@ export const slice = {
       phase: "answer",
       run: onToolDescribe,
     },
+    {
+      event: "prompt.attachment",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow:
+          "plugins/claudetto/tests/off.test.ts > `prompt.attachment` keeps an attachment of another kind",
+        text: "plugins/claudetto/tests/off.test.ts > `prompt.attachment` leaves out an attachment of an `off` kind",
+      },
+      filter: { type: [...OFF_ATTACHMENTS] },
+      phase: "answer",
+      run: onAttachment,
+    },
+    {
+      event: "command.describe",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow:
+          "plugins/claudetto/tests/off.test.ts > `command.describe` keeps another command in the menu",
+        text: "plugins/claudetto/tests/off.test.ts > `command.describe` hides a command of an `off` name",
+      },
+      filter: { command: [...OFF_COMMANDS] },
+      phase: "rewrite",
+      run: onCommandDescribe,
+    },
+    {
+      event: "agent.offer",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow:
+          "plugins/claudetto/tests/off.test.ts > `agent.offer` keeps another agent type",
+        text: "plugins/claudetto/tests/off.test.ts > `agent.offer` takes an agent type of an `off` name from the model",
+      },
+      filter: { agent: [...OFF_AGENTS] },
+      phase: "answer",
+      run: onAgentOffer,
+    },
   ],
   settings: {
     $schema:
@@ -96,11 +143,13 @@ export const slice = {
       "cc-plugin-agents-md@builtin": false,
       "cc-plugin-claude-test@builtin": false,
       "cc-plugin-diff@builtin": false,
+      "cc-plugin-easel@builtin": false,
       "cc-plugin-mermaid@builtin": false,
       "cc-plugin-mods-guide@builtin": false,
       "cc-plugin-responsive-mode@builtin": false,
       "cc-plugin-telemetry@builtin": false,
       "cc-plugin-tips@builtin": false,
+      "cc-plugin-you-should-know@builtin": false,
     },
     skillOverrides: {
       "plugin-authoring": "name-only",

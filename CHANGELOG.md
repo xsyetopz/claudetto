@@ -29,6 +29,7 @@ Run `/claudetto:setup` again after the update, because it cleans the settings of
   `handoff` keeps the compact answer and `/handoff`, and reads `openspec/changes/` in place of `minispec/changes/`.
 - **Breaking:** `prompt` is rebuilt on the short prompt of Claude Code 2.1.302 (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`).
   It answers `lean_body` with one tailored text, so the per-model variants are gone, and `surface` is merged into it.
+  It leaves out 5 attachment kinds, hides 47 commands, takes 1 agent type from the model, and turns off 2 more plugins (`tools/builtins/verdicts/`).
 - **Breaking:** `setup` merges the settings snippet and the cleanup of 0.1.0:
   the `hook.claudetto-*` git config pairs, the rule texts of the 0.1.0 policy, and the `CLAUDE.md` block.
   The `trim` slice is merged into it, and `setup` no longer installs the commit and push hooks.
@@ -37,8 +38,7 @@ Run `/claudetto:setup` again after the update, because it cleans the settings of
 
 - **Breaking:** the slices `agents`, `asks`, `attribution`, `checks`, `corrections`, `gc`, `minispec`, `policy`, `reads`, `repostate`, `turngate`, `usercheck`, and `worktree`.
   The `minispec` CLI and skills, the `gc` skill, the custom agents, and `claudetto-run-checks` go with them.
-- **Breaking:** the `testJudge` option, with the `asks` slice.
-- **Breaking:** the add-on `claudetto-you-should-know`.
+- **Breaking:** the `testJudge` option with the `asks` slice, and the add-on `claudetto-you-should-know`.
 - **Breaking:** the recipes `just measure`, `just usage`, and `just start-run`.
 
 ## [0.1.0-alpha.1] - 2026-10-15

@@ -117,18 +117,9 @@ test("the cleanup removes the claudetto block of `CLAUDE.md`, and keeps the text
   expect(claudeMd).toBe("# Mine\n");
 });
 
-test('the cleanup removes `promptCacheTtl: "5m"` and the switch-off of `you-should-know`, and keeps other values', async () => {
-  const { settings } = await run({
-    promptCacheTtl: "5m",
-    enabledPlugins: {
-      "cc-plugin-you-should-know@builtin": false,
-      "cc-plugin-tips@builtin": true,
-    },
-  });
+test('the cleanup removes `promptCacheTtl: "5m"`, and keeps other values', async () => {
+  const { settings } = await run({ promptCacheTtl: "5m" });
   expect(settings.promptCacheTtl).toBeUndefined();
-  expect(
-    settings.enabledPlugins["cc-plugin-you-should-know@builtin"],
-  ).toBeUndefined();
   expect((await run({ promptCacheTtl: "1h" })).settings.promptCacheTtl).toBe(
     "1h",
   );

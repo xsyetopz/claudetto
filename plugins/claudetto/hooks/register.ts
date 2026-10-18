@@ -16,22 +16,97 @@ import {
 } from "../slices/handoff/adapters/mod.ts";
 import {
   keepOptions as h10,
-  onSection as h11,
-  onSpawn as h12,
-  onToolDescribe as h13,
+  onAgentOffer as h11,
+  onAttachment as h12,
+  onCommandDescribe as h13,
+  onSection as h14,
+  onSpawn as h15,
+  onToolDescribe as h16,
 } from "../slices/prompt/adapters/mod.ts";
-import { onToolCall as h14 } from "../slices/sembr/adapters/mod.ts";
+import { onToolCall as h17 } from "../slices/sembr/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h0(options);
   h6(options);
   h10(options);
+  // eval: agent.offer prompt
+  on("agent.offer", { agent: ["comment-thread-analyst"] }, h11);
   // eval: agent.spawn prompt
-  on("agent.spawn", h12);
+  on("agent.spawn", h15);
+  // eval: command.describe prompt
+  on(
+    "command.describe",
+    {
+      command: [
+        "artifacts",
+        "autofix-pr",
+        "brief",
+        "bug",
+        "claim-credit",
+        "cloud-plugins",
+        "daemon",
+        "design-consent",
+        "design-login",
+        "design-revoke",
+        "desktop",
+        "extra-usage",
+        "fast",
+        "feedback",
+        "heapdump",
+        "ide",
+        "import",
+        "install",
+        "install-github-app",
+        "install-slack-app",
+        "limit-reset",
+        "loops",
+        "mobile",
+        "passes",
+        "pause-memory",
+        "powerup",
+        "pro-trial-expired",
+        "radio",
+        "rate-limit-options",
+        "remote-control",
+        "remote-env",
+        "session",
+        "setup-bedrock",
+        "setup-vertex",
+        "statusline",
+        "stickers",
+        "team-onboarding",
+        "teleport",
+        "ultraplan",
+        "ultrareview",
+        "upgrade",
+        "usage-credits",
+        "voice",
+        "web-setup",
+        "wellbeing",
+        "workflow-launch-exec",
+        "workflows",
+      ],
+    },
+    h13,
+  );
   // eval: command.run handoff
   on("command.run", { command: "handoff" }, h7);
+  // eval: prompt.attachment prompt
+  on(
+    "prompt.attachment",
+    {
+      type: [
+        "artifact_opening_prefetch",
+        "session_cron_carry",
+        "task_reminder",
+        "tool_hosts_notice",
+        "workflow_keyword_request",
+      ],
+    },
+    h12,
+  );
   // eval: prompt.section prompt
-  on("prompt.section", h11);
+  on("prompt.section", h14);
   // eval: session.compact handoff
   on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h8);
   // eval: session.start decide
@@ -41,7 +116,7 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.call decide
   on("tool.call", { tool: ["AskUserQuestion"] }, h1);
   // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h14);
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h17);
   // eval: tool.call ground
   on("tool.call", { tool: ["Write", "Edit", "ProposeGoal"] }, h4);
   // eval: tool.call guard
@@ -49,5 +124,5 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.call decide
   on("tool.call", { tool: /^mcp__claudetto__second_opinion$/ }, h2);
   // eval: tool.describe prompt
-  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h13);
+  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h16);
 };

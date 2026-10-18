@@ -8,8 +8,6 @@ import { isObject, type Json } from "./merge.ts";
 const BEGIN = "<!-- claudetto:begin -->";
 const END = "<!-- claudetto:end -->";
 
-const YSK = "cc-plugin-you-should-know@builtin";
-
 /** The prefix of the names of the git hooks that 0.1.0 put in `env`. */
 const HOOK_PREFIX = "hook.claudetto-";
 
@@ -64,17 +62,12 @@ export const cleanAutoMode = (settings: Json): Json => {
   return { ...settings, autoMode: next };
 };
 
-/** `settings` without the 0.1.0 values `promptCacheTtl: "5m"` and the switch-off of `you-should-know`. */
+/** `settings` without the 0.1.0 value `promptCacheTtl: "5m"`. */
 export const cleanLegacyKeys = (settings: Json): Json => {
-  const { promptCacheTtl, enabledPlugins, ...rest } = settings;
+  const { promptCacheTtl, ...rest } = settings;
   const out: Json = { ...rest };
   if (promptCacheTtl !== "5m" && promptCacheTtl !== undefined)
     out["promptCacheTtl"] = promptCacheTtl;
-  if (isObject(enabledPlugins)) {
-    const { [YSK]: off, ...others } = enabledPlugins;
-    out["enabledPlugins"] = off === false ? others : enabledPlugins;
-  } else if (enabledPlugins !== undefined)
-    out["enabledPlugins"] = enabledPlugins;
   return out;
 };
 

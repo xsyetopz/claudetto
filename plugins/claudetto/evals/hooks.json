@@ -1,10 +1,24 @@
 {
+  "agent.offer prompt": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/claudetto/tests/off.test.ts > `agent.offer` keeps another agent type",
+    "text": "plugins/claudetto/tests/off.test.ts > `agent.offer` takes an agent type of an `off` name from the model"
+  },
   "agent.spawn prompt": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
     "allow": "plugins/claudetto/tests/section.test.ts > a spawn with a block in its task prompt keeps it",
     "text": "plugins/claudetto/tests/section.test.ts > a spawn ends its task prompt with the rules for a subagent one time"
+  },
+  "command.describe prompt": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/claudetto/tests/off.test.ts > `command.describe` keeps another command in the menu",
+    "text": "plugins/claudetto/tests/off.test.ts > `command.describe` hides a command of an `off` name"
   },
   "command.run handoff": {
     "requests": 1,
@@ -13,6 +27,13 @@
     "eval": "handoff",
     "allow": "plugins/claudetto/tests/command.test.ts > another command runs unchanged",
     "text": "plugins/claudetto/tests/command.test.ts > on a terminal, the command writes the handoff, clears the chat, and submits the handed message"
+  },
+  "prompt.attachment prompt": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/claudetto/tests/off.test.ts > `prompt.attachment` keeps an attachment of another kind",
+    "text": "plugins/claudetto/tests/off.test.ts > `prompt.attachment` leaves out an attachment of an `off` kind"
   },
   "prompt.section prompt": {
     "requests": 0,
