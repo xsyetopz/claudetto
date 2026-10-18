@@ -1,31 +1,58 @@
-// The matching of a `Bash(...)` permission rule, as `permissions.md` describes it:
-// a rule is a whole-command pattern in which `*` stands for any text,
-// and a deny or ask rule matches a compound command when it matches any subcommand.
+// The matching of a `Bash(...)` permission rule, as the `Ene` function of Claude Code 2.1.302 does it:
+// a rule with `*` is anchored `^...$` with the `s` flag, `*` is `.*`, a trailing ` *` is `( .*)?`, and repeated spaces collapse.
+// A deny or ask rule tests the whole command, and then each subcommand of the shell parse, which knows quotes.
+// A prefix `VAR=x`, `sudo`, `env`, `timeout`, `nice`, `nohup`, and `command` is stripped before the test.
 // A program by path, `sh -c`, and an option before the subcommand are out of scope, because a rule cannot match them.
 
-/** The subcommands of a compound command: it splits on `&&`, `||`, `;`, `|`, `&`, and a newline. */
-export const subcommands = (command: string): string[] =>
-  command
-    .split(/&&|\|\||[;|&\n]/)
-    .map((part) => part.trim())
-    .filter(Boolean);
+/** The subcommands of a compound command: split on `&&`, `||`, `;`, `|`, `&`, and a newline, outside quotes. */
+export const subcommands = (command: string): string[] => {
+  const parts: string[] = [];
+  let part = "";
+  let quote = "";
+  for (let i = 0; i < command.length; i++) {
+    const ch = command[i] as string;
+    if (quote) {
+      if (ch === quote) quote = "";
+    } else if (ch === '"' || ch === "'") quote = ch;
+    else if (";|&\n".includes(ch)) {
+      parts.push(part);
+      part = "";
+      if ((ch === "&" || ch === "|") && command[i + 1] === ch) i++;
+      continue;
+    }
+    part += ch;
+  }
+  parts.push(part);
+  return parts.map((p) => p.trim()).filter(Boolean);
+};
+
+const PREFIX =
+  /^(?:[A-Za-z_]\w*=\S*|sudo|env|timeout(?: \d+\S*)?|nice|nohup|command)\s+/;
+const stripPrefix = (part: string): string => {
+  let rest = part;
+  while (PREFIX.test(rest)) rest = rest.replace(PREFIX, "");
+  return rest;
+};
 
 /** The pattern of a `Bash(pattern)` rule, or `null` for another tool. */
 export const bashPattern = (rule: string): string | null =>
   /^Bash\((.*)\)$/s.exec(rule)?.[1] ?? null;
 
-const regexOf = (pattern: string): RegExp =>
-  new RegExp(
-    `^${pattern
-      .split("*")
-      .map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&"))
-      .join(".*")}$`,
-    "s",
-  );
+const regexOf = (pattern: string): RegExp => {
+  const trailing = pattern.endsWith(" *");
+  const body = trailing ? pattern.slice(0, -2) : pattern;
+  const source = body
+    .split("*")
+    .map((p) => p.replace(/[.+?^${}()|[\]\\]/g, "\\$&"))
+    .join(".*");
+  return new RegExp(`^${source}${trailing ? "( .*)?" : ""}$`, "s");
+};
 
-/** The rules that match the command: a rule matches when it matches the whole command or one subcommand. */
+/** The rules that match the command: a rule matches the whole command or one subcommand. */
 export const matchingRules = (rules: string[], command: string): string[] => {
-  const parts = [command.trim(), ...subcommands(command)];
+  const parts = [command, ...subcommands(command)].map((p) =>
+    stripPrefix(p.trim()).replace(/ +/g, " "),
+  );
   return rules.filter((rule) => {
     const pattern = bashPattern(rule);
     if (pattern === null) return false;

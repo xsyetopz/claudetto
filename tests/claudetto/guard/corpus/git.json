@@ -35,7 +35,18 @@
     "cd x && git reset --hard",
     "git status; git clean -fd",
     "git log | cat || git push -f",
-    "git add . && git commit -m x\ngit stash clear"
+    "git add . && git commit -m x\ngit stash clear",
+    "git push --delete origin br",
+    "git push origin :br",
+    "git push --mirror",
+    "git branch --delete --force old",
+    "git checkout -f",
+    "git restore -W f",
+    "git restore --source=HEAD~1 f",
+    "git reflog delete HEAD@{1}",
+    "sudo git reset --hard",
+    "FOO=1 git clean -fd",
+    "env X=1 git push -f"
   ],
   "pass": [
     "git reset",
@@ -70,7 +81,9 @@
     "git diff HEAD~1",
     "git add . && git commit -m 'fix: x'",
     "cd x && git status | head",
-    "echo 'git reset --soft' && git fetch origin"
+    "echo 'git reset --soft' && git fetch origin",
+    "git commit -m \"x; git reset --hard\"",
+    "git commit -m 'a && git push -f'"
   ],
   "gap": [
     "git restore src/a.ts",
@@ -78,6 +91,8 @@
     "git push -uf origin main",
     "git -C x reset --hard",
     "sh -c 'git reset --hard'",
-    "/usr/bin/git reset --hard"
+    "/usr/bin/git reset --hard",
+    "git checkout --force",
+    "git branch -df old"
   ]
 }

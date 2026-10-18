@@ -1,5 +1,0 @@
-// The text of a handoff file with each pair of blockquotes that only a blank line separates joined into one (`MD028`).
-
-/** `text` with a `>` line in place of the blank lines between two quoted lines. */
-export const joinQuotes = (text: string): string =>
-  text.replace(/^([ \t]*>.*)\n(?:[ \t]*\n)+(?=([ \t]*)>)/gm, "$1\n$2>\n");
