@@ -1,7 +1,7 @@
 // The cleanup of the keys that claudetto 0.1.0 wrote to a settings file and to `CLAUDE.md`.
 // Each function removes only what 0.1.0 wrote, and leaves the keys of the user.
 
-import { LEGACY_RULES } from "../prompts.ts";
+import { LEGACY_KEYS, LEGACY_RULES } from "../prompts.ts";
 import { isObject, type Json } from "./merge.ts";
 
 /** The lines that open and close the claudetto block of `CLAUDE.md`. */
@@ -62,12 +62,28 @@ export const cleanAutoMode = (settings: Json): Json => {
   return { ...settings, autoMode: next };
 };
 
-/** `settings` without the 0.1.0 value `promptCacheTtl: "5m"`. */
+/**
+ * `settings` without the values that only the 0.1.0 snippet wrote (`LEGACY_KEYS`):
+ * `promptCacheTtl: "5m"`, the env key with its 0.1.0 value, and the `permissions.ask` rules.
+ * The other keys and rules of the user stay.
+ */
 export const cleanLegacyKeys = (settings: Json): Json => {
-  const { promptCacheTtl, ...rest } = settings;
-  const out: Json = { ...rest };
+  const { promptCacheTtl, ...out }: Json = settings;
   if (promptCacheTtl !== "5m" && promptCacheTtl !== undefined)
     out["promptCacheTtl"] = promptCacheTtl;
+  const { env: oldEnv, ask: oldAsk } = LEGACY_KEYS;
+  const { env, permissions: perms } = out;
+  if (isObject(env))
+    out["env"] = Object.fromEntries(
+      Object.entries(env).filter(
+        ([k, v]) => oldEnv[k as keyof typeof oldEnv] !== v,
+      ),
+    );
+  if (isObject(perms) && Array.isArray(perms["ask"]))
+    out["permissions"] = {
+      ...perms,
+      ask: perms["ask"].filter((v) => !oldAsk.includes(v)),
+    };
   return out;
 };
 

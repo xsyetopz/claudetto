@@ -34,7 +34,7 @@ Each add-on works without the core plugin.
 | Plugin | What it adds |
 | --- | --- |
 | `claudetto` | The core: the handoff, MiniSpec, the prompt profile, the context trim, the status line, the role agents, the guards, and the setup. |
-| `claudetto-codegraph` | The `codegraph` CLI and skill, and an opt-in MCP server. |
+| `claudetto-codegraph` | The `codegraph` CLI skill and check. `/claudetto:setup` offers `codegraph install` for it. |
 | `claudetto-browser` | The browser guide and an opt-in `WebSearch` backend. |
 | `claudetto-docs` | The current docs of a library or an API, with the Context7 CLI `ctx7`. |
 | `claudetto-sessions` | The measure of the start of a session by source, and the usage of each run. |

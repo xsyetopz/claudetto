@@ -58,7 +58,7 @@ test("lint: each command hook of a plugin and each status line command of the sn
   for await (const file of files) {
     commands.push(...hookCommands(await Bun.file(file).json()));
   }
-  expect(commands.length).toBeGreaterThan(2);
+  expect(commands.length).toBeGreaterThanOrEqual(2);
   expect(offPluginBun(commands)).toEqual([]);
 });
 

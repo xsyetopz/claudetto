@@ -116,9 +116,18 @@ Jev picked `project-root` at confidence 0.74.
 - Decision: setup writes no global block.
   It moves each rule to the surface above, and on its next run, it removes the block between its own markers, after the user's yes (D10).
   Text outside the markers stays.
-- Setup runs `codegraph install --target claude --location global` after the user's yes, in place of its own code graph text.
-  Its rule "Do not run `codegraph install`" (`slices/setup/skills/setup/SKILL.md:61`) goes, and so does the contradiction between `claude-md-codegraph.md` ("run `codegraph init -y` first") and the `codegraph` skill ("Do not run `codegraph init` yourself").
-- Each part of `claudetto-codegraph` that `codegraph install` already gives (the skill text, the `SessionStart` line) is measured against the install alone, and removed when it adds nothing.
+- The core setup does not run `codegraph install` itself, and it holds no code graph text.
+  Each add-on has no setup of its own (the user, 2026-10-18: "if each add-on had a setup script, that'd be bloated. main setup can optionally activate the setup for other tools, if the add-ons are found and installed/not disabled").
+  `claudetto-setup --addons` reads `enabledPlugins` in the user, project, and local settings files (a later file wins), and prints the step of each add-on that is enabled.
+  For `claudetto-codegraph`, the step is `codegraph install --target claude --location global`, which the skill runs only after the user's yes.
+  An add-on that is not installed or is disabled gets no text.
+  The core plugin names the add-on as text and imports no code from it, and the add-on imports nothing from the core plugin.
+- The contradiction between `claude-md-codegraph.md` and the `codegraph` skill goes, and so does the false text of the skill that "the plugin starts no MCP server" and the `claude mcp add` command.
+- The user approved the removal of the three controls `sync at session start`, `sync after an edit`, and `sync after git`, because `codegraph` syncs its own index.
+  The add-on has no hook, no mod handler, and no sync lock now.
+  `claudetto-codegraph-check` and the skill stay.
+  The check tells a missing CLI from a failed one, which `codegraph status` does not.
+  The measure is in `wiki/evidence/Usage-Evidence.md`.
 - A rule that a subagent needs goes into the prompt of that agent, because a subagent gets the instructions file but not the `SessionStart` context or the MCP instructions.
 - The `andrej-karpathy-skills` repository (MIT) is a model for the rewrite of D17, not text to copy.
   It holds four principles in `358` words, each with a short test, such as "Every changed line should trace directly to the user's request".

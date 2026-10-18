@@ -1,6 +1,9 @@
 // The CLI `claudetto-setup` of the `setup` slice. The launcher `bin/claudetto-setup` calls `main`.
 //
 //   claudetto-setup [--scope user|project|local] [--advisor builtin|claudetto] [--apply]
+//   claudetto-setup --addons
+//
+// With `--addons`, it prints the optional step of each add-on that `enabledPlugins` lists as enabled, and writes nothing.
 //
 // It cleans the keys of 0.1.0 out of the settings file and out of `CLAUDE.md`, then merges the settings snippet into the settings file.
 // It writes nothing without `--apply`.
@@ -17,6 +20,7 @@ import {
   PROJECT_SETTINGS,
   SETTINGS_FILE,
 } from "../../../../../kernel/paths.ts";
+import { addonSteps } from "../domain/addons.ts";
 import {
   cleanAutoMode,
   cleanGitConfig,
@@ -70,6 +74,8 @@ export const main = async (
   cwd: string = process.cwd(),
   io: Io = consoleIo,
 ): Promise<number> => {
+  const addons = args.includes("--addons");
+  if (addons && args.length > 1) return fail(io, USAGE);
   const apply = args.includes("--apply");
   const at = args.indexOf("--scope");
   const scope = at < 0 ? "user" : args[at + 1];
@@ -78,6 +84,7 @@ export const main = async (
   const bad = args.filter(
     (a, i) =>
       a !== "--apply" &&
+      a !== "--addons" &&
       a !== "--scope" &&
       a !== "--advisor" &&
       (at < 0 || i !== at + 1) &&
@@ -107,6 +114,18 @@ export const main = async (
     ? (files[scope] as [string, string])
     : [];
   if (!file || !claudeMd) return fail(io, UNKNOWN_SCOPE({ scope }));
+  if (addons) {
+    // The settings files in the order of precedence: a later file wins.
+    const parsed = await Promise.all(
+      Object.values(files).map(([f]) => readSettings(f)),
+    ).catch((err: Error) => err);
+    if (parsed instanceof Error) {
+      io.error(SETTINGS_FAILED({ file: "settings", message: parsed.message }));
+      return 1;
+    }
+    for (const step of addonSteps(parsed)) io.log(step);
+    return 0;
+  }
   let current: Json;
   try {
     current = await readSettings(file);
@@ -119,7 +138,13 @@ export const main = async (
   if (advisor === "claudetto")
     snippet["env"] = { ...(snippet["env"] as Json), ...ADVISOR_ENV };
   const changes = (
-    ["env", "autoMode", "promptCacheTtl", "enabledPlugins"] as const
+    [
+      "env",
+      "autoMode",
+      "promptCacheTtl",
+      "enabledPlugins",
+      "permissions",
+    ] as const
   )
     .filter(
       (key) => JSON.stringify(cleaned[key]) !== JSON.stringify(current[key]),

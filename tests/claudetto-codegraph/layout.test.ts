@@ -1,26 +1,18 @@
-// The shape of claudetto-codegraph: manifest, marketplace entry, hooks, the check, and the rule that
-// the add-on works alone (design D24, D26).
+// The shape of claudetto-codegraph: manifest, marketplace entry, the check, and the rule that
+// the add-on works alone (design D24, D26, D51).
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import {
-  INSTALL_COMMAND,
-  MCP_ADD_COMMAND,
-  MCP_REMOVE_COMMAND,
-} from "../../plugins/claudetto-codegraph/slices/graph/graph.ts";
+import { INSTALL_COMMAND } from "../../plugins/claudetto-codegraph/slices/graph/graph.ts";
 import { slice } from "../../plugins/claudetto-codegraph/slices/graph/slice.ts";
 import { type Env, REPO } from "../support/repo.ts";
-import { PLUGIN, run, runHook, setUp } from "./fake-cli.ts";
+import { PLUGIN, run, setUp } from "./fake-cli.ts";
 
 const json = (file: string) => Bun.file(file).json();
 const manifest: { description: string; mcpServers?: unknown } = await json(
   path.join(PLUGIN, ".claude-plugin/plugin.json"),
 );
-const hooks: {
-  modules?: unknown;
-  hooks: Record<string, { hooks: { type: string; command: string }[] }[]>;
-} = await json(path.join(PLUGIN, "hooks/hooks.json"));
 const ORDER = [
   "claudetto",
   "claudetto-codegraph",
@@ -41,33 +33,22 @@ test("the marketplace lists the plugins in order, and the entry has the manifest
   expect(entry.description).toBe(manifest.description);
 });
 
-test("the plugin has two classic command hooks, one module, and no MCP server", () => {
-  expect(hooks.modules).toStrictEqual(["./register.ts"]);
-  expect(Object.keys(hooks.hooks).sort()).toStrictEqual([
-    "PostToolUse",
-    "SessionStart",
-  ]);
-  expect(
-    Object.values(hooks.hooks)
-      .flat()
-      .flatMap((g) => g.hooks).length,
-  ).toBe(2);
-  expect(fs.existsSync(path.join(PLUGIN, "hooks/register.ts"))).toBe(true);
+test("the plugin has no hook module and no MCP server", () => {
+  expect(fs.existsSync(path.join(PLUGIN, "hooks"))).toBe(false);
   expect(fs.existsSync(path.join(PLUGIN, ".mcp.json"))).toBe(false);
   expect(manifest.mcpServers).toBe(undefined);
 });
 
-test("the plugin works alone: a copy of the plugin folder runs its hook with no other plugin", async () => {
+test("the plugin works alone: a copy of the plugin folder runs its check with no other plugin", async () => {
   const t = await setUp();
   const copy = path.join(t.dir, "alone", "claudetto-codegraph");
   fs.cpSync(PLUGIN, copy, { recursive: true });
-  const r = runHook(
-    "session-start",
-    { cwd: t.project },
-    t.env,
-    path.join(copy, "slices/graph/adapters/hook.ts"),
+  const r = run(
+    process.execPath,
+    ["--no-env-file", path.join(copy, "bin/claudetto-codegraph-check")],
+    { cwd: t.project, env: t.env },
   );
-  expect(r.out?.hookSpecificOutput.additionalContext).not.toBe(undefined);
+  expect(r.stdout).toContain("9.9.9");
 });
 
 const check = (env: Env, cwd: string, args: string[] = []) =>
@@ -110,20 +91,11 @@ test("the check tells a failed CLI from a missing CLI", async () => {
   expect(check(missing.env, missing.project).stdout).toContain(INSTALL_COMMAND);
 });
 
-test("`--mcp` prints the add and remove commands, and runs no `codegraph` command", async () => {
-  const t = await setUp();
-  const r = check(t.env, t.project, ["--mcp"]);
-  expect(r.status).toBe(0);
-  expect(r.stdout).toContain(MCP_ADD_COMMAND);
-  expect(r.stdout).toContain(MCP_REMOVE_COMMAND);
-  expect(await t.log()).toStrictEqual([]);
-});
-
 test("an unknown argument exits 2 with the usage line, and runs no `codegraph` command", async () => {
   const t = await setUp();
-  const r = check(t.env, t.project, ["--mpc"]);
+  const r = check(t.env, t.project, ["--mcp"]);
   expect(r.status).toBe(2);
-  expect(r.stderr).toContain("Usage: claudetto-codegraph-check [--mcp]");
+  expect(r.stderr).toContain("Usage: claudetto-codegraph-check");
   expect(await t.log()).toStrictEqual([]);
 });
 
@@ -131,34 +103,12 @@ test("`--help` prints the usage line and exits 0", async () => {
   const t = await setUp();
   const r = check(t.env, t.project, ["--help"]);
   expect(r.status).toBe(0);
-  expect(r.stdout).toContain("Usage: claudetto-codegraph-check [--mcp]");
+  expect(r.stdout).toContain("Usage: claudetto-codegraph-check");
   expect(await t.log()).toStrictEqual([]);
 });
 
-test("a default install ships the skill and no MCP server, and the skill gives the MCP command", async () => {
+test("a default install ships the skill and no MCP server", () => {
   expect(slice.skills).toStrictEqual(["codegraph"]);
-  const skill = await Bun.file(
-    path.join(PLUGIN, "skills/codegraph/SKILL.md"),
-  ).text();
-  expect(skill).toContain(MCP_ADD_COMMAND);
+  expect(slice.hooks).toBe(undefined);
   expect(JSON.stringify(manifest)).not.toContain("codegraph serve");
-});
-
-test("no hook run calls codegraph `install` or `init`, with an index or without one", async () => {
-  const payloads = {
-    "session-start": (project: string) => ({ cwd: project }),
-    sync: (project: string) => ({ cwd: project, tool_name: "Edit" }),
-  };
-  for (const index of [true, false]) {
-    const t = await setUp({ index });
-    for (const [mode, payload] of Object.entries(payloads))
-      runHook(mode, payload(t.project), t.env);
-    const subcommands = (await t.log()).map((line) => line.split(" ")[0]);
-    if (index)
-      expect(subcommands.length > 0, "the hooks called the CLI").toBeTruthy();
-    expect(
-      subcommands.filter((c) => c === "install" || c === "init"),
-      `index ${index}: ${subcommands}`,
-    ).toStrictEqual([]);
-  }
 });

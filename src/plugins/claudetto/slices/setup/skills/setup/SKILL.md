@@ -3,7 +3,7 @@ name: setup
 description: Applies the claudetto settings snippet, and removes the keys and the `CLAUDE.md` block that claudetto 0.1.0 wrote. Use after an install or update of the plugin `claudetto`.
 disable-model-invocation: true
 argument-hint: "[user|project|local]"
-allowed-tools: Bash(claudetto-setup *)
+allowed-tools: Bash(claudetto-setup *) Bash(codegraph install --target claude --location global)
 ---
 
 <task>
@@ -61,5 +61,13 @@ The command `claudetto-setup` writes nothing without `--apply`, so run the previ
 
    Do not edit the startup file, because it is outside Claude Code.
 
-6. Tell the user the files that changed, and tell them to restart Claude Code.
+6. Offer the steps of the add-ons.
+   Run `claudetto-setup --addons`.
+   It prints one step for each add-on that is installed and not disabled, and prints nothing for the others.
+   If it prints nothing, say nothing about add-ons.
+   For each step, ask the user with one `AskUserQuestion` call, because the step changes files outside the project.
+   After a yes, run the command that the step names, for example `codegraph install --target claude --location global`.
+   After a no, run nothing.
+
+7. Tell the user the files that changed, and tell them to restart Claude Code.
 </procedure>

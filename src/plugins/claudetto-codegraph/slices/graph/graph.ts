@@ -1,8 +1,6 @@
-// The pure logic of the code-graph hooks: the text that goes to Claude, and the parse of the payload.
+// The pure logic of the check: the text that `claudetto-codegraph-check` prints.
 // No function here runs a command or reads a file.
 
-import { parse } from "../../../../kernel/shell.ts";
-import { baseName, stripWrappers } from "../../../../kernel/wrappers.ts";
 import { ERROR_TEXT_MAX_CHARS } from "./limits.ts";
 import {
   CHECK_FAILED,
@@ -10,25 +8,7 @@ import {
   CHECK_MISSING,
   CHECK_NOT_INDEXED,
   CHECK_OK,
-  MCP_LINES,
 } from "./prompts.ts";
-
-/** The global options of `git` that take the next word as their value, from `git help git`. */
-export const GIT_VALUE_OPTIONS: ReadonlySet<string> = new Set([
-  "-C",
-  "-c",
-  "--git-dir",
-  "--work-tree",
-  "--namespace",
-  "--super-prefix",
-  "--attr-source",
-  "--config-env",
-]);
-
-/** The fields of a hook payload that the hooks read. */
-export interface HookPayload {
-  cwd?: string;
-}
 
 /** The install command that the check prints. The add-on never runs it. */
 export const INSTALL_COMMAND = "bun i -g @colbymchenry/codegraph";
@@ -36,94 +16,8 @@ export const INSTALL_COMMAND = "bun i -g @colbymchenry/codegraph";
 /** The command that builds the first index. It is the opt-in of a project. */
 export const INIT_COMMAND = "codegraph init -y";
 
-/**
- * The command that adds the `codegraph` MCP server to the user config of Claude Code.
- * The user runs it, because it changes the user config.
- * The add-on ships no MCP server, so a default install starts none.
- */
-export const MCP_ADD_COMMAND =
-  // biome-ignore lint/plugin: the shell command is data that the user runs
-  "claude mcp add --scope user codegraph -- bunx @colbymchenry/codegraph@1.6.0 serve --mcp";
-
-/** The command that removes the `codegraph` MCP server that `MCP_ADD_COMMAND` added. */
-export const MCP_REMOVE_COMMAND = "claude mcp remove codegraph --scope user";
-
-/** The lines of `claudetto-codegraph-check --mcp`: the two commands, which the add-on never runs. */
-export const mcpLines = (): string[] =>
-  MCP_LINES({
-    addCommand: MCP_ADD_COMMAND,
-    removeCommand: MCP_REMOVE_COMMAND,
-  }).split("\n");
-
 /** The path of the index database in a project. A project with this file has opted in. */
 export const INDEX_PATH = ".codegraph/codegraph.db";
-
-/** The verbs of `git` that change the files of the tree. `stash` is checked on its own. */
-const TREE_VERBS = new Set([
-  "commit",
-  "merge",
-  "rebase",
-  "pull",
-  "checkout",
-  "switch",
-  "reset",
-  "cherry-pick",
-  "revert",
-  "apply",
-  "am",
-  "restore",
-  "clean",
-  "rm",
-  "mv",
-  "submodule",
-  "sparse-checkout",
-  "bisect",
-  "read-tree",
-  "checkout-index",
-  "filter-branch",
-  "history",
-]);
-
-/** The subcommands of `git stash` that change the files of the tree. `list` and `show` do not. */
-const STASH_CHANGES = new Set(["push", "save", "pop", "apply", "branch"]);
-
-/** The verb of a `git` command and the words after it, or undefined when the words are not a `git` command. Global options before the verb are skipped. */
-const gitVerb = (words: string[]): [string, string[]] | undefined => {
-  if (baseName(words[0] ?? "") !== "git") return undefined;
-  let i = 1;
-  while (i < words.length && (words[i] as string).startsWith("-"))
-    i += GIT_VALUE_OPTIONS.has(words[i] as string) ? 2 : 1;
-  const verb = words[i];
-  return verb === undefined ? undefined : [verb, words.slice(i + 1)];
-};
-
-/**
- * True when a `Bash` command runs a `git` command that changes the tree: `commit`, `merge`, `rebase`, `pull`, `checkout`, `switch`, `reset`, `cherry-pick`, `revert`, `apply`, `am`, `restore`, `clean`, `rm`, `mv`, `submodule`, `sparse-checkout`, `bisect`, `read-tree`, `checkout-index`, `filter-branch`, `history`, or a `stash` that changes files.
- * The shell parser of the kernel finds each simple command, so `cd x && git commit`, `timeout 5 git reset`, `env GIT_DIR=.git git checkout main`, and a command on a new line match.
- * Global options before the verb are skipped, so `git -C dir commit` matches too.
- * `git stash list` does not match, because it changes no file.
- */
-export const changesTree = (command: string): boolean =>
-  parse(command).commands.some((words) => {
-    const found = gitVerb(stripWrappers(words));
-    if (!found) return false;
-    const [verb, rest] = found;
-    if (verb === "stash") {
-      const sub = rest[0];
-      return sub === undefined || sub.startsWith("-") || STASH_CHANGES.has(sub);
-    }
-    return TREE_VERBS.has(verb);
-  });
-
-/** `text` as a parsed payload, or `null` when it is not JSON. */
-export const parseJson = (text: string): HookPayload | null => {
-  try {
-    return JSON.parse(text);
-  } catch (err) {
-    if (!(err instanceof SyntaxError)) throw err;
-    return null;
-  }
-};
 
 /** What the check found: no CLI, a CLI that failed, or a CLI that answered. */
 export type CliState =

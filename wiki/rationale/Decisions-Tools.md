@@ -148,26 +148,21 @@ See [Handoff](Handoff).
 The problem is that Claude needs a code graph of the project, such as the callers of a function.
 
 The choice is the add-on `claudetto-codegraph`.
-It uses the `codegraph` CLI and no MCP server.
+It uses the `codegraph` CLI and a skill that shows its commands.
 The code is in `src/plugins/claudetto-codegraph/slices/graph/`.
-Each hook runs only when `.codegraph/codegraph.db` exists (`INDEX_PATH` in `domain/graph.ts`).
-The hooks in `hooks/hooks.json` do three things:
-
-- They sync the index at `SessionStart`, and they add one line about the graph.
-- They sync the index after an `Edit`, `Write`, `MultiEdit`, or `NotebookEdit`.
-- They sync the index after a `git` command that changes the tree (a mod handler in `adapters/mod.ts`).
+The add-on has no hook, because `codegraph` syncs its own index (D51).
+The earlier hooks synced the index at `SessionStart`, after an edit, and after a `git` command, and they are removed.
+`/claudetto:setup` offers `codegraph install --target claude --location global` when the add-on is on, and that command adds the MCP server.
 
 The add-on runs `codegraph` by its name, and a missing CLI gives `ENOENT` in `adapters/codegraph.ts`.
 The bounds are in `slices/graph/limits.ts`.
 `QUERY_TIMEOUT_MS` is 2000.
-`START_SYNC_TIMEOUT_MS` is 6000.
-With `HOOK_MARGIN_MS` (1000), the total is 7 s, which is 3 s under the 10 s hook timeout (`SESSION_START_HOOK_TIMEOUT_S`).
 
 The alternatives are these:
 
 - An MCP server.
   It is not the default, because a skill with a CLI costs less at the start of a session.
-  The MCP server is the choice of the user ([Code Graph](Code-Graph#the-mcp-server-option)).
+  The MCP server comes from `codegraph install`, which setup offers ([Code Graph](Code-Graph#install)).
 - The built-in LSP tool.
   The comparison with it is not in the repository.
   So the page cannot say which one to ship.

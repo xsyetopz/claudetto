@@ -2,7 +2,6 @@
 paths:
   - "src/kernel/*.ts"
   - "src/plugins/*/slices/*/adapters/mod.ts"
-  - "src/plugins/*/slices/*/adapters/hook*.ts"
   - "src/plugins/*/slices/*/domain/**/*.ts"
 ---
 
