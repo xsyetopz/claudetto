@@ -7,7 +7,8 @@ import { onPlanCall as h10 } from "../slices/ground/adapters/mod.ts";
 import { onBashCall as h11 } from "../slices/guard/adapters/mod.ts";
 import { keepOptions as h12, onCommand as h13, onCompact as h14, onStart as h15 } from "../slices/handoff/adapters/mod.ts";
 import { keepOptions as h16, onAgentOffer as h17, onAttachment as h18, onCommandDescribe as h19, onSection as h20, onSpawn as h21, onToolDescribe as h22 } from "../slices/prompt/adapters/mod.ts";
-import { onToolCall as h23 } from "../slices/sembr/adapters/mod.ts";
+import { onRender as h23 } from "../slices/reply/adapters/mod.ts";
+import { onToolCall as h24 } from "../slices/sembr/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h0(options);
@@ -39,7 +40,7 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.call decide
   on("tool.call", { tool: ["AskUserQuestion"] }, h4);
   // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h23);
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h24);
   // eval: tool.call ground
   on("tool.call", { tool: ["Write", "Edit"] }, h10);
   // eval: tool.call guard
@@ -54,4 +55,6 @@ export const register = (on: On, options: PluginOptions): void => {
   on("tool.describe", { tool: ["Agent", "ListAgents"] }, h22);
   // eval: turn.complete goal
   on("turn.complete", h9);
+  // eval: ui.render reply
+  on("ui.render", { component: "AssistantMessage" }, h23);
 };
