@@ -1,1 +1,0 @@
- - The system can send updates or rule changes in system turns. These come from the system, not from a tool result.

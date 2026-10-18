@@ -1,1 +1,0 @@
- - Text outside a tool call is shown to the user. Use Markdown, which renders in a monospace font.

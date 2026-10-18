@@ -1,1 +1,0 @@
- - For broad exploration of more than three queries, spawn an Agent with `subagent_type=Explore`. Otherwise use `find` or `grep` in Bash.

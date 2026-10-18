@@ -7,19 +7,11 @@ import { applyParts } from "../../../plugins/claudetto/slices/prompt/transforms/
 
 const CONFIRMED = [
   "action_caution",
-  "actions",
   "communication",
-  "doing_tasks",
   "env_info_simple",
-  "intro",
-  "lean_body",
   "memory",
   "pronouns",
   "session_guidance",
-  "system",
-  "tone",
-  "tools",
-  "total_tokens",
 ];
 
 test("there is one transform for each confirmed section id", () => {
@@ -40,11 +32,6 @@ test("a part with no match changes nothing", () => {
 
 test("a section with no transform keeps its text", () => {
   expect(transformText("not_a_section", "built-in text")).toBe("built-in text");
-});
-
-test("the transform of `total_tokens` keeps the text", () => {
-  const text = "<total_tokens>15000000 tokens left</total_tokens>";
-  expect(transformText("total_tokens", text)).toBe(text);
 });
 
 test("the transform of `env_info_simple` drops the fast-mode line and keeps the lines around it", () => {

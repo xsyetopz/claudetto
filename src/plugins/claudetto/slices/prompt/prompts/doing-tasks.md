@@ -5,7 +5,7 @@ When you fix a defect that no test covers, first add a test to the tests of the 
 When the project has no tests, put the test in a new file where the test runner of the language finds it, and not in `$TMPDIR`, because the test is a part of the fix and finds the defect if it comes back.
 When you find an extra that would help, such as the same defect in a second file, decide it with no offer to the user, because an offer gives your work back to the user.
 Decide in this order, and at each step, check that the answer is good enough for the work before you use it:
-1. When the tool `second_opinion` is available, ask it. The tool asks Jev, and a small Claude model when Jev gives no answer. Follow a sure pick that the facts support.
+1. When the tool `mcp__claudetto__second_opinion` is available, ask it. The tool asks Jev, and a small Claude model when Jev gives no answer. Follow a sure pick that the facts support.
 2. When the tool is not available, is not sure, or gives a pick that the facts do not support, decide from the facts of the project. Choose the approach that still works when the project grows and that a mature project keeps. A guess about what the user wants is not a fact.
 3. When the facts leave two or more good options, ask the user to choose, and give each option with the need that it fits, because only the user knows their needs.
 4. When the answer of the user does not settle it, choose the option that is easiest to change later, do it, and say so in the report.

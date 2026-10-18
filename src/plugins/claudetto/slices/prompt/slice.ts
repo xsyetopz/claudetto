@@ -1,5 +1,6 @@
-// The manifest of the `prompt` slice: the system prompt variant of each model (design D15),
-// its block at the end of the task row of a subagent, for the model that the engine resolved for it,
+// The manifest of the `prompt` slice: the tailored text of the short prompt (design D15, `lean_body`),
+// the shorter text of the other built-in sections that the short prompt keeps,
+// the rules at the end of the task prompt of a subagent,
 // and the `context_management` section that agrees with the compaction state (spec `prompt-profile`, "Compaction gate").
 // The settings set no entry to its default (`tests/support/defaults.ts`).
 
@@ -7,29 +8,27 @@ import { BASH_OUTPUT_MAX_CHARS } from "../../../../kernel/budget.ts";
 import type { Slice } from "../../../../kernel/slice.ts";
 import {
   keepOptions,
-  onAppend,
-  onCompose,
   onSection,
   onSpawn,
+  onToolDescribe,
 } from "./adapters/mod.ts";
 
 export const slice = {
   name: "prompt",
-  ladder:
-    "mod: the `prompt.compose`, `agent.spawn`, `session.append`, and `prompt.section` hooks",
+  ladder: "mod: the `prompt.section`, `agent.spawn`, and `tool.describe` hooks",
   mod: [
     {
-      event: "prompt.compose",
+      event: "prompt.section",
       evals: {
         requests: 0,
         tokens: 0,
         blocks: false,
         allow:
-          "plugins/claudetto/tests/variants.test.ts > a model with no variant keeps the sections of the engine",
-        text: "plugins/claudetto/tests/variants.test.ts > two turns and a model switch give the same prompt bytes",
+          "plugins/claudetto/tests/section.test.ts > another section keeps the text of the engine",
+        text: "plugins/claudetto/tests/section.test.ts > the `lean_body` section gets the tailored text",
       },
-      phase: "rewrite",
-      run: onCompose,
+      phase: "answer",
+      run: onSection,
       configure: keepOptions,
     },
     {
@@ -39,38 +38,25 @@ export const slice = {
         tokens: 0,
         blocks: false,
         allow:
-          "plugins/claudetto/tests/variants.test.ts > a spawn passes its task prompt on unchanged",
-        text: "plugins/claudetto/tests/variants.test.ts > a spawn with no `model` gets the block of its own model",
+          "plugins/claudetto/tests/section.test.ts > a spawn with a block in its task prompt keeps it",
+        text: "plugins/claudetto/tests/section.test.ts > a spawn ends its task prompt with the rules for a subagent one time",
       },
       phase: "rewrite",
       run: onSpawn,
     },
     {
-      event: "session.append",
+      event: "tool.describe",
       evals: {
         requests: 0,
         tokens: 0,
         blocks: false,
         allow:
-          "plugins/claudetto/tests/variants.test.ts > a spawn on a model with no variant keeps its task row",
-        text: "plugins/claudetto/tests/variants.test.ts > a spawn on Haiku 5.5 ends the task row with its block one time",
+          "plugins/claudetto/tests/tool.test.ts > `tool.describe` passes an unknown tool on with no change",
+        text: "plugins/claudetto/tests/tool.test.ts > `tool.describe` replaces the built-in `Agent` description with a shorter one",
       },
-      phase: "rewrite",
-      run: onAppend,
-    },
-    {
-      event: "prompt.section",
-      evals: {
-        requests: 0,
-        tokens: 0,
-        blocks: false,
-        allow:
-          "plugins/claudetto/tests/section.test.ts > another section keeps the text of the engine",
-        text: "plugins/claudetto/tests/section.test.ts > with the handoff on, the `context_management` section says that a handoff carries the work",
-      },
+      filter: { tool: ["Agent", "ListAgents"] },
       phase: "answer",
-      run: onSection,
-      configure: keepOptions,
+      run: onToolDescribe,
     },
   ],
   settings: {

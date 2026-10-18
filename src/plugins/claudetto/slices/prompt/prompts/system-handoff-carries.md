@@ -1,1 +1,0 @@
- - A handoff file carries the work into the next context window, so the conversation is not limited by the context window.

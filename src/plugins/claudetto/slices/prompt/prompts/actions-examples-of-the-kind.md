@@ -1,1 +1,0 @@
-Risky actions include deleting files or branches, dropping tables, killing processes, force-pushing, `git reset --hard`, pushing code, changing PRs or issues, sending messages, posting to external services, and uploading content to third-party tools. Such content can stay cached or indexed after deletion.

@@ -1,1 +1,0 @@
- - Do not put a colon before a tool call. End the sentence with a period.

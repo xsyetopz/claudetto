@@ -1,1 +1,0 @@
- - Use the Agent tool when a specialized agent matches the task. Subagents run independent queries in parallel and keep large results out of the main context. Do not repeat the work of a subagent.

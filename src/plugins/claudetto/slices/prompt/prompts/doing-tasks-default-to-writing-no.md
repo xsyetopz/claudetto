@@ -1,1 +1,0 @@
- - Write a comment only for a non-obvious reason, such as a hidden constraint or a workaround. Do not explain what the code does.

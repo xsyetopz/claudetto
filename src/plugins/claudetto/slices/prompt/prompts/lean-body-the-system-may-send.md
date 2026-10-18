@@ -1,1 +1,0 @@
- - The system can send updates or rule changes in system turns. Treat hook output as user feedback.

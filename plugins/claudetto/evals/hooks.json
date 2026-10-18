@@ -1,17 +1,10 @@
 {
-  "agent.offer surface": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/surface.test.ts > `agent.offer` offers an agent that is not dropped",
-    "text": "plugins/claudetto/tests/surface.test.ts > `agent.offer` leaves a dropped agent out of the listing"
-  },
   "agent.spawn prompt": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
-    "allow": "plugins/claudetto/tests/variants.test.ts > a spawn passes its task prompt on unchanged",
-    "text": "plugins/claudetto/tests/variants.test.ts > a spawn with no `model` gets the block of its own model"
+    "allow": "plugins/claudetto/tests/section.test.ts > a spawn with a block in its task prompt keeps it",
+    "text": "plugins/claudetto/tests/section.test.ts > a spawn ends its task prompt with the rules for a subagent one time"
   },
   "command.run handoff": {
     "requests": 1,
@@ -28,26 +21,12 @@
     "allow": "plugins/claudetto/tests/handoff-setup.test.ts > a plugin with no `session.compact` hook is not named",
     "text": "plugins/claudetto/tests/handoff-setup.test.ts > no file gives the new file, the warning with the other plugin, and one `! sudo` command"
   },
-  "prompt.compose prompt": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/variants.test.ts > a model with no variant keeps the sections of the engine",
-    "text": "plugins/claudetto/tests/variants.test.ts > two turns and a model switch give the same prompt bytes"
-  },
   "prompt.section prompt": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
     "allow": "plugins/claudetto/tests/section.test.ts > another section keeps the text of the engine",
-    "text": "plugins/claudetto/tests/section.test.ts > with the handoff on, the `context_management` section says that a handoff carries the work"
-  },
-  "session.append prompt": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/variants.test.ts > a spawn on a model with no variant keeps its task row",
-    "text": "plugins/claudetto/tests/variants.test.ts > a spawn on Haiku 5.5 ends the task row with its block one time"
+    "text": "plugins/claudetto/tests/section.test.ts > the `lean_body` section gets the tailored text"
   },
   "session.compact handoff": {
     "requests": 1,
@@ -94,11 +73,11 @@
     "block": "plugins/claudetto/tests/print.test.ts > a `Bash` print of a file is denied with the `Read` range",
     "false": "tests/claudetto/guard/print.test.ts > a command with an edit, a byte count, or another bounded form stays allowed"
   },
-  "tool.describe surface": {
+  "tool.describe prompt": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
-    "allow": "plugins/claudetto/tests/surface.test.ts > `tool.describe` passes an unknown tool on with no change",
-    "text": "plugins/claudetto/tests/surface.test.ts > `tool.describe` replaces the built-in `Bash` description with a shorter one"
+    "allow": "plugins/claudetto/tests/tool.test.ts > `tool.describe` passes an unknown tool on with no change",
+    "text": "plugins/claudetto/tests/tool.test.ts > `tool.describe` replaces the built-in `Agent` description with a shorter one"
   }
 }

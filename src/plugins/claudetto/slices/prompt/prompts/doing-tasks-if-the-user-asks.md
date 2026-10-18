@@ -1,1 +1,0 @@
- - For help, use `/help`. For feedback, report the issue at https://github.com/anthropics/claude-code/issues.

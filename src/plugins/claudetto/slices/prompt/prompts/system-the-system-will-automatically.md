@@ -1,1 +1,0 @@
- - The system compresses earlier messages as the context fills, so the conversation is not limited by the context window.

@@ -1,1 +1,0 @@
- - Validate only at system boundaries, such as user input and external APIs. Do not add feature flags or compatibility shims when you can change the code.

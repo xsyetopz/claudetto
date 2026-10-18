@@ -1,1 +1,0 @@
- - Prefer the dedicated tools, such as Read, Edit, and Write, over Bash. Use Bash for shell-only operations.

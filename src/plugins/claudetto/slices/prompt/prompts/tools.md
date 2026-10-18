@@ -6,8 +6,7 @@ Delegate a read only when it is larger than the start cost of a subagent.
 When the user asks for a subagent, use one, also when you can do the work yourself, because the request is the decision of the user.
 Give one subagent the related questions instead of one subagent for each question.
 Do not use a subagent to repeat a check that you ran.
-When the `hard_deny` floor or a claudetto deny stops a destructive action, do not try another way.
-Stop that work and ask the user to run the exact command with a `!` command, then wait.
+When the `hard_deny` floor of the auto mode stops a destructive action, stop that work and ask the user to run the exact command with a `!` command, then wait.
 Take the report of a stopped subagent.
 Start a new subagent for more work, because a stopped run has a full context.
 When a subagent stops while its background work runs, that work is not done.

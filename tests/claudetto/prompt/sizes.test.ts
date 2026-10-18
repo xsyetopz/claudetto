@@ -1,75 +1,55 @@
-// The size of each prompt variant and of each text that `claudetto` adds to the first request (E5, spec `prompt-profile`, "Measured size").
-// Each pin is the size in bytes that `external/cc-2.1.299/scratch/v110/sizes-301.md` measured, and a test fails when a text grows past its pin.
-// To change a text, measure the first request again and update the pin and the evidence file.
+// The size of the vanilla short prompt of Claude Code 2.1.302 and of the tailored text that `claudetto` answers for its `lean_body` section (spec `prompt-profile`, "Measured size").
+// The vanilla fixture is the `lean_body` section as the first request of a session carries it.
+// A test fails when a text grows past its pin.
+// To change a text, update the pin, and measure the first request again with the command in `wiki/evidence/`.
 
 import { expect, test } from "bun:test";
 import path from "node:path";
 import {
-  spawnBlock,
-  type VariantKey,
-  variantSections,
-} from "../../../plugins/claudetto/slices/prompt/domain/variants.ts";
-import {
-  TOOL_AGENT,
-  TOOL_BASH,
-  TOOL_READ,
-} from "../../../plugins/claudetto/slices/surface/prompts.ts";
+  LEAN_BODY,
+  withBlock,
+} from "../../../plugins/claudetto/slices/prompt/domain/lean-body.ts";
+import { TOOL_AGENT } from "../../../plugins/claudetto/slices/prompt/prompts.ts";
 
 const PLUGIN = path.join(import.meta.dir, "../../../plugins/claudetto");
 
-const ROOT = "/p";
+/** The size in characters, as Claude Code counts a prompt. */
+const chars = (text: string) => [...text].length;
 
-const bytes = (text: string) => Buffer.byteLength(text);
+const VANILLA = (
+  await Bun.file(path.join(import.meta.dir, "fixtures/lean_body.txt")).text()
+).trim();
 
-/** The system text of a variant: the shared sections and the sections of the model. */
-const variantText = (key: VariantKey) =>
-  variantSections(key, ROOT)
-    .map((s) => s.text)
-    .join("\n\n");
-
-const VARIANT_PINS: Readonly<Record<VariantKey, number>> = {
-  opus: 8286,
-  sonnet: 8059,
-  haiku: 8178,
-  fable: 8193,
-};
-
-const BLOCK_PINS: Readonly<Record<VariantKey, number>> = {
-  opus: 859,
-  sonnet: 1075,
-  haiku: 1164,
-  fable: 859,
-};
-
-const TEXT_PINS: Readonly<Record<string, [text: string, pin: number]>> = {
+const PINS: Readonly<Record<string, [text: string, pin: number]>> = {
+  "vanilla `lean_body` fixture": [VANILLA, 610],
+  "tailored `lean_body` text": [LEAN_BODY, 7263],
+  "block of a subagent": [withBlock(""), 1065],
   "output style `Concise`": [
     await Bun.file(path.join(PLUGIN, "output-styles/Concise.md")).text(),
     1156,
   ],
   // The brief line of D33 replaced a line of 48 bytes with one of 124 bytes (the user, 2026-10-17).
   "`Agent` description": [TOOL_AGENT, 984],
-  "`Bash` description": [TOOL_BASH, 746],
-  "`Read` description": [TOOL_READ, 427],
 };
 
-for (const [key, pin] of Object.entries(VARIANT_PINS) as [
-  VariantKey,
-  number,
-][]) {
-  test(`the variant of \`${key}\` is at most ${pin} bytes`, () => {
-    expect(bytes(variantText(key))).toBeLessThanOrEqual(pin);
-  });
-  test(`the subagent block of \`${key}\` is at most ${BLOCK_PINS[key]} bytes`, () => {
-    expect(bytes(spawnBlock(key))).toBeLessThanOrEqual(BLOCK_PINS[key]);
-  });
-}
-
-for (const [name, [text, pin]] of Object.entries(TEXT_PINS))
-  test(`the ${name} is at most ${pin} bytes`, () => {
-    expect(bytes(text)).toBeLessThanOrEqual(pin);
+for (const [name, [text, pin]] of Object.entries(PINS))
+  test(`the ${name} is at most ${pin} characters`, () => {
+    expect(chars(text)).toBeLessThanOrEqual(pin);
   });
 
-test("a variant that grows past its pin fails", () => {
-  const grown = `${variantText("opus")}\n\nOne more line.`;
-  expect(bytes(grown) <= VARIANT_PINS.opus).toBe(false);
+// Each vanilla rule that still applies, with a keyword that the tailored text must hold.
+// The `<system-reminder>` rule and the "dedicated tools" rule are said by the `system` and `tools` parts of the tailored text.
+const KEPT_RULES: Readonly<Record<string, string>> = {
+  "displayed to the user as Github-flavored markdown": "Markdown",
+  "a denied call means the user declined it": "denied",
+  "injected by the harness, not the user": "system-reminder",
+  "Prefer the dedicated file/search tools": "dedicated tools",
+  "Reference code as": "file_path:line_number",
+};
+
+test("the tailored text keeps each rule of the vanilla fixture that still applies", () => {
+  for (const [rule, keyword] of Object.entries(KEPT_RULES)) {
+    expect(VANILLA, rule).toContain(rule);
+    expect(LEAN_BODY, rule).toContain(keyword);
+  }
 });

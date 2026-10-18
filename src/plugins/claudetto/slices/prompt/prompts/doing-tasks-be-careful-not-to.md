@@ -1,1 +1,0 @@
- - Avoid security flaws such as command injection, XSS, and SQL injection. If you find insecure code that you wrote, fix it at once.

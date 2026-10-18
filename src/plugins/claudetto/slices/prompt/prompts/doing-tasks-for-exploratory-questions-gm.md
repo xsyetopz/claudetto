@@ -1,1 +1,0 @@
- - For an exploratory question, give a short answer with a recommendation and the main trade-off. Do not implement until the user agrees.

@@ -1,26 +1,12 @@
-// The choice of a variant for a model id, and the splice of a variant into the section list of `prompt.compose`.
+// The transform of a built-in section, and the debug lines for an anchor that finds nothing.
 // Both are pure functions, so the mod handlers and the tests share them.
 
-import type { PromptComposeSection } from "claude-code";
-import type { CompactionState } from "../transforms/context_management.ts";
 import { PARTS_OF, TRANSFORMS } from "../transforms/index.ts";
 import { missedParts } from "../transforms/parts.ts";
-import {
-  BLOCK_OPEN,
-  spawnBlock,
-  type VariantKey,
-  variantSections,
-} from "./variants.ts";
 
-/**
- * The built-in text of a section after its transform, or the text unchanged when no transform has the id.
- * The transform runs first, so a model with no variant gets the transformed text, and a variant replaces its known sections after it.
- */
-export const transformText = (
-  id: string,
-  text: string,
-  state: CompactionState = "built-in",
-): string => TRANSFORMS.get(id)?.(text, state) ?? text;
+/** The built-in text of a section after its transform, or the text unchanged when no transform has the id. */
+export const transformText = (id: string, text: string): string =>
+  TRANSFORMS.get(id)?.(text) ?? text;
 
 /** One debug log line for each anchor of the transform of `id` that finds nothing in `text`. */
 export const missLines = (id: string, text: string): string[] =>
@@ -29,51 +15,3 @@ export const missLines = (id: string, text: string): string[] =>
       // biome-ignore lint/plugin: a debug log line that only a developer reads
       `prompt transform: the anchor \`${p.anchor}\` of the section \`${id}\` found nothing, so that part of the built-in text is unchanged`,
   );
-
-/** The ids of the Claude Code sections that a variant replaces. Any other id passes on unchanged. */
-export const KNOWN_SECTIONS = [
-  "intro",
-  "system",
-  "doing_tasks",
-  "actions",
-  "tools",
-  "tone",
-  "lean_body",
-];
-
-/**
- * The variant key of a model id or alias (`claude-haiku-5-5`, `haiku`), or `null` for a model with no variant.
- * Mythos 5.1 gets the Fable variant, because one prompting guide covers both models.
- */
-export const variantKey = (model: unknown): VariantKey | null => {
-  const id = String(model ?? "").toLowerCase();
-  const keys: VariantKey[] = ["opus", "sonnet", "haiku", "fable"];
-  if (id.includes("mythos")) return "fable";
-  return keys.find((k) => id.includes(k)) ?? null;
-};
-
-/**
- * The section list with the known sections replaced by the variant sections.
- * The variant sits where the first known section was, and the unknown sections keep their order.
- * `root` is the root of the plugin, for the path of its `bin/` files in the variant.
- */
-export const composeSections = (
-  sections: readonly PromptComposeSection[],
-  key: VariantKey,
-  root: string,
-): PromptComposeSection[] => {
-  const out: PromptComposeSection[] = [];
-  let placed = false;
-  for (const s of sections) {
-    if (!KNOWN_SECTIONS.includes(s.id)) out.push(s);
-    else if (!placed) {
-      out.push(...variantSections(key, root));
-      placed = true;
-    }
-  }
-  return placed ? out : [...variantSections(key, root), ...out];
-};
-
-/** The task prompt with the block of the model at its end, one time. */
-export const withBlock = (prompt: string, key: VariantKey): string =>
-  prompt.includes(BLOCK_OPEN) ? prompt : `${prompt}\n\n${spawnBlock(key)}`;

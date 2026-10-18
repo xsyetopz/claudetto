@@ -1,1 +1,0 @@
- - Do not add features, refactors, or abstractions beyond the task. Do not design for future needs. Three similar lines are better than a premature abstraction.

@@ -1,16 +1,11 @@
-import type { CompactionState } from "./context_management.ts";
-
 // The shape of a transform: a part of a built-in section, found by an anchor, and the text that replaces it.
 // An anchor is a RegExp with the `g` flag, so that a text which repeats a part changes at each place.
 
 /** One part of a built-in section: the anchor that finds it, and the text that replaces it. */
 export type Part = { readonly anchor: RegExp; readonly text: string };
 
-/**
- * A transform: the built-in text of a section in, the shorter text out.
- * A transform that depends on the compaction state reads `state`, and the others ignore it.
- */
-export type Transform = (text: string, state?: CompactionState) => string;
+/** A transform: the built-in text of a section in, the shorter text out. */
+export type Transform = (text: string) => string;
 
 /** The text with each part replaced, in the order of `parts`. A part that finds nothing changes nothing. */
 export const applyParts = (text: string, parts: readonly Part[]): string =>

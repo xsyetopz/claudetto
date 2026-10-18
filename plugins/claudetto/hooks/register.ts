@@ -17,37 +17,26 @@ import {
 } from "../slices/handoff/adapters/mod.ts";
 import {
   keepOptions as h11,
-  onAppend as h12,
-  onCompose as h13,
-  onSection as h14,
-  onSpawn as h15,
+  onSection as h12,
+  onSpawn as h13,
+  onToolDescribe as h14,
 } from "../slices/prompt/adapters/mod.ts";
-import { onToolCall as h16 } from "../slices/sembr/adapters/mod.ts";
-import {
-  onAgentOffer as h17,
-  onToolDescribe as h18,
-} from "../slices/surface/adapters/mod.ts";
+import { onToolCall as h15 } from "../slices/sembr/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h0(options);
   h5(options);
   h11(options);
-  // eval: agent.offer surface
-  on("agent.offer", h17);
   // eval: agent.spawn prompt
-  on("agent.spawn", h15);
+  on("agent.spawn", h13);
   // eval: command.run handoff
   on("command.run", { command: "handoff" }, h6);
   // eval: command.run handoff
   on("command.run", { command: "handoff-setup" }, h9);
   // eval: plugin.register handoff
   on("plugin.register", h8);
-  // eval: prompt.compose prompt
-  on("prompt.compose", h13);
   // eval: prompt.section prompt
-  on("prompt.section", h14);
-  // eval: session.append prompt
-  on("session.append", h12);
+  on("prompt.section", h12);
   // eval: session.compact handoff
   on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h7);
   // eval: session.start decide
@@ -57,11 +46,11 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.call decide
   on("tool.call", { tool: ["AskUserQuestion"] }, h1);
   // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h16);
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h15);
   // eval: tool.call guard
   on("tool.call", { tool: ["Bash"] }, h4);
   // eval: tool.call decide
   on("tool.call", { tool: /^mcp__claudetto__second_opinion$/ }, h2);
-  // eval: tool.describe surface
-  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h18);
+  // eval: tool.describe prompt
+  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h14);
 };
