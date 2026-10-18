@@ -17,12 +17,13 @@ Run `/claudetto:setup` again after the update, because it cleans the settings of
 
 ### Added
 
-- The `ground` slice denies a `Write` or `Edit` of a plan file, and a `ProposeGoal` call, when the text cites a `file:line` or a convention that the source does not hold.
+- The `goal` slice replaces the built-in `/goal` with checks that run a command, read a file, or ask a small model, with the steps of a plan file, a budget, and a stall rule, and it turns off `ProposeGoal` and the `goal_status` attachment.
+- The `ground` slice denies a `Write` or `Edit` of a plan file when the text cites a `file:line` or a convention that the source does not hold.
 - The `spec` slice ships the OpenSpec schemas `task`, `story`, and `epic`, and a `config.yaml` template of the project rules, in the `spec` skill.
 
 ### Changed
 
-- **Breaking:** `claudetto` has these slices: `decide`, `ground`, `guard`, `handoff`, `prompt`, `sembr`, `setup`, `spec`, `statusline`, and `styles`.
+- **Breaking:** `claudetto` has these slices: `decide`, `goal`, `ground`, `guard`, `handoff`, `prompt`, `sembr`, `setup`, `spec`, `statusline`, and `styles`.
 - **Breaking:** `claudetto-sessions` is one `sessions` skill with the scripts `audit` and `replay`.
   The `awareness`, `start-cost`, and `usage` slices are gone, because `/context`, `/usage`, `/insights`, and `/status` give the same facts.
 - **Breaking:** `guard` keeps the deny of a `Bash` command that only prints a file, and it names the `Read` call to use.
@@ -30,8 +31,7 @@ Run `/claudetto:setup` again after the update, because it cleans the settings of
 - **Breaking:** `prompt` is rebuilt on the short prompt of Claude Code 2.1.302 (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`).
   It answers `lean_body` with one tailored text, so the per-model variants are gone, and `surface` is merged into it.
   It leaves out 5 attachment kinds, hides 47 commands, takes 1 agent type from the model, and turns off 2 more plugins (`tools/builtins/verdicts/`).
-- **Breaking:** `setup` merges the settings snippet and the cleanup of 0.1.0:
-  the `hook.claudetto-*` git config pairs, the rule texts of the 0.1.0 policy, and the `CLAUDE.md` block.
+- **Breaking:** `setup` merges the settings snippet and the cleanup of 0.1.0: the `hook.claudetto-*` git config pairs, the rule texts of the 0.1.0 policy, and the `CLAUDE.md` block.
   The `trim` slice is merged into it, and `setup` no longer installs the commit and push hooks.
 
 ### Removed
