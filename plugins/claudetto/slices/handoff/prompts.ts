@@ -4,9 +4,11 @@ export const CHANGE_HEADER = (v: {
   name: string;
   next: string;
   done: string;
+  checks: string;
 }): string => `openspec change: \`openspec/changes/${v.name}/\`.
 Next open task: \`${v.next}\` in \`tasks.md\`.
 Done tasks, checked in \`tasks.md\`: ${v.done}.
+Passed checks: ${v.checks}.
 Only a checked task or a passed check is done.
 Each checked task is done and verified, so do not run its check again unless the user asks.`;
 
