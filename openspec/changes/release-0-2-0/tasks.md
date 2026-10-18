@@ -292,7 +292,7 @@ The rows `new:` of `findings.md` that need no decision of the user.
   Check: `just test tests/claudetto/statusline`
 - [x] 13.3 Add a test that `claudetto-codegraph-check --help` exits 0, and that `sessions` `replay.ts --help` prints the usage, and see them fail, then fix both.
   Check: `just test tests/claudetto-codegraph tests/claudetto-sessions`
-- [ ] 13.4 Run `biome` in `tests/support/prose-in-code.test.ts` with `bunx --bun`, as `tools/lint.ts` does, so the test passes on a host with only Bun.
+- [x] 13.4 Run `biome` in `tests/support/prose-in-code.test.ts` with `bunx --bun`, as `tools/lint.ts` does, so the test passes on a host with only Bun.
   Check: `bun test tests/support/prose-in-code.test.ts`
 - [x] 13.5 Remove the specs of this change that describe removed parts, such as `specs/minispec-format/` and `specs/agent-roster/`.
   Check: `OPENSPEC_TELEMETRY=0 bunx --bun @fission-ai/openspec@1.14.3 validate release-0-2-0`

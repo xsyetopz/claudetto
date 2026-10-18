@@ -73,6 +73,8 @@ beforeAll(async () => {
     await Bun.write(path.join(dir, file), text);
   const run = Bun.spawn(
     [
+      process.execPath,
+      "--bun",
       path.join(REPO, "node_modules", ".bin", "biome"),
       "lint",
       "--reporter=json",
