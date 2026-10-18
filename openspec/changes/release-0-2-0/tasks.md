@@ -142,9 +142,9 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [x] 6.6 Measure the start of a fresh session with `just start-run` and `just measure`, and run the evals of group 11 on each cut text, and put back each cut that lowers a score (D26). (closed: removed in trim-0-2-0)
   This is a paid sandbox session: ask the user first, with the expected cost and the weekly share.
   Check: `just measure`
-- [ ] 6.7 Add a lab test that a `Write` of a `.md` file with a heading that is not in Title Case gets the right form back, and that a right heading gets no message, and a test of the custom markdownlint rule, and see them fail, then add the hook and the rule, and fix each heading of the repository (D52).
+- [x] 6.7 Add a lab test that a `Write` of a `.md` file with a heading that is not in Title Case gets the right form back, and that a right heading gets no message, and a test of the custom markdownlint rule, and see them fail, then add the hook and the rule, and fix each heading of the repository (D52).
   Check: `just generate && just lab && bun run lint:md`
-- [ ] 6.8 Add a test that the system prompt holds the rule of D53 and the output style holds the line of D54 on corrections, and see it fail, then add both texts, and replace the rule of `slices/prompt/prompts/doing-tasks.md:24` with the three tiers of D54 on pushback.
+- [x] 6.8 Add a test that the system prompt holds the rule of D53 and the output style holds the line of D54 on corrections, and see it fail, then add both texts, and replace the rule of `slices/prompt/prompts/doing-tasks.md:24` with the three tiers of D54 on pushback.
   Add eval cases for each tier: a repeat with no reason gets a hold and a request for the reason, a harm that facts settle gets no compliance, an explicit override goes on and is recorded, and a choice of taste goes on with no pushback.
   Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles`
 - [ ] 6.9 Add a test that setup runs `codegraph install --target claude --location global` after a yes, and that no setup text or `codegraph` skill text tells the agent not to run it, and see it fail, then change setup and the skill (D51).
@@ -153,7 +153,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [ ] 6.10 Add an eval case for D53: a task with a known short solution, with the added lines of each run against the reference, at 10 runs.
   This is a paid run: ask the user first, with the expected cost and the weekly share.
   Check: `just validate`
-- [ ] 6.11 Add each RED of the table in `design-prompts.md` as a fixture that a test or an eval case catches, and each GREEN as the example of its shipped text, and add the D54 line on a missing tool to the system prompt, and see the tests fail first (D55).
+- [x] 6.11 Add each RED of the table in `design-prompts.md` as a fixture that a test or an eval case catches, and each GREEN as the example of its shipped text, and add the D54 line on a missing tool to the system prompt, and see the tests fail first (D55).
   Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles && just lab`
 
 ## 7. Cache and Setup
@@ -225,7 +225,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [ ] 10.7 Add a `just validate` rule that fails on a slice with a hook and no row in `src/wiki/rationale/Controls.md`, see it fail, then write one row for each hook, guard, cap, and notice: its incident and the condition that removes it (D27).
   Check: `just validate`
 
-- [ ] 10.8 Add a `just validate` rule that reads the pinned line count of each part from `tools/limits.ts` and fails when a part grows past it, and a rule that fails on a file under 15 lines that is not an entry point and on a folder with one file, and see both fail (D40, D41).
+- [x] 10.8 Add a `just validate` rule that reads the pinned line count of each part from `tools/limits.ts` and fails when a part grows past it, and a rule that fails on a file under 15 lines that is not an entry point and on a folder with one file, and see both fail (D40, D41).
   Check: `just test tests/tools && just validate`
 - [x] 10.9 Write `openspec/changes/release-0-2-0/behavior.md` with the behavior table of each part of the table of facts of `design-redo.md`: each input of its tests and its old decision, from a run of the tests (D40). (closed: obsolete: trim-0-2-0 did the rewrite)
   Check: `test -s openspec/changes/release-0-2-0/behavior.md && just test`
