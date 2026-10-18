@@ -83,6 +83,10 @@ update:
 bump level *flags:
     bun tools/bump-version.ts "$@"
 
+# Fail while a row of findings.md of an openspec change (default release-0-2-0, or a findings.md path) has no passed check (D38); run it before `release`, and not in `check`
+release-check *change:
+    bun tools/findings-check.ts "$@"
+
 # Tag each plugin under plugins/ at HEAD and push all tags in one atomic push; add --dry-run to preview
 release *flags:
     bun tools/release.ts "$@"
