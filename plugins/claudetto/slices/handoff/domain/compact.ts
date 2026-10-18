@@ -148,6 +148,22 @@ const messageTokens = (message: SessionMessage): number => {
 const contextTokens = (messages: readonly SessionMessage[]): number =>
   messages.reduce((sum, message) => sum + messageTokens(message), 0);
 
+/**
+ * The text of the first user message before an earlier compaction: the text in `message` with the wrapper of that compaction taken off.
+ * After a compaction the first user message holds the earlier handoff, which the new handoff updates and does not stack (design D46).
+ */
+const originalFirst = (message: string): string => {
+  const [lead = "", mid = ""] = FIRST_MESSAGE({
+    first: "\0",
+    handed: "\0",
+  }).split("\0");
+  const handed = HANDED({ path: "\0" }).split("\0")[0] as string;
+  const body = message.startsWith(lead) ? message.slice(lead.length) : message;
+  const end = body.indexOf(`${mid}${handed}`);
+  if (end !== -1) return body.slice(0, end);
+  return body.startsWith(handed) ? "" : message;
+};
+
 /** The text of the one user message after a compaction: the text of the first user message `first`, then `handed`. */
 const headText = (first: string, handed: string): string =>
   first === "" ? handed : FIRST_MESSAGE({ first, handed });
@@ -167,7 +183,11 @@ export const compactedMessages = (
   const cut = tailStart(messages);
   const first = messages.slice(0, cut).find((m) => m.role === "user");
   const head: SessionMessage[] = [
-    { role: "user", text: headText(first?.text ?? "", handed), toolUses: [] },
+    {
+      role: "user",
+      text: headText(originalFirst(first?.text ?? ""), handed),
+      toolUses: [],
+    },
   ];
   const context = [...head, ...messages.slice(cut)];
   return contextTokens(context) < trigger ? context : null;
