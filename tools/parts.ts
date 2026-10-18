@@ -2,6 +2,7 @@
 // A part is a slice of the core plugin, an add-on plugin, `src/kernel/`, or `tools/`.
 // The pins and the allow lists are in `tools/limits.ts`.
 
+import type { FoundPlugin } from "./generate/discover.ts";
 import {
   PART_LINE_PINS,
   RECIPE_FILES,
@@ -119,3 +120,21 @@ export const thinFolders = (
       ),
   ];
 };
+
+/** The slices with a hook or a mod handler and no `controls` record (D27), and the controls with an empty field. */
+export const missingControls = (plugins: readonly FoundPlugin[]): string[] =>
+  plugins.flatMap((p) =>
+    p.slices.flatMap(({ dir, slice }) => {
+      if (!slice.mod?.length && !slice.hooks?.length) return [];
+      if (!slice.controls?.length)
+        return [
+          `${dir}: registers a hook and has no \`controls\` record in \`slice.ts\``,
+        ];
+      return slice.controls
+        .filter((c) => !c.incident.trim() || !c.removeWhen.trim())
+        .map(
+          (c) =>
+            `${dir}: the control \`${c.name}\` has an empty \`incident\` or \`removeWhen\``,
+        );
+    }),
+  );

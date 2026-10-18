@@ -107,10 +107,23 @@ export const RUNGS = ["mod", "classic", "built-in", "none"] as const;
 /** The ladder line of a slice: its rung, and why no higher rung can do the work. */
 export type Ladder = `${(typeof RUNGS)[number]}: ${string}`;
 
+/**
+ * One control of a slice (design D27): a hook, a guard, a cap, or a notice.
+ * `incident` is the event that the control exists for, and `removeWhen` is the condition that removes it.
+ * `incident` is `none recorded` when the repository holds no evidence, and then the control is a candidate for removal.
+ */
+export interface Control {
+  readonly name: string;
+  readonly incident: string;
+  readonly removeWhen: string;
+}
+
 /** The manifest of one slice: the name, and each part that the slice adds to the plugin. */
 export interface Slice {
   readonly name: string;
   readonly ladder: Ladder;
+  /** The record of each control. `just validate` fails on a slice with a hook and no record. */
+  readonly controls?: readonly Control[];
   readonly mod?: readonly ModHandler[];
   readonly hooks?: readonly ClassicHook[];
   readonly cli?: { readonly bin: string };

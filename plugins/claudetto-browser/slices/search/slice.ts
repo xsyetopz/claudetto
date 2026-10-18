@@ -9,6 +9,20 @@ import { OPTION_DESCRIPTION } from "./prompts.ts";
 export const slice: Slice = {
   name: "search",
   ladder: "mod: the `tool.call` hook",
+  controls: [
+    {
+      name: "CloakBrowser search",
+      incident:
+        "The default browser search took about 7 seconds and each search engine blocked it (`CHANGELOG.md`).",
+      removeWhen: "A search engine serves a browser search with no block.",
+    },
+    {
+      name: "search permission gate",
+      incident: "none recorded",
+      removeWhen:
+        "The mod API runs the `WebSearch` permission rules before this hook.",
+    },
+  ],
   mod: [
     {
       event: "tool.call",

@@ -9,6 +9,13 @@ import { onToolCall } from "./adapters/mod.ts";
 export const slice = {
   name: "sembr",
   ladder: "mod: the `tool.call` hook",
+  controls: [
+    {
+      name: "sentence split",
+      incident: "none recorded",
+      removeWhen: "Claude keeps one sentence on each line with no hook.",
+    },
+  ],
   mod: [
     {
       event: "tool.call",

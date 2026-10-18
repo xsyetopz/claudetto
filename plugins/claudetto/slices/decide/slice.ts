@@ -16,6 +16,25 @@ import { OPTION_DESCRIPTION } from "./prompts.ts";
 export const slice = {
   name: "decide",
   ladder: "mod: the `session.start` and `tool.call` hooks",
+  controls: [
+    {
+      name: "second_opinion tool",
+      incident: "none recorded",
+      removeWhen: "The user drops `second_opinion`.",
+    },
+    {
+      name: "AskUserQuestion pick",
+      incident:
+        "The user had to answer a choice that the project or Jev settles (trim design, decision 9).",
+      removeWhen: "Claude settles such a choice from the project with no hook.",
+    },
+    {
+      name: "small model fallback",
+      incident:
+        "Jev gave no answer for some causes (trim design, decision 11).",
+      removeWhen: "Jev always answers.",
+    },
+  ],
   mod: [
     {
       event: "session.start",

@@ -78,25 +78,25 @@ export const SHORT_FILE_MIN_LINES = 15;
  * `just validate` fails when a part grows past its pin. Lower a pin when the part shrinks.
  */
 export const PART_LINE_PINS: Record<string, number> = {
-  "src/kernel": 1620,
-  "src/plugins/claudetto-browser": 625,
-  "src/plugins/claudetto-codegraph": 637,
+  "src/kernel": 1633,
+  "src/plugins/claudetto-browser": 639,
+  "src/plugins/claudetto-codegraph": 654,
   "src/plugins/claudetto-docs": 32,
   "src/plugins/claudetto-lab": 1896,
   "src/plugins/claudetto-sessions": 252,
-  "src/plugins/claudetto/slices/advise": 339,
-  "src/plugins/claudetto/slices/decide": 1197,
-  "src/plugins/claudetto/slices/goal": 607,
-  "src/plugins/claudetto/slices/ground": 368,
-  "src/plugins/claudetto/slices/guard": 344,
-  "src/plugins/claudetto/slices/handoff": 539,
-  "src/plugins/claudetto/slices/prompt": 923,
-  "src/plugins/claudetto/slices/sembr": 514,
+  "src/plugins/claudetto/slices/advise": 352,
+  "src/plugins/claudetto/slices/decide": 1216,
+  "src/plugins/claudetto/slices/goal": 625,
+  "src/plugins/claudetto/slices/ground": 377,
+  "src/plugins/claudetto/slices/guard": 352,
+  "src/plugins/claudetto/slices/handoff": 563,
+  "src/plugins/claudetto/slices/prompt": 935,
+  "src/plugins/claudetto/slices/sembr": 521,
   "src/plugins/claudetto/slices/setup": 354,
   "src/plugins/claudetto/slices/spec": 11,
   "src/plugins/claudetto/slices/statusline": 1209,
   "src/plugins/claudetto/slices/styles": 13,
-  tools: 4961,
+  tools: 5024,
 };
 
 /** The short `tools/` files that `justfile` runs with `bun`, so that a recipe stays a file. */

@@ -12,6 +12,19 @@ const LAB = "plugins/claudetto/tests/advise.test.ts";
 export const slice = {
   name: "advise",
   ladder: "mod: the `session.start` and `tool.call` hooks",
+  controls: [
+    {
+      name: "advise tool",
+      incident: "none recorded",
+      removeWhen:
+        "The built-in advisor gives the user the control of the model and the bounds.",
+    },
+    {
+      name: "advise caps",
+      incident: "none recorded",
+      removeWhen: "The user drops the tool.",
+    },
+  ],
   mod: [
     {
       event: "session.start",

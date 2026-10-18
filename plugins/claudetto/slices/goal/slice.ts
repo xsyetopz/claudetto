@@ -14,6 +14,24 @@ const COMMAND_LAB = "plugins/claudetto/tests/goal.test.ts";
 export const slice = {
   name: "goal",
   ladder: "mod: the `turn.complete` hook",
+  controls: [
+    {
+      name: "goal loop",
+      incident:
+        "The built-in evaluator reads only the conversation, so it cannot run a check (trim design).",
+      removeWhen: "The built-in `/goal` runs checks.",
+    },
+    {
+      name: "goal stop",
+      incident: "none recorded",
+      removeWhen: "The built-in `/goal` has the same stops.",
+    },
+    {
+      name: "ProposeGoal deny",
+      incident: "none recorded",
+      removeWhen: "The built-in `/goal` is removed.",
+    },
+  ],
   mod: [
     {
       event: "turn.complete",

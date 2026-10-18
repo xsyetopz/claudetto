@@ -49,6 +49,23 @@ export const slice: Slice = {
       },
     },
   ],
+  controls: [
+    {
+      name: "sync at session start",
+      incident: "none recorded",
+      removeWhen: "`codegraph` syncs its own index.",
+    },
+    {
+      name: "sync after an edit",
+      incident: "none recorded",
+      removeWhen: "`codegraph` syncs its own index.",
+    },
+    {
+      name: "sync after git",
+      incident: "none recorded",
+      removeWhen: "`codegraph` syncs its own index.",
+    },
+  ],
   mod: [
     {
       event: "tool.call",

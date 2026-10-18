@@ -10,6 +10,15 @@ const LAB = "plugins/claudetto/tests/plan.test.ts";
 export const slice = {
   name: "ground",
   ladder: "mod: the `tool.call` hook",
+  controls: [
+    {
+      name: "source check",
+      incident:
+        "Claude wrote a number, a `file:line` reference, or a convention (`npx` in a `bun` project) with no source (trim design, step 9).",
+      removeWhen:
+        "Claude cites only sources that exist, shown by a replay with no false claim.",
+    },
+  ],
   mod: [
     {
       event: "tool.call",

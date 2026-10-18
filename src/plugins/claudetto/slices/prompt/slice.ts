@@ -22,6 +22,18 @@ export const slice = {
   name: "prompt",
   ladder:
     "mod: the `prompt.section`, `agent.spawn`, `tool.describe`, `prompt.attachment`, `command.describe`, and `agent.offer` hooks",
+  controls: [
+    {
+      name: "lean_body text",
+      incident: "The built-in prompts are bad (the user, trim decision 3).",
+      removeWhen: "Claude Code ships a short prompt that needs no tailor.",
+    },
+    {
+      name: "other hooks",
+      incident: "none recorded",
+      removeWhen: "Claude Code has a setting for each cut.",
+    },
+  ],
   mod: [
     {
       event: "prompt.section",

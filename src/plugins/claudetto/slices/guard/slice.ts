@@ -7,6 +7,14 @@ import { onBashCall } from "./adapters/mod.ts";
 export const slice = {
   name: "guard",
   ladder: "mod: the `tool.call` hook",
+  controls: [
+    {
+      name: "print deny",
+      incident:
+        "A `Bash` print of a file gave the text again, and only `Read` gets the short stub on a second read (trim design, steps table).",
+      removeWhen: "Claude Code gives the short stub for a `Bash` print too.",
+    },
+  ],
   mod: [
     {
       event: "tool.call",

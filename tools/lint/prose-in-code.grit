@@ -23,11 +23,11 @@ or {
     $fixed <: r"(?s).{61,}"
   }
 } where {
-  // The `ladder` line and the `evals` test references of `slice.ts` are fields of the slice contract (`src/kernel/slice.ts`) that never ship as text.
+  // The `ladder` line, the `controls` records, and the `evals` test references of `slice.ts` are fields of the slice contract (`src/kernel/slice.ts`) that never ship as text.
   // The rule finds them by their place in the code, not by their words.
   not and {
     $filename <: r".*/slice\.ts",
-    $text <: within JsPropertyObjectMember(name=r"ladder|evals")
+    $text <: within JsPropertyObjectMember(name=r"ladder|evals|controls")
   },
   register_diagnostic(
     span = $text,

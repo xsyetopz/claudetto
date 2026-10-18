@@ -8,9 +8,17 @@
 
 import { readdirSync } from "node:fs";
 import path, { join } from "node:path";
+import { discover } from "./generate/discover.ts";
+import "./generate/emit/slices.ts"; // registers the loader that discovery needs for the `prompts.ts` modules
 import { isGenerated } from "./generate/emit/texts.ts";
 import { FILE_MAX_LINES, TEST_FILE_MAX_LINES } from "./limits.ts";
-import { overPins, partLines, shortFiles, thinFolders } from "./parts.ts";
+import {
+  missingControls,
+  overPins,
+  partLines,
+  shortFiles,
+  thinFolders,
+} from "./parts.ts";
 import { $claude } from "./telemetry.ts";
 
 const root = join(import.meta.dir, "..");
@@ -87,6 +95,7 @@ if (import.meta.main) {
     ...overPins(partLines(present, linesOf)),
     ...shortFiles(present, linesOf),
     ...thinFolders(present),
+    ...missingControls(await discover(root)),
   ];
   if (parts.length) {
     for (const line of parts) console.error(`part rule: ${line}`);

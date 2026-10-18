@@ -32,6 +32,30 @@ const COMMAND_LAB = "plugins/claudetto/tests/command.test.ts";
 export const slice = {
   name: "handoff",
   ladder: "mod: the `session.compact` hook",
+  controls: [
+    {
+      name: "compact answer",
+      incident:
+        "A compaction costs much and loses the state of the work (trim design, decision 6).",
+      removeWhen: "Claude Code compaction keeps the state at the same cost.",
+    },
+    {
+      name: "second compaction update",
+      incident:
+        "The first handoff `H1` stayed inside `H2` at a second compaction (commit `9914887a`, D46).",
+      removeWhen: "The compact answer is removed.",
+    },
+    {
+      name: "session start",
+      incident: "none recorded",
+      removeWhen: "The compact answer is removed.",
+    },
+    {
+      name: "/handoff command",
+      incident: "none recorded",
+      removeWhen: "Claude Code has a command that compacts to a handoff.",
+    },
+  ],
   mod: [
     {
       event: "session.compact",
