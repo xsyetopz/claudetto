@@ -1,5 +1,4 @@
 // The `off` lists of the `prompt` slice equal the `off` rows of the verdict tables.
-// The rows that name part 2 or part 3 of the plan are for later tasks, so the lists leave them out.
 
 import { expect, test } from "bun:test";
 import {
@@ -13,18 +12,15 @@ import { VERDICTS } from "../../../tools/builtins/verdicts.ts";
 /** The names of a list, sorted. */
 const sorted = (list: readonly string[]): string[] => [...list].sort();
 
-/** The names of the `off` rows of one group, with the rows of later tasks left out. */
-const offNames = (group: string, later: readonly string[] = []): string[] =>
+/** The names of the `off` rows of one group. */
+const offNames = (group: string): string[] =>
   Object.entries(VERDICTS)
     .filter(([key, v]) => key.startsWith(`${group}:`) && v.verdict === "off")
     .map(([key]) => key.slice(group.length + 1))
-    .filter((name) => !later.includes(name))
     .sort();
 
-test("the `off` attachment kinds equal the `off` rows of the attachments, less `goal_status`", () => {
-  expect(sorted(OFF_ATTACHMENTS)).toStrictEqual(
-    offNames("attachments", ["goal_status"]),
-  );
+test("the `off` attachment kinds equal the `off` rows of the attachments", () => {
+  expect(sorted(OFF_ATTACHMENTS)).toStrictEqual(offNames("attachments"));
 });
 
 test("the hidden commands equal the `off` rows of the commands", () => {

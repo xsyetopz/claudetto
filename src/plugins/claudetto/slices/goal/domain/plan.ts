@@ -1,0 +1,40 @@
+// How the text of `/goal` becomes steps with checks.
+// A command in backticks is a `run` check, so `just check` exits 0 is the check `just check`.
+
+import type { Check, Step } from "./state.ts";
+
+/** The `run` checks of the commands in backticks in `text`. */
+const runsIn = (text: string): Check[] =>
+  [...text.matchAll(/`([^`]+)`/g)].map(([, command = ""]) => ({
+    kind: "run",
+    command,
+  }));
+
+/**
+ * The steps of a condition: one step.
+ * The commands in backticks are its `run` checks.
+ * A condition with no command is one `judge` check of a small model.
+ */
+export const conditionSteps = (condition: string): Step[] => {
+  const runs = runsIn(condition);
+  const checks: Check[] = runs.length
+    ? runs
+    : [{ kind: "judge", claim: condition }];
+  return [{ title: condition, checks }];
+};
+
+/**
+ * The steps of a plan file.
+ * A heading of level 2 or 3 that starts with a number, such as `## 8b. Rewrite`, is a step.
+ * Each `Check:` line below it, with an optional `- `, gives a `run` check for each command in backticks.
+ */
+export const planSteps = (text: string): Step[] => {
+  const steps: { title: string; checks: Check[] }[] = [];
+  for (const line of text.split("\n")) {
+    const title = /^#{2,3} \d+\w*\. (.+)/.exec(line)?.[1];
+    if (title) steps.push({ title, checks: [] });
+    const check = /^\s*(?:- )?Check: (.+)/.exec(line)?.[1];
+    if (check) steps.at(-1)?.checks.push(...runsIn(check));
+  }
+  return steps;
+};

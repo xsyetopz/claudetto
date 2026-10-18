@@ -16,6 +16,8 @@ type Stubs = {
 const engine = (stubs: Stubs = {}) => {
   const judged: string[] = [];
   const $ = {
+    env: { get: async () => undefined },
+    session: { root: async () => "" },
     process: {
       run: async () => ({
         exitCode: stubs.exitCode ?? 0,

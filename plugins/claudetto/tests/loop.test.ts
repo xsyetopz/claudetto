@@ -25,8 +25,8 @@ const goalWith = (over: Record<string, unknown> = {}) => ({
   results: [],
   turns: 0,
   stalled: 0,
-  signature: "",
-  baseUsd: 0,
+  spentUsd: 0,
+  lastUsd: 0,
   paused: false,
   log: [],
   stall: 3,
@@ -40,12 +40,17 @@ type World = {
   usd?: number;
   percent?: number;
   now?: number;
+  /** The value of `CLAUDE_PROJECT_DIR`. */
+  root?: string;
 };
 
 /** The stubs for the state `goal`, which is the text of the file or `null` for none. They give the file, and the prompts that the hook submitted. */
 const stub = (on: On, goal: unknown, world: World = {}) => {
   const file = { text: goal === null ? null : JSON.stringify(goal) };
   const prompts: string[] = [];
+  const writes: string[] = [];
+  const cwds: (string | undefined)[] = [];
+  on("env.get", () => ({ value: world.root }));
   on("turn.complete", (_$, e) => ({ text: e.answer }));
   // Any other file, such as `OUT.md`, exists and holds `out`.
   on("fs.read", (_$, e) => {
@@ -53,12 +58,15 @@ const stub = (on: On, goal: unknown, world: World = {}) => {
     return file.text === null ? { deny: "missing" } : { value: file.text };
   });
   on("fs.write", (_$, e) => {
+    writes.push(e.path);
     if (e.path.endsWith(FILE)) file.text = e.text;
     return { value: undefined };
   });
-  on("process.run", () => ({
-    value: { ...OK, exitCode: world.exitCode ?? 1, stderr: world.stderr ?? "" },
-  }));
+  on("process.run", (_$, e) => {
+    cwds.push(e.init?.cwd);
+    const exitCode = world.exitCode ?? 1;
+    return { value: { ...OK, exitCode, stderr: world.stderr ?? "" } };
+  });
   on("session.usage", () => ({
     value: {
       startedAt: 0,
@@ -75,6 +83,8 @@ const stub = (on: On, goal: unknown, world: World = {}) => {
   });
   return {
     prompts,
+    writes,
+    cwds,
     state: () => (file.text === null ? null : JSON.parse(file.text)),
   };
 };
@@ -133,9 +143,13 @@ test("`maxTurns` stops the goal at the count of turns", async ($: Engine, on: On
 });
 
 test("`budget` in USD stops the goal at the cost", async ($: Engine, on: On) => {
-  const world = stub(on, goalWith({ budget: { usd: 2 }, baseUsd: 1 }), {
-    usd: 3.5,
-  });
+  const world = stub(
+    on,
+    goalWith({ budget: { usd: 2 }, spentUsd: 1, lastUsd: 1 }),
+    {
+      usd: 3.5,
+    },
+  );
   await finish($);
   expect(world.prompts).toEqual([]);
   expect(world.state().log[0].note).toBe("stopped: budget");
@@ -166,4 +180,32 @@ test("`stall` stops the goal after the same failure in a row", async ($: Engine,
   await finish($);
   expect(world.prompts).toHaveLength(2);
   expect(world.state().log[0].note).toBe("stopped: stall");
+});
+
+// biome-ignore lint/plugin: a test name
+test("the paths start at the project root, not at the folder of the shell", async ($: Engine, on: On) => {
+  const world = stub(on, goalWith(), { root: "/proj" });
+  await finish($);
+  expect(world.cwds).toEqual(["/proj"]);
+  expect(world.writes).toEqual(["/proj/.claudetto/goal.json"]);
+});
+
+test("a turn whose checks all pass still stops at `maxTurns`", async ($: Engine, on: On) => {
+  const world = stub(on, goalWith({ maxTurns: 1 }), { exitCode: 0 });
+  await finish($);
+  expect(world.prompts).toEqual([]);
+  expect(world.state()).toMatchObject({ step: 1, paused: true });
+  expect(world.state().log.at(-1).note).toBe("stopped: max-turns");
+});
+
+// biome-ignore lint/plugin: a test name
+test("the cost after a `/clear` adds to the spent cost, and does not go below it", async ($: Engine, on: On) => {
+  const goal = goalWith({ budget: { usd: 5 }, spentUsd: 1, lastUsd: 10 });
+  const world = stub(on, goal, { usd: 2 });
+  await finish($);
+  expect(world.state()).toMatchObject({
+    spentUsd: 3,
+    lastUsd: 2,
+    paused: false,
+  });
 });

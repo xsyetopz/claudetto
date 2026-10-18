@@ -38,11 +38,11 @@ export type Goal = Controls & {
   /** The results of the checks of the current step, in order. Empty before the first run. */
   readonly results: readonly Result[];
   readonly turns: number;
-  /** The count of turns in a row with the same failing checks and output, and the text that tells them apart. */
+  /** The count of turns in a row with the same failing checks and output. */
   readonly stalled: number;
-  readonly signature: string;
-  /** The cost in USD of the session when the goal began, to take from the cost in `budget.usd`. */
-  readonly baseUsd: number;
+  /** The cost in USD that the goal spent, and the cost of the session at the last turn. A `/clear` restarts the cost of the session, and so `lastUsd` can be higher than the new cost. */
+  readonly spentUsd: number;
+  readonly lastUsd: number;
   readonly paused: boolean;
   /** The moves between steps and the stop, with the time. */
   readonly log: readonly { readonly at: number; readonly note: string }[];
@@ -52,7 +52,7 @@ export type Goal = Controls & {
 export const createGoal = (
   steps: readonly Step[],
   controls: Partial<Controls> = {},
-  baseUsd = 0,
+  lastUsd = 0,
 ): Goal => ({
   stall: STALL_DEFAULT,
   ...controls,
@@ -61,8 +61,8 @@ export const createGoal = (
   results: [],
   turns: 0,
   stalled: 0,
-  signature: "",
-  baseUsd,
+  spentUsd: 0,
+  lastUsd,
   paused: false,
   log: [],
 });
@@ -76,7 +76,3 @@ export const parseGoal = (text: string): Goal | null => {
     return null;
   }
 };
-
-/** The text to write to the state file for `goal`, or `null` to clear it. */
-export const goalText = (goal: Goal | null): string =>
-  JSON.stringify(goal, null, 2);

@@ -5,6 +5,7 @@
 /** The attachment kinds that `prompt.attachment` leaves out of the request. */
 export const OFF_ATTACHMENTS = [
   "artifact_opening_prefetch",
+  "goal_status",
   "session_cron_carry",
   "task_reminder",
   "tool_hosts_notice",

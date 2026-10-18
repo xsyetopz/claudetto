@@ -18,6 +18,9 @@ export const NEXT = (v: {
   title: string;
 }): string => `Step ${v.done} is done. Do step ${v.step} now: ${v.title}`;
 
+/** From `src/plugins/claudetto/slices/goal/prompts/propose-deny.md`. */
+export const PROPOSE_DENY = `\`ProposeGoal\` is off. The user sets a goal with \`/goal\`.`;
+
 /** From `src/plugins/claudetto/slices/goal/prompts/retry.md`. */
 export const RETRY = (v: {
   step: string;
@@ -25,6 +28,14 @@ export const RETRY = (v: {
   failing: string;
 }): string => `These checks of step ${v.step} (${v.title}) fail. Fix them, and then end the turn.
 ${v.failing}`;
+
+/** From `src/plugins/claudetto/slices/goal/prompts/start.md`. */
+export const START = (v: {
+  steps: string;
+  step: string;
+  title: string;
+}): string =>
+  `The goal has ${v.steps} steps. Do step ${v.step} now: ${v.title}`;
 
 /** From `src/plugins/claudetto/slices/goal/prompts/stopped.md`. */
 export const STOPPED = (v: { reason: string; step: string }): string =>

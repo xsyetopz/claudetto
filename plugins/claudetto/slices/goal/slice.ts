@@ -2,12 +2,14 @@
 // The manifest of the `goal` slice: the goal engine, a loop of checks at the end of each turn.
 // The state is in `.claudetto/goal.json` (`domain/state.ts`), and the `turn.complete` hook runs the checks of the current step.
 // When a check fails, the hook starts the next turn with only the failing checks. When all pass, it goes to the next step.
-// A command module that makes and changes the goal comes later.
+// `command.run` answers `/goal` (a condition, a plan file, `status`, `clear`, `pause`, `resume`, `skip`, `step N`), so the built-in command does not run.
+// `tool.call` denies `ProposeGoal`. The attachment `goal_status` is left out by the `prompt` slice.
 
-import type { Slice } from "../../kernel/slice.ts";
-import { onTurnComplete } from "./adapters/mod.ts";
+import type { Handler, Slice } from "../../kernel/slice.ts";
+import { onCommand, onProposeGoal, onTurnComplete } from "./adapters/mod.ts";
 
 const LAB = "plugins/claudetto/tests/loop.test.ts";
+const COMMAND_LAB = "plugins/claudetto/tests/goal.test.ts";
 
 export const slice = {
   name: "goal",
@@ -25,6 +27,34 @@ export const slice = {
       },
       phase: "observe",
       run: onTurnComplete,
+    },
+    {
+      event: "command.run",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow: `${COMMAND_LAB} > another command runs unchanged`,
+        text: `${COMMAND_LAB} > a condition with commands in backticks makes a goal of \`run\` checks, and the first turn starts`,
+      },
+      filter: { command: "goal" },
+      phase: "answer",
+      run: onCommand,
+    },
+    {
+      event: "tool.call",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: true,
+        allow: `${COMMAND_LAB} > another tool call passes`,
+        text: `${COMMAND_LAB} > \`ProposeGoal\` is denied with a text that names \`/goal\``,
+        block: `${COMMAND_LAB} > \`ProposeGoal\` is denied with a text that names \`/goal\``,
+        false: `${COMMAND_LAB} > another tool call passes`,
+      },
+      filter: { tool: ["ProposeGoal"] },
+      phase: "answer",
+      run: onProposeGoal as unknown as Handler<"tool.call">,
     },
   ],
 } satisfies Slice;

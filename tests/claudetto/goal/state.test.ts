@@ -4,7 +4,6 @@ import { expect, test } from "bun:test";
 import {
   type Check,
   createGoal,
-  goalText,
   parseGoal,
 } from "../../../src/plugins/claudetto/slices/goal/domain/state.ts";
 import { STALL_DEFAULT } from "../../../src/plugins/claudetto/slices/goal/limits.ts";
@@ -30,7 +29,7 @@ test("a goal with a check of each kind survives a write and a read", async () =>
     paused: true,
     log: [{ at: 1, note: "skip 1 to 2" }],
   };
-  await Bun.write(path, goalText(moved));
+  await Bun.write(path, JSON.stringify(moved));
   expect(parseGoal(await Bun.file(path).text())).toEqual(moved);
 });
 
@@ -38,5 +37,4 @@ test("the text `null`, an empty text, and a text that is not a goal read as no g
   for (const text of ["null", "", "{", '{"steps":1}']) {
     expect(parseGoal(text)).toBeNull();
   }
-  expect(goalText(null)).toBe("null");
 });
