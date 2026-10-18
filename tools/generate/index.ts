@@ -8,13 +8,14 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { formatted } from "./format.ts";
 import { modeProblems, setModes } from "./modes.ts";
 import { generated, problems } from "./outputs.ts";
 
 const REPO = path.resolve(import.meta.dir, "../..");
 
 if (process.argv[1] === import.meta.path) {
-  const made = await generated(REPO);
+  const made = await formatted(REPO, await generated(REPO));
   if (!process.argv.includes("--check"))
     for (const o of made) {
       const at = path.join(REPO, o.file);

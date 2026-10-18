@@ -13,7 +13,10 @@ import {
 import { fileReader, writeAtomic } from "../../../kernel/node/fs.ts";
 import { failureText, readStdin } from "../../../kernel/node/hook-io.ts";
 import { processRunner } from "../../../kernel/node/process.ts";
-import { CLAUDE_STATE_FILE, SETTINGS_FILE } from "../../../kernel/paths.ts";
+import {
+  CLAUDE_STATE_FILE,
+  SETTINGS_FILE,
+} from "../../../kernel/paths.ts";
 import type { FileReader, ProcessRunner } from "../../../kernel/ports.ts";
 import { colorOff, paintOf, themeOf } from "../color.ts";
 import { baseName } from "../format.ts";

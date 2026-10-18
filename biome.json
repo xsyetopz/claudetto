@@ -10,6 +10,8 @@
     "includes": [
       "**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,json,jsonc}",
       "!!**/.agents",
+      "!!plugins",
+      "!!wiki",
       "!**/slices/*/prompts/*.json",
       "!!**/node_modules",
       "!!**/dist",

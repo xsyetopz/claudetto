@@ -18,7 +18,10 @@ import {
   HAIKU_HANDOFF_TRIGGER_TOKENS,
   HANDOFF_TRIGGER_TOKENS,
 } from "../../kernel/budget.ts";
-import { changeHandoffPath, type OpenChange } from "../../kernel/change.ts";
+import {
+  changeHandoffPath,
+  type OpenChange,
+} from "../../kernel/change.ts";
 import { HANDOFF_DIR } from "../../kernel/paths.ts";
 import { CALL_INPUT_CHARS_MAX, CHARS_PER_TOKEN } from "./limits.ts";
 import {

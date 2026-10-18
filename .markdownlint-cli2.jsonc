@@ -9,9 +9,12 @@
     ".claude/**",
     ".agents/**",
     "**/.claudetto/**",
-    "src/**",
+    // `plugins/` is generated output, and `wiki/` is generated from `src/wiki/`.
+    "plugins/**",
     // The wiki is frozen until the 0.2.0 tag, so the `title-case` fix waits for it.
     "wiki/**",
-    "plugins/*/evals/results/**"
+    "src/wiki/**",
+    // A prompt fragment has the format of the Claude Code prompt, not of Markdown, and a lint fix would change its words or its size pin.
+    "src/**/prompts/**"
   ]
 }
