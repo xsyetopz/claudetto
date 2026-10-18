@@ -1,16 +1,14 @@
-// The context cut of `advise`: the parts, the byte bound, and the call counts, on a fixture of `$.session.messages()`.
+// The context cut of `advise`: the parts, the byte bound, and the limit of a turn, on a fixture of `$.session.messages()`.
 
 import { expect, test } from "bun:test";
 import type { SessionMessage } from "claude-code";
-import { refusal } from "../../../src/plugins/claudetto/slices/advise/domain/calls.ts";
 import {
+  clip,
   cutContext,
-  readGoal,
-} from "../../../src/plugins/claudetto/slices/advise/domain/context.ts";
-import {
-  MAX_CALLS_PER_SESSION,
-  MAX_CALLS_PER_TURN,
-} from "../../../src/plugins/claudetto/slices/advise/limits.ts";
+  isTurnFull,
+} from "../../../src/plugins/claudetto/slices/advise/domain/advise.ts";
+import { MAX_CALLS_PER_TURN } from "../../../src/plugins/claudetto/slices/advise/limits.ts";
+import { ASK } from "../../../src/plugins/claudetto/slices/advise/prompts.ts";
 
 const msg = (
   role: "user" | "assistant",
@@ -26,69 +24,73 @@ const msg = (
   })),
 });
 
-const GOAL = readGoal(
-  JSON.stringify({
-    steps: [
-      { title: "build", checks: [] },
-      { title: "ship", checks: [] },
-    ],
-    step: 1,
-    results: [
-      { pass: true, output: "fine" },
-      { pass: false, output: "error: boom\n" },
-    ],
-  }),
-);
+const GOAL = JSON.stringify({
+  steps: [{ title: "build" }, { title: "ship" }],
+  step: 1,
+  results: [
+    { pass: true, output: "fine" },
+    { pass: false, output: "error: boom\n" },
+  ],
+});
 const LOG = [
   msg("user", "fix it"),
   msg("assistant", "trying", ["Bash"]),
   msg("user", ""),
 ];
-
-test("the context holds the question, the plan, the failing checks, and the conversation", () => {
-  const cut = cutContext({
-    question: " Why? ",
+const bytes = (text: string) => new TextEncoder().encode(text).length;
+/** The bytes of the template with no content, which the bound does not count. */
+const FRAME = bytes(ASK({ plan: "", failing: "", tail: "", question: "" }));
+const cut = (over: Record<string, unknown>) =>
+  cutContext({
+    question: "Why?",
     messages: LOG,
-    goal: GOAL,
+    goalText: GOAL,
     limit: 1000,
+    ...over,
   });
-  expect(cut.question).toBe("Why?");
-  expect(cut.plan).toBe("- 1. build\n> 2. ship");
-  expect(cut.failing).toBe("Check 2: error: boom");
-  expect(cut.tail).toBe("user: fix it\nassistant: trying [Bash]");
+
+test("the prompt holds the question, the plan, the failing checks, and the conversation", () => {
+  const text = cut({ question: " Why? " });
+  expect(text).toContain("- 1. build\n> 2. ship");
+  expect(text).toContain("Check 2: error: boom");
+  expect(text).toContain("user: fix it\nassistant: trying [Bash]");
+  expect(text.endsWith("Why?")).toBe(true);
 });
 
 test("with no goal, the plan and the failing checks are empty", () => {
-  const cut = cutContext({
-    question: "Why?",
-    messages: LOG,
-    goal: readGoal("nope"),
-    limit: 1000,
-  });
-  expect([cut.plan, cut.failing]).toEqual(["", ""]);
+  expect(cut({ goalText: "nope" })).not.toContain("Check");
+  expect(cut({ goalText: null })).not.toContain("build");
 });
 
 test("the tail keeps the newest messages within the byte bound", () => {
   const messages = [msg("user", "old".repeat(100)), msg("assistant", "new")];
-  const cut = cutContext({
-    question: "Q",
-    messages,
-    goal: undefined,
-    limit: 40,
-  });
-  expect(cut.tail).toBe("assistant: new");
-  const total = cut.question.length + cut.tail.length;
-  expect(total).toBeLessThanOrEqual(40);
+  const text = cut({ messages, goalText: null, limit: 40 });
+  expect(text).toContain("assistant: new");
+  expect(text).not.toContain("old");
 });
 
-test("a message longer than the room is cut at its start", () => {
-  const cut = cutContext({
-    question: "Q",
-    messages: [msg("user", "a".repeat(100))],
-    goal: undefined,
-    limit: 11,
+test("a multi-byte tail, a multi-byte question, and a long failing output stay within the limit", () => {
+  const long = JSON.stringify({
+    steps: [{ title: "build" }],
+    step: 0,
+    results: [{ pass: false, output: "x".repeat(5000) }],
   });
-  expect(cut.tail).toBe("a".repeat(10));
+  for (const over of [
+    { messages: [msg("user", "é€😀".repeat(200))], goalText: null },
+    { question: "😀é€".repeat(200), goalText: null },
+    { goalText: long },
+  ]) {
+    expect(bytes(cut({ ...over, limit: 1000 })) - FRAME).toBeLessThanOrEqual(
+      1000,
+    );
+  }
+});
+
+test("a cut drops the character that it splits", () => {
+  expect(clip("a😀", 3)).toBe("a");
+  expect(clip("😀a", 3, true)).toBe("a");
+  expect(clip("abc", 10)).toBe("abc");
+  expect(clip("abc", 0)).toBe("");
 });
 
 const ADVISE = "mcp__claudetto__advise";
@@ -97,13 +99,7 @@ test("the calls of a turn are counted from the last message of the user with tex
   const calls = Array.from({ length: MAX_CALLS_PER_TURN }, () =>
     msg("assistant", "", [ADVISE]),
   );
-  expect(refusal([msg("user", "go"), ...calls.slice(1)], "x")).toBeUndefined();
-  expect(refusal([msg("user", "go"), ...calls], "x")).toContain("this turn");
-  expect(refusal([...calls, msg("user", "go")], "x")).toBeUndefined();
-});
-
-test("the calls of a session are counted over all turns", () => {
-  const turn = [msg("user", "go"), msg("assistant", "", [ADVISE])];
-  const log = Array.from({ length: MAX_CALLS_PER_SESSION }, () => turn).flat();
-  expect(refusal(log, "x")).toContain("this session");
+  expect(isTurnFull([msg("user", "go"), ...calls.slice(1)], "x")).toBe(false);
+  expect(isTurnFull([msg("user", "go"), ...calls], "x")).toBe(true);
+  expect(isTurnFull([...calls, msg("user", "go")], "x")).toBe(false);
 });

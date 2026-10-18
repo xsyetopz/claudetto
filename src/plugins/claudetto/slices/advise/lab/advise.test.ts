@@ -17,6 +17,7 @@ const USAGE = {
   cache_read_input_tokens: 0,
   cache_creation_input_tokens: 0,
 };
+let sessions = 0;
 const ON: { options: PluginOptions } = { options: { advisor: "claudetto" } };
 
 const message = (text: string, tools: string[] = []) => ({
@@ -42,6 +43,10 @@ const stub = (
   on("env.get", () => ({ value: undefined }));
   on("session.start", (_$, e) => ({ cwd: e.cwd }));
   on("session.messages", () => ({ value: history }));
+  // A new id for each test, because the count of calls of a session is kept in the module.
+  sessions += 1;
+  const id = `s${sessions}`;
+  on("session.id", () => ({ value: id }));
   on("fs.read", () => ({ deny: "missing" }));
   on("tool.register", (_$, e) => {
     seen.tools.push(e.name);
@@ -149,5 +154,16 @@ test(
       "no call left in this turn",
     );
     expect(seen.requests).toEqual([]);
+  },
+);
+
+test(
+  "the 21st call in one session gets no model request",
+  ON,
+  async ($: Engine, on: On) => {
+    const seen = stub(on, { isAnswered: true, text: "x", usage: USAGE });
+    for (let i = 0; i < 20; i += 1) await ask($);
+    expect(String((await ask($)).result)).toContain("in this session");
+    expect(seen.requests).toHaveLength(20);
   },
 );

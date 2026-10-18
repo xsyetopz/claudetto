@@ -1,3 +1,6 @@
+The plan:
+{{plan}}
+
 The failing checks:
 {{failing}}
 

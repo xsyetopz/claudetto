@@ -25,7 +25,7 @@
     "advisorEffort": {
       "type": "string",
       "title": "Advisor Effort",
-      "description": "The effort of the tool `advise`: `low`, `medium`, `high`, `xhigh`, or `max`.",
+      "description": "The effort of `advise`.",
       "default": "high",
       "options": ["low", "medium", "high", "xhigh", "max"]
     },

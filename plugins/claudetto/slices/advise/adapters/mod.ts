@@ -3,58 +3,88 @@
 // `session.start` registers the tool for `claudetto`, and `tool.call` answers it with one `$.model.complete` call.
 // `claude plugin validate` follows `$` only into a function of one file, so each function that touches `$` is here.
 
-import type { ModelTextBlock, PluginOptions } from "claude-code";
+import type { PluginOptions } from "claude-code";
 import { GOAL_FILE } from "../../../kernel/paths.ts";
 import type { Handler } from "../../../kernel/slice.ts";
-import { refusal } from "../domain/calls.ts";
-import { cutContext, readGoal } from "../domain/context.ts";
-import { type Options, optionsOf } from "../domain/options.ts";
-import { resultText } from "../domain/result.ts";
-import { toolSpec } from "../domain/tool.ts";
-import { CONTEXT_BYTES, MAX_TOKENS, TIMEOUT_MS } from "../limits.ts";
-import { ASK, ERROR_QUESTION, PLAN, SYSTEM } from "../prompts.ts";
+import {
+  cutContext,
+  isTurnFull,
+  type Options,
+  optionsOf,
+  resultText,
+  TOOL,
+} from "../domain/advise.ts";
+import {
+  CONTEXT_BYTES,
+  MAX_CALLS_PER_SESSION,
+  MAX_TOKENS,
+  TIMEOUT_MS,
+} from "../limits.ts";
+import {
+  ERROR_FAIL,
+  ERROR_LIMIT,
+  SYSTEM,
+  TOOL_DESCRIPTION,
+  TOOL_QUESTION,
+} from "../prompts.ts";
 
-/** The options, which the generated `register` sets once with `keepOptions`. */
-const kept: { options: Options } = { options: optionsOf({}) };
+/** The options, which the generated `register` sets once with `keepOptions`, and the count of calls in the session `id`. A `/compact` keeps the session id, so it does not reset the count. */
+const kept: { options: Options; id: string; calls: number } = {
+  options: optionsOf({}),
+  id: "",
+  calls: 0,
+};
 
 export const keepOptions = (values: PluginOptions): void => {
   kept.options = optionsOf(values);
 };
 
 export const onSessionStart: Handler<"session.start"> = async ($, e, next) => {
-  if (kept.options.advisor === "claudetto") await $.tool.register(toolSpec());
+  if (kept.options.advisor === "claudetto") {
+    await $.tool.register({
+      name: TOOL,
+      description: TOOL_DESCRIPTION,
+      inputSchema: {
+        type: "object",
+        properties: {
+          question: { type: "string", description: TOOL_QUESTION },
+        },
+        required: ["question"],
+      },
+      isDeferred: false,
+    });
+  }
   return next(e);
 };
 
 export const onAdvise: Handler<"tool.call"> = async ($, e) => {
   // An MCP tool gets its arguments as the fields of `e`.
-  const { question = "" } = e as unknown as { question?: string };
+  const { question } = e as unknown as { question?: string };
   if (typeof question !== "string" || !question.trim())
-    return { result: ERROR_QUESTION };
+    return { result: ERROR_FAIL({ cause: "the question is empty" }) };
   const messages = await $.session.messages();
-  const refused = refusal(messages, e.tool_use_id);
-  if (refused) return { result: refused };
+  const id = await $.session.id();
+  if (kept.id !== id) Object.assign(kept, { id, calls: 0 });
+  if (kept.calls >= MAX_CALLS_PER_SESSION)
+    return { result: ERROR_LIMIT({ scope: "session" }) };
+  if (isTurnFull(messages, e.tool_use_id))
+    return { result: ERROR_LIMIT({ scope: "turn" }) };
+  kept.calls += 1;
   const root =
     (await $.env.get("CLAUDE_PROJECT_DIR").catch(() => undefined)) ||
     (await $.session.root().catch(() => ""));
-  const goal = readGoal(
-    await $.fs
-      .read(root ? `${root.replace(/\/+$/, "")}/${GOAL_FILE}` : GOAL_FILE)
-      .catch(() => null),
-  );
-  const part = cutContext({ question, messages, goal, limit: CONTEXT_BYTES });
+  const goalText = await $.fs
+    .read(root ? `${root.replace(/\/+$/, "")}/${GOAL_FILE}` : GOAL_FILE)
+    .catch(() => null);
   const { model, effort } = kept.options;
-  const prompt: ModelTextBlock[] = [{ text: ASK(part) }];
-  if (part.plan)
-    prompt.unshift({ text: PLAN({ plan: part.plan }), cache: true });
   const reply = await $.model.complete({
     model,
     effort,
     maxTokens: MAX_TOKENS,
     timeoutMs: TIMEOUT_MS,
-    // The system prompt and the plan stay the same between calls, so they carry the cache marks.
-    system: [{ text: SYSTEM, cache: true as const }],
-    prompt,
+    // The system prompt stays the same between calls, so it carries the cache mark.
+    system: [{ text: SYSTEM, cache: true }],
+    prompt: cutContext({ question, messages, goalText, limit: CONTEXT_BYTES }),
   });
   return { result: resultText(reply, model) };
 };

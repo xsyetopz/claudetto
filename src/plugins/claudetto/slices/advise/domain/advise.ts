@@ -1,0 +1,165 @@
+// The rules of the tool `advise`: the options, the context within a byte bound, the limit of a turn, and the result text.
+// The goal state is read from `.claudetto/goal.json`, and this file knows only the fields that it needs.
+
+import type {
+  ModelCompleteResult,
+  ModelEffort,
+  SessionMessage,
+} from "claude-code";
+import { MAX_CALLS_PER_TURN } from "../limits.ts";
+import { ASK, ERROR_FAIL, RESULT } from "../prompts.ts";
+
+/** The short name of the tool, and the name that `tool.call` carries for it. */
+export const TOOL = "advise";
+const TOOL_NAME = `mcp__claudetto__${TOOL}`;
+
+/** The values of the `advisor` option and of the `advisorEffort` option. */
+export const ADVISORS = ["builtin", "claudetto"] as const;
+export const EFFORTS: readonly ModelEffort[] = [
+  "low",
+  "medium",
+  "high",
+  "xhigh",
+  "max",
+];
+
+export type Options = {
+  readonly advisor: (typeof ADVISORS)[number];
+  readonly model: string;
+  readonly effort: ModelEffort;
+};
+
+/** The options for the `userConfig` values of the plugin. A missing or unknown value is the default. */
+export const optionsOf = (
+  values: Readonly<Record<string, unknown>>,
+): Options => {
+  const { advisorModel: model, advisorEffort: effort } = values;
+  return {
+    advisor: values["advisor"] === "claudetto" ? "claudetto" : "builtin",
+    model: typeof model === "string" && model ? model : "opus",
+    effort: EFFORTS.find((e) => e === effort) ?? "high",
+  };
+};
+
+/** The part of a goal state that the context reads. */
+type GoalState = {
+  readonly steps: readonly { readonly title: string }[];
+  readonly step: number;
+  readonly results: readonly {
+    readonly pass: boolean;
+    readonly output: string;
+  }[];
+};
+
+const bytes = (text: string) => new TextEncoder().encode(text).length;
+
+/** `text` cut to `room` bytes, at its end or (`fromEnd`) at its start. A character that the cut splits drops. */
+export const clip = (text: string, room: number, fromEnd = false): string => {
+  const raw = new TextEncoder().encode(text);
+  if (raw.length <= room) return text;
+  if (room <= 0) return "";
+  const cut = new TextDecoder().decode(
+    fromEnd ? raw.slice(-room) : raw.slice(0, room),
+  );
+  return fromEnd ? cut.replace(/^�+/, "") : cut.replace(/�+$/, "");
+};
+
+const lineOf = (m: SessionMessage): string =>
+  `${m.role}: ${[m.text, ...m.toolUses.map((t) => `[${t.tool}]`)].filter(Boolean).join(" ")}`;
+
+/** The newest lines of the conversation that fit in `room` bytes. The oldest kept line is cut at its start when it is too long. */
+const tailOf = (messages: readonly SessionMessage[], room: number): string => {
+  const kept: string[] = [];
+  let left = room;
+  for (const m of [...messages].reverse()) {
+    if (!m.text && m.toolUses.length === 0) continue;
+    const line = lineOf(m);
+    if (bytes(line) + 1 > left) {
+      if (kept.length === 0) kept.push(clip(line, left, true));
+      break;
+    }
+    kept.unshift(line);
+    left -= bytes(line) + 1;
+  }
+  return kept.join("\n");
+};
+
+/**
+ * The prompt of one call: the question, the failing checks and the steps of the goal (`goalText` is the state file, or `null`), and the end of the conversation.
+ * The parts together are at most `limit` bytes, cut in this order: the question, the failing checks, the plan, the tail.
+ */
+export const cutContext = (input: {
+  readonly question: string;
+  readonly messages: readonly SessionMessage[];
+  readonly goalText: string | null;
+  readonly limit: number;
+}): string => {
+  let goal: GoalState | undefined;
+  try {
+    goal = JSON.parse(input.goalText ?? "null") ?? undefined;
+  } catch {}
+  const steps = Array.isArray(goal?.steps) ? goal.steps : [];
+  let left = input.limit;
+  const take = (text: string) => {
+    const part = clip(text, left);
+    left -= bytes(part);
+    return part;
+  };
+  const question = take(input.question.trim());
+  const failing = take(
+    (goal?.results ?? [])
+      .map((r, i) => (r.pass ? "" : `Check ${i + 1}: ${r.output.trim()}`))
+      .filter(Boolean)
+      .join("\n"),
+  );
+  const plan = take(
+    steps
+      .map((s, i) => `${i === goal?.step ? ">" : "-"} ${i + 1}. ${s.title}`)
+      .join("\n"),
+  );
+  return ASK({ plan, failing, question, tail: tailOf(input.messages, left) });
+};
+
+/** Whether the turn has used its calls. A turn starts at the last message of the user with text. `id` is the call itself, which the transcript may already hold. */
+export const isTurnFull = (
+  messages: readonly SessionMessage[],
+  id: string,
+): boolean => {
+  const turn = Math.max(
+    messages.findLastIndex((m) => m.role === "user" && m.text),
+    0,
+  );
+  const calls = messages.slice(turn).flatMap((m) => m.toolUses);
+  return (
+    calls.filter((t) => t.tool === TOOL_NAME && t.tool_use_id !== id).length >=
+    MAX_CALLS_PER_TURN
+  );
+};
+
+/** The result text for a reply of the model: the advice with the model name and the token counts, or the cause of no advice. */
+export const resultText = (
+  reply: ModelCompleteResult,
+  model: string,
+): string => {
+  if (reply.isAnswered) {
+    const u = reply.usage;
+    return RESULT({
+      model,
+      input: String(
+        u.input_tokens +
+          u.cache_read_input_tokens +
+          u.cache_creation_input_tokens,
+      ),
+      output: String(u.output_tokens),
+      text: reply.text.trim(),
+    });
+  }
+  return ERROR_FAIL({
+    cause:
+      reply.reason === "api-error"
+        ? `the API gave an error (${reply.error}, status ${reply.status ?? "none"})`
+        : reply.reason === "empty-reply"
+          ? "the model replied with no text"
+          : "the call was cut short or took too long",
+  });
+};

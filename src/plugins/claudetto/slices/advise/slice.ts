@@ -1,10 +1,11 @@
 // The manifest of the slice `advise`: the tool `advise`, an advisor that the user controls, in place of the built-in advisor.
 // The `advisor` option is `builtin` by default, and then the slice registers no tool.
-// With `claudetto`, the tool asks the model of `advisorModel` with the context of `domain/context.ts`.
+// With `claudetto`, the tool asks the model of `advisorModel` with the context of `domain/advise.ts`.
 
 import type { Slice } from "../../../../kernel/slice.ts";
 import { keepOptions, onAdvise, onSessionStart } from "./adapters/mod.ts";
-import { OPTION_ADVISOR, OPTION_EFFORT, OPTION_MODEL } from "./prompts.ts";
+import { ADVISORS, EFFORTS } from "./domain/advise.ts";
+import { OPTION_ADVISOR, OPTION_MODEL } from "./prompts.ts";
 
 const LAB = "plugins/claudetto/tests/advise.test.ts";
 
@@ -49,7 +50,7 @@ export const slice = {
       title: "Advisor",
       description: OPTION_ADVISOR,
       default: "builtin",
-      options: ["builtin", "claudetto"],
+      options: [...ADVISORS],
     },
     advisorModel: {
       type: "string",
@@ -60,9 +61,9 @@ export const slice = {
     advisorEffort: {
       type: "string",
       title: "Advisor Effort",
-      description: OPTION_EFFORT,
+      description: "The effort of `advise`.",
       default: "high",
-      options: ["low", "medium", "high", "xhigh", "max"],
+      options: [...EFFORTS],
     },
   },
 } satisfies Slice;

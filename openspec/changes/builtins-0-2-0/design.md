@@ -167,7 +167,7 @@ At each call:
 1. It reads the conversation with `$.session.messages()` (`types-2.1.302.d.ts:2815-2823`).
 2. It cuts the context to what the advice needs: the question of Claude, the plan file, the last failing checks, and the tail of the conversation, to a byte bound in `advise/limits.ts`.
 3. It asks a stronger model with `$.model.complete`, with `model`, `effort`, `maxTokens`, and `timeoutMs`, and with a cache mark on the part that stays the same.
-4. It gives the advice to Claude as the tool result, with the model name and the cost from `usage`.
+4. It gives the advice to Claude as the tool result, with the model name and the token counts from `usage`.
 
 A question with a fixed set of options goes to `second_opinion` of `decide` (Jev, then the fallback model), not to `advise`.
 The tool text of `advise` says so.
