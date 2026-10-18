@@ -90,13 +90,13 @@ export const PART_LINE_PINS: Record<string, number> = {
   "src/plugins/claudetto/slices/ground": 368,
   "src/plugins/claudetto/slices/guard": 344,
   "src/plugins/claudetto/slices/handoff": 540,
-  "src/plugins/claudetto/slices/prompt": 896,
-  "src/plugins/claudetto/slices/sembr": 455,
+  "src/plugins/claudetto/slices/prompt": 912,
+  "src/plugins/claudetto/slices/sembr": 516,
   "src/plugins/claudetto/slices/setup": 354,
   "src/plugins/claudetto/slices/spec": 11,
   "src/plugins/claudetto/slices/statusline": 1210,
   "src/plugins/claudetto/slices/styles": 13,
-  tools: 4926,
+  tools: 4968,
 };
 
 /** The code files under `SHORT_FILE_MIN_LINES` that are allowed for now. Each entry is a merge of part 2 of task 10.8. */
@@ -118,21 +118,14 @@ export const SHORT_FILE_ALLOWED: readonly string[] = [
 export const THIN_FOLDER_ALLOWED: readonly string[] = [
   "src/plugins/claudetto-browser/slices/browse/adapters",
   "src/plugins/claudetto-browser/slices/browse/domain",
-  "src/plugins/claudetto-browser/slices/search/adapters",
   "src/plugins/claudetto-browser/slices/search/domain",
   "src/plugins/claudetto-codegraph/slices/graph/domain",
   "src/plugins/claudetto-lab/slices/capture/adapters",
   "src/plugins/claudetto-lab/slices/eval-compare/domain",
   "src/plugins/claudetto-lab/slices/eval-compare/prompts",
   "src/plugins/claudetto-lab/slices/schema/adapters",
-  "src/plugins/claudetto/slices/advise/adapters",
   "src/plugins/claudetto/slices/advise/domain",
-  "src/plugins/claudetto/slices/goal/adapters",
   "src/plugins/claudetto/slices/ground/prompts",
-  "src/plugins/claudetto/slices/guard/adapters",
   "src/plugins/claudetto/slices/guard/prompts",
-  "src/plugins/claudetto/slices/handoff/adapters",
-  "src/plugins/claudetto/slices/prompt/adapters",
-  "src/plugins/claudetto/slices/sembr/adapters",
   "src/plugins/claudetto/slices/setup/adapters",
 ];

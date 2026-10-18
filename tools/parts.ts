@@ -22,7 +22,7 @@ const THIN_DIR = /^(.*\/(?:domain|adapters|prompts))\//;
 /** The code files of the rules: the `.ts` files that are not tests. */
 const isCode = (file: string): boolean =>
   /\.ts$/.test(file) &&
-  !/\.test\.ts$/.test(file) &&
+  !/\.(test|d)\.ts$/.test(file) &&
   PART.some((p) => p.test(file));
 
 /** The part that holds `file`, as its folder path, or `undefined`. */
@@ -91,7 +91,10 @@ export const thinFolders = (
     const dir = THIN_DIR.exec(f)?.[1];
     if (dir) count.set(dir, (count.get(dir) ?? 0) + 1);
   }
-  const thin = [...count].filter(([, n]) => n < 2).map(([d]) => d);
+  // The generator needs `adapters/mod.ts`, so a folder with only that file stays.
+  const thin = [...count]
+    .filter(([d, n]) => n < 2 && !files.includes(`${d}/mod.ts`))
+    .map(([d]) => d);
   return [
     ...thin
       .filter((d) => !allowed.includes(d))
