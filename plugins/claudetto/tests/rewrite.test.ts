@@ -72,3 +72,18 @@ test("a second compaction holds the first user message once, the new handoff, an
     1,
   );
 });
+
+// biome-ignore lint/plugin: a test name
+test("a first user message that quotes the handoff marker stays whole", async ($: Engine, on: On) => {
+  engine(on, [H1], []);
+  // biome-ignore lint/plugin: test input data
+  const quote = `quote:\n\nThis is the handoff of the earlier part of this session, from \`y\` ok`;
+  const result = await $.session.compact({
+    trigger: "auto",
+    messages: [
+      { role: "user", text: quote, toolUses: [], handle: "h0" },
+      ...TURN,
+    ],
+  });
+  expect(result.messages?.[0]?.text).toContain(`${quote}\n\n`);
+});

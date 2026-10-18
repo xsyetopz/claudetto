@@ -38,6 +38,7 @@ import {
   triggerTokens,
   withChange,
 } from "../domain/compact.ts";
+import { joinQuotes } from "../domain/quotes.ts";
 import { COMMAND_HANDOFF, RULES, WRITTEN_NOTICE } from "../prompts.ts";
 
 /** The hook for the triggers in the filter of `slice.ts`, with `e` narrowed to them. */
@@ -122,7 +123,7 @@ const fileOf = async ($: EngineInterface, reply: string) => {
   const change = await openChangeOf($, root);
   return {
     path: `${root}${handoffPath(new Date(), change)}`,
-    text: withChange(`${reply.trimEnd()}\n`, change),
+    text: withChange(`${joinQuotes(reply.trimEnd())}\n`, change),
   };
 };
 

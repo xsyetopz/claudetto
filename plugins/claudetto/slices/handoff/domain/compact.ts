@@ -158,10 +158,11 @@ const originalFirst = (message: string): string => {
     handed: "\0",
   }).split("\0");
   const handed = HANDED({ path: "\0" }).split("\0")[0] as string;
-  const body = message.startsWith(lead) ? message.slice(lead.length) : message;
+  if (message.startsWith(handed)) return "";
+  if (!message.startsWith(lead)) return message;
+  const body = message.slice(lead.length);
   const end = body.indexOf(`${mid}${handed}`);
-  if (end !== -1) return body.slice(0, end);
-  return body.startsWith(handed) ? "" : message;
+  return end === -1 ? message : body.slice(0, end);
 };
 
 /** The text of the one user message after a compaction: the text of the first user message `first`, then `handed`. */
