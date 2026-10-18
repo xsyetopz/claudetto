@@ -1,4 +1,4 @@
-// Tests of the Node and Bun adapters: `fileReader`, `readTail`, `runHook`, and the output builders.
+// Tests of the Node and Bun adapters: `fileReader`, `runHook`, and the output builders.
 // An injected reader and writer replace stdin and stdout.
 
 import { expect, test } from "bun:test";
@@ -11,7 +11,6 @@ import {
   preToolUse,
   runHook,
 } from "../../src/kernel/node/hook-io.ts";
-import { readTail } from "../../src/kernel/node/tail.ts";
 
 /** Runs `decide` on the text `input` and gives the text that the hook wrote. `failed` collects the stderr text. */
 const run = async (
@@ -27,26 +26,6 @@ const run = async (
   });
   return written;
 };
-
-test("`readTail` returns the end of a file and says when it cut the start", async () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kernel-tail-"));
-  try {
-    const file = path.join(dir, "t.txt");
-    await Bun.write(file, "0123456789");
-    expect(await readTail(file, 4)).toStrictEqual({
-      text: "6789",
-      truncated: true,
-    });
-    expect(await readTail(file, 20)).toStrictEqual({
-      text: "0123456789",
-      truncated: false,
-    });
-    expect(await readTail(path.join(dir, "absent.txt"), 4)).toBe(null);
-    expect(await readTail(dir, 4)).toBe(null);
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
-});
 
 test("a valid payload reaches decide and its output is printed as JSON", async () => {
   const seen: unknown[] = [];

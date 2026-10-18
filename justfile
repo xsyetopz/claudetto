@@ -77,7 +77,7 @@ measure *args:
 
 # Where your Claude Code usage went; extra arguments go to claudetto-usage (--days N, --runs N, --json)
 usage *args:
-    bun plugins/claudetto-sessions/bin/claudetto-usage --agents-dir plugins/claudetto/agents "$@"
+    bun plugins/claudetto-sessions/bin/claudetto-usage "$@"
 
 # Publish wiki/ to the GitHub wiki; the wiki repository exists only after its first page is made in the web UI
 wiki:

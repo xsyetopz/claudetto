@@ -25,9 +25,6 @@ export const PROJECT_SETTINGS = `${CLAUDE_DIR}/${SETTINGS_FILE}`;
 /** The path of the local settings file, from the project root. */
 export const PROJECT_LOCAL_SETTINGS = `${CLAUDE_DIR}/${LOCAL_SETTINGS_FILE}`;
 
-/** The folder of the hook scripts of a project or of the home folder. Claude Code runs hooks from `settings.json`, not from this folder. */
-export const CLAUDE_HOOKS_DIR = `${CLAUDE_DIR}/hooks`;
-
 /** The folder of the handoff files, from the project root, when no openspec change is active. One checkout owns them. */
 export const HANDOFF_DIR = `${CLAUDETTO_DIR}/handoffs`;
 
@@ -36,38 +33,3 @@ export const CHANGES_DIR = "openspec/changes";
 
 /** The name of the handoff file inside an openspec change folder. */
 export const CHANGE_HANDOFF_FILE = "handoff.md";
-
-/** The runtime paths in `.claude/` that git must not track. Claude Code writes the first ones, and the last one is a local file. */
-export const CLAUDE_LOCAL_PATHS = [
-  "scheduled_tasks.lock",
-  "scheduled_tasks.json",
-  "routines/.state/",
-  "worktrees/",
-  "checkpoints/",
-  "mailbox/",
-  "agent-registry.json",
-  "agent-memory-local",
-  "first-run",
-  "assistant-daemon-state.json",
-  LOCAL_SETTINGS_FILE,
-] as const;
-
-/** The paths in `.claudetto/` that git must not track. */
-export const CLAUDETTO_LOCAL_PATHS = [
-  "handoffs/",
-  "checks/",
-  "sandbox-stop.json",
-] as const;
-
-/** The record of the hard stop that `claudetto-setup sandbox` wrote to `.claude/settings.local.json`. */
-export const SANDBOX_STOP_RECORD = `${CLAUDETTO_DIR}/sandbox-stop.json`;
-
-/** The local `CLAUDE.md` file in the project root, which the `claude-md` command of setup writes at the `local` scope. */
-export const CLAUDE_LOCAL_MD = "CLAUDE.local.md";
-
-/** The patterns for `.git/info/exclude`: only the local checkout needs them, so the team `.gitignore` stays as it is. */
-export const GIT_EXCLUDE_PATTERNS: readonly string[] = [
-  ...CLAUDE_LOCAL_PATHS.map((rel) => `**/${CLAUDE_DIR}/${rel}`),
-  ...CLAUDETTO_LOCAL_PATHS.map((rel) => `**/${CLAUDETTO_DIR}/${rel}`),
-  `**/${CLAUDE_LOCAL_MD}`,
-];

@@ -2,7 +2,6 @@
 paths:
   - "src/plugins/*/slices/*/adapters/*.ts"
   - "src/plugins/*/slices/*/prompts/*.md"
-  - "src/kernel/repo/*.ts"
 ---
 
 These choices rest on facts of Claude Code that no test shows.

@@ -97,9 +97,3 @@ export const RENAME_TRIES = 10;
 
 /** The wait in milliseconds between two tries of a rename in `writeAtomic`, so the total wait is short. */
 export const RENAME_WAIT_MS = 100;
-
-/** The most records that one session keeps in its gc record file. A session over it drops the oldest records. */
-export const GC_RECORDS_MAX = 500;
-
-/** The seconds that a consent token of the `pre-push` hook stays valid. The slice also clears it at the next tool call. */
-export const PUSH_TOKEN_TTL_S = 900;
