@@ -1,2 +1,0 @@
-Jev answered:
-{{text}}

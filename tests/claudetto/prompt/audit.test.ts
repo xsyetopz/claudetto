@@ -2,7 +2,6 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import { LEAN_BODY } from "../../../plugins/claudetto/slices/prompt/domain/lean-body.ts";
 
 const SLICES = "src/plugins/claudetto/slices";
 const read = (rel: string) =>
@@ -15,11 +14,6 @@ test("the install of a missing tool and the rule of a block agree on the permiss
   expect(doing).toContain("permission dialog");
   expect(blocks).toContain("permission dialog");
   expect(blocks).toContain("install of a missing tool");
-});
-
-test("the system prompt does not name the tool `second_opinion`, which `decide` can turn off", () => {
-  expect(LEAN_BODY).not.toContain("second_opinion");
-  expect(LEAN_BODY).not.toContain("Decide in this order");
 });
 
 test("the text of verification holds the rule of D7 with no tool name", async () => {

@@ -40,7 +40,7 @@ Each add-on works without the core plugin.
 
 | Plugin | What it does | Reference |
 | --- | --- | --- |
-| `claudetto` | The core plugin. It gives the output style, the agents, the guards, the status line, the handoff, MiniSpec, the prompt profile, the setup, and the opt-in second opinion (`second_opinion`). | [Overview](Overview), [Architecture](Architecture), [Decision API](Decision-API) |
+| `claudetto` | The core plugin. It gives the output style, the agents, the guards, the status line, the handoff, MiniSpec, the prompt profile, the setup, and the opt-in Jev pick of `AskUserQuestion`. | [Overview](Overview), [Architecture](Architecture), [Decision API](Decision-API) |
 | `claudetto-codegraph` | Gives Claude the code graph of a project from the CodeGraph CLI `codegraph`. | [Code Graph](Code-Graph) |
 | `claudetto-browser` | Drives a browser with `agent-browser`. It answers each `WebSearch` call with a headless browser search. | [Browser](Browser) |
 | `claudetto-docs` | Gets current library and API docs with the Context7 CLI `ctx7`. | [Library Docs](Library-Docs) |

@@ -3,8 +3,8 @@
 // The API gives the fields of the kind of the question, and `qOf` checks them before any use.
 
 import { MIN_CONFIDENCE, YES_NO_UNSURE_BAND } from "../limits.ts";
-import type { Answer } from "../ports.ts";
 import { PICK_UNSURE, YES_UNSURE } from "../prompts.ts";
+import type { Answer } from "./request.ts";
 
 /** The answer of the API to a yes or no question. */
 export interface YesNoAnswer {

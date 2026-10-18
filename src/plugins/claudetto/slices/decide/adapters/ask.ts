@@ -9,7 +9,13 @@ import {
   withPicks,
 } from "../domain/ask.ts";
 import type { CliCall } from "../domain/request.ts";
-import type { CliRun } from "./jev.ts";
+
+/** The fields of a finished run that the adapter reads. */
+export interface CliRun {
+  readonly exitCode: number | null;
+  readonly stdout: string;
+  readonly stderr: string;
+}
 
 /** The questions with the pick of Jev, or `undefined` when Jev gives no pick for them. */
 export const pickQuestions = async <Q extends AskQuestion>(

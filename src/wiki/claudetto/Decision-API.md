@@ -1,33 +1,31 @@
 # Decision API
 
 This page describes the opt-in decision API of the core plugin `claudetto`.
-It is for a user who wants Claude to settle a choice with a second opinion, and for a contributor who edits the `decide` slice.
+It is for a user who wants Jev to pick an option of a question that facts can settle, and for a contributor who edits the `decide` slice.
 
 ## What It Does
 
-Claude calls the tool `second_opinion` with a question, the facts, and two or more options.
-The tool gives one option key and a confidence from 0 to 1.
-A choice that the facts can settle then does not go to the user.
-
-Two options with the same key give an input error.
-The call makes no request in that case.
+A `tool.call` hook reads each `AskUserQuestion` call.
+It sends each question that facts can settle to Jev, and it adds the pick of Jev to the matching option.
+Claude and the user see the pick and the confidence.
+A question about a goal, a preference, or an approval stays as Claude asked it.
+When Jev gives no pick, the question stays as Claude asked it, and the user answers.
 
 ## It Is Off by Default
 
-The plugin option `decide` has 3 values:
+The plugin option `decide` has 2 values:
 
 | Value | Effect |
 | --- | --- |
-| `off` | The default. The plugin registers no tool, makes no model call, and sends no request to Jev. |
-| `claude` | A small Claude model answers. No request goes to the Jev API. |
-| `jev` | Jev answers, and it needs `TYPESAFE_API_KEY`. The question goes to the TypeSafe API. |
+| `off` | The default. The plugin sends no request to Jev. |
+| `jev` | Jev picks, and it needs `TYPESAFE_API_KEY`. The question goes to the TypeSafe API. |
 
 Only the value `jev` sends data to the Jev API.
 
 ## Errors
 
 When the backend fails, the CLI `claudetto-decide` prints the error and exits with a non-zero code.
-The result of a failed `second_opinion` call keeps the text of the error, so Claude can tell the user why there is no answer.
+The hook then leaves the question as Claude asked it.
 
 ## Bounds
 
