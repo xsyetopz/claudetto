@@ -212,6 +212,7 @@ test("a `Write` of a Markdown file gets Title Case in each heading and keeps a r
       "# What i need from you",
       "## Install the Core Plugin",
       "## The `hooks.json` file of an add-on",
+      "> ## a quoted heading",
       fence,
     ),
   );
@@ -219,7 +220,8 @@ test("a `Write` of a Markdown file gets Title Case in each heading and keeps a r
     doc(
       "# What I Need from You",
       "## Install the Core Plugin",
-      "## The `hooks.json` File of an Add-On",
+      "## The `hooks.json` File of an Add-on",
+      "> ## A Quoted Heading",
       fence,
     ),
   );

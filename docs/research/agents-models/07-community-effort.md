@@ -95,7 +95,7 @@ Changing effort on Opus 5.5, Sonnet 5.5, Haiku 5.5, and Fable/Mythos 5.1 keeps t
 This is a quote from the Claude Code docs in "I built a Claude Code mod on Haiku 5.5 ...".
 Earlier posts in "Claude Code effort level and model selection | Claude" say the opposite, so the first claim is outdated for 5.5 models.
 
-## Implications for the Dotclaude Agents
+## Implications for the `dotclaude` Agents
 
 - `medium` is the evidence-backed default, so `implementer` and `researcher` at `medium` fit (R1, R4, M2).
 - `planner` and `reviewer` at `high` fit (R3, M1).

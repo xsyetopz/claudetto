@@ -69,6 +69,7 @@ const HEADING = /^(\s{0,3}(?:>\s*)*#{1,6}[ \t]+)(.*?)([ \t]+#+[ \t]*)?$/;
 const KEPT =
   /(`+)[\s\S]*?(?<!`)\1(?!`)|\]\([^)]*\)|\]\[[^\]]*\]|<[^<>\s][^<>]*>|\b[a-z][a-z0-9+.-]*:\/\/\S+/gi;
 const MARK = "\u0000";
+const MASKED = new RegExp(`${MARK}\\d+${MARK}`, "g");
 const WORD = /^([^A-Za-z0-9]*)([A-Za-z][A-Za-z'’-]*)(.*)$/;
 const PLAIN = /^(?:[a-z][a-z'’]*|[A-Z][a-z'’]*)$/;
 
@@ -77,13 +78,22 @@ const upper = (part: string) => part.charAt(0).toUpperCase() + part.slice(1);
 /** One whitespace-free word of a heading, in Title Case. `edge` is true for the first word, the last word, and the word after a colon. */
 const word = (token: string, edge: boolean): string => {
   const [, head = "", core = "", tail = ""] = token.match(WORD) ?? [];
-  if (core === "" || /[A-Za-z0-9]/.test(tail) || /\d/.test(head)) return token;
+  if (
+    core === "" ||
+    /[A-Za-z0-9]/.test(tail.replace(MASKED, "")) ||
+    /\d/.test(head)
+  )
+    return token;
   const parts = core.split("-");
   if (!parts.every((p) => PLAIN.test(p))) return token;
   const lower = core.toLowerCase();
   if (parts.length === 1 && core !== "A" && MINOR_WORDS.has(lower) && !edge)
     return head + lower + tail;
-  return head + parts.map(upper).join("-") + tail;
+  // A minor word after the first part of a hyphenated word stays in lower case, such as `End-to-End`.
+  const fixed = parts.map((p, i) =>
+    i > 0 && MINOR_WORDS.has(p.toLowerCase()) ? p.toLowerCase() : upper(p),
+  );
+  return head + fixed.join("-") + tail;
 };
 
 /** The text of a heading in Title Case. */

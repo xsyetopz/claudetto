@@ -1,4 +1,4 @@
-# Claudetto 0.2.0: The Trim
+# `claudetto` 0.2.0: The Trim
 
 A plan for one `/goal` run in vanilla Claude Code 2.1.302, in the repository `/Users/krystian/Downloads/CodeProjects/xsyetopz/claudetto`.
 The aim: a small framework that makes vanilla Claude Code token-efficient.

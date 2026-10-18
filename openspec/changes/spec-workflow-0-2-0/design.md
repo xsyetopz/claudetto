@@ -1,4 +1,4 @@
-# Claudetto 0.2.0: The Spec Workflow
+# `claudetto` 0.2.0: The Spec Workflow
 
 A plan for a second `/goal` run, after the run of `openspec/changes/trim-0-2-0/design.md` is done.
 It replaces `minispec` with one workflow that merges OpenSpec, GitHub Spec Kit, and the BMAD Method.

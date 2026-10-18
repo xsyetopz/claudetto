@@ -52,7 +52,7 @@
   Set `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` to `1` to force one model on every subagent (v2.1.257 or later).
   The `Mythos` name does not appear in the part of the model page that I read.
 
-### Built-In Subagents and Delegation
+### Built-in Subagents and Delegation
 
 - `Explore` is read-only and runs on the main model, with exceptions for Fable/Mythos and some providers. (Subagents page.)
 - `Plan` is read-only and inherits the main model. (Subagents page.)
@@ -74,7 +74,7 @@
 - `wiki/reference/Bounds.md` says `AGENT_MAX_TURNS` spans `31` to `61`.
 - The wiki rationale for "one spare turn" is project design, not an official claim.
 
-## Implications for the Dotclaude Agents
+## Implications for the `dotclaude` Agents
 
 - `maxTurns` is optional, and the docs show no default.
   Removing it from the implementer is allowed by the docs.

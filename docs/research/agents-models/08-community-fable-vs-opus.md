@@ -95,7 +95,7 @@ The chart is an image, and the comments do not give a Fable/Mythos 5.1 review sc
   A user says an Opus orchestrator for other Opus sessions loops on self-correction notes.
   This supports the rule that no subagent orchestrates.
 
-## Implications for the Dotclaude Agents
+## Implications for the `dotclaude` Agents
 
 - No role has measured evidence that earns Fable/Mythos 5.1 as a default.
   Fable/Mythos 5.1 costs about 3x more per passed task for equal accuracy in the 23-task run.

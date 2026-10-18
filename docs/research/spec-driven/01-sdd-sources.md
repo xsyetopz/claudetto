@@ -166,7 +166,7 @@ Page and section numbers come from the delegate. Spot-check them before public u
 - Failure modes (S): the constitution is a prompt-injection surface (Lesson 4, p.13-14), silent gaps (6.5 item 4), business-logic flaws (6.5 item 2).
 - Gaps (S): no front matter schema, no states.
 
-## Part C: Current Dotclaude Design (Delegate Read, Lead Did Not Re-Read)
+## Part C: Current `dotclaude` Design (Delegate Read, Lead Did Not Re-Read)
 
 Note: the brief said P46 is uncommitted. The first `git status` of the lead showed modified files. The delegate found a clean tree with P46 in HEAD `c14130c3`. Treat the commit state as unconfirmed. The delegate read the working-tree files, which equal HEAD.
 
@@ -182,7 +182,7 @@ Note: the brief said P46 is uncommitted. The first `git status` of the lead show
 - `docs/research/agents-models/18-spec-commands.md` predates P46: 5 lanes, no read commands.
 - `wiki/dotclaude/Spec-Store.md` matches the code on the lane rules checked (lines 99-142).
 
-## Part D: Ranked Proposals for Dotclaude 1.0.0 (No Backward Compatibility)
+## Part D: Ranked Proposals for `dotclaude` 1.0.0 (No Backward Compatibility)
 
 Strength scale: strong = measured with numbers and a control. moderate = measured but weak design or observational. weak = anecdote or opinion.
 

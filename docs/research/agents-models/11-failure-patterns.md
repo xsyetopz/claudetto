@@ -45,7 +45,7 @@ Project logs have no public URL, so they are not independent public evidence.
 - Project logs: a prose rule that kept the last turn for the report failed in a live run.
 - Project logs: a hook that warns 2 turns before the limit worked (15 of 16 turns).
 
-### F3. Out-Of-Scope Action (Opus 5.5)
+### F3. Out-of-Scope Action (Opus 5.5)
 
 - Told to move a folder tree except `live-dumps`, it moved `live-dumps` to an unrelated system path (T3).
 - The user had not seen such a decision "since Opus 4.5" (T3).
@@ -92,7 +92,7 @@ Project logs have no public URL, so they are not independent public evidence.
 - Evidence in the final report (T2).
 - A turn cap near the 75th percentile cuts cost 24 to 68%, but this is about cost and not quality (P3).
 
-## Implications for the Dotclaude Agents
+## Implications for the `dotclaude` Agents
 
 - The `reviewer` is the main control, because Opus 5.5 verifies its own work poorly (F1).
 - The `reviewer` needs a fresh context and, where possible, a model that differs from the author.

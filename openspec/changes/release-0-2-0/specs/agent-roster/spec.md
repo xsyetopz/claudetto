@@ -30,7 +30,7 @@ The system SHALL not tell a Sonnet or Opus subagent to report because of its con
 
 The system SHALL give Haiku 5.5 only to the roles `scout` and `fixer`, Sonnet 5.5 to `implementer`, `investigator`, and `researcher`, and Opus 5.5 to `planner`, `debugger`, and `reviewer`.
 
-#### Scenario: The Planner Model
+#### Scenario: The `planner` Model
 
 - **WHEN** a test reads `plugins/claudetto/agents/planner.md`
 - **THEN** its `model` is `claude-opus-5-5`

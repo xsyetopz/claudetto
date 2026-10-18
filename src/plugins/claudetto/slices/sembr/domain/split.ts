@@ -161,7 +161,7 @@ export const format = (text: string): { out: string[]; counts: number[] } => {
     const quote = line.match(/^\s*(?:>\s*)*/)?.[0] ?? "";
     const first = list ? list[0] : quote;
     const next = list ? quote + " ".repeat(first.length - quote.length) : first;
-    const [head = "", ...tail] = sentences(line.slice(first.length));
+    const [head = "", ...tail] = sentences(titleLine(line).slice(first.length));
     out.push(first + head + eol, ...tail.map((p) => next + p + eol));
     counts.push(tail.length + 1);
   }

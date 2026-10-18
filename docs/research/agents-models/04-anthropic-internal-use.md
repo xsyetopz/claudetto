@@ -86,7 +86,7 @@
 - Switching models inside one session breaks the prompt cache, so S9 says to spawn a cheaper subagent and keep the main loop on one model.
 - Subagent requests count toward the same usage limits as the main session (S7).
 
-## Implications for the Dotclaude Agents
+## Implications for the `dotclaude` Agents
 
 - The root session is the lead, which matches S1, S5, and S9.
 - No dotclaude agent should hold the `Agent` tool.

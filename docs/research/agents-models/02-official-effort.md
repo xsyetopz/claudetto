@@ -85,7 +85,7 @@ All quotes are one sentence at most.
 - S5 states no default for `maxTurns` in the part read.
 - S1 to S6 give no turn-limit advice for subagents.
 
-## Implications for the Dotclaude Agents
+## Implications for the `dotclaude` Agents
 
 - Keep the current effort values. No source asks for a change in any of the six.
 - The 5 implementer failures on 2026-10-13 are a turn limit and a context limit, not an effort issue.

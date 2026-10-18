@@ -1,4 +1,4 @@
-# R17: Project Evidence on the Dotclaude Agents
+# R17: Project Evidence on the `dotclaude` Agents
 
 ## Sources
 
@@ -84,7 +84,7 @@
   The stopped runs were on track, not stuck.
   Their notes list done commits, verified tests, and the exact next steps.
 
-## Implications for the Dotclaude Agents
+## Implications for the `dotclaude` Agents
 
 - `implementer` and `debugger` at 61 turns: the limit cut on-track work at least 4 times, and it did no useful stopping.
   The one-way cost was a retry run.

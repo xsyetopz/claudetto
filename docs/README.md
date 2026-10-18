@@ -1,4 +1,4 @@
-# Dotclaude Documentation
+# `dotclaude` Documentation
 
 The documentation is in the [dotclaude wiki](https://github.com/xsyetopz/claudetto/wiki).
 

@@ -10,7 +10,7 @@
 - dotclaude-spec: `src/plugins/dotclaude/slices/spec/` and `wiki/dotclaude/Spec-Store.md`, at commit `44e74425` of dotclaude 1.0.0.
 - Limit: Spec Kitty `agent tasks list-tasks` flags and a `dashboard` command are not confirmed (page read 100000 of 149086 characters).
 
-## Dotclaude-Spec Today
+## `dotclaude-spec` Today
 
 The CLI is `dotclaude-spec`, in `src/plugins/dotclaude/slices/spec/adapters/`.
 The store is `.dotclaude/spec/` (`wiki/dotclaude/Spec-Store.md`).

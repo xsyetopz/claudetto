@@ -8,7 +8,7 @@ The tools and the env vars that the settings snippet of the setup turns on or of
 
 ## ADDED Requirements
 
-### Requirement: No Denied Tool That Claudetto Needs
+### Requirement: No Denied Tool That `claudetto` Needs
 
 The system SHALL not deny a tool that a claudetto text or hook tells the model to use.
 

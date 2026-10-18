@@ -19,7 +19,7 @@ Read on 2026-10-17 from `code.claude.com/docs/en/` (`permission-modes.md`, `perm
 
 ## Decisions
 
-### D43. The Sandbox Stops System Damage, and Exact Deny Rules Stop Git Damage
+### D43. The Sandbox Stops System Damage, and Exact Deny Rules Stop `git` Damage
 
 - The setup snippet turns the sandbox on with `autoAllowBashIfSandboxed: true` and `allowUnsandboxedCommands: false`, in the user settings.
   The OS stops each write outside the project, the temp folder, and the cache folders of task 7.4, with no command pattern, so no safe command is denied by a pattern.

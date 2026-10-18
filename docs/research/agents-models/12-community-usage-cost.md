@@ -91,7 +91,7 @@ No thread measures Sonnet 5.5 or Haiku 5.5 subagents on a subscription plan.
  3. A subagent starts with a clean window, so the 700k point rarely applies to it.
     A long loop with large tool output can still reach 150k (an inference).
 
-## Implications for the Dotclaude Agents
+## Implications for the `dotclaude` Agents
 
 - `planner` and `reviewer` (Opus 5.5 high): finding 5 shows Opus 5.5 is the cheapest per passed task.
   Findings 7 and 8 say `medium` may keep accuracy, so test `medium` for `reviewer` before keeping `high`.

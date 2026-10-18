@@ -9,7 +9,7 @@ I did not run Claude Code, so each claim is a reading of code and not a measurem
 
 ## Findings
 
-### Built-In Agents
+### Built-in Agents
 
 | Agent | Model | Effort | `maxTurns` |
 | --- | --- | --- | --- |
@@ -99,7 +99,7 @@ The picker shows "{from} effort is ~Nx the estimated cost of {default} (the defa
 - The default window is the model context size.
   The compact threshold is the window minus 13000 tokens (function `O4`), and the block level is 3000 below the window.
 
-## Implications for the Dotclaude Agents
+## Implications for the `dotclaude` Agents
 
 - Claude Code gives no turn limit to `Explore`, `Plan`, or `general-purpose`.
   A `maxTurns` value in dotclaude is a choice that needs a reason.

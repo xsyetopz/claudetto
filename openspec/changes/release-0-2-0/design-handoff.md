@@ -57,7 +57,7 @@ The sources are in the last section.
 - The handoff is written in `PreCompact`, which does not block the compaction.
 - Each field of the handoff comes from tool results or from the words of the user, as now.
 
-### D35. The Guard Denies Only by the Words That a Command Has
+### D35. The `guard` Denies Only by the Words That a Command Has
 
 - An empty name still matches each system tool, so `$(which rm) -rf /` stays denied (the user, 2026-10-17).
   The false deny came from the walk, which read `$(( ))` as a subshell, not from the matcher.

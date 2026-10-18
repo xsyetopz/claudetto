@@ -40,7 +40,7 @@ Tasks 7.6 and 7.7 write one row for each name, so that no name is missed.
   The skill listing of a fresh session is 1.1k tokens, under the default budget of 1% of the window.
   A cap of 10 helpers fits the default tool concurrency of 10.
 
-### D19. Setup Asks for the Plan When Claude Code Does Not Give It
+### D19. `setup` Asks for the Plan When Claude Code Does Not Give It
 
 `claude auth status --json` gives `subscriptionType: "max"` and no tier.
 Claude Code sets `CLAUDE_CODE_RATE_LIMIT_TIER` only from the auth snapshot of a background session (`external/cc-2.1.302/strings.txt`, "Consumed bg auth snapshot"), so it is unset in a normal shell.
@@ -101,7 +101,7 @@ Jev picked `project-root` at confidence 0.74.
 - Alternative: the git root of the current folder.
   Rejected, because a resume from the project root may not find the file, and a folder outside git has no root.
 
-### D51. Setup Writes No Block in the Global `CLAUDE.md`
+### D51. `setup` Writes No Block in the Global `CLAUDE.md`
 
 - Facts: the block of `/claudetto:setup` has five parts, `claude-md-base.md`, `claude-md-codegraph.md`, `claude-md-docs.md`, `claude-md-browser.md` and `claude-md-note.md` in `slices/setup/prompts/`, with `222` words in total, and it loads on each turn of each project.
 - The Claude Code 101 lesson of the Anthropic Academy says the global file "applies across all your projects", and is the place for "your personal preferences".
@@ -130,10 +130,13 @@ Jev picked `project-root` at confidence 0.74.
   Articles, coordinating conjunctions, and prepositions of any length stay in lower case, but not as the first or the last word, and inline code does not change (Chicago style).
   So the label of D36 is "What I Need from You".
   APA style capitalizes each word of four letters or more, and claudetto does not follow it.
-- A hook after a `Write` or `Edit` of a `.md` file reads its headings, and only on a fault returns the headings in the right form to the model.
-  It costs no tokens when the headings are right.
-- This repository adds a custom rule to `.markdownlint-cli2.jsonc`, and one pass fixes each heading that is wrong now.
-  The list of minor words is in one file, which the hook and the rule share by a copy that a test pins.
+- The `sembr` rewrite of a `Write` or `Edit` of a `.md` file fixes each heading in place, so the file is written right.
+  No message goes to the model, and it costs no tokens.
+  A minor word after the first part of a hyphenated word stays in lower case, such as `End-to-End`.
+  A name of a tool or a slice goes in backticks, because the rule does not change inline code.
+- This repository adds the custom rule `tools/lint/title-case.ts` to `.markdownlint-cli2.jsonc`, and one pass fixes each heading that was wrong.
+  The list of minor words is in one file, `slices/sembr/domain/title.ts`, which the hook and the rule both import.
+  The rule skips `wiki/` until the 0.2.0 tag.
 - Not in the system prompt or the output style, because both load on each turn, and a rule with no check is followed less reliably.
   The output style also shapes replies, not files.
 - Jev: `hook-plus-lint (confidence 1.00)`, against a line in the system prompt and against a line in the output style.

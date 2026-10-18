@@ -24,7 +24,7 @@ Evidence from `external/2026-10-17/` (untrusted, used as leads):
 
 ## Decisions
 
-### D1. Rewrite `claudetto-you-should-know` to Match the Built-In, with No Telemetry
+### D1. Rewrite `claudetto-you-should-know` to Match the Built-in, with No Telemetry
 
 The built-in `cc-plugin-you-should-know` needs feature-flag fetching (`external/cc-2.1.302/docs/env.md:587`), and D31 turns that off.
 The user wants the built-in look and behavior with no telemetry, and chose a rewrite on 2026-10-17.
@@ -135,7 +135,7 @@ The turn gate keeps its claim rule, so a claim still needs a run.
 - Alternative: a hook that counts test runs.
   Rejected, because a rule for a should is enough and a hook adds code.
 
-### D8. Jscpd Integration
+### D8. `jscpd` Integration
 
 - `src/plugins/claudetto/slices/dry/assets/jscpd.base.json` holds the base from the user's `jscpd-strict` skill, which covers all formats of jscpd 5.4.1.
 - `bin/jscpd-config` (TypeScript, Bun) merges a `jscpd.local.json` chain with `extends` into `.jscpd.json`, with the merge rules of the user's `jscpd_config.py`: deep merge of objects, append for the ignore lists, `<key>Remove`, and `null` to delete a key.
@@ -157,7 +157,7 @@ Files with no frontmatter fail validation, with no migration, by the no-legacy r
 - Alternative: `.minispec.yaml` too.
   Accept both names, and refuse a repository that has both.
 
-### D10. Setup Acts on the User's Yes
+### D10. `setup` Acts on the User's Yes
 
 When the user agrees to a change that the setup offers, such as the `claude` alias in `~/.zshrc`, the setup makes the change in the same turn.
 The sandbox write list gets the cache folder of each toolchain that the project uses, read from the env of the toolchain (`CARGO_TARGET_DIR`, `cargo metadata`, and the like), not from a fixed list of paths.
@@ -209,7 +209,7 @@ Task 4.7 records the method and the numbers in `wiki/evidence/Usage-Evidence.md`
 - Alternative: lower caps to save weekly usage.
   Rejected, because the cap does not change the cost of the work, only its speed.
 
-### D15. Each Built-In Tool Is on or Off by Need, with a Measure
+### D15. Each Built-in Tool Is on or Off by Need, with a Measure
 
 The settings snippet denies `TaskStop`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`, `EnterPlanMode`, `ExitPlanMode`, `ScheduleWakeup`, and `ReportFindings` (`src/plugins/claudetto/slices/prompt/slice.ts:173`-`182`).
 The turn gate tells the model to stop a task with `TaskStop` (`slices/turngate/prompts/tasks-reason.md:4`), so the two parts of claudetto disagree, and a session on 2026-10-17 could not stop its own background task.
@@ -233,7 +233,7 @@ Community reports are leads, and a row that rests on one needs a docs or bundle 
 - Alternative: set only the env vars that claudetto uses now.
   Rejected, because the user asks for the best choice from all of them.
 
-### D17. Each Text That Claudetto Can Override Is Rewritten for the Model That Reads It
+### D17. Each Text That `claudetto` Can Override Is Rewritten for the Model That Reads It
 
 claudetto can replace or add text at these points: the descriptions of built-in tools (`tool.describe` in `slices/surface/`, now only `Agent`, `Bash`, `Read`, and `ListAgents`), the system prompt blocks (`slices/prompt/`), the output styles, the agent descriptions and bodies, the skill descriptions and bodies, the MCP tool descriptions and server instructions, the `CLAUDE.md` block of the setup, and each hook message.
 Task 6.2 lists each point from the extension points of 2.1.302 and covers each one, not only the four tools.

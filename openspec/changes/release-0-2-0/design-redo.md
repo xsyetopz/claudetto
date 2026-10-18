@@ -1,4 +1,4 @@
-# Design: Claudetto from First Principles
+# Design: `claudetto` from First Principles
 
 This file continues [`design.md`](design.md) and [`design-trim.md`](design-trim.md).
 The user asked on 2026-10-17 for a redo of all of claudetto in this plan.
@@ -53,7 +53,7 @@ D12 and D13 stay, and this file adds the parts that they do not name.
 
 ## Decisions
 
-### D39. Each Part Has One Job, and a Part Goes When It Has None or a Built-In Does It
+### D39. Each Part Has One Job, and a Part Goes When It Has None or a Built-in Does It
 
 The user picked a rewrite of every part on 2026-10-17 ("every part").
 So each part that keeps its job is rewritten by D40, and no part stays as it is.

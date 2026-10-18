@@ -74,7 +74,7 @@
    To stop one subagent from spawning, omit `Agent` from its `tools` (S4).
 3. S2: Opus 5 "delegates to subagents more readily than earlier models".
 
-## Implications for the Dotclaude Agents
+## Implications for the `dotclaude` Agents
 
 1. The documented default is no `maxTurns`.
    Anthropic documents depth, concurrency, and dollars for a tree, and `maxTurns` as a runaway guard (S1, S2).
