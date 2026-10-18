@@ -2,8 +2,7 @@
 
 This file records the notable changes to this project.
 
-The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and the versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Before 1.0.0, a release can change or remove behavior.
 After each update, do the steps in the "Update" section of the README.
 The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History) page of the wiki has the notes of older releases.
@@ -25,20 +24,21 @@ Run `/claudetto:setup` again after the update, because it cleans the settings of
 ### Changed
 
 - **Breaking:** `claudetto` has these slices: `advise`, `decide`, `goal`, `ground`, `guard`, `handoff`, `prompt`, `sembr`, `setup`, `spec`, `statusline`, and `styles`.
-- **Breaking:** `claudetto-sessions` is one `sessions` skill with the scripts `audit` and `replay`.
-  The `awareness`, `start-cost`, and `usage` slices are gone, because `/context`, `/usage`, `/insights`, and `/status` give the same facts.
-- **Breaking:** `guard` keeps the deny of a `Bash` command that only prints a file, and it names the `Read` call to use.
-  `handoff` keeps the compact answer and `/handoff`, and reads `openspec/changes/` in place of `minispec/changes/`.
-- **Breaking:** `prompt` is rebuilt on the short prompt of Claude Code 2.1.302 (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`).
-  It answers `lean_body` with one tailored text, so the per-model variants are gone, and `surface` is merged into it.
+- **Breaking:** `claudetto-sessions` is one `sessions` skill with the scripts `audit` and `replay`, and the `awareness`, `start-cost`, and `usage` slices are gone, because `/context`, `/usage`, `/insights`, and `/status` give the same facts.
+- **Breaking:** `guard` keeps the deny of a `Bash` command that only prints a file, and it names the `Read` call to use, and `handoff` keeps the compact answer and `/handoff`, and reads `openspec/changes/` in place of `minispec/changes/`.
+- **Breaking:** `prompt` is rebuilt on the short prompt of Claude Code 2.1.302 (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`), and it answers `lean_body` with one tailored text, so the per-model variants are gone, and `surface` is merged into it.
   It leaves out 5 attachment kinds, hides 47 commands, takes 1 agent type from the model, and turns off 2 more plugins (`tools/builtins/verdicts/`).
-- **Breaking:** `setup` merges the settings snippet and the cleanup of 0.1.0: the `hook.claudetto-*` git config pairs, the rule texts of the 0.1.0 policy, and the `CLAUDE.md` block.
-  The `trim` slice is merged into it, and `setup` no longer installs the commit and push hooks.
+- **Breaking:** `setup` merges the settings snippet and the cleanup of 0.1.0: the `hook.claudetto-*` git config pairs, the rule texts of the 0.1.0 policy, and the `CLAUDE.md` block, and the `trim` slice is merged into it, and `setup` no longer installs the commit and push hooks.
+- The status line shows the percent of the effective window, such as `40% of 300k`, and a Haiku subagent row shows the Haiku window.
+- The system prompt and the `Concise` style add a least-code rule, the pushback tiers, a missing tool as a step that the agent installs, the next action with no apology after a correction, and the check rule of the prompt audit, which the `story` schema of the `spec` skill also holds.
+- `claudetto-browser` tells the agent to install `agent-browser` with `npm install -g agent-browser`, and `sembr` puts each Markdown heading in Title Case in place.
+- The settings snippet has 25 exact git `ask` rules that name the destructive flags, such as `git push* --force` and `git reset* --hard`.
+- A second compaction updates the earlier handoff instead of nesting it, with its open items and the words of the user in one quote block, and the handoff file joins the quote blocks that a blank line splits (`MD028`).
+- In the repository, `just validate` pins the line count of each part and fails on a short file, a folder with one file, a hook slice with no `controls` (in the generated `wiki/rationale/Controls.md`), and an eval case that checks only the reply, the generator formats its output with `Biome`, a `markdownlint` rule checks Title Case, and the old name `dotclaude` is gone outside the wiki.
 
 ### Removed
 
-- **Breaking:** the slices `agents`, `asks`, `attribution`, `checks`, `corrections`, `gc`, `minispec`, `policy`, `reads`, `repostate`, `turngate`, `usercheck`, and `worktree`.
-  The `minispec` CLI and skills, the `gc` skill, the custom agents, and `claudetto-run-checks` go with them.
+- **Breaking:** the slices `agents`, `asks`, `attribution`, `checks`, `corrections`, `gc`, `minispec`, `policy`, `reads`, `repostate`, `turngate`, `usercheck`, and `worktree`, with the `minispec` CLI and skills, the `gc` skill, the custom agents, and `claudetto-run-checks`.
 - **Breaking:** the `testJudge` option with the `asks` slice, the add-on `claudetto-you-should-know`, and the recipes `just measure`, `just usage`, and `just start-run`.
 
 ## [0.1.0-alpha.1] - 2026-10-15
