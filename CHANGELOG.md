@@ -18,7 +18,7 @@ Run `/claudetto:setup` again after the update, because it cleans the settings of
 ### Added
 
 - The `ground` slice denies a `Write` or `Edit` of a plan file, and a `ProposeGoal` call, when the text cites a `file:line` or a convention that the source does not hold.
-- The `spec` slice ships the OpenSpec schemas `task`, `story`, and `epic` in the `spec` skill.
+- The `spec` slice ships the OpenSpec schemas `task`, `story`, and `epic`, and a `config.yaml` template of the project rules, in the `spec` skill.
 
 ### Changed
 
