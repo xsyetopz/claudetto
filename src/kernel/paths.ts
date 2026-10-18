@@ -32,3 +32,6 @@ export const CHANGES_DIR = "openspec/changes";
 
 /** The name of the handoff file inside an openspec change folder. */
 export const CHANGE_HANDOFF_FILE = "handoff.md";
+
+/** The state file of the goal engine, from the project root. The file holds `null` when no goal is set. */
+export const GOAL_FILE = `${CLAUDETTO_DIR}/goal.json`;

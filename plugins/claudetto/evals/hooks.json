@@ -102,5 +102,12 @@
     "blocks": false,
     "allow": "plugins/claudetto/tests/tool.test.ts > `tool.describe` passes an unknown tool on with no change",
     "text": "plugins/claudetto/tests/tool.test.ts > `tool.describe` replaces the built-in `Agent` description with a shorter one"
+  },
+  "turn.complete goal": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/claudetto/tests/loop.test.ts > with no goal, the turn ends with no check",
+    "text": "plugins/claudetto/tests/loop.test.ts > a failing check submits only the failing checks"
   }
 }

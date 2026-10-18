@@ -6,33 +6,34 @@ import {
   onSecondOpinion as h2,
   onSessionStart as h3,
 } from "../slices/decide/adapters/mod.ts";
-import { onPlanCall as h4 } from "../slices/ground/adapters/mod.ts";
-import { onBashCall as h5 } from "../slices/guard/adapters/mod.ts";
+import { onTurnComplete as h4 } from "../slices/goal/adapters/mod.ts";
+import { onPlanCall as h5 } from "../slices/ground/adapters/mod.ts";
+import { onBashCall as h6 } from "../slices/guard/adapters/mod.ts";
 import {
-  keepOptions as h6,
-  onCommand as h7,
-  onCompact as h8,
-  onStart as h9,
+  keepOptions as h7,
+  onCommand as h8,
+  onCompact as h9,
+  onStart as h10,
 } from "../slices/handoff/adapters/mod.ts";
 import {
-  keepOptions as h10,
-  onAgentOffer as h11,
-  onAttachment as h12,
-  onCommandDescribe as h13,
-  onSection as h14,
-  onSpawn as h15,
-  onToolDescribe as h16,
+  keepOptions as h11,
+  onAgentOffer as h12,
+  onAttachment as h13,
+  onCommandDescribe as h14,
+  onSection as h15,
+  onSpawn as h16,
+  onToolDescribe as h17,
 } from "../slices/prompt/adapters/mod.ts";
-import { onToolCall as h17 } from "../slices/sembr/adapters/mod.ts";
+import { onToolCall as h18 } from "../slices/sembr/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h0(options);
-  h6(options);
-  h10(options);
+  h7(options);
+  h11(options);
   // eval: agent.offer prompt
-  on("agent.offer", { agent: ["comment-thread-analyst"] }, h11);
+  on("agent.offer", { agent: ["comment-thread-analyst"] }, h12);
   // eval: agent.spawn prompt
-  on("agent.spawn", h15);
+  on("agent.spawn", h16);
   // eval: command.describe prompt
   on(
     "command.describe",
@@ -87,10 +88,10 @@ export const register = (on: On, options: PluginOptions): void => {
         "workflows",
       ],
     },
-    h13,
+    h14,
   );
   // eval: command.run handoff
-  on("command.run", { command: "handoff" }, h7);
+  on("command.run", { command: "handoff" }, h8);
   // eval: prompt.attachment prompt
   on(
     "prompt.attachment",
@@ -103,26 +104,28 @@ export const register = (on: On, options: PluginOptions): void => {
         "workflow_keyword_request",
       ],
     },
-    h12,
+    h13,
   );
   // eval: prompt.section prompt
-  on("prompt.section", h14);
+  on("prompt.section", h15);
   // eval: session.compact handoff
-  on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h8);
+  on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h9);
   // eval: session.start decide
   on("session.start", { isInteractive: [true, false] }, h3);
   // eval: session.start handoff
-  on("session.start", { isInteractive: [true, false] }, h9);
+  on("session.start", { isInteractive: [true, false] }, h10);
   // eval: tool.call decide
   on("tool.call", { tool: ["AskUserQuestion"] }, h1);
   // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h17);
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h18);
   // eval: tool.call ground
-  on("tool.call", { tool: ["Write", "Edit", "ProposeGoal"] }, h4);
+  on("tool.call", { tool: ["Write", "Edit", "ProposeGoal"] }, h5);
   // eval: tool.call guard
-  on("tool.call", { tool: ["Bash"] }, h5);
+  on("tool.call", { tool: ["Bash"] }, h6);
   // eval: tool.call decide
   on("tool.call", { tool: /^mcp__claudetto__second_opinion$/ }, h2);
   // eval: tool.describe prompt
-  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h16);
+  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h17);
+  // eval: turn.complete goal
+  on("turn.complete", h4);
 };
