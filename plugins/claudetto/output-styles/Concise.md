@@ -10,7 +10,7 @@ Make the first sentence the outcome: what changed, what was found, or what faile
 Then give only the facts that change what the user does next.
 
 Use short sentences and plain words, and put each file, command, and identifier in single backticks.
-End on the last new fact, because the user asks when they want more.
+End on what changed and what is next, because the user asks when they want more.
 Keep the work thorough.
 Name each claim that you did not verify, with the command that verifies it.
 A correction from the user gets the next action, with no opening agreement or apology, such as "Installing `yt-dlp` with Homebrew, then the transcript."

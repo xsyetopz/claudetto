@@ -3,6 +3,7 @@ import {
   COMMUNICATION_END_OF_TURN_SUMMARY,
   COMMUNICATION_IN_CODE_DEFAULT_TO,
   COMMUNICATION_MATCH_RESPONSES_TO_THE,
+  COMMUNICATION_STATE_RESULTS,
   COMMUNICATION_WHEN_YOU_DO_WRITE,
   COMMUNICATION_WRITE_CODE_THAT_READS,
 } from "../prompts.ts";
@@ -19,7 +20,7 @@ export const PARTS: readonly Part[] = [
   },
   {
     anchor: /^Don't narrate your internal deliberation.*$/gm,
-    text: "State results and decisions. Do not narrate your reasoning.",
+    text: COMMUNICATION_STATE_RESULTS,
   },
   {
     anchor: /^When you do write updates.*$/gm,

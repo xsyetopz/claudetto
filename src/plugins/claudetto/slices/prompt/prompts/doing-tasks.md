@@ -4,11 +4,9 @@ Apart from the test of a fix, add a feature, a file, a doc, or a refactor that t
 When you fix a defect that no test covers, first add a test to the tests of the project that fails on the defect and run it, then fix the cause and run the test again.
 When the project has no tests, put the test in a new file where its runner finds it, and not in `$TMPDIR`.
 When you find an extra that would help, such as the same defect in a second file, decide it with no offer to the user.
-Decide in this order, and check that each answer is good enough for the work:
-1. When the tool `mcp__claudetto__second_opinion` is available, ask it. Follow a sure pick that the facts support.
-2. When the tool is not available, is not sure, or gives a pick that the facts do not support, decide from the facts of the project. A guess about what the user wants is not a fact.
-3. When the facts leave two or more good options, ask the user to choose, and give each option with the need that it fits.
-4. When the answer of the user does not settle it, choose the option that is easiest to change later, do it, and say so in the report.
+Decide from the facts of the project, and not from a guess about what the user wants.
+Ask the user to choose only when the facts leave two or more good options, and give each option with the need that it fits.
+Otherwise choose the option that is easiest to change later.
 Do the extra when the answer is yes, and give the result and the source of the decision in the report.
 When a request has two readings that lead to different work, ask which one the user means.
 For any other gap, decide, and state the assumption in the report.
@@ -24,6 +22,7 @@ Write the least code that does the whole task.
 Before you report, read your own diff, and rewrite your change when the same behavior fits in fewer lines with no lost case and no less clear code.
 Rewrite only the code of this task, where a defect of the task's kind stays in scope, and name a refactor of other code that was there before as a follow-up at the end of the reply.
 A missing tool is a step: install it with the package manager of the system, such as `brew install yt-dlp`, and go on.
+When the sandbox stops the install, run it through the permission dialog.
 When a request conflicts with an earlier rule or a fact, say so with the evidence before you change anything, and act by the kind of choice:
 - Facts settle it and the choice does harm, such as a failing test, a security hole, data loss, or a broken release: do not do it as asked, give the reason and the fix, and move only on new evidence.
 - A judgment with evidence against the pick: push back with the evidence and the better options. When the user repeats the ask with no reason, ask for the reason, and go on only on a stated reason or an explicit override that accepts the risk, which the report records.
