@@ -6,13 +6,7 @@
 // there is nothing to fork (such as after a resume), the model gives no handoff, `$.session.model` fails, or the file is missing or empty.
 // A subagent compaction passes on with no change, and the filter has the trigger `plugin` of `$.session.compact` too.
 // On a terminal, a status line shows while the handoff is written, and a notice names the file. In `-p` the hooks draw nothing.
-// With the `compaction` option `built-in`, each compaction goes to Claude Code unchanged and `/handoff` is not registered.
-//
-// `/handoff` is the manual handoff (design D3): on a terminal, a fork writes the handoff, and the hook writes and checks the file.
-// In `-p`, or when the fork gives no handoff or the write fails, the step is the compaction path.
-// Claude Code refuses `$.command.run`, `$.prompt.submit`, and `$.session.compact` in a `command.run` hook,
-// and `turn.complete` does not fire after a command that a hook answers (`handoff-p-301.md`),
-// so a `$.clock.after` timer runs the step after the hook: it clears the chat and submits the handed message, or it runs `/compact`.
+// With the `compaction` option `built-in`, each compaction goes to Claude Code unchanged.
 // The ground check warns about each value in backticks that is not in the messages (`kernel/ground.ts`).
 // Each path starts at the project root, because `$.fs` resolves a relative path against the folder of the shell (D23).
 // `claude plugin validate` follows `$` only into a function of one file, so each function that touches `$` is here, and the rules are in `domain/`.
@@ -29,6 +23,7 @@ import { missingValues, missLine } from "../../../kernel/ground.ts";
 import { CHANGES_DIR } from "../../../kernel/paths.ts";
 import type { Handler } from "../../../kernel/slice.ts";
 import { oneLine } from "../../../kernel/text.ts";
+import { coldHandoff, isCold } from "../cold.ts";
 import {
   compactedMessages,
   forkPrompt,
@@ -36,19 +31,17 @@ import {
   handoffPath,
   isHandoff,
   joinQuotes,
+  statusFree,
   triggerTokens,
   withChange,
 } from "../compact.ts";
-import { COMMAND_HANDOFF, RULES, WRITTEN_NOTICE } from "../prompts.ts";
+import { WRITTEN_NOTICE } from "../prompts.ts";
 
 /** The hook for the triggers in the filter of `slice.ts`, with `e` narrowed to them. */
 export type CompactHook = MatchedHook<
   "session.compact",
   { readonly trigger: readonly ["auto", "manual", "plugin"] }
 >;
-
-/** The name of the manual handoff command, without the slash. */
-export const HANDOFF_COMMAND = "handoff";
 
 /** The status line on a terminal while the handoff is written, in place of the spinner of the compaction. */
 const PROGRESS_TEXT = "Writing the handoff…";
@@ -59,6 +52,16 @@ const kept: { options: PluginOptions } = { options: {} };
 /** Keeps the `userConfig` values of the plugin for the hooks of the slice. */
 export const keepOptions = (options: PluginOptions): void => {
   kept.options = options;
+};
+
+/** The time of the end of the last turn of the main thread in milliseconds, or `null` before the first turn of this process. */
+let lastTurnAt: number | null = null;
+
+/** `turn.complete`: notes the end of a turn of the main thread, when the prompt cache was last written (D47). */
+export const onTurnComplete: Handler<"turn.complete"> = async ($, e, next) => {
+  if (e.agentId === undefined)
+    lastTurnAt = await $.clock.now().catch(() => lastTurnAt);
+  return next(e);
 };
 
 /** True when the `compaction` option turns the handoff off. */
@@ -141,8 +144,13 @@ const isWritten = ($: EngineInterface, path: string, text: string) =>
 const compacted = async (
   $: EngineInterface,
   messages: readonly SessionMessage[],
+  isCache: "cold" | "warm",
 ): Promise<{ messages: SessionMessage[]; path: string } | null> => {
-  const reply = await handoffText($, forkPrompt(messages));
+  // A cold cache makes a fork read the full history as uncached input, so the handoff holds only what needs no model (D47).
+  const forked =
+    isCache === "cold" ? null : await handoffText($, forkPrompt(messages));
+  const reply =
+    isCache === "cold" ? coldHandoff(messages) : forked && statusFree(forked);
   if (reply === null) return null;
   const model = await $.session.model().catch(() => null);
   if (model === null) return null;
@@ -161,69 +169,15 @@ const compacted = async (
 
 export const onCompact: CompactHook = async ($, e, next) => {
   if (e.agentId !== undefined || isOff()) return next(e);
+  const now = await $.clock.now().catch(() => null);
+  const cache =
+    now !== null && isCold(now, lastTurnAt, false) ? "cold" : "warm";
   const isShown = await isTerminal($);
   if (isShown) $.ui.status(PROGRESS_TEXT);
-  const done = await compacted($, e.messages).finally(() => {
+  const done = await compacted($, e.messages, cache).finally(() => {
     if (isShown) $.ui.status(undefined);
   });
   if (done === null) return next(e);
   if (isShown) $.ui.log(oneLine(WRITTEN_NOTICE({ path: done.path })));
   return { messages: done.messages };
-};
-
-/**
- * Registers `/handoff` for the session.
- * Claude Code refuses the name when another plugin has it, and then `/compact` stays.
- */
-const register = ($: EngineInterface) =>
-  $.command
-    .register({ name: HANDOFF_COMMAND, description: COMMAND_HANDOFF })
-    .catch(() => undefined);
-
-/** `session.start`: registers `/handoff` for the session. */
-export const onStart: Handler<"session.start"> = async ($, e, next) => {
-  const started = await next(e);
-  if (!isOff()) await register($);
-  return started;
-};
-
-/** A written handoff file on a terminal: its path and the message that hands it over. */
-type Handed = { path: string; text: string };
-
-/** A new handoff file on a terminal, or `null` for the compaction path. */
-const handedFile = async ($: EngineInterface): Promise<Handed | null> => {
-  // The command runs after the turn, so the fork sees each tool result and there is no tail.
-  const reply = await handoffText($, RULES);
-  if (reply === null) return null;
-  const { path, text } = await fileOf($, reply);
-  if (!(await isWritten($, path, text))) return null;
-  // When the messages fail to read, the check has nothing to look in, so it gives no warning.
-  const messages = await $.session.messages().catch(() => null);
-  const missing = messages === null ? [] : ungrounded($, reply, messages);
-  return { path, text: handedText(path, text, missing) };
-};
-
-/** Clears the chat and submits the message that hands over the file. */
-const handOff = async ($: EngineInterface, handed: Handed) => {
-  await $.command.run({ command: "clear" });
-  // A clear starts a new session, and `session.start` does not fire for it, so the command is registered again.
-  await register($);
-  // The notice comes after the clear, which removes the transcript.
-  $.ui.log(oneLine(WRITTEN_NOTICE({ path: handed.path })));
-  await $.prompt.submit({ text: handed.text });
-};
-
-/** `command.run` of `/handoff`: on a terminal it writes the handoff, and a timer runs the step after the hook, the handed file or `/compact`. */
-export const onCommand: Handler<"command.run"> = async ($) => {
-  let handed: Handed | null = null;
-  if (await isTerminal($)) {
-    $.ui.status(PROGRESS_TEXT);
-    handed = await handedFile($).finally(() => $.ui.status(undefined));
-  }
-  const step = () =>
-    handed === null
-      ? $.command.run({ command: "compact" })
-      : handOff($, handed);
-  $.clock.after(0, () => void step().catch(() => undefined));
-  return {};
 };

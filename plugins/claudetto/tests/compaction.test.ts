@@ -105,7 +105,8 @@ test("an auto compaction gives one user message with the first user message and 
   const { result, seen } = await compact($, on);
   const [path, text] = seen.writes[0] ?? [];
   expect(path).toMatch(/\/\.claudetto\/handoffs\/handoff-\d{8}T\d{6}Z\.md$/);
-  expect(text).toBe(`${HANDOFF}\n`);
+  // The hook takes the `DONE` mark off the model text (D48).
+  expect(text).toBe(`${HANDOFF.replace(" DONE,", "")}\n`);
   const out = result.messages ?? [];
   expect(out.map((m) => m.handle)).toEqual([undefined, "h3", "h4"]);
   expect(out[0]?.role).toBe("user");

@@ -4,7 +4,7 @@
 // With an open change, the handoff goes to `handoff.md` in the change folder and names the next open task.
 // With no open change, it goes to the default place.
 
-import type { On } from "claude-code";
+import type { On, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
 const HANDOFF =
@@ -17,6 +17,11 @@ const NO_USAGE = {
   cache_read_input_tokens: 0,
   cache_creation_input_tokens: 0,
 };
+
+const MESSAGES: SessionMessage[] = [
+  { role: "user", text: "Export the data.", toolUses: [], handle: "h0" },
+  { role: "assistant", text: "Done.", toolUses: [], handle: "h1" },
+];
 
 const entry = (name: string, kind: "dir" | "file" = "dir") => ({
   name,
@@ -32,11 +37,10 @@ type World = {
   readonly listing?: string[];
 };
 
-/** The stubs for `world`. They give the paths of the writes and the texts that the hooks submit. */
+/** The stubs for `world`. They give the paths and the texts of the writes. */
 const engine = (on: On, world: World) => {
   const seen = {
     writes: [] as { path: string; text: string }[],
-    submits: [] as string[],
   };
   on("fs.list", () => ({
     value: (world.listing ?? Object.keys(world.tasks)).map((n) => entry(n)),
@@ -48,6 +52,7 @@ const engine = (on: On, world: World) => {
     return { value: text };
   });
   on("session.surfaces", () => ({ value: ["terminal"] }));
+  on("session.model", () => ({ value: "claude-haiku-5-5" }));
   on("model.fork", () => ({
     value: { isAnswered: true, text: HANDOFF, usage: NO_USAGE },
   }));
@@ -58,30 +63,18 @@ const engine = (on: On, world: World) => {
   on("fs.stat", () => ({
     value: { kind: "file", size: 100, mtimeMs: 0, isLink: false },
   }));
-  on("command.run", () => ({ text: "core" }));
-  on("prompt.submit", (_$, e) => {
-    seen.submits.push(e.text);
-    return { text: e.text };
-  });
-  on("clock.after", () => ({ value: undefined }));
-  on("command.register", (_$, e) => ({ value: { command: e.name } }));
-  on("session.start", (_$, e) => ({ cwd: e.cwd }));
-  on("tool.register", (_$, e) => ({
-    value: { tool: `mcp__claudetto__${e.name}` },
-  }));
+  on("session.compact", () => ({ skip: "the built-in compaction" }));
   on("ui.status", () => ({ value: undefined }));
   on("ui.log", () => ({ value: undefined }));
   return seen;
 };
 
 const handedOver = async ($: Engine) => {
-  await $.command.run({
-    command: "handoff",
-    args: "",
-    origin: { kind: "composer" },
-    presentation: { isFullscreen: false, columns: 80 },
+  const result = await $.session.compact({
+    trigger: "auto",
+    messages: MESSAGES,
   });
-  await new Promise((resolve) => setTimeout(resolve, 20));
+  return result.messages?.[0]?.text ?? "";
 };
 
 const TASKS =
@@ -91,7 +84,7 @@ const TASKS =
 // biome-ignore lint/plugin: a test name
 test("with tasks 1.1 and 1.2 checked, the handoff goes to the change folder and names task 1.3", async ($: Engine, on: On) => {
   const seen = engine(on, { tasks: { "add-export": TASKS } });
-  await handedOver($);
+  const handed = await handedOver($);
   expect(seen.writes).toHaveLength(1);
   const [write] = seen.writes;
   expect(write?.path.endsWith("openspec/changes/add-export/handoff.md")).toBe(
@@ -99,9 +92,12 @@ test("with tasks 1.1 and 1.2 checked, the handoff goes to the change folder and 
   );
   expect(write?.text).toContain("`openspec/changes/add-export/`");
   expect(write?.text).toContain("Next open task: `1.3`");
-  expect(write?.text).toContain(HANDOFF);
-  expect(seen.submits[0]).toContain("openspec/changes/add-export/handoff.md");
-  expect(seen.submits[0]).toContain("Next open task: `1.3`");
+  expect(write?.text).toContain(HANDOFF.replace(" DONE,", ""));
+  expect(write?.text).toContain(
+    "Done tasks, checked in `tasks.md`: `1.1`, `1.2`.",
+  );
+  expect(handed).toContain("openspec/changes/add-export/handoff.md");
+  expect(handed).toContain("Next open task: `1.3`");
 });
 
 // biome-ignore lint/plugin: a test name

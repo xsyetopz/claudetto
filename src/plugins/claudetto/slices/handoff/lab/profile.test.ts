@@ -1,6 +1,5 @@
 // Lab tests of the compaction profile (spec `handoff`, "Opt-in compaction profile").
-// With the `compaction` option `built-in`, the `session.compact` hook gives each compaction to Claude Code unchanged,
-// and the session start does not register `/handoff`.
+// With the `compaction` option `built-in`, the `session.compact` hook gives each compaction to Claude Code unchanged.
 // The stub of `session.compact` is the built-in compaction, which gives a skip that names it.
 
 import type { On, SessionMessage } from "claude-code";
@@ -14,7 +13,7 @@ const MESSAGES: SessionMessage[] = [
   { role: "assistant", text: "Done.", toolUses: [], handle: "h1" },
 ];
 
-/** The stubs, and each fork, write, registration, and compaction of the hooks, in order. */
+/** The stubs, and each fork, write, and compaction of the hooks, in order. */
 const engine = (on: On): string[] => {
   const seen: string[] = [];
   on("session.surfaces", () => ({ value: ["terminal"] }));
@@ -29,14 +28,6 @@ const engine = (on: On): string[] => {
   on("session.compact", (_$, e) => {
     seen.push(`compact ${e.trigger} ${e.messages.length}`);
     return { skip: BUILT_IN };
-  });
-  on("session.start", (_$, e) => ({ cwd: e.cwd }));
-  on("tool.register", (_$, e) => ({
-    value: { tool: `mcp__claudetto__${e.name}` },
-  }));
-  on("command.register", (_$, e) => {
-    seen.push(`register ${e.name}`);
-    return { value: { command: e.name } };
   });
   return seen;
 };
@@ -53,17 +44,6 @@ for (const trigger of ["auto", "manual"] as const)
       expect(seen).toEqual([`compact ${trigger} 2`]);
     },
   );
-
-test(
-  // biome-ignore lint/plugin: a test name
-  "with the compaction profile, the session start does not register `/handoff`",
-  PROFILE,
-  async ($: Engine, on: On) => {
-    const seen = engine(on);
-    await $.session.start({ cwd: "/p", surface: null, isInteractive: true });
-    expect(seen).toEqual([]);
-  },
-);
 
 // biome-ignore lint/plugin: a test name
 test("with the default `handoff`, a compaction forks for the handoff", async ($: Engine, on: On) => {

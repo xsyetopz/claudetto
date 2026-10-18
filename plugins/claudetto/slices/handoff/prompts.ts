@@ -3,12 +3,24 @@
 export const CHANGE_HEADER = (v: {
   name: string;
   next: string;
+  done: string;
 }): string => `openspec change: \`openspec/changes/${v.name}/\`.
 Next open task: \`${v.next}\` in \`tasks.md\`.
+Done tasks, checked in \`tasks.md\`: ${v.done}.
+Only a checked task or a passed check is done.
 Each checked task is done and verified, so do not run its check again unless the user asks.`;
 
-/** From `src/plugins/claudetto/slices/handoff/prompts/command-handoff.md`. */
-export const COMMAND_HANDOFF = `Writes a handoff file, clears the chat, and continues from the handoff`;
+/** From `src/plugins/claudetto/slices/handoff/prompts/cold.md`. */
+export const COLD = (v: {
+  task: string;
+  files: string;
+  words: string;
+}): string => `This handoff is from the state of the session, with no model call, because the prompt cache was cold.
+Task: ${v.task}
+Changed files: ${v.files}.
+The last words of the user:
+
+${v.words}`;
 
 /** From `src/plugins/claudetto/slices/handoff/prompts/first-message.md`. */
 export const FIRST_MESSAGE = (v: {

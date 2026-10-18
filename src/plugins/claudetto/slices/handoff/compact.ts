@@ -86,9 +86,18 @@ export const handoffPath = (
 export const withChange = (text: string, change: OpenChange | null): string =>
   change === null
     ? text
-    : [CHANGE_HEADER({ name: change.name, next: change.next }), "", text].join(
-        "\n",
-      );
+    : [
+        CHANGE_HEADER({
+          name: change.name,
+          next: change.next,
+          done:
+            change.done.length === 0
+              ? "none"
+              : change.done.map((id) => `\`${id}\``).join(", "),
+        }),
+        "",
+        text,
+      ].join("\n");
 
 /**
  * The text of the user message that hands over `text`, the content of the file at `path`,
@@ -199,3 +208,10 @@ export const compactedMessages = (
 /** `text` with a `>` line in place of the blank lines between two quoted lines. */
 export const joinQuotes = (text: string): string =>
   text.replace(/^([ \t]*>.*)\n(?:[ \t]*\n)+(?=([ \t]*)>)/gm, "$1\n$2>\n");
+
+/**
+ * `text` of the model with each `DONE` mark taken off.
+ * The status of a step comes from the checked tasks of `tasks.md` and from passed checks, not from the model text (design D48).
+ */
+export const statusFree = (text: string): string =>
+  text.replace(/[ \t]*\bDONE\b[,:]?/g, "");

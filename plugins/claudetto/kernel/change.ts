@@ -13,6 +13,8 @@ export interface TaskCounts {
   readonly done: number;
   readonly total: number;
   readonly next: string | null;
+  /** The ids of the checked tasks, in file order. */
+  readonly doneIds: readonly string[];
 }
 
 /**
@@ -22,6 +24,7 @@ export interface TaskCounts {
  */
 export const countTasks = (tasks: string): TaskCounts => {
   let done = 0;
+  const doneIds: string[] = [];
   let total = 0;
   let first: string | null = null;
   let after: string | null = null;
@@ -31,13 +34,14 @@ export const countTasks = (tasks: string): TaskCounts => {
     total++;
     if (m[1] !== " ") {
       done++;
+      doneIds.push(m[2] ?? "");
       after = null;
     } else {
       first ??= m[2] ?? "";
       after ??= m[2] ?? "";
     }
   }
-  return { done, total, next: after ?? first };
+  return { done, total, next: after ?? first, doneIds };
 };
 
 /** The path of the handoff file of the change `name`, from the project root. */
@@ -48,6 +52,8 @@ export const changeHandoffPath = (name: string): string =>
 export interface OpenChange {
   readonly name: string;
   readonly next: string;
+  /** The ids of the checked tasks of `tasks.md`: the only source of the done list of a handoff (D48). */
+  readonly done: readonly string[];
 }
 
 /**
@@ -60,8 +66,9 @@ export const openChange = (
   for (const { name, tasks } of [...changes].sort((a, b) =>
     a.name < b.name ? -1 : a.name > b.name ? 1 : 0,
   )) {
-    const next = tasks === null ? null : countTasks(tasks).next;
-    if (next !== null) return { name, next };
+    const counts = tasks === null ? null : countTasks(tasks);
+    if (counts?.next != null)
+      return { name, next: counts.next, done: counts.doneIds };
   }
   return null;
 };

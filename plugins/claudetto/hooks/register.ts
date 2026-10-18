@@ -5,41 +5,37 @@ import { keepOptions as h3, onAskUserQuestion as h4, onSecondOpinion as h5, onSe
 import { onCommand as h7, onProposeGoal as h8, onTurnComplete as h9 } from "../slices/goal/adapters/mod.ts";
 import { onPlanCall as h10 } from "../slices/ground/adapters/mod.ts";
 import { onBashCall as h11 } from "../slices/guard/adapters/mod.ts";
-import { keepOptions as h12, onCommand as h13, onCompact as h14, onStart as h15 } from "../slices/handoff/adapters/mod.ts";
-import { keepOptions as h16, onAgentOffer as h17, onAttachment as h18, onCommandDescribe as h19, onSection as h20, onSpawn as h21, onToolDescribe as h22 } from "../slices/prompt/adapters/mod.ts";
-import { onToolCall as h23 } from "../slices/sembr/adapters/mod.ts";
+import { keepOptions as h12, onCompact as h13, onTurnComplete as h14 } from "../slices/handoff/adapters/mod.ts";
+import { keepOptions as h15, onAgentOffer as h16, onAttachment as h17, onCommandDescribe as h18, onSection as h19, onSpawn as h20, onToolDescribe as h21 } from "../slices/prompt/adapters/mod.ts";
+import { onToolCall as h22 } from "../slices/sembr/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h0(options);
   h3(options);
   h12(options);
-  h16(options);
+  h15(options);
   // eval: agent.offer prompt
-  on("agent.offer", { agent: ["comment-thread-analyst"] }, h17);
+  on("agent.offer", { agent: ["comment-thread-analyst"] }, h16);
   // eval: agent.spawn prompt
-  on("agent.spawn", h21);
+  on("agent.spawn", h20);
   // eval: command.describe prompt
-  on("command.describe", { command: ["artifacts", "autofix-pr", "brief", "bug", "claim-credit", "cloud-plugins", "daemon", "design-consent", "design-login", "design-revoke", "desktop", "extra-usage", "fast", "feedback", "heapdump", "ide", "import", "install", "install-github-app", "install-slack-app", "limit-reset", "loops", "mobile", "passes", "pause-memory", "powerup", "pro-trial-expired", "radio", "rate-limit-options", "remote-control", "remote-env", "session", "setup-bedrock", "setup-vertex", "statusline", "stickers", "team-onboarding", "teleport", "ultraplan", "ultrareview", "upgrade", "usage-credits", "voice", "web-setup", "wellbeing", "workflow-launch-exec", "workflows"] }, h19);
+  on("command.describe", { command: ["artifacts", "autofix-pr", "brief", "bug", "claim-credit", "cloud-plugins", "daemon", "design-consent", "design-login", "design-revoke", "desktop", "extra-usage", "fast", "feedback", "heapdump", "ide", "import", "install", "install-github-app", "install-slack-app", "limit-reset", "loops", "mobile", "passes", "pause-memory", "powerup", "pro-trial-expired", "radio", "rate-limit-options", "remote-control", "remote-env", "session", "setup-bedrock", "setup-vertex", "statusline", "stickers", "team-onboarding", "teleport", "ultraplan", "ultrareview", "upgrade", "usage-credits", "voice", "web-setup", "wellbeing", "workflow-launch-exec", "workflows"] }, h18);
   // eval: command.run goal
   on("command.run", { command: "goal" }, h7);
-  // eval: command.run handoff
-  on("command.run", { command: "handoff" }, h13);
   // eval: prompt.attachment prompt
-  on("prompt.attachment", { type: ["artifact_opening_prefetch", "goal_status", "session_cron_carry", "task_reminder", "tool_hosts_notice", "workflow_keyword_request"] }, h18);
+  on("prompt.attachment", { type: ["artifact_opening_prefetch", "goal_status", "session_cron_carry", "task_reminder", "tool_hosts_notice", "workflow_keyword_request"] }, h17);
   // eval: prompt.section prompt
-  on("prompt.section", h20);
+  on("prompt.section", h19);
   // eval: session.compact handoff
-  on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h14);
+  on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h13);
   // eval: session.start advise
   on("session.start", { isInteractive: [true, false] }, h2);
   // eval: session.start decide
   on("session.start", { isInteractive: [true, false] }, h6);
-  // eval: session.start handoff
-  on("session.start", { isInteractive: [true, false] }, h15);
   // eval: tool.call decide
   on("tool.call", { tool: ["AskUserQuestion"] }, h4);
   // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h23);
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h22);
   // eval: tool.call ground
   on("tool.call", { tool: ["Write", "Edit"] }, h10);
   // eval: tool.call guard
@@ -51,7 +47,9 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.call goal
   on("tool.call", { tool: ["ProposeGoal"] }, h8);
   // eval: tool.describe prompt
-  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h22);
+  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h21);
   // eval: turn.complete goal
   on("turn.complete", h9);
+  // eval: turn.complete handoff
+  on("turn.complete", { reason: ["answer", "aborted", "refusal", "error"] }, h14);
 };
