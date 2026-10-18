@@ -25,8 +25,8 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Fix it by D22 (`design-surfaces.md`): the target is the first and the last line of the command, each cut to 80 characters.
   Check: `just test tests/claudetto/turngate && just lab`
 
-- [x] 3.4 Add a lab test that a compaction in a session whose shell is in a subfolder writes the handoff under the project root, and see it fail, then resolve `HANDOFF_DIR` against `CLAUDE_PROJECT_DIR` by D23, and move the handoff of this change out of `minispec/changes/release-0-2-0/.claudetto/`.
-  Check: `just lab && test ! -e minispec/changes/release-0-2-0/.claudetto`
+- [x] 3.4 Add a lab test that a compaction in a session whose shell is in a subfolder writes the handoff under the project root, and see it fail, then resolve `HANDOFF_DIR` against `CLAUDE_PROJECT_DIR` by D23, and move the handoff of this change out of `openspec/changes/release-0-2-0/.claudetto/`.
+  Check: `just lab && test ! -e openspec/changes/release-0-2-0/.claudetto`
 
 - [x] 3.5 Add lab tests of the stop gate: no block for a running background task, one `additionalContext` notice with the count when the reply does not name the tasks, no second notice when `stop_hook_active` is `true`, a block of a repeated false claim also when `stop_hook_active` is `true` (D58), and the reply read from `last_assistant_message`, and see them fail, then change the gate and remove `MAX_BLOCKS` and its cap notice (D32).
   The user kept D58 for the judge on 2026-10-17, so the 8-continuation cap of Claude Code bounds the blocks of the judge.
@@ -57,7 +57,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [ ] 3.16 Ask the user before the paid run, with the cost and the weekly share, then measure the automatic compaction against the handoff on one recorded session: cost, time, tokens after, and whether the next turn takes the next open task with no done step run again.
   Write the results and the method to `wiki/evidence/Handoff-Cost.md` (D46, D47).
   Check: `grep -q 'D46' wiki/evidence/Handoff-Cost.md && bun run lint:md`
-- [ ] 3.17 Add a lab test that a `Bash` command that removes or moves a project `.claudetto` folder, such as `rmdir minispec/changes/c/.claudetto`, passes the `policy` gate, and that a write in `~/.claudetto/policy/` is still denied, and see it fail, then make `touchesStore` of `slices/policy/domain/paths.ts` match only the store under the home folder.
+- [ ] 3.17 Add a lab test that a `Bash` command that removes or moves a project `.claudetto` folder, such as `rmdir openspec/changes/c/.claudetto`, passes the `policy` gate, and that a write in `~/.claudetto/policy/` is still denied, and see it fail, then make `touchesStore` of `slices/policy/domain/paths.ts` match only the store under the home folder.
   On 2026-10-17 the gate denied the move of task 3.4 as a write of the verdict store, because `touchesStore` takes each folder named `.claudetto` as the store.
   Check: `just test tests/claudetto/policy && just lab`
 
@@ -66,10 +66,10 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [ ] 1.1 Add a test that `main(["minor", "--dry-run"])` of `tools/bump-version.ts` with no `--root` returns 0, and see it fail, because `rest` at line 95 drops `args[0]` when `at` is `-1`.
   Fix the filter, then bump the version to `0.2.0` with `just bump 0.2.0`.
   Check: `just test tests/tools/bump-version.test.ts && grep -q '"version": "0.2.0"' package.json`
-- [ ] 1.2 Write `minispec/changes/release-0-2-0/findings.md` with one row for each surface of D38.
+- [ ] 1.2 Write `openspec/changes/release-0-2-0/findings.md` with one row for each surface of D38.
   Fill it from the transcripts in `~/.claude/projects/` of the sessions that used claudetto, read-only, from the facts of each `design*.md`, and from one run of each `bin/` command and each hook lab.
   Give each fault its source, the task that fixes it, and the check, and add a task for each fault that no task covers.
-  Check: `test -s minispec/changes/release-0-2-0/findings.md && minispec validate release-0-2-0`
+  Check: `test -s openspec/changes/release-0-2-0/findings.md && minispec validate release-0-2-0`
 - [ ] 1.3 Read the rest of `external/2026-10-17/` and the older dossiers in `external/` for model, effort, prompt, and cache facts, and add each new fact that changes a decision to `design.md`.
   Check: `minispec validate release-0-2-0`
 
@@ -126,8 +126,8 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `grep -q START_TOKENS tools/limits.ts && just test`
 - [ ] 6.2 List each point where claudetto can override or add a text in 2.1.302 (tool descriptions, system prompt blocks, output styles, agents, skills, MCP texts, the `CLAUDE.md` block, hook messages), with the model that reads each text, in `src/wiki/reference/Texts.md`.
   Check: `test -s src/wiki/reference/Texts.md && bun run lint:md`
-- [ ] 6.3 Audit each text of 6.2 by `.claude/skills/claude-api/shared/prompt-audit.md` for the model that reads it, and write the report with `file:line` to `minispec/changes/release-0-2-0/prompt-audit.md`.
-  Check: `test -s minispec/changes/release-0-2-0/prompt-audit.md`
+- [ ] 6.3 Audit each text of 6.2 by `.claude/skills/claude-api/shared/prompt-audit.md` for the model that reads it, and write the report with `file:line` to `openspec/changes/release-0-2-0/prompt-audit.md`.
+  Check: `test -s openspec/changes/release-0-2-0/prompt-audit.md`
 - [ ] 6.4 Rewrite each text by the audit, D17, and the practices of `design-prompts.md` for the model that reads it (D54): goals and limits, no step lists, no rule that a hook enforces, a fast check of the changed files after each change of behavior, the full checks once for each finished part, and none for an edit that changes no behavior (D7).
   Each text tells the model to report a gap or a blocker and not to work around it (D26).
   Add a `tool.describe` transform for each built-in tool whose text the audit shortens or fixes.
@@ -223,8 +223,8 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 - [ ] 10.8 Add a `just validate` rule that reads the pinned line count of each part from `tools/limits.ts` and fails when a part grows past it, and a rule that fails on a file under 15 lines that is not an entry point and on a folder with one file, and see both fail (D40, D41).
   Check: `just test tests/tools && just validate`
-- [ ] 10.9 Write `minispec/changes/release-0-2-0/behavior.md` with the behavior table of each part of the table of facts of `design-redo.md`: each input of its tests and its old decision, from a run of the tests (D40).
-  Check: `test -s minispec/changes/release-0-2-0/behavior.md && just test`
+- [ ] 10.9 Write `openspec/changes/release-0-2-0/behavior.md` with the behavior table of each part of the table of facts of `design-redo.md`: each input of its tests and its old decision, from a run of the tests (D40).
+  Check: `test -s openspec/changes/release-0-2-0/behavior.md && just test`
 - [ ] 10.10 Remove the repeated-`Read` deny of `reads`, and check in the 2.1.302 bundle whether a built-in keeps a rejected call rejected, then keep that gate or remove the slice by the result, with the source line in `src/wiki/rationale/Decisions-Session.md` (D39).
   Check: `just test tests/claudetto/reads && just lab`
 - [ ] 10.11 Merge `usercheck` into `turngate` with one `Stop` hook, with the rows of both in `behavior.md` as tests (D42).

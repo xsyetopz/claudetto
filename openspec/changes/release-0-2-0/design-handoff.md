@@ -16,7 +16,7 @@ The sources are in the last section.
 - The guard denied the read-only command `d=…; echo $(( $(date +%s) - $(stat -Lf %m $d/a.output) )); cat $d/b.output 2>&1 | tail -3` as `git.discard-uncommitted` (`slices/guard/domain/matchers/git.ts:96`).
   The command has no `git` word.
   The walk gave the words `["git",""]`, and an empty name matches each tool (`slices/guard/domain/matchers/system.ts:50`).
-- Two handoffs were written to `minispec/changes/release-0-2-0/.claudetto/handoffs/`, because `HANDOFF_DIR` is relative (`src/kernel/paths.ts:31`) and the shell was in the change folder (D23).
+- Two handoffs were written to `openspec/changes/release-0-2-0/.claudetto/handoffs/`, because `HANDOFF_DIR` is relative (`src/kernel/paths.ts:31`) and the shell was in the change folder (D23).
 
 ## Decisions
 

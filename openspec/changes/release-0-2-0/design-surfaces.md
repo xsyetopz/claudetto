@@ -93,7 +93,7 @@ The head-tail is the smallest change that fixes both failures, and the output ca
 ### D23. The handoff goes to the project root
 
 `HANDOFF_DIR` is the relative path `.claudetto/handoffs` (`src/kernel/paths.ts:31`), so the write follows the folder of the shell.
-On 2026-10-17 a session in `minispec/changes/release-0-2-0/` wrote its handoff into that change folder, where the Markdown lint sees it.
+On 2026-10-17 a session in `openspec/changes/release-0-2-0/` wrote its handoff into that change folder, where the Markdown lint sees it.
 The `.git/info/exclude` of this checkout ignores it, but a fresh clone has no such line.
 The handoff path now resolves against `CLAUDE_PROJECT_DIR`.
 Jev picked `project-root` at confidence 0.74.
