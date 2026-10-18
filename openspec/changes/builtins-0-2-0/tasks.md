@@ -4,7 +4,7 @@ The `Check:` of each task is in its part of `design.md`.
 
 ## 1. Inventory
 
-- [ ] 1.1 Do the steps of part 1: the inventory script `tools/builtins.ts` with `--check`.
+- [x] 1.1 Do the steps of part 1: the inventory script `tools/builtins.ts` with `--check`.
 
 ## 2. Goal engine
 
