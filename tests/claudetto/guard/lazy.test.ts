@@ -1,59 +1,52 @@
-// Tests of the cost of the `guard` ports: a `Bash` call with no git, `rm`, `dd`, `chmod`, or `chown` word reads no file (spec P37, step 2).
-// The ports are lazy, so a counting fake shows the lookups of each call, and a git call is the positive control.
+// Test of the cost of the `guard` print deny: a `Bash` call that prints no file reads no file.
+// A counting stub engine shows the lookups of each call, and a print is the positive control.
 
 import { expect, test } from "bun:test";
+import type { EngineInterface } from "claude-code";
 import { onBashCall } from "../../../plugins/claudetto/slices/guard/adapters/mod.ts";
-import { guardReason } from "../../../plugins/claudetto/slices/guard/domain/guard.ts";
-import { bare, bash, engineIn, main, passes } from "./ports.ts";
 
-/** A context whose ports count each call, and which answers a missing path and a main checkout. */
+/** A stub engine whose `fs` and `session` count each call. */
 const counting = () => {
-  const calls = { kind: 0, isMainCheckout: 0 };
-  return {
-    calls,
-    ctx: {
-      kind: async () => {
-        calls.kind++;
-        return "missing" as const;
+  const calls = { exists: 0, stat: 0, read: 0, cwd: 0 };
+  const $ = {
+    session: {
+      cwd: async () => {
+        calls.cwd++;
+        return "/tmp/p";
       },
-      isMainCheckout: async () => {
-        calls.isMainCheckout++;
-        return true;
-      },
-      subagent: true,
     },
-  };
+    fs: {
+      exists: async () => {
+        calls.exists++;
+        return false;
+      },
+      stat: async () => {
+        calls.stat++;
+        throw new Error("stat");
+      },
+      read: async () => {
+        calls.read++;
+        return "";
+      },
+    },
+  } as unknown as EngineInterface;
+  return { calls, $ };
 };
 
-/** Commands with no git, `rm`, `dd`, `chmod`, or `chown` word, so no rule reads a path. */
-const NO_LOOKUP = ["bun test", "ls -la", "echo hi", "npm run build"];
+const call = (command: string) =>
+  ({ tool: "Bash" as const, tool_use_id: "u1", command }) as never;
+const passes = (() => ({ result: "ok" })) as never;
 
-test("a command with no matched word makes no lookup of a path in guardReason", async () => {
-  for (const command of NO_LOOKUP) {
-    const { calls, ctx } = counting();
-    expect(await guardReason(command, ctx), command).toBeNull();
-    expect(calls, command).toEqual({ kind: 0, isMainCheckout: 0 });
+test("a `Bash` call that prints no file reads no file", async () => {
+  for (const command of ["bun test", "ls -la", "echo hi", "rm -rf x"]) {
+    const { calls, $ } = counting();
+    await onBashCall($, call(command), passes);
+    expect(calls, command).toEqual({ exists: 0, stat: 0, read: 0, cwd: 0 });
   }
 });
 
-test("a command with no matched word makes no stat call of the engine", async () => {
-  for (const command of NO_LOOKUP) {
-    const stats: string[] = [];
-    await onBashCall(engineIn(main, stats), bash(command, "a1"), passes);
-    expect(stats, command).toEqual([]);
-  }
-});
-
-test("a git command that reads a path makes a lookup, so the counter is a real check", async () => {
-  const { calls, ctx } = counting();
-  await guardReason("git checkout main", ctx);
-  expect(calls.kind).toBeGreaterThan(0);
-  expect(calls.isMainCheckout).toBeGreaterThan(0);
-  const stats: string[] = [];
-  await onBashCall(
-    engineIn(bare, stats),
-    bash("git checkout main", "a1"),
-    passes,
-  );
-  expect(stats.length).toBeGreaterThan(0);
+test("a `Bash` call that prints a file looks the file up, so the counter is a real check", async () => {
+  const { calls, $ } = counting();
+  await onBashCall($, call("cat a.ts"), passes);
+  expect(calls.exists).toBeGreaterThan(0);
 });
