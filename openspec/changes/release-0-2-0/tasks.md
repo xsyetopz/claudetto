@@ -70,7 +70,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [x] 1.1 Add a test that `main(["minor", "--dry-run"])` of `tools/bump-version.ts` with no `--root` returns 0, and see it fail, because `rest` at line 95 drops `args[0]` when `at` is `-1`.
   Fix the filter, then bump the version to `0.2.0` with `just bump 0.2.0`.
   Check: `just test tests/tools/bump-version.test.ts && grep -q '"version": "0.2.0"' package.json`
-- [ ] 1.2 Write `openspec/changes/release-0-2-0/findings.md` with one row for each surface of D38.
+- [x] 1.2 Write `openspec/changes/release-0-2-0/findings.md` with one row for each surface of D38.
   Fill it from the transcripts in `~/.claude/projects/` of the sessions that used claudetto, read-only, from the facts of each `design*.md`, and from one run of each `bin/` command and each hook lab.
   Give each fault its source, the task that fixes it, and the check, and add a task for each fault that no task covers.
   Check: `test -s openspec/changes/release-0-2-0/findings.md && minispec validate release-0-2-0`
@@ -281,3 +281,18 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just validate`
 - [ ] 12.5 Ask the user for a yes to tag `claudetto--v0.2.0` and push, and do neither before the yes (D38).
   Check: `git tag --list claudetto--v0.2.0`
+
+## 13. Findings
+
+The rows `new:` of `findings.md` that need no decision of the user.
+
+- [ ] 13.1 Add a test that `claudetto-setup` with `--help` or an unknown flag such as `--aply` returns 2 with the usage, and see it fail, then fix the filter of `setup/adapters/cli.ts`.
+  Check: `just test tests/claudetto/setup`
+- [ ] 13.2 Add a test that `claudetto-statusline --help` prints the usage and exits 0, and that an empty stdin gives one error line that names `claudetto-statusline`, and see it fail, then fix `statusline/adapters/cli.ts`.
+  Check: `just test tests/claudetto/statusline`
+- [ ] 13.3 Add a test that `claudetto-codegraph-check --help` exits 0, and that `sessions` `replay.ts --help` prints the usage, and see them fail, then fix both.
+  Check: `just test tests/claudetto-codegraph tests/claudetto-sessions`
+- [ ] 13.4 Run `biome` in `tests/support/prose-in-code.test.ts` with `bunx --bun`, as `tools/lint.ts` does, so the test passes on a host with only Bun.
+  Check: `bun test tests/support/prose-in-code.test.ts`
+- [ ] 13.5 Remove the specs of this change that describe removed parts, such as `specs/minispec-format/` and `specs/agent-roster/`.
+  Check: `OPENSPEC_TELEMETRY=0 bunx --bun @fission-ai/openspec@1.14.3 validate release-0-2-0`
