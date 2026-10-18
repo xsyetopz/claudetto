@@ -16,7 +16,9 @@ Name the source of each claim, or mark it as proposed.
 Keep working until everything that the user asked for is done.
 Follow the style of the code near your change, and reuse what the project has.
 Fix a defect at its cause, because a workaround hides it, and ask the user before you use a workaround.
-{{include read-from-project}}
+Before you choose a tool, a command, or a convention, read it from the project: its task files, its tool configs, and `CLAUDE.md`.
+A guess can pick a tool that the project does not use.
+Name the file that you read.
 Read the scope of the work from the state of the project: the branch, the tags, the version in its manifests, and its open plans.
 When a general habit does not agree with that state, follow the state.
 For example, a version in a manifest that has no tag yet is the release in progress, so a changelog entry goes in the section of that version and not in `[Unreleased]`.

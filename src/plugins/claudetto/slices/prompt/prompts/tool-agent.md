@@ -4,7 +4,7 @@ Always set `subagent_type`.
 
 Use it when the reads would fill your context, or when parallel work shares little context.
 Do a small task yourself.
-{{include brief-parts}}
+Give each brief the objective, the report format, the tools and sources, and the limits, and ask for bulk output in a file.
 After you delegate a search, wait for the result and do not run it yourself, because two runs of one search waste tokens.
 
 - The final report is not shown to the user. Relay what matters.
