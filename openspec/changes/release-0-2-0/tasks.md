@@ -222,7 +222,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `bun run lint:md && just validate`
 - [ ] 10.6 Make `biome.json` and `.markdownlint-cli2.jsonc` skip `plugins/` and `wiki/` and lint `src/**/*.md`, and make `just generate` format its output with Biome (D13).
   Check: `just lint && just generate --check`
-- [ ] 10.7 Add a `just validate` rule that fails on a slice with a hook and no row in `src/wiki/rationale/Controls.md`, see it fail, then write one row for each hook, guard, cap, and notice: its incident and the condition that removes it (D27).
+- [x] 10.7 Add a `just validate` rule that fails on a slice with a hook and no row in `src/wiki/rationale/Controls.md`, see it fail, then write one row for each hook, guard, cap, and notice: its incident and the condition that removes it (D27).
   Check: `just validate`
 
 - [x] 10.8 Add a `just validate` rule that reads the pinned line count of each part from `tools/limits.ts` and fails when a part grows past it, and a rule that fails on a file under 15 lines that is not an entry point and on a folder with one file, and see both fail (D40, D41).

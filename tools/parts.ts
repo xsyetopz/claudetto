@@ -104,8 +104,10 @@ export const thinFolders = (
     .filter(
       ([d, n]) =>
         n < 2 &&
-        !files.includes(`${d}/mod.ts`) &&
-        !files.includes(`${d}/cli.ts`),
+        !(
+          d.endsWith("/adapters") &&
+          (files.includes(`${d}/mod.ts`) || files.includes(`${d}/cli.ts`))
+        ),
     )
     .map(([d]) => d);
   return [

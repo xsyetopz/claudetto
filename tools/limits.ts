@@ -96,7 +96,7 @@ export const PART_LINE_PINS: Record<string, number> = {
   "src/plugins/claudetto/slices/spec": 11,
   "src/plugins/claudetto/slices/statusline": 1209,
   "src/plugins/claudetto/slices/styles": 13,
-  tools: 5024,
+  tools: 5026,
 };
 
 /** The short `tools/` files that `justfile` runs with `bun`, so that a recipe stays a file. */
