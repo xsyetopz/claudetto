@@ -8,7 +8,8 @@ The `Check:` of each task is in its part of `design.md`.
 
 ## 2. Goal engine
 
-- [ ] 2.1 Do the steps of part 2.
+- [x] 2.1 Do the steps of part 2.
+  Step 7, the wiki page of the slice, waits for the docs pass after the tag of 0.2.0.
 
 ## 3. Advisor
 
