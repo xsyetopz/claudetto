@@ -147,9 +147,10 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [x] 6.8 Add a test that the system prompt holds the rule of D53 and the output style holds the line of D54 on corrections, and see it fail, then add both texts, and replace the rule of `slices/prompt/prompts/doing-tasks.md:24` with the three tiers of D54 on pushback.
   Add eval cases for each tier: a repeat with no reason gets a hold and a request for the reason, a harm that facts settle gets no compliance, an explicit override goes on and is recorded, and a choice of taste goes on with no pushback.
   Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles`
-- [ ] 6.9 Add a test that setup runs `codegraph install --target claude --location global` after a yes, and that no setup text or `codegraph` skill text tells the agent not to run it, and see it fail, then change setup and the skill (D51).
-  Measure each part of `claudetto-codegraph` against `codegraph install` alone, and remove each part that adds nothing, with the result in `wiki/evidence/Usage-Evidence.md`.
-  Check: `just generate && just test tests/claudetto/setup tests/claudetto-codegraph && just lab`
+- [x] 6.9 Core setup offers `codegraph install --target claude --location global` through `claudetto-setup --addons` when `claudetto-codegraph` is enabled in `enabledPlugins`, and runs it only after a yes (D51).
+  No add-on has its own setup (the user, 2026-10-18: "main setup can optionally activate the setup for other tools, if the add-ons are found and installed/not disabled").
+  The `codegraph` skill no longer says the plugin starts no MCP server, the 3 sync controls and their hooks are removed, and the measure is in `wiki/evidence/Usage-Evidence.md`.
+  Check: `just generate && just test tests/claudetto/setup tests/claudetto-codegraph && just lab` (closed: done in `11e2cc88`, `722307bb`)
 - [ ] 6.10 Add an eval case for D53: a task with a known short solution, with the added lines of each run against the reference, at 10 runs.
   This is a paid run: ask the user first, with the expected cost and the weekly share.
   Check: `just validate`
