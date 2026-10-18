@@ -43,7 +43,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just generate && just test tests/claudetto/agents`
 - [x] 3.9 Add a test that each `!` command that a hook gives has the exact command and one line of reason, then change the hook texts (D36). (closed: obsolete: the hook texts with `!` commands were removed in `2aeb47dc`)
   Check: `just generate && just test tests/claudetto && just lab`
-- [ ] 3.10 Add a lab test that a second compaction gives one handoff that keeps the open decisions of the first and drops its closed steps, and that the next context holds one handoff, and see it fail, then change the handoff (D46).
+- [x] 3.10 Add a lab test that a second compaction gives one handoff that keeps the open decisions of the first and drops its closed steps, and that the next context holds one handoff, and see it fail, then change the handoff (D46).
   The test also runs markdownlint on the written handoff, because the handoff of this change gave `MD028` (blank line inside blockquote) between two quoted user messages.
   Check: `just test tests/claudetto/handoff && just lab`
 - [ ] 3.11 Add a lab test that a compaction after the cache TTL writes the handoff with no model call, and that a compaction on a warm cache forks the cached prefix, and see it fail, then change the handoff (D47).
@@ -160,7 +160,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 - [ ] 7.1 Confirm the names `promptCacheTtl` and `subagentPromptCacheTtl` in the settings schema of the installed Claude Code, and record the source in `src/wiki/rationale/Decisions-Session.md`.
   Check: `just schema && grep -rq promptCacheTtl schemas/`
-- [ ] 7.2 Add a test that the setup snippet has no `promptCacheTtl` and no `subagentPromptCacheTtl`, and that setup removes a `promptCacheTtl` of `5m` that an earlier setup wrote, then remove it from the snippet (D18).
+- [x] 7.2 Add a test that the setup snippet has no `promptCacheTtl` and no `subagentPromptCacheTtl`, and that setup removes a `promptCacheTtl` of `5m` that an earlier setup wrote, then remove it from the snippet (D18).
   Check: `just test tests/claudetto/setup`
 - [x] 7.3 Add a test that the setup makes a change that it offered, such as the `claude` alias, when the user says yes, then change the setup text and code. (closed: obsolete: the setup skill no longer edits the startup file)
   Check: `just test tests/claudetto/setup`
@@ -214,7 +214,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just generate && just check`
 - [x] 10.2 Add tests that the snippet has a `permissions.ask` rule for each path and command ask of `asks`, and a `permissions.deny` rule for each prefix deny of `guard`, see them fail, then move those rules to the snippet and remove their code, and the deny of a print-only `Bash` command (D12). (closed: removed in trim-0-2-0)
   Check: `just test tests/claudetto/asks tests/claudetto/guard tests/claudetto/setup && just check`
-- [ ] 10.3 Merge the files of `setup` that hold one concern, with no change of behavior, and remove each prompt fragment that one prompt uses (D12).
+- [x] 10.3 Merge the files of `setup` that hold one concern, with no change of behavior, and remove each prompt fragment that one prompt uses (D12).
   Check: `just generate && just check`
 - [ ] 10.4 Move each hand-edited page of `wiki/` to `src/wiki/`, generate all of `wiki/` from it, move each cited fact of `docs/research/` to `src/wiki/evidence/`, and remove `wiki/archive/` and `docs/research/` (D13).
   Check: `just generate --check && bun test tests/support/wiki-links.test.ts`
