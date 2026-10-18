@@ -48,7 +48,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just test tests/claudetto/handoff && just lab`
 - [x] 3.11 Add a lab test that a compaction after the cache TTL writes the handoff with no model call, and that a compaction on a warm cache forks the cached prefix, and see it fail, then change the handoff (D47). (closed: done in `52acdf49`: TTL 1h root, 5m subagent, `CLAUDE_CODE_PROMPT_CACHE_TTL=1h`)
   Check: `just test tests/claudetto/handoff && just lab`
-- [ ] 3.12 Add a test that the done list of a handoff holds only checked tasks of `tasks.md` and passed checks, also when the model text says that a step is done, and see it fail, then fix the handoff (D48). (partial in `0ababfa0`: checked tasks only, passed checks still open)
+- [x] 3.12 Add a test that the done list of a handoff holds only checked tasks of `tasks.md` and passed checks, also when the model text says that a step is done, and see it fail, then fix the handoff (D48). (closed: done in `0ababfa0`, `155c1b94`)
   Check: `just test tests/claudetto/handoff`
 - [x] 3.13 Add a lab test that a cold handoff copies the open decisions of `design.md` in an openspec change, and of `.claudetto/progress.md` in other work, with no model call, and see it fail, then change the handoff, and add the one line of D50 to the always-loaded text. (closed: dropped by the user, 2026-10-18)
   Check: `just generate && just test tests/claudetto/handoff && just lab`
