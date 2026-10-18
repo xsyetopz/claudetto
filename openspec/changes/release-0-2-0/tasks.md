@@ -132,7 +132,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `test -s src/wiki/reference/Texts.md && bun run lint:md`
 - [x] 6.3 Audit each text of 6.2 by `.claude/skills/claude-api/shared/prompt-audit.md` for the model that reads it, and write the report with `file:line` to `openspec/changes/release-0-2-0/prompt-audit.md`.
   Check: `test -s openspec/changes/release-0-2-0/prompt-audit.md`
-- [ ] 6.4 Rewrite each text by the audit, D17, and the practices of `design-prompts.md` for the model that reads it (D54): goals and limits, no step lists, no rule that a hook enforces, a fast check of the changed files after each change of behavior, the full checks once for each finished part, and none for an edit that changes no behavior (D7).
+- [x] 6.4 Rewrite each text by the audit, D17, and the practices of `design-prompts.md` for the model that reads it (D54): goals and limits, no step lists, no rule that a hook enforces, a fast check of the changed files after each change of behavior, the full checks once for each finished part, and none for an edit that changes no behavior (D7). (done: `c8e1a7fd`..`4e1aa5e9`; the eval gate of D26 on the cuts waits for a paid run, see the Commit column of `prompt-audit.md`)
   Each text tells the model to report a gap or a blocker and not to work around it (D26).
   Add a `tool.describe` transform for each built-in tool whose text the audit shortens or fixes.
   Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles && bun run lint:md`
