@@ -10,7 +10,7 @@ import {
   type GuideRun,
   guideText,
   noGuide,
-} from "../../plugins/claudetto-browser/slices/browse/domain/guide.ts";
+} from "../../plugins/claudetto-browser/slices/browse/guide.ts";
 import { MAX_GUIDE_CHARS } from "../../plugins/claudetto-browser/slices/browse/limits.ts";
 import { NOT_INSTALLED } from "../../plugins/claudetto-browser/slices/browse/prompts.ts";
 import { PLUGINS } from "../support/repo.ts";

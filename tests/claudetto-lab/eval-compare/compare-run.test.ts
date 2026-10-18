@@ -7,7 +7,7 @@ import {
   armProblem,
   baselineProblem,
   withCostBound,
-} from "../../../plugins/claudetto-lab/slices/eval-compare/domain/compare.ts";
+} from "../../../plugins/claudetto-lab/slices/eval-compare/compare.ts";
 
 const runBoth = runBothOn;
 

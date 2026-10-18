@@ -2,6 +2,15 @@
 
 import { expect, test } from "bun:test";
 import {
+  MAX_DOMAINS,
+  MAX_OUTPUT_CHARS,
+  RESULTS_SELECTOR,
+  SESSION_COUNTER_CHARS,
+  SESSION_NAME_MAX,
+  SESSION_PREFIX,
+  SESSION_RANDOM_CHARS,
+} from "../../plugins/claudetto-browser/slices/search/limits.ts";
+import {
   cloakBuilds,
   failure,
   pageResult,
@@ -11,16 +20,7 @@ import {
   searchUrl,
   sessionName,
   steps,
-} from "../../plugins/claudetto-browser/slices/search/domain/search.ts";
-import {
-  MAX_DOMAINS,
-  MAX_OUTPUT_CHARS,
-  RESULTS_SELECTOR,
-  SESSION_COUNTER_CHARS,
-  SESSION_NAME_MAX,
-  SESSION_PREFIX,
-  SESSION_RANDOM_CHARS,
-} from "../../plugins/claudetto-browser/slices/search/limits.ts";
+} from "../../plugins/claudetto-browser/slices/search/search.ts";
 
 /** The reason of a page result, or `undefined` when the page gave text. */
 const reasonOf = (page: ReturnType<typeof pageResult>) =>

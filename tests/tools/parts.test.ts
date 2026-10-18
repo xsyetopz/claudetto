@@ -36,8 +36,8 @@ test("a code file under 15 lines fails unless it is an entry point or allowed", 
     [`${SLICE}/limits.ts`]: 4,
     [`${SLICE}/adapters/mod.ts`]: 4,
     "src/plugins/claudetto/plugin.ts": 4,
-    "tools/recipe.ts": 4,
-    "tools/deep/tiny.ts": 4,
+    "tools/lab.ts": 4,
+    "tools/tiny.ts": 4,
     [`${SLICE}/tiny.ts`]: 14,
     [`${SLICE}/old.ts`]: 5,
     [`${SLICE}/ok.ts`]: 15,
@@ -46,7 +46,7 @@ test("a code file under 15 lines fails unless it is an entry point or allowed", 
   expect(
     shortFiles(files, (f) => lines[f] as number, [`${SLICE}/old.ts`]),
   ).toEqual([
-    "tools/deep/tiny.ts: 4 lines, under 15",
+    "tools/tiny.ts: 4 lines, under 15",
     `${SLICE}/tiny.ts: 14 lines, under 15`,
   ]);
 });
@@ -58,15 +58,16 @@ test("an allowed short file that grew is reported as stale", () => {
   ]);
 });
 
-test("a `domain/`, `adapters/`, or `prompts/` folder with one file fails unless allowed", () => {
+test("a `domain/` or `adapters/` folder with one file fails unless allowed, and `prompts/`, `cli.ts`, and `mod.ts` stay", () => {
   const files = [
     `${SLICE}/domain/a.ts`,
     `${SLICE}/adapters/a.ts`,
     `${SLICE}/adapters/b.ts`,
     `${SLICE}/prompts/p.md`,
     "src/kernel/domain/x.ts",
+    "src/plugins/claudetto-lab/slices/s/adapters/cli.ts",
   ];
-  expect(thinFolders(files, [`${SLICE}/prompts`])).toEqual([
+  expect(thinFolders(files, [])).toEqual([
     `${SLICE}/domain: a folder with one file`,
     "src/kernel/domain: a folder with one file",
   ]);

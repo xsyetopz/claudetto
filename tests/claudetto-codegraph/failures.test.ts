@@ -3,7 +3,7 @@
 
 import { expect, test } from "bun:test";
 import os from "node:os";
-import { parseJson } from "../../plugins/claudetto-codegraph/slices/graph/domain/graph.ts";
+import { parseJson } from "../../plugins/claudetto-codegraph/slices/graph/graph.ts";
 import type { Env } from "../support/repo.ts";
 import { CLI, setUp } from "./fake-cli.ts";
 

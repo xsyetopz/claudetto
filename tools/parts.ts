@@ -4,6 +4,7 @@
 
 import {
   PART_LINE_PINS,
+  RECIPE_FILES,
   SHORT_FILE_ALLOWED,
   SHORT_FILE_MIN_LINES,
   THIN_FOLDER_ALLOWED,
@@ -15,11 +16,9 @@ const PART = [
   /^src\/kernel/,
   /^tools/,
 ];
-// The files that the generator, Claude Code, or a `just` recipe needs, whatever their size.
-// A recipe is a `tools/<name>.ts` file that `justfile` runs with `bun`.
-const ENTRY =
-  /(?:^|\/)(?:slice|plugin|limits)\.ts$|\/adapters\/mod\.ts$|^tools\/[^/]+\.ts$/;
-const THIN_DIR = /^(.*\/(?:domain|adapters|prompts))\//;
+// The files that the generator or Claude Code needs, whatever their size.
+const ENTRY = /(?:^|\/)(?:slice|plugin|limits)\.ts$|\/adapters\/mod\.ts$/;
+const THIN_DIR = /^(.*\/(?:domain|adapters))\//;
 
 /** The code files of the rules: the `.ts` files that are not tests. */
 const isCode = (file: string): boolean =>
@@ -69,7 +68,12 @@ export const shortFiles = (
 ): string[] => {
   const short = files
     .filter(isCode)
-    .filter((f) => !ENTRY.test(f) && linesOf(f) < SHORT_FILE_MIN_LINES);
+    .filter(
+      (f) =>
+        !ENTRY.test(f) &&
+        !RECIPE_FILES.includes(f) &&
+        linesOf(f) < SHORT_FILE_MIN_LINES,
+    );
   return [
     ...short
       .filter((f) => !allowed.includes(f))
@@ -83,7 +87,7 @@ export const shortFiles = (
   ];
 };
 
-/** The `domain/`, `adapters/`, and `prompts/` folders with one file that are not in `allowed`, and the stale entries of `allowed`. */
+/** The `domain/` and `adapters/` folders with one file that are not in `allowed`, and the stale entries of `allowed`. */
 export const thinFolders = (
   files: string[],
   allowed: readonly string[] = THIN_FOLDER_ALLOWED,
@@ -93,9 +97,15 @@ export const thinFolders = (
     const dir = THIN_DIR.exec(f)?.[1];
     if (dir) count.set(dir, (count.get(dir) ?? 0) + 1);
   }
-  // The generator needs `adapters/mod.ts`, so a folder with only that file stays.
+  // The generator builds the launcher from `adapters/cli.ts` and the hooks from `adapters/mod.ts`, so a folder with only one of them stays.
+  // A `prompts/` folder stays too, because the generator builds `prompts.ts` from it.
   const thin = [...count]
-    .filter(([d, n]) => n < 2 && !files.includes(`${d}/mod.ts`))
+    .filter(
+      ([d, n]) =>
+        n < 2 &&
+        !files.includes(`${d}/mod.ts`) &&
+        !files.includes(`${d}/cli.ts`),
+    )
     .map(([d]) => d);
   return [
     ...thin

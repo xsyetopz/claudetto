@@ -10,7 +10,7 @@
 // Each sync goes through `lock.ts`, so one sync runs on one index at a time.
 // The sync after a `git` command is a mod handler in `mod.ts`, so a `Bash` call starts no process here unless the command changes the tree.
 
-import { failureDetail, type HookPayload, parseJson } from "../domain/graph.ts";
+import { failureDetail, type HookPayload, parseJson } from "../graph.ts";
 import {
   BACKGROUND_SYNC_TIMEOUT_MS,
   GIT_SYNC_TIMEOUT_MS,

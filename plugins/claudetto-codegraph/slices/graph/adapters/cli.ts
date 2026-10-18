@@ -8,7 +8,7 @@ import {
   checkLines,
   failureDetail,
   mcpLines,
-} from "../domain/graph.ts";
+} from "../graph.ts";
 import { QUERY_TIMEOUT_MS } from "../limits.ts";
 import { codegraph, indexed } from "./codegraph.ts";
 

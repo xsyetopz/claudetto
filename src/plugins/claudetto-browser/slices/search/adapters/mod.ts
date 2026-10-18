@@ -16,6 +16,13 @@ import type {
 import type { Handler } from "../../../../../kernel/slice.ts";
 import { oneLine } from "../../../../../kernel/text.ts";
 import {
+  CLOSE_TIMEOUT_MS,
+  OPEN_TIMEOUT_MS,
+  READ_TIMEOUT_MS,
+  RESULTS_SELECTOR,
+} from "../limits.ts";
+import { CLOSE_FAILED, FALLBACK_NOTICE, INVALID_INPUT } from "../prompts.ts";
+import {
   CLOAK_DIR,
   cloakBinaryPath,
   cloakBuilds,
@@ -28,14 +35,7 @@ import {
   searchUrl,
   sessionName,
   steps,
-} from "../domain/search.ts";
-import {
-  CLOSE_TIMEOUT_MS,
-  OPEN_TIMEOUT_MS,
-  READ_TIMEOUT_MS,
-  RESULTS_SELECTOR,
-} from "../limits.ts";
-import { CLOSE_FAILED, FALLBACK_NOTICE, INVALID_INPUT } from "../prompts.ts";
+} from "../search.ts";
 
 /** The `WebSearch` tool call that the hook reads. */
 type SearchCall = Extract<BuiltinToolCallInput, { tool: "WebSearch" }>;

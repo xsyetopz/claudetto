@@ -13,7 +13,7 @@ import {
   optionsOf,
   resultText,
   TOOL,
-} from "../domain/advise.ts";
+} from "../advise.ts";
 import {
   CONTEXT_BYTES,
   MAX_CALLS_PER_SESSION,

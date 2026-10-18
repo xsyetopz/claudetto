@@ -8,7 +8,7 @@ import {
   INSTALL_COMMAND,
   MCP_ADD_COMMAND,
   MCP_REMOVE_COMMAND,
-} from "../../plugins/claudetto-codegraph/slices/graph/domain/graph.ts";
+} from "../../plugins/claudetto-codegraph/slices/graph/graph.ts";
 import { slice } from "../../plugins/claudetto-codegraph/slices/graph/slice.ts";
 import { type Env, REPO } from "../support/repo.ts";
 import { PLUGIN, run, runHook, setUp } from "./fake-cli.ts";

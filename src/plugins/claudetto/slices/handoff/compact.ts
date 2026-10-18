@@ -16,13 +16,13 @@ import type { SessionMessage, ToolUseSummary } from "claude-code";
 import {
   HAIKU_HANDOFF_TRIGGER_TOKENS,
   HANDOFF_TRIGGER_TOKENS,
-} from "../../../../../kernel/budget.ts";
+} from "../../../../kernel/budget.ts";
 import {
   changeHandoffPath,
   type OpenChange,
-} from "../../../../../kernel/change.ts";
-import { HANDOFF_DIR } from "../../../../../kernel/paths.ts";
-import { CALL_INPUT_CHARS_MAX, CHARS_PER_TOKEN } from "../limits.ts";
+} from "../../../../kernel/change.ts";
+import { HANDOFF_DIR } from "../../../../kernel/paths.ts";
+import { CALL_INPUT_CHARS_MAX, CHARS_PER_TOKEN } from "./limits.ts";
 import {
   CHANGE_HEADER,
   FIRST_MESSAGE,
@@ -30,7 +30,7 @@ import {
   GROUND_WARNING,
   HANDED,
   RULES,
-} from "../prompts.ts";
+} from "./prompts.ts";
 
 /** The warning at the end of the handed message for the quoted values `missing`. */
 const groundWarning = (missing: readonly string[]): string =>

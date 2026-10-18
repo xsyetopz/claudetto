@@ -1,7 +1,7 @@
 // The `agent-browser` guide that the `browse` skill loads.
 
-import { MAX_GUIDE_CHARS } from "../limits.ts";
-import { GUIDE_CUT, NO_GUIDE, NOT_INSTALLED } from "../prompts.ts";
+import { MAX_GUIDE_CHARS } from "./limits.ts";
+import { GUIDE_CUT, NO_GUIDE, NOT_INSTALLED } from "./prompts.ts";
 
 /** The command that prints the guide. */
 export const GUIDE_COMMAND: readonly [string, ...string[]] = [

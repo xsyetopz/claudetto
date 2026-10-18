@@ -1,7 +1,7 @@
 // `changesTree`: the `git` commands that change the tree, read with the shell parser of the kernel.
 
 import { expect, test } from "bun:test";
-import { changesTree } from "../../plugins/claudetto-codegraph/slices/graph/domain/graph.ts";
+import { changesTree } from "../../plugins/claudetto-codegraph/slices/graph/graph.ts";
 
 test("each git command that changes the tree matches", () => {
   for (const sub of [

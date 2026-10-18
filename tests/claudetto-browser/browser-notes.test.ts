@@ -121,7 +121,7 @@ test("a search that the browser fails passes to the built-in `WebSearch` through
 test("the import graph of the hooks module has no `node:` import", async () => {
   const files = [
     "hooks/register.ts",
-    "slices/search/domain/search.ts",
+    "slices/search/search.ts",
     "slices/search/limits.ts",
   ];
   for (const file of files)

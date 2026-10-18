@@ -8,7 +8,7 @@
 
 import type { EngineInterface } from "claude-code";
 import type { Handler } from "../../../../../kernel/slice.ts";
-import { changesTree, INDEX_PATH } from "../domain/graph.ts";
+import { changesTree, INDEX_PATH } from "../graph.ts";
 import { GIT_RUN_TIMEOUT_MS } from "../limits.ts";
 
 /**

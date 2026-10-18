@@ -6,7 +6,7 @@ import {
   clip,
   cutContext,
   isTurnFull,
-} from "../../../src/plugins/claudetto/slices/advise/domain/advise.ts";
+} from "../../../src/plugins/claudetto/slices/advise/advise.ts";
 import { MAX_CALLS_PER_TURN } from "../../../src/plugins/claudetto/slices/advise/limits.ts";
 import { ASK } from "../../../src/plugins/claudetto/slices/advise/prompts.ts";
 

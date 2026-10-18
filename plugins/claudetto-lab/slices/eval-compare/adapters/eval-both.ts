@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { type Arm, armHeading, evalArgs, verdict } from "../domain/compare.ts";
+import { type Arm, armHeading, evalArgs, verdict } from "../compare.ts";
 
 export type Spawn = (
   file: string,

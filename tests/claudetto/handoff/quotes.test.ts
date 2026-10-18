@@ -1,7 +1,7 @@
 // The join of two blockquotes that only a blank line separates (`MD028`), in the file of a handoff.
 
 import { expect, test } from "bun:test";
-import { joinQuotes } from "../../../plugins/claudetto/slices/handoff/domain/compact.ts";
+import { joinQuotes } from "../../../plugins/claudetto/slices/handoff/compact.ts";
 
 test("a blank line between two quoted lines becomes a `>` line", () => {
   expect(joinQuotes("> one\n\n> two\n")).toBe("> one\n>\n> two\n");

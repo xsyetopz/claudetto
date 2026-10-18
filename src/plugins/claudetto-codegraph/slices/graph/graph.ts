@@ -1,9 +1,9 @@
 // The pure logic of the code-graph hooks: the text that goes to Claude, and the parse of the payload.
 // No function here runs a command or reads a file.
 
-import { parse } from "../../../../../kernel/shell.ts";
-import { baseName, stripWrappers } from "../../../../../kernel/wrappers.ts";
-import { ERROR_TEXT_MAX_CHARS } from "../limits.ts";
+import { parse } from "../../../../kernel/shell.ts";
+import { baseName, stripWrappers } from "../../../../kernel/wrappers.ts";
+import { ERROR_TEXT_MAX_CHARS } from "./limits.ts";
 import {
   CHECK_FAILED,
   CHECK_INDEXED,
@@ -11,7 +11,7 @@ import {
   CHECK_NOT_INDEXED,
   CHECK_OK,
   MCP_LINES,
-} from "../prompts.ts";
+} from "./prompts.ts";
 
 /** The global options of `git` that take the next word as their value, from `git help git`. */
 export const GIT_VALUE_OPTIONS: ReadonlySet<string> = new Set([

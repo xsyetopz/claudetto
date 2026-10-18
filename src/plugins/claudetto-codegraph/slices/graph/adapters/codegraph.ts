@@ -3,7 +3,7 @@
 
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { type HookPayload, INDEX_PATH } from "../domain/graph.ts";
+import { type HookPayload, INDEX_PATH } from "../graph.ts";
 
 /** The project folder of a hook payload. */
 export const rootOf = (

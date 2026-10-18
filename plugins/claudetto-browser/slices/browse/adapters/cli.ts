@@ -2,7 +2,7 @@
 // The command `claudetto-browser-guide`: it prints the `agent-browser` guide for the `browse` skill.
 // It runs `agent-browser skills get core` and cuts the output at the bound of `limits.ts`.
 
-import { GUIDE_COMMAND, type GuideRun, guideText } from "../domain/guide.ts";
+import { GUIDE_COMMAND, type GuideRun, guideText } from "../guide.ts";
 import { GUIDE_TIMEOUT_MS } from "../limits.ts";
 
 /** Runs `cmd` with `args` and gives a `GuideRun`. A missing program gives `ENOENT`, and a timeout gives `ETIMEDOUT`. */

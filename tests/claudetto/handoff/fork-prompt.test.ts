@@ -3,7 +3,7 @@
 
 import { expect, test } from "bun:test";
 import type { SessionMessage } from "claude-code";
-import { forkPrompt } from "../../../plugins/claudetto/slices/handoff/domain/compact.ts";
+import { forkPrompt } from "../../../plugins/claudetto/slices/handoff/compact.ts";
 import { RULES } from "../../../plugins/claudetto/slices/handoff/prompts.ts";
 
 const messages = [

@@ -3,7 +3,7 @@
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
-import { INSTALL_COMMAND } from "../../plugins/claudetto-codegraph/slices/graph/domain/graph.ts";
+import { INSTALL_COMMAND } from "../../plugins/claudetto-codegraph/slices/graph/graph.ts";
 import { SESSION_LINE } from "../../plugins/claudetto-codegraph/slices/graph/prompts.ts";
 import { grep, runHook, setUp, text } from "./fake-cli.ts";
 

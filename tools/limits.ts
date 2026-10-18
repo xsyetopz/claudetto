@@ -91,30 +91,22 @@ export const PART_LINE_PINS: Record<string, number> = {
   "src/plugins/claudetto/slices/guard": 344,
   "src/plugins/claudetto/slices/handoff": 539,
   "src/plugins/claudetto/slices/prompt": 923,
-  "src/plugins/claudetto/slices/sembr": 516,
+  "src/plugins/claudetto/slices/sembr": 514,
   "src/plugins/claudetto/slices/setup": 354,
   "src/plugins/claudetto/slices/spec": 11,
-  "src/plugins/claudetto/slices/statusline": 1210,
+  "src/plugins/claudetto/slices/statusline": 1209,
   "src/plugins/claudetto/slices/styles": 13,
-  tools: 4959,
+  tools: 4961,
 };
+
+/** The short `tools/` files that `justfile` runs with `bun`, so that a recipe stays a file. */
+export const RECIPE_FILES: readonly string[] = [
+  "tools/lab.ts",
+  "tools/update.ts",
+];
 
 /** The code files under `SHORT_FILE_MIN_LINES` that are allowed for now. Each entry is a merge of part 2 of task 10.8. */
 export const SHORT_FILE_ALLOWED: readonly string[] = [];
 
 /** The `domain/`, `adapters/`, and `prompts/` folders with one file that are allowed for now. Each entry is a merge of part 2 of task 10.8. */
-export const THIN_FOLDER_ALLOWED: readonly string[] = [
-  "src/plugins/claudetto/slices/handoff/domain",
-  "src/plugins/claudetto-browser/slices/browse/adapters",
-  "src/plugins/claudetto-browser/slices/browse/domain",
-  "src/plugins/claudetto-browser/slices/search/domain",
-  "src/plugins/claudetto-codegraph/slices/graph/domain",
-  "src/plugins/claudetto-lab/slices/capture/adapters",
-  "src/plugins/claudetto-lab/slices/eval-compare/domain",
-  "src/plugins/claudetto-lab/slices/eval-compare/prompts",
-  "src/plugins/claudetto-lab/slices/schema/adapters",
-  "src/plugins/claudetto/slices/advise/domain",
-  "src/plugins/claudetto/slices/ground/prompts",
-  "src/plugins/claudetto/slices/guard/prompts",
-  "src/plugins/claudetto/slices/setup/adapters",
-];
+export const THIN_FOLDER_ALLOWED: readonly string[] = [];
