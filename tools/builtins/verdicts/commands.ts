@@ -39,7 +39,7 @@ commands:fast	off	45	\`CLAUDE_CODE_DISABLE_FAST_MODE\` is set, so fast mode is o
 commands:feedback	off	50	\`DISABLE_FEEDBACK_COMMAND\` is set, so the feedback path is off.
 commands:focus	keep	-	A user needs it for coding or for the session, and no lever makes it better.
 commands:fork	keep	-	Already hidden. Useful for coding.
-commands:goal	replace	-	Part 2 of \`builtins-0-2-0\`: the goal engine keeps the name and the form.
+commands:goal	replace	-	Part 2 of \`builtins-0-2-0\`: the goal engine keeps the name and the form, \`command.run\` answers it so the built-in goal does not start, and \`command.describe\` gives it the menu text.
 commands:heapdump	off	84	An internal debug command.
 commands:help	keep	-	A user needs it for coding or for the session, and no lever makes it better.
 commands:hooks	keep	-	A user needs it for coding or for the session, and no lever makes it better.

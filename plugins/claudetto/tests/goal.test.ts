@@ -256,3 +256,28 @@ test("the attachment `goal_status` is left out", async ($: Engine, on: On) => {
   const out = await $.prompt.attachment({ type: "goal_status" } as never);
   expect(out.text).toBeNull();
 });
+
+const describeCommand = ($: Engine, on: On, command: string) => {
+  on("command.describe", (_$, e) => ({
+    description: e.description,
+    isHidden: e.isHidden,
+  }));
+  return $.command.describe({
+    command,
+    description: "Set a goal that Claude works toward.",
+    isHidden: false,
+    immediate: false,
+    provider: { plugin: "engine", tier: "core" },
+  });
+};
+
+test("`command.describe` gives `/goal` the description of the goal engine", async ($: Engine, on: On) => {
+  const out = await describeCommand($, on, "goal");
+  expect(out.description).toContain("check");
+  expect(out.isHidden).toBe(false);
+});
+
+test("`command.describe` leaves another command unchanged", async ($: Engine, on: On) => {
+  const out = await describeCommand($, on, "help");
+  expect(out.description).toBe("Set a goal that Claude works toward.");
+});

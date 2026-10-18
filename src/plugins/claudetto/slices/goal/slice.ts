@@ -2,10 +2,16 @@
 // The state is in `.claudetto/goal.json` (`domain/state.ts`), and the `turn.complete` hook runs the checks of the current step.
 // When a check fails, the hook starts the next turn with only the failing checks. When all pass, it goes to the next step.
 // `command.run` answers `/goal` (a condition, a plan file, `status`, `clear`, `pause`, `resume`, `skip`, `step N`), so the built-in command does not run.
+// `command.describe` gives `/goal` the menu text of the engine.
 // `tool.call` denies `ProposeGoal`. The attachment `goal_status` is left out by the `prompt` slice.
 
 import type { Slice } from "../../../../kernel/slice.ts";
-import { onCommand, onProposeGoal, onTurnComplete } from "./adapters/mod.ts";
+import {
+  onCommand,
+  onCommandDescribe,
+  onProposeGoal,
+  onTurnComplete,
+} from "./adapters/mod.ts";
 
 const LAB = "plugins/claudetto/tests/loop.test.ts";
 const COMMAND_LAB = "plugins/claudetto/tests/goal.test.ts";
@@ -57,6 +63,19 @@ export const slice = {
       filter: { command: "goal" },
       phase: "answer",
       run: onCommand,
+    },
+    {
+      event: "command.describe",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow: `${COMMAND_LAB} > \`command.describe\` leaves another command unchanged`,
+        text: `${COMMAND_LAB} > \`command.describe\` gives \`/goal\` the description of the goal engine`,
+      },
+      filter: { command: "goal" },
+      phase: "rewrite",
+      run: onCommandDescribe,
     },
     {
       event: "tool.call",

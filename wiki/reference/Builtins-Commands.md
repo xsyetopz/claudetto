@@ -43,7 +43,7 @@ The levers of the group are on the page [Builtins](Builtins).
 | `/feedback` | commands | 50 | off | `DISABLE_FEEDBACK_COMMAND` is set, so the feedback path is off. | 50 |
 | `/focus` | commands | 66 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
 | `/fork` | commands | 82 | keep | Already hidden. Useful for coding. | - |
-| `/goal` | commands | 61 | replace | Part 2 of `builtins-0-2-0`: the goal engine keeps the name and the form. | - |
+| `/goal` | commands | 61 | replace | Part 2 of `builtins-0-2-0`: the goal engine keeps the name and the form, `command.run` answers it so the built-in goal does not start, and `command.describe` gives it the menu text. | - |
 | `/heapdump` | commands | 84 | off | An internal debug command. | 84 |
 | `/help` | commands | 38 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
 | `/hooks` | commands | 46 | keep | A user needs it for coding or for the session, and no lever makes it better. | - |
