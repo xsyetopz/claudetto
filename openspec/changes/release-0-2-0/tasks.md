@@ -41,7 +41,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just lab && just test tests/claudetto/guard`
 - [x] 3.8 Add a test that each agent prompt and each delegation text of claudetto gives an objective, an output format, the tools, and the limits, and asks for bulk output in a file, and see it fail, then change the texts (D33).
   Check: `just generate && just test tests/claudetto/agents`
-- [ ] 3.9 Add a test that each `!` command that a hook gives has the exact command and one line of reason, then change the hook texts (D36).
+- [x] 3.9 Add a test that each `!` command that a hook gives has the exact command and one line of reason, then change the hook texts (D36). (closed: obsolete: the hook texts with `!` commands were removed in `2aeb47dc`)
   Check: `just generate && just test tests/claudetto && just lab`
 - [ ] 3.10 Add a lab test that a second compaction gives one handoff that keeps the open decisions of the first and drops its closed steps, and that the next context holds one handoff, and see it fail, then change the handoff (D46).
   The test also runs markdownlint on the written handoff, because the handoff of this change gave `MD028` (blank line inside blockquote) between two quoted user messages.
@@ -110,11 +110,11 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [x] 4.6 Remove the prompt text that asks for long-lived lane worktrees, and add a drift line of the setup for a missing `worktree.baseRef` of `head`, with a test. (closed: removed in trim-0-2-0)
   Record the source of D11 in `src/wiki/rationale/Decisions-Session.md`.
   Check: `just test tests/claudetto/setup && ! git grep -qi 'lane worktree' src`
-- [ ] 4.7 Set `SUBAGENTS_MAX_20X` to 10 and `SUBAGENTS_API` to 4 by D14, keep `SUBAGENTS_PRO` at 2 and `SUBAGENTS_MAX_5X` at 4, and add the method and numbers of D14 to `wiki/evidence/Usage-Evidence.md`.
+- [x] 4.7 Set `SUBAGENTS_MAX_20X` to 10 and `SUBAGENTS_API` to 4 by D14, keep `SUBAGENTS_PRO` at 2 and `SUBAGENTS_MAX_5X` at 4, and add the method and numbers of D14 to `wiki/evidence/Usage-Evidence.md`. (closed: obsolete: `SUBAGENTS_*` removed in `c98733bb`, trim keeps the cap at 2)
   Check: `just test tests/claudetto/setup tests/claudetto/prompt && bun run lint:md`
 - [x] 4.8 Add a test that `accountOf` with `subscriptionType: "max"` and no tier asks for the plan, and that setup writes the picks of the answer, and see it fail, then add the question to the setup by D19. (closed: removed in trim-0-2-0)
   Check: `just test tests/claudetto/setup`
-- [ ] 4.9 Set the picks of each account to D20 (Pro `medium`, Max 5x, Max 20x, and API key `high`, Opus 5.5 for each), with the test that pins them.
+- [x] 4.9 Set the picks of each account to D20 (Pro `medium`, Max 5x, Max 20x, and API key `high`, Opus 5.5 for each), with the test that pins them. (closed: obsolete: the account picks were removed in `c98733bb`)
   Check: `just test tests/claudetto/setup`
 
 ## 5. Status line
@@ -128,7 +128,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 - [x] 6.1 Record the start tokens of `0.1.0-alpha.1` by source from an existing transcript, and set `START_TOKENS` in `tools/limits.ts` to half of the part that claudetto adds. (closed: removed in trim-0-2-0)
   Check: `grep -q START_TOKENS tools/limits.ts && just test`
-- [ ] 6.2 List each point where claudetto can override or add a text in 2.1.302 (tool descriptions, system prompt blocks, output styles, skills, MCP texts, the `CLAUDE.md` block, hook messages), with the model that reads each text, in `src/wiki/reference/Texts.md`.
+- [x] 6.2 List each point where claudetto can override or add a text in 2.1.302 (tool descriptions, system prompt blocks, output styles, skills, MCP texts, the `CLAUDE.md` block, hook messages), with the model that reads each text, in `src/wiki/reference/Texts.md`. (closed: obsolete: `tools/builtins.ts` and the generated `Builtins` pages list each text point)
   Check: `test -s src/wiki/reference/Texts.md && bun run lint:md`
 - [ ] 6.3 Audit each text of 6.2 by `.claude/skills/claude-api/shared/prompt-audit.md` for the model that reads it, and write the report with `file:line` to `openspec/changes/release-0-2-0/prompt-audit.md`.
   Check: `test -s openspec/changes/release-0-2-0/prompt-audit.md`
@@ -136,7 +136,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Each text tells the model to report a gap or a blocker and not to work around it (D26).
   Add a `tool.describe` transform for each built-in tool whose text the audit shortens or fixes.
   Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles && bun run lint:md`
-- [ ] 6.5 Remove the global `CLAUDE.md` block of the setup by D51, with a test that setup writes no block and removes its own block after a yes, and leaves the text outside the markers, and see it fail first.
+- [x] 6.5 Remove the global `CLAUDE.md` block of the setup by D51, with a test that setup writes no block and removes its own block after a yes, and leaves the text outside the markers, and see it fail first. (closed: done: `setup/domain/cleanup.ts`, pinned by `tests/claudetto/setup/setup.test.ts`)
   Then cut the MCP tool descriptions, the MCP server instructions, and the skill and agent descriptions to the words that a model needs to pick them.
   Check: `just generate && just test tests/claudetto/setup && just validate`
 - [x] 6.6 Measure the start of a fresh session with `just start-run` and `just measure`, and run the evals of group 11 on each cut text, and put back each cut that lowers a score (D26). (closed: removed in trim-0-2-0)
@@ -162,14 +162,14 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just schema && grep -rq promptCacheTtl schemas/`
 - [ ] 7.2 Add a test that the setup snippet has no `promptCacheTtl` and no `subagentPromptCacheTtl`, and that setup removes a `promptCacheTtl` of `5m` that an earlier setup wrote, then remove it from the snippet (D18).
   Check: `just test tests/claudetto/setup`
-- [ ] 7.3 Add a test that the setup makes a change that it offered, such as the `claude` alias, when the user says yes, then change the setup text and code.
+- [x] 7.3 Add a test that the setup makes a change that it offered, such as the `claude` alias, when the user says yes, then change the setup text and code. (closed: obsolete: the setup skill no longer edits the startup file)
   Check: `just test tests/claudetto/setup`
 - [ ] 7.4 Add a test that the sandbox step of the setup adds the cache and build folders that the toolchains of the project report, with no fixed list of tools or paths, then add the code.
   Check: `just test tests/claudetto/setup`
 
-- [ ] 7.5 Add a test that fails when a claudetto text or hook names a tool that the settings snippet denies, and see it fail on `TaskStop`.
+- [x] 7.5 Add a test that fails when a claudetto text or hook names a tool that the settings snippet denies, and see it fail on `TaskStop`. (closed: done: `tests/claudetto/prompt/denied-names.test.ts`)
   Check: `! just test tests/claudetto/prompt/denied-tools.test.ts`
-- [ ] 7.6 Write `src/wiki/reference/Tools.md` with one row for each built-in tool of 2.1.302 (purpose, start tokens, the claudetto need, the decision), and change the deny list of the snippet to match.
+- [x] 7.6 Write `src/wiki/reference/Tools.md` with one row for each built-in tool of 2.1.302 (purpose, start tokens, the claudetto need, the decision), and change the deny list of the snippet to match. (closed: done in builtins-0-2-0: `tools/builtins/verdicts/tools.ts`)
   Check: `just generate && just test tests/claudetto/prompt && bun run lint:md`
 - [ ] 7.7 List each env var that the 2.1.302 bundle reads and the docs env-vars page names, and each settings key of the inventory, and write `src/wiki/reference/Env.md` and `src/wiki/reference/Settings-Keys.md` with one row for each: what it does, what else it changes, the sources, and the decision.
   Start from the inventory and the D18 list of `design-surfaces.md`.
@@ -177,13 +177,13 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [ ] 7.8 Add a test that pins the `env` of the settings snippet to the rows of `Env.md` with the decision `set`, then change the snippet.
   The test also pins the tracking variables of D31, and that the snippet sets no `OTEL_LOG_*` variable.
   Check: `just generate && just test tests/claudetto/setup tests/claudetto/prompt`
-- [ ] 7.9 Measure from the transcripts the share of helper cache writes that follow a gap of more than 5 minutes, with the method in `wiki/evidence/Usage-Evidence.md`, and set `subagentPromptCacheTtl` to `1h` only when the rewrites that it saves cost more than the higher price of each write (D18).
+- [x] 7.9 Measure from the transcripts the share of helper cache writes that follow a gap of more than 5 minutes, with the method in `wiki/evidence/Usage-Evidence.md`, and set `subagentPromptCacheTtl` to `1h` only when the rewrites that it saves cost more than the higher price of each write (D18). (closed: obsolete: trim-0-2-0 keeps the 5-minute subagent cache)
   Check: `grep -q subagentPromptCacheTtl wiki/evidence/Usage-Evidence.md`
 - [ ] 7.10 Write the command corpus of D43 in `tests/claudetto/guard/corpus/`: each destructive git form that must be denied, and each safe form that must pass, from the transcripts of other projects and the safe forms of D43.
   Check: `test -n "$(ls tests/claudetto/guard/corpus/)"`
 - [ ] 7.11 Add a test that matches the corpus against the `permissions.deny` rules of the snippet by the matching of `permissions.md` (whole command, `*`, and each subcommand of a compound command), and see it fail, then write the exact deny rules (D43).
   Check: `just test tests/claudetto/setup tests/claudetto/guard`
-- [ ] 7.12 Add a test that the snippet sets `sandbox.enabled`, `autoAllowBashIfSandboxed: true`, `allowUnsandboxedCommands: false`, `permissions.defaultMode: "acceptEdits"`, and the allow rules of the safe tools of `Tools.md`, and see it fail, then change the snippet (D43).
+- [x] 7.12 Add a test that the snippet sets `sandbox.enabled`, `autoAllowBashIfSandboxed: true`, `allowUnsandboxedCommands: false`, `permissions.defaultMode: "acceptEdits"`, and the allow rules of the safe tools of `Tools.md`, and see it fail, then change the snippet (D43). (closed: obsolete: `acceptEdits` conflicts with trim-0-2-0 decision 1 (auto mode))
   Check: `just test tests/claudetto/setup`
 - [x] 7.13 Cut the `guard` hook to the forms that a rule cannot match (`sh -c`, `bash -c`, `eval`, and a program by path), with the corpus as its lab, and move each ask of `asks` for a call that discards work to the deny rules of 7.11 (D43, D35). (closed: removed in trim-0-2-0)
   Check: `just test tests/claudetto/guard tests/claudetto/asks && just lab`
@@ -227,7 +227,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 - [ ] 10.8 Add a `just validate` rule that reads the pinned line count of each part from `tools/limits.ts` and fails when a part grows past it, and a rule that fails on a file under 15 lines that is not an entry point and on a folder with one file, and see both fail (D40, D41).
   Check: `just test tests/tools && just validate`
-- [ ] 10.9 Write `openspec/changes/release-0-2-0/behavior.md` with the behavior table of each part of the table of facts of `design-redo.md`: each input of its tests and its old decision, from a run of the tests (D40).
+- [x] 10.9 Write `openspec/changes/release-0-2-0/behavior.md` with the behavior table of each part of the table of facts of `design-redo.md`: each input of its tests and its old decision, from a run of the tests (D40). (closed: obsolete: trim-0-2-0 did the rewrite)
   Check: `test -s openspec/changes/release-0-2-0/behavior.md && just test`
 - [x] 10.10 Remove the repeated-`Read` deny of `reads`, and check in the 2.1.302 bundle whether a built-in keeps a rejected call rejected, then keep that gate or remove the slice by the result, with the source line in `src/wiki/rationale/Decisions-Session.md` (D39). (closed: removed in trim-0-2-0)
   Check: `just test tests/claudetto/reads && just lab`
@@ -235,9 +235,9 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just test tests/claudetto/turngate && just lab`
 - [x] 10.12 Remove the `gc` slice, the CLI `claudetto-gc`, the command `/claudetto:gc`, their tests, and their wiki pages, and add the cleanup rule of D44 to the system prompt text and each agent prompt (D44). (closed: removed in trim-0-2-0)
   Check: `just generate && just test && ! test -d src/plugins/claudetto/slices/gc`
-- [ ] 10.13 Rewrite each slice of the core plugin that D39 keeps, one part at a time, each to its rows of `behavior.md` and below its line count in `design-redo.md`, with the full `just check` after each part (D40).
+- [x] 10.13 Rewrite each slice of the core plugin that D39 keeps, one part at a time, each to its rows of `behavior.md` and below its line count in `design-redo.md`, with the full `just check` after each part (D40). (closed: obsolete: trim-0-2-0 did the rewrite)
   Check: `just check`
-- [ ] 10.14 Rewrite each add-on plugin the same way, and then rewrite `src/kernel/` and `tools/` to what the parts still use, each below its line count (D40).
+- [x] 10.14 Rewrite each add-on plugin the same way, and then rewrite `src/kernel/` and `tools/` to what the parts still use, each below its line count (D40). (closed: obsolete: trim-0-2-0 did the rewrite)
   Check: `just check`
 - [ ] 10.15 Apply D41 to each part, and pin the line count of each part in `tools/limits.ts` (D40, D41).
   Check: `just validate`
@@ -258,7 +258,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   This is a paid run: ask the user first, with the expected cost and the weekly share.
   Set the effort of each arm with `CLAUDE_CODE_EFFORT_LEVEL`, which overrides the `effort` of the agent files.
   Check: `CLAUDE_CODE_EFFORT_LEVEL=high just eval-variant claudetto--v0.1.0-alpha.1 --model claude-sonnet-5-5 --max-cost-usd 5`
-- [ ] 11.5 Find in the bundle a variable that stops the telemetry of a `claude` run and keeps the feature flags, and record it in `src/wiki/rationale/Decisions-Session.md`.
+- [x] 11.5 Find in the bundle a variable that stops the telemetry of a `claude` run and keeps the feature flags, and record it in `src/wiki/rationale/Decisions-Session.md`. (closed: obsolete: the `advise` slice replaced the built-in advisor)
   Add a test that `tools/telemetry.ts` gives an arm that env and no `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`, see it fail, then add it.
   When no such variable exists, drop task 11.6 and keep the `planner` (D31).
   Check: `just test tests/tools/telemetry-env.test.ts`
