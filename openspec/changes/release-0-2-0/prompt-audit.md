@@ -62,4 +62,3 @@ Paths are under `src/plugins/claudetto/slices/` unless they start with `src/`.
 ## Not Audited
 
 The `schema.yaml` and the templates of the `epic` and `task` presets (except `epic/templates/review.md`), the `claudetto-you-should-know` plugin, the `statusline` slice (its text goes to the user), and the descriptions in `hooks.json` (they go to the user).
-
