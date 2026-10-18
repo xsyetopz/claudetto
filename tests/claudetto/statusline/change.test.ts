@@ -8,7 +8,7 @@ import {
 import { rowsOf } from "./support.ts";
 
 const ROOT = "/work/claudetto";
-const DIR = `${ROOT}/minispec/changes`;
+const DIR = `${ROOT}/openspec/changes`;
 
 /** A project with the changes in `tree`, a map from a file to its text. A name in `broken` fails to read. */
 const project = (tree: Record<string, string>, broken: string[] = []) => ({

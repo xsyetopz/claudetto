@@ -115,11 +115,10 @@ test("on a terminal, the command writes the handoff, clears the chat, and submit
   expect(seen[3]).toBe("timer 0");
   expect(seen[4]).toBe("command clear");
   expect(seen[5]).toBe("register handoff");
-  expect(seen[6]).toBe("register handoff-setup");
-  expect(seen[7]).toBe(`log The handoff is in ${seen[1]?.slice(6)}.`);
-  expect(seen[8]).toContain("submit This is the handoff");
-  expect(seen[8]).toContain(HANDOFF);
-  expect(seen).toHaveLength(9);
+  expect(seen[6]).toBe(`log The handoff is in ${seen[1]?.slice(6)}.`);
+  expect(seen[7]).toContain("submit This is the handoff");
+  expect(seen[7]).toContain(HANDOFF);
+  expect(seen).toHaveLength(8);
 });
 
 // biome-ignore lint/plugin: a test name
@@ -169,7 +168,7 @@ test("another command runs unchanged", async ($: Engine, on: On) => {
 test("the session start registers the command `handoff`", async ($: Engine, on: On) => {
   const seen = engine(on);
   await $.session.start({ cwd: "/p", surface: null, isInteractive: false });
-  expect(seen).toEqual(["register handoff", "register handoff-setup"]);
+  expect(seen).toEqual(["register handoff"]);
 });
 
 test("a refused name gives no error at session start", async ($: Engine, on: On) => {

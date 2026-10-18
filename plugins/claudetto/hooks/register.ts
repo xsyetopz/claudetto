@@ -11,46 +11,40 @@ import {
   keepOptions as h5,
   onCommand as h6,
   onCompact as h7,
-  onPluginRegister as h8,
-  onSetup as h9,
-  onStart as h10,
+  onStart as h8,
 } from "../slices/handoff/adapters/mod.ts";
 import {
-  keepOptions as h11,
-  onSection as h12,
-  onSpawn as h13,
-  onToolDescribe as h14,
+  keepOptions as h9,
+  onSection as h10,
+  onSpawn as h11,
+  onToolDescribe as h12,
 } from "../slices/prompt/adapters/mod.ts";
-import { onToolCall as h15 } from "../slices/sembr/adapters/mod.ts";
+import { onToolCall as h13 } from "../slices/sembr/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h0(options);
   h5(options);
-  h11(options);
+  h9(options);
   // eval: agent.spawn prompt
-  on("agent.spawn", h13);
+  on("agent.spawn", h11);
   // eval: command.run handoff
   on("command.run", { command: "handoff" }, h6);
-  // eval: command.run handoff
-  on("command.run", { command: "handoff-setup" }, h9);
-  // eval: plugin.register handoff
-  on("plugin.register", h8);
   // eval: prompt.section prompt
-  on("prompt.section", h12);
+  on("prompt.section", h10);
   // eval: session.compact handoff
   on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h7);
   // eval: session.start decide
   on("session.start", { isInteractive: [true, false] }, h3);
   // eval: session.start handoff
-  on("session.start", { isInteractive: [true, false] }, h10);
+  on("session.start", { isInteractive: [true, false] }, h8);
   // eval: tool.call decide
   on("tool.call", { tool: ["AskUserQuestion"] }, h1);
   // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h15);
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h13);
   // eval: tool.call guard
   on("tool.call", { tool: ["Bash"] }, h4);
   // eval: tool.call decide
   on("tool.call", { tool: /^mcp__claudetto__second_opinion$/ }, h2);
   // eval: tool.describe prompt
-  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h14);
+  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h12);
 };

@@ -14,13 +14,6 @@
     "allow": "plugins/claudetto/tests/command.test.ts > another command runs unchanged",
     "text": "plugins/claudetto/tests/command.test.ts > on a terminal, the command writes the handoff, clears the chat, and submits the handed message"
   },
-  "plugin.register handoff": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/handoff-setup.test.ts > a plugin with no `session.compact` hook is not named",
-    "text": "plugins/claudetto/tests/handoff-setup.test.ts > no file gives the new file, the warning with the other plugin, and one `! sudo` command"
-  },
   "prompt.section prompt": {
     "requests": 0,
     "tokens": 0,

@@ -1,5 +1,5 @@
-// The task state of a MiniSpec change, read from the text of its `tasks.md`.
-// The `minispec` CLI and the handoff share these rules, and neither imports the other.
+// The task state of a openspec change, read from the text of its `tasks.md`.
+// The handoff and the statusline share these rules.
 // The file has no import beyond `paths.ts`, so the module graph of a hooks module can use it.
 
 import { CHANGE_HANDOFF_FILE, CHANGES_DIR } from "./paths.ts";

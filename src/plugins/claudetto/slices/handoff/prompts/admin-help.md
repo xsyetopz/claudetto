@@ -1,1 +1,0 @@
-An organization manages Claude Code on this machine, so `claudetto` gives no setup command. Ask the admin to add `"appendPlugins": ["{{id}}"]` and `"enabledPlugins": {"{{id}}": true}` to the managed settings.

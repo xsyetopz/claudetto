@@ -1,5 +1,5 @@
-// Lab tests of the handoff with an active MiniSpec change (spec `minispec`, "State for the handoff").
-// The stubs answer the listing of `minispec/changes/`, the `tasks.md` files, the fork, and the write.
+// Lab tests of the handoff with an active openspec change .
+// The stubs answer the listing of `openspec/changes/`, the `tasks.md` files, the fork, and the write.
 // With an open change, the handoff goes to `handoff.md` in the change folder and names the next open task.
 // With no open change, it goes to the default place.
 
@@ -25,7 +25,7 @@ const entry = (name: string, kind: "dir" | "file" = "dir") => ({
   isLink: false,
 });
 
-/** The `tasks.md` text of each change folder by name, and the listing of `minispec/changes/`. */
+/** The `tasks.md` text of each change folder by name, and the listing of `openspec/changes/`. */
 type World = {
   readonly tasks: Record<string, string>;
   readonly listing?: string[];
@@ -41,7 +41,7 @@ const engine = (on: On, world: World) => {
     value: (world.listing ?? Object.keys(world.tasks)).map((n) => entry(n)),
   }));
   on("fs.read", (_$, e) => {
-    const name = /minispec\/changes\/([^/]+)\/tasks\.md$/.exec(e.path)?.[1];
+    const name = /openspec\/changes\/([^/]+)\/tasks\.md$/.exec(e.path)?.[1];
     const text = name === undefined ? undefined : world.tasks[name];
     if (text === undefined) throw new Error("ENOENT");
     return { value: text };
@@ -93,13 +93,13 @@ test("with tasks 1.1 and 1.2 checked, the handoff goes to the change folder and 
   await handedOver($);
   expect(seen.writes).toHaveLength(1);
   const [write] = seen.writes;
-  expect(write?.path.endsWith("minispec/changes/add-export/handoff.md")).toBe(
+  expect(write?.path.endsWith("openspec/changes/add-export/handoff.md")).toBe(
     true,
   );
-  expect(write?.text).toContain("`minispec/changes/add-export/`");
+  expect(write?.text).toContain("`openspec/changes/add-export/`");
   expect(write?.text).toContain("Next open task: `1.3`");
   expect(write?.text).toContain(HANDOFF);
-  expect(seen.submits[0]).toContain("minispec/changes/add-export/handoff.md");
+  expect(seen.submits[0]).toContain("openspec/changes/add-export/handoff.md");
   expect(seen.submits[0]).toContain("Next open task: `1.3`");
 });
 
@@ -112,7 +112,7 @@ test("a change with all tasks checked and the archive folder are not active, so 
   expect(seen.writes[0]?.path).toMatch(
     /\.claudetto\/handoffs\/handoff-\d{8}T\d{6}Z\.md$/,
   );
-  expect(seen.writes[0]?.text).not.toContain("MiniSpec change");
+  expect(seen.writes[0]?.text).not.toContain("openspec change");
 });
 
 test("a missing change folder gives the default place", async ($: Engine, on: On) => {

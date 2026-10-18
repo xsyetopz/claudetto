@@ -1,6 +1,5 @@
 // The manifest of the `handoff` slice: the `session.compact` hook that replaces the summary of a compaction with a handoff (design D3).
 // It runs for the triggers `auto` and `manual` of the main thread, and a fork writes the handoff from the cached prefix of the session.
-// When there is nothing to fork, `$.model.complete` writes it from the text of the messages.
 // The command `/handoff` is the manual handoff: on a terminal it clears the chat and submits the handoff, and in `-p` it compacts.
 // Claude Code refuses these calls in a `command.run` hook, so a `$.clock.after` timer runs them after the hook.
 // The phase is `answer`, because the hook gives the compaction in place of Claude Code.
@@ -22,16 +21,12 @@ import {
   keepOptions,
   onCommand,
   onCompact,
-  onPluginRegister,
-  onSetup,
   onStart,
-  SETUP_COMMAND,
 } from "./adapters/mod.ts";
 import { OPTION_DESCRIPTION } from "./prompts.ts";
 
 const LAB = "plugins/claudetto/tests/compaction.test.ts";
 const COMMAND_LAB = "plugins/claudetto/tests/command.test.ts";
-const SETUP_LAB = "plugins/claudetto/tests/handoff-setup.test.ts";
 
 export const slice = {
   name: "handoff",
@@ -83,24 +78,6 @@ export const slice = {
       filter: { command: HANDOFF_COMMAND },
       phase: "answer",
       run: onCommand,
-    },
-    {
-      event: "command.run",
-      filter: { command: SETUP_COMMAND },
-      phase: "answer",
-      run: onSetup,
-    },
-    {
-      event: "plugin.register",
-      evals: {
-        requests: 0,
-        tokens: 0,
-        blocks: false,
-        allow: `${SETUP_LAB} > a plugin with no \`session.compact\` hook is not named`,
-        text: `${SETUP_LAB} > no file gives the new file, the warning with the other plugin, and one \`! sudo\` command`,
-      },
-      phase: "observe",
-      run: onPluginRegister,
     },
   ],
   userConfig: {

@@ -9,8 +9,7 @@
 // and there is no tail, so a manual compaction between two turns keeps no large tool result (`handoff-cost-301.md`).
 // The fork does not see the tool calls of the tail either, so its prompt names them,
 // or the handoff gives the newest call as not started, and the model runs it again (`handoff-cost-301.md`).
-// When the new context is not below the trigger, the tail is cut to the last tool use of its first reply,
-// and when the cut is not enough, there is no new context.
+// When the new context is not below the trigger, there is no new context, and Claude Code compacts as built in.
 // The functions are pure and import only `limits.ts`, `ground.ts`, and the kernel.
 
 import type { SessionMessage, ToolUseSummary } from "claude-code";
@@ -63,7 +62,7 @@ export const isHandoff = (text: string): boolean => /`[^`\n]+`/.test(text);
 
 /**
  * The path of a new handoff file from the project root.
- * With an open MiniSpec change it is `minispec/changes/<name>/handoff.md`.
+ * With an open openspec change it is `openspec/changes/<name>/handoff.md`.
  * Otherwise it has the UTC time in its name: `handoff-20261015T101010Z.md`.
  */
 export const handoffPath = (
@@ -76,8 +75,8 @@ export const handoffPath = (
 };
 
 /**
- * The text of the handoff file with the open MiniSpec change at its start: the change folder, the next open task,
- * and the rule that a checked task is done and verified (spec `minispec`, "State for the handoff").
+ * The text of the handoff file with the open openspec change at its start: the change folder, the next open task,
+ * and the rule that a checked task is done and verified.
  * With no change, the text stays as it is.
  */
 export const withChange = (text: string, change: OpenChange | null): string =>
@@ -135,7 +134,7 @@ export const triggerTokens = (model: string): number =>
   /haiku/i.test(model) ? HAIKU_HANDOFF_TRIGGER_TOKENS : HANDOFF_TRIGGER_TOKENS;
 
 /** The estimated tokens of a message: its text, and the input and the result text of each tool use, over `CHARS_PER_TOKEN`. */
-export const messageTokens = (message: SessionMessage): number => {
+const messageTokens = (message: SessionMessage): number => {
   const tools = message.toolUses.reduce(
     (sum, use) =>
       sum + JSON.stringify(use.input ?? null).length + (use.text?.length ?? 0),
@@ -147,38 +146,6 @@ export const messageTokens = (message: SessionMessage): number => {
 const contextTokens = (messages: readonly SessionMessage[]): number =>
   messages.reduce((sum, message) => sum + messageTokens(message), 0);
 
-/**
- * The tail with only the last tool use of its first reply and the result of that tool use.
- * A message that loses a tool use or a result is built again without its `handle`, and each other message stays the message of the engine.
- * A message that has nothing left after the cut is removed.
- */
-export const cutTail = (tail: readonly SessionMessage[]): SessionMessage[] => {
-  const uses = replyUses(tail);
-  const dropped = new Set(uses.slice(0, -1).map((use) => use.tool_use_id));
-  return tail.flatMap((message) => {
-    const toolUses = message.toolUses.filter(
-      (use) => !dropped.has(use.tool_use_id),
-    );
-    const toolResults = message.toolResults?.filter(
-      (result) => !dropped.has(result.tool_use_id),
-    );
-    const isSame =
-      toolUses.length === message.toolUses.length &&
-      toolResults?.length === message.toolResults?.length;
-    if (isSame) return [message];
-    if (message.text === "" && toolUses.length === 0 && !toolResults?.length)
-      return [];
-    return [
-      {
-        role: message.role,
-        text: message.text,
-        toolUses,
-        ...(toolResults ? { toolResults } : {}),
-      },
-    ];
-  });
-};
-
 /** The text of the one user message after a compaction: the text of the first user message `first`, then `handed`. */
 export const headText = (first: string, handed: string): string =>
   first === "" ? handed : FIRST_MESSAGE({ first, handed });
@@ -188,8 +155,7 @@ export const headText = (first: string, handed: string): string =>
  * Claude Code sends each message that a hook gives back to the output again, and `num_turns` counts each user message there,
  * so one user message in place of two removes one turn for each compaction (`handoff-turns-301.md`).
  * The tail has the messages of the engine, each with its `handle`.
- * When this context is not below `trigger` tokens, the tail is cut with `cutTail`.
- * `null` when the cut context is not below `trigger` tokens either.
+ * `null` when this context is not below `trigger` tokens.
  */
 export const compactedMessages = (
   messages: readonly SessionMessage[],
@@ -201,10 +167,6 @@ export const compactedMessages = (
   const head: SessionMessage[] = [
     { role: "user", text: headText(first?.text ?? "", handed), toolUses: [] },
   ];
-  const tail = messages.slice(cut);
-  for (const kept of [tail, cutTail(tail)]) {
-    const context = [...head, ...kept];
-    if (contextTokens(context) < trigger) return context;
-  }
-  return null;
+  const context = [...head, ...messages.slice(cut)];
+  return contextTokens(context) < trigger ? context : null;
 };

@@ -2,28 +2,19 @@
 // The mod handler of the `handoff` slice: the `session.compact` hook of the main thread (design D3, spec `handoff`).
 // A fork writes the handoff, the hook writes it to a file and checks it with `$.fs.stat`,
 // and the hook gives back the first user message, the handoff message, and the tail in place of the summary.
-// With nothing to fork, such as after a resume, `$.model.complete` writes it from a digest of at most `DIGEST_TOKENS_MAX` tokens,
-// because a completion reads no prompt cache (`handoff-cost-301.md`, `domain/digest.ts`).
-// When the new context is not below the trigger of the session model, the hook cuts the tail.
-// When the digest does not fit, the model gives no handoff, the cut is not enough, `$.session.model` fails,
-// or the file is missing or empty, `next(e)` runs the built-in compaction.
+// When the new context is not below the trigger of the session model, there is nothing to fork (such as after a resume),
+// the model gives no handoff, `$.session.model` fails, or the file is missing or empty, `next(e)` runs the built-in compaction.
 // A subagent compaction passes on with no change, and the filter has the trigger `plugin` of `$.session.compact` too.
 // On a terminal, a status line shows while the handoff is written, and a notice names the file. In `-p` the hooks draw nothing.
-// With the `compaction` option `built-in`, each compaction goes to Claude Code unchanged, the cheapest path,
-// because the summary request reads the prompt cache and new messages would not (`handoff-cost-301.md`), and `/handoff` is not registered.
-// On a managed machine where the guard skips `claudetto` for `session.compact`, `session.start` shows one notice with the managed entries
-// that turn it on (`domain/managed.ts`). The plan comes from `oauthAccount` in the state file of Claude Code,
-// because `$.session.identity()` answers only to a plugin that the managed settings install.
+// With the `compaction` option `built-in`, each compaction goes to Claude Code unchanged and `/handoff` is not registered.
 //
 // `/handoff` is the manual handoff (design D3): on a terminal, a fork writes the handoff, and the hook writes and checks the file.
 // In `-p`, or when the fork gives no handoff or the write fails, the step is the compaction path.
 // Claude Code refuses `$.command.run`, `$.prompt.submit`, and `$.session.compact` in a `command.run` hook,
 // and `turn.complete` does not fire after a command that a hook answers (`handoff-p-301.md`),
 // so a `$.clock.after` timer runs the step after the hook: it clears the chat and submits the handed message, or it runs `/compact`.
-// The ground check warns about each value in backticks that is not in the messages (`domain/ground.ts`),
-// and the file keeps the last user messages and the changed files with no model call (`domain/kept.ts`).
+// The ground check warns about each value in backticks that is not in the messages (`domain/ground.ts`).
 // Each path starts at the project root, because `$.fs` resolves a relative path against the folder of the shell (D23).
-// `/handoff-setup` has its handlers in `setup.ts`.
 // `claude plugin validate` follows `$` only into a function of one file, so each function that touches `$` is here, and the rules are in `domain/`.
 
 import type {
@@ -34,7 +25,7 @@ import type {
 } from "claude-code";
 import { openChange } from "../../../kernel/change.ts";
 import { isBuiltInCompaction } from "../../../kernel/compaction.ts";
-import { CHANGES_DIR, CLAUDE_STATE_FILE } from "../../../kernel/paths.ts";
+import { CHANGES_DIR } from "../../../kernel/paths.ts";
 import type { Handler } from "../../../kernel/slice.ts";
 import { oneLine } from "../../../kernel/text.ts";
 import {
@@ -46,20 +37,8 @@ import {
   triggerTokens,
   withChange,
 } from "../domain/compact.ts";
-import { digestPrompt } from "../domain/digest.ts";
 import { missingValues, missLine } from "../domain/ground.ts";
-import { withKept } from "../domain/kept.ts";
-import { isAppended, isGuardSeated, managedNotice } from "../domain/managed.ts";
-import {
-  handoffMarkdown,
-  PROGRESS_TEXT,
-  writtenNotice,
-} from "../domain/markdown.ts";
-import { HANDOFF_MODEL } from "../limits.ts";
-import { COMMAND_HANDOFF, COMMAND_SETUP, RULES } from "../prompts.ts";
-
-// The generator takes each handler of the slice from this file.
-export { onPluginRegister, onSetup } from "./setup.ts";
+import { COMMAND_HANDOFF, RULES, WRITTEN_NOTICE } from "../prompts.ts";
 
 /** The hook for the triggers in the filter of `slice.ts`, with `e` narrowed to them. */
 export type CompactHook = MatchedHook<
@@ -70,8 +49,8 @@ export type CompactHook = MatchedHook<
 /** The name of the manual handoff command, without the slash. */
 export const HANDOFF_COMMAND = "handoff";
 
-/** The name of the command of the managed setup help, without the slash. */
-export const SETUP_COMMAND = "handoff-setup";
+/** The status line on a terminal while the handoff is written, in place of the spinner of the compaction. */
+const PROGRESS_TEXT = "Writing the handoff…";
 
 /** The `userConfig` values of the plugin, which the generated `register` gives to `keepOptions`. */
 const kept: { options: PluginOptions } = { options: {} };
@@ -84,48 +63,14 @@ export const keepOptions = (options: PluginOptions): void => {
 /** True when the `compaction` option turns the handoff off. */
 const isOff = () => isBuiltInCompaction(kept.options);
 
-/**
- * The text of the handoff from a fork, or from a completion on the digest of `messages` when there is nothing to fork.
- * `null` when the digest does not fit, or for no reply, an empty reply, or a text that is not a handoff.
- */
+/** The text of the handoff from a fork, or `null` for no reply, nothing to fork, an error, or a text that is not a handoff. */
 const handoffText = async (
   $: EngineInterface,
-  messages: readonly SessionMessage[],
+  prompt: string,
 ): Promise<string | null> => {
   // A call of the model can throw, such as with an SDK error, and then the built-in compaction runs.
-  try {
-    const fork = await $.model.fork({ prompt: forkPrompt(messages) });
-    if (!fork.isAnswered && fork.reason === "nothing-to-fork") {
-      const prompt = digestPrompt(messages);
-      if (prompt === null) return null;
-      const reply = await $.model.complete({ model: HANDOFF_MODEL, prompt });
-      return reply.isAnswered && isHandoff(reply.text) ? reply.text : null;
-    }
-    return fork.isAnswered && isHandoff(fork.text) ? fork.text : null;
-  } catch {
-    return null;
-  }
-};
-
-/** True when the write of `text` to `path` succeeds and the file is not empty after it. */
-const isWritten = ($: EngineInterface, path: string, text: string) =>
-  $.fs
-    .write(path, text)
-    .then(() => $.fs.stat(path))
-    .then(
-      (stat) => stat.size > 0,
-      () => false,
-    );
-
-/** The values in backticks of `text` that are not in `messages`, each with one debug log line (`domain/ground.ts`). */
-const ungrounded = (
-  $: EngineInterface,
-  text: string,
-  messages: readonly SessionMessage[],
-): string[] => {
-  const missing = missingValues(text, messages);
-  for (const value of missing) $.ui.log(missLine(value), { to: "debug" });
-  return missing;
+  const fork = await $.model.fork({ prompt }).catch(() => null);
+  return fork?.isAnswered && isHandoff(fork.text) ? fork.text : null;
 };
 
 /** True when the session has a terminal, where the handoff shows its progress. */
@@ -143,7 +88,7 @@ const rootOf = async ($: EngineInterface): Promise<string> => {
   return root === "" ? "" : `${root.replace(/\/+$/, "")}/`;
 };
 
-/** The MiniSpec change in progress, or `null` when no change has an open task or the folder is missing. The `archive` folder is no change. */
+/** The open change among the folders of `openspec/changes/`, or `null` when no change has an open task. The `archive` folder is no change. */
 const openChangeOf = async ($: EngineInterface, root: string) => {
   const entries = await $.fs.list(`${root}${CHANGES_DIR}`).catch(() => []);
   const changes = await Promise.all(
@@ -160,29 +105,56 @@ const openChangeOf = async ($: EngineInterface, root: string) => {
   return openChange(changes);
 };
 
+/** The values in backticks of `reply` that are not in `messages`, each with one debug log line (`domain/ground.ts`). */
+const ungrounded = (
+  $: EngineInterface,
+  reply: string,
+  messages: readonly SessionMessage[],
+): string[] => {
+  const missing = missingValues(reply, messages);
+  for (const value of missing) $.ui.log(missLine(value), { to: "debug" });
+  return missing;
+};
+
+/** The path of a new handoff file and the text of the file for `reply`, with the open change at its start. */
+const fileOf = async ($: EngineInterface, reply: string) => {
+  const root = await rootOf($);
+  const change = await openChangeOf($, root);
+  return {
+    path: `${root}${handoffPath(new Date(), change)}`,
+    text: withChange(`${reply.trimEnd()}\n`, change),
+  };
+};
+
+/** True when the write of `text` to `path` succeeds and the file is not empty after it. */
+const isWritten = ($: EngineInterface, path: string, text: string) =>
+  $.fs
+    .write(path, text)
+    .then(() => $.fs.stat(path))
+    .then(
+      (stat) => stat.size > 0,
+      () => false,
+    );
+
 /** The new messages and the path of the written handoff file, or `null` when the built-in compaction runs. */
 const compacted = async (
   $: EngineInterface,
   messages: readonly SessionMessage[],
 ): Promise<{ messages: SessionMessage[]; path: string } | null> => {
-  const reply = await handoffText($, messages);
-  if (reply === null) return null;
+  const reply = await handoffText($, forkPrompt(messages));
   const model = await $.session.model().catch(() => null);
-  if (model === null) return null;
-  const root = await rootOf($);
-  const change = await openChangeOf($, root);
-  const path = `${root}${handoffPath(new Date(), change)}`;
-  const written = handoffMarkdown(reply);
-  const text = withKept(withChange(written, change), messages);
+  if (reply === null || model === null) return null;
+  const { path, text } = await fileOf($, reply);
   const kept = compactedMessages(
     messages,
-    handedText(path, text, ungrounded($, written, messages)),
+    handedText(path, text, ungrounded($, reply, messages)),
     triggerTokens(model),
   );
   // The file is written only for a new context that is below the trigger.
-  if (kept === null) return null;
   // The spec gives the compaction back to Claude Code on each failure of the write.
-  return (await isWritten($, path, text)) ? { messages: kept, path } : null;
+  return kept !== null && (await isWritten($, path, text))
+    ? { messages: kept, path }
+    : null;
 };
 
 export const onCompact: CompactHook = async ($, e, next) => {
@@ -193,7 +165,7 @@ export const onCompact: CompactHook = async ($, e, next) => {
     if (isShown) $.ui.status(undefined);
   });
   if (done === null) return next(e);
-  if (isShown) $.ui.log(oneLine(writtenNotice(done.path)));
+  if (isShown) $.ui.log(oneLine(WRITTEN_NOTICE({ path: done.path })));
   return { messages: done.messages };
 };
 
@@ -202,47 +174,14 @@ export const onCompact: CompactHook = async ($, e, next) => {
  * Claude Code refuses the name when another plugin has it, and then `/compact` stays.
  */
 const register = ($: EngineInterface) =>
-  Promise.all(
-    [
-      {
-        name: HANDOFF_COMMAND,
-        description: COMMAND_HANDOFF,
-      },
-      {
-        name: SETUP_COMMAND,
-        description: COMMAND_SETUP,
-      },
-    ].map((spec) => $.command.register(spec).catch(() => undefined)),
-  );
-
-/** The plan of the organization in the state file of Claude Code, or `undefined` when the file or the key is missing. */
-const plan = async ($: EngineInterface): Promise<string | undefined> => {
-  const dir =
-    (await $.env.get("CLAUDE_CONFIG_DIR")) ?? (await $.env.get("HOME"));
-  if (dir === undefined) return undefined;
-  const state = JSON.parse(await $.fs.read(`${dir}/${CLAUDE_STATE_FILE}`));
-  const type = state?.["oauthAccount"]?.["organizationType"];
-  return typeof type === "string" ? type : undefined;
-};
-
-/** True when the guard skips `claudetto` for `session.compact`. A fact that fails to read counts as absent. */
-const isSkipped = async ($: EngineInterface) => {
-  const policy = await $.settings
-    .read({ source: "policy" })
+  $.command
+    .register({ name: HANDOFF_COMMAND, description: COMMAND_HANDOFF })
     .catch(() => undefined);
-  if (isAppended(policy, $.plugin.name)) return false;
-  return isGuardSeated(policy, await plan($).catch(() => undefined));
-};
 
-/**
- * `session.start`: registers `/handoff` for the session, and shows the notice when the guard skips the compaction hook.
- * The guard does not skip `command.run`, so `/handoff` stays.
- */
+/** `session.start`: registers `/handoff` for the session. */
 export const onStart: Handler<"session.start"> = async ($, e, next) => {
   const started = await next(e);
-  if (isOff()) return started;
-  if (await isSkipped($)) $.ui.log(oneLine(managedNotice($.plugin.name)));
-  await register($);
+  if (!isOff()) await register($);
   return started;
 };
 
@@ -252,18 +191,13 @@ type Handed = { path: string; text: string };
 /** A new handoff file on a terminal, or `null` for the compaction path. */
 const handedFile = async ($: EngineInterface): Promise<Handed | null> => {
   // The command runs after the turn, so the fork sees each tool result and there is no tail.
-  // A fork that throws gives the compaction path, as a fork with no handoff does.
-  const fork = await $.model.fork({ prompt: RULES }).catch(() => null);
-  if (!(fork?.isAnswered && isHandoff(fork.text))) return null;
-  const root = await rootOf($);
-  const change = await openChangeOf($, root);
-  const path = `${root}${handoffPath(new Date(), change)}`;
-  const written = handoffMarkdown(fork.text);
-  // When the messages fail to read, the file keeps no messages, and the check has nothing to look in, so it gives no warning.
-  const messages = await $.session.messages().catch(() => null);
-  const text = withKept(withChange(written, change), messages ?? []);
+  const reply = await handoffText($, RULES);
+  if (reply === null) return null;
+  const { path, text } = await fileOf($, reply);
   if (!(await isWritten($, path, text))) return null;
-  const missing = messages === null ? [] : ungrounded($, written, messages);
+  // When the messages fail to read, the check has nothing to look in, so it gives no warning.
+  const messages = await $.session.messages().catch(() => null);
+  const missing = messages === null ? [] : ungrounded($, reply, messages);
   return { path, text: handedText(path, text, missing) };
 };
 
@@ -273,25 +207,21 @@ const handOff = async ($: EngineInterface, handed: Handed) => {
   // A clear starts a new session, and `session.start` does not fire for it, so the command is registered again.
   await register($);
   // The notice comes after the clear, which removes the transcript.
-  $.ui.log(oneLine(writtenNotice(handed.path)));
+  $.ui.log(oneLine(WRITTEN_NOTICE({ path: handed.path })));
   await $.prompt.submit({ text: handed.text });
 };
 
-/** The step of `/handoff` after its hook: the handed file, or `/compact` when `handed` is `null`. */
-const step = ($: EngineInterface, handed: Handed | null) =>
-  (handed === null
-    ? $.command.run({ command: "compact" })
-    : handOff($, handed)
-  ).catch(() => undefined);
-
-/** `command.run` of `/handoff`: writes the handoff on a terminal, and starts a timer for the step after the hook. */
+/** `command.run` of `/handoff`: on a terminal it writes the handoff, and a timer runs the step after the hook, the handed file or `/compact`. */
 export const onCommand: Handler<"command.run"> = async ($) => {
-  if (!(await isTerminal($))) {
-    $.clock.after(0, () => void step($, null));
-    return {};
+  let handed: Handed | null = null;
+  if (await isTerminal($)) {
+    $.ui.status(PROGRESS_TEXT);
+    handed = await handedFile($).finally(() => $.ui.status(undefined));
   }
-  $.ui.status(PROGRESS_TEXT);
-  const handed = await handedFile($).finally(() => $.ui.status(undefined));
-  $.clock.after(0, () => void step($, handed));
+  const step = () =>
+    handed === null
+      ? $.command.run({ command: "compact" })
+      : handOff($, handed);
+  $.clock.after(0, () => void step().catch(() => undefined));
   return {};
 };

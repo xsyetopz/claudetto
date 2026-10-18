@@ -1,13 +1,8 @@
 // Lab tests of the `handoff` `session.compact` hook (design D3, spec `handoff`).
-// The stubs answer the fork, the completion, the session model, the write, and the stat of the hook,
+// The stubs answer the fork, the session model, the write, and the stat of the hook,
 // and the stub of `session.compact` is the built-in compaction, which gives a skip that names it.
 
-import type {
-  ModelCompleteResult,
-  ModelForkResult,
-  On,
-  SessionMessage,
-} from "claude-code";
+import type { ModelForkResult, On, SessionMessage } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 import { FIRST_MESSAGE } from "../prompts.ts";
 
@@ -53,31 +48,25 @@ const NOTHING = {
   reason: "nothing-to-fork" as const,
 };
 
-/** What the stubs answer: the fork, the completion, the session model or `"reject"`, and the size of the file or the code of a stat error. */
+/** What the stubs answer: the fork, the session model or `"reject"`, and the size of the file or the code of a stat error. */
 type World = {
   fork?: ModelForkResult;
-  complete?: ModelCompleteResult;
   model?: string;
-  /** A call of the model that throws, as an SDK error does. */
-  throws?: "fork" | "complete";
+  /** A fork that throws, as an SDK error does. */
+  isForkThrowing?: boolean;
   stat?: number | "ENOENT" | "EACCES";
 };
 
-/** What the hook did: the writes, as path and text, the prompts of the forks, and the model and the prompt of each completion. */
-type Seen = { writes: string[][]; forks: string[]; complete: string[][] };
+/** What the hook did: the writes, as path and text, and the prompts of the forks. */
+type Seen = { writes: string[][]; forks: string[] };
 
 /** The stubs for `world`, and the stub of `session.compact`, which is the built-in compaction. */
 const engine = (on: On, world: World = {}): Seen => {
-  const seen: Seen = { writes: [], forks: [], complete: [] };
+  const seen: Seen = { writes: [], forks: [] };
   on("model.fork", (_$, e) => {
     seen.forks.push(e.prompt);
-    if (world.throws === "fork") throw new Error("sdk error");
+    if (world.isForkThrowing) throw new Error("sdk error");
     return { value: world.fork ?? answered(HANDOFF) };
-  });
-  on("model.complete", (_$, e) => {
-    seen.complete.push([e.model, String(e.prompt)]);
-    if (world.throws === "complete") throw new Error("sdk error");
-    return { value: world.complete ?? answered(HANDOFF) };
   });
   on("session.model", () => {
     if (world.model === "reject") throw new Error("no session");
@@ -125,7 +114,6 @@ test("an auto compaction gives one user message with the first user message and 
   const rel = (path as string).slice((path as string).indexOf(".claudetto/"));
   expect(out[0]?.text).toContain(`from \`${rel}\``);
   expect(out[0]?.text).toContain(text as string);
-  expect(seen.complete).toEqual([]);
 });
 
 // biome-ignore lint/plugin: a test name
@@ -157,34 +145,8 @@ test("the fork prompt cuts a long tool input", async ($: Engine, on: On) => {
   expect(seen.forks[0]).not.toContain("y".repeat(400));
 });
 
-// biome-ignore lint/plugin: a test name
-test("with nothing to fork, a Haiku completion on the digest of the messages writes the handoff", async ($: Engine, on: On) => {
-  const { result, seen } = await compact($, on, { fork: NOTHING });
-  const [model, prompt] = seen.complete[0] ?? [];
-  expect(model).toBe("haiku");
-  expect(prompt).toContain("<session>");
-  expect(prompt).toContain('Call: Read {"file_path":"a.txt"}');
-  expect(seen.writes).toHaveLength(1);
-  expect(result.messages?.map((m) => m.handle)).toEqual([
-    undefined,
-    "h3",
-    "h4",
-  ]);
-});
-
-// biome-ignore lint/plugin: a test name
-test("with nothing to fork and a digest that does not fit, the built-in compaction runs with no completion", async ($: Engine, on: On) => {
-  const big = { ...tool, text: "k: v\n".repeat(20_000) };
-  const messages = IN_TURN.map((m, i) =>
-    i === 3 ? { ...m, toolUses: [big] } : m,
-  );
-  const { result, seen } = await compact($, on, { fork: NOTHING }, messages);
-  expect(result.skip).toBe(BUILT_IN);
-  expect(seen.complete).toEqual([]);
-  expect(seen.writes).toEqual([]);
-});
-
 const FALLBACKS: [string, World][] = [
+  ["nothing to fork", { fork: NOTHING }],
   [
     "an empty reply of the fork",
     { fork: { isAnswered: false, reason: "empty-reply", usage: NO_USAGE } },
@@ -201,15 +163,7 @@ const FALLBACKS: [string, World][] = [
       },
     },
   ],
-  [
-    "an empty reply of the completion",
-    {
-      fork: NOTHING,
-      complete: { isAnswered: false, reason: "empty-reply", usage: NO_USAGE },
-    },
-  ],
-  ["a fork that throws", { throws: "fork" }],
-  ["a completion that throws", { fork: NOTHING, throws: "complete" }],
+  ["a fork that throws", { isForkThrowing: true }],
   ["a session model that rejects", { model: "reject" }],
   [
     "a fork text with no value in backticks",
@@ -239,7 +193,6 @@ test("a subagent compaction passes on with no change", async ($: Engine, on: On)
   });
   expect(result.skip).toBe(BUILT_IN);
   expect(seen.writes).toEqual([]);
-  expect(seen.complete).toEqual([]);
 });
 
 test("a `precompute` compaction passes on with no change", async ($: Engine, on: On) => {
@@ -283,16 +236,6 @@ const bigTail = (tokens: number): SessionMessage[] => {
 };
 
 // biome-ignore lint/plugin: a test name
-test("a tail of 120,000 tokens above the Haiku trigger is cut to the last tool use and its result", async ($: Engine, on: On) => {
-  const { result, seen } = await compact($, on, {}, bigTail(60_000));
-  const out = result.messages ?? [];
-  expect(out.map((m) => m.handle)).toEqual([undefined, undefined, undefined]);
-  expect(out[1]?.toolUses.map((use) => use.tool_use_id)).toEqual(["r2"]);
-  expect(out[2]?.toolResults?.map((r) => r.tool_use_id)).toEqual(["r2"]);
-  expect(seen.writes).toHaveLength(1);
-});
-
-// biome-ignore lint/plugin: a test name
 test("a tail of 120,000 tokens below the trigger of an Opus session stays whole", async ($: Engine, on: On) => {
   const world = { model: "claude-opus-5-5" };
   const { result } = await compact($, on, world, bigTail(60_000));
@@ -303,9 +246,8 @@ test("a tail of 120,000 tokens below the trigger of an Opus session stays whole"
   ]);
 });
 
-// biome-ignore lint/plugin: a test name
-test("a tail that the cut does not bring below the trigger gives the compaction to Claude Code", async ($: Engine, on: On) => {
-  const { result, seen } = await compact($, on, {}, bigTail(120_000));
+test("a tail above the trigger gives the compaction to Claude Code", async ($: Engine, on: On) => {
+  const { result, seen } = await compact($, on, {}, bigTail(60_000));
   expect(result.skip).toBe(BUILT_IN);
   expect(seen.writes).toEqual([]);
 });
@@ -338,19 +280,11 @@ test("a reply in two assistant messages stays whole in the tail, so each tool re
   expect(seen.forks[0]).toContain('- Read {"file_path":"b.txt"}');
 });
 
-// biome-ignore lint/plugin: a test name
-test("the cut of a reply in two assistant messages keeps the last tool use and removes the message with nothing left", async ($: Engine, on: On) => {
-  const { result } = await compact($, on, {}, splitTail(60_000));
-  const out = result.messages ?? [];
-  expect(out.map((m) => m.handle)).toEqual([undefined, "s2", undefined]);
-  expect(out[2]?.toolResults?.map((r) => r.tool_use_id)).toEqual(["r2"]);
-});
-
 // D23: a shell in a subfolder does not move the handoff, which goes under the project root.
 // biome-ignore lint/plugin: a test name
 test("a compaction with the shell in a subfolder writes the handoff under the project root", async ($: Engine, on: On) => {
   mock.env(on, { CLAUDE_PROJECT_DIR: "/p" });
-  on("session.cwd", () => ({ value: "/p/minispec/changes/c" }));
+  on("session.cwd", () => ({ value: "/p/openspec/changes/c" }));
   const { seen } = await compact($, on);
   const [path] = seen.writes[0] ?? [];
   expect(path).toMatch(

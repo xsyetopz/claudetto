@@ -27,13 +27,13 @@ export const PROJECT_LOCAL_SETTINGS = `${CLAUDE_DIR}/${LOCAL_SETTINGS_FILE}`;
 /** The folder of the hook scripts of a project or of the home folder. Claude Code runs hooks from `settings.json`, not from this folder. */
 export const CLAUDE_HOOKS_DIR = `${CLAUDE_DIR}/hooks`;
 
-/** The folder of the handoff files, from the project root, when no MiniSpec change is active. One checkout owns them. */
+/** The folder of the handoff files, from the project root, when no openspec change is active. One checkout owns them. */
 export const HANDOFF_DIR = `${CLAUDETTO_DIR}/handoffs`;
 
-/** The folder of the MiniSpec changes, from the project root. The folder `archive` in it holds the finished changes. */
-export const CHANGES_DIR = "minispec/changes";
+/** The folder of the openspec changes, from the project root. The folder `archive` in it holds the finished changes. */
+export const CHANGES_DIR = "openspec/changes";
 
-/** The name of the handoff file inside a MiniSpec change folder. */
+/** The name of the handoff file inside a openspec change folder. */
 export const CHANGE_HANDOFF_FILE = "handoff.md";
 
 /** The runtime paths in `.claude/` that git must not track. Claude Code writes the first ones, and the last one is a local file. */
