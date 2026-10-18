@@ -13,7 +13,7 @@ The main session does each task itself, with no subagent and no worktree (D37).
 Do group 3 first, then the other groups in order, so group 3 is the first section, because each compaction of the build uses the handoff and the stop gate (D37).
 The release is stable: each row of `findings.md` is closed before the tag (D38).
 
-## 3. Turn gate notice
+## 3. Turn Gate Notice
 
 - [x] 3.1 Add a test that the cap notice of the turn gate is one line with `claudetto` at most once, and see it fail.
   Check: `! just test tests/claudetto/turngate/notice.test.ts`
@@ -65,7 +65,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   On 2026-10-17 the gate denied the move of task 3.4 as a write of the verdict store, because `touchesStore` takes each folder named `.claudetto` as the store.
   Check: `just test tests/claudetto/policy && just lab`
 
-## 1. Version and evidence
+## 1. Version and Evidence
 
 - [x] 1.1 Add a test that `main(["minor", "--dry-run"])` of `tools/bump-version.ts` with no `--root` returns 0, and see it fail, because `rest` at line 95 drops `args[0]` when `at` is `-1`.
   Fix the filter, then bump the version to `0.2.0` with `just bump 0.2.0`.
@@ -77,7 +77,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [ ] 1.3 Read the rest of `external/2026-10-17/` and the older dossiers in `external/` for model, effort, prompt, and cache facts, and add each new fact that changes a decision to `design.md`.
   Check: `OPENSPEC_TELEMETRY=0 bunx --bun @fission-ai/openspec validate release-0-2-0`
 
-## 2. You-Should-Know and removals
+## 2. You-Should-Know and Removals
 
 - [x] 2.1 Read all of the code of the built-in `cc-plugin-you-should-know` in the 2.1.302 bundle, and record its behavior in `src/wiki/rationale/Decisions-Session.md` with each source line: the trigger, the model, the effort, the prompt goals, the state, the timing, the keys, and the render tree with its colors, glyphs, and layout (D1). (closed: removed in trim-0-2-0)
   Check: `grep -q cc-plugin-you-should-know src/wiki/rationale/Decisions-Session.md`
@@ -90,7 +90,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [ ] 2.4 Read how `$.prompt.fill` treats typed text and how a terminal user presses a `Button` with keys, then add a lab test that a press of the `Reply` button under a message of Claude fills the prompt with that message as a `>` quote, and see it fail, then add the mod (D56).
   Check: `just generate && just lab`
 
-## 4. Agent caps and roster
+## 4. Agent Caps and Roster
 
 - [x] 4.1 Change `tests/claudetto/agents/max-turns.test.ts` to require no `maxTurns` in each agent file, and add a test that the `tool.call` hook adds no report-now text at 120K tokens for a Sonnet or Opus subagent. (closed: removed in trim-0-2-0)
   Check: `! just test tests/claudetto/agents/max-turns.test.ts`
@@ -117,14 +117,14 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [x] 4.9 Set the picks of each account to D20 (Pro `medium`, Max 5x, Max 20x, and API key `high`, Opus 5.5 for each), with the test that pins them. (closed: obsolete: the account picks were removed in `c98733bb`)
   Check: `just test tests/claudetto/setup`
 
-## 5. Status line
+## 5. Status Line
 
 - [x] 5.1 Add tests that the context segment shows `of 300k` for a window of 1M, and that a Haiku subagent row shows the Haiku window, and see them fail.
   Check: `! just test tests/claudetto/statusline/window.test.ts`
 - [x] 5.2 Use `windowOf` from `src/kernel/budget.ts` in `segments.ts` and a family window in `adapters/subagents.ts`.
   Check: `just test tests/claudetto/statusline`
 
-## 6. Prompts and session start
+## 6. Prompts and Session Start
 
 - [x] 6.1 Record the start tokens of `0.1.0-alpha.1` by source from an existing transcript, and set `START_TOKENS` in `tools/limits.ts` to half of the part that claudetto adds. (closed: removed in trim-0-2-0)
   Check: `grep -q START_TOKENS tools/limits.ts && just test`
@@ -156,7 +156,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [ ] 6.11 Add each RED of the table in `design-prompts.md` as a fixture that a test or an eval case catches, and each GREEN as the example of its shipped text, and add the D54 line on a missing tool to the system prompt, and see the tests fail first (D55).
   Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles && just lab`
 
-## 7. Cache and setup
+## 7. Cache and Setup
 
 - [ ] 7.1 Confirm the names `promptCacheTtl` and `subagentPromptCacheTtl` in the settings schema of the installed Claude Code, and record the source in `src/wiki/rationale/Decisions-Session.md`.
   Check: `just schema && grep -rq promptCacheTtl schemas/`
@@ -190,14 +190,14 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [ ] 7.14 Run `just docker check` with the sandbox of D43, and when it fails, add the Docker socket to `sandbox.network.allowUnixSockets`, or else an `excludedCommands` entry for `docker *` alone, with a setup test that offers it only for a project that uses Docker (D43).
   Check: `just docker check && just test tests/claudetto/setup`
 
-## 8. MiniSpec format
+## 8. MiniSpec Format
 
 - [x] 8.1 Add tests that `minispec new` writes frontmatter and that `minispec validate` refuses a file with no frontmatter and a root with both `.minispec.yml` and `.minispec.yaml`, and see them fail. (closed: removed in trim-0-2-0)
   Check: `! just test tests/claudetto/minispec/format.test.ts`
 - [x] 8.2 Add the frontmatter and the `.minispec.yml` config to the `minispec` slice, and add both to this change. (closed: removed in trim-0-2-0)
   Check: `just test tests/claudetto/minispec && just generate && plugins/claudetto/bin/minispec validate release-0-2-0`
 
-## 9. jscpd and the `dry` skill
+## 9. Jscpd and the `dry` Skill
 
 - [ ] 9.1 Add tests of the `extends` merge of `jscpd` spec: deep merge, append of ignore lists, `<key>Remove`, `null`, and exit 2 on a cycle, and see them fail.
   Check: `! just test tests/claudetto/dry/merge.test.ts`
@@ -208,7 +208,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [ ] 9.4 Write the skill `dry` in at most 60 lines: when to run jscpd, how to read a clone, and when a merge of clones is right.
   Check: `just generate && just validate && bun run lint:md`
 
-## 10. Smaller source and wiki
+## 10. Smaller Source and Wiki
 
 - [x] 10.1 Remove the slices `worktree`, `attribution`, and `corrections`, the `commit-msg` hook of the setup, and their tests and wiki pages, and add a setup test that the snippet has no `WorktreeCreate` hook and sets `attribution` (D12). (closed: removed in trim-0-2-0)
   Check: `just generate && just check`
@@ -269,7 +269,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [ ] 11.7 Add an eval case that gives a task that writes to the temp folder, and checks that each folder that the task made is gone at the end, and run it at 10 runs (D44).
   Check: `just validate`
 
-## 12. Release notes and gate
+## 12. Release Notes and Gate
 
 - [ ] 12.1 Add the entries of this change under `0.2.0` in `CHANGELOG.md`.
   Check: `grep -q '0.2.0' CHANGELOG.md && bun run lint:md`
