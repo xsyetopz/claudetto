@@ -1,9 +1,11 @@
 // The CLI `claudetto-setup` of the `setup` slice. The launcher `bin/claudetto-setup` calls `main`.
 //
-//   claudetto-setup [--scope user|project|local] [--apply]
+//   claudetto-setup [--scope user|project|local] [--advisor builtin|claudetto] [--apply]
 //
 // It cleans the keys of 0.1.0 out of the settings file and out of `CLAUDE.md`, then merges the settings snippet into the settings file.
 // It writes nothing without `--apply`.
+// With `--advisor claudetto`, the snippet also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor only.
+// The skill passes the `advisor` option, because a CLI run by the user gets no `CLAUDE_PLUGIN_OPTION_*` env var.
 
 import fs from "node:fs";
 import os from "node:os";
@@ -35,6 +37,9 @@ import {
   USAGE,
   WROTE,
 } from "../prompts.ts";
+
+/** The env var that turns off the built-in advisor, for the option `advisor` = `claudetto`. */
+const ADVISOR_ENV = { CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1" };
 
 /** Where the CLI prints. */
 export type Io = { log: (line: string) => void; error: (line: string) => void };
@@ -68,10 +73,18 @@ export const main = async (
   const apply = args.includes("--apply");
   const at = args.indexOf("--scope");
   const scope = at < 0 ? "user" : args[at + 1];
+  const adv = args.indexOf("--advisor");
+  const advisor = adv < 0 ? "builtin" : args[adv + 1];
   const bad = args.filter(
-    (a, i) => a !== "--apply" && a !== "--scope" && i !== at + 1,
+    (a, i) =>
+      a !== "--apply" &&
+      a !== "--scope" &&
+      a !== "--advisor" &&
+      i !== at + 1 &&
+      i !== adv + 1,
   );
-  if (bad.length > 0) return fail(io, USAGE);
+  if (bad.length > 0 || (advisor !== "builtin" && advisor !== "claudetto"))
+    return fail(io, USAGE);
   if (!scope || scope.startsWith("--")) return fail(io, SCOPE_MISSING);
   const configDir =
     env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), CLAUDE_DIR);
@@ -103,6 +116,8 @@ export const main = async (
   }
   const cleaned = cleanLegacyKeys(cleanAutoMode(cleanGitConfig(current)));
   const { snippet, kept } = snippetFor(cleaned, ROOT, scope === "project");
+  if (advisor === "claudetto")
+    snippet["env"] = { ...(snippet["env"] as Json), ...ADVISOR_ENV };
   const changes = (
     ["env", "autoMode", "promptCacheTtl", "enabledPlugins"] as const
   )

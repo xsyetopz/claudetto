@@ -294,7 +294,7 @@ export const UNKNOWN_SCOPE = (v: { scope: string }): string =>
   `Unknown scope "${v.scope}". Use user, project, or local.`;
 
 /** From `src/plugins/claudetto/slices/setup/prompts/usage.md`. */
-export const USAGE = `Usage: claudetto-setup [--scope user|project|local] [--apply]`;
+export const USAGE = `Usage: claudetto-setup [--scope user|project|local] [--advisor builtin|claudetto] [--apply]`;
 
 /** From `src/plugins/claudetto/slices/setup/prompts/wrote.md`. */
 export const WROTE = (v: { file: string }): string =>
