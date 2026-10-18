@@ -6,13 +6,13 @@
   },
   "description": "Lists the claudetto plugin and its optional code-graph, browser, docs, sessions, and lab plugins.",
   "metadata": {
-    "version": "0.1.0-alpha.1"
+    "version": "0.2.0"
   },
   "plugins": [
     {
       "name": "claudetto",
       "source": "./plugins/claudetto",
-      "description": "Adds a lean output style, six role agents, and a status line command. Adds hooks that check edits and `git` calls, bound the context of subagents, and check Markdown line breaks.",
+      "description": "Adds a lean output style and a status line command. Adds hooks that deny printed secrets, check plan files for claims with no source, and check Markdown line breaks.",
       "category": "productivity"
     },
     {

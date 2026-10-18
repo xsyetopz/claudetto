@@ -15,4 +15,4 @@ The `Check:` of each task is in its step of `design-steps.md`.
 - [x] 1.8 Trim `src/kernel` and `tools` (step 8).
 - [x] 1.9 Rewrite `claudetto-sessions` as one skill with scripts (step 8b).
 - [x] 1.10 Add the `ground` slice (step 9).
-- [ ] 1.11 Write the CHANGELOG entries, close `release-0-2-0`, and add the `after` size (step 10, with no wiki edit).
+- [x] 1.11 Write the CHANGELOG entries, close `release-0-2-0`, and add the `after` size (step 10, with no wiki edit).

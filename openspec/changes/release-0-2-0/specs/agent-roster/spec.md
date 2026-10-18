@@ -4,6 +4,8 @@
 
 The set of subagents that the core plugin ships, with the model, the effort, and the size of work of each one.
 
+> Closed: `trim-0-2-0` removes the `agents` slice and the agent files, so this delta does not apply.
+
 ## ADDED Requirements
 
 ### Requirement: No turn cap

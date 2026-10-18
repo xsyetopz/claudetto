@@ -1,8 +1,8 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "claudetto",
-  "version": "0.1.0-alpha.1",
-  "description": "Adds a lean output style, six role agents, and a status line command. Adds hooks that check edits and `git` calls, bound the context of subagents, and check Markdown line breaks.",
+  "version": "0.2.0",
+  "description": "Adds a lean output style and a status line command. Adds hooks that deny printed secrets, check plan files for claims with no source, and check Markdown line breaks.",
   "author": {
     "name": "xsyetopz"
   },

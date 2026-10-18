@@ -92,7 +92,7 @@ export const main = async (args: string[]): Promise<number> => {
     return 2;
   }
   const root = path.resolve(given ?? path.join(import.meta.dirname, ".."));
-  const rest = args.filter((_a, i) => i !== at && i !== at + 1);
+  const rest = at < 0 ? args : args.filter((_a, i) => i !== at && i !== at + 1);
   const level = rest.find((a) => !a.startsWith("--"));
   const unknown = rest.filter((a) => a !== level && a !== "--dry-run");
   if (!level || unknown.length > 0) {

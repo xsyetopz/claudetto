@@ -4,6 +4,8 @@
 
 The file format of a MiniSpec change and the config of a repository.
 
+> Closed: `trim-0-2-0` removes `minispec`, so this delta does not apply.
+
 ## ADDED Requirements
 
 ### Requirement: Frontmatter in each change file

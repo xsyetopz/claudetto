@@ -1,5 +1,8 @@
 # Proposal: release-0-2-0
 
+> `trim-0-2-0` replaces the parts below that name removed code.
+> It removes the turn gate, the `agents` slice, `minispec`, `claudetto-you-should-know`, `just measure`, `just usage`, and `just start-run`.
+
 ## Why
 
 Live sessions of `0.1.0-alpha.1` in three repositories show that claudetto works against the user in several places.

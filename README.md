@@ -1,6 +1,6 @@
 # claudetto
 
-claudetto changes Claude Code through its official extension points: settings, hooks, skills, agents, and an output style.
+claudetto changes Claude Code through its official extension points: settings, hooks, skills, and an output style.
 It does not patch the Claude Code binary.
 Its goal is the highest quality for the lowest token cost.
 
@@ -9,18 +9,17 @@ Start with the [Home](https://github.com/xsyetopz/claudetto/wiki/Home) page, or 
 
 ## Plugins
 
-claudetto is a marketplace with one core plugin and six add-on plugins.
+claudetto is a marketplace with one core plugin and five add-on plugins.
 Each add-on works without the core plugin.
 
 | Plugin | What it gives |
 | --- | --- |
-| `claudetto` | The core: the settings snippet, the status line, the output style, six agents, ten skills, the guard and asks hooks, the spec store, and the `second_opinion` tool. |
+| `claudetto` | The core: the settings snippet, the status line, the output style, the `setup` skill, the `/handoff` command, the `guard`, `ground`, and `sembr` hooks, the tailored prompt, and the `second_opinion` tool. |
 | `claudetto-codegraph` | The code graph of a project, from the CLI `codegraph`. |
 | `claudetto-browser` | The `browse` skill, and a headless browser search for each `WebSearch` call. |
 | `claudetto-docs` | The `docs` skill, with current library docs from the CLI `ctx7`. |
-| `claudetto-sessions` | The `sessions` skill, with scripts that audit the setup and replay a hook on past transcripts. |
+| `claudetto-sessions` | The `sessions` skill, with two scripts: `audit` for the setup and `replay` for a hook on past transcripts. |
 | `claudetto-lab` | Tools for plugin authors: the sandbox, capture, schema, and eval compare. |
-| `claudetto-you-should-know` | Opt-in. Shows one thing to know before Claude changes something, in place of the built-in `cc-plugin-you-should-know`. |
 
 ## Install
 
@@ -54,49 +53,34 @@ You can also copy the keys that you want into your own `settings.json`.
 
 | Part | Effect |
 | --- | --- |
-| Compaction | Off. `autoCompactEnabled` is `false`, and `DISABLE_COMPACT` is `1`, which also turns off `/compact`. |
-| Context window | `CLAUDE_CODE_MAX_CONTEXT_TOKENS` and `CLAUDE_CODE_AUTO_COMPACT_WINDOW` are `300000`. A session that reaches the limit stops, and you run `/clear`. |
-| Memory | `autoMemoryEnabled` is `false`. The spec store holds the state instead. |
+| Compaction | The `handoff` slice replaces the summary of a compaction with a handoff. `autoCompactWindow` is `300000`. The `compaction` option `built-in` turns the handoff off. |
+| Memory | `autoMemoryEnabled` is `false`. |
+| Prompt | `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is `1`, and the `prompt` slice gives one tailored text for the short prompt. |
 | Output style | `outputStyle` is `claudetto:Concise`. Your own `outputStyle` setting can change it. |
-| Permissions | Normal work passes. Work like `sudo` asks. Destructive actions are denied by `autoMode.hard_deny`. Reads of secret files are denied. |
+| Permissions | Reads of secret files and destructive commands such as `rm -rf /` are denied. A force push asks. |
 | Sandbox | Bash runs in the sandbox. Its network reaches GitHub and the package registries only. |
-| Guard | Asks before the first call of a session to a GitHub repository of another owner that has an AI policy file. |
-| Asks | Asks only when a change weakens a check. It never asks for a read. |
-| Status line | The folder, git, model, effort, context against the window, cost, the 5-hour, 7-day, and spend limits, and the progress of a spec change. The percent turns yellow at `75%` and red at `90%`. |
-| Handoff | With the default `manual` value of `mainHandoff`, a hint at `60%` of the window tells you to run `/claudetto:handoff`. |
-| Checks | The CLI `claudetto-run-checks` runs a batch of check commands, with no model call. |
+| Guard | Denies a command that prints a secret. |
+| Ground | Denies a `Write` or `Edit` of a plan file, and a `ProposeGoal` call, that cites a `file:line` or a convention that the source does not hold. |
+| Sembr | Checks the line breaks of Markdown. |
+| Status line | The folder, git, model, effort, context against the window, cost, and the limits. The percent turns yellow at `75%` and red at `90%`. |
+| Handoff | `/handoff` writes the handoff, clears the chat, and starts the next session from it. |
 
-The core plugin has one option, `mainHandoff`.
-Its values are `auto`, `manual`, and `off`, and the default is `manual`.
-
-## Agents and models
-
-| Agent | Model | Effort |
-| --- | --- | --- |
-| `planner`, `reviewer` | `claude-opus-5-5` | `high` |
-| `debugger` | `claude-sonnet-5-5` | `high` |
-| `implementer`, `researcher` | `claude-sonnet-5-5` | `medium` |
-| `investigator` | `claude-haiku-5-5` | `medium` |
+## Model and skills
 
 The main session uses `claude-opus-5-5`, from the settings snippet.
-The `maxEffortLevel` setting is `max`, so `/effort` can go up to `max` for a hard check.
-See [Agents](https://github.com/xsyetopz/claudetto/wiki/Agents).
+`CLAUDE_CODE_SUBAGENT_MODEL` is `claude-sonnet-5-5`.
 
-The ten skills are `/claudetto:handoff`, `/claudetto:rules-creator`, `/claudetto:setup`, and the seven spec phases `/claudetto:specify`, `/claudetto:plan`, `/claudetto:implement`, `/claudetto:review`, `/claudetto:merge`, `/claudetto:accept`, and `/claudetto:archive`.
-See [Skills](https://github.com/xsyetopz/claudetto/wiki/Skills).
+The core plugin has the skill `/claudetto:setup`, and the command `/handoff`.
+Use openspec for specs: `claudetto` has no spec store.
 
 ## Long work without compaction
 
 Each model call reads the whole context again, so the size of the context sets the cost of each turn.
+Run `/handoff` to start a fresh session from a handoff.
+A model change rebuilds the prompt cache.
+An effort change keeps the prompt cache.
 
-- For work that takes more than one session, run `/claudetto:specify <id>`, or run `claudetto-spec specify <id>`.
-- Before `/clear`, run `claudetto-spec status <id>`.
-  In the fresh session, run `claudetto-spec next <id>`, which prints the brief of the next package.
-- A model change rebuilds the prompt cache.
-  An effort change keeps the prompt cache.
-
-See [Context and handoff](https://github.com/xsyetopz/claudetto/wiki/Context-And-Handoff)
-and [Spec store](https://github.com/xsyetopz/claudetto/wiki/Spec-Store).
+See [Context and handoff](https://github.com/xsyetopz/claudetto/wiki/Context-And-Handoff).
 
 ## Second opinion
 
@@ -118,7 +102,6 @@ claude plugin install claudetto-browser@claudetto
 claude plugin install claudetto-docs@claudetto
 claude plugin install claudetto-sessions@claudetto
 claude plugin install claudetto-lab@claudetto
-claude plugin install claudetto-you-should-know@claudetto
 
 # --- TUI -----------------------------
 /plugin install claudetto-codegraph@claudetto
@@ -126,7 +109,6 @@ claude plugin install claudetto-you-should-know@claudetto
 /plugin install claudetto-docs@claudetto
 /plugin install claudetto-sessions@claudetto
 /plugin install claudetto-lab@claudetto
-/plugin install claudetto-you-should-know@claudetto
 ```
 
 - `claudetto-codegraph` needs the CLI `codegraph` on `PATH`, and an index that `codegraph init -y` builds in the project.
@@ -137,13 +119,10 @@ claude plugin install claudetto-you-should-know@claudetto
   See [Browser](https://github.com/xsyetopz/claudetto/wiki/Browser).
 - `claudetto-docs` needs no key.
   See [Library docs](https://github.com/xsyetopz/claudetto/wiki/Library-Docs).
-- `claudetto-sessions` measures the start of a session and the usage of each run.
+- `claudetto-sessions` audits the setup and replays a hook on past transcripts.
   See [Sessions](https://github.com/xsyetopz/claudetto/wiki/Sessions).
 - `claudetto-lab` is for plugin authors, and it works alone.
   See [Lab](https://github.com/xsyetopz/claudetto/wiki/Lab).
-- `claudetto-you-should-know` is opt-in, because each check makes one Haiku call, on an API key or a subscription.
-  It replaces the built-in `cc-plugin-you-should-know`, so turn the built-in plugin off.
-  See [You should know](https://github.com/xsyetopz/claudetto/wiki/You-Should-Know).
 
 ## Update
 

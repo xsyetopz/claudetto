@@ -4,6 +4,8 @@
 
 The window that claudetto uses, as the status line shows it, and the prompt cache that keeps a pause cheap.
 
+> `trim-0-2-0` removes `just measure`, `just start-run`, and `START_TOKENS`, so the scenario "Measure the empty session" does not apply.
+
 ## ADDED Requirements
 
 ### Requirement: The status line shows the effective window

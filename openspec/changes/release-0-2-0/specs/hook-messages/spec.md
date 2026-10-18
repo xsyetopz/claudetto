@@ -4,6 +4,8 @@
 
 The text that the hooks show to the user.
 
+> `trim-0-2-0` removes the turn gate, so the scenario "The cap notice of the turn gate" does not apply.
+
 ## ADDED Requirements
 
 ### Requirement: One-line notices

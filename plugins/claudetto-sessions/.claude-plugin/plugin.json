@@ -1,7 +1,7 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "claudetto-sessions",
-  "version": "0.1.0-alpha.1",
+  "version": "0.2.0",
   "description": "Reads the setup of Claude Code and past transcripts with two scripts: an audit of settings, plugins, hooks, and the bytes that load at session start, and a replay of a hook on past tool calls.",
   "author": {
     "name": "xsyetopz"

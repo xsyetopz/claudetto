@@ -4,6 +4,8 @@
 
 The tools and the env vars that the settings snippet of the setup turns on or off.
 
+> `trim-0-2-0` removes the turn gate, so the scenario "The turn gate names `TaskStop`" does not apply.
+
 ## ADDED Requirements
 
 ### Requirement: No denied tool that claudetto needs

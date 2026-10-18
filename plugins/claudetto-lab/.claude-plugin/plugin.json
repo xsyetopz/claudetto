@@ -1,7 +1,7 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "claudetto-lab",
-  "version": "0.1.0-alpha.1",
+  "version": "0.2.0",
   "description": "Tools for plugin authors. Runs Claude Code in a sandbox, captures and sizes the requests, writes the JSON Schema of `settings.json`, and compares the eval scores of two plugin folders.",
   "author": {
     "name": "xsyetopz"
