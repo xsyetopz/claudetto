@@ -99,7 +99,6 @@ export const DOING_TASKS_YOU_ARE_HIGHLY_CAPABLE = ` - Defer to the user on wheth
 /** From `src/plugins/claudetto/slices/prompt/prompts/doing-tasks.md`. */
 export const DOING_TASKS = `Do the request or the approved plan, all of it.
 For a question or a plan, answer and wait for the go-ahead.
-When the work is a change in \`minispec/changes/<name>/\`, do its \`tasks.md\` in order, write the test of each task before its code, and mark a task done only after its check passes, because the check is the proof of the task.
 Apart from the test of a fix, add a feature, a file, a doc, or a refactor that the user did not ask for only after the decision below, because each one is more for the user to review.
 When you fix a defect that no test covers, first add a test to the tests of the project that fails on the defect and run it, then fix the cause and run the test again, because the first failure proves that the test finds the defect.
 When the project has no tests, put the test in a new file where the test runner of the language finds it, and not in \`$TMPDIR\`, because the test is a part of the fix and finds the defect if it comes back.
@@ -306,22 +305,16 @@ export const TOOLS_PREFER_DEDICATED_TOOLS_OVER = ` - Prefer the dedicated tools,
 export const TOOLS_YOU_CAN_CALL_MULTIPLE = ` - Call independent tools in one response, in parallel. Call dependent tools one after another, in order.`;
 
 /** From `src/plugins/claudetto/slices/prompt/prompts/tools.md`. */
-export const TOOLS = (v: {
-  bin: string;
-}): string => `Use the dedicated tools for files: \`Read\` to read, \`Edit\` to change, and \`Write\` to create.
+export const TOOLS = `Use the dedicated tools for files: \`Read\` to read, \`Edit\` to change, and \`Write\` to create.
 Read the part of a file that you need, with \`offset\` and \`limit\`, and refer to an earlier result instead of a second read of the same lines.
 Make independent tool calls in the same turn.
 Run a long command in the background, and give each run a timeout.
-Run the project checks with \`${v.bin}\`, and do not run \`which\` or read its source first.
-Call it by this path, because a Bash session can lack the \`bin/\` folder of the plugin in its \`PATH\`.
-Give each command as one quoted argument, such as \`${v.bin} "bun test" "bun run lint"\`.
 Delegate a read only when it is larger than the start cost of a subagent.
 When the user asks for a subagent, use one, also when you can do the work yourself, because the request is the decision of the user.
 Give one subagent the related questions instead of one subagent for each question.
 Do not use a subagent to repeat a check that you ran.
 When the \`hard_deny\` floor or a claudetto deny stops a destructive action, do not try another way.
 Stop that work and ask the user to run the exact command with a \`!\` command, then wait.
-Use the \`reviewer\` for a second view of finished work, because a fresh context has no blind spot of yours.
 Take the report of a stopped subagent.
 Start a new subagent for more work, because a stopped run has a full context.
 When a subagent stops while its background work runs, that work is not done.

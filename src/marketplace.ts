@@ -5,7 +5,7 @@ export const marketplace = {
   name: "claudetto",
   owner: { name: "xsyetopz" },
   description:
-    "Lists the claudetto plugin and its optional code-graph, browser, docs, sessions, lab, and you-should-know plugins.",
+    "Lists the claudetto plugin and its optional code-graph, browser, docs, sessions, and lab plugins.",
   /** The plugins in the order of the listing. Each name is a folder of `src/plugins/` with a `plugin.ts`. */
   plugins: [
     "claudetto",
@@ -14,7 +14,6 @@ export const marketplace = {
     "claudetto-docs",
     "claudetto-sessions",
     "claudetto-lab",
-    "claudetto-you-should-know",
   ],
   category: "productivity",
 } as const;

@@ -1,9 +1,7 @@
 // The destructive floor of the `guard` slice: the first matcher of a command whose tier applies gives the deny reason.
 // The `floor` tier applies in every session, and the `subagent` tier only in a subagent.
-// A batch of `claudetto-run-checks` gets the floor on each of its commands.
 // The functions are pure, and the ports of the file system and of the checkout come in through `ctx`.
 
-import { RUN_CHECKS_BIN } from "../../../../../kernel/paths.ts";
 import { MATCHERS, tierOf } from "./matchers/index.ts";
 import { isAbsPath } from "./matchers/norm.ts";
 import type { Ctx, Kind, Tier } from "./matchers/types.ts";
@@ -38,12 +36,6 @@ export const guardReason = async (
       if (await matcher.match(simple.words, scoped))
         return denyReason({ tier, command, subagent: ctx.subagent });
     }
-    // Each argument of a batch is a command that the runner runs, so it meets the same floor as a `Bash` call.
-    if (simple.words[0] === RUN_CHECKS_BIN)
-      for (const check of simple.words.slice(1)) {
-        const reason = await guardReason(check, ctx);
-        if (reason) return reason;
-      }
   }
   return null;
 };

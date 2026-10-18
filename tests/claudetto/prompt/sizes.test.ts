@@ -3,7 +3,6 @@
 // To change a text, measure the first request again and update the pin and the evidence file.
 
 import { expect, test } from "bun:test";
-import { readdirSync } from "node:fs";
 import path from "node:path";
 import {
   spawnBlock,
@@ -28,15 +27,11 @@ const variantText = (key: VariantKey) =>
     .map((s) => s.text)
     .join("\n\n");
 
-/** The `description` of an agent file, which goes into the agent listing. */
-const description = async (file: string) =>
-  /^description:\s*(.*)$/m.exec(await Bun.file(file).text())?.[1] ?? "";
-
 const VARIANT_PINS: Readonly<Record<VariantKey, number>> = {
-  opus: 8933,
-  sonnet: 8706,
-  haiku: 8825,
-  fable: 8840,
+  opus: 8286,
+  sonnet: 8059,
+  haiku: 8178,
+  fable: 8193,
 };
 
 const BLOCK_PINS: Readonly<Record<VariantKey, number>> = {
@@ -57,15 +52,6 @@ const TEXT_PINS: Readonly<Record<string, [text: string, pin: number]>> = {
   "`Read` description": [TOOL_READ, 427],
 };
 
-const AGENT_PINS: Readonly<Record<string, number>> = {
-  "debugger.md": 169,
-  "implementer.md": 259,
-  "investigator.md": 197,
-  "planner.md": 224,
-  "researcher.md": 212,
-  "reviewer.md": 191,
-};
-
 for (const [key, pin] of Object.entries(VARIANT_PINS) as [
   VariantKey,
   number,
@@ -82,22 +68,6 @@ for (const [name, [text, pin]] of Object.entries(TEXT_PINS))
   test(`the ${name} is at most ${pin} bytes`, () => {
     expect(bytes(text)).toBeLessThanOrEqual(pin);
   });
-
-test("each agent description is in its pin, and each agent has a pin", async () => {
-  const sizes = Object.fromEntries(
-    await Promise.all(
-      readdirSync(path.join(PLUGIN, "agents")).map(async (f) => [
-        f,
-        bytes(await description(path.join(PLUGIN, "agents", f))),
-      ]),
-    ),
-  );
-  expect(Object.keys(sizes).sort()).toStrictEqual(
-    Object.keys(AGENT_PINS).sort(),
-  );
-  for (const [f, size] of Object.entries(sizes))
-    expect(size, f).toBeLessThanOrEqual(AGENT_PINS[f] ?? 0);
-});
 
 test("a variant that grows past its pin fails", () => {
   const grown = `${variantText("opus")}\n\nOne more line.`;

@@ -30,20 +30,11 @@ export const CLAUDE_HOOKS_DIR = `${CLAUDE_DIR}/hooks`;
 /** The folder of the handoff files, from the project root, when no MiniSpec change is active. One checkout owns them. */
 export const HANDOFF_DIR = `${CLAUDETTO_DIR}/handoffs`;
 
-/** The corrections file of a project, from the project root, which the user writes and the `corrections` slice adds to each prompt. */
-export const CORRECTIONS_FILE = `${CLAUDETTO_DIR}/corrections.md`;
-
 /** The folder of the MiniSpec changes, from the project root. The folder `archive` in it holds the finished changes. */
 export const CHANGES_DIR = "minispec/changes";
 
 /** The name of the handoff file inside a MiniSpec change folder. */
 export const CHANGE_HANDOFF_FILE = "handoff.md";
-
-/** The name of the `bin/` command that runs a batch of check commands. */
-export const RUN_CHECKS_BIN = "claudetto-run-checks";
-
-/** The folder of the log files of `claudetto-run-checks`. It is a runtime folder, and git must not track it. */
-export const CHECKS_DIR = `${CLAUDETTO_DIR}/checks`;
 
 /** The runtime paths in `.claude/` that git must not track. Claude Code writes the first ones, and the last one is a local file. */
 export const CLAUDE_LOCAL_PATHS = [

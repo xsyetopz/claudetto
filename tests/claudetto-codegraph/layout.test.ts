@@ -28,7 +28,6 @@ const ORDER = [
   "claudetto-docs",
   "claudetto-sessions",
   "claudetto-lab",
-  "claudetto-you-should-know",
 ];
 
 test("the marketplace lists the plugins in order, and the entry has the manifest description", async () => {

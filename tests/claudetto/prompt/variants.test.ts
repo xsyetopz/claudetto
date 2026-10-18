@@ -46,19 +46,6 @@ test("the section ids of each variant are `claudetto:<word>` and unique", () => 
   }
 });
 
-test("the `tools` section names `claudetto-run-checks` by its path under the plugin root, in each variant", () => {
-  for (const k of KEYS) {
-    const tools = variantSections(k, "/cache/claudetto").find(
-      (s) => s.id === "claudetto:tools",
-    )?.text;
-    expect(tools, k).toContain(
-      '`/cache/claudetto/bin/claudetto-run-checks "bun test" "bun run lint"`',
-    );
-    // A bare name is not on `PATH` in each session (D57), so no command in the section starts with it.
-    expect(tools, k).not.toMatch(/`claudetto-run-checks[ `]/);
-  }
-});
-
 test("`shellWord` keeps a safe path and quotes a path with a space or a quote", () => {
   expect(shellWord("/Users/a-b/.claude/plugins/c@1.0")).toBe(
     "/Users/a-b/.claude/plugins/c@1.0",

@@ -1,22 +1,4 @@
 {
-  "WorktreeCreate slices/worktree/adapters/run.ts create": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": true,
-    "allow": "tests/claudetto/worktree/create.test.ts > a worktree starts from `HEAD` with the files of `.worktreeinclude`",
-    "text": "tests/claudetto/worktree/create.test.ts > the hook prints the path of the new worktree",
-    "block": "tests/claudetto/worktree/create.test.ts > a name with a path part fails with a reason and makes no worktree",
-    "false": "tests/claudetto/worktree/create.test.ts > a folder with no repository fails with a reason"
-  },
-  "WorktreeRemove slices/worktree/adapters/run.ts remove": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": true,
-    "allow": "tests/claudetto/worktree/remove.test.ts > a worktree with only copied files is removed",
-    "text": "tests/claudetto/worktree/remove.test.ts > a worktree with a file of a session stays and the reason names the file",
-    "block": "tests/claudetto/worktree/remove.test.ts > an ignored file that a session made keeps the worktree",
-    "false": "tests/claudetto/worktree/remove.test.ts > a worktree that is already gone gives exit 0"
-  },
   "agent.offer surface": {
     "requests": 0,
     "tokens": 0,
@@ -24,69 +6,12 @@
     "allow": "plugins/claudetto/tests/surface.test.ts > `agent.offer` offers an agent that is not dropped",
     "text": "plugins/claudetto/tests/surface.test.ts > `agent.offer` leaves a dropped agent out of the listing"
   },
-  "agent.spawn attribution": {
-    "requests": 0,
-    "tokens": 70,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/attribution.test.ts > a fork keeps its task prompt",
-    "text": "plugins/claudetto/tests/attribution.test.ts > a subagent task prompt ends with the reminder for its model"
-  },
   "agent.spawn prompt": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
     "allow": "plugins/claudetto/tests/variants.test.ts > a spawn passes its task prompt on unchanged",
     "text": "plugins/claudetto/tests/variants.test.ts > a spawn with no `model` gets the block of its own model"
-  },
-  "classic.PermissionDenied usercheck": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/usercheck.test.ts > with no denied call, the stop passes",
-    "text": "plugins/claudetto/tests/usercheck.test.ts > after a denied call, a reply with no `!` command gets one block that names the call"
-  },
-  "classic.SessionStart repostate": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/repostate.test.ts > a folder with no git gives no context",
-    "text": "plugins/claudetto/tests/repostate.test.ts > a version with no tag gives a context that says that the version has no tag"
-  },
-  "classic.Stop turngate": {
-    "requests": 1,
-    "tokens": 2500,
-    "blocks": true,
-    "allow": "plugins/claudetto/tests/turngate.test.ts > when each background task ended, the task part passes",
-    "text": "plugins/claudetto/tests/turngate.test.ts > a block sends only the reason, with no line of the rubric",
-    "block": "plugins/claudetto/tests/turngate.test.ts > a claim with no check after the last edit is blocked",
-    "false": "plugins/claudetto/tests/turngate.test.ts > a reply that only asks a question passes",
-    "eval": "claim-check"
-  },
-  "classic.Stop usercheck": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": true,
-    "allow": "plugins/claudetto/tests/usercheck.test.ts > after a denied call, a reply with a `!` command passes",
-    "text": "plugins/claudetto/tests/usercheck.test.ts > after a denied call, a reply with no `!` command gets one block that names the call",
-    "block": "plugins/claudetto/tests/usercheck.test.ts > after a denied call, a reply with no `!` command gets one block that names the call",
-    "false": "plugins/claudetto/tests/usercheck.test.ts > a stop after a block passes, so the block comes one time"
-  },
-  "classic.SubagentStop turngate": {
-    "requests": 1,
-    "tokens": 2500,
-    "blocks": true,
-    "allow": "plugins/claudetto/tests/turngate.test.ts > when each background task ended, the task part passes",
-    "text": "plugins/claudetto/tests/turngate.test.ts > a block sends only the reason, with no line of the rubric",
-    "block": "plugins/claudetto/tests/turngate.test.ts > a subagent is judged on its own calls only",
-    "false": "plugins/claudetto/tests/turngate.test.ts > a reply that only asks a question passes",
-    "eval": "claim-check"
-  },
-  "command.run gc": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/gc.test.ts > another command runs unchanged",
-    "text": "plugins/claudetto/tests/gc.test.ts > the command `claudetto:gc` passes the dry-run option to the CLI"
   },
   "command.run handoff": {
     "requests": 1,
@@ -117,40 +42,12 @@
     "allow": "plugins/claudetto/tests/section.test.ts > another section keeps the text of the engine",
     "text": "plugins/claudetto/tests/section.test.ts > with the handoff on, the `context_management` section says that a handoff carries the work"
   },
-  "prompt.submit turngate": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/context.test.ts > the judge gets the last user prompt and the earlier reply",
-    "text": "plugins/claudetto/tests/context.test.ts > a prompt that the user did not write is not the request"
-  },
-  "prompt.submit attribution": {
-    "requests": 0,
-    "tokens": 70,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/attribution.test.ts > a second prompt with the same lines gets no reminder",
-    "text": "plugins/claudetto/tests/attribution.test.ts > the first prompt gets the reminder with the trailer of the main model"
-  },
-  "prompt.submit corrections": {
-    "requests": 0,
-    "tokens": 420,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/corrections.test.ts > a project with no corrections file adds no context",
-    "text": "plugins/claudetto/tests/corrections.test.ts > a prompt of the user gets the last items of the corrections file as context"
-  },
   "session.append prompt": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
     "allow": "plugins/claudetto/tests/variants.test.ts > a spawn on a model with no variant keeps its task row",
     "text": "plugins/claudetto/tests/variants.test.ts > a spawn on Haiku 5.5 ends the task row with its block one time"
-  },
-  "session.compact attribution": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/attribution.test.ts > after a compaction the next prompt gets the reminder again",
-    "text": "plugins/claudetto/tests/attribution.test.ts > after a compaction the next prompt gets the reminder again"
   },
   "session.compact handoff": {
     "requests": 1,
@@ -160,26 +57,12 @@
     "allow": "plugins/claudetto/tests/compaction.test.ts > a subagent compaction passes on with no change",
     "text": "plugins/claudetto/tests/compaction.test.ts > an auto compaction gives one user message with the first user message and the handoff, and the tail"
   },
-  "session.end gc": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/gc.test.ts > session end passes the end on",
-    "text": "plugins/claudetto/tests/gc.test.ts > session end runs the sweep with the id of the ending session"
-  },
   "session.start decide": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
     "allow": "plugins/claudetto/tests/session.test.ts > with the option off, session start registers no tool and passes the session on",
     "text": "plugins/claudetto/tests/session.test.ts > with the option `jev`, session start registers the tool with its input schema"
-  },
-  "session.start gc": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/gc.test.ts > session start passes the session on",
-    "text": "plugins/claudetto/tests/gc.test.ts > session start runs the sweep without the ending option"
   },
   "session.start handoff": {
     "requests": 0,
@@ -188,33 +71,12 @@
     "allow": "plugins/claudetto/tests/command.test.ts > a refused name gives no error at session start",
     "text": "plugins/claudetto/tests/command.test.ts > the session start registers the command `handoff`"
   },
-  "session.start policy": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/policy.test.ts > with the option off, session start registers no tool",
-    "text": "plugins/claudetto/tests/policy.test.ts > session start registers the tool `ai_policy`"
-  },
   "session.start setup": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
     "allow": "plugins/claudetto/tests/drift.test.ts > no drift adds no text",
     "text": "plugins/claudetto/tests/drift.test.ts > a settings file without the snippet names the missing values and the setup skill"
-  },
-  "tool.call gc": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/gc.test.ts > a `Bash` call that makes no output writes no record",
-    "text": "plugins/claudetto/tests/gc.test.ts > `mktemp -d` writes a record with the path and the session id"
-  },
-  "tool.call turngate": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/turngate.test.ts > the judge gets the summary of the tool calls of the turn",
-    "text": "plugins/claudetto/tests/turngate.test.ts > the judge gets the summary of the tool calls of the turn"
   },
   "tool.call decide": {
     "requests": 0,
@@ -230,24 +92,6 @@
     "allow": "plugins/claudetto/tests/sembr.test.ts > a `Write` of another file type keeps its content",
     "text": "plugins/claudetto/tests/sembr.test.ts > a `Write` of a Markdown file gets one sentence on each line"
   },
-  "tool.call agents": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": true,
-    "allow": "tests/claudetto/agents/hooks.test.ts > a subagent in its bound gets no note",
-    "text": "tests/claudetto/agents/hooks.test.ts > a subagent over its bound gets the note one time in 10 calls",
-    "block": "tests/claudetto/agents/hooks.test.ts > the planner write outside the change folder is denied",
-    "false": "tests/claudetto/agents/hooks.test.ts > the planner write inside the change folder is allowed"
-  },
-  "tool.call attribution": {
-    "requests": 0,
-    "tokens": 100,
-    "blocks": true,
-    "allow": "plugins/claudetto/tests/git.test.ts > a commit without a bypass passes",
-    "text": "plugins/claudetto/tests/git.test.ts > a pull request without the line gets a note after `gh pr create`",
-    "block": "plugins/claudetto/tests/git.test.ts > `git commit --no-verify` is denied",
-    "false": "plugins/claudetto/tests/git.test.ts > with the commit line off, `--no-verify` passes"
-  },
   "tool.call guard": {
     "requests": 0,
     "tokens": 0,
@@ -257,87 +101,11 @@
     "block": "plugins/claudetto/tests/print.test.ts > a `Bash` print of a file is denied with the `Read` range",
     "false": "tests/claudetto/guard/print.test.ts > a command with an edit, a byte count, or another bounded form stays allowed"
   },
-  "tool.call policy": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": true,
-    "allow": "plugins/claudetto/tests/policy.test.ts > a repository of the user passes",
-    "text": "plugins/claudetto/tests/policy.test.ts > the first push to another repository is denied with the list of its policy files",
-    "block": "plugins/claudetto/tests/policy.test.ts > a forbidden verdict denies a push, a GitHub write, and an MCP write",
-    "false": "plugins/claudetto/tests/policy.test.ts > a read of a forbidden repository stays allowed"
-  },
-  "tool.call reads": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": true,
-    "allow": "plugins/claudetto/tests/reads.test.ts > a read of a changed file runs",
-    "text": "plugins/claudetto/tests/reads.test.ts > a full read after the same full read is denied, and the reason gives the path and the range",
-    "block": "plugins/claudetto/tests/reads.test.ts > a call that the user rejected is denied when it comes again with the same input",
-    "false": "plugins/claudetto/tests/reads.test.ts > a call with another input runs after a rejection"
-  },
-  "tool.check asks": {
-    "requests": 1,
-    "tokens": 5000,
-    "eval": "test-judge",
-    "blocks": true,
-    "allow": "plugins/claudetto/tests/asks.test.ts > a `Write` of a source file gets no ask",
-    "text": "plugins/claudetto/tests/asks.test.ts > a `Write` that changes a line of a test file asks",
-    "block": "plugins/claudetto/tests/asks.test.ts > a `Write` that changes a line of a test file asks",
-    "false": "plugins/claudetto/tests/asks.test.ts > a `Write` of a source file gets no ask"
-  },
-  "tool.check policy": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": true,
-    "allow": "plugins/claudetto/tests/consent.test.ts > an allowed verdict lets a push pass with no ask",
-    "text": "plugins/claudetto/tests/consent.test.ts > a silent verdict asks the user before each push",
-    "block": "plugins/claudetto/tests/consent.test.ts > a silent verdict asks the user before each push",
-    "false": "plugins/claudetto/tests/consent.test.ts > an edit never asks, also in a repository with a silent verdict"
-  },
-  "tool.check repostate": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": true,
-    "allow": "plugins/claudetto/tests/repostate.test.ts > an edit of `[Unreleased]` for a version with a tag gets no ask",
-    "text": "plugins/claudetto/tests/repostate.test.ts > an edit of `[Unreleased]` for a version with no tag asks and names the version",
-    "block": "plugins/claudetto/tests/repostate.test.ts > `bun add left-padx` asks when the registry has no such package",
-    "false": "plugins/claudetto/tests/repostate.test.ts > `bun add left-padx` gets no ask when the registry has the package"
-  },
-  "tool.check turngate": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": true,
-    "allow": "plugins/claudetto/tests/jobs.test.ts > a job that `wait` ends passes",
-    "text": "plugins/claudetto/tests/jobs.test.ts > the deny reason names `run_in_background` and the PID",
-    "block": "plugins/claudetto/tests/jobs.test.ts > a `nohup` job is denied",
-    "false": "plugins/claudetto/tests/jobs.test.ts > a `kill` by PID passes"
-  },
   "tool.describe surface": {
     "requests": 0,
     "tokens": 0,
     "blocks": false,
     "allow": "plugins/claudetto/tests/surface.test.ts > `tool.describe` passes an unknown tool on with no change",
     "text": "plugins/claudetto/tests/surface.test.ts > `tool.describe` replaces the built-in `Bash` description with a shorter one"
-  },
-  "turn.complete repostate": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/repostate.test.ts > a response from the requested model leaves the status line clear",
-    "text": "plugins/claudetto/tests/repostate.test.ts > a response from another model shows the mark and the served model"
-  },
-  "turn.complete turngate": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/turngate.test.ts > an interrupted turn clears the tool calls",
-    "text": "plugins/claudetto/tests/turngate.test.ts > an interrupted turn clears the tool calls"
-  },
-  "turn.step agents": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "tests/claudetto/agents/hooks.test.ts > a step of the main loop keeps no state",
-    "text": "tests/claudetto/agents/hooks.test.ts > a step of a subagent keeps its context"
   }
 }

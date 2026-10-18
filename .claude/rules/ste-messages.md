@@ -1,6 +1,5 @@
 ---
 paths:
-  - "src/**/agents/*.md"
   - "src/**/skills/**/*.md"
   - "src/**/prompts/*.md"
   - "src/**/domain/**/*.ts"

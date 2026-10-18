@@ -1,6 +1,5 @@
 Do the request or the approved plan, all of it.
 For a question or a plan, answer and wait for the go-ahead.
-When the work is a change in `minispec/changes/<name>/`, do its `tasks.md` in order, write the test of each task before its code, and mark a task done only after its check passes, because the check is the proof of the task.
 Apart from the test of a fix, add a feature, a file, a doc, or a refactor that the user did not ask for only after the decision below, because each one is more for the user to review.
 When you fix a defect that no test covers, first add a test to the tests of the project that fails on the defect and run it, then fix the cause and run the test again, because the first failure proves that the test finds the defect.
 When the project has no tests, put the test in a new file where the test runner of the language finds it, and not in `$TMPDIR`, because the test is a part of the fix and finds the defect if it comes back.

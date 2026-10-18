@@ -2,7 +2,6 @@
 // Claude Code reads `autoMode` only from the user settings, so setup writes it to the user scope only.
 // This file is in the import graph of the hooks module through `drift.ts`, so it has no `node:` import.
 
-import { prosesOf } from "../../../../../kernel/policy/index.ts";
 import { AUTOMODE } from "../prompts.ts";
 import { isObject } from "./merge.ts";
 import type { Change, Json } from "./types.ts";
@@ -12,18 +11,9 @@ export const DEFAULTS = "$defaults";
 
 const show = (v: unknown) => (v === undefined ? "(unset)" : JSON.stringify(v));
 
-/**
- * The lists that setup writes: the texts of `AUTOMODE`, with the rules of the catalog added.
- * The `ask` rules go to `soft_deny`, and the `floor` and `subagent` rules go to `hard_deny`.
- */
+/** The lists that setup writes: the texts of `AUTOMODE`, which hold `$defaults` and the claudetto entries. */
 export const wantedLists = (): Record<string, unknown[]> => ({
   ...(AUTOMODE as Record<string, unknown[]>),
-  soft_deny: [...AUTOMODE.soft_deny, ...prosesOf("ask")],
-  hard_deny: [
-    ...AUTOMODE.hard_deny,
-    ...prosesOf("floor"),
-    ...prosesOf("subagent"),
-  ],
 });
 
 /**

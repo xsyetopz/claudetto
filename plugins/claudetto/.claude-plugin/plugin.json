@@ -9,12 +9,6 @@
   "repository": "https://github.com/xsyetopz/claudetto",
   "license": "MIT",
   "userConfig": {
-    "testJudge": {
-      "type": "boolean",
-      "title": "Test Judge",
-      "description": "On: a small model reads the lines that a call adds to a test file that exists, and an added line that makes a test weaker asks. Each check is one Haiku call of at most about 5,000 tokens. Off: the added lines get no check, and a lost or changed line still asks.",
-      "default": true
-    },
     "decide": {
       "type": "string",
       "title": "Second Opinion",
@@ -28,18 +22,6 @@
       "description": "Use `handoff` to write a handoff file in place of the compaction summary, or `built-in` for the compaction of Claude Code.",
       "default": "handoff",
       "options": ["handoff", "built-in"]
-    },
-    "aiPolicy": {
-      "type": "boolean",
-      "title": "AI Policy Gate",
-      "description": "When on, claudetto reads the AI policy of each repository that is not yours before Claude pushes or writes to GitHub there, and blocks those actions when the policy forbids AI tools. Local edits and commits stay allowed.",
-      "default": true
-    },
-    "judge": {
-      "type": "boolean",
-      "title": "Turn Judge",
-      "description": "On: a model checks the end of each turn that has a reply, and blocks a claim that no call shows, a step that it gives the user with no block, and a change of position with no new evidence. Each check is one Sonnet call of at most about 2,500 tokens.",
-      "default": true
     }
   },
   "homepage": "https://github.com/xsyetopz/claudetto/wiki/Architecture",

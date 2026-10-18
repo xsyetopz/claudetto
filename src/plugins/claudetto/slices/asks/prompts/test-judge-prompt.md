@@ -1,3 +1,0 @@
-The file: `{{rel}}`
-
-{{text}}

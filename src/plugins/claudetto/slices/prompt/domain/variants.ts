@@ -5,7 +5,6 @@
 // The texts come from `prompts/` of the slice through `just generate`.
 // The `intro` section is the `lean_body` transform of the live block of Claude Code 2.1.301 in `live-block.ts`, which names its capture command.
 
-import { RUN_CHECKS_BIN } from "../../../../../kernel/paths.ts";
 import {
   ACTIONS,
   BLOCK_LINE,
@@ -43,18 +42,16 @@ export const shellWord = (path: string): string =>
 
 /**
  * The shared sections, in prompt order.
- * `root` is the root of the plugin.
- * The `tools` section names the `claudetto-run-checks` file by its path under `root`,
- * because Claude Code adds the `bin/` folder of a plugin to `PATH` only through the shell snapshot (D57).
+ * `_root` is the root of the plugin, which no shared section names now.
  */
-export const sharedSections = (root: string): string[] => [
+export const sharedSections = (_root: string): string[] => [
   section("intro", INTRO),
   section("doing_tasks", DOING_TASKS),
   section("system", SYSTEM),
   section("blocks", BLOCKS),
   section("verification", VERIFICATION),
   section("actions", ACTIONS),
-  section("tools", TOOLS({ bin: shellWord(`${root}/bin/${RUN_CHECKS_BIN}`) })),
+  section("tools", TOOLS),
   section("counts", COUNTS),
 ];
 

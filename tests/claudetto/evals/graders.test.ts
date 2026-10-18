@@ -168,17 +168,6 @@ test("a file-state grader is built from the builders of `tests/support/eval-patt
   }
 });
 
-test("the file-state grader of `data/big.log` does not see a change in the middle, which is the bound", async () => {
-  const dir = runScaffold(path.join(EVALS, "big-file-subagent"));
-  const content = await Bun.file(path.join(dir, "data/big.log")).text();
-  const re = regexOf(grader("big-file-subagent", "kept-data-big-log"));
-  expect(content.length > 900_000).toBeTruthy();
-  expect(re.test(content.replace("row 000100", "row 000101"))).toBeTruthy();
-  expect(re.test(content.replace("KX-7731", "KX-0000"))).toBe(false);
-  expect(re.test(content.replace(/\n[^\n]*\n$/, "\n"))).toBe(false);
-  expect(re.test(`${content}extra\n`)).toBe(false);
-});
-
 const ABS = {
   name: "abs-fixed",
   target: { source: "file", path: "src/abs.mjs" },

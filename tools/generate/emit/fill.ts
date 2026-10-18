@@ -10,24 +10,26 @@ import {
   CONTEXT_WINDOW,
   USAGE_LEVELS,
 } from "../../../src/kernel/budget.ts";
-import {
-  HAIKU_CONTEXT_MAX,
-  REPORT_MAX_WORDS,
-  SUBAGENT_CONTEXT_MAX,
-} from "../../../src/plugins/claudetto/slices/agents/limits.ts";
-import { FILE_MAX_BYTES } from "../../../src/plugins/claudetto/slices/asks/limits.ts";
 import { MAX_ROWS } from "../../../src/plugins/claudetto/slices/statusline/limits.ts";
+
+/**
+ * The values of the cut slices `agents` and `asks`, which the pages of `src/wiki/` still name.
+ * Remove them with those pages, after the 0.2.0 release tag.
+ */
+const CUT_VALUES = {
+  FILE_MAX_BYTES: 1_000_000,
+  HAIKU_CONTEXT_MAX: 85_000,
+  REPORT_MAX_WORDS: 400,
+  SUBAGENT_CONTEXT_MAX: 100_000,
+};
 
 /** The limits that a source can name as `{{NAME}}`, from the one place in code where each is set. A number has the `300,000` form of the docs. */
 export const VALUES: Record<string, string> = Object.fromEntries(
   Object.entries({
     BASH_OUTPUT_MAX_CHARS,
     CONTEXT_WINDOW,
-    FILE_MAX_BYTES,
     MAX_ROWS,
-    HAIKU_CONTEXT_MAX,
-    REPORT_MAX_WORDS,
-    SUBAGENT_CONTEXT_MAX,
+    ...CUT_VALUES,
     USAGE_LEVEL_LOW: USAGE_LEVELS[0],
     USAGE_LEVEL_HIGH: USAGE_LEVELS[1],
   }).map(([name, value]) => [name, value.toLocaleString("en-US")]),

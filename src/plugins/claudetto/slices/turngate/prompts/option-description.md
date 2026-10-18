@@ -1,1 +1,0 @@
-On: a model checks the end of each turn that has a reply, and blocks a claim that no call shows, a step that it gives the user with no block, and a change of position with no new evidence. Each check is one Sonnet call of at most about {{JUDGE_TOKENS}} tokens.

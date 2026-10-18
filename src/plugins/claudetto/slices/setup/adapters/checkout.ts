@@ -4,15 +4,17 @@
 
 import path from "node:path";
 import { runProgram } from "../../../../../kernel/node/process.ts";
-import {
-  FLAT_DIR,
-  STORE_DIR,
-  safeOf,
-} from "../../../../../kernel/push-hook/index.ts";
 import { ownedOrgsOf } from "../../../../../kernel/repo/orgs.ts";
 import { keyOf, type Repo, repoOf } from "../../../../../kernel/repo/remote.ts";
 import { GH_TIMEOUT_MS } from "../limits.ts";
 import { git } from "./git.ts";
+
+/** The store folder of the verdicts that 0.1.0 wrote under the home folder, and its folder of one word for each repository. */
+const STORE_DIR = ".claudetto/policy";
+const FLAT_DIR = "flat";
+
+/** The file name of a repository key. */
+const safeOf = (key: string): string => key.replace(/[^a-z0-9.-]+/g, "_");
 
 /** The trimmed stdout of `gh args`, or `undefined` when `gh` is missing or fails. */
 const gh = (args: string[], cwd: string, env: NodeJS.ProcessEnv) => {

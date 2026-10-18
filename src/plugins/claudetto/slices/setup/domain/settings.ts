@@ -3,7 +3,6 @@
 
 import { DOCS_SNIPPET } from "../prompts.ts";
 import { planAutoMode } from "./automode.ts";
-import { planCommitHook } from "./commit-hook.ts";
 import {
   FABLE,
   foreignStatusLines,
@@ -112,7 +111,6 @@ export const planSettings = (
     ).settings;
   if (picks) settings = mergeSettings(settings, picks, "", changes).settings;
   if (autoMode) settings = planAutoMode(settings, changes);
-  settings = planCommitHook(settings, changes);
   settings = planSigningKey(settings, signingKey, changes, agentSocket);
   if (advisor)
     settings = mergeSettings(

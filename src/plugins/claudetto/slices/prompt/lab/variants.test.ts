@@ -194,13 +194,3 @@ test("a row of the main loop keeps its text", async ($: Engine, on: On) => {
   });
   expect(await rowText($, "Read the file.")).toBe("Read the file.");
 });
-
-// biome-ignore lint/plugin: a test name that states the rule
-test("`prompt.compose` names `claudetto-run-checks` by a path under the plugin root of the session", async ($: Engine, on: On) => {
-  stub(on);
-  const text = bytes(await compose($, "claude-haiku-5-5"));
-  const path = /`(\S+claudetto-run-checks)`, and do not run/.exec(text)?.[1];
-  expect(path).toBeDefined();
-  // The path is absolute, so a Bash session without the plugin `bin/` folder in `PATH` still finds the file.
-  expect(path).toMatch(/^\/.*\/bin\/claudetto-run-checks$/);
-});
