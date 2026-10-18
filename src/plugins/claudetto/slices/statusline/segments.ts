@@ -4,6 +4,7 @@
 import {
   HAIKU_HANDOFF_TRIGGER_TOKENS,
   HANDOFF_TRIGGER_TOKENS,
+  windowOf,
 } from "../../../../kernel/budget.ts";
 import { parseModel } from "../../../../kernel/model.ts";
 import type { StatusSegment } from "../../../../kernel/slice.ts";
@@ -62,16 +63,18 @@ const changeText = (change: Change, paint: Status["paint"]): string => {
   }
 };
 
-/** `▤ 12% of 1M ⇥180k`: the tokens left to the handoff trigger (the compaction threshold with `built-in`), warning within `TRIGGER_WARN_FRACTION` of it. */
+/** `▤ 40% of 300k ⇥180k`: the used tokens against the effective window (`windowOf`),: the tokens left to the handoff trigger (the compaction threshold with `built-in`), warning within `TRIGGER_WARN_FRACTION` of it. */
 const contextText = ({ input, paint, compaction }: Status) => {
   const window = input.context_window;
   const used = window?.used_percentage;
   if (used === undefined || used === null) return null;
   if (!isNumber(used)) return paint.limit(`${ICON.context} ${ICON.error}`);
-  const percent = Math.round(used);
-  const size = window?.context_window_size;
-  const of = isNumber(size) && size > 0 ? ` of ${windowText(size)}` : "";
   const tokens = window?.total_input_tokens;
+  const effective = windowOf(window?.context_window_size);
+  const percent = isNumber(tokens)
+    ? Math.min(100, Math.round((tokens / effective) * 100))
+    : Math.round(used);
+  const of = ` of ${windowText(effective)}`;
   if (!isNumber(tokens))
     return paint.level(percent)(`${ICON.context} ${percent}%${of}`);
   const trigger =

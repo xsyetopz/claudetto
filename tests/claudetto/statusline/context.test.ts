@@ -15,13 +15,13 @@ const withContext = (
     { env: { COLUMNS: "160", NO_COLOR: "1", ...env }, ...over },
   );
 
-test("an Opus session with a 1M window shows the percent of 1M, not of a fixed window", async () => {
+test("an Opus session with a 1M window shows the percent of the 300k effective window", async () => {
   const { text } = await withContext("claude-opus-5-5", {
     total_input_tokens: 120_000,
     context_window_size: 1_000_000,
     used_percentage: 12,
   });
-  expect(text).toContain("▤ 12% of 1M ⇥105k");
+  expect(text).toContain("▤ 40% of 300k ⇥105k");
 });
 
 test("an Opus session counts the distance from the handoff trigger of 225k tokens", async () => {

@@ -1,5 +1,10 @@
 // The rows of `subagentStatusLine`: one row for each running subagent. The description fills the room that is left.
 
+import {
+  HAIKU_AUTOCOMPACT_WINDOW,
+  windowOf,
+} from "../../../../kernel/budget.ts";
+import { parseModel } from "../../../../kernel/model.ts";
 import type { Paint } from "./color.ts";
 import { modelLabel, span, thousands } from "./format.ts";
 import { ICON } from "./icons.ts";
@@ -17,9 +22,12 @@ const renderTask = (
   const agentType = task.agentType?.replace(/^[^:]+:/, "");
   const name = task.name || agentType || "agent";
   const tokens = task.tokenCount ?? 0;
-  const size = task.contextWindowSize;
-  const sized = typeof size === "number" && Number.isFinite(size) && size > 0;
-  const percent = sized ? Math.round((tokens / size) * 100) : 0;
+  // The effective window: the Haiku window for a Haiku model, else `windowOf`.
+  const size =
+    parseModel(task.model)?.family === "haiku"
+      ? HAIKU_AUTOCOMPACT_WINDOW
+      : windowOf(task.contextWindowSize);
+  const percent = Math.min(100, Math.round((tokens / size) * 100));
   const start =
     typeof task.startTime === "number"
       ? task.startTime
@@ -33,7 +41,7 @@ const renderTask = (
     `${ICON.agent} ${paint.bold(name)}${type}${model}`,
     tokens > 0
       ? paint.level(percent)(
-          `${ICON.context} ${thousands(tokens)}${sized ? `/${thousands(size)} ${percent}%` : ""}`,
+          `${ICON.context} ${thousands(tokens)}/${thousands(size)} ${percent}%`,
         )
       : "",
     Number.isFinite(start)
