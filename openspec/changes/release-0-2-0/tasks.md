@@ -271,11 +271,11 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 ## 12. Release Notes and Gate
 
-- [ ] 12.1 Add the entries of this change under `0.2.0` in `CHANGELOG.md`.
+- [x] 12.1 Add the entries of this change under `0.2.0` in `CHANGELOG.md`.
   Check: `grep -q '0.2.0' CHANGELOG.md && bun run lint:md`
 - [ ] 12.2 Add a `just validate` rule that fails while `findings.md` has a row with no passed check, and see it fail on the open rows (D38).
   Check: `just validate`
-- [ ] 12.3 Run the full gate in a container.
+- [x] 12.3 Run the full gate in a container.
   Check: `just docker check`
 - [ ] 12.4 Ask the user before the paid run, with the cost and the weekly share, then run one `just sandbox` session of the setup and one task of each slice on a fresh config, and write each fault to `findings.md` and fix it (D38).
   Check: `just validate`

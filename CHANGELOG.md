@@ -29,7 +29,7 @@ Run `/claudetto:setup` again after the update, because it cleans the settings of
 - **Breaking:** `prompt` is rebuilt on the short prompt of Claude Code 2.1.302 (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`), and it answers `lean_body` with one tailored text, so the per-model variants are gone, and `surface` is merged into it.
   It leaves out 5 attachment kinds, hides 47 commands, takes 1 agent type from the model, and turns off 2 more plugins (`tools/builtins/verdicts/`).
 - **Breaking:** `setup` merges the settings snippet and the cleanup of 0.1.0: the `hook.claudetto-*` git config pairs, the rule texts of the 0.1.0 policy, and the `CLAUDE.md` block, and the `trim` slice is merged into it, and `setup` no longer installs the commit and push hooks.
-- The status line shows the percent of the effective window, such as `40% of 300k`, and a Haiku subagent row shows the Haiku window.
+- The status line shows the percent of the effective window, such as `40% of 300k`, and a Haiku subagent row shows the Haiku window, and `--help` of `claudetto-setup`, `claudetto-statusline`, `claudetto-codegraph-check`, and the `replay` script of `sessions` prints the usage.
 - The system prompt and the `Concise` style add a least-code rule, the pushback tiers, a missing tool as a step that the agent installs, the next action with no apology after a correction, and the check rule of the prompt audit, which the `story` schema of the `spec` skill also holds.
 - `claudetto-browser` tells the agent to install `agent-browser` with `npm install -g agent-browser`, and `sembr` puts each Markdown heading in Title Case in place.
 - The settings snippet has 25 exact git `ask` rules that name the destructive flags, such as `git push* --force` and `git reset* --hard`.
