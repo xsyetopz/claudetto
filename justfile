@@ -23,6 +23,11 @@ typecheck:
 validate:
     bun run validate
 
+# Fail on a clone that `.jscpd-baseline.json` does not hold: merge `jscpd.local.json` into `.jscpd.json`, then run jscpd (`bunx jscpd --update-baseline` accepts the clones of the run)
+dry:
+    bun plugins/claudetto/bin/jscpd-config
+    bunx jscpd --no-tips
+
 # Run the hook lab: the tests of each plugin hooks module, with stubbed Claude Code events
 lab:
     bun tools/lab.ts
@@ -37,10 +42,10 @@ check:
 
 # The steps of `check`, with no lock; `ci` lists the same steps, and `check` holds the lock of the run
 [private]
-gate: lint typecheck (generate "--check") test validate lab
+gate: lint typecheck (generate "--check") test validate lab dry
 
 # The gate of the CI `check` job: `check` without the type check, because CI has no `.claude-plugin/types/`
-ci: lint (generate "--check") test validate lab
+ci: lint (generate "--check") test validate lab dry
 
 # Run Claude Code with the plugins of this checkout, in a sandbox config apart from yours; extra arguments go to claude
 sandbox *args:
