@@ -12,6 +12,8 @@ type Value = string | number | boolean | null;
 export const ENV_DEFAULTS: Readonly<Record<string, Value>> = {
   // The default percentage depends on the model, and a value above it is ignored.
   CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: null,
+  // With no entry, the main conversation gets 1 hour for a subscription within its included usage, and 5 minutes for an API key.
+  CLAUDE_CODE_PROMPT_CACHE_TTL: null,
   // With no entry, Claude Code connects in a supported IDE, and `true` forces a connection.
   CLAUDE_CODE_AUTO_CONNECT_IDE: null,
   CLAUDE_CODE_DISABLE_CFC_PROMPT: "0",

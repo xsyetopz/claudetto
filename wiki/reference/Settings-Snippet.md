@@ -26,6 +26,7 @@ To apply the snippet with setup or by hand, see [Settings Apply](Settings-Apply)
     "CLAUDE_CODE_FORK_SUBAGENT": "0",
     "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "1",
     "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "2",
+    "CLAUDE_CODE_PROMPT_CACHE_TTL": "1h",
     "CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT": "1",
     "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-5-5",
     "DISABLE_ERROR_REPORTING": "1",

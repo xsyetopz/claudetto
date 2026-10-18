@@ -65,8 +65,9 @@ test("a second compaction holds the first user message once, the new handoff, an
   });
   const text = second.messages?.[0]?.text ?? "";
   expect(text.split(FIRST)).toHaveLength(2);
-  expect(text).toContain(H2);
-  expect(text).not.toContain(H1);
+  // The hook takes the `DONE` mark off the model text (D48).
+  expect(text).toContain(H2.replace(" DONE,", ""));
+  expect(text).not.toContain(H1.replace(" DONE,", ""));
   expect(text.match(/This is the handoff of the earlier part/g)).toHaveLength(
     1,
   );

@@ -73,7 +73,6 @@ At 225,000 tokens of the 300,000 window, the handoff writes a file with the goal
 For Haiku the trigger is 100,000 tokens.
 The file goes to `minispec/changes/<name>/handoff.md` when a change is open, and else to `.claudetto/handoffs/`.
 Then a clean session reads the file.
-Run `/handoff` to start it by hand.
 See [Handoff](Handoff).
 
 ## The Guards
