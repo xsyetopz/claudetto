@@ -1,7 +1,7 @@
 # Tasks
 
 Each step of `design.md` is one task and one commit.
-The `Check:` of each task is in its step of `design.md`.
+The `Check:` of each task is in its step of `design-steps.md`.
 
 ## 1. Trim
 
