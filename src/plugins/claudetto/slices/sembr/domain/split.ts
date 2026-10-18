@@ -1,6 +1,9 @@
 // The `sembr` formatter: it puts each sentence of a Markdown paragraph on its own line (design D29).
 // It only splits after a sentence end and never joins lines, so a second run gives the same text.
-// It is pure string code with no import, because the hooks module may load it.
+// A heading line also gets its Title Case (design D52).
+// It is pure string code, because the hooks module may load it.
+
+import { titleLine } from "./title.ts";
 
 const QUOTE = String.raw`\s*(?:>\s*)*`;
 const FENCE = new RegExp(`^${QUOTE}(\`{3,}|~{3,})`);
@@ -150,7 +153,8 @@ export const format = (text: string): { out: string[]; counts: number[] } => {
       CODE_LIKE.test(plain) ||
       /^\s*(?:=+|-+)\s*$/.test(lines[n + 1] ?? "x")
     ) {
-      out.push(line + eol);
+      const heading = skip.has(n) || indented || esm ? line : titleLine(line);
+      out.push(heading + eol);
       counts.push(1);
       continue;
     }

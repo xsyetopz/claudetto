@@ -198,3 +198,36 @@ test("a `Bash` call that is not a quoted heredoc commit passes on unchanged", as
   await bash($, `git commit -m "${FUSED_TEXT}"`);
   expect(seen[0]?.command).toBe(`git commit -m "${FUSED_TEXT}"`);
 });
+
+// biome-ignore lint/plugin: a test name that a `slice.ts` file references
+test("a `Write` of a Markdown file gets Title Case in each heading and keeps a right heading", async ($: Engine, on: On) => {
+  const seen: Seen[] = [];
+  engine(on, { file: null, seen });
+  const doc = (...lines: string[]) => `${lines.join("\n\n")}\n`;
+  const fence = "```md\n# not a heading in a fence\n```";
+  await write(
+    $,
+    "notes.md",
+    doc(
+      "# What i need from you",
+      "## Install the Core Plugin",
+      "## The `hooks.json` file of an add-on",
+      fence,
+    ),
+  );
+  expect(seen[0]?.content).toBe(
+    doc(
+      "# What I Need from You",
+      "## Install the Core Plugin",
+      "## The `hooks.json` File of an Add-On",
+      fence,
+    ),
+  );
+});
+
+test("an `Edit` of a heading line gets Title Case in `new_string`", async ($: Engine, on: On) => {
+  const seen: Seen[] = [];
+  engine(on, { file: "# T\n\n## Old\n", seen });
+  await edit($, { old_string: "## Old", new_string: "## Use of the tool" });
+  expect(seen[0]?.new_string).toBe("## Use of the Tool");
+});
