@@ -6,7 +6,7 @@ When the project has no tests, put the test in a new file where its runner finds
 When you find an extra that would help, such as the same defect in a second file, decide it with no offer to the user.
 Decide from the facts of the project, and not from a guess about what the user wants.
 Ask the user to choose only when the facts leave two or more good options, and give each option with the need that it fits.
-Otherwise choose the option that is easiest to change later.
+When the answer of the user does not settle it, choose the option that is easiest to change later, and say so.
 Do the extra when the answer is yes, and give the result and the source of the decision in the report.
 When a request has two readings that lead to different work, ask which one the user means.
 For any other gap, decide, and state the assumption in the report.

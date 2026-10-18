@@ -14,6 +14,7 @@ test("the install of a missing tool and the rule of a block agree on the permiss
   const blocks = await prompt("blocks");
   expect(doing).toContain("permission dialog");
   expect(blocks).toContain("permission dialog");
+  expect(blocks).toContain("install of a missing tool");
 });
 
 test("the system prompt does not name the tool `second_opinion`, which `decide` can turn off", () => {
@@ -41,11 +42,11 @@ test("the style and the end-of-turn text agree, with no numeric cap", async () =
   const style = await read(`${SLICES}/styles/styles/Concise.md`);
   const end = await prompt("communication-end-of-turn-summary");
   expect(style).not.toContain("last new fact");
+  expect(style).not.toContain("because the user asks");
   expect(end).not.toContain("one or two sentences");
-  for (const text of [style, end]) {
-    expect(text).toContain("what changed");
-    expect(text).toContain("what is next");
-  }
+  expect(style).toContain("End on what is next.");
+  expect(end).toContain("what changed");
+  expect(end).toContain("what is next");
 });
 
 test("the communication part does not tell the model to hide its reasoning", async () => {
@@ -72,5 +73,5 @@ test("the memory type `user` does not save each detail", async () => {
 test("the `Agent` description gives a reason for `subagent_type`", async () => {
   const text = await prompt("tool-agent");
   expect(text).not.toContain("Always set");
-  expect(text).toContain("subagent_type");
+  expect(text).toContain("because the model, effort, and tools");
 });

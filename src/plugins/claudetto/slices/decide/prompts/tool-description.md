@@ -9,3 +9,4 @@ Leave out the lean of the user, the notes, or the team, because Jev judges the f
 The tool puts the options in a random order.
 When Jev gives no answer, the tool uses a small Claude model, and it says so in its result.
 When you do not follow the pick, tell the user and give the reason.
+Ask it before you ask the user to choose between options that facts can settle.
