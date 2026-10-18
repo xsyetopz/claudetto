@@ -54,9 +54,6 @@ export const HAIKU_AUTOCOMPACT_WINDOW =
   Math.floor(HAIKU_HANDOFF_TRIGGER_TOKENS / (AUTOCOMPACT_PCT / 100)) +
   COMPACT_OUTPUT_RESERVE;
 
-/** Most expanded patterns that one rule file (`.claude/rules/*.md`) can have in its `paths` (the budget of Claude Code). */
-export const MAX_PATTERNS = 1000;
-
 /** The status line shows a use in the warning color from the first and in the limit color from the second percentage. The context of the main session uses the distance to the handoff trigger instead. */
 export const USAGE_LEVELS: [number, number] = [75, 90];
 
