@@ -22,6 +22,8 @@ The user set both on 2026-10-17: "0.2.0 must implement it solo, because of the f
 - A surface is each part that a user meets: each hook of each plugin, each slice, each add-on plugin, the setup and its snippet, the status line, the output styles, the agents, the skills, the MCP tools, the `bin/` commands, the evals, the wiki, the `CHANGELOG.md`, and the repository tools (`just generate`, `just bump`, `just docker`).
 - `findings.md` has one row for each surface: its faults with a source (a transcript line, a test, or a run), the task that fixes each one, and the check that shows the fix.
   A surface with no fault gets a row with the check that shows it works.
+- `just release-check` (`tools/findings-check.ts`) fails while a row of `findings.md` has a `Task` that is not `none`, `done`, or `(checked)`.
+  It runs before the tag, and not in `just validate` or `just check`, so `just check` stays green until the release.
 - The release has no "known issues" section.
   A fault is fixed, or its surface is removed, before the tag.
 - No legacy upkeep: `0.2.0` reads no state of `0.1.0-alpha.1` and migrates none.

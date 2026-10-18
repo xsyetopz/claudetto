@@ -50,7 +50,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just test tests/claudetto/handoff && just lab`
 - [ ] 3.12 Add a test that the done list of a handoff holds only checked tasks of `tasks.md` and passed checks, also when the model text says that a step is done, and see it fail, then fix the handoff (D48).
   Check: `just test tests/claudetto/handoff`
-- [ ] 3.13 Add a lab test that a cold handoff copies the open decisions of `design.md` in an openspec change, and of `.claudetto/progress.md` in other work, with no model call, and see it fail, then change the handoff, and add the one line of D50 to the always-loaded text.
+- [x] 3.13 Add a lab test that a cold handoff copies the open decisions of `design.md` in an openspec change, and of `.claudetto/progress.md` in other work, with no model call, and see it fail, then change the handoff, and add the one line of D50 to the always-loaded text. (closed: dropped by the user, 2026-10-18)
   Check: `just generate && just test tests/claudetto/handoff && just lab`
 - [x] 3.14 Add a test that each agent prompt and each delegation text asks for the full output of a failed check in a file, and see it fail, then change the texts (D33). (closed: removed in trim-0-2-0)
   Check: `just generate && just test tests/claudetto/agents`
@@ -74,7 +74,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Fill it from the transcripts in `~/.claude/projects/` of the sessions that used claudetto, read-only, from the facts of each `design*.md`, and from one run of each `bin/` command and each hook lab.
   Give each fault its source, the task that fixes it, and the check, and add a task for each fault that no task covers.
   Check: `test -s openspec/changes/release-0-2-0/findings.md && minispec validate release-0-2-0`
-- [ ] 1.3 Read the rest of `external/2026-10-17/` and the older dossiers in `external/` for model, effort, prompt, and cache facts, and add each new fact that changes a decision to `design.md`.
+- [x] 1.3 Read the rest of `external/2026-10-17/` and the older dossiers in `external/` for model, effort, prompt, and cache facts, and add each new fact that changes a decision to `design.md`. (closed: low value, the user, 2026-10-18)
   Check: `OPENSPEC_TELEMETRY=0 bunx --bun @fission-ai/openspec validate release-0-2-0`
 
 ## 2. You-Should-Know and Removals
@@ -87,7 +87,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just generate && just test tests/claudetto-you-should-know && just lab && test $(find src/plugins/claudetto-you-should-know -name '*.ts' | xargs cat | wc -l) -lt 1607`
 - [ ] 2.3 Remove each mention of `dotclaude` from the tracked files, the eval results included.
   Check: `! git grep -qi dotclaude`
-- [ ] 2.4 Read how `$.prompt.fill` treats typed text and how a terminal user presses a `Button` with keys, then add a lab test that a press of the `Reply` button under a message of Claude fills the prompt with that message as a `>` quote, and see it fail, then add the mod (D56).
+- [x] 2.4 Read how `$.prompt.fill` treats typed text and how a terminal user presses a `Button` with keys, then add a lab test that a press of the `Reply` button under a message of Claude fills the prompt with that message as a `>` quote, and see it fail, then add the mod (D56). (closed: done in `207c3b9d`, slice `reply`)
   Check: `just generate && just lab`
 
 ## 4. Agent Caps and Roster
@@ -164,17 +164,17 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just test tests/claudetto/setup`
 - [x] 7.3 Add a test that the setup makes a change that it offered, such as the `claude` alias, when the user says yes, then change the setup text and code. (closed: obsolete: the setup skill no longer edits the startup file)
   Check: `just test tests/claudetto/setup`
-- [ ] 7.4 Add a test that the sandbox step of the setup adds the cache and build folders that the toolchains of the project report, with no fixed list of tools or paths, then add the code.
+- [x] 7.4 Add a test that the sandbox step of the setup adds the cache and build folders that the toolchains of the project report, with no fixed list of tools or paths, then add the code. (closed: low value, the user, 2026-10-18)
   Check: `just test tests/claudetto/setup`
 
 - [x] 7.5 Add a test that fails when a claudetto text or hook names a tool that the settings snippet denies, and see it fail on `TaskStop`. (closed: done: `tests/claudetto/prompt/denied-names.test.ts`)
   Check: `! just test tests/claudetto/prompt/denied-tools.test.ts`
 - [x] 7.6 Write `src/wiki/reference/Tools.md` with one row for each built-in tool of 2.1.302 (purpose, start tokens, the claudetto need, the decision), and change the deny list of the snippet to match. (closed: done in builtins-0-2-0: `tools/builtins/verdicts/tools.ts`)
   Check: `just generate && just test tests/claudetto/prompt && bun run lint:md`
-- [ ] 7.7 List each env var that the 2.1.302 bundle reads and the docs env-vars page names, and each settings key of the inventory, and write `src/wiki/reference/Env.md` and `src/wiki/reference/Settings-Keys.md` with one row for each: what it does, what else it changes, the sources, and the decision.
+- [x] 7.7 List each env var that the 2.1.302 bundle reads and the docs env-vars page names, and each settings key of the inventory, and write `src/wiki/reference/Env.md` and `src/wiki/reference/Settings-Keys.md` with one row for each: what it does, what else it changes, the sources, and the decision. (closed: dropped by the user, 2026-10-18: no env table, no `DISABLE_TELEMETRY`)
   Start from the inventory and the D18 list of `design-surfaces.md`.
   Check: `test -s src/wiki/reference/Env.md && bun run lint:md`
-- [ ] 7.8 Add a test that pins the `env` of the settings snippet to the rows of `Env.md` with the decision `set`, then change the snippet.
+- [x] 7.8 Add a test that pins the `env` of the settings snippet to the rows of `Env.md` with the decision `set`, then change the snippet. (closed: dropped by the user, 2026-10-18: no env table, no `DISABLE_TELEMETRY`)
   The test also pins the tracking variables of D31, and that the snippet sets no `OTEL_LOG_*` variable.
   Check: `just generate && just test tests/claudetto/setup tests/claudetto/prompt`
 - [x] 7.9 Measure from the transcripts the share of helper cache writes that follow a gap of more than 5 minutes, with the method in `wiki/evidence/Usage-Evidence.md`, and set `subagentPromptCacheTtl` to `1h` only when the rewrites that it saves cost more than the higher price of each write (D18). (closed: obsolete: trim-0-2-0 keeps the 5-minute subagent cache)
@@ -199,13 +199,13 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 ## 9. Jscpd and the `dry` Skill
 
-- [ ] 9.1 Add tests of the `extends` merge of `jscpd` spec: deep merge, append of ignore lists, `<key>Remove`, `null`, and exit 2 on a cycle, and see them fail.
+- [x] 9.1 Add tests of the `extends` merge of `jscpd` spec: deep merge, append of ignore lists, `<key>Remove`, `null`, and exit 2 on a cycle, and see them fail. (closed: done in `f336e6c2`)
   Check: `! just test tests/claudetto/dry/merge.test.ts`
-- [ ] 9.2 Add the slice `dry` with `assets/jscpd.base.json`, the merge in `bin/jscpd-config`, and no format list in code.
+- [x] 9.2 Add the slice `dry` with `assets/jscpd.base.json`, the merge in `bin/jscpd-config`, and no format list in code. (closed: done in `f336e6c2`)
   Check: `just generate && just test tests/claudetto/dry`
-- [ ] 9.3 Add `jscpd.local.json` that extends the shipped base with `"semantic": null`, write `.jscpd-baseline.json`, and add the `just dry` recipe to `just check`.
+- [x] 9.3 Add `jscpd.local.json` that extends the shipped base with `"semantic": null`, write `.jscpd-baseline.json`, and add the `just dry` recipe to `just check`. (closed: done in `f336e6c2`)
   Check: `just dry`
-- [ ] 9.4 Write the skill `dry` in at most 60 lines: when to run jscpd, how to read a clone, and when a merge of clones is right.
+- [x] 9.4 Write the skill `dry` in at most 60 lines: when to run jscpd, how to read a clone, and when a merge of clones is right. (closed: done in `f336e6c2`)
   Check: `just generate && just validate && bun run lint:md`
 
 ## 10. Smaller Source and Wiki
@@ -273,8 +273,9 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 - [x] 12.1 Add the entries of this change under `0.2.0` in `CHANGELOG.md`.
   Check: `grep -q '0.2.0' CHANGELOG.md && bun run lint:md`
-- [ ] 12.2 Add a `just validate` rule that fails while `findings.md` has a row with no passed check, and see it fail on the open rows (D38).
-  Check: `just validate`
+- [x] 12.2 Add `tools/findings-check.ts` and `just release-check`, which fail while a row of `findings.md` has a `Task` that is not `none`, `done`, or `(checked)`, and see it fail on the open rows (D38).
+  The rule is not in `just validate` or `just check`, so `just check` stays green until the release (the user, 2026-10-18).
+  Check: `just test tests/tools/findings-check.test.ts`, and `just release-check`, which exits 1 while rows are open. (closed: done in `794638b8`)
 - [x] 12.3 Run the full gate in a container.
   Check: `just docker check`
 - [ ] 12.4 Ask the user before the paid run, with the cost and the weekly share, then run one `just sandbox` session of the setup and one task of each slice on a fresh config, and write each fault to `findings.md` and fix it (D38).
