@@ -12,7 +12,7 @@ The `Check:` of each task is in its step of `design-steps.md`.
 - [x] 1.5 Rebuild `prompt` on the vanilla short prompt, and merge `surface` (step 5).
 - [x] 1.6 Trim `handoff` (step 6).
 - [x] 1.7 Trim `statusline`, `sembr`, and `claudetto-lab` (step 7).
-- [ ] 1.8 Trim `src/kernel` and `tools` (step 8).
+- [x] 1.8 Trim `src/kernel` and `tools` (step 8).
 - [ ] 1.9 Rewrite `claudetto-sessions` as one skill with scripts (step 8b).
 - [ ] 1.10 Add the `ground` slice (step 9).
 - [ ] 1.11 Write the CHANGELOG entries, close `release-0-2-0`, and add the `after` size (step 10, with no wiki edit).
