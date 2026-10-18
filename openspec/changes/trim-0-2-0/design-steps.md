@@ -158,6 +158,9 @@ Tests:
   Report the count and the rate.
   Ship the hook only when the count is low enough, and write the count to `wiki/evidence/`.
 
+Skipped in the first cut: the end-of-turn note and the subagent-report check (items 2 and 3), because no `mod` event gives them in a few lines.
+The replay result is in `evidence-ground.md`.
+
 Check: `just test tests/claudetto/ground && just lab`, and the replay count.
 
 ## 10. Docs and release notes

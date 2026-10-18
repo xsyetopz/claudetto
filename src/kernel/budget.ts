@@ -93,3 +93,6 @@ export const RENAME_TRIES = 10;
 
 /** The wait in milliseconds between two tries of a rename in `writeAtomic`, so the total wait is short. */
 export const RENAME_WAIT_MS = 100;
+
+/** The fewest characters of a value in backticks that the ground check looks for (`handoff-edge-300.md`). */
+export const GROUND_VALUE_CHARS_MIN = 4;

@@ -13,7 +13,7 @@
 // Claude Code refuses `$.command.run`, `$.prompt.submit`, and `$.session.compact` in a `command.run` hook,
 // and `turn.complete` does not fire after a command that a hook answers (`handoff-p-301.md`),
 // so a `$.clock.after` timer runs the step after the hook: it clears the chat and submits the handed message, or it runs `/compact`.
-// The ground check warns about each value in backticks that is not in the messages (`domain/ground.ts`).
+// The ground check warns about each value in backticks that is not in the messages (`kernel/ground.ts`).
 // Each path starts at the project root, because `$.fs` resolves a relative path against the folder of the shell (D23).
 // `claude plugin validate` follows `$` only into a function of one file, so each function that touches `$` is here, and the rules are in `domain/`.
 
@@ -25,6 +25,7 @@ import type {
 } from "claude-code";
 import { openChange } from "../../../kernel/change.ts";
 import { isBuiltInCompaction } from "../../../kernel/compaction.ts";
+import { missingValues, missLine } from "../../../kernel/ground.ts";
 import { CHANGES_DIR } from "../../../kernel/paths.ts";
 import type { Handler } from "../../../kernel/slice.ts";
 import { oneLine } from "../../../kernel/text.ts";
@@ -37,7 +38,6 @@ import {
   triggerTokens,
   withChange,
 } from "../domain/compact.ts";
-import { missingValues, missLine } from "../domain/ground.ts";
 import { COMMAND_HANDOFF, RULES, WRITTEN_NOTICE } from "../prompts.ts";
 
 /** The hook for the triggers in the filter of `slice.ts`, with `e` narrowed to them. */
@@ -105,7 +105,7 @@ const openChangeOf = async ($: EngineInterface, root: string) => {
   return openChange(changes);
 };
 
-/** The values in backticks of `reply` that are not in `messages`, each with one debug log line (`domain/ground.ts`). */
+/** The values in backticks of `reply` that are not in `messages`, each with one debug log line (`kernel/ground.ts`). */
 const ungrounded = (
   $: EngineInterface,
   reply: string,

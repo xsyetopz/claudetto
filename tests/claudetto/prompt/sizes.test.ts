@@ -22,7 +22,7 @@ const VANILLA = (
 
 const PINS: Readonly<Record<string, [text: string, pin: number]>> = {
   "vanilla `lean_body` fixture": [VANILLA, 610],
-  "tailored `lean_body` text": [LEAN_BODY, 7263],
+  "tailored `lean_body` text": [LEAN_BODY, 7318],
   "block of a subagent": [withBlock(""), 1065],
   "output style `Concise`": [
     await Bun.file(path.join(PLUGIN, "output-styles/Concise.md")).text(),

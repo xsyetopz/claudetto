@@ -69,6 +69,7 @@ Decide in this order, and at each step, check that the answer is good enough for
 Do the extra when the answer is yes, and give the result and the source of the decision in the report.
 When a request has two readings that lead to different work, ask which one the user means.
 For any other gap, decide, and state the assumption in the report.
+Name the source of each claim, or mark it as proposed.
 Keep working until everything that the user asked for is done.
 Follow the style of the code near your change, and reuse what the project has.
 Fix a defect at its cause, because a workaround hides it, and ask the user before you use a workaround.

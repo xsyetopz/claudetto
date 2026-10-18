@@ -10,7 +10,7 @@
 // The fork does not see the tool calls of the tail either, so its prompt names them,
 // or the handoff gives the newest call as not started, and the model runs it again (`handoff-cost-301.md`).
 // When the new context is not below the trigger, there is no new context, and Claude Code compacts as built in.
-// The functions are pure and import only `limits.ts`, `ground.ts`, and the kernel.
+// The functions are pure and import only `limits.ts` and the kernel.
 
 import type { SessionMessage, ToolUseSummary } from "claude-code";
 import {
@@ -27,10 +27,14 @@ import {
   CHANGE_HEADER,
   FIRST_MESSAGE,
   FORK_TAIL,
+  GROUND_WARNING,
   HANDED,
   RULES,
 } from "../prompts.ts";
-import { groundWarning } from "./ground.ts";
+
+/** The warning at the end of the handed message for the quoted values `missing`. */
+const groundWarning = (missing: readonly string[]): string =>
+  GROUND_WARNING({ values: missing.map((v) => `\`${v}\``).join(", ") });
 
 /** One tool call as one list item: the tool and its input as JSON, cut to `CALL_INPUT_CHARS_MAX` characters. */
 const callLine = (use: ToolUseSummary): string => {

@@ -57,6 +57,15 @@
     "allow": "plugins/claudetto/tests/sembr.test.ts > a `Write` of another file type keeps its content",
     "text": "plugins/claudetto/tests/sembr.test.ts > a `Write` of a Markdown file gets one sentence on each line"
   },
+  "tool.call ground": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": true,
+    "allow": "plugins/claudetto/tests/plan.test.ts > a claim that names its source passes",
+    "text": "plugins/claudetto/tests/plan.test.ts > a claim with no source is denied with the three ways out",
+    "block": "plugins/claudetto/tests/plan.test.ts > a claim with no source is denied with the three ways out",
+    "false": "plugins/claudetto/tests/plan.test.ts > a write of another file is not checked"
+  },
   "tool.call guard": {
     "requests": 0,
     "tokens": 0,
