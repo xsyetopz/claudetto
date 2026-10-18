@@ -45,6 +45,7 @@ Each recipe runs from the repository root.
 | `just usage [ARGS]` | Shows where your Claude Code usage went. Add `--days N`, `--runs N`, or `--json`. |
 | `just update` | Refreshes the marketplace, then updates each installed plugin under `plugins/`. Restart Claude Code after it. |
 | `just bump LEVEL` | Bumps the version in `package.json` and moves the `[Unreleased]` CHANGELOG entries. Then run `just generate`. See [Releases](#releases). |
+| `just release-check [CHANGE]` | Fails while a row of `findings.md` of an openspec change has no passed check. It is not part of `just check`. See [Releases](#releases). |
 | `just release` | Tags each plugin under `plugins/` at `HEAD`, and pushes the tags in one push. See [Releases](#releases). |
 | `just generate` | Writes each text that a plugin ships from its source in `src/`. `--check` names each file that differs. |
 | `just schema` | Writes the settings schemas of the installed Claude Code to `schemas/`. |
@@ -213,7 +214,9 @@ The workflows are in `.github/workflows/`.
    Commit before you tag.
    `claude plugin tag` checks that each `plugin.json` agrees with its marketplace entry.
    It stops on a dirty working tree.
-4. Preview the tags, then tag and push.
+4. Run `just release-check`.
+   It fails while a row of `findings.md` of the change has a `Task` that is not `none`, `done`, or `(checked)`.
+5. Preview the tags, then tag and push.
 
    ```bash
    just release --dry-run
