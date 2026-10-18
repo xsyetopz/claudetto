@@ -7,16 +7,18 @@ No model call ran.
 
 - The module `src/plugins/claudetto/slices/ground/adapters/check.ts` exports `check(event, prior)`.
   It runs the pure source check of the slice on a recorded `PreToolUse` call.
-- Command: `bun src/plugins/claudetto-sessions/slices/sessions/skills/sessions/replay.ts src/plugins/claudetto/slices/ground/adapters/check.ts`.
+- Command: `bun src/plugins/claudetto-sessions/slices/sessions/skills/sessions/replay.ts plugins/claudetto/slices/ground/adapters/check.ts` (the generated copy, because the check imports `prompts.ts`).
+  A `file:line` reference resolves as a path suffix under the `cwd`, and a reference that does not resolve passes.
+  The numbers were measured again after the review fixes (2026-10-18).
 - Data: `~/.claude/projects` (44 transcript files, 46 MB, 2026-10-18).
 
 ## Result
 
 | Run | Calls replayed | Events checked | Denies |
 | --- | --- | --- | --- |
-| `check.ts` (the shipped filter) | 942 | 0 | 0 |
-| Stress: each `Write` and `Edit` of a `.md` file counts as a plan file | 949 | 4 | 1 |
-| Stress: each `Write` and `Edit` counts as a plan file | 952 | 19 | 1 |
+| `check.ts` (the shipped filter) | 990 | 0 | 0 |
+| Stress: each `Write` and `Edit` of a `.md` file counts as a plan file | 990 | 4 | 1 |
+| Stress: each `Write` and `Edit` counts as a plan file | 990 | 19 | 1 |
 
 - The local transcripts hold no `Write` or `Edit` of a plan or spec file and no `ProposeGoal` call.
   So the shipped filter checks no event, and the rate of false denies on real plan edits is not measured.

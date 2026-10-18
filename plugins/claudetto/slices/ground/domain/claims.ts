@@ -39,14 +39,18 @@ const CONVENTIONS: readonly [readonly string[], string[]][] = [
 ];
 const command = (tool: string) => new RegExp(`(?<![\\w/.-])${tool}\\s+[\\w@-]`);
 
-/** The files that `findUnsourced` reads for `text`: the rules, the lock files, and each referenced file. */
-export const neededFiles = (text: string): string[] => [
-  ...new Set([
-    "CLAUDE.md",
-    ...CONVENTIONS.flatMap(([locks]) => locks),
-    ...[...text.matchAll(REF)].map((m) => m[1] as string),
-  ]),
+/** The files of the project that `findUnsourced` reads from the root: the rules and the lock files. */
+export const PROJECT_FILES: readonly string[] = [
+  "CLAUDE.md",
+  ...CONVENTIONS.flatMap(([locks]) => locks),
 ];
+
+/** The files that `text` references with `file:line`. A reference is not always relative to the root. */
+export const refFiles = (text: string): string[] => [
+  ...new Set([...text.matchAll(REF)].map((m) => m[1] as string)),
+];
+
+const NEGATION = /\b(?:not|never|no)\b/i;
 
 /** The lines of `text` that the check reads. */
 const proseLines = (text: string): string[] =>
@@ -55,7 +59,8 @@ const proseLines = (text: string): string[] =>
     .split("\n")
     .filter((line) => !MARK.test(line));
 
-/** The claims of `text` with no source in `msgs`, in `files`, or in `own`, the old text of the target file. */
+/** The claims of `text` with no source in `msgs`, in `files`, or in `own`, the old text of the target file.
+ * A file of a reference that is `null` did not resolve, and the check skips it, because a guess would deny a correct reference. */
 export const findUnsourced = (
   text: string,
   msgs: readonly Msg[],
@@ -74,7 +79,8 @@ export const findUnsourced = (
     msgs.findLastIndex((m) => m.role === "user" && m.text !== "") + 1,
   );
   const claims = new Set<string>();
-  for (const line of proseLines(text)) {
+  const prose = proseLines(text);
+  for (const line of prose) {
     for (const [, num = ""] of line.matchAll(NUMBER)) {
       const n = num.replace(/,/g, "");
       if (/^(?:19|20)\d\d$/.test(n)) continue;
@@ -85,10 +91,7 @@ export const findUnsourced = (
       REF,
     )) {
       const body = files[file];
-      if (corpus.includes(ref)) continue;
-      if (body == null)
-        claims.add(`\`${ref}\`: the file \`${file}\` does not exist.`);
-      else if (Number(to) > lineCount(body))
+      if (body != null && Number(to) > lineCount(body))
         claims.add(`\`${ref}\`: the file has ${lineCount(body)} lines.`);
     }
     for (const [, said = ""] of line.matchAll(USER)) {
@@ -106,15 +109,20 @@ export const findUnsourced = (
         `"${line.trim().slice(0, 80)}" has no check output in this turn.`,
       );
   }
+  // A rule names the tool in a line with no negation. In a project file, the tool is also in backticks.
+  const isRule = (l: string, tool: string, strict: boolean) =>
+    !NEGATION.test(l) &&
+    (strict ? new RegExp(`\`[^\`]*\\b${tool}\\b`) : command(tool)).test(l);
   for (const [locks, tools] of CONVENTIONS) {
     if (!locks.some((lock) => files[lock] != null)) continue;
     for (const tool of tools) {
       const rule = command(tool);
-      if (
-        proseLines(text).some((l) => rule.test(l)) &&
-        !rule.test(user) &&
-        !rule.test(rules)
-      )
+      const said = (t: string, strict: boolean) =>
+        t.split("\n").some((l) => isRule(l, tool, strict));
+      const used = prose.some(
+        (l) => rule.test(l) && !NEGATION.test(l.slice(0, l.search(rule))),
+      );
+      if (used && !said(user, false) && !said(rules, true))
         claims.add(
           `\`${tool}\` in a project with \`${locks[0]}\`, and no user rule names it.`,
         );

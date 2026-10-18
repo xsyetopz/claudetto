@@ -3,6 +3,7 @@
 
 import type { On, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+import { UNSOURCED } from "../prompts.ts";
 
 const user = (text: string): SessionMessage => ({
   role: "user",
@@ -63,4 +64,16 @@ test("a goal condition with a bound that has no source is denied", async ($: Eng
     condition: "prints 9000 or less",
   });
   expect("deny" in out).toBe(true);
+});
+
+test("a retry is denied again when the deny is in the tool results", async ($: Engine, on: On) => {
+  const reason = UNSOURCED({ claims: "- `9000` is in no user message." });
+  const row = {
+    role: "user",
+    text: "",
+    toolUses: [],
+    toolResults: [{ tool_use_id: "t", text: reason, isError: true }],
+  } as unknown as SessionMessage;
+  project(on, [user("Go."), row]);
+  expect("deny" in (await plan($, "The bound is 9000 lines."))).toBe(true);
 });

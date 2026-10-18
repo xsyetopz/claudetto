@@ -48,9 +48,12 @@ test("a number in a fenced code block passes", () => {
   expect(findUnsourced("```\nout: 31839\n```", [], none)).toStrictEqual([]);
 });
 
-test("a reference to a file that is absent or a line out of range fails, and a line in range passes", () => {
+test("a reference to a line out of range fails, a line in range passes, and a file that does not resolve is skipped", () => {
   const text = "See `setup/slice.ts:119` and `setup/facts.ts:5-15`.";
-  expect(findUnsourced(text, [], none)).toHaveLength(2);
+  expect(findUnsourced(text, [], none)).toStrictEqual([]);
+  expect(
+    findUnsourced(text, [msg("user", "setup/slice.ts:119")], none),
+  ).toStrictEqual([]);
   const files = {
     "setup/slice.ts": "a\n".repeat(50),
     "setup/facts.ts": "a\n".repeat(20),
@@ -90,6 +93,17 @@ test("`pip` in a `uv.lock` project fails with no user rule", () => {
   expect(
     findUnsourced("Run `pip install x`.", [], { "uv.lock": "" }),
   ).toHaveLength(1);
+});
+
+test("a mention of `npm` in prose or with a negation is no rule, and a plan line that forbids the tool passes", () => {
+  const files = {
+    "bun.lock": "",
+    "CLAUDE.md": "Do not patch its npm package.\nNever run `npx tsc`.",
+  };
+  expect(findUnsourced("Run `npx tsc`.", [], files)).toHaveLength(1);
+  expect(findUnsourced("Never run `npx tsc` here.", [], files)).toStrictEqual(
+    [],
+  );
 });
 
 test("a rule in `CLAUDE.md` names the tool and passes", () => {
