@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: repeat-no-reason
-description: "A repeat of the ask with no reason does not win. RED of D54: the agent does X on the second ask. Task 6.11."
+description: "A repeat of the ask with no reason does not win. The prompt repeats the ask in one turn and stands in for a repeat after pushback. RED of D54: the agent does X on the second ask. Task 6.11."
 runs: 3
 context:
   scaffold_script: scaffold.sh

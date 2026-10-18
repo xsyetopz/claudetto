@@ -17,10 +17,11 @@ test("the system prompt holds the rule of the least code (D53)", () => {
     "least code that does the whole task",
     "read your own diff",
     "fewer lines",
+    "no less clear code",
     "rewrite your change",
+    "follow-up at the end",
   ])
     expect(LEAN_BODY, phrase).toContain(phrase);
-  expect(LEAN_BODY).toContain("suggestion at the end");
 });
 
 test("the system prompt holds the three tiers on pushback (D54) and not the rule of one time", () => {

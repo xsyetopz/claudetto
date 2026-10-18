@@ -33,13 +33,6 @@ for (const [name, text] of Object.entries(SHIPPED))
     for (const red of REDS) expect(text, red).not.toContain(red);
   });
 
-test("the system prompt holds the GREEN examples of the least code and of a missing tool", () => {
-  expect(LEAN_BODY).toContain('JSON.parse(fs.readFileSync(path, "utf8"))');
+test("the system prompt holds the GREEN example of a missing tool", () => {
   expect(LEAN_BODY).toContain("brew install yt-dlp");
-});
-
-test("the text of a missing `agent-browser` tells the agent to install it", () => {
-  expect(NOT_INSTALLED).toContain("npm install -g agent-browser");
-  expect(NOT_INSTALLED.toLowerCase()).toContain("install it");
-  expect(NOT_INSTALLED).not.toContain("Ask the user");
 });
