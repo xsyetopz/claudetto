@@ -60,27 +60,23 @@ Then a `haiku` completion writes the handoff from a digest of the messages of at
 
 When the new context is not below the trigger, the handoff cuts the tail.
 
-## The Command `/handoff`
+## A Cold Cache
 
-`/handoff` is the manual handoff.
+The fork reads the conversation from the prompt cache.
+After the cache TTL, the cache is cold, and a fork reads the full history as uncached input.
+So the handoff of a cold compaction needs no model call.
+It holds the task, the next open task of `tasks.md`, the done tasks (the checked tasks of `tasks.md`), the changed files, and the last words of the user.
 
-- **On a terminal:**
-  `/handoff` writes the file, clears the chat, and submits the message that hands over the file.
-  A status line shows "Writing the handoff…" while the file is written,
-  and a notice in the transcript names the file at the end.
-  You can run `/handoff` again in the same session.
-- **In `-p`:**
-  `/handoff` runs `/compact`, and the handoff replaces the summary of that compaction.
-  `claude -p "/handoff" --resume <id>` compacts the session before the process ends.
+The TTL of a root session is 1 hour, and the TTL of a subagent is 5 minutes.
+`claudetto` sets `CLAUDE_CODE_PROMPT_CACHE_TTL` to `1h` in the settings snippet, so the main conversation keeps a 1-hour cache.
+Claude Code bills a 1-hour cache write at a higher rate.
+A subagent keeps the default of 5 minutes, which `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` can change.
+When the hook has seen no turn in this process, such as after `--resume`, it takes the cache as warm.
 
-Claude Code does not let the hook of a command clear the chat or compact.
-So the hook starts a timer, and the timer does these steps after the hook.
+## The Status Comes from Checks
 
-In `-p --input-format stream-json`, a prompt that is already in the queue runs before the compaction of `/handoff`.
-Send the next prompt after the compaction, not at the same time as `/handoff`.
-
-When another plugin has the name `/handoff`, `claudetto` does not register the command.
-Use `/compact` in its place.
+The done list of a handoff is the list of the checked tasks of `tasks.md`.
+The handoff takes each `DONE` mark off the text of the model, so the model text cannot add a done step.
 
 ## When the Handoff Fails
 
@@ -93,8 +89,6 @@ These cases are failures:
 - The cut of the tail does not bring the context below the trigger.
 - The file cannot be written, or it is empty after the write.
 
-When `/handoff` cannot write the file on a terminal, it runs `/compact`.
-
 ## Turn the Handoff Off
 
 Set the plugin option `compaction` to `built-in`:
@@ -103,7 +97,7 @@ Set the plugin option `compaction` to `built-in`:
 2. Select "Configure options".
 3. Set "Compaction" to `built-in`.
 
-With `built-in`, each compaction stays as built in, and `/handoff` is not registered.
+With `built-in`, each compaction stays as built in.
 The default is `handoff`.
 
 ## Managed Machines
@@ -121,8 +115,6 @@ At session start, `claudetto` shows one notice that gives the managed entries th
   "enabledPlugins": { "claudetto@claudetto": true }
 }
 ```
-
-`/handoff` still works on a managed machine.
 
 `/handoff-setup` shows the steps that add these entries.
 It shows the new content of the managed settings file, with each key of the current file kept,

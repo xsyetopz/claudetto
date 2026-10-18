@@ -118,6 +118,9 @@ The sources are in the last section.
 
 - When the last assistant turn is older than the cache TTL, the handoff writes only the part that needs no model: the task, the next open task of `tasks.md`, the changed files, the git state, and the last words of the user.
 - When the cache is warm, the model part, which holds the reasons and the decisions, comes from a fork of the cached prefix (D34).
+- The TTL is 1 hour for a root session and 5 minutes for a subagent (the user, 2026-10-18).
+  Claude Code picks the TTL with `CLAUDE_CODE_PROMPT_CACHE_TTL` (main conversation) and `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` (other requests), and `FORCE_PROMPT_CACHING_5M` overrides both (`external/cc-2.1.302/docs/env.md:369`, `:405`, `:480`).
+  The settings snippet of the `handoff` slice sets `CLAUDE_CODE_PROMPT_CACHE_TTL` to `1h`.
 - The reasons of a cold handoff come from the decision file of D50, so no model call is needed for them.
 - Alternative: a summary by a small model.
   Rejected for now, because Claude Code has no setting for the summary model, and a cold read of the full history costs the most of each path.
