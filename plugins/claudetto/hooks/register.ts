@@ -23,10 +23,9 @@ import {
   onSpawn as h15,
 } from "../slices/prompt/adapters/mod.ts";
 import { onToolCall as h16 } from "../slices/sembr/adapters/mod.ts";
-import { onSessionStart as h17 } from "../slices/setup/adapters/mod.ts";
 import {
-  onAgentOffer as h18,
-  onToolDescribe as h19,
+  onAgentOffer as h17,
+  onToolDescribe as h18,
 } from "../slices/surface/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
@@ -34,7 +33,7 @@ export const register = (on: On, options: PluginOptions): void => {
   h5(options);
   h11(options);
   // eval: agent.offer surface
-  on("agent.offer", h18);
+  on("agent.offer", h17);
   // eval: agent.spawn prompt
   on("agent.spawn", h15);
   // eval: command.run handoff
@@ -55,8 +54,6 @@ export const register = (on: On, options: PluginOptions): void => {
   on("session.start", { isInteractive: [true, false] }, h3);
   // eval: session.start handoff
   on("session.start", { isInteractive: [true, false] }, h10);
-  // eval: session.start setup
-  on("session.start", h17);
   // eval: tool.call decide
   on("tool.call", { tool: ["AskUserQuestion"] }, h1);
   // eval: tool.call sembr
@@ -66,5 +63,5 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.call decide
   on("tool.call", { tool: /^mcp__claudetto__second_opinion$/ }, h2);
   // eval: tool.describe surface
-  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h19);
+  on("tool.describe", { tool: ["Agent", "Bash", "Read", "ListAgents"] }, h18);
 };

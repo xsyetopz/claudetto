@@ -24,8 +24,9 @@ export const ENV_DEFAULTS: Readonly<Record<string, Value>> = {
   CLAUDE_CODE_FORK_SUBAGENT: null,
   CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL: "0",
   CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: "20",
-  // The 5.5 models and Fable 5.1 use the shorter prompt with no entry.
-  CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT: "1",
+  // The default depends on the model: Haiku 4.5, Sonnet 5, Opus 4.7, and older use the full prompt.
+  // The user chose the entry `"1"` for each model (the plan `trim-0-2-0`, step 4).
+  CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT: null,
   // With no entry, a subagent inherits the model of the main loop.
   CLAUDE_CODE_SUBAGENT_MODEL: null,
   // Not in the docs. The bundle reads the flag `tengu_soft_slate_nudge` with the default `baseline`.

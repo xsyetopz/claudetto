@@ -3,7 +3,6 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { planAddons } from "../../plugins/claudetto/slices/setup/domain/addons.ts";
 import {
   CTX7_RUNNER,
   CTX7_VERSION,
@@ -87,21 +86,6 @@ test("the call bound of the skill is the bound in limits.ts", () => {
 test("the skill asks for the docs of the project version", () => {
   expect(SKILL).toContain("version of the library that the project uses");
   expect(SKILL).toContain("/colinhacks/zod/v4.6.5");
-});
-
-test("the setup check reads bunx, the runner of the skill", () => {
-  const names: string[] = [];
-  const plan = planAddons(["claudetto-docs"], {
-    projectDir: "/p",
-    bun: "1.4.3",
-    indexBuilt: false,
-    version: (program) => {
-      names.push(program);
-      return "1.4.3";
-    },
-  });
-  expect(names).toStrictEqual(["bunx"]);
-  expect(plan.lines).toStrictEqual(["claudetto-docs: bunx 1.4.3"]);
 });
 
 test("the plugin ships no MCP server and no MCP option", async () => {

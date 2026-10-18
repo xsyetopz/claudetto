@@ -76,22 +76,12 @@ test(
 
 test(
   // biome-ignore lint/plugin: a test name that a `slice.ts` file references
-  "the `decide` handler and the `setup` handler both run on an interactive start and on a non-interactive start",
+  "the `decide` handler runs on an interactive start and on a non-interactive start",
   option("claude"),
   async ($: Engine, on: On) => {
     const specs = stub(on);
-    on("settings.read", (_$, e) => ({
-      value: e.source === "policy" ? {} : { syncClaudeAiSkills: false },
-    }));
-    on("session.turns", () => ({ value: 0 }));
-    const shown: string[] = [];
-    on("ui.log", (_$, e) => {
-      shown.push(e.text);
-      return { value: undefined };
-    });
     for (const isInteractive of [true, false])
       await $.session.start({ cwd: "/work/app", surface: null, isInteractive });
     expect(specs).toHaveLength(2);
-    expect(shown).toHaveLength(2);
   },
 );

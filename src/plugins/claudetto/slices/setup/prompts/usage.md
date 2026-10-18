@@ -1,1 +1,1 @@
-Usage: claudetto-setup settings [--scope user|project|local] [--advisor] [--apply] | claude-md [--scope user|project|local] [--apply] | addons [--apply] | drift [--scope user|project|local] | sandbox [--remove] [--apply]
+Usage: claudetto-setup [--scope user|project|local] [--apply]

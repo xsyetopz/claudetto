@@ -23,16 +23,6 @@ test("each entry of the profile with a single value has a row in the defaults ta
   expect(missing).toStrictEqual([]);
 });
 
-test("a profile with `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1` fails and names the switch", () => {
-  const redundant = {
-    ...PROFILE,
-    env: { ...PROFILE.env, CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT: "1" },
-  };
-  expect(defaultViolations(redundant)).toStrictEqual([
-    "env.CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT",
-  ]);
-});
-
 test("a settings key at its default fails and names the key", () => {
   expect(defaultViolations({ ...PROFILE, fastMode: false })).toStrictEqual([
     "fastMode",

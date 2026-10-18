@@ -71,13 +71,6 @@
     "allow": "plugins/claudetto/tests/command.test.ts > a refused name gives no error at session start",
     "text": "plugins/claudetto/tests/command.test.ts > the session start registers the command `handoff`"
   },
-  "session.start setup": {
-    "requests": 0,
-    "tokens": 0,
-    "blocks": false,
-    "allow": "plugins/claudetto/tests/drift.test.ts > no drift adds no text",
-    "text": "plugins/claudetto/tests/drift.test.ts > a settings file without the snippet names the missing values and the setup skill"
-  },
   "tool.call decide": {
     "requests": 0,
     "tokens": 0,

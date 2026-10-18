@@ -98,7 +98,6 @@ export const slice = {
     enforceAvailableModels: true,
     enableArtifact: false,
     enableWorkflows: false,
-    promptCacheTtl: "5m",
     disableBundledSkills: true,
     promptSuggestionEnabled: false,
     bashOutputMaxChars: BASH_OUTPUT_MAX_CHARS,
@@ -116,7 +115,6 @@ export const slice = {
       "cc-plugin-responsive-mode@builtin": false,
       "cc-plugin-telemetry@builtin": false,
       "cc-plugin-tips@builtin": false,
-      "cc-plugin-you-should-know@builtin": false,
     },
     skillOverrides: {
       "plugin-authoring": "name-only",

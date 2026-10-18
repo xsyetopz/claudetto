@@ -20,13 +20,13 @@ To apply the snippet with setup or by hand, see [Settings Apply](Settings-Apply)
     "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80.3571",
     "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
     "CLAUDE_CODE_DISABLE_CRON": "1",
-    "CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS": "1",
     "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
     "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
     "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1",
     "CLAUDE_CODE_FORK_SUBAGENT": "0",
     "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "1",
     "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "2",
+    "CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT": "1",
     "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-5-5",
     "DISABLE_ERROR_REPORTING": "1",
     "DISABLE_FEEDBACK_COMMAND": "1"
@@ -164,9 +164,6 @@ To apply the snippet with setup or by hand, see [Settings Apply](Settings-Apply)
     "plugin-authoring": "name-only"
   },
   "disableBundledSkills": true,
-  "worktree": {
-    "baseRef": "head"
-  },
   "disableRemoteControl": true,
   "enableArtifact": false,
   "enableWorkflows": false,
@@ -190,8 +187,7 @@ To apply the snippet with setup or by hand, see [Settings Apply](Settings-Apply)
     "cc-plugin-mods-guide@builtin": false,
     "cc-plugin-responsive-mode@builtin": false,
     "cc-plugin-telemetry@builtin": false,
-    "cc-plugin-tips@builtin": false,
-    "cc-plugin-you-should-know@builtin": false
+    "cc-plugin-tips@builtin": false
   },
   "outputStyle": "claudetto:Concise",
   "sandbox": {
@@ -210,22 +206,13 @@ To apply the snippet with setup or by hand, see [Settings Apply](Settings-Apply)
         "static.crates.io",
         "index.crates.io",
         "proxy.golang.org"
-      ]
-    },
-    "filesystem": {
-      "allowWrite": [
-        "~/.bun/install/cache",
-        "~/.npm",
-        "~/.cache/pip",
-        "~/.cargo/registry",
-        "~/go/pkg/mod"
-      ]
+      ],
+      "allowLocalBinding": true
     }
   },
   "feedbackSurveyRate": 0,
   "feedbackDrafts": "off",
   "spinnerTipsEnabled": false,
-  "promptCacheTtl": "5m",
   "modelSettings": {
     "claude-haiku-5-5": {
       "autoCompactWindow": 144444
