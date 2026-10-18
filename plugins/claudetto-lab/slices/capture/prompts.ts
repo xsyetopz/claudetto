@@ -15,4 +15,4 @@ export const UPSTREAM_LOOP = (v: { text: string }): string =>
   `The upstream ${v.text} is the address of this proxy, so requests would loop. Pass --upstream URL, or unset ANTHROPIC_BASE_URL.`;
 
 /** From `src/plugins/claudetto-lab/slices/capture/prompts/usage.md`. */
-export const USAGE = `Usage: claudetto-capture [--port 8787] [--out DIR] [--upstream URL] [--no-count] [--count FILE]`;
+export const USAGE = `Usage: claudetto-capture [--port 8787] [--out DIR] [--upstream URL] [--no-count]`;

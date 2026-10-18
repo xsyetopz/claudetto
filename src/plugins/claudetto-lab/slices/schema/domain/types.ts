@@ -1,9 +1,6 @@
-// The type chains of the bundle as JSON Schema.
-// The meaning of each minified type helper comes from its definition in the bundle (`helpers.ts`).
-
 import { kindOf } from "./helpers.ts";
-import type { Call, Ctx, Schema } from "./model.ts";
 import {
+  type Call,
   chainCalls,
   exprEnd,
   matchClose,
@@ -13,20 +10,37 @@ import {
   unquote,
 } from "./scan.ts";
 
+export type Ctx = {
+  src: string;
+  stack: Set<string>;
+  defs?: Map<string, number[]>;
+  scopes?: {
+    home: string;
+    imported: Map<string, { text: string; local: string }>;
+  };
+  kinds?: Map<string, string | undefined>;
+};
+
+export type Schema = {
+  type?: string;
+  description?: string;
+  properties?: Record<string, Schema>;
+  items?: Schema;
+  additionalProperties?: Schema | boolean;
+  anyOf?: Schema[];
+  required?: string[];
+  [key: string]: unknown;
+};
+
 const DEPTH_MAX = 8;
 
-// A string part of a `+` chain is literal text, unless it is a template with a real `${...}`.
-// An escaped `\${` is text.
 const isLiteralPart = (part: string): boolean =>
   /^(["'`])/.test(part) &&
   !(part.startsWith("`") && part.replace(/\\[\s\S]/g, "").includes("${"));
 
-// The literal parts of a string expression, joined: `"a "+Ws+"b"` gives `a b`.
 const literalText = (expr: string): string =>
   splitPlus(expr.trim()).filter(isLiteralPart).map(unquote).join("");
 
-// A block thunk, `{let i=EXPR;return RET}`, as RET with each `i` replaced by EXPR.
-// Returns null for any other expression.
 export const inlineBlock = (expr: string): string | null => {
   const m = /^\{let ([\w$]+)=/.exec(expr);
   if (!m || matchClose(expr, 0) !== expr.length - 1) return null;
@@ -43,7 +57,6 @@ export const inlineBlock = (expr: string): string | null => {
   return body.replace(ref, () => value);
 };
 
-// The JSON Schema of one type expression.
 export const typeSchema = (
   expr: string,
   ctx: Ctx,
@@ -90,7 +103,6 @@ const recordSchema = (args: string, ctx: Ctx, depth: number): Schema => {
   return { type: "object", additionalProperties: items };
 };
 
-// The first argument of a union is its list of members, such as `[H(),u({...})]`.
 const unionSchema = (args: string, ctx: Ctx, depth: number): Schema => {
   const [list = ""] = splitTop(args);
   const members = splitTop(list.replace(/^\[|\]$/g, ""));
@@ -99,8 +111,6 @@ const unionSchema = (args: string, ctx: Ctx, depth: number): Schema => {
   };
 };
 
-// A key is required when its helper is known and nothing in its chain makes it optional.
-// A call to an unknown function may be optional inside, so its key is not required.
 const isRequired = (expr: string, ctx: Ctx): boolean => {
   const { head } = chainCalls(expr);
   return (
@@ -129,45 +139,40 @@ const objectSchema = (
   return out;
 };
 
-// A plain call with no arguments as the value of a property, such as `network:Gc()`.
-// An array item or a record value is not followed, because `A(Wo())` named a different `Wo` in the bundle.
-// The minified names repeat in other modules, so the call resolves only when the bundle has one definition of the name.
+const follow = (
+  name: string,
+  unique: boolean,
+  ctx: Ctx,
+  depth: number,
+): Schema => {
+  if (depth > DEPTH_MAX || ctx.stack.has(name)) return {};
+  const body = findDefinition(ctx, name, unique);
+  if (body === null) return {};
+  ctx.stack.add(name);
+  const out = typeSchema(body, ctx, depth + 1);
+  ctx.stack.delete(name);
+  return out;
+};
+
+// A record or array item is not followed, because `A(Wo())` named a different `Wo` in the bundle.
 const plainRefSchema = (
   head: string,
   args: string,
   ctx: Ctx,
   depth: number,
-): Schema => {
-  if (args.trim() !== "" || !/^[\w$]+$/.test(head)) return {};
-  if (depth > DEPTH_MAX || ctx.stack.has(head)) return {};
-  const body = findDefinition(ctx, head, true);
-  if (body === null) return {};
-  ctx.stack.add(head);
-  const out = typeSchema(body, ctx, depth + 1);
-  ctx.stack.delete(head);
-  return out;
-};
+): Schema =>
+  args.trim() !== "" || !/^[\w$]+$/.test(head)
+    ? {}
+    : follow(head, true, ctx, depth);
 
-// A lazy reference, `Ae(()=>yFn())` or `Ae(()=>ya(e))`, to a function that the bundle defines.
-// The first definition wins.
 const lazySchema = (args: string, ctx: Ctx, depth: number): Schema => {
   const inline = /^\(\)=>([\s\S]*)$/.exec(args.trim());
   const m = /^\(\)=>([\w$]+)\(/.exec(args.trim());
   if (inline && m && kindOf(ctx, m[1] as string) !== undefined)
     return typeSchema(inline[1] as string, ctx, depth + 1);
-  if (!m || depth > DEPTH_MAX || ctx.stack.has(m[1] as string)) return {};
-  const body = findDefinition(ctx, m[1] as string, false);
-  if (body === null) return {};
-  ctx.stack.add(m[1] as string);
-  const out = typeSchema(body, ctx, depth + 1);
-  ctx.stack.delete(m[1] as string);
-  return out;
+  return m ? follow(m[1] as string, false, ctx, depth) : {};
 };
 
-// The expression that builds the schema `name`, from `function name(){return u({...})}`
-// or `name=f(()=>u({...}))`. Returns `null` when the definition is not an object or a record.
-// The bundle reuses short names in other modules, so the last definition before the schema is the one it uses.
-// A definition of another shape, such as a wrapper call, gives null, and not an earlier definition of the same name.
 export const findDefinition = (
   ctx: Ctx,
   name: string,
@@ -177,24 +182,14 @@ export const findDefinition = (
   ctx.defs ??= definitions(src);
   const hits = [...(ctx.defs.get(name) ?? [])];
   const shaped = hits.filter((end) => isShape(ctx, end));
+  // The last definition before the schema wins.
   const from = hits.pop();
   if (from === undefined || !shaped.includes(from)) return null;
   if (unique && shaped.length > 1) return null;
   return src.slice(from, exprEnd(src, from));
 };
 
-// The end of each definition before the schema, by name, in source order:
-// `function name(...){return ` or `name=` with an arrow after it, after `,`, `;`, or a space.
-// Only the definitions before the schema count, so a later module that reuses the name does not make it ambiguous.
-//
-// Speed: the bundle is about 240 MB, and one pass over it costs about 80 ms on a fast machine.
-// A build looks up about 12 names, so a regex for each name made 24 passes, about 1.8 s, and CI runners are 4 times slower.
-// A regex that starts with the literal name was not faster, because the cost is the pass and not the regex start.
-// So the first lookup makes 2 passes that find the definitions of all names, and `ctx.defs` keeps them for the build:
-// - The pass for `function name(` captures the name.
-// - The pass for `=` with an arrow after it reads the name back from the `=`, over `[\w$]` characters.
-//   That longest name, with `,`, `;`, or a space before it, is the same hit as `[,;\s]name=` for that one name.
-// The result is the same as the regex for each name, and the build takes about 0.2 s.
+// The bundle is about 240 MB and one pass costs about 80 ms, so 2 passes for all names replace 24 passes for each name.
 const definitions = (src: string): Map<string, number[]> => {
   const anchor = src.indexOf("{$schema:()=>");
   const limit = anchor < 0 ? src.length : anchor;
@@ -219,7 +214,6 @@ const definitions = (src: string): Map<string, number[]> => {
   return defs;
 };
 
-// A call to the object or record helper, such as `u(` and `fe(`.
 const isShape = (ctx: Ctx, at: number): boolean => {
   const name = /^[\w$]+/.exec(ctx.src.slice(at, at + 8))?.[0];
   return (

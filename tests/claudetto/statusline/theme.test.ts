@@ -1,10 +1,11 @@
 // The colors of the status line: the built-in theme from the `theme` key, and the cases `*-ansi`, `*-daltonized`, and `NO_COLOR`.
 
 import { expect, test } from "bun:test";
-import { readThemeName } from "../../../src/plugins/claudetto/slices/statusline/adapters/theme.ts";
-import { paintOf } from "../../../src/plugins/claudetto/slices/statusline/color.ts";
-import { themeOf } from "../../../src/plugins/claudetto/slices/statusline/theme.ts";
-import { noFiles, rowsOf } from "./support.ts";
+import {
+  paintOf,
+  themeOf,
+} from "../../../src/plugins/claudetto/slices/statusline/color.ts";
+import { rowsOf } from "./support.ts";
 
 const ESC = String.fromCharCode(27);
 const sgr = (parameters: string): string => `${ESC}[${parameters}m`;
@@ -132,9 +133,7 @@ test("a config file that cannot be parsed writes the cause to stderr and keeps t
 });
 
 test("a missing config file gives no theme name and no error", async () => {
-  const errors: string[] = [];
-  expect(
-    await readThemeName("/none", noFiles, (e) => errors.push(e)),
-  ).toBeNull();
-  expect(errors).toStrictEqual([]);
+  const { text, run } = await rowsOf({}, { env: { COLUMNS: "160" } });
+  expect(run.err).toStrictEqual([]);
+  expect(text).toContain(`${sgr("38;2;175;135;255")}⎇ main`);
 });

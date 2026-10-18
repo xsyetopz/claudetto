@@ -5,11 +5,10 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   buildSchemas,
+  fallbackOf,
+  isManagedOnly,
   schemaFiles,
 } from "../../../plugins/claudetto-lab/slices/schema/domain/build.ts";
-import { fallbackOf } from "../../../plugins/claudetto-lab/slices/schema/domain/descriptions.ts";
-import { isManagedOnly } from "../../../plugins/claudetto-lab/slices/schema/domain/managed.ts";
-import type { Schema } from "../../../plugins/claudetto-lab/slices/schema/domain/model.ts";
 import {
   chainCalls,
   findSchemaBody,
@@ -19,6 +18,7 @@ import {
   splitTop,
   unquote,
 } from "../../../plugins/claudetto-lab/slices/schema/domain/scan.ts";
+import type { Schema } from "../../../plugins/claudetto-lab/slices/schema/domain/types.ts";
 import { REPO, tmpDir } from "../../support/repo.ts";
 import { validate } from "../../support/validate.ts";
 import { spawnText } from "../fixture-repo.ts";

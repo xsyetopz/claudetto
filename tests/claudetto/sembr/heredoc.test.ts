@@ -82,7 +82,6 @@ test("a body that needs no change gives no output", () => {
 
 test("another command or a missing closing delimiter gives no output", () => {
   expect(rewriteCommand("echo hi")).toBe(undefined);
-  expect(rewriteCommand(undefined)).toBe(undefined);
   expect(
     rewriteCommand(
       `echo "$(cat <<'EOF'\nRead the file. Then edit it.\nEOF\n)"`,

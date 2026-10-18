@@ -1,8 +1,6 @@
-// The scanner of the bundle text: it matches brackets and splits expressions
-// and skips strings, template literals, regex literals, and comments.
-// Every function is pure, so a test can run it on a fixture string.
+export type Call = [name: string, args: string];
 
-import type { Call, Chain } from "./model.ts";
+export type Chain = { head: string; headArgs?: string; calls: Call[] };
 
 export const ANCHOR = "{$schema:()=>";
 
@@ -11,12 +9,8 @@ const CLOSE = ")]}";
 const REGEX_AFTER = "(,=:[!&|?{};+-*%<>~^";
 const KEYWORDS_BEFORE_REGEX = /(?:return|typeof|case|in|of|void|delete)$/;
 
-// Called for each code character with its index, the character, and its depth.
-// Returns true to stop the walk.
 type Visit = (index: number, char: string, depth: number) => boolean;
 
-// The index after the string, template, regex, or comment that starts at `i`.
-// Returns `i` when none starts there.
 export const skipToken = (src: string, i: number, prev: string): number => {
   const c = src[i];
   if (c === '"' || c === "'") return skipQuoted(src, i, c);
@@ -69,9 +63,6 @@ const skipRegex = (src: string, i: number): number => {
   return src.length;
 };
 
-// Walks `src` from `from` and calls `visit(index, char, depth)` for each code character.
-// `visit` returns true to stop.
-// Depth is 0 before the first bracket, and the visit of a bracket sees the depth outside it.
 const walk = (src: string, from: number, visit: Visit): number | null => {
   let depth = 0;
   let prev = "";
@@ -91,11 +82,9 @@ const walk = (src: string, from: number, visit: Visit): number | null => {
   return null;
 };
 
-// The index of the bracket that closes the one at `open`, or `null`.
 export const matchClose = (src: string, open: number): number | null =>
   walk(src, open, (_i, c, depth) => CLOSE.includes(c) && depth === 0);
 
-// Splits `text` at the commas that are outside any bracket.
 export const splitTop = (text: string): string[] => {
   const parts: string[] = [];
   let start = 0;
@@ -110,7 +99,6 @@ export const splitTop = (text: string): string[] => {
   return parts.map((p) => p.trim()).filter(Boolean);
 };
 
-// The index where the expression that starts at `from` ends.
 export const exprEnd = (src: string, from: number): number => {
   const stop = walk(
     src,
@@ -122,7 +110,6 @@ export const exprEnd = (src: string, from: number): number => {
   return stop ?? src.length;
 };
 
-// The body of the settings object (without braces), or `null`.
 export const findSchemaBody = (src: string): string | null => {
   const start = src.indexOf(ANCHOR);
   if (start < 0) return null;
@@ -140,7 +127,6 @@ const ESCAPES: Record<string, string> = {
   0: "\0",
 };
 
-// The value of a JavaScript string literal.
 export const unquote = (lit: string): string => {
   const body = lit.slice(1, -1);
   return body.replace(
@@ -171,7 +157,6 @@ export const splitPlus = (expr: string): string[] => {
   return parts;
 };
 
-// The `[name, args]` of each top-level method call in a chain such as `o().optional().describe("x")`.
 export const chainCalls = (expr: string): Chain => {
   const calls: Call[] = [];
   let i = expr.search(/\(/);
@@ -192,9 +177,6 @@ export const chainCalls = (expr: string): Chain => {
   return { head, headArgs, calls };
 };
 
-// The `[key, expr]` pairs of an object body.
-// A conditional spread such as `...flag&&{key:()=>x}` gives the pairs of its object.
-// Any other spread has no key and is skipped.
 export const parseEntries = (
   body: string,
   thunk: boolean,

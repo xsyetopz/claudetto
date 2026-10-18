@@ -2,8 +2,10 @@
 
 import type { FileReader } from "../../../src/kernel/ports.ts";
 import type { Deps } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
-import { paintOf } from "../../../src/plugins/claudetto/slices/statusline/color.ts";
-import { themeOf } from "../../../src/plugins/claudetto/slices/statusline/theme.ts";
+import {
+  paintOf,
+  themeOf,
+} from "../../../src/plugins/claudetto/slices/statusline/color.ts";
 
 // The clock of a limit prints local time, so the tests that print it fix the zone to UTC and do not depend on `TZ`.
 process.env["TZ"] = "UTC";

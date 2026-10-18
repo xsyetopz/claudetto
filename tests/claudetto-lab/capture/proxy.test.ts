@@ -321,25 +321,3 @@ test("`--port` that is not a whole number from 1 to 65535 stops the proxy with e
     expect(r.exitCode).toBe(2);
   }
 });
-
-test("`--count FILE` that is not JSON stops the proxy with exit 1 and names the file", async () => {
-  const port = await freePort();
-  const dir = tmpDir("capture");
-  const file = path.join(dir, "request.json");
-  await Bun.write(file, "{ not json");
-  const r = Bun.spawnSync([
-    process.execPath,
-    "--no-env-file",
-    TOOL,
-    "--port",
-    String(port),
-    "--out",
-    dir,
-    "--upstream",
-    "http://127.0.0.1:9",
-    "--count",
-    file,
-  ]);
-  expect(r.exitCode).toBe(1);
-  expect(Buffer.from(r.stderr).toString("utf8")).toContain(file);
-});

@@ -1,42 +1,34 @@
-// The login token and the environment of the sandbox child process.
-
 import os from "node:os";
 import path from "node:path";
-import { parseJson, readJson, readText } from "./json.ts";
-import { spawnSyncOrNull } from "./run-program.ts";
+import { parseJson, readJson } from "./json.ts";
 
 interface Credentials {
   claudeAiOauth?: { accessToken?: string };
 }
 
-/**
- * The token of `CLAUDE_CODE_OAUTH_TOKEN`, else the macOS Keychain entry,
- * else `~/.claude/.credentials.json`, else `null`.
- */
 export const loginToken = async (): Promise<string | null> => {
   if (process.env["CLAUDE_CODE_OAUTH_TOKEN"])
     return process.env["CLAUDE_CODE_OAUTH_TOKEN"];
-  let text: string | null = null;
-  if (process.platform === "darwin") {
-    const r = spawnSyncOrNull("security", [
-      "find-generic-password",
-      "-s",
-      "Claude Code-credentials",
-      "-w",
-    ]);
-    if (r?.exitCode === 0) text = (r.stdout as Buffer).toString("utf8");
-  }
-  if (!text)
-    text = await readText(
-      path.join(os.homedir(), ".claude", ".credentials.json"),
-    );
-  return (
-    (text && parseJson<Credentials>(text)?.claudeAiOauth?.accessToken) || null
-  );
+  const keychain =
+    process.platform === "darwin" && Bun.which("security")
+      ? Bun.spawnSync([
+          "security",
+          "find-generic-password",
+          "-s",
+          "Claude Code-credentials",
+          "-w",
+        ])
+      : null;
+  const creds =
+    keychain?.exitCode === 0 && keychain.stdout.length
+      ? parseJson<Credentials>(keychain.stdout.toString("utf8"))
+      : await readJson<Credentials>(
+          path.join(os.homedir(), ".claude", ".credentials.json"),
+        );
+  return creds?.claudeAiOauth?.accessToken || null;
 };
 
-// Variables that the parent Claude Code session sets for its own tools. In the
-// sandbox they would join the parent session or fake its state.
+// These variables of the parent session would join the parent session or fake its state in the sandbox.
 const SESSION_VARS = new Set([
   "CLAUDECODE",
   "AI_AGENT",
@@ -55,11 +47,6 @@ const SESSION_PREFIXES = [
   "CLAUDE_PLUGIN_",
 ];
 
-/**
- * The environment without the parent session's variables, and without each
- * variable that has the value your own settings `env` gives it. A value that
- * you set for the sandbox on the command line stays.
- */
 export const cleanEnv = async (): Promise<NodeJS.ProcessEnv> => {
   const own = path.join(
     process.env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), ".claude"),

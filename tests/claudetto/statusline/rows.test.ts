@@ -2,7 +2,7 @@
 
 import { expect, test } from "bun:test";
 import type { StatusSegment } from "../../../src/kernel/slice.ts";
-import { renderRows } from "../../../src/plugins/claudetto/slices/statusline/domain/rows.ts";
+import { renderRows } from "../../../src/plugins/claudetto/slices/statusline/rows.ts";
 
 /** A segment with `text` in `row`, and a count of the renders of each segment id in `renders`. */
 const counted =

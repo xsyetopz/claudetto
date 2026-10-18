@@ -1,19 +1,9 @@
-// The guard of `claudetto-sandbox --clean`, which removes a folder with all its contents.
-// The sandbox writes only `config/`, `project/`, `home/`, and the marker into its folder.
-// `setUp` writes `.claude.json` inside `config/`, and the debug log goes to the temp folder.
-
 import { REFUSE_FOREIGN, REFUSE_NO_MARKER } from "../prompts.ts";
 
-/** The only entries that the sandbox writes into its folder. */
 export const SANDBOX_LAYOUT: readonly string[] = ["config", "project", "home"];
 
-/** The file that `setUp` writes into the sandbox folder. A folder without it was not made by the sandbox. */
 export const SANDBOX_MARKER = ".claudetto-sandbox";
 
-/**
- * Returns why `--clean` must not remove the folder, or `null` when it may.
- * `entries` lists the names in the folder, and `isDefault` is true for the default sandbox folder.
- */
 export const cleanRefusal = (
   root: string,
   entries: readonly string[],

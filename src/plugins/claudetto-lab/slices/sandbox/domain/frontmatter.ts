@@ -1,37 +1,21 @@
-// The check of `claudetto-sandbox --check-frontmatter`.
-// Claude Code writes a debug line for each unknown or ignored frontmatter field of a plugin file.
-// The sandbox runs one headless session with `--debug-file`, and this file reads the log.
-
 import {
   NO_PLUGIN_LOADED,
   NO_UNKNOWN_FIELD,
   UNKNOWN_FIELD_COUNT,
 } from "../prompts.ts";
 
-/** The lines of a debug log that name an unknown or ignored frontmatter field. */
-export const unknownFieldLines = (text: string): string[] =>
-  text
-    .split("\n")
-    .filter((l: string) =>
-      /unknown (?:frontmatter )?field|unrecognized field/i.test(l),
-    );
+export const pluginLoaded = (text: string): boolean =>
+  /Loaded inline plugin from path:/.test(text);
 
-// The debug line of Claude Code for a plugin folder that `--plugin-dir` loads.
-// The count `Found N plugins` is not used, because it also counts the built-in plugins.
-const INLINE = /Loaded inline plugin from path:/;
-
-/** Whether the debug log shows at least one plugin folder that `--plugin-dir` loaded. */
-export const pluginLoaded = (text: string): boolean => INLINE.test(text);
-
-/**
- * The lines to print for a log, and the exit code.
- * The code is 1 when the log names a field, and also when no plugin loaded, because then the check proves nothing.
- */
 export const report = (
   log: string,
   text: string,
 ): { lines: string[]; code: number } => {
-  const hits = unknownFieldLines(text);
+  const hits = text
+    .split("\n")
+    .filter((l) =>
+      /unknown (?:frontmatter )?field|unrecognized field/i.test(l),
+    );
   const loaded = pluginLoaded(text);
   return {
     lines: [

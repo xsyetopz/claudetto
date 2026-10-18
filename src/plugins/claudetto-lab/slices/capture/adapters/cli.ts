@@ -1,23 +1,3 @@
-// A local logging proxy for the requests of Claude Code.
-// The `claudetto-capture` bin calls `main`.
-//
-//   claudetto-capture [--port 8787] [--out DIR] [--upstream URL] [--no-count] [--count FILE]
-//   ANTHROPIC_BASE_URL=http://127.0.0.1:8787 ENABLE_TOOL_SEARCH=true claude
-//
-// It forwards each request to the upstream and writes the body of
-// each `/v1/messages` request to DIR (default $TMPDIR/claudetto-capture).
-// It never writes a request header, because the headers carry the credential.
-// For the first `/v1/messages` request with tools, it sizes each part with
-// the `count_tokens` endpoint: the full request, then the request without one
-// tool, one block, or one section of a long text block at a time.
-// With `--count FILE`, it sizes FILE instead, with the credential of the first
-// request that comes in.
-// The difference is the token cost of that part, wrappers included.
-// The report goes to DIR/report-<n>.jsonl and to stdout.
-// The upstream is `--upstream URL`, else `ANTHROPIC_BASE_URL`, else https://api.anthropic.com.
-// The proxy stops when the upstream is its own address, because requests would loop.
-// A test sets `--upstream` to a local fake server.
-
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -27,7 +7,7 @@ import type { Body } from "../domain/types.ts";
 import { resolveUpstream } from "../domain/upstream.ts";
 import { BODY_NOT_JSON, PORT_INVALID, USAGE } from "../prompts.ts";
 
-// Headers that go upstream unchanged; all others stay behind.
+// Only these headers go upstream, and the proxy never writes a request header, because the headers carry the credential.
 const PASS =
   /^(authorization|x-api-key|anthropic-.*|content-type|user-agent|x-app|x-stainless-.*)$/i;
 
@@ -38,38 +18,6 @@ const passHeaders = (headers: Headers): Headers => {
   return kept;
 };
 
-/** The body as JSON, or `null` when it is not JSON. */
-const parseBody = (raw: Buffer): Body | null => {
-  try {
-    return JSON.parse(raw.toString("utf8")) as Body;
-  } catch {
-    return null;
-  }
-};
-
-/** Sizes one request, writes DIR/report-<n>.jsonl, and prints the lines. */
-const sizeTo = async (
-  upstream: string,
-  out: string,
-  n: string,
-  body: Body,
-  headers: Headers,
-  query: string,
-): Promise<void> => {
-  const sizing = await sizeRequest(
-    upstream,
-    body,
-    Object.fromEntries(passHeaders(headers)),
-    query,
-  );
-  await Bun.write(
-    path.join(out, `report-${n}.jsonl`),
-    `${JSON.stringify(sizing)}\n`,
-  );
-  for (const line of sizingLines(n, sizing)) console.log(line);
-};
-
-/** Runs the proxy with `args`, and returns the exit code once it listens. */
 export const main = async (
   args: string[],
   env: NodeJS.ProcessEnv = process.env,
@@ -95,6 +43,7 @@ export const main = async (
   const baseUrl = env["ANTHROPIC_BASE_URL"];
   let upstream: string;
   try {
+    // `resolveUpstream` throws when the upstream is the proxy itself, because requests would loop.
     upstream = resolveUpstream({
       flag: flag("--upstream", null),
       ...(baseUrl === undefined ? {} : { baseUrl }),
@@ -105,33 +54,31 @@ export const main = async (
     return 1;
   }
   const count = !args.includes("--no-count");
-  const recount = flag("--count", null);
-  // The file is read before the proxy listens, so a file that is not JSON stops the run.
-  let recounted: Body | null = null;
-  if (recount !== null) {
-    try {
-      recounted = (await Bun.file(recount).json()) as Body;
-    } catch (e) {
-      console.error(
-        `capture: cannot read ${recount} as a JSON request: ${(e as Error).message}`,
-      );
-      return 1;
-    }
-  }
   fs.mkdirSync(out, { recursive: true });
 
-  // Each run numbers its files from a new stamp, so a run never overwrites another.
   const run = new Date().toISOString().replace(/[:.]/g, "-");
   let seen = 0;
   let counted = false;
 
-  /** Print an error and keep it in DIR, because the terminal may be gone. */
-  const fail = (n: string) => async (e: unknown) => {
-    console.error(String(e));
-    await Bun.write(
-      path.join(out, `error-${n}.txt`),
-      `${(e as Error)?.stack ?? e}\n`,
-    );
+  const save = (name: string, text: string) =>
+    Bun.write(path.join(out, name), `${text}\n`);
+
+  const size = (n: string, body: Body, req: Request): void => {
+    counted = true;
+    sizeRequest(
+      upstream,
+      body,
+      Object.fromEntries(passHeaders(req.headers)),
+      new URL(req.url).search,
+    )
+      .then(async (sizing) => {
+        await save(`report-${n}.jsonl`, JSON.stringify(sizing));
+        for (const line of sizingLines(n, sizing)) console.log(line);
+      })
+      .catch(async (e) => {
+        console.error(String(e));
+        await save(`error-${n}.txt`, e?.stack ?? e);
+      });
   };
 
   const handle = async (req: Request): Promise<Response> => {
@@ -141,42 +88,19 @@ export const main = async (
       req.method === "GET" || req.method === "HEAD"
         ? undefined
         : Buffer.from(await req.arrayBuffer());
-    if (recounted && !counted && raw) {
-      counted = true;
-      sizeTo(
-        upstream,
-        out,
-        `${run}-file`,
-        recounted,
-        passHeaders(req.headers),
-        url.search,
-      ).catch(fail(`${run}-file`));
-    }
-    // A body that is not JSON is forwarded unchanged, and only its save and its sizing are skipped.
     if (url.pathname === "/v1/messages" && raw) {
-      const body = parseBody(raw);
+      let body: Body | null = null;
+      try {
+        body = JSON.parse(raw.toString("utf8")) as Body;
+      } catch {}
       if (body === null) console.error(BODY_NOT_JSON);
       else {
         const n = `${run}-${++seen}`;
-        await Bun.write(
-          path.join(out, `request-${n}.jsonl`),
-          `${JSON.stringify(body)}\n`,
-        );
+        await save(`request-${n}.jsonl`, JSON.stringify(body));
         console.log(
           `request ${n}: ${body.model}, ${raw.byteLength} bytes, saved`,
         );
-        // The main loop sends the first request with tools.
-        if (count && !counted && body.tools?.length) {
-          counted = true;
-          sizeTo(
-            upstream,
-            out,
-            n,
-            body,
-            passHeaders(req.headers),
-            url.search,
-          ).catch(fail(n));
-        }
+        if (count && !counted && body.tools?.length) size(n, body, req);
       }
     }
     // A client that goes away, such as an Esc in Claude Code, ends the upstream request too.
@@ -190,17 +114,13 @@ export const main = async (
     const back = new Headers(back_.headers);
     back.delete("content-encoding");
     back.delete("content-length");
-    return new Response(back_.body, {
-      status: back_.status,
-      headers: back,
-    });
+    return new Response(back_.body, { status: back_.status, headers: back });
   };
 
   try {
     Bun.serve({
       port,
       hostname: "127.0.0.1",
-      // No idle timeout, as before.
       idleTimeout: 0,
       fetch: (req) =>
         handle(req).catch((e: Error) => {

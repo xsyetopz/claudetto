@@ -27,6 +27,7 @@ await Bun.write(process.env.FAKE_OUT, JSON.stringify({ env: process.env, argv: p
 `;
 // Prints the token in `FAKE_KEYCHAIN` as the Keychain JSON, or fails when the variable is not set.
 const FAKE_SECURITY = `const t = process.env.FAKE_KEYCHAIN;
+if (process.env.FAKE_KEYCHAIN_EMPTY) process.exit(0);
 if (!t) process.exit(44);
 process.stdout.write(JSON.stringify({ claudeAiOauth: { accessToken: t } }));
 `;
@@ -121,6 +122,17 @@ test("with no env token, the credentials file gives the token", async () => {
   expect(r.status, r.stderr).toBe(0);
   expect(shown(seen.env["CLAUDE_CODE_OAUTH_TOKEN"])).toBe("file-token");
 });
+
+test.skipIf(process.platform !== "darwin")(
+  "a Keychain call that succeeds with empty output falls back to the credentials file",
+  async () => {
+    const s = await setUp();
+    await writeCredentials(s.home, "file-token");
+    const { r, seen } = await run(s, { FAKE_KEYCHAIN_EMPTY: "1" });
+    expect(r.status, r.stderr).toBe(0);
+    expect(shown(seen.env["CLAUDE_CODE_OAUTH_TOKEN"])).toBe("file-token");
+  },
+);
 
 test.skipIf(process.platform !== "darwin")(
   "with no env token, the Keychain gives the token and wins over the file",

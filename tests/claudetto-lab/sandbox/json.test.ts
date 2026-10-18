@@ -1,5 +1,5 @@
 // Behavior of the JSON reads of `claudetto-sandbox`: an absent file and text that is not JSON are expected,
-// and any other read error is thrown.
+// and a file that cannot be read also gives null.
 // Each test works in its own folder under `TMPDIR`.
 
 import { expect, test } from "bun:test";
@@ -32,12 +32,10 @@ test("a file with damaged JSON gives null", async () => {
   expect(await readJson(path.join(dir, "bad.json"))).toBe(null);
 });
 
-test("a read error other than an absent file is thrown", async () => {
+test("a folder in place of a file gives null", async () => {
   const dir = folder();
   fs.mkdirSync(path.join(dir, "folder.json"));
-  await expect(readJson(path.join(dir, "folder.json"))).rejects.toMatchObject({
-    code: "EISDIR",
-  });
+  expect(await readJson(path.join(dir, "folder.json"))).toBe(null);
 });
 
 test("`availableModels` reads the list, and gives undefined when the settings are absent", async () => {

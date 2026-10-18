@@ -4,7 +4,7 @@
 
 import { expect, test } from "bun:test";
 import { main } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
-import { paceOf } from "../../../src/plugins/claudetto/slices/statusline/domain/pace.ts";
+import { paceOf } from "../../../src/plugins/claudetto/slices/statusline/format.ts";
 import { FIVE_HOUR_S } from "../../../src/plugins/claudetto/slices/statusline/limits.ts";
 import { depsFor, NOW, type Run, STATUS } from "./support.ts";
 

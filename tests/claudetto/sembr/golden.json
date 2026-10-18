@@ -1,0 +1,283 @@
+{
+  "split": [
+    ["One. Two. Three.", "One.\nTwo.\nThree.", [3]],
+    ["Dr. Smith went home. He slept.", "Dr.\nSmith went home.\nHe slept.", [3]],
+    ["See `a. b. c` now. Then go.", "See `a. b. c` now.\nThen go.", [2]],
+    [
+      "Visit https://x.com/a. Then leave. Ok [a. b](c.d). Fine.",
+      "Visit https://x.com/a. Then leave.\nOk [a. b](c.d).\nFine.",
+      [3]
+    ],
+    [
+      "# Head. Two.\n\nBody one. Body two.\n",
+      "# Head. Two.\n\nBody one.\nBody two.\n",
+      [1, 1, 2, 1]
+    ],
+    [
+      "- Item one. Item two.\n  More here. And more.\n1. Num one. Num two.\n\nPara. Next.",
+      "- Item one.\n  Item two.\n  More here.\n  And more.\n1. Num one.\n   Num two.\n\nPara.\nNext.",
+      [2, 2, 2, 1, 2]
+    ],
+    [
+      "> Quote one. Quote two.\n> Again. Yes.",
+      "> Quote one.\n> Quote two.\n> Again.\n> Yes.",
+      [2, 2]
+    ],
+    [
+      "```js\nfoo. bar.\n```\nAfter. Fence.\n~~~\nx. y.\n~~~",
+      "```js\nfoo. bar.\n```\nAfter.\nFence.\n~~~\nx. y.\n~~~",
+      [1, 1, 1, 2, 1, 1, 1]
+    ],
+    [
+      "---\ntitle: A. B.\n---\nText. More.",
+      "---\ntitle: A. B.\n---\nText.\nMore.",
+      [1, 1, 1, 2]
+    ],
+    [
+      "| a. b | c |\n|---|---|\n| d. e | f |\n\nAfter. Table.",
+      "| a. b | c |\n|---|---|\n| d. e | f |\n\nAfter.\nTable.",
+      [1, 1, 1, 1, 2]
+    ],
+    [
+      "<pre>\nA. B.\n</pre>\nOut. Side.\n$$\nx. y.\n$$\nEnd. Done.",
+      "<pre>\nA. B.\n</pre>\nOut.\nSide.\n$$\nx. y.\n$$\nEnd.\nDone.",
+      [1, 1, 1, 2, 1, 1, 1, 2]
+    ],
+    [
+      "    indented. code.\nPara. Two.",
+      "    indented. code.\nPara.\nTwo.",
+      [1, 2]
+    ],
+    [
+      "Line  \nhard. break.\nTitle\n=====\nA. B.",
+      "Line  \nhard. break.\nTitle\n=====\nA.\nB.",
+      [1, 1, 1, 1, 2]
+    ],
+    [
+      "import A from 'a'\nexport const x = {a: 1}\n\nProse. Here.",
+      "import A from 'a'\nexport const x = {a: 1}\n\nProse.\nHere.",
+      [1, 1, 1, 2]
+    ],
+    [
+      "Is it? Yes! Really... Maybe. 3.5 is a number. e.g. this.",
+      "Is it?\nYes!\nReally...\nMaybe.\n3.5 is a number. e.g. this.",
+      [5]
+    ],
+    ["a. b\r\nc. D.\r\n", "a. b\r\nc.\r\nD.\r\n", [1, 2, 1]],
+    [
+      "- item\n\n      code. here.\n  Text. More.\n",
+      "- item\n\n      code. here.\n  Text.\n  More.\n",
+      [1, 1, 1, 2, 1]
+    ],
+    [
+      "Use <b>x. y</b> tag. Next.\nThe key: \"v\". Done.",
+      "Use <b>x. y</b> tag.\nNext.\nThe key: \"v\".\nDone.",
+      [2, 2]
+    ],
+    [
+      "1. First. Second.\n   - Nested. Sub.\n10) Ten. Ok.",
+      "1. First.\n   Second.\n   - Nested.\n     Sub.\n10) Ten.\n    Ok.",
+      [2, 2, 2]
+    ],
+    [
+      "End. - not list. # not head. 1. not.",
+      "End. - not list. # not head. 1. not.",
+      [1]
+    ]
+  ],
+  "cmds": [
+    [
+      "git commit -m \"$(cat <<'EOF'\nSubject. Here.\n\nBody one. Body two.\n\nCo-Authored-By: A <a@b>\nEOF\n)\"",
+      "git commit -m \"$(cat <<'EOF'\nSubject. Here.\n\nBody one.\nBody two.\n\nCo-Authored-By: A <a@b>\nEOF\n)\""
+    ],
+    [
+      "gh pr create --title \"T. U.\" --body \"$(cat <<'EOF'\nA. B.\n- c. d.\nEOF\n)\"",
+      "gh pr create --title \"T. U.\" --body \"$(cat <<'EOF'\nA.\nB.\n- c. d.\nEOF\n)\""
+    ],
+    ["git commit -m \"$(cat <<'EOF'\nA. B.\nEOF\n)\"", null],
+    ["echo hi", null],
+    ["git commit -m \"$(cat <<'EOF'\nS\n\nEOF. x. EOF\nEOF\n)\"", null]
+  ],
+  "edits": [
+    [
+      "- Read the file. Then edit it.",
+      "- Open it. Close it.",
+      "- Read the file.\n  Then edit it.\n\n> Quote one.\n> Quote two.\n\nPlain para. Another here.\r\nZ.\n",
+      {
+        "old_string": "- Read the file.\n  Then edit it.",
+        "new_string": "- Open it.\n  Close it."
+      },
+      null,
+      {
+        "tool": "Edit",
+        "tool_use_id": "t",
+        "file_path": "/w/a.md",
+        "old_string": "- Read the file.\n  Then edit it.",
+        "new_string": "- Open it.\n  Close it."
+      }
+    ],
+    [
+      "Then edit it.",
+      "Done. Yes.",
+      "- Read the file.\n  Then edit it.\n\n> Quote one.\n> Quote two.\n\nPlain para. Another here.\r\nZ.\n",
+      null,
+      null,
+      {
+        "tool": "Edit",
+        "tool_use_id": "t",
+        "file_path": "/w/a.md",
+        "old_string": "Then edit it.",
+        "new_string": "Done. Yes."
+      }
+    ],
+    [
+      "Quote one. Quote two.",
+      "Q1. Q2.",
+      "- Read the file.\n  Then edit it.\n\n> Quote one.\n> Quote two.\n\nPlain para. Another here.\r\nZ.\n",
+      { "old_string": "Quote one.\n> Quote two.", "new_string": "Q1.\n> Q2." },
+      null,
+      {
+        "tool": "Edit",
+        "tool_use_id": "t",
+        "file_path": "/w/a.md",
+        "old_string": "Quote one.\n> Quote two.",
+        "new_string": "Q1.\n> Q2."
+      }
+    ],
+    [
+      "Plain para. Another here.",
+      "New one. New two.",
+      "- Read the file.\n  Then edit it.\n\n> Quote one.\n> Quote two.\n\nPlain para. Another here.\r\nZ.\n",
+      null,
+      "New one.\r\nNew two.",
+      {
+        "tool": "Edit",
+        "tool_use_id": "t",
+        "file_path": "/w/a.md",
+        "old_string": "Plain para. Another here.",
+        "new_string": "New one.\r\nNew two."
+      }
+    ],
+    [
+      "Plain para.",
+      "A. B.",
+      "- Read the file.\n  Then edit it.\n\n> Quote one.\n> Quote two.\n\nPlain para. Another here.\r\nZ.\n",
+      null,
+      null,
+      {
+        "tool": "Edit",
+        "tool_use_id": "t",
+        "file_path": "/w/a.md",
+        "old_string": "Plain para.",
+        "new_string": "A. B."
+      }
+    ],
+    [
+      "",
+      "Hi. There.",
+      null,
+      null,
+      "Hi.\nThere.",
+      {
+        "tool": "Edit",
+        "tool_use_id": "t",
+        "file_path": "/w/a.md",
+        "old_string": "",
+        "new_string": "Hi.\nThere."
+      }
+    ],
+    [
+      "x",
+      "y. z.",
+      "- Read the file.\n  Then edit it.\n\n> Quote one.\n> Quote two.\n\nPlain para. Another here.\r\nZ.\n",
+      null,
+      null,
+      {
+        "tool": "Edit",
+        "tool_use_id": "t",
+        "file_path": "/w/a.md",
+        "old_string": "x",
+        "new_string": "y. z."
+      }
+    ],
+    [
+      "Another here.",
+      "K. L.\n",
+      "- Read the file.\n  Then edit it.\n\n> Quote one.\n> Quote two.\n\nPlain para. Another here.\r\nZ.\n",
+      null,
+      null,
+      {
+        "tool": "Edit",
+        "tool_use_id": "t",
+        "file_path": "/w/a.md",
+        "old_string": "Another here.",
+        "new_string": "K. L.\n"
+      }
+    ]
+  ],
+  "write": [
+    [
+      "/w/a.md",
+      "A. B.",
+      {
+        "tool": "Write",
+        "tool_use_id": "t",
+        "file_path": "/w/a.md",
+        "content": "A.\nB."
+      }
+    ],
+    [
+      "/w/a.ts",
+      "A. B.",
+      {
+        "tool": "Write",
+        "tool_use_id": "t",
+        "file_path": "/w/a.ts",
+        "content": "A. B."
+      }
+    ],
+    [
+      "/w/a.md",
+      "A.\nB.\n",
+      {
+        "tool": "Write",
+        "tool_use_id": "t",
+        "file_path": "/w/a.md",
+        "content": "A.\nB.\n"
+      }
+    ],
+    [
+      "/w/a.ts",
+      "A.\nB.\n",
+      {
+        "tool": "Write",
+        "tool_use_id": "t",
+        "file_path": "/w/a.ts",
+        "content": "A.\nB.\n"
+      }
+    ]
+  ],
+  "bash": [
+    {
+      "tool": "Bash",
+      "tool_use_id": "t",
+      "command": "git commit -m \"$(cat <<'EOF'\nSubject. Here.\n\nBody one.\nBody two.\n\nCo-Authored-By: A <a@b>\nEOF\n)\""
+    },
+    {
+      "tool": "Bash",
+      "tool_use_id": "t",
+      "command": "gh pr create --title \"T. U.\" --body \"$(cat <<'EOF'\nA.\nB.\n- c. d.\nEOF\n)\""
+    },
+    {
+      "tool": "Bash",
+      "tool_use_id": "t",
+      "command": "git commit -m \"$(cat <<'EOF'\nA. B.\nEOF\n)\""
+    },
+    { "tool": "Bash", "tool_use_id": "t", "command": "echo hi" },
+    {
+      "tool": "Bash",
+      "tool_use_id": "t",
+      "command": "git commit -m \"$(cat <<'EOF'\nS\n\nEOF. x. EOF\nEOF\n)\""
+    }
+  ]
+}

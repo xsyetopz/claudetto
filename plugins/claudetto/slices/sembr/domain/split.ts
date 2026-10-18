@@ -3,59 +3,44 @@
 // It only splits after a sentence end and never joins lines, so a second run gives the same text.
 // It is pure string code with no import, because the hooks module may load it.
 
-const FENCE = /^\s*(?:>\s*)*(`{3,}|~{3,})/;
-const FENCE_END = /^\s*(?:>\s*)*[`~]+\s*$/;
-const TABLE_RULE =
-  /^\s*(?:>\s*)*\|?\s*:?-{2,}:?\s*(?:\|\s*:?-{2,}:?\s*)*\|?\s*$/;
+const QUOTE = String.raw`\s*(?:>\s*)*`;
+const FENCE = new RegExp(`^${QUOTE}(\`{3,}|~{3,})`);
+const FENCE_END = new RegExp(`^${QUOTE}[\`~]+\\s*$`);
+const TABLE_RULE = new RegExp(
+  `^${QUOTE}\\|?\\s*:?-{2,}:?\\s*(?:\\|\\s*:?-{2,}:?\\s*)*\\|?\\s*$`,
+);
 // A block that opens on a line and closes on a later line: `<pre>`, `<code>`, and a `$$` math block.
 const BLOCKS = [
-  { open: /^\s*(?:>\s*)*<pre\b[^>]*>?/i, close: /<\/pre\s*>/i },
-  { open: /^\s*(?:>\s*)*<code\b[^>]*>?/i, close: /<\/code\s*>/i },
-  { open: /^\s*(?:>\s*)*\$\$/, close: /\$\$/ },
+  { open: new RegExp(`^${QUOTE}<pre\\b[^>]*>?`, "i"), close: /<\/pre\s*>/i },
+  { open: new RegExp(`^${QUOTE}<code\\b[^>]*>?`, "i"), close: /<\/code\s*>/i },
+  { open: new RegExp(`^${QUOTE}\\$\\$`), close: /\$\$/ },
 ];
-type Block = (typeof BLOCKS)[number];
 const LIST = /^(\s*(?:>\s*)*)((?:[-*+]|\d{1,9}[.)])\s+)/;
 const SKIP_LINE = /^\s*(?:#{1,6}(?:\s|$)|\[[^\]]+\]:\s|<|\||(?:[-*_]\s*){3,}$)/;
 // The text after a break must not start a block: a list item, a heading, or a fence.
 const BLOCK_START = /^(?:[-*+]\s|\d{1,9}[.)]\s|#|`{3,}|~{3,})/;
-// A line with code or data syntax: a brace, an assignment, a JSON key, or a JSON array.
 const CODE_LIKE = /[{}=]|":|\[\s*(?:["'{[\d-]|$)/;
-const ESM = /^\s*(?:import|export)\s/;
-const UNDERLINE = /^\s*(?:=+|-+)\s*$/;
+const CODE_SPAN = /(`+)[\s\S]*?(?<!`)\1(?!`)/g;
+const LINK = /\[[^\]]*\]\([^)]*\)/g;
+const PROTECTED = [
+  CODE_SPAN,
+  LINK,
+  /\]\[[^\]]*\]/g,
+  /<[^<>\s][^<>]*>/g,
+  /\b[a-z][a-z0-9+.-]*:\/\/\S+/gi,
+];
 
-/**
- * The ranges `[start, end)` of `text` that a split must not enter.
- */
-const protectedRanges = (text: string): [number, number][] => {
-  const ranges: [number, number][] = [];
-  const add = (re: RegExp) => {
-    for (const m of text.matchAll(re))
-      ranges.push([m.index, m.index + m[0].length]);
-  };
-  for (const m of text.matchAll(/(`+)[\s\S]*?(?<!`)\1(?!`)/g))
-    ranges.push([m.index, m.index + m[0].length]);
-  add(/\[[^\]]*\]\([^)]*\)/g);
-  add(/\]\[[^\]]*\]/g);
-  add(/<[^<>\s][^<>]*>/g);
-  add(/\b[a-z][a-z0-9+.-]*:\/\/\S+/gi);
-  return ranges;
-};
+// The locale `und` keeps the Unicode sentence rules (UAX 29) the same on each host.
+const SEGMENTER = new Intl.Segmenter("und", { granularity: "sentence" });
 
-// The sentence rules are the Unicode ones (UAX 29 with CLDR data), so they hold for each written language.
-// The locale `und` keeps the result the same on each host, whatever its language setting.
-const SEGMENTER: Intl.Segmenter | undefined =
-  typeof Intl !== "undefined" && typeof Intl.Segmenter === "function"
-    ? new Intl.Segmenter("und", { granularity: "sentence" })
-    : undefined;
-
-/**
- * The sentences of one line body, without the prefix.
- * A runtime without `Intl.Segmenter` gets no split, because a wrong split is worse than none.
- */
 const sentences = (body: string): string[] => {
-  if (!SEGMENTER) return [body];
-  const ranges = protectedRanges(body);
-  const inside = (i: number) => ranges.some(([a, b]) => i >= a && i < b);
+  const ranges = PROTECTED.flatMap((re) =>
+    [...body.matchAll(re)].map((m) => ({
+      a: m.index,
+      b: m.index + m[0].length,
+    })),
+  );
+  const inside = (i: number) => ranges.some(({ a, b }) => i >= a && i < b);
   const parts: string[] = [];
   let start = 0;
   for (const { index } of SEGMENTER.segment(body)) {
@@ -70,20 +55,21 @@ const sentences = (body: string): string[] => {
   return parts;
 };
 
-/**
- * The set of line numbers in tables, in front matter, and in fences.
- */
 const protectedLines = (lines: string[]): Set<number> => {
   const skip = new Set<number>();
+  const add = (from: number, to: number) => {
+    for (let i = from; i <= to; i++) skip.add(i);
+  };
+  const row = (i: number) => lines[i]?.trim() !== "" && lines[i]?.includes("|");
   let fence: string | null = null;
-  let block: Block | null = null;
+  let block: (typeof BLOCKS)[number] | null = null;
   for (let n = 0; n < lines.length; n++) {
     const line = lines[n] ?? "";
     if (n === 0 && line === "---") {
       const end = lines.findIndex(
         (l, i) => i > 0 && (l === "---" || l === "..."),
       );
-      if (end > 0) for (let i = 0; i <= end; i++) skip.add(i);
+      if (end > 0) add(0, end);
       n = Math.max(end, 0);
       continue;
     }
@@ -112,50 +98,26 @@ const protectedLines = (lines: string[]): Set<number> => {
       skip.add(n);
     } else if (TABLE_RULE.test(line) && line.includes("|") && n > 0) {
       let top = n - 1;
-      while (
-        top > 0 &&
-        lines[top - 1]?.trim() !== "" &&
-        lines[top - 1]?.includes("|")
-      )
-        top--;
-      for (let i = top; i <= n; i++) skip.add(i);
-      for (
-        let i = n + 1;
-        i < lines.length && lines[i]?.trim() !== "" && lines[i]?.includes("|");
-        i++
-      )
-        skip.add(i);
+      while (top > 0 && row(top - 1)) top--;
+      let end = n;
+      while (row(end + 1)) end++;
+      add(top, end);
     }
   }
   return skip;
 };
 
-/**
- * True when `line` has code or data syntax outside inline code and links.
- */
-const codeLike = (line: string): boolean => {
-  const plain = line
-    .replace(/(`+)[\s\S]*?(?<!`)\1(?!`)/g, "")
-    .replace(/\[[^\]]*\]\([^)]*\)/g, "");
-  return CODE_LIKE.test(plain);
-};
-
-/**
- * The width of the leading white space of `line`, with a tab as four columns.
- */
 const indentOf = (line: string): number =>
   (line.match(/^[ \t]*/)?.[0] ?? "").replace(/\t/g, "    ").length;
 
 /**
  * The formatted lines of `text` and the count of output lines for each input line.
- * `sembr` only splits a line and never joins, so the counts sum to the output length.
  * A line that ends with CR is formatted without it, and each output line of it gets the CR back,
  * so a CRLF file keeps its line endings and the guards of the front matter and of the fences still match.
  */
-const format = (text: unknown): { out: string[]; counts: number[] } => {
-  const raw = String(text).split("\n");
-  const cr = raw.map((l) => l.endsWith("\r"));
-  const lines = raw.map((l, i) => (cr[i] ? l.slice(0, -1) : l));
+export const format = (text: string): { out: string[]; counts: number[] } => {
+  const raw = text.split("\n");
+  const lines = raw.map((l) => l.replace(/\r$/, ""));
   const skip = protectedLines(lines);
   const out: string[] = [];
   const counts: number[] = [];
@@ -165,6 +127,7 @@ const format = (text: unknown): { out: string[]; counts: number[] } => {
   let esm = false;
   for (let n = 0; n < lines.length; n++) {
     const line = lines[n] ?? "";
+    const eol = raw[n]?.endsWith("\r") ? "\r" : "";
     const list = line.match(LIST);
     const blank = line.trim() === "";
     if (list) {
@@ -173,47 +136,34 @@ const format = (text: unknown): { out: string[]; counts: number[] } => {
       listCode = false;
     } else if (!blank && !/^\s/.test(line)) listOpen = false;
     if (blank) esm = false;
-    else if (ESM.test(line)) esm = true;
+    else if (/^\s*(?:import|export)\s/.test(line)) esm = true;
     if (listOpen && !list && !blank && indentOf(line) >= listIndent + 4) {
       if (listCode || lines[n - 1]?.trim() === "") listCode = true;
     } else if (!blank) listCode = false;
     const indented = /^( {4}|\t)/.test(line) && (!listOpen || listCode);
-    const eol = cr[n] ? "\r" : "";
+    const plain = line.replace(CODE_SPAN, "").replace(LINK, "");
     if (
       skip.has(n) ||
       indented ||
       esm ||
       SKIP_LINE.test(line) ||
       / {2,}$|\\$/.test(line) ||
-      codeLike(line) ||
-      UNDERLINE.test(lines[n + 1] ?? "x")
+      CODE_LIKE.test(plain) ||
+      /^\s*(?:=+|-+)\s*$/.test(lines[n + 1] ?? "x")
     ) {
       out.push(line + eol);
       counts.push(1);
       continue;
     }
-    const first = list ? list[0] : (line.match(/^\s*(?:>\s*)*/)?.[0] ?? "");
-    const rest = line.slice(first.length);
-    const quote = first.match(/^\s*(?:>\s*)*/)?.[0] ?? "";
+    const quote = line.match(/^\s*(?:>\s*)*/)?.[0] ?? "";
+    const first = list ? list[0] : quote;
     const next = list ? quote + " ".repeat(first.length - quote.length) : first;
-    const parts = sentences(rest);
-    out.push(first + (parts[0] ?? "") + eol);
-    for (const part of parts.slice(1)) out.push(next + part + eol);
-    counts.push(parts.length);
+    const [head = "", ...tail] = sentences(line.slice(first.length));
+    out.push(first + head + eol, ...tail.map((p) => next + p + eol));
+    counts.push(tail.length + 1);
   }
   return { out, counts };
 };
 
-/**
- * `text` with a line break after each sentence end of a paragraph line.
- */
-export const sembr = (text: unknown): string => {
-  return format(text).out.join("\n");
-};
-
-/**
- * The count of output lines that `sembr` makes for each line of `text`.
- */
-export const sembrCounts = (text: unknown): number[] => {
-  return format(text).counts;
-};
+/** `text` with a line break after each sentence end of a paragraph line. */
+export const sembr = (text: string): string => format(text).out.join("\n");

@@ -1,34 +1,3 @@
-// Run Claude Code in a config directory apart from your own, so a test of a
-// plugin cannot change your settings, sessions, or installed plugins.
-// The `claudetto-sandbox` bin calls `main`.
-//
-//   claudetto-sandbox [--dir DIR] [claude arguments...]    set up, then run claude
-//   claudetto-sandbox [--dir DIR] --clean                  remove the sandbox
-//   claudetto-sandbox [--dir DIR] --check-frontmatter ...  run one headless session with a debug log,
-//                                              and print each line that names an unknown field
-//
-// The command loads no plugin by itself.
-// Pass `--plugin-dir DIR` once for each plugin folder, as for `claude`.
-// `--dir DIR` sets the sandbox directory (default: `claudetto-sandbox` in
-// the system temp folder). It holds `config/` (`CLAUDE_CONFIG_DIR`) and
-// `project/`, an empty git repository that is the working directory, and
-// `home/`, the HOME of claude, so that setup scripts that change shell startup
-// files change only the sandbox. The config skips onboarding and trusts the project.
-//
-// `--check-frontmatter` adds `--debug-file` and `-p "Reply with OK."` to the call.
-// Claude Code loads the plugin files at start, so a short prompt is enough.
-// It exits 1 when the log names a field, or when the session fails.
-//
-// Managed settings can lock a plugin name.
-// Then Claude Code ignores the `--plugin-dir` copy of it, and
-// the debug log says "plugin is locked by managed settings".
-//
-// Login: the sandbox uses `CLAUDE_CODE_OAUTH_TOKEN` when it is set. If not, it
-// reads your own login token (the macOS Keychain entry, or
-// `~/.claude/.credentials.json`) and gives it to claude in its environment
-// only. The token is not written to disk or printed.
-// The command finds `claude` on `PATH` only. A shell function or alias does not work.
-
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -42,35 +11,29 @@ import {
   USAGE,
 } from "../prompts.ts";
 import { cleanEnv, loginToken } from "./login.ts";
-import { spawnSyncOrNull } from "./run-program.ts";
 import { absolutePluginDirs, availableModels, setUp } from "./setup.ts";
 
-/**
- * Adds the owner's read, write, and search bits to each folder under `dir`.
- * A folder without the write bit keeps its files, so `rmSync` cannot remove them.
- */
+// A folder without the write bit keeps its files, so `rmSync` cannot remove them.
 const makeWritable = (dir: string): void => {
   fs.chmodSync(dir, fs.statSync(dir).mode | 0o700);
   for (const entry of fs.readdirSync(dir, { withFileTypes: true }))
     if (entry.isDirectory()) makeWritable(path.join(dir, entry.name));
 };
 
-/** Runs the command with `argv`, and returns the exit code. */
 export const main = async (argv: string[]): Promise<number> => {
   const args = [...argv];
-  // `--dir DIR` is for this command, so it does not go on to claude.
   const dirAt = args.indexOf("--dir");
-  let dir = path.join(os.tmpdir(), SANDBOX_TEMP);
+  const next = args[dirAt + 1];
   if (dirAt !== -1) {
-    const next = args[dirAt + 1];
     if (!next || next.startsWith("--")) {
       console.error("--dir needs a directory, not a flag.");
       return 1;
     }
-    dir = args[dirAt + 1] as string;
     args.splice(dirAt, 2);
   }
-  const root = path.resolve(dir);
+  const root = path.resolve(
+    dirAt === -1 ? path.join(os.tmpdir(), SANDBOX_TEMP) : (next as string),
+  );
   const config = path.join(root, "config");
   const project = path.join(root, "project");
   const home = path.join(root, "home");
@@ -80,13 +43,12 @@ export const main = async (argv: string[]): Promise<number> => {
     return 0;
   }
   if (args[0] === "--clean") {
-    // A missing folder has nothing to remove, so `just sandbox-alone` runs on its first use.
     const rootStat = fs.lstatSync(root, { throwIfNoEntry: false });
     if (!rootStat) {
       console.log(NOTHING_TO_REMOVE({ root }));
       return 0;
     }
-    // A symlink would make `makeWritable` and `readdirSync` act on the folder it points to.
+    // A symlink would make `makeWritable` act on the folder it points to.
     if (rootStat.isSymbolicLink()) {
       console.error(REFUSE_SYMLINK({ root }));
       return 1;
@@ -130,8 +92,7 @@ export const main = async (argv: string[]): Promise<number> => {
     console.error("claude is not on PATH. Put the claude executable on PATH.");
     return 1;
   }
-  // The token is read above with the real HOME. Only the child gets the sandbox
-  // HOME, without the variables that point back to the real shell files.
+  // The token is read with the real HOME, and only the child gets the sandbox HOME.
   const env: NodeJS.ProcessEnv = {
     ...(await cleanEnv()),
     CLAUDE_CONFIG_DIR: config,
@@ -139,30 +100,30 @@ export const main = async (argv: string[]): Promise<number> => {
   };
   delete env["ZDOTDIR"];
   delete env["XDG_CONFIG_HOME"];
+  // The token is not written to disk or printed.
   const token = await loginToken();
   if (token) env["CLAUDE_CODE_OAUTH_TOKEN"] = token;
   else console.error("No login token found. Run /login inside the sandbox.");
-  // Claude Code gives no error for a `--model` that `availableModels` leaves
-  // out, and the session runs on another model, so the script says so.
-  const model = rest[rest.indexOf("--model") + 1];
-  if (rest.includes("--model")) {
-    const allowed = await availableModels(config);
-    if (
-      Array.isArray(allowed) &&
-      model?.startsWith("claude-") &&
-      !allowed.includes(model)
-    )
-      console.error(MODEL_NOT_ALLOWED({ model, allowed: allowed.join(", ") }));
-  }
-  const r = spawnSyncOrNull(claude, rest, {
+  // Claude Code gives no error for a `--model` that `availableModels` leaves out.
+  const model = rest.includes("--model")
+    ? rest[rest.indexOf("--model") + 1]
+    : "";
+  const allowed = model ? await availableModels(config) : undefined;
+  if (
+    Array.isArray(allowed) &&
+    model?.startsWith("claude-") &&
+    !allowed.includes(model)
+  )
+    console.error(MODEL_NOT_ALLOWED({ model, allowed: allowed.join(", ") }));
+  // Managed settings can lock a plugin name, and then Claude Code ignores its `--plugin-dir` copy.
+  const { exitCode } = Bun.spawnSync([claude, ...rest], {
     cwd: project,
     env,
-    stdio: "inherit",
+    stdio: ["inherit", "inherit", "inherit"],
   });
-  if (!check) return r?.exitCode ?? 1;
-
-  if (r?.exitCode !== 0) {
-    console.error(`The sandbox session failed with exit ${r?.exitCode}.`);
+  if (!check) return exitCode ?? 1;
+  if (exitCode !== 0) {
+    console.error(`The sandbox session failed with exit ${exitCode}.`);
     return 1;
   }
   if (!log || !fs.existsSync(log)) {

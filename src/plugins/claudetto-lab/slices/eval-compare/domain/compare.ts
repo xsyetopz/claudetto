@@ -1,23 +1,12 @@
-// The rules of `claudetto-eval-compare` that need no process and no output.
-// The adapter in `../adapters/eval-both.ts` runs the arguments and prints the lines.
-
-/** The result of the two runs: the exit code and the lines to print after them. */
 export type Verdict = { code: number; lines: string[] };
 
-/** What one arm gave: the exit code of its run, and the text of its `--json` file or `null` when the file is absent. */
 export type Arm = { code: number; result: string | null };
 
-/** The eval options with the cost bound added when the caller sets none. */
 export const withCostBound = (opts: string[]): string[] =>
   opts.some((o) => /^--max-cost-usd(?:=|$)/.test(o))
     ? opts
     : [...opts, "--max-cost-usd", "5"];
 
-/**
- * The arguments of `claude` for the eval of one plugin folder.
- * It adds no `--scaffold` and no `--allow-tools`, because each one runs the code or the tools of the suite as the user.
- * `--json FILE` is last, because it takes the words after it as its value.
- */
 export const evalArgs = (
   plugin: string,
   opts: string[],
@@ -32,11 +21,9 @@ export const evalArgs = (
   json,
 ];
 
-/** The heading that the output shows before the run of one arm. */
 export const armHeading = (arm: "A" | "B", folder: string): string =>
   `\n== Arm ${arm} (${folder})\n`;
 
-// The `problem` codes of `suite.plugins` that say the plugin did not load.
 const NOT_LOADED = new Set([
   "manifest_invalid",
   "disabled_by_default",
@@ -49,14 +36,8 @@ type Doc = {
   cases?: { aggregates?: { score?: unknown; scoreWithout?: unknown } }[];
 };
 
-/** The highest score of a case. A baseline at this score leaves no room for a gain. */
 const MAX_SCORE = 1;
 
-/**
- * The reason that the `--json` result of an arm is not valid, or `null` when it is valid.
- * A result is valid when it has at least one case, each case has a finite score, the run is not partial,
- * and the plugin loaded.
- */
 export const armProblem = (result: string | null): string | null => {
   if (result === null) return "it wrote no result file";
   let doc: Doc;
@@ -86,11 +67,6 @@ export const armProblem = (result: string | null): string | null => {
   return null;
 };
 
-/**
- * The reason that the baseline of an arm cannot show a gain, or `null` when it can.
- * The baseline is the `scoreWithout` of each case, which is the score with no plugin.
- * A gain needs at least one case where the baseline scores below the maximum.
- */
 export const baselineProblem = (result: string | null): string | null => {
   if (result === null) return null;
   const cases = (JSON.parse(result) as Doc).cases ?? [];
@@ -102,11 +78,6 @@ export const baselineProblem = (result: string | null): string | null => {
   return null;
 };
 
-/**
- * The verdict of the two arms. Both exit codes must be `0` and both results valid.
- * A run that exits with `0` and has no valid result still fails the comparison.
- * An arm whose baseline scores the maximum on each case fails it too, because no gain shows.
- */
 export const verdict = (x: Arm, y: Arm): Verdict => {
   const failed = (
     [

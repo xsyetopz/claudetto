@@ -1,12 +1,8 @@
-// The folders and the state file of the sandbox.
-
 import fs from "node:fs";
 import path from "node:path";
 import { SANDBOX_MARKER } from "../domain/clean.ts";
 import { readJson } from "./json.ts";
-import { spawnSyncOrNull } from "./run-program.ts";
 
-/** The folders of the sandbox, and the folder `root` that holds them. */
 export interface SandboxDirs {
   root: string;
   config: string;
@@ -14,14 +10,12 @@ export interface SandboxDirs {
   project: string;
 }
 
-/** The fields of the state file `.claude.json` that the sandbox sets. */
 interface ClaudeState {
   hasCompletedOnboarding?: boolean;
   theme?: string;
   projects?: Record<string, object>;
 }
 
-/** Creates `config/`, `home/`, and `project/` (a git repository) in `root`, writes the marker, and trusts the project. */
 export const setUp = async ({
   root,
   config,
@@ -34,16 +28,14 @@ export const setUp = async ({
   fs.mkdirSync(home, { recursive: true });
   if (!fs.existsSync(path.join(project, ".git"))) {
     fs.mkdirSync(project, { recursive: true });
-    spawnSyncOrNull("git", ["init", "-q", project]);
+    if (Bun.which("git")) Bun.spawnSync(["git", "init", "-q", project]);
   }
   const state = path.join(config, ".claude.json");
-  // A state file that is absent or damaged starts again from an empty object.
   const json: ClaudeState = (await readJson<ClaudeState>(state)) ?? {};
   json.hasCompletedOnboarding = true;
   json.theme ??= "dark";
   json.projects ??= {};
-  // macOS resolves `/tmp` and `/var` to `/private`, and the trust key is the
-  // resolved path.
+  // macOS resolves `/tmp` and `/var` to `/private`, and the trust key is the resolved path.
   for (const dir of new Set([project, fs.realpathSync(project)]))
     json.projects[dir] = {
       ...json.projects[dir],
@@ -52,7 +44,6 @@ export const setUp = async ({
   await Bun.write(state, JSON.stringify(json, null, 2));
 };
 
-/** The `availableModels` list in `settings.json` of the folder `config`, or `undefined` when there is none. */
 export const availableModels = async (
   config: string,
 ): Promise<string[] | undefined> =>
@@ -62,9 +53,7 @@ export const availableModels = async (
     )
   )?.availableModels;
 
-// claude runs with the project as its working directory, so a relative
-// `--plugin-dir` would point into the project and Claude Code would skip it.
-// Resolve each one against the working directory of the caller.
+// Claude runs in the project, so a relative `--plugin-dir` would point into it and be skipped.
 export const absolutePluginDirs = (
   args: string[],
   cwd: string = process.cwd(),

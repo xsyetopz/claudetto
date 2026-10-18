@@ -1,31 +1,32 @@
-// The CLI `claudetto-statusline` of the `statusline` slice. The launcher `bin/claudetto-statusline` calls `main`.
-//
-//   claudetto-statusline             the `statusLine` command: the status JSON on stdin, up to `MAX_ROWS` rows on stdout
-//   claudetto-statusline --subagent  the `subagentStatusLine` command: the tasks JSON on stdin, one JSON row for each subagent
-//
-// Claude Code runs the main command every `refreshInterval` seconds.
-// The CLI calls no model and no network, and no program except `git`.
-// A failure prints an empty row on stdout and the cause on stderr, so the status line stays up.
+// The CLI `claudetto-statusline`, which the launcher `bin/claudetto-statusline` calls.
+// With no argument it is the `statusLine` command: status JSON on stdin, up to `MAX_ROWS` rows on stdout.
+// With `--subagent` it is the `subagentStatusLine` command: tasks JSON on stdin, one JSON row for each subagent.
+// It calls no model and no network, and no program except `git`.
 
 import os from "node:os";
-import { BUILT_IN_COMPACTION } from "../../../../../kernel/compaction.ts";
+import path from "node:path";
+import {
+  BUILT_IN_COMPACTION,
+  COMPACTION_OPTION,
+} from "../../../../../kernel/compaction.ts";
 import { fileReader, writeAtomic } from "../../../../../kernel/node/fs.ts";
 import { failureText } from "../../../../../kernel/node/hook-io.ts";
 import { processRunner } from "../../../../../kernel/node/process.ts";
 import { readStdin } from "../../../../../kernel/node/stdin.ts";
+import {
+  CLAUDE_STATE_FILE,
+  SETTINGS_FILE,
+} from "../../../../../kernel/paths.ts";
 import type { FileReader, ProcessRunner } from "../../../../../kernel/ports.ts";
-import { colorOff, type Paint, paintOf } from "../color.ts";
-import { baseName } from "../domain/format.ts";
-import { renderRows } from "../domain/rows.ts";
-import type { Status, StatusInput, SubagentInput } from "../domain/types.ts";
+import { colorOff, paintOf, themeOf } from "../color.ts";
+import { baseName } from "../format.ts";
 import { COLUMNS_MARGIN, DEFAULT_COLUMNS } from "../limits.ts";
+import { renderRows } from "../rows.ts";
 import { SEGMENTS, SEGMENTS_ONE_ROW } from "../segments.ts";
-import { themeOf } from "../theme.ts";
+import { taskRows } from "../subagents.ts";
+import type { Status, StatusInput, SubagentInput } from "../types.ts";
 import { activeChange } from "./change.ts";
 import { cachedGitState } from "./git-cache.ts";
-import { readCompactionOption } from "./option.ts";
-import { taskRows } from "./subagents.ts";
-import { configFile, readThemeName } from "./theme.ts";
 
 /** The ports of `main`. A test gives fakes. */
 export interface Deps {
@@ -54,89 +55,106 @@ const defaults = (): Deps => ({
   error: (text) => process.stderr.write(text),
 });
 
-/** The object in `text`. Text that is not a JSON object throws an error with the cause. */
-export const parseInput = <T extends object>(text: string): T => {
-  const value: unknown = JSON.parse(text);
-  if (value === null || typeof value !== "object" || Array.isArray(value))
-    throw new Error("the input is not a JSON object");
-  return value as T;
+/** The JSON of `file`, or `null` for a missing file. A file that cannot be read or parsed gives `null` and the cause on stderr. */
+const readJson = async (
+  file: string,
+  deps: Deps,
+): Promise<{ theme?: unknown; pluginConfigs?: unknown } | null> => {
+  try {
+    const text = await deps.files.read(file);
+    return text === null ? null : JSON.parse(text);
+  } catch (err) {
+    deps.error(failureText(err));
+    return null;
+  }
 };
 
-/** The colors: none for `NO_COLOR`, otherwise the built-in theme from the config file of Claude Code. */
-const paintFor = async (deps: Deps): Promise<Paint> =>
-  colorOff(deps.env)
-    ? paintOf(null)
-    : paintOf(
-        themeOf(
-          await readThemeName(
-            configFile(deps.env, deps.home),
-            deps.files,
-            deps.error,
-          ),
-        ),
-      );
+/**
+ * True when the `compaction` option is `built-in`.
+ * Claude Code gives `CLAUDE_PLUGIN_OPTION_*` only to commands in a plugin `hooks.json`, and the `statusLine` command is in `settings.json`.
+ * So the value comes from `pluginConfigs` in the user settings, and the env var wins when it is set.
+ */
+const builtInCompaction = async (deps: Deps): Promise<boolean> => {
+  const fromEnv =
+    deps.env[`CLAUDE_PLUGIN_OPTION_${COMPACTION_OPTION.toUpperCase()}`];
+  if (fromEnv) return fromEnv === BUILT_IN_COMPACTION;
+  const settings = path.join(
+    deps.env["CLAUDE_CONFIG_DIR"] || path.join(deps.home, ".claude"),
+    SETTINGS_FILE,
+  );
+  const configs = (await readJson(settings, deps))?.pluginConfigs;
+  for (const [id, config] of Object.entries(configs ?? {})) {
+    const value = (config as { options?: Record<string, unknown> } | null)
+      ?.options?.[COMPACTION_OPTION];
+    if (id.startsWith("claudetto@") && typeof value === "string")
+      return value === BUILT_IN_COMPACTION;
+  }
+  return false;
+};
 
-const columnsOf = (deps: Deps): number =>
-  (Number(deps.env["COLUMNS"]) || DEFAULT_COLUMNS) - COLUMNS_MARGIN;
+/** No color for `NO_COLOR`, otherwise the built-in theme named by the `theme` key of the config file of Claude Code. */
+const paintFor = async (deps: Deps) => {
+  if (colorOff(deps.env)) return paintOf(null);
+  const config = path.join(
+    deps.env["CLAUDE_CONFIG_DIR"] || deps.home,
+    CLAUDE_STATE_FILE,
+  );
+  const theme = (await readJson(config, deps))?.theme;
+  return paintOf(themeOf(typeof theme === "string" ? theme : null));
+};
 
-/** `value` when it is a non-empty string, otherwise null. A status object can hold a number or `null` in a folder field. */
+/** A status object can hold a number or `null` in a folder field, so only a non-empty string counts. */
 const textOf = (value: unknown): string | null =>
   typeof value === "string" && value !== "" ? value : null;
 
-const mainLine = async (text: string, deps: Deps): Promise<string> => {
-  const input = parseInput<StatusInput>(text);
-  const dir =
-    textOf(input.workspace?.current_dir) ?? textOf(input.cwd) ?? deps.cwd;
-  const status: Status = {
-    input,
-    folder: baseName(dir),
-    git: await cachedGitState(dir, deps, deps.error),
-    change: await activeChange(
-      textOf(input.workspace?.project_dir) ?? dir,
-      deps.files,
-      deps.error,
-    ),
-    compaction:
-      (await readCompactionOption(
-        deps.env,
-        deps.home,
-        deps.files,
-        deps.error,
-      )) === BUILT_IN_COMPACTION,
-    now: deps.now(),
-    paint: await paintFor(deps),
-    compact: false,
-  };
-  return renderRows(
-    SEGMENTS,
-    SEGMENTS_ONE_ROW,
-    (compact) => ({ ...status, compact }),
-    columnsOf(deps),
-  ).join("\n");
-};
-
-const subagentLines = async (text: string, deps: Deps): Promise<string[]> => {
-  const input = parseInput<SubagentInput>(text);
-  if (!Array.isArray(input.tasks))
-    throw new Error("the input has no `tasks` array");
-  return taskRows(input, deps.now(), columnsOf(deps), await paintFor(deps)).map(
-    (row) => JSON.stringify(row),
-  );
-};
-
-/** Run the CLI with `args` and return the exit status. The status is 0, also after a failure, because a failed status line must not stop Claude Code. */
+/**
+ * Run the CLI and return 0, also after a failure, because a failed status line must not stop Claude Code.
+ * A failure prints the cause on stderr, and an empty row on stdout for the main line (the subagent rows keep the default look).
+ */
 export const main = async (
   args: string[],
   deps: Deps = defaults(),
 ): Promise<number> => {
   const subagent = args.includes("--subagent");
+  const columns =
+    (Number(deps.env["COLUMNS"]) || DEFAULT_COLUMNS) - COLUMNS_MARGIN;
   try {
-    const text = await deps.stdin();
-    if (subagent)
-      for (const line of await subagentLines(text, deps)) deps.log(line);
-    else deps.log(await mainLine(text, deps));
+    const input: StatusInput & SubagentInput = JSON.parse(await deps.stdin());
+    if (input === null || typeof input !== "object" || Array.isArray(input))
+      throw new Error("the input is not a JSON object");
+    if (subagent) {
+      if (!Array.isArray(input.tasks))
+        throw new Error("the input has no `tasks` array");
+      const paint = await paintFor(deps);
+      for (const row of taskRows(input, deps.now(), columns, paint))
+        deps.log(JSON.stringify(row));
+      return 0;
+    }
+    const dir =
+      textOf(input.workspace?.current_dir) ?? textOf(input.cwd) ?? deps.cwd;
+    const status: Status = {
+      input,
+      folder: baseName(dir),
+      git: await cachedGitState(dir, deps, deps.error),
+      change: await activeChange(
+        textOf(input.workspace?.project_dir) ?? dir,
+        deps.files,
+        deps.error,
+      ),
+      compaction: await builtInCompaction(deps),
+      now: deps.now(),
+      paint: await paintFor(deps),
+      compact: false,
+    };
+    deps.log(
+      renderRows(
+        SEGMENTS,
+        SEGMENTS_ONE_ROW,
+        (compact) => ({ ...status, compact }),
+        columns,
+      ).join("\n"),
+    );
   } catch (err) {
-    // The main row stays empty, the subagent rows keep the default look of Claude Code, and stderr shows the cause.
     deps.error(failureText(err));
     if (!subagent) deps.log("");
   }

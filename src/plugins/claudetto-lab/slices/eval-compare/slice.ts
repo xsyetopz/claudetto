@@ -1,5 +1,3 @@
-// The manifest of the `eval-compare` slice: the `claudetto-eval-compare` CLI, and the `/eval-compare` skill that runs it.
-
 import type { Slice } from "../../../../kernel/slice.ts";
 
 export const slice = {

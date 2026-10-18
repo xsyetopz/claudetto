@@ -1,4 +1,4 @@
-// The change segment: each state of the active MiniSpec change.
+// The change segment: each state of the active openspec change.
 
 import { expect, test } from "bun:test";
 import {

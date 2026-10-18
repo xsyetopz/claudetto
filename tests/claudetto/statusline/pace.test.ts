@@ -106,10 +106,3 @@ test("a `7d` deficit shows a yellow `▲36%`, from the same 1 day elapsed", asyn
     `${YELLOW}▲36%${RESET}`,
   );
 });
-
-test("`pace.ts` has no `paceDelta`, because `paceOf` gives the delta", async () => {
-  const mod = await import(
-    "../../../src/plugins/claudetto/slices/statusline/domain/pace.ts"
-  );
-  expect(Object.keys(mod)).toStrictEqual(["paceOf"]);
-});

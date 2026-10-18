@@ -3,7 +3,6 @@
 import { expect, test } from "bun:test";
 import { closeSync, openSync, writeSync } from "node:fs";
 import { runBoth as runBothOn } from "../../../plugins/claudetto-lab/slices/eval-compare/adapters/eval-both.ts";
-import type { RunResult } from "../../../plugins/claudetto-lab/slices/eval-compare/adapters/run-program.ts";
 import {
   armProblem,
   baselineProblem,
@@ -47,7 +46,7 @@ const fake = (
         closeSync(fd);
       }
       // A fake result with only `exitCode`, which `runBoth` reads.
-      return { exitCode: statuses[calls.length - 1] } as unknown as RunResult;
+      return { exitCode: statuses[calls.length - 1] };
     },
     log: (line: string) => lines.push(line),
   };

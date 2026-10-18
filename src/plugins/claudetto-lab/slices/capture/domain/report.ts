@@ -1,6 +1,3 @@
-// Request sizing for `claudetto-capture`: split a request into parts and count each
-// part with the `count_tokens` endpoint. The CLI writes the result.
-
 import { MAX_PART_COUNTS, SPLIT_CHARS } from "../limits.ts";
 import { countTokens } from "./count.ts";
 import type {
@@ -16,7 +13,6 @@ import type {
   Wait,
 } from "./types.ts";
 
-/** The label of one content block: its type and its first words. */
 const label = (block: Block | string): string => {
   if (typeof block === "string") return `text: ${block.slice(0, 70)}`;
   const text = block.text ?? block.content ?? block.name ?? "";
@@ -27,14 +23,15 @@ const label = (block: Block | string): string => {
   return `${block.type}: ${head.slice(0, 70)}`;
 };
 
+const swapAt = <T>(list: T[], at: number, next: T | null): T[] =>
+  list.flatMap((x, i) => (i !== at ? [x] : next ? [next] : []));
+
 const asBlocks = (content: string | Block[]): Block[] =>
   typeof content === "string" ? [{ type: "text", text: content }] : content;
 
-// A line that starts a section: a heading, an opening tag, or a listing.
 const SECTION =
   /^(#{1,3} \S|<[a-z_-]+>\s*$|The following |Available agent types|While auto mode)/;
 
-/** The sections of a text: each one starts at a SECTION line. */
 const sections = (text: string): string[] => {
   const lines = text.split("\n");
   const found: string[] = [];
@@ -49,10 +46,6 @@ const sections = (text: string): string[] => {
   return found;
 };
 
-/**
- * The parts of one content block. A long text block gives one part for each
- * section, and `swap` returns the request with the block replaced.
- */
 const blockParts = (
   kind: string,
   block: Block,
@@ -83,14 +76,13 @@ const blockParts = (
   ];
 };
 
-/** The parts of a request, each with a function that returns the request without it. */
 export const parts = (body: Body): Part[] => {
   const list: Part[] = [];
   const system = asBlocks(body.system ?? []);
   system.forEach((block, i) => {
     const swap: Swap = (next) => ({
       ...body,
-      system: system.flatMap((b, j) => (j !== i ? [b] : next ? [next] : [])),
+      system: swapAt(system, i, next),
     });
     list.push(...blockParts("system", block, swap, true));
   });
@@ -114,19 +106,17 @@ export const parts = (body: Body): Part[] => {
           j === m
             ? {
                 ...msg,
-                content: blocks.flatMap((x, k) =>
-                  k !== b ? [x] : next ? [next] : [],
-                ),
+                content: swapAt(blocks, b, next),
               }
             : msg,
         ),
       });
-      // A message needs one block, so the only block of a message is not removed.
       list.push(
         ...blockParts(
           `message ${m} (${message.role})`,
           block,
           swap,
+          // A message needs one block, so the only block of a message is not removed.
           blocks.length > 1,
         ),
       );
@@ -135,8 +125,6 @@ export const parts = (body: Body): Part[] => {
   return list;
 };
 
-// Changes that make a body acceptable to `count_tokens`, tried in this order
-// when it refuses the body as sent. The report names the changes in use.
 const FIXES: Record<string, Fix> = {
   "no thinking": (body) => ({ ...body, thinking: undefined }),
   "system messages as user text": (body) => {
@@ -154,7 +142,6 @@ const FIXES: Record<string, Fix> = {
 
 const pause: Wait = (ms) => new Promise((done) => setTimeout(done, ms));
 
-/** The fixes that `count_tokens` needs for this body, and the count with them. */
 const fixesFor = async (
   upstream: string,
   body: Body,
@@ -179,10 +166,6 @@ const fixesFor = async (
   throw new Error(errors.join("\n"));
 };
 
-/**
- * Sizes one request: the full count, then the count without each part.
- * `wait` sleeps between the attempts of a 429 retry; the tests pass a fake.
- */
 export const sizeRequest = async (
   upstream: string,
   body: Body,
@@ -213,7 +196,6 @@ export const sizeRequest = async (
       );
       rows.push({ ...row, tokens: full - without, note: null });
     } catch (e) {
-      // One failed count leaves the size of this part unknown, and the other parts still count.
       rows.push({ ...row, tokens: null, note: `count failed: ${String(e)}` });
     }
   }
@@ -228,10 +210,6 @@ export const sizeRequest = async (
   };
 };
 
-/**
- * The lines that the CLI prints for a sizing, the largest part first.
- * A part with no count shows `?` and its note, and the header counts those parts.
- */
 export const sizingLines = (n: string, s: Sizing): string[] => {
   const uncounted = s.rows.filter((r) => r.tokens === null).length;
   const header = `\nrequest ${n}: ${s.full} tokens by count_tokens, parts ${s.parts}, rest ${s.rest}`;

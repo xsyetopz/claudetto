@@ -12,7 +12,7 @@ import {
   schemaFiles,
   unreadKeys,
 } from "../../../plugins/claudetto-lab/slices/schema/domain/build.ts";
-import type { Schema } from "../../../plugins/claudetto-lab/slices/schema/domain/model.ts";
+import type { Schema } from "../../../plugins/claudetto-lab/slices/schema/domain/types.ts";
 import { BUNDLE_SCAN_TIMEOUT_MS } from "../../../tools/limits.ts";
 import { REPO } from "../../support/repo.ts";
 
