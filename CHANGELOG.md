@@ -21,6 +21,10 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
   It needs at least one `--image`, prints the four fractions and the confidence, adds the pixels of the first picture when its size is readable, and prints the raw answer with `--json`.
   A box can come back when the target is absent, so the confidence matters.
   Images are a preview feature of the TypeSafe API, so their format and limits can change.
+- The classic hook `PreModelSwitch` of the `handoff` slice asks the user to confirm a `/model` switch when the prompt cache is warm (D47).
+  The question has the new model, the size of the context, the cache time to live, and the `estimated_cache_write_usd` that Claude Code gives to the hook.
+  A switch on a cold cache goes on with no message.
+  The hook needs Claude Code `2.1.251` or later, and `claudetto` already needs `2.1.305`.
 
 ### Fixed
 

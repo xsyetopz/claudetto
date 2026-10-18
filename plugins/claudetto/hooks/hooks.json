@@ -1,3 +1,15 @@
 {
-  "modules": ["./register.ts"]
+  "modules": ["./register.ts"],
+  "hooks": {
+    "PreModelSwitch": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/slices/handoff/adapters/switch.ts\""
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -24,11 +24,14 @@ import {
 import { OPTION_DESCRIPTION } from "./prompts.ts";
 
 const LAB = "plugins/claudetto/tests/compaction.test.ts";
+const SWITCH_TEST = (name: string) =>
+  `tests/claudetto/handoff/switch.test.ts > ${name}`;
 const CACHE_LAB = "plugins/claudetto/tests/cache.test.ts";
 
 export const slice = {
   name: "handoff",
-  ladder: "mod: the `session.compact` hook",
+  ladder:
+    "mod: the `session.compact` hook, and a classic `PreModelSwitch` hook, which has no mod event",
   controls: [
     {
       name: "compact answer",
@@ -41,6 +44,26 @@ export const slice = {
       incident:
         "The first handoff `H1` stayed inside `H2` at a second compaction (commit `9914887a`, D46).",
       removeWhen: "The compact answer is removed.",
+    },
+    {
+      name: "model switch warning",
+      incident:
+        "A `/model` switch drops a warm prompt cache, and the new model writes the whole context again (D47).",
+      removeWhen:
+        "The built-in confirmation of Claude Code shows the cost of the cache write.",
+    },
+  ],
+  hooks: [
+    {
+      event: "PreModelSwitch",
+      command: `bun --no-env-file "\${CLAUDE_PLUGIN_ROOT}/slices/handoff/adapters/switch.ts"`,
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow: SWITCH_TEST("a cold cache says nothing"),
+        text: SWITCH_TEST("a warm cache asks the user and names the cost"),
+      },
     },
   ],
   mod: [
