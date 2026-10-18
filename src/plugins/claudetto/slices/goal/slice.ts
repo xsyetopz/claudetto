@@ -4,7 +4,7 @@
 // `command.run` answers `/goal` (a condition, a plan file, `status`, `clear`, `pause`, `resume`, `skip`, `step N`), so the built-in command does not run.
 // `tool.call` denies `ProposeGoal`. The attachment `goal_status` is left out by the `prompt` slice.
 
-import type { Handler, Slice } from "../../../../kernel/slice.ts";
+import type { Slice } from "../../../../kernel/slice.ts";
 import { onCommand, onProposeGoal, onTurnComplete } from "./adapters/mod.ts";
 
 const LAB = "plugins/claudetto/tests/loop.test.ts";
@@ -53,7 +53,7 @@ export const slice = {
       },
       filter: { tool: ["ProposeGoal"] },
       phase: "answer",
-      run: onProposeGoal as unknown as Handler<"tool.call">,
+      run: onProposeGoal,
     },
   ],
 } satisfies Slice;

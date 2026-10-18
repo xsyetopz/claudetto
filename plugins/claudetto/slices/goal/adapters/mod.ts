@@ -5,7 +5,7 @@
 // Each path starts at the project root, because `$.fs` resolves a relative path against the folder of the shell.
 // `claude plugin validate` follows `$` only into a function of one file, so each function that touches `$` is here.
 
-import type { EngineInterface, MatchedHook } from "claude-code";
+import type { EngineInterface } from "claude-code";
 import { GOAL_FILE } from "../../../kernel/paths.ts";
 import type { Handler } from "../../../kernel/slice.ts";
 import { change, parseArgs, statusText } from "../domain/command.ts";
@@ -104,14 +104,11 @@ export const onTurnComplete: Handler<"turn.complete"> = async ($, e, next) => {
 };
 
 /** `tool.call` of `ProposeGoal`: the tool is off, and the text names `/goal`. */
-export const onProposeGoal: MatchedHook<
-  "tool.call",
-  { readonly tool: readonly ["ProposeGoal"] }
-> = () => ({
+export const onProposeGoal = () => ({
   deny: PROPOSE_DENY,
 });
 
-/** Starts a turn on the current step of `goal`. Claude Code refuses `$.prompt.submit` in a `command.run` hook, so a timer runs it after the hook. */
+/** Starts a turn on the current step of `goal`. Claude Code refuses `$.prompt.submit` in a `command.run` hook (see the header of `slices/handoff/adapters/mod.ts`, which does the same), so a timer runs it after the hook. */
 const begin = ($: EngineInterface, goal: Goal) => {
   const { title } = goal.steps[goal.step] ?? { title: "" };
   const text = START({
@@ -122,41 +119,61 @@ const begin = ($: EngineInterface, goal: Goal) => {
   $.clock.after(0, () => void $.prompt.submit({ text }).catch(() => undefined));
 };
 
-/** The goal for `condition`: the steps of a plan file for a name that ends in `.md`, else the steps of the condition. */
+/** The goal for the text after `/goal`, or the line that tells what is wrong: the steps of a plan file for a name that ends in `.md`, else the steps of the condition. */
 const newGoal = async ($: EngineInterface, args: string, now: number) => {
-  const { condition, controls } = parseArgs(args, now);
-  const isPlan = /^\S+\.md$/.test(condition);
-  const root = await rootOf($);
-  const text = isPlan
-    ? await $.fs.read(under(root, condition)).catch(() => "")
-    : "";
-  const steps = isPlan ? planSteps(text) : conditionSteps(condition);
-  if (!condition || steps.length === 0) return null;
+  const parsed = parseArgs(args, now);
+  if (typeof parsed === "string") return parsed;
+  const { condition, controls } = parsed;
+  if (!condition) return "Give a condition or a plan file of steps.";
+  let steps = conditionSteps(condition);
+  if (/^\S+\.md$/.test(condition)) {
+    const text = await $.fs
+      .read(under(await rootOf($), condition))
+      .catch(() => null);
+    if (text === null) return `The plan file \`${condition}\` was not found.`;
+    steps = planSteps(text);
+    if (steps.length === 0)
+      return `The plan file \`${condition}\` has no numbered step heading.`;
+  }
   return createGoal(steps, controls, (await $.session.usage()).cost?.usd ?? 0);
 };
 
-/** `command.run` of `/goal`: answers in place of the built-in command, with no model turn. `/goal`, `status`, `clear`, `pause`, `resume`, `skip`, `step N`, or a condition. */
-export const onCommand: Handler<"command.run"> = async ($, e) => {
-  const [word = "", arg = ""] = e.args.trim().split(/\s+/);
+/** The words that are a command only when they are all of the text after `/goal`. */
+const WORDS = ["clear", "status", "pause", "resume", "skip"];
+
+const answer: Handler<"command.run"> = async ($, e) => {
+  const text = e.args.trim();
+  const arg = /^step (\d+)$/.exec(text)?.[1] ?? "";
+  const word = arg ? "step" : text;
   const [goal, now] = [await readGoal($), await $.clock.now()];
   if (word === "clear") {
     await writeGoal($, null);
     return { text: "Goal cleared." };
   }
   if (!word || word === "status") {
-    const text = goal ? statusText(goal, await spendOf($)) : "No goal.";
-    return { text };
+    return { text: goal ? statusText(goal, await spendOf($)) : "No goal." };
   }
-  if (["pause", "resume", "skip", "step"].includes(word)) {
+  if (WORDS.includes(word) || word === "step") {
     if (!goal) return { text: "No goal." };
-    const changed = change(goal, word, arg, now);
+    const usd = goal.budget ? (await spendOf($)).usd : 0;
+    const changed = change(goal, word, arg, now, usd);
     await writeGoal($, changed.goal);
     if (changed.goal && changed.start) begin($, changed.goal);
     return { text: changed.say };
   }
   const created = await newGoal($, e.args, now);
-  if (!created) return { text: "Give a condition or a plan file of steps." };
+  if (typeof created === "string") return { text: created };
   await writeGoal($, created);
   begin($, created);
   return { text: `Goal set: ${created.steps.length} steps.` };
 };
+
+/**
+ * `command.run` of `/goal`: answers in place of the built-in command, with no model turn.
+ * `/goal`, `status`, `clear`, `pause`, `resume`, `skip`, `step N`, or a condition.
+ * A failure answers with its message, because a failing hook would let the built-in command run.
+ */
+export const onCommand: Handler<"command.run"> = ($, e, next) =>
+  Promise.resolve(answer($, e, next)).catch((error: Error) => ({
+    text: `Goal: ${error.message}`,
+  }));

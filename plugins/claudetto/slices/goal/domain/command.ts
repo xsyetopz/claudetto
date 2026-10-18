@@ -8,37 +8,49 @@ import type { Controls, Goal } from "./state.ts";
 /** The condition without its flags, and the controls that the flags set. */
 export type Parsed = { condition: string; controls: Partial<Controls> };
 
-/** The time in milliseconds of `text`: `HH:MM` is the next such time, and any other text is a date. */
+/** The time in milliseconds of `text`: `HH:MM` is the next such time, a date alone is midnight local time, and `NaN` is no time. */
 const untilOf = (text: string, now: number): number => {
+  if (!/^\d{1,2}:\d{2}$/.test(text)) {
+    return Date.parse(/^\d{4}-\d\d-\d\d$/.test(text) ? `${text}T00:00` : text);
+  }
   const [hours = 0, minutes = 0] = text.split(":").map(Number);
-  if (!/^\d{1,2}:\d{2}$/.test(text)) return Date.parse(text);
+  if (hours > 23 || minutes > 59) return Number.NaN;
   const date = new Date(now);
   date.setHours(hours, minutes, 0, 0);
   if (date.getTime() <= now) date.setDate(date.getDate() + 1);
   return date.getTime();
 };
 
-/** Splits the text after `/goal` into the condition and the controls of the flags `--max-turns N`, `--budget $X` or `N%`, `--until TIME`, and `--stall N`. */
-export const parseArgs = (args: string, now: number): Parsed => {
+/**
+ * Splits the text after `/goal` into the condition and the controls of the flags `--max-turns N`, `--budget $X` or `N%`, `--until TIME`, and `--stall N`.
+ * A flag starts a word. A value must be a number above 0, and a time must be valid, or the result is an error line.
+ */
+export const parseArgs = (args: string, now: number): Parsed | string => {
   const flags = new Map<string, string>();
   const condition = args
-    .replace(/--(max-turns|budget|stall|until)[ =](\S+)/g, (_, key, value) => {
-      flags.set(key, value);
-      return "";
-    })
+    .replace(
+      /(^|\s)--(max-turns|budget|stall|until)[ =](\S+)/g,
+      (_, space, key, value) => {
+        flags.set(key, value);
+        return space;
+      },
+    )
     .trim();
-  const budget = flags.get("budget") ?? "";
-  const controls: Partial<Controls> = {};
-  const set = (fields: Partial<Controls>) => Object.assign(controls, fields);
-  const maxTurns = flags.get("max-turns");
-  const stall = flags.get("stall");
-  const until = flags.get("until");
-  if (maxTurns) set({ maxTurns: Number(maxTurns) });
-  if (stall) set({ stall: Number(stall) });
-  if (until) set({ until: untilOf(until, now) });
-  if (budget.endsWith("%")) set({ budget: { percent: parseFloat(budget) } });
-  else if (budget) set({ budget: { usd: Number(budget.replace("$", "")) } });
-  return { condition, controls };
+  const c: { -readonly [K in keyof Controls]?: Controls[K] } = {};
+  for (const [key, value] of flags) {
+    const isUntil = key === "until";
+    const n = isUntil
+      ? untilOf(value, now)
+      : Number(value.replace(/^\$|%$/g, ""));
+    if (!Number.isFinite(n) || (!isUntil && n <= 0)) {
+      return `The value \`${value}\` of \`--${key}\` is not valid.`;
+    }
+    if (key === "max-turns") c.maxTurns = n;
+    else if (key === "stall") c.stall = n;
+    else if (isUntil) c.until = n;
+    else c.budget = value.endsWith("%") ? { percent: n } : { usd: n };
+  }
+  return { condition, controls: c };
 };
 
 /** The new goal (`null` clears it), a line to show, and whether the loop starts a turn now. */
@@ -50,28 +62,29 @@ const moveTo = (
   index: number,
   note: string,
   now: number,
-): Change => {
-  if (index >= goal.steps.length) {
-    return { goal: null, say: "The goal is done.", start: false };
-  }
-  const log = [...goal.log, { at: now, note }];
-  const moved = {
-    ...goal,
-    step: index,
-    results: [],
-    stalled: 0,
-    signature: "",
-  };
-  const next = { ...moved, paused: false, log };
-  return { goal: next, say: `${note}.`, start: true };
-};
+): Change =>
+  index >= goal.steps.length
+    ? { goal: null, say: "The goal is done.", start: false }
+    : {
+        goal: {
+          ...goal,
+          step: index,
+          results: [],
+          stalled: 0,
+          paused: false,
+          log: [...goal.log, { at: now, note }],
+        },
+        say: `${note}.`,
+        start: true,
+      };
 
-/** The change that the word `pause`, `resume`, `skip`, or `step` (with `arg`) makes to `goal`. */
+/** The change that the word `pause`, `resume`, `skip`, or `step` (with `arg`) makes to `goal`. `usd` is the cost of the session now. */
 export const change = (
   goal: Goal,
   word: string,
   arg: string,
   now: number,
+  usd: number,
 ): Change => {
   const at = goal.step + 1;
   if (word === "pause") {
@@ -82,8 +95,10 @@ export const change = (
     };
   }
   if (word === "resume") {
+    if (!goal.paused)
+      return { goal, say: "The goal is not paused.", start: false };
     // A resumed goal counts its turns and its cost from the resume, or it would stop at once.
-    const fresh = { ...goal, turns: 0, spentUsd: 0 };
+    const fresh = { ...goal, turns: 0, spentUsd: 0, lastUsd: usd };
     return moveTo(fresh, goal.step, `Resumed at step ${at}`, now);
   }
   if (word === "skip") return moveTo(goal, at, `Skipped step ${at}`, now);

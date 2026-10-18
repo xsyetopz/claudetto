@@ -26,17 +26,19 @@ const goalWith = (over: Record<string, unknown> = {}) => ({
 });
 
 /** The stubs for the state `goal` (the text of the file, or `null` for none). They give the file and the prompts that the hooks submitted. */
-const stub = (on: On, goal: unknown = null) => {
+const stub = (on: On, goal: unknown = null, isWriteFailing = false) => {
   const file = { text: goal === null ? null : JSON.stringify(goal) };
   const prompts: string[] = [];
   on("command.run", (_$, e) => ({ text: `core ${e.command}` }));
   on("fs.read", (_$, e) => {
+    if (e.path.endsWith("NOPE.md")) return { deny: "missing" };
     if (!e.path.endsWith(FILE)) {
       return { value: "## 1. Build\n- Check: `just check`\n## 2. Ship" };
     }
     return file.text === null ? { deny: "missing" } : { value: file.text };
   });
   on("fs.write", (_$, e) => {
+    if (isWriteFailing) throw new Error("disk full");
     if (e.path.endsWith(FILE)) file.text = e.text;
     return { value: undefined };
   });
@@ -87,11 +89,7 @@ test("the built-in `/goal` does not run, and the hook answers", async ($: Engine
 // biome-ignore lint/plugin: a test name
 test("a condition with commands in backticks makes a goal of `run` checks, and the first turn starts", async ($: Engine, on: On) => {
   const world = stub(on);
-  await typed(
-    $,
-    "goal",
-    "`just check` and `ls` pass --max-turns 4 --budget $2",
-  );
+  await typed($, "goal", "`just check` and `ls` --max-turns 4 --budget $2");
   expect(world.state().steps[0].checks).toEqual([
     { kind: "run", command: "just check" },
     { kind: "run", command: "ls" },
@@ -102,6 +100,50 @@ test("a condition with commands in backticks makes a goal of `run` checks, and t
     lastUsd: 1,
   });
   expect(world.prompts[0]).toContain("step 1");
+});
+
+// biome-ignore lint/plugin: a test name
+test("a failing hook still answers, and the built-in `/goal` does not run", async ($: Engine, on: On) => {
+  stub(on, goalWith(), true);
+  const out = await typed($, "goal", "clear");
+  expect(out.text).toContain("Goal:");
+  expect(out.text).not.toContain("core");
+});
+
+test("a control word inside a condition is a condition", async ($: Engine, on: On) => {
+  const world = stub(on);
+  await typed($, "goal", "clear the cache with `just x`");
+  expect(world.state().steps[0].title).toBe("clear the cache with `just x`");
+});
+
+test("a bad flag value gives an error line and no goal", async ($: Engine, on: On) => {
+  const world = stub(on);
+  const out = await typed($, "goal", "x --stall 0");
+  expect(out.text).toContain("--stall");
+  expect(world.state()).toBeNull();
+});
+
+test("a plan file that is missing gives a line that says so", async ($: Engine, on: On) => {
+  stub(on);
+  const out = await typed($, "goal", "NOPE.md");
+  expect(out.text).toContain("was not found");
+});
+
+test("`resume` of a goal that is not paused changes nothing", async ($: Engine, on: On) => {
+  const world = stub(on, goalWith({ turns: 2 }));
+  const out = await typed($, "goal", "resume");
+  expect(out.text).toContain("not paused");
+  expect(world.state().turns).toBe(2);
+});
+
+// biome-ignore lint/plugin: a test name
+test("`resume` of a goal with a budget takes the cost of the session as its base", async ($: Engine, on: On) => {
+  const world = stub(
+    on,
+    goalWith({ paused: true, budget: { usd: 9 }, lastUsd: 50 }),
+  );
+  await typed($, "goal", "resume");
+  expect(world.state().lastUsd).toBe(1);
 });
 
 test("a condition with no command makes one `judge` check", async ($: Engine, on: On) => {
