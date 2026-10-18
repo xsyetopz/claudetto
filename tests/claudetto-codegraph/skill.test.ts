@@ -27,11 +27,7 @@ test("no setup text or skill text tells the agent to skip `codegraph install`", 
 });
 
 test("the add-on registers no hook and has no sync code, because `codegraph` syncs its own index", () => {
-  const file = path.join(PLUGIN, "hooks/hooks.json");
-  const hooks = fs.existsSync(file)
-    ? (JSON.parse(fs.readFileSync(file, "utf8")).hooks ?? {})
-    : {};
-  expect(Object.keys(hooks)).toStrictEqual([]);
+  expect(fs.existsSync(path.join(PLUGIN, "hooks"))).toBe(false);
   for (const gone of [
     "adapters/hook.ts",
     "adapters/lock.ts",

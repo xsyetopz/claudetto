@@ -199,6 +199,24 @@ A deny of a read-only command is a false positive, and this section gives their 
   This sample is small, and most of its denies come from the work on the guard, so it does not show the false-positive rate of normal use.
 - measured, 2026-10-17: the read-only command of `design-handoff.md`, with `$(( ))`, was denied in this project, and the shell scan of this release reads `$(( ))` as arithmetic, so it passes.
 
+## The Code Graph Add-On Against `codegraph install`
+
+This is the measure of task 6.9 (D51).
+It ran on 2026-10-18 with no model call, from the code and the text of the add-on before and after the change.
+`codegraph` was not on the `PATH` of the machine, so this measure did not run `codegraph install`.
+The facts about the install come from the vendor source that D51 cites (`dist/installer/instructions-template.d.ts`, measured earlier).
+
+| Part of `claudetto-codegraph` | What `codegraph install` alone gives | Result |
+| --- | --- | --- |
+| `SessionStart` hook and its line (46 words, once for each session) | The block in `~/.claude/CLAUDE.md` and the MCP instructions name the same commands | Removed. It adds nothing. |
+| `SessionStart` sync, sync after an edit, sync after `git` (hook, mod handler, lock) | `codegraph` syncs its own index (the user, 2026-10-18) | Removed with the three controls. About 450 lines of code and tests, and 3 hook entries. |
+| `--mcp` option of the check, and `MCP_ADD_COMMAND` | `codegraph install` writes the MCP server | Removed. |
+| Skill `codegraph` (466 words, loaded on use) | The MCP tools cover the same questions, but the subagents get only the block | Kept. It is the way to use the CLI with no MCP server, and its text now says so. |
+| `claudetto-codegraph-check` | `codegraph status` shows the index, but a missing CLI is a shell error | Kept. It tells a missing CLI from a failed CLI. Not measured against the live CLI. |
+
+The code of the add-on went from 658 lines (the pin of `tools/limits.ts`) to 201 lines.
+The add-on has no hook now, so it adds no process to a session.
+
 ## Community Claims
 
 - True: `/compact` reads the whole conversation to write its summary.

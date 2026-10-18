@@ -58,15 +58,6 @@ The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 | `SESSION_COUNTER_CHARS` | `2` | `src/plugins/claudetto-browser/slices/search/limits.ts` | The characters of the counter in a search session name, in base 36. |
 | `SESSION_RANDOM_CHARS` | `5` | `src/plugins/claudetto-browser/slices/search/limits.ts` | The characters of the random part of a search session name, in base 36. |
 | `QUERY_TIMEOUT_MS` | `2,000` | `src/plugins/claudetto-codegraph/slices/graph/limits.ts` | The time that `codegraph --version` may take for the check. |
-| `START_SYNC_TIMEOUT_MS` | `6,000` | `src/plugins/claudetto-codegraph/slices/graph/limits.ts` | The time that the sync at session start may take. |
-| `BACKGROUND_SYNC_TIMEOUT_MS` | `60,000` | `src/plugins/claudetto-codegraph/slices/graph/limits.ts` | The time that the background sync after an edit may take. |
-| `GIT_SYNC_TIMEOUT_MS` | `15,000` | `src/plugins/claudetto-codegraph/slices/graph/limits.ts` | The time that the sync after a `git` command may take. |
-| `SESSION_START_HOOK_TIMEOUT_S` | `10` | `src/plugins/claudetto-codegraph/slices/graph/limits.ts` | The hook timeout of `SessionStart`, in seconds. |
-| `HOOK_MARGIN_MS` | `1,000` | `src/plugins/claudetto-codegraph/slices/graph/limits.ts` | The time that a hook timeout keeps free after the last wait of its command. |
-| `BACKGROUND_HOOK_TIMEOUT_S` | `61` | `src/plugins/claudetto-codegraph/slices/graph/limits.ts` | The hook timeout of the sync after an edit, in seconds. It covers `BACKGROUND_SYNC_TIMEOUT_MS` and `HOOK_MARGIN_MS`. |
-| `LOCK_STALE_MS` | `61,000` | `src/plugins/claudetto-codegraph/slices/graph/limits.ts` | The age at which a sync lock counts as left by a dead process. |
-| `GIT_RUN_TIMEOUT_MS` | `16,000` | `src/plugins/claudetto-codegraph/slices/graph/limits.ts` | The time that the mod handler waits for the sync process after a `git` command. |
-| `MIN_CATCH_UP_MS` | `2,000` | `src/plugins/claudetto-codegraph/slices/graph/limits.ts` | The shortest time that a catch-up sync in the same run needs. |
 | `ERROR_TEXT_MAX_CHARS` | `300` | `src/plugins/claudetto-codegraph/slices/graph/limits.ts` | The most characters of CLI error text that a notice gives. |
 | `CTX7_VERSION` | `0.6.1` | `src/plugins/claudetto-docs/slices/docs/limits.ts` | The `ctx7` version that the skill and the settings snippet run. |
 | `MAX_CALLS` | `3` | `src/plugins/claudetto-docs/slices/docs/limits.ts` | The most `ctx7` calls for one question. |

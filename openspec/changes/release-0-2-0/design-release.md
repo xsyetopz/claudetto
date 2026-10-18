@@ -24,7 +24,8 @@ The user set both on 2026-10-17: "0.2.0 must implement it solo, because of the f
   A surface with no fault gets a row with the check that shows it works.
 - The release has no "known issues" section.
   A fault is fixed, or its surface is removed, before the tag.
-- No legacy upkeep: `0.2.0` reads no state of `0.1.0-alpha.1` and migrates none.
+- No state of `0.1.0-alpha.1` is read at run time, and the setup of `0.2.0` cleans the keys of 0.1.0 that it finds, and nothing else of the user (the user, 2026-10-18).
+  The cleanup removes the git config pairs, the `autoMode` rule texts, the `CLAUDE.md` block, `promptCacheTtl: "5m"`, `env.CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS: "1"`, and ten `permissions.ask` rules, only with the value that 0.1.0 wrote.
   The setup of `0.2.0` writes its snippet fresh, and the `CHANGELOG.md` says to run `/claudetto:setup` again.
 - The version is `0.2.0`, with no pre-release suffix.
 - The tag waits for the user's yes after the last gate, because a tag and a push are seen by others.
