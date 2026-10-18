@@ -220,7 +220,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just generate --check && bun test tests/support/wiki-links.test.ts`
 - [ ] 10.5 Cut each wiki page to at most 150 lines, with no narrative (D13).
   Check: `bun run lint:md && just validate`
-- [ ] 10.6 Make `biome.json` and `.markdownlint-cli2.jsonc` skip `plugins/` and `wiki/` and lint `src/**/*.md`, and make `just generate` format its output with Biome (D13).
+- [x] 10.6 Make `biome.json` and `.markdownlint-cli2.jsonc` skip `plugins/` and `wiki/` and lint `src/**/*.md`, and make `just generate` format its output with Biome (D13).
   Check: `just lint && just generate --check`
 - [x] 10.7 Add a `just validate` rule that fails on a slice with a hook and no row in `src/wiki/rationale/Controls.md`, see it fail, then write one row for each hook, guard, cap, and notice: its incident and the condition that removes it (D27).
   Check: `just validate`
