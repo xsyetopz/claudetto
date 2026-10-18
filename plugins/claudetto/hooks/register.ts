@@ -2,42 +2,48 @@
 import type { On, PluginOptions } from "claude-code";
 import {
   keepOptions as h0,
-  onAskUserQuestion as h1,
-  onSecondOpinion as h2,
-  onSessionStart as h3,
+  onAdvise as h1,
+  onSessionStart as h2,
+} from "../slices/advise/adapters/mod.ts";
+import {
+  keepOptions as h3,
+  onAskUserQuestion as h4,
+  onSecondOpinion as h5,
+  onSessionStart as h6,
 } from "../slices/decide/adapters/mod.ts";
 import {
-  onCommand as h4,
-  onProposeGoal as h5,
-  onTurnComplete as h6,
+  onCommand as h7,
+  onProposeGoal as h8,
+  onTurnComplete as h9,
 } from "../slices/goal/adapters/mod.ts";
-import { onPlanCall as h7 } from "../slices/ground/adapters/mod.ts";
-import { onBashCall as h8 } from "../slices/guard/adapters/mod.ts";
+import { onPlanCall as h10 } from "../slices/ground/adapters/mod.ts";
+import { onBashCall as h11 } from "../slices/guard/adapters/mod.ts";
 import {
-  keepOptions as h9,
-  onCommand as h10,
-  onCompact as h11,
-  onStart as h12,
+  keepOptions as h12,
+  onCommand as h13,
+  onCompact as h14,
+  onStart as h15,
 } from "../slices/handoff/adapters/mod.ts";
 import {
-  keepOptions as h13,
-  onAgentOffer as h14,
-  onAttachment as h15,
-  onCommandDescribe as h16,
-  onSection as h17,
-  onSpawn as h18,
-  onToolDescribe as h19,
+  keepOptions as h16,
+  onAgentOffer as h17,
+  onAttachment as h18,
+  onCommandDescribe as h19,
+  onSection as h20,
+  onSpawn as h21,
+  onToolDescribe as h22,
 } from "../slices/prompt/adapters/mod.ts";
-import { onToolCall as h20 } from "../slices/sembr/adapters/mod.ts";
+import { onToolCall as h23 } from "../slices/sembr/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h0(options);
-  h9(options);
-  h13(options);
+  h3(options);
+  h12(options);
+  h16(options);
   // eval: agent.offer prompt
-  on("agent.offer", { agent: ["comment-thread-analyst"] }, h14);
+  on("agent.offer", { agent: ["comment-thread-analyst"] }, h17);
   // eval: agent.spawn prompt
-  on("agent.spawn", h18);
+  on("agent.spawn", h21);
   // eval: command.describe prompt
   on(
     "command.describe",
@@ -92,12 +98,12 @@ export const register = (on: On, options: PluginOptions): void => {
         "workflows",
       ],
     },
-    h16,
+    h19,
   );
   // eval: command.run goal
-  on("command.run", { command: "goal" }, h4);
+  on("command.run", { command: "goal" }, h7);
   // eval: command.run handoff
-  on("command.run", { command: "handoff" }, h10);
+  on("command.run", { command: "handoff" }, h13);
   // eval: prompt.attachment prompt
   on(
     "prompt.attachment",
@@ -111,30 +117,34 @@ export const register = (on: On, options: PluginOptions): void => {
         "workflow_keyword_request",
       ],
     },
-    h15,
+    h18,
   );
   // eval: prompt.section prompt
-  on("prompt.section", h17);
+  on("prompt.section", h20);
   // eval: session.compact handoff
-  on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h11);
+  on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h14);
+  // eval: session.start advise
+  on("session.start", { isInteractive: [true, false] }, h2);
   // eval: session.start decide
-  on("session.start", { isInteractive: [true, false] }, h3);
+  on("session.start", { isInteractive: [true, false] }, h6);
   // eval: session.start handoff
-  on("session.start", { isInteractive: [true, false] }, h12);
+  on("session.start", { isInteractive: [true, false] }, h15);
   // eval: tool.call decide
-  on("tool.call", { tool: ["AskUserQuestion"] }, h1);
+  on("tool.call", { tool: ["AskUserQuestion"] }, h4);
   // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h20);
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h23);
   // eval: tool.call ground
-  on("tool.call", { tool: ["Write", "Edit"] }, h7);
+  on("tool.call", { tool: ["Write", "Edit"] }, h10);
   // eval: tool.call guard
-  on("tool.call", { tool: ["Bash"] }, h8);
+  on("tool.call", { tool: ["Bash"] }, h11);
+  // eval: tool.call advise
+  on("tool.call", { tool: /^mcp__claudetto__advise$/ }, h1);
   // eval: tool.call decide
-  on("tool.call", { tool: /^mcp__claudetto__second_opinion$/ }, h2);
+  on("tool.call", { tool: /^mcp__claudetto__second_opinion$/ }, h5);
   // eval: tool.call goal
-  on("tool.call", { tool: ["ProposeGoal"] }, h5);
+  on("tool.call", { tool: ["ProposeGoal"] }, h8);
   // eval: tool.describe prompt
-  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h19);
+  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h22);
   // eval: turn.complete goal
-  on("turn.complete", h6);
+  on("turn.complete", h9);
 };

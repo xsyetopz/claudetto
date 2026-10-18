@@ -57,6 +57,13 @@
     "allow": "plugins/claudetto/tests/compaction.test.ts > a subagent compaction passes on with no change",
     "text": "plugins/claudetto/tests/compaction.test.ts > an auto compaction gives one user message with the first user message and the handoff, and the tail"
   },
+  "session.start advise": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/claudetto/tests/advise.test.ts > with the option `builtin`, session start registers no tool",
+    "text": "plugins/claudetto/tests/advise.test.ts > with the option `claudetto`, session start registers the tool"
+  },
   "session.start decide": {
     "requests": 0,
     "tokens": 0,
@@ -102,6 +109,13 @@
     "text": "tests/claudetto/guard/print.test.ts > `cat F` is denied with the absolute path and no range",
     "block": "plugins/claudetto/tests/print.test.ts > a `Bash` print of a file is denied with the `Read` range",
     "false": "tests/claudetto/guard/print.test.ts > a command with an edit, a byte count, or another bounded form stays allowed"
+  },
+  "tool.call advise": {
+    "requests": 0,
+    "tokens": 0,
+    "blocks": false,
+    "allow": "plugins/claudetto/tests/advise.test.ts > with the option `builtin`, session start registers no tool",
+    "text": "plugins/claudetto/tests/advise.test.ts > an answer gives the advice with the model name and the tokens"
   },
   "tool.call goal": {
     "requests": 0,

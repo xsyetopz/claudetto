@@ -1,0 +1,1 @@
+Use `builtin` for the advisor of Claude Code, or `claudetto` for the tool `advise` (the model and the context are yours). With `claudetto`, set `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` so that Claude sees one advisor.

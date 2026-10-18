@@ -1,0 +1,29 @@
+// The result of the tool for the result of `$.model.complete`: the advice, or a clear text with the cause.
+
+import type { ModelCompleteResult } from "claude-code";
+import { ERROR_ABORTED, ERROR_API, ERROR_EMPTY, RESULT } from "../prompts.ts";
+
+export const resultText = (
+  reply: ModelCompleteResult,
+  model: string,
+): string => {
+  if (reply.isAnswered) {
+    return RESULT({
+      model,
+      input: String(
+        reply.usage.input_tokens +
+          reply.usage.cache_read_input_tokens +
+          reply.usage.cache_creation_input_tokens,
+      ),
+      output: String(reply.usage.output_tokens),
+      text: reply.text.trim(),
+    });
+  }
+  if (reply.reason === "api-error") {
+    return ERROR_API({
+      kind: reply.error,
+      status: String(reply.status ?? "none"),
+    });
+  }
+  return reply.reason === "empty-reply" ? ERROR_EMPTY : ERROR_ABORTED;
+};
