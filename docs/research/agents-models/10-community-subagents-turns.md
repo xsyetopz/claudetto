@@ -1,4 +1,4 @@
-# Community evidence on subagents, orchestration, and turn limits
+# Community Evidence on Subagents, Orchestration, and Turn Limits
 
 ## Sources
 
@@ -25,7 +25,7 @@ Treat each claim as one user report.
 
 ## Findings
 
-### Turn limits
+### Turn Limits
 
 - One user on version 2.1.280 and Opus 5.5 reports a fixed 200-tool-call stop for fork subagents only. T1: "they have a stringent limit of 200 tool calls before being forcefully stopped".
 - The user wants it removed or made configurable, and argues it makes resumed agents rush. T1.
@@ -34,7 +34,7 @@ Treat each claim as one user report.
 - The closest data is a benchmark where one scaffold took 563 turns on a task and another took 55. T9.
 - The gap came from prompt rules such as no re-polling of background jobs, not from a cap. T9.
 
-### How work is lost at limits
+### How Work Is Lost at Limits
 
 - A subagent that hits the 5-hour usage limit before it writes its output loses the work, and a restart redoes it. T2: "possible to lose subagent work if the 5hr limit hits".
 - Fable/Mythos subagents did not finish inside one window, so one user moved them to Opus. T2.
@@ -44,7 +44,7 @@ Treat each claim as one user report.
 - A crash can leave a state that says a step is open when its side effect is done, so check for the result before a retry. T15.
 - The 20-call "tool-use limit" is a web chat breaker and does not apply to Claude Code. T14.
 
-### What users do instead of a turn limit
+### What Users Do Instead of a Turn Limit
 
 - Cut work into small phases or vertical slices, where one session owns one slice and leaves the tree green. T7, T6.
 - A small feature has about 3 phases and a large one about 5. T6.
@@ -57,7 +57,7 @@ Treat each claim as one user report.
 - Limit subagent use, because it fills context. T4.
 - One user limits Explore agents to Haiku and 2 per agent. T5.
 
-### Model mixes for root plus workers
+### Model Mixes for Root Plus Workers
 
 - Opus 5.5 is root for design, review, merge, and orchestration. Sonnet and Haiku do work that a check can verify, such as implementation, tests, and refactors. T3.
 - On day one of Fable/Mythos 5.1, a root fanned out 19 agents on the top model and hit the session limit in about 45 minutes. T3.
@@ -66,7 +66,7 @@ Treat each claim as one user report.
 - A Sonnet subagent writes code, with independent review subagents. T11.
 - Model and `effort` can be pinned in agent frontmatter. T10.
 
-### Orchestration shape
+### Orchestration Shape
 
 - Users treat the root session as the one orchestrator. T5: "one orchestrator agent act as a project manager for the others".
 - Review does not vanish when work moves down, so a verifiable outcome is the fix. T5.
@@ -74,7 +74,7 @@ Treat each claim as one user report.
 - A separate reviewer with a fresh context beats self-review. T7.
 - A subagent is for context isolation. T13.
 
-## Implications for the dotclaude agents
+## Implications for the Dotclaude Agents
 
 - No thread supports a small hard cap. Raise `maxTurns` for `implementer` and `debugger`, or remove it, and bound the work by slice size.
 - Add a commit-early rule and a journal rule to the worker prompts, to protect work at any stop. T2, T6, T12.
@@ -85,7 +85,7 @@ Treat each claim as one user report.
 - A turn limit on read-only `investigator` and `researcher` is cheap protection against polling loops, but a no-re-poll rule does the same job. T9.
 - Fable/Mythos drains the 5-hour window fast, so do not make it a default worker. T2.
 
-## Open questions
+## Open Questions
 
 - Does `maxTurns` in frontmatter stop a subagent like the 200-call cap in T1? Test it in `just sandbox`.
 - Does a stopped subagent return its partial text and edits to the root? T2 suggests loss only at a usage limit.

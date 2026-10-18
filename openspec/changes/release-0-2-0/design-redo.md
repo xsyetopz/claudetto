@@ -1,4 +1,4 @@
-# Design: claudetto from first principles
+# Design: Claudetto from First Principles
 
 This file continues [`design.md`](design.md) and [`design-trim.md`](design-trim.md).
 The user asked on 2026-10-17 for a redo of all of claudetto in this plan.
@@ -53,7 +53,7 @@ D12 and D13 stay, and this file adds the parts that they do not name.
 
 ## Decisions
 
-### D39. Each part has one job, and a part goes when it has none or a built-in does it
+### D39. Each Part Has One Job, and a Part Goes When It Has None or a Built-In Does It
 
 The user picked a rewrite of every part on 2026-10-17 ("every part").
 So each part that keeps its job is rewritten by D40, and no part stays as it is.
@@ -79,7 +79,7 @@ The call says what happens to the job of each part:
 | `claudetto-browser`, `claudetto-codegraph`, `claudetto-docs` | a browser, the code graph, and library docs | rewrite |
 | `src/kernel/`, `tools/` | the shared runtime and the repository scripts | rewrite last, to what the parts use |
 
-### D40. Each rewrite starts from a behavior table, and its size is pinned after
+### D40. Each Rewrite Starts from a Behavior Table, and Its Size Is Pinned After
 
 - Jev picked `ceiling-after-behavior-table` at confidence 0.80, over fixed ceilings now at 0.11.
 - D40 applies to every part of the table of facts, the add-ons, `src/kernel/`, and `tools/` included.
@@ -90,14 +90,14 @@ The call says what happens to the job of each part:
   Its line count must be lower than the count in the table of facts above, which answers the weak point of the pick.
 - After the rewrite, `tools/limits.ts` pins the line count of the part, and `just validate` fails when the part grows past it.
 
-### D41. A folder or a file exists only when it holds a concern
+### D41. A Folder or a File Exists Only When It Holds a Concern
 
 - A part has a `domain/`, `adapters/`, or `prompts/` folder only when the folder holds two files or more.
 - A file under 15 lines merges into the file that uses it, except an entry point that Claude Code or the generator needs.
 - A prompt fragment that one prompt uses goes into that prompt, in each part, not only in `setup` (D12).
 - The 300-line bound of each file stays.
 
-### D45. The model knows its usage with no tool call
+### D45. The Model Knows Its Usage with No Tool Call
 
 - Claude Code gives a status line `context_window`, `cost`, and `rate_limits` with `five_hour`, `seven_day`, and `spend_limit` (`external/cc-2.1.302/docs/statusline.md:182-198`).
   The status line shows them to the user, and the model does not see them.
@@ -109,7 +109,7 @@ The call says what happens to the job of each part:
 - Other hook inputs that carry cost stay with their hooks: the cache write estimate of `SessionStart` on a resume and of `PreModelSwitch`, and the run telemetry of a subagent in `PostToolUse` of `Agent` (`hooks.md:1240`, `:3390`, `:1884`).
   The status line row of a subagent (D4) shows that telemetry to the user.
 
-### D42. One `Stop` hook for the end of a turn
+### D42. One `Stop` Hook for the End of a Turn
 
 - `usercheck` merges into `turngate`, so one `Stop` hook gives one reason at most.
 - The `!` command of D36 is one row of the turn gate.

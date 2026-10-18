@@ -2,7 +2,7 @@
 
 Each step ends with `just generate`, its check, and one commit.
 
-## 1. Commit the start state
+## 1. Commit the Start State
 
 - Commit the uncommitted work of 2026-10-17.
 - Move the stray handoff.
@@ -10,7 +10,7 @@ Each step ends with `just generate`, its check, and one commit.
   Step 10 adds the `after` line the same way.
 - Check: `git status --short` prints nothing that the step did not leave on purpose.
 
-## 2. Delete the cut slices and add-ons
+## 2. Delete the Cut Slices and Add-Ons
 
 - Delete the folder of each part with the verdict `cut`, in `src/plugins/claudetto/slices/`, `src/plugins/`, and `tests/claudetto/` or `tests/<add-on>/`.
   A slice is found by its folder (`tools/generate/discover.ts`), so the folder is the slice.
@@ -22,7 +22,7 @@ Each step ends with `just generate`, its check, and one commit.
 - Remove each prompt text that names a cut part, such as a custom agent name, `claudetto-run-checks`, or `minispec`.
 - Check: `just check`.
 
-## 3. Trim `guard` to the print deny
+## 3. Trim `guard` to the Print Deny
 
 - Keep `slice.ts`, `limits.ts`, `domain/deny.ts`, `domain/reads.ts`, `domain/paths.ts`, `prompts/print-deny.md`, and `lab/print.test.ts`.
 - In `adapters/mod.ts`, keep `countOf` and the print part of `onBashCall`, and remove `kindOf`, `isMainCheckout`, and the `guardReason` call.
@@ -32,7 +32,7 @@ Each step ends with `just generate`, its check, and one commit.
 - Add one test: a `Bash` call that prints no file reads no file (the property that `lazy.test.ts` checked for the floor).
 - Check: `just test tests/claudetto/guard && just lab`.
 
-## 4. Trim `setup`, and move `trim` into it
+## 4. Trim `setup`, and Move `trim` into It
 
 - The snippet that setup writes:
   - `includeGitInstructions: false`.
@@ -58,7 +58,7 @@ Each step ends with `just generate`, its check, and one commit.
 - Remove the drift notice of `session.start`.
 - Check: `just test tests/claudetto/setup`, with a test for each cleanup on a settings file of 0.1.0, and a test that the snippet sets `sandbox.network.allowLocalBinding` to `true`.
 
-## 5. Rebuild `prompt` on the vanilla short prompt
+## 5. Rebuild `prompt` on the Vanilla Short Prompt
 
 - Get the vanilla short prompt of 2.1.302 from `external/cc-2.1.302/strings.txt` and the `lean_body` section, and save it as a fixture.
 - Write the tailored text as a `prompt.section` answer for `lean_body`, and drop sections with `prompt.compose` only where the vanilla text is wrong or wastes tokens.
@@ -88,7 +88,7 @@ Each step ends with `just generate`, its check, and one commit.
 - Remove each check in `tools/` of a cut part.
 - Check: `just check`.
 
-## 8b. Rewrite `claudetto-sessions` as one skill with scripts
+## 8b. Rewrite `claudetto-sessions` as One Skill with Scripts
 
 What Claude Code 2.1.302 has built in (`strings.txt`):
 
@@ -109,7 +109,7 @@ So the skill keeps only what these do not do: a free and repeatable read of the 
   If no command does, move the feature into a script of the skill.
 - Check: `just test tests/claudetto-sessions && just lab`, with a fixture folder in the shape of `~/.claude/`.
 
-## 9. Add the `ground` slice
+## 9. Add the `ground` Slice
 
 The aim: the user gives no policy for a failure that a program can find.
 The failure class: Claude writes a claim with no source as if it were a fact or a choice of the user, or it acts against a convention that the project already states.
@@ -163,7 +163,7 @@ The replay result is in `evidence-ground.md`.
 
 Check: `just test tests/claudetto/ground && just lab`, and the replay count.
 
-## 10. Docs and release notes
+## 10. Docs and Release Notes
 
 - After the user tags 0.2.0, remove the wiki pages of the cut parts: `src/wiki/claudetto/Turn-Gate.md`, `Corrections.md`, `Repo-State.md`, `Agents.md`, the floor part of `Guards.md`, and the rows of the cut parts in `src/wiki/reference/Bounds.md`.
 - Update `README.md` and `docs/README.md`.
@@ -172,7 +172,7 @@ Check: `just test tests/claudetto/ground && just lab`, and the replay count.
 - Add the end size with `printf 'after %s\n' "$(find src -name '*.ts' -not -path '*/lab/*' | xargs cat | wc -l)" >> .claudetto/trim-size.txt`.
 - Check: each command of the `/goal` condition, in the final turn.
 
-## Notes for the spec integration (a later change)
+## Notes for the Spec Integration (a Later Change)
 
 The plan of the spec workflow is in `openspec/changes/spec-workflow-0-2-0/design.md`, next to this file.
 The user gave these notes on 2026-10-17.

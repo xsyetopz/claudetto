@@ -1,4 +1,4 @@
-# Turn limits and other budgets in the official docs
+# Turn Limits and Other Budgets in the Official Docs
 
 ## Sources
 
@@ -15,7 +15,7 @@
 
 ## Findings
 
-### What each limit is for
+### What Each Limit Is For
 
 1. `maxTurns` counts tool-use round trips only, and the default is no limit (S1).
 2. S1 sample code uses `max_turns=30` with the comment "Prevent runaway sessions".
@@ -26,7 +26,7 @@
    It is one shared pool: "there are no per-thread caps" (S6).
 6. The subagent field `maxTurns` is the only per-subagent bound in the definition (S2, S4).
 
-### What happens to the work when a limit hits
+### What Happens to the Work When a Limit Hits
 
 1. Subagent `maxTurns`: Claude Code returns the output "marked as partial" (S4).
    The parent can resume it with `SendMessage`, and it keeps its full history (S2, S4).
@@ -44,7 +44,7 @@
    S1: "Compaction replaces older messages with a summary".
    S1 and S2 show no error subtype for a full context window.
 
-### Does Anthropic set a turn limit on its own workers
+### Does Anthropic Set a Turn Limit on Its Own Workers
 
 1. No page that we read gives a `maxTurns` value for `Explore`, `Plan`, or `general-purpose` (S4).
 2. The SDK default is no limit (S1).
@@ -54,7 +54,7 @@
 4. Managed Agents bounds threads by count and depth, not by turns (S7, via local skill summary).
    The limits are 25 child threads per session and one level of delegation.
 
-### Which signal best bounds a worker
+### Which Signal Best Bounds a Worker
 
 1. Dollars are the only hard cap that covers a subagent tree (S1, S2, S6).
    S3: `total_cost_usd` includes subagents, and `usage` "undercounts as soon as nesting occurs".
@@ -74,7 +74,7 @@
    To stop one subagent from spawning, omit `Agent` from its `tools` (S4).
 3. S2: Opus 5 "delegates to subagents more readily than earlier models".
 
-## Implications for the dotclaude agents
+## Implications for the Dotclaude Agents
 
 1. The documented default is no `maxTurns`.
    Anthropic documents depth, concurrency, and dollars for a tree, and `maxTurns` as a runaway guard (S1, S2).
@@ -97,7 +97,7 @@
    Omit `Agent` from each worker `tools` list (S4).
    Opus 5.x workers delegate more readily (S2), so this matters most for `planner` and `reviewer`.
 
-## Proposed `maxTurns` by agent
+## Proposed `maxTurns` by Agent
 
 These are proposals.
 No source gives the numbers.
@@ -111,7 +111,7 @@ No source gives the numbers.
 | `researcher` | Keep a backstop, read-only | S1 runaway guard |
 | `investigator` | Keep a backstop, read-only | S1 runaway guard |
 
-## Open questions
+## Open Questions
 
 1. Do `Explore`, `Plan`, or `general-purpose` have a default `maxTurns`?
    The unread end of S4 may say.

@@ -1,4 +1,4 @@
-# Spec Commands: the Gap to OpenSpec and Spec Kitty
+# Spec Commands: The Gap to OpenSpec and Spec Kitty
 
 ## Sources
 
@@ -10,7 +10,7 @@
 - dotclaude-spec: `src/plugins/dotclaude/slices/spec/` and `wiki/dotclaude/Spec-Store.md`, at commit `44e74425` of dotclaude 1.0.0.
 - Limit: Spec Kitty `agent tasks list-tasks` flags and a `dashboard` command are not confirmed (page read 100000 of 149086 characters).
 
-## dotclaude-spec today
+## Dotclaude-Spec Today
 
 The CLI is `dotclaude-spec`, in `src/plugins/dotclaude/slices/spec/adapters/`.
 The store is `.dotclaude/spec/` (`wiki/dotclaude/Spec-Store.md`).
@@ -89,7 +89,7 @@ Lanes (<https://github.com/Priivacy-ai/spec-kitty/blob/main/docs/architecture/ka
 - A move outside the table needs `--force` with an actor and a reason.
 - Rejection is `move-task --to planned --review-feedback-file`.
 
-## Gap table
+## Gap Table
 
 | Control | OpenSpec | Spec Kitty | dotclaude-spec |
 | --- | --- | --- | --- |
@@ -104,7 +104,7 @@ Lanes (<https://github.com/Priivacy-ai/spec-kitty/blob/main/docs/architecture/ka
 | Accept a change | none | `mission accept` | none (`archive` only) |
 | Merge | none | `mission merge --dry-run` | `merge` without `--dry-run` |
 
-## Recommended commands (ranked)
+## Recommended Commands (Ranked)
 
 The root session is the orchestrator and subagents are workers.
 Each command runs in the main checkout only, like `lane`, and has `--json`.
@@ -133,7 +133,7 @@ Each command runs in the main checkout only, like `lane`, and has `--json`.
     Then `archive` is allowed.
     `dashboard`, `init`, `config`, `store`, `workset`, and `schema` add surface without control, so skip them.
 
-## Open questions
+## Open Questions
 
 - Should `canceled` count as a done dep, or block its dependents?
 - Should the hooks (`agent.spawn`, `turn.complete`) write the `claimed` and `in_review` lanes, or stay with 5 lanes?

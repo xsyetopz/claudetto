@@ -1,10 +1,10 @@
-# Design: evidence from the reading of 2026-10-17
+# Design: Evidence from the Reading of 2026-10-17
 
 This file continues [`design.md`](design.md) with the sources that the user gave on 2026-10-17.
 Four read-only helpers read them, and each quote below is from their reports.
 Most sources are case studies, one-project reports, or runs on older models, so each decision here is a check or a guard, not a new number.
 
-## Sources and their weight
+## Sources and Their Weight
 
 | Source | Method | Weight |
 | --- | --- | --- |
@@ -20,7 +20,7 @@ Most sources are case studies, one-project reports, or runs on older models, so 
 
 ## Decisions
 
-### D24. A red check names the failure that it expects
+### D24. A Red Check Names the Failure That It Expects
 
 The red checks of `tasks.md` use `!`, so a test that fails for a wrong reason, such as a syntax error, passes the red step.
 One thread user: "stage the tests in order to be able verify that the subagent did not touch those tests to get them green."
@@ -32,7 +32,7 @@ A study found that regenerated tests did better (arXiv 2610.02952), but its effe
 - Alternative: a fresh-context reviewer of each new test.
   Rejected for this change, because it adds a helper run to each task, and the matched failure text costs nothing.
 
-### D25. An eval check must fail on a known-bad run first
+### D25. An Eval Check Must Fail on a Known-Bad Run First
 
 Anthropic: "it's important that the task verifier is nearly perfect, otherwise Claude will solve the wrong problem."
 Each changed eval case of task 11.2 runs once on a recorded bad run, and its check must fail there.
@@ -41,21 +41,21 @@ Each case counts the tool calls and the tokens of the run as a deterministic che
 A case that changes tests also counts each edit that deletes or weakens a test (arXiv 2609.09671).
 The implementer cases keep a held-out split that the prompt work of D17 never sees (arXiv 2603.08806, 2610.02952).
 
-### D26. A text cut is gated on evals, not on tokens
+### D26. A Text Cut Is Gated on Evals, Not on Tokens
 
 Minification cut "average input token usage by 42% with a 12 percentage-point drop in resolution rate" (arXiv 2606.01326).
 Tool results are 30.4K of a 48.4K average trajectory, and the system and user text 4.4K (arXiv 2509.23586).
 So the cuts of tasks 6.4 and 6.5 save little in a long run, and a cut that lowers an eval score goes back.
 The rewrite of D17 tells the model to report a gap or a blocker, and not to work around it, because a thread user reports that an agent "decides to work around an issue it should have surfaced to address."
 
-### D27. Each control has an incident and an expiry
+### D27. Each Control Has an Incident and an Expiry
 
 Anthropic: "every component in a harness encodes an assumption about what the model can't do on its own, and those assumptions are worth stress testing."
 `src/wiki/rationale/Controls.md` gets one row for each hook, guard, cap, and notice of claudetto: the incident that it exists for, and the condition that removes it.
 `just validate` fails on a slice with a hook and no row.
 This is the audit of D12 kept as a rule, so that the next release does not need a new audit.
 
-### D28. Guards that a prompt cannot hold are tested for their effect
+### D28. Guards That a Prompt Cannot Hold Are Tested for Their Effect
 
 AgentDiet: "the agent often persisted with the original task without calling erase, despite explicit prompts."
 So the Haiku notice of D2, if task 4.2 picks it, has a test that the helper writes its report after the notice, not only that the notice is sent.
@@ -73,13 +73,13 @@ The fragment keeps the bound as a default, and the length that the brief gives w
 The docs answer the first choice of D2: a subagent file can set `autoCompactWindow` from v2.1.296 (`external/cc-2.1.302/docs/sub-agents.md:313`).
 Task 4.2 sets it on each Haiku agent.
 
-### D29. Check output is short, and the detail goes to a file
+### D29. Check Output Is Short, and the Detail Goes to a File
 
 Anthropic: "At most, it should print a few lines of output and log all important information to a file so Claude can find it when needed."
 `claudetto-run-checks` already prints one result for each command and the name of a log file (`slices/checks/domain/summary.ts`).
 Each hook message of claudetto follows it: one line, with the reason, and a file path for more.
 
-## Not adopted
+## Not Adopted
 
 - A second reviewer agent: one secondhand source reports a drop of 8%, which nobody here checked (arXiv 2603.25723, through Marmelab).
   The `reviewer` body gets calibration examples (Anthropic: "Out of the box, Claude is a poor QA agent"), and task 11.4 measures it before the role changes.
@@ -87,7 +87,7 @@ Each hook message of claudetto follows it: one line, with the reason, and a file
 - File locks for parallel agents in one checkout: D11 keeps one worktree for each helper.
 - Gherkin specs (`fspec`), lexical spec coverage (`intent-verify`), and the `llm-wiki` profile: leads with no evidence.
 
-### D30. The advisor is tested in place of the `planner`
+### D30. The Advisor Is Tested in Place of the `planner`
 
 The user asked on 2026-10-17 to test the built-in advisor in place of the `planner` agent.
 The docs (`code.claude.com/docs/en/advisor.md`, read on 2026-10-17) give these facts:
@@ -113,7 +113,7 @@ Otherwise the `planner` stays, and `/claudetto:setup --advisor` stays an option 
 Each run of the `advisor` arm checks in its transcript that an advisor call happened, because the API drops a refused pairing with no error.
 When the bundle has no variable that stops the telemetry of a run and keeps the feature flags, the test does not run (D31).
 
-### D31. The snippet turns off each tracking path
+### D31. The Snippet Turns Off Each Tracking Path
 
 The user does not want telemetry or prompt tracking (2026-10-17).
 The settings snippet sets `DISABLE_TELEMETRY`, `DO_NOT_TRACK`, `DISABLE_ERROR_REPORTING`, `DISABLE_FEEDBACK_COMMAND`, `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`, and `CLAUDE_CODE_SEND_FEEDBACK=0`, and sets no `OTEL_LOG_*` variable.
@@ -124,7 +124,7 @@ Task 7.7 gives each variable its row in `Env.md`, and task 7.8 pins the `env` of
 The advisor of D30 needs the feature flags, so its test runs only when task 11.5 finds a variable that keeps them with the telemetry off.
 Otherwise the `planner` stays, and task 11.6 is dropped with that reason in `Usage-Evidence.md`.
 
-## More sources, read on 2026-10-17
+## More Sources, Read on 2026-10-17
 
 - Spec Kit, OpenSpec, Kiro, and BMAD make tests optional, generate them after the work, or do not say.
   So the test-first rule of `tasks.md` stays, and no change of MiniSpec comes from them.

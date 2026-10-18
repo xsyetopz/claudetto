@@ -1,10 +1,10 @@
-# claudetto 0.2.0: the trim
+# Claudetto 0.2.0: The Trim
 
 A plan for one `/goal` run in vanilla Claude Code 2.1.302, in the repository `/Users/krystian/Downloads/CodeProjects/xsyetopz/claudetto`.
 The aim: a small framework that makes vanilla Claude Code token-efficient.
 A part stays only when Claude Code cannot do its work and the part does something meaningful.
 
-## `/goal` condition
+## `/goal` Condition
 
 Paste this line after `/goal` (477 characters, and the bound is 500):
 
@@ -20,7 +20,7 @@ The condition has no line target on purpose.
 A hard number can push the run to cut a kept part only to reach it.
 Each part is as small as its tests allow.
 
-## State at the start
+## State at the Start
 
 - Branch `feat/0.2.0`, last commit `d91d77ec`.
 - Version in the manifests: `0.1.0-alpha.1`, which `CHANGELOG.md` gives as released on 2026-10-15.
@@ -33,7 +33,7 @@ Each part is as small as its tests allow.
 - A stray handoff is in `src/plugins/claudetto/slices/guard/.claudetto/handoffs/`.
   Move it to `.claudetto/handoffs/`.
 
-## Rules of the run
+## Rules of the Run
 
 - Run the full checks with `just docker check`, as `CLAUDE.md` says.
   In the sandbox of Claude Code, 12 tests fail with `Failed to start server`, because the sandbox blocks local ports.
@@ -52,7 +52,7 @@ Each part is as small as its tests allow.
 - Before you delete a symbol in a shared file, run `codegraph callers <symbol>` (run `codegraph init -y` first if there is no index).
 - Make one commit for each step, with the check output in the chat.
 
-## Decisions of the user (2026-10-17)
+## Decisions of the User (2026-10-17)
 
 1. Cut the destructive floor of `guard`.
    The user runs auto mode.
@@ -76,7 +76,7 @@ Each part is as small as its tests allow.
 11. Jev is first-class.
     Keep `decide`, and when Jev gives no answer for any cause, a smaller Claude model answers.
 
-## Decisions of the user (2026-10-18)
+## Decisions of the User (2026-10-18)
 
 1. 0.2.0 holds all three plans: `trim-0-2-0`, then `spec-workflow-0-2-0`, then `builtins-0-2-0`.
 2. Triage the open tasks of `release-0-2-0` after the trim.
@@ -101,7 +101,7 @@ Each one has its reason, so the run does not stop for them.
 - Merge `surface` into `prompt`, and `trim` into `setup`.
 - Keep `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` at `2`, from the snippet of 0.1.0.
 
-## Keep and cut
+## Keep and Cut
 
 | Part | Lines | Verdict | Reason |
 | --- | ---: | --- | --- |
@@ -140,7 +140,7 @@ Each one has its reason, so the run does not stop for them.
 
 The line counts are non-test `.ts` files, from `find <dir> -name '*.ts' -not -path '*/lab/*' | xargs cat | wc -l` on 2026-10-17.
 
-## Facts of Claude Code 2.1.302 for the plan
+## Facts of Claude Code 2.1.302 for the Plan
 
 - `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` picks the short system prompt with short tool descriptions.
   Newer models use it by default, and the full prompt is the default only for Haiku 4.5, Sonnet 5, Opus 4.7, and older (`docs/env.md`).
@@ -169,7 +169,7 @@ The line counts are non-test `.ts` files, from `find <dir> -name '*.ts' -not -pa
 
 The steps and the notes for the spec integration are in [`design-steps.md`](design-steps.md).
 
-## Out of scope for this run
+## Out of Scope for This Run
 
 - The integration of OpenSpec, GitHub Spec Kit, or BMAD.
 - Each paid measure: the live prompt size, the evals, and the handoff cost of the new prompt.

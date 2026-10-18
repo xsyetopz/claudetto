@@ -24,7 +24,7 @@ Evidence from `external/2026-10-17/` (untrusted, used as leads):
 
 ## Decisions
 
-### D1. Rewrite `claudetto-you-should-know` to match the built-in, with no telemetry
+### D1. Rewrite `claudetto-you-should-know` to Match the Built-In, with No Telemetry
 
 The built-in `cc-plugin-you-should-know` needs feature-flag fetching (`external/cc-2.1.302/docs/env.md:587`), and D31 turns that off.
 The user wants the built-in look and behavior with no telemetry, and chose a rewrite on 2026-10-17.
@@ -44,7 +44,7 @@ The current add-on (1,607 lines of `.ts`) "looks nothing like builtin", in the w
 - Alternative: remove the add-on.
   Rejected by the user, because D31 turns off the built-in.
 
-### D2. No `maxTurns`, and no context cap for subagents
+### D2. No `maxTurns`, and No Context Cap for Subagents
 
 Each cap stopped a helper before it wrote its result, and no measurement set the values.
 Claude Code compaction and the handoff trigger already bound the context.
@@ -64,7 +64,7 @@ A second opinion (Jev) leaned to compaction at confidence 0.30, so the choice re
 - Alternative: no guard for Haiku.
   Rejected, because one long Haiku run can cost more than the Sonnet run that it replaces.
 
-### D3. Roster by model fit
+### D3. Roster by Model Fit
 
 | Role | Model | Effort | Work |
 | --- | --- | --- | --- |
@@ -96,7 +96,7 @@ The descriptions say the size of work for each role, so that the caller picks by
 - Alternative: one agent with a model parameter.
   Rejected, because the caller then picks the model with no rule, and the description cannot say the fit.
 
-### D4. The status line shows the effective window
+### D4. The Status Line Shows the Effective Window
 
 The main session shows `windowOf(size)` from `src/kernel/budget.ts`.
 A subagent row shows the window of its model family: `HAIKU_AUTOCOMPACT_WINDOW` for Haiku, else `windowOf(size)`.
@@ -104,7 +104,7 @@ A subagent row shows the window of its model family: `HAIKU_AUTOCOMPACT_WINDOW` 
 - Alternative: show both windows.
   Rejected, because the extra number takes room and the user acts on the effective one.
 
-### D5. One-line notices
+### D5. One-Line Notices
 
 Each `$.ui.log` text is one line.
 A helper in `src/kernel/text.ts` folds line breaks to ` · ` before the call, and the notice text drops its own `claudetto` prefix.
@@ -113,7 +113,7 @@ The cap notice names the count of open tasks, not the full block reason.
 - Alternative: send a multi-line text.
   Rejected, because the notice line renders a line break as `�`.
 
-### D6. Prompt cache TTL in the setup snippet
+### D6. Prompt Cache TTL in the Setup Snippet
 
 D18 in [`design-surfaces.md`](design-surfaces.md) replaces this decision: the snippet sets no `promptCacheTtl`, and `subagentPromptCacheTtl` waits for the measure of task 7.9.
 Task 7.1 confirms the key names in the Claude Code docs before the change.
@@ -121,7 +121,7 @@ One user measured that a 1-hour TTL lowers the cost of the main session and rais
 
 D12 and D13 are in [`design-trim.md`](design-trim.md), and D24 to D29 are in [`design-evidence.md`](design-evidence.md).
 
-### D7. A fast check after each change of behavior, the full checks at the end of a part
+### D7. A Fast Check after Each Change of Behavior, the Full Checks at the End of a Part
 
 The prompt says to run a fast check after each edit that changes behavior: the lint and the type check of the changed files, and the tests of those files.
 It says to run the full checks that cover a part once the part is done, and to skip each check for an edit that changes no behavior, such as a typo in a comment.
@@ -135,7 +135,7 @@ The turn gate keeps its claim rule, so a claim still needs a run.
 - Alternative: a hook that counts test runs.
   Rejected, because a rule for a should is enough and a hook adds code.
 
-### D8. jscpd integration
+### D8. Jscpd Integration
 
 - `src/plugins/claudetto/slices/dry/assets/jscpd.base.json` holds the base from the user's `jscpd-strict` skill, which covers all formats of jscpd 5.4.1.
 - `bin/jscpd-config` (TypeScript, Bun) merges a `jscpd.local.json` chain with `extends` into `.jscpd.json`, with the merge rules of the user's `jscpd_config.py`: deep merge of objects, append for the ignore lists, `<key>Remove`, and `null` to delete a key.
@@ -147,7 +147,7 @@ The turn gate keeps its claim rule, so a claim still needs a run.
 - Alternative: a Python script, as in the user's skill.
   Rejected, because `tools/` and `bin/` run on Bun, and one runtime is less to keep.
 
-### D9. MiniSpec frontmatter and `.minispec.yml`
+### D9. MiniSpec Frontmatter and `.minispec.yml`
 
 Each file of a change starts with YAML frontmatter: `proposal.md` has `name`, `tier`, `status`, and `created`, and `tasks.md` has `change`.
 `.minispec.yml` at the repository root holds the paths of `specs/` and `changes/`, and the tier defaults.
@@ -157,12 +157,12 @@ Files with no frontmatter fail validation, with no migration, by the no-legacy r
 - Alternative: `.minispec.yaml` too.
   Accept both names, and refuse a repository that has both.
 
-### D10. Setup acts on the user's yes
+### D10. Setup Acts on the User's Yes
 
 When the user agrees to a change that the setup offers, such as the `claude` alias in `~/.zshrc`, the setup makes the change in the same turn.
 The sandbox write list gets the cache folder of each toolchain that the project uses, read from the env of the toolchain (`CARGO_TARGET_DIR`, `cargo metadata`, and the like), not from a fixed list of paths.
 
-### D11. Helpers start from the current branch
+### D11. Helpers Start from the Current Branch
 
 A subagent worktree branches from the default branch "unless `worktree.baseRef` is set to `"head"`" (`code.claude.com/docs/en/worktrees`, "Isolate subagents with worktrees").
 The settings snippet already sets `worktree.baseRef` to `head` (`src/wiki/reference/Settings-Apply.md:39`), so the `versionlens-redux` helper that started from `main` ran without it.
@@ -170,7 +170,7 @@ The drift check of the setup names a missing `worktree.baseRef`.
 The prompts stop asking for long-lived lane worktrees, because the isolation checks block a helper from a path outside its own worktree (same page, "How Claude Code enforces isolation").
 The main session merges each finished task into the feature branch and starts the next helper from it.
 
-### D14. Concurrency caps by the limit that binds
+### D14. Concurrency Caps by the Limit That Binds
 
 The cap does not change the total cost of a fixed amount of work, so it does not change the weekly usage.
 It sets only how fast a burst of helpers drains the 5-hour window.
@@ -209,7 +209,7 @@ Task 4.7 records the method and the numbers in `wiki/evidence/Usage-Evidence.md`
 - Alternative: lower caps to save weekly usage.
   Rejected, because the cap does not change the cost of the work, only its speed.
 
-### D15. Each built-in tool is on or off by need, with a measure
+### D15. Each Built-In Tool Is on or Off by Need, with a Measure
 
 The settings snippet denies `TaskStop`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`, `EnterPlanMode`, `ExitPlanMode`, `ScheduleWakeup`, and `ReportFindings` (`src/plugins/claudetto/slices/prompt/slice.ts:173`-`182`).
 The turn gate tells the model to stop a task with `TaskStop` (`slices/turngate/prompts/tasks-reason.md:4`), so the two parts of claudetto disagree, and a session on 2026-10-17 could not stop its own background task.
@@ -221,7 +221,7 @@ A test fails when a claudetto text names a tool that the snippet denies.
 - Alternative: keep the deny list and change the texts.
   Rejected, because a session with no way to stop a background task stalls at the turn gate.
 
-### D16. Each env var of Claude Code 2.1.302 is a measured choice
+### D16. Each Env Var of Claude Code 2.1.302 Is a Measured Choice
 
 The `env` of `settings.json` can set each env var that Claude Code reads.
 Many env vars change more than their name says, such as a cache TTL that also changes the price of a write.
@@ -233,7 +233,7 @@ Community reports are leads, and a row that rests on one needs a docs or bundle 
 - Alternative: set only the env vars that claudetto uses now.
   Rejected, because the user asks for the best choice from all of them.
 
-### D17. Each text that claudetto can override is rewritten for the model that reads it
+### D17. Each Text That Claudetto Can Override Is Rewritten for the Model That Reads It
 
 claudetto can replace or add text at these points: the descriptions of built-in tools (`tool.describe` in `slices/surface/`, now only `Agent`, `Bash`, `Read`, and `ListAgents`), the system prompt blocks (`slices/prompt/`), the output styles, the agent descriptions and bodies, the skill descriptions and bodies, the MCP tool descriptions and server instructions, the `CLAUDE.md` block of the setup, and each hook message.
 Task 6.2 lists each point from the extension points of 2.1.302 and covers each one, not only the four tools.
@@ -263,7 +263,7 @@ D53 to D55, the least code, the prompt practices for each model, and the example
 - The engine facts from the dossier can be wrong.
   Tasks 7.1 and 7.4 check them before any change rests on them.
 
-## Resolved questions
+## Resolved Questions
 
 The user settled question 4 on 2026-10-17, and asked to settle the rest from the web, the dossiers, and the `claude-api` reference.
 

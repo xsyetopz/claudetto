@@ -81,13 +81,13 @@ test("the plan file `design-steps.md` of `trim-0-2-0` gives its numbered steps a
   const steps = planSteps(text);
   expect(steps.length).toBeGreaterThanOrEqual(10);
   const titles = steps.map((s) => s.title);
-  expect(titles[0]).toBe("Commit the start state");
+  expect(titles[0]).toBe("Commit the Start State");
   expect(titles).not.toContain(
-    "Notes for the spec integration (a later change)",
+    "Notes for the Spec Integration (a Later Change)",
   );
   const by = (title: string) => steps.find((s) => s.title.startsWith(title));
   // Only a span and separators: `run`.
-  expect(by("Delete the cut")?.checks).toEqual([
+  expect(by("Delete the Cut")?.checks).toEqual([
     { kind: "run", command: "just check" },
   ]);
   // A span, then prose: `run` and `judge`.
@@ -96,7 +96,7 @@ test("the plan file `design-steps.md` of `trim-0-2-0` gives its numbered steps a
     { kind: "judge" },
   ]);
   // No span at the start: `judge` only.
-  expect(by("Docs and release")?.checks).toMatchObject([{ kind: "judge" }]);
+  expect(by("Docs and Release")?.checks).toMatchObject([{ kind: "judge" }]);
   // A step with `Check:` lines has no `run` check of a code item such as `true`.
   const runs = steps.flatMap((s) => s.checks).filter((c) => c.kind === "run");
   expect(runs.map((c) => (c.kind === "run" ? c.command : ""))).not.toContain(

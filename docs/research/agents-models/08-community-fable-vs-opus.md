@@ -1,4 +1,4 @@
-# R08: Community evidence, Fable/Mythos 5.1 versus Opus 5.5
+# R08: Community Evidence, Fable/Mythos 5.1 Versus Opus 5.5
 
 All sources are Reddit threads. Most claims are one user's report.
 The tables come from the official announcement charts.
@@ -21,9 +21,9 @@ The tables come from the official announcement charts.
 - "Opus 5.5 as a fleet orchestrator- early notes from a real workload": <https://www.reddit.com/r/ClaudeAI/comments/1wnmbqg/opus_55_as_a_fleet_orchestrator_early_notes_from/>
 - "Aight I get it, Opus 5.5 is actually peak": <https://www.reddit.com/r/ClaudeAI/comments/1wqcara/aight_i_get_it_opus_55_is_actually_peak/>
 
-## Findings: measured
+## Findings: Measured
 
-### Price and score by effort (announcement tables)
+### Price and Score by Effort (Announcement Tables)
 
 Source: "Opus 5.5 Still Overthinks at Higher Effort".
 The format is score and cost per attempt.
@@ -44,7 +44,7 @@ The format is score and cost per attempt.
 - For Opus 5.5, `xhigh` costs 76% to 106% more than `high` and gives at most +2.2 points (Terminal-Bench), per the same thread.
   The thread concludes that `medium` or `high` is the best value for coding.
 
-### Independent run, 23 tasks
+### Independent Run, 23 Tasks
 
 Source: "Opus 5.5 is the real deal- same accuracy as Fable 5.1 on my 25 graded tasks, faster, and way cheaper".
 Both models passed 100% of tasks with automatic graders.
@@ -52,16 +52,16 @@ Cost per passed task was about $0.09 for Opus 5.5 and about $0.26 for Fable/Myth
 The average time was 27 s against 41 s.
 The author says the sample is small, with 7 to 11 attempts per tier.
 
-### Code review benchmark
+### Code Review Benchmark
 
 Source: "Opus 5.5 leads the code review benchmark".
 One commenter reports 88% precision for GPT-6 Sol against 84% for Opus 5.5 on `max`.
 The same commenter reports a score of 80.3% for Sol against 82.3% for Opus 5.5, at a little over 3x the cost.
 The chart is an image, and the comments do not give a Fable/Mythos 5.1 review score.
 
-## Findings: reported
+## Findings: Reported
 
-### Where Fable/Mythos 5.1 is said to win
+### Where Fable/Mythos 5.1 Is Said to Win
 
 - Very large, long tasks.
   Source: "Opus 5.5 is the default now so who still switches to Fable and why".
@@ -78,7 +78,7 @@ The chart is an image, and the comments do not give a Fable/Mythos 5.1 review sc
   Source: "Be careful with Opus 5.5's confidence".
   A user says each Fable/Mythos 5.1 review "catches gaps" that Opus 5.5 left.
 
-### Where Opus 5.5 is said to win
+### Where Opus 5.5 Is Said to Win
 
 - Source: "Stupid question - if Opus 5.5 is better than Fable 5.1, why would we ever use Fable 5.1-".
   On a 6-hour autonomous design run, a user stopped Fable/Mythos because the Opus 5.5 output was "noticably more coherent".
@@ -87,7 +87,7 @@ The chart is an image, and the comments do not give a Fable/Mythos 5.1 review sc
 - Source: "Aight I get it, Opus 5.5 is actually peak".
   A user finds Opus 5.5 at `max` better than Fable/Mythos 5.1 at `max` for coding spec work, at far lower cost.
 
-### Mixed models in practice
+### Mixed Models in Practice
 
 - Source: "Opus 5.5 as a fleet orchestrator- early notes from a real workload".
   The author uses Opus 5.5 for design and review, and Sonnet and Haiku for work that a check can verify.
@@ -95,7 +95,7 @@ The chart is an image, and the comments do not give a Fable/Mythos 5.1 review sc
   A user says an Opus orchestrator for other Opus sessions loops on self-correction notes.
   This supports the rule that no subagent orchestrates.
 
-## Implications for the dotclaude agents
+## Implications for the Dotclaude Agents
 
 - No role has measured evidence that earns Fable/Mythos 5.1 as a default.
   Fable/Mythos 5.1 costs about 3x more per passed task for equal accuracy in the 23-task run.
@@ -110,7 +110,7 @@ The chart is an image, and the comments do not give a Fable/Mythos 5.1 review sc
 - Never set Opus 5.5 to `low` for a planner or reviewer and expect Fable/Mythos-level output.
 - Sonnet 5.5, Haiku 5.5, and `maxTurns` have no evidence in these threads.
 
-## Open questions
+## Open Questions
 
 - Is there a code review score for Fable/Mythos 5.1 on the same chart as Opus 5.5 and Sol?
 - Does the planning advantage of Fable/Mythos 5.1 hold in a controlled test with a blind grader?

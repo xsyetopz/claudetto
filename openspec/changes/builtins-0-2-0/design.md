@@ -1,4 +1,4 @@
-# claudetto 0.2.0: the built-ins, and a goal engine
+# Claudetto 0.2.0: The Built-Ins, and a Goal Engine
 
 A plan for a third `/goal` run, after `openspec/changes/trim-0-2-0/design.md` and `openspec/changes/spec-workflow-0-2-0/design.md`.
 The aim: Claude Code as a small harness that the user controls, in the way of `earendil-works/pi`, with no change to the Claude Code binary.
@@ -8,13 +8,13 @@ Part 1 lists each built-in part of Claude Code 2.1.302 and the lever that turns 
 Part 2 replaces the built-in `/goal` with a goal engine of claudetto.
 Part 3 replaces the built-in advisor with an advisor that the user controls.
 
-## `/goal` condition
+## `/goal` Condition
 
 ```text
 The plan openspec/changes/builtins-0-2-0 is done when the final turn shows these, run after the last commit on feat/0.2.0: `bun tools/builtins.ts --check` exits 0; `just test tests/claudetto/goal tests/claudetto/advise` exits 0; `just lab` exits 0; `just docker check` exits 0; `git status --short -- src tools tests plugins wiki` is empty.
 ```
 
-## What the built-in `/goal` is (2.1.302)
+## What the Built-In `/goal` Is (2.1.302)
 
 From `external/cc-2.1.302/strings.txt`:
 
@@ -37,7 +37,7 @@ Its limits:
 | No progress check | A loop that makes no progress goes on until the user stops it. |
 | No steps | No order of steps, no state for each step, and no resume from a step. |
 
-## Part 1: the inventory of the built-ins
+## Part 1: The Inventory of the Built-Ins
 
 Counts from `strings.txt` of 2.1.302, measured on 2026-10-17.
 A step of this plan writes them again with a script, so these numbers are only a start.
@@ -59,7 +59,7 @@ A step of this plan writes them again with a script, so these numbers are only a
 
 The 12 built-in plugins: `agents-md`, `claude-test`, `diff`, `easel`, `mermaid`, `mods-guide`, `plugin-authoring`, `responsive-mode`, `sec-default`, `telemetry`, `tips`, and `you-should-know` (each with the prefix `cc-plugin-` and the suffix `@builtin`).
 
-### Steps of part 1
+### Steps of Part 1
 
 1. Write `tools/builtins.ts`.
    It reads `external/cc-2.1.302/` (`strings.txt`, `types-2.1.302.d.ts`, `docs/`) and writes `wiki/reference/Builtins.md`.
@@ -82,12 +82,12 @@ The 12 built-in plugins: `agents-md`, `claude-test`, `diff`, `easel`, `mermaid`,
 4. `bun tools/builtins.ts --check` fails when the table of `wiki/reference/Builtins.md` differs from a new run, so that a new release of Claude Code shows each new part.
 5. Check: `bun tools/builtins.ts --check`.
 
-## Part 2: the goal engine
+## Part 2: The Goal Engine
 
 The slice `goal` of claudetto.
 It replaces the built-in `/goal`, and it keeps the name and the known form: `/goal <condition>`, `/goal clear`.
 
-### What it does
+### What It Does
 
 - A goal is a list of checks, not one sentence.
   Each check is one of these kinds:
@@ -119,20 +119,20 @@ It replaces the built-in `/goal`, and it keeps the name and the known form: `/go
 
 The defaults are a proposal of Claude, not a choice of the user.
 
-### Why it costs fewer tokens
+### Why It Costs Fewer Tokens
 
 - A `run` check costs no model call.
   The built-in judge costs one call at each stop.
 - The next turn gets only the failing checks, not a restatement of the goal.
 - The proof is in the state file, so Claude does not need to print each output again for the judge.
 
-### The built-in parts that the engine turns off
+### The Built-In Parts That the Engine Turns Off
 
 - The `/goal` command of Claude Code: `command.run` answers `goal`, so the built-in one does not run.
 - The `ProposeGoal` tool: `permissions.deny`, or `tool.call` with `{ deny }`, with the text that names `/goal`.
 - The `goal_status` attachment: `prompt.attachment` with `{ text: null }`, because the engine gives its own text.
 
-### Steps of part 2
+### Steps of Part 2
 
 1. Write the state format and its tests: create, update, and read a goal, with a fixture for each kind of check.
 2. Write the check runner: `run`, `file`, and `judge`.
@@ -147,9 +147,9 @@ The defaults are a proposal of Claude, not a choice of the user.
 7. Write the wiki page of the slice.
 8. Check: `just test tests/claudetto/goal && just lab`.
 
-## Part 3: the advisor
+## Part 3: The Advisor
 
-### What the built-in advisor is (2.1.302)
+### What the Built-In Advisor Is (2.1.302)
 
 - A server tool: the API runs it inside the request, so the engine runs nothing for it (`types-2.1.302.d.ts:14192-14203`).
 - No `tool.check`, `tool.call`, or `tool.describe` hook, and no `PreToolUse` hook, can refuse, rewrite, or answer it (`types-2.1.302.d.ts:14216-14222`).
@@ -159,7 +159,7 @@ The defaults are a proposal of Claude, not a choice of the user.
 
 So claudetto cannot change the built-in advisor, but it can turn it off and give a tool in its place.
 
-### The replacement: the tool `advise`
+### The Replacement: The Tool `advise`
 
 The slice `advise` registers one tool with `$.tool.register`.
 At each call:
@@ -172,7 +172,7 @@ At each call:
 A question with a fixed set of options goes to `second_opinion` of `decide` (Jev, then the fallback model), not to `advise`.
 The tool text of `advise` says so.
 
-### Controls of the advisor
+### Controls of the Advisor
 
 | Control | Default | Effect |
 | --- | --- | --- |
@@ -184,7 +184,7 @@ The tool text of `advise` says so.
 The default is `builtin` until the paid run of "Out of scope" shows that `advise` is as good or better.
 A change of the default is one line.
 
-### What the replacement gives that the built-in does not
+### What the Replacement Gives That the Built-In Does Not
 
 - The user picks the model, the effort, and the context, and sets a bound on the cost.
 - Each call goes through the hooks of claudetto, so the cost shows in the status line, and the handoff can name the advice.
@@ -193,7 +193,7 @@ A change of the default is one line.
 What it costs: the built-in runs inside one request of the API.
 `advise` is a tool call of the engine, so it adds one round trip, and its context is a copy, not the cache of the main thread.
 
-### Steps of part 3
+### Steps of Part 3
 
 1. Write `advise/limits.ts` and the context cut, with tests on a fixture of `$.session.messages()`.
 2. Write the tool with a stub of `$.model.complete`: an answer, an `api-error`, an `empty-reply`, and an `aborted` result each give a clear tool result.
@@ -202,7 +202,7 @@ What it costs: the built-in runs inside one request of the API.
 4. One lab test: a call of `advise` in a stubbed session.
 5. Check: `just test tests/claudetto/advise && just lab`.
 
-## Out of scope
+## Out of Scope
 
 - A paid run that compares the engine with the built-in `/goal`.
   Write its command for the user.

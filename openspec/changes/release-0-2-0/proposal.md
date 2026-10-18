@@ -18,7 +18,7 @@ The add-on `claudetto-you-should-know` looks nothing like the built-in `You shou
 
 The user asks for a major overhaul, with no legacy upkeep.
 
-## Answers to the user's questions
+## Answers to the User's Questions
 
 - **Why the status line shows `1M`.
   **

@@ -1,4 +1,4 @@
-# R04: How Anthropic uses its models in multi-agent and coding work
+# R04: How Anthropic Uses Its Models in Multi-Agent and Coding Work
 
 ## Sources
 
@@ -16,7 +16,7 @@
 
 ## Findings
 
-### Which model leads and which works
+### Which Model Leads and Which Works
 
 - The best research setup used "Claude Opus 4 as the lead agent and Claude Sonnet 4 subagents" (S1).
 - S9 gives the current form: the large model plans and checks, and a smaller model does the reading-heavy work.
@@ -30,7 +30,7 @@
 - S9 adds an `advisor` setting: the primary thread consults a stronger model mid-turn (S8).
 - S9 and S8 do not name Fable/Mythos 5.1 in the parts that I read.
 
-### Measured gains and token cost
+### Measured Gains and Token Cost
 
 - The multi-agent setup beat single-agent Opus 4 by 90.2% on the internal research eval (S1).
 - Parallel work cut research time by up to 90% on complex queries (S1).
@@ -41,7 +41,7 @@
 - In one role-based test (planner, implementer, tester, reviewer), the subagents spent more tokens on coordination than on work (S5).
 - A subagent may use tens of thousands of tokens and return a 1,000-2,000 token summary (S3).
 
-### When Anthropic says not to use subagents
+### When Anthropic Says Not to Use Subagents
 
 - Domains with shared context or many dependencies "are not a good fit for multi-agent systems today" (S1).
 - Most coding tasks have fewer parallel subtasks than research (S1).
@@ -56,7 +56,7 @@
 - A reviewer asked for gaps will report some, so tell it to flag only correctness and requirement gaps (S6).
 - Whether specialized agents (test, QA, cleanup) beat one general agent is an open hypothesis (S4).
 
-### Orchestration structure
+### Orchestration Structure
 
 - The lead agent plans and synthesizes, and workers run in parallel with their own context (S1).
 - Orchestrator-workers fits tasks "where you can't predict the subtasks needed" (S2).
@@ -64,7 +64,7 @@
 - `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1` turns nesting off, and omitting `Agent` from `tools` stops one agent (S7).
 - Anthropic runs the nesting limit as a tunable, not as a rule against it.
 
-### Turn and effort budgets
+### Turn and Effort Budgets
 
 - Anthropic gives no `maxTurns` value for any worker.
 - S7 defines `maxTurns` as a stop that returns partial output, which the parent can resume.
@@ -79,14 +79,14 @@
 - S6 gives a check the agent can run as the main stop signal: "Claude stops when the work looks done".
 - S6 offers `/goal` and a Stop hook as the unattended stop gates.
 
-### Cost routing and cache
+### Cost Routing and Cache
 
 - S7 names cost routing to "lower-cost models like Haiku" as a main reason for subagents.
 - S7 says the built-in `Explore` agent takes the main model, and a user can override it with `model: haiku`.
 - Switching models inside one session breaks the prompt cache, so S9 says to spawn a cheaper subagent and keep the main loop on one model.
 - Subagent requests count toward the same usage limits as the main session (S7).
 
-## Implications for the dotclaude agents
+## Implications for the Dotclaude Agents
 
 - The root session is the lead, which matches S1, S5, and S9.
 - No dotclaude agent should hold the `Agent` tool.
@@ -109,7 +109,7 @@
 - Keep the effort per agent explicit, with `medium` as the default and `high` for planning and review (S9).
 - A Fable/Mythos 5.1 worker has no Anthropic precedent in these sources, so any Fable/Mythos seat needs a local measurement.
 
-## Open questions
+## Open Questions
 
 - Which 2026 Anthropic posts give a measured lead and worker split for Fable/Mythos 5.1, Opus 5.5, Sonnet 5.5, and Haiku 5.5?
 - Does Anthropic use a `maxTurns` value in its own subagents? No source says so.

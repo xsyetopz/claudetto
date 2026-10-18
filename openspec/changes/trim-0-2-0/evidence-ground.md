@@ -1,4 +1,4 @@
-# Evidence: the `ground` replay
+# Evidence: The `ground` Replay
 
 Step 9 of `design-steps.md`.
 No model call ran.

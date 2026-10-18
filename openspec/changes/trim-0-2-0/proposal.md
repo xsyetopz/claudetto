@@ -5,7 +5,7 @@
 claudetto 0.1.0 adds many parts that Claude Code 2.1.302 already does, and some parts do measured harm.
 The aim of 0.2.0 is a small framework that makes vanilla Claude Code token-efficient.
 
-## What changes
+## What Changes
 
 - Cut the slices and add-ons with the verdict `cut` in the table of `design.md`.
 - Trim `guard`, `setup`, `prompt`, `handoff`, `statusline`, `sembr`, `claudetto-lab`, `src/kernel`, and `tools`.

@@ -16,7 +16,7 @@ Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/claudetto/wik
 The rules that apply to some files only are in [`.claude/rules/`](.claude/rules/).
 Each of those rules has a `paths:` list, and Claude Code loads the rule when Claude works on a matching file.
 
-## Commands (repository root)
+## Commands (Repository Root)
 
 - `just check` runs lint, the type check, the check of the generated files, tests, validation, and the hook labs.
   It must pass before done.

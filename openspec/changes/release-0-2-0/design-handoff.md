@@ -1,4 +1,4 @@
-# Design: handoffs
+# Design: Handoffs
 
 This file continues [`design.md`](design.md) with the four handoffs of claudetto: to the next context, to a subagent and back, to the user, and at the stop gate.
 The sources are in the last section.
@@ -20,7 +20,7 @@ The sources are in the last section.
 
 ## Decisions
 
-### D32. The stop gate blocks only for work that a turn can do
+### D32. The Stop Gate Blocks Only for Work That a Turn Can Do
 
 - The gate does not block for a background task that runs.
   A turn cannot make a task end, and `TaskStop` is denied, so a block gives an empty turn.
@@ -37,7 +37,7 @@ The sources are in the last section.
 - Alternative: keep the block for running tasks, with a lower cap.
   Rejected, because each block of this session gave no work, and the notice of the task end continues the session anyway.
 
-### D33. A subagent always writes its report
+### D33. A Subagent Always Writes Its Report
 
 - D2 removes `maxTurns`, and task 4.3 removes `report-note.md`, with the facts above as their evidence.
 - Each delegation text and each agent prompt gives the four parts that the multi-agent post of Anthropic names: "an objective, an output format, guidance on the tools and sources to use, and clear task boundaries".
@@ -49,7 +49,7 @@ The sources are in the last section.
   The subagent docs say "Resumed subagents retain their full conversation history".
 - The Haiku guard of task 4.2 stays a notice that does not stop the run and does not ask for a commit.
 
-### D34. The session handoff stays a file, at the project root
+### D34. The Session Handoff Stays a File, at the Project Root
 
 - The handoff file stays, because the long-running harness post of Anthropic calls files and git history "the key insight", and says compaction alone "isn't sufficient".
 - The path resolves against `CLAUDE_PROJECT_DIR` (D23).
@@ -57,7 +57,7 @@ The sources are in the last section.
 - The handoff is written in `PreCompact`, which does not block the compaction.
 - Each field of the handoff comes from tool results or from the words of the user, as now.
 
-### D35. The guard denies only by the words that a command has
+### D35. The Guard Denies Only by the Words That a Command Has
 
 - An empty name still matches each system tool, so `$(which rm) -rf /` stays denied (the user, 2026-10-17).
   The false deny came from the walk, which read `$(( ))` as a subshell, not from the matcher.
@@ -66,7 +66,7 @@ The sources are in the last section.
 - The lab gets the command of the facts above as a case that must pass.
 - Each deny of the guard on a read-only command in the transcripts of other projects becomes a lab case, so the false positives have a count.
 
-### D36. A question to the user carries what the user needs to answer
+### D36. A Question to the User Carries What the User Needs to Answer
 
 - A `!` command that a hook gives the user is the exact command, with one line on why the agent cannot run it.
 - A question to the user names what the agent tried and what each answer changes, so the user does not answer twice.
@@ -83,9 +83,9 @@ The sources are in the last section.
   Jev picked this before the transcript gave the numbers, and only the full rule was measured.
   So an eval of task 3.15 runs both forms at 10 runs each, and keeps the form with more turns that end with a clear ask when the user is needed, with the fewer words as the tie-break.
 
-## The handoff in place of the compaction summary
+## The Handoff in Place of the Compaction Summary
 
-### Facts of the compaction
+### Facts of the Compaction
 
 - This session had three automatic compactions (`compact_boundary` rows of its transcript):
 
@@ -105,7 +105,7 @@ The sources are in the last section.
 - Anthropic's harness post: an agent "marks features as done prematurely", and the fix is a feature list where the agent changes only the `passes` field.
 - Factory measured anchored updates of one summary above summaries that are written again each time: `3.70` against `3.44` (Anthropic) and `3.35` (OpenAI) out of 5 (vendor, judging method not read).
 
-### D46. One anchored handoff, updated at each compaction
+### D46. One Anchored Handoff, Updated at Each Compaction
 
 - The handoff of a compaction updates the last handoff, and does not stack a new one on top of it.
   It keeps the decisions and the user's words that are still open, and drops each step that a check closed.
@@ -114,7 +114,7 @@ The sources are in the last section.
 - Alternative: a new handoff each time, as now.
   Rejected by the table above and by the measure of Factory.
 
-### D47. No model call on a cold cache
+### D47. No Model Call on a Cold Cache
 
 - When the last assistant turn is older than the cache TTL, the handoff writes only the part that needs no model: the task, the next open task of `tasks.md`, the changed files, the git state, and the last words of the user.
 - When the cache is warm, the model part, which holds the reasons and the decisions, comes from a fork of the cached prefix (D34).
@@ -122,17 +122,17 @@ The sources are in the last section.
 - Alternative: a summary by a small model.
   Rejected for now, because Claude Code has no setting for the summary model, and a cold read of the full history costs the most of each path.
 
-### D48. The status comes from checks, not from the summary
+### D48. The Status Comes from Checks, Not from the Summary
 
 - The done list of a handoff comes only from the checked tasks of `tasks.md` and the check results of the session.
 - The model part can give reasons, and not status.
 
-### D49. API context editing stays out of scope
+### D49. API Context Editing Stays Out of Scope
 
 - `clear_tool_uses_20250919` "Invalidates cached prompt prefixes" (context-editing docs), and Claude Code has no documented extension point that sets it.
 - Anthropic measured "token consumption by 84%" less with context editing (vendor, measured), so this choice is open again when Claude Code documents a setting for it.
 
-### D50. Decisions go to a file as the work goes
+### D50. Decisions Go to a File as the Work Goes
 
 - The agent writes each decision with its reason to a file at the time of the decision: `design.md` in a MiniSpec change, and `.claudetto/progress.md` at the project root (D23) in other work.
 - The handoff links that file and copies its open decisions, with no model call.
@@ -143,7 +143,7 @@ The sources are in the last section.
 - Alternative: no file, with only the reasons of the earlier warm handoffs kept.
   Rejected, because after a break, a resumed session can undo a recent choice whose reason it lost.
 
-### Notes from the multi-agent sources of 2026-10-17
+### Notes from the Multi-Agent Sources of 2026-10-17
 
 - D3 stays.
   The managed agents docs give an example roster with `claude-haiku-5-5` for `reviewer` and `test-writer`.

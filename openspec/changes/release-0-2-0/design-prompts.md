@@ -57,7 +57,7 @@ Each item is a short summary, and the skill file holds the tested text.
 
 ## Decisions
 
-### D53. The least code that does the whole task
+### D53. The Least Code That Does the Whole Task
 
 The user named this rule as one of the most important: "if you can write the same thing in less code, rewrite it".
 The words for the system prompt, in the style of D17, with the reason and the test:
@@ -73,7 +73,7 @@ The words for the system prompt, in the style of D17, with the reason and the te
 - It joins the scope text of `mm:1478` and the test of the Karpathy guidelines ("If you write 200 lines and it could be 50, rewrite it", D51) into one rule with its reason.
 - An eval case checks it: a task with a known short solution, with the added lines of each run against the reference.
 
-### D54. The practices above apply to each text of task 6.4
+### D54. The Practices above Apply to Each Text of Task 6.4
 
 - Each rewrite of task 6.4 names the model that reads the text, and follows the practices for all models and for that model.
 - A correction from the user gets the next action, with no opening agreement or apology.
@@ -92,7 +92,7 @@ The words for the system prompt, in the style of D17, with the reason and the te
 - A missing tool is a step, not a blocker: the agent installs it with the package manager of the system, through the permission dialog when the sandbox stops the install, and goes on.
   On 2026-10-17 the agent stopped at "`yt-dlp` isn't installed", and the user had to say "install yt-dlp".
 
-### D55. GREEN examples in the shipped texts, GREEN-RED pairs in the tests
+### D55. GREEN Examples in the Shipped Texts, GREEN-RED Pairs in the Tests
 
 - Each shipped text gets one specific GREEN example for each rule where the shape of the output matters, and no RED example.
   The guide says "Positive examples showing the desired level of concision tend to be more effective than negative examples or instructions telling the model what not to do" (`mm:745`).

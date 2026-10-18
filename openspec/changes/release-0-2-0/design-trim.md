@@ -1,9 +1,9 @@
-# Design: a smaller claudetto
+# Design: A Smaller Claudetto
 
 This file continues [`design.md`](design.md) with the audit of the code, the docs, and the lint scope.
 Each pick came from Jev on 2026-10-17, unless the decision says otherwise.
 
-## Audit facts
+## Audit Facts
 
 - The 256 transcripts of other projects show 0 messages of `asks`, `worktree`, `minispec`, `usercheck`, and `agents`, 4 of `reads`, 34 of `turngate`, and 44 of `handoff`.
 - Lines and files of each slice that a decision names (`find <slice> -name '*.ts' | xargs cat | wc -l`):
@@ -29,7 +29,7 @@ Each pick came from Jev on 2026-10-17, unless the decision says otherwise.
 
 ## Decisions
 
-### D12. Remove each slice that a built-in does, and shrink each slice that a rule can do
+### D12. Remove Each Slice That a Built-In Does, and Shrink Each Slice That a Rule Can Do
 
 - Remove `worktree`, at confidence 0.94.
   Its `WorktreeCreate` hook replaces the creation of Claude Code, so `worktree.baseRef: "head"` of the snippet (D11) has no effect while the hook is on.
@@ -60,7 +60,7 @@ Each pick came from Jev on 2026-10-17, unless the decision says otherwise.
 - Alternative: one `context` slice for `trim`, `surface`, and `prompt`.
   Rejected for now, by the reason above.
 
-### D13. One source for the docs, and lint at the source
+### D13. One Source for the Docs, and Lint at the Source
 
 - `src/wiki/` is the one source of the wiki, at confidence 0.98.
   Each of the 84 hand-edited pages moves to `src/wiki/`, and `just generate` writes all of `wiki/`.

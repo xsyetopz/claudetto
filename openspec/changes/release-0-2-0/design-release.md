@@ -1,11 +1,11 @@
-# Design: how 0.2.0 is built and released
+# Design: How 0.2.0 Is Built and Released
 
 This file continues [`design.md`](design.md) with the build mode and the bar of a stable release.
 The user set both on 2026-10-17: "0.2.0 must implement it solo, because of the faults 0.1.0-alpha.1 has", and "0.2.0 must be created as a *stable* release, so every possible fucked-up surface right now must be addressed directly."
 
 ## Decisions
 
-### D37. One session builds 0.2.0, with no subagents
+### D37. One Session Builds 0.2.0, with No Subagents
 
 - The main session does each task itself.
   It starts no subagent, no agent team, and no background agent, and it uses no worktree.
@@ -17,7 +17,7 @@ The user set both on 2026-10-17: "0.2.0 must implement it solo, because of the f
   One session with no helpers goes through many compactions, and each one writes and reads a handoff, so the rest of the build runs on the fixed handoff.
 - The rules of `design-evidence.md` for parallel subagents apply to the texts that claudetto ships, not to this build.
 
-### D38. Stable means no open fault on any surface
+### D38. Stable Means No Open Fault on Any Surface
 
 - A surface is each part that a user meets: each hook of each plugin, each slice, each add-on plugin, the setup and its snippet, the status line, the output styles, the agents, the skills, the MCP tools, the `bin/` commands, the evals, the wiki, the `CHANGELOG.md`, and the repository tools (`just generate`, `just bump`, `just docker`).
 - `findings.md` has one row for each surface: its faults with a source (a transcript line, a test, or a run), the task that fixes each one, and the check that shows the fix.

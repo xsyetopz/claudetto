@@ -1,16 +1,16 @@
-# claudetto 0.2.0: the spec workflow
+# Claudetto 0.2.0: The Spec Workflow
 
 A plan for a second `/goal` run, after the run of `openspec/changes/trim-0-2-0/design.md` is done.
 It replaces `minispec` with one workflow that merges OpenSpec, GitHub Spec Kit, and the BMAD Method.
 It costs few tokens, and it uses the commands and files that these tools already have.
 
-## `/goal` condition
+## `/goal` Condition
 
 ```text
 The plan openspec/changes/spec-workflow-0-2-0 is done when the final turn shows these, run after the last commit on feat/0.2.0: `bunx @fission-ai/openspec schema validate` passes for each preset schema; `bunx @fission-ai/openspec validate --all --strict` passes; `just docker check` exits 0; `ls minispec` fails; `git status --short -- src tools tests plugins openspec` is empty.
 ```
 
-## The design
+## The Design
 
 The engine is the OpenSpec CLI, run with `bunx @fission-ai/openspec`.
 claudetto ships no CLI of its own for specs.
@@ -36,7 +36,7 @@ The parts that come from each tool:
 | BMAD | The PRD and the architecture document | Artifacts of the largest preset only |
 | BMAD | The PM, architect, and QA roles | Checklists in the `review` artifact, not personas. A persona costs a whole skill in context, and a checklist costs a few lines. |
 
-## The presets
+## The Presets
 
 The names are a proposal of Claude, not a choice of the user.
 They are the work item sizes of agile teams, so most developers know them.
@@ -55,7 +55,7 @@ The skill picks the preset from facts of the project, and it states the facts th
 - A change with no change of behavior: `task`.
 - The user names a preset: that preset.
 
-## Token budget
+## Token Budget
 
 The sizes of the prompt texts in the pinned repositories of `external/sdd/repos/`, measured on 2026-10-17:
 
@@ -76,44 +76,44 @@ Rules for the budget:
 
 ## Steps
 
-### 1. Install and pin OpenSpec
+### 1. Install and Pin OpenSpec
 
 - Pin a version of `@fission-ai/openspec` in the `devDependencies` of `package.json`, and run it with `bunx`.
 - Run `bunx @fission-ai/openspec init --tools claude --profile core` in a temporary folder, and list the files that it makes.
 - Check: the list of files, and the byte size of each one.
 
-### 2. Write the three schemas
+### 2. Write the Three Schemas
 
 - Fork `spec-driven` three times with `bunx @fission-ai/openspec schema fork spec-driven <preset>`, and edit each one as in the table of presets.
 - Keep the instructions short, and cut each line of the forked text that the preset does not need.
 - Put the schemas in `src/` and ship them in `plugins/claudetto/`, so that `just generate` copies them.
 - Check: `bunx @fission-ai/openspec schema validate <preset>` for each preset.
 
-### 3. Write the constitution template
+### 3. Write the Constitution Template
 
 - A template of `openspec/config.yaml` with a short `context:` and the `rules:` of each artifact.
 - Check: `bunx @fission-ai/openspec validate` on a sample project that uses it.
 
-### 4. Write the skill that picks the preset
+### 4. Write the Skill That Picks the Preset
 
 - One skill of claudetto that reads the facts of the project, picks a preset, copies the schemas into `openspec/schemas/` when they are missing, and then hands off to the `/opsx:*` commands.
 - It has no workflow steps of its own.
 - Check: a lab test for each rule of the preset choice.
 
-### 5. Move the changes of this repository
+### 5. Move the Changes of This Repository
 
 - Move `minispec/specs/` to `openspec/specs/` and the open changes to `openspec/changes/`.
   Fix each file that the OpenSpec validator rejects.
 - Delete `minispec/`.
 - Check: `bunx @fission-ai/openspec validate --all --strict`.
 
-### 6. Samples and docs
+### 6. Samples and Docs
 
 - Add one sample change for each preset under `tests/`, and validate it in `just check`.
 - Write the wiki page of the workflow, with the token sizes of step 1 and step 2.
 - Check: `just check`.
 
-## Out of scope
+## Out of Scope
 
 - An install of Spec Kit or BMAD.
   Their ideas come in as schema text only.

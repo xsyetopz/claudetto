@@ -1,4 +1,4 @@
-# R11: Failure patterns of the 5.5 models in agent work
+# R11: Failure Patterns of the 5.5 Models in Agent Work
 
 ## Sources
 
@@ -27,7 +27,7 @@ Project logs have no public URL, so they are not independent public evidence.
 
 ## Findings
 
-### F1. Verification skips (Opus 5.5)
+### F1. Verification Skips (Opus 5.5)
 
 - A user says Opus 5.5 returns "either an incomplete investigation or a conclusion based on wrong results" (T1, score 53).
 - When asked to check for mistakes, it found them "in nearly every chat" (T1).
@@ -37,7 +37,7 @@ Project logs have no public URL, so they are not independent public evidence.
 - Its search also skipped a `.cjs` file (T2).
 - Project logs: a fresh-context reviewer found 4 defects after 611 passing tests.
 
-### F2. Protocol drift (Opus 5.5)
+### F2. Protocol Drift (Opus 5.5)
 
 - Users report `CLAUDE.md` rules that 5.5 "started blatantly ignoring" (T2).
 - A hook that tells it to check the documented instructions before it finishes "fixed it" (T2).
@@ -45,12 +45,12 @@ Project logs have no public URL, so they are not independent public evidence.
 - Project logs: a prose rule that kept the last turn for the report failed in a live run.
 - Project logs: a hook that warns 2 turns before the limit worked (15 of 16 turns).
 
-### F3. Out-of-scope action (Opus 5.5)
+### F3. Out-Of-Scope Action (Opus 5.5)
 
 - Told to move a folder tree except `live-dumps`, it moved `live-dumps` to an unrelated system path (T3).
 - The user had not seen such a decision "since Opus 4.5" (T3).
 
-### F4. Context degradation and its token point
+### F4. Context Degradation and Its Token Point
 
 - One user ran Opus 5.5 to a very large window and saw no loss at about 500k tokens (T5, score 7).
 - Exhaustion "became noticeable at past ~700k", and at about 800k it was still usable (T5).
@@ -67,7 +67,7 @@ Project logs have no public URL, so they are not independent public evidence.
 - It argues against pruning or rewriting the context of a worker in the middle of a run.
 - Mitigations users report: a short hand-off with decisions, files, and next step, then a fresh session (T4, score 18).
 
-### F5. Safeguard refusals that stop work
+### F5. Safeguard Refusals That Stop Work
 
 - Opus 5.5 flags ordinary prompts: hotel points, yen, and a noodle recipe (T10, score 63).
 - A code session was flagged as cybersecurity (T7, score 11).
@@ -83,7 +83,7 @@ Project logs have no public URL, so they are not independent public evidence.
 - T12 (score 881) is not a Claude case.
 - The top comment says the model was Qwen 3.8 Flash Next, and a reply warns that such a report may be a hallucination.
 
-### F6. Mitigations that work
+### F6. Mitigations That Work
 
 - A reviewer in a fresh context, ideally on another model (T1, P1, P2).
 - A hook, not a prose rule (T2, project logs).
@@ -92,7 +92,7 @@ Project logs have no public URL, so they are not independent public evidence.
 - Evidence in the final report (T2).
 - A turn cap near the 75th percentile cuts cost 24 to 68%, but this is about cost and not quality (P3).
 
-## Implications for the dotclaude agents
+## Implications for the Dotclaude Agents
 
 - The `reviewer` is the main control, because Opus 5.5 verifies its own work poorly (F1).
 - The `reviewer` needs a fresh context and, where possible, a model that differs from the author.
@@ -111,7 +111,7 @@ Project logs have no public URL, so they are not independent public evidence.
 - Workers that write should have a path scope, but F3 is one anecdote, so the priority is low.
 - Do not prune or rewrite the context of a running worker (T6, unmeasured).
 
-## Open questions
+## Open Questions
 
 - Do Sonnet 5.5 and Haiku 5.5 skip verification as Opus 5.5 does?
 - Is the 700k point valid for a worker with large tool output?

@@ -1,4 +1,4 @@
-# Community evidence on Sonnet and Haiku as workers
+# Community Evidence on Sonnet and Haiku as Workers
 
 ## Sources
 
@@ -28,7 +28,7 @@ Each claim names its generation: "5.5" for the in-scope generation, "older" for 
 
 ## Findings
 
-### F1. No thread covers Sonnet 5.5 or Haiku 5.5
+### F1. No Thread Covers Sonnet 5.5 or Haiku 5.5
 
 The newest threads date from 2026-09-25.
 At that date the posters still wait for the 5.5 small models.
@@ -38,7 +38,7 @@ Another poster wrote "unless Sonnet 5.5 is a hit" ("What am I missing by only us
 All evidence on Sonnet and Haiku below is about older models: Sonnet 5, Haiku 4.5.
 Treat it as a prior, not as a measurement of the 5.5 generation.
 
-### F2. Sonnet (older) does well with a written plan
+### F2. Sonnet (Older) Does Well with a Written Plan
 
 - A user plans in a larger model and implements in Sonnet: "sonnet is great for coding, as long as i have a plan for the code, first."
   ("I feel like most people underestimate Sonnet for coding", older.)
@@ -50,7 +50,7 @@ Treat it as a prior, not as a measurement of the 5.5 generation.
   The same commenter warns that if review bounces the work two or three times, the build is paid more than once.
   ("Is Sonnet actually good enough for Claude Code", older.)
 
-### F3. Opus 5.5 displaced Sonnet 5 for some users
+### F3. Opus 5.5 Displaced Sonnet 5 for Some Users
 
 - An API-priced user moved from 99 percent Sonnet to Opus 5.5 and says it costs less, runs faster, and does a better job.
   ("What am I missing by only using sonnet when it comes to coding?", Opus 5.5 vs older Sonnet.)
@@ -59,7 +59,7 @@ Treat it as a prior, not as a measurement of the 5.5 generation.
 - Lesson: turn count, not price per token, drives cost.
   A cheap worker that needs more rounds can cost more than a strong worker.
 
-### F4. Haiku (older) fits read-heavy, verifiable grunt work
+### F4. Haiku (Older) Fits Read-Heavy, Verifiable Grunt Work
 
 - Log parsing and dense context reading: "higher tier models like opus would be overkill and expensive".
   ("What tasks are Haiku really great at?", older.)
@@ -76,7 +76,7 @@ Treat it as a prior, not as a measurement of the 5.5 generation.
 - Haiku is "extremely literal and unlikely to freelance a solution you didn't ask for".
   ("What tasks are Haiku really great at?", older.)
 
-### F5. Haiku (older) failure patterns that cost turns
+### F5. Haiku (Older) Failure Patterns That Cost Turns
 
 - Silent confidence: "Haiku just does the wrong thing coherently."
   ("Those of you actually using Haiku regularly", older.)
@@ -91,13 +91,13 @@ Treat it as a prior, not as a measurement of the 5.5 generation.
 - More logic mistakes than Sonnet, but good on small, well-described problems.
   ("What are your thoughts on Haiku 4.5?", 4.5.)
 
-### F6. Cost is often context re-read, not the model
+### F6. Cost Is Often Context Re-Read, Not the Model
 
 - One user metered 21 billion tokens: "97 of every 100 were Claude re-reading things it had already read."
   ("Is Sonnet actually good enough for Claude Code", older, not model specific.)
 - Lesson: short worker contexts and few turns matter more than the model row.
 
-## Implications for the dotclaude agents
+## Implications for the Dotclaude Agents
 
 - `investigator` (read-only search and reading) fits Haiku 5.5 on the older evidence in F4.
   Keep a rule to report sources and to stop on ambiguity, because of F5.
@@ -111,7 +111,7 @@ Treat it as a prior, not as a measurement of the 5.5 generation.
   A tight limit on a weak worker moves the retry cost to the orchestrator.
 - Simple mechanical jobs (commit, CI monitor) fit Haiku only with exact scope in the prompt (F5).
 
-## Open questions
+## Open Questions
 
 - Does Sonnet 5.5 match Opus 5.5 on implementation with a plan?
   No community thread answers this yet.

@@ -1,4 +1,4 @@
-# Evidence: `openspec init` sizes
+# Evidence: `openspec init` Sizes
 
 Date: 2026-10-18.
 Step 1 of `design.md`.

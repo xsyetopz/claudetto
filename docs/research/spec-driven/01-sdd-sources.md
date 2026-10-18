@@ -1,6 +1,6 @@
 # Spec-Driven Development Sources: Research for the Spec Redesign of 1.0.0
 
-## Part A: sources read by the lead (PDF text via `pdftotext`, saved under `/tmp/claude-sdd-research/`)
+## Part A: Sources Read by the Lead (PDF Text via `pdftotext`, Saved under `/tmp/claude-sdd-research/`)
 
 Method note:
 `WebFetch` returns a model summary and cannot quote long text, so the PDFs were downloaded with `curl` and converted with `pdftotext -layout`.
@@ -8,7 +8,7 @@ All six PDFs and the blog loaded fully.
 Quotes below are from the PDF text.
 Marks: (S) = source, (I) = inference.
 
-### 0. What `traceSDD` is (answer first)
+### 0. What `traceSDD` Is (Answer First)
 
 (S) `traceSDD` appears in only one of the seven sources: arXiv 2606.30689 (Panda).
 The other five arXiv texts and the blog do not contain the string (checked with `grep -i tracesdd`).
@@ -36,7 +36,7 @@ What the paper does NOT give (verified by reading the whole text, 17 pages):
 (S) Table 1 vs text: Section 5.2.1 says "All six pairwise comparisons survive Bonferroni-Holm correction except the cited vs OpenSpec and Spec Kit vs OpenSpec comparisons" (internally odd, since cited vs Spec Kit Claude has p = 0.049).
 (S) Reference [19] is cited for Levenshtein Set Similarity but is Kaplan et al. "Scaling laws for neural language models". Reference [8] is a casual-contributor study cited as a traceability tool survey. (I) The citations look unreliable, so treat the paper with care.
 
-### 1. arXiv 2606.30689 (traceSDD source)
+### 1. arXiv 2606.30689 (traceSDD Source)
 
 - Title (PDF): "Citation Discipline in Spec-Driven Development: A Cross-Model Empirical Study of Output Determinism and Automated Hallucination Detection in LLM-Generated Code".
 - Author: Subham Panda (sole author).
@@ -140,12 +140,12 @@ What the paper does NOT give (verified by reading the whole text, 17 pages):
 - Adoptable: nothing structural beyond the Spec Kit layout.
   No states, no IDs.
 
-## Part B: papers read by a delegate (relayed, not re-verified by the lead)
+## Part B: Papers Read by a Delegate (Relayed, Not Re-Verified by the Lead)
 
 Marks: (S) = source as relayed by the delegate. (I) = inference.
 Page and section numbers come from the delegate. Spot-check them before public use.
 
-### 6. arXiv 2609.00252 (Diaz et al.)
+### 6. arXiv 2609.00252 (Diaz Et Al.)
 
 - Title: "Spec-Driven Development for Agentic Software Engineering: Harnessing Human-Agent Teamwork".
 - Authors: Jessica Diaz, Joaquin Gayoso, Andrea Cimminio, Jorge Perez. Year 2026 (submitted 31 Aug 2026). arXiv 2609.00252 v1 [cs.SE]. URL <https://arxiv.org/abs/2609.00252>.
@@ -166,7 +166,7 @@ Page and section numbers come from the delegate. Spot-check them before public u
 - Failure modes (S): the constitution is a prompt-injection surface (Lesson 4, p.13-14), silent gaps (6.5 item 4), business-logic flaws (6.5 item 2).
 - Gaps (S): no front matter schema, no states.
 
-## Part C: current dotclaude design (delegate read, lead did not re-read)
+## Part C: Current Dotclaude Design (Delegate Read, Lead Did Not Re-Read)
 
 Note: the brief said P46 is uncommitted. The first `git status` of the lead showed modified files. The delegate found a clean tree with P46 in HEAD `c14130c3`. Treat the commit state as unconfirmed. The delegate read the working-tree files, which equal HEAD.
 
@@ -182,7 +182,7 @@ Note: the brief said P46 is uncommitted. The first `git status` of the lead show
 - `docs/research/agents-models/18-spec-commands.md` predates P46: 5 lanes, no read commands.
 - `wiki/dotclaude/Spec-Store.md` matches the code on the lane rules checked (lines 99-142).
 
-## Part D: ranked proposals for dotclaude 1.0.0 (no backward compatibility)
+## Part D: Ranked Proposals for Dotclaude 1.0.0 (No Backward Compatibility)
 
 Strength scale: strong = measured with numbers and a control. moderate = measured but weak design or observational. weak = anecdote or opinion.
 

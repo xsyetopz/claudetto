@@ -1,6 +1,6 @@
 # Contributing
 
-## Set up
+## Set Up
 
 1. Install Bun 1.4.3 (the `packageManager` field of `package.json`), `just`, and Claude Code 2.1.302.
 2. Run `bun install` in the repository root.
@@ -19,7 +19,7 @@ In short:
 - Use only the documented extension points of Claude Code.
 - A plugin imports nothing from another plugin.
 
-## Tests first
+## Tests First
 
 Write the test first, and see it fail for the right reason.
 Then make the change.
@@ -36,7 +36,7 @@ Change versions only with `just bump`.
 Write public docs in `wiki/`.
 See [`wiki/core/Contributions.md`](wiki/core/Contributions.md) for more.
 
-## Conduct and security
+## Conduct and Security
 
 Read the [code of conduct](CODE_OF_CONDUCT.md).
 Report a vulnerability in private, as [`SECURITY.md`](SECURITY.md) says.

@@ -1,4 +1,4 @@
-# Design: the surfaces of Claude Code 2.1.302
+# Design: The Surfaces of Claude Code 2.1.302
 
 This file continues [`design.md`](design.md) with the decisions that come from the inventory of 2.1.302.
 
@@ -24,7 +24,7 @@ Tasks 7.6 and 7.7 write one row for each name, so that no name is missed.
 
 ## Decisions
 
-### D18. The snippet keeps a default when the default fits each account
+### D18. The Snippet Keeps a Default When the Default Fits Each Account
 
 - `promptCacheTtl` goes out of the snippet.
   The schema says: "Unset = automatic: 1 hour on a Claude subscription within its usage limits, 5 minutes on an API key".
@@ -40,7 +40,7 @@ Tasks 7.6 and 7.7 write one row for each name, so that no name is missed.
   The skill listing of a fresh session is 1.1k tokens, under the default budget of 1% of the window.
   A cap of 10 helpers fits the default tool concurrency of 10.
 
-### D19. Setup asks for the plan when Claude Code does not give it
+### D19. Setup Asks for the Plan When Claude Code Does Not Give It
 
 `claude auth status --json` gives `subscriptionType: "max"` and no tier.
 Claude Code sets `CLAUDE_CODE_RATE_LIMIT_TIER` only from the auth snapshot of a background session (`external/cc-2.1.302/strings.txt`, "Consumed bg auth snapshot"), so it is unset in a normal shell.
@@ -54,7 +54,7 @@ Jev picked `env-then-ask` at confidence 0.36, close to `ask-once` at 0.47, and b
 - Alternative: infer the tier from the window percentage and the session cost.
   Rejected, because it needs a session first, and the windows change.
 
-### D20. Main model and effort by plan
+### D20. Main Model and Effort by Plan
 
 | Account | Model | `effortLevel` |
 | --- | --- | --- |
@@ -75,13 +75,13 @@ For Pro, the evidence does not support Sonnet:
 A second opinion (Jev) picked `keep` (Opus with `high` on Pro and `xhigh` on Max) at confidence 0.33.
 The user chose `high` on Max, and `medium` on Pro is the default of Opus 5.5.
 
-### D21. The helpers keep D3 until an effort sweep
+### D21. The Helpers Keep D3 until an Effort Sweep
 
 Jev picked Sonnet `high` for the implementer at confidence 0.33, close to Opus `medium` at 0.42.
 Anthropic asks for an effort sweep on own evals in place of settings from an earlier model.
 So D3 stays, and task 11.4 runs the implementer cases on Sonnet `high`, Opus `low`, and Opus `medium`, and changes D3 only when an arm wins on passes at a cost that the weekly limit can carry.
 
-### D22. The turn gate judge sees the end of each command
+### D22. The Turn Gate Judge Sees the End of Each Command
 
 The judge reads one line for each call, and `targetOf` (`slices/turngate/domain/calls.ts:37`) gives only the first line of a command, cut to 160 characters.
 So a check at the end of a heredoc or an `&&` chain is not in the summary, and the gate blocked two correct claims on 2026-10-17.
@@ -90,7 +90,7 @@ An exit of `ok` for a chain that ends in the check shows that the check passed.
 Jev picked `head-tail` at confidence 0.20, over the last line of the output at 0.15 and both at 0.38.
 The head-tail is the smallest change that fixes both failures, and the output can be added later if a session shows a need.
 
-### D23. The handoff goes to the project root
+### D23. The Handoff Goes to the Project Root
 
 `HANDOFF_DIR` is the relative path `.claudetto/handoffs` (`src/kernel/paths.ts:31`), so the write follows the folder of the shell.
 On 2026-10-17 a session in `openspec/changes/release-0-2-0/` wrote its handoff into that change folder, where the Markdown lint sees it.
@@ -101,7 +101,7 @@ Jev picked `project-root` at confidence 0.74.
 - Alternative: the git root of the current folder.
   Rejected, because a resume from the project root may not find the file, and a folder outside git has no root.
 
-### D51. Setup writes no block in the global `CLAUDE.md`
+### D51. Setup Writes No Block in the Global `CLAUDE.md`
 
 - Facts: the block of `/claudetto:setup` has five parts, `claude-md-base.md`, `claude-md-codegraph.md`, `claude-md-docs.md`, `claude-md-browser.md` and `claude-md-note.md` in `slices/setup/prompts/`, with `222` words in total, and it loads on each turn of each project.
 - The Claude Code 101 lesson of the Anthropic Academy says the global file "applies across all your projects", and is the place for "your personal preferences".
@@ -124,7 +124,7 @@ Jev picked `project-root` at confidence 0.74.
   It holds four principles in `358` words, each with a short test, such as "Every changed line should trace directly to the user's request".
   This supports goals with a test in place of long rule lists, which agrees with the user's note that narrow coding instructions can give worse results.
 
-### D52. Title Case for Markdown headings, by a check
+### D52. Title Case for Markdown Headings, by a Check
 
 - Each Markdown heading uses Title Case.
   Articles, coordinating conjunctions, and prepositions of any length stay in lower case, but not as the first or the last word, and inline code does not change (Chicago style).
@@ -138,7 +138,7 @@ Jev picked `project-root` at confidence 0.74.
   The output style also shapes replies, not files.
 - Jev: `hook-plus-lint (confidence 1.00)`, against a line in the system prompt and against a line in the output style.
 
-### D56. A reply button on each message of Claude
+### D56. A Reply Button on Each Message of Claude
 
 - The user asked for a Discord-style reply: pick a message of Claude, and answer it with that message quoted.
 - The mods API of 2.1.302 has what this needs, with no change to Claude Code:

@@ -1,4 +1,4 @@
-# Community evidence on usage, cost, caching, and context (R12)
+# Community Evidence on Usage, Cost, Caching, and Context (R12)
 
 Scope: Reddit threads, 2026-09 to 2026-10, anecdotal or self-measured.
 No thread measures Sonnet 5.5 or Haiku 5.5 subagents on a subscription plan.
@@ -26,7 +26,7 @@ No thread measures Sonnet 5.5 or Haiku 5.5 subagents on a subscription plan.
 
 ## Findings
 
-### Cache and model switch
+### Cache and Model Switch
 
 1. A cache hit bills at 10% of input price, and a change early in the prefix, such as the model, is a miss.
    A subagent has its own cache, and "Subagents always use 5m, even on a subscription."
@@ -43,7 +43,7 @@ No thread measures Sonnet 5.5 or Haiku 5.5 subagents on a subscription plan.
    Forking became the default in CLI 2.1.232, and `CLAUDE_CODE_FORK_SUBAGENT=0` turns it off.
    Source: "Theories on the increased usage consumption + tips".
 
-### Measured cost per model (self-run benchmark on Max, API list prices as an estimate)
+### Measured Cost per Model (Self-Run Benchmark on Max, API List Prices as an Estimate)
 
 1. On 23 graded tasks, the cost per passed task was Opus 5.5 $0.09, Sonnet 5 $0.11, Opus 5 $0.19, Fable/Mythos 5.1 $0.26.
    Haiku 4.5 was $0.10 with a 76% pass rate, mostly failing the hardest tier.
@@ -62,7 +62,7 @@ No thread measures Sonnet 5.5 or Haiku 5.5 subagents on a subscription plan.
    Source: "Claude Code ships a per-model table of what each effort level costs".
    The table is relative inside one model and has no 5.5 data.
 
-### Subscription limits and lost work
+### Subscription Limits and Lost Work
 
  1. Fable/Mythos 5.1 drains limits fastest, and users hit the weekly Fable/Mythos limit on the $200 plan.
     Source: "Heavy usage use cases".
@@ -79,7 +79,7 @@ No thread measures Sonnet 5.5 or Haiku 5.5 subagents on a subscription plan.
  6. A commenter warns that a cheaper subagent may falsify its report, and the parent log keeps only the result.
     Source: "Six subagents on three different models in one turn".
 
-### Context quality
+### Context Quality
 
  1. For Opus 5.5, one poster saw no loss at about 500k tokens and visible loss past about 700k.
     Opus 5 degraded at about 300k.
@@ -91,7 +91,7 @@ No thread measures Sonnet 5.5 or Haiku 5.5 subagents on a subscription plan.
  3. A subagent starts with a clean window, so the 700k point rarely applies to it.
     A long loop with large tool output can still reach 150k (an inference).
 
-## Implications for the dotclaude agents
+## Implications for the Dotclaude Agents
 
 - `planner` and `reviewer` (Opus 5.5 high): finding 5 shows Opus 5.5 is the cheapest per passed task.
   Findings 7 and 8 say `medium` may keep accuracy, so test `medium` for `reviewer` before keeping `high`.
@@ -113,7 +113,7 @@ No thread measures Sonnet 5.5 or Haiku 5.5 subagents on a subscription plan.
 - No agent orchestrates, so finding 11 is a warning only, as the root agent is the expensive thinker.
   Few parallel workers lose less work at a limit stop (finding 13).
 
-## Open questions
+## Open Questions
 
 - No thread measures Sonnet 5.5, Haiku 5.5, or Opus 5.5 subagents on a subscription plan.
   Run `dotclaude-sessions:usage` on real sessions to get the usage percent per task.

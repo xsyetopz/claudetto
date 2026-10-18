@@ -1,4 +1,4 @@
-# claudetto
+# Claudetto
 
 claudetto changes Claude Code through its official extension points: settings, hooks, skills, and an output style.
 It does not patch the Claude Code binary.
@@ -49,7 +49,7 @@ So the core plugin gives these settings as a [settings snippet](https://github.c
 The setup skill applies the snippet for you.
 You can also copy the keys that you want into your own `settings.json`.
 
-## What the core plugin changes
+## What the Core Plugin Changes
 
 | Part | Effect |
 | --- | --- |
@@ -65,7 +65,7 @@ You can also copy the keys that you want into your own `settings.json`.
 | Status line | The folder, git, model, effort, context against the window, cost, and the limits. The percent turns yellow at `75%` and red at `90%`. |
 | Handoff | `/handoff` writes the handoff, clears the chat, and starts the next session from it. |
 
-## Model and skills
+## Model and Skills
 
 The main session uses `claude-opus-5-5`, from the settings snippet.
 `CLAUDE_CODE_SUBAGENT_MODEL` is `claude-sonnet-5-5`.
@@ -73,7 +73,7 @@ The main session uses `claude-opus-5-5`, from the settings snippet.
 The core plugin has the skill `/claudetto:setup`, and the command `/handoff`.
 Use openspec for specs: `claudetto` has no spec store.
 
-## Long work without compaction
+## Long Work without Compaction
 
 Each model call reads the whole context again, so the size of the context sets the cost of each turn.
 Run `/handoff` to start a fresh session from a handoff.
@@ -82,7 +82,7 @@ An effort change keeps the prompt cache.
 
 See [Context and handoff](https://github.com/xsyetopz/claudetto/wiki/Context-And-Handoff).
 
-## Second opinion
+## Second Opinion
 
 The `second_opinion` tool of the core plugin asks [TypeSafe Jev](https://docs.typesafe.ai/introduction) for a pick and a confidence on a decision.
 Export `TYPESAFE_API_KEY` before Claude Code starts.
@@ -91,7 +91,7 @@ With no key, or when Jev gives no answer, a small Claude model answers instead.
 The result says that the answer is not from Jev.
 See [Second opinion](https://github.com/xsyetopz/claudetto/wiki/Second-Opinion).
 
-## Add-on plugins
+## Add-On Plugins
 
 Install each add-on that you need.
 

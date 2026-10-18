@@ -1,4 +1,4 @@
-# Official effort guidance per model and task type
+# Official Effort Guidance per Model and Task Type
 
 All quotes are one sentence at most.
 
@@ -12,7 +12,7 @@ All quotes are one sentence at most.
 - S6: Claude API skill reference, pages "Thinking & Effort" and "Cost optimization", section 2.6 (the skill summarizes S1 and S3).
 - Not read: the end of S3, S4, and S5 (each page was cut at 100000 characters).
 
-## Findings per model
+## Findings per Model
 
 ### Defaults (S1, S4)
 
@@ -59,14 +59,14 @@ All quotes are one sentence at most.
 - `high` is for knowledge work, longer agent tasks, and strict instruction following. (S1)
 - A prompt to answer directly does not stop its thinking, so use effort. (S2)
 
-### Effort by task type (cross-model)
+### Effort by Task Type (Cross-Model)
 
 - Agentic coding: effort responds strongly, and "each step down gave up a few points of pass rate" for a lower cost. (S6, from S3)
 - Research: curves are nearly flat, and `medium` matched `high` accuracy at 70% to 87% of the cost on Fable 5. (S3)
 - Subagents and simple tasks: `low` is "Simpler tasks that need the best speed and lowest costs, such as subagents". (S1)
 - Review and bug fixing: `high` is for "Work where verification matters or edge cases are likely, such as fixing a bug in an existing codebase". (S4)
 
-### Effect on tool calls, turns, and cost
+### Effect on Tool Calls, Turns, and Cost
 
 - Lower effort means fewer tool calls, merged operations, less preamble, and terse confirmations. (S1)
 - Higher effort means more tool calls, plans before action, and detailed summaries. (S1)
@@ -74,7 +74,7 @@ All quotes are one sentence at most.
 - After new user input, the first request carries most reasoning, and tool-result follow-ups can skip thinking. (S2)
 - The advice is to judge cost per completed task, since a cheaper request that needs more turns is not cheaper. (S6)
 
-### Claude Code and subagents
+### Claude Code and Subagents
 
 - Effort resolves in this order: `CLAUDE_CODE_EFFORT_LEVEL`, `--effort`, `/effort`, saved settings, model default. (S4)
 - Frontmatter `effort` "overrides the session level but not the environment variable". (S4)
@@ -85,7 +85,7 @@ All quotes are one sentence at most.
 - S5 states no default for `maxTurns` in the part read.
 - S1 to S6 give no turn-limit advice for subagents.
 
-## Implications for the dotclaude agents
+## Implications for the Dotclaude Agents
 
 - Keep the current effort values. No source asks for a change in any of the six.
 - The 5 implementer failures on 2026-10-13 are a turn limit and a context limit, not an effort issue.
@@ -97,7 +97,7 @@ All quotes are one sentence at most.
 - The docs do not support a `maxTurns` value as an effort control.
   They show `maxTurns` only as a stop with partial output that can resume (S5).
 
-## Open questions
+## Open Questions
 
 - What is the default for `maxTurns` when the field is absent?
   The part of S5 that was read does not say.

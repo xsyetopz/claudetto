@@ -1,4 +1,4 @@
-# Community evidence on effort levels
+# Community Evidence on Effort Levels
 
 All threads are on Reddit, from the first two weeks after the Opus 5.5 launch.
 No Anthropic staff reply is marked in these threads.
@@ -23,7 +23,7 @@ No Anthropic staff reply is marked in these threads.
 - "Why does Haiku 5.5 have effort levels ...": <https://www.reddit.com/r/ClaudeAI/comments/1x096m6/why_does_haiku_55_have_effort_levels_like/>
 - "I built a Claude Code mod on Haiku 5.5 (or Jev) that picks the effort per prompt": <https://www.reddit.com/r/ClaudeCode/comments/1x19b2c/>
 
-## Findings: measured
+## Findings: Measured
 
 M1.
 A user tabulated the charts of the Opus 5.5 announcement (accuracy / cost per task).
@@ -55,7 +55,7 @@ One user ran Sonnet 5.5 high and Opus 5.5 high as subagents on a low and a mediu
 Sonnet was faster and cheaper but left bugs.
 Sonnet then Opus review cost more and took longer than Opus alone, in both tasks (n=2), per "Sonnet 5.5 is not worth using it unless at Low/Med effort".
 
-## Findings: reported
+## Findings: Reported
 
 R1.
 `medium` is the default for most users.
@@ -95,7 +95,7 @@ Changing effort on Opus 5.5, Sonnet 5.5, Haiku 5.5, and Fable/Mythos 5.1 keeps t
 This is a quote from the Claude Code docs in "I built a Claude Code mod on Haiku 5.5 ...".
 Earlier posts in "Claude Code effort level and model selection | Claude" say the opposite, so the first claim is outdated for 5.5 models.
 
-## Implications for the dotclaude agents
+## Implications for the Dotclaude Agents
 
 - `medium` is the evidence-backed default, so `implementer` and `researcher` at `medium` fit (R1, R4, M2).
 - `planner` and `reviewer` at `high` fit (R3, M1).
@@ -110,7 +110,7 @@ Earlier posts in "Claude Code effort level and model selection | Claude" say the
   An effort value has no cache cost on 5.5 models (R9), so it costs nothing to pin.
 - No thread discusses `maxTurns`.
 
-## Open questions
+## Open Questions
 
 - No independent test compares Opus 5.5 `medium` and `high` for plan quality.
   Only vendor charts and opinion exist.

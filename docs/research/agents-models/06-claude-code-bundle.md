@@ -1,4 +1,4 @@
-# Claude Code v2.1.296 bundle: agents, models, effort, and turn limits
+# Claude Code v2.1.296 Bundle: Agents, Models, Effort, and Turn Limits
 
 ## Method
 
@@ -9,7 +9,7 @@ I did not run Claude Code, so each claim is a reading of code and not a measurem
 
 ## Findings
 
-### Built-in agents
+### Built-In Agents
 
 | Agent | Model | Effort | `maxTurns` |
 | --- | --- | --- | --- |
@@ -28,7 +28,7 @@ I did not run Claude Code, so each claim is a reading of code and not a measurem
   So `Explore` under a `fable` root runs on `opus`.
   `CLAUDE_CODE_DISABLE_EXPLORE_INHERIT_CAP` turns the cap off.
 
-### Model resolution
+### Model Resolution
 
 The function `o1` resolves the subagent model in this order.
 
@@ -42,7 +42,7 @@ The function `o1` resolves the subagent model in this order.
 - A frontmatter `model: inherit` returns the parent model at once and skips the env var.
   Without `_FORCE`, the env var affects only agents that set no `model`.
 
-### Model catalog
+### Model Catalog
 
 The bundle ships a catalog with a 1M window for all five models.
 `haiku_55` costs 5 times more above 100000 prompt tokens.
@@ -54,7 +54,7 @@ The bundle ships a catalog with a 1M window for all five models.
 | `claude-sonnet-5-5` | `medium` | 2 / 10 |
 | `claude-haiku-5-5` | `medium` | 0.1 / 0.5 |
 
-### The per-model effort table
+### The Per-Model Effort Table
 
 The catalog field `effort_cost_index` is the table that users report.
 The function `uLt` divides the cost of a level by the cost of the model default level.
@@ -68,7 +68,7 @@ The picker shows "{from} effort is ~Nx the estimated cost of {default} (the defa
 - The built-in catalog has no `effort_cost_index` for `opus-5-5`, `sonnet-5-5`, and `haiku-5-5`.
   Then `uLt` returns null and the picker shows only "uses more tokens per task".
 
-### Plugin agent `effort`
+### Plugin Agent `effort`
 
 - The function `w_n` sets the subagent effort to the agent `effort` first, and to the inherited effort otherwise.
 - The `Agent` tool `effort` parameter exists too, and the root should set it only when the user asks.
@@ -77,7 +77,7 @@ The picker shows "{from} effort is ~Nx the estimated cost of {default} (the defa
   The loader warns "which is ignored for plugin agents".
   The keys `model`, `effort`, `maxTurns`, `tools`, `disallowedTools`, `skills`, and `autoCompactWindow` stay.
 
-### How `maxTurns` is enforced
+### How `maxTurns` Is Enforced
 
 - The schema says "Maximum number of agentic turns (API round-trips) before stopping".
   The loader needs a positive integer.
@@ -90,7 +90,7 @@ The picker shows "{from} effort is ~Nx the estimated cost of {default} (the defa
   The note adds "PARTIAL output" when text exists, or "had produced no report" when none exists.
   For agents other than `Explore` and `Plan`, it adds a hint to send the agent a message to continue.
 
-### Nesting and context
+### Nesting and Context
 
 - Subagents can spawn subagents.
   The function `_E` gives the depth cap: `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, else a GrowthBook value, else `3`.
@@ -99,7 +99,7 @@ The picker shows "{from} effort is ~Nx the estimated cost of {default} (the defa
 - The default window is the model context size.
   The compact threshold is the window minus 13000 tokens (function `O4`), and the block level is 3000 below the window.
 
-## Implications for the dotclaude agents
+## Implications for the Dotclaude Agents
 
 - Claude Code gives no turn limit to `Explore`, `Plan`, or `general-purpose`.
   A `maxTurns` value in dotclaude is a choice that needs a reason.
@@ -114,6 +114,6 @@ The picker shows "{from} effort is ~Nx the estimated cost of {default} (the defa
 - "No subagent orchestrates" is not a default.
   Depth 3 is allowed, so each dotclaude agent must block the `Agent` tool with `disallowedTools`.
 
-## Open questions
+## Open Questions
 
 - Does `CLAUDE_CODE_EFFORT_LEVEL` override a frontmatter `effort` of a subagent?

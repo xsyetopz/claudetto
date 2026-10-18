@@ -1,4 +1,4 @@
-# R17: Project Evidence on the dotclaude Agents
+# R17: Project Evidence on the Dotclaude Agents
 
 ## Sources
 
@@ -13,7 +13,7 @@
 
 ## Findings
 
-### The captures hold no subagent runs
+### The Captures Hold No Subagent Runs
 
 - All 11 request bodies come from the settings snippet probes (`vanilla`, `snippet`, `snippet-applied`).
 - Models seen: `claude-opus-5-5` (3 requests), `claude-sonnet-5-5` (8 requests).
@@ -25,7 +25,7 @@
   They cannot answer the question of cost per agent.
 - No `haiku` request is in the captures.
 
-### The recorded reasons for each choice
+### The Recorded Reasons for Each Choice
 
 - `reviewer` and `debugger` moved to Sonnet 5.5 at `high` in commit `f7710bc8` (2026-10-02).
   Reason: in the 0.17.1 evals Sonnet at `high` passed `t5-review` 20 of 20 and the debug cases 40 of 40.
@@ -48,7 +48,7 @@
 - `TURNS_LEFT_AT` is 4: two turns to commit, one to report, one spare (commit `ba249cb8`).
   It must stay below the smallest `maxTurns`.
 
-### Measured cost and calls
+### Measured Cost and Calls
 
 - The Max 20x week (2026-09-21 to 09-28) cost $1,854, with Opus 5.5 at 98.7%.
   It ran under the 0.x config, so it does not describe the 1.0.0 roster.
@@ -62,7 +62,7 @@
   One investigator ran 40% of the usage of one day.
 - No per-agent figures exist for `planner`, `researcher`, or `debugger`.
 
-### Turn and context limits in the session of 2026-10-13
+### Turn and Context Limits in the Session of 2026-10-13
 
 - 30 agent runs finished: 23 messages came from `implementer` and 7 from `reviewer`.
   The `dotclaude:implementer` type was started 11 times and `dotclaude:reviewer` 4 times by name.
@@ -84,7 +84,7 @@
   The stopped runs were on track, not stuck.
   Their notes list done commits, verified tests, and the exact next steps.
 
-## Implications for the dotclaude agents
+## Implications for the Dotclaude Agents
 
 - `implementer` and `debugger` at 61 turns: the limit cut on-track work at least 4 times, and it did no useful stopping.
   The one-way cost was a retry run.
@@ -103,7 +103,7 @@
   A report-now note at 4 turns left did not prevent the stops at 61 turns (it ships in `ba249cb8` after the first P02 stop).
   Whether it works is not measured.
 
-## Open questions
+## Open Questions
 
 - Do the P02 and P04 stops happen after the note of `ba249cb8`, and did the note fire?
   The log does not say.

@@ -1,10 +1,10 @@
-# Security policy
+# Security Policy
 
-## Supported versions
+## Supported Versions
 
 Only the latest release gets security fixes.
 
-## Report a vulnerability
+## Report a Vulnerability
 
 Do not open a public issue.
 Use the private vulnerability reporting of GitHub:

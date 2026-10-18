@@ -1,4 +1,4 @@
-# R01: Official Anthropic guidance on the 5.5 family and Fable 5.1
+# R01: Official Anthropic Guidance on the 5.5 Family and Fable 5.1
 
 Date of fetch: 2026-10-13.
 
@@ -16,7 +16,7 @@ Date of fetch: 2026-10-13.
 - S10: Claude API skill model catalog (the Anthropic `claude-api` skill), pages "Model Descriptions" and "Migrating to Claude Haiku 5.5".
 - Not read: system cards and launch posts, so no claim here rests on them.
 
-## Findings per model
+## Findings per Model
 
 All four models have a 1M token context window and 128K max output (S1).
 All four have a reliable knowledge cutoff of Jun 2026 (S1).
@@ -67,7 +67,7 @@ The lineup order by cost and capability is Haiku, Sonnet, Opus, Fable/Mythos (S2
 - S7: at `low` "the model is more likely to skip a search, stop early, or skip a check".
 - S7: at `low` and `medium` it sometimes reports a code change as done without a check.
 
-### Effort, orchestrator, worker, reviewer statements
+### Effort, Orchestrator, Worker, Reviewer Statements
 
 - The `low` effort row reads "Simpler tasks that need the best speed and lowest costs, such as subagents" (S4).
 - S2 describes the orchestrator pattern: the frontier model "decomposes the task, dispatches subtasks to lower-cost worker models, and merges their results".
@@ -78,7 +78,7 @@ The lineup order by cost and capability is Haiku, Sonnet, Opus, Fable/Mythos (S2
 - S9 defines `maxTurns` as the "Maximum number of agentic turns before the subagent stops".
 - S9 says at the limit Claude Code returns the output marked as partial, and Claude can resume it.
 
-## Implications for the dotclaude agents
+## Implications for the Dotclaude Agents
 
 1. Keep `planner` and `reviewer` on `opus-5-5`.
    - Evidence: Opus 5.5 is the named default and the best cost per solved task (S1, S2).
@@ -108,7 +108,7 @@ The lineup order by cost and capability is Haiku, Sonnet, Opus, Fable/Mythos (S2
    - The root agent as the only orchestrator matches this.
    - To enforce a single orchestrator, omit `Agent` from each subagent tool list (S9).
 
-## Open questions
+## Open Questions
 
 - S3 lists the Sonnet 5.5 cache read at $0.10 per MTok, while the S10 catalog lists $0.20.
   S3 is the primary source, but the page text says "0.05x", which also gives $0.10.

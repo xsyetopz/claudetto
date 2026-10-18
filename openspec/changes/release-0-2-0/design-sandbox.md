@@ -1,10 +1,10 @@
-# Design: work with no prompts, and no destructive command
+# Design: Work with No Prompts, and No Destructive Command
 
 This file continues [`design.md`](design.md) and [`design-redo.md`](design-redo.md).
 The user asked on 2026-10-17 for "the YOLO mode, but without system-destructive commands, or git-destructive commands, allowed", and said that "a pattern too broad will deny even safe operations".
 The user also asked that `gc` not be a part: Claude deletes what it writes in its temp folder or a worktree when it no longer needs it.
 
-## Facts from the docs of Claude Code
+## Facts from the Docs of Claude Code
 
 Read on 2026-10-17 from `code.claude.com/docs/en/` (`permission-modes.md`, `permissions.md`, `sandboxing.md`).
 
@@ -19,7 +19,7 @@ Read on 2026-10-17 from `code.claude.com/docs/en/` (`permission-modes.md`, `perm
 
 ## Decisions
 
-### D43. The sandbox stops system damage, and exact deny rules stop git damage
+### D43. The Sandbox Stops System Damage, and Exact Deny Rules Stop Git Damage
 
 - The setup snippet turns the sandbox on with `autoAllowBashIfSandboxed: true` and `allowUnsandboxedCommands: false`, in the user settings.
   The OS stops each write outside the project, the temp folder, and the cache folders of task 7.4, with no command pattern, so no safe command is denied by a pattern.
@@ -45,7 +45,7 @@ Read on 2026-10-17 from `code.claude.com/docs/en/` (`permission-modes.md`, `perm
 - Alternative: `auto` mode.
   Rejected, because its classifier can block or prompt on safe actions, which the user names as the problem.
 
-### D44. Claude removes what it writes outside the project, and `gc` goes
+### D44. Claude Removes What It Writes Outside the Project, and `gc` Goes
 
 - The `gc` slice, its CLI `claudetto-gc`, and the command `/claudetto:gc` go.
 - The system prompt text of D17 and each agent prompt give the rule: a file or a folder that Claude makes in its temp folder or a worktree that it makes is removed by Claude when the work no longer needs it, and the report names what stays.

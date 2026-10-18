@@ -33,7 +33,7 @@ Use the first rule that fits.
 - The change touches one capability: `story`.
 - Unsure: `story`, and ask the user.
 
-## Hand off
+## Hand Off
 
 Run `/opsx:propose`, and name the schema `<preset>`, so that it runs `new change <change> --schema <preset>`.
 The schema `task` sets `skip_specs` itself.
