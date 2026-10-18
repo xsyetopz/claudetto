@@ -92,7 +92,8 @@ The call says what happens to the job of each part:
 
 ### D41. A Folder or a File Exists Only When It Holds a Concern
 
-- A part has a `domain/`, `adapters/`, or `prompts/` folder only when the folder holds two files or more.
+- A part has a `domain/` or `adapters/` folder only when the folder holds two files or more.
+  An `adapters/` folder with only the `mod.ts` or the `cli.ts` that the generator needs, and each `prompts/` folder, are exempt, because the generator reads them by path.
 - A file under 15 lines merges into the file that uses it, except an entry point that Claude Code or the generator needs.
 - A prompt fragment that one prompt uses goes into that prompt, in each part, not only in `setup` (D12).
 - The 300-line bound of each file stays.

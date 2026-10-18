@@ -239,7 +239,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just check`
 - [x] 10.14 Rewrite each add-on plugin the same way, and then rewrite `src/kernel/` and `tools/` to what the parts still use, each below its line count (D40). (closed: obsolete: trim-0-2-0 did the rewrite)
   Check: `just check`
-- [ ] 10.15 Apply D41 to each part, and pin the line count of each part in `tools/limits.ts` (D40, D41).
+- [x] 10.15 Apply D41 to each part, and pin the line count of each part in `tools/limits.ts` (D40, D41).
   Check: `just validate`
 - [x] 10.16 Add lab tests that `awareness` gives one note for each limit of the account (five-hour, seven-day, `spend_limit`) when its share crosses a bound, no text below the bound, and no tool call or model call, and see them fail, then extend the hook (D45). (closed: removed in trim-0-2-0)
   Check: `just test tests/claudetto-sessions && just lab`
