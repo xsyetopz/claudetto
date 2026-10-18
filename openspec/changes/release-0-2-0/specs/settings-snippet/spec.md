@@ -4,15 +4,13 @@
 
 The tools and the env vars that the settings snippet of the setup turns on or off.
 
-> `trim-0-2-0` removes the turn gate, so the scenario "The turn gate names `TaskStop`" does not apply.
-
 ## ADDED Requirements
 
 ### Requirement: No Denied Tool That `claudetto` Needs
 
 The system SHALL not deny a tool that a claudetto text or hook tells the model to use.
 
-#### Scenario: The Turn Gate Names `TaskStop`
+#### Scenario: A Prompt Names a Tool
 
 - **WHEN** a test reads each prompt of the plugin and the deny list of the snippet
 - **THEN** no tool that a prompt names is in the deny list
