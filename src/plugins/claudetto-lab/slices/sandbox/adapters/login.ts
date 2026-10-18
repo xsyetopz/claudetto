@@ -1,6 +1,20 @@
 import os from "node:os";
 import path from "node:path";
-import { parseJson, readJson } from "./json.ts";
+
+export const parseJson = <T = unknown>(text: string): T | null => {
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return null;
+  }
+};
+
+export const readJson = async <T = unknown>(file: string): Promise<T | null> =>
+  parseJson<T>(
+    await Bun.file(file)
+      .text()
+      .catch(() => ""),
+  );
 
 interface Credentials {
   claudeAiOauth?: { accessToken?: string };

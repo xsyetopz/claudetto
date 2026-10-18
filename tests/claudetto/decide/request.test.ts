@@ -1,8 +1,10 @@
 // The check of the tool input and the mode of the `decide` option, and the error text of a failed route.
 
 import { expect, test } from "bun:test";
-import { modeOf } from "../../../plugins/claudetto/slices/decide/domain/mode.ts";
-import { parseInput } from "../../../plugins/claudetto/slices/decide/domain/request.ts";
+import {
+  modeOf,
+  parseInput,
+} from "../../../plugins/claudetto/slices/decide/domain/request.ts";
 import { resultText } from "../../../plugins/claudetto/slices/decide/domain/text.ts";
 
 test("two options with one key fail the input check", () => {

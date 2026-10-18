@@ -195,3 +195,7 @@ export const compactedMessages = (
   const context = [...head, ...messages.slice(cut)];
   return contextTokens(context) < trigger ? context : null;
 };
+
+/** `text` with a `>` line in place of the blank lines between two quoted lines. */
+export const joinQuotes = (text: string): string =>
+  text.replace(/^([ \t]*>.*)\n(?:[ \t]*\n)+(?=([ \t]*)>)/gm, "$1\n$2>\n");

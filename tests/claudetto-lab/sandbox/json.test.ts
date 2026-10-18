@@ -8,7 +8,7 @@ import path from "node:path";
 import {
   parseJson,
   readJson,
-} from "../../../plugins/claudetto-lab/slices/sandbox/adapters/json.ts";
+} from "../../../plugins/claudetto-lab/slices/sandbox/adapters/login.ts";
 import { availableModels } from "../../../plugins/claudetto-lab/slices/sandbox/adapters/setup.ts";
 import { tmpDir } from "../../support/repo.ts";
 

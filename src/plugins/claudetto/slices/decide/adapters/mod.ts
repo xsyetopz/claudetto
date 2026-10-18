@@ -9,9 +9,8 @@
 
 import type { EngineInterface, MatchedHook, PluginOptions } from "claude-code";
 import type { Handler } from "../../../../../kernel/slice.ts";
-import { type Mode, modeOf } from "../domain/mode.ts";
 import type { CliCall } from "../domain/request.ts";
-import { parseInput } from "../domain/request.ts";
+import { type Mode, modeOf, parseInput } from "../domain/request.ts";
 import { route } from "../domain/route.ts";
 import { resultText } from "../domain/text.ts";
 import { toolSpec } from "../domain/tool.ts";

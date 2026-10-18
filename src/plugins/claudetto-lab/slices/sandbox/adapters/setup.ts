@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { SANDBOX_MARKER } from "../domain/clean.ts";
-import { readJson } from "./json.ts";
+import { readJson } from "./login.ts";
 
 export interface SandboxDirs {
   root: string;

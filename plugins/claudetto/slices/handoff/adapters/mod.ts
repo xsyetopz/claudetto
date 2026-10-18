@@ -35,10 +35,10 @@ import {
   handedText,
   handoffPath,
   isHandoff,
+  joinQuotes,
   triggerTokens,
   withChange,
 } from "../domain/compact.ts";
-import { joinQuotes } from "../domain/quotes.ts";
 import { COMMAND_HANDOFF, RULES, WRITTEN_NOTICE } from "../prompts.ts";
 
 /** The hook for the triggers in the filter of `slice.ts`, with `e` narrowed to them. */

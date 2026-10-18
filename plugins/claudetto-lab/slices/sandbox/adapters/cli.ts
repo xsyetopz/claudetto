@@ -2,7 +2,6 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { SANDBOX_TEMP } from "../../../kernel/temp-paths.ts";
 import { cleanRefusal } from "../domain/clean.ts";
 import { report } from "../domain/frontmatter.ts";
 import {
@@ -13,6 +12,9 @@ import {
 } from "../prompts.ts";
 import { cleanEnv, loginToken } from "./login.ts";
 import { absolutePluginDirs, availableModels, setUp } from "./setup.ts";
+
+/** The name of the scratch folder of `claudetto-sandbox` in the temp folder. */
+const SANDBOX_TEMP = "claudetto-sandbox";
 
 // A folder without the write bit keeps its files, so `rmSync` cannot remove them.
 const makeWritable = (dir: string): void => {

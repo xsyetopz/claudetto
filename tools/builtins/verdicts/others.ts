@@ -25,7 +25,7 @@ plugins:telemetry	off	-	Already \`false\` in \`enabledPlugins\` (\`prompt\` slic
 plugins:tips	off	-	Already \`false\` in \`enabledPlugins\` (\`prompt\` slice).
 plugins:you-should-know	off	-	An opt-in promo for a side agent. No \`claudetto-you-should-know\` add-on exists in \`src/plugins\`.
 sections:act_dont_rederive	keep	-	behaviour rule against re-deriving facts, no lever makes it better
-sections:action_caution	replace	-	\`prompt.section\` rewrite in \`transforms/action_caution.ts\` is shorter
+sections:action_caution	replace	-	\`prompt.section\` rewrite in \`transforms/index.ts\` is shorter
 sections:actions	off	3605	\`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1\` drops it and \`lean_body\` takes its place
 sections:autonomy_append	keep	-	fires only in autonomous runs, and it guards against blocking questions
 sections:bg-session	keep	-	fires only in background sessions, and it holds worktree rules
@@ -46,7 +46,7 @@ sections:lean_body	replace	-	\`prompt.section\` answers with the tailored text o
 sections:memory	replace	-	\`prompt.section\` rewrite in \`transforms/memory.ts\` is shorter
 sections:memory_static	keep	-	14 bytes, and \`autoMemoryEnabled\` is off already
 sections:overcorrection	keep	-	flag-gated rule against self-correction noise, 27 bytes
-sections:pronouns	replace	-	\`prompt.section\` rewrite in \`transforms/pronouns.ts\` is shorter
+sections:pronouns	replace	-	\`prompt.section\` rewrite in \`transforms/index.ts\` is shorter
 sections:repl_working	keep	-	the function returns \`null\`, so it adds no text
 sections:session_guidance	replace	-	\`prompt.section\` rewrite in \`transforms/session_guidance.ts\` is shorter
 sections:subagent_steer_delegation	keep	-	fires only on a flag, and it steers delegation

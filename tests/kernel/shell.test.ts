@@ -6,10 +6,9 @@ import {
   BRACE_WORDS_MAX,
   SHELL_SCAN_MAX_CHARS,
 } from "../../src/kernel/budget.ts";
-import { words } from "../../src/kernel/shell/words.ts";
 import { commands, parse } from "../../src/kernel/shell.ts";
 import { hiddenLevel } from "../../src/kernel/shellkinds.ts";
-import { stripWrappers } from "../../src/kernel/wrappers.ts";
+import { stripWrappers, words } from "../../src/kernel/wrappers.ts";
 
 test("`parse` gives `truncated` only for a text over the scan bound", () => {
   const word = "a";

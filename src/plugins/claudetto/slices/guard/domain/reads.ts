@@ -2,7 +2,7 @@
 // A command is a print only when each part of it prints a file (spec `command-guard`, "Deny only a pure print").
 // The functions are pure, and `deny.ts` turns a print into a deny reason.
 
-import { words as shellWords } from "../../../../../kernel/shell/words.ts";
+import { words as shellWords } from "../../../../../kernel/wrappers.ts";
 import { resolve, segments } from "./paths.ts";
 
 /** The print of a command: the `file`, and the `offset` and `limit`, or the `tail` count. */

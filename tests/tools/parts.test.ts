@@ -36,6 +36,8 @@ test("a code file under 15 lines fails unless it is an entry point or allowed", 
     [`${SLICE}/limits.ts`]: 4,
     [`${SLICE}/adapters/mod.ts`]: 4,
     "src/plugins/claudetto/plugin.ts": 4,
+    "tools/recipe.ts": 4,
+    "tools/deep/tiny.ts": 4,
     [`${SLICE}/tiny.ts`]: 14,
     [`${SLICE}/old.ts`]: 5,
     [`${SLICE}/ok.ts`]: 15,
@@ -43,7 +45,10 @@ test("a code file under 15 lines fails unless it is an entry point or allowed", 
   const files = Object.keys(lines);
   expect(
     shortFiles(files, (f) => lines[f] as number, [`${SLICE}/old.ts`]),
-  ).toEqual([`${SLICE}/tiny.ts: 14 lines, under 15`]);
+  ).toEqual([
+    "tools/deep/tiny.ts: 4 lines, under 15",
+    `${SLICE}/tiny.ts: 14 lines, under 15`,
+  ]);
 });
 
 test("an allowed short file that grew is reported as stale", () => {

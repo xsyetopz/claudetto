@@ -10,9 +10,8 @@ import {
   COMPACTION_OPTION,
 } from "../../../../../kernel/compaction.ts";
 import { fileReader, writeAtomic } from "../../../../../kernel/node/fs.ts";
-import { failureText } from "../../../../../kernel/node/hook-io.ts";
+import { failureText, readStdin } from "../../../../../kernel/node/hook-io.ts";
 import { processRunner } from "../../../../../kernel/node/process.ts";
-import { readStdin } from "../../../../../kernel/node/stdin.ts";
 import {
   CLAUDE_STATE_FILE,
   SETTINGS_FILE,

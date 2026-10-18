@@ -3,7 +3,7 @@
 // It cannot run the shell, so it reads only the syntax that decides which command runs:
 // words, quotes, the operators between simple commands, nested scripts, and the wrapper commands.
 // Text that another program runs as code is in the `code` list of `parse`, for the code reader of a slice.
-// The scan of the text is in `shell/scan.ts`, and the word splitter is in `shell/words.ts`.
+// The scan of the text is in `shell/scan.ts`, and the word splitter is in `wrappers.ts`.
 // The functions are pure and import only `budget.ts`, `shell/scan.ts`, `shellkinds.ts`, and `wrappers.ts`.
 
 import { SHELL_SCAN_MAX_CHARS } from "./budget.ts";

@@ -9,7 +9,7 @@ import {
   onSecondOpinion,
   onSessionStart,
 } from "./adapters/mod.ts";
-import { MODES } from "./domain/mode.ts";
+import { MODES } from "./domain/request.ts";
 import { OPTION_DESCRIPTION } from "./prompts.ts";
 
 export const slice = {

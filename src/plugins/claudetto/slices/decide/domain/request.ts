@@ -1,4 +1,6 @@
 // The input of `second_opinion`: the check of each field, and the words of the CLI for a valid request.
+// The `decide` option is here too: which backend, if any, answers a decision.
+// The option is off by default, so no text goes to Jev or to a model until the user turns it on.
 // Each error text names the field and tells the model what to give, so the model can call the tool again.
 
 import { MAX_OPTIONS, MIN_OPTIONS } from "../limits.ts";
@@ -10,6 +12,16 @@ import {
   ERROR_QUESTION_EMPTY,
 } from "../prompts.ts";
 import { pickWords } from "./picks.ts";
+
+/** The values of the `decide` option, as `/config` shows them. */
+export const MODES = ["off", "claude", "jev"] as const;
+
+/** `off`: no tool and no call. `claude`: a small Claude model answers. `jev`: Jev answers, and the model answers when Jev gives no answer. */
+export type Mode = (typeof MODES)[number];
+
+/** The mode for the `userConfig` values of the plugin. A missing or unknown value is `off`. */
+export const modeOf = (options: Readonly<Record<string, unknown>>): Mode =>
+  MODES.find((m) => m === options["decide"]) ?? "off";
 
 /** The result of `parseInput`: a request, or the error text for the model. */
 export type Parsed =

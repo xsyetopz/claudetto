@@ -15,8 +15,10 @@ const PART = [
   /^src\/kernel/,
   /^tools/,
 ];
-// The files that the generator or Claude Code needs, whatever their size.
-const ENTRY = /(?:^|\/)(?:slice|plugin|limits)\.ts$|\/adapters\/mod\.ts$/;
+// The files that the generator, Claude Code, or a `just` recipe needs, whatever their size.
+// A recipe is a `tools/<name>.ts` file that `justfile` runs with `bun`.
+const ENTRY =
+  /(?:^|\/)(?:slice|plugin|limits)\.ts$|\/adapters\/mod\.ts$|^tools\/[^/]+\.ts$/;
 const THIN_DIR = /^(.*\/(?:domain|adapters|prompts))\//;
 
 /** The code files of the rules: the `.ts` files that are not tests. */

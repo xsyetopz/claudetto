@@ -2,7 +2,6 @@
 // The pure logic of the code-graph hooks: the text that goes to Claude, and the parse of the payload.
 // No function here runs a command or reads a file.
 
-import { GIT_VALUE_OPTIONS } from "../../../kernel/gitopts.ts";
 import { parse } from "../../../kernel/shell.ts";
 import { baseName, stripWrappers } from "../../../kernel/wrappers.ts";
 import { ERROR_TEXT_MAX_CHARS } from "../limits.ts";
@@ -14,6 +13,18 @@ import {
   CHECK_OK,
   MCP_LINES,
 } from "../prompts.ts";
+
+/** The global options of `git` that take the next word as their value, from `git help git`. */
+export const GIT_VALUE_OPTIONS: ReadonlySet<string> = new Set([
+  "-C",
+  "-c",
+  "--git-dir",
+  "--work-tree",
+  "--namespace",
+  "--super-prefix",
+  "--attr-source",
+  "--config-env",
+]);
 
 /** The fields of a hook payload that the hooks read. */
 export interface HookPayload {

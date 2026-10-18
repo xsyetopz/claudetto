@@ -7,7 +7,9 @@
 // Claude Code shows the stderr text of a hook that exits with code 0 only in its debug output.
 
 import { rethrowUnless } from "../errors.ts";
-import { readStdin } from "./stdin.ts";
+
+/** The whole text of stdin, read by Bun. A classic hook reads its JSON payload with this function. */
+export const readStdin = (): Promise<string> => Bun.stdin.text();
 
 /** The fields of a `hookSpecificOutput` object. A field with the value `undefined` is left out of the output. */
 export type OutputFields = {

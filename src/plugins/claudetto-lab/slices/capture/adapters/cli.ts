@@ -1,11 +1,13 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { CAPTURE_TEMP } from "../../../../../kernel/temp-paths.ts";
 import { sizeRequest, sizingLines } from "../domain/report.ts";
 import type { Body } from "../domain/types.ts";
 import { resolveUpstream } from "../domain/upstream.ts";
 import { BODY_NOT_JSON, PORT_INVALID, USAGE } from "../prompts.ts";
+
+/** The name of the scratch folder of `claudetto-capture` in the temp folder. */
+const CAPTURE_TEMP = "claudetto-capture";
 
 // Only these headers go upstream, and the proxy never writes a request header, because the headers carry the credential.
 const PASS =

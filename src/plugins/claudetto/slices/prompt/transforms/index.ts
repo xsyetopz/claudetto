@@ -1,15 +1,38 @@
-// The transform of each built-in section that the short prompt keeps, keyed by the section id, and each file here holds one transform.
+// The transform of each built-in section that the short prompt keeps, keyed by the section id.
+// Each file here holds one transform, except `action_caution` and `pronouns`, which are small and are in this file.
 // The bundle of Claude Code 2.1.302 names each id in `dm(...)`, and `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1` drops the `intro`, `system`, `doing_tasks`, `actions`, `tools`, and `tone` sections.
 // The `lean_body` section has no transform, because its whole text is ours (`domain/lean-body.ts`).
 // The `context_management` section has no entry, because its text depends on the compaction state (`domain/compaction.ts`).
 
-import * as actionCaution from "./action_caution.ts";
+import {
+  ACTION_CAUTION_FOR_ACTIONS_THAT_ARE,
+  PRONOUNS_WHEN_YOU_USE_PRONOUN,
+} from "../prompts.ts";
 import * as communication from "./communication.ts";
 import * as envInfoSimple from "./env_info_simple.ts";
 import * as memory from "./memory.ts";
-import type { Part, Transform } from "./parts.ts";
-import * as pronouns from "./pronouns.ts";
+import { applyParts, type Part, type Transform } from "./parts.ts";
 import * as sessionGuidance from "./session_guidance.ts";
+
+const actionCaution = {
+  PARTS: [
+    {
+      anchor: /^For actions that are hard to reverse.*$/gm,
+      text: ACTION_CAUTION_FOR_ACTIONS_THAT_ARE,
+    },
+  ] as readonly Part[],
+  transform: (text: string): string => applyParts(text, actionCaution.PARTS),
+};
+
+const pronouns = {
+  PARTS: [
+    {
+      anchor: /^When you use a pronoun.*$/gm,
+      text: PRONOUNS_WHEN_YOU_USE_PRONOUN,
+    },
+  ] as readonly Part[],
+  transform: (text: string): string => applyParts(text, pronouns.PARTS),
+};
 
 const MODULES: Record<
   string,

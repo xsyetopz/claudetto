@@ -78,44 +78,33 @@ export const SHORT_FILE_MIN_LINES = 15;
  * `just validate` fails when a part grows past its pin. Lower a pin when the part shrinks.
  */
 export const PART_LINE_PINS: Record<string, number> = {
-  "src/kernel": 1647,
+  "src/kernel": 1620,
   "src/plugins/claudetto-browser": 625,
-  "src/plugins/claudetto-codegraph": 626,
+  "src/plugins/claudetto-codegraph": 637,
   "src/plugins/claudetto-docs": 32,
-  "src/plugins/claudetto-lab": 1892,
+  "src/plugins/claudetto-lab": 1896,
   "src/plugins/claudetto-sessions": 252,
   "src/plugins/claudetto/slices/advise": 339,
-  "src/plugins/claudetto/slices/decide": 1198,
+  "src/plugins/claudetto/slices/decide": 1197,
   "src/plugins/claudetto/slices/goal": 607,
   "src/plugins/claudetto/slices/ground": 368,
   "src/plugins/claudetto/slices/guard": 344,
-  "src/plugins/claudetto/slices/handoff": 540,
-  "src/plugins/claudetto/slices/prompt": 912,
+  "src/plugins/claudetto/slices/handoff": 539,
+  "src/plugins/claudetto/slices/prompt": 923,
   "src/plugins/claudetto/slices/sembr": 516,
   "src/plugins/claudetto/slices/setup": 354,
   "src/plugins/claudetto/slices/spec": 11,
   "src/plugins/claudetto/slices/statusline": 1210,
   "src/plugins/claudetto/slices/styles": 13,
-  tools: 4968,
+  tools: 4959,
 };
 
 /** The code files under `SHORT_FILE_MIN_LINES` that are allowed for now. Each entry is a merge of part 2 of task 10.8. */
-export const SHORT_FILE_ALLOWED: readonly string[] = [
-  "src/kernel/gitopts.ts",
-  "src/kernel/node/stdin.ts",
-  "src/kernel/shell/words.ts",
-  "src/kernel/temp-paths.ts",
-  "src/plugins/claudetto-lab/slices/sandbox/adapters/json.ts",
-  "src/plugins/claudetto/slices/decide/domain/mode.ts",
-  "src/plugins/claudetto/slices/handoff/domain/quotes.ts",
-  "src/plugins/claudetto/slices/prompt/transforms/action_caution.ts",
-  "src/plugins/claudetto/slices/prompt/transforms/pronouns.ts",
-  "tools/lab.ts",
-  "tools/update.ts",
-];
+export const SHORT_FILE_ALLOWED: readonly string[] = [];
 
 /** The `domain/`, `adapters/`, and `prompts/` folders with one file that are allowed for now. Each entry is a merge of part 2 of task 10.8. */
 export const THIN_FOLDER_ALLOWED: readonly string[] = [
+  "src/plugins/claudetto/slices/handoff/domain",
   "src/plugins/claudetto-browser/slices/browse/adapters",
   "src/plugins/claudetto-browser/slices/browse/domain",
   "src/plugins/claudetto-browser/slices/search/domain",
