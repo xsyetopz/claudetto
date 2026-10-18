@@ -53,7 +53,7 @@ if (import.meta.main) {
     console.error(`No findings file: ${file}`);
     process.exit(1);
   }
-  const open = openRows(fs.readFileSync(file, "utf8"));
+  const open = openRows(await Bun.file(file).text());
   for (const row of open)
     console.error(
       `findings.md:${row.line}: ${row.surface} (task: ${row.task})`,

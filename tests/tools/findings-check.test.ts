@@ -20,11 +20,11 @@ test("`openRows` finds no row when each task is `none`, done, or checked", () =>
   expect(openRows(CLOSED)).toEqual([]);
 });
 
-const run = (findings: string) => {
+const run = async (findings: string) => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "findings-"));
   const file = path.join(dir, "findings.md");
   try {
-    fs.writeFileSync(file, findings);
+    await Bun.write(file, findings);
     return Bun.spawnSync(
       [process.execPath, path.join(REPO, "tools/findings-check.ts"), file],
       { cwd: REPO, stdout: "pipe", stderr: "pipe" },
@@ -34,12 +34,12 @@ const run = (findings: string) => {
   }
 };
 
-test("the tool exits 1 on a fixture with an open row", () => {
-  const result = run(OPEN);
+test("the tool exits 1 on a fixture with an open row", async () => {
+  const result = await run(OPEN);
   expect(result.exitCode).toBe(1);
   expect(result.stderr.toString()).toContain("findings.md:4:");
 });
 
-test("the tool exits 0 on a fixture with no open row", () => {
-  expect(run(CLOSED).exitCode).toBe(0);
+test("the tool exits 0 on a fixture with no open row", async () => {
+  expect((await run(CLOSED)).exitCode).toBe(0);
 });
