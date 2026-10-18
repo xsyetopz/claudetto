@@ -103,18 +103,25 @@ const paintFor = async (deps: Deps) => {
   return paintOf(themeOf(typeof theme === "string" ? theme : null));
 };
 
+const USAGE = "Usage: claudetto-statusline [--subagent] < status.json";
+
 /** A status object can hold a number or `null` in a folder field, so only a non-empty string counts. */
 const textOf = (value: unknown): string | null =>
   typeof value === "string" && value !== "" ? value : null;
 
 /**
  * Run the CLI and return 0, also after a failure, because a failed status line must not stop Claude Code.
+ * A nonzero code would make Claude Code show an error on each refresh.
  * A failure prints the cause on stderr, and an empty row on stdout for the main line (the subagent rows keep the default look).
  */
 export const main = async (
   args: string[],
   deps: Deps = defaults(),
 ): Promise<number> => {
+  if (args.includes("--help")) {
+    deps.log(USAGE);
+    return 0;
+  }
   const subagent = args.includes("--subagent");
   const columns =
     (Number(deps.env["COLUMNS"]) || DEFAULT_COLUMNS) - COLUMNS_MARGIN;
@@ -155,7 +162,7 @@ export const main = async (
       ).join("\n"),
     );
   } catch (err) {
-    deps.error(failureText(err));
+    deps.error(`claudetto-statusline failed: ${(err as Error).message}\n`);
     if (!subagent) deps.log("");
   }
   return 0;

@@ -288,7 +288,7 @@ The rows `new:` of `findings.md` that need no decision of the user.
 
 - [x] 13.1 Add a test that `claudetto-setup` with `--help` or an unknown flag such as `--aply` returns 2 with the usage, and see it fail, then fix the filter of `setup/adapters/cli.ts`.
   Check: `just test tests/claudetto/setup`
-- [ ] 13.2 Add a test that `claudetto-statusline --help` prints the usage and exits 0, and that an empty stdin gives one error line that names `claudetto-statusline`, and see it fail, then fix `statusline/adapters/cli.ts`.
+- [x] 13.2 Add a test that `claudetto-statusline --help` prints the usage and exits 0, and that an empty stdin gives one error line that names `claudetto-statusline`, and see it fail, then fix `statusline/adapters/cli.ts`.
   Check: `just test tests/claudetto/statusline`
 - [ ] 13.3 Add a test that `claudetto-codegraph-check --help` exits 0, and that `sessions` `replay.ts --help` prints the usage, and see them fail, then fix both.
   Check: `just test tests/claudetto-codegraph tests/claudetto-sessions`
