@@ -119,9 +119,9 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 ## 5. Status line
 
-- [ ] 5.1 Add tests that the context segment shows `of 300k` for a window of 1M, and that a Haiku subagent row shows the Haiku window, and see them fail.
+- [x] 5.1 Add tests that the context segment shows `of 300k` for a window of 1M, and that a Haiku subagent row shows the Haiku window, and see them fail.
   Check: `! just test tests/claudetto/statusline/window.test.ts`
-- [ ] 5.2 Use `windowOf` from `src/kernel/budget.ts` in `segments.ts` and a family window in `adapters/subagents.ts`.
+- [x] 5.2 Use `windowOf` from `src/kernel/budget.ts` in `segments.ts` and a family window in `adapters/subagents.ts`.
   Check: `just test tests/claudetto/statusline`
 
 ## 6. Prompts and session start

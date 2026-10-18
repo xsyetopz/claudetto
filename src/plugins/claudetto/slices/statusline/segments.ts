@@ -63,7 +63,7 @@ const changeText = (change: Change, paint: Status["paint"]): string => {
   }
 };
 
-/** `▤ 40% of 300k ⇥180k`: the used tokens against the effective window (`windowOf`),: the tokens left to the handoff trigger (the compaction threshold with `built-in`), warning within `TRIGGER_WARN_FRACTION` of it. */
+/** `▤ 40% of 300k ⇥180k`: the used tokens against the effective window (`windowOf`), and the tokens left to the handoff trigger (the compaction threshold with `built-in`), warning within `TRIGGER_WARN_FRACTION` of it. */
 const contextText = ({ input, paint, compaction }: Status) => {
   const window = input.context_window;
   const used = window?.used_percentage;
