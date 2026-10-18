@@ -1,0 +1,32 @@
+name: task
+version: 1
+description: A bug fix, a small change, or a refactor with no change of behavior - proposal, tasks
+artifacts:
+  - id: proposal
+    generates: proposal.md
+    description: Why, what changes, and impact
+    template: proposal.md
+    instruction: |
+      Write why the change is needed.
+      Sections: **Why** (1-2 sentences), **What Changes** (bullets), **Impact**.
+      List no capability, because a task changes no behavior.
+      Tell the user to set `skip_specs: true` in the `.openspec.yaml` of the change, because `openspec validate` rejects a change with no delta otherwise.
+      Use `story` in place of `task` if behavior changes.
+    requires: []
+
+  - id: tasks
+    generates: tasks.md
+    description: Implementation checklist
+    template: tasks.md
+    instruction: |
+      Write the task list as checkboxes `- [ ] X.Y Task` under `## N.` headings, because the apply step parses them.
+      Order the tasks by dependency, and keep each small enough for one session.
+      Each task states how to verify it, and lands its own tests and docs.
+    requires: [proposal]
+
+apply:
+  requires: [ tasks ]
+  tracks: tasks.md
+  instruction: |
+    Read the context files, do the pending tasks, and tick each one when done.
+    Stop at a blocker.

@@ -12,17 +12,17 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ## [0.2.0] - 2026-10-18
 
-This release cuts `claudetto` to the parts that Claude Code does not do already:
-the `.ts` source under `src/` (without `lab/`) goes from 33,219 lines to 10,232 lines.
+This release cuts `claudetto` to the parts that Claude Code does not do already: the `.ts` source under `src/` (without `lab/`) goes from 33,219 lines to 10,232 lines.
 Run `/claudetto:setup` again after the update, because it cleans the settings of 0.1.0.
 
 ### Added
 
 - The `ground` slice denies a `Write` or `Edit` of a plan file, and a `ProposeGoal` call, when the text cites a `file:line` or a convention that the source does not hold.
+- The `spec` slice ships the OpenSpec schemas `task`, `story`, and `epic` in the `spec` skill.
 
 ### Changed
 
-- **Breaking:** `claudetto` has these slices: `decide`, `ground`, `guard`, `handoff`, `prompt`, `sembr`, `setup`, `statusline`, and `styles`.
+- **Breaking:** `claudetto` has these slices: `decide`, `ground`, `guard`, `handoff`, `prompt`, `sembr`, `setup`, `spec`, `statusline`, and `styles`.
 - **Breaking:** `claudetto-sessions` is one `sessions` skill with the scripts `audit` and `replay`.
   The `awareness`, `start-cost`, and `usage` slices are gone, because `/context`, `/usage`, `/insights`, and `/status` give the same facts.
 - **Breaking:** `guard` keeps the deny of a `Bash` command that only prints a file, and it names the `Read` call to use.
