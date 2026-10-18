@@ -10,6 +10,7 @@ import fs, { readdirSync } from "node:fs";
 import path, { join } from "node:path";
 import { isGenerated } from "./generate/emit/texts.ts";
 import { FILE_MAX_LINES, TEST_FILE_MAX_LINES } from "./limits.ts";
+import { overPins, partLines, shortFiles, thinFolders } from "./parts.ts";
 import { $claude } from "./telemetry.ts";
 
 const root = join(import.meta.dir, "..");
@@ -66,6 +67,18 @@ if (import.meta.main) {
   const over = await overBound(root, visibleFiles(root));
   if (over.length) {
     for (const line of over) console.error(`over the line bound: ${line}`);
+    process.exit(1);
+  }
+  const files = visibleFiles(root);
+  const linesOf = (f: string): number =>
+    fs.readFileSync(join(root, f), "utf8").split("\n").length - 1;
+  const parts = [
+    ...overPins(partLines(files, linesOf)),
+    ...shortFiles(files, linesOf),
+    ...thinFolders(files),
+  ];
+  if (parts.length) {
+    for (const line of parts) console.error(`part rule: ${line}`);
     process.exit(1);
   }
   await $claude()`claude plugin validate --strict ${root}`;
