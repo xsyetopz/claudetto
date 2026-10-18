@@ -286,7 +286,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 The rows `new:` of `findings.md` that need no decision of the user.
 
-- [ ] 13.1 Add a test that `claudetto-setup` with `--help` or an unknown flag such as `--aply` returns 2 with the usage, and see it fail, then fix the filter of `setup/adapters/cli.ts`.
+- [x] 13.1 Add a test that `claudetto-setup` with `--help` or an unknown flag such as `--aply` returns 2 with the usage, and see it fail, then fix the filter of `setup/adapters/cli.ts`.
   Check: `just test tests/claudetto/setup`
 - [ ] 13.2 Add a test that `claudetto-statusline --help` prints the usage and exits 0, and that an empty stdin gives one error line that names `claudetto-statusline`, and see it fail, then fix `statusline/adapters/cli.ts`.
   Check: `just test tests/claudetto/statusline`

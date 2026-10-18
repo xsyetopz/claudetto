@@ -80,8 +80,8 @@ export const main = async (
       a !== "--apply" &&
       a !== "--scope" &&
       a !== "--advisor" &&
-      i !== at + 1 &&
-      i !== adv + 1,
+      (at < 0 || i !== at + 1) &&
+      (adv < 0 || i !== adv + 1),
   );
   if (bad.length > 0 || (advisor !== "builtin" && advisor !== "claudetto"))
     return fail(io, USAGE);

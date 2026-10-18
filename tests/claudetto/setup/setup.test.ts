@@ -130,3 +130,15 @@ test('the cleanup removes `promptCacheTtl: "5m"`, and keeps other values', async
     "1h",
   );
 });
+
+test("`--help` and an unknown flag such as `--aply` return 2 with the usage and write nothing", async () => {
+  for (const flag of ["--help", "--aply"]) {
+    const lines: string[] = [];
+    const io = {
+      log: (l: string) => lines.push(l),
+      error: (l: string) => lines.push(l),
+    };
+    expect(await main([flag], {}, "/nonexistent", io)).toBe(2);
+    expect(lines.join("\n")).toContain("claudetto-setup");
+  }
+});
