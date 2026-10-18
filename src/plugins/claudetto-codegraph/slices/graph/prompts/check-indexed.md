@@ -1,1 +1,1 @@
-This project has an index, so the code-graph hooks run.
+This project has an index, so the `codegraph` commands work.

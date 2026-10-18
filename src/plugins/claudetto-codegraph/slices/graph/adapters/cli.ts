@@ -1,13 +1,7 @@
 // The command `claudetto-codegraph-check`: it prints whether `codegraph` is on `PATH` and whether this project has an index.
 // It prints the install command when the CLI is missing, and never installs it.
-// With `--mcp`, it prints the commands that add and remove the `codegraph` MCP server, and runs neither.
 
-import {
-  type CliState,
-  checkLines,
-  failureDetail,
-  mcpLines,
-} from "../graph.ts";
+import { type CliState, checkLines, failureDetail } from "../graph.ts";
 import { QUERY_TIMEOUT_MS } from "../limits.ts";
 import { codegraph, indexed } from "./codegraph.ts";
 
@@ -32,14 +26,10 @@ export const check = (root: string, env: NodeJS.ProcessEnv): string[] => {
   return checkLines(cli, indexed(root));
 };
 
-const USAGE = "Usage: claudetto-codegraph-check [--mcp]";
+const USAGE = "Usage: claudetto-codegraph-check";
 
-/** Prints the check for the current folder, or the MCP lines with `--mcp`. Returns the exit code, which is 0 also when the CLI is missing, because the text then tells the user what to do, 0 for `--help`, and 2 for an unknown argument. */
+/** Prints the check for the current folder. Returns the exit code, which is 0 also when the CLI is missing, because the text then tells the user what to do, 0 for `--help`, and 2 for an unknown argument. */
 export const main = (argv: readonly string[]): number => {
-  if (argv.length === 1 && argv[0] === "--mcp") {
-    console.log(mcpLines().join("\n"));
-    return 0;
-  }
   if (argv.length === 1 && argv[0] === "--help") {
     console.log(USAGE);
     return 0;
