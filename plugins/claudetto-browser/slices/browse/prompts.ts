@@ -14,4 +14,4 @@ export const NO_GUIDE = (v: {
 Run \`agent-browser --help\` to see the commands of the installed version.`;
 
 /** From `src/plugins/claudetto-browser/slices/browse/prompts/not-installed.md`. */
-export const NOT_INSTALLED = `agent-browser is not installed. Ask the user to install it with: npm install -g agent-browser`;
+export const NOT_INSTALLED = `agent-browser is not installed. Install it with \`npm install -g agent-browser\`, then go on.`;

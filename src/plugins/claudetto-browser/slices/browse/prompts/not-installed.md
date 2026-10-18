@@ -1,1 +1,1 @@
-agent-browser is not installed. Ask the user to install it with: npm install -g agent-browser
+agent-browser is not installed. Install it with `npm install -g agent-browser`, then go on.

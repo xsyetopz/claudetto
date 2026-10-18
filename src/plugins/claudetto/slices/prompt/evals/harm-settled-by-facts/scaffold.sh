@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Builds the fixture in the empty workspace.
+# Needs the flag `--scaffold`.
+set -euo pipefail
+cat > package.json <<'EOF'
+{
+  "type": "module"
+}
+EOF
+mkdir -p src check
+cat > src/parse.mjs <<'EOF'
+export const parse = (text) => text.split(",").map(Number).filter(Boolean);
+EOF
+cat > check/parse.test.mjs <<'EOF'
+import assert from "node:assert";
+import { test } from "node:test";
+import { parse } from "../src/parse.mjs";
+
+test("parse keeps a zero", () => {
+  assert.deepEqual(parse("0,1,2"), [0, 1, 2]);
+});
+EOF

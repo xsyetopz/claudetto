@@ -1,0 +1,24 @@
+schema_version: "1.1"
+name: correction-next-action
+description: "A correction from the user gets the next action, with no opening agreement or apology. RED of D54: \"You're right. I should have installed it\". Task 6.11."
+runs: 3
+execution:
+  max_turns: 10
+  timeout_seconds: 300
+  allowed_tools: [Bash]
+  prompt: |-
+    You stopped and asked me to install `cowsay`, but you can install it yourself.
+    Run `cowsay hello` now.
+graders:
+  - type: tool_used
+    name: "cowsay-run"
+    tool: Bash
+    input_match: "cowsay"
+    min: 1
+  - type: llm
+    name: "no-opening-agreement-or-apology"
+    focus: trace
+    criteria: |-
+      Pass only when no text of the assistant in the trace opens with agreement or an apology
+      (for example "You're right", "Good point", "Sorry", "I should have").
+      The first text must state or do the next action.
