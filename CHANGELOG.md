@@ -18,12 +18,13 @@ Run `/claudetto:setup` again after the update, because it cleans the settings of
 ### Added
 
 - The `goal` slice replaces the built-in `/goal` with checks that run a command, read a file, or ask a small model, with the steps of a plan file, a budget, and a stall rule, and it turns off `ProposeGoal` and the `goal_status` attachment.
+- With the `advisor` option `claudetto`, the `advise` slice gives the tool `advise` in place of the built-in advisor, with the model, the effort, and the bounds that the user sets, and `/setup` sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`.
 - The `ground` slice denies a `Write` or `Edit` of a plan file when the text cites a `file:line` or a convention that the source does not hold.
 - The `spec` slice ships the OpenSpec schemas `task`, `story`, and `epic`, and a `config.yaml` template of the project rules, in the `spec` skill.
 
 ### Changed
 
-- **Breaking:** `claudetto` has these slices: `decide`, `goal`, `ground`, `guard`, `handoff`, `prompt`, `sembr`, `setup`, `spec`, `statusline`, and `styles`.
+- **Breaking:** `claudetto` has these slices: `advise`, `decide`, `goal`, `ground`, `guard`, `handoff`, `prompt`, `sembr`, `setup`, `spec`, `statusline`, and `styles`.
 - **Breaking:** `claudetto-sessions` is one `sessions` skill with the scripts `audit` and `replay`.
   The `awareness`, `start-cost`, and `usage` slices are gone, because `/context`, `/usage`, `/insights`, and `/status` give the same facts.
 - **Breaking:** `guard` keeps the deny of a `Bash` command that only prints a file, and it names the `Read` call to use.
@@ -38,8 +39,7 @@ Run `/claudetto:setup` again after the update, because it cleans the settings of
 
 - **Breaking:** the slices `agents`, `asks`, `attribution`, `checks`, `corrections`, `gc`, `minispec`, `policy`, `reads`, `repostate`, `turngate`, `usercheck`, and `worktree`.
   The `minispec` CLI and skills, the `gc` skill, the custom agents, and `claudetto-run-checks` go with them.
-- **Breaking:** the `testJudge` option with the `asks` slice, and the add-on `claudetto-you-should-know`.
-- **Breaking:** the recipes `just measure`, `just usage`, and `just start-run`.
+- **Breaking:** the `testJudge` option with the `asks` slice, the add-on `claudetto-you-should-know`, and the recipes `just measure`, `just usage`, and `just start-run`.
 
 ## [0.1.0-alpha.1] - 2026-10-15
 
