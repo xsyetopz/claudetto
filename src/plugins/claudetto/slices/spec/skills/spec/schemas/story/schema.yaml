@@ -27,8 +27,7 @@ artifacts:
       Keep each requirement text to 500 characters or fewer.
       A new capability starts with `## Purpose` of 50 characters or more.
       Do not add `## Purpose` to a delta of an existing capability.
-      Write `[NEEDS CLARIFICATION: <question>]` in place of a guess.
-      While a marker is open, ask the user and do not make `tasks.md`.
+      Write `[NEEDS CLARIFICATION: <question>]` in place of a guess, and ask the user.
     requires: [proposal]
 
   - id: design
@@ -49,7 +48,7 @@ artifacts:
       Check that the proposal, the specs, the design, and the tasks agree.
       Tick or fix each item of the template, and list each gap under **Gaps**.
       Stop and ask the user while a gap or a `[NEEDS CLARIFICATION` marker is open.
-    requires: [specs, design]
+    requires: [tasks]
 
   - id: tasks
     generates: tasks.md
@@ -57,13 +56,12 @@ artifacts:
     template: tasks.md
     instruction: |
       Write the task list as checkboxes `- [ ] X.Y Task` under `## N.` headings, because the apply step parses them.
-      Stop first if `review.md` or a spec has an open `[NEEDS CLARIFICATION` marker.
       Order the tasks by dependency, and keep each small enough for one session.
       Each task states how to verify it, and lands its own tests and docs.
-    requires: [review]
+    requires: [specs, design]
 
 apply:
-  requires: [ tasks ]
+  requires: [review]
   tracks: tasks.md
   instruction: |
     Read the context files, do the pending tasks, and tick each one when done.

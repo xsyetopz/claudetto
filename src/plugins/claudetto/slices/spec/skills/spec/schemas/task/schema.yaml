@@ -9,9 +9,7 @@ artifacts:
     instruction: |
       Write why the change is needed.
       Sections: **Why** (1-2 sentences), **What Changes** (bullets), **Impact**.
-      List no capability, because a task changes no behavior.
-      Tell the user to set `skip_specs: true` in the `.openspec.yaml` of the change, because `openspec validate` rejects a change with no delta otherwise.
-      Use `story` in place of `task` if behavior changes.
+      List no capability. Use `story` if behavior changes.
     requires: []
 
   - id: tasks
