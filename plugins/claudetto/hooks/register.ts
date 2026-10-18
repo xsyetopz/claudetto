@@ -126,7 +126,7 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.call sembr
   on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h20);
   // eval: tool.call ground
-  on("tool.call", { tool: ["Write", "Edit", "ProposeGoal"] }, h7);
+  on("tool.call", { tool: ["Write", "Edit"] }, h7);
   // eval: tool.call guard
   on("tool.call", { tool: ["Bash"] }, h8);
   // eval: tool.call decide

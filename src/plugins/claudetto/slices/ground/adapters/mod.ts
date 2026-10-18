@@ -1,4 +1,4 @@
-// The mod handler of the `ground` slice: `tool.call` on `Write` and `Edit` of a plan or a spec file, and on `ProposeGoal`.
+// The mod handler of the `ground` slice: `tool.call` on `Write` and `Edit` of a plan or a spec file.
 // A claim with no source gets a deny that names it, and the three ways out (`prompts/unsourced.md`).
 // The hook has no catch-all: when it throws, Claude Code logs the failure and skips the hook, so the call runs.
 // The session and the files are read here, because `claude plugin validate` follows `$` only into a function of one file.
@@ -9,7 +9,7 @@ import { groundDeny } from "./shared.ts";
 
 export type GroundHook = MatchedHook<
   "tool.call",
-  { readonly tool: readonly ["Write", "Edit", "ProposeGoal"] }
+  { readonly tool: readonly ["Write", "Edit"] }
 >;
 
 /** The text of `path` or `null`. */

@@ -138,7 +138,7 @@ test("a done-claim in a condition or a check line passes", () => {
   );
 });
 
-test("`planText` reads a plan file, a goal condition, and no other call", () => {
+test("`planText` reads a plan file and no other call", () => {
   const w = {
     tool: "Write",
     file_path: "/p/openspec/changes/c/tasks.md",
@@ -148,7 +148,6 @@ test("`planText` reads a plan file, a goal condition, and no other call", () => 
   expect(
     planText({ tool: "Edit", file_path: "/p/design.md", new_string: "y" }),
   ).toBe("y");
-  expect(planText({ tool: "ProposeGoal", condition: "z" })).toBe("z");
   expect(
     planText({ tool: "Write", file_path: "/p/src/a.ts", content: "x" }),
   ).toBeNull();
