@@ -97,7 +97,7 @@ Treat it as a prior, not as a measurement of the 5.5 generation.
   ("Is Sonnet actually good enough for Claude Code", older, not model specific.)
 - Lesson: short worker contexts and few turns matter more than the model row.
 
-## Implications for the `dotclaude` Agents
+## Implications for the `claudetto` Agents
 
 - `investigator` (read-only search and reading) fits Haiku 5.5 on the older evidence in F4.
   Keep a rule to report sources and to stop on ambiguity, because of F5.

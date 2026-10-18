@@ -85,7 +85,7 @@ All quotes are one sentence at most.
 - S5 states no default for `maxTurns` in the part read.
 - S1 to S6 give no turn-limit advice for subagents.
 
-## Implications for the `dotclaude` Agents
+## Implications for the `claudetto` Agents
 
 - Keep the current effort values. No source asks for a change in any of the six.
 - The 5 implementer failures on 2026-10-13 are a turn limit and a context limit, not an effort issue.
@@ -102,6 +102,6 @@ All quotes are one sentence at most.
 - What is the default for `maxTurns` when the field is absent?
   The part of S5 that was read does not say.
 - Does the frontmatter `effort` of a subagent pass through the Sonnet 5.5 recalibration as `medium` in Claude Code?
-  S4 says the scale is "calibrated per model", so a sweep on dotclaude tasks is needed.
+  S4 says the scale is "calibrated per model", so a sweep on claudetto tasks is needed.
 - Does `effort: high` for the implementer cut partial returns, or does it only raise turn use?
   No source measures this.

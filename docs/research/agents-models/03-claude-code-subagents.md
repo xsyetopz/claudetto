@@ -4,7 +4,7 @@
 
 - Subagents page: <https://code.claude.com/docs/en/sub-agents> (read 2026-10-13, first 100000 of 108547 characters).
 - Model configuration page: <https://code.claude.com/docs/en/model-config> (read 2026-10-13, first 100000 of 116497 characters).
-- Project wiki: `wiki/claude-code/Subagents.md`, `wiki/dotclaude/Agents.md`, `wiki/rationale/Decisions-Tools.md`, `wiki/reference/Bounds.md`.
+- Project wiki: `wiki/claude-code/Subagents.md`, `wiki/claudetto/Agents.md`, `wiki/rationale/Decisions-Tools.md`, `wiki/reference/Bounds.md`.
 - Not read: agent teams, costs, and best-practices pages.
 - Not read: the tail of both pages.
 
@@ -68,13 +68,13 @@
 ### What the Project Claims Today
 
 - `wiki/claude-code/Subagents.md` says the docs give no default `maxTurns` and that the agent files always set it.
-- `wiki/dotclaude/Agents.md` says a roster test pins each `maxTurns` to `turnBound`.
+- `wiki/claudetto/Agents.md` says a roster test pins each `maxTurns` to `turnBound`.
 - `wiki/rationale/Decisions-Tools.md` says `maxTurns` is the third layer, with one spare turn.
   The first layers are a hook that tells the run to report at the bound.
 - `wiki/reference/Bounds.md` says `AGENT_MAX_TURNS` spans `31` to `61`.
 - The wiki rationale for "one spare turn" is project design, not an official claim.
 
-## Implications for the `dotclaude` Agents
+## Implications for the `claudetto` Agents
 
 - `maxTurns` is optional, and the docs show no default.
   Removing it from the implementer is allowed by the docs.

@@ -23,4 +23,3 @@ node_modules/
 /.agents/
 /.claude/skills/claude-api
 /skills-lock.json
-.dotclaude/

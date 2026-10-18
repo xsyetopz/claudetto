@@ -1,4 +1,4 @@
-// The S1 sample of the guard: the 368 distinct commands that the file-print deny of dotclaude 1.0.0 refused in 37 sessions.
+// The S1 sample of the guard: the 368 distinct commands that the file-print deny of version 1.0.0 of the earlier name of the project refused in 37 sessions.
 // 300 of them did more than print, so the compound command ran in full before the deny.
 // No command runs. A command is denied only when each part of it is a bare print of one file.
 

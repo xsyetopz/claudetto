@@ -92,7 +92,7 @@ Project logs have no public URL, so they are not independent public evidence.
 - Evidence in the final report (T2).
 - A turn cap near the 75th percentile cuts cost 24 to 68%, but this is about cost and not quality (P3).
 
-## Implications for the `dotclaude` Agents
+## Implications for the `claudetto` Agents
 
 - The `reviewer` is the main control, because Opus 5.5 verifies its own work poorly (F1).
 - The `reviewer` needs a fresh context and, where possible, a model that differs from the author.

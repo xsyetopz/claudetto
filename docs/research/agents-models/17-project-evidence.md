@@ -1,10 +1,10 @@
-# R17: Project Evidence on the `dotclaude` Agents
+# R17: Project Evidence on the `claudetto` Agents
 
 ## Sources
 
-- `wiki/dotclaude/Agents.md`: the roster table and the turn bounds.
-- `src/plugins/dotclaude/slices/agents/limits.ts` and `src/plugins/dotclaude/slices/agents/agents/*.md`.
-- `src/plugins/dotclaude/slices/handoff/limits.ts`: `SUBAGENT_CONTEXT_MAX`, `HAIKU_CONTEXT_MAX`, `TURNS_LEFT_AT`.
+- `wiki/claudetto/Agents.md`: the roster table and the turn bounds.
+- `src/plugins/claudetto/slices/agents/limits.ts` and `src/plugins/claudetto/slices/agents/agents/*.md`.
+- `src/plugins/claudetto/slices/handoff/limits.ts`: `SUBAGENT_CONTEXT_MAX`, `HAIKU_CONTEXT_MAX`, `TURNS_LEFT_AT`.
 - `wiki/evidence/Usage-Evidence.md`: prices and the measured Max 20x week.
 - Git history: commits `f7710bc8`, `c940923f`, `2df8299f`, `ba249cb8`, `547f1f4f`.
 - Archived `research/subagent-usage.md` of the 0.28.0 change, seen in commit `e1dc9984`.
@@ -44,7 +44,7 @@
   Those runs made 64 to 66 requests.
   The note says the count unit of `maxTurns` is not verified.
 - `test-runner` (Haiku 5.5, 16 turns) was removed in commit `2df8299f`.
-  A CLI, `dotclaude-run-checks`, replaced it.
+  A CLI, `claudetto-run-checks`, replaced it.
 - `TURNS_LEFT_AT` is 4: two turns to commit, one to report, one spare (commit `ba249cb8`).
   It must stay below the smallest `maxTurns`.
 
@@ -65,7 +65,7 @@
 ### Turn and Context Limits in the Session of 2026-10-13
 
 - 30 agent runs finished: 23 messages came from `implementer` and 7 from `reviewer`.
-  The `dotclaude:implementer` type was started 11 times and `dotclaude:reviewer` 4 times by name.
+  The `claudetto:implementer` type was started 11 times and `claudetto:reviewer` 4 times by name.
   No other type ran.
 - `implementer` stopped for a context limit 3 times in the first wave: P05, P03, and P06.
   Each run reported "my context reached its bound" or "ran out of context".
@@ -84,7 +84,7 @@
   The stopped runs were on track, not stuck.
   Their notes list done commits, verified tests, and the exact next steps.
 
-## Implications for the `dotclaude` Agents
+## Implications for the `claudetto` Agents
 
 - `implementer` and `debugger` at 61 turns: the limit cut on-track work at least 4 times, and it did no useful stopping.
   The one-way cost was a retry run.

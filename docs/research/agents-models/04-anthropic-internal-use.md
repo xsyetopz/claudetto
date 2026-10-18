@@ -86,10 +86,10 @@
 - Switching models inside one session breaks the prompt cache, so S9 says to spawn a cheaper subagent and keep the main loop on one model.
 - Subagent requests count toward the same usage limits as the main session (S7).
 
-## Implications for the `dotclaude` Agents
+## Implications for the `claudetto` Agents
 
 - The root session is the lead, which matches S1, S5, and S9.
-- No dotclaude agent should hold the `Agent` tool.
+- No claudetto agent should hold the `Agent` tool.
 - S7 allows nesting by default, so the agents must omit `Agent` in `tools`, as the current agent list shows.
 - The split of strong lead and cheaper reading worker supports `investigator` on haiku-5-5.
 - S9 says to move to Sonnet 5.5 when the worker needs judgment.
@@ -103,7 +103,7 @@
 - Coding has fewer parallel subtasks (S1), so the root should run few implementers at once.
 - `debugger` has no direct Anthropic precedent, and S4 calls role-specialized agents unproven.
 - Anthropic offers no evidence for a numeric `maxTurns` value, so no source supports 31, 41, or 61.
-- If dotclaude keeps `maxTurns`, it works as a runaway guard, and S7 shows that the root can resume partial output.
+- If claudetto keeps `maxTurns`, it works as a runaway guard, and S7 shows that the root can resume partial output.
 - A limit that stops real work early costs more than it saves, because S1 shows token use drives results.
 - Scale the budget by task class like S1, and put the stop signal in a runnable check like S6.
 - Keep the effort per agent explicit, with `medium` as the default and `high` for planning and review (S9).
@@ -113,7 +113,7 @@
 
 - Which 2026 Anthropic posts give a measured lead and worker split for Fable/Mythos 5.1, Opus 5.5, Sonnet 5.5, and Haiku 5.5?
 - Does Anthropic use a `maxTurns` value in its own subagents? No source says so.
-- Does the S5 range (3-10x) or the S1 figure (15x) match a coding workload with dotclaude agents?
+- Does the S5 range (3-10x) or the S1 figure (15x) match a coding workload with claudetto agents?
 - Should `researcher` and `investigator` merge, given that S9 separates workers only by the judgment they need?
 - Does the `advisor` setting (S8) have a Claude Code equivalent that could replace `planner`?
 - "How Anthropic teams use Claude Code" was not read, and it may hold internal usage data.

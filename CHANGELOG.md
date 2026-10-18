@@ -43,7 +43,7 @@ Run `/claudetto:setup` again after the update, because it cleans the settings of
 
 ## [0.1.0-alpha.1] - 2026-10-15
 
-This release restarts dotclaude 1.0.0 as `claudetto`, with no compatibility with dotclaude 1.0.0.
+This release restarts the earlier name of the project as `claudetto`, with no compatibility with version 1.0.0 of the earlier name.
 The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the wiki tells what changes.
 
 ### Added
@@ -205,7 +205,7 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 
 ### Removed
 
-- The `rules`, `stamp`, and `spec` slices of dotclaude 1.0.0, and its old `handoff` slice.
+- The `rules`, `stamp`, and `spec` slices of the earlier name of the project (version 1.0.0), and its old `handoff` slice.
 - The `dcc-plugin-agents-md` plugin.
 - The AI-policy ask of the guard, which the `policy` slice replaces.
 - The counts of passed, failed, and skipped tests in `claudetto-run-checks`, because they came from English words in the output of each test runner.

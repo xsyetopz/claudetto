@@ -7,13 +7,13 @@
 - Spec Kitty README: <https://github.com/Priivacy-ai/spec-kitty>
 - Spec Kitty kanban: <https://github.com/Priivacy-ai/spec-kitty/blob/main/docs/architecture/kanban-workflow.md>
 - Spec Kitty agent commands: <https://github.com/spec-kitty/spec-kitty/blob/main/docs/api/agent-subcommands.md>
-- dotclaude-spec: `src/plugins/dotclaude/slices/spec/` and `wiki/dotclaude/Spec-Store.md`, at commit `44e74425` of dotclaude 1.0.0.
+- the earlier spec CLI: `src/plugins/claudetto/slices/spec/` and `wiki/claudetto/Spec-Store.md`, at commit `44e74425` of version 1.0.0 of the earlier name of the project.
 - Limit: Spec Kitty `agent tasks list-tasks` flags and a `dashboard` command are not confirmed (page read 100000 of 149086 characters).
 
-## `dotclaude-spec` Today
+## The Earlier Spec CLI Today
 
-The CLI is `dotclaude-spec`, in `src/plugins/dotclaude/slices/spec/adapters/`.
-The store is `.dotclaude/spec/` (`wiki/dotclaude/Spec-Store.md`).
+The CLI is the earlier spec CLI, in `src/plugins/claudetto/slices/spec/adapters/`.
+The store is `.claudetto/spec/` (`wiki/claudetto/Spec-Store.md`).
 Sizes are `trivial`, `medium`, and `large`.
 Only `large` has packages, waves, and `events.jsonl`.
 
@@ -91,7 +91,7 @@ Lanes (<https://github.com/Priivacy-ai/spec-kitty/blob/main/docs/architecture/ka
 
 ## Gap Table
 
-| Control | OpenSpec | Spec Kitty | dotclaude-spec |
+| Control | OpenSpec | Spec Kitty | the earlier spec CLI |
 | --- | --- | --- | --- |
 | List changes | `list` | none found | none (`status` with no id only) |
 | Show one change or package | `show` | prompt via `action implement` | none |

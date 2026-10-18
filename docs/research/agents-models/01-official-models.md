@@ -78,7 +78,7 @@ The lineup order by cost and capability is Haiku, Sonnet, Opus, Fable/Mythos (S2
 - S9 defines `maxTurns` as the "Maximum number of agentic turns before the subagent stops".
 - S9 says at the limit Claude Code returns the output marked as partial, and Claude can resume it.
 
-## Implications for the `dotclaude` Agents
+## Implications for the `claudetto` Agents
 
 1. Keep `planner` and `reviewer` on `opus-5-5`.
    - Evidence: Opus 5.5 is the named default and the best cost per solved task (S1, S2).

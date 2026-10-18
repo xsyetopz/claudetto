@@ -99,10 +99,10 @@ The picker shows "{from} effort is ~Nx the estimated cost of {default} (the defa
 - The default window is the model context size.
   The compact threshold is the window minus 13000 tokens (function `O4`), and the block level is 3000 below the window.
 
-## Implications for the `dotclaude` Agents
+## Implications for the `claudetto` Agents
 
 - Claude Code gives no turn limit to `Explore`, `Plan`, or `general-purpose`.
-  A `maxTurns` value in dotclaude is a choice that needs a reason.
+  A `maxTurns` value in claudetto is a choice that needs a reason.
 - A hit limit gives no final report turn.
   The root gets partial text or "no report", and can continue the agent by message.
   So a low limit on a worker that must report (`planner`, `reviewer`, `researcher`) risks an empty result.
@@ -112,7 +112,7 @@ The picker shows "{from} effort is ~Nx the estimated cost of {default} (the defa
   The `planner`, `reviewer`, and `debugger` use `high`, which is above the default.
   No cost ratio exists for these levels, so a cost claim needs a measurement.
 - "No subagent orchestrates" is not a default.
-  Depth 3 is allowed, so each dotclaude agent must block the `Agent` tool with `disallowedTools`.
+  Depth 3 is allowed, so each claudetto agent must block the `Agent` tool with `disallowedTools`.
 
 ## Open Questions
 

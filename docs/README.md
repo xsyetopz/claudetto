@@ -1,6 +1,6 @@
-# `dotclaude` Documentation
+# `claudetto` Documentation
 
-The documentation is in the [dotclaude wiki](https://github.com/xsyetopz/claudetto/wiki).
+The documentation is in the [claudetto wiki](https://github.com/xsyetopz/claudetto/wiki).
 
 - Use: [Core plugin](https://github.com/xsyetopz/claudetto/wiki/Architecture), [Spec store](https://github.com/xsyetopz/claudetto/wiki/Spec-Store), [Contributions](https://github.com/xsyetopz/claudetto/wiki/Contributions)
 - Develop: [Development](https://github.com/xsyetopz/claudetto/wiki/Development), [Sandbox](https://github.com/xsyetopz/claudetto/wiki/Sandbox)

@@ -166,11 +166,11 @@ Page and section numbers come from the delegate. Spot-check them before public u
 - Failure modes (S): the constitution is a prompt-injection surface (Lesson 4, p.13-14), silent gaps (6.5 item 4), business-logic flaws (6.5 item 2).
 - Gaps (S): no front matter schema, no states.
 
-## Part C: Current `dotclaude` Design (Delegate Read, Lead Did Not Re-Read)
+## Part C: Current `claudetto` Design (Delegate Read, Lead Did Not Re-Read)
 
 Note: the brief said P46 is uncommitted. The first `git status` of the lead showed modified files. The delegate found a clean tree with P46 in HEAD `c14130c3`. Treat the commit state as unconfirmed. The delegate read the working-tree files, which equal HEAD.
 
-- Lanes (S): `planned, doing, review, done, blocked, canceled` (`src/kernel/spec-store.ts:16-23`). Transition table `NEXT_LANES` in `src/plugins/dotclaude/slices/spec/adapters/lane.ts:78-85`.
+- Lanes (S): `planned, doing, review, done, blocked, canceled` (`src/kernel/spec-store.ts:16-23`). Transition table `NEXT_LANES` in `src/plugins/claudetto/slices/spec/adapters/lane.ts:78-85`.
 - `lane <pkg> done` needs no evidence: `NEXT_LANES` allows `done` from `planned`, `doing`, `review`, `blocked` (lane.ts:79-82). Only `canceled` is refused (lane.ts:213-218). (I) `done` can skip `merge` and `approve`.
 - `merge` needs `lane === "review"` (`adapters/merge.ts:167-170`) and `approved()` (`domain/events.ts:20-24`). `approve` is only a verdict event (`adapters/review.ts:43-52`). The event type has no commit or SHA field (`spec-store.ts:42-49`), so an approval is not bound to a commit.
 - The `turn.complete` hook moves a package to `review` on any end with reason `answer` (`adapters/mod.ts:74-81`). No `Verify:` line is run by any tool (no runner in `adapters/`).
@@ -180,9 +180,9 @@ Note: the brief said P46 is uncommitted. The first `git status` of the lead show
 - `SPEC_SCHEMA` stays `1` (`spec-store.ts:13`) although P46 added `canceled`, `note`, `verdict`, `findings`.
 - `archive.ts` has no lane or checkbox check (inferred from absence).
 - `docs/research/agents-models/18-spec-commands.md` predates P46: 5 lanes, no read commands.
-- `wiki/dotclaude/Spec-Store.md` matches the code on the lane rules checked (lines 99-142).
+- `wiki/claudetto/Spec-Store.md` matches the code on the lane rules checked (lines 99-142).
 
-## Part D: Ranked Proposals for `dotclaude` 1.0.0 (No Backward Compatibility)
+## Part D: Ranked Proposals for the Earlier Name of the Project, Version 1.0.0 (No Backward Compatibility)
 
 Strength scale: strong = measured with numbers and a control. moderate = measured but weak design or observational. weak = anecdote or opinion.
 

@@ -74,7 +74,7 @@ Treat each claim as one user report.
 - A separate reviewer with a fresh context beats self-review. T7.
 - A subagent is for context isolation. T13.
 
-## Implications for the `dotclaude` Agents
+## Implications for the `claudetto` Agents
 
 - No thread supports a small hard cap. Raise `maxTurns` for `implementer` and `debugger`, or remove it, and bound the work by slice size.
 - Add a commit-early rule and a journal rule to the worker prompts, to protect work at any stop. T2, T6, T12.
