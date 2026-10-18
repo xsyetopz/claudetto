@@ -86,6 +86,7 @@ export const PART_LINE_PINS: Record<string, number> = {
   "src/plugins/claudetto-sessions": 257,
   "src/plugins/claudetto/slices/advise": 352,
   "src/plugins/claudetto/slices/decide": 1216,
+  "src/plugins/claudetto/slices/dry": 141,
   "src/plugins/claudetto/slices/goal": 625,
   "src/plugins/claudetto/slices/ground": 377,
   "src/plugins/claudetto/slices/guard": 352,
@@ -96,7 +97,7 @@ export const PART_LINE_PINS: Record<string, number> = {
   "src/plugins/claudetto/slices/spec": 11,
   "src/plugins/claudetto/slices/statusline": 1216,
   "src/plugins/claudetto/slices/styles": 13,
-  tools: 5104,
+  tools: 5105,
 };
 
 /** The short `tools/` files that `justfile` runs with `bun`, so that a recipe stays a file. */

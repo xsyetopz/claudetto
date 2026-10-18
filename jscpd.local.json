@@ -1,0 +1,6 @@
+{
+  "extends": "claudetto:base",
+  "path": ["src", "tests", "tools"],
+  "ignore": ["**/*.md", "**/fixtures/**", "**/samples/**"],
+  "semantic": null
+}
