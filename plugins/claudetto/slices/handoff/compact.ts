@@ -81,10 +81,14 @@ export const handoffPath = (
 
 /**
  * The text of the handoff file with the open openspec change at its start: the change folder, the next open task,
- * and the rule that a checked task is done and verified.
+ * the passed `checks` of the session, and the rule that a checked task is done and verified.
  * With no change, the text stays as it is.
  */
-export const withChange = (text: string, change: OpenChange | null): string =>
+export const withChange = (
+  text: string,
+  change: OpenChange | null,
+  checks: readonly string[] = [],
+): string =>
   change === null
     ? text
     : [
@@ -95,6 +99,10 @@ export const withChange = (text: string, change: OpenChange | null): string =>
             change.done.length === 0
               ? "none"
               : change.done.map((id) => `\`${id}\``).join(", "),
+          checks:
+            checks.length === 0
+              ? "none"
+              : checks.map((c) => `\`${c}\``).join(", "),
         }),
         "",
         text,

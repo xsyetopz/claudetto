@@ -22,6 +22,7 @@ import { missingValues, missLine } from "../../../../../kernel/ground.ts";
 import { CHANGES_DIR } from "../../../../../kernel/paths.ts";
 import type { Handler } from "../../../../../kernel/slice.ts";
 import { oneLine } from "../../../../../kernel/text.ts";
+import { passedChecks } from "../checks.ts";
 import { coldHandoff, isCold } from "../cold.ts";
 import {
   compactedMessages,
@@ -120,12 +121,20 @@ const ungrounded = (
 };
 
 /** The path of a new handoff file and the text of the file for `reply`, with the open change at its start. */
-const fileOf = async ($: EngineInterface, reply: string) => {
+const fileOf = async (
+  $: EngineInterface,
+  reply: string,
+  messages: readonly SessionMessage[],
+) => {
   const root = await rootOf($);
   const change = await openChangeOf($, root);
   return {
     path: `${root}${handoffPath(new Date(), change)}`,
-    text: withChange(`${joinQuotes(reply.trimEnd())}\n`, change),
+    text: withChange(
+      `${joinQuotes(reply.trimEnd())}\n`,
+      change,
+      passedChecks(messages),
+    ),
   };
 };
 
@@ -153,7 +162,7 @@ const compacted = async (
   if (reply === null) return null;
   const model = await $.session.model().catch(() => null);
   if (model === null) return null;
-  const { path, text } = await fileOf($, reply);
+  const { path, text } = await fileOf($, reply, messages);
   const kept = compactedMessages(
     messages,
     handedText(path, text, ungrounded($, reply, messages)),
