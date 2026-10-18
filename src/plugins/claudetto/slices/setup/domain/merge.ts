@@ -42,6 +42,9 @@ export const snippetFor = (
   };
 };
 
+/** The arrays that the snippet replaces: `enforceAvailableModels` makes a stale entry a hole. */
+const REPLACED = new Set(["availableModels"]);
+
 const show = (v: unknown) => (v === undefined ? "(unset)" : JSON.stringify(v));
 
 /**
@@ -61,12 +64,13 @@ export const merge = (
     const had = out[key];
     if (isObject(value)) out[key] = merge(had, value, changes, where);
     else {
-      const next = Array.isArray(value)
-        ? [
-            ...(Array.isArray(had) ? had : []),
-            ...value.filter((v) => !(Array.isArray(had) && had.includes(v))),
-          ]
-        : value;
+      const next =
+        Array.isArray(value) && !REPLACED.has(where)
+          ? [
+              ...(Array.isArray(had) ? had : []),
+              ...value.filter((v) => !(Array.isArray(had) && had.includes(v))),
+            ]
+          : value;
       if (JSON.stringify(had) !== JSON.stringify(next)) {
         changes.push(`${where}: ${show(had)} -> ${show(next)}`);
         out[key] = next;

@@ -21,7 +21,21 @@ export const slice = {
     disableClaudeAiConnectors: true,
     syncClaudeAiSkills: false,
     syncClaudeAiPlugins: false,
+    // An agent worktree starts from the current `HEAD`, not from `origin/<default-branch>`.
+    worktree: { baseRef: "head" },
     // Tests and dev servers bind a local port without leaving the sandbox.
-    sandbox: { network: { allowLocalBinding: true } },
+    sandbox: {
+      network: { allowLocalBinding: true },
+      filesystem: {
+        // The package caches that an install writes. `bun install` fails with `EPERM` in the sandbox without the first one.
+        allowWrite: [
+          "~/.bun/install/cache",
+          "~/.npm",
+          "~/.cache/pip",
+          "~/.cargo/registry",
+          "~/go/pkg/mod",
+        ],
+      },
+    },
   },
 } satisfies Slice;

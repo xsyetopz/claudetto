@@ -18,6 +18,7 @@ import {
 import {
   cleanAutoMode,
   cleanGitConfig,
+  cleanLegacyKeys,
   stripBlock,
 } from "../domain/cleanup.ts";
 import { isObject, type Json, merge, snippetFor } from "../domain/merge.ts";
@@ -39,14 +40,6 @@ import {
 export type Io = { log: (line: string) => void; error: (line: string) => void };
 
 const consoleIo: Io = { log: console.log, error: console.error };
-
-/** The `autoMode` lists of the snippet. The schema has no `autoMode`, and Claude Code reads it only from the user settings. */
-const AUTO_MODE = Object.fromEntries(
-  ["allow", "soft_deny", "hard_deny", "environment"].map((list) => [
-    list,
-    ["$defaults"],
-  ]),
-);
 
 /** The plugin folder, three levels above this file. */
 const ROOT = path.resolve(import.meta.dirname, "..", "..", "..");
@@ -108,18 +101,16 @@ export const main = async (
     io.error(SETTINGS_FAILED({ file, message: (err as Error).message }));
     return 1;
   }
-  const cleaned = cleanAutoMode(cleanGitConfig(current));
+  const cleaned = cleanLegacyKeys(cleanAutoMode(cleanGitConfig(current)));
   const { snippet, kept } = snippetFor(cleaned, ROOT, scope === "project");
-  const changes = (["env", "autoMode"] as const)
+  const changes = (
+    ["env", "autoMode", "promptCacheTtl", "enabledPlugins"] as const
+  )
     .filter(
       (key) => JSON.stringify(cleaned[key]) !== JSON.stringify(current[key]),
     )
     .map((key) => CLEANED({ key }));
-  const settings = merge(
-    cleaned,
-    scope === "user" ? { ...snippet, autoMode: AUTO_MODE } : snippet,
-    changes,
-  );
+  const settings = merge(cleaned, snippet, changes);
   const mdText = fs.existsSync(claudeMd) ? await Bun.file(claudeMd).text() : "";
   const mdNext = stripBlock(mdText);
   if (mdNext !== mdText) changes.push(CLAUDE_MD_REMOVED({ file: claudeMd }));

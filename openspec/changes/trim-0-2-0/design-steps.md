@@ -42,7 +42,7 @@ Each step ends with `just generate`, its check, and one commit.
   - `sandbox.network.allowLocalBinding: true`, so that tests and dev servers can bind a local port without leaving the sandbox.
     Without it, 12 tests of this repo fail with `Failed to start server`.
   - `outputStyle: "claudetto:Concise"`.
-  - `autoMode` lists with `$defaults` only.
+  - No `autoMode` key, because `$defaults` is the built-in default, so the snippet sets nothing.
   - The `statusLine` command of the trimmed status line.
   - The entries of `trim/domain/removed.ts`, each one checked against `docs/env.md` or `strings.txt` of 2.1.302.
   - No `promptCacheTtl` key.

@@ -42,29 +42,35 @@ test("the snippet keeps the keys of the user, and a second run changes nothing",
   expect((await run(first)).settings).toStrictEqual(first);
 });
 
-test("the cleanup removes the git hooks of 0.1.0 from `env`, and renumbers the pairs of the user", async () => {
-  const { settings } = await run({
-    env: {
-      GIT_CONFIG_COUNT: "4",
-      GIT_CONFIG_KEY_0: "hook.claudetto-attribution.event",
-      GIT_CONFIG_VALUE_0: "commit-msg",
-      GIT_CONFIG_KEY_1: "user.name",
-      GIT_CONFIG_VALUE_1: "Ann",
-      GIT_CONFIG_KEY_2: "hook.claudetto-policy.command",
-      GIT_CONFIG_VALUE_2: "script",
-      GIT_CONFIG_KEY_3: "core.editor",
-      GIT_CONFIG_VALUE_3: "vim",
-    },
-  });
+/** The eight pairs that 0.1.0 wrote for the two hooks. */
+const PAIRS_0_1_0: [string, string][] = [
+  ["hook.claudetto-attribution.event", "commit-msg"],
+  ["hook.claudetto-attribution.command", "script"],
+  ["hook.claudetto-attribution.enabled", "true"],
+  ["hook.commit-msg.enabled", "true"],
+  ["hook.claudetto-policy.event", "pre-push"],
+  ["hook.claudetto-policy.command", "script"],
+  ["hook.claudetto-policy.enabled", "true"],
+  ["hook.pre-push.enabled", "true"],
+];
+
+test("the cleanup removes the eight git config pairs of 0.1.0 from `env`, and keeps the pair of the user", async () => {
+  const pairs = [["user.name", "Ann"], ...PAIRS_0_1_0];
+  const env = Object.fromEntries([
+    ["GIT_CONFIG_COUNT", String(pairs.length)],
+    ...pairs.flatMap(([k, v], i) => [
+      [`GIT_CONFIG_KEY_${i}`, k],
+      [`GIT_CONFIG_VALUE_${i}`, v],
+    ]),
+  ]);
+  const { settings } = await run({ env });
   const git = Object.entries(settings.env).filter(([k]) =>
     k.startsWith("GIT_CONFIG"),
   );
   expect(Object.fromEntries(git)).toStrictEqual({
-    GIT_CONFIG_COUNT: "2",
+    GIT_CONFIG_COUNT: "1",
     GIT_CONFIG_KEY_0: "user.name",
     GIT_CONFIG_VALUE_0: "Ann",
-    GIT_CONFIG_KEY_1: "core.editor",
-    GIT_CONFIG_VALUE_1: "vim",
   });
 });
 
@@ -85,12 +91,14 @@ test("the cleanup removes the rule texts of 0.1.0 from `autoMode`, and keeps the
   const mine = "My rule: never touch the staging folder.";
   const { settings } = await run({
     autoMode: {
+      allow: [...fixture.allow, mine],
       soft_deny: [...fixture.soft_deny, mine],
       hard_deny: [...fixture.hard_deny, mine],
     },
   });
-  expect(settings.autoMode.soft_deny).toStrictEqual([mine, "$defaults"]);
-  expect(settings.autoMode.hard_deny).toStrictEqual([mine, "$defaults"]);
+  expect(settings.autoMode.allow).toStrictEqual([mine]);
+  expect(settings.autoMode.soft_deny).toStrictEqual([mine]);
+  expect(settings.autoMode.hard_deny).toStrictEqual([mine]);
 });
 
 test("the rule texts that the cleanup matches are the rule texts of `kernel/policy` of 0.1.0", () => {
@@ -100,4 +108,21 @@ test("the rule texts that the cleanup matches are the rule texts of `kernel/poli
 test("the cleanup removes the claudetto block of `CLAUDE.md`, and keeps the text of the user", async () => {
   const { claudeMd } = await run({}, `# Mine\n\n${BLOCK}\n`);
   expect(claudeMd).toBe("# Mine\n");
+});
+
+test('the cleanup removes `promptCacheTtl: "5m"` and the switch-off of `you-should-know`, and keeps other values', async () => {
+  const { settings } = await run({
+    promptCacheTtl: "5m",
+    enabledPlugins: {
+      "cc-plugin-you-should-know@builtin": false,
+      "cc-plugin-tips@builtin": true,
+    },
+  });
+  expect(settings.promptCacheTtl).toBeUndefined();
+  expect(
+    settings.enabledPlugins["cc-plugin-you-should-know@builtin"],
+  ).toBeUndefined();
+  expect((await run({ promptCacheTtl: "1h" })).settings.promptCacheTtl).toBe(
+    "1h",
+  );
 });

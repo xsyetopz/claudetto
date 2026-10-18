@@ -16,6 +16,10 @@ export const KEPT_KEY = (v: { key: string }): string =>
 
 /** From `src/plugins/claudetto/slices/setup/prompts/legacy-rules.json`. */
 export const LEGACY_RULES = {
+  allow: [
+    "Agent worktree removal: `git worktree remove <path>`, then `git branch -d worktree-agent-<id>` of the worktree that this transcript removed, with the same `<id>`. Each command is a plain command, with no `cd`, `-C`, `--git-dir`, `--work-tree`, or other command on the same line. `<path>` is one literal absolute path to a `.claude/worktrees/agent-<id>` folder under the repository that the session started in. `<id>` holds only letters, digits, `_`, and `-`. No other flag, such as `--force`, `-f`, `-D`, or `-r`. Not covered by this exception, so the default rules judge them: `git worktree prune`, a glob, a variable, `..`, a trailing `/`, and the `.claude/worktrees/` folder itself. For context only, git refuses a worktree with changes or a lock, and it refuses an unmerged branch. Git does not refuse ignored files, so the removal can delete them.",
+    "Claude Code temp folder cleanup: `rm`, `rm -r`, `rm -rf`, `rm -fr`, or `rmdir`, with no other flag and one literal path, under `/private/tmp/claude-<uid>/`, `/tmp/claude-<uid>/`, or `<TMPDIR>/claude-<uid>/`. `<uid>` is the digits of the `claude-<uid>` folder that a prior tool call in this session shows. The command holds the literal path, with `TMPDIR` already resolved, and no variable. The path must be a folder that a prior tool call in this transcript visibly created (`mkdir`, `Write`, a `>` redirect, or `-o` or `--output`), or the exact file that a prior call wrote. A folder that Claude Code creates does not count as agent-created. A file that a program wrote as a side effect does not count. A line with another command is judged under the default rules. Not covered by this exception, so the default rules judge them: the `claude-<uid>` folder itself, a glob or pattern, `..`, a trailing `/`, and a pipeline or command that deletes by pattern, such as `find ... -delete`, `rsync --delete`, or `xargs`.",
+  ],
   soft_deny: [
     "A command that runs with root privileges, such as `sudo` or `doas`, or that installs software for every user. Ask the user first.",
   ],
@@ -210,6 +214,9 @@ export const SNIPPET = {
     "plugin-authoring": "name-only",
   },
   disableBundledSkills: true,
+  worktree: {
+    baseRef: "head",
+  },
   disableRemoteControl: true,
   enableArtifact: false,
   enableWorkflows: false,
@@ -255,6 +262,15 @@ export const SNIPPET = {
         "proxy.golang.org",
       ],
       allowLocalBinding: true,
+    },
+    filesystem: {
+      allowWrite: [
+        "~/.bun/install/cache",
+        "~/.npm",
+        "~/.cache/pip",
+        "~/.cargo/registry",
+        "~/go/pkg/mod",
+      ],
     },
   },
   feedbackSurveyRate: 0,

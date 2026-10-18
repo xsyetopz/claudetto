@@ -8,8 +8,13 @@ import { isObject, type Json } from "./merge.ts";
 const BEGIN = "<!-- claudetto:begin -->";
 const END = "<!-- claudetto:end -->";
 
+const YSK = "cc-plugin-you-should-know@builtin";
+
 /** The prefix of the names of the git hooks that 0.1.0 put in `env`. */
 const HOOK_PREFIX = "hook.claudetto-";
+
+/** The keys that 0.1.0 set to `"true"` so that its hooks win over a repository that turns them off. */
+const ENABLED_KEYS = ["hook.commit-msg.enabled", "hook.pre-push.enabled"];
 
 /**
  * `settings` without the `GIT_CONFIG_KEY_<n>` and `GIT_CONFIG_VALUE_<n>` pairs of the claudetto hooks.
@@ -22,23 +27,28 @@ export const cleanGitConfig = (settings: Json): Json => {
   const pairs = Array.from({ length: count }, (_, i) => [
     env[`GIT_CONFIG_KEY_${i}`],
     env[`GIT_CONFIG_VALUE_${i}`],
-  ]).filter(([key]) => !String(key).startsWith(HOOK_PREFIX));
-  if (pairs.length === count) return settings;
+  ]).filter(([key]) => key !== undefined);
+  const kept = pairs.filter(
+    ([key, value]) =>
+      !String(key).startsWith(HOOK_PREFIX) &&
+      !(ENABLED_KEYS.includes(String(key)) && value === "true"),
+  );
+  if (kept.length === count) return settings;
   const next: Json = { ...env };
   for (let i = 0; i < count; i++) {
     delete next[`GIT_CONFIG_KEY_${i}`];
     delete next[`GIT_CONFIG_VALUE_${i}`];
   }
-  pairs.forEach(([key, value], i) => {
+  kept.forEach(([key, value], i) => {
     next[`GIT_CONFIG_KEY_${i}`] = key;
     next[`GIT_CONFIG_VALUE_${i}`] = value;
   });
-  if (pairs.length > 0) next["GIT_CONFIG_COUNT"] = String(pairs.length);
+  if (kept.length > 0) next["GIT_CONFIG_COUNT"] = String(kept.length);
   else delete next["GIT_CONFIG_COUNT"];
   return { ...settings, env: next };
 };
 
-/** `settings` without the rule texts of 0.1.0 in `autoMode.soft_deny` and `autoMode.hard_deny`. */
+/** `settings` without the rule texts of 0.1.0 in `autoMode.allow`, `autoMode.soft_deny` and `autoMode.hard_deny`. */
 export const cleanAutoMode = (settings: Json): Json => {
   const auto = settings["autoMode"];
   if (!isObject(auto)) return settings;
@@ -49,6 +59,20 @@ export const cleanAutoMode = (settings: Json): Json => {
       next[key] = list.filter((v) => !(old as unknown[]).includes(v));
   }
   return { ...settings, autoMode: next };
+};
+
+/** `settings` without the 0.1.0 values `promptCacheTtl: "5m"` and the switch-off of `you-should-know`. */
+export const cleanLegacyKeys = (settings: Json): Json => {
+  const { promptCacheTtl, enabledPlugins, ...rest } = settings;
+  const out: Json = { ...rest };
+  if (promptCacheTtl !== "5m" && promptCacheTtl !== undefined)
+    out["promptCacheTtl"] = promptCacheTtl;
+  if (isObject(enabledPlugins)) {
+    const { [YSK]: off, ...others } = enabledPlugins;
+    out["enabledPlugins"] = off === false ? others : enabledPlugins;
+  } else if (enabledPlugins !== undefined)
+    out["enabledPlugins"] = enabledPlugins;
+  return out;
 };
 
 /** `text` without the claudetto block, or `text` when it has no block in order. */

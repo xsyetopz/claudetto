@@ -164,6 +164,9 @@ To apply the snippet with setup or by hand, see [Settings Apply](Settings-Apply)
     "plugin-authoring": "name-only"
   },
   "disableBundledSkills": true,
+  "worktree": {
+    "baseRef": "head"
+  },
   "disableRemoteControl": true,
   "enableArtifact": false,
   "enableWorkflows": false,
@@ -208,6 +211,15 @@ To apply the snippet with setup or by hand, see [Settings Apply](Settings-Apply)
         "proxy.golang.org"
       ],
       "allowLocalBinding": true
+    },
+    "filesystem": {
+      "allowWrite": [
+        "~/.bun/install/cache",
+        "~/.npm",
+        "~/.cache/pip",
+        "~/.cargo/registry",
+        "~/go/pkg/mod"
+      ]
     }
   },
   "feedbackSurveyRate": 0,
