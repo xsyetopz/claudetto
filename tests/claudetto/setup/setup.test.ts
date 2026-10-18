@@ -34,6 +34,12 @@ test("the snippet sets `sandbox.network.allowLocalBinding` to `true`", async () 
   expect(settings.sandbox.network.allowLocalBinding).toBe(true);
 });
 
+test("the snippet holds no `promptCacheTtl` and no `subagentPromptCacheTtl`", async () => {
+  const { settings } = await run({});
+  expect(settings).not.toHaveProperty("promptCacheTtl");
+  expect(settings).not.toHaveProperty("subagentPromptCacheTtl");
+});
+
 test("the snippet keeps the keys of the user, and a second run changes nothing", async () => {
   const first = (await run({ theme: "dark", env: { A: "1" } })).settings;
   expect(first.theme).toBe("dark");
