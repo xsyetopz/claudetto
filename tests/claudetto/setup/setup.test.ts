@@ -101,6 +101,13 @@ test("the cleanup removes the rule texts of 0.1.0 from `autoMode`, and keeps the
   expect(settings.autoMode.hard_deny).toStrictEqual([mine]);
 });
 
+test("the cleanup removes an `autoMode` list that holds only 0.1.0 texts, so the built-in defaults apply", async () => {
+  const { settings } = await run({
+    autoMode: { hard_deny: [...fixture.hard_deny] },
+  });
+  expect(settings.autoMode.hard_deny).toBeUndefined();
+});
+
 test("the rule texts that the cleanup matches are the rule texts of `kernel/policy` of 0.1.0", () => {
   expect(LEGACY_RULES).toStrictEqual(fixture);
 });

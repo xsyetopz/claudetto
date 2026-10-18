@@ -56,8 +56,11 @@ export const cleanAutoMode = (settings: Json): Json => {
   const next: Json = { ...auto };
   for (const [key, old] of Object.entries(LEGACY_RULES as Json)) {
     const list = auto[key];
-    if (Array.isArray(list))
-      next[key] = list.filter((v) => !(old as unknown[]).includes(v));
+    if (!Array.isArray(list)) continue;
+    const kept = list.filter((v) => !(old as unknown[]).includes(v));
+    // An empty list would replace the built-in defaults, so the key goes.
+    if (kept.length > 0) next[key] = kept;
+    else delete next[key];
   }
   return { ...settings, autoMode: next };
 };
