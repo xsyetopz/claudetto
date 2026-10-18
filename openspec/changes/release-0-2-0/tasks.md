@@ -50,7 +50,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just test tests/claudetto/handoff && just lab`
 - [ ] 3.12 Add a test that the done list of a handoff holds only checked tasks of `tasks.md` and passed checks, also when the model text says that a step is done, and see it fail, then fix the handoff (D48).
   Check: `just test tests/claudetto/handoff`
-- [x] 3.13 Add a lab test that a cold handoff copies the open decisions of `design.md` in a MiniSpec change, and of `.claudetto/progress.md` in other work, with no model call, and see it fail, then change the handoff, and add the one line of D50 to the always-loaded text. (closed: removed in trim-0-2-0)
+- [ ] 3.13 Add a lab test that a cold handoff copies the open decisions of `design.md` in an openspec change, and of `.claudetto/progress.md` in other work, with no model call, and see it fail, then change the handoff, and add the one line of D50 to the always-loaded text.
   Check: `just generate && just test tests/claudetto/handoff && just lab`
 - [x] 3.14 Add a test that each agent prompt and each delegation text asks for the full output of a failed check in a file, and see it fail, then change the texts (D33). (closed: removed in trim-0-2-0)
   Check: `just generate && just test tests/claudetto/agents`
@@ -67,7 +67,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 ## 1. Version and evidence
 
-- [ ] 1.1 Add a test that `main(["minor", "--dry-run"])` of `tools/bump-version.ts` with no `--root` returns 0, and see it fail, because `rest` at line 95 drops `args[0]` when `at` is `-1`.
+- [x] 1.1 Add a test that `main(["minor", "--dry-run"])` of `tools/bump-version.ts` with no `--root` returns 0, and see it fail, because `rest` at line 95 drops `args[0]` when `at` is `-1`.
   Fix the filter, then bump the version to `0.2.0` with `just bump 0.2.0`.
   Check: `just test tests/tools/bump-version.test.ts && grep -q '"version": "0.2.0"' package.json`
 - [ ] 1.2 Write `openspec/changes/release-0-2-0/findings.md` with one row for each surface of D38.
@@ -75,7 +75,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Give each fault its source, the task that fixes it, and the check, and add a task for each fault that no task covers.
   Check: `test -s openspec/changes/release-0-2-0/findings.md && minispec validate release-0-2-0`
 - [ ] 1.3 Read the rest of `external/2026-10-17/` and the older dossiers in `external/` for model, effort, prompt, and cache facts, and add each new fact that changes a decision to `design.md`.
-  Check: `minispec validate release-0-2-0`
+  Check: `OPENSPEC_TELEMETRY=0 bunx --bun @fission-ai/openspec validate release-0-2-0`
 
 ## 2. You-Should-Know and removals
 
@@ -107,12 +107,12 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [x] 4.5 Add `scout` and `fixer`, and set the model and the effort of each agent to D3. (closed: removed in trim-0-2-0)
   Write each description as the size and the kind of work that fits, and each body as goals and limits, not steps.
   Check: `just generate && just test tests/claudetto/agents && just validate`
-- [ ] 4.6 Remove the prompt text that asks for long-lived lane worktrees, and add a drift line of the setup for a missing `worktree.baseRef` of `head`, with a test.
+- [x] 4.6 Remove the prompt text that asks for long-lived lane worktrees, and add a drift line of the setup for a missing `worktree.baseRef` of `head`, with a test. (closed: removed in trim-0-2-0)
   Record the source of D11 in `src/wiki/rationale/Decisions-Session.md`.
   Check: `just test tests/claudetto/setup && ! git grep -qi 'lane worktree' src`
 - [ ] 4.7 Set `SUBAGENTS_MAX_20X` to 10 and `SUBAGENTS_API` to 4 by D14, keep `SUBAGENTS_PRO` at 2 and `SUBAGENTS_MAX_5X` at 4, and add the method and numbers of D14 to `wiki/evidence/Usage-Evidence.md`.
   Check: `just test tests/claudetto/setup tests/claudetto/prompt && bun run lint:md`
-- [ ] 4.8 Add a test that `accountOf` with `subscriptionType: "max"` and no tier asks for the plan, and that setup writes the picks of the answer, and see it fail, then add the question to the setup by D19.
+- [x] 4.8 Add a test that `accountOf` with `subscriptionType: "max"` and no tier asks for the plan, and that setup writes the picks of the answer, and see it fail, then add the question to the setup by D19. (closed: removed in trim-0-2-0)
   Check: `just test tests/claudetto/setup`
 - [ ] 4.9 Set the picks of each account to D20 (Pro `medium`, Max 5x, Max 20x, and API key `high`, Opus 5.5 for each), with the test that pins them.
   Check: `just test tests/claudetto/setup`
@@ -128,14 +128,14 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 - [x] 6.1 Record the start tokens of `0.1.0-alpha.1` by source from an existing transcript, and set `START_TOKENS` in `tools/limits.ts` to half of the part that claudetto adds. (closed: removed in trim-0-2-0)
   Check: `grep -q START_TOKENS tools/limits.ts && just test`
-- [ ] 6.2 List each point where claudetto can override or add a text in 2.1.302 (tool descriptions, system prompt blocks, output styles, agents, skills, MCP texts, the `CLAUDE.md` block, hook messages), with the model that reads each text, in `src/wiki/reference/Texts.md`.
+- [ ] 6.2 List each point where claudetto can override or add a text in 2.1.302 (tool descriptions, system prompt blocks, output styles, skills, MCP texts, the `CLAUDE.md` block, hook messages), with the model that reads each text, in `src/wiki/reference/Texts.md`.
   Check: `test -s src/wiki/reference/Texts.md && bun run lint:md`
 - [ ] 6.3 Audit each text of 6.2 by `.claude/skills/claude-api/shared/prompt-audit.md` for the model that reads it, and write the report with `file:line` to `openspec/changes/release-0-2-0/prompt-audit.md`.
   Check: `test -s openspec/changes/release-0-2-0/prompt-audit.md`
 - [ ] 6.4 Rewrite each text by the audit, D17, and the practices of `design-prompts.md` for the model that reads it (D54): goals and limits, no step lists, no rule that a hook enforces, a fast check of the changed files after each change of behavior, the full checks once for each finished part, and none for an edit that changes no behavior (D7).
   Each text tells the model to report a gap or a blocker and not to work around it (D26).
   Add a `tool.describe` transform for each built-in tool whose text the audit shortens or fixes.
-  Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles tests/claudetto/surface && bun run lint:md`
+  Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles && bun run lint:md`
 - [ ] 6.5 Remove the global `CLAUDE.md` block of the setup by D51, with a test that setup writes no block and removes its own block after a yes, and leaves the text outside the markers, and see it fail first.
   Then cut the MCP tool descriptions, the MCP server instructions, and the skill and agent descriptions to the words that a model needs to pick them.
   Check: `just generate && just test tests/claudetto/setup && just validate`
@@ -154,7 +154,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   This is a paid run: ask the user first, with the expected cost and the weekly share.
   Check: `just validate`
 - [ ] 6.11 Add each RED of the table in `design-prompts.md` as a fixture that a test or an eval case catches, and each GREEN as the example of its shipped text, and add the D54 line on a missing tool to the system prompt, and see the tests fail first (D55).
-  Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles tests/claudetto/turngate && just lab`
+  Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles && just lab`
 
 ## 7. Cache and setup
 
@@ -254,14 +254,14 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [ ] 11.3 Run the changed evals with `just eval-variant claudetto--v0.1.0-alpha.1` at 10 runs for each arm.
   This is a paid run: ask the user first, with the expected cost and the weekly share.
   Check: `just eval-variant claudetto--v0.1.0-alpha.1 --model claude-haiku-5-5 --max-cost-usd 5`
-- [ ] 11.4 Run the implementer cases on Sonnet 5.5 `high`, Opus 5.5 `low`, and Opus 5.5 `medium` at 10 runs for each arm, and change D3 only by D21.
+- [x] 11.4 Run the implementer cases on Sonnet 5.5 `high`, Opus 5.5 `low`, and Opus 5.5 `medium` at 10 runs for each arm, and change D3 only by D21. (closed: removed in trim-0-2-0)
   This is a paid run: ask the user first, with the expected cost and the weekly share.
   Set the effort of each arm with `CLAUDE_CODE_EFFORT_LEVEL`, which overrides the `effort` of the agent files.
   Check: `CLAUDE_CODE_EFFORT_LEVEL=high just eval-variant claudetto--v0.1.0-alpha.1 --model claude-sonnet-5-5 --max-cost-usd 5`
-- [x] 11.5 Find in the bundle a variable that stops the telemetry of a `claude` run and keeps the feature flags, and record it in `src/wiki/rationale/Decisions-Session.md`. (closed: removed in trim-0-2-0)
-  Add a test that `tools/telemetry.ts` gives an arm with the advisor that env and no `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`, see it fail, then add it.
+- [ ] 11.5 Find in the bundle a variable that stops the telemetry of a `claude` run and keeps the feature flags, and record it in `src/wiki/rationale/Decisions-Session.md`.
+  Add a test that `tools/telemetry.ts` gives an arm that env and no `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`, see it fail, then add it.
   When no such variable exists, drop task 11.6 and keep the `planner` (D31).
-  Check: `just test tests/tools/telemetry-env.test.ts && grep -q advisor src/wiki/rationale/Decisions-Session.md`
+  Check: `just test tests/tools/telemetry-env.test.ts`
 - [x] 11.6 Add the planning cases of D30 with their hidden lists, and check each case on a recorded bad plan (D25), then run the `planner` and `advisor` arms at 10 runs each, and keep or remove the `planner` agent by the rule of D30. (closed: removed in trim-0-2-0)
   This is a paid run: ask the user first, with the expected cost and the weekly share.
   Check: `just validate && grep -q 'planner.*advisor' wiki/evidence/Usage-Evidence.md`
@@ -279,5 +279,5 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just docker check`
 - [ ] 12.4 Ask the user before the paid run, with the cost and the weekly share, then run one `just sandbox` session of the setup and one task of each slice on a fresh config, and write each fault to `findings.md` and fix it (D38).
   Check: `just validate`
-- [ ] 12.5 Ask the user for a yes to tag `v0.2.0` and push, and do neither before the yes (D38).
-  Check: `git tag --list v0.2.0`
+- [ ] 12.5 Ask the user for a yes to tag `claudetto--v0.2.0` and push, and do neither before the yes (D38).
+  Check: `git tag --list claudetto--v0.2.0`

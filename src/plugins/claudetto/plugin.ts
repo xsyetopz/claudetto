@@ -3,6 +3,6 @@
 
 export const plugin = {
   name: "claudetto",
-  keywords: ["output-style", "agents", "hooks", "statusline"],
+  keywords: ["output-style", "hooks", "statusline"],
   homepage: "https://github.com/xsyetopz/claudetto/wiki/Architecture",
 };

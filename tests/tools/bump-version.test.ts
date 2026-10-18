@@ -54,6 +54,10 @@ test.skipIf(process.getuid?.() === 0)(
   },
 );
 
+test("a dry run with no `--root` finds the level and writes nothing", async () => {
+  expect(await main(["minor", "--dry-run"])).toBe(0);
+});
+
 test("an exact pre-release target is the next version", () => {
   expect(nextVersion("1.0.0", "0.1.0-alpha.1")).toBe("0.1.0-alpha.1");
 });

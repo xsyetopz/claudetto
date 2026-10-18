@@ -38,8 +38,8 @@ The setup skill shows each change to your settings file, and it writes the chang
 
 Requirements:
 
-- Claude Code `2.1.296` or later.
-  claudetto is tested only on `2.1.296`.
+- Claude Code `2.1.302` or later.
+  claudetto is tested only on `2.1.302`.
 - `git`.
 - [Bun](https://bun.sh) `1.4.3` or later on `PATH`, for the status line, the setup command, and the `second_opinion` tool.
 - [Node.js](https://nodejs.org) on `PATH`, for the npm installs of the add-ons.
@@ -59,7 +59,7 @@ You can also copy the keys that you want into your own `settings.json`.
 | Output style | `outputStyle` is `claudetto:Concise`. Your own `outputStyle` setting can change it. |
 | Permissions | Reads of secret files and destructive commands such as `rm -rf /` are denied. A force push asks. |
 | Sandbox | Bash runs in the sandbox. Its network reaches GitHub and the package registries only. |
-| Guard | Denies a command that prints a secret. |
+| Guard | Denies a `Bash` command that only prints a file, and names the `Read` call to use. |
 | Ground | Denies a `Write` or `Edit` of a plan file, and a `ProposeGoal` call, that cites a `file:line` or a convention that the source does not hold. |
 | Sembr | Checks the line breaks of Markdown. |
 | Status line | The folder, git, model, effort, context against the window, cost, and the limits. The percent turns yellow at `75%` and red at `90%`. |
