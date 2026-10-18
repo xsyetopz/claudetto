@@ -16,6 +16,7 @@ import {
   onSpawn,
   onToolDescribe,
 } from "./adapters/mod.ts";
+import { GIT_ASK } from "./domain/git-ask.ts";
 import { OFF_AGENTS, OFF_ATTACHMENTS, OFF_COMMANDS } from "./domain/off.ts";
 
 export const slice = {
@@ -216,16 +217,7 @@ export const slice = {
         "TaskUpdate",
       ],
       ask: [
-        "Bash(git push *--force*)",
-        "Bash(git push -f*)",
-        "Bash(git push * -f)",
-        "Bash(git push * -f *)",
-        "Bash(git reset --hard*)",
-        "Bash(git clean -f*)",
-        "Bash(git clean -d*)",
-        "Bash(git branch -D *)",
-        "Bash(git checkout -- *)",
-        "Bash(git restore *)",
+        ...GIT_ASK,
         "Bash(rm -*r*)",
         "Bash(rm -*R*)",
         "Bash(rm * -*r*)",
