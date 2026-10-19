@@ -3,7 +3,7 @@
 # Mod API: Turn and Prompt Types (Part 2)
 
 These are more of the types behind `$.turn`, `$.prompt`, and their events.
-They run from `PromptMedia` to `TurnRefusal.explanation`.
+They run from `PromptMedia` to `SkillSource`.
 Example: `await $.prompt.submit({ text: "what the person typed", asUser: true })`.
 
 ## Types
@@ -128,26 +128,6 @@ Example: `await $.prompt.submit({ text: "what the person typed", asUser: true })
 | ✅ | `SkillPromptResult` | What a `skill.prompt` hook returns: the text the model reads for that skill. | Object. Its fields have rows below. Used by `skill.prompt`, `$.skill.prompt`. | d.ts line 12467 |
 | ✅ | `SkillPromptResult.text` | A field of `SkillPromptResult`. | Type: `string`. | d.ts line 12467 |
 | ✅ | `SkillSource` | Whose words a skill is, in the engine's own words: the settings tier whose skills folder holds it, or what else provides it. | Alias of `'userSettings' \| 'projectSettings' \| 'policySettings' \| 'plugin' \| 'built-in' \| 'mcp' \| 'syncedSkills'` or any string. The list is open, so a newer source is a word of its own. | d.ts line 12479 |
-| ✅ | `TurnCompleteFields` | What every `turn.complete` carries whatever its reason: the answer, the duration, the interrupt flag, the turn's id, its loop and what it cost. | Object. Its fields have rows below. | d.ts line 13938 |
-| ✅ | `TurnCompleteFields.answer` | The assistant's final visible text this turn ("" if none, e.g. thinking-only). | Type: `string`. For a subagent that handed its report back, this is the report as delivered. A refused hand-back changes nothing. | d.ts line 13938 |
-| ✅ | `TurnCompleteFields.durationMs` | Wall-clock length of the turn in milliseconds. | Type: `number`. | d.ts line 13938 |
-| ✅ | `TurnCompleteFields.isAborted` | True when the turn ended by interruption (`reason === 'aborted'`). | Type: `boolean`. | d.ts line 13938 |
-| ✅ | `TurnCompleteFields.turnId` | The turn's id, the same one its `turn.start` and every `turn.step` carried, on the main loop and in a subagent's run alike. | Type: `string`. A hook that heard a turn's start hears its end too, even for an aborted run. | d.ts line 13938 |
-| ✅ | `TurnCompleteFields.agentId` | The loop the turn ran in: a subagent's id, as `$.agent.spawn` resolves it, each run of its loop one turn, absent on the main loop. | Type: `string`. Optional. Pinned: a different value is refused. Every hook hears an agent's end, so a plugin gets its child's answer. | d.ts line 13938 |
-| ✅ | `TurnCompleteFields.usage` | What the turn cost: its real requests' token counts, plus what a made-up response's stop stated, summed, and the model of the last that counted. | Type: `TurnUsage`. Optional. A response a `turn.step` hook made up adds nothing unless its stop states usage, absent when nothing counted (an interrupt, an API error). | d.ts line 13938 |
-| ✅ | `TurnCompleteInput` | The input of `turn.complete`: the assistant's final message of a turn, at the moment the turn ends (where the turn's duration is reported). | Alias of `TurnCompleteFields & (TurnCompleteRefused \| TurnCompleteUnrefused)`. `reason` says why it ended, `refusal` exists on a refusal alone. Used by `turn.complete`, `$.turn.complete`. | d.ts line 13990 |
-| ✅ | `TurnCompleteReason` | Why a turn ended: the model answered, the user interrupted it, the model refused with no fallback model to retry on, or an API error ended it. | Alias of `'answer' \| 'aborted' \| 'refusal' \| 'error'`. | d.ts line 13996 |
-| ✅ | `TurnCompleteRefused` | The end of a turn the model refused with no fallback model to retry on: what the API said of the refusal rides along. | Object. Its fields have rows below. | d.ts line 14002 |
-| ✅ | `TurnCompleteRefused.reason` | A field of `TurnCompleteRefused`. | Type: `'refusal'`. | d.ts line 14002 |
-| ✅ | `TurnCompleteRefused.refusal` | A field of `TurnCompleteRefused`. | Type: `TurnRefusal`. | d.ts line 14002 |
-| ✅ | `TurnCompleteResult` | What a `turn.complete` hook returns and what `next(e)` resolves to: `{ text }`, a text other than a main-loop answer's is shown beneath it. | Object. Its fields have rows below. Core fills `usage` from `e.usage` when the turn had one. Used by `turn.complete`, `$.turn.complete`. | d.ts line 14014 |
-| ✅ | `TurnCompleteResult.text` | A field of `TurnCompleteResult`. | Type: `string`. | d.ts line 14014 |
-| ✅ | `TurnCompleteResult.usage` | A field of `TurnCompleteResult`. | Type: `TurnUsage`. Optional. | d.ts line 14014 |
-| ✅ | `TurnCompleteUnrefused` | The end of a turn that was not a refusal: answered, interrupted, or dead on an API error (retries exhausted, the context limit), nothing more. | Object. Its fields have rows below. | d.ts line 14023 |
-| ✅ | `TurnCompleteUnrefused.reason` | A field of `TurnCompleteUnrefused`. | Type: `Exclude<TurnCompleteReason, 'refusal'>`. | d.ts line 14023 |
-| ✅ | `TurnRefusal` | What the API said about a refusal that ended a turn: the classifier's category and its explanation, each null when the API sent none. | Object. Its fields have rows below. | d.ts line 14031 |
-| ✅ | `TurnRefusal.category` | A field of `TurnRefusal`. | Type: `string \| null`. | d.ts line 14031 |
-| ✅ | `TurnRefusal.explanation` | A field of `TurnRefusal`. | Type: `string \| null`. | d.ts line 14031 |
 
 ## See Also
 

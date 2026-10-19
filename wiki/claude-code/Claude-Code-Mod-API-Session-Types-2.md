@@ -3,13 +3,36 @@
 # Mod API: Session Types (Part 2)
 
 These are more of the types behind `$.session` and the `session.*` events.
-They run from `SessionEndReason` to `SessionVersion.builtAt`.
+They run from `SessionContextUsage` to `SessionStartResult.cwd`.
 Example: `const { isDelivered, reason } = await $.session.send({ to, text })`.
 
 ## Types
 
 | Mark | Item | What it is for | Shape and limits | Source |
 | --- | --- | --- | --- | --- |
+| ✅ | `SessionContextUsage` | The live context window as the status line reads it, and by category as /context breaks it down when the call asked (`{ breakdown }`). | Object. Its fields have rows below. `tokens` and `percent` are absent until the first API response of a fresh or just-compacted session. | d.ts line 11377 |
+| ✅ | `SessionContextUsage.tokens` | Input tokens the last response was answered over: uncached, cache-written and cache-read together (the status line's `total_input_tokens`). | Type: `number`. Optional. | d.ts line 11377 |
+| ✅ | `SessionContextUsage.window` | The context window of the session's model, in tokens (the status line's `context_window_size`). | Type: `number`. | d.ts line 11377 |
+| ✅ | `SessionContextUsage.percent` | `tokens` over `window` as a whole percentage, 0 to 100 (the status line's `used_percentage`). | Type: `number`. Optional. | d.ts line 11377 |
+| ✅ | `SessionContextUsage.breakdown` | The window by category, as /context breaks it down: present only when the call passed `breakdown`, and only with a session bound. | Type: `SessionContextBreakdown`. Optional. It counts against the compaction window (`rawMaxTokens`), so its `totalTokens` may differ from `tokens`. | d.ts line 11377 |
+| ✅ | `SessionCost` | What the session has cost, as `/cost` and the status line total it. | Object. Its fields have rows below. | d.ts line 11407 |
+| ✅ | `SessionCost.usd` | US dollars, summed over every priced API response this session. | Type: `number`. | d.ts line 11407 |
+| ✅ | `SessionCronSummary` | No description in the d.ts. | Object. Its fields have rows below. | d.ts line 11414 |
+| ✅ | `SessionCronSummary.id` | A field of `SessionCronSummary`. | Type: `string`. | d.ts line 11414 |
+| ✅ | `SessionCronSummary.schedule` | Cron expression, e.g. "0 9 \* * 1-5". | Type: `string`. | d.ts line 11414 |
+| ✅ | `SessionCronSummary.recurring` | False for one-shot wakeups whose cron field encodes a single fire time, true for tasks that re-fire on every match. | Type: `boolean`. | d.ts line 11414 |
+| ✅ | `SessionCronSummary.prompt` | Prompt text submitted when the cron fires. Capped at 1000 chars, clipped values append an in-string "... [+N chars]" marker. | Type: `string`. | d.ts line 11414 |
+| ✅ | `SessionDetachInput` | The input of `session.detach`: a client left the session's roster. Every field is the engine's: a hook observes, and `next(e)` passes them on. | Object. Its fields have rows below. Used by `session.detach`, `$.session.detach`. | d.ts line 11434 |
+| ✅ | `SessionDetachInput.surface` | Where the client drew. | Type: `RenderSurface`. | d.ts line 11434 |
+| ✅ | `SessionDetachInput.clientId` | The id it attached under. | Type: `string`. | d.ts line 11434 |
+| ✅ | `SessionDetachInput.reason` | Why it left: it detached, or the session ended under it. | Type: `SessionDetachReason`. | d.ts line 11434 |
+| ✅ | `SessionDetachReason` | Why a client left the roster: `detach`, it said so (ui_detach), `end`, the session ended with it still attached. | Alias of `'detach' \| 'end'`. | d.ts line 11453 |
+| ✅ | `SessionDetachResult` | What a `session.detach` hook returns and what `next(e)` resolves to: `{ clientId }`, echoed by core, a hook's own value changes nothing. | Object. Its fields have rows below. Used by `session.detach`, `$.session.detach`. | d.ts line 11459 |
+| ✅ | `SessionDetachResult.clientId` | A field of `SessionDetachResult`. | Type: `string`. | d.ts line 11459 |
+| ✅ | `SessionEndInput` | The input of `session.end`: the session is ending, why, and how to come back to it, every field is the engine's: a hook observes, `next(e)` passes it on. | Object. Its fields have rows below. One short time bound (1.5 s by default) covers all hooks. `next.budget` reads it and `next.signal` aborts at it. Used by `session.end`, `$.session.end`. | d.ts line 11476 |
+| ✅ | `SessionEndInput.reason` | Why it ends (SessionEndReason), the word the classic SessionEnd hook receives as its `reason`. | Type: `SessionEndReason`. `clear` is how a hook sees a `/clear`: the conversation ends, the process goes on under a new session id, and no `session.start` fires for it. | d.ts line 11476 |
+| ✅ | `SessionEndInput.sessionId` | The ending session's id (`$.session.id()` until now), after a `/clear` or a resume the process goes on under another. | Type: `string`. | d.ts line 11476 |
+| ✅ | `SessionEndInput.resume` | What `claude --resume` takes to return to it. | Type: `SessionResume`. | d.ts line 11476 |
 | ✅ | `SessionEndReason` | Why the session ended: the classic SessionEnd hook's own `reason`, word for word. | Alias of `ClassicHookInputs['SessionEnd']['reason']`. Why the session ended, such as `prompt_input_exit`, `clear`, `resume`, `logout`, or `other`. | d.ts line 11504 |
 | ✅ | `SessionEndResult` | What a `session.end` hook returns and what `next(e)` resolves to: `{ sessionId }`, echoed by core, a hook's own value changes nothing. | Object. Its fields have rows below. Used by `session.end`, `$.session.end`. | d.ts line 11510 |
 | ✅ | `SessionEndResult.sessionId` | A field of `SessionEndResult`. | Type: `string`. | d.ts line 11510 |
@@ -118,22 +141,11 @@ Example: `const { isDelivered, reason } = await $.session.send({ to, text })`.
 | ✅ | `SessionStartInput.isInteractive` | Whether a person is at the prompt: true under the REPL, false for a `-p` run or the SDK. | Type: `boolean`. | d.ts line 12158 |
 | ✅ | `SessionStartResult` | What a `session.start` hook returns and what `next(e)` resolves to: `{ cwd }`, echoed by core, a hook's own value does not change the session. | Object. Its fields have rows below. Used by `session.start`, `$.session.start`. | d.ts line 12179 |
 | ✅ | `SessionStartResult.cwd` | A field of `SessionStartResult`. | Type: `string`. | d.ts line 12179 |
-| ✅ | `SessionUsage` | What `$.session.usage()` answers: when the session began, the context window's fill, the account's rate-limit windows and the session's cost. | Object. Its fields have rows below. The status line's figures. A figure the engine lacks is left out, never set to zero. Used by `$.session.usage`, `session.usage`. | d.ts line 12191 |
-| ✅ | `SessionUsage.startedAt` | When the session these figures count from began, in `$.clock.now()`'s milliseconds: its launch, or for a resumed session its first launch. | Type: `number`. When the session counts from. `/clear` starts it over at that moment. | d.ts line 12191 |
-| ✅ | `SessionUsage.context` | The live context window: the status line's `context_window` figures. | Type: `SessionContextUsage`. | d.ts line 12191 |
-| ✅ | `SessionUsage.rateLimits` | The rate-limit windows the last API response reported (`five_hour`, `seven_day`, a gateway's `spend_limit`), empty when none has a reading. | Type: `SessionRateLimit[]`. | d.ts line 12191 |
-| ✅ | `SessionUsage.cost` | What the session has cost so far, as /cost totals it, absent only where the host keeps no cost ledger (the CLI always has one). | Type: `SessionCost`. Optional. | d.ts line 12191 |
-| ✅ | `SessionUsageArgs` | What `$.session.usage(args)` takes: nothing for the status line's figures alone, `breakdown` to have the window broken down as /context breaks it. | Object. Its fields have rows below. Used by `$.session.usage`, `session.usage`. | d.ts line 12224 |
-| ✅ | `SessionUsageArgs.breakdown` | Asks for `context.breakdown` and says how it is counted (ContextBreakdownDetail), absent, none is computed and the call is free. | Type: `ContextBreakdownDetail`. Optional. `full` sends one token-count request per tool and memory file, as /context does, `summary` estimates locally and sends none. | d.ts line 12224 |
-| ✅ | `SessionUsageArgs.columns` | The width the breakdown's grid will be drawn in, in terminal columns, absent, the full-width grid. Read only with `breakdown`. | Type: `number`. Optional. Under 80 the grid is the narrow one /context draws there, 5 wide. A thin client's breakdown is the remote workspace's, whose grid ignores this. | d.ts line 12224 |
-| ✅ | `SessionVersion` | What `$.session.version()` answers: the version of the engine the session runs on, the release that version is built from, and when it was built. | Object. Its fields have rows below. The same three values as the engine's own analytics rows. Used by `$.session.version`, `session.version`. | d.ts line 12251 |
-| ✅ | `SessionVersion.version` | The engine's full version, as `claude --version` prints it. | Type: `string`. A release's is `2.1.280`, a development build's adds the build's date, time and commit (`2.1.280-dev.20260920.t101500.sha1a2b3c4`). | d.ts line 12251 |
-| ✅ | `SessionVersion.base` | The release the version is built from, its semantic core and channel: `2.1.280` for that release, `2.1.280-dev` for a development build of it. | Type: `string`. Optional. Absent when the version is not spelled as a release. | d.ts line 12251 |
-| ✅ | `SessionVersion.builtAt` | When the binary was built, an ISO 8601 timestamp (`2026-09-20T10:15:00Z`). Absent in a run from source that stamps none. | Type: `string`. Optional. | d.ts line 12251 |
 
 ## See Also
 
 - [Mod API: Session Types](Claude-Code-Mod-API-Session-Types)
+- [Mod API: Session Types (Part 3)](Claude-Code-Mod-API-Session-Types-3)
 - [Mod API: Session](Claude-Code-Mod-API-Session)
 - [Claude Code Mod API](Claude-Code-Mod-API)
 - [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference)

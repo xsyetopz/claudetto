@@ -3,7 +3,7 @@
 These are the types behind `$.tool`, `$.command`, and `$.config`.
 They describe a tool call, a permission check, a command run, and a row of the `/config` menu.
 Example: `const { decision } = await $.tool.check({ tool: "Read", input })`.
-The types here run from `BuiltinToolCallInput` to `ToolDescribeInput.provider`.
+The types here run from `BuiltinToolCallInput` to `ToolCheckInput.ceiling`.
 
 ## Types
 
@@ -131,20 +131,6 @@ The types here run from `BuiltinToolCallInput` to `ToolDescribeInput.provider`.
 | ✅ | `ToolCheckInput.tool_use_id` | The call being decided, on a real call only, absent on a query. | Type: `string`. Optional. `next.origin` names who raised it: `{ plugin: 'engine', tier: 'core' }` for the model's own call, the plugin for its `$.tool.call` or its query. | d.ts line 13456 |
 | ✅ | `ToolCheckInput.agentId` | The id of the loop the call is decided in, on a real call inside a subagent's or a teammate's loop: the one its `tool.call` carried. | Type: `string`. Optional. Absent on the main loop and on a query. Which loop, not which plugin caused the call (that is `next.origin`). | d.ts line 13456 |
 | ✅ | `ToolCheckInput.ceiling` | The most permissive verdict the organization lets a call of the tool reach (`ask`), as its administrators set it on a connector's tool. | Type: `ToolCheckDecision`. Optional. Set by the engine, from the tool, never by a query, and pinned. A hook's own `ceiling`, on its answer, is dropped. Absent where none is set. | d.ts line 13456 |
-| ✅ | `ToolCheckResult` | What a `tool.check` hook returns and what `next(e)` resolves to: the verdict, why, what stands behind it, and who answers core's ask. | Object. Its fields have rows below. From core, the engine's decision for the mode and rules. A hook may answer any verdict. The last word up the chain decides. Used by `tool.check`, `$.tool.check`. | d.ts line 13503 |
-| ✅ | `ToolCheckResult.decision` | `allow` runs the tool, `ask` puts it to the mode's decider, `deny` refuses it, the reason the model's error. | Type: `ToolCheckDecision`. For a tool that needs the person, a hook can only tighten the verdict. Its `allow` does not dismiss the dialog. | d.ts line 13503 |
-| ✅ | `ToolCheckResult.reason` | Why, in a sentence: from core the rule or check that decided, from a hook, what the model reads on a deny and the dialog shows on an ask. | Type: `string`. Optional. | d.ts line 13503 |
-| ✅ | `ToolCheckResult.rule` | The settings rule that decided, as written (`Bash(git push:*)`). | Type: `string`. Optional. Absent for a mode or a tool's own check. | d.ts line 13503 |
-| ✅ | `ToolCheckResult.hook` | The classic hook event that decided, or whose ask the verdict was reached under (`PreToolUse`), whoever configured the hook. | Type: `string`. Optional. Absent on a `$.tool.check` query, which runs no classic hook. | d.ts line 13503 |
-| ✅ | `ToolCheckResult.setting` | The key of the option whose own check asked, whoever configured it (`permissions.blockReadsOutsideWorkingDirectories`). | Type: `string`. Optional. From core, for the read block: its ask on a shell command that reads outside the working directories or, the block on, leaves the sandbox. | d.ts line 13503 |
-| ✅ | `ToolCheckResult.decider` | Who an ask is put to, where that is not a dialog here: `host`, a hosted session's permission callback or the cloud session a served call is for. | Type: `ToolCheckDecider`. Optional. From core, only where a host would be asked. Names who decided. | d.ts line 13503 |
-| ✅ | `ToolCheckResult.ceiling` | The most permissive verdict the organization lets a call of the tool reach (`ask`), as its administrators set it on a connector's tool. | Type: `ToolCheckDecision`. Optional. Set by the engine from the tool. A hook's own `ceiling` is dropped. | d.ts line 13503 |
-| ✅ | `ToolDeferral` | Where a `tool.describe` answer places the tool: `true` behind ToolSearch (its schema loads when the model asks for it), `false` in the prompt's list. | Alias of `boolean`. Left out of an answer, the placement beneath stands. | d.ts line 13565 |
-| ✅ | `ToolDescribeInput` | The input of `tool.describe`: one tool's description, at the moment the engine first renders the tool's schema for the model. | Object. Its fields have rows below. Used by `tool.describe`, `$.tool.describe`. | d.ts line 13571 |
-| ✅ | `ToolDescribeInput.tool` | As the model sees the name (`Bash`, `mcp__server__tool`), the key a matcher narrows on. | Type: `string`. | d.ts line 13571 |
-| ✅ | `ToolDescribeInput.description` | The tool's description as it computed it. | Type: `string`. | d.ts line 13571 |
-| ✅ | `ToolDescribeInput.isDeferred` | Present, and true, when the engine lists the tool behind ToolSearch (its schema loads when the model asks for it by name), absent for one listed. | Type: `true`. Optional. An MCP server's tool, or one that asks to be, loads on demand. A plugin tool with `isDeferred: false` stays in front. | d.ts line 13571 |
-| ✅ | `ToolDescribeInput.provider` | Who provides this tool: the plugin and its tier, `{ plugin: "engine", tier: "core" }` for a built-in. Pinned: a rewrite is refused. | Type: `Origin`. A configured MCP server's tool is `mcp:<server>`, in `prepend` when the policy settings source configures the server, else `user`. | d.ts line 13571 |
 
 ## See Also
 

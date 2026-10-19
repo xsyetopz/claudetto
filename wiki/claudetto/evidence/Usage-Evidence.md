@@ -3,15 +3,7 @@
 # Usage Evidence
 
 This page gives the prices, models, and usage facts that `claudetto` relies on.
-It also gives one measured heavy week of an earlier release (0.x).
 Each fact has a source label: official, binary, measured, reported, or inference.
-
-## Summary
-
-- One Max 20x week reached 100% of the weekly limit at $1,854 (measured).
-- Three things drive usage: context per turn, subagent fan-out, and the `general-purpose` agent.
-  The model choice is not one of them.
-- Turns set the cost, not tool calls.
 
 ## Prices
 
@@ -63,6 +55,9 @@ A plugin that switches the model at plan mode, as `opusplan` does, pays a cache 
 
 ## The Measured Week
 
+One Max 20x week reached 100% of the weekly limit at $1,854 (measured).
+The model choice is not one of the three drivers of usage.
+
 **Method:** A scan of local transcripts for one Max 20x week (2026-09-21 to 09-28).
 The transcripts start on 09-25, so the figures are a lower bound.
 The week ran under the config of an earlier release (0.x).
@@ -92,8 +87,7 @@ The source is git commit `af3071f4` (`wiki/Usage-Evidence.md`, line 22).
 
 ## Delegation Share
 
-The `usage` report of 0.1.0 scanned local transcripts.
-It is not in 0.2.0.
+The `usage` report of 0.1.0 scanned local transcripts, and it is not in 0.2.0.
 The [Sessions](Sessions) add-on replays and audits a session.
 
 | Measure | Value | Date |
@@ -104,8 +98,7 @@ The [Sessions](Sessions) add-on replays and audits a session.
 ## Turns, Not Tool Calls
 
 - Each model turn reads the context again, so the number of turns sets the cost.
-- Independent tool calls in one response take one turn.
-  The same calls in sequence take one turn each.
+- Independent tool calls in one response take one turn, and the same calls in sequence take one turn each.
 - Claude Code has no general tool that runs several tools in one call (binary).
 
 ## Guard Denies of Read-Only Commands
@@ -129,49 +122,9 @@ The guard must deny only a command that discards work.
 - A read-only command with `$(( ))` was denied before.
   The shell scan of this release reads `$(( ))` as arithmetic, so it passes.
 
-## Code Graph Add-On Against `codegraph install`
-
-**Method:** On 2026-10-18, with no model call, from the code and text of the add-on before and after the change.
-`codegraph` was not on the `PATH`, so `codegraph install` did not run.
-The install facts come from the vendor source (`dist/installer/instructions-template.d.ts`).
-
-| Part of `claudetto-codegraph` | What `codegraph install` alone gives | Result |
-| --- | --- | --- |
-| `SessionStart` hook and its 46-word line | The `CLAUDE.md` block and MCP instructions name the same commands | Removed |
-| Sync on start, after an edit, and after `git` | `codegraph` syncs its own index (the user, 2026-10-18) | Removed, about 450 lines and 3 hook entries |
-| `--mcp` option of the check, `MCP_ADD_COMMAND` | `codegraph install` writes the MCP server | Removed |
-| Skill `codegraph` (466 words) | MCP tools cover the same questions, but subagents get only the block | Kept, for use with no MCP server |
-| `claudetto-codegraph-check` | `codegraph status` shows the index, but a missing CLI is a shell error | Kept, not measured against the live CLI |
-
-The add-on went from 658 lines to 201 lines and has no hook, so it adds no process to a session.
-
-## Model Calls of a Hook
-
-- In all 4 runs of an earlier check, `total_cost_usd` did not count the model call of an `agent` hook (measured, `external/cc-diff-299-300/live/live-checks.md`, check 6).
-- So a hook that calls `$.model.complete` reads the `usage` of the result and applies the list prices.
-- Two calls to a small model on 2026-10-16 (Claude Code `2.1.301`) used 798 input and 68 output tokens at $0.0023, and 826 and 11 tokens at $0.0018, at the list prices of Sonnet 5.5.
-  Neither read the cache.
-
-## Community Claims
-
-| Claim | True | Note |
-| --- | --- | --- |
-| `/compact` reads the whole conversation | ✅ | Expensive on a large context. `/clear` costs nothing (official) |
-| `MEMORY.md` loads at every start, up to 200 lines or 25 KB | ✅ | Topic files do not load at start (official) |
-| A short `CLAUDE.md` saves usage | ✅ | It loads at every start and in every subagent that does not set `omitClaudeMd` |
-| Subagents keep large reads out of the main context | ✅ | |
-| Old `.jsonl` transcripts in `~/.claude/projects/` enter the context | ❌ | Only `/resume` loads one. The snippet does not set `cleanupPeriodDays` ([Settings Snippet Keys](Settings-Snippet-Keys)) |
-
-## Tools That claudetto Does Not Use
-
-| Tool | Reason |
-| --- | --- |
-| RTK | A JetBrains measurement of 7.6% more cost (reported) |
-| Graphify | Fails on large repositories (reported) |
-| grepai | Needs embeddings from Ollama or OpenAI, and has no measurement |
-
 ## See Also
 
+- [Usage Evidence (Part 2)](Usage-Evidence-2)
 - [Sessions](Sessions)
 - [Settings Snippet](Settings-Snippet)
 - [Handoff Cost](Handoff-Cost)

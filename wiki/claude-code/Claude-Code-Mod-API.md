@@ -106,24 +106,24 @@ A semicolon in a doc comment became a comma.
 | [Mod API: UI Methods](Claude-Code-Mod-API-UI) | `$.ui`: toasts, panes, scroll, focus, clipboard. |
 | [Mod API: UI Events](Claude-Code-Mod-API-UI-Events) | `ui.render`, `ui.press`, and the other interface events. |
 | [Mod API: Surfaces, Elements, and Render Sites](Claude-Code-Mod-API-UI-Elements) | What a mod may draw, where, and with which props. Also JSX and globals. |
-| [Mod API: UI Types (Parts 1 to 4)](Claude-Code-Mod-API-UI-Types) | Element props and results of `$.ui`, in four parts (`-2`, `-3`, `-4`). |
+| [Mod API: UI Types (Parts 1 to 4)](Claude-Code-Mod-API-UI-Types) | Element props and results of `$.ui`, in four parts: [Part 2](Claude-Code-Mod-API-UI-Types-2), [Part 3](Claude-Code-Mod-API-UI-Types-3), [Part 4](Claude-Code-Mod-API-UI-Types-4). |
 | [Mod API: Model, Audio, and MCP](Claude-Code-Mod-API-Model) | `$.model`, `$.audio`, `$.mcp`. |
 | [Mod API: Model, Audio, and MCP Types](Claude-Code-Mod-API-Model-Types) | Requests, answers, and MCP types. |
 | [Mod API: Session](Claude-Code-Mod-API-Session) | `$.session` and the `session.*` events. |
-| [Mod API: Session Types (Parts 1 and 2)](Claude-Code-Mod-API-Session-Types) | Context, messages, usage, and send types (`-2` for part 2). |
+| [Mod API: Session Types (Parts 1 to 3)](Claude-Code-Mod-API-Session-Types) | Context, messages, usage, and send types ([Part 2](Claude-Code-Mod-API-Session-Types-2), [Part 3](Claude-Code-Mod-API-Session-Types-3)). |
 | [Mod API: Turn and Prompt](Claude-Code-Mod-API-Turn-Prompt) | `$.turn`, `$.prompt`, `turn.*`, `prompt.*`, `skill.prompt`, `attribution.text`. |
-| [Mod API: Turn and Prompt Types (Parts 1 to 3)](Claude-Code-Mod-API-Turn-Prompt-Types) | Prompt, attachment, and model step types (`-2`, `-3`). |
+| [Mod API: Turn and Prompt Types (Parts 1 to 3)](Claude-Code-Mod-API-Turn-Prompt-Types) | Prompt, attachment, and model step types ([Part 2](Claude-Code-Mod-API-Turn-Prompt-Types-2), [Part 3](Claude-Code-Mod-API-Turn-Prompt-Types-3)). |
 | [Mod API: Tool, Command, and Config](Claude-Code-Mod-API-Tool-Command-Config) | `$.tool`, `$.command`, `$.config`. |
-| [Mod API: Tool, Command, and Config Types (Parts 1 and 2)](Claude-Code-Mod-API-Tool-Command-Config-Types) | Tool call, check, command, and config types (`-2` for part 2). |
+| [Mod API: Tool, Command, and Config Types (Parts 1 and 2)](Claude-Code-Mod-API-Tool-Command-Config-Types) | Tool call, check, command, and config types ([Part 2](Claude-Code-Mod-API-Tool-Command-Config-Types-2)). |
 | [Mod API: Agent](Claude-Code-Mod-API-Agent) | `$.agent`, `agent.offer`, `agent.spawn`, and the agent types. |
 | [Mod API: Files, Store, and State](Claude-Code-Mod-API-Fs-Store-State) | `$.fs`, `$.store`, `$.state`, and the state helpers. |
 | [Mod API: Clock, HTTP, Process, Env, and Settings](Claude-Code-Mod-API-Clock-Http-Process-Env-Settings) | `$.clock`, `$.http`, `$.process`, `$.env`, `$.settings`. |
 | [Mod API: Files, State, Clock, HTTP, Process, and Settings Types](Claude-Code-Mod-API-Infra-Types) | Types of the nouns above. |
 | [Mod API: Telemetry](Claude-Code-Mod-API-Telemetry) | `$.telemetry`, `telemetry.log`, `telemetry.mark`. |
 | [Mod API: Classic Events](Claude-Code-Mod-API-Classic-Events) | The `classic.*` events of the settings hooks. |
-| [Mod API: Classic Event Types (Parts 1 to 3)](Claude-Code-Mod-API-Classic-Types) | Inputs and results of the classic events (`-2`, `-3`). |
+| [Mod API: Classic Event Types (Parts 1 to 3)](Claude-Code-Mod-API-Classic-Types) | Inputs and results of the classic events ([Part 2](Claude-Code-Mod-API-Classic-Types-2), [Part 3](Claude-Code-Mod-API-Classic-Types-3)). |
 | [Mod API: The `claude-code/testing` Module](Claude-Code-Mod-API-Testing) | `test`, `describe`, `expect`, `mock`, `tier`, `$.ui.mount`. |
-| [Mod API: Testing Types (Parts 1 and 2)](Claude-Code-Mod-API-Testing-Types) | Types of the test kit (`-2` for part 2). |
+| [Mod API: Testing Types (Parts 1 and 2)](Claude-Code-Mod-API-Testing-Types) | Types of the test kit ([Part 2](Claude-Code-Mod-API-Testing-Types-2)). |
 
 ## Known Gaps
 

@@ -1,7 +1,7 @@
 # Mod API: UI Types (Part 2)
 
 These are more of the types behind `$.ui` and the element props.
-They run from `ImageSource` to `RenderSurface`, and they cover images, inputs, links, panes, and render inputs.
+They run from `ImageSource` to `RenderInput`, and they cover images, inputs, links, panes, and render inputs.
 
 ## Types
 
@@ -131,17 +131,6 @@ They run from `ImageSource` to `RenderSurface`, and they cover images, inputs, l
 | ✅ | `RenderElement.ref` | Which drawing: the number core answered from `next(e)`, under which it holds the props it received, 0 draws the original props. | Type: `number`. | d.ts line 9780 |
 | ✅ | `RenderEventName` | The render event: `ui.render`, one event for every component that has a render site. | Alias of `'ui.render'`. | d.ts line 10119 |
 | ✅ | `RenderInput` | The input of `ui.render`: a union discriminated by `component`, one member per RenderComponent and per RenderSurface. | Generic alias of `C extends RenderComponent ? P extends RenderSurface ? RenderInputOf<C, P> : never : never`. Used by `ui.render`, `$.ui.render`. | d.ts line 10125 |
-| ✅ | `RenderInputOf` | One `ui.render` input, for a component narrowed to one surface. | Object. Its fields have rows below. | d.ts line 10130 |
-| ✅ | `RenderInputOf.surface` | Where the tree will be drawn, one literal per member, so `if (e.surface === "terminal")` narrows `e` and `$.ui.resolve(e)`. | Type: `P`. Over the wire it is what the client declared, a rendering fact and not a trust signal: do not key policy on it. | d.ts line 10130 |
-| ✅ | `RenderInputOf.component` | Which component this instance is, the key a matcher narrows on. | Type: `C`. | d.ts line 10130 |
-| ✅ | `RenderInputOf.requestId` | The instance: the tool_use_id for a dialog or tool row, the message id for a message, the agent id for a spinner. | Type: `string`. Two drawings of one component are two instances. | d.ts line 10130 |
-| ✅ | `RenderInputOf.viewport` | The size of what the surface draws into, in character cells, and whether its layout docks a pane, absent where no surface has measured. | Type: `RenderViewport`. Optional. Part of the envelope, so a rewrite keeps it. A change of width re-draws every hooked site once the resize settles. | d.ts line 10130 |
-| ✅ | `RenderInputOf.props` | The component's plain-data props. | Type: `RenderPropsOf[C]`. | d.ts line 10130 |
-| ✅ | `RenderNode` | A node of a render tree: an element, or a string (text). | Alias of `RenderElement \| string`. | d.ts line 10168 |
-| ✅ | `RenderPropsOf` | The plain-data props of each renderable component, as `ui.render` sees them under `e.props`, a hook rewrites them with `next({ ...e, props })`. | Object. Its fields have rows below. A component validates a rewrite. An invalid rewrite draws the original. This is the render contract for plugins. | d.ts line 10178 |
-| ✅ | `RenderResultOf` | What a `ui.render` hook returns and what `next(e)` resolves to: a RenderElement tree, the same for every component. | Object. Its fields have rows below. | d.ts line 10783 |
-| ✅ | `RenderResultOf.[C in RenderComponent]` | A field of `RenderResultOf`. | Type: `RenderElement`. | d.ts line 10783 |
-| ✅ | `RenderSurface` | The surface a render event's component is drawn on, by name. Plugins draw into surfaces, they do not provide them. | Alias of `keyof Elements & string`. The surfaces: `terminal`, `desktop`, `mobile`, and `vscode`. A host with no attached surface shows nothing drawn. Used by `$.session.surfaces`. | d.ts line 10802 |
 
 ## See Also
 

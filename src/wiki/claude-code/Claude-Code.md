@@ -45,30 +45,20 @@ Anthropic can change a 🔍 item without notice.
 - [Turn Pipeline](Claude-Code-Turn-Pipeline): the path from your prompt to the final answer.
 - [Request Build](Claude-Code-Request-Build): what goes into one request to the model, and how the cache works.
 - [System Prompt](Claude-Code-System-Prompt): the first text the model reads, and how to change it.
-  - [System Prompt Sections](Claude-Code-System-Prompt-Sections)
 - [Context and Compaction](Claude-Code-Context-And-Compaction): the context window and the summary.
 - [Sessions and Storage](Claude-Code-Sessions-And-Storage): resume, branch, and the files on your disk.
-  - [Sessions Transcript](Claude-Code-Sessions-Transcript)
 
 ### Models and the API
 
 Models, effort, thinking, retries, and the server calls.
 
 - [Models and API](Claude-Code-Models-And-API)
-  - [API Betas](Claude-Code-API-Betas)
-  - [API Endpoints](Claude-Code-API-Endpoints)
-  - [Capabilities](Claude-Code-Models-Capabilities)
-  - [Catalog](Claude-Code-Models-Catalog)
-  - [Providers](Claude-Code-Models-Providers)
 
 ### Command Line
 
 The `claude` command, its flags, and the JSON line protocol.
 
 - [CLI](Claude-Code-CLI)
-  - [Flags](Claude-Code-CLI-Flags)
-  - [Hidden Flags](Claude-Code-CLI-Hidden-Flags)
-  - [Stream JSON](Claude-Code-CLI-Stream-Json)
   - [Stream JSON Control](Claude-Code-CLI-Stream-Json-Control)
 
 ### Settings and Environment Variables
@@ -76,161 +66,62 @@ The `claude` command, its flags, and the JSON line protocol.
 Every settings key and every environment variable.
 
 - [Settings](Claude-Code-Settings)
-  - [Agents and Remote](Claude-Code-Settings-Agents-And-Remote)
-  - [Auth](Claude-Code-Settings-Auth)
-  - [Core](Claude-Code-Settings-Core)
-  - [Enterprise](Claude-Code-Settings-Enterprise)
-  - [Extra Keys](Claude-Code-Settings-Extra-Keys)
-  - [Hooks and Plugins](Claude-Code-Settings-Hooks-And-Plugins)
-  - [MCP and Channels](Claude-Code-Settings-MCP-And-Channels)
-  - [Model](Claude-Code-Settings-Model)
-  - [UI](Claude-Code-Settings-UI)
 
 - [Env Vars](Claude-Code-Env-Vars)
-  - [Agents and Teams](Claude-Code-Env-Vars-Agents-And-Teams)
-  - [Auth](Claude-Code-Env-Vars-Auth)
-  - [Cloud and Remote](Claude-Code-Env-Vars-Cloud-And-Remote)
-  - [Cloud Providers](Claude-Code-Env-Vars-Cloud-Providers)
-  - [Context and Compaction](Claude-Code-Env-Vars-Context-And-Compaction)
-  - [Features and Gates](Claude-Code-Env-Vars-Features-And-Gates)
-  - [Internal and SDK](Claude-Code-Env-Vars-Internal-And-SDK)
-  - [Models and Effort](Claude-Code-Env-Vars-Models-And-Effort)
-  - [Network and Proxy](Claude-Code-Env-Vars-Network-And-Proxy)
-  - [Plugins and MCP](Claude-Code-Env-Vars-Plugins-And-MCP)
-  - [Sessions and Storage](Claude-Code-Env-Vars-Sessions-And-Storage)
-  - [Telemetry and Debug](Claude-Code-Env-Vars-Telemetry-And-Debug)
-  - [Third-Party and System](Claude-Code-Env-Vars-Third-Party-And-System)
-  - [Tools and Bash](Claude-Code-Env-Vars-Tools-And-Bash)
-  - [UI and Terminal](Claude-Code-Env-Vars-UI-And-Terminal)
 
 ### Permissions and Sandbox
 
 Rules, modes, auto mode, and the sandbox.
 
 - [Permissions and Sandbox](Claude-Code-Permissions-And-Sandbox)
-  - [Auto Mode](Claude-Code-Permissions-And-Sandbox-Auto-Mode)
-  - [Auto Mode Allow](Claude-Code-Permissions-And-Sandbox-Auto-Mode-Allow)
-  - [Auto Mode Soft Deny](Claude-Code-Permissions-And-Sandbox-Auto-Mode-Soft-Deny)
-  - [Modes](Claude-Code-Permissions-And-Sandbox-Modes)
-  - [Rules](Claude-Code-Permissions-And-Sandbox-Rules)
-  - [Sandbox](Claude-Code-Permissions-And-Sandbox-Sandbox)
 
 ### Hooks
 
 Commands that run at fixed points in a turn.
 
 - [Hooks](Claude-Code-Hooks)
-  - [Config](Claude-Code-Hooks-Config)
-  - [Events Agent](Claude-Code-Hooks-Events-Agent)
-  - [Events Other](Claude-Code-Hooks-Events-Other)
-  - [Events Prompt](Claude-Code-Hooks-Events-Prompt)
-  - [Events Session](Claude-Code-Hooks-Events-Session)
-  - [Events Tool](Claude-Code-Hooks-Events-Tool)
-  - [Events Tool Result](Claude-Code-Hooks-Events-ToolResult)
-  - [Handlers](Claude-Code-Hooks-Handlers)
-  - [Output](Claude-Code-Hooks-Output)
 
 ### Tools
 
 The built-in tools the model can call.
 
 - [Tools](Claude-Code-Tools)
-  - [Agents and Tasks](Claude-Code-Tools-Agents-And-Tasks)
-  - [Files](Claude-Code-Tools-Files)
-  - [Other](Claude-Code-Tools-Other)
-  - [Shell and Web](Claude-Code-Tools-Shell-And-Web)
 
 ### Subagents
 
 Helper agents that work in their own context.
 
 - [Subagents](Claude-Code-Subagents)
-  - [Frontmatter](Claude-Code-Subagents-Frontmatter)
-  - [Runtime](Claude-Code-Subagents-Runtime)
 
 ### Skills and Commands
 
 Reusable instructions and slash commands.
 
 - [Skills and Commands](Claude-Code-Skills-And-Commands)
-  - [Commands Cloud](Claude-Code-Skills-And-Commands-Commands-Cloud)
-  - [Commands Session](Claude-Code-Skills-And-Commands-Commands-Session)
-  - [Commands Setup](Claude-Code-Skills-And-Commands-Commands-Setup)
-  - [Skills Bundled](Claude-Code-Skills-And-Commands-Skills-Bundled)
-  - [Skills Frontmatter](Claude-Code-Skills-And-Commands-Skills-Frontmatter)
-  - [Skills Locations](Claude-Code-Skills-And-Commands-Skills-Locations)
-  - [Skills Substitutions](Claude-Code-Skills-And-Commands-Skills-Substitutions)
 
 ### Plugins
 
 Packages of skills, agents, hooks, and servers.
 
 - [Plugins](Claude-Code-Plugins)
-  - [CLI](Claude-Code-Plugins-CLI)
-  - [Loader](Claude-Code-Plugins-Loader)
-  - [Manifest](Claude-Code-Plugins-Manifest)
-  - [Marketplace](Claude-Code-Plugins-Marketplace)
 
 ### MCP
 
 Servers that give Claude Code more tools.
 
 - [MCP](Claude-Code-MCP)
-  - [Auth](Claude-Code-MCP-Auth)
-  - [CLI](Claude-Code-MCP-CLI)
-  - [Config](Claude-Code-MCP-Config)
-  - [Env Vars](Claude-Code-MCP-Env-Vars)
-  - [Runtime](Claude-Code-MCP-Runtime)
-  - [Settings](Claude-Code-MCP-Settings)
 
 ### Mod API
 
 The `$` API for plugins that change how Claude Code behaves.
 
 - [Mod API](Claude-Code-Mod-API)
-  - [Agent](Claude-Code-Mod-API-Agent)
-  - [Classic Events](Claude-Code-Mod-API-Classic-Events)
-  - [Classic Types](Claude-Code-Mod-API-Classic-Types)
-  - [Classic Types 2](Claude-Code-Mod-API-Classic-Types-2)
-  - [Classic Types 3](Claude-Code-Mod-API-Classic-Types-3)
-  - [Clock Http Process Env Settings](Claude-Code-Mod-API-Clock-Http-Process-Env-Settings)
-  - [Event Types](Claude-Code-Mod-API-Event-Types)
-  - [Fs Store State](Claude-Code-Mod-API-Fs-Store-State)
-  - [Hook Types](Claude-Code-Mod-API-Hook-Types)
-  - [Hooks](Claude-Code-Mod-API-Hooks)
-  - [Infra Types](Claude-Code-Mod-API-Infra-Types)
-  - [Model](Claude-Code-Mod-API-Model)
-  - [Model Types](Claude-Code-Mod-API-Model-Types)
-  - [Nouns and Gates](Claude-Code-Mod-API-Nouns-And-Gates)
-  - [Plugin](Claude-Code-Mod-API-Plugin)
-  - [Session](Claude-Code-Mod-API-Session)
-  - [Session Types](Claude-Code-Mod-API-Session-Types)
-  - [Session Types 2](Claude-Code-Mod-API-Session-Types-2)
-  - [Telemetry](Claude-Code-Mod-API-Telemetry)
-  - [Testing](Claude-Code-Mod-API-Testing)
-  - [Testing Types](Claude-Code-Mod-API-Testing-Types)
-  - [Testing Types 2](Claude-Code-Mod-API-Testing-Types-2)
-  - [Tool Command Config](Claude-Code-Mod-API-Tool-Command-Config)
-  - [Tool Command Config Types](Claude-Code-Mod-API-Tool-Command-Config-Types)
-  - [Tool Command Config Types 2](Claude-Code-Mod-API-Tool-Command-Config-Types-2)
-  - [Turn Prompt](Claude-Code-Mod-API-Turn-Prompt)
-  - [Turn Prompt Types](Claude-Code-Mod-API-Turn-Prompt-Types)
-  - [Turn Prompt Types 2](Claude-Code-Mod-API-Turn-Prompt-Types-2)
-  - [Turn Prompt Types 3](Claude-Code-Mod-API-Turn-Prompt-Types-3)
-  - [UI](Claude-Code-Mod-API-UI)
-  - [UI Elements](Claude-Code-Mod-API-UI-Elements)
-  - [UI Events](Claude-Code-Mod-API-UI-Events)
-  - [UI Types](Claude-Code-Mod-API-UI-Types)
-  - [UI Types 2](Claude-Code-Mod-API-UI-Types-2)
-  - [UI Types 3](Claude-Code-Mod-API-UI-Types-3)
-  - [UI Types 4](Claude-Code-Mod-API-UI-Types-4)
 
 ### Memory, Style, and Display
 
 - [Memory and Rules](Claude-Code-Memory-And-Rules): `CLAUDE.md` files, rules, and imports.
 - [Output Styles](Claude-Code-Output-Styles): style files that change how Claude answers.
 - [Status Line](Claude-Code-Status-Line): the line under the prompt.
-  - [Fields](Claude-Code-Status-Line-Fields)
 
 ### Not in the Docs
 

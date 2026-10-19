@@ -9,7 +9,8 @@ Each row below names a page, what it measures, and when.
 | Page | What it measures | Date | Claude Code version |
 | --- | --- | --- | --- |
 | [Handoff Cost](Handoff-Cost) | The cost of one handoff and one `/compact` in the same session | 2026-10-12 | `2.1.296` |
-| [Usage Evidence](Usage-Evidence) | Prices, models, cache, and one week of usage | 2026-09-21 to 2026-10-18 | `2.1.287` for one fact, otherwise not stated |
+| [Usage Evidence](Usage-Evidence) | Prices, models, cache, and one week of usage | 2026-09-21 to 2026-10-17 | `2.1.287` for one fact, otherwise not stated |
+| [Usage Evidence (Part 2)](Usage-Evidence-2) | Code graph add-on, hook model calls, community claims, and tools not used | 2026-10-16 to 2026-10-18 | `2.1.301` for one fact, otherwise not stated |
 | [Prompt Size](Prompt-Size) | The size of the tailored prompt text | 2026-10-19 | Not stated |
 | [Evals](Evals) | The eval suite, how to run it, and where results are | 2026-10-10 | `2.1.296` |
 | [Eval Graders](Eval-Graders) | The grader kinds of `claude plugin eval` | Not stated | `2.1.296` to `2.1.302` |

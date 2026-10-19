@@ -2,7 +2,6 @@
 
 `claudetto` is a plugin for Claude Code.
 You add it from a plugin marketplace, which is a list of plugins.
-Two commands add it, and one more command sets it up.
 Add-ons are optional.
 
 ## Before You Begin
@@ -45,8 +44,7 @@ In a shell, use `claude plugin marketplace add xsyetopz/claudetto` and `claude p
 
 A plugin cannot set permissions, env vars, or models.
 So the setup skill copies the [settings snippet](Settings-Snippet) into one of your settings files.
-It shows each change first.
-It writes nothing until you say yes.
+It shows each change first and writes nothing until you say yes.
 
 It runs this command for the scope that you choose:
 
@@ -61,8 +59,7 @@ claudetto-setup --scope user --apply
 | `local` | `.claude/settings.local.json` |
 
 When `CLAUDE_CONFIG_DIR` is set, the command uses that folder in place of `~/.claude`.
-The merge adds the keys of the snippet.
-Your other keys stay.
+The merge adds the keys of the snippet, and your other keys stay.
 
 The skill then offers two more steps:
 

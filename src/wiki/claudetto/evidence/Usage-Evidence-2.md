@@ -1,0 +1,50 @@
+# Usage Evidence (Part 2)
+
+This page gives more of the usage facts that `claudetto` relies on, from the code graph add-on to the tools that `claudetto` does not use.
+Each fact has a source label: official, binary, measured, reported, or inference.
+
+## Code Graph Add-On Against `codegraph install`
+
+**Method:** On 2026-10-18, with no model call, from the code and text of the add-on before and after the change.
+`codegraph` was not on the `PATH`, so `codegraph install` did not run.
+The install facts come from the vendor source (`dist/installer/instructions-template.d.ts`).
+
+| Part of `claudetto-codegraph` | What `codegraph install` alone gives | Result |
+| --- | --- | --- |
+| `SessionStart` hook and its 46-word line | The `CLAUDE.md` block and MCP instructions name the same commands | Removed |
+| Sync on start, after an edit, and after `git` | `codegraph` syncs its own index (the user, 2026-10-18) | Removed, about 450 lines and 3 hook entries |
+| `--mcp` option of the check, `MCP_ADD_COMMAND` | `codegraph install` writes the MCP server | Removed |
+| Skill `codegraph` (466 words) | MCP tools cover the same questions, but subagents get only the block | Kept, for use with no MCP server |
+| `claudetto-codegraph-check` | `codegraph status` shows the index, but a missing CLI is a shell error | Kept, not measured against the live CLI |
+
+The add-on went from 658 lines to 201 lines and has no hook, so it adds no process to a session.
+
+## Model Calls of a Hook
+
+- In all 4 runs of an earlier check, `total_cost_usd` did not count the model call of an `agent` hook (measured, `external/cc-diff-299-300/live/live-checks.md`, check 6).
+- So a hook that calls `$.model.complete` reads the `usage` of the result and applies the list prices.
+- Two calls to a small model on 2026-10-16 (Claude Code `2.1.301`) used 798 input and 68 output tokens at $0.0023, and 826 and 11 tokens at $0.0018, at the list prices of Sonnet 5.5.
+  Neither read the cache.
+
+## Community Claims
+
+| Claim | True | Note |
+| --- | --- | --- |
+| `/compact` reads the whole conversation | ✅ | Expensive on a large context. `/clear` costs nothing (official) |
+| `MEMORY.md` loads at every start, up to 200 lines or 25 KB | ✅ | Topic files do not load at start (official) |
+| A short `CLAUDE.md` saves usage | ✅ | It loads at every start and in every subagent that does not set `omitClaudeMd` |
+| Subagents keep large reads out of the main context | ✅ | |
+| Old `.jsonl` transcripts in `~/.claude/projects/` enter the context | ❌ | Only `/resume` loads one. The snippet does not set `cleanupPeriodDays` ([Settings Snippet Keys](Settings-Snippet-Keys)) |
+
+## Tools That claudetto Does Not Use
+
+| Tool | Reason |
+| --- | --- |
+| RTK | A JetBrains measurement of 7.6% more cost (reported) |
+| Graphify | Fails on large repositories (reported) |
+| grepai | Needs embeddings from Ollama or OpenAI, and has no measurement |
+
+## See Also
+
+- [Usage Evidence](Usage-Evidence)
+- [Evidence](Evidence)

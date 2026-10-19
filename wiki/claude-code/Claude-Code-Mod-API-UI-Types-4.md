@@ -3,12 +3,32 @@
 # Mod API: UI Types (Part 4)
 
 These are the last of the types behind `$.ui` and the element props.
-They run from `UiOpenResult` to `UserMessageTask.durationMs`, and most of them are panes, scroll targets, and selections.
+They run from `UiInputResult` to `UserMessageTask.durationMs`, and most of them are panes, scroll targets, and selections.
 
 ## Types
 
 | Mark | Item | What it is for | Shape and limits | Source |
 | --- | --- | --- | --- | --- |
+| ✅ | `UiInputResult` | What a `ui.input` hook returns and what `next(e)` resolves to. | Object. Its fields have rows below. Core runs the element's `onInput` (kind `change`) or `onSubmit` (kind `submit`) closure and answers `{ element, value }`. Used by `ui.input`. | d.ts line 14672 |
+| ✅ | `UiInputResult.element` | Which handler the input reached, by its Input's `key`. | Type: `string`. | d.ts line 14672 |
+| ✅ | `UiInputResult.value` | The text the handler received. | Type: `string`. | d.ts line 14672 |
+| ✅ | `UiLogOptions` | Options of `$.ui.log`. | Object. Its fields have rows below. Used by `$.ui.log`. | d.ts line 14686 |
+| ✅ | `UiLogOptions.to` | Where the line goes (UiLogSink), `transcript` when left out. A hook on `ui.log` reads it as `e.to` and may send the line elsewhere. | Type: `UiLogSink`. Optional. | d.ts line 14686 |
+| ✅ | `UiLogSink` | Where a `$.ui.log` line goes: `transcript`, a dim row of its own (and the debug log, as every line), `debug`, the debug log alone, nothing on screen. | Alias of `'transcript' \| 'debug'`. The debug log is `claude --debug` or the `--debug-file`, either way the line is led by the plugin's name. Used by `ui.log`. | d.ts line 14701 |
+| ✅ | `UiMessageArgument` | The argument of `ui.message`: what a `Client` instance's surface module posted (`surface.post(data)`), addressed by where the instance is drawn. | Object. Its fields have rows below. The origin is `client`, so `data` is input to validate, not a fact. A hook may not rewrite the other fields. Used by `ui.message`. | d.ts line 14711 |
+| ✅ | `UiMessageArgument.surface` | Where the instance is drawn: `terminal`, or `desktop` once it has them. | Type: `RenderSurface`. | d.ts line 14711 |
+| ✅ | `UiMessageArgument.component` | The render component the `Client` was drawn in (`AbovePrompt`, `Pane`, ...). | Type: `RenderComponent`. | d.ts line 14711 |
+| ✅ | `UiMessageArgument.requestId` | The engine's id for the drawing the `Client` sits in: the `requestId` the `ui.render` hook that drew it saw. | Type: `string`. | d.ts line 14711 |
+| ✅ | `UiMessageArgument.element` | The `Client`'s `key`: which instance posted. | Type: `string`. | d.ts line 14711 |
+| ✅ | `UiMessageArgument.module` | The `Client`'s `module`: which surface module runs there, as its path under the plugin's folder. | Type: `string`. | d.ts line 14711 |
+| ✅ | `UiMessageArgument.data` | What the instance posted: plain data (JsonValue) of at most 100000 characters, typed `unknown` since it came from code. Rewritable. | Type: `unknown`. | d.ts line 14711 |
+| ✅ | `UiMessageResult` | What a `ui.message` hook returns and what `next(e)` resolves to. | Object. Its fields have rows below. Core answers `{}`. A hook that answers `{ props }` hands the posting instance its next props with no `ui.render` run. Used by `ui.message`. | d.ts line 14750 |
+| ✅ | `UiMessageResult.props` | The instance's next props, plain data (JsonValue) bounded as a `Client`'s props are, absent leaves the instance's props as they were. | Type: `unknown`. Optional. | d.ts line 14750 |
+| ✅ | `UiNotifyResult` | What `$.ui.notify` resolves to and what a `ui.notify` hook's `{ value }` holds: whether a channel sent it (`isSent`) and which, else why not. | Object. Its fields have rows below. Example: `if (!(await $.ui.notify(text)).isSent) $.ui.toast(text)`. Used by `$.ui.notify`, `ui.notify`. | d.ts line 14765 |
+| ✅ | `UiNotifyResult.isSent` | True: the person's notification channel wrote it to their terminal, as its notification sequence, its bell, or both. | Type: `true`. A terminal does not report back: one that drops the sequence, or a system that mutes its banners, still reads true. | d.ts line 14765 |
+| ✅ | `UiNotifyResult.channel` | Which channel sent it, spelt as the `preferredNotifChannel` setting spells it, under `auto`, the one their terminal resolved to. | Type: `'iterm2' \| 'iterm2_with_bell' \| 'kitty' \| 'ghostty' \| 'terminal_bell'`. `terminal_bell` rings and shows neither the text nor the title. | d.ts line 14765 |
+| ✅ | `UiNotifyResult.isSent` | False: no channel sent it. | Type: `false`. | d.ts line 14765 |
+| ✅ | `UiNotifyResult.reason` | Why not, a closed set: `disabled`, `no-channel`, `no-surface` or `refused`, which a hook above says when it answers without sending. | Type: `'disabled' \| 'no-channel' \| 'no-surface' \| 'refused'`. `disabled` means `notifications_disabled` is set. `no-channel` means no terminal that notifies. | d.ts line 14765 |
 | ✅ | `UiOpenResult` | What `$.ui.open` resolves to and what a `ui.open` hook's `{ value }` holds. | Object. Its fields have rows below. `isPlaced` says if a surface draws the pane now. Asked panes place at any width, and unasked panes need 144 columns (110 for an id the person opened before). | d.ts line 14820 |
 | ✅ | `UiOpenResult.isPlaced` | True: the pane is open and drawn (or retitled in place), the first `ui.render` for `{ component: "Pane", requestId: id }` follows. | Type: `true`. | d.ts line 14820 |
 | ✅ | `UiOpenResult.isPlaced` | False: the pane is open but undrawn: opened unasked on a narrow terminal, or where no surface places panes, or none is attached. | Type: `false`. With none attached keep the pane, which stays open: `session.attach` is raised when one is, `$.ui.panes()` then says placed, and a surface that places panes asks the pane's `ui.render`. | d.ts line 14820 |

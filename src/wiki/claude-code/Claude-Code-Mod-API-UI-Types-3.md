@@ -1,12 +1,23 @@
 # Mod API: UI Types (Part 3)
 
 These are more of the types behind `$.ui` and the element props.
-They run from `RenderViewport` to `UiNotifyResult.reason`, and they cover scroll, select, text, and the results of `$.ui` calls.
+They run from `RenderInputOf` to `UiInputArgument.value`, and they cover scroll, select, text, and the results of `$.ui` calls.
 
 ## Types
 
 | Mark | Item | What it is for | Shape and limits | Source |
 | --- | --- | --- | --- | --- |
+| ✅ | `RenderInputOf` | One `ui.render` input, for a component narrowed to one surface. | Object. Its fields have rows below. | d.ts line 10130 |
+| ✅ | `RenderInputOf.surface` | Where the tree will be drawn, one literal per member, so `if (e.surface === "terminal")` narrows `e` and `$.ui.resolve(e)`. | Type: `P`. Over the wire it is what the client declared, a rendering fact and not a trust signal: do not key policy on it. | d.ts line 10130 |
+| ✅ | `RenderInputOf.component` | Which component this instance is, the key a matcher narrows on. | Type: `C`. | d.ts line 10130 |
+| ✅ | `RenderInputOf.requestId` | The instance: the tool_use_id for a dialog or tool row, the message id for a message, the agent id for a spinner. | Type: `string`. Two drawings of one component are two instances. | d.ts line 10130 |
+| ✅ | `RenderInputOf.viewport` | The size of what the surface draws into, in character cells, and whether its layout docks a pane, absent where no surface has measured. | Type: `RenderViewport`. Optional. Part of the envelope, so a rewrite keeps it. A change of width re-draws every hooked site once the resize settles. | d.ts line 10130 |
+| ✅ | `RenderInputOf.props` | The component's plain-data props. | Type: `RenderPropsOf[C]`. | d.ts line 10130 |
+| ✅ | `RenderNode` | A node of a render tree: an element, or a string (text). | Alias of `RenderElement \| string`. | d.ts line 10168 |
+| ✅ | `RenderPropsOf` | The plain-data props of each renderable component, as `ui.render` sees them under `e.props`, a hook rewrites them with `next({ ...e, props })`. | Object. Its fields have rows below. A component validates a rewrite. An invalid rewrite draws the original. This is the render contract for plugins. | d.ts line 10178 |
+| ✅ | `RenderResultOf` | What a `ui.render` hook returns and what `next(e)` resolves to: a RenderElement tree, the same for every component. | Object. Its fields have rows below. | d.ts line 10783 |
+| ✅ | `RenderResultOf.[C in RenderComponent]` | A field of `RenderResultOf`. | Type: `RenderElement`. | d.ts line 10783 |
+| ✅ | `RenderSurface` | The surface a render event's component is drawn on, by name. Plugins draw into surfaces, they do not provide them. | Alias of `keyof Elements & string`. The surfaces: `terminal`, `desktop`, `mobile`, and `vscode`. A host with no attached surface shows nothing drawn. Used by `$.session.surfaces`. | d.ts line 10802 |
 | ✅ | `RenderViewport` | The size of what a surface draws into, in character cells of the surface's monospace metric, and whether its layout docks a pane. | Object. Its fields have rows below. On the terminal it is the columns and rows of the conversation. On a remote surface it is the pane size. | d.ts line 10812 |
 | ✅ | `RenderViewport.columns` | Cells across. A tree wider than this wraps or truncates, as its Text props say. | Type: `number`. | d.ts line 10812 |
 | ✅ | `RenderViewport.rows` | Cells down the whole surface, not the room left for this component. | Type: `number`. Informational: a change of height alone re-draws nothing and keys no new evaluation, so a hook reads it as of the last width or props change. | d.ts line 10812 |
@@ -125,26 +136,6 @@ They run from `RenderViewport` to `UiNotifyResult.reason`, and they cover scroll
 | ✅ | `UiInputArgument.surface` | Where the typing came from, one literal per member, so `if (e.surface === "terminal")` narrows `e`. | Type: `RenderSurface`. | d.ts line 14628 |
 | ✅ | `UiInputArgument.kind` | `change` after every edit of the text, `submit` on Enter. | Type: `'change' \| 'submit'`. | d.ts line 14628 |
 | ✅ | `UiInputArgument.value` | The field's whole text at that moment, a hook above may rewrite it for the plugins beneath and the element's own handler. | Type: `string`. A field of several lines joins them with `\n`, a submit trims nothing. | d.ts line 14628 |
-| ✅ | `UiInputResult` | What a `ui.input` hook returns and what `next(e)` resolves to. | Object. Its fields have rows below. Core runs the element's `onInput` (kind `change`) or `onSubmit` (kind `submit`) closure and answers `{ element, value }`. Used by `ui.input`. | d.ts line 14672 |
-| ✅ | `UiInputResult.element` | Which handler the input reached, by its Input's `key`. | Type: `string`. | d.ts line 14672 |
-| ✅ | `UiInputResult.value` | The text the handler received. | Type: `string`. | d.ts line 14672 |
-| ✅ | `UiLogOptions` | Options of `$.ui.log`. | Object. Its fields have rows below. Used by `$.ui.log`. | d.ts line 14686 |
-| ✅ | `UiLogOptions.to` | Where the line goes (UiLogSink), `transcript` when left out. A hook on `ui.log` reads it as `e.to` and may send the line elsewhere. | Type: `UiLogSink`. Optional. | d.ts line 14686 |
-| ✅ | `UiLogSink` | Where a `$.ui.log` line goes: `transcript`, a dim row of its own (and the debug log, as every line), `debug`, the debug log alone, nothing on screen. | Alias of `'transcript' \| 'debug'`. The debug log is `claude --debug` or the `--debug-file`, either way the line is led by the plugin's name. Used by `ui.log`. | d.ts line 14701 |
-| ✅ | `UiMessageArgument` | The argument of `ui.message`: what a `Client` instance's surface module posted (`surface.post(data)`), addressed by where the instance is drawn. | Object. Its fields have rows below. The origin is `client`, so `data` is input to validate, not a fact. A hook may not rewrite the other fields. Used by `ui.message`. | d.ts line 14711 |
-| ✅ | `UiMessageArgument.surface` | Where the instance is drawn: `terminal`, or `desktop` once it has them. | Type: `RenderSurface`. | d.ts line 14711 |
-| ✅ | `UiMessageArgument.component` | The render component the `Client` was drawn in (`AbovePrompt`, `Pane`, ...). | Type: `RenderComponent`. | d.ts line 14711 |
-| ✅ | `UiMessageArgument.requestId` | The engine's id for the drawing the `Client` sits in: the `requestId` the `ui.render` hook that drew it saw. | Type: `string`. | d.ts line 14711 |
-| ✅ | `UiMessageArgument.element` | The `Client`'s `key`: which instance posted. | Type: `string`. | d.ts line 14711 |
-| ✅ | `UiMessageArgument.module` | The `Client`'s `module`: which surface module runs there, as its path under the plugin's folder. | Type: `string`. | d.ts line 14711 |
-| ✅ | `UiMessageArgument.data` | What the instance posted: plain data (JsonValue) of at most 100000 characters, typed `unknown` since it came from code. Rewritable. | Type: `unknown`. | d.ts line 14711 |
-| ✅ | `UiMessageResult` | What a `ui.message` hook returns and what `next(e)` resolves to. | Object. Its fields have rows below. Core answers `{}`. A hook that answers `{ props }` hands the posting instance its next props with no `ui.render` run. Used by `ui.message`. | d.ts line 14750 |
-| ✅ | `UiMessageResult.props` | The instance's next props, plain data (JsonValue) bounded as a `Client`'s props are, absent leaves the instance's props as they were. | Type: `unknown`. Optional. | d.ts line 14750 |
-| ✅ | `UiNotifyResult` | What `$.ui.notify` resolves to and what a `ui.notify` hook's `{ value }` holds: whether a channel sent it (`isSent`) and which, else why not. | Object. Its fields have rows below. Example: `if (!(await $.ui.notify(text)).isSent) $.ui.toast(text)`. Used by `$.ui.notify`, `ui.notify`. | d.ts line 14765 |
-| ✅ | `UiNotifyResult.isSent` | True: the person's notification channel wrote it to their terminal, as its notification sequence, its bell, or both. | Type: `true`. A terminal does not report back: one that drops the sequence, or a system that mutes its banners, still reads true. | d.ts line 14765 |
-| ✅ | `UiNotifyResult.channel` | Which channel sent it, spelt as the `preferredNotifChannel` setting spells it, under `auto`, the one their terminal resolved to. | Type: `'iterm2' \| 'iterm2_with_bell' \| 'kitty' \| 'ghostty' \| 'terminal_bell'`. `terminal_bell` rings and shows neither the text nor the title. | d.ts line 14765 |
-| ✅ | `UiNotifyResult.isSent` | False: no channel sent it. | Type: `false`. | d.ts line 14765 |
-| ✅ | `UiNotifyResult.reason` | Why not, a closed set: `disabled`, `no-channel`, `no-surface` or `refused`, which a hook above says when it answers without sending. | Type: `'disabled' \| 'no-channel' \| 'no-surface' \| 'refused'`. `disabled` means `notifications_disabled` is set. `no-channel` means no terminal that notifies. | d.ts line 14765 |
 
 ## See Also
 

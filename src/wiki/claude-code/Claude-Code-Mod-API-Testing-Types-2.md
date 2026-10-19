@@ -1,13 +1,28 @@
 # Mod API: Testing Types (Part 2)
 
 These are more of the types of the `claude-code/testing` module, which a mod uses to test itself.
-They run from `MountSelectTarget` to `WithMessage.message`, and they include `test` and `MountTarget`.
+They run from `MountInputTarget` to `WithMessage.message`, and they include `test` and `MountTarget`.
 Example: `test('greets', { options: { greeting: 'yo' } }, body)`.
 
 ## Types
 
 | Mark | Item | What it is for | Shape and limits | Source |
 | --- | --- | --- | --- | --- |
+| ✅ | `MountInputTarget` | What a mounted drawing's `input` takes: the Input's key, the text, which of the two inputs it is (`submit` when unsaid), another plugin's name. | Object with fields `key`, `text`, `kind?`, `plugin?`. | d.ts line 16454 |
+| ✅ | `MountInputTarget.key` | A field of `MountInputTarget`. | Type: `string`. | d.ts line 16454 |
+| ✅ | `MountInputTarget.text` | A field of `MountInputTarget`. | Type: `string`. | d.ts line 16454 |
+| ✅ | `MountInputTarget.kind` | A field of `MountInputTarget`. | Type: `UiInputArgument['kind']`. Optional. | d.ts line 16454 |
+| ✅ | `MountInputTarget.plugin` | A field of `MountInputTarget`. | Type: `string`. Optional. | d.ts line 16454 |
+| ✅ | `MountKeyEvent` | What a mounted drawing's `key` takes: the key as a `Client`'s `onKey` listener receives it (ClientKeyEvent), and which `Client` when several. | Alias of `ClientKeyEvent & ClientScope`. | d.ts line 16465 |
+| ✅ | `MountPointerEvent` | What a mounted drawing's `pointer` takes: the event as a `Client`'s `onPointer` listener receives it, in its region's cells, and which one. | Alias of `ClientPointerEvent & ClientScope`. | d.ts line 16471 |
+| ✅ | `MountPressTarget` | What a mounted drawing's `press` takes: the Button's key, another plugin's name when the Button is not the mounted plugin's, a link. | Object with fields `key`, `plugin?`, `link?`. | d.ts line 16477 |
+| ✅ | `MountPressTarget.key` | A field of `MountPressTarget`. | Type: `string`. | d.ts line 16477 |
+| ✅ | `MountPressTarget.plugin` | A field of `MountPressTarget`. | Type: `string`. Optional. | d.ts line 16477 |
+| ✅ | `MountPressTarget.link` | Presses this link of the Markdown keyed `key` instead of a Button. | Type: `PressedLink`. Optional. | d.ts line 16477 |
+| ✅ | `MountResizeTarget` | What a mounted drawing's `resize` takes: a `Client` region's size in cells, as the surface measuring it hands it, and which `Client`. | Object with fields `columns`, `rows`, `in?`. | d.ts line 16490 |
+| ✅ | `MountResizeTarget.columns` | A field of `MountResizeTarget`. | Type: `number`. | d.ts line 16490 |
+| ✅ | `MountResizeTarget.rows` | A field of `MountResizeTarget`. | Type: `number`. | d.ts line 16490 |
+| ✅ | `MountResizeTarget.in` | A field of `MountResizeTarget`. | Type: `string`. Optional. | d.ts line 16490 |
 | ✅ | `MountSelectTarget` | What a mounted drawing's `select` takes: the Select's key, the picked option's value, another plugin's name when the Select is not its own. | Object with fields `key`, `value`, `plugin?`. | d.ts line 16500 |
 | ✅ | `MountSelectTarget.key` | A field of `MountSelectTarget`. | Type: `string`. | d.ts line 16500 |
 | ✅ | `MountSelectTarget.value` | A field of `MountSelectTarget`. | Type: `string`. | d.ts line 16500 |

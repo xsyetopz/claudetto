@@ -3,7 +3,7 @@
 These are the input and result types of the `classic.*` events.
 Each one matches the data that a settings hook of the same name receives on `stdin`.
 Example: `on("classic.Stop", ($, e, next) => next(e))`.
-The types here run from `BackgroundTaskSummary` to `PermissionRequestHookInput.mcp_server`.
+The types here run from `BackgroundTaskSummary` to `PermissionMode`.
 
 ## Types
 
@@ -132,19 +132,6 @@ The types here run from `BackgroundTaskSummary` to `PermissionRequestHookInput.m
 | ✅ | `PermissionDeniedHookInput.reason` | A field of `PermissionDeniedHookInput`. | Type: `string`. | d.ts line 7638 |
 | ✅ | `PermissionDeniedHookInput.mcp_server` | A field of `PermissionDeniedHookInput`. | Type: `McpServerProvenance`. Optional. | d.ts line 7638 |
 | ✅ | `PermissionMode` | How tool runs are handled: `default`, `acceptEdits`, `bypassPermissions`, `plan`, `dontAsk`, or `auto`. `bypassPermissions` needs `allowDangerouslySkipPermissions`. | Alias of `'default' \| 'acceptEdits' \| 'bypassPermissions' \| 'plan' \| 'dontAsk' \| 'auto'`. | d.ts line 7650 |
-| ✅ | `PermissionRequestDecision` | A `classic.PermissionRequest` answer's `decision`, as the classic hook's `hookSpecificOutput.decision`: allow (with a rewrite or rules) or deny. | Object. Its fields have rows below. | d.ts line 7656 |
-| ✅ | `PermissionRequestDecision.behavior` | A field of `PermissionRequestDecision`. | Type: `'allow'`. | d.ts line 7656 |
-| ✅ | `PermissionRequestDecision.updatedInput` | A field of `PermissionRequestDecision`. | Type: `Record<string, unknown>`. Optional. | d.ts line 7656 |
-| ✅ | `PermissionRequestDecision.updatedPermissions` | A field of `PermissionRequestDecision`. | Type: `PermissionUpdates`. Optional. | d.ts line 7656 |
-| ✅ | `PermissionRequestDecision.behavior` | A field of `PermissionRequestDecision`. | Type: `'deny'`. | d.ts line 7656 |
-| ✅ | `PermissionRequestDecision.message` | A field of `PermissionRequestDecision`. | Type: `string`. Optional. | d.ts line 7656 |
-| ✅ | `PermissionRequestDecision.interrupt` | A field of `PermissionRequestDecision`. | Type: `true`. Optional. | d.ts line 7656 |
-| ✅ | `PermissionRequestHookInput` | No description in the d.ts. | Intersection with `PermissionRequestHookInput`, `BaseHookInput`. Object. Its fields have rows below. | d.ts line 7666 |
-| ✅ | `PermissionRequestHookInput.hook_event_name` | A field of `PermissionRequestHookInput`. | Type: `'PermissionRequest'`. | d.ts line 7666 |
-| ✅ | `PermissionRequestHookInput.tool_name` | A field of `PermissionRequestHookInput`. | Type: `string`. | d.ts line 7666 |
-| ✅ | `PermissionRequestHookInput.tool_input` | A field of `PermissionRequestHookInput`. | Type: `unknown`. | d.ts line 7666 |
-| ✅ | `PermissionRequestHookInput.permission_suggestions` | A field of `PermissionRequestHookInput`. | Type: `PermissionUpdate[]`. Optional. | d.ts line 7666 |
-| ✅ | `PermissionRequestHookInput.mcp_server` | A field of `PermissionRequestHookInput`. | Type: `McpServerProvenance`. Optional. | d.ts line 7666 |
 
 ## See Also
 

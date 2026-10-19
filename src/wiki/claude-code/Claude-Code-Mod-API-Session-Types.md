@@ -125,29 +125,6 @@ The marks are on the main page.
 | ✅ | `SessionContextBreakdown.autoCompactThreshold` | The token count at which auto-compaction runs, absent when it is off. | Type: `number`. Optional. | d.ts line 11293 |
 | ✅ | `SessionContextBreakdown.isAutoCompactEnabled` | Whether auto-compaction is on for the session. | Type: `boolean`. | d.ts line 11293 |
 | ✅ | `SessionContextBreakdown.apiUsage` | The token counts (ModelUsage) the live window's last API response reported, or null before one came back. | Type: `ModelUsage \| null`. The breakdown's `Messages` row is reconciled to it. | d.ts line 11293 |
-| ✅ | `SessionContextUsage` | The live context window as the status line reads it, and by category as /context breaks it down when the call asked (`{ breakdown }`). | Object. Its fields have rows below. `tokens` and `percent` are absent until the first API response of a fresh or just-compacted session. | d.ts line 11377 |
-| ✅ | `SessionContextUsage.tokens` | Input tokens the last response was answered over: uncached, cache-written and cache-read together (the status line's `total_input_tokens`). | Type: `number`. Optional. | d.ts line 11377 |
-| ✅ | `SessionContextUsage.window` | The context window of the session's model, in tokens (the status line's `context_window_size`). | Type: `number`. | d.ts line 11377 |
-| ✅ | `SessionContextUsage.percent` | `tokens` over `window` as a whole percentage, 0 to 100 (the status line's `used_percentage`). | Type: `number`. Optional. | d.ts line 11377 |
-| ✅ | `SessionContextUsage.breakdown` | The window by category, as /context breaks it down: present only when the call passed `breakdown`, and only with a session bound. | Type: `SessionContextBreakdown`. Optional. It counts against the compaction window (`rawMaxTokens`), so its `totalTokens` may differ from `tokens`. | d.ts line 11377 |
-| ✅ | `SessionCost` | What the session has cost, as `/cost` and the status line total it. | Object. Its fields have rows below. | d.ts line 11407 |
-| ✅ | `SessionCost.usd` | US dollars, summed over every priced API response this session. | Type: `number`. | d.ts line 11407 |
-| ✅ | `SessionCronSummary` | No description in the d.ts. | Object. Its fields have rows below. | d.ts line 11414 |
-| ✅ | `SessionCronSummary.id` | A field of `SessionCronSummary`. | Type: `string`. | d.ts line 11414 |
-| ✅ | `SessionCronSummary.schedule` | Cron expression, e.g. "0 9 \* * 1-5". | Type: `string`. | d.ts line 11414 |
-| ✅ | `SessionCronSummary.recurring` | False for one-shot wakeups whose cron field encodes a single fire time, true for tasks that re-fire on every match. | Type: `boolean`. | d.ts line 11414 |
-| ✅ | `SessionCronSummary.prompt` | Prompt text submitted when the cron fires. Capped at 1000 chars, clipped values append an in-string "... [+N chars]" marker. | Type: `string`. | d.ts line 11414 |
-| ✅ | `SessionDetachInput` | The input of `session.detach`: a client left the session's roster. Every field is the engine's: a hook observes, and `next(e)` passes them on. | Object. Its fields have rows below. Used by `session.detach`, `$.session.detach`. | d.ts line 11434 |
-| ✅ | `SessionDetachInput.surface` | Where the client drew. | Type: `RenderSurface`. | d.ts line 11434 |
-| ✅ | `SessionDetachInput.clientId` | The id it attached under. | Type: `string`. | d.ts line 11434 |
-| ✅ | `SessionDetachInput.reason` | Why it left: it detached, or the session ended under it. | Type: `SessionDetachReason`. | d.ts line 11434 |
-| ✅ | `SessionDetachReason` | Why a client left the roster: `detach`, it said so (ui_detach), `end`, the session ended with it still attached. | Alias of `'detach' \| 'end'`. | d.ts line 11453 |
-| ✅ | `SessionDetachResult` | What a `session.detach` hook returns and what `next(e)` resolves to: `{ clientId }`, echoed by core, a hook's own value changes nothing. | Object. Its fields have rows below. Used by `session.detach`, `$.session.detach`. | d.ts line 11459 |
-| ✅ | `SessionDetachResult.clientId` | A field of `SessionDetachResult`. | Type: `string`. | d.ts line 11459 |
-| ✅ | `SessionEndInput` | The input of `session.end`: the session is ending, why, and how to come back to it, every field is the engine's: a hook observes, `next(e)` passes it on. | Object. Its fields have rows below. One short time bound (1.5 s by default) covers all hooks. `next.budget` reads it and `next.signal` aborts at it. Used by `session.end`, `$.session.end`. | d.ts line 11476 |
-| ✅ | `SessionEndInput.reason` | Why it ends (SessionEndReason), the word the classic SessionEnd hook receives as its `reason`. | Type: `SessionEndReason`. `clear` is how a hook sees a `/clear`: the conversation ends, the process goes on under a new session id, and no `session.start` fires for it. | d.ts line 11476 |
-| ✅ | `SessionEndInput.sessionId` | The ending session's id (`$.session.id()` until now), after a `/clear` or a resume the process goes on under another. | Type: `string`. | d.ts line 11476 |
-| ✅ | `SessionEndInput.resume` | What `claude --resume` takes to return to it. | Type: `SessionResume`. | d.ts line 11476 |
 
 ## See Also
 

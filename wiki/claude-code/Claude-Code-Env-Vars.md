@@ -45,16 +45,21 @@ A run with no visible effect does not prove that the variable does nothing.
 | [Models and Effort](Claude-Code-Env-Vars-Models-And-Effort) | The model, how hard it thinks, fast mode, and output size. | 91 |
 | [Context and Compaction](Claude-Code-Env-Vars-Context-And-Compaction) | The context window, compaction, memory, and the prompt cache. | 57 |
 | [Tools and Bash](Claude-Code-Env-Vars-Tools-And-Bash) | The `Bash` tool, file tools, search, permissions, and the sandbox. | 109 |
-| [Telemetry and Debug](Claude-Code-Env-Vars-Telemetry-And-Debug) | Usage data, OpenTelemetry, debug logs, and error reports. | 156 |
+| [Telemetry and Debug](Claude-Code-Env-Vars-Telemetry-And-Debug) | Usage data, OpenTelemetry, debug logs, and error reports. | 78 |
+| [Telemetry and Debug (Part 2)](Claude-Code-Env-Vars-Telemetry-And-Debug-2) | More usage data, OpenTelemetry, debug log, and error report names. | 78 |
 | [Network and Proxy](Claude-Code-Env-Vars-Network-And-Proxy) | API addresses, proxies, TLS, time limits, and retries. | 72 |
 | [Sessions and Storage](Claude-Code-Env-Vars-Sessions-And-Storage) | Folders, session files, resume, install, and updates. | 82 |
 | [Agents and Teams](Claude-Code-Env-Vars-Agents-And-Teams) | Subagents, teams, background tasks, and workers. | 88 |
 | [UI and Terminal](Claude-Code-Env-Vars-UI-And-Terminal) | The terminal screen, colors, voice, keys, and notifications. | 95 |
 | [Plugins and MCP](Claude-Code-Env-Vars-Plugins-And-MCP) | Plugins, MCP servers, skills, hooks, and marketplaces. | 97 |
 | [Features and Gates](Claude-Code-Env-Vars-Features-And-Gates) | Switches that turn a feature on or off. | 82 |
-| [Cloud and Remote](Claude-Code-Env-Vars-Cloud-And-Remote) | Cloud sessions, the bridge, the desktop app, Chrome, Cowork, and Slack. | 159 |
+| [Cloud and Remote](Claude-Code-Env-Vars-Cloud-And-Remote) | Cloud sessions, the bridge, the desktop app, Chrome, Cowork, and Slack. | 80 |
+| [Cloud and Remote (Part 2)](Claude-Code-Env-Vars-Cloud-And-Remote-2) | More cloud, bridge, desktop app, Chrome, Cowork, and Slack names. | 79 |
 | [Internal and SDK](Claude-Code-Env-Vars-Internal-And-SDK) | Names for tests, evals, Anthropic staff, and programs that host Claude Code. | 67 |
-| [Third-Party and System](Claude-Code-Env-Vars-Third-Party-And-System) | Names that the system or another project owns, such as `HOME` and `ALL_PROXY`, and names that only bundled libraries read. | 266 |
+| [Third-Party and System](Claude-Code-Env-Vars-Third-Party-And-System) | Names that the system or another project owns, such as `HOME` and `ALL_PROXY`. | 68 |
+| [Third-Party and System (Part 2)](Claude-Code-Env-Vars-Third-Party-And-System-2) | More names that the system or another project owns. | 68 |
+| [Third-Party and System (Part 3)](Claude-Code-Env-Vars-Third-Party-And-System-3) | Names that only bundled libraries read. | 65 |
+| [Third-Party and System (Part 4)](Claude-Code-Env-Vars-Third-Party-And-System-4) | More names that only bundled libraries read. | 65 |
 
 ## Limits
 
@@ -62,7 +67,7 @@ A run with no visible effect does not prove that the variable does nothing.
 - Many rows say only what the code around the name suggests, because the code gives no more detail.
 - The scan can miss names that the code builds at run time.
 - Libraries inside the program read 130 of the names.
-  [Third-Party and System](Claude-Code-Env-Vars-Third-Party-And-System#read-by-bundled-libraries) lists them apart, and they were found by a scan of strings.
+  [Third-Party and System](Claude-Code-Env-Vars-Third-Party-And-System-3#read-by-bundled-libraries) lists them apart, and they were found by a scan of strings.
 - The docs use `NPM_TOKEN`, `DB_PASSWORD`, `PIP_INDEX_URL`, and `GIT_CONFIG_KEY_<n>` only as examples, so they have no rows.
 
 ## See Also

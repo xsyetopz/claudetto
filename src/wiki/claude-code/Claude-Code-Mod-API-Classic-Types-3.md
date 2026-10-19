@@ -1,12 +1,30 @@
 # Mod API: Classic Event Types (Part 3)
 
 These are the last of the types behind the `classic.*` events, which mirror the settings hooks.
-They run from `SubagentStopHookInput` to `WorktreeRemoveHookInput.worktree_path`.
+They run from `SetupHookInput` to `WorktreeRemoveHookInput.worktree_path`.
 
 ## Types
 
 | Mark | Item | What it is for | Shape and limits | Source |
 | --- | --- | --- | --- | --- |
+| ✅ | `SetupHookInput` | No description in the d.ts. | Intersection with `SetupHookInput`, `BaseHookInput`. Object. Its fields have rows below. | d.ts line 12305 |
+| ✅ | `SetupHookInput.hook_event_name` | A field of `SetupHookInput`. | Type: `'Setup'`. | d.ts line 12305 |
+| ✅ | `SetupHookInput.trigger` | A field of `SetupHookInput`. | Type: `'init' \| 'maintenance'`. | d.ts line 12305 |
+| ✅ | `StopFailureHookInput` | No description in the d.ts. | Intersection with `StopFailureHookInput`, `BaseHookInput`. Object. Its fields have rows below. | d.ts line 12693 |
+| ✅ | `StopFailureHookInput.hook_event_name` | A field of `StopFailureHookInput`. | Type: `'StopFailure'`. | d.ts line 12693 |
+| ✅ | `StopFailureHookInput.error` | A field of `StopFailureHookInput`. | Type: `SDKAssistantMessageError`. | d.ts line 12693 |
+| ✅ | `StopFailureHookInput.error_details` | A field of `StopFailureHookInput`. | Type: `string`. Optional. | d.ts line 12693 |
+| ✅ | `StopFailureHookInput.last_assistant_message` | A field of `StopFailureHookInput`. | Type: `string`. Optional. | d.ts line 12693 |
+| ✅ | `StopHookInput` | No description in the d.ts. | Intersection with `StopHookInput`, `BaseHookInput`. Object. Its fields have rows below. | d.ts line 12700 |
+| ✅ | `StopHookInput.hook_event_name` | A field of `StopHookInput`. | Type: `'Stop'`. | d.ts line 12700 |
+| ✅ | `StopHookInput.stop_hook_active` | A field of `StopHookInput`. | Type: `boolean`. | d.ts line 12700 |
+| ✅ | `StopHookInput.last_assistant_message` | Text content of the last assistant message before stopping. Avoids the need to read and parse the transcript file. | Type: `string`. Optional. | d.ts line 12700 |
+| ✅ | `StopHookInput.background_tasks` | In-flight background work in this session. Lets a hook tell "session is done" from "session is paused for background work". Empty when nothing is in flight. | Type: `BackgroundTaskSummary[]`. Optional. | d.ts line 12700 |
+| ✅ | `StopHookInput.session_crons` | Session-scoped cron tasks (CronCreate, ScheduleWakeup, /loop) that will wake this session later. Empty array when none are scheduled. | Type: `SessionCronSummary[]`. Optional. | d.ts line 12700 |
+| ✅ | `SubagentStartHookInput` | No description in the d.ts. | Intersection with `SubagentStartHookInput`, `BaseHookInput`. Object. Its fields have rows below. | d.ts line 12828 |
+| ✅ | `SubagentStartHookInput.hook_event_name` | A field of `SubagentStartHookInput`. | Type: `'SubagentStart'`. | d.ts line 12828 |
+| ✅ | `SubagentStartHookInput.agent_id` | A field of `SubagentStartHookInput`. | Type: `string`. | d.ts line 12828 |
+| ✅ | `SubagentStartHookInput.agent_type` | A field of `SubagentStartHookInput`. | Type: `string`. | d.ts line 12828 |
 | ✅ | `SubagentStopHookInput` | No description in the d.ts. | Intersection with `SubagentStopHookInput`, `BaseHookInput`. Object. Its fields have rows below. | d.ts line 12834 |
 | ✅ | `SubagentStopHookInput.hook_event_name` | A field of `SubagentStopHookInput`. | Type: `'SubagentStop'`. | d.ts line 12834 |
 | ✅ | `SubagentStopHookInput.stop_hook_active` | A field of `SubagentStopHookInput`. | Type: `boolean`. | d.ts line 12834 |
