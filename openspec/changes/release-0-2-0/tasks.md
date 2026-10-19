@@ -155,7 +155,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 ## 7. Cache and Setup
 
-- [ ] 7.1 Confirm the names `promptCacheTtl` and `subagentPromptCacheTtl` in the settings schema of the installed Claude Code, and record the source in `src/wiki/claudetto/rationale/Decisions-Session.md`.
+- [x] 7.1 Confirm the names `promptCacheTtl` and `subagentPromptCacheTtl` in the settings schema of the installed Claude Code, and record the source in `src/wiki/claudetto/rationale/Decisions-Session.md`.
   Check: `just schema && grep -rq promptCacheTtl schemas/`
 - [x] 7.2 Add a test that the setup snippet has no `promptCacheTtl` and no `subagentPromptCacheTtl`, and that setup removes a `promptCacheTtl` of `5m` that an earlier setup wrote, then remove it from the snippet (D18).
   Check: `just test tests/claudetto/setup`
