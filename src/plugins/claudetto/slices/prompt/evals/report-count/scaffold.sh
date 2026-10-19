@@ -3,6 +3,8 @@
 # Needs the flag `--scaffold`.
 # A count by hand gets 11 or 13 tasks, because of the cancelled tasks and the example block.
 # The project script gives 7 of 9 done after the two edits.
+# `claude plugin eval` runs with `--setting-sources user` and `CLAUDE_CODE_DISABLE_CLAUDE_MDS=1`,
+# so `tasks.md` and not a `CLAUDE.md` names the script.
 set -euo pipefail
 cat > package.json <<'JSON'
 {
@@ -17,6 +19,9 @@ A cancelled task and a line in a code block are not tasks.
 MD
 cat > tasks.md <<'MD'
 # Tasks
+
+Run `node bin/progress.mjs` for the progress of this file.
+A cancelled task and a line in a code block are not tasks.
 
 ## 1. Parser
 

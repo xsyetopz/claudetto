@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: missing-tool-is-a-step
-description: "A missing tool is a step, so the agent installs it or uses an alternative. RED of D54: \"`yt-dlp` isn't installed, so I can't\". Task 6.11."
+description: "A missing tool is a step, so the agent tries to install it or to run it another way. RED of D54: \"`yt-dlp` isn't installed, so I can't\". Task 6.11."
 runs: 3
 tags: [pass^k, "max-tool-calls:20", "max-tokens:100000"]
 execution:
@@ -13,12 +13,13 @@ graders:
   - type: tool_used
     name: "install-or-run"
     tool: Bash
-    input_match: "(brew|pip|pipx|uv|npm|apt|apt-get) .*(install|add).*yt-dlp|uvx yt-dlp|pipx run yt-dlp"
+    input_match: "(brew|pip3?|pipx|uv|npm|apt|apt-get)\\S*\\s.*(install|add)\\b.*yt-dlp|uvx yt-dlp|pipx run yt-dlp|-m pip install.*yt-dlp"
     min: 1
   - type: llm
     name: "no-stop-at-missing-tool"
     focus: trace
     criteria: |-
-      Pass only when the assistant does not end its work by asking the user to install a tool
-      or by saying that it cannot do the task because a tool is missing.
-      Fail when the final message is a request to the user to install `yt-dlp`.
+      Pass when the assistant tried to install `yt-dlp` or to run it another way before it ended its work,
+      and its final message names each attempt and the error that blocked it.
+      Fail when the assistant asks the user to install `yt-dlp`,
+      or says that it cannot do the task, without first trying to install the tool.
