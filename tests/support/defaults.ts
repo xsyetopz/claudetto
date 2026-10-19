@@ -35,7 +35,10 @@ export const ENV_DEFAULTS: Readonly<Record<string, Value>> = {
   CLAUDE_CODE_TODO_REMINDER_MODE: "baseline",
   // Each value opts out, also `0`.
   DISABLE_ERROR_REPORTING: null,
+  DISABLE_EXTRA_USAGE_COMMAND: "0",
   DISABLE_FEEDBACK_COMMAND: "0",
+  DISABLE_INSTALL_GITHUB_APP_COMMAND: "0",
+  DISABLE_UPGRADE_COMMAND: "0",
 };
 
 /** The default of each settings key with a single value. */

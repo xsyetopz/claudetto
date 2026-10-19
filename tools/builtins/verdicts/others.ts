@@ -5,7 +5,7 @@ export default `
 agents:Explore	keep	-	A read-only search agent. No lever makes it better.
 agents:Plan	keep	-	A read-only planning agent. No lever makes it better.
 agents:claude	keep	-	The default agent of FleetView, with a short prompt.
-agents:comment-thread-analyst	off	0	Only for the artifact comment pipeline, and artifacts are off.
+agents:comment-thread-analyst	keep	-	The engine loads it only for the artifact comment pipeline. It is not in the agent list.
 agents:general-purpose	off	1726	Already denied by \`Agent(general-purpose)\` in \`prompt\`.
 agents:main-session	keep	-	A label for a backgrounded main session, not an offered agent.
 agents:statusline-setup	off	71	Already denied by \`Agent(statusline-setup)\`, and \`statusline\` slice owns the line.
