@@ -51,7 +51,6 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [x] 3.12 Add a test that the done list of a handoff holds only checked tasks of `tasks.md` and passed checks, also when the model text says that a step is done, and see it fail, then fix the handoff (D48). (closed: done in `0ababfa0`, `155c1b94`)
   Check: `just test tests/claudetto/handoff`
 - [x] 3.13 Add a lab test that a cold handoff copies the open decisions of `design.md` in an openspec change, and of `.claudetto/progress.md` in other work, with no model call, and see it fail, then change the handoff, and add the one line of D50 to the always-loaded text. (closed: dropped by the user, 2026-10-18)
-  Check: `just generate && just test tests/claudetto/handoff && just lab`
 - [x] 3.14 Add a test that each agent prompt and each delegation text asks for the full output of a failed check in a file, and see it fail, then change the texts (D33). (closed: removed in trim-0-2-0)
   Check: `just generate && just test tests/claudetto/agents`
 - [ ] 3.15 Add a test that `src/plugins/claudetto/slices/styles/styles/Concise.md` asks for a numbered "What I Need from You" list only on a turn that needs the user, with an example from claudetto's work, and see it fail, then change the style (D36).
@@ -75,7 +74,6 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Give each fault its source, the task that fixes it, and the check, and add a task for each fault that no task covers.
   Check: `test -s openspec/changes/release-0-2-0/findings.md && minispec validate release-0-2-0`
 - [x] 1.3 Read the rest of `external/2026-10-17/` and the older dossiers in `external/` for model, effort, prompt, and cache facts, and add each new fact that changes a decision to `design.md`. (closed: low value, the user, 2026-10-18)
-  Check: `OPENSPEC_TELEMETRY=0 bunx --bun @fission-ai/openspec validate release-0-2-0`
 
 ## 2. You-Should-Know and Removals
 
@@ -147,10 +145,8 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [x] 6.8 Add a test that the system prompt holds the rule of D53 and the output style holds the line of D54 on corrections, and see it fail, then add both texts, and replace the rule of `slices/prompt/prompts/doing-tasks.md:24` with the three tiers of D54 on pushback.
   Add eval cases for each tier: a repeat with no reason gets a hold and a request for the reason, a harm that facts settle gets no compliance, an explicit override goes on and is recorded, and a choice of taste goes on with no pushback.
   Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles`
-- [x] 6.9 Core setup offers `codegraph install --target claude --location global` through `claudetto-setup --addons` when `claudetto-codegraph` is enabled in `enabledPlugins`, and runs it only after a yes (D51).
-  No add-on has its own setup (the user, 2026-10-18: "main setup can optionally activate the setup for other tools, if the add-ons are found and installed/not disabled").
-  The `codegraph` skill no longer says the plugin starts no MCP server, the 3 sync controls and their hooks are removed, and the measure is in `wiki/evidence/Usage-Evidence.md`.
-  Check: `just generate && just test tests/claudetto/setup tests/claudetto-codegraph && just lab` (closed: done in `11e2cc88`, `722307bb`)
+- [x] 6.9 Core setup offers `codegraph install --target claude --location global` through `claudetto-setup --addons` when `claudetto-codegraph` is enabled, after a yes, and no add-on has its own setup (D51, the user, 2026-10-18). The `codegraph` skill no longer says the plugin starts no MCP server, the 3 sync controls are removed, and the measure is in `wiki/evidence/Usage-Evidence.md`. (closed: done in `11e2cc88`, `722307bb`)
+  Check: `just generate && just test tests/claudetto/setup tests/claudetto-codegraph && just lab`
 - [ ] 6.10 Add an eval case for D53: a task with a known short solution, with the added lines of each run against the reference, at 10 runs.
   This is a paid run: ask the user first, with the expected cost and the weekly share.
   Check: `just validate`
@@ -166,7 +162,6 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [x] 7.3 Add a test that the setup makes a change that it offered, such as the `claude` alias, when the user says yes, then change the setup text and code. (closed: obsolete: the setup skill no longer edits the startup file)
   Check: `just test tests/claudetto/setup`
 - [x] 7.4 Add a test that the sandbox step of the setup adds the cache and build folders that the toolchains of the project report, with no fixed list of tools or paths, then add the code. (closed: low value, the user, 2026-10-18)
-  Check: `just test tests/claudetto/setup`
 
 - [x] 7.5 Add a test that fails when a claudetto text or hook names a tool that the settings snippet denies, and see it fail on `TaskStop`. (closed: done: `tests/claudetto/prompt/denied-names.test.ts`)
   Check: `! just test tests/claudetto/prompt/denied-tools.test.ts`
@@ -274,9 +269,8 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 - [x] 12.1 Add the entries of this change under `0.2.0` in `CHANGELOG.md`.
   Check: `grep -q '0.2.0' CHANGELOG.md && bun run lint:md`
-- [x] 12.2 Add `tools/findings-check.ts` and `just release-check`, which fail while a row of `findings.md` has a `Task` that is not `none`, `done`, or `(checked)`, and see it fail on the open rows (D38).
-  The rule is not in `just validate` or `just check`, so `just check` stays green until the release (the user, 2026-10-18).
-  Check: `just test tests/tools/findings-check.test.ts`, and `just release-check`, which exits 1 while rows are open. (closed: done in `794638b8`)
+- [x] 12.2 Add `tools/findings-check.ts` and `just release-check`, which fail while a row of `findings.md` is open, and see it fail on the open rows (D38). It is not in `just check` (the user, 2026-10-18). (closed: done in `794638b8`)
+  Check: `just test tests/tools/findings-check.test.ts`
 - [x] 12.3 Run the full gate in a container.
   Check: `just docker check`
 - [ ] 12.4 Ask the user before the paid run, with the cost and the weekly share, then run one `just sandbox` session of the setup and one task of each slice on a fresh config, and write each fault to `findings.md` and fix it (D38).
