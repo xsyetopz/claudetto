@@ -95,7 +95,7 @@ export const PART_LINE_PINS: Record<string, number> = {
   "src/plugins/claudetto/slices/prompt": 909,
   "src/plugins/claudetto/slices/reply": 82,
   "src/plugins/claudetto/slices/sembr": 521,
-  "src/plugins/claudetto/slices/setup": 438,
+  "src/plugins/claudetto/slices/setup": 439,
   "src/plugins/claudetto/slices/spec": 11,
   "src/plugins/claudetto/slices/statusline": 1226,
   "src/plugins/claudetto/slices/styles": 13,
