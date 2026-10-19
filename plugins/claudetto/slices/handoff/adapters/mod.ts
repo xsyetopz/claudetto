@@ -150,14 +150,14 @@ const fileOf = async (
   };
 };
 
-/** True when the write of `text` to `path` succeeds and the file is not empty after it. */
-const isWritten = ($: EngineInterface, path: string, text: string) =>
+/** The size in bytes of the file after the write of `text` to `path`, or `0` when the write fails. */
+const writtenSize = ($: EngineInterface, path: string, text: string) =>
   $.fs
     .write(path, text)
     .then(() => $.fs.stat(path))
     .then(
-      (stat) => stat.size > 0,
-      () => false,
+      (stat) => stat.size,
+      () => 0,
     );
 
 /** The new messages and the path of the written handoff file, or `null` when the built-in compaction runs. */
@@ -165,7 +165,7 @@ const compacted = async (
   $: EngineInterface,
   messages: readonly SessionMessage[],
   isCache: "cold" | "warm",
-): Promise<{ messages: SessionMessage[]; path: string } | null> => {
+): Promise<{ messages: SessionMessage[]; path: string; size: number } | null> => {
   // A cold cache makes a fork read the full history as uncached input, so the handoff holds only what needs no model (D47).
   const forked =
     isCache === "cold" ? null : await handoffText($, forkPrompt(messages));
@@ -182,9 +182,9 @@ const compacted = async (
   );
   // The file is written only for a new context that is below the trigger.
   // The spec gives the compaction back to Claude Code on each failure of the write.
-  return kept !== null && (await isWritten($, path, text))
-    ? { messages: kept, path }
-    : null;
+  if (kept === null) return null;
+  const size = await writtenSize($, path, text);
+  return size > 0 ? { messages: kept, path, size } : null;
 };
 
 export const onCompact: CompactHook = async ($, e, next) => {
@@ -197,6 +197,15 @@ export const onCompact: CompactHook = async ($, e, next) => {
     if (isShown) $.ui.status(undefined);
   });
   if (done === null) return next(e);
-  if (isShown) $.ui.log(oneLine(WRITTEN_NOTICE({ path: done.path })));
+  if (isShown) 
+    $.ui.log(
+      oneLine(
+        WRITTEN_NOTICE({
+          path: done.path,
+          size: String(done.size),
+          mode: cache === "cold" ? "cold write" : "warm fork",
+        }),
+      ),
+    );
   return { messages: done.messages };
 };

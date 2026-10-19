@@ -36,7 +36,7 @@ const separatorColumn = (line: string): number => line.indexOf(" · ");
 
 test("the items of a row are joined by ` · `", async () => {
   const rows = await rowsAt(200);
-  expect(rows[1]).toContain(" · ▤ 15% of 300k ⇥180k ");
+  expect(rows[1]).toContain(" · ▤ 15% of 300k ⇥80% ");
   expect(rows[0]).toContain(" · ◷ 7d");
   expect(rows[1]).toContain("+300 -20 · ◷ 5h");
 });
@@ -54,7 +54,7 @@ test("the rows drop the alignment together when one row does not fit", async () 
   const rows = await rowsAt(60);
   expect(rows[0]).toBe("⌂ claudetto · ⎇ main ✎2 ↑1 ↓2");
   expect(rows[1]).toBe(
-    "◈ Opus 5.5 high ✦ · ▤ 15% of 300k ⇥180k · $1.23 +300 -20",
+    "◈ Opus 5.5 high ✦ · ▤ 15% of 300k ⇥80% · $1.23 +300 -20",
   );
   expect(rows[2]).toBe("◷ 5h 23% ▼13% ↻3h12m · ◷ 7d 80% ▲11% ⏵1d5h ↻2d4h");
 });

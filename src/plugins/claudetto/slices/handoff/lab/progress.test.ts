@@ -61,7 +61,7 @@ test("on a terminal, a status line shows while the handoff is written, and a not
   expect(drawn[0]).toBe("status Writing the handoff…");
   expect(drawn[1]).toBe("status none");
   expect(drawn[2]).toMatch(
-    /^log The handoff is in \.claudetto\/handoffs\/handoff-\d{8}T\d{6}Z\.md\.$/,
+    /^log The handoff is in \.claudetto\/handoffs\/handoff-\d{8}T\d{6}Z\.md, 100 bytes, by a (warm fork|cold write)\.$/,
   );
   expect(drawn).toHaveLength(3);
 });

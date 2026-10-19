@@ -1,1 +1,1 @@
-The handoff is in {{path}}.
+The handoff is in {{path}}, {{size}} bytes, by a {{mode}}.

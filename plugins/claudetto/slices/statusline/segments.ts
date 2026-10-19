@@ -63,7 +63,7 @@ const changeText = (change: Change, paint: Status["paint"]): string => {
   }
 };
 
-/** `▤ 12% of 1M ⇥105k`: the `used_percentage` and the `context_window_size` that Claude Code reports, and the tokens left to the handoff trigger (the compaction threshold with `built-in`), warning within `TRIGGER_WARN_FRACTION` of it. */
+/** `▤ 12% of 1M ⇥53%`: the `used_percentage` and the `context_window_size` that Claude Code reports, and the percent of the handoff trigger that is left (the compaction threshold with `built-in`), warning within `TRIGGER_WARN_FRACTION` of it. */
 const contextText = ({ input, paint, compaction }: Status) => {
   const window = input.context_window;
   const used = window?.used_percentage;
@@ -87,7 +87,10 @@ const contextText = ({ input, paint, compaction }: Status) => {
         ? paint.warn
         : paint.ok;
   const icon = compaction ? ICON.compaction : ICON.handoff;
-  const distance = left <= 0 ? "now" : thousands(left);
+  const distance =
+    left <= 0
+      ? "now"
+      : `${Math.round((left / trigger) * 100)}%`;
   return style(`${ICON.context} ${percent}%${of} ${icon}${distance}`);
 };
 
