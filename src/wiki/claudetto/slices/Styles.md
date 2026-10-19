@@ -1,0 +1,63 @@
+# Styles
+
+This page tells about the output style `claudetto:Concise` of the core plugin `claudetto`.
+A user who wants short replies and a contributor who edits the `styles` slice read it.
+
+## What the Style Does
+
+The style file is `styles/Concise.md` in the slice.
+The text of the style is the block `reply_style`.
+It sets these rules for each reply:
+
+- The first sentence is the outcome: what changed, what was found, or what failed.
+  Then the reply gives only the facts that change what the user does next.
+- The reply uses short sentences and plain words, and it puts each file, command, and identifier in single backticks.
+- The reply ends on what is next.
+- The work stays thorough.
+  The reply names each claim that the agent did not verify, with the command that verifies it.
+- After a correction, the reply gives the next action, with no opening agreement and no apology.
+- The tone is free, and the tone of the user is not a topic.
+  A strong word of the user is the severity of the problem, and the reply answers the work.
+
+The style shortens the text of the reply, not the work.
+
+## Front Matter
+
+| Key | Value | Meaning |
+| --- | --- | --- |
+| `name` | `Concise` | The name of the style |
+| `description` | A short sentence | The text that Claude Code shows in the style list |
+| `keep-coding-instructions` | `true` | The style keeps the coding instructions |
+
+The `prompt` slice changes the coding sections of the system prompt.
+A style without `keep-coding-instructions: true` would set the section `doing_tasks` to `null`.
+
+## How the Style Is Selected
+
+The slice sets `outputStyle` to `claudetto:Concise` in the settings snippet.
+The `/claudetto:setup` skill merges the snippet into the settings.
+The style has no `force-for-plugin`, so the `outputStyle` setting of the user stays in charge.
+To use another style, set `outputStyle` to its name in your own settings.
+
+## The Evals
+
+The slice holds four eval cases in `evals/`.
+Each case has a `case.yaml` and a `scaffold.sh`.
+
+| Case | What it checks |
+| --- | --- |
+| `accusation-warranted` | A true fault claim in the prompt leads to a fix, with no preamble and no closing offer |
+| `claim-check` (name `verification-claim`) | The agent runs a check before it says that the tests pass, and the claim matches the last run |
+| `partial-verification` | The final message does not say that all is verified when a check was skipped |
+| `unprompted-skip` | The final message names the skipped check, though the user did not ask |
+
+Graders of type `llm` read the final message in any written language.
+The graders check the first sentence and the last sentence of the reply.
+A padded reply fails.
+A command such as `npm test` alone is not a check of the fix when the package has no `test` script.
+
+## Related Pages
+
+- [Prompt](Prompt)
+- [Settings Snippet](Settings-Snippet)
+- [Setup](Setup)

@@ -1,0 +1,49 @@
+# Bounds for Add-Ons
+
+This page tells maintainers each bound of the add-on plugins, with its value and its file.
+The values come from the `limits.ts` file of each add-on slice.
+The shared bounds and the repository bounds are on [Bounds](Bounds).
+
+## Browser
+
+| Name | Value | File | Purpose |
+| --- | --- | --- | --- |
+| `MAX_GUIDE_CHARS` | `40,000` | `src/plugins/claudetto-browser/slices/browse/limits.ts` | The most characters of the `agent-browser` guide in the skill. |
+| `GUIDE_TIMEOUT_MS` | `15,000` | `src/plugins/claudetto-browser/slices/browse/limits.ts` | The time that `agent-browser skills get core` may take. |
+| `MAX_OUTPUT_CHARS` | `20,000` | `src/plugins/claudetto-browser/slices/search/limits.ts` | The most characters of page text in one search result. |
+| `OPEN_TIMEOUT_MS` | `30,000` | `src/plugins/claudetto-browser/slices/search/limits.ts` | The time that the browser may take to open the search page. |
+| `READ_TIMEOUT_MS` | `15,000` | `src/plugins/claudetto-browser/slices/search/limits.ts` | The time that the browser may take to read the page text. |
+| `CLOSE_TIMEOUT_MS` | `10,000` | `src/plugins/claudetto-browser/slices/search/limits.ts` | The time that the browser may take to close. |
+| `SESSION_NAME_MAX` | `12` | `src/plugins/claudetto-browser/slices/search/limits.ts` | The longest name of a search session, which keeps a socket path under the macOS limit. |
+| `MAX_DOMAINS` | `10` | `src/plugins/claudetto-browser/slices/search/limits.ts` | The most `allowed_domains` or `blocked_domains` that the query takes. |
+| `SESSION_COUNTER_CHARS` | `2` | `src/plugins/claudetto-browser/slices/search/limits.ts` | The characters of the counter in a search session name, in base 36. |
+| `SESSION_RANDOM_CHARS` | `5` | `src/plugins/claudetto-browser/slices/search/limits.ts` | The characters of the random part of a search session name, in base 36. |
+
+## Code Graph
+
+| Name | Value | File | Purpose |
+| --- | --- | --- | --- |
+| `QUERY_TIMEOUT_MS` | `2,000` | `src/plugins/claudetto-codegraph/slices/graph/limits.ts` | The time that `codegraph --version` may take for the check. |
+| `ERROR_TEXT_MAX_CHARS` | `300` | `src/plugins/claudetto-codegraph/slices/graph/limits.ts` | The most characters of CLI error text that a notice gives. |
+
+## Library Docs
+
+| Name | Value | File | Purpose |
+| --- | --- | --- | --- |
+| `CTX7_VERSION` | `0.6.1` | `src/plugins/claudetto-docs/slices/docs/limits.ts` | The `ctx7` version that the skill and the settings snippet run. |
+| `MAX_CALLS` | `3` | `src/plugins/claudetto-docs/slices/docs/limits.ts` | The most `ctx7` calls for one question. |
+
+## Lab
+
+| Name | Value | File | Purpose |
+| --- | --- | --- | --- |
+| `MAX_PART_COUNTS` | `64` | `src/plugins/claudetto-lab/slices/capture/limits.ts` | The most parts of one request that get a `count_tokens` call. |
+| `COUNT_ATTEMPTS` | `4` | `src/plugins/claudetto-lab/slices/capture/limits.ts` | The most attempts of one `count_tokens` call when the endpoint answers HTTP 429. |
+| `COUNT_BACKOFF_MS` | `500` | `src/plugins/claudetto-lab/slices/capture/limits.ts` | The wait before the second attempt, which doubles for each later wait. |
+| `SPLIT_CHARS` | `2,000` | `src/plugins/claudetto-lab/slices/capture/limits.ts` | The most characters of a text block that are sized as one part. |
+
+## Related Pages
+
+- [Bounds](Bounds) gives the shared and the repository bounds.
+- [Bounds for Slices](Bounds-Slices) gives the bounds of the core slices.
+- [Browser](Browser), [Code Graph](Code-Graph), [Library Docs](Library-Docs), and [Lab](Lab) describe the add-ons.

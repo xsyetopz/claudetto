@@ -1,5 +1,5 @@
 // The test plugin in `padded/` holds two cases for the judge `plain-reply`: a padded reply and a plain reply.
-// A paid run of them shows that the judge fails a padded reply and passes a plain one (`wiki/evidence/Evals-0.1.0.md`).
+// A paid run of them shows that the judge fails a padded reply and passes a plain one (`wiki/claudetto/evidence/Evals-0.1.0.md`).
 // This test keeps the judge of the test plugin equal to the judge of each style case, so the run covers the shipped judge.
 
 import { expect, test } from "bun:test";

@@ -1,10 +1,10 @@
-// Writes `wiki/rationale/Controls.md` from the `controls` of each slice (design D27): one row for each control.
+// Writes `wiki/claudetto/rationale/Controls.md` from the `controls` of each slice (design D27): one row for each control.
 // No page is written when no slice has a control.
 
 import type { FoundPlugin } from "../discover.ts";
 import { type Output, withHeader } from "./texts.ts";
 
-const FILE = "wiki/rationale/Controls.md";
+const FILE = "wiki/claudetto/rationale/Controls.md";
 const SOURCE = "src/plugins/*/slices/*/slice.ts";
 
 const INTRO = [

@@ -2,92 +2,89 @@
 
 # Overview
 
-This page tells what `claudetto` is and which plugins it has.
-It is for a reader who meets `claudetto` for the first time, before the [architecture](Architecture).
-`claudetto` 0.1.0 is not built yet, so this page describes the plan, not the shipped code.
+This page tells what `claudetto` is, which plugins it has, and which slices the core plugin has.
+A reader who meets `claudetto` for the first time reads it before [Architecture](Architecture) and [Install](Install).
 
 ## What `claudetto` Is
 
-`claudetto` is a Claude Code plugin marketplace for software engineering.
-It is the restart of dotclaude 1.0.0, with a new name and no compatibility with dotclaude 1.0.0.
-No setting, file, or command of dotclaude 1.0.0 carries over.
-The slices `rules`, `stamp`, `spec`, and `handoff` of dotclaude 1.0.0 go.
-A new `handoff` slice replaces the old one, and `minispec` replaces `spec`.
+`claudetto` is a marketplace of Claude Code plugins for software engineering.
+Its goal is the highest quality for the lowest token cost.
+It has one core plugin and five add-on plugins.
+Each add-on works without the core plugin.
 
 `claudetto` changes Claude Code only through its extension points.
 For each feature, it uses the first of these that can do the work:
 
 1. The Mod API.
 2. A classic hook.
-3. A built-in part of Claude Code: a setting, an env var, a flag, a skill, an agent, or an output style.
+3. A built-in part of Claude Code: a setting, an env var, a flag, a skill, or an output style.
 4. Nothing.
 
 It does not patch the Claude Code binary or its npm package.
+It writes no code for a feature that Claude Code has.
 
-## The Minimum Claude Code Version
+## Minimum Claude Code Version
 
-`claudetto` is built for Claude Code 2.1.302 or later.
+`claudetto` needs Claude Code 2.1.303 or later.
+`MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts` sets this version, and CI installs it.
 
 ## The Plugins
 
-The marketplace has one core plugin and 6 add-ons.
-Each add-on works without the core plugin.
+| Plugin | What it adds | Page |
+| --- | --- | --- |
+| `claudetto` | The core: the settings snippet, the slices below, the output style, and the status line. | This page |
+| `claudetto-codegraph` | The `codegraph` skill and the check `claudetto-codegraph-check`. | [Code Graph](Code-Graph) |
+| `claudetto-browser` | The `browse` skill, and a headless browser search for each `WebSearch` call. | [Browser](Browser) |
+| `claudetto-docs` | The `docs` skill, with current library docs from the CLI `ctx7`. | [Library Docs](Library-Docs) |
+| `claudetto-sessions` | The `sessions` skill, with the scripts `audit` and `replay`. | [Sessions](Sessions) |
+| `claudetto-lab` | Tools for plugin authors: the sandbox, the capture, the schema, and the eval compare. | [Lab](Lab) |
 
-| Plugin | What it adds |
+[Add-Ons](Add-Ons) tells how to pick an add-on.
+
+## The Slices of the Core Plugin
+
+A slice is one feature, in one folder of `src/plugins/claudetto/slices/`.
+The core plugin has 15 slices.
+
+| Slice | What it does |
 | --- | --- |
-| `claudetto` | The core: the handoff, MiniSpec, the prompt profile, the context trim, the status line, the role agents, the guards, and the setup. |
-| `claudetto-codegraph` | The `codegraph` CLI skill and check. `/claudetto:setup` offers `codegraph install` for it. |
-| `claudetto-browser` | The browser guide and an opt-in `WebSearch` backend. |
-| `claudetto-docs` | The current docs of a library or an API, with the Context7 CLI `ctx7`. |
-| `claudetto-sessions` | The measure of the start of a session by source, and the usage of each run. |
-| `claudetto-lab` | The tools to measure Claude Code: the request capture, the sandbox, the schema build, and the eval compare. |
-| `claudetto-you-should-know` | The "you should know" notices of Claude Code, also in `-p`. |
+| [`advise`](Advise) | Gives the tool `advise`, an advisor with the model and the effort that the user sets. |
+| [`decide`](Decide) | Asks Jev for a pick on each `AskUserQuestion` question that facts settle. |
+| [`dry`](Dry) | Merges the config of `jscpd`, and gives the skill `dry`. |
+| [`goal`](Goal) | Replaces `/goal` with a loop of checks that run at the end of each turn. |
+| [`ground`](Ground) | Denies a plan file that cites a `file:line` or a convention that the source does not hold. |
+| [`guard`](Guard) | Denies a `Bash` command that only prints a file. |
+| [`handoff`](Handoff) | Writes a handoff file in place of the summary of a compaction. |
+| [`patch`](Patch) | Keeps one patch for each subagent in a worktree, and lands it. |
+| [`prompt`](Prompt) | Gives one tailored text for the short system prompt, and cuts built-in parts. |
+| [`reply`](Reply) | Adds a `Reply` button under each message of Claude. |
+| [`sembr`](Sembr) | Puts each sentence of a Markdown file on its own line. |
+| [`setup`](Setup) | Merges the settings snippet into a settings file. |
+| [`spec`](Spec) | Ships the OpenSpec schemas `task`, `story`, and `epic`. |
+| [`statusline`](Status-Line) | Shows the folder, git, model, context, cost, and limits. |
+| [`styles`](Styles) | Gives the output style `claudetto:Concise`. |
 
-## The Main Features of the Core
+## Options and Settings
 
-- **Handoff.**
-  When the context is near full, a handoff replaces the built-in compaction.
-  The session continues with one message that has the first user message and a handoff of the work, and the newest messages.
-  On each failure, Claude Code does its built-in compaction.
-  See [Handoff](Handoff).
-- **MiniSpec.**
-  A lightweight spec-driven workflow with skills, Markdown files, and the `minispec` CLI.
-  See [MiniSpec](MiniSpec).
-  The checked tasks of a change are its record, so a handoff keeps the state of the change.
-- **Guards.**
-  An ask before a call that discards work, weakens a test, or changes a protected file.
-  A deny of a command part that only prints a file.
-- **Prompt and context.**
-  A system prompt for each model, and the switches that turn off built-in parts that `claudetto` does not use.
-- **Jev pick.**
-  An opt-in hook that adds the pick of Jev to an `AskUserQuestion` question that facts settle.
-  It is off by default.
-  See [Decision API](Decision-API).
-- **Semantic breaks and output style.**
-  A rewrite that puts each sentence of a Markdown file on its own line, and a concise output style.
-  See [Semantic Breaks](Semantic-Breaks) and [Output Style](Output-Style).
-- **Worktrees.**
-  Hooks that make an agent worktree from `HEAD`, copy `.worktreeinclude`, and keep a worktree that holds work.
-  See [Worktrees](Worktrees).
-- **User checks.**
-  A hook that asks for the exact `!` command when a check that only the user can run stays open after a denied call.
-  See [User Checks](User-Checks).
-- **Turn gate.**
-  A gate at the end of each turn that blocks a stop while a background task runs, and a judge that blocks a claim with no check after the last edit.
-  See [Turn Gate](Turn-Gate).
-- **Read gates.**
-  Gates that keep a rejected call rejected, deny a read of an unchanged range that is in the context, and ask for a new read after a rejected write.
-  See [Read Gates](Read-Gates).
-- **Repo state.**
-  The git state at the start, an ask before an edit of `[Unreleased]` for a version with no tag, an ask before a package that the registry lacks, and a mark for a served model that differs from the requested one.
-  See [Repo State](Repo-State).
-- **Status line.**
-  The main and subagent status lines from the input of Claude Code.
-  See [Status Line](Status-Line).
-- **Reply button.**
-  A `Reply` button under each message of Claude.
-  A press puts the first lines of that message in the prompt box as a `>` quote, at the cursor, so the text that you typed stays.
+A plugin cannot set permissions, env vars, or models.
+So the core plugin gives these settings as the [settings snippet](Settings-Snippet).
+The `setup` slice merges the snippet into your settings file after you confirm.
+See [Settings Snippet Keys](Settings-Snippet-Keys) for the reason of each key.
+
+The core plugin has these `userConfig` options:
+
+| Option | Values | Default |
+| --- | --- | --- |
+| `advisor` | `builtin`, `claudetto` | `builtin` |
+| `advisorModel` | an alias or a model ID | `opus` |
+| `advisorEffort` | `low`, `medium`, `high`, `xhigh`, `max` | `high` |
+| `decide` | `off`, `jev` | `off` |
+| `compaction` | `handoff`, `built-in` | `handoff` |
+
+[Off Switches](Off-Switches) lists how to turn each part off.
 
 ## Related Pages
 
-- [Architecture](Architecture): the layers, the slices, and the build of `claudetto`.
+- [Install](Install): add the marketplace and install the plugins.
+- [Architecture](Architecture): the layers, the slices, and the build.
+- [Decisions](Decisions): the reasons for the design.

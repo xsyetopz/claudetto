@@ -1,0 +1,29 @@
+# Prompt Size
+
+This page gives the measured size of the system prompt text of the `prompt` slice, and the gap in the compact prompt.
+Read it to learn what the `prompt` slice sends, and what it cannot change.
+The rules that the text holds are on the page [Prompt](Prompt).
+
+## Size of the Tailored Text
+
+The `prompt` slice answers the `lean_body` section with one text.
+The text has eight sections: `intro`, `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, and `counts`.
+Their source files are in `src/plugins/claudetto/slices/prompt/prompts/`.
+On 2026-10-19, the eight files had 6,769 bytes and 1,312 words together (measured with `wc`, before the section tags).
+`doing-tasks.md` is the largest file, with 3,289 bytes.
+The text replaces the `# Harness` rules of the short prompt of Claude Code `2.1.302` (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`).
+The repository has no bound on this size.
+
+## The Compact Prompt Gap
+
+The `prompt.compose` and `prompt.section` hooks do not reach the compact prompt of Claude Code.
+The `handoff` slice replaces the built-in compaction by default instead ([Handoff](Handoff)).
+The `context_management` section agrees with the compaction state of the session ([Prompt](Prompt#compaction-gate)).
+The `built-in` state keeps the built-in text, and the compact prompt of Claude Code stays unchanged.
+The settings snippet does not set `DISABLE_COMPACT` ([Settings Snippet](Settings-Snippet)).
+
+## Related Pages
+
+- [Evidence](Evidence): the index of the evidence pages and their source files.
+- [Prompt](Prompt): the rules of the slice.
+- [Handoff](Handoff): the replacement of the built-in compaction.

@@ -1,0 +1,130 @@
+# Decisions: Tools and Features
+
+This page holds the decisions D6, D8, D9, D26, and D44.
+Read it to learn why `claudetto` ships each tool and feature in the form that it has.
+The index is [Decisions](Decisions).
+A missing id is a removed decision, and the index lists them.
+
+Each decision gives the problem, the choice, the alternatives, and the evidence.
+Each number has a source in the code or in a binary fact with its version.
+
+## D6 Status Line
+
+**Problem:** The status line shows the session state under the prompt.
+It must stay small, and it must read no file of Claude Code that the docs do not name.
+
+**Choice:** One `statusLine` command and one `subagentStatusLine` command.
+They are the documented extension points.
+The code is in `src/plugins/claudetto/slices/statusline/`.
+
+The command reads the status object from stdin.
+It reads the active change from `openspec/changes/<name>/tasks.md` (`adapters/change.ts`).
+It makes one `git` call and caches the result for `GIT_CACHE_MS` in a `claudetto-git-<key>.jsonl` file in the temp folder (`adapters/git-cache.ts`).
+`NO_COLOR` turns off each color, and the icons stay.
+The status line has no progress bars (the user, 2026-10-12).
+
+The bounds are in `slices/statusline/limits.ts`:
+
+- `MAX_ROWS` is 3, and `REFRESH_SECONDS` is 1.
+- `GIT_TIMEOUT_MS` is 1500, and `GIT_CACHE_MS` is 3000.
+- `DEFAULT_COLUMNS` is 120, and `COLUMNS_MARGIN` is 4.
+- `SUBAGENT_ROWS_MAX` is 20.
+
+`USAGE_LEVELS` in `src/kernel/budget.ts` is 75 and 90 percent.
+The context share of the main session uses the distance to the handoff trigger instead.
+
+**Alternatives:** The old state files of the status line.
+They are removed, so no segment reads them.
+
+**Evidence:** `slices/statusline/limits.ts` and `src/kernel/budget.ts`.
+See [Status Line](Status-Line).
+
+## D8 Context7 Skill
+
+**Problem:** The model needs the API of a library version that the project does not show.
+
+**Choice:** The `docs` skill of the add-on `claudetto-docs`.
+The model invokes it.
+The code is in `src/plugins/claudetto-docs/slices/docs/skills/docs/SKILL.md`.
+The skill runs `ctx7@0.6.1` through `bunx -y`, with `CTX7_TELEMETRY_DISABLED=1`.
+Its `allowed-tools` rule allows only the two read forms, `library` and `docs`.
+The skill makes at most 3 `ctx7` calls for one question.
+
+**Alternatives:** An unpinned `ctx7@latest`.
+The pin keeps the allowed command the same until a release changes it.
+
+**Evidence:** The `SKILL.md` file.
+See [Library Docs](Library-Docs).
+
+## D9 Evals Through `claude plugin eval`
+
+**Problem:** `claudetto` needs checks that run the plugin in a real session.
+
+**Choice:** The `claude plugin eval` command of Claude Code.
+Claude Code owns the case format, so `claudetto` keeps no harness of its own.
+Each case has a `case.yaml` and a `scaffold.sh`.
+
+- `src/plugins/claudetto/evals/` holds 3 cases.
+- The `evals/` folders of the slices hold 16 more: `prompt` 11, `styles` 4, and `handoff` 1.
+- `just eval` runs `claude plugin eval plugins/claudetto` on the path of the checkout.
+  It uses `--max-cost-usd 5`, `--keep-temp`, and a lock from `tools/lock.ts`, and it needs `--model`.
+- `just eval-variant` compares the checkout with a variant at a git ref.
+- The `eval-compare` slice of `claudetto-lab` runs `claude plugin eval` on two plugin folders in turn.
+- `just validate` fails on a case that checks only the words of the reply (D28 in [Prompt](Decisions-Prompt)).
+
+**Alternatives:** A Bun harness with its own case format, its own oracle, and its own reports.
+It is not built, because the command of Claude Code covers the cases (inference).
+
+**Evidence:** `justfile`, and `EVAL_MAX_COST_USD` in `tools/limits.ts`.
+See [Evals](Evals).
+
+## D26 Code Graph Through the CodeGraph CLI
+
+**Problem:** Claude needs a code graph of the project, such as the callers of a function.
+
+**Choice:** The add-on `claudetto-codegraph`.
+It uses the `codegraph` CLI and a skill that shows its commands.
+The code is in `src/plugins/claudetto-codegraph/slices/graph/`.
+The add-on has no hook, because `codegraph` syncs its own index.
+`/claudetto:setup` offers `codegraph install --target claude --location global` when the add-on is on, and that command adds the MCP server.
+
+The add-on runs `codegraph` by its name, and a missing CLI gives `ENOENT` in `adapters/cli.ts`.
+`QUERY_TIMEOUT_MS` is 2000 in `slices/graph/limits.ts`.
+
+**Alternatives:**
+
+- An MCP server that the add-on ships.
+  A skill with a CLI costs less at the start of a session.
+  The MCP server comes from `codegraph install` instead.
+- The built-in LSP tool.
+  The comparison with it is not in the repository, so the question is open.
+
+**Evidence:** `src/plugins/claudetto-codegraph/slices/graph/slice.ts` and `tests/claudetto-codegraph/layout.test.ts`.
+See [Code Graph](Code-Graph).
+
+## D44 Jev Is a Slice of the Core Plugin, Off by Default
+
+**Problem:** A decision that facts settle can go to Jev, an outside decision service.
+The service must not need an add-on install, and it must not send text without the choice of the user.
+
+**Choice:** The `decide` slice in `src/plugins/claudetto/slices/decide/`.
+The `decide` option has the values `off` and `jev`, and `off` is the default.
+With `jev`, the `claudetto-decide` CLI picks an option of each `AskUserQuestion` question that facts settle.
+When Jev gives no pick, the question stays as Claude asked it.
+The key `TYPESAFE_API_KEY` goes in the environment of the CLI, never in its arguments.
+Inference: a core slice needs no add-on install before a workflow can ask a decision.
+
+**Alternatives:** An add-on for Jev, and a fallback model for the case that Jev gives no answer.
+The fallback and the `second_opinion` tool are not in 0.2.0, because no incident needs them.
+
+**Evidence:**
+
+- `src/plugins/claudetto/slices/decide/adapters/ask.ts` sends the questions to Jev.
+- `src/plugins/claudetto/slices/decide/limits.ts` has `JEV_TIMEOUT_MS` of 45 seconds, `TRIES` of 3, and `ATTEMPT_TIMEOUT_MS` of 12 seconds.
+- See [Decide](Decide).
+
+## Related Pages
+
+- [Architecture](Architecture)
+- [Plugin Layout](Plugin-Layout)
+- [Decisions](Decisions)

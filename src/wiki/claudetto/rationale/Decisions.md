@@ -1,0 +1,63 @@
+# Decisions
+
+This page is the index of the design decisions of `claudetto`.
+Read it to find the page that holds the detail of a decision.
+Each row gives the number, the title, and the page with the detail.
+[Design](Design) holds the principles.
+
+The ids stay as they were, because the code and the OpenSpec changes cite them.
+A missing id is a removed decision.
+The removed ids are `D2`, `D4`, `D7`, `D11`, `D12`, `D19`, `D20`, `D21`, `D25`, `D32`, `D33`, `D34`, `D35`, `D36`, `D40`, `D41`, `D50`, `D54`, `D56`, and `D58` to `D62`.
+They described parts that 0.2.0 does not have, such as the custom agents, the `asks`, `policy`, `reads`, `repostate`, and `turngate` slices, the per-model prompt variants, and the start budget.
+[Engine Facts](Decisions-Engine) holds the facts of the engine that a change must not break.
+
+Some comments in the code cite `D` numbers of the OpenSpec change `release-0-2-0`, such as `D47`, `D48`, and `D64`.
+Those numbers are not the numbers on this page.
+
+| Decision | Title | Page |
+| --- | --- | --- |
+| D1 | Rule of Least Power | [Settings](Decisions-Settings) |
+| D3 | Cuts by Id | [Prompt](Decisions-Prompt) |
+| D5 | Who Invokes What | [Settings](Decisions-Settings) |
+| D6 | Status Line | [Tools](Decisions-Tools) |
+| D8 | Context7 Skill | [Tools](Decisions-Tools) |
+| D9 | Evals Through `claude plugin eval` | [Tools](Decisions-Tools) |
+| D10 | Schema Extraction | [Settings](Decisions-Settings) |
+| D13 | No Router, the Main Loop Keeps the Session Choice | [Settings](Decisions-Settings) |
+| D14 | Off Switches | [Settings](Decisions-Settings) |
+| D15 | claudetto Owns the System Prompt | [Prompt](Decisions-Prompt) |
+| D16 | Request Capture | [Prompt](Decisions-Prompt) |
+| D17 | Plugin and Marketplace Layout | [Layout](Decisions-Layout) |
+| D18 | Separation of Concerns and Bound Tiers | [Layout](Decisions-Layout) |
+| D22 | Context Bound by the Size of a Result | [Prompt](Decisions-Prompt) |
+| D23 | Development Frictions | [Layout](Decisions-Layout) |
+| D24 | Add-On Plugins Stay Separate | [Layout](Decisions-Layout) |
+| D26 | Code Graph Through the CodeGraph CLI | [Tools](Decisions-Tools) |
+| D27 | Measured Facts over Model Reports | [Evidence](Decisions-Evidence) |
+| D28 | Compliance by Checks, Not by Prose | [Prompt](Decisions-Prompt) |
+| D29 | Semantic Line Breaks | [Evidence](Decisions-Evidence) |
+| D30 | Hold Work That Is Right Under an Unsupported Claim | [Evidence](Decisions-Evidence) |
+| D31 | A Guard Hook Fails Closed | [Evidence](Decisions-Evidence) |
+| D37 | Ports and Adapters Inside Vertical Slices | [Architecture](Decisions-Architecture) |
+| D38 | A Generated Composition Root | [Architecture](Decisions-Architecture) |
+| D39 | One Hook Module in Place of Classic Command Hooks | [Architecture](Decisions-Architecture) |
+| D42 | Zero Token Cost Where a Hook, a Script, or a CLI Can Do the Work | [Architecture](Decisions-Architecture) |
+| D43 | Ask Before a Destructive Call, Never for a Read | [Settings](Decisions-Settings) |
+| D44 | Jev Is a Slice of the Core Plugin, Off by Default | [Tools](Decisions-Tools) |
+| D45 | Add-Ons Import Nothing from the Core Plugin or from Each Other | [Architecture](Decisions-Architecture) |
+| D46 | Bounds in Three Tiers | [Architecture](Decisions-Architecture) |
+| D47 | Arrow Functions, Plain Data, and Classes Only for State | [Architecture](Decisions-Architecture) |
+| D48 | User Notices Through `$.ui.log`, Not a Transcript Row | [Engine Facts](Decisions-Engine) |
+| D49 | No Catch-All in a Hook That Calls `next` First | [Engine Facts](Decisions-Engine) |
+| D51 | The Sandbox Keys Come From Settings | [Engine Facts](Decisions-Engine) |
+| D52 | Each Adapter Keeps Its Own `$` Calls | [Engine Facts](Decisions-Engine) |
+| D53 | A Plugin Verdict Only Makes a Call Stricter | [Engine Facts](Decisions-Engine) |
+| D55 | No Session-Wide Env Through `CLAUDE_ENV_FILE` | [Engine Facts](Decisions-Engine) |
+| D57 | A Plugin `bin/` Command Is Named by Its Path, Not by Its Bare Name | [Engine Facts](Decisions-Engine) |
+| D63 | The Cost of a Model Call Comes From Its Own `usage` | [Session Facts](Decisions-Session) |
+
+## Related Pages
+
+- [Design](Design)
+- [Controls](Controls)
+- [Plugin Layout](Plugin-Layout)

@@ -1,0 +1,49 @@
+# Sandbox Linux
+
+This page tells what `just sandbox-linux` checks and what it costs.
+A contributor reads it before a change to the sandbox keys of the settings snippet.
+It follows [Sandbox](Sandbox).
+
+## What It Checks
+
+`just sandbox-linux` runs one live session of Claude Code in a Linux container.
+It checks that the seccomp helper of the native build of Claude Code blocks a Unix socket in a sandboxed `Bash` call.
+The script is `tools/sandbox/linux/run.ts`, and it runs `tools/sandbox/linux/check.sh` in the container.
+
+The session runs with these settings:
+
+```json
+{"sandbox": {"enabled": true, "failIfUnavailable": true,
+  "allowUnsandboxedCommands": false, "autoAllowBashIfSandboxed": true}}
+```
+
+The prompt asks Claude to run one `socat` call to the socket `$SSH_AUTH_SOCK`.
+The socket is a fake agent of `socat` in the container, and not the `ssh-agent` of the host.
+A control call outside the sandbox must connect.
+The verdict is `blocked` when the control connects and the sandboxed call does not.
+It is `reached` when the sandboxed call connects, and `unknown` when the control fails or the session gives no result.
+The recipe exits with 1 for any verdict but `blocked`.
+
+## How It Runs
+
+1. The script builds the image from the image of `just docker`, with `bubblewrap` and `socat` added (`tools/sandbox/linux/Dockerfile`).
+2. It reads the login of the host: from the Keychain on macOS, or from `.credentials.json` on Linux.
+3. It stops when the access token has less than `LINUX_TOKEN_MIN_MINUTES` (30) minutes left.
+   A refresh in the container would make the login of the host fail.
+   Run one `claude` command on the host to refresh the token, then run the recipe again.
+4. It runs the container with `--rm`, `--privileged` (so `bwrap` can make its namespaces), and `DOCKER_CPUS` CPUs.
+   The login goes to the container on stdin, and no file of the host gets it.
+5. It prints the control result, each `Bash` command, each tool result, the sandbox lines of stderr, and the verdict.
+
+## Cost and Approval
+
+The session uses your login and costs money.
+It uses the model `LINUX_SESSION_MODEL` (`haiku`) and runs one short turn with at most 3 turns.
+Ask the user before each run.
+The recipe does not run in `just docker`, because it needs the login of the host.
+
+## Related Pages
+
+- [Sandbox](Sandbox): the other sandbox commands.
+- [Sandbox Sessions](Sandbox-Sessions): headless and TUI tests.
+- [Development](Development): the repository commands.

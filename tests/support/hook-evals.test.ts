@@ -1,4 +1,4 @@
-// Each hook of each plugin has its eval cases (`wiki/development/Plugin-Layout.md`).
+// Each hook of each plugin has its eval cases (`wiki/claudetto/development/Plugin-Layout.md`).
 // The rules are in `hook-evals.ts`, and the fixtures work in their own folder under `TMPDIR`.
 
 import { expect, test } from "bun:test";

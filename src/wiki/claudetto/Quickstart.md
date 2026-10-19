@@ -1,0 +1,78 @@
+# Quickstart
+
+This page shows what you see in your first session with `claudetto`, and the commands to try.
+A user who finished [Install](Install) reads it.
+The install steps are not repeated here.
+
+## What You See at Session Start
+
+After `/claudetto:setup` and a restart, you see these parts:
+
+- The status line, with the parts in the next section.
+- The output style `claudetto:Concise`.
+  It sets how Claude writes its replies: the result first, then only the facts that you need.
+  See [Styles](Styles).
+- A shorter system prompt.
+  The setting `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` selects the short prompt, and the `prompt` slice tailors it.
+  See [Prompt](Prompt).
+- A `Reply` button under each message of Claude.
+  A press puts that message in the prompt box as a `>` quote.
+  See [Reply](Reply).
+
+## The Status Line
+
+The status line has up to three rows:
+
+- The first row shows the folder, the git state, the pull request, the active OpenSpec change, and the 7-day limit.
+- The second row shows the model, the context, the cost, and the 5-hour limit.
+  The context reads like `40% of 300k`, and the number after `⇥` is the percent that is left to the handoff.
+- The third row shows the spend limit and the prompt cache.
+
+The status line calls no model and no network.
+See [Status Line](Status-Line) for each segment.
+
+## Long Work
+
+The `handoff` slice replaces the summary of a compaction with a handoff file.
+At 225,000 tokens of the 300,000 window, Claude writes the file with the goal, the state, and the next step.
+For Haiku the trigger is 100,000 tokens.
+Then a new context starts from the file.
+The files are in `.claudetto/handoffs/`, or in the folder of the open OpenSpec change.
+The option `compaction` set to `built-in` turns the handoff off.
+See [Handoff](Handoff).
+
+## Plans and Goals
+
+- `/claudetto:spec` picks an OpenSpec schema, `task`, `story`, or `epic`, and hands off to the `/opsx:*` commands.
+  See [Spec](Spec).
+- `/goal` runs a loop of checks at the end of each turn, until the checks pass.
+  See [Goal](Goal).
+- A plan file with a claim that has no source is denied, and Claude must name the source, mark the claim `(proposed)`, or ask you.
+  See [Ground](Ground).
+
+## What the Hooks Deny and Check
+
+- A `Bash` command that only prints a file is denied.
+  The denial names the `Read` call with the range to use.
+  See [Guard](Guard).
+- A Markdown file that Claude writes gets one sentence on each line.
+  See [Sembr](Sembr).
+- With the option `decide` set to `jev`, Jev picks an option of each `AskUserQuestion` question that facts settle.
+  See [Decide](Decide).
+
+The settings snippet also sets permission rules and the sandbox.
+Reads of secret files and destructive commands are denied, and a force push asks first.
+See [Settings Snippet](Settings-Snippet).
+
+## Try These
+
+1. Ask Claude to print a file with `cat`, and read the denial.
+2. Run `/context` and `/usage` to see the size of the start of the session.
+3. Run `/goal status` to see the goal engine.
+4. Run `/claudetto:setup` again, and see that it changes nothing.
+
+## Related Pages
+
+- [Troubleshooting](Troubleshooting): what to check when a part does not show.
+- [Overview](Overview): the list of slices.
+- [Settings Snippet](Settings-Snippet): the settings that `/claudetto:setup` writes.

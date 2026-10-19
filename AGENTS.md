@@ -2,7 +2,7 @@
 
 A Claude Code plugin marketplace in ESM.
 Code that needs Python is Python, and the tests and `tools/` run on Bun 1.4.3 or later, with `bun install` for the dev dependencies.
-The core plugin is in `plugins/claudetto/`, next to six add-on plugins: `claudetto-codegraph`, `claudetto-browser`, `claudetto-docs`, `claudetto-sessions`, `claudetto-lab`, and `claudetto-you-should-know`.
+The core plugin is in `plugins/claudetto/`, next to five add-on plugins: `claudetto-codegraph`, `claudetto-browser`, `claudetto-docs`, `claudetto-sessions`, and `claudetto-lab`.
 Each add-on plugin works without the core plugin, so it imports nothing from another plugin.
 Only `plugins/` ships to users.
 `tests/` has one folder for each plugin, with `tests/claudetto/<slice>/` for each slice of the core plugin.
@@ -11,7 +11,7 @@ Only `plugins/` ships to users.
 `src/` holds the source of each plugin, the shared kernel, and each text that a plugin ships, such as the agents, the skills, and `hooks.json`.
 Edit the source in `src/` and run `just generate`, because a test fails when a generated file differs from its source.
 Do not edit `plugins/` by hand.
-Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/claudetto/wiki), with its source in `wiki/`.
+Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/claudetto/wiki), with its source in `src/wiki/`.
 
 The rules that apply to some files only are in [`.claude/rules/`](.claude/rules/).
 Each of those rules has a `paths:` list, and Claude Code loads the rule when Claude works on a matching file.
@@ -30,7 +30,7 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
 - `bun run lint:md` lints the Markdown files.
   Headings and code blocks have a 100-column bound.
 - `just sandbox` runs Claude Code with this checkout in a separate config.
-  Read `wiki/development/Sandbox.md` first.
+  Read `wiki/claudetto/development/Sandbox.md` first.
 
 ## Rules
 
@@ -62,6 +62,6 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
 - Add CHANGELOG entries under the section of the version in the manifests when that version has no tag yet, because it is the release in progress.
   Otherwise add them under `[Unreleased]`.
   Change versions with `just bump`.
-- Write public docs in `wiki/`, and run `just wiki` to publish them.
+- Write public docs in `src/wiki/`, run `just generate` to write `wiki/`, and run `just wiki` to publish them.
   `docs/README.md` only links to the wiki.
   `external/` holds local sources, and git ignores it.

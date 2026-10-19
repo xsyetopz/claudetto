@@ -1,0 +1,91 @@
+# Eval Graders
+
+This page lists the grader kinds of `claude plugin eval`, how the cases of claudetto guard a file, and which checks the format can express.
+Read it before you write or change a `case.yaml`.
+The suite and the commands are on the page [Evals](Evals).
+
+## Graders
+
+The format has six grader kinds.
+
+| Kind | Passes when | Cost |
+| --- | --- | --- |
+| `regex` | A JavaScript regex is found in the last message, the trace, or one file after the run | Free |
+| `tool_used` | The count of matching tool calls is in the range `min` to `max` | Free |
+| `tool_order` | The first call of one tool comes before the first call of another | Free |
+| `file_exists` | A file that the agent created matches a glob | Free |
+| `llm` | A judge model gives a pass in 2 of 3 votes | Paid |
+| `baseline` | The judge finds the run at least as good as a reference transcript | Paid |
+
+The current cases use `regex`, `tool_used`, and `llm`.
+No current case uses `tool_order`, `file_exists`, or `baseline`.
+
+No grader runs a command or a test file.
+To test code, the prompt asks Claude to run the tests and to write the result to a file.
+A `regex` grader then reads that file.
+The agent sees the test and the result, so this check is not hidden.
+
+### File-State Graders
+
+A case with a protected file guards it with a `tool_used` grader on `Edit`, a `tool_used` grader on `Write`, and one `regex` file-state grader.
+The file-state grader has the name `kept-<path>`, such as `kept-check-range-test-mjs`, and the target `{ source: file, path }`.
+It matches the final content of the file.
+Command text cannot always tell a write from a read.
+For example, `cp data/big.log /tmp/x` reads the log, and its text looks like a write.
+So no file-state grader reads the text of a `Bash` call.
+A small file has a pattern for its exact content, with an optional last line end.
+The pattern is anchored to the start and the end of the file.
+The anchors are `(?<![\s\S])` and `(?![\s\S])`, so they hold with or without the `m` flag.
+A file that the agent deleted does not exist, so the grader throws, and the run fails the grader.
+`tests/claudetto/evals/graders.test.ts` loads the regex of each file-state grader.
+It runs the regex against a passing sample and a failing sample.
+A regex that no run has met can pass for a wrong reason.
+
+## Checks That the Format Can Express
+
+The mapping of the earlier checks to the format is a plan.
+No run proved the mapping, so each row is unverified.
+
+| Check | Expressible | Mechanism |
+| --- | --- | --- |
+| Paired comparison, plugin against no plugin | Yes | The two arms and `Δ` |
+| Isolation of the config for each run | Yes | The temporary home of each run |
+| Cost limit | Yes | `--max-cost-usd`, exit code 2 with a partial result |
+| `k` runs for each case | Yes | `runs:` in `case.yaml` or `--runs` |
+| Tamper check | Partly | `tool_used` with `max: 0` on `Edit` and `Write` for the protected path, and a file-state `regex` on its final content |
+| Over-claim check | Partly | `regex` on the last message, and `tool_used` on `Bash` for the test command with `min: 1` |
+| Wrongful-revert and warranted-fix checks | Partly | `regex` on the final content of a file, with the claim in the prompt |
+| Cost for each resolved task | Partly | `costUsd` of the result, divided by hand by the passed runs |
+| Turns, tokens, and time | Partly | `durationSeconds`, and a turn count in the run record. No token field is documented |
+| Hidden outcome check with its own test files | No | No grader runs a test file |
+| Interval, and "not shown" when it includes 0 | No | The result has a mean and no interval |
+
+## Dropped Checks
+
+The user approved these drops.
+
+- The hidden oracle with test files, tamper hashes, and canary files.
+- The scripted user: a claim at turn N, and a scripted answer.
+- A fixture `CLAUDE.md` as the source of a rule or of an accusation, because no `CLAUDE.md` loads in a run.
+  So the adherence cases of earlier releases cannot port as they were.
+- The interval rule.
+- A comparison against a style or a prompt text in one run, because the only arms are plugin and no plugin.
+  `just eval-variant` compares two checkouts instead.
+- The LLM grader calibration against human labels.
+
+Instruction adherence is checked by the guards and the hooks in code.
+
+## Open Facts
+
+- Whether a `regex` grader on a missing file is scored a fail in every case.
+  The runs of 2026-10-10 reported `grader threw: ... path "tasks.md" does not exist`, and scored a fail.
+- Whether `claude plugin eval` adds the `m` flag to a `regex` grader.
+  The docs say only that the pattern is a JavaScript regex with an optional `flags` field.
+- Whether `plugins:` in `case.yaml` loads add-on plugins.
+- Whether the hooks of the plugin behave the same inside a run.
+- Whether the trace names a subagent call `Agent`, and whether `input_match` sees the commands of a subagent.
+
+## Related Pages
+
+- [Evals](Evals): the suite, the commands, and the results.
+- [Evidence](Evidence): the index of the evidence pages.

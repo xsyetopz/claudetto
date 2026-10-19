@@ -98,7 +98,7 @@ test("the plugin ships no MCP server and no MCP option", async () => {
 
 test("the wiki page gives the MCP key as the `Authorization` header that the pinned `ctx7` writes", async () => {
   const page = await Bun.file(
-    path.join(REPO, "wiki/add-ons/Library-Docs.md"),
+    path.join(REPO, "wiki/claudetto/add-ons/Library-Docs.md"),
   ).text();
   expect(page).toContain('--header "Authorization: Bearer $CONTEXT7_API_KEY"');
   expect(page).toContain(`\`ctx7\` ${CTX7_VERSION} does`);

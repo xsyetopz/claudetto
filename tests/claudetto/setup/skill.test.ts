@@ -42,12 +42,14 @@ test("the plugin ships the launcher of the CLI that the skill runs", () => {
   expect(fs.existsSync(path.join(PLUGIN, "bin/claudetto-setup"))).toBe(true);
 });
 
-test("the skill `setup` gives the same `Glob` and `Grep` alias line as the wiki page `Trim`", async () => {
+test("the skill `setup` gives the same `Glob` and `Grep` alias line as the wiki page `Setup`", async () => {
   const alias = "alias claude='claude --allowedTools Glob,Grep'";
   const skill = await Bun.file(
     path.join(PLUGIN, "skills/setup/SKILL.md"),
   ).text();
-  const wiki = await Bun.file(path.join(REPO, "wiki/claudetto/Trim.md")).text();
+  const wiki = await Bun.file(
+    path.join(REPO, "wiki/claudetto/slices/Setup.md"),
+  ).text();
   expect(skill).toContain(alias);
   expect(wiki).toContain(alias);
   expect(skill).toContain("Do not edit the startup file");

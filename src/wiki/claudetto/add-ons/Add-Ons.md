@@ -1,0 +1,47 @@
+# Add-On Plugins
+
+This page lists the five add-on plugins of `claudetto`.
+It shows what each add-on adds, what it needs, and how to install it.
+Read it if you want an optional feature that the core plugin does not include.
+
+Each add-on is a separate plugin.
+You install and remove each add-on by itself.
+Each add-on works without the core plugin.
+An add-on imports nothing from another plugin.
+
+## The Add-Ons
+
+The marketplace lists the core plugin and the five add-ons in `.claude-plugin/marketplace.json`.
+Add the marketplace first with `/plugin marketplace add xsyetopz/claudetto`.
+See [Install](Install) for details.
+
+| Plugin | What it adds | Needs | Page |
+| --- | --- | --- | --- |
+| `claudetto-codegraph` | The skill `codegraph` and the command `claudetto-codegraph-check`. Claude reads the code graph of a project with the `codegraph` CLI. | The `codegraph` CLI and a project index. | [Code Graph](Code-Graph) |
+| `claudetto-browser` | The skill `browse`, which drives a browser with `agent-browser`. With the `cloakbrowser` backend, a CloakBrowser search answers `WebSearch`. | `agent-browser`. The `cloakbrowser` backend also needs a CloakBrowser build. | [Browser](Browser) |
+| `claudetto-docs` | The skill `docs`, which gets the current docs of a library from Context7 with the `ctx7` CLI. | Bun on `PATH`, for `bunx`. No key. | [Library Docs](Library-Docs) |
+| `claudetto-sessions` | The skill `sessions` with the scripts `audit` and `replay`. | Bun. | [Sessions](Sessions) |
+| `claudetto-lab` | Tools for plugin authors: a sandbox, a request capture, a settings schema writer, and an eval compare. | Bun 1.4.3 or later, and `claude` on `PATH`. | [Lab](Lab) |
+
+Install each add-on with `/plugin install <plugin>@claudetto`.
+For example, run `/plugin install claudetto-docs@claudetto`.
+
+## Install One Add-On
+
+1. Add the marketplace, if you have not done so.
+2. Run the install command for the add-on.
+3. Install the tools in the needs column.
+   The plugin never installs an outside tool for you, except where its page says so.
+4. Start a new session so that Claude Code loads the plugin.
+
+## Hooks
+
+Only `claudetto-browser` runs a hook module.
+It registers one `tool.call` handler on `WebSearch`.
+The other four add-ons have no hook.
+
+## Related Pages
+
+- [Install](Install): the install steps of the core plugin and the marketplace.
+- [Code Graph](Code-Graph): the first add-on page.
+- [Settings Snippet](Settings-Snippet): the permission rules that `/claudetto:setup` merges.

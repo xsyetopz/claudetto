@@ -1,4 +1,4 @@
-// The hook evals of each plugin (`wiki/development/Plugin-Layout.md`).
+// The hook evals of each plugin (`wiki/claudetto/development/Plugin-Layout.md`).
 // `evals/hooks.json` of a plugin names each hook by its id, the hook-lab test of each case kind, and the model requests and tokens that the hook adds to each turn.
 // A hook in a hooks module has its id in a `// eval: <id>` comment on the line above its `on(` call.
 // A call that joins several hooks has one such comment for each hook, in the lines above it.

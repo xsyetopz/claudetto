@@ -1,0 +1,85 @@
+# Ground
+
+This page tells how the `ground` slice of the core plugin `claudetto` checks the claims of a plan file.
+A user reads it to learn why Claude gets a deny on a plan, and how to fix it.
+A contributor reads it before an edit of `slices/ground/`.
+
+## The Concept
+
+Claude can write a number, a `file:line` reference, or a convention with no source.
+An example is `npx` in a project that has `bun.lock`.
+The `ground` slice finds such claims in a plan file and denies the write.
+The check is a program.
+It makes no model call, because a check that guesses can block correct text.
+
+## The Hook
+
+The slice adds one `tool.call` hook on `Write` and `Edit`, in the phase `check`.
+The hook checks only these files:
+
+- A file under `openspec/changes/`.
+- A file named `proposal.md`, `design.md`, or `tasks.md`.
+
+For `Write`, the hook reads `content`.
+For `Edit`, it reads `new_string`.
+A write of any other file is not checked.
+
+## What Counts as a Source
+
+A claim has a source when it is in one of these:
+
+- A user message of the session.
+- A tool result of the session.
+- `CLAUDE.md` in the project root.
+- The old text of the file that the call changes.
+
+A tool result that is a deny of this check is not a source.
+It names each claim, so a retry would pass on it.
+
+## The Claims
+
+| Kind | The check fails when |
+| --- | --- |
+| Number | A number of 3 digits or more is in no user message and no tool result. A year does not count. |
+| `file:line` | The file is found and has fewer lines than the reference. |
+| Attribution | A sentence such as `the user chose ...` has words that are mostly not in a user message. |
+| Done claim | The text says that tests, checks, lint, or a build pass, or that something is fixed, and the turn has no `Bash` call. A sentence with `must`, `should`, `will`, `if`, or a similar word is not a claim. |
+| Convention | The text uses `npm` or `npx` in a project with `bun.lock` or `bun.lockb`, or `pip` in a project with `uv.lock`, and no user rule names the tool. |
+
+For a `file:line` reference, the check looks for the file at the project root first.
+Then it searches the folders below the root, but it skips `node_modules` and dot folders and reads at most 2,000 folders.
+If the check does not find the file, it skips the reference, because a guess would deny a correct one.
+
+## Text That Passes
+
+- A line with `(proposed)` or `[NEEDS CLARIFICATION: ...]`.
+- A fenced code block.
+
+## The Deny
+
+The deny lists each claim and gives three ways out:
+
+1. Name the source: a user message, a tool result of this session, or a file of the project.
+2. Mark the claim `(proposed)` or `[NEEDS CLARIFICATION: ...]`.
+3. Ask the user.
+
+Claude then writes the text again.
+
+## Options and Cost
+
+The slice has no `userConfig` key and no limit.
+The hook costs no request and no token.
+If the hook throws, Claude Code logs the failure and the call runs.
+
+## Replay
+
+The `replay` script of `claudetto-sessions` runs the same check on a recorded call.
+It reads the files as they are now, so a reference to a file that is gone passes.
+See [Sessions](Sessions).
+
+## Related Pages
+
+- [Spec](Spec)
+- [Goal](Goal)
+- [Controls](Controls)
+- [Sessions](Sessions)

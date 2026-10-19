@@ -1,247 +1,128 @@
 # Architecture
 
-This page is the map of `claudetto` 0.1.0, and it gives the rules for the releases after it.
-The [Overview](Overview) tells how `claudetto` replaces the earlier plugin.
-The decisions and their reasons are in the OpenSpec change `openspec/changes/claudetto-0-1-0/` of the repository, in `design.md`.
+This page is the map of `claudetto`: the layers, the kernel, the slices, and the composition of a plugin.
+A contributor reads it before a change to the code.
+The build from `src/` to `plugins/` is on [Architecture Generate](Architecture-Generate).
+The folders are on [Plugin Layout](Plugin-Layout).
 
 ## Layers
 
-`claudetto` has 5 layers.
+`claudetto` has five layers.
 A layer imports only from the layers below it.
 
 | Layer | Folder | What it holds | Imports |
 | --- | --- | --- | --- |
-| Kernel | `src/kernel/` | Pure code that the plugins share: the slice contract, bounds, paths, the shell reader, the policy catalog, and the model ids. | Nothing, except `src/kernel/node/` |
+| Kernel | `src/kernel/` | Pure code that the plugins share: the slice contract, bounds, paths, the shell reader, and the model ids. | Nothing, except `src/kernel/node/` |
 | Runtime adapters | `src/kernel/node/` | The adapters of Node and Bun: files, processes, hook input and output. | The kernel |
-| Slices | `src/plugins/<plugin>/slices/<s>/` | One feature each, with `domain/`, `adapters/`, `lab/`, and `limits.ts`. | The kernel, and the adapters for a CLI only |
-| Entry points | `src/plugins/<plugin>/` | `plugin.ts`, which lists the slices, and the text that the plugin ships: agents, skills, output styles. | The slices |
-| Generator | `tools/generate/` | The build from `src/` to `plugins/` and the marketplace file. | Each layer, at build time only |
+| Slices | `src/plugins/<plugin>/slices/<s>/` | One feature each. | The kernel, and its own folder |
+| Entry points | `src/plugins/<plugin>/` | `plugin.ts` and `description.md`, which give the manifest. | The slices |
+| Generator | `tools/generate/` | The build from `src/` to `plugins/` and to the marketplace file. | Each layer, at build time only |
 
 The rules of the layers:
 
 - A slice never imports another slice.
   Slices share data only through a file layout that the kernel names in `src/kernel/paths.ts`.
-  For example, the handoff reads `minispec/changes/<name>/tasks.md` and does not import the `minispec` slice.
-- A hooks module has no `node:` import and no `Bun`, so a mod handler imports only the pure kernel.
-- A plugin never imports another plugin (decision D8 of `design.md`).
+- A plugin never imports another plugin.
   The generator copies each kernel file that a plugin uses into that plugin.
-- Each slice states its rung of the decision ladder in one line of `slice.ts` (decision D2 of `design.md`).
+- A hooks module has no `node:` import, no `bun:` import, and no `Bun`.
+  So a mod handler imports only the pure kernel.
+- Each slice states its rung of the decision ladder in the field `ladder` of `slice.ts`.
 
-## Plugins and slices
+## The Kernel
 
-```mermaid
-flowchart TB
-  K["src/kernel/<br/>shared, copied into each plugin"]
-  subgraph core["claudetto (core)"]
-    direction LR
-    HO[handoff] --- MS[minispec]
-    PR[prompt] --- TR[trim] --- SU[surface]
-    SL[statusline] --- AG[agents] --- ST[styles]
-    GU[guard] --- AS[asks] --- CH[checks]
-    AT[attribution] --- SB[sembr] --- DE[decide]
-    SE[setup] --- GC[gc] --- WT[worktree] --- UC[usercheck] --- TG[turngate] --- RD[reads] --- RS[repostate] --- CO[corrections]
-  end
-  subgraph addons["add-ons, each works alone"]
-    direction LR
-    Y["claudetto-you-should-know<br/>notice"]
-    B["claudetto-browser<br/>browse, search"]
-    C["claudetto-codegraph<br/>graph"]
-    D["claudetto-docs<br/>docs"]
-    L["claudetto-lab<br/>capture, eval-compare,<br/>sandbox, schema"]
-    S["claudetto-sessions<br/>awareness, start-cost,<br/>usage"]
-  end
-  K --> core
-  K --> addons
-  HO -. "reads tasks.md<br/>(file layout only)" .-> MS
-```
+The kernel has these files:
 
-The capability of each slice:
+| File | What it holds |
+| --- | --- |
+| `slice.ts` | The contract of a slice manifest, the phases, and the rungs of the ladder. |
+| `budget.ts` | The shared runtime bounds, such as `CONTEXT_WINDOW` and the handoff trigger. |
+| `paths.ts` | The paths of the files that `claudetto` reads or writes. |
+| `change.ts` | The task state of an OpenSpec change, from the text of `tasks.md`. |
+| `compaction.ts` | The `compaction` option, which `handoff` declares and `prompt` reads. |
+| `ground.ts` | The source check of quoted values, for `handoff` and `ground`. |
+| `shell.ts`, `shellkinds.ts`, `wrappers.ts`, `shell/` | The shell reader for the guards. It reads the syntax, and it does not run the shell. |
+| `model.ts`, `errors.ts`, `text.ts`, `ports.ts` | Model families, the error policy, small text tests, and the ports that tests replace. |
+| `node/` | The adapters of Node and Bun, for the CLIs. |
 
-| Slice | Capability | Rung of the ladder |
+Change a shared bound only in `budget.ts`.
+See [Bounds](Bounds).
+
+## The Decision Ladder
+
+For each feature, a slice uses the highest rung that can do the work.
+The field `ladder` of `slice.ts` names the rung and the reason.
+
+| Rung | Meaning | Example |
 | --- | --- | --- |
-| `handoff` | `handoff` | Mod API (`session.compact`, `$.model.fork`) |
-| `minispec` | `minispec` | Skills and the `minispec` CLI |
-| `prompt` | `prompt-profile` | Mod API |
-| `trim`, `surface` | `context-trim` | Built-in settings and env vars, then the Mod API |
-| `statusline` | `status-line` | Built-in `statusLine` command |
-| `agents` | `role-agents` | Plugin agents |
-| `styles` | `output-style` | Plugin output style |
-| `guard` | `command-guard` | Mod API |
-| `asks` | `safety-asks` | Mod API |
-| `checks` | `check-runner` | Mod API and a CLI |
-| `attribution` | `commit-attribution` | Built-in `attribution` setting, then the Mod API |
-| `sembr` | `semantic-breaks` | Mod API |
-| `decide` | `decision-api` | A CLI, opt-in |
-| `setup` | `settings-setup` | A skill and a CLI |
-| `gc` | `output-gc` | Mod API and a classic `SessionEnd` hook |
-| `worktree` | `worktree-hooks` | Classic `WorktreeCreate` and `WorktreeRemove` hooks |
-| `usercheck` | `user-check` | Mod API (`classic.PermissionDenied`, `classic.Stop`) |
-| `turngate` | `turn-gate` | Mod API (`prompt.submit`, `tool.check`, `tool.call`, `turn.complete`, `classic.Stop`, `classic.SubagentStop`) |
-| `reads` | `read-gates` | Mod API (`tool.call`) |
-| `repostate` | `ground-gates` | Mod API (`classic.SessionStart`, `tool.check`, `turn.complete`) |
-| `corrections` | `corrections` | Mod API (`prompt.submit`) |
+| `mod` | A hook of the Mod API. | `guard`, `handoff`, `ground` |
+| `classic` | A classic command hook. | The core plugin has none. |
+| `built-in` | A setting, an env var, or a plugin part with no hook. | `setup`, `styles`, `spec` |
+| `none` | Nothing. | |
 
-The rungs in this table are the targets.
-Each slice gets its ladder line in the work on 0.1.0, and a slice goes down a rung only with a test or a lab run.
+## Slices
 
-## Build
+A slice adds one feature.
+The generator finds each folder `slices/<s>/` that has a `slice.ts`.
+The file exports `slice`, and `slice.name` equals the folder name.
 
-```mermaid
-flowchart LR
-  subgraph src["src/ (hand-written)"]
-    KS[kernel/]
-    PS["plugins/&lt;p&gt;/plugin.ts<br/>slices/"]
-    TX["agents, skills,<br/>output styles, wiki"]
-  end
-  G["tools/generate/<br/>just generate"]
-  subgraph out["plugins/ (generated, shipped)"]
-    M[".claude-plugin/<br/>plugin.json"]
-    HJ["hooks/hooks.json<br/>hooks/register.ts"]
-    BI["bin/"]
-    KC["kernel/ copy"]
-  end
-  MK[".claude-plugin/<br/>marketplace.json"]
-  T["tests/ and just check<br/>drift test"]
-  src --> G --> out
-  G --> MK
-  out --> T
-  src --> T
-```
+A slice can add these parts:
 
-`just check` fails when a file in `plugins/` differs from the output of the generator.
-Only `plugins/` and the marketplace file ship to users.
+| Field | Part |
+| --- | --- |
+| `mod` | Mod handlers: an event, a filter, a phase, and a `run` function. |
+| `hooks` | Classic command hooks. |
+| `cli` | A command in `bin/`. |
+| `skills` | Skills. |
+| `userConfig` | Options that the user sets. |
+| `settings` | Keys of the settings snippet. |
+| `segments` | Segments of the status line. |
+| `controls` | The record of each hook, guard, cap, or notice. |
 
-## Handoff flow
+Mod handlers of one event run in this order of phases:
 
-```mermaid
-sequenceDiagram
-  participant CC as Claude Code
-  participant H as handoff slice
-  participant F as $.model.fork
-  participant FS as handoff file
-  CC->>H: session.compact (auto or manual, main thread)
-  alt subagent or compaction profile
-    H->>CC: next(e)
-  else
-    H->>F: handoff prompt
-    F-->>H: reply with DONE steps and quoted values
-    alt nothing-to-fork, empty reply, or API error
-      H->>CC: next(e)
-    else
-      H->>FS: write (MiniSpec change folder or default place)
-      H->>FS: $.fs.stat
-      alt missing or empty
-        H->>CC: next(e)
-      else
-        H->>H: ground check of quoted values
-        H->>CC: first user message and handoff in one message, tail
-      end
-    end
-  end
-```
+1. `observe`
+2. `normalize`
+3. `rewrite`
+4. `check`
+5. `answer`
 
-The tail holds each message from the last assistant message with a tool use, so the newest tool result stays in the context (`p4`, `p5`).
-The ground check adds a warning to the handoff message for each quoted value that is not in the messages of the session.
+For example, `sembr` rewrites in the phase `rewrite`, and `guard` checks in the phase `check`.
+The generator orders the handlers by event, phase, slice name, and filter.
 
-## MiniSpec and the handoff
+## Plugin Composition
 
-```mermaid
-flowchart LR
-  U[user request] --> TI{size tier}
-  TI -- small --> W[work, no folder]
-  TI -- medium --> P["proposal.md<br/>tasks.md"]
-  TI -- big or large --> P2["+ design.md<br/>+ specs/"]
-  P --> IM[work on tasks]
-  P2 --> IM
-  IM -- "check passed" --> CK["[x] in tasks.md"]
-  CK --> IM
-  IM -- "context full" --> HF["handoff.md<br/>in change folder"]
-  HF -- "next open task" --> IM
-  IM --> RV["review by another agent"]
-  RV --> AR["minispec archive"]
-  IM -. "spec is wrong" .-> P
-```
+A plugin is a folder `src/plugins/<plugin>/` with `plugin.ts`, `description.md`, and a folder `slices/`.
+`plugin.ts` gives the keywords and the homepage.
+The generator takes the version from `package.json`, the `userConfig` from the slices, and the hooks from the slices.
 
-## File tree
+The core plugin `claudetto` has 15 slices.
+See [Overview](Overview) for the list.
+Each add-on has one to four slices:
 
-The target tree for 0.1.0.
-The names of slices and files can change in the work, but the layers and their rules do not.
+| Plugin | Slices |
+| --- | --- |
+| `claudetto-codegraph` | `graph` |
+| `claudetto-browser` | `browse`, `search` |
+| `claudetto-docs` | `docs` |
+| `claudetto-sessions` | `sessions` |
+| `claudetto-lab` | `capture`, `eval-compare`, `sandbox`, `schema` |
 
-```text
-src/
-  kernel/
-    slice.ts            slice contract, phases, ladder line type
-    budget.ts           shared runtime bounds (handoff triggers)
-    paths.ts            file layout that slices share
-    errors.ts  model.ts  ports.ts  text.ts  temp-paths.ts
-    shell.ts  shellkinds.ts  wrappers.ts  shell/
-    policy/             destructive floor catalog
-    node/               Node and Bun adapters
-  fragments/            shared text, inlined by the generator
-  plugins/
-    claudetto/
-      plugin.ts
-      agents/  output-styles/
-      slices/
-        handoff/  minispec/  prompt/  trim/  surface/
-        statusline/  agents/  styles/  guard/  asks/
-        checks/  attribution/  sembr/  decide/  setup/  gc/
-        worktree/  usercheck/  turngate/  reads/  repostate/
-        corrections/
-    claudetto-you-should-know/  slices/notice/
-    claudetto-browser/          slices/browse/  slices/search/
-    claudetto-codegraph/        slices/graph/
-    claudetto-docs/             slices/docs/
-    claudetto-lab/              slices/capture/  eval-compare/  sandbox/  schema/
-    claudetto-sessions/         slices/awareness/  start-cost/  usage/
-  wiki/                 source of the claudetto wiki pages
-tools/
-  generate/  validate.ts  limits.ts  lab.ts  sandbox/  wiki.ts  bump-version.ts
-tests/
-  kernel/  support/
-  claudetto/<slice>/
-  claudetto-<addon>/
-plugins/                generated, do not edit
-  claudetto/
-    .claude-plugin/plugin.json
-    hooks/hooks.json  hooks/register.ts
-    bin/minispec  bin/claudetto-statusline  bin/claudetto-run-checks
-    bin/claudetto-decide  bin/claudetto-setup
-    agents/  skills/  output-styles/  kernel/  slices/
-  claudetto-<addon>/    same shape, only the parts that the add-on uses
-.claude-plugin/marketplace.json
-```
+A new feature is a new slice.
+It goes into the core plugin only when most users need it.
+Otherwise it goes into an add-on, and the add-on works without the core plugin.
 
-Each slice folder has the same shape:
+## The Hooks Module
 
-```text
-slices/<s>/
-  slice.ts      what the slice adds, and its ladder line
-  limits.ts     bounds of the slice
-  domain/       logic, no I/O
-  adapters/     mod.ts, cli.ts, or hook.ts
-  lab/          hook lab tests with stubbed events
-  skills/       skill files, when the slice has any
-```
+Each plugin with mod handlers has one hooks module, `hooks/register.ts`.
+The generator writes it, with one literal `on()` call for each handler.
+`hooks/hooks.json` names only this module: `{"modules": ["./register.ts"]}`.
+The module has a comment `// eval: <event> <slice>` above each `on()` call.
+That comment links the hook to its entry in `evals/hooks.json`.
+See [Plugin Layout](Plugin-Layout#hook-evals).
 
-## Long term
+## Related Pages
 
-The rules that keep the architecture stable after 0.1.0:
-
-- **A new feature is a new slice.**
-  It goes into the core only when most users need it.
-  Otherwise it goes into an add-on, and the add-on works without the core.
-- **The ladder is checked again for each Claude Code release.**
-  When a new release gives a higher rung, such as a Mod API event for a feature that uses a classic hook, the slice moves up with a lab test.
-  When a release removes a rung, the slice moves down, and the lab test shows the reason.
-- **The minimum Claude Code version moves only with the lab.**
-  A bump of the pin needs `just lab` and the handoff eval on the new version.
-- **Bounds live in one place.**
-  Shared bounds go to `src/kernel/budget.ts`, slice bounds to `slices/<s>/limits.ts`, and repository bounds to `tools/limits.ts`.
-- **Shared state is a file layout, not an import.**
-  When two slices need the same data, the kernel names the path, and each slice reads the file.
-  This keeps a slice removable: remove its folder and its line in `plugin.ts`, and the other slices still build.
-- **Each measured claim has an evidence file.**
-  A change to the handoff prompt, the ground check, or the trigger runs the handoff eval again before it merges.
-- **Self-improvement goes through settings and the repository.**
-  A user changes `claudetto` through its settings or a pull request, not through the plugin cache, which updates overwrite.
+- [Architecture Generate](Architecture-Generate): the build from `src/` to `plugins/`.
+- [Plugin Layout](Plugin-Layout): the folders and the import rules.
+- [Controls](Controls): the record of each hook and guard.
+- [Decisions](Decisions): the reasons for the design.

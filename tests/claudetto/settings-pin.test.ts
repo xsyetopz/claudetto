@@ -14,7 +14,7 @@ import {
 } from "../support/settings-pin.ts";
 import { validate } from "../support/validate.ts";
 
-const SNIPPET = "wiki/reference/Settings-Snippet.md";
+const SNIPPET = "wiki/claudetto/reference/Settings-Snippet.md";
 
 /** The parsed JSON blocks of a Markdown file, or an empty list when the file is absent. */
 const jsonBlocks = async (file: string): Promise<Settings[]> => {

@@ -1,0 +1,144 @@
+# Decisions: Architecture
+
+This page holds the decisions D37, D38, D39, D42, D45, D46, and D47.
+Read it to learn why the code has the slices, the generator, and the style that it has.
+The index is [Decisions](Decisions).
+A missing id is a removed decision, and the index lists them.
+
+Each decision gives the problem, the choice, the alternatives, and the evidence.
+Where the sources record no alternative, the page says so.
+
+## D37 Ports and Adapters Inside Vertical Slices
+
+**Problem:** One capability spread over four folders in an earlier release of the project (1.0.0).
+Parallel agents then conflicted on the shared folders.
+A microkernel alone does not keep I/O out of the logic of an extension.
+
+**Choice:** Ports and adapters (hexagonal architecture) inside vertical slices.
+A slice holds one capability, from its domain to its entry points.
+The domain is pure data and functions.
+A port is an interface that the domain needs.
+An adapter connects the domain to one entry point: a mod handler, a CLI, or a status line segment.
+
+**Alternatives:** Clean architecture in layers, and a microkernel alone.
+Jev picked ports and adapters with confidence 0.82 on 2026-10-12.
+
+**Evidence:**
+
+- `src/plugins/claudetto/slices/` has 15 slices, and the add-ons have 9 slices in total.
+- `biome.json` has `noRestrictedImports` overrides for the slice and domain folders.
+  A slice imports only `src/kernel/` and its own folder.
+- [Architecture](Architecture) explains the pattern.
+
+## D38 A Generated Composition Root
+
+**Problem:** The mod runtime needs a literal event name in each `on()` call.
+A shared file that each slice edits makes parallel work conflict.
+
+**Choice:** A generator.
+`just generate` reads the manifest `slice.ts` of each slice and finds the slices by a glob.
+It writes `hooks/register.ts`, `hooks/hooks.json`, `plugin.json`, the texts, and the copies of the kernel that a plugin imports.
+It fails when one slice has two handlers with the same event, filter, and phase.
+
+**Alternatives:** A hand-edited register file, and a list of slices in a shared file.
+Both need a hand edit of a shared file.
+
+**Evidence:**
+
+- `plugins/claudetto/hooks/register.ts` starts with a line that says it is generated, and it has 20 `on()` calls.
+- `just gate` runs `generate --check`, so a plugin file that differs from the generator output fails the check.
+- The generator is in `tools/generate/`.
+
+## D39 One Hook Module in Place of Classic Command Hooks
+
+**Problem:** A classic command hook starts a process for each event.
+A mod handler runs in the process of the mod runtime, with no Bun start.
+
+**Choice:** One module for each plugin.
+`hooks/hooks.json` of `claudetto` and of `claudetto-browser` names one module, `./register.ts`.
+No plugin keeps a classic command hook.
+The other add-ons have no hooks.
+
+**Alternatives:** One classic command hook for each event.
+A classic hook stays an option only when no mod event can do the work.
+
+**Evidence:**
+
+- `plugins/claudetto/hooks/hooks.json` and `plugins/claudetto-browser/hooks/hooks.json`.
+- The hooks module has no `node:` import, no `bun:` import, and no `Bun` (`.claude/rules/hooks-module.md`).
+
+## D42 Zero Token Cost Where a Hook, a Script, or a CLI Can Do the Work
+
+**Problem:** A skill step that only runs a command costs model calls.
+Each call reads the context again, so the step costs cache reads and output tokens.
+
+**Choice:** Move each such task to a hook, a script, a setting, or a status line command.
+For example, a `command.run` handler answers `/goal`, and the `claudetto-setup` CLI merges the settings.
+
+**Alternatives:** Keep each step in the skill text, for Claude to run.
+
+**Evidence:** One headless run for each form in an earlier release of the project (1.0.0).
+A usage report as a skill had 2 turns and $0.038.
+The same report as a `command.run` handler had 0 turns and $0.
+This is one sample.
+
+## D45 Add-Ons Import Nothing from the Core Plugin or from Each Other
+
+**Problem:** Each add-on must work with no other plugin installed.
+`claudetto-lab` matters most, because a user debugs a session with it.
+
+**Choice:** Each add-on has its own `src/plugins/<add-on>/`.
+The generator copies each `src/kernel/` module that an add-on imports into the `kernel/` folder of the add-on.
+The copies cannot drift, because the generator writes them from one source.
+
+**Alternatives:** A shared package for the add-ons, or an add-on that depends on the core plugin.
+A shared npm package adds an install step and a version skew between plugins.
+
+**Evidence:**
+
+- `tests/support/addons.test.ts` fails when an add-on file names `../claudetto/` or `plugins/claudetto/`.
+- `checkPluginBoundary` in `tests/support/import-rules.ts` flags each import that leaves its plugin.
+  `tests/claudetto/imports.test.ts` runs the rules over `plugins/`.
+- The add-ons are on [Add-Ons](Add-Ons).
+
+## D46 Bounds in Three Tiers
+
+**Problem:** Copies of one bound in code, config, and prose drift apart.
+D18 in [Layout](Decisions-Layout) set the three tiers.
+
+**Choice:** Keep the three tiers.
+A shared runtime bound is in `src/kernel/budget.ts`.
+A slice bound is in `slices/<s>/limits.ts`, and the tree has 13 of these files.
+A repository bound is in `tools/limits.ts`.
+A test pins each copy, so a change of a bound in its one file changes its copies.
+
+**Alternatives:** None recorded.
+
+**Evidence:**
+
+- `src/kernel/budget.ts` has `CONTEXT_WINDOW` of 300,000 tokens, and the other shared bounds.
+- `tools/limits.ts` has `MIN_CLAUDE_CODE_VERSION`, `DOCKER_CPUS`, and `EVAL_MAX_COST_USD`.
+- The tiers are on [Plugin Layout](Plugin-Layout#bound-tiers), and [Bounds](Bounds) lists the bounds.
+
+## D47 Arrow Functions, Plain Data, and Classes Only for State
+
+**Problem:** The user decided on 2026-10-12 that code uses arrow functions and uses OOP only where it fits.
+
+**Choice:** `export const f = (a: A): B => ...`.
+An interface holds each port and each contract.
+A class holds only state that lives across calls.
+Domain code is plain data and functions, so a test calls it with no stub.
+
+**Alternatives:** None recorded.
+
+**Evidence:**
+
+- `biome.json` sets `useArrowFunction` to `error` for each file.
+- `tools/lint/arrow-functions.grit` flags a `function` declaration, because Biome has no rule for one.
+- `.claude/rules/arrow-functions.md` states the rule for editors.
+
+## Related Pages
+
+- [Architecture](Architecture)
+- [Design](Design)
+- [Decisions](Decisions)

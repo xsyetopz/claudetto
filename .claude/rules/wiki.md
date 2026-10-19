@@ -42,5 +42,5 @@ A change of the words of a heading changes its anchor, so update each link to it
 - Use a numbered list for steps that the reader does in sequence, and a bulleted list for items with no sequence.
 - End each page with `## Related Pages`, and link the next page that the reader reads.
 - Keep the facts, the numbers, and the hedges of the text when you rewrite it.
-- `just generate` writes some pages from a source in `src/wiki/`, such as `reference/Bounds.md`.
+- `just generate` writes some pages from a source in `src/wiki/`, such as `claudetto/reference/Bounds.md`.
   Edit the source, keep each `{{...}}` marker, and run `just generate`.

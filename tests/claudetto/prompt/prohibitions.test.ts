@@ -1,12 +1,14 @@
 // No text that a plugin sends to Claude has a prohibition list: a paragraph with three or more sentences that start with `Do not`, `Never`, or `Avoid` (task 21.5, `prompt-audit.md:100`).
-// A list can stay only when its failure reproduces on the target model, and then `Failure-Gaps-0.1.0` names its file under "Kept Prohibition Lists".
-// The turn gate checks the replies, so a rule against a fault of a reply goes into the rubric of the judge.
+// A list can stay only when its failure reproduces on the target model, and then `Prohibition-Lists` names its file under "Kept Prohibition Lists".
 
 import { expect, test } from "bun:test";
 import path from "node:path";
 
 const ROOT = path.join(import.meta.dir, "../../..");
-const PAGE = path.join(ROOT, "wiki/evidence/Failure-Gaps-0.1.0.md");
+const PAGE = path.join(
+  ROOT,
+  "src/wiki/claudetto/evidence/Prohibition-Lists.md",
+);
 const HEADS = ["Do not ", "Don't ", "Never ", "Avoid "];
 const MIN_RUN = 3;
 
@@ -52,7 +54,7 @@ const kept = async (): Promise<string[]> => {
     .map((line) => line.slice(3, line.indexOf("`", 3)));
 };
 
-test("the prompts with a prohibition list are the ones that `Failure-Gaps-0.1.0` keeps", async () => {
+test("the prompts with a prohibition list are the ones that `Prohibition-Lists` keeps", async () => {
   expect(await found()).toStrictEqual(await kept());
 });
 
