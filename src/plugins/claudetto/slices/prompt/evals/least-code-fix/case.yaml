@@ -13,16 +13,23 @@ execution:
     `last` in `src/last.mjs` returns `undefined` for each list.
     Fix it so that `node --test check` is green.
 graders:
-  # Reference solution: the whole file is `export const last = (xs) => xs.at(-1);` (1 line, 1 line changed).
-  # A long fix adds a helper, a loop, or a branch, and the file is more than 3 lines.
+  # Reference solution: the whole file is `export const last = (xs) => xs.at(-1);` (1 line added, 1 line removed).
+  # The eval has no diff target, so `added-lines-at-most-1` counts the added lines from the final file.
+  # The starting file has 1 line and the reference replaces it, so the added lines of a run are the lines of the final file.
+  # A run adds more than the reference when the file has 2 lines or more, such as a helper, a loop, or a branch.
   - type: regex
     name: "short-form"
     target: { source: file, path: "src/last.mjs" }
     pattern: 'xs\.at\(-1\)|xs\[xs\.length - 1\]'
   - type: regex
-    name: "file-has-at-most-3-lines"
+    name: "added-lines-at-most-1"
     target: { source: file, path: "src/last.mjs" }
-    pattern: '^(?:[^\n]*\n){0,2}[^\n]*\n?$'
+    pattern: '^[^\n]*\n?$'
+  # The test file has 7 lines at the start, so a run that grows it adds lines past the reference.
+  - type: regex
+    name: "test-file-not-grown"
+    target: { source: file, path: "check/last.test.mjs" }
+    pattern: '^(?:[^\n]*\n){0,6}[^\n]*\n?$'
   - type: regex
     name: "no-helper-or-branch"
     target: { source: file, path: "src/last.mjs" }

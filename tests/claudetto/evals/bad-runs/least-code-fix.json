@@ -1,5 +1,5 @@
 {
-  "fails": "file-has-at-most-3-lines",
+  "fails": "added-lines-at-most-1",
   "events": [
     {
       "type": "assistant",
