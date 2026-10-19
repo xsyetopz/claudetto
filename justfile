@@ -130,7 +130,7 @@ eval-budget *args:
 
 # Print the statistics of the with/without comparison from `aggregate-result.json` files or folders of results (Fisher p, Newcombe CI, bootstrap CI over cases, judge agreement); add --json, --seed N, or --pick oldest
 eval-stats *args:
-    bun tools/eval-stats.ts "$@"
+    bun tools/stats.ts "$@"
 
 # Run the eval cases on the checkout and on a variant at a git ref (in a temporary worktree), to compare the two plugin arms; extra arguments go to the eval, and --model is required as for `eval`
 eval-variant ref *args:

@@ -15,12 +15,12 @@ The user said "go ahead with the redesign plan" (2026-10-20).
 - Add a `blind` set: cases that an author writes from a behavior description only, with no access to the rule text or the plugin.
 - Add a `control` set: cases where the plugin must not change the result.
 - Give each case a reference run that passes each deterministic grader, and a no-op run that fails.
-- Add `tools/eval-stats.ts`: Fisher exact p and a Newcombe CI for each case, and a bootstrap CI over the cases of each set.
+- Add `tools/stats.ts`: Fisher exact p and a Newcombe CI for each case, and a bootstrap CI over the cases of each set.
 - Report each set apart, with CIs, in the evidence page.
 
 ## Sources
 
-- Anthropic, "Demystifying evals for AI agents": https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents
-- ABC, "Establishing Best Practices for Building Rigorous Agentic Benchmarks": https://arxiv.org/abs/2507.02825
-- Anthropic, "A statistical approach to model evaluations": https://www.anthropic.com/research/statistical-approach-to-model-evals
-- `claude plugin eval` docs: https://code.claude.com/docs/en/plugin-evals
+- Anthropic, "Demystifying evals for AI agents": <https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents>
+- ABC, "Establishing Best Practices for Building Rigorous Agentic Benchmarks": <https://arxiv.org/abs/2507.02825>
+- Anthropic, "A statistical approach to model evaluations": <https://www.anthropic.com/research/statistical-approach-to-model-evals>
+- `claude plugin eval` docs: <https://code.claude.com/docs/en/plugin-evals>

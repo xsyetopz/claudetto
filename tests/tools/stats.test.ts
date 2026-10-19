@@ -9,7 +9,7 @@ import {
   judgeAgreement,
   newcombe,
   zForConfidence,
-} from "../../tools/eval-stats.ts";
+} from "../../tools/stats.ts";
 
 test("`fisherExact` matches known two-sided values", () => {
   expect(fisherExact(10, 10, 5, 10)).toBeCloseTo(0.0325, 4);

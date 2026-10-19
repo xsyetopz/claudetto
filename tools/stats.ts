@@ -1,6 +1,6 @@
 #!/usr/bin/env -S bun --no-env-file
 // Prints statistics for the with/without comparison in the `aggregate-result.json` files of `claude plugin eval`.
-// Usage: `bun tools/eval-stats.ts [--json] [--seed N] [--pick newest|oldest] [--version X] PATH...`
+// Usage: `bun tools/stats.ts [--json] [--seed N] [--pick newest|oldest] [--version X] PATH...`
 // A PATH is an `aggregate-result.json` file or a folder that holds some.
 // The case is the unit of a set, so the bootstrap resamples cases and never pools runs.
 
@@ -570,7 +570,7 @@ if (import.meta.main) {
   }
   if (paths.length === 0 || Number.isNaN(seed)) {
     console.error(
-      "Usage: bun tools/eval-stats.ts [--json] [--seed N] [--pick newest|oldest] [--version X] PATH...",
+      "Usage: bun tools/stats.ts [--json] [--seed N] [--pick newest|oldest] [--version X] PATH...",
     );
     process.exit(1);
   }
