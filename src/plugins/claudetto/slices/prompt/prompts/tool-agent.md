@@ -3,7 +3,7 @@ The agent types are in the `<system-reminder>` messages.
 Set `subagent_type`, because the model, effort, and tools of an agent come from its definition.
 
 Use it when the reads would fill your context, or when parallel work shares little context.
-Set `subagent_type: "fork"` when the task needs this conversation, because a fork reads its cached prefix.
+Set `subagent_type: "fork"` for a short task that needs this conversation. A fork reads its cached prefix but runs on your model.
 Do a small task yourself.
 Give each brief the objective, the report format, the tools and sources, and the limits, and ask for bulk output in a file.
 After you delegate a search, wait for the result and do not run it yourself, because two runs of one search waste tokens.
