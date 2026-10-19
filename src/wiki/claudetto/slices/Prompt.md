@@ -10,7 +10,7 @@ The short prompt starts when the env var `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is `
 In the short prompt, Claude Code drops the `intro`, `system`, `doing_tasks`, `actions`, `tools`, and `tone` sections.
 It keeps one section, `lean_body`, with a few harness rules.
 
-The slice answers the `lean_body` section with one tailored text.
+The slice replaces the text of the `lean_body` section with one tailored text.
 There is one text for all models and no variant for a model.
 The slice also gives a shorter text for some other sections that the short prompt keeps.
 
@@ -21,11 +21,15 @@ The texts are `.md` files in `prompts/`, and `just generate` builds the module `
 
 | Hook | Phase | What it does |
 | --- | --- | --- |
-| `prompt.section` | `answer` | Gives the tailored text for `lean_body`, the gated text for `context_management`, and a shorter text for a section that has a transform. |
+| `prompt.compose` | `rewrite` | Replaces the text of `lean_body` with the tailored text, and keeps the other sections in their place. |
+| `prompt.section` | `answer` | Gives the gated text for `context_management`, and a shorter text for a section that has a transform. |
 | `agent.spawn` | `rewrite` | Adds the notes block to the end of the task prompt of a subagent, one time. |
 | `tool.describe` | `answer` | Gives a shorter `Agent` description, and defers `ListAgents`. |
 | `prompt.attachment` | `answer` | Leaves out an attachment of the kinds `goal_status` and `tool_hosts_notice`. |
 | `command.describe` | `rewrite` | Hides a command of the list below from the typeahead and `/help`. |
+
+Claude Code `2.1.302` and `2.1.303` build `lean_body` without a `prompt.section` call.
+So the slice uses `prompt.compose` for it ([Prompt Size](Prompt-Size)).
 
 The slice has no `userConfig` key.
 It reads the `compaction` option of the [Handoff](Handoff) slice.
@@ -93,9 +97,9 @@ The short prompt already shortens the `Bash` and `Read` descriptions.
 The slice hides these commands from the typeahead and `/help`.
 A hidden command still runs when typed in full.
 
-The `prompt` slice gives Claude a shorter system prompt.
+The `prompt` slice keeps the short prompt of Claude Code and shortens some of its built-in text.
 The system prompt is the hidden text that tells Claude how to behave.
-A shorter prompt costs fewer tokens and keeps the rules that matter.
+Its `lean_body` text is longer than the stock text, and the net size of the whole prompt is not measured live yet ([Prompt Size](Prompt-Size)).
 
 ## See Also
 

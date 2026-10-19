@@ -77,6 +77,7 @@ Tests pin each copy in code and config.
 Each request sends the system prompt and the tool descriptions again.
 Shorter text leaves more context for the work.
 The `prompt` slice gives one text for the `lean_body` section, and the snippet sets `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`.
+That text is longer than the stock `lean_body` text, and its size is on [Prompt Size](Prompt-Size).
 
 - `src/plugins/claudetto/slices/prompt/domain/lean-body.ts` joins the sections `intro`, `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, and `counts`.
 - The settings merge fails when two slices give one key two values.

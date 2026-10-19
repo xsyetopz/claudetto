@@ -14,6 +14,8 @@ See [System Prompt](Claude-Code-System-Prompt) and [Mod API](Claude-Code-Mod-API
 
 These come first.
 Claude Code uses either the short row or the full rows.
+In `2.1.302` and `2.1.303`, the engine builds the `lean_body` section without a `prompt.section` call, so a `prompt.section` hook does not see it.
+A `prompt.compose` hook sees it.
 
 | Section | Mark | When | Content |
 | --- | --- | --- | --- |

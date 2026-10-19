@@ -10,7 +10,7 @@ After `/claudetto:setup` and a restart, you get these parts:
 
 - A status line with up to three rows.
 - The output style `claudetto:Concise`, which puts the result first and then only the facts you need. See [Styles](Styles).
-- A shorter system prompt. See [Prompt](Prompt).
+- A short system prompt with a tailored `lean_body` text. See [Prompt](Prompt).
 - A `Reply` button under each message of Claude. A press puts that message in the prompt box as a `>` quote. See [Reply](Reply).
 
 ## The Status Line

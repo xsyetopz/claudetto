@@ -7,7 +7,8 @@ These decisions explain the shape of the system prompt, the cuts to built-in tex
 **Choice:** The `prompt` slice answers by exact id.
 An unknown id passes on unchanged.
 
-- `prompt.section` answers `lean_body` with the tailored text, and the ids that have a transform in `slices/prompt/transforms/`.
+- `prompt.compose` replaces the text of `lean_body` with the tailored text, because Claude Code `2.1.302` and `2.1.303` never send that section to `prompt.section`.
+- `prompt.section` answers the ids that have a transform in `slices/prompt/transforms/`.
 - `tool.describe` replaces the description of `Agent` when the new text is shorter.
   `ListAgents` is deferred behind `ToolSearch`.
 - `prompt.attachment` leaves out `goal_status` and `tool_hosts_notice`.
@@ -26,7 +27,7 @@ See [Prompt](Prompt).
 ## Why claudetto Owns the System Prompt
 
 **Choice:** The `prompt` slice builds on the short prompt (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1`).
-It answers `lean_body` with one text for every model.
+It replaces the text of `lean_body` with one text for every model, through `prompt.compose`.
 `LEAN_BODY` joins the sections `intro`, `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, and `counts`.
 
 - The text is the same on each turn, so the prompt cache stays valid.
@@ -39,7 +40,7 @@ It answers `lean_body` with one text for every model.
 **Reason:** The same rules are needed for every model, and one text serves them all.
 
 **Evidence:** `tests/claudetto/prompt/rules.test.ts` pins the least-code rule, the pushback tiers, and the missing-tool rule.
-`slices/prompt/lab/section.test.ts` checks the `lean_body` answer.
+`slices/prompt/lab/section.test.ts` checks that `prompt.compose` replaces the `lean_body` section and keeps the other ids.
 
 ## Why Requests Are Captured
 
