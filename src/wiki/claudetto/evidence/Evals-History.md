@@ -1,67 +1,62 @@
 # Evals History
 
-This page holds the measured results of the eval runs and benches of earlier releases, as far as they still describe the code of claudetto.
-Read it when a current page cites a figure of an older run.
-Each section gives the date, the Claude Code version, the method, and the figures.
-The runs of claudetto 0.1.0 are in [Evals of 0.1.0](Evals-0.1.0).
-The current suite is on the page [Evals](Evals).
+This page keeps the figures of older eval runs and benches that still help to read the current pages.
+Each section gives the date, version, method, and figures.
+The runs of 0.1.0 are on [Evals of 0.1.0](Evals-0.1.0).
 
-## Eval of 2026-10-08 (Off Switches)
+## Off-Switch Eval of 2026-10-08
 
-The eval ran 12 cases with 3 runs per arm.
-It used the harness of an earlier release (0.27.0), and the Claude Code version is not stated.
-The rule was to drop an item when the resolve rate, the over-claim rate, or the policy-violation rate got worse beyond the noise bound.
-When another measure worsened with a shown interval, the arm ran a second time.
-The rule dropped the item only when the loss showed again.
-The report files are not in the repository, so this page holds the figures.
+**Method:** 12 cases, 3 runs per arm, with an earlier harness.
+The Claude Code version is not stated.
+An item was dropped when the resolve rate, over-claim rate, or policy-violation rate got worse beyond noise.
+When another measure got worse with a shown interval, the arm ran again, and the item was dropped only if the loss showed again.
+The report files are not in the repository.
 
-| Item | Result | Decision |
+| Item | Result | In the snippet |
 | --- | --- | --- |
-| `plan-mode` | First run: `multiSentenceShare` 0.6 against 0.718, shown. Second run: 0.694 against 0.752, not shown. Cost was lower with the item (0.002, interval 0 to 0.003, shown). | In the snippet. |
-| `task-tools` | No measure was worse. | In the snippet. |
-| `git-instructions` | No measure was worse. A sandbox commit kept the `Co-Authored-By` trailer. | In the snippet. |
-| `telemetry` | Second run: `turns` 4.75 against 5.5, `seconds` 12.113 against 15.432, and `outputTokens` 655.861 against 799.917. All three were shown worse for the item. | Not in the snippet. |
-| `nonessential-traffic` | Second run: `turns` 4.75 against 5.389 and `outputTokens` 655.861 against 762.472. Both were shown worse for the item. | Not in the snippet. |
-| `subagent-cache-1h` | Cost for each resolved task 0.028 against 0.027. The mean difference was 0.002, interval -0.008 to 0.007. No saving was shown. | Not in the snippet. |
+| `plan-mode` | Run 1: `multiSentenceShare` 0.6 against 0.718, shown. Run 2: 0.694 against 0.752, not shown. | ✅ |
+| `task-tools` | No measure worse. | ✅ |
+| `git-instructions` | No measure worse. A sandbox commit kept the `Co-Authored-By` trailer. | ✅ |
+| `telemetry` | Run 2: `turns` 4.75 against 5.5, `seconds` 12.113 against 15.432, `outputTokens` 655.861 against 799.917. All three shown worse. | ❌ |
+| `nonessential-traffic` | Run 2: `turns` 4.75 against 5.389, `outputTokens` 655.861 against 762.472. Both shown worse. | ❌ |
+| `subagent-cache-1h` | Cost for each resolved task 0.028 against 0.027. Difference 0.002, interval -0.008 to 0.007. No saving. | ❌ |
 
-The items map to the keys of the settings snippet in [Settings Snippet Keys](Settings-Snippet-Keys) and [Off Switches](Off-Switches).
+See [Settings Snippet Keys](Settings-Snippet-Keys) and [Off Switches](Off-Switches).
 
-## Compaction: Fast-Compact Against `/compact`
+## Compaction Bench
 
-This bench ran on 2026-09-27 from local transcripts, with no Claude usage (measured).
-Users report that the Jev picks compact badly.
-The bench found the picks no better than keeping the newest outputs.
-It used 28 local points, and 20 of them had an answer:
+**Method:** On 2026-09-27, from 28 local transcript points (20 with an answer), with no Claude usage.
+A needed token is a path, number, or identifier of 8 or more characters that a tool result introduced and Claude used within 40 calls after the compaction.
+A replay of 5 real compactions found 70 needed tokens.
+The token label agreed with a blind check 71% of the time.
 
-- The upstream `fast-jev-compaction` kept 0% of old tool output.
-- The `fast-compact` rule keeps 55% of the size, 52% of the needed tokens, and 63% of the needed outputs.
-- The same rule without Jev, with the newest outputs kept whole, keeps 58%, 54%, and 63%.
-- The Jev ranking scored AUC 0.51 to 0.55, near chance.
-  "Largest first" scored 0.74.
+| Method | Kept size | Kept needed tokens | Kept needed outputs |
+| --- | --- | --- | --- |
+| Upstream `fast-jev-compaction` | not stated | not stated | 0% of old output |
+| `fast-compact` rule | 55% | 52% | 63% |
+| Same rule, newest outputs kept whole | 58% | 54% | 63% |
 
-A needed token is a path, a number, or an identifier of 8 or more characters.
-A tool result introduced it, and Claude used it within 40 calls after the compaction.
-The replay of 5 real compactions found 70 needed tokens.
+The Jev ranking scored AUC 0.51 to 0.55, near chance.
+"Largest first" scored 0.74.
 
 | | Kept | Read again | Neither | Context left |
 | --- | --- | --- | --- | --- |
 | Built-in `/compact` | 28 (40%) | 26 (37%) | 16 (23%) | 18k to 25k of about 970k tokens |
 | `fast-compact` rule | 58 (83%) | 12 (17%) | none | 72% to 91% of characters |
 
-- `fast-compact` trims only old tool output, so every later turn reads 72% to 91% of the context again.
-  It keeps 83% of the needed tokens, against 40% for the built-in summary.
-- For usage, the built-in compaction wins by far.
-  Each extra read costs a few thousand tokens, against about 750k extra on every turn.
-- Jev adds no measurable gain.
-- The sample is small.
-  The token label agreed with the blind check of the bench 71% of the time.
+**Result:**
 
-Compact while the cache is warm.
-After the TTL expires, a compaction reads the whole conversation with no cache (reported).
+- `fast-compact` keeps 83% of needed tokens, against 40% for the built-in summary.
+- It trims only old tool output, so each later turn reads 72% to 91% of the context again.
+  For usage, the built-in compaction wins by far (a few thousand tokens per extra read, against about 750k extra on every turn).
+- Jev adds no measurable gain.
+- Compact while the cache is warm.
+  After the TTL, a compaction reads the whole conversation uncached (reported).
+- The sample is small.
 
 ## Model and Effort Sweep
 
-These runs used Claude Code `2.1.287` and a Sonnet 5.5 judge, with the 8 `t*` cases and 3 trials per arm.
+**Method:** Claude Code `2.1.287`, a Sonnet 5.5 judge, 8 `t*` cases, 3 trials per arm.
 Effort came from `CLAUDE_CODE_EFFORT_LEVEL`.
 The summary files went with the removed harness.
 
@@ -73,25 +68,30 @@ The summary files went with the removed harness.
 | Opus 5.5 xhigh | 24/24 | $0.28 |
 
 A longer run used 11 cases with 10 trials per arm.
-It passed 98 of 110 (Sonnet 5.5 medium, $0.12 per pass), 99 of 110 (Sonnet 5.5 high, $0.13), 101 of 110 (Opus 5.5 medium, $0.22), and 99 of 110 (Opus 5.5 high, $0.24).
-After fixes of the cases, a rerun passed 109, 107, 110, and 109 of 110 in the same order, at $0.10, $0.12, $0.19, and $0.21 per pass.
 
-- Opus 5.5 `medium` passed as many trials as `high` for less.
-- Sonnet 5.5 was at the ceiling on these tasks at 55% to 60% of the Opus 5.5 cost.
-  The tasks were not hard reviews or hard root causes.
+| Arm | Passed first | Cost per pass | Passed after case fixes | Cost per pass |
+| --- | --- | --- | --- | --- |
+| Sonnet 5.5 medium | 98/110 | $0.12 | 109/110 | $0.10 |
+| Sonnet 5.5 high | 99/110 | $0.13 | 107/110 | $0.12 |
+| Opus 5.5 medium | 101/110 | $0.22 | 110/110 | $0.19 |
+| Opus 5.5 high | 99/110 | $0.24 | 109/110 | $0.21 |
+
+**Result:**
+
+- Opus 5.5 `medium` passed as much as `high` for less.
+- Sonnet 5.5 was at the ceiling at 55% to 60% of the Opus 5.5 cost, on tasks that were not hard reviews.
 - Haiku 4.5 failed on judgment cases and cost more per pass than Sonnet 5.5 `low`.
 - With 3 trials, the arms from Sonnet 5.5 `low` to Opus 5.5 `xhigh` do not differ significantly.
 
 ## Full Suite on Claude Code 2.1.296
 
-The full run of 2026-10-10 (`2026-10-10T21-59-53-466Z`) used Claude Code `2.1.296` and the default model, which was Opus 5.5.
-Each case ran 3 times on the arm with the plugin and 3 times on the arm with no plugin.
-The run took 1,763 seconds and cost 10.81 USD.
-It ran 16 cases of the earlier release.
-The table gives the cases that claudetto 0.2.0 still has.
+**Method:** Run `2026-10-10T21-59-53-466Z` on Claude Code `2.1.296`, default model Opus 5.5, 3 runs per arm, 16 cases of an earlier suite.
+It took 1,763 seconds and cost 10.81 USD.
 The mean difference of all 16 cases was +0.08.
+Only the cases that 0.2.0 still has are below.
+The runs used an earlier prompt, so they do not test the text of 0.2.0.
 
-| Case | Plugin | Baseline | Delta |
+| Case | Plugin | Baseline | Δ |
 | --- | ---: | ---: | ---: |
 | `accusation-subagent` | 1.00 | 1.00 | 0.00 |
 | `accusation-user` | 1.00 | 1.00 | 0.00 |
@@ -103,30 +103,29 @@ The mean difference of all 16 cases was +0.08.
 | `report-count` | 1.00 | 0.47 | +0.53 |
 | `verification-claim` | 1.00 | 1.00 | 0.00 |
 
-- Before the shared rules moved into the system prompt, `accusation-user` gave 0.74 and `report-count` gave 0.40 on the plugin arm (`2026-10-10T16-50-16-985Z`).
-- The runs used the Opus variant of the prompt of that release, so they do not test the text of 0.2.0.
+Before the shared rules moved into the system prompt, `accusation-user` scored 0.74 and `report-count` 0.40 on the plugin arm (`2026-10-10T16-50-16-985Z`).
 
 ### Sonnet 5.5 and Haiku 5.5
 
 Two full runs of 16 cases used `suite.modelOverride`.
 
-| Model | Run | Cost | Time | Plugin arm | Mean difference |
+| Model | Run | Cost | Time | Plugin arm | Mean Δ |
 | --- | --- | --- | --- | --- | --- |
 | Sonnet 5.5 | `2026-10-10T22-46-02-753Z` | 5.16 USD | 1,237 s | 1.00 on 15 cases | +0.09 |
 | Haiku 5.5 | `2026-10-10T23-07-46-668Z` | 0.95 USD | 1,915 s | 12 of 16 cases pass | +0.05 |
 
-- Sonnet 5.5 gave `report-count` 0.93 on the plugin arm and 0.40 on the arm with no plugin.
-  The one miss was a grader error: a regex matched a count that the reply named as wrong.
-- Haiku 5.5 missed `accusation-user` (0.88), `report-count` (0.50), and two cases that the suite no longer has.
-- Three reruns on Haiku 5.5 used `CLAUDE_CODE_EFFORT_LEVEL=high`.
+- Sonnet 5.5 scored `report-count` 0.93 with the plugin and 0.40 without.
+  Its one miss was a grader error, where a regex matched a count that the reply named as wrong.
+- Haiku 5.5 missed `accusation-user` (0.88), `report-count` (0.50), and two cases that no longer exist.
+- Three Haiku reruns used `CLAUDE_CODE_EFFORT_LEVEL=high`.
   The traces do not show the effort level, so it is not verified that the setting reached the runs.
-  `report-count` gave 0.50 on both arms, `accusation-user` gave 1.00 against 0.67, and a case that the suite no longer has gave 1.00 on both arms.
-- A line in the model notes for Haiku that told it to run the project command before a count gave no gain (plugin arm 0.50, 1 of 3 runs).
-  In the failing runs, Haiku counts with its own `grep` and does not run the project script.
+  `report-count` scored 0.50 on both arms, and `accusation-user` scored 1.00 against 0.67.
+- A model note that told Haiku to run the project command before a count gave no gain (plugin arm 0.50).
+  Haiku counts with its own `grep`.
 
-## Related Pages
+## See Also
 
-- [Evals](Evals): the current suite.
-- [Evals of 0.1.0](Evals-0.1.0): the runs of claudetto 0.1.0.
+- [Evals](Evals)
+- [Evals 0.1.0](Evals-0.1.0)
 - [Usage Evidence](Usage-Evidence)
 - [Evidence](Evidence)

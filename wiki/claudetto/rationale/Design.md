@@ -2,159 +2,106 @@
 
 # Design
 
-This page gives the design principles of `claudetto` 0.2.0.
-Read it to learn the reason behind each part of the plugins.
-For each principle, it gives what the principle is, why it holds, and how the code applies it.
-The decisions behind the principles are in [Decisions](Decisions).
-[Architecture](Architecture) explains how the parts work together.
-[Controls](Controls) lists each hook, guard, cap, and notice with the reason that it exists.
+`claudetto` is a set of Claude Code plugins built on a few simple principles.
+They keep the plugins small, cheap, and safe to update.
+Each section names a principle, the reason, and where the code applies it.
 
-## Only Documented Extension Points
+## Use Only Documented Extension Points
 
-**What:** `claudetto` changes Claude Code with the mod API, settings, skills, output styles, and the status line command.
+`claudetto` changes Claude Code with the mod API, settings, skills, output styles, and the status line command.
 It never patches the Claude Code binary or its npm package.
-
-**Why:** A patch breaks at each release, and it breaks the terms of service of Anthropic.
-Reading the bundle for facts is permitted.
-
-**How in the code:**
+A patch breaks at each release, and it breaks the terms of service of Anthropic.
 
 - `plugins/claudetto/hooks/hooks.json` names one module, `./register.ts`, and no classic hook.
-- `plugins/claudetto/hooks/register.ts` is generated.
+- `register.ts` is generated.
   It has 20 `on()` calls for 12 events.
 - The output style `Concise` is `src/plugins/claudetto/slices/styles/styles/Concise.md`.
-- The transforms in `src/plugins/claudetto/slices/prompt/transforms/` are keyed by the id of a built-in section.
 
-## The Least Powerful Component for Each Need
+## Use the Least Powerful Part
 
-**What:** For each need, `claudetto` uses the component with the least cost.
-Claude Code first: its default, a setting, or an env var.
-Then a mod handler, then a classic hook, then a script.
-A user-invoked skill starts a workflow, and a model-invoked skill holds knowledge.
+For each need, `claudetto` picks the cheapest part that works.
+The order is: a default of Claude Code, a setting or env var, a mod handler, a classic hook, a script.
+A skill adds its description to each session, so only a skill that the user starts has `disable-model-invocation`.
 
-**Why:** A skill adds its description to the start of each session.
-A mod handler runs in the process of Claude Code.
-A classic hook starts a process for each event that it matches.
+- `Slice.ladder` in `src/kernel/slice.ts` records the step of each slice and why no cheaper step works.
+- `.claude/rules/extension-points.md` forbids new runtime code for a feature that Claude Code already has.
 
-**How in the code:**
+## Do Not Call a Model for a Plain Check
 
-- `Slice.ladder` in `src/kernel/slice.ts` is a line that starts with a rung: `mod`, `classic`, `built-in`, or `none`.
-  Each `slice.ts` states its rung and the reason that no higher rung can do the work.
-- `.claude/rules/extension-points.md` forbids runtime code for a feature that Claude Code has.
+A model call reads the whole context again.
+So a check that needs no judgment is code.
 
-## No Model Call for a Check That a Script Can Make
+- `guard` denies a `Bash` print of a file by parsing the command.
+- `sembr` rewrites Markdown with a sentence splitter.
+- `ground` checks `file:line` claims of a plan against the source.
+- `handoff` writes a cold handoff with no model call.
 
-**What:** A hook, a script, a setting, or a status line command does work that needs no judgment.
+## Put Each Capability in One Slice
 
-**Why:** A model call reads the whole context again, so a check without judgment spends tokens for no gain.
-
-**How in the code:**
-
-- The `guard` slice denies a `Bash` print of a file with a parse of the command.
-- The `sembr` slice rewrites Markdown with a sentence splitter.
-- The `ground` slice checks the `file:line` claims of a plan file against the source.
-- The `handoff` slice writes a cold handoff with no model call.
-
-## Ports and Adapters in Vertical Slices
-
-**What:** A slice holds one capability, from its pure code in `domain/` to its entry points in `adapters/`.
+A slice holds one capability, from its pure code in `domain/` to its entry points in `adapters/`.
 To add a capability, add a slice.
 To remove it, remove the slice.
-
-**Why:** Layers spread one capability over many folders, so parallel work conflicts on the shared folders.
-
-**How in the code:**
+Layers would spread one capability over many folders, and parallel work would conflict.
 
 - `biome.json` sets `noRestrictedImports`.
-  A slice imports only `src/kernel/` and its own folder, and `domain/` imports no adapter and no `src/kernel/node/`.
+  A slice imports only `src/kernel/` and its own folder.
 - `src/kernel/slice.ts` is the contract of a slice.
 
-## A Generated Composition Root
+## Generate the Joining Files
 
-**What:** `just generate` writes the files that join the slices: `hooks/register.ts`, `hooks/hooks.json`, `plugin.json`, the settings snippet, and the texts.
-No one edits these files.
+`just generate` writes the files that join the slices: `hooks/register.ts`, `hooks.json`, `plugin.json`, the settings snippet, and the texts.
+A hand-kept list would need an edit for each new slice.
 
-**Why:** A hand-kept list of slices needs an edit for each new slice.
-
-**How in the code:**
-
-- `tools/generate/discover.ts` finds each `src/plugins/<plugin>/slices/*/slice.ts`.
-- `tools/generate/order.ts` orders the handlers and throws on two handlers of one slice with the same event, filter, and phase.
+- `tools/generate/discover.ts` finds each `slice.ts`.
 - `tools/generate/emit/register.ts` writes one literal `on()` call for each handler, because the mod runtime reads the event name only as a literal.
 - `just gate` runs `generate --check`, and `tools/generate/stray.ts` fails on a file in `plugins/` that the generator did not write.
 
-## Each Plugin Works Alone
+## Let Each Plugin Work Alone
 
-**What:** A plugin imports nothing from another plugin.
-Each add-on works without the core plugin.
+A plugin imports nothing from another plugin.
+A user debugs a session with `claudetto-lab`, so that add-on cannot need the core plugin.
 
-**Why:** A user debugs a session with `claudetto-lab`, so that add-on cannot need the core plugin.
-
-**How in the code:**
-
-- `tools/generate/closure.ts` copies each `src/kernel/` module that a plugin imports into `plugins/<plugin>/kernel/`.
+- `tools/generate/closure.ts` copies each kernel module that a plugin imports into `plugins/<plugin>/kernel/`.
 - `.claude/rules/plugin-imports.md` and `tests/support/addons.test.ts` enforce the rule.
 
-## One Owner for Each Bound
+## Give Each Bound One Owner
 
-**What:** A shared runtime bound is in `src/kernel/budget.ts`.
-A slice bound is in `slices/<s>/limits.ts`.
-A repository bound is in `tools/limits.ts`.
+A number in two places drifts apart.
+So a shared runtime bound is in `src/kernel/budget.ts`, a slice bound is in `slices/<s>/limits.ts`, and a repository bound is in `tools/limits.ts`.
+Tests pin each copy in code and config.
 
-**Why:** A number in two places drifts apart.
-Tests pin each copy in code and config, and not in prose.
+- `CONTEXT_WINDOW` is `300_000`.
+  The snippet sets `autoCompactWindow` to it for each model that is not a Haiku model.
+- `MIN_CLAUDE_CODE_VERSION` is `2.1.303`.
 
-**How in the code:**
+## Keep the Prompt Short
 
-- `CONTEXT_WINDOW` is `300_000` in `src/kernel/budget.ts`.
-  The settings snippet sets `autoCompactWindow` to it for each model that is not a Haiku model.
-- `MIN_CLAUDE_CODE_VERSION` is `2.1.303` in `tools/limits.ts`.
-- [Bounds](Bounds) lists each bound.
-
-## The Shortest Prompt That Keeps the Facts
-
-**What:** The `prompt` slice gives one tailored text for the `lean_body` section of the short prompt of Claude Code.
-The settings snippet turns on `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` and turns off the built-in parts that `claudetto` does not need.
-
-**Why:** Each request sends the system prompt and the tool descriptions again.
+Each request sends the system prompt and the tool descriptions again.
 Shorter text leaves more context for the work.
-
-**How in the code:**
+The `prompt` slice gives one text for the `lean_body` section, and the snippet sets `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`.
 
 - `src/plugins/claudetto/slices/prompt/domain/lean-body.ts` joins the sections `intro`, `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, and `counts`.
-- The settings merge fails when two slices give one key two different values.
+- The settings merge fails when two slices give one key two values.
 
-## A Handoff in Place of Compaction
+## Hand Off Instead of Compacting
 
-**What:** The `handoff` slice replaces the summary of a compaction with a handoff.
-The option `compaction` set to `built-in` turns the handoff off.
-
-**Why:** The built-in compaction loses facts that the work needs.
-A trigger below the point where the client blocks gives the handoff time to run.
-
-**How in the code:**
+The `handoff` slice replaces the summary of a compaction with a handoff.
+The built-in compaction loses facts that the work needs.
+Set the option `compaction` to `built-in` to turn the handoff off.
 
 - `CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `HANDOFF_TRIGGER_TOKENS` are in `src/kernel/budget.ts`.
 - The slice registers a `session.compact` hook with the phase `answer`.
-- The trigger comes from `autoCompactWindow` and `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`.
-- See [Handoff](Handoff).
 
-## A Change Record in Checked Tasks
+## Record Progress in Checked Tasks
 
-**What:** The state of an OpenSpec change is in its `tasks.md`, where a checked task is a done task.
+The state of an OpenSpec change is in `tasks.md`, where a checked task is a done task.
+The handoff reads the done list from there and from checks that passed, never from model text.
+`src/kernel/change.ts` holds the shared rules.
 
-**Why:** One fact is in one place.
-The handoff reads the done list from `tasks.md` and from checks that passed, and never from the text of the model.
-
-**How in the code:**
-
-- `src/kernel/change.ts` holds the rules that read the task state, and the `handoff` and `statusline` slices share them.
-
-
-
-
-## Related Pages
+## See Also
 
 - [Decisions](Decisions)
 - [Architecture](Architecture)
 - [Controls](Controls)
+- [Bounds](Bounds)
+- [Handoff](Handoff)

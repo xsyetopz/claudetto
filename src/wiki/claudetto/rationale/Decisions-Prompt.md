@@ -1,136 +1,90 @@
 # Decisions: Prompt
 
-This page holds the decisions D3, D15, D16, D22, and D28.
-Read it to learn why the system prompt, the tool texts, and the request capture have the shape that they have.
-The index is [Decisions](Decisions).
-A missing id is a removed decision, and the index lists them.
+These decisions explain the shape of the system prompt, the cuts to built-in text, and the limits on result size.
 
-## D3 Cuts by Id
+## Why Some Built-In Text Is Cut
 
-**Problem:** The start of a session sends the built-in tool descriptions, the built-in sections of the system prompt, and the built-in commands and attachments.
-Some of that text does not help `claudetto`.
+**Choice:** The `prompt` slice answers by exact id.
+An unknown id passes on unchanged.
 
-**Choice:** The mods of the `prompt` slice answer by exact id.
-The lab tests of the slice check the handlers (`src/plugins/claudetto/slices/prompt/lab/`).
-
-- `prompt.section` answers `lean_body` with the tailored text (D15).
-  It answers only the other ids that have a transform in `slices/prompt/transforms/`.
-  An unknown id passes on unchanged.
+- `prompt.section` answers `lean_body` with the tailored text, and the ids that have a transform in `slices/prompt/transforms/`.
 - `tool.describe` replaces the description of `Agent` when the new text is shorter.
-  `ListAgents` is deferred behind `ToolSearch`, with `isDeferred` set to `true`.
-  The short prompt (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1`) already shortens `Bash` and `Read`.
-- `prompt.attachment` leaves out the kinds `goal_status` and `tool_hosts_notice`.
+  `ListAgents` is deferred behind `ToolSearch`.
+- `prompt.attachment` leaves out `goal_status` and `tool_hosts_notice`.
 - `command.describe` hides 29 commands from the typeahead and `/help`.
-  A hidden command still runs when the user types it in full.
-- The `context_management` section has no transform.
-  `slices/prompt/domain/compaction.ts` gives its text for the compaction state of the session: `handoff`, `built-in`, or `off`.
-  With the compaction `built-in`, the text stays as Claude Code wrote it.
+  A hidden command still runs when typed in full.
+- The `context_management` section follows the compaction state: `handoff`, `built-in`, or `off`.
+  With `built-in`, Claude Code text stays as written.
 
-**Open points:** No code in `src/` cuts `session_context` or `prompt.context`.
-A cut of either needs an eval with no loss before it ships.
+**Reason:** Some built-in text does not help `claudetto` and costs tokens on every request.
+Nothing cuts `session_context` or `prompt.context`, because a cut needs an eval with no loss first.
 
-**Alternatives:** None recorded in the sources of this decision.
+**Evidence:** `slices/prompt/lab/` tests the handlers.
+`tools/builtins/verdicts/` holds the verdict for each part.
+See [Prompt](Prompt).
 
-**Evidence:** `tools/builtins/verdicts/` holds the verdict for each part, and [Prompt](Prompt) describes the slice.
+## Why claudetto Owns the System Prompt
 
-## D15 claudetto Owns the System Prompt
+**Choice:** The `prompt` slice builds on the short prompt (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1`).
+It answers `lean_body` with one text for every model.
+`LEAN_BODY` joins the sections `intro`, `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, and `counts`.
 
-**Problem:** Claude Code sends its own system prompt sections.
-The same rules are needed for each model.
+- The text is the same on each turn, so the prompt cache stays valid.
+- A subagent gets its prompt from Claude Code, so `agent.spawn` adds a `<claudetto_notes>` block once.
+  It holds the verification, block, and evidence lines.
+- An output style reaches the model as a message, so `Concise` holds only role, tone, and format.
+- Rules are plain imperatives.
+  A reason appears only where it changes behavior.
 
-**Choice:** The `prompt` slice builds on the short prompt of Claude Code, which `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1` turns on.
-It answers the `lean_body` section with one text for each model, and it has no variant for a model.
-`LEAN_BODY` in `slices/prompt/domain/lean-body.ts` joins the sections `intro`, `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, and `counts`.
-The texts are the `.md` files in `slices/prompt/prompts/`.
+**Reason:** The same rules are needed for every model, and one text serves them all.
 
-- The text is the same for each turn of a session, so it keeps the prompt cache.
-- A subagent gets its system prompt from Claude Code.
-  So `agent.spawn` adds the block `<claudetto_notes>` to the end of its task prompt, one time (`withBlock`).
-  The block holds the verification line, the block line, and the evidence line.
-- An output style reaches the model as a message and not in the system prompt.
-  So the `Concise` style holds only the role, the tone, and the format.
-- XML tags separate instructions from data.
-  The rules are plain imperatives, and a reason is given only where it changes the behavior.
+**Evidence:** `tests/claudetto/prompt/rules.test.ts` pins the least-code rule, the pushback tiers, and the missing-tool rule.
+`slices/prompt/lab/section.test.ts` checks the `lean_body` answer.
 
-**Alternatives:** One variant for each model, as in 0.1.0.
-It was removed because the one tailored text serves each model.
+## Why Requests Are Captured
 
-**Evidence:**
-
-- `tests/claudetto/prompt/rules.test.ts` pins the least-code rule, the pushback tiers, and the rule for a missing tool.
-- `src/plugins/claudetto/slices/prompt/lab/section.test.ts` checks the `lean_body` and `context_management` answers.
-
-See [Prompt](Prompt) for the rules in the sections.
-
-## D16 Request Capture
-
-**Problem:** A size figure of the start of a session must come from the request that Claude Code sends, and not from an estimate.
-
-**Choice:** `claudetto-capture` is a local logging proxy.
-Its code is in `src/plugins/claudetto-lab/slices/capture/adapters/cli.ts`.
+**Choice:** `claudetto-capture` is a local logging proxy in `src/plugins/claudetto-lab/slices/capture/adapters/cli.ts`.
 Claude Code reaches it through `ANTHROPIC_BASE_URL`.
-The proxy records the body of each request and forwards it to `--upstream URL`.
-When that option is not set, it forwards to `ANTHROPIC_BASE_URL`, and then to `https://api.anthropic.com`.
+It records each request body and forwards it to `--upstream URL`, then to `ANTHROPIC_BASE_URL`, then to `https://api.anthropic.com`.
 It refuses an upstream that is its own address.
-The report splits the first request into system blocks, tool schemas, and messages (`domain/report.ts`).
+The report splits the first request into system blocks, tool schemas, and messages.
 
-The agent sandbox can block a local port.
-So the user runs `just capture` in a terminal.
-See [Sandbox](Sandbox-Sessions#capture-session).
+**Reason:** A size figure for the start of a session must come from a real request, not an estimate.
+The agent sandbox can block a local port, so the user runs `just capture` in a terminal.
 
-**Evidence:** The size figures of the first request are on [Evidence](Evidence).
+**Evidence:** [Prompt Size](Prompt-Size).
 
-## D22 Context Bound by the Size of a Result
-
-**Problem:** Each read and each command output adds text to the context.
-The context grows with each one.
-The bound is a choice, and no measured figure in the repository supports its value (inference).
+## Why a Result Has a Size Limit
 
 **Choice:**
 
-1. A `Bash` deny for a command that only prints a file.
-   `slices/guard/domain/reads.ts` parses the print, and `deny.ts` names the `Read` call with the same range.
-   A `Read` of a range that did not change returns a short stub, and a `Bash` print does not.
-2. A prompt line in the `tools` section: read the part of a file that you need, with `offset` and `limit`, and not the same lines twice.
-3. `bashOutputMaxChars` at 16000.
-   `BASH_OUTPUT_MAX_CHARS` in `src/kernel/budget.ts` gives the value, and the settings of the `prompt` slice carry it.
-   Claude Code 2.1.303 clamps the key to a range of 4000 to 128000, with a default of 30000.
-   An output above the cap goes to a file, and Claude gets a preview and the path.
-   The comment of the constant says that 16000 brings 196 of 240 saved outputs inline.
+1. `guard` denies a `Bash` command that only prints a file, and names the `Read` call with the same range.
+   A `Read` of an unchanged range returns a short stub, and a `Bash` print does not.
+2. The `tools` section tells the model to read only the part it needs, with `offset` and `limit`.
+3. `bashOutputMaxChars` is 16000.
+   Claude Code 2.1.303 allows 4000 to 128000, with a default of 30000.
+   A longer output goes to a file, and Claude gets a preview and the path.
 
-**Alternatives:**
+**Reason:** Each read and command output adds text to the context.
+The value 16000 is a choice.
+It brings 196 of 240 saved outputs inline.
 
-- A lower cap was the first choice.
-  It cut build output.
-  No evidence file in the repository checks this reason.
-- A filter in `updatedInput` for test output is not built.
-  The reason is that test output was small.
+**Evidence:** `tests/claudetto/guard/print.test.ts` and `slices/guard/lab/print.test.ts`.
 
-`bashOutputMaxChars` keeps the full output in a file.
-
-**Evidence:** `tests/claudetto/guard/print.test.ts` and `src/plugins/claudetto/slices/guard/lab/print.test.ts`.
-
-## D28 Compliance by Checks, Not by Prose
-
-**Problem:** Rules that are written as prose in the prompt are not checked.
-Some of them fail in practice.
+## Why Checks Beat Prose
 
 **Choice:** A rule that a program can check goes to a hook, a lint rule in `just check`, or an eval case.
 
-1. `sembr` rewrites line breaks, and `guard` denies a print of a file, with no model token.
-2. `just eval` runs `claude plugin eval` on the plugin, with the cases in the `evals/` folders.
-   `just validate` fails on a case that checks only the words of the reply (`tools/case-checks.ts`).
-3. `CLAUDE.md` says that chat replies are in the scope of the line-break rule.
+- `sembr` rewrites line breaks, and `guard` denies a file print, with no model token.
+- `just eval` runs `claude plugin eval` with the cases in the `evals/` folders.
+- `just validate` fails on a case that checks only the words of a reply (`tools/case-checks.ts`).
 
-**Open points:** "Ask before publish" is prose in the prompt, and the `permissions.ask` rules of the snippet cover only the forms that they name (D43).
-The cases have no measure for repeat reads, recaps, or chat lines with more than one sentence.
-So no gate checks those rules.
+**Reason:** A rule written only as prose is not checked, and some fail in practice.
+No gate checks repeat reads, recaps, or multi-sentence chat lines yet.
 
-**Alternatives:** None recorded.
+**Evidence:** `tests/tools/case-checks.test.ts`.
 
-**Evidence:** `tools/case-checks.ts` and `tests/tools/case-checks.test.ts`.
-
-## Related Pages
+## See Also
 
 - [Prompt](Prompt)
 - [Styles](Styles)

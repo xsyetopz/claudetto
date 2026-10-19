@@ -2,15 +2,13 @@
 
 # Architecture
 
-This page is the map of `claudetto`: the layers, the kernel, the slices, and the composition of a plugin.
-A contributor reads it before a change to the code.
-The build from `src/` to `plugins/` is on [Architecture Generate](Architecture-Generate).
-The folders are on [Plugin Layout](Plugin-Layout).
+`claudetto` is built in layers.
+A layer uses only the layers below it, so a change in one place does not break the rest.
+This page is the map: the layers, the kernel, the slices, and how a plugin is put together.
 
 ## Layers
 
 `claudetto` has five layers.
-A layer imports only from the layers below it.
 
 | Layer | Folder | What it holds | Imports |
 | --- | --- | --- | --- |
@@ -122,9 +120,9 @@ The module has a comment `// eval: <event> <slice>` above each `on()` call.
 That comment links the hook to its entry in `evals/hooks.json`.
 See [Plugin Layout](Plugin-Layout#hook-evals).
 
-## Related Pages
+## See Also
 
-- [Architecture Generate](Architecture-Generate): the build from `src/` to `plugins/`.
-- [Plugin Layout](Plugin-Layout): the folders and the import rules.
-- [Controls](Controls): the record of each hook and guard.
-- [Decisions](Decisions): the reasons for the design.
+- [Architecture Generate](Architecture-Generate)
+- [Plugin Layout](Plugin-Layout)
+- [Controls](Controls)
+- [Decisions](Decisions)

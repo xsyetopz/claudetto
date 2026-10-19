@@ -1,8 +1,8 @@
 # Bounds for Slices
 
-This page tells maintainers each bound of the slices of the core plugin `claudetto`, with its value and its file.
-The values come from the `limits.ts` file of each slice.
-The shared bounds and the repository bounds are on [Bounds](Bounds).
+A bound is a fixed limit, such as a timeout or a size.
+This page lists the bounds of each slice of the core plugin, with the value and the file.
+The shared and repository bounds are on [Bounds](Bounds).
 
 ## Advise
 
@@ -88,8 +88,15 @@ The shared bounds and the repository bounds are on [Bounds](Bounds).
 | `ARROW_FIELD` | `5` | `src/plugins/claudetto/slices/statusline/limits.ts` | The columns of the pace arrow field of a limit window. |
 | `RUNOUT_FIELD` | `14` | `src/plugins/claudetto/slices/statusline/limits.ts` | The columns of the run-out time field of a limit window. |
 
-## Related Pages
+## See Also
 
-- [Bounds](Bounds) gives the shared and the repository bounds.
-- [Bounds for Add-Ons](Bounds-Add-Ons) gives the bounds of the add-on plugins.
-- [Advise](Advise), [Decide](Decide), [Goal](Goal), [Guard](Guard), [Handoff](Handoff), [Patch](Patch), [Reply](Reply), and [Status Line](Status-Line) describe the slices.
+- [Bounds](Bounds)
+- [Bounds for Add-Ons](Bounds-Add-Ons)
+- [Advise](Advise)
+- [Decide](Decide)
+- [Goal](Goal)
+- [Guard](Guard)
+- [Handoff](Handoff)
+- [Patch](Patch)
+- [Reply](Reply)
+- [Status Line](Status-Line)

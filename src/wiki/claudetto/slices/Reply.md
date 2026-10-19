@@ -3,7 +3,7 @@
 This page tells how the core plugin `claudetto` adds a `Reply` button under each message of Claude.
 A user who answers a message of Claude in the terminal and a contributor who edits the `reply` slice read it.
 
-## What the Slice Does
+## What It Does for You
 
 The slice draws a dim `Reply` button under each message of Claude.
 A press of the button puts the text of the message in the prompt box as a `>` quote.
@@ -38,12 +38,14 @@ A message with more than 12 lines keeps its first 12 lines in the quote.
 - The hook draws the built-in message first and adds the button under it, so the message stays as Claude Code draws it.
 - Trailing blank space of a quoted line is cut.
 
-## Off Switch
+## How to Turn It Off
 
-The slice has no `userConfig` key and no switch of its own.
+The `reply` slice adds a `Reply` button under each message of Claude.
+A press puts the message in your prompt box as a quote.
+You then write your answer below it.
 
-## Related Pages
+## See Also
 
-- [Prompt](Prompt): the system prompt that the core plugin gives to Claude.
-- [Styles](Styles): the output styles of the core plugin.
-- [Off Switches](Off-Switches): the ways to turn a part off.
+- [Prompt](Prompt)
+- [Styles](Styles)
+- [Off Switches](Off-Switches)

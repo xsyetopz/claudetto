@@ -6,7 +6,7 @@ This page tells how the `guard` slice of the core plugin `claudetto` denies a `B
 A user reads it to learn why Claude gets a deny and what to do.
 A contributor reads it before an edit of `slices/guard/`.
 
-## The Reason
+## Why It Exists
 
 The `Read` tool sends a short stub when Claude reads the same range of an unchanged file again.
 A `Bash` print of a file gets no stub, so the text enters the context again.
@@ -72,11 +72,13 @@ If the hook fails and the command prints a file, the handler denies the call and
 The reason tells Claude to use `Read` with an `offset` and a `limit`.
 A command that does not print a file runs.
 
-## Options
+## How to Turn It Off
 
-The slice has no `userConfig` key and no other option.
+The `guard` slice denies a `Bash` command that only prints a file.
+Claude gets a `Read` call to use instead.
+This saves tokens, because `Read` does not send the same text twice.
 
-## Related Pages
+## See Also
 
 - [Sembr](Sembr)
 - [Controls](Controls)

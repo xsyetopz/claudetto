@@ -26,7 +26,7 @@ The open change is the first folder of `openspec/changes/`, by name, that has an
 The folder `archive` is not a change.
 With an open change, the file starts with the change name, the next open task, the done tasks, and the passed checks.
 
-## The Status Comes from Facts
+## The Status Comes From Facts
 
 The model text cannot add a done step:
 
@@ -45,13 +45,13 @@ The check finds a value that is missing.
 It does not find a wrong fact in prose.
 See [Ground](Ground).
 
-## An Earlier Handoff
+## Update of an Earlier Handoff
 
-After a compaction, the first user message holds the earlier handoff.
-The next handoff updates it and does not stack it.
-The hook takes the original first message out of the wrapper, and it keeps the earlier handed text.
+A handoff is a short note that `claudetto` writes in place of the summary of a compaction.
+This page shows what the note holds and where the file is.
+[Handoff](Handoff) tells when and how it runs.
 
-## Related Pages
+## See Also
 
-- [Handoff](Handoff): when and how the handoff runs.
-- [Ground](Ground): the check of quoted values.
+- [Handoff](Handoff)
+- [Ground](Ground)

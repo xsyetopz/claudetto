@@ -5,12 +5,11 @@ It adds one skill, `docs`, which calls the `ctx7` CLI.
 Read this page to install the plugin, or to learn how the skill calls `ctx7` and which limits it sets.
 
 The plugin works without the core plugin.
-It imports nothing from another plugin.
 It has no hook, no command, no `userConfig`, and no code that runs in the plugin.
 It ships no MCP server.
-The source is in `src/plugins/claudetto-docs/`, and its one slice is `docs`.
+Its one slice is `docs`.
 
-## Install
+## How to Install It
 
 1. Have Bun on `PATH`.
    The skill runs `bunx`, which comes with Bun.
@@ -102,13 +101,13 @@ The bounds are in `slices/docs/limits.ts`.
 | `CTX7_VERSION` | `0.6.1` | The `ctx7` version that the skill and the snippet run |
 | `MAX_CALLS` | 3 | The most `ctx7` calls for one question |
 
-The skill text repeats both values, because it is prose and no code fills it.
-A test fails when a copy differs from `limits.ts`.
-No code enforces the call bound, because the skill is text.
+The plugin `claudetto-docs` lets Claude read the current docs of a library.
+The docs come from Context7, a service for library docs, through the `ctx7` command.
+Claude then writes code from the real docs and not from memory.
 
-## Related Pages
+## See Also
 
-- [Settings Snippet](Settings-Snippet): the permission rules of this plugin.
-- [Sessions](Sessions): the next add-on page.
-- [Attributions](Attributions): the license of Context7 and of the `ctx7` CLI.
-- [Troubleshooting](Troubleshooting): the symptoms of this plugin and their fixes.
+- [Settings Snippet](Settings-Snippet)
+- [Sessions](Sessions)
+- [Attributions](Attributions)
+- [Troubleshooting](Troubleshooting)

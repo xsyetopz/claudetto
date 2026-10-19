@@ -2,9 +2,9 @@
 
 # Architecture Generate
 
-This page tells how `just generate` builds `plugins/` and `wiki/` from `src/`.
-A contributor reads it before a change to a text that a plugin ships.
-It follows [Architecture](Architecture).
+`just generate` builds `plugins/` and `wiki/` from `src/`.
+You edit the source, and the generator writes the shipped files.
+This keeps the source and the output in step.
 
 ## The Rule
 
@@ -82,8 +82,8 @@ The generator fails with a message on these faults:
 The generator formats each `.ts` and `.json` output with Biome.
 It sets the mode 755 on the files in `bin/`.
 
-## Related Pages
+## See Also
 
-- [Architecture](Architecture): the layers and the slices.
-- [Plugin Layout](Plugin-Layout): the folders of `src/`.
-- [Development](Development): the commands.
+- [Architecture](Architecture)
+- [Plugin Layout](Plugin-Layout)
+- [Development](Development)

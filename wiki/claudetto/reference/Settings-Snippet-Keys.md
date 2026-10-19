@@ -2,18 +2,24 @@
 
 # Settings Snippet Keys
 
-This page tells maintainers why each key of the [settings snippet](Settings-Snippet) is set.
-Each row gives the value, what the key does in Claude Code, and why `claudetto` sets it.
-The snippet sets a key only when the Claude Code default does not give the result that `claudetto` needs.
-The Claude Code facts refer to version `2.1.303`.
+Each key of the [settings snippet](Settings-Snippet) has a reason.
+This page gives the value, the effect in Claude Code, and the reason for each key.
+The snippet sets a key only when the default of Claude Code does not give the result that `claudetto` needs.
+The facts are for Claude Code `2.1.303`.
 
-The snippet merges the `settings` entries of the slices in `src/plugins/claudetto/slices/`.
-The `prompt` slice sets most keys, the `permissions`, and the list of allowed domains.
-The `setup` slice sets the keys that turn off parts of Claude Code, `worktree`, and the package cache folders.
-The `handoff` slice sets `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, `CLAUDE_CODE_PROMPT_CACHE_TTL`, `autoCompactWindow`, and `modelSettings`.
-The `statusline` slice sets `statusLine` and `subagentStatusLine`.
-The `styles` slice sets `outputStyle`.
-A test checks the keys against `schemas/claude-code-settings.json`, so a key that the schema lacks fails the test.
+## Who Sets Which Key
+
+Each slice in `src/plugins/claudetto/slices/` adds its `settings` entries to the snippet.
+
+| Slice | Keys |
+| --- | --- |
+| `prompt` | Most keys, `permissions`, and the allowed domains |
+| `setup` | Keys that turn off parts of Claude Code, `worktree`, and the package cache folders |
+| `handoff` | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, `CLAUDE_CODE_PROMPT_CACHE_TTL`, `autoCompactWindow`, `modelSettings` |
+| `statusline` | `statusLine`, `subagentStatusLine` |
+| `styles` | `outputStyle` |
+
+A test checks the keys against `schemas/claude-code-settings.json`, so a key that the schema lacks fails.
 
 ## Environment Entries
 
@@ -39,7 +45,7 @@ A test checks the keys against `schemas/claude-code-settings.json`, so a key tha
 
 `claudetto-setup --advisor claudetto` also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor.
 The value is not in the snippet block, because it depends on the `advisor` option.
-The snippet never sets the entries on the never-set list of [Never-Set Settings](Off-Switches-Never-Set).
+The snippet never sets the entries of [Never-Set Settings](Off-Switches-Never-Set).
 
 ## Settings Keys
 
@@ -99,7 +105,7 @@ The `allow` list has `Glob`, `Grep`, and read-only or test commands of `git`, `g
 - `advisorModel`: the `advise` slice reads its own `advisorModel` option.
 - The never-set list and the items without a gate: see [Off Switches](Off-Switches).
 
-## Related Pages
+## See Also
 
 - [Settings Snippet](Settings-Snippet)
 - [Off Switches](Off-Switches)

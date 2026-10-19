@@ -3,7 +3,7 @@
 This page tells how the core plugin `claudetto` keeps the work of a subagent in a git worktree when the worktree is lost.
 A user who runs subagents in worktrees and a contributor who edits the `patch` slice read it.
 
-## What the Slice Does
+## What It Does for You
 
 A subagent in a worktree can stop before it commits.
 A turn limit or a usage limit can stop it, and the removal of its worktree then deletes the work.
@@ -48,7 +48,7 @@ The files are in the main checkout, in `.claudetto/patches/<agentId>/`:
 
 The patch stays after the worktree is gone.
 
-## List and Land Patches
+## How to Use It
 
 ```text
 claudetto-patch list
@@ -87,12 +87,12 @@ It is the time that one `git` run may take, in milliseconds.
 
 ## Edge Cases
 
-- A `git` run that does not finish in `GIT_TIMEOUT_MS` is stopped.
-- The hook has no catch-all, so the result of the edit stands when the hook throws after it.
-- The slice is not part of the [Handoff](Handoff) slice, which is about the compaction of the main thread.
+The `patch` slice keeps the work of a subagent when its git worktree is lost.
+It saves one patch for each subagent after each edit.
+You or Claude can then land the patch in the main checkout.
 
-## Related Pages
+## See Also
 
-- [Handoff](Handoff): the handoff of the main thread.
-- [Dry](Dry): the command and the skill for duplicate code.
-- [Guard](Guard): the rules that stop a call.
+- [Handoff](Handoff)
+- [Dry](Dry)
+- [Guard](Guard)

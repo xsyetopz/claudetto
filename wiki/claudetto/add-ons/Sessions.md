@@ -7,10 +7,9 @@ It adds one skill, `sessions`, with two `bun` scripts, `audit` and `replay`.
 Read this page to learn what each script prints and when to use it.
 
 The plugin works without the core plugin.
-It imports nothing from another plugin.
-Its one slice is `sessions`, in `src/plugins/claudetto-sessions/`.
+Its one slice is `sessions`.
 
-## Concept
+## What It Does for You
 
 Claude Code has views for the live session: `/context`, `/usage`, `/insights`, `/hooks`, `/permissions`, `/plugin`, `/skills`, `/memory`, and `/status`.
 Use the skill only for what those views do not give.
@@ -21,7 +20,7 @@ The skill sets `disable-model-invocation: true`, so you start it.
 It grants `bun ${CLAUDE_SKILL_DIR}/audit.ts *` and `bun ${CLAUDE_SKILL_DIR}/replay.ts *`.
 Claude copies each figure of the output and does not compute, round, or convert it.
 
-## Install
+## How to Install It
 
 1. Have Bun on `PATH`.
 2. Install the plugin with `/plugin install claudetto-sessions@claudetto`.
@@ -81,14 +80,12 @@ The output is JSON with `calls`, `denies`, and `shown`.
 Each item of `shown` has the file, the tool, and the reason.
 List the denies so that the user can judge which ones are false.
 
-| Exit status | Meaning |
-| --- | --- |
-| `0` | The script ran, or `--help` printed the usage |
-| `1` | The projects folder does not exist |
-| `2` | The command has no `HOOK_MODULE` |
+The plugin `claudetto-sessions` shows what Claude Code loads at session start and what a hook would have denied.
+It adds one skill, `sessions`, with two `bun` scripts, `audit` and `replay`.
+Both scripts only read.
 
-## Related Pages
+## See Also
 
-- [Add-Ons](Add-Ons): the list of the add-on plugins.
-- [Lab](Lab): the next add-on page.
-- [Troubleshooting](Troubleshooting): the symptoms of the add-ons and their fixes.
+- [Add-Ons](Add-Ons)
+- [Lab](Lab)
+- [Troubleshooting](Troubleshooting)

@@ -3,10 +3,9 @@
 This page tells how the core plugin `claudetto` shapes the system prompt of Claude Code.
 A user who wants to know what Claude reads and a contributor who edits the `prompt` slice read it.
 
-## What the Slice Does
+## What It Does for You
 
-The slice builds on the short prompt of Claude Code 2.1.302.
-The version 2.1.303, the minimum, changed no prompt text.
+The slice builds on the short prompt of Claude Code.
 The short prompt starts when the env var `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is `1`, which the settings snippet sets.
 In the short prompt, Claude Code drops the `intro`, `system`, `doing_tasks`, `actions`, `tools`, and `tone` sections.
 It keeps one section, `lean_body`, with a few harness rules.
@@ -89,17 +88,19 @@ The hook replaces the built-in `Agent` description with the text of the slice on
 It marks `ListAgents` as deferred, so Claude Code loads it behind `ToolSearch`.
 The short prompt already shortens the `Bash` and `Read` descriptions.
 
-## Parts Turned Off
+## Commands Hidden From the List
 
 The slice hides these commands from the typeahead and `/help`.
 A hidden command still runs when typed in full.
 
-`autofix-pr`, `brief`, `bug`, `claim-credit`, `cloud-plugins`, `daemon`, `design-login`, `desktop`, `feedback`, `ide`, `import`, `install`, `install-slack-app`, `limit-reset`, `mobile`, `passes`, `powerup`, `radio`, `rate-limit-options`, `remote-env`, `session`, `statusline`, `stickers`, `team-onboarding`, `teleport`, `ultraplan`, `ultrareview`, `voice`, and `web-setup`.
+The `prompt` slice gives Claude a shorter system prompt.
+The system prompt is the hidden text that tells Claude how to behave.
+A shorter prompt costs fewer tokens and keeps the rules that matter.
 
-## Related Pages
+## See Also
 
-- [Handoff](Handoff): the `compaction` option.
-- [Setup](Setup): the settings that start the short prompt.
-- [Settings Snippet](Settings-Snippet): the settings of the core plugin.
-- [Styles](Styles): the output styles.
-- [Off Switches](Off-Switches): the ways to turn a part off.
+- [Handoff](Handoff)
+- [Setup](Setup)
+- [Settings Snippet](Settings-Snippet)
+- [Styles](Styles)
+- [Off Switches](Off-Switches)

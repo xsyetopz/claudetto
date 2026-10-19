@@ -4,8 +4,6 @@ The plugin `claudetto-browser` drives a real browser for Claude.
 Read this page to set up the browser, to learn how the `WebSearch` handler works, and to learn which commands the skill grants.
 
 The plugin works without the core plugin.
-It imports nothing from another plugin.
-The source is in `src/plugins/claudetto-browser/`.
 It has two slices, `browse` and `search`.
 
 ## What It Adds
@@ -16,7 +14,7 @@ It has two slices, `browse` and `search`.
 | Command `claudetto-browser-guide` | `browse` | Prints the `agent-browser` guide that the skill loads |
 | Handler on `WebSearch` | `search` | With the `cloakbrowser` backend, runs a search in CloakBrowser, and falls back to the built-in `WebSearch` |
 
-## Options
+## How to Change It
 
 | Key | Default | Meaning |
 | --- | --- | --- |
@@ -30,7 +28,7 @@ With `cloakbrowser`, the handler answers `WebSearch` with a search in CloakBrows
 The skill then uses CloakBrowser for each site.
 With the default backend, the skill uses CloakBrowser only after the user agrees to a step in `<blocked_pages>`.
 
-## Install
+## How to Install It
 
 1. Install `agent-browser` with `npm install -g agent-browser`.
    The skill asks the user for this command when the binary is missing.
@@ -130,12 +128,13 @@ The slice lists two controls in the [Controls](Controls) page:
 | `SEARCH_URL` | `https://html.duckduckgo.com/html/` | `slices/search/limits.ts` | The search page, which needs no script and no sign-in |
 | `RESULTS_SELECTOR` | `#links` | `slices/search/limits.ts` | The element that holds the results |
 
-The browser makes a socket path under the home folder, and macOS refuses a path over 103 bytes.
-This is the reason for `SESSION_NAME_MAX`.
+The plugin `claudetto-browser` lets Claude use a real browser.
+Claude can open a page, click, fill a form, and read the text.
+It can also answer `WebSearch` with a browser search, if you choose that.
 
-## Related Pages
+## See Also
 
-- [Add-Ons](Add-Ons): the list of the add-on plugins.
-- [Library Docs](Library-Docs): the next add-on page.
-- [Attributions](Attributions): the license of `agent-browser` and of CloakBrowser.
-- [Troubleshooting](Troubleshooting): the symptoms of this plugin and their fixes.
+- [Add-Ons](Add-Ons)
+- [Library Docs](Library-Docs)
+- [Attributions](Attributions)
+- [Troubleshooting](Troubleshooting)

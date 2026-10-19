@@ -2,11 +2,12 @@
 
 # Status Line
 
-This page tells what the main status line and the subagent status line of the core plugin `claudetto` show.
-It tells the segments, the rows, the colors, and the failure behavior.
-A user who reads the status line and a contributor who edits the `statusline` slice read it.
+The status line is the bar at the bottom of Claude Code.
+The `statusline` slice of `claudetto` fills it with the folder, git, model, context, cost, and limits.
+It calls no model and no network, so it costs nothing.
+A second line shows the running subagents.
 
-## The Commands
+## How to Turn It On
 
 The slice adds the CLI `claudetto-statusline` and two settings keys.
 The `/claudetto:setup` skill replaces `<plugin folder>` with the folder of the installed plugin.
@@ -16,16 +17,13 @@ The `/claudetto:setup` skill replaces `<plugin folder>` with the folder of the i
 | `statusLine` | `bun --no-env-file "<plugin folder>/bin/claudetto-statusline"`, with `padding` 0, `refreshInterval` 1, and `hideVimModeIndicator` true |
 | `subagentStatusLine` | The same command with `--subagent` |
 
-The command calls no model and no network, and no program except `git`.
-`claudetto-statusline --help` prints the usage.
-The command always exits with 0.
+The command runs no program except `git`, and it always exits with 0.
 See [Settings Snippet](Settings-Snippet) for how the keys reach your settings.
 
-## Rows
+## The Rows
 
 The main line has at most `3` rows.
-A segment with no input has no text.
-A row with no text is not shown.
+A segment with no input has no text, and a row with no text is not shown.
 The segments of a row line up in columns with the same segments of the other rows.
 
 | Row | Segments, in order |
@@ -34,16 +32,13 @@ The segments of a row line up in columns with the same segments of the other row
 | 1 | Model, context, cost, 5-hour limit |
 | 2 | Spend limit, prompt cache |
 
-The width is `COLUMNS` minus 4 columns, or 120 minus 4 when `COLUMNS` is not set.
-The command tries these layouts in order and uses the first layout in which every row fits:
-
-1. The layout above, with full clock times for the resets.
-2. The same layout, with countdowns in place of clock times.
-3. The layout in which the 5-hour limit and the 7-day limit share row 2, with clock times.
-4. The same layout, with countdowns.
-
+The width is `COLUMNS` minus 4, or 120 minus 4 when `COLUMNS` is not set.
+The command tries four layouts in order and uses the first one in which every row fits.
+The layouts are the table above or a version where the 5-hour and 7-day limits share row 2.
+Each comes first with clock times for the resets, then with countdowns.
 If no layout fits, the last one is used.
-Each row that is too wide then drops its items at the right, one by one, and the last item is cut with `…`.
+Each row that is too wide then drops its items at the right, one by one.
+The last item is cut with `…`.
 
 ## Segments
 
@@ -63,36 +58,39 @@ A field with a wrong type shows the error mark `✗` in place of the value.
 
 ### Context and Handoff Distance
 
-The percent is `used_percentage`, and the window is `context_window_size`, both as Claude Code reports them.
-The text `of 300k` shows the effective window.
-The segment has no text before the first message, when `used_percentage` is `null`.
+The percent is `used_percentage` and the window is `context_window_size`, as Claude Code reports them.
+Before the first message `used_percentage` is `null`, and the segment has no text.
 
-The number after `⇥` is the share of the handoff trigger that is left.
-The trigger is `HANDOFF_TRIGGER_TOKENS` (225,000 tokens), or `HAIKU_HANDOFF_TRIGGER_TOKENS` (100,000 tokens) for a Haiku model.
+The number after `⇥` is the share of the [handoff](Handoff) trigger that is left.
+The trigger is 225,000 tokens (`HANDOFF_TRIGGER_TOKENS`).
+For a Haiku model it is 100,000 tokens (`HAIKU_HANDOFF_TRIGGER_TOKENS`).
 The text `now` replaces the number when the context is at the trigger or above it.
-The segment shows `⇲` in place of `⇥` when the `compaction` option is `built-in`.
-It then shows the distance to the compaction threshold.
 
-The segment reads that option from the env var `CLAUDE_PLUGIN_OPTION_COMPACTION` first.
-Claude Code gives the env var to plugin hooks only, so the segment usually reads `pluginConfigs` in `settings.json` of `CLAUDE_CONFIG_DIR` (default `~/.claude`).
+When the `compaction` option is `built-in`, the segment shows `⇲` in place of `⇥`.
+It then shows the distance to the compaction point of Claude Code.
+The segment reads the option from the env var `CLAUDE_PLUGIN_OPTION_COMPACTION` first.
+Claude Code gives that env var to plugin hooks only.
+So the segment usually reads `pluginConfigs` in `settings.json` of `CLAUDE_CONFIG_DIR` (default `~/.claude`).
 When neither has the option, the segment shows the handoff.
 
 ### Limits
 
 The `5h` and `7d` segments use `rate_limits.five_hour` and `rate_limits.seven_day`.
-The `spend` segment uses `rate_limits.spend_limit` and adds `$used/$limit` and the period when Claude Code gives them.
+The `spend` segment uses `rate_limits.spend_limit`.
+It adds `$used/$limit` and the period when Claude Code gives them.
 
-- The pace arrow shows after 3% of the window has passed.
-  `▲` is a deficit and `▼` is a reserve, in percent points against the elapsed time.
-- The run-out mark `⏵` shows the time at which the use reaches 100%.
-  It shows only when the projected use at the window end is above 100%.
-- The reset mark `↻` shows the time of `resets_at`.
-- A clock time is `1:50pm` within 24 hours and `Oct 19 at 7am` later.
-  A countdown is `45s`, `12m`, `3h12m`, or `2d4h`.
+- `▲` is a deficit and `▼` is a reserve, against the time that has passed.
+- `⏵` is the time at which the use reaches 100%. It shows only when the projected use at the window end is above 100%.
+- `↻` is the time of `resets_at`.
+
+The pace arrow shows after 3% of the window has passed.
+It gives percent points against the elapsed time.
+A clock time is `1:50pm` within 24 hours and `Oct 19 at 7am` later.
+A countdown is `45s`, `12m`, `3h12m`, or `2d4h`.
 
 ### Prompt Cache
 
-A warm cache shows the time to `expires_at`, `/` and the `ttl`, and the `hit_ratio`.
+A warm cache shows the time to `expires_at`, `/`, the `ttl`, and the `hit_ratio`.
 A cold cache shows `cold`, `+` and the tokens that Claude Code must cache again, and the `hit_ratio`.
 The segment has no text when `caching_observed` is `false`.
 
@@ -112,15 +110,15 @@ A folder with neither `tasks.md` nor `proposal.md` is not a change.
 
 ## Subagent Rows
 
-The `--subagent` command reads a `tasks` array and prints one JSON row for each running task.
-It prints at most 20 rows.
+The `--subagent` command reads a `tasks` array.
+It prints one JSON row for each running task, and at most 20 rows.
 A row shows the name, the agent type in parentheses when it differs from the name, the model and the effort, the tokens against the window of the task with the percent, and the run time.
-The description fills the room that is left, and it shows only when more than 8 columns are free.
-A task with no window size shows the tokens only, so a Haiku task shows its own Haiku window.
+The description fills the room that is left, when more than 8 columns are free.
+A task with no window size shows the tokens only.
 
 ## Colors
 
-The color roles follow the built-in themes of Claude Code.
+The colors follow the built-in themes of Claude Code.
 The command reads the `theme` key of `.claude.json` in `CLAUDE_CONFIG_DIR`, or else in the home folder.
 
 | Theme | Colors |
@@ -129,29 +127,24 @@ The command reads the `theme` key of `.claude.json` in `CLAUDE_CONFIG_DIR`, or e
 | `light`, `dark-daltonized`, `light-daltonized` | The values of that theme |
 | `dark-ansi`, `light-ansi` | The 16 ANSI colors |
 
-A value of `NO_COLOR` that is not empty turns off all color.
+A `NO_COLOR` value that is not empty turns off all color.
 
-A percent has the warning color from 75% and the limit color from 90% (`USAGE_LEVELS` in `src/kernel/budget.ts`).
-The percent of a limit with a pace follows its projected use: warning from 75% and limit color above 100%.
-The distance to the handoff has the warning color within 10% of the trigger and the limit color at the trigger.
+- A percent has the warning color from 75% and the limit color from 90% (`USAGE_LEVELS` in `src/kernel/budget.ts`).
+- The percent of a limit with a pace follows its projected use: warning from 75%, limit color above 100%.
+- The distance to the handoff has the warning color within 10% of the trigger and the limit color at the trigger.
+
 A pull request has the color of its review state: `approved`, `pending`, `changes_requested`, or `draft`.
 
 ## Git Cache and Failures
 
 The git state is cached for 3 seconds in one file for each repository, in the folder `claudetto-git-<uid>` of the temp folder.
-The command runs `git` for at most 1.5 seconds.
-The command uses the cache folder only when it has mode `0700`, the right owner, and no link.
-The bounds are in `slices/statusline/limits.ts`, and the handoff trigger is in `src/kernel/budget.ts`.
+The command uses that folder only when it has mode `0700`, the right owner, and no link.
+It runs `git` for at most 1.5 seconds (see `slices/statusline/limits.ts`).
 
 A failure never stops the status line.
 The command writes the cause to stderr and exits with 0.
 
-- A `git` that times out, is missing, or fails shows `⎇ ✗`.
-  A folder that is not a repository has no git segment.
-- Input that is not a JSON object prints an empty row for the main line, and no row for the subagent line.
-- A config file that cannot be read goes to stderr, and the command uses the default.
-
-## Related Pages
+## See Also
 
 - [Handoff](Handoff)
 - [Settings Snippet](Settings-Snippet)

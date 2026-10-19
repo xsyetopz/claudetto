@@ -1,148 +1,123 @@
 # Decisions: Engine Facts
 
-This page holds the decisions D48 to D57 that still stand in 0.2.0.
-Each rests on a fact of the Claude Code engine that the code alone does not show.
-Read this page before you change one of the code paths below.
+Each topic here rests on a fact of the Claude Code engine that the code alone does not show.
+Read this page before you change one of these code paths.
 A change that looks simpler can break a fact that a test cannot see.
-The later decision D63 is on [Session Facts](Decisions-Session).
-The ids D50, D54, D56, and D58 to D62 are removed, and [Decisions](Decisions) lists them.
 
 ## Rules for Contributors
 
-- Do not replace a choice on this page with a different mechanism without new evidence.
-  Write the new evidence into the decision, and change the decision in the same commit.
-- When you find a fact of the engine that saves model tokens, or that costs no model tokens, add it to this page.
-  Give the source: a page of the docs, a line of the types file, a line of the bundle, or a measured run.
+- Do not replace a choice here with another mechanism without new evidence.
+  Write the evidence into the topic in the same commit.
+- If you find an engine fact that saves model tokens, add it here with its source.
+  A source is a docs page, a line of the types file, a line of the bundle, or a measured run.
 - The types file is `.claude-plugin/types/claude-code/index.d.ts`.
-  The bundle dumps are in `external/`, which git ignores, so a bundle line is evidence for a reader with that folder.
+  Bundle dumps are in `external/`, which git ignores.
 
-## Channels That Cost No Model Tokens
+## Which Channels Cost No Model Tokens
 
-A text that the model reads costs input tokens on each later turn, and it can change the reply.
-A text that only the user reads costs no model tokens.
+A text that the model reads costs input tokens on each later turn.
+A text that only the user reads costs none.
 
-| Channel | The model reads it | Use |
+| Channel | Model reads it | Use |
 | --- | --- | --- |
-| `$.ui.log` | ❌ | A notice for the user, such as the line of `/goal` (D48) |
-| The status line command | ❌ | Live figures, such as the context share and the rate limits |
-| A `command.run` handler | ❌ | A command with a fixed output, such as `/goal` (D42) |
-| A key in `settings.json` | ❌ | A behavior that Claude Code has, such as `sandbox` (D51) |
-| `$.session.append` with a `user` row | ✅ | Only a text that the model must act on |
-| A `prompt.submit` text | ✅ | Only a short text that the model must follow |
+| `$.ui.log` | ❌ | A notice for the user, such as the line of `/goal` |
+| The status line command | ❌ | Live figures, such as context share |
+| A `command.run` handler | ❌ | A command with a fixed output, such as `/goal` |
+| A key in `settings.json` | ❌ | A behavior Claude Code has, such as `sandbox` |
+| `$.session.append` with a `user` row | ✅ | Only text the model must act on |
+| A `prompt.submit` text | ✅ | Only a short text the model must follow |
 
-## D48 User Notices Through `$.ui.log`, Not a Transcript Row
-
-**Problem:** A session-start notice was a `user` row from `$.session.append`.
-The model read the row as a part of the task.
-In the eval case `accusation-warranted` (Haiku, run `2026-10-16T16-28-11-485Z`), the reply of the task had the settings diff appended: 56 missing snippet values and 9 built-in plugins.
-The reply then ended with "Tell me if you want either of those done."
-The judge `plain-reply` failed all three runs, and the score with the plugin was 0.89 against 1.00 without it.
+## Why Notices Use `$.ui.log`
 
 **Choice:** A notice for the user calls `$.ui.log`.
-The types file says that `$.ui.log` appends one dim line to the transcript, and that the line is not sent to the model.
-A `-p` or SDK host receives the line as `ui_log`.
-The `goal` and `handoff` slices use it (`slices/goal/adapters/mod.ts`, `slices/handoff/adapters/mod.ts`).
-A line of `$.ui.log` must hold no line break, because Claude Code draws a break as a bad glyph (`src/kernel/text.ts`).
+The types file says it appends one dim line to the transcript that is not sent to the model.
+A `-p` or SDK host receives it as `ui_log`.
+The `goal` and `handoff` slices use it.
+A line must hold no line break, because Claude Code draws a break as a bad glyph (`src/kernel/text.ts`).
 
-**Alternatives:** A `user` row with words that tell the model to ignore it.
-It still costs tokens on each turn, and the model can still act on it.
+**Reason:** A session-start notice sent as a `user` row was read as part of the task.
+In the eval case `accusation-warranted` (Haiku), the reply ended with extra settings text, and the judge `plain-reply` failed all three runs.
+The score was 0.89 with the plugin and 1.00 without.
 
 **Evidence:** The trace `out/trace.jsonl` of the failed run.
-`src/plugins/claudetto/slices/handoff/lab/change.test.ts` checks the notice on `ui.log`.
+`slices/handoff/lab/change.test.ts` checks the notice.
 
-## D49 No Catch-All in a Hook That Calls `next` First
+## Why a Hook That Calls `next` First Has No Catch-All
 
-**Problem:** A `catch` around the whole `tool.call` hook looks safe.
-But it can hide an error, and it can replace a verdict of another handler.
+**Choice:** Such a hook has no `catch` around the whole body.
+A `catch` names only the error it expects.
 
-**Choice:** A hook that calls `next` first has no catch-all.
-The docs page [Handle a hook that fails](https://code.claude.com/docs/en/plugins/mods/events) says:
-"It failed after `next` resolved: that result stands".
-So when the hook throws after `next`, Claude Code logs the error and keeps the result of `next`.
-A `catch` names only the error that it expects.
+**Reason:** The docs page [Handle a Hook That Fails](https://code.claude.com/docs/en/plugins/mods/events) says: "It failed after `next` resolved: that result stands".
+So Claude Code logs the error and keeps the result.
+A catch-all would hide the error from the log.
 
-**Alternatives:** A catch-all that returns the result of `next`.
-It gives the same result, and it hides the error from the log.
+**Evidence:** Header comments of `slices/patch/adapters/mod.ts` and `slices/guard/adapters/mod.ts`.
 
-**Evidence:** The header comments of `slices/patch/adapters/mod.ts` and `slices/guard/adapters/mod.ts`.
+## Why the Sandbox Keys Come From Settings
 
-## D51 The Sandbox Keys Come From Settings
+**Choice:** The snippet carries the `sandbox` keys, and `claudetto-setup --apply` merges them ([Settings Apply](Settings-Apply)).
 
-**Problem:** A plugin cannot set `sandbox`.
-Of the `settings` of a plugin, "only `agent` and `subagentStatusLine` take effect" (`docs/plugins_manifest-reference.md`).
+**Reason:** A plugin cannot set `sandbox`.
+Of the `settings` of a plugin, "only `agent` and `subagentStatusLine` take effect".
+These facts shape `just sandbox-linux` (`tools/sandbox/linux/run.ts`):
 
-**Choice:** The settings snippet carries the `sandbox` keys, and `claudetto-setup --apply` merges them into a settings file ([Settings Apply](Settings-Apply)).
-The facts below shape the check `just sandbox-linux` (`tools/sandbox/linux/run.ts`):
-
-- With `failIfUnavailable: false`, the default, a missing sandbox gives only a warning, and the commands run unsandboxed.
+- With the default `failIfUnavailable: false`, a missing sandbox only warns, and commands run unsandboxed.
   So the check sets `failIfUnavailable: true` and `allowUnsandboxedCommands: false`.
-- On Linux and WSL2, the sandbox needs `bwrap` and `socat`.
-- The seccomp filter is required for the hard stop on Linux and WSL2.
-  It blocks `socket(AF_UNIX, ...)`.
-  Without it, a command reaches the `ssh-agent` socket.
-  Claude Code only warns when it is missing (`seccomp not available - unix socket access not restricted`).
-- The engine looks up the helper in the order `sandbox.seccomp.applyPath`, the `vendor/seccomp/<arch>/apply-seccomp` folders next to the bundle, and the global `npm` install.
-  The native Linux binary embeds the helper, and the engine uses it with no `npm` install (checked on 2026-10-16).
-- `sandbox.network.allowAllUnixSockets: true` makes the engine skip the filter.
+- Linux and WSL2 need `bwrap` and `socat`.
+- The seccomp filter blocks `socket(AF_UNIX, ...)`.
+  Without it, a command reaches the `ssh-agent` socket, and Claude Code only warns.
+- The engine looks for the helper at `sandbox.seccomp.applyPath`, then `vendor/seccomp/<arch>/apply-seccomp`, then a global `npm` install.
+  The native Linux binary embeds the helper (checked 2026-10-16).
+- `sandbox.network.allowAllUnixSockets: true` skips the filter.
 
-**Alternatives:** A `tool.check` deny of each network command.
-A script can reach the network in many forms, so a deny list is never complete.
+**Evidence:** A live `just sandbox-linux` run on 2026-10-17 (native `claude-code-linux-arm64@2.1.302`, `haiku`, 0.0031 USD).
+The control call got `pong` from `SSH_AUTH_SOCK`.
+The sandboxed call failed with `socket(1, 1, 0): Operation not permitted`, so the verdict is `blocked`.
 
-**Evidence:** A live session of `just sandbox-linux` on 2026-10-17 (the native `claude-code-linux-arm64@2.1.302` on `haiku`, 0.0031 USD).
-The control call with no sandbox got `pong` from `SSH_AUTH_SOCK`.
-The sandboxed `Bash` call to `socat` failed with `socket(1, 1, 0): Operation not permitted`, so the verdict is `blocked`.
-With `SRT_DEBUG=1` the engine logged `[Sandbox Linux] Applying seccomp filter for Unix socket blocking`.
+## Why Each Adapter Keeps Its Own `$` Calls
 
-## D52 Each Adapter Keeps Its Own `$` Calls
+**Choice:** Each function that touches `$` stays in the adapter file that uses it.
 
-**Problem:** A shared helper that calls `$` looks like less code.
+**Reason:** `claude plugin validate` follows `$` only into a function of one file, and each `$.env` call needs a literal name.
+A shared helper makes validation fail.
 
-**Choice:** Each function that touches `$` is in the adapter file that uses it.
-`claude plugin validate` follows `$` only into a function of one file, and each `$.env` call needs a literal name.
-A shared helper makes the validation fail.
+**Evidence:** Header comments of the `mod.ts` files of `goal`, `patch`, `decide`, and `guard`.
 
-**Evidence:** The header comments of `slices/goal/adapters/mod.ts`, `slices/patch/adapters/mod.ts`, `slices/decide/adapters/mod.ts`, and `slices/guard/adapters/mod.ts`.
-
-## D53 A Plugin Verdict Only Makes a Call Stricter
-
-**Problem:** A handler can return `allow`, and a reader can think that it approves a call that a rule of the user asks for.
+## Why a Plugin Verdict Only Makes a Call Stricter
 
 **Choice:** No handler uses `allow` to make a call less strict.
-The engine orders the verdicts `deny`, `ask`, `allow`, and the verdict of a plugin is final unless the engine is stricter.
-An `ask` from a hook prompts in auto mode, and in a session that cannot prompt the call is denied (`docs/hooks.md`).
+The engine orders verdicts `deny`, `ask`, `allow`.
+An `ask` from a hook prompts in auto mode, and in a session that cannot prompt, the call is denied.
 
-**Evidence:** The `guard` handler returns `next(e)` or a deny, and never an `allow`.
+**Reason:** A reader could think `allow` overrides a rule of the user.
 
-## D55 No Session-Wide Env Through `CLAUDE_ENV_FILE`
+**Evidence:** The `guard` handler returns `next(e)` or a deny, never an `allow`.
 
-**Problem:** `CLAUDE_ENV_FILE` looks like the documented way to set an env var.
+## Why `CLAUDE_ENV_FILE` Is Not Used
 
 **Choice:** `claudetto` uses `$.env` in the hooks module.
-`CLAUDE_ENV_FILE` is only for a `SessionStart` command hook (`docs/hooks.md`), and `claudetto` has one hooks module in place of command hooks (D39).
-A value in that file also holds for the whole session, and a value of `claudetto` must hold only for one call.
 
-## D57 A Plugin `bin/` Command Is Named by Its Path, Not by Its Bare Name
+**Reason:** `CLAUDE_ENV_FILE` works only for a `SessionStart` command hook, and `claudetto` has no command hooks.
+A value in that file holds for the whole session, but a `claudetto` value must hold for one call.
 
-**Problem:** The `bin/` folder of a plugin is "on the Bash tool's `PATH` while the plugin is enabled" (`docs/plugins_manifest-reference.md`).
-In an eval run on Claude Code 2.1.301, the model ran a `bin/` command of the plugin by its bare name.
-The shell answered `Exit code 127` and `command not found`, and the model then ran the command itself.
-The plugin was loaded: the `init` row had `claudetto@inline`, its slash commands, and its MCP server.
+## Why a `bin/` Command Is Named by Its Path
 
-**Choice:** Claude Code adds the `bin/` folders only to the shell snapshot, so the `PATH` of a Bash call has them only when the call sources the snapshot.
-The bundle shows the path: one function lists the `bin/` folder of each enabled plugin, one writes `export PATH=...` with those folders into the snapshot file,
-and `buildExecCommand` runs `source <snapshot> 2>/dev/null || true` before each command.
-A snapshot that is missing, or a read of it that fails, gives no error and no `bin/` folder.
-In `claude plugin eval`, the sandbox settings of the run have the config folder in `denyRead`, and the snapshot sits in `shell-snapshots/` of that folder.
-So the source fails with no message in that sandbox.
-`claudetto` does not rely on `PATH` for a command.
-A skill names its command by `${CLAUDE_PLUGIN_ROOT}/bin/<name>` (`slices/dry/skills/dry/SKILL.md`), and the `decide` hook runs `${$.plugin.root}/bin/claudetto-decide`.
+**Choice:** A skill names its command by `${CLAUDE_PLUGIN_ROOT}/bin/<name>`.
+The `decide` hook runs `${$.plugin.root}/bin/claudetto-decide`.
+`claudetto` does not rely on `PATH`.
 
-**Evidence:** `external/cc-2.1.301/strings.txt` (a local dump), and the trace of the kept eval run.
-The cause in `claude plugin eval` follows from the `denyRead` list and the bundle, and no debug log of that run exists to confirm it.
+**Reason:** The docs say the `bin/` folder is "on the Bash tool's `PATH` while the plugin is enabled".
+In an eval on 2.1.301, the bare name gave `Exit code 127` and `command not found`, although the plugin was loaded.
+The bundle adds the folders only to the shell snapshot, and each command runs `source <snapshot> 2>/dev/null || true`.
+In `claude plugin eval`, the config folder is in `denyRead`, so the source fails with no message.
+No debug log confirms this cause.
 
-## Related Pages
+**Evidence:** `external/cc-2.1.301/strings.txt` and the trace of the kept eval run.
+See `slices/dry/skills/dry/SKILL.md`.
 
-- [Decisions](Decisions)
-- [Session Facts](Decisions-Session)
-- [Architecture](Decisions-Architecture)
+## See Also
+
+- [Decisions Session](Decisions-Session)
+- [Decisions Architecture](Decisions-Architecture)
 - [Evidence](Evidence)
+- [Decisions](Decisions)

@@ -2,22 +2,22 @@
 
 # Off Switches
 
-This page tells maintainers and users which switches turn off a part of `claudetto` or of Claude Code.
-For each switch, it gives the effect and the file that sets or reads it.
+An off switch turns off a part of `claudetto` or of Claude Code that you do not need.
+Each section below lists the switches of one kind, what they do, and the file that sets them.
 Paths start at `src/plugins/claudetto/` unless they say otherwise.
 
-There are four ways to turn off a part:
+## Four Ways to Turn Off a Part
 
-- A plugin option (`userConfig`), which the user sets when the plugin is enabled.
-- A key or an `env` entry of the [settings snippet](Settings-Snippet).
-- An `enabledPlugins` entry for a built-in plugin or a `claudetto` add-on.
-- A `skillOverrides` entry.
+| Way | Where you set it |
+| --- | --- |
+| A plugin option (`userConfig`) | When you enable the plugin |
+| A key or `env` entry | The [settings snippet](Settings-Snippet) |
+| An `enabledPlugins` entry | For a built-in plugin or a `claudetto` add-on |
+| A `skillOverrides` entry | Your settings |
 
 The code reads no `CLAUDETTO_` env var as a switch.
-`CLAUDETTO_DIR` in `src/kernel/paths.ts` is the name of the `.claudetto` folder, not an env var.
-
-The Claude Code facts refer to version `2.1.303`.
-The key names match `schemas/claude-code-settings.json`.
+`CLAUDETTO_DIR` in `src/kernel/paths.ts` is the name of the `.claudetto` folder.
+The facts are for Claude Code `2.1.303`, and the key names match `schemas/claude-code-settings.json`.
 
 ## Plugin Options
 
@@ -130,7 +130,7 @@ To check the effect, run `/context` in `just sandbox`.
 The snippet never sets some keys and env entries, such as `disableAllHooks` and `CLAUDE_CODE_EFFORT_LEVEL`, because each one forces a behavior on every session.
 [Never-Set Settings](Off-Switches-Never-Set) lists them.
 
-## Related Pages
+## See Also
 
 - [Never-Set Settings](Off-Switches-Never-Set)
 - [Settings Snippet](Settings-Snippet)

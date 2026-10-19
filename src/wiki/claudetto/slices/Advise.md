@@ -1,20 +1,21 @@
 # Advise
 
-This page tells how the `advise` slice of the core plugin `claudetto` gives Claude an advisor that the user controls.
-A user reads it to choose the advisor, its model, and its effort.
-A contributor reads it before an edit of `slices/advise/`.
+The `advise` slice gives Claude an advisor that you control.
+The advisor is a stronger model that Claude asks when a problem is hard or a task is stuck.
+You choose its model and its effort.
 
-## The Concept
+## What It Does for You
 
 Claude Code has a built-in advisor.
-The `advise` slice offers the tool `advise` in its place.
-The user sets the model, the effort, and the bounds of the tool.
-The tool asks a stronger model for advice on a hard problem, a plan, or a stuck task.
+This slice offers the tool `advise` in its place.
+The tool sends one question to the model that you set, and Claude gets the advice back.
 
 The slice is off by default.
 Then the built-in advisor stays, and the slice registers no tool.
 
-## Options
+## How to Use It
+
+Set the options of the plugin:
 
 | Key | Default | Meaning |
 | --- | --- | --- |
@@ -23,17 +24,14 @@ Then the built-in advisor stays, and the slice registers no tool.
 | `advisorEffort` | `high` | The effort of the call: `low`, `medium`, `high`, `xhigh`, or `max`. |
 
 An unknown value gives the default.
-
 With `claudetto`, set `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor.
 The `setup` slice sets this env var.
-See [Setup](Setup).
 
-## Hooks
+## How to Turn It Off
 
-| Hook | Filter | What it does |
-| --- | --- | --- |
-| `session.start` | Each start | With `advisor` set to `claudetto`, registers the tool `advise`. The tool is not deferred. |
-| `tool.call` | `mcp__claudetto__advise` | Answers a call with one model request. |
+Set `advisor` to `builtin`.
+The slice then costs nothing.
+With `claudetto`, each call is one model request.
 
 ## The Tool
 
@@ -49,13 +47,19 @@ One call sends a prompt with these parts:
 4. The end of the conversation.
 
 The goal comes from `.claudetto/goal.json`.
-See [Goal](Goal).
-The system prompt tells the model to give advice that Claude can act on: the cause, the next step, and the risk.
-The system prompt carries a cache mark, because it stays the same between calls.
+The system prompt asks for advice that Claude can act on: the cause, the next step, and the risk.
+It carries a cache mark, because it stays the same between calls.
 
 The result gives the advice with the model name and the count of tokens in and out.
-If the model gives no answer, the result says the cause: an API error, an empty reply, or a call that ended too soon.
+If the model gives no answer, the result names the cause: an API error, an empty reply, or a call that ended too soon.
 An empty question gives an error result.
+
+## Hooks
+
+| Hook | Filter | What it does |
+| --- | --- | --- |
+| `session.start` | Each start | With `advisor` set to `claudetto`, registers the tool `advise`. The tool is not deferred. |
+| `tool.call` | `mcp__claudetto__advise` | Answers a call with one model request. |
 
 ## Bounds
 
@@ -74,14 +78,9 @@ Each part takes what is left of the bound.
 The conversation keeps its newest lines.
 A turn starts at the last user message with text.
 A `/compact` keeps the session id, so it does not reset the count of calls.
-A call over a limit gets a result that tells Claude to go on or to ask the user.
+A call over a limit gets a result that tells Claude to go on or to ask you.
 
-## Cost
-
-With `builtin`, the slice costs nothing.
-With `claudetto`, each call is one model request.
-
-## Related Pages
+## See Also
 
 - [Goal](Goal)
 - [Decide](Decide)

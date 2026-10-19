@@ -2,24 +2,22 @@
 
 # Bounds
 
-This page tells maintainers each bound, its value, and its file.
-The values come from the code.
-A value in a placeholder is filled from the code when `just generate` runs.
+A bound is a fixed limit, such as a timeout, a size, or a token count.
+This page lists the shared and repository bounds with their values and files.
+The slice bounds are on [Bounds for Slices](Bounds-Slices) and [Bounds for Add-Ons](Bounds-Add-Ons).
 
 ## Where a New Bound Goes
 
-A new bound goes in the tier of its reader.
-Each bound has one owner, and tests pin the copies of a bound in code and config.
+Each bound has one owner file, and tests pin the copies in code and config.
+Pick the tier by who reads the bound:
 
-- A shared runtime bound goes in `src/kernel/budget.ts`.
-  Use this tier when the shipped code of more than one slice reads the bound.
-- A slice bound goes in `src/plugins/<plugin>/slices/<slice>/limits.ts`.
-  Use this tier when one slice reads the bound.
-- A repository bound goes in `tools/limits.ts`.
-  Use this tier when only the tests and the tools read the bound, so it does not ship.
+| Tier | File | Use when |
+| --- | --- | --- |
+| Shared runtime | `src/kernel/budget.ts` | The shipped code of more than one slice reads it |
+| Slice | `src/plugins/<plugin>/slices/<slice>/limits.ts` | One slice reads it |
+| Repository | `tools/limits.ts` | Only tests and tools read it, so it does not ship |
 
-The rule for each tier is in `CLAUDE.md`.
-The slice bounds are on [Bounds for Slices](Bounds-Slices) and [Bounds for Add-Ons](Bounds-Add-Ons).
+A value in a `{{...}}` placeholder is filled from the code when `just generate` runs.
 
 ## Shared Runtime Bounds
 
@@ -58,16 +56,17 @@ The slice bounds are on [Bounds for Slices](Bounds-Slices) and [Bounds for Add-O
 
 ## Source of the Binary Facts
 
-Three shared bounds depend on the Claude Code `2.1.303` binary: `CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `BASH_OUTPUT_MAX_CHARS`.
+Three shared bounds depend on the Claude Code `2.1.303` binary:
+`CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `BASH_OUTPUT_MAX_CHARS`.
 The range of `bashOutputMaxChars` (4,000 to 128,000) comes from the description of the key in the `2.1.303` settings schema.
 `CONTEXT_BLOCK_MARGIN` is the output reserve of 20,000 tokens plus 3,000 tokens of the `2.1.303` bundle.
 The `2.1.303` bundle caps the window of some models at 200,000 tokens, so the settings snippet sets `CONTEXT_WINDOW` in `autoCompactWindow`.
 The `2.1.303` bundle starts the auto compaction at `min(floor(E × pct / 100), E − 13000)`, with `E` the window less `COMPACT_OUTPUT_RESERVE`.
 `AUTOCOMPACT_PCT` and `HAIKU_AUTOCOMPACT_WINDOW` come from this formula.
 
-## Related Pages
+## See Also
 
-- [Bounds for Slices](Bounds-Slices) gives the bounds of the core slices.
-- [Bounds for Add-Ons](Bounds-Add-Ons) gives the bounds of the add-on plugins.
-- [Settings Snippet](Settings-Snippet) gives the settings that use `CONTEXT_WINDOW`.
-- [Handoff](Handoff) explains the handoff bounds.
+- [Bounds for Slices](Bounds-Slices)
+- [Bounds for Add-Ons](Bounds-Add-Ons)
+- [Settings Snippet](Settings-Snippet)
+- [Handoff](Handoff)

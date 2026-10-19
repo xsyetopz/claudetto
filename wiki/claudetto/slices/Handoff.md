@@ -2,37 +2,34 @@
 
 # Handoff
 
-This page tells how the core plugin `claudetto` replaces the summary of a compaction with a handoff.
-A user who wants to know what stays in the context after a compaction and a contributor who edits the `handoff` slice read it.
+Claude Code compacts the main thread when the context gets long.
+The built-in compaction writes a summary.
+The `handoff` slice of `claudetto` writes a handoff in its place.
+A handoff is a short note with the task, the steps that are done, and the next step.
+The new context starts from the note, so long work does not lose its place.
 
-## What the Handoff Does
-
-Claude Code compacts the main thread when the context is long.
-The built-in compaction writes a summary of the session.
-The `handoff` slice writes a handoff in place of that summary.
+## What You Get
 
 After a handoff, the context holds two parts:
 
 1. One user message.
-   It has the text of the first user message of the session and the handoff.
-   The handoff gives the task, each step that is done, and the next step.
-2. The tail: the newest messages, from the first message of the last reply that has a tool use to the end.
+   It has the first user message of the session and the handoff.
+2. The tail: the newest messages.
+   The tail starts at the first message of the last reply that has a tool use.
 
 An image or an attachment of the first user message does not stay.
 The tail keeps each newest tool call with its result, so the model does not run a step again.
-When the last message is a reply with no tool use, the turn has ended, and there is no tail.
+If the last message is a reply with no tool use, the turn has ended and there is no tail.
 
 The handoff also goes to a file.
 The user message names the file, so you and the model can read it again.
 
-## The Hook
-
-The slice has three hooks:
+## The Hooks
 
 | Hook | Phase | What it does |
 | --- | --- | --- |
 | `session.compact` | `answer` | Writes the handoff and gives the new context in place of the summary. |
-| `turn.complete` | `observe` | Notes the time of the end of a turn of the main thread. |
+| `turn.complete` | `observe` | Notes the time when a turn of the main thread ends. |
 | `turn.step` | `observe` | Notes the time of each model request of the main thread. |
 
 The `session.compact` hook runs for the triggers `auto`, `manual`, and `plugin`.
@@ -40,8 +37,8 @@ A compaction of a subagent passes on with no change.
 
 ## When It Runs
 
-`claudetto` sets the trigger of the auto compaction in the settings snippet.
-The trigger is a context size below the point where Claude Code blocks a request with "Prompt is too long".
+The settings snippet sets the point where auto compaction starts.
+That point is below the size where Claude Code blocks a request with "Prompt is too long".
 
 | Model family | Auto compaction starts at |
 | --- | --- |
@@ -50,70 +47,81 @@ The trigger is a context size below the point where Claude Code blocks a request
 
 The snippet sets `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` and `autoCompactWindow` for this.
 It sets a window for `claude-haiku-5-5` with `modelSettings`.
-The same size is the bound of the new context: when the new context is not below the trigger of the session model, the handoff does not run (see [When the Handoff Fails](#when-the-handoff-fails)).
-See [Settings Snippet](Settings-Snippet) for the keys.
+The same size limits the new context.
+If the new context is not below the trigger of the session model, the handoff does not run.
+See [When the Handoff Fails](#when-the-handoff-fails) and [Settings Snippet](Settings-Snippet).
 
 ## How the Handoff Is Written
 
-The cache of the session decides how the hook writes the handoff.
+The prompt cache decides how the hook writes the handoff.
+The cache is a store that makes repeated input cheap.
 The hook takes the cache as cold when no turn or model request of the main thread ended in the last hour.
-It also takes the cache as cold when it has seen no request in this process, such as after `--resume`.
+It also takes it as cold when it has seen no request in this process, such as after `--resume`.
+If the clock fails, the hook takes the cache as warm.
 
 | Cache | Mode | Cost |
 | --- | --- | --- |
 | Warm | A fork of the session writes the handoff. | One model request, mostly read from the cache. |
 | Cold | The hook writes the handoff from the messages. | No model call. |
 
-A cold cache would make a fork read the full history as uncached input.
-If the clock fails, the hook takes the cache as warm.
+On a cold cache, a fork would read the full history as uncached input.
+That is why the hook does not use a fork then.
 
-`claudetto` sets `CLAUDE_CODE_PROMPT_CACHE_TTL` to `1h` in the settings snippet, so the main thread keeps a 1-hour cache.
+The settings snippet sets `CLAUDE_CODE_PROMPT_CACHE_TTL` to `1h`, so the main thread keeps a 1-hour cache.
 Claude Code bills a 1-hour cache write at a higher rate.
-A model request of the main thread renews the time of the cache, so a long turn stays warm.
+Each model request of the main thread renews the cache time, so a long turn stays warm.
 A subagent keeps the 5-minute default, and its requests do not renew the time.
 
-On a terminal, the status line shows `Writing the handoff…` while the hook works, and a notice names the file and its size.
+On a terminal, the status line shows `Writing the handoff…` while the hook works.
+A notice then names the file and its size.
 In `-p` mode the hooks draw nothing.
 
 ## The Warm Handoff
 
-The prompt of the fork asks for a handoff of 10 lines or less as a Markdown list.
-The prompt asks for these items:
+The prompt of the fork asks for a Markdown list of 10 lines or less.
+The list must hold:
 
 - The task, each step that is done, and the next step.
 - Each exact value with its label, in backticks.
 - The exact text of each error, in backticks.
-- The words of the user in one block, with an update of an earlier handoff in place of a second one.
+- Your words in one block, with an update of an earlier handoff in place of a second one.
 
 The fork does not see the results of the tail.
 So the prompt names each call of the first reply of the tail, with its input cut at 300 characters.
-It asks the fork to mark each of these calls `RAN`, and to state no result for them.
+The fork must mark each of these calls `RAN` and state no result for them.
 
 A reply with no value in backticks is not a handoff.
 The hook then gives the compaction back to Claude Code.
 
 ## The Handoff File
 
-The cold handoff, the path of the file, the source of the status, the ground check, and the update of an earlier handoff are in [Handoff Files](Handoff-Files).
+[Handoff Files](Handoff-Files) tells about:
+
+- the cold handoff
+- the path of the file
+- the source of the status
+- the ground check
+- the update of an earlier handoff
 
 ## When the Handoff Fails
 
-The hook gives the compaction back to Claude Code on each of these failures.
-Claude Code then does its built-in compaction.
+The hook gives the compaction back to Claude Code when:
 
 - The fork fails, gives no answer, or gives a text with no value in backticks.
 - The model of the session is not known.
 - The new context is not below the trigger of the model.
 - The file cannot be written, or it is empty after the write.
 
-## Options
+Claude Code then does its built-in compaction.
+
+## How to Turn It Off
 
 | Key | Default | Meaning |
 | --- | --- | --- |
 | `compaction` | `handoff` | `handoff` writes a handoff. `built-in` leaves each compaction to Claude Code. |
 
 To change it, run `/plugin`, select `claudetto`, select "Configure options", and set "Compaction".
-The [Prompt](Prompt) slice reads the same option, so the text about long context agrees with it.
+The [Prompt](Prompt) slice reads the same option.
 
 ## Bounds
 
@@ -129,11 +137,10 @@ The [Prompt](Prompt) slice reads the same option, so the text about long context
 | `HANDOFF_TRIGGER_TOKENS` | 225,000 | `src/kernel/budget.ts` |
 | `HAIKU_HANDOFF_TRIGGER_TOKENS` | 100,000 | `src/kernel/budget.ts` |
 
-`CHARS_PER_TOKEN` is the estimate of the size of the new context.
+## See Also
 
-## Related Pages
-
-- [Ground](Ground): the check of quoted values.
-- [Prompt](Prompt): the text about long context.
-- [Settings Snippet](Settings-Snippet): the keys that set the trigger.
-- [Off Switches](Off-Switches): the ways to turn a part off.
+- [Handoff Files](Handoff-Files)
+- [Ground](Ground)
+- [Prompt](Prompt)
+- [Settings Snippet](Settings-Snippet)
+- [Off Switches](Off-Switches)

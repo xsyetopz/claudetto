@@ -2,30 +2,33 @@
 
 # Prompt Size
 
-This page gives the measured size of the system prompt text of the `prompt` slice, and the gap in the compact prompt.
-Read it to learn what the `prompt` slice sends, and what it cannot change.
-The rules that the text holds are on the page [Prompt](Prompt).
+The `prompt` slice sends one tailored system prompt text.
+This page gives its measured size and the one part it cannot change.
+The rules in the text are on [Prompt](Prompt).
 
 ## Size of the Tailored Text
 
-The `prompt` slice answers the `lean_body` section with one text.
-The text has eight sections: `intro`, `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, and `counts`.
-Their source files are in `src/plugins/claudetto/slices/prompt/prompts/`.
-On 2026-10-19, the eight files had 6,769 bytes and 1,312 words together (measured with `wc`, before the section tags).
-`doing-tasks.md` is the largest file, with 3,289 bytes.
+| Measure | Value |
+| --- | --- |
+| Sections | 8: `intro`, `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, `counts` |
+| Size | 6,769 bytes and 1,312 words |
+| Largest file | `doing-tasks.md`, 3,289 bytes |
+| Method | `wc` on the 8 files in `src/plugins/claudetto/slices/prompt/prompts/`, before the section tags |
+| Date | 2026-10-19 |
+
 The text replaces the `# Harness` rules of the short prompt of Claude Code `2.1.302` (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`).
 The repository has no bound on this size.
 
 ## The Compact Prompt Gap
 
-The `prompt.compose` and `prompt.section` hooks do not reach the compact prompt of Claude Code.
-The `handoff` slice replaces the built-in compaction by default instead ([Handoff](Handoff)).
-The `context_management` section agrees with the compaction state of the session ([Prompt](Prompt#compaction-gate)).
-The `built-in` state keeps the built-in text, and the compact prompt of Claude Code stays unchanged.
-The settings snippet does not set `DISABLE_COMPACT` ([Settings Snippet](Settings-Snippet)).
+The `prompt.compose` and `prompt.section` hooks cannot change the compact prompt of Claude Code.
+So the `handoff` slice replaces the built-in compaction by default ([Handoff](Handoff)).
+The `context_management` section follows the compaction state of the session ([Prompt](Prompt#compaction-gate)).
+With the state `built-in`, the compact prompt stays unchanged.
+The snippet does not set `DISABLE_COMPACT` ([Settings Snippet](Settings-Snippet)).
 
-## Related Pages
+## See Also
 
-- [Evidence](Evidence): the index of the evidence pages and their source files.
-- [Prompt](Prompt): the rules of the slice.
-- [Handoff](Handoff): the replacement of the built-in compaction.
+- [Evidence](Evidence)
+- [Prompt](Prompt)
+- [Handoff](Handoff)

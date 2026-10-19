@@ -2,9 +2,8 @@
 
 # Attributions
 
-This page lists the outside works that `claudetto` uses.
-Read it if you check the license of a work that `claudetto` uses.
-Each row gives the license that the source states.
+`claudetto` uses work from other projects.
+The table names each work and its license, as the source states it.
 Where the source states no license, the row says `not stated`.
 
 ## Outside Works
@@ -33,8 +32,10 @@ The packages in the root `package.json` are dev tools for the repository.
 These are `@biomejs/biome`, `@fission-ai/openspec`, `@types/node`, `bun-types`, `jscpd`, `markdownlint-cli2`, and `yaml`.
 The shipped code in `plugins/` imports only relative files, the `node:` and `bun:` built-in modules, and the `claude-code` plugin types.
 
-## Related Pages
+## See Also
 
-- [Overview](Overview): the plugins and the slices.
-- [Decide](Decide): the `claudetto-decide` command.
-- [Browser](Browser), [Code Graph](Code-Graph), and [Library Docs](Library-Docs): the add-on plugins that call the CLIs.
+- [Overview](Overview)
+- [Decide](Decide)
+- [Browser](Browser)
+- [Code Graph](Code-Graph)
+- [Library Docs](Library-Docs)

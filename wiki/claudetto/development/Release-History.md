@@ -2,25 +2,25 @@
 
 # Release History
 
-This page tells where the notes of each release are.
-Read it when you need the notes of a release.
+The notes of each release are in `CHANGELOG.md` and on GitHub.
+Read them before an update to see what changed.
 
 ## Where the Notes Are
 
-- [CHANGELOG.md](https://github.com/xsyetopz/claudetto/blob/main/CHANGELOG.md) lists the changes of each release, with the sections Added, Changed, and Removed.
+- [CHANGELOG.md](https://github.com/xsyetopz/claudetto/blob/main/CHANGELOG.md) lists the changes of each release under Added, Changed, and Removed.
   A release with no tag yet is the release in progress, and its section holds the changes so far.
 - The [GitHub releases](https://github.com/xsyetopz/claudetto/releases) page lists each tagged release.
 
 The version of `claudetto` is in `package.json`.
-`just bump` changes it, and `just generate` copies it to each `plugin.json` and to the marketplace file.
-See [Development Release](Development-Release) for the steps.
+`just bump` changes it, and `just generate` copies it to each `plugin.json` and the marketplace file.
+See [Development Release](Development-Release).
 
 ## After an Update
 
 Read the new entry of `CHANGELOG.md`, then run `/claudetto:setup` again.
 See [Install](Install#update).
 
-## Related Pages
+## See Also
 
-- [Development Release](Development-Release): how to make a release.
-- [Install](Install): how to update.
+- [Development Release](Development-Release)
+- [Install](Install)

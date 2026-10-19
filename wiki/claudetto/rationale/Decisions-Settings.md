@@ -2,147 +2,94 @@
 
 # Decisions: Settings
 
-This page holds the decisions D1, D5, D10, D13, D14, and D43.
-Read it to learn why `claudetto` sets some keys, turns off some parts of Claude Code, and leaves the model choice to the user.
-The index is [Decisions](Decisions).
-A missing id is a removed decision, and the index lists them.
+These decisions explain which keys `claudetto` sets, which parts of Claude Code it turns off, and when it asks the user.
+The minimum Claude Code version is `2.1.303` (`MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts`).
 
-Each decision has the problem, the choice, the alternatives, and the evidence.
-The minimum version of Claude Code is `2.1.303` (`MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts`).
+## Why Each Need Takes the Simplest Way
 
-## D1 Rule of Least Power
+**Choice:** Each need takes the first way that works:
 
-**Problem:** A need of `claudetto` can be met in many ways in Claude Code.
-A way that needs more code breaks more often when Claude Code updates.
-
-**Choice:** Each need takes the first way that works, in this order:
-
-1. No key, because the default of Claude Code gives the result.
-2. A settings key or an env var of `schemas/claude-code-settings.json`.
-3. A built-in part that the settings turn off ([Off Switches](Off-Switches)).
+1. No key, because the default of Claude Code works.
+2. A settings key or env var from `schemas/claude-code-settings.json`.
+3. A built-in part that settings turn off ([Off Switches](Off-Switches)).
 4. A mod handler.
 5. A script.
-   This is the last choice.
 
-[Settings Snippet Keys](Settings-Snippet-Keys) gives the reason and the default for each key that the snippet sets.
-The `setup` slice owns the merge: `claudetto-setup` merges the snippet into a settings file only with `--apply`.
+**Reason:** More code breaks more often when Claude Code updates.
+`claudetto-setup` merges the snippet only with `--apply`.
 
-**Alternatives:** A script or a mod handler first.
-Inference: a script or a mod handler has more code that Claude Code can break, so the order keeps the code small.
+**Evidence:** `.claude/rules/extension-points.md` forbids runtime code for a feature Claude Code has.
+`tests/claudetto/settings-pin.test.ts` checks each JSON block of [Settings Snippet](Settings-Snippet) against the schema.
+It fails on a key the schema lacks and on a never-set key (`NEVER_SET_KEYS`, `NEVER_SET_ENV` in `tests/support/settings-pin.ts`).
 
-**Evidence:**
+## Why Some Skills Are User-Only
 
-- `.claude/rules/extension-points.md` forbids runtime code for a feature that the latest Claude Code has.
-- `tests/claudetto/settings-pin.test.ts` checks each JSON block of [Settings Snippet](Settings-Snippet) against `schemas/claude-code-settings.json`.
-  It fails on a key that the schema lacks, and on a never-set key.
-  The never-set lists `NEVER_SET_KEYS` and `NEVER_SET_ENV` are in `tests/support/settings-pin.ts`.
+**Choice:** A skill that only the user runs sets `disable-model-invocation: true`.
+These are `setup` and `spec` (core), `sessions` (`claudetto-sessions`), and `eval-compare` (`claudetto-lab`).
+The skills `dry`, `patch`, `docs`, `codegraph`, and `browse` stay model-invocable.
 
-## D5 Who Invokes What
-
-**Problem:** A skill that the model can invoke adds a line to the skill listing of each request.
-A skill that the user runs by hand has no reason to be in that listing.
-
-**Choice:** A skill that only the user runs sets `disable-model-invocation: true` in its `SKILL.md`.
-These skills are `setup` and `spec` of the core plugin, `sessions` of `claudetto-sessions`, and `eval-compare` of `claudetto-lab`.
-The skills `dry` and `patch` of the core plugin, and `docs`, `codegraph`, and `browse` of the add-ons, are model-invocable, because the model starts them when a task needs them.
-
-The `docs` skill has a description of 155 characters.
-This run did not measure its token cost.
-
-**Alternatives:** Model-invocable skills for all of them.
-Inference: each model-invocable skill costs a listing line in each request.
+**Reason:** Each model-invocable skill adds a line to every request.
+A user-only skill needs no such line.
 
 **Evidence:** The `SKILL.md` files under `src/plugins/`.
 
-## D10 Schema Extraction
+## Why the Schema Is Read From the Bundle
 
-**Problem:** The settings schema must match the installed Claude Code version.
-A schema that is typed by hand goes stale when Claude Code updates.
+**Choice:** `claudetto-schema` (`just schema`) reads the settings schema out of the installed bundle.
+It writes `schemas/claude-code-settings.json` and `schemas/claude-code-managed-settings.json`.
+The second file is a reference only.
 
-**Choice:** `claudetto-schema` reads the settings schema out of the installed bundle.
-It is the CLI of the `claudetto-lab` add-on, and `just schema` runs it.
-It writes two files:
+**Reason:** A schema typed by hand goes stale when Claude Code updates.
 
-- `schemas/claude-code-settings.json`, the keys of `settings.json`.
-- `schemas/claude-code-managed-settings.json`, the keys of `managed-settings.json`.
-  This file is a reference only, because `claudetto` writes no managed settings.
+**Evidence:** `src/plugins/claudetto-lab/slices/schema/domain/build.ts`.
+The `$comment` of the schema names Claude Code `2.1.302`.
 
-**Code:** `src/plugins/claudetto-lab/slices/schema/domain/build.ts` builds the schema from the bundle text.
-The file names have no version, so the `$schema` links stay the same.
+## Why There Is No Model Router
 
-**Evidence:** The `$comment` of `schemas/claude-code-settings.json` says that the file was extracted from Claude Code `2.1.302`.
+**Choice:** The main loop keeps the model and effort the user sets with `/model`, `/effort`, or `effortLevel`.
+`claudetto` never writes them in a hook.
+The snippet sets `model` to `claude-opus-5-5` as a start value and `CLAUDE_CODE_SUBAGENT_MODEL` to `claude-sonnet-5-5`.
+It never sets `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`, because they override the user.
+The `advise` tool sets the model and effort of its own call only.
 
-## D13 No Router, the Main Loop Keeps the Session Choice
+**Reason:** A hook that rewrites `model` or `effort` adds a rule that only a probe can prove.
+A cited study found a tool-call router wrong on about 1 route in 6 (arXiv 2605.07112, not checked here).
 
-**Problem:** Something must set the model and the effort of a turn.
-A router that does this adds a rule that a test cannot check on its own.
+**Evidence:** The `settings` object of `slices/prompt/slice.ts`.
 
-**Choice:** The main loop keeps the model and the effort that the user sets with `/model`, `/effort`, or `effortLevel`.
-`claudetto` does not write `model` or `effort` in a hook or in a command.
-The tool `advise` sets the model and the effort of its own call, which is no change to the main loop.
-
-The snippet sets `model` to `claude-opus-5-5` as a start value, and it sets `CLAUDE_CODE_SUBAGENT_MODEL` to `claude-sonnet-5-5` for a subagent with no model of its own.
-It never sets `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`, because each one overrides the choice of the user.
-The prompt tells the model not to pass `model` or `effort` for a subagent, because its values win (`src/plugins/claudetto/slices/prompt/prompts/tools.md`).
-
-**Alternatives:** A deterministic router on `prompt.submit` and `agent.spawn`, with a table of model and effort pairs.
-The choice does not keep it.
-A hook that rewrites `model` or `effort` adds a rule that only a probe can prove.
-A router on tool calls was wrong on about 1 route in 6 in a cited study (arXiv 2605.07112).
-This run did not check the study.
-
-**Evidence:** The `settings` object of `src/plugins/claudetto/slices/prompt/slice.ts`.
-
-## D14 Off Switches
-
-**Problem:** Some built-in parts of Claude Code add tokens or noise that `claudetto` does not use.
-Some switches also cost quality, so each switch needs a test.
+## Why Some Parts Are Switched Off
 
 **Choice:** Three lists hold the switches.
-Each key is in one list.
 
-1. Forced off, with no quality cost:
-   - The built-in plugins in `enabledPlugins` of the snippet.
-   - The claude.ai connectors and syncs: `disableClaudeAiConnectors`, `syncClaudeAiSkills`, and `syncClaudeAiPlugins`.
-   - The feedback and tips switches, fast mode, and cron.
-   - A command or an attachment that a mod handler hides (`src/plugins/claudetto/slices/prompt/domain/off.ts`).
-   See [Off Switches](Off-Switches).
-2. Not in the snippet, because the eval of 2026-10-08 showed a loss or no saving:
-   - `DISABLE_TELEMETRY` and `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`.
-     Both showed a loss on the second run.
-   - `subagentPromptCacheTtl` set to `"1h"`.
-     It showed no saving.
-3. Never set: keys that disable hooks, that force thinking on, or that remove context that Claude needs.
-   The lists are `NEVER_SET_KEYS` and `NEVER_SET_ENV` in `tests/support/settings-pin.ts`.
+| List | Content |
+| --- | --- |
+| Forced off | Built-in plugins, claude.ai connectors and syncs, feedback and tips, fast mode, cron, and hidden commands and attachments |
+| Not set | `DISABLE_TELEMETRY`, `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`, `subagentPromptCacheTtl` |
+| Never set | Keys that disable hooks, force thinking on, or remove needed context |
 
-A key of the global config (`~/.claude.json`) is not in `settings.json`.
-The snippet sets the env var for it, such as `CLAUDE_CODE_AUTO_CONNECT_IDE`.
-No off switch for the `computer-use` MCP server is known, so the snippet holds a deny rule, `mcp__computer-use`.
+Keys of `~/.claude.json` are not in `settings.json`, so the snippet sets an env var, such as `CLAUDE_CODE_AUTO_CONNECT_IDE`.
+No off switch for the `computer-use` MCP server is known, so the snippet denies `mcp__computer-use`.
 
-**Alternatives:** Turn off all telemetry and all non-essential traffic.
-The eval rejected that choice for the two keys in list 2.
+**Reason:** Some switches cost quality.
+The eval of 2026-10-08 showed a loss for the two telemetry keys and no saving for the cache TTL.
 
-**Evidence:** The figures of the eval are on [Evals](Evals).
-They were not measured again for 0.2.0.
+**Evidence:** [Evals History](Evals-History) and [Off Switches](Off-Switches).
+The figures were not measured again for 0.2.0.
 
-## D43 Ask Before a Destructive Call, Never for a Read
+## Why the Snippet Asks Only Before Harm
 
-**Problem:** Each ask stops the work and takes the time of the user.
-An ask for a read trains the user to approve without a reading.
+**Choice:** `permissions.ask` has 25 exact git rules that name the destructive flag, such as `git push* --force` and `git reset* --hard`.
+It also covers `docker run`, `create`, `compose run`, and `compose up` with a mount or `--privileged`, `rm` with a recursive flag, `sudo`, publish commands, `gh` writes, and an SQL drop.
+A safe read such as `git status` is in `permissions.allow`.
+`git reset --soft` and `git push --force-with-lease` pass.
 
-**Choice:** The snippet asks only before a call that destroys work, publishes work, or gives host rights.
-`permissions.ask` has 25 exact git rules that name the destructive flag, such as `git push* --force` and `git reset* --hard`.
-It has rules for `docker run`, `docker create`, `docker compose run`, and `docker compose up` with a mount or `--privileged`.
-It has rules for `rm` with a recursive flag, `sudo`, a publish command, a write of `gh`, and an SQL drop.
-A safe read, such as `git status`, is in `permissions.allow`.
-A rule that names the flag lets `git reset --soft` and `git push --force-with-lease` pass.
+**Reason:** Each ask stops the work.
+An ask for a read teaches the user to approve without reading.
+The `guard` hook covers forms a rule cannot match, such as `sh -c`.
 
-**Alternatives:** Ask on each change to a protected file.
-The `guard` hook keeps the forms that a rule cannot match, such as `sh -c`.
+**Evidence:** `slices/prompt/domain/git-ask.ts` and `docker-ask.ts`, and `tests/claudetto/prompt/docker-rules.test.ts`.
 
-**Evidence:** `src/plugins/claudetto/slices/prompt/domain/git-ask.ts` and `docker-ask.ts`, and `tests/claudetto/prompt/docker-rules.test.ts`.
-
-## Related Pages
+## See Also
 
 - [Settings Snippet](Settings-Snippet)
 - [Settings Snippet Keys](Settings-Snippet-Keys)

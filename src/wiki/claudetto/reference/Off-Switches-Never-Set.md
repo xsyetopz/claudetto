@@ -1,11 +1,9 @@
 # Never-Set Settings
 
-This page lists the keys and env entries that the [settings snippet](Settings-Snippet) never sets.
-Maintainers read it.
-
-The snippet never sets these entries.
-The lists are in `tests/support/settings-pin.ts`, as `NEVER_SET_KEYS` and `NEVER_SET_ENV`.
-The test `tests/claudetto/settings-pin.test.ts` checks the snippet against them.
+Some settings force a behavior on every session, so `claudetto` never sets them.
+This page lists them and the reason for each.
+`NEVER_SET_KEYS` and `NEVER_SET_ENV` in `tests/support/settings-pin.ts` hold the lists.
+`tests/claudetto/settings-pin.test.ts` checks the [settings snippet](Settings-Snippet) against them.
 
 | Entry | Value | Reason |
 | --- | --- | --- |
@@ -31,7 +29,7 @@ The test `tests/claudetto/settings-pin.test.ts` checks the snippet against them.
 | `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` | any | Removes beta features. |
 | `DISABLE_INTERLEAVED_THINKING` | any | Removes thinking between tool calls. |
 
-## Related Pages
+## See Also
 
 - [Off Switches](Off-Switches)
 - [Settings Snippet](Settings-Snippet)

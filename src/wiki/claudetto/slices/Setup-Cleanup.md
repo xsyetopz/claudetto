@@ -10,6 +10,7 @@ The cleanup removes only what 0.1.0 wrote.
 It leaves each key and rule of the user.
 The preview lists each removal.
 Nothing is written without `--apply`.
+The cleanup runs before the merge, in the same command.
 
 | Item | What the cleanup removes |
 | --- | --- |
@@ -33,20 +34,18 @@ Nothing is written without `--apply`.
   The file is the one for the scope: `CLAUDE.md` or `CLAUDE.local.md`.
 - A value that the user changed stays, because the cleanup removes a value only when it equals the 0.1.0 value.
 
-## Removed Git Hooks
+## Git Hooks
 
-`setup` no longer installs the `commit-msg` and `pre-push` hooks of git.
+`setup` installs no git hooks.
 The cleanup removes the `GIT_CONFIG_*` pairs that set them in `env`.
 
 ## Messages
 
-| Message | Meaning |
-| --- | --- |
-| `<key>: removed the entries of 0.1.0.` | The cleanup changed this top-level key |
-| `permissions.ask: removed the rule ...` | The cleanup removed one of the ten rules |
-| `Remove the claudetto block of 0.1.0 from <file>.` | The cleanup strips the `CLAUDE.md` block |
+The `setup` command removes old `claudetto` 0.1.0 settings before it merges the new ones.
+It leaves each key and rule that you wrote.
+You see every removal in the preview first.
 
-## Related Pages
+## See Also
 
 - [Setup](Setup)
 - [Settings Snippet](Settings-Snippet)

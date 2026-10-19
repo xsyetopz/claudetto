@@ -1,15 +1,15 @@
 # Sandbox Sessions
 
-This page tells how to test in a sandbox session: headless runs, TUI runs in `tmux`, a capture of the requests, and the clean up.
-A contributor reads it after [Sandbox](Sandbox).
+A sandbox session can run headless, in a `tmux` TUI, or behind a capture proxy.
+This page shows each way and how to clean up.
+Read [Sandbox](Sandbox) first.
 
 ## Headless Tests
 
 `-p` runs one turn and prints the reply.
 Use it for hook behavior that the reply shows.
 
-1. Put test files in `project/` first.
-   For example, add a `pkg/CLAUDE.md` with a rule that the reply must show.
+1. Put test files in `project/` first, such as a `pkg/CLAUDE.md` with a rule the reply must show.
 2. Run the prompt:
 
    ```bash
@@ -19,18 +19,17 @@ Use it for hook behavior that the reply shows.
 3. Add `--debug-file <path>` to see which hooks ran and what they returned.
 
 - The script warns when a `--model` value is not in `availableModels` of the sandbox `settings.json`.
-  Claude Code gives no error for such a model.
-  The session runs on another model.
+  Claude Code gives no error, and the session runs on another model.
 - Put the prompt before variadic flags such as `--allowedTools`.
-  A variadic flag takes all the arguments after it, and then `claude` finds no prompt.
+  A variadic flag takes all later arguments, and then `claude` finds no prompt.
 - A headless run cannot answer a permission prompt.
-  So list each tool that the test needs, such as `--allowedTools 'Bash' 'Write' 'Edit'`.
-  A tool that the flag does not list is denied.
+  List each tool the test needs, such as `--allowedTools 'Bash' 'Write' 'Edit'`.
+  An unlisted tool is denied.
 
 ## TUI Tests in `tmux`
 
 The status line, the `Reply` button, and dialogs show only in the TUI.
-Run the TUI in a detached `tmux` session, and read the screen:
+Run it in a detached `tmux` session and read the screen:
 
 ```bash
 tmux new-session -d -s sandbox -x 150 -y 40 "just sandbox; sleep 60"
@@ -40,19 +39,17 @@ tmux capture-pane -p -t sandbox | tail -30
 tmux kill-session -t sandbox
 ```
 
-- Wait some seconds after the start and after each prompt.
-  Then read the screen.
-- Send the text with `-l`.
-  Send `Enter` in a second command.
-  If you do not, `tmux` can read words of the text as key names.
+- Wait some seconds after the start and after each prompt, then read the screen.
+- Send the text with `-l` and `Enter` in a second command.
+  Otherwise `tmux` can read words of the text as key names.
 
 ## Capture Session
 
-`just capture` runs `claudetto-capture`, a proxy that writes each request body that passes through it.
-Use it to record the requests of a session and to size each part of the first one.
+`just capture` runs `claudetto-capture`, a proxy that writes each request body.
+Use it to size each part of the first request of a session.
 
 1. In a terminal, run `just capture`.
-   It listens on port `8787` by default and writes to `claudetto-capture` in `$TMPDIR`.
+   It listens on port `8787` and writes to `claudetto-capture` in `$TMPDIR`.
    The options are `--port N`, `--out DIR`, `--upstream URL`, and `--no-count`.
 2. In a second terminal, start the session with the proxy:
 
@@ -60,18 +57,13 @@ Use it to record the requests of a session and to size each part of the first on
    ANTHROPIC_BASE_URL=http://127.0.0.1:8787 ENABLE_TOOL_SEARCH=true claude
    ```
 
-- The proxy forwards to `--upstream URL`.
-  Without that option, it forwards to `ANTHROPIC_BASE_URL`.
-  Without that variable, it forwards to `https://api.anthropic.com`.
+- The proxy forwards to `--upstream URL`, else to `ANTHROPIC_BASE_URL`, else to `https://api.anthropic.com`.
   It stops with an error when the upstream is its own address, because the requests would loop.
   This happens when you export `ANTHROPIC_BASE_URL` in the terminal of `just capture`.
-- `ENABLE_TOOL_SEARCH=true` keeps tool search enabled.
-  Claude Code disables it for a base URL that is not first-party.
+- `ENABLE_TOOL_SEARCH=true` keeps tool search on, because Claude Code turns it off for a base URL that is not first-party.
 - The proxy does not write request headers, because they hold the credential.
-- `just capture` listens on a local port.
-  A session with a sandbox can block that port.
-  The fix is `sandbox.network.allowLocalBinding: true` in the settings of the session that runs the proxy.
-  The user sets that value.
+- A session with a sandbox can block the local port.
+  The user sets `sandbox.network.allowLocalBinding: true` in the settings of the session that runs the proxy.
 
 ## Status Line Commands
 
@@ -81,37 +73,35 @@ To test the status line script without a session, give it input on stdin:
 echo '<input JSON>' | bun plugins/claudetto/bin/claudetto-statusline
 ```
 
-Read the fields of the input in the status line docs of Claude Code and in the script before you write the input.
+Read the input fields in the status line docs of Claude Code and in the script.
 To see the real input, set a status line command in `config/settings.json` that writes stdin to a file.
 
 ## Clean Up
 
-1. Stop each `tmux` session that you started.
+1. Stop each `tmux` session you started.
 2. Run `just sandbox-clean`.
-   It removes the whole `claudetto-sandbox` folder with `config/`, `project/`, `home/`, and the `.claudetto-sandbox` marker.
-3. For `just sandbox-alone`, run `just sandbox-alone PLUGIN` again, or run:
+   It removes the `claudetto-sandbox` folder with `config/`, `project/`, `home/`, and the `.claudetto-sandbox` marker.
+3. For `just sandbox-alone`, run the recipe again, or run:
 
    ```bash
    bun plugins/claudetto-lab/bin/claudetto-sandbox --dir /tmp/claudetto-sandbox-alone --clean
    ```
 
-4. For `just sandbox-install`, run the same command with `--dir /tmp/claudetto-sandbox-install`.
+4. For `just sandbox-install`, use the same command with `--dir /tmp/claudetto-sandbox-install`.
 
-The sandbox writes a marker into each folder that it makes.
-`--clean` of a folder other than the default one refuses a folder without the marker, and it refuses a symlink.
-A folder that has no marker needs a removal by hand.
+The sandbox writes a marker into each folder it makes.
+`--clean` of a folder other than the default refuses a folder without the marker and refuses a symlink.
+Remove such a folder by hand.
 
 A sandbox session also writes into your checkout.
-Claude Code writes `.claude-plugin/types/` and a `tsconfig.json` into each plugin folder that it loads, and git ignores them.
-See [Types](Development-Release#types).
+Claude Code writes `.claude-plugin/types/` and a `tsconfig.json` into each plugin folder it loads, and git ignores them ([Types](Development-Release#types)).
 
-`just sandbox` keeps its sessions and settings until you remove it, so you can continue a test.
-But an old sandbox can hide a first-run problem.
-`just sandbox-alone` starts from an empty folder on each run, so it shows a first-run problem.
+`just sandbox` keeps sessions and settings, so you can continue a test, but an old sandbox can hide a first-run problem.
+`just sandbox-alone` starts empty on each run, so it shows a first-run problem.
 
-## Related Pages
+## See Also
 
-- [Sandbox](Sandbox): the commands and the login.
-- [Sandbox Linux](Sandbox-Linux): the check of the Linux sandbox.
-- [Troubleshooting](Troubleshooting): the symptoms and their fixes.
-- [Lab](Lab): the bins of the lab plugin.
+- [Sandbox](Sandbox)
+- [Sandbox Linux](Sandbox-Linux)
+- [Troubleshooting](Troubleshooting)
+- [Lab](Lab)

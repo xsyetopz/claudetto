@@ -4,7 +4,7 @@ This page tells how the `goal` slice of the core plugin `claudetto` works.
 A user reads it to set a goal with `/goal`.
 A contributor reads it before an edit of `slices/goal/`.
 
-## The Concept
+## What It Does for You
 
 The slice replaces the built-in `/goal` with a goal engine.
 A goal is a list of steps.
@@ -19,7 +19,7 @@ The engine can run a command, read a file, or ask a small model.
 
 The state is in `.claudetto/goal.json` of the project root.
 
-## The Command
+## How to Use It
 
 `/goal` answers with no model turn.
 The text after `/goal` is one of these:
@@ -62,7 +62,7 @@ For example, `## 8b. Rewrite the page`.
 Each `Check:` line below the heading, with an optional `- ` before it, gives the checks of that step by the rules above.
 A plan file with no such heading gives an error.
 
-## Controls
+## Limits You Can Set
 
 Flags in the text after `/goal` set the limits.
 A value must be a number above 0.
@@ -79,7 +79,7 @@ Digits do not count when the engine compares the output of two turns, so a chang
 A stop pauses the goal, writes the reason to the log, and tells Claude the reason (`max-turns`, `budget`, `until`, or `stall`) and the step.
 The user can fix the cause and run `/goal resume`.
 
-## Built-in Parts That Are Off
+## Built-In Parts That Are Off
 
 - The hook denies the `ProposeGoal` tool and tells Claude that the user sets a goal with `/goal`.
 - The `prompt` slice leaves out the `goal_status` attachment.
@@ -95,12 +95,11 @@ The user can fix the cause and run `/goal resume`.
 
 ## Cost
 
-A `run` check and a `file` check cost no request.
-Only a `judge` check calls the small model.
-The engine reads the usage of the session only for a goal with a budget.
-After a `/clear`, the cost of the session restarts, and the engine counts the new cost as all new.
+The `goal` slice makes `/goal` run real checks.
+A goal is a list of steps, and each step has checks, such as a command that must pass.
+Claude keeps working until the checks pass.
 
-## Related Pages
+## See Also
 
 - [Spec](Spec)
 - [Handoff](Handoff)

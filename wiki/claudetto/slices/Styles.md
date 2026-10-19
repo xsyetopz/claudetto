@@ -5,7 +5,7 @@
 This page tells about the output style `claudetto:Concise` of the core plugin `claudetto`.
 A user who wants short replies and a contributor who edits the `styles` slice read it.
 
-## What the Style Does
+## What It Does for You
 
 The style file is `styles/Concise.md` in the slice.
 The text of the style is the block `reply_style`.
@@ -34,14 +34,14 @@ The style shortens the text of the reply, not the work.
 The `prompt` slice changes the coding sections of the system prompt.
 A style without `keep-coding-instructions: true` would set the section `doing_tasks` to `null`.
 
-## How the Style Is Selected
+## How to Turn It On or Off
 
 The slice sets `outputStyle` to `claudetto:Concise` in the settings snippet.
 The `/claudetto:setup` skill merges the snippet into the settings.
 The style has no `force-for-plugin`, so the `outputStyle` setting of the user stays in charge.
 To use another style, set `outputStyle` to its name in your own settings.
 
-## The Evals
+## The Eval Cases
 
 The slice holds four eval cases in `evals/`.
 Each case has a `case.yaml` and a `scaffold.sh`.
@@ -53,12 +53,11 @@ Each case has a `case.yaml` and a `scaffold.sh`.
 | `partial-verification` | The final message does not say that all is verified when a check was skipped |
 | `unprompted-skip` | The final message names the skipped check, though the user did not ask |
 
-Graders of type `llm` read the final message in any written language.
-The graders check the first sentence and the last sentence of the reply.
-A padded reply fails.
-A command such as `npm test` alone is not a check of the fix when the package has no `test` script.
+The output style `claudetto:Concise` makes the replies of Claude short.
+The first sentence tells the result, and the rest holds only the facts you need.
+The work stays as thorough as before.
 
-## Related Pages
+## See Also
 
 - [Prompt](Prompt)
 - [Settings Snippet](Settings-Snippet)

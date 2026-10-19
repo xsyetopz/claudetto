@@ -6,7 +6,7 @@ This page tells how the `ground` slice of the core plugin `claudetto` checks the
 A user reads it to learn why Claude gets a deny on a plan, and how to fix it.
 A contributor reads it before an edit of `slices/ground/`.
 
-## The Concept
+## What It Does for You
 
 Claude can write a number, a `file:line` reference, or a convention with no source.
 An example is `npx` in a project that has `bun.lock`.
@@ -75,11 +75,11 @@ If the hook throws, Claude Code logs the failure and the call runs.
 
 ## Replay
 
-The `replay` script of `claudetto-sessions` runs the same check on a recorded call.
-It reads the files as they are now, so a reference to a file that is gone passes.
-See [Sessions](Sessions).
+The `ground` slice checks the claims of a plan file.
+It denies a plan that cites a number, a line, or a convention with no source.
+This stops Claude from writing guesses as facts.
 
-## Related Pages
+## See Also
 
 - [Spec](Spec)
 - [Goal](Goal)

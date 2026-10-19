@@ -7,8 +7,7 @@ It uses the `codegraph` CLI of the CodeGraph project, and it ships a skill that 
 Read this page to use the code graph of a project.
 
 The plugin works without the core plugin.
-It imports nothing from another plugin.
-Its one slice is `graph`, in `src/plugins/claudetto-codegraph/`.
+Its one slice is `graph`.
 
 ## What It Adds
 
@@ -18,10 +17,9 @@ Its one slice is `graph`, in `src/plugins/claudetto-codegraph/`.
 | Command `claudetto-codegraph-check` | A report: is `codegraph` on `PATH`, does it work, and does the project have an index |
 
 The plugin has no hook, no `userConfig`, and no MCP server.
-Version 0.2.0 removed the hooks that synced the index at session start, after an edit, and after a `git` command.
 `codegraph` syncs its own index, so the plugin does not.
 
-## Install
+## How to Install It
 
 1. Install the CLI with `bun i -g @colbymchenry/codegraph`.
    The plugin never installs the CLI.
@@ -87,12 +85,13 @@ The bounds are in `slices/graph/limits.ts`.
 
 ## Telemetry
 
-The CLI keeps its telemetry setting in `~/.codegraph/`.
-The plugin does not run `codegraph telemetry`, so the setting stays as the user left it.
+The plugin `claudetto-codegraph` gives Claude a map of the code in your project.
+The map is a code graph: which function calls which, and what a change affects.
+Claude finds the right code with fewer reads.
 
-## Related Pages
+## See Also
 
-- [Add-Ons](Add-Ons): the list of the add-on plugins.
-- [Browser](Browser): the next add-on page.
-- [Setup](Setup): the slice that offers `codegraph install`.
-- [Troubleshooting](Troubleshooting): the symptoms of this plugin and their fixes.
+- [Add-Ons](Add-Ons)
+- [Browser](Browser)
+- [Setup](Setup)
+- [Troubleshooting](Troubleshooting)

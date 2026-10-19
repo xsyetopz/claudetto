@@ -1,8 +1,8 @@
 # Troubleshooting
 
-This page is for users who see a symptom in `claudetto`.
-It lists each symptom with its cause and fix.
-Find the plugin, then find the symptom.
+Something does not work as you expect?
+Find your plugin below, then find the symptom.
+Each row gives the cause and the fix.
 The debug log of Claude Code (`--debug-file <path>`) shows what a hook or a plugin did.
 
 ## The Core Plugin
@@ -69,8 +69,8 @@ The option `decide` is `off` by default.
 | `claudetto-capture` says the upstream is the address of the proxy | Pass `--upstream URL`, or unset `ANTHROPIC_BASE_URL`. | [Lab Capture](Lab-Capture) |
 | `claudetto-eval-compare` stops at a cost bound | The command adds `--max-cost-usd 5` to each run when the options set no bound. Pass `--max-cost-usd` with another value. | [Lab](Lab) |
 
-## Related Pages
+## See Also
 
-- [Install](Install): install `claudetto` again, if a part is missing.
-- [Off Switches](Off-Switches): turn a part off.
-- [Settings Snippet](Settings-Snippet): the settings that the setup writes.
+- [Install](Install)
+- [Off Switches](Off-Switches)
+- [Settings Snippet](Settings-Snippet)

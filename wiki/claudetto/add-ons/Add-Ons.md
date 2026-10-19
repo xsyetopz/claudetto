@@ -2,14 +2,9 @@
 
 # Add-On Plugins
 
-This page lists the five add-on plugins of `claudetto`.
-It shows what each add-on adds, what it needs, and how to install it.
-Read it if you want an optional feature that the core plugin does not include.
-
-Each add-on is a separate plugin.
-You install and remove each add-on by itself.
+An add-on is an optional plugin of `claudetto`.
+There are five, and you install only the ones you want.
 Each add-on works without the core plugin.
-An add-on imports nothing from another plugin.
 
 ## The Add-Ons
 
@@ -38,12 +33,12 @@ For example, run `/plugin install claudetto-docs@claudetto`.
 
 ## Hooks
 
-Only `claudetto-browser` runs a hook module.
-It registers one `tool.call` handler on `WebSearch`.
-The other four add-ons have no hook.
+An add-on is an optional plugin of `claudetto`.
+There are five, and you install only the ones you want.
+Each add-on works without the core plugin.
 
-## Related Pages
+## See Also
 
-- [Install](Install): the install steps of the core plugin and the marketplace.
-- [Code Graph](Code-Graph): the first add-on page.
-- [Settings Snippet](Settings-Snippet): the permission rules that `/claudetto:setup` merges.
+- [Install](Install)
+- [Code Graph](Code-Graph)
+- [Settings Snippet](Settings-Snippet)

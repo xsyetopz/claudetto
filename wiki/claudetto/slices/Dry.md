@@ -2,13 +2,14 @@
 
 # Dry
 
-This page tells how the core plugin `claudetto` finds duplicate code with `jscpd` and helps Claude decide which clones to merge.
-A user who runs the check and a contributor who edits the `dry` slice read it.
+The `dry` slice helps find duplicate code.
+It uses `jscpd`, a tool that spots copied blocks, and it helps Claude decide which copies to merge.
+Less duplicate code means less to read and less to fix.
 
-## What the Slice Does
+## What It Does for You
 
 The slice adds one command and one skill.
-It has no hook, no `userConfig` key, and no setting.
+It has no hook, no `userConfig` key, and no setting, so there is nothing to turn off.
 The command `jscpd-config` writes the config of `jscpd`.
 The skill `dry` tells Claude when to run `jscpd` and how to read a clone.
 
@@ -20,9 +21,9 @@ The skill `dry` tells Claude when to run `jscpd` and how to read a clone.
 The slice runs no `jscpd` itself.
 Claude runs `bunx jscpd` after the command wrote the config.
 
-## Write the Config
+## How to Use It
 
-Run `jscpd-config` from the root of the project:
+Run `jscpd-config` from the root of the project to write the config:
 
 ```text
 jscpd-config [--local FILE] [--out FILE]
@@ -87,8 +88,8 @@ The skill tells Claude to merge two clones only when one change of a rule must c
 It tells Claude not to merge blocks that only look alike, or a merge that needs a flag for each difference.
 A clone that Claude keeps on purpose goes in the baseline with `bunx jscpd --update-baseline`, and Claude says why.
 
-## Related Pages
+## See Also
 
-- [Patch](Patch): the command and the skill for the work of a subagent.
-- [Guard](Guard): the rules that stop a call.
-- [Settings Snippet](Settings-Snippet): the settings of the core plugin.
+- [Patch](Patch)
+- [Guard](Guard)
+- [Settings Snippet](Settings-Snippet)

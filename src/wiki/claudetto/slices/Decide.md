@@ -1,22 +1,19 @@
 # Decide
 
-This page tells how the `decide` slice of the core plugin `claudetto` lets Jev pick an option for a question of Claude.
-A user reads it to turn the feature on or off.
-A contributor reads it before an edit of `slices/decide/`.
-
-## The Concept
-
-Claude sometimes asks the user a question with `AskUserQuestion` when facts can settle the answer.
+The `decide` slice lets Jev answer a question that Claude asks you, when facts can settle the answer.
 Jev is a model of the TypeSafe API.
-The slice sends such a question to Jev and adds the pick of Jev to the matching option.
-Claude and the user then see the pick and its confidence.
-The user still answers the question.
+You still give the final answer.
 
+## What It Does for You
+
+Claude sometimes asks a question with `AskUserQuestion` when a fact could answer it.
+The slice sends such a question to Jev.
+It adds the pick of Jev and its confidence to the matching option.
 A question about a goal, a preference, or an approval stays as Claude asked it.
 
-## It Is Off by Default
+## How to Turn It On or Off
 
-The plugin option `decide` has two values:
+The option `decide` has two values:
 
 | Value | Effect |
 | --- | --- |
@@ -27,7 +24,7 @@ The value `jev` needs the env var `TYPESAFE_API_KEY` when Claude Code starts.
 If the key is not set, the call passes unchanged.
 Only the value `jev` sends data to the TypeSafe API.
 
-## The Hook
+## How the Hook Works
 
 The slice adds one `tool.call` hook on `AskUserQuestion`, in the phase `rewrite`.
 One call costs one request to Jev.
@@ -45,7 +42,7 @@ If Jev gives no answer, or the run fails or times out, the question stays as Cla
 
 The hook runs the command `claudetto-decide` with Bun.
 The key goes in the environment of the process and never in the arguments.
-The command is also usable alone:
+You can also use the command alone:
 
 | Command | Effect |
 | --- | --- |
@@ -59,9 +56,7 @@ The state is text and never a file path, because a path would send a file to the
 A `pick` question has `MIN_OPTIONS` (2) to `MAX_OPTIONS` (255) options.
 The output adds a line when Jev is not sure: a confidence under 0.5 for `pick`, or `P(yes)` within 0.2 of 0.5 for `yes`.
 
-## Exit Codes
-
-| Code | Meaning |
+| Exit Code | Meaning |
 | --- | --- |
 | 0 | An answer. |
 | 1 | A failure. |
@@ -69,7 +64,7 @@ The output adds a line when Jev is not sure: a confidence under 0.5 for `pick`, 
 | 3 | The key is not valid (status 401). |
 | 4 | The account has no balance (status 402). |
 
-When the command fails, it prints the error and the hook leaves the question as Claude asked it.
+When the command fails, the hook leaves the question as Claude asked it.
 
 ## Bounds
 
@@ -83,8 +78,9 @@ All bounds are in `slices/decide/limits.ts`.
 | `BACKOFF_MS` | 1,000 ms before the first retry. Each later wait doubles. |
 | `ERROR_BODY_MAX` | 200 characters of an error body. |
 
-## Related Pages
+## See Also
 
 - [Advise](Advise)
+- [Install](Install)
 - [Controls](Controls)
 - [Bounds](Bounds)

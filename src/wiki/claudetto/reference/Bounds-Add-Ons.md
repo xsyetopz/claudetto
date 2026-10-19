@@ -1,8 +1,8 @@
 # Bounds for Add-Ons
 
-This page tells maintainers each bound of the add-on plugins, with its value and its file.
-The values come from the `limits.ts` file of each add-on slice.
-The shared bounds and the repository bounds are on [Bounds](Bounds).
+A bound is a fixed limit, such as a timeout or a size.
+This page lists the bounds of the add-on plugins, with the value and the file.
+The shared and repository bounds are on [Bounds](Bounds).
 
 ## Browser
 
@@ -42,8 +42,11 @@ The shared bounds and the repository bounds are on [Bounds](Bounds).
 | `COUNT_BACKOFF_MS` | `500` | `src/plugins/claudetto-lab/slices/capture/limits.ts` | The wait before the second attempt, which doubles for each later wait. |
 | `SPLIT_CHARS` | `2,000` | `src/plugins/claudetto-lab/slices/capture/limits.ts` | The most characters of a text block that are sized as one part. |
 
-## Related Pages
+## See Also
 
-- [Bounds](Bounds) gives the shared and the repository bounds.
-- [Bounds for Slices](Bounds-Slices) gives the bounds of the core slices.
-- [Browser](Browser), [Code Graph](Code-Graph), [Library Docs](Library-Docs), and [Lab](Lab) describe the add-ons.
+- [Bounds](Bounds)
+- [Bounds for Slices](Bounds-Slices)
+- [Browser](Browser)
+- [Code Graph](Code-Graph)
+- [Library Docs](Library-Docs)
+- [Lab](Lab)
