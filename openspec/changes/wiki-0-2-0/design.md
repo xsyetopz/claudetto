@@ -49,6 +49,9 @@ A page over about 150 lines splits into sub-pages, such as `Claude-Code-Settings
   A person who is not a programmer must understand how to change Claude Code from the page.
   Short sentences, plain words, no filler. Explain a term once, at its first use, or link to it.
   Start each page with what it is for and a short example of use.
+- ✅ means a page of `external/cc-2.1.303/docs-live/` (as of 2026-10-19) names the item. A mention only in `changelog.md` or the Agent SDK pages does not count.
+  An item of the published `claude-code.d.ts` counts as documented, because `plugins_mods_reference.md` calls it the complete reference.
+- No minified identifiers (such as `Q_t` or `eV()`) in text that readers see. Cite a stable string, key, or message instead.
 - Each fact gives its source: a docs page (title and URL), or the bundle (a string, a key, or a type name).
 
 ## W4. Sources of Part 2
