@@ -164,7 +164,11 @@ const compacted = async (
   $: EngineInterface,
   messages: readonly SessionMessage[],
   isCache: "cold" | "warm",
-): Promise<{ messages: SessionMessage[]; path: string; size: number } | null> => {
+): Promise<{
+  messages: SessionMessage[];
+  path: string;
+  size: number;
+} | null> => {
   // A cold cache makes a fork read the full history as uncached input, so the handoff holds only what needs no model (D47).
   const forked =
     isCache === "cold" ? null : await handoffText($, forkPrompt(messages));
@@ -196,7 +200,7 @@ export const onCompact: CompactHook = async ($, e, next) => {
     if (isShown) $.ui.status(undefined);
   });
   if (done === null) return next(e);
-  if (isShown) 
+  if (isShown)
     $.ui.log(
       oneLine(
         WRITTEN_NOTICE({
