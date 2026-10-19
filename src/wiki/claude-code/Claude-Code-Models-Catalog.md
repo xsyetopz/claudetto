@@ -1,0 +1,63 @@
+# Claude Code Models Catalog
+
+Claude Code has a built-in list of 22 models.
+The list tells Claude Code the name, the context window, and the output limit of each model.
+To get a 1M window, find `native 1M` in the table, and then run `claude --model opus`.
+
+## About the Catalog
+
+The catalog is a JavaScript object in the bundle that carries the comment `Hand-maintained baked-in model catalog`.
+It holds the provider names, the window, the output limits, the price, and the capability flags of each model.
+A row has the mark ✅ when a page of the [Model Configuration](https://code.claude.com/docs/en/model-config) docs or another docs page names the model.
+It has the mark 🔍 when no docs page names it.
+The docs do not list the catalog fields, so the window, the limits, and the prices are bundle facts for all rows.
+
+## Catalog
+
+The column `Window` is the context window of the model.
+The column `Larger window` says how to get a bigger one:
+`native 1M` means the model has a 1M window already, the `context-1m` beta asks the API for it, and the `[1m]` suffix asks for it in `--model`.
+The column `Output` shows the default and the highest output limit in tokens.
+The column `Price` shows the dollars for one million input tokens and one million output tokens.
+See [Models Capabilities](Claude-Code-Models-Capabilities#pricing) for the cache prices.
+
+| `id` | Mark | Name | Knowledge cutoff | Window | Larger window | Output | Default effort | Price |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `claude-3-5-haiku` | 🔍 | Haiku 3.5 | - | not set | - | 8,192 / 8,192 | - | $0.8 / $4 |
+| `claude-haiku-4-5` | ✅ | Haiku 4.5 | February 2025 | 200,000 | `[1m]` suffix | 32,000 / 64,000 | - | $1 / $5 |
+| `claude-haiku-5-5` | ✅ | Haiku 5.5 | June 2026 | 1,000,000 | native 1M, `context-1m` beta | 128,000 / 128,000 | `medium` | $0.1 / $0.5 |
+| `claude-3-5-sonnet` | 🔍 | Sonnet 3.5 | - | not set | - | 8,192 / 8,192 | - | $3 / $15 |
+| `claude-3-7-sonnet` | 🔍 | Sonnet 3.7 | - | not set | - | 32,000 / 64,000 | - | $3 / $15 |
+| `claude-sonnet-4-0` | 🔍 | Sonnet 4 | January 2025 | 200,000 | `context-1m` beta, `[1m]` suffix | 32,000 / 64,000 | - | $3 / $15 |
+| `claude-sonnet-4-5` | ✅ | Sonnet 4.5 | January 2025 | 200,000 | `context-1m` beta, `[1m]` suffix | 32,000 / 64,000 | - | $3 / $15 |
+| `claude-sonnet-4-6` | ✅ | Sonnet 4.6 | August 2025 | 200,000 | `context-1m` beta, `[1m]` suffix | 32,000 / 128,000 | - | $3 / $15 |
+| `claude-sonnet-5` | ✅ | Sonnet 5 | January 2026 | 1,000,000 | native 1M, `context-1m` beta | 64,000 / 128,000 | `high` | $2 / $10 |
+| `claude-sonnet-5-5` | ✅ | Sonnet 5.5 | June 2026 | 1,000,000 | native 1M, `context-1m` beta | 128,000 / 128,000 | `medium` | $2 / $10 |
+| `claude-opus-4-0` | 🔍 | Opus 4 | January 2025 | 200,000 | `[1m]` suffix | 32,000 / 32,000 | - | $15 / $75 |
+| `claude-opus-4-1` | ✅ | Opus 4.1 | January 2025 | 200,000 | `[1m]` suffix | 32,000 / 32,000 | - | $15 / $75 |
+| `claude-opus-4-5` | ✅ | Opus 4.5 | May 2025 | 200,000 | `[1m]` suffix | 32,000 / 64,000 | - | $5 / $25 |
+| `claude-opus-4-6` | ✅ | Opus 4.6 | May 2025 | 200,000 | `context-1m` beta, `[1m]` suffix | 64,000 / 128,000 | - | $5 / $25 |
+| `claude-opus-4-7` | ✅ | Opus 4.7 | January 2026 | 1,000,000 | native 1M, `context-1m` beta, `[1m]` suffix | 64,000 / 128,000 | `xhigh` | $5 / $25 |
+| `claude-opus-4-8` | ✅ | Opus 4.8 | January 2026 | 1,000,000 | native 1M, `context-1m` beta, `[1m]` suffix | 64,000 / 128,000 | `high` | $5 / $25 |
+| `claude-opus-5` | ✅ | Opus 5 | May 2026 | 1,000,000 | native 1M, `context-1m` beta, `[1m]` suffix | 64,000 / 128,000 | `high` | $5 / $25 |
+| `claude-opus-5-5` | ✅ | Opus 5.5 | June 2026 | 1,000,000 | native 1M, `context-1m` beta, `[1m]` suffix | 128,000 / 128,000 | `medium` | $4 / $20 |
+| `claude-fable-5` | ✅ | Fable 5 | January 2026 | 1,000,000 | native 1M, `context-1m` beta | 64,000 / 128,000 | `high` | $10 / $50 |
+| `claude-fable-5-1` | ✅ | Fable 5.1 | June 2026 | 1,000,000 | native 1M, `context-1m` beta | 64,000 / 128,000 | `high` | $10 / $50 |
+| `claude-mythos-5` | ✅ | Mythos 5 | January 2026 | 1,000,000 | native 1M, `context-1m` beta | 64,000 / 128,000 | - | $10 / $50 |
+| `claude-mythos-5-1` | 🔍 | Mythos 5.1 | June 2026 | 1,000,000 | native 1M, `context-1m` beta | 64,000 / 128,000 | `high` | $10 / $50 |
+
+## Notes
+
+- A model with no window in the table has no `context` entry in the catalog.
+- The catalog keeps a rank for each model for the advisor tool (`--advisor`).
+  The ranks run from `1` for `claude-haiku-4-5` to `9` for `claude-fable-5-1` and `claude-mythos-5-1`.
+- A model can name a model to use instead on a third-party provider.
+  For example, `claude-opus-5-5` falls back to `claude-opus-5`, and `claude-fable-5-1` falls back to `claude-fable-5`.
+- The Mythos models have a name on the Anthropic API only, and none on the cloud providers.
+- The `lean_prompt` capability chooses the short system prompt for a model (see [System Prompt](Claude-Code-System-Prompt#short-or-full-prompt)).
+
+## See Also
+
+- [Models and API](Claude-Code-Models-And-API)
+- [Models Providers](Claude-Code-Models-Providers)
+- [Models Capabilities](Claude-Code-Models-Capabilities)

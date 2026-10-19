@@ -1,0 +1,48 @@
+# Claude Code Sessions Transcript
+
+A transcript is a text file with one JSON object on each line.
+Each object is a message or a note about the session.
+The docs say the format is internal and changes between versions, so a script that reads it can break.
+
+## Example
+
+Count the lines by `type` to see what a session holds:
+`jq -r .type ~/.claude/projects/<project>/<session>.jsonl | sort | uniq -c`.
+
+## Rules
+
+Source: [Manage Sessions](https://code.claude.com/docs/en/sessions#where-transcripts-are-stored).
+For scripts, use `/export` or the output of print mode instead (see [CLI](Claude-Code-CLI)).
+The tables below come from one transcript that `2.1.303` wrote on a local machine, which gives key names only, and from the writer code in the bundle.
+All rows have the mark 🔍, because no docs page lists the line types.
+
+## Line Types
+
+| `type` | Mark | Main keys | Meaning |
+| --- | --- | --- | --- |
+| `user` | 🔍 | `uuid`, `parentUuid`, `sessionId`, `timestamp`, `cwd`, `message` | A user turn or a tool result, where `parentUuid` links the chain. |
+| `assistant` | 🔍 | `message`, `requestId`, `requestedModel`, `effort` | A reply of the model, where `message` holds `usage` with the token counts. |
+| `system` | 🔍 | `subtype`, `content`, `level`, `durationMs` | A note, with the subtypes `turn_duration`, `local_command`, `informational`, and `compact_boundary`. |
+| `attachment` | 🔍 | `attachment`, `rendered` | Context that Claude Code adds (see [Context and Compaction](Claude-Code-Context-And-Compaction)). |
+| `queue-operation` | 🔍 | `operation`, `content`, `commandUuid` | A prompt or command that waits in the queue. |
+| `api-request` | 🔍 | `params`, `shapeHash`, `cacheControl`, `requestDigest` | The shape of one request (see [Request Build](Claude-Code-Request-Build)). |
+| `api-request-shape` | 🔍 | `shape`, `shapeHash` | The `system` and `tools` of a request, stored once. |
+| `api-request-blob` | 🔍 | `hash`, `message` | A message that is stored by its hash. |
+| `file-history-snapshot`, `file-history-delta` | 🔍 | `messageId`, `snapshot`, `backup` | File checkpoints for rewind. |
+| `last-prompt` | 🔍 | `lastPrompt`, `leafUuid` | The last prompt, for the picker. |
+| `ai-title` | 🔍 | `aiTitle` | The title that the model made. |
+| `mode` | 🔍 | `mode` | The mode of the session. |
+| `atis-latch` | 🔍 | `atis` | A latch value, and no source states its purpose. |
+
+## Other Types in the Writer
+
+These names are in the bundle near the writer.
+No example line was read, so the bundle gives no meaning for them.
+All of them are 🔍.
+
+`custom-title`, `agent-name`, `agent-color`, `agent-setting`, `tag`, `permission-mode`, `worktree-state`, `pr-link`, `bridge-session`, `content-replacement`, `attribution-snapshot`, `cost-state`, `fork-context-ref`, `observer-ref`, `isolation-latch`, `memory-mode`, `proactivity`, `dev-mods`, `language`, `frame-link`, `ended-by-model`, `line-withheld`, and `artifact-autoreact-ledger`.
+
+## See Also
+
+- [Sessions and Storage](Claude-Code-Sessions-And-Storage)
+- [Request Build](Claude-Code-Request-Build)

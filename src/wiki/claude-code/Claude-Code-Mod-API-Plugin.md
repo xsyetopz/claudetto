@@ -1,0 +1,70 @@
+# Mod API: Plugin and Engine
+
+`$.plugin` names the plugin.
+`plugin.register` lets a mod refuse another module.
+`engine.create` builds `$` and lets a mod add a noun.
+Example: `on("plugin.register", { tier: "user" }, () => ({ refuse: "managed only" }))` keeps user mods out.
+A plugin ships the types of its noun in the `.d.ts` file that `types` names in `plugin.json`.
+
+## Members of `$.plugin`
+
+| Mark | Item | What it does | How it works | Where it can be used | Source |
+| --- | --- | --- | --- | --- | --- |
+| ✅ | `$.plugin.name` | From plugin.json, debug-log and `$.ui.log` lines carry it. | Type: `string`. | Anywhere in the module (a plain value). | `CoreEngineInterface` line 2355, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | `$.plugin.root` | The plugin's directory (the one holding plugin.json), absolute. | Type: `string`. | Anywhere in the module (a plain value). | `CoreEngineInterface` line 2359, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+
+## Events
+
+| Mark | Item | What it does | How it works | Where it can be used | Source |
+| --- | --- | --- | --- | --- | --- |
+| ✅ | `plugin.register` | Fires once per hooks module about to join the chain, at load (the set folded and built, nothing swapped in) and at reload, core allows. | Input `PluginRegisterInput`. Result `PluginRegisterResult`. Hook result: `{ allow: true }` or `{ refuse }`. A refused module never joins. A judge that fails is skipped and the module joins. | Hook via `on('plugin.register', ...)`. | `EngineEventOf` line 4551, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | `engine.create` | Runs while `$` is being built, once per load or reload of this plugin and before any other hook of it, `next(e)` resolves to `$` built so far. | Input `EngineCreateInput`. Result `EngineCreateResult`. A step may add nouns to `$`. Outside `user` it may also withhold nouns. It fails and unloads if it replaces another plugin's noun. | Hook via `on('engine.create', ...)`. | `EngineEventOf` line 4590, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+
+## Types
+
+| Mark | Item | What it is for | Shape and limits | Source |
+| --- | --- | --- | --- | --- |
+| ✅ | `CoreEngineInterface` | The plugin's identity (`plugin`) and the nouns core contributes to `$` as the innermost step of the `engine.create` fold. | Interface with the members of the core nouns. A finished `$` has every core noun that no outer step withheld and every noun that plugins added. | d.ts line 2347 |
+| ✅ | `EngineCreateInput` | The input of `engine.create`: the fold that builds `$`, once per load, core innermost. | Object with the field `plugins`. Write the hook after `next`: `const built = await next(e)`, then `return { ...built, voice: { say } }` adds a noun. Used by `engine.create`. | d.ts line 4008 |
+| ✅ | `EngineCreateInput.plugins` | The modules this fold builds, in list order, first outermost (managed plugins first, so an org plugin's withholding wins). | Type: `readonly string[]`. At a first load it is all plugins. At a reload it is this plugin only. | d.ts line 4008 |
+| ✅ | `EngineCreateResult` | What an `engine.create` hook returns: `$` as built so far with this plugin's nouns added, less any it withheld. | Intersection of `EngineInterface` and a record of nouns. Every declared noun is optional here. Used by `engine.create`. | d.ts line 4027 |
+| ✅ | `EngineCreateResult.[noun: string]` | A field of `EngineCreateResult`. | Type: `unknown`. | d.ts line 4027 |
+| ✅ | `EngineInterface` | `$`, the first parameter of every hook. Frozen, core's interface plus every noun the plugins' `engine.create` steps added. | Interface. A plugin adds its own noun by declaration merging: `declare module "claude-code" { interface EngineInterface { voice: Voice } }`. | d.ts line 4604 |
+| ✅ | `EngineInterfaceBuilt` | What `next(e)` resolves to at `engine.create`: `$` as the steps beneath built it, typed as `$` is, open to nouns no declaration names yet. | Intersection of `EngineInterface` and a record of nouns. A withheld noun is a stub on it. | d.ts line 4615 |
+| ✅ | `EngineInterfaceBuilt.[noun: string]` | A field of `EngineInterfaceBuilt`. | Type: `unknown`. | d.ts line 4615 |
+| ✅ | `INSTRUCTION_FILE_KINDS` | Every tier an instruction file can belong to, for checking a hook's answer, the kind type is derived from this list. | Alias of `const INSTRUCTION_FILE_KINDS: readonly ["managed", "user", "project", "local", "memory"]`. | d.ts line 5657 |
+| ✅ | `InstructionFile` | One instruction file behind the `claudeMd` block: where it was read, its tier, its text as loaded, and the file that `@`-imported it if one did. | Object with fields `path`, `kind`, `content`, `parent?`. | d.ts line 5663 |
+| ✅ | `InstructionFile.path` | The file's path, absolute. | Type: `string`. | d.ts line 5663 |
+| ✅ | `InstructionFile.kind` | Its tier. | Type: `InstructionFileKind`. | d.ts line 5663 |
+| ✅ | `InstructionFile.content` | The text as loaded (comments and frontmatter already stripped). | Type: `string`. | d.ts line 5663 |
+| ✅ | `InstructionFile.parent` | The path of the file whose `@` import brought this one, when one did. | Type: `string`. Optional. | d.ts line 5663 |
+| ✅ | `InstructionFileKind` | What tier an instruction file belongs to: the organization's managed policy, the person's own, the project's checked-in or private ones, memory. | Alias of `(typeof INSTRUCTION_FILE_KINDS)[number]`. | d.ts line 5686 |
+| ✅ | `NoEngineInterface` | What an `engine.create` hook receives as `$`: nothing. Every property reads as `never`, so `$.model` inside the hook is a compile error. | Object with fields `[noun: string]`. | d.ts line 6823 |
+| ✅ | `NoEngineInterface.[noun: string]` | A field of `NoEngineInterface`. | Type: `never`. | d.ts line 6823 |
+| ✅ | `PluginOptions` | A plugin's options as `register(on, options)` receives them: the values of the fields its manifest's `userConfig` declares, defaults filled in. | Alias of a read-only record of string, number, boolean, or string list. Stored in `pluginConfigs[<plugin>].options` of settings. A required field with no value fails the load. | d.ts line 7821 |
+| ✅ | `PluginRegisterInput` | The input of `plugin.register`: one hooks module the engine is about to load, read off its manifest and its scanned source. Every field is pinned. | Object with the fields `name`, `tier`, `root`, `version?`, `provenance`, `uses`. `tier` and `uses` are the host's reading. The others are the plugin's own word. Used by `plugin.register`. | d.ts line 7831 |
+| ✅ | `PluginRegisterInput.name` | The plugin's name, as its own plugin.json declares it. | Type: `string`. | d.ts line 7831 |
+| ✅ | `PluginRegisterInput.tier` | Where its hooks would stand among the chain's tiers (Tier), never `core`, the engine's own. | Type: `Exclude<Tier, 'core'>`. | d.ts line 7831 |
+| ✅ | `PluginRegisterInput.root` | The plugin's directory (the one holding plugin.json), absolute. | Type: `string`. | d.ts line 7831 |
+| ✅ | `PluginRegisterInput.version` | Its manifest's `version`, when it states one. | Type: `string`. Optional. | d.ts line 7831 |
+| ✅ | `PluginRegisterInput.provenance` | Where the plugin came from, as the loader keys it: `<name>@<marketplace>` installed, `<name>@inline` by `--plugin-dir`, `<name>@builtin` bundled. | Type: `string`. | d.ts line 7831 |
+| ✅ | `PluginRegisterInput.uses` | What the module hooks and calls, as scanned (PluginRegisterUses). | Type: `PluginRegisterUses`. | d.ts line 7831 |
+| ✅ | `PluginRegisterResult` | What a `plugin.register` hook returns and what `next(e)` resolves to: `{ allow: true }` from core, or `{ refuse: reason }`. | Object with fields `allow`, `refuse?`, `refuse`, `allow?`. Used by `plugin.register`. | d.ts line 7864 |
+| ✅ | `PluginRegisterResult.allow` | The module loads: its `engine.create` step runs and its hooks join. | Type: `true`. | d.ts line 7864 |
+| ✅ | `PluginRegisterResult.refuse` | A field of `PluginRegisterResult`. | Type: `undefined`. Optional. | d.ts line 7864 |
+| ✅ | `PluginRegisterResult.refuse` | The module does not load: no step, no hooks, no tools or commands, the debug log names the plugin that refused and this reason. | Type: `string`. | d.ts line 7864 |
+| ✅ | `PluginRegisterResult.allow` | A field of `PluginRegisterResult`. | Type: `undefined`. Optional. | d.ts line 7864 |
+| ✅ | `PluginRegisterUses` | What a hooks module uses, as the host scanned its source before loading it: the same lists `claude plugin validate` prints and the host's rule reads. | Object with fields `events`, `calls`, `env?`, `state?`. Exact, since a module that spells `on`, `$`, `$.env` or a `$.state` reference other than literally does not load. | d.ts line 7886 |
+| ✅ | `PluginRegisterUses.events` | The patterns its `on(...)` registrations name, as written (`tool.call`, `*`, `classic.*`, `!tool.describe`), in registration order, each once. | Type: `readonly string[]`. | d.ts line 7886 |
+| ✅ | `PluginRegisterUses.calls` | What it calls on `$`, spelled `noun.method` (`fs.write`, `http.fetch`), sorted, each once. | Type: `readonly string[]`. | d.ts line 7886 |
+| ✅ | `PluginRegisterUses.env` | The environment variables its `$.env.get` and `$.env.set` calls name, absent when it calls neither. | Type: `object`. Optional. | d.ts line 7886 |
+| ✅ | `PluginRegisterUses.state` | The named values its `$.state.get` and `$.state.set` calls refer to by literal, each `{ plugin, key }`, absent when it calls neither. | Type: `object`. Optional. | d.ts line 7886 |
+| ✅ | `PluginStamp` | Whose element: the plugin whose hook drew it, stamped by the runtime as the tree leaves it, a Box's or Text's `group`, a Client's or Raster's own. | Object with fields `plugin`. A Button's `press` names its plugin the same way, beside its handle. Two plugins under one `hover.scope` string never share a group. | d.ts line 7934 |
+| ✅ | `PluginStamp.plugin` | A field of `PluginStamp`. | Type: `string`. | d.ts line 7934 |
+| ✅ | `PluginState` | The named values plugins keep in the session (`$.state`), by plugin name then key, for declaration merging, empty by default. | Interface. A plugin declares its own keys inside `declare module "claude-code"`, and a key's type is what `$.state.get` answers. Example: `interface PluginState { swarm: { workers: Worker[] } }`. | d.ts line 7949 |
+
+## See Also
+
+- [Claude Code Mod API](Claude-Code-Mod-API)
+- [Mod API: Hooks, `on`, and `next`](Claude-Code-Mod-API-Hooks)
+- [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference)

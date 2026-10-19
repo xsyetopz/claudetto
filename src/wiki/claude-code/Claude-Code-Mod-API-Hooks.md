@@ -1,0 +1,94 @@
+# Mod API: Hooks, `on`, and `next`
+
+A hook is a function that Claude Code calls when an event happens.
+You register it with `on`.
+It can watch the event, change it, or answer it.
+This mod refuses every Bash command that contains `rm -rf`:
+
+```javascript
+export function register(on) {
+  on('tool.call', { tool: 'Bash', command: /rm -rf/ }, async () => ({ deny: 'No rm -rf here.' }))
+}
+```
+
+The sections below cover the entry point `register`, the function `on`, the three arguments of a hook, what happens when a hook fails, and the time budget of a hook.
+The events themselves are on the page of their namespace.
+
+## Entry Point and Registration
+
+| Mark | Item | What it does | How it works | Where it can be used | Source |
+| --- | --- | --- | --- | --- | --- |
+| ✅ | `register(on, options)` | The entry point. The module exports it. `on` registers hooks. `options` holds the `userConfig` values with defaults filled in. | Runs once when the module loads, and again after a reload. Its return value is dropped, a promise is awaited. `$` does not exist yet. | The hooks module named in `hooks/hooks.json`. | `Register` line 9712, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference), [Mods Overview](https://code.claude.com/docs/en/plugins/mods/overview#how-a-mod-works) |
+| ✅ | `on(pattern, hook)` | Registers `hook` on the events that `pattern` selects. | `pattern` is an event name, a glob (`*`, `classic.*`), or a negation (`!tool.describe`). A repeat registration throws. A plugin's registrations nest in order, first outermost. | Inside `register` only. | `On` line 6915, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | `on(pattern, matcher, hook)` | As above, narrowed by a matcher: a partial of the event input. | A leaf matches by `===` or by `RegExp`. An array is any-of. An object is a partial of an object. Example: `{ tool: 'Bash', command: /^p4 / }`. | Inside `register` only. | `Matcher` line 5943, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | `on(...).catch(handler)` | Sets the handler that runs when the hook throws or overruns its budget. | A second `.catch` on one registration throws. So does one after `register` returned. A handler answer within the grace time stands as the hook result. | Inside `register` only, on the returned registration. | `Registration` line 9738, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | Pattern `*` and negation | `*` selects every event. `!x` selects every event except `x`. | A telemetry event is not selected by `*` or by a negation for an installed plugin. Hook it by name or with `telemetry.*`. A glob hook types `e` as the union of the selected events. | Inside `register` only. | `Glob` line 5182, `Negation` line 6664, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+
+## Arguments of a Hook
+
+A hook is `async ($, e, next) => result`.
+Hooks on `turn.step` and `process.spawn` are async generators.
+
+| Mark | Item | What it does | How it works | Where it can be used | Source |
+| --- | --- | --- | --- | --- | --- |
+| ✅ | `$` | The mods API object. Frozen. Holds the core nouns and every noun that the `engine.create` steps added. | Write each call in full: namespace, then method, as in `$.fs.read('notes.md')`. | Every hook and every closure a hook drew. | `EngineInterface` line 4604, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | `e` | The event input. Deeply frozen plain data. | To change it, pass a copy to `next`, as in `next({ ...e, text })`. A field marked pinned in the type is refused when changed. | Every hook. | [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | `next(e)` | The rest of the chain, as middleware. It runs the hooks beneath, then the engine. It resolves to the event result. | Called with no argument it rejects. A hook that returns without `next` ends the chain. Returning nothing is a failure. On a streaming event (`turn.step`, `process.spawn`) it returns a `HookStream`. | Every hook. | `Next` line 6679, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | `next.to(e, tier)` | Continues the dispatch at a later tier (`append`, `builtin`, or `core`). The links between are skipped. | A managed hook only: `prepend` may name `append`, `builtin`, or `core`. `append` may name `core`. No user hook skips the organization. | Mods in `prependPlugins` or `appendPlugins`. | `TargetTier` line 12904, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | `next.signal` | An `AbortSignal` that aborts when the dispatch is abandoned. | The user interrupted, a hook above settled first, or this hook ran out of budget. Pass it to `$.clock.sleep` and other waits. | Every hook. | [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | `next.origin` | `{ plugin, tier }` of who raised the dispatch. The engine is `{ plugin: 'engine', tier: 'core' }`. | Set by the host. A plugin cannot write it. Every hook of one dispatch sees the same origin. | Every hook. | `Origin` line 7482, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | `next.is(pattern, e)` | A type predicate. It says whether this dispatch event is selected by `pattern`. | Narrows `e` for a hook on a glob or on `*`. Under a matcher the narrowing includes it. | Glob and `*` hooks. | `Next` line 6679 |
+| ✅ | `next.event` | The name of the dispatch event, as a value. | For a glob hook to log or switch on. | Every hook. | `Next` line 6679 |
+| ✅ | `next.trace` | A list of `TraceEntry`: what settled beneath on the latest `next()` call. | One entry for each link beneath, nearest first. Empty before `next` is called. Data, frozen. | Every hook. | `TraceEntry` line 13880 |
+| ✅ | `next.budget` | `{ ms, remainingMs }`: the time limit of the hook and what is left. | Read fresh at each access. It stands still while a `next` or `$` call is in flight. In a `.catch` handler it is the grace. At `session.end` it reads the exit bound, which never stops. | Every hook. | `NextBudget` line 6765, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ⚠️ | `next.error` | In a `.catch` handler only. Why the hook failed: `kind`, `message`, `budget`. | The d.ts types `kind` as `throw` or `timeout`. The docs add `re-entry` (the event came from a call by the same hook) and `next.error.cause`. | `.catch` handlers. | `HookFailure` line 5276, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | `next.called` | In a `.catch` handler only. True when the hook had called `next`. | In a handler `next` is replay-safe. When `called`, `next(e)` returns what the last call settled to and runs nothing again. | `.catch` handlers. | `Caught` line 1214, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+
+## Failure Behavior
+
+A hook that throws, overruns its budget, or returns a wrong shape is skipped.
+
+The hooks beneath and the engine run in its place, or its last `next` result stands.
+
+So a guard fails open unless its registration carries a `.catch` that refuses in its place.
+
+The d.ts gives this advice at each event where an answer can refuse.
+
+| Mark | Item | What it does | How it works | Where it can be used | Source |
+| --- | --- | --- | --- | --- | --- |
+| ✅ | `tool.call` | A guard that fails is skipped and the tool runs, so give it `.catch(($, e, next) => next.called ? next(e) : { deny: "no" })`. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4054 |
+| ✅ | `tool.check` | A guard that fails is skipped, leaving the verdict beneath. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4068 |
+| ✅ | `ui.resolve` | Return it, one with an element restyled for every other plugin, or one with a key left out (a fragment there), own table: hook skipped. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4089 |
+| ✅ | `ui.fault` | A `Client` born in that redraw that fails is heard too, and the engine draws nothing again for it: to go on, ask (`$.ui.invalidate`). | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4139 |
+| ✅ | `ui.focus` | `next(e)` lands the focus on `e.element` and redraws. A hook with no `next` keeps the focus where it was. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4163 |
+| ✅ | `agent.offer` | A hook that fails passes it through. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4176 |
+| ✅ | `agent.spawn` | A guard that fails is skipped and the subagent starts, so give it `.catch(($, e, next) => next.called ? next(e) : { deny: "no" })`. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4188 |
+| ✅ | `prompt.submit` | So a guard that fails lets the prompt through, unless given `.catch(($, e, next) => next.called ? next(e) : { drop: "no" })`. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4200 |
+| ✅ | `prompt.mention` | A guard that fails is skipped and the file is read, so give it `.catch(($, e, next) => next.called ? next(e) : { deny: "no" })`. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4318 |
+| ✅ | `command.run` | A guard that fails is skipped and the command runs, so give it `.catch(($, e, next) => next.called ? next(e) : { text: "no" })`. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4350 |
+| ✅ | `command.describe` | A hook that fails passes it through. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4362 |
+| ✅ | `config.set` | A guard that fails is skipped and the row is written, so give it `.catch(($, e, next) => next.called ? next(e) : { deny: "no" })`. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4376 |
+| ✅ | `config.describe` | A hook that fails passes the row through. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4388 |
+| ✅ | `skill.prompt` | A hook that fails passes it through. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4422 |
+| ✅ | `attribution.text` | A hook that fails passes it through. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4433 |
+| ✅ | `plugin.register` | A judge that fails is skipped and the module joins, so give it `.catch(($, e, next) => next.called ? next(e) : { refuse: "no" })`. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4551 |
+| ✅ | `turn.complete` | A hook that fails leaves the answer as it was. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4581 |
+| ✅ | `engine.create` | It fails, and its plugin unloads, when it REPLACES another's, in `user`, also past its own stub, or adding a seated name. | Without a `.catch` the failed hook is skipped. The hooks beneath and the engine decide. | Hooks on this event. | `EngineEventOf` line 4590 |
+
+## Budgets
+
+| Mark | Item | What it does | How it works | Where it can be used | Source |
+| --- | --- | --- | --- | --- | --- |
+| ✅ | Hook time per event | 10 seconds of the hook's own code. The clock stops during `next` and `$` calls, but a `$.clock.sleep` counts. | `HookBudget.ms` is 10000. A streaming hook counts its own code only, never a `yield` or a read beneath. | Every hook. | `HookBudget` line 5240, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ⚠️ | `prompt.edit` hook time | The docs say 50 milliseconds. | The d.ts has no such limit and `HookBudget` has one `ms` value. Not verified in the d.ts. | `prompt.edit` hooks. | [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | `.catch` grace | 1 second. | `HookBudget.catchMs` is 1000. A fresh budget from the call of the handler. | `.catch` handlers. | `HookBudget` line 5240, [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+| ✅ | Linger after abort | 5 seconds. | `HookBudget.lingerMs` is 5000. Past it the hook is reported as lingering. The dispatch had gone on without it. | Every hook. | `HookBudget` line 5240 |
+| ✅ | `session.end` hooks together | The `SessionEnd` hook budget, 1.5 seconds by default. | The whole chain shares one short wall-clock bound that `next.budget` reads. | `session.end` hooks. | [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference) |
+
+## See Also
+
+- [Mod API: Hook Machinery Types](Claude-Code-Mod-API-Hook-Types)
+- [Mod API: Event Table Types](Claude-Code-Mod-API-Event-Types)
+- [Claude Code Mod API](Claude-Code-Mod-API)
+- [React to Events](https://code.claude.com/docs/en/plugins/mods/events)
+- [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference)

@@ -1,0 +1,53 @@
+# Claude Code Settings: Core
+
+These keys control how Claude Code compacts, remembers, cleans up, and runs shell commands.
+Most people change only a few of them, such as `language` or `cleanupPeriodDays`.
+For example, `{ "cleanupPeriodDays": 7 }` in `~/.claude/settings.json` deletes transcripts after a week.
+
+The marks and the scopes are explained on [Settings](Claude-Code-Settings).
+A `-` in the `Default` column means that neither the docs nor the schema state a default.
+
+| Mark | Key | Type | Default | What It Is For | Scope | Source |
+| --- | --- | --- | --- | --- | --- | --- |
+| ✅ | `$schema` | string | - | Point your editor at the published JSON schema for autocomplete and checks. Use `https://json.schemastore.org/claude-code-settings.json`. | Settings files | [Settings Files and Precedence](https://code.claude.com/docs/en/settings) |
+| ✅ | `attribution` | boolean or object | Standard attribution | Customize the attribution Claude Code adds to commits and pull requests. `false` hides all attribution. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `autoCompactEnabled` | boolean | - | Turn automatic compaction off or on. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `autoCompactWindow` | number or `"auto"` | - | Set how full the context gets before Claude Code compacts. A number from `100000` to `1000000` tokens, or `"auto"` for the window tuned for the model. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| 🔍 | `autoDreamEnabled` | boolean | - | Turn background memory consolidation (auto-dream) on or off. A value here overrides the server-side default. | Settings files | Bundle settings schema |
+| ✅ | `autoMemoryDirectory` | string | `~/.claude/projects` | Store auto memory in a directory you choose. `~/` expands to your home directory. Claude Code ignores the key in the checked-in project file. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `autoMemoryEnabled` | boolean | - | Turn auto memory off or on. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `autoUpdatesChannel` | enum: `latest`, `stable`, `rc` | `latest` | Follow the stable release channel instead of latest. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `awaySummaryEnabled` | boolean | - | Turn off the session recap shown when you come back to the terminal. The recap shows after 5 or more minutes away. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `bashEditDiffEnabled` | boolean | On when the Bash tool handles file edits | Record the files that changed while a Bash command ran in every permission mode. Outside auto and `bypassPermissions` modes, only user or managed settings can turn it on. | User, managed | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `bashOutputMaxChars` | integer | `30000` | Set how much of a successful command's output Claude receives inline. Clamped to `4000`-`128000`. Longer output goes to a file and Claude gets a preview. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `claudeMd` | string | - | Inject organization-wide CLAUDE.md instructions from managed settings. Only managed settings honor it. | Managed | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `claudeMdExcludes` | array of string | - | Skip specific CLAUDE.md files when memory loads. Takes glob patterns or absolute paths. Managed files cannot be excluded. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `cleanupPeriodDays` | integer | 30 | Choose how many days Claude Code keeps transcripts before deleting them. The minimum is `1`. `--no-session-persistence` turns off transcript writes. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `defaultShell` | enum: `bash`, `powershell` | `bash` | Choose whether Bash or PowerShell runs the shell commands you type with the `!` prefix. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `desktopSessionCleanupPeriodDays` | integer | - | Set an age limit in days for Claude Desktop and Cowork transcripts. `0` (the default) means no ceiling. Ignored when org policy sets `cleanupPeriodDays`. | User, managed | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `disableArtifact` | boolean | - | Deprecated, so use `enableArtifact` to turn the Artifact tool off. `true` still turns the tool off. `false` is ignored. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `enableArtifact` | boolean | On once the feature is available | Turn the `Artifact` tool on or off. A `false` in any file turns it off, and no file can turn it back on. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `env` | object | - | Set environment variables for every session and its subprocesses. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `fileCheckpointingEnabled` | boolean | - | Turn off or on the file snapshots that `/rewind` restores. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `fileSuggestion` | object | - | Supply `@` file autocomplete from your own command. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `idleCompaction` | boolean | - | Stop Claude Code from compacting a long conversation while your terminal session is idle. Setting `true` does not turn idle compaction on. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `includeCoAuthoredBy` | boolean | `true` | Deprecated, so use `attribution` to hide or change commit and PR attribution. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `includeGitInstructions` | boolean | `true` | Remove the built-in commit and PR instructions from Claude's context. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `language` | string | - | Have Claude respond in a language other than English. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `minimumVersion` | string | - | Keep auto-updates from installing anything below a version. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `plansDirectory` | string | `~/.claude/plans` | Choose where plan mode writes plan files. The path is relative to the project root. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| 🔍 | `precomputeCompactionEnabled` | boolean | - | Build the compaction summary in the background before it is needed. Applies only when auto-compact is on. | Settings files | Bundle settings schema |
+| ✅ | `respectGitignore` | boolean | `true` | Keep gitignored files out of the `@` file picker. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `respondToBashCommands` | boolean | `true` | Stop Claude from responding after a `!` shell command runs. The command output still joins the context. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `sandbox` | object | - | Isolate Bash commands from your filesystem and network on macOS, Linux, and WSL2. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `skipWebFetchPreflight` | boolean | - | Skip the WebFetch hostname check when Anthropic is unreachable. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ❌ | `taskOutputMaxChars` | integer | - | Has no effect, because the `TaskOutput` tool was removed. Claude reads a background task output file with `Read` instead. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| 🔍 | `todoFeatureEnabled` | boolean | - | Turn the todo and task tracking panel on or off. | Settings files | Bundle settings schema |
+| ✅ | `worktree` | object | - | Configure how Claude Code creates git worktrees. Covers `--worktree`, `EnterWorktree`, and agent isolation. | Any file | [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+
+## See Also
+
+- [Settings](Claude-Code-Settings) explains the marks, the scopes, and the precedence.
+- [Settings Reference](https://code.claude.com/docs/en/settings-reference) is the docs page for each key.
+- [Env Vars](Claude-Code-Env-Vars) lists the variables that pair with some keys.
+- [Memory And Rules](Claude-Code-Memory-And-Rules) covers `CLAUDE.md` and auto memory.

@@ -1,0 +1,55 @@
+# Mod API: Tool, Command, and Config Types (Part 2)
+
+These are more of the types behind `$.tool`, `$.command`, and `$.config`.
+They run from `ToolDescribeResult` to `ToolUseSummary.meta`.
+Example: `if (use.agentId) child = await $.session.messages({ agentId: use.agentId })`.
+
+## Types
+
+| Mark | Item | What it is for | Shape and limits | Source |
+| --- | --- | --- | --- | --- |
+| ✅ | `ToolDescribeResult` | What a `tool.describe` hook returns: the description the model sees for that tool and, when the hook moves it, where the tool waits (ToolDeferral). | Object. Its fields have rows below. `{ description }` alone changes the text and keeps the placement. `isDeferred: true` puts the tool behind ToolSearch. Used by `tool.describe`. | d.ts line 13608 |
+| ✅ | `ToolDescribeResult.description` | A field of `ToolDescribeResult`. | Type: `string`. | d.ts line 13608 |
+| ✅ | `ToolDescribeResult.isDeferred` | A field of `ToolDescribeResult`. | Type: `ToolDeferral`. Optional. | d.ts line 13608 |
+| ✅ | `ToolEnvelope` | `{ tool, tool_use_id, ...args }` as one flat object type, generic over the tool name and its parsed arguments. | Object. Its fields have rows below. | d.ts line 13617 |
+| ✅ | `ToolEnvelope.tool` | The name of the tool being called (`Bash`, `mcp__<server>__<tool>`), comparing it narrows `e`. Reserved: a rewrite of it is ignored by core. | Type: `Name`. | d.ts line 13617 |
+| ✅ | `ToolEnvelope.tool_use_id` | The tool_use block's id: the same at every event of the call and in `$.ui.notice`. Reserved: a rewrite of it is ignored by core. | Type: `string`. | d.ts line 13617 |
+| ✅ | `ToolInfo` | One tool as `$.tool.list()` returns it. | Object. Its fields have rows below. Used by `$.tool.list`, `tool.list`. | d.ts line 13670 |
+| ✅ | `ToolInfo.name` | What the model calls it by. | Type: `string`. | d.ts line 13670 |
+| ✅ | `ToolInfo.description` | What it does, in the tool's own words (its description, a first sentence at most for MCP tools without one). | Type: `string`. | d.ts line 13670 |
+| ✅ | `ToolInfo.mcp` | True for an MCP server's tool. | Type: `boolean`. | d.ts line 13670 |
+| ✅ | `ToolInputOf` | `{ tool, tool_use_id, ...args }` as one flat object type. | Object. Its fields have rows below. The docs of `tool` and `tool_use_id` live on the `keyof` operand: a mapped type takes its properties' docs from there. | d.ts line 13692 |
+| ✅ | `ToolInputOf.[K in keyof ToolEnvelope<Name, Arguments>]` | A field of `ToolInputOf`. | Type: `ToolEnvelope<Name, Arguments>[K]`. | d.ts line 13692 |
+| ✅ | `ToolNamed` | An input that names its tool as the literal `T`: what `next` and `$.tool.call` read to type the call's result per tool (NextResultFor). | Object. Its fields have rows below. | d.ts line 13700 |
+| ✅ | `ToolNamed.tool` | The name of the tool being called (`Bash`). | Type: `T`. | d.ts line 13700 |
+| ✅ | `ToolRequestMeta` | What a `tool.call` hook sets for the request of an MCP server's tool. | Object. Its fields have rows below. | d.ts line 13710 |
+| ✅ | `ToolRequestMeta.requestMeta` | Entries for the `_meta` of the request this call sends its MCP server, set with `next({ ...e, requestMeta })`, never an argument of the tool. | Type: `Record<string, string>`. Optional. A hook may set only `anthropic/sources`, a string of at most 256 KiB. It goes only to a connector relay. `{}` clears it. | d.ts line 13710 |
+| ✅ | `ToolResultOf` | The structured result of the tool named `Name`: its BuiltinToolResults entry for a built-in tool, else `unknown`. | Alias of the result type of a tool by name. `Agent` also allows a teammate or call record. `unknown` covers an MCP tool or an unknown name. | d.ts line 13735 |
+| ✅ | `ToolResultSummary` | One tool_result block of a user message. | Object. Its fields have rows below. | d.ts line 13740 |
+| ✅ | `ToolResultSummary.tool_use_id` | The id of the call this result answers (`tool.call`'s `e.tool_use_id`). | Type: `string`. | d.ts line 13740 |
+| ✅ | `ToolResultSummary.text` | The result as the model read it (text blocks joined). | Type: `string`. | d.ts line 13740 |
+| ✅ | `ToolResultSummary.isError` | True when the tool reported an error. | Type: `boolean`. | d.ts line 13740 |
+| ✅ | `ToolResultSummary.result` | What the transcript stored for the call: the tool's record on an answered one (`tool.call`'s `result`), the error text when `isError`. | Type: `unknown`. Optional. Absent when nothing was stored. In `-p` a tool may store the record without its bulk. `text` is what the model read. | d.ts line 13740 |
+| ✅ | `ToolResultSummary.meta` | What the tool's MCP server addressed to plugins in `_meta`: entries under `"claude/plugins"` and `"anthropic/sources"`. The model never reads it. A key over 256 KiB is left out. | Type: `Record<string, unknown>`. Optional. Off by default. Absent on an error result, and when the server addressed nothing, a subagent's transcript keeps at most 8 KiB. | d.ts line 13740 |
+| ✅ | `ToolSpec` | What `$.tool.register` takes. | Object. Its fields have rows below. Used by `$.tool.register`. | d.ts line 13779 |
+| ✅ | `ToolSpec.name` | The tool's short name (letters, digits, `_`, `-`, up to 64), the model calls it as `mcp__<plugin>__<name>`. | Type: `string`. | d.ts line 13779 |
+| ✅ | `ToolSpec.description` | What the tool does, for the model (and the person where tools are listed), an unpaired surrogate half in it is drawn as U+FFFD. | Type: `string`. | d.ts line 13779 |
+| ✅ | `ToolSpec.inputSchema` | A JSON schema object for the input (`{ type: "object", properties, required }`), default `{ type: "object" }`. | Type: `Record<string, unknown>`. Optional. | d.ts line 13779 |
+| ✅ | `ToolSpec.isDeferred` | Where the tool waits: `false` puts its schema in the prompt's tool list, `true` behind ToolSearch. | Type: `ToolDeferral`. Optional. Left out, the engine's rule places it: behind ToolSearch, as it places an MCP server's tool. A `tool.describe` hook's answer is read first. | d.ts line 13779 |
+| ✅ | `ToolUseSummary` | One tool_use block of an assistant message, with its outcome once the transcript holds the call's tool_result (paired by `tool_use_id`). | Object. Its fields have rows below. | d.ts line 13809 |
+| ✅ | `ToolUseSummary.tool_use_id` | The call's id, as `tool.call` carried it (`e.tool_use_id` there). | Type: `string`. | d.ts line 13809 |
+| ✅ | `ToolUseSummary.tool` | Which one was called (`Read`, `Bash`, `mcp__server__tool`), as `tool.call` named it (`e.tool` there). | Type: `string`. | d.ts line 13809 |
+| ✅ | `ToolUseSummary.input` | The arguments the model gave it. | Type: `Record<string, unknown>`. | d.ts line 13809 |
+| ✅ | `ToolUseSummary.result` | What the transcript stored for the call: the tool's record on an answered one (`tool.call`'s `result`), the error text on a refused or errored one. | Type: `unknown`. Optional. Absent while the call is in flight or when nothing was stored. `text` holds either way. | d.ts line 13809 |
+| ✅ | `ToolUseSummary.text` | The result as the model read it, absent while the call is in flight. | Type: `string`. Optional. | d.ts line 13809 |
+| ✅ | `ToolUseSummary.isError` | Present only when the tool reported an error, as on `tool.call`'s result. | Type: `true`. Optional. | d.ts line 13809 |
+| ✅ | `ToolUseSummary.agentId` | On an Agent tool use, the id of the agent it spawned: what `$.session.messages({ agentId })` reads and its `turn.complete` carries. | Type: `string`. Optional. Known while the session tracks the run. Absent on other tools and on a refused Agent call. | d.ts line 13809 |
+| ✅ | `ToolUseSummary.durationMs` | On an answered Agent tool use that ran to completion, how long the agent ran, in milliseconds, as the call's stored record has it. | Type: `number`. Optional. Absent while it runs, on a background launch, and on every other tool. | d.ts line 13809 |
+| ✅ | `ToolUseSummary.meta` | What the tool's MCP server addressed to plugins in `_meta`: entries under `"claude/plugins"` and `"anthropic/sources"`. The model never reads it. A key over 256 KiB is left out. | Type: `Record<string, unknown>`. Optional. Off by default. Absent on an error result, and when the server addressed nothing, a subagent's transcript keeps at most 8 KiB. | d.ts line 13809 |
+
+## See Also
+
+- [Mod API: Tool, Command, and Config Types](Claude-Code-Mod-API-Tool-Command-Config-Types)
+- [Mod API: Tool, Command, and Config](Claude-Code-Mod-API-Tool-Command-Config)
+- [Claude Code Mod API](Claude-Code-Mod-API)
+- [Mods Reference](https://code.claude.com/docs/en/plugins/mods/reference)

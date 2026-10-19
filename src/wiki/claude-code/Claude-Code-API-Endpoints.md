@@ -1,0 +1,103 @@
+# Claude Code API Endpoints
+
+An endpoint is a URL path on a server, and a header is a named value that a request carries.
+Claude Code calls the model server and a few account servers, and it adds headers to each request.
+If you run Claude Code behind a proxy, the proxy must pass `anthropic-version` and `anthropic-beta` on without a change (see [Request Headers](#request-headers)).
+
+## Model Endpoints
+
+Source: [Gateway Compatibility Guide](https://code.claude.com/docs/en/llm-gateway-protocol).
+
+| Path | Mark | What it does |
+| --- | --- | --- |
+| `/v1/messages?beta=true` | ✅ | Sends the model request. |
+| `/v1/messages/count_tokens` | ✅ | Counts tokens, and without it Claude Code estimates from the number of characters. |
+| `/v1/messages/cache_touch` | 🔍 | Claude Code calls it every 30 seconds (10 to 120) to keep the prompt cache warm. It needs a subscriber login and the `cache-keepalive-2026-09-03` beta ([Probes](Claude-Code-Probes)). |
+| `/v1/models` | ✅ | Lists the models for the `/model` picker, only with `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1`. |
+| `HEAD /api/hello` | ✅ | Warms up the connection, and Claude Code skips it when an HTTP proxy or a client certificate is set. |
+| `/model/{model}/invoke` and `/model/{model}/invoke-with-response-stream` | ✅ | The Amazon Bedrock format, chosen with `ANTHROPIC_BEDROCK_BASE_URL`. |
+| `:rawPredict` and `:streamRawPredict` | ✅ | The Google Cloud Agent Platform format, chosen with `ANTHROPIC_VERTEX_BASE_URL`. |
+
+The model list is cached in `~/.claude/cache/gateway-models.json`.
+
+## Account and Service Endpoints
+
+These paths are strings in the bundle.
+The docs do not describe them, so the rows have the mark 🔍, except the OpenTelemetry row.
+The use of a path is a guess from its name.
+
+| Path | Mark | Likely use |
+| --- | --- | --- |
+| `/v1/oauth/token`, `/api/oauth/profile`, `/api/oauth/usage`, `/api/oauth/account/settings` | 🔍 | Sign-in tokens, the profile, plan usage, and account settings. |
+| `/api/claude_code/policy_limits` | 🔍 | The limits of your organization, cached in `policy-limits.json` (see [Sessions and Storage](Claude-Code-Sessions-And-Storage)). |
+| `/api/claude_code/organizations/metrics_enabled`, `/api/claude_code/notification/preferences`, `/api/claude_code/skills` | 🔍 | The metrics switch of the organization, notification settings, and synced skills. |
+| `/api/event_logging/v2/batch` | 🔍 | Event logging by Anthropic. |
+| `/v1/metrics`, `/v1/logs`, `/v1/traces` | ✅ | OpenTelemetry export, which [Monitoring](https://code.claude.com/docs/en/monitoring-usage) documents. |
+| `/api/claude_cli_feedback`, `/api/claude_code_shared_session_transcripts` | 🔍 | Feedback and shared transcripts. |
+| `/v1/code/sessions`, `/v1/code/triggers`, `/v1/code/github/*`, `/v1/code/agent-proxy` | 🔍 | Cloud sessions, routines, and GitHub helpers. |
+| `/v1/ultrareview/quota`, `/v1/ultrareview/preflight` | 🔍 | The command `claude ultrareview`. |
+| `/api/model_selector/{id}`, `/api/organization/claude_code_first_token_date` | 🔍 | Data for the model picker and the date of first use. |
+| `/api/ws/speech_to_text/voice_stream` | 🔍 | Voice dictation. |
+| `/api/frame/*`, `/v1/design/*` | 🔍 | Artifacts and Claude Design. |
+
+The bundle also holds an Anthropic SDK client with paths such as `/v1/agents`, `/v1/skills`, `/v1/vaults`, and `/v1/organizations/*`.
+They belong to the SDK code, and the Claude Code loop does not call them.
+
+The hosts that the bundle names include `code.claude.com`, `claude.ai`, `claude.com`, `api.anthropic.com`, `platform.claude.com`, `www.anthropic.com`, `support.claude.com`, `downloads.claude.ai`, and `mcp-proxy.anthropic.com`.
+
+## Request Headers
+
+Source: [Gateway Compatibility Guide](https://code.claude.com/docs/en/llm-gateway-protocol#request-headers).
+Header names are not case-sensitive.
+
+| Header | Mark | Meaning |
+| --- | --- | --- |
+| `Authorization`, `x-api-key` | ✅ | The credential. |
+| `anthropic-version` | ✅ | The API version, `2023-06-01`. |
+| `anthropic-beta` | ✅ | The list of beta values (see [API Betas](Claude-Code-API-Betas)). |
+| `x-claude-code-session-id` | ✅ | One value for each session. |
+| `x-claude-code-agent-id`, `x-claude-code-parent-agent-id` | ✅ | The subagent that sent the request, and its parent. |
+| `x-claude-code-request-class` | ✅ | The kind of request: `main`, `subagent`, `workflow`, `compaction`, or `auxiliary`. |
+| `x-claude-code-agent-type` | ✅ | The kind of agent: `Explore`, `Plan`, `general-purpose`, `custom`, `teammate`, or `fork`. |
+| `x-claude-code-compaction`, `x-claude-code-context-compacted` | ✅ | Marks a compaction request, and the first request after one. |
+| `x-claude-code-prev-tool-durations` | ✅ | The run time of the last tool batch, such as `Bash=742;Read=9`, with at most 32 entries and 4 KB. |
+| `x-claude-code-prompt-id` | ✅ | A random UUID for the user prompt, from v2.1.283. |
+| `anthropic-workspace-id` | ✅ | Needed on Claude Platform on AWS. |
+| `ANTHROPIC_CUSTOM_HEADERS` | ✅ | An env var for extra headers, one `Name: value` on each line. |
+| `x-app`, `anthropic-client-platform`, `X-Stainless-*`, `X-Trusted-Device-Token`, `x-organization-uuid` | 🔍 | Names in the bundle, and no source states their rules. |
+
+The hint headers (`x-claude-code-request-class` and the next four) go out on a direct connection to the Anthropic API.
+On a custom base URL they need `CLAUDE_CODE_GATEWAY_HINT_HEADERS=1`.
+Setting it to `0` stops them everywhere.
+
+## Response Headers Claude Code Reads
+
+| Header | Mark | Use |
+| --- | --- | --- |
+| `retry-after` | ✅ | A number of seconds, and a value above 60 stops the retries unless `CLAUDE_CODE_RETRY_WATCHDOG` is set. |
+| `x-should-retry` | ✅ | `true` or `false`, which is one input to the retry decision. |
+| `anthropic-ratelimit-unified-*` | ✅ | Plan usage and limits for `claude.ai` sign-ins. |
+| `content-type` | ✅ | `text/event-stream`, or `application/vnd.amazon.eventstream` on Bedrock. |
+
+## Attribution Block
+
+The first block of `system` is a text line that starts with `x-anthropic-billing-header:`.
+The docs say the block holds the client version and a fingerprint of the conversation ([Gateway Compatibility Guide](https://code.claude.com/docs/en/llm-gateway-protocol#system-prompt-attribution-block)).
+The field names below come from the bundle.
+
+| Field | Mark | Meaning |
+| --- | --- | --- |
+| `cc_version` | 🔍 | The client version. |
+| `cc_entrypoint` | 🔍 | Where Claude Code runs, such as `cli`, `sdk-cli`, or `claude-vscode`. |
+| `cc_workload`, `cc_is_subagent` | 🔍 | The workload tag (`--workload`), and a flag for subagents. |
+| `cc_prev_req`, `cc_prompt_id`, `cc_turn_origin`, `cc_prompt_index`, `cc_turn_index` | 🔍 | Request and turn tracking, only on the Anthropic API. |
+| `cc_gateway`, `cc_project`, `cc_project_src` | 🔍 | Tags for the gateway and the project. |
+
+`CLAUDE_CODE_ATTRIBUTION_HEADER=0` removes the block.
+The `api.anthropic.com` server strips it when it is the first and only block of its entry.
+
+## See Also
+
+- [Request Build](Claude-Code-Request-Build)
+- [API Betas](Claude-Code-API-Betas)
+- [Env Vars](Claude-Code-Env-Vars)

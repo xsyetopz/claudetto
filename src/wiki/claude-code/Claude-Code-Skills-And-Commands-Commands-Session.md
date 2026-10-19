@@ -1,0 +1,54 @@
+# Claude Code Built-In Commands: Session and Conversation Commands
+
+These slash commands manage the session and the conversation, such as clearing, compacting, resuming, and switching the model.
+Type `/` in the prompt to see the list.
+For example, `/compact` replaces the history with a summary to free space.
+The marks are explained on [Skills and Commands](Claude-Code-Skills-And-Commands).
+
+## How to Read the Table
+
+- `local-jsx` means an interactive panel.
+  `local` means fixed code that returns text.
+  `prompt` means the command expands to a model prompt.
+- Many commands have two forms: a panel for interactive sessions and a text form for `-p` and the SDK.
+- A 🧪 command has a gate, such as a flag, a policy, a provider, or an env var.
+
+## Commands
+
+| Mark | Item | What It Does | How It Works | Where It Can Be Used | Source |
+| --- | --- | --- | --- | --- | --- |
+| ✅ | `/add-dir` `<path>` | Add a new working directory. | `local-jsx` panel. Runs at once when a path is given. A `local` variant runs for some SDK entrypoints. Loads `.claude/skills`, `.claude/commands`, and `.claude/agents` of the directory. | Interactive. Non-interactive only for some SDK entrypoints. | [Commands](https://code.claude.com/docs/en/commands), [Extend Claude with Skills](https://code.claude.com/docs/en/skills) |
+| ✅ | `/cd` `<path>` | Move this session to a new working directory. | `local-jsx` panel. The new directory adds its project skills (v2.1.246 or later). | Interactive. | [Commands](https://code.claude.com/docs/en/commands), [Extend Claude with Skills](https://code.claude.com/docs/en/skills) |
+| ✅ | `/clear` (aliases `/reset`, `/new`) `[name]` | Start a new session with empty context. The previous session stays on disk and `/resume` opens it. | `local` command. | Interactive and non-interactive. | [Commands](https://code.claude.com/docs/en/commands), [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `/compact` `<optional custom summarization instructions>` | Free up context by summarizing the conversation so far. | `local` command. Off when env `DISABLE_COMPACT` is truthy. | Interactive and non-interactive. | [Commands](https://code.claude.com/docs/en/commands), [Extend Claude with Skills](https://code.claude.com/docs/en/skills) |
+| ✅ | `/autocompact` `[auto\|<tokens>]` | Set how full the context gets before auto-summarizing. | `local-jsx` panel (hidden only in non-interactive mode). A `local` variant, "Configure the auto-compact window size", runs non-interactive or in a remote workspace. | Both. | [Commands](https://code.claude.com/docs/en/commands), [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `/context` | Show current context usage. | Only a `local` object is found, enabled in non-interactive mode. | Non-interactive. | [Commands](https://code.claude.com/docs/en/commands), [Extend Claude with Skills](https://code.claude.com/docs/en/skills) |
+| ✅ | `/resume` (aliases `/continue`) `[conversation id or search term]` | Resume a previous conversation. | `local-jsx` panel. Hidden for a remote viewer. | Interactive. | [Commands](https://code.claude.com/docs/en/commands), [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `/rename` (aliases `/name`) `[name]` | Rename the current conversation. | `local-jsx` panel with `immediate`. A `local` variant runs non-interactive. | Both. | [Commands](https://code.claude.com/docs/en/commands), [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `/branch` `[name]` | Create a branch of the current conversation at this point. | `local-jsx` panel. | Interactive. | [Commands](https://code.claude.com/docs/en/commands) |
+| ✅ | `/fork` `<directive> or [prompt]` | Spawn a background agent that inherits the full conversation. The other definition says: copy this conversation into a new background session and keep working here. | Two `local-jsx` objects. Both have `isEnabled` = not coordinator mode (env `CLAUDE_CODE_COORDINATOR_MODE`). | Interactive. | [Commands](https://code.claude.com/docs/en/commands), [Create Custom Subagents](https://code.claude.com/docs/en/sub-agents) |
+| ✅ | `/subtask` `<task>` | Send a subagent off with your full context. Its result comes back here. | `local-jsx` panel. Off in coordinator mode. | Interactive. | [Commands](https://code.claude.com/docs/en/commands), [Environment Variables](https://code.claude.com/docs/en/env-vars) |
+| ✅ | `/background` (aliases `/bg`) `[prompt]` | Send this session to the background and free the terminal. | `local-jsx` panel. Runs at once when no prompt is given. Matches the `--bg` flag. | Interactive. | [Commands](https://code.claude.com/docs/en/commands), [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| 🧪 | `/stop` | Stop this background session. The transcript and the worktree are kept. | `local-jsx` panel. Gate: the session is a background session (`bg` kind). A `local` variant has the same gate. | Background sessions. | bundle |
+| ✅ | `/goal` `[<condition> \| clear]` | Set a goal that Claude checks before it stops. | `local-jsx` panel with `immediate`. A `local` variant ("keep working until the condition is met") needs non-interactive mode or a remote workspace. Hooks docs name the command. | Both. | [Commands](https://code.claude.com/docs/en/commands), [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `/plan` `[open\|<description>]` | Enable plan mode or view the current session plan. | `local-jsx` panel. | Interactive. | [Commands](https://code.claude.com/docs/en/commands) |
+| ✅ | `/recap` | Generate a one-line session recap now. | `local` command. | Interactive and non-interactive. | [Commands](https://code.claude.com/docs/en/commands) |
+| ✅ | `/btw` `[question]` | Ask a quick side question without interrupting the main conversation. | `local-jsx` panel with `immediate`. | Interactive. | [Commands](https://code.claude.com/docs/en/commands), [Create Custom Subagents](https://code.claude.com/docs/en/sub-agents) |
+| ✅ | `/export` `[filename]` | Export the current conversation to a file or the clipboard. | `local-jsx` panel. | Interactive. | [Commands](https://code.claude.com/docs/en/commands) |
+| ✅ | `/copy` `[N]` | Copy the last response of Claude to the clipboard. `/copy N` copies the Nth-latest. | `local-jsx` panel. | Interactive. | [Commands](https://code.claude.com/docs/en/commands), [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `/exit` (aliases `/quit`) | Exit the CLI. In a background session the text is "Detach from this background session (it keeps running)". | `local-jsx` panel and a `local` variant. | Both. | [Commands](https://code.claude.com/docs/en/commands) |
+| 🧪 | `/restart` (aliases `/update`) | Restart Claude Code and keep this session. The text names the version when a newer or older one is pending. | `local` command, `supportsNonInteractive:false`. Hidden unless its gate is true (gate function not decoded). | Interactive. | bundle |
+| ✅ | `/rewind` (aliases `/checkpoint`, `/undo`) | Restore the code and/or the conversation to a previous point. | `local` command, `supportsNonInteractive:false`. | Interactive. | [Commands](https://code.claude.com/docs/en/commands), [Extend Claude with Skills](https://code.claude.com/docs/en/skills) |
+| ✅ | `/tasks` (aliases `/bashes`) | View and manage everything that runs in the background. | `local-jsx` panel. | Interactive. | [Commands](https://code.claude.com/docs/en/commands), [Create Custom Subagents](https://code.claude.com/docs/en/sub-agents) |
+| ✅ | `/list-agents` (aliases `/peers`) | List subagents, teammates, and other Claude sessions you can message. | `local` command. Off when the org setting `messagingBeyondOwnAgentsDisabled` is set. | Both. | [Commands](https://code.claude.com/docs/en/commands) |
+| ✅ | `/focus` `[on\|off]` | Toggle focus view: only your prompt, a summary, and the response. | `local-jsx` panel. Needs the fullscreen renderer (`/tui fullscreen` or env `CLAUDE_CODE_NO_FLICKER=1`). Setting `viewMode: "focus"` sets it too. | Both (fullscreen only). | [Commands](https://code.claude.com/docs/en/commands), [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| ✅ | `/diff` | Toggle the diff panel of uncommitted changes (fullscreen) or view uncommitted changes and per-turn diffs (inline). | `local-jsx` panel. Off when a mod provides its own diff view (gate not fully decoded). | Interactive. | [Commands](https://code.claude.com/docs/en/commands) |
+| ✅ | `/model` `<model> or [model]` | Set the AI model for Claude Code. The interactive text adds the current model. | `local-jsx` panel and a `local` variant for non-interactive mode. | Both. | [Commands](https://code.claude.com/docs/en/commands), [Extend Claude with Skills](https://code.claude.com/docs/en/skills) |
+| ✅ | `/effort` `[levels] or <levels>` | Set the effort level for model usage. | `local-jsx` panel and a `local` variant. The hint lists the effort levels. | Both. | [Commands](https://code.claude.com/docs/en/commands), [Settings Reference](https://code.claude.com/docs/en/settings-reference) |
+| 🧪 | `/fast` `[on\|off]` | Toggle fast mode. | `local-jsx` panel and a `local` variant. Gate: first-party provider and env `CLAUDE_CODE_DISABLE_FAST_MODE` not set. | Both. | bundle |
+| 🧪 | `/advisor` `[model\|off]` | Let Claude consult a stronger model at key moments. | `local-jsx` panel and a `local` variant. | Both. | bundle |
+
+## See Also
+
+- [Commands](https://code.claude.com/docs/en/commands) is the docs page.
+- [Context And Compaction](Claude-Code-Context-And-Compaction) covers `/compact`.

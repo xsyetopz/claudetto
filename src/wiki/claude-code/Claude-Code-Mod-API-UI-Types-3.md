@@ -1,0 +1,154 @@
+# Mod API: UI Types (Part 3)
+
+These are more of the types behind `$.ui` and the element props.
+They run from `RenderViewport` to `UiNotifyResult.reason`, and they cover scroll, select, text, and the results of `$.ui` calls.
+
+## Types
+
+| Mark | Item | What it is for | Shape and limits | Source |
+| --- | --- | --- | --- | --- |
+| ✅ | `RenderViewport` | The size of what a surface draws into, in character cells of the surface's monospace metric, and whether its layout docks a pane. | Object. Its fields have rows below. On the terminal it is the columns and rows of the conversation. On a remote surface it is the pane size. | d.ts line 10812 |
+| ✅ | `RenderViewport.columns` | Cells across. A tree wider than this wraps or truncates, as its Text props say. | Type: `number`. | d.ts line 10812 |
+| ✅ | `RenderViewport.rows` | Cells down the whole surface, not the room left for this component. | Type: `number`. Informational: a change of height alone re-draws nothing and keys no new evaluation, so a hook reads it as of the last width or props change. | d.ts line 10812 |
+| ✅ | `RenderViewport.isFullscreen` | Whether this surface docks a pane beside the transcript, so a pane a plugin opens unasked is a sidebar, not a takeover, absent is unknown. | Type: `boolean`. Optional. The terminal always says it: `true` is fullscreen. A remote surface reports it with its size. A change re-draws. | d.ts line 10812 |
+| ✅ | `ResolveInput` | The input of `ui.resolve`: which surface's elements, for which component, a union with one member per surface (ResolveInputOf). | Alias that picks the input type for a component and a surface. It names the surface and the component, not the props. Used by `$.ui.resolve`, `ui.resolve`. | d.ts line 10848 |
+| ✅ | `ResolveInputOf` | One `ui.resolve` input, for a component on one surface. | Object. Its fields have rows below. | d.ts line 10853 |
+| ✅ | `ResolveInputOf.surface` | Where the table draws, one literal per member, so a hook that narrows it narrows the table `next(e)` resolves to. | Type: `P`. | d.ts line 10853 |
+| ✅ | `ResolveInputOf.component` | Which drawing the table is resolved for, the key a matcher narrows on. | Type: `C`. | d.ts line 10853 |
+| ✅ | `SelectOption` | One option of a `Select`: the value `onSelect` and `ui.select` carry, and the text drawn for it (the value when absent). | Object. Its fields have rows below. | d.ts line 10900 |
+| ✅ | `SelectOption.value` | A field of `SelectOption`. | Type: `string`. | d.ts line 10900 |
+| ✅ | `SelectOption.label` | A field of `SelectOption`. | Type: `string`. Optional. | d.ts line 10900 |
+| ✅ | `SelectProps` | The props of `Select`, every surface's one-of-several picker: an address, a label, the options, the one selected, the closure a pick runs. A leaf. | Object. Its fields have rows below. Arrows move, Enter picks, and Esc returns to the prompt. A pick raises `ui.select`. | d.ts line 10913 |
+| ✅ | `SelectProps.key` | The element's address: `e.element` at `ui.select`, what a matcher names. | Type: `string`. | d.ts line 10913 |
+| ✅ | `SelectProps.label` | Text drawn before the current value. | Type: `string`. Optional. | d.ts line 10913 |
+| ✅ | `SelectProps.options` | What can be picked, in the order drawn, at least one, values unique. | Type: `readonly SelectOption[]`. | d.ts line 10913 |
+| ✅ | `SelectProps.value` | Which option is selected when drawn, the person's pick replaces it until the hook draws another. | Type: `string`. Optional. | d.ts line 10913 |
+| ✅ | `SelectProps.autoFocus` | The site's focus ring starts here when the site takes the keyboard, instead of on nothing, as the DOM's `autofocus`: Enter acts on it at once. | Type: `true`. Optional. A pane opened with `focus` takes it. Of several in one site, the first drawn wins. A ring the person has moved stays where it is. | d.ts line 10913 |
+| ✅ | `SelectProps.onSelect` | Runs on a pick with the option's value, in the plugin's own environment: the bottom of a `ui.select` chain. No model turn unless it asks one. | Type: `(value: string, e: UiSelectArgument) => void`. | d.ts line 10913 |
+| ✅ | `SiteScroll` | Where a site's window sits over the tree a hook drew in it (a pane's body, the band): the engine's to move (the person scrolls), the plugin's to read. | Object. Its fields have rows below. | d.ts line 12335 |
+| ✅ | `SiteScroll.offset` | The first row of the tree the window showed when the hook was asked, 0 at the top. Read-only. | Type: `number`. A move through `ui.scroll` asks again. The engine's own moves on the terminal do not. The next ask reads where the window stands. | d.ts line 12335 |
+| ✅ | `SiteScroll.bodyRows` | How many rows of the tree the window may show at once: the rows the surface gave the body, whatever the tree's own height. Read-only. | Type: `number`. | d.ts line 12335 |
+| ✅ | `SiteView` | Which transcript the person has on screen where a site draws: the main conversation's, or one agent's, opened from the tasks list. | Object. Its fields have rows below. A site reads it. A switch re-runs the site's hooks. `$.ui.view` takes the same shape. Used by `$.ui.view`, `ui.view`. | d.ts line 12360 |
+| ✅ | `SiteView.agentId` | The agent whose transcript is in view: the `id` `$.agent.list()` gives it, the `agentId` its `turn.step` and `tool.call` events carry. | Type: `string`. Optional. Absent while the main conversation is in view. Read-only on a site. | d.ts line 12360 |
+| ✅ | `Space` | Spacing of a `Box`: a number of character cells, or a step name (`xs`, `sm`, `md`, `lg`, `xl`). The terminal and VS Code draw steps as cells. Desktop and phones use their own scale. | Alias of `number \| 'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'`. | d.ts line 12507 |
+| ✅ | `StyledElement` | The shape a `Box` and a `Text` share in a render tree: allowlisted props, an optional `hover`, the group stamp a `hover.scope` earns, the mark of the plugin whose drawing starts there, and children. | Object. Its fields have rows below. `Tag` says if it is a `Box` or a `Text`. `Hover` holds the hover props. Every surface draws both. | d.ts line 12795 |
+| ✅ | `StyledElement.type` | A field of `StyledElement`. | Type: `Tag`. | d.ts line 12795 |
+| ✅ | `StyledElement.props` | A Box's layout, position, spacing and border props and the `key` that makes it a hover scope, a Text's colors and styles. Others are refused. | Type: `Record<string, string \| number \| boolean>`. Optional. | d.ts line 12795 |
+| ✅ | `StyledElement.hover` | Style overrides the surface applies while the pointer is over the nearest keyed Box, or over any member of the group `scope` names. | Type: `Hover`. Optional. Plain data, no hook. It never moves a sibling. `display` only reveals a `Box` that is drawn as `"none"`. | d.ts line 12795 |
+| ✅ | `StyledElement.group` | Whose group `hover.scope` names, absent without a `scope`. | Type: `PluginStamp`. Optional. | d.ts line 12795 |
+| ✅ | `StyledElement.part` | Says whose part of the drawing starts here. The engine sets it on each hook's returned root. It proves no author. | Type: `PluginStamp`. Optional. | d.ts line 12795 |
+| ✅ | `StyledElement.children` | In order: a Box holds elements and strings (core wraps each string in a Text), a Text holds strings and inline elements, never an engine node. | Type: `RenderNode[]`. Optional. | d.ts line 12795 |
+| ✅ | `SvgProps` | The props of `Svg`, the remote surfaces' vector leaf: the markup is the element's data, as a string is a Text's, drawn isolated. | Object. Its fields have rows below. A leaf with no children. The engine bounds the markup. The surface never lets it reach the page. | d.ts line 12862 |
+| ✅ | `SvgProps.source` | The SVG document, `<svg ...>...</svg>`, at most 131072 characters. | Type: `string`. | d.ts line 12862 |
+| ✅ | `SvgProps.alt` | What the drawing says, for a reader that cannot see it, required, since a surface without the element draws nothing else of it. | Type: `string`. | d.ts line 12862 |
+| ✅ | `SvgProps.width` | CSS pixels, absent, the box takes the markup's own width up to the slot. | Type: `number`. Optional. | d.ts line 12862 |
+| ✅ | `SvgProps.height` | CSS pixels, absent, the markup's own height at the drawn width. | Type: `number`. Optional. | d.ts line 12862 |
+| ✅ | `SvgProps.isInteractive` | `true` draws the SVG in a script-less sandboxed frame so hover, CSS `:hover`, SMIL animation and `<title>` tooltips work, absent, an image. | Type: `boolean`. Optional. It never enables script or event-handler attributes. Put presses on an enclosing element. | d.ts line 12862 |
+| ✅ | `TextHoverProps` | The `Text` props a `hover` may override (its colors and styles, not its wrapping) and `scope`, the hover group it joins, a `Button`'s label too. | Object. Its fields have rows below. | d.ts line 13129 |
+| ✅ | `TextHoverProps.scope` | Names a hover group of this plugin's: every element it draws with the same `scope`, in any site on the surface, lights while any is hovered. | Type: `string`. Optional. A scope is 1 to 64 characters with no control characters. Other plugins' elements with the same string are a different group. | d.ts line 13129 |
+| ✅ | `TextHoverProps.color` | A field of `TextHoverProps`. | Type: `Color`. Optional. | d.ts line 13129 |
+| ✅ | `TextHoverProps.backgroundColor` | A field of `TextHoverProps`. | Type: `Color`. Optional. | d.ts line 13129 |
+| ✅ | `TextHoverProps.dimColor` | A field of `TextHoverProps`. | Type: `boolean`. Optional. | d.ts line 13129 |
+| ✅ | `TextHoverProps.bold` | A field of `TextHoverProps`. | Type: `boolean`. Optional. | d.ts line 13129 |
+| ✅ | `TextHoverProps.italic` | A field of `TextHoverProps`. | Type: `boolean`. Optional. | d.ts line 13129 |
+| ✅ | `TextHoverProps.underline` | A field of `TextHoverProps`. | Type: `boolean`. Optional. | d.ts line 13129 |
+| ✅ | `TextHoverProps.strikethrough` | A field of `TextHoverProps`. | Type: `boolean`. Optional. | d.ts line 13129 |
+| ✅ | `TextHoverProps.inverse` | A field of `TextHoverProps`. | Type: `boolean`. Optional. | d.ts line 13129 |
+| ✅ | `TextProps` | The props of `Text`: colors, styles, and the size, weight, face and digits each surface draws its own way. Colors are a theme key or a raw color. | Object. Its fields have rows below. | d.ts line 13153 |
+| ✅ | `TextProps.hover` | Style overrides applied by the surface while the pointer is over the nearest enclosing keyed `Box`, or, given a `scope`, over its group. | Type: `TextHoverProps`. Optional. No hook runs and nothing crosses to the plugin. Refused outside a keyed Box unless it names a `scope`. | d.ts line 13153 |
+| ✅ | `TextProps.color` | A field of `TextProps`. | Type: `Color`. Optional. | d.ts line 13153 |
+| ✅ | `TextProps.backgroundColor` | A field of `TextProps`. | Type: `Color`. Optional. | d.ts line 13153 |
+| ✅ | `TextProps.dimColor` | The run dimmed: on the terminal, drawn in the theme's dim color. | Type: `boolean`. Optional. Faint too where that color is the palette's own white or black, as plain text is, unless the run is bold, inverse or on a background of any other color. | d.ts line 13153 |
+| ✅ | `TextProps.size` | The text size, a step on a scale each surface maps to its own type sizes. | Type: `'caption' \| 'footnote' \| 'body' \| 'heading' \| 'title'`. Optional. Absent, the enclosing Text's, or `body`. The terminal has one size and ignores it. | d.ts line 13153 |
+| ✅ | `TextProps.weight` | How heavy the text is, drawn at the nearest weight the surface has. | Type: `'regular' \| 'medium' \| 'semibold' \| 'bold'`. Optional. Absent, the enclosing Text's. The terminal draws `semibold` and `bold` as bold and cannot draw a lighter weight inside a bold Text. | d.ts line 13153 |
+| ✅ | `TextProps.mono` | The surface's monospaced face at the same size. The terminal is always monospaced and ignores it. | Type: `boolean`. Optional. | d.ts line 13153 |
+| ✅ | `TextProps.tabular` | Digits of one width, for a number that changes by itself on screen (a timer, a percentage) or numbers stacked in a column to line up. | Type: `boolean`. Optional. The terminal's digits are already one cell each. | d.ts line 13153 |
+| ✅ | `TextProps.bold` | The older spelling of a semibold weight. | Type: `boolean`. Optional. Deprecated: Use `weight`. `bold: true` is read as `weight: 'semibold'`, and an explicit `weight` outranks it, a `hover`'s `bold` still applies. | d.ts line 13153 |
+| ✅ | `TextProps.italic` | A field of `TextProps`. | Type: `boolean`. Optional. | d.ts line 13153 |
+| ✅ | `TextProps.underline` | A field of `TextProps`. | Type: `boolean`. Optional. | d.ts line 13153 |
+| ✅ | `TextProps.strikethrough` | A field of `TextProps`. | Type: `boolean`. Optional. | d.ts line 13153 |
+| ✅ | `TextProps.inverse` | A field of `TextProps`. | Type: `boolean`. Optional. | d.ts line 13153 |
+| ✅ | `TextProps.dir` | The direction the text reads in: `rtl` for a right-to-left script, so a row of it that opens with a Latin word or a number reads right to left. | Type: `'ltr' \| 'rtl'`. Optional. When absent, each row reads by its first strong letter. `rtl` rows are flush right. | d.ts line 13153 |
+| ✅ | `TextProps.wrap` | A field of `TextProps`. | Type: `'wrap' \| 'end' \| 'middle' \| 'truncate' \| 'truncate-start' \| 'truncate-middle' \| 'truncate-end'`. Optional. | d.ts line 13153 |
+| ✅ | `ThemeKey` | The theme keys named for what a color means: text, status, the prompt box and its modes, and diffs, as the custom theme reference lists them. | Alias of theme color names such as `'text'`, `'error'`, `'success'`, `'warning'`, `'permission'`, and `'diffAdded'`. A tree that names one follows the person's theme. | d.ts line 13228 |
+| ✅ | `ToastOptions` | Options of `$.ui.toast`. | Object. Its fields have rows below. Used by `$.ui.toast`. | d.ts line 13269 |
+| ✅ | `ToastOptions.timeoutMs` | How long the line stays, in milliseconds, default 4000. | Type: `number`. Optional. | d.ts line 13269 |
+| ✅ | `ToolGroupCall` | One tool call of a ToolGroup, as `ui.render` sees it under `calls`. | Object. Its fields have rows below. | d.ts line 13633 |
+| ✅ | `ToolGroupCall.tool_use_id` | The id `tool.call` carried for this call (`e.tool_use_id` there), so a hook that saw the call finds its row in the group. Read-only. | Type: `string`. Optional. Absent on a desktop host that predates it. | d.ts line 13633 |
+| ✅ | `ToolGroupCall.tool` | Which one the call ran (`Bash`, `Read`, `Grep`, ...). | Type: `string`. | d.ts line 13633 |
+| ✅ | `ToolGroupCall.input` | The call's input, as the model sent it. | Type: `unknown`. | d.ts line 13633 |
+| ✅ | `ToolGroupCall.isRunning` | True while the call is still running. | Type: `boolean`. | d.ts line 13633 |
+| ✅ | `ToolGroupCall.isErrored` | True when the call ended in an error. | Type: `boolean`. | d.ts line 13633 |
+| ✅ | `ToolGroupCall.isInterrupted` | True when an abort ended the call, as on `ToolUse`. | Type: `boolean`. | d.ts line 13633 |
+| ✅ | `ToolGroupCall.output` | As on `ToolUse`, undefined while the call runs. | Type: `unknown`. Optional. | d.ts line 13633 |
+| ✅ | `UiBlitArgs` | What a plugin's `$.ui.blit(args)` takes: a Raster's next `cells` (RasterBlitArgs) or a keyed Image's next `source` (ImageBlitArgs). | Alias of `RasterBlitArgs \| ImageBlitArgs`. It names an element that this plugin's own `ui.render` hook drew. A hook may rewrite the cells or source, not the address. Used by `$.ui.blit`. | d.ts line 14354 |
+| ✅ | `UiBlitResult` | What `$.ui.blit` resolves to and what a `ui.blit` hook's `{ value }` holds: `{}` once the cells or source are the next frame's, or why not. | Object. Its fields have rows below. Used by `$.ui.blit`, `ui.blit`. | d.ts line 14360 |
+| ✅ | `UiBlitResult.deny` | Absent when the cells or source were taken, else why not. | Type: `string`. Optional. Says why nothing was drawn: not mounted, wrong size, bad cells or source. With no surface `no-surface` heads it. | d.ts line 14360 |
+| ✅ | `UiCopyArgs` | The argument of `$.ui.copy` and the input of `ui.copy`: the text, and which surface's clipboard takes it, the caller's choice. | Object. Its fields have rows below. A hook above may rewrite either field, refuse with `{ deny }`, or answer `{ value }`. Used by `$.ui.copy`, `ui.copy`. | d.ts line 14379 |
+| ✅ | `UiCopyArgs.text` | What the person pastes afterwards, verbatim: any string, newlines and all, never shown on screen by the copy itself. | Type: `string`. | d.ts line 14379 |
+| ✅ | `UiCopyArgs.surface` | Which surface to copy on, the caller's choice, one the session draws on: a press, field or message hook passes `e.surface`. | Type: `RenderSurface`. Optional. When left out, the first of `$.session.surfaces()` is used. A matcher can narrow on it. | d.ts line 14379 |
+| ✅ | `UiCopyResult` | What `$.ui.copy` resolves to and what a `ui.copy` hook's `{ value }` holds: whether the text reached a clipboard (`isCopied`), else why not. | Object. Its fields have rows below. Example: `if (!(await $.ui.copy({ text, surface: e.surface })).isCopied) warn()`. Used by `$.ui.copy`, `ui.copy`. | d.ts line 14403 |
+| ✅ | `UiCopyResult.isCopied` | True: the surface took the text: the terminal's clipboard tool or its OSC 52 write, or a remote surface's app writing its own clipboard. | Type: `true`. OSC 52 does not report back: a terminal that drops it, with no tool on the machine (pbcopy, wl-copy, xclip, PowerShell, tmux's buffer), still reads true. | d.ts line 14403 |
+| ✅ | `UiCopyResult.isCopied` | False: nothing was copied. | Type: `false`. | d.ts line 14403 |
+| ✅ | `UiCopyResult.reason` | Why not, a closed set: `no-surface`, `no-clipboard` or `refused`, a hook above answering without copying says `refused`. | Type: `'no-surface' \| 'no-clipboard' \| 'refused'`. `no-surface` means nothing draws. `no-clipboard` means no clipboard tool ran and nothing was written. | d.ts line 14403 |
+| ✅ | `UiFaultInput` | The input of `ui.fault`: a `Client` this plugin drew failed on a surface, addressed by where the instance is drawn. | Object. Its fields have rows below. Every key is the engine's word, pinned: `next(e)` passes them on, a rewrite that leaves one out keeps it, one that changes it fails the hook. Used by `ui.fault`. | d.ts line 14440 |
+| ✅ | `UiFaultInput.surface` | Where the instance failed: `terminal`, or the remote surface that told the engine (`desktop`). | Type: `RenderSurface`. | d.ts line 14440 |
+| ✅ | `UiFaultInput.component` | The render component the `Client` was drawn in (`AbovePrompt`, `Pane`, ...). | Type: `RenderComponent`. | d.ts line 14440 |
+| ✅ | `UiFaultInput.requestId` | The engine's id for the drawing the `Client` sits in: the `requestId` the `ui.render` hook that drew it saw. | Type: `string`. | d.ts line 14440 |
+| ✅ | `UiFaultInput.element` | The `Client`'s `key`: which instance failed. | Type: `string`. | d.ts line 14440 |
+| ✅ | `UiFaultInput.module` | The `Client`'s `module`: which surface module ran there, as its path under the plugin's folder. | Type: `string`. | d.ts line 14440 |
+| ✅ | `UiFaultInput.phase` | When it failed (UiFaultPhase): loading, drawing, or running after it had drawn. | Type: `UiFaultPhase`. The step that failed. The terminal tries again once with new props or a new size. | d.ts line 14440 |
+| ✅ | `UiFaultInput.reason` | Why, as the surface said it: one line of 1 to 200 characters, no control character in it, a longer one cut and ended with an ellipsis. | Type: `string`. Untrusted text. It may quote what the plugin's module threw. Show or log it. Never act on it. | d.ts line 14440 |
+| ✅ | `UiFaultPhase` | When a `Client` failed, as `ui.fault` names it, a closed set a matcher narrows on. | Alias of `'load' \| 'render' \| 'run'`. `load` is before the module ran. `render` is while drawing. `run` is in a listener, timer, or handler. | d.ts line 14493 |
+| ✅ | `UiFaultResult` | What a `ui.fault` hook returns and what `next(e)` resolves to: `{}`, the fault was heard. | Alias of `Record<string, never>`. Observe only. The engine then draws the site again. The plugin's `ui.render` hook falls back by leaving the `Client` out. Used by `ui.fault`. | d.ts line 14506 |
+| ✅ | `UiFocusArgs` | What a plugin's `$.ui.focus(args)` takes: one of its own elements, by the `key` it drew it under, in one of its sites that holds the keyboard now. | Object. Its fields have rows below. The engine resolves it to the site's focus ring and raises `ui.focus`. A site that holds no keyboard gets `{ deny }`. Used by `$.ui.focus`. | d.ts line 14516 |
+| ✅ | `UiFocusArgs.requestId` | The site, by the `requestId` this plugin draws it under: one of its panes' ids, or the band's. | Type: `string`. | d.ts line 14516 |
+| ✅ | `UiFocusArgs.key` | The element's `key`: a `Button`, `Input` or `Select` this plugin drew in that site, of several under one key, the first in document order. | Type: `string`. The element key. The engine waits a short time for one that the next drawing brings. An element never drawn gets `{ deny }`. | d.ts line 14516 |
+| ✅ | `UiFocusComponent` | The render components whose site keeps a focus ring: a pane's body and the band above the prompt, each a ring over the elements hooks drew there. | Alias of `'Pane' \| 'AbovePrompt'`. | d.ts line 14537 |
+| ✅ | `UiFocusInput` | The input of `ui.focus`: a site's focus ring about to move onto one of the elements a hook drew in it (a `Button`, `Input` or `Select`), or off them. | Object. Its fields have rows below. Every key but `element` is pinned. A rewrite that changes a pinned key fails the hook. Used by `ui.focus`. | d.ts line 14547 |
+| ✅ | `UiFocusInput.component` | Which site: a `Pane` body or the `AbovePrompt` band. | Type: `UiFocusComponent`. | d.ts line 14547 |
+| ✅ | `UiFocusInput.requestId` | The instance the `ui.render` hook drawing the site sees: the pane's id, or the band's one id. | Type: `string`. | d.ts line 14547 |
+| ✅ | `UiFocusInput.plugin` | Whose `ui.render` hook drew the element taking the ring, absent with `element`. Read-only. | Type: `string`. Optional. | d.ts line 14547 |
+| ✅ | `UiFocusInput.element` | The `key` of the element taking the ring, as `ui.press` names it, absent for one of the engine's own stops (a pane's close mark or another's tab). | Type: `string`. Optional. `next({ ...e, element })` lands it on another element `plugin` drew in the site instead, one not drawn there is core's `{ deny }`. | d.ts line 14547 |
+| ✅ | `UiFocusInput.origin` | Who moves it (UiFocusOrigin), set by the engine where the move starts. | Type: `UiFocusOrigin`. | d.ts line 14547 |
+| ✅ | `UiFocusOrigin` | Who moves the ring at `ui.focus`, as the engine stamps it where the move starts, a closed set a matcher narrows on. | Object. Its fields have rows below. `next(e)` passes it on as received, no hook sets one. | d.ts line 14582 |
+| ✅ | `UiFocusOrigin.kind` | The person, by Tab, the arrows or a click while the site holds the keyboard. | Type: `'person'`. | d.ts line 14582 |
+| ✅ | `UiFocusOrigin.kind` | A plugin's `$.ui.focus`, or its `autoFocus` element taking the ring as the site takes the keyboard. | Type: `'plugin'`. | d.ts line 14582 |
+| ✅ | `UiFocusOrigin.name` | The focusing plugin's name. | Type: `string`. | d.ts line 14582 |
+| ✅ | `UiFocusResult` | What a `ui.focus` hook returns, what `next(e)` resolves to, and what `$.ui.focus` hands back: `{}` once the ring moved, or why it did not. | Object. Its fields have rows below. As `ui.scroll` spells it. Used by `$.ui.focus`, `ui.focus`. | d.ts line 14606 |
+| ✅ | `UiFocusResult.deny` | Absent when the ring is where the chain left it, else why nothing moved. | Type: `string`. Optional. Says why the focus did not move: a hook kept the ring, the site is not this plugin's, or another move came first. With no surface `no-surface` heads it. | d.ts line 14606 |
+| ✅ | `UiInputArgument` | The argument of `ui.input`: a change of, or a submit from, an `Input` a render hook drew. Flat and frozen like every event's. | Object. Its fields have rows below. Another plugin addresses one field by matcher: `on("ui.input", { plugin: "roster", element: "reply" }, ...)`. Used by `ui.input`. | d.ts line 14628 |
+| ✅ | `UiInputArgument.plugin` | Whose `ui.render` hook drew the element. | Type: `string`. | d.ts line 14628 |
+| ✅ | `UiInputArgument.element` | The `key` the hook gave its `Input`: its address, what a matcher names. | Type: `string`. | d.ts line 14628 |
+| ✅ | `UiInputArgument.component` | The render component the element was drawn in (`AbovePrompt`, `ToolUse`, ...). | Type: `RenderComponent`. | d.ts line 14628 |
+| ✅ | `UiInputArgument.requestId` | The instance the element was drawn in: the `requestId` the `ui.render` hook that drew it saw (a tool row's tool_use_id, a pane's id). | Type: `string`. | d.ts line 14628 |
+| ✅ | `UiInputArgument.surface` | Where the typing came from, one literal per member, so `if (e.surface === "terminal")` narrows `e`. | Type: `RenderSurface`. | d.ts line 14628 |
+| ✅ | `UiInputArgument.kind` | `change` after every edit of the text, `submit` on Enter. | Type: `'change' \| 'submit'`. | d.ts line 14628 |
+| ✅ | `UiInputArgument.value` | The field's whole text at that moment, a hook above may rewrite it for the plugins beneath and the element's own handler. | Type: `string`. A field of several lines joins them with `\n`, a submit trims nothing. | d.ts line 14628 |
+| ✅ | `UiInputResult` | What a `ui.input` hook returns and what `next(e)` resolves to. | Object. Its fields have rows below. Core runs the element's `onInput` (kind `change`) or `onSubmit` (kind `submit`) closure and answers `{ element, value }`. Used by `ui.input`. | d.ts line 14672 |
+| ✅ | `UiInputResult.element` | Which handler the input reached, by its Input's `key`. | Type: `string`. | d.ts line 14672 |
+| ✅ | `UiInputResult.value` | The text the handler received. | Type: `string`. | d.ts line 14672 |
+| ✅ | `UiLogOptions` | Options of `$.ui.log`. | Object. Its fields have rows below. Used by `$.ui.log`. | d.ts line 14686 |
+| ✅ | `UiLogOptions.to` | Where the line goes (UiLogSink), `transcript` when left out. A hook on `ui.log` reads it as `e.to` and may send the line elsewhere. | Type: `UiLogSink`. Optional. | d.ts line 14686 |
+| ✅ | `UiLogSink` | Where a `$.ui.log` line goes: `transcript`, a dim row of its own (and the debug log, as every line), `debug`, the debug log alone, nothing on screen. | Alias of `'transcript' \| 'debug'`. The debug log is `claude --debug` or the `--debug-file`, either way the line is led by the plugin's name. Used by `ui.log`. | d.ts line 14701 |
+| ✅ | `UiMessageArgument` | The argument of `ui.message`: what a `Client` instance's surface module posted (`surface.post(data)`), addressed by where the instance is drawn. | Object. Its fields have rows below. The origin is `client`, so `data` is input to validate, not a fact. A hook may not rewrite the other fields. Used by `ui.message`. | d.ts line 14711 |
+| ✅ | `UiMessageArgument.surface` | Where the instance is drawn: `terminal`, or `desktop` once it has them. | Type: `RenderSurface`. | d.ts line 14711 |
+| ✅ | `UiMessageArgument.component` | The render component the `Client` was drawn in (`AbovePrompt`, `Pane`, ...). | Type: `RenderComponent`. | d.ts line 14711 |
+| ✅ | `UiMessageArgument.requestId` | The engine's id for the drawing the `Client` sits in: the `requestId` the `ui.render` hook that drew it saw. | Type: `string`. | d.ts line 14711 |
+| ✅ | `UiMessageArgument.element` | The `Client`'s `key`: which instance posted. | Type: `string`. | d.ts line 14711 |
+| ✅ | `UiMessageArgument.module` | The `Client`'s `module`: which surface module runs there, as its path under the plugin's folder. | Type: `string`. | d.ts line 14711 |
+| ✅ | `UiMessageArgument.data` | What the instance posted: plain data (JsonValue) of at most 100000 characters, typed `unknown` since it came from code. Rewritable. | Type: `unknown`. | d.ts line 14711 |
+| ✅ | `UiMessageResult` | What a `ui.message` hook returns and what `next(e)` resolves to. | Object. Its fields have rows below. Core answers `{}`. A hook that answers `{ props }` hands the posting instance its next props with no `ui.render` run. Used by `ui.message`. | d.ts line 14750 |
+| ✅ | `UiMessageResult.props` | The instance's next props, plain data (JsonValue) bounded as a `Client`'s props are, absent leaves the instance's props as they were. | Type: `unknown`. Optional. | d.ts line 14750 |
+| ✅ | `UiNotifyResult` | What `$.ui.notify` resolves to and what a `ui.notify` hook's `{ value }` holds: whether a channel sent it (`isSent`) and which, else why not. | Object. Its fields have rows below. Example: `if (!(await $.ui.notify(text)).isSent) $.ui.toast(text)`. Used by `$.ui.notify`, `ui.notify`. | d.ts line 14765 |
+| ✅ | `UiNotifyResult.isSent` | True: the person's notification channel wrote it to their terminal, as its notification sequence, its bell, or both. | Type: `true`. A terminal does not report back: one that drops the sequence, or a system that mutes its banners, still reads true. | d.ts line 14765 |
+| ✅ | `UiNotifyResult.channel` | Which channel sent it, spelt as the `preferredNotifChannel` setting spells it, under `auto`, the one their terminal resolved to. | Type: `'iterm2' \| 'iterm2_with_bell' \| 'kitty' \| 'ghostty' \| 'terminal_bell'`. `terminal_bell` rings and shows neither the text nor the title. | d.ts line 14765 |
+| ✅ | `UiNotifyResult.isSent` | False: no channel sent it. | Type: `false`. | d.ts line 14765 |
+| ✅ | `UiNotifyResult.reason` | Why not, a closed set: `disabled`, `no-channel`, `no-surface` or `refused`, which a hook above says when it answers without sending. | Type: `'disabled' \| 'no-channel' \| 'no-surface' \| 'refused'`. `disabled` means `notifications_disabled` is set. `no-channel` means no terminal that notifies. | d.ts line 14765 |
+
+## See Also
+
+- [Mod API: UI Types (Part 2)](Claude-Code-Mod-API-UI-Types-2)
+- [Mod API: UI Types (Part 4)](Claude-Code-Mod-API-UI-Types-4)
+- [Mod API: UI Methods](Claude-Code-Mod-API-UI)
+- [Claude Code Mod API](Claude-Code-Mod-API)

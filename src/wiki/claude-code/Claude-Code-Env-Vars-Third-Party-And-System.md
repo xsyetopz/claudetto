@@ -1,0 +1,299 @@
+# Claude Code Environment Variables: Third-Party and System
+
+Claude Code `2.1.303` reads 136 environment variables that the system or another project owns, such as `HOME` and `ALL_PROXY`.
+Claude Code reads them and does not define them.
+Another 130 names are read only by libraries inside the program, and they have their own table.
+An environment variable is a named setting that you put in your shell or in the `env` key of `settings.json`.
+
+## Example
+
+Run `export ALL_PROXY=http://proxy.example:8080` before `claude` to send `git` traffic through a proxy.
+Or put `{ "env": { "ALL_PROXY": "http://proxy.example:8080" } }` in `~/.claude/settings.json`.
+
+## Variables
+
+The marks are explained on the [index](Claude-Code-Env-Vars#marks).
+
+| Name | Mark | What It Does | Value | Where It Works |
+| --- | --- | --- | --- | --- |
+| `AGENT_NAME` | 🔍 | Confirms an Azure Pipelines agent for the terminal color level. | Text. Presence test together with `TF_BUILD` | All sessions |
+| `ALACRITTY_LOG` | 🔍 | Terminal detection. A set value counts as an Alacritty terminal in a terminal-feature check and rules out a plain VTE terminal. | On or off. Truthy test only. Read from the env object and from the `env` of the terminal detector | Terminal UI rendering, all. Not set from project `env` before trust |
+| `ALACRITTY_WINDOW_ID` | 🔍 | Terminal detection. A set value rules out a plain `vte-based` or `gnome-terminal` guess, because Alacritty sets it. | On or off. Truthy test only, in the terminal detector | Terminal UI rendering, all. Not set from project `env` before trust |
+| `ALLUSERSPROFILE` | 🔍 | Windows path variable. It is the last fallback for the `ProgramData` folder when Claude Code builds the Windows Start Menu path. | Text. Order is `ProgramData`, then `PROGRAMDATA`, then `ALLUSERSPROFILE`. Also in a list of Windows path names | Windows. Not set from project `env` before trust |
+| `ALL_PROXY` | ✅ | Standard proxy variable. Claude Code passes it to `git` as `http.proxy` and `remote.origin.proxy` when it runs `git` commands. | Text. Read after `HTTPS_PROXY` and `https_proxy`, with the lowercase `all_proxy` as the last fallback | Git helper commands, all. Not set from project `env` before trust |
+| `ANDROID_HOME` | 🔍 | Environment detection. If the path exists, Claude Code records `android-sdk` in the detected build tools. | Text. Read first, with `ANDROID_SDK_ROOT` as the fallback. Only the path check matters | Environment report, all. Not set from project `env` before trust |
+| `ANDROID_SDK_ROOT` | 🔍 | Environment detection. It is the fallback for `ANDROID_HOME`. If the path exists, Claude Code records `android-sdk` in the detected build tools. | Text. Read only when `ANDROID_HOME` is unset | Environment report, all. Not set from project `env` before trust |
+| `APPDATA` | ✅ | Windows path variable. Claude Code uses it for the `gcloud` config folder, the Alacritty config path, and a Windows path list. | Text. Used on Windows only for `gcloud` and Alacritty paths | Windows. Not set from project `env` before trust |
+| `APPVEYOR` | 🔍 | Names AppVeyor for the terminal color level. | Presence test, only when `CI` is set. Gives color level 1 | All sessions |
+| `AWS_CA_BUNDLE` | 🔍 | It is in the schema and listed with other CA bundle vars in help text and lists. Purpose unknown. No visible effect in a print-mode probe ([Probes](Claude-Code-Probes)). | Text | Not set from project `env` before trust |
+| `AWS_EXECUTION_ENV` | 🔍 | Names the AWS runtime. Claude Code uses it to detect `aws-fargate` and `aws-ecs` as the deployment environment. The AWS SDK adds it to its user agent. | Compared with `AWS_ECS_FARGATE` and `AWS_ECS_EC2` | All (deployment detection) and AWS SDK calls |
+| `AWS_LAMBDA_FUNCTION_NAME` | 🔍 | Marks an AWS Lambda host. Claude Code reports `aws-lambda` as the deployment environment when it is set. | Text. Any non-empty value. The AWS SDK also reads it for trace headers | All (deployment detection) |
+| `AWS_PAGER` | 🔍 | Sets the pager of the AWS CLI. Claude Code lists it among env names that can run a program, for safety checks. | Text. No direct read | Settings `env` and Bash safety checks |
+| `AZURE_AUTH_LOCATION` | 🔍 | Names an Azure auth file path. Claude Code lists it among credential file names to protect. | Text. No direct read | Settings `env` and sandbox credential lists |
+| `AZURE_CONFIG_DIR` | 🔍 | Sets the Azure CLI config folder. Claude Code treats it as a credential path to protect, default `~/.azure`. | Text | Sandbox credential deny paths |
+| `AZURE_FUNCTIONS_ENVIRONMENT` | 🔍 | Marks an Azure Functions host. Claude Code reports `azure-functions` as the deployment environment when it is set. | Any non-empty value | All (deployment detection) |
+| `BASH_ENV` | ✅ | Names the startup file that bash reads. Claude Code treats it as an unsafe inlet and flags it in settings and plugin env. | Claude Code never reads it for its own use | Settings `env`, plugin env, sandbox checks |
+| `BAT_THEME` | 🔍 | Is the color theme variable of the `bat` tool.  No property read of this name was found. No visible effect in a print-mode probe ([Probes](Claude-Code-Probes)). | Text | Unknown |
+| `BROWSER` | ✅ | Names the command that opens URLs. Claude Code uses it before `open` on macOS, and the `browser` setting wins over it. | Text. The `browser` setting wins over it. On Linux with no display the open step fails with `no_display` | All sessions |
+| `BUILDKITE` | 🔍 | Marks a Buildkite CI run. Claude Code uses it for CI detection, deployment detection, and color depth hints. | Text. Any non-empty value counts | All sessions |
+| `C9_PID` | 🔍 | Marks an AWS Cloud9 workspace. Claude Code reports `aws-cloud9` as the environment when it is set. | Any non-empty value. Read directly in deployment detection | All (deployment detection) |
+| `C9_USER` | 🔍 | Marks an AWS Cloud9 workspace. Claude Code reports `aws-cloud9` as the environment when it is set. | Any non-empty value. Read directly in deployment detection | All (deployment detection) |
+| `CDPATH` | 🔍 | Is the shell `cd` search path. Claude Code blanks it in `cd` helper commands and treats it as an unsafe env name to override. | Text | Bash tool, Git and settings `env` checks |
+| `CF_PAGES` | 🔍 | Marks Cloudflare Pages. Claude Code reports `cloudflare-pages` as the deployment environment and counts it as a CI signal. | On or off. Truthy value check | All (deployment detection) |
+| `CI` | ✅ | Marks a CI run for the terminal color level. | Presence test (`"CI" in env`), any value counts. A CI vendor variable then picks the level | All sessions |
+| `CIRCLECI` | 🔍 | Marks a CircleCI run. Claude Code uses it for CI detection, deployment detection, and terminal color depth. | Text. Presence counts | All sessions |
+| `CI_NAME` | 🔍 | Names the CI vendor. Claude Code checks for `codeship` when it picks the terminal color depth. | Text. Only the value `codeship` matters | Terminal color detection (all) |
+| `CLAUDE_CODE_SLACK_TAG_TOKEN` | 🔍 | The name is only in a list of env names that sit next to credential names. Nothing reads it, and a [Probes](Claude-Code-Probes) run saw no effect. | Text | Unknown |
+| `CODER` | 🔍 | Marks a Coder workspace. The environment detector records deployment `coder`. | - | - |
+| `CODER_WORKSPACE_NAME` | 🔍 | Marks a Coder workspace by name. The environment detector records deployment `coder`. | Text | - |
+| `CODESPACES` | 🔍 | Marks GitHub Codespaces. The environment detector records deployment `codespaces`. | - | - |
+| `COLORTERM` | 🔍 | Reports terminal color support. `truecolor` or `24bit` means 24-bit color. | - | - |
+| `COLUMNS` | ✅ | Gives hook commands the terminal width. | - | - |
+| `COMPUTERNAME` | 🔍 | The Windows host name. Claude Code uses it as the device name. | - | - |
+| `COMSPEC` | 🔍 | The Windows command interpreter path. Claude Code uses it as a shell path fallback in environment info. | - | - |
+| `CONTAINER_SANDBOX_MOUNT_POINT` | 🔍 | Marks a Windows container. The check turns off the registry sweep. | - | - |
+| `COREPACK_ENABLE_AUTO_PIN` | 🔍 | Set to `0` at startup so that `corepack` does not edit `package.json`. | - | - |
+| `CURSOR_TRACE_ID` | 🔍 | Marks the Cursor editor. Claude Code uses it to name the terminal host. | Text | - |
+| `ComSpec` | ✅ | The Windows command interpreter path. The terminal opener uses it for the Command Prompt entry. | - | - |
+| `ConEmuANSI` | 🔍 | Marks ConEmu. Any of the three `ConEmu` vars turns on terminal progress reporting. | - | - |
+| `ConEmuPID` | 🔍 | Marks ConEmu. Any of the three `ConEmu` vars turns on terminal progress reporting. | - | - |
+| `ConEmuTask` | 🔍 | Marks ConEmu. The value `{cmd::Cmder}` also selects Unicode symbols. | - | - |
+| `DAYTONA_WS_ID` | 🔍 | Marks a Daytona workspace. The environment detector records deployment `daytona`. | Text | - |
+| `DENO_DEPLOYMENT_ID` | 🔍 | Marks Deno Deploy. The environment detector records deployment `deno-deploy`. | Text | - |
+| `DEVPOD` | 🔍 | Marks a DevPod workspace. The environment detector records deployment `devpod`. | - | - |
+| `DEVPOD_WORKSPACE_UID` | 🔍 | Marks a DevPod workspace by ID. The environment detector records deployment `devpod`. | - | - |
+| `DISPLAY` | 🔍 | Tells Claude Code if a local display exists on Linux. With no `DISPLAY` and no `WAYLAND_DISPLAY`, it treats the browser open as not possible. | Text. Matched against `:N` or `unix:N` forms | Linux. Not set from project `env` before trust |
+| `DRONE` | 🔍 | Names Drone CI for the terminal color level. | Presence test, only when `CI` is set. Gives color level 1 | All sessions |
+| `DYNO` | 🔍 | Heroku sets it. Environment detection reports the deployment platform as `heroku` when it is non-empty. | Any non-empty value counts | All sessions. Environment detection only |
+| `EDITOR` | ✅ | Names the editor that Claude Code opens for files, for example for `/memory`. `VISUAL` wins over it, and the fallback is the first of `code`, `vi`, `nano` found. | Text. Also sent in environment detection as the editor value | Interactive. Not set from project `env` before trust |
+| `FLY_APP_NAME` | 🔍 | Fly.io sets it. Environment detection reports the platform as `fly.io` when it is non-empty. | Text | All sessions. Environment detection only |
+| `FLY_MACHINE_ID` | 🔍 | Fly.io sets it. Environment detection reports the platform as `fly.io` when it is non-empty. | Text | All sessions. Environment detection only |
+| `FORCE_COLOR` | ✅ | Forces the color depth. The Bun runtime maps `""`, `1`, `true` to 16 colors and `2` to 256 colors. | Text. Untrimmed string | All sessions. Not set from project `env` before trust |
+| `GH_CONFIG_DIR` | 🔍 | Names the `gh` config directory. Claude Code checks it for `hosts.yml` or `config.yml` to see if `gh` has a login. | Text. Falls back to `XDG_CONFIG_HOME/gh`, then `~/.config/gh`. Also used in a secrets scan | GitHub features. Not set from project `env` before trust |
+| `GH_HOST` | ✅ | Names the GitHub host. It picks the enterprise token and is passed to the `gh` stand-in shim. | Text | GitHub features. Not set from project `env` before trust |
+| `GH_REPO` | 🔍 | Names the repository for `gh`. Claude Code passes it to the `gh` shim, which uses a host in it to choose the route. | Text | GitHub features. Not set from project `env` before trust |
+| `GITEA_ACTIONS` | 🔍 | Names Gitea Actions for the terminal color level. | Presence test, only when `CI` is set. Gives color level 3 in one helper | All sessions |
+| `GITHUB_ACTIONS` | 🔍 | Marks a GitHub Actions run. It adds run metadata to telemetry and turns on the subprocess env scrub unless that scrub is set off. | On or off. Truthy parse. `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` set to `0`, `false`, `no`, or `off` turns the scrub off | GitHub Actions. Not set from project `env` before trust |
+| `GITHUB_ACTION_PATH` | 🔍 | Path of the running action. Claude Code protects it in the scrub path list and logs the `claude-code-action` ref. | A path | GitHub Actions. Not set from project `env` before trust |
+| `GITHUB_ACTOR` | 🔍 | Gives a user label for a cache diagnostic. It falls back to `USER`, `USERNAME`, then the git email name. | Text. The label drops chars outside `a-zA-Z0-9._-` and is cut to 64 chars. Telemetry also reads it in Actions | GitHub Actions. Not set from project `env` before trust |
+| `GITHUB_ENV` | 🔍 | Path of the runner env file. Claude Code adds it to the protected path list of the subprocess scrub. | Resolved to a path | GitHub Actions. Not set from project `env` before trust |
+| `GITHUB_EVENT_PATH` | 🔍 | Path of the event payload file. Claude Code adds it to the protected path list of the subprocess scrub. | A path | GitHub Actions. Not set from project `env` before trust |
+| `GITHUB_WORKSPACE` | 🔍 | Path of the workspace. If it differs from the cwd, Claude Code protects its `.git` hooks and config in the scrub path list. | - | GitHub Actions. Not set from project `env` before trust |
+| `GITLAB_CI` | 🔍 | GitLab CI marker. It appears in CI vendor lists of the Bun runtime and the color support code. | Text. Use is by name in lists. No direct Claude Code read was seen | GitLab CI. Not set from project `env` before trust |
+| `GITPOD_WORKSPACE_ID` | 🔍 | Gitpod sets it. Environment detection reports the deployment as `gitpod` when it is non-empty. | Text | All sessions. Environment detection only |
+| `GNOME_TERMINAL_SERVICE` | 🔍 | Terminal marker for GNOME Terminal. Environment detection records if it is set. | Presence only | Terminal detection |
+| `GOOGLE_CLOUD_WORKSTATIONS` | 🔍 | Marks Google Cloud Workstations. Environment detection reports `gcp-cloud-workstations` when it is set. | Presence check | All sessions. Environment detection only |
+| `HEX_CACERTS_PATH` | 🔍 | It is named in a list of CA bundle env vars of other tools, such as Hex. Nothing reads it, and a [Probes](Claude-Code-Probes) run saw no effect. | Text. Seen in a CA diagnosis text and a list only | Unknown |
+| `HISTFILE` | 🔍 | Gives the shell history path to a context step that reads the shell history for tool usage. | Text. Passed as the history file input. Does not run if the home is a network path | Context gathering. Not set from project `env` before trust |
+| `HOME` | ✅ | Home directory. Many paths start from it, such as the config and XDG fallback dirs. | Text. Falls back to the OS home dir | All sessions. Not set from project `env` before trust |
+| `HOMEDRIVE` | 🔍 | Windows home drive. Claude Code sets it in a child env and uses it to expand paths in a Windows lookup. | Set by Claude Code from the home path for a Windows child env | Windows |
+| `HOMEPATH` | 🔍 | Windows home path. Claude Code sets it in a child env and uses it to expand paths in a Windows lookup. | Set by Claude Code from the home path for a Windows child env | Windows |
+| `HOMESHARE` | 🔍 | Windows network home. Claude Code uses it to expand `%HOMESHARE%` in a Windows registry lookup. | Text | Windows |
+| `HTTPLIB2_CA_CERTS` | 🔍 | It is named in a list of CA bundle env vars of other tools, such as `httplib2`. Nothing reads it, and a [Probes](Claude-Code-Probes) run saw no effect. | Text. Seen only in a list | Unknown |
+| `JAVA_HOME` | 🔍 | Name is in a typed list and in sets of env names that Claude Code treats as path-valued. Purpose unknown. No visible effect in a print-mode probe ([Probes](Claude-Code-Probes)). | A path | - |
+| `KUBERNETES_SERVICE_HOST` | 🔍 | Detects a Kubernetes pod so Claude Code reports a Kubernetes container runtime. | - | - |
+| `NODE_ENV` | ✅ | Claude Code sets `production` in the env of some helper child processes. It also lists it in env reports. | - | - |
+| `NODE_OPTIONS` | 🔍 | Node options. Claude Code adds `--max-old-space-size=8192` when `CLAUDE_CODE_REMOTE` is `true`. | - | - |
+| `NODE_PATH` | ✅ | Bun runtime module search path. Claude Code removes it from the env of some helper child processes. | A path | - |
+| `PATH` | ✅ | Standard executable search path. Claude Code reads it to find tools and sets it in shell and `pwsh` child environments. | Text | All sessions. Not set from project `env` before trust |
+| `PATHEXT` | ✅ | Windows list of executable extensions. Used when Claude Code looks for commands. | Text, `.EXE` by default. For `pwsh` child shells Claude Code sets its own value | Windows. Not set from project `env` before trust |
+| `PIP_CERT` | 🔍 | Sets the CA bundle path for `pip`. Claude Code sets it in the egress-proxy child env. | Text. Also in the sandbox CA list | Sessions with the agent proxy or sandbox. Not set from project `env` before trust |
+| `PLAYWRIGHT_BROWSERS_PATH` | 🔍 | Is part of the key of the local Chrome search for artifact preview. | Text | Local sessions with artifact preview. Not set from project `env` before trust |
+| `PREFIX` | ✅🧪 | Gives the Termux install prefix. Claude Code uses `$PREFIX/tmp` for daemon and socket paths. | Text. Used only when `TERMUX_VERSION` is set. Else `/tmp` | Termux (Android). Not set from project `env` before trust |
+| `PROGRAMDATA` | 🔍🧪 | Gives the Windows `ProgramData` folder. Used to find the Start Menu folder and as a protected env name in shell checks. | Text. Looked up as `ProgramData`, then `PROGRAMDATA`, then `ALLUSERSPROFILE` | Windows. Not set from project `env` before trust |
+| `PROJECT_DOMAIN` | 🔍 | Marks the host as Glitch in deployment-environment detection. | Text | All platforms. Not set from project `env` before trust |
+| `PWD` | ✅ | Standard working directory. Claude Code adds it as a session directory when it differs from the original cwd. | Text. Used in startup permission setup and shell-expression checks | All sessions. Not set from project `env` before trust |
+| `ProgramData` | ✅🧪 | Gives the Windows `ProgramData` folder for the sandbox runtime and the Azure Arc token path. | Text. The sandbox throws `ProgramData is not set` when it is missing | Windows. Not set from project `env` before trust |
+| `ProgramFiles` | ✅🧪 | Gives the Windows `Program Files` folder. Used to locate PowerShell and Azure Arc tools. | Text | Windows. Not set from project `env` before trust |
+| `RAILWAY_ENVIRONMENT_NAME` | 🔍 | Marks the host as Railway in deployment-environment detection. | Text | All platforms. Not set from project `env` before trust |
+| `RAILWAY_SERVICE_NAME` | 🔍 | Marks the host as Railway in deployment-environment detection. | Text | All platforms. Not set from project `env` before trust |
+| `RENDER` | 🔍 | Marks the host as Render in deployment-environment detection. | Text | All platforms. Not set from project `env` before trust |
+| `REPL_ID` | 🔍 | Marks the host as Replit in deployment-environment detection. | Text | All platforms. Not set from project `env` before trust |
+| `REPL_SLUG` | 🔍 | Marks the host as Replit in deployment-environment detection. | Text | All platforms. Not set from project `env` before trust |
+| `REQUESTS_CA_BUNDLE` | 🔍 | Sets the CA bundle path for Python `requests`. Claude Code sets it in the egress-proxy and sandbox child env. | Text. Listed with the other CA variables | Sessions with the agent proxy or sandbox. Not set from project `env` before trust |
+| `RUNNER_ENVIRONMENT` | 🔍🧪 | GitHub Actions runner kind. `github-hosted` marks a hosted runner in diagnostics. | Text. Read only when `GITHUB_ACTIONS` is true | GitHub Actions. Not set from project `env` before trust |
+| `RUNNER_OS` | 🔍🧪 | GitHub Actions runner OS. Claude Code reports it in telemetry. | Text. Read only when `GITHUB_ACTIONS` is true | GitHub Actions. Not set from project `env` before trust |
+| `SESSIONNAME` | 🔍 | Windows console session name. Claude Code only records whether it is set, as telemetry about the terminal. | Text. Any non-empty string. No behavior change | All sessions, telemetry only |
+| `SPACE_CREATOR_USER_ID` | 🔍 | Hugging Face Spaces variable. Claude Code uses it to detect the `huggingface-spaces` deployment environment for telemetry. | Text. Non-empty string means present | All sessions, telemetry only |
+| `SSH_AUTH_SOCK` | 🔍 | SSH agent socket. The agent proxy tests whether it is unset before it sets up git access. | Text. Non-empty string. Used with `GIT_SSH_COMMAND` in a check on the agent proxy git setup | Agent proxy (remote sessions) |
+| `SSH_CLIENT` | 🔍 | Marks an SSH session. Claude Code uses it to decide not to open a browser and for terminal detection. | Text. Non-empty string means SSH. One of `SSH_CONNECTION`, `SSH_TTY` or this on Windows | All sessions |
+| `SSH_CONNECTION` | 🔍 | Marks an SSH session. Claude Code treats the terminal as remote and skips opening a browser. | Text. Non-empty string. Sets the terminal `ssh` flag | All sessions |
+| `SSH_TTY` | 🔍 | Marks an SSH session. Used with `SSH_CONNECTION` and `SSH_CLIENT` in Windows terminal checks and in the no-browser check. | Text. Non-empty string means present. Also recorded as `hasSshTty` in the environment report | All sessions |
+| `STY` | 🔍 | GNU screen session id. Claude Code uses it to detect a `screen` multiplexer. | Text. Non-empty string. Sets the multiplexer to `screen` when `TMUX` is not set | All sessions |
+| `SYSTEMROOT` | 🔍 | Windows system directory. Claude Code uses it to find `powershell.exe` and other Windows tools. | Text. Non-empty string. Falls back to `SystemRoot`, then to `windir`, then to `C:\Windows` | Windows |
+| `SystemRoot` | ✅ | Windows system directory in its usual mixed case. Claude Code reads it as a fallback and sets it in a clean git env. | Text. Non-empty string. On Windows a sanitized env sets it to `C:\Windows` | Windows |
+| `TERM` | ✅ | Terminal type. Claude Code reads it to pick color level, key dialect, and terminal-feature support. | Text. Non-empty string. Names like `xterm-kitty` or `xterm-ghostty` raise the color level to 3 | All sessions |
+| `TERMINAL_EMULATOR` | 🔍 | JetBrains sets it to `JetBrains-JediTerm`. Claude Code uses it to detect a JetBrains IDE terminal. | Compared to `JetBrains-JediTerm`. On non-macOS it sets the terminal name to `pycharm` | All sessions, JetBrains terminals |
+| `TERMINATOR_UUID` | 🔍 | Terminator terminal id. Claude Code records only whether it is set, as a telemetry flag. | Text. Non-empty string means present. No behavior change | All sessions, telemetry only |
+| `TERM_PROGRAM` | ✅ | Terminal program name. Claude Code reads it to detect `vscode`, `iTerm.app`, `ghostty`, `tmux`, and others and tune features. | Text. Non-empty string. Used for color level, hyperlinks, clipboard and key support | All sessions |
+| `TERM_PROGRAM_VERSION` | 🔍 | Terminal program version. Claude Code reads the major version to pick a color level for `iTerm.app` and a hyperlink check for `tmux`. | Text. Non-empty string. For example iTerm2 major 3 or later gives true color | All sessions |
+| `TF_BUILD` | 🔍 | Names Azure Pipelines for the terminal color level. | Presence test together with `AGENT_NAME`. Gives color level 1 in one helper and 4 in another | All sessions |
+| `TILIX_ID` | 🔍 | Tilix terminal id. Claude Code records only whether it is set, as a telemetry flag. | Text. Non-empty string means present. No behavior change | All sessions, telemetry only |
+| `TMUX` | ✅ | Set by tmux. Claude Code uses it to detect tmux, to find the tmux socket, and to tune colors and features. | Text. Non-empty string. Also gives a true color step down, and blocks some terminal features inside tmux | All sessions |
+| `TMUX_PANE` | 🔍 | Set by tmux. Claude Code uses it to find the current pane when it runs tmux commands. | Text. Non-empty string. Needs `TMUX` as well | Tmux |
+| `TRAVIS` | 🔍 | Names Travis CI for the terminal color level. | Presence test, only when `CI` is set. Gives color level 1 | All sessions |
+| `USER` | ✅ | Login name. Claude Code uses it as a fallback for the user name, for example in a browser bridge socket name. | Text. Non-empty string. Read when the OS user lookup fails, then `USERNAME`, then `default` | All sessions |
+| `USERNAME` | 🔍 | Windows user name. Claude Code uses it as a name fallback and to spot Windows container users. | Text. Non-empty string. `ContainerAdministrator` or `ContainerUser` turns off a registry sweep | Windows |
+| `USERPROFILE` | ✅ | Windows home directory. Claude Code uses it to find Desktop, Documents, Downloads, and IDE lock files, and in WSL path mapping. | Text. Non-empty string. Used on Windows and WSL | Windows and WSL |
+| `UV_THREADPOOL_SIZE` | 🔍 | Node libuv thread pool size. Claude Code only prints it in MCP HTTP debug logs. | Text. Non-empty string. Shown as `default` when unset | MCP HTTP transport debug |
+| `VERCEL` | 🔍 | Vercel variable. Claude Code uses it to detect the `vercel` deployment environment for telemetry. | On or off. Truthy string | All sessions, telemetry only |
+| `VSCODE_GIT_ASKPASS_MAIN` | 🔍 | VS Code sets this path. Claude Code checks it to tell Cursor from VS Code and to find remote VS Code servers. | Text. Non-empty string. A path with `cursor` means Cursor | VS Code and Cursor terminals |
+| `VTE_VERSION` | 🔍 | VTE terminal version. Claude Code uses it for terminal bug workarounds and hyperlink support. | A number. A value under `5300` gets a workaround for unknown sequence printing. `4400` or more enables a feature | VTE terminals |
+| `WAYLAND_DISPLAY` | 🔍 | Wayland display name. Claude Code uses it to detect whether a local display exists, and to pick a clipboard tool. | Text. Non-empty string. With no `DISPLAY` and no `WAYLAND_DISPLAY` on Linux, it takes no browser or GUI path | Linux |
+| `WEBSITE_SITE_NAME` | 🔍 | Azure App Service variable. Claude Code uses it to detect the `azure-app-service` environment for telemetry. | Text. Non-empty string means present | All sessions, telemetry only |
+| `WEBSITE_SKU` | 🔍 | Azure App Service variable. Claude Code uses it to detect the `azure-app-service` environment for telemetry. | Text. Non-empty string means present | All sessions, telemetry only |
+| `WEZTERM_PANE` | 🔍 | WezTerm pane id. Claude Code uses it to exclude WezTerm when it detects a VTE-based terminal. | Text. Non-empty string. Used as a presence check only | All sessions |
+| `WINDIR` | 🔍 | Windows directory. Claude Code reads it once at load to build the `explorer.exe` path for a Windows app filter. | Lowercased with a trailing backslash. Also a fallback for `powershell.exe` path | Windows |
+| `WSL_DISTRO_NAME` | 🔍 | WSL distro name. Claude Code uses it to detect WSL and to match IDE workspace paths. | Text. Non-empty string. Either this or `WSL_INTEROP` on Linux sets the platform to `wsl` | WSL |
+| `WSL_INTEROP` | 🔍 | WSL interop socket. Claude Code uses it to detect WSL. | Text. Non-empty string. Either this or `WSL_DISTRO_NAME` on Linux sets the platform to `wsl` | WSL |
+| `WT_SESSION` | 🔍 | Windows Terminal session id. Claude Code uses it to detect Windows Terminal for key and link support. | Text. Non-empty string. Enables hyperlinks and some features | Windows Terminal |
+| `XTERM_VERSION` | 🔍 | Xterm version. Claude Code uses it to tell xterm from a VTE terminal and as a telemetry flag. | Text. Non-empty string. Presence check only | All sessions |
+| `ZDOTDIR` | ✅ | Zsh config directory. Claude Code uses it to find the zsh rc files when it checks for a `claude` alias. | Text. Non-empty string. Falls back to the home dir | Zsh users |
+| `ZED_TERM` | 🔍 | Zed terminal marker. Claude Code uses it to detect the Zed terminal for hyperlink and feature support. | Text. Non-empty string. Presence check only | Zed terminal |
+| `ZELLIJ` | 🔍 | Zellij marker. Claude Code uses it to detect the `zellij` multiplexer. | Any value other than undefined. Turns off some terminal features | Zellij |
+| `__CFBundleIdentifier` | 🔍 | MacOS bundle id of the app that started the process. Claude Code uses it to find the host app and the URL handler. | Text. Non-empty string. `com.anthropic.claude-code-url-handler` starts the deep link path | MacOS |
+
+## Read by Bundled Libraries
+
+Claude Code ships with some libraries inside its program.
+These libraries read the names below, and Claude Code itself does not use them.
+A name here works only when the library code runs.
+
+| Name | Mark | Library | What It Does |
+| --- | --- | --- | --- |
+| `APP_URL` | 🔍 | cloud detector | A bundled cloud detector treats a value that contains `ondigitalocean.app` as the DigitalOcean App Platform. |
+| `AWS_ACCOUNT_ID` | 🔍 | AWS SDK | The bundled AWS SDK env credential provider reads it with the key, secret, token, expiry, and scope vars. |
+| `AWS_AUTH_SCHEME_PREFERENCE` | 🔍 | AWS SDK | The bundled AWS SDK reads it as a comma list of preferred auth schemes. |
+| `AWS_CONTAINER_AUTHORIZATION_TOKEN` | 🔍 | AWS SDK | The bundled AWS SDK sends it as the auth value to the container credentials endpoint. |
+| `AWS_CONTAINER_AUTHORIZATION_TOKEN_FILE` | 🔍 | AWS SDK | The bundled AWS SDK reads the container credentials auth token from this file path. |
+| `AWS_CREDENTIAL_EXPIRATION` | ✅ | AWS SDK | The bundled AWS SDK env credential provider reads it as the expiry time of the env credentials. |
+| `AWS_DEFAULTS_MODE` | 🔍 | AWS SDK | The bundled AWS SDK reads it as the SDK defaults mode. |
+| `AWS_EC2_METADATA_DISABLED` | 🔍 | AWS SDK | Turns off the EC2 instance metadata lookup in the bundled AWS SDK credential chain and region defaults. |
+| `AWS_EC2_METADATA_SERVICE_ENDPOINT` | 🔍 | AWS SDK | Sets the EC2 metadata service URL for the bundled AWS SDK. |
+| `AWS_EC2_METADATA_SERVICE_ENDPOINT_MODE` | 🔍 | AWS SDK | Picks `IPv4` or `IPv6` for the EC2 metadata service address in the bundled AWS SDK. |
+| `AWS_EC2_METADATA_V1_DISABLED` | 🔍 | AWS SDK | Blocks the IMDSv1 fallback in the bundled AWS SDK, so only token-based IMDSv2 is used. |
+| `AWS_ENDPOINT_URL_SSO` | 🔍 | AWS SDK | Overrides the AWS SSO endpoint in the bundled AWS SDK. |
+| `AWS_ENDPOINT_URL_SSO_OIDC` | 🔍 | AWS SDK | Overrides the AWS SSO OIDC endpoint in the bundled AWS SDK. |
+| `AWS_LAMBDA_BENCHMARK_MODE` | 🔍 | AWS SDK | Enables a test reset hook in the bundled AWS Lambda `InvokeStore`. |
+| `AWS_LAMBDA_MAX_CONCURRENCY` | 🔍 | AWS SDK | Selects the concurrent-aware store in the bundled AWS Lambda `InvokeStore` when present. |
+| `AWS_LOGIN_CACHE_DIRECTORY` | 🔍 | AWS SDK | Sets the cache folder for the AWS SDK `login_session` credential provider (`aws login`). |
+| `AWS_MAX_ATTEMPTS` | 🔍 | AWS SDK | Sets the maximum retry attempts of the bundled AWS SDK clients. |
+| `AWS_RETRY_MODE` | 🔍 | AWS SDK | Sets the retry mode of the bundled AWS SDK clients. |
+| `AWS_ROLE_SESSION_NAME` | 🔍 | AWS SDK | Sets the session name for AWS web identity role assumption in the bundled AWS SDK. |
+| `AWS_SDK_UA_APP_ID` | 🔍 | AWS SDK | Adds an `app/<id>` part to the user agent of the bundled AWS SDK calls. |
+| `AWS_USE_DUALSTACK_ENDPOINT` | 🔍 | AWS SDK | Turns on AWS dual-stack endpoints in the AWS SDK. |
+| `AZURE_ADDITIONALLY_ALLOWED_TENANTS` | 🔍 | Azure SDK | Lists extra tenant IDs the bundled Azure identity library may use. |
+| `AZURE_AUTHORITY_HOST` | 🔍 | Azure SDK | Sets the Microsoft Entra authority URL of the bundled Azure identity library. |
+| `AZURE_CLIENT_CERTIFICATE_PASSWORD` | 🔍 | Azure SDK | Gives the password of the client certificate for the Azure `EnvironmentCredential`. |
+| `AZURE_CLIENT_CERTIFICATE_PATH` | 🔍 | Azure SDK | Gives the client certificate path for the Azure `EnvironmentCredential`. |
+| `AZURE_CLIENT_ID` | ✅ | Azure SDK | Gives the Azure app client ID for the bundled Azure identity credentials. |
+| `AZURE_CLIENT_SECRET` | 🔍 | Azure SDK | Gives the Azure app client secret for the Azure `EnvironmentCredential`. |
+| `AZURE_CLIENT_SEND_CERTIFICATE_CHAIN` | 🔍 | Azure SDK | Makes the Azure client certificate credential send the full certificate chain. |
+| `AZURE_FEDERATED_TOKEN_FILE` | 🔍 | Azure SDK | Gives the federated token file for Azure workload identity login. |
+| `AZURE_IDENTITY_DISABLE_MULTITENANTAUTH` | 🔍 | Azure SDK | Turns off multi-tenant token requests in the Azure identity library, so the configured tenant is always used. |
+| `AZURE_LOG_LEVEL` | 🔍 | Azure SDK | Sets the log level of the bundled Azure SDK logger. |
+| `AZURE_PASSWORD` | 🔍 | Azure SDK | Gives the password for the Azure username and password credential. |
+| `AZURE_POD_IDENTITY_AUTHORITY_HOST` | 🔍 | Azure SDK | Sets the Azure pod identity authority host for managed identity login in the bundled MSAL library. |
+| `AZURE_REGIONAL_AUTHORITY_NAME` | 🔍 | Azure SDK | Sets the regional authority name for MSAL token requests. |
+| `AZURE_TENANT_ID` | ✅ | Azure SDK | Gives the Azure tenant ID for the bundled Azure identity credentials. |
+| `AZURE_TOKEN_CREDENTIALS` | 🔍 | Azure SDK | Picks which Azure credential chain `DefaultAzureCredential` uses. |
+| `AZURE_USERNAME` | 🔍 | Azure SDK | Gives the username for the Azure username and password credential. |
+| `BUF_BIGINT_DISABLE` | 🔍 | protobuf | Turns off native `BigInt` use in the bundled protobuf library, so it uses its fallback int64 code. |
+| `BUN_DISABLE_DYNAMIC_CHUNK_SIZE` | 🔍 | Bun runtime | Turns off dynamic chunk size tuning for native readable streams in the Bun runtime. |
+| `BUN_FEATURE_FLAG_VERBOSE_WARNINGS` | 🔍 | Bun runtime | Shows the Bun runtime warning for unsupported `async_hooks` use. |
+| `BUN_INSPECT_NOTIFY` | 🔍 | Bun runtime | Tells the Bun inspector where to report that it listens. |
+| `BUN_PORT` | 🔍 | Bun runtime | Gives a fallback port for the Bun dev server when the default port is busy. |
+| `CHOKIDAR_INTERVAL` | 🔍 | chokidar | Sets the poll interval for the bundled `chokidar` file watcher when polling is on. |
+| `CHOKIDAR_USEPOLLING` | 🔍 | chokidar | Forces the bundled `chokidar` file watcher to use polling or not. |
+| `CLOUD_RUN_JOB` | 🔍 | Google auth | Marks a Google Cloud Run job. |
+| `DATABASEURL` | 🔍 | Bun SQL | Is a second spelling of `DATABASE_URL` for the embedded Bun SQL client. |
+| `DATABASE_URL` | ✅ | Bun SQL | Gives the default connection URL to the embedded Bun SQL client. |
+| `DEBUG_AUTH` | 🔍 | Google auth | Prints GCP metadata detection errors with `console.info`. |
+| `DETECT_GCP_RETRIES` | 🔍 | Google auth | Sets the number of retries for GCP metadata server detection. |
+| `FUNCTION_NAME` | 🔍 | Google auth | Marks a Google Cloud Functions runtime in the bundled Google auth library. |
+| `FUNCTION_TARGET` | 🔍 | Google auth | Marks a Google Cloud Functions runtime in the bundled Google auth library. |
+| `GAE_MODULE_NAME` | 🔍 | Google auth | Marks a Google App Engine runtime in the bundled Google auth library. |
+| `GAE_SERVICE` | 🔍 | Google auth | Marks a Google App Engine runtime in the bundled Google auth library. |
+| `GCE_METADATA_HOST` | 🔍 | Google auth | Sets the host of the Compute Engine metadata server for the bundled Google auth library. |
+| `GCE_METADATA_IP` | 🔍 | Google auth | Sets the address of the Compute Engine metadata server for the bundled Google auth library. |
+| `GOOGLE_API_CERTIFICATE_CONFIG` | 🔍 | Google auth | Path of the certificate config for mTLS in the bundled Google auth library. |
+| `GOOGLE_CLOUD_QUOTA_PROJECT` | 🔍 | Google auth | Sets the quota project of the credential in the bundled Google auth library. |
+| `GRACEFUL_FS_PLATFORM` | 🔍 | graceful-fs | Overrides the platform name that the bundled `graceful-fs` patches use. |
+| `GRPC_DEFAULT_SSL_ROOTS_FILE_PATH` | 🔍 | gRPC | Path of a root certificate file that the bundled gRPC library loads as its TLS roots. |
+| `GRPC_EXPERIMENTAL_ENABLE_OUTLIER_DETECTION` | 🔍 | gRPC | Turns the gRPC outlier detection load balancer on or off. |
+| `GRPC_NODE_TRACE` | 🔍 | gRPC | Lists the gRPC tracers to turn on. |
+| `GRPC_NODE_USE_ALTERNATIVE_RESOLVER` | 🔍 | gRPC | Makes the gRPC DNS resolver use the alternative path when it is `true`. |
+| `GRPC_NODE_VERBOSITY` | 🔍 | gRPC | Sets the gRPC log level. |
+| `GRPC_SSL_CIPHER_SUITES` | 🔍 | gRPC | Sets the TLS cipher suites of the bundled gRPC library. |
+| `GRPC_TRACE` | 🔍 | gRPC | Lists the gRPC tracers to turn on. |
+| `GRPC_VERBOSITY` | 🔍 | gRPC | Sets the gRPC log level. |
+| `LRU_CACHE_IGNORE_AC_WARNING` | 🔍 | lru-cache | Set to `1` to hide the `lru-cache` warning about a missing `AbortController`. |
+| `MARIADBDATABASE` | 🔍 | Bun SQL | Is another spelling of `MARIADB_DATABASE`. |
+| `MARIADBHOST` | 🔍 | Bun SQL | Is another spelling of `MARIADB_HOST`. |
+| `MARIADBPASSWORD` | 🔍 | Bun SQL | Is another spelling of `MARIADB_PASSWORD`. |
+| `MARIADBPORT` | 🔍 | Bun SQL | Is another spelling of `MARIADB_PORT`. |
+| `MARIADBURL` | 🔍 | Bun SQL | Is another spelling of `MARIADB_URL` for the embedded Bun SQL client. |
+| `MARIADBUSER` | 🔍 | Bun SQL | Is another spelling of `MARIADB_USER`. |
+| `MARIADB_DATABASE` | 🔍 | Bun SQL | Sets the database of the MariaDB connection of the embedded Bun SQL client. |
+| `MARIADB_HOST` | 🔍 | Bun SQL | Sets the host of the MariaDB connection of the embedded Bun SQL client. |
+| `MARIADB_PASSWORD` | 🔍 | Bun SQL | Sets the password of the MariaDB connection of the embedded Bun SQL client. |
+| `MARIADB_PORT` | 🔍 | Bun SQL | Sets the port of the MariaDB connection of the embedded Bun SQL client. |
+| `MARIADB_URL` | 🔍 | Bun SQL | Gives the default MariaDB connection URL to the embedded Bun SQL client. |
+| `MARIADB_USER` | 🔍 | Bun SQL | Sets the user of the MariaDB connection of the embedded Bun SQL client. |
+| `MYSQLDATABASE` | 🔍 | Bun SQL | Is another spelling of `MYSQL_DATABASE`. |
+| `MYSQLHOST` | 🔍 | Bun SQL | Is another spelling of `MYSQL_HOST`. |
+| `MYSQLPASSWORD` | 🔍 | Bun SQL | Is another spelling of `MYSQL_PASSWORD`. |
+| `MYSQLPORT` | 🔍 | Bun SQL | Is another spelling of `MYSQL_PORT`. |
+| `MYSQLURL` | 🔍 | Bun SQL | Is another spelling of `MYSQL_URL` for the embedded Bun SQL client. |
+| `MYSQLUSER` | 🔍 | Bun SQL | Is another spelling of `MYSQL_USER`. |
+| `MYSQL_DATABASE` | 🔍 | Bun SQL | Sets the database of the MySQL connection of the embedded Bun SQL client. |
+| `MYSQL_HOST` | 🔍 | Bun SQL | Sets the host of the MySQL connection of the embedded Bun SQL client. |
+| `MYSQL_PASSWORD` | 🔍 | Bun SQL | Sets the password of the MySQL connection of the embedded Bun SQL client. |
+| `MYSQL_PORT` | 🔍 | Bun SQL | Sets the port of the MySQL connection of the embedded Bun SQL client. |
+| `MYSQL_URL` | 🔍 | Bun SQL | Gives the default MySQL connection URL to the embedded Bun SQL client. |
+| `MYSQL_USER` | 🔍 | Bun SQL | Sets the user of the MySQL connection of the embedded Bun SQL client. |
+| `NODE_CHANNEL_FD` | 🔍 | Bun runtime | Bun runtime: if set, the process has an IPC channel and `send` and `disconnect` are stubbed in workers. |
+| `NODE_CLUSTER_SCHED_POLICY` | 🔍 | Bun runtime | Bun runtime `cluster`: `rr` or `none` picks the scheduling policy. |
+| `NODE_DEBUG` | 🔍 | Bun runtime | Bun runtime: enables `debuglog` sections by name. |
+| `NODE_DISABLE_COLORS` | 🔍 | Bun runtime | Bun runtime: a non-empty value sets terminal color depth to one color. |
+| `NODE_NO_READLINE` | 🔍 | Bun runtime | Bun REPL: a number that parses to non-zero turns off terminal mode. |
+| `NODE_PORT` | 🔍 | Bun runtime | Bun dev server: fallback port after `PORT` and `BUN_PORT` when the port is in use. |
+| `NODE_REPL_EXTERNAL_MODULE` | 🔍 | Bun runtime | Bun REPL: path of a module to load in place of the built-in REPL. |
+| `NODE_REPL_HISTORY` | 🔍 | Bun runtime | Bun REPL: file path for persistent history. |
+| `NODE_REPL_HISTORY_SIZE` | 🔍 | Bun runtime | Bun REPL: history size. |
+| `NODE_REPL_MODE` | 🔍 | Bun runtime | Bun REPL: `strict` or `sloppy` mode. |
+| `NODE_TEST_CONTEXT` | 🔍 | Bun runtime | Bun `node:test` runner: when set, the process emits run-child events. |
+| `NODE_TEST_WORKER_ID` | 🔍 | Bun runtime | Bun `node:test` runner: gives the worker id of a test. |
+| `NODE_UNIQUE_ID` | 🔍 | Bun runtime | Bun runtime `cluster`: gives the worker id of a forked worker and is deleted after use. |
+| `OSTYPE` | 🔍 | which | The bundled `which` code treats `cygwin` or `msys` as a Windows-style path list. |
+| `PASSWORD` | ✅ | Bun SQL | Gives a fallback password to the embedded Bun SQL client. |
+| `PGDATABASE` | 🔍 | Bun SQL | Is another spelling of `PG_DATABASE`. |
+| `PGHOST` | 🔍 | Bun SQL | Is another spelling of `PG_HOST`. |
+| `PGPASSWORD` | 🔍 | Bun SQL | Is another spelling of `PG_PASSWORD`. |
+| `PGPORT` | 🔍 | Bun SQL | Is another spelling of `PG_PORT`. |
+| `PGSSLMODE` | 🔍 | Bun SQL | Is another spelling of `PG_SSLMODE`. |
+| `PGURL` | 🔍 | Bun SQL | Is another spelling of `POSTGRES_URL` for the embedded Bun SQL client. |
+| `PGUSER` | 🔍 | Bun SQL | Is another spelling of `PG_USER`. |
+| `PG_DATABASE` | 🔍 | Bun SQL | Sets the database of the Postgres connection of the embedded Bun SQL client. |
+| `PG_HOST` | 🔍 | Bun SQL | Sets the host of the Postgres connection of the embedded Bun SQL client. |
+| `PG_PASSWORD` | 🔍 | Bun SQL | Sets the password of the Postgres connection of the embedded Bun SQL client. |
+| `PG_PORT` | 🔍 | Bun SQL | Sets the port of the Postgres connection of the embedded Bun SQL client. |
+| `PG_SSLMODE` | 🔍 | Bun SQL | Sets the TLS mode of the Postgres connection of the embedded Bun SQL client. |
+| `PG_URL` | 🔍 | Bun SQL | Is a third spelling of `POSTGRES_URL` for the embedded Bun SQL client. |
+| `PG_USER` | 🔍 | Bun SQL | Sets the user of the Postgres connection of the embedded Bun SQL client. |
+| `POSTGRES_URL` | 🔍 | Bun SQL | Gives the default Postgres connection URL to the embedded Bun SQL client. |
+| `SQLITEURL` | 🔍 | Bun SQL | Is another spelling of `SQLITE_URL` for the embedded Bun SQL client. |
+| `SQLITE_URL` | 🔍 | Bun SQL | Gives the default SQLite connection URL to the embedded Bun SQL client. |
+| `TEAMCITY_VERSION` | 🔍 | color support | TeamCity CI variable. |
+| `TEST_GRACEFUL_FS_GLOBAL_PATCH` | 🔍 | graceful-fs | Option of the bundled `graceful-fs` package. |
+| `TLS_DATABASE_URL` | 🔍 | Bun SQL | Gives a default URL and turns on TLS for the embedded Bun SQL client. |
+| `TLS_MARIADB_DATABASE_URL` | 🔍 | Bun SQL | Gives the MariaDB URL and turns on TLS for the embedded Bun SQL client. |
+| `TLS_MYSQL_DATABASE_URL` | 🔍 | Bun SQL | Gives the MySQL URL and turns on TLS for the embedded Bun SQL client. |
+| `TLS_POSTGRES_DATABASE_URL` | 🔍 | Bun SQL | Gives the Postgres URL and turns on TLS for the embedded Bun SQL client. |
+| `VERBOSE_SSR` | 🔍 | Bun runtime | Bun's server-side rendering debug flag. |
+
+## See Also
+
+- [Environment Variables](Claude-Code-Env-Vars)
+- [Probes](Claude-Code-Probes)
+- [Settings](Claude-Code-Settings)
