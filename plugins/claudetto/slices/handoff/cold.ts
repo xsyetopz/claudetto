@@ -5,6 +5,7 @@
 // The functions are pure and import only `limits.ts` and the kernel.
 
 import type { SessionMessage } from "claude-code";
+import { earlierHanded, originalFirst } from "./compact.ts";
 import {
   CACHE_TTL_MS,
   COLD_FILES_MAX,
@@ -49,15 +50,24 @@ const quote = (texts: readonly string[]): string =>
     )
     .join("\n>\n");
 
-/** The text of a cold handoff of `messages`. */
+/**
+ * The text of a cold handoff of `messages`.
+ * After an earlier compaction the first user message is the wrapper of the earlier handoff:
+ * the task comes from the original first message, and the earlier handed text stays whole.
+ */
 export const coldHandoff = (messages: readonly SessionMessage[]): string => {
   const prompts = messages
     .filter((m) => m.role === "user" && m.text.trim() !== "")
     .map((m) => m.text);
+  const head = prompts[0] ?? "";
+  const earlier = earlierHanded(head);
   const files = changedFiles(messages).map((f) => `\`${f}\``);
   return COLD({
-    task: cut((prompts[0] ?? "").trim().split("\n")[0] ?? ""),
+    task: cut(originalFirst(head).trim().split("\n")[0] ?? ""),
     files: files.length === 0 ? "none" : files.join(", "),
-    words: quote(prompts.slice(-COLD_PROMPTS_MAX)),
+    words: quote(
+      (earlier === "" ? prompts : prompts.slice(1)).slice(-COLD_PROMPTS_MAX),
+    ),
+    earlier: earlier === "" ? "none" : earlier,
   });
 };

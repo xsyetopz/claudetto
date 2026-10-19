@@ -4,3 +4,7 @@ Changed files: {{files}}.
 The last words of the user:
 
 {{words}}
+
+The earlier handoff of this session:
+
+{{earlier}}

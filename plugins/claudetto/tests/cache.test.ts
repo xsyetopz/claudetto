@@ -127,7 +127,6 @@ test("a model request of the main thread in a long turn keeps the cache warm", a
   expect(seen.forks).toBe(1);
 });
 
-// biome-ignore lint/plugin: a test name
 test("a model request of a subagent does not keep the cache warm", async ($: Engine, on: On) => {
   const seen = engine(on);
   await finish($);

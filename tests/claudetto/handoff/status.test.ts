@@ -68,3 +68,32 @@ test("a later failure of a check removes its earlier pass", () => {
     "Passed checks: none.",
   );
 });
+
+test("a `Bash` use that runs in the background has no outcome, so it is not a passed check", () => {
+  const use = bash("a", "just check");
+  use.toolUses[0] = {
+    ...use.toolUses[0],
+    input: { command: "just check", run_in_background: true },
+  } as (typeof use.toolUses)[0];
+  expect(passedChecks([use])).toEqual([]);
+});
+
+test("`just docker` with a recipe is a check, and a shell operator is not", () => {
+  const checks = passedChecks([
+    bash("a", "just docker check"),
+    bash("b", "just docker test tests/x.test.ts"),
+    bash("c", "just docker check; true"),
+    bash("d", "just docker build"),
+  ]);
+  expect(checks).toEqual([
+    "just docker check",
+    "just docker test tests/x.test.ts",
+  ]);
+});
+
+test("with no open change, the passed checks still show", () => {
+  expect(withChange("- Next.\n", null, ["just check"])).toContain(
+    "Passed checks: `just check`.",
+  );
+  expect(withChange("- Next.\n", null)).toBe("- Next.\n");
+});

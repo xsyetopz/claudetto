@@ -25,6 +25,7 @@ import { HANDOFF_DIR } from "../../../../kernel/paths.ts";
 import { CALL_INPUT_CHARS_MAX, CHARS_PER_TOKEN } from "./limits.ts";
 import {
   CHANGE_HEADER,
+  CHECKS_LINE,
   FIRST_MESSAGE,
   FORK_TAIL,
   GROUND_WARNING,
@@ -81,31 +82,33 @@ export const handoffPath = (
 /**
  * The text of the handoff file with the open openspec change at its start: the change folder, the next open task,
  * the passed `checks` of the session, and the rule that a checked task is done and verified.
- * With no change, the text stays as it is.
+ * With no change, only the passed checks are at its start, and with none the text stays as it is.
  */
 export const withChange = (
   text: string,
   change: OpenChange | null,
   checks: readonly string[] = [],
-): string =>
-  change === null
-    ? text
-    : [
-        CHANGE_HEADER({
-          name: change.name,
-          next: change.next,
-          done:
-            change.done.length === 0
-              ? "none"
-              : change.done.map((id) => `\`${id}\``).join(", "),
-          checks:
-            checks.length === 0
-              ? "none"
-              : checks.map((c) => `\`${c}\``).join(", "),
-        }),
-        "",
-        text,
-      ].join("\n");
+): string => {
+  const passed =
+    checks.length === 0 ? "none" : checks.map((c) => `\`${c}\``).join(", ");
+  if (change === null)
+    return checks.length === 0
+      ? text
+      : [CHECKS_LINE({ checks: passed }), "", text].join("\n");
+  return [
+    CHANGE_HEADER({
+      name: change.name,
+      next: change.next,
+      done:
+        change.done.length === 0
+          ? "none"
+          : change.done.map((id) => `\`${id}\``).join(", "),
+      checks: passed,
+    }),
+    "",
+    text,
+  ].join("\n");
+};
 
 /**
  * The text of the user message that hands over `text`, the content of the file at `path`,
@@ -168,21 +171,31 @@ const contextTokens = (messages: readonly SessionMessage[]): number =>
   messages.reduce((sum, message) => sum + messageTokens(message), 0);
 
 /**
- * The text of the first user message before an earlier compaction: the text in `message` with the wrapper of that compaction taken off.
+ * `message` split at the wrapper of an earlier compaction: the original first user message, and the handed message after it.
  * After a compaction the first user message holds the earlier handoff, which the new handoff updates and does not stack (design D46).
+ * A message with no wrapper is all first message, and a bare handed message has no first message.
  */
-const originalFirst = (message: string): string => {
+const unwrap = (message: string): { first: string; handed: string } => {
   const [lead = "", mid = ""] = FIRST_MESSAGE({
     first: "\0",
     handed: "\0",
   }).split("\0");
   const handed = HANDED({ path: "\0" }).split("\0")[0] as string;
-  if (message.startsWith(handed)) return "";
-  if (!message.startsWith(lead)) return message;
+  if (message.startsWith(handed)) return { first: "", handed: message };
+  if (!message.startsWith(lead)) return { first: message, handed: "" };
   const body = message.slice(lead.length);
   const end = body.indexOf(`${mid}${handed}`);
-  return end === -1 ? message : body.slice(0, end);
+  return end === -1
+    ? { first: message, handed: "" }
+    : { first: body.slice(0, end), handed: body.slice(end + mid.length) };
 };
+
+/** The text of the first user message before an earlier compaction: the text in `message` with the wrapper of that compaction taken off. */
+export const originalFirst = (message: string): string => unwrap(message).first;
+
+/** The handed message of an earlier compaction in `message`, or `""` for a message with none. */
+export const earlierHanded = (message: string): string =>
+  unwrap(message).handed;
 
 /** The text of the one user message after a compaction: the text of the first user message `first`, then `handed`. */
 const headText = (first: string, handed: string): string =>
