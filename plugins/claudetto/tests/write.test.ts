@@ -25,7 +25,11 @@ const MAIN = ["/main", "/main/.git", "/main/.git", "abc123"].join("\n");
 
 /** Stubs the tool, the file system, and `git`. `rev` is the answer of `rev-parse`. */
 const stub = (on: On, rev: string, files: Record<string, string> = {}) => {
-  const runs: { argv: readonly string[]; cwd?: string; env?: object }[] = [];
+  const runs: {
+    argv: readonly string[];
+    cwd?: string | undefined;
+    env?: object | undefined;
+  }[] = [];
   const writes: Record<string, string> = {};
   on("tool.call", () => ({ result: "ok" }));
   on("fs.exists", (_$, e) => ({ value: e.path in files }));

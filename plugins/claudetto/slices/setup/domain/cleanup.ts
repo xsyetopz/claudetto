@@ -82,14 +82,15 @@ export const cleanLegacyKeys = (settings: Json): Json => {
         ([k, v]) => oldEnv[k as keyof typeof oldEnv] !== v,
       ),
     );
+  const ask: unknown = isObject(perms) ? perms["ask"] : undefined;
   if (
     isObject(perms) &&
-    Array.isArray(perms["ask"]) &&
-    oldAsk.every((rule) => perms["ask"].includes(rule))
+    Array.isArray(ask) &&
+    oldAsk.every((rule) => ask.includes(rule))
   )
     out["permissions"] = {
       ...perms,
-      ask: perms["ask"].filter((v) => !oldAsk.includes(v)),
+      ask: ask.filter((v) => !oldAsk.includes(v)),
     };
   return out;
 };
