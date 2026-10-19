@@ -21,6 +21,7 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 - The `patch` slice (D64) keeps one patch in `.claudetto/patches/<agentId>/` of the main checkout after each `Edit` and `Write` of a subagent in a worktree, and `claudetto-patch` lists and lands it with `git apply --check` first, `--3way` only on request, and no auto-resolve.
 - `just release-check` fails while a row of `findings.md` is open (D38) and is not part of `just check`, and `setup` offers `codegraph install --target claude --location global` when `claudetto-codegraph` is enabled (D51).
 - The settings snippet sets `CLAUDE_CODE_PROMPT_CACHE_TTL=1h`, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`, `DISABLE_EXTRA_USAGE_COMMAND`, `DISABLE_UPGRADE_COMMAND`, and `DISABLE_INSTALL_GITHUB_APP_COMMAND`, has 25 exact git `ask` rules that name the destructive flags, such as `git push* --force` and `git reset* --hard`, and adds `permissions.ask` rules for `docker run`, `create`, `compose run`, and `compose up` with a mount or `--privileged` (D43).
+- `claudetto-setup --apply` appends `/.claudetto/`, `/.jscpd.json`, and `/.claude/settings.local.json` to the `.gitignore` of a project with `.git/`, under a comment header, adds no duplicate line, and changes nothing in a project with no `.git/`.
 
 ### Changed
 

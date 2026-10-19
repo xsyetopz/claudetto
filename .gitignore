@@ -26,3 +26,7 @@ node_modules/
 
 # Written by `just dry` from `jscpd.local.json`.
 /.jscpd.json
+
+# Local session state and research notes, not for the public repository.
+/HANDOVER.md
+/.claudetto/

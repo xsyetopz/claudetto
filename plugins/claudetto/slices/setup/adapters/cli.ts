@@ -8,6 +8,7 @@
 //
 // It cleans the keys of 0.1.0 out of the settings file and out of `CLAUDE.md`, then merges the settings snippet into the settings file.
 // It writes nothing without `--apply`.
+// With `--apply`, in a project with `.git/`, it also appends the local files of claudetto to `.gitignore`.
 // With `--advisor claudetto`, the snippet also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor only.
 // The skill passes the `advisor` option, because a CLI run by the user gets no `CLAUDE_PLUGIN_OPTION_*` env var.
 
@@ -28,6 +29,7 @@ import {
   cleanLegacyKeys,
   stripBlock,
 } from "../domain/cleanup.ts";
+import { withIgnores } from "../domain/gitignore.ts";
 import { isObject, type Json, merge, snippetFor } from "../domain/merge.ts";
 import {
   CLAUDE_MD_REMOVED,
@@ -67,6 +69,15 @@ const readSettings = async (file: string): Promise<Json> => {
   const data: unknown = JSON.parse(await Bun.file(file).text());
   if (!isObject(data)) throw new Error("The settings are not an object.");
   return data;
+};
+
+/** Appends the local files of claudetto to the `.gitignore` of the project, when the project has `.git/`. */
+const ignoreLocal = async (projectDir: string): Promise<void> => {
+  if (!fs.existsSync(path.join(projectDir, ".git"))) return;
+  const file = path.join(projectDir, ".gitignore");
+  const text = fs.existsSync(file) ? await Bun.file(file).text() : "";
+  const next = withIgnores(text);
+  if (next !== text) await writeAtomic(file, next);
 };
 
 /** Run the CLI with `args` and return the exit status. */
@@ -152,6 +163,7 @@ export const main = async (
   for (const key of kept) io.log(KEPT_KEY({ key }));
   io.log(changes.length ? `${changes.length} change(s):` : SETTINGS_MATCH);
   for (const line of changes) io.log(`  ${line}`);
+  if (apply) await ignoreLocal(projectDir);
   if (!changes.length) return 0;
   if (!apply) {
     io.log(`\n${DRY_RUN}`);

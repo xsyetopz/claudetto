@@ -186,6 +186,9 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [ ] 7.14 Run `just docker check` with the sandbox of D43, and when it fails, add the Docker socket to `sandbox.network.allowUnixSockets`, or else an `excludedCommands` entry for `docker *` alone, with a setup test that offers it only for a project that uses Docker (D43).
   Check: `just docker check && just test tests/claudetto/setup`
 
+- [x] 7.15 Add a setup test that, in a project with `.git/`, setup appends to `.gitignore` the paths of local files that must not be public that claudetto writes in the project (its state and cache files, not files of other plugins), keeps each file that is safe for the public, adds no duplicate entry, and changes nothing in a project with no `.git/`. See it fail, then add the step to setup (the user, 2026-10-19).
+  Check: `just generate && just test tests/claudetto/setup && just lab`
+
 ## 8. MiniSpec Format
 
 - [x] 8.1 Add tests that `minispec new` writes frontmatter and that `minispec validate` refuses a file with no frontmatter and a root with both `.minispec.yml` and `.minispec.yaml`, and see them fail. (closed: removed in trim-0-2-0)
