@@ -4,56 +4,56 @@ import { keepOptions as h0, onAdvise as h1, onSessionStart as h2 } from "../slic
 import { keepOptions as h3, onAskUserQuestion as h4 } from "../slices/decide/adapters/mod.ts";
 import { onCommand as h5, onCommandDescribe as h6, onProposeGoal as h7, onTurnComplete as h8 } from "../slices/goal/adapters/mod.ts";
 import { onPlanCall as h9 } from "../slices/ground/adapters/mod.ts";
-import { onBashCall as h10 } from "../slices/guard/adapters/mod.ts";
-import { keepOptions as h11, onCompact as h12, onTurnComplete as h13, onTurnStep as h14 } from "../slices/handoff/adapters/mod.ts";
-import { onFileWrite as h15 } from "../slices/patch/adapters/mod.ts";
-import { keepOptions as h16, onAttachment as h17, onCommandDescribe as h18, onSection as h19, onSpawn as h20, onToolDescribe as h21 } from "../slices/prompt/adapters/mod.ts";
-import { onRender as h22 } from "../slices/reply/adapters/mod.ts";
-import { onToolCall as h23 } from "../slices/sembr/adapters/mod.ts";
+import { onBashCall as h10, onBashFail as h11 } from "../slices/guard/adapters/mod.ts";
+import { keepOptions as h12, onCompact as h13, onTurnComplete as h14, onTurnStep as h15 } from "../slices/handoff/adapters/mod.ts";
+import { onFileWrite as h16 } from "../slices/patch/adapters/mod.ts";
+import { keepOptions as h17, onAttachment as h18, onCommandDescribe as h19, onSection as h20, onSpawn as h21, onToolDescribe as h22 } from "../slices/prompt/adapters/mod.ts";
+import { onRender as h23 } from "../slices/reply/adapters/mod.ts";
+import { onToolCall as h24 } from "../slices/sembr/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h0(options);
   h3(options);
-  h11(options);
-  h16(options);
+  h12(options);
+  h17(options);
   // eval: agent.spawn prompt
-  on("agent.spawn", h20);
+  on("agent.spawn", h21);
   // eval: command.describe goal
   on("command.describe", { command: "goal" }, h6);
   // eval: command.describe prompt
-  on("command.describe", { command: ["autofix-pr", "brief", "bug", "claim-credit", "cloud-plugins", "daemon", "design-login", "desktop", "feedback", "ide", "import", "install", "install-slack-app", "limit-reset", "mobile", "passes", "powerup", "radio", "rate-limit-options", "remote-env", "session", "statusline", "stickers", "team-onboarding", "teleport", "ultraplan", "ultrareview", "voice", "web-setup"] }, h18);
+  on("command.describe", { command: ["autofix-pr", "brief", "bug", "claim-credit", "cloud-plugins", "daemon", "design-login", "desktop", "feedback", "ide", "import", "install", "install-slack-app", "limit-reset", "mobile", "passes", "powerup", "radio", "rate-limit-options", "remote-env", "session", "statusline", "stickers", "team-onboarding", "teleport", "ultraplan", "ultrareview", "voice", "web-setup"] }, h19);
   // eval: command.run goal
   on("command.run", { command: "goal" }, h5);
   // eval: prompt.attachment prompt
-  on("prompt.attachment", { type: ["goal_status", "tool_hosts_notice"] }, h17);
+  on("prompt.attachment", { type: ["goal_status", "tool_hosts_notice"] }, h18);
   // eval: prompt.section prompt
-  on("prompt.section", h19);
+  on("prompt.section", h20);
   // eval: session.compact handoff
-  on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h12);
+  on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h13);
   // eval: session.start advise
   on("session.start", { isInteractive: [true, false] }, h2);
   // eval: tool.call patch
-  on("tool.call", { tool: ["Edit", "Write"] }, h15);
+  on("tool.call", { tool: ["Edit", "Write"] }, h16);
   // eval: tool.call decide
   on("tool.call", { tool: ["AskUserQuestion"] }, h4);
   // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h23);
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h24);
   // eval: tool.call ground
   on("tool.call", { tool: ["Write", "Edit"] }, h9);
   // eval: tool.call guard
-  on("tool.call", { tool: ["Bash"] }, h10);
+  on("tool.call", { tool: ["Bash"] }, h10).catch(h11);
   // eval: tool.call advise
   on("tool.call", { tool: /^mcp__claudetto__advise$/ }, h1);
   // eval: tool.call goal
   on("tool.call", { tool: ["ProposeGoal"] }, h7);
   // eval: tool.describe prompt
-  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h21);
+  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h22);
   // eval: turn.complete goal
   on("turn.complete", h8);
   // eval: turn.complete handoff
-  on("turn.complete", { reason: ["answer", "aborted", "refusal", "error"] }, h13);
+  on("turn.complete", { reason: ["answer", "aborted", "refusal", "error"] }, h14);
   // eval: turn.step handoff
-  on("turn.step", h14);
+  on("turn.step", h15);
   // eval: ui.render reply
-  on("ui.render", { component: "AssistantMessage" }, h22);
+  on("ui.render", { component: "AssistantMessage" }, h23);
 };

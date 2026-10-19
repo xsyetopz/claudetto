@@ -66,6 +66,11 @@ export interface ModHandler<E extends EventName = EventName> {
    */
   readonly run: Handler<E> | ((...args: never[]) => unknown);
   readonly configure?: Configure;
+  /**
+   * The error handler of the hook: the generated `register.ts` gives it to `.catch()`.
+   * A hook that blocks needs it, because a hook that throws or times out is skipped, and the call runs.
+   */
+  readonly onFail?: Handler<E> | ((...args: never[]) => unknown);
   /** The eval kinds of the hook. One entry covers each handler of the slice on the same event. */
   readonly evals?: HookEvals;
 }

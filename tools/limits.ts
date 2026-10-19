@@ -14,7 +14,7 @@ export const GIT_REPO_TEST_TIMEOUT_MS = 15_000;
 export const BUNDLE_SCAN_TIMEOUT_MS = 60_000;
 
 /** The lowest Claude Code version that claudetto is built for. `ci.yml` installs it, and the files of `schemas/` come from its bundle. */
-export const MIN_CLAUDE_CODE_VERSION = "2.1.302";
+export const MIN_CLAUDE_CODE_VERSION = "2.1.303";
 
 /** The CPUs of the container of `just docker`, so a check does not take each CPU of the host. */
 export const DOCKER_CPUS = 4;
@@ -89,7 +89,7 @@ export const PART_LINE_PINS: Record<string, number> = {
   "src/plugins/claudetto/slices/dry": 141,
   "src/plugins/claudetto/slices/goal": 625,
   "src/plugins/claudetto/slices/ground": 377,
-  "src/plugins/claudetto/slices/guard": 352,
+  "src/plugins/claudetto/slices/guard": 362,
   "src/plugins/claudetto/slices/handoff": 674,
   "src/plugins/claudetto/slices/prompt": 936,
   "src/plugins/claudetto/slices/sembr": 521,

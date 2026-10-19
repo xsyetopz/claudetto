@@ -2,14 +2,15 @@
 // The mod handler of the `guard` slice:
 // `tool.call` on `Bash` denies a command that only prints a file and names the `Read` call (design D22).
 //
-// The hook has no catch-all on purpose.
-// When it throws, Claude Code logs the failure and skips the hook, so the call runs.
-// A `catch` here names the error that it expects, and the others reach that log.
+// The hook has no catch-all.
+// A `catch` here names the error that it expects, and the others reach the log of Claude Code.
+// When the hook throws or times out, Claude Code skips it, so the call would run (a guard fails open, d.ts of 2.1.303).
+// So the slice gives `onBashFail` to `.catch()`, which denies a command that prints a file (fail closed).
 //
 // `claude plugin validate` follows `$` only into a function of one file,
 // so each function that touches `$` is here, and the rules are in `domain/`.
 
-import type { EngineInterface, MatchedHook } from "claude-code";
+import type { CatchHandler, EngineInterface, MatchedHook } from "claude-code";
 import { lineCount } from "../../../kernel/text.ts";
 import { type Count, printReason } from "../domain/deny.ts";
 import { printsOf } from "../domain/reads.ts";
@@ -38,4 +39,12 @@ export const onBashCall: BashHook = async ($, e, next) => {
   const cwd = await $.session.cwd();
   const deny = await printReason(e.command, cwd, countOf($));
   return deny ? { deny } : next(e);
+};
+
+/** The error handler of the hook: a command that prints a file is denied, and any other command runs. */
+export const onBashFail: CatchHandler<BashHook> = (_$, e, next) => {
+  if (next.called || !printsOf(e.command, "").length) return next(e);
+  return {
+    deny: `The print guard failed (${next.error.kind}), so this command was not run. Use \`Read\` with an \`offset\` and a \`limit\`.`,
+  };
 };

@@ -3,7 +3,7 @@
 // the deny of a `Bash` command that only prints a file (design D22).
 
 import type { Handler, Slice } from "../../kernel/slice.ts";
-import { onBashCall } from "./adapters/mod.ts";
+import { onBashCall, onBashFail } from "./adapters/mod.ts";
 
 export const slice = {
   name: "guard",
@@ -34,6 +34,7 @@ export const slice = {
       filter: { tool: ["Bash"] },
       phase: "check",
       run: onBashCall as unknown as Handler<"tool.call">,
+      onFail: onBashFail as unknown as Handler<"tool.call">,
     },
   ],
 } satisfies Slice;

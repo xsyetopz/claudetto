@@ -23,13 +23,13 @@ const exportOf = (
 
 const compare = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 
-/** The `on()` call of the handler `e`, with its `// eval:` comment, and `hook`, the name of its alias. */
-const onCall = (e: Entry, hook: string): string => {
+/** The `on()` call of the handler `e`, with its `// eval:` comment, and `hook`, the name of its alias. A `fail` alias adds the `.catch` error handler. */
+const onCall = (e: Entry, hook: string, fail?: string): string => {
   const filter = filterOf(e);
   const args = [JSON.stringify(e.handler.event), ...(filter ? [filter] : [])];
   return [
     `  // eval: ${e.handler.event} ${e.slice}`,
-    `  on(${[...args, hook].join(", ")});`,
+    `  on(${[...args, hook].join(", ")})${fail ? `.catch(${fail})` : ""};`,
   ].join("\n");
 };
 
@@ -37,6 +37,7 @@ const onCall = (e: Entry, hook: string): string => {
 export const registerOf = async (p: FoundPlugin): Promise<Output[]> => {
   const where = new Map<Entry, { dir: string; name: string }>();
   const configures = new Set<string>();
+  const fails = new Map<Entry, { dir: string; name: string }>();
   const entries: Entry[] = [];
   const nameOf = (
     s: FoundPlugin["slices"][number],
@@ -56,6 +57,11 @@ export const registerOf = async (p: FoundPlugin): Promise<Output[]> => {
       const e = { slice: s.name, handler };
       entries.push(e);
       where.set(e, { dir: s.name, name: nameOf(s, handler.run, part) });
+      if (handler.onFail)
+        fails.set(e, {
+          dir: s.name,
+          name: nameOf(s, handler.onFail, `the onFail of ${part}`),
+        });
       if (handler.configure)
         configures.add(
           `${s.name}\0${nameOf(s, handler.configure, `the configure of ${part}`)}`,
@@ -66,7 +72,9 @@ export const registerOf = async (p: FoundPlugin): Promise<Output[]> => {
   // so the imports are already in the order of the import sorter of Biome, which formats the file.
   const pairs = [
     ...new Set([
-      ...[...where.values()].map((w) => `${w.dir}\0${w.name}`),
+      ...[...where.values(), ...fails.values()].map(
+        (w) => `${w.dir}\0${w.name}`,
+      ),
       ...configures,
     ]),
   ]
@@ -86,7 +94,11 @@ export const registerOf = async (p: FoundPlugin): Promise<Output[]> => {
   const sorted = order(entries);
   const hookOf = (e: Entry): string =>
     alias.get(`${where.get(e)?.dir}\0${where.get(e)?.name}`) as string;
-  const calls = sorted.map((e) => onCall(e, hookOf(e)));
+  const failOf = (e: Entry): string | undefined => {
+    const f = fails.get(e);
+    return f && alias.get(`${f.dir}\0${f.name}`);
+  };
+  const calls = sorted.map((e) => onCall(e, hookOf(e), failOf(e)));
   const configured = configures.size > 0;
   const file = `plugins/${p.name}/hooks/register.ts`;
   const source = `src/plugins/${p.name}/slices/*/slice.ts`;

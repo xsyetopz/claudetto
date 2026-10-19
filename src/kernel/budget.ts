@@ -5,7 +5,7 @@
 /**
  * The context window in tokens.
  * The settings snippet sets `autoCompactWindow` to it for each model that is not a Haiku model.
- * Without it, Claude Code 2.1.302 caps the window of some models, such as Opus 5.5, at 200K, and warns.
+ * Without it, Claude Code 2.1.303 caps the window of some models, such as Opus 5.5, at 200K, and warns.
  */
 export const CONTEXT_WINDOW = 300_000;
 
@@ -18,12 +18,12 @@ export const windowOf = (size: number | null | undefined): number =>
     ? Math.min(size, CONTEXT_WINDOW)
     : CONTEXT_WINDOW;
 
-/** The output reserve in tokens that Claude Code takes from the compaction window: `min(maxOutputTokens, 20000)` (2.1.302 bundle). */
+/** The output reserve in tokens that Claude Code takes from the compaction window: `min(maxOutputTokens, 20000)` (2.1.303 bundle). */
 export const COMPACT_OUTPUT_RESERVE = 20_000;
 
 /**
  * The tokens below `CONTEXT_WINDOW` at which the client blocks the next request with `Prompt is too long`:
- * the output reserve plus 3K tokens (2.1.302 bundle).
+ * the output reserve plus 3K tokens (2.1.303 bundle).
  */
 export const CONTEXT_BLOCK_MARGIN = COMPACT_OUTPUT_RESERVE + 3_000;
 
@@ -40,7 +40,7 @@ export const HAIKU_HANDOFF_TRIGGER_TOKENS = 100_000;
 
 /**
  * The value of `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`: the percent of the window less `COMPACT_OUTPUT_RESERVE` at which the auto compaction starts.
- * Claude Code 2.1.302 compacts at `min(floor(E * pct / 100), E - 13000)`, with `E` the window less the reserve.
+ * Claude Code 2.1.303 compacts at `min(floor(E * pct / 100), E - 13000)`, with `E` the window less the reserve.
  * At the window `CONTEXT_WINDOW`, the percent gives `HANDOFF_TRIGGER_TOKENS`, rounded down to 4 decimals.
  */
 export const AUTOCOMPACT_PCT =
@@ -59,7 +59,7 @@ export const USAGE_LEVELS: [number, number] = [75, 90];
 /**
  * The characters of a successful `Bash` output that Claude receives inline, the settings key `bashOutputMaxChars`.
  * Claude Code saves a longer output to a file and sends a preview and the path, so no output is lost.
- * The default of Claude Code is 30000, and Claude Code 2.1.302 clamps the value to 4000 to 128000.
+ * The default of Claude Code is 30000, and Claude Code 2.1.303 clamps the value to 4000 to 128000.
  * 16000 brings 196 of 240 saved outputs inline, and it is about 4000 tokens for each result (`bash-output-length.md`).
  */
 export const BASH_OUTPUT_MAX_CHARS = 16_000;
