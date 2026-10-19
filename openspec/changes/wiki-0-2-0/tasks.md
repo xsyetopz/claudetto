@@ -11,7 +11,7 @@
   A probe that needs the real API is a paid run: ask the user first.
 - [x] 1.6 (dropped by the user, 2026-10-19: the permission checks refused the local TLS proxy) Probe again, as a subscriber, the vars that showed no effect in 1.5: the stub sends each account and flag request to the real API with `CLAUDE_CODE_OAUTH_TOKEN` from `.env` (the user, 2026-10-19), and it still answers each `/v1/messages` call itself, so no model call is made.
   The stub never logs or prints the token. A probe that needs a real model reply is a paid run: ask the user first.
-- [ ] 1.4 Write `Claude-Code-Undocumented`, move the drafts to `src/wiki/claude-code/`, remove the old `wiki/claude-code/` pages.
+- [x] 1.4 Write `Claude-Code-Undocumented`, move the drafts to `src/wiki/claude-code/`, remove the old `wiki/claude-code/` pages.
   Check: `just generate && bun run lint:md && bun test tests/support/wiki-links.test.ts`
 
 ## 2. claudetto 0.2.0+ (Part 1)
@@ -20,8 +20,8 @@
 - [x] 2.2 Move each cited fact of `docs/research/` and `wiki/archive/` that a page still needs to an evidence page, then remove both folders.
 - [x] 2.3 Remove each mention of `dotclaude` (`release-0-2-0` 2.3).
   Check: `! git grep -qi dotclaude -- ':!openspec' ':!CHANGELOG.md'`
-- [ ] 2.4 Write `Home.md` and `_Sidebar.md` for the two parts.
+- [x] 2.4 Write `Home.md` and `_Sidebar.md` for the two parts.
   Check: `just docker check`
-- [ ] 2.5 Rewrite each page of both parts to W3 and W5: Simple English Wikipedia look, no internal ids, ✅ and ❌ for yes and no.
+- [x] 2.5 Rewrite each page of both parts to W3 and W5: Simple English Wikipedia look, no internal ids, ✅ and ❌ for yes and no.
   Check: `just docker check` and `! grep -rqE '\bD[0-9]+\b' src/wiki`
 - [ ] 2.6 Ask the user before `just wiki`, because it pushes to the public wiki.
