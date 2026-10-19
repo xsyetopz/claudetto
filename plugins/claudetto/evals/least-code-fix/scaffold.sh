@@ -9,16 +9,33 @@ cat > package.json <<'EOT'
 }
 EOT
 mkdir -p src check
-cat > src/last.mjs <<'EOT'
-export const last = (xs) => xs[xs.length];
+cat > src/list.mjs <<'EOT'
+// Helpers for lists of items.
+export const first = (items) => items[0];
+
+export const last = (items) => items[items.length - 1];
+
+export const count = (items, test) => items.filter(test).length;
+
+export const unique = (items) => [...new Set(items)];
+
+export const pageCount = (items, size) => Math.ceil(items.length / size);
+
+// Page 1 is the first page.
+export const paged = (items, page, size) => {
+  const start = page * size;
+  return items.slice(start, start + size);
+};
+
+export const sum = (numbers) => numbers.reduce((a, b) => a + b, 0);
 EOT
-cat > check/last.test.mjs <<'EOT'
+cat > check/list.test.mjs <<'EOT'
 import assert from "node:assert";
 import { test } from "node:test";
-import { last } from "../src/last.mjs";
+import { paged } from "../src/list.mjs";
 
-test("last returns the final item", () => {
-  assert.equal(last([1, 2, 3]), 3);
-  assert.equal(last(["a"]), "a");
+test("paged returns the items of a page, from page 1", () => {
+  assert.deepEqual(paged([1, 2, 3, 4, 5], 1, 2), [1, 2]);
+  assert.deepEqual(paged([1, 2, 3, 4, 5], 3, 2), [5]);
 });
 EOT

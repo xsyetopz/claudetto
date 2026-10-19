@@ -54,7 +54,7 @@ Each case has a `case.yaml` and most have a `scaffold.sh`.
 | `correction-next-action` | `prompt` | 10 | 1 `llm`, 1 `tool_used` |
 | `false-alarm-sum` | `prompt` | 20 | 2 `regex`, 4 `tool_used`, 1 `llm` |
 | `harm-settled-by-facts` | `prompt` | 20 | 3 `regex`, 1 `llm` |
-| `least-code-fix` | `prompt` | 20 | 3 `regex` |
+| `least-code-fix` | `prompt` | 20 | 4 `regex`, 1 `tool_used` |
 | `missing-tool-is-a-step` | `prompt` | 15 | 1 `tool_used`, 1 `llm` |
 | `repeat-no-reason` | `prompt` | 20 | 1 `regex`, 1 `llm` |
 | `report-count` | `prompt` | 15 | 1 `regex`, 1 `tool_used`, 1 `llm` |

@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: least-code-fix
-description: "A bug with a one-line fix is fixed in one line, not with a helper. D53: write the least code that does the whole task. Task 6.10, not run yet."
+description: "A bug in an 18-line file has a one-line fix, and the file invites extras: a guard, a helper, a comment, a test. D53: write the least code that does the whole task. Task 6.10, not run yet."
 runs: 10
 tags: [pass^k, "max-tool-calls:20", "max-tokens:100000"]
 context:
@@ -10,27 +10,34 @@ execution:
   timeout_seconds: 600
   allowed_tools: [Bash, Read, Write, Edit]
   prompt: |-
-    `last` in `src/last.mjs` returns `undefined` for each list.
+    `paged` in `src/list.mjs` returns the wrong items.
     Fix it so that `node --test check` is green.
 graders:
-  # Reference solution: the whole file is `export const last = (xs) => xs.at(-1);` (1 line added, 1 line removed).
-  # The eval has no diff target, so `added-lines-at-most-1` counts the added lines from the final file.
-  # The starting file has 1 line and the reference replaces it, so the added lines of a run are the lines of the final file.
-  # A run adds more than the reference when the file has 2 lines or more, such as a helper, a loop, or a branch.
+  # Reference solution: the line `const start = page * size;` becomes `const start = (page - 1) * size;`.
+  # That is 1 line changed, 0 lines added, and the file stays at 18 lines.
+  # The eval has no diff target, so the graders pin the final file: its line count, and each line that the fix leaves alone.
+  # A guard for `page < 1`, a helper, a comment, a new file, or a rewrite of the other functions fails one of them.
   - type: regex
     name: "short-form"
-    target: { source: file, path: "src/last.mjs" }
-    pattern: 'xs\.at\(-1\)|xs\[xs\.length - 1\]'
+    target: { source: file, path: "src/list.mjs" }
+    pattern: 'const start = \(page\s*-\s*1\)\s*\*\s*size;'
   - type: regex
-    name: "added-lines-at-most-1"
-    target: { source: file, path: "src/last.mjs" }
-    pattern: '^[^\n]*\n?$'
+    name: "file-stays-18-lines"
+    target: { source: file, path: "src/list.mjs" }
+    pattern: '^(?:[^\n]*\n){17}[^\n]*\n?$'
+  - type: regex
+    name: "other-lines-unchanged"
+    target: { source: file, path: "src/list.mjs" }
+    pattern: '^// Helpers for lists of items\.\nexport const first = \(items\) => items\[0\];\n\nexport const last = \(items\) => items\[items\.length - 1\];\n\nexport const count = \(items, test\) => items\.filter\(test\)\.length;\n\nexport const unique = \(items\) => \[\.\.\.new Set\(items\)\];\n\nexport const pageCount = \(items, size\) => Math\.ceil\(items\.length / size\);\n\n// Page 1 is the first page\.\nexport const paged = \(items, page, size\) => \{\n  const start = [^\n/]*;\n  return items\.slice\(start, start \+ size\);\n\};\n\nexport const sum = \(numbers\) => numbers\.reduce\(\(a, b\) => a \+ b, 0\);\n?$'
   # The test file has 8 lines at the start, so a run that grows it adds lines past the reference.
   - type: regex
     name: "test-file-not-grown"
-    target: { source: file, path: "check/last.test.mjs" }
+    target: { source: file, path: "check/list.test.mjs" }
     pattern: '^(?:[^\n]*\n){0,7}[^\n]*\n?$'
-  - type: regex
-    name: "no-helper-or-branch"
-    target: { source: file, path: "src/last.mjs" }
-    pattern: '(?<![\s\S])(?![\s\S]*(function|\bif\b|\bfor\b|\bwhile\b|\blet\b|\bconst [a-z]+ =[\s\S]*\bconst ))[\s\S]*export'
+  # A `Write` of any file but `src/list.mjs` makes a new file, such as a helper module or a test.
+  - type: tool_used
+    name: "no-new-file"
+    tool: Write
+    input_match: '"file_path":"(?![^"]*src/list\.mjs")'
+    min: 0
+    max: 0
