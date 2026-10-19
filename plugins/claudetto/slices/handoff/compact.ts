@@ -34,18 +34,13 @@ import {
   RULES,
 } from "./prompts.ts";
 
-/** The warning at the end of the handed message for the quoted values `missing`. */
-const groundWarning = (missing: readonly string[]): string =>
-  GROUND_WARNING({ values: missing.map((v) => `\`${v}\``).join(", ") });
+/** `text` cut to `max` characters, with `...` at the cut. */
+export const clip = (text: string, max: number): string =>
+  text.length > max ? `${text.slice(0, max)}...` : text;
 
 /** One tool call as one list item: the tool and its input as JSON, cut to `CALL_INPUT_CHARS_MAX` characters. */
 const callLine = (use: ToolUseSummary): string => {
-  const input = JSON.stringify(use.input ?? null);
-  const cut =
-    input.length > CALL_INPUT_CHARS_MAX
-      ? `${input.slice(0, CALL_INPUT_CHARS_MAX)}...`
-      : input;
-  return `- ${use.tool} ${cut}`;
+  return `- ${use.tool} ${clip(JSON.stringify(use.input ?? null), CALL_INPUT_CHARS_MAX)}`;
 };
 
 /**
@@ -123,9 +118,14 @@ export const handedText = (
   [
     HANDED({ path }),
     "",
-    // The text of the file ends with a newline, so the warning has one blank line before it.
     text,
-    ...(missing.length === 0 ? [] : [groundWarning(missing)]),
+    ...(missing.length === 0
+      ? []
+      : [
+          GROUND_WARNING({
+            values: missing.map((v) => `\`${v}\``).join(", "),
+          }),
+        ]),
   ].join("\n");
 
 /**
@@ -168,9 +168,6 @@ const messageTokens = (message: SessionMessage): number => {
   return Math.ceil((message.text.length + tools) / CHARS_PER_TOKEN);
 };
 
-const contextTokens = (messages: readonly SessionMessage[]): number =>
-  messages.reduce((sum, message) => sum + messageTokens(message), 0);
-
 /**
  * `message` split at the wrapper of an earlier compaction: the original first user message, and the handed message after it.
  * After a compaction the first user message holds the earlier handoff, which the new handoff updates and does not stack (design D46).
@@ -198,10 +195,6 @@ export const originalFirst = (message: string): string => unwrap(message).first;
 export const earlierHanded = (message: string): string =>
   unwrap(message).handed;
 
-/** The text of the one user message after a compaction: the text of the first user message `first`, then `handed`. */
-const headText = (first: string, handed: string): string =>
-  first === "" ? handed : FIRST_MESSAGE({ first, handed });
-
 /**
  * The context after the handoff: one user message with the text of the first user message before the tail and `handed`, and the tail.
  * Claude Code sends each message that a hook gives back to the output again, and `num_turns` counts each user message there,
@@ -216,15 +209,18 @@ export const compactedMessages = (
 ): SessionMessage[] | null => {
   const cut = tailStart(messages);
   const first = messages.slice(0, cut).find((m) => m.role === "user");
-  const head: SessionMessage[] = [
+  const firstText = originalFirst(first?.text ?? "");
+  const context: SessionMessage[] = [
     {
       role: "user",
-      text: headText(originalFirst(first?.text ?? ""), handed),
+      text:
+        firstText === "" ? handed : FIRST_MESSAGE({ first: firstText, handed }),
       toolUses: [],
     },
+    ...messages.slice(cut),
   ];
-  const context = [...head, ...messages.slice(cut)];
-  return contextTokens(context) < trigger ? context : null;
+  const tokens = context.reduce((sum, m) => sum + messageTokens(m), 0);
+  return tokens < trigger ? context : null;
 };
 
 /** `text` with a `>` line in place of the blank lines between two quoted lines. */

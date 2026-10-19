@@ -29,13 +29,9 @@ export const openRows = (markdown: string): OpenRow[] => {
   const open: OpenRow[] = [];
   let taskColumn = -1;
   markdown.split("\n").forEach((text, index) => {
-    if (!text.startsWith("|")) {
-      taskColumn = -1;
-      return;
-    }
     const row = cells(text);
-    if (row.includes("Task")) {
-      taskColumn = row.indexOf("Task");
+    if (!text.startsWith("|") || row.includes("Task")) {
+      taskColumn = text.startsWith("|") ? row.indexOf("Task") : -1;
       return;
     }
     if (taskColumn < 0 || row.every((cell) => /^:?-+:?$/.test(cell))) return;
@@ -56,10 +52,8 @@ if (import.meta.main) {
     process.exit(1);
   }
   const open = openRows(await Bun.file(file).text());
-  for (const row of open)
-    console.error(
-      `findings.md:${row.line}: ${row.surface} (task: ${row.task})`,
-    );
+  for (const { line, surface, task } of open)
+    console.error(`findings.md:${line}: ${surface} (task: ${task})`);
   if (open.length) {
     console.error(`${open.length} open row(s) in ${file}.`);
     process.exit(1);

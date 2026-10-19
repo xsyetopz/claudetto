@@ -84,12 +84,8 @@ export const main = async (
   const advisor = adv < 0 ? "builtin" : args[adv + 1];
   const bad = args.filter(
     (a, i) =>
-      a !== "--apply" &&
-      a !== "--addons" &&
-      a !== "--scope" &&
-      a !== "--advisor" &&
-      (at < 0 || i !== at + 1) &&
-      (adv < 0 || i !== adv + 1),
+      !["--apply", "--addons", "--scope", "--advisor"].includes(a) &&
+      !(i > 0 && [at, adv].includes(i - 1)),
   );
   if (bad.length > 0 || (advisor !== "builtin" && advisor !== "claudetto"))
     return fail(io, USAGE);
@@ -116,7 +112,6 @@ export const main = async (
     : [];
   if (!file || !claudeMd) return fail(io, UNKNOWN_SCOPE({ scope }));
   if (addons) {
-    // The settings files in the order of precedence: a later file wins.
     const parsed = await Promise.all(
       Object.values(files).map(([f]) => readSettings(f)),
     ).catch((err: Error) => err);
@@ -127,29 +122,17 @@ export const main = async (
     for (const step of addonSteps(parsed)) io.log(step);
     return 0;
   }
-  let current: Json;
-  try {
-    current = await readSettings(file);
-  } catch (err) {
-    io.error(SETTINGS_FAILED({ file, message: (err as Error).message }));
+  const current = await readSettings(file).catch((err: Error) => err);
+  if (current instanceof Error) {
+    io.error(SETTINGS_FAILED({ file, message: current.message }));
     return 1;
   }
   const cleaned = cleanLegacyKeys(cleanAutoMode(cleanGitConfig(current)));
   const { snippet, kept } = snippetFor(cleaned, ROOT, scope === "project");
   if (advisor === "claudetto")
     snippet["env"] = { ...(snippet["env"] as Json), ...ADVISOR_ENV };
-  const changes = (
-    [
-      "env",
-      "autoMode",
-      "promptCacheTtl",
-      "enabledPlugins",
-      "permissions",
-    ] as const
-  )
-    .filter(
-      (key) => JSON.stringify(cleaned[key]) !== JSON.stringify(current[key]),
-    )
+  const changes = Object.keys(current)
+    .filter((k) => JSON.stringify(cleaned[k]) !== JSON.stringify(current[k]))
     .map((key) => CLEANED({ key }));
   const askOf = (s: Json): unknown[] =>
     isObject(s["permissions"]) && Array.isArray(s["permissions"]["ask"])

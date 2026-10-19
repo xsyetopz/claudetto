@@ -5,9 +5,8 @@
 //
 // `src/` has the layout of the repository: `src/plugins/<name>/agents/x.md` gives `plugins/<name>/agents/x.md`.
 // `src/fragments/` holds the parts that more than one file repeats, and gives no file of its own.
-// `src/kernel/` and `src/plugins/*/slices/` hold the code of the 1.0.0 slices, and give no file here either.
-// `src/marketplace.ts` gives no file here, because `emit/marketplace.ts` writes `.claude-plugin/marketplace.json` from it.
-// The `hooks.json` of a plugin with a slice gives no file here, because `emit/hooks.ts` writes it from the source and the slices.
+// `src/kernel/`, `src/plugins/*/slices/`, `src/marketplace.ts`, and the `hooks.json` of a plugin with a slice give no file here:
+// `emit/marketplace.ts` and `emit/hooks.ts` write the last two.
 // `emit/fill.ts` fills the `{{include NAME}}` lines and the `{{NAME}}` values of a source.
 // A `hooks.json` also gets its texts from the files next to it: `description.txt` and `<Event>.prompt.txt`.
 // The `prompts/` folder of a slice gives its module `prompts.ts` (`emit/prompts.ts`).
