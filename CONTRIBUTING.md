@@ -33,8 +33,8 @@ Change versions only with `just bump`.
 
 ## Docs
 
-Write public docs in `wiki/`.
-See [`wiki/core/Contributions.md`](wiki/core/Contributions.md) for more.
+Write the public docs in `src/wiki/`, and run `just generate` to write `wiki/`.
+See the [Development](https://github.com/xsyetopz/claudetto/wiki/Development) page for more.
 
 ## Conduct and Security
 

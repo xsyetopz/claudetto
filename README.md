@@ -80,7 +80,7 @@ Run `/handoff` to start a fresh session from a handoff.
 A model change rebuilds the prompt cache.
 An effort change keeps the prompt cache.
 
-See [Context and handoff](https://github.com/xsyetopz/claudetto/wiki/Context-And-Handoff).
+See [Handoff](https://github.com/xsyetopz/claudetto/wiki/Handoff).
 
 ## Jev Pick
 
@@ -88,7 +88,7 @@ With the option `decide` set to `jev`, the core plugin asks [TypeSafe Jev](https
 Export `TYPESAFE_API_KEY` before Claude Code starts.
 Each pick sends the question and the options to the TypeSafe API.
 When Jev gives no pick, the question stays as Claude asked it.
-See [Decision API](https://github.com/xsyetopz/claudetto/wiki/Decision-API).
+See [Decide](https://github.com/xsyetopz/claudetto/wiki/Decide).
 
 ## Add-On Plugins
 
@@ -111,7 +111,7 @@ claude plugin install claudetto-lab@claudetto
 ```
 
 - `claudetto-codegraph` needs the CLI `codegraph` on `PATH`, and an index that `codegraph init -y` builds in the project.
-  It syncs the index at session start, and it adds no MCP server.
+  It adds no hook and no MCP server, because `codegraph` syncs its own index.
   See [Code graph](https://github.com/xsyetopz/claudetto/wiki/Code-Graph).
 - `claudetto-browser` uses `agent-browser`.
   Its `backend` option can select CloakBrowser, for sites with bot detection.
