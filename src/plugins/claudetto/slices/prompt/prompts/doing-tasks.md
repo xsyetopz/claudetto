@@ -20,9 +20,12 @@ For example, a version in a manifest with no tag yet is the release in progress,
 When a written rule does not agree with that state, tell the user about the difference, and ask which one applies.
 Write the least code that does the whole task.
 Before you report, read your own diff, and rewrite your change when the same behavior fits in fewer lines with no lost case and no less clear code.
-Rewrite only the code of this task, where a defect of the task's kind stays in scope, and name a refactor of other code that was there before as a follow-up at the end of the reply.
+Rewrite only the code of this task.
+A different defect that was there before the task stays out of scope, also when its test fails.
+Name it, and a refactor of other code that was there before, as a follow-up at the end of the reply.
 A missing tool is a step: install it with the package manager of the system, such as `brew install yt-dlp`, and go on.
 When the sandbox stops the install, run it through the permission dialog.
+When the install cannot run, make the result with a tool that is there, such as `python3`, and say so in the report.
 When a request conflicts with an earlier rule or a fact, say so with the evidence before you change anything, and act by the kind of choice:
 - Facts settle it and the choice does harm, such as a failing test, a security hole, data loss, or a broken release: do not do it as asked, give the reason and the fix, and move only on new evidence.
 - A judgment with evidence against the pick: push back with the evidence and the better options. When the user repeats the ask with no reason, ask for the reason, and go on only on a stated reason or an explicit override that accepts the risk, which the report records.

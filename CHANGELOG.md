@@ -40,6 +40,7 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 - In the repository, `just validate` pins the line count of each part and fails on a short file, a folder with one file, a hook slice with no `controls` (in the generated `wiki/rationale/Controls.md`), and an eval case that checks only the reply, the generator formats its output with `Biome`, a `markdownlint` rule checks Title Case, and the old name `dotclaude` is gone outside the wiki.
 - Forked subagents are allowed again (`CLAUDE_CODE_FORK_SUBAGENT` is no longer set), the `Agent` text says to fork for a short task that needs the conversation, and a stopped subagent is resumed only within 5 minutes.
 - The `prompt` slice now replaces the shared `lean_body` section with `prompt.compose`, because Claude Code 2.1.302 and later send only the session sections through `prompt.section`, so the tailored text never reached the model, and a subagent gets the rule to remove what it made outside the project (D44).
+- When the install of a missing tool cannot run, the system prompt tells Claude to make the result with a tool that is there, such as `python3`, and to say so, and a different defect that was there before the task stays out of scope and goes in the follow-up, also when its test fails, because the eval of 2026-10-20 showed that the old texts made the plugin arm score lower (`missing-tool-is-a-step-hard`, `scope-followup-hard`).
 
 ### Removed
 

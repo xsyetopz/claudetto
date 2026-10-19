@@ -8,12 +8,22 @@ const read = (rel: string) =>
   Bun.file(path.join(import.meta.dir, "../../..", rel)).text();
 const prompt = (name: string) => read(`${SLICES}/prompt/prompts/${name}.md`);
 
-test("the install of a missing tool and the rule of a block agree on the permission dialog", async () => {
+test("the install of a missing tool and the rule of a block agree on the permission dialog and the fallback", async () => {
   const doing = await prompt("doing-tasks");
   const blocks = await prompt("blocks");
   expect(doing).toContain("permission dialog");
   expect(blocks).toContain("permission dialog");
-  expect(blocks).toContain("install of a missing tool");
+  expect(blocks).toContain("a missing tool");
+  expect(doing).toContain("make the result with a tool that is there");
+  expect(blocks).toContain("make the result with a tool that is there");
+});
+
+test("a different defect that was there before the task stays out of scope", async () => {
+  const doing = await prompt("doing-tasks");
+  expect(doing).toContain(
+    "different defect that was there before the task stays out of scope",
+  );
+  expect(doing).not.toContain("a defect of the task's kind stays in scope");
 });
 
 test("the text of verification holds the rule of D7 with no tool name", async () => {
