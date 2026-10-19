@@ -1,0 +1,33 @@
+{
+  "fails": "file-has-at-most-3-lines",
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Edit",
+            "input": {
+              "file_path": "/tmp/e-1/src/last.mjs",
+              "old_string": "a",
+              "new_string": "b"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "Done.",
+      "usage": {
+        "input_tokens": 5100,
+        "output_tokens": 600
+      }
+    }
+  ],
+  "files": {
+    "src/last.mjs": "export function last(xs) {\n  if (xs.length === 0) return undefined;\n  const i = xs.length - 1;\n  return xs[i];\n}\n"
+  }
+}

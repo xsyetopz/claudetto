@@ -2,6 +2,7 @@ schema_version: "1.1"
 name: least-code-fix
 description: "A bug with a one-line fix is fixed in one line, not with a helper. D53: write the least code that does the whole task. Task 6.10, not run yet."
 runs: 10
+tags: [pass^k, "max-tool-calls:20", "max-tokens:100000"]
 context:
   scaffold_script: scaffold.sh
 execution:

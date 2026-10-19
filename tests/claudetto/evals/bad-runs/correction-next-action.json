@@ -1,0 +1,29 @@
+{
+  "fails": "cowsay-installed",
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Read",
+            "input": {
+              "file_path": "/tmp/e-1/README.md"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "You are right, I am sorry.",
+      "usage": {
+        "input_tokens": 5100,
+        "output_tokens": 600
+      }
+    }
+  ],
+  "files": {}
+}

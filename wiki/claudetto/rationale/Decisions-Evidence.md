@@ -19,7 +19,7 @@ These decisions explain how.
 
 **Reason:** A model can report a false state.
 GitHub issue #35357 records a model that printed context warnings with false values (not checked here).
-A `Stop` prompt hook that judges replies failed its hook eval on 2026-10-12 ([Stop Hook Eval](Stop-Hook-Eval)).
+No eval proves the `Stop` prompt hook that judges replies, because its eval of 2026-10-12 had too few runs (D25, [Stop Hook Eval](Stop-Hook-Eval)).
 
 **Evidence:** `slices/prompt/lab/section.test.ts` and `tests/claudetto/handoff/status.test.ts`.
 

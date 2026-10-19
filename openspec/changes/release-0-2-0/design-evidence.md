@@ -35,7 +35,8 @@ A study found that regenerated tests did better (arXiv 2610.02952), but its effe
 ### D25. An Eval Check Must Fail on a Known-Bad Run First
 
 Anthropic: "it's important that the task verifier is nearly perfect, otherwise Claude will solve the wrong problem."
-Each changed eval case of task 11.2 runs once on a recorded bad run, and its check must fail there.
+Each changed eval case of task 11.2 runs once on a hand-made bad run that fails one named grader, and its check must fail there.
+The user accepted hand-made bad runs on 2026-10-19, and real failing runs from a later paid run can replace them.
 Each eval claim names its metric: pass^k for "it behaves the same each time" and pass@1 for "it gets it on the first try" (Anthropic: "pass^k for agents where consistency is essential").
 Each case counts the tool calls and the tokens of the run as a deterministic check.
 A case that changes tests also counts each edit that deletes or weakens a test (arXiv 2609.09671).

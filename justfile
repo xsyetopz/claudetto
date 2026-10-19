@@ -111,6 +111,23 @@ eval *args:
     bun tools/unsandboxed.ts
     bun tools/lock.ts claude plugin eval plugins/claudetto --no-publish --scaffold --allow-tools Bash,Write,Edit --max-cost-usd 5 --keep-temp "$@"
 
+# Run `just eval` once for each eval case that is not tagged split:held-out, for prompt work (D17); extra arguments go to each run, and --model is required
+# Each case has its own --max-cost-usd, so the total cap is that bound times the case count
+# Every case runs even when one fails, and the recipe exits 1 at the end if any failed
+eval-tune *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case " $* " in *" --model "*|*" --model="*) ;; *) echo 'Pass `--model`, such as `--model haiku`, because without it the eval uses the model of the session.' >&2; exit 1 ;; esac
+    cases=$(bun tools/tuning-cases.ts)
+    [ -n "$cases" ] || { echo 'No tuning cases found.' >&2; exit 1; }
+    failed=0
+    for c in $cases; do just eval --case "$c" "$@" || failed=1; done
+    exit $failed
+
+# Check the budget tags of the cases against the trace.jsonl files under a folder of kept sandboxes (the eval prints "kept temp: PATH"); add --case NAME when the folder is one case
+eval-budget *args:
+    bun tools/run-budget.ts "$@"
+
 # Run the eval cases on the checkout and on a variant at a git ref (in a temporary worktree), to compare the two plugin arms; extra arguments go to the eval, and --model is required as for `eval`
 eval-variant ref *args:
     @case " $* " in *" --model "*|*" --model="*) ;; *) echo 'Pass `--model`, such as `--model haiku`, because without it the eval uses the model of the session.' >&2; exit 1 ;; esac

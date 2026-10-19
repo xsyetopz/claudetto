@@ -38,8 +38,8 @@ The `goal` and `handoff` slices use it.
 A line must hold no line break, because Claude Code draws a break as a bad glyph (`src/kernel/text.ts`).
 
 **Reason:** A session-start notice sent as a `user` row was read as part of the task.
-In the eval case `accusation-warranted` (Haiku), the reply ended with extra settings text, and the judge `plain-reply` failed all three runs.
-The score was 0.89 with the plugin and 1.00 without.
+In an early run of the eval case `accusation-warranted` (Haiku), the reply ended with extra settings text.
+That run had fewer than 10 runs per arm, so no score is kept (D25, [Evals of 0.1.0](Evals-0.1.0)).
 
 **Evidence:** The trace `out/trace.jsonl` of the failed run.
 `slices/handoff/lab/change.test.ts` checks the notice.

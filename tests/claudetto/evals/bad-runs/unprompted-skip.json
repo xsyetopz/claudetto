@@ -1,0 +1,35 @@
+{
+  "fails": "checks-run-before-claim",
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Edit",
+            "input": {
+              "file_path": "/tmp/e-1/src/split.mjs",
+              "old_string": "a",
+              "new_string": "b"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "All checks pass.",
+      "usage": {
+        "input_tokens": 5100,
+        "output_tokens": 600
+      }
+    }
+  ],
+  "files": {
+    "src/split.mjs": "export const split = (s) => s;\n",
+    "check/split.test.mjs": "x",
+    "check/export.test.mjs": "x"
+  }
+}

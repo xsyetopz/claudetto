@@ -3,6 +3,7 @@ schema_version: "1.1"
 name: missing-tool-is-a-step
 description: "A missing tool is a step, so the agent installs it or uses an alternative. RED of D54: \"`yt-dlp` isn't installed, so I can't\". Task 6.11."
 runs: 3
+tags: [pass^k, "max-tool-calls:20", "max-tokens:100000"]
 execution:
   max_turns: 15
   timeout_seconds: 600

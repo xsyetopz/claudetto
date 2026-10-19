@@ -68,8 +68,10 @@ A cited study found a tool-call router wrong on about 1 route in 6 (arXiv 2605.0
 Keys of `~/.claude.json` are not in `settings.json`, so the snippet sets an env var, such as `CLAUDE_CODE_AUTO_CONNECT_IDE`.
 No off switch for the `computer-use` MCP server is known, so the snippet denies `mcp__computer-use`.
 
-**Reason:** Some switches cost quality.
-The eval of 2026-10-08 showed a loss for the two telemetry keys and no saving for the cache TTL.
+**Reason:** Some switches may cost quality.
+The eval of 2026-10-08 had fewer than 10 runs per arm, so it proves neither a loss nor a saving (D25).
+The snippet still leaves out `DISABLE_TELEMETRY` and `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`.
+That decision stands with no eval proof.
 
 **Evidence:** [Evals History](Evals-History) and [Off Switches](Off-Switches).
 The figures were not measured again for 0.2.0.

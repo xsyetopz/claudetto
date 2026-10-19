@@ -1,25 +1,17 @@
 # Evals History
 
-This page keeps the figures of older eval runs and benches that still help to read the current pages.
-Each section gives the date, version, method, and figures.
+This page keeps the method of older eval runs, and the figures of the compaction bench.
+An eval section that had fewer than 10 runs per arm keeps no result numbers (D25).
 The runs of 0.1.0 are on [Evals of 0.1.0](Evals-0.1.0).
 
 ## Off-Switch Eval of 2026-10-08
 
-**Method:** 12 cases, 3 runs per arm, with an earlier harness.
+**Method:** 12 cases, with an earlier harness.
+Each arm had fewer than 10 runs, so this section keeps no result numbers (D25).
 The Claude Code version is not stated.
 An item was dropped when the resolve rate, over-claim rate, or policy-violation rate got worse beyond noise.
 When another measure got worse with a shown interval, the arm ran again, and the item was dropped only if the loss showed again.
 The report files are not in the repository.
-
-| Item | Result | In the snippet |
-| --- | --- | --- |
-| `plan-mode` | Run 1: `multiSentenceShare` 0.6 against 0.718, shown. Run 2: 0.694 against 0.752, not shown. | ✅ |
-| `task-tools` | No measure worse. | ✅ |
-| `git-instructions` | No measure worse. A sandbox commit kept the `Co-Authored-By` trailer. | ✅ |
-| `telemetry` | Run 2: `turns` 4.75 against 5.5, `seconds` 12.113 against 15.432, `outputTokens` 655.861 against 799.917. All three shown worse. | ❌ |
-| `nonessential-traffic` | Run 2: `turns` 4.75 against 5.389, `outputTokens` 655.861 against 762.472. Both shown worse. | ❌ |
-| `subagent-cache-1h` | Cost for each resolved task 0.028 against 0.027. Difference 0.002, interval -0.008 to 0.007. No saving. | ❌ |
 
 See [Settings Snippet Keys](Settings-Snippet-Keys) and [Off Switches](Off-Switches).
 
@@ -56,18 +48,13 @@ The Jev ranking scored AUC 0.51 to 0.55, near chance.
 
 ## Model and Effort Sweep
 
-**Method:** Claude Code `2.1.287`, a Sonnet 5.5 judge, 8 `t*` cases, 3 trials per arm.
+**Method:** The first run used Claude Code `2.1.287`, a Sonnet 5.5 judge, and 8 `t*` cases.
+Each arm had fewer than 10 trials in that run, so it keeps no result numbers (D25).
 Effort came from `CLAUDE_CODE_EFFORT_LEVEL`.
 The summary files went with the removed harness.
 
-| Arm | Passed | Cost per pass |
-| --- | --- | --- |
-| Haiku 4.5 | 17/24 | $0.14 |
-| Sonnet 5.5 low, medium, high | 21, 20, 22 of 24 | $0.12 to $0.13 |
-| Opus 5.5 low, medium, high | 20, 22, 22 of 24 | $0.20 to $0.22 |
-| Opus 5.5 xhigh | 24/24 | $0.28 |
-
 A longer run used 11 cases with 10 trials per arm.
+The Claude Code version of the longer run is not stated.
 
 | Arm | Passed first | Cost per pass | Passed after case fixes | Cost per pass |
 | --- | --- | --- | --- | --- |
@@ -80,48 +67,20 @@ A longer run used 11 cases with 10 trials per arm.
 
 - Opus 5.5 `medium` passed as much as `high` for less.
 - Sonnet 5.5 was at the ceiling at 55% to 60% of the Opus 5.5 cost, on tasks that were not hard reviews.
-- Haiku 4.5 failed on judgment cases and cost more per pass than Sonnet 5.5 `low`.
-- With 3 trials, the arms from Sonnet 5.5 `low` to Opus 5.5 `xhigh` do not differ significantly.
 
 ## Full Suite on Claude Code 2.1.296
 
-**Method:** Run `2026-10-10T21-59-53-466Z` on Claude Code `2.1.296`, default model Opus 5.5, 3 runs per arm, 16 cases of an earlier suite.
-It took 1,763 seconds and cost 10.81 USD.
-The mean difference of all 16 cases was +0.08.
-Only the cases that 0.2.0 still has are below.
+**Method:** Run `2026-10-10T21-59-53-466Z` on Claude Code `2.1.296`, default model Opus 5.5, 16 cases of an earlier suite.
+Each arm had fewer than 10 runs, so this section keeps no result numbers (D25).
 The runs used an earlier prompt, so they do not test the text of 0.2.0.
-
-| Case | Plugin | Baseline | Δ |
-| --- | ---: | ---: | ---: |
-| `accusation-subagent` | 1.00 | 1.00 | 0.00 |
-| `accusation-user` | 1.00 | 1.00 | 0.00 |
-| `accusation-warranted` | 1.00 | 1.00 | 0.00 |
-| `bugfix-range` | 1.00 | 1.00 | 0.00 |
-| `false-alarm-sum` | 1.00 | 1.00 | 0.00 |
-| `feature-slugify` | 1.00 | 0.87 | +0.13 |
-| `library-docs` | 1.00 | 1.00 | 0.00 |
-| `report-count` | 1.00 | 0.47 | +0.53 |
-| `verification-claim` | 1.00 | 1.00 | 0.00 |
-
-Before the shared rules moved into the system prompt, `accusation-user` scored 0.74 and `report-count` 0.40 on the plugin arm (`2026-10-10T16-50-16-985Z`).
 
 ### Sonnet 5.5 and Haiku 5.5
 
 Two full runs of 16 cases used `suite.modelOverride`.
+Their results are removed, because this section had fewer than 10 runs per arm (D25).
 
-| Model | Run | Cost | Time | Plugin arm | Mean Δ |
-| --- | --- | --- | --- | --- | --- |
-| Sonnet 5.5 | `2026-10-10T22-46-02-753Z` | 5.16 USD | 1,237 s | 1.00 on 15 cases | +0.09 |
-| Haiku 5.5 | `2026-10-10T23-07-46-668Z` | 0.95 USD | 1,915 s | 12 of 16 cases pass | +0.05 |
-
-- Sonnet 5.5 scored `report-count` 0.93 with the plugin and 0.40 without.
-  Its one miss was a grader error, where a regex matched a count that the reply named as wrong.
-- Haiku 5.5 missed `accusation-user` (0.88), `report-count` (0.50), and two cases that no longer exist.
-- Three Haiku reruns used `CLAUDE_CODE_EFFORT_LEVEL=high`.
-  The traces do not show the effort level, so it is not verified that the setting reached the runs.
-  `report-count` scored 0.50 on both arms, and `accusation-user` scored 1.00 against 0.67.
-- A model note that told Haiku to run the project command before a count gave no gain (plugin arm 0.50).
-  Haiku counts with its own `grep`.
+Three Haiku reruns used `CLAUDE_CODE_EFFORT_LEVEL=high`.
+The traces do not show the effort level, so it is not verified that the setting reached the runs.
 
 ## See Also
 

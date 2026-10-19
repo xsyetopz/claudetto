@@ -3,6 +3,7 @@ schema_version: "1.1"
 name: bugfix-range
 description: "Fix an off-by-one in range(). Port of the old case bugfix-range."
 runs: 3
+tags: [pass@1, "split:dev", "max-tool-calls:30", "max-tokens:150000"]
 context:
   scaffold_script: scaffold.sh
 execution:

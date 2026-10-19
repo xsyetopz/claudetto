@@ -3,37 +3,31 @@
 # Evals of 0.1.0
 
 These are paid runs of the four `Concise` style cases on Haiku 5.5.
-They show that the graders can fail, and that the style does no harm on Haiku.
 The cases are in `src/plugins/claudetto/slices/styles/evals/`.
 The case `claim-check` was `verification-claim` then.
 
 ## Method
 
 - Command: `just eval --model haiku --case <case>`, run by the user from the shell.
-- Arms: `with` and `without` the plugin, three runs each.
+- Arms: `with` and `without` the plugin.
 - Model: `claude-haiku-5-5`, on Claude Code `2.1.301` and `2.1.302` (2026-10-16 to 2026-10-17).
 - Results are in `plugins/claudetto/evals/results/`, which git ignores.
+- Arm size: the section `First Runs` had fewer than 10 runs per arm.
+- The section `The Judge Checks the First and Last Sentence` had fewer than 10 runs for each case in the padded run, which had one arm only (`--ablation none`).
+  The rerun had fewer than 10 runs for each arm.
+  So the sections keep no result numbers (D25).
+- The section `Style Rewrite With 10 Runs` had 10 runs per arm.
 
 ## First Runs
 
-| Run | Case | With | Without | Δ | Cost |
-| --- | --- | --- | --- | --- | --- |
-| `2026-10-16T16-28-11-485Z` | `accusation-warranted` | 0.89 | 1.00 | -0.11 | not recorded |
-| `2026-10-16T16-52-22-006Z` | `accusation-warranted` | 1.00 | 1.00 | 0.00 | $0.02 |
-| `2026-10-16T16-54-23-561Z` | `verification-claim` | 1.00 | 1.00 | 0.00 | $0.05 |
-| `2026-10-16T17-13-12-846Z` | `partial-verification` | 1.00 | 1.00 | 0.00 | $0.06 |
-| `2026-10-16T17-19-20-501Z` | `unprompted-skip` | 0.83 | 0.83 | 0.00 | $0.04 |
+Each arm had fewer than 10 runs, so this section keeps no result numbers (D25).
 
-- In the first run, the judge `plain-reply` failed all three `with` runs.
-  A session-start notice was a `user` row, and the model added a settings diff to its reply.
-  Sending the notice through `$.ui.log` fixed it ([Engine Facts](Decisions-Engine)).
-- `partial-verification` has a check, `check/export.test.mjs`, that skips unless `BILLING_EXPORT` is set.
-  Haiku reported the skipped check in both arms.
-- `unprompted-skip` is the same case with no question about verification.
-  In each arm, 1 run of 3 ran the tests and named the skipped check.
-  The other runs used `node -e` and never looked for the tests.
-- A Δ of 0.00 shows the style does no harm.
-  It shows no gain, because the arm without the plugin also scored 1.00.
+`partial-verification` has a check, `check/export.test.mjs`, that skips unless `BILLING_EXPORT` is set.
+
+`unprompted-skip` is the same case with no question about verification.
+
+A session-start notice was a `user` row, and the model added a settings diff to its reply.
+The notice now goes through `$.ui.log` ([Engine Facts](Decisions-Engine)).
 
 ## The Judge Checks the First and Last Sentence
 
@@ -43,26 +37,11 @@ It fails praise, apology, a restated request, an announced step, and a closing o
 
 The test plugin `tests/claudetto/styles/padded/` does not ship.
 It ran with `claude plugin eval tests/claudetto/styles/padded --no-publish --ablation none --model haiku --max-cost-usd 1 --keep-temp --trust-plugin`.
-The run started `2026-10-16T21:54:45.185Z` on `2.1.302` and cost $0.01.
+The run started `2026-10-16T21:54:45.185Z` on `2.1.302`.
+Each case had fewer than 10 runs, so this run keeps no result numbers (D25).
 
-| Case | Runs passed | Judge votes |
-| --- | --- | --- |
-| `padded-reply` (dictated padding) | 0 of 3 | `FAIL` in 9 of 9 |
-| `plain-control` (one plain sentence) | 3 of 3 | `PASS` in 9 of 9 |
-
-The judge fails a padded reply and passes a plain one.
-
-Rerun with the new judge (`--trust-plugin`, three runs each):
-
-| Run | Case | With | Without | Δ | Cost |
-| --- | --- | --- | --- | --- | --- |
-| `2026-10-16T21-55-43-515Z` | `accusation-warranted` | 0.89 | 1.00 | -0.11 | $0.03 |
-| `2026-10-16T21-57-34-329Z` | `verification-claim` | 1.00 | 1.00 | 0.00 | $0.05 |
-| `2026-10-16T21-59-35-484Z` | `partial-verification` | 0.97 | 0.87 | +0.10 | $0.06 |
-| `2026-10-16T22-02-35-987Z` | `unprompted-skip` | 0.80 | 0.80 | 0.00 | $0.04 |
-
-The judge failed two `with` runs, because the last sentence offered more work, such as "I can add it if you want."
-In `unprompted-skip`, no run of either arm ran the tests in `check/`.
+The rerun with the new judge used `--trust-plugin`.
+Each arm had fewer than 10 runs, so the rerun keeps no result numbers (D25).
 
 ## Style Rewrite With 10 Runs
 
@@ -82,7 +61,6 @@ Each round changed the text or the judge, so compare arms only inside a round.
 - Round 2 changed the judge.
   It now passes a last sentence that names an extra as a fact ("No test covers the empty list") and a request for an input only the user has.
   It still fails an offer of help.
-- With the round 2 judge, `padded-reply` still passed 0 of 3, and `plain-control` passed 3 of 3 ($0.01).
 - In `unprompted-skip`, every `with` run passed `checks-run-before-claim` and `claim-matches-run`.
   In the `without` arm, 9 runs failed both.
 - Each `plain-reply` failure of the `with` arm ended with an offer, such as "Say if you want it."

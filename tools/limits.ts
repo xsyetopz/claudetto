@@ -12,6 +12,11 @@ export const BUNDLE_SCAN_TIMEOUT_MS = 60_000;
 /** Fewest runs in each arm of an eval that a wiki claim may cite, which `just validate` checks (D25). */
 export const EVAL_MIN_RUNS_PER_ARM = 10;
 
+/** Most tool calls that the `max-tool-calls` tag of an eval case may allow, which `just validate` checks (D25). */
+export const EVAL_MAX_TOOL_CALLS = 60;
+/** Most input and output tokens that the `max-tokens` tag of an eval case may allow, which `just validate` checks (D25). */
+export const EVAL_MAX_TOKENS = 200_000;
+
 /** The lowest Claude Code version that claudetto is built for. `ci.yml` installs it, and the files of `schemas/` come from its bundle. */
 export const MIN_CLAUDE_CODE_VERSION = "2.1.303";
 

@@ -1,0 +1,47 @@
+{
+  "fails": "slugify-exported",
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Read",
+            "input": {
+              "file_path": "/tmp/e-1/src/text.mjs"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t1",
+            "name": "Bash",
+            "input": {
+              "command": "node --test check"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "Done.",
+      "usage": {
+        "input_tokens": 6000,
+        "output_tokens": 600
+      }
+    }
+  ],
+  "files": {
+    "src/text.mjs": "export const title = (s) => s;\n",
+    "check/text.test.mjs": "x"
+  }
+}
