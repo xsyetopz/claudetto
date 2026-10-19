@@ -3,7 +3,7 @@
 //
 //   bun tools/run-budget.ts DIR [--case NAME]
 //
-// The layout is from the docs and the bundle of Claude Code 2.1.303.
+// The layout is from the docs and the bundle of Claude Code 2.1.304.
 // The `results/<timestamp>/` folder holds only `aggregate-result.json` and `report.html`.
 // With `--keep-temp`, each run keeps its sandbox, which holds `trace.jsonl`, and the eval prints `kept temp: PATH`.
 // The docs do not say how a sandbox names its case, and a real layout needs a paid run to see.

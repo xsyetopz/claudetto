@@ -186,6 +186,21 @@ test("a spawn ends its task prompt with the rules for a subagent one time", asyn
   expect(first.endsWith("</claudetto_notes>")).toBe(true);
 });
 
+test("a refusal of a spawn, such as past a Stop or a host limit, reaches the caller as it is", async ($: Engine, on: On) => {
+  on("agent.spawn", () => ({ deny: "past a Stop" }));
+  const answer = await $.agent.spawn({
+    tool_use_id: "t1",
+    prompt: "Read the file.",
+    description: "Read the file.",
+    subagentType: "reviewer",
+    provider: { plugin: "engine", tier: "core" },
+    parentModel: "claude-opus-5-5",
+    background: false,
+    fork: false,
+  });
+  expect(answer).toEqual({ deny: "past a Stop" });
+});
+
 test("a spawn with a block in its task prompt keeps it", async ($: Engine, on: On) => {
   const block = "Read it.\n\n<claudetto_notes>\nx\n</claudetto_notes>";
   expect(await spawned($, on, block)).toBe(block);

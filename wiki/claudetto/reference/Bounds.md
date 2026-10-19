@@ -48,7 +48,7 @@ A value in a `{{...}}` placeholder is filled from the code when `just generate` 
 | `WORKTREE_TEST_TIMEOUT_MS` | `15,000` | `tools/limits.ts` | The time for one test that makes a `git worktree`. |
 | `GIT_REPO_TEST_TIMEOUT_MS` | `15,000` | `tools/limits.ts` | The time for one test that starts many `git` processes. |
 | `BUNDLE_SCAN_TIMEOUT_MS` | `60,000` | `tools/limits.ts` | The time for one test that scans the bundle of the installed `claude`. |
-| `MIN_CLAUDE_CODE_VERSION` | `2.1.303` | `tools/limits.ts` | The lowest Claude Code version that claudetto is built for. |
+| `MIN_CLAUDE_CODE_VERSION` | `2.1.304` | `tools/limits.ts` | The lowest Claude Code version that claudetto is built for. |
 | `DOCKER_CPUS` | `4` | `tools/limits.ts` | The CPUs of the container of `just docker`. |
 | `EVAL_MAX_COST_USD` | `5` | `tools/limits.ts` | The most US dollars for one `just eval` run. |
 | `LINUX_TOKEN_MIN_MINUTES` | `30` | `tools/limits.ts` | The fewest minutes of life of the access token before `just sandbox-linux` sends the login to its container. |
@@ -56,12 +56,13 @@ A value in a `{{...}}` placeholder is filled from the code when `just generate` 
 
 ## Source of the Binary Facts
 
-Three shared bounds depend on the Claude Code `2.1.303` binary:
+Three shared bounds depend on the Claude Code binary:
 `CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `BASH_OUTPUT_MAX_CHARS`.
-The range of `bashOutputMaxChars` (4,000 to 128,000) comes from the description of the key in the `2.1.303` settings schema.
+The range of `bashOutputMaxChars` (4,000 to 128,000) comes from the description of the key in the settings schema of `2.1.303` and `2.1.304`.
 `CONTEXT_BLOCK_MARGIN` is the output reserve of 20,000 tokens plus 3,000 tokens of the `2.1.303` bundle.
-The `2.1.303` bundle caps the window of some models at 200,000 tokens, so the settings snippet sets `CONTEXT_WINDOW` in `autoCompactWindow`.
-The `2.1.303` bundle starts the auto compaction at `min(floor(E × pct / 100), E − 13000)`, with `E` the window less `COMPACT_OUTPUT_RESERVE`.
+The `+3,000` was not found by name in the `2.1.304` bundle, so it stays a claim of `2.1.303` only.
+The `2.1.303` and `2.1.304` bundles cap the window of some models at 200,000 tokens, so the settings snippet sets `CONTEXT_WINDOW` in `autoCompactWindow`.
+The `2.1.303` and `2.1.304` bundles start the auto compaction at `min(floor(E × pct / 100), E − 13000)`, with `E` the window less `COMPACT_OUTPUT_RESERVE`.
 `AUTOCOMPACT_PCT` and `HAIKU_AUTOCOMPACT_WINDOW` come from this formula.
 
 ## See Also

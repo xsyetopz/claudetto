@@ -1,7 +1,7 @@
 # Decisions: Settings
 
 These decisions explain which keys `claudetto` sets, which parts of Claude Code it turns off, and when it asks the user.
-The minimum Claude Code version is `2.1.303` (`MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts`).
+The minimum Claude Code version is `2.1.304` (`MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts`).
 
 ## Why Each Need Takes the Simplest Way
 

@@ -4,7 +4,7 @@
 //
 // The hook has no catch-all.
 // A `catch` here names the error that it expects, and the others reach the log of Claude Code.
-// When the hook throws or times out, Claude Code skips it, so the call would run (a guard fails open, d.ts of 2.1.303).
+// When the hook throws or times out, Claude Code skips it, so the call would run (a guard fails open, d.ts of 2.1.303 and 2.1.304).
 // So the slice gives `onBashFail` to `.catch()`, which denies a command that prints a file (fail closed).
 //
 // `claude plugin validate` follows `$` only into a function of one file,

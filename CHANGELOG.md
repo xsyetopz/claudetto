@@ -11,7 +11,7 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ## [0.2.0] - 2026-10-18
 
-This release cuts `claudetto` to the parts that Claude Code does not do already, so the `.ts` source under `src/` (without `lab/`) goes from 33,219 lines to 11,288 lines, it needs Claude Code 2.1.303 or later, and `/claudetto:setup` must run again after the update, because it cleans the settings of 0.1.0.
+This release cuts `claudetto` to the parts that Claude Code does not do already, so the `.ts` source under `src/` (without `lab/`) goes from 33,219 lines to 11,288 lines, it needs Claude Code 2.1.304 or later, and `/claudetto:setup` must run again after the update, because it cleans the settings of 0.1.0.
 
 ### Added
 
@@ -26,6 +26,9 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 ### Changed
 
+- `claudetto` now targets Claude Code 2.1.304 (`MIN_CLAUDE_CODE_VERSION`, the CI, the issue templates, and the schemas in `schemas/`).
+  The facts about the compaction window, the output reserve, and `bashOutputMaxChars` hold on 2.1.303 and 2.1.304.
+  No settings key changed, and no plugin calls `$.agent.spawn`, whose `{ deny }` result is now also the refusal of the engine past a Stop or a host limit.
 - **Breaking:** `claudetto` has these slices: `advise`, `decide`, `dry`, `goal`, `ground`, `guard`, `handoff`, `patch`, `prompt`, `reply`, `sembr`, `setup`, `spec`, `statusline`, and `styles`, and `claudetto-sessions` is one `sessions` skill with the scripts `audit` and `replay`, and the `awareness`, `start-cost`, and `usage` slices are gone, because `/context`, `/usage`, `/insights`, and `/status` give the same facts.
 - **Breaking:** `guard` keeps the deny of a `Bash` command that only prints a file and names the `Read` call to use, and it fails closed, so a crash or timeout denies a print command.
 - **Breaking:** `handoff` keeps the compact answer and reads `openspec/changes/` in place of `minispec/changes/`, a handoff after the cache TTL is written with no model call while a warm cache still forks, and the done list holds only checked tasks of `tasks.md` and checks whose last run passed (D47, D48).
@@ -48,6 +51,11 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 - **Breaking:** the slices `agents`, `asks`, `attribution`, `checks`, `corrections`, `gc`, `minispec`, `policy`, `reads`, `repostate`, `turngate`, `usercheck`, and `worktree`, with the `minispec` CLI and skills, the `gc` skill, the custom agents, and `claudetto-run-checks`, and the `testJudge` option with the `asks` slice, the add-on `claudetto-you-should-know`, and the recipes `just measure`, `just usage`, and `just start-run`.
 - **Breaking:** the `second_opinion` tool, its fallback model, and the `decide` value `claude` (values are now `off` and `jev`), the `/handoff` command and its session-start registration, and the `claudetto-codegraph` hooks (sync at session start, after an edit, and after git) and `--mcp` of `claudetto-codegraph-check`, because `codegraph` syncs its own index.
 - Repository checks: the file line caps, the part line pins, the prompt text size pins, the prose-in-code `biome` rule, and the `title-case` markdownlint rule, with their bounds in `tools/limits.ts`, because they made code split and grow instead of stay small (the user, 2026-10-19).
+
+### Fixed
+
+- `claudetto-schema` resolves a lazy reference to a name that the settings module imports in the module that exports it.
+  Without it, the 2.1.304 bundle gave `hooks` no `type` and no `additionalProperties`.
 
 ## [0.1.0-alpha.1] - 2026-10-15
 

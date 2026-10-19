@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$comment": "Extracted from Claude Code 2.1.303",
+  "$comment": "Extracted from Claude Code 2.1.304",
   "type": "object",
   "properties": {
     "$schema": {
@@ -1064,7 +1064,7 @@
     },
     "totalTokensReminder": {
       "enum": ["off", "infinite", "fixed", "countdown", "padded-countdown"],
-      "description": "@internal Emit a <`total_tokens`>N tokens left<`/total_tokens`> block in the system prompt, after each tool result, and (when `totalTokensReminderAfterUserTurn` is on) after each regular user prompt. `infinite` uses the literal value Infinite, `fixed` uses 5000000, `countdown` uses the live remaining context-window tokens, `padded-countdown` counts down from `totalTokensReminderBudget` (re-anchoring to the full budget on each regular user prompt when `totalTokensReminderAfterUserTurn` is on — task-budget semantics). Defaults to padded-countdown. Env var `CLAUDE_CODE_TOTAL_TOKENS_REMINDER` overrides."
+      "description": "@internal Emit a <`total_tokens`>N tokens left<`/total_tokens`> block in the system prompt, after each tool result, and (when `totalTokensReminderAfterUserTurn` is on) after each regular user prompt. `infinite` uses the literal value Infinite, `fixed` uses 5000000, `countdown` uses the live remaining context-window tokens, `padded-countdown` counts down from `totalTokensReminderBudget` (re-anchoring to the full budget on each regular user prompt when `totalTokensReminderAfterUserTurn` is on — task-budget semantics). Defaults to padded-countdown for a model with the `total_tokens_reminder` capability, else off. Env var `CLAUDE_CODE_TOTAL_TOKENS_REMINDER` overrides."
     },
     "totalTokensReminderBudget": {
       "type": "integer",
@@ -1280,5 +1280,5 @@
     }
   },
   "additionalProperties": false,
-  "title": "Claude Code 2.1.303 settings.json"
+  "title": "Claude Code 2.1.304 settings.json"
 }

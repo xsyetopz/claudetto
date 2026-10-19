@@ -18,7 +18,7 @@ const KINDS: Record<string, string> = {
 // Each module of the bundle starts with a `// @bun` line and reuses short minified names, so a name resolves in its own module.
 const MODULE = "// @bun";
 
-type Scope = { text: string; local: string };
+export type Scope = { text: string; local: string };
 
 const pairsOf = (list: string): [string, string][] =>
   list
@@ -51,7 +51,14 @@ const scopes = (
   const anchor = src.indexOf(ANCHOR);
   const start = Math.max(src.lastIndexOf(MODULE, anchor), 0);
   const next = src.indexOf(MODULE, anchor);
-  const home = src.slice(start, next < 0 ? src.length : next);
+  return scopesIn(src, src.slice(start, next < 0 ? src.length : next));
+};
+
+// The imports of one module, each resolved to the module that exports it (`src` is the whole bundle).
+export const scopesIn = (
+  src: string,
+  home: string,
+): { home: string; imported: Map<string, Scope> } => {
   const imported = new Map<string, Scope>();
   for (const m of home.matchAll(/import\{([^}]*)\}from"[^"]*"/g)) {
     const pairs = pairsOf(m[1] as string);
@@ -85,6 +92,12 @@ const tagOf = (text: string, name: string, follow: boolean): string | null => {
   if (tag !== undefined) return tag;
   const factory = /^return ([\w$]+)\(/.exec(body)?.[1];
   return follow && factory ? tagOf(text, factory, false) : null;
+};
+
+// The module that a name is imported from, or `undefined` when the name is local to the module of `ctx`.
+export const importOf = (ctx: Ctx, name: string): Scope | undefined => {
+  ctx.scopes ??= scopes(ctx.src);
+  return ctx.scopes.imported.get(name);
 };
 
 export const kindOf = (ctx: Ctx, name: string): string | undefined => {

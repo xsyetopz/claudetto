@@ -266,6 +266,42 @@ test("a lazy reference to a record helper gives an object", () => {
   });
 });
 
+test("a lazy reference to an imported helper resolves in the module that exports it", () => {
+  // The name `G` is a record in its own module, and the home module only imports it, with no `rec` helper of its own.
+  const [lib = "", home = ""] = HELPERS.split(/(?=\/\/ @bun\nimport)/);
+  const exporter = [
+    "// @bun\n",
+    'import{o,C}from"/$bunfs/root/chunk-z.js";',
+    'function rec(e,t){return new D({type:"record",keyType:e,valueType:t})}',
+    "var G=f(()=>rec(o(),C(o())));",
+    "export{G};\n",
+  ].join("");
+  const bundle = [
+    lib,
+    exporter,
+    home.replace(
+      'from"/$bunfs/root/chunk-z.js";',
+      'from"/$bunfs/root/chunk-z.js";import{G}from"/$bunfs/root/chunk-a.js";',
+    ),
+    'const s={$schema:()=>o().optional().describe("Schema"),',
+    'hooks:()=>Pe(()=>G()).describe("Hooks"),};',
+  ].join("");
+  const { user } = buildSchemas(bundle, VERSION);
+  expect(at(user, "hooks")).toStrictEqual({
+    type: "object",
+    additionalProperties: { type: "array", items: { type: "string" } },
+    description: "Hooks",
+  });
+});
+
+test("`hooks` is an object of arrays in each shipped schema", async () => {
+  for (const kind of ["user", "managed"] as const)
+    expect(at(await shipped(kind), "hooks")).toMatchObject({
+      type: "object",
+      additionalProperties: { type: "array" },
+    });
+});
+
 test("`forceLoginGatewayUrl` is a user key and not managed-only", async () => {
   const user = await shipped("user");
   const managed = await shipped("managed");

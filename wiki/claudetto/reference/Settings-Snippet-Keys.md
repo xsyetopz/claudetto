@@ -5,7 +5,7 @@
 Each key of the [settings snippet](Settings-Snippet) has a reason.
 This page gives the value, the effect in Claude Code, and the reason for each key.
 The snippet sets a key only when the default of Claude Code does not give the result that `claudetto` needs.
-The facts are for Claude Code `2.1.303`.
+The facts are for Claude Code `2.1.304`.
 
 ## Who Sets Which Key
 

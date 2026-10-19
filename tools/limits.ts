@@ -18,7 +18,7 @@ export const EVAL_MAX_TOOL_CALLS = 60;
 export const EVAL_MAX_TOKENS = 200_000;
 
 /** The lowest Claude Code version that claudetto is built for. `ci.yml` installs it, and the files of `schemas/` come from its bundle. */
-export const MIN_CLAUDE_CODE_VERSION = "2.1.303";
+export const MIN_CLAUDE_CODE_VERSION = "2.1.304";
 
 /** The CPUs of the container of `just docker`, so a check does not take each CPU of the host. */
 export const DOCKER_CPUS = 4;
