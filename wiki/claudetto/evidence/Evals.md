@@ -52,7 +52,7 @@ Each case has a `case.yaml` and most have a `scaffold.sh`.
 | `library-docs` | none | 20 | 5 `regex`, 2 `tool_used` |
 | `handoff` | `handoff` | 20 | 2 `regex`, 3 `tool_used` |
 | `accusation-subagent` | `prompt` | 25 | 3 `regex`, 4 `tool_used` |
-| `accusation-user` | `prompt` | 25 | 3 `regex`, 5 `tool_used` |
+| `accusation-user` | `prompt` | 25 | 3 `regex`, 7 `tool_used` |
 | `correction-next-action` | `prompt` | 10 | 1 `llm`, 1 `tool_used` |
 | `false-alarm-sum` | `prompt` | 20 | 2 `regex`, 4 `tool_used`, 1 `llm` |
 | `harm-settled-by-facts` | `prompt` | 20 | 3 `regex`, 1 `llm` |
@@ -84,8 +84,8 @@ It checks that an auto compaction in the middle of a task keeps the done steps a
 No full run of the 19 current cases exists.
 The four `styles` cases ran on Haiku 5.5 ([Evals of 0.1.0](Evals-0.1.0)).
 On 2026-10-19, eleven `prompt` slice cases ran on Claude Code `2.1.303`, after the fix of `LEAN_BODY` ([Evals of 0.2.0](Evals-0.2.0)).
-Two of them have 10 runs for each arm.
-The other nine are a screen below the D25 floor.
+Each of them has 10 runs for each arm, so all eleven meet the D25 floor.
+Nine of them ran with `--runs 10`, which overrides the 3 runs of their `case.yaml`.
 The newest full run was on 2026-10-10 on Claude Code `2.1.296`, with an earlier suite ([Evals History](Evals-History#full-suite-on-claude-code-21296)).
 Its figures do not describe the current prompt.
 
