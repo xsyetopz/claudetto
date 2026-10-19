@@ -52,6 +52,8 @@ A page over about 150 lines splits into sub-pages, such as `Claude-Code-Settings
 - ✅ means a page of `external/cc-2.1.303/docs-live/` (as of 2026-10-19) names the item. A mention only in `changelog.md` or the Agent SDK pages does not count.
   An item of the published `claude-code.d.ts` counts as documented, because `plugins_mods_reference.md` calls it the complete reference.
 - No minified identifiers (such as `Q_t` or `eV()`) in text that readers see. Cite a stable string, key, or message instead.
+- No details of how Claude Code proves that a request comes from it, such as the `cch` value of the billing header or switches that make a request look first party (the user, 2026-10-19).
+  Tools that pretend to be Claude Code use such details, and the wiki is public.
 - Each fact gives its source: a docs page (title and URL), or the bundle (a string, a key, or a type name).
 
 ## W4. Sources of Part 2
