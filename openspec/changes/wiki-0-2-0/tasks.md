@@ -9,7 +9,7 @@
   a separate `CLAUDE_CONFIG_DIR`, a fake `ANTHROPIC_API_KEY`, and `ANTHROPIC_BASE_URL` set to a local stub of the Messages API that records each request and sends scripted replies.
   Record the method and each result in an evidence page, and fix the marks and the text of the drafts.
   A probe that needs the real API is a paid run: ask the user first.
-- [ ] 1.6 Probe again, as a subscriber, the vars that showed no effect in 1.5: the stub sends each account and flag request to the real API with `CLAUDE_CODE_OAUTH_TOKEN` from `.env` (the user, 2026-10-19), and it still answers each `/v1/messages` call itself, so no model call is made.
+- [x] 1.6 (dropped by the user, 2026-10-19: the permission checks refused the local TLS proxy) Probe again, as a subscriber, the vars that showed no effect in 1.5: the stub sends each account and flag request to the real API with `CLAUDE_CODE_OAUTH_TOKEN` from `.env` (the user, 2026-10-19), and it still answers each `/v1/messages` call itself, so no model call is made.
   The stub never logs or prints the token. A probe that needs a real model reply is a paid run: ask the user first.
 - [ ] 1.4 Write `Claude-Code-Undocumented`, move the drafts to `src/wiki/claude-code/`, remove the old `wiki/claude-code/` pages.
   Check: `just generate && bun run lint:md && bun test tests/support/wiki-links.test.ts`
