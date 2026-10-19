@@ -92,25 +92,19 @@ export const registerOf = async (p: FoundPlugin): Promise<Output[]> => {
     ].join(""),
   );
   const sorted = order(entries);
-  const hookOf = (e: Entry): string =>
-    alias.get(`${where.get(e)?.dir}\0${where.get(e)?.name}`) as string;
-  const failOf = (e: Entry): string | undefined => {
-    const f = fails.get(e);
-    return f && alias.get(`${f.dir}\0${f.name}`);
-  };
-  const calls = sorted.map((e) => onCall(e, hookOf(e), failOf(e)));
+  const aliasOf = (w?: { dir: string; name: string }) =>
+    w && alias.get(`${w.dir}\0${w.name}`);
+  const calls = sorted.map((e) =>
+    onCall(e, aliasOf(where.get(e)) as string, aliasOf(fails.get(e))),
+  );
   const configured = configures.size > 0;
   const file = `plugins/${p.name}/hooks/register.ts`;
   const source = `src/plugins/${p.name}/slices/*/slice.ts`;
   const text = [
-    configured
-      ? 'import type { On, PluginOptions } from "claude-code";'
-      : 'import type { On } from "claude-code";',
+    `import type { On${configured ? ", PluginOptions" : ""} } from "claude-code";`,
     ...imports,
     "",
-    configured
-      ? "export const register = (on: On, options: PluginOptions): void => {"
-      : "export const register = (on: On): void => {",
+    `export const register = (on: On${configured ? ", options: PluginOptions" : ""}): void => {`,
     ...[...configures].sort().map((key) => `  ${alias.get(key)}(options);`),
     ...calls,
     "};",
