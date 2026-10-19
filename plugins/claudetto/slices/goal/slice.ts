@@ -72,7 +72,7 @@ export const slice = {
         tokens: 0,
         blocks: false,
         allow: `${COMMAND_LAB} > \`command.describe\` leaves another command unchanged`,
-        text: `${COMMAND_LAB} > \`command.describe\` gives \`/goal\` the description of the goal engine`,
+        text: `${COMMAND_LAB} > \`/goal\` has the goal engine text`,
       },
       filter: { command: "goal" },
       phase: "rewrite",
