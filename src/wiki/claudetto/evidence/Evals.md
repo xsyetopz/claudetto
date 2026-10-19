@@ -81,6 +81,9 @@ It checks that an auto compaction in the middle of a task keeps the done steps a
 
 No full run of the 19 current cases exists.
 The four `styles` cases ran on Haiku 5.5 ([Evals of 0.1.0](Evals-0.1.0)).
+On 2026-10-19, eleven `prompt` slice cases ran on Claude Code `2.1.303`, after the fix of `LEAN_BODY` ([Evals of 0.2.0](Evals-0.2.0)).
+Two of them have 10 runs for each arm.
+The other nine are a screen below the D25 floor.
 The newest full run was on 2026-10-10 on Claude Code `2.1.296`, with an earlier suite ([Evals History](Evals-History#full-suite-on-claude-code-21296)).
 Its figures do not describe the current prompt.
 
@@ -89,6 +92,7 @@ Its figures do not describe the current prompt.
 - [Eval Graders](Eval-Graders)
 - [Evals History](Evals-History)
 - [Evals 0.1.0](Evals-0.1.0)
+- [Evals 0.2.0](Evals-0.2.0)
 - [Handoff Cost](Handoff-Cost)
 - [Off Switches](Off-Switches)
 - [Evidence](Evidence)
