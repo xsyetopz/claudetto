@@ -38,6 +38,11 @@ Read on 2026-10-17 from `code.claude.com/docs/en/` (`permission-modes.md`, `perm
 - A tool that needs more than the sandbox gives, such as Docker, which talks to its daemon through a socket, gets the narrowest exception that a test shows to work.
   First `sandbox.network.allowUnixSockets` with the path of the socket, which keeps the command in the sandbox.
   Only when that fails, an `excludedCommands` entry for that tool alone, such as `docker *`, with an allow rule, which runs it outside the sandbox.
+  Measured on 2026-10-19 with sandbox-runtime 0.0.80 (task 7.14): `docker` fails with `permission denied` on the socket, and with the socket in `sandbox.network.allowUnixSockets` the full `just docker check` exits 0, so `excludedCommands` is not needed.
+  Setup writes the socket to the local settings of a project that uses Docker only.
+  The socket rule is macOS only, because Claude Code ignores `allowUnixSockets` on Linux, so setup skips the step there.
+  Open: on Linux the fallback, an `excludedCommands` entry for `docker *`, is not done.
+  Accepted risk: with the socket open, any sandboxed process (`curl --unix-socket`, `docker -H`, `docker --context`) can reach the daemon and get past the `permissions.ask` rules of `docker-ask.ts`.
   `just docker check` of this project is the first case, and setup offers the exception only when the project uses the tool.
 - The socket exception stays, so `permissions.ask` rules guard the host: `docker run`, `docker create`, `docker compose run`, and `docker compose up` with `-v`, `--volume`, `--mount`, or `--privileged` ask the user (`slices/prompt/domain/docker-ask.ts`, the user, 2026-10-19).
 

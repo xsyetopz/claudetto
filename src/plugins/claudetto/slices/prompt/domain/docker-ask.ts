@@ -6,6 +6,8 @@
 const COMMANDS = [
   "docker run",
   "docker create",
+  "docker container run",
+  "docker container create",
   "docker compose run",
   "docker compose up",
 ];

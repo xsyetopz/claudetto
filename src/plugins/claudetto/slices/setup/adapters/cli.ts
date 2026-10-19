@@ -7,6 +7,8 @@
 //
 // It cleans the keys of 0.1.0 out of the settings file and out of `CLAUDE.md`, then merges the settings snippet into the settings file.
 // It writes nothing without `--apply`.
+// In a project that uses Docker, on macOS only, it also offers the Docker socket in `sandbox.network.allowUnixSockets` of the local settings, and writes it with `--apply`.
+// Claude Code ignores `allowUnixSockets` on Linux, so setup skips the step there.
 // With `--apply`, in a project with `.git/`, it also appends the local files of claudetto to `.gitignore`.
 // With `--advisor claudetto`, the snippet also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor only.
 // The skill passes the `advisor` option, because a CLI run by the user gets no `CLAUDE_PLUGIN_OPTION_*` env var.
@@ -28,6 +30,7 @@ import {
   cleanLegacyKeys,
   stripBlock,
 } from "../domain/cleanup.ts";
+import { dockerSocket, usesDocker } from "../domain/docker.ts";
 import { withIgnores } from "../domain/gitignore.ts";
 import { isObject, type Json, merge, snippetFor } from "../domain/merge.ts";
 import {
@@ -70,6 +73,17 @@ const readSettings = async (file: string): Promise<Json> => {
   return data;
 };
 
+/** The settings of `file`, or `undefined` after an error line when the file does not parse. */
+const readReported = async (
+  file: string,
+  io: Io,
+): Promise<Json | undefined> => {
+  const settings = await readSettings(file).catch((err: Error) => err);
+  if (!(settings instanceof Error)) return settings;
+  io.error(SETTINGS_FAILED({ file, message: settings.message }));
+  return undefined;
+};
+
 /** Appends the local files of claudetto to the `.gitignore` of the project, when the project has `.git/`. */
 const ignoreLocal = async (projectDir: string): Promise<void> => {
   if (!fs.existsSync(path.join(projectDir, ".git"))) return;
@@ -79,8 +93,81 @@ const ignoreLocal = async (projectDir: string): Promise<void> => {
   if (next !== text) await writeAtomic(file, next);
 };
 
+/**
+ * In a project that uses Docker, adds the Docker socket to `sandbox.network.allowUnixSockets` of the local settings,
+ * because the socket path belongs to the machine of the user.
+ * It prints the offer and writes only with `apply`.
+ * It does nothing off macOS, where Claude Code ignores `allowUnixSockets`.
+ * It gives the exit status: 1 when the local settings do not parse.
+ */
+const allowDocker = async (
+  projectDir: string,
+  env: NodeJS.ProcessEnv,
+  apply: boolean,
+  io: Io,
+  exists: (file: string) => boolean,
+  platform: string,
+  hintShown: boolean,
+): Promise<number> => {
+  if (platform !== "darwin") return 0;
+  const inProject = (name: string) =>
+    fs.existsSync(path.join(projectDir, name));
+  const texts: Record<string, string> = {};
+  for (const name of ["justfile", "Justfile", "package.json"])
+    if (inProject(name))
+      texts[name] = await Bun.file(path.join(projectDir, name)).text();
+  const read = (name: string) => texts[name] ?? "";
+  if (!usesDocker(inProject, read, () => fs.readdirSync(projectDir))) return 0;
+  const socket = dockerSocket(env, env["HOME"] || os.homedir(), exists);
+  if (!socket) return 0;
+  const file = path.join(projectDir, PROJECT_LOCAL_SETTINGS);
+  const current = await readReported(file, io);
+  if (!current) return 1;
+  const changes: string[] = [];
+  const next = merge(
+    current,
+    { sandbox: { network: { allowUnixSockets: [socket] } } },
+    changes,
+  );
+  if (!changes.length) return 0;
+  io.log(
+    `Docker project: ${file} gets sandbox.network.allowUnixSockets ${socket}`,
+  );
+  if (!apply) {
+    if (!hintShown) io.log(`\n${DRY_RUN}`);
+    return 0;
+  }
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  await writeAtomic(file, `${JSON.stringify(next, null, 2)}\n`);
+  return 0;
+};
+
 /** Run the CLI with `args` and return the exit status. */
 export const main = async (
+  args: string[],
+  env: NodeJS.ProcessEnv = process.env,
+  cwd: string = process.cwd(),
+  io: Io = consoleIo,
+  exists: (file: string) => boolean = fs.existsSync,
+  platform: string = process.platform,
+): Promise<number> => {
+  let hintShown = false;
+  const seen: Io = {
+    ...io,
+    log: (line) => {
+      if (line.includes(DRY_RUN)) hintShown = true;
+      io.log(line);
+    },
+  };
+  const status = await setup(args, env, cwd, seen);
+  const project = path.resolve(env["CLAUDE_PROJECT_DIR"] || cwd);
+  // After the settings write, so that scope `local` does not overwrite the entry.
+  if (status !== 0 || args.includes("--addons")) return status;
+  const apply = args.includes("--apply");
+  return allowDocker(project, env, apply, io, exists, platform, hintShown);
+};
+
+const setup = async (
   args: string[],
   env: NodeJS.ProcessEnv = process.env,
   cwd: string = process.cwd(),
@@ -133,11 +220,8 @@ export const main = async (
     for (const step of addonSteps(parsed)) io.log(step);
     return 0;
   }
-  const current = await readSettings(file).catch((err: Error) => err);
-  if (current instanceof Error) {
-    io.error(SETTINGS_FAILED({ file, message: current.message }));
-    return 1;
-  }
+  const current = await readReported(file, io);
+  if (!current) return 1;
   const cleaned = cleanLegacyKeys(cleanAutoMode(cleanGitConfig(current)));
   const { snippet, kept } = snippetFor(cleaned, ROOT, scope === "project");
   if (advisor === "claudetto")

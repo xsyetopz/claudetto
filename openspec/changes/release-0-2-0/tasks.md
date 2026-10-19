@@ -183,7 +183,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just test tests/claudetto/setup`
 - [x] 7.13 Cut the `guard` hook to the forms that a rule cannot match (`sh -c`, `bash -c`, `eval`, and a program by path), with the corpus as its lab, and move each ask of `asks` for a call that discards work to the deny rules of 7.11 (D43, D35). (closed: removed in trim-0-2-0)
   Check: `just test tests/claudetto/guard tests/claudetto/asks && just lab`
-- [ ] 7.14 Run `just docker check` with the sandbox of D43, and when it fails, add the Docker socket to `sandbox.network.allowUnixSockets`, or else an `excludedCommands` entry for `docker *` alone, with a setup test that offers it only for a project that uses Docker (D43).
+- [x] 7.14 Run `just docker check` with the sandbox of D43, and when it fails, add the Docker socket to `sandbox.network.allowUnixSockets`, or else an `excludedCommands` entry for `docker *` alone, with a setup test that offers it only for a project that uses Docker (D43).
   Check: `just docker check && just test tests/claudetto/setup`
 
 - [x] 7.15 Add a setup test that, in a project with `.git/`, setup appends to `.gitignore` the paths of local files that must not be public that claudetto writes in the project (its state and cache files, not files of other plugins), keeps each file that is safe for the public, adds no duplicate entry, and changes nothing in a project with no `.git/`. See it fail, then add the step to setup (the user, 2026-10-19).

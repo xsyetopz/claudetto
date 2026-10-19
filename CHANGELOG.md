@@ -15,6 +15,7 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 ### Added
 
+- On macOS, `/setup` offers the Docker socket in `sandbox.network.allowUnixSockets` of `.claude/settings.local.json` for a project that uses Docker, because the sandbox blocks the socket and `docker` fails with `permission denied` (D43).
 - The `goal` slice replaces the built-in `/goal` with checks that run a command, read a file, or ask a small model, with the steps of a plan file, a budget, and a stall rule, and it turns off `ProposeGoal` and the `goal_status` attachment, and `/goal` shows the goal engine's own description, while the `advise` slice, with the `advisor` option `claudetto`, gives the tool `advise` in place of the built-in advisor, with the model, the effort, and the bounds that the user sets, and `/setup` sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`.
 - The `ground` slice denies a `Write` or `Edit` of a plan file when the text cites a `file:line` or a convention that the source does not hold, and the `spec` slice ships the OpenSpec schemas `task`, `story`, and `epic`, and a `config.yaml` template of the project rules, in the `spec` skill.
 - The `reply` slice adds a `Reply` button under each message of Claude, which puts that message in the prompt as a `>` quote at the cursor (D56), and the `dry` slice adds `jscpd-config`, which merges `jscpd.local.json` and its `extends` chain, the skill `dry`, and `just dry` in `just check`, with `.jscpd-baseline.json`, so a new clone fails the check.

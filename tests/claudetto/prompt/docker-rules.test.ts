@@ -16,6 +16,8 @@ test("a Docker run, create, or compose form with a mount or `--privileged` asks"
     "docker run --mount type=bind,src=/,dst=/h alpine",
     "docker run --privileged alpine",
     "docker create -v ~/.ssh:/s alpine",
+    "docker container run -v /:/host alpine",
+    "docker container create --privileged alpine",
     "docker compose run --rm -v /:/h app",
     "docker compose up --privileged",
   ];
@@ -27,6 +29,7 @@ test("a Docker form with no mount and no `--privileged` passes", () => {
     "docker run --rm alpine echo hi",
     "docker compose up -d",
     "docker compose run --rm app test",
+    "docker container run --rm alpine echo hi",
     "docker ps",
     "docker build -t x .",
   ];

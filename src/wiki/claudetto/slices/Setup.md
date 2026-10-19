@@ -130,6 +130,14 @@ It creates `.gitignore` when the file is missing.
 It changes nothing in a project with no `.git/`.
 A file that a team shares, such as an OpenSpec change, is not in the list.
 
+## The Docker Socket
+
+In a project that uses Docker (a `Dockerfile`, a Compose file, or a `justfile` or `package.json` that calls `docker`), the command offers the Docker socket in `sandbox.network.allowUnixSockets`, and with `--apply` it writes the socket to `.claude/settings.local.json`.
+The socket is the `unix://` path of `DOCKER_HOST`, or else the first of `~/.orbstack/run/docker.sock`, `~/.docker/run/docker.sock`, and `/var/run/docker.sock` that exists.
+It changes nothing in a project that does not use Docker.
+This step runs on macOS only, because Claude Code ignores `allowUnixSockets` on Linux.
+A local settings file that does not parse stops the step with an error.
+
 ## See Also
 
 - [Setup Cleanup](Setup-Cleanup)
