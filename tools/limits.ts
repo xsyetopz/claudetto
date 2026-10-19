@@ -9,6 +9,9 @@ export const GIT_REPO_TEST_TIMEOUT_MS = 15_000;
 /** Most milliseconds for one test that scans the bundle of the installed `claude`, which took 15 s under the CPU cap of `just docker`. */
 export const BUNDLE_SCAN_TIMEOUT_MS = 60_000;
 
+/** Fewest runs in each arm of an eval that a wiki claim may cite, which `just validate` checks (D25). */
+export const EVAL_MIN_RUNS_PER_ARM = 10;
+
 /** The lowest Claude Code version that claudetto is built for. `ci.yml` installs it, and the files of `schemas/` come from its bundle. */
 export const MIN_CLAUDE_CODE_VERSION = "2.1.303";
 
