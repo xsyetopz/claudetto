@@ -11,7 +11,7 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ## [0.2.0] - 2026-10-18
 
-This release cuts `claudetto` to the parts that Claude Code does not do already, so the `.ts` source under `src/` (without `lab/`) goes from 33,219 lines to 10,232 lines, it needs Claude Code 2.1.303 or later, and `/claudetto:setup` must run again after the update, because it cleans the settings of 0.1.0.
+This release cuts `claudetto` to the parts that Claude Code does not do already, so the `.ts` source under `src/` (without `lab/`) goes from 33,219 lines to 11,288 lines, it needs Claude Code 2.1.303 or later, and `/claudetto:setup` must run again after the update, because it cleans the settings of 0.1.0.
 
 ### Added
 
@@ -40,6 +40,7 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 - **Breaking:** the slices `agents`, `asks`, `attribution`, `checks`, `corrections`, `gc`, `minispec`, `policy`, `reads`, `repostate`, `turngate`, `usercheck`, and `worktree`, with the `minispec` CLI and skills, the `gc` skill, the custom agents, and `claudetto-run-checks`, and the `testJudge` option with the `asks` slice, the add-on `claudetto-you-should-know`, and the recipes `just measure`, `just usage`, and `just start-run`.
 - **Breaking:** the `second_opinion` tool, its fallback model, and the `decide` value `claude` (values are now `off` and `jev`), the `/handoff` command and its session-start registration, and the `claudetto-codegraph` hooks (sync at session start, after an edit, and after git) and `--mcp` of `claudetto-codegraph-check`, because `codegraph` syncs its own index.
+- Repository checks: the file line caps, the part line pins, the prompt text size pins, the prose-in-code `biome` rule, and the `title-case` markdownlint rule, with their bounds in `tools/limits.ts`, because they made code split and grow instead of stay small (the user, 2026-10-19).
 
 ## [0.1.0-alpha.1] - 2026-10-15
 
