@@ -84,6 +84,8 @@ The four `styles` cases ran on Haiku 5.5 ([Evals of 0.1.0](Evals-0.1.0)).
 On 2026-10-19, eleven `prompt` slice cases ran on Claude Code `2.1.303`, after the fix of `LEAN_BODY` ([Evals of 0.2.0](Evals-0.2.0)).
 Each of them has 10 runs for each arm, so all eleven meet the D25 floor.
 Nine of them ran with `--runs 10`, which overrides the 3 runs of their `case.yaml`.
+Two of the eleven, `missing-tool-is-a-step` and `report-count`, had faults.
+They ran again after their fixes, and their current values are on [Evals of 0.2.0](Evals-0.2.0#fixes-of-two-cases-on-2026-10-19).
 The newest full run was on 2026-10-10 on Claude Code `2.1.296`, with an earlier suite ([Evals History](Evals-History#full-suite-on-claude-code-21296)).
 Its figures do not describe the current prompt.
 
