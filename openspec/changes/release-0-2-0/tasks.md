@@ -248,10 +248,12 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 - [x] 11.1 Add a `just validate` rule that fails on an eval case whose only check matches reply words, and on a wiki claim that cites an eval with fewer than 10 runs in an arm, and see it fail on the current cases.
   Check: `! just validate`
-- [ ] 11.2 Change each eval case to check a file, an exit status, or a tool call, or remove it, and remove each wiki number that no eval proves.
-  Each case fails on a recorded bad run, names pass^k or pass@1, counts its tool calls and tokens, and the implementer cases keep a held-out split (D25).
+- [x] 11.2 Change each eval case to check a file, an exit status, or a tool call, or remove it, and remove each wiki number that no eval proves.
+  Each case fails on a hand-made bad run that fails one named grader, names pass^k or pass@1, counts its tool calls and tokens, and the implementer cases keep a held-out split (D25).
   Check: `just validate`
 - [ ] 11.3 Run the changed evals with `just eval-variant claudetto--v0.1.0-alpha.1` at 10 runs for each arm.
+  Run with `--keep-temp`, then run `just eval-budget <kept folder>` to check each `trace.jsonl` against the `max-tool-calls:N` and `max-tokens:N` tags (D25).
+  Confirm that the trace is stream-json and that the folder names its case, and fix `tools/run-budget.ts` when not.
   This is a paid run: ask the user first, with the expected cost and the weekly share.
   Check: `just eval-variant claudetto--v0.1.0-alpha.1 --model claude-haiku-5-5 --max-cost-usd 5`
 - [x] 11.4 Run the implementer cases on Sonnet 5.5 `high`, Opus 5.5 `low`, and Opus 5.5 `medium` at 10 runs for each arm, and change D3 only by D21. (closed: removed in trim-0-2-0)
