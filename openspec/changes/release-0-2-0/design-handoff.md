@@ -45,7 +45,8 @@ The sources are in the last section.
   The output of a failed check or test always goes to a file in full, because a report of "tests failed" hides the detail, and the subagent docs found that "the test runner pattern performed worse among all configurations" (`academy.claude.com`, using subagents effectively).
 - A delegation runs work in parallel or keeps bulk reads out of the main context.
   Subagents that run one after another "incur multi-agent token costs without the speed benefit" (`claude.com`, multi-agent coordination patterns).
-- When a subagent stops with no report, the main session resumes it with `SendMessage`, and does not start it again.
+- When a subagent stops with no report, the main session resumes it with `SendMessage` only within 5 minutes of its stop, because a subagent keeps a 5-minute cache (`external/cc-2.1.302/docs/sub-agents.md:1229`).
+  After that, the main session starts a fresh subagent that reads the report of the stopped one and its saved patch (the user, 2026-10-19).
   The subagent docs say "Resumed subagents retain their full conversation history".
 - The Haiku guard of task 4.2 stays a notice that does not stop the run and does not ask for a commit.
 

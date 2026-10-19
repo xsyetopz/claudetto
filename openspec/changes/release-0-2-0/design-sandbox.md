@@ -39,6 +39,7 @@ Read on 2026-10-17 from `code.claude.com/docs/en/` (`permission-modes.md`, `perm
   First `sandbox.network.allowUnixSockets` with the path of the socket, which keeps the command in the sandbox.
   Only when that fails, an `excludedCommands` entry for that tool alone, such as `docker *`, with an allow rule, which runs it outside the sandbox.
   `just docker check` of this project is the first case, and setup offers the exception only when the project uses the tool.
+- The socket exception stays, so `permissions.ask` rules guard the host: `docker run`, `docker create`, `docker compose run`, and `docker compose up` with `-v`, `--volume`, `--mount`, or `--privileged` ask the user (`slices/prompt/domain/docker-ask.ts`, the user, 2026-10-19).
 
 - Alternative: `bypassPermissions` with the same rules.
   Rejected, because the docs scope it to containers and VMs, and it lets the `Edit` tool write to `.git` and `.claude` with no prompt.

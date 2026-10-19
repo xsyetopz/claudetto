@@ -26,17 +26,18 @@ Tasks 7.6 and 7.7 write one row for each name, so that no name is missed.
 
 ### D18. The Snippet Keeps a Default When the Default Fits Each Account
 
-- `promptCacheTtl` goes out of the snippet.
-  The schema says: "Unset = automatic: 1 hour on a Claude subscription within its usage limits, 5 minutes on an API key".
-  The snippet set `5m` for each account with no recorded reason (from `3dbe21d1`), so a subscription lost its free 1-hour cache, and a session of 2026-10-17 wrote 28.4k tokens again after a break.
-  Jev picked `unset` at confidence 0.89.
+- `CLAUDE_CODE_PROMPT_CACHE_TTL` stays `1h` in the snippet (D47, the user, 2026-10-19).
+  The cold or warm timer of the handoff is right in every case only when the TTL is known, and overage keeps the 1-hour TTL.
+  An API-key account pays 2 times the base input for a write (`external/cc-2.1.302/docs/env.md:474`), and that cost is accepted.
+  The earlier plan (`promptCacheTtl` out of the snippet, the schema says "Unset = automatic") is replaced.
 - `subagentPromptCacheTtl` stays unset until a measure (task 7.9).
   A 1-hour write costs 2 times the base input and a 5-minute write 1.25 times, so `1h` pays only when enough helper writes follow a gap over 5 minutes.
   Jev picked `measure-first` at confidence 0.67.
 - `cc-plugin-you-should-know@builtin` stays off in `enabledPlugins` (`slices/prompt/slice.ts:119`), because D31 turns off its feature flags and D1 rewrites `claudetto-you-should-know` in its place.
+- `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` is `1` (default 3, `external/cc-2.1.302/docs/env.md:330`), so a helper does not start helpers of its own (the user, 2026-10-19).
 - `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` stays unset.
   The docs say that the 5.x models get the shorter prompt by default.
-- `idleCompaction`, `skillListingBudgetFraction`, `skillListingMaxDescChars`, `CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH`, `CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY` (default 10), and `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` keep their defaults, and their rows in task 7.7 give the reason.
+- `idleCompaction`, `skillListingBudgetFraction`, `skillListingMaxDescChars`, `CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH`, and `CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY` (default 10) keep their defaults, and their rows in task 7.7 give the reason.
   The skill listing of a fresh session is 1.1k tokens, under the default budget of 1% of the window.
   A cap of 10 helpers fits the default tool concurrency of 10.
 

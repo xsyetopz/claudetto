@@ -15,6 +15,7 @@ import {
   onSpawn,
   onToolDescribe,
 } from "./adapters/mod.ts";
+import { DOCKER_ASK } from "./domain/docker-ask.ts";
 import { GIT_ASK } from "./domain/git-ask.ts";
 import { OFF_ATTACHMENTS, OFF_COMMANDS } from "./domain/off.ts";
 
@@ -116,6 +117,7 @@ export const slice = {
       CLAUDE_CODE_FORK_SUBAGENT: "0",
       CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL: "1",
       CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: "2",
+      CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH: "1",
       CLAUDE_CODE_SUBAGENT_MODEL: "claude-sonnet-5-5",
       DISABLE_ERROR_REPORTING: "1",
       DISABLE_EXTRA_USAGE_COMMAND: "1",
@@ -218,6 +220,7 @@ export const slice = {
       ],
       ask: [
         ...GIT_ASK,
+        ...DOCKER_ASK,
         "Bash(rm -*r*)",
         "Bash(rm -*R*)",
         "Bash(rm * -*r*)",

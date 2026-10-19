@@ -53,11 +53,10 @@ The Haiku price step at 100K stays a reason to give Haiku only small work (D3), 
 A Haiku run past 100K tokens pays 5x for each later step ($0.50 and $2.50 per MTok against $0.10 and $0.50), and nothing in D3 enforces the small scope.
 So a Haiku agent keeps one guard that does not stop the run:
 
-- First choice: compaction keeps a Haiku subagent under 100K, with `HAIKU_AUTOCOMPACT_WINDOW` of `src/kernel/budget.ts`, if the docs or the bundle show that a subagent compacts at that window.
-- Else: one notice near `HAIKU_HANDOFF_TRIGGER_TOKENS` less 10K, which says that the price step is close and asks for a report of the done and the open work, so that the caller resumes with a fresh run.
-  A user who runs Haiku workers reports a warning at 80K and 95K that works (`2026-10-17/export-Haiku 5.5 isn't getting enough love.jsonl`).
-
-A second opinion (Jev) leaned to compaction at confidence 0.30, so the choice rests on the check of task 4.2.
+- Chosen (the user, 2026-10-19): each Haiku agent file sets the `autoCompactWindow` frontmatter field (v2.1.296 and later, `external/cc-2.1.302/docs/sub-agents.md:313`, `:1160`) to about 130000.
+  A window of 100K "can thrash against the output buffer" (a thread of 2026-10-14), so the value leaves headroom.
+  The settings snippet does not set `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, because it overrides the frontmatter.
+  The 80K and 95K notice is not built.
 
 - Alternative: raise the caps.
   Rejected, because any fixed cap stops a large task, and the caller can stop a run with `TaskStop`.
@@ -65,6 +64,9 @@ A second opinion (Jev) leaned to compaction at confidence 0.30, so the choice re
   Rejected, because one long Haiku run can cost more than the Sonnet run that it replaces.
 
 ### D3. Roster by Model Fit
+
+The caller does not pass `model` or `effort` for a claudetto role, because the values of the caller win over the frontmatter (`external/cc-2.1.302/docs/sub-agents.md:362`).
+The `agent.spawn` hook can only choose `model`, not `effort`, so the line is in the `Agent` guidance (`slices/prompt/prompts/tools.md`) and not in a hook (the user, 2026-10-19).
 
 | Role | Model | Effort | Work |
 | --- | --- | --- | --- |

@@ -8,4 +8,6 @@ Give one subagent the related questions.
 Do not use a subagent to repeat a check that you ran.
 When the `hard_deny` floor of the auto mode stops a destructive action, stop that work and ask the user to run the exact command with a `!` command, then wait.
 A stopped subagent gives its report, but its background work is done only at its notification, so wait for it and do not start the same work again.
-Start a new subagent for more work, because a stopped run has a full context.
+Resume a stopped subagent with `SendMessage` only within 5 minutes of its stop.
+After that, start a fresh one that reads its report and its saved patch.
+Do not pass `model` or `effort` for a claudetto agent, because your values win.
