@@ -2,86 +2,132 @@
 
 # Handoff Cost
 
-This page compares the cost of one handoff with the cost of one `/compact` on the same session.
-On this session, the handoff cost $0.0630 and the compaction cost $0.2288.
-The figures are from an earlier release (1.0.0), not from the `handoff` slice of 0.2.0.
-That slice works another way: it runs at each compaction ([Handoff](Handoff)).
+This page gives the measurement of the `handoff` slice of 0.2.0 against the built-in compaction.
+It relates to the decisions `D46` and `D47` of `openspec/changes/release-0-2-0/design-handoff.md`, but tests neither (see [Limits](#limits)).
+The older measurement on 1.0.0 is on [Handoff Cost (Part 2)](Handoff-Cost-2).
 
-## Setup
+## Result in Brief
+
+- The compaction step cost about $0.0067 with the handoff, and about $0.0163 with the built-in compaction.
+- With the follow-up turn, the handoff arm cost about $0.061, and the built-in arm cost about $0.046.
+- The handoff step took 3.4 s, and the built-in step took 6.4 s.
+- After the handoff, the context held about 500 tokens.
+  After the built-in compaction, it held about 1,580 tokens.
+- In none of the four follow-ups did the next turn start task 3.
+  The criterion of task 3.16 failed in both arms.
+- Both H follow-ups checked task 2 again (`Read` or `git diff`), although the handoff said not to.
+  Neither B follow-up made a tool call, and no follow-up changed a file.
+
+## Method
 
 | Item | Value |
 | --- | --- |
-| Date | 2026-10-12, 17:32 to 17:34 UTC |
-| Claude Code | `2.1.296` |
-| Model | `claude-sonnet-5-5`, context window 1,000,000 tokens |
-| Checkout | Commit `627d1d22` of the earlier release |
-| Session | `just sandbox` after `just sandbox-clean`, in a project with four slices of that release |
-| Runs | 4: one base, one handoff fork, one compaction fork, one follow-up |
+| Date | 2026-10-19 |
+| Claude Code | `2.1.303` |
+| Model | `claude-sonnet-5-5` |
+| Checkout | Commit `0b79e582` of claudetto 0.2.0 |
+| Arms | H: the `handoff` slice on, with the default `compaction` option `handoff`. B: built-in compaction, set in `config/settings.json` by `{"pluginConfigs":{"claudetto@inline":{"options":{"compaction":"built-in"}}}}` |
+| Fixture | A git project with `math.js` (one `add` line), and `openspec/changes/fixture/tasks.md` with 4 tasks, task 1 checked |
+| Runs | 2 runs of each arm, each arm in its own `just sandbox --dir` root |
 
-All runs used `just sandbox --model claude-sonnet-5-5 --output-format stream-json --verbose`.
-The base run read 31 files with `Read`.
-Its last call had a context of 81,316 tokens.
-Both forks started from that context with `--fork-session`.
-The handoff fork wrote a handoff file (1,585 bytes) and ran `/clear`, and the new session read it and answered.
-The compaction fork ran `/compact`, then got the follow-up `Continue the work.`
+Arm B wrote no handoff file, so the option took effect.
+Arm H wrote `openspec/changes/fixture/handoff.md`.
 
-## Sources
+Each run had two processes.
+The first process ran `just sandbox --dir <root> --model claude-sonnet-5-5 --input-format stream-json --output-format stream-json --verbose --max-budget-usd 0.6 --permission-mode acceptEdits -p < input.jsonl`.
+It sent the task turn, then `/compact`, and it exited after `/compact`.
+The follow-up ran in a new process with `--resume <session-id> -p "Continue the work."`.
+That process wrote the cache again, so its cost counts in the follow-up of both arms.
 
-| Source | Content |
-| --- | --- |
-| S | `usage` and `total_cost_usd` of the `result` events in `stream-json` |
-| T | `cost-state` and `compact_boundary` entries and `assistant` `usage` in the transcripts. A fork starts with the `cost-state` of its base, so a step is the difference of two `cost-state` values |
-| U | The usage report of that release, used as a check only |
+The two runs used two prompts for the task turn:
 
-## Handoff
+- Run 1: "Do task 2 of `openspec/changes/fixture/tasks.md`: change `math.js`, then tick the task in `tasks.md`. Do only task 2, then stop."
+- Run 2: "Do task 2 of `openspec/changes/fixture/tasks.md`: change `math.js`, then tick the task."
 
-| Measure | Handoff step | Resume step | Total | Source |
+The figures come from the `result` and `compact_boundary` events of the stream output.
+
+- The compaction step is the second `result` of the first process, minus the first `result`.
+- `total_cost_usd` is cumulative for a session.
+  So the follow-up cost is the resumed total minus the compacted total.
+- The time is the `duration_ms` of the `result`.
+- The tokens after are the `post_tokens` of the `compact_boundary` event, which has `trigger: manual`.
+
+The four sessions cost $0.395 in all, from their final `total_cost_usd`.
+
+## Compaction Step
+
+| Measure | H, run 1 | H, run 2 | B, run 1 | B, run 2 | H mean | B mean |
+| --- | --- | --- | --- | --- | --- | --- |
+| Cost | $0.0068 | $0.0066 | $0.0165 | $0.0162 | $0.0067 | $0.0163 |
+| Time (`duration_ms`) | 3.5 s | 3.3 s | 6.1 s | 6.7 s | 3.4 s | 6.4 s |
+| Tokens after (`post_tokens`) | 479 | 522 | 1,580 | 1,584 | about 500 | about 1,580 |
+
+The `compact_boundary` event gives the same means for the time, 3.4 s and 6.4 s.
+The tokens before the compaction (`pre_tokens`) were between 16,755 and 16,865 in all four runs.
+
+## Follow-Up Step
+
+A done step is a check of a task that the handoff marks as done.
+
+| Measure | H, run 1 | H, run 2 | B, run 1 | B, run 2 |
 | --- | --- | --- | --- | --- |
-| Input tokens (not cached) | 6 | 4 | 10 | S |
-| Cache read tokens | 164,242 | 25,946 | 190,188 | S |
-| Cache write tokens | 2,576 | 5,874 | 8,450 | S |
-| Output tokens | 869 | 147 | 1,016 | S |
-| Model calls | 2 | 2 | 4 | T |
-| Cost (API list price) | $0.0354 | $0.0276 | $0.0630 | S |
-| Context, last call of the step | 82,927 | 18,487 | 18,487 | T |
-| Time | 6.7 s | 2.4 s | 9.1 s | S |
+| Cost (resumed total minus compacted total) | $0.0732 | $0.0348 | $0.0296 | $0.0297 |
+| Time (`duration_ms`) | 4.8 s | 5.6 s | 1.6 s | 2.3 s |
+| Tool calls | 2 `Read` | 1 `Bash` | none | none |
+| Next turn started task 3 | no | no | no | no |
+| Done step run again | yes (re-read the files) | yes (`git diff`) | no | no |
+| Changed a file | no | no | no | no |
 
-## Compaction
+Each follow-up reported task 2 as done, and tasks 3 and 4 as open.
+The two H follow-ups differ by about $0.038.
+Two sessions in each arm are too few for a stable mean.
 
-| Measure | `/compact` step | Follow-up step | Total | Source |
-| --- | --- | --- | --- | --- |
-| Input tokens (not cached) | 59,526 | 2 | 59,528 | T |
-| Cache read tokens | 20,245 | 12,613 | 32,858 | T |
-| Cache write tokens | 3,542 | 15,803 | 19,345 | T |
-| Output tokens | 3,049 | 391 | 3,440 | T |
-| Model calls | not shown | 1 | not shown | T |
-| Cost (API list price) | $0.1604 | $0.0684 | $0.2288 | S |
-| Context, first call of the follow-up | 7,835 (`postTokens`) | 28,418 | 28,418 | T |
-| Time | 18.8 s | 4.4 s | 23.2 s | T and S |
+## Handoff Content
 
-Read the context rows as two different points, not as one measure.
+The text below is as the handoff files wrote it.
+
+- Run 1 wrote "Next step: none," and "the user asked me to stop."
+  It said to do tasks 3 and 4 only if the user asks.
+- Run 2 wrote "Next step: if the user wants it, check the change, for example with `git diff`."
+  It also wrote "the user asked only for task 2," although its prompt had no stop wording.
+- Both files wrote "Next open task: `3` in `tasks.md`."
+- Both files called the checked tasks "done and verified," and both listed "Passed checks: none."
+  No check ran in either arm.
+- In run 2, the follow-up ran `git diff && cat math.js`, which matches the example of the handoff.
 
 ## Result
 
-- The summary call of the compaction read 59,526 uncached tokens and wrote 3,049 output tokens.
-- The handoff made no such call.
-- The handoff took 9.1 s, and the compaction with its follow-up took 23.2 s.
-- The sums of the usage report (source U) do not match the tables.
-  A fork copies the history of its base, and the report does not show the `/compact` call.
+- The handoff step cost about 41% of the built-in step.
+  This is the compaction step only.
+- Compaction plus follow-up: H cost $0.0800 and $0.0414 (mean about $0.061), and B cost $0.0461 and $0.0459 (mean about $0.046).
+  Over the whole cycle, the handoff arm was not cheaper, partly because of the extra tool calls of its follow-ups.
+- The handoff step took about half the time of the built-in step.
+- The handoff left about a third of the tokens of the built-in step.
+- The next turn did not take task 3 in any follow-up.
+  So the criterion of task 3.16 failed in both arms.
+
+## What This Shows for `D46` and `D47`
+
+- `D46` says that a compaction updates the last handoff, so the context does not grow with each compaction.
+  Each session here had one compaction, so this measurement does not test that growth.
+- `D47` says that a handoff on a cold cache needs no model call.
+  The compaction ran seconds after the task turn, in the same process, so its cache was warm.
+  The cold path was not measured.
+  The `/compact` result reports `num_turns` of 0 and no usage, so the stream does not show whether the handoff made a model call.
 
 ## Limits
 
-- One session of about 81,000 tokens, one model, and one run of each step.
-  The numbers have no spread.
-- The `/compact` call is not in the transcript as a message, so its call count is unknown.
-- The cost is the API list price, not a subscription limit.
-  Sources S and T come from the same client.
-- The quality of the continued work is not measured.
-- Cache expiry is not measured.
-  The steps ran within two minutes, with a one-hour cache.
+- Two sessions in each arm, one fixture, one model, and a context of about 16,800 tokens.
+  Two sessions in each arm are too few for a measure of the spread.
+- The compaction was manual, with `trigger: manual`.
+  The automatic trigger needs a full context window, which costs much more, so it was not measured.
+- Each session had one compaction, so `D46` was not tested.
+- The cold path of `D47` was not tested.
+- The quality of the continued work was not scored.
 
 ## See Also
 
-- [Usage Evidence](Usage-Evidence)
+- [Handoff Cost (Part 2)](Handoff-Cost-2)
 - [Handoff](Handoff)
+- [Usage Evidence](Usage-Evidence)
 - [Evidence](Evidence)
