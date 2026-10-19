@@ -9,7 +9,6 @@ import { BASH_OUTPUT_MAX_CHARS } from "../../kernel/budget.ts";
 import type { Slice } from "../../kernel/slice.ts";
 import {
   keepOptions,
-  onAgentOffer,
   onAttachment,
   onCommandDescribe,
   onSection,
@@ -17,12 +16,12 @@ import {
   onToolDescribe,
 } from "./adapters/mod.ts";
 import { GIT_ASK } from "./domain/git-ask.ts";
-import { OFF_AGENTS, OFF_ATTACHMENTS, OFF_COMMANDS } from "./domain/off.ts";
+import { OFF_ATTACHMENTS, OFF_COMMANDS } from "./domain/off.ts";
 
 export const slice = {
   name: "prompt",
   ladder:
-    "mod: the `prompt.section`, `agent.spawn`, `tool.describe`, `prompt.attachment`, `command.describe`, and `agent.offer` hooks",
+    "mod: the `prompt.section`, `agent.spawn`, `tool.describe`, `prompt.attachment`, and `command.describe` hooks",
   controls: [
     {
       name: "lean_body text",
@@ -105,20 +104,6 @@ export const slice = {
       phase: "rewrite",
       run: onCommandDescribe,
     },
-    {
-      event: "agent.offer",
-      evals: {
-        requests: 0,
-        tokens: 0,
-        blocks: false,
-        allow:
-          "plugins/claudetto/tests/off.test.ts > `agent.offer` keeps another agent type",
-        text: "plugins/claudetto/tests/off.test.ts > `agent.offer` takes an agent type of an `off` name from the model",
-      },
-      filter: { agent: [...OFF_AGENTS] },
-      phase: "answer",
-      run: onAgentOffer,
-    },
   ],
   settings: {
     $schema:
@@ -133,7 +118,10 @@ export const slice = {
       CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: "2",
       CLAUDE_CODE_SUBAGENT_MODEL: "claude-sonnet-5-5",
       DISABLE_ERROR_REPORTING: "1",
+      DISABLE_EXTRA_USAGE_COMMAND: "1",
       DISABLE_FEEDBACK_COMMAND: "1",
+      DISABLE_INSTALL_GITHUB_APP_COMMAND: "1",
+      DISABLE_UPGRADE_COMMAND: "1",
     },
     model: "claude-opus-5-5",
     availableModels: [

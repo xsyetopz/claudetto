@@ -4,7 +4,7 @@
 // and the `context_management` section with the text of the compaction state.
 // `tool.describe` shortens the `Agent` description and defers `ListAgents`.
 // `agent.spawn` adds the rules for a subagent to the end of its task prompt.
-// `prompt.attachment`, `command.describe`, and `agent.offer` turn the `off` parts of the verdicts off.
+// `prompt.attachment` and `command.describe` turn the `off` parts of the verdicts off.
 
 import type { PluginOptions } from "claude-code";
 import type { Handler } from "../../../../../kernel/slice.ts";
@@ -72,8 +72,3 @@ export const onAttachment = (): { text: null } => ({ text: null });
 /** A command of an `off` name leaves the typeahead and `/help`, and it still runs when typed in full. */
 export const onCommandDescribe: Handler<"command.describe"> = (_$, e, next) =>
   next({ ...e, isHidden: true });
-
-/** An agent type of an `off` name is not offered to the model. */
-export const onAgentOffer: Handler<"agent.offer"> = () => ({
-  isOffered: false,
-});

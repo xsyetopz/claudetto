@@ -8,7 +8,7 @@ attachments:advisor_tool	replace	-	part 3 replaces the advisor, and no hook can 
 attachments:agent_listing_delta	keep	-	lists agent types the model can call
 attachments:agent_mention	keep	-	user-supplied context or file content, never turned off
 attachments:already_read_file	keep	-	user-supplied context or file content, never turned off
-attachments:artifact_opening_prefetch	off	6	\`enableArtifact\` is false
+attachments:artifact_opening_prefetch	keep	-	built only for the \`remote_cowork\` entry point, so it never runs in the CLI
 attachments:async_hook_response	keep	-	hook output, never turned off
 attachments:async_hook_response_batch	keep	-	hook output, never turned off
 attachments:at_mention_reference	keep	-	user-supplied context or file content, never turned off
@@ -90,13 +90,13 @@ attachments:secondary_reminder_sent	keep	-	flag-gated nudge with no text found, 
 attachments:selected_lines_in_diff	keep	-	user-supplied context or file content, never turned off
 attachments:selected_lines_in_ide	keep	-	user-supplied context or file content, never turned off
 attachments:session_context	keep	-	session state or marker that the engine needs
-attachments:session_cron_carry	off	0	\`CLAUDE_CODE_DISABLE_CRON=1\` removes cron tools
+attachments:session_cron_carry	off	0	\`CLAUDE_CODE_DISABLE_CRON=1\` leaves no task to carry
 attachments:session_settings	keep	-	session state or marker that the engine needs
 attachments:silent_turn_reminder	keep	-	flag-gated nudge with no text found, so no measured gain
 attachments:skill_listing	keep	-	user-supplied context or file content, never turned off
 attachments:skill_mention	keep	-	user-supplied context or file content, never turned off
 attachments:structured_output	keep	-	diagnostic, safety, or limit text, never turned off
-attachments:task_reminder	off	438	\`Task*\` tools are denied, so the nudge points at tools the model lacks
+attachments:task_reminder	off	438	built only when \`TaskUpdate\` is a tool, and \`TaskUpdate\` is denied
 attachments:task_status	keep	-	status of background tasks that the model needs
 attachments:team_context	keep	-	team or fork state, and claudetto does not turn off that feature
 attachments:teammate_mailbox	keep	-	team or fork state, and claudetto does not turn off that feature
@@ -116,6 +116,6 @@ attachments:ultra_effort_exit	keep	-	effort mode that the user chose
 attachments:ultrathink_effort	keep	-	user keyword that sets the effort
 attachments:unknown_command_fallback	keep	-	diagnostic, safety, or limit text, never turned off
 attachments:withheld_memory	keep	-	memory notice, never turned off
-attachments:workflow_keyword_request	off	143	\`enableWorkflows\` is false, so the keyword nudge is useless
+attachments:workflow_keyword_request	off	143	built only when workflows are on, and \`enableWorkflows\` is false
 attachments:workflow_size_guideline_change	keep	-	flag-gated nudge with no text found, so no measured gain
 `;
