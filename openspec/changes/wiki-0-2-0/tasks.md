@@ -20,4 +20,6 @@
   Check: `! git grep -qi dotclaude -- ':!openspec' ':!CHANGELOG.md'`
 - [ ] 2.4 Write `Home.md` and `_Sidebar.md` for the two parts.
   Check: `just docker check`
-- [ ] 2.5 Ask the user before `just wiki`, because it pushes to the public wiki.
+- [ ] 2.5 Rewrite each page of both parts to W3 and W5: Simple English Wikipedia look, no internal ids, ✅ and ❌ for yes and no.
+  Check: `just docker check` and `! grep -rqE '\bD[0-9]+\b' src/wiki`
+- [ ] 2.6 Ask the user before `just wiki`, because it pushes to the public wiki.

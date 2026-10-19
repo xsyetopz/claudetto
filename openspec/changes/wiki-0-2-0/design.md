@@ -58,3 +58,19 @@ A page over about 150 lines splits into sub-pages, such as `Claude-Code-Settings
 - `external/cc-kg/2.1.300/` and `external/cc-diff-301-302/`, `external/cc-diff-302-303/` for what changed.
 - The old pages `wiki/claude-code/`, `wiki/reference/Builtins*.md`, `wiki/reference/Settings-Schema.md` as a start, checked again against `2.1.303`.
 - No model call, no eval, no sandbox session. `claude --help` and `claude <cmd> --help` are free.
+
+## W5. Look and Feel: Simple English Wikipedia
+
+The user wants the wiki to read like the Simple English Wikipedia (the user, 2026-10-19).
+The old wiki does not, so each page gets a full rewrite, not a light edit.
+
+- A page starts with a lead: two or three short sentences that say what the subject is and why it matters.
+  No "This page tells…" and no "It is for…".
+- Then sections by topic, from simple to detailed. Detail goes into tables or sub-pages.
+- A page ends with `## See Also`, a short list of links.
+- No internal ids in titles or text, such as `D13` or `W3`.
+  A decision page has a heading for each topic, such as `## Why the Cache Lasts One Hour`.
+  The ids stay in `openspec/` and `.claude/rules/` only.
+  If a test or a rule reads an id from a page, change the test or the rule too.
+- Facts, not history. A page says what is true now. How it came to be goes to `CHANGELOG.md` or `openspec/`.
+- One idea for each sentence. Common words. A technical word gets a short explanation at first use.
