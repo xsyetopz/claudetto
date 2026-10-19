@@ -4,7 +4,7 @@
 
 `0.1.0-alpha.1` is tagged, so this change starts with `just bump` to `0.2.0`.
 The version is `0.2.0` and not `0.1.0-alpha.2`, because the change breaks users, and the user asked for `0.2.0` for a breaking change (2026-10-17).
-The breaks are the rewrite of `claudetto-you-should-know` (D1), the telemetry switches of the snippet, which turn off the built-in parts that need feature flags (D31), the removal of the slices `worktree`, `attribution`, and `corrections` with the `commit-msg` hook and `.claudetto/corrections.md` (D12), and the MiniSpec files with no frontmatter that `minispec validate` refuses (D9).
+The breaks are the rewrite of `claudetto-you-should-know` (D1), the removal of the slices `worktree`, `attribution`, and `corrections` with the `commit-msg` hook and `.claudetto/corrections.md` (D12), and the MiniSpec files with no frontmatter that `minispec validate` refuses (D9).
 `CHANGELOG.md` names each break under `0.2.0`.
 The working tree has uncommitted deletions of `openspec/` and `.claude/skills/openspec-*`, which are the user's work.
 The user asks for no legacy upkeep: no alias, shim, or migration for a removed thing.
@@ -26,7 +26,7 @@ Evidence from `external/2026-10-17/` (untrusted, used as leads):
 
 ### D1. Rewrite `claudetto-you-should-know` to Match the Built-In, with No Telemetry
 
-The built-in `cc-plugin-you-should-know` needs feature-flag fetching (`external/cc-2.1.302/docs/env.md:587`), and D31 turns that off.
+The built-in `cc-plugin-you-should-know` needs feature-flag fetching (`external/cc-2.1.302/docs/env.md:587`), and the snippet does not stop that fetch (D31).
 The user wants the built-in look and behavior with no telemetry, and chose a rewrite on 2026-10-17.
 The current add-on (1,607 lines of `.ts`) "looks nothing like builtin", in the words of the user.
 
@@ -42,7 +42,7 @@ The current add-on (1,607 lines of `.ts`) "looks nothing like builtin", in the w
 - Alternative: a fork of the built-in code from the bundle.
   Rejected, because it puts closed Anthropic code in a public repository.
 - Alternative: remove the add-on.
-  Rejected by the user, because D31 turns off the built-in.
+  Rejected by the user.
 
 ### D2. No `maxTurns`, and No Context Cap for Subagents
 

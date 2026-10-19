@@ -33,7 +33,7 @@ Tasks 7.6 and 7.7 write one row for each name, so that no name is missed.
 - `subagentPromptCacheTtl` stays unset until a measure (task 7.9).
   A 1-hour write costs 2 times the base input and a 5-minute write 1.25 times, so `1h` pays only when enough helper writes follow a gap over 5 minutes.
   Jev picked `measure-first` at confidence 0.67.
-- `cc-plugin-you-should-know@builtin` stays off in `enabledPlugins` (`slices/prompt/slice.ts:119`), because D31 turns off its feature flags and D1 rewrites `claudetto-you-should-know` in its place.
+- `cc-plugin-you-should-know@builtin` stays off in `enabledPlugins` (`slices/prompt/slice.ts:153`), because D1 rewrites `claudetto-you-should-know` in its place, so that two notes do not show.
 - `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` is `1` (default 3, `external/cc-2.1.302/docs/env.md:330`), so a helper does not start helpers of its own (the user, 2026-10-19).
 - `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` stays unset.
   The docs say that the 5.x models get the shorter prompt by default.

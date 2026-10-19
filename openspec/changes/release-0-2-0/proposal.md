@@ -14,7 +14,7 @@ The turn gate notice shows `�` for each line break and says `claudetto: claude
 An empty session costs about 19.7K tokens, and the prompts are long and narrow.
 The source has 1,075 files in `src/`, of which 70 of the 460 `.ts` files have fewer than 20 lines, and the wiki has about 148K words.
 The evals use small samples and check words more than behavior, so they do not prove the claims that cite them.
-The add-on `claudetto-you-should-know` looks nothing like the built-in `You should know` feature of Claude Code 2.1.302, and the built-in needs feature flags, which the telemetry switches of D31 turn off.
+The add-on `claudetto-you-should-know` looks nothing like the built-in `You should know` feature of Claude Code 2.1.302, and the built-in needs feature flags, which the snippet does not turn off (D31).
 
 The user asks for a major overhaul, with no legacy upkeep.
 
@@ -85,4 +85,4 @@ The user asks for a major overhaul, with no legacy upkeep.
 - Code: `src/plugins/claudetto/slices/{agents,statusline,turngate,prompt,styles,setup,minispec,checks}`, `src/kernel/budget.ts`, `src/plugins/claudetto-you-should-know/` (rewritten), `tools/`, `justfile`, `src/wiki/`.
 - Specs: `agent-roster`, `context-budget`, `hook-messages`, `jscpd`, `minispec-format`, `evals`, `settings-snippet`.
 - Users: each user of the core plugin gets new agent models and no turn caps.
-  Users of `claudetto-you-should-know` get a new look and behavior, and each user of the snippet gets telemetry, error reports, feedback, and surveys off (D31).
+  Users of `claudetto-you-should-know` get a new look and behavior, and the snippet sets no telemetry variable (D31).

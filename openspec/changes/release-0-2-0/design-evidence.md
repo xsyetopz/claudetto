@@ -114,13 +114,14 @@ Otherwise the `planner` stays, and `/claudetto:setup --advisor` stays an option 
 Each run of the `advisor` arm checks in its transcript that an advisor call happened, because the API drops a refused pairing with no error.
 When the bundle has no variable that stops the telemetry of a run and keeps the feature flags, the test does not run (D31).
 
-### D31. The Snippet Turns Off Each Tracking Path
+### D31. The Snippet Sets No Telemetry Variable
 
 The user does not want telemetry or prompt tracking (2026-10-17).
-The settings snippet sets `DISABLE_TELEMETRY`, `DO_NOT_TRACK`, `DISABLE_ERROR_REPORTING`, `DISABLE_FEEDBACK_COMMAND`, `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`, and `CLAUDE_CODE_SEND_FEEDBACK=0`, and sets no `OTEL_LOG_*` variable.
-`DISABLE_TELEMETRY` and `DO_NOT_TRACK` also stop feature-flag fetching (`external/cc-2.1.302/docs/env.md:571`).
-So these built-in parts are off: the You-Should-Know mod, the advisor, `/skill-doctor`, `/auto-mode-setup`, and the claude.ai sync of skills and plugins.
-Task 7.7 gives each variable its row in `Env.md`, and task 7.8 pins the `env` of the snippet to those rows.
+By the user's decision of 2026-10-18, the snippet sets no `DISABLE_TELEMETRY`, `DO_NOT_TRACK`, `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`, or `OTEL_LOG_*` variable.
+The snippet still sets `DISABLE_ERROR_REPORTING`, `DISABLE_FEEDBACK_COMMAND`, and `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY` (`slices/prompt/slice.ts:113`, `:119`, `:121`).
+`DISABLE_TELEMETRY` and `DO_NOT_TRACK` also stop feature-flag fetching (`external/cc-2.1.302/docs/env.md:575`).
+The snippet sets none of the four variables that skip that fetch (`external/cc-2.1.302/docs/env.md:575`), so it does not stop the fetch for the features of `external/cc-2.1.302/docs/env.md:571`.
+Tasks 7.7 and 7.8 are closed (2026-10-18), so no table pins the `env` of the snippet to the variables.
 
 The advisor of D30 needs the feature flags, so its test runs only when task 11.5 finds a variable that keeps them with the telemetry off.
 Otherwise the `planner` stays, and task 11.6 is dropped with that reason in `Usage-Evidence.md`.
