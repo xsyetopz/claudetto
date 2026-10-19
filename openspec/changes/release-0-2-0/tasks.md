@@ -218,7 +218,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [x] 10.4 Move each hand-edited page of `wiki/` to `src/wiki/`, generate all of `wiki/` from it, move each cited fact of `docs/research/` to `src/wiki/evidence/`, and remove `wiki/archive/` and `docs/research/` (D13).
   The 150-line cap of 10.5 is a style target now, because the user removed the size checks.
   Check: `just generate --check && bun test tests/support/wiki-links.test.ts`
-- [ ] 10.5 Cut each wiki page to at most 150 lines, with no narrative (D13).
+- [x] 10.5 Cut each wiki page to at most 150 lines, with no narrative (D13).
   Check: `bun run lint:md && just validate`
 - [x] 10.6 Make `biome.json` and `.markdownlint-cli2.jsonc` skip `plugins/` and `wiki/` and lint `src/**/*.md`, and make `just generate` format its output with Biome (D13).
   Check: `just lint && just generate --check`
