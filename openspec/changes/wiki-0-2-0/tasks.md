@@ -24,4 +24,4 @@
   Check: `just docker check`
 - [x] 2.5 Rewrite each page of both parts to W3 and W5: Simple English Wikipedia look, no internal ids, ✅ and ❌ for yes and no.
   Check: `just docker check` and `! grep -rqE '\bD[0-9]+\b' src/wiki`
-- [ ] 2.6 Ask the user before `just wiki`, because it pushes to the public wiki.
+- [x] 2.6 (the user said publish, 2026-10-19, `00a618a`) Ask the user before `just wiki`, because it pushes to the public wiki.
