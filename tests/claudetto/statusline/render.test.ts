@@ -33,8 +33,8 @@ test("a wide terminal shows two rows of numbers with icons, and `NO_COLOR` keeps
   expect(run.err).toStrictEqual([]);
   expect(run.out).toStrictEqual([
     [
-      "⌂ claudetto       · ⎇ main ✎2 ↑1 ↓2                      · ◷ 7d  80% ▲11%  ⏵Oct 13 at 5pm ↻Oct 14 at 4pm",
-      "◈ Opus 5.5 high ✦ · ▤ 15% of 300k ⇥180k · $1.23 +300 -20 · ◷ 5h  23% ▼13%                 ↻3:12pm",
+      "⌂ claudetto       · ⎇ main ✎2 ↑1 ↓2                     · ◷ 7d  80% ▲11%  ⏵Oct 13 at 5pm ↻Oct 14 at 4pm",
+      "◈ Opus 5.5 high ✦ · ▤ 15% of 300k ⇥80% · $1.23 +300 -20 · ◷ 5h  23% ▼13%                 ↻3:12pm",
     ].join("\n"),
   ]);
 });

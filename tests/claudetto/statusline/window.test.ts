@@ -1,28 +1,8 @@
-// The effective window: the percent is the used tokens against `windowOf(size)`, or against `HAIKU_AUTOCOMPACT_WINDOW` for a Haiku subagent.
+// The window of a subagent row is the `contextWindowSize` that Claude Code reports, with no assumed window.
 
 import { expect, test } from "bun:test";
-import {
-  HAIKU_AUTOCOMPACT_WINDOW,
-  windowOf,
-} from "../../../src/kernel/budget.ts";
 import { main } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
-import { windowText } from "../../../src/plugins/claudetto/slices/statusline/format.ts";
-import { depsFor, NOW, type Run, rowsOf } from "./support.ts";
-
-test("a main session with a 1M window shows the percent of 300k, from the used tokens", async () => {
-  const { text } = await rowsOf(
-    {
-      model: { id: "claude-opus-5-5" },
-      context_window: {
-        total_input_tokens: 120_000,
-        context_window_size: 1_000_000,
-        used_percentage: 12,
-      },
-    },
-    { env: { COLUMNS: "160", NO_COLOR: "1" } },
-  );
-  expect(text).toContain(`▤ 40% of ${windowText(windowOf(1_000_000))} `);
-});
+import { depsFor, NOW, type Run } from "./support.ts";
 
 const subagentRow = async (task: Record<string, unknown>) => {
   const run: Run = { status: -1, out: [], err: [] };
@@ -43,23 +23,19 @@ const base = {
   tokenCount: 60_000,
 };
 
-test("a Haiku subagent row shows the percent of the Haiku window", async () => {
-  const content = await subagentRow({
-    ...base,
-    model: "claude-haiku-4-5",
-    contextWindowSize: 1_000_000,
-  });
-  const percent = Math.round((60_000 / HAIKU_AUTOCOMPACT_WINDOW) * 100);
-  expect(content).toContain(
-    `60k/${windowText(HAIKU_AUTOCOMPACT_WINDOW)} ${percent}%`,
-  );
+test("a subagent row shows the `contextWindowSize` that Claude Code reports, for each model", async () => {
+  for (const model of ["claude-haiku-4-5", "claude-sonnet-5-5"]) {
+    const content = await subagentRow({
+      ...base,
+      model,
+      contextWindowSize: 1_000_000,
+    });
+    expect(content).toContain("60k/1M 6%");
+  }
 });
 
-test("another subagent row shows the percent of `windowOf(size)`", async () => {
-  const content = await subagentRow({
-    ...base,
-    model: "claude-sonnet-5-5",
-    contextWindowSize: 1_000_000,
-  });
-  expect(content).toContain("60k/300k 20%");
+test("a subagent row with no `contextWindowSize` shows the tokens and no percent", async () => {
+  const content = await subagentRow({ ...base, model: "claude-haiku-4-5" });
+  expect(content).toContain("▤ 60k ");
+  expect(content).not.toContain("%");
 });

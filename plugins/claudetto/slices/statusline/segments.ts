@@ -5,11 +5,10 @@
 import {
   HAIKU_HANDOFF_TRIGGER_TOKENS,
   HANDOFF_TRIGGER_TOKENS,
-  windowOf,
 } from "../../kernel/budget.ts";
 import { parseModel } from "../../kernel/model.ts";
 import type { StatusSegment } from "../../kernel/slice.ts";
-import { modelLabel, span, thousands, windowText } from "./format.ts";
+import { span, thousands, windowText } from "./format.ts";
 import { ICON } from "./icons.ts";
 import { limit } from "./limit-segment.ts";
 import { FIVE_HOUR_S, SEVEN_DAY_S, TRIGGER_WARN_FRACTION } from "./limits.ts";
@@ -64,18 +63,16 @@ const changeText = (change: Change, paint: Status["paint"]): string => {
   }
 };
 
-/** `▤ 40% of 300k ⇥180k`: the used tokens against the effective window (`windowOf`), and the tokens left to the handoff trigger (the compaction threshold with `built-in`), warning within `TRIGGER_WARN_FRACTION` of it. */
+/** `▤ 12% of 1M ⇥53%`: the `used_percentage` and the `context_window_size` that Claude Code reports, and the percent of the handoff trigger that is left (the compaction threshold with `built-in`), warning within `TRIGGER_WARN_FRACTION` of it. */
 const contextText = ({ input, paint, compaction }: Status) => {
   const window = input.context_window;
   const used = window?.used_percentage;
   if (used === undefined || used === null) return null;
   if (!isNumber(used)) return paint.limit(`${ICON.context} ${ICON.error}`);
   const tokens = window?.total_input_tokens;
-  const effective = windowOf(window?.context_window_size);
-  const percent = isNumber(tokens)
-    ? Math.min(100, Math.round((tokens / effective) * 100))
-    : Math.round(used);
-  const of = ` of ${windowText(effective)}`;
+  const percent = Math.round(used);
+  const size = window?.context_window_size;
+  const of = isNumber(size) && size > 0 ? ` of ${windowText(size)}` : "";
   if (!isNumber(tokens))
     return paint.level(percent)(`${ICON.context} ${percent}%${of}`);
   const trigger =
@@ -90,25 +87,29 @@ const contextText = ({ input, paint, compaction }: Status) => {
         ? paint.warn
         : paint.ok;
   const icon = compaction ? ICON.compaction : ICON.handoff;
-  const distance = left <= 0 ? "now" : thousands(left);
+  const distance = left <= 0 ? "now" : `${Math.round((left / trigger) * 100)}%`;
   return style(`${ICON.context} ${percent}%${of} ${icon}${distance}`);
 };
 
-/** `⌁ 4m12s` while warm, `⌁ cold +120k` (the tokens to cache again) when cold. No segment when `caching_observed` is `false`. */
+/** `⌁ 4m12s/5m 91%`: the time to `expires_at`, the real `ttl`, and the `hit_ratio`. Cold gives `⌁ cold +120k` (the tokens to cache again). No segment when `caching_observed` is `false`. */
 const cacheText = ({ input, paint, now }: Status) => {
   const state = input.prompt_cache;
   if (!state || state.caching_observed === false) return null;
   if (typeof state.warm !== "boolean")
     return paint.limit(`${ICON.cache} ${ICON.error}`);
+  const ratio = isNumber(state.hit_ratio)
+    ? ` ${Math.round(state.hit_ratio * 100)}%`
+    : "";
   if (state.warm) {
     const left = isNumber(state.expires_at)
       ? span(state.expires_at * 1000 - now)
       : "warm";
-    return paint.ok(`${ICON.cache} ${left}`);
+    const ttl = state.ttl ? `/${state.ttl}` : "";
+    return paint.ok(`${ICON.cache} ${left}${ttl}${ratio}`);
   }
   const recache = state.recache_tokens_if_cold;
   const tokens = isNumber(recache) ? ` +${thousands(recache)}` : "";
-  return paint.inactive(`${ICON.cache} cold${tokens}`);
+  return paint.inactive(`${ICON.cache} cold${tokens}${ratio}`);
 };
 
 // The order of the places in a row. `5h` is before `7d` for `SEGMENTS_ONE_ROW`.
@@ -123,10 +124,7 @@ export const SEGMENTS: readonly StatusSegment[] = [
     change ? changeText(change, paint) : null,
   ),
   segment("model", 1, ({ input, paint }) => {
-    const family = modelLabel(input.model?.id);
-    const name = family
-      ? family.charAt(0).toUpperCase() + family.slice(1)
-      : input.model?.display_name;
+    const name = input.model?.display_name || input.model?.id;
     if (!name) return null;
     const level = input.effort?.level;
     const effort =
@@ -136,7 +134,8 @@ export const SEGMENTS: readonly StatusSegment[] = [
           ? paint.dim(` ${level}`)
           : ` ${paint.limit(ICON.error)}`;
     const thinking = input.thinking?.enabled ? ` ${ICON.thinking}` : "";
-    return `${paint.model(`${ICON.model} ${name}`)}${effort}${thinking}`;
+    const fast = input.fast_mode ? ` ${paint.warn(ICON.fast)}` : "";
+    return `${paint.model(`${ICON.model} ${name}`)}${effort}${thinking}${fast}`;
   }),
   segment("context", 1, contextText),
   segment("cost", 1, ({ input, paint }) => {

@@ -21,12 +21,17 @@ export type StatusInput = {
   prompt_cache?: {
     warm?: boolean;
     caching_observed?: boolean;
+    /** The lifetime of the cached prefix: `5m` or `1h`. */
+    ttl?: string;
+    /** From 0 to 1, `null` while no input tokens are counted. */
+    hit_ratio?: number | null;
     expires_at?: number | null;
     recache_tokens_if_cold?: number | null;
   };
   /** `kind` is `mr` for a GitLab merge request. */
   pr?: { number?: number; review_state?: string; kind?: string };
   effort?: { level?: string };
+  fast_mode?: boolean;
   thinking?: { enabled?: boolean };
   rate_limits?: {
     five_hour?: LimitWindow;

@@ -162,3 +162,22 @@ Jev picked `project-root` at confidence 0.74.
   A press fills the prompt with the first lines of that message as a `>` quote and puts the cursor after it, so the user types the answer.
 - Not verified: what `$.prompt.fill` does with text that the user has already typed, and whether a terminal user can reach the button with no mouse.
   Task 2.4 reads both from the docs and the bundle first, and adds a `/reply` command with a `Select` of the last messages when the button cannot be reached by keys.
+
+### D65. The Status Line Shows Only Values That Claude Code Reports
+
+- The user asked (2026-10-19): the status line and each mod UI must show real values, never a guess, a default, or a constant.
+- The audit of the `statusline` slice found these assumed values, and the change removes them:
+  - The model name was parsed from `model.id`.
+    It now is `model.display_name`, with `model.id` when the name is absent.
+  - The context percent was the used tokens against `windowOf(size)` (300k).
+    It now is `used_percentage` against `context_window_size`.
+  - A subagent row used a Haiku window constant, or `windowOf(contextWindowSize)`.
+    It now uses `contextWindowSize` as given, and shows no percent when the field is absent.
+  - A subagent model was a parsed label.
+    It now is the resolved `model` id of the task without the `claude-` prefix.
+- The change adds `prompt_cache.ttl` and `hit_ratio`, `fast_mode`, and the spend limit `used_usd`, `limit_usd`, and `period`.
+- The `⇥` item shows the percent of the handoff trigger that is left, from the real `total_input_tokens`.
+  The trigger itself is the claudetto policy of `src/kernel/budget.ts`, not a value of Claude Code.
+- The `effort` of a subagent task is the configured value (the docs of `subagentStatusLine`), and Claude Code can apply another one.
+  The row shows it as given.
+- The handoff notice names the file, its size in bytes, and the mode (`warm fork` or `cold write`).

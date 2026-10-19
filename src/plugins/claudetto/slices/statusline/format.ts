@@ -1,6 +1,5 @@
 // The number formats of the status line, the name of a model, and the pace of a limit window.
 
-import { parseModel } from "../../../../kernel/model.ts";
 import { PACE_MIN_FRACTION, PROJECTED_RUNOUT } from "./limits.ts";
 
 /** Tokens as thousands, such as `45k`. */
@@ -41,18 +40,17 @@ export const clock = (sec: number, nowMs: number): string => {
 export const baseName = (dir: string): string =>
   dir.split(/[\\/]/).filter(Boolean).pop() ?? dir;
 
-/** `opus 5.5`, or `null` for an id that is not a known Claude model. */
-export const modelLabel = (id: string | undefined): string | null => {
-  const m = parseModel(id);
-  return m && m.family !== "unknown"
-    ? `${m.family} ${m.major}${m.minor === null ? "" : `.${m.minor}`}`
-    : null;
-};
+/** A model id as Claude Code gives it, without the `claude-` prefix: `sonnet-5-5`. */
+export const idLabel = (id: string): string => id.replace(/^claude-/, "");
 
 /** `used_percentage` is in percent, and `resets_at` is in seconds. */
 export type LimitWindow = {
   used_percentage?: number;
   resets_at?: number | null;
+  /** The spend limit only, and each can be absent. */
+  used_usd?: number;
+  limit_usd?: number;
+  period?: string;
 };
 
 /**

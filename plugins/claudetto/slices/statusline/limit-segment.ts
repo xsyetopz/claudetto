@@ -40,9 +40,23 @@ const limitText = (
   const style = pace ? paint.projected(pace.projected) : paint.level(percent);
   const pad = compact ? "" : " ".repeat(PERCENT_FIELD - width(`${percent}%`));
   const head = `${ICON.limit} ${label} ${pad}${style(`${percent}%`)}`;
+  const { used_usd: usd, limit_usd: cap, period } = window;
+  const money =
+    typeof usd === "number" && typeof cap === "number"
+      ? paint.dim(
+          `$${Math.round(usd)}/$${Math.round(cap)}${period ? ` ${period}` : ""}`,
+        )
+      : "";
   return compact
-    ? [head, arrow, runOut, reset].filter(Boolean).join(" ")
-    : [head, fieldOf(arrow, ARROW_FIELD), fieldOf(runOut, RUNOUT_FIELD), reset]
+    ? [head, money, arrow, runOut, reset].filter(Boolean).join(" ")
+    : [
+        head,
+        money,
+        fieldOf(arrow, ARROW_FIELD),
+        fieldOf(runOut, RUNOUT_FIELD),
+        reset,
+      ]
+        .filter((part, i) => i !== 1 || part)
         .join(" ")
         .trimEnd();
 };
