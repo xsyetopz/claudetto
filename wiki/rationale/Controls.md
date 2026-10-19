@@ -21,6 +21,7 @@ A row with `none recorded` has no evidence in the repository, so it is a candida
 | `claudetto/patch` | `cumulative patch` | A turn limit and a weekly usage limit stopped three subagents in worktrees before they committed (2026-10-19, D64). | Claude Code keeps the uncommitted work of a stopped subagent in a worktree. |
 | `claudetto/prompt` | `lean_body text` | The built-in prompts are bad (the user, trim decision 3). | Claude Code ships a short prompt that needs no tailor. |
 | `claudetto/prompt` | `other hooks` | none recorded | Claude Code has a setting for each cut. |
+| `claudetto/reply` | `reply button` | the user copied messages of Claude by hand to answer them (the user, 2026-10-18) | Claude Code has its own action that quotes a message in the prompt. |
 | `claudetto/sembr` | `sentence split` | none recorded | Claude keeps one sentence on each line with no hook. |
 | `claudetto-browser/search` | `CloakBrowser search` | The default browser search took about 7 seconds and each search engine blocked it (`CHANGELOG.md`). | A search engine serves a browser search with no block. |
 | `claudetto-browser/search` | `search permission gate` | none recorded | The mod API runs the `WebSearch` permission rules before this hook. |

@@ -11,6 +11,13 @@ const LAB = "plugins/claudetto/tests/reply.test.ts";
 export const slice = {
   name: "reply",
   ladder: "mod: the `ui.render` hook on `AssistantMessage`",
+  controls: [
+    {
+      name: "reply button",
+      incident: "the user copied messages of Claude by hand to answer them (the user, 2026-10-18)",
+      removeWhen: "Claude Code has its own action that quotes a message in the prompt.",
+    },
+  ],
   mod: [
     {
       event: "ui.render",

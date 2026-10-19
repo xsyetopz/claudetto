@@ -3,7 +3,16 @@
 // The mode `insert` keeps the text that the user typed already, and puts the quote at the cursor.
 
 import type { MatchedHook } from "claude-code";
-import { quoteOf } from "../domain/quote.ts";
+import { QUOTE_MAX_LINES } from "../limits.ts";
+
+/** The first `QUOTE_MAX_LINES` lines of `text` as a `>` quote, with a blank line after it for the answer. */
+export const quoteOf = (text: string): string =>
+  `${text
+    .trim()
+    .split("\n")
+    .slice(0, QUOTE_MAX_LINES)
+    .map((line) => `> ${line}`.trimEnd())
+    .join("\n")}\n\n`;
 
 /** The address of the button. */
 const REPLY = "reply";
