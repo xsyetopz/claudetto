@@ -12,9 +12,6 @@ export const CHARS_PER_TOKEN = 4;
 /** The prompt cache TTL of a root session: 1 hour. Claudetto asks for it with `CLAUDE_CODE_PROMPT_CACHE_TTL` (`settings.env` of the slice). */
 export const CACHE_TTL_MS = 3_600_000;
 
-/** The prompt cache TTL of a subagent: 5 minutes, the default of Claude Code, which `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` can change. */
-export const SUBAGENT_CACHE_TTL_MS = 300_000;
-
 /** The most changed files that a cold handoff names. */
 export const COLD_FILES_MAX = 20;
 

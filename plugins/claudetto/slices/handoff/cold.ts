@@ -5,12 +5,12 @@
 // The functions are pure and import only `limits.ts` and the kernel.
 
 import type { SessionMessage } from "claude-code";
+import { earlierHanded, originalFirst } from "./compact.ts";
 import {
   CACHE_TTL_MS,
   COLD_FILES_MAX,
   COLD_PROMPT_CHARS_MAX,
   COLD_PROMPTS_MAX,
-  SUBAGENT_CACHE_TTL_MS,
 } from "./limits.ts";
 import { COLD } from "./prompts.ts";
 
@@ -18,17 +18,11 @@ import { COLD } from "./prompts.ts";
 const WRITERS = new Set(["Edit", "Write", "MultiEdit", "NotebookEdit"]);
 
 /**
- * True when the last turn, at `lastTurnAt` in milliseconds, is older than the cache TTL of the session kind:
- * 1 hour for a root session and 5 minutes for a subagent.
- * With no turn seen, the cache is not known to be cold, so the answer is `false`.
+ * True when the last request of the main thread, at `lastTurnAt` in milliseconds, is older than the cache TTL of 1 hour.
+ * With no request seen in this process, the session was resumed and its cache is gone, so the answer is `true`.
  */
-export const isCold = (
-  now: number,
-  lastTurnAt: number | null,
-  isSubagent: boolean,
-): boolean =>
-  lastTurnAt !== null &&
-  now - lastTurnAt > (isSubagent ? SUBAGENT_CACHE_TTL_MS : CACHE_TTL_MS);
+export const isCold = (now: number, lastTurnAt: number | null): boolean =>
+  lastTurnAt === null || now - lastTurnAt > CACHE_TTL_MS;
 
 const cut = (text: string): string =>
   text.length > COLD_PROMPT_CHARS_MAX
@@ -56,15 +50,24 @@ const quote = (texts: readonly string[]): string =>
     )
     .join("\n>\n");
 
-/** The text of a cold handoff of `messages`. */
+/**
+ * The text of a cold handoff of `messages`.
+ * After an earlier compaction the first user message is the wrapper of the earlier handoff:
+ * the task comes from the original first message, and the earlier handed text stays whole.
+ */
 export const coldHandoff = (messages: readonly SessionMessage[]): string => {
   const prompts = messages
     .filter((m) => m.role === "user" && m.text.trim() !== "")
     .map((m) => m.text);
+  const head = prompts[0] ?? "";
+  const earlier = earlierHanded(head);
   const files = changedFiles(messages).map((f) => `\`${f}\``);
   return COLD({
-    task: cut((prompts[0] ?? "").trim().split("\n")[0] ?? ""),
+    task: cut(originalFirst(head).trim().split("\n")[0] ?? ""),
     files: files.length === 0 ? "none" : files.join(", "),
-    words: quote(prompts.slice(-COLD_PROMPTS_MAX)),
+    words: quote(
+      (earlier === "" ? prompts : prompts.slice(1)).slice(-COLD_PROMPTS_MAX),
+    ),
+    earlier: earlier === "" ? "none" : earlier,
   });
 };

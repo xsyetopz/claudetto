@@ -58,11 +58,22 @@ export const keepOptions = (options: PluginOptions): void => {
 /** The time of the end of the last turn of the main thread in milliseconds, or `null` before the first turn of this process. */
 let lastTurnAt: number | null = null;
 
-/** `turn.complete`: notes the end of a turn of the main thread, when the prompt cache was last written (D47). */
-export const onTurnComplete: Handler<"turn.complete"> = async ($, e, next) => {
-  if (e.agentId === undefined)
+/** Notes that the main thread, with no `agentId`, wrote or read the prompt cache just now (D47). */
+const noteCache = async ($: EngineInterface, agentId: string | undefined) => {
+  if (agentId === undefined)
     lastTurnAt = await $.clock.now().catch(() => lastTurnAt);
+};
+
+/** `turn.complete`: notes the end of a turn of the main thread. */
+export const onTurnComplete: Handler<"turn.complete"> = async ($, e, next) => {
+  await noteCache($, e.agentId);
   return next(e);
+};
+
+/** `turn.step`: notes each model request of the main thread, so a long turn keeps the cache warm for the auto compaction inside it. */
+export const onTurnStep: Handler<"turn.step"> = async function* ($, e, next) {
+  await noteCache($, e.agentId);
+  return yield* next(e);
 };
 
 /** True when the `compaction` option turns the handoff off. */
@@ -179,8 +190,7 @@ const compacted = async (
 export const onCompact: CompactHook = async ($, e, next) => {
   if (e.agentId !== undefined || isOff()) return next(e);
   const now = await $.clock.now().catch(() => null);
-  const cache =
-    now !== null && isCold(now, lastTurnAt, false) ? "cold" : "warm";
+  const cache = now !== null && isCold(now, lastTurnAt) ? "cold" : "warm";
   const isShown = await isTerminal($);
   if (isShown) $.ui.status(PROGRESS_TEXT);
   const done = await compacted($, e.messages, cache).finally(() => {

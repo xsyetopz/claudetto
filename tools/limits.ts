@@ -90,7 +90,7 @@ export const PART_LINE_PINS: Record<string, number> = {
   "src/plugins/claudetto/slices/goal": 625,
   "src/plugins/claudetto/slices/ground": 377,
   "src/plugins/claudetto/slices/guard": 352,
-  "src/plugins/claudetto/slices/handoff": 563,
+  "src/plugins/claudetto/slices/handoff": 674,
   "src/plugins/claudetto/slices/prompt": 936,
   "src/plugins/claudetto/slices/sembr": 521,
   "src/plugins/claudetto/slices/setup": 438,

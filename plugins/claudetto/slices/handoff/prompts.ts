@@ -12,17 +12,26 @@ Passed checks: ${v.checks}.
 Only a checked task or a passed check is done.
 Each checked task is done and verified, so do not run its check again unless the user asks.`;
 
+/** From `src/plugins/claudetto/slices/handoff/prompts/checks-line.md`. */
+export const CHECKS_LINE = (v: { checks: string }): string =>
+  `Passed checks: ${v.checks}.`;
+
 /** From `src/plugins/claudetto/slices/handoff/prompts/cold.md`. */
 export const COLD = (v: {
   task: string;
   files: string;
   words: string;
+  earlier: string;
 }): string => `This handoff is from the state of the session, with no model call, because the prompt cache was cold.
 Task: ${v.task}
 Changed files: ${v.files}.
 The last words of the user:
 
-${v.words}`;
+${v.words}
+
+The earlier handoff of this session:
+
+${v.earlier}`;
 
 /** From `src/plugins/claudetto/slices/handoff/prompts/first-message.md`. */
 export const FIRST_MESSAGE = (v: {
