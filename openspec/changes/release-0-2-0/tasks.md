@@ -77,8 +77,8 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 ## 2. You-Should-Know and Removals
 
-- [x] 2.1 Read all of the code of the built-in `cc-plugin-you-should-know` in the 2.1.302 bundle, and record its behavior in `src/wiki/rationale/Decisions-Session.md` with each source line: the trigger, the model, the effort, the prompt goals, the state, the timing, the keys, and the render tree with its colors, glyphs, and layout (D1). (closed: removed in trim-0-2-0)
-  Check: `grep -q cc-plugin-you-should-know src/wiki/rationale/Decisions-Session.md`
+- [x] 2.1 Read all of the code of the built-in `cc-plugin-you-should-know` in the 2.1.302 bundle, and record its behavior in `src/wiki/claudetto/rationale/Decisions-Session.md` with each source line: the trigger, the model, the effort, the prompt goals, the state, the timing, the keys, and the render tree with its colors, glyphs, and layout (D1). (closed: removed in trim-0-2-0)
+  Check: `grep -q cc-plugin-you-should-know src/wiki/claudetto/rationale/Decisions-Session.md`
 - [x] 2.2 Add lab tests of `claudetto-you-should-know`: its `AbovePrompt` tree has the first line `<kind> · <summary>`, a bold title, a list, and a last line, it draws nothing when it has no note, it calls no `$.telemetry` method, and it runs with `DISABLE_TELEMETRY` set, and see them fail. (closed: removed in trim-0-2-0)
   Each behavior of 2.1 gets a test.
   Rewrite the add-on as the smallest code that passes them, remove each old file that the rewrite does not use, and keep `cc-plugin-you-should-know@builtin` off in the snippet (D1).
@@ -94,9 +94,9 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `! just test tests/claudetto/agents/max-turns.test.ts`
 - [x] 4.2 Add a test that each Haiku agent file sets `autoCompactWindow` to `HAIKU_AUTOCOMPACT_WINDOW` (`144444`), and see it fail, then set it. (closed: removed in trim-0-2-0)
   The docs give the field from v2.1.296, with a range of `100000` to `1000000`, and `CLAUDE_CODE_AUTO_COMPACT_WINDOW` overrides it (`external/cc-2.1.302/docs/sub-agents.md:313`, `:1160`).
-  Find in the bundle whether `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` applies to a subagent, so that compaction starts near 100K, and record the source in `src/wiki/rationale/Decisions-Session.md`.
+  Find in the bundle whether `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` applies to a subagent, so that compaction starts near 100K, and record the source in `src/wiki/claudetto/rationale/Decisions-Session.md`.
   When it does not apply, keep the notice of D2 as the guard.
-  Check: `just test tests/claudetto/agents && grep -q CLAUDE_AUTOCOMPACT_PCT_OVERRIDE src/wiki/rationale/Decisions-Session.md`
+  Check: `just test tests/claudetto/agents && grep -q CLAUDE_AUTOCOMPACT_PCT_OVERRIDE src/wiki/claudetto/rationale/Decisions-Session.md`
 - [x] 4.3 Remove `AGENT_MAX_TURNS`, `SUBAGENT_CONTEXT_MAX`, `HAIKU_CONTEXT_MAX`, each `maxTurns` line, and the turn-limit part of `claudetto-sessions` usage, and `slices/agents/prompts/report-note.md`, and keep only the Haiku guard of task 4.2, with a test that it does not stop the run and that the helper writes its report after a notice (D28). (closed: removed in trim-0-2-0)
   Change `src/fragments/report-size.md` so that the report length of the brief wins over `REPORT_MAX_WORDS` (D28).
   Check: `just generate && just test tests/claudetto/agents && just lab`
@@ -106,7 +106,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Write each description as the size and the kind of work that fits, and each body as goals and limits, not steps.
   Check: `just generate && just test tests/claudetto/agents && just validate`
 - [x] 4.6 Remove the prompt text that asks for long-lived lane worktrees, and add a drift line of the setup for a missing `worktree.baseRef` of `head`, with a test. (closed: removed in trim-0-2-0)
-  Record the source of D11 in `src/wiki/rationale/Decisions-Session.md`.
+  Record the source of D11 in `src/wiki/claudetto/rationale/Decisions-Session.md`.
   Check: `just test tests/claudetto/setup && ! git grep -qi 'lane worktree' src`
 - [x] 4.7 Set `SUBAGENTS_MAX_20X` to 10 and `SUBAGENTS_API` to 4 by D14, keep `SUBAGENTS_PRO` at 2 and `SUBAGENTS_MAX_5X` at 4, and add the method and numbers of D14 to `wiki/evidence/Usage-Evidence.md`. (closed: obsolete: `SUBAGENTS_*` removed in `c98733bb`, trim keeps the cap at 2)
   Check: `just test tests/claudetto/setup tests/claudetto/prompt && bun run lint:md`
@@ -155,7 +155,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 ## 7. Cache and Setup
 
-- [ ] 7.1 Confirm the names `promptCacheTtl` and `subagentPromptCacheTtl` in the settings schema of the installed Claude Code, and record the source in `src/wiki/rationale/Decisions-Session.md`.
+- [ ] 7.1 Confirm the names `promptCacheTtl` and `subagentPromptCacheTtl` in the settings schema of the installed Claude Code, and record the source in `src/wiki/claudetto/rationale/Decisions-Session.md`.
   Check: `just schema && grep -rq promptCacheTtl schemas/`
 - [x] 7.2 Add a test that the setup snippet has no `promptCacheTtl` and no `subagentPromptCacheTtl`, and that setup removes a `promptCacheTtl` of `5m` that an earlier setup wrote, then remove it from the snippet (D18).
   Check: `just test tests/claudetto/setup`
@@ -229,7 +229,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just test tests/tools && just validate`
 - [x] 10.9 Write `openspec/changes/release-0-2-0/behavior.md` with the behavior table of each part of the table of facts of `design-redo.md`: each input of its tests and its old decision, from a run of the tests (D40). (closed: obsolete: trim-0-2-0 did the rewrite)
   Check: `test -s openspec/changes/release-0-2-0/behavior.md && just test`
-- [x] 10.10 Remove the repeated-`Read` deny of `reads`, and check in the 2.1.302 bundle whether a built-in keeps a rejected call rejected, then keep that gate or remove the slice by the result, with the source line in `src/wiki/rationale/Decisions-Session.md` (D39). (closed: removed in trim-0-2-0)
+- [x] 10.10 Remove the repeated-`Read` deny of `reads`, and check in the 2.1.302 bundle whether a built-in keeps a rejected call rejected, then keep that gate or remove the slice by the result, with the source line in `src/wiki/claudetto/rationale/Decisions-Session.md` (D39). (closed: removed in trim-0-2-0)
   Check: `just test tests/claudetto/reads && just lab`
 - [x] 10.11 Merge `usercheck` into `turngate` with one `Stop` hook, with the rows of both in `behavior.md` as tests (D42). (closed: removed in trim-0-2-0)
   Check: `just test tests/claudetto/turngate && just lab`
@@ -258,7 +258,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   This is a paid run: ask the user first, with the expected cost and the weekly share.
   Set the effort of each arm with `CLAUDE_CODE_EFFORT_LEVEL`, which overrides the `effort` of the agent files.
   Check: `CLAUDE_CODE_EFFORT_LEVEL=high just eval-variant claudetto--v0.1.0-alpha.1 --model claude-sonnet-5-5 --max-cost-usd 5`
-- [x] 11.5 Find in the bundle a variable that stops the telemetry of a `claude` run and keeps the feature flags, and record it in `src/wiki/rationale/Decisions-Session.md`. (closed: obsolete: the `advise` slice replaced the built-in advisor)
+- [x] 11.5 Find in the bundle a variable that stops the telemetry of a `claude` run and keeps the feature flags, and record it in `src/wiki/claudetto/rationale/Decisions-Session.md`. (closed: obsolete: the `advise` slice replaced the built-in advisor)
   Add a test that `tools/telemetry.ts` gives an arm that env and no `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`, see it fail, then add it.
   When no such variable exists, drop task 11.6 and keep the `planner` (D31).
   Check: `just test tests/tools/telemetry-env.test.ts`

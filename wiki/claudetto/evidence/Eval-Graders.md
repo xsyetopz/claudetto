@@ -50,17 +50,17 @@ No run proved the mapping, so each row is unverified.
 
 | Check | Expressible | Mechanism |
 | --- | --- | --- |
-| Paired comparison, plugin against no plugin | Yes | The two arms and `Δ` |
-| Isolation of the config for each run | Yes | The temporary home of each run |
-| Cost limit | Yes | `--max-cost-usd`, exit code 2 with a partial result |
-| `k` runs for each case | Yes | `runs:` in `case.yaml` or `--runs` |
+| Paired comparison, plugin against no plugin | ✅ | The two arms and `Δ` |
+| Isolation of the config for each run | ✅ | The temporary home of each run |
+| Cost limit | ✅ | `--max-cost-usd`, exit code 2 with a partial result |
+| `k` runs for each case | ✅ | `runs:` in `case.yaml` or `--runs` |
 | Tamper check | Partly | `tool_used` with `max: 0` on `Edit` and `Write` for the protected path, and a file-state `regex` on its final content |
 | Over-claim check | Partly | `regex` on the last message, and `tool_used` on `Bash` for the test command with `min: 1` |
 | Wrongful-revert and warranted-fix checks | Partly | `regex` on the final content of a file, with the claim in the prompt |
 | Cost for each resolved task | Partly | `costUsd` of the result, divided by hand by the passed runs |
 | Turns, tokens, and time | Partly | `durationSeconds`, and a turn count in the run record. No token field is documented |
-| Hidden outcome check with its own test files | No | No grader runs a test file |
-| Interval, and "not shown" when it includes 0 | No | The result has a mean and no interval |
+| Hidden outcome check with its own test files | ❌ | No grader runs a test file |
+| Interval, and "not shown" when it includes 0 | ❌ | The result has a mean and no interval |
 
 ## Dropped Checks
 

@@ -38,8 +38,7 @@ const engine = (
   on("fs.exists", () => ({ value: file !== null }));
   if (file !== null) on("fs.read", () => ({ value: file }));
   quietPolicy(on);
-  // The `attribution` hooks of the same module read these. Its lines are off here,
-  // so the `attribution` hooks stay silent and the commit tests check the rewrite of `sembr` alone.
+  // The module reads the model and the settings. The values here keep the commit tests on the rewrite of `sembr` alone.
   on("session.model", () => ({ value: "claude-opus-5-5" }));
   on("settings.read", () => ({ value: { includeCoAuthoredBy: false } }));
   on("tool.call", (_$, e) => {

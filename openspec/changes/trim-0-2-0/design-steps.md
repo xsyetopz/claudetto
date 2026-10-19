@@ -145,7 +145,7 @@ Where the check runs, in order of cost:
 The rules of the check:
 
 - Only checks that a program can run, with no model call.
-  The judge of `turngate` blocked correct claims, and `asks` denied correct edits (`Evals-0.1.0.md:150-164`), so a check that guesses does harm.
+  The judge of `turngate` blocked correct claims, and `asks` denied correct edits (`src/wiki/claudetto/evidence/Evals-0.1.0.md`), so a check that guesses does harm.
 - A claim with no source is not denied forever.
   The deny names each claim and gives three ways out: name the source, mark it as `(proposed)` or with `[NEEDS CLARIFICATION: …]`, or ask the user.
 - Text that the user wrote, and text in a fenced code block that is a quote of a tool result, are out of scope.

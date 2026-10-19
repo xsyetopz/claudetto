@@ -1,5 +1,5 @@
 // The manifest of the `handoff` slice: the `session.compact` hook that replaces the summary of a compaction with a handoff (design D3).
-// It runs for the triggers `auto` and `manual` of the main thread, and a fork writes the handoff from the cached prefix of the session.
+// It runs for the triggers `auto`, `manual`, and `plugin` of the main thread, and a fork writes the handoff from the cached prefix of the session.
 // The phase is `answer`, because the hook gives the compaction in place of Claude Code.
 // The `compaction` option `built-in` turns the handoff off, and Claude Code compacts as built in.
 

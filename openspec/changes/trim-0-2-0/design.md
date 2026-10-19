@@ -105,9 +105,9 @@ Each one has its reason, so the run does not stop for them.
 
 | Part | Lines | Verdict | Reason |
 | --- | ---: | --- | --- |
-| `asks` | 4,257 | cut | Measured harm: 9 `Edit` calls denied, and 5 of 9 runs left the bug (`wiki/evidence/Evals-0.1.0.md:150-164`). |
+| `asks` | 4,257 | cut | Measured harm: 9 `Edit` calls denied, and 5 of 9 runs left the bug (`src/wiki/claudetto/evidence/Evals-0.1.0.md`). |
 | `policy` | 2,713 | cut | Decision 2. |
-| `turngate` | 727 | cut | Harm both ways: a false claim passed 2 of 3 times, and 2 correct claims were blocked (`Failure-Gaps-0.1.0.md:90`, `design-surfaces.md:84-91`). |
+| `turngate` | 727 | cut | Harm both ways: a false claim passed 2 of 3 times, and 2 correct claims were blocked (`src/wiki/claudetto/rationale/Decisions.md`, `design-surfaces.md:84-91`). |
 | `usercheck` | 178 | cut | It was to merge into `turngate`, which goes. |
 | `repostate` | 680 | cut | Decision 2. The git status snapshot of the system prompt goes with `includeGitInstructions: false`. |
 | `attribution` | 672 | cut | Decision 2. The `attribution` setting of Claude Code does this work. |
@@ -117,7 +117,7 @@ Each one has its reason, so the run does not stop for them.
 | `agents` | 226 | cut | Measured harm: 3 of 4 helpers stopped with no report (`design-handoff.md:12-13`). |
 | `corrections` | 104 | cut | Decision 2. `CLAUDE.md` does this work. |
 | `decide` | 1,198 | keep, trim | Decision 11. Default mode `jev`, with the fallback model when Jev gives no answer. |
-| `checks` | 379 | cut | Decision 8. It also has an exit 127 bug (`Evals-0.1.0.md:41`). |
+| `checks` | 379 | cut | Decision 8. It also has an exit 127 bug (`src/wiki/claudetto/evidence/Evals-0.1.0.md`). |
 | `minispec` | 1,328 | cut | Decision 8. |
 | `claudetto-sessions` | 2,823 | rewrite as one skill with scripts | Its aim is the analysis of the `~/.claude/` system of the user. The built-in commands cover part of it (step 8b). Keep only the part that they do not cover. |
 | `claudetto-you-should-know` | 798 | cut | The user uses the built-in `you-should-know` plugin of Claude Code in its place (the user, 2026-10-17). |
@@ -127,8 +127,8 @@ Each one has its reason, so the run does not stop for them.
 | `surface` | 171 | merge into `prompt` | Use `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1` in place of the `agent.offer` hook where it does the same work. |
 | `trim` | 92 | merge into `setup` | It is a list of settings, so it belongs to the settings snippet. |
 | `handoff` | 1,263 | keep, trim | Decision 6. |
-| `setup` | 2,961 | trim | Keep the settings snippet and the cleanup of old keys. Remove the `CLAUDE.md` block (D51) and the drift notice, which leaked into a reply (`Evals-0.1.0.md:23-27`). |
-| `styles` | 13 | keep | Mixed result (`Evals-0.1.0.md:105-110`), and it costs 13 lines. |
+| `setup` | 2,961 | trim | Keep the settings snippet and the cleanup of old keys. Remove the `CLAUDE.md` block (D51) and the drift notice, which leaked into a reply (`src/wiki/claudetto/evidence/Evals-0.1.0.md`). |
+| `styles` | 13 | keep | Mixed result (`src/wiki/claudetto/evidence/Evals-0.1.0.md`), and it costs 13 lines. |
 | `statusline` | 1,684 | trim hard | Decision 7. |
 | `sembr` | 501 | trim hard | Decision 7. |
 | `claudetto-lab` | 2,462 | trim hard | Decision 7. These are dev tools, so they need no runtime guard. |

@@ -43,8 +43,8 @@ The trigger is a context size below the point where Claude Code blocks a request
 
 | Model family | Auto compaction starts at |
 | --- | --- |
-| Opus, Sonnet, and Fable | 225,000 tokens of a {{CONTEXT_WINDOW}}-token window |
-| Haiku | 100,000 tokens |
+| Opus, Sonnet, and Fable | {{HANDOFF_TRIGGER_TOKENS}} tokens of a {{CONTEXT_WINDOW}}-token window |
+| Haiku | {{HAIKU_HANDOFF_TRIGGER_TOKENS}} tokens |
 
 The snippet sets `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` and `autoCompactWindow` for this.
 It sets a window for `claude-haiku-5-5` with `modelSettings`.
@@ -124,8 +124,8 @@ The [Prompt](Prompt) slice reads the same option, so the text about long context
 | `COLD_FILES_MAX` | 20 | `slices/handoff/limits.ts` |
 | `COLD_PROMPTS_MAX` | 3 | `slices/handoff/limits.ts` |
 | `COLD_PROMPT_CHARS_MAX` | 1,500 | `slices/handoff/limits.ts` |
-| `HANDOFF_TRIGGER_TOKENS` | 225,000 | `src/kernel/budget.ts` |
-| `HAIKU_HANDOFF_TRIGGER_TOKENS` | 100,000 | `src/kernel/budget.ts` |
+| `HANDOFF_TRIGGER_TOKENS` | {{HANDOFF_TRIGGER_TOKENS}} | `src/kernel/budget.ts` |
+| `HAIKU_HANDOFF_TRIGGER_TOKENS` | {{HAIKU_HANDOFF_TRIGGER_TOKENS}} | `src/kernel/budget.ts` |
 
 `CHARS_PER_TOKEN` is the estimate of the size of the new context.
 

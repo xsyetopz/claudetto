@@ -41,7 +41,7 @@ The skill never edits a settings file itself, because the command is the checked
 | `--advisor` | The `advisor` option of the `advise` slice. The default is `builtin` |
 | `--apply` | Write the changes. Without it, the command only prints them |
 | `--addons` | Print the optional step of each enabled add-on, and write nothing |
-| `--help` | Print the usage |
+| (an unknown option) | Prints the usage to `stderr` and exits with code 2 |
 
 | Scope | Settings file | Markdown file for the cleanup |
 | --- | --- | --- |

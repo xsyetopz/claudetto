@@ -6,8 +6,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import {
+  AUTOCOMPACT_PCT,
   BASH_OUTPUT_MAX_CHARS,
   CONTEXT_WINDOW,
+  HAIKU_AUTOCOMPACT_WINDOW,
+  HAIKU_HANDOFF_TRIGGER_TOKENS,
   HANDOFF_TRIGGER_TOKENS,
   USAGE_LEVELS,
 } from "../../../src/kernel/budget.ts";
@@ -18,12 +21,16 @@ export const VALUES: Record<string, string> = Object.fromEntries(
   Object.entries({
     BASH_OUTPUT_MAX_CHARS,
     CONTEXT_WINDOW,
+    HAIKU_AUTOCOMPACT_WINDOW,
+    HAIKU_HANDOFF_TRIGGER_TOKENS,
     HANDOFF_TRIGGER_TOKENS,
     MAX_ROWS,
     USAGE_LEVEL_LOW: USAGE_LEVELS[0],
     USAGE_LEVEL_HIGH: USAGE_LEVELS[1],
   }).map(([name, value]) => [name, value.toLocaleString("en-US")]),
 );
+// The percent keeps its 4 decimals, which `toLocaleString` would cut to 3.
+VALUES["AUTOCOMPACT_PCT"] = String(AUTOCOMPACT_PCT);
 
 const INCLUDE = /^\{\{include ([a-z0-9-]+(?:\.json)?)\}\}$/gm;
 const VALUE = /\{\{([A-Z0-9_]+)\}\}/g;

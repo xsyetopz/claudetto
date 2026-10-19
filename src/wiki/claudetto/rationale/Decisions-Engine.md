@@ -23,12 +23,12 @@ A text that only the user reads costs no model tokens.
 
 | Channel | The model reads it | Use |
 | --- | --- | --- |
-| `$.ui.log` | No | A notice for the user, such as the line of `/goal` (D48) |
-| The status line command | No | Live figures, such as the context share and the rate limits |
-| A `command.run` handler | No | A command with a fixed output, such as `/goal` (D42) |
-| A key in `settings.json` | No | A behavior that Claude Code has, such as `sandbox` (D51) |
-| `$.session.append` with a `user` row | Yes | Only a text that the model must act on |
-| A `prompt.submit` text | Yes | Only a short text that the model must follow |
+| `$.ui.log` | ❌ | A notice for the user, such as the line of `/goal` (D48) |
+| The status line command | ❌ | Live figures, such as the context share and the rate limits |
+| A `command.run` handler | ❌ | A command with a fixed output, such as `/goal` (D42) |
+| A key in `settings.json` | ❌ | A behavior that Claude Code has, such as `sandbox` (D51) |
+| `$.session.append` with a `user` row | ✅ | Only a text that the model must act on |
+| A `prompt.submit` text | ✅ | Only a short text that the model must follow |
 
 ## D48 User Notices Through `$.ui.log`, Not a Transcript Row
 
@@ -39,7 +39,7 @@ The reply then ended with "Tell me if you want either of those done."
 The judge `plain-reply` failed all three runs, and the score with the plugin was 0.89 against 1.00 without it.
 
 **Choice:** A notice for the user calls `$.ui.log`.
-The types file says that `$.ui.log` "appends one line to the transcript, drawn like a system notice (dim; not sent to the model)".
+The types file says that `$.ui.log` appends one dim line to the transcript, and that the line is not sent to the model.
 A `-p` or SDK host receives the line as `ui_log`.
 The `goal` and `handoff` slices use it (`slices/goal/adapters/mod.ts`, `slices/handoff/adapters/mod.ts`).
 A line of `$.ui.log` must hold no line break, because Claude Code draws a break as a bad glyph (`src/kernel/text.ts`).

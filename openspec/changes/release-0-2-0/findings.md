@@ -67,7 +67,7 @@ A row with the task `new:` is a fault that no task of `tasks.md` covers, with a 
 | --- | --- | --- | --- | --- |
 | snippet | the snippet set `promptCacheTtl` | `design-surfaces.md:27` (D18) | 7.2 (checked) | `just test tests/claudetto/setup` |
 | snippet | a text named `TaskStop`, which the snippet denies | `design-handoff.md:8` | 3.3, 7.5, done in `bd689f03` | `just test tests/claudetto/prompt/denied-names.test.ts` |
-| snippet | the names `promptCacheTtl` and `subagentPromptCacheTtl` have no recorded source | `tasks.md` 7.1 | 7.1 | `grep -n promptCacheTtl src/wiki/rationale/Decisions-Session.md` |
+| snippet | the names `promptCacheTtl` and `subagentPromptCacheTtl` have no recorded source | `tasks.md` 7.1 | 7.1 | `grep -n promptCacheTtl src/wiki/claudetto/rationale/Decisions-Session.md` |
 | snippet | the `env` of the snippet is not pinned to `Env.md` | `tasks.md` 7.7, 7.8 | 7.7, 7.8 | `just test tests/claudetto/settings-pin.test.ts` |
 | setup run | no run of the setup on a fresh config | D38 | 12.4 (paid) | the evidence of 12.4 |
 

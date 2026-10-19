@@ -12,16 +12,16 @@ The parts of a slice and the steps to add one are on [Plugin Layout Slices](Plug
 
 | Path | What it holds | Tracked |
 | --- | --- | --- |
-| `src/` | The source of each plugin, the kernel, the shipped texts, the fragments, and the wiki sources. | Yes |
-| `plugins/` | The plugins that users install. The generator writes them. | Yes, generated |
-| `tools/` | The scripts of the repository, and the generator in `tools/generate/`. | Yes |
-| `tests/` | One folder for each plugin, and `kernel/`, `support/`, and `tools/`. | Yes |
-| `wiki/` | The pages of the wiki. The generator writes them from `src/wiki/`. | Yes, generated |
-| `.claude-plugin/` | The marketplace file `marketplace.json`. The generator writes it. | Yes, generated |
-| `.claude/rules/` | The rules that Claude Code loads for matching paths. | Yes |
-| `schemas/` | The settings schemas, written by `just schema`. | Yes, generated |
-| `docs/` | A link to the wiki only. | Yes |
-| `external/` | Local sources. | No, git ignores it |
+| `src/` | The source of each plugin, the kernel, the shipped texts, the fragments, and the wiki sources. | ✅ |
+| `plugins/` | The plugins that users install. The generator writes them. | ✅ generated |
+| `tools/` | The scripts of the repository, and the generator in `tools/generate/`. | ✅ |
+| `tests/` | One folder for each plugin, and `kernel/`, `support/`, and `tools/`. | ✅ |
+| `wiki/` | The pages of the wiki. The generator writes them from `src/wiki/`. | ✅ generated |
+| `.claude-plugin/` | The marketplace file `marketplace.json`. The generator writes it. | ✅ generated |
+| `.claude/rules/` | The rules that Claude Code loads for matching paths. | ✅ |
+| `schemas/` | The settings schemas, written by `just schema`. | ✅ generated |
+| `docs/` | A link to the wiki only. | ✅ |
+| `external/` | Local sources. | ❌ git ignores it |
 
 Each file under `plugins/` names its source in a header, except a JSON file.
 A file in `plugins/` that has no source fails `just generate --check`.

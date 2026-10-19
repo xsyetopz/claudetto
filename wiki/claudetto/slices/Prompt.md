@@ -8,6 +8,7 @@ A user who wants to know what Claude reads and a contributor who edits the `prom
 ## What the Slice Does
 
 The slice builds on the short prompt of Claude Code 2.1.302.
+The version 2.1.303, the minimum, changed no prompt text.
 The short prompt starts when the env var `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is `1`, which the settings snippet sets.
 In the short prompt, Claude Code drops the `intro`, `system`, `doing_tasks`, `actions`, `tools`, and `tone` sections.
 It keeps one section, `lean_body`, with a few harness rules.

@@ -30,10 +30,10 @@ The slice bounds are on [Bounds for Slices](Bounds-Slices) and [Bounds for Add-O
 | `USAGE_LEVELS` (high) | `{{USAGE_LEVEL_HIGH}}` | `src/kernel/budget.ts` | The percent at which the status line shows a use in the limit color. It applies to the pace of a limit and to the context of a subagent. |
 | `BASH_OUTPUT_MAX_CHARS` | `{{BASH_OUTPUT_MAX_CHARS}}` | `src/kernel/budget.ts` | The characters of a successful `Bash` output that Claude gets inline. |
 | `COMMAND_OUTPUT_MAX_CHARS` | `20,000` | `src/kernel/budget.ts` | The characters of a skill command output that shows with no model turn. |
-| `HANDOFF_TRIGGER_TOKENS` | `225,000` | `src/kernel/budget.ts` | The context at which the auto handoff of an Opus, Sonnet, or Fable session starts. |
-| `HAIKU_HANDOFF_TRIGGER_TOKENS` | `100,000` | `src/kernel/budget.ts` | The context at which the auto handoff of a Haiku session starts. |
-| `AUTOCOMPACT_PCT` | `80.3571` | `src/kernel/budget.ts` | The value of `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, which starts the auto compaction at `HANDOFF_TRIGGER_TOKENS` in the window `CONTEXT_WINDOW`. |
-| `HAIKU_AUTOCOMPACT_WINDOW` | `144,444` | `src/kernel/budget.ts` | The `autoCompactWindow` of a Haiku model, which starts the auto compaction below `HAIKU_HANDOFF_TRIGGER_TOKENS`. |
+| `HANDOFF_TRIGGER_TOKENS` | `{{HANDOFF_TRIGGER_TOKENS}}` | `src/kernel/budget.ts` | The context at which the auto handoff of an Opus, Sonnet, or Fable session starts. |
+| `HAIKU_HANDOFF_TRIGGER_TOKENS` | `{{HAIKU_HANDOFF_TRIGGER_TOKENS}}` | `src/kernel/budget.ts` | The context at which the auto handoff of a Haiku session starts. |
+| `AUTOCOMPACT_PCT` | `{{AUTOCOMPACT_PCT}}` | `src/kernel/budget.ts` | The value of `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, which starts the auto compaction at `HANDOFF_TRIGGER_TOKENS` in the window `CONTEXT_WINDOW`. |
+| `HAIKU_AUTOCOMPACT_WINDOW` | `{{HAIKU_AUTOCOMPACT_WINDOW}}` | `src/kernel/budget.ts` | The `autoCompactWindow` of a Haiku model, which starts the auto compaction below `HAIKU_HANDOFF_TRIGGER_TOKENS`. |
 | `SHELL_SCAN_MAX_CHARS` | `200,000` | `src/kernel/budget.ts` | The most characters that `commands` in `src/kernel/shell.ts` reads in one command. |
 | `BRACE_WORDS_MAX` | `256` | `src/kernel/budget.ts` | The most words that the brace expansion of one word gives. A word that gives more is unreadable. |
 | `CODE_COMMAND_MAX_WORDS` | `32` | `src/kernel/budget.ts` | The most words of one command that a code reader reads from code in another language. |

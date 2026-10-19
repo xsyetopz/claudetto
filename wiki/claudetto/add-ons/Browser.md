@@ -121,12 +121,12 @@ The slice lists two controls in the [Controls](Controls) page:
 
 | Bound | Value | File | Use |
 | --- | --- | --- | --- |
-| `MAX_GUIDE_CHARS` | 40000 | `slices/browse/limits.ts` | Most characters of the guide in the skill |
-| `GUIDE_TIMEOUT_MS` | 15000 ms | `slices/browse/limits.ts` | Time for `agent-browser skills get core` |
-| `MAX_OUTPUT_CHARS` | 20000 | `slices/search/limits.ts` | Most characters of page text in one result |
-| `OPEN_TIMEOUT_MS` | 30000 ms | `slices/search/limits.ts` | Time to open the search page |
-| `READ_TIMEOUT_MS` | 15000 ms | `slices/search/limits.ts` | Time to read the page text |
-| `CLOSE_TIMEOUT_MS` | 10000 ms | `slices/search/limits.ts` | Time to close the session |
+| `MAX_GUIDE_CHARS` | 40,000 | `slices/browse/limits.ts` | Most characters of the guide in the skill |
+| `GUIDE_TIMEOUT_MS` | 15,000 ms | `slices/browse/limits.ts` | Time for `agent-browser skills get core` |
+| `MAX_OUTPUT_CHARS` | 20,000 | `slices/search/limits.ts` | Most characters of page text in one result |
+| `OPEN_TIMEOUT_MS` | 30,000 ms | `slices/search/limits.ts` | Time to open the search page |
+| `READ_TIMEOUT_MS` | 15,000 ms | `slices/search/limits.ts` | Time to read the page text |
+| `CLOSE_TIMEOUT_MS` | 10,000 ms | `slices/search/limits.ts` | Time to close the session |
 | `SESSION_NAME_MAX` | 12 | `slices/search/limits.ts` | Longest session name, with the prefix `cbws` |
 | `MAX_DOMAINS` | 10 | `slices/search/limits.ts` | Most domains in each filter list |
 | `SEARCH_URL` | `https://html.duckduckgo.com/html/` | `slices/search/limits.ts` | The search page, which needs no script and no sign-in |

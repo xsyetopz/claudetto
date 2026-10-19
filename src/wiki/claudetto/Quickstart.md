@@ -34,8 +34,8 @@ See [Status Line](Status-Line) for each segment.
 ## Long Work
 
 The `handoff` slice replaces the summary of a compaction with a handoff file.
-At 225,000 tokens of the 300,000 window, Claude writes the file with the goal, the state, and the next step.
-For Haiku the trigger is 100,000 tokens.
+At {{HANDOFF_TRIGGER_TOKENS}} tokens of the {{CONTEXT_WINDOW}} window, Claude writes the file with the goal, the state, and the next step.
+For Haiku the trigger is {{HAIKU_HANDOFF_TRIGGER_TOKENS}} tokens.
 Then a new context starts from the file.
 The files are in `.claudetto/handoffs/`, or in the folder of the open OpenSpec change.
 The option `compaction` set to `built-in` turns the handoff off.

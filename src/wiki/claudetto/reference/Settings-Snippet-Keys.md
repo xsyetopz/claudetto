@@ -17,7 +17,7 @@ A test checks the keys against `schemas/claude-code-settings.json`, so a key tha
 
 | Entry | Value | What it does in Claude Code | Why `claudetto` sets it |
 | --- | --- | --- | --- |
-| `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | `80.3571` | Sets the percent of the auto-compact window at which automatic compaction starts. | At a window of {{CONTEXT_WINDOW}} tokens, the percent gives {{HANDOFF_TRIGGER_TOKENS}} tokens, the trigger of the auto handoff (`AUTOCOMPACT_PCT` in `src/kernel/budget.ts`). |
+| `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | `{{AUTOCOMPACT_PCT}}` | Sets the percent of the auto-compact window at which automatic compaction starts. | At a window of {{CONTEXT_WINDOW}} tokens, the percent gives {{HANDOFF_TRIGGER_TOKENS}} tokens, the trigger of the auto handoff (`AUTOCOMPACT_PCT` in `src/kernel/budget.ts`). |
 | `CLAUDE_CODE_AUTO_CONNECT_IDE` | `false` | Default: the IDE connects by itself. | No IDE connection at start. |
 | `CLAUDE_CODE_DISABLE_CRON` | `1` | Removes the Cron tools and `/loop`. | No scheduled runs. |
 | `CLAUDE_CODE_DISABLE_FAST_MODE` | `1` | Keeps fast mode off. | Fast mode stays off. |
@@ -54,10 +54,10 @@ The snippet never sets the entries on the never-set list of [Never-Set Settings]
 | `statusLine` | The command `bun --no-env-file "<plugin folder>/bin/claudetto-statusline"`, `padding` `0`, `refreshInterval` `1`, and `hideVimModeIndicator` `true` | Sets the status line command. | The status line of [Status Line](Status-Line). `refreshInterval` keeps the countdowns current in an idle session. |
 | `subagentStatusLine` | The same command with `--subagent` | Sets the status line of each subagent. | One row for each running subagent. |
 | `autoCompactWindow` | `{{CONTEXT_WINDOW}}` | Sets the auto-compact window in tokens. | The window that `/context` shows. The `handoff` slice sets it from `CONTEXT_WINDOW`. |
-| `modelSettings` | `claude-haiku-5-5` with an `autoCompactWindow` of `144444` | Sets per-model settings. | A Haiku session starts the auto handoff below 100,000 tokens (`HAIKU_AUTOCOMPACT_WINDOW`). |
+| `modelSettings` | `claude-haiku-5-5` with an `autoCompactWindow` of `144444` | Sets per-model settings. | A Haiku session starts the auto handoff below {{HAIKU_HANDOFF_TRIGGER_TOKENS}} tokens (`HAIKU_AUTOCOMPACT_WINDOW`). |
 | `worktree` | `baseRef` set to `head` | Sets how a worktree starts. Default: `fresh`. | An agent worktree starts from the current `HEAD`. |
 | `autoMemoryEnabled` | `false` | Stops the auto-memory folder of the project from being read or written. | No auto memory. |
-| `includeGitInstructions` | `false` | Excludes the built-in commit and pull request text from the system prompt. | The git text adds tokens to each request, and the `guard` and `sembr` slices give the git rules. |
+| `includeGitInstructions` | `false` | Excludes the built-in commit and pull request text from the system prompt. | The git text adds tokens to each request. No slice of claudetto replaces it, and `CLAUDE.md` of the project gives the git rules. |
 | `promptSuggestionEnabled` | `false` | Disables prompt suggestions. | No background request for suggestions. |
 | `awaySummaryEnabled` | `false` | Disables the session recap after a break. | No background request for a recap. |
 | `bashOutputMaxChars` | `{{BASH_OUTPUT_MAX_CHARS}}` | Sets how many characters of a successful `Bash` output go inline. Claude Code clamps it to 4,000 to 128,000. | A shorter inline output (`BASH_OUTPUT_MAX_CHARS`). |

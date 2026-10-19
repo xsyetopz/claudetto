@@ -56,7 +56,7 @@ A field with a wrong type shows the error mark `✗` in place of the value.
 | Pull request | `⇄ #12 approved` | The number and the review state, with `!` for a merge request |
 | Change | `◆ add-login 4/13 ▸5.1` | The active OpenSpec change |
 | Model | `◈ Opus 5.5 high ✦ ↯` | `display_name`, the effort level, the thinking mark, and the fast mode mark |
-| Context | `▤ 12% of 1M ⇥53%` | The used percent of the window and the distance to the handoff |
+| Context | `▤ 12% of 300k ⇥53%` | The used percent of the window and the distance to the handoff |
 | Cost | `$1.23 +300 -20` | The spend in dollars and the lines added and removed |
 | Limit | `◷ 5h 23% ▼13% ⏵2:10pm ↻1:50pm` | The used percent, the pace, the run-out time, and the reset |
 | Prompt cache | `⌁ 4m12s/5m 91%` | The time left, the cache TTL, and the hit ratio |

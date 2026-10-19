@@ -59,7 +59,7 @@ The snippet never sets the entries on the never-set list of [Never-Set Settings]
 | `modelSettings` | `claude-haiku-5-5` with an `autoCompactWindow` of `144444` | Sets per-model settings. | A Haiku session starts the auto handoff below 100,000 tokens (`HAIKU_AUTOCOMPACT_WINDOW`). |
 | `worktree` | `baseRef` set to `head` | Sets how a worktree starts. Default: `fresh`. | An agent worktree starts from the current `HEAD`. |
 | `autoMemoryEnabled` | `false` | Stops the auto-memory folder of the project from being read or written. | No auto memory. |
-| `includeGitInstructions` | `false` | Excludes the built-in commit and pull request text from the system prompt. | The git text adds tokens to each request, and the `guard` and `sembr` slices give the git rules. |
+| `includeGitInstructions` | `false` | Excludes the built-in commit and pull request text from the system prompt. | The git text adds tokens to each request. No slice of claudetto replaces it, and `CLAUDE.md` of the project gives the git rules. |
 | `promptSuggestionEnabled` | `false` | Disables prompt suggestions. | No background request for suggestions. |
 | `awaySummaryEnabled` | `false` | Disables the session recap after a break. | No background request for a recap. |
 | `bashOutputMaxChars` | `16,000` | Sets how many characters of a successful `Bash` output go inline. Claude Code clamps it to 4,000 to 128,000. | A shorter inline output (`BASH_OUTPUT_MAX_CHARS`). |

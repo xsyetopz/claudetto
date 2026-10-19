@@ -80,7 +80,7 @@ The bounds are in `slices/graph/limits.ts`.
 
 | Bound | Value | Use |
 | --- | --- | --- |
-| `QUERY_TIMEOUT_MS` | 2000 ms | Time for `codegraph --version` in the check |
+| `QUERY_TIMEOUT_MS` | 2,000 ms | Time for `codegraph --version` in the check |
 | `ERROR_TEXT_MAX_CHARS` | 300 | Most characters of CLI error text in the report |
 
 ## Telemetry
