@@ -26,11 +26,11 @@ graders:
     name: "added-lines-at-most-1"
     target: { source: file, path: "src/last.mjs" }
     pattern: '^[^\n]*\n?$'
-  # The test file has 7 lines at the start, so a run that grows it adds lines past the reference.
+  # The test file has 8 lines at the start, so a run that grows it adds lines past the reference.
   - type: regex
     name: "test-file-not-grown"
     target: { source: file, path: "check/last.test.mjs" }
-    pattern: '^(?:[^\n]*\n){0,6}[^\n]*\n?$'
+    pattern: '^(?:[^\n]*\n){0,7}[^\n]*\n?$'
   - type: regex
     name: "no-helper-or-branch"
     target: { source: file, path: "src/last.mjs" }
