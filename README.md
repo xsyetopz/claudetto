@@ -6,6 +6,7 @@ Its goal is the highest quality for the lowest token cost.
 
 The [wiki](https://github.com/xsyetopz/claudetto/wiki) explains each part and the reason for it.
 Start with the [Home](https://github.com/xsyetopz/claudetto/wiki/Home) page, or read the [Install](https://github.com/xsyetopz/claudetto/wiki/Install) page for the full setup.
+The docs of Claude Code itself are on the [Claude Code docs](https://xsyetopz.github.io/claude-code-docs/) site, with an optional MCP server and a skill (`bunx skills add xsyetopz/claude-code-docs-skills`).
 
 ## Plugins
 

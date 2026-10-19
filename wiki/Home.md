@@ -2,10 +2,8 @@
 
 # Home
 
-This wiki has two parts.
-One part is about `claudetto`, a plugin marketplace for Claude Code.
-The other part is a reference of how Claude Code `2.1.303` works.
-You can read each part alone.
+This wiki is about `claudetto`, a plugin marketplace for Claude Code.
+For Claude Code itself, see [Claude Code Docs](#claude-code-docs).
 
 ## `claudetto` 0.2.0+
 
@@ -56,39 +54,11 @@ The marketplace is on [Add-Ons](Add-Ons).
 | [Attributions](Attributions) | The projects whose ideas `claudetto` reimplements. |
 | [Release History](Release-History) | Where the notes of each release are. |
 
-## How Claude Code 2.1.303 Works
+## Claude Code Docs
 
-This part is a reference of Claude Code `2.1.303`, the newest release on 2026-10-19.
-It tells how a turn runs, which settings, hooks, tools, and env vars exist, and how to change each one.
-It also lists the items that the official docs do not name.
-Each fact names its source: a docs page, or the program itself.
-
-For example, [Claude Code Hooks](Claude-Code-Hooks) lists each hook event with its input and its output.
-
-### Marks
-
-Each row in a table has one mark.
-
-| Mark | Meaning |
-| --- | --- |
-| ✅ | A page of the [official docs](https://code.claude.com/docs/en) names the item. |
-| 🔍 | No docs page names the item, and it is found only in the program. |
-| ⚠️ | The docs and the program differ. |
-| 🧪 | The item works only behind a flag or a gate. |
-| ❌ | The item is removed or does nothing in `2.1.303`. |
-
-A yes or no value in a table is ✅ or ❌.
-
-### Start Here
-
-- [Claude Code](Claude-Code): the index, the version, and how to read this part.
-- [Claude Code Turn Pipeline](Claude-Code-Turn-Pipeline): the steps from a prompt to the final answer.
-- [Claude Code Settings](Claude-Code-Settings): each key of `settings.json`.
-- [Claude Code Hooks](Claude-Code-Hooks): each hook event, input, and output.
-- [Claude Code Tools](Claude-Code-Tools): each built-in tool.
-- [Claude Code Mod API](Claude-Code-Mod-API): the API that a plugin uses to change Claude Code.
-- [Claude Code Env Vars](Claude-Code-Env-Vars): each env var.
-- [Claude Code Undocumented](Claude-Code-Undocumented): the items that the docs do not name.
+This wiki does not document Claude Code itself.
+The [Claude Code docs](https://xsyetopz.github.io/claude-code-docs/) site holds the reference of how Claude Code works.
+It has an optional MCP server, and a lightweight skill that you add with `bunx skills add xsyetopz/claude-code-docs-skills`.
 
 ## Sources
 

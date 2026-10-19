@@ -43,6 +43,7 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 ### Removed
 
+- The pages about Claude Code itself (`src/wiki/claude-code/`) are out of the wiki, because they are not about `claudetto`, and the wiki now links the [Claude Code docs](https://xsyetopz.github.io/claude-code-docs/) site, which has an optional MCP server and a skill (`bunx skills add xsyetopz/claude-code-docs-skills`).
 - **Breaking:** the slices `agents`, `asks`, `attribution`, `checks`, `corrections`, `gc`, `minispec`, `policy`, `reads`, `repostate`, `turngate`, `usercheck`, and `worktree`, with the `minispec` CLI and skills, the `gc` skill, the custom agents, and `claudetto-run-checks`, and the `testJudge` option with the `asks` slice, the add-on `claudetto-you-should-know`, and the recipes `just measure`, `just usage`, and `just start-run`.
 - **Breaking:** the `second_opinion` tool, its fallback model, and the `decide` value `claude` (values are now `off` and `jev`), the `/handoff` command and its session-start registration, and the `claudetto-codegraph` hooks (sync at session start, after an edit, and after git) and `--mcp` of `claudetto-codegraph-check`, because `codegraph` syncs its own index.
 - Repository checks: the file line caps, the part line pins, the prompt text size pins, the prose-in-code `biome` rule, and the `title-case` markdownlint rule, with their bounds in `tools/limits.ts`, because they made code split and grow instead of stay small (the user, 2026-10-19).

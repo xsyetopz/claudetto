@@ -64,34 +64,6 @@
   - [Sandbox](Sandbox)
   - [Release History](Release-History)
 
-**Claude Code 2.1.303**
+**Claude Code**
 
-- Start
-  - [Claude Code](Claude-Code)
-  - [Architecture](Claude-Code-Architecture)
-  - [Turn Pipeline](Claude-Code-Turn-Pipeline)
-  - [Request Build](Claude-Code-Request-Build)
-  - [System Prompt](Claude-Code-System-Prompt)
-- Models and Context
-  - [Models and API](Claude-Code-Models-And-API)
-  - [Context and Compaction](Claude-Code-Context-And-Compaction)
-  - [Sessions and Storage](Claude-Code-Sessions-And-Storage)
-- Configure
-  - [Settings](Claude-Code-Settings)
-  - [Env Vars](Claude-Code-Env-Vars)
-  - [Permissions and Sandbox](Claude-Code-Permissions-And-Sandbox)
-  - [Memory and Rules](Claude-Code-Memory-And-Rules)
-  - [Output Styles](Claude-Code-Output-Styles)
-  - [Status Line](Claude-Code-Status-Line)
-  - [CLI](Claude-Code-CLI)
-- Extend
-  - [Hooks](Claude-Code-Hooks)
-  - [Tools](Claude-Code-Tools)
-  - [Subagents](Claude-Code-Subagents)
-  - [Skills and Commands](Claude-Code-Skills-And-Commands)
-  - [Plugins](Claude-Code-Plugins)
-  - [MCP](Claude-Code-MCP)
-  - [Mod API](Claude-Code-Mod-API)
-- Findings
-  - [Undocumented](Claude-Code-Undocumented)
-  - [Probes](Claude-Code-Probes)
+- [Claude Code Docs](https://xsyetopz.github.io/claude-code-docs/)
