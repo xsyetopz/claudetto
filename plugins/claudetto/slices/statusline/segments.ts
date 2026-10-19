@@ -87,10 +87,7 @@ const contextText = ({ input, paint, compaction }: Status) => {
         ? paint.warn
         : paint.ok;
   const icon = compaction ? ICON.compaction : ICON.handoff;
-  const distance =
-    left <= 0
-      ? "now"
-      : `${Math.round((left / trigger) * 100)}%`;
+  const distance = left <= 0 ? "now" : `${Math.round((left / trigger) * 100)}%`;
   return style(`${ICON.context} ${percent}%${of} ${icon}${distance}`);
 };
 
