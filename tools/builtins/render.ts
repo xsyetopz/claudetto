@@ -1,4 +1,4 @@
-// The pages `wiki/reference/Builtins*.md`: the render of the rows, and the diff of two renders.
+// The pages `Builtins*.md`: the render of the rows, and the diff of two renders.
 // The output is deterministic: rows are sorted by group and then by name, and each size is a count of bytes.
 
 import { GROUPS, type Group, type Part } from "./found.ts";

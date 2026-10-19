@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // The inventory of the built-in parts of Claude Code.
 // It reads one release folder, `external/cc-<version>/` (`strings.txt` and `types-<version>.d.ts`),
-// and writes `wiki/reference/Builtins.md` with the pages that it links.
+// and writes `Builtins.md` with the pages that it links, to the git-ignored `.claudetto/builtins/`.
 //
 //   bun tools/builtins.ts            write the pages
 //   bun tools/builtins.ts --check    exit 1 with the added, removed, and changed rows when the pages differ from a new run
@@ -19,7 +19,7 @@ import { VERDICTS } from "./builtins/verdicts.ts";
 
 /** The folder of the release that the tool reads when `--dir` is not given. */
 const SOURCE_DIR = "external/cc-2.1.303";
-const OUT_DIR = "wiki/reference";
+const OUT_DIR = ".claudetto/builtins";
 const ROOT = path.resolve(import.meta.dir, "..");
 
 const main = async (): Promise<number> => {

@@ -1,5 +1,8 @@
+- [Home](Home)
+
+**claudetto**
+
 - Start
-  - [Home](Home)
   - [Overview](Overview)
   - [Install](Install)
   - [Quickstart](Quickstart)
@@ -22,30 +25,18 @@
   - [Spec](Spec)
   - [Status Line](Status-Line)
   - [Styles](Styles)
-- Add-On Plugins
-  - [Add-On Plugins](Add-Ons)
+- Add-Ons
+  - [Add-Ons](Add-Ons)
   - [Code Graph](Code-Graph)
   - [Browser](Browser)
   - [Library Docs](Library-Docs)
   - [Sessions](Sessions)
   - [Lab](Lab)
-- How Claude Code Works
-  - [Internals](Claude-Code-Internals)
-  - [Request Build](Request-Build)
-  - [Tools and Deferral](Tools-And-Deferral)
-  - [Hook Events](Hook-Events)
-  - [Plugin Loader](Plugin-Loader)
-  - [Settings Resolution](Settings-Resolution)
-  - [Subagents](Subagents)
-  - [Compaction and Context](Compaction-And-Context)
-  - [Auto Mode](Auto-Mode)
-  - [Undocumented Reads](Undocumented-Reads)
 - Reference
   - [Settings Snippet](Settings-Snippet)
   - [Settings Apply](Settings-Apply)
   - [Snippet Keys](Settings-Snippet-Keys)
   - [Off Switches](Off-Switches)
-  - [Settings Schema](Settings-Schema)
   - [Bounds](Bounds)
 - Rationale
   - [Design](Design)
@@ -70,3 +61,35 @@
   - [Plugin Layout](Plugin-Layout)
   - [Sandbox](Sandbox)
   - [Release History](Release-History)
+
+**Claude Code 2.1.303**
+
+- Start
+  - [Claude Code](Claude-Code)
+  - [Architecture](Claude-Code-Architecture)
+  - [Turn Pipeline](Claude-Code-Turn-Pipeline)
+  - [Request Build](Claude-Code-Request-Build)
+  - [System Prompt](Claude-Code-System-Prompt)
+- Models and Context
+  - [Models and API](Claude-Code-Models-And-API)
+  - [Context and Compaction](Claude-Code-Context-And-Compaction)
+  - [Sessions and Storage](Claude-Code-Sessions-And-Storage)
+- Configure
+  - [Settings](Claude-Code-Settings)
+  - [Env Vars](Claude-Code-Env-Vars)
+  - [Permissions and Sandbox](Claude-Code-Permissions-And-Sandbox)
+  - [Memory and Rules](Claude-Code-Memory-And-Rules)
+  - [Output Styles](Claude-Code-Output-Styles)
+  - [Status Line](Claude-Code-Status-Line)
+  - [CLI](Claude-Code-CLI)
+- Extend
+  - [Hooks](Claude-Code-Hooks)
+  - [Tools](Claude-Code-Tools)
+  - [Subagents](Claude-Code-Subagents)
+  - [Skills and Commands](Claude-Code-Skills-And-Commands)
+  - [Plugins](Claude-Code-Plugins)
+  - [MCP](Claude-Code-MCP)
+  - [Mod API](Claude-Code-Mod-API)
+- Findings
+  - [Undocumented](Claude-Code-Undocumented)
+  - [Probes](Claude-Code-Probes)
