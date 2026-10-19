@@ -258,10 +258,7 @@ test("the attachment `goal_status` is left out", async ($: Engine, on: On) => {
 });
 
 const describeCommand = ($: Engine, on: On, command: string) => {
-  on("command.describe", (_$, e) => ({
-    description: e.description,
-    isHidden: e.isHidden,
-  }));
+  on("command.describe", (_$, e) => e);
   return $.command.describe({
     command,
     description: "Set a goal that Claude works toward.",

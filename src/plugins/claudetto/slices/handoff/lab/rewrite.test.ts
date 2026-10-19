@@ -3,6 +3,7 @@
 
 import type { On, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+import { stubSession } from "./shared.ts";
 
 const FIRST = "Read a.txt in two parts.";
 const H1 =
@@ -36,15 +37,11 @@ const engine = (on: On, replies: string[], writes: string[][]) => {
       },
     },
   }));
-  on("session.model", () => ({ value: "claude-haiku-5-5" }));
   on("fs.write", (_$, e) => {
     writes.push([e.path, e.text]);
     return { value: undefined };
   });
-  on("fs.stat", () => ({
-    value: { kind: "file", size: 100, mtimeMs: 0, isLink: false },
-  }));
-  on("session.compact", () => ({ skip: "the built-in compaction" }));
+  stubSession(on);
 };
 
 // biome-ignore lint/plugin: a test name

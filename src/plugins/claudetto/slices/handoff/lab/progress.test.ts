@@ -3,15 +3,11 @@
 // and a notice in the transcript names the file at the end.
 // With no surface, as in `-p`, the hook draws nothing.
 
-import type { ModelForkResult, On, SessionMessage } from "claude-code";
+import type { ModelForkResult, On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+import { MESSAGES, stubSession } from "./shared.ts";
 
 const HANDOFF = "- Read `a.txt`: DONE, line 1 is `amber-falcon-42`.";
-
-const MESSAGES: SessionMessage[] = [
-  { role: "user", text: "Read a.txt.", toolUses: [], handle: "h0" },
-  { role: "assistant", text: "Done.", toolUses: [], handle: "h1" },
-];
 
 const NO_USAGE = {
   input_tokens: 0,
@@ -33,12 +29,8 @@ const engine = (on: On, world: World = {}): string[] => {
   on("model.fork", () => ({
     value: world.fork ?? { isAnswered: true, text: HANDOFF, usage: NO_USAGE },
   }));
-  on("session.model", () => ({ value: "claude-haiku-5-5" }));
   on("fs.write", () => ({ value: undefined }));
-  on("fs.stat", () => ({
-    value: { kind: "file", size: 100, mtimeMs: 0, isLink: false },
-  }));
-  on("session.compact", () => ({ skip: "the built-in compaction" }));
+  stubSession(on);
   on("ui.status", (_$, e) => {
     drawn.push(`status ${e.text ?? "none"}`);
     return { value: undefined };

@@ -4,8 +4,9 @@
 // With an open change, the handoff goes to `handoff.md` in the change folder and names the next open task.
 // With no open change, it goes to the default place.
 
-import type { On, SessionMessage } from "claude-code";
+import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+import { MESSAGES, stubSession } from "./shared.ts";
 
 const HANDOFF =
   // biome-ignore lint/plugin: test input data
@@ -17,11 +18,6 @@ const NO_USAGE = {
   cache_read_input_tokens: 0,
   cache_creation_input_tokens: 0,
 };
-
-const MESSAGES: SessionMessage[] = [
-  { role: "user", text: "Export the data.", toolUses: [], handle: "h0" },
-  { role: "assistant", text: "Done.", toolUses: [], handle: "h1" },
-];
 
 const entry = (name: string, kind: "dir" | "file" = "dir") => ({
   name,
@@ -52,7 +48,6 @@ const engine = (on: On, world: World) => {
     return { value: text };
   });
   on("session.surfaces", () => ({ value: ["terminal"] }));
-  on("session.model", () => ({ value: "claude-haiku-5-5" }));
   on("model.fork", () => ({
     value: { isAnswered: true, text: HANDOFF, usage: NO_USAGE },
   }));
@@ -60,10 +55,7 @@ const engine = (on: On, world: World) => {
     seen.writes.push({ path: e.path, text: e.text });
     return { value: undefined };
   });
-  on("fs.stat", () => ({
-    value: { kind: "file", size: 100, mtimeMs: 0, isLink: false },
-  }));
-  on("session.compact", () => ({ skip: "the built-in compaction" }));
+  stubSession(on);
   on("ui.status", () => ({ value: undefined }));
   on("ui.log", () => ({ value: undefined }));
   return seen;

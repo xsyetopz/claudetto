@@ -3,16 +3,12 @@
 // With the `compaction` option `built-in`, the `session.compact` hook gives each compaction to Claude Code unchanged.
 // The stub of `session.compact` is the built-in compaction, which gives a skip that names it.
 
-import type { On, SessionMessage } from "claude-code";
+import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
+import { MESSAGES } from "./shared.ts";
 
 const BUILT_IN = "the built-in compaction";
 const PROFILE = { options: { compaction: "built-in" } };
-
-const MESSAGES: SessionMessage[] = [
-  { role: "user", text: "Read a.txt.", toolUses: [], handle: "h0" },
-  { role: "assistant", text: "Done.", toolUses: [], handle: "h1" },
-];
 
 /** The stubs, and each fork, write, and compaction of the hooks, in order. */
 const engine = (on: On): string[] => {
