@@ -145,7 +145,6 @@ The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 | `CHARS_PER_TOKEN` | `4` | `src/plugins/claudetto/slices/handoff/limits.ts` | The characters of one token in the estimate of the size of the new context. |
 | `GROUND_VALUE_CHARS_MIN` | `4` | `src/plugins/claudetto/slices/handoff/limits.ts` | The fewest characters of a value in backticks that the ground check looks for. |
 | `CACHE_TTL_MS` | `3,600,000` | `src/plugins/claudetto/slices/handoff/limits.ts` | The prompt cache TTL of a root session, 1 hour. A handoff after it needs no model call. |
-| `SUBAGENT_CACHE_TTL_MS` | `300,000` | `src/plugins/claudetto/slices/handoff/limits.ts` | The prompt cache TTL of a subagent, 5 minutes. |
 | `COLD_FILES_MAX` | `20` | `src/plugins/claudetto/slices/handoff/limits.ts` | The most changed files that a cold handoff names. |
 | `COLD_PROMPTS_MAX` | `3` | `src/plugins/claudetto/slices/handoff/limits.ts` | The most user messages that a cold handoff quotes. |
 | `COLD_PROMPT_CHARS_MAX` | `1,500` | `src/plugins/claudetto/slices/handoff/limits.ts` | The most characters of the task and of one quoted user message in a cold handoff. |

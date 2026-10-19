@@ -9,7 +9,6 @@ import {
   COLD_FILES_MAX,
   COLD_PROMPT_CHARS_MAX,
   COLD_PROMPTS_MAX,
-  SUBAGENT_CACHE_TTL_MS,
 } from "./limits.ts";
 import { COLD } from "./prompts.ts";
 
@@ -17,17 +16,11 @@ import { COLD } from "./prompts.ts";
 const WRITERS = new Set(["Edit", "Write", "MultiEdit", "NotebookEdit"]);
 
 /**
- * True when the last turn, at `lastTurnAt` in milliseconds, is older than the cache TTL of the session kind:
- * 1 hour for a root session and 5 minutes for a subagent.
- * With no turn seen, the cache is not known to be cold, so the answer is `false`.
+ * True when the last request of the main thread, at `lastTurnAt` in milliseconds, is older than the cache TTL of 1 hour.
+ * With no request seen in this process, the session was resumed and its cache is gone, so the answer is `true`.
  */
-export const isCold = (
-  now: number,
-  lastTurnAt: number | null,
-  isSubagent: boolean,
-): boolean =>
-  lastTurnAt !== null &&
-  now - lastTurnAt > (isSubagent ? SUBAGENT_CACHE_TTL_MS : CACHE_TTL_MS);
+export const isCold = (now: number, lastTurnAt: number | null): boolean =>
+  lastTurnAt === null || now - lastTurnAt > CACHE_TTL_MS;
 
 const cut = (text: string): string =>
   text.length > COLD_PROMPT_CHARS_MAX

@@ -14,7 +14,12 @@ import {
   HANDOFF_COMPACTION,
 } from "../../../../kernel/compaction.ts";
 import type { Handler, Slice } from "../../../../kernel/slice.ts";
-import { keepOptions, onCompact, onTurnComplete } from "./adapters/mod.ts";
+import {
+  keepOptions,
+  onCompact,
+  onTurnComplete,
+  onTurnStep,
+} from "./adapters/mod.ts";
 import { OPTION_DESCRIPTION } from "./prompts.ts";
 
 const LAB = "plugins/claudetto/tests/compaction.test.ts";
@@ -68,6 +73,19 @@ export const slice = {
       filter: { reason: ["answer", "aborted", "refusal", "error"] },
       phase: "observe",
       run: onTurnComplete,
+    },
+    {
+      // A request of the model reads and writes the prompt cache, so a long turn keeps it warm (D47).
+      event: "turn.step",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow: `${CACHE_LAB} > a model request of a subagent does not keep the cache warm`,
+        text: `${CACHE_LAB} > a model request of the main thread in a long turn keeps the cache warm`,
+      },
+      phase: "observe",
+      run: onTurnStep,
     },
   ],
   userConfig: {

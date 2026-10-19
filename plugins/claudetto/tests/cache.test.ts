@@ -42,6 +42,17 @@ const engine = (on: On) => {
     value: { kind: "file", size: 100, mtimeMs: 0, isLink: false },
   }));
   on("turn.complete", (_$, e) => ({ text: e.answer }));
+  on("turn.step", async function* (_$, e) {
+    yield* [];
+    return {
+      turnId: e.turnId,
+      index: e.index,
+      answer: "",
+      toolUses: [],
+      stopReason: "end_turn" as const,
+      usage: null,
+    };
+  });
   on("session.compact", () => ({ skip: "the built-in compaction" }));
   return seen;
 };
@@ -57,6 +68,26 @@ const finish = ($: Engine) =>
 
 const compact = ($: Engine) =>
   $.session.compact({ trigger: "auto", messages: MESSAGES });
+
+const step = async ($: Engine, agentId?: string) => {
+  const stream = $.turn.step({
+    turnId: "t1",
+    index: 0,
+    model: "claude-haiku-5-5",
+    messageCount: 1,
+    ...(agentId === undefined ? {} : { agentId }),
+  });
+  for await (const _chunk of stream);
+};
+
+// This test runs first: the module keeps the time of the last turn, and here no turn was seen in the process.
+// biome-ignore lint/plugin: a test name
+test("a compaction after a resume, with no turn seen in the process, is cold", async ($: Engine, on: On) => {
+  const seen = engine(on);
+  await compact($);
+  expect(seen.forks).toBe(0);
+  expect(seen.writes[0]).toContain("> Use `csv`, not JSON.");
+});
 
 test("the TTL of a root session is 1 hour", () => {
   expect(CACHE_TTL_MS).toBe(HOUR);
@@ -83,4 +114,26 @@ test("a compaction on a warm cache forks the cached prefix", async ($: Engine, o
   expect(seen.forks).toBe(1);
   expect(seen.writes[0]).toContain("- Read `a.txt`.");
   expect(result.messages).toBeDefined();
+});
+
+// biome-ignore lint/plugin: a test name
+test("a model request of the main thread in a long turn keeps the cache warm", async ($: Engine, on: On) => {
+  const seen = engine(on);
+  await finish($);
+  seen.now = HOUR - 1;
+  await step($);
+  seen.now = 2 * HOUR - 2;
+  await compact($);
+  expect(seen.forks).toBe(1);
+});
+
+// biome-ignore lint/plugin: a test name
+test("a model request of a subagent does not keep the cache warm", async ($: Engine, on: On) => {
+  const seen = engine(on);
+  await finish($);
+  seen.now = HOUR - 1;
+  await step($, "a1");
+  seen.now = 2 * HOUR - 2;
+  await compact($);
+  expect(seen.forks).toBe(0);
 });

@@ -67,11 +67,12 @@ After the cache TTL, the cache is cold, and a fork reads the full history as unc
 So the handoff of a cold compaction needs no model call.
 It holds the task, the next open task of `tasks.md`, the done tasks (the checked tasks of `tasks.md`), the changed files, and the last words of the user.
 
-The TTL of a root session is 1 hour, and the TTL of a subagent is 5 minutes.
+The TTL of a root session is 1 hour.
+A subagent compaction goes to the built-in compaction, so its 5-minute TTL does not matter here.
 `claudetto` sets `CLAUDE_CODE_PROMPT_CACHE_TTL` to `1h` in the settings snippet, so the main conversation keeps a 1-hour cache.
 Claude Code bills a 1-hour cache write at a higher rate.
-A subagent keeps the default of 5 minutes, which `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` can change.
-When the hook has seen no turn in this process, such as after `--resume`, it takes the cache as warm.
+Each model request of the main thread, and the end of each turn, renews the time of the cache, so a long turn stays warm.
+When the hook has seen no request in this process, such as after `--resume`, it takes the cache as cold.
 
 ## The Status Comes from Checks
 
