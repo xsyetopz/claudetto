@@ -5,7 +5,7 @@
 // The functions are pure and import only `limits.ts` and the kernel.
 
 import type { SessionMessage } from "claude-code";
-import { earlierHanded, originalFirst } from "./compact.ts";
+import { clip, earlierHanded, originalFirst } from "./compact.ts";
 import {
   CACHE_TTL_MS,
   COLD_FILES_MAX,
@@ -24,10 +24,7 @@ const WRITERS = new Set(["Edit", "Write", "MultiEdit", "NotebookEdit"]);
 export const isCold = (now: number, lastTurnAt: number | null): boolean =>
   lastTurnAt === null || now - lastTurnAt > CACHE_TTL_MS;
 
-const cut = (text: string): string =>
-  text.length > COLD_PROMPT_CHARS_MAX
-    ? `${text.slice(0, COLD_PROMPT_CHARS_MAX)}...`
-    : text;
+const cut = (text: string): string => clip(text, COLD_PROMPT_CHARS_MAX);
 
 /** The paths of the files that the tool calls changed, each once, the newest `COLD_FILES_MAX` in the order of first change. */
 const changedFiles = (messages: readonly SessionMessage[]): string[] => {

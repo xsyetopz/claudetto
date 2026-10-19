@@ -5,7 +5,6 @@
 import { LEGACY_KEYS, LEGACY_RULES } from "../prompts.ts";
 import { isObject, type Json } from "./merge.ts";
 
-/** The lines that open and close the claudetto block of `CLAUDE.md`. */
 const BEGIN = "<!-- claudetto:begin -->";
 const END = "<!-- claudetto:end -->";
 
@@ -100,10 +99,11 @@ export const stripBlock = (text: string): string => {
   const begin = text.indexOf(BEGIN);
   const end = text.indexOf(END);
   if (begin < 0 || end < begin) return text;
-  const rest = [
+  const joined = [
     text.slice(0, begin).trimEnd(),
     text.slice(end + END.length).trimStart(),
-  ];
-  const joined = rest.filter(Boolean).join("\n\n");
+  ]
+    .filter(Boolean)
+    .join("\n\n");
   return joined && `${joined}\n`;
 };

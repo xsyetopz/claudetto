@@ -19,12 +19,10 @@ export const passedChecks = (messages: readonly SessionMessage[]): string[] => {
       | { command?: unknown; run_in_background?: unknown }
       | undefined;
     const command = input?.command;
-    // A command in the background returns at once with no outcome.
     if (use.tool !== "Bash" || typeof command !== "string") continue;
-    if (input?.run_in_background === true) continue;
     const trimmed = command.trim();
-    if (!CHECK.test(trimmed) || use.text === undefined) continue;
-    outcome.set(trimmed, use.isError !== true);
+    if (input?.run_in_background === true || !CHECK.test(trimmed)) continue;
+    if (use.text !== undefined) outcome.set(trimmed, use.isError !== true);
   }
   return [...outcome].filter(([, isPassed]) => isPassed).map(([c]) => c);
 };

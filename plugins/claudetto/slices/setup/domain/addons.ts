@@ -16,13 +16,16 @@ const STEPS: Record<string, string> = {
  * `settings` are the parsed files in the order user, project, local, and a later file wins, as in Claude Code.
  */
 export const addonSteps = (settings: Json[]): string[] => {
-  const state = new Map<string, boolean>();
-  for (const file of settings) {
-    const plugins = file["enabledPlugins"];
-    if (!isObject(plugins)) continue;
-    for (const [id, value] of Object.entries(plugins))
-      state.set(id.split("@")[0] ?? id, value === true);
-  }
+  const state = new Map(
+    settings.flatMap((file) => {
+      const plugins = file["enabledPlugins"];
+      return isObject(plugins)
+        ? Object.entries(plugins).map(
+            ([id, on]) => [id.split("@")[0], on === true] as const,
+          )
+        : [];
+    }),
+  );
   return Object.entries(STEPS)
     .filter(([name]) => state.get(name))
     .map(([, text]) => text);

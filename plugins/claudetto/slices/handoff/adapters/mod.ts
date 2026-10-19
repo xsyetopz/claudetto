@@ -44,9 +44,6 @@ export type CompactHook = MatchedHook<
   { readonly trigger: readonly ["auto", "manual", "plugin"] }
 >;
 
-/** The status line on a terminal while the handoff is written, in place of the spinner of the compaction. */
-const PROGRESS_TEXT = "Writing the handoff…";
-
 /** The `userConfig` values of the plugin, which the generated `register` gives to `keepOptions`. */
 const kept: { options: PluginOptions } = { options: {} };
 
@@ -76,17 +73,15 @@ export const onTurnStep: Handler<"turn.step"> = async function* ($, e, next) {
   return yield* next(e);
 };
 
-/** True when the `compaction` option turns the handoff off. */
-const isOff = () => isBuiltInCompaction(kept.options);
-
 /** The text of the handoff from a fork, or `null` for no reply, nothing to fork, an error, or a text that is not a handoff. */
 const handoffText = async (
   $: EngineInterface,
   prompt: string,
 ): Promise<string | null> => {
-  // A call of the model can throw, such as with an SDK error, and then the built-in compaction runs.
   const fork = await $.model.fork({ prompt }).catch(() => null);
-  return fork?.isAnswered && isHandoff(fork.text) ? fork.text : null;
+  return fork?.isAnswered && isHandoff(fork.text)
+    ? statusFree(fork.text)
+    : null;
 };
 
 /** True when the session has a terminal, where the handoff shows its progress. */
@@ -171,10 +166,10 @@ const compacted = async (
   size: number;
 } | null> => {
   // A cold cache makes a fork read the full history as uncached input, so the handoff holds only what needs no model (D47).
-  const forked =
-    isCache === "cold" ? null : await handoffText($, forkPrompt(messages));
   const reply =
-    isCache === "cold" ? coldHandoff(messages) : forked && statusFree(forked);
+    isCache === "cold"
+      ? coldHandoff(messages)
+      : await handoffText($, forkPrompt(messages));
   if (reply === null) return null;
   const model = await $.session.model().catch(() => null);
   if (model === null) return null;
@@ -192,11 +187,12 @@ const compacted = async (
 };
 
 export const onCompact: CompactHook = async ($, e, next) => {
-  if (e.agentId !== undefined || isOff()) return next(e);
+  if (e.agentId !== undefined || isBuiltInCompaction(kept.options))
+    return next(e);
   const now = await $.clock.now().catch(() => null);
   const cache = now !== null && isCold(now, lastTurnAt) ? "cold" : "warm";
   const isShown = await isTerminal($);
-  if (isShown) $.ui.status(PROGRESS_TEXT);
+  if (isShown) $.ui.status("Writing the handoff…");
   const done = await compacted($, e.messages, cache).finally(() => {
     if (isShown) $.ui.status(undefined);
   });
