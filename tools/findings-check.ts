@@ -18,9 +18,11 @@ const cells = (row: string): string[] =>
     .slice(1, -1)
     .map((cell) => cell.trim());
 
-/** True when a `Task` cell shows a passed check: `none`, `done ...`, or `(checked)`. */
+/** True when a `Task` cell shows a passed check: `none`, a task id with `done ...`, or `(checked)`. */
 export const passed = (task: string): boolean =>
-  task === "none" || /\bdone\b/.test(task) || task.includes("(checked)");
+  task === "none" ||
+  /^(\d+(\.\d+)*,\s*)+done\b/.test(task) ||
+  task.includes("(checked)");
 
 /** The rows of the tables of `markdown` whose `Task` cell is not a passed check. */
 export const openRows = (markdown: string): OpenRow[] => {

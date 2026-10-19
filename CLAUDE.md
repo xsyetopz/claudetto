@@ -2,7 +2,7 @@
 
 A Claude Code plugin marketplace in ESM.
 Code that needs Python is Python, and the tests and `tools/` run on Bun 1.4.3 or later, with `bun install` for the dev dependencies.
-The core plugin is in `plugins/claudetto/`, next to six add-on plugins: `claudetto-codegraph`, `claudetto-browser`, `claudetto-docs`, `claudetto-sessions`, `claudetto-lab`, and `claudetto-you-should-know`.
+The core plugin is in `plugins/claudetto/`, next to five add-on plugins: `claudetto-codegraph`, `claudetto-browser`, `claudetto-docs`, `claudetto-sessions`, and `claudetto-lab`.
 Each add-on plugin works without the core plugin, so it imports nothing from another plugin.
 Only `plugins/` ships to users.
 `tests/` has one folder for each plugin, with `tests/claudetto/<slice>/` for each slice of the core plugin.
