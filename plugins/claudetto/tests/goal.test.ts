@@ -271,7 +271,7 @@ const describeCommand = ($: Engine, on: On, command: string) => {
   });
 };
 
-test("`command.describe` gives `/goal` the description of the goal engine", async ($: Engine, on: On) => {
+test("`/goal` has the goal engine text", async ($: Engine, on: On) => {
   const out = await describeCommand($, on, "goal");
   expect(out.description).toContain("check");
   expect(out.isHidden).toBe(false);

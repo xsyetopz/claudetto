@@ -18,7 +18,7 @@ import {
   type Result,
 } from "../domain/state.ts";
 import { OUTPUT_TAIL_CHARS, RUN_TIMEOUT_MS } from "../limits.ts";
-import { JUDGE, PROPOSE_DENY, START } from "../prompts.ts";
+import { DESCRIPTION, JUDGE, PROPOSE_DENY, START } from "../prompts.ts";
 
 /** The project root: `CLAUDE_PROJECT_DIR`, or the root of the session, or `""` with no root. */
 const rootOf = async ($: EngineInterface): Promise<string> =>
@@ -177,10 +177,6 @@ export const onCommand: Handler<"command.run"> = ($, e, next) =>
     text: `Goal: ${error.message}`,
   }));
 
-/** The menu text of `/goal`: the goal engine of claudetto, not the built-in goal. */
-const GOAL_DESCRIPTION =
-  "Set a goal with checks that run at the end of each turn (a condition, a plan file, or `status`)";
-
 /** `command.describe` of `/goal`: the typeahead and `/help` name the goal engine, because `onCommand` answers the command. */
 export const onCommandDescribe: Handler<"command.describe"> = (_$, e, next) =>
-  next({ ...e, description: GOAL_DESCRIPTION });
+  next({ ...e, description: DESCRIPTION });
