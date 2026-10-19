@@ -2,7 +2,10 @@
 // except the rows that a setting of the snippet already covers.
 
 import { expect, test } from "bun:test";
-import { OFF_ATTACHMENTS, OFF_COMMANDS } from "../../../plugins/claudetto/slices/prompt/domain/off.ts";
+import {
+  OFF_ATTACHMENTS,
+  OFF_COMMANDS,
+} from "../../../plugins/claudetto/slices/prompt/domain/off.ts";
 import { slice } from "../../../plugins/claudetto/slices/prompt/slice.ts";
 import { slice as setup } from "../../../plugins/claudetto/slices/setup/slice.ts";
 import { VERDICTS } from "../../../tools/builtins/verdicts.ts";

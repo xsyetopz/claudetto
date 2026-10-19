@@ -15,6 +15,7 @@ import { lineCount } from "../../../kernel/text.ts";
 import { type Count, printReason } from "../domain/deny.ts";
 import { printsOf } from "../domain/reads.ts";
 import { READ_MAX_BYTES } from "../limits.ts";
+import { FAIL_DENY } from "../prompts.ts";
 
 /** The line count of a file for the print rule: `Infinity` when it is too large to read. */
 const countOf =
@@ -45,6 +46,6 @@ export const onBashCall: BashHook = async ($, e, next) => {
 export const onBashFail: CatchHandler<BashHook> = (_$, e, next) => {
   if (next.called || !printsOf(e.command, "").length) return next(e);
   return {
-    deny: `The print guard failed (${next.error.kind}), so this command was not run. Use \`Read\` with an \`offset\` and a \`limit\`.`,
+    deny: FAIL_DENY({ kind: next.error.kind }),
   };
 };
