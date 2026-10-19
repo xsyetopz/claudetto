@@ -57,7 +57,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just generate && just test tests/claudetto/styles`
   Then run an eval of the two forms of D36, the list only when needed and the full rule with "Nothing needed from you right now", at 10 runs each, and keep the form that D36 picks.
   This is a paid run: ask the user first, with the expected cost and the weekly share.
-- [ ] 3.16 Ask the user before the paid run, with the cost and the weekly share, then measure the automatic compaction against the handoff on one recorded session: cost, time, tokens after, and whether the next turn takes the next open task with no done step run again.
+- [x] 3.16 Ask the user before the paid run, with the cost and the weekly share, then measure the automatic compaction against the handoff on one recorded session: cost, time, tokens after, and whether the next turn takes the next open task with no done step run again.
   Write the results and the method to `wiki/evidence/Handoff-Cost.md` (D46, D47).
   Check: `grep -q 'D46' wiki/evidence/Handoff-Cost.md && bun run lint:md`
 - [x] 3.17 Add a lab test that a `Bash` command that removes or moves a project `.claudetto` folder, such as `rmdir openspec/changes/c/.claudetto`, passes the `policy` gate, and that a write in `~/.claudetto/policy/` is still denied, and see it fail, then make `touchesStore` of `slices/policy/domain/paths.ts` match only the store under the home folder. (closed: removed in trim-0-2-0)
