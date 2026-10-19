@@ -14,8 +14,10 @@ export const slice = {
   controls: [
     {
       name: "reply button",
-      incident: "the user copied messages of Claude by hand to answer them (the user, 2026-10-18)",
-      removeWhen: "Claude Code has its own action that quotes a message in the prompt.",
+      incident:
+        "the user copied messages of Claude by hand to answer them (the user, 2026-10-18)",
+      removeWhen:
+        "Claude Code has its own action that quotes a message in the prompt.",
     },
   ],
   mod: [
