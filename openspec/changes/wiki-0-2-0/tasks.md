@@ -2,8 +2,8 @@
 
 ## 1. Claude Code 2.1.303 (Part 2)
 
-- [ ] 1.1 Draft the architecture and runtime pages of W2: `Claude-Code` to `Claude-Code-Sessions-And-Storage`, plus `Claude-Code-CLI`, `Claude-Code-Env-Vars`.
-- [ ] 1.2 Draft the extension pages of W2: settings, permissions, hooks, memory, output styles, status line, tools, subagents, skills, plugins, Mod API, MCP.
+- [x] 1.1 Draft the architecture and runtime pages of W2: `Claude-Code` to `Claude-Code-Sessions-And-Storage`, plus `Claude-Code-CLI`, `Claude-Code-Env-Vars`.
+- [x] 1.2 Draft the extension pages of W2: settings, permissions, hooks, memory, output styles, status line, tools, subagents, skills, plugins, Mod API, MCP.
 - [ ] 1.3 Review a sample of facts of each page against the bundle and the docs, and fix each error.
 - [ ] 1.5 Probe each gate and env var that a draft names with no known effect, on a vanilla `2.1.303` with no login:
   a separate `CLAUDE_CONFIG_DIR`, a fake `ANTHROPIC_API_KEY`, and `ANTHROPIC_BASE_URL` set to a local stub of the Messages API that records each request and sends scripted replies.
