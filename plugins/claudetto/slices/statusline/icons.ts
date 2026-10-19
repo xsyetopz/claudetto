@@ -12,6 +12,7 @@ export const ICON = {
   deficit: "▲",
   reserve: "▼",
   thinking: "✦",
+  fast: "↯",
   context: "▤",
   added: "+",
   removed: "-",
