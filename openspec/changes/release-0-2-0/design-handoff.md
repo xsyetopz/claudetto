@@ -157,6 +157,32 @@ The sources are in the last section.
 - Token cost of agents, vendor measures with no method: about 4x the tokens of a chat for one agent and about 15x for a multi-agent system (multi-agent research post), and 3-10x against a single agent on equivalent tasks (`claude.com`, building multi-agent systems).
   The two use different baselines.
 
+### D64. A Subagent in a Worktree Keeps One Cumulative `.patch` File
+
+- The user asked for this (2026-10-19): a subagent writes its code as `.patch` files, so a lost agent or a killed context still shows where the work stopped, and the code gets from a worktree to the live codebase.
+- Facts: turn limits and a weekly usage limit stopped three subagents in worktrees before they committed, and worktrees started from the wrong base commit.
+  The prior art `aGiTrack` (`.claudetto/research/H-web.md`) names the failure modes: leftover worktrees, untracked or ignored files that only the worktree holds, merge conflicts, and an auto-resolve that gives a wrong clean merge.
+- Decision: a `tool.call` hook on `Edit` and `Write` with an `agentId`, in a linked git worktree, writes `.claudetto/patches/<agentId>/changes.patch` in the main checkout.
+  The main checkout is the parent of `git rev-parse --git-common-dir`, so the file survives the removal of the worktree.
+  The file `base` in the same folder holds the `HEAD` commit of the worktree at the first write.
+- One cumulative patch, written again after each change, and not one patch for each change:
+  - The patch is the diff of the base commit against the working tree, with the untracked files, from a temporary index (`git add -A`, then `git diff --cached --binary`).
+    It stays right after an edit that a `Bash` command made, a commit of the agent, and a lost earlier file.
+  - A series needs a sequence number, an order of landing, and a check that no file is missing.
+    One file needs none of these, and a replacement agent reads one file.
+  - The cost is that the patch is not a history.
+    The worktree branch keeps the history of the commits, and the patch keeps the state.
+- The main session lists and lands the patches with the `bin/` command `claudetto-patch`.
+  `land` runs `git apply --check` first, and applies only a clean patch.
+  A patch that fails is not applied, and the command prints the error of git.
+  Only `land --3way` applies with conflict markers, and git lists the files with a conflict.
+  Nothing resolves a conflict by itself, because an auto-resolve can give a clean merge that is wrong.
+- A replacement or resumed agent reads the patch of the agent that it replaces first, and applies it with `git apply` in its own worktree.
+- The files that git ignores are not in the patch.
+  A `Bash` command that changes a file shows in the next patch, which an `Edit` or `Write` writes, and not at once.
+- Slice `patch`, and not `handoff`: the `handoff` slice is about the compaction of the main thread, and this work is about a subagent in a worktree.
+  The two share only the word.
+
 ## Sources
 
 Read on 2026-10-17 by a researcher subagent with `curl`.

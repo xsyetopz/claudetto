@@ -298,3 +298,8 @@ The rows `new:` of `findings.md` that need no decision of the user.
   Check: `bun test tests/support/prose-in-code.test.ts`
 - [x] 13.5 Remove the specs of this change that describe removed parts, such as `specs/minispec-format/` and `specs/agent-roster/`.
   Check: `OPENSPEC_TELEMETRY=0 bunx --bun @fission-ai/openspec@1.14.3 validate release-0-2-0`
+
+## 14. Patches of Subagents
+
+- [x] 14.1 Add the slice `patch` test-first (D64): the lab test `write.test.ts`, the tests `tests/claudetto/patch/land.test.ts`, the hook, the CLI `claudetto-patch`, the skill `patch`, and the line in the text of the `Agent` tool.
+  Check: `just generate && just test tests/claudetto/patch && just lab`
