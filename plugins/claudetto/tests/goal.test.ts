@@ -86,7 +86,6 @@ test("the built-in `/goal` does not run, and the hook answers", async ($: Engine
   expect((await typed($, "goal", "status")).text).toBe("No goal.");
 });
 
-// biome-ignore lint/plugin: a test name
 test("a condition with commands in backticks makes a goal of `run` checks, and the first turn starts", async ($: Engine, on: On) => {
   const world = stub(on);
   await typed($, "goal", "`just check` and `ls` --max-turns 4 --budget $2");
@@ -102,7 +101,6 @@ test("a condition with commands in backticks makes a goal of `run` checks, and t
   expect(world.prompts[0]).toContain("step 1");
 });
 
-// biome-ignore lint/plugin: a test name
 test("a failing hook still answers, and the built-in `/goal` does not run", async ($: Engine, on: On) => {
   stub(on, goalWith(), true);
   const out = await typed($, "goal", "clear");
@@ -136,7 +134,6 @@ test("`resume` of a goal that is not paused changes nothing", async ($: Engine, 
   expect(world.state().turns).toBe(2);
 });
 
-// biome-ignore lint/plugin: a test name
 test("`resume` of a goal with a budget takes the cost of the session as its base", async ($: Engine, on: On) => {
   const world = stub(
     on,
@@ -180,7 +177,6 @@ test("`pause` keeps the goal, and `resume` starts the turn again", async ($: Eng
   expect(world.prompts).toHaveLength(1);
 });
 
-// biome-ignore lint/plugin: a test name
 test("`resume` counts the turns, the cost, and the stall from the resume", async ($: Engine, on: On) => {
   const goal = goalWith({
     paused: true,
@@ -199,7 +195,6 @@ test("`resume` counts the turns, the cost, and the stall from the resume", async
   });
 });
 
-// biome-ignore lint/plugin: a test name
 test("`skip` and `step N` move the step and write a line to the log", async ($: Engine, on: On) => {
   const world = stub(on, goalWith());
   await typed($, "goal", "skip");
@@ -219,7 +214,6 @@ test("`skip` on the last step ends the goal", async ($: Engine, on: On) => {
   expect(world.state()).toBeNull();
 });
 
-// biome-ignore lint/plugin: a test name
 test("`status` shows the step, each check with its last result, and the budget, with no turn", async ($: Engine, on: On) => {
   const world = stub(
     on,

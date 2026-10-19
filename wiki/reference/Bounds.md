@@ -177,26 +177,12 @@ The choice of the three tiers is in [Decisions-Layout](Decisions-Layout).
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
-| `FILE_MAX_LINES` | `300` | `tools/limits.ts` | The most lines in a file that is not a test. |
-| `TEST_FILE_MAX_LINES` | `500` | `tools/limits.ts` | The most lines in a test file. |
 | `WORKTREE_TEST_TIMEOUT_MS` | `15,000` | `tools/limits.ts` | The time for one test that makes a `git worktree`. |
 | `GIT_REPO_TEST_TIMEOUT_MS` | `15,000` | `tools/limits.ts` | The time for one test that starts many `git` processes. |
 | `BUNDLE_SCAN_TIMEOUT_MS` | `60,000` | `tools/limits.ts` | The time for one test that scans the bundle of the installed `claude`. |
 | `MIN_CLAUDE_CODE_VERSION` | `2.1.303` | `tools/limits.ts` | The lowest Claude Code version that claudetto is built for. |
 | `DOCKER_CPUS` | `4` | `tools/limits.ts` | The CPUs of the container of `just docker`. |
 | `EVAL_MAX_COST_USD` | `5` | `tools/limits.ts` | The most US dollars for one `just eval` run. |
-| `CODE_TEXT_MAX_CHARS` | `60` | `tools/limits.ts` | The most characters in one text in the code of a plugin or of the kernel. |
-| `AGENT_DESCRIPTION_MAX_CHARS` | `300` | `tools/limits.ts` | The most characters in the `description` of an agent file. |
-| `CLAUDE_MD_MAX_BYTES` | `6,144` | `tools/limits.ts` | The most bytes in a `CLAUDE.md` or `AGENTS.md` file. |
-| `SKILL_META_LOW_BYTES` | `150` | `tools/limits.ts` | The fewest bytes in the `name` and `description` of one skill. |
-| `SKILL_META_HIGH_BYTES` | `300` | `tools/limits.ts` | The most bytes in the `name` and `description` of one skill. |
-| `SKILL_META_TOTAL_LOW_BYTES` | `5,120` | `tools/limits.ts` | The fewest bytes of skill metadata in all skills together. |
-| `SKILL_META_TOTAL_HIGH_BYTES` | `8,192` | `tools/limits.ts` | The target for the skill metadata of all skills together. A larger sum is reported. |
-| `SKILL_META_TOTAL_MAX_BYTES` | `15,360` | `tools/limits.ts` | The ceiling for the skill metadata of all skills together. A larger sum fails. |
-| `SKILL_BODY_LOW_BYTES` | `2,048` | `tools/limits.ts` | The fewest bytes in a `SKILL.md` body. |
-| `SKILL_BODY_HIGH_BYTES` | `8,192` | `tools/limits.ts` | The most bytes in a `SKILL.md` body. |
-| `FIRST_REQUEST_LOW_BYTES` | `8,192` | `tools/limits.ts` | The fewest bytes in the first request, with no tool schemas. |
-| `FIRST_REQUEST_HIGH_BYTES` | `16,384` | `tools/limits.ts` | The most bytes in the first request, with no tool schemas. |
 | `START_TOKENS` | `9,960` | `tools/limits.ts` | The most tokens in the first request of a claudetto session. |
 
 ## Source of the Binary Facts

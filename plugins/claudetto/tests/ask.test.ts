@@ -62,7 +62,6 @@ const builtIn = (on: On): { input: unknown } => {
 };
 
 test(
-  // biome-ignore lint/plugin: a test name that a `slice.ts` file references
   "with the option off, `AskUserQuestion` passes unchanged and no process runs",
   option("off"),
   async ($: Engine, on: On) => {
@@ -75,7 +74,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: a test name that a `slice.ts` file references
   "with the option `jev` and no key, `AskUserQuestion` sends nothing to Jev",
   option("jev"),
   async ($: Engine, on: On) => {
@@ -87,7 +85,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: a test name that a `slice.ts` file references
   "with the option `jev` and a key, one run asks Jev for the questions",
   option("jev"),
   async ($: Engine, on: On) => {

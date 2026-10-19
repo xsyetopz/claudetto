@@ -31,7 +31,6 @@ type SearchInput = {
 const PAGE = "Bun v1.4.3 release notes\nhttps://bun.com/blog/bun-v1.4.3";
 
 const BIN = (v: string) =>
-  // biome-ignore lint/plugin: a path in the fixture data
   `/home/me/.cloakbrowser/chromium-${v}/Chromium.app/Contents/MacOS/Chromium`;
 const BUILDS = [
   "chromium-9.1.0",
@@ -120,7 +119,6 @@ const builtIn = (on: On) => {
   );
 };
 
-// biome-ignore lint/plugin: the test name is kept whole, because the `slice.ts` file references it
 test("with the default backend, a `WebSearch` call passes to the built-in tool and starts no browser", async ($: Engine, on: On) => {
   const runs = stub(on);
   builtIn(on);
@@ -130,7 +128,6 @@ test("with the default backend, a `WebSearch` call passes to the built-in tool a
 });
 
 test(
-  // biome-ignore lint/plugin: the test name is kept whole, because the `slice.ts` file references it
   "with the `cloakbrowser` backend, the result comes from CloakBrowser",
   CLOAK,
   async ($: Engine, on: On) => {
@@ -151,7 +148,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: the test name is kept whole, because the `slice.ts` file references it
   "parallel searches use own sessions, and each closes only its own",
   CLOAK,
   async ($: Engine, on: On) => {
@@ -173,7 +169,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: the test name is kept whole, because the `slice.ts` file references it
   "when the read gives no text with exit 0, the built-in `WebSearch` answers",
   CLOAK,
   async ($: Engine, on: On) => {
@@ -213,7 +208,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: the test name is kept whole, because the `slice.ts` file references it
   "when the browser fails, the built-in `WebSearch` answers and the session closes",
   CLOAK,
   async ($: Engine, on: On) => {
@@ -231,7 +225,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: the test name is kept whole, because the `slice.ts` file references it
   "when the page has no results element, as on a bot check, the built-in `WebSearch` answers with a notice of the reason",
   CLOAK,
   async ($: Engine, on: On) => {
@@ -261,7 +254,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: the test name is kept whole, because the `slice.ts` file references it
   "when the browser throws, the built-in `WebSearch` answers with a notice",
   CLOAK,
   async ($: Engine, on: On) => {
@@ -276,7 +268,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: the test name is kept whole, because the `slice.ts` file references it
   "with the `cloakbrowser` backend and no folder of builds, the call is denied and no browser starts",
   CLOAK,
   async ($: Engine, on: On) => {
@@ -288,7 +279,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: the test name is kept whole, because the `slice.ts` file references it
   "with the `cloakbrowser` backend and no binary, the call is denied and no browser starts",
   CLOAK,
   async ($: Engine, on: On) => {
@@ -300,7 +290,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: the test name is kept whole, because the `slice.ts` file references it
   "with the `cloakbrowser` backend, a folder of builds that fails to read for another reason than a missing folder starts no browser",
   CLOAK,
   async ($: Engine, on: On) => {
@@ -352,7 +341,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: the test name is kept whole, because the `slice.ts` file references it
   "a `WebSearch` ask makes no search, and the built-in tool answers",
   CLOAK,
   async ($: Engine, on: On) => {
@@ -365,7 +353,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: the test name is kept whole, because the `slice.ts` file references it
   "a dropped domain and the `extended` mode give notices in the result",
   CLOAK,
   async ($: Engine, on: On) => {
@@ -383,7 +370,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: the test name is kept whole, because the `slice.ts` file references it
   "a failed close goes to the log, and the next search uses a new session",
   CLOAK,
   async ($: Engine, on: On) => {

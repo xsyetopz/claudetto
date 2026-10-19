@@ -63,19 +63,16 @@ const handed = async ($: Engine, on: On, handoff: string) => {
   return { text: result.messages?.[0]?.text ?? "", logs };
 };
 
-// biome-ignore lint/plugin: a test name
 test("a changed value gives a warning that names it and one debug log line", async ($: Engine, on: On) => {
   const { text, logs } = await handed(
     $,
     on,
-    // biome-ignore lint/plugin: test input data
     "- Read `a.txt` lines 1 to 600: DONE, line 1 is `FIRST-LINE: amber-falcon-24`.",
   );
   expect(text).toContain(
     GROUND_WARNING({ values: "`FIRST-LINE: amber-falcon-24`" }),
   );
   expect(logs).toEqual([
-    // biome-ignore lint/plugin: test input data
     "ground check: `FIRST-LINE: amber-falcon-24` is not in the messages of the session",
   ]);
 });
@@ -84,7 +81,6 @@ test("a true value gives no warning and no log line", async ($: Engine, on: On) 
   const { text, logs } = await handed(
     $,
     on,
-    // biome-ignore lint/plugin: test input data
     "- Read `a.txt` lines 1 to 600: DONE, line 1 is `FIRST-LINE: amber-falcon-42`.",
   );
   expect(text).toContain("`FIRST-LINE: amber-falcon-42`");
@@ -92,15 +88,12 @@ test("a true value gives no warning and no log line", async ($: Engine, on: On) 
   expect(logs).toEqual([]);
 });
 
-// biome-ignore lint/plugin: a test name
 test("a line with an odd count of backticks and a short value makes no value of prose", async ($: Engine, on: On) => {
   const { text, logs } = await handed(
     $,
     on,
     [
-      // biome-ignore lint/plugin: test input data
       "- Step 1 (offset `1`): DONE. Line 1 is `FIRST-LINE: amber-falcon-42`.",
-      // biome-ignore lint/plugin: test input data
       "- Next: read `a.txt` at the next offset, then run ` cat b.txt for the code word.",
     ].join("\n"),
   );

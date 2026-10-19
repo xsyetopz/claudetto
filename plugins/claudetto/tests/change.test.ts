@@ -9,7 +9,6 @@ import { type Engine, expect, test } from "claude-code/testing";
 import { MESSAGES, stubSession } from "./shared.ts";
 
 const HANDOFF =
-  // biome-ignore lint/plugin: test input data
   "- Read `a.txt` lines 1 to 600: DONE, line 1 is `amber-falcon-42`.\n- Next: read lines 601 to 1200.";
 
 const NO_USAGE = {
@@ -70,10 +69,8 @@ const handedOver = async ($: Engine) => {
 };
 
 const TASKS =
-  // biome-ignore lint/plugin: test input data
   "- [x] 1.1 First\n- [x] 1.2 Second\n- [ ] 1.3 Third\n- [ ] 1.4 Fourth\n";
 
-// biome-ignore lint/plugin: a test name
 test("with tasks 1.1 and 1.2 checked, the handoff goes to the change folder and names task 1.3", async ($: Engine, on: On) => {
   const seen = engine(on, { tasks: { "add-export": TASKS } });
   const handed = await handedOver($);
@@ -92,7 +89,6 @@ test("with tasks 1.1 and 1.2 checked, the handoff goes to the change folder and 
   expect(handed).toContain("Next open task: `1.3`");
 });
 
-// biome-ignore lint/plugin: a test name
 test("a change with all tasks checked and the archive folder are not active, so the handoff goes to the default place", async ($: Engine, on: On) => {
   const seen = engine(on, {
     tasks: { "add-export": "- [x] 1.1 First\n", archive: TASKS },

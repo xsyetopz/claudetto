@@ -107,7 +107,6 @@ export const slice = {
   ],
   settings: {
     $schema:
-      // biome-ignore lint/plugin: the URL of the settings schema
       "https://raw.githubusercontent.com/xsyetopz/claudetto/main/schemas/claude-code-settings.json",
     env: {
       CLAUDE_CODE_AUTO_CONNECT_IDE: "false",

@@ -16,14 +16,12 @@ const describe = ($: Engine, on: On, tool: string, description = BUILT_IN) => {
   });
 };
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("`tool.describe` replaces the built-in `Agent` description with a shorter one", async ($: Engine, on: On) => {
   const answer = await describe($, on, "Agent");
   expect(answer.description.length).toBeLessThan(BUILT_IN.length);
   expect(answer.isDeferred).toBeUndefined();
 });
 
-// biome-ignore lint/plugin: a test name
 test("`tool.describe` keeps a built-in `Agent` description that is shorter", async ($: Engine, on: On) => {
   on("tool.describe", () => ({ description: "short" }));
   const answer = await $.tool.describe({
@@ -34,7 +32,6 @@ test("`tool.describe` keeps a built-in `Agent` description that is shorter", asy
   expect(answer.description).toBe("short");
 });
 
-// biome-ignore lint/plugin: a test name
 test("`tool.describe` defers `ListAgents` and keeps its built-in description", async ($: Engine, on: On) => {
   const answer = await describe($, on, "ListAgents");
   expect(answer.isDeferred).toBe(true);

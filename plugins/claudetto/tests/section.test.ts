@@ -7,16 +7,13 @@ import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
 const SUMMARY =
-  // biome-ignore lint/plugin: text of the engine that the test feeds to the transform
   "When the conversation grows long, some or all of the current context is summarized; the summary is provided in the next context window.";
 
 const PROFILE = { options: { compaction: "built-in" } };
 
 const HANDOFF_TEXT =
-  // biome-ignore lint/plugin: text of the section that the test expects
   "When the conversation grows long, a handoff file carries the work into the next context window, so you do not need to wrap up early or stop mid-task.";
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("with the handoff on, the `context_management` section says that a handoff carries the work", async ($: Engine, on: On) => {
   on("prompt.section", () => ({ text: "engine text" }));
   mock.env(on, {});
@@ -27,7 +24,6 @@ test("with the handoff on, the `context_management` section says that a handoff 
   expect(out.text).toBe(HANDOFF_TEXT);
 });
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("with `DISABLE_COMPACT`, the `context_management` section says that compaction is off", async ($: Engine, on: On) => {
   on("prompt.section", () => ({ text: "engine text" }));
   mock.env(on, { DISABLE_COMPACT: "1" });
@@ -40,7 +36,6 @@ test("with `DISABLE_COMPACT`, the `context_management` section says that compact
 });
 
 test(
-  // biome-ignore lint/plugin: a test name that a `slice.ts` file references
   "with the compaction profile, the `context_management` section keeps the engine text",
   PROFILE,
   async ($: Engine, on: On) => {
@@ -57,7 +52,6 @@ test(
 test("a section with a transform gets its shorter text", async ($: Engine, on: On) => {
   on("prompt.section", () => ({ text: "engine text" }));
   const text =
-    // biome-ignore lint/plugin: text of the engine that the test feeds to the transform
     "You have a persistent file-based memory at `/x/`. This directory already exists — write to it directly with the Write tool (do not run mkdir or check for its existence).";
   const out = await $.prompt.section({ name: "memory", text });
   expect(out.text).not.toBe("engine text");
@@ -89,7 +83,6 @@ const debugLogs = (on: On) => {
   return logs;
 };
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("when an anchor of a transform finds nothing, a debug log line names the anchor and the section", async ($: Engine, on: On) => {
   on("prompt.section", () => ({ text: "engine text" }));
   const logs = debugLogs(on);
@@ -101,14 +94,12 @@ test("when an anchor of a transform finds nothing, a debug log line names the an
   expect(logs.some((l) => l.includes("Fast mode for Claude Code"))).toBe(true);
 });
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("when each anchor of a transform finds its part, no debug log line is written", async ($: Engine, on: On) => {
   on("prompt.section", () => ({ text: "engine text" }));
   const logs = debugLogs(on);
   const text = [
     " - The most recent Claude models are the Claude 5 family.",
     " - Claude Code is available as a CLI in the terminal.",
-    // biome-ignore lint/plugin: text of the engine that the test feeds to the transform
     " - Fast mode for Claude Code uses Claude Opus with faster output.",
   ].join("\n");
   await $.prompt.section({ name: "env_info_simple", text });
@@ -143,7 +134,6 @@ const spawned = async ($: Engine, on: On, prompt: string) => {
   return seen;
 };
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("a spawn ends its task prompt with the rules for a subagent one time", async ($: Engine, on: On) => {
   const first = await spawned($, on, "Read the file.");
   expect(first.startsWith("Read the file.\n\n<claudetto_notes>")).toBe(true);

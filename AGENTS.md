@@ -36,9 +36,6 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
 
 - Use the env vars of Claude Code and flags.
   Add a claudetto env var only when neither can do the work, and give it the prefix `CLAUDETTO_`.
-- Keep each file at 300 lines or less, and each test file at 500 lines or less, which `just validate` checks.
-  Split a larger file into files that each hold one concern, and split a long `.md` file into linked parts.
-  Generated files, such as `schemas/`, are out of scope.
 - Write docs in STE-flavored ASD-STE100.
   Use no semicolons.
 - Use semantic line breaks in all text that is not code: Markdown, comments, messages to Claude, commit messages, pull requests, and chat replies.

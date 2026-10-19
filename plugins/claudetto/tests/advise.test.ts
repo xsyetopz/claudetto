@@ -80,7 +80,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: a test name that a `slice.ts` file references
   "with the option `claudetto`, session start registers the tool",
   ON,
   async ($: Engine, on: On) => {
@@ -91,7 +90,6 @@ test(
 );
 
 test(
-  // biome-ignore lint/plugin: a test name that a `slice.ts` file references
   "an answer gives the advice with the model name and the tokens",
   ON,
   async ($: Engine, on: On) => {

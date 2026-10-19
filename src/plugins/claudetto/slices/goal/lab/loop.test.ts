@@ -181,7 +181,6 @@ test("`stall` stops the goal after the same failure in a row", async ($: Engine,
   expect(world.state().log[0].note).toBe("stopped: stall");
 });
 
-// biome-ignore lint/plugin: a test name
 test("the paths start at the project root, not at the folder of the shell", async ($: Engine, on: On) => {
   const world = stub(on, goalWith(), { root: "/proj" });
   await finish($);
@@ -197,7 +196,6 @@ test("a turn whose checks all pass still stops at `maxTurns`", async ($: Engine,
   expect(world.state().log.at(-1).note).toBe("stopped: max-turns");
 });
 
-// biome-ignore lint/plugin: a test name
 test("the cost after a `/clear` adds to the spent cost, and does not go below it", async ($: Engine, on: On) => {
   const goal = goalWith({ budget: { usd: 5 }, spentUsd: 1, lastUsd: 10 });
   const world = stub(on, goal, { usd: 2 });

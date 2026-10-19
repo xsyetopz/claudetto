@@ -13,6 +13,5 @@ export const transformText = (id: string, text: string): string =>
 export const missLines = (id: string, text: string): string[] =>
   missedParts(text, PARTS_OF.get(id) ?? []).map(
     (p) =>
-      // biome-ignore lint/plugin: a debug log line that only a developer reads
       `prompt transform: the anchor \`${p.anchor}\` of the section \`${id}\` found nothing, so that part of the built-in text is unchanged`,
   );

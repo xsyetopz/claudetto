@@ -80,7 +80,6 @@ const step = async ($: Engine, agentId?: string) => {
 };
 
 // This test runs first: the module keeps the time of the last turn, and here no turn was seen in the process.
-// biome-ignore lint/plugin: a test name
 test("a compaction after a resume, with no turn seen in the process, is cold", async ($: Engine, on: On) => {
   const seen = engine(on);
   await compact($);
@@ -92,7 +91,6 @@ test("the TTL of a root session is 1 hour", () => {
   expect(CACHE_TTL_MS).toBe(HOUR);
 });
 
-// biome-ignore lint/plugin: a test name
 test("a compaction after the cache TTL writes the handoff with no model call", async ($: Engine, on: On) => {
   const seen = engine(on);
   await finish($);
@@ -115,7 +113,6 @@ test("a compaction on a warm cache forks the cached prefix", async ($: Engine, o
   expect(result.messages).toBeDefined();
 });
 
-// biome-ignore lint/plugin: a test name
 test("a model request of the main thread in a long turn keeps the cache warm", async ($: Engine, on: On) => {
   const seen = engine(on);
   await finish($);

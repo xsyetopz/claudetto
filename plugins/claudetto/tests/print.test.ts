@@ -55,7 +55,6 @@ test("a `tail` print names the last lines from the line count", async ($: Engine
   expect(deny).toContain("`limit` 20");
 });
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("a compound command is denied when each part only prints a file, and not when another part does work", async ($: Engine, on: On) => {
   project(on, { "/p/big.txt": "line\n".repeat(10) });
   expect("deny" in (await call($, "cat /p/big.txt && cat /p/big.txt"))).toBe(
@@ -64,7 +63,6 @@ test("a compound command is denied when each part only prints a file, and not wh
   expect("deny" in (await call($, "ls && cat /p/big.txt"))).toBe(false);
 });
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("a print of a file that is absent, a generated file, and a command that does not print stay allowed", async ($: Engine, on: On) => {
   project(on, { "/p/run.log": "line\n", "/p/a.txt": "line\n" });
   for (const command of [
@@ -76,7 +74,6 @@ test("a print of a file that is absent, a generated file, and a command that doe
     expect("deny" in (await call($, command)), command).toBe(false);
 });
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("a check that throws denies a command that prints a file, and a command that does not print runs", async ($: Engine, on: On) => {
   project(on, {}, true);
   const printed = await call($, "cat big.txt");

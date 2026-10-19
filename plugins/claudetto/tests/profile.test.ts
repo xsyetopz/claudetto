@@ -31,7 +31,6 @@ const engine = (on: On): string[] => {
 
 for (const trigger of ["auto", "manual"] as const)
   test(
-    // biome-ignore lint/plugin: test input data
     `with the compaction profile, a compaction with the trigger \`${trigger}\` writes no handoff file and gives the compaction to Claude Code unchanged`,
     PROFILE,
     async ($: Engine, on: On) => {
@@ -42,7 +41,6 @@ for (const trigger of ["auto", "manual"] as const)
     },
   );
 
-// biome-ignore lint/plugin: a test name
 test("with the default `handoff`, a compaction forks for the handoff", async ($: Engine, on: On) => {
   const seen = engine(on);
   await $.session.compact({ trigger: "auto", messages: MESSAGES });

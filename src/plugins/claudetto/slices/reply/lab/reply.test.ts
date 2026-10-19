@@ -26,7 +26,6 @@ const mount = ($: Engine, text: string, id = "m1") =>
     props: { text, isFirstOfReply: true },
   });
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("a press of `Reply` fills the prompt with the message as a `>` quote", async ($: Engine, on: On) => {
   const fills = stub(on);
   const ui = await mount($, "First line.\nSecond line.");

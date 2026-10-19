@@ -30,7 +30,6 @@ const describe = ($: Engine, on: On, command: string) => {
   });
 };
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("`prompt.attachment` leaves out an attachment of an `off` kind", async ($: Engine, on: On) => {
   expect((await attach($, on, "tool_hosts_notice")).text).toBeNull();
 });

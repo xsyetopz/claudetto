@@ -24,7 +24,6 @@ const PATTERNS = [
   String.raw`\b[A-Z]:/(?:Program Files/)?[\w.\-/]*\w`,
   String.raw`(?<![\w/.\-])(?:~|\.{1,2})?/[\w.\-*/@{}]*[\w*}]`,
   String.raw`(?<![\w/])\.[a-z][\w\-]*(?:[./][\w\-*]+)*`,
-  // biome-ignore lint/plugin: a regex is data
   String.raw`\b[\w\-]+(?:\.[\w\-]+)*\.(?:json|jsonl|md|mjs|js|ts|sh|ps1|yaml|yml|toml|txt|plist|exe)\b`,
   String.raw`(?<![\w\-])--?[a-z](?:[a-z\-]*[a-z])?\b`,
   String.raw`\b[A-Z][A-Z0-9]*_[A-Z0-9_]*[A-Z0-9]\b(?:=[\w.]+)?`,

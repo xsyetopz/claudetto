@@ -46,7 +46,6 @@ const engine = (on: On, world: World = {}): string[] => {
 const compact = ($: Engine) =>
   $.session.compact({ trigger: "auto", messages: MESSAGES });
 
-// biome-ignore lint/plugin: a test name
 test("on a terminal, a status line shows while the handoff is written, and a notice names the file", async ($: Engine, on: On) => {
   const drawn = engine(on);
   await compact($);
@@ -65,7 +64,6 @@ test("with no surface, as in `-p`, the handoff draws nothing", async ($: Engine,
   expect(drawn).toEqual([]);
 });
 
-// biome-ignore lint/plugin: a test name
 test("on a terminal, a failed handoff removes the status line and gives no notice", async ($: Engine, on: On) => {
   const drawn = engine(on, {
     fork: { isAnswered: true, text: "No handoff.", usage: NO_USAGE },

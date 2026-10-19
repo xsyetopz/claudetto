@@ -41,8 +41,6 @@ A change of the words of a heading changes its anchor, so update each link to it
   Put the sections in the order in which the reader needs them: the concept first, then the steps, then the details and the edge cases.
 - Use a numbered list for steps that the reader does in sequence, and a bulleted list for items with no sequence.
 - End each page with `## Related Pages`, and link the next page that the reader reads.
-- Keep each page at 300 lines or less.
-  Split a longer page into linked pages, and add each new page to `_Sidebar.md`.
 - Keep the facts, the numbers, and the hedges of the text when you rewrite it.
 - `just generate` writes some pages from a source in `src/wiki/`, such as `reference/Bounds.md`.
   Edit the source, keep each `{{...}}` marker, and run `just generate`.

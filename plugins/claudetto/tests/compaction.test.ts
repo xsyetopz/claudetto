@@ -8,7 +8,6 @@ import { type Engine, expect, mock, test } from "claude-code/testing";
 import { FIRST_MESSAGE } from "../slices/handoff/prompts.ts";
 
 const HANDOFF =
-  // biome-ignore lint/plugin: test input data
   "- Read `a.txt` lines 1 to 600: DONE, line 1 is `amber-falcon-42`.\n- Next: read lines 601 to 1200.";
 const BUILT_IN = "the built-in compaction";
 
@@ -100,7 +99,6 @@ const compact = (
     .then((result) => ({ result, seen }));
 };
 
-// biome-ignore lint/plugin: a test name
 test("an auto compaction gives one user message with the first user message and the handoff, and the tail", async ($: Engine, on: On) => {
   const { result, seen } = await compact($, on);
   const [path, text] = seen.writes[0] ?? [];
@@ -118,7 +116,6 @@ test("an auto compaction gives one user message with the first user message and 
   expect(out[0]?.text).toContain(text as string);
 });
 
-// biome-ignore lint/plugin: a test name
 test("a manual compaction after the end of a turn gives one user message with the first user message and the handoff, and no tail", async ($: Engine, on: On) => {
   const seen = engine(on);
   const result = await $.session.compact({
@@ -129,7 +126,6 @@ test("a manual compaction after the end of a turn gives one user message with th
   expect(seen.forks[0]).not.toContain("the session ran these tool calls");
 });
 
-// biome-ignore lint/plugin: a test name
 test("the fork prompt names each tool call of the tail and asks to mark it `RAN`", async ($: Engine, on: On) => {
   const { seen } = await compact($, on);
   expect(seen.forks).toHaveLength(1);
@@ -237,7 +233,6 @@ const bigTail = (tokens: number): SessionMessage[] => {
   ];
 };
 
-// biome-ignore lint/plugin: a test name
 test("a tail of 120,000 tokens below the trigger of an Opus session stays whole", async ($: Engine, on: On) => {
   const world = { model: "claude-opus-5-5" };
   const { result } = await compact($, on, world, bigTail(60_000));
@@ -269,7 +264,6 @@ const splitTail = (tokens: number): SessionMessage[] => {
   ];
 };
 
-// biome-ignore lint/plugin: a test name
 test("a reply in two assistant messages stays whole in the tail, so each tool result keeps its call", async ($: Engine, on: On) => {
   const { result, seen } = await compact($, on, {}, splitTail(10));
   expect(result.messages?.map((m) => m.handle)).toEqual([
@@ -283,7 +277,6 @@ test("a reply in two assistant messages stays whole in the tail, so each tool re
 });
 
 // D23: a shell in a subfolder does not move the handoff, which goes under the project root.
-// biome-ignore lint/plugin: a test name
 test("a compaction with the shell in a subfolder writes the handoff under the project root", async ($: Engine, on: On) => {
   mock.env(on, { CLAUDE_PROJECT_DIR: "/p" });
   on("session.cwd", () => ({ value: "/p/openspec/changes/c" }));

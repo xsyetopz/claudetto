@@ -53,7 +53,6 @@ const edit = ($: Engine, agentId?: string) =>
     ...(agentId ? { agentId } : {}),
   });
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("an `Edit` of a subagent in a worktree writes the base and the cumulative patch in the main checkout", async ($: Engine, on: On) => {
   const seen = stub(on, WORKTREE);
   await edit($, "agent1");

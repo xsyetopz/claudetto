@@ -23,7 +23,6 @@ export const slice = {
     subagentStatusLine: {
       type: "command",
       command:
-        // biome-ignore lint/plugin: a status line command, which Claude Code runs as written
         'bun --no-env-file "<plugin folder>/bin/claudetto-statusline" --subagent',
     },
   },

@@ -7,11 +7,8 @@ import { type Engine, expect, test } from "claude-code/testing";
 import { stubSession } from "./shared.ts";
 
 const FIRST = "Read a.txt in two parts.";
-const H1 =
-  // biome-ignore lint/plugin: test input data
-  "- Read `a.txt` lines 1 to 600: DONE, line 1 is `amber-falcon-42`.";
+const H1 = "- Read `a.txt` lines 1 to 600: DONE, line 1 is `amber-falcon-42`.";
 const H2 =
-  // biome-ignore lint/plugin: test input data
   "- Read `a.txt` lines 601 to 1200: DONE, line 601 is `green-otter-7`.";
 const TURN: SessionMessage[] = [
   { role: "assistant", text: "", toolUses: [], handle: "a1" },
@@ -45,7 +42,6 @@ const engine = (on: On, replies: string[], writes: string[][]) => {
   stubSession(on);
 };
 
-// biome-ignore lint/plugin: a test name
 test("a second compaction holds the first user message once, the new handoff, and not the old one", async ($: Engine, on: On) => {
   const writes: string[][] = [];
   engine(on, [H1, H2], writes);
@@ -71,10 +67,8 @@ test("a second compaction holds the first user message once, the new handoff, an
   );
 });
 
-// biome-ignore lint/plugin: a test name
 test("a first user message that quotes the handoff marker stays whole", async ($: Engine, on: On) => {
   engine(on, [H1], []);
-  // biome-ignore lint/plugin: test input data
   const quote = `quote:\n\nThis is the handoff of the earlier part of this session, from \`y\` ok`;
   const result = await $.session.compact({
     trigger: "auto",

@@ -59,7 +59,6 @@ const edit = (
   input: { old_string: string; new_string: string; replace_all?: boolean },
 ) => $.tool.call({ tool: "Edit", file_path: "notes.md", ...input });
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("a cross-sentence `old_string` is split when only its split form is in the file", async ($: Engine, on: On) => {
   const seen: Seen[] = [];
   engine(on, { file: SPLIT, seen });
@@ -71,7 +70,6 @@ test("a cross-sentence `old_string` is split when only its split form is in the 
   expect(seen[0]?.new_string).toBe("Beta is 2nd.\nGamma is 3rd.");
 });
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("an `old_string` that matches as written reaches the engine unchanged", async ($: Engine, on: On) => {
   const seen: Seen[] = [];
   engine(on, { file: SPLIT, seen });
@@ -98,7 +96,6 @@ test("a missing file passes on unchanged", async ($: Engine, on: On) => {
   expect(seen[0]?.old_string).toBe("One. Two.");
 });
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("an `old_string` that is in the file in neither form passes on unchanged", async ($: Engine, on: On) => {
   const seen: Seen[] = [];
   engine(on, { file: SPLIT, seen });
@@ -121,7 +118,6 @@ test("an `Edit` of another file type passes on unchanged", async ($: Engine, on:
 const FUSED_TEXT = "Read the file. Then edit it.";
 const SPLIT_TEXT = "Read the file.\nThen edit it.";
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("an `Edit` rewrites a fused `new_string` of whole lines and keeps `old_string`", async ($: Engine, on: On) => {
   const seen: Seen[] = [];
   engine(on, { file: "# T\n\nOld line.\n", seen });
@@ -191,7 +187,6 @@ test("a `Bash` commit heredoc is rewritten, with the subject kept", async ($: En
   );
 });
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("a `Bash` call that is not a quoted heredoc commit passes on unchanged", async ($: Engine, on: On) => {
   const seen: Seen[] = [];
   engine(on, { file: null, seen });
@@ -199,7 +194,6 @@ test("a `Bash` call that is not a quoted heredoc commit passes on unchanged", as
   expect(seen[0]?.command).toBe(`git commit -m "${FUSED_TEXT}"`);
 });
 
-// biome-ignore lint/plugin: a test name that a `slice.ts` file references
 test("a `Write` of a Markdown file gets Title Case in each heading and keeps a right heading", async ($: Engine, on: On) => {
   const seen: Seen[] = [];
   engine(on, { file: null, seen });
