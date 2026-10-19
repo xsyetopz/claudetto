@@ -246,7 +246,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 ## 11. Evals
 
-- [ ] 11.1 Add a `just validate` rule that fails on an eval case whose only check matches reply words, and on a wiki claim that cites an eval with fewer than 10 runs in an arm, and see it fail on the current cases.
+- [x] 11.1 Add a `just validate` rule that fails on an eval case whose only check matches reply words, and on a wiki claim that cites an eval with fewer than 10 runs in an arm, and see it fail on the current cases.
   Check: `! just validate`
 - [ ] 11.2 Change each eval case to check a file, an exit status, or a tool call, or remove it, and remove each wiki number that no eval proves.
   Each case fails on a recorded bad run, names pass^k or pass@1, counts its tool calls and tokens, and the implementer cases keep a held-out split (D25).
