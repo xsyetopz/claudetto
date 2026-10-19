@@ -1,6 +1,7 @@
 // The mod handlers of the `prompt` slice:
-// `prompt.section` answers the `lean_body` section of the short prompt with the tailored text,
-// each other built-in section that has a transform with its shorter text,
+// `prompt.compose` replaces the shared `lean_body` section of the short prompt with the tailored text,
+// because Claude Code 2.1.302 and later build that section raw and send only the session sections through `prompt.section`.
+// `prompt.section` answers each other built-in section that has a transform with its shorter text,
 // and the `context_management` section with the text of the compaction state.
 // `tool.describe` shortens the `Agent` description and defers `ListAgents`.
 // `agent.spawn` adds the rules for a subagent to the end of its task prompt.
@@ -34,7 +35,6 @@ export const keepOptions = (options: PluginOptions): void => {
 // `prompt.section` logs one debug line for each anchor that finds nothing.
 export const onSection: Handler<"prompt.section"> = async ($, e, next) => {
   if (e.text === null) return next(e);
-  if (e.name === LEAN_BODY_SECTION) return { text: LEAN_BODY };
   if (e.name === CONTEXT_SECTION) {
     const state = compactionState(
       kept.options,
@@ -45,6 +45,16 @@ export const onSection: Handler<"prompt.section"> = async ($, e, next) => {
   if (!TRANSFORMS.has(e.name)) return next(e);
   for (const line of missLines(e.name, e.text)) $.ui.log(line, { to: "debug" });
   return { text: transformText(e.name, e.text) };
+};
+
+// A section of another id keeps its place, its scope, and its text, so the order and the cache boundary stay the engine's.
+export const onCompose: Handler<"prompt.compose"> = async (_$, e, next) => {
+  const { sections } = await next(e);
+  return {
+    sections: sections.map((s) =>
+      s.id === LEAN_BODY_SECTION ? { ...s, text: LEAN_BODY } : s,
+    ),
+  };
 };
 
 // A subagent gets its system prompt from its agent body, so the rules go to the end of its task prompt.

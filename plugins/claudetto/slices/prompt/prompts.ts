@@ -26,6 +26,9 @@ Do not raise a bound, weaken or skip a test, or edit a check, a config, or a hoo
 Do not run the stopped action another way.
 The one exception is the install of a missing tool, which goes through the permission dialog.`;
 
+/** From `src/plugins/claudetto/slices/prompt/prompts/cleanup-line.md`. */
+export const CLEANUP_LINE = `Remove each file and folder that you made outside the project, such as a scratch folder in the temp folder, before you end the task, unless the user asked to keep it, and name what stays in the report.`;
+
 /** From `src/plugins/claudetto/slices/prompt/prompts/communication-assume-users-can-see.md`. */
 export const COMMUNICATION_ASSUME_USERS_CAN_SEE = `Users see your text output, not most tool calls. Before the first tool call, say in one sentence what you will do. Give a short update when you find something, change direction, or meet a blocker.`;
 

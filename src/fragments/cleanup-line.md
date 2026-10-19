@@ -1,0 +1,1 @@
+Remove each file and folder that you made outside the project, such as a scratch folder in the temp folder, before you end the task, unless the user asked to keep it, and name what stays in the report.

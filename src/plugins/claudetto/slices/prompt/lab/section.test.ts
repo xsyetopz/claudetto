@@ -105,12 +105,59 @@ test("when each anchor of a transform finds its part, no debug log line is writt
   expect(logs).toEqual([]);
 });
 
-test("the `lean_body` section gets the tailored text", async ($: Engine, on: On) => {
-  on("prompt.section", () => ({ text: "engine text" }));
-  const out = await $.prompt.section({ name: "lean_body", text: "# Harness" });
-  expect(out.text).toContain("<doing_tasks>");
-  expect(out.text).toContain("# Harness\n - Text outside a tool call");
-  expect(out.text).not.toContain("engine text");
+/** The sections of the short prompt as the bundle builds them: `lean_body` is shared and raw, the rest are session sections. */
+const ENGINE_SECTIONS = [
+  {
+    id: "lean_body",
+    text: "# Harness\n - Text outside a tool call",
+    scope: "shared",
+  },
+  { id: "action_caution", text: "Be careful.", scope: "session" },
+] as const;
+
+/** The facts of one render of the short prompt. */
+const COMPOSE_INPUT = {
+  model: "claude-opus-5-5",
+  promptModel: "claude-opus-5-5",
+  surfaces: ["terminal"],
+  tools: ["Bash", "Read"],
+  outputStyle: null,
+  traits: ["lean"],
+} as const;
+
+/** The final prompt: shared sections reach only `prompt.compose`, and session sections go to `prompt.section` after it. */
+const finalPrompt = async ($: Engine, on: On) => {
+  on("prompt.compose", () => ({ sections: ENGINE_SECTIONS }));
+  const { sections } = await $.prompt.compose(COMPOSE_INPUT);
+  const out: string[] = [];
+  for (const s of sections) {
+    if (s.scope === "shared") out.push(s.text);
+    else
+      out.push(
+        (await $.prompt.section({ name: s.id, text: s.text })).text ?? s.text,
+      );
+  }
+  return out.join("\n\n");
+};
+
+test("`prompt.compose` replaces the shared `lean_body` section with the tailored text", async ($: Engine, on: On) => {
+  const prompt = await finalPrompt($, on);
+  expect(prompt).toContain("<doing_tasks>");
+  expect(prompt).toContain("<actions>");
+  expect(prompt).toContain(
+    "Remove each file and folder that you made outside the project",
+  );
+  expect(prompt).not.toContain("# Harness\n - Text outside a tool call\n\n");
+});
+
+test("`prompt.compose` keeps each section of another id", async ($: Engine, on: On) => {
+  on("prompt.compose", () => ({ sections: ENGINE_SECTIONS }));
+  const { sections } = await $.prompt.compose(COMPOSE_INPUT);
+  expect(sections.map((s) => [s.id, s.scope])).toEqual([
+    ["lean_body", "shared"],
+    ["action_caution", "session"],
+  ]);
+  expect(sections[1]?.text).toBe("Be careful.");
 });
 
 /** The task prompt that the engine gets for a spawn with `prompt`. */
@@ -142,4 +189,11 @@ test("a spawn ends its task prompt with the rules for a subagent one time", asyn
 test("a spawn with a block in its task prompt keeps it", async ($: Engine, on: On) => {
   const block = "Read it.\n\n<claudetto_notes>\nx\n</claudetto_notes>";
   expect(await spawned($, on, block)).toBe(block);
+});
+
+test("a spawn gives a subagent the rule to remove what it made outside the project", async ($: Engine, on: On) => {
+  const out = await spawned($, on, "Read the file.");
+  expect(out).toContain(
+    "Remove each file and folder that you made outside the project",
+  );
 });

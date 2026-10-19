@@ -10,6 +10,7 @@ import {
   keepOptions,
   onAttachment,
   onCommandDescribe,
+  onCompose,
   onSection,
   onSpawn,
   onToolDescribe,
@@ -21,7 +22,7 @@ import { OFF_ATTACHMENTS, OFF_COMMANDS } from "./domain/off.ts";
 export const slice = {
   name: "prompt",
   ladder:
-    "mod: the `prompt.section`, `agent.spawn`, `tool.describe`, `prompt.attachment`, and `command.describe` hooks",
+    "mod: the `prompt.compose`, `prompt.section`, `agent.spawn`, `tool.describe`, `prompt.attachment`, and `command.describe` hooks",
   controls: [
     {
       name: "lean_body text",
@@ -36,6 +37,19 @@ export const slice = {
   ],
   mod: [
     {
+      event: "prompt.compose",
+      evals: {
+        requests: 0,
+        tokens: 0,
+        blocks: false,
+        allow:
+          "plugins/claudetto/tests/section.test.ts > `prompt.compose` keeps each section of another id",
+        text: "plugins/claudetto/tests/section.test.ts > `prompt.compose` replaces the shared `lean_body` section with the tailored text",
+      },
+      phase: "rewrite",
+      run: onCompose,
+    },
+    {
       event: "prompt.section",
       evals: {
         requests: 0,
@@ -43,7 +57,7 @@ export const slice = {
         blocks: false,
         allow:
           "plugins/claudetto/tests/section.test.ts > another section keeps the text of the engine",
-        text: "plugins/claudetto/tests/section.test.ts > the `lean_body` section gets the tailored text",
+        text: "plugins/claudetto/tests/section.test.ts > a section with a transform gets its shorter text",
       },
       phase: "answer",
       run: onSection,

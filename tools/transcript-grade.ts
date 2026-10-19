@@ -1,6 +1,6 @@
 // Applies the graders of an eval case to a recorded transcript.
 // A transcript is `{ events, files }`: the stream-json events of a run, and the files that the run left.
-// It supports the grader types `regex` and `tool_used`, which the agent evals use.
+// It supports the grader types `regex`, `tool_used`, and `tool_order`, which the agent evals use.
 // It skips the grader type `llm`, because a judge needs a model.
 // `graderFaults` lists each grader type or field that it does not model, and `failedGraders` throws on them, so a grader never passes or fails by a guess.
 // The default `min` of a `tool_used` grader is 1, which is an assumption of this helper.
@@ -17,7 +17,12 @@ export type Grader = {
   input_match?: string;
   min?: number;
   max?: number;
+  before?: ToolMatch;
+  after?: ToolMatch;
 };
+
+/** A tool name, or a tool name with a regex for the JSON of its input, as a `tool_order` grader holds it. */
+type ToolMatch = string | { tool: string; input_match?: string };
 
 /** A recorded run. A bad run also names the grader that it must fail, in `fails`. */
 export type Transcript = {
@@ -35,6 +40,7 @@ export type Transcript = {
 const FIELDS: Record<string, string[]> = {
   regex: ["target", "pattern", "flags"],
   tool_used: ["tool", "input_match", "min", "max"],
+  tool_order: ["before", "after"],
   llm: ["criteria", "focus"],
 };
 
@@ -62,6 +68,8 @@ export const graderFaults = (graders: Grader[]): string[] => {
       out.push(`grader ${g.name}: a regex grader needs a pattern`);
     if (g.type === "tool_used" && typeof g.tool !== "string")
       out.push(`grader ${g.name}: a tool_used grader needs a tool`);
+    if (g.type === "tool_order" && (!g.before || !g.after))
+      out.push(`grader ${g.name}: a tool_order grader needs before and after`);
   }
   return out;
 };
@@ -81,6 +89,20 @@ export const failedGraders = (graders: Grader[], run: Transcript): string[] => {
         const text =
           g.target === undefined ? last : (run.files[g.target.path] ?? "");
         return !new RegExp(g.pattern as string, g.flags ?? "").test(text);
+      }
+      if (g.type === "tool_order") {
+        const at = (m: ToolMatch) => {
+          const { tool, input_match } =
+            typeof m === "string" ? { tool: m, input_match: undefined } : m;
+          const re = input_match ? new RegExp(input_match) : undefined;
+          return calls.findIndex(
+            (c) => c.name === tool && (!re || re.test(JSON.stringify(c.input))),
+          );
+        };
+        // Both must be called, and the first `before` call comes strictly before the first `after` call, as in the live grader.
+        const first = at(g.before as ToolMatch);
+        const second = at(g.after as ToolMatch);
+        return first < 0 || second < 0 || first >= second;
       }
       const match = g.input_match ? new RegExp(g.input_match) : undefined;
       const n = calls.filter(

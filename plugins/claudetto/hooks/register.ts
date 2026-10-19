@@ -7,9 +7,9 @@ import { onPlanCall as h9 } from "../slices/ground/adapters/mod.ts";
 import { onBashCall as h10, onBashFail as h11 } from "../slices/guard/adapters/mod.ts";
 import { keepOptions as h12, onCompact as h13, onTurnComplete as h14, onTurnStep as h15 } from "../slices/handoff/adapters/mod.ts";
 import { onFileWrite as h16 } from "../slices/patch/adapters/mod.ts";
-import { keepOptions as h17, onAttachment as h18, onCommandDescribe as h19, onSection as h20, onSpawn as h21, onToolDescribe as h22 } from "../slices/prompt/adapters/mod.ts";
-import { onRender as h23 } from "../slices/reply/adapters/mod.ts";
-import { onToolCall as h24 } from "../slices/sembr/adapters/mod.ts";
+import { keepOptions as h17, onAttachment as h18, onCommandDescribe as h19, onCompose as h20, onSection as h21, onSpawn as h22, onToolDescribe as h23 } from "../slices/prompt/adapters/mod.ts";
+import { onRender as h24 } from "../slices/reply/adapters/mod.ts";
+import { onToolCall as h25 } from "../slices/sembr/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h0(options);
@@ -17,7 +17,7 @@ export const register = (on: On, options: PluginOptions): void => {
   h12(options);
   h17(options);
   // eval: agent.spawn prompt
-  on("agent.spawn", h21);
+  on("agent.spawn", h22);
   // eval: command.describe goal
   on("command.describe", { command: "goal" }, h6);
   // eval: command.describe prompt
@@ -26,8 +26,10 @@ export const register = (on: On, options: PluginOptions): void => {
   on("command.run", { command: "goal" }, h5);
   // eval: prompt.attachment prompt
   on("prompt.attachment", { type: ["goal_status", "tool_hosts_notice"] }, h18);
+  // eval: prompt.compose prompt
+  on("prompt.compose", h20);
   // eval: prompt.section prompt
-  on("prompt.section", h20);
+  on("prompt.section", h21);
   // eval: session.compact handoff
   on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h13);
   // eval: session.start advise
@@ -37,7 +39,7 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.call decide
   on("tool.call", { tool: ["AskUserQuestion"] }, h4);
   // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h24);
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h25);
   // eval: tool.call ground
   on("tool.call", { tool: ["Write", "Edit"] }, h9);
   // eval: tool.call guard
@@ -47,7 +49,7 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.call goal
   on("tool.call", { tool: ["ProposeGoal"] }, h7);
   // eval: tool.describe prompt
-  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h22);
+  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h23);
   // eval: turn.complete goal
   on("turn.complete", h8);
   // eval: turn.complete handoff
@@ -55,5 +57,5 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: turn.step handoff
   on("turn.step", h15);
   // eval: ui.render reply
-  on("ui.render", { component: "AssistantMessage" }, h23);
+  on("ui.render", { component: "AssistantMessage" }, h24);
 };

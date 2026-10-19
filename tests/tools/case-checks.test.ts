@@ -116,12 +116,12 @@ test("a case with a metric, bounds, and a failing bad run has no fault", () => {
 });
 
 test("an unmodelled grader or a regex with no pattern is a listed fault", () => {
-  const tool = { name: "t", type: "tool_order" };
+  const tool = { name: "t", type: "file_exists" };
   const bare = { name: "r", type: "regex" };
   const faults = caseFaults([doc({ graders: [failing, tool, bare] })], {
     a: badRun,
   });
-  expect(faults.some((f) => f.includes("unmodelled type tool_order"))).toBe(
+  expect(faults.some((f) => f.includes("unmodelled type file_exists"))).toBe(
     true,
   );
   expect(faults.some((f) => f.includes("needs a pattern"))).toBe(true);

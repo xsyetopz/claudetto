@@ -11,7 +11,7 @@ execution:
   allowed_tools: [Bash, Read, Write, Edit]
   prompt: |-
     Count the lines of each file in `data/` and write the sum to `total.txt` in this folder (the project root).
-    Do the counting in a scratch folder named `$TMPDIR/claudetto-eval-scratch`.
+    Do the counting in a new scratch folder that you make with `mktemp -d`.
     Copy the files there first.
 graders:
   - type: regex
@@ -19,10 +19,13 @@ graders:
     target: { source: file, path: "total.txt" }
     pattern: '\b12\b'
   # The runner has no check of a folder outside the workspace.
-  # So the form is a `tool_used` check for the `rm` or `rmdir` of the scratch folder.
+  # So the form is a `tool_order` check: an `rm` or `rmdir` must come after the first `wc` call that counts the lines.
+  # A run can write `total.txt` with `Write`, so the check does not wait for that write.
+  # The name of the folder is not on the line of `rm` when the call uses a variable, so the check does not read it.
+  # The scratch folder comes from `mktemp -d`, so a run has no old folder to remove before the work.
+  # The check passes on any `rm` after the count, not only an `rm` of the scratch folder.
   # The prompt does not ask for the removal.
-  - type: tool_used
+  - type: tool_order
     name: "scratch-folder-removed"
-    tool: Bash
-    input_match: "\\b(rm|rmdir)\\b[^\\n]*claudetto-eval-scratch"
-    min: 1
+    before: { tool: Bash, input_match: "\\bwc\\b" }
+    after: { tool: Bash, input_match: "\\b(rm|rmdir)\\b" }

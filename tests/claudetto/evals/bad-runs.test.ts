@@ -35,3 +35,30 @@ for (const file of new Bun.Glob("*.json").scanSync(DIR)) {
     expect(runTokens(run)).toBeGreaterThan(0);
   });
 }
+
+test("a `tool_order` grader fails when the removal comes before the count, in the same call, or never", () => {
+  const call = (command: string) => ({
+    type: "assistant",
+    message: {
+      content: [{ type: "tool_use", name: "Bash", input: { command } }],
+    },
+  });
+  const grader = [
+    {
+      name: "g",
+      type: "tool_order",
+      before: { tool: "Bash", input_match: "\\bwc\\b" },
+      after: { tool: "Bash", input_match: "\\b(rm|rmdir)\\b" },
+    },
+  ];
+  const run = (...cmds: string[]) => ({
+    events: cmds.map(call),
+    files: {},
+  });
+  const write = "wc -l data/* > total.txt";
+  const rm = 'rm -rf "$SCRATCH"';
+  expect(failedGraders(grader, run(write, rm))).toEqual([]);
+  expect(failedGraders(grader, run(rm, write))).toEqual(["g"]);
+  expect(failedGraders(grader, run(write))).toEqual(["g"]);
+  expect(failedGraders(grader, run(`${write} && ${rm}`))).toEqual(["g"]);
+});
