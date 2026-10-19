@@ -270,6 +270,11 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 
 - [ ] 11.7 Add an eval case that gives a task that writes to the temp folder, and checks that each folder that the task made is gone at the end, and run it at 10 runs (D44).
   Check: `just validate`
+- [ ] 11.8 Make `LEAN_BODY` of the `prompt` slice reach the model with a `prompt.compose` hook, add the D44 line to the subagent lines of `withBlock`, and make the `temp-folder-removed` grader need the removal after the work.
+  On 2026-10-19 the `prompt_snapshot` of the eval runs showed the stock `lean_body`, because Claude Code 2.1.303 builds the shared sections with no `prompt.section` call.
+  The lab passed only because its stub engine sends each section to `prompt.section`.
+  Then rerun each prompt-slice eval case: this is a paid run, so ask the user first, with the expected cost and the weekly share.
+  Check: `just lab && just test tests/claudetto/prompt`
 
 ## 12. Release Notes and Gate
 
