@@ -48,7 +48,7 @@ A page over about 150 lines splits into sub-pages, such as `Claude-Code-Settings
 
 ## W4. Sources of Part 2
 
-- `external/cc-2.1.303/`: `docs/`, `strings.txt`, `types-2.1.303.d.ts`, `models-2.1.303.tsv`, `automode-defaults.json`.
+- `external/cc-2.1.303/`: `docs-live/` (all 228 docs pages, which match `2.1.303`, the newest release on 2026-10-19), `docs/`, `strings.txt`, `types-2.1.303.d.ts`, `models-2.1.303.tsv`, `automode-defaults.json`.
 - The binary `~/.local/share/claude/versions/2.1.303` (read only, never patch).
 - `external/cc-kg/2.1.300/` and `external/cc-diff-301-302/`, `external/cc-diff-302-303/` for what changed.
 - The old pages `wiki/claude-code/`, `wiki/reference/Builtins*.md`, `wiki/reference/Settings-Schema.md` as a start, checked again against `2.1.303`.
