@@ -232,3 +232,39 @@ test("a case of the `prompt` slice needs exactly one `set:` tag, and `blind` and
   expect(faults([...GOOD_TAGS, "set:blind"], { a: ref })).toEqual([]);
   expect(faults([...GOOD_TAGS, "set:control"], { a: ref })).toEqual([]);
 });
+
+test("a `Bash` `input_match` must start at the `command` key", () => {
+  const graders = (input_match: string) => [
+    failing,
+    { type: "tool_used", name: "b", tool: "Bash", input_match },
+  ];
+  const faults = (g: unknown[]) =>
+    caseFaults([doc({ graders: g })], { a: badRun }).filter((f) =>
+      f.includes("must start with"),
+    );
+  expect(faults(graders("\\brm\\b"))).toHaveLength(1);
+  expect(faults(graders('"description":"rm'))).toHaveLength(1);
+  expect(faults(graders('"command":"(?:[^"\\\\]|\\\\.)*\\brm\\b'))).toEqual([]);
+  expect(faults(graders('^\\{"command":"rm'))).toEqual([]);
+  // A `Bash` grader with no pattern, and a pattern on another tool, are not flagged.
+  expect(
+    faults([failing, { type: "tool_used", name: "b", tool: "Bash" }]),
+  ).toEqual([]);
+  expect(
+    faults([
+      failing,
+      { type: "tool_used", name: "e", tool: "Edit", input_match: "file_path" },
+    ]),
+  ).toEqual([]);
+  const order = (before: unknown) => [
+    failing,
+    { type: "tool_order", name: "o", before, after: "Edit" },
+  ];
+  expect(faults(order({ tool: "Bash", input_match: "\\bwc\\b" }))).toHaveLength(
+    1,
+  );
+  expect(faults(order({ tool: "Bash", input_match: '"command":"wc' }))).toEqual(
+    [],
+  );
+  expect(faults(order("Bash"))).toEqual([]);
+});

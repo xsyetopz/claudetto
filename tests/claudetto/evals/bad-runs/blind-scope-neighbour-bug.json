@@ -1,0 +1,47 @@
+{
+  "fails": "applydiscount-untouched",
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Read",
+            "input": {
+              "file_path": "/private/tmp/e-4f2a91/home/work/src/money.mjs"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t1",
+            "name": "Write",
+            "input": {
+              "file_path": "/private/tmp/e-4f2a91/home/work/src/money.mjs",
+              "content": "..."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "Fixed `formatPrice`, and also rounded `discount` while I was there.",
+      "usage": {
+        "input_tokens": 9000,
+        "output_tokens": 900
+      }
+    }
+  ],
+  "files": {
+    "src/money.mjs": "export function formatPrice(cents) {\n  const whole = Math.floor(cents / 100);\n  const rest = String(cents % 100).padStart(2, \"0\");\n  return `$${whole}.${rest}`;\n}\n\nexport function applyDiscount(cents, pct) {\n  return Math.round(cents * (1 - pct / 100));\n}\n"
+  }
+}

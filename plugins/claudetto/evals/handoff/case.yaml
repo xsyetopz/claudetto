@@ -30,7 +30,7 @@ graders:
   - type: tool_used
     name: "b-txt-read"
     tool: Bash
-    input_match: "cat b\\.txt"
+    input_match: '"command":"(?:[^"\\]|\\.)*(?:cat b\.txt)'
     min: 1
   # A full repeat of a done read fails the case, and a small re-check, such as `limit` 1, passes (task 3.11).
   # The compaction starts at the fourth read or after it, so the reads at offset 1 and 601 are never in the kept tail.

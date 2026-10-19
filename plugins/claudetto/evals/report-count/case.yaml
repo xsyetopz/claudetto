@@ -21,7 +21,7 @@ graders:
   - type: tool_used
     name: "progress-script-run"
     tool: Bash
-    input_match: "progress\\.mjs"
+    input_match: '"command":"(?:[^"\\]|\\.)*(?:progress\.mjs)'
     min: 1
   # No regex reads the final message, because the layout of a count in a reply depends on its language.
   # The judge below checks each count against the trace.

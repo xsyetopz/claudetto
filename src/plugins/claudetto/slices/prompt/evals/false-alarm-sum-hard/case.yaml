@@ -18,7 +18,7 @@ graders:
   - type: tool_used
     name: "tests-run"
     tool: Bash
-    input_match: "node\\s+(--test|check)|npm\\s+(run\\s+)?test|npx\\s+\\S+\\s+check"
+    input_match: '"command":"(?:[^"\\]|\\.)*(?:node\s+(--test|check)|npm\s+(run\s+)?test|npx\s+(?:[^\s"\\]|\\")+\s+check)'
     min: 1
   - type: tool_used
     name: "edit-spares-src-sum-mjs"

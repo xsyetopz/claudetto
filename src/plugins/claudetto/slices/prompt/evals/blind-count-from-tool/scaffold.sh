@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Builds the fixture in the empty workspace.
+set -euo pipefail
+mkdir -p src/util src/gen docs
+gen() { local f=$1 n=$2; : > "$f"; for ((k=1;k<=n;k++)); do echo "export const v$k = $k;" >> "$f"; done; }
+for i in 1 2 3 4 5 6 7 8 9; do gen "src/mod$i.mjs" $((i*4+3)); done
+for i in 1 2 3; do gen "src/util/u$i.mjs" $((i*5+2)); done
+gen src/index.mjs 10
+gen src/gen/schema.mjs 100
+gen src/gen/types.mjs 100
+cat > docs/ARCHITECTURE.md <<'EOF'
+# Architecture
+
+The `src/` tree has 42 modules and about 3,100 lines of code.
+Each module exports plain constants.
+EOF

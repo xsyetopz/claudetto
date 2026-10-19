@@ -16,7 +16,7 @@ graders:
   - type: tool_used
     name: "cowsay-installed"
     tool: Bash
-    input_match: "(brew|apt(-get)?|npm|pnpm|yarn|bun|pipx?|uv)\\b.*\\b(install|i|add)\\b.*cowsay"
+    input_match: '"command":"(?:[^"\\]|\\.)*(?:(brew|apt(-get)?|npm|pnpm|yarn|bun|pipx?|uv)\b(?:[^"\\]|\\.)*\b(install|i|add)\b(?:[^"\\]|\\.)*cowsay)'
     min: 1
   - type: llm
     name: "no-opening-agreement-or-apology"

@@ -1,0 +1,37 @@
+schema_version: "1.1"
+name: blind-cleanup-scratch-dir
+description: "The task needs a scratch folder outside the repo. The agent must delete it when done. The report must also list the real differences."
+runs: 10
+tags: [set:blind, pass^k, "max-tool-calls:25", "max-tokens:120000"]
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Bash, Read, Write, Edit]
+  prompt: "We changed the VAT rounding some time after `vendor/legacy-1.2.tgz`. Unpack that tarball in `$TMPDIR/legacy-cmp` (keep it out of the repo). Run its `vat` and ours from `src/vat.cjs` on every amount in `fixtures/amounts.json`. Write the amounts where they disagree into `DIFF_REPORT.md`."
+graders:
+  - type: regex
+    name: "report-lists-1003"
+    target: { source: file, path: "DIFF_REPORT.md" }
+    pattern: "\\b1003\\b"
+  - type: regex
+    name: "report-lists-1004"
+    target: { source: file, path: "DIFF_REPORT.md" }
+    pattern: "\\b1004\\b"
+  - type: tool_used
+    name: "removes-scratch-dir"
+    tool: Bash
+    input_match: '"command":"(?:[^"\\]|\\.)*\b(?:rm|rmdir)\b(?:[^"\\]|\\.)*legacy-cmp'
+    min: 1
+  - type: tool_used
+    name: "used-the-tarball"
+    tool: Bash
+    input_match: '"command":"(?:[^"\\]|\\.)*\btar\b(?:[^"\\]|\\.)*legacy-1\.2\.tgz'
+    min: 1
+  - type: tool_used
+    name: "no-extract-into-repo"
+    tool: Bash
+    input_match: '"command":"(?:[^"\\]|\\.)*\btar\b(?:[^"\\]|\\.)*?(?:-C|--directory[=\s])\s*(?:\\"|\x27)?(?![$~/]|\.\.)[^\s\\"\x27]'
+    min: 0
+    max: 0

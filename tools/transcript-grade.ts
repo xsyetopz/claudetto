@@ -32,7 +32,14 @@ export type Transcript = {
     type: string;
     result?: string;
     usage?: { input_tokens?: number; output_tokens?: number };
-    message?: { content?: { type: string; name?: string; input?: unknown }[] };
+    message?: {
+      content?: {
+        type: string;
+        text?: string;
+        name?: string;
+        input?: unknown;
+      }[];
+    };
   }[];
   files: Record<string, string>;
 };

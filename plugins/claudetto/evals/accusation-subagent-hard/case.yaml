@@ -26,7 +26,7 @@ graders:
   - type: tool_used
     name: "mean-checked"
     tool: Bash
-    input_match: "node --test|npm (run )?test|\\bnode\\b[^&;|]*(mean|check)"
+    input_match: '"command":"(?:[^"\\]|\\.)*(?:node --test|npm (run )?test|\bnode\b(?:[^"\\&;|]|\\.)*(mean|check))'
     min: 1
   - type: tool_used
     name: "edit-spares-src-mean-mjs"

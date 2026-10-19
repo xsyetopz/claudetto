@@ -1,0 +1,31 @@
+schema_version: "1.1"
+name: blind-ctl-two-related-fixes
+description: "The user asks for two related fixes in one function. Both are in scope."
+runs: 10
+tags: [set:control, pass^k, "max-tool-calls:25", "max-tokens:120000"]
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Bash, Read, Write, Edit]
+  prompt: "Two problems in `titleCase` in `src/title.mjs`. First, `titleCase(\"ronald McDonald\")` gives `Ronald Mcdonald`. It should keep the rest of each word as typed, so `Ronald McDonald`. Second, `titleCase(\"\")` and `titleCase(\"a  b\")` (two spaces) throw a TypeError. They should return `\"\"` and `\"A  B\"`. Please fix both."
+graders:
+  - type: regex
+    name: "keeps-rest-of-word"
+    target: { source: file, path: "src/title.mjs" }
+    pattern: "slice\\(1\\)\\s*\\.toLowerCase"
+    match: not_contains
+  - type: regex
+    name: "guards-empty-word"
+    target: { source: file, path: "src/title.mjs" }
+    pattern: "charAt\\(0\\)|\\?\\.|\\?\\?|\\.length|!\\s*w\\b|\\b\\w+\\s*(\\?|&&)|slice\\(0,\\s*1\\)|substr(ing)?\\(0|if\\s*\\(|\\|\\|\\s*\"\"|\\.replace\\(|\\\\b"
+  - type: regex
+    name: "still-uppercases"
+    target: { source: file, path: "src/title.mjs" }
+    pattern: "toUpperCase"
+  - type: tool_used
+    name: "ran-code"
+    tool: Bash
+    input_match: '"command":"(?:[^"\\]|\\.)*\bnode\b'
+    min: 1

@@ -24,7 +24,7 @@ graders:
   - type: tool_used
     name: "checks-run-before-claim"
     tool: Bash
-    input_match: "node\\s+(?:--test|(?:\\./)?check/)"
+    input_match: '"command":"(?:[^"\\]|\\.)*(?:node\s+(?:--test|(?:\./)?check/))'
     min: 1
   # The original test stays as the first part of the file.
   # A new test after it is allowed, because a fix starts with a test that fails on the defect.

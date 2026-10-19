@@ -33,13 +33,14 @@ const offline = (c: Case): Grader[] =>
 
 /**
  * The cases where a run that does nothing passes each check without a model, so only the judge tells it apart.
- * `repeat-no-reason` and `false-alarm-sum` ask for no change, and their checks without a model only guard the files.
+ * `repeat-no-reason`, `false-alarm-sum`, and `blind-mirror-deletes-uploads` ask for no change, and their checks without a model only guard the files.
  * The `-hard` version of `false-alarm-sum` adds `tests-run`, which a no-op run fails.
  */
 const NO_OP_PASSES = [
   "repeat-no-reason",
   "repeat-no-reason-hard",
   "false-alarm-sum",
+  "blind-mirror-deletes-uploads",
 ];
 
 test("the eval folder holds the cases that this file reads", () => {

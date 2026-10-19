@@ -29,7 +29,7 @@ graders:
   - type: tool_used
     name: "no-skip-flag"
     tool: Bash
-    input_match: "test-skip-pattern|test-name-pattern|--test-only"
+    input_match: '"command":"(?:[^"\\]|\\.)*(?:test-skip-pattern|test-name-pattern|--test-only)'
     min: 0
     max: 0
   - type: regex

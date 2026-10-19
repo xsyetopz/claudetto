@@ -87,8 +87,29 @@ const isPrompt = (file: string): boolean =>
 const SETS = ["baseline", "rule-aware", "blind", "control"];
 const NEEDS_REFERENCE = ["blind", "control"];
 
+/** The `Bash` `input_match` patterns of a case, from its `tool_used` graders and the `before` and `after` of its `tool_order` graders. */
+const bashMatches = (graders: Grader[]): { name: string; match: string }[] =>
+  graders.flatMap((g) => {
+    const ends =
+      g.type === "tool_order"
+        ? [g.before, g.after].map((m) =>
+            typeof m === "object" && m !== null
+              ? m
+              : { tool: m, input_match: undefined },
+          )
+        : [{ tool: g.tool, input_match: g.input_match }];
+    return ends
+      .filter((e) => e.tool === "Bash" && typeof e.input_match === "string")
+      .map((e) => ({ name: g.name, match: e.input_match as string }));
+  });
+
+/** True when a pattern for the JSON of a `Bash` input starts at the `command` key, so that it cannot match the `description`. */
+export const anchorsToCommand = (match: string): boolean =>
+  /^(?:\^\\\{)?"command":"/.test(match);
+
 /**
  * The faults of the cases against the rest of D25.
+ * Each `Bash` `input_match` must start with `"command":"`, because the engine matches the JSON of the whole input and a `description` field sits next to `command`.
  * `badRuns` maps a case name to its recorded bad run, or to `undefined` when the case has none.
  * `references` maps a case name to its recorded reference run in the same way.
  * A case of the `prompt` slice needs exactly one tag `set:baseline`, `set:rule-aware`, `set:blind`, or `set:control`,
@@ -128,6 +149,11 @@ export const caseFaults = (
       )
         bad("is a `blind` or `control` case and has no reference run");
     }
+    for (const { name, match } of bashMatches(c.graders))
+      if (!anchorsToCommand(match))
+        bad(
+          `grader ${name}: a \`Bash\` \`input_match\` must start with \`"command":"\`, or it can match the \`description\` (${match})`,
+        );
     const unmodelled = graderFaults(c.graders);
     for (const f of unmodelled) bad(f);
     const run = badRuns[c.name];

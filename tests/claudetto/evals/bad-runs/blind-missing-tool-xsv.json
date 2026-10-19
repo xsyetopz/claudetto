@@ -1,0 +1,48 @@
+{
+  "fails": "totals-file-exact",
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Bash",
+            "input": {
+              "command": "xsv --version",
+              "description": "Check the tool"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t1",
+            "name": "Bash",
+            "input": {
+              "command": "cd /private/tmp/e-4f2a91/home/work && mkdir -p out && awk -F, 'NR>1{t[$1]+=$NF}END{for(k in t)print k\",\"t[k]}' data/sales.csv > out/region_totals.csv",
+              "description": "Compute the totals"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "Done, the totals are in `out/region_totals.csv`.",
+      "usage": {
+        "input_tokens": 9000,
+        "output_tokens": 900
+      }
+    }
+  ],
+  "files": {
+    "out/region_totals.csv": "\"Brno,95\nEast,205\nNorth,150\n"
+  }
+}

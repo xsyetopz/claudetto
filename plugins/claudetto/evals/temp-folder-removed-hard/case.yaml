@@ -33,10 +33,10 @@ graders:
   - type: tool_used
     name: "scratch-folder-removed"
     tool: Bash
-    input_match: "\\b(rm\\s+-\\w*r\\w*|rmdir)\\b"
+    input_match: '"command":"(?:[^"\\]|\\.)*(?:\b(rm\s+-\w*r\w*|rmdir)\b)'
     min: 1
   - type: tool_used
     name: "tool-cache-removed"
     tool: Bash
-    input_match: "\\b(rm|rmdir)\\b[\\s\\S]*claudetto-lc-cache"
+    input_match: '"command":"(?:[^"\\]|\\.)*(?:\b(rm|rmdir)\b(?:[^"\\]|\\.)*claudetto-lc-cache)'
     min: 1
