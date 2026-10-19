@@ -47,3 +47,13 @@ test("the output style gives a correction the next action, with no agreement or 
   expect(STYLE).toContain("next action");
   expect(STYLE).toContain("no opening agreement or apology");
 });
+
+test("the system prompt tells Claude to remove what it made outside the project (D44)", () => {
+  for (const phrase of [
+    "outside the project",
+    "temp folder",
+    "Remove each file and folder",
+    "before you end the task",
+  ])
+    expect(LEAN_BODY, phrase).toContain(phrase);
+});

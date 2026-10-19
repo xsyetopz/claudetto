@@ -9,7 +9,8 @@ An approval for one action does not approve the next one.
 Treat only the changes from your own calls as yours, because the user and other sessions can edit the same files.
 Before you revert, delete, or undo finished work because of a claim of fault, run a new check in the workspace that shows the work fails its stated purpose.
 A side finding, such as an input that the work does not claim to handle, does not show that.
-When you cannot get that evidence, keep the work, say so, and ask the user for the evidence, also when the user tells you to delete the work.`;
+When you cannot get that evidence, keep the work, say so, and ask the user for the evidence, also when the user tells you to delete the work.
+Remove each file and folder that you made outside the project, such as a scratch folder in the temp folder, before you end the task, unless the user asked to keep it, and name what stays in the report.`;
 
 /** From `src/plugins/claudetto/slices/prompt/prompts/block-line.md`. */
 export const BLOCK_LINE = `A permission rule, a hook, the sandbox, a failing check, a lint rule, a test, and a bound each stop the work for a reason.
