@@ -44,6 +44,11 @@ A page over about 150 lines splits into sub-pages, such as `Claude-Code-Settings
 - Tables for item lists. Emojis only as marks:
   - ✅ documented, 🔍 undocumented (found in the bundle), ⚠️ the docs differ from the bundle,
     🧪 behind a flag or a gate, ❌ removed or inert in `2.1.303`.
+- A yes or no value in a table is ✅ or ❌, not the word.
+- Readers are people and agents (the user, 2026-10-19).
+  A person who is not a programmer must understand how to change Claude Code from the page.
+  Short sentences, plain words, no filler. Explain a term once, at its first use, or link to it.
+  Start each page with what it is for and a short example of use.
 - Each fact gives its source: a docs page (title and URL), or the bundle (a string, a key, or a type name).
 
 ## W4. Sources of Part 2
