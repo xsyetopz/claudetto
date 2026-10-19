@@ -63,3 +63,22 @@ test("setup keeps the other keys of the user, such as `deny` and `theme`", async
   expect(out.theme).toBe("dark");
   expect(out.permissions.deny).toContain("Read(./secret)");
 });
+
+test("setup keeps one `ask` rule of the user when the other 0.1.0 rules are not there", async () => {
+  const out = await run({ permissions: { ask: ["Bash(git reset --hard*)"] } });
+  expect(out.permissions.ask).toContain("Bash(git reset --hard*)");
+});
+
+test("the dry run lists each `ask` rule that it removes", async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), "legacy-"));
+  await Bun.write(
+    path.join(dir, "settings.json"),
+    JSON.stringify({ permissions: { ask: ASK_0_1_0 } }),
+  );
+  const lines: string[] = [];
+  const io = { log: (l: string) => lines.push(l), error: () => {} };
+  const env = { CLAUDE_CONFIG_DIR: dir, CLAUDE_PROJECT_DIR: dir };
+  expect(await main(["--scope", "user"], env, dir, io)).toBe(0);
+  const text = lines.join("\n");
+  for (const rule of ASK_0_1_0) expect(text).toContain(`\`${rule}\``);
+});

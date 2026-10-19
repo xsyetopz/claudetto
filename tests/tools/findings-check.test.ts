@@ -20,6 +20,16 @@ test("`openRows` finds no row when each task is `none`, done, or checked", () =>
   expect(openRows(CLOSED)).toEqual([]);
 });
 
+test("`openRows` names a row whose task says `not done`", () => {
+  const row = `${HEAD}| \`b\` | a fault | test | 3.4, not done | \`just lab\` |\n`;
+  expect(openRows(row)).toHaveLength(1);
+});
+
+test("`openRows` accepts a task list before `done`", () => {
+  const row = `${HEAD}| \`b\` | a fault | test | 7.10, 7.11, done in \`abc\` | \`just lab\` |\n`;
+  expect(openRows(row)).toEqual([]);
+});
+
 const run = async (findings: string) => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "findings-"));
   const file = path.join(dir, "findings.md");

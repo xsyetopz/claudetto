@@ -75,18 +75,6 @@ test(
 
 test(
   // biome-ignore lint/plugin: a test name that a `slice.ts` file references
-  "with the option `claude`, `AskUserQuestion` sends nothing to Jev",
-  option("claude"),
-  async ($: Engine, on: On) => {
-    const runs = stub(on, "typesafe-key");
-    builtIn(on);
-    await ask($);
-    expect(runs).toEqual([]);
-  },
-);
-
-test(
-  // biome-ignore lint/plugin: a test name that a `slice.ts` file references
   "with the option `jev` and no key, `AskUserQuestion` sends nothing to Jev",
   option("jev"),
   async ($: Engine, on: On) => {

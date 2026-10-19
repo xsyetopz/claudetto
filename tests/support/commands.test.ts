@@ -51,14 +51,19 @@ test("lint: each command hook of a plugin and each status line command of the sn
     cwd: REPO,
     absolute: true,
   });
+  // A `hooks.json` has `modules` and no command hook in 0.2.0, so the lint proves the file list.
+  const hooks: string[] = [];
+  let seen = 0;
+  for await (const file of files) {
+    seen += 1;
+    hooks.push(...hookCommands(await Bun.file(file).json()));
+  }
+  expect(seen).toBeGreaterThanOrEqual(1);
   const commands = [
     SNIPPET.statusLine.command,
     SNIPPET.subagentStatusLine.command,
+    ...hooks,
   ];
-  for await (const file of files) {
-    commands.push(...hookCommands(await Bun.file(file).json()));
-  }
-  expect(commands.length).toBeGreaterThanOrEqual(2);
   expect(offPluginBun(commands)).toEqual([]);
 });
 

@@ -66,6 +66,8 @@ export const cleanAutoMode = (settings: Json): Json => {
 /**
  * `settings` without the values that only the 0.1.0 snippet wrote (`LEGACY_KEYS`):
  * `promptCacheTtl: "5m"`, the env key with its 0.1.0 value, and the `permissions.ask` rules.
+ * The `ask` rules go only when the user has all of them, which is the 0.1.0 signature,
+ * because one of them alone can be a safety rule of the user.
  * The other keys and rules of the user stay.
  */
 export const cleanLegacyKeys = (settings: Json): Json => {
@@ -80,7 +82,11 @@ export const cleanLegacyKeys = (settings: Json): Json => {
         ([k, v]) => oldEnv[k as keyof typeof oldEnv] !== v,
       ),
     );
-  if (isObject(perms) && Array.isArray(perms["ask"]))
+  if (
+    isObject(perms) &&
+    Array.isArray(perms["ask"]) &&
+    oldAsk.every((rule) => perms["ask"].includes(rule))
+  )
     out["permissions"] = {
       ...perms,
       ask: perms["ask"].filter((v) => !oldAsk.includes(v)),

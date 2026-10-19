@@ -72,6 +72,10 @@ export const LEGACY_RULES = {
 /** From `src/plugins/claudetto/slices/setup/prompts/project-no-status-line.md`. */
 export const PROJECT_NO_STATUS_LINE = `Project settings get no status line, because its command holds an absolute path of this computer. Run setup with the user or local scope for it.`;
 
+/** From `src/plugins/claudetto/slices/setup/prompts/removed-rule.md`. */
+export const REMOVED_RULE = (v: { rule: string }): string =>
+  `\`permissions.ask\`: removed the rule \`${v.rule}\` of 0.1.0.`;
+
 /** From `src/plugins/claudetto/slices/setup/prompts/scope-missing.md`. */
 export const SCOPE_MISSING = `The option --scope needs a value. Use user, project, or local.`;
 

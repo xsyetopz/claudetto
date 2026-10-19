@@ -9,9 +9,7 @@ const PLUGIN = "claudetto";
 
 const stub = (on: On) => {
   const fills: { text: string; mode?: string }[] = [];
-  on("ui.render", ($, e) =>
-    $.ui.resolve(e).Text({ children: "message" }),
-  );
+  on("ui.render", ($, e) => $.ui.resolve(e).Text({ children: "message" }));
   on("prompt.fill", (_$, e) => {
     fills.push({ text: e.text, mode: e.mode });
     return { isFilled: true };

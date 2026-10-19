@@ -34,6 +34,7 @@ import {
   DRY_RUN,
   KEPT_KEY,
   PROJECT_NO_STATUS_LINE,
+  REMOVED_RULE,
   SCOPE_MISSING,
   SETTINGS_FAILED,
   SETTINGS_MATCH,
@@ -150,6 +151,14 @@ export const main = async (
       (key) => JSON.stringify(cleaned[key]) !== JSON.stringify(current[key]),
     )
     .map((key) => CLEANED({ key }));
+  const askOf = (s: Json): unknown[] =>
+    isObject(s["permissions"]) && Array.isArray(s["permissions"]["ask"])
+      ? s["permissions"]["ask"]
+      : [];
+  const keptAsk = askOf(cleaned);
+  for (const rule of askOf(current))
+    if (!keptAsk.includes(rule))
+      changes.push(REMOVED_RULE({ rule: String(rule) }));
   const settings = merge(cleaned, snippet, changes);
   const mdText = fs.existsSync(claudeMd) ? await Bun.file(claudeMd).text() : "";
   const mdNext = stripBlock(mdText);
