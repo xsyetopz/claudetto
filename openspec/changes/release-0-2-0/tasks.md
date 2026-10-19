@@ -53,7 +53,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [x] 3.13 Add a lab test that a cold handoff copies the open decisions of `design.md` in an openspec change, and of `.claudetto/progress.md` in other work, with no model call, and see it fail, then change the handoff, and add the one line of D50 to the always-loaded text. (closed: dropped by the user, 2026-10-18)
 - [x] 3.14 Add a test that each agent prompt and each delegation text asks for the full output of a failed check in a file, and see it fail, then change the texts (D33). (closed: removed in trim-0-2-0)
   Check: `just generate && just test tests/claudetto/agents`
-- [ ] 3.15 Add a test that `src/plugins/claudetto/slices/styles/styles/Concise.md` asks for a numbered "What I Need from You" list only on a turn that needs the user, with an example from claudetto's work, and see it fail, then change the style (D36).
+- [x] 3.15 Add a test that `src/plugins/claudetto/slices/styles/styles/Concise.md` asks for a numbered "What I Need from You" list only on a turn that needs the user, with an example from claudetto's work, and see it fail, then change the style (D36). (closed: code in `fea01750`, the paid eval skipped by the user, 2026-10-19, so the "only when needed" form stays)
   Check: `just generate && just test tests/claudetto/styles`
   Then run an eval of the two forms of D36, the list only when needed and the full rule with "Nothing needed from you right now", at 10 runs each, and keep the form that D36 picks.
   This is a paid run: ask the user first, with the expected cost and the weekly share.
