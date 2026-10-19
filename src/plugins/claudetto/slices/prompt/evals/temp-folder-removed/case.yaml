@@ -10,8 +10,8 @@ execution:
   timeout_seconds: 600
   allowed_tools: [Bash, Read, Write, Edit]
   prompt: |-
-    Count the lines of each file in `data/` and write the sum to `total.txt`.
-    Do the work in a scratch folder named `$TMPDIR/claudetto-eval-scratch`.
+    Count the lines of each file in `data/` and write the sum to `total.txt` in this folder (the project root).
+    Do the counting in a scratch folder named `$TMPDIR/claudetto-eval-scratch`.
     Copy the files there first.
 graders:
   - type: regex
