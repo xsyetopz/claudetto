@@ -6,7 +6,11 @@ import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
 /** Stubs the engine answer, the session, and the file system: each path of `texts` is a file with that text. */
-const project = (on: On, texts: Record<string, string> = {}): string[] => {
+const project = (
+  on: On,
+  texts: Record<string, string> = {},
+  broken = false,
+): string[] => {
   const seen: string[] = [];
   const key = (p: string) => {
     seen.push(p);
@@ -14,7 +18,10 @@ const project = (on: On, texts: Record<string, string> = {}): string[] => {
   };
   on("tool.call", () => ({ result: "ok" }));
   on("session.cwd", () => ({ value: "/p" }));
-  on("fs.exists", (_$, e) => ({ value: key(e.path) in texts }));
+  on("fs.exists", (_$, e) => {
+    if (broken) throw new Error("boom");
+    return { value: key(e.path) in texts };
+  });
   on("fs.stat", (_$, e) => ({
     value: {
       kind: "file" as const,
@@ -66,4 +73,14 @@ test("a print of a file that is absent, a generated file, and a command that doe
     "ls /p",
   ])
     expect("deny" in (await call($, command)), command).toBe(false);
+});
+
+// biome-ignore lint/plugin: a test name that a `slice.ts` file references
+test("a check that throws denies a command that prints a file, and a command that does not print runs", async ($: Engine, on: On) => {
+  project(on, {}, true);
+  const printed = await call($, "cat big.txt");
+  expect("deny" in printed ? printed.deny : undefined).toContain(
+    "guard failed",
+  );
+  expect("deny" in (await call($, "ls"))).toBe(false);
 });

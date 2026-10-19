@@ -1,6 +1,6 @@
 // The parts of a Claude model id. This file has no import, so every layer can use it.
 
-/** The model families of Claude Code 2.1.302. */
+/** The model families of Claude Code 2.1.303. */
 const FAMILIES = ["opus", "sonnet", "haiku", "fable", "mythos"] as const;
 
 /** A model family of `FAMILIES`, or `unknown` for a family that this list does not have. */

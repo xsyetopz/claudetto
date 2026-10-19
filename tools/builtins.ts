@@ -18,7 +18,7 @@ import { diff, render } from "./builtins/render.ts";
 import { VERDICTS } from "./builtins/verdicts.ts";
 
 /** The folder of the release that the tool reads when `--dir` is not given. */
-const SOURCE_DIR = "external/cc-2.1.302";
+const SOURCE_DIR = "external/cc-2.1.303";
 const OUT_DIR = "wiki/reference";
 const ROOT = path.resolve(import.meta.dir, "..");
 
