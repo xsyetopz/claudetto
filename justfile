@@ -128,6 +128,10 @@ eval-tune *args:
 eval-budget *args:
     bun tools/run-budget.ts "$@"
 
+# Print the statistics of the with/without comparison from `aggregate-result.json` files or folders of results (Fisher p, Newcombe CI, bootstrap CI over cases, judge agreement); add --json, --seed N, or --pick oldest
+eval-stats *args:
+    bun tools/eval-stats.ts "$@"
+
 # Run the eval cases on the checkout and on a variant at a git ref (in a temporary worktree), to compare the two plugin arms; extra arguments go to the eval, and --model is required as for `eval`
 eval-variant ref *args:
     @case " $* " in *" --model "*|*" --model="*) ;; *) echo 'Pass `--model`, such as `--model haiku`, because without it the eval uses the model of the session.' >&2; exit 1 ;; esac

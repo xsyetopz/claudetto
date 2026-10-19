@@ -26,6 +26,13 @@ export const DOCKER_CPUS = 4;
 /** Most US dollars for one `just eval` run, which the `eval` recipe of the `justfile` passes as `--max-cost-usd`. */
 export const EVAL_MAX_COST_USD = 5;
 
+/** Confidence level of each interval that `just eval-stats` prints: the Newcombe interval of a case and the bootstrap interval of a set. */
+export const EVAL_STATS_CONFIDENCE = 0.95;
+/** Resamples of the bootstrap over the cases of a set in `just eval-stats`. */
+export const EVAL_STATS_RESAMPLES = 10_000;
+/** Default seed of the bootstrap in `just eval-stats`, so a rerun prints the same interval. The `--seed` flag changes it. */
+export const EVAL_STATS_SEED = 20_261_019;
+
 // Bounds of `just sandbox-linux`, checked by `tools/sandbox/linux/run.ts`.
 
 /**
