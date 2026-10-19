@@ -3,10 +3,11 @@
   "globs": ["**/*.md"],
   "config": { "extends": "./.markdownlint.jsonc" },
   "ignores": [
-    "node_modules/**",
     "external/**",
-    ".claude/**",
-    ".agents/**",
+    "**/node_modules/**",
+    "**/.agents/**",
+    "**/.claude/**",
+    "**/.openspec/**",
     "**/.claudetto/**",
     // `plugins/` is generated output, and `wiki/` is generated from `src/wiki/`.
     "plugins/**",
