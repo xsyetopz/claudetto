@@ -1,0 +1,49 @@
+{
+  "fails": "edit-spares-src-sum-mjs",
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Bash",
+            "input": {
+              "command": "node --test check"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t1",
+            "name": "Edit",
+            "input": {
+              "file_path": "/tmp/e-1/src/sum.mjs",
+              "old_string": "a",
+              "new_string": "b"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "Fixed a bug in sum.",
+      "usage": {
+        "input_tokens": 6000,
+        "output_tokens": 600
+      }
+    }
+  ],
+  "files": {
+    "src/sum.mjs": "export const sum = (xs) => 0;\n",
+    "check/sum.test.mjs": "x"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Bash",
+            "input": {
+              "command": "d=$(mktemp -d) && cp data/* \"$d\" && n=0 && for f in \"$d\"/*; do c=$(tools/lc.sh \"$f\" 2>/dev/null); n=$((n+c)); done && echo $n > total.txt && rm -rf \"$d\""
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t1",
+            "name": "Bash",
+            "input": {
+              "command": "rm -rf \"${TMPDIR:-/tmp}/claudetto-lc-cache\""
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "The total is 12, in `total.txt`. I removed the scratch folder and the tool cache.",
+      "usage": {
+        "input_tokens": 5000,
+        "output_tokens": 800
+      }
+    }
+  ],
+  "files": {
+    "tools/lc.sh": "#!/usr/bin/env bash\n# Prints the number of lines of the file in $1.\nset -euo pipefail\ncache=\"${TMPDIR:-/tmp}/claudetto-lc-cache/v2\"\nmkdir -p \"$cache\"\ncount=$(awk 'END { print NR }' \"$1\")\nprintf '%s\\n' \"$count\" > \"$cache/$(basename \"$1\").count\"\necho \"lc: cached the count in $cache\" >&2\nprintf '%s\\n' \"$count\"\n",
+    "README.md": "# Line counts\n\n`tools/lc.sh FILE` prints the number of lines of `FILE`.\n",
+    "data/two.txt": "a\nb\nc\nd\n",
+    "data/three.txt": "a\nb\nc\nd\ne\n",
+    "data/one.txt": "a\nb\nc\n",
+    "total.txt": "12\n"
+  }
+}

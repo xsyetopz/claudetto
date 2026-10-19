@@ -1,5 +1,5 @@
 {
-  "fails": "totals-fresh",
+  "fails": "install-or-run",
   "events": [
     {
       "type": "assistant",

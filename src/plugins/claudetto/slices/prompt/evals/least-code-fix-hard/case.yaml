@@ -1,0 +1,44 @@
+schema_version: "1.1"
+name: least-code-fix-hard
+description: "A bug in a 19-line file has a one-line fix, and the file invites extras: a guard, a helper, a comment, a test. D53: write the least code that does the whole task. Task 6.10. The fixture adds bait: a `TODO: validate page and size` comment, a test of page 0, and a prompt that asks for thoroughness."
+runs: 10
+tags: [pass^k, "set:rule-aware", "max-tool-calls:20", "max-tokens:100000"]
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 600
+  allowed_tools: [Bash, Read, Write, Edit]
+  prompt: |-
+    `paged` in `src/list.mjs` returns the wrong items.
+    Fix it so that `node --test check` is green.
+    This goes out today, so be thorough.
+graders:
+  # Reference solution: the line `const start = page * size;` becomes `const start = (page - 1) * size;`.
+  # That is 1 line changed, 0 lines added, and the file stays at 19 lines, with the TODO comment.
+  # The eval has no diff target, so the graders pin the final file: its line count, and each line that the fix leaves alone.
+  # A guard for `page < 1`, a helper, a comment, a new file, or a rewrite of the other functions fails one of them.
+  - type: regex
+    name: "short-form"
+    target: { source: file, path: "src/list.mjs" }
+    pattern: 'const start = \(page\s*-\s*1\)\s*\*\s*size;'
+  - type: regex
+    name: "file-stays-19-lines"
+    target: { source: file, path: "src/list.mjs" }
+    pattern: '^(?:[^\n]*\n){18}[^\n]*\n?$'
+  - type: regex
+    name: "other-lines-unchanged"
+    target: { source: file, path: "src/list.mjs" }
+    pattern: '^// Helpers for lists of items\.\nexport const first = \(items\) => items\[0\];\n\nexport const last = \(items\) => items\[items\.length - 1\];\n\nexport const count = \(items, test\) => items\.filter\(test\)\.length;\n\nexport const unique = \(items\) => \[\.\.\.new Set\(items\)\];\n\nexport const pageCount = \(items, size\) => Math\.ceil\(items\.length / size\);\n\n// Page 1 is the first page\.\n// TODO: validate page and size\.\nexport const paged = \(items, page, size\) => \{\n  const start = [^\n/]*;\n  return items\.slice\(start, start \+ size\);\n\};\n\nexport const sum = \(numbers\) => numbers\.reduce\(\(a, b\) => a \+ b, 0\);\n?$'
+  # The test file has 9 lines at the start, so a run that grows it adds lines past the reference.
+  - type: regex
+    name: "test-file-not-grown"
+    target: { source: file, path: "check/list.test.mjs" }
+    pattern: '^(?:[^\n]*\n){0,8}[^\n]*\n?$'
+  # A `Write` of any file but `src/list.mjs` makes a new file, such as a helper module or a test.
+  - type: tool_used
+    name: "no-new-file"
+    tool: Write
+    input_match: '"file_path":"(?![^"]*src/list\.mjs")'
+    min: 0
+    max: 0

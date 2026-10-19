@@ -79,9 +79,20 @@ export const overBudget = (tags: string[], run: Transcript): string[] => {
 const isImplementer = (file: string): boolean =>
   /^src\/plugins\/[^/]+\/evals\/[^/]+\/case\.yaml$/.test(file);
 
+/** A case of the `prompt` slice belongs to one set, named by its tag `set:NAME`. */
+const isPrompt = (file: string): boolean =>
+  /^src\/plugins\/[^/]+\/slices\/prompt\/evals\/[^/]+\/case\.yaml$/.test(file);
+
+/** The sets of the `prompt` slice. The `blind` and `control` sets need a reference run. */
+const SETS = ["baseline", "rule-aware", "blind", "control"];
+const NEEDS_REFERENCE = ["blind", "control"];
+
 /**
  * The faults of the cases against the rest of D25.
  * `badRuns` maps a case name to its recorded bad run, or to `undefined` when the case has none.
+ * `references` maps a case name to its recorded reference run in the same way.
+ * A case of the `prompt` slice needs exactly one tag `set:baseline`, `set:rule-aware`, `set:blind`, or `set:control`,
+ * and a case of the `blind` or `control` set needs a reference run with events.
  * A case needs one metric tag (`pass^k` or `pass@1`), the tags `max-tool-calls:N` and `max-tokens:N` within the bounds of `limits.ts`,
  * and a bad run that has events, counts tokens, and fails the check without a model that its `fails` field names.
  * The implementer cases need a `split:dev` or `split:held-out` tag, and the set needs both splits.
@@ -89,6 +100,7 @@ const isImplementer = (file: string): boolean =>
 export const caseFaults = (
   cases: CaseDoc[],
   badRuns: Record<string, Transcript | undefined>,
+  references: Record<string, Transcript | undefined> = {},
 ): string[] => {
   const out: string[] = [];
   for (const c of cases) {
@@ -104,6 +116,18 @@ export const caseFaults = (
     const tokens = tagNumber(c.tags, "max-tokens");
     if (tokens === undefined || tokens < 1 || tokens > EVAL_MAX_TOKENS)
       bad(`needs a tag \`max-tokens:N\` with N from 1 to ${EVAL_MAX_TOKENS}`);
+    if (isPrompt(c.file)) {
+      const sets = c.tags.filter((t) =>
+        new RegExp(`^set:(${SETS.join("|")})$`).test(t),
+      );
+      if (sets.length !== 1)
+        bad(`needs exactly one tag \`set:${SETS.join("|")}\``);
+      else if (
+        NEEDS_REFERENCE.some((s) => sets[0] === `set:${s}`) &&
+        !references[c.name]?.events.length
+      )
+        bad("is a `blind` or `control` case and has no reference run");
+    }
     const unmodelled = graderFaults(c.graders);
     for (const f of unmodelled) bad(f);
     const run = badRuns[c.name];
@@ -138,13 +162,14 @@ export const caseFaults = (
   return out;
 };
 
-/** The faults of `caseFaults` for the cases under `root`, with the bad runs in `tests/<plugin>/evals/bad-runs/<name>.json`. */
+/** The faults of `caseFaults` for the cases under `root`, with the bad runs in `tests/<plugin>/evals/bad-runs/<name>.json` and the reference runs in `reference-runs/<name>.json`. */
 export const caseFaultsIn = async (
   root: string,
   glob: string = CASES,
 ): Promise<string[]> => {
   const cases: CaseDoc[] = [];
   const badRuns: Record<string, Transcript | undefined> = {};
+  const references: Record<string, Transcript | undefined> = {};
   for await (const f of new Bun.Glob(glob).scan(root)) {
     const doc = parse(await Bun.file(join(root, f)).text());
     const name: string = doc?.name ?? f;
@@ -159,10 +184,22 @@ export const caseFaultsIn = async (
       join(root, "tests", plugin ?? "", "evals", "bad-runs", `${name}.json`),
     );
     badRuns[name] = (await bad.exists()) ? await bad.json() : undefined;
+    const ref = Bun.file(
+      join(
+        root,
+        "tests",
+        plugin ?? "",
+        "evals",
+        "reference-runs",
+        `${name}.json`,
+      ),
+    );
+    references[name] = (await ref.exists()) ? await ref.json() : undefined;
   }
   return caseFaults(
     cases.sort((a, b) => a.file.localeCompare(b.file)),
     badRuns,
+    references,
   );
 };
 

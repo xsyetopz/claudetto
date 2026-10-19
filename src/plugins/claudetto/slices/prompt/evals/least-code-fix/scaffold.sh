@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # Builds the fixture in the empty workspace.
 # Needs the flag `--scaffold`.
-# The fix is one line, and the TODO and the test of page 0 invite a guard.
-# The one-line fix also passes the test of page 0, because the slice ends at 0.
 set -euo pipefail
 cat > package.json <<'EOT'
 {
@@ -23,7 +21,6 @@ export const unique = (items) => [...new Set(items)];
 export const pageCount = (items, size) => Math.ceil(items.length / size);
 
 // Page 1 is the first page.
-// TODO: validate page and size.
 export const paged = (items, page, size) => {
   const start = page * size;
   return items.slice(start, start + size);
@@ -39,6 +36,5 @@ import { paged } from "../src/list.mjs";
 test("paged returns the items of a page, from page 1", () => {
   assert.deepEqual(paged([1, 2, 3, 4, 5], 1, 2), [1, 2]);
   assert.deepEqual(paged([1, 2, 3, 4, 5], 3, 2), [5]);
-  assert.deepEqual(paged([1, 2, 3, 4, 5], 0, 2), []);
 });
 EOT

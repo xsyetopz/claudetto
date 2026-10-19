@@ -1,0 +1,58 @@
+{
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Bash",
+            "input": {
+              "command": "yt-dlp --get-title https://www.youtube.com/watch?v=jNQXAC9IVRw"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t1",
+            "name": "Bash",
+            "input": {
+              "command": "pipx install yt-dlp"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t2",
+            "name": "Bash",
+            "input": {
+              "command": "yt-dlp --get-title https://www.youtube.com/watch?v=jNQXAC9IVRw"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "`yt-dlp` was missing. I installed it with `pipx`, and the title is shown above.",
+      "usage": {
+        "input_tokens": 5000,
+        "output_tokens": 800
+      }
+    }
+  ],
+  "files": {}
+}

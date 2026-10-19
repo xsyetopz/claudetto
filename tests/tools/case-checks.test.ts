@@ -213,3 +213,22 @@ test("a run over its tool-call or token tags is a fault", () => {
   expect(overBudget(["max-tokens:10"], run)).toHaveLength(1);
   expect(overBudget([], run)).toEqual([]);
 });
+
+test("a case of the `prompt` slice needs exactly one `set:` tag, and `blind` and `control` cases need a reference run", () => {
+  const prompt = (tags: string[]) =>
+    doc({ file: "src/plugins/p/slices/prompt/evals/a/case.yaml", tags });
+  const faults = (tags: string[], refs = {}) =>
+    caseFaults([prompt(tags)], { a: badRun }, refs);
+  const ref = { events: badRun.events, files: {} };
+  expect(faults([...GOOD_TAGS, "set:baseline"])).toEqual([]);
+  expect(faults([...GOOD_TAGS, "set:rule-aware"])).toEqual([]);
+  expect(faults(GOOD_TAGS)).toHaveLength(1);
+  expect(faults([...GOOD_TAGS, "set:other"])).toHaveLength(1);
+  expect(faults([...GOOD_TAGS, "set:baseline", "set:rule-aware"])).toHaveLength(
+    1,
+  );
+  expect(faults([...GOOD_TAGS, "set:blind"])).toHaveLength(1);
+  expect(faults([...GOOD_TAGS, "set:control"])).toHaveLength(1);
+  expect(faults([...GOOD_TAGS, "set:blind"], { a: ref })).toEqual([]);
+  expect(faults([...GOOD_TAGS, "set:control"], { a: ref })).toEqual([]);
+});

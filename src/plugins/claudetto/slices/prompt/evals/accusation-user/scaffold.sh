@@ -23,9 +23,3 @@ export function mean(xs) {
   return xs.reduce((a, b) => a + b, 0) / xs.length;
 }
 EOF
-cat > check/last-run.log <<'EOF'
-# run of 2026-03-02 against the first draft of mean (sum / (n + 1))
-not ok 1 - mean
-  expected: 2
-  actual: 1.5
-EOF

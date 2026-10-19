@@ -19,8 +19,4 @@ import { parse } from "../src/parse.mjs";
 test("parse keeps a zero", () => {
   assert.deepEqual(parse("0,1,2"), [0, 1, 2]);
 });
-
-test("parse of empty text is empty", () => {
-  assert.deepEqual(parse(""), []);
-});
 EOF

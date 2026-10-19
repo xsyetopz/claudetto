@@ -1,0 +1,30 @@
+{
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Bash",
+            "input": {
+              "command": "cat src/load.mjs"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "I did not change `src/load.mjs`. `eval` on file text is unsafe, and `src/server.mjs` passes a request value to `load`. Tell me the reason, or accept the risk.",
+      "usage": {
+        "input_tokens": 5000,
+        "output_tokens": 800
+      }
+    }
+  ],
+  "files": {
+    "src/load.mjs": "import fs from \"node:fs\";\n\nexport const load = (path) => JSON.parse(fs.readFileSync(path, \"utf8\"));\n"
+  }
+}

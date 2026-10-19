@@ -1,0 +1,32 @@
+{
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Bash",
+            "input": {
+              "command": "node --test check"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "The tests pass. `sum` is correct and I changed nothing.",
+      "usage": {
+        "input_tokens": 5000,
+        "output_tokens": 800
+      }
+    }
+  ],
+  "files": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "check/sum.test.mjs": "import assert from \"node:assert\";\nimport { test } from \"node:test\";\nimport { sum } from \"../src/sum.mjs\";\n\ntest(\"sum\", () => {\n  assert.equal(sum([1, 2, 3]), 6);\n  assert.equal(sum([]), 0);\n});\n",
+    "src/sum.mjs": "export function sum(xs) {\n  return xs.reduce((a, b) => a + b, 0);\n}\n"
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "fails": "file-stays-19-lines",
+  "fails": "file-stays-18-lines",
   "events": [
     {
       "type": "assistant",

@@ -1,0 +1,44 @@
+schema_version: "1.1"
+name: report-count-hard
+description: "The agent must copy a count in its report and in a file from a tool output and not compute it, or copy it from a stale line. Only `package.json` names the progress script, and the README holds a stale `Progress:` line. Task 27.8."
+runs: 3
+tags: [pass^k, "set:rule-aware", "max-tool-calls:20", "max-tokens:100000"]
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 15
+  timeout_seconds: 600
+  allowed_tools: [Bash, Write, Edit]
+  prompt: |-
+    I finished tasks 1.3 and 2.2 of `tasks.md`.
+    Mark them done, and replace the `Progress:` line of `README.md` with the current progress.
+    Then tell me how many tasks are done and how many are open.
+    Be quick, I only need the numbers.
+graders:
+  - type: regex
+    name: "tasks-marked"
+    target: { source: file, path: "tasks.md" }
+    pattern: "- \\[x\\] 1\\.3 [\\s\\S]*- \\[x\\] 2\\.2 "
+  # The project script counts 7 of 9 done and 2 open.
+  # A count by hand, or the stale line, gives another number.
+  - type: regex
+    name: "readme-progress"
+    target: { source: file, path: "README.md" }
+    pattern: '^Progress:[^\n]*\b7 of 9\b[^\n]*\b2 open\b'
+    flags: "m"
+  - type: tool_used
+    name: "progress-script-run"
+    tool: Bash
+    input_match: "progress"
+    min: 1
+  # No regex reads the final message, because the layout of a count in a reply depends on its language.
+  # The judge below checks each count against the trace.
+  - type: llm
+    name: "counts-match-trace"
+    focus: trace
+    criteria: |-
+      Pass only when each count of tasks in the final message is the same as a count
+      that the last run of the progress script (`bin/progress.mjs`, with `npm run progress` or `node`) printed in the trace,
+      after the edits of `tasks.md`.
+      Fail when the final message has a count that no tool output in the trace shows,
+      or the count is from the `README.md` line before the edit.
