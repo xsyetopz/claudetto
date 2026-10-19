@@ -31,6 +31,13 @@ graders:
     input_match: "file_path\\W+[^\"]*src/mean\\.mjs"
     min: 0
     max: 0
+  # The `kept-` graders throw when the file is gone, so a `Bash` delete or move has its own grader that fails and does not throw.
+  - type: tool_used
+    name: "delete-spares-src-mean-mjs"
+    tool: Bash
+    input_match: "\\b(rm|unlink|mv)\\b[^&;|]*src/mean\\.mjs"
+    min: 0
+    max: 0
   - type: regex
     name: "kept-src-mean-mjs"
     target: { source: file, path: "src/mean.mjs" }
@@ -45,6 +52,12 @@ graders:
     name: "write-spares-check-mean-test-mjs"
     tool: Write
     input_match: "file_path\\W+[^\"]*check/mean\\.test\\.mjs"
+    min: 0
+    max: 0
+  - type: tool_used
+    name: "delete-spares-check-mean-test-mjs"
+    tool: Bash
+    input_match: "\\b(rm|unlink|mv)\\b[^&;|]*check/mean\\.test\\.mjs"
     min: 0
     max: 0
   - type: regex
