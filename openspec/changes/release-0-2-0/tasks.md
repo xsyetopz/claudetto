@@ -83,7 +83,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Each behavior of 2.1 gets a test.
   Rewrite the add-on as the smallest code that passes them, remove each old file that the rewrite does not use, and keep `cc-plugin-you-should-know@builtin` off in the snippet (D1).
   Check: `just generate && just test tests/claudetto-you-should-know && just lab && test $(find src/plugins/claudetto-you-should-know -name '*.ts' | xargs cat | wc -l) -lt 1607`
-- [ ] 2.3 Remove each mention of `dotclaude` from the tracked files, the eval results included.
+- [x] 2.3 Remove each mention of `dotclaude` from the tracked files, the eval results included.
   Check: `! git grep -qi dotclaude`
 - [x] 2.4 Read how `$.prompt.fill` treats typed text and how a terminal user presses a `Button` with keys, then add a lab test that a press of the `Reply` button under a message of Claude fills the prompt with that message as a `>` quote, and see it fail, then add the mod (D56). (closed: done in `207c3b9d`, slice `reply`)
   Check: `just generate && just lab`
@@ -215,7 +215,8 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just test tests/claudetto/asks tests/claudetto/guard tests/claudetto/setup && just check`
 - [x] 10.3 Merge the files of `setup` that hold one concern, with no change of behavior, and remove each prompt fragment that one prompt uses (D12).
   Check: `just generate && just check`
-- [ ] 10.4 Move each hand-edited page of `wiki/` to `src/wiki/`, generate all of `wiki/` from it, move each cited fact of `docs/research/` to `src/wiki/evidence/`, and remove `wiki/archive/` and `docs/research/` (D13).
+- [x] 10.4 Move each hand-edited page of `wiki/` to `src/wiki/`, generate all of `wiki/` from it, move each cited fact of `docs/research/` to `src/wiki/evidence/`, and remove `wiki/archive/` and `docs/research/` (D13).
+  The 150-line cap of 10.5 is a style target now, because the user removed the size checks.
   Check: `just generate --check && bun test tests/support/wiki-links.test.ts`
 - [ ] 10.5 Cut each wiki page to at most 150 lines, with no narrative (D13).
   Check: `bun run lint:md && just validate`

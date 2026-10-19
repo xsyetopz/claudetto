@@ -10,9 +10,9 @@
 
 ## 2. claudetto 0.2.0+ (Part 1)
 
-- [ ] 2.1 Move each hand-edited page of `wiki/` to `src/wiki/claudetto/`, keep only pages that are true for 0.2.0, and give one page to each slice and add-on (`release-0-2-0` 10.4).
-- [ ] 2.2 Move each cited fact of `docs/research/` and `wiki/archive/` that a page still needs to an evidence page, then remove both folders.
-- [ ] 2.3 Remove each mention of `dotclaude` (`release-0-2-0` 2.3).
+- [x] 2.1 Move each hand-edited page of `wiki/` to `src/wiki/claudetto/`, keep only pages that are true for 0.2.0, and give one page to each slice and add-on (`release-0-2-0` 10.4).
+- [x] 2.2 Move each cited fact of `docs/research/` and `wiki/archive/` that a page still needs to an evidence page, then remove both folders.
+- [x] 2.3 Remove each mention of `dotclaude` (`release-0-2-0` 2.3).
   Check: `! git grep -qi dotclaude -- ':!openspec' ':!CHANGELOG.md'`
 - [ ] 2.4 Write `Home.md` and `_Sidebar.md` for the two parts.
   Check: `just docker check`
