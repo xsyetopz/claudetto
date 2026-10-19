@@ -18,6 +18,7 @@ A row with `none recorded` has no evidence in the repository, so it is a candida
 | `claudetto/guard` | `print deny` | A `Bash` print of a file gave the text again, and only `Read` gets the short stub on a second read (trim design, steps table). | Claude Code gives the short stub for a `Bash` print too. |
 | `claudetto/handoff` | `compact answer` | A compaction costs much and loses the state of the work (trim design, decision 6). | Claude Code compaction keeps the state at the same cost. |
 | `claudetto/handoff` | `second compaction update` | The first handoff `H1` stayed inside `H2` at a second compaction (commit `9914887a`, D46). | The compact answer is removed. |
+| `claudetto/patch` | `cumulative patch` | A turn limit and a weekly usage limit stopped three subagents in worktrees before they committed (2026-10-19, D64). | Claude Code keeps the uncommitted work of a stopped subagent in a worktree. |
 | `claudetto/prompt` | `lean_body text` | The built-in prompts are bad (the user, trim decision 3). | Claude Code ships a short prompt that needs no tailor. |
 | `claudetto/prompt` | `other hooks` | none recorded | Claude Code has a setting for each cut. |
 | `claudetto/sembr` | `sentence split` | none recorded | Claude keeps one sentence on each line with no hook. |

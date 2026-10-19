@@ -29,7 +29,8 @@ const PINS: Readonly<Record<string, [text: string, pin: number]>> = {
     1156,
   ],
   // The brief line of D33 replaced a line of 48 bytes with one of 124 bytes (the user, 2026-10-17).
-  "`Agent` description": [TOOL_AGENT, 984],
+  // The patch line of D64 added 176 characters (the user, 2026-10-19).
+  "`Agent` description": [TOOL_AGENT, 1160],
 };
 
 for (const [name, [text, pin]] of Object.entries(PINS))

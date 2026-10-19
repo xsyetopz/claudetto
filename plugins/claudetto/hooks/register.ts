@@ -6,35 +6,38 @@ import { onCommand as h5, onCommandDescribe as h6, onProposeGoal as h7, onTurnCo
 import { onPlanCall as h9 } from "../slices/ground/adapters/mod.ts";
 import { onBashCall as h10 } from "../slices/guard/adapters/mod.ts";
 import { keepOptions as h11, onCompact as h12, onTurnComplete as h13, onTurnStep as h14 } from "../slices/handoff/adapters/mod.ts";
-import { keepOptions as h15, onAttachment as h16, onCommandDescribe as h17, onSection as h18, onSpawn as h19, onToolDescribe as h20 } from "../slices/prompt/adapters/mod.ts";
-import { onRender as h21 } from "../slices/reply/adapters/mod.ts";
-import { onToolCall as h22 } from "../slices/sembr/adapters/mod.ts";
+import { onFileWrite as h15 } from "../slices/patch/adapters/mod.ts";
+import { keepOptions as h16, onAttachment as h17, onCommandDescribe as h18, onSection as h19, onSpawn as h20, onToolDescribe as h21 } from "../slices/prompt/adapters/mod.ts";
+import { onRender as h22 } from "../slices/reply/adapters/mod.ts";
+import { onToolCall as h23 } from "../slices/sembr/adapters/mod.ts";
 
 export const register = (on: On, options: PluginOptions): void => {
   h0(options);
   h3(options);
   h11(options);
-  h15(options);
+  h16(options);
   // eval: agent.spawn prompt
-  on("agent.spawn", h19);
+  on("agent.spawn", h20);
   // eval: command.describe goal
   on("command.describe", { command: "goal" }, h6);
   // eval: command.describe prompt
-  on("command.describe", { command: ["autofix-pr", "brief", "bug", "claim-credit", "cloud-plugins", "daemon", "design-login", "desktop", "feedback", "ide", "import", "install", "install-slack-app", "limit-reset", "mobile", "passes", "powerup", "radio", "rate-limit-options", "remote-env", "session", "statusline", "stickers", "team-onboarding", "teleport", "ultraplan", "ultrareview", "voice", "web-setup"] }, h17);
+  on("command.describe", { command: ["autofix-pr", "brief", "bug", "claim-credit", "cloud-plugins", "daemon", "design-login", "desktop", "feedback", "ide", "import", "install", "install-slack-app", "limit-reset", "mobile", "passes", "powerup", "radio", "rate-limit-options", "remote-env", "session", "statusline", "stickers", "team-onboarding", "teleport", "ultraplan", "ultrareview", "voice", "web-setup"] }, h18);
   // eval: command.run goal
   on("command.run", { command: "goal" }, h5);
   // eval: prompt.attachment prompt
-  on("prompt.attachment", { type: ["goal_status", "tool_hosts_notice"] }, h16);
+  on("prompt.attachment", { type: ["goal_status", "tool_hosts_notice"] }, h17);
   // eval: prompt.section prompt
-  on("prompt.section", h18);
+  on("prompt.section", h19);
   // eval: session.compact handoff
   on("session.compact", { trigger: ["auto", "manual", "plugin"] }, h12);
   // eval: session.start advise
   on("session.start", { isInteractive: [true, false] }, h2);
+  // eval: tool.call patch
+  on("tool.call", { tool: ["Edit", "Write"] }, h15);
   // eval: tool.call decide
   on("tool.call", { tool: ["AskUserQuestion"] }, h4);
   // eval: tool.call sembr
-  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h22);
+  on("tool.call", { tool: ["Write", "Edit", "Bash"] }, h23);
   // eval: tool.call ground
   on("tool.call", { tool: ["Write", "Edit"] }, h9);
   // eval: tool.call guard
@@ -44,7 +47,7 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: tool.call goal
   on("tool.call", { tool: ["ProposeGoal"] }, h7);
   // eval: tool.describe prompt
-  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h20);
+  on("tool.describe", { tool: ["Agent", "ListAgents"] }, h21);
   // eval: turn.complete goal
   on("turn.complete", h8);
   // eval: turn.complete handoff
@@ -52,5 +55,5 @@ export const register = (on: On, options: PluginOptions): void => {
   // eval: turn.step handoff
   on("turn.step", h14);
   // eval: ui.render reply
-  on("ui.render", { component: "AssistantMessage" }, h21);
+  on("ui.render", { component: "AssistantMessage" }, h22);
 };

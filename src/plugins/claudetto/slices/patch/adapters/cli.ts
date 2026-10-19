@@ -1,0 +1,102 @@
+// The CLI `claudetto-patch` lists and lands the patches that a subagent in a worktree left (design D64). The launcher `bin/claudetto-patch` calls `main`.
+//
+//   claudetto-patch list
+//   claudetto-patch land <agentId> [--3way]
+//
+// The patches are in `.claudetto/patches/<agentId>/` of the main checkout.
+// `land` applies a patch only when `git apply --check` passes.
+// With `--3way`, a patch that does not apply goes in with conflict markers, and the user or Claude resolves them.
+// Nothing here resolves a conflict.
+// Exit codes: 0 done, 1 a patch that does not apply or a fault of git, 2 a usage fault.
+
+import { existsSync, readdirSync } from "node:fs";
+import path from "node:path";
+import {
+  BASE_FILE,
+  PATCH_FILE,
+  PATCHES_DIR,
+} from "../../../../../kernel/paths.ts";
+import { GIT_TIMEOUT_MS } from "../limits.ts";
+import {
+  APPLY_FAILED,
+  LANDED,
+  NO_PATCH,
+  NO_REPOSITORY,
+  USAGE,
+} from "../prompts.ts";
+
+/** The output functions of the CLI, so a test can read them. */
+export interface Io {
+  log: (message: string) => void;
+  error: (message: string) => void;
+}
+
+/** Runs `git` in `cwd`, and gives the exit code and the text of both streams. */
+const git = (cwd: string, args: string[]) => {
+  const run = Bun.spawnSync(["git", ...args], {
+    cwd,
+    timeout: GIT_TIMEOUT_MS,
+  });
+  return {
+    code: run.exitCode ?? 1,
+    out: run.stdout.toString().trim(),
+    err: run.stderr.toString().trim(),
+  };
+};
+
+/** The main checkout of the repository that holds `cwd`: the parent of the common git dir, or `null` outside a repository. */
+const mainRoot = (cwd: string): string | null => {
+  const run = git(cwd, [
+    "rev-parse",
+    "--path-format=absolute",
+    "--git-common-dir",
+  ]);
+  return run.code === 0 ? run.out.replace(/\/\.git$/, "") : null;
+};
+
+export const main = async (
+  argv: string[],
+  io: Io = console,
+  cwd: string = process.cwd(),
+): Promise<number> => {
+  const [verb, id] = argv;
+  if (argv.includes("--help") || !["list", "land"].includes(verb ?? "")) {
+    io.log(USAGE);
+    return argv.includes("--help") ? 0 : 2;
+  }
+  const root = mainRoot(cwd);
+  if (root === null) return fail(io, NO_REPOSITORY);
+  const dir = path.join(root, PATCHES_DIR);
+  if (verb === "list") {
+    for (const name of existsSync(dir) ? readdirSync(dir).sort() : []) {
+      const base = (
+        await Bun.file(path.join(dir, name, BASE_FILE)).text()
+      ).trim();
+      const files = git(root, [
+        "apply",
+        "--numstat",
+        path.join(dir, name, PATCH_FILE),
+      ]);
+      io.log(
+        `${name}\tbase ${base.slice(0, 8)}\t${files.out.split("\n").length} files`,
+      );
+    }
+    return 0;
+  }
+  const patch = path.join(dir, id ?? "", PATCH_FILE);
+  if (!id || !existsSync(patch)) return fail(io, NO_PATCH({ id: id ?? "" }));
+  const way = argv.includes("--3way") ? ["--3way"] : [];
+  const check = git(root, ["apply", "--check", patch]);
+  // Without `--3way`, a patch that fails the check is not applied, so no file changes.
+  if (check.code !== 0 && way.length === 0)
+    return fail(io, APPLY_FAILED({ id, error: check.err }));
+  const apply = git(root, ["apply", ...way, patch]);
+  if (apply.code !== 0) return fail(io, APPLY_FAILED({ id, error: apply.err }));
+  io.log(LANDED({ id }));
+  return 0;
+};
+
+const fail = (io: Io, message: string): number => {
+  io.error(message);
+  return 1;
+};

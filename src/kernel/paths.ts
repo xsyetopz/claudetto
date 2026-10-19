@@ -24,7 +24,16 @@ export const PROJECT_SETTINGS = `${CLAUDE_DIR}/${SETTINGS_FILE}`;
 /** The path of the local settings file, from the project root. */
 export const PROJECT_LOCAL_SETTINGS = `${CLAUDE_DIR}/${LOCAL_SETTINGS_FILE}`;
 
-/** The folder of the handoff files, from the project root, when no openspec change is active. One checkout owns them. */
+/** The folder of the patches of the subagents in worktrees, from the main checkout, with one folder for each agent (D64). */
+export const PATCHES_DIR = `${CLAUDETTO_DIR}/patches`;
+
+/** The cumulative patch of an agent, in its folder of `PATCHES_DIR`. */
+export const PATCH_FILE = "changes.patch";
+
+/** The file of an agent folder that holds the base commit of the patch. */
+export const BASE_FILE = "base";
+
+/** The folder of the handoff files,from the project root, when no openspec change is active. One checkout owns them. */
 export const HANDOFF_DIR = `${CLAUDETTO_DIR}/handoffs`;
 
 /** The folder of the openspec changes, from the project root. The folder `archive` in it holds the finished changes. */
