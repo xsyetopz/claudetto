@@ -13,6 +13,7 @@ export type Grader = {
   target?: { source: string; path: string };
   pattern?: string;
   flags?: string;
+  match?: string;
   tool?: string;
   input_match?: string;
   min?: number;
@@ -38,7 +39,7 @@ export type Transcript = {
 
 /** The fields that each grader type models. A field outside the list is a fault of `graderFaults`. */
 const FIELDS: Record<string, string[]> = {
-  regex: ["target", "pattern", "flags"],
+  regex: ["target", "pattern", "flags", "match"],
   tool_used: ["tool", "input_match", "min", "max"],
   tool_order: ["before", "after"],
   llm: ["criteria", "focus"],
@@ -64,6 +65,12 @@ export const graderFaults = (graders: Grader[]): string[] => {
         (t as { source?: string }).source !== "file")
     )
       out.push(`grader ${g.name}: unmodelled target`);
+    if (
+      g.match !== undefined &&
+      g.match !== "contains" &&
+      g.match !== "not_contains"
+    )
+      out.push(`grader ${g.name}: unmodelled match ${g.match}`);
     if (g.type === "regex" && typeof g.pattern !== "string")
       out.push(`grader ${g.name}: a regex grader needs a pattern`);
     if (g.type === "tool_used" && typeof g.tool !== "string")
@@ -88,7 +95,9 @@ export const failedGraders = (graders: Grader[], run: Transcript): string[] => {
       if (g.type === "regex") {
         const text =
           g.target === undefined ? last : (run.files[g.target.path] ?? "");
-        return !new RegExp(g.pattern as string, g.flags ?? "").test(text);
+        const found = new RegExp(g.pattern as string, g.flags ?? "").test(text);
+        // A `not_contains` grader passes when the regex finds nothing.
+        return g.match === "not_contains" ? found : !found;
       }
       if (g.type === "tool_order") {
         const at = (m: ToolMatch) => {

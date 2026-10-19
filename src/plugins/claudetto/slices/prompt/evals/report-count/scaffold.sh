@@ -2,26 +2,25 @@
 # Builds the fixture in the empty workspace.
 # Needs the flag `--scaffold`.
 # A count by hand gets 11 or 13 tasks, because of the cancelled tasks and the example block.
-# The project script gives 7 of 9 done after the two edits.
-# `claude plugin eval` runs with `--setting-sources user` and `CLAUDE_CODE_DISABLE_CLAUDE_MDS=1`,
-# so `tasks.md` and not a `CLAUDE.md` names the script.
+# The project script gives 7 of 9 done and 2 open after the two edits.
+# Only the `scripts` key of `package.json` names the script, and the README has a stale line (6 of 9).
+# `claude plugin eval` loads no `CLAUDE.md`, so the agent must look in `package.json`.
 set -euo pipefail
 cat > package.json <<'JSON'
 {
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "progress": "node bin/progress.mjs"
+  }
 }
 JSON
 cat > README.md <<'MD'
 # Parser
 
-`node bin/progress.mjs` prints the progress of `tasks.md`.
-A cancelled task and a line in a code block are not tasks.
+Progress: 6 of 9 tasks done, 3 open
 MD
 cat > tasks.md <<'MD'
 # Tasks
-
-Run `node bin/progress.mjs` for the progress of this file.
-A cancelled task and a line in a code block are not tasks.
 
 ## 1. Parser
 

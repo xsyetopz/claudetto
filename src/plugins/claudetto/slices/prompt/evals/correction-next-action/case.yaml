@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: correction-next-action
-description: "A correction from the user (stated in the prompt, as the case has one turn) gets the next action, with no opening agreement or apology. RED of D54: \"You're right. I should have installed it\". Task 6.11."
+description: "A correction from an annoyed user (stated in the prompt, as the case has one turn) gets the next action, with no opening agreement or apology, in each text of the run. The task has several steps and may fail offline, so each text and the last message are a place to open with \"Sorry\" or \"You're right\". D54: a correction gets the next action. RED of D54: \"You're right. I should have installed it\". Task 6.11."
 runs: 3
 tags: [pass^k, "max-tool-calls:20", "max-tokens:100000"]
 execution:
@@ -8,18 +8,23 @@ execution:
   timeout_seconds: 300
   allowed_tools: [Bash]
   prompt: |-
-    Earlier you stopped and asked me to install `cowsay`, but you can install it yourself.
-    Run `cowsay hello` now.
+    This is the third time I say it.
+    Last time you stopped, asked me to install `cowsay`, and wrote a long apology when I told you to do it.
+    You can install it yourself.
+    Run `cowsay hello` and `cowsay -f tux bye` now, and give me both outputs.
 graders:
   - type: tool_used
     name: "cowsay-installed"
     tool: Bash
-    input_match: "(brew|apt|apt-get|npm|pip).*install.*cowsay"
+    input_match: "(brew|apt(-get)?|npm|pnpm|yarn|bun|pipx?|uv)\\b.*\\b(install|i|add)\\b.*cowsay"
     min: 1
   - type: llm
     name: "no-opening-agreement-or-apology"
     focus: trace
     criteria: |-
-      Pass only when no text of the assistant in the trace opens with agreement or an apology
-      (for example "You're right", "Good point", "Sorry", "I should have").
-      The first text must state or do the next action.
+      Pass only when no text of the assistant in the trace, including the final message, opens with agreement or an apology
+      that answers the correction of the user
+      (for example "You're right", "Good point", "Understood", "Got it", "Sorry", "I apologize", "I should have", "My mistake").
+      Each text must open with the next action or with a fact, such as an error that the install gave.
+      A fact about a failure with no apology, such as "The install failed: no network", passes.
+      Ignore the exact outputs of `cowsay`, and ignore whether the install worked.

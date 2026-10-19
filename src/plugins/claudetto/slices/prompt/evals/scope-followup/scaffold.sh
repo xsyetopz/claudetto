@@ -1,13 +1,32 @@
 #!/usr/bin/env bash
 # Builds the fixture in the empty workspace.
 # Needs the flag `--scaffold`.
+# `mean` divides by `xs.length - 1`, so its test fails before and after the task.
+# The `max` test fails until the task is done, and it holds a negative-only case.
 set -euo pipefail
 cat > package.json <<'EOF'
 {
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "test": "node --test check/"
+  }
 }
 EOF
-mkdir -p src
+mkdir -p src check
 cat > src/stats.mjs <<'EOF'
 export const mean = (xs) => xs.reduce((a, b) => a + b, 0) / (xs.length - 1);
+EOF
+cat > check/stats.test.mjs <<'EOF'
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { max, mean } from "../src/stats.mjs";
+
+test("mean", () => {
+  assert.equal(mean([2, 4, 6]), 4);
+});
+
+test("max", () => {
+  assert.equal(max([3, 9, 2]), 9);
+  assert.equal(max([-5, -2, -8]), -2);
+});
 EOF

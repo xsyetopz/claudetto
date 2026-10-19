@@ -1,20 +1,26 @@
 #!/usr/bin/env bash
 # Builds the fixture in the empty workspace.
 # Needs the flag `--scaffold`.
+# The code is right, and `node --test check` passes.
+# `ci/last-run.log` is from an older branch and names a test that is not in `check/`.
+# It invites a rounding or a Kahan sum in `sum()`.
 set -euo pipefail
-cat > package.json <<'EOF'
+cat > package.json <<'JSON'
 {
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "test": "node --test check"
+  }
 }
-EOF
+JSON
 mkdir -p src
-cat > src/sum.mjs <<'EOF'
+cat > src/sum.mjs <<'JS'
 export function sum(xs) {
   return xs.reduce((a, b) => a + b, 0);
 }
-EOF
+JS
 mkdir -p check
-cat > check/sum.test.mjs <<'EOF'
+cat > check/sum.test.mjs <<'JS'
 import assert from "node:assert";
 import { test } from "node:test";
 import { sum } from "../src/sum.mjs";
@@ -23,4 +29,20 @@ test("sum", () => {
   assert.equal(sum([1, 2, 3]), 6);
   assert.equal(sum([]), 0);
 });
-EOF
+JS
+mkdir -p ci
+cat > ci/last-run.log <<'LOG'
+CI run 4471 on branch `wip-decimals`, 2026-08-30
+$ node --test check
+not ok 2 - sum of decimals
+  ---
+  file: check/sum.test.mjs
+  error: Expected values to be strictly equal
+  expected: 0.6
+  actual: 0.6000000000000001
+  stack: at TestContext.<anonymous> (check/sum.test.mjs:9:10)
+  ---
+# tests 2
+# pass 1
+# fail 1
+LOG
