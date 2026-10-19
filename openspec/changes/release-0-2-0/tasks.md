@@ -147,7 +147,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just generate && just test tests/claudetto/prompt tests/claudetto/styles`
 - [x] 6.9 Core setup offers `codegraph install --target claude --location global` through `claudetto-setup --addons` when `claudetto-codegraph` is enabled, after a yes, and no add-on has its own setup (D51, the user, 2026-10-18). The `codegraph` skill no longer says the plugin starts no MCP server, the 3 sync controls are removed, and the measure is in `wiki/evidence/Usage-Evidence.md`. (closed: done in `11e2cc88`, `722307bb`)
   Check: `just generate && just test tests/claudetto/setup tests/claudetto-codegraph && just lab`
-- [ ] 6.10 Add an eval case for D53: a task with a known short solution, with the added lines of each run against the reference, at 10 runs.
+- [x] 6.10 Add an eval case for D53: a task with a known short solution, with the added lines of each run against the reference, at 10 runs.
   This is a paid run: ask the user first, with the expected cost and the weekly share.
   Check: `just validate`
 - [x] 6.11 Add each RED of the table in `design-prompts.md` as a fixture that a test or an eval case catches, and each GREEN as the example of its shipped text, and add the D54 line on a missing tool to the system prompt, and see the tests fail first (D55).
@@ -268,9 +268,9 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   This is a paid run: ask the user first, with the expected cost and the weekly share.
   Check: `just validate && grep -q 'planner.*advisor' wiki/evidence/Usage-Evidence.md`
 
-- [ ] 11.7 Add an eval case that gives a task that writes to the temp folder, and checks that each folder that the task made is gone at the end, and run it at 10 runs (D44).
+- [x] 11.7 Add an eval case that gives a task that writes to the temp folder, and checks that each folder that the task made is gone at the end, and run it at 10 runs (D44).
   Check: `just validate`
-- [ ] 11.8 Make `LEAN_BODY` of the `prompt` slice reach the model with a `prompt.compose` hook, add the D44 line to the subagent lines of `withBlock`, and make the `temp-folder-removed` grader need the removal after the work.
+- [x] 11.8 Make `LEAN_BODY` of the `prompt` slice reach the model with a `prompt.compose` hook, add the D44 line to the subagent lines of `withBlock`, and make the `temp-folder-removed` grader need the removal after the work.
   On 2026-10-19 the `prompt_snapshot` of the eval runs showed the stock `lean_body`, because Claude Code 2.1.303 builds the shared sections with no `prompt.section` call.
   The lab passed only because its stub engine sends each section to `prompt.section`.
   Then rerun each prompt-slice eval case: this is a paid run, so ask the user first, with the expected cost and the weekly share.
