@@ -22,7 +22,7 @@ For each feature, it picks the first of these that can do the work:
 4. Nothing.
 
 It writes no code for a feature that Claude Code already has.
-Claude Code 2.1.304 or later is the minimum version.
+Claude Code 2.1.305 or later is the minimum version.
 
 ## The Plugins
 

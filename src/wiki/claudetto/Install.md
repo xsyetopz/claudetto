@@ -8,7 +8,7 @@ Add-ons are optional.
 
 | Need | For | Note |
 | --- | --- | --- |
-| Claude Code 2.1.304 or later | all plugins | |
+| Claude Code 2.1.305 or later | all plugins | |
 | `git` | `claudetto` | The status line and the `patch` slice use it. |
 | [Bun](https://bun.sh) 1.4.3 or later, on `PATH` | all plugins | The `docs` skill runs `ctx7` with `bunx`. |
 | [Node.js](https://nodejs.org) | `agent-browser` | Only for `npm install -g agent-browser`. |

@@ -17,7 +17,7 @@ Paths start at `src/plugins/claudetto/` unless they say otherwise.
 
 The code reads no `CLAUDETTO_` env var as a switch.
 `CLAUDETTO_DIR` in `src/kernel/paths.ts` is the name of the `.claudetto` folder.
-The facts are for Claude Code `2.1.304`, and the key names match `schemas/claude-code-settings.json`.
+The facts are for Claude Code `2.1.305`, and the key names match `schemas/claude-code-settings.json`.
 
 ## Plugin Options
 
@@ -122,7 +122,7 @@ Claude Code stops loading the parts of a disabled plugin.
 
 The snippet sets one entry of `skillOverrides`: `plugin-authoring` set to `name-only`.
 The value `name-only` shows the skill by name only.
-The effect on a plugin skill is not re-checked on `2.1.304`.
+The effect on a plugin skill is not re-checked on `2.1.305`.
 To check the effect, run `/context` in `just sandbox`.
 
 ## Never Set

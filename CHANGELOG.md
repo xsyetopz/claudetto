@@ -9,9 +9,9 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ## [Unreleased]
 
-## [0.2.0] - 2026-10-18
+## [0.2.0] - 2026-10-21
 
-This release cuts `claudetto` to the parts that Claude Code does not do already, so the `.ts` source under `src/` (without `lab/`) goes from 33,219 lines to 11,288 lines, it needs Claude Code 2.1.304 or later, and `/claudetto:setup` must run again after the update, because it cleans the settings of 0.1.0.
+This release cuts `claudetto` to the parts that Claude Code does not do already, so the `.ts` source under `src/` (without `lab/`) goes from 33,219 lines to 11,288 lines, it needs Claude Code 2.1.305 or later, and `/claudetto:setup` must run again after the update, because it cleans the settings of 0.1.0.
 
 ### Added
 
@@ -32,9 +32,14 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 - The skill `dry` runs `jscpd-config --run`, which sets `BUN_TMPDIR` from `TMPDIR` itself, so the scan needs no env prefix and no prompt, and the ask rule for a git delete refspec is `Bash(git push* :* *)`, because Claude Code read `Bash(git push* :*)` as a literal prefix that matched nothing.
 - The settings snippet sets `sandbox.allowUnsandboxedCommands` to `false`, so a command that fails in the sandbox is not run again outside it with no prompt.
-- `claudetto` now targets Claude Code 2.1.304 (`MIN_CLAUDE_CODE_VERSION`, the CI, the issue templates, and the schemas in `schemas/`).
-  The facts about the compaction window, the output reserve, and `bashOutputMaxChars` hold on 2.1.303 and 2.1.304.
-  No settings key changed, and no plugin calls `$.agent.spawn`, whose `{ deny }` result is now also the refusal of the engine past a Stop or a host limit.
+- `claudetto` now targets Claude Code 2.1.305 (`MIN_CLAUDE_CODE_VERSION`, the CI, the issue templates, and the schemas in `schemas/`).
+  The facts about the compaction formula, the output reserve, and `bashOutputMaxChars` hold on 2.1.303 to 2.1.305.
+  The hook fields, the events, the tools, and the prompt section ids are the same as in 2.1.304.
+  The schemas in `schemas/` gain `attributionProject`, `attributionProjectPolicy` (managed settings only), and `sandbox.allowNestedUserNamespaces`, and the descriptions of `allowedMcpServers` and `allowManagedPermissionRulesOnly` changed.
+  No plugin sets these keys.
+  Claude Code 2.1.305 changed the resolver of the auto-compact window, and no live check shows whether it still caps Opus 5.5 at 200K.
+  The `autoCompactWindow` key of the snippet still wins first, so the snippet stays as it is.
+  No plugin calls `$.agent.spawn`, whose `{ deny }` result is also the refusal of the engine past a Stop or a host limit.
 - **Breaking:** `claudetto` has these slices: `advise`, `decide`, `dry`, `goal`, `ground`, `guard`, `handoff`, `patch`, `prompt`, `reply`, `sembr`, `setup`, `spec`, `statusline`, and `styles`, and `claudetto-sessions` is one `sessions` skill with the scripts `audit` and `replay`, and the `awareness`, `start-cost`, and `usage` slices are gone, because `/context`, `/usage`, `/insights`, and `/status` give the same facts.
 - **Breaking:** `guard` keeps the deny of a `Bash` command that only prints a file and names the `Read` call to use, and it fails closed, so a crash or timeout denies a print command.
 - **Breaking:** `handoff` keeps the compact answer and reads `openspec/changes/` in place of `minispec/changes/`, a handoff after the cache TTL is written with no model call while a warm cache still forks, and the done list holds only checked tasks of `tasks.md` and checks whose last run passed (D47, D48).

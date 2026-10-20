@@ -63,7 +63,7 @@ The agent sandbox can block a local port, so the user runs `just capture` in a t
    A `Read` of an unchanged range returns a short stub, and a `Bash` print does not.
 2. The `tools` section tells the model to read only the part it needs, with `offset` and `limit`.
 3. `bashOutputMaxChars` is 16000.
-   Claude Code 2.1.303 and 2.1.304 allow 4000 to 128000, with a default of 30000.
+   Claude Code 2.1.303 to 2.1.305 allow 4000 to 128000, with a default of 30000.
    A longer output goes to a file, and Claude gets a preview and the path.
 
 **Reason:** Each read and command output adds text to the context.

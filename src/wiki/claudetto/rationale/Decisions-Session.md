@@ -25,7 +25,7 @@ The main conversation gets 1 hour on a Claude subscription within its usage limi
 Everything outside the main conversation gets 5 minutes, unless `ENABLE_PROMPT_CACHING_1H=1`.
 A fixed value in the snippet is wrong for one of these accounts.
 
-**Evidence:** Both names are in the settings schema of the installed Claude Code 2.1.304, in `schemas/claude-code-settings.json` and `schemas/claude-code-managed-settings.json`.
+**Evidence:** Both names are in the settings schema of the installed Claude Code 2.1.305, in `schemas/claude-code-settings.json` and `schemas/claude-code-managed-settings.json`.
 `just schema` extracts the schema from the bundle.
 The env vars `CLAUDE_CODE_PROMPT_CACHE_TTL` and `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` take precedence over the keys.
 

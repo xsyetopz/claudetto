@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$comment": "Extracted from Claude Code 2.1.304",
+  "$comment": "Extracted from Claude Code 2.1.305",
   "type": "object",
   "properties": {
     "$schema": {
@@ -172,6 +172,10 @@
       ],
       "description": "Customize attribution text for commits and PRs. Each field defaults to the standard Claude Code attribution if not set. Set to `false` to hide all attribution, the same as `{ \"commit\": \"\", \"pr\": \"\", \"sessionUrl\": false }`. Setting it to `true` is the same as leaving it out. Older Claude Code versions reject `true` or `false` here, so use the object form in settings files shared across versions."
     },
+    "attributionProject": {
+      "type": "string",
+      "description": "The claude.ai Project this session names for your organization's usage reports: the Project's UUID, or its ID starting with `claude_proj_`. An empty string names none and stops lower-precedence files from naming one; the organization default still applies. Sent only when Claude Code uses your claude.ai login, connects directly to the Anthropic API, is not in a cloud session, and `CLAUDE_CODE_ATTRIBUTION_HEADER` is not 0. `CLAUDE_CODE_ATTRIBUTION_PROJECT` takes precedence over it. Set in managed settings, it overrides people's own settings files. A project's `.claude/settings.json` and `settings.local.json` count only once the folder is trusted; for runs in a folder nobody has trusted, such as CI, use `CLAUDE_CODE_ATTRIBUTION_PROJECT`."
+    },
     "includeCoAuthoredBy": {
       "type": "boolean",
       "description": "Deprecated: Use attribution instead. Whether to include Claude's co-authored by attribution in commits and PRs (defaults to `true`)"
@@ -306,7 +310,7 @@
     "allowedMcpServers": {
       "type": "array",
       "items": {},
-      "description": "Enterprise allowlist of the MCP servers users may use. Governs servers users add (user, project and local config, `--mcp-config`, agent frontmatter, plugins, claude.ai connectors); servers the organization itself delivers (`managedMcpServers`, and `managed-mcp.json` entries that use no ${VAR} expansion) are allowed without being listed; a `managed-mcp.json` entry that uses ${VAR} expansion is still checked against this list. If undefined, all servers are allowed. If empty array, users can use no servers of their own. Denylist takes precedence - if a server is on both lists, it is denied."
+      "description": "Enterprise allowlist of the MCP servers users may use. Governs servers users add (user, project and local config, `--mcp-config`, agent frontmatter, plugins, claude.ai connectors); servers the organization itself delivers (`managedMcpServers`, and `managed-mcp.json` entries with no ${VAR} in their command, args, url or header values) are allowed without being listed; a `managed-mcp.json` entry with ${VAR} in any of those must match this list. If undefined, all servers are allowed. If empty array, users can use no servers of their own. Denylist takes precedence - if a server is on both lists, it is denied."
     },
     "deniedMcpServers": {
       "type": "array",
@@ -726,6 +730,10 @@
         "enableWeakerNestedSandbox": {
           "type": "boolean",
           "description": "Linux only: Run without the fresh `/proc` mount, for hosts such as unprivileged Docker containers that cannot create one. **Reduces security** — the host `/proc` stays readable by sandboxed commands. Default: `false`. "
+        },
+        "allowNestedUserNamespaces": {
+          "type": "boolean",
+          "description": "Linux/WSL only: Let sandboxed commands create user namespaces of their own, which the sandbox refuses by default. Needed by tools that sandbox themselves that way, such as Chromium's and Electron's sandbox, rootless podman or buildah, a nested bubblewrap, and `unshare`. **Removes code-execution isolation** — in any folder a hostile command may write, it can then bypass `filesystem.denyWrite`, `filesystem.denyRead`, `credentials.files` entries and the paths the sandbox always write-protects (such as `.claude/settings.json`, git hooks and git config), and so plant code that later runs outside the sandbox; while `autoAllowBashIfSandboxed` is on, the command that plants it needs no approval. Default: `false`. Only honored from user, managed/policy, or CLI (`--settings`) settings — "
         },
         "enableWeakerNetworkIsolation": {
           "type": "boolean",
@@ -1280,5 +1288,5 @@
     }
   },
   "additionalProperties": false,
-  "title": "Claude Code 2.1.304 settings.json"
+  "title": "Claude Code 2.1.305 settings.json"
 }
