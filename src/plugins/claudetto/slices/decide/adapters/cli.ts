@@ -37,6 +37,10 @@ import {
 
 const API = "https://api.typesafe.ai/v1/systemone";
 const MODEL = "jev-latest";
+/** The pinned model of a request with a `box` question, which needs Jev 1.14 (design D3). */
+const BOX_MODEL = "jev-1.14.0";
+/** The header that turns on the images and the `box` question, on each request that uses one (design D1). */
+const IMAGES_HEADER = "TypeSafe-Danger-Zone-Images";
 
 /** The exit codes of the command. */
 export const EXIT = {
@@ -155,8 +159,52 @@ export const exitOf = (err: unknown): number => {
   return EXIT.failed;
 };
 
+/** The request body, and the headers that go with it. The body is a JSON string, or a `FormData` for images. */
+export interface Request {
+  readonly body: string | FormData;
+  readonly headers: Record<string, string>;
+}
+
+/**
+ * The request for a body and its images (design D1, D2, D3).
+ * With no image and no `box` question, it is the JSON string of the body, with no header.
+ * Each image gets a UUID in `assets`, a file part `img<n>`, and a state line `Image img<n>: <uuid>`.
+ * The model is `jev-1.14.0` when a question has the type `box`, and the model of the body otherwise.
+ */
+export const buildRequest = (
+  body: { state: string; model: string; questions: object },
+  images: readonly Blob[],
+): Request => {
+  const box = Object.values(body.questions).some((q) => q?.type === "box");
+  if (!box && images.length === 0)
+    return { body: JSON.stringify(body), headers: {} };
+  const assets: Record<string, object> = {};
+  const lines = images.map((_, i) => {
+    const id = crypto.randomUUID();
+    assets[id] = { type: "image", part: `img${i + 1}` };
+    return `Image img${i + 1}: ${id}`;
+  });
+  const json = {
+    ...body,
+    state: [body.state, ...lines].filter(Boolean).join("\n"),
+    model: box ? BOX_MODEL : body.model,
+    ...(images.length > 0 && { assets }),
+  };
+  const headers = { [IMAGES_HEADER]: "true" };
+  if (images.length === 0) return { body: JSON.stringify(json), headers };
+  const form = new FormData();
+  form.set(
+    "request",
+    new Blob([JSON.stringify(json)], { type: "application/json" }),
+  );
+  images.forEach((blob, i) => form.set(`img${i + 1}`, blob, `img${i + 1}`));
+  return { body: form, headers };
+};
+
 /** The functions that `post` uses, which a test can replace. */
 export interface PostOptions {
+  /** The image files to send with the body, in the order of `--image`. */
+  readonly images?: readonly Blob[];
   readonly fetchFn?: typeof fetch;
   readonly sleep?: (ms: number) => Promise<void>;
 }
@@ -168,16 +216,25 @@ export interface PostOptions {
 export const post = async (
   body: object,
   key: string,
-  { fetchFn = fetch, sleep = Bun.sleep }: PostOptions = {},
+  { fetchFn = fetch, sleep = Bun.sleep, images = [] }: PostOptions = {},
 ): Promise<unknown> => {
+  // One request for all tries, so that a retry sends the same UUIDs.
+  const request = buildRequest(
+    body as Parameters<typeof buildRequest>[0],
+    images,
+  );
   for (let i = 0; ; i++) {
     const res = await fetchFn(API, {
       method: "POST",
       headers: {
         authorization: `Bearer ${key}`,
-        "content-type": "application/json",
+        // A `FormData` body gets its content type, with the boundary, from `fetch`.
+        ...(typeof request.body === "string" && {
+          "content-type": "application/json",
+        }),
+        ...request.headers,
       },
-      body: JSON.stringify(body),
+      body: request.body,
       signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
     });
     if (res.ok) return res.json();

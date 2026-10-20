@@ -5,6 +5,7 @@ import { expect, spyOn, test } from "bun:test";
 import {
   ApiError,
   buildBody,
+  buildRequest,
   EXIT,
   exitOf,
   main,
@@ -361,4 +362,96 @@ test("the verb `box` is known to the parser", () => {
     json: false,
     images: ["a.png"],
   });
+});
+
+/** A fake image file with a content type. */
+const image = (type: string, byte: number): Blob =>
+  new Blob([new Uint8Array([byte])], { type });
+
+const IMAGE_BODY = {
+  state: "A screen.",
+  model: "jev-latest",
+  questions: { q: { type: "noul", instructions: "Is `img1` a login?" } },
+};
+
+test("a request with an image has the header, and a first part `request` with `application/json`", async () => {
+  const { body, headers } = buildRequest(IMAGE_BODY, [
+    image("image/png", 1),
+    image("image/jpeg", 2),
+  ]);
+  expect(headers["TypeSafe-Danger-Zone-Images"]).toBe("true");
+  expect(body).toBeInstanceOf(FormData);
+  const form = body as FormData;
+  expect([...form.keys()]).toEqual(["request", "img1", "img2"]);
+  const part = form.get("request") as File;
+  expect(part.type).toContain("application/json");
+  expect(JSON.parse(await part.text()).model).toBe("jev-latest");
+});
+
+test("each image has one file part `img<n>`, one `assets` entry, and one state line", async () => {
+  const { body } = buildRequest(IMAGE_BODY, [
+    image("image/png", 1),
+    image("image/jpeg", 2),
+  ]);
+  const form = body as FormData;
+  expect((form.get("img1") as File).type).toBe("image/png");
+  expect((form.get("img2") as File).type).toBe("image/jpeg");
+  const json = JSON.parse(await (form.get("request") as File).text());
+  const ids = Object.keys(json.assets);
+  expect(ids).toHaveLength(2);
+  expect(new Set(ids).size).toBe(2);
+  expect(json.assets[ids[0] as string]).toEqual({
+    type: "image",
+    part: "img1",
+  });
+  expect(json.assets[ids[1] as string]).toEqual({
+    type: "image",
+    part: "img2",
+  });
+  expect(json.state).toBe(
+    `A screen.\nImage img1: ${ids[0]}\nImage img2: ${ids[1]}`,
+  );
+  expect(json.questions).toEqual(IMAGE_BODY.questions);
+});
+
+test("a request with no image and no `box` is the same JSON, with no header, and the model `jev-latest`", () => {
+  const { body, headers } = buildRequest(IMAGE_BODY, []);
+  expect(headers).toEqual({});
+  expect(body).toBe(JSON.stringify(IMAGE_BODY));
+  expect(JSON.parse(body as string).model).toBe("jev-latest");
+});
+
+test("a request with a `box` question has the header and the model `jev-1.14.0`", () => {
+  const box = {
+    ...IMAGE_BODY,
+    questions: {
+      q: { type: "noul", instructions: "x" },
+      b: { type: "box", instructions: "the button" },
+    },
+  };
+  const { body, headers } = buildRequest(box, []);
+  expect(headers["TypeSafe-Danger-Zone-Images"]).toBe("true");
+  expect(JSON.parse(body as string).model).toBe("jev-1.14.0");
+});
+
+test("`post` sends the multipart body and the header with `fetch`, and a text body with no header", async () => {
+  const seen: RequestInit[] = [];
+  const fetchFn = (async (_url: string, init: RequestInit) => {
+    seen.push(init);
+    return reply(200, { answers: 1 });
+  }) as unknown as typeof fetch;
+  await post(IMAGE_BODY, KEY, { fetchFn, images: [image("image/png", 1)] });
+  await post(IMAGE_BODY, KEY, { fetchFn });
+  const [withImage, text] = seen;
+  expect(withImage?.body).toBeInstanceOf(FormData);
+  expect(withImage?.headers).toMatchObject({
+    "TypeSafe-Danger-Zone-Images": "true",
+  });
+  // `fetch` sets the content type with the boundary of the form.
+  expect(JSON.stringify(withImage?.headers).toLowerCase()).not.toContain(
+    "content-type",
+  );
+  expect(text?.body).toBe(JSON.stringify(IMAGE_BODY));
+  expect(JSON.stringify(text?.headers)).not.toContain("Danger-Zone");
+  expect(text?.headers).toMatchObject({ "content-type": "application/json" });
 });
