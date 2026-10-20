@@ -130,15 +130,17 @@ const checkImageSize = (path: string, bytes: Uint8Array): void => {
   const size = imageSize(bytes);
   if (!size) return;
   const { width, height } = size;
+  // Numbers print with commas, as the numbers of the prompts do.
+  const n = (v: number) => v.toLocaleString("en-US");
   const bound =
     Math.max(width, height) > IMAGE_SIDE_MAX
-      ? `over ${IMAGE_SIDE_MAX} px on a side`
+      ? `over ${n(IMAGE_SIDE_MAX)} px on a side`
       : Math.min(width, height) < IMAGE_SIDE_MIN
-        ? `under ${IMAGE_SIDE_MIN} px on a side`
+        ? `under ${n(IMAGE_SIDE_MIN)} px on a side`
         : width * height > IMAGE_PIXELS_MAX
-          ? `over ${IMAGE_PIXELS_MAX} px in total`
+          ? `over ${n(IMAGE_PIXELS_MAX)} px in total`
           : width * height < IMAGE_PIXELS_MIN
-            ? `under ${IMAGE_PIXELS_MIN} px in total`
+            ? `under ${n(IMAGE_PIXELS_MIN)} px in total`
             : undefined;
   if (bound)
     throw new UsageError(

@@ -931,7 +931,7 @@ test("`main` exits 2 with no request for an image over the side maximum, and nam
   expect(r.seen).toHaveLength(0);
   expect(r.text).toContain(r.path);
   expect(r.text).toContain("1554x2000");
-  expect(r.text).toContain("over 1568 px on a side");
+  expect(r.text).toContain("over 1,568 px on a side");
   expect(r.text).toContain("Scale the image");
 });
 
@@ -968,18 +968,24 @@ test("`main` passes the inclusive edges of the pixel bounds", async () => {
 
 test("`main` checks the pixel bounds for each verb that takes an image", async () => {
   const dir = await mkdtemp(join(tmpdir(), "decide-"));
+  const stdin = spyOn(Bun.stdin, "text").mockResolvedValue(
+    JSON.stringify({ questions: { q: { type: "noul", instructions: "Ok?" } } }),
+  );
   try {
     const a = join(dir, "a.png");
     await Bun.write(a, pngOf(1554, 2000));
     for (const argv of [
+      ["yes", "--image", a, "--", "Q?"],
       ["pick", "--image", a, "--", "Which?", "x", "y"],
       ["box", "--image", a, "--", "the button"],
+      ["ask", "--image", a],
     ]) {
       const { code, seen } = await runMain(argv);
       expect(code).toBe(EXIT.usage);
       expect(seen).toHaveLength(0);
     }
   } finally {
+    stdin.mockRestore();
     await rm(dir, { recursive: true });
   }
 });
@@ -988,4 +994,23 @@ test("`main` leaves an image with an unreadable size to the API", async () => {
   const r = await runBad("cut.png", pngOf(5000, 5000).slice(0, 20));
   expect(r.code).toBe(EXIT.ok);
   expect(r.seen).toHaveLength(1);
+});
+
+test("`main` leaves a JPEG with no `SOF` to the API", async () => {
+  const r = await runBad("nosof.jpg", JPEG);
+  expect(r.code).toBe(EXIT.ok);
+  expect(r.seen).toHaveLength(1);
+});
+
+test("the usage and the size message name the pixel bounds from `limits.ts`", async () => {
+  const { USAGE, ERROR_IMAGE_SIZE } = await import(
+    "../../../plugins/claudetto/slices/decide/prompts.ts"
+  );
+  for (const text of [
+    USAGE,
+    ERROR_IMAGE_SIZE({ path: "a.png", size: "1x1", bound: "b" }),
+  ]) {
+    expect(text).toContain(IMAGE_SIDE_MIN.toLocaleString("en-US"));
+    expect(text).toContain(IMAGE_SIDE_MAX.toLocaleString("en-US"));
+  }
 });

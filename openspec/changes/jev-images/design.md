@@ -94,7 +94,7 @@ The header read of D5 is the only size read, and it needs no library.
 
 - Alternative: leave the pixel bounds to the API.
   Rejected after the live `400` above, because the reply gives the user no size and no advice.
-- Alternative: check the pixels in the CLI.
+- Alternative: decode the pixels in the CLI.
   Rejected, for the reason above.
 - Alternative: resize the picture in the CLI.
   Rejected, because the API does no resize, and a resize needs an image library.
