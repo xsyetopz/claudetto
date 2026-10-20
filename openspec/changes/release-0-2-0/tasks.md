@@ -286,7 +286,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just docker check`
 - [x] 12.4 Ask the user before the paid run, with the cost and the weekly share, then run one `just sandbox` session of the setup and one task of each slice on a fresh config, and write each fault to `findings.md` and fix it (D38).
   Check: `just validate`
-- [ ] 12.5 Ask the user for a yes to tag `claudetto--v0.2.0` and push, and do neither before the yes (D38).
+- [x] 12.5 Ask the user for a yes to tag `claudetto--v0.2.0` and push, and do neither before the yes (D38).
   Check: `git tag --list claudetto--v0.2.0`
 
 ## 13. Findings
