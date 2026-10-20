@@ -500,6 +500,12 @@ test("a request with a `box` question and images is multipart, with `jev-1.14.0`
   expect(json.model).toBe("jev-1.14.0");
 });
 
+/** Stubs stdin with one `noul` question for `ask`. The caller restores the spy. */
+const stubAskStdin = () =>
+  spyOn(Bun.stdin, "text").mockResolvedValue(
+    JSON.stringify({ questions: { q: { type: "noul", instructions: "Ok?" } } }),
+  );
+
 /** Runs `main` with a fake `fetch` that records the init of each call, and a key in the environment. */
 const runMain = async (
   argv: string[],
@@ -570,9 +576,7 @@ test("`main` sends `yes` and `pick` with `--image` as multipart, one part for ea
 
 test("`main` sends `ask` with `--image` as multipart, with the questions of stdin", async () => {
   const dir = await mkdtemp(join(tmpdir(), "decide-"));
-  const stdin = spyOn(Bun.stdin, "text").mockResolvedValue(
-    JSON.stringify({ questions: { q: { type: "noul", instructions: "Ok?" } } }),
-  );
+  const stdin = stubAskStdin();
   try {
     const a = join(dir, "a.png");
     await Bun.write(a, PNG);
@@ -968,9 +972,7 @@ test("`main` passes the inclusive edges of the pixel bounds", async () => {
 
 test("`main` checks the pixel bounds for each verb that takes an image", async () => {
   const dir = await mkdtemp(join(tmpdir(), "decide-"));
-  const stdin = spyOn(Bun.stdin, "text").mockResolvedValue(
-    JSON.stringify({ questions: { q: { type: "noul", instructions: "Ok?" } } }),
-  );
+  const stdin = stubAskStdin();
   try {
     const a = join(dir, "a.png");
     await Bun.write(a, pngOf(1554, 2000));
