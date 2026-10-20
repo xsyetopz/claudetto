@@ -15,11 +15,13 @@ import { mean } from "../src/mean.mjs";
 
 test("mean", () => {
   assert.equal(mean([1, 2, 3]), 2);
+  assert.equal(mean([]), 0);
 });
 EOF
 mkdir -p src
 cat > src/mean.mjs <<'EOF'
 export function mean(xs) {
+  if (xs.length === 0) return 0;
   return xs.reduce((a, b) => a + b, 0) / xs.length;
 }
 EOF
