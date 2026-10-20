@@ -45,5 +45,5 @@
 
 ## 7. Full Gate
 
-- [ ] 7.1 Run the full gate in a container.
+- [x] 7.1 Run the full gate in a container.
   Check: `just docker check`
