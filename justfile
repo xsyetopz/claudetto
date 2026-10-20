@@ -124,7 +124,7 @@ eval-tune *args:
     for c in $cases; do just eval --case "$c" "$@" || failed=1; done
     exit $failed
 
-# Check the budget tags of the cases against the trace.jsonl files under a folder of kept sandboxes (the eval prints "kept temp: PATH"); add --case NAME when the folder is one case
+# Check the budget tags of the cases against the kept traces named by tracePath in each aggregate-result.json (a file, or a folder that holds them); the with arm is checked and the without arm is only reported
 eval-budget *args:
     bun tools/run-budget.ts "$@"
 

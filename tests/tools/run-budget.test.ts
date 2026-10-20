@@ -1,7 +1,7 @@
-// The budget reader finds each `trace.jsonl` under a folder and checks it against the tags of its case.
+// The budget reader checks the `tracePath` of each run in an `aggregate-result.json` against the tags of its case.
 
 import { expect, test } from "bun:test";
-import { mkdirSync, mkdtempSync } from "node:fs";
+import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -23,43 +23,95 @@ const result = (n: number) =>
     usage: { input_tokens: n, output_tokens: 0 },
   });
 
-const stub = async (traces: Record<string, string>) => {
+/** A folder with the traces, and an `aggregate-result.json` whose case `name` holds the runs of the `with` and `without` arms. */
+const stub = async (
+  name: string,
+  withTraces: (string | null)[],
+  withoutTraces: (string | null)[] = [],
+) => {
   const dir = mkdtempSync(join(tmpdir(), "run-budget-"));
-  for (const [path, text] of Object.entries(traces)) {
-    mkdirSync(join(dir, path, ".."), { recursive: true });
-    await Bun.write(join(dir, path), text);
-  }
+  let n = 0;
+  const run = async (text: string | null) => {
+    if (text === null) return {};
+    const tracePath = join(dir, `t${n++}.jsonl`);
+    await Bun.write(tracePath, text);
+    return { tracePath };
+  };
+  const agg = {
+    cases: [
+      {
+        name,
+        arms: {
+          with: await Promise.all(withTraces.map(run)),
+          without: await Promise.all(withoutTraces.map(run)),
+        },
+      },
+    ],
+  };
+  await Bun.write(join(dir, "r/aggregate-result.json"), JSON.stringify(agg));
   return dir;
 };
 
 test("a trace in budget has no fault", async () => {
-  const dir = await stub({
-    "e-1/a/trace.jsonl": `${call("Bash")}\n${result(5)}\n`,
-  });
-  expect(await budgetFaultsIn(dir, tags)).toEqual([]);
+  const dir = await stub("a", [`${call("Bash")}\n${result(5)}\n`]);
+  const r = await budgetFaultsIn([dir], tags);
+  expect(r.faults).toEqual([]);
+  expect(r.checked).toBe(1);
 });
 
-test("a trace over a bound is listed", async () => {
-  const dir = await stub({
-    "e-1/a/trace.jsonl": `${call("Bash")}\n${call("Edit")}\n${result(50)}\n`,
-  });
-  const faults = await budgetFaultsIn(dir, tags);
-  expect(faults).toHaveLength(2);
-  expect(faults.join()).toContain("max-tool-calls:1");
-  expect(faults.join()).toContain("max-tokens:10");
+test("a trace over a bound names the case, arm, and run", async () => {
+  const dir = await stub("a", [
+    `${call("Bash")}\n${result(5)}\n`,
+    `${call("Bash")}\n${call("Edit")}\n${result(50)}\n`,
+  ]);
+  const r = await budgetFaultsIn([join(dir, "r/aggregate-result.json")], tags);
+  expect(r.faults).toHaveLength(2);
+  expect(r.faults.join()).toContain("a with[1]");
+  expect(r.faults.join()).toContain("max-tool-calls:1");
+  expect(r.faults.join()).toContain("max-tokens:10");
 });
 
-test("--case names the case of each trace", async () => {
-  const dir = await stub({ "e-1/trace.jsonl": `${call("A")}\n${call("B")}\n` });
-  expect(await budgetFaultsIn(dir, tags)).toHaveLength(1);
-  expect(await budgetFaultsIn(dir, tags, "a")).toHaveLength(1);
-  expect((await budgetFaultsIn(dir, tags, "zzz")).join()).toContain("no case");
+test("the without arm is only reported", async () => {
+  const dir = await stub(
+    "a",
+    [`${call("Bash")}\n`],
+    [`${call("A")}\n${call("B")}\n`, null],
+  );
+  const r = await budgetFaultsIn([dir], tags);
+  expect(r.faults).toEqual([]);
+  expect(r.info.join()).toContain("1 of 2 runs over");
 });
 
-test("no trace, an unknown case, and a bad line are faults", async () => {
-  expect(await budgetFaultsIn(await stub({}), tags)).toHaveLength(1);
-  const bad = await stub({ "a/trace.jsonl": "not json\n" });
-  expect((await budgetFaultsIn(bad, tags)).join()).toContain("no JSON");
+test("a missing tracePath, a missing trace, a bad line, and an unknown case are faults", async () => {
+  const none = await budgetFaultsIn([await stub("a", [null])], tags);
+  expect(none.faults.join()).toContain("no tracePath");
+  const dir = await stub("a", ["not json\n"]);
+  const bad = await budgetFaultsIn([dir], tags);
+  expect(bad.faults.join()).toContain("no JSON");
+  await Bun.write(
+    join(dir, "r/aggregate-result.json"),
+    JSON.stringify({
+      cases: [
+        { name: "a", arms: { with: [{ tracePath: join(dir, "gone") }] } },
+      ],
+    }),
+  );
+  expect((await budgetFaultsIn([dir], tags)).faults.join()).toContain(
+    "missing",
+  );
+  const unknown = await budgetFaultsIn(
+    [await stub("zzz", [`${call("A")}\n`])],
+    tags,
+  );
+  expect(unknown.faults.join()).toContain("no tags for this case");
+});
+
+test("a folder with no result file is a fault", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "run-budget-"));
+  expect((await budgetFaultsIn([dir], tags)).faults).toHaveLength(1);
+});
+
+test("parseTrace reads stream-json lines", () => {
   expect(parseTrace('{"type":"x"}\n\n')).toEqual({
     run: { events: [{ type: "x" }], files: {} },
   });

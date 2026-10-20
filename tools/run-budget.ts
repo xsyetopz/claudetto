@@ -1,16 +1,17 @@
 #!/usr/bin/env -S bun --no-env-file
 // Checks the budget tags of the eval cases against the kept traces of a `claude plugin eval` run (D25).
 //
-//   bun tools/run-budget.ts DIR [--case NAME]
+//   bun tools/run-budget.ts PATH...
 //
-// The layout is from the docs and the bundle of Claude Code 2.1.304.
-// The `results/<timestamp>/` folder holds only `aggregate-result.json` and `report.html`.
-// With `--keep-temp`, each run keeps its sandbox, which holds `trace.jsonl`, and the eval prints `kept temp: PATH`.
-// The docs do not say how a sandbox names its case, and a real layout needs a paid run to see.
-// So DIR is any folder, such as the folder that holds the kept sandboxes, and the reader looks at it deep for each `trace.jsonl`.
-// The case of a trace is `--case NAME`, or else the first path part under DIR that is the name of a case.
-// A trace with no known case is a fault, so a wrong layout never passes by a skip.
-// A trace line is a stream-json event. The script exits 1 on a fault.
+// Each PATH is an `aggregate-result.json`, or a folder that holds one or more of them at any depth.
+// The layout is from the run of 2026-10-20 (Claude Code 2.1.304, `--keep-temp`).
+// A kept sandbox is `/private/tmp/e-XXXXXX/` with a random name, so it does not name its case.
+// A `trace.jsonl` holds neither the case name nor the prompt.
+// So the case of a trace comes from the result file: `cases[i].name` and `cases[i].arms.with[j].tracePath`.
+// The `with` arm is checked against the tags of its case.
+// D25 does not say if the `without` arm (no plugin) is checked, so the script only prints its counts as info.
+// A run with no `tracePath`, a trace that is missing or no stream-json, and a case with no tags in this checkout are faults.
+// The script exits 1 on a fault, and 2 on a bad call.
 
 import { join, relative } from "node:path";
 import { parse } from "yaml";
@@ -51,52 +52,116 @@ export const parseTrace = (
   return { run: { events, files: {} } };
 };
 
-/** The faults of each `trace.jsonl` under `dir` against the tags of the cases. */
-export const budgetFaultsIn = async (
-  dir: string,
+type Run = { tracePath?: string | null };
+type Aggregate = {
+  cases?: { name?: string; arms?: { with?: Run[]; without?: Run[] } }[];
+};
+
+/** The result of a check: the faults, the count of the runs checked, and the info lines. */
+export type Budget = { faults: string[]; checked: number; info: string[] };
+
+/** The budget check of the runs in one parsed `aggregate-result.json`, named `label` in each message. */
+export const budgetOfAggregate = async (
+  agg: Aggregate,
   tags: Record<string, string[]>,
-  only?: string,
-): Promise<string[]> => {
+  label: string,
+): Promise<Budget> => {
+  const out: Budget = { faults: [], checked: 0, info: [] };
+  if (!Array.isArray(agg.cases) || agg.cases.length === 0)
+    out.faults.push(`${label}: no cases in the result`);
+  for (const c of agg.cases ?? []) {
+    const name = c.name ?? "(no name)";
+    const caseTagList = c.name === undefined ? undefined : tags[c.name];
+    for (const arm of ["with", "without"] as const) {
+      const runs = c.arms?.[arm] ?? [];
+      let over = 0;
+      for (const [j, run] of runs.entries()) {
+        const where = `${label}: ${name} ${arm}[${j}]`;
+        if (arm === "with" && caseTagList === undefined) {
+          out.faults.push(`${where}: no tags for this case in the checkout`);
+          continue;
+        }
+        if (!run.tracePath) {
+          if (arm === "with") out.faults.push(`${where}: no tracePath`);
+          continue;
+        }
+        const file = Bun.file(run.tracePath);
+        const parsed = (await file.exists())
+          ? parseTrace(await file.text())
+          : { fault: "trace is missing" };
+        if ("fault" in parsed) {
+          if (arm === "with")
+            out.faults.push(`${where}: ${run.tracePath}: ${parsed.fault}`);
+          continue;
+        }
+        const faults = overBudget(caseTagList ?? [], parsed.run);
+        if (arm === "without") {
+          if (faults.length) over++;
+          continue;
+        }
+        out.checked++;
+        for (const fault of faults) out.faults.push(`${where}: ${fault}`);
+      }
+      if (arm === "without" && runs.length)
+        out.info.push(
+          `${label}: ${name} without: ${over} of ${runs.length} runs over the budget of the case (not a fault)`,
+        );
+    }
+  }
+  return out;
+};
+
+/** The `aggregate-result.json` files at `path`, which is such a file or a folder. */
+export const aggregateFiles = async (path: string): Promise<string[]> => {
+  if (path.endsWith(".json")) return [path];
   const out: string[] = [];
-  const files: string[] = [];
-  for await (const f of new Bun.Glob("**/trace.jsonl").scan({
-    cwd: dir,
+  for await (const f of new Bun.Glob("**/aggregate-result.json").scan({
+    cwd: path,
     dot: true,
   }))
-    files.push(f);
-  if (files.length === 0) out.push(`${dir}: no trace.jsonl found`);
-  if (only !== undefined && !tags[only]) out.push(`no case named ${only}`);
-  for (const f of files.sort()) {
-    const name = only ?? f.split("/").find((p) => p in tags);
-    const caseTagList = name === undefined ? undefined : tags[name];
-    if (caseTagList === undefined) {
-      out.push(`${f}: no known case for this trace, pass --case NAME`);
-      continue;
+    out.push(join(path, f));
+  return out.sort();
+};
+
+/** The budget check of each result file under each of `paths`. */
+export const budgetFaultsIn = async (
+  paths: string[],
+  tags: Record<string, string[]>,
+): Promise<Budget> => {
+  const out: Budget = { faults: [], checked: 0, info: [] };
+  for (const path of paths) {
+    const files = await aggregateFiles(path);
+    if (files.length === 0)
+      out.faults.push(`${path}: no aggregate-result.json found`);
+    for (const f of files) {
+      let agg: Aggregate;
+      try {
+        agg = JSON.parse(await Bun.file(f).text());
+      } catch {
+        out.faults.push(`${f}: no readable JSON`);
+        continue;
+      }
+      const r = await budgetOfAggregate(agg, tags, relative(process.cwd(), f));
+      out.faults.push(...r.faults);
+      out.info.push(...r.info);
+      out.checked += r.checked;
     }
-    const parsed = parseTrace(await Bun.file(join(dir, f)).text());
-    if ("fault" in parsed) out.push(`${f}: ${parsed.fault}`);
-    else
-      for (const fault of overBudget(caseTagList, parsed.run))
-        out.push(`${name} (${f}): ${fault}`);
   }
   return out;
 };
 
 if (import.meta.main) {
-  const args = process.argv.slice(2);
-  const i = args.indexOf("--case");
-  const only = i >= 0 ? args[i + 1] : undefined;
-  const dir = args.find((a, j) => !a.startsWith("--") && j !== i + 1);
-  if (!dir || (i >= 0 && !only)) {
-    console.error("Usage: bun tools/run-budget.ts DIR [--case NAME]");
+  const paths = process.argv.slice(2);
+  if (paths.length === 0 || paths.some((a) => a.startsWith("--"))) {
+    console.error("Usage: bun tools/run-budget.ts PATH...");
     process.exit(2);
   }
   const root = join(import.meta.dirname, "..");
-  const faults = await budgetFaultsIn(dir, await caseTags(root), only);
-  for (const f of faults) console.error(f);
-  if (faults.length === 0)
-    console.log(
-      `The traces under ${relative(process.cwd(), dir) || "."} are in budget.`,
-    );
-  process.exit(faults.length ? 1 : 0);
+  const r = await budgetFaultsIn(paths, await caseTags(root));
+  for (const line of r.info) console.log(`info: ${line}`);
+  for (const f of r.faults) console.error(f);
+  console.log(
+    `${r.checked} runs checked, ${r.faults.length} faults.${r.faults.length ? "" : " All are in budget."}`,
+  );
+  process.exit(r.faults.length ? 1 : 0);
 }
