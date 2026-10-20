@@ -26,6 +26,8 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 ### Changed
 
+- The skill `dry` runs `jscpd-config --run`, which sets `BUN_TMPDIR` from `TMPDIR` itself, so the scan needs no env prefix and no prompt, and the ask rule for a git delete refspec is `Bash(git push* :* *)`, because Claude Code read `Bash(git push* :*)` as a literal prefix that matched nothing.
+- The settings snippet sets `sandbox.allowUnsandboxedCommands` to `false`, so a command that fails in the sandbox is not run again outside it with no prompt.
 - `claudetto` now targets Claude Code 2.1.304 (`MIN_CLAUDE_CODE_VERSION`, the CI, the issue templates, and the schemas in `schemas/`).
   The facts about the compaction window, the output reserve, and `bashOutputMaxChars` hold on 2.1.303 and 2.1.304.
   No settings key changed, and no plugin calls `$.agent.spawn`, whose `{ deny }` result is now also the refusal of the engine past a Stop or a host limit.

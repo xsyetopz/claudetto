@@ -38,7 +38,16 @@ const stripPrefix = (part: string): string => {
 export const bashPattern = (rule: string): string | null =>
   /^Bash\((.*)\)$/s.exec(rule)?.[1] ?? null;
 
+/** Claude Code reads `*` before a trailing `:*` as part of a literal prefix, so the rule has no wildcard (the warning "mixes * with the trailing :* prefix syntax"). */
+export const mixesStarWithPrefix = (pattern: string): boolean =>
+  pattern.endsWith(":*") && pattern.slice(0, -2).includes("*");
+
 const regexOf = (pattern: string): RegExp => {
+  if (mixesStarWithPrefix(pattern))
+    return new RegExp(
+      `^${pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+      "s",
+    );
   const trailing = pattern.endsWith(" *");
   const body = trailing ? pattern.slice(0, -2) : pattern;
   const source = body

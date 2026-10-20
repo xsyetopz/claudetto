@@ -33,10 +33,13 @@ One call costs one request to Jev.
 The hook does these steps:
 
 1. It picks each question that has 2 or more options and is not multi-select.
-2. It asks Jev two things for each such question: the kind of the question (`facts` or `preference`), and the best option.
+2. It asks Jev two things for each such question: the kind of the question (`facts`, `project`, or `preference`), and the best option.
 3. It adds the note `Jev picks this option (confidence N).` to the description of the picked option.
 
-The hook changes a question only when both answers have a confidence of at least `MIN_CONFIDENCE` (0.5), the kind is `facts`, and the pick is one of the options.
+The kind `facts` means that the question and the option texts alone settle the answer.
+The kind `project` means that the answer depends on a file, the project, or the session, which Jev does not get.
+The hook changes a question only when the kind is `facts` with a confidence of at least `MIN_CONFIDENCE` (0.5), the pick is one of the options, and the pick confidence is at least `1 / options + MIN_MARGIN` (0.15) and `MIN_CONFIDENCE`.
+So a pick of 2 options needs 0.65.
 The text of the question does not change, because the answers come back with that text as key.
 If Jev gives no answer, or the run fails or times out, the question stays as Claude asked it.
 

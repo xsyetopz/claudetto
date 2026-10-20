@@ -17,6 +17,7 @@ import {
   CLAUDE_STATE_FILE,
   SETTINGS_FILE,
 } from "../../../kernel/paths.ts";
+import { pluginOption } from "../../../kernel/plugin-option.ts";
 import type { FileReader, ProcessRunner } from "../../../kernel/ports.ts";
 import { colorOff, paintOf, themeOf } from "../color.ts";
 import { baseName } from "../format.ts";
@@ -75,21 +76,17 @@ const readJson = async (
  * So the value comes from `pluginConfigs` in the user settings, and the env var wins when it is set.
  */
 const builtInCompaction = async (deps: Deps): Promise<boolean> => {
-  const fromEnv =
-    deps.env[`CLAUDE_PLUGIN_OPTION_${COMPACTION_OPTION.toUpperCase()}`];
-  if (fromEnv) return fromEnv === BUILT_IN_COMPACTION;
   const settings = path.join(
     deps.env["CLAUDE_CONFIG_DIR"] || path.join(deps.home, ".claude"),
     SETTINGS_FILE,
   );
-  const configs = (await readJson(settings, deps))?.pluginConfigs;
-  for (const [id, config] of Object.entries(configs ?? {})) {
-    const value = (config as { options?: Record<string, unknown> } | null)
-      ?.options?.[COMPACTION_OPTION];
-    if (id.startsWith("claudetto@") && typeof value === "string")
-      return value === BUILT_IN_COMPACTION;
-  }
-  return false;
+  const value = pluginOption(
+    "claudetto",
+    COMPACTION_OPTION,
+    deps.env,
+    await readJson(settings, deps),
+  );
+  return value === BUILT_IN_COMPACTION;
 };
 
 /** No color for `NO_COLOR`, otherwise the built-in theme named by the `theme` key of the config file of Claude Code. */

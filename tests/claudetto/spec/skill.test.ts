@@ -45,3 +45,13 @@ test.each(["task", "story", "epic", "config"])(
     expect(await Bun.file(path.join(DIR, file)).exists()).toBe(true);
   },
 );
+
+test("the skill `spec` tests for the `/opsx:*` commands, and not for the folder `openspec/`, before `openspec init`", () => {
+  expect(skill).not.toContain("If `openspec/` is missing");
+  expect(skill).toContain("If the `/opsx:*` commands are missing, run");
+  expect(skill).toContain(".claude/commands/opsx/propose.md");
+  expect(skill).toContain(".claude/skills/openspec-propose/SKILL.md");
+  expect(skill.indexOf("openspec init")).toBeLessThan(
+    skill.indexOf("Copy `$" + "{CLAUDE_SKILL_DIR}/config.yaml`"),
+  );
+});

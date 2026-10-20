@@ -1,13 +1,16 @@
 // The pick of Jev for an `AskUserQuestion` call: the request for the questions, and the questions with the pick added.
-// A facts question gets the pick of Jev in the description of the picked option, when Jev is sure.
+// A facts question is one that the question and the option texts alone settle.
+// A project question depends on a file or the session, which Jev does not get, so it stays as it is.
+// A facts question gets the pick of Jev in the description of the picked option, when Jev is sure: the pick beats chance by `MIN_MARGIN`.
 // A preference question, a multi-select question, and a question with fewer than 2 options stay as they are.
 // The question text stays as Claude sent it, because the answers come back keyed by that text.
 
-import { MIN_CONFIDENCE, MIN_OPTIONS } from "../limits.ts";
+import { MIN_CONFIDENCE, MIN_MARGIN, MIN_OPTIONS } from "../limits.ts";
 import {
   ASK_KIND,
   ASK_KIND_FACTS,
   ASK_KIND_PREFERENCE,
+  ASK_KIND_PROJECT,
   ASK_NOTE,
   ASK_PICK,
 } from "../prompts.ts";
@@ -19,6 +22,7 @@ const KIND = {
   criteria: {
     preference: ASK_KIND_PREFERENCE,
     facts: ASK_KIND_FACTS,
+    project: ASK_KIND_PROJECT,
   },
 };
 
@@ -81,7 +85,10 @@ export const withPicks = <Q extends AskQuestion>(
       kind?.choice !== "facts" ||
       !(kind.confidence >= MIN_CONFIDENCE) ||
       pick === undefined ||
-      !(pick.confidence >= MIN_CONFIDENCE) ||
+      !(
+        pick.confidence >=
+        Math.max(MIN_CONFIDENCE, 1 / (q.options ?? []).length + MIN_MARGIN)
+      ) ||
       !(q.options ?? []).some((o) => o.label === pick.choice)
     )
       return q;

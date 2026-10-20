@@ -13,7 +13,10 @@ Do no other workflow step.
 
 Never overwrite a file, because the user may have changed it.
 
-- If `openspec/` is missing, run `bunx @fission-ai/openspec init --tools claude --profile core`.
+- If the `/opsx:*` commands are missing, run `bunx @fission-ai/openspec init --tools claude --profile core`.
+  They are missing when neither `.claude/commands/opsx/propose.md` nor `.claude/skills/openspec-propose/SKILL.md` exists.
+  Test for these files, and not for the folder `openspec/`, because a folder with only `changes/` is not an init.
+  Run the init before the copy of `config.yaml` below, so that the init does not find a `config.yaml` that it did not write.
 - For each folder `${CLAUDE_SKILL_DIR}/schemas/<preset>`, copy it to `openspec/schemas/<preset>` only when that folder is missing.
 - Copy `${CLAUDE_SKILL_DIR}/config.yaml` to `openspec/config.yaml` only when that file is missing.
 - Read the global config with `bunx @fission-ai/openspec config list`.

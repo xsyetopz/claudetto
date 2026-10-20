@@ -12,7 +12,8 @@
 // Claude Code ignores `allowUnixSockets` on Linux, so setup skips the step there.
 // With `--apply`, in a project with `.git/`, it also appends the local files of claudetto to `.gitignore`.
 // With `--advisor claudetto`, the snippet also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor only.
-// The skill passes the `advisor` option, because a CLI run by the user gets no `CLAUDE_PLUGIN_OPTION_*` env var.
+// With no `--advisor`, the CLI reads the `advisor` option from `pluginConfigs` in the user settings, because a CLI run by the user gets no `CLAUDE_PLUGIN_OPTION_*` env var.
+// The skill passes no `--advisor`, so that the model cannot choose the value.
 
 import fs from "node:fs";
 import os from "node:os";
@@ -24,6 +25,7 @@ import {
   PROJECT_SETTINGS,
   SETTINGS_FILE,
 } from "../../../kernel/paths.ts";
+import { pluginOption } from "../../../kernel/plugin-option.ts";
 import { addonSteps } from "../domain/addons.ts";
 import {
   cleanAutoMode,
@@ -83,6 +85,22 @@ const readReported = async (
   if (!(settings instanceof Error)) return settings;
   io.error(SETTINGS_FAILED({ file, message: settings.message }));
   return undefined;
+};
+
+/**
+ * The `advisor` option of the user: `claudetto` or `builtin`.
+ * It comes from the env var `CLAUDE_PLUGIN_OPTION_ADVISOR`, then from `pluginConfigs` of the user settings, and it is `builtin` when the option is not set or the file does not parse.
+ */
+const advisorOption = async (
+  configDir: string,
+  env: Record<string, string | undefined>,
+): Promise<string> => {
+  const settings = await readSettings(
+    path.join(configDir, SETTINGS_FILE),
+  ).catch(() => ({}) as Json);
+  return pluginOption("claudetto", "advisor", env, settings) === "claudetto"
+    ? "claudetto"
+    : "builtin";
 };
 
 /** Appends the local files of claudetto to the `.gitignore` of the project, when the project has `.git/`. */
@@ -180,17 +198,21 @@ const setup = async (
   const at = args.indexOf("--scope");
   const scope = at < 0 ? "user" : args[at + 1];
   const adv = args.indexOf("--advisor");
-  const advisor = adv < 0 ? "builtin" : args[adv + 1];
+  const flag = adv < 0 ? undefined : args[adv + 1];
   const bad = args.filter(
     (a, i) =>
       !["--apply", "--addons", "--scope", "--advisor"].includes(a) &&
       !(i > 0 && [at, adv].includes(i - 1)),
   );
-  if (bad.length > 0 || (advisor !== "builtin" && advisor !== "claudetto"))
+  if (
+    bad.length > 0 ||
+    (adv >= 0 && flag !== "builtin" && flag !== "claudetto")
+  )
     return fail(io, USAGE);
   if (!scope || scope.startsWith("--")) return fail(io, SCOPE_MISSING);
   const configDir =
     env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), CLAUDE_DIR);
+  const advisor = flag ?? (await advisorOption(configDir, env));
   const projectDir = path.resolve(env["CLAUDE_PROJECT_DIR"] || cwd);
   const files: Record<string, [string, string]> = {
     user: [

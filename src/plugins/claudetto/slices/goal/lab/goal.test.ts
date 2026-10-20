@@ -100,6 +100,14 @@ test("a condition with commands in backticks makes a goal of `run` checks, and t
   expect(world.prompts[0]).toContain("step 1");
 });
 
+test("a goal of one step says `1 step`", async ($: Engine, on: On) => {
+  const world = stub(on);
+  const out = await typed($, "goal", "`just check`");
+  expect(out.text).toBe("Goal set: 1 step.");
+  expect(world.prompts[0]).toContain("The goal has 1 step.");
+  expect(world.prompts[0]).not.toContain("1 steps");
+});
+
 test("a failing hook still answers, and the built-in `/goal` does not run", async ($: Engine, on: On) => {
   stub(on, goalWith(), true);
   const out = await typed($, "goal", "clear");

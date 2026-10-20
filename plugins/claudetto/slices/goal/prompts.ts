@@ -4,7 +4,7 @@ export const DESCRIPTION = `Set a goal with checks that run at the end of each t
 
 /** From `src/plugins/claudetto/slices/goal/prompts/done.md`. */
 export const DONE = (v: { steps: string }): string =>
-  `The goal is done: all ${v.steps} steps pass.`;
+  `The goal is done: all checks of ${v.steps} pass.`;
 
 /** From `src/plugins/claudetto/slices/goal/prompts/judge.md`. */
 export const JUDGE = (v: {
@@ -37,8 +37,7 @@ export const START = (v: {
   steps: string;
   step: string;
   title: string;
-}): string =>
-  `The goal has ${v.steps} steps. Do step ${v.step} now: ${v.title}`;
+}): string => `The goal has ${v.steps}. Do step ${v.step} now: ${v.title}`;
 
 /** From `src/plugins/claudetto/slices/goal/prompts/stopped.md`. */
 export const STOPPED = (v: { reason: string; step: string }): string =>

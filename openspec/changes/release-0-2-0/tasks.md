@@ -308,6 +308,41 @@ The rows `new:` of `findings.md` that need no decision of the user.
   Check: `just eval --model haiku --runs 10 -j 4 --max-cost-usd 1 --case accusation-user*`
   This is a paid run: ask the user first, with the expected cost and the weekly share.
 
+- [x] 13.7 Make `/claudetto:setup` pass the `advisor` option that the user set, found in the run of task 12.4: with no `pluginConfigs`, the skill text holds the literal `${user_config.advisor}`, the model picked `--advisor claudetto` itself, and the snippet then set `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` while `advise` stayed off, so the user had no advisor.
+  Check: `just test tests/claudetto/setup`
+- [x] 13.8 Make `/claudetto:setup` show the list of changes before its `AskUserQuestion`, found in the run of task 12.4: the model gave only the count (68 changes).
+  Check: `just test tests/claudetto/setup`
+- [x] 13.9 Make the pick of Jev need facts, found in the run of task 12.4: the hook sends Jev only the question and the option texts (`slices/decide/domain/ask.ts`), so Jev picked `CommonJS` for an ESM `math.js` at confidence 0.76, and with two options `MIN_CONFIDENCE` 0.5 blocks nothing.
+  Check: `just test tests/claudetto/decide`
+- [x] 13.10 Make the `rm` ask rules of the snippet match the flags only, found in the run of task 12.4: `Bash(rm -*R*)` matched `rm -f $TMPDIR/m.mjs`, because of the `R` in `$TMPDIR`, so the cleanup of D44 prompts the user.
+  Check: `just test tests/claudetto/prompt`
+- [x] 13.11 Make `bunx jscpd` of `/claudetto:dry` run in the sandbox of the snippet, found in the run of task 12.4: it failed with `bun is unable to write files to tempdir: EPERM`, and the model ran it with `dangerouslyDisableSandbox`.
+  Cause found in a live sandbox: `BUN_TMPDIR` alone is not enough, because Bun also needs its install cache (`$BUN_INSTALL/install/cache`) to take a write, and the sandbox does not let Bun create it when the path differs from the allowed one or its parents do not exist.
+  `jscpd-config --run` now probes the cache and, when it fails and `TMPDIR` is set, sets `BUN_INSTALL` to `TMPDIR/bun` for the child.
+  Check: `just test tests/claudetto/dry`
+  Live run (2026-10-20, `claude-sonnet-5-5`, `allowUnsandboxedCommands: false`): `/claudetto:dry` ran `jscpd-config --run` in the sandbox with no prompt, found 1 clone, merged it, and a rescan found 0 clones. Each of the 3 `Bash` calls ran sandboxed.
+- [x] 13.12 Make the first run of `/claudetto:dry` scan with no baseline, found in the run of task 12.4: the config of `jscpd-config` needs `.jscpd-baseline.json`, so a first scan stops with `baseline file ... not found`.
+  Check: `just test tests/claudetto/dry`
+- [x] 13.13 Make `/claudetto:spec` run `openspec init` when the project has no `/opsx:*` commands, found in the run of task 12.4: an `openspec/` folder with only `changes/` made the skill skip the init, and `/opsx:propose` did not exist.
+  Check: `just test tests/claudetto/spec`
+- [x] 13.14 Use the singular in the texts of `goal` for one step, found in the run of task 12.4: "The goal has 1 steps" and "all 1 steps pass".
+  Check: `just test tests/claudetto/goal`
+
+- [x] 13.15 Set `sandbox.allowUnsandboxedCommands` to `false` in the snippet, found in the run of task 12.4: the model ran `bunx` again with `dangerouslyDisableSandbox` twice, with no prompt (the user, 2026-10-20: "Turn it off (Recommended)").
+  Check: `just test tests/claudetto/prompt/sandbox-escape.test.ts`
+  Live run of 13.11: no command of `/claudetto:dry` needed the escape.
+
+- [x] 13.16 Give the skill `dry` a scan command with no env prefix, found in the live run of 13.11: Claude Code rejects `BUN_TMPDIR="$TMPDIR" bunx jscpd` ("Quoted text in this command can't be checked before it runs"), and the unquoted form needs approval.
+  `jscpd-config --run [ARGUMENT...]` spawns `bunx jscpd` with `BUN_TMPDIR` from `TMPDIR`, and the skill allows `Bash(jscpd-config *)`.
+  Check: `just test tests/claudetto/dry`
+  Live run of 13.11: the call needed no prompt.
+- [x] 13.17 Fix the rule `Bash(git push* :*)` of the snippet, found in the live run: Claude Code reads `*` before a trailing `:*` as a literal prefix, so the rule matched nothing.
+  The rule is now `Bash(git push* :* *)`, which asks for `git push origin :branch` and passes `git push origin main:main`.
+  A test pins that no rule of the snippet mixes `*` with a trailing `:*`.
+  Check: `just test tests/claudetto/prompt tests/claudetto/guard`
+  Open: Claude Code 2.1.304 prints an info warning for the inner `:*`, and it matches the rule as a `*` wildcard (read in the bundle).
+  The `guard` hook has no rule for a delete refspec, so the ask rule is the only guard.
+
 ## 14. Patches of Subagents
 
 - [x] 14.1 Add the slice `patch` test-first (D64): the lab test `write.test.ts`, the tests `tests/claudetto/patch/land.test.ts`, the hook, the CLI `claudetto-patch`, the skill `patch`, and the line in the text of the `Agent` tool.

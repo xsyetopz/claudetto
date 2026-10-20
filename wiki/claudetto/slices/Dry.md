@@ -18,8 +18,7 @@ The skill `dry` tells Claude when to run `jscpd` and how to read a clone.
 | `jscpd-config` | Command in `bin/` | Merges `jscpd.local.json` and its `extends` chain into `.jscpd.json`. |
 | `dry` | Skill | Finds clones, reads each clone, and decides if a merge is good. |
 
-The slice runs no `jscpd` itself.
-Claude runs `bunx jscpd` after the command wrote the config.
+Claude runs `jscpd` with `jscpd-config --run` after the command wrote the config.
 
 ## How to Use It
 
@@ -33,6 +32,12 @@ jscpd-config [--local FILE] [--out FILE]
 | --- | --- | --- |
 | `--local FILE` | `jscpd.local.json` | The file with the rules of the project. |
 | `--out FILE` | `.jscpd.json` | The file that the command writes. |
+
+`jscpd-config --run [JSCPD ARGUMENT...]` runs `bunx jscpd` with the arguments, and exits with the exit code of `jscpd`.
+It sets `BUN_TMPDIR` to `TMPDIR` when `TMPDIR` is set, so that Bun writes to the temp folder of the sandbox.
+Before the run, it tests a write to the cache of Bun (`$BUN_INSTALL/install/cache`).
+When the write fails and `TMPDIR` is set, it sets `BUN_INSTALL` to `TMPDIR/bun`, because the sandbox allows `TMPDIR` but not always the cache of Bun.
+Claude Code asks before a command with an env prefix, and it rejects a quoted `"$TMPDIR"`, so the command sets the variable itself.
 
 When the local file does not exist, the command writes the shipped base.
 The command writes the output file in one step, so a failed run leaves no half file.
@@ -57,6 +62,7 @@ It sets these keys:
 
 The base ignores `.git`, `node_modules`, `dist`, `build`, `target`, `vendor`, minified files, and lock files.
 With the baseline file and `failOnNewClones` at 0, only a new clone fails a run.
+When the baseline file does not exist, the command leaves out `baseline` and `failOnNewClones`, so a first run scans and reports each clone.
 The base lists no format, so a project adds each format in `formatsExts`.
 `semantic` needs a large model download, so a project sets `"semantic": null` when it does not want it.
 
@@ -86,7 +92,8 @@ A chain that returns to a file is an `extends` cycle, and the command stops with
 Claude runs the skill when a change copies a block, before it finishes a change that adds many lines, and when the user asks about duplication.
 The skill tells Claude to merge two clones only when one change of a rule must change both, and the behavior and the effects stay the same.
 It tells Claude not to merge blocks that only look alike, or a merge that needs a flag for each difference.
-A clone that Claude keeps on purpose goes in the baseline with `bunx jscpd --update-baseline`, and Claude says why.
+A clone that Claude keeps on purpose goes in the baseline with `jscpd-config --run --baseline .jscpd-baseline.json --update-baseline`, and Claude says why.
+The skill may run only `jscpd-config *`, so a call needs no prompt.
 
 ## See Also
 

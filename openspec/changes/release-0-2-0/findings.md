@@ -69,7 +69,7 @@ A row with the task `new:` is a fault that no task of `tasks.md` covers, with a 
 | snippet | a text named `TaskStop`, which the snippet denies | `design-handoff.md:8` | 3.3, 7.5, done in `bd689f03` | `just test tests/claudetto/prompt/denied-names.test.ts` |
 | snippet | the names `promptCacheTtl` and `subagentPromptCacheTtl` have no recorded source | `tasks.md` 7.1 | 7.1 | `grep -n promptCacheTtl src/wiki/claudetto/rationale/Decisions-Session.md` |
 | snippet | the `env` of the snippet is not pinned to `Env.md` | `tasks.md` 7.7, 7.8 | 7.7, 7.8 | `just test tests/claudetto/settings-pin.test.ts` |
-| setup run | no run of the setup on a fresh config | D38 | 12.4 (paid) | the evidence of 12.4 |
+| setup run | ran on a fresh config in task 12.4: 68 changes applied, and a second run changed nothing | 12.4 | (checked) | the evidence of 12.4 |
 
 ## Other Surfaces of D38
 
@@ -77,7 +77,7 @@ A row with the task `new:` is a fault that no task of `tasks.md` covers, with a 
 | --- | --- | --- | --- | --- |
 | hooks | none found in the labs, 172 pass | `bun tools/lab.ts` | none | `just lab` |
 | agents | the core plugin ships no agent now | `plugins/claudetto/` | none | `just validate` |
-| MCP tools | `advise`, `second_opinion`, and `claudetto-codegraph-check --mcp` not run, because they call a model or a server | D38 | 12.4 (paid) | the evidence of 12.4 |
+| MCP tools | `advise` ran in task 12.4 and answered from `opus`. `second_opinion` and `--mcp` of `claudetto-codegraph-check` are not in 0.2.0 (D51), and the plain check exits 0 | 12.4 | (checked) | the evidence of 12.4 |
 | `bin/` commands | see the rows of `setup`, `statusline`, `claudetto-codegraph`, and `claudetto-sessions` | runs | see those rows | see those rows |
 | evals | a case can pass on reply words only | `tasks.md` 11.1 | 11.1, part done in `f6281c96` | `just validate` |
 | evals | the cases and the wiki numbers are not proved at 10 runs | `tasks.md` 11.2, 11.3 | 11.2, 11.3 (paid) | `just validate` |
@@ -92,7 +92,25 @@ A row with the task `new:` is a fault that no task of `tasks.md` covers, with a 
 | tests | `tests/support/prose-in-code.test.ts` spawns `node_modules/.bin/biome`, whose shebang needs `node`, so the test fails on a host with Bun only (`env: node: No such file or directory`, also in `47e8ce26…jsonl:65`) | `tests/support/prose-in-code.test.ts:76`, run of `bun test tests/` | new: spawn Biome with `bunx --bun biome`, as `tools/lint.ts:11` does, and run the test on a host with no `node` | `just test tests/support/prose-in-code.test.ts` |
 | Reply button (D56) | task 2.4 has no plugin, because `claudetto-you-should-know` is removed | `design-surfaces.md:144`, `tasks.md` 2.4 | new: close 2.4 as obsolete, or name the plugin that holds the `Reply` mod | `grep -n "2.4" openspec/changes/release-0-2-0/tasks.md` |
 
+## Sandbox Run of 12.4
+
+One `just sandbox` session on a fresh config, on `claude-sonnet-5-5`, with `advisor` `claudetto` and `decide` `jev`, on 2026-10-20.
+
+| Surface | Fault | Source | Task | Check |
+| --- | --- | --- | --- | --- |
+| `setup` | the model picked `--advisor claudetto` when the option was not set, so the user had no advisor | transcript `4e1a9957` | 13.7, done | `just test tests/claudetto/setup` |
+| `setup` | the skill gave the count of changes, not the list, before it asked | transcript `4e1a9957` | 13.8, done | `just test tests/claudetto/setup` |
+| `decide` | Jev picked a wrong option at confidence 0.76 with no facts | transcript `508abd63` | 13.9, done | `just test tests/claudetto/decide` |
+| snippet | `Bash(rm -*R*)` asks for `rm -f $TMPDIR/m.mjs` | transcript `508abd63` | 13.10, done | `just test tests/claudetto/prompt` |
+| `dry` | `bunx jscpd` fails in the sandbox with `EPERM` on the temp folder of Bun | transcript `508abd63` | 13.11, done, live run 2026-10-20 | `just test tests/claudetto/dry` |
+| `dry` | a first scan stops, because no baseline exists | transcript `508abd63` | 13.12, done | `just test tests/claudetto/dry` |
+| `spec` | an `openspec/` folder with no `/opsx:*` commands skips `openspec init` | transcript `508abd63` | 13.13, done | `just test tests/claudetto/spec` |
+| `goal` | "1 steps" | transcript `508abd63` | 13.14, done | `just test tests/claudetto/goal` |
+| snippet | `allowUnsandboxedCommands: true` let the model run `bunx` outside the sandbox twice with no prompt | transcript `508abd63` | 13.15, done | `just test tests/claudetto/prompt/sandbox-escape.test.ts` |
+| `dry` | `BUN_TMPDIR="$TMPDIR" bunx jscpd` is rejected (quoted text) or needs approval (env prefix) | live run of 13.11 | 13.16, done | `just test tests/claudetto/dry` |
+| snippet | `Bash(git push* :*)` mixes `*` with a trailing `:*`, so it matches nothing | live run of 13.11 | 13.17, done | `just test tests/claudetto/prompt tests/claudetto/guard` |
+| `guard`, `sembr`, `ground`, `patch`, `handoff`, `statusline`, `reply`, `styles`, `advise` | none found | transcript `508abd63` | none | the evidence of 12.4 |
+
 ## Not Checked
 
-- A live session of each slice, the MCP tools, and `claudetto-decide`, because they need a model call (task 12.4).
 - `just docker check`, because the brief forbids it.

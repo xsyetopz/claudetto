@@ -27,5 +27,12 @@ export const MAX_OPTIONS = 255;
 /** The confidence under which a Jev answer says that Jev is not sure. */
 export const MIN_CONFIDENCE = 0.5;
 
+/**
+ * The margin that a pick needs over chance, `1 / options`.
+ * The confidence is the probability of the top option, so with 2 options it is never under 0.5.
+ * A margin of 0.15 makes a 2-option pick need 0.65, which a guess near 0.5 or 0.6 does not reach.
+ */
+export const MIN_MARGIN = 0.15;
+
 /** The distance from 0.5 under which a yes or no answer says that Jev is not sure. */
 export const YES_NO_UNSURE_BAND = 0.2;

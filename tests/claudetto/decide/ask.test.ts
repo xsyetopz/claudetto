@@ -6,9 +6,15 @@ import {
   type CliRun,
   pickQuestions,
 } from "../../../plugins/claudetto/slices/decide/adapters/ask.ts";
-import type { AskQuestion } from "../../../plugins/claudetto/slices/decide/domain/ask.ts";
+import {
+  type AskQuestion,
+  askRequest,
+} from "../../../plugins/claudetto/slices/decide/domain/ask.ts";
 import type { CliCall } from "../../../plugins/claudetto/slices/decide/domain/request.ts";
-import { MIN_CONFIDENCE } from "../../../plugins/claudetto/slices/decide/limits.ts";
+import {
+  MIN_CONFIDENCE,
+  MIN_MARGIN,
+} from "../../../plugins/claudetto/slices/decide/limits.ts";
 
 const FACTS: AskQuestion = {
   question: "Which store?",
@@ -62,12 +68,52 @@ test("a pick under the minimum confidence leaves the question as asked", async (
   expect(await pickQuestions([FACTS], fn)).toEqual([FACTS]);
 });
 
-test("a pick at the minimum confidence goes into the option", async () => {
+test("a pick at chance plus the margin goes into the option", async () => {
   const { fn } = runWith({
-    stdout: answersOf("facts", "sql", MIN_CONFIDENCE),
+    stdout: answersOf("facts", "sql", 0.5 + MIN_MARGIN),
   });
   const [q] = (await pickQuestions([FACTS], fn)) ?? [];
   expect(q?.options?.[0]?.description).toMatch(/^relations /);
+});
+
+test("a pick of 2 options at 0.6 stays unannotated", async () => {
+  const { fn } = runWith({ stdout: answersOf("facts", "sql", 0.6) });
+  expect(await pickQuestions([FACTS], fn)).toEqual([FACTS]);
+});
+
+test("a pick of 3 options is annotated at the floor `1/n + MIN_MARGIN` and not under it", async () => {
+  const three: AskQuestion = {
+    question: "Which store?",
+    options: [{ label: "sql" }, { label: "kv" }, { label: "doc" }],
+  };
+  const floor = Math.max(MIN_CONFIDENCE, 1 / 3 + MIN_MARGIN);
+  const picked = runWith({ stdout: answersOf("facts", "sql", floor + 0.01) });
+  const [q] = (await pickQuestions([three], picked.fn)) ?? [];
+  expect(q?.options?.[0]?.description).toBeDefined();
+  const under = runWith({ stdout: answersOf("facts", "sql", floor - 0.02) });
+  expect(await pickQuestions([three], under.fn)).toEqual([three]);
+});
+
+test("a project question stays unchanged although the pick is confident", async () => {
+  const q: AskQuestion = {
+    question: "Which module syntax does math.js use?",
+    options: [{ label: "ESM" }, { label: "CommonJS" }],
+  };
+  const { fn } = runWith({ stdout: answersOf("project", "CommonJS", 0.76) });
+  expect(await pickQuestions([q], fn)).toEqual([q]);
+});
+
+test("the request puts the project kind in the kind criteria", async () => {
+  const request = askRequest([FACTS]);
+  const kind = request?.questions["kind_0"] as {
+    criteria: Record<string, string>;
+  };
+  expect(Object.keys(kind.criteria).sort()).toEqual([
+    "facts",
+    "preference",
+    "project",
+  ]);
+  expect(kind.criteria["project"]).toContain("file");
 });
 
 test("a preference question is not picked, so Jev gives no pick for it", async () => {

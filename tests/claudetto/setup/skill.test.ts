@@ -54,3 +54,20 @@ test("the skill `setup` gives the same `Glob` and `Grep` alias line as the wiki 
   expect(wiki).toContain(alias);
   expect(skill).toContain("Do not edit the startup file");
 });
+
+const skillText = () =>
+  Bun.file(path.join(PLUGIN, "skills/setup/SKILL.md")).text();
+
+test("the skill `setup` leaves the `advisor` option to the command, so that the model cannot choose it", async () => {
+  const skill = await skillText();
+  expect(skill).not.toContain("--advisor");
+  expect(skill).not.toContain("user_config.advisor");
+});
+
+test("the skill `setup` prints the list of changes as text before its question", async () => {
+  const skill = await skillText();
+  const print = skill.indexOf("Print the list of changes");
+  expect(print).toBeGreaterThan(-1);
+  expect(print).toBeLessThan(skill.indexOf("AskUserQuestion"));
+  expect(skill).toContain("not only the count");
+});

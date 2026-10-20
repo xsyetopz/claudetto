@@ -19,7 +19,7 @@ Its `argument-hint` is `[user|project|local]`.
 It may run only `claudetto-setup *` and `codegraph install --target claude --location global`.
 
 1. It takes the scope from the argument, or it asks you.
-2. It runs `claudetto-setup --scope <scope> --advisor <advisor>` and shows the list of changes.
+2. It runs `claudetto-setup --scope <scope>` and prints the list of changes as text.
 3. It asks you once whether to apply them.
 4. After a yes, it runs the same command with `--apply`.
 5. It gives you the `alias` line for `Glob` and `Grep`.
@@ -39,7 +39,7 @@ claudetto-setup --addons
 | Option | Meaning |
 | --- | --- |
 | `--scope` | The settings file to change. The default is `user`. |
-| `--advisor` | The `advisor` option of the `advise` slice. The default is `builtin`. |
+| `--advisor` | Overrides the `advisor` option of the `advise` slice. The default is the option in `pluginConfigs`, or `builtin`. |
 | `--apply` | Write the changes. Without it, the command only prints them. |
 | `--addons` | Print the optional step of each enabled add-on. It writes nothing. |
 | (an unknown option) | Print the usage to `stderr` and exit with code 2. |
@@ -96,7 +96,8 @@ The `setup` slice adds these keys:
 
 With `--advisor claudetto`, the snippet also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`.
 Claude then sees one advisor.
-The skill passes its `advisor` option to the command, because a CLI that you run gets no `CLAUDE_PLUGIN_OPTION_*` env var.
+Without `--advisor`, the command reads the `advisor` option from `pluginConfigs` in the user settings, because a CLI that you run gets no `CLAUDE_PLUGIN_OPTION_*` env var.
+The skill passes no `--advisor`, so that the model cannot choose the value.
 
 ## Status Lines
 

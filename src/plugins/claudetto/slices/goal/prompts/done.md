@@ -1,1 +1,1 @@
-The goal is done: all {{steps}} steps pass.
+The goal is done: all checks of {{steps}} pass.

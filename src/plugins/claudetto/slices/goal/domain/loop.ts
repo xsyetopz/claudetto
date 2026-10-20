@@ -2,6 +2,7 @@
 // The adapter runs the checks and reads the usage, and this module decides.
 
 import { DONE, NEXT, RETRY, STOPPED } from "../prompts.ts";
+import { stepsText } from "./count.ts";
 import type { Check, Goal, Result } from "./state.ts";
 
 /** What the session spent: the cost in USD, and the highest percent of a plan limit. */
@@ -74,7 +75,7 @@ export const nextTurn = (
   );
   if (failing.length === 0) {
     if (step + 1 >= steps.length) {
-      return { goal: null, say: DONE({ steps: String(steps.length) }) };
+      return { goal: null, say: DONE({ steps: stepsText(steps.length) }) };
     }
     const log = [...goal.log, { at: now, note: `step ${step + 1} done` }];
     const next = { ...turned, step: step + 1, results: [], stalled: 0, log };

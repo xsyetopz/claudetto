@@ -9,6 +9,7 @@ import type { EngineInterface } from "claude-code";
 import { GOAL_FILE } from "../../../kernel/paths.ts";
 import type { Handler } from "../../../kernel/slice.ts";
 import { change, parseArgs, statusText } from "../domain/command.ts";
+import { stepsText } from "../domain/count.ts";
 import { nextTurn, type Spend } from "../domain/loop.ts";
 import { conditionSteps, planSteps } from "../domain/plan.ts";
 import {
@@ -112,7 +113,7 @@ export const onProposeGoal = () => ({
 const begin = ($: EngineInterface, goal: Goal) => {
   const { title } = goal.steps[goal.step] ?? { title: "" };
   const text = START({
-    steps: String(goal.steps.length),
+    steps: stepsText(goal.steps.length),
     step: String(goal.step + 1),
     title,
   });
@@ -165,7 +166,7 @@ const answer: Handler<"command.run"> = async ($, e) => {
   if (typeof created === "string") return { text: created };
   await writeGoal($, created);
   begin($, created);
-  return { text: `Goal set: ${created.steps.length} steps.` };
+  return { text: `Goal set: ${stepsText(created.steps.length)}.` };
 };
 
 /**

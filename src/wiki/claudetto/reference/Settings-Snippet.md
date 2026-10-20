@@ -18,11 +18,14 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
 
 ## The `rm` Rules
 
-The six `rm` rules in `permissions.ask` match any flag spelling with an `r` or `R` after a dash, and `--recursive`.
-They also ask for some calls that are not recursive, such as `rm -f report.txt`, where the `r` is in the file name.
+The `rm` rules in `permissions.ask` match the recursive flags only: `-r` and `-R`, alone or at the end of a cluster with these leads: up to 3 distinct letters of `f`, `i`, and `v`, and `d`, `I`, `P`, or `x` alone or with one letter of `f`, `i`, or `v` before or after it (for example `-dr`, `-Pfr`, `-Ir`, `-xr`, and `-fvir`), as a later argument, and `--recursive`.
+A path with an `r` or `R` does not match, so `rm -f $TMPDIR/m.mjs` passes.
+A file name that starts with `-r` also asks.
 An extra ask is acceptable.
 The rules do not stop a write outside the allowed folders.
 The sandbox limits the writes of `Bash`.
+`allowUnsandboxedCommands` is `false`, so a command that fails in the sandbox is not run again outside it, and Claude Code ignores `dangerouslyDisableSandbox`.
+Only the `excludedCommands` run outside the sandbox.
 
 ## See Also
 

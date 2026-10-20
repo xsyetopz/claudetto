@@ -26,12 +26,12 @@ The command `claudetto-setup` writes nothing without `--apply`, so run the previ
 2. Preview the changes:
 
    ```bash
-   claudetto-setup --scope <scope> --advisor ${user_config.advisor}
+   claudetto-setup --scope <scope>
    ```
 
-   The `advisor` option of the user is `${user_config.advisor}`.
-   With `claudetto`, the snippet sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor only.
-   Show the user the list of changes.
+   The command reads the `advisor` option of the user itself.
+   Pass it no advisor flag.
+   Print the list of changes from the preview as text in your reply, grouped as the preview groups them, and not only the count.
    The merge adds keys and rules, and keeps the other keys of the user.
    The status line commands get the absolute path of the installed plugin folder, which holds the version.
    So tell the user to run this skill again after each plugin update.
@@ -44,7 +44,7 @@ The command `claudetto-setup` writes nothing without `--apply`, so run the previ
 4. Run the command:
 
    ```bash
-   claudetto-setup --scope <scope> --advisor ${user_config.advisor} --apply
+   claudetto-setup --scope <scope> --apply
    ```
 
    A second run changes nothing.

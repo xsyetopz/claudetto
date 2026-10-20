@@ -3,6 +3,8 @@
 // Each rule names the destructive flag, so `git reset --soft`, `git clean -n`, `git restore --staged`, and `git push --force-with-lease` pass.
 // `git clean* -*f*` also asks for `git clean -n src/foo.ts`, and `*` reaches across `&&` in the whole-command test.
 // Accepted: both are extra prompts.
+// `git push* :* *` asks for a delete refspec such as `git push origin :branch`, and passes `git push origin main:main`, which has no space before the colon.
+// A rule must not end in `:*` after a `*`: Claude Code then reads it as a literal prefix, and it matches nothing.
 // A rule cannot match `sh -c`, a program by path, an option before the subcommand, or a reordered short flag, so the `guard` hook keeps those.
 
 export const GIT_ASK = [
@@ -10,7 +12,7 @@ export const GIT_ASK = [
   "Bash(git push* --force)",
   "Bash(git push* --force *)",
   "Bash(git push* --delete*)",
-  "Bash(git push* :*)",
+  "Bash(git push* :* *)",
   "Bash(git push* --mirror*)",
   "Bash(git reset* --hard*)",
   "Bash(git clean* -*f*)",

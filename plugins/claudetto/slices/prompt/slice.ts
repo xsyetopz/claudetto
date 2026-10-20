@@ -19,6 +19,7 @@ import {
 import { DOCKER_ASK } from "./domain/docker-ask.ts";
 import { GIT_ASK } from "./domain/git-ask.ts";
 import { OFF_ATTACHMENTS, OFF_COMMANDS } from "./domain/off.ts";
+import { RM_ASK } from "./domain/rm-ask.ts";
 
 export const slice = {
   name: "prompt",
@@ -172,7 +173,7 @@ export const slice = {
     },
     sandbox: {
       enabled: true,
-      allowUnsandboxedCommands: true,
+      allowUnsandboxedCommands: false,
       excludedCommands: ["git fetch *", "git pull *", "git push *", "gh *"],
       network: {
         allowedDomains: [
@@ -233,12 +234,7 @@ export const slice = {
       ask: [
         ...GIT_ASK,
         ...DOCKER_ASK,
-        "Bash(rm -*r*)",
-        "Bash(rm -*R*)",
-        "Bash(rm * -*r*)",
-        "Bash(rm * -*R*)",
-        "Bash(rm --recursive*)",
-        "Bash(rm * --recursive*)",
+        ...RM_ASK,
         "Bash(sh)",
         "Bash(sh -)",
         "Bash(sh -s*)",

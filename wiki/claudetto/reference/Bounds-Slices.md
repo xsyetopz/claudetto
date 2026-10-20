@@ -28,6 +28,7 @@ The shared and repository bounds are on [Bounds](Bounds).
 | `MIN_OPTIONS` | `2` | `src/plugins/claudetto/slices/decide/limits.ts` | The fewest options of a `pick` question. |
 | `MAX_OPTIONS` | `255` | `src/plugins/claudetto/slices/decide/limits.ts` | The most options of a `pick` question. |
 | `MIN_CONFIDENCE` | `0.5` | `src/plugins/claudetto/slices/decide/limits.ts` | The confidence under which a Jev answer says that Jev is not sure. |
+| `MIN_MARGIN` | `0.15` | `src/plugins/claudetto/slices/decide/limits.ts` | The margin that a pick needs over chance, `1 / options`. |
 | `YES_NO_UNSURE_BAND` | `0.2` | `src/plugins/claudetto/slices/decide/limits.ts` | The distance from 0.5 under which a yes or no answer says that Jev is not sure. |
 
 ## Goal
