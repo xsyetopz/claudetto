@@ -23,6 +23,10 @@ import {
   BACKOFF_MS,
   ERROR_BODY_MAX,
   IMAGE_BYTES_MAX,
+  IMAGE_PIXELS_MAX,
+  IMAGE_PIXELS_MIN,
+  IMAGE_SIDE_MAX,
+  IMAGE_SIDE_MIN,
   JEV_TIMEOUT_MS,
   TRIES,
 } from "../../../plugins/claudetto/slices/decide/limits.ts";
@@ -912,4 +916,76 @@ test("`main` prints pixels for the first image, and none for a truncated file", 
   } finally {
     await rm(dir, { recursive: true });
   }
+});
+
+test("the pixel bounds of an image are pinned", () => {
+  expect(IMAGE_SIDE_MIN).toBe(280);
+  expect(IMAGE_SIDE_MAX).toBe(1568);
+  expect(IMAGE_PIXELS_MIN).toBe(IMAGE_SIDE_MIN ** 2);
+  expect(IMAGE_PIXELS_MAX).toBe(IMAGE_SIDE_MAX ** 2);
+});
+
+test("`main` exits 2 with no request for an image over the side maximum, and names the path, the size, and the bound", async () => {
+  const r = await runBad("tall.png", pngOf(1554, 2000));
+  expect(r.code).toBe(EXIT.usage);
+  expect(r.seen).toHaveLength(0);
+  expect(r.text).toContain(r.path);
+  expect(r.text).toContain("1554x2000");
+  expect(r.text).toContain("over 1568 px on a side");
+  expect(r.text).toContain("Scale the image");
+});
+
+test("`main` exits 2 with no request for a JPEG over the side maximum or under the side minimum", async () => {
+  for (const [w, h] of [
+    [1569, 400],
+    [400, 279],
+  ] as const) {
+    const r = await runBad("a.jpg", jpegOf(w, h));
+    expect(r.code).toBe(EXIT.usage);
+    expect(r.seen).toHaveLength(0);
+    expect(r.text).toContain(`${w}x${h}`);
+  }
+});
+
+test("`main` exits 2 with no request for an image under the side minimum", async () => {
+  const r = await runBad("small.png", pngOf(279, 600));
+  expect(r.code).toBe(EXIT.usage);
+  expect(r.seen).toHaveLength(0);
+  expect(r.text).toContain("under 280 px on a side");
+});
+
+test("`main` passes the inclusive edges of the pixel bounds", async () => {
+  for (const [w, h] of [
+    [1568, 1568],
+    [280, 280],
+    [1568, 280],
+  ] as const) {
+    const r = await runBad("edge.png", pngOf(w, h));
+    expect(r.code).toBe(EXIT.ok);
+    expect(r.seen).toHaveLength(1);
+  }
+});
+
+test("`main` checks the pixel bounds for each verb that takes an image", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "decide-"));
+  try {
+    const a = join(dir, "a.png");
+    await Bun.write(a, pngOf(1554, 2000));
+    for (const argv of [
+      ["pick", "--image", a, "--", "Which?", "x", "y"],
+      ["box", "--image", a, "--", "the button"],
+    ]) {
+      const { code, seen } = await runMain(argv);
+      expect(code).toBe(EXIT.usage);
+      expect(seen).toHaveLength(0);
+    }
+  } finally {
+    await rm(dir, { recursive: true });
+  }
+});
+
+test("`main` leaves an image with an unreadable size to the API", async () => {
+  const r = await runBad("cut.png", pngOf(5000, 5000).slice(0, 20));
+  expect(r.code).toBe(EXIT.ok);
+  expect(r.seen).toHaveLength(1);
 });

@@ -36,6 +36,15 @@ export const ERROR_IMAGE_PATH = (v: {
 }): string => `Use \`--image <path>\` with a path to a PNG or JPEG file.
 ${v.usage}`;
 
+/** From `src/plugins/claudetto/slices/decide/prompts/error-image-size.md`. */
+export const ERROR_IMAGE_SIZE = (v: {
+  path: string;
+  size: string;
+  bound: string;
+}): string => `The image file \`${v.path}\` is ${v.size} px, which is ${v.bound}.
+The API takes 280 to 1568 px per side, and it answers a larger or smaller image with a \`400\`.
+Scale the image so that its longest side is at most 1568 px and its shortest side is at least 280 px, then send it again.`;
+
 /** From `src/plugins/claudetto/slices/decide/prompts/error-no-key.md`. */
 export const ERROR_NO_KEY = `The variable \`TYPESAFE_API_KEY\` is not set. Set it before Claude Code starts.`;
 
@@ -85,6 +94,7 @@ export const USAGE = `Use one of these forms:
 - \`claudetto-decide box --image <path> [--image <path>]... [--json] [--state <- | text>] [--] "<what to find>"\`
 - \`claudetto-decide ask [--image <path>]...\`, with JSON on stdin.
 An \`--image\` takes a PNG or JPEG file, and the image leaves the machine, so send only the pictures that the user agrees to show.
+Each side must be 280 to 1568 px, or the command exits with code 2, so scale a larger picture first.
 A \`box\` can come back when the target is absent from the image, so read its confidence.`;
 
 /** From `src/plugins/claudetto/slices/decide/prompts/yes-unsure.md`. */

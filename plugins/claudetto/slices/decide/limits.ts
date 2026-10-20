@@ -50,3 +50,21 @@ export const APPROVAL_MAX = 0.2;
  * It does not add the sizes, so the API answers a request over 32 MiB with a `413`.
  */
 export const IMAGE_BYTES_MAX = 16 * 1024 * 1024;
+
+// The pixel bounds of one `--image`, from the TypeSafe docs and a live `400` ("Invalid image dimensions.").
+// A 1554 x 2000 PNG got that `400`, and the same image at 1218 x 1568 got a `200`.
+// The side bounds are inclusive, and so is the total: 1568 x 1568 is exactly `IMAGE_PIXELS_MAX`.
+// A side of at least `IMAGE_SIDE_MIN` makes the total at least `IMAGE_PIXELS_MIN`, and a side of at most `IMAGE_SIDE_MAX` makes the total at most `IMAGE_PIXELS_MAX`.
+// The total bounds are kept for the docs and for a test that pins them.
+
+/** The fewest pixels of one side of an `--image`. */
+export const IMAGE_SIDE_MIN = 280;
+
+/** The most pixels of one side of an `--image`. */
+export const IMAGE_SIDE_MAX = 1568;
+
+/** The fewest pixels in total of an `--image`: 280 x 280. */
+export const IMAGE_PIXELS_MIN = 78_400;
+
+/** The most pixels in total of an `--image`: 1568 x 1568. */
+export const IMAGE_PIXELS_MAX = 2_458_624;

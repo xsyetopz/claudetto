@@ -77,14 +77,23 @@ The content type of the part comes from that check, as `image/png` or `image/jpe
 The CLI checks the size of each file against `IMAGE_BYTES_MAX` in `src/plugins/claudetto/slices/decide/limits.ts`, which is 16 MiB (16,777,216 bytes).
 A file that fails a check is a usage fault, with exit `2`, and no request is sent.
 
-The pixel bounds of the docs (280 to 1568 px per side, and 78,400 to 2,458,624 px in total) are left to the API.
-The API answers with `413` or `400`, and the CLI prints the body of the answer, bounded by `ERROR_BODY_MAX`.
-The CLI does not add the sizes of the files, so a request over the 32 MiB body gets the `413` of the API.
+The CLI also checks the pixel size of each `--image` against the bounds of the docs.
+A side must be 280 to 1568 px, and the total must be 78,400 to 2,458,624 px, as `IMAGE_SIDE_MIN`, `IMAGE_SIDE_MAX`, `IMAGE_PIXELS_MIN`, and `IMAGE_PIXELS_MAX` in `limits.ts`.
+The size comes from the header read of D5, with `imageSize` on the bytes that `readImage` already read.
+A size that is out of bounds is a usage fault, with exit `2`, no request, and a message that names the path, the size, and the bound, and tells the user to scale the image.
+A size that cannot be read does not stop the command, and the API then decides.
+The reason is a live result of 2026-10-20: a 1554 x 2000 RGBA PNG passed the other checks, and the API answered `400` with `Invalid image dimensions.` to a `yes` and to a `box`.
+The same image at 1218 x 1568 got `200`.
+The user chose to check before the call.
+
+The CLI does not add the sizes of the files, so a request over the 32 MiB body gets the `413` of the API, and the CLI prints the body of the answer, bounded by `ERROR_BODY_MAX`.
 
 The CLI has no image library, so it cannot read the pixels of a picture.
 A decoder adds code and a dependency, and the goal of the user (D10) forbids both.
 The header read of D5 is the only size read, and it needs no library.
 
+- Alternative: leave the pixel bounds to the API.
+  Rejected after the live `400` above, because the reply gives the user no size and no advice.
 - Alternative: check the pixels in the CLI.
   Rejected, for the reason above.
 - Alternative: resize the picture in the CLI.

@@ -21,6 +21,10 @@ import {
   BACKOFF_MS,
   ERROR_BODY_MAX,
   IMAGE_BYTES_MAX,
+  IMAGE_PIXELS_MAX,
+  IMAGE_PIXELS_MIN,
+  IMAGE_SIDE_MAX,
+  IMAGE_SIDE_MIN,
   MAX_OPTIONS,
   MIN_OPTIONS,
   TRIES,
@@ -31,6 +35,7 @@ import {
   ERROR_BOX_IMAGE,
   ERROR_IMAGE_FILE,
   ERROR_IMAGE_PATH,
+  ERROR_IMAGE_SIZE,
   ERROR_NO_KEY,
   ERROR_PICK_OPTIONS,
   ERROR_QUESTION_MISSING,
@@ -117,7 +122,31 @@ const imageType = (bytes: Uint8Array): string | undefined => {
 };
 
 /**
- * Reads one `--image` file, and checks its size and its first bytes (design D4).
+ * Stops an image outside the pixel bounds of the API before the request (design D4).
+ * A size that cannot be read does not stop the command: the API checks it then.
+ */
+const checkImageSize = (path: string, bytes: Uint8Array): void => {
+  const size = imageSize(bytes);
+  if (!size) return;
+  const { width, height } = size;
+  const bound =
+    Math.max(width, height) > IMAGE_SIDE_MAX
+      ? `over ${IMAGE_SIDE_MAX} px on a side`
+      : Math.min(width, height) < IMAGE_SIDE_MIN
+        ? `under ${IMAGE_SIDE_MIN} px on a side`
+        : width * height > IMAGE_PIXELS_MAX
+          ? `over ${IMAGE_PIXELS_MAX} px in total`
+          : width * height < IMAGE_PIXELS_MIN
+            ? `under ${IMAGE_PIXELS_MIN} px in total`
+            : undefined;
+  if (bound)
+    throw new UsageError(
+      ERROR_IMAGE_SIZE({ path, size: `${width}x${height}`, bound }),
+    );
+};
+
+/**
+ * Reads one `--image` file, and checks its file size, its first bytes, and its pixel size (design D4).
  * A fault is a `UsageError` that names the path and the reason.
  */
 export const readImage = async (path: string): Promise<Blob> => {
@@ -138,6 +167,7 @@ export const readImage = async (path: string): Promise<Blob> => {
     throw fail(`is over ${IMAGE_BYTES_MAX} bytes`);
   const type = imageType(bytes);
   if (!type) throw fail("is not a PNG or JPEG file");
+  checkImageSize(path, bytes);
   return new Blob([bytes], { type });
 };
 
