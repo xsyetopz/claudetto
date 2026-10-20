@@ -181,3 +181,27 @@ Jev picked `project-root` at confidence 0.74.
 - The `effort` of a subagent task is the configured value (the docs of `subagentStatusLine`), and Claude Code can apply another one.
   The row shows it as given.
 - The handoff notice names the file, its size in bytes, and the mode (`warm fork` or `cold write`).
+
+### D66. Jev Answers Each `AskUserQuestion` Call When a Key Is Set
+
+- The user said (2026-10-20): "when Jev is found, all 'decisions' go to Jev".
+  Their answers to the follow-up questions:
+  - What turns Jev on: "Key is set".
+    `TYPESAFE_API_KEY` in the environment turns Jev on.
+    The `decide` option defaults to `jev`, and `off` still turns it off.
+  - What Jev does with each `AskUserQuestion`: "Jev answers, user skipped".
+    The pick of Jev becomes the answer, and the dialog does not show.
+    Only a pick below the confidence bound reaches the user, as the normal dialog.
+  - How Jev gets project facts: "Claude writes them in".
+    The tool text tells Claude to put the facts that decide the question (file lines, tool results) in the question and the option descriptions.
+    No file is sent on its own.
+- This replaces the kind gate of 13.9 (`facts`, `preference`, `project`).
+  Each question with 2 or more options goes to Jev, and the bound `max(MIN_CONFIDENCE, 1/n + MIN_MARGIN)` stays.
+- Mechanism: a `tool.call` hook answers with `{ result }` in place of `next`, and Claude Code maps the result for the model with the own mapper of the tool (`plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts:4075`, the `tool.call` event: "`{ result }` answers in place of `next`", and `:13534`, `ToolCallResult`).
+  The result has the `questions` and the `answers` (question text to option label), which is the output shape of `AskUserQuestion` (`claude-code-tools/index.d.ts:4298`).
+  The documented `PreToolUse` way is the same in effect: `permissionDecision: "allow"` with an `updatedInput` that holds `answers` (`external/cc-2.1.304/docs/hooks.md:1938` and "Allow with `updatedInput`": "For `AskUserQuestion`, echo back the original `questions` array and add an `answers` object").
+  The slice uses the mod `{ result }`, because a mod hook has no permission step to pass.
+- The `context` of the result names Jev, the pick, and the confidence, and tells Claude to say so in its reply, so the user sees who answered.
+- A call is answered only when each question has a sure pick.
+  A multi-select question, and a question with fewer than 2 options, go to the user, so the dialog shows with the sure picks as notes in their options (the 13.9 behavior).
+- Jev cannot read files, so the quality of the pick depends on the facts that Claude writes in.

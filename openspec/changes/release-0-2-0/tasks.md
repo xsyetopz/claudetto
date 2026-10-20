@@ -284,7 +284,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
   Check: `just test tests/tools/findings-check.test.ts`
 - [x] 12.3 Run the full gate in a container.
   Check: `just docker check`
-- [ ] 12.4 Ask the user before the paid run, with the cost and the weekly share, then run one `just sandbox` session of the setup and one task of each slice on a fresh config, and write each fault to `findings.md` and fix it (D38).
+- [x] 12.4 Ask the user before the paid run, with the cost and the weekly share, then run one `just sandbox` session of the setup and one task of each slice on a fresh config, and write each fault to `findings.md` and fix it (D38).
   Check: `just validate`
 - [ ] 12.5 Ask the user for a yes to tag `claudetto--v0.2.0` and push, and do neither before the yes (D38).
   Check: `git tag --list claudetto--v0.2.0`
@@ -314,6 +314,7 @@ The rows `new:` of `findings.md` that need no decision of the user.
   Check: `just test tests/claudetto/setup`
 - [x] 13.9 Make the pick of Jev need facts, found in the run of task 12.4: the hook sends Jev only the question and the option texts (`slices/decide/domain/ask.ts`), so Jev picked `CommonJS` for an ESM `math.js` at confidence 0.76, and with two options `MIN_CONFIDENCE` 0.5 blocks nothing.
   Check: `just test tests/claudetto/decide`
+  Task 13.18 replaces its kind gate: each question goes to Jev.
 - [x] 13.10 Make the `rm` ask rules of the snippet match the flags only, found in the run of task 12.4: `Bash(rm -*R*)` matched `rm -f $TMPDIR/m.mjs`, because of the `R` in `$TMPDIR`, so the cleanup of D44 prompts the user.
   Check: `just test tests/claudetto/prompt`
 - [x] 13.11 Make `bunx jscpd` of `/claudetto:dry` run in the sandbox of the snippet, found in the run of task 12.4: it failed with `bun is unable to write files to tempdir: EPERM`, and the model ran it with `dangerouslyDisableSandbox`.
@@ -342,6 +343,14 @@ The rows `new:` of `findings.md` that need no decision of the user.
   Check: `just test tests/claudetto/prompt tests/claudetto/guard`
   Open: Claude Code 2.1.304 prints an info warning for the inner `:*`, and it matches the rule as a `*` wildcard (read in the bundle).
   The `guard` hook has no rule for a delete refspec, so the ask rule is the only guard.
+
+- [x] 13.18 Send each `AskUserQuestion` question to Jev when the key is set (D66), found in the use of 13.9 (the user, 2026-10-20: "when Jev is found, all 'decisions' go to Jev").
+  The `decide` option defaults to `jev`, and `TYPESAFE_API_KEY` turns Jev on.
+  When each question of a call has a pick over the bound `max(MIN_CONFIDENCE, 1/n + MIN_MARGIN)`, the `tool.call` hook answers the call with `{ result }` and a `context` that names Jev, the pick, and the confidence, and the dialog does not show.
+  Otherwise the dialog shows, with the sure picks as notes in their options.
+  A multi-select question goes to the user.
+  The kind gate and its prompts are gone, and the `tool.describe` text of `AskUserQuestion` tells Claude to put the deciding facts in the question and the option descriptions.
+  Check: `just test tests/claudetto/decide && just lab`
 
 ## 14. Patches of Subagents
 

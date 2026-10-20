@@ -109,6 +109,7 @@ One `just sandbox` session on a fresh config, on `claude-sonnet-5-5`, with `advi
 | snippet | `allowUnsandboxedCommands: true` let the model run `bunx` outside the sandbox twice with no prompt | transcript `508abd63` | 13.15, done | `just test tests/claudetto/prompt/sandbox-escape.test.ts` |
 | `dry` | `BUN_TMPDIR="$TMPDIR" bunx jscpd` is rejected (quoted text) or needs approval (env prefix) | live run of 13.11 | 13.16, done | `just test tests/claudetto/dry` |
 | snippet | `Bash(git push* :*)` mixes `*` with a trailing `:*`, so it matches nothing | live run of 13.11 | 13.17, done | `just test tests/claudetto/prompt tests/claudetto/guard` |
+| `decide` | the kind gate sent most decisions to the user, though the user wants Jev to answer them | the user, 2026-10-20 | 13.18, done | `just test tests/claudetto/decide && just lab` |
 | `guard`, `sembr`, `ground`, `patch`, `handoff`, `statusline`, `reply`, `styles`, `advise` | none found | transcript `508abd63` | none | the evidence of 12.4 |
 
 ## Not Checked

@@ -1,11 +1,11 @@
 // The answers of Jev for an `AskUserQuestion` call, with the same questions to Jev as the `decide` slice.
-// The hook answers for the user only when each question of the call is a single-select facts question,
-// and Jev is sure about its kind and its pick.
+// The hook answers for the user only when each question of the call is a single-select question,
+// and Jev is sure about its pick (D66: all decisions go to Jev).
 // Otherwise the call goes to the user as Claude sent it.
 
 export const API = "https://api.typesafe.ai/v1/systemone";
 export const MODEL = "jev-latest";
-/** The minimum confidence of Jev for the kind and the pick before the hook answers for the user. */
+/** The minimum confidence of Jev for the pick before the hook answers for the user. */
 export const MIN_ANSWER_CONFIDENCE = 0.8;
 export const MIN_OPTIONS = 2;
 export const ATTEMPT_TIMEOUT_MS = 12_000;
@@ -27,7 +27,7 @@ export interface Answer {
   readonly confidence: number;
 }
 
-/** The answers of Jev by key, `kind_<i>` for the kind of question `i` and `pick_<i>` for its pick. */
+/** The answers of Jev by key, `pick_<i>` for its pick. */
 export type AskAnswers = Record<string, Answer | undefined>;
 
 /** The fields that the hook adds to the input: the answers, and a note on each answer. */
@@ -35,18 +35,6 @@ export interface Picked {
   readonly answers: Record<string, string>;
   readonly annotations: Record<string, { readonly notes: string }>;
 }
-
-const KIND = {
-  type: "choice",
-  instructions:
-    "Only the user can answer some questions. Facts decide others. Which is this question?",
-  criteria: {
-    preference:
-      "A goal, a preference, an approval, or a choice that reasonable engineers make either way",
-    facts:
-      "Correctness, security, data loss, performance, or maintenance cost decide the answer",
-  },
-};
 
 /** The body of the API request for the questions, or `null` when no question needs Jev. */
 export const askBody = (
@@ -65,10 +53,6 @@ export const askBody = (
       `Question ${i}: ${q.question}`,
       ...options.map((o) => `- ${o.label}: ${o.description ?? ""}`),
     );
-    asked[`kind_${i}`] = {
-      ...KIND,
-      instructions: `${KIND.instructions} (question ${i})`,
-    };
     asked[`pick_${i}`] = {
       type: "choice",
       instructions: `Which option is the best answer to question ${i}?`,
@@ -89,12 +73,9 @@ export const jevAnswers = (
 ): Picked | null => {
   const picked: Picked = { answers: {}, annotations: {} };
   for (const [i, q] of questions.entries()) {
-    const kind = answers[`kind_${i}`];
     const pick = answers[`pick_${i}`];
     if (
       q.multiSelect ||
-      kind?.choice !== "facts" ||
-      !(kind.confidence >= MIN_ANSWER_CONFIDENCE) ||
       pick === undefined ||
       !(pick.confidence >= MIN_ANSWER_CONFIDENCE) ||
       !(q.options ?? []).some((o) => o.label === pick.choice)

@@ -15,6 +15,9 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 ### Added
 
+- The `decide` option is `jev` by default, and with `TYPESAFE_API_KEY` set, Jev answers each `AskUserQuestion` call with no dialog when it is sure about each question (D66, the user, 2026-10-20: "when Jev is found, all 'decisions' go to Jev").
+  The kind gate (`facts`, `preference`, `project`) is gone, a multi-select question goes to the user, and one unsure question shows the normal dialog with the sure picks as notes.
+  The answer that Claude gets names Jev, the pick, and the confidence, and the text of the tool tells Claude to put the deciding facts in the question.
 - On macOS, `/setup` offers the Docker socket in `sandbox.network.allowUnixSockets` of `.claude/settings.local.json` for a project that uses Docker, because the sandbox blocks the socket and `docker` fails with `permission denied` (D43).
 - The `goal` slice replaces the built-in `/goal` with checks that run a command, read a file, or ask a small model, with the steps of a plan file, a budget, and a stall rule, and it turns off `ProposeGoal` and the `goal_status` attachment, and `/goal` shows the goal engine's own description, while the `advise` slice, with the `advisor` option `claudetto`, gives the tool `advise` in place of the built-in advisor, with the model, the effort, and the bounds that the user sets, and `/setup` sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`.
 - The `ground` slice denies a `Write` or `Edit` of a plan file when the text cites a `file:line` or a convention that the source does not hold, and the `spec` slice ships the OpenSpec schemas `task`, `story`, and `epic`, and a `config.yaml` template of the project rules, in the `spec` skill.
@@ -168,7 +171,7 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 - The description of each plugin is `src/plugins/<plugin>/description.md`.
 - A hook lab test imports the texts of its slice from `../prompts.ts`.
 - `just test` runs `just generate` first, because many tests import the generated copy in `plugins/`.
-- The decision API of the `decide` slice is off until you turn it on.
+- The decision API of the `decide` slice is on when `TYPESAFE_API_KEY` is set, and `decide` set to `off` turns it off.
 - The guard denies only a command part that only prints a file.
   It asks before a call that discards work, weakens a test, or changes a protected file.
 - The `Bash` text of the `surface` slice copies the timeouts, the background line, and the `# Machines` section from the built-in text.

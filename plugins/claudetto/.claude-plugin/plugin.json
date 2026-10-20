@@ -2,7 +2,7 @@
   "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "claudetto",
   "version": "0.2.0",
-  "description": "Adds a lean output style, a status line command, the `setup` skill, and an opt-in Jev pick of `AskUserQuestion`. Adds hooks that deny a `Bash` command that only prints a file, check plan files for claims with no source, and check Markdown line breaks.",
+  "description": "Adds a lean output style, a status line command, the `setup` skill, and Jev answers for `AskUserQuestion` when a key is set. Adds hooks that deny a `Bash` command that only prints a file, check plan files for claims with no source, and check Markdown line breaks.",
   "author": {
     "name": "xsyetopz"
   },
@@ -32,8 +32,8 @@
     "decide": {
       "type": "string",
       "title": "Second Opinion",
-      "description": "Use `off` for no pick, or `jev` for Jev (it needs `TYPESAFE_API_KEY`, and the question goes to the TypeSafe API). With `jev`, Jev picks an option of each `AskUserQuestion` question that facts decide.",
-      "default": "off",
+      "description": "Use `off` for no pick, or `jev` for Jev (it needs `TYPESAFE_API_KEY`, and the questions go to the TypeSafe API). With `jev` and the key, Jev answers each `AskUserQuestion` call and the dialog does not show, unless Jev is not sure about a question.",
+      "default": "jev",
       "options": ["off", "jev"]
     },
     "compaction": {

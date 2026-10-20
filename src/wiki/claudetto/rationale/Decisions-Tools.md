@@ -71,15 +71,17 @@ The comparison with the built-in LSP tool is not in the repository.
 **Evidence:** `slices/graph/slice.ts` and `tests/claudetto-codegraph/layout.test.ts`.
 See [Code Graph](Code-Graph).
 
-## Why Jev Is Off by Default
+## Why Jev Is On When the Key Is Set
 
 **Choice:** Jev is an outside decision service.
-The `decide` slice of the core plugin has an option `decide` with the values `off` (default) and `jev`.
-With `jev`, the `claudetto-decide` CLI picks an option of each `AskUserQuestion` that facts settle.
-When Jev gives no pick, the question stays as Claude asked it.
+The `decide` slice of the core plugin has an option `decide` with the values `off` and `jev` (default, D66).
+The key `TYPESAFE_API_KEY` is the trigger, and with no key nothing goes out.
+With `jev` and a key, all decisions go to Jev: the `claudetto-decide` CLI picks an option of each `AskUserQuestion` question, and a call is answered with no dialog when Jev is sure about each question.
+When Jev is not sure, the user sees the dialog.
 `TYPESAFE_API_KEY` goes in the environment of the CLI, never in its arguments.
 
-**Reason:** The service must not need an add-on install, and it must not send text unless the user chooses.
+**Reason:** The service must not need an add-on install, and it must not send text unless the user sets the key.
+The user chose this on 2026-10-20: "when Jev is found, all 'decisions' go to Jev".
 A fallback model and a `second_opinion` tool are not in 0.2.0, because no incident needs them.
 
 **Evidence:** `slices/decide/adapters/ask.ts`.

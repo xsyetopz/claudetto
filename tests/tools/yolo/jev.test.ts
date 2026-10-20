@@ -23,17 +23,13 @@ const colors: AskQuestion = {
   options: [{ label: "Red" }, { label: "Blue" }],
 };
 const sure = {
-  kind_0: { choice: "facts", confidence: 0.9 },
   pick_0: { choice: "RW lock", confidence: 0.85 },
 };
 
 describe("askBody", () => {
-  test("asks the kind and the pick of each single-select question, and skips a multi-select question", () => {
+  test("asks the pick of each single-select question, and skips a multi-select question", () => {
     const body = askBody([lock, colors]);
-    expect(Object.keys(body?.questions ?? {}).sort()).toEqual([
-      "kind_0",
-      "pick_0",
-    ]);
+    expect(Object.keys(body?.questions ?? {})).toEqual(["pick_0"]);
     expect(body?.model).toBe("jev-latest");
     expect(body?.state).toContain("Question 0: Which lock?");
   });
@@ -60,11 +56,9 @@ describe("jevAnswers", () => {
     expect(jevAnswers([lock, colors], sure)).toBeNull();
   });
 
-  test("gives `null` for a preference question, a pick under 0.8, a kind under 0.8, and an unknown label", () => {
+  test("gives `null` for a pick under 0.8 and an unknown label", () => {
     for (const answers of [
-      { ...sure, kind_0: { choice: "preference", confidence: 0.9 } },
       { ...sure, pick_0: { choice: "RW lock", confidence: 0.79 } },
-      { ...sure, kind_0: { choice: "facts", confidence: 0.79 } },
       { ...sure, pick_0: { choice: "Spin", confidence: 0.9 } },
       {},
     ])

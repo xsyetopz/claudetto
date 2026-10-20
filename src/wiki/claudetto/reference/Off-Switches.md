@@ -22,7 +22,7 @@ The facts are for Claude Code `2.1.304`, and the key names match `schemas/claude
 | Option | Values | Effect | Read in |
 | --- | --- | --- | --- |
 | `compaction` | `handoff` (default), `built-in` | `built-in` turns off the handoff and keeps the compaction of Claude Code. | `slices/handoff/slice.ts` |
-| `decide` | `off` (default), `jev` | `off` picks no option of an `AskUserQuestion` question. `jev` needs `TYPESAFE_API_KEY`. | `slices/decide/slice.ts` |
+| `decide` | `off`, `jev` (default) | `off` sends no question to Jev. `jev` needs `TYPESAFE_API_KEY`, and then Jev answers each `AskUserQuestion` call that it is sure about. | `slices/decide/slice.ts` |
 | `advisor` | `builtin` (default), `claudetto` | `builtin` keeps the advisor of Claude Code and registers no `advise` tool. | `slices/advise/slice.ts` |
 | `advisorModel` | An alias or a model ID, default `opus` | Sets the model of the tool `advise`. It is not an off switch. | `slices/advise/slice.ts` |
 | `advisorEffort` | An effort level, default `high` | Sets the effort of the tool `advise`. It is not an off switch. | `slices/advise/slice.ts` |

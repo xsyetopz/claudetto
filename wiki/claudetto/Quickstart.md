@@ -48,7 +48,7 @@ See [Handoff](Handoff).
 
 - A `Bash` command that only prints a file is denied. The denial names the `Read` call to use. See [Guard](Guard).
 - A Markdown file that Claude writes gets one sentence on each line. See [Sembr](Sembr).
-- With `decide` set to `jev`, Jev picks an option of each `AskUserQuestion` question that facts settle. See [Decide](Decide).
+- With `TYPESAFE_API_KEY` set, Jev answers each `AskUserQuestion` call when it is sure, and you see no dialog. See [Decide](Decide).
 
 The settings snippet also sets permission rules and the sandbox.
 Reads of secret files and destructive commands are denied, and a force push asks first.

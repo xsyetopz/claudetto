@@ -27,12 +27,12 @@ The debug log of Claude Code (`--debug-file <path>`) shows what a hook or a plug
 
 ## The Jev Pick
 
-The option `decide` is `off` by default.
+The option `decide` is `jev` by default, and `TYPESAFE_API_KEY` turns Jev on.
 
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
-| A question has no pick of Jev | The option `decide` is `off`, or `TYPESAFE_API_KEY` was not set when Claude Code started. Set the option, export the variable, and start Claude Code again. | [Decide](Decide) |
-| A question has no pick, and the key is set | The key is not valid, the account has no balance, or Jev was not sure. The hook leaves the question as Claude asked it. | [Decide](Decide) |
+| A question has no answer of Jev | The option `decide` is `off`, or `TYPESAFE_API_KEY` was not set when Claude Code started. Set the option, export the variable, and start Claude Code again. | [Decide](Decide) |
+| You see the dialog, and the key is set | The key is not valid, the account has no balance, or Jev was not sure about one question of the call. The hook leaves the dialog as Claude asked it. | [Decide](Decide) |
 
 ## The Code Graph
 

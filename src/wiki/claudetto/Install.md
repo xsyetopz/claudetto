@@ -84,17 +84,17 @@ The skill then offers two more steps:
 | `claudetto-sessions` | No setup. See [Sessions](Sessions). |
 | `claudetto-lab` | For plugin authors. See [Lab](Lab). |
 
-## Turn On the Jev Pick
+## Turn On Jev
 
-The Jev pick is off by default.
-To use it, set the option `decide` of `claudetto` to `jev`.
-Then export the key before Claude Code starts:
+The option `decide` of `claudetto` is `jev` by default, so the key alone turns Jev on.
+Export the key before Claude Code starts:
 
 ```bash
 export TYPESAFE_API_KEY=<your key>
 ```
 
-Each pick then sends the question and the options to the TypeSafe API.
+Each `AskUserQuestion` call then sends the questions and the options to the TypeSafe API.
+To turn Jev off, set the option `decide` to `off`.
 See [Decide](Decide).
 
 ## Update

@@ -45,7 +45,7 @@ The core plugin has 15 slices.
 | Slice | What it does |
 | --- | --- |
 | [`advise`](Advise) | Gives the tool `advise`, an advisor with the model and the effort that you set. |
-| [`decide`](Decide) | Asks Jev for a pick on each `AskUserQuestion` question that facts settle. |
+| [`decide`](Decide) | Lets Jev answer each `AskUserQuestion` call when `TYPESAFE_API_KEY` is set and Jev is sure. |
 | [`dry`](Dry) | Merges the config of `jscpd`, and gives the skill `dry`. |
 | [`goal`](Goal) | Replaces `/goal` with a loop of checks at the end of each turn. |
 | [`ground`](Ground) | Denies a plan file that cites a `file:line` or a convention that the source does not hold. |
@@ -73,7 +73,7 @@ These `userConfig` options change how the core plugin works:
 | `advisor` | `builtin`, `claudetto` | `builtin` |
 | `advisorModel` | an alias or a model ID | `opus` |
 | `advisorEffort` | `low`, `medium`, `high`, `xhigh`, `max` | `high` |
-| `decide` | `off`, `jev` | `off` |
+| `decide` | `off`, `jev` | `jev` |
 | `compaction` | `handoff`, `built-in` | `handoff` |
 
 ## See Also
