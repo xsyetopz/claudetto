@@ -737,6 +737,9 @@ test("`main` sends `ask` with a `box` and another question with `jev-1.14.0`", a
     const form = seen[0]?.body as FormData;
     const json = JSON.parse(await (form.get("request") as File).text());
     expect(json.model).toBe("jev-1.14.0");
+    expect(seen[0]?.headers).toMatchObject({
+      "TypeSafe-Danger-Zone-Images": "true",
+    });
   } finally {
     stdin.mockRestore();
     await rm(dir, { recursive: true });
@@ -759,4 +762,10 @@ test("`box --json` prints the raw answer", () => {
 
 test("`box` fails on a reply with no box", () => {
   expect(() => render(parseArgs(["box", "--", "x"]), {})).toThrow();
+});
+
+test("`box` with no `--image` exits `2` and sends no request", async () => {
+  const { code, seen } = await runMain(["box", "--", "the button"]);
+  expect(code).toBe(EXIT.usage);
+  expect(seen).toHaveLength(0);
 });

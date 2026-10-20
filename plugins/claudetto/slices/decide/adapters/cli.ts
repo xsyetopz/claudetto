@@ -6,7 +6,7 @@
 //   claudetto-decide yes  [--json] [--state <- | text>] [--] "<question>"
 //   claudetto-decide pick [--json] [--state <- | text>] [--] "<question>" <key>[=<description>]...
 //   claudetto-decide ask < questions.json
-//   claudetto-decide box  [--json] [--image <path>]... [--] "<what to find>"
+//   claudetto-decide box  [--json] [--state <- | text>] [--image <path>]... [--] "<what to find>"
 //
 // The state is text or `-` for stdin, and never a file path, because a path would send a file to the API.
 // The one exception is `--image <path>`, which `yes`, `pick`, `ask`, and `box` take, and which repeats.
@@ -29,6 +29,7 @@ import {
 import {
   ERROR_ASK_QUESTIONS,
   ERROR_ASK_STDIN,
+  ERROR_BOX_IMAGE,
   ERROR_IMAGE_FILE,
   ERROR_IMAGE_PATH,
   ERROR_NO_KEY,
@@ -169,12 +170,15 @@ export const buildBody = async (
   const [question, ...items] = words;
   if (!question) throw new UsageError(ERROR_QUESTION_MISSING({ usage: USAGE }));
   const text = state === "-" ? await stdin() : (state ?? "");
-  if (kind === "box")
+  if (kind === "box") {
+    if (args.images.length === 0)
+      throw new UsageError(ERROR_BOX_IMAGE({ usage: USAGE }));
     return {
       state: text,
       model: MODEL,
       questions: { q: { type: "box", instructions: question } },
     };
+  }
   if (kind === "yes")
     return {
       state: text,

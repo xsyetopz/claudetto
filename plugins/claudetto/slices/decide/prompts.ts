@@ -19,6 +19,13 @@ export const ERROR_ASK_QUESTIONS = (v: { usage: string }): string =>
 export const ERROR_ASK_STDIN = (v: { usage: string }): string =>
   `\`ask\` needs a JSON object on stdin. ${v.usage}`;
 
+/** From `src/plugins/claudetto/slices/decide/prompts/error-box-image.md`. */
+export const ERROR_BOX_IMAGE = (v: {
+  usage: string;
+}): string => `The verb \`box\` needs one picture.
+Use \`--image <path>\` with a path to a PNG or JPEG file.
+${v.usage}`;
+
 /** From `src/plugins/claudetto/slices/decide/prompts/error-image-file.md`. */
 export const ERROR_IMAGE_FILE = (v: { path: string; reason: string }): string =>
   `The image file \`${v.path}\` ${v.reason}.`;

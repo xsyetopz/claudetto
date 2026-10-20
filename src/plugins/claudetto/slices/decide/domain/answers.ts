@@ -118,7 +118,7 @@ export const boxOf = (answers: unknown): BoxAnswer => {
       right: q["right"],
       confidence: q["confidence"],
     };
-  throw new Error("The reply of the TypeSafe API has no answer. Try again.");
+  throw new Error("The reply of the TypeSafe API has no valid box. Try again.");
 };
 
 /** The text of a box answer: one line with the four fractions and the confidence. */
