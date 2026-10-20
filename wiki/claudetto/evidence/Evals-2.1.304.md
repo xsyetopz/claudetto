@@ -341,6 +341,35 @@ Both reruns used `just eval --model haiku --runs 10 -j 4 --max-cost-usd 1 --case
   Its baseline is at the maximum, so the case cannot show a gain at this model.
 - `just eval-budget` on both results: 20 `with` runs checked, 0 faults.
 
+## Eval Gate of Task 6.4
+
+Task 6.4 cut texts that the model reads, in the commits `c8e1a7fd`..`4e1aa5e9`.
+`D26` says that a cut that lowers an eval score goes back.
+A check of `scope-followup` at 10 runs for each arm found no drop.
+It ran on 2026-10-21.
+
+### Method
+
+- Arm A is the checkout at `ad33e605`, which holds the cuts.
+- Arm B is `c8e1a7fd^`, the commit before the first cut.
+- Command: `just eval-variant "c8e1a7fd^" --case scope-followup --model haiku --runs 10 -j 4 --max-cost-usd 0.37`.
+  The `--max-cost-usd` bound applies to each arm.
+- Claude Code: `2.1.304`.
+- Model: `claude-haiku-5-5`.
+  The judge is `haiku`.
+- Results: `plugins/claudetto/evals/results/2026-10-20T22-18-40-315Z/` (arm A) and `plugins/claudetto/evals/results/variant-c8e1a7fd--2026-10-20T22-21-56-047Z/` (arm B).
+  Result folder names use UTC time.
+
+### Result
+
+- Both arms scored 1.00 in 10 of 10 runs.
+  The `without` arm scored 1.00 too.
+- The check cost $0.52 in total, with $0.23 for arm A and $0.29 for arm B.
+- The run exited with code 1 only because the baseline was at the maximum, so no gain could show.
+- The check has 10 runs for each arm, so it meets the `D25` floor.
+
+The full record of the eval gate of task 6.4 is in the openspec change `release-0-2-0`, in the file `openspec/changes/release-0-2-0/eval-gate-6.4.md`.
+
 ## Limits
 
 - **Blind author:** The author of the `blind` cases saw no plugin text.
@@ -366,6 +395,8 @@ Both reruns used `just eval --model haiku --runs 10 -j 4 --max-cost-usd 1 --case
 
 The 32 cases cost $4.60 in total.
 The rerun of `false-alarm-sum` cost $0.23, so the paid runs of this page cost $4.83 in total.
+The check of `scope-followup` for task 6.4 cost $0.52 in total, and [its section](#eval-gate-of-task-64) gives the method.
+With it, the paid runs of this page cost $5.35 in total.
 
 ## Sources
 
