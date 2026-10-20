@@ -22,6 +22,7 @@ Each row below names a page, what it measures, and when.
 | [Prohibition Lists](Prohibition-Lists) | Plugin texts that keep a list of `Do not` sentences | 2026-10-16 | Not stated |
 | [Probes of 2.1.301](Probes-2.1.301) | What a plugin `hooks.json`, agent, and `Stop` input accept | 2026-10-16 | `2.1.301` |
 | [Stop Hook Eval](Stop-Hook-Eval) | The behavior of a `type: "prompt"` hook on `Stop` | 2026-10-07 to 2026-10-12 | `2.1.292`, `2.1.296` |
+| [Sandbox Run 0.2.0](Sandbox-Run-0.2.0) | Live sandbox runs of 0.2.0, the slices that worked, and the faults fixed | 2026-10-20 | `2.1.304` |
 
 ## See Also
 
