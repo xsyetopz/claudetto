@@ -42,3 +42,10 @@ export const YES_NO_UNSURE_BAND = 0.2;
  * The bound is low, because a wrong "no" lets Jev approve for the user, and a wrong "yes" only shows a dialog.
  */
 export const APPROVAL_MAX = 0.2;
+
+/**
+ * The most bytes of one `--image` file: 16 MiB, or 16,777,216 bytes.
+ * The command checks the size of each file before it sends a request.
+ * It does not add the sizes, so the API answers a request over 32 MiB with a `413`.
+ */
+export const IMAGE_BYTES_MAX = 16 * 1024 * 1024;

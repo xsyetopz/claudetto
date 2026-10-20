@@ -19,6 +19,10 @@ export const ERROR_ASK_QUESTIONS = (v: { usage: string }): string =>
 export const ERROR_ASK_STDIN = (v: { usage: string }): string =>
   `\`ask\` needs a JSON object on stdin. ${v.usage}`;
 
+/** From `src/plugins/claudetto/slices/decide/prompts/error-image-file.md`. */
+export const ERROR_IMAGE_FILE = (v: { path: string; reason: string }): string =>
+  `The image file \`${v.path}\` ${v.reason}.`;
+
 /** From `src/plugins/claudetto/slices/decide/prompts/error-image-path.md`. */
 export const ERROR_IMAGE_PATH = (v: {
   usage: string;

@@ -21,6 +21,7 @@ import {
   ATTEMPT_TIMEOUT_MS,
   BACKOFF_MS,
   ERROR_BODY_MAX,
+  IMAGE_BYTES_MAX,
   MAX_OPTIONS,
   MIN_OPTIONS,
   TRIES,
@@ -28,6 +29,7 @@ import {
 import {
   ERROR_ASK_QUESTIONS,
   ERROR_ASK_STDIN,
+  ERROR_IMAGE_FILE,
   ERROR_IMAGE_PATH,
   ERROR_NO_KEY,
   ERROR_PICK_OPTIONS,
@@ -99,6 +101,43 @@ export const parseArgs = (argv: readonly string[]): Args => {
     } else words.push(arg);
   }
   return { kind: verb, words, state, json, images };
+};
+
+/** The first bytes of a PNG file and of a JPEG file (design D4). */
+const PNG_MAGIC = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+const JPEG_MAGIC = [0xff, 0xd8, 0xff];
+
+/** The content type for the first bytes of a file, or `undefined` when they are not PNG or JPEG. */
+const imageType = (bytes: Uint8Array): string | undefined => {
+  const starts = (magic: number[]) => magic.every((b, i) => bytes[i] === b);
+  if (starts(PNG_MAGIC)) return "image/png";
+  if (starts(JPEG_MAGIC)) return "image/jpeg";
+  return undefined;
+};
+
+/**
+ * Reads one `--image` file, and checks its size and its first bytes (design D4).
+ * A fault is a `UsageError` that names the path and the reason.
+ */
+export const readImage = async (path: string): Promise<Blob> => {
+  const fail = (reason: string) =>
+    new UsageError(ERROR_IMAGE_FILE({ path, reason }));
+  const file = Bun.file(path);
+  if (!(await file.exists())) throw fail("does not exist");
+  if (file.size > IMAGE_BYTES_MAX)
+    throw fail(`is over ${IMAGE_BYTES_MAX} bytes`);
+  let bytes: Uint8Array;
+  try {
+    bytes = await file.bytes();
+  } catch {
+    throw fail("cannot be read");
+  }
+  // The size check above can miss a file that grew, so the read length is checked too.
+  if (bytes.length > IMAGE_BYTES_MAX)
+    throw fail(`is over ${IMAGE_BYTES_MAX} bytes`);
+  const type = imageType(bytes);
+  if (!type) throw fail("is not a PNG or JPEG file");
+  return new Blob([bytes], { type });
 };
 
 /** The request body of `ask`: the JSON object on stdin, with its `questions` and an optional `state`. */
@@ -265,11 +304,8 @@ export const main = async (argv: readonly string[]): Promise<number> => {
     if (!key) throw new UsageError(ERROR_NO_KEY);
     const args = parseArgs(argv);
     const body = await buildBody(args, () => Bun.stdin.text());
-    // `Bun.file().slice()` is lazy and reads nothing here.
-    // The checks of task 3.1 read the files here, before the request.
-    const images = await Promise.all(
-      args.images.map((p) => Bun.file(p).slice()),
-    );
+    // `readImage` reads and checks each file here, so that a bad file stops the command before the request.
+    const images = await Promise.all(args.images.map(readImage));
     const res = (await post(body, key, { images })) as { answers?: unknown };
     console.log(render(args, res.answers));
     return EXIT.ok;

@@ -20,7 +20,7 @@
 
 ## 3. Magic Bytes and Size
 
-- [ ] 3.1 Add tests that a PNG and a JPEG file pass the check of the first bytes, with the content type `image/png` or `image/jpeg`, and that a GIF file, a text file with a `.png` name, and a file over `IMAGE_BYTES_MAX` exit `2` before any request is sent, and see them fail, then add `IMAGE_BYTES_MAX` with its comment to `src/plugins/claudetto/slices/decide/limits.ts`, and add the checks to the adapter (D4).
+- [x] 3.1 Add tests that a PNG and a JPEG file pass the check of the first bytes, with the content type `image/png` or `image/jpeg`, and that a GIF file, a text file with a `.png` name, and a file over `IMAGE_BYTES_MAX` exit `2` before any request is sent, and see them fail, then add `IMAGE_BYTES_MAX` with its comment to `src/plugins/claudetto/slices/decide/limits.ts`, and add the checks to the adapter (D4).
   Check: `just test tests/claudetto/decide`
 
 ## 4. The Verb `box`

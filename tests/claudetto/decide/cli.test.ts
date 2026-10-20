@@ -2,7 +2,7 @@
 // The API is a fake `fetch`, and the waits are a fake `sleep`, so no test sends a request or waits.
 
 import { expect, spyOn, test } from "bun:test";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, truncate } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -21,6 +21,7 @@ import {
   ATTEMPT_TIMEOUT_MS,
   BACKOFF_MS,
   ERROR_BODY_MAX,
+  IMAGE_BYTES_MAX,
   JEV_TIMEOUT_MS,
   TRIES,
 } from "../../../plugins/claudetto/slices/decide/limits.ts";
@@ -526,13 +527,18 @@ const runMain = async (argv: string[]) => {
   }
 };
 
-test("`main` sends `yes` and `pick` with `--image` as multipart, and one part for each path", async () => {
+/** The first bytes of a PNG file and of a JPEG file, with a little more. */
+const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0]);
+const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0]);
+const GIF = new TextEncoder().encode("GIF89a\u0001\u0000");
+
+test("`main` sends `yes` and `pick` with `--image` as multipart, one part for each path, with the content type of the first bytes", async () => {
   const dir = await mkdtemp(join(tmpdir(), "decide-"));
-  const a = join(dir, "a.png");
-  const b = join(dir, "b.jpg");
-  await Bun.write(a, new Uint8Array([1]));
-  await Bun.write(b, new Uint8Array([2]));
   try {
+    const a = join(dir, "a.png");
+    const b = join(dir, "b.jpg");
+    await Bun.write(a, PNG);
+    await Bun.write(b, JPEG);
     for (const argv of [
       ["yes", "--image", a, "--image", b, "--", "Safe?"],
       ["pick", "--image", a, "--image", b, "--", "Which?", "x", "y"],
@@ -542,6 +548,11 @@ test("`main` sends `yes` and `pick` with `--image` as multipart, and one part fo
       const form = seen[0]?.body as FormData;
       expect(form).toBeInstanceOf(FormData);
       expect([...form.keys()]).toEqual(["request", "img1", "img2"]);
+      expect((form.get("img1") as File).type).toBe("image/png");
+      expect((form.get("img2") as File).type).toBe("image/jpeg");
+      expect(
+        new Uint8Array(await (form.get("img1") as File).arrayBuffer()),
+      ).toEqual(PNG);
       expect(seen[0]?.headers).toMatchObject({
         "TypeSafe-Danger-Zone-Images": "true",
       });
@@ -553,12 +564,12 @@ test("`main` sends `yes` and `pick` with `--image` as multipart, and one part fo
 
 test("`main` sends `ask` with `--image` as multipart, with the questions of stdin", async () => {
   const dir = await mkdtemp(join(tmpdir(), "decide-"));
-  const a = join(dir, "a.png");
-  await Bun.write(a, new Uint8Array([1]));
   const stdin = spyOn(Bun.stdin, "text").mockResolvedValue(
     JSON.stringify({ questions: { q: { type: "noul", instructions: "Ok?" } } }),
   );
   try {
+    const a = join(dir, "a.png");
+    await Bun.write(a, PNG);
     const { code, seen } = await runMain(["ask", "--image", a]);
     expect(code).toBe(EXIT.ok);
     const form = seen[0]?.body as FormData;
@@ -583,4 +594,77 @@ test("`main` sends a verb with no `--image` as the JSON text it sends today", as
     }),
   );
   expect(JSON.stringify(seen[0]?.headers)).not.toContain("Danger-Zone");
+});
+
+test("`--image` with `--json` parses, and the flags stay as given", () => {
+  const args = parseArgs(["yes", "--json", "--image", "a.png", "--", "Q?"]);
+  expect(args.json).toBe(true);
+  expect(args.images).toEqual(["a.png"]);
+});
+
+/** Runs `main` with one bad image file, and gives the code, the messages, and the number of requests. */
+const runBad = async (
+  name: string,
+  bytes: Uint8Array | null,
+  size?: number,
+) => {
+  const dir = await mkdtemp(join(tmpdir(), "decide-"));
+  const errors: string[] = [];
+  const spy = spyOn(console, "error").mockImplementation((m: unknown) => {
+    errors.push(String(m));
+  });
+  try {
+    const path = join(dir, name);
+    if (bytes) await Bun.write(path, bytes);
+    if (size !== undefined) {
+      await truncate(path, size);
+    }
+    const { code, seen } = await runMain(["yes", "--image", path, "--", "Q?"]);
+    return { code, seen, text: errors.join("\n"), path };
+  } finally {
+    spy.mockRestore();
+    await rm(dir, { recursive: true });
+  }
+};
+
+test("`main` exits 2 with no request for a GIF file", async () => {
+  const r = await runBad("a.gif", GIF);
+  expect(r.code).toBe(EXIT.usage);
+  expect(r.seen).toHaveLength(0);
+  expect(r.text).toContain(r.path);
+});
+
+test("`main` exits 2 with no request for a text file with a `.png` name", async () => {
+  const r = await runBad("a.png", new TextEncoder().encode("not a picture"));
+  expect(r.code).toBe(EXIT.usage);
+  expect(r.seen).toHaveLength(0);
+  expect(r.text).toContain(r.path);
+});
+
+test("`main` exits 2 with no request for an empty file", async () => {
+  const r = await runBad("a.png", new Uint8Array());
+  expect(r.code).toBe(EXIT.usage);
+  expect(r.seen).toHaveLength(0);
+});
+
+test("`main` exits 2 with no request for a file over `IMAGE_BYTES_MAX`", async () => {
+  expect(IMAGE_BYTES_MAX).toBe(16 * 1024 * 1024);
+  const r = await runBad("big.png", PNG, IMAGE_BYTES_MAX + 1);
+  expect(r.code).toBe(EXIT.usage);
+  expect(r.seen).toHaveLength(0);
+  expect(r.text).toContain(r.path);
+});
+
+test("`main` passes a file of exactly `IMAGE_BYTES_MAX` bytes", async () => {
+  const r = await runBad("max.png", PNG, IMAGE_BYTES_MAX);
+  expect(r.code).toBe(EXIT.ok);
+  expect(r.seen).toHaveLength(1);
+});
+
+test("`main` exits 2 with no request for a missing path", async () => {
+  const r = await runBad("none.png", null);
+  expect(r.code).toBe(EXIT.usage);
+  expect(r.seen).toHaveLength(0);
+  expect(r.text).toContain(r.path);
+  expect(r.text).not.toContain("ENOENT");
 });
