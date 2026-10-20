@@ -2,6 +2,8 @@
 
 # Evals of 0.2.0
 
+The page [Evals of 2.1.304](Evals-2.1.304) replaces this page for the current prompt.
+
 These are paid runs of eleven cases of the `prompt` slice on Haiku 5.5, on 2026-10-19.
 They are the first runs after the fix of task 11.8, which made `LEAN_BODY` reach the model.
 Each case had 10 runs for each arm, so every case meets the D25 floor.

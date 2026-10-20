@@ -38,8 +38,9 @@ Delete kept folders by hand.
 
 ## The Suite
 
-The suite has 19 cases.
-3 are in `src/plugins/claudetto/evals/` and 16 are in the `evals/` folder of a slice.
+The suite has 40 cases.
+3 are in `src/plugins/claudetto/evals/` and 37 are in the `evals/` folder of a slice.
+The 32 cases of the `prompt` slice are in four sets: `baseline`, `rule-aware`, `blind`, and `control` (a `set:` tag).
 `just generate` copies them to `plugins/claudetto/evals/`.
 Each case has a `case.yaml` and most have a `scaffold.sh`.
 
@@ -79,7 +80,10 @@ It checks that an auto compaction in the middle of a task keeps the done steps a
 
 ## Current Results
 
-No full run of the 19 current cases exists.
+The newest runs are on [Evals of 2.1.304](Evals-2.1.304).
+On 2026-10-20, 32 `prompt` slice cases ran on Claude Code `2.1.304` in four sets, with 10 runs for each arm and a CI for each set.
+That page replaces [Evals of 0.2.0](Evals-0.2.0) for the current prompt.
+No full run of the 40 current cases exists.
 The four `styles` cases ran on Haiku 5.5 ([Evals of 0.1.0](Evals-0.1.0)).
 On 2026-10-19, eleven `prompt` slice cases ran on Claude Code `2.1.303`, after the fix of `LEAN_BODY` ([Evals of 0.2.0](Evals-0.2.0)).
 Each of them has 10 runs for each arm, so all eleven meet the D25 floor.
@@ -95,6 +99,7 @@ Its figures do not describe the current prompt.
 - [Evals History](Evals-History)
 - [Evals 0.1.0](Evals-0.1.0)
 - [Evals 0.2.0](Evals-0.2.0)
+- [Evals 2.1.304](Evals-2.1.304)
 - [Handoff Cost](Handoff-Cost)
 - [Off Switches](Off-Switches)
 - [Evidence](Evidence)
