@@ -12,6 +12,7 @@ import {
 } from "../../../plugins/claudetto/slices/decide/domain/ask.ts";
 import type { CliCall } from "../../../plugins/claudetto/slices/decide/domain/request.ts";
 import {
+  APPROVAL_MAX,
   MIN_CONFIDENCE,
   MIN_MARGIN,
 } from "../../../plugins/claudetto/slices/decide/limits.ts";
@@ -43,12 +44,17 @@ const runWith = (run: Partial<CliRun>) => {
 };
 
 const answersOf = (pick: string, confidence: number, i = 0) =>
-  JSON.stringify({ [`pick_${i}`]: { choice: pick, confidence } });
+  JSON.stringify({
+    [`pick_${i}`]: { choice: pick, confidence },
+    [`approval_${i}`]: { noul: 0.05 },
+  });
 
 const both = (a: [string, number], b: [string, number]) =>
   JSON.stringify({
     pick_0: { choice: a[0], confidence: a[1] },
     pick_1: { choice: b[0], confidence: b[1] },
+    approval_0: { noul: 0.05 },
+    approval_1: { noul: 0.05 },
   });
 
 test("a confident pick of the only question answers the call", async () => {
@@ -72,9 +78,14 @@ test("each question of the call goes to Jev, whatever its kind", async () => {
   });
 });
 
-test("the request has one `pick` entry for each question and no kind entry", () => {
+test("the request has a `pick` entry and an approval entry for each question", () => {
   const request = askRequest([FACTS, COLOR]);
-  expect(Object.keys(request?.questions ?? {})).toEqual(["pick_0", "pick_1"]);
+  expect(Object.keys(request?.questions ?? {})).toEqual([
+    "pick_0",
+    "approval_0",
+    "pick_1",
+    "approval_1",
+  ]);
 });
 
 test("a pick under the minimum confidence leaves the question as asked", async () => {
@@ -174,4 +185,89 @@ test("two questions with the same text go to the dialog, because their answers c
   const { fn } = runWith({ stdout: both(["sql", 0.9], ["sql", 0.9]) });
   const outcome = await judgeQuestions([FACTS, FACTS], fn);
   expect(outcome).not.toHaveProperty("answered");
+});
+
+/** The reply of Jev with the picks and the `noul` answers (P(yes)) of the approval questions. */
+const withApproval = (
+  picks: [string, number][],
+  approvals: (number | undefined)[],
+) =>
+  JSON.stringify({
+    ...Object.fromEntries(
+      picks.map(([choice, confidence], i) => [
+        `pick_${i}`,
+        { choice, confidence },
+      ]),
+    ),
+    ...Object.fromEntries(
+      approvals.flatMap((noul, i) =>
+        noul === undefined ? [] : [[`approval_${i}`, { noul }]],
+      ),
+    ),
+  });
+
+test("the request has one `noul` approval entry for each question", () => {
+  const request = askRequest([FACTS, COLOR]);
+  expect(Object.keys(request?.questions ?? {})).toEqual([
+    "pick_0",
+    "approval_0",
+    "pick_1",
+    "approval_1",
+  ]);
+  const entry = request?.questions["approval_1"] as {
+    type: string;
+    instructions: string;
+  };
+  expect(entry.type).toBe("noul");
+  expect(entry.instructions).toContain("cannot be undone");
+});
+
+test("an approval no and a sure pick answer the call", async () => {
+  const { fn } = runWith({
+    stdout: withApproval([["sql", 0.9]], [APPROVAL_MAX - 0.05]),
+  });
+  expect(await judgeQuestions([FACTS], fn)).toHaveProperty("answered");
+});
+
+test("an approval yes at high confidence shows the dialog with no note", async () => {
+  const { fn } = runWith({ stdout: withApproval([["sql", 0.95]], [0.95]) });
+  const outcome = await judgeQuestions([FACTS], fn);
+  expect(outcome).not.toHaveProperty("answered");
+  expect(shownOf(outcome)).toEqual([FACTS]);
+});
+
+test("an unsure approval shows the dialog", async () => {
+  const { fn } = runWith({ stdout: withApproval([["sql", 0.95]], [0.5]) });
+  expect(await judgeQuestions([FACTS], fn)).toEqual({ questions: [FACTS] });
+});
+
+test("an approval at the bound is unsure and shows the dialog", async () => {
+  const { fn } = runWith({
+    stdout: withApproval([["sql", 0.95]], [APPROVAL_MAX]),
+  });
+  expect(await judgeQuestions([FACTS], fn)).toEqual({ questions: [FACTS] });
+});
+
+test("a missing approval answer shows the dialog", async () => {
+  const { fn } = runWith({
+    stdout: withApproval([["sql", 0.95]], [undefined]),
+  });
+  expect(await judgeQuestions([FACTS], fn)).toEqual({ questions: [FACTS] });
+});
+
+test("a call of two questions with one approval shows the dialog and no note on the approval", async () => {
+  const { fn } = runWith({
+    stdout: withApproval(
+      [
+        ["sql", 0.9],
+        ["red", 0.9],
+      ],
+      [0.9, 0.05],
+    ),
+  });
+  const outcome = await judgeQuestions([FACTS, COLOR], fn);
+  expect(outcome).not.toHaveProperty("answered");
+  const [first, second] = shownOf(outcome);
+  expect(first).toEqual(FACTS);
+  expect(second?.options?.[0]?.description).toMatch(/^warm Jev picks/);
 });

@@ -78,10 +78,13 @@ The `decide` slice of the core plugin has an option `decide` with the values `of
 The key `TYPESAFE_API_KEY` is the trigger, and with no key nothing goes out.
 With `jev` and a key, all decisions go to Jev: the `claudetto-decide` CLI picks an option of each `AskUserQuestion` question, and a call is answered with no dialog when Jev is sure about each question.
 When Jev is not sure, the user sees the dialog.
+Approvals stay with the user: each request also asks Jev if the question asks for approval of money, a push, a release, a delete, or a step that cannot be undone.
+A yes, or an unsure answer, shows the dialog, and it costs no extra call.
 `TYPESAFE_API_KEY` goes in the environment of the CLI, never in its arguments.
 
 **Reason:** The service must not need an add-on install, and it must not send text unless the user sets the key.
 The user chose this on 2026-10-20: "when Jev is found, all 'decisions' go to Jev".
+The user also chose "Approvals stay with you (Recommended)", because a "(Recommended)" option makes a confident pick likely, and consent is for the user.
 A fallback model and a `second_opinion` tool are not in 0.2.0, because no incident needs them.
 
 **Evidence:** `slices/decide/adapters/ask.ts`.

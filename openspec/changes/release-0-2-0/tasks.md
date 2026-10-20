@@ -352,6 +352,15 @@ The rows `new:` of `findings.md` that need no decision of the user.
   The kind gate and its prompts are gone, and the `tool.describe` text of `AskUserQuestion` tells Claude to put the deciding facts in the question and the option descriptions.
   Check: `just test tests/claudetto/decide && just lab`
 
+- [x] 13.19 Keep approvals with the user (D66, extended), found in review of 13.18: an approval question, such as "run this paid eval?" or "tag and push?", went to Jev, and a "(Recommended)" option made a confident pick likely.
+  The user decided (2026-10-20): "Approvals stay with you (Recommended)", which means: "Each Jev request also asks Jev one yes/no question: 'Does this ask the user to approve money, a push, a release, a delete, or a step that cannot be undone?' A yes, or a confidence below the bound, shows you the dialog. It costs no extra call."
+  The request holds a `noul` question `approval_<i>` for each question (`prompts/ask-approval.md`).
+  Jev answers a question only when its pick passes the bound and its P(yes) is under `APPROVAL_MAX` (`limits.ts`).
+  A missing, failed, or unsure approval answer shows the dialog, with no note on that question.
+  The text of the tool tells Claude that an approval question goes to the user.
+  Check: `just test tests/claudetto/decide tests/tools && just lab`
+  Live run (2026-10-21, `just sandbox` TUI, `claude-sonnet-5-5`, $0.09): a question on `math.js` got Jev's answer `ESM` at confidence 1.00 with no dialog, and Claude named Jev in its reply. An approval question ("run a paid eval that costs about $5") showed the dialog with no note of Jev. Claude Code labels Jev's answer "User answered Claude's questions".
+
 ## 14. Patches of Subagents
 
 - [x] 14.1 Add the slice `patch` test-first (D64): the lab test `write.test.ts`, the tests `tests/claudetto/patch/land.test.ts`, the hook, the CLI `claudetto-patch`, the skill `patch`, and the line in the text of the `Agent` tool.

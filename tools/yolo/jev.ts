@@ -1,4 +1,4 @@
-// The answers of Jev for an `AskUserQuestion` call, with the same questions to Jev as the `decide` slice.
+// The answers of Jev for an `AskUserQuestion` call, a smaller request than the `decide` slice, which also asks Jev for the approval of each question.
 // The hook answers for the user only when each question of the call is a single-select question,
 // and Jev is sure about its pick (D66: all decisions go to Jev).
 // Otherwise the call goes to the user as Claude sent it.

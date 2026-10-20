@@ -1,11 +1,18 @@
 // The pick of Jev for an `AskUserQuestion` call: the request for the questions, the picks, and the questions with the picks added.
 // Jev picks for each question that has 2 or more options and is not multi-select, whatever its kind (D66).
 // A pick is sure when its confidence beats chance by `MIN_MARGIN` and reaches `MIN_CONFIDENCE`.
+// The same request asks Jev one yes or no question for each question, `approval_<i>`: does it ask the user to approve something that only the user may approve?
+// Jev answers a question only when its approval answer is a confident no, and a missing or unsure approval answer sends the question to the user with no note.
 // A multi-select question, a question with fewer than 2 options, and a question whose text another question repeats go to the user.
 // The question text stays as Claude sent it, because the answers come back keyed by that text.
 
-import { MIN_CONFIDENCE, MIN_MARGIN, MIN_OPTIONS } from "../limits.ts";
-import { ASK_NOTE, ASK_PICK } from "../prompts.ts";
+import {
+  APPROVAL_MAX,
+  MIN_CONFIDENCE,
+  MIN_MARGIN,
+  MIN_OPTIONS,
+} from "../limits.ts";
+import { ASK_APPROVAL, ASK_NOTE, ASK_PICK } from "../prompts.ts";
 import type { Answer } from "./request.ts";
 
 /** One option of an `AskUserQuestion` question. */
@@ -21,7 +28,7 @@ export interface AskQuestion {
   readonly options?: readonly AskOption[];
 }
 
-/** The answers of Jev by key, `pick_<i>` for the pick of question `i`. */
+/** The answers of Jev by key: `pick_<i>` for the pick of question `i`, and `approval_<i>` for its approval answer, with P(yes) as the `confidence`. */
 export type AskAnswers = Record<string, Answer | undefined>;
 
 /** Whether Jev can pick for the question: 2 or more options, and one choice. */
@@ -40,20 +47,26 @@ export const askRequest = (
     `Question ${i}: ${q.question}`,
     ...(q.options ?? []).map((o) => `- ${o.label}: ${o.description ?? ""}`),
   ]);
-  const asked = picked.map(({ q, i }) => [
-    `pick_${i}`,
-    {
-      type: "choice",
-      instructions: ASK_PICK({ index: String(i) }),
-      criteria: Object.fromEntries(
-        (q.options ?? []).map((o) => [o.label, o.description || o.label]),
-      ),
-    },
+  const asked = picked.flatMap(({ q, i }) => [
+    [
+      `pick_${i}`,
+      {
+        type: "choice",
+        instructions: ASK_PICK({ index: String(i) }),
+        criteria: Object.fromEntries(
+          (q.options ?? []).map((o) => [o.label, o.description || o.label]),
+        ),
+      },
+    ],
+    [
+      `approval_${i}`,
+      { type: "noul", instructions: ASK_APPROVAL({ index: String(i) }) },
+    ],
   ]);
   return { state: state.join("\n"), questions: Object.fromEntries(asked) };
 };
 
-/** The pick of Jev for question `q` at index `i`, or `undefined` when Jev is not sure or the pick is not an option. */
+/** The pick of Jev for question `i`, or `undefined` when Jev is not sure, the pick is not an option, or Jev is not sure that the question is no approval. */
 export const sureAnswer = (
   questions: readonly AskQuestion[],
   answers: AskAnswers,
@@ -61,11 +74,14 @@ export const sureAnswer = (
 ): Answer | undefined => {
   const q = questions[i] as AskQuestion;
   const pick = answers[`pick_${i}`];
+  const approval = answers[`approval_${i}`];
   const options = q.options ?? [];
   if (
     q.multiSelect ||
     questions.some((o, j) => j !== i && o.question === q.question) ||
     pick === undefined ||
+    approval === undefined ||
+    !(approval.confidence < APPROVAL_MAX) ||
     !(
       pick.confidence >=
       Math.max(MIN_CONFIDENCE, 1 / options.length + MIN_MARGIN)
@@ -100,7 +116,12 @@ export const withPicks = <Q extends AskQuestion>(
 
 const asAnswer = (value: unknown): Answer | undefined => {
   if (typeof value !== "object" || value === null) return undefined;
-  const { choice, confidence } = value as Record<string, unknown>;
+  const { choice, confidence, noul } = value as Record<string, unknown>;
+  // A yes or no answer has `noul`, the probability of yes, which is the `confidence` of the answer "yes".
+  if (typeof noul === "number")
+    return noul >= 0 && noul <= 1
+      ? { choice: "yes", confidence: noul }
+      : undefined;
   if (typeof choice !== "string") return undefined;
   if (typeof confidence !== "number" || !(confidence >= 0 && confidence <= 1))
     return undefined;

@@ -35,3 +35,10 @@ export const MIN_MARGIN = 0.15;
 
 /** The distance from 0.5 under which a yes or no answer says that Jev is not sure. */
 export const YES_NO_UNSURE_BAND = 0.2;
+
+/**
+ * The most P(yes) of the approval question under which Jev is sure that a question is not an approval.
+ * An approval is money, a push, a release, a delete, or a step that cannot be undone, and only the user may approve it.
+ * The bound is low, because a wrong "no" lets Jev approve for the user, and a wrong "yes" only shows a dialog.
+ */
+export const APPROVAL_MAX = 0.2;

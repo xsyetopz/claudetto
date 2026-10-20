@@ -205,3 +205,10 @@ Jev picked `project-root` at confidence 0.74.
 - A call is answered only when each question has a sure pick.
   A multi-select question, and a question with fewer than 2 options, go to the user, so the dialog shows with the sure picks as notes in their options (the 13.9 behavior).
 - Jev cannot read files, so the quality of the pick depends on the facts that Claude writes in.
+
+- Extended (2026-10-20, task 13.19): the user chose "Approvals stay with you (Recommended)".
+  It means: "Each Jev request also asks Jev one yes/no question: 'Does this ask the user to approve money, a push, a release, a delete, or a step that cannot be undone?' A yes, or a confidence below the bound, shows you the dialog. It costs no extra call."
+  The request has a `noul` question `approval_<i>` for each question.
+  Jev answers a question only when P(yes) is under `APPROVAL_MAX` (0.2) in `limits.ts`.
+  A missing or unsure approval answer shows the dialog.
+  A question with no confident "no" gets no note, because a note on an approval is a nudge.

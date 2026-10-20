@@ -35,12 +35,17 @@ The hook does these steps:
 1. It sends each question that has 2 or more options and is not multi-select.
    A multi-select question goes to you, because the pick of Jev is one option.
 2. It asks Jev for the best option of each such question.
+   The same request asks Jev one yes or no question for each question: "Does this ask the user to approve money, a push, a release, a delete, or a step that cannot be undone?"
+   This adds no extra call.
 3. It checks each pick: the confidence must be at least `MIN_CONFIDENCE` (0.5) and at least `1 / options + MIN_MARGIN` (0.15), and the pick must be one of the options.
    So a pick of 2 options needs 0.65.
+   The approval answer must be a confident no: `P(yes)` under `APPROVAL_MAX` (0.2).
+   A missing or unsure approval answer fails toward you.
 4. When each question of the call has a pick that passes, the hook answers the call with `{ result }`, the way a hook answers in place of the tool.
    The answers are keyed by the question text.
    The `context` of the result names Jev, the pick, and the confidence.
-5. Otherwise the dialog shows, with the note of Jev in each option that passed.
+5. Otherwise the dialog shows, with the note of Jev in each option that passed both checks.
+   A question with no confident "no" on approval gets no note, because a note there is a nudge.
 
 The text of the question does not change, because the answers come back with that text as key.
 If Jev gives no answer, or the run fails or times out, the dialog shows as Claude asked it.
@@ -48,6 +53,7 @@ If Jev gives no answer, or the run fails or times out, the dialog shows as Claud
 A second hook, `tool.describe` on `AskUserQuestion`, adds a short text to the tool when Jev is on.
 It tells Claude that Jev may answer from the text alone, so Claude puts the facts that decide the question in the question and in the option descriptions.
 Jev gets no file on its own.
+The text also tells Claude that an approval question goes to you, so Claude states in the question that it asks for approval.
 The picks are as good as those facts.
 
 ## The Command

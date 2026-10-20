@@ -6,25 +6,37 @@
 import type { On, PluginOptions } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 
-const answers = (confidence: number) =>
-  JSON.stringify({ pick_0: { choice: "sql", confidence } });
+const answers = (confidence: number, approval = 0.05) =>
+  JSON.stringify({
+    pick_0: { choice: "sql", confidence },
+    approval_0: { noul: approval },
+  });
 
-/** Stubs for one test: the key, the confidence of the pick, and the list of the process runs. */
-const stub = (on: On, key: string, confidence = 0.9): (readonly string[])[] => {
-  mock.env(on, { TYPESAFE_API_KEY: key });
-  const runs: (readonly string[])[] = [];
+/** Stubs `process.run` with the Jev CLI output `stdout`, and records the argv of each run in `runs`. */
+const reply = (on: On, stdout: string, runs: (readonly string[])[] = []) =>
   on("process.run", (_$, e) => {
     runs.push(e.argv);
     return {
       value: {
         exitCode: 0,
-        stdout: answers(confidence),
+        stdout,
         stderr: "",
         isStdoutTruncated: false,
         isStderrTruncated: false,
       },
     };
   });
+
+/** Stubs for one test: the key, the confidence of the pick, and the list of the process runs. */
+const stub = (
+  on: On,
+  key: string,
+  confidence = 0.9,
+  approval = 0.05,
+): (readonly string[])[] => {
+  mock.env(on, { TYPESAFE_API_KEY: key });
+  const runs: (readonly string[])[] = [];
+  reply(on, answers(confidence, approval), runs);
   return runs;
 };
 
@@ -115,15 +127,36 @@ test(
   },
 );
 
+/** The input that the built-in tool gets when Jev gives the pick and the approval answer. */
+const shownWith = async (
+  $: Engine,
+  on: On,
+  confidence: number,
+  approval: number,
+) => {
+  stub(on, "typesafe-key", confidence, approval);
+  const seen = builtIn(on);
+  await ask($);
+  return JSON.stringify(seen.input);
+};
+
 test(
   "with the option `jev` and an unsure pick, the dialog stays",
   option("jev"),
   async ($: Engine, on: On) => {
-    stub(on, "typesafe-key", 0.55);
-    const seen = builtIn(on);
-    await ask($);
-    expect(seen.input).toBeDefined();
-    expect(JSON.stringify(seen.input)).not.toContain("Jev picks");
+    const shown = await shownWith($, on, 0.55, 0.05);
+    expect(shown).toContain("Which store?");
+    expect(shown).not.toContain("Jev picks");
+  },
+);
+
+test(
+  "with the option `jev` and an approval yes, the dialog stays with no note",
+  option("jev"),
+  async ($: Engine, on: On) => {
+    const shown = await shownWith($, on, 0.95, 0.95);
+    expect(shown).toContain("Which store?");
+    expect(shown).not.toContain("Jev picks");
   },
 );
 
@@ -161,18 +194,15 @@ test(
   option("jev"),
   async ($: Engine, on: On) => {
     mock.env(on, { TYPESAFE_API_KEY: "typesafe-key" });
-    on("process.run", () => ({
-      value: {
-        exitCode: 0,
-        stdout: JSON.stringify({
-          pick_0: { choice: "sql", confidence: 0.9 },
-          pick_1: { choice: "red", confidence: 0.55 },
-        }),
-        stderr: "",
-        isStdoutTruncated: false,
-        isStderrTruncated: false,
-      },
-    }));
+    reply(
+      on,
+      JSON.stringify({
+        pick_0: { choice: "sql", confidence: 0.9 },
+        approval_0: { noul: 0.05 },
+        pick_1: { choice: "red", confidence: 0.55 },
+        approval_1: { noul: 0.05 },
+      }),
+    );
     const seen = builtIn(on);
     await ask($, [STORE, COLOR]);
     expect(JSON.stringify(seen.input)).toContain("Jev picks");

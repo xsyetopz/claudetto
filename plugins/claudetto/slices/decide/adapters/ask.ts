@@ -2,6 +2,7 @@
 // The `AskUserQuestion` adapter: it sends the questions to Jev through `ask`.
 // When Jev is sure about each question, the outcome is the answers of the call.
 // Otherwise the outcome is the questions with the picks added, and the user answers the dialog.
+// A question that Jev is not sure to be no approval gets no pick and no note, and the user answers it.
 // The run of the CLI is a parameter, so a test gives a fake run, and the hooks module gives `$.process.run`.
 // Each failure gives `undefined`, so the question stays as Claude sent it, and the user answers it.
 
