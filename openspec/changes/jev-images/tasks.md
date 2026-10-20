@@ -37,8 +37,11 @@
 
 ## 6. Live Paid Calls
 
-- [ ] 6.1 Ask the user before each paid call, with the expected cost and the current weekly share, then run one `yes` call with one image, and one `box` call with one image, and write the results and the method to `src/wiki/evidence/Jev-Images.md`, with the tokens of each request, the model ID that each request names, and what the box found.
-  Check: `grep -q 'jev-1.14.0' src/wiki/evidence/Jev-Images.md && just generate --check`
+- [x] 6.1 Ask the user before each paid call, with the expected cost and the current weekly share, then run one `yes` call with one image, and one `box` call with one image, and write the results and the method to `src/wiki/claudetto/evidence/Jev-Images.md`, with the tokens of each request, the model ID that each request names, and what the box found.
+  Check: `grep -q 'jev-1.14.0' src/wiki/claudetto/evidence/Jev-Images.md && just generate --check`
+
+- [x] 6.2 Add tests that an image over 1568 px or under 280 px on a side exits `2` before any request for each verb, that the edges 1568 x 1568 and 280 x 280 pass, and that an unreadable size passes to the API, and see them fail, then add `IMAGE_SIDE_MIN`, `IMAGE_SIDE_MAX`, `IMAGE_PIXELS_MIN`, and `IMAGE_PIXELS_MAX` to `limits.ts` and the check to `readImage` (D4, live `400` of 2026-10-20).
+  Check: `just test tests/claudetto/decide && just generate --check`
 
 ## 7. Full Gate
 

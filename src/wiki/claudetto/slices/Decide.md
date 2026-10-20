@@ -92,6 +92,8 @@ Each `--image` adds one picture to the request.
 The file must be a PNG or JPEG file.
 The command reads the first bytes of the file to check its type, not its name, so a text file with a `.png` name fails.
 A file over `IMAGE_BYTES_MAX` (16 MiB) fails too.
+A picture with a side under 280 px or over 1568 px fails too, because the API answers it with a `400`.
+The command reads the size from the header of the file, and it leaves a size that it cannot read to the API.
 A bad file exits with code 2, and no request is sent.
 
 `--image` is the one exception to the path rule of the command.
@@ -127,7 +129,9 @@ An image leaves the machine and goes to the TypeSafe API.
 Send only the pictures that the user agrees to show.
 An image bills as input tokens, so a large picture costs more.
 Images are a preview feature of the API, so their format, limits, and accuracy can change.
-The shape of the answer follows the API docs, and no live call has confirmed it yet.
+The live calls confirmed the nested shape of the answer.
+The four fractions are at `q.box.{top,bottom,left,right}`, and the confidence is at `q.confidence`.
+See [Jev Images](Jev-Images) for the calls.
 
 ## Bounds
 
