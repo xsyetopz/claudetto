@@ -15,7 +15,7 @@
 // A `--` ends the flags, so that no word of the model is read as a flag.
 // Exit codes: 0 an answer, 1 a failure, 2 a usage fault, 3 a key that is not valid, and 4 an account with no balance.
 
-import { answerOf, formatAnswer } from "../domain/answers.ts";
+import { answerOf, boxOf, formatAnswer, formatBox } from "../domain/answers.ts";
 import {
   ATTEMPT_TIMEOUT_MS,
   BACKOFF_MS,
@@ -164,12 +164,16 @@ export const buildBody = async (
   stdin: () => Promise<string>,
 ): Promise<object> => {
   if (args.kind === "ask") return askBody(stdin);
-  // The request of `box` comes in task 4.1 of the change `jev-images`.
-  if (args.kind === "box") throw new Error("The verb `box` is not built yet.");
   const { kind, words, state } = args;
   const [question, ...items] = words;
   if (!question) throw new UsageError(ERROR_QUESTION_MISSING({ usage: USAGE }));
   const text = state === "-" ? await stdin() : (state ?? "");
+  if (kind === "box")
+    return {
+      state: text,
+      model: MODEL,
+      questions: { q: { type: "box", instructions: question } },
+    };
   if (kind === "yes")
     return {
       state: text,
@@ -291,7 +295,13 @@ export const post = async (
 /** The output of the command: the answers as JSON for `ask`, the text for Claude, or the text and the answer with `--json`. */
 export const render = (args: Args, answers: unknown): string => {
   if (args.kind === "ask") return JSON.stringify(answers ?? null);
-  if (args.kind === "box") return JSON.stringify(answers ?? null);
+  if (args.kind === "box") {
+    const box = boxOf(answers);
+    // `--json` prints the raw answer of the API, which `boxOf` has checked.
+    return args.json
+      ? JSON.stringify((answers as { q: unknown }).q)
+      : formatBox(box);
+  }
   const text = formatAnswer(args.kind, answers);
   if (!args.json) return text;
   return JSON.stringify({ text, answer: answerOf(args.kind, answers) });

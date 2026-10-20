@@ -25,7 +25,7 @@
 
 ## 4. The Verb `box`
 
-- [ ] 4.1 Add tests that `box` sends one question with `"type": "box"`, the `instructions`, and no `criteria`, with the model `jev-1.14.0` and the header, that a request that mixes a `box` with another question also uses `jev-1.14.0`, that the text output prints the four fractions and the `confidence`, and that `--json` prints the raw answer, and see them fail, then add the verb (D3, D5).
+- [x] 4.1 Add tests that `box` sends one question with `"type": "box"`, the `instructions`, and no `criteria`, with the model `jev-1.14.0` and the header, that a request that mixes a `box` with another question also uses `jev-1.14.0`, that the text output prints the four fractions and the `confidence`, and that `--json` prints the raw answer, and see them fail, then add the verb (D3, D5).
   Check: `just test tests/claudetto/decide`
 - [ ] 4.2 Decide by code size whether the box also prints in pixels, from the `IHDR` chunk of a PNG or the `SOF` marker of a JPEG, and if it does, add a test and the read (D5, open question 1).
   Check: `just test tests/claudetto/decide`

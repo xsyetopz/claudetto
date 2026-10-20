@@ -496,7 +496,17 @@ test("a request with a `box` question and images is multipart, with `jev-1.14.0`
 });
 
 /** Runs `main` with a fake `fetch` that records the init of each call, and a key in the environment. */
-const runMain = async (argv: string[]) => {
+const runMain = async (
+  argv: string[],
+  answers: unknown = {
+    q: {
+      noul: 0.9,
+      choice: "x",
+      confidence: 0.8,
+      probabilities: { x: 0.8 },
+    },
+  },
+) => {
   const saved = process.env["TYPESAFE_API_KEY"];
   process.env["TYPESAFE_API_KEY"] = KEY;
   const seen: RequestInit[] = [];
@@ -505,20 +515,11 @@ const runMain = async (argv: string[]) => {
     init: RequestInit,
   ) => {
     seen.push(init);
-    return reply(200, {
-      answers: {
-        q: {
-          noul: 0.9,
-          choice: "x",
-          confidence: 0.8,
-          probabilities: { x: 0.8 },
-        },
-      },
-    });
+    return reply(200, { answers });
   }) as unknown as typeof fetch);
   const logSpy = spyOn(console, "log").mockImplementation(() => {});
   try {
-    return { code: await main(argv), seen };
+    return { code: await main(argv), seen, out: logSpy.mock.calls.flat() };
   } finally {
     fetchSpy.mockRestore();
     logSpy.mockRestore();
@@ -675,4 +676,87 @@ test("`main` exits 2 with no request for a missing path", async () => {
   expect(r.seen).toHaveLength(0);
   expect(r.text).toContain(r.path);
   expect(r.text).not.toContain("ENOENT");
+});
+
+const BOX_ANSWER = {
+  top: 0.1,
+  bottom: 0.5,
+  left: 0.25,
+  right: 0.75,
+  confidence: 0.9,
+};
+
+test("a `box` body asks one `box` question with the instructions and no `criteria`", async () => {
+  const args = parseArgs(["box", "--image", "a.png", "--", "the button"]);
+  expect(await buildBody(args, async () => "")).toEqual({
+    state: "",
+    model: "jev-latest",
+    questions: { q: { type: "box", instructions: "the button" } },
+  });
+});
+
+test("`main` sends `box` with `jev-1.14.0` and the header", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "decide-"));
+  try {
+    const a = join(dir, "a.png");
+    await Bun.write(a, PNG);
+    const { code, seen } = await runMain(
+      ["box", "--image", a, "--", "the button"],
+      { q: BOX_ANSWER },
+    );
+    expect(code).toBe(EXIT.ok);
+    expect(seen[0]?.headers).toMatchObject({
+      "TypeSafe-Danger-Zone-Images": "true",
+    });
+    const form = seen[0]?.body as FormData;
+    const json = JSON.parse(await (form.get("request") as File).text());
+    expect(json.model).toBe("jev-1.14.0");
+    expect(json.questions).toEqual({
+      q: { type: "box", instructions: "the button" },
+    });
+  } finally {
+    await rm(dir, { recursive: true });
+  }
+});
+
+test("`main` sends `ask` with a `box` and another question with `jev-1.14.0`", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "decide-"));
+  const stdin = spyOn(Bun.stdin, "text").mockResolvedValue(
+    JSON.stringify({
+      questions: {
+        p: { type: "noul", instructions: "Is it there?" },
+        b: { type: "box", instructions: "the button" },
+      },
+    }),
+  );
+  try {
+    const a = join(dir, "a.png");
+    await Bun.write(a, PNG);
+    const { code, seen } = await runMain(["ask", "--image", a], {});
+    expect(code).toBe(EXIT.ok);
+    const form = seen[0]?.body as FormData;
+    const json = JSON.parse(await (form.get("request") as File).text());
+    expect(json.model).toBe("jev-1.14.0");
+  } finally {
+    stdin.mockRestore();
+    await rm(dir, { recursive: true });
+  }
+});
+
+test("`box` prints the four fractions and the `confidence` as text", () => {
+  const text = render(parseArgs(["box", "--", "x"]), { q: BOX_ANSWER });
+  expect(text).toBe(
+    "top 0.10, bottom 0.50, left 0.25, right 0.75 (confidence 0.90)",
+  );
+});
+
+test("`box --json` prints the raw answer", () => {
+  const text = render(parseArgs(["box", "--json", "--", "x"]), {
+    q: BOX_ANSWER,
+  });
+  expect(JSON.parse(text)).toEqual(BOX_ANSWER);
+});
+
+test("`box` fails on a reply with no box", () => {
+  expect(() => render(parseArgs(["box", "--", "x"]), {})).toThrow();
 });

@@ -91,3 +91,37 @@ export const answerOf = (kind: "yes" | "pick", answers: unknown): Answer => {
     ? { choice: "yes", confidence: noul }
     : { choice: "no", confidence: 1 - noul };
 };
+
+/** The answer of the API to a `box` question: fractions from 0 to 1 from the top-left corner, and the confidence. */
+export interface BoxAnswer {
+  readonly top: number;
+  readonly bottom: number;
+  readonly left: number;
+  readonly right: number;
+  readonly confidence: number;
+}
+
+/** The `box` answer from the `q` field of `answers`. It throws when the reply has no box. */
+export const boxOf = (answers: unknown): BoxAnswer => {
+  const q = isRecord(answers) ? answers["q"] : undefined;
+  if (
+    isRecord(q) &&
+    isProbability(q["top"]) &&
+    isProbability(q["bottom"]) &&
+    isProbability(q["left"]) &&
+    isProbability(q["right"]) &&
+    isProbability(q["confidence"])
+  )
+    return {
+      top: q["top"],
+      bottom: q["bottom"],
+      left: q["left"],
+      right: q["right"],
+      confidence: q["confidence"],
+    };
+  throw new Error("The reply of the TypeSafe API has no answer. Try again.");
+};
+
+/** The text of a box answer: one line with the four fractions and the confidence. */
+export const formatBox = (a: BoxAnswer): string =>
+  `top ${num(a.top)}, bottom ${num(a.bottom)}, left ${num(a.left)}, right ${num(a.right)} (confidence ${num(a.confidence)})`;
