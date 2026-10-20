@@ -2,6 +2,9 @@
 // The API is a fake `fetch`, and the waits are a fake `sleep`, so no test sends a request or waits.
 
 import { expect, spyOn, test } from "bun:test";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
   ApiError,
   buildBody,
@@ -454,4 +457,130 @@ test("`post` sends the multipart body and the header with `fetch`, and a text bo
   expect(text?.body).toBe(JSON.stringify(IMAGE_BODY));
   expect(JSON.stringify(text?.headers)).not.toContain("Danger-Zone");
   expect(text?.headers).toMatchObject({ "content-type": "application/json" });
+});
+
+test("a 429 retry resends the same `FormData`, with the same image UUIDs", async () => {
+  const bodies: unknown[] = [];
+  const answers = [reply(429), reply(200, { answers: 1 })];
+  const fetchFn = (async (_url: string, init: RequestInit) => {
+    bodies.push(init.body);
+    return answers.shift();
+  }) as unknown as typeof fetch;
+  const { sleep } = waits();
+  await post(IMAGE_BODY, KEY, {
+    fetchFn,
+    sleep,
+    images: [image("image/png", 1), image("image/jpeg", 2)],
+  });
+  expect(bodies).toHaveLength(2);
+  expect(bodies[1]).toBe(bodies[0]);
+  const form = bodies[1] as FormData;
+  const json = JSON.parse(await (form.get("request") as File).text());
+  expect(Object.keys(json.assets)).toHaveLength(2);
+  expect([...form.keys()]).toEqual(["request", "img1", "img2"]);
+});
+
+test("a request with a `box` question and images is multipart, with `jev-1.14.0` in the `request` part", async () => {
+  const box = {
+    ...IMAGE_BODY,
+    questions: { b: { type: "box", instructions: "the button" } },
+  };
+  const { body, headers } = buildRequest(box, [image("image/png", 1)]);
+  expect(headers["TypeSafe-Danger-Zone-Images"]).toBe("true");
+  expect(body).toBeInstanceOf(FormData);
+  const json = JSON.parse(
+    await ((body as FormData).get("request") as File).text(),
+  );
+  expect(json.model).toBe("jev-1.14.0");
+});
+
+/** Runs `main` with a fake `fetch` that records the init of each call, and a key in the environment. */
+const runMain = async (argv: string[]) => {
+  const saved = process.env["TYPESAFE_API_KEY"];
+  process.env["TYPESAFE_API_KEY"] = KEY;
+  const seen: RequestInit[] = [];
+  const fetchSpy = spyOn(globalThis, "fetch").mockImplementation((async (
+    _url: string,
+    init: RequestInit,
+  ) => {
+    seen.push(init);
+    return reply(200, {
+      answers: {
+        q: {
+          noul: 0.9,
+          choice: "x",
+          confidence: 0.8,
+          probabilities: { x: 0.8 },
+        },
+      },
+    });
+  }) as unknown as typeof fetch);
+  const logSpy = spyOn(console, "log").mockImplementation(() => {});
+  try {
+    return { code: await main(argv), seen };
+  } finally {
+    fetchSpy.mockRestore();
+    logSpy.mockRestore();
+    if (saved === undefined) delete process.env["TYPESAFE_API_KEY"];
+    else process.env["TYPESAFE_API_KEY"] = saved;
+  }
+};
+
+test("`main` sends `yes` and `pick` with `--image` as multipart, and one part for each path", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "decide-"));
+  const a = join(dir, "a.png");
+  const b = join(dir, "b.jpg");
+  await Bun.write(a, new Uint8Array([1]));
+  await Bun.write(b, new Uint8Array([2]));
+  try {
+    for (const argv of [
+      ["yes", "--image", a, "--image", b, "--", "Safe?"],
+      ["pick", "--image", a, "--image", b, "--", "Which?", "x", "y"],
+    ]) {
+      const { code, seen } = await runMain(argv);
+      expect(code).toBe(EXIT.ok);
+      const form = seen[0]?.body as FormData;
+      expect(form).toBeInstanceOf(FormData);
+      expect([...form.keys()]).toEqual(["request", "img1", "img2"]);
+      expect(seen[0]?.headers).toMatchObject({
+        "TypeSafe-Danger-Zone-Images": "true",
+      });
+    }
+  } finally {
+    await rm(dir, { recursive: true });
+  }
+});
+
+test("`main` sends `ask` with `--image` as multipart, with the questions of stdin", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "decide-"));
+  const a = join(dir, "a.png");
+  await Bun.write(a, new Uint8Array([1]));
+  const stdin = spyOn(Bun.stdin, "text").mockResolvedValue(
+    JSON.stringify({ questions: { q: { type: "noul", instructions: "Ok?" } } }),
+  );
+  try {
+    const { code, seen } = await runMain(["ask", "--image", a]);
+    expect(code).toBe(EXIT.ok);
+    const form = seen[0]?.body as FormData;
+    expect(form).toBeInstanceOf(FormData);
+    const json = JSON.parse(await (form.get("request") as File).text());
+    expect(json.questions.q.instructions).toBe("Ok?");
+    expect(Object.keys(json.assets)).toHaveLength(1);
+  } finally {
+    stdin.mockRestore();
+    await rm(dir, { recursive: true });
+  }
+});
+
+test("`main` sends a verb with no `--image` as the JSON text it sends today", async () => {
+  const { code, seen } = await runMain(["yes", "--", "Safe?"]);
+  expect(code).toBe(EXIT.ok);
+  expect(seen[0]?.body).toBe(
+    JSON.stringify({
+      state: "",
+      model: "jev-latest",
+      questions: { q: { type: "noul", instructions: "Safe?" } },
+    }),
+  );
+  expect(JSON.stringify(seen[0]?.headers)).not.toContain("Danger-Zone");
 });

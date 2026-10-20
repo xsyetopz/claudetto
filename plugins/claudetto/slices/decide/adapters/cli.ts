@@ -198,7 +198,8 @@ export const buildRequest = (
     "request",
     new Blob([JSON.stringify(json)], { type: "application/json" }),
   );
-  images.forEach((blob, i) => form.set(`img${i + 1}`, blob, `img${i + 1}`));
+  for (const [i, blob] of images.entries())
+    form.set(`img${i + 1}`, blob, `img${i + 1}`);
   return { body: form, headers };
 };
 
@@ -264,7 +265,11 @@ export const main = async (argv: readonly string[]): Promise<number> => {
     if (!key) throw new UsageError(ERROR_NO_KEY);
     const args = parseArgs(argv);
     const body = await buildBody(args, () => Bun.stdin.text());
-    const res = (await post(body, key)) as { answers?: unknown };
+    // The files are read here, so a fault of a path comes before the request.
+    const images = await Promise.all(
+      args.images.map((p) => Bun.file(p).slice()),
+    );
+    const res = (await post(body, key, { images })) as { answers?: unknown };
     console.log(render(args, res.answers));
     return EXIT.ok;
   } catch (err) {

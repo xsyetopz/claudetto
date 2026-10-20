@@ -15,7 +15,7 @@
 
 - [x] 2.1 Add tests of the request builder: a request with an image has the header `TypeSafe-Danger-Zone-Images: true`, a first part `request` with `application/json`, one file part `img<n>` for each image, one `assets` entry for each UUID, and one state line for each image, and a request with no image and no `box` has the same JSON body as before, with no header, and the model `jev-latest`, and see them fail, then build the body with `FormData` and `fetch` (D1, D2, D3).
   Check: `just test tests/claudetto/decide`
-- [ ] 2.2 Change the verbs `yes`, `pick`, and `ask` to use the builder, and keep the text path of each verb as it is now.
+- [x] 2.2 Change the verbs `yes`, `pick`, and `ask` to use the builder, and keep the text path of each verb as it is now.
   Check: `just test tests/claudetto/decide && just lab`
 
 ## 3. Magic Bytes and Size
