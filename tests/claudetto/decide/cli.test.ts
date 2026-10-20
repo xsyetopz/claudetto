@@ -1,7 +1,7 @@
 // The command `claudetto-decide` (`adapters/cli.ts`): its arguments, its request body, its retries, and its exit codes.
 // The API is a fake `fetch`, and the waits are a fake `sleep`, so no test sends a request or waits.
 
-import { expect, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
 import {
   ApiError,
   buildBody,
@@ -57,6 +57,7 @@ test("`yes` with a question and no flag reads the question as a word", () => {
     words: ["Use the cache?"],
     state: undefined,
     json: false,
+    images: [],
   });
 });
 
@@ -68,6 +69,7 @@ test("`--state` takes the value after it, and the words keep their order", () =>
     words: ["Which?", "sql", "kv=keys"],
     state: "-",
     json: false,
+    images: [],
   });
 });
 
@@ -77,6 +79,7 @@ test("a word after `--` that looks like a flag is a literal word", () => {
     words: ["--state"],
     state: undefined,
     json: false,
+    images: [],
   });
 });
 
@@ -204,6 +207,7 @@ test("`--json` before `--` is the flag, and after `--` it is a word", () => {
     words: ["--json"],
     state: undefined,
     json: false,
+    images: [],
   });
 });
 
@@ -213,6 +217,7 @@ test("`ask` is a verb with no words", () => {
     words: [],
     state: undefined,
     json: false,
+    images: [],
   });
 });
 
@@ -286,4 +291,74 @@ test("`--json` prints the chosen key and its confidence for `pick`", () => {
 test("`--json` with a reply that has no answer throws", () => {
   const args = parseArgs(["yes", "--json", "--", "Safe?"]);
   expect(() => render(args, {})).toThrow();
+});
+
+test("`--image <path>` repeats on `yes`, `pick`, `ask`, and `box`, in order", () => {
+  for (const verb of ["yes", "pick", "ask", "box"] as const) {
+    const args = parseArgs([
+      verb,
+      "--image",
+      "a.png",
+      "--image",
+      "b.jpg",
+      "--",
+      "Q?",
+    ]);
+    expect(args.kind).toBe(verb);
+    expect(args.images).toEqual(["a.png", "b.jpg"]);
+    expect(args.words).toEqual(["Q?"]);
+  }
+});
+
+test("a verb with no `--image` has an empty list of images", () => {
+  expect(parseArgs(["yes", "--", "Q?"]).images).toEqual([]);
+});
+
+test("`--image` after `--` is a literal word", () => {
+  const args = parseArgs(["yes", "--", "--image", "a.png"]);
+  expect(args.images).toEqual([]);
+  expect(args.words).toEqual(["--image", "a.png"]);
+});
+
+test("`--image` with no path is a usage fault with the usage", () => {
+  for (const verb of ["yes", "pick", "ask", "box"]) {
+    expect(() => parseArgs([verb, "--image"])).toThrow(UsageError);
+    expect(() => parseArgs([verb, "--", "Q?", "--image"])).not.toThrow();
+  }
+  expect(() => parseArgs(["yes", "--image"])).toThrow(/claudetto-decide/);
+});
+
+test("`main` with `--image` and no path exits with the usage code and prints the usage", async () => {
+  const saved = process.env["TYPESAFE_API_KEY"];
+  process.env["TYPESAFE_API_KEY"] = KEY;
+  const errors: string[] = [];
+  const spy = spyOn(console, "error").mockImplementation((m: unknown) => {
+    errors.push(String(m));
+  });
+  try {
+    expect(await main(["yes", "--image"])).toBe(EXIT.usage);
+    expect(errors.join("\n")).toContain("claudetto-decide");
+  } finally {
+    spy.mockRestore();
+    if (saved === undefined) delete process.env["TYPESAFE_API_KEY"];
+    else process.env["TYPESAFE_API_KEY"] = saved;
+  }
+});
+
+test("a file path in `--state` stays text and is not read as a file", async () => {
+  const args = parseArgs(["yes", "--state", "/etc/hosts", "--", "Q?"]);
+  expect(args.state).toBe("/etc/hosts");
+  expect(args.images).toEqual([]);
+  const body = (await buildBody(args, async () => "")) as { state: string };
+  expect(body.state).toBe("/etc/hosts");
+});
+
+test("the verb `box` is known to the parser", () => {
+  expect(parseArgs(["box", "--image", "a.png", "--", "the cat"])).toEqual({
+    kind: "box",
+    words: ["the cat"],
+    state: undefined,
+    json: false,
+    images: ["a.png"],
+  });
 });

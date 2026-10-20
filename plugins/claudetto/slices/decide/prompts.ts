@@ -19,6 +19,12 @@ export const ERROR_ASK_QUESTIONS = (v: { usage: string }): string =>
 export const ERROR_ASK_STDIN = (v: { usage: string }): string =>
   `\`ask\` needs a JSON object on stdin. ${v.usage}`;
 
+/** From `src/plugins/claudetto/slices/decide/prompts/error-image-path.md`. */
+export const ERROR_IMAGE_PATH = (v: {
+  usage: string;
+}): string => `Use \`--image <path>\` with a path to a PNG or JPEG file.
+${v.usage}`;
+
 /** From `src/plugins/claudetto/slices/decide/prompts/error-no-key.md`. */
 export const ERROR_NO_KEY = `The variable \`TYPESAFE_API_KEY\` is not set. Set it before Claude Code starts.`;
 
@@ -62,7 +68,7 @@ An approval question goes to the user, never to Jev: a question that asks the us
 State in the question that it asks for approval, so that the user gets the dialog.`;
 
 /** From `src/plugins/claudetto/slices/decide/prompts/usage.md`. */
-export const USAGE = `Use \`claudetto-decide yes|pick [--json] [--state <- | text>] [--] "<question>" [options]\`, or \`claudetto-decide ask\` with JSON on stdin.`;
+export const USAGE = `Use \`claudetto-decide yes|pick|box [--json] [--state <- | text>] [--image <path>]... [--] "<question>" [options]\`, or \`claudetto-decide ask\` with JSON on stdin.`;
 
 /** From `src/plugins/claudetto/slices/decide/prompts/yes-unsure.md`. */
 export const YES_UNSURE = `P(yes) is near 0.5, so Jev is not sure.`;

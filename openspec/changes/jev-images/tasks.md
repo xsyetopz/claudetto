@@ -8,7 +8,7 @@
 
 ## 1. Flags and the Verb `box`
 
-- [ ] 1.1 Add lab tests that `--image <path>` repeats on `yes`, `pick`, `ask`, and `box`, that a `--image` with no path exits `2` with the usage, that a file path in `--state` stays text, and that the verb `box` exists, and see them fail, then parse the flags in `src/plugins/claudetto/slices/decide/adapters/cli.ts`, and name the one exception to the path rule in its header comment (D7, D8).
+- [x] 1.1 Add lab tests that `--image <path>` repeats on `yes`, `pick`, `ask`, and `box`, that a `--image` with no path exits `2` with the usage, that a file path in `--state` stays text, and that the verb `box` exists, and see them fail, then parse the flags in `src/plugins/claudetto/slices/decide/adapters/cli.ts`, and name the one exception to the path rule in its header comment (D7, D8).
   Check: `just test tests/claudetto/decide`
 
 ## 2. Multipart Body and Header

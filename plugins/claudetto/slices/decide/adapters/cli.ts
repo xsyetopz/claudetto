@@ -6,8 +6,11 @@
 //   claudetto-decide yes  [--json] [--state <- | text>] [--] "<question>"
 //   claudetto-decide pick [--json] [--state <- | text>] [--] "<question>" <key>[=<description>]...
 //   claudetto-decide ask < questions.json
+//   claudetto-decide box  [--json] [--image <path>]... [--] "<what to find>"
 //
 // The state is text or `-` for stdin, and never a file path, because a path would send a file to the API.
+// The one exception is `--image <path>`, which `yes`, `pick`, `ask`, and `box` take, and which repeats.
+// It takes a path to a PNG or JPEG file only, and a check of the first bytes must pass (design D8).
 // `--json` prints one object with the `text` and the structured `answer`, for a hooks module.
 // `ask` reads one JSON object with the `questions` of the API and an optional `state`, and prints the answers as JSON.
 // A `--` ends the flags, so that no word of the model is read as a flag.
@@ -25,6 +28,7 @@ import {
 import {
   ERROR_ASK_QUESTIONS,
   ERROR_ASK_STDIN,
+  ERROR_IMAGE_PATH,
   ERROR_NO_KEY,
   ERROR_PICK_OPTIONS,
   ERROR_QUESTION_MISSING,
@@ -59,19 +63,22 @@ export class ApiError extends Error {
 
 /** The parsed arguments: the kind, the words after the flags, the value of `--state`, and the `--json` flag. */
 export interface Args {
-  readonly kind: "yes" | "pick" | "ask";
+  readonly kind: "yes" | "pick" | "ask" | "box";
   readonly words: readonly string[];
   readonly state: string | undefined;
   readonly json: boolean;
+  /** The paths of the `--image` options, in order. */
+  readonly images: readonly string[];
 }
 
 /** The parsed arguments of the command. The words after `--` are literal words. */
 export const parseArgs = (argv: readonly string[]): Args => {
   const [verb, ...rest] = argv;
-  if (verb !== "yes" && verb !== "pick" && verb !== "ask")
+  if (verb !== "yes" && verb !== "pick" && verb !== "ask" && verb !== "box")
     throw new UsageError(ERROR_VERB({ verb: verb ?? "", usage: USAGE }));
   let state: string | undefined;
   let json = false;
+  const images: string[] = [];
   const words: string[] = [];
   for (let i = 0; i < rest.length; i++) {
     const arg = rest[i] ?? "";
@@ -81,9 +88,13 @@ export const parseArgs = (argv: readonly string[]): Args => {
     }
     if (arg === "--state") state = rest[++i] ?? "";
     else if (arg === "--json") json = true;
-    else words.push(arg);
+    else if (arg === "--image") {
+      const path = rest[++i];
+      if (!path) throw new UsageError(ERROR_IMAGE_PATH({ usage: USAGE }));
+      images.push(path);
+    } else words.push(arg);
   }
-  return { kind: verb, words, state, json };
+  return { kind: verb, words, state, json, images };
 };
 
 /** The request body of `ask`: the JSON object on stdin, with its `questions` and an optional `state`. */
@@ -110,6 +121,8 @@ export const buildBody = async (
   stdin: () => Promise<string>,
 ): Promise<object> => {
   if (args.kind === "ask") return askBody(stdin);
+  // The request of `box` comes in task 4.1 of the change `jev-images`.
+  if (args.kind === "box") throw new Error("The verb `box` is not built yet.");
   const { kind, words, state } = args;
   const [question, ...items] = words;
   if (!question) throw new UsageError(ERROR_QUESTION_MISSING({ usage: USAGE }));
@@ -181,6 +194,7 @@ export const post = async (
 /** The output of the command: the answers as JSON for `ask`, the text for Claude, or the text and the answer with `--json`. */
 export const render = (args: Args, answers: unknown): string => {
   if (args.kind === "ask") return JSON.stringify(answers ?? null);
+  if (args.kind === "box") return JSON.stringify(answers ?? null);
   const text = formatAnswer(args.kind, answers);
   if (!args.json) return text;
   return JSON.stringify({ text, answer: answerOf(args.kind, answers) });
