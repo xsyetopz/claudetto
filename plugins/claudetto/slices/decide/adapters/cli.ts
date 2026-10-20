@@ -96,7 +96,8 @@ export const parseArgs = (argv: readonly string[]): Args => {
     else if (arg === "--json") json = true;
     else if (arg === "--image") {
       const path = rest[++i];
-      if (!path) throw new UsageError(ERROR_IMAGE_PATH({ usage: USAGE }));
+      if (!path || path.startsWith("-"))
+        throw new UsageError(ERROR_IMAGE_PATH({ usage: USAGE }));
       images.push(path);
     } else words.push(arg);
   }

@@ -596,6 +596,14 @@ test("`main` sends a verb with no `--image` as the JSON text it sends today", as
   expect(JSON.stringify(seen[0]?.headers)).not.toContain("Danger-Zone");
 });
 
+test("`--image` followed by a flag is a usage fault, as a missing path is", () => {
+  for (const argv of [
+    ["yes", "--image", "--json", "--", "Q?"],
+    ["yes", "--image", "--", "Q?"],
+  ])
+    expect(() => parseArgs(argv)).toThrow(UsageError);
+});
+
 test("`--image` with `--json` parses, and the flags stay as given", () => {
   const args = parseArgs(["yes", "--json", "--image", "a.png", "--", "Q?"]);
   expect(args.json).toBe(true);
