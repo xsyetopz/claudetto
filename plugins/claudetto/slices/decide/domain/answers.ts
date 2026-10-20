@@ -122,6 +122,9 @@ export const boxOf = (answers: unknown): BoxAnswer => {
   throw new Error("The reply of the TypeSafe API has no valid box. Try again.");
 };
 
-/** The text of a box answer: one line with the four fractions and the confidence. */
-export const formatBox = (a: BoxAnswer): string =>
-  `top ${num(a.top)}, bottom ${num(a.bottom)}, left ${num(a.left)}, right ${num(a.right)} (confidence ${num(a.confidence)})`;
+/** The text of a box answer: one line with the four fractions and the confidence, and the pixels when the size is known. */
+export const formatBox = (
+  a: BoxAnswer,
+  size?: { readonly width: number; readonly height: number },
+): string =>
+  `top ${num(a.top)}, bottom ${num(a.bottom)}, left ${num(a.left)}, right ${num(a.right)} (confidence ${num(a.confidence)})${size ? `, px x ${Math.round(a.left * size.width)}..${Math.round(a.right * size.width)} y ${Math.round(a.top * size.height)}..${Math.round(a.bottom * size.height)} of ${size.width}x${size.height}` : ""}`;

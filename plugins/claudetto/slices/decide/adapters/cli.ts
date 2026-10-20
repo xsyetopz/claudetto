@@ -142,6 +142,40 @@ export const readImage = async (path: string): Promise<Blob> => {
   return new Blob([bytes], { type });
 };
 
+/** The size of a picture in pixels. */
+export interface ImageSize {
+  readonly width: number;
+  readonly height: number;
+}
+
+/**
+ * The size from the `IHDR` chunk of a PNG or the first `SOF` marker of a JPEG (design D5).
+ * It gives `undefined` for a file that is cut short or has no `SOF`, and the caller then prints no pixels.
+ */
+export const imageSize = (bytes: Uint8Array): ImageSize | undefined => {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  if (imageType(bytes) === "image/png")
+    return bytes.length >= 24
+      ? { width: view.getUint32(16), height: view.getUint32(20) }
+      : undefined;
+  // Each segment is `FF`, a marker byte, and a length that counts its own two bytes.
+  for (let at = 2; at + 4 <= bytes.length; ) {
+    if (bytes[at] !== 0xff) return undefined;
+    const marker = bytes[at + 1] as number;
+    if (marker === 0xff) at++;
+    else if (
+      marker >= 0xc0 &&
+      marker <= 0xcf &&
+      ![0xc4, 0xc8, 0xcc].includes(marker)
+    )
+      return at + 9 <= bytes.length
+        ? { width: view.getUint16(at + 7), height: view.getUint16(at + 5) }
+        : undefined;
+    else at += 2 + view.getUint16(at + 2);
+  }
+  return undefined;
+};
+
 /** The request body of `ask`: the JSON object on stdin, with its `questions` and an optional `state`. */
 const askBody = async (stdin: () => Promise<string>): Promise<object> => {
   let req: Record<string, unknown> | null;
@@ -298,14 +332,18 @@ export const post = async (
 };
 
 /** The output of the command: the answers as JSON for `ask`, the text for Claude, or the text and the answer with `--json`. */
-export const render = (args: Args, answers: unknown): string => {
+export const render = (
+  args: Args,
+  answers: unknown,
+  size?: ImageSize,
+): string => {
   if (args.kind === "ask") return JSON.stringify(answers ?? null);
   if (args.kind === "box") {
     const box = boxOf(answers);
     // `--json` prints the raw answer of the API, which `boxOf` has checked.
     return args.json
       ? JSON.stringify((answers as { q: unknown }).q)
-      : formatBox(box);
+      : formatBox(box, size);
   }
   const text = formatAnswer(args.kind, answers);
   if (!args.json) return text;
@@ -321,8 +359,11 @@ export const main = async (argv: readonly string[]): Promise<number> => {
     const body = await buildBody(args, () => Bun.stdin.text());
     // `readImage` reads and checks each file here, so that a bad file stops the command before the request.
     const images = await Promise.all(args.images.map(readImage));
+    // The pixels come from the first image, which the `box` question names (design D5).
+    const first = images[0];
+    const size = first && imageSize(new Uint8Array(await first.arrayBuffer()));
     const res = (await post(body, key, { images })) as { answers?: unknown };
-    console.log(render(args, res.answers));
+    console.log(render(args, res.answers, size || undefined));
     return EXIT.ok;
   } catch (err) {
     // The message names the fault. It never holds the key, because the key is not in any message.

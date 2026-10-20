@@ -11,6 +11,7 @@ import {
   buildRequest,
   EXIT,
   exitOf,
+  imageSize,
   main,
   parseArgs,
   post,
@@ -768,4 +769,88 @@ test("`box` with no `--image` exits `2` and sends no request", async () => {
   const { code, seen } = await runMain(["box", "--", "the button"]);
   expect(code).toBe(EXIT.usage);
   expect(seen).toHaveLength(0);
+});
+
+/** A PNG header: the signature, then `IHDR` with the width and the height, big-endian. */
+const pngOf = (w: number, h: number): Uint8Array => {
+  const bytes = new Uint8Array(33);
+  bytes.set(PNG.slice(0, 8));
+  bytes.set([0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52], 8);
+  const view = new DataView(bytes.buffer);
+  view.setUint32(16, w);
+  view.setUint32(20, h);
+  return bytes;
+};
+
+/** A JPEG with an `APP0` segment before the `SOF0` segment, and the `SOF0` has the height, then the width. */
+const jpegOf = (w: number, h: number): Uint8Array => {
+  const bytes = new Uint8Array([
+    0xff, 0xd8, 0xff, 0xe0, 0, 6, 1, 2, 3, 4, 0xff, 0xc0, 0, 11, 8, 0, 0, 0, 0,
+    3,
+  ]);
+  const view = new DataView(bytes.buffer);
+  view.setUint16(15, h);
+  view.setUint16(17, w);
+  return bytes;
+};
+
+test("`imageSize` reads the width and the height from the `IHDR` of a PNG", () => {
+  expect(imageSize(pngOf(640, 480))).toEqual({ width: 640, height: 480 });
+});
+
+test("`imageSize` reads the `SOF0` of a JPEG after an `APP0` segment", () => {
+  expect(imageSize(jpegOf(640, 480))).toEqual({ width: 640, height: 480 });
+});
+
+test("`imageSize` gives `undefined` for a truncated file or a JPEG with no `SOF`", () => {
+  expect(imageSize(pngOf(640, 480).slice(0, 20))).toBeUndefined();
+  expect(imageSize(jpegOf(640, 480).slice(0, 16))).toBeUndefined();
+  expect(imageSize(JPEG)).toBeUndefined();
+});
+
+test("`box` prints the box in pixels when the size is known", () => {
+  const text = render(
+    parseArgs(["box", "--", "x"]),
+    { q: BOX_ANSWER },
+    { width: 640, height: 480 },
+  );
+  expect(text).toBe(
+    "top 0.10, bottom 0.50, left 0.25, right 0.75 (confidence 0.90), px x 160..480 y 48..240 of 640x480",
+  );
+});
+
+test("`box --json` is the raw answer even when the size is known", () => {
+  const text = render(
+    parseArgs(["box", "--json", "--", "x"]),
+    { q: BOX_ANSWER },
+    { width: 640, height: 480 },
+  );
+  expect(JSON.parse(text)).toEqual(BOX_ANSWER);
+});
+
+test("`main` prints pixels for the first image, and none for a truncated file", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "decide-"));
+  try {
+    const a = join(dir, "a.png");
+    const b = join(dir, "b.png");
+    await Bun.write(a, pngOf(640, 480));
+    await Bun.write(b, pngOf(640, 480).slice(0, 20));
+    const full = await runMain(["box", "--image", a, "--", "x"], {
+      q: BOX_ANSWER,
+    });
+    expect(full.out[0]).toContain("px x 160..480 y 48..240 of 640x480");
+    const cut = await runMain(["box", "--image", b, "--", "x"], {
+      q: BOX_ANSWER,
+    });
+    expect(cut.code).toBe(EXIT.ok);
+    expect(cut.out[0]).toBe(
+      "top 0.10, bottom 0.50, left 0.25, right 0.75 (confidence 0.90)",
+    );
+    const json = await runMain(["box", "--json", "--image", a, "--", "x"], {
+      q: BOX_ANSWER,
+    });
+    expect(JSON.parse(json.out[0] as string)).toEqual(BOX_ANSWER);
+  } finally {
+    await rm(dir, { recursive: true });
+  }
 });

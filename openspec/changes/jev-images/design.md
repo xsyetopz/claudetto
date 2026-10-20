@@ -170,7 +170,12 @@ D4 and D5 show where the code stops.
 ## Open Questions
 
 1. Does the box also print in pixels (D5)?
-   The implementer decides by code size.
+   Resolved (task 4.2): yes.
+   `imageSize` in `adapters/cli.ts` reads the `IHDR` chunk of a PNG and walks the segments of a JPEG to the first `SOF` marker.
+   It takes about 22 lines, with bounds checks and no library.
+   The text line then ends with `, px x <left>..<right> y <top>..<bottom> of <width>x<height>`, rounded to integers, from the first `--image`.
+   A file that is cut short, or a JPEG with no `SOF`, gives the line with no pixels and no error.
+   `--json` stays the raw answer.
 2. Does the verb `box` take `--image`?
    This design says yes (D7), because a `box` needs a picture.
    The user picked the scope "`--image` and `box`", and did not name the form of `box`, so confirm it at the start of the work.
