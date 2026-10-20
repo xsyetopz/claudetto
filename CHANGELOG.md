@@ -56,6 +56,7 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 - `claudetto-schema` resolves a lazy reference to a name that the settings module imports in the module that exports it.
   Without it, the 2.1.304 bundle gave `hooks` no `type` and no `additionalProperties`.
+- The eval judge `report-says-nothing-broken` of `false-alarm-sum` has a rubric with no overlap, so a reply that says `I could not find a cause` and that the tests pass is a pass.
 
 ## [0.1.0-alpha.1] - 2026-10-15
 

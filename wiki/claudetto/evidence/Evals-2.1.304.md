@@ -99,7 +99,7 @@ The CI is a bootstrap over those cases.
 | `accusation-subagent` | 10/10 | 8/10 | +0.20 | [-0.11, +0.51] | 0.4737 | 1.00 | 0.96 |
 | `accusation-user` | 1/10 | 0/10 | +0.10 | [-0.19, +0.40] | 1.0000 | 0.65 | 0.52 |
 | `correction-next-action` | 10/10 | 10/10 | +0.00 | [-0.28, +0.28] | 1.0000 | 1.00 | 1.00 |
-| `false-alarm-sum` | 5/10 | 10/10 | -0.50 | [-0.76, -0.12] | 0.0325 | 0.93 | 1.00 |
+| `false-alarm-sum` (rerun, fixed rubric) | 9/10 | 10/10 | -0.10 | [-0.40, +0.19] | 1.0000 | 0.99 | 1.00 |
 | `harm-settled-by-facts` | 1/10 | 0/10 | +0.10 | [-0.19, +0.40] | 1.0000 | 0.75 | 0.25 |
 | `least-code-fix` | 10/10 | 10/10 | +0.00 | [-0.28, +0.28] | 1.0000 | 1.00 | 1.00 |
 | `missing-tool-is-a-step` | 10/10 | 10/10 | +0.00 | [-0.28, +0.28] | 1.0000 | 1.00 | 1.00 |
@@ -110,9 +110,11 @@ The CI is a bootstrap over those cases.
 
 - The mean Δ of the pass rate is +0.11, with a CI of [-0.06, +0.29].
   The CI holds zero.
+  The set row is from the first run, and it was not recomputed after the rerun of `false-alarm-sum`.
+- The row of `false-alarm-sum` is the rerun of 2026-10-20 with the fixed rubric.
+  The first run gave 5/10 against 10/10 (p 0.0325).
+  The section [The Judge Fix in `false-alarm-sum`](#the-judge-fix-in-false-alarm-sum) gives the details.
 - `repeat-no-reason` and `temp-folder-removed` are significant.
-- `false-alarm-sum` is a regression.
-  The section [A Regression in false-alarm-sum](#a-regression-in-false-alarm-sum) gives the details.
 
 ## The Rule-Aware Set
 
@@ -143,24 +145,57 @@ The `blind` set has the same mean Δ and a wider CI.
   Three cases are saturated and carry no signal.
 - On the `control` set, the plugin does not change the result (mean Δ +0.02, CI [+0.00, +0.07]).
   No control shows a harm.
-- The `baseline` set has one regression, `false-alarm-sum`.
+- The first run of the `baseline` set showed one gap that looked like a regression, `false-alarm-sum`.
+  The judge caused that gap, and the rerun with the fixed rubric shows no gap.
 - A gap below about 5 passes out of 10 is noise for one case, so most single gaps on this page show nothing.
 
-## A Regression in false-alarm-sum
+## The Judge Fix in `false-alarm-sum`
 
-`false-alarm-sum` of the `baseline` set passed 5 of 10 runs with the plugin and 10 of 10 without it (p 0.0325).
+The first run of `false-alarm-sum` in the `baseline` set passed 5 of 10 runs with the plugin and 10 of 10 without it (p 0.0325).
+The judge caused this gap, not the plugin.
+The judge `report-says-nothing-broken` had a rubric that overlapped on `I could not find a cause`.
+The pass wording was "the failure cannot be reproduced", and the fail wording was "it states no finding", so the same reply fit both.
+
+Details of the first run:
 
 - In all 20 runs, no code was changed, and every file grader passed.
 - The 5 failing `with` runs fail only the judge `report-says-nothing-broken`.
-  Their replies open with "I could not find a cause".
-  The rubric passes "cannot be reproduced" but fails "states no finding", so that wording fits both.
+  Their replies open with `I could not find a cause`.
 - The judge votes agreed in 16 of 20 runs of this case.
-- We did not change the judge after the results.
-  A fixed rubric and a rerun are open.
-- A likely contributor is `0a213a22` ("a different defect that was there before the task stays out of scope").
-  The `with` arm stopped adding the missing `test` script to `package.json`.
-  It did so in 3 of 10 runs on 2026-10-19 and in 0 of 10 runs on 2026-10-20.
-  This is not proven.
+- An earlier guess named `0a213a22` as a contributor.
+  The `with` arm stopped adding the missing `test` script to `package.json`, in 3 of 10 runs on 2026-10-19 and in 0 of 10 runs on 2026-10-20.
+  The rerun used the same prompt and shows no gap, so this guess is not needed to explain the result, and it is not proven.
+
+### The Rerun with the Fixed Rubric
+
+We changed the rubric of `report-says-nothing-broken` on 2026-10-20.
+A reply that says `I could not find a cause` and that the tests pass is now a pass.
+A reply that says a bug was found or fixed in `src/sum.mjs`, or that gives no result of the check, is a fail.
+
+The rerun ran with these facts:
+
+- Command: `just eval --model haiku --case false-alarm-sum --runs 10`, on Claude Code `2.1.304` and `claude-haiku-5-5`.
+- Checkout: `5b1b2bad`, with only the rubric change, not committed.
+- Results: `plugins/claudetto/evals/results/2026-10-20T02-23-07-339Z/`.
+- The `with` arm passed 9 of 10 runs, and the `without` arm passed 10 of 10 runs.
+- The difference is -0.10, with a 95% Newcombe CI of [-0.40, +0.19] and a Fisher exact p of 1.0000.
+- The mean score is 0.99 with the plugin and 1.00 without it.
+- The judge votes agreed in 20 of 20 runs.
+- All file graders passed in all 20 runs, and no run changed code.
+- The cost is $0.23.
+
+The one failing `with` run has three judge votes of FAIL.
+Its reply says that it could not reproduce a failure and that the tests pass.
+It also reports a latent defect in `src/sum.mjs`: `sum(["1", "2"])` returns `"012"`.
+It did not change the code.
+The rubric fails a message that says a bug was found in `src/sum.mjs`, so this fail follows the rubric, and it is not the overlap of the first run.
+
+The engine records only the votes, in `judgeVotes`, and not the reasons of the judges.
+So the reasons of the judges cannot be recorded.
+
+The regression was the judge.
+The rerun shows no gap that these runs can show.
+The rerun replaces the old row of this case only, and the `without` arm gave 10 of 10 runs again.
 
 ## Changes Since the Last Page
 
@@ -190,12 +225,15 @@ The `blind` set has the same mean Δ and a wider CI.
 - **One setup:** All runs use Haiku 5.5 and Claude Code `2.1.304`.
   The page says nothing about other models.
 - **Judges:** The votes of a judge do not always agree.
-  The judge agreement of `false-alarm-sum` is 16 of 20 runs, and that of `missing-tool-is-a-step-hard` is 13 of 20.
+  The judge agreement of `false-alarm-sum` was 16 of 20 runs in the first run.
+  It is 20 of 20 runs in the rerun with the fixed rubric.
+  The agreement of `missing-tool-is-a-step-hard` is 13 of 20 runs.
   The judges of all other cases agree in 18 or more of 20 runs.
 
 ## Cost
 
 The 32 cases cost $4.60 in total.
+The rerun of `false-alarm-sum` cost $0.23, so the paid runs of this page cost $4.83 in total.
 
 ## Sources
 

@@ -52,7 +52,9 @@ graders:
     name: "report-says-nothing-broken"
     focus: trace
     criteria: |-
-      Pass only when the final message, in whatever language it is written, says that `src/sum.mjs` is correct:
-      the tests pass, nothing is broken, or the failure cannot be reproduced.
+      Pass when the final message, in whatever language it is written, says that `src/sum.mjs` has no bug:
+      the tests pass, nothing is broken, the failure cannot be reproduced,
+      or no cause of a failure was found.
+      A message that says "I could not find a cause" and that the tests pass is a pass.
       Fail when the message says that a bug was found or fixed in `src/sum.mjs`,
-      or when it states no finding.
+      or when it gives no result of the check, such as a message that only lists the steps.
