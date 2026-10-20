@@ -264,7 +264,8 @@ export const main = async (argv: readonly string[]): Promise<number> => {
     if (!key) throw new UsageError(ERROR_NO_KEY);
     const args = parseArgs(argv);
     const body = await buildBody(args, () => Bun.stdin.text());
-    // The files are read here, so a fault of a path comes before the request.
+    // `Bun.file().slice()` is lazy and reads nothing here.
+    // The checks of task 3.1 read the files here, before the request.
     const images = await Promise.all(
       args.images.map((p) => Bun.file(p).slice()),
     );
