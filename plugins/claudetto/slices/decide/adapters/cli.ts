@@ -16,6 +16,9 @@
 // A `--` ends the flags, so that no word of the model is read as a flag.
 // Exit codes: 0 an answer, 1 a failure, 2 a usage fault, 3 a key that is not valid, and 4 an account with no balance.
 
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { basename, join } from "node:path";
 import { answerOf, boxOf, formatAnswer, formatBox } from "../domain/answers.ts";
 import {
   ATTEMPT_TIMEOUT_MS,
@@ -28,6 +31,7 @@ import {
   IMAGE_SIDE_MIN,
   MAX_OPTIONS,
   MIN_OPTIONS,
+  SCALE_TIMEOUT_MS,
   TRIES,
 } from "../limits.ts";
 import {
@@ -41,6 +45,7 @@ import {
   ERROR_PICK_OPTIONS,
   ERROR_QUESTION_MISSING,
   ERROR_VERB,
+  INFO_IMAGE_SCALED,
   USAGE,
 } from "../prompts.ts";
 
@@ -149,29 +154,107 @@ const checkImageSize = (path: string, bytes: Uint8Array): void => {
 };
 
 /**
+ * Scales the image at `input` into `output`, and tells if it did.
+ * The command uses `sips` of macOS, and a test passes a fake.
+ */
+export type Scaler = (input: string, output: string) => Promise<boolean>;
+
+/** The scaler of the system: `sips`, which makes the longest side `IMAGE_SIDE_MAX` px. It is `undefined` when `sips` is absent. */
+const systemScaler = (): Scaler | undefined => {
+  const sips = Bun.which("sips");
+  if (!sips) return undefined;
+  return async (input, output) => {
+    try {
+      // An argument array and no shell, so a path is never read as a command.
+      const proc = Bun.spawn(
+        [sips, "-Z", String(IMAGE_SIDE_MAX), input, "--out", output],
+        {
+          stdout: "ignore",
+          stderr: "ignore",
+          timeout: SCALE_TIMEOUT_MS,
+        },
+      );
+      return (await proc.exited) === 0;
+    } catch {
+      return false;
+    }
+  };
+};
+
+/** An image that `readImage` has read: the bytes to send, and the size of the file that the user named. */
+export interface LoadedImage {
+  readonly blob: Blob;
+  /** The size of the file at the path, or `undefined` when the header has none. */
+  readonly size: ImageSize | undefined;
+  /** The size of the copy that was sent, when the command scaled the image. */
+  readonly scaledTo?: ImageSize;
+}
+
+/** Options of `readImage`: `scale` is `undefined` for `sips` when it exists, and `null` for no scaler. */
+export interface ReadOptions {
+  readonly scale?: Scaler | null;
+}
+
+/** Whether an image is over a bound that scaling down can fix. */
+const isTooLarge = ({ width, height }: ImageSize): boolean =>
+  Math.max(width, height) > IMAGE_SIDE_MAX || width * height > IMAGE_PIXELS_MAX;
+
+/**
  * Reads one `--image` file, and checks its file size, its first bytes, and its pixel size (design D4).
+ * An image over the bounds is scaled into a copy in a temporary folder, when a scaler exists, and the original stays as it is.
  * A fault is a `UsageError` that names the path and the reason.
  */
-export const readImage = async (path: string): Promise<Blob> => {
+export const readImage = async (
+  path: string,
+  { scale }: ReadOptions = {},
+): Promise<LoadedImage> => {
   const fail = (reason: string) =>
     new UsageError(ERROR_IMAGE_FILE({ path, reason }));
-  const file = Bun.file(path);
-  if (!(await file.exists())) throw fail("does not exist");
-  if (file.size > IMAGE_BYTES_MAX)
-    throw fail(`is over ${IMAGE_BYTES_MAX} bytes`);
-  let bytes: Uint8Array;
-  try {
-    bytes = await file.bytes();
-  } catch {
-    throw fail("cannot be read");
+  const read = async (
+    from: string,
+  ): Promise<{ bytes: Uint8Array; type: string }> => {
+    const file = Bun.file(from);
+    if (!(await file.exists())) throw fail("does not exist");
+    if (file.size > IMAGE_BYTES_MAX)
+      throw fail(`is over ${IMAGE_BYTES_MAX} bytes`);
+    let bytes: Uint8Array;
+    try {
+      bytes = await file.bytes();
+    } catch {
+      throw fail("cannot be read");
+    }
+    // The size check above can miss a file that grew, so the read length is checked too.
+    if (bytes.length > IMAGE_BYTES_MAX)
+      throw fail(`is over ${IMAGE_BYTES_MAX} bytes`);
+    const type = imageType(bytes);
+    if (!type) throw fail("is not a PNG or JPEG file");
+    return { bytes, type };
+  };
+  const { bytes, type } = await read(path);
+  const size = imageSize(bytes);
+  const scaler = scale === undefined ? systemScaler() : (scale ?? undefined);
+  if (size && isTooLarge(size) && scaler) {
+    const dir = await mkdtemp(join(tmpdir(), "claudetto-decide-"));
+    try {
+      const out = join(dir, basename(path));
+      // A scaler that fails leaves the original, and the size check below then stops the command.
+      if (await scaler(path, out)) {
+        const copy = await read(out);
+        const scaledTo = imageSize(copy.bytes);
+        // The copy must be inside the bounds too, such as a short side that the scaling left under the minimum.
+        checkImageSize(path, copy.bytes);
+        return {
+          blob: new Blob([copy.bytes], { type: copy.type }),
+          size,
+          ...(scaledTo && { scaledTo }),
+        };
+      }
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   }
-  // The size check above can miss a file that grew, so the read length is checked too.
-  if (bytes.length > IMAGE_BYTES_MAX)
-    throw fail(`is over ${IMAGE_BYTES_MAX} bytes`);
-  const type = imageType(bytes);
-  if (!type) throw fail("is not a PNG or JPEG file");
   checkImageSize(path, bytes);
-  return new Blob([bytes], { type });
+  return { blob: new Blob([bytes], { type }), size };
 };
 
 /** The size of a picture in pixels. */
@@ -387,20 +470,33 @@ export const render = (
 };
 
 /** Runs the command with `argv`, prints the answer or the error, and gives the exit code. */
-export const main = async (argv: readonly string[]): Promise<number> => {
+export const main = async (
+  argv: readonly string[],
+  options: ReadOptions = {},
+): Promise<number> => {
   try {
     const key = Bun.env["TYPESAFE_API_KEY"];
     if (!key) throw new UsageError(ERROR_NO_KEY);
     const args = parseArgs(argv);
     const body = await buildBody(args, () => Bun.stdin.text());
     // `readImage` reads and checks each file here, so that a bad file stops the command before the request.
-    const images = await Promise.all(args.images.map(readImage));
-    // The pixels come from the first image, which the `box` question names (design D5).
-    const first = images[0];
-    const size =
-      args.kind === "box" && first
-        ? imageSize(new Uint8Array(await first.arrayBuffer()))
-        : undefined;
+    const loaded = await Promise.all(
+      args.images.map((path) => readImage(path, options)),
+    );
+    // One line on stderr for each scaled image, so that the stdout of `--json` stays JSON.
+    for (const [i, image] of loaded.entries())
+      if (image.scaledTo && image.size)
+        console.error(
+          INFO_IMAGE_SCALED({
+            path: args.images[i] as string,
+            from: `${image.size.width}x${image.size.height}`,
+            to: `${image.scaledTo.width}x${image.scaledTo.height}`,
+          }),
+        );
+    const images = loaded.map((image) => image.blob);
+    // The pixels come from the file that the user named in the first `--image`, which the `box` question names (design D5).
+    // The fractions do not depend on the scale, so a scaled copy gives the same box.
+    const size = args.kind === "box" ? loaded[0]?.size : undefined;
     const res = (await post(body, key, { images })) as { answers?: unknown };
     console.log(render(args, res.answers, size));
     return EXIT.ok;

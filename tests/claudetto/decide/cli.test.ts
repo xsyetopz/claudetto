@@ -5,6 +5,7 @@ import { expect, spyOn, test } from "bun:test";
 import { mkdtemp, rm, truncate } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { deflateSync } from "node:zlib";
 import {
   ApiError,
   buildBody,
@@ -15,6 +16,7 @@ import {
   main,
   parseArgs,
   post,
+  type ReadOptions,
   render,
   UsageError,
 } from "../../../plugins/claudetto/slices/decide/adapters/cli.ts";
@@ -28,6 +30,7 @@ import {
   IMAGE_SIDE_MAX,
   IMAGE_SIDE_MIN,
   JEV_TIMEOUT_MS,
+  SCALE_TIMEOUT_MS,
   TRIES,
 } from "../../../plugins/claudetto/slices/decide/limits.ts";
 
@@ -194,9 +197,9 @@ test("the tries of the client and their waits fit in the time limit of the hook"
     { length: TRIES - 1 },
     (_, i) => BACKOFF_MS * 2 ** i,
   ).reduce((sum, ms) => sum + ms, 0);
-  expect(ATTEMPT_TIMEOUT_MS * TRIES + waitTotal).toBeLessThanOrEqual(
-    JEV_TIMEOUT_MS,
-  );
+  expect(
+    ATTEMPT_TIMEOUT_MS * TRIES + waitTotal + SCALE_TIMEOUT_MS,
+  ).toBeLessThanOrEqual(JEV_TIMEOUT_MS);
 });
 
 test("`main` with no key exits with the usage code and prints no key", async () => {
@@ -517,6 +520,8 @@ const runMain = async (
       probabilities: { x: 0.8 },
     },
   },
+  // No scaler, so that a test never runs `sips` unless it asks to.
+  options: ReadOptions = { scale: null },
 ) => {
   const saved = process.env["TYPESAFE_API_KEY"];
   process.env["TYPESAFE_API_KEY"] = KEY;
@@ -529,11 +534,19 @@ const runMain = async (
     return reply(200, { answers });
   }) as unknown as typeof fetch);
   const logSpy = spyOn(console, "log").mockImplementation(() => {});
+  const errSpy = spyOn(console, "error").mockImplementation(() => {});
   try {
-    return { code: await main(argv), seen, out: logSpy.mock.calls.flat() };
+    const code = await main(argv, options);
+    return {
+      code,
+      seen,
+      out: logSpy.mock.calls.flat(),
+      err: errSpy.mock.calls.flat().map(String),
+    };
   } finally {
     fetchSpy.mockRestore();
     logSpy.mockRestore();
+    errSpy.mockRestore();
     if (saved === undefined) delete process.env["TYPESAFE_API_KEY"];
     else process.env["TYPESAFE_API_KEY"] = saved;
   }
@@ -620,29 +633,40 @@ test("`--image` with `--json` parses, and the flags stay as given", () => {
   expect(args.images).toEqual(["a.png"]);
 });
 
-/** Runs `main` with one bad image file, and gives the code, the messages, and the number of requests. */
+/** Runs `main` with one image file, and gives the code, the messages, and the requests. */
 const runBad = async (
   name: string,
   bytes: Uint8Array | null,
   size?: number,
+  options?: ReadOptions,
 ) => {
   const dir = await mkdtemp(join(tmpdir(), "decide-"));
-  const errors: string[] = [];
-  const spy = spyOn(console, "error").mockImplementation((m: unknown) => {
-    errors.push(String(m));
-  });
   try {
     const path = join(dir, name);
     if (bytes) await Bun.write(path, bytes);
     if (size !== undefined) {
       await truncate(path, size);
     }
-    const { code, seen } = await runMain(["yes", "--image", path, "--", "Q?"]);
-    return { code, seen, text: errors.join("\n"), path };
+    const { code, seen, err } = await runMain(
+      ["yes", "--image", path, "--", "Q?"],
+      undefined,
+      options,
+    );
+    return { code, seen, text: err.join("\n"), path };
   } finally {
-    spy.mockRestore();
     await rm(dir, { recursive: true });
   }
+};
+
+/** Expects a run that exited 2 with no request, and with the size `w`x`h` in the message. */
+const expectStopped = (
+  r: { code: number; seen: unknown[]; text: string },
+  w: number,
+  h: number,
+) => {
+  expect(r.code).toBe(EXIT.usage);
+  expect(r.seen).toHaveLength(0);
+  expect(r.text).toContain(`${w}x${h}`);
 };
 
 test("`main` exits 2 with no request for a GIF file", async () => {
@@ -944,10 +968,7 @@ test("`main` exits 2 with no request for a JPEG over the side maximum or under t
     [1569, 400],
     [400, 279],
   ] as const) {
-    const r = await runBad("a.jpg", jpegOf(w, h));
-    expect(r.code).toBe(EXIT.usage);
-    expect(r.seen).toHaveLength(0);
-    expect(r.text).toContain(`${w}x${h}`);
+    expectStopped(await runBad("a.jpg", jpegOf(w, h)), w, h);
   }
 });
 
@@ -1016,3 +1037,163 @@ test("the usage and the size message name the pixel bounds from `limits.ts`", as
     expect(text).toContain(IMAGE_SIDE_MAX.toLocaleString("en-US"));
   }
 });
+
+/** A fake scaler that writes a PNG of a size, and records the paths that it got. */
+const fakeScaler = (w: number, h: number, ok = true) => {
+  const calls: string[][] = [];
+  const scale = async (input: string, output: string) => {
+    calls.push([input, output]);
+    if (ok) await Bun.write(output, pngOf(w, h));
+    return ok;
+  };
+  return { scale, calls };
+};
+
+/** Runs `main` on a PNG header of a size with `options`, and gives the result and the original bytes after the run. */
+const runScaled = async (
+  argv: (path: string) => string[],
+  original: Uint8Array,
+  options: ReadOptions,
+  answers?: unknown,
+) => {
+  const dir = await mkdtemp(join(tmpdir(), "decide-"));
+  try {
+    const path = join(dir, "big.png");
+    await Bun.write(path, original);
+    const r = await runMain(argv(path), answers, options);
+    return { ...r, path, after: await Bun.file(path).bytes() };
+  } finally {
+    await rm(dir, { recursive: true });
+  }
+};
+
+const BIG = pngOf(1554, 2000);
+const yes = (path: string) => ["yes", "--image", path, "--", "Q?"];
+
+test("`main` scales an image over the side maximum into a copy, sends the copy, and prints one info line", async () => {
+  const { scale, calls } = fakeScaler(1218, 1568);
+  const r = await runScaled(yes, BIG, { scale });
+  expect(r.code).toBe(EXIT.ok);
+  expect(r.seen).toHaveLength(1);
+  expect(calls).toHaveLength(1);
+  expect(calls[0]?.[0]).toBe(r.path);
+  expect(calls[0]?.[1]).not.toBe(r.path);
+  expect(r.err).toEqual([
+    `Scaled \`${r.path}\` from 1554x2000 to 1218x1568 px for the API.`,
+  ]);
+  expect(Buffer.from(r.after).equals(BIG)).toBe(true);
+  const form = r.seen[0]?.body as FormData;
+  const sent = new Uint8Array(await (form.get("img1") as File).arrayBuffer());
+  expect(imageSize(sent)).toEqual({ width: 1218, height: 1568 });
+});
+
+test("`main` prints the pixels of a `box` from the size of the original file", async () => {
+  const { scale } = fakeScaler(1218, 1568);
+  const r = await runScaled(
+    (path) => ["box", "--image", path, "--", "the button"],
+    BIG,
+    { scale },
+    { q: BOX_ANSWER },
+  );
+  expect(r.code).toBe(EXIT.ok);
+  expect(r.out[0]).toContain("of 1554x2000");
+});
+
+test("`main` with `--json` keeps stdout as JSON when it scaled", async () => {
+  const { scale } = fakeScaler(1218, 1568);
+  const r = await runScaled(
+    (path) => ["yes", "--json", "--image", path, "--", "Q?"],
+    BIG,
+    { scale },
+    { q: { noul: 0.9, confidence: 0.8, probabilities: { x: 0.8 } } },
+  );
+  expect(r.code).toBe(EXIT.ok);
+  expect(() => JSON.parse(String(r.out[0]))).not.toThrow();
+});
+
+test("`main` with no scaler exits 2 with no request and a hint for `sips` and `magick`", async () => {
+  const r = await runBad("big.png", BIG, undefined, { scale: null });
+  expect(r.code).toBe(EXIT.usage);
+  expect(r.seen).toHaveLength(0);
+  expect(r.text).toContain("sips -Z 1,568 in.png --out out.png");
+  expect(r.text).toContain("magick in.png -resize 1,568x1,568 out.png");
+});
+
+test("`main` exits 2 with no request when the scaler fails", async () => {
+  const { scale, calls } = fakeScaler(1, 1, false);
+  const r = await runBad("big.png", BIG, undefined, { scale });
+  expect(calls).toHaveLength(1);
+  expect(r.code).toBe(EXIT.usage);
+  expect(r.seen).toHaveLength(0);
+  expect(r.text).toContain("1554x2000");
+});
+
+test("`main` exits 2 with no request when the copy is still out of bounds", async () => {
+  for (const [w, h] of [
+    [1600, 1600],
+    [1568, 100],
+  ] as const) {
+    const { scale } = fakeScaler(w, h);
+    expectStopped(await runBad("big.png", BIG, undefined, { scale }), w, h);
+  }
+});
+
+test("`main` never scales an image up", async () => {
+  const { scale, calls } = fakeScaler(300, 300);
+  const r = await runBad("small.png", pngOf(100, 100), undefined, { scale });
+  expect(calls).toHaveLength(0);
+  expect(r.code).toBe(EXIT.usage);
+  expect(r.seen).toHaveLength(0);
+});
+
+test("`main` does not call the scaler for an image inside the bounds", async () => {
+  const { scale, calls } = fakeScaler(300, 300);
+  const r = await runBad("ok.png", pngOf(1568, 1568), undefined, { scale });
+  expect(calls).toHaveLength(0);
+  expect(r.code).toBe(EXIT.ok);
+});
+
+/** A real PNG of a size: grey RGB pixels, with the CRC of each chunk. */
+const realPng = (w: number, h: number): Uint8Array => {
+  const chunk = (type: string, data: Uint8Array): Uint8Array => {
+    const out = new Uint8Array(12 + data.length);
+    const view = new DataView(out.buffer);
+    view.setUint32(0, data.length);
+    out.set(new TextEncoder().encode(type), 4);
+    out.set(data, 8);
+    view.setUint32(
+      8 + data.length,
+      Bun.hash.crc32(out.subarray(4, 8 + data.length)),
+    );
+    return out;
+  };
+  const ihdr = new Uint8Array(13);
+  const v = new DataView(ihdr.buffer);
+  v.setUint32(0, w);
+  v.setUint32(4, h);
+  ihdr.set([8, 2, 0, 0, 0], 8);
+  // Each row is a filter byte `0`, then `w` RGB pixels.
+  const rows = new Uint8Array(h * (1 + w * 3)).fill(128);
+  for (let y = 0; y < h; y++) rows[y * (1 + w * 3)] = 0;
+  return Buffer.concat([
+    PNG.subarray(0, 8),
+    chunk("IHDR", ihdr),
+    chunk("IDAT", deflateSync(rows)),
+    chunk("IEND", new Uint8Array()),
+  ]);
+};
+
+test.skipIf(!Bun.which("sips"))(
+  "`main` scales a real PNG with `sips` and sends a copy inside the bounds",
+  async () => {
+    const original = realPng(1554, 2000);
+    const r = await runScaled(yes, original, {});
+    expect(r.code).toBe(EXIT.ok);
+    expect(r.seen).toHaveLength(1);
+    expect(r.err[0]).toContain("from 1554x2000 to 1218x1568 px");
+    expect(Buffer.from(r.after).equals(original)).toBe(true);
+    const form = r.seen[0]?.body as FormData;
+    const sent = new Uint8Array(await (form.get("img1") as File).arrayBuffer());
+    expect(imageSize(sent)).toEqual({ width: 1218, height: 1568 });
+  },
+);

@@ -94,6 +94,10 @@ The command reads the first bytes of the file to check its type, not its name, s
 A file over `IMAGE_BYTES_MAX` (16 MiB) fails too.
 A picture with a side under 280 px or over 1568 px fails too, because the API answers it with a `400`.
 The command reads the size from the header of the file, and it leaves a size that it cannot read to the API.
+On macOS, the command scales a picture over 1568 px on a side with `sips` into a copy in a temporary folder, and it prints `Scaled <path> from <w>x<h> to <w>x<h> px for the API.` on stderr.
+The original file stays as it is, and the `px` suffix of a `box` uses its size.
+Without `sips`, the command exits with code 2, and the message has the `sips` and ImageMagick commands to scale the picture.
+The command never scales a picture up.
 A bad file exits with code 2, and no request is sent.
 
 `--image` is the one exception to the path rule of the command.

@@ -67,3 +67,10 @@ export const IMAGE_PIXELS_MIN = 78_400;
 
 /** The most pixels in total of an `--image`: 1568 x 1568. */
 export const IMAGE_PIXELS_MAX = 2_458_624;
+
+/**
+ * The most time that `sips` has to scale one `--image`, in milliseconds.
+ * The scaling runs before the request, so `ATTEMPT_TIMEOUT_MS * TRIES`, the waits of `BACKOFF_MS`, and this time fit in `JEV_TIMEOUT_MS`, and a test pins that.
+ * The images scale in parallel, so the time counts once.
+ */
+export const SCALE_TIMEOUT_MS = 5_000;

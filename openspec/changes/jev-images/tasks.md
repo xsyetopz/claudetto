@@ -47,3 +47,8 @@
 
 - [x] 7.1 Run the full gate in a container.
   Check: `just docker check`
+
+## 8. Scale in the CLI
+
+- [x] 8.1 Add tests with a fake scaler that an image over 1568 px on a side is scaled into a copy and sent (one request, the info line on stderr, the original file as it is, the `box` pixels from the original size), and that an absent scaler, a scaler that fails, and a copy that is still out of bounds exit `2` with no request and the hint, and one test with the real `sips` that is skipped without it, and see them fail, then add `SCALE_TIMEOUT_MS` to `limits.ts` and the scaling to `readImage` (D4).
+  Check: `just test tests/claudetto/decide && just generate --check`
