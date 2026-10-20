@@ -154,22 +154,26 @@ export interface ImageSize {
  */
 export const imageSize = (bytes: Uint8Array): ImageSize | undefined => {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const sized = (width: number, height: number) =>
+    width > 0 && height > 0 ? { width, height } : undefined;
   if (imageType(bytes) === "image/png")
-    return bytes.length >= 24
-      ? { width: view.getUint32(16), height: view.getUint32(20) }
+    // The first chunk must be `IHDR`, which is the four bytes `49 48 44 52` at 12.
+    return bytes.length >= 24 && view.getUint32(12) === 0x49484452
+      ? sized(view.getUint32(16), view.getUint32(20))
       : undefined;
   // Each segment is `FF`, a marker byte, and a length that counts its own two bytes.
   for (let at = 2; at + 4 <= bytes.length; ) {
     if (bytes[at] !== 0xff) return undefined;
     const marker = bytes[at + 1] as number;
     if (marker === 0xff) at++;
+    else if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd8)) at += 2;
     else if (
       marker >= 0xc0 &&
       marker <= 0xcf &&
       ![0xc4, 0xc8, 0xcc].includes(marker)
     )
       return at + 9 <= bytes.length
-        ? { width: view.getUint16(at + 7), height: view.getUint16(at + 5) }
+        ? sized(view.getUint16(at + 7), view.getUint16(at + 5))
         : undefined;
     else at += 2 + view.getUint16(at + 2);
   }
@@ -361,9 +365,12 @@ export const main = async (argv: readonly string[]): Promise<number> => {
     const images = await Promise.all(args.images.map(readImage));
     // The pixels come from the first image, which the `box` question names (design D5).
     const first = images[0];
-    const size = first && imageSize(new Uint8Array(await first.arrayBuffer()));
+    const size =
+      args.kind === "box" && first
+        ? imageSize(new Uint8Array(await first.arrayBuffer()))
+        : undefined;
     const res = (await post(body, key, { images })) as { answers?: unknown };
-    console.log(render(args, res.answers, size || undefined));
+    console.log(render(args, res.answers, size));
     return EXIT.ok;
   } catch (err) {
     // The message names the fault. It never holds the key, because the key is not in any message.

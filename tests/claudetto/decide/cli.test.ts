@@ -808,6 +808,46 @@ test("`imageSize` gives `undefined` for a truncated file or a JPEG with no `SOF`
   expect(imageSize(JPEG)).toBeUndefined();
 });
 
+test("`imageSize` gives `undefined` for a PNG whose first chunk is not `IHDR`", () => {
+  const bytes = pngOf(640, 480);
+  bytes.set([0x49, 0x48, 0x44, 0x53], 12);
+  expect(imageSize(bytes)).toBeUndefined();
+});
+
+test("`imageSize` gives `undefined` for a width or height of 0", () => {
+  expect(imageSize(pngOf(0, 480))).toBeUndefined();
+  expect(imageSize(pngOf(640, 0))).toBeUndefined();
+  expect(imageSize(jpegOf(0, 480))).toBeUndefined();
+  expect(imageSize(jpegOf(640, 0))).toBeUndefined();
+});
+
+/** A JPEG made of `parts` after the `SOI`, then a `SOF` segment with `marker`. */
+const jpegWith = (parts: number[], marker = 0xc0): Uint8Array =>
+  new Uint8Array([
+    0xff,
+    0xd8,
+    ...parts,
+    0xff,
+    marker,
+    0,
+    11,
+    8,
+    0,
+    20,
+    0,
+    30,
+    3,
+  ]);
+
+test("`imageSize` walks past standalone markers, fill bytes, and `DHT`, and reads `SOF2`", () => {
+  const want = { width: 30, height: 20 };
+  expect(imageSize(jpegWith([0xff, 0xd0]))).toEqual(want);
+  expect(imageSize(jpegWith([0xff, 0x01]))).toEqual(want);
+  expect(imageSize(jpegWith([0xff, 0xff]))).toEqual(want);
+  expect(imageSize(jpegWith([0xff, 0xc4, 0, 4, 0, 0]))).toEqual(want);
+  expect(imageSize(jpegWith([], 0xc2))).toEqual(want);
+});
+
 test("`box` prints the box in pixels when the size is known", () => {
   const text = render(
     parseArgs(["box", "--", "x"]),
