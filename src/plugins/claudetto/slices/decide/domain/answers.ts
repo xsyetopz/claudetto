@@ -100,22 +100,28 @@ export interface BoxAnswer {
   readonly confidence: number;
 }
 
-/** The `box` answer from the `q` field of `answers`. It throws when the reply has no box. */
+/**
+ * The `box` answer from the `q` field of `answers`.
+ * The API gives `{"type": "box", "box": {top, bottom, left, right}, "confidence": c}`, as `jev-1.14.0` showed live.
+ * It throws when the reply has no valid box.
+ */
 export const boxOf = (answers: unknown): BoxAnswer => {
   const q = isRecord(answers) ? answers["q"] : undefined;
+  const b = isRecord(q) ? q["box"] : undefined;
   if (
     isRecord(q) &&
-    isProbability(q["top"]) &&
-    isProbability(q["bottom"]) &&
-    isProbability(q["left"]) &&
-    isProbability(q["right"]) &&
+    isRecord(b) &&
+    isProbability(b["top"]) &&
+    isProbability(b["bottom"]) &&
+    isProbability(b["left"]) &&
+    isProbability(b["right"]) &&
     isProbability(q["confidence"])
   )
     return {
-      top: q["top"],
-      bottom: q["bottom"],
-      left: q["left"],
-      right: q["right"],
+      top: b["top"],
+      bottom: b["bottom"],
+      left: b["left"],
+      right: b["right"],
       confidence: q["confidence"],
     };
   throw new Error("The reply of the TypeSafe API has no valid box. Try again.");

@@ -118,7 +118,8 @@ The text output has the four fractions and the confidence, for example:
 The fractions run from 0 to 1 of the image, measured from the top-left corner.
 When the first image is a PNG or JPEG with a readable size, a pixel suffix follows, such as `, px x 160..480 y 48..240 of 640x480`.
 The size is the stored size of the file, and EXIF orientation is ignored.
-With `--json`, the command prints the raw answer, with no pixels.
+With `--json`, the command prints the raw `q` answer of the API, with no pixels.
+The API gives it as `{"type": "box", "box": {"top": 0.1, "bottom": 0.51, "left": 0.25, "right": 0.76}, "confidence": 0.92}`.
 
 A `box` can come back when the target is absent from the image.
 Read the `confidence` before you use the box.

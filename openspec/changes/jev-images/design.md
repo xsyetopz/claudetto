@@ -16,7 +16,7 @@ The docs (read 2026-10-20) give these facts, which the decisions use:
   Each use of a reference adds a copy of the image.
 - A multipart request has a first part named `request` (`application/json`), and one file part for each image.
 - A `box` question has the form `{"type": "box", "instructions": "..."}`, with no `criteria`, and it needs Jev 1.14.
-  The answer is a box, with `top`, `bottom`, `left`, and `right` as fractions from 0 to 1 from the top-left corner, and a `confidence`.
+  The answer is `answers.q = {"type": "box", "box": {top, bottom, left, right}, "confidence": c}`, with the four fractions from 0 to 1 from the top-left corner (confirmed live with `jev-1.14.0` in task 6.1).
   The box finds one target per question.
 - The API does no resize.
   One bad image fails the whole request.

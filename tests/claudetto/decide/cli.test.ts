@@ -680,10 +680,8 @@ test("`main` exits 2 with no request for a missing path", async () => {
 });
 
 const BOX_ANSWER = {
-  top: 0.1,
-  bottom: 0.5,
-  left: 0.25,
-  right: 0.75,
+  type: "box",
+  box: { top: 0.1, bottom: 0.5, left: 0.25, right: 0.75 },
   confidence: 0.9,
 };
 
@@ -759,6 +757,27 @@ test("`box --json` prints the raw answer", () => {
     q: BOX_ANSWER,
   });
   expect(JSON.parse(text)).toEqual(BOX_ANSWER);
+});
+
+test("`box` reads the reply of `jev-1.14.0` as the API gave it", () => {
+  const reply = JSON.parse(
+    '{"q":{"type":"box","box":{"top":0.1,"bottom":0.51,"left":0.25,"right":0.76},"confidence":0.92}}',
+  );
+  expect(render(parseArgs(["box", "--", "x"]), reply)).toBe(
+    "top 0.10, bottom 0.51, left 0.25, right 0.76 (confidence 0.92)",
+  );
+  expect(
+    render(parseArgs(["box", "--", "x"]), reply, { width: 640, height: 480 }),
+  ).toBe(
+    "top 0.10, bottom 0.51, left 0.25, right 0.76 (confidence 0.92), px x 160..486 y 48..245 of 640x480",
+  );
+});
+
+test("`box` fails on the flat shape", () => {
+  const flat = {
+    q: { top: 0.1, bottom: 0.5, left: 0.25, right: 0.75, confidence: 0.9 },
+  };
+  expect(() => render(parseArgs(["box", "--", "x"]), flat)).toThrow();
 });
 
 test("`box` fails on a reply with no box", () => {
