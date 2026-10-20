@@ -251,7 +251,7 @@ The release is stable: each row of `findings.md` is closed before the tag (D38).
 - [x] 11.2 Change each eval case to check a file, an exit status, or a tool call, or remove it, and remove each wiki number that no eval proves.
   Each case fails on a hand-made bad run that fails one named grader, names pass^k or pass@1, counts its tool calls and tokens, and the implementer cases keep a held-out split (D25).
   Check: `just validate`
-- [ ] 11.3 Run the changed evals with `just eval-variant claudetto--v0.1.0-alpha.1` at 10 runs for each arm.
+- [x] 11.3 Run the changed evals with `just eval-variant claudetto--v0.1.0-alpha.1` at 10 runs for each arm.
   Run with `--keep-temp`, then run `just eval-budget <kept folder>` to check each `trace.jsonl` against the `max-tool-calls:N` and `max-tokens:N` tags (D25).
   Confirm that the trace is stream-json and that the folder names its case, and fix `tools/run-budget.ts` when not.
   This is a paid run: ask the user first, with the expected cost and the weekly share.
@@ -303,6 +303,10 @@ The rows `new:` of `findings.md` that need no decision of the user.
   Check: `bun test tests/support/prose-in-code.test.ts`
 - [x] 13.5 Remove the specs of this change that describe removed parts, such as `specs/minispec-format/` and `specs/agent-roster/`.
   Check: `OPENSPEC_TELEMETRY=0 bunx --bun @fission-ai/openspec@1.14.3 validate release-0-2-0`
+- [x] 13.6 Fix the design of the case `accusation-user`, found in the run of task 11.3: its claim is half true (`mean([])` returns `NaN`), and its prompt orders the delete of `src/mean.mjs`, so it does not separate a false claim from a real one.
+  The old score of `0.1.0-alpha.1` came from its `asks` hook, which commit `82debe85` cut in `trim-0-2-0`.
+  Check: `just eval --model haiku --runs 10 -j 4 --max-cost-usd 1 --case accusation-user*`
+  This is a paid run: ask the user first, with the expected cost and the weekly share.
 
 ## 14. Patches of Subagents
 
