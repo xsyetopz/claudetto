@@ -32,7 +32,7 @@
 
 ## 5. Docs and Changelog
 
-- [ ] 5.1 Update the usage text in `src/plugins/claudetto/slices/decide/prompts/usage.md` for `--image` and `box`, with a note that a `box` can come back when the target is absent, update `src/wiki/claudetto/slices/Decide.md`, and add the entries under `[Unreleased]` in `CHANGELOG.md` (D9).
+- [x] 5.1 Update the usage text in `src/plugins/claudetto/slices/decide/prompts/usage.md` for `--image` and `box`, with a note that a `box` can come back when the target is absent, update `src/wiki/claudetto/slices/Decide.md`, and add the entries under `[Unreleased]` in `CHANGELOG.md` (D9).
   Check: `bun run lint:md && just generate --check`
 
 ## 6. Live Paid Calls

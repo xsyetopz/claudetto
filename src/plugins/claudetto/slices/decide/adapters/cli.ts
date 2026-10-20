@@ -5,7 +5,7 @@
 //   claudetto-decide yes  [--json] [--state <- | text>] [--] "<question>"
 //   claudetto-decide pick [--json] [--state <- | text>] [--] "<question>" <key>[=<description>]...
 //   claudetto-decide ask < questions.json
-//   claudetto-decide box  [--json] [--state <- | text>] [--image <path>]... [--] "<what to find>"
+//   claudetto-decide box  --image <path> [--image <path>]... [--json] [--state <- | text>] [--] "<what to find>"
 //
 // The state is text or `-` for stdin, and never a file path, because a path would send a file to the API.
 // The one exception is `--image <path>`, which `yes`, `pick`, `ask`, and `box` take, and which repeats.

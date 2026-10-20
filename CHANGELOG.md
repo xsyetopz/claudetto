@@ -9,6 +9,17 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ## [Unreleased]
 
+### Added
+
+- The option `--image <path>` of `claudetto-decide` adds a PNG or JPEG picture to the verbs `yes`, `pick`, `ask`, and `box`, and it repeats (D1, D2, D8).
+  The command reads the first bytes of each file to check its type, not its name, and it exits with code 2 before any request for a file that is not a PNG or JPEG, or that is over 16 MiB (`IMAGE_BYTES_MAX`, D4).
+  A request with a picture is multipart, with the header `TypeSafe-Danger-Zone-Images: true`, and a request with no picture and no `box` question keeps the JSON body that it had (D1).
+  The `--state` option stays text, so a path in it is never read as a file, and the `decide` hook sends no picture (D6).
+- The verb `box` of `claudetto-decide` asks Jev for the box of one target in a picture, with the model `jev-1.14.0` (D3, D5, D7).
+  It needs at least one `--image`, prints the four fractions and the confidence, adds the pixels of the first picture when its size is readable, and prints the raw answer with `--json`.
+  A box can come back when the target is absent, so the confidence matters.
+  Images are a preview feature of the TypeSafe API, so their format and limits can change.
+
 ## [0.2.0] - 2026-10-21
 
 This release cuts `claudetto` to the parts that Claude Code does not do already, so the `.ts` source under `src/` (without `lab/`) goes from 33,219 lines to 11,288 lines, it needs Claude Code 2.1.305 or later, and `/claudetto:setup` must run again after the update, because it cleans the settings of 0.1.0.
