@@ -1,2 +1,2 @@
-Advice from {{model}} ({{input}} tokens in, {{output}} tokens out):
+Advice from {{model}}:
 {{text}}

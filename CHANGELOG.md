@@ -27,6 +27,11 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
   A switch on a cold cache goes on with no message too, and the question has no cost sentence when the hook input has no number for the tokens or the cost.
   The hook needs Claude Code `2.1.251` or later, and `claudetto` already needs `2.1.305`.
 
+### Changed
+
+- The result of the `advise` tool no longer has the token counts, so the model reads only the model name and the advice.
+  The adapter shows the counts to the user with `$.ui.log`, once for each answered reply.
+
 ### Fixed
 
 - The verb `ask` of `claudetto-decide` now exits with code 2 for `--state` or `--json`, because it ignored them.

@@ -7,7 +7,7 @@ Read it before you change how a slice reports cost or how setup sets the prompt 
 
 **Choice:** A hook that calls `$.model.complete` takes the cost and tokens from the `usage` of that result.
 It never takes them from `total_cost_usd` of the session.
-The `advise` tool reports its model and tokens this way (`resultText` in `slices/advise/advise.ts`).
+The `advise` tool takes its tokens this way (`usageLine` in `slices/advise/advise.ts`), and shows them to the user only.
 
 **Reason:** In all 4 measured runs (Claude Code 2.1.302), `total_cost_usd` did not count the model call of a hook.
 

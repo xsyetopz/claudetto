@@ -90,7 +90,7 @@ test(
 );
 
 test(
-  "an answer gives the advice with the model name and the tokens",
+  "an answer gives the advice with the model name and no token counts, and logs the counts for the user",
   ON,
   async ($: Engine, on: On) => {
     const seen = stub(on, {
@@ -98,10 +98,16 @@ test(
       text: "Check the lock.",
       usage: USAGE,
     });
+    const logs: string[] = [];
+    on("ui.log", (_$, e) => {
+      logs.push(e.text);
+      return { value: undefined };
+    });
     const { result } = await ask($);
     expect(String(result)).toContain("Check the lock.");
     expect(String(result)).toContain("opus");
-    expect(String(result)).toContain("10 tokens in");
+    expect(String(result)).not.toContain("tokens");
+    expect(logs).toEqual(["`advise`: opus used 10 tokens in, 5 tokens out."]);
     expect(seen.requests[0]).toMatchObject({ model: "opus", effort: "high" });
   },
 );

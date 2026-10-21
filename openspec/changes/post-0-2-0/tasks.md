@@ -22,7 +22,7 @@
 
 ## 2. Prompts
 
-- [ ] 2.1 Stop giving token counts to the model in `src/plugins/claudetto/slices/advise/prompts/result.md`, and move the count to `$.ui.log` (row `advise/prompts/result.md:1` of `evidence.md`).
+- [x] 2.1 Stop giving token counts to the model in `src/plugins/claudetto/slices/advise/prompts/result.md`, and move the count to `$.ui.log` (row `advise/prompts/result.md:1` of `evidence.md`).
   Check: `just test tests/claudetto/advise tests/claudetto/prompt`
 - [ ] 2.2 Pin the version of `@fission-ai/openspec` in `src/plugins/claudetto/slices/spec/skills/spec/SKILL.md` (the three `bunx @fission-ai/openspec` commands of the section "Setup"), to the version of `package.json` (`1.14.3`).
   Give the reason for "Never overwrite a file." in the same pass.
@@ -58,3 +58,16 @@ Ask the user before each run.
 - [ ] 5.3 Run more cases for the lower cases of the eval gate of 0.2.0 (3 runs for each arm, and the floor is 10), and write the result to `src/wiki/claudetto/evidence/Evals-2.1.304.md`.
 - [ ] 5.4 Grade the 0.1.0 `styles` cases again, when results exist.
   The published runs have no kept results for them.
+
+## 6. Goal
+
+- [ ] 6.1 Reject a `--until` time that is not after now in `parseArgs` of `src/plugins/claudetto/slices/goal/domain/command.ts`.
+  A full date or a date and time in the past now passes, and the goal stops at the first turn.
+  `HH:MM` already moves to the next day, so it keeps that behaviour.
+  Update the section of `--until` in `src/wiki/claudetto/slices/Goal.md`.
+  Check: `just test tests/claudetto/goal && just generate`
+- [ ] 6.2 Make `/goal resume` reset a `--budget N%` goal, as it resets the turns and the cost.
+  The loop compares the percent of the whole session with the budget, so a goal that paused at its budget stops again at once.
+  Keep the percent at the start or the resume in the goal state, and compare the growth since then with the budget.
+  Update the section of `--budget` in `src/wiki/claudetto/slices/Goal.md`.
+  Check: `just test tests/claudetto/goal && just generate`

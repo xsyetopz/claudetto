@@ -50,7 +50,7 @@ export const slice = {
         tokens: 0,
         blocks: false,
         allow: `${LAB} > with the option \`builtin\`, session start registers no tool`,
-        text: `${LAB} > an answer gives the advice with the model name and the tokens`,
+        text: `${LAB} > an answer gives the advice with the model name and no token counts, and logs the counts for the user`,
       },
       filter: { tool: /^mcp__claudetto__advise$/ },
       phase: "answer",

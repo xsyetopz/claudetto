@@ -136,24 +136,24 @@ export const isTurnFull = (
   );
 };
 
-/** The result text for a reply of the model: the advice with the model name and the token counts, or the cause of no advice. */
+/** The count of tokens of an answered reply as a line for the user, or `undefined` when the reply has no answer. The model never reads it, so the adapter gives it to `$.ui.log`. */
+export const usageLine = (
+  reply: ModelCompleteResult,
+  model: string,
+): string | undefined => {
+  if (!reply.isAnswered) return undefined;
+  const u = reply.usage;
+  const input =
+    u.input_tokens + u.cache_read_input_tokens + u.cache_creation_input_tokens;
+  return `\`advise\`: ${model} used ${input} tokens in, ${u.output_tokens} tokens out.`;
+};
+
+/** The result text for a reply of the model: the advice with the model name, or the cause of no advice. The text has no token counts, and `usageLine` has them. */
 export const resultText = (
   reply: ModelCompleteResult,
   model: string,
 ): string => {
-  if (reply.isAnswered) {
-    const u = reply.usage;
-    return RESULT({
-      model,
-      input: String(
-        u.input_tokens +
-          u.cache_read_input_tokens +
-          u.cache_creation_input_tokens,
-      ),
-      output: String(u.output_tokens),
-      text: reply.text.trim(),
-    });
-  }
+  if (reply.isAnswered) return RESULT({ model, text: reply.text.trim() });
   return ERROR_FAIL({
     cause:
       reply.reason === "api-error"

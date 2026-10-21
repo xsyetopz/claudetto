@@ -34,10 +34,8 @@ export const OPTION_MODEL = `The model of the tool \`advise\`, an alias such as 
 /** From `src/plugins/claudetto/slices/advise/prompts/result.md`. */
 export const RESULT = (v: {
   model: string;
-  input: string;
-  output: string;
   text: string;
-}): string => `Advice from ${v.model} (${v.input} tokens in, ${v.output} tokens out):
+}): string => `Advice from ${v.model}:
 ${v.text}`;
 
 /** From `src/plugins/claudetto/slices/advise/prompts/system.md`. */

@@ -13,6 +13,7 @@ import {
   optionsOf,
   resultText,
   TOOL,
+  usageLine,
 } from "../advise.ts";
 import {
   CONTEXT_BYTES,
@@ -86,5 +87,7 @@ export const onAdvise: Handler<"tool.call"> = async ($, e) => {
     system: [{ text: SYSTEM, cache: true }],
     prompt: cutContext({ question, messages, goalText, limit: CONTEXT_BYTES }),
   });
+  const line = usageLine(reply, model);
+  if (line) $.ui.log(line);
   return { result: resultText(reply, model) };
 };
