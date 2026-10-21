@@ -25,13 +25,18 @@ export const label = (check: Check): string =>
         : `\`${check.path}\` holds \`${check.text}\``
       : check.claim;
 
+/** The growth in percent of a plan limit since `base`. A percent below `base` means the window restarted, so it is all new. */
+export const growthOf = (percent: number, base = 0): number =>
+  percent >= base ? percent - base : percent;
+
 /** The first control but `stall` that says stop, or `undefined`. */
 const stopReason = (goal: Goal, percent: number, now: number) => {
   const { maxTurns, budget, until } = goal;
   if (maxTurns !== undefined && goal.turns >= maxTurns) return "max-turns";
   const isOverUsd = budget?.usd !== undefined && goal.spentUsd >= budget.usd;
   const isOverPercent =
-    budget?.percent !== undefined && percent >= budget.percent;
+    budget?.percent !== undefined &&
+    growthOf(percent, goal.basePercent) >= budget.percent;
   if (isOverUsd || isOverPercent) return "budget";
   return until !== undefined && now >= until ? "until" : undefined;
 };

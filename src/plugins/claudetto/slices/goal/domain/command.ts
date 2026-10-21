@@ -1,7 +1,7 @@
 // The rules of the `/goal` command: the flags, the move between steps, and the status text.
 // The adapter reads and writes the state and starts the loop, and this module decides.
 
-import { label, type Spend } from "./loop.ts";
+import { growthOf, label, type Spend } from "./loop.ts";
 import type { Controls, Goal } from "./state.ts";
 
 /** The condition without its flags, and the controls that the flags set. */
@@ -41,6 +41,9 @@ export const parseArgs = (args: string, now: number): Parsed | string => {
     const n = isUntil
       ? untilOf(value, now)
       : Number(value.replace(/^\$|%$/g, ""));
+    if (isUntil && Number.isFinite(n) && n <= now) {
+      return `The time \`${value}\` of \`--until\` is not after now.`;
+    }
     if (!Number.isFinite(n) || (!isUntil && n <= 0)) {
       return `The value \`${value}\` of \`--${key}\` is not valid.`;
     }
@@ -77,13 +80,14 @@ const moveTo = (
         start: true,
       };
 
-/** The change that the word `pause`, `resume`, `skip`, or `step` (with `arg`) makes to `goal`. `usd` is the cost of the session now. */
+/** The change that the word `pause`, `resume`, `skip`, or `step` (with `arg`) makes to `goal`. `usd` is the cost of the session now, and `percent` is its highest percent of a plan limit. */
 export const change = (
   goal: Goal,
   word: string,
   arg: string,
   now: number,
   usd: number,
+  percent = 0,
 ): Change => {
   const at = goal.step + 1;
   if (word === "pause") {
@@ -96,8 +100,14 @@ export const change = (
   if (word === "resume") {
     if (!goal.paused)
       return { goal, say: "The goal is not paused.", start: false };
-    // A resumed goal counts its turns and its cost from the resume, or it would stop at once.
-    const fresh = { ...goal, turns: 0, spentUsd: 0, lastUsd: usd };
+    // A resumed goal counts its turns, its cost, and its plan percent from the resume, or it would stop at once.
+    const fresh = {
+      ...goal,
+      turns: 0,
+      spentUsd: 0,
+      lastUsd: usd,
+      basePercent: percent,
+    };
     return moveTo(fresh, goal.step, `Resumed at step ${at}`, now);
   }
   if (word === "skip") return moveTo(goal, at, `Skipped step ${at}`, now);
@@ -130,7 +140,7 @@ export const statusText = (goal: Goal, spend: Spend): string => {
       : `cost $${goal.spentUsd.toFixed(2)} of $${budget.usd}`,
     budget?.percent === undefined
       ? ""
-      : `plan ${spend.percent}% of ${budget.percent}%`,
+      : `plan ${growthOf(spend.percent, goal.basePercent)}% of ${budget.percent}%`,
   ].filter(Boolean);
   const head = `Goal step ${goal.step + 1} of ${goal.steps.length}: ${title}${goal.paused ? " (paused)" : ""}`;
   return [head, ...lines, limits.join(", ")].filter(Boolean).join("\n");

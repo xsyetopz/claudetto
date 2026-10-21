@@ -85,8 +85,8 @@ A limit that is left out is no limit, except `--stall`.
 | Flag | Meaning | Default |
 | --- | --- | --- |
 | `--max-turns N` | The goal stops after N turns. | None |
-| `--budget $X` or `N%` | The goal stops at a cost of X USD, or at N percent of a plan limit. | None |
-| `--until TIME` | The goal stops at `HH:MM` (the next such time), a date, or a date and time. | None |
+| `--budget $X` or `N%` | The goal stops at a cost of X USD, or when N percent of a plan limit is used up since the start or the last `/goal resume`. | None |
+| `--until TIME` | The goal stops at `HH:MM` (the next such time), a date, or a date and time. A time that is not after now is an error. | None |
 | `--stall N` | The goal stops after N turns in a row with the same failing checks and output. | 3 (`STALL_DEFAULT`) |
 
 Digits do not count when the engine compares the output of two turns, so a changed time does not hide a stall.

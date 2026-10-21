@@ -43,6 +43,8 @@ export type Goal = Controls & {
   /** The cost in USD that the goal spent, and the cost of the session at the last turn. A `/clear` restarts the cost of the session, and so `lastUsd` can be higher than the new cost. */
   readonly spentUsd: number;
   readonly lastUsd: number;
+  /** The highest percent of a plan limit at the start or the last resume. A `--budget N%` counts the growth since then. A goal saved with no such field has 0. */
+  readonly basePercent?: number;
   readonly paused: boolean;
   /** The moves between steps and the stop, with the time. */
   readonly log: readonly { readonly at: number; readonly note: string }[];
@@ -53,6 +55,7 @@ export const createGoal = (
   steps: readonly Step[],
   controls: Partial<Controls> = {},
   lastUsd = 0,
+  basePercent = 0,
 ): Goal => ({
   stall: STALL_DEFAULT,
   ...controls,
@@ -63,6 +66,7 @@ export const createGoal = (
   stalled: 0,
   spentUsd: 0,
   lastUsd,
+  basePercent,
   paused: false,
   log: [],
 });

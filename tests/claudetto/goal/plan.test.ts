@@ -1,7 +1,10 @@
 // The rules of the text of `/goal`: the flags, the checks of a text, and the steps of a plan file.
 
 import { expect, test } from "bun:test";
-import { parseArgs } from "../../../src/plugins/claudetto/slices/goal/domain/command.ts";
+import {
+  type Parsed,
+  parseArgs,
+} from "../../../src/plugins/claudetto/slices/goal/domain/command.ts";
 import {
   checksOf,
   planSteps,
@@ -47,6 +50,25 @@ test("a value that is not a number above 0, and a time that is not valid, are er
   ]) {
     expect(typeof parseArgs(`x ${bad}`, 0)).toBe("string");
   }
+});
+
+test("a full date in the past for `--until` is an error", () => {
+  const now = new Date(2030, 0, 2, 12).getTime();
+  expect(String(parseArgs("x --until 2030-01-01", now))).toContain(
+    "not after now",
+  );
+});
+
+test("a date and time in the past for `--until` is an error", () => {
+  const now = new Date(2030, 0, 2, 12).getTime();
+  expect(typeof parseArgs("x --until 2030-01-02T11:00", now)).toBe("string");
+  expect(typeof parseArgs("x --until 2030-01-02T13:00", now)).toBe("object");
+});
+
+test("`--until HH:MM` that has passed today is the same time on the next day", () => {
+  const now = new Date(2030, 0, 2, 12).getTime();
+  const out = parseArgs("x --until 09:00", now) as Parsed;
+  expect(out.controls.until).toBe(new Date(2030, 0, 3, 9).getTime());
 });
 
 test("a flag starts a word", () => {

@@ -136,7 +136,8 @@ const newGoal = async ($: EngineInterface, args: string, now: number) => {
     if (steps.length === 0)
       return `The plan file \`${condition}\` has no numbered step heading.`;
   }
-  return createGoal(steps, controls, (await $.session.usage()).cost?.usd ?? 0);
+  const spend = await spendOf($);
+  return createGoal(steps, controls, spend.usd, spend.percent);
 };
 
 /** The words that are a command only when they are all of the text after `/goal`. */
@@ -156,8 +157,8 @@ const answer: Handler<"command.run"> = async ($, e) => {
   }
   if (WORDS.includes(word) || word === "step") {
     if (!goal) return { text: "No goal." };
-    const usd = goal.budget ? (await spendOf($)).usd : 0;
-    const changed = change(goal, word, arg, now, usd);
+    const spend = goal.budget ? await spendOf($) : { usd: 0, percent: 0 };
+    const changed = change(goal, word, arg, now, spend.usd, spend.percent);
     await writeGoal($, changed.goal);
     if (changed.goal && changed.start) begin($, changed.goal);
     return { text: changed.say };
