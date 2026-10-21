@@ -388,6 +388,8 @@ The drops came from a judge and a grader, not from the cuts.
 - First run (2026-10-21): `just eval-variant eval/gate-b --case <case> --model haiku --runs 10 -j 4 --max-cost-usd 0.6`, one call for each case.
   Second run, after the case fixes below: the same command with the fixed case files in both arms.
   `five-reads-codeword` ran with `just eval --model haiku --runs 10 -j 4 --max-cost-usd 1.1 --case five-reads-codeword` in arm A only, because its `without` arm is the same in both.
+  The `without` arm of B did not run.
+  The `D26` question compares A `with` against B `with`, so it does not need that arm.
 - Claude Code: `2.1.306`.
   Model: `claude-haiku-5-5`.
 - Results are in `plugins/claudetto/evals/results/`.
