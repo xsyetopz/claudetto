@@ -12,15 +12,19 @@ The first round found that its cases were too easy, and the second round tried t
 
 ## Result
 
-- `advise` against the built-in advisor: no difference on two cases (60 runs with the control), and no case could tell an advisor from none.
-  Every control run without an advisor passed, so the comparison cannot show "better".
-  The default of `advisor` stays `builtin`.
-- Goal engine against the built-in `/goal`: the engine is better on the retry case `goal-blind-qa`, with 10 of 10 passes against 0 of 10.
-  The engine ran the QA checks and started 4 retry turns in each run.
-  The built-in `/goal` has no way to run a check, so it stopped at the first turn.
+- On the easy tasks all arms pass, and on the hard tasks all arms fail.
+  The advisor was called in every run of the advisor arms (see "Round 3").
+  So on Haiku 5.5, neither advisor changes the outcome.
+- `advise` costs about 1/20 of the built-in advisor: 0.055 USD against 1.18 USD for 10 runs of `advice-audit`.
+  The session cost does not count the `opus` calls of `advise` (see "Cost of `advise`").
+- The default of `advisor` stays `builtin`: parity, the risk of two advisors, and a cost that the session hides.
+- Goal engine against the built-in `/goal`: parity on `goal-two-checks` and `goal-first-violation` (10 of 10 each, again after the fix).
+  `goal-blind-qa` favours the engine by design, because the built-in `/goal` cannot run a check.
+  The engine passed 10 of 10 and the built-in `/goal` passed 0 of 10.
 - The retry case found one defect of the goal engine, a `judge` check that cannot pass.
   The defect is fixed (see "Goal Engine").
-- The missing cost of the `opus` calls of `advise` is a limit of Claude Code, not a defect of `claudetto` (see "Cost of `advise`").
+- The round 3 audit runs found one limit of `advise`: its context holds no tool results (see "Round 3").
+- The missing cost of the `opus` calls of `advise` is a limit of Claude Code, not a defect of `claudetto`.
 
 ## Method
 
@@ -128,19 +132,79 @@ Haiku found each hidden fault by reading the code, and solved the puzzle by hand
 A case that Haiku fails alone needs a task that reasoning, reading, and running code cannot solve, and then an advisor that sees only the conversation cannot solve it either.
 So no honest case with a control at 5 of 10 or less was found.
 
+## Round 3
+
+The goal was a measurement with both advisors run on tasks that Haiku fails alone.
+
+### Pilots of the Control
+
+All pilots ran the control arm (no advisor) with the subagent tools off (`--disallowedTools Agent,Task,ListAgents,SendMessage`).
+This matters: in the first pilots Haiku used a `Plan` subagent as its advisor, so the control was not clean.
+
+| Candidate | Control passes | Setting |
+| --- | ---: | --- |
+| `dayStarts`, date ranges across zone changes, with a time limit | 3/3, 3/3, 3/3, 3/3 | default, `--effort low` with thinking off, no subagent, no `Bash` |
+| `parseScsv`, a precise dialect of CSV with escapes | 3/3, 3/3, 3/3, 3/3 | the same four settings |
+| `bestJobs`, jobs on k machines (min-cost flow), brute force check and time limit | 3/3, 3/3, 3/3, 3/3 | the same four settings |
+| `erfc` to a relative error of 1e-14 | 3/3, 4/4 | default, and `--effort low` with no `Bash` |
+| `advice-audit`, a review with 8 subtle faults | 0/4, 0/4, 0/4 | no `Bash`, no subagent |
+| `advice-audit-web`, a review with 6 subtle faults | 3/4, 0/4, 0/4 | the same |
+
+Haiku wrote a correct min-cost flow and a correct `erfc` without `Bash`.
+Only the code reviews with subtle faults made the control fail.
+The four algorithm candidates are not kept in the repository.
+Two early versions of the audit cases flagged safe decoy functions for real reasons, so the final graders list the faults only and do not punish extra findings.
+
+### Full Runs
+
+Both cases ran with the working model on Read, Write, and Edit, no `Bash`, and no subagent tools, the same in each arm.
+The prompt asks for the advisor once, after the file is read.
+The grader `advisor-called` is a `tool_used` grader, and the table counts it from the traces.
+
+| Case | Arm | Passed | Runs with an advisor call | Cost (USD) |
+| --- | --- | ---: | ---: | ---: |
+| `advice-audit` | `advise-none` | 0/10 | 0 | 0.046 |
+| `advice-audit` | `advise-ours` | 0/10 | 10 | 0.055 |
+| `advice-audit` | `advise-builtin` | 0/10 | 10 | 1.185 |
+| `advice-audit-web` | `advise-none` | 0/10 | 0 | 0.059 |
+| `advice-audit-web` | `advise-ours` | 0/10 | 10 | 0.055 |
+| `advice-audit-web` | `advise-builtin` | 0/10 | 10 | 1.481 |
+
+### Is the 0/10 the Task?
+
+- The reference list of faults, run through `final.sh` of each case, passes. A stub with no list fails.
+- In `advice-audit`, every run of every arm missed the same two items: `readUpload` (a symlink in the folder) and `findAccount` (the Kelvin sign and other case mappings of `toLowerCase`).
+  The other six items were found in 10 of 10 runs of `advise-none` and `advise-builtin`, and in 6 to 10 of 10 runs of `advise-ours`.
+  Three runs of `advise-ours` also missed `unsign`.
+- One direct review of `src/web.mjs` by `opus` in `-p` (the code in the prompt) named all six faults and also `webhookOk`, which is safe.
+  The review of `src/app.mjs` ran too, but its reply was cut by the hooks of the project, so the page makes no claim on it.
+  So the web case is solvable by `opus` when it sees the code, and the 0 of 10 there means that Haiku did not turn the advice into a complete list.
+- The 0 of 10 is not a broken grader: the reference list passes, and the failed runs miss named items.
+
+### A Limit of `advise`
+
+The `opus` advice of `advise` began with "I haven't seen `src/app.mjs`, so all of this rests on your summary."
+`advise` sends the text of the messages and the names of the tools, but no tool results, so the advisor does not see the file that Claude read.
+The built-in advisor reads the whole transcript.
+The mod API gives raw messages with tool results (`$.session.messages({ as: "api" })`), so a fix is possible.
+It was not made in this round, and no run shows that it would change a result.
+
+### Reruns of the Goal Cases
+
+The two goal cases ran again with `goal-ours` on the fixed engine, with 10 runs each:
+`goal-two-checks` 10/10 for 0.054 USD, and `goal-first-violation` 10/10 for 0.063 USD.
+The folders are `rerun-<case>-goal-ours`.
+With the first round, this shows parity with the built-in `/goal` on these two cases.
+`goal-blind-qa` favours the engine by design, because the built-in `/goal` cannot run a check.
+
 ## Decision for the Default
 
 The default of `advisor` stays `builtin`, and the CHANGELOG has no entry.
 
-1. The tasks cannot show that an advisor helps.
-   The control without an advisor passed all 20 runs of the first round and all 10 runs of the puzzle.
-   So parity is not evidence that `advise` is as good where an advisor matters.
-2. A default of `claudetto` needs `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, or Claude sees two advisors.
-   Only the `setup` slice sets it.
-   No safe path was built, because the default did not change.
-3. The calls of `advise` to `opus` are missing from the session cost, so a user would pay for them out of sight.
-
-Run the comparison again with a weaker working model, or on a task that Haiku fails alone, before a default change.
+- On easy tasks all arms pass, and on hard tasks all arms fail, so `advise` is as good as the built-in advisor but not better.
+- Parity and a cost 1/20 as high would justify `claudetto`, but a default of `claudetto` needs `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, or Claude sees two advisors, and the `opus` calls are missing from the session cost.
+- No safe path was built.
+  `$.env.set` can set the variable at `session.start`, but no run showed that the advisor check reads it late, and the limit of `advise` above is open.
 
 ## Cost of `advise`
 
@@ -186,13 +250,15 @@ This is a limit of Claude Code, not a defect of `claudetto`.
 
 ## Cost
 
-- Round 1: pilots about 0.4 USD, full runs 3.0 USD in the cost fields, and about 0.7 USD estimated for the `opus` calls of `advise`.
-- Round 2: pilots about 1.1 USD (the candidates above, and `goal-blind-qa`), and full runs 0.2 USD (`goal-blind-qa`, plus the control of the puzzle).
-- Total: about 5.4 USD, under both limits (8 USD for round 1 and 6 USD for round 2).
+- Round 1: pilots about 0.4 USD, full runs 3.0 USD, and about 0.7 USD estimated for the `opus` calls of `advise`.
+- Round 2: about 1.3 USD.
+- Round 3: pilots about 1.7 USD, full runs 2.9 USD, and about 0.3 USD for the direct `opus` reviews and the estimated `opus` calls of `advise`.
+- Round 3 is about 4.9 USD, under its limit of 6 USD.
 
 ## Results Folders
 
 On the machine of the run, in `/tmp/claudetto-evals/builtin-comparisons-0.2.0/`.
+The runs of round 3 are in `round3/`.
 The folder is not in the repository.
 Each case and arm has a folder `full-<case>-<arm>/`, and each pilot has a folder `pilot*`.
 It holds `summary.json`, and for each run `run-N/stream.jsonl` and the workspace `run-N/project/`.

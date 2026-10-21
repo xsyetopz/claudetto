@@ -4,6 +4,7 @@
 // So this script runs the case with `claude -p` in the sandbox of `claudetto-sandbox`, with the prompt and the graders of the `case.yaml`.
 //
 //   bun tools/compare-builtins.ts CASE_DIR ARM [--runs N] [-j N] [--model M] [--max-cost-usd USD] [--out DIR]
+//                                 [--claude-flags "--effort low"] [--tools Read,Write,Edit]
 //
 // An ARM is a name of `ARMS` below.
 // The cases are in `tests/compare/`, so a plain eval run never picks them up.
@@ -164,6 +165,7 @@ type Result = {
   run: number;
   cost: number;
   turns: number;
+  advisorCalls: number;
   graders: Record<string, boolean>;
   passed: boolean;
   error?: string;
@@ -188,7 +190,11 @@ const runOnce = async (n: number): Promise<Result> => {
       pluginConfigs: { "claudetto@inline": { options: arm.options } },
     }),
   );
-  const tools = [...(spec.execution.allowed_tools ?? []), ...arm.allow];
+  const only = flag("--tools", "");
+  const tools = [
+    ...(only ? only.split(",") : (spec.execution.allowed_tools ?? [])),
+    ...arm.allow,
+  ];
   const proc = Bun.spawn(
     [
       "bun",
@@ -262,6 +268,7 @@ const runOnce = async (n: number): Promise<Result> => {
     run: n,
     cost,
     turns,
+    advisorCalls: calls.filter((c) => c.name === arm.advisor).length,
     graders,
     passed: Object.values(graders).every(Boolean),
   };
@@ -285,6 +292,7 @@ const worker = async (): Promise<void> => {
         run: n,
         cost: 0,
         turns: 0,
+        advisorCalls: 0,
         graders: {},
         passed: false,
         error: String(e),
