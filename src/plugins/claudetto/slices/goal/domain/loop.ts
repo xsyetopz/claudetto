@@ -5,8 +5,11 @@ import { DONE, NEXT, RETRY, STOPPED } from "../prompts.ts";
 import { stepsText } from "./count.ts";
 import type { Check, Goal, Result } from "./state.ts";
 
-/** What the session spent: the cost in USD, and the highest percent of a plan limit. */
-export type Spend = { readonly usd: number; readonly percent: number };
+/** What the session spent: the cost in USD, and the percent used of each plan limit by its `kind`. */
+export type Spend = {
+  readonly usd: number;
+  readonly percents: Readonly<Record<string, number>>;
+};
 
 /** The new state (`null` clears the goal), a line to show, and a prompt for the next turn (absent when the loop ends). */
 export type Outcome = {
@@ -25,18 +28,30 @@ export const label = (check: Check): string =>
         : `\`${check.path}\` holds \`${check.text}\``
       : check.claim;
 
-/** The growth in percent of a plan limit since `base`. A percent below `base` means the window restarted, so it is all new. */
+/** The growth in percent of one plan limit since `base`. A percent below `base` means the window restarted, so it is all new. */
 export const growthOf = (percent: number, base = 0): number =>
   percent >= base ? percent - base : percent;
 
+/** The highest growth over the plan limits in `percents`, each against its own base in `bases`. */
+export const planGrowth = (
+  percents: Readonly<Record<string, number>>,
+  bases: Readonly<Record<string, number>> = {},
+): number =>
+  Math.max(
+    0,
+    ...Object.entries(percents).map(([kind, percent]) =>
+      growthOf(percent, bases[kind]),
+    ),
+  );
+
 /** The first control but `stall` that says stop, or `undefined`. */
-const stopReason = (goal: Goal, percent: number, now: number) => {
+const stopReason = (goal: Goal, spend: Spend, now: number) => {
   const { maxTurns, budget, until } = goal;
   if (maxTurns !== undefined && goal.turns >= maxTurns) return "max-turns";
   const isOverUsd = budget?.usd !== undefined && goal.spentUsd >= budget.usd;
   const isOverPercent =
     budget?.percent !== undefined &&
-    growthOf(percent, goal.basePercent) >= budget.percent;
+    planGrowth(spend.percents, goal.basePercents) >= budget.percent;
   if (isOverUsd || isOverPercent) return "budget";
   return until !== undefined && now >= until ? "until" : undefined;
 };
@@ -69,8 +84,16 @@ export const nextTurn = (
   const { title, checks } = steps[step] ?? { title: "", checks: [] };
   // A `/clear` restarts the cost of the session, so a cost below the last one is all new.
   const usd = spend.usd >= goal.lastUsd ? spend.usd - goal.lastUsd : spend.usd;
+  // A limit below its base restarted its window, so its base is 0 from now on, or its growth would count short once it passes the old base.
+  const basePercents = Object.fromEntries(
+    Object.entries(goal.basePercents ?? {}).map(([kind, base]) => [
+      kind,
+      (spend.percents[kind] ?? base) < base ? 0 : base,
+    ]),
+  );
   const turned = {
     ...goal,
+    basePercents,
     turns: goal.turns + 1,
     spentUsd: goal.spentUsd + usd,
     lastUsd: spend.usd,
@@ -84,7 +107,7 @@ export const nextTurn = (
     }
     const log = [...goal.log, { at: now, note: `step ${step + 1} done` }];
     const next = { ...turned, step: step + 1, results: [], stalled: 0, log };
-    const reason = stopReason(next, spend.percent, now);
+    const reason = stopReason(next, spend, now);
     if (reason !== undefined) return stopped(next, reason, now);
     const text = { done: String(step + 1), step: String(step + 2) };
     const nextTitle = steps[step + 1]?.title ?? "";
@@ -94,7 +117,7 @@ export const nextTurn = (
   const stalled = isSame ? goal.stalled + 1 : 1;
   const kept = { ...turned, results, stalled };
   const reason =
-    stopReason(kept, spend.percent, now) ??
+    stopReason(kept, spend, now) ??
     (stalled >= goal.stall ? "stall" : undefined);
   if (reason !== undefined) return stopped(kept, reason, now);
   const lines = failing.map(

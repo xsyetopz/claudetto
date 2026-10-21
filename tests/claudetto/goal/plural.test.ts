@@ -4,7 +4,7 @@ import { expect, test } from "bun:test";
 import { nextTurn } from "../../../src/plugins/claudetto/slices/goal/domain/loop.ts";
 import { createGoal } from "../../../src/plugins/claudetto/slices/goal/domain/state.ts";
 
-const SPEND = { usd: 0, percent: 0 };
+const SPEND = { usd: 0, percents: {} };
 
 test("the done text of a goal with one step says `1 step`", () => {
   const goal = createGoal(

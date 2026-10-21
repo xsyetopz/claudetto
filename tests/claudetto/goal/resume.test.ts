@@ -1,7 +1,10 @@
-// The `--budget N%` of a goal counts the growth of the plan percent since the start or the last `/goal resume`.
+// The `--budget N%` of a goal counts the highest growth of one plan limit since the start or the last `/goal resume`.
 
 import { expect, test } from "bun:test";
-import { change } from "../../../src/plugins/claudetto/slices/goal/domain/command.ts";
+import {
+  change,
+  statusText,
+} from "../../../src/plugins/claudetto/slices/goal/domain/command.ts";
 import { nextTurn } from "../../../src/plugins/claudetto/slices/goal/domain/loop.ts";
 import {
   createGoal,
@@ -10,43 +13,94 @@ import {
 
 const CHECKS = [{ kind: "run", command: "false" } as const];
 const FAIL = [{ pass: false, output: "x", at: 0 }];
-const goal = (over: Partial<Goal> = {}): Goal => ({
-  ...createGoal([{ title: "t", checks: CHECKS }], { budget: { percent: 50 } }),
+const goal = (over: Partial<Goal> = {}, percent = 50): Goal => ({
+  ...createGoal([{ title: "t", checks: CHECKS }], { budget: { percent } }),
   ...over,
 });
-const resumed = (percent: number): Goal =>
-  change(goal({ paused: true }), "resume", "", 1, 0, percent).goal as Goal;
+const resumed = (percents: Record<string, number>): Goal =>
+  change(goal({ paused: true }), "resume", "", 1, 0, percents).goal as Goal;
+const spend = (percents: Record<string, number>) => ({ usd: 0, percents });
 
-test("`resume` takes the plan percent as the base of the budget", () => {
-  const out = change(goal({ paused: true }), "resume", "", 1, 0, 60);
-  expect(out.goal?.basePercent).toBe(60);
+test("`resume` takes the percent of each limit as the bases of the budget", () => {
+  const out = change(goal({ paused: true }), "resume", "", 1, 0, {
+    five_hour: 60,
+    seven_day: 10,
+  });
+  expect(out.goal?.basePercents).toEqual({ five_hour: 60, seven_day: 10 });
   expect(out.start).toBe(true);
 });
 
 test("a resumed goal does not stop at once at the percent that stopped it", () => {
-  const out = nextTurn(resumed(60), FAIL, { usd: 0, percent: 62 }, 2);
+  const out = nextTurn(
+    resumed({ five_hour: 60 }),
+    FAIL,
+    spend({ five_hour: 62 }),
+    2,
+  );
   expect(out.goal?.paused).toBe(false);
   expect(out.submit).toBeDefined();
 });
 
-test("a resumed goal stops when the percent grows by the budget", () => {
-  const out = nextTurn(resumed(60), FAIL, { usd: 0, percent: 110 }, 2);
-  expect(out.goal?.paused).toBe(true);
-});
-
-test("a saved goal with no `basePercent` counts from 0", () => {
-  const old = goal();
-  delete (old as { basePercent?: number }).basePercent;
-  const out = nextTurn(old, FAIL, { usd: 0, percent: 51 }, 2);
-  expect(out.goal?.paused).toBe(true);
-});
-
-test("a percent below the base means a new window and counts in full", () => {
+test("a resumed goal stops when one limit grows by the budget", () => {
   const out = nextTurn(
-    goal({ basePercent: 80 }),
+    resumed({ five_hour: 60, seven_day: 5 }),
     FAIL,
-    { usd: 0, percent: 10 },
+    spend({ five_hour: 61, seven_day: 55 }),
+    2,
+  );
+  expect(out.goal?.paused).toBe(true);
+});
+
+test("a saved goal with no `basePercents` counts from 0", () => {
+  const old = { ...goal(), basePercent: 80 } as Goal;
+  delete (old as { basePercents?: unknown }).basePercents;
+  const out = nextTurn(old, FAIL, spend({ five_hour: 51 }), 2);
+  expect(out.goal?.paused).toBe(true);
+});
+
+test("a limit with no base counts from 0", () => {
+  const out = nextTurn(
+    goal({ basePercents: { five_hour: 10 } }),
+    FAIL,
+    spend({ five_hour: 12, seven_day: 51 }),
+    2,
+  );
+  expect(out.goal?.paused).toBe(true);
+});
+
+test("a limit below its base means a new window and counts in full", () => {
+  const out = nextTurn(
+    goal({ basePercents: { five_hour: 80 } }),
+    FAIL,
+    spend({ five_hour: 10 }),
     2,
   );
   expect(out.goal?.paused).toBe(false);
+});
+
+test("a reset of the 5-hour window does not count the weekly percent as new growth", () => {
+  const base = { five_hour: 90, seven_day: 40 };
+  const out = nextTurn(
+    goal({ basePercents: base }, 30),
+    FAIL,
+    spend({ five_hour: 0, seven_day: 40 }),
+    2,
+  );
+  expect(out.goal?.paused).toBe(false);
+});
+
+test("a limit that resets and grows again counts its growth once, not twice", () => {
+  const g = goal({ basePercents: { five_hour: 20 } }, 50);
+  const low = nextTurn(g, FAIL, spend({ five_hour: 19 }), 2);
+  expect(low.goal?.paused).toBe(false);
+  expect(low.goal?.basePercents).toEqual({ five_hour: 0 });
+  expect(statusText(g, spend({ five_hour: 19 }))).toContain("plan 19% of 50%");
+  const high = nextTurn(low.goal as Goal, FAIL, spend({ five_hour: 50 }), 3);
+  expect(high.goal?.paused).toBe(true);
+});
+
+test("the status shows the highest growth over the limits", () => {
+  const g = goal({ basePercents: { five_hour: 10, seven_day: 5 } });
+  const text = statusText(g, spend({ five_hour: 15, seven_day: 25 }));
+  expect(text).toContain("plan 20% of 50%");
 });

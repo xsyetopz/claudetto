@@ -77,11 +77,13 @@ export const runCheck = async (
   return { pass: answer === "yes", output: "" };
 };
 
-/** The spend of the session: the cost, and the highest share of a plan limit. */
+/** The spend of the session: the cost, and the share of each plan limit. */
 const spendOf = async ($: EngineInterface): Promise<Spend> => {
   const usage = await $.session.usage();
-  const percents = usage.rateLimits.map((limit) => limit.percentUsed);
-  return { usd: usage.cost?.usd ?? 0, percent: Math.max(0, ...percents) };
+  const percents = Object.fromEntries(
+    usage.rateLimits.map((limit) => [limit.kind, limit.percentUsed]),
+  );
+  return { usd: usage.cost?.usd ?? 0, percents };
 };
 
 export const onTurnComplete: Handler<"turn.complete"> = async ($, e, next) => {
@@ -94,7 +96,7 @@ export const onTurnComplete: Handler<"turn.complete"> = async ($, e, next) => {
     results.push({ ...(await runCheck($, check, e.answer)), at: now });
   }
   // The usage is read only for a goal with a budget.
-  const spend = goal.budget ? await spendOf($) : { usd: 0, percent: 0 };
+  const spend = goal.budget ? await spendOf($) : { usd: 0, percents: {} };
   const outcome = nextTurn(goal, results, spend, now);
   await writeGoal($, outcome.goal);
   if (outcome.say) $.ui.log(outcome.say);
@@ -137,7 +139,7 @@ const newGoal = async ($: EngineInterface, args: string, now: number) => {
       return `The plan file \`${condition}\` has no numbered step heading.`;
   }
   const spend = await spendOf($);
-  return createGoal(steps, controls, spend.usd, spend.percent);
+  return createGoal(steps, controls, spend.usd, spend.percents);
 };
 
 /** The words that are a command only when they are all of the text after `/goal`. */
@@ -157,8 +159,8 @@ const answer: Handler<"command.run"> = async ($, e) => {
   }
   if (WORDS.includes(word) || word === "step") {
     if (!goal) return { text: "No goal." };
-    const spend = goal.budget ? await spendOf($) : { usd: 0, percent: 0 };
-    const changed = change(goal, word, arg, now, spend.usd, spend.percent);
+    const spend = goal.budget ? await spendOf($) : { usd: 0, percents: {} };
+    const changed = change(goal, word, arg, now, spend.usd, spend.percents);
     await writeGoal($, changed.goal);
     if (changed.goal && changed.start) begin($, changed.goal);
     return { text: changed.say };
