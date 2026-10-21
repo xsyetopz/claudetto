@@ -1,5 +1,5 @@
 // The Docker step of `claudetto-setup`: a project that uses Docker gets `sandbox.network.allowUnixSockets` with the socket, in the local settings.
-// On Linux, Claude Code ignores `allowUnixSockets`, so the step writes `docker *` to `excludedCommands` with an allow rule.
+// On Linux, Claude Code ignores `allowUnixSockets`, so the step writes `docker *` to `excludedCommands` of the user settings and an allow rule to the local settings.
 
 import { expect, test } from "bun:test";
 import { mkdir, mkdtemp } from "node:fs/promises";
@@ -24,9 +24,16 @@ const run = async (
     times?: number;
     before?: unknown;
     platform?: string;
+    userBefore?: unknown;
   } = {},
 ) => {
-  const { args = ["--apply"], times = 1, before, platform = "darwin" } = opts;
+  const {
+    args = ["--apply"],
+    times = 1,
+    before,
+    platform = "darwin",
+    userBefore,
+  } = opts;
   const dir = await mkdtemp(path.join(os.tmpdir(), "docker-"));
   const project = path.join(dir, "project");
   await mkdir(path.join(project, ".claude"), { recursive: true });
@@ -34,6 +41,8 @@ const run = async (
     await Bun.write(path.join(project, name), text);
   const local = path.join(project, ".claude", "settings.local.json");
   if (before) await Bun.write(local, JSON.stringify(before));
+  const userFile = path.join(dir, "settings.json");
+  if (userBefore) await Bun.write(userFile, JSON.stringify(userBefore));
   const out: string[] = [];
   const io = { log: (l: string) => out.push(l), error: () => {} };
   const env = { CLAUDE_CONFIG_DIR: dir, CLAUDE_PROJECT_DIR: project, HOME };
@@ -45,7 +54,11 @@ const run = async (
     ? await Bun.file(local).text()
     : null;
   const settings = text ? JSON.parse(text) : {};
+  const user = (await Bun.file(userFile).exists())
+    ? JSON.parse(await Bun.file(userFile).text())
+    : {};
   return {
+    userExcluded: user.sandbox?.excludedCommands,
     sockets: settings.sandbox?.network?.allowUnixSockets,
     excluded: settings.sandbox?.excludedCommands,
     allow: settings.permissions?.allow,
@@ -115,33 +128,59 @@ test("`--addons` leaves the local settings as they are", async () => {
   expect(text).toBeNull();
 });
 
-test("on Linux, setup writes `docker *` to `excludedCommands` with an allow rule, and no socket", async () => {
-  const { sockets, excluded, allow } = await run(
+test("on Linux, `excludedCommands` goes to the user settings and `Bash(docker *)` to the local settings", async () => {
+  const { sockets, excluded, allow, userExcluded } = await run(
     { Dockerfile: "FROM scratch\n" },
     [ORB],
     { platform: "linux" },
   );
   expect(sockets).toBeUndefined();
-  expect(excluded).toEqual(["docker *"]);
+  expect(excluded ?? []).not.toContain("docker *");
+  expect(userExcluded).toContain("docker *");
   expect(allow).toEqual(["Bash(docker *)"]);
 });
 
+test("on Linux, `--scope local` still writes `excludedCommands` to the user settings only", async () => {
+  const { excluded, userExcluded } = await run({ Dockerfile: "x\n" }, [ORB], {
+    platform: "linux",
+    args: ["--apply", "--scope", "local"],
+  });
+  expect(excluded ?? []).not.toContain("docker *");
+  expect(userExcluded).toContain("docker *");
+});
+
+test("on Linux, a dry run writes neither file and names the user settings", async () => {
+  const { text, userExcluded, out } = await run({ Dockerfile: "x\n" }, [ORB], {
+    platform: "linux",
+    args: [],
+  });
+  expect(text).toBeNull();
+  expect(userExcluded).toBeUndefined();
+  expect(out.join("\n")).toContain(
+    "settings.json gets sandbox.excludedCommands",
+  );
+});
+
 test("on Linux, a second run adds no duplicate, and the entries of the user stay", async () => {
-  const { excluded, allow } = await run({ Dockerfile: "x\n" }, [ORB], {
+  const { allow, userExcluded } = await run({ Dockerfile: "x\n" }, [ORB], {
     platform: "linux",
     times: 2,
-    before: {
-      sandbox: { excludedCommands: ["make *"] },
-      permissions: { allow: ["Bash(ls)"] },
-    },
+    before: { permissions: { allow: ["Bash(ls)"] } },
+    userBefore: { sandbox: { excludedCommands: ["make *"] } },
   });
-  expect(excluded).toEqual(["make *", "docker *"]);
+  expect(userExcluded).toContain("make *");
+  expect(userExcluded.filter((c: string) => c === "docker *")).toEqual([
+    "docker *",
+  ]);
   expect(allow).toEqual(["Bash(ls)", "Bash(docker *)"]);
 });
 
 test("on macOS, setup writes no `excludedCommands` entry for `docker *`", async () => {
-  const { excluded, allow } = await run({ Dockerfile: "x\n" }, [ORB]);
-  expect(excluded).toBeUndefined();
+  const { excluded, allow, userExcluded } = await run({ Dockerfile: "x\n" }, [
+    ORB,
+  ]);
+  expect(excluded ?? []).not.toContain("docker *");
+  expect(userExcluded ?? []).not.toContain("docker *");
   expect(allow).toBeUndefined();
 });
 

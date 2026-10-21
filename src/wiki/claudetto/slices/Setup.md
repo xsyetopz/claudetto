@@ -137,7 +137,11 @@ In a project that uses Docker (a `Dockerfile`, a Compose file, or a `justfile` o
 The socket is the `unix://` path of `DOCKER_HOST`, or else the first of `~/.orbstack/run/docker.sock`, `~/.docker/run/docker.sock`, and `/var/run/docker.sock` that exists.
 It changes nothing in a project that does not use Docker.
 On macOS, the socket entry keeps `docker` in the sandbox.
-Claude Code ignores `allowUnixSockets` on Linux, so there the command writes `docker *` to `sandbox.excludedCommands` and `Bash(docker *)` to `permissions.allow` instead.
+Claude Code ignores `allowUnixSockets` on Linux, so there the command writes `Bash(docker *)` to `permissions.allow` of `.claude/settings.local.json` instead.
+It also writes `docker *` to `sandbox.excludedCommands` of the user settings, whatever the `--scope` is.
+Claude Code reads `excludedCommands` only from trusted settings, because the settings snippet sets `sandbox.allowUnsandboxedCommands` to `false`.
+The user settings are trusted, and the local settings are not.
+This entry applies to all projects of the user.
 A command in `excludedCommands` runs outside the sandbox, and the `permissions.ask` rules of the Docker commands still win over the allow rule.
 On other platforms, the step does nothing.
 A local settings file that does not parse stops the step with an error.
@@ -148,7 +152,11 @@ With the Docker socket open, a sandboxed process can reach the Docker daemon wit
 It can use `curl --unix-socket`, `docker -H`, or `docker --context`.
 Such a call skips the `permissions.ask` rules of `docker-ask.ts`, which match the text of a `docker` command only.
 The daemon then has the rights of the daemon, not the limits of the sandbox.
-The same holds on Linux, where `docker *` runs outside the sandbox.
+On Linux, the socket stays closed to sandboxed processes, so `curl --unix-socket` does not apply.
+The risk there is that `docker *` runs outside the sandbox.
+A call such as `docker -H x run -v /:/h` matches `Bash(docker *)`.
+It matches no `permissions.ask` rule, because those rules start with `docker run`, `docker create`, `docker container run`, `docker container create`, `docker compose run`, or `docker compose up`.
+So the call runs outside the sandbox with no prompt.
 This risk is accepted, because Docker does not work in the sandbox without the socket.
 Do not use the Docker step in a project in which you do not trust the commands that Claude runs.
 

@@ -9,7 +9,8 @@
 // It cleans the keys of 0.1.0 out of the settings file and out of `CLAUDE.md`, then merges the settings snippet into the settings file.
 // It writes nothing without `--apply`.
 // In a project that uses Docker, on macOS only, it also offers the Docker socket in `sandbox.network.allowUnixSockets` of the local settings, and writes it with `--apply`.
-// Claude Code ignores `allowUnixSockets` on Linux, so there it offers `docker *` in `sandbox.excludedCommands` with `Bash(docker *)` in `permissions.allow` instead.
+// Claude Code ignores `allowUnixSockets` on Linux, so there it offers `Bash(docker *)` in `permissions.allow` of the local settings instead.
+// It also offers `docker *` in `sandbox.excludedCommands` of the user settings, in each scope, because Claude Code reads `excludedCommands` only from trusted settings.
 // With `--apply`, in a project with `.git/`, it also appends the local files of claudetto to `.gitignore`.
 // With `--advisor claudetto`, the snippet also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor only.
 // With no `--advisor`, the CLI reads the `advisor` option from `pluginConfigs` in the user settings, because a CLI run by the user gets no `CLAUDE_PLUGIN_OPTION_*` env var.
@@ -53,6 +54,12 @@ import {
 
 /** The env var that turns off the built-in advisor, for the option `advisor` = `claudetto`. */
 const ADVISOR_ENV = { CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1" };
+
+/**
+ * The Linux entry for Docker.
+ * Claude Code reads `sandbox.excludedCommands` only from trusted settings, and the user settings are one of them.
+ */
+const EXCLUDE_DOCKER = { sandbox: { excludedCommands: ["docker *"] } };
 
 /** Where the CLI prints. */
 export type Io = { log: (line: string) => void; error: (line: string) => void };
@@ -116,7 +123,8 @@ const ignoreLocal = async (projectDir: string): Promise<void> => {
  * In a project that uses Docker, adds the Docker socket to `sandbox.network.allowUnixSockets` of the local settings,
  * because the socket path belongs to the machine of the user.
  * It prints the offer and writes only with `apply`.
- * On Linux, where Claude Code ignores `allowUnixSockets`, it adds `docker *` to `sandbox.excludedCommands` and `Bash(docker *)` to `permissions.allow` instead.
+ * On Linux, where Claude Code ignores `allowUnixSockets`, it adds `Bash(docker *)` to `permissions.allow` of the local settings,
+ * and `docker *` to `sandbox.excludedCommands` of the user settings in `configDir`, for all projects.
  * The `permissions.ask` rules of `docker-ask.ts` still win over that allow rule.
  * It does nothing on other platforms.
  * It gives the exit status: 1 when the local settings do not parse.
@@ -124,6 +132,7 @@ const ignoreLocal = async (projectDir: string): Promise<void> => {
 const allowDocker = async (
   projectDir: string,
   env: NodeJS.ProcessEnv,
+  configDir: string,
   apply: boolean,
   io: Io,
   exists: (file: string) => boolean,
@@ -143,28 +152,43 @@ const allowDocker = async (
   const socket = dockerSocket(env, env["HOME"] || os.homedir(), exists);
   if (!socket) return 0;
   const offer = linux
-    ? {
-        sandbox: { excludedCommands: ["docker *"] },
-        permissions: { allow: ["Bash(docker *)"] },
-      }
+    ? { permissions: { allow: ["Bash(docker *)"] } }
     : { sandbox: { network: { allowUnixSockets: [socket] } } };
   const file = path.join(projectDir, PROJECT_LOCAL_SETTINGS);
   const current = await readReported(file, io);
   if (!current) return 1;
   const changes: string[] = [];
   const next = merge(current, offer, changes);
-  if (!changes.length) return 0;
-  io.log(
-    linux
-      ? `Docker project: ${file} gets sandbox.excludedCommands "docker *" and permissions.allow "Bash(docker *)"`
-      : `Docker project: ${file} gets sandbox.network.allowUnixSockets ${socket}`,
-  );
+  const userFile = path.join(configDir, SETTINGS_FILE);
+  const userCurrent = linux ? await readReported(userFile, io) : {};
+  if (!userCurrent) return 1;
+  const userChanges: string[] = [];
+  const userNext = linux
+    ? merge(userCurrent, EXCLUDE_DOCKER, userChanges)
+    : userCurrent;
+  if (!changes.length && !userChanges.length) return 0;
+  if (changes.length)
+    io.log(
+      linux
+        ? `Docker project: ${file} gets permissions.allow "Bash(docker *)"`
+        : `Docker project: ${file} gets sandbox.network.allowUnixSockets ${socket}`,
+    );
+  if (userChanges.length)
+    io.log(
+      `Docker project: ${userFile} gets sandbox.excludedCommands "docker *", which applies to all projects`,
+    );
   if (!apply) {
     if (!hintShown) io.log(`\n${DRY_RUN}`);
     return 0;
   }
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  await writeAtomic(file, `${JSON.stringify(next, null, 2)}\n`);
+  if (changes.length) {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    await writeAtomic(file, `${JSON.stringify(next, null, 2)}\n`);
+  }
+  if (userChanges.length) {
+    fs.mkdirSync(path.dirname(userFile), { recursive: true });
+    await writeAtomic(userFile, `${JSON.stringify(userNext, null, 2)}\n`);
+  }
   return 0;
 };
 
@@ -190,7 +214,18 @@ export const main = async (
   // After the settings write, so that scope `local` does not overwrite the entry.
   if (status !== 0 || args.includes("--addons")) return status;
   const apply = args.includes("--apply");
-  return allowDocker(project, env, apply, io, exists, platform, hintShown);
+  const configDir =
+    env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), CLAUDE_DIR);
+  return allowDocker(
+    project,
+    env,
+    configDir,
+    apply,
+    io,
+    exists,
+    platform,
+    hintShown,
+  );
 };
 
 const setup = async (
