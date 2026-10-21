@@ -4,10 +4,11 @@
 //   bun replay.ts HOOK_MODULE [PROJECTS_DIR]
 //
 // The module exports `check(event, prior)`, sync or async.
+// It can also export `checked(event)`, which tells if the filter of the hook takes the call, so that the output counts the events checked.
 // `event` = `{ hook_event_name: "PreToolUse", tool_name, tool_input, tool_use_id, cwd, session_id, transcript_path }`.
 // `prior` is the list of the transcript rows that come before the call, in the same file.
 // A result is a deny when it has `deny`, `decision: "block"`, or `permissionDecision: "deny"`, also under `hookSpecificOutput`.
-// The output is JSON: the calls, the denies, and each deny with its reason.
+// The output is JSON: the calls, the events checked (only when the module exports `checked`), the denies, and each deny with its reason.
 
 import fs from "node:fs";
 import os from "node:os";
@@ -28,8 +29,9 @@ if (!fs.existsSync(dir)) {
   console.error(`replay: no projects folder at ${dir}`);
   process.exit(1);
 }
-const { check } = (await import(path.resolve(module))) as {
+const { check, checked } = (await import(path.resolve(module))) as {
   check: (event: object, prior: object[]) => unknown;
+  checked?: (event: object) => boolean;
 };
 
 interface Out {
@@ -65,6 +67,7 @@ const denial = (out: unknown): string | null => {
 };
 
 let calls = 0;
+let events = 0;
 let denies = 0;
 const shown: { file: string; tool: string; reason: string }[] = [];
 for (const rel of new Bun.Glob("**/*.jsonl").scanSync({ cwd: dir })) {
@@ -83,24 +86,27 @@ for (const rel of new Bun.Glob("**/*.jsonl").scanSync({ cwd: dir })) {
     for (const block of content) {
       if (block.type !== "tool_use") continue;
       calls++;
-      const reason = denial(
-        await check(
-          {
-            hook_event_name: "PreToolUse",
-            tool_name: block.name,
-            tool_input: block.input,
-            cwd: row.cwd,
-            session_id: row.sessionId,
-            tool_use_id: block.id,
-            transcript_path: file,
-          },
-          prior.slice(0, -1),
-        ),
-      );
+      const event = {
+        hook_event_name: "PreToolUse",
+        tool_name: block.name,
+        tool_input: block.input,
+        cwd: row.cwd,
+        session_id: row.sessionId,
+        tool_use_id: block.id,
+        transcript_path: file,
+      };
+      if (checked?.(event)) events++;
+      const reason = denial(await check(event, prior.slice(0, -1)));
       if (reason === null) continue;
       denies++;
       shown.push({ file, tool: String(block.name), reason });
     }
   }
 }
-console.log(JSON.stringify({ calls, denies, shown }, null, 2));
+console.log(
+  JSON.stringify(
+    { calls, ...(checked ? { checked: events } : {}), denies, shown },
+    null,
+    2,
+  ),
+);

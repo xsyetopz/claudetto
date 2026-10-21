@@ -47,6 +47,13 @@ const msgOf = (row: Row): Msg | null => {
   };
 };
 
+/** True when the filter of the hook takes the call: a write of a plan or a spec file. */
+export const checked = (event: {
+  tool_name: string;
+  tool_input?: Omit<PlanCall, "tool">;
+}): boolean =>
+  planText({ tool: event.tool_name, ...(event.tool_input ?? {}) }) !== null;
+
 export const check = async (
   event: {
     tool_name: string;

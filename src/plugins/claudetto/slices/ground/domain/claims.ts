@@ -21,6 +21,13 @@ export type Files = Readonly<Record<string, string | null>>;
 const REF =
   /(?<![\w/.-])((?:[\w.-]+\/)*[\w.-]+\.(?:tsx?|jsx?|mjs|py|md|json|rs|go|sh|toml|ya?ml|java|c|h|cpp)):(\d+)(?:-(\d+))?/g;
 const NUMBER = /(?<![\w.,:/#$-])(\d{1,3}(?:,\d{3})+|\d{3,})(?![\w:/-]|[.,]\d)/g;
+/** A number that is part of the name of a standard, such as `ISO 8601` or `RFC 3339`. It names a document and is no claim. */
+const STANDARD =
+  /\b(?:ISO|IEC|RFC|BCP|STD|PEP|IEEE|ANSI|ECMA|DIN)[ -]?\d[\d.:-]*/g;
+/** A size in a binary unit, such as `16 MiB`. */
+const SIZE = /(\d+(?:\.\d+)?)\s*(KiB|MiB|GiB|TiB)\b/g;
+const SOURCE_NUMBERS_MAX = 400;
+const CELL = /^\s*\+?(\d{1,3}(?:,\d{3})+|\d+)\b/;
 const USER =
   /\bthe user (?:chose|said|decided|wants|asked|prefers|approved|confirmed|requested|told|picked|stated)\b([^.\n]*)/gi;
 const DONE =
@@ -36,7 +43,17 @@ const CONVENTIONS: readonly [readonly string[], string[]][] = [
   ],
   [["uv.lock"], ["pip", "pip3"]],
 ];
-const command = (tool: string) => new RegExp(`(?<![\\w/.-])${tool}\\s+[\\w@-]`);
+/** The words that make a tool name in prose a command: a subcommand, a flag, or a package for `npx`. */
+const SUBCOMMANDS: Readonly<Record<string, string>> = {
+  npm: "i|install|ci|run|test|start|build|exec|init|publish|update|uninstall|add|remove|link|pack|audit|ls|rebuild|version|-\\w+",
+  npx: "[\\w@-]+",
+  pip: "install|uninstall|freeze|list|show|download|wheel|-\\w+",
+  pip3: "install|uninstall|freeze|list|show|download|wheel|-\\w+",
+};
+const command = (tool: string) =>
+  new RegExp(
+    `(?<![\\w/.-])${tool}\\s+(?:${SUBCOMMANDS[tool] ?? "[\\w@-]"})(?![\\w-])`,
+  );
 
 /** The files of the project that `findUnsourced` reads from the root: the rules and the lock files. */
 export const PROJECT_FILES: readonly string[] = [
@@ -58,6 +75,34 @@ const proseLines = (text: string): string[] =>
     .split("\n")
     .filter((line) => !MARK.test(line));
 
+/** The totals of a table: a number of a row that is the sum of the numbers above it in the same column, for two rows or more. */
+const columnTotals = (lines: readonly string[]): Set<number> => {
+  const totals = new Set<number>();
+  let rows: (number | null)[][] = [];
+  for (const line of lines) {
+    if (!line.trimStart().startsWith("|")) {
+      rows = [];
+      continue;
+    }
+    const cells = line
+      .trim()
+      .slice(1)
+      .split("|")
+      .map((c) => {
+        const m = CELL.exec(c);
+        return m ? Number((m[1] as string).replace(/,/g, "")) : null;
+      });
+    cells.forEach((v, i) => {
+      if (v === null) return;
+      const above = rows.map((r) => r[i] ?? null).filter((x) => x !== null);
+      if (above.length >= 2 && above.reduce((a, b) => a + b, 0) === v)
+        totals.add(v);
+    });
+    rows.push(cells);
+  }
+  return totals;
+};
+
 /** The claims of `text` with no source in `msgs`, in `files`, or in `own`, the old text of the target file.
  * A file of a reference that is `null` did not resolve, and the check skips it, because a guess would deny a correct reference. */
 export const findUnsourced = (
@@ -73,17 +118,33 @@ export const findUnsourced = (
   const rules = files["CLAUDE.md"] ?? "";
   const corpus = [user, ...msgs.flatMap((m) => m.results), rules, own]
     .join("\n")
-    .replace(/(?<=\d),(?=\d{3})/g, "");
+    .replace(/(?<=\d)[,_](?=\d{3})/g, "");
   const turn = msgs.slice(
     msgs.findLastIndex((m) => m.role === "user" && m.text !== "") + 1,
   );
   const claims = new Set<string>();
   const prose = proseLines(text);
+  const has = (n: string) => new RegExp(`(?<!\\d)${n}(?!\\d)`).test(corpus);
+  const numbersOf = (line: string) =>
+    [...line.replace(STANDARD, "").matchAll(NUMBER)].map((m) =>
+      (m[1] as string).replace(/,/g, ""),
+    );
+  // A number that the text computes from numbers with a source: a column total, a sum, a difference, or a binary size.
+  const totals = columnTotals(prose);
+  const operands = [...new Set(prose.flatMap(numbersOf))]
+    .map(Number)
+    .filter((n) => totals.has(n) || has(String(n)))
+    .slice(0, SOURCE_NUMBERS_MAX);
+  const derived = (n: number, line: string) =>
+    [...line.matchAll(SIZE)].some(
+      ([, k = "", unit = ""]) =>
+        Number(k) * 1024 ** ("KMGT".indexOf(unit[0] as string) + 1) === n,
+    ) || operands.some((a) => operands.some((b) => a - b === n || a + b === n));
   for (const line of prose) {
-    for (const [, num = ""] of line.matchAll(NUMBER)) {
+    for (const [, num = ""] of line.replace(STANDARD, "").matchAll(NUMBER)) {
       const n = num.replace(/,/g, "");
       if (/^(?:19|20)\d\d$/.test(n)) continue;
-      if (!new RegExp(`(?<!\\d)${n}(?!\\d)`).test(corpus))
+      if (!has(n) && !totals.has(Number(n)) && !derived(Number(n), line))
         claims.add(`\`${num}\` is in no user message and no tool result.`);
     }
     for (const [ref = "", file = "", from = "", to = from] of line.matchAll(

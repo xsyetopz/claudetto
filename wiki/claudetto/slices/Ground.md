@@ -42,11 +42,11 @@ It names each claim, so a retry would pass on it.
 
 | Kind | The check fails when |
 | --- | --- |
-| Number | A number of 3 digits or more is in no user message and no tool result. A year does not count. |
+| Number | A number of 3 digits or more is in no user message and no tool result. A year, a number in the name of a standard (`ISO 8601`, `RFC 3339`), and a number that the text computes do not count. The text computes a number when it is a binary size in bytes (`16 MiB` and `16,777,216`), a total of a table column, or a sum or a difference of two numbers that have a source. A source can write the number with `_`, as `1_000_000`. |
 | `file:line` | The file is found and has fewer lines than the reference. |
 | Attribution | A sentence such as `the user chose ...` has words that are mostly not in a user message. |
 | Done claim | The text says that tests, checks, lint, or a build pass, or that something is fixed, and the turn has no `Bash` call. A sentence with `must`, `should`, `will`, `if`, or a similar word is not a claim. |
-| Convention | The text uses `npm` or `npx` in a project with `bun.lock` or `bun.lockb`, or `pip` in a project with `uv.lock`, and no user rule names the tool. |
+| Convention | The text uses a command of `npm` or `npx` (not the word `npm` in a sentence) in a project with `bun.lock` or `bun.lockb`, or `pip` in a project with `uv.lock`, and no user rule names the tool. |
 
 For a `file:line` reference, the check looks for the file at the project root first.
 Then it searches the folders below the root, but it skips `node_modules` and dot folders and reads at most 2,000 folders.
@@ -85,20 +85,33 @@ It makes no model call.
 - The replay reads the files of the project as they are today.
   A `file:line` reference resolves as a path suffix under the `cwd`, and a reference that does not resolve passes.
 
-The run of 2026-10-18 used 44 transcript files (46 MB) from `~/.claude/projects`:
+The `checked` export of the same module counts the events that the shipped filter takes, which are the writes of a plan or a spec file.
+`replay.ts` prints `checked` when the module exports it.
+The rate is the denies divided by the events checked.
 
-| Run | Calls replayed | Events checked | Denies |
-| --- | --- | --- | --- |
-| The shipped filter | 990 | 0 | 0 |
-| Stress: each `Write` and `Edit` of a `.md` file counts as a plan file | 990 | 4 | 1 |
-| Stress: each `Write` and `Edit` counts as a plan file | 990 | 19 | 1 |
+The run of 2026-10-21 used 1,014 transcript files (952 MB) from `~/.claude/projects`.
+The transcripts now hold plan edits, so the rate is measured.
+Each deny was graded by hand: a true deny is a claim with no source in the session or the project, and a false deny is a claim that has a source or is no claim.
 
-- The transcripts held no `Write` or `Edit` of a plan or spec file, so the shipped filter checked no event.
-  The rate of false denies on real plan edits is not measured yet.
-- The one deny is a reference to `src/kernel/paths.ts:55-70` from a past edit.
-  The file has 34 lines now, so the reference is stale, and the deny is not false.
-- The sample is too small to set a rate.
-  A false deny costs one rewrite, because the deny names each claim and gives three ways out.
+| Run | Calls replayed | Events checked | Denies | True | False | False rate |
+| --- | --- | --- | --- | --- | --- | --- |
+| Before the fixes | 25,331 | 53 | 9 | 1 | 8 | 15 percent (8 of 53) |
+| After the fixes | 25,354 | 53 | 1 | 1 | 0 | 0 percent (0 of 53) |
+
+The calls differ because live sessions grew between the runs.
+The denies before the fixes, by cause:
+
+- `8601`, `3339`, `7763` (4 denies): the number is in the name of a standard (`ISO 8601`, `RFC 3339`, `RFC 7763`).
+- `1,000,000` (3 denies): the project writes the number as `1_000_000`, and the check matched only `1,000,000` and `1000000`.
+- `892`, `1,005`, `178`, `287`, `47,305`, `46,388`, `917` (1 deny): the numbers are column totals and differences in a table of line counts.
+- `16,777,216` (1 deny): the text says `16 MiB (16,777,216 bytes)`, and the project states `16 * 1024 * 1024`.
+- `npm` in a project with `bun.lock` (1 deny): the text says "an npm marketplace", which is a name of a Claude Code feature and no command.
+- `140` (1 deny, true): "140 pages" of a wiki folder, and the session listed no count.
+
+The 5 fixes are in `slices/ground/domain/claims.ts`, and each has a test in `tests/claudetto/ground/claims.test.ts`.
+A fix does not accept a guess: a computed number needs numbers that have a source, a binary size needs the exact product, and a table total needs the exact sum of the column.
+The sample is 53 events from 5 projects, so the rate has a wide margin.
+A false deny costs one rewrite, because the deny names each claim and gives three ways out.
 
 ## See Also
 

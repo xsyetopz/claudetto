@@ -62,24 +62,36 @@ No model call ran.
 - Command: `bun src/plugins/claudetto-sessions/slices/sessions/skills/sessions/replay.ts plugins/claudetto/slices/ground/adapters/check.ts` (the generated copy, because the check imports `prompts.ts`).
   A `file:line` reference resolves as a path suffix under the `cwd`, and a reference that does not resolve passes.
   The numbers were measured again after the review fixes (2026-10-18).
-- Data: `~/.claude/projects` (44 transcript files, 46 MB, 2026-10-18).
 
 ### Result
 
-| Run | Calls replayed | Events checked | Denies |
-| --- | --- | --- | --- |
-| `check.ts` (the shipped filter) | 990 | 0 | 0 |
-| Stress: each `Write` and `Edit` of a `.md` file counts as a plan file | 990 | 4 | 1 |
-| Stress: each `Write` and `Edit` counts as a plan file | 990 | 19 | 1 |
+| Run | Calls replayed | Events checked | Denies | True | False |
+| --- | --- | --- | --- | --- | --- |
+| 2026-10-18, `check.ts` (the shipped filter) | 990 | 0 | 0 | 0 | 0 |
+| 2026-10-21, before the fixes of task 1.3 | 25,331 | 53 | 9 | 1 | 8 |
+| 2026-10-21, after the fixes of task 1.3 | 25,354 | 53 | 1 | 1 | 0 |
 
-- The local transcripts hold no `Write` or `Edit` of a plan or spec file and no `ProposeGoal` call.
-  So the shipped filter checks no event, and the rate of false denies on real plan edits is not measured.
-  The deny rate is 0 of 0 for the shipped filter, and 1 of 19 (5 percent) in the widest stress run.
-- The one deny is `src/kernel/paths.ts:55-70`: the file has 34 lines now.
-  The replay reads the files as they are today, so this is a stale reference of a past edit, not a false deny of the hook.
-- The sample is too small to set a rate.
+- Task 1.3 (2026-10-21): data is `~/.claude/projects`, 1,014 transcript files, 952 MB.
+  `replay.ts` now prints `checked`, the count of the calls that the filter of `check.ts` takes (`checked` export), so the rate is the denies divided by the events checked.
+- The rate before the fixes is 9 of 53 denies, and 8 of 53 (15 percent) are false.
+  The rate after the fixes is 1 of 53 denies, and 0 of 53 are false.
+- Grades, by hand, with the denied text and the transcript:
+
+| Deny | Project | Grade | Cause and fix |
+| --- | --- | --- | --- |
+| `8601`, `3339` | `export-for-ai-agents`, `proposal.md` | false | Standard names. Fix: `STANDARD` skips `ISO 8601`, `RFC 3339`. |
+| `3339`, `8601`, `7763` | `export-for-ai-agents`, `design.md` | false | Same. `RFC 7763` is the MIME registration of `text/markdown`. |
+| `1,000,000` (3 denies) | `export-for-ai-agents`, `jsonld.ts` has `MAX_JSONLD_CHARS = 1_000_000` | false | The source writes `1_000_000`. Fix: the corpus drops `_` between digit groups. |
+| `892`, `1,005`, `178`, `287`, `47,305`, `46,388`, `917` | `versionlens-redux`, `pr-description.md` | false | Column totals and differences of a table. Fix: `columnTotals`, and the sum and difference of sourced numbers. |
+| `140` | `claude-code-docs`, `proposal.md` | true | A page count of `wiki/claude-code/`. The session ran `wc -l` with `tail -15`, so no count is in a tool result. |
+| `npm` with `bun.lock` | `claude-code-docs`, `binary-diff.md` | false | "npm marketplace" is prose. Fix: `command()` needs a subcommand or a flag. |
+| `16,777,216` | `claudetto`, `jev-images/design.md` | false | `16 MiB` in the same line, and `16 * 1024 * 1024` in `limits.ts`. Fix: `SIZE` multiplies by the binary unit. |
+
+- The tests of the fixes are in `tests/claudetto/ground/claims.test.ts`, and each one failed on the code before the fixes.
+  The test of `checked` is in `tests/claudetto-sessions/sessions.test.ts`.
+- The sample is 53 events from 5 projects, so the rate has a wide margin.
   The hook only denies with a message that names each claim and gives three ways out, so a false deny costs one rewrite.
-  The rate needs a re-run when the transcripts hold plan edits.
+- Method of the 2026-10-18 run: the old rows `src/kernel/paths.ts:55-70` and the stress runs are history, and the numbers of that run are replaced by the run above.
 
 ## Prompt Audit Rows That Are Open (Tasks 2.1 to 2.4)
 

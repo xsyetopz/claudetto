@@ -152,3 +152,58 @@ test("`planText` reads a plan file and no other call", () => {
     planText({ tool: "Write", file_path: "/p/src/a.ts", content: "x" }),
   ).toBeNull();
 });
+
+test("a number in the name of a standard is no claim, and the same number in plain prose fails", () => {
+  const text = "Files use ISO 8601 basic time, RFC 3339 stamps, and RFC 7763.";
+  expect(findUnsourced(text, [], none)).toStrictEqual([]);
+  expect(findUnsourced("The port is 8601 here.", [], none)).toHaveLength(1);
+});
+
+test("a number with an underscore separator in a tool result is a source", () => {
+  const text = "The cap is 1,000,000 characters.";
+  expect(findUnsourced(text, [], none)).toHaveLength(1);
+  const msgs = [msg("user", "", ["export const MAX = 1_000_000;"])];
+  expect(findUnsourced(text, msgs, none)).toStrictEqual([]);
+});
+
+test("a number that the text computes from sourced numbers passes, and a number that it does not compute fails", () => {
+  const table = "| lsp | 3,257 | 2,252 | +1,005 |\n| Total | 5,509 |";
+  const msgs = [msg("user", "", ["lsp 3257 and 2252"])];
+  // 5,509 = 3,257 + 2,252, and 1,005 = 3,257 - 2,252.
+  expect(findUnsourced(table, msgs, none)).toStrictEqual([]);
+  expect(
+    findUnsourced(table.replace("+1,005", "+1,006"), msgs, none),
+  ).toHaveLength(1);
+});
+
+test("a size in a binary unit passes with its value in bytes, and fails with another value", () => {
+  expect(
+    findUnsourced("The cap is 16 MiB (16,777,216 bytes).", [], none),
+  ).toStrictEqual([]);
+  expect(
+    findUnsourced("The cap is 16 MiB (16,777,217 bytes).", [], none),
+  ).toHaveLength(1);
+});
+
+test("the name of a package manager in prose is no command, and the command with a subcommand fails in a project with a lock file", () => {
+  const files: Files = { "bun.lock": "" };
+  expect(
+    findUnsourced("An npm marketplace keeps the registry.", [], files),
+  ).toStrictEqual([]);
+  expect(findUnsourced("Run npm install first.", [], files)).toHaveLength(1);
+});
+
+test("a total of a table column passes, and a difference of two totals passes", () => {
+  const table = [
+    "| Part | After | Before | Change |",
+    "| --- | --- | --- | --- |",
+    "| a | 1,000 | 900 | +100 |",
+    "| b | 2,000 | 1,500 | +500 |",
+    "| Total | 3,000 | 2,400 | +600 |",
+  ].join("\n");
+  const msgs = [msg("user", "", ["1000 900 100 2000 1500 500"])];
+  expect(findUnsourced(table, msgs, none)).toStrictEqual([]);
+  expect(
+    findUnsourced(table.replace("| 3,000 |", "| 3,001 |"), msgs, none),
+  ).toHaveLength(1);
+});

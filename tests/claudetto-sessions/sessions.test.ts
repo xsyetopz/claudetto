@@ -101,6 +101,27 @@ test("`replay` counts the calls and the denies of a hook module", async () => {
   expect(json.shown[0].reason).toBe("prior 1");
 });
 
+test("`replay` counts the events that the module `checked` takes", async () => {
+  const hook = path.join(root, "hook2.ts");
+  await put(
+    hook,
+    "export const checked = (e) => e.tool_name === 'Write';\nexport const check = () => ({});\n",
+  );
+  const use = (name: string) =>
+    JSON.stringify({
+      type: "assistant",
+      message: { content: [{ type: "tool_use", name, input: {} }] },
+    });
+  await put(
+    path.join(root, "projects2/p/s1.jsonl"),
+    [use("Write"), use("Bash"), use("Write")].join("\n"),
+  );
+  const json = JSON.parse(
+    run("replay.ts", hook, path.join(root, "projects2")).out,
+  );
+  expect([json.calls, json.checked, json.denies]).toStrictEqual([3, 2, 0]);
+});
+
 test("`replay` with a missing projects folder fails with a message", () => {
   expect(run("replay.ts", "x.ts", path.join(root, "none")).status).toBe(1);
 });
