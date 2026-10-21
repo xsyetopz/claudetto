@@ -49,7 +49,9 @@ A relative path uses the folder of the session or of the last `cd`.
 
 The `tool.check` hook asks the person before a `git push` with a delete refspec, such as `git push origin :branch` or `git push origin +:branch`.
 An `ask` rule of the settings cannot match this form, because Claude Code warns on an inner `:*` in a rule.
-The ask of a hook goes to the person, and no allow rule or classifier settles it.
+The ask has `decider: "person"`, so in each mode the dialog is the only approver.
+No allow rule, classifier, or `bypassPermissions` settles it.
+Where no person can be asked, Claude Code refuses the call.
 The hook keeps a deny of the engine.
 The hook finds the form with `git` options before `push` (`git -C dir push`), a wrapper such as `sudo`, and options before or after the remote.
 It also finds the form in `$(...)`, `bash -c`, `sh -c`, `eval`, a group, and a branch of `if`.

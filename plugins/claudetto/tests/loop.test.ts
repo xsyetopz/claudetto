@@ -142,26 +142,33 @@ test("`maxTurns` stops the goal at the count of turns", async ($: Engine, on: On
   expect(world.state().log[0].note).toBe("stopped: max-turns");
 });
 
-test("`budget` in USD stops the goal at the cost", async ($: Engine, on: On) => {
-  const world = stub(
-    on,
-    goalWith({ budget: { usd: 2 }, spentUsd: 1, lastUsd: 1 }),
-    {
-      usd: 3.5,
-    },
-  );
+// Runs the turn and checks that the goal stops at its budget.
+const stopsAtBudget = async ($: Engine, world: ReturnType<typeof stub>) => {
   await finish($);
   expect(world.prompts).toEqual([]);
   expect(world.state().log[0].note).toBe("stopped: budget");
+};
+
+test("`budget` in USD stops the goal at the cost", async ($: Engine, on: On) => {
+  const goal = goalWith({ budget: { usd: 2 }, spentUsd: 1, lastUsd: 1 });
+  await stopsAtBudget($, stub(on, goal, { usd: 3.5 }));
 });
 
 test("`budget` in percent stops the goal at the plan share", async ($: Engine, on: On) => {
-  const world = stub(on, goalWith({ budget: { percent: 50 } }), {
-    percent: 51,
+  const goal = goalWith({
+    budget: { percent: 50 },
+    basePercents: { five_hour: 0 },
+  });
+  await stopsAtBudget($, stub(on, goal, { percent: 51 }));
+});
+
+test("`budget` in percent counts no growth at the first turn of a goal with no base", async ($: Engine, on: On) => {
+  const world = stub(on, goalWith({ budget: { percent: 10 } }), {
+    percent: 60,
   });
   await finish($);
-  expect(world.prompts).toEqual([]);
-  expect(world.state().log[0].note).toBe("stopped: budget");
+  expect(world.prompts).toHaveLength(1);
+  expect(world.state().basePercents).toEqual({ five_hour: 60 });
 });
 
 test("`until` stops the goal at the time", async ($: Engine, on: On) => {

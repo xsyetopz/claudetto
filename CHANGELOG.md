@@ -37,6 +37,15 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 - The verb `ask` of `claudetto-decide` now exits with code 2 for `--state` or `--json`, because it ignored them.
   An `--image` path that is a directory now gets the message "is a directory, not a file", not "does not exist".
+- `/goal` rejects an `--until` date, or a date and time, that is not after now, so the goal does not stop at the first turn.
+  `HH:MM` still moves to the next day.
+- `/goal resume` resets a `--budget N%` goal.
+  The budget counts the growth of each plan limit since the start or the resume, and a limit whose window restarts counts from 0.
+- `guard` asks the person before `git push <remote> :<branch>` or `+:<branch>`, a delete refspec, also inside `bash -c`, `$(...)`, and `eval`.
+  The ask rule `Bash(git push* :* *)` is removed, because Claude Code 2.1.304 warns on its inner `:*`.
+- On Linux, `claudetto-setup` adds `docker *` to `sandbox.excludedCommands` of the user settings, for all projects, and `Bash(docker *)` to `permissions.allow` of `.claude/settings.local.json` in a Docker project, because Claude Code ignores `sandbox.network.allowUnixSockets` there.
+  The user settings hold the entry because Claude Code reads `excludedCommands` only from trusted settings when `allowUnsandboxedCommands` is `false`.
+  The `Setup` wiki page gives the accepted risk of the open Docker socket on macOS and of `docker *` outside the sandbox on Linux.
 
 ## [0.2.0] - 2026-10-21
 

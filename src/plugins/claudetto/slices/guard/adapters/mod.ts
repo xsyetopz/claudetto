@@ -1,7 +1,8 @@
 // The mod handler of the `guard` slice:
 // `tool.call` on `Bash` denies a command that only prints a file and names the `Read` call (design D22).
 // `tool.check` on `Bash` asks the person before a `git push` with a delete refspec such as `origin :branch`, because an ask rule cannot match it (task 4.1 of `post-0-2-0`).
-// The ask of a hook goes to the person, and no allow rule or classifier settles it (Claude Code 2.1.304).
+// The ask has `decider: "person"`, so in each mode the dialog is the only approver, and no allow rule, classifier, or `bypassPermissions` settles it.
+// Where no person can be asked, the call is refused (Claude Code 2.1.304).
 //
 // The hook has no catch-all.
 // A `catch` here names the error that it expects, and the others reach the log of Claude Code.
@@ -17,7 +18,7 @@ import { type Count, printReason } from "../domain/deny.ts";
 import { printsOf } from "../domain/reads.ts";
 import { deleteRefspec } from "../domain/refspec.ts";
 import { READ_MAX_BYTES } from "../limits.ts";
-import { FAIL_DENY, REFSPEC_ASK } from "../prompts.ts";
+import { CHECK_FAIL, FAIL_DENY, REFSPEC_ASK } from "../prompts.ts";
 
 /** The line count of a file for the print rule: `Infinity` when it is too large to read. */
 const countOf =
@@ -63,11 +64,13 @@ export const onBashCheck: BashCheck = async (_$, e, next) => {
   const v = await next(e);
   if (v.decision === "deny") return v;
   const ref = deleteRefspec((e.input as { command?: unknown } | null)?.command);
-  return ref === null ? v : { decision: "ask", reason: REFSPEC_ASK({ ref }) };
+  return ref === null
+    ? v
+    : { decision: "ask", decider: "person", reason: REFSPEC_ASK({ ref }) };
 };
 
 /** The error handler of the check: a check that throws denies, because nothing has run. */
 export const onBashCheckFail: CatchHandler<BashCheck> = () => ({
   decision: "deny",
-  reason: "The `guard` check failed.",
+  reason: CHECK_FAIL,
 });

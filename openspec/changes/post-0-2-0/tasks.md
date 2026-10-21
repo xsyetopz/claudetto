@@ -36,14 +36,14 @@
 
 ## 3. Sandbox
 
-- [ ] 3.1 Add the Linux fallback of `docker *` as an `excludedCommands` entry, with an allow rule, because Claude Code ignores `allowUnixSockets` on Linux.
+- [x] 3.1 Add the Linux fallback of `docker *` as an `excludedCommands` entry, with an allow rule, because Claude Code ignores `allowUnixSockets` on Linux.
   Check: `just test tests/claudetto/setup tests/claudetto/prompt`
-- [ ] 3.2 Document for users, in `src/wiki/`, the accepted risk that with the Docker socket open a sandboxed process can skip the `permissions.ask` rules of `docker-ask.ts`.
+- [x] 3.2 Document for users, in `src/wiki/`, the accepted risk that with the Docker socket open a sandboxed process can skip the `permissions.ask` rules of `docker-ask.ts`.
   Check: `just generate && bun run lint:md`
 
 ## 4. Guard
 
-- [ ] 4.1 Claude Code 2.1.304 warns on the inner `:*` of the rule `Bash(git push* :* *)`, and `guard` has no rule for a delete refspec.
+- [x] 4.1 Claude Code 2.1.304 warns on the inner `:*` of the rule `Bash(git push* :* *)`, and `guard` has no rule for a delete refspec.
   Add a `guard` rule for `git push <remote> :<branch>`, or rewrite the ask rule so that it gives no warning.
   Test with the corpus of safe and destructive forms.
   Check: `just test tests/claudetto/guard tests/claudetto/prompt`
@@ -61,12 +61,12 @@ Ask the user before each run.
 
 ## 6. Goal
 
-- [ ] 6.1 Reject a `--until` time that is not after now in `parseArgs` of `src/plugins/claudetto/slices/goal/domain/command.ts`.
+- [x] 6.1 Reject a `--until` time that is not after now in `parseArgs` of `src/plugins/claudetto/slices/goal/domain/command.ts`.
   A full date or a date and time in the past now passes, and the goal stops at the first turn.
   `HH:MM` already moves to the next day, so it keeps that behaviour.
   Update the section of `--until` in `src/wiki/claudetto/slices/Goal.md`.
   Check: `just test tests/claudetto/goal && just generate`
-- [ ] 6.2 Make `/goal resume` reset a `--budget N%` goal, as it resets the turns and the cost.
+- [x] 6.2 Make `/goal resume` reset a `--budget N%` goal, as it resets the turns and the cost.
   The loop compares the percent of the whole session with the budget, so a goal that paused at its budget stops again at once.
   Keep the percent at the start or the resume in the goal state, and compare the growth since then with the budget.
   Update the section of `--budget` in `src/wiki/claudetto/slices/Goal.md`.

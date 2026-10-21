@@ -34,7 +34,7 @@ The text after `/goal` is one of these:
 | A name that ends in `.md` | Makes a goal from the steps of that plan file. |
 | `status` or nothing | Shows the step, each check with its last result, and the limits. |
 | `pause` | Pauses the goal. The `turn.complete` hook then runs no check. |
-| `resume` | Resumes a paused goal from its current step, and starts a turn. A goal that is not paused answers `The goal is not paused.` and starts no turn. The counts of turns and cost restart, but not the plan percents of `--budget N%`. |
+| `resume` | Resumes a paused goal from its current step, and starts a turn. A goal that is not paused answers `The goal is not paused.` and starts no turn. The counts of turns, the cost, and the plan percents of `--budget N%` restart. |
 | `skip` | Skips the current step, and starts a turn on the next step. On the last step, it ends the goal. |
 | `step N` | Moves to step N, from 1 to the count of steps, and starts a turn. This also resumes a paused goal. |
 | `clear` | Clears the goal. |
@@ -87,7 +87,7 @@ A limit that is left out is no limit, except `--stall`.
 | Flag | Meaning | Default |
 | --- | --- | --- |
 | `--max-turns N` | The goal stops after N turns. | None |
-| `--budget $X` or `N%` | The goal stops at a cost of X USD, or when N percent of one plan limit is used up since the start or the last `/goal resume`. The engine counts each limit (`five_hour`, `seven_day`) from its own percent at that time, and a limit that restarts its window counts from 0. | None |
+| `--budget $X` or `N%` | The goal stops at a cost of X USD, or when N percent of one plan limit is used up since the start or the last `/goal resume`. The engine counts each limit (`five_hour`, `seven_day`) from its own percent at that time, a limit with no base at that time (for example a goal made before the first model reply) takes its percent at the first turn as its base, and a limit that restarts its window counts from 0. | None |
 | `--until TIME` | The goal stops at `HH:MM` (the next such time), a date, or a date and time. A time that is not after now is an error. | None |
 | `--stall N` | The goal stops after N turns in a row with the same failing checks and output. | 3 (`STALL_DEFAULT`) |
 

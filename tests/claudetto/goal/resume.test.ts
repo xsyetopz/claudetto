@@ -51,21 +51,43 @@ test("a resumed goal stops when one limit grows by the budget", () => {
   expect(out.goal?.paused).toBe(true);
 });
 
-test("a saved goal with no `basePercents` counts from 0", () => {
-  const old = { ...goal(), basePercent: 80 } as Goal;
-  delete (old as { basePercents?: unknown }).basePercents;
-  const out = nextTurn(old, FAIL, spend({ five_hour: 51 }), 2);
-  expect(out.goal?.paused).toBe(true);
+test("a goal made with empty bases takes the percent of the first turn as its base", () => {
+  const first = nextTurn(
+    goal({ basePercents: {} }, 10),
+    FAIL,
+    spend({ five_hour: 60 }),
+    2,
+  );
+  expect(first.goal?.paused).toBe(false);
+  expect(first.goal?.basePercents).toEqual({ five_hour: 60 });
+  const later = nextTurn(first.goal as Goal, FAIL, spend({ five_hour: 70 }), 3);
+  expect(later.goal?.paused).toBe(true);
 });
 
-test("a limit with no base counts from 0", () => {
+test("a saved goal with no `basePercents` takes the percent of the first turn as its base", () => {
+  const old = { ...goal({}, 10), basePercent: 80 } as Goal;
+  delete (old as { basePercents?: unknown }).basePercents;
+  const out = nextTurn(old, FAIL, spend({ five_hour: 60 }), 2);
+  expect(out.goal?.paused).toBe(false);
+  expect(out.goal?.basePercents).toEqual({ five_hour: 60 });
+});
+
+test("a limit with no base takes its percent as its base, and the others count", () => {
   const out = nextTurn(
     goal({ basePercents: { five_hour: 10 } }),
     FAIL,
     spend({ five_hour: 12, seven_day: 51 }),
     2,
   );
-  expect(out.goal?.paused).toBe(true);
+  expect(out.goal?.paused).toBe(false);
+  expect(out.goal?.basePercents).toEqual({ five_hour: 10, seven_day: 51 });
+  const grown = nextTurn(
+    goal({ basePercents: { five_hour: 10 } }),
+    FAIL,
+    spend({ five_hour: 61 }),
+    2,
+  );
+  expect(grown.goal?.paused).toBe(true);
 });
 
 test("a limit below its base means a new window and counts in full", () => {

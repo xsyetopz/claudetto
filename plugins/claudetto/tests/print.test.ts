@@ -90,6 +90,7 @@ test("a `git push` with a delete refspec asks the person, and a push of a branch
     $.tool.check({ tool: "Bash", input: { command } });
   const asked = await check("git -C x push origin +:br");
   expect(asked.decision).toBe("ask");
+  expect(asked.decider).toBe("person");
   expect(asked.reason).toContain("`br`");
   for (const command of ["git push origin main", "git push origin a:b"])
     expect((await check(command)).decision, command).toBe("allow");

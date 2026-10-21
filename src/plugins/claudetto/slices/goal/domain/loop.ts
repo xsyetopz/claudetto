@@ -85,12 +85,14 @@ export const nextTurn = (
   // A `/clear` restarts the cost of the session, so a cost below the last one is all new.
   const usd = spend.usd >= goal.lastUsd ? spend.usd - goal.lastUsd : spend.usd;
   // A limit below its base restarted its window, so its base is 0 from now on, or its growth would count short once it passes the old base.
-  const basePercents = Object.fromEntries(
+  // A limit with no base (a goal made before the engine had the figures, or a legacy goal) takes its current percent as its base, so that turn counts no growth for it.
+  const known = Object.fromEntries(
     Object.entries(goal.basePercents ?? {}).map(([kind, base]) => [
       kind,
       (spend.percents[kind] ?? base) < base ? 0 : base,
     ]),
   );
+  const basePercents: Record<string, number> = { ...spend.percents, ...known };
   const turned = {
     ...goal,
     basePercents,

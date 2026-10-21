@@ -43,7 +43,7 @@ export type Goal = Controls & {
   /** The cost in USD that the goal spent, and the cost of the session at the last turn. A `/clear` restarts the cost of the session, and so `lastUsd` can be higher than the new cost. */
   readonly spentUsd: number;
   readonly lastUsd: number;
-  /** The percent of each plan limit at the start or the last resume, by the `kind` of the limit (`five_hour`, `seven_day`). A `--budget N%` counts the highest growth of one limit since then. A limit with no base counts from 0, and so does a goal saved with no such field (also a goal saved with the old `basePercent`, which is ignored). */
+  /** The percent of each plan limit at the start or the last resume, by the `kind` of the limit (`five_hour`, `seven_day`). A `--budget N%` counts the highest growth of one limit since then. A limit with no base takes its percent at the first turn as its base, and so does a goal saved with no such field (also a goal saved with the old `basePercent`, which is ignored). */
   readonly basePercents?: Readonly<Record<string, number>>;
   readonly paused: boolean;
   /** The moves between steps and the stop, with the time. */
