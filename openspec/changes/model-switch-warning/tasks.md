@@ -14,6 +14,6 @@
 
 - [x] 2.1 Run the full checks.
   Check: `just docker check`
-- [ ] 2.2 Review the diff against `main`.
-- [ ] 2.3 Merge the branch into `main`, and remove the worktree and the branch `worktree-agent-aa482046137065819`.
+- [x] 2.2 Review the diff against `main`.
+- [x] 2.3 Merge the branch into `main`, and remove the worktree and the branch `worktree-agent-aa482046137065819`.
   Check: `git cherry main 4439a6e3` shows no `+` line, or the content of `adapters/switch.ts` is in `main`.
