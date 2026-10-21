@@ -1,10 +1,10 @@
-# Spec Delta: `jscpd`
+# jscpd Specification
 
 ## Purpose
 
 Duplicate-code checks with jscpd, with a shipped base config, layered local configs, and a baseline.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Layered Configs
 

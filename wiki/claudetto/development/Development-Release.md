@@ -66,7 +66,7 @@ See [Evals](Evals).
 
    Commit before you tag.
    `claude plugin tag` checks that each `plugin.json` agrees with its marketplace entry, and it stops on a dirty tree.
-4. Run `just release-check`.
+4. Run `just release-check CHANGE`, with the name of the change folder under `openspec/changes/`.
    It fails while a row of `findings.md` has a `Task` that is not `none`, `done`, or `(checked)`.
 5. Preview the tags, then tag and push.
 

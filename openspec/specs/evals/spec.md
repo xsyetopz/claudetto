@@ -1,10 +1,10 @@
-# Spec Delta: `evals`
+# evals Specification
 
 ## Purpose
 
-The rules that make an eval a proof of a claim.
+The rules that make an eval a proof of a claim that a text or a doc cites as a source.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: A Cited Eval Is a Proof
 

@@ -1,10 +1,10 @@
-# Spec Delta: `hook-messages`
+# hook-messages Specification
 
 ## Purpose
 
-The text that the hooks show to the user.
+The text that the hooks of the plugins show to the user through the log of the engine.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: One-Line Notices
 

@@ -1,7 +1,7 @@
 # Handoff Cost
 
 This page gives the measurement of the `handoff` slice of 0.2.0 against the built-in compaction.
-It relates to the decisions `D46` and `D47` of `openspec/changes/release-0-2-0/design-handoff.md`, but tests neither (see [Limits](#limits)).
+It relates to the decisions `D46` and `D47` of [`design-handoff.md`](https://github.com/xsyetopz/claudetto/blob/claudetto--v0.2.0/openspec/changes/release-0-2-0/design-handoff.md) at the tag `claudetto--v0.2.0`, but tests neither (see [Limits](#limits)).
 The older measurement on 1.0.0 is on [Handoff Cost (Part 2)](Handoff-Cost-2).
 
 ## Result in Brief

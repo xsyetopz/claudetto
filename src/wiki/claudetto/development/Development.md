@@ -67,7 +67,7 @@ Each recipe runs from the repository root.
 | `just schema` | Writes the settings schemas of the installed Claude Code to `schemas/` |
 | `just update` | Refreshes the marketplace and updates your installed plugins. Restart Claude Code after it |
 | `just bump LEVEL` | Bumps the version and moves the `[Unreleased]` CHANGELOG entries |
-| `just release-check [CHANGE]` | Fails while a row of `findings.md` has no passed check |
+| `just release-check CHANGE` | Fails while a row of `findings.md` has no passed check |
 | `just release` | Tags each plugin at `HEAD` and pushes the tags |
 | `just wiki` | Publishes `wiki/` to the GitHub wiki |
 | `just eval --model M` | Runs the eval cases with `claude plugin eval`. It costs money |
@@ -110,6 +110,13 @@ A slice keeps its lab tests in `lab/*.test.ts`, and `just generate` copies them 
 Each test fires events at the hooks module with stubbed reads.
 Test each change to `hooks/register.ts` in the lab before a live session.
 See [Plugin Layout](Plugin-Layout#hook-evals) for the eval entry of each hook.
+
+## Decision Numbers in Comments
+
+A comment in the code may cite a decision as `D3` or `D46`.
+These numbers name the decisions of `design.md` and the files `design-*.md` of the change `release-0-2-0`.
+The folder is deleted from the tree, so read it at the tag:
+`git show claudetto--v0.2.0:openspec/changes/release-0-2-0/design.md`.
 
 ## See Also
 

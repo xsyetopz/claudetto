@@ -2,13 +2,11 @@
 // A row passes when its `Task` cell is `none`, or says `done` or `(checked)`.
 // Any other row is open, and the tool prints its line number, surface, and task.
 //
-//   bun tools/findings-check.ts [CHANGE|FILE.md]    CHANGE is a change folder name, `release-0-2-0` by default
+//   bun tools/findings-check.ts CHANGE|FILE.md    CHANGE is a change folder name and is required
 
 import fs from "node:fs";
 import path from "node:path";
 import { REPO } from "./recipes.ts";
-
-export const DEFAULT_CHANGE = "release-0-2-0";
 
 export type OpenRow = { line: number; surface: string; task: string };
 
@@ -43,7 +41,13 @@ export const openRows = (markdown: string): OpenRow[] => {
 };
 
 if (import.meta.main) {
-  const arg = process.argv[2] ?? DEFAULT_CHANGE;
+  const arg = process.argv[2];
+  if (!arg) {
+    console.error(
+      "Usage: bun tools/findings-check.ts CHANGE|FILE.md (CHANGE is a folder name under openspec/changes/)",
+    );
+    process.exit(2);
+  }
   const file = arg.endsWith(".md")
     ? path.resolve(arg)
     : path.join(REPO, "openspec/changes", arg, "findings.md");

@@ -74,9 +74,9 @@ test("a text with no span at the start is one `judge` check", () => {
   expect(checksOf(text)).toEqual([{ kind: "judge", claim: text }]);
 });
 
-test("the plan file `design-steps.md` of `trim-0-2-0` gives its numbered steps and their `Check:` lines", async () => {
+test("the plan file fixture `design-steps.md` (a copy of the plan of `trim-0-2-0`) gives its numbered steps and their `Check:` lines", async () => {
   const text = await Bun.file(
-    "openspec/changes/trim-0-2-0/design-steps.md",
+    "tests/claudetto/goal/fixtures/design-steps.md",
   ).text();
   const steps = planSteps(text);
   expect(steps.length).toBeGreaterThanOrEqual(10);
