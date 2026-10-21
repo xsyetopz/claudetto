@@ -203,12 +203,23 @@ With the first round, this shows parity with the built-in `/goal` on these two c
 
 ## Decision for the Default
 
-The default of `advisor` stays `builtin`, and the CHANGELOG has no entry.
+The default of `advisor` is now `claudetto` (commit `b56351e0`).
 
-- On easy tasks all arms pass, and on hard tasks all arms fail, so `advise` is as good as the built-in advisor but not better.
-- Parity and a cost 1/20 as high would justify `claudetto`, but a default of `claudetto` needs `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, or Claude sees two advisors, and the `opus` calls are missing from the session cost.
-- No safe path was built.
-  `$.env.set` can set the variable at `session.start`, but no run showed that the advisor check reads it late, and the limit of `advise` above is open.
+- On easy tasks all arms pass, and on hard tasks all arms fail, so `advise` is as good as the built-in advisor.
+- `advise` costs less.
+  For 10 runs of `advice-audit`, the session cost was $0.055 against $1.185.
+  The session cost leaves out the `opus` calls of `advise`.
+  With an estimate of $0.035 for each call, the total is about $0.40 against $1.18, so `advise` costs about one third.
+  The $0.035 is an estimate, not a measured price.
+- With `claudetto`, the slice sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` at `session.start` with `$.env.set`, so that Claude sees one advisor.
+
+### Live Check of the One-Advisor Rule
+
+On 2026-10-21, two `claude -p` runs with `--advisor opus` and `--model haiku` asked for the names of all tools that contain "advis".
+The run with `--plugin-dir plugins/claudetto` (default options) gave `mcp__claudetto__advise` only.
+The run with no plugin gave `advisor`.
+So the variable that the slice sets at `session.start` turns off the built-in advisor.
+The two runs cost $0.006.
 
 ## Cost of `advise`
 
