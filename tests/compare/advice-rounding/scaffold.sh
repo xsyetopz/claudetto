@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Builds the fixture in the empty workspace.
+# The total of a cart is one cent too low, and the cause is a float product that is floored.
+# Needs the flag `--scaffold`.
+set -euo pipefail
+cat > package.json <<'EOT'
+{
+  "type": "module"
+}
+EOT
+mkdir -p src check
+cat > src/money.mjs <<'EOT'
+// Money helpers. All amounts inside the app are integer cents.
+export const toCents = (amount) => Math.floor(amount * 100);
+
+export const fromCents = (cents) => cents / 100;
+
+export const add = (a, b) => a + b;
+EOT
+cat > src/cart.mjs <<'EOT'
+import { add, toCents } from "./money.mjs";
+
+export const total = (items) =>
+  items.map((item) => toCents(item.price) * item.qty).reduce(add, 0);
+EOT
+cat > src/report.mjs <<'EOT'
+import { total } from "./cart.mjs";
+import { fromCents } from "./money.mjs";
+
+export const line = (items) => `Total: ${fromCents(total(items)).toFixed(2)}`;
+EOT
+cat > check/report.test.mjs <<'EOT'
+import assert from "node:assert";
+import { test } from "node:test";
+import { line } from "../src/report.mjs";
+
+test("the total of the cart is exact", () => {
+  const items = [
+    { price: 19.99, qty: 3 },
+    { price: 0.29, qty: 1 },
+  ];
+  assert.equal(line(items), "Total: 60.26");
+});
+EOT
