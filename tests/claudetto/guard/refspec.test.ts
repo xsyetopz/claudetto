@@ -1,4 +1,4 @@
-// The delete-refspec rule of `git push` (task 4.1 of `post-0-2-0`) with commands as strings.
+// The delete-refspec rule of `git push` (task 4.1 of `0-2-0`) with commands as strings.
 // No command runs.
 
 import { expect, test } from "bun:test";

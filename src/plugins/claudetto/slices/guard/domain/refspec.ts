@@ -1,4 +1,4 @@
-// The delete-refspec rule of `git push` (task 4.1 of `post-0-2-0`): `git push origin :branch` deletes a branch on the remote.
+// The delete-refspec rule of `git push` (task 4.1 of `0-2-0`): `git push origin :branch` deletes a branch on the remote.
 // A `permissions.ask` rule cannot match it: Claude Code warns on the inner `:*` of `Bash(git push* :* *)`.
 // The functions are pure, and `adapters/mod.ts` turns a ref into an ask.
 

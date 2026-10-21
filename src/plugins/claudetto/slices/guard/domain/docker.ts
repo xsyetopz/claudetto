@@ -1,4 +1,4 @@
-// The docker-run rule (task 3.3 of `post-0-2-0`): a `docker` command that runs or creates a container.
+// The docker-run rule (task 3.3 of `0-2-0`): a `docker` command that runs or creates a container.
 // On Linux, setup puts `docker *` in `sandbox.excludedCommands` and `Bash(docker *)` in `permissions.allow`.
 // The `DOCKER_ASK` rules of the `prompt` slice match only a verb right after `docker`, so `docker -H x run -v /:/h` matches none.
 // The functions are pure, and `adapters/mod.ts` turns a verb into an ask.

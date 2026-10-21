@@ -1,7 +1,7 @@
-# Evidence for `post-0-2-0`
+# Evidence for `0-2-0`
 
 This file holds the parts of the deleted changes that the open tasks need.
-The source folders are in git at the tag `claudetto--v0.2.0`.
+The source folders are in git at commit `1c579e10`.
 Each section names its source file.
 
 ## Spec Profile Sizes (Task 1.1)
@@ -86,7 +86,7 @@ No model call ran.
 Source: `release-0-2-0/prompt-audit.md`.
 `pa:<line>` cites the checklist `shared/prompt-audit.md` of the bundled `claude-api` skill of Claude Code 2.1.302.
 Paths are under `src/plugins/claudetto/slices/` unless they start with `src/`.
-`design-prompts.md` and `mm:<line>` are in `release-0-2-0` at the tag.
+`design-prompts.md` and `mm:<line>` are in `release-0-2-0` at commit `1c579e10`.
 
 | Sev | `file:line` | Reader | Checklist item | Finding | Fix | Pin | Commit |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -95,7 +95,7 @@ Paths are under `src/plugins/claudetto/slices/` unless they start with `src/`.
 | L | `advise/prompts/result.md:1` | Main | Context count (`design-prompts.md`, `mm:1504`) | The tool result gives the tokens in and out. It is not the remaining context, but it is a token count in a text for the model. | Move the count to `$.ui.log`. | yes | skipped: code change, not small |
 | L | `prompt/prompts/system.md:3-4` | Main | Keep-list 1, flag | "Treat the facts in them as true" also covers a hook message that quotes a file or a tool result. | Flag: limit it to the facts that the harness states. | no | eval: no effect, kept |
 | L | `spec/skills/spec/SKILL.md:13`, `:15` | Main | 1a (`pa:75`), Group 2 volatile specifics (`pa:146`) | "Never overwrite a file." has no reason. `@fission-ai/openspec` has no pinned version, while `ctx7@0.6.1` and `codegraph@1.6.0` are pinned. | Give the reason. Pin the version, or say why it floats. | yes | `4cfcfc62`, version pin skipped |
-| - | `decide/prompts/fallback-system.md:3` | - | - | Gone: this file is not in HEAD or at the tag `claudetto--v0.2.0`. No task. | - | - | - |
+| - | `decide/prompts/fallback-system.md:3` | - | - | Gone: this file is not in HEAD or at commit `1c579e10`. No task. | - | - | - |
 
 Not audited, source: `prompt-audit.md`, section "Not Audited":
 

@@ -4,7 +4,7 @@
 // `git clean* -*f*` also asks for `git clean -n src/foo.ts`, and `*` reaches across `&&` in the whole-command test.
 // Accepted: both are extra prompts.
 // No rule matches a delete refspec such as `git push origin :branch`: Claude Code warns on an inner `:*`, and reads a `:*` after a `*` as a literal prefix.
-// The `guard` hook asks the person before that form, with the `tool.check` event (task 4.1 of `post-0-2-0`).
+// The `guard` hook asks the person before that form, with the `tool.check` event (task 4.1 of `0-2-0`).
 // A rule cannot match `sh -c`, a program by path, an option before the subcommand, or a reordered short flag, so the `guard` hook keeps those.
 
 export const GIT_ASK = [

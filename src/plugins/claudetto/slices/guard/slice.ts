@@ -1,7 +1,7 @@
 // The manifest of the `guard` slice:
 // the deny of a `Bash` command that only prints a file (design D22),
-// the ask before a `git push` with a delete refspec (task 4.1 of `post-0-2-0`),
-// and the ask before a `docker` command that runs or creates a container (task 3.3 of `post-0-2-0`).
+// the ask before a `git push` with a delete refspec (task 4.1 of `0-2-0`),
+// and the ask before a `docker` command that runs or creates a container (task 3.3 of `0-2-0`).
 
 import type { Handler, Slice } from "../../../../kernel/slice.ts";
 import {

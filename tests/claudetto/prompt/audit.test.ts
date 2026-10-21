@@ -1,4 +1,4 @@
-// The fixes of the prompt audit (`prompt-audit.md` of `release-0-2-0` at the tag `claudetto--v0.2.0`: https://github.com/xsyetopz/claudetto/blob/claudetto--v0.2.0/openspec/changes/release-0-2-0/prompt-audit.md) that a text test can pin: key phrases and the lack of the old text, and not whole paragraphs.
+// The fixes of the prompt audit (`prompt-audit.md` of `release-0-2-0` at commit `1c579e10`: https://github.com/xsyetopz/claudetto/blob/1c579e10/openspec/changes/release-0-2-0/prompt-audit.md) that a text test can pin: key phrases and the lack of the old text, and not whole paragraphs.
 
 import { expect, test } from "bun:test";
 import path from "node:path";

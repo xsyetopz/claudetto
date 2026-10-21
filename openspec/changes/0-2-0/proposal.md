@@ -1,10 +1,11 @@
-# Proposal: post-0-2-0
+# Proposal: 0-2-0
 
 ## Why
 
-Version 0.2.0 is released and tagged (`claudetto--v0.2.0` and the five add-on tags).
+Version 0.2.0 is not released yet.
+Its six tags were removed on 2026-10-21 (`claudetto--v0.2.0` and the five add-on tags, all on commit `1c579e10`), so that this work ships in 0.2.0.
 Eight changes were finished, and their folders are deleted from the tree: `builtins-0-2-0`, `cc-2-1-304`, `cc-2-1-305`, `evals-redesign-0-2-0`, `release-0-2-0`, `spec-workflow-0-2-0`, `trim-0-2-0`, and `wiki-0-2-0`.
-They stay in git at the tag `claudetto--v0.2.0`.
+They stay in git at commit `1c579e10`.
 Some work in them stayed open, or was noted as a follow-up.
 This change collects that work in one place.
 

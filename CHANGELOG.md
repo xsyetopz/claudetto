@@ -9,49 +9,7 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ## [Unreleased]
 
-### Added
-
-- The option `--image <path>` of `claudetto-decide` adds a PNG or JPEG picture to the verbs `yes`, `pick`, `ask`, and `box`, and it repeats (D1, D2, D8).
-  The command reads the first bytes of each file to check its type, not its name, and it exits with code 2 before any request for a file that is not a PNG or JPEG, or that is over 16 MiB (`IMAGE_BYTES_MAX`, D4), or whose size is over 1568 px or under 280 px on a side.
-  On macOS, the command first scales a picture that is too large with `sips` into a copy, leaves the original as it is, and prints one line on stderr (`SCALE_TIMEOUT_MS`, D4).
-  Elsewhere the message has the `sips` and ImageMagick commands to scale it.
-  A request with a picture is multipart, with the header `TypeSafe-Danger-Zone-Images: true`, and a request with no picture and no `box` question keeps the JSON body that it had (D1).
-  The `--state` option stays text, so a path in it is never read as a file, and the `decide` hook sends no picture (D6).
-- The verb `box` of `claudetto-decide` asks Jev for the box of one target in a picture, with the model `jev-1.14.0` (D3, D5, D7).
-  It needs at least one `--image`, prints the four fractions and the confidence, adds the pixels of the first picture when its size is readable, and prints the raw answer with `--json`.
-  A box can come back when the target is absent, so the confidence matters.
-  Images are a preview feature of the TypeSafe API, so their format and limits can change.
-- The classic hook `PreModelSwitch` of the `handoff` slice asks the user to confirm a typed `/model` command when the prompt cache is warm (D47).
-  The question has the new model, the size of the context, the cache time to live, and the `estimated_cache_write_usd` that Claude Code gives to the hook.
-  The hook asks only when `source` is `command` (a typed `/model`), because `ask` is a refusal for any other `source`, and that switch goes on with no message.
-  A switch on a cold cache goes on with no message too, and the question has no cost sentence when the hook input has no number for the tokens or the cost.
-  The hook needs Claude Code `2.1.251` or later, and `claudetto` already needs `2.1.305`.
-
-### Changed
-
-- The result of the `advise` tool no longer has the token counts, so the model reads only the model name and the advice.
-  The adapter shows the counts to the user with `$.ui.log`, once for each answered reply.
-- The `bunx @fission-ai/openspec` commands of the `spec` skill now pin the version `1.14.3`, the version that the tests use.
-- The `proposal` instruction of the `task` preset now gives the reason for no capability, and says what to do when the change alters behavior: tell the user that it is a `story`.
-- The `apply` instruction of the `epic` and `task` presets now has the check rule of `story`: a fast check of the changed files after a change of behavior, the full checks at the end of each task group, and no check for an edit that changes no behavior.
-
-### Fixed
-
-- The verb `ask` of `claudetto-decide` now exits with code 2 for `--state` or `--json`, because it ignored them.
-  An `--image` path that is a directory now gets the message "is a directory, not a file", not "does not exist".
-- `/goal` rejects an `--until` date, or a date and time, that is not after now, so the goal does not stop at the first turn.
-  `HH:MM` still moves to the next day.
-- `/goal resume` resets a `--budget N%` goal.
-  The budget counts the growth of each plan limit since the start or the resume, and a limit whose window restarts counts from 0.
-- `guard` asks the person before `git push <remote> :<branch>` or `+:<branch>`, a delete refspec, also inside `bash -c`, `$(...)`, and `eval`.
-  The ask rule `Bash(git push* :* *)` is removed, because Claude Code 2.1.304 warns on its inner `:*`.
-- On Linux, `claudetto-setup` adds `docker *` to `sandbox.excludedCommands` of the user settings, for all projects, and `Bash(docker *)` to `permissions.allow` of `.claude/settings.local.json` in a Docker project, because Claude Code ignores `sandbox.network.allowUnixSockets` there.
-  The user settings hold the entry because Claude Code reads `excludedCommands` only from trusted settings when `allowUnsandboxedCommands` is `false`.
-  The `Setup` wiki page gives the accepted risk of the open Docker socket on macOS and of `docker *` outside the sandbox on Linux.
-- `guard` asks the person before a `docker` command that runs or creates a container, also with global options before the verb (`docker -H x run`) and inside `bash -c` or `$(...)`, so that on Linux the call does not run outside the sandbox with no prompt.
-- The `permissions.ask` rules of the snippet also cover `docker compose create` with a mount or `--privileged`.
-
-## [0.2.0] - 2026-10-21
+## [0.2.0]
 
 This release cuts `claudetto` to the parts that Claude Code does not do already, so the `.ts` source under `src/` (without `lab/`) goes from 33,219 lines to 11,288 lines, it needs Claude Code 2.1.305 or later, and `/claudetto:setup` must run again after the update, because it cleans the settings of 0.1.0.
 
@@ -69,6 +27,21 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 - `just release-check` fails while a row of `findings.md` is open (D38) and is not part of `just check`, and `setup` offers `codegraph install --target claude --location global` when `claudetto-codegraph` is enabled (D51).
 - The settings snippet sets `CLAUDE_CODE_PROMPT_CACHE_TTL=1h`, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`, `DISABLE_EXTRA_USAGE_COMMAND`, `DISABLE_UPGRADE_COMMAND`, and `DISABLE_INSTALL_GITHUB_APP_COMMAND`, has 25 exact git `ask` rules that name the destructive flags, such as `git push* --force` and `git reset* --hard`, and adds `permissions.ask` rules for `docker run`, `create`, `compose run`, and `compose up` with a mount or `--privileged` (D43).
 - `claudetto-setup --apply` appends `/.claudetto/`, `/.jscpd.json`, and `/.claude/settings.local.json` to the `.gitignore` of a project with `.git/`, under a comment header, adds no duplicate line, and changes nothing in a project with no `.git/`.
+- The option `--image <path>` of `claudetto-decide` adds a PNG or JPEG picture to the verbs `yes`, `pick`, `ask`, and `box`, and it repeats (D1, D2, D8).
+  The command reads the first bytes of each file to check its type, not its name, and it exits with code 2 before any request for a file that is not a PNG or JPEG, or that is over 16 MiB (`IMAGE_BYTES_MAX`, D4), or whose size is over 1568 px or under 280 px on a side.
+  On macOS, the command first scales a picture that is too large with `sips` into a copy, leaves the original as it is, and prints one line on stderr (`SCALE_TIMEOUT_MS`, D4).
+  Elsewhere the message has the `sips` and ImageMagick commands to scale it.
+  A request with a picture is multipart, with the header `TypeSafe-Danger-Zone-Images: true`, and a request with no picture and no `box` question keeps the JSON body that it had (D1).
+  The `--state` option stays text, so a path in it is never read as a file, and the `decide` hook sends no picture (D6).
+- The verb `box` of `claudetto-decide` asks Jev for the box of one target in a picture, with the model `jev-1.14.0` (D3, D5, D7).
+  It needs at least one `--image`, prints the four fractions and the confidence, adds the pixels of the first picture when its size is readable, and prints the raw answer with `--json`.
+  A box can come back when the target is absent, so the confidence matters.
+  Images are a preview feature of the TypeSafe API, so their format and limits can change.
+- The classic hook `PreModelSwitch` of the `handoff` slice asks the user to confirm a typed `/model` command when the prompt cache is warm (D47).
+  The question has the new model, the size of the context, the cache time to live, and the `estimated_cache_write_usd` that Claude Code gives to the hook.
+  The hook asks only when `source` is `command` (a typed `/model`), because `ask` is a refusal for any other `source`, and that switch goes on with no message.
+  A switch on a cold cache goes on with no message too, and the question has no cost sentence when the hook input has no number for the tokens or the cost.
+  The hook needs Claude Code `2.1.251` or later, and `claudetto` already needs `2.1.305`.
 
 ### Changed
 
@@ -97,6 +70,11 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 - Forked subagents are allowed again (`CLAUDE_CODE_FORK_SUBAGENT` is no longer set), the `Agent` text says to fork for a short task that needs the conversation, and a stopped subagent is resumed only within 5 minutes.
 - The `prompt` slice now replaces the shared `lean_body` section with `prompt.compose`, because Claude Code 2.1.302 and later send only the session sections through `prompt.section`, so the tailored text never reached the model, and a subagent gets the rule to remove what it made outside the project (D44).
 - When the install of a missing tool cannot run, the system prompt tells Claude to make the result with a tool that is there, such as `python3`, and to say so, and a different defect that was there before the task stays out of scope and goes in the follow-up, also when its test fails, because the eval of 2026-10-20 showed that the old texts made the plugin arm score lower (`missing-tool-is-a-step-hard`, `scope-followup-hard`).
+- The result of the `advise` tool no longer has the token counts, so the model reads only the model name and the advice.
+  The adapter shows the counts to the user with `$.ui.log`, once for each answered reply.
+- The `bunx @fission-ai/openspec` commands of the `spec` skill now pin the version `1.14.3`, the version that the tests use.
+- The `proposal` instruction of the `task` preset now gives the reason for no capability, and says what to do when the change alters behavior: tell the user that it is a `story`.
+- The `apply` instruction of the `epic` and `task` presets now has the check rule of `story`: a fast check of the changed files after a change of behavior, the full checks at the end of each task group, and no check for an edit that changes no behavior.
 
 ### Removed
 
@@ -110,6 +88,19 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 - `claudetto-schema` resolves a lazy reference to a name that the settings module imports in the module that exports it.
   Without it, the 2.1.304 bundle gave `hooks` no `type` and no `additionalProperties`.
 - The eval judge `report-says-nothing-broken` of `false-alarm-sum` has a rubric with no overlap, so a reply that says `I could not find a cause` and that the tests pass is a pass.
+- The verb `ask` of `claudetto-decide` now exits with code 2 for `--state` or `--json`, because it ignored them.
+  An `--image` path that is a directory now gets the message "is a directory, not a file", not "does not exist".
+- `/goal` rejects an `--until` date, or a date and time, that is not after now, so the goal does not stop at the first turn.
+  `HH:MM` still moves to the next day.
+- `/goal resume` resets a `--budget N%` goal.
+  The budget counts the growth of each plan limit since the start or the resume, and a limit whose window restarts counts from 0.
+- `guard` asks the person before `git push <remote> :<branch>` or `+:<branch>`, a delete refspec, also inside `bash -c`, `$(...)`, and `eval`.
+  The ask rule `Bash(git push* :* *)` is removed, because Claude Code 2.1.304 warns on its inner `:*`.
+- On Linux, `claudetto-setup` adds `docker *` to `sandbox.excludedCommands` of the user settings, for all projects, and `Bash(docker *)` to `permissions.allow` of `.claude/settings.local.json` in a Docker project, because Claude Code ignores `sandbox.network.allowUnixSockets` there.
+  The user settings hold the entry because Claude Code reads `excludedCommands` only from trusted settings when `allowUnsandboxedCommands` is `false`.
+  The `Setup` wiki page gives the accepted risk of the open Docker socket on macOS and of `docker *` outside the sandbox on Linux.
+- `guard` asks the person before a `docker` command that runs or creates a container, also with global options before the verb (`docker -H x run`) and inside `bash -c` or `$(...)`, so that on Linux the call does not run outside the sandbox with no prompt.
+- The `permissions.ask` rules of the snippet also cover `docker compose create` with a mount or `--privileged`.
 
 ## [0.1.0-alpha.1] - 2026-10-15
 

@@ -1,7 +1,7 @@
 // The mod handler of the `guard` slice:
 // `tool.call` on `Bash` denies a command that only prints a file and names the `Read` call (design D22).
-// `tool.check` on `Bash` asks the person before a `git push` with a delete refspec such as `origin :branch`, because an ask rule cannot match it (task 4.1 of `post-0-2-0`),
-// and before a `docker` command that runs or creates a container, also with options before the verb (task 3.3 of `post-0-2-0`).
+// `tool.check` on `Bash` asks the person before a `git push` with a delete refspec such as `origin :branch`, because an ask rule cannot match it (task 4.1 of `0-2-0`),
+// and before a `docker` command that runs or creates a container, also with options before the verb (task 3.3 of `0-2-0`).
 // The ask has `decider: "person"`, so in each mode the dialog is the only approver, and no allow rule, classifier, or `bypassPermissions` settles it.
 // Where no person can be asked, the call is refused (Claude Code 2.1.304).
 //

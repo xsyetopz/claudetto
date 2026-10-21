@@ -366,7 +366,7 @@ It ran on 2026-10-21.
 - The run exited with code 1 only because the baseline was at the maximum, so no gain could show.
 - The check has 10 runs for each arm, so it meets the `D25` floor.
 
-The full record of the eval gate of task 6.4 is in the openspec change `release-0-2-0`, in the file [`eval-gate-6.4.md`](https://github.com/xsyetopz/claudetto/blob/claudetto--v0.2.0/openspec/changes/release-0-2-0/eval-gate-6.4.md) at the tag `claudetto--v0.2.0`.
+The full record of the eval gate of task 6.4 is in the openspec change `release-0-2-0`, in the file [`eval-gate-6.4.md`](https://github.com/xsyetopz/claudetto/blob/1c579e10/openspec/changes/release-0-2-0/eval-gate-6.4.md) at the tag `claudetto--v0.2.0`.
 
 ## Limits
 

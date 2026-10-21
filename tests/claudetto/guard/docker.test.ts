@@ -1,4 +1,4 @@
-// The docker-run rule (task 3.3 of `post-0-2-0`) with commands as strings.
+// The docker-run rule (task 3.3 of `0-2-0`) with commands as strings.
 // No command runs.
 
 import { expect, test } from "bun:test";

@@ -13,7 +13,7 @@ A `Bash` print of a file gets no stub, so the text enters the context again.
 The `guard` slice denies such a print and names the `Read` call that does the same work.
 
 The slice has one control, `print deny`.
-The ask before a delete refspec has no control entry: it keeps the ask of 0.2.0 for this form, and it does not save tokens (task 4.1 of `post-0-2-0`).
+The ask before a delete refspec has no control entry: it keeps the ask of 0.2.0 for this form, and it does not save tokens (task 4.1 of `0-2-0`).
 Remove `print deny` when Claude Code gives the short stub for a `Bash` print too.
 
 ## What the Hook Does

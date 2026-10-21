@@ -1,6 +1,6 @@
 # Tasks
 
-> This change starts after the tag `claudetto--v0.2.0`.
+> This change starts after commit `1c579e10`, where the tags of 0.2.0 were before 2026-10-21.
 > The data for each task is in `evidence.md`.
 > Mark a task done only after its check ran and passed.
 > Ask the user before each paid run, and give the expected cost and the weekly share with the question.

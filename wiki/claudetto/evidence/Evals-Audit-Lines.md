@@ -2,7 +2,7 @@
 
 # Evals of the Audit Lines
 
-This page gives the paid runs that tested three lines of the audit of `post-0-2-0`.
+This page gives the paid runs that tested three lines of the audit of `0-2-0`.
 The audit marked each line "flag only".
 Each run compares the arm with the line, the arm without the line, and a baseline with no plugin.
 Read it to see which lines the runs support and which claims they do not.
@@ -80,7 +80,7 @@ The cause is the same as above.
 Their with results show the plugin loaded with the default style.
 The trace of `accusation-warranted` in `plugins/claudetto/evals/results/2026-10-20T02-41-08-446Z/` gives `"output_style":"default"` in its init event.
 Do not cite these cases as style results.
-Task 5.4 of `post-0-2-0` tracks their regrade.
+Task 5.4 of `0-2-0` tracks their regrade.
 
 ## Cost
 
