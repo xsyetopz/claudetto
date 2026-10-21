@@ -10,7 +10,7 @@
 - [x] 1.1 Write the sizes of the spec profiles into `src/wiki/claudetto/slices/Spec.md` from `evidence.md`, section "Spec Profile Sizes".
   Say that the sizes are bytes.
   Check: `just generate && just test tests/tools`
-- [ ] 1.2 Write the `ground` replay numbers into the section "Replay" of `src/wiki/claudetto/slices/Ground.md` from `evidence.md`, section "Ground Replay".
+- [x] 1.2 Write the `ground` replay numbers into the section "Replay" of `src/wiki/claudetto/slices/Ground.md` from `evidence.md`, section "Ground Replay".
   Check: `just generate && bun run lint:md`
 - [ ] 1.3 Measure the false-deny rate of `ground` again on real plan edits, when the transcripts hold plan edits.
   The local run of 2026-10-18 checked 0 events with the shipped filter.

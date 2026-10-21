@@ -75,9 +75,30 @@ If the hook throws, Claude Code logs the failure and the call runs.
 
 ## Replay
 
-The `ground` slice checks the claims of a plan file.
-It denies a plan that cites a number, a line, or a convention with no source.
-This stops Claude from writing guesses as facts.
+A replay runs the check of the hook on the tool calls of recorded sessions.
+It makes no model call.
+
+- The module `slices/ground/adapters/check.ts` exports `check(event, prior)`.
+  It runs the source check on one recorded `PreToolUse` call.
+- The script `replay.ts` of the `sessions` skill in `claudetto-sessions` feeds it the calls:
+  `bun plugins/claudetto-sessions/skills/sessions/replay.ts plugins/claudetto/slices/ground/adapters/check.ts`
+- The replay reads the files of the project as they are today.
+  A `file:line` reference resolves as a path suffix under the `cwd`, and a reference that does not resolve passes.
+
+The run of 2026-10-18 used 44 transcript files (46 MB) from `~/.claude/projects`:
+
+| Run | Calls replayed | Events checked | Denies |
+| --- | --- | --- | --- |
+| The shipped filter | 990 | 0 | 0 |
+| Stress: each `Write` and `Edit` of a `.md` file counts as a plan file | 990 | 4 | 1 |
+| Stress: each `Write` and `Edit` counts as a plan file | 990 | 19 | 1 |
+
+- The transcripts held no `Write` or `Edit` of a plan or spec file, so the shipped filter checked no event.
+  The rate of false denies on real plan edits is not measured yet.
+- The one deny is a reference to `src/kernel/paths.ts:55-70` from a past edit.
+  The file has 34 lines now, so the reference is stale, and the deny is not false.
+- The sample is too small to set a rate.
+  A false deny costs one rewrite, because the deny names each claim and gives three ways out.
 
 ## See Also
 
