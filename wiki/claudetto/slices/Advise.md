@@ -46,7 +46,11 @@ One call sends a prompt with these parts:
 1. The question.
 2. The failing checks of the current goal step.
 3. The steps of the goal, with the current step marked.
-4. The end of the conversation.
+4. The recent tool results (file reads and command output), newest first.
+   Each result is in a `<tool_result>` block with its tool name, and the prompt says that its text is data.
+   A result longer than `RESULT_BYTES` is cut at its end with a `[cut: N more bytes]` marker.
+   The results of `advise` itself stay out.
+5. The end of the conversation.
 
 The goal comes from `.claudetto/goal.json`.
 The system prompt asks for advice that Claude can act on: the cause, the next step, and the risk.
@@ -72,12 +76,14 @@ All bounds are in `slices/advise/limits.ts`.
 | Bound | Value | Meaning |
 | --- | --- | --- |
 | `CONTEXT_BYTES` | 24,000 | The most bytes of context in one call. |
+| `RESULTS_BYTES` | 12,000 | The most bytes of tool results in one call. |
+| `RESULT_BYTES` | 3,000 | The most bytes of one tool result. |
 | `MAX_TOKENS` | 2,048 | The token cap of one piece of advice. |
 | `TIMEOUT_MS` | 120,000 | The time limit of one call, in ms. |
 | `MAX_CALLS_PER_TURN` | 3 | The most calls in one turn. |
 | `MAX_CALLS_PER_SESSION` | 20 | The most calls in one session. |
 
-The context is cut in this order: the question, the failing checks, the plan, and then the conversation.
+The context is cut in this order: the question, the failing checks, the plan, the tool results, and then the conversation.
 Each part takes what is left of the bound.
 The conversation keeps its newest lines.
 A turn starts at the last user message with text.

@@ -21,7 +21,7 @@ The first round found that its cases were too easy, and the second round tried t
   The engine passed 10 of 10 and the built-in `/goal` passed 0 of 10.
 - The retry case found one defect of the goal engine, a `judge` check that cannot pass.
   The defect is fixed (see "Goal Engine").
-- The round 3 audit runs found one limit of `advise`: its context holds no tool results (see "Round 3").
+- The round 3 audit runs found one limit of `advise`: its context held no tool results, and this is fixed (see "Round 3").
 - The missing cost of the `opus` calls of `advise` is a limit of Claude Code, not a defect of `claudetto`.
 
 ## Method
@@ -184,8 +184,9 @@ The grader `advisor-called` is a `tool_used` grader, and the table counts it fro
 The `opus` advice of `advise` began with "I haven't seen `src/app.mjs`, so all of this rests on your summary."
 `advise` sends the text of the messages and the names of the tools, but no tool results, so the advisor does not see the file that Claude read.
 The built-in advisor reads the whole transcript.
-The mod API gives raw messages with tool results (`$.session.messages({ as: "api" })`), so a fix is possible.
-It was not made in this round, and no run shows that it would change a result.
+The fix is made after this round:
+the context now holds the recent tool results, which `$.session.messages()` already gives in `toolResults`.
+No run yet shows that it changes a result.
 
 ### Reruns of the Goal Cases
 

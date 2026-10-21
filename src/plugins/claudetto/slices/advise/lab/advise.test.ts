@@ -2,7 +2,12 @@
 // The stubs record the request of the model, and no model call goes out.
 // The file is self-contained, because `just generate` copies it to `tests/` of the plugin, where it cannot import a relative file.
 
-import type { ModelCompleteResult, On, PluginOptions } from "claude-code";
+import type {
+  ModelCompleteResult,
+  On,
+  PluginOptions,
+  SessionMessage,
+} from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
 
 declare module "claude-code" {
@@ -34,7 +39,7 @@ const message = (text: string, tools: string[] = []) => ({
 const stub = (
   on: On,
   reply: ModelCompleteResult,
-  history = [message("hello")],
+  history: SessionMessage[] = [message("hello")],
 ) => {
   const seen = {
     requests: [] as Record<string, unknown>[],
@@ -169,5 +174,32 @@ test(
     for (let i = 0; i < 20; i += 1) await ask($);
     expect(String((await ask($)).result)).toContain("in this session");
     expect(seen.requests).toHaveLength(20);
+  },
+);
+
+test(
+  "a tool result of the conversation reaches the request as data",
+  ON,
+  async ($: Engine, on: On) => {
+    const seen = stub(on, { isAnswered: true, text: "x", usage: USAGE }, [
+      { role: "user", text: "go", toolUses: [] },
+      {
+        role: "assistant",
+        text: "",
+        toolUses: [{ tool_use_id: "r1", tool: "Read", input: {} }],
+      },
+      {
+        role: "user",
+        text: "",
+        toolUses: [],
+        toolResults: [
+          { tool_use_id: "r1", text: "export const app = 1;", isError: false },
+        ],
+      },
+    ]);
+    await ask($);
+    const prompt = String(seen.requests[0]?.["prompt"]);
+    expect(prompt).toContain('<tool_result tool="Read" id="r1">');
+    expect(prompt).toContain("export const app = 1;");
   },
 );

@@ -85,6 +85,9 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 ### Fixed
 
+- The `advise` tool now sends the advisor the recent tool results (file reads and command output), newest first, in `<tool_result>` blocks that the prompt marks as data.
+  Before, the advisor saw no tool result and said that it had not seen a file that Claude had read.
+  The bounds are `RESULTS_BYTES` and `RESULT_BYTES` in `slices/advise/limits.ts`.
 - A `/goal` condition such as "`cmd` exits 0" no longer makes a `judge` check that cannot pass, so the goal does not stop by `stall` when the command exits 0.
   A span after `returns`, `with`, or `code` is a value, so it is not a `run` check.
 - The `ground` slice no longer denies a number in the name of a standard (`ISO 8601`, `RFC 3339`), a number that the source writes with `_` (`1_000_000`), a binary size in bytes (`16 MiB` and `16,777,216`), a total of a table column or a difference of two cells of a row, or the word `npm` in a sentence that is no command.

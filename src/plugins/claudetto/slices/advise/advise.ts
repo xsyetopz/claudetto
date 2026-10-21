@@ -6,7 +6,7 @@ import type {
   ModelEffort,
   SessionMessage,
 } from "claude-code";
-import { MAX_CALLS_PER_TURN } from "./limits.ts";
+import { MAX_CALLS_PER_TURN, RESULT_BYTES, RESULTS_BYTES } from "./limits.ts";
 import { ASK, ERROR_FAIL, RESULT } from "./prompts.ts";
 
 /** The short name of the tool, and the name that `tool.call` carries for it. */
@@ -84,9 +84,39 @@ const tailOf = (messages: readonly SessionMessage[], room: number): string => {
   return kept.join("\n");
 };
 
+/** One tool result as a block of the prompt: the tool, the id, and the text cut to `RESULT_BYTES` with a marker. */
+const blockOf = (tool: string, id: string, text: string): string => {
+  const body = clip(text, RESULT_BYTES);
+  const cut = bytes(text) - bytes(body);
+  return `<tool_result tool="${tool}" id="${id}">\n${body}${cut > 0 ? `\n[cut: ${cut} more bytes]` : ""}\n</tool_result>`;
+};
+
+/** The newest tool results that fit in `room` bytes (and in `RESULTS_BYTES`), newest first. The results of `advise` itself stay out. */
+const resultsOf = (
+  messages: readonly SessionMessage[],
+  room: number,
+): string => {
+  const names = new Map(
+    messages.flatMap((m) => m.toolUses.map((t) => [t.tool_use_id, t.tool])),
+  );
+  const kept: string[] = [];
+  let left = Math.min(room, RESULTS_BYTES);
+  for (const m of [...messages].reverse()) {
+    for (const r of [...(m.toolResults ?? [])].reverse()) {
+      const tool = names.get(r.tool_use_id) ?? "unknown";
+      if (tool === TOOL_NAME || !r.text) continue;
+      const block = blockOf(tool, r.tool_use_id, r.text);
+      if (bytes(block) + 1 > left) return kept.join("\n");
+      kept.push(block);
+      left -= bytes(block) + 1;
+    }
+  }
+  return kept.join("\n");
+};
+
 /**
- * The prompt of one call: the question, the failing checks and the steps of the goal (`goalText` is the state file, or `null`), and the end of the conversation.
- * The parts together are at most `limit` bytes, cut in this order: the question, the failing checks, the plan, the tail.
+ * The prompt of one call: the question, the failing checks and the steps of the goal (`goalText` is the state file, or `null`), the recent tool results, and the end of the conversation.
+ * The parts together are at most `limit` bytes, cut in this order: the question, the failing checks, the plan, the tool results, the tail.
  */
 export const cutContext = (input: {
   readonly question: string;
@@ -117,7 +147,15 @@ export const cutContext = (input: {
       .map((s, i) => `${i === goal?.step ? ">" : "-"} ${i + 1}. ${s.title}`)
       .join("\n"),
   );
-  return ASK({ plan, failing, question, tail: tailOf(input.messages, left) });
+  const results = resultsOf(input.messages, left);
+  left -= bytes(results);
+  return ASK({
+    plan,
+    failing,
+    question,
+    results,
+    tail: tailOf(input.messages, left),
+  });
 };
 
 /** Whether the turn has used its calls. A turn starts at the last message of the user with text. `id` is the call itself, which the transcript may already hold. */

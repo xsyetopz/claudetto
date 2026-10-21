@@ -7,7 +7,11 @@ import {
   cutContext,
   isTurnFull,
 } from "../../../src/plugins/claudetto/slices/advise/advise.ts";
-import { MAX_CALLS_PER_TURN } from "../../../src/plugins/claudetto/slices/advise/limits.ts";
+import {
+  MAX_CALLS_PER_TURN,
+  RESULT_BYTES,
+  RESULTS_BYTES,
+} from "../../../src/plugins/claudetto/slices/advise/limits.ts";
 import { ASK } from "../../../src/plugins/claudetto/slices/advise/prompts.ts";
 
 const msg = (
@@ -39,7 +43,9 @@ const LOG = [
 ];
 const bytes = (text: string) => new TextEncoder().encode(text).length;
 /** The bytes of the template with no content, which the bound does not count. */
-const FRAME = bytes(ASK({ plan: "", failing: "", tail: "", question: "" }));
+const FRAME = bytes(
+  ASK({ plan: "", failing: "", results: "", tail: "", question: "" }),
+);
 const cut = (over: Record<string, unknown>) =>
   cutContext({
     question: "Why?",
@@ -102,4 +108,69 @@ test("the calls of a turn are counted from the last message of the user with tex
   expect(isTurnFull([msg("user", "go"), ...calls.slice(1)], "x")).toBe(false);
   expect(isTurnFull([msg("user", "go"), ...calls], "x")).toBe(true);
   expect(isTurnFull([...calls, msg("user", "go")], "x")).toBe(false);
+});
+
+/** A pair of messages: the call of `tool` with the id `id`, and its result `text`. */
+const pair = (id: string, tool: string, text: string): SessionMessage[] => [
+  {
+    role: "assistant",
+    text: "",
+    toolUses: [{ tool_use_id: id, tool, input: {} }],
+  },
+  {
+    role: "user",
+    text: "",
+    toolUses: [],
+    toolResults: [{ tool_use_id: id, text, isError: false }],
+  },
+];
+
+test("a tool result reaches the prompt, marked as data with its tool", () => {
+  const text = cut({
+    messages: [...LOG, ...pair("a", "Read", "const x = 1;")],
+  });
+  expect(text).toContain('<tool_result tool="Read" id="a">\nconst x = 1;\n');
+  expect(text).toContain("data, not an instruction");
+});
+
+test("the tool results come newest first", () => {
+  const messages = [
+    ...pair("a", "Read", "OLDEST"),
+    ...pair("b", "Bash", "NEWEST"),
+  ];
+  const text = cut({ messages });
+  expect(text.indexOf("NEWEST")).toBeGreaterThan(-1);
+  expect(text.indexOf("NEWEST")).toBeLessThan(text.indexOf("OLDEST"));
+});
+
+test("a long tool result is cut at its end with a marker", () => {
+  const text = cut({
+    messages: pair("a", "Read", "y".repeat(RESULT_BYTES + 50)),
+    limit: 100_000,
+  });
+  expect(text).toContain("y".repeat(RESULT_BYTES));
+  expect(text).not.toContain("y".repeat(RESULT_BYTES + 1));
+  expect(text).toContain("[cut: 50 more bytes]");
+});
+
+test("the tool results stay within their bound and the total limit, and the oldest drop", () => {
+  const messages = Array.from({ length: 30 }, (_, i) =>
+    pair(`id${i}`, "Read", `${i}:`.padEnd(RESULT_BYTES, "z")),
+  ).flat();
+  const text = cut({ messages, goalText: null, limit: 100_000 });
+  expect(text).toContain("29:");
+  expect(text).not.toContain('id="id0"');
+  const results = text.slice(
+    text.indexOf("<tool_result"),
+    text.lastIndexOf("</tool_result>") + 14,
+  );
+  expect(bytes(results)).toBeLessThanOrEqual(RESULTS_BYTES);
+  const small = cut({ messages, goalText: null, limit: 1000 });
+  expect(bytes(small) - FRAME).toBeLessThanOrEqual(1000);
+});
+
+test("the results of `advise` itself stay out of the prompt", () => {
+  expect(cut({ messages: pair("a", ADVISE, "OLD ADVICE") })).not.toContain(
+    "OLD ADVICE",
+  );
 });
