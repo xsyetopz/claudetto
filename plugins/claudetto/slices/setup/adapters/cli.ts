@@ -9,7 +9,7 @@
 // It cleans the keys of 0.1.0 out of the settings file and out of `CLAUDE.md`, then merges the settings snippet into the settings file.
 // It writes nothing without `--apply`.
 // In a project that uses Docker, on macOS only, it also offers the Docker socket in `sandbox.network.allowUnixSockets` of the local settings, and writes it with `--apply`.
-// Claude Code ignores `allowUnixSockets` on Linux, so setup skips the step there.
+// Claude Code ignores `allowUnixSockets` on Linux, so there it offers `docker *` in `sandbox.excludedCommands` with `Bash(docker *)` in `permissions.allow` instead.
 // With `--apply`, in a project with `.git/`, it also appends the local files of claudetto to `.gitignore`.
 // With `--advisor claudetto`, the snippet also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor only.
 // With no `--advisor`, the CLI reads the `advisor` option from `pluginConfigs` in the user settings, because a CLI run by the user gets no `CLAUDE_PLUGIN_OPTION_*` env var.
@@ -116,7 +116,9 @@ const ignoreLocal = async (projectDir: string): Promise<void> => {
  * In a project that uses Docker, adds the Docker socket to `sandbox.network.allowUnixSockets` of the local settings,
  * because the socket path belongs to the machine of the user.
  * It prints the offer and writes only with `apply`.
- * It does nothing off macOS, where Claude Code ignores `allowUnixSockets`.
+ * On Linux, where Claude Code ignores `allowUnixSockets`, it adds `docker *` to `sandbox.excludedCommands` and `Bash(docker *)` to `permissions.allow` instead.
+ * The `permissions.ask` rules of `docker-ask.ts` still win over that allow rule.
+ * It does nothing on other platforms.
  * It gives the exit status: 1 when the local settings do not parse.
  */
 const allowDocker = async (
@@ -128,7 +130,8 @@ const allowDocker = async (
   platform: string,
   hintShown: boolean,
 ): Promise<number> => {
-  if (platform !== "darwin") return 0;
+  if (platform !== "darwin" && platform !== "linux") return 0;
+  const linux = platform === "linux";
   const inProject = (name: string) =>
     fs.existsSync(path.join(projectDir, name));
   const texts: Record<string, string> = {};
@@ -139,18 +142,22 @@ const allowDocker = async (
   if (!usesDocker(inProject, read, () => fs.readdirSync(projectDir))) return 0;
   const socket = dockerSocket(env, env["HOME"] || os.homedir(), exists);
   if (!socket) return 0;
+  const offer = linux
+    ? {
+        sandbox: { excludedCommands: ["docker *"] },
+        permissions: { allow: ["Bash(docker *)"] },
+      }
+    : { sandbox: { network: { allowUnixSockets: [socket] } } };
   const file = path.join(projectDir, PROJECT_LOCAL_SETTINGS);
   const current = await readReported(file, io);
   if (!current) return 1;
   const changes: string[] = [];
-  const next = merge(
-    current,
-    { sandbox: { network: { allowUnixSockets: [socket] } } },
-    changes,
-  );
+  const next = merge(current, offer, changes);
   if (!changes.length) return 0;
   io.log(
-    `Docker project: ${file} gets sandbox.network.allowUnixSockets ${socket}`,
+    linux
+      ? `Docker project: ${file} gets sandbox.excludedCommands "docker *" and permissions.allow "Bash(docker *)"`
+      : `Docker project: ${file} gets sandbox.network.allowUnixSockets ${socket}`,
   );
   if (!apply) {
     if (!hintShown) io.log(`\n${DRY_RUN}`);

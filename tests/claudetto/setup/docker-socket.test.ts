@@ -1,4 +1,5 @@
 // The Docker step of `claudetto-setup`: a project that uses Docker gets `sandbox.network.allowUnixSockets` with the socket, in the local settings.
+// On Linux, Claude Code ignores `allowUnixSockets`, so the step writes `docker *` to `excludedCommands` with an allow rule.
 
 import { expect, test } from "bun:test";
 import { mkdir, mkdtemp } from "node:fs/promises";
@@ -44,7 +45,14 @@ const run = async (
     ? await Bun.file(local).text()
     : null;
   const settings = text ? JSON.parse(text) : {};
-  return { sockets: settings.sandbox?.network?.allowUnixSockets, out, text };
+  return {
+    sockets: settings.sandbox?.network?.allowUnixSockets,
+    excluded: settings.sandbox?.excludedCommands,
+    allow: settings.permissions?.allow,
+    out,
+    text,
+    settings,
+  };
 };
 
 test("setup offers the Docker socket for a project with a `Dockerfile`", async () => {
@@ -107,9 +115,39 @@ test("`--addons` leaves the local settings as they are", async () => {
   expect(text).toBeNull();
 });
 
-test("off macOS, setup writes nothing for the socket", async () => {
-  const { text } = await run({ Dockerfile: "FROM scratch\n" }, [ORB], {
+test("on Linux, setup writes `docker *` to `excludedCommands` with an allow rule, and no socket", async () => {
+  const { sockets, excluded, allow } = await run(
+    { Dockerfile: "FROM scratch\n" },
+    [ORB],
+    { platform: "linux" },
+  );
+  expect(sockets).toBeUndefined();
+  expect(excluded).toEqual(["docker *"]);
+  expect(allow).toEqual(["Bash(docker *)"]);
+});
+
+test("on Linux, a second run adds no duplicate, and the entries of the user stay", async () => {
+  const { excluded, allow } = await run({ Dockerfile: "x\n" }, [ORB], {
     platform: "linux",
+    times: 2,
+    before: {
+      sandbox: { excludedCommands: ["make *"] },
+      permissions: { allow: ["Bash(ls)"] },
+    },
+  });
+  expect(excluded).toEqual(["make *", "docker *"]);
+  expect(allow).toEqual(["Bash(ls)", "Bash(docker *)"]);
+});
+
+test("on macOS, setup writes no `excludedCommands` entry for `docker *`", async () => {
+  const { excluded, allow } = await run({ Dockerfile: "x\n" }, [ORB]);
+  expect(excluded).toBeUndefined();
+  expect(allow).toBeUndefined();
+});
+
+test("off macOS and Linux, setup writes nothing for Docker", async () => {
+  const { text } = await run({ Dockerfile: "FROM scratch\n" }, [ORB], {
+    platform: "win32",
   });
   expect(text).toBeNull();
 });

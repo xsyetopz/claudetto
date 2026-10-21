@@ -136,8 +136,21 @@ A file that a team shares, such as an OpenSpec change, is not in the list.
 In a project that uses Docker (a `Dockerfile`, a Compose file, or a `justfile` or `package.json` that calls `docker`), the command offers the Docker socket in `sandbox.network.allowUnixSockets`, and with `--apply` it writes the socket to `.claude/settings.local.json`.
 The socket is the `unix://` path of `DOCKER_HOST`, or else the first of `~/.orbstack/run/docker.sock`, `~/.docker/run/docker.sock`, and `/var/run/docker.sock` that exists.
 It changes nothing in a project that does not use Docker.
-This step runs on macOS only, because Claude Code ignores `allowUnixSockets` on Linux.
+On macOS, the socket entry keeps `docker` in the sandbox.
+Claude Code ignores `allowUnixSockets` on Linux, so there the command writes `docker *` to `sandbox.excludedCommands` and `Bash(docker *)` to `permissions.allow` instead.
+A command in `excludedCommands` runs outside the sandbox, and the `permissions.ask` rules of the Docker commands still win over the allow rule.
+On other platforms, the step does nothing.
 A local settings file that does not parse stops the step with an error.
+
+### Accepted Risk: The Open Socket
+
+With the Docker socket open, a sandboxed process can reach the Docker daemon without the `docker` rules.
+It can use `curl --unix-socket`, `docker -H`, or `docker --context`.
+Such a call skips the `permissions.ask` rules of `docker-ask.ts`, which match the text of a `docker` command only.
+The daemon then has the rights of the daemon, not the limits of the sandbox.
+The same holds on Linux, where `docker *` runs outside the sandbox.
+This risk is accepted, because Docker does not work in the sandbox without the socket.
+Do not use the Docker step in a project in which you do not trust the commands that Claude runs.
 
 ## See Also
 

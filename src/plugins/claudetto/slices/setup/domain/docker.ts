@@ -1,5 +1,6 @@
 // The Docker step of setup: the sandbox blocks the Docker socket, so a project that uses Docker needs `sandbox.network.allowUnixSockets` with that socket.
-// Measured on 2026-10-19 with sandbox-runtime 0.0.80: the socket rule is enough, and `excludedCommands` is not needed.
+// Measured on 2026-10-19 with sandbox-runtime 0.0.80: the socket rule is enough, and `excludedCommands` is not needed on macOS.
+// Claude Code ignores `allowUnixSockets` on Linux, so there the step uses the `excludedCommands` fallback (see `adapters/cli.ts`).
 
 import path from "node:path";
 
