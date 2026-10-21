@@ -5,18 +5,20 @@ The first is the tool `advise` with the built-in advisor (task 5.1).
 The second is the goal engine with the built-in `/goal` (task 5.2).
 They ran on 2026-10-21, on Claude Code `2.1.306`, with Haiku 5.5 as the working model.
 Each arm has 10 runs for each case, so every case meets the D25 floor.
+There are two rounds.
+The first round found that its cases were too easy, and the second round tried to fix that.
 
 ## Result
 
-- Both comparisons show no difference.
-  Every run of every arm passed all graders, 80 runs in all.
-- The `advise` tasks cannot tell an advisor from no advisor.
-  The control arm, with no advisor, also passed 20 of 20 runs.
-  So "as good" holds, but "better" cannot show.
-- The default of the `advisor` option stays `builtin`.
-  See "Decision for the Default".
-- The goal engine showed no defect.
-  On the two cases it used 1 to 1.5 turns more than the built-in `/goal`, and the cost was lower.
+- `advise` against the built-in advisor: no difference on two cases (60 runs with the control), and no case could tell an advisor from none.
+  Every control run without an advisor passed, so the comparison cannot show "better".
+  The default of `advisor` stays `builtin`.
+- Goal engine against the built-in `/goal`: the engine is better on the retry case `goal-blind-qa`, with 10 of 10 passes against 0 of 10.
+  The engine ran the QA checks and started 4 retry turns in each run.
+  The built-in `/goal` has no way to run a check, so it stopped at the first turn.
+- The retry case found one defect of the goal engine, a `judge` check that cannot pass.
+  The defect is fixed (see "Goal Engine").
+- The missing cost of the `opus` calls of `advise` is a limit of Claude Code, not a defect of `claudetto` (see "Cost of `advise`").
 
 ## Method
 
@@ -31,6 +33,8 @@ Each arm has 10 runs for each case, so every case meets the D25 floor.
   The plugin loads with `--plugin-dir`, and the options of the arm are in `pluginConfigs` of the sandbox settings.
   The script grades the files with the `regex` graders, and the tool calls with the `tool_used` graders.
   An optional `final.sh` of the case runs in the workspace, and it must exit 0.
+  The cases are in `tests/compare/`, not in `evals/` of a slice, so they do not ship in `plugins/`.
+  So `claude plugin eval`, `just eval`, and `just eval-tune` never see them (`tests/claudetto/evals/compare-cases.test.ts`).
   A run passes when all graders pass.
 - Command: `bun tools/compare-builtins.ts <case dir> <arm> --runs 10 -j 4 --max-cost-usd <usd>`.
 - Pilots: one run of each case on each arm ran first, to catch a broken grader.
@@ -62,8 +66,14 @@ Each arm has 10 runs for each case, so every case meets the D25 floor.
   Graders: `final.sh` runs both commands.
 - `goal-first-violation`: Eight modules with `var` and no header, three bugs, and a style script that stops at the first fault.
   The prompt is the same.
+- `goal-blind-qa`: The task is in `TASK.md` and says little.
+  `CLAUDE.md` says the files in `check/` belong to QA, and that Claude must not open or run them, because the goal runs them.
+  `check/qa.mjs` shows the first of six rules that fails, so the first attempt fails and the goal must start new turns.
+  The prompt is ``/goal `node check/qa.mjs` exits 0``.
+  Graders: `src/slug.mjs` exists, `qa.mjs` was not read, and `final.sh` runs `qa.mjs`.
+  The built-in `/goal` has no engine that runs a check, so this case tests exactly the feature that differs.
 
-The cases are in `src/plugins/claudetto/slices/advise/evals/` and `src/plugins/claudetto/slices/goal/evals/`.
+The cases are in `tests/compare/`.
 
 ## Results
 
@@ -81,6 +91,8 @@ The cost is the sum of `total_cost_usd` of the runs.
 | `goal-two-checks` | `goal-builtin` | 10/10 | 9.5 | 0.067 |
 | `goal-first-violation` | `goal-ours` | 10/10 | 17.6 | 0.062 |
 | `goal-first-violation` | `goal-builtin` | 10/10 | 16.6 | 0.079 |
+| `goal-blind-qa` | `goal-ours` | 10/10 | 3.5 | 0.097 |
+| `goal-blind-qa` | `goal-builtin` | 0/10 | 14.9 | 0.103 |
 
 - For `advise`, the pooled pass rate is 20/20 on each side.
   The 95% Newcombe CI of the difference is [-0.16, +0.16].
@@ -94,49 +106,93 @@ The cost is the sum of `total_cost_usd` of the runs.
 - The goal arms cost the same within noise, and the working model is cheap.
   The turn counts differ by about 1 to 1.5 turns, and the ranges overlap.
 
+## Attempts at a Case That Separates the Arms
+
+The coordinator asked for two `advise` cases where the control without an advisor passes 5 of 10 runs or fewer.
+Haiku 5.5 passed every candidate, in 1-run to 6-run pilots of the control arm:
+
+| Candidate | Control passes | Pilot cost (USD) |
+| --- | ---: | ---: |
+| `mergeIntervals` with three faults, one visible | 4/4 | 0.03 |
+| A stale test, with the rule in `docs/RULES.md` and a hint in `CLAUDE.md` | 4/4 | 0.03 |
+| The same, with the hint removed | 6/6 | 0.05 |
+| A generated file `src/routes.mjs` that `final.sh` regenerates | 4/4 and 4/4 | 0.05 |
+| `isoWeek` near the turn of a year, hidden dates | 4/4 and 4/4 | 0.08 |
+| Eight functions with one subtle fault each, hidden audit | 6/6 | 0.11 |
+| The same, with no `Bash` tool to run code | 6/6 | 0.10 |
+| A logic puzzle of 6 houses and 54 clues, no `Bash` tool | 6/6, 6/6 with `--effort low`, 6/6 with thinking off, then 10/10 | 0.28 |
+
+Haiku found each hidden fault by reading the code, and solved the puzzle by hand.
+A case that Haiku fails alone needs a task that reasoning, reading, and running code cannot solve, and then an advisor that sees only the conversation cannot solve it either.
+So no honest case with a control at 5 of 10 or less was found.
+
 ## Decision for the Default
 
 The default of `advisor` stays `builtin`, and the CHANGELOG has no entry.
 
 1. The tasks cannot show that an advisor helps.
-   The control without an advisor passed all 20 runs.
-   So parity here is not evidence that `advise` is as good where an advisor matters.
+   The control without an advisor passed all 20 runs of the first round and all 10 runs of the puzzle.
+   So parity is not evidence that `advise` is as good where an advisor matters.
 2. A default of `claudetto` needs `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, or Claude sees two advisors.
    Only the `setup` slice sets it.
+   No safe path was built, because the default did not change.
 3. The calls of `advise` to `opus` are missing from the session cost, so a user would pay for them out of sight.
 
-Run the comparison again on tasks where an advisor changes the result before a default change.
-Such a task needs a working model that fails it alone.
+Run the comparison again with a weaker working model, or on a task that Haiku fails alone, before a default change.
+
+## Cost of `advise`
+
+The `opus` calls of `advise` are not in `total_cost_usd`.
+This is a limit of Claude Code, not a defect of `claudetto`.
+
+- `$.model.complete` resolves the text and a `usage` of four token counts (`ModelUsage`).
+  It gives no price, and the mod API has no call that adds a cost to the session.
+- `advise` already reports what it can: it sends the token counts to the user with `$.ui.log`, in the line "`advise`: opus used N tokens in, M tokens out."
+  The stream of a run shows this line as a `ui_log` event.
+- A price in `claudetto` would be a guess that goes stale, so the slice has no price table.
 
 ## Goal Engine
 
-- Both engines took `/goal <condition>` in `-p`, and the working model fixed all faults in the first stretch of work.
-- The engine of the plugin wrote `.claudetto/goal.json`, ran the two commands at the turn end, and logged "The goal is done: all checks of 1 step pass."
-  The built-in `/goal` printed "Goal set" and the model ran the commands itself.
-- No run needed a retry turn, so the comparison did not test the loop that starts the next turn with the failing checks.
-  The tests of the slice (`loop.test.ts`) cover that loop.
-- No defect of the goal engine showed, so the slice has no change.
+- Both engines took `/goal <condition>` in `-p`.
+  In the two cases where the model may run the checks, it fixed all faults in the first stretch of work, and the arms were equal.
+- In `goal-blind-qa` the engine of the plugin ran `node check/qa.mjs` at the end of each turn, and it started a retry turn with the failure.
+  Each of 10 runs had 4 retry turns, and all 10 passed.
+  The built-in `/goal` printed "Goal set", and the model would not run the QA check.
+  It stopped at the first turn, and 0 of 10 passed.
+  The built-in `/goal` is not wrong to stop, because the model followed the rule of the project.
+  But it shows that only the engine can run a check for Claude.
+- The case found a defect.
+  A condition that starts with a code span gave a `run` check and a `judge` check of the whole text.
+  For ``node check/qa.mjs` exits 0`, the `run` check passed in the last turn, but the `judge` check failed, because the model could not run the command and its answer had no proof.
+  The goal stopped by `stall` although the command exited 0.
+  The first run of the case (before the fix) shows it: `results` held a passing `run` check and a failing `judge` check with the same time.
+- The fix is in `checksOf` (`slices/goal/domain/plan.ts`): the words `both`, `all`, `each`, `exits 0`, `passes`, `succeeds`, and `green` no longer make a text a `judge` check.
+  The test is in `tests/claudetto/goal/plan.test.ts`, and `Goal.md` has the rule.
+  After the fix, 10 of 10 runs passed.
+- The first-round cases `goal-two-checks` and `goal-first-violation` ran before the fix.
+  Their condition ("both exit 0") now gives two `run` checks and no `judge` check, so the engine decides from the exit codes only.
+  They were not run again.
 
 ## Limits
 
 - One working model (Haiku 5.5) and one Claude Code version.
-- Four cases, all at the ceiling.
-  A comparison that can find a difference needs harder tasks.
+- The `advise` cases are at the ceiling, and the control passes them.
+- `goal-blind-qa` favors the engine by design, because the project rule forbids Claude to run the check.
 - The grader `advisor-called` counts calls, so it shows that the advisor ran, not that its advice was good.
 - The `advise-ours` cost is an estimate (see "Results").
 - The arms differ in the call path of the advisor, so the turn counts can differ for that reason.
 
 ## Cost
 
-- Pilots: about 0.4 USD.
-- Full runs: 3.0 USD in the cost fields, plus the estimated 0.7 USD of `opus` calls of `advise`.
-- Total: about 4.1 USD, under the limit of 8 USD.
+- Round 1: pilots about 0.4 USD, full runs 3.0 USD in the cost fields, and about 0.7 USD estimated for the `opus` calls of `advise`.
+- Round 2: pilots about 1.1 USD (the candidates above, and `goal-blind-qa`), and full runs 0.2 USD (`goal-blind-qa`, plus the control of the puzzle).
+- Total: about 5.4 USD, under both limits (8 USD for round 1 and 6 USD for round 2).
 
 ## Results Folders
 
 On the machine of the run, in `/tmp/claudetto-evals/builtin-comparisons-0.2.0/`.
 The folder is not in the repository.
-Each case and arm has a folder `full-<case>-<arm>/`.
+Each case and arm has a folder `full-<case>-<arm>/`, and each pilot has a folder `pilot*`.
 It holds `summary.json`, and for each run `run-N/stream.jsonl` and the workspace `run-N/project/`.
 `rest.log` and `advise-full.log` hold the console lines.
 

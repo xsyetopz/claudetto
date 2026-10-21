@@ -83,6 +83,17 @@ test("a text of spans and separators gives a `run` check for each span", () => {
   ]);
 });
 
+test("words that only say a command succeeds add no `judge` check", () => {
+  expect(checksOf("`node check/qa.mjs` exits 0")).toEqual([
+    { kind: "run", command: "node check/qa.mjs" },
+  ]);
+  expect(checksOf("`a` and `b` both exit 0")).toEqual([
+    { kind: "run", command: "a" },
+    { kind: "run", command: "b" },
+  ]);
+  expect(checksOf("`just check` passes and the docs are done")).toHaveLength(2);
+});
+
 test("a span at the start of a text gives a `run` check and a `judge` check of the text", () => {
   const text = "`just test x`, with a test for each cleanup";
   expect(checksOf(text)).toEqual([

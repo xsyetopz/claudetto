@@ -54,6 +54,7 @@ It carries a cache mark, because it stays the same between calls.
 
 The result gives the advice with the model name.
 The count of tokens in and out goes to the user with `$.ui.log`, and the model does not read it.
+The cost of these calls is not in the cost of the session, because Claude Code gives a plugin no way to add a cost.
 If the model gives no answer, the result names the cause: an API error, an empty reply, or a call that ended too soon.
 An empty question gives an error result.
 

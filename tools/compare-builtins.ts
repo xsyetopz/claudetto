@@ -6,6 +6,7 @@
 //   bun tools/compare-builtins.ts CASE_DIR ARM [--runs N] [-j N] [--model M] [--max-cost-usd USD] [--out DIR]
 //
 // An ARM is a name of `ARMS` below.
+// The cases are in `tests/compare/`, so a plain eval run never picks them up.
 // A run builds the fixture with the `scaffold_script` of the case, writes the settings of the arm, and runs `claude -p`.
 // The graders are the `regex` (a file, or the reply) and the `tool_used` graders of the case.
 // A `tool_used` grader with the tool `advisor` counts the advisor of the arm.
@@ -96,6 +97,8 @@ const maxCost = Number(flag("--max-cost-usd", "2"));
 const out = path.resolve(
   flag("--out", fs.mkdtempSync(path.join(os.tmpdir(), "compare-builtins-"))),
 );
+/** Flags for `claude` from `--claude-flags "..."`, such as `--effort low`, the same for each arm. */
+const extra = flag("--claude-flags", "").split(" ").filter(Boolean);
 const BIN = path.join(REPO, "plugins/claudetto-lab/bin/claudetto-sandbox");
 
 /** The plugin folder of the arm. The arm `goal-builtin` gets a copy with the hooks of the `goal` slice removed. */
@@ -197,6 +200,7 @@ const runOnce = async (n: number): Promise<Result> => {
       "--model",
       model,
       ...arm.flags,
+      ...extra,
       "--permission-mode",
       "acceptEdits",
       "--allowedTools",
