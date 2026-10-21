@@ -15,10 +15,12 @@ The first round found that its cases were too easy, and the second round tried t
 - On the easy tasks all arms pass, and on the hard tasks all arms fail.
   The advisor was called in every run of the advisor arms (see "Round 3").
   So on Haiku 5.5, neither advisor changes the outcome.
-- `advise` costs about 1/20 of the built-in advisor on the reported cost: 0.055 USD against 1.18 USD for 10 runs of `advice-audit`.
-  The session cost does not count the `opus` calls of `advise` (see "Cost of `advise`").
-  With an estimated `opus` cost added, `advise` costs about 0.40 USD against 1.18 USD for 10 runs, which is about 1/3.
-- Decision (the user, 2026-10-21): the default of `advisor` is now `claudetto`, because it gives the same results for about 1/3 of the cost.
+- `advise` is not cheaper than the built-in advisor in total.
+  The session cost of `advise` is small, but its `opus` calls are not in it (see "Cost of `advise`").
+  Measured with the token counts of the calls, 10 runs of `advice-audit` cost 0.045 USD for the sessions and 1.163 USD for the `opus` calls, which is 1.208 USD in total, against 1.185 USD for the built-in advisor.
+  One `opus` call of `advise` costs about 0.12 USD, not the 0.035 USD that an early estimate gave.
+- Decision (the user, 2026-10-21), made on the early estimate: the default of `advisor` is `claudetto`, because it gives the same results.
+  The estimate was wrong, so the cost is no reason for the default (see "Decision for the Default").
   The slice turns off the built-in advisor with `$.env.set` at `session.start`, so that Claude never sees two advisors.
   `$.model.complete` reports tokens only, and the mod API has no way to add a cost to the session or a price source, so the cost of the `opus` calls stays out of the session cost.
 - Goal engine against the built-in `/goal`: parity on `goal-two-checks` and `goal-first-violation` (10 of 10 each, again after the fix).
@@ -106,12 +108,9 @@ The cost is the sum of `total_cost_usd` of the runs.
 - For `advise`, the pooled pass rate is 20/20 on each side.
   The 95% Newcombe CI of the difference is [-0.16, +0.16].
   One case alone (10 against 10) gives [-0.28, +0.28].
-- The cost of `advise-ours` leaves out its calls to `opus`.
+- The cost of `advise-ours` in this table leaves out its calls to `opus`.
   The tool calls `$.model.complete`, and Claude Code does not add that cost to `total_cost_usd`.
-  There were 20 calls, with about 600 output tokens each.
-  The estimate is about 0.035 USD for a call, so about 0.7 USD for the 20 calls.
-  Even with this, `advise-ours` costs about 0.8 USD for 20 runs, against 2.4 USD for the built-in advisor.
-  The built-in advisor cost includes the server-side advisor tokens.
+  The sums of `advise-ours` are in "Cost of `advise`", with the `opus` calls measured.
 - The goal arms cost the same within noise, and the working model is cheap.
   The turn counts differ by about 1 to 1.5 turns, and the ranges overlap.
 
@@ -167,10 +166,10 @@ The grader `advisor-called` is a `tool_used` grader, and the table counts it fro
 | Case | Arm | Passed | Runs with an advisor call | Cost (USD) |
 | --- | --- | ---: | ---: | ---: |
 | `advice-audit` | `advise-none` | 0/10 | 0 | 0.046 |
-| `advice-audit` | `advise-ours` | 0/10 | 10 | 0.055 |
+| `advice-audit` | `advise-ours` | 0/10 | 10 | 0.055 (session only) |
 | `advice-audit` | `advise-builtin` | 0/10 | 10 | 1.185 |
 | `advice-audit-web` | `advise-none` | 0/10 | 0 | 0.059 |
-| `advice-audit-web` | `advise-ours` | 0/10 | 10 | 0.055 |
+| `advice-audit-web` | `advise-ours` | 0/10 | 10 | 0.055 (session only) |
 | `advice-audit-web` | `advise-builtin` | 0/10 | 10 | 1.481 |
 
 ### Is the 0/10 the Task?
@@ -206,11 +205,11 @@ With the first round, this shows parity with the built-in `/goal` on these two c
 The default of `advisor` is now `claudetto` (commit `b56351e0`).
 
 - On easy tasks all arms pass, and on hard tasks all arms fail, so `advise` is as good as the built-in advisor.
-- `advise` costs less.
-  For 10 runs of `advice-audit`, the session cost was $0.055 against $1.185.
-  The session cost leaves out the `opus` calls of `advise`.
-  With an estimate of $0.035 for each call, the total is about $0.40 against $1.18, so `advise` costs about one third.
-  The $0.035 is an estimate, not a measured price.
+- `advise` does not cost less in total.
+  For 10 runs of `advice-audit`, the sessions cost $0.045 and the measured `opus` calls cost $1.163, which is $1.208 against $1.185 for the built-in advisor (see "Cost of `advise`").
+  The first version of this page used an estimate of $0.035 for each call, and the measure is about $0.12.
+  So the default `claudetto` rests on equal results, and the cost does not support it.
+  The user decides whether the default stays.
 - With `claudetto`, the slice sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` at `session.start` with `$.env.set`, so that Claude sees one advisor.
 
 ### Live Check of the One-Advisor Rule
@@ -228,9 +227,29 @@ This is a limit of Claude Code, not a defect of `claudetto`.
 
 - `$.model.complete` resolves the text and a `usage` of four token counts (`ModelUsage`).
   It gives no price, and the mod API has no call that adds a cost to the session.
-- `advise` already reports what it can: it sends the token counts to the user with `$.ui.log`, in the line "`advise`: opus used N tokens in, M tokens out."
-  The stream of a run shows this line as a `ui_log` event.
-- A price in `claudetto` would be a guess that goes stale, so the slice has no price table.
+- `advise` sends the token counts to the user with `$.ui.log`, in the line "`advise`: opus used N tokens in (R read from the cache, W written to the cache), M tokens out."
+  The debug log holds every `$.ui.log` line (the type `UiLogOptions` in the mod API), so `claude --debug-file <path>` captures them.
+  `tools/compare-builtins.ts` passes `--debug-file` for each run, and `tools/advise-usage.ts` sums the lines and prices them.
+- The price is the price table that Claude Code uses for its own `total_cost_usd`.
+  It is in the bundle of Claude Code `2.1.305` (`external/cc-2.1.305/strings.txt`, line 337400), and the same entry is in the binary of `2.1.306`.
+  The function that picks the table returns `kb` for `claude-opus-5-5`: `{inputTokens: 8, outputTokens: 40, promptCacheWriteTokens: 10, promptCacheReadTokens: 0.4}`, in USD for one million tokens.
+  The bundle was read as evidence only, and nothing in it was changed.
+- `advise-ours` ran on the fixed code with `--model haiku` and the advisor model `opus`, which is taken here as `claude-opus-5-5` at the price above.
+
+| Case | Runs | Passed | Session cost | `opus` calls | Tokens in | Tokens out | `opus` cost | Total | Built-in arm |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `advice-audit` | 10 | 0/10 | 0.045 | 10 | 21390 | 24787 | 1.163 | 1.208 | 1.185 |
+| `advice-audit-web` | 2 | 0/2 | 0.010 | 2 | 4299 | 5565 | 0.257 | 0.267 | 1.481 for 10 runs |
+
+- One call used about 2100 tokens in and about 2500 tokens out, and no call read or wrote the cache.
+  The output is large because `effort` is `high`, so thinking tokens count as output tokens.
+  The early guess was 600 output tokens and 0.035 USD.
+- `advice-audit-web` ran 2 runs, not 10, because 10 runs would pass the limit of 1.50 USD for the paid runs.
+  At the measured 0.128 USD for a call, 10 runs would cost about 1.28 USD for `opus` and 0.05 USD for the sessions, about 1.33 USD against 1.481 USD.
+  This is a projection from 2 runs and not a measure.
+- `advise` costs 1.208 USD against 1.185 USD on `advice-audit`, so it is not cheaper in total.
+  On `advice-audit-web` the projection is a little lower than the built-in arm.
+- Both arms of `advice-audit` passed 0 of 10, so the cost is for equal results.
 
 ## Goal Engine
 
@@ -260,15 +279,16 @@ This is a limit of Claude Code, not a defect of `claudetto`.
 - The `advise` cases are at the ceiling, and the control passes them.
 - `goal-blind-qa` favors the engine by design, because the project rule forbids Claude to run the check.
 - The grader `advisor-called` counts calls, so it shows that the advisor ran, not that its advice was good.
-- The `advise-ours` cost is an estimate (see "Results").
+- The `advise-ours` cost of the `advice-audit-web` case comes from 2 runs, and the full cost of 10 runs is a projection (see "Cost of `advise`").
 - The arms differ in the call path of the advisor, so the turn counts can differ for that reason.
 
 ## Cost
 
-- Round 1: pilots about 0.4 USD, full runs 3.0 USD, and about 0.7 USD estimated for the `opus` calls of `advise`.
+- Round 1: pilots about 0.4 USD, full runs 3.0 USD, and an unmeasured estimate for the `opus` calls of `advise`, which the measure of round 5 replaced.
 - Round 2: about 1.3 USD.
-- Round 3: pilots about 1.7 USD, full runs 2.9 USD, and about 0.3 USD for the direct `opus` reviews and the estimated `opus` calls of `advise`.
+- Round 3: pilots about 1.7 USD, full runs 2.9 USD, and about 0.3 USD for the direct `opus` reviews and an estimate for the `opus` calls of `advise`.
 - Round 3 is about 4.9 USD, under its limit of 6 USD.
+- Round 5 (the measure of `advise`): about 1.5 USD, of which 1.42 USD is for the `opus` calls.
 
 ## Results Folders
 

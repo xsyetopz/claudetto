@@ -57,8 +57,8 @@ The system prompt asks for advice that Claude can act on: the cause, the next st
 It carries a cache mark, because it stays the same between calls.
 
 The result gives the advice with the model name.
-The count of tokens in and out goes to the user with `$.ui.log`, and the model does not read it.
-The cost of these calls is not in the cost of the session, because Claude Code gives a plugin no way to add a cost.
+The count of tokens in and out, with the cache reads and writes, goes to the user with `$.ui.log`, and the model does not read it.
+The cost of these calls is not in the cost of the session, because Claude Code gives a plugin no way to add a cost (see the page `Builtin-Comparisons` for the measured cost).
 The session cost leaves out these calls, because `$.model.complete` reports tokens and the mod API has no way to add a cost to the session.
 The token log is the only record, and `claudetto` shows no estimated cost, because it has no documented price source.
 On the 5.1 eval, an estimated `opus` cost for 10 runs was about 0.40 USD, against 1.18 USD for the built-in advisor.

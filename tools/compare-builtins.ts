@@ -18,6 +18,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { adviseUsage } from "./advise-usage.ts";
 
 type Arm = {
   /** Plugin options, written to `pluginConfigs` of the sandbox settings. */
@@ -164,6 +165,7 @@ const grade = async (
 type Result = {
   run: number;
   cost: number;
+  advise?: ReturnType<typeof adviseUsage> | undefined;
   turns: number;
   advisorCalls: number;
   graders: Record<string, boolean>;
@@ -213,6 +215,8 @@ const runOnce = async (n: number): Promise<Result> => {
       tools.join(","),
       "--max-turns",
       String(spec.execution.max_turns ?? 25),
+      "--debug-file",
+      path.join(root, "debug.log"),
       "--output-format",
       "stream-json",
       "--verbose",
@@ -264,9 +268,14 @@ const runOnce = async (n: number): Promise<Result> => {
   if (await Bun.file(final).exists())
     graders["final-checks"] =
       Bun.spawnSync(["bash", final], { cwd: project }).exitCode === 0;
+  const debug = path.join(root, "debug.log");
+  const advise = (await Bun.file(debug).exists())
+    ? adviseUsage(await Bun.file(debug).text())
+    : undefined;
   return {
     run: n,
     cost,
+    advise,
     turns,
     advisorCalls: calls.filter((c) => c.name === arm.advisor).length,
     graders,
@@ -311,6 +320,14 @@ const summary = {
   runs: results.length,
   passes,
   cost: results.reduce((s, r) => s + r.cost, 0),
+  advise: results.reduce(
+    (t, r) => {
+      for (const k of Object.keys(t) as (keyof typeof t)[])
+        t[k] += r.advise?.[k] ?? 0;
+      return t;
+    },
+    { calls: 0, input: 0, read: 0, write: 0, output: 0, cost: 0 },
+  ),
   out,
   results,
 };
@@ -319,5 +336,5 @@ await Bun.write(
   JSON.stringify(summary, null, 2),
 );
 console.log(
-  `${spec.name} ${armName}: ${passes}/${results.length} passed, $${summary.cost.toFixed(3)}, ${out}`,
+  `${spec.name} ${armName}: ${passes}/${results.length} passed, $${summary.cost.toFixed(3)}, advise ${JSON.stringify(summary.advise)}, ${out}`,
 );
