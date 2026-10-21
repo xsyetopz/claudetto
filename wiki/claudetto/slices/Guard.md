@@ -45,6 +45,15 @@ The hook splits on `;`, `&&`, `||`, `|`, `&`, and new lines outside quotes.
 A plain `cd DIR` is not work, and it sets the folder of the later parts.
 A relative path uses the folder of the session or of the last `cd`.
 
+## Delete Refspec of `git push`
+
+The same hook also denies a `git push` with a delete refspec, such as `git push origin :branch`.
+An `ask` rule of the settings cannot match this form, because Claude Code warns on an inner `:*` in a rule.
+The hook finds the form with `git` options before `push` (`git -C dir push`), a wrapper such as `sudo`, and options before or after the remote.
+The first plain word after `push` is the remote, and each later word that starts with `:` is a delete refspec.
+The deny names `git push --delete <remote> <branch>`, which the `ask` list stops for the user.
+The forms `git push origin main`, `git push origin HEAD:main`, and `git push origin a:b` run.
+
 ## When the Command Runs
 
 The hook lets the call run in these cases:

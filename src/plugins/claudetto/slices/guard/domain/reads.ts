@@ -46,7 +46,7 @@ type Part = { text: string; piped: boolean };
  * The parts of `command` split on `;`, `&&`, `||`, `|`, `&`, and new lines outside quotes, or `null` when it has a heredoc or an open quote.
  * A comment is not a part. A `&` of a redirect, such as `2>&1` or `&>`, does not split.
  */
-const parts = (command: string): Part[] | null => {
+export const parts = (command: string): Part[] | null => {
   const out: Part[] = [];
   let cur = "";
   let quote: string | null = null;

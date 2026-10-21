@@ -81,7 +81,6 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
       "Bash(git push* --force)",
       "Bash(git push* --force *)",
       "Bash(git push* --delete*)",
-      "Bash(git push* :* *)",
       "Bash(git push* --mirror*)",
       "Bash(git reset* --hard*)",
       "Bash(git clean* -*f*)",

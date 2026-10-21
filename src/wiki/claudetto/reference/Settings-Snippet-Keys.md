@@ -79,7 +79,7 @@ The snippet never sets the entries of [Never-Set Settings](Off-Switches-Never-Se
 | `sandbox` | On, with a retry outside the sandbox, `allowLocalBinding`, a list of allowed domains, and the package cache folders in `filesystem.allowWrite` | Limits the files and the network of `Bash`. | The sandbox limits `Bash`. The cache folders let an install write, and `git fetch`, `git pull`, `git push`, and `gh` run outside it. |
 | `permissions` | `disableBypassPermissionsMode` set to `disable`, and the `deny`, `ask`, and `allow` lists | Sets the rules for each tool call. | Risky commands ask, and read-only commands run. |
 
-The `ask` list has 25 git rules that name the destructive flags, such as `git push* --force` and `git reset* --hard`.
+The `ask` list has 24 git rules that name the destructive flags, such as `git push* --force` and `git reset* --hard`.
 It also asks for `docker run`, `create`, `compose run`, and `compose up` with a mount or `--privileged`, for `rm` with a recursive flag, for `sudo`, for a package publish, for write commands of `gh`, and for SQL that drops data.
 The `allow` list has `Glob`, `Grep`, and read-only or test commands of `git`, `gh`, and the common build tools.
 

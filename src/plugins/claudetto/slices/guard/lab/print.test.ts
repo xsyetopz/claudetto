@@ -81,3 +81,13 @@ test("a check that throws denies a command that prints a file, and a command tha
   );
   expect("deny" in (await call($, "ls"))).toBe(false);
 });
+
+test("a `git push` with a delete refspec is denied and names `git push --delete`, and a push of a branch runs", async ($: Engine, on: On) => {
+  project(on);
+  const denied = await call($, "git -C x push origin :br");
+  expect("deny" in denied ? denied.deny : undefined).toContain(
+    "git push --delete <remote> br",
+  );
+  for (const command of ["git push origin main", "git push origin a:b"])
+    expect("deny" in (await call($, command)), command).toBe(false);
+});

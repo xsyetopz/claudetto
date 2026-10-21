@@ -78,7 +78,7 @@ The figures were not measured again for 0.2.0.
 
 ## Why the Snippet Asks Only Before Harm
 
-**Choice:** `permissions.ask` has 25 exact git rules that name the destructive flag, such as `git push* --force` and `git reset* --hard`.
+**Choice:** `permissions.ask` has 24 exact git rules that name the destructive flag, such as `git push* --force` and `git reset* --hard`.
 It also covers `docker run`, `create`, `compose run`, and `compose up` with a mount or `--privileged`, `rm` with a recursive flag, `sudo`, publish commands, `gh` writes, and an SQL drop.
 A safe read such as `git status` is in `permissions.allow`.
 `git reset --soft` and `git push --force-with-lease` pass.

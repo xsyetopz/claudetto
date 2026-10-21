@@ -11,3 +11,9 @@ export const PRINT_DENY = (v: {
 }): string => `This command only prints a file.
 The \`Read\` tool sends a short stub when you read the same range of an unchanged file again, and a Bash print gets no stub.
 Call \`Read\` with ${v.args} instead.`;
+
+/** From `src/plugins/claudetto/slices/guard/prompts/refspec-deny.md`. */
+export const REFSPEC_DENY = (v: {
+  ref: string;
+}): string => `This command deletes the ref \`${v.ref}\` on the remote with a delete refspec.
+Use \`git push --delete <remote> ${v.ref}\` instead, because the settings ask the user before it runs.`;
