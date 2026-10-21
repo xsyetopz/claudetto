@@ -21,7 +21,9 @@ It does no other step.
 
 The skill never overwrites a file, because you may have changed it.
 
-1. If `openspec/` is missing, it runs `bunx @fission-ai/openspec@1.14.3 init --tools claude --profile core`.
+1. If the `/opsx:*` commands are missing, it runs `bunx @fission-ai/openspec@1.14.3 init --tools claude --profile core`.
+   They are missing when neither `.claude/commands/opsx/propose.md` nor `.claude/skills/openspec-propose/SKILL.md` exists.
+   The skill does not test for the folder `openspec/`, because a folder with only `changes/` is not an init.
 2. It copies each `schemas/<preset>` folder of the skill to `openspec/schemas/<preset>`, only when that folder is missing.
 3. It copies `config.yaml` to `openspec/config.yaml`, only when that file is missing.
 4. It reads the global config with `bunx @fission-ai/openspec@1.14.3 config list`.

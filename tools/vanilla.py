@@ -16,7 +16,7 @@ import sys
 import time
 from pathlib import Path
 
-OPENSPEC = "@fission-ai/openspec@1.14.1"
+OPENSPEC = "@fission-ai/openspec@1.14.3"
 
 # The built-in plugins that replace the dcc-* plugins.
 BUILTIN_ON = ["cc-plugin-agents-md@builtin", "cc-plugin-you-should-know@builtin"]

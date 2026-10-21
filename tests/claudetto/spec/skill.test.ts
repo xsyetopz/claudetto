@@ -65,3 +65,10 @@ test("each `bunx @fission-ai/openspec` command of the skill `spec` pins the vers
     expect(command).toBe(`bunx @fission-ai/openspec@${version}`);
   }
 });
+
+test("`tools/vanilla.py` pins the `@fission-ai/openspec` version of `package.json`", async () => {
+  const pkg = await Bun.file(path.join(REPO, "package.json")).json();
+  const version = pkg.devDependencies["@fission-ai/openspec"];
+  const script = await Bun.file(path.join(REPO, "tools/vanilla.py")).text();
+  expect(script).toContain(`OPENSPEC = "@fission-ai/openspec@${version}"`);
+});
