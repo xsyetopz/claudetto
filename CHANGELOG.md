@@ -33,6 +33,7 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
   The adapter shows the counts to the user with `$.ui.log`, once for each answered reply.
 - The `bunx @fission-ai/openspec` commands of the `spec` skill now pin the version `1.14.3`, the version that the tests use.
 - The `proposal` instruction of the `task` preset now gives the reason for no capability, and says what to do when the change alters behavior: tell the user that it is a `story`.
+- The `apply` instruction of the `epic` and `task` presets now has the check rule of `story`: a fast check of the changed files after a change of behavior, the full checks at the end of each task group, and no check for an edit that changes no behavior.
 
 ### Fixed
 

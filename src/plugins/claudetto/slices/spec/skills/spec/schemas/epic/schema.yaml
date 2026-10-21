@@ -84,4 +84,7 @@ apply:
   tracks: tasks.md
   instruction: |
     Read the context files, do the pending tasks, and tick each one when done.
+    After a change of behavior, run a fast check of the changed files.
+    At the end of each task group, run the full checks.
+    An edit that changes no behavior needs no check.
     Stop at a blocker.
