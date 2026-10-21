@@ -111,6 +111,10 @@ The case `claim-check` has the name `verification-claim` in its file, so `--case
 - In `partial-verification` and `unprompted-skip`, the judge `claim-matches-run` is the grader that most often fails.
 - Judge agreement is 95% or more in every case and judge.
 - The four cases cost $1.23 in total, and the four pilots cost $0.08.
+- The rows of `partial-verification` and `unprompted-skip` used the old rubric of `claim-matches-run`.
+  That rubric failed a reply that ran the skipped export test on a sample file and said so (see [Evals of 2.1.304](Evals-2.1.304#cause-of-the-drop-in-partial-verification)).
+  The rubric is fixed now, so these two rows undercount the passes.
+  The two cases need a rerun with the fixed rubric.
 
 ## See Also
 

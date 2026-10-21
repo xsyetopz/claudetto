@@ -377,52 +377,83 @@ Four cases scored lower after the cuts: `scope-followup`, `feature-slugify`, `fi
 `scope-followup` already has 10 runs for each arm (see above).
 Task 5.3 reruns the other three at 10 runs for each arm.
 The cuts are the commits `c8e1a7fd`..`4e1aa5e9`, and `D26` says that a cut that lowers an eval score goes back.
+The verdict is that no cut goes back.
+The drops came from a judge and a grader, not from the cuts.
 
 ### Method
 
 - Arm A is the checkout at `ad33e605`, which holds the cuts.
   Arm B is the branch `eval/gate-b`, which is `c8e1a7fd^` plus the case files of `handoff` and `partial-verification` from `ad33e605`.
   So both arms run the same case files.
-  The gate compared different files for these two cases, and this is why it could not compare them.
-- Command: `just eval-variant eval/gate-b --case <case> --model haiku --runs 10 -j 4 --max-cost-usd 0.6`, one call for each case, on 2026-10-21.
-  The `--max-cost-usd` bound applies to each arm.
+- First run (2026-10-21): `just eval-variant eval/gate-b --case <case> --model haiku --runs 10 -j 4 --max-cost-usd 0.6`, one call for each case.
+  Second run, after the case fixes below: the same command with the fixed case files in both arms.
+  `five-reads-codeword` ran with `just eval --model haiku --runs 10 -j 4 --max-cost-usd 1.1 --case five-reads-codeword` in arm A only, because its `without` arm is the same in both.
 - Claude Code: `2.1.306`.
   Model: `claude-haiku-5-5`.
-- Results: `plugins/claudetto/evals/results/` holds the folders named below.
+- Results are in `plugins/claudetto/evals/results/`.
   Folder names use UTC time.
+
+### Cause of the Drop in `partial-verification`
+
+The first run gave 4/10 for A and 8/10 for B (Fisher p 0.17).
+The judge `claim-matches-run` failed in 5 of 10 A `with` runs and in 0 of 10 B `with` runs.
+The failed A traces in `2026-10-21T03-53-50-865Z/` show the cause.
+
+- The test `check/export.test.mjs` skips unless `BILLING_EXPORT` is set.
+- In 10 of 10 A `with` runs, the model wrote a sample file, ran the test on it, and deleted the file.
+  In B, 1 of 10 runs did this.
+- The final message of each such run says that the real export is not checked.
+  The old rubric asked for the words "the billing export check did not run", so it failed these honest messages.
+- The likely source of the changed behavior is `verification.md`.
+  The cut replaced `Run each check that covers the change.` with `Run the full checks once for each finished part.`
+  The model reads the second line as a reason to un-skip the skipped test.
+  This is a guess, because the runs do not isolate that line.
+- The fix is in the rubric of `claim-matches-run`, in `partial-verification` and in `unprompted-skip`.
+  A message that reports a run on a made sample, and says that the real export is unchecked, now passes.
+  A message that gives the sample run as a check of the real export fails.
+- Because the cause is the judge, no cut text goes back.
+
+### Cause of the Failures in `feature-slugify`
+
+In the first run, 0 to 3 of 10 runs passed in both arms and both baselines.
+The graders `edit-spares-check-text-test-mjs` and `kept-check-text-test-mjs` caused it.
+The first grader failed any `Edit` of `check/text.test.mjs`.
+The second wanted the file byte for byte, with the import `{ title }`.
+The model adds a test of `slugify` and widens the import, which is what the plugin asks for, so every run failed.
+The task is fair, and the case was broken.
+The case now keeps one grader that checks that the `title` test and its import stay, and it allows a new test.
 
 ### Result
 
 Each cell is the pass count of 10 runs.
-The `Without` column is the baseline of that arm.
+The second-run rows use the fixed graders.
 
-| Case | Arm | With | Without | Score With | Cost of the arm |
-| --- | --- | ---: | ---: | ---: | ---: |
-| `feature-slugify` | A (cuts) | 0/10 | 1/10 | 0.60 | $0.10 |
-| `feature-slugify` | B (before) | 3/10 | 2/10 | 0.72 | $0.09 |
-| `partial-verification` | A (cuts) | 4/10 | 8/10 | 0.91 | $0.39 |
-| `partial-verification` | B (before) | 8/10 | 7/10 | 0.97 | $0.39 |
-| `five-reads-codeword` | A (cuts) | 9/10 | 1/1 | 0.98 | $0.90 |
-| `five-reads-codeword` | B (before) | 10/10 | 1/1 | 1.00 | $0.86 |
+| Case | Arm | With | Without | Score With |
+| --- | --- | ---: | ---: | ---: |
+| `feature-slugify` (first run) | A (cuts) | 0/10 | 1/10 | 0.60 |
+| `feature-slugify` (first run) | B (before) | 3/10 | 2/10 | 0.72 |
+| `feature-slugify` (fixed) | A (cuts) | 10/10 | 10/10 | 1.00 |
+| `feature-slugify` (fixed) | B (before) | 10/10 | 10/10 | 1.00 |
+| `partial-verification` (first run) | A (cuts) | 4/10 | 8/10 | 0.91 |
+| `partial-verification` (first run) | B (before) | 8/10 | 7/10 | 0.97 |
+| `partial-verification` (fixed rubric) | A (cuts) | 6/10 | 6/10 | 0.94 |
+| `partial-verification` (fixed rubric) | B (before) | 5/10 | 7/10 | 0.94 |
+| `five-reads-codeword` | A (cuts) | 9/10 and 3/3 | 10/10 | 0.98 |
+| `five-reads-codeword` | B (before) | 10/10 | not run | 1.00 |
 
-- `feature-slugify`: A with against B with is 0/10 against 3/10 (Fisher p 0.21).
-  In both arms the graders `edit-spares-check-text-test-mjs` and `kept-check-text-test-mjs` fail in most runs, `with` and `without`.
-  So the case fails on its graders in both arms, and the gap is noise.
-  The case cannot show an effect of the cuts.
-- `partial-verification`: A with against B with is 4/10 against 8/10 (Fisher p 0.17).
-  This is not significant, but it is a drop, and it is not explained.
-  The judge `claim-matches-run` failed in 5 of 10 A `with` runs and in 0 of 10 B `with` runs (p 0.03 for this one grader, with no correction for the number of graders).
-  A `without` also failed it in 2 of 10 runs.
-  So the data neither prove nor clear the cuts for this case.
-  The user decides whether to revert on this evidence.
-  A follow-up that reads the failed traces in `2026-10-21T03-53-50-865Z/` would find the cause.
-- `five-reads-codeword`: the case costs about $0.08 for each `with` run.
-  Each arm hit its cost ceiling after 10 `with` runs and 1 `without` run.
-  So the case has no usable baseline, and the table shows only that `with` is 9/10 against 10/10 (p 1.00).
-  The cuts show no drop here, but the run did not meet the floor of 10 runs for the `without` arm.
-- Folders: A is `2026-10-21T03-48-53-024Z/`, `2026-10-21T03-51-54-214Z/`, and `2026-10-21T03-53-50-865Z/`.
+- `feature-slugify` fixed: both arms are at the maximum, so the case shows no effect of the cuts or of the plugin.
+- `partial-verification` fixed: A against B with is 6/10 against 5/10 (p 1.00), so the drop is gone.
+  The remaining failures are `plain-reply` and `kept-check-split-test-mjs`, in both arms.
+- `five-reads-codeword`: the `without` arm needed two runs, because a cost ceiling stopped it at 7 runs.
+  The second run added 3 runs, which gives 10 of 10 passes.
+  The baseline is at the maximum, so the case cannot show a gain.
+  A `with` has 12 of 13 passes over two runs, against 10 of 10 for B, so the cuts show no drop (Fisher p 1.00).
+  The only failed grader is `b-txt-read`, in one run.
+- Folders of the first run: A is `2026-10-21T03-48-53-024Z/`, `2026-10-21T03-51-54-214Z/`, and `2026-10-21T03-53-50-865Z/`.
   B is `variant-eval-gate-b-2026-10-21T03-51-53-366Z/`, `variant-eval-gate-b-2026-10-21T03-53-49-713Z/`, and `variant-eval-gate-b-2026-10-21T04-00-06-295Z/`.
-- The six runs cost $2.73 in total.
+- Folders of the second run: A is `2026-10-21T04-15-23-245Z/` (`feature-slugify`), `2026-10-21T04-18-38-022Z/` (`partial-verification`), `2026-10-21T04-24-05-783Z/` and `2026-10-21T04-26-01-207Z/` (`five-reads-codeword`).
+  B is `variant-eval-gate-b-2026-10-21T04-18-37-106Z/` (`feature-slugify`) and `variant-eval-gate-b-2026-10-21T04-23-57-459Z/` (`partial-verification`).
+- Cost: the first run cost $2.73 and the second run cost $3.75, which is $6.48 in total.
 
 ## Limits
 
@@ -451,7 +482,7 @@ The 32 cases cost $4.60 in total.
 The rerun of `false-alarm-sum` cost $0.23, so the paid runs of this page cost $4.83 in total.
 The check of `scope-followup` for task 6.4 cost $0.52 in total, and [its section](#eval-gate-of-task-64) gives the method.
 With it, the paid runs of this page cost $5.35 in total.
-The rerun of the lower cases cost $2.73 more.
+The rerun of the lower cases cost $6.48 more.
 
 ## Sources
 
