@@ -21,15 +21,15 @@ It does no other step.
 
 The skill never overwrites a file, because you may have changed it.
 
-1. If `openspec/` is missing, it runs `bunx @fission-ai/openspec init --tools claude --profile core`.
+1. If `openspec/` is missing, it runs `bunx @fission-ai/openspec@1.14.3 init --tools claude --profile core`.
 2. It copies each `schemas/<preset>` folder of the skill to `openspec/schemas/<preset>`, only when that folder is missing.
 3. It copies `config.yaml` to `openspec/config.yaml`, only when that file is missing.
-4. It reads the global config with `bunx @fission-ai/openspec config list`.
+4. It reads the global config with `bunx @fission-ai/openspec@1.14.3 config list`.
    - If `delivery` is `both`, each workflow is listed twice.
    - If `verify` is not in `workflows`, `/opsx:verify` is missing.
 
 The global config is outside the project, so the skill asks you before it changes it.
-It gives you the commands `bunx @fission-ai/openspec config set delivery skills` and `bunx @fission-ai/openspec config profile`.
+It gives you the commands `bunx @fission-ai/openspec@1.14.3 config set delivery skills` and `bunx @fission-ai/openspec@1.14.3 config profile`.
 
 ## Profile Sizes
 

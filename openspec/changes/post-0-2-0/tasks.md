@@ -24,7 +24,7 @@
 
 - [x] 2.1 Stop giving token counts to the model in `src/plugins/claudetto/slices/advise/prompts/result.md`, and move the count to `$.ui.log` (row `advise/prompts/result.md:1` of `evidence.md`).
   Check: `just test tests/claudetto/advise tests/claudetto/prompt`
-- [ ] 2.2 Pin the version of `@fission-ai/openspec` in `src/plugins/claudetto/slices/spec/skills/spec/SKILL.md` (the three `bunx @fission-ai/openspec` commands of the section "Setup"), to the version of `package.json` (`1.14.3`).
+- [x] 2.2 Pin the version of `@fission-ai/openspec` in `src/plugins/claudetto/slices/spec/skills/spec/SKILL.md` (the three `bunx @fission-ai/openspec` commands of the section "Setup"), to the version of `package.json` (`1.14.3`).
   Give the reason for "Never overwrite a file." in the same pass.
   Check: `just test tests/claudetto/prompt tests/claudetto/spec`
 - [ ] 2.3 Eval the three items that the audit marked "flag only": `doing-tasks.md:4-5`, `Concise.md:16`, and `system.md:3-4`.

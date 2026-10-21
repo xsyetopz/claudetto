@@ -31,6 +31,7 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 - The result of the `advise` tool no longer has the token counts, so the model reads only the model name and the advice.
   The adapter shows the counts to the user with `$.ui.log`, once for each answered reply.
+- The `bunx @fission-ai/openspec` commands of the `spec` skill now pin the version `1.14.3`, the version that the tests use.
 
 ### Fixed
 

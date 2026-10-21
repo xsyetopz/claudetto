@@ -55,3 +55,13 @@ test("the skill `spec` tests for the `/opsx:*` commands, and not for the folder 
     skill.indexOf("Copy `$" + "{CLAUDE_SKILL_DIR}/config.yaml`"),
   );
 });
+
+test("each `bunx @fission-ai/openspec` command of the skill `spec` pins the version of `package.json`", async () => {
+  const pkg = await Bun.file(path.join(REPO, "package.json")).json();
+  const version = pkg.devDependencies["@fission-ai/openspec"];
+  const commands = skill.match(/bunx @fission-ai\/openspec\S*/g) ?? [];
+  expect(commands.length).toBe(4);
+  for (const command of commands) {
+    expect(command).toBe(`bunx @fission-ai/openspec@${version}`);
+  }
+});
