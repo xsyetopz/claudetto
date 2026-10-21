@@ -49,7 +49,7 @@ The core plugin has 15 slices.
 | [`dry`](Dry) | Merges the config of `jscpd`, and gives the skill `dry`. |
 | [`goal`](Goal) | Replaces `/goal` with a loop of checks at the end of each turn. |
 | [`ground`](Ground) | Denies a plan file that cites a `file:line` or a convention that the source does not hold. |
-| [`guard`](Guard) | Denies a `Bash` command that only prints a file. |
+| [`guard`](Guard) | Denies a `Bash` command that only prints a file, and asks before a `git push` that deletes a remote branch. |
 | [`handoff`](Handoff) | Writes a handoff file in place of the summary of a compaction. |
 | [`patch`](Patch) | Keeps one patch for each subagent in a worktree, and lands it. |
 | [`prompt`](Prompt) | Gives one tailored text for the short system prompt, and cuts built-in parts. |

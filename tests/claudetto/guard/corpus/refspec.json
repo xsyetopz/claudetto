@@ -19,7 +19,16 @@
     "git status; git push origin :br",
     "sudo git push origin :br",
     "env X=1 git push origin :br",
-    "/usr/bin/git push origin :br"
+    "/usr/bin/git push origin :br",
+    "git push origin +:br",
+    "git push origin +:refs/heads/x",
+    "echo $(git push origin :br)",
+    "bash -c \"git push origin :br\"",
+    "sh -c 'git push origin :br'",
+    "eval git push origin :br",
+    "(git push origin :br)",
+    "{ git push origin :br; }",
+    "if true; then git push origin :br; fi"
   ],
   "pass": [
     "git push",

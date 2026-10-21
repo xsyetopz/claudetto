@@ -1,13 +1,9 @@
 // The delete-refspec rule of `git push` (task 4.1 of `post-0-2-0`): `git push origin :branch` deletes a branch on the remote.
 // A `permissions.ask` rule cannot match it: Claude Code warns on the inner `:*` of `Bash(git push* :* *)`.
-// The functions are pure, and `adapters/mod.ts` turns a ref into a deny.
+// The functions are pure, and `adapters/mod.ts` turns a ref into an ask.
 
-import {
-  baseName,
-  stripWrappers,
-  words,
-} from "../../../../../kernel/wrappers.ts";
-import { parts } from "./reads.ts";
+import { commands } from "../../../../../kernel/shell.ts";
+import { baseName, stripWrappers } from "../../../../../kernel/wrappers.ts";
 
 /** The global options of `git` that take a separate argument. */
 const GIT_VALUE_OPTS = new Set([
@@ -58,19 +54,20 @@ const plainWords = (args: string[]): { plain: string[]; repo: boolean } => {
 };
 
 /**
- * The ref of the first delete refspec (`:ref`) that `command` pushes, or `null`.
+ * The ref of the first delete refspec (`:ref` or `+:ref`) that `command` pushes, or `null`.
+ * `commands` reads each simple command, also in a substitution, `bash -c`, `eval`, a group, and a branch of `if`.
  * The first plain word of `git push` is the remote, and each later plain word is a refspec.
  * A refspec with a source (`a:b`, `HEAD:main`) and a plain name pass.
  */
 export const deleteRefspec = (command: unknown): string | null => {
-  for (const part of parts(String(command ?? "")) ?? []) {
-    const args = pushArgs(words(part.text));
+  for (const argv of commands(String(command ?? ""))) {
+    const args = pushArgs(argv);
     if (!args) continue;
     const { plain, repo } = plainWords(args);
-    const found = (repo ? plain : plain.slice(1)).find(
-      (refspec) => refspec.length > 1 && refspec.startsWith(":"),
-    );
-    if (found) return found.slice(1);
+    for (const refspec of repo ? plain : plain.slice(1)) {
+      const ref = /^\+?:(.+)$/.exec(refspec)?.[1];
+      if (ref) return ref;
+    }
   }
   return null;
 };

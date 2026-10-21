@@ -2,7 +2,7 @@
 
 # Guard
 
-This page tells how the `guard` slice of the core plugin `claudetto` denies a `Bash` command that only prints a file.
+This page tells how the `guard` slice of the core plugin `claudetto` denies a `Bash` command that only prints a file, and asks before a `git push` that deletes a remote branch.
 A user reads it to learn why Claude gets a deny and what to do.
 A contributor reads it before an edit of `slices/guard/`.
 
@@ -13,11 +13,13 @@ A `Bash` print of a file gets no stub, so the text enters the context again.
 The `guard` slice denies such a print and names the `Read` call that does the same work.
 
 The slice has one control, `print deny`.
-Remove it when Claude Code gives the short stub for a `Bash` print too.
+The ask before a delete refspec has no control entry: it keeps the ask of 0.2.0 for this form, and it does not save tokens (task 4.1 of `post-0-2-0`).
+Remove `print deny` when Claude Code gives the short stub for a `Bash` print too.
 
 ## What the Hook Does
 
-The slice adds one `tool.call` hook on the tool `Bash`.
+The slice adds a `tool.call` hook and a `tool.check` hook on the tool `Bash`.
+The `tool.call` hook is the print deny, and the `tool.check` hook is the ask in the section `Delete Refspec of git push`.
 The hook runs in the phase `check`, after the `sembr` rewrite of the phase `rewrite`.
 So the hook checks the command that would run.
 
@@ -47,11 +49,14 @@ A relative path uses the folder of the session or of the last `cd`.
 
 ## Delete Refspec of `git push`
 
-The same hook also denies a `git push` with a delete refspec, such as `git push origin :branch`.
+The `tool.check` hook asks the person before a `git push` with a delete refspec, such as `git push origin :branch` or `git push origin +:branch`.
 An `ask` rule of the settings cannot match this form, because Claude Code warns on an inner `:*` in a rule.
+The ask of a hook goes to the person, and no allow rule or classifier settles it.
+The hook keeps a deny of the engine.
 The hook finds the form with `git` options before `push` (`git -C dir push`), a wrapper such as `sudo`, and options before or after the remote.
-The first plain word after `push` is the remote, and each later word that starts with `:` is a delete refspec.
-The deny names `git push --delete <remote> <branch>`, which the `ask` list stops for the user.
+It also finds the form in `$(...)`, `bash -c`, `sh -c`, `eval`, a group, and a branch of `if`.
+The first plain word after `push` is the remote, and each later word that starts with `:` or `+:` is a delete refspec.
+The reason of the ask says that the push deletes the remote branch.
 The forms `git push origin main`, `git push origin HEAD:main`, and `git push origin a:b` run.
 
 ## When the Command Runs
