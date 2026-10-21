@@ -2,6 +2,7 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
+import { parse } from "yaml";
 import { slice } from "../../../src/plugins/claudetto/slices/styles/slice.ts";
 import { REPO } from "../../support/repo.ts";
 
@@ -53,4 +54,19 @@ test("the style gives an example from the work of claudetto with a `!` command",
   const text = await replyStyle();
   expect(text).toMatch(/`! [^`]+`/);
   expect(text).toContain("`! just sandbox`");
+});
+
+test("the case `concise-stays-thorough` carries the body of the style as `append_system_prompt`", async () => {
+  const text = await Bun.file(STYLE).text();
+  const body = text.split("\n---\n")[1]?.trim();
+  const doc = parse(
+    await Bun.file(
+      path.join(
+        REPO,
+        "src/plugins/claudetto/slices/styles/evals/concise-stays-thorough/case.yaml",
+      ),
+    ).text(),
+  );
+  expect(body).toContain("<reply_style>");
+  expect(doc.execution.append_system_prompt).toBe(body);
 });
