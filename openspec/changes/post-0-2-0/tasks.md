@@ -17,7 +17,7 @@
   Replay with `replay.ts` and `check.ts` as `evidence.md` describes.
   Mark the run paid if it calls a model, and ask the user first.
   Check: the new numbers are in `Ground.md`.
-- [ ] 1.4 Check that `src/wiki/claudetto/slices/Goal.md` covers the wiki page of the goal slice that `builtins-0-2-0` task 2.1 deferred (step 7), and add what is missing.
+- [x] 1.4 Check that `src/wiki/claudetto/slices/Goal.md` covers the wiki page of the goal slice that `builtins-0-2-0` task 2.1 deferred (step 7), and add what is missing.
   Check: `just generate && bun run lint:md`
 
 ## 2. Prompts
