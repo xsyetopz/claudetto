@@ -39,7 +39,7 @@ test("each case of the test plugin has only the judge `plain-reply`", async () =
 
 test("the judge `plain-reply` is the same in each style case and in the test plugin", async () => {
   const style = await load(STYLE_EVALS);
-  expect(style.length).toBe(4);
+  expect(style.length).toBe(5);
   const judges = [...style, ...(await load(PADDED_EVALS))].map((c) => {
     const g = judgeOf(c);
     expect(g, c.name).toBeTruthy();

@@ -1,0 +1,79 @@
+{
+  "fails": "test-written-before-fix",
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Edit",
+            "input": {
+              "file_path": "/w/src/pad.mjs",
+              "old_string": "return String(n);",
+              "new_string": "return String(n).padStart(width, \"0\");"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t1",
+            "name": "Write",
+            "input": {
+              "file_path": "/w/check/pad.test.mjs",
+              "content": "x"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t2",
+            "name": "Bash",
+            "input": {
+              "command": "node --test"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t3",
+            "name": "Bash",
+            "input": {
+              "command": "node --test"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "Done.",
+      "usage": {
+        "input_tokens": 6000,
+        "output_tokens": 600
+      }
+    }
+  ],
+  "files": {
+    "src/pad.mjs": "export function pad(n, width) {\n  return String(n).padStart(width, \"0\");\n}\n"
+  }
+}

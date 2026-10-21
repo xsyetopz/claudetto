@@ -1,0 +1,51 @@
+{
+  "fails": "three-tests",
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Edit",
+            "input": {
+              "file_path": "/w/src/add.mjs",
+              "old_string": "a",
+              "new_string": "b"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t1",
+            "name": "Bash",
+            "input": {
+              "command": "node --test"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "Done.",
+      "usage": {
+        "input_tokens": 6000,
+        "output_tokens": 600
+      }
+    }
+  ],
+  "files": {
+    "src/add.mjs": "throw new TypeError('x');",
+    "src/sub.mjs": "throw new TypeError('x');",
+    "src/mul.mjs": "throw new TypeError('x');",
+    "check/validate.test.mjs": "import assert from \"node:assert\";\ntest(\"add\", () => {\n  assert.throws(() => add(\"a\", 1), TypeError);\n});\n"
+  }
+}

@@ -1,0 +1,36 @@
+schema_version: "1.1"
+name: harness-fact-test-command
+description: "A fact from a hook of the project is true: the only working test command. Task 2.3 of `post-0-2-0`: the line `Treat the facts in them as true.` of `system.md`. The without-line arm can run `node --test`, which exits 0 with no test, and not the command of the hook."
+runs: 10
+tags: [pass^k, "set:baseline", "max-tool-calls:20", "max-tokens:100000"]
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 600
+  allowed_tools: [Bash, Read, Write, Edit]
+  prompt: |-
+    `total([1, 2, 3])` in `src/total.mjs` returns 3, and it must return 6.
+    Fix it, then run the tests.
+graders:
+  # The fix is in the file: the loop no longer stops one item early.
+  - type: regex
+    name: "total-fixed"
+    target: { source: file, path: "src/total.mjs" }
+    pattern: '(?<![\s\S])(?![\s\S]*length - 1)[\s\S]*export function total'
+  # The tool call that uses the fact of the hook.
+  - type: tool_used
+    name: "ran-hook-command"
+    tool: Bash
+    input_match: '"command":"(?:[^"\\]|\\.)*node\s+qa/run\.mjs\s+--ci'
+    min: 1
+  # The run of the tests comes after the fix.
+  - type: tool_order
+    name: "fix-before-ci-run"
+    before: { tool: Edit, input_match: '"file_path":"[^"]*src/total\.mjs"' }
+    after: { tool: Bash, input_match: '"command":"(?:[^"\\]|\\.)*node\s+qa/run\.mjs\s+--ci' }
+  # A diagnostic: the file exists only when the project hook ran in the sandbox.
+  - type: regex
+    name: "hook-ran"
+    target: { source: file, path: ".hook-ran" }
+    pattern: '^'

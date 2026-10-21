@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Builds the fixture in the empty workspace.
+# Needs the flag `--scaffold`.
+# The project has tests for `slug`, and none for `pad`, which has the defect.
+set -euo pipefail
+cat > package.json <<'EOT'
+{
+  "type": "module"
+}
+EOT
+mkdir -p src check
+cat > src/slug.mjs <<'EOT'
+export function slug(text) {
+  return text.trim().toLowerCase().replaceAll(" ", "-");
+}
+EOT
+cat > src/pad.mjs <<'EOT'
+export function pad(n, width) {
+  return String(n);
+}
+EOT
+cat > check/slug.test.mjs <<'EOT'
+import assert from "node:assert";
+import { test } from "node:test";
+import { slug } from "../src/slug.mjs";
+
+test("slug", () => {
+  assert.equal(slug(" A b "), "a-b");
+});
+EOT

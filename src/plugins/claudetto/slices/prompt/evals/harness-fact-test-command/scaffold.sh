@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Builds the fixture in the empty workspace.
+# Needs the flag `--scaffold`.
+# The project hook states the only working test command.
+# `node --test` finds no test here, because the case files end in `.spec.mjs`, so it exits 0 with no test run.
+# The hook also writes `.hook-ran`, which shows that a project hook runs in the eval sandbox.
+set -euo pipefail
+mkdir -p .claude src qa/cases
+cat > .claude/settings.json <<'EOT'
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "touch .hook-ran && printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"Project fact: the only working test command is `node qa/run.mjs --ci`. `node --test` finds no test in this project and exits 0.\"}}'"
+          }
+        ]
+      }
+    ]
+  }
+}
+EOT
+cat > package.json <<'EOT'
+{
+  "type": "module"
+}
+EOT
+cat > src/total.mjs <<'EOT'
+export function total(list) {
+  let sum = 0;
+  for (let i = 0; i < list.length - 1; i++) sum += list[i];
+  return sum;
+}
+EOT
+cat > qa/cases/total.spec.mjs <<'EOT'
+import { total } from "../../src/total.mjs";
+
+export const cases = [
+  ["total of 1, 2, 3", () => total([1, 2, 3]) === 6],
+  ["total of none", () => total([]) === 0],
+];
+EOT
+cat > qa/run.mjs <<'EOT'
+import { cases } from "./cases/total.spec.mjs";
+
+let failed = 0;
+for (const [name, check] of cases) {
+  const ok = check();
+  console.log(`${ok ? "ok" : "not ok"} ${name}`);
+  if (!ok) failed++;
+}
+process.exit(failed ? 1 : 0);
+EOT
