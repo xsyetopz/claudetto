@@ -56,17 +56,28 @@ test("the style gives an example from the work of claudetto with a `!` command",
   expect(text).toContain("`! just sandbox`");
 });
 
-test("the case `concise-stays-thorough` carries the body of the style as `append_system_prompt`", async () => {
-  const text = await Bun.file(STYLE).text();
-  const body = text.split("\n---\n")[1]?.trim();
-  const doc = parse(
-    await Bun.file(
-      path.join(
-        REPO,
-        "src/plugins/claudetto/slices/styles/evals/concise-stays-thorough/case.yaml",
-      ),
-    ).text(),
-  );
-  expect(body).toContain("<reply_style>");
-  expect(doc.execution.append_system_prompt).toBe(body);
-});
+const PROXY_CASES = [
+  "accusation-warranted",
+  "claim-check",
+  "concise-stays-thorough",
+  "partial-verification",
+  "unprompted-skip",
+];
+
+test.each(PROXY_CASES)(
+  "the case `%s` carries the body of the style as `append_system_prompt`",
+  async (name) => {
+    const text = await Bun.file(STYLE).text();
+    const body = text.split("\n---\n")[1]?.trim();
+    const doc = parse(
+      await Bun.file(
+        path.join(
+          REPO,
+          `src/plugins/claudetto/slices/styles/evals/${name}/case.yaml`,
+        ),
+      ).text(),
+    );
+    expect(body).toContain("<reply_style>");
+    expect(doc.execution.append_system_prompt).toBe(body);
+  },
+);
