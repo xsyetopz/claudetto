@@ -7,7 +7,7 @@
 
 ## 1. Docs
 
-- [ ] 1.1 Write the sizes of the spec profiles into `src/wiki/claudetto/slices/Spec.md` from `evidence.md`, section "Spec Profile Sizes".
+- [x] 1.1 Write the sizes of the spec profiles into `src/wiki/claudetto/slices/Spec.md` from `evidence.md`, section "Spec Profile Sizes".
   Say that the sizes are bytes.
   Check: `just generate && just test tests/tools`
 - [ ] 1.2 Write the `ground` replay numbers into the section "Replay" of `src/wiki/claudetto/slices/Ground.md` from `evidence.md`, section "Ground Replay".

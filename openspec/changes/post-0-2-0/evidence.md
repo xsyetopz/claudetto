@@ -26,11 +26,11 @@ Common to each run: `openspec/config.yaml` is 998 bytes.
 | `propose` | 16700 | 16395 | 33084 |
 | `sync` | 15779 | 15579 | 31348 |
 | `update` | 11578 | 11186 | 22720 |
-| Prompt total | 95589 | 92122 | 187565 |
+| Prompt total | 95587 | 92122 | 187565 |
 | With `config.yaml` | 96585 | 93120 | 188563 |
 
 With `verify` in `skills`: `openspec-verify-change/SKILL.md` is 20229 bytes.
-The total is 116814 bytes, and the prompt total is 115818 bytes.
+The total is 116814 bytes, and the prompt total is 115816 bytes.
 
 ### Comparison
 
@@ -38,8 +38,8 @@ The total is 116814 bytes, and the prompt total is 115818 bytes.
 | --- | ---: | ---: |
 | `minispec` of 0.1.0 | 12500 | 1.0 |
 | `core`, `commands` | 92122 | 7.4 |
-| `core`, `skills` | 95589 | 7.6 |
-| `core` + `verify`, `skills` | 115818 | 9.3 |
+| `core`, `skills` | 95587 | 7.6 |
+| `core` + `verify`, `skills` | 115816 | 9.3 |
 | `core`, `both` (default) | 187565 | 15.0 |
 
 Result: the budget rule holds only in part.

@@ -31,6 +31,27 @@ The skill never overwrites a file, because you may have changed it.
 The global config is outside the project, so the skill asks you before it changes it.
 It gives you the commands `bunx @fission-ai/openspec config set delivery skills` and `bunx @fission-ai/openspec config profile`.
 
+## Profile Sizes
+
+The sizes in this section are bytes, not tokens.
+They are the bytes of the files that `openspec init --tools claude --profile core` writes, measured with `@fission-ai/openspec` version `1.14.3`.
+The mode is the `delivery` key of the global config, because `init` has no flag for it.
+The prompt bytes leave out `openspec/config.yaml`, which is 998 bytes.
+
+| Setup | Prompt bytes | Times `minispec` |
+| --- | ---: | ---: |
+| `core`, `commands` | 92122 | 7.4 |
+| `core`, `skills` | 95587 | 7.6 |
+| `core` + `verify`, `skills` | 115816 | 9.3 |
+| `core`, `both` (the default) | 187565 | 15.0 |
+
+`minispec` is the preset of 0.1.0, at 12500 bytes.
+The last column is the prompt bytes divided by 12500.
+
+Only the skill description loads at session start.
+The body of a skill loads when the skill runs.
+`commands` has no description cost at start, so it is the smaller choice for context.
+
 ## Picking a Preset
 
 The skill states the facts that it used.
