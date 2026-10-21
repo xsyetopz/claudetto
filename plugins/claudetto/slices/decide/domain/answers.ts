@@ -91,3 +91,46 @@ export const answerOf = (kind: "yes" | "pick", answers: unknown): Answer => {
     ? { choice: "yes", confidence: noul }
     : { choice: "no", confidence: 1 - noul };
 };
+
+/** The answer of the API to a `box` question: fractions from 0 to 1 from the top-left corner, and the confidence. */
+export interface BoxAnswer {
+  readonly top: number;
+  readonly bottom: number;
+  readonly left: number;
+  readonly right: number;
+  readonly confidence: number;
+}
+
+/**
+ * The `box` answer from the `q` field of `answers`.
+ * The API gives `{"type": "box", "box": {top, bottom, left, right}, "confidence": c}`, as `jev-1.14.0` showed live.
+ * It throws when the reply has no valid box.
+ */
+export const boxOf = (answers: unknown): BoxAnswer => {
+  const q = isRecord(answers) ? answers["q"] : undefined;
+  const b = isRecord(q) ? q["box"] : undefined;
+  if (
+    isRecord(q) &&
+    isRecord(b) &&
+    isProbability(b["top"]) &&
+    isProbability(b["bottom"]) &&
+    isProbability(b["left"]) &&
+    isProbability(b["right"]) &&
+    isProbability(q["confidence"])
+  )
+    return {
+      top: b["top"],
+      bottom: b["bottom"],
+      left: b["left"],
+      right: b["right"],
+      confidence: q["confidence"],
+    };
+  throw new Error("The reply of the TypeSafe API has no valid box. Try again.");
+};
+
+/** The text of a box answer: one line with the four fractions and the confidence, and the pixels when the size is known. */
+export const formatBox = (
+  a: BoxAnswer,
+  size?: { readonly width: number; readonly height: number },
+): string =>
+  `top ${num(a.top)}, bottom ${num(a.bottom)}, left ${num(a.left)}, right ${num(a.right)} (confidence ${num(a.confidence)})${size ? `, px x ${Math.round(a.left * size.width)}..${Math.round(a.right * size.width)} y ${Math.round(a.top * size.height)}..${Math.round(a.bottom * size.height)} of ${size.width}x${size.height}` : ""}`;

@@ -11,6 +11,12 @@ export const ASK_NOTE = (v: { confidence: string }): string =>
 export const ASK_PICK = (v: { index: string }): string =>
   `Which option is the best answer to question ${v.index}?`;
 
+/** From `src/plugins/claudetto/slices/decide/prompts/error-ask-flags.md`. */
+export const ERROR_ASK_FLAGS = (v: {
+  usage: string;
+}): string => `\`ask\` takes the state in the JSON on stdin, and it prints JSON, so it does not take \`--state\` or \`--json\`.
+${v.usage}`;
+
 /** From `src/plugins/claudetto/slices/decide/prompts/error-ask-questions.md`. */
 export const ERROR_ASK_QUESTIONS = (v: { usage: string }): string =>
   `\`ask\` needs \`questions\` in the JSON. ${v.usage}`;
@@ -18,6 +24,44 @@ export const ERROR_ASK_QUESTIONS = (v: { usage: string }): string =>
 /** From `src/plugins/claudetto/slices/decide/prompts/error-ask-stdin.md`. */
 export const ERROR_ASK_STDIN = (v: { usage: string }): string =>
   `\`ask\` needs a JSON object on stdin. ${v.usage}`;
+
+/** From `src/plugins/claudetto/slices/decide/prompts/error-box-image.md`. */
+export const ERROR_BOX_IMAGE = (v: {
+  usage: string;
+}): string => `The verb \`box\` needs one picture.
+Use \`--image <path>\` with a path to a PNG or JPEG file.
+${v.usage}`;
+
+/** From `src/plugins/claudetto/slices/decide/prompts/error-image-copy-size.md`. */
+export const ERROR_IMAGE_COPY_SIZE = (v: {
+  path: string;
+  size: string;
+  bound: string;
+  original: string;
+}): string => `The scaled copy of the image file \`${v.path}\` is ${v.size} px, which is ${v.bound}, and the original is ${v.original} px.
+The API takes 280 to 1,568 px per side.
+Scale the image by hand so that its longest side is at most 1,568 px and its shortest side is at least 280 px, then send it again.`;
+
+/** From `src/plugins/claudetto/slices/decide/prompts/error-image-file.md`. */
+export const ERROR_IMAGE_FILE = (v: { path: string; reason: string }): string =>
+  `The image file \`${v.path}\` ${v.reason}.`;
+
+/** From `src/plugins/claudetto/slices/decide/prompts/error-image-path.md`. */
+export const ERROR_IMAGE_PATH = (v: {
+  usage: string;
+}): string => `Use \`--image <path>\` with a path to a PNG or JPEG file.
+${v.usage}`;
+
+/** From `src/plugins/claudetto/slices/decide/prompts/error-image-size.md`. */
+export const ERROR_IMAGE_SIZE = (v: {
+  path: string;
+  size: string;
+  bound: string;
+}): string => `The image file \`${v.path}\` is ${v.size} px, which is ${v.bound}.
+The API takes 280 to 1,568 px per side, and it answers a larger or smaller image with a \`400\`.
+Scale the image so that its longest side is at most 1,568 px and its shortest side is at least 280 px, then send it again.
+On macOS, run \`sips -Z 1568 in.png --out out.png\`.
+On other systems, run ImageMagick \`magick in.png -resize 1568x1568 out.png\`.`;
 
 /** From `src/plugins/claudetto/slices/decide/prompts/error-no-key.md`. */
 export const ERROR_NO_KEY = `The variable \`TYPESAFE_API_KEY\` is not set. Set it before Claude Code starts.`;
@@ -32,6 +76,20 @@ export const ERROR_QUESTION_MISSING = (v: { usage: string }): string =>
 /** From `src/plugins/claudetto/slices/decide/prompts/error-verb.md`. */
 export const ERROR_VERB = (v: { verb: string; usage: string }): string =>
   `The verb \`${v.verb}\` is not known. ${v.usage}`;
+
+/** From `src/plugins/claudetto/slices/decide/prompts/info-image-scaled-max.md`. */
+export const INFO_IMAGE_SCALED_MAX = (v: {
+  path: string;
+  from: string;
+}): string =>
+  `Scaled \`${v.path}\` from ${v.from} to at most 1,568 px on a side for the API.`;
+
+/** From `src/plugins/claudetto/slices/decide/prompts/info-image-scaled.md`. */
+export const INFO_IMAGE_SCALED = (v: {
+  path: string;
+  from: string;
+  to: string;
+}): string => `Scaled \`${v.path}\` from ${v.from} to ${v.to} px for the API.`;
 
 /** From `src/plugins/claudetto/slices/decide/prompts/jev-answered.md`. */
 export const JEV_ANSWERED = (v: {
@@ -62,7 +120,20 @@ An approval question goes to the user, never to Jev: a question that asks the us
 State in the question that it asks for approval, so that the user gets the dialog.`;
 
 /** From `src/plugins/claudetto/slices/decide/prompts/usage.md`. */
-export const USAGE = `Use \`claudetto-decide yes|pick [--json] [--state <- | text>] [--] "<question>" [options]\`, or \`claudetto-decide ask\` with JSON on stdin.`;
+export const USAGE = `Use one of these forms:
+- \`claudetto-decide yes [--json] [--state <- | text>] [--image <path>]... [--] "<question>"\`
+- \`claudetto-decide pick [--json] [--state <- | text>] [--image <path>]... [--] "<question>" <key>[=<description>]...\`
+- \`claudetto-decide box --image <path> [--image <path>]... [--json] [--state <- | text>] [--] "<what to find>"\`
+- \`claudetto-decide ask [--image <path>]...\`, with JSON on stdin.
+An \`--image\` takes a PNG or JPEG file, and the image leaves the machine, so send only the pictures that the user agrees to show.
+Each side must be 280 to 1,568 px, or the command exits with code 2.
+On macOS, the command scales a larger picture itself with \`sips\`, into a copy, and it prints one line on stderr.
+On other systems, scale the picture first, such as with \`magick in.png -resize 1568x1568 out.png\`.
+A \`box\` can come back when the target is absent from the image, so read its confidence.`;
+
+/** From `src/plugins/claudetto/slices/decide/prompts/warn-image-scale-failed.md`. */
+export const WARN_IMAGE_SCALE_FAILED = (v: { path: string }): string =>
+  `Could not scale \`${v.path}\` with \`sips\`.`;
 
 /** From `src/plugins/claudetto/slices/decide/prompts/yes-unsure.md`. */
 export const YES_UNSURE = `P(yes) is near 0.5, so Jev is not sure.`;

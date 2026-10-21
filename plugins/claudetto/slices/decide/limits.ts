@@ -43,3 +43,38 @@ export const YES_NO_UNSURE_BAND = 0.2;
  * The bound is low, because a wrong "no" lets Jev approve for the user, and a wrong "yes" only shows a dialog.
  */
 export const APPROVAL_MAX = 0.2;
+
+/**
+ * The most bytes of one `--image` file: 16 MiB, or 16,777,216 bytes.
+ * The command checks the size of each file before it sends a request.
+ * It does not add the sizes, so the API answers a request over 32 MiB with a `413`.
+ */
+export const IMAGE_BYTES_MAX = 16 * 1024 * 1024;
+
+// The pixel bounds of one `--image`, from the TypeSafe docs and a live `400` ("Invalid image dimensions.").
+// A 1554 x 2000 PNG got that `400`, and the same image at 1218 x 1568 got a `200`.
+// The side bounds are inclusive, and so is the total: 1568 x 1568 is exactly `IMAGE_PIXELS_MAX`.
+// A side of at least `IMAGE_SIDE_MIN` makes the total at least `IMAGE_PIXELS_MIN`, and a side of at most `IMAGE_SIDE_MAX` makes the total at most `IMAGE_PIXELS_MAX`.
+// The total bounds are kept for the docs and for a test that pins them.
+
+/** The fewest pixels of one side of an `--image`. */
+export const IMAGE_SIDE_MIN = 280;
+
+/** The most pixels of one side of an `--image`. */
+export const IMAGE_SIDE_MAX = 1568;
+
+/** `IMAGE_SIDE_MAX` as plain text, for a command in a prompt, because the generator writes a number with commas. */
+export const IMAGE_SIDE_MAX_TEXT = String(IMAGE_SIDE_MAX);
+
+/** The fewest pixels in total of an `--image`: 280 x 280. */
+export const IMAGE_PIXELS_MIN = 78_400;
+
+/** The most pixels in total of an `--image`: 1568 x 1568. */
+export const IMAGE_PIXELS_MAX = 2_458_624;
+
+/**
+ * The most time that `sips` has to scale one `--image`, in milliseconds.
+ * The scaling runs before the request, so `ATTEMPT_TIMEOUT_MS * TRIES`, the waits of `BACKOFF_MS`, and this time fit in `JEV_TIMEOUT_MS`, and a test pins that.
+ * The images scale in parallel, so the time counts once.
+ */
+export const SCALE_TIMEOUT_MS = 5_000;

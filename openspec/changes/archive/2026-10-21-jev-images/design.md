@@ -16,7 +16,7 @@ The docs (read 2026-10-20) give these facts, which the decisions use:
   Each use of a reference adds a copy of the image.
 - A multipart request has a first part named `request` (`application/json`), and one file part for each image.
 - A `box` question has the form `{"type": "box", "instructions": "..."}`, with no `criteria`, and it needs Jev 1.14.
-  The answer is a box, with `top`, `bottom`, `left`, and `right` as fractions from 0 to 1 from the top-left corner, and a `confidence`.
+  The answer is `answers.q = {"type": "box", "box": {top, bottom, left, right}, "confidence": c}`, with the four fractions from 0 to 1 from the top-left corner (confirmed live with `jev-1.14.0` in task 6.1).
   The box finds one target per question.
 - The API does no resize.
   One bad image fails the whole request.
@@ -77,18 +77,38 @@ The content type of the part comes from that check, as `image/png` or `image/jpe
 The CLI checks the size of each file against `IMAGE_BYTES_MAX` in `src/plugins/claudetto/slices/decide/limits.ts`, which is 16 MiB (16,777,216 bytes).
 A file that fails a check is a usage fault, with exit `2`, and no request is sent.
 
-The pixel bounds of the docs (280 to 1568 px per side, and 78,400 to 2,458,624 px in total) are left to the API.
-The API answers with `413` or `400`, and the CLI prints the body of the answer, bounded by `ERROR_BODY_MAX`.
-The CLI does not add the sizes of the files, so a request over the 32 MiB body gets the `413` of the API.
+The CLI also checks the pixel size of each `--image` against the bounds of the docs.
+A side must be 280 to 1568 px, and the total must be 78,400 to 2,458,624 px, as `IMAGE_SIDE_MIN`, `IMAGE_SIDE_MAX`, `IMAGE_PIXELS_MIN`, and `IMAGE_PIXELS_MAX` in `limits.ts`.
+The size comes from the header read of D5, with `imageSize` on the bytes that `readImage` already read.
+A size that is out of bounds is a usage fault, with exit `2`, no request, and a message that names the path, the size, and the bound, and tells the user to scale the image.
+A size that cannot be read does not stop the command, and the API then decides.
+The reason is a live result of 2026-10-20: a 1554 x 2000 RGBA PNG passed the other checks, and the API answered `400` with `Invalid image dimensions.` to a `yes` and to a `box`.
+The same image at 1218 x 1568 got `200`.
+The user chose to check before the call, and then chose to scale in the CLI, with a hint otherwise and an info line when the CLI scaled an image.
+
+When an image is over `IMAGE_SIDE_MAX` on a side, or over `IMAGE_PIXELS_MAX`, and the system has `sips` (macOS), the CLI scales a copy with `sips -Z 1568`.
+It runs `Bun.spawn` with an argument array and no shell, with the timeout `SCALE_TIMEOUT_MS`, into a `mkdtemp` folder that it removes in a `finally`.
+`SCALE_TIMEOUT_MS` fits in `JEV_TIMEOUT_MS` with the tries of the client, and a test pins that.
+The CLI checks the copy again (the first bytes, the file size, and the pixel size), and the original file stays as it is.
+It prints one line on stderr, so that the stdout of `--json` stays JSON: ``Scaled `<path>` from 1554x2000 to 1218x1568 px for the API.``
+The pixels of a `box` come from the size of the original file, because the fractions do not depend on the scale.
+`sips` is a tool of the system, so the CLI still has no library and no dependency.
+It never scales up: an image under the minimum is a usage fault.
+Without `sips`, or when `sips` fails, or when the copy is still out of bounds, the command exits `2` with the size message, which has a hint for `sips` and for ImageMagick `magick`.
+
+The CLI does not add the sizes of the files, so a request over the 32 MiB body gets the `413` of the API, and the CLI prints the body of the answer, bounded by `ERROR_BODY_MAX`.
 
 The CLI has no image library, so it cannot read the pixels of a picture.
 A decoder adds code and a dependency, and the goal of the user (D10) forbids both.
 The header read of D5 is the only size read, and it needs no library.
 
-- Alternative: check the pixels in the CLI.
+- Alternative: leave the pixel bounds to the API.
+  Rejected after the live `400` above, because the reply gives the user no size and no advice.
+- Alternative: decode the pixels in the CLI.
   Rejected, for the reason above.
-- Alternative: resize the picture in the CLI.
-  Rejected, because the API does no resize, and a resize needs an image library.
+- Alternative: resize the picture with a library in the CLI.
+  Rejected, because a resize needs an image library or a bundled tool, and the goal of the user (D10) forbids both.
+  The `sips` of macOS is a tool of the system, so it is not that.
 
 ### D5. Box Output
 
@@ -170,7 +190,13 @@ D4 and D5 show where the code stops.
 ## Open Questions
 
 1. Does the box also print in pixels (D5)?
-   The implementer decides by code size.
+   Resolved (task 4.2): yes.
+   `imageSize` in `adapters/cli.ts` reads the `IHDR` chunk of a PNG and walks the segments of a JPEG to the first `SOF` marker.
+   It takes about 25 lines, with bounds checks and no library.
+   The text line then ends with `, px x <left>..<right> y <top>..<bottom> of <width>x<height>`, rounded to integers, from the first `--image`.
+   A file that is cut short, a JPEG with no `SOF`, a PNG whose first chunk is not `IHDR`, and a size of 0 give the line with no pixels and no error.
+   The read ignores the EXIF orientation, so a rotated JPEG gives the stored size.
+   `--json` stays the raw answer.
 2. Does the verb `box` take `--image`?
    This design says yes (D7), because a `box` needs a picture.
    The user picked the scope "`--image` and `box`", and did not name the form of `box`, so confirm it at the start of the work.

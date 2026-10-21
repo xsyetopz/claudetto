@@ -69,6 +69,7 @@ You can also use the command alone:
 | `claudetto-decide yes "<question>"` | Prints `P(yes)` for a yes or no question. |
 | `claudetto-decide pick "<question>" key[=description]...` | Prints the chosen key, the confidence, and the probability of each key. |
 | `claudetto-decide ask` | Reads one JSON object on stdin with `questions` and `state`. Prints the answers as JSON. |
+| `claudetto-decide box --image <path> "<what to find>"` | Prints the box of the target in the picture, with the confidence. |
 
 `yes` and `pick` take `--state <text>` for facts, `--state -` to read the facts from stdin, and `--json` for a JSON output.
 A `--` ends the flags.
@@ -80,11 +81,63 @@ The output adds a line when Jev is not sure: a confidence under 0.5 for `pick`, 
 | --- | --- |
 | 0 | An answer. |
 | 1 | A failure. |
-| 2 | A usage fault, such as a missing key or question. |
+| 2 | A usage fault, such as a missing key, question, or image file. |
 | 3 | The key is not valid (status 401). |
 | 4 | The account has no balance (status 402). |
 
 When the command fails, the hook leaves the question as Claude asked it.
+
+## Images and `box`
+
+The verbs `yes`, `pick`, `ask`, and `box` take `--image <path>`, and the option repeats.
+Each `--image` adds one picture to the request.
+The file must be a PNG or JPEG file.
+The command reads the first bytes of the file to check its type, not its name, so a text file with a `.png` name fails.
+A file over `IMAGE_BYTES_MAX` (16 MiB) fails too.
+A picture with a side under 280 px or over 1568 px fails too, because the API answers it with a `400`.
+The command reads the size from the header of the file, and it leaves a size that it cannot read to the API.
+On macOS, the command scales a picture over 1568 px on a side with `sips` into a copy in a temporary folder, and it prints `Scaled <path> from <w>x<h> to <w>x<h> px for the API.` on stderr.
+The original file stays as it is, and the `px` suffix of a `box` uses its size.
+Without `sips`, the command exits with code 2, and the message has the `sips` and ImageMagick commands to scale the picture.
+The command never scales a picture up.
+A bad file exits with code 2, and no request is sent.
+
+`--image` is the one exception to the path rule of the command.
+`--state` stays text, so a path in `--state` is never read as a file.
+
+A request with an image is multipart, with the header `TypeSafe-Danger-Zone-Images: true`.
+A request with no image and no `box` question keeps the same JSON body as before, with no header.
+The command gives each picture a UUID, and it adds one line to the state for each picture, such as `Image img1: <uuid>`.
+A question can name a picture as `img1`, `img2`, and so on, in the order of the `--image` options.
+The model is `jev-latest` for a request with no `box` question, and `jev-1.14.0` for a request with one.
+The hook of `AskUserQuestion` sends no image, so no picture of a session goes to the API through it.
+
+The verb `box` finds one target in a picture.
+It sends one question of type `box`, with the instructions that you give.
+It needs at least one `--image`, and it exits with code 2 without one.
+It takes `--state` and `--json`, and it drops the words after the question, as `yes` does.
+
+The text output has the four fractions and the confidence, for example:
+
+`top 0.10, bottom 0.50, left 0.25, right 0.75 (confidence 0.90)`
+
+The fractions run from 0 to 1 of the image, measured from the top-left corner.
+When the first image is a PNG or JPEG with a readable size, a pixel suffix follows, such as `, px x 160..480 y 48..240 of 640x480`.
+The size is the stored size of the file, and EXIF orientation is ignored.
+With `--json`, the command prints the raw `q` answer of the API, with no pixels.
+The API gives it as `{"type": "box", "box": {"top": 0.1, "bottom": 0.51, "left": 0.25, "right": 0.76}, "confidence": 0.92}`.
+
+A `box` can come back when the target is absent from the image.
+Read the `confidence` before you use the box.
+To check that the target is present, ask a `yes` question about the same picture first.
+
+An image leaves the machine and goes to the TypeSafe API.
+Send only the pictures that the user agrees to show.
+An image bills as input tokens, so a large picture costs more.
+Images are a preview feature of the API, so their format, limits, and accuracy can change.
+The live calls confirmed the nested shape of the answer.
+The four fractions are at `q.box.{top,bottom,left,right}`, and the confidence is at `q.confidence`.
+See [Jev Images](Jev-Images) for the calls.
 
 ## Bounds
 
@@ -97,6 +150,12 @@ All bounds are in `slices/decide/limits.ts`.
 | `TRIES` | 3 tries on a reply of 429 or 529. |
 | `BACKOFF_MS` | 1,000 ms before the first retry. Each later wait doubles. |
 | `ERROR_BODY_MAX` | 200 characters of an error body. |
+| `IMAGE_BYTES_MAX` | 16 MiB for one `--image` file. |
+| `IMAGE_SIDE_MIN` | 280 px for the shortest side of an `--image`. |
+| `IMAGE_SIDE_MAX` | 1,568 px for the longest side of an `--image`. |
+| `IMAGE_PIXELS_MIN` | 78,400 px in total for an `--image`. |
+| `IMAGE_PIXELS_MAX` | 2,458,624 px in total for an `--image`. |
+| `SCALE_TIMEOUT_MS` | 5,000 ms for `sips` to scale the images. |
 
 ## See Also
 
