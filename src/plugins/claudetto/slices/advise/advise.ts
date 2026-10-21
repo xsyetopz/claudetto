@@ -84,11 +84,21 @@ const tailOf = (messages: readonly SessionMessage[], room: number): string => {
   return kept.join("\n");
 };
 
-/** One tool result as a block of the prompt: the tool, the id, and the text cut to `RESULT_BYTES` with a marker. */
-const blockOf = (tool: string, id: string, text: string): string => {
-  const body = clip(text, RESULT_BYTES);
-  const cut = bytes(text) - bytes(body);
-  return `<tool_result tool="${tool}" id="${id}">\n${body}${cut > 0 ? `\n[cut: ${cut} more bytes]` : ""}\n</tool_result>`;
+/** An attribute value without a character that could close the attribute or the tag. */
+const attrOf = (value: string): string => value.replace(/["<>\r\n]/g, "_");
+
+/** One tool result as a block of the prompt: the tool, the id, the error mark, and the text cut to `RESULT_BYTES` with a marker. The text cannot close the block, because `</tool_result` in it becomes `<\/tool_result`. */
+const blockOf = (
+  tool: string,
+  id: string,
+  text: string,
+  isError = false,
+): string => {
+  const safe = text.replace(/<\/(tool_result)/gi, "<\\/$1");
+  const body = clip(safe, RESULT_BYTES);
+  const cut = bytes(safe) - bytes(body);
+  const error = isError ? ' error="true"' : "";
+  return `<tool_result tool="${attrOf(tool)}" id="${attrOf(id)}"${error}>\n${body}${cut > 0 ? `\n[cut: ${cut} more bytes]` : ""}\n</tool_result>`;
 };
 
 /** The newest tool results that fit in `room` bytes (and in `RESULTS_BYTES`), newest first. The results of `advise` itself stay out. */
@@ -105,7 +115,7 @@ const resultsOf = (
     for (const r of [...(m.toolResults ?? [])].reverse()) {
       const tool = names.get(r.tool_use_id) ?? "unknown";
       if (tool === TOOL_NAME || !r.text) continue;
-      const block = blockOf(tool, r.tool_use_id, r.text);
+      const block = blockOf(tool, r.tool_use_id, r.text, r.isError);
       if (bytes(block) + 1 > left) return kept.join("\n");
       kept.push(block);
       left -= bytes(block) + 1;
@@ -183,7 +193,7 @@ export const usageLine = (
   const u = reply.usage;
   const input =
     u.input_tokens + u.cache_read_input_tokens + u.cache_creation_input_tokens;
-  return `\`advise\`: ${model} used ${input} tokens in, ${u.output_tokens} tokens out.`;
+  return `\`advise\`: ${model} used ${input} tokens in (${u.cache_read_input_tokens} read from the cache, ${u.cache_creation_input_tokens} written to the cache), ${u.output_tokens} tokens out.`;
 };
 
 /** The result text for a reply of the model: the advice with the model name, or the cause of no advice. The text has no token counts, and `usageLine` has them. */

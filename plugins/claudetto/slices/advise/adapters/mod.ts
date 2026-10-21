@@ -37,6 +37,9 @@ const kept: { options: Options; id: string; calls: number } = {
   calls: 0,
 };
 
+/** Whether this module set `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`, so that a later switch to `builtin` in the same process (`/clear`, a plugin reload) unsets only what this module set. */
+let disabledBuiltin = false;
+
 export const keepOptions = (values: PluginOptions): void => {
   kept.options = optionsOf(values);
 };
@@ -44,7 +47,10 @@ export const keepOptions = (values: PluginOptions): void => {
 export const onSessionStart: Handler<"session.start"> = async ($, e, next) => {
   if (kept.options.advisor === "claudetto") {
     // The built-in advisor is a server tool that no hook can remove, so the env var turns it off before the first request.
-    await $.env.set("CLAUDE_CODE_DISABLE_ADVISOR_TOOL", "1");
+    const set = await $.env.set("CLAUDE_CODE_DISABLE_ADVISOR_TOOL", "1");
+    if (set.deny !== undefined)
+      $.ui.log(`\`advise\`: the env var was denied (${set.deny}).`);
+    else disabledBuiltin = true;
     await $.tool.register({
       name: TOOL,
       description: TOOL_DESCRIPTION,
@@ -57,6 +63,15 @@ export const onSessionStart: Handler<"session.start"> = async ($, e, next) => {
       },
       isDeferred: false,
     });
+  } else if (disabledBuiltin) {
+    // This module set the var in an earlier session of the process, so the built-in advisor comes back.
+    const unset = await $.env.set(
+      "CLAUDE_CODE_DISABLE_ADVISOR_TOOL",
+      undefined,
+    );
+    if (unset.deny !== undefined)
+      $.ui.log(`\`advise\`: the env var stays set (${unset.deny}).`);
+    else disabledBuiltin = false;
   }
   return next(e);
 };
