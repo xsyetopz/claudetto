@@ -78,7 +78,8 @@ The cause is the same as above.
 Their with results show the plugin loaded with the default style.
 The trace of `accusation-warranted` in `plugins/claudetto/evals/results/2026-10-20T02-41-08-446Z/` gives `"output_style":"default"` in its init event.
 Do not cite these cases as style results.
-Task 5.4 of `post-0-2-0` tracks their regrade.
+Task 5.4 of `post-0-2-0` regraded them with the style text as `append_system_prompt`.
+The results are in [Evals of 0.1.0](Evals-0.1.0#regrade-with-the-style-active).
 
 ## Cost
 

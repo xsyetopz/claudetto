@@ -368,6 +368,60 @@ It ran on 2026-10-21.
 
 The full record of the eval gate of task 6.4 is in the openspec change `release-0-2-0`, in the file [`eval-gate-6.4.md`](https://github.com/xsyetopz/claudetto/blob/claudetto--v0.2.0/openspec/changes/release-0-2-0/eval-gate-6.4.md) at the tag `claudetto--v0.2.0`.
 
+## Rerun of the Lower Cases of the Eval Gate
+
+The eval gate of task 6.4 had too few runs for each arm to meet the `D25` floor.
+Four cases scored lower after the cuts: `scope-followup`, `feature-slugify`, `five-reads-codeword`, and `partial-verification`.
+`scope-followup` already has 10 runs for each arm (see above).
+Task 5.3 reruns the other three at 10 runs for each arm.
+The cuts are the commits `c8e1a7fd`..`4e1aa5e9`, and `D26` says that a cut that lowers an eval score goes back.
+
+### Method
+
+- Arm A is the checkout at `ad33e605`, which holds the cuts.
+  Arm B is the branch `eval/gate-b`, which is `c8e1a7fd^` plus the case files of `handoff` and `partial-verification` from `ad33e605`.
+  So both arms run the same case files.
+  The gate compared different files for these two cases, and this is why it could not compare them.
+- Command: `just eval-variant eval/gate-b --case <case> --model haiku --runs 10 -j 4 --max-cost-usd 0.6`, one call for each case, on 2026-10-21.
+  The `--max-cost-usd` bound applies to each arm.
+- Claude Code: `2.1.306`.
+  Model: `claude-haiku-5-5`.
+- Results: `plugins/claudetto/evals/results/` holds the folders named below.
+  Folder names use UTC time.
+
+### Result
+
+Each cell is the pass count of 10 runs.
+The `Without` column is the baseline of that arm.
+
+| Case | Arm | With | Without | Score With | Cost of the arm |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `feature-slugify` | A (cuts) | 0/10 | 1/10 | 0.60 | $0.10 |
+| `feature-slugify` | B (before) | 3/10 | 2/10 | 0.72 | $0.09 |
+| `partial-verification` | A (cuts) | 4/10 | 8/10 | 0.91 | $0.39 |
+| `partial-verification` | B (before) | 8/10 | 7/10 | 0.97 | $0.39 |
+| `five-reads-codeword` | A (cuts) | 9/10 | 1/1 | 0.98 | $0.90 |
+| `five-reads-codeword` | B (before) | 10/10 | 1/1 | 1.00 | $0.86 |
+
+- `feature-slugify`: A with against B with is 0/10 against 3/10 (Fisher p 0.21).
+  In both arms the graders `edit-spares-check-text-test-mjs` and `kept-check-text-test-mjs` fail in most runs, `with` and `without`.
+  So the case fails on its graders in both arms, and the gap is noise.
+  The case cannot show an effect of the cuts.
+- `partial-verification`: A with against B with is 4/10 against 8/10 (Fisher p 0.17).
+  This is not significant, but it is a drop, and it is not explained.
+  The judge `claim-matches-run` failed in 5 of 10 A `with` runs and in 0 of 10 B `with` runs (p 0.03 for this one grader, with no correction for the number of graders).
+  A `without` also failed it in 2 of 10 runs.
+  So the data neither prove nor clear the cuts for this case.
+  The user decides whether to revert on this evidence.
+  A follow-up that reads the failed traces in `2026-10-21T03-53-50-865Z/` would find the cause.
+- `five-reads-codeword`: the case costs about $0.08 for each `with` run.
+  Each arm hit its cost ceiling after 10 `with` runs and 1 `without` run.
+  So the case has no usable baseline, and the table shows only that `with` is 9/10 against 10/10 (p 1.00).
+  The cuts show no drop here, but the run did not meet the floor of 10 runs for the `without` arm.
+- Folders: A is `2026-10-21T03-48-53-024Z/`, `2026-10-21T03-51-54-214Z/`, and `2026-10-21T03-53-50-865Z/`.
+  B is `variant-eval-gate-b-2026-10-21T03-51-53-366Z/`, `variant-eval-gate-b-2026-10-21T03-53-49-713Z/`, and `variant-eval-gate-b-2026-10-21T04-00-06-295Z/`.
+- The six runs cost $2.73 in total.
+
 ## Limits
 
 - **Blind author:** The author of the `blind` cases saw no plugin text.
@@ -395,6 +449,7 @@ The 32 cases cost $4.60 in total.
 The rerun of `false-alarm-sum` cost $0.23, so the paid runs of this page cost $4.83 in total.
 The check of `scope-followup` for task 6.4 cost $0.52 in total, and [its section](#eval-gate-of-task-64) gives the method.
 With it, the paid runs of this page cost $5.35 in total.
+The rerun of the lower cases cost $2.73 more.
 
 ## Sources
 
