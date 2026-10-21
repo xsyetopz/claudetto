@@ -148,6 +148,12 @@ All bounds are in `slices/decide/limits.ts`.
 | `TRIES` | 3 tries on a reply of 429 or 529. |
 | `BACKOFF_MS` | 1,000 ms before the first retry. Each later wait doubles. |
 | `ERROR_BODY_MAX` | 200 characters of an error body. |
+| `IMAGE_BYTES_MAX` | 16 MiB for one `--image` file. |
+| `IMAGE_SIDE_MIN` | 280 px for the shortest side of an `--image`. |
+| `IMAGE_SIDE_MAX` | 1,568 px for the longest side of an `--image`. |
+| `IMAGE_PIXELS_MIN` | 78,400 px in total for an `--image`. |
+| `IMAGE_PIXELS_MAX` | 2,458,624 px in total for an `--image`. |
+| `SCALE_TIMEOUT_MS` | 5,000 ms for `sips` to scale the images. |
 
 ## See Also
 

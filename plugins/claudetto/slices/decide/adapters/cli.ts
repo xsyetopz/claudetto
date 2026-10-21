@@ -38,6 +38,7 @@ import {
   ERROR_ASK_QUESTIONS,
   ERROR_ASK_STDIN,
   ERROR_BOX_IMAGE,
+  ERROR_IMAGE_COPY_SIZE,
   ERROR_IMAGE_FILE,
   ERROR_IMAGE_PATH,
   ERROR_IMAGE_SIZE,
@@ -46,7 +47,9 @@ import {
   ERROR_QUESTION_MISSING,
   ERROR_VERB,
   INFO_IMAGE_SCALED,
+  INFO_IMAGE_SCALED_MAX,
   USAGE,
+  WARN_IMAGE_SCALE_FAILED,
 } from "../prompts.ts";
 
 const API = "https://api.typesafe.ai/v1/systemone";
@@ -127,6 +130,27 @@ const imageType = (bytes: Uint8Array): string | undefined => {
   return undefined;
 };
 
+/** Numbers print with commas, as the numbers of the prompts do. */
+const n = (v: number) => v.toLocaleString("en-US");
+
+/** The bound that a size is over, or `undefined`. Scaling down can fix it. */
+const maxBound = ({ width, height }: ImageSize): string | undefined =>
+  Math.max(width, height) > IMAGE_SIDE_MAX
+    ? `over ${n(IMAGE_SIDE_MAX)} px on a side`
+    : width * height > IMAGE_PIXELS_MAX
+      ? `over ${n(IMAGE_PIXELS_MAX)} px in total`
+      : undefined;
+
+/** The bound that a size is under, or `undefined`. The command never scales up, so nothing can fix it. */
+const minBound = ({ width, height }: ImageSize): string | undefined =>
+  Math.min(width, height) < IMAGE_SIDE_MIN
+    ? `under ${n(IMAGE_SIDE_MIN)} px on a side`
+    : width * height < IMAGE_PIXELS_MIN
+      ? `under ${n(IMAGE_PIXELS_MIN)} px in total`
+      : undefined;
+
+const sizeText = ({ width, height }: ImageSize): string => `${width}x${height}`;
+
 /**
  * Stops an image outside the pixel bounds of the API before the request (design D4).
  * A size that cannot be read does not stop the command: the API checks it then.
@@ -134,22 +158,10 @@ const imageType = (bytes: Uint8Array): string | undefined => {
 const checkImageSize = (path: string, bytes: Uint8Array): void => {
   const size = imageSize(bytes);
   if (!size) return;
-  const { width, height } = size;
-  // Numbers print with commas, as the numbers of the prompts do.
-  const n = (v: number) => v.toLocaleString("en-US");
-  const bound =
-    Math.max(width, height) > IMAGE_SIDE_MAX
-      ? `over ${n(IMAGE_SIDE_MAX)} px on a side`
-      : Math.min(width, height) < IMAGE_SIDE_MIN
-        ? `under ${n(IMAGE_SIDE_MIN)} px on a side`
-        : width * height > IMAGE_PIXELS_MAX
-          ? `over ${n(IMAGE_PIXELS_MAX)} px in total`
-          : width * height < IMAGE_PIXELS_MIN
-            ? `under ${n(IMAGE_PIXELS_MIN)} px in total`
-            : undefined;
+  const bound = maxBound(size) ?? minBound(size);
   if (bound)
     throw new UsageError(
-      ERROR_IMAGE_SIZE({ path, size: `${width}x${height}`, bound }),
+      ERROR_IMAGE_SIZE({ path, size: sizeText(size), bound }),
     );
 };
 
@@ -188,6 +200,8 @@ export interface LoadedImage {
   readonly size: ImageSize | undefined;
   /** The size of the copy that was sent, when the command scaled the image. */
   readonly scaledTo?: ImageSize;
+  /** Whether the command sent a scaled copy. */
+  readonly scaled?: boolean;
 }
 
 /** Options of `readImage`: `scale` is `undefined` for `sips` when it exists, and `null` for no scaler. */
@@ -234,18 +248,37 @@ export const readImage = async (
   const size = imageSize(bytes);
   const scaler = scale === undefined ? systemScaler() : (scale ?? undefined);
   if (size && isTooLarge(size) && scaler) {
+    // The command never scales up, so a side under the minimum stops it with the real size, before any scaling.
+    const small = minBound(size);
+    if (small)
+      throw new UsageError(
+        ERROR_IMAGE_SIZE({ path, size: sizeText(size), bound: small }),
+      );
     const dir = await mkdtemp(join(tmpdir(), "claudetto-decide-"));
     try {
       const out = join(dir, basename(path));
-      // A scaler that fails leaves the original, and the size check below then stops the command.
-      if (await scaler(path, out)) {
-        const copy = await read(out);
+      // A scaler that fails, or leaves no good copy, leaves the original, and the size check below then stops the command.
+      const copy = (await scaler(path, out))
+        ? await read(out).catch(() => undefined)
+        : undefined;
+      if (!copy) console.error(WARN_IMAGE_SCALE_FAILED({ path }));
+      else {
         const scaledTo = imageSize(copy.bytes);
         // The copy must be inside the bounds too, such as a short side that the scaling left under the minimum.
-        checkImageSize(path, copy.bytes);
+        const bound = scaledTo && (maxBound(scaledTo) ?? minBound(scaledTo));
+        if (scaledTo && bound)
+          throw new UsageError(
+            ERROR_IMAGE_COPY_SIZE({
+              path,
+              size: sizeText(scaledTo),
+              bound,
+              original: sizeText(size),
+            }),
+          );
         return {
           blob: new Blob([copy.bytes], { type: copy.type }),
           size,
+          scaled: true,
           ...(scaledTo && { scaledTo }),
         };
       }
@@ -484,15 +517,16 @@ export const main = async (
       args.images.map((path) => readImage(path, options)),
     );
     // One line on stderr for each scaled image, so that the stdout of `--json` stays JSON.
-    for (const [i, image] of loaded.entries())
-      if (image.scaledTo && image.size)
-        console.error(
-          INFO_IMAGE_SCALED({
-            path: args.images[i] as string,
-            from: `${image.size.width}x${image.size.height}`,
-            to: `${image.scaledTo.width}x${image.scaledTo.height}`,
-          }),
-        );
+    for (const [i, image] of loaded.entries()) {
+      if (!(image.scaled && image.size)) continue;
+      const path = args.images[i] as string;
+      const from = sizeText(image.size);
+      console.error(
+        image.scaledTo
+          ? INFO_IMAGE_SCALED({ path, from, to: sizeText(image.scaledTo) })
+          : INFO_IMAGE_SCALED_MAX({ path, from }),
+      );
+    }
     const images = loaded.map((image) => image.blob);
     // The pixels come from the file that the user named in the first `--image`, which the `box` question names (design D5).
     // The fractions do not depend on the scale, so a scaled copy gives the same box.

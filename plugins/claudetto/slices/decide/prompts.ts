@@ -26,6 +26,16 @@ export const ERROR_BOX_IMAGE = (v: {
 Use \`--image <path>\` with a path to a PNG or JPEG file.
 ${v.usage}`;
 
+/** From `src/plugins/claudetto/slices/decide/prompts/error-image-copy-size.md`. */
+export const ERROR_IMAGE_COPY_SIZE = (v: {
+  path: string;
+  size: string;
+  bound: string;
+  original: string;
+}): string => `The scaled copy of the image file \`${v.path}\` is ${v.size} px, which is ${v.bound}, and the original is ${v.original} px.
+The API takes 280 to 1,568 px per side.
+Scale the image by hand so that its longest side is at most 1,568 px and its shortest side is at least 280 px, then send it again.`;
+
 /** From `src/plugins/claudetto/slices/decide/prompts/error-image-file.md`. */
 export const ERROR_IMAGE_FILE = (v: { path: string; reason: string }): string =>
   `The image file \`${v.path}\` ${v.reason}.`;
@@ -60,6 +70,13 @@ export const ERROR_QUESTION_MISSING = (v: { usage: string }): string =>
 /** From `src/plugins/claudetto/slices/decide/prompts/error-verb.md`. */
 export const ERROR_VERB = (v: { verb: string; usage: string }): string =>
   `The verb \`${v.verb}\` is not known. ${v.usage}`;
+
+/** From `src/plugins/claudetto/slices/decide/prompts/info-image-scaled-max.md`. */
+export const INFO_IMAGE_SCALED_MAX = (v: {
+  path: string;
+  from: string;
+}): string =>
+  `Scaled \`${v.path}\` from ${v.from} to at most 1,568 px on a side for the API.`;
 
 /** From `src/plugins/claudetto/slices/decide/prompts/info-image-scaled.md`. */
 export const INFO_IMAGE_SCALED = (v: {
@@ -107,6 +124,10 @@ Each side must be 280 to 1,568 px, or the command exits with code 2.
 On macOS, the command scales a larger picture itself with \`sips\`, into a copy, and it prints one line on stderr.
 On other systems, scale the picture first, such as with \`magick in.png -resize 1568x1568 out.png\`.
 A \`box\` can come back when the target is absent from the image, so read its confidence.`;
+
+/** From `src/plugins/claudetto/slices/decide/prompts/warn-image-scale-failed.md`. */
+export const WARN_IMAGE_SCALE_FAILED = (v: { path: string }): string =>
+  `Could not scale \`${v.path}\` with \`sips\`.`;
 
 /** From `src/plugins/claudetto/slices/decide/prompts/yes-unsure.md`. */
 export const YES_UNSURE = `P(yes) is near 0.5, so Jev is not sure.`;

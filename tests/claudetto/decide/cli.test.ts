@@ -1141,6 +1141,49 @@ test("`main` exits 2 with no request when the copy is still out of bounds", asyn
   }
 });
 
+test("`main` reports the real size of a file that is under the minimum and over the maximum, with no scaling", async () => {
+  const { scale, calls } = fakeScaler(1568, 100);
+  const r = await runBad("wide.png", pngOf(4000, 255), undefined, { scale });
+  expect(calls).toHaveLength(0);
+  expectStopped(r, 4000, 255);
+  expect(r.text).toContain("under 280 px on a side");
+});
+
+test("`main` names the scaled copy, its size, and the original size when the copy is out of bounds", async () => {
+  const { scale } = fakeScaler(1568, 100);
+  const r = await runBad("wide.png", pngOf(4000, 2000), undefined, { scale });
+  expectStopped(r, 1568, 100);
+  expect(r.text).toContain("The scaled copy of the image file");
+  expect(r.text).toContain("original is 4000x2000 px");
+});
+
+test("`main` prints one line for a scaler that fails, then the size error", async () => {
+  const { scale } = fakeScaler(1, 1, false);
+  const r = await runBad("big.png", BIG, undefined, { scale });
+  expectStopped(r, 1554, 2000);
+  expect(r.text).toContain(`Could not scale \`${r.path}\` with \`sips\`.`);
+});
+
+test("`main` treats a scaler that writes no copy as a failed scaling, and does not say that the original is missing", async () => {
+  const none = async () => true;
+  const r = await runBad("big.png", BIG, undefined, { scale: none });
+  expectStopped(r, 1554, 2000);
+  expect(r.text).toContain("Could not scale");
+  expect(r.text).not.toContain("does not exist");
+});
+
+test("`main` prints an info line with the maximum when the header of the copy has no size", async () => {
+  const scale = async (_in: string, out: string) => {
+    await Bun.write(out, PNG);
+    return true;
+  };
+  const r = await runScaled(yes, BIG, { scale });
+  expect(r.code).toBe(EXIT.ok);
+  expect(r.err).toEqual([
+    `Scaled \`${r.path}\` from 1554x2000 to at most 1,568 px on a side for the API.`,
+  ]);
+});
+
 test("`main` never scales an image up", async () => {
   const { scale, calls } = fakeScaler(300, 300);
   const r = await runBad("small.png", pngOf(100, 100), undefined, { scale });
