@@ -27,7 +27,7 @@
 - [x] 2.2 Pin the version of `@fission-ai/openspec` in `src/plugins/claudetto/slices/spec/skills/spec/SKILL.md` (the three `bunx @fission-ai/openspec` commands of the section "Setup"), to the version of `package.json` (`1.14.3`).
   Give the reason for "Never overwrite a file." in the same pass.
   Check: `just test tests/claudetto/prompt tests/claudetto/spec`
-- [ ] 2.3 Eval the three items that the audit marked "flag only": `doing-tasks.md:4-5`, `Concise.md:16`, and `system.md:3-4`.
+- [x] 2.3 Eval the three items that the audit marked "flag only": `doing-tasks.md:4-5`, `Concise.md:16`, and `system.md:3-4`.
   Paid: ask the user first.
   Use the rules of the spec `evals` (at least 10 runs for each arm).
   Check: the evidence page of the eval states the result for each item.
@@ -62,6 +62,7 @@ Ask the user before each run.
 - [ ] 5.3 Run more cases for the lower cases of the eval gate of 0.2.0 (3 runs for each arm, and the floor is 10), and write the result to `src/wiki/claudetto/evidence/Evals-2.1.304.md`.
 - [ ] 5.4 Grade the 0.1.0 `styles` cases again, when results exist.
   The published runs have no kept results for them.
+  The older `styles` cases ran without the style active, because the eval child reads only user settings, see `Evals-Audit-Lines`.
 
 ## 6. Goal
 

@@ -102,6 +102,7 @@ Its figures do not describe the current prompt.
 - [Evals 0.1.0](Evals-0.1.0)
 - [Evals 0.2.0](Evals-0.2.0)
 - [Evals 2.1.304](Evals-2.1.304)
+- [Evals of the Audit Lines](Evals-Audit-Lines)
 - [Handoff Cost](Handoff-Cost)
 - [Off Switches](Off-Switches)
 - [Evidence](Evidence)

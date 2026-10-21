@@ -54,6 +54,7 @@
   - [Evidence](Evidence)
   - [Evals](Evals)
   - [Evals 2.1.304](Evals-2.1.304)
+  - [Evals of the Audit Lines](Evals-Audit-Lines)
   - [Eval History](Evals-History)
   - [Handoff Cost](Handoff-Cost)
   - [Usage Evidence](Usage-Evidence)

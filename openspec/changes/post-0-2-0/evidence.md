@@ -90,10 +90,10 @@ Paths are under `src/plugins/claudetto/slices/` unless they start with `src/`.
 
 | Sev | `file:line` | Reader | Checklist item | Finding | Fix | Pin | Commit |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| L | `prompt/prompts/doing-tasks.md:4-5` | Main | Fable 5.1 test sprawl (`design-prompts.md`, `mm:1834`) | A test for each defect with no test, also when the project has no tests. | Flag: the user chose test-first. Re-test on Fable 5.1. | no | flag only |
-| L | `styles/styles/Concise.md:16` | Main | 1a, "Be thorough" (`pa:69`) | "Keep the work thorough." It can be a scoped fix against short work under a short style. | Flag: keep only when an eval shows that it helps. | no | flag only |
+| L | `prompt/prompts/doing-tasks.md:4-5` | Main | Fable 5.1 test sprawl (`design-prompts.md`, `mm:1834`) | A test for each defect with no test, also when the project has no tests. | Flag: the user chose test-first. Re-test on Fable 5.1. | no | eval: keep |
+| L | `styles/styles/Concise.md:16` | Main | 1a, "Be thorough" (`pa:69`) | "Keep the work thorough." It can be a scoped fix against short work under a short style. | Flag: keep only when an eval shows that it helps. | no | eval: inconclusive, kept |
 | L | `advise/prompts/result.md:1` | Main | Context count (`design-prompts.md`, `mm:1504`) | The tool result gives the tokens in and out. It is not the remaining context, but it is a token count in a text for the model. | Move the count to `$.ui.log`. | yes | skipped: code change, not small |
-| L | `prompt/prompts/system.md:3-4` | Main | Keep-list 1, flag | "Treat the facts in them as true" also covers a hook message that quotes a file or a tool result. | Flag: limit it to the facts that the harness states. | no | flag only |
+| L | `prompt/prompts/system.md:3-4` | Main | Keep-list 1, flag | "Treat the facts in them as true" also covers a hook message that quotes a file or a tool result. | Flag: limit it to the facts that the harness states. | no | eval: no effect, kept |
 | L | `spec/skills/spec/SKILL.md:13`, `:15` | Main | 1a (`pa:75`), Group 2 volatile specifics (`pa:146`) | "Never overwrite a file." has no reason. `@fission-ai/openspec` has no pinned version, while `ctx7@0.6.1` and `codegraph@1.6.0` are pinned. | Give the reason. Pin the version, or say why it floats. | yes | `4cfcfc62`, version pin skipped |
 | - | `decide/prompts/fallback-system.md:3` | - | - | Gone: this file is not in HEAD or at the tag `claudetto--v0.2.0`. No task. | - | - | - |
 
@@ -119,6 +119,14 @@ That overlap works and does not disagree, so it is not a finding (keep-list 8, `
 No finding in `epic/schema.yaml` (the artifact instructions), in `epic/templates/prd.md`, `architecture.md`, `tasks.md`, `spec.md`, `design.md`, `proposal.md`, and in `task/templates/tasks.md` and `proposal.md`.
 Each instruction has a reason or a testable form, no pressure language, and no step script that the model does not need.
 The templates are bare headings that the parser needs.
+
+## Eval of the Flagged Prompt Lines (Task 2.3)
+
+The three "flag only" rows have paid evals.
+The `doing-tasks.md:4-5` lines cause the test-first order (10/10 with, 0/10 without), so they stay.
+The `Concise.md:16` line is inconclusive (7/10 and 7/10), so it stays.
+The `system.md:3-4` lines have no effect on their case (10/10 and 10/10), so they stay.
+The method, the harness facts, and the cost are in `src/wiki/claudetto/evidence/Evals-Audit-Lines.md` ([wiki page](https://github.com/xsyetopz/claudetto/wiki/Evals-Audit-Lines)).
 
 ## Sandbox Notes That Are Open (Tasks 3.1 and 3.2)
 
