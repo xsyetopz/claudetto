@@ -31,7 +31,7 @@
   Paid: ask the user first.
   Use the rules of the spec `evals` (at least 10 runs for each arm).
   Check: the evidence page of the eval states the result for each item.
-- [ ] 2.4 Audit the `schema.yaml` and the templates of the `epic` and `task` presets, except `epic/templates/review.md`, against the checklist of the audit.
+- [x] 2.4 Audit the `schema.yaml` and the templates of the `epic` and `task` presets, except `epic/templates/review.md`, against the checklist of the audit.
   Check: `just test tests/claudetto/prompt`
 
 ## 3. Sandbox

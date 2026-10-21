@@ -10,7 +10,8 @@ artifacts:
     instruction: |
       Write why the change is needed.
       Sections: **Why** (1-2 sentences), **What Changes** (bullets), **Impact**.
-      List no capability. Use `story` if behavior changes.
+      List no capability, because this preset has no specs.
+      When the change alters behavior, it is a `story`: tell the user, and do not go on with this preset.
     requires: []
 
   - id: tasks
@@ -24,7 +25,7 @@ artifacts:
     requires: [proposal]
 
 apply:
-  requires: [ tasks ]
+  requires: [tasks]
   tracks: tasks.md
   instruction: |
     Read the context files, do the pending tasks, and tick each one when done.

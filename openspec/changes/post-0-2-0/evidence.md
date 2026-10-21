@@ -99,7 +99,26 @@ Paths are under `src/plugins/claudetto/slices/` unless they start with `src/`.
 
 Not audited, source: `prompt-audit.md`, section "Not Audited":
 
-The `schema.yaml` and the templates of the `epic` and `task` presets (except `epic/templates/review.md`), the `claudetto-you-should-know` plugin, the `statusline` slice (its text goes to the user), and the descriptions in `hooks.json` (they go to the user).
+The `claudetto-you-should-know` plugin, the `statusline` slice (its text goes to the user), and the descriptions in `hooks.json` (they go to the user).
+The `epic` and `task` presets are in "Task 2.4" below.
+
+### Task 2.4: Presets `epic` and `task`
+
+Scope: `spec/skills/spec/schemas/epic/schema.yaml`, `epic/templates/{prd,architecture,tasks,spec,design,proposal}.md`, `task/schema.yaml`, and `task/templates/{tasks,proposal}.md`.
+`epic/templates/review.md` is out of scope.
+Reader: Main (the model that runs the `spec` skill).
+Compared with the `story` preset: the templates `design`, `proposal`, `tasks`, and `spec` of `epic` are the same as in `story`, and the artifact instructions for `specs`, `design`, and `tasks` are the same as in `story`.
+That overlap works and does not disagree, so it is not a finding (keep-list 8, `pa:198`).
+
+| Sev | `file:line` | Reader | Checklist item | Finding | Fix | Pin | Commit |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| L | `spec/skills/spec/schemas/task/schema.yaml:12` | Main | 1a, no reason (`pa:75`), 1c, vague condition | "Use `story` if behavior changes." has no reason for "no capability", and does not say who uses `story` or what the model does then. | Give the reason, and say: tell the user, and do not go on with this preset. | no | this change, not committed |
+| L | `spec/skills/spec/schemas/task/schema.yaml:26` | Main | Style | `requires: [ tasks ]` has spaces that no other `requires` has. | `requires: [tasks]`. | no | this change, not committed |
+| L | `spec/skills/spec/schemas/epic/schema.yaml:82-87`, `task/schema.yaml:25-30` | Main | Group 2, files that disagree (`pa:146`) | The `apply` instruction of `story` has the check rule (D7: fast check after a change of behavior, full checks at the end of a group, none for an edit with no behavior change). `epic` and `task` lack it. | Flag: this changes behavior of the apply step, and `story` got it with an eval (`4cfcfc62`). Copy it only after an eval or a user decision. | no | flag only |
+
+No finding in `epic/schema.yaml` (the artifact instructions), in `epic/templates/prd.md`, `architecture.md`, `tasks.md`, `spec.md`, `design.md`, `proposal.md`, and in `task/templates/tasks.md` and `proposal.md`.
+Each instruction has a reason or a testable form, no pressure language, and no step script that the model does not need.
+The templates are bare headings that the parser needs.
 
 ## Sandbox Notes That Are Open (Tasks 3.1 and 3.2)
 
