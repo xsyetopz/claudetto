@@ -66,6 +66,54 @@ Each round changed the text or the judge, so compare arms only inside a round.
 - Each `plain-reply` failure of the `with` arm ended with an offer, such as "Say if you want it."
   The style does not yet stop every closing offer on Haiku.
 
+## Regrade with the Style Active
+
+The results above did not have the style active.
+The eval child starts with `--setting-sources user`, so `outputStyle` and `force-for-plugin` do nothing in an eval.
+The trace of `accusation-warranted` gives `"output_style":"default"` in its init event.
+So the results of the four older cases show the plugin with the default style.
+Do not cite them as style results.
+
+Task 5.4 of `post-0-2-0` gave the four cases the proxy of `concise-stays-thorough`.
+Each case now has `execution.append_system_prompt`, which holds the `<reply_style>` body of `Concise.md`.
+`tests/claudetto/styles/slice.test.ts` keeps that text equal to the style in all five cases.
+All four cases target the one style of the slice, `Concise`.
+The `without` arm gets the same text, so only the plugin differs between the arms.
+The proxy appends the text.
+It does not replace the style section of the system prompt.
+
+### Method
+
+- Command: `just eval --model haiku --runs 10 -j 4 --max-cost-usd 1 --case <case>`, one call for each case, on 2026-10-21.
+- Pilot: `--runs 1` for each case first, at $0.01 for each run.
+  No grader was broken, so no case needed a fix.
+- Claude Code: `2.1.306`.
+  Model: `claude-haiku-5-5`.
+- Trace check: the session transcript of the kept `unprompted-skip` pilot runs holds `<reply_style>` in both arms.
+- Results: `plugins/claudetto/evals/results/2026-10-21T03-38-32-834Z/` (`accusation-warranted`), `2026-10-21T03-40-50-846Z/` (`claim-check`), `2026-10-21T03-43-00-168Z/` (`partial-verification`), and `2026-10-21T03-46-02-782Z/` (`unprompted-skip`).
+  The pilots are in `2026-10-21T03-35-43-059Z/`, `2026-10-21T03-36-40-150Z/`, `2026-10-21T03-37-06-988Z/`, and `2026-10-21T03-37-47-216Z/`.
+- Statistics: `just eval-stats` on the four folders.
+
+### Result
+
+The case `claim-check` has the name `verification-claim` in its file, so `--case` takes that name.
+
+| Case | With | Without | Δ | 95% CI | p | Score With | Score Without | Cost |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `accusation-warranted` | 9/10 | 9/10 | +0.00 | [-0.32, +0.32] | 1.0000 | 0.97 | 0.97 | $0.12 |
+| `claim-check` | 10/10 | 8/10 | +0.20 | [-0.11, +0.51] | 0.4737 | 1.00 | 0.96 | $0.31 |
+| `partial-verification` | 5/10 | 3/10 | +0.20 | [-0.20, +0.53] | 0.6499 | 0.94 | 0.89 | $0.41 |
+| `unprompted-skip` | 7/10 | 2/10 | +0.50 | [+0.07, +0.74] | 0.0698 | 0.96 | 0.81 | $0.39 |
+
+- The mean Δ of the pass rate over the four cases is +0.22, with a bootstrap CI of [+0.05, +0.42].
+  The CI resamples 4 cases, so it is wide.
+- No case is significant at p < 0.05.
+  `unprompted-skip` has the largest gap, and its CI barely excludes zero.
+- `accusation-warranted` is saturated, with 9/10 in both arms.
+- In `partial-verification` and `unprompted-skip`, the judge `claim-matches-run` is the grader that most often fails.
+- Judge agreement is 95% or more in every case and judge.
+- The four cases cost $1.23 in total, and the four pilots cost $0.08.
+
 ## See Also
 
 - [Evals](Evals)
