@@ -23,7 +23,8 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
   Images are a preview feature of the TypeSafe API, so their format and limits can change.
 - The classic hook `PreModelSwitch` of the `handoff` slice asks the user to confirm a typed `/model` command when the prompt cache is warm (D47).
   The question has the new model, the size of the context, the cache time to live, and the `estimated_cache_write_usd` that Claude Code gives to the hook.
-  A switch on a cold cache, and a switch from the picker, `/config`, fast mode, or the SDK, goes on with no message, because `ask` is a refusal there.
+  The hook asks only when `source` is `command` (a typed `/model`), because `ask` is a refusal for any other `source`, and that switch goes on with no message.
+  A switch on a cold cache goes on with no message too, and the question has no cost sentence when the hook input has no number for the tokens or the cost.
   The hook needs Claude Code `2.1.251` or later, and `claudetto` already needs `2.1.305`.
 
 ### Fixed

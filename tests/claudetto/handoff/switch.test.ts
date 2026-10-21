@@ -42,3 +42,20 @@ test("a warm cache with no `source` says nothing", () => {
   const { source: _source, ...noSource } = input(true);
   expect(switchDecision(noSource)).toBeUndefined();
 });
+
+test("a warm cache with no cost field asks with no cost sentence", () => {
+  const { estimated_cache_write_usd: _usd, ...noUsd } = input(true);
+  const { context_tokens: _tokens, ...noTokens } = input(true);
+  for (const p of [noUsd, noTokens]) {
+    const r = switchDecision(p)?.hookSpecificOutput;
+    expect(r?.permissionDecision).toBe("ask");
+    expect(r?.permissionDecisionReason).toContain("claude-opus-5");
+    expect(r?.permissionDecisionReason).not.toContain("$");
+    expect(r?.permissionDecisionReason).not.toContain("tokens");
+  }
+});
+
+test("the cost sentence groups the tokens with a comma", () => {
+  const r = switchDecision(input(true))?.hookSpecificOutput;
+  expect(r?.permissionDecisionReason).toContain("about 182,000 tokens");
+});

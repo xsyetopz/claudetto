@@ -13,7 +13,8 @@ Claude Code gives the classic hook `PreModelSwitch` (2.1.251 or later) with the 
 - Add the classic hook `PreModelSwitch` to the `handoff` slice, in `src/plugins/claudetto/slices/handoff/adapters/switch.ts`.
   On a warm cache and a typed `/model` command (`source` is `command`), it returns `permissionDecision: "ask"` with a reason that names the TTL, the new model, the tokens, and the cost.
   On a cold cache, with no cache field, or for any other `source`, it returns nothing, and the switch goes on.
-  The other sources are the picker, `/config`, fast mode, and the SDK, where `ask` is a refusal.
+  `ask` is a refusal for any other `source`.
+  When the tokens or the cost are not numbers, the reason has no cost sentence.
 - Add the prompt `prompts/switch-warning.md`, the control `model switch warning`, and its row in the wiki page `Controls.md`.
 - Add `tests/claudetto/handoff/switch.test.ts`.
 - Add a `CHANGELOG.md` entry under `[Unreleased]`.

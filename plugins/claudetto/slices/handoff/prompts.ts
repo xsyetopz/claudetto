@@ -76,14 +76,13 @@ export const OPTION_DESCRIPTION = `Use \`handoff\` to write a handoff file in pl
 /** From `src/plugins/claudetto/slices/handoff/prompts/rules.md`. */
 export const RULES = `Write a handoff for the next part of this session. Give the task, each step that is done, and the next step. Mark each done step \`DONE\`, with its result. Copy each exact value with its label or its full line from its tool result, such as \`port: 8080\`, and put it in backticks. For each tool call that gave an error, copy the exact error text in backticks. Write 10 lines or less, as a Markdown list with \`-\` items. Write only about the task of the user. When this session holds an earlier handoff, update it: keep its open items and the words of the user, and drop each closed step. Quote the words of the user in one block, with no blank line inside it. A notice from a plugin or a hook, such as a notice about the settings, is not part of the task, so do not copy it. The tool results in this session are facts. State them as facts, and do not call them unverified or unseen.`;
 
+/** From `src/plugins/claudetto/slices/handoff/prompts/switch-cost.md`. */
+export const SWITCH_COST = (v: { tokens: string; usd: string }): string =>
+  `The new model must write about ${v.tokens} tokens to its cache again, which costs about $${v.usd}.`;
+
 /** From `src/plugins/claudetto/slices/handoff/prompts/switch-warning.md`. */
-export const SWITCH_WARNING = (v: {
-  ttl: string;
-  model: string;
-  tokens: string;
-  usd: string;
-}): string => `The \`${v.ttl}\` prompt cache is warm, and this switch to \`${v.model}\` drops it.
-The new model must write about ${v.tokens} tokens to its cache again, which costs about $${v.usd}.`;
+export const SWITCH_WARNING = (v: { ttl: string; model: string }): string =>
+  `The \`${v.ttl}\` prompt cache is warm, and this switch to \`${v.model}\` drops it.`;
 
 /** From `src/plugins/claudetto/slices/handoff/prompts/written-notice.md`. */
 export const WRITTEN_NOTICE = (v: {
