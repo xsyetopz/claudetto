@@ -94,6 +94,44 @@ test("words that only say a command succeeds add no `judge` check", () => {
   expect(checksOf("`just check` passes and the docs are done")).toHaveLength(2);
 });
 
+test("a span that follows `returns`, `with`, or `code` is a value, not a `run` check", () => {
+  for (const [text, command] of [
+    ["`curl -s x` returns `200`", "curl -s x"],
+    ["`f` exits with code `0`", "f"],
+    ["`bun test` passes with `CI=1`", "bun test"],
+  ] as const) {
+    expect(checksOf(text)).toEqual([
+      { kind: "run", command },
+      { kind: "judge", claim: text },
+    ]);
+  }
+});
+
+test("the filler words ignore case and allow the past tense and `!`", () => {
+  expect(checksOf("`a` Exits 0!")).toEqual([{ kind: "run", command: "a" }]);
+  expect(checksOf("`a` passed and `b` succeeded.")).toEqual([
+    { kind: "run", command: "a" },
+    { kind: "run", command: "b" },
+  ]);
+  expect(checksOf("`a` and `b` pass.")).toHaveLength(2);
+  expect(checksOf("`a` returns 0")).toEqual([{ kind: "run", command: "a" }]);
+});
+
+test("prose next to the filler words keeps the `judge` check", () => {
+  expect(checksOf("`cmd` returns all")).toHaveLength(2);
+  expect(
+    checksOf("`bun test` passes and the README documents the flag"),
+  ).toMatchObject([{ kind: "run" }, { kind: "judge" }]);
+  for (const text of [
+    "exits 0 within 5 seconds",
+    "passes on Linux",
+    "both files exist",
+    "exits non-zero",
+  ]) {
+    expect(checksOf(text)).toEqual([{ kind: "judge", claim: text }]);
+  }
+});
+
 test("a span at the start of a text gives a `run` check and a `judge` check of the text", () => {
   const text = "`just test x`, with a test for each cleanup";
   expect(checksOf(text)).toEqual([

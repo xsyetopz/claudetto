@@ -62,6 +62,9 @@ A `judge` check that fails to answer counts as failed.
 
 - If the text has only code spans in backticks, with `,`, `;`, `and`, or spaces between them, each span is a `run` check.
   The words that only say a command succeeds are allowed too: `both`, `all`, `each`, `exits 0`, `passes`, `succeeds`, and `green`.
+  The words are not case-sensitive, and `passed`, `succeeded`, and `!` are allowed too.
+  A span after `returns`, `with`, `code`, or `status` is a value, not a command.
+  Then the text keeps its `judge` check, and the value is not a `run` check.
   A `judge` check of "`cmd` exits 0" would add nothing, and it fails when Claude could not run the command (the compare run of 2026-10-21).
 - If the text starts with a code span, that span is a `run` check, and the whole text is one `judge` check.
 - Otherwise the whole text is one `judge` check.

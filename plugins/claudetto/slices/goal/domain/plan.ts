@@ -5,7 +5,10 @@ import type { Check, Step } from "./state.ts";
 
 /** The spans, the separators, and the words that only say a command succeeds. */
 const SPAN_FILLER =
-  /`[^`]+`|\b(?:and|both|all|each|with|exits?|returns?|pass(?:es)?|succeed(?:s)?|status|code|zero|0|green)\b|[,;.\s]/g;
+  /`[^`]+`|\breturns?\s+(?:0|zero)\b|\b(?:and|both|all|each|with|exits?|pass(?:es|ed)?|succeed(?:s|ed)?|status|code|zero|0|green)\b|[,;.!\s]/gi;
+
+/** A word that says a value follows: a span after it is a value, not a command. */
+const VALUE_SPAN = /\b(?:returns?|with|code|status)[\s,]*`/i;
 
 /**
  * The checks of a text, from a condition or from a `Check:` line.
@@ -13,6 +16,7 @@ const SPAN_FILLER =
  * - Only spans with separators (`,` `;` `and`, space, a final `.`) and the words that say a command succeeds
  *   (`both`, `all`, `each`, `exit 0`, `passes`, `succeeds`, `green`): each span is a `run` check.
  *   A `judge` check of "`cmd` exits 0" adds nothing, and it fails when the model could not run the command.
+ *   A span after `returns`, `with`, `code`, or `status` is a value, so a text with one is not of this form.
  * - Else a span at the start is a `run` check, with one `judge` check of the whole text.
  * - Else one `judge` check.
  */
@@ -20,7 +24,7 @@ export const checksOf = (text: string): Check[] => {
   const t = text.trim();
   const run = (command = ""): Check => ({ kind: "run", command });
   const spans = [...t.matchAll(/`([^`]+)`/g)].map(([, command]) => command);
-  if (spans.length && !t.replace(SPAN_FILLER, "")) {
+  if (spans.length && !VALUE_SPAN.test(t) && !t.replace(SPAN_FILLER, "")) {
     return spans.map(run);
   }
   const first = /^`([^`]+)`/.exec(t)?.[1];
