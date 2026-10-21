@@ -24,7 +24,7 @@ Set the options of the plugin:
 | --- | --- | --- |
 | `advisor` | `claudetto` | `claudetto` registers the tool `advise` and turns off the advisor of Claude Code. `builtin` keeps the advisor of Claude Code. |
 | `advisorModel` | `opus` | The model of the tool: an alias such as `opus`, or a model ID. |
-| `advisorEffort` | `high` | The effort of the call: `low`, `medium`, `high`, `xhigh`, or `max`. |
+| `advisorEffort` | `low` | The effort of the call: `low`, `medium`, `high`, `xhigh`, or `max`. |
 
 An unknown value gives the default.
 With `claudetto`, the slice sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` at `session.start` with `$.env.set`, so that Claude sees one advisor.
@@ -60,7 +60,7 @@ It carries a cache mark, because it stays the same between calls.
 
 The result gives the advice with the model name.
 The count of tokens in and out, with the cache reads and writes, goes to the user with `$.ui.log`, and the model does not read it.
-The cost of these calls is not in the cost of the session, because Claude Code gives a plugin no way to add a cost (see the page `Builtin-Comparisons` for the measured cost).
+The cost of these calls is not in the cost of the session, because Claude Code gives a plugin no way to add a cost (see the page `Builtin-Comparisons`: with `advisorEffort` `low`, a call costs about 0.10 USD).
 The session cost leaves out these calls, because `$.model.complete` reports tokens and the mod API has no way to add a cost to the session.
 The token log is the only record, and `claudetto` shows no estimated cost, because it has no documented price source.
 On the 5.1 eval, an estimated `opus` cost for 10 runs was about 0.40 USD, against 1.18 USD for the built-in advisor.

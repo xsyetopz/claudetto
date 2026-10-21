@@ -45,9 +45,10 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 ### Changed
 
-- The default of the `advisor` option is now `claudetto`, so the tool `advise` is on, because it gave the same results as the built-in advisor for about 1/3 of the cost in the 5.1 eval.
+- The default of the `advisor` option is now `claudetto`, so the tool `advise` is on, and the default of `advisorEffort` is now `low`.
+  On `advice-audit-web` with 5 runs, `effort` `low` named 5.0 of the 6 faults in `FINDINGS.txt`, against 4.8 for the built-in advisor, for about 0.95 USD per 10 runs against 1.97 USD.
   The slice sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` at `session.start`, so that Claude sees one advisor, and `claudetto-setup` sets it too.
-  The session cost still leaves out the `opus` calls of `advise`.
+  The session cost still leaves out the `opus` calls of `advise`, but the compare script now measures them from the debug log.
   Set `advisor` to `builtin` to keep the built-in advisor.
 - The skill `dry` runs `jscpd-config --run`, which sets `BUN_TMPDIR` from `TMPDIR` itself, so the scan needs no env prefix and no prompt, and the ask rule for a git delete refspec is `Bash(git push* :* *)`, because Claude Code read `Bash(git push* :*)` as a literal prefix that matched nothing.
 - The settings snippet sets `sandbox.allowUnsandboxedCommands` to `false`, so a command that fails in the sandbox is not run again outside it with no prompt.
@@ -89,6 +90,7 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 ### Fixed
 
+- The `advise` tool no longer lets a tool result close its `<tool_result>` block, it marks an error result with `error="true"`, and it unsets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` when the option changes to `builtin` in the same process.
 - The `advise` tool now sends the advisor the recent tool results (file reads and command output), newest first, in `<tool_result>` blocks that the prompt marks as data.
   Before, the advisor saw no tool result and said that it had not seen a file that Claude had read.
   The bounds are `RESULTS_BYTES` and `RESULT_BYTES` in `slices/advise/limits.ts`.

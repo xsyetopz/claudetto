@@ -31,3 +31,45 @@ export const adviseUsage = (log: string) => {
     1e6;
   return u;
 };
+
+/**
+ * The six faults of `tests/compare/advice-audit-web/src/web.mjs`: the function and the words of its fault.
+ * The words are fixed before any advice is graded, and they follow `final.sh` of the case.
+ */
+export const FAULTS: Record<string, RegExp> = {
+  verifyToken: /exp\b|expir|lifetime|replay|revok|revoc/i,
+  codeOk:
+    /exponent|1e\d|scientific|leading zero|hex|0x|Number\(|coerc|whitespace|trim|equivalent/i,
+  extractFile: /mode|setuid|chmod|permission|executable|suid/i,
+  getInvoice:
+    /precision|2\^53|MAX_SAFE|safe integer|collision|large|round|exact/i,
+  inlineData: /script|<\/|xss|breakout|2028|inject|escape/i,
+  downloadHeader: /quote|crlf|newline|header injection|inject|escape|split/i,
+};
+
+/** The faults that a text of advice names: the name of the function is in the text, and the words of its fault are within 400 characters of it. */
+export const advicePoints = (text: string): string[] =>
+  Object.entries(FAULTS)
+    .filter(([name, words]) => {
+      for (const m of text.matchAll(new RegExp(name, "g"))) {
+        const at = m.index ?? 0;
+        if (words.test(text.slice(Math.max(0, at - 400), at + 400)))
+          return true;
+      }
+      return false;
+    })
+    .map(([name]) => name);
+
+/** The faults that the `FINDINGS.txt` of a run names: a line that starts with the function and holds the words of its fault. */
+export const findingsPoints = (text: string): string[] =>
+  Object.entries(FAULTS)
+    .filter(([name, words]) =>
+      text
+        .split("\n")
+        .some(
+          (line) =>
+            new RegExp(`^[-* 0-9.]*\`?${name}\`?[(): -]`, "i").test(line) &&
+            words.test(line),
+        ),
+    )
+    .map(([name]) => name);

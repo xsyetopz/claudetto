@@ -13,12 +13,11 @@ The first round found that its cases were too easy, and the second round tried t
 - On the easy tasks all arms pass, and on the hard tasks all arms fail.
   The advisor was called in every run of the advisor arms (see "Round 3").
   So on Haiku 5.5, neither advisor changes the outcome.
-- `advise` is not cheaper than the built-in advisor in total.
-  The session cost of `advise` is small, but its `opus` calls are not in it (see "Cost of `advise`").
-  Measured with the token counts of the calls, 10 runs of `advice-audit` cost 0.045 USD for the sessions and 1.163 USD for the `opus` calls, which is 1.208 USD in total, against 1.185 USD for the built-in advisor.
-  One `opus` call of `advise` costs about 0.12 USD, not the 0.035 USD that an early estimate gave.
-- Decision (the user, 2026-10-21), made on the early estimate: the default of `advisor` is `claudetto`, because it gives the same results.
-  The estimate was wrong, so the cost is no reason for the default (see "Decision for the Default").
+- `advise` at `effort` `high` is not cheaper than the built-in advisor in total: 1.208 USD against 1.185 USD for 10 runs of `advice-audit`, with the `opus` calls measured (see "Cost of `advise`").
+  One call costs about 0.12 USD, not the 0.035 USD that an early estimate gave.
+- Round 6 measured the quality of the advice and the effort (see "Round 6").
+  On `advice-audit-web`, `advise` at `effort` `low` has a recall of the 6 faults at least equal to the built-in advisor, and its total cost for 10 runs is 0.95 USD against 1.97 USD.
+- Decision (the user, 2026-10-21): the default of `advisor` is `claudetto`, and since round 6 the default of `advisorEffort` is `low` (see "Decision for the Default").
   The slice turns off the built-in advisor with `$.env.set` at `session.start`, so that Claude never sees two advisors.
   `$.model.complete` reports tokens only, and the mod API has no way to add a cost to the session or a price source, so the cost of the `opus` calls stays out of the session cost.
 - Goal engine against the built-in `/goal`: parity on `goal-two-checks` and `goal-first-violation` (10 of 10 each, again after the fix).
@@ -203,11 +202,11 @@ With the first round, this shows parity with the built-in `/goal` on these two c
 The default of `advisor` is now `claudetto` (commit `b56351e0`).
 
 - On easy tasks all arms pass, and on hard tasks all arms fail, so `advise` is as good as the built-in advisor.
-- `advise` does not cost less in total.
+- At `effort` `high` (the first default), `advise` did not cost less in total.
   For 10 runs of `advice-audit`, the sessions cost $0.045 and the measured `opus` calls cost $1.163, which is $1.208 against $1.185 for the built-in advisor (see "Cost of `advise`").
   The first version of this page used an estimate of $0.035 for each call, and the measure is about $0.12.
-  So the default `claudetto` rests on equal results, and the cost does not support it.
-  The user decides whether the default stays.
+- Round 6 found that `effort` `low` gives the same recall for about half of the cost, so the default `advisorEffort` is now `low`.
+  For 10 runs of `advice-audit-web`, the total is $0.95 against $1.97 for the built-in advisor.
 - With `claudetto`, the slice sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` at `session.start` with `$.env.set`, so that Claude sees one advisor.
 
 ### Live Check of the One-Advisor Rule
@@ -249,6 +248,35 @@ This is a limit of Claude Code, not a defect of `claudetto`.
   On `advice-audit-web` the projection is a little lower than the built-in arm.
 - Both arms of `advice-audit` passed 0 of 10, so the cost is for equal results.
 
+## Round 6
+
+The goal was the quality of the advice, and the cheapest `effort` of `advise` that is as good as the built-in advisor.
+All arms ran `advice-audit-web` (6 faults) with 5 runs, Haiku 5.5 as the working model, and `opus` as the advisor.
+
+- The built-in advisor gives an encrypted result (`advisor_tool_result` with `advisor_redacted_result`), so its advice text cannot be read.
+  So the quality is measured on `FINDINGS.txt`, the list that Haiku writes after the advice, for all arms.
+  A fault counts when a line of the file starts with the function and holds the words of its fault.
+  For the arms with `advise`, the advice text is graded too: the function and the words of its fault within 400 characters.
+- The words for each fault are in `FAULTS` in `tools/advise-usage.ts`, written before any result was graded, and a unit test covers the grader.
+
+| Arm | Passed | Faults in `FINDINGS.txt` (of 6) | Faults in the advice (of 6) | Cost for a call | Cost for 10 runs (session plus `opus`) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| built-in | 0/5 | 4.8 | not readable | 0.197 (whole run) | 1.97 |
+| `advise`, `high` | 0/5 | 4.8 | 5.4 | 0.153 | 1.53 |
+| `advise`, `medium` | 0/5 | 5.0 | 5.0 | 0.121 | 1.21 |
+| `advise`, `low` | 0/5 | 5.0 | 5.2 | 0.095 | 0.95 |
+| `advise`, `medium`, `MAX_TOKENS` 1024 | 0/5 | 4.8 | 5.2 | 0.127 | 1.27 |
+
+- The cost for a call is the `opus` cost per call plus the session cost per run, as each run has one call.
+  The built-in cost is the session cost per run, and it includes the server-side advisor tokens.
+- A run has 6 faults, and each arm named 4 or 5 of them in every run, so no arm passed.
+  The runs differ by at most 1 fault, so the noise of the mean of 5 runs is about 0.2 faults.
+  The criterion is that the mean of an `advise` arm is at least the mean of the built-in advisor, and `low` has 5.0 against 4.8.
+- The tighter bound `MAX_TOKENS` 1024 changed nothing: the calls still gave 2100 to 3100 tokens out, so the cap does not bound the tokens that the thinking uses.
+  The bound stays 2048.
+- `effort` `low` uses about 1850 tokens out for a call, against 3260 at `high`, and the recall of the advice did not fall.
+- The folders are in `round6/` on the machine of the run.
+
 ## Goal Engine
 
 - Both engines took `/goal <condition>` in `-p`.
@@ -287,6 +315,7 @@ This is a limit of Claude Code, not a defect of `claudetto`.
 - Round 3: pilots about 1.7 USD, full runs 2.9 USD, and about 0.3 USD for the direct `opus` reviews and an estimate for the `opus` calls of `advise`.
 - Round 3 is about 4.9 USD, under its limit of 6 USD.
 - Round 5 (the measure of `advise`): about 1.5 USD, of which 1.42 USD is for the `opus` calls.
+- Round 6 (the effort of `advise`): about 3.5 USD for 25 runs, of which 2.4 USD is for the `opus` calls.
 
 ## Results Folders
 

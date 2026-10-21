@@ -76,7 +76,7 @@ export const slice = {
       type: "string",
       title: "Advisor Effort",
       description: "The effort of `advise`.",
-      default: "high",
+      default: "low",
       options: [...EFFORTS],
     },
   },

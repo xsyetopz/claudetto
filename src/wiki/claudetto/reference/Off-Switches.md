@@ -25,7 +25,7 @@ The facts are for Claude Code `2.1.305`, and the key names match `schemas/claude
 | `decide` | `off`, `jev` (default) | `off` sends no question to Jev. `jev` needs `TYPESAFE_API_KEY`, and then Jev answers each `AskUserQuestion` call that it is sure about. | `slices/decide/slice.ts` |
 | `advisor` | `claudetto` (default), `builtin` | `builtin` keeps the advisor of Claude Code and registers no `advise` tool. | `slices/advise/slice.ts` |
 | `advisorModel` | An alias or a model ID, default `opus` | Sets the model of the tool `advise`. It is not an off switch. | `slices/advise/slice.ts` |
-| `advisorEffort` | An effort level, default `high` | Sets the effort of the tool `advise`. It is not an off switch. | `slices/advise/slice.ts` |
+| `advisorEffort` | An effort level, default `low` | Sets the effort of the tool `advise`. It is not an off switch. | `slices/advise/slice.ts` |
 | `backend` of `claudetto-browser` | `agent-browser` (default), `cloakbrowser` | `agent-browser` keeps the built-in `WebSearch`. | `claudetto-browser/slices/search/slice.ts` |
 
 The `prompt` slice also reads the env var `DISABLE_COMPACT`.

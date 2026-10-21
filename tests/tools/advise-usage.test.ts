@@ -16,3 +16,24 @@ test("`adviseUsage` sums the `advise` lines of a debug log and prices them", () 
 test("`adviseUsage` of a log with no line is zero", () => {
   expect(adviseUsage("x").calls).toBe(0);
 });
+
+import { advicePoints, findingsPoints } from "../../tools/advise-usage.ts";
+
+test("`advicePoints` needs the function and the words of its fault close together", () => {
+  expect(
+    advicePoints("verifyToken never checks exp, so a token lives forever."),
+  ).toEqual(["verifyToken"]);
+  expect(advicePoints("verifyToken is fine.")).toEqual([]);
+  expect(advicePoints("The exp is checked.")).toEqual([]);
+  expect(
+    advicePoints(
+      `extractFile: chmod with entry mode.\n${"x".repeat(900)}\ndownloadHeader is safe`,
+    ),
+  ).toEqual(["extractFile"]);
+});
+
+test("`findingsPoints` reads the lines of `FINDINGS.txt`", () => {
+  const text =
+    "- `codeOk`: Number() coerces 1e3\ninlineData: JSON in a script can break out\nnoise: exp";
+  expect(findingsPoints(text)).toEqual(["codeOk", "inlineData"]);
+});

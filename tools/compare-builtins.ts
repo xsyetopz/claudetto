@@ -18,7 +18,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { adviseUsage } from "./advise-usage.ts";
+import { advicePoints, adviseUsage, findingsPoints } from "./advise-usage.ts";
 
 type Arm = {
   /** Plugin options, written to `pluginConfigs` of the sandbox settings. */
@@ -36,6 +36,29 @@ type Arm = {
 const ARMS: Record<string, Arm> = {
   "advise-ours": {
     options: { advisor: "claudetto", advisorModel: "opus" },
+    env: { CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1" },
+    flags: [],
+    allow: ["mcp__claudetto__advise"],
+    advisor: "mcp__claudetto__advise",
+  },
+  // The effort of the advice, for the comparison of the cost and the quality of `advise`.
+  "advise-ours-medium": {
+    options: {
+      advisor: "claudetto",
+      advisorModel: "opus",
+      advisorEffort: "medium",
+    },
+    env: { CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1" },
+    flags: [],
+    allow: ["mcp__claudetto__advise"],
+    advisor: "mcp__claudetto__advise",
+  },
+  "advise-ours-low": {
+    options: {
+      advisor: "claudetto",
+      advisorModel: "opus",
+      advisorEffort: "low",
+    },
     env: { CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1" },
     flags: [],
     allow: ["mcp__claudetto__advise"],
@@ -73,7 +96,14 @@ type Grader = {
   target?: { source: string; path?: string };
 };
 
-type Block = { type: string; name?: string; input?: unknown };
+type Block = {
+  type: string;
+  name?: string;
+  input?: unknown;
+  id?: string;
+  tool_use_id?: string;
+  content?: unknown;
+};
 
 const REPO = path.resolve(import.meta.dirname, "..");
 
@@ -166,6 +196,9 @@ type Result = {
   run: number;
   cost: number;
   advise?: ReturnType<typeof adviseUsage> | undefined;
+  /** The faults of the web case that `FINDINGS.txt` names, and (for the arms with `advise`) that the advice names. */
+  findings: string[];
+  advice: string[];
   turns: number;
   advisorCalls: number;
   graders: Record<string, boolean>;
@@ -236,6 +269,9 @@ const runOnce = async (n: number): Promise<Result> => {
   let cost = 0;
   let turns = 0;
   const stream = await Bun.file(path.join(root, "stream.jsonl")).text();
+  // The text of the `advise` results. The built-in advisor gives an encrypted result, so it has no text.
+  let adviceText = "";
+  const adviseIds = new Set<string>();
   for (const line of stream.split("\n")) {
     if (!line.trim()) continue;
     const o = JSON.parse(line) as {
@@ -247,8 +283,14 @@ const runOnce = async (n: number): Promise<Result> => {
     };
     if (o.type === "assistant")
       for (const b of o.message?.content ?? [])
-        if (b.type === "tool_use" || b.type === "server_tool_use")
+        if (b.type === "tool_use" || b.type === "server_tool_use") {
           calls.push(b);
+          if (b.name === arm.advisor && b.id) adviseIds.add(b.id);
+        }
+    if (o.type === "user" && Array.isArray(o.message?.content))
+      for (const b of o.message.content)
+        if (b.type === "tool_result" && adviseIds.has(b.tool_use_id ?? ""))
+          adviceText += `${typeof b.content === "string" ? b.content : JSON.stringify(b.content)}\n`;
     if (o.type === "result") {
       reply = o.result ?? "";
       cost = o.total_cost_usd ?? 0;
@@ -268,6 +310,11 @@ const runOnce = async (n: number): Promise<Result> => {
   if (await Bun.file(final).exists())
     graders["final-checks"] =
       Bun.spawnSync(["bash", final], { cwd: project }).exitCode === 0;
+  const found = path.join(project, "FINDINGS.txt");
+  const findings = (await Bun.file(found).exists())
+    ? findingsPoints(await Bun.file(found).text())
+    : [];
+  const advice = advicePoints(adviceText);
   const debug = path.join(root, "debug.log");
   const advise = (await Bun.file(debug).exists())
     ? adviseUsage(await Bun.file(debug).text())
@@ -276,6 +323,8 @@ const runOnce = async (n: number): Promise<Result> => {
     run: n,
     cost,
     advise,
+    findings,
+    advice,
     turns,
     advisorCalls: calls.filter((c) => c.name === arm.advisor).length,
     graders,
@@ -302,6 +351,8 @@ const worker = async (): Promise<void> => {
         cost: 0,
         turns: 0,
         advisorCalls: 0,
+        findings: [],
+        advice: [],
         graders: {},
         passed: false,
         error: String(e),
@@ -319,6 +370,9 @@ const summary = {
   model,
   runs: results.length,
   passes,
+  meanFindings:
+    results.reduce((t, r) => t + r.findings.length, 0) / results.length,
+  meanAdvice: results.reduce((t, r) => t + r.advice.length, 0) / results.length,
   cost: results.reduce((s, r) => s + r.cost, 0),
   advise: results.reduce(
     (t, r) => {

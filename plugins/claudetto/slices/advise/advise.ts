@@ -38,7 +38,7 @@ export const optionsOf = (
   return {
     advisor: values["advisor"] === "builtin" ? "builtin" : "claudetto",
     model: typeof model === "string" && model ? model : "opus",
-    effort: EFFORTS.find((e) => e === effort) ?? "high",
+    effort: EFFORTS.find((e) => e === effort) ?? "low",
   };
 };
 
