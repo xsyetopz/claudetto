@@ -22,6 +22,11 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
   A box can come back when the target is absent, so the confidence matters.
   Images are a preview feature of the TypeSafe API, so their format and limits can change.
 
+### Fixed
+
+- The verb `ask` of `claudetto-decide` now exits with code 2 for `--state` or `--json`, because it ignored them.
+  An `--image` path that is a directory now gets the message "is a directory, not a file", not "does not exist".
+
 ## [0.2.0] - 2026-10-21
 
 This release cuts `claudetto` to the parts that Claude Code does not do already, so the `.ts` source under `src/` (without `lab/`) goes from 33,219 lines to 11,288 lines, it needs Claude Code 2.1.305 or later, and `/claudetto:setup` must run again after the update, because it cleans the settings of 0.1.0.

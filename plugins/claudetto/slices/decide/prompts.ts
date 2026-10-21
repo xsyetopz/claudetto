@@ -11,6 +11,12 @@ export const ASK_NOTE = (v: { confidence: string }): string =>
 export const ASK_PICK = (v: { index: string }): string =>
   `Which option is the best answer to question ${v.index}?`;
 
+/** From `src/plugins/claudetto/slices/decide/prompts/error-ask-flags.md`. */
+export const ERROR_ASK_FLAGS = (v: {
+  usage: string;
+}): string => `\`ask\` takes the state in the JSON on stdin, and it prints JSON, so it does not take \`--state\` or \`--json\`.
+${v.usage}`;
+
 /** From `src/plugins/claudetto/slices/decide/prompts/error-ask-questions.md`. */
 export const ERROR_ASK_QUESTIONS = (v: { usage: string }): string =>
   `\`ask\` needs \`questions\` in the JSON. ${v.usage}`;

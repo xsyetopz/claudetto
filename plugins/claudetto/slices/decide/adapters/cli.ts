@@ -12,11 +12,12 @@
 // The one exception is `--image <path>`, which `yes`, `pick`, `ask`, and `box` take, and which repeats.
 // It takes a path to a PNG or JPEG file only, and a check of the first bytes must pass (design D8).
 // `--json` prints one object with the `text` and the structured `answer`, for a hooks module.
+// `ask` takes no `--state` and no `--json`: the JSON on stdin has the state, and the output is JSON.
 // `ask` reads one JSON object with the `questions` of the API and an optional `state`, and prints the answers as JSON.
 // A `--` ends the flags, so that no word of the model is read as a flag.
 // Exit codes: 0 an answer, 1 a failure, 2 a usage fault, 3 a key that is not valid, and 4 an account with no balance.
 
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { answerOf, boxOf, formatAnswer, formatBox } from "../domain/answers.ts";
@@ -35,6 +36,7 @@ import {
   TRIES,
 } from "../limits.ts";
 import {
+  ERROR_ASK_FLAGS,
   ERROR_ASK_QUESTIONS,
   ERROR_ASK_STDIN,
   ERROR_BOX_IMAGE,
@@ -115,6 +117,9 @@ export const parseArgs = (argv: readonly string[]): Args => {
       images.push(path);
     } else words.push(arg);
   }
+  // `ask` takes its state and its output format from the JSON on stdin, so a flag for them would do nothing.
+  if (verb === "ask" && (state !== undefined || json))
+    throw new UsageError(ERROR_ASK_FLAGS({ usage: USAGE }));
   return { kind: verb, words, state, json, images };
 };
 
@@ -227,6 +232,8 @@ export const readImage = async (
   const read = async (
     from: string,
   ): Promise<{ bytes: Uint8Array; type: string }> => {
+    const info = await stat(from).catch(() => undefined);
+    if (info?.isDirectory()) throw fail("is a directory, not a file");
     const file = Bun.file(from);
     if (!(await file.exists())) throw fail("does not exist");
     if (file.size > IMAGE_BYTES_MAX)

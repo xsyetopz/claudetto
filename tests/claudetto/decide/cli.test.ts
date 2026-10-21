@@ -1243,3 +1243,30 @@ test.skipIf(!Bun.which("sips"))(
     expect(imageSize(sent)).toEqual({ width: 1218, height: 1568 });
   },
 );
+
+test("`main` exits 2 with no request for an `--image` path that is a directory", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "decide-"));
+  try {
+    const { code, seen, err } = await runMain(
+      ["yes", "--image", dir, "--", "Q?"],
+      undefined,
+    );
+    expect(code).toBe(EXIT.usage);
+    expect(seen).toHaveLength(0);
+    expect(err.join("\n")).toBe(
+      `The image file \`${dir}\` is a directory, not a file.`,
+    );
+  } finally {
+    await rm(dir, { recursive: true });
+  }
+});
+
+test("`ask` rejects `--state` and `--json` with a usage error, and sends no request", async () => {
+  for (const flags of [["--state", "x"], ["--json"]]) {
+    expect(() => parseArgs(["ask", ...flags])).toThrow(UsageError);
+    const { code, seen, err } = await runMain(["ask", ...flags]);
+    expect(code).toBe(EXIT.usage);
+    expect(seen).toHaveLength(0);
+    expect(err.join("\n")).toContain("does not take `--state` or `--json`");
+  }
+});
