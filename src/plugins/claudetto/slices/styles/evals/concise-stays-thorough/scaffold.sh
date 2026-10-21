@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
 # Builds the fixture in the empty workspace.
 # Needs the flag `--scaffold`.
-# The project settings select the output style `claudetto:Concise`, as the settings snippet does.
-# The run without the plugin has no such style and uses the default style.
+# The eval child reads user settings only, so a project `.claude/settings.json` cannot select the style.
+# The branch `eval/2-3-base` sets `force-for-plugin: true` in `Concise.md`, which selects the style for the with arm.
 set -euo pipefail
-mkdir -p .claude
-cat > .claude/settings.json <<'EOT'
-{
-  "outputStyle": "claudetto:Concise"
-}
-EOT
 cat > package.json <<'EOT'
 {
   "type": "module"

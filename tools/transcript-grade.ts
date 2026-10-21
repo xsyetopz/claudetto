@@ -1,6 +1,6 @@
 // Applies the graders of an eval case to a recorded transcript.
 // A transcript is `{ events, files }`: the stream-json events of a run, and the files that the run left.
-// It supports the grader types `regex`, `tool_used`, and `tool_order`, which the agent evals use.
+// It supports the grader types `regex` (the last message, the trace, or a file), `tool_used`, and `tool_order`, which the agent evals use.
 // It skips the grader type `llm`, because a judge needs a model.
 // `graderFaults` lists each grader type or field that it does not model, and `failedGraders` throws on them, so a grader never passes or fails by a guess.
 // The default `min` of a `tool_used` grader is 1, which is an assumption of this helper.
@@ -10,7 +10,7 @@
 export type Grader = {
   name: string;
   type: string;
-  target?: { source: string; path: string };
+  target?: { source: string; path: string } | "trace";
   pattern?: string;
   flags?: string;
   match?: string;
@@ -67,6 +67,7 @@ export const graderFaults = (graders: Grader[]): string[] => {
     const t = g.target as unknown;
     if (
       t !== undefined &&
+      t !== "trace" &&
       (typeof t !== "object" ||
         t === null ||
         (t as { source?: string }).source !== "file")
@@ -100,8 +101,13 @@ export const failedGraders = (graders: Grader[], run: Transcript): string[] => {
     .filter((g) => {
       if (g.type === "llm") return false;
       if (g.type === "regex") {
+        // The trace is the events as JSON lines, as the live `trace` target reads them.
         const text =
-          g.target === undefined ? last : (run.files[g.target.path] ?? "");
+          g.target === undefined
+            ? last
+            : g.target === "trace"
+              ? run.events.map((e) => JSON.stringify(e)).join("\n")
+              : (run.files[g.target.path] ?? "");
         const found = new RegExp(g.pattern as string, g.flags ?? "").test(text);
         // A `not_contains` grader passes when the regex finds nothing.
         return g.match === "not_contains" ? found : !found;

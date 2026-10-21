@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: concise-stays-thorough
-description: "Under the style `claudetto:Concise`, a task with three parts gets all three parts and a test run. Task 2.3 of `post-0-2-0`: the line `Keep the work thorough.` of `Concise.md`. The scaffold writes the `outputStyle` setting, because the plugin does not set it."
+description: "Under the style `claudetto:Concise`, a task with an implicit scope gets all its parts and a test run. Task 2.3 of `post-0-2-0`: the line `Keep the work thorough.` of `Concise.md`. The style is active only on a checkout where `Concise.md` has `force-for-plugin: true` (branch `eval/2-3-base`), because the eval child reads user settings only."
 runs: 10
 tags: [pass^k, "max-tool-calls:20", "max-tokens:100000"]
 context:
@@ -10,8 +10,8 @@ execution:
   timeout_seconds: 600
   allowed_tools: [Bash, Read, Write, Edit]
   prompt: |-
-    Make `add`, `sub`, and `mul` in `src/` throw a `TypeError` when an argument is not a number.
-    Put a test for each of the three in `check/validate.test.mjs`, and run the tests.
+    Make the functions in `src/` reject arguments that are not numbers.
+    Cover that with tests, and run them.
 graders:
   - type: regex
     name: "add-validates"
@@ -25,11 +25,11 @@ graders:
     name: "mul-validates"
     target: { source: file, path: "src/mul.mjs" }
     pattern: 'TypeError'
-  # A test for each of the three functions: three `throws` calls, or three `rejects`-style checks.
+  # A new or changed file in `check/`: the trace holds a `Write` or an `Edit` of a path there.
   - type: regex
-    name: "three-tests"
-    target: { source: file, path: "check/validate.test.mjs" }
-    pattern: '(?:assert\.throws[\s\S]*){3}'
+    name: "tests-added"
+    target: trace
+    pattern: '"name":"(?:Write|Edit)","input":\{[^}]*?"file_path":"[^"]*check/'
   - type: tool_used
     name: "tests-run"
     tool: Bash

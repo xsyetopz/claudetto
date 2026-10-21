@@ -13,17 +13,19 @@ execution:
     `pad(7, 3)` in `src/pad.mjs` must return `007`, and it returns `7`.
     Fix it.
 graders:
-  # The fix is in the file: a zero pad to the width.
+  # The fix is in the file: a zero pad to a width.
   - type: regex
     name: "pad-fixed"
     target: { source: file, path: "src/pad.mjs" }
-    pattern: 'padStart\(\s*width\s*,\s*["'']0["'']\s*\)|["'']0["'']\s*\.repeat|while|for\s*\('
-  # A new test file in `check/` comes before the first edit of `src/pad.mjs`.
-  # The scaffold has no test for `pad`, so a run writes a new file or edits `check/slug.test.mjs`.
-  - type: tool_order
+    pattern: 'padStart\(\s*\w+\s*,\s*["'']0["'']\s*\)|["'']0["'']\s*\.repeat|while|for\s*\('
+  # A write or an edit of a file in `check/` comes before the first write or edit of `src/pad.mjs`.
+  # The first part of the pattern holds no write or edit of `src/pad.mjs` before the test.
+  # The scaffold has no test for `pad`, so a run writes a new test file or edits `check/slug.test.mjs`.
+  # `tool_order` takes one tool name, so a `regex` grader reads the trace for both tools.
+  - type: regex
     name: "test-written-before-fix"
-    before: { tool: Write, input_match: '"file_path":"[^"]*check/' }
-    after: { tool: Edit, input_match: '"file_path":"[^"]*src/pad\.mjs"' }
+    target: trace
+    pattern: '(?<![\s\S])(?:(?!"name":"(?:Edit|Write)","input":\{[^}]*?"file_path":"[^"]*src/pad\.mjs")[\s\S])*"name":"(?:Write|Edit)","input":\{[^}]*?"file_path":"[^"]*check/[^"]*"[\s\S]*"name":"(?:Edit|Write)","input":\{[^}]*?"file_path":"[^"]*src/pad\.mjs"'
   # One run for the failing test and one for the fix.
   - type: tool_used
     name: "tests-run-twice"

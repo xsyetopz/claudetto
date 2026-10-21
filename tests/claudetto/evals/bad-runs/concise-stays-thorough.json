@@ -1,5 +1,5 @@
 {
-  "fails": "three-tests",
+  "fails": "tests-added",
   "events": [
     {
       "type": "assistant",
@@ -11,6 +11,23 @@
             "name": "Edit",
             "input": {
               "file_path": "/w/src/add.mjs",
+              "old_string": "return a + b;",
+              "new_string": "throw new TypeError(\"x\");"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t1",
+            "name": "Edit",
+            "input": {
+              "file_path": "/w/src/sub.mjs",
               "old_string": "a",
               "new_string": "b"
             }
@@ -24,7 +41,24 @@
         "content": [
           {
             "type": "tool_use",
-            "id": "t1",
+            "id": "t2",
+            "name": "Edit",
+            "input": {
+              "file_path": "/w/src/mul.mjs",
+              "old_string": "a",
+              "new_string": "b"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t3",
             "name": "Bash",
             "input": {
               "command": "node --test"
@@ -35,17 +69,16 @@
     },
     {
       "type": "result",
-      "result": "Done.",
+      "result": "Validated the three functions.",
       "usage": {
-        "input_tokens": 6000,
-        "output_tokens": 600
+        "input_tokens": 7100,
+        "output_tokens": 420
       }
     }
   ],
   "files": {
     "src/add.mjs": "throw new TypeError('x');",
     "src/sub.mjs": "throw new TypeError('x');",
-    "src/mul.mjs": "throw new TypeError('x');",
-    "check/validate.test.mjs": "import assert from \"node:assert\";\ntest(\"add\", () => {\n  assert.throws(() => add(\"a\", 1), TypeError);\n});\n"
+    "src/mul.mjs": "throw new TypeError('x');"
   }
 }

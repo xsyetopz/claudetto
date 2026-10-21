@@ -66,10 +66,10 @@
     },
     {
       "type": "result",
-      "result": "Done.",
+      "result": "Fixed with a test after.",
       "usage": {
-        "input_tokens": 6000,
-        "output_tokens": 600
+        "input_tokens": 7100,
+        "output_tokens": 420
       }
     }
   ],

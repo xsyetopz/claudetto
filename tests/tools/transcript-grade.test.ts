@@ -27,10 +27,27 @@ test("an unmodelled field or target is a fault", () => {
   const faults = (o: object) => graderFaults(g({ pattern: "x", ...o }));
   expect(faults({ match: "count:2" })).toHaveLength(1);
   expect(faults({ match: "not_contains" })).toEqual([]);
-  expect(faults({ target: "trace" })).toHaveLength(1);
+  expect(faults({ target: "trace" })).toEqual([]);
   expect(faults({ target: "files" })).toHaveLength(1);
   expect(faults({ target: "mock_calls" })).toHaveLength(1);
   expect(faults({})).toEqual([]);
+});
+
+test("a regex grader on the trace reads the events as JSON lines", () => {
+  const events = [
+    {
+      type: "assistant",
+      message: {
+        content: [
+          { type: "tool_use", name: "Edit", input: { file_path: "a" } },
+        ],
+      },
+    },
+  ];
+  const traced = { events, files: {} };
+  const grader = (pattern: string) => g({ pattern, target: "trace" });
+  expect(failedGraders(grader('"name":"Edit"'), traced)).toEqual([]);
+  expect(failedGraders(grader('"name":"Write"'), traced)).toEqual(["g"]);
 });
 
 test("a regex needs a pattern and a tool_used needs a tool", () => {

@@ -35,7 +35,7 @@
     },
     {
       "type": "result",
-      "result": "Fixed and tested.",
+      "result": "Fixed. `node --test` passes.",
       "usage": {
         "input_tokens": 7100,
         "output_tokens": 420
