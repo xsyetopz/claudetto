@@ -85,7 +85,7 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 ### Fixed
 
-- The `ground` slice no longer denies a number in the name of a standard (`ISO 8601`, `RFC 3339`), a number that the source writes with `_` (`1_000_000`), a binary size in bytes (`16 MiB` and `16,777,216`), a total of a table column or a sum or a difference of numbers that have a source, or the word `npm` in a sentence that is no command.
+- The `ground` slice no longer denies a number in the name of a standard (`ISO 8601`, `RFC 3339`), a number that the source writes with `_` (`1_000_000`), a binary size in bytes (`16 MiB` and `16,777,216`), a total of a table column or a difference of two cells of a row, or the word `npm` in a sentence that is no command.
   On the transcripts of 2026-10-21, 8 of 53 checked plan writes got a false deny, and 0 of 53 do now.
 
 - `claudetto-schema` resolves a lazy reference to a name that the settings module imports in the module that exports it.

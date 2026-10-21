@@ -166,14 +166,19 @@ test("a number with an underscore separator in a tool result is a source", () =>
   expect(findUnsourced(text, msgs, none)).toStrictEqual([]);
 });
 
-test("a number that the text computes from sourced numbers passes, and a number that it does not compute fails", () => {
-  const table = "| lsp | 3,257 | 2,252 | +1,005 |\n| Total | 5,509 |";
+test("a number that is the difference of two cells of its row passes, and a number that is not fails", () => {
+  const row = (d: string) => `| lsp | 3,257 | 2,252 | ${d} |`;
   const msgs = [msg("user", "", ["lsp 3257 and 2252"])];
-  // 5,509 = 3,257 + 2,252, and 1,005 = 3,257 - 2,252.
-  expect(findUnsourced(table, msgs, none)).toStrictEqual([]);
-  expect(
-    findUnsourced(table.replace("+1,005", "+1,006"), msgs, none),
-  ).toHaveLength(1);
+  expect(findUnsourced(row("+1,005"), msgs, none)).toStrictEqual([]);
+  expect(findUnsourced(row("+1,006"), msgs, none)).toHaveLength(1);
+});
+
+test("a sum or a difference of two numbers in prose is no source, and a doubled number fails", () => {
+  const msgs = [msg("user", "", ["500 and 700"])];
+  expect(findUnsourced("The total is 1200.", msgs, none)).toHaveLength(1);
+  expect(findUnsourced("We cut it to 1000 from 500.", msgs, none)).toHaveLength(
+    1,
+  );
 });
 
 test("a size in a binary unit passes with its value in bytes, and fails with another value", () => {
@@ -193,17 +198,35 @@ test("the name of a package manager in prose is no command, and the command with
   expect(findUnsourced("Run npm install first.", [], files)).toHaveLength(1);
 });
 
-test("a total of a table column passes, and a difference of two totals passes", () => {
-  const table = [
-    "| Part | After | Before | Change |",
-    "| --- | --- | --- | --- |",
-    "| a | 1,000 | 900 | +100 |",
-    "| b | 2,000 | 1,500 | +500 |",
-    "| Total | 3,000 | 2,400 | +600 |",
-  ].join("\n");
-  const msgs = [msg("user", "", ["1000 900 100 2000 1500 500"])];
-  expect(findUnsourced(table, msgs, none)).toStrictEqual([]);
+test("a total of three rows or more passes, and a total that is not the sum fails", () => {
+  const rows = [
+    "| Part | Lines |",
+    "| --- | --- |",
+    "| a | 1,000 |",
+    "| b | 2,000 |",
+    "| c | 4,000 |",
+  ];
+  const msgs = [msg("user", "", ["1000 2000 4000"])];
+  const table = (total: string) => [...rows, `| Total | ${total} |`].join("\n");
+  expect(findUnsourced(table("7,000"), msgs, none)).toStrictEqual([]);
+  expect(findUnsourced(table("7,001"), msgs, none)).toHaveLength(1);
+  // Two rows only: the total 3,000 is not enough evidence.
   expect(
-    findUnsourced(table.replace("| 3,000 |", "| 3,001 |"), msgs, none),
+    findUnsourced(
+      ["| a | 1,000 |", "| b | 2,000 |", "| Total | 3,000 |"].join("\n"),
+      [msg("user", "", ["1000 2000"])],
+      none,
+    ),
   ).toHaveLength(1);
+});
+
+test("a flag or a subcommand of a package manager is a command, and the number after a standard name is a claim", () => {
+  const files: Files = { "bun.lock": "", "uv.lock": "" };
+  for (const line of [
+    "Run npm --version first.",
+    "Run npm view foo first.",
+    "Run pip --upgrade foo first.",
+  ])
+    expect(findUnsourced(line, [], files)).toHaveLength(1);
+  expect(findUnsourced("RFC 9110 has 7777 cases.", [], none)).toHaveLength(1);
 });

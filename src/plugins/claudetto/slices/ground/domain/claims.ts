@@ -23,11 +23,10 @@ const REF =
 const NUMBER = /(?<![\w.,:/#$-])(\d{1,3}(?:,\d{3})+|\d{3,})(?![\w:/-]|[.,]\d)/g;
 /** A number that is part of the name of a standard, such as `ISO 8601` or `RFC 3339`. It names a document and is no claim. */
 const STANDARD =
-  /\b(?:ISO|IEC|RFC|BCP|STD|PEP|IEEE|ANSI|ECMA|DIN)[ -]?\d[\d.:-]*/g;
+  /\b(?:ISO|IEC|RFC|BCP|STD|PEP|IEEE|ANSI|ECMA|DIN)[ -]?\d[\d.:]*/g;
 /** A size in a binary unit, such as `16 MiB`. */
 const SIZE = /(\d+(?:\.\d+)?)\s*(KiB|MiB|GiB|TiB)\b/g;
-const SOURCE_NUMBERS_MAX = 400;
-const CELL = /^\s*\+?(\d{1,3}(?:,\d{3})+|\d+)\b/;
+const CELL = /^\s*([+\-−]?)(\d{1,3}(?:,\d{3})+|\d+)\b/;
 const USER =
   /\bthe user (?:chose|said|decided|wants|asked|prefers|approved|confirmed|requested|told|picked|stated)\b([^.\n]*)/gi;
 const DONE =
@@ -45,10 +44,10 @@ const CONVENTIONS: readonly [readonly string[], string[]][] = [
 ];
 /** The words that make a tool name in prose a command: a subcommand, a flag, or a package for `npx`. */
 const SUBCOMMANDS: Readonly<Record<string, string>> = {
-  npm: "i|install|ci|run|test|start|build|exec|init|publish|update|uninstall|add|remove|link|pack|audit|ls|rebuild|version|-\\w+",
+  npm: "i|install|ci|run|test|start|build|exec|init|publish|update|uninstall|add|remove|link|pack|audit|ls|rebuild|version|view|outdated|x|r|un|t|pkg|cache|config|dedupe|prune|--?\\w[\\w-]*",
   npx: "[\\w@-]+",
-  pip: "install|uninstall|freeze|list|show|download|wheel|-\\w+",
-  pip3: "install|uninstall|freeze|list|show|download|wheel|-\\w+",
+  pip: "install|uninstall|freeze|list|show|download|wheel|check|cache|config|index|--?\\w[\\w-]*",
+  pip3: "install|uninstall|freeze|list|show|download|wheel|check|cache|config|index|--?\\w[\\w-]*",
 };
 const command = (tool: string) =>
   new RegExp(
@@ -75,7 +74,8 @@ const proseLines = (text: string): string[] =>
     .split("\n")
     .filter((line) => !MARK.test(line));
 
-/** The totals of a table: a number of a row that is the sum of the numbers above it in the same column, for two rows or more. */
+/** The numbers of a table that the table computes: a cell that is the sum of the cells above it in its column (three rows or more),
+ * or the absolute difference of two other cells of its row. The values are signed in the sums and absolute in the result. */
 const columnTotals = (lines: readonly string[]): Set<number> => {
   const totals = new Set<number>();
   let rows: (number | null)[][] = [];
@@ -90,13 +90,21 @@ const columnTotals = (lines: readonly string[]): Set<number> => {
       .split("|")
       .map((c) => {
         const m = CELL.exec(c);
-        return m ? Number((m[1] as string).replace(/,/g, "")) : null;
+        if (!m) return null;
+        const v = Number((m[2] as string).replace(/,/g, ""));
+        return m[1] === "-" || m[1] === "\u2212" ? -v : v;
       });
     cells.forEach((v, i) => {
       if (v === null) return;
       const above = rows.map((r) => r[i] ?? null).filter((x) => x !== null);
-      if (above.length >= 2 && above.reduce((a, b) => a + b, 0) === v)
-        totals.add(v);
+      const others = cells.filter((x, j): x is number => j !== i && x !== null);
+      if (
+        (above.length >= 3 && above.reduce((a, b) => a + b, 0) === v) ||
+        others.some((a) =>
+          others.some((b) => a !== b && Math.abs(a - b) === Math.abs(v)),
+        )
+      )
+        totals.add(Math.abs(v));
     });
     rows.push(cells);
   }
@@ -125,21 +133,13 @@ export const findUnsourced = (
   const claims = new Set<string>();
   const prose = proseLines(text);
   const has = (n: string) => new RegExp(`(?<!\\d)${n}(?!\\d)`).test(corpus);
-  const numbersOf = (line: string) =>
-    [...line.replace(STANDARD, "").matchAll(NUMBER)].map((m) =>
-      (m[1] as string).replace(/,/g, ""),
-    );
-  // A number that the text computes from numbers with a source: a column total, a sum, a difference, or a binary size.
+  // A number that the text computes: a table total or difference, or a binary size.
   const totals = columnTotals(prose);
-  const operands = [...new Set(prose.flatMap(numbersOf))]
-    .map(Number)
-    .filter((n) => totals.has(n) || has(String(n)))
-    .slice(0, SOURCE_NUMBERS_MAX);
   const derived = (n: number, line: string) =>
     [...line.matchAll(SIZE)].some(
       ([, k = "", unit = ""]) =>
         Number(k) * 1024 ** ("KMGT".indexOf(unit[0] as string) + 1) === n,
-    ) || operands.some((a) => operands.some((b) => a - b === n || a + b === n));
+    );
   for (const line of prose) {
     for (const [, num = ""] of line.replace(STANDARD, "").matchAll(NUMBER)) {
       const n = num.replace(/,/g, "");

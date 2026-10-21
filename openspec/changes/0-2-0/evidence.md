@@ -69,7 +69,7 @@ No model call ran.
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18, `check.ts` (the shipped filter) | 990 | 0 | 0 | 0 | 0 |
 | 2026-10-21, before the fixes of task 1.3 | 25,331 | 53 | 9 | 1 | 8 |
-| 2026-10-21, after the fixes of task 1.3 | 25,354 | 53 | 1 | 1 | 0 |
+| 2026-10-21, after the fixes of task 1.3 | 25,436 | 53 | 1 | 1 | 0 |
 
 - Task 1.3 (2026-10-21): data is `~/.claude/projects`, 1,014 transcript files, 952 MB.
   `replay.ts` now prints `checked`, the count of the calls that the filter of `check.ts` takes (`checked` export), so the rate is the denies divided by the events checked.
@@ -82,7 +82,7 @@ No model call ran.
 | `8601`, `3339` | `export-for-ai-agents`, `proposal.md` | false | Standard names. Fix: `STANDARD` skips `ISO 8601`, `RFC 3339`. |
 | `3339`, `8601`, `7763` | `export-for-ai-agents`, `design.md` | false | Same. `RFC 7763` is the MIME registration of `text/markdown`. |
 | `1,000,000` (3 denies) | `export-for-ai-agents`, `jsonld.ts` has `MAX_JSONLD_CHARS = 1_000_000` | false | The source writes `1_000_000`. Fix: the corpus drops `_` between digit groups. |
-| `892`, `1,005`, `178`, `287`, `47,305`, `46,388`, `917` | `versionlens-redux`, `pr-description.md` | false | Column totals and differences of a table. Fix: `columnTotals`, and the sum and difference of sourced numbers. |
+| `892`, `1,005`, `178`, `287`, `47,305`, `46,388`, `917` | `versionlens-redux`, `pr-description.md` | false | Column totals and differences of a table. Fix: `columnTotals` (a sum of three rows or more, or a difference of two cells of a row). |
 | `140` | `claude-code-docs`, `proposal.md` | true | A page count of `wiki/claude-code/`. The session ran `wc -l` with `tail -15`, so no count is in a tool result. |
 | `npm` with `bun.lock` | `claude-code-docs`, `binary-diff.md` | false | "npm marketplace" is prose. Fix: `command()` needs a subcommand or a flag. |
 | `16,777,216` | `claudetto`, `jev-images/design.md` | false | `16 MiB` in the same line, and `16 * 1024 * 1024` in `limits.ts`. Fix: `SIZE` multiplies by the binary unit. |

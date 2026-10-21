@@ -42,7 +42,7 @@ It names each claim, so a retry would pass on it.
 
 | Kind | The check fails when |
 | --- | --- |
-| Number | A number of 3 digits or more is in no user message and no tool result. A year, a number in the name of a standard (`ISO 8601`, `RFC 3339`), and a number that the text computes do not count. The text computes a number when it is a binary size in bytes (`16 MiB` and `16,777,216`), a total of a table column, or a sum or a difference of two numbers that have a source. A source can write the number with `_`, as `1_000_000`. |
+| Number | A number of 3 digits or more is in no user message and no tool result. A year, a number in the name of a standard (`ISO 8601`, `RFC 3339`), and a number that the text computes do not count. The text computes a number when it is a binary size in bytes (`16 MiB` and `16,777,216`), a total of a table column (three rows or more) or the difference of two cells of the same row. A source can write the number with `_`, as `1_000_000`. |
 | `file:line` | The file is found and has fewer lines than the reference. |
 | Attribution | A sentence such as `the user chose ...` has words that are mostly not in a user message. |
 | Done claim | The text says that tests, checks, lint, or a build pass, or that something is fixed, and the turn has no `Bash` call. A sentence with `must`, `should`, `will`, `if`, or a similar word is not a claim. |
@@ -96,7 +96,7 @@ Each deny was graded by hand: a true deny is a claim with no source in the sessi
 | Run | Calls replayed | Events checked | Denies | True | False | False rate |
 | --- | --- | --- | --- | --- | --- | --- |
 | Before the fixes | 25,331 | 53 | 9 | 1 | 8 | 15 percent (8 of 53) |
-| After the fixes | 25,354 | 53 | 1 | 1 | 0 | 0 percent (0 of 53) |
+| After the fixes | 25,436 | 53 | 1 | 1 | 0 | 0 percent (0 of 53) |
 
 The calls differ because live sessions grew between the runs.
 The denies before the fixes, by cause:
@@ -109,7 +109,7 @@ The denies before the fixes, by cause:
 - `140` (1 deny, true): "140 pages" of a wiki folder, and the session listed no count.
 
 The 5 fixes are in `slices/ground/domain/claims.ts`, and each has a test in `tests/claudetto/ground/claims.test.ts`.
-A fix does not accept a guess: a computed number needs numbers that have a source, a binary size needs the exact product, and a table total needs the exact sum of the column.
+A fix does not accept a guess: a binary size needs the exact product, a table total needs the exact sum of the column, and a difference needs two cells of the same row.
 The sample is 53 events from 5 projects, so the rate has a wide margin.
 A false deny costs one rewrite, because the deny names each claim and gives three ways out.
 
