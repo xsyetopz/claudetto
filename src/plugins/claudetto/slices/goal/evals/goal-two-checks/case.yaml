@@ -1,0 +1,19 @@
+schema_version: "1.1"
+name: goal-two-checks
+description: "Task 5.2. Three bugs, and a style script that is not a test. The goal names both checks. `tools/compare-builtins.ts` runs it on two arms: the goal engine of the plugin, and the built-in `/goal` (the plugin with the hooks of the `goal` slice removed). The runs report turns and cost as well as the pass."
+runs: 10
+tags: [pass^k, "max-tool-calls:40", "max-tokens:200000"]
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Bash, Read, Write, Edit]
+  prompt: "/goal `node --test check` and `node check/style.mjs` both exit 0"
+graders:
+  # The final checks of the files are in `final.sh`, which `tools/compare-builtins.ts` runs in the workspace after the run.
+  # The case has no regex for the fixes themselves, because the real check is that both commands of the goal exit 0.
+  - type: regex
+    name: "one-fix-in-stack"
+    target: { source: file, path: "src/stack.mjs" }
+    pattern: '^// @ts-check\n(?![\s\S]*\bvar\b)'

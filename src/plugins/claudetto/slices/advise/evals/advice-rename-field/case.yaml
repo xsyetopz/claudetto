@@ -1,0 +1,49 @@
+schema_version: "1.1"
+name: advice-rename-field
+description: "Task 5.1. The field `name` of a user becomes `fullName` in four ways of use, and one use is a key built from two strings. The prompt asks for the advisor before an edit. `tools/compare-builtins.ts` runs it on two arms: the tool `advise` of the plugin, and the built-in advisor of Claude Code."
+runs: 10
+tags: [pass^k, "max-tool-calls:30", "max-tokens:150000"]
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Bash, Read, Write, Edit]
+  prompt: |-
+    Rename the field `name` of a user to `fullName` everywhere, in the code and in the data.
+    Do not change other names, such as `username` or `filename`.
+    Ask your advisor for advice once, before you edit a file, and weigh what it says.
+    `node --test check` must be green when you stop.
+graders:
+  - type: regex
+    name: "make-user"
+    target: { source: file, path: "src/user.mjs" }
+    pattern: '\(\{ fullName, age \}\)'
+  - type: regex
+    name: "greet-property"
+    target: { source: file, path: "src/greet.mjs" }
+    pattern: 'user\.fullName'
+  - type: regex
+    name: "initials-destructure"
+    target: { source: file, path: "src/greet.mjs" }
+    pattern: '\(\{ fullName \}\)'
+  - type: regex
+    name: "export-key-renamed"
+    target: { source: file, path: "src/export.mjs" }
+    pattern: '^(?![\s\S]*"na"\s*\+\s*"me")[\s\S]*(?:fullName|"full"\s*\+\s*"Name")'
+  - type: regex
+    name: "data-renamed"
+    target: { source: file, path: "data/users.json" }
+    pattern: '^(?![\s\S]*"name")(?=[\s\S]*"fullName": "Ann Lee")(?=[\s\S]*"fullName": "Bo Park")'
+  - type: regex
+    name: "login-unchanged"
+    target: { source: file, path: "src/login.mjs" }
+    pattern: '\(username, password\)'
+  - type: regex
+    name: "files-unchanged"
+    target: { source: file, path: "src/files.mjs" }
+    pattern: '\(filename\) => filename\.split'
+  - type: tool_used
+    name: "advisor-called"
+    tool: advisor
+    min: 1

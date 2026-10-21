@@ -83,6 +83,7 @@ It checks that an auto compaction in the middle of a task keeps the done steps a
 ## Current Results
 
 The newest runs are on [Evals of 2.1.304](Evals-2.1.304).
+The comparisons with the built-in advisor and the built-in `/goal` are on [Built-In Comparisons](Builtin-Comparisons).
 On 2026-10-20, 32 `prompt` slice cases ran on Claude Code `2.1.304` in four sets, with 10 runs for each arm and a CI for each set.
 That page replaces [Evals of 0.2.0](Evals-0.2.0) for the current prompt.
 No full run of the 40 current cases exists.
@@ -102,6 +103,7 @@ Its figures do not describe the current prompt.
 - [Evals 0.1.0](Evals-0.1.0)
 - [Evals 0.2.0](Evals-0.2.0)
 - [Evals 2.1.304](Evals-2.1.304)
+- [Built-In Comparisons](Builtin-Comparisons)
 - [Evals of the Audit Lines](Evals-Audit-Lines)
 - [Handoff Cost](Handoff-Cost)
 - [Off Switches](Off-Switches)

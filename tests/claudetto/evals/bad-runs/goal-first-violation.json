@@ -1,0 +1,36 @@
+{
+  "files": {
+    "src/m8.mjs": "var base = 8;\n\nexport const f8 = (x) => x + base;\n",
+    "src/m2.mjs": "// @ts-check\nconst base = 2;\n\nexport const f2 = (x) => x + base;\n"
+  },
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "text",
+            "text": "I will look first."
+          },
+          {
+            "type": "tool_use",
+            "id": "call_3",
+            "name": "Read",
+            "input": {
+              "file_path": "check/style.mjs"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "Finished.",
+      "usage": {
+        "input_tokens": 4333,
+        "output_tokens": 351
+      }
+    }
+  ],
+  "fails": "m8-header-no-var"
+}
