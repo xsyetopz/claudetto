@@ -62,6 +62,9 @@ export const IMAGE_SIDE_MIN = 280;
 /** The most pixels of one side of an `--image`. */
 export const IMAGE_SIDE_MAX = 1568;
 
+/** `IMAGE_SIDE_MAX` as plain text, for a command in a prompt, because the generator writes a number with commas. */
+export const IMAGE_SIDE_MAX_TEXT = String(IMAGE_SIDE_MAX);
+
 /** The fewest pixels in total of an `--image`: 280 x 280. */
 export const IMAGE_PIXELS_MIN = 78_400;
 

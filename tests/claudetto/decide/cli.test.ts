@@ -1025,7 +1025,7 @@ test("`main` leaves a JPEG with no `SOF` to the API", async () => {
   expect(r.seen).toHaveLength(1);
 });
 
-test("the usage and the size message name the pixel bounds from `limits.ts`", async () => {
+test("the usage and the size message name the pixel bounds from `limits.ts`, with a plain number in each command", async () => {
   const { USAGE, ERROR_IMAGE_SIZE } = await import(
     "../../../plugins/claudetto/slices/decide/prompts.ts"
   );
@@ -1035,6 +1035,9 @@ test("the usage and the size message name the pixel bounds from `limits.ts`", as
   ]) {
     expect(text).toContain(IMAGE_SIDE_MIN.toLocaleString("en-US"));
     expect(text).toContain(IMAGE_SIDE_MAX.toLocaleString("en-US"));
+    expect(text).toContain("-resize 1568x1568 ");
+    for (const code of text.match(/`[^`]*`/g) ?? [])
+      expect(code).not.toContain("1,568");
   }
 });
 
@@ -1115,8 +1118,8 @@ test("`main` with no scaler exits 2 with no request and a hint for `sips` and `m
   const r = await runBad("big.png", BIG, undefined, { scale: null });
   expect(r.code).toBe(EXIT.usage);
   expect(r.seen).toHaveLength(0);
-  expect(r.text).toContain("sips -Z 1,568 in.png --out out.png");
-  expect(r.text).toContain("magick in.png -resize 1,568x1,568 out.png");
+  expect(r.text).toContain("sips -Z 1568 in.png --out out.png");
+  expect(r.text).toContain("magick in.png -resize 1568x1568 out.png");
 });
 
 test("`main` exits 2 with no request when the scaler fails", async () => {
