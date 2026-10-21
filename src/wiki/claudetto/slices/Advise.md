@@ -58,7 +58,7 @@ It carries a cache mark, because it stays the same between calls.
 
 The result gives the advice with the model name.
 The count of tokens in and out, with the cache reads and writes, goes to the user with `$.ui.log`, and the model does not read it.
-The cost of these calls is not in the cost of the session, because Claude Code gives a plugin no way to add a cost (see the page `Builtin-Comparisons`: with `advisorEffort` `low`, a call costs about 0.10 USD).
+The cost of these calls is not in the cost of the session, because Claude Code gives a plugin no way to add a cost (see the page `Builtin-Comparisons`: with `advisorEffort` `low`, a call costs about 0.03 USD: about 2000 tokens in and 1200 tokens out).
 The session cost leaves out these calls, because `$.model.complete` reports tokens and the mod API has no way to add a cost to the session.
 The token log is the only record, and `claudetto` shows no estimated cost, because it has no documented price source.
 On the 5.1 eval, an estimated `opus` cost for 10 runs was about 0.40 USD, against 1.18 USD for the built-in advisor.
@@ -81,7 +81,7 @@ All bounds are in `slices/advise/limits.ts`.
 | `CONTEXT_BYTES` | 24,000 | The most bytes of context in one call. |
 | `RESULTS_BYTES` | 12,000 | The most bytes of tool results in one call. |
 | `RESULT_BYTES` | 3,000 | The most bytes of one tool result. |
-| `MAX_TOKENS` | 2,048 | The token cap of one piece of advice. |
+| `MAX_TOKENS` | 2,048 | The token cap of one piece of advice. It bounds the text and not the thinking, so a lower cap saved little (see `Builtin-Comparisons`). |
 | `TIMEOUT_MS` | 120,000 | The time limit of one call, in ms. |
 | `MAX_CALLS_PER_TURN` | 3 | The most calls in one turn. |
 | `MAX_CALLS_PER_SESSION` | 20 | The most calls in one session. |

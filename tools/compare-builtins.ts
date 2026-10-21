@@ -42,6 +42,17 @@ const ARMS: Record<string, Arm> = {
     advisor: "mcp__claudetto__advise",
   },
   // The effort of the advice, for the comparison of the cost and the quality of `advise`.
+  "advise-ours-high": {
+    options: {
+      advisor: "claudetto",
+      advisorModel: "opus",
+      advisorEffort: "high",
+    },
+    env: { CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1" },
+    flags: [],
+    allow: ["mcp__claudetto__advise"],
+    advisor: "mcp__claudetto__advise",
+  },
   "advise-ours-medium": {
     options: {
       advisor: "claudetto",
@@ -94,6 +105,15 @@ type Grader = {
   max?: number;
   pattern?: string;
   target?: { source: string; path?: string };
+};
+
+/** The `modelUsage` of a model in the result event. */
+type ModelUse = {
+  inputTokens: number;
+  outputTokens: number;
+  cacheReadInputTokens: number;
+  cacheCreationInputTokens: number;
+  costUSD: number;
 };
 
 type Block = {
@@ -196,6 +216,13 @@ type Result = {
   run: number;
   cost: number;
   advise?: ReturnType<typeof adviseUsage> | undefined;
+  opus: {
+    input: number;
+    output: number;
+    read: number;
+    write: number;
+    cost: number;
+  };
   /** The faults of the web case that `FINDINGS.txt` names, and (for the arms with `advise`) that the advice names. */
   findings: string[];
   advice: string[];
@@ -271,6 +298,8 @@ const runOnce = async (n: number): Promise<Result> => {
   const stream = await Bun.file(path.join(root, "stream.jsonl")).text();
   // The text of the `advise` results. The built-in advisor gives an encrypted result, so it has no text.
   let adviceText = "";
+  // The tokens and the cost that Claude Code itself reports for `opus` (the built-in advisor), from `modelUsage`.
+  const opus = { input: 0, output: 0, read: 0, write: 0, cost: 0 };
   const adviseIds = new Set<string>();
   for (const line of stream.split("\n")) {
     if (!line.trim()) continue;
@@ -280,6 +309,7 @@ const runOnce = async (n: number): Promise<Result> => {
       result?: string;
       total_cost_usd?: number;
       num_turns?: number;
+      modelUsage?: Record<string, ModelUse>;
     };
     if (o.type === "assistant")
       for (const b of o.message?.content ?? [])
@@ -295,6 +325,14 @@ const runOnce = async (n: number): Promise<Result> => {
       reply = o.result ?? "";
       cost = o.total_cost_usd ?? 0;
       turns = o.num_turns ?? 0;
+      for (const [name, u] of Object.entries(o.modelUsage ?? {}))
+        if (name.includes("opus")) {
+          opus.input += u.inputTokens;
+          opus.output += u.outputTokens;
+          opus.read += u.cacheReadInputTokens;
+          opus.write += u.cacheCreationInputTokens;
+          opus.cost += u.costUSD;
+        }
     }
   }
   const graders = Object.fromEntries(
@@ -323,6 +361,7 @@ const runOnce = async (n: number): Promise<Result> => {
     run: n,
     cost,
     advise,
+    opus,
     findings,
     advice,
     turns,
@@ -351,6 +390,7 @@ const worker = async (): Promise<void> => {
         cost: 0,
         turns: 0,
         advisorCalls: 0,
+        opus: { input: 0, output: 0, read: 0, write: 0, cost: 0 },
         findings: [],
         advice: [],
         graders: {},

@@ -9,8 +9,8 @@ test("`adviseUsage` sums the `advise` lines of a debug log and prices them", () 
   ].join("\n");
   const u = adviseUsage(log);
   expect(u).toMatchObject({ calls: 2, input: 1000000, output: 100000 });
-  // 500k fresh * 8 + 400k read * 0.4 + 100k write * 10 + 100k out * 40, per million
-  expect(u.cost).toBeCloseTo(4 + 0.16 + 1 + 4, 6);
+  // 500k fresh * 4 + 400k read * 0.2 + 100k write * 5 + 100k out * 20, per million
+  expect(u.cost).toBeCloseTo(2 + 0.08 + 0.5 + 2, 6);
 });
 
 test("`adviseUsage` of a log with no line is zero", () => {

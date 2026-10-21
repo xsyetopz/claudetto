@@ -142,7 +142,16 @@ test(
     expect(logs).toEqual([
       "`advise`: opus used 10 tokens in (0 read from the cache, 0 written to the cache), 5 tokens out.",
     ]);
-    expect(seen.requests[0]).toMatchObject({ model: "opus", effort: "low" });
+    expect(seen.requests[0]).toMatchObject({
+      model: "opus",
+      effort: "low",
+      maxTokens: 2048,
+      timeoutMs: 120_000,
+    });
+    // The system prompt asks for a short answer.
+    expect(JSON.stringify(seen.requests[0]?.["system"])).toContain(
+      "at most 10 short lines",
+    );
   },
 );
 

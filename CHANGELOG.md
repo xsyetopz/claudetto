@@ -46,7 +46,9 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 ### Changed
 
 - The default of the `advisor` option is now `claudetto`, so the tool `advise` is on, and the default of `advisorEffort` is now `low`.
-  On `advice-audit-web` with 5 runs, `effort` `low` named 5.0 of the 6 faults in `FINDINGS.txt`, against 4.8 for the built-in advisor, for about 0.95 USD per 10 runs against 1.97 USD.
+  The system prompt asks for an answer of at most 10 short lines.
+  On `advice-audit-web` with 10 runs for each arm, `advise` with `effort` `low` and this prompt named 4.9 of the 6 faults in `FINDINGS.txt`, against 4.8 for the built-in advisor.
+  It sent about 2000 tokens in and got about 1200 tokens out for a call, against about 23300 and 5200 for the built-in advisor, and it cost about 0.37 USD per 10 runs against 2.02 USD.
   The slice sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` at `session.start`, so that Claude sees one advisor, and `claudetto-setup` sets it too.
   The session cost still leaves out the `opus` calls of `advise`, but the compare script now measures them from the debug log.
   Set `advisor` to `builtin` to keep the built-in advisor.

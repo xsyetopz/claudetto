@@ -13,11 +13,14 @@ The first round found that its cases were too easy, and the second round tried t
 - On the easy tasks all arms pass, and on the hard tasks all arms fail.
   The advisor was called in every run of the advisor arms (see "Round 3").
   So on Haiku 5.5, neither advisor changes the outcome.
-- `advise` at `effort` `high` is not cheaper than the built-in advisor in total: 1.208 USD against 1.185 USD for 10 runs of `advice-audit`, with the `opus` calls measured (see "Cost of `advise`").
-  One call costs about 0.12 USD, not the 0.035 USD that an early estimate gave.
-- Round 6 measured the quality of the advice and the effort (see "Round 6").
-  On `advice-audit-web`, `advise` at `effort` `low` has a recall of the 6 faults at least equal to the built-in advisor, and its total cost for 10 runs is 0.95 USD against 1.97 USD.
-- Decision (the user, 2026-10-21): the default of `advisor` is `claudetto`, and since round 6 the default of `advisorEffort` is `low` (see "Decision for the Default").
+- A first price for the `opus` calls was twice too high.
+  The price table is the catalog entry of the model, $4 and $20 for one million tokens in and out, and a run of the built-in advisor confirms it (see "Cost of `advise`").
+  With the right price, `advise` at `effort` `high` costs 0.63 USD against 1.19 USD for 10 runs of `advice-audit`, and 0.56 USD against 2.02 USD for 10 runs of `advice-audit-web`.
+- Round 6 measured the advice quality, the tokens of the built-in advisor, and the cost levers (see "Round 6").
+  The built-in advisor sends about 23300 tokens in and gets about 5200 tokens out for a call.
+  `advise` with `effort` `low` and a short answer sends about 2000 tokens in and gets about 1200 tokens out.
+  It names as many of the 6 faults as the built-in advisor, for about 0.37 USD for 10 runs against 2.02 USD.
+- Decision (the user, 2026-10-21): the default of `advisor` is `claudetto`, and since round 6 the default of `advisorEffort` is `low` and the system prompt asks for a short answer (see "Decision for the Default").
   The slice turns off the built-in advisor with `$.env.set` at `session.start`, so that Claude never sees two advisors.
   `$.model.complete` reports tokens only, and the mod API has no way to add a cost to the session or a price source, so the cost of the `opus` calls stays out of the session cost.
 - Goal engine against the built-in `/goal`: parity on `goal-two-checks` and `goal-first-violation` (10 of 10 each, again after the fix).
@@ -202,11 +205,9 @@ With the first round, this shows parity with the built-in `/goal` on these two c
 The default of `advisor` is now `claudetto` (commit `b56351e0`).
 
 - On easy tasks all arms pass, and on hard tasks all arms fail, so `advise` is as good as the built-in advisor.
-- At `effort` `high` (the first default), `advise` did not cost less in total.
-  For 10 runs of `advice-audit`, the sessions cost $0.045 and the measured `opus` calls cost $1.163, which is $1.208 against $1.185 for the built-in advisor (see "Cost of `advise`").
-  The first version of this page used an estimate of $0.035 for each call, and the measure is about $0.12.
-- Round 6 found that `effort` `low` gives the same recall for about half of the cost, so the default `advisorEffort` is now `low`.
-  For 10 runs of `advice-audit-web`, the total is $0.95 against $1.97 for the built-in advisor.
+- The first measure, at `effort` `high`, was 0.63 USD against 1.19 USD for 10 runs of `advice-audit`, so `advise` was cheaper already (see "Cost of `advise`").
+- Round 6 found that `effort` `low` and a short answer give the same recall for about 1/5 of the cost of the built-in advisor, so the default `advisorEffort` is `low` and the system prompt asks for at most 10 lines.
+  For 10 runs of `advice-audit-web`, the total is about $0.37 against $2.02.
 - With `claudetto`, the slice sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` at `session.start` with `$.env.set`, so that Claude sees one advisor.
 
 ### Live Check of the One-Advisor Rule
@@ -227,54 +228,60 @@ This is a limit of Claude Code, not a defect of `claudetto`.
 - `advise` sends the token counts to the user with `$.ui.log`, in the line "`advise`: opus used N tokens in (R read from the cache, W written to the cache), M tokens out."
   The debug log holds every `$.ui.log` line (the type `UiLogOptions` in the mod API), so `claude --debug-file <path>` captures them.
   `tools/compare-builtins.ts` passes `--debug-file` for each run, and `tools/advise-usage.ts` sums the lines and prices them.
-- The price is the price table that Claude Code uses for its own `total_cost_usd`.
-  It is in the bundle of Claude Code `2.1.305` (`external/cc-2.1.305/strings.txt`, line 337400), and the same entry is in the binary of `2.1.306`.
-  The function that picks the table returns `kb` for `claude-opus-5-5`: `{inputTokens: 8, outputTokens: 40, promptCacheWriteTokens: 10, promptCacheReadTokens: 0.4}`, in USD for one million tokens.
-  The bundle was read as evidence only, and nothing in it was changed.
-- `advise-ours` ran on the fixed code with `--model haiku` and the advisor model `opus`, which is taken here as `claude-opus-5-5` at the price above.
+- The price is the price table that Claude Code uses for its own `total_cost_usd`, read from the bundle as evidence only.
+  The model catalog of Claude Code `2.1.305` (`external/cc-2.1.305/strings.txt`) has the entry of `claude-opus-5-5` (`VERTEX_REGION_CLAUDE_5_5_OPUS`) with the pricing `tier_4_20_cache_read_0_20`.
+  That is $4 for one million tokens in, $20 out, $5 for a cache write, and $0.20 for a cache read.
+  A run of the built-in advisor confirms it: `modelUsage` gave 22528 tokens in and 4309 tokens out for a `costUSD` of 0.176292, which is 4 and 20.
+  The first version of this page took the entry `kb` of the same bundle ($8 and $40), which is a table for another path, and it was twice too high.
+- `advise-ours` ran with `--model haiku` and the advisor model `opus` (`claude-opus-5-5`).
 
 | Case | Runs | Passed | Session cost | `opus` calls | Tokens in | Tokens out | `opus` cost | Total | Built-in arm |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `advice-audit` | 10 | 0/10 | 0.045 | 10 | 21390 | 24787 | 1.163 | 1.208 | 1.185 |
-| `advice-audit-web` | 2 | 0/2 | 0.010 | 2 | 4299 | 5565 | 0.257 | 0.267 | 1.481 for 10 runs |
+| `advice-audit`, `effort` `high` | 10 | 0/10 | 0.045 | 10 | 21390 | 24787 | 0.581 | 0.626 | 1.185 |
+| `advice-audit-web`, `effort` `high` | 2 | 0/2 | 0.010 | 2 | 4299 | 5565 | 0.128 | 0.138 | 1.481 for 10 runs |
 
-- One call used about 2100 tokens in and about 2500 tokens out, and no call read or wrote the cache.
-  The output is large because `effort` is `high`, so thinking tokens count as output tokens.
-  The early guess was 600 output tokens and 0.035 USD.
-- `advice-audit-web` ran 2 runs, not 10, because 10 runs would pass the limit of 1.50 USD for the paid runs.
-  At the measured 0.128 USD for a call, 10 runs would cost about 1.28 USD for `opus` and 0.05 USD for the sessions, about 1.33 USD against 1.481 USD.
-  This is a projection from 2 runs and not a measure.
-- `advise` costs 1.208 USD against 1.185 USD on `advice-audit`, so it is not cheaper in total.
-  On `advice-audit-web` the projection is a little lower than the built-in arm.
-- Both arms of `advice-audit` passed 0 of 10, so the cost is for equal results.
+- At `effort` `high`, one call used about 2100 tokens in and about 2500 tokens out, and no call read or wrote the cache.
+  It cost about 0.06 USD, and the early guess was 0.035 USD.
+- So the first conclusion of this round, that `advise` was not cheaper, was wrong, because of the price.
+  `advise` at `effort` `high` already cost about half of the built-in advisor on `advice-audit`.
 
 ## Round 6
 
-The goal was the quality of the advice, and the cheapest `effort` of `advise` that is as good as the built-in advisor.
-All arms ran `advice-audit-web` (6 faults) with 5 runs, Haiku 5.5 as the working model, and `opus` as the advisor.
+The goal was the quality of the advice, the exact cost of the built-in advisor, and the cheapest `advise` at equal quality.
+All arms ran `advice-audit-web` (6 faults), Haiku 5.5 as the working model, and `opus` as the advisor.
+Each arm in the table ran 10 runs.
+A first pass with fewer runs for each arm picked the levers, and the table holds the final measure.
 
-- The built-in advisor gives an encrypted result (`advisor_tool_result` with `advisor_redacted_result`), so its advice text cannot be read.
+- The built-in advisor gives an encrypted result (`advisor_redacted_result`), so its advice text cannot be read.
   So the quality is measured on `FINDINGS.txt`, the list that Haiku writes after the advice, for all arms.
   A fault counts when a line of the file starts with the function and holds the words of its fault.
   For the arms with `advise`, the advice text is graded too: the function and the words of its fault within 400 characters.
 - The words for each fault are in `FAULTS` in `tools/advise-usage.ts`, written before any result was graded, and a unit test covers the grader.
+- The tokens of the built-in advisor are the `modelUsage` of `claude-opus-5-5` in the `result` event of each run.
+  Each run had one advisor call.
+  The `thinkingTokens` of `opus` are 0 there, and `ModelUsage` of `advise` has no thinking count either, so thinking is inside the output tokens in both.
 
-| Arm | Passed | Faults in `FINDINGS.txt` (of 6) | Faults in the advice (of 6) | Cost for a call | Cost for 10 runs (session plus `opus`) |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| built-in | 0/5 | 4.8 | not readable | 0.197 (whole run) | 1.97 |
-| `advise`, `high` | 0/5 | 4.8 | 5.4 | 0.153 | 1.53 |
-| `advise`, `medium` | 0/5 | 5.0 | 5.0 | 0.121 | 1.21 |
-| `advise`, `low` | 0/5 | 5.0 | 5.2 | 0.095 | 0.95 |
-| `advise`, `medium`, `MAX_TOKENS` 1024 | 0/5 | 4.8 | 5.2 | 0.127 | 1.27 |
+| Arm | Faults in `FINDINGS.txt` (of 6) | Faults in the advice | Tokens in for a call | Tokens out for a call | Cost for a run (session plus `opus`) | Cost for 10 runs |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| built-in | 4.8 | not readable | 23283 | 5160 | 0.202 | 2.02 |
+| `advise`, `high` (the first default), short answer | 4.7 | 5.0 | 2011 | 2128 | 0.056 | 0.56 |
+| `advise`, `medium`, short answer | 4.8 | 5.2 | 2107 | 1607 | 0.046 | 0.46 |
+| `advise`, `low`, short answer (the default now) | 4.9 | 5.3 | 2022 | 1196 | 0.037 | 0.37 |
 
-- The cost for a call is the `opus` cost per call plus the session cost per run, as each run has one call.
-  The built-in cost is the session cost per run, and it includes the server-side advisor tokens.
-- A run has 6 faults, and each arm named 4 or 5 of them in every run, so no arm passed.
-  The runs differ by at most 1 fault, so the noise of the mean of 5 runs is about 0.2 faults.
-  The criterion is that the mean of an `advise` arm is at least the mean of the built-in advisor, and `low` has 5.0 against 4.8.
-- The tighter bound `MAX_TOKENS` 1024 changed nothing: the calls still gave 2100 to 3100 tokens out, so the cap does not bound the tokens that the thinking uses.
-  The bound stays 2048.
-- `effort` `low` uses about 1850 tokens out for a call, against 3260 at `high`, and the recall of the advice did not fall.
+- No arm passed a run, because each run missed one or two faults, so the comparison rests on the recall.
+  The runs differ by at most 1 fault, so the noise of a mean of 10 runs is about 0.1 faults, and the four means are inside that noise.
+- The built-in advisor sends the whole transcript with its own system prompt, about 23300 tokens, which is 11 times the context of `advise` (about 2000 tokens).
+  Its output is also 4 times longer.
+  No cache was read or written in the advisor call.
+- The levers, in the order tried:
+  - `MAX_TOKENS` (the `maxTokens` of `$.model.complete`): in a small trial at 1024 and at 700 the calls still gave more than the cap in output tokens (1670 on average at 700), because the cap bounds the text and not the thinking.
+    The saving at 700 was 10% at most, and a cap can cut a piece of advice, so the bound stays 2048.
+  - `effort`: from `high` to `low` the output fell from 2128 to 1196 tokens with no fall of the recall (in the first pass, with the long prompt, from 3266 to 1851).
+    `$.model.complete` has no switch to turn thinking off.
+  - A tighter `system.md` ("at most 10 short lines", with the function or file named for each point): at `low` the output fell from 1851 to 1196 tokens, and the recall held.
+  - A cache mark on the stable prefix: the prefix is about 100 tokens, below the minimum that the API caches, and the logs show 0 tokens written to the cache.
+    So it saves nothing now, and the mark stays because it costs nothing.
+  - A cheaper advisor model: not tried, because the cost of an `opus` call is already about 0.03 USD.
 - The folders are in `round6/` on the machine of the run.
 
 ## Goal Engine
@@ -305,7 +312,7 @@ All arms ran `advice-audit-web` (6 faults) with 5 runs, Haiku 5.5 as the working
 - The `advise` cases are at the ceiling, and the control passes them.
 - `goal-blind-qa` favors the engine by design, because the project rule forbids Claude to run the check.
 - The grader `advisor-called` counts calls, so it shows that the advisor ran, not that its advice was good.
-- The `advise-ours` cost of the `advice-audit-web` case comes from 2 runs, and the full cost of 10 runs is a projection (see "Cost of `advise`").
+- The cost of `advise-ours` on `advice-audit-web` at `effort` `high` in round 5 comes from 2 runs, and round 6 has 10 runs for each arm.
 - The arms differ in the call path of the advisor, so the turn counts can differ for that reason.
 
 ## Cost
@@ -315,7 +322,7 @@ All arms ran `advice-audit-web` (6 faults) with 5 runs, Haiku 5.5 as the working
 - Round 3: pilots about 1.7 USD, full runs 2.9 USD, and about 0.3 USD for the direct `opus` reviews and an estimate for the `opus` calls of `advise`.
 - Round 3 is about 4.9 USD, under its limit of 6 USD.
 - Round 5 (the measure of `advise`): about 1.5 USD, of which 1.42 USD is for the `opus` calls.
-- Round 6 (the effort of `advise`): about 3.5 USD for 25 runs, of which 2.4 USD is for the `opus` calls.
+- Round 6 (the quality and the levers of `advise`): about 5.6 USD for 80 runs, of which 2.0 USD is for the built-in advisor and 2.7 USD for the `opus` calls of `advise`.
 
 ## Results Folders
 

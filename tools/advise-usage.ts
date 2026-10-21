@@ -1,8 +1,13 @@
 // The token counts and the price of the `advise` calls of one run, from its debug log (`claude --debug-file`).
 // `advise` writes one line for each call with `$.ui.log`, and the debug log holds every `$.ui.log` line.
 
-/** The prices in USD for one million tokens of `claude-opus-5-5`, read as evidence from the bundle of Claude Code 2.1.305 and 2.1.306 (`kb` there). The page `Builtin-Comparisons` of the wiki cites them. */
-export const OPUS_PRICE = { input: 8, output: 40, read: 0.4, write: 10 };
+/**
+ * The prices in USD for one million tokens of `claude-opus-5-5`, read as evidence from the model catalog in the bundle of Claude Code 2.1.305 and 2.1.306.
+ * The catalog entry of the model (`VERTEX_REGION_CLAUDE_5_5_OPUS`) has the pricing `tier_4_20_cache_read_0_20`: input 4, output 20, cache write 5 (5 minutes), cache read 0.2.
+ * A run of the built-in advisor confirms it: `modelUsage` gave 22528 tokens in and 4309 tokens out for a `costUSD` of 0.176292, which is 4 and 20.
+ * The wiki page `Builtin-Comparisons` cites this.
+ */
+export const OPUS_PRICE = { input: 4, output: 20, read: 0.2, write: 5 };
 
 /** The token counts of the `advise` calls in a debug log, from the lines that `usageLine` of the slice writes, and their price. */
 export const adviseUsage = (log: string) => {
