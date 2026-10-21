@@ -85,6 +85,7 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 ### Fixed
 
+- A `/goal` condition such as ``cmd` exits 0` no longer makes a `judge` check that cannot pass, so the goal does not stop by `stall` when the command exits 0.
 - The `ground` slice no longer denies a number in the name of a standard (`ISO 8601`, `RFC 3339`), a number that the source writes with `_` (`1_000_000`), a binary size in bytes (`16 MiB` and `16,777,216`), a total of a table column or a difference of two cells of a row, or the word `npm` in a sentence that is no command.
   On the transcripts of 2026-10-21, 8 of 53 checked plan writes got a false deny, and 0 of 53 do now.
 

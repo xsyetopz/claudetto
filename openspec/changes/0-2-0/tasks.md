@@ -59,8 +59,8 @@ Ask the user before each run.
 - [ ] 5.1 Compare `advise` with the built-in advisor on the same tasks.
   Change the default of the `advisor` option only if `advise` is as good or better.
 - [ ] 5.2 Compare the goal engine with the built-in `/goal`.
-- [ ] 5.3 Run more cases for the lower cases of the eval gate of 0.2.0 (3 runs for each arm, and the floor is 10), and write the result to `src/wiki/claudetto/evidence/Evals-2.1.304.md`.
-- [ ] 5.4 Grade the 0.1.0 `styles` cases again, when results exist.
+- [x] 5.3 Run more cases for the lower cases of the eval gate of 0.2.0 (3 runs for each arm, and the floor is 10), and write the result to `src/wiki/claudetto/evidence/Evals-2.1.304.md`.
+- [x] 5.4 Grade the 0.1.0 `styles` cases again, when results exist.
   The published runs have no kept results for them.
   The older `styles` cases ran without the style active, because the eval child reads only user settings, see `Evals-Audit-Lines`.
 
