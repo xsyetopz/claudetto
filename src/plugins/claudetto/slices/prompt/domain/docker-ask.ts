@@ -10,6 +10,7 @@ const COMMANDS = [
   "docker container create",
   "docker compose run",
   "docker compose up",
+  "docker compose create",
 ];
 const FLAGS = ["-v*", "--volume*", "--mount*", "--privileged*"];
 

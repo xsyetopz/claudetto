@@ -1,0 +1,88 @@
+// The docker-run rule (task 3.3 of `post-0-2-0`): a `docker` command that runs or creates a container.
+// On Linux, setup puts `docker *` in `sandbox.excludedCommands` and `Bash(docker *)` in `permissions.allow`.
+// The `DOCKER_ASK` rules of the `prompt` slice match only a verb right after `docker`, so `docker -H x run -v /:/h` matches none.
+// The functions are pure, and `adapters/mod.ts` turns a verb into an ask.
+// The verb list copies the `COMMANDS` of `prompt/domain/docker-ask.ts`, because a slice does not import another slice.
+// A test pins the two lists equal.
+
+import { commands } from "../../../../../kernel/shell.ts";
+import { baseName, stripWrappers } from "../../../../../kernel/wrappers.ts";
+
+/** The verbs that run or create a container, as `docker` words. */
+export const DOCKER_VERBS = [
+  "run",
+  "create",
+  "container run",
+  "container create",
+  "compose run",
+  "compose up",
+  "compose create",
+] as const;
+
+/** The global options of `docker` that take a separate argument. */
+const DOCKER_VALUE_OPTS = new Set([
+  "-H",
+  "--host",
+  "-c",
+  "--context",
+  "--config",
+  "-l",
+  "--log-level",
+  "--tlscacert",
+  "--tlscert",
+  "--tlskey",
+]);
+
+/** The options of `docker compose` before the verb that take a separate argument. */
+const COMPOSE_VALUE_OPTS = new Set([
+  "-f",
+  "--file",
+  "-p",
+  "--project-name",
+  "--profile",
+  "--env-file",
+  "--project-directory",
+  "--workdir",
+  "--parallel",
+  "--progress",
+  "--ansi",
+]);
+
+/** The index of the first word from `i` that is not an option, with `valueOpts` taking one argument. */
+const skipOpts = (
+  argv: string[],
+  i: number,
+  valueOpts: Set<string>,
+): number => {
+  while (i < argv.length && (argv[i] as string).startsWith("-"))
+    i += valueOpts.has(argv[i] as string) ? 2 : 1;
+  return i;
+};
+
+/** The verb of a `docker` call (`run`, `container create`, `compose up`), or `null` for another command or verb. */
+const verbOf = (argv: string[]): string | null => {
+  const rest = stripWrappers(argv);
+  if (rest[0] === undefined || baseName(rest[0]) !== "docker") return null;
+  let i = skipOpts(rest, 1, DOCKER_VALUE_OPTS);
+  let verb = rest[i];
+  if (verb === "container" || verb === "compose") {
+    if (verb === "compose") i = skipOpts(rest, i + 1, COMPOSE_VALUE_OPTS) - 1;
+    verb = `${verb} ${rest[i + 1]}`;
+  }
+  return (DOCKER_VERBS as readonly (string | undefined)[]).includes(verb)
+    ? (verb as string)
+    : null;
+};
+
+/**
+ * The verb of the first `docker` call in `command` that runs or creates a container, or `null`.
+ * `commands` reads each simple command, also in a substitution, `bash -c`, `eval`, a group, and a branch of `if`.
+ * The call may have global options of `docker` before the verb, and options of `docker compose` before `run` or `up`.
+ */
+export const dockerRun = (command: unknown): string | null => {
+  for (const argv of commands(String(command ?? ""))) {
+    const verb = verbOf(argv);
+    if (verb) return verb;
+  }
+  return null;
+};

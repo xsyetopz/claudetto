@@ -82,7 +82,7 @@ The snippet never sets the entries of [Never-Set Settings](Off-Switches-Never-Se
 | `permissions` | `disableBypassPermissionsMode` set to `disable`, and the `deny`, `ask`, and `allow` lists | Sets the rules for each tool call. | Risky commands ask, and read-only commands run. |
 
 The `ask` list has 24 git rules that name the destructive flags, such as `git push* --force` and `git reset* --hard`.
-It also asks for `docker run`, `create`, `compose run`, and `compose up` with a mount or `--privileged`, for `rm` with a recursive flag, for `sudo`, for a package publish, for write commands of `gh`, and for SQL that drops data.
+It also asks for `docker run`, `create`, `compose run`, `compose up`, and `compose create` with a mount or `--privileged`, for `rm` with a recursive flag, for `sudo`, for a package publish, for write commands of `gh`, and for SQL that drops data.
 The `allow` list has `Glob`, `Grep`, and read-only or test commands of `git`, `gh`, and the common build tools.
 
 ## The Deny List

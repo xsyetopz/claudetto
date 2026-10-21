@@ -35,6 +35,9 @@ const project = (
   return seen;
 };
 
+const checkOf = ($: Engine) => (command: string) =>
+  $.tool.check({ tool: "Bash", input: { command } });
+
 const call = ($: Engine, command: string) =>
   $.tool.call({ tool: "Bash", command });
 
@@ -86,12 +89,22 @@ test("a check that throws denies a command that prints a file, and a command tha
 test("a `git push` with a delete refspec asks the person, and a push of a branch is not touched", async ($: Engine, on: On) => {
   project(on);
   on("tool.check", () => ({ decision: "allow" }));
-  const check = (command: string) =>
-    $.tool.check({ tool: "Bash", input: { command } });
+  const check = checkOf($);
   const asked = await check("git -C x push origin +:br");
   expect(asked.decision).toBe("ask");
   expect(asked.decider).toBe("person");
   expect(asked.reason).toContain("`br`");
   for (const command of ["git push origin main", "git push origin a:b"])
     expect((await check(command)).decision, command).toBe("allow");
+});
+
+test("a `docker` call that runs a container asks the person, and `docker ps` runs", async ($: Engine, on: On) => {
+  project(on);
+  on("tool.check", () => ({ decision: "allow" }));
+  const check = checkOf($);
+  const asked = await check("docker -H x run -v /:/h alpine");
+  expect(asked.decision).toBe("ask");
+  expect(asked.decider).toBe("person");
+  expect(asked.reason).toContain("`docker run`");
+  expect((await check("docker ps")).decision).toBe("allow");
 });

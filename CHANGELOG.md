@@ -46,6 +46,8 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 - On Linux, `claudetto-setup` adds `docker *` to `sandbox.excludedCommands` of the user settings, for all projects, and `Bash(docker *)` to `permissions.allow` of `.claude/settings.local.json` in a Docker project, because Claude Code ignores `sandbox.network.allowUnixSockets` there.
   The user settings hold the entry because Claude Code reads `excludedCommands` only from trusted settings when `allowUnsandboxedCommands` is `false`.
   The `Setup` wiki page gives the accepted risk of the open Docker socket on macOS and of `docker *` outside the sandbox on Linux.
+- `guard` asks the person before a `docker` command that runs or creates a container, also with global options before the verb (`docker -H x run`) and inside `bash -c` or `$(...)`, so that on Linux the call does not run outside the sandbox with no prompt.
+- The `permissions.ask` rules of the snippet also cover `docker compose create` with a mount or `--privileged`.
 
 ## [0.2.0] - 2026-10-21
 

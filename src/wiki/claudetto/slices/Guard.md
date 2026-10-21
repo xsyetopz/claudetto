@@ -17,7 +17,7 @@ Remove `print deny` when Claude Code gives the short stub for a `Bash` print too
 ## What the Hook Does
 
 The slice adds a `tool.call` hook and a `tool.check` hook on the tool `Bash`.
-The `tool.call` hook is the print deny, and the `tool.check` hook is the ask in the section `Delete Refspec of git push`.
+The `tool.call` hook is the print deny, and the `tool.check` hook is the ask in the sections `Delete Refspec of git push` and `Docker Run`.
 The hook runs in the phase `check`, after the `sembr` rewrite of the phase `rewrite`.
 So the hook checks the command that would run.
 
@@ -58,6 +58,25 @@ It also finds the form in `$(...)`, `bash -c`, `sh -c`, `eval`, a group, and a b
 The first plain word after `push` is the remote, and each later word that starts with `:` or `+:` is a delete refspec.
 The reason of the ask says that the push deletes the remote branch.
 The forms `git push origin main`, `git push origin HEAD:main`, and `git push origin a:b` run.
+
+## Docker Run
+
+On Linux, setup puts `docker *` in `sandbox.excludedCommands` and `Bash(docker *)` in `permissions.allow`.
+The `DOCKER_ASK` rules of the `prompt` slice match only a verb right after `docker`.
+So `docker -H x run -v /:/h alpine` matches no ask rule, and it runs outside the sandbox with no prompt.
+The same `tool.check` hook asks the person before a `docker` command that runs or creates a container.
+The ask has `decider: "person"`, like the ask of the delete refspec, and the hook keeps a deny of the engine.
+The verbs are `run`, `create`, `container run`, `container create`, `compose run`, `compose up`, and `compose create`.
+A test pins them equal to the verbs of the `DOCKER_ASK` rules.
+The hook skips the global options of `docker` before the verb: `-H`, `--host`, `-c`, `--context`, `--config`, `-l`, `--log-level`, `--tlscacert`, `--tlscert`, and `--tlskey` with a value, and flags such as `-D`, `--tls`, `--tlsverify`, and `--opt=value`.
+For `docker compose`, it also skips `-f`, `--file`, `-p`, `--project-name`, `--profile`, `--env-file`, `--project-directory`, `--workdir`, `--parallel`, `--progress`, and `--ansi` with a value.
+It finds the call by path (`/usr/bin/docker`), after a wrapper such as `sudo`, and in `$(...)`, `bash -c`, `eval`, a group, and a branch of `if`.
+The reason of the ask names the verb and says that the container can mount host paths.
+The calls `docker ps`, `docker logs run`, `docker build`, and `docker compose ps` run.
+`docker-compose` is not covered, because the `DOCKER_ASK` rules do not cover it.
+Other routes stay open: a variable that holds the verb, an alias, a script that calls `docker`, and on macOS `curl --unix-socket`.
+On Linux, the `docker` client runs outside the sandbox, so `docker cp`, `docker save -o`, and `docker export -o` can write a host path with no prompt.
+`docker service create --mount` and `docker stack deploy` stay open too, after `docker swarm init`.
 
 ## When the Command Runs
 

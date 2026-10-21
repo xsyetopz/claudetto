@@ -2,6 +2,12 @@
 /** From `src/plugins/claudetto/slices/guard/prompts/check-fail.md`. */
 export const CHECK_FAIL = `The \`guard\` check failed, so nothing has run.`;
 
+/** From `src/plugins/claudetto/slices/guard/prompts/docker-ask.md`. */
+export const DOCKER_ASK = (v: {
+  verb: string;
+}): string => `The command \`docker ${v.verb}\` starts a container that can mount host paths.
+On Linux, it runs outside the sandbox.`;
+
 /** From `src/plugins/claudetto/slices/guard/prompts/fail-deny.md`. */
 export const FAIL_DENY = (v: {
   kind: string;

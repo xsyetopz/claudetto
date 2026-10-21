@@ -40,6 +40,10 @@
   Check: `just test tests/claudetto/setup tests/claudetto/prompt`
 - [x] 3.2 Document for users, in `src/wiki/`, the accepted risk that with the Docker socket open a sandboxed process can skip the `permissions.ask` rules of `docker-ask.ts`.
   Check: `just generate && bun run lint:md`
+- [x] 3.3 Make `guard` ask the person (`decider: "person"`) through `tool.check` before a `docker` command that runs or creates a container, also with global options before the verb (`docker -H x run`) and inside wrappers.
+  The `DOCKER_ASK` rules of `docker-ask.ts` match only `docker run` and the other verbs at the start, and on Linux `Bash(docker *)` allows the rest outside the sandbox (the user, 2026-10-21: "Guard check, like refspec").
+  Update the accepted risk in `src/wiki/claudetto/slices/Setup.md`.
+  Check: `just test tests/claudetto/guard tests/claudetto/setup && just lab`
 
 ## 4. Guard
 

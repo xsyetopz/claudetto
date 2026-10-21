@@ -155,8 +155,11 @@ The daemon then has the rights of the daemon, not the limits of the sandbox.
 On Linux, the socket stays closed to sandboxed processes, so `curl --unix-socket` does not apply.
 The risk there is that `docker *` runs outside the sandbox.
 A call such as `docker -H x run -v /:/h` matches `Bash(docker *)`.
-It matches no `permissions.ask` rule, because those rules start with `docker run`, `docker create`, `docker container run`, `docker container create`, `docker compose run`, or `docker compose up`.
-So the call runs outside the sandbox with no prompt.
+It matches no `permissions.ask` rule, because those rules start with `docker run`, `docker create`, `docker container run`, `docker container create`, `docker compose run`, `docker compose up`, or `docker compose create`.
+The `guard` slice closes this part: it asks the person before a `docker` command that runs or creates a container, also with options before the verb.
+Some routes stay open, such as a variable that holds the verb or a script that calls `docker`.
+The `docker` client itself runs outside the sandbox on Linux, so `docker cp` and `docker save -o` can write a host path with no prompt.
+On macOS, `curl --unix-socket` to the open socket stays open too.
 This risk is accepted, because Docker does not work in the sandbox without the socket.
 Do not use the Docker step in a project in which you do not trust the commands that Claude runs.
 
