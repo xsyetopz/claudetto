@@ -33,7 +33,7 @@ After you approve, the skill runs it again with `--apply`.
 
 The preview prints one line for each changed key path, as `path: old -> new`.
 When nothing differs, it prints `Settings match the snippet.`
-With the option `advisor` set to `claudetto`, the merge also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`.
+With the option `advisor` set to `claudetto` (the default), the merge also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`.
 
 ## Status Lines
 

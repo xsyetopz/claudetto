@@ -45,8 +45,13 @@ const stub = (
   const seen = {
     requests: [] as Record<string, unknown>[],
     tools: [] as string[],
+    env: [] as string[],
   };
   on("env.get", () => ({ value: undefined }));
+  on("env.set", (_$, e) => {
+    seen.env.push(`${e.name}=${e.value}`);
+    return { value: {} };
+  });
   on("session.start", (_$, e) => ({ cwd: e.cwd }));
   on("session.messages", () => ({ value: history }));
   // A new id for each test, because the count of calls of a session is kept in the module.
@@ -81,6 +86,7 @@ test(
     const seen = stub(on, { isAnswered: true, text: "x", usage: USAGE });
     await start($);
     expect(seen.tools).toEqual([]);
+    expect(seen.env).toEqual([]);
   },
 );
 
@@ -91,6 +97,27 @@ test(
     const seen = stub(on, { isAnswered: true, text: "x", usage: USAGE });
     await start($);
     expect(seen.tools).toEqual(["advise"]);
+  },
+);
+
+test(
+  "with the option `claudetto`, session start turns off the built-in advisor",
+  ON,
+  async ($: Engine, on: On) => {
+    const seen = stub(on, { isAnswered: true, text: "x", usage: USAGE });
+    await start($);
+    expect(seen.env).toEqual(["CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1"]);
+  },
+);
+
+test(
+  "with no option, the default is `claudetto`, so the tool is registered",
+  { options: {} },
+  async ($: Engine, on: On) => {
+    const seen = stub(on, { isAnswered: true, text: "x", usage: USAGE });
+    await start($);
+    expect(seen.tools).toEqual(["advise"]);
+    expect(seen.env).toEqual(["CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1"]);
   },
 );
 

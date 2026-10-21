@@ -1,5 +1,6 @@
-// The mod handlers of the `advise` slice. The `advisor` option is `builtin` by default, and then the slice registers no tool.
-// `session.start` registers the tool for `claudetto`, and `tool.call` answers it with one `$.model.complete` call.
+// The mod handlers of the `advise` slice. The `advisor` option is `claudetto` by default, and then `session.start` registers the tool and turns off the built-in advisor.
+// With `builtin`, the slice registers no tool.
+// `tool.call` answers it with one `$.model.complete` call.
 // `claude plugin validate` follows `$` only into a function of one file, so each function that touches `$` is here.
 
 import type { PluginOptions } from "claude-code";
@@ -41,6 +42,8 @@ export const keepOptions = (values: PluginOptions): void => {
 
 export const onSessionStart: Handler<"session.start"> = async ($, e, next) => {
   if (kept.options.advisor === "claudetto") {
+    // The built-in advisor is a server tool that no hook can remove, so the env var turns it off before the first request.
+    await $.env.set("CLAUDE_CODE_DISABLE_ADVISOR_TOOL", "1");
     await $.tool.register({
       name: TOOL,
       description: TOOL_DESCRIPTION,

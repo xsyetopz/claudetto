@@ -21,7 +21,7 @@ The debug log of Claude Code (`--debug-file <path>`) shows what a hook or a plug
 | A Markdown file has one sentence on each line | The `sembr` slice rewrites the file. This is the intended result. | [Sembr](Sembr) |
 | The compaction is not a handoff | The option `compaction` is `built-in`. Set it to `handoff`. | [Handoff](Handoff) |
 | `ProposeGoal` is denied | The `goal` slice turns it off. Use `/goal` with a condition or a plan file. | [Goal](Goal) |
-| The tool `advise` is missing | The option `advisor` is `builtin`, so the slice registers no tool. Set it to `claudetto`, and run the setup again. | [Advise](Advise) |
+| The tool `advise` is missing | The option `advisor` is `builtin`, so the slice registers no tool. Remove it or set it to `claudetto`. | [Advise](Advise) |
 
 ## The Jev Pick
 

@@ -12,7 +12,7 @@
 // It also offers `docker *` in `sandbox.excludedCommands` of the user settings, in each scope, because Claude Code reads `excludedCommands` only from trusted settings.
 // With `--apply`, in a project with `.git/`, it also appends the local files of claudetto to `.gitignore`.
 // With `--advisor claudetto`, the snippet also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor only.
-// With no `--advisor`, the CLI reads the `advisor` option from `pluginConfigs` in the user settings, because a CLI run by the user gets no `CLAUDE_PLUGIN_OPTION_*` env var.
+// With no `--advisor`, the default is `claudetto`, and the CLI reads the `advisor` option from `pluginConfigs` in the user settings, because a CLI run by the user gets no `CLAUDE_PLUGIN_OPTION_*` env var.
 // The skill passes no `--advisor`, so that the model cannot choose the value.
 
 import fs from "node:fs";
@@ -95,7 +95,7 @@ const readReported = async (
 
 /**
  * The `advisor` option of the user: `claudetto` or `builtin`.
- * It comes from the env var `CLAUDE_PLUGIN_OPTION_ADVISOR`, then from `pluginConfigs` of the user settings, and it is `builtin` when the option is not set or the file does not parse.
+ * It comes from the env var `CLAUDE_PLUGIN_OPTION_ADVISOR`, then from `pluginConfigs` of the user settings, and it is `claudetto` when the option is not set or the file does not parse.
  */
 const advisorOption = async (
   configDir: string,
@@ -104,9 +104,9 @@ const advisorOption = async (
   const settings = await readSettings(
     path.join(configDir, SETTINGS_FILE),
   ).catch(() => ({}) as Json);
-  return pluginOption("claudetto", "advisor", env, settings) === "claudetto"
-    ? "claudetto"
-    : "builtin";
+  return pluginOption("claudetto", "advisor", env, settings) === "builtin"
+    ? "builtin"
+    : "claudetto";
 };
 
 /** Appends the local files of claudetto to the `.gitignore` of the project, when the project has `.git/`. */

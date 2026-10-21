@@ -37,7 +37,7 @@ claudetto-setup --addons
 | Option | Meaning |
 | --- | --- |
 | `--scope` | The settings file to change. The default is `user`. |
-| `--advisor` | Overrides the `advisor` option of the `advise` slice. The default is the option in `pluginConfigs`, or `builtin`. |
+| `--advisor` | Overrides the `advisor` option of the `advise` slice. The default is the option in `pluginConfigs`, or `claudetto`. |
 | `--apply` | Write the changes. Without it, the command only prints them. |
 | `--addons` | Print the optional step of each enabled add-on. It writes nothing. |
 | (an unknown option) | Print the usage to `stderr` and exit with code 2. |
@@ -92,7 +92,7 @@ The `setup` slice adds these keys:
 | `sandbox.network.allowLocalBinding` | `true` |
 | `sandbox.filesystem.allowWrite` | The package caches `~/.bun/install/cache`, `~/.npm`, `~/.cache/pip`, `~/.cargo/registry`, `~/go/pkg/mod` |
 
-With `--advisor claudetto`, the snippet also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`.
+With `--advisor claudetto` (the default), the snippet also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`.
 Claude then sees one advisor.
 Without `--advisor`, the command reads the `advisor` option from `pluginConfigs` in the user settings, because a CLI that you run gets no `CLAUDE_PLUGIN_OPTION_*` env var.
 The skill passes no `--advisor`, so that the model cannot choose the value.

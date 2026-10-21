@@ -70,7 +70,7 @@ These `userConfig` options change how the core plugin works:
 
 | Option | Values | Default |
 | --- | --- | --- |
-| `advisor` | `builtin`, `claudetto` | `builtin` |
+| `advisor` | `builtin`, `claudetto` | `claudetto` |
 | `advisorModel` | an alias or a model ID | `opus` |
 | `advisorEffort` | `low`, `medium`, `high`, `xhigh`, `max` | `high` |
 | `decide` | `off`, `jev` | `jev` |

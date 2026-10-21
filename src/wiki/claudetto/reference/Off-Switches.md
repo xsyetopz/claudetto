@@ -23,14 +23,14 @@ The facts are for Claude Code `2.1.305`, and the key names match `schemas/claude
 | --- | --- | --- | --- |
 | `compaction` | `handoff` (default), `built-in` | `built-in` turns off the handoff and keeps the compaction of Claude Code. | `slices/handoff/slice.ts` |
 | `decide` | `off`, `jev` (default) | `off` sends no question to Jev. `jev` needs `TYPESAFE_API_KEY`, and then Jev answers each `AskUserQuestion` call that it is sure about. | `slices/decide/slice.ts` |
-| `advisor` | `builtin` (default), `claudetto` | `builtin` keeps the advisor of Claude Code and registers no `advise` tool. | `slices/advise/slice.ts` |
+| `advisor` | `claudetto` (default), `builtin` | `builtin` keeps the advisor of Claude Code and registers no `advise` tool. | `slices/advise/slice.ts` |
 | `advisorModel` | An alias or a model ID, default `opus` | Sets the model of the tool `advise`. It is not an off switch. | `slices/advise/slice.ts` |
 | `advisorEffort` | An effort level, default `high` | Sets the effort of the tool `advise`. It is not an off switch. | `slices/advise/slice.ts` |
 | `backend` of `claudetto-browser` | `agent-browser` (default), `cloakbrowser` | `agent-browser` keeps the built-in `WebSearch`. | `claudetto-browser/slices/search/slice.ts` |
 
 The `prompt` slice also reads the env var `DISABLE_COMPACT`.
 When it is on, the `prompt` slice gives the context section the text for no compaction.
-With `advisor` set to `claudetto`, run `claudetto-setup --advisor claudetto` to set `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`.
+With `advisor` set to `claudetto` (the default), the `advise` slice sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` at `session.start`, and `claudetto-setup` sets it in the settings.
 
 ## Env Entries of the Snippet
 

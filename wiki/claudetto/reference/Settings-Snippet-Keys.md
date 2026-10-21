@@ -43,8 +43,8 @@ A test checks the keys against `schemas/claude-code-settings.json`, so a key tha
 | `DISABLE_INSTALL_GITHUB_APP_COMMAND` | `1` | Removes the `/install-github-app` command. | No `/install-github-app` command. |
 | `DISABLE_UPGRADE_COMMAND` | `1` | Removes the `/upgrade` command. | No `/upgrade` command. |
 
-`claudetto-setup --advisor claudetto` also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor.
-The value is not in the snippet block, because it depends on the `advisor` option.
+`claudetto-setup` also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor.
+The value is not in the snippet block, because it depends on the `advisor` option, which is `claudetto` by default.
 The snippet never sets the entries of [Never-Set Settings](Off-Switches-Never-Set).
 
 ## Settings Keys

@@ -1,4 +1,4 @@
-// The `--advisor` argument of `claudetto-setup`: only the value `claudetto` turns off the built-in advisor.
+// The `--advisor` argument of `claudetto-setup`: the default `claudetto` turns off the built-in advisor, and `builtin` keeps it.
 
 import { expect, test } from "bun:test";
 import { mkdtemp } from "node:fs/promises";
@@ -28,11 +28,14 @@ test("with `--advisor claudetto`, the snippet sets `CLAUDE_CODE_DISABLE_ADVISOR_
   expect(env.CLAUDE_CODE_DISABLE_CRON).toBe("1");
 });
 
-test("with `--advisor builtin` or no argument, the snippet does not set `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`", async () => {
-  for (const extra of [["--advisor", "builtin"], []])
-    expect(
-      (await run(extra)).env.CLAUDE_CODE_DISABLE_ADVISOR_TOOL,
-    ).toBeUndefined();
+test("with no argument, the snippet sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` to `1`", async () => {
+  expect((await run([])).env.CLAUDE_CODE_DISABLE_ADVISOR_TOOL).toBe("1");
+});
+
+test("with `--advisor builtin`, the snippet does not set `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`", async () => {
+  expect(
+    (await run(["--advisor", "builtin"])).env.CLAUDE_CODE_DISABLE_ADVISOR_TOOL,
+  ).toBeUndefined();
 });
 
 test("an unknown `--advisor` value is a usage error", async () => {
@@ -57,15 +60,15 @@ test("with no argument, the `advisor` option in `pluginConfigs` of the user sett
   }
 });
 
-test("an option of another plugin or an unknown value gives the default `builtin`", async () => {
+test("an option of another plugin or an unknown value gives the default `claudetto`", async () => {
   for (const user of [
-    option("other@x", "claudetto"),
+    option("other@x", "builtin"),
     option("claudetto@inline", "x"),
     { pluginConfigs: { "claudetto@inline": null } },
   ])
-    expect(
-      (await run([], user)).env.CLAUDE_CODE_DISABLE_ADVISOR_TOOL,
-    ).toBeUndefined();
+    expect((await run([], user)).env.CLAUDE_CODE_DISABLE_ADVISOR_TOOL).toBe(
+      "1",
+    );
 });
 
 test("`--advisor` wins over the option", async () => {

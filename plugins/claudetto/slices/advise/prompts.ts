@@ -31,7 +31,7 @@ export const ERROR_LIMIT = (v: { scope: string }): string =>
   `The advisor has no call left in this ${v.scope}. Go on with the task, or ask the user.`;
 
 /** From `src/plugins/claudetto/slices/advise/prompts/option-advisor.md`. */
-export const OPTION_ADVISOR = `Use \`builtin\` for the advisor of Claude Code, or \`claudetto\` for the tool \`advise\` (the model and the context are yours). With \`claudetto\`, set \`CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1\` so that Claude sees one advisor.`;
+export const OPTION_ADVISOR = `Use \`claudetto\` (the default) for the tool \`advise\`, with a model, an effort, and a context that you control, and the slice turns off the advisor of Claude Code for the session. Use \`builtin\` for the advisor of Claude Code.`;
 
 /** From `src/plugins/claudetto/slices/advise/prompts/option-model.md`. */
 export const OPTION_MODEL = `The model of the tool \`advise\`, an alias such as \`opus\` or a model ID.`;

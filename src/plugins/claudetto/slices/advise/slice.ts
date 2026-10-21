@@ -1,6 +1,7 @@
 // The manifest of the slice `advise`: the tool `advise`, an advisor that the user controls, in place of the built-in advisor.
-// The `advisor` option is `builtin` by default, and then the slice registers no tool.
-// With `claudetto`, the tool asks the model of `advisorModel` with the context of `advise.ts`.
+// The `advisor` option is `claudetto` by default, and then the slice registers the tool and turns off the built-in advisor.
+// With `builtin`, the slice registers no tool.
+// The tool asks the model of `advisorModel` with the context of `advise.ts`.
 
 import type { Slice } from "../../../../kernel/slice.ts";
 import { keepOptions, onAdvise, onSessionStart } from "./adapters/mod.ts";
@@ -62,7 +63,7 @@ export const slice = {
       type: "string",
       title: "Advisor",
       description: OPTION_ADVISOR,
-      default: "builtin",
+      default: "claudetto",
       options: [...ADVISORS],
     },
     advisorModel: {

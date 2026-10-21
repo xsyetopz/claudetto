@@ -10,8 +10,9 @@ Claude Code has a built-in advisor.
 This slice offers the tool `advise` in its place.
 The tool sends one question to the model that you set, and Claude gets the advice back.
 
-The slice is off by default.
-Then the built-in advisor stays, and the slice registers no tool.
+The slice is on by default.
+It registers the tool `advise` and turns off the built-in advisor for the session.
+Set `advisor` to `builtin` to keep the built-in advisor, and then the slice registers no tool.
 
 ## How to Use It
 
@@ -19,18 +20,19 @@ Set the options of the plugin:
 
 | Key | Default | Meaning |
 | --- | --- | --- |
-| `advisor` | `builtin` | `builtin` keeps the advisor of Claude Code. `claudetto` registers the tool `advise`. |
+| `advisor` | `claudetto` | `claudetto` registers the tool `advise` and turns off the advisor of Claude Code. `builtin` keeps the advisor of Claude Code. |
 | `advisorModel` | `opus` | The model of the tool: an alias such as `opus`, or a model ID. |
 | `advisorEffort` | `high` | The effort of the call: `low`, `medium`, `high`, `xhigh`, or `max`. |
 
 An unknown value gives the default.
-With `claudetto`, set `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor.
-The `setup` slice sets this env var.
+With `claudetto`, the slice sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` at `session.start` with `$.env.set`, so that Claude sees one advisor.
+The built-in advisor is a server tool, and no hook can remove it, so the env var is the way.
+The `setup` slice also sets this env var in the settings.
 
 ## How to Turn It Off
 
 Set `advisor` to `builtin`.
-The slice then costs nothing.
+The slice then registers no tool and costs nothing.
 With `claudetto`, each call is one model request.
 
 ## The Tool
@@ -57,6 +59,9 @@ It carries a cache mark, because it stays the same between calls.
 The result gives the advice with the model name.
 The count of tokens in and out goes to the user with `$.ui.log`, and the model does not read it.
 The cost of these calls is not in the cost of the session, because Claude Code gives a plugin no way to add a cost.
+The session cost leaves out these calls, because `$.model.complete` reports tokens and the mod API has no way to add a cost to the session.
+The token log is the only record, and `claudetto` shows no estimated cost, because it has no documented price source.
+On the 5.1 eval, an estimated `opus` cost for 10 runs was about 0.40 USD, against 1.18 USD for the built-in advisor.
 If the model gives no answer, the result names the cause: an API error, an empty reply, or a call that ended too soon.
 An empty question gives an error result.
 
@@ -64,7 +69,7 @@ An empty question gives an error result.
 
 | Hook | Filter | What it does |
 | --- | --- | --- |
-| `session.start` | Each start | With `advisor` set to `claudetto`, registers the tool `advise`. The tool is not deferred. |
+| `session.start` | Each start | With `advisor` set to `claudetto`, registers the tool `advise` (not deferred) and sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`. |
 | `tool.call` | `mcp__claudetto__advise` | Answers a call with one model request. |
 
 ## Bounds

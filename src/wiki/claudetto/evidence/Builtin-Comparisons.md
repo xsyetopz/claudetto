@@ -13,9 +13,12 @@ The first round found that its cases were too easy, and the second round tried t
 - On the easy tasks all arms pass, and on the hard tasks all arms fail.
   The advisor was called in every run of the advisor arms (see "Round 3").
   So on Haiku 5.5, neither advisor changes the outcome.
-- `advise` costs about 1/20 of the built-in advisor: 0.055 USD against 1.18 USD for 10 runs of `advice-audit`.
+- `advise` costs about 1/20 of the built-in advisor on the reported cost: 0.055 USD against 1.18 USD for 10 runs of `advice-audit`.
   The session cost does not count the `opus` calls of `advise` (see "Cost of `advise`").
-- The default of `advisor` stays `builtin`: parity, the risk of two advisors, and a cost that the session hides.
+  With an estimated `opus` cost added, `advise` costs about 0.40 USD against 1.18 USD for 10 runs, which is about 1/3.
+- Decision (the user, 2026-10-21): the default of `advisor` is now `claudetto`, because it gives the same results for about 1/3 of the cost.
+  The slice turns off the built-in advisor with `$.env.set` at `session.start`, so that Claude never sees two advisors.
+  `$.model.complete` reports tokens only, and the mod API has no way to add a cost to the session or a price source, so the cost of the `opus` calls stays out of the session cost.
 - Goal engine against the built-in `/goal`: parity on `goal-two-checks` and `goal-first-violation` (10 of 10 each, again after the fix).
   `goal-blind-qa` favours the engine by design, because the built-in `/goal` cannot run a check.
   The engine passed 10 of 10 and the built-in `/goal` passed 0 of 10.

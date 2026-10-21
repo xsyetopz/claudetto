@@ -45,6 +45,10 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 ### Changed
 
+- The default of the `advisor` option is now `claudetto`, so the tool `advise` is on, because it gave the same results as the built-in advisor for about 1/3 of the cost in the 5.1 eval.
+  The slice sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` at `session.start`, so that Claude sees one advisor, and `claudetto-setup` sets it too.
+  The session cost still leaves out the `opus` calls of `advise`.
+  Set `advisor` to `builtin` to keep the built-in advisor.
 - The skill `dry` runs `jscpd-config --run`, which sets `BUN_TMPDIR` from `TMPDIR` itself, so the scan needs no env prefix and no prompt, and the ask rule for a git delete refspec is `Bash(git push* :* *)`, because Claude Code read `Bash(git push* :*)` as a literal prefix that matched nothing.
 - The settings snippet sets `sandbox.allowUnsandboxedCommands` to `false`, so a command that fails in the sandbox is not run again outside it with no prompt.
 - `claudetto` now targets Claude Code 2.1.305 (`MIN_CLAUDE_CODE_VERSION`, the CI, the issue templates, and the schemas in `schemas/`).
