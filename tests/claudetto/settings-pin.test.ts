@@ -75,25 +75,3 @@ test("a never-set entry with a banned value is flagged only for that value", () 
     neverSetViolations({ env: { CLAUDE_CODE_ENABLE_TASKS: "1" } }),
   ).toStrictEqual([]);
 });
-
-test("the settings snippet asks before each flag spelling of a recursive `rm`", async () => {
-  const asked = (await jsonBlocks(SNIPPET)).flatMap(
-    (b) => b.permissions?.ask ?? [],
-  );
-  for (const rule of [
-    "Bash(rm -r*)",
-    "Bash(rm -R*)",
-    "Bash(rm -fr*)",
-    "Bash(rm -fR*)",
-    "Bash(rm -dr*)",
-    "Bash(rm -Pfr*)",
-    "Bash(rm -Ir*)",
-    "Bash(rm -xr*)",
-    "Bash(rm -fvir*)",
-    "Bash(rm * -r*)",
-    "Bash(rm * -R*)",
-    "Bash(rm --recursive*)",
-    "Bash(rm * --recursive*)",
-  ])
-    expect(asked.includes(rule), rule).toBeTruthy();
-});

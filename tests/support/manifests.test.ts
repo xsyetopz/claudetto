@@ -17,11 +17,6 @@ type Manifest = {
 /** The entries of the marketplace that the tests read. */
 type Marketplace = { plugins: { name: string; description?: string }[] };
 
-/** The `backend` option of the `claudetto-browser` manifest. */
-type BrowserManifest = {
-  userConfig: { backend: { options: string[] } };
-};
-
 const readJson = async <T>(file: string): Promise<T> =>
   (await Bun.file(file).json()) as T;
 const marketplace = await readJson<Marketplace>(
@@ -61,13 +56,3 @@ for (const name of NAMES) {
     );
   });
 }
-
-test("`claudetto-browser` lists the allowed values of `backend`", async () => {
-  const manifest = await readJson<BrowserManifest>(
-    path.join(PLUGINS, "claudetto-browser", ".claude-plugin", "plugin.json"),
-  );
-  expect(manifest.userConfig.backend.options).toStrictEqual([
-    "agent-browser",
-    "cloakbrowser",
-  ]);
-});

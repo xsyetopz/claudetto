@@ -43,7 +43,7 @@ test("a case with a file regex or a tool call passes", () => {
   ).toEqual([]);
 });
 
-test("the cases of `src/` each check a file or a tool call", async () => {
+test("the cases of `plugins/` each check a file or a tool call", async () => {
   expect(await replyOnlyCasesIn(join(import.meta.dir, "../.."))).toEqual([]);
 });
 
@@ -104,7 +104,7 @@ const badRun = {
   files: {},
 };
 const doc = (o: Record<string, unknown> = {}) => ({
-  file: "src/plugins/p/slices/s/evals/a/case.yaml",
+  file: "plugins/p/evals/a/case.yaml",
   name: "a",
   tags: GOOD_TAGS,
   graders: [failing],
@@ -164,7 +164,7 @@ test("a bad run with no token count is a fault", () => {
 test("the implementer cases need both splits", () => {
   const impl = (name: string, split?: string) =>
     doc({
-      file: `src/plugins/p/evals/${name}/case.yaml`,
+      file: `plugins/p/evals/${name}/case.yaml`,
       name,
       tags: split ? [...GOOD_TAGS, split] : GOOD_TAGS,
     });
@@ -177,7 +177,7 @@ test("the implementer cases need both splits", () => {
   ).toHaveLength(1);
   expect(
     caseFaults([impl("a"), impl("b", "split:held-out")], runs),
-  ).toHaveLength(2);
+  ).toHaveLength(1);
 });
 
 test("a bad run with no events, no `fails`, or a `fails` that is not a failing check is a fault", () => {
@@ -214,15 +214,14 @@ test("a run over its tool-call or token tags is a fault", () => {
   expect(overBudget([], run)).toEqual([]);
 });
 
-test("a case of the `prompt` slice needs exactly one `set:` tag, and `blind` and `control` cases need a reference run", () => {
+test("a `prompt` case has exactly one valid `set:` tag, and `blind` and `control` cases need a reference run", () => {
   const prompt = (tags: string[]) =>
-    doc({ file: "src/plugins/p/slices/prompt/evals/a/case.yaml", tags });
+    doc({ file: "plugins/p/evals/a/case.yaml", tags });
   const faults = (tags: string[], refs = {}) =>
     caseFaults([prompt(tags)], { a: badRun }, refs);
   const ref = { events: badRun.events, files: {} };
   expect(faults([...GOOD_TAGS, "set:baseline"])).toEqual([]);
   expect(faults([...GOOD_TAGS, "set:rule-aware"])).toEqual([]);
-  expect(faults(GOOD_TAGS)).toHaveLength(1);
   expect(faults([...GOOD_TAGS, "set:other"])).toHaveLength(1);
   expect(faults([...GOOD_TAGS, "set:baseline", "set:rule-aware"])).toHaveLength(
     1,

@@ -11,7 +11,7 @@ test("the tuning cases leave out the held-out cases", async () => {
   const root = mkdtempSync(join(tmpdir(), "tune-"));
   const put = (name: string, tags: string[]) =>
     Bun.write(
-      join(root, `src/plugins/claudetto/evals/${name}/case.yaml`),
+      join(root, `plugins/claudetto/evals/${name}/case.yaml`),
       `name: ${name}\ntags: [${tags.join(", ")}]\n`,
     );
   await put("a", ["split:dev"]);

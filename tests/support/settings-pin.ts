@@ -123,3 +123,23 @@ export const problems = (settings: Settings): string[] => [
   ...validate(settings, SCHEMA),
   ...neverSetViolations(settings).map((n) => `never set: ${n}`),
 ];
+
+/** Each name that `snippet` writes, with the settings that set only it: an env name, `permissions.<key>`, or a top-level key other than `$schema`. */
+export const snippetLevers = (snippet: {
+  [key: string]: unknown;
+  env?: object;
+  permissions?: object;
+}): Record<string, Settings> => {
+  const { $schema: _schema, env = {}, permissions = {}, ...keys } = snippet;
+  return Object.fromEntries([
+    ...Object.entries(keys).map(([key, value]) => [key, { [key]: value }]),
+    ...Object.entries(env).map(([name, value]) => [
+      name,
+      { env: { [name]: value } },
+    ]),
+    ...Object.entries(permissions).map(([key, value]) => [
+      `permissions.${key}`,
+      { permissions: { [key]: value } },
+    ]),
+  ]);
+};

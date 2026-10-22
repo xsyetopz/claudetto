@@ -8,7 +8,7 @@ import { parse } from "yaml";
 /** The case names under `root` that match `glob`, without the cases tagged `split:held-out`. */
 export const tuningCasesIn = async (
   root: string,
-  glob = "src/plugins/claudetto/**/evals/*/case.yaml",
+  glob = "plugins/claudetto/evals/*/case.yaml",
 ): Promise<string[]> => {
   const names: string[] = [];
   for await (const f of new Bun.Glob(glob).scan(root)) {

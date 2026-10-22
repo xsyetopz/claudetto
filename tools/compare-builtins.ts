@@ -1,6 +1,6 @@
 #!/usr/bin/env -S bun --no-env-file
 // Runs one eval case on two arms of a comparison with a built-in feature of Claude Code (tasks 5.1 and 5.2 of `0-2-0`).
-// `claude plugin eval` cannot do it, because the eval child takes no `--advisor` flag and no `CLAUDE_PLUGIN_OPTION_*` env var.
+// `claude plugin eval` cannot do it, because the eval child takes no `CLAUDE_PLUGIN_OPTION_*` env var.
 // So this script runs the case with `claude -p` in the sandbox of `claudetto-sandbox`, with the prompt and the graders of the `case.yaml`.
 //
 //   bun tools/compare-builtins.ts CASE_DIR ARM [--runs N] [-j N] [--model M] [--max-cost-usd USD] [--out DIR]
@@ -10,7 +10,6 @@
 // The cases are in `tests/compare/`, so a plain eval run never picks them up.
 // A run builds the fixture with the `scaffold_script` of the case, writes the settings of the arm, and runs `claude -p`.
 // The graders are the `regex` (a file, or the reply) and the `tool_used` graders of the case.
-// A `tool_used` grader with the tool `advisor` counts the advisor of the arm.
 // The file `final.sh` of the case, if there is one, runs in the workspace after the run, and it counts as one more grader.
 // A run passes when all graders pass.
 // The script stops to launch runs when the cost of the finished runs reaches `--max-cost-usd`.
@@ -18,7 +17,6 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { advicePoints, adviseUsage, findingsPoints } from "./advise-usage.ts";
 
 type Arm = {
   /** Plugin options, written to `pluginConfigs` of the sandbox settings. */
@@ -29,66 +27,9 @@ type Arm = {
   flags: string[];
   /** Tools to allow, besides the tools of the case. */
   allow: string[];
-  /** The name of the tool that a grader with the tool `advisor` counts. */
-  advisor?: string;
 };
 
 const ARMS: Record<string, Arm> = {
-  "advise-ours": {
-    options: { advisor: "claudetto", advisorModel: "opus" },
-    env: { CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1" },
-    flags: [],
-    allow: ["mcp__claudetto__advise"],
-    advisor: "mcp__claudetto__advise",
-  },
-  // The effort of the advice, for the comparison of the cost and the quality of `advise`.
-  "advise-ours-high": {
-    options: {
-      advisor: "claudetto",
-      advisorModel: "opus",
-      advisorEffort: "high",
-    },
-    env: { CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1" },
-    flags: [],
-    allow: ["mcp__claudetto__advise"],
-    advisor: "mcp__claudetto__advise",
-  },
-  "advise-ours-medium": {
-    options: {
-      advisor: "claudetto",
-      advisorModel: "opus",
-      advisorEffort: "medium",
-    },
-    env: { CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1" },
-    flags: [],
-    allow: ["mcp__claudetto__advise"],
-    advisor: "mcp__claudetto__advise",
-  },
-  "advise-ours-low": {
-    options: {
-      advisor: "claudetto",
-      advisorModel: "opus",
-      advisorEffort: "low",
-    },
-    env: { CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1" },
-    flags: [],
-    allow: ["mcp__claudetto__advise"],
-    advisor: "mcp__claudetto__advise",
-  },
-  "advise-builtin": {
-    options: { advisor: "builtin" },
-    env: {},
-    flags: ["--advisor", "opus"],
-    allow: [],
-    advisor: "advisor",
-  },
-  // The control of the advisor cases: no advisor at all, so that a grader `advisor-called` is left out.
-  "advise-none": {
-    options: { advisor: "builtin" },
-    env: { CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1" },
-    flags: [],
-    allow: [],
-  },
   // The arms of the goal comparison send `/goal` as the prompt.
   // The first is the plugin with the goal engine.
   // The second is a copy of the plugin with the hooks of the `goal` slice removed, so the built-in `/goal` runs and the other slices stay.
@@ -107,22 +48,10 @@ type Grader = {
   target?: { source: string; path?: string };
 };
 
-/** The `modelUsage` of a model in the result event. */
-type ModelUse = {
-  inputTokens: number;
-  outputTokens: number;
-  cacheReadInputTokens: number;
-  cacheCreationInputTokens: number;
-  costUSD: number;
-};
-
 type Block = {
   type: string;
   name?: string;
   input?: unknown;
-  id?: string;
-  tool_use_id?: string;
-  content?: unknown;
 };
 
 const REPO = path.resolve(import.meta.dirname, "..");
@@ -151,7 +80,7 @@ const out = path.resolve(
 );
 /** Flags for `claude` from `--claude-flags "..."`, such as `--effort low`, the same for each arm. */
 const extra = flag("--claude-flags", "").split(" ").filter(Boolean);
-const BIN = path.join(REPO, "plugins/claudetto-lab/bin/claudetto-sandbox");
+const BIN = path.join(REPO, "tools/sandbox/main.ts");
 
 /** The plugin folder of the arm. The arm `goal-builtin` gets a copy with the hooks of the `goal` slice removed. */
 const pluginDir = async (): Promise<string> => {
@@ -199,11 +128,9 @@ const grade = async (
     return new RegExp(g.pattern ?? "").test(text);
   }
   if (g.type === "tool_used") {
-    const wanted = g.tool === "advisor" ? arm.advisor : g.tool;
-    if (!wanted) return true;
     const match = calls.filter(
       (c) =>
-        c.name === wanted &&
+        c.name === g.tool &&
         (!g.input_match ||
           new RegExp(g.input_match).test(JSON.stringify(c.input ?? {}))),
     ).length;
@@ -215,22 +142,86 @@ const grade = async (
 type Result = {
   run: number;
   cost: number;
-  advise?: ReturnType<typeof adviseUsage> | undefined;
-  opus: {
-    input: number;
-    output: number;
-    read: number;
-    write: number;
-    cost: number;
-  };
-  /** The faults of the web case that `FINDINGS.txt` names, and (for the arms with `advise`) that the advice names. */
-  findings: string[];
-  advice: string[];
   turns: number;
-  advisorCalls: number;
   graders: Record<string, boolean>;
   passed: boolean;
   error?: string;
+};
+
+const scaffoldProject = (project: string): void => {
+  const scaffold = spec.context?.scaffold_script;
+  if (!scaffold) return;
+  const r = Bun.spawnSync(["bash", path.resolve(caseDir, scaffold)], {
+    cwd: project,
+  });
+  if (r.exitCode !== 0) throw new Error(`scaffold failed: ${r.stderr}`);
+};
+
+const claudeArgs = (root: string): string[] => {
+  const only = flag("--tools", "");
+  const tools = [
+    ...(only ? only.split(",") : (spec.execution.allowed_tools ?? [])),
+    ...arm.allow,
+  ];
+  return [
+    "bun",
+    BIN,
+    "--dir",
+    root,
+    "--plugin-dir",
+    PLUGIN,
+    "--model",
+    model,
+    ...arm.flags,
+    ...extra,
+    "--permission-mode",
+    "acceptEdits",
+    "--allowedTools",
+    tools.join(","),
+    "--max-turns",
+    String(spec.execution.max_turns ?? 25),
+    "--debug-file",
+    path.join(root, "debug.log"),
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "-p",
+    spec.execution.prompt,
+  ];
+};
+
+type StreamLine = {
+  type: string;
+  message?: { content?: Block[] };
+  result?: string;
+  total_cost_usd?: number;
+  num_turns?: number;
+};
+
+const toolCalls = (o: StreamLine): Block[] =>
+  o.type === "assistant"
+    ? (o.message?.content ?? []).filter(
+        (b) => b.type === "tool_use" || b.type === "server_tool_use",
+      )
+    : [];
+
+const parseStream = (
+  stream: string,
+): { calls: Block[]; reply: string; cost: number; turns: number } => {
+  const calls: Block[] = [];
+  let done: StreamLine | undefined;
+  for (const line of stream.split("\n")) {
+    if (!line.trim()) continue;
+    const o = JSON.parse(line) as StreamLine;
+    calls.push(...toolCalls(o));
+    if (o.type === "result") done = o;
+  }
+  return {
+    calls,
+    reply: done?.result ?? "",
+    cost: done?.total_cost_usd ?? 0,
+    turns: done?.num_turns ?? 0,
+  };
 };
 
 const runOnce = async (n: number): Promise<Result> => {
@@ -239,102 +230,23 @@ const runOnce = async (n: number): Promise<Result> => {
   const config = path.join(root, "config");
   fs.mkdirSync(project, { recursive: true });
   fs.mkdirSync(config, { recursive: true });
-  const scaffold = spec.context?.scaffold_script;
-  if (scaffold) {
-    const r = Bun.spawnSync(["bash", path.resolve(caseDir, scaffold)], {
-      cwd: project,
-    });
-    if (r.exitCode !== 0) throw new Error(`scaffold failed: ${r.stderr}`);
-  }
+  scaffoldProject(project);
   await Bun.write(
     path.join(config, "settings.json"),
     JSON.stringify({
       pluginConfigs: { "claudetto@inline": { options: arm.options } },
     }),
   );
-  const only = flag("--tools", "");
-  const tools = [
-    ...(only ? only.split(",") : (spec.execution.allowed_tools ?? [])),
-    ...arm.allow,
-  ];
-  const proc = Bun.spawn(
-    [
-      "bun",
-      BIN,
-      "--dir",
-      root,
-      "--plugin-dir",
-      PLUGIN,
-      "--model",
-      model,
-      ...arm.flags,
-      ...extra,
-      "--permission-mode",
-      "acceptEdits",
-      "--allowedTools",
-      tools.join(","),
-      "--max-turns",
-      String(spec.execution.max_turns ?? 25),
-      "--debug-file",
-      path.join(root, "debug.log"),
-      "--output-format",
-      "stream-json",
-      "--verbose",
-      "-p",
-      spec.execution.prompt,
-    ],
-    {
-      env: { ...process.env, ...arm.env },
-      stdout: Bun.file(path.join(root, "stream.jsonl")),
-      stderr: Bun.file(path.join(root, "stderr.txt")),
-      timeout: (spec.execution.timeout_seconds ?? 600) * 1000,
-    },
-  );
+  const proc = Bun.spawn(claudeArgs(root), {
+    env: { ...process.env, ...arm.env },
+    stdout: Bun.file(path.join(root, "stream.jsonl")),
+    stderr: Bun.file(path.join(root, "stderr.txt")),
+    timeout: (spec.execution.timeout_seconds ?? 600) * 1000,
+  });
   await proc.exited;
-  const calls: Block[] = [];
-  let reply = "";
-  let cost = 0;
-  let turns = 0;
-  const stream = await Bun.file(path.join(root, "stream.jsonl")).text();
-  // The text of the `advise` results. The built-in advisor gives an encrypted result, so it has no text.
-  let adviceText = "";
-  // The tokens and the cost that Claude Code itself reports for `opus` (the built-in advisor), from `modelUsage`.
-  const opus = { input: 0, output: 0, read: 0, write: 0, cost: 0 };
-  const adviseIds = new Set<string>();
-  for (const line of stream.split("\n")) {
-    if (!line.trim()) continue;
-    const o = JSON.parse(line) as {
-      type: string;
-      message?: { content?: Block[] };
-      result?: string;
-      total_cost_usd?: number;
-      num_turns?: number;
-      modelUsage?: Record<string, ModelUse>;
-    };
-    if (o.type === "assistant")
-      for (const b of o.message?.content ?? [])
-        if (b.type === "tool_use" || b.type === "server_tool_use") {
-          calls.push(b);
-          if (b.name === arm.advisor && b.id) adviseIds.add(b.id);
-        }
-    if (o.type === "user" && Array.isArray(o.message?.content))
-      for (const b of o.message.content)
-        if (b.type === "tool_result" && adviseIds.has(b.tool_use_id ?? ""))
-          adviceText += `${typeof b.content === "string" ? b.content : JSON.stringify(b.content)}\n`;
-    if (o.type === "result") {
-      reply = o.result ?? "";
-      cost = o.total_cost_usd ?? 0;
-      turns = o.num_turns ?? 0;
-      for (const [name, u] of Object.entries(o.modelUsage ?? {}))
-        if (name.includes("opus")) {
-          opus.input += u.inputTokens;
-          opus.output += u.outputTokens;
-          opus.read += u.cacheReadInputTokens;
-          opus.write += u.cacheCreationInputTokens;
-          opus.cost += u.costUSD;
-        }
-    }
-  }
+  const { calls, reply, cost, turns } = parseStream(
+    await Bun.file(path.join(root, "stream.jsonl")).text(),
+  );
   const graders = Object.fromEntries(
     await Promise.all(
       spec.graders.map(
@@ -348,24 +260,10 @@ const runOnce = async (n: number): Promise<Result> => {
   if (await Bun.file(final).exists())
     graders["final-checks"] =
       Bun.spawnSync(["bash", final], { cwd: project }).exitCode === 0;
-  const found = path.join(project, "FINDINGS.txt");
-  const findings = (await Bun.file(found).exists())
-    ? findingsPoints(await Bun.file(found).text())
-    : [];
-  const advice = advicePoints(adviceText);
-  const debug = path.join(root, "debug.log");
-  const advise = (await Bun.file(debug).exists())
-    ? adviseUsage(await Bun.file(debug).text())
-    : undefined;
   return {
     run: n,
     cost,
-    advise,
-    opus,
-    findings,
-    advice,
     turns,
-    advisorCalls: calls.filter((c) => c.name === arm.advisor).length,
     graders,
     passed: Object.values(graders).every(Boolean),
   };
@@ -389,10 +287,6 @@ const worker = async (): Promise<void> => {
         run: n,
         cost: 0,
         turns: 0,
-        advisorCalls: 0,
-        opus: { input: 0, output: 0, read: 0, write: 0, cost: 0 },
-        findings: [],
-        advice: [],
         graders: {},
         passed: false,
         error: String(e),
@@ -410,18 +304,7 @@ const summary = {
   model,
   runs: results.length,
   passes,
-  meanFindings:
-    results.reduce((t, r) => t + r.findings.length, 0) / results.length,
-  meanAdvice: results.reduce((t, r) => t + r.advice.length, 0) / results.length,
   cost: results.reduce((s, r) => s + r.cost, 0),
-  advise: results.reduce(
-    (t, r) => {
-      for (const k of Object.keys(t) as (keyof typeof t)[])
-        t[k] += r.advise?.[k] ?? 0;
-      return t;
-    },
-    { calls: 0, input: 0, read: 0, write: 0, output: 0, cost: 0 },
-  ),
   out,
   results,
 };
@@ -430,5 +313,5 @@ await Bun.write(
   JSON.stringify(summary, null, 2),
 );
 console.log(
-  `${spec.name} ${armName}: ${passes}/${results.length} passed, $${summary.cost.toFixed(3)}, advise ${JSON.stringify(summary.advise)}, ${out}`,
+  `${spec.name} ${armName}: ${passes}/${results.length} passed, $${summary.cost.toFixed(3)}, ${out}`,
 );

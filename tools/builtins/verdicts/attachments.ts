@@ -4,7 +4,7 @@
 export default `
 attachments:account_memory_recall	keep	-	memory content, never turned off
 attachments:advisor_stripped	keep	-	marker with no model text, so nothing to remove
-attachments:advisor_tool	replace	-	part 3 replaces the advisor, and no hook can rewrite a server tool
+attachments:advisor_tool	off	-	The \`advise\` tool went in 0.3.0 (D6 of \`0-3-0\`), and \`CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1\` of the snippet turns the built-in advisor off.
 attachments:agent_listing_delta	keep	-	lists agent types the model can call
 attachments:agent_mention	keep	-	user-supplied context or file content, never turned off
 attachments:already_read_file	keep	-	user-supplied context or file content, never turned off

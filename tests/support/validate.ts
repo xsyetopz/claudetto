@@ -37,14 +37,23 @@ export const validate = (value: unknown, schema: Schema, at = ""): string[] => {
       validate(v, schema.items as Schema, `${at}[${i}]`),
     );
   if (schema.type !== "object") return [];
-  const object = value as Record<string, unknown>;
+  return objectErrors(value as Record<string, unknown>, schema, at);
+};
+
+// The errors of the keys of an object `object` against `schema`: missing, unknown, and nested.
+const objectErrors = (
+  object: Record<string, unknown>,
+  schema: Schema,
+  at: string,
+): string[] => {
+  const where = at || "(root)";
   const errors: string[] = [];
   for (const key of schema.required ?? [])
     if (!(key in object)) errors.push(`${where}: missing key "${key}"`);
   for (const [key, sub] of Object.entries(object)) {
     const child = at ? `${at}.${key}` : key;
-    if (schema.properties?.[key])
-      errors.push(...validate(sub, schema.properties[key], child));
+    const keySchema = schema.properties?.[key];
+    if (keySchema) errors.push(...validate(sub, keySchema, child));
     else if (schema.additionalProperties === false)
       errors.push(`${where}: unknown key "${key}"`);
     else if (typeof schema.additionalProperties === "object")

@@ -25,24 +25,30 @@ const ENTRY_TARGETS = new Set(["lib", "features", "slices", "kernel"]);
 
 // Rule 3: entry points import `lib/`, features, slices, and `kernel/`, and a `cli` file only its own feature and `lib/`.
 // The `noRestrictedImports` overrides of `biome.json` check the imports of `slices/` and `kernel/`, so this rule skips them.
-export const checkEntries = (files: Files): string[] => {
-  const bad: string[] = [];
-  for (const { file, spec, target } of edges(files)) {
-    const [top, name, leaf] = within(file);
-    if (top === "lib" || top === "slices" || top === "kernel") continue;
-    if (!target || !inside(file, target)) continue;
-    const [tTop, tName] = within(target);
-    if (top === "features") {
-      if (!/^cli\.(?:mjs|ts)$/.test(leaf as string)) continue;
-      if (tTop === "features" && tName !== name)
-        bad.push(`${file}: cli imports ${spec}, another feature`);
-    } else if (!ENTRY_TARGETS.has(tTop as string))
-      bad.push(
-        `${file}: entry point imports ${spec}, outside lib, features, slices, and kernel`,
-      );
+const entryFault = ({
+  file,
+  spec,
+  target,
+}: ReturnType<typeof edges>[number]): string | null => {
+  const [top, name, leaf] = within(file);
+  if (top === "lib" || top === "slices" || top === "kernel") return null;
+  if (!target || !inside(file, target)) return null;
+  const [tTop, tName] = within(target);
+  if (top === "features") {
+    if (!/^cli\.(?:mjs|ts)$/.test(leaf as string)) return null;
+    return tTop === "features" && tName !== name
+      ? `${file}: cli imports ${spec}, another feature`
+      : null;
   }
-  return bad;
+  return ENTRY_TARGETS.has(tTop as string)
+    ? null
+    : `${file}: entry point imports ${spec}, outside lib, features, slices, and kernel`;
 };
+
+export const checkEntries = (files: Files): string[] =>
+  edges(files)
+    .map(entryFault)
+    .filter((fault): fault is string => fault !== null);
 
 // Rule 4: no import leaves its plugin, so none reaches another plugin, `tools/`, or `tests/`.
 export const checkPluginBoundary = (files: Files): string[] =>
@@ -94,25 +100,34 @@ export const moduleGraph = (files: Files): Set<string> => {
   return seen;
 };
 
-export const checkModuleGraph = (files: Files): string[] => {
+// The faults of the imports of one file `file` in a module graph.
+const moduleImportFaults = (file: string, source: string): string[] =>
+  parseImports(source).flatMap((imp) => {
+    if (imp.dynamic) return [`${file}: import() in the module graph`];
+    if (!resolve(file, imp.spec) && !MODULE_IMPORTS.has(imp.spec))
+      return [`${file}: ${imp.spec} in the module graph`];
+    return [];
+  });
+
+// The faults of the code of one file `file` in a module graph: the `Bun` global and a computed `on()` name.
+const moduleCodeFaults = (file: string, source: string): string[] => {
+  const code = stripComments(source);
   const bad: string[] = [];
-  for (const file of moduleGraph(files)) {
-    const source = files[file] as string;
-    for (const imp of parseImports(source)) {
-      if (imp.dynamic) bad.push(`${file}: import() in the module graph`);
-      else if (!resolve(file, imp.spec) && !MODULE_IMPORTS.has(imp.spec))
-        bad.push(`${file}: ${imp.spec} in the module graph`);
-    }
-    const code = stripComments(source);
-    if (/(?<![\w.$])Bun\b/.test(code))
-      bad.push(`${file}: Bun global in the module graph`);
-    for (const m of code.matchAll(/(?<![\w.$])on\((?!\s*["'])/g))
-      bad.push(
-        `${file}: on() event name is not a string literal at ${m.index}`,
-      );
-  }
+  if (/(?<![\w.$])Bun\b/.test(code))
+    bad.push(`${file}: Bun global in the module graph`);
+  for (const m of code.matchAll(/(?<![\w.$])on\((?!\s*["'])/g))
+    bad.push(`${file}: on() event name is not a string literal at ${m.index}`);
   return bad;
 };
+
+export const checkModuleGraph = (files: Files): string[] =>
+  [...moduleGraph(files)].flatMap((file) => {
+    const source = files[file] as string;
+    return [
+      ...moduleImportFaults(file, source),
+      ...moduleCodeFaults(file, source),
+    ];
+  });
 
 // A `bin/` file of a plugin is an entry point with no file extension.
 // The hook-lab tests (`tests/*.test.ts`) run in `claude plugin test` and import its types, so they are out of scope.

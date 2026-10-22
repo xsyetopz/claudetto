@@ -1,4 +1,4 @@
-// `bump-version.ts` writes two files, so a bump that cannot write the second one must leave the first one as it was.
+// `bump-version.ts` writes more than one file, so a bump that cannot write one of them must leave the others as they were.
 // Every test uses a folder under the temp folder, and the bump runs with `--root` on that folder.
 
 import { afterEach, beforeEach, expect, test } from "bun:test";
@@ -54,8 +54,9 @@ test.skipIf(process.getuid?.() === 0)(
   },
 );
 
-test("a dry run with no `--root` finds the level and writes nothing", async () => {
-  expect(await main(["minor", "--dry-run"])).toBe(0);
+test("a dry run with no `--root` finds the root and writes nothing", async () => {
+  // An exact target works from each current version, also from a pre-release.
+  expect(await main(["99.0.0", "--dry-run"])).toBe(0);
 });
 
 test("an exact pre-release target is the next version", () => {
@@ -112,4 +113,20 @@ test("`--root` with no folder is a usage error that names `--root`, and nothing 
   }
   expect(status).toBe(2);
   expect(errors.join("\n")).toContain("--root needs a folder");
+});
+
+test("a bump writes the version into each plugin manifest and the marketplace", async () => {
+  const manifest = '{\n  "name": "p",\n  "version": "1.0.0"\n}\n';
+  const plugin = path.join(root, "plugins/p/.claude-plugin/plugin.json");
+  const market = path.join(root, ".claude-plugin/marketplace.json");
+  await Bun.write(plugin, manifest);
+  await Bun.write(
+    market,
+    '{\n  "metadata": {\n    "version": "1.0.0"\n  }\n}\n',
+  );
+  expect(await main(["minor", "--root", root])).toBe(0);
+  expect(await Bun.file(plugin).text()).toBe(
+    manifest.replace("1.0.0", "1.1.0"),
+  );
+  expect(await Bun.file(market).text()).toContain('"version": "1.1.0"');
 });

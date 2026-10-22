@@ -7,7 +7,7 @@ import { VERDICTS, type Verdict } from "./verdicts.ts";
 /** The levers of each group. `NAME` is the name of the part. */
 const LEVERS: Record<Group, [string, string]> = {
   commands: [
-    '`command.describe` `{ command: "NAME" }` answers `next({ ...e, isHidden: true })`',
+    "a settings key or a `DISABLE_*_COMMAND` env var of the snippet",
     '`command.run` `{ command: "NAME" }` answers `{ text }` or `{}`',
   ],
   plugins: [

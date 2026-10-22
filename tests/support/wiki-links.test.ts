@@ -46,35 +46,31 @@ const targets = (text: string): string[] => {
   return [...plain.matchAll(/\]\(([^)\s]+)\)/g)].map((m) => m[1] as string);
 };
 
+/** Whether the link `t` of `page` is broken. */
+const isBroken = async (page: string, t: string): Promise<boolean> => {
+  const [file, anchor] = t.split("#") as [string, string | undefined];
+  const named = byName.get(file)?.[0];
+  // A page link with a folder does not resolve on the GitHub Wiki, which addresses a page by name.
+  if (!named && byName.has(path.basename(file, ".md")) && !file.startsWith("."))
+    return true;
+  const target =
+    file === ""
+      ? path.join(WIKI, page)
+      : named
+        ? path.join(WIKI, named)
+        : path.resolve(WIKI, path.dirname(page), file);
+  if (!fs.existsSync(target)) return true;
+  if (!anchor || !target.endsWith(".md")) return false;
+  return !anchors(await Bun.file(target).text()).has(anchor);
+};
+
 /** The broken links of the wiki, as "page: target". */
 const broken = async (): Promise<string[]> => {
   const bad = [];
   for (const page of pages) {
     for (const t of targets(await Bun.file(path.join(WIKI, page)).text())) {
       if (/^[a-z][a-z0-9+.-]*:/i.test(t)) continue;
-      const [file, anchor] = t.split("#") as [string, string | undefined];
-      const own = file === "";
-      const named = byName.get(file)?.[0];
-      // A page link with a folder does not resolve on the GitHub Wiki, which addresses a page by name.
-      if (
-        !named &&
-        byName.has(path.basename(file, ".md")) &&
-        !file.startsWith(".")
-      ) {
-        bad.push(`${page}: ${t}`);
-        continue;
-      }
-      const target = own
-        ? path.join(WIKI, page)
-        : named
-          ? path.join(WIKI, named)
-          : path.resolve(WIKI, path.dirname(page), file);
-      if (!fs.existsSync(target)) {
-        bad.push(`${page}: ${t}`);
-      } else if (anchor && target.endsWith(".md")) {
-        if (!anchors(await Bun.file(target).text()).has(anchor))
-          bad.push(`${page}: ${t}`);
-      }
+      if (await isBroken(page, t)) bad.push(`${page}: ${t}`);
     }
   }
   return bad;

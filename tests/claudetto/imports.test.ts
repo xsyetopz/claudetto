@@ -16,7 +16,7 @@ test("the plugins hold the files that the rules read", async () => {
     files.join("\n"),
   ).toBeTruthy();
   expect(
-    files.includes("plugins/claudetto/slices/prompt/slice.ts"),
+    files.includes("plugins/claudetto/slices/prompt/adapters/mod.ts"),
     files.join("\n"),
   ).toBeTruthy();
 });

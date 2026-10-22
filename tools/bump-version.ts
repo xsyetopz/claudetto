@@ -1,12 +1,11 @@
 #!/usr/bin/env -S bun --no-env-file
-// Bumps the version in `package.json` by semver, moves the CHANGELOG's [Unreleased] entries under
+// Bumps the version in `package.json` by semver, each plugin manifest, and the marketplace, moves the CHANGELOG's [Unreleased] entries under
 // a new dated heading, and points the [unreleased] compare link at the new tag (`just bump`).
 //
 //   bun tools/bump-version.ts <major|minor|patch|X.Y.Z[-PRE]> [--dry-run] [--root DIR]
 //
 // Only the "version" line of `package.json` and two CHANGELOG lines change, so formatting and key
-// order stay as they are. `just generate` copies the version into each `plugin.json`, so this tool
-// writes no plugin file.
+// order stay as they are. The "version" line of each `plugin.json` and of the marketplace changes too.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -52,6 +51,18 @@ export const plan = async (root: string, level: string, today: string) => {
   if (!m) throw new Error('package.json has no "version" line');
   const current = m[2] as string;
   const next = nextVersion(current, level);
+  const manifests = await Promise.all(
+    [
+      ...new Bun.Glob("plugins/*/.claude-plugin/plugin.json").scanSync(root),
+      ".claude-plugin/marketplace.json",
+    ]
+      .map((rel) => path.join(root, rel))
+      .filter((f) => fs.existsSync(f))
+      .map(async (f) => ({
+        file: f,
+        text: (await Bun.file(f).text()).replace(VERSION_LINE, `$1"${next}"`),
+      })),
+  );
   const changelog = path.join(root, "CHANGELOG.md");
   const log = await Bun.file(changelog).text();
   if (log.includes(`## [${next}]`))
@@ -63,6 +74,7 @@ export const plan = async (root: string, level: string, today: string) => {
     next,
     writes: [
       { file, text: text.replace(VERSION_LINE, `$1"${next}"`) },
+      ...manifests,
       {
         file: changelog,
         text: log
@@ -124,9 +136,6 @@ export const main = async (args: string[]): Promise<number> => {
     return 1;
   }
   for (const { file, text } of result.writes) await Bun.write(file, text);
-  console.log(
-    "Next: run `just generate`, so each plugin.json has the new version.",
-  );
   return 0;
 };
 

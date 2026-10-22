@@ -53,6 +53,29 @@ const MEMBERS: Record<string, Record<string, string>> = {
 const IMPORT =
   /^\s*import\s+(?:type\s+)?([^;'"]*?)\s+from\s+["'](node:[\w/]+)["'];?/gm;
 
+/** The names that an import clause `clause` of `source` uses: the named members and the members read through the binding. */
+const usedMembers = (clause: string, source: string): Set<string> => {
+  const used = new Set<string>();
+  const named = clause.match(/\{([\s\S]*)\}/)?.[1] ?? "";
+  for (const part of named.split(",")) {
+    const name = part.trim().split(/\s+as\s+/)[0];
+    if (name) used.add(name);
+  }
+  const binding = clause
+    .replace(/\{[\s\S]*\}/, "")
+    .replace(/\*\s+as\s+/, "")
+    .replace(/,/g, " ")
+    .trim();
+  if (binding) {
+    for (const [, name = ""] of source.matchAll(
+      new RegExp(`(?<![\\w.$])${binding}\\.(\\w+)`, "g"),
+    )) {
+      used.add(name);
+    }
+  }
+  return used;
+};
+
 /** The faults of one file: each `node:` import or member that the map gives a Bun API for. */
 const offMap = (file: string, source: string): string[] => {
   const faults: string[] = [];
@@ -64,25 +87,7 @@ const offMap = (file: string, source: string): string[] => {
     }
     const members = MEMBERS[spec];
     if (!members) continue;
-    const used = new Set<string>();
-    const named = clause.match(/\{([\s\S]*)\}/)?.[1] ?? "";
-    for (const part of named.split(",")) {
-      const name = part.trim().split(/\s+as\s+/)[0];
-      if (name) used.add(name);
-    }
-    const binding = clause
-      .replace(/\{[\s\S]*\}/, "")
-      .replace(/\*\s+as\s+/, "")
-      .replace(/,/g, " ")
-      .trim();
-    if (binding) {
-      for (const [, name = ""] of source.matchAll(
-        new RegExp(`(?<![\\w.$])${binding}\\.(\\w+)`, "g"),
-      )) {
-        used.add(name);
-      }
-    }
-    for (const name of [...used].sort()) {
+    for (const name of [...usedMembers(clause, source)].sort()) {
       const api = members[name];
       if (api) faults.push(`${file}: ${spec} ${name} (use ${api})`);
     }

@@ -24,7 +24,7 @@ export type EvalCase = {
   graders: { type?: string; target?: { source?: string } }[];
 };
 
-const CASES = "src/plugins/**/evals/*/case.yaml";
+const CASES = "plugins/*/evals/*/case.yaml";
 
 /** True when a grader checks a file or a tool call, and not the words of the reply. */
 const checksWork = (g: EvalCase["graders"][number]): boolean =>
@@ -75,13 +75,13 @@ export const overBudget = (tags: string[], run: Transcript): string[] => {
   return out;
 };
 
-/** An implementer case sits right under the `evals/` of a plugin, and a slice case sits under `slices/`. */
-const isImplementer = (file: string): boolean =>
-  /^src\/plugins\/[^/]+\/evals\/[^/]+\/case\.yaml$/.test(file);
+/** An implementer case has a tag `split:NAME`. */
+const isImplementer = (c: CaseDoc): boolean =>
+  c.tags.some((t) => t.startsWith("split:"));
 
-/** A case of the `prompt` slice belongs to one set, named by its tag `set:NAME`. */
-const isPrompt = (file: string): boolean =>
-  /^src\/plugins\/[^/]+\/slices\/prompt\/evals\/[^/]+\/case\.yaml$/.test(file);
+/** A case of the `prompt` rules belongs to one set, named by its tag `set:NAME`. */
+const isPrompt = (c: CaseDoc): boolean =>
+  c.tags.some((t) => t.startsWith("set:"));
 
 /** The sets of the `prompt` slice. The `blind` and `control` sets need a reference run. */
 const SETS = ["baseline", "rule-aware", "blind", "control"];
@@ -123,69 +123,96 @@ export const caseFaults = (
   badRuns: Record<string, Transcript | undefined>,
   references: Record<string, Transcript | undefined> = {},
 ): string[] => {
-  const out: string[] = [];
-  for (const c of cases) {
-    const bad = (why: string) => out.push(`${c.file}: ${why} (D25)`);
-    const metrics = c.tags.filter((t) => t === "pass^k" || t === "pass@1");
-    if (metrics.length !== 1)
-      bad("needs exactly one tag, `pass^k` or `pass@1`");
-    const calls = tagNumber(c.tags, "max-tool-calls");
-    if (calls === undefined || calls < 1 || calls > EVAL_MAX_TOOL_CALLS)
-      bad(
-        `needs a tag \`max-tool-calls:N\` with N from 1 to ${EVAL_MAX_TOOL_CALLS}`,
-      );
-    const tokens = tagNumber(c.tags, "max-tokens");
-    if (tokens === undefined || tokens < 1 || tokens > EVAL_MAX_TOKENS)
-      bad(`needs a tag \`max-tokens:N\` with N from 1 to ${EVAL_MAX_TOKENS}`);
-    if (isPrompt(c.file)) {
-      const sets = c.tags.filter((t) =>
-        new RegExp(`^set:(${SETS.join("|")})$`).test(t),
-      );
-      if (sets.length !== 1)
-        bad(`needs exactly one tag \`set:${SETS.join("|")}\``);
-      else if (
-        NEEDS_REFERENCE.some((s) => sets[0] === `set:${s}`) &&
-        !references[c.name]?.events.length
-      )
-        bad("is a `blind` or `control` case and has no reference run");
-    }
-    for (const { name, match } of bashMatches(c.graders))
-      if (!anchorsToCommand(match))
-        bad(
-          `grader ${name}: a \`Bash\` \`input_match\` must start with \`"command":"\`, or it can match the \`description\` (${match})`,
-        );
-    const unmodelled = graderFaults(c.graders);
-    for (const f of unmodelled) bad(f);
-    const run = badRuns[c.name];
-    if (!run) bad("has no recorded bad run");
-    else {
-      const target = c.graders.find((g) => g.name === run.fails);
-      if (run.events.length === 0) bad("has an empty bad run");
-      else if (!run.fails) bad("has a bad run that names no `fails` grader");
-      else if (!target || target.type === "llm")
-        bad(
-          `has a bad run whose \`fails\` grader ${run.fails} is no check without a model`,
-        );
-      else if (unmodelled.length)
-        bad("has graders that the offline check cannot run");
-      else if (!failedGraders(c.graders, run).includes(run.fails))
-        bad(`passes its bad run at the grader ${run.fails}`);
-      if (run.events.length && runTokens(run) === undefined)
-        bad("has a bad run with no `usage` in its `result` event");
-    }
-    if (
-      isImplementer(c.file) &&
-      !c.tags.some((t) => /^split:(dev|held-out)$/.test(t))
-    )
-      bad(
-        "is an implementer case and needs a tag `split:dev` or `split:held-out`",
-      );
-  }
-  const impl = cases.filter((c) => isImplementer(c.file));
+  const out = cases.flatMap((c) =>
+    oneCaseFaults(c, badRuns[c.name], references[c.name]).map(
+      (why) => `${c.file}: ${why} (D25)`,
+    ),
+  );
+  const impl = cases.filter(isImplementer);
   for (const split of ["dev", "held-out"])
     if (impl.length && !impl.some((c) => c.tags.includes(`split:${split}`)))
       out.push(`the implementer cases have no \`split:${split}\` case (D25)`);
   return out;
+};
+
+/** The fault of a tag `key:N` that is missing or out of the bounds 1 to `max`. */
+const boundedTagFaults = (
+  tags: string[],
+  key: string,
+  max: number,
+): string[] => {
+  const n = tagNumber(tags, key);
+  return n === undefined || n < 1 || n > max
+    ? [`needs a tag \`${key}:N\` with N from 1 to ${max}`]
+    : [];
+};
+
+/** The faults of the tags of a case of the `prompt` slice. */
+const promptSetFaults = (c: CaseDoc, reference?: Transcript): string[] => {
+  if (!isPrompt(c)) return [];
+  const sets = c.tags.filter((t) =>
+    new RegExp(`^set:(${SETS.join("|")})$`).test(t),
+  );
+  if (sets.length !== 1)
+    return [`needs exactly one tag \`set:${SETS.join("|")}\``];
+  const needs = NEEDS_REFERENCE.some((s) => sets[0] === `set:${s}`);
+  return needs && !reference?.events.length
+    ? ["is a `blind` or `control` case and has no reference run"]
+    : [];
+};
+
+/** The faults of the recorded bad run of a case. */
+const badRunFaults = (
+  c: CaseDoc,
+  run: Transcript | undefined,
+  unmodelled: string[],
+): string[] => {
+  if (!run) return ["has no recorded bad run"];
+  const out: string[] = [];
+  const target = c.graders.find((g) => g.name === run.fails);
+  if (run.events.length === 0) out.push("has an empty bad run");
+  else if (!run.fails) out.push("has a bad run that names no `fails` grader");
+  else if (!target || target.type === "llm")
+    out.push(
+      `has a bad run whose \`fails\` grader ${run.fails} is no check without a model`,
+    );
+  else if (unmodelled.length)
+    out.push("has graders that the offline check cannot run");
+  else if (!failedGraders(c.graders, run).includes(run.fails))
+    out.push(`passes its bad run at the grader ${run.fails}`);
+  if (run.events.length && runTokens(run) === undefined)
+    out.push("has a bad run with no `usage` in its `result` event");
+  return out;
+};
+
+/** The faults of one case, in the order of the checks. */
+const oneCaseFaults = (
+  c: CaseDoc,
+  badRun: Transcript | undefined,
+  reference: Transcript | undefined,
+): string[] => {
+  const metrics = c.tags.filter((t) => t === "pass^k" || t === "pass@1");
+  const unmodelled = graderFaults(c.graders);
+  return [
+    ...(metrics.length === 1
+      ? []
+      : ["needs exactly one tag, `pass^k` or `pass@1`"]),
+    ...boundedTagFaults(c.tags, "max-tool-calls", EVAL_MAX_TOOL_CALLS),
+    ...boundedTagFaults(c.tags, "max-tokens", EVAL_MAX_TOKENS),
+    ...promptSetFaults(c, reference),
+    ...bashMatches(c.graders)
+      .filter(({ match }) => !anchorsToCommand(match))
+      .map(
+        ({ name, match }) =>
+          `grader ${name}: a \`Bash\` \`input_match\` must start with \`"command":"\`, or it can match the \`description\` (${match})`,
+      ),
+    ...unmodelled,
+    ...badRunFaults(c, badRun, unmodelled),
+    ...(isImplementer(c) &&
+    !c.tags.some((t) => /^split:(dev|held-out)$/.test(t))
+      ? ["needs the tag `split:dev` or `split:held-out`"]
+      : []),
+  ];
 };
 
 /** The faults of `caseFaults` for the cases under `root`, with the bad runs in `tests/<plugin>/evals/bad-runs/<name>.json` and the reference runs in `reference-runs/<name>.json`. */
@@ -205,7 +232,7 @@ export const caseFaultsIn = async (
       tags: doc?.tags ?? [],
       graders: doc?.graders ?? [],
     });
-    const plugin = f.split("/")[2];
+    const plugin = f.split("/")[1];
     const bad = Bun.file(
       join(root, "tests", plugin ?? "", "evals", "bad-runs", `${name}.json`),
     );

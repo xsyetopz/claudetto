@@ -18,7 +18,7 @@ import { parse } from "yaml";
 import { overBudget } from "./case-checks.ts";
 import type { Transcript } from "./transcript-grade.ts";
 
-const CASES = "src/plugins/**/evals/*/case.yaml";
+const CASES = "plugins/*/evals/*/case.yaml";
 
 /** The tags of each case under `root`, by case name. */
 export const caseTags = async (
@@ -60,6 +60,68 @@ type Aggregate = {
 /** The result of a check: the faults, the count of the runs checked, and the info lines. */
 export type Budget = { faults: string[]; checked: number; info: string[] };
 
+/** The outcome of one run: its faults, whether it counts as checked, and whether the `without` arm went over the budget. */
+type RunCheck = { faults: string[]; checked: boolean; over: boolean };
+
+const checkRun = async (
+  run: Run,
+  arm: "with" | "without",
+  where: string,
+  caseTagList: string[] | undefined,
+): Promise<RunCheck> => {
+  const none: RunCheck = { faults: [], checked: false, over: false };
+  const isWith = arm === "with";
+  if (isWith && caseTagList === undefined)
+    return {
+      ...none,
+      faults: [`${where}: no tags for this case in the checkout`],
+    };
+  if (!run.tracePath)
+    return isWith ? { ...none, faults: [`${where}: no tracePath`] } : none;
+  const file = Bun.file(run.tracePath);
+  const parsed = (await file.exists())
+    ? parseTrace(await file.text())
+    : { fault: "trace is missing" };
+  if ("fault" in parsed)
+    return isWith
+      ? { ...none, faults: [`${where}: ${run.tracePath}: ${parsed.fault}`] }
+      : none;
+  const faults = overBudget(caseTagList ?? [], parsed.run);
+  if (!isWith) return { ...none, over: faults.length > 0 };
+  return {
+    faults: faults.map((fault) => `${where}: ${fault}`),
+    checked: true,
+    over: false,
+  };
+};
+
+/** The budget check of the runs of one arm of one case, added to `out`. */
+const checkArm = async (
+  out: Budget,
+  runs: Run[],
+  arm: "with" | "without",
+  label: string,
+  name: string,
+  caseTagList: string[] | undefined,
+): Promise<void> => {
+  let over = 0;
+  for (const [j, run] of runs.entries()) {
+    const r = await checkRun(
+      run,
+      arm,
+      `${label}: ${name} ${arm}[${j}]`,
+      caseTagList,
+    );
+    out.faults.push(...r.faults);
+    if (r.checked) out.checked++;
+    if (r.over) over++;
+  }
+  if (arm === "without" && runs.length)
+    out.info.push(
+      `${label}: ${name} without: ${over} of ${runs.length} runs over the budget of the case (not a fault)`,
+    );
+};
+
 /** The budget check of the runs in one parsed `aggregate-result.json`, named `label` in each message. */
 export const budgetOfAggregate = async (
   agg: Aggregate,
@@ -72,41 +134,8 @@ export const budgetOfAggregate = async (
   for (const c of agg.cases ?? []) {
     const name = c.name ?? "(no name)";
     const caseTagList = c.name === undefined ? undefined : tags[c.name];
-    for (const arm of ["with", "without"] as const) {
-      const runs = c.arms?.[arm] ?? [];
-      let over = 0;
-      for (const [j, run] of runs.entries()) {
-        const where = `${label}: ${name} ${arm}[${j}]`;
-        if (arm === "with" && caseTagList === undefined) {
-          out.faults.push(`${where}: no tags for this case in the checkout`);
-          continue;
-        }
-        if (!run.tracePath) {
-          if (arm === "with") out.faults.push(`${where}: no tracePath`);
-          continue;
-        }
-        const file = Bun.file(run.tracePath);
-        const parsed = (await file.exists())
-          ? parseTrace(await file.text())
-          : { fault: "trace is missing" };
-        if ("fault" in parsed) {
-          if (arm === "with")
-            out.faults.push(`${where}: ${run.tracePath}: ${parsed.fault}`);
-          continue;
-        }
-        const faults = overBudget(caseTagList ?? [], parsed.run);
-        if (arm === "without") {
-          if (faults.length) over++;
-          continue;
-        }
-        out.checked++;
-        for (const fault of faults) out.faults.push(`${where}: ${fault}`);
-      }
-      if (arm === "without" && runs.length)
-        out.info.push(
-          `${label}: ${name} without: ${over} of ${runs.length} runs over the budget of the case (not a fault)`,
-        );
-    }
+    for (const arm of ["with", "without"] as const)
+      await checkArm(out, c.arms?.[arm] ?? [], arm, label, name, caseTagList);
   }
   return out;
 };

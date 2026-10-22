@@ -4,6 +4,12 @@
 // A prefix `VAR=x`, `sudo`, `env`, `timeout`, `nice`, `nohup`, and `command` is stripped before the test.
 // A program by path, `sh -c`, and an option before the subcommand are out of scope, because a rule cannot match them.
 
+/** The index after a separator at `i`: a doubled `&&` or `||` counts as one separator. */
+const separatorEnd = (command: string, i: number): number => {
+  const ch = command[i] as string;
+  return (ch === "&" || ch === "|") && command[i + 1] === ch ? i + 1 : i;
+};
+
 /** The subcommands of a compound command: split on `&&`, `||`, `;`, `|`, `&`, and a newline, outside quotes. */
 export const subcommands = (command: string): string[] => {
   const parts: string[] = [];
@@ -11,15 +17,15 @@ export const subcommands = (command: string): string[] => {
   let quote = "";
   for (let i = 0; i < command.length; i++) {
     const ch = command[i] as string;
+    if (!quote && ";|&\n".includes(ch)) {
+      parts.push(part);
+      part = "";
+      i = separatorEnd(command, i);
+      continue;
+    }
     if (quote) {
       if (ch === quote) quote = "";
     } else if (ch === '"' || ch === "'") quote = ch;
-    else if (";|&\n".includes(ch)) {
-      parts.push(part);
-      part = "";
-      if ((ch === "&" || ch === "|") && command[i + 1] === ch) i++;
-      continue;
-    }
     part += ch;
   }
   parts.push(part);

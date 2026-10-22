@@ -72,6 +72,35 @@ const index = (t: string) => {
   return defs;
 };
 
+/** The names of 2 letters or more that the code of `t[from, to)` uses, outside strings. */
+const codeIds = (t: string, from: number, to: number): Set<string> => {
+  const ids = new Set<string>();
+  for (let i = from; i < to; i++) {
+    if (/["'`]/.test(t[i] as string)) {
+      i = skipStr(t, i) - 1;
+      continue;
+    }
+    const m = /^[A-Za-z_$][\w$]*/.exec(t.slice(i, i + 40));
+    if (
+      m &&
+      !/[\w$.]/.test(t[i - 1] ?? " ") &&
+      m[0].length > 1 &&
+      t[i + m[0].length] !== ":"
+    )
+      ids.add(m[0]);
+    i += (m?.[0].length ?? 1) - 1;
+  }
+  return ids;
+};
+
+/** The bytes of one definition: a constant text, or a function body when `fns` is set. */
+const defBytes = (t: string, best: [number, boolean], fns: boolean): number => {
+  if (!best[1]) return literalBytes(t, t.indexOf("=", best[0]) + 1);
+  if (!fns) return 0;
+  const body = t.indexOf("{", skipBlock(t, t.indexOf("(", best[0])));
+  return staticBytes(t, body, skipBlock(t, body));
+};
+
 /** The text of the constants (`X="..."`) and functions that the code of `t[from, to)` names, from the definition nearest to `from`: a minified name is local to one chunk, and the nearest one is the one of the chunk. A text over 100 KB is shared, so it counts 0. */
 const refBytes = (
   t: string,
@@ -79,33 +108,13 @@ const refBytes = (
   to: number,
   fns: boolean,
 ): number => {
-  const ids = new Set<string>();
-  for (let i = from; i < to; i++) {
-    if (/["'`]/.test(t[i] as string)) i = skipStr(t, i) - 1;
-    else {
-      const m = /^[A-Za-z_$][\w$]*/.exec(t.slice(i, i + 40));
-      if (
-        m &&
-        !/[\w$.]/.test(t[i - 1] ?? " ") &&
-        m[0].length > 1 &&
-        t[i + m[0].length] !== ":"
-      )
-        ids.add(m[0]);
-      i += (m?.[0].length ?? 1) - 1;
-    }
-  }
   let bytes = 0;
-  for (const id of [...ids].slice(0, 60)) {
+  for (const id of [...codeIds(t, from, to)].slice(0, 60)) {
     const best = (index(t).get(id) ?? []).sort(
       (x, y) => Math.abs(x[0] - from) - Math.abs(y[0] - from),
     )[0];
     if (!best) continue;
-    let n = 0;
-    if (!best[1]) n = literalBytes(t, t.indexOf("=", best[0]) + 1);
-    else if (fns) {
-      const body = t.indexOf("{", skipBlock(t, t.indexOf("(", best[0])));
-      n = staticBytes(t, body, skipBlock(t, body));
-    }
+    const n = defBytes(t, best, fns);
     bytes += n > 100_000 ? 0 : n;
   }
   return bytes;
