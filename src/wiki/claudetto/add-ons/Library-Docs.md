@@ -1,7 +1,7 @@
 # Library Docs
 
 The plugin `claudetto-docs` gets the current docs of a library from Context7.
-It adds one skill, `docs`, which calls the `ctx7` CLI.
+It adds one skill, `find-docs`, which calls the `ctx7` CLI.
 Read this page to install the plugin, or to learn how the skill calls `ctx7` and which limits it sets.
 
 The plugin works without the core plugin.
@@ -53,9 +53,9 @@ The other `ctx7` subcommands, such as `setup`, `login`, and `upgrade`, write fil
 So the permission rules allow `library` and `docs` and no other subcommand.
 If Claude Code denies a call, the skill tells Claude to ask the user, and not to change the form.
 
-The settings snippet allows the same two commands as the skill, and it allows the network domains `context7.com` and `registry.npmjs.org` for the sandbox.
-See [Settings Snippet](Settings-Snippet).
-A test pins the three copies of the pin: the skill, the snippet, and `limits.ts`.
+The settings snippet has no `allow` list, so the `allowed-tools` entry of the skill is the only permission for these two forms.
+A test pins the pin in the skill and in `limits.ts`.
+The `claudetto-setup` command prints a notice when a `context7` file of the project or the user adds text to each session, because the skill does the same work ([Setup](Setup#context7-notice)).
 
 ## Rules in the Skill
 
@@ -94,7 +94,7 @@ To remove the server, run `claude mcp remove context7 --scope user`.
 
 ## Bounds
 
-The bounds are in `slices/docs/limits.ts`.
+The bounds are in `plugins/claudetto-docs/slices/docs/limits.ts`.
 
 | Bound | Value | Use |
 | --- | --- | --- |
@@ -105,9 +105,8 @@ The plugin `claudetto-docs` lets Claude read the current docs of a library.
 The docs come from Context7, a service for library docs, through the `ctx7` command.
 Claude then writes code from the real docs and not from memory.
 
-## See Also
+## Related Pages
 
 - [Settings Snippet](Settings-Snippet)
-- [Sessions](Sessions)
 - [Attributions](Attributions)
 - [Troubleshooting](Troubleshooting)
