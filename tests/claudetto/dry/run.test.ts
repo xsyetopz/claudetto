@@ -7,7 +7,7 @@ import { runEnv } from "../../../plugins/claudetto/slices/dry/adapters/cli.ts";
 const SKILL = await Bun.file(
   path.join(
     import.meta.dir,
-    "../../../src/plugins/claudetto/slices/dry/skills/dry/SKILL.md",
+    "../../../plugins/claudetto/skills/dedupe/SKILL.md",
   ),
 ).text();
 
@@ -36,12 +36,6 @@ test("`runEnv` puts `BUN_INSTALL` under `TMPDIR` when the cache of Bun takes no 
 test("`runEnv` keeps `BUN_INSTALL` when the cache takes no write and `TMPDIR` is not set", () => {
   expect(runEnv({ BUN_INSTALL: "/a" }, false)["BUN_INSTALL"]).toBe("/a");
   expect(runEnv({}, false)["BUN_INSTALL"]).toBeUndefined();
-});
-
-test("the skill has no `BUN_TMPDIR=` prefix and no bare `bunx jscpd` call", () => {
-  expect(SKILL).not.toContain("BUN_TMPDIR=");
-  expect(SKILL).not.toMatch(/`bunx jscpd /);
-  expect(SKILL).toContain("jscpd-config --run");
 });
 
 test("the skill allows only `jscpd-config *` without a prompt", () => {

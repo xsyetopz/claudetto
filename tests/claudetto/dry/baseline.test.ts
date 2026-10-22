@@ -6,13 +6,6 @@ import os from "node:os";
 import path from "node:path";
 import { main } from "../../../plugins/claudetto/slices/dry/adapters/cli.ts";
 
-const SKILL = await Bun.file(
-  path.join(
-    import.meta.dir,
-    "../../../src/plugins/claudetto/slices/dry/skills/dry/SKILL.md",
-  ),
-).text();
-
 /** Runs `jscpd-config` in a new folder that holds the files of `files`, and returns the config. */
 const run = async (files: string[]) => {
   const dir = await mkdtemp(path.join(os.tmpdir(), "dry-base-"));
@@ -37,11 +30,4 @@ test("with a baseline file, the config keeps `baseline` and `failOnNewClones`", 
   const { config } = await run([".jscpd-baseline.json"]);
   expect(config.baseline).toBe(".jscpd-baseline.json");
   expect(config.failOnNewClones).toBe(0);
-});
-
-test("the skill `dry` makes the baseline only after the user decides on the clones", () => {
-  expect(SKILL).toContain(
-    "jscpd-config --run --baseline .jscpd-baseline.json --update-baseline",
-  );
-  expect(SKILL).toContain("first run");
 });

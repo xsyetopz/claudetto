@@ -11,12 +11,12 @@ Less duplicate code means less to read and less to fix.
 The slice adds one command and one skill.
 It has no hook, no `userConfig` key, and no setting, so there is nothing to turn off.
 The command `jscpd-config` writes the config of `jscpd`.
-The skill `dry` tells Claude when to run `jscpd` and how to read a clone.
+The skill `dedupe` tells Claude when to run `jscpd` and how to read a clone.
 
 | Item | Kind | What it does |
 | --- | --- | --- |
 | `jscpd-config` | Command in `bin/` | Merges `jscpd.local.json` and its `extends` chain into `.jscpd.json`. |
-| `dry` | Skill | Finds clones, reads each clone, and decides if a merge is good. |
+| `dedupe` | Skill | Finds clones, reads each clone, and decides if a merge is good. |
 
 Claude runs `jscpd` with `jscpd-config --run` after the command wrote the config.
 
@@ -95,8 +95,7 @@ It tells Claude not to merge blocks that only look alike, or a merge that needs 
 A clone that Claude keeps on purpose goes in the baseline with `jscpd-config --run --baseline .jscpd-baseline.json --update-baseline`, and Claude says why.
 The skill may run only `jscpd-config *`, so a call needs no prompt.
 
-## See Also
+## Related Pages
 
-- [Patch](Patch)
 - [Guard](Guard)
 - [Settings Snippet](Settings-Snippet)
