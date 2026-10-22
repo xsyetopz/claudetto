@@ -2,119 +2,129 @@
 
 # Guard
 
-This page tells how the `guard` slice of the core plugin `claudetto` denies a `Bash` command that only prints a file, and asks before a `git push` that deletes a remote branch.
-A user reads it to learn why Claude gets a deny and what to do.
+This page tells how the `guard` slice of the core plugin `claudetto` decides which calls run, which ask a person, and which stop.
+A user reads it to learn why Claude Code shows a dialog or a refusal.
 A contributor reads it before an edit of `slices/guard/`.
 
 ## Why It Exists
 
-The `Read` tool sends a short stub when Claude reads the same range of an unchanged file again.
-A `Bash` print of a file gets no stub, so the text enters the context again.
-The `guard` slice denies such a print and names the `Read` call that does the same work.
-
-The slice has one control, `print deny`.
-The ask before a delete refspec has no control entry: it keeps the ask of 0.2.0 for this form, and it does not save tokens (task 4.1 of `0-2-0`).
-Remove `print deny` when Claude Code gives the short stub for a `Bash` print too.
+The settings snippet has no `allow` list and no `ask` list.
+`permissions.defaultMode` is `default`, and `permissions.disableAutoMode` is `disable`, so the classifier of auto mode is off.
+The slice replaces the lists with one gate that reads the command.
+The gate lets a call run unless the call can lose work for good, harm the system, or read a secret.
+A rule of the settings cannot read a command, so it cannot tell `rm -rf node_modules` from `rm -rf src`.
+The gate can.
 
 ## What the Hook Does
 
-The slice adds a `tool.call` hook and a `tool.check` hook on the tool `Bash`.
-The `tool.call` hook is the print deny, and the `tool.check` hook is the ask in the sections `Delete Refspec of git push` and `Docker Run`.
-The hook runs in the phase `check`, after the `sembr` rewrite of the phase `rewrite`.
-So the hook checks the command that would run.
+The slice adds one `tool.check` hook on the tools `Bash`, `Read`, `Grep`, `Glob`, `Edit`, and `Write`.
+It gives each call one of three answers:
 
-1. The hook reads the command and splits it into parts.
-2. If each part only prints a file, the hook finds the file and the line range.
-3. The hook denies the call and names the `Read` call with `file_path`, `offset`, and `limit`.
-
-If one part does other work, the call runs.
-Examples of such a part are `ls`, a build, and a print that goes into a pipe.
-
-## Which Commands Count as a Print
-
-The hook reads these forms as a print of one file:
-
-| Command | Range in the deny |
+| Answer | What happens |
 | --- | --- |
-| `cat F` | No range |
-| `sed -n A,Bp F` or `sed -n Np F` | `offset` A, `limit` B-A+1 |
-| `head F`, `head -n N F`, `head -N F` | `offset` 1, `limit` N (10 by default) |
-| `tail -n +N F` | `offset` N |
-| `tail F`, `tail -n N F`, `tail -N F` | The last N lines (10 by default) |
+| Allow | The call runs. This is the default |
+| `ask` | A person decides in the dialog, unless Jev decides first (see below) |
+| `deny` | The call stops, and Claude gets the reason |
 
-A compound command is a print only when each part is a print.
-The hook splits on `;`, `&&`, `||`, `|`, `&`, and new lines outside quotes.
-A plain `cd DIR` is not work, and it sets the folder of the later parts.
-A relative path uses the folder of the session or of the last `cd`.
+The hook keeps a `deny` of the engine, such as a `deny` rule of the user.
+The slice reads the shell syntax and does not run the shell.
+It finds a command in `$(...)`, `bash -c`, a group, and a branch of `if`.
 
-## Delete Refspec of `git push`
+## What the Gate Denies
 
-The `tool.check` hook asks the person before a `git push` with a delete refspec, such as `git push origin :branch` or `git push origin +:branch`.
-An `ask` rule of the settings cannot match this form, because Claude Code warns on an inner `:*` in a rule.
-The ask has `decider: "person"`, so in each mode the dialog is the only approver.
-No allow rule, classifier, or `bypassPermissions` settles it.
+The gate denies these calls:
+
+- `sudo`, `doas`, and `su`.
+- A command that can erase a disk or turn off a protection of the system:
+  `mkfs`, `newfs`, `dd` with `of=/dev/`, `diskutil` with `erase`, `zero`, `secureErase`, `partition`, or `reformat`, `csrutil` (except `status`), `spctl --master-disable` and `--global-disable`, `nvram` that sets or deletes a value, and `security delete-*`.
+- A recursive `chmod`, `chown`, or `chgrp` on `/` or the home folder.
+- A write to `/System`, `/Library`, or `/usr` (but not `/usr/local`), by a command, by a redirect, or by `Edit` or `Write`.
+- A read of a secret: a `.env` file (but not `.env.example`, a sample, or a template), `~/.ssh`, `~/.gnupg`, `~/.aws/credentials`, `~/.netrc`, and `~/.docker/config.json`.
+  This covers `Read`, `Grep`, and the globs of `Glob`.
+- A delete of `/` or the home folder.
+
+The reason of a `deny` of a `Bash` command, except a read of a secret, ends with ``If the user wants this command, they can run `! <cmd>`.``
+
+## What the Gate Asks
+
+### Deletes
+
+The commands `rm`, `shred`, `srm`, `unlink`, and `find` with `-delete` or `-exec rm` are deletes.
+
+- A delete in the temporary folder runs, but a delete in a project in the temporary folder gets the check of the project.
+- A delete of a build folder runs: `node_modules`, `dist`, `build`, `out`, `target`, `coverage`, `.next`, `.nuxt`, `.turbo`, `.cache`, `.parcel-cache`, `.build`, `DerivedData`, `__pycache__`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `.venv`, and `.gradle`.
+- A delete outside the project asks.
+- A delete inside the project runs `git status` and `git ls-files` for the paths.
+  The delete runs when each path has a commit and no change.
+  A path with a change, with no commit, or in a folder that `git` does not manage asks.
+  For a delete, ignored and untracked files count as changes, because the delete removes them.
+- A delete whose paths come from a pipe (`xargs` and `parallel`), or whose target the gate cannot read, asks.
+
+### Local `git` Work
+
+A `git` command that can lose local work asks when the paths have a change:
+`reset --hard`, `checkout` with a force flag or paths, `restore`, `clean -f`, `stash drop`, and `stash clear`.
+`clean -f` counts untracked files, and `clean -fx` and `clean -fX` count ignored files too.
+`reflog expire` and `gc --prune=now` or `--prune=all` always ask.
+
+### History on a Remote
+
+A `git push` with `--force`, `--force-with-lease`, `--delete`, `--mirror`, or a refspec that starts with `+` or `:` asks.
+This ask is for a person only, because Jev does not decide it.
+
+### Commands the Gate Cannot Read
+
+These ask, because the gate cannot know what they do:
+
+- `eval`.
+- A shell script that the gate cannot read, or a script file with no commit.
+- A command that is too long to read (`SHELL_SCAN_MAX_CHARS`).
+
+## Who Decides an `ask`
+
+Each `ask` carries `decider: "person"`, so the dialog has no "always allow" row, and no classifier settles it.
 Where no person can be asked, Claude Code refuses the call.
-The hook keeps a deny of the engine.
-The hook finds the form with `git` options before `push` (`git -C dir push`), a wrapper such as `sudo`, and options before or after the remote.
-It also finds the form in `$(...)`, `bash -c`, `sh -c`, `eval`, a group, and a branch of `if`.
-The first plain word after `push` is the remote, and each later word that starts with `:` or `+:` is a delete refspec.
-The reason of the ask says that the push deletes the remote branch.
-The forms `git push origin main`, `git push origin HEAD:main`, and `git push origin a:b` run.
 
-## Docker Run
+An `ask` of a delete or of local `git` work goes to Jev first when both of these are true:
 
-On Linux, setup puts `docker *` in `sandbox.excludedCommands` and `Bash(docker *)` in `permissions.allow`.
-The `DOCKER_ASK` rules of the `prompt` slice match only a verb right after `docker`.
-So `docker -H x run -v /:/h alpine` matches no ask rule, and it runs outside the sandbox with no prompt.
-The same `tool.check` hook asks the person before a `docker` command that runs or creates a container.
-The ask has `decider: "person"`, like the ask of the delete refspec, and the hook keeps a deny of the engine.
-The verbs are `run`, `create`, `container run`, `container create`, `compose run`, `compose up`, and `compose create`.
-A test pins them equal to the verbs of the `DOCKER_ASK` rules.
-The hook skips the global options of `docker` before the verb: `-H`, `--host`, `-c`, `--context`, `--config`, `-l`, `--log-level`, `--tlscacert`, `--tlscert`, and `--tlskey` with a value, and flags such as `-D`, `--tls`, `--tlsverify`, and `--opt=value`.
-For `docker compose`, it also skips `-f`, `--file`, `-p`, `--project-name`, `--profile`, `--env-file`, `--project-directory`, `--workdir`, `--parallel`, `--progress`, and `--ansi` with a value.
-It finds the call by path (`/usr/bin/docker`), after a wrapper such as `sudo`, and in `$(...)`, `bash -c`, `eval`, a group, and a branch of `if`.
-The reason of the ask names the verb and says that the container can mount host paths.
-The calls `docker ps`, `docker logs run`, `docker build`, and `docker compose ps` run.
-`docker-compose` is not covered, because the `DOCKER_ASK` rules do not cover it.
-Other routes stay open: a variable that holds the verb, an alias, a script that calls `docker`, and on macOS `curl --unix-socket`.
-On Linux, the `docker` client runs outside the sandbox, so `docker cp`, `docker save -o`, and `docker export -o` can write a host path with no prompt.
-`docker service create --mount` and `docker stack deploy` stay open too, after `docker swarm init`.
+- The `decide` option of the plugin is `jev`, which is the default.
+- `TYPESAFE_API_KEY` is set.
 
-## When the Command Runs
+The gate runs `claudetto-decide yes --json` once, with a timeout of `JEV_TIMEOUT_MS` (12,000 ms).
+The question is whether each file that the command can lose is safe to lose, such as build output, a cache, a log, or a temporary file.
+The command and the reason of the `ask` go with it.
+The call runs when `P(yes)` is `JEV_YES_MIN` (0.8) or more.
+Any other answer, a failure, or a timeout leaves the `ask` to a person.
+See [Decide](Decide) for the Jev client.
 
-The hook lets the call run in these cases:
+The `ask` for a push, for `eval`, and for a script is for a person only.
 
-- The command has a heredoc, an open quote, a substitution, a variable, a glob, or a redirect.
-- A part prints into a pipe, or `cd` has an unknown folder.
-- The file does not exist, or is not a regular file.
-- The file is a generated file.
-  These are files in `node_modules`, `.git`, `dist`, `build`, `target`, `coverage`, `.next`, `out`, or `__pycache__`.
-  Files that end in `.log`, `.map`, `.lock`, `.min.js`, `.min.css`, `.tsbuildinfo`, `package-lock.json`, or `bun.lock` and `bun.lockb` count too.
-- The file is empty and the command uses `tail` with a count.
+## The Log
 
-## Large Files
-
-The hook counts the lines of a file with the engine file reader.
-A file over `READ_MAX_BYTES` (4 MiB, in `slices/guard/limits.ts`) gets no line count.
-The deny then names the file with no range.
-The same holds for `cat F`.
+The gate writes each `ask` as one JSON line to `<tmp>/claudetto/gate/<sessionId>.jsonl`.
+The fields are `at`, `tool`, `target`, `reason`, and `decider`, which is `jev` or `person`.
+A log that cannot be written changes no answer.
+The session cleanup removes the log with the other files of the session ([Session Hygiene](Hygiene)).
 
 ## Fail Closed
 
 Claude Code skips a hook that throws or times out, so the call would run.
 The slice adds an error handler for this case.
-If the hook fails and the command prints a file, the handler denies the call and gives the kind of the failure.
-The reason tells Claude to use `Read` with an `offset` and a `limit`.
-A command that does not print a file runs.
+If the hook fails, the handler gives an `ask` for a person, with the reason that the gate failed.
+A `git` run that fails or takes more than `GIT_TIMEOUT_MS` (5,000 ms) counts as a change, so a person decides.
 
-## How to Turn It Off
+## What the Gate Does Not Cover
 
-The `guard` slice denies a `Bash` command that only prints a file.
-Claude gets a `Read` call to use instead.
-This saves tokens, because `Read` does not send the same text twice.
+- A path that a variable, an alias, or a script hides from the shell reader.
+  Only the cases above ask.
+- A `Bash` edit of a file that is not a delete.
+  The edit ledger of [Session Hygiene](Hygiene) tells Claude about it when a file changes.
+- The `deny` list of the settings snippet.
+  It is a second layer for the same dangers, and it holds in each mode ([Settings Snippet](Settings-Snippet)).
 
-## See Also
+## Related Pages
 
-- [Sembr](Sembr)
+- [Decide](Decide)
+- [Session Hygiene](Hygiene)
+- [Settings Snippet](Settings-Snippet)
 - [Controls](Controls)
-- [Bounds](Bounds)
