@@ -1,11 +1,13 @@
-// The cleanup of the settings keys that claudetto 0.1.0 wrote and 0.2.0 no longer writes.
-// The list comes from the snippet of the tag `claudetto--v0.1.0-alpha.1` against the snippet of 0.2.0.
+// The cleanup of the settings keys that claudetto 0.1.0 and 0.2.0 wrote and later versions no longer write.
+// The 0.1.0 list comes from the snippet of the tag `claudetto--v0.1.0-alpha.1` against the snippet of 0.2.0.
+// The 0.2.0 snippet is the snippet of the tag `claudetto--v0.2.0`.
 
 import { expect, test } from "bun:test";
 import { mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { main } from "../../../plugins/claudetto/slices/setup/adapters/cli.ts";
+import OLD from "../../../plugins/claudetto/slices/setup/snippet-0.2.0.json";
 
 const ASK_0_1_0 = [
   "Bash(git push *--force*)",
@@ -31,25 +33,14 @@ const run = async (settings: object) => {
   return Bun.file(file).json();
 };
 
-test("setup removes the env key and the `ask` rules that only 0.1.0 wrote", async () => {
+test("setup removes the `ask` rules that only 0.1.0 wrote", async () => {
   const out = await run({
-    env: {
-      CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS: "1",
-      MY_VAR: "keep",
-    },
+    env: { MY_VAR: "keep" },
     permissions: { ask: [...ASK_0_1_0, "Bash(my ask *)"] },
   });
-  expect(out.env).not.toHaveProperty("CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS");
   expect(out.env.MY_VAR).toBe("keep");
   for (const rule of ASK_0_1_0) expect(out.permissions.ask).not.toContain(rule);
   expect(out.permissions.ask).toContain("Bash(my ask *)");
-});
-
-test("setup keeps an env key of the user that has another value than 0.1.0 wrote", async () => {
-  const out = await run({
-    env: { CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS: "0" },
-  });
-  expect(out.env.CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS).toBe("0");
 });
 
 test("setup keeps the other keys of the user, such as `deny` and `theme`", async () => {
@@ -81,4 +72,39 @@ test("the dry run lists each `ask` rule that it removes", async () => {
   expect(await main(["--scope", "user"], env, dir, io)).toBe(0);
   const text = lines.join("\n");
   for (const rule of ASK_0_1_0) expect(text).toContain(`\`${rule}\``);
+});
+
+test("setup removes the values of 0.2.0, and keeps the values that the user changed or added", async () => {
+  const { sandbox, permissions } = OLD;
+  const ask = permissions.ask.slice(1);
+  const out = await run({
+    ...OLD,
+    sandbox: {
+      ...sandbox,
+      enabled: false,
+      network: {
+        ...sandbox.network,
+        allowedDomains: [...sandbox.network.allowedDomains, "example.com"],
+      },
+    },
+    permissions: { ...permissions, ask },
+  });
+  expect(out.sandbox).toStrictEqual({
+    enabled: false,
+    network: { allowedDomains: ["example.com"] },
+  });
+  expect(out.permissions.ask).toStrictEqual(ask);
+  expect(out.permissions.deny).not.toContain("TaskStop");
+  expect(out.permissions).not.toHaveProperty("allow");
+  expect(out).not.toHaveProperty("syncClaudeAiSkills");
+});
+
+test("setup leaves `cc-plugin-you-should-know@builtin` to the user: it removes the `false` of 0.2.0 and keeps a `true` of the user", async () => {
+  const key = "cc-plugin-you-should-know@builtin";
+  expect((await run(OLD)).enabledPlugins).not.toHaveProperty(key);
+  const mine = await run({
+    ...OLD,
+    enabledPlugins: { ...OLD.enabledPlugins, [key]: true },
+  });
+  expect(mine.enabledPlugins[key]).toBe(true);
 });

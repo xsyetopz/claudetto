@@ -6,8 +6,6 @@ import { mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { main } from "../../../plugins/claudetto/slices/setup/adapters/cli.ts";
-import { LEGACY_RULES } from "../../../plugins/claudetto/slices/setup/prompts.ts";
-import fixture from "./fixtures/policy-rules-0.1.0.json";
 
 const BLOCK = "<!-- claudetto:begin -->\nold rules\n<!-- claudetto:end -->";
 
@@ -29,11 +27,6 @@ const run = async (settings: object, claudeMd?: string) => {
   };
 };
 
-test("the snippet sets `sandbox.network.allowLocalBinding` to `true`", async () => {
-  const { settings } = await run({});
-  expect(settings.sandbox.network.allowLocalBinding).toBe(true);
-});
-
 test("the snippet holds no `promptCacheTtl` and no `subagentPromptCacheTtl`", async () => {
   const { settings } = await run({});
   expect(settings).not.toHaveProperty("promptCacheTtl");
@@ -44,7 +37,7 @@ test("the snippet keeps the keys of the user, and a second run changes nothing",
   const first = (await run({ theme: "dark", env: { A: "1" } })).settings;
   expect(first.theme).toBe("dark");
   expect(first.env.A).toBe("1");
-  expect(first.env.CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT).toBe("1");
+  expect(first.env.CLAUDE_CODE_DISABLE_CRON).toBe("1");
   expect((await run(first)).settings).toStrictEqual(first);
 });
 
@@ -91,31 +84,6 @@ test("the cleanup removes `GIT_CONFIG_COUNT` when only the pairs of claudetto we
   expect(Object.keys(settings.env).filter((k) => k.startsWith("GIT"))).toEqual(
     [],
   );
-});
-
-test("the cleanup removes the rule texts of 0.1.0 from `autoMode`, and keeps the rules of the user", async () => {
-  const mine = "My rule: never touch the staging folder.";
-  const { settings } = await run({
-    autoMode: {
-      allow: [...fixture.allow, mine],
-      soft_deny: [...fixture.soft_deny, mine],
-      hard_deny: [...fixture.hard_deny, mine],
-    },
-  });
-  expect(settings.autoMode.allow).toStrictEqual([mine]);
-  expect(settings.autoMode.soft_deny).toStrictEqual([mine]);
-  expect(settings.autoMode.hard_deny).toStrictEqual([mine]);
-});
-
-test("the cleanup removes an `autoMode` list that holds only 0.1.0 texts, so the built-in defaults apply", async () => {
-  const { settings } = await run({
-    autoMode: { hard_deny: [...fixture.hard_deny] },
-  });
-  expect(settings.autoMode.hard_deny).toBeUndefined();
-});
-
-test("the rule texts that the cleanup matches are the rule texts of `kernel/policy` of 0.1.0", () => {
-  expect(LEGACY_RULES).toStrictEqual(fixture);
 });
 
 test("the cleanup removes the claudetto block of `CLAUDE.md`, and keeps the text of the user", async () => {

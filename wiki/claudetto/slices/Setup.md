@@ -5,26 +5,26 @@
 The `setup` slice puts the right settings into your Claude Code settings file.
 A plugin cannot set permissions or env vars by itself, so this slice does it for you.
 Run `/claudetto:setup` once, and again after each update.
-The cleanup of the 0.1.0 settings is on [Setup Cleanup](Setup-Cleanup).
+The cleanup of the settings of 0.1.0 and 0.2.0 is on [Setup Cleanup](Setup-Cleanup).
 
 ## Why You Need It
 
 A plugin settings file can set only `agent` and `subagentStatusLine`.
+The plugin of claudetto sets `agent` to `claudetto:main`.
 So the slice ships a settings snippet and a tool that merges it into a file that you pick.
 
 ## How to Use It
 
 Only you can start the skill `setup`, because it has `disable-model-invocation: true`.
 Its `argument-hint` is `[user|project|local]`.
-It may run only `claudetto-setup *` and `codegraph install --target claude --location global`.
+It may run only `claudetto-setup *`.
 
 1. It takes the scope from the argument, or it asks you.
 2. It runs `claudetto-setup --scope <scope>` and prints the list of changes as text.
 3. It asks you once whether to apply them.
 4. After a yes, it runs the same command with `--apply`.
 5. It gives you the `alias` line for `Glob` and `Grep`.
-6. It runs `claudetto-setup --addons` and asks you about each step that the command prints.
-7. It lists the files that changed and tells you to restart Claude Code.
+6. It lists the files that changed and tells you to restart Claude Code.
 
 The skill never edits a settings file itself.
 The command is the checked path.
@@ -32,16 +32,13 @@ The command is the checked path.
 ## The Command
 
 ```text
-claudetto-setup [--scope user|project|local] [--advisor builtin|claudetto] [--apply]
-claudetto-setup --addons
+claudetto-setup [--scope user|project|local] [--apply]
 ```
 
 | Option | Meaning |
 | --- | --- |
 | `--scope` | The settings file to change. The default is `user`. |
-| `--advisor` | Overrides the `advisor` option of the `advise` slice. The default is the option in `pluginConfigs`, or `claudetto`. |
 | `--apply` | Write the changes. Without it, the command only prints them. |
-| `--addons` | Print the optional step of each enabled add-on. It writes nothing. |
 | (an unknown option) | Print the usage to `stderr` and exit with code 2. |
 
 | Scope | Settings file | Markdown file for the cleanup |
@@ -54,22 +51,29 @@ claudetto-setup --addons
 | --- | --- |
 | 0 | Good run |
 | 1 | A settings file is not a JSON object |
-| 2 | Bad option |
+| 2 | Bad option or unknown scope |
 
 The command changes nothing when it fails.
 A second run with the same options changes nothing.
 
+## The Order of Work
+
+The command works in this order:
+
+1. It removes what 0.1.0 wrote ([Setup Cleanup](Setup-Cleanup)).
+2. It removes what 0.2.0 wrote and 0.3.0 does not set ([Setup Cleanup](Setup-Cleanup#the-020-keys)).
+3. It removes the `claudetto` block of 0.1.0 from the `CLAUDE.md` file of the scope.
+4. It merges the settings snippet.
+
 ## The Merge
 
-The command first runs the [cleanup](Setup-Cleanup).
-It then merges the settings snippet into the result.
-The snippet is the sum of the `settings` of all slices.
-See [Settings Snippet](Settings-Snippet) for each key.
+The snippet is in `plugins/claudetto/slices/setup/prompts.ts`.
+See [Settings Snippet](Settings-Snippet) for the value of each key and [Snippet Keys](Settings-Snippet-Keys) for the reason.
 
 | Kind of value | What the merge does |
 | --- | --- |
 | Object | Merges key by key. |
-| Array | Adds the entries that are missing. Your entries stay. `availableModels` is the one exception, because the snippet replaces it. |
+| Array | Adds the entries that are missing. Your entries stay. |
 | Scalar | Takes the value of the snippet. |
 | Key that the snippet does not name | Stays as it is. |
 
@@ -78,26 +82,26 @@ It prints `Settings match the snippet.` when nothing differs.
 `<plugin folder>` in a status line command becomes the folder of the installed plugin.
 That folder holds the version, so run the skill again after an update.
 
-The `setup` slice adds these keys:
+## Subagent Cap
 
-| Key | Value |
+The snippet does not set `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, because the right value depends on your plan.
+The command reads `oauthAccount.organizationRateLimitTier` and `organizationType` from `.claude.json` (in `CLAUDE_CONFIG_DIR`, or in your home folder).
+It writes the cap of the plan into `env` of the `user` and `local` scopes:
+
+| Plan tier | Cap |
 | --- | --- |
-| `env.CLAUDE_CODE_DISABLE_CRON` | `1` |
-| `env.CLAUDE_CODE_DISABLE_FAST_MODE` | `1` |
-| `env.CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` | `1` |
-| `includeGitInstructions` | `false` |
-| `autoMemoryEnabled` | `false` |
-| `disableClaudeAiConnectors` | `true` |
-| `syncClaudeAiSkills` | `false` |
-| `syncClaudeAiPlugins` | `false` |
-| `worktree.baseRef` | `head` |
-| `sandbox.network.allowLocalBinding` | `true` |
-| `sandbox.filesystem.allowWrite` | The package caches `~/.bun/install/cache`, `~/.npm`, `~/.cache/pip`, `~/.cargo/registry`, `~/go/pkg/mod` |
+| `claude_pro` | 2 |
+| `default_claude_max_5x` | 4 |
+| `default_claude_max_20x` | 6 |
 
-With `--advisor claudetto` (the default), the snippet also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`.
-Claude then sees one advisor.
-Without `--advisor`, the command reads the `advisor` option from `pluginConfigs` in the user settings, because a CLI that you run gets no `CLAUDE_PLUGIN_OPTION_*` env var.
-The skill passes no `--advisor`, so that the model cannot choose the value.
+For any other tier, the command writes no cap and names the tier in its output.
+The `project` scope gets no cap, because a plan belongs to one login.
+
+## Context7 Notice
+
+The command looks in `~/.claude` and in `<project>/.claude` for the official Context7 `find-docs` skill and for a Context7 rule file.
+It prints each one that it finds with the characters that it adds to each session.
+The skill `claudetto-docs:find-docs` of the add-on uses the same `ctx7` CLI with 155 characters, so keep one of the two.
 
 ## Status Lines
 
@@ -133,39 +137,7 @@ It creates `.gitignore` when the file is missing.
 It changes nothing in a project with no `.git/`.
 A file that a team shares, such as an OpenSpec change, is not in the list.
 
-## The Docker Socket
-
-In a project that uses Docker (a `Dockerfile`, a Compose file, or a `justfile` or `package.json` that calls `docker`), the command offers the Docker socket in `sandbox.network.allowUnixSockets`, and with `--apply` it writes the socket to `.claude/settings.local.json`.
-The socket is the `unix://` path of `DOCKER_HOST`, or else the first of `~/.orbstack/run/docker.sock`, `~/.docker/run/docker.sock`, and `/var/run/docker.sock` that exists.
-It changes nothing in a project that does not use Docker.
-On macOS, the socket entry keeps `docker` in the sandbox.
-Claude Code ignores `allowUnixSockets` on Linux, so there the command writes `Bash(docker *)` to `permissions.allow` of `.claude/settings.local.json` instead.
-It also writes `docker *` to `sandbox.excludedCommands` of the user settings, whatever the `--scope` is.
-Claude Code reads `excludedCommands` only from trusted settings, because the settings snippet sets `sandbox.allowUnsandboxedCommands` to `false`.
-The user settings are trusted, and the local settings are not.
-This entry applies to all projects of the user.
-A command in `excludedCommands` runs outside the sandbox, and the `permissions.ask` rules of the Docker commands still win over the allow rule.
-On other platforms, the step does nothing.
-A local settings file that does not parse stops the step with an error.
-
-### Accepted Risk: The Open Socket
-
-With the Docker socket open, a sandboxed process can reach the Docker daemon without the `docker` rules.
-It can use `curl --unix-socket`, `docker -H`, or `docker --context`.
-Such a call skips the `permissions.ask` rules of `docker-ask.ts`, which match the text of a `docker` command only.
-The daemon then has the rights of the daemon, not the limits of the sandbox.
-On Linux, the socket stays closed to sandboxed processes, so `curl --unix-socket` does not apply.
-The risk there is that `docker *` runs outside the sandbox.
-A call such as `docker -H x run -v /:/h` matches `Bash(docker *)`.
-It matches no `permissions.ask` rule, because those rules start with `docker run`, `docker create`, `docker container run`, `docker container create`, `docker compose run`, `docker compose up`, or `docker compose create`.
-The `guard` slice closes this part: it asks the person before a `docker` command that runs or creates a container, also with options before the verb.
-Some routes stay open, such as a variable that holds the verb or a script that calls `docker`.
-The `docker` client itself runs outside the sandbox on Linux, so `docker cp` and `docker save -o` can write a host path with no prompt.
-On macOS, `curl --unix-socket` to the open socket stays open too.
-This risk is accepted, because Docker does not work in the sandbox without the socket.
-Do not use the Docker step in a project in which you do not trust the commands that Claude runs.
-
-## See Also
+## Related Pages
 
 - [Setup Cleanup](Setup-Cleanup)
 - [Settings Snippet](Settings-Snippet)
