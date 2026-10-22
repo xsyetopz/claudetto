@@ -31,7 +31,7 @@ On 2026-10-16, a `Bash` call of a subagent ran `cat > <file>` with no input.
 The sandbox blocked `ps`, so the state was unknown.
 A local session has no time limit on a background `Bash` command ([Engine Facts](Decisions-Engine)).
 
-## See Also
+## Related Pages
 
 - [Model Guidance](Model-Guidance)
 - [Usage Evidence](Usage-Evidence)

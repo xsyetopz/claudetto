@@ -12,7 +12,7 @@ After `/claudetto:setup` and a restart, you get these parts:
 
 - A status line with up to three rows.
 - The output style `claudetto:Concise`, which puts the result first and then only the facts you need. See [Styles](Styles).
-- A short system prompt with a tailored `lean_body` text. See [Prompt](Prompt).
+- A tailored system prompt: each session runs as the main agent `claudetto:main`. See [Prompt](Prompt).
 - A `Reply` button under each message of Claude. A press puts that message in the prompt box as a `>` quote. See [Reply](Reply).
 
 ## The Status Line
@@ -40,27 +40,31 @@ See [Handoff](Handoff).
 
 ## Plans and Goals
 
-- `/claudetto:spec` picks an OpenSpec schema, `task`, `story`, or `epic`. See [Spec](Spec).
-- `/goal` runs checks at the end of each turn, until they pass. See [Goal](Goal).
+- `/claudetto:propose`, `/claudetto:apply`, `/claudetto:verify`, and `/claudetto:archive` plan, do, check, and archive a change. See [Spec](Spec).
+- `/goal <check command>` sets a check that must exit `0` before Claude can stop. See [Goal](Goal).
 - A plan file with a claim that has no source is denied. Claude must name the source, mark the claim `(proposed)`, or ask you. See [Ground](Ground).
 
-## What Gets Denied or Checked
+## What Gets Allowed, Asked, or Denied
 
-- A `Bash` command that only prints a file is denied. The denial names the `Read` call to use. See [Guard](Guard).
-- A Markdown file that Claude writes gets one sentence on each line. See [Sembr](Sembr).
-- With `TYPESAFE_API_KEY` set, Jev answers each `AskUserQuestion` call when it is sure, and you see no dialog. See [Decide](Decide).
+- The permission gate lets a command run unless it can lose work for good, harm the system, or read a secret.
+  A delete of a path with uncommitted work, a `git reset --hard` over changes, and a force push ask you first.
+  `sudo`, a disk erase, a write to a system folder, and a read of a secret file are denied.
+  See [Guard](Guard).
+- With `TYPESAFE_API_KEY` set, Jev answers each `AskUserQuestion` call when it is sure, and you see no dialog.
+  Jev can also allow an `ask` of the gate for a delete or a local `git` loss. See [Decide](Decide).
+- At the start of a session, claudetto removes old session files and worktrees that no session uses. See [Session Hygiene](Hygiene).
 
-The settings snippet also sets permission rules and the sandbox.
-Reads of secret files and destructive commands are denied, and a force push asks first.
+The settings snippet sets no `allow` or `ask` rules.
+It sets a `deny` list as a second layer.
 
 ## Try These
 
-1. Ask Claude to print a file with `cat`, and read the denial.
+1. Ask Claude to delete a file that has uncommitted changes, and read the dialog.
 2. Run `/context` and `/usage` to see the size of the start of the session.
-3. Run `/goal status` to see the goal engine.
+3. Run `/goal status` to see the goal, or `/goal` with a check command to set one.
 4. Run `/claudetto:setup` again. It changes nothing.
 
-## See Also
+## Related Pages
 
 - [Troubleshooting](Troubleshooting)
 - [Overview](Overview)

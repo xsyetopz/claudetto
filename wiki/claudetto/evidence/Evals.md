@@ -40,33 +40,33 @@ Delete kept folders by hand.
 
 ## The Suite
 
-The suite has 40 cases.
-3 are in `src/plugins/claudetto/evals/` and 37 are in the `evals/` folder of a slice.
-The 32 cases of the `prompt` slice are in four sets: `baseline`, `rule-aware`, `blind`, and `control` (a `set:` tag).
-`just generate` copies them to `plugins/claudetto/evals/`.
+The suite has 43 cases, all in `plugins/claudetto/evals/`.
+A case can have a `set:` tag, such as `baseline`, `rule-aware`, `blind`, or `control`.
 Each case has a `case.yaml` and most have a `scaffold.sh`.
 
-| Case | Slice | Max turns | Graders |
-| --- | --- | ---: | --- |
-| `bugfix-range` | none | 20 | 2 `regex`, 2 `tool_used` |
-| `feature-slugify` | none | 20 | 3 `regex`, 2 `tool_used` |
-| `library-docs` | none | 20 | 5 `regex`, 2 `tool_used` |
-| `handoff` | `handoff` | 20 | 2 `regex`, 3 `tool_used` |
-| `accusation-subagent` | `prompt` | 25 | 3 `regex`, 4 `tool_used` |
-| `accusation-user` | `prompt` | 25 | 3 `regex`, 7 `tool_used` |
-| `correction-next-action` | `prompt` | 10 | 1 `llm`, 1 `tool_used` |
-| `false-alarm-sum` | `prompt` | 20 | 2 `regex`, 4 `tool_used`, 1 `llm` |
-| `harm-settled-by-facts` | `prompt` | 20 | 3 `regex`, 1 `llm` |
-| `least-code-fix` | `prompt` | 20 | 4 `regex`, 1 `tool_used` |
-| `missing-tool-is-a-step` | `prompt` | 15 | 1 `tool_used`, 1 `llm` |
-| `repeat-no-reason` | `prompt` | 20 | 1 `regex`, 1 `llm` |
-| `report-count` | `prompt` | 15 | 1 `regex`, 1 `tool_used`, 1 `llm` |
-| `scope-followup` | `prompt` | 20 | 2 `regex`, 1 `llm` |
-| `temp-folder-removed` | `prompt` | 20 | 1 `regex`, 1 `tool_used` |
-| `accusation-warranted` | `styles` | 20 | 2 `regex`, 1 `llm` |
-| `claim-check` | `styles` | 20 | 2 `regex`, 1 `tool_used`, 2 `llm` |
-| `partial-verification` | `styles` | 20 | 3 `regex`, 3 `tool_used`, 2 `llm` |
-| `unprompted-skip` | `styles` | 20 | 3 `regex`, 3 `tool_used`, 2 `llm` |
+The table lists the cases of the earlier suite.
+
+| Case | Max turns | Graders |
+| --- | ---: | --- |
+| `bugfix-range` | 20 | 2 `regex`, 2 `tool_used` |
+| `feature-slugify` | 20 | 3 `regex`, 2 `tool_used` |
+| `library-docs` | 20 | 5 `regex`, 2 `tool_used` |
+| `handoff` | 20 | 2 `regex`, 3 `tool_used` |
+| `accusation-subagent` | 25 | 3 `regex`, 4 `tool_used` |
+| `accusation-user` | 25 | 3 `regex`, 7 `tool_used` |
+| `correction-next-action` | 10 | 1 `llm`, 1 `tool_used` |
+| `false-alarm-sum` | 20 | 2 `regex`, 4 `tool_used`, 1 `llm` |
+| `harm-settled-by-facts` | 20 | 3 `regex`, 1 `llm` |
+| `least-code-fix` | 20 | 4 `regex`, 1 `tool_used` |
+| `missing-tool-is-a-step` | 15 | 1 `tool_used`, 1 `llm` |
+| `repeat-no-reason` | 20 | 1 `regex`, 1 `llm` |
+| `report-count` | 15 | 1 `regex`, 1 `tool_used`, 1 `llm` |
+| `scope-followup` | 20 | 2 `regex`, 1 `llm` |
+| `temp-folder-removed` | 20 | 1 `regex`, 1 `tool_used` |
+| `accusation-warranted` | 20 | 2 `regex`, 1 `llm` |
+| `claim-check` | 20 | 2 `regex`, 1 `tool_used`, 2 `llm` |
+| `partial-verification` | 20 | 3 `regex`, 3 `tool_used`, 2 `llm` |
+| `unprompted-skip` | 20 | 3 `regex`, 3 `tool_used`, 2 `llm` |
 
 ## Bounds of a Run
 
@@ -75,7 +75,7 @@ Each case has a `case.yaml` and most have a `scaffold.sh`.
 | `runs` | 3 for each arm, 10 for `least-code-fix` and `temp-folder-removed` | `case.yaml` |
 | `execution.timeout_seconds` | 600, 900 for `handoff`, 300 for `correction-next-action` | `case.yaml` |
 | `execution.max_turns` | 10 to 25 | `case.yaml` |
-| `--max-cost-usd` | 5 | `justfile`, `eval-compare/compare.ts` |
+| `--max-cost-usd` | 5 | `justfile`, `tools/eval-compare/compare.ts` |
 
 The `handoff` case is named `five-reads-codeword` and uses `model: haiku`.
 It checks that an auto compaction in the middle of a task keeps the done steps and exact values ([Handoff](Handoff)).
@@ -86,7 +86,7 @@ The newest runs are on [Evals of 2.1.304](Evals-2.1.304).
 The comparisons with the built-in advisor and the built-in `/goal` are on [Built-In Comparisons](Builtin-Comparisons).
 On 2026-10-20, 32 `prompt` slice cases ran on Claude Code `2.1.304` in four sets, with 10 runs for each arm and a CI for each set.
 That page replaces [Evals of 0.2.0](Evals-0.2.0) for the current prompt.
-No full run of the 40 current cases exists.
+No full run of the 43 current cases exists.
 The four `styles` cases ran on Haiku 5.5 ([Evals of 0.1.0](Evals-0.1.0)).
 On 2026-10-19, eleven `prompt` slice cases ran on Claude Code `2.1.303`, after the fix of `LEAN_BODY` ([Evals of 0.2.0](Evals-0.2.0)).
 Each of them has 10 runs for each arm, so all eleven meet the D25 floor.
@@ -96,7 +96,7 @@ They ran again after their fixes, and their current values are on [Evals of 0.2.
 The newest full run was on 2026-10-10 on Claude Code `2.1.296`, with an earlier suite ([Evals History](Evals-History#full-suite-on-claude-code-21296)).
 Its figures do not describe the current prompt.
 
-## See Also
+## Related Pages
 
 - [Eval Graders](Eval-Graders)
 - [Evals History](Evals-History)

@@ -1,7 +1,7 @@
 # Settings Snippet
 
 The settings snippet is the set of Claude Code settings that `claudetto` needs, as one JSON block.
-The `settings` entries of the slices make it, and `just generate` writes it into this page.
+It lives in `plugins/claudetto/slices/setup/prompts.ts`, and `just generate` writes it into this page.
 A test checks each key against `schemas/claude-code-settings.json`.
 To apply it, see [Settings Apply](Settings-Apply).
 The reason and default of each key are on [Settings Snippet Keys](Settings-Snippet-Keys).
@@ -16,18 +16,25 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
   `claudetto-setup` fills it in.
 - `claudetto-setup` leaves out `$schema`, because it names the schema and is not a setting.
 
-## The `rm` Rules
+## The Lists
 
-The `rm` rules in `permissions.ask` match the recursive flags only: `-r` and `-R`, alone or at the end of a cluster with these leads: up to 3 distinct letters of `f`, `i`, and `v`, and `d`, `I`, `P`, or `x` alone or with one letter of `f`, `i`, or `v` before or after it (for example `-dr`, `-Pfr`, `-Ir`, `-xr`, and `-fvir`), as a later argument, and `--recursive`.
-A path with an `r` or `R` does not match, so `rm -f $TMPDIR/m.mjs` passes.
-A file name that starts with `-r` also asks.
-An extra ask is acceptable.
-The rules do not stop a write outside the allowed folders.
-The sandbox limits the writes of `Bash`.
-`allowUnsandboxedCommands` is `false`, so a command that fails in the sandbox is not run again outside it, and Claude Code ignores `dangerouslyDisableSandbox`.
-Only the `excludedCommands` run outside the sandbox.
+The snippet has no `permissions.allow` list and no `permissions.ask` list.
+`permissions.defaultMode` is `default`, and `permissions.disableAutoMode` is `disable`.
+The permission gate of the `guard` slice decides which calls run, which ask, and which stop ([Guard](Guard)).
+The `deny` list is a second layer for the same dangers.
+It holds in each mode, and it names:
 
-## See Also
+- Reads of secrets: `.env*` files, `~/.ssh`, `~/.aws/credentials`, `~/.gnupg`, `~/.netrc`, and `~/.docker/config.json`.
+- `rm -rf` of `/`, the home folder, and their variants.
+- Disk and system commands: `mkfs`, `dd` to a device, `newfs`, `diskutil`, `csrutil`, `spctl`, `nvram`, and `security delete-*`.
+- `sudo`, `doas`, and `su`.
+- Edits of `/System`, `/Library`, and the system folders of `/usr`.
+- The `Agent` types of the engine and tools that claudetto does not use, such as `Workflow`, `Artifact`, and the `Task*` tools.
+
+The snippet has no `sandbox` key.
+Setup adds one more key that the snippet does not hold: the subagent cap ([Setup](Setup#subagent-cap)).
+
+## Related Pages
 
 - [Settings Apply](Settings-Apply)
 - [Settings Snippet Keys](Settings-Snippet-Keys)

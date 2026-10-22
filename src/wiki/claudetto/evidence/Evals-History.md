@@ -82,7 +82,7 @@ Their results are removed, because this section had fewer than 10 runs per arm (
 Three Haiku reruns used `CLAUDE_CODE_EFFORT_LEVEL=high`.
 The traces do not show the effort level, so it is not verified that the setting reached the runs.
 
-## See Also
+## Related Pages
 
 - [Evals](Evals)
 - [Evals 0.1.0](Evals-0.1.0)

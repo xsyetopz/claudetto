@@ -12,10 +12,9 @@ Each section names a principle, the reason, and where the code applies it.
 It never patches the Claude Code binary or its npm package.
 A patch breaks at each release, and it breaks the terms of service of Anthropic.
 
-- `plugins/claudetto/hooks/hooks.json` names one module, `./register.ts`, and no classic hook.
-- `register.ts` is generated.
-  It has 20 `on()` calls for 12 events.
-- The output style `Concise` is `src/plugins/claudetto/slices/styles/styles/Concise.md`.
+- `plugins/claudetto/hooks/hooks.json` names one module, `./register.ts`, and one classic hook, `PreModelSwitch`.
+- `register.ts` has 18 `on()` calls for 15 events.
+- The output style `Concise` is `plugins/claudetto/output-styles/Concise.md`.
 
 ## Use the Least Powerful Part
 
@@ -23,7 +22,7 @@ For each need, `claudetto` picks the cheapest part that works.
 The order is: a default of Claude Code, a setting or env var, a mod handler, a classic hook, a script.
 A skill adds its description to each session, so only a skill that the user starts has `disable-model-invocation`.
 
-- `Slice.ladder` in `src/kernel/slice.ts` records the step of each slice and why no cheaper step works.
+- A slice that a setting can replace is not a slice. The `styles` slice is an empty folder, because the output style needs no code.
 - `.claude/rules/extension-points.md` forbids new runtime code for a feature that Claude Code already has.
 
 ## Do Not Call a Model for a Plain Check
@@ -31,8 +30,7 @@ A skill adds its description to each session, so only a skill that the user star
 A model call reads the whole context again.
 So a check that needs no judgment is code.
 
-- `guard` denies a `Bash` print of a file by parsing the command.
-- `sembr` rewrites Markdown with a sentence splitter.
+- `guard` reads the syntax of a command to tell a delete of build output from a delete of work, and a harmless `git` command from a loss.
 - `ground` checks `file:line` claims of a plan against the source.
 - `handoff` writes a cold handoff with no model call.
 
@@ -44,45 +42,55 @@ To remove it, remove the slice.
 Layers would spread one capability over many folders, and parallel work would conflict.
 
 - `biome.json` sets `noRestrictedImports`.
-  A slice imports only `src/kernel/` and its own folder.
-- `src/kernel/slice.ts` is the contract of a slice.
+  A slice imports only the `kernel/` of its plugin and its own folder.
 
-## Generate the Joining Files
+## Write the Joining Files by Hand
 
-`just generate` writes the files that join the slices: `hooks/register.ts`, `hooks.json`, `plugin.json`, the settings snippet, and the texts.
-A hand-kept list would need an edit for each new slice.
+`plugins/` is the source, and no generator writes it.
+Version 0.2.0 generated `hooks/register.ts`, `hooks.json`, `plugin.json`, and the kernel copies from a `slice.ts` manifest in each slice.
+Version 0.3.0 removed the generator and the manifests, because one reader can follow a hand-written `register.ts` with 18 `on()` calls and the generator was more code than it saved.
+`just generate` now writes only `wiki/`.
 
-- `tools/generate/discover.ts` finds each `slice.ts`.
-- `tools/generate/emit/register.ts` writes one literal `on()` call for each handler, because the mod runtime reads the event name only as a literal.
-- `just gate` runs `generate --check`, and `tools/generate/stray.ts` fails on a file in `plugins/` that the generator did not write.
+- `register.ts` has one literal `on()` call for each handler, because the mod runtime reads the event name only as a literal.
+- `tests/support/hook-evals.test.ts` fails when an `on()` call has no `// eval:` comment or no entry in `evals/hooks.json`.
 
 ## Let Each Plugin Work Alone
 
 A plugin imports nothing from another plugin.
-A user debugs a session with `claudetto-lab`, so that add-on cannot need the core plugin.
+An add-on must work when the user installs it alone, so it cannot need the core plugin.
 
-- `tools/generate/closure.ts` copies each kernel module that a plugin imports into `plugins/<plugin>/kernel/`.
+- An add-on keeps its own copy of each kernel file that it uses, and a test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
 - `.claude/rules/plugin-imports.md` and `tests/support/addons.test.ts` enforce the rule.
 
 ## Give Each Bound One Owner
 
 A number in two places drifts apart.
-So a shared runtime bound is in `src/kernel/budget.ts`, a slice bound is in `slices/<s>/limits.ts`, and a repository bound is in `tools/limits.ts`.
+So a shared runtime bound is in `plugins/claudetto/kernel/budget.ts`, a slice bound is in `slices/<s>/limits.ts`, and a repository bound is in `tools/limits.ts`.
 Tests pin each copy in code and config.
 
 - `CONTEXT_WINDOW` is `300_000`.
   The snippet sets `autoCompactWindow` to it for each model that is not a Haiku model.
-- `MIN_CLAUDE_CODE_VERSION` is `2.1.305`.
+- `MIN_CLAUDE_CODE_VERSION` is `2.1.307`.
 
 ## Keep the Prompt Short
 
 Each request sends the system prompt and the tool descriptions again.
 Shorter text leaves more context for the work.
-The `prompt` slice gives one text for the `lean_body` section, and the snippet sets `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`.
-That text is longer than the stock `lean_body` text, and its size is on [Prompt Size](Prompt-Size).
+Each session runs as the main agent `claudetto:main`, whose body replaces each built-in section, and the `prompt` slice gives shorter texts for seven tools.
+The size of the body is on [Prompt Size](Prompt-Size).
 
-- `src/plugins/claudetto/slices/prompt/domain/lean-body.ts` joins the sections `intro`, `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, and `counts`.
-- The settings merge fails when two slices give one key two values.
+- `plugins/claudetto/agents/main.md` is the body.
+- Three caps in `tools/limits.ts` pin the size of the first request ([Prompt](Prompt#size)).
+
+## Decide by the State, Not by a List
+
+A rule list cannot tell `rm -rf node_modules` from `rm -rf src`, and a classifier of auto mode is a large request on each call.
+The permission gate of the `guard` slice reads the command and the `git` state of its paths.
+It allows by default, asks before a loss for good, and denies a danger to the system or a secret read.
+Jev can allow an `ask` first, and a person decides the rest.
+The snippet keeps a `deny` list as a second layer, and it sets no `allow` list and no `ask` list.
+
+- `plugins/claudetto/slices/guard/domain/gate.ts` holds the rules ([Guard](Guard)).
 
 ## Hand Off Instead of Compacting
 
@@ -90,16 +98,16 @@ The `handoff` slice replaces the summary of a compaction with a handoff.
 The built-in compaction loses facts that the work needs.
 Set the option `compaction` to `built-in` to turn the handoff off.
 
-- `CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `HANDOFF_TRIGGER_TOKENS` are in `src/kernel/budget.ts`.
-- The slice registers a `session.compact` hook with the phase `answer`.
+- `CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `HANDOFF_TRIGGER_TOKENS` are in `plugins/claudetto/kernel/budget.ts`.
+- The slice registers a `session.compact` hook.
 
 ## Record Progress in Checked Tasks
 
 The state of an OpenSpec change is in `tasks.md`, where a checked task is a done task.
 The handoff reads the done list from there and from checks that passed, never from model text.
-`src/kernel/change.ts` holds the shared rules.
+`plugins/claudetto/kernel/change.ts` holds the shared rules.
 
-## See Also
+## Related Pages
 
 - [Decisions](Decisions)
 - [Architecture](Architecture)

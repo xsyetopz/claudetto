@@ -1,6 +1,5 @@
 ---
 paths:
-  - "src/plugins/**/*.ts"
   - "plugins/**"
 ---
 

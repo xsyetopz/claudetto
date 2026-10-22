@@ -1,6 +1,6 @@
 ---
 paths:
-  - "src/plugins/*/slices/*/lab/*.test.ts"
+  - "plugins/*/tests/*.test.ts"
 ---
 
-Each slice keeps its hook lab tests in `lab/*.test.ts`, and `just generate` copies them to `plugins/<name>/tests/`, which `claude plugin test` runs against the hooks module.
+Each plugin with hooks keeps its hook lab tests in `plugins/<name>/tests/`, and `claude plugin test` runs them against the hooks module.

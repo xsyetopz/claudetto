@@ -86,7 +86,6 @@ The source is git commit `af3071f4` (`wiki/Usage-Evidence.md`, line 22).
 ## Delegation Share
 
 The `usage` report of 0.1.0 scanned local transcripts, and it is not in 0.2.0.
-The [Sessions](Sessions) add-on replays and audits a session.
 
 | Measure | Value | Date |
 | --- | --- | --- |
@@ -120,10 +119,9 @@ The guard must deny only a command that discards work.
 - A read-only command with `$(( ))` was denied before.
   The shell scan of this release reads `$(( ))` as arithmetic, so it passes.
 
-## See Also
+## Related Pages
 
 - [Usage Evidence (Part 2)](Usage-Evidence-2)
-- [Sessions](Sessions)
 - [Settings Snippet](Settings-Snippet)
 - [Handoff Cost](Handoff-Cost)
 - [Evals](Evals)

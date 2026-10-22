@@ -10,17 +10,14 @@ The docs of Claude Code itself are on the [Claude Code docs](https://xsyetopz.gi
 
 ## Plugins
 
-claudetto is a marketplace with one core plugin and five add-on plugins.
+claudetto is a marketplace with one core plugin and two add-on plugins.
 Each add-on works without the core plugin.
 
 | Plugin | What it gives |
 | --- | --- |
-| `claudetto` | The core: the settings snippet, the status line, the output style, the `setup` skill, the `/handoff` command, the `guard`, `ground`, and `sembr` hooks, the tailored prompt, and the Jev pick of `AskUserQuestion`. |
-| `claudetto-codegraph` | The code graph of a project, from the CLI `codegraph`. |
-| `claudetto-browser` | The `browse` skill, and a headless browser search for each `WebSearch` call. |
-| `claudetto-docs` | The `docs` skill, with current library docs from the CLI `ctx7`. |
-| `claudetto-sessions` | The `sessions` skill, with two scripts: `audit` for the setup and `replay` for a hook on past transcripts. |
-| `claudetto-lab` | Tools for plugin authors: the sandbox, capture, schema, and eval compare. |
+| `claudetto` | The core: the settings snippet, the status line, the output style, the `setup` skill, the `/handoff` command, the `guard` and `ground` hooks, the tailored prompt, and the Jev pick of `AskUserQuestion`. |
+| `claudetto-browser` | The `browse` skill, which drives a real browser with `agent-browser`. |
+| `claudetto-docs` | The `find-docs` skill, with current library docs from the CLI `ctx7`. |
 
 ## Install
 
@@ -39,8 +36,8 @@ The setup skill shows each change to your settings file, and it writes the chang
 
 Requirements:
 
-- Claude Code `2.1.305` or later.
-  claudetto is tested only on `2.1.305`.
+- Claude Code `2.1.307` or later.
+  claudetto is tested only on `2.1.307`.
 - `git`.
 - [Bun](https://bun.sh) `1.4.3` or later on `PATH`, for the status line, the setup command, and the Jev pick of `AskUserQuestion`.
 - [Node.js](https://nodejs.org) on `PATH`, for the npm installs of the add-ons.
@@ -60,9 +57,8 @@ You can also copy the keys that you want into your own `settings.json`.
 | Output style | `outputStyle` is `claudetto:Concise`. Your own `outputStyle` setting can change it. |
 | Permissions | Reads of secret files and destructive commands such as `rm -rf /` are denied. A force push asks. |
 | Sandbox | Bash runs in the sandbox. Its network reaches GitHub and the package registries only. |
-| Guard | Denies a `Bash` command that only prints a file, and names the `Read` call to use. |
-| Ground | Denies a `Write` or `Edit` of a plan file, and a `ProposeGoal` call, that cites a `file:line` or a convention that the source does not hold. |
-| Sembr | Checks the line breaks of Markdown. |
+| Guard | Asks before a `git push` that deletes a remote branch, and before a `docker` command that runs or creates a container. |
+| Ground | Denies a `Write` or `Edit` of a plan file that cites a `file:line` or a convention that the source does not hold. |
 | Status line | The folder, git, model, effort, context against the window, cost, and the limits. The percent turns yellow at `75%` and red at `90%`. |
 | Handoff | `/handoff` writes the handoff, clears the chat, and starts the next session from it. |
 
@@ -97,32 +93,19 @@ Install each add-on that you need.
 
 ```bash
 # --- CLI -----------------------------
-claude plugin install claudetto-codegraph@claudetto
 claude plugin install claudetto-browser@claudetto
 claude plugin install claudetto-docs@claudetto
-claude plugin install claudetto-sessions@claudetto
-claude plugin install claudetto-lab@claudetto
 
 # --- TUI -----------------------------
-/plugin install claudetto-codegraph@claudetto
 /plugin install claudetto-browser@claudetto
 /plugin install claudetto-docs@claudetto
-/plugin install claudetto-sessions@claudetto
-/plugin install claudetto-lab@claudetto
 ```
 
-- `claudetto-codegraph` needs the CLI `codegraph` on `PATH`, and an index that `codegraph init -y` builds in the project.
-  It adds no hook and no MCP server, because `codegraph` syncs its own index.
-  See [Code graph](https://github.com/xsyetopz/claudetto/wiki/Code-Graph).
 - `claudetto-browser` uses `agent-browser`.
-  Its `backend` option can select CloakBrowser, for sites with bot detection.
+  Install it with `bun add -g agent-browser`.
   See [Browser](https://github.com/xsyetopz/claudetto/wiki/Browser).
 - `claudetto-docs` needs no key.
   See [Library docs](https://github.com/xsyetopz/claudetto/wiki/Library-Docs).
-- `claudetto-sessions` audits the setup and replays a hook on past transcripts.
-  See [Sessions](https://github.com/xsyetopz/claudetto/wiki/Sessions).
-- `claudetto-lab` is for plugin authors, and it works alone.
-  See [Lab](https://github.com/xsyetopz/claudetto/wiki/Lab).
 
 ## Update
 

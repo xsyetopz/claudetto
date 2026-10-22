@@ -89,7 +89,7 @@ So Haiku can classify a reply, but it cannot verify work.
 - No text gives a false-block rate for a judge in Claude Code.
   [Stop Hook Eval](Stop-Hook-Eval) has the only measured false-block counts, for 10 runs of each prompt.
 
-## See Also
+## Related Pages
 
 - [Prohibition Lists](Prohibition-Lists)
 - [Stop Hook Eval](Stop-Hook-Eval)

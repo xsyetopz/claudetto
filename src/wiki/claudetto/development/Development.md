@@ -10,7 +10,7 @@ Types, CI, releases, and the wiki are on [Development Release](Development-Relea
 | --- | --- | --- |
 | [`Bun`](https://bun.sh) | 1.4.3 or later | `package.json` sets the minimum in `engines`, `packageManager`, and `.bun-version` |
 | `just` | any (CI uses 1.58.0) | Runs the recipes |
-| Claude Code | 2.1.305 or later | `MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts` sets it. The recipes `sandbox`, `validate`, `lab`, `eval`, and `release` call `claude` |
+| Claude Code | 2.1.307 or later | `MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts` sets it. The recipes `sandbox`, `validate`, `lab`, `eval`, and `release` call `claude` |
 | `docker` (OrbStack or Docker) | any | For `just docker` and `just sandbox-linux` |
 
 Then run `bun install` in the repository root.
@@ -18,9 +18,9 @@ It installs the dev dependencies that `bun.lock` pins: Biome, `markdownlint-cli2
 
 ## Rules
 
-- Edit the source in `src/`, then run `just generate`.
-  Do not edit `plugins/` by hand, because a test fails when a generated file differs from its source.
-- Change a bound only in its owner file: `src/kernel/budget.ts` (shared), `slices/<s>/limits.ts` (slice), or `tools/limits.ts` (repository).
+- Edit the plugins in `plugins/`, because it is the source.
+  Edit the wiki in `src/wiki/`, then run `just generate`, because `wiki/` is written from it.
+- Change a bound only in its owner file: `plugins/claudetto/kernel/budget.ts` (shared), `slices/<s>/limits.ts` (slice), or `tools/limits.ts` (repository).
   See [Bounds](Bounds).
 - Use the env vars and flags of Claude Code.
   Add a `CLAUDETTO_` env var only when neither can do the work.
@@ -36,13 +36,13 @@ Claude Code loads a rule when Claude works on a matching file.
 | Rule file | Subject |
 | --- | --- |
 | `arrow-functions.md` | Each function is an arrow function |
-| `slice-imports.md` | A slice imports only `src/kernel/` and its own folder |
+| `slice-imports.md` | A slice imports only the `kernel/` of its plugin and its own folder |
 | `plugin-imports.md` | A plugin imports no other plugin |
 | `hooks-module.md` | The hooks module graph has no `node:`, no `bun:`, and no `Bun` |
 | `cli-adapters.md` | A CLI adapter runs on Bun and may use `node:`, `bun:`, and `Bun` |
 | `engine-facts.md` | Facts of Claude Code that a hook relies on ([Engine Facts](Decisions-Engine)) |
 | `extension-points.md` | No runtime code for a feature that Claude Code has |
-| `lab-tests.md` | Hook lab tests are in `lab/*.test.ts` |
+| `lab-tests.md` | Hook lab tests are in `plugins/*/tests/*.test.ts` |
 | `ste-messages.md` | Messages to Claude are in strict ASD-STE100 |
 | `tests.md` | A test never runs a guarded command |
 | `wiki.md` | Title Case and the style of the wiki pages |
@@ -63,7 +63,7 @@ Each recipe runs from the repository root.
 | `just validate` | Fails on an eval case that checks only the reply, then runs `claude plugin validate --strict` |
 | `just lab` | Runs `claude plugin test` on each plugin that has a `tests/` folder |
 | `just dry` | Fails on a code clone that `.jscpd-baseline.json` does not hold |
-| `just generate [--check]` | Writes each shipped text from `src/`. `--check` names each file that differs |
+| `just generate [--check]` | Writes `wiki/` from `src/wiki/`. `--check` names each page that differs |
 | `just schema` | Writes the settings schemas of the installed Claude Code to `schemas/` |
 | `just update` | Refreshes the marketplace and updates your installed plugins. Restart Claude Code after it |
 | `just bump LEVEL` | Bumps the version and moves the `[Unreleased]` CHANGELOG entries |
@@ -77,7 +77,7 @@ Each recipe runs from the repository root.
 
 ```bash
 just check                                     # must pass before a change is done
-just test tests/claudetto/guard/rules.test.ts  # one file
+just test tests/claudetto/guard/gate.test.ts  # one file
 bun run lint:md                                # lint Markdown
 ```
 
@@ -93,20 +93,20 @@ A container has its own `node_modules/` volume and its own lock.
 
 ## Tests
 
-`just test` runs `just generate` first, because many tests import the generated copy in `plugins/`.
+`just test` runs `just generate` first, because some tests read the generated pages in `wiki/`.
 
 | Folder | What it holds |
 | --- | --- |
 | `tests/claudetto/<slice>/` | Tests of each slice of the core plugin |
 | `tests/claudetto-<add-on>/` | Tests of each add-on |
-| `tests/kernel/` | Tests of `src/kernel/` |
+| `tests/kernel/` | Tests of `plugins/claudetto/kernel/` |
 | `tests/support/` | Test helpers and repository checks, such as `wiki-links.test.ts` and `hook-evals.test.ts` |
 | `tests/tools/` | Tests of the scripts in `tools/` |
 
 ### The Hook Lab
 
 `just lab` runs `claude plugin test` on each plugin folder that has a `tests/` folder.
-A slice keeps its lab tests in `lab/*.test.ts`, and `just generate` copies them to `plugins/<name>/tests/`.
+The lab tests are in `plugins/<name>/tests/*.test.ts`.
 Each test fires events at the hooks module with stubbed reads.
 Test each change to `hooks/register.ts` in the lab before a live session.
 See [Plugin Layout](Plugin-Layout#hook-evals) for the eval entry of each hook.
@@ -118,7 +118,7 @@ These numbers name the decisions of `design.md` and the files `design-*.md` of t
 The folder is deleted from the tree, so read it at commit `1c579e10`:
 `git show 1c579e10:openspec/changes/release-0-2-0/design.md`.
 
-## See Also
+## Related Pages
 
 - [Development Release](Development-Release)
 - [Sandbox](Sandbox)

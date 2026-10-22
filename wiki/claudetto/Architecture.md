@@ -2,127 +2,113 @@
 
 # Architecture
 
-`claudetto` is built in layers.
-A layer uses only the layers below it, so a change in one place does not break the rest.
-This page is the map: the layers, the kernel, the slices, and how a plugin is put together.
+This page is the map of the `claudetto` repository: the plugins, the kernel, the slices, and the hooks module.
+Read it before you read the code or add a feature.
 
-## Layers
+## The Plugins
 
-`claudetto` has five layers.
+The repository is a Claude Code plugin marketplace.
+`plugins/` is the source of each plugin, and Claude Code reads its files as they are.
+No build step writes them.
+
+| Plugin | Folder | What it holds |
+| --- | --- | --- |
+| `claudetto` | `plugins/claudetto/` | The core plugin: the main agent, the roster, the permission gate, and the other slices. |
+| `claudetto-browser` | `plugins/claudetto-browser/` | The browser add-on. |
+| `claudetto-docs` | `plugins/claudetto-docs/` | The library docs add-on. |
+
+Each add-on works without the core plugin, so it imports nothing from another plugin.
+Only `plugins/` ships to users.
+The core plugin sets `agent` to `claudetto:main` in its `settings.json`.
+
+## The Layers
+
+Each plugin has the same layers.
+A layer uses only the layers below it.
 
 | Layer | Folder | What it holds | Imports |
 | --- | --- | --- | --- |
-| Kernel | `src/kernel/` | Pure code that the plugins share: the slice contract, bounds, paths, the shell reader, and the model ids. | Nothing, except `src/kernel/node/` |
-| Runtime adapters | `src/kernel/node/` | The adapters of Node and Bun: files, processes, hook input and output. | The kernel |
-| Slices | `src/plugins/<plugin>/slices/<s>/` | One feature each. | The kernel, and its own folder |
-| Entry points | `src/plugins/<plugin>/` | `plugin.ts` and `description.md`, which give the manifest. | The slices |
-| Generator | `tools/generate/` | The build from `src/` to `plugins/` and to the marketplace file. | Each layer, at build time only |
+| Kernel | `plugins/<plugin>/kernel/` | Pure code that the slices of the plugin share: bounds, paths, the shell reader, the model ids, and the ports that tests replace. | Nothing, except `kernel/node/` |
+| Runtime adapters | `plugins/<plugin>/kernel/node/` | The adapters of Node and Bun: files, processes, and hook input and output. | The kernel |
+| Slices | `plugins/<plugin>/slices/<s>/` | One feature each. | The kernel, and its own folder |
+| Entry points | `plugins/<plugin>/hooks/register.ts` and `bin/` | The hooks module and the commands. | The slices |
 
 The rules of the layers:
 
 - A slice never imports another slice.
-  Slices share data only through a file layout that the kernel names in `src/kernel/paths.ts`.
 - A plugin never imports another plugin.
-  The generator copies each kernel file that a plugin uses into that plugin.
-- A hooks module has no `node:` import, no `bun:` import, and no `Bun`.
+  An add-on keeps its own copy of each kernel file that it uses, and a test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
+- A file in the import graph of the hooks module has no `node:` import, no `bun:` import, and no `Bun`.
   So a mod handler imports only the pure kernel.
-- Each slice states its rung of the decision ladder in the field `ladder` of `slice.ts`.
+
+The tests in `tests/claudetto/imports.test.ts` and `tests/claudetto/import-rules.test.ts` check the import rules.
+See [Plugin Layout](Plugin-Layout#imports).
 
 ## The Kernel
 
-The kernel has these files:
+The kernel of the core plugin has these files:
 
 | File | What it holds |
 | --- | --- |
-| `slice.ts` | The contract of a slice manifest, the phases, and the rungs of the ladder. |
 | `budget.ts` | The shared runtime bounds, such as `CONTEXT_WINDOW` and the handoff trigger. |
 | `paths.ts` | The paths of the files that `claudetto` reads or writes. |
 | `change.ts` | The task state of an OpenSpec change, from the text of `tasks.md`. |
-| `compaction.ts` | The `compaction` option, which `handoff` declares and `prompt` reads. |
+| `compaction.ts`, `plugin-option.ts` | The `compaction` option and the reader of the options of the plugin. |
 | `ground.ts` | The source check of quoted values, for `handoff` and `ground`. |
-| `shell.ts`, `shellkinds.ts`, `wrappers.ts`, `shell/` | The shell reader for the guards. It reads the syntax, and it does not run the shell. |
-| `model.ts`, `errors.ts`, `text.ts`, `ports.ts` | Model families, the error policy, small text tests, and the ports that tests replace. |
-| `node/` | The adapters of Node and Bun, for the CLIs. |
+| `shell.ts`, `shellkinds.ts`, `wrappers.ts`, `shell/` | The shell reader for the permission gate. It reads the syntax, and it does not run the shell. |
+| `model.ts`, `errors.ts`, `text.ts`, `ports.ts`, `slice.ts` | Model families, the error policy, small text tests, the ports that tests replace, and the shared hook types. |
+| `node/` | The adapters of Node and Bun, for the commands. |
 
 Change a shared bound only in `budget.ts`.
 See [Bounds](Bounds).
 
-## The Decision Ladder
+## The Slices
 
-For each feature, a slice uses the highest rung that can do the work.
-The field `ladder` of `slice.ts` names the rung and the reason.
+A slice adds one feature, in one folder `slices/<s>/`.
+The core plugin has these slices:
 
-| Rung | Meaning | Example |
+| Slice | What it does | Page |
 | --- | --- | --- |
-| `mod` | A hook of the Mod API. | `guard`, `handoff`, `ground` |
-| `classic` | A classic command hook. | The core plugin has none. |
-| `built-in` | A setting, an env var, or a plugin part with no hook. | `setup`, `styles`, `spec` |
-| `none` | Nothing. | |
+| `agents` | Offers the roster of four subagents and hides the built-in agents | [Agents](Agents) |
+| `decide` | Gives Jev answers for `AskUserQuestion` | [Decide](Decide) |
+| `dry` | The `claudetto:dedupe` skill | [Dry](Dry) |
+| `goal` | The `/goal` check command and its `Stop` hook | [Goal](Goal) |
+| `ground` | Checks plan files for claims with no source | [Ground](Ground) |
+| `guard` | The permission gate | [Guard](Guard) |
+| `handoff` | Writes a handoff file in place of the compaction summary | [Handoff](Handoff) |
+| `hygiene` | The cleanup at session start and the edit ledger | [Session Hygiene](Hygiene) |
+| `prompt` | The main agent body and the shorter tool texts | [Prompt](Prompt) |
+| `reply` | The reply button | [Reply](Reply) |
+| `setup` | The `claudetto-setup` command and the settings snippet | [Setup](Setup) |
+| `spec` | MiniSpec | [Spec](Spec) |
+| `statusline` | The status line | [Status Line](Status-Line) |
+| `styles` | An empty folder. The style is in `output-styles/Concise.md` | [Styles](Styles) |
 
-## Slices
+A slice has the parts that it needs:
 
-A slice adds one feature.
-The generator finds each folder `slices/<s>/` that has a `slice.ts`.
-The file exports `slice`, and `slice.name` equals the folder name.
-
-A slice can add these parts:
-
-| Field | Part |
+| Part | Use |
 | --- | --- |
-| `mod` | Mod handlers: an event, a filter, a phase, and a `run` function. |
-| `hooks` | Classic command hooks. |
-| `cli` | A command in `bin/`. |
-| `skills` | Skills. |
-| `userConfig` | Options that the user sets. |
-| `settings` | Keys of the settings snippet. |
-| `segments` | Segments of the status line. |
-| `controls` | The record of each hook, guard, cap, or notice. |
+| `domain/` | Pure logic with no I/O, and no import of an adapter. |
+| `adapters/mod.ts` | The functions that the hooks module registers. |
+| `adapters/cli.ts` | A command in `bin/` that exports `main`. |
+| `prompts.ts` | The texts for Claude and for the user. |
+| `limits.ts` | The bounds of the slice. |
 
-Mod handlers of one event run in this order of phases:
-
-1. `observe`
-2. `normalize`
-3. `rewrite`
-4. `check`
-5. `answer`
-
-For example, `sembr` rewrites in the phase `rewrite`, and `guard` checks in the phase `check`.
-The generator orders the handlers by event, phase, slice name, and filter.
-
-## Plugin Composition
-
-A plugin is a folder `src/plugins/<plugin>/` with `plugin.ts`, `description.md`, and a folder `slices/`.
-`plugin.ts` gives the keywords and the homepage.
-The generator takes the version from `package.json`, the `userConfig` from the slices, and the hooks from the slices.
-
-The core plugin `claudetto` has 15 slices.
-See [Overview](Overview) for the list.
-Each add-on has one to four slices:
-
-| Plugin | Slices |
-| --- | --- |
-| `claudetto-codegraph` | `graph` |
-| `claudetto-browser` | `browse`, `search` |
-| `claudetto-docs` | `docs` |
-| `claudetto-sessions` | `sessions` |
-| `claudetto-lab` | `capture`, `eval-compare`, `sandbox`, `schema` |
-
-A new feature is a new slice.
-It goes into the core plugin only when most users need it.
-Otherwise it goes into an add-on, and the add-on works without the core plugin.
+A skill is in `skills/<name>/SKILL.md`, an agent is in `agents/<name>.md`, and an output style is in `output-styles/`.
 
 ## The Hooks Module
 
-Each plugin with mod handlers has one hooks module, `hooks/register.ts`.
-The generator writes it, with one literal `on()` call for each handler.
-`hooks/hooks.json` names only this module: `{"modules": ["./register.ts"]}`.
-The module has a comment `// eval: <event> <slice>` above each `on()` call.
-That comment links the hook to its entry in `evals/hooks.json`.
-See [Plugin Layout](Plugin-Layout#hook-evals).
+The core plugin has one hooks module, `hooks/register.ts`.
+`hooks/hooks.json` names it with `{"modules": ["./register.ts"]}`, and it holds the one classic hook `PreModelSwitch`.
+The module has one literal `on()` call for each mod handler.
+The event name of each call is a string literal.
+The module is hand-written, so a new handler needs a new `on()` call there.
+Test each change to it in the hook lab (`just lab`).
+See [Plugin Layout](Plugin-Layout#hook-evals) for the eval entry of each hook.
 
-## See Also
+## Related Pages
 
-- [Architecture Generate](Architecture-Generate)
 - [Plugin Layout](Plugin-Layout)
 - [Controls](Controls)
 - [Decisions](Decisions)
+- [Development](Development)

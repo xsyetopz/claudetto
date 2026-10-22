@@ -12,7 +12,7 @@ Read them before an update to see what changed.
 - The [GitHub releases](https://github.com/xsyetopz/claudetto/releases) page lists each tagged release.
 
 The version of `claudetto` is in `package.json`.
-`just bump` changes it, and `just generate` copies it to each `plugin.json` and the marketplace file.
+`just bump` writes it to `package.json`, each `plugin.json`, and the marketplace file.
 See [Development Release](Development-Release).
 
 ## After an Update
@@ -20,7 +20,7 @@ See [Development Release](Development-Release).
 Read the new entry of `CHANGELOG.md`, then run `/claudetto:setup` again.
 See [Install](Install#update).
 
-## See Also
+## Related Pages
 
 - [Development Release](Development-Release)
 - [Install](Install)

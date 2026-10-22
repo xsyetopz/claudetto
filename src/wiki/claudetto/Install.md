@@ -8,11 +8,9 @@ Add-ons are optional.
 
 | Need | For | Note |
 | --- | --- | --- |
-| Claude Code 2.1.305 or later | all plugins | |
-| `git` | `claudetto` | The status line and the `patch` slice use it. |
-| [Bun](https://bun.sh) 1.4.3 or later, on `PATH` | all plugins | The `docs` skill runs `ctx7` with `bunx`. |
-| [Node.js](https://nodejs.org) | `agent-browser` | Only for `npm install -g agent-browser`. |
-| `codegraph` | `claudetto-codegraph` | Run `bun i -g @colbymchenry/codegraph`. |
+| Claude Code 2.1.307 or later | all plugins | |
+| `git` | `claudetto` | The status line uses it. |
+| [Bun](https://bun.sh) 1.4.3 or later, on `PATH` | all plugins | The `find-docs` skill runs `ctx7` with `bunx`. |
 | `agent-browser` | `claudetto-browser` | See [Browser](Browser). |
 | `TYPESAFE_API_KEY` | `decide` set to `jev` | Export it before Claude Code starts. |
 
@@ -60,29 +58,23 @@ claudetto-setup --scope user --apply
 
 When `CLAUDE_CONFIG_DIR` is set, the command uses that folder in place of `~/.claude`.
 The merge adds the keys of the snippet, and your other keys stay.
+It also removes the keys, rules, and hook that 0.1.0 and 0.2.0 wrote ([Setup Cleanup](Setup-Cleanup)).
+It writes a cap on the subagents that run at one time, from your plan ([Setup](Setup#subagent-cap)).
 
-The skill then offers two more steps:
-
-- An `alias` line for the search tools `Glob` and `Grep`. It does not edit your shell file.
-- One step for each add-on that you installed, such as `codegraph install --target claude --location global`. It runs a step only after you say yes.
+The skill then gives an `alias` line for the search tools `Glob` and `Grep`.
+It does not edit your shell file.
 
 ## Install an Add-On
 
 ```text
-/plugin install claudetto-codegraph@claudetto
 /plugin install claudetto-browser@claudetto
 /plugin install claudetto-docs@claudetto
-/plugin install claudetto-sessions@claudetto
-/plugin install claudetto-lab@claudetto
 ```
 
 | Add-On | What it needs |
 | --- | --- |
-| `claudetto-codegraph` | The CLI `codegraph` and an index from `codegraph init -y`. See [Code Graph](Code-Graph). |
-| `claudetto-browser` | `agent-browser`. The option `backend` can pick CloakBrowser. See [Browser](Browser). |
+| `claudetto-browser` | `agent-browser`, installed with `bun add -g agent-browser`. See [Browser](Browser). |
 | `claudetto-docs` | No key. See [Library Docs](Library-Docs). |
-| `claudetto-sessions` | No setup. See [Sessions](Sessions). |
-| `claudetto-lab` | For plugin authors. See [Lab](Lab). |
 
 ## Turn On Jev
 
@@ -119,9 +111,13 @@ In a checkout of the repository, `just update` updates each plugin under `plugin
 1. Uninstall each add-on, then the core plugin.
 
    ```bash
-   claude plugin uninstall claudetto-codegraph@claudetto
+   claude plugin uninstall claudetto-browser@claudetto
+   claude plugin uninstall claudetto-docs@claudetto
    claude plugin uninstall claudetto@claudetto
    ```
+
+   The add-ons `claudetto-codegraph`, `claudetto-sessions`, and `claudetto-lab` of 0.2.0 are gone from the marketplace.
+   Uninstall them in the same way if you still have them.
 
 2. Remove the marketplace.
 
@@ -142,7 +138,7 @@ claude --plugin-dir /path/to/claudetto/plugins/claudetto
 
 For a separate config, see [Sandbox](Sandbox).
 
-## See Also
+## Related Pages
 
 - [Quickstart](Quickstart)
 - [Troubleshooting](Troubleshooting)

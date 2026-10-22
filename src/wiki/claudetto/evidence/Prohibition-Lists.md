@@ -12,16 +12,13 @@ So `claudetto` keeps such a list only when its failure reproduces on the target 
 
 ## Kept Prohibition Lists
 
-No text under `src/plugins/` keeps a list.
+No text under `plugins/` keeps a list.
 On 2026-10-16, one paragraph had a list.
 One sentence said again what another rule says, so it was deleted.
 The two other sentences stay, because each guards a failure the slice saw.
 
-`tests/claudetto/prompt/prohibitions.test.ts` reads this section.
-It fails on a new list unless an entry is added here.
-An entry is a line that starts with a file path in single backticks.
 
-## See Also
+## Related Pages
 
 - [Model Guidance](Model-Guidance)
 - [Probes 2.1.301](Probes-2.1.301)

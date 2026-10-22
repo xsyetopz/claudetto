@@ -19,7 +19,7 @@ Read these pages before you change a part, so that you do not break a fact that 
 
 [Design](Design) lists the principles that all of these decisions follow.
 
-## See Also
+## Related Pages
 
 - [Design](Design)
 - [Controls](Controls)

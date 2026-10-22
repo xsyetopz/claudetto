@@ -492,7 +492,7 @@ The rerun of the lower cases cost $6.48 more.
 - ABC, "Establishing Best Practices for Building Rigorous Agentic Benchmarks": <https://arxiv.org/abs/2507.02825>
 - `claude plugin eval` docs: <https://code.claude.com/docs/en/plugin-evals>
 
-## See Also
+## Related Pages
 
 - [Evals](Evals)
 - [Evals 0.2.0](Evals-0.2.0)

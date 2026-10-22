@@ -12,7 +12,7 @@ It is for a maintainer who checks the 0.2.0 release.
 - In run 1, each slice in the list below worked.
 - The runs found 11 faults.
   Commit `74eb3d0d` holds the fixes.
-- After the fixes, `/claudetto:dry` ran `jscpd-config --run` with no prompt.
+- After the fixes, the skill `dry` (named `dedupe` since 0.3.0) ran `jscpd-config --run` with no prompt.
   A rescan found `0` clones.
 - Run 1 cost about $0.65 as a sandbox session.
   The `advise` call and the Jev calls cost more, and this page does not give their cost.
@@ -74,7 +74,7 @@ Each item names the task in `tasks.md`, the fault, and the fix where this page r
   `BUN_TMPDIR` with `BUN_INSTALL` in `TMPDIR` printed `jscpd 5.4.1`.
   The fix is that `jscpd-config --run` sets `BUN_TMPDIR` and `BUN_INSTALL`, and it probes the cache.
 - Task `13.12`: A first scan stopped, because the config needed a baseline file.
-- Task `13.13`: `/claudetto:spec` skipped `openspec init` when an `openspec/` folder existed.
+- Task `13.13`: the skill `spec` (replaced by `propose`, `apply`, `verify`, and `archive` in 0.3.0) skipped `openspec init` when an `openspec/` folder existed.
 - Task `13.14`: The goal message read `The goal has 1 steps`.
 - Task `13.15`: With `allowUnsandboxedCommands` set to `true`, the model ran `bunx` again with `dangerouslyDisableSandbox` twice, with no prompt.
   The snippet now sets `allowUnsandboxedCommands` to `false`, the user's choice.
@@ -86,10 +86,10 @@ Each item names the task in `tasks.md`, the fault, and the fix where this page r
 ## Headless Runs After the Fixes
 
 Runs 2 to 4 ran headless on fresh configs, after the fixes.
-They checked `/claudetto:dry` and `git push origin :x`.
+They checked the skill `dry` (named `dedupe` since 0.3.0) and `git push origin :x`.
 The confirm run gave these results:
 
-- `/claudetto:dry` ran `jscpd-config --run` with no prompt.
+- the skill `dry` (named `dedupe` since 0.3.0) ran `jscpd-config --run` with no prompt.
   It found 1 clone and merged it.
   A rescan found `0` clones.
 - Each of the 3 `Bash` calls ran in the sandbox.

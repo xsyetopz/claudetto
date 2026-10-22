@@ -1,8 +1,8 @@
 ---
 paths:
-  - "src/**/skills/**/*.md"
-  - "src/**/prompts/*.md"
-  - "src/**/domain/**/*.ts"
+  - "plugins/**/skills/**/*.md"
+  - "plugins/**/prompts.ts"
+  - "plugins/**/domain/**/*.ts"
 ---
 
 Write each message that goes to Claude (hook output, deny reasons, skill and agent prompts) in strict ASD-STE100.

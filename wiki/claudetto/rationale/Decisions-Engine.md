@@ -35,14 +35,14 @@ A text that only the user reads costs none.
 The types file says it appends one dim line to the transcript that is not sent to the model.
 A `-p` or SDK host receives it as `ui_log`.
 The `goal` and `handoff` slices use it.
-A line must hold no line break, because Claude Code draws a break as a bad glyph (`src/kernel/text.ts`).
+A line must hold no line break, because Claude Code draws a break as a bad glyph (`plugins/claudetto/kernel/text.ts`).
 
 **Reason:** A session-start notice sent as a `user` row was read as part of the task.
 In an early run of the eval case `accusation-warranted` (Haiku), the reply ended with extra settings text.
 That run had fewer than 10 runs per arm, so no score is kept (D25, [Evals of 0.1.0](Evals-0.1.0)).
 
 **Evidence:** The trace `out/trace.jsonl` of the failed run.
-`slices/handoff/lab/change.test.ts` checks the notice.
+`plugins/claudetto/tests/change.test.ts` checks the notice.
 
 ## Why a Hook That Calls `next` First Has No Catch-All
 
@@ -53,11 +53,14 @@ A `catch` names only the error it expects.
 So Claude Code logs the error and keeps the result.
 A catch-all would hide the error from the log.
 
-**Evidence:** Header comments of `slices/patch/adapters/mod.ts` and `slices/guard/adapters/mod.ts`.
+**Evidence:** Header comment of `slices/guard/adapters/mod.ts`.
 
 ## Why the Sandbox Keys Come From Settings
 
-**Choice:** The snippet carries the `sandbox` keys, and `claudetto-setup --apply` merges them ([Settings Apply](Settings-Apply)).
+**Status:** The fact stands, but the snippet of 0.3.0 has no `sandbox` key (design D1 of the change `0-3-0`).
+The record below is what 0.2.0 did.
+
+**Choice:** The snippet carried the `sandbox` keys, and `claudetto-setup --apply` merged them ([Settings Apply](Settings-Apply)).
 
 **Reason:** A plugin cannot set `sandbox`.
 Of the `settings` of a plugin, "only `agent` and `subagentStatusLine` take effect".
@@ -83,7 +86,7 @@ The sandboxed call failed with `socket(1, 1, 0): Operation not permitted`, so th
 **Reason:** `claude plugin validate` follows `$` only into a function of one file, and each `$.env` call needs a literal name.
 A shared helper makes validation fail.
 
-**Evidence:** Header comments of the `mod.ts` files of `goal`, `patch`, `decide`, and `guard`.
+**Evidence:** Header comments of the `mod.ts` files of `goal`, `decide`, and `guard`.
 
 ## Why a Plugin Verdict Only Makes a Call Stricter
 
@@ -115,9 +118,9 @@ In `claude plugin eval`, the config folder is in `denyRead`, so the source fails
 No debug log confirms this cause.
 
 **Evidence:** `external/cc-2.1.301/strings.txt` and the trace of the kept eval run.
-See `slices/dry/skills/dry/SKILL.md`.
+See `skills/dedupe/SKILL.md`.
 
-## See Also
+## Related Pages
 
 - [Decisions Session](Decisions-Session)
 - [Decisions Architecture](Decisions-Architecture)

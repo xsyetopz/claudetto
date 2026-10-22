@@ -3,107 +3,108 @@
 Each key of the [settings snippet](Settings-Snippet) has a reason.
 This page gives the value, the effect in Claude Code, and the reason for each key.
 The snippet sets a key only when the default of Claude Code does not give the result that `claudetto` needs.
-The facts are for Claude Code `2.1.305`.
+The sizes and the evidence are in the research of the change `0-3-0` (`research/replace-matrix.md`).
 
-## Who Sets Which Key
+## Where the Snippet Lives
 
-Each slice in `src/plugins/claudetto/slices/` adds its `settings` entries to the snippet.
-
-| Slice | Keys |
-| --- | --- |
-| `prompt` | Most keys, `permissions`, and the allowed domains |
-| `setup` | Keys that turn off parts of Claude Code, `worktree`, and the package cache folders |
-| `handoff` | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, `CLAUDE_CODE_PROMPT_CACHE_TTL`, `autoCompactWindow`, `modelSettings` |
-| `statusline` | `statusLine`, `subagentStatusLine` |
-| `styles` | `outputStyle` |
-
+The snippet is the constant `SNIPPET` in `plugins/claudetto/slices/setup/prompts.ts`, and `plugins/claudetto/snippets.ts` exports it.
 A test checks the keys against `schemas/claude-code-settings.json`, so a key that the schema lacks fails.
+`claudetto-setup` adds one more entry: the subagent cap ([Setup](Setup#subagent-cap)).
 
 ## Environment Entries
 
 | Entry | Value | What it does in Claude Code | Why `claudetto` sets it |
 | --- | --- | --- | --- |
-| `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | `{{AUTOCOMPACT_PCT}}` | Sets the percent of the auto-compact window at which automatic compaction starts. | At a window of {{CONTEXT_WINDOW}} tokens, the percent gives {{HANDOFF_TRIGGER_TOKENS}} tokens, the trigger of the auto handoff (`AUTOCOMPACT_PCT` in `src/kernel/budget.ts`). |
+| `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | `{{AUTOCOMPACT_PCT}}` | Sets the percent of the auto-compact window at which automatic compaction starts. | At a window of {{CONTEXT_WINDOW}} tokens, the percent gives {{HANDOFF_TRIGGER_TOKENS}} tokens, the trigger of the auto handoff (`AUTOCOMPACT_PCT` in `plugins/claudetto/kernel/budget.ts`). |
 | `CLAUDE_CODE_AUTO_CONNECT_IDE` | `false` | Default: the IDE connects by itself. | No IDE connection at start. |
+| `CLAUDE_CODE_BASH_OUTPUT_AUDIENCE_NOTE` | `0` | Stops a note that a rollout can add to each `Bash` result. | A shorter `Bash` result. The note is not sized. |
+| `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` | `1` | Removes the built-in advisor tool. | The advisor is a model call with no bound that the user sets. |
+| `CLAUDE_CODE_DISABLE_CFC_PROMPT` | `1` | Removes the Chrome prompt section. | `claudetto-browser:browse` takes the place of Claude in Chrome. |
 | `CLAUDE_CODE_DISABLE_CRON` | `1` | Removes the Cron tools and `/loop`. | No scheduled runs. |
+| `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` | `1` | Removes the `Explore` and `Plan` agents. | `claudetto:scout` takes the place of `Explore` ([Agents](Agents)). |
 | `CLAUDE_CODE_DISABLE_FAST_MODE` | `1` | Keeps fast mode off. | Fast mode stays off. |
 | `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY` | `1` | Stops the session quality survey. | No survey in a session. |
+| `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` | `1` | Removes the built-in git text, the git status block, and the attribution reminder. | They add tokens to each request, and `CLAUDE.md` of the project gives the git rules. |
 | `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` | `1` | Stops the terminal title and its small-model request. | No title and no request for one. |
+| `CLAUDE_CODE_FORK_SUBAGENT` | `0` | Turns off fork mode, in which a fork copies the whole parent context. | A fork costs the whole context. |
 | `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL` | `1` | Stops the IDE extension from installing itself. | No install without the user. |
-| `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` | `2` | Caps the subagents that run in parallel. Default: `20`. | A hard cap on parallel subagents. |
-| `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` | `1` | Caps how deep a subagent can start subagents. | A subagent starts no subagent. |
-| `CLAUDE_CODE_PROMPT_CACHE_TTL` | `1h` | Sets the cache lifetime of the main conversation. | The main conversation keeps a 1-hour cache, and a subagent keeps the 5-minute default. The `handoff` slice sets it. |
-| `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` | `1` | Replaces the system prompt with the short prompt. | The `prompt` slice tailors the short prompt. |
-| `CLAUDE_CODE_SUBAGENT_MODEL` | `claude-sonnet-5-5` | Sets the model of a subagent that has no model of its own. | A subagent with no model of its own runs on Sonnet 5.5. |
+| `CLAUDE_CODE_MEMORY_SUBAGENT_APPEND` | `1` | Controls the memory block in the prompt of each subagent. | On trial. The block is not sized. |
+| `CLAUDE_CODE_PLAN_V2_AGENT_COUNT` | `1` | Sets the number of agents of the plan mode. | One agent, in place of more. |
+| `CLAUDE_CODE_PLAN_V2_EXPLORE_AGENT_COUNT` | `1` | Sets the number of explore agents of the plan mode. | One agent, in place of more. |
+| `CLAUDE_CODE_PROMPT_CACHE_TTL` | `1h` | Sets the cache lifetime of the main conversation. | The main conversation keeps a 1-hour cache, and a subagent keeps the 5-minute default. |
+| `CLAUDE_CODE_SILENT_TURN_REMINDER` | `0` | Stops an extra nudge after a quiet turn. | No nudge. It is not sized. |
+| `CLAUDE_CODE_TODO_REMINDER_MODE` | `off` | Stops the todo reminder on an idle turn. | No reminder. It is not sized. |
+| `CLAUDE_CODE_TOTAL_TOKENS_REMINDER` | `off` | Stops the `total_tokens` reminder. | It is 78 characters in the capture. |
 | `DISABLE_ERROR_REPORTING` | `1` | Stops the error reports. | No error reports. |
 | `DISABLE_EXTRA_USAGE_COMMAND` | `1` | Removes the `/extra-usage` command. | No `/extra-usage` command. |
 | `DISABLE_FEEDBACK_COMMAND` | `1` | Removes the `/feedback` command. | No `/feedback` command. |
 | `DISABLE_INSTALL_GITHUB_APP_COMMAND` | `1` | Removes the `/install-github-app` command. | No `/install-github-app` command. |
-| `DISABLE_UPGRADE_COMMAND` | `1` | Removes the `/upgrade` command. | No `/upgrade` command. |
 
-`claudetto-setup` also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, so that Claude sees one advisor.
-The value is not in the snippet block, because it depends on the `advisor` option, which is `claudetto` by default.
 The snippet never sets the entries of [Never-Set Settings](Off-Switches-Never-Set).
+
+## Permission Keys
+
+| Key | Value | Why `claudetto` sets it |
+| --- | --- | --- |
+| `permissions.defaultMode` | `default` | Each mode other than `default` skips the dialog. The gate of the `guard` slice decides ([Guard](Guard)). |
+| `permissions.disableAutoMode` | `disable` | Auto mode is not available. Its classifier is a large request, and the gate takes its place. |
+| `useAutoModeDuringPlan` | `false` | The plan mode does not switch to auto mode. |
+| `permissions.deny` | The list of [The Deny List](#the-deny-list) | A second layer that holds in each mode. |
+
+The snippet has no `allow` list and no `ask` list.
 
 ## Settings Keys
 
 | Key | Value | What it does in Claude Code | Why `claudetto` sets it |
 | --- | --- | --- | --- |
-| `$schema` | The URL of `schemas/claude-code-settings.json` on the main branch | Points an editor at the JSON Schema of the settings. | An editor can check the keys. `claudetto-setup` leaves it out. |
-| `outputStyle` | `claudetto:Concise` | Selects the output style. The user can change it. | The `styles` slice ships the concise style. |
-| `model` | `claude-opus-5-5` | Sets the main model. | The main model. |
-| `availableModels` | Opus 5.5, Sonnet 5.5, Haiku 5.5, and Fable 5.1 | Lists the models that the user can select. | A fixed roster. The merge replaces this list. |
-| `enforceAvailableModels` | `true` | `Default` resolves to a model of `availableModels`. | `Default` stays on a model of the list. |
+| `$schema` | The URL of the settings schema of the Claude Code docs | Points an editor at the JSON Schema of the settings. | An editor can check the keys. `claudetto-setup` leaves it out. |
+| `outputStyle` | `claudetto:Concise` | Selects the output style. The user can change it. | The plugin ships the concise style ([Styles](Styles)). |
 | `enableArtifact` | `false` | Disables the Artifact tool. | Removes the Artifact tool from each request. |
 | `enableWorkflows` | `false` | Disables the Workflows feature. | Removes the Workflow tool from each request. |
 | `disableBundledSkills` | `true` | Removes the bundled skills and workflows. | Removes the bundled skills from the listing. |
 | `statusLine` | The command `bun --no-env-file "<plugin folder>/bin/claudetto-statusline"`, `padding` `0`, `refreshInterval` `1`, and `hideVimModeIndicator` `true` | Sets the status line command. | The status line of [Status Line](Status-Line). `refreshInterval` keeps the countdowns current in an idle session. |
 | `subagentStatusLine` | The same command with `--subagent` | Sets the status line of each subagent. | One row for each running subagent. |
-| `autoCompactWindow` | `{{CONTEXT_WINDOW}}` | Sets the auto-compact window in tokens. | The window that `/context` shows. The `handoff` slice sets it from `CONTEXT_WINDOW`. |
+| `autoCompactWindow` | `{{CONTEXT_WINDOW}}` | Sets the auto-compact window in tokens. | The window that `/context` shows. |
 | `modelSettings` | `claude-haiku-5-5` with an `autoCompactWindow` of `144444` | Sets per-model settings. | A Haiku session starts the auto handoff below {{HAIKU_HANDOFF_TRIGGER_TOKENS}} tokens (`HAIKU_AUTOCOMPACT_WINDOW`). |
 | `worktree` | `baseRef` set to `head` | Sets how a worktree starts. Default: `fresh`. | An agent worktree starts from the current `HEAD`. |
 | `autoMemoryEnabled` | `false` | Stops the auto-memory folder of the project from being read or written. | No auto memory. |
-| `includeGitInstructions` | `false` | Excludes the built-in commit and pull request text from the system prompt. | The git text adds tokens to each request. No slice of claudetto replaces it, and `CLAUDE.md` of the project gives the git rules. |
+| `autoDreamEnabled` | `false` | Stops the memory consolidation. It runs as a fork that shares the main request prefix. | No background fork. |
+| `modelProposedGoals` | `disabled` | Stops the goal proposals of the model. Claude Code reads it only from the user settings. | The user sets a goal with `/goal`. |
 | `promptSuggestionEnabled` | `false` | Disables prompt suggestions. | No background request for suggestions. |
 | `awaySummaryEnabled` | `false` | Disables the session recap after a break. | No background request for a recap. |
-| `bashOutputMaxChars` | `{{BASH_OUTPUT_MAX_CHARS}}` | Sets how many characters of a successful `Bash` output go inline. Claude Code clamps it to 4,000 to 128,000. | A shorter inline output (`BASH_OUTPUT_MAX_CHARS`). |
 | `spinnerTipsEnabled` | `false` | Hides the tips in the spinner. | No tips. |
-| `feedbackSurveyRate` | `0` | Sets the chance that the quality survey shows. | No quality survey. |
 | `feedbackDrafts` | `off` | Disables the `SendFeedback` tool. | Removes the tool. |
 | `disableRemoteControl` | `true` | Disables Remote Control. | No Remote Control. |
-| `syncClaudeAiSkills` | `false` | Stops the sync of the skills that you enable on claude.ai. | No `anthropic-skills:*` skill. |
-| `syncClaudeAiPlugins` | `false` | Stops the sync of the plugins that you enable on claude.ai. | No plugin sync from claude.ai. |
 | `disableClaudeAiConnectors` | `true` | Stops the claude.ai MCP connectors from being fetched. | No claude.ai connector server. |
 | `enabledPlugins` | Ten built-in plugins set to `false` | Enables or disables each plugin. | See [Off Switches](Off-Switches#built-in-plugins). |
 | `skillOverrides` | `plugin-authoring` set to `name-only` | Lists the skill by name only. | A shorter listing line. |
-| `sandbox` | On, with a retry outside the sandbox, `allowLocalBinding`, a list of allowed domains, and the package cache folders in `filesystem.allowWrite` | Limits the files and the network of `Bash`. | The sandbox limits `Bash`. The cache folders let an install write, and `git fetch`, `git pull`, `git push`, and `gh` run outside it. |
-| `permissions` | `disableBypassPermissionsMode` set to `disable`, and the `deny`, `ask`, and `allow` lists | Sets the rules for each tool call. | Risky commands ask, and read-only commands run. |
-
-The `ask` list has 24 git rules that name the destructive flags, such as `git push* --force` and `git reset* --hard`.
-It also asks for `docker run`, `create`, `compose run`, `compose up`, and `compose create` with a mount or `--privileged`, for `rm` with a recursive flag, for `sudo`, for a package publish, for write commands of `gh`, and for SQL that drops data.
-The `allow` list has `Glob`, `Grep`, and read-only or test commands of `git`, `gh`, and the common build tools.
 
 ## The Deny List
 
 | Denied items | Reason |
 | --- | --- |
-| `Read` of secret files, `rm -rf` of `/`, `/*`, `~`, and `~/*`, `mkfs`, and `dd` to a device | Secrets and disk wipes stay out of reach of a tool call. |
+| `Read` of secret files, `rm -rf` of `/`, `/*`, `~`, `~/*`, `~/`, `$HOME`, and `"$HOME"`, `mkfs`, `dd` to a device, `sudo`, `doas`, and `su` | Secrets, disk wipes, and root stay out of reach of a tool call. |
+| `newfs`, `diskutil` (`erase`, `zero`, `secureErase`, `partition`, and `reformat`), `csrutil` (`disable`, `clear`, and `authenticated-root`), `spctl` (`--master-disable` and `--global-disable`), `nvram` (a set, `-d`, and `-c`), and `security delete-*` | Commands that erase a disk or turn off a protection of macOS. |
+| `Edit` of `//System`, `//Library`, and `//usr/bin`, `sbin`, `lib`, `libexec`, and `share` | The system folders stay as they are. |
+| `Agent` of `general-purpose`, `Explore`, `Plan`, `claude`, `claude-code-guide`, `statusline-setup`, and `fork` | The roster of the plugin takes their place ([Agents](Agents)). |
 | `EnterPlanMode` and `ExitPlanMode` | Removes two tool lines. |
-| `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, and `TaskUpdate` | Removes five tool lines. |
-| `Agent(general-purpose)`, `Agent(claude-code-guide)`, and `Agent(statusline-setup)` | Removes three agent lines from each request. |
-| `mcp__computer-use` | A guard for the case that you enable the opt-in server. |
+| `TaskCreate`, `TaskGet`, `TaskList`, and `TaskUpdate` | Removes four tool lines. |
+| `Workflow`, `Artifact`, `DesignSync`, and `RemoteTrigger` | Removes the tools. Each is a name on each request. |
 | `ScheduleWakeup` and `ReportFindings` | Removes the tools. No `claudetto` code uses them. |
+| `mcp__computer-use` | A guard for the case that you enable the opt-in server. |
 
 ## Keys That the Snippet Does Not Set
 
-- `autoMode`: the snippet holds no `autoMode` list, and `claudetto-setup` writes none.
+- `sandbox`: the snippet has no `sandbox` key. The gate replaces the allow and ask lists, and the sandbox is the choice of the user.
+- `model`, `availableModels`, and `enforceAvailableModels`: the user keeps the model choice.
+- `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`: the main agent `claudetto:main` replaces the system prompt ([Prompt](Prompt)).
+- `autoMode`: the snippet holds no `autoMode` list, and `claudetto-setup` removes an old one.
 - `promptCacheTtl`: the env var `CLAUDE_CODE_PROMPT_CACHE_TTL` does the work.
-- `cleanupPeriodDays`: the Claude Code default of 30 days applies.
+- `cleanupPeriodDays`: the Claude Code default of 30 days applies, and the cleanup of [Session Hygiene](Hygiene) reads it.
 - `effortLevel`: each model keeps its default.
-- `advisorModel`: the `advise` slice reads its own `advisorModel` option.
 - The never-set list and the items without a gate: see [Off Switches](Off-Switches).
 
-## See Also
+## Related Pages
 
 - [Settings Snippet](Settings-Snippet)
 - [Off Switches](Off-Switches)

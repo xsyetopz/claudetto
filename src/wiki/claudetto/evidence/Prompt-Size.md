@@ -1,6 +1,10 @@
 # Prompt Size
 
-The `prompt` slice sends one tailored text for the `lean_body` section.
+**Status:** This page records 0.2.0.
+In 0.3.0, the body of the main agent `claudetto:main` replaces the `lean_body` text, and `MAIN_BODY_MAX_CHARS` bounds it ([Agents](Agents)).
+The fixture and the `LEAN_BODY` module are gone.
+
+The `prompt` slice of 0.2.0 sent one tailored text for the `lean_body` section.
 This page gives its measured size and the one part it cannot change.
 The rules in the text are on [Prompt](Prompt).
 
@@ -14,7 +18,7 @@ The rules in the text are on [Prompt](Prompt).
 | Largest file | `doing-tasks.md`, 3,289 bytes |
 | Date | 2026-10-19 |
 
-The source texts are the 8 files in `src/plugins/claudetto/slices/prompt/prompts/`.
+The source texts are the 8 files in `src/plugins/claudetto/slices/prompt/prompts/` (removed in 0.3.0).
 `wc -c` and `wc -w` measure them before the section tags.
 `LEAN_BODY` is exported by `domain/lean-body.ts`, and Bun 1.4.3 measured it after the build.
 It has only ASCII characters, so its bytes and characters are equal.
@@ -23,7 +27,7 @@ The sections are counted in `LEAN_BODY`, which has eight `<tag>` lines.
 
 ## Size Against the Stock Text
 
-The stock `lean_body` text of Claude Code `2.1.302` is in `tests/claudetto/prompt/fixtures/lean_body.txt`.
+The stock `lean_body` text of Claude Code `2.1.302` was in `tests/claudetto/prompt/fixtures/lean_body.txt` at `v0.2.0`.
 It is 616 bytes, which is 612 characters, and 99 words.
 The net growth is about 6,900 bytes.
 
@@ -57,7 +61,7 @@ The `context_management` section follows the compaction state of the session ([P
 With the state `built-in`, the compact prompt stays unchanged.
 The snippet does not set `DISABLE_COMPACT` ([Settings Snippet](Settings-Snippet)).
 
-## See Also
+## Related Pages
 
 - [Evidence](Evidence)
 - [Prompt](Prompt)

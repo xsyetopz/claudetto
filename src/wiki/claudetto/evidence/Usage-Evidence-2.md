@@ -44,7 +44,7 @@ The add-on went from 658 lines to 201 lines and has no hook, so it adds no proce
 | Graphify | Fails on large repositories (reported) |
 | grepai | Needs embeddings from Ollama or OpenAI, and has no measurement |
 
-## See Also
+## Related Pages
 
 - [Usage Evidence](Usage-Evidence)
 - [Evidence](Evidence)

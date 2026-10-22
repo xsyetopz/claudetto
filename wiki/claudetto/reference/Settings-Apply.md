@@ -13,7 +13,7 @@ The easy way is `/claudetto:setup`.
 3. Read the list of changes, and approve the write.
 4. Restart Claude Code.
 
-The skill first runs `claudetto-setup --scope <scope> --advisor <advisor>` as a preview.
+The skill first runs `claudetto-setup --scope <scope>` as a preview.
 Without `--apply`, the command writes nothing.
 After you approve, the skill runs it again with `--apply`.
 
@@ -27,13 +27,12 @@ After you approve, the skill runs it again with `--apply`.
 | Kind of value | Result |
 | --- | --- |
 | Object | Merges key by key |
-| Array | Adds the entries it lacks and keeps yours, except `availableModels`, which the snippet replaces |
+| Array | Adds the entries it lacks and keeps yours |
 | Scalar | Takes the value of the snippet |
 | Key the snippet does not name | Stays as it is |
 
 The preview prints one line for each changed key path, as `path: old -> new`.
 When nothing differs, it prints `Settings match the snippet.`
-With the option `advisor` set to `claudetto` (the default), the merge also sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`.
 
 ## Status Lines
 
@@ -57,10 +56,11 @@ It adds no line the file already has, and it changes nothing in a project with n
 
 ## Other Steps of Setup
 
-- Setup cleans up the keys, rules, and `CLAUDE.md` block that 0.1.0 wrote, and keeps your keys ([Setup Cleanup](Setup-Cleanup)).
+- Setup cleans up the keys, rules, hook, and `CLAUDE.md` block that 0.1.0 and 0.2.0 wrote, and keeps your keys ([Setup Cleanup](Setup-Cleanup)).
+- Setup writes the subagent cap of your plan into `env` ([Setup](Setup#subagent-cap)).
+- Setup names the Context7 skill or rule files that it finds in `~/.claude` or in the project.
 - Setup gives an alias line for your shell that starts Claude Code with `Glob` and `Grep`.
   It does not edit your shell startup file.
-- The skill also runs `claudetto-setup --addons` and offers the step of each enabled add-on.
 - When `claudetto-docs` is installed, merge the [lines for the add-on](Settings-Snippet-Docs) by hand.
 
 ## Copy It by Hand
@@ -74,7 +74,7 @@ It adds no line the file already has, and it changes nothing in a project with n
 
 A test fails when the block holds a key of the [never-set list](Off-Switches-Never-Set).
 
-## See Also
+## Related Pages
 
 - [Setup](Setup)
 - [Setup Cleanup](Setup-Cleanup)

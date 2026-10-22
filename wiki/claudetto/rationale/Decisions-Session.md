@@ -9,12 +9,11 @@ Read it before you change how a slice reports cost or how setup sets the prompt 
 
 **Choice:** A hook that calls `$.model.complete` takes the cost and tokens from the `usage` of that result.
 It never takes them from `total_cost_usd` of the session.
-The `advise` tool takes its tokens this way (`usageLine` in `slices/advise/advise.ts`), and shows them to the user only.
+The `advise` tool of 0.2.0 took its tokens this way. The tool is removed in 0.3.0.
 
 **Reason:** In all 4 measured runs (Claude Code 2.1.302), `total_cost_usd` did not count the model call of a hook.
 
 **Evidence:** `ModelCompleteResult.usage` in the mod API types.
-`src/plugins/claudetto/slices/advise/lab/advise.test.ts` checks the result text.
 The runs are on [Evidence](Evidence).
 
 ## Why Setup Does Not Set the Prompt Cache TTL
@@ -31,7 +30,7 @@ A fixed value in the snippet is wrong for one of these accounts.
 `just schema` extracts the schema from the bundle.
 The env vars `CLAUDE_CODE_PROMPT_CACHE_TTL` and `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` take precedence over the keys.
 
-## See Also
+## Related Pages
 
 - [Decisions Engine](Decisions-Engine)
 - [Evidence](Evidence)

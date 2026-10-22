@@ -2,7 +2,7 @@
 
 `just sandbox-linux` runs one live Claude Code session in a Linux container.
 It checks that the sandbox blocks a Unix socket in a `Bash` call.
-Run it before you change the sandbox keys of the settings snippet.
+Run it before you add a `sandbox` key to the settings snippet.
 It uses your login and costs money.
 
 ## What It Checks
@@ -46,7 +46,7 @@ The session uses the model `LINUX_SESSION_MODEL` (`haiku`) for one short turn of
 Ask the user before each run.
 The recipe does not run in `just docker`, because it needs the login of the host.
 
-## See Also
+## Related Pages
 
 - [Sandbox](Sandbox)
 - [Sandbox Sessions](Sandbox-Sessions)

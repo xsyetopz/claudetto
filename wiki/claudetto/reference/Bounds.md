@@ -13,8 +13,8 @@ Pick the tier by who reads the bound:
 
 | Tier | File | Use when |
 | --- | --- | --- |
-| Shared runtime | `src/kernel/budget.ts` | The shipped code of more than one slice reads it |
-| Slice | `src/plugins/<plugin>/slices/<slice>/limits.ts` | One slice reads it |
+| Shared runtime | `plugins/claudetto/kernel/budget.ts` | The shipped code of more than one slice reads it |
+| Slice | `plugins/<plugin>/slices/<slice>/limits.ts` | One slice reads it |
 | Repository | `tools/limits.ts` | Only tests and tools read it, so it does not ship |
 
 A value in a `{{...}}` placeholder is filled from the code when `just generate` runs.
@@ -23,32 +23,38 @@ A value in a `{{...}}` placeholder is filled from the code when `just generate` 
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
-| `CONTEXT_WINDOW` | `300,000` | `src/kernel/budget.ts` | The context window in tokens, which the settings snippet sets for Claude Code. |
-| `COMPACT_OUTPUT_RESERVE` | `20,000` | `src/kernel/budget.ts` | The output reserve that Claude Code takes from the compaction window. |
-| `CONTEXT_BLOCK_MARGIN` | `23,000` | `src/kernel/budget.ts` | The tokens below the window at which the client blocks the next request as too long. |
-| `USAGE_LEVELS` (low) | `75` | `src/kernel/budget.ts` | The percent at which the status line shows a use in the warning color. It applies to the pace of a limit and to the context of a subagent. |
-| `USAGE_LEVELS` (high) | `90` | `src/kernel/budget.ts` | The percent at which the status line shows a use in the limit color. It applies to the pace of a limit and to the context of a subagent. |
-| `BASH_OUTPUT_MAX_CHARS` | `16,000` | `src/kernel/budget.ts` | The characters of a successful `Bash` output that Claude gets inline. |
-| `COMMAND_OUTPUT_MAX_CHARS` | `20,000` | `src/kernel/budget.ts` | The characters of a skill command output that shows with no model turn. |
-| `HANDOFF_TRIGGER_TOKENS` | `225,000` | `src/kernel/budget.ts` | The context at which the auto handoff of an Opus, Sonnet, or Fable session starts. |
-| `HAIKU_HANDOFF_TRIGGER_TOKENS` | `100,000` | `src/kernel/budget.ts` | The context at which the auto handoff of a Haiku session starts. |
-| `AUTOCOMPACT_PCT` | `80.3571` | `src/kernel/budget.ts` | The value of `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, which starts the auto compaction at `HANDOFF_TRIGGER_TOKENS` in the window `CONTEXT_WINDOW`. |
-| `HAIKU_AUTOCOMPACT_WINDOW` | `144,444` | `src/kernel/budget.ts` | The `autoCompactWindow` of a Haiku model, which starts the auto compaction below `HAIKU_HANDOFF_TRIGGER_TOKENS`. |
-| `SHELL_SCAN_MAX_CHARS` | `200,000` | `src/kernel/budget.ts` | The most characters that `commands` in `src/kernel/shell.ts` reads in one command. |
-| `BRACE_WORDS_MAX` | `256` | `src/kernel/budget.ts` | The most words that the brace expansion of one word gives. A word that gives more is unreadable. |
-| `CODE_COMMAND_MAX_WORDS` | `32` | `src/kernel/budget.ts` | The most words of one command that a code reader reads from code in another language. |
-| `RENAME_TRIES` | `10` | `src/kernel/budget.ts` | The tries of a rename in `writeAtomic`, the first one included. |
-| `RENAME_WAIT_MS` | `100` | `src/kernel/budget.ts` | The wait in milliseconds between two tries of a rename in `writeAtomic`. |
-| `GROUND_VALUE_CHARS_MIN` | `4` | `src/kernel/budget.ts` | The fewest characters of a value in backticks that the ground check looks for. |
+| `CONTEXT_WINDOW` | `300,000` | `plugins/claudetto/kernel/budget.ts` | The context window in tokens, which the settings snippet sets for Claude Code. |
+| `COMPACT_OUTPUT_RESERVE` | `20,000` | `plugins/claudetto/kernel/budget.ts` | The output reserve that Claude Code takes from the compaction window. |
+| `CONTEXT_BLOCK_MARGIN` | `23,000` | `plugins/claudetto/kernel/budget.ts` | The tokens below the window at which the client blocks the next request as too long. |
+| `USAGE_LEVELS` (low) | `75` | `plugins/claudetto/kernel/budget.ts` | The percent at which the status line shows a use in the warning color. It applies to the pace of a limit and to the context of a subagent. |
+| `USAGE_LEVELS` (high) | `90` | `plugins/claudetto/kernel/budget.ts` | The percent at which the status line shows a use in the limit color. It applies to the pace of a limit and to the context of a subagent. |
+| `HANDOFF_TRIGGER_TOKENS` | `225,000` | `plugins/claudetto/kernel/budget.ts` | The context at which the auto handoff of an Opus, Sonnet, or Fable session starts. |
+| `HAIKU_HANDOFF_TRIGGER_TOKENS` | `100,000` | `plugins/claudetto/kernel/budget.ts` | The context at which the auto handoff of a Haiku session starts. |
+| `AUTOCOMPACT_PCT` | `80.3571` | `plugins/claudetto/kernel/budget.ts` | The value of `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, which starts the auto compaction at `HANDOFF_TRIGGER_TOKENS` in the window `CONTEXT_WINDOW`. |
+| `HAIKU_AUTOCOMPACT_WINDOW` | `144,444` | `plugins/claudetto/kernel/budget.ts` | The `autoCompactWindow` of a Haiku model, which starts the auto compaction below `HAIKU_HANDOFF_TRIGGER_TOKENS`. |
+| `SHELL_SCAN_MAX_CHARS` | `200,000` | `plugins/claudetto/kernel/budget.ts` | The most characters that `commands` in `plugins/claudetto/kernel/shell.ts` reads in one command. |
+| `BRACE_WORDS_MAX` | `256` | `plugins/claudetto/kernel/budget.ts` | The most words that the brace expansion of one word gives. A word that gives more is unreadable. |
+| `RENAME_TRIES` | `10` | `plugins/claudetto/kernel/budget.ts` | The tries of a rename in `writeAtomic`, the first one included. |
+| `RENAME_WAIT_MS` | `100` | `plugins/claudetto/kernel/budget.ts` | The wait in milliseconds between two tries of a rename in `writeAtomic`. |
+| `GROUND_VALUE_CHARS_MIN` | `4` | `plugins/claudetto/kernel/budget.ts` | The fewest characters of a value in backticks that the ground check looks for. |
 
 ## Repository Bounds
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
 | `WORKTREE_TEST_TIMEOUT_MS` | `15,000` | `tools/limits.ts` | The time for one test that makes a `git worktree`. |
-| `GIT_REPO_TEST_TIMEOUT_MS` | `15,000` | `tools/limits.ts` | The time for one test that starts many `git` processes. |
 | `BUNDLE_SCAN_TIMEOUT_MS` | `60,000` | `tools/limits.ts` | The time for one test that scans the bundle of the installed `claude`. |
-| `MIN_CLAUDE_CODE_VERSION` | `2.1.305` | `tools/limits.ts` | The lowest Claude Code version that claudetto is built for. |
+| `STUB_RUN_TIMEOUT_MS` | `30,000` | `tools/limits.ts` | The time for one `claude` run against the stub of the Messages API. |
+| `CTX7_HELP_TIMEOUT_MS` | `30,000` | `tools/limits.ts` | The time for the run of `ctx7 --help` that checks the pinned `ctx7`. |
+| `OPENSPEC_RUN_TIMEOUT_MS` | `30,000` | `tools/limits.ts` | The time for one run of the OpenSpec CLI in the parity test of MiniSpec. |
+| `PIN_RUNS_TIMEOUT_MS` | `180,000` | `tools/limits.ts` | The time for all the stub runs of the settings pin test. |
+| `STUB_RUNS_AT_ONCE` | `6` | `tools/limits.ts` | The most stub runs at a time in the settings pin test. |
+| `MAX_FILE_LINES` | `400` | `tools/limits.ts` | The most lines in one `.ts` or `.py` file of `plugins/`, `tools/`, and `tests/`. |
+| `MAIN_BODY_MAX_CHARS` | `9,349` | `tools/limits.ts` | The most characters of the body of `claudetto:main`. |
+| `TOOL_TEXTS_MAX_CHARS` | `4,535` | `tools/limits.ts` | The most characters of the shorter tool texts of the `prompt` slice. |
+| `CONTEXT_BLOCKS_MAX_CHARS` | `401` | `tools/limits.ts` | The most characters of the context blocks of the `prompt` slice. |
+| `EVAL_MIN_RUNS_PER_ARM` | `10` | `tools/limits.ts` | The fewest runs of each arm of an eval. |
+| `MIN_CLAUDE_CODE_VERSION` | `2.1.307` | `tools/limits.ts` | The lowest Claude Code version that claudetto is built for. |
 | `DOCKER_CPUS` | `4` | `tools/limits.ts` | The CPUs of the container of `just docker`. |
 | `EVAL_MAX_COST_USD` | `5` | `tools/limits.ts` | The most US dollars for one `just eval` run. |
 | `LINUX_TOKEN_MIN_MINUTES` | `30` | `tools/limits.ts` | The fewest minutes of life of the access token before `just sandbox-linux` sends the login to its container. |
@@ -56,9 +62,8 @@ A value in a `{{...}}` placeholder is filled from the code when `just generate` 
 
 ## Source of the Binary Facts
 
-Three shared bounds depend on the Claude Code binary:
-`CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `BASH_OUTPUT_MAX_CHARS`.
-The range of `bashOutputMaxChars` (4,000 to 128,000) comes from the description of the key in the settings schema of `2.1.303` to `2.1.305`.
+Two shared bounds depend on the Claude Code binary:
+`CONTEXT_WINDOW` and `CONTEXT_BLOCK_MARGIN`.
 `CONTEXT_BLOCK_MARGIN` is the output reserve of 20,000 tokens plus 3,000 tokens of the `2.1.303` bundle.
 The `+3,000` was not found by name in the `2.1.304` bundle, so it stays a claim of `2.1.303` only.
 The `2.1.303` and `2.1.304` bundles cap the window of some models at 200,000 tokens.
@@ -67,7 +72,7 @@ The env var and the setting win first in each of them, so the settings snippet s
 The `2.1.303` to `2.1.305` bundles start the auto compaction at `min(floor(E × pct / 100), E − 13000)`, with `E` the window less `COMPACT_OUTPUT_RESERVE`.
 `AUTOCOMPACT_PCT` and `HAIKU_AUTOCOMPACT_WINDOW` come from this formula.
 
-## See Also
+## Related Pages
 
 - [Bounds for Slices](Bounds-Slices)
 - [Bounds for Add-Ons](Bounds-Add-Ons)

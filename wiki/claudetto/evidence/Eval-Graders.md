@@ -34,7 +34,7 @@ The file-state grader matches the final content of the file.
 No grader reads the text of a `Bash` call, because `cp data/big.log /tmp/x` reads the log but looks like a write.
 A pattern for a small file is anchored with `(?<![\s\S])` and `(?![\s\S])`, so it holds with or without the `m` flag.
 A deleted file makes the grader throw, and the run fails.
-`tests/claudetto/evals/graders.test.ts` runs each file-state regex on a passing and a failing sample.
+The tests in `tests/claudetto/evals/graders/` run each file-state regex on a passing and a failing sample.
 
 ## What the Format Can Check
 
@@ -78,7 +78,7 @@ Hooks and guards in code check instruction adherence.
 - Do the hooks of the plugin behave the same inside a run?
 - Does the trace name a subagent call `Agent`, and does `input_match` see subagent commands?
 
-## See Also
+## Related Pages
 
 - [Evals](Evals)
 - [Evidence](Evidence)

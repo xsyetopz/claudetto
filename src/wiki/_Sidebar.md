@@ -10,28 +10,24 @@
   - [Attributions](Attributions)
   - [Architecture](Architecture)
 - Slices
-  - [Advise](Advise)
+  - [Agents](Agents)
   - [Decide](Decide)
   - [Dry](Dry)
   - [Goal](Goal)
   - [Ground](Ground)
   - [Guard](Guard)
   - [Handoff](Handoff)
-  - [Patch](Patch)
+  - [Session Hygiene](Hygiene)
   - [Prompt](Prompt)
   - [Reply](Reply)
-  - [Sembr](Sembr)
   - [Setup](Setup)
   - [Spec](Spec)
   - [Status Line](Status-Line)
   - [Styles](Styles)
 - Add-Ons
   - [Add-Ons](Add-Ons)
-  - [Code Graph](Code-Graph)
   - [Browser](Browser)
   - [Library Docs](Library-Docs)
-  - [Sessions](Sessions)
-  - [Lab](Lab)
 - Reference
   - [Settings Snippet](Settings-Snippet)
   - [Settings Apply](Settings-Apply)
@@ -63,6 +59,7 @@
   - [Development](Development)
   - [Plugin Layout](Plugin-Layout)
   - [Sandbox](Sandbox)
+  - [Lab](Lab)
   - [Release History](Release-History)
 
 **Claude Code**

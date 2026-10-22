@@ -23,7 +23,7 @@ Each row below names a page, what it measures, and when.
 | [Sandbox Run 0.2.0](Sandbox-Run-0.2.0) | Live sandbox runs of 0.2.0, the slices that worked, and the faults fixed | 2026-10-20 | `2.1.304` |
 | [Jev Images](Jev-Images) | Live `yes` and `box` calls with one image, the reply shape of `box`, an image over the pixel bound, and the cost | 2026-10-20 | Not applicable |
 
-## See Also
+## Related Pages
 
 - [Handoff Cost](Handoff-Cost)
 - [Usage Evidence](Usage-Evidence)

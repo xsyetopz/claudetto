@@ -31,7 +31,7 @@ This page lists them and the reason for each.
 | `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` | any | Removes beta features. |
 | `DISABLE_INTERLEAVED_THINKING` | any | Removes thinking between tool calls. |
 
-## See Also
+## Related Pages
 
 - [Off Switches](Off-Switches)
 - [Settings Snippet](Settings-Snippet)

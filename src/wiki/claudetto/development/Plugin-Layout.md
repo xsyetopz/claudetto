@@ -1,57 +1,59 @@
 # Plugin Layout
 
-The repository keeps the source of each plugin in `src/`, and a generator writes the files that users install into `plugins/`.
+The source of each plugin is in `plugins/`, and Claude Code reads its files as they are.
 This page shows where each file lives and which import rules the tests check.
 Read it before you add a file, a slice, or a plugin.
 
 ## Top Level
 
-| Path | What it holds | Tracked |
-| --- | --- | --- |
-| `src/` | The source of each plugin, the kernel, the shipped texts, the fragments, and the wiki sources | ✅ |
-| `plugins/` | The plugins that users install, written by the generator | ✅ generated |
-| `tools/` | The repository scripts and the generator in `tools/generate/` | ✅ |
-| `tests/` | One folder for each plugin, and `kernel/`, `support/`, and `tools/` | ✅ |
-| `wiki/` | The wiki pages, written from `src/wiki/` | ✅ generated |
-| `.claude-plugin/` | The marketplace file `marketplace.json` | ✅ generated |
-| `.claude/rules/` | Rules that Claude Code loads for matching paths | ✅ |
-| `schemas/` | The settings schemas, written by `just schema` | ✅ generated |
-| `docs/` | A link to the wiki only | ✅ |
-| `external/` | Local sources | ❌ |
+| Path | What it holds |
+| --- | --- |
+| `plugins/` | The plugins that users install. It is the source |
+| `tools/` | The repository scripts, and the generator of the wiki in `tools/generate/` |
+| `tests/` | One folder for each plugin, and `kernel/`, `support/`, and `tools/` |
+| `src/wiki/` | The source of the wiki pages |
+| `wiki/` | The wiki pages, written from `src/wiki/` by `just generate` |
+| `.claude-plugin/` | The marketplace file `marketplace.json` |
+| `.claude/rules/` | Rules that Claude Code loads for matching paths |
+| `openspec/` | The changes and the specs, in the layout that MiniSpec reads |
+| `schemas/` | The settings schemas, written by `just schema` |
+| `docs/` | A link to the wiki only |
+| `external/` | Local sources. Git ignores it |
 
-Each file under `plugins/` names its source in a header, except a JSON file.
-A file in `plugins/` with no source fails `just generate --check`.
+`just generate` writes only `wiki/`.
+`just generate --check` names each page of `wiki/` that differs from its source in `src/wiki/`.
 
 ## Plugins
 
-`src/marketplace.ts` lists the plugins in this order.
-
 | Plugin | Source | Tests | Page |
 | --- | --- | --- | --- |
-| `claudetto` | `src/plugins/claudetto/` | `tests/claudetto/<slice>/` | [Overview](Overview) |
-| `claudetto-codegraph` | `src/plugins/claudetto-codegraph/` | `tests/claudetto-codegraph/` | [Code Graph](Code-Graph) |
-| `claudetto-browser` | `src/plugins/claudetto-browser/` | `tests/claudetto-browser/` | [Browser](Browser) |
-| `claudetto-docs` | `src/plugins/claudetto-docs/` | `tests/claudetto-docs/` | [Library Docs](Library-Docs) |
-| `claudetto-sessions` | `src/plugins/claudetto-sessions/` | `tests/claudetto-sessions/` | [Sessions](Sessions) |
-| `claudetto-lab` | `src/plugins/claudetto-lab/` | `tests/claudetto-lab/` | [Lab](Lab) |
+| `claudetto` | `plugins/claudetto/` | `tests/claudetto/<slice>/` and `plugins/claudetto/tests/` | [Overview](Overview) |
+| `claudetto-browser` | `plugins/claudetto-browser/` | `tests/claudetto-browser/` | [Browser](Browser) |
+| `claudetto-docs` | `plugins/claudetto-docs/` | `tests/claudetto-docs/` | [Library Docs](Library-Docs) |
 
-## The Source Tree
+`plugins/claudetto/tests/` holds the hook lab tests of the core plugin.
+
+## The Plugin Tree
 
 ```text
-src/kernel/                              shared code and ports
-src/kernel/node/                         adapters of the Node and Bun runtimes
-src/fragments/                           parts that more than one text repeats
-src/wiki/                                the sources of the wiki pages
-src/marketplace.ts                       the list of the plugins of the marketplace
-src/plugins/<plugin>/plugin.ts           the manifest data: name, keywords, homepage
-src/plugins/<plugin>/description.md      the description, one sentence on each line
-src/plugins/<plugin>/slices/<s>/         one feature of the plugin
-src/plugins/<plugin>/hooks/hooks.json    texts of a classic hook, when the plugin has one
-src/plugins/<plugin>/evals/              eval cases of the plugin
+plugins/claudetto/.claude-plugin/plugin.json   the manifest and the userConfig
+plugins/claudetto/settings.json                the setting agent: claudetto:main
+plugins/claudetto/agents/                      the main agent and the roster
+plugins/claudetto/bin/                         the commands
+plugins/claudetto/evals/                       eval cases, and hooks.json
+plugins/claudetto/hooks/                       hooks.json and register.ts
+plugins/claudetto/kernel/                      shared code and ports
+plugins/claudetto/kernel/node/                 adapters of the Node and Bun runtimes
+plugins/claudetto/output-styles/               the output style
+plugins/claudetto/skills/                      the skills
+plugins/claudetto/slices/<s>/                  one feature of the plugin
+plugins/claudetto/snippets.ts                  the settings snippet
+plugins/claudetto/tests/                       hook lab tests
 ```
 
-The core plugin has 15 slices, and each add-on has one to four.
-The generator finds each `slice.ts`, so no list of slices exists to edit.
+The core plugin has 13 slices with code, and each add-on has one.
+An add-on keeps its own copy of each kernel file that it uses.
+A test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
 The parts of a slice are on [Plugin Layout Slices](Plugin-Layout-Slices).
 
 ## Imports
@@ -63,18 +65,18 @@ The import rules are in `tests/support/import-rules.ts`.
 - A plugin imports nothing from another plugin, `tools/`, or `tests/`.
 - A plugin imports only relative paths and `node:` or `bun:` modules.
   The one allowed package is a type import of `claude-code`.
-- A slice imports only `src/kernel/` and its own folder.
+- A slice imports only the `kernel/` of its plugin and its own folder.
   Biome enforces this with `noRestrictedImports`.
-- Domain code in `domain/` imports no adapter and no `src/kernel/node/` file.
+- Domain code in `domain/` imports no adapter and no `kernel/node/` file.
 - Each plugin has its own copy of the kernel files it imports.
-  `tools/generate/closure.ts` writes the copies.
+  A test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
 
 The rules for each folder are in `.claude/rules/`, such as `slice-imports.md` and `plugin-imports.md`.
 
 ## The Hooks Module
 
-- `plugins/<plugin>/hooks/register.ts` is generated.
-  It is the only hooks module and has one literal `on()` call for each mod handler.
+- `plugins/<plugin>/hooks/register.ts` is the only hooks module.
+  It has one literal `on()` call for each mod handler.
 - A file in the import graph of the hooks module has no `node:` import, no `bun:` import, no `import()`, and no `Bun`.
   The event name of each `on()` call is a string literal.
   `.claude/rules/hooks-module.md` states the rule, and `tests/support/import-rules.ts` checks it.
@@ -83,11 +85,11 @@ The rules for each folder are in `.claude/rules/`, such as `slice-imports.md` an
 ## Hook Evals
 
 Each hook of each plugin has an entry in `evals/hooks.json`.
-The generator writes the file from the `evals` field of the hook in `slice.ts`.
+A person writes the file.
 `tests/support/hook-evals.test.ts` checks it.
 
 - The id of a mod hook is `<event> <slice>`.
-  The generated `register.ts` has the comment `// eval: <id>` above its `on()` call.
+  `register.ts` has the comment `// eval: <id>` above its `on()` call.
 - The id of a classic hook is its event and command, without the `bun` launcher and the plugin root.
 - An entry has `requests` and `tokens`: the model requests and tokens the hook adds to each turn.
 - An entry names the test of each case kind as `<file from the repository root> > <test name>`.
@@ -115,15 +117,16 @@ The values are on [Bounds](Bounds).
 
 | Tier | File |
 | --- | --- |
-| Shared runtime | `src/kernel/budget.ts` |
-| Slice | `src/plugins/<plugin>/slices/<s>/limits.ts` |
+| Shared runtime | `plugins/claudetto/kernel/budget.ts` |
+| Slice | `plugins/<plugin>/slices/<s>/limits.ts` |
 | Repository | `tools/limits.ts` |
 
 A slice with no bound has no `limits.ts`.
-A `userConfig` field in `slice.ts` is for a choice that the user makes.
+A `userConfig` field in `plugin.json` is for a choice that the user makes.
 Each option adds one dialog at install, so it needs a real user choice.
+The core plugin has two: `decide` and `compaction`.
 
-## See Also
+## Related Pages
 
 - [Plugin Layout Slices](Plugin-Layout-Slices)
 - [Architecture](Architecture)

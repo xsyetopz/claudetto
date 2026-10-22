@@ -1,6 +1,6 @@
 # Decisions: Architecture
 
-These decisions explain why the code has slices, a generator, and a fixed style.
+These decisions explain why the code has slices, a hand-written hooks module, and a fixed style.
 Each topic gives the choice, the reason, and the evidence.
 
 ## Why Each Capability Is a Slice
@@ -13,23 +13,26 @@ An entry point is a mod handler, a CLI, or a status line segment.
 
 **Evidence:**
 
-- `src/plugins/claudetto/slices/` has 15 slices, and the add-ons have 9.
-- `biome.json` limits the imports of a slice to `src/kernel/` and its own folder.
+- `plugins/claudetto/slices/` has 13 slices with code, and each add-on has 1.
+- `biome.json` limits the imports of a slice to the `kernel/` of its plugin and its own folder.
 
-## Why the Wiring Files Are Generated
+## Why the Wiring Files Are Hand-Written
 
-**Choice:** `just generate` reads each `slice.ts` and writes `hooks/register.ts`, `hooks.json`, `plugin.json`, the texts, and the kernel copies.
-It fails when one slice has two handlers with the same event, filter, and phase.
+**Choice:** `plugins/claudetto/hooks/register.ts` is written by hand, with one literal `on()` call for each handler.
+Version 0.2.0 generated it, with `hooks.json`, `plugin.json`, and the kernel copies, from a `slice.ts` manifest in each slice.
+Version 0.3.0 removed the generator of the plugins and the manifests.
+`just generate` writes only `wiki/`.
 
-**Reason:** The mod runtime needs a literal event name in each `on()` call, and a shared file that each slice edits makes parallel work conflict.
+**Reason:** The mod runtime needs a literal event name in each `on()` call.
+The generator and the manifests were more code than the 18 calls they wrote, and `plugins/` as the source is what Claude Code reads.
 
-**Evidence:** `register.ts` starts with a "generated" line and has 20 `on()` calls.
-`just gate` fails when a plugin file differs from the generator output.
+**Evidence:** `register.ts` has 18 `on()` calls.
+`tests/support/hook-evals.test.ts` fails when a call has no `// eval:` comment or no entry in `evals/hooks.json`.
 
-## Why One Hook Module Replaces Command Hooks
+## Why One Hook Module Replaces Most Command Hooks
 
 **Choice:** `claudetto` and `claudetto-browser` each name one module, `./register.ts`, in `hooks.json`.
-No plugin keeps a classic command hook.
+The one classic command hook is `PreModelSwitch` in `claudetto`, because the mod API has no event for a model switch.
 
 **Reason:** A command hook starts a process for each event.
 A mod handler runs inside Claude Code with no extra start.
@@ -51,10 +54,10 @@ This is one sample.
 
 ## Why Add-Ons Import Nothing From Other Plugins
 
-**Choice:** Each add-on has its own folder in `src/plugins/`.
-The generator copies each kernel module it imports into the `kernel/` folder of the add-on.
+**Choice:** Each add-on has its own folder in `plugins/`.
+It keeps its own copy of each kernel file that it uses, and a test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
 
-**Reason:** Each add-on must work alone, and `claudetto-lab` most of all.
+**Reason:** Each add-on must work alone.
 A shared npm package would add an install step and version skew.
 
 **Evidence:**
@@ -64,8 +67,8 @@ A shared npm package would add an install step and version skew.
 
 ## Why Bounds Have Three Tiers
 
-**Choice:** A shared runtime bound is in `src/kernel/budget.ts`.
-A slice bound is in `slices/<s>/limits.ts` (13 files).
+**Choice:** A shared runtime bound is in `plugins/claudetto/kernel/budget.ts`.
+A slice bound is in `slices/<s>/limits.ts` (12 files).
 A repository bound is in `tools/limits.ts`.
 
 **Reason:** Copies of one bound in code, config, and prose drift apart.
@@ -87,7 +90,7 @@ Domain code is plain data and functions, so a test needs no stub.
 **Evidence:** `biome.json` sets `useArrowFunction` to `error`.
 `tools/lint/arrow-functions.grit` flags a `function` declaration.
 
-## See Also
+## Related Pages
 
 - [Architecture](Architecture)
 - [Design](Design)

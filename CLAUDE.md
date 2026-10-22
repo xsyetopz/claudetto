@@ -2,15 +2,14 @@
 
 A Claude Code plugin marketplace in ESM.
 Code that needs Python is Python, and the tests and `tools/` run on Bun 1.4.3 or later, with `bun install` for the dev dependencies.
-The core plugin is in `plugins/claudetto/`, next to five add-on plugins: `claudetto-codegraph`, `claudetto-browser`, `claudetto-docs`, `claudetto-sessions`, and `claudetto-lab`.
+The core plugin is in `plugins/claudetto/`, next to two add-on plugins: `claudetto-browser` and `claudetto-docs`.
 Each add-on plugin works without the core plugin, so it imports nothing from another plugin.
 Only `plugins/` ships to users.
 `tests/` has one folder for each plugin, with `tests/claudetto/<slice>/` for each slice of the core plugin.
-`tests/kernel/` tests `src/kernel/`, and `tests/support/` holds the helpers of the tests.
+`tests/kernel/` tests `plugins/claudetto/kernel/`, and `tests/support/` holds the helpers of the tests.
 `tools/` holds the repository scripts.
-`src/` holds the source of each plugin, the shared kernel, and each text that a plugin ships, such as the agents, the skills, and `hooks.json`.
-Edit the source in `src/` and run `just generate`, because a test fails when a generated file differs from its source.
-Do not edit `plugins/` by hand.
+`plugins/` is the source of each plugin, and Claude Code reads its files as they are.
+An add-on plugin keeps its own copy of each kernel file that it uses, and a test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
 Docs, design, and evidence: the [wiki](https://github.com/xsyetopz/claudetto/wiki), with its source in `src/wiki/`.
 
 The rules that apply to some files only are in [`.claude/rules/`](.claude/rules/).
@@ -18,13 +17,13 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
 
 ## Commands (Repository Root)
 
-- `just check` runs lint, the type check, the check of the generated files, tests, validation, and the hook labs.
+- `just check` runs lint, the type check, the check of the generated wiki, tests, validation, and the hook labs.
   It must pass before done.
 - `just docker check` runs `just check` in a container on OrbStack or Docker, with at most `DOCKER_CPUS` CPUs (`tools/limits.ts`).
-  `just docker test tests/claudetto/guard/rules.test.ts` runs one recipe the same way.
+  `just docker test tests/claudetto/guard/gate.test.ts` runs one recipe the same way.
   Use it for the checks, so that they do not take each CPU of the host.
   The sandbox sessions and the paid runs use the login of the host, so they do not run in the container.
-- `just test tests/claudetto/guard/rules.test.ts` runs one test file with `bun test`.
+- `just test tests/claudetto/guard/gate.test.ts` runs one test file with `bun test`.
 - `just lab` runs the hook lab of each plugin: the tests of its hooks module with stubbed Claude Code events.
   Test each change to `hooks/register.ts` there before a live session.
 - `bun run lint:md` lints the Markdown files.
@@ -44,7 +43,7 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
 - Put each code item in inline code (single backticks) in all text that is not code: Markdown, comments, test names, messages to Claude, commit messages, pull requests, and chat replies.
   A code item is a command, a tool name, a file path, an identifier, a settings key, an env var, or a literal value, such as `cat F`, `Read`, `hooks.json`, and `maxTurns`.
   The backticks show a reader, a person or a model, which words are code and which words are prose.
-- Change a shared runtime bound only in `src/kernel/budget.ts`,
+- Change a shared runtime bound only in `plugins/claudetto/kernel/budget.ts`,
   a slice bound only in `slices/<s>/limits.ts`,
   and a repository bound only in `tools/limits.ts`.
   Tests pin the copies of each bound in code and config, not in prose.

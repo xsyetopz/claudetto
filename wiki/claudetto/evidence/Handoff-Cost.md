@@ -125,7 +125,7 @@ The text below is as the handoff files wrote it.
 - The cold path of `D47` was not tested.
 - The quality of the continued work was not scored.
 
-## See Also
+## Related Pages
 
 - [Handoff Cost (Part 2)](Handoff-Cost-2)
 - [Handoff](Handoff)

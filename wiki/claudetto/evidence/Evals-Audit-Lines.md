@@ -112,7 +112,7 @@ The folders are in `plugins/claudetto/evals/results/`, which git ignores.
 - `variant-eval-2-3-no-thorough-2026-10-21T03-26-39-779Z`: item B, without line.
 - `2026-10-21T02-31-53-010Z`, `2026-10-21T02-32-27-972Z`, and `2026-10-21T02-41-53-278Z`: one-run pilots.
 
-## See Also
+## Related Pages
 
 - [Evals](Evals)
 - [Evals 2.1.304](Evals-2.1.304)

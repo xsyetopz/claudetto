@@ -110,7 +110,7 @@ The nine reruns cost $1.50, and the two cases of the first 10-run set cost $0.15
 The three fix runs cost $0.51 in total, one for `missing-tool-is-a-step` and two for `report-count`.
 So the paid runs on this page cost $2.16 in total.
 
-## See Also
+## Related Pages
 
 - [Evals](Evals)
 - [Evals 0.1.0](Evals-0.1.0)

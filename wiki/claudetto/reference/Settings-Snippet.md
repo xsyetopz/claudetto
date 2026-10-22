@@ -3,7 +3,7 @@
 # Settings Snippet
 
 The settings snippet is the set of Claude Code settings that `claudetto` needs, as one JSON block.
-The `settings` entries of the slices make it, and `just generate` writes it into this page.
+It lives in `plugins/claudetto/slices/setup/prompts.ts`, and `just generate` writes it into this page.
 A test checks each key against `schemas/claude-code-settings.json`.
 To apply it, see [Settings Apply](Settings-Apply).
 The reason and default of each key are on [Settings Snippet Keys](Settings-Snippet-Keys).
@@ -12,31 +12,34 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/xsyetopz/claudetto/main/schemas/claude-code-settings.json",
-  "syncClaudeAiSkills": false,
-  "syncClaudeAiPlugins": false,
+  "$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-settings.json",
   "env": {
-    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80.3571",
-    "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
-    "CLAUDE_CODE_DISABLE_CRON": "1",
     "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+    "CLAUDE_CODE_PROMPT_CACHE_TTL": "1h",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80.3571",
+    "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS": "1",
+    "CLAUDE_CODE_TOTAL_TOKENS_REMINDER": "off",
+    "CLAUDE_CODE_BASH_OUTPUT_AUDIENCE_NOTE": "0",
+    "CLAUDE_CODE_DISABLE_ADVISOR_TOOL": "1",
+    "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
     "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
     "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1",
     "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "1",
-    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "2",
-    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "1",
-    "CLAUDE_CODE_PROMPT_CACHE_TTL": "1h",
-    "CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT": "1",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-5-5",
+    "CLAUDE_CODE_SILENT_TURN_REMINDER": "0",
     "DISABLE_ERROR_REPORTING": "1",
+    "CLAUDE_CODE_DISABLE_CFC_PROMPT": "1",
+    "CLAUDE_CODE_DISABLE_CRON": "1",
+    "CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS": "1",
+    "CLAUDE_CODE_FORK_SUBAGENT": "0",
+    "CLAUDE_CODE_MEMORY_SUBAGENT_APPEND": "1",
+    "CLAUDE_CODE_PLAN_V2_AGENT_COUNT": "1",
+    "CLAUDE_CODE_PLAN_V2_EXPLORE_AGENT_COUNT": "1",
+    "CLAUDE_CODE_TODO_REMINDER_MODE": "off",
     "DISABLE_EXTRA_USAGE_COMMAND": "1",
     "DISABLE_FEEDBACK_COMMAND": "1",
-    "DISABLE_INSTALL_GITHUB_APP_COMMAND": "1",
-    "DISABLE_UPGRADE_COMMAND": "1"
+    "DISABLE_INSTALL_GITHUB_APP_COMMAND": "1"
   },
-  "includeGitInstructions": false,
   "permissions": {
-    "disableBypassPermissionsMode": "disable",
     "deny": [
       "Read(**/.env)",
       "Read(**/.env.local)",
@@ -62,234 +65,58 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
       "Bash(mkfs *)",
       "Bash(mkfs.*)",
       "Bash(dd * of=/dev/*)",
+      "Bash(rm -rf ~/)",
+      "Bash(rm -rf $HOME)",
+      "Bash(rm -rf \"$HOME\")",
+      "Bash(sudo *)",
+      "Bash(doas *)",
+      "Bash(su *)",
+      "Bash(newfs*)",
+      "Bash(diskutil erase*)",
+      "Bash(diskutil zero*)",
+      "Bash(diskutil secureErase*)",
+      "Bash(diskutil partition*)",
+      "Bash(diskutil reformat*)",
+      "Bash(csrutil disable*)",
+      "Bash(csrutil clear*)",
+      "Bash(csrutil authenticated-root *)",
+      "Bash(spctl --master-disable*)",
+      "Bash(spctl --global-disable*)",
+      "Bash(nvram *=*)",
+      "Bash(nvram -d *)",
+      "Bash(nvram -c*)",
+      "Bash(security delete-*)",
+      "Edit(//System/**)",
+      "Edit(//Library/**)",
+      "Edit(//usr/bin/**)",
+      "Edit(//usr/sbin/**)",
+      "Edit(//usr/lib/**)",
+      "Edit(//usr/libexec/**)",
+      "Edit(//usr/share/**)",
       "Agent(general-purpose)",
+      "Agent(Explore)",
+      "Agent(Plan)",
+      "Agent(claude)",
       "Agent(claude-code-guide)",
       "Agent(statusline-setup)",
+      "Agent(fork)",
       "mcp__computer-use",
       "ScheduleWakeup",
       "ReportFindings",
       "EnterPlanMode",
       "ExitPlanMode",
+      "Workflow",
+      "Artifact",
+      "DesignSync",
+      "RemoteTrigger",
       "TaskCreate",
       "TaskGet",
       "TaskList",
-      "TaskStop",
       "TaskUpdate"
     ],
-    "ask": [
-      "Bash(git push* -f*)",
-      "Bash(git push* --force)",
-      "Bash(git push* --force *)",
-      "Bash(git push* --delete*)",
-      "Bash(git push* --mirror*)",
-      "Bash(git reset* --hard*)",
-      "Bash(git clean* -*f*)",
-      "Bash(git checkout .)",
-      "Bash(git checkout* -- *)",
-      "Bash(git restore .)",
-      "Bash(git restore -- *)",
-      "Bash(git restore* --worktree*)",
-      "Bash(git restore* -W*)",
-      "Bash(git restore* --source*)",
-      "Bash(git branch* -D*)",
-      "Bash(git branch* --force*)",
-      "Bash(git checkout* -f*)",
-      "Bash(git stash drop*)",
-      "Bash(git stash clear*)",
-      "Bash(git reflog expire*)",
-      "Bash(git reflog delete*)",
-      "Bash(git gc* --prune*)",
-      "Bash(git prune*)",
-      "Bash(git filter-*)",
-      "Bash(docker run* -v*)",
-      "Bash(docker run* --volume*)",
-      "Bash(docker run* --mount*)",
-      "Bash(docker run* --privileged*)",
-      "Bash(docker create* -v*)",
-      "Bash(docker create* --volume*)",
-      "Bash(docker create* --mount*)",
-      "Bash(docker create* --privileged*)",
-      "Bash(docker container run* -v*)",
-      "Bash(docker container run* --volume*)",
-      "Bash(docker container run* --mount*)",
-      "Bash(docker container run* --privileged*)",
-      "Bash(docker container create* -v*)",
-      "Bash(docker container create* --volume*)",
-      "Bash(docker container create* --mount*)",
-      "Bash(docker container create* --privileged*)",
-      "Bash(docker compose run* -v*)",
-      "Bash(docker compose run* --volume*)",
-      "Bash(docker compose run* --mount*)",
-      "Bash(docker compose run* --privileged*)",
-      "Bash(docker compose up* -v*)",
-      "Bash(docker compose up* --volume*)",
-      "Bash(docker compose up* --mount*)",
-      "Bash(docker compose up* --privileged*)",
-      "Bash(docker compose create* -v*)",
-      "Bash(docker compose create* --volume*)",
-      "Bash(docker compose create* --mount*)",
-      "Bash(docker compose create* --privileged*)",
-      "Bash(rm -r*)",
-      "Bash(rm -R*)",
-      "Bash(rm -fr*)",
-      "Bash(rm -fR*)",
-      "Bash(rm -ir*)",
-      "Bash(rm -iR*)",
-      "Bash(rm -vr*)",
-      "Bash(rm -vR*)",
-      "Bash(rm -fir*)",
-      "Bash(rm -fiR*)",
-      "Bash(rm -fvr*)",
-      "Bash(rm -fvR*)",
-      "Bash(rm -ifr*)",
-      "Bash(rm -ifR*)",
-      "Bash(rm -ivr*)",
-      "Bash(rm -ivR*)",
-      "Bash(rm -vfr*)",
-      "Bash(rm -vfR*)",
-      "Bash(rm -vir*)",
-      "Bash(rm -viR*)",
-      "Bash(rm -fivr*)",
-      "Bash(rm -fivR*)",
-      "Bash(rm -fvir*)",
-      "Bash(rm -fviR*)",
-      "Bash(rm -ifvr*)",
-      "Bash(rm -ifvR*)",
-      "Bash(rm -ivfr*)",
-      "Bash(rm -ivfR*)",
-      "Bash(rm -vfir*)",
-      "Bash(rm -vfiR*)",
-      "Bash(rm -vifr*)",
-      "Bash(rm -vifR*)",
-      "Bash(rm -dr*)",
-      "Bash(rm -dR*)",
-      "Bash(rm -dfr*)",
-      "Bash(rm -dfR*)",
-      "Bash(rm -fdr*)",
-      "Bash(rm -fdR*)",
-      "Bash(rm -dir*)",
-      "Bash(rm -diR*)",
-      "Bash(rm -idr*)",
-      "Bash(rm -idR*)",
-      "Bash(rm -dvr*)",
-      "Bash(rm -dvR*)",
-      "Bash(rm -vdr*)",
-      "Bash(rm -vdR*)",
-      "Bash(rm -Ir*)",
-      "Bash(rm -IR*)",
-      "Bash(rm -Ifr*)",
-      "Bash(rm -IfR*)",
-      "Bash(rm -fIr*)",
-      "Bash(rm -fIR*)",
-      "Bash(rm -Iir*)",
-      "Bash(rm -IiR*)",
-      "Bash(rm -iIr*)",
-      "Bash(rm -iIR*)",
-      "Bash(rm -Ivr*)",
-      "Bash(rm -IvR*)",
-      "Bash(rm -vIr*)",
-      "Bash(rm -vIR*)",
-      "Bash(rm -Pr*)",
-      "Bash(rm -PR*)",
-      "Bash(rm -Pfr*)",
-      "Bash(rm -PfR*)",
-      "Bash(rm -fPr*)",
-      "Bash(rm -fPR*)",
-      "Bash(rm -Pir*)",
-      "Bash(rm -PiR*)",
-      "Bash(rm -iPr*)",
-      "Bash(rm -iPR*)",
-      "Bash(rm -Pvr*)",
-      "Bash(rm -PvR*)",
-      "Bash(rm -vPr*)",
-      "Bash(rm -vPR*)",
-      "Bash(rm -xr*)",
-      "Bash(rm -xR*)",
-      "Bash(rm -xfr*)",
-      "Bash(rm -xfR*)",
-      "Bash(rm -fxr*)",
-      "Bash(rm -fxR*)",
-      "Bash(rm -xir*)",
-      "Bash(rm -xiR*)",
-      "Bash(rm -ixr*)",
-      "Bash(rm -ixR*)",
-      "Bash(rm -xvr*)",
-      "Bash(rm -xvR*)",
-      "Bash(rm -vxr*)",
-      "Bash(rm -vxR*)",
-      "Bash(rm * -r*)",
-      "Bash(rm * -R*)",
-      "Bash(rm --recursive*)",
-      "Bash(rm * --recursive*)",
-      "Bash(sh)",
-      "Bash(sh -)",
-      "Bash(sh -s*)",
-      "Bash(bash)",
-      "Bash(bash -)",
-      "Bash(bash -s*)",
-      "Bash(zsh)",
-      "Bash(sudo *)",
-      "Bash(npm publish*)",
-      "Bash(bun publish*)",
-      "Bash(pnpm publish*)",
-      "Bash(yarn publish*)",
-      "Bash(cargo publish*)",
-      "Bash(gh pr create *)",
-      "Bash(gh pr merge *)",
-      "Bash(gh pr comment *)",
-      "Bash(gh pr review *)",
-      "Bash(gh issue create *)",
-      "Bash(gh issue comment *)",
-      "Bash(gh release *)",
-      "Bash(* DROP DATABASE *)",
-      "Bash(* DROP TABLE *)",
-      "Bash(* TRUNCATE *)",
-      "Bash(* drop database *)",
-      "Bash(* drop table *)",
-      "Bash(* truncate table *)"
-    ],
-    "allow": [
-      "Glob",
-      "Grep",
-      "Bash(git status *)",
-      "Bash(git diff *)",
-      "Bash(git log *)",
-      "Bash(git show *)",
-      "Bash(git branch)",
-      "Bash(git fetch *)",
-      "Bash(gh pr view *)",
-      "Bash(gh pr list *)",
-      "Bash(gh pr diff *)",
-      "Bash(gh pr checks *)",
-      "Bash(gh issue view *)",
-      "Bash(gh issue list *)",
-      "Bash(gh run view *)",
-      "Bash(gh run list *)",
-      "Bash(gh repo view *)",
-      "Bash(bun test *)",
-      "Bash(bun run *)",
-      "Bash(npm test *)",
-      "Bash(npm run *)",
-      "Bash(pnpm test *)",
-      "Bash(pnpm run *)",
-      "Bash(cargo build *)",
-      "Bash(cargo test *)",
-      "Bash(cargo check *)",
-      "Bash(go build *)",
-      "Bash(go test *)",
-      "Bash(go vet *)",
-      "Bash(just *)",
-      "Bash(make *)"
-    ]
+    "defaultMode": "default",
+    "disableAutoMode": "disable"
   },
-  "model": "claude-opus-5-5",
-  "availableModels": [
-    "claude-opus-5-5",
-    "claude-sonnet-5-5",
-    "claude-haiku-5-5",
-    "claude-fable-5-1"
-  ],
-  "enforceAvailableModels": true,
   "disableClaudeAiConnectors": true,
   "skillOverrides": {
     "plugin-authoring": "name-only"
@@ -301,17 +128,16 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
   "disableRemoteControl": true,
   "enableArtifact": false,
   "enableWorkflows": false,
-  "bashOutputMaxChars": 16000,
   "statusLine": {
     "type": "command",
-    "command": "bun --no-env-file \"<plugin folder>/bin/claudetto-statusline\"",
+    "command": "bun --no-env-file \"$(ls -d \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/plugins/cache/claudetto/claudetto/*/ | sort -V | tail -1)bin/claudetto-statusline\"",
     "padding": 0,
     "refreshInterval": 1,
     "hideVimModeIndicator": true
   },
   "subagentStatusLine": {
     "type": "command",
-    "command": "bun --no-env-file \"<plugin folder>/bin/claudetto-statusline\" --subagent"
+    "command": "bun --no-env-file \"$(ls -d \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/plugins/cache/claudetto/claudetto/*/ | sort -V | tail -1)bin/claudetto-statusline\" --subagent"
   },
   "enabledPlugins": {
     "cc-plugin-agents-md@builtin": false,
@@ -320,42 +146,12 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
     "cc-plugin-easel@builtin": false,
     "cc-plugin-mermaid@builtin": false,
     "cc-plugin-mods-guide@builtin": false,
+    "cc-plugin-plugin-authoring@builtin": false,
     "cc-plugin-responsive-mode@builtin": false,
     "cc-plugin-telemetry@builtin": false,
-    "cc-plugin-tips@builtin": false,
-    "cc-plugin-you-should-know@builtin": false
+    "cc-plugin-tips@builtin": false
   },
   "outputStyle": "claudetto:Concise",
-  "sandbox": {
-    "enabled": true,
-    "allowUnsandboxedCommands": false,
-    "excludedCommands": ["git fetch *", "git pull *", "git push *", "gh *"],
-    "network": {
-      "allowedDomains": [
-        "github.com",
-        "*.github.com",
-        "*.githubusercontent.com",
-        "registry.npmjs.org",
-        "pypi.org",
-        "files.pythonhosted.org",
-        "crates.io",
-        "static.crates.io",
-        "index.crates.io",
-        "proxy.golang.org"
-      ],
-      "allowLocalBinding": true
-    },
-    "filesystem": {
-      "allowWrite": [
-        "~/.bun/install/cache",
-        "~/.npm",
-        "~/.cache/pip",
-        "~/.cargo/registry",
-        "~/go/pkg/mod"
-      ]
-    }
-  },
-  "feedbackSurveyRate": 0,
   "feedbackDrafts": "off",
   "spinnerTipsEnabled": false,
   "modelSettings": {
@@ -366,7 +162,10 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
   "autoCompactWindow": 300000,
   "promptSuggestionEnabled": false,
   "awaySummaryEnabled": false,
-  "autoMemoryEnabled": false
+  "modelProposedGoals": "disabled",
+  "autoMemoryEnabled": false,
+  "autoDreamEnabled": false,
+  "useAutoModeDuringPlan": false
 }
 ```
 
@@ -374,18 +173,25 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
   `claudetto-setup` fills it in.
 - `claudetto-setup` leaves out `$schema`, because it names the schema and is not a setting.
 
-## The `rm` Rules
+## The Lists
 
-The `rm` rules in `permissions.ask` match the recursive flags only: `-r` and `-R`, alone or at the end of a cluster with these leads: up to 3 distinct letters of `f`, `i`, and `v`, and `d`, `I`, `P`, or `x` alone or with one letter of `f`, `i`, or `v` before or after it (for example `-dr`, `-Pfr`, `-Ir`, `-xr`, and `-fvir`), as a later argument, and `--recursive`.
-A path with an `r` or `R` does not match, so `rm -f $TMPDIR/m.mjs` passes.
-A file name that starts with `-r` also asks.
-An extra ask is acceptable.
-The rules do not stop a write outside the allowed folders.
-The sandbox limits the writes of `Bash`.
-`allowUnsandboxedCommands` is `false`, so a command that fails in the sandbox is not run again outside it, and Claude Code ignores `dangerouslyDisableSandbox`.
-Only the `excludedCommands` run outside the sandbox.
+The snippet has no `permissions.allow` list and no `permissions.ask` list.
+`permissions.defaultMode` is `default`, and `permissions.disableAutoMode` is `disable`.
+The permission gate of the `guard` slice decides which calls run, which ask, and which stop ([Guard](Guard)).
+The `deny` list is a second layer for the same dangers.
+It holds in each mode, and it names:
 
-## See Also
+- Reads of secrets: `.env*` files, `~/.ssh`, `~/.aws/credentials`, `~/.gnupg`, `~/.netrc`, and `~/.docker/config.json`.
+- `rm -rf` of `/`, the home folder, and their variants.
+- Disk and system commands: `mkfs`, `dd` to a device, `newfs`, `diskutil`, `csrutil`, `spctl`, `nvram`, and `security delete-*`.
+- `sudo`, `doas`, and `su`.
+- Edits of `/System`, `/Library`, and the system folders of `/usr`.
+- The `Agent` types of the engine and tools that claudetto does not use, such as `Workflow`, `Artifact`, and the `Task*` tools.
+
+The snippet has no `sandbox` key.
+Setup adds one more key that the snippet does not hold: the subagent cap ([Setup](Setup#subagent-cap)).
+
+## Related Pages
 
 - [Settings Apply](Settings-Apply)
 - [Settings Snippet Keys](Settings-Snippet-Keys)

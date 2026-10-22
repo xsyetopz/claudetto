@@ -76,7 +76,7 @@ From live tests of `2.1.292` in `just sandbox` with Haiku 4.5.
   Claude Code then returned the hook prompt to the session as `Stop hook feedback`.
   A prompt that asks for the JSON object first passed in the rerun (`2026-10-10T23-53-58-434Z`), which is too small to prove a result (D25).
 
-## See Also
+## Related Pages
 
 - [Model Guidance](Model-Guidance)
 - [Probes 2.1.301](Probes-2.1.301)

@@ -24,16 +24,21 @@ After the copy, a plugin cannot use a file outside its folder.
 
 **Choice:** Each file has one concern.
 Each bound lives in one of three tiers (see [Architecture](Decisions-Architecture)).
-A slice imports only `src/kernel/` and its own folder.
+A slice imports only the `kernel/` of its plugin and its own folder.
 An add-on imports nothing from another plugin.
 
 **Reason:** A file with two concerns is hard to review, and a bound in prose drifts from the code.
 A rule on file length is not part of the design, because it made code split and grow (the user, 2026-10-19).
 
-**Evidence:** `tools/limits.ts`, `src/kernel/budget.ts`, and the `limits.ts` files of the slices.
-The `userConfig` of `plugin.json` has the options `advisor`, `advisorModel`, `advisorEffort`, `decide`, and `compaction`, each with a default.
+**Evidence:** `tools/limits.ts`, `plugins/claudetto/kernel/budget.ts`, and the `limits.ts` files of the slices.
+The `userConfig` of `plugin.json` has the options `decide` and `compaction`, each with a default.
 
 ## Why the Snippet Allows Local Binding
+
+**Status:** Removed in 0.3.0.
+The snippet has no `sandbox` key (design D1 of the change `0-3-0`).
+The sandbox is the choice of the user.
+The record below is what 0.2.0 did.
 
 **Choice:** The settings snippet sets `sandbox.network.allowLocalBinding` to `true`.
 The schema says the key applies to macOS only.
@@ -48,10 +53,10 @@ See [Sandbox Sessions](Sandbox-Sessions#capture-session).
 
 **Choice:** An optional feature that costs tokens or needs an outside tool is its own plugin.
 The plugin is the unit of install and disable.
-The add-ons are `claudetto-codegraph`, `claudetto-docs`, `claudetto-sessions`, `claudetto-browser`, and `claudetto-lab`.
+The add-ons are `claudetto-docs` and `claudetto-browser`.
 `claudetto-browser` replaces the built-in `WebSearch` with a headless browser.
 Jev is not an add-on.
-It is the `decide` slice of the core plugin, off by default.
+It is the `decide` slice of the core plugin, and it sends nothing until the user sets `TYPESAFE_API_KEY`.
 
 **Reason:** A separate plugin keeps the core plugin light for every user.
 One plugin also forces all `$` calls into one module file.
@@ -59,7 +64,7 @@ One plugin also forces all `$` calls into one module file.
 **Evidence:** `.claude-plugin/marketplace.json` lists the plugins in order.
 See [Add-Ons](Add-Ons).
 
-## See Also
+## Related Pages
 
 - [Plugin Layout](Plugin-Layout)
 - [Development](Development)

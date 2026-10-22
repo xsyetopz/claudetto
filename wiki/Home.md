@@ -5,15 +5,15 @@
 This wiki is about `claudetto`, a plugin marketplace for Claude Code.
 For Claude Code itself, see [Claude Code Docs](#claude-code-docs).
 
-## `claudetto` 0.2.0+
+## `claudetto` 0.3.0
 
 `claudetto` is a plugin marketplace for software engineering with Claude Code.
 It changes Claude Code with the Mod API, settings, hooks, skills, agents, and output styles.
 It does not patch the program.
 Its goal is the best quality for the lowest token cost.
-`claudetto` needs Claude Code `2.1.305` or later.
+`claudetto` needs Claude Code `2.1.307` or later.
 
-For example, the `Guard` slice denies a risky command before Claude Code runs it.
+For example, the permission gate of the `guard` slice lets a safe command run, asks before a command that can lose work for good, and denies a command that can harm the system.
 
 ### Start Here
 
@@ -25,8 +25,9 @@ For example, the `Guard` slice denies a risky command before Claude Code runs it
 
 ### Slices
 
-The core plugin has 15 slices, and each slice has one page:
-[Advise](Advise), [Decide](Decide), [Dry](Dry), [Goal](Goal), [Ground](Ground), [Guard](Guard), [Handoff](Handoff), [Patch](Patch), [Prompt](Prompt), [Reply](Reply), [Sembr](Sembr), [Setup](Setup), [Spec](Spec), [Status Line](Status-Line), and [Styles](Styles).
+The core plugin has 13 slices with code and one style.
+Each has a page:
+[Agents](Agents), [Decide](Decide), [Dry](Dry), [Goal](Goal), [Ground](Ground), [Guard](Guard), [Handoff](Handoff), [Session Hygiene](Hygiene), [Prompt](Prompt), [Reply](Reply), [Setup](Setup), [Spec](Spec), [Status Line](Status-Line), and [Styles](Styles).
 
 ### Add-Ons
 
@@ -34,11 +35,8 @@ Each add-on is a separate plugin, and it works without the core plugin.
 
 | Plugin | What it does | Page |
 | --- | --- | --- |
-| `claudetto-codegraph` | Gives Claude the code graph of a project. | [Code Graph](Code-Graph) |
-| `claudetto-browser` | Drives a browser, and answers `WebSearch` with a headless search. | [Browser](Browser) |
+| `claudetto-browser` | Drives a browser with `agent-browser`. | [Browser](Browser) |
 | `claudetto-docs` | Gets current docs of libraries and APIs. | [Library Docs](Library-Docs) |
-| `claudetto-sessions` | Audits the setup and replays a hook on past transcripts. | [Sessions](Sessions) |
-| `claudetto-lab` | Gives tools for plugin authors. | [Lab](Lab) |
 
 The marketplace is on [Add-Ons](Add-Ons).
 

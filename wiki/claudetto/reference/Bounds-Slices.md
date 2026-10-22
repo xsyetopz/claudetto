@@ -6,100 +6,112 @@ A bound is a fixed limit, such as a timeout or a size.
 This page lists the bounds of each slice of the core plugin, with the value and the file.
 The shared and repository bounds are on [Bounds](Bounds).
 
-## Advise
-
-| Name | Value | File | Purpose |
-| --- | --- | --- | --- |
-| `CONTEXT_BYTES` | `24,000` | `src/plugins/claudetto/slices/advise/limits.ts` | The most bytes of context that one `advise` call sends: the question, the plan, the failing checks, and the end of the conversation. |
-| `MAX_TOKENS` | `2,048` | `src/plugins/claudetto/slices/advise/limits.ts` | The token cap of one piece of advice. |
-| `TIMEOUT_MS` | `120,000` | `src/plugins/claudetto/slices/advise/limits.ts` | The time limit of one `advise` call. |
-| `MAX_CALLS_PER_TURN` | `3` | `src/plugins/claudetto/slices/advise/limits.ts` | The most `advise` calls in one turn. |
-| `MAX_CALLS_PER_SESSION` | `20` | `src/plugins/claudetto/slices/advise/limits.ts` | The most `advise` calls in one session. |
-
 ## Decide
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
-| `JEV_TIMEOUT_MS` | `45,000` | `src/plugins/claudetto/slices/decide/limits.ts` | The most time that the hook waits for one run of the TypeSafe client. |
-| `TRIES` | `3` | `src/plugins/claudetto/slices/decide/limits.ts` | The tries of the TypeSafe client on a 429 or a 529 reply. |
-| `BACKOFF_MS` | `1,000` | `src/plugins/claudetto/slices/decide/limits.ts` | The first wait before a retry, which doubles for each later wait. |
-| `ATTEMPT_TIMEOUT_MS` | `12,000` | `src/plugins/claudetto/slices/decide/limits.ts` | The timeout of one try of the TypeSafe client. |
-| `ERROR_BODY_MAX` | `200` | `src/plugins/claudetto/slices/decide/limits.ts` | The most characters of an error body of the TypeSafe API that the client keeps. |
-| `MIN_OPTIONS` | `2` | `src/plugins/claudetto/slices/decide/limits.ts` | The fewest options of a `pick` question. |
-| `MAX_OPTIONS` | `255` | `src/plugins/claudetto/slices/decide/limits.ts` | The most options of a `pick` question. |
-| `MIN_CONFIDENCE` | `0.5` | `src/plugins/claudetto/slices/decide/limits.ts` | The confidence under which a Jev answer says that Jev is not sure. |
-| `MIN_MARGIN` | `0.15` | `src/plugins/claudetto/slices/decide/limits.ts` | The margin that a pick needs over chance, `1 / options`. |
-| `YES_NO_UNSURE_BAND` | `0.2` | `src/plugins/claudetto/slices/decide/limits.ts` | The distance from 0.5 under which a yes or no answer says that Jev is not sure. |
-
-## Goal
-
-| Name | Value | File | Purpose |
-| --- | --- | --- | --- |
-| `STALL_DEFAULT` | `3` | `src/plugins/claudetto/slices/goal/limits.ts` | The turns in a row with the same failing checks and the same output, after which the goal stops. |
-| `OUTPUT_TAIL_CHARS` | `1,500` | `src/plugins/claudetto/slices/goal/limits.ts` | The most characters of a check output that the state keeps and the next turn shows. The tail has the error. |
-| `RUN_TIMEOUT_MS` | `300,000` | `src/plugins/claudetto/slices/goal/limits.ts` | The most time that a `run` check may take. |
+| `JEV_TIMEOUT_MS` | `45,000` | `plugins/claudetto/slices/decide/limits.ts` | The most time that the hook waits for one run of the TypeSafe client. |
+| `TRIES` | `3` | `plugins/claudetto/slices/decide/limits.ts` | The tries of the TypeSafe client on a 429 or a 529 reply. |
+| `BACKOFF_MS` | `1,000` | `plugins/claudetto/slices/decide/limits.ts` | The first wait before a retry, which doubles for each later wait. |
+| `ATTEMPT_TIMEOUT_MS` | `12,000` | `plugins/claudetto/slices/decide/limits.ts` | The timeout of one try of the TypeSafe client. |
+| `ERROR_BODY_MAX` | `200` | `plugins/claudetto/slices/decide/limits.ts` | The most characters of an error body of the TypeSafe API that the client keeps. |
+| `MIN_OPTIONS` | `2` | `plugins/claudetto/slices/decide/limits.ts` | The fewest options of a `pick` question. |
+| `MAX_OPTIONS` | `255` | `plugins/claudetto/slices/decide/limits.ts` | The most options of a `pick` question. |
+| `MIN_CONFIDENCE` | `0.5` | `plugins/claudetto/slices/decide/limits.ts` | The confidence under which a Jev answer says that Jev is not sure. |
+| `MIN_MARGIN` | `0.15` | `plugins/claudetto/slices/decide/limits.ts` | The margin that a pick needs over chance, `1 / options`. |
+| `YES_NO_UNSURE_BAND` | `0.2` | `plugins/claudetto/slices/decide/limits.ts` | The distance from 0.5 under which a yes or no answer says that Jev is not sure. |
 
 ## Guard
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
-| `READ_MAX_BYTES` | `4,194,304` | `src/plugins/claudetto/slices/guard/limits.ts` | The size of the largest file that `$.fs.read` reads, which is 4 MiB. |
+| `GIT_TIMEOUT_MS` | `5,000` | `plugins/claudetto/slices/guard/limits.ts` | The most time of one `git` run that gives the gate the state of a path. A slower run fails the gate, and a person decides. |
+| `JEV_TIMEOUT_MS` | `12,000` | `plugins/claudetto/slices/guard/limits.ts` | The most time of the one Jev run that decides an `ask` of the gate. It equals `ATTEMPT_TIMEOUT_MS` of the `decide` slice. |
+| `JEV_YES_MIN` | `0.8` | `plugins/claudetto/slices/guard/limits.ts` | The least `P(yes)` of Jev that allows a call. It is `1 - APPROVAL_MAX` of the `decide` slice. |
+
+## Hygiene
+
+| Name | Value | File | Purpose |
+| --- | --- | --- | --- |
+| `PROBE_MAX_AGE_MIN` | `60` | `plugins/claudetto/slices/hygiene/limits.ts` | The age in minutes after which a `fswatch-probe-*` folder is a leftover. |
+| `SWEEP_TIMEOUT_MS` | `60,000` | `plugins/claudetto/slices/hygiene/limits.ts` | The most time of the one `find` run that removes the leftover probe folders. |
+| `LEDGER_MAX_FILES` | `200` | `plugins/claudetto/slices/hygiene/limits.ts` | The most files in the edit ledger. The oldest entry goes first. |
+| `LEDGER_WRITE_TRIES` | `5` | `plugins/claudetto/slices/hygiene/limits.ts` | The most times that a write of the ledger runs again after another write landed first. |
+| `DEFAULT_CLEANUP_DAYS` | `30` | `plugins/claudetto/slices/hygiene/limits.ts` | The age in days over which a session folder is old, when `cleanupPeriodDays` is not set. |
+| `WORKTREES_DIR` | `.claude/worktrees` | `plugins/claudetto/slices/hygiene/limits.ts` | The folder of the worktrees of Claude Code, under the project root. |
+
+## Setup
+
+| Name | Value | File | Purpose |
+| --- | --- | --- | --- |
+| `PLAN_CAPS` | `claude_pro` 2, `default_claude_max_5x` 4, `default_claude_max_20x` 6 | `plugins/claudetto/slices/setup/limits.ts` | The cap of subagents at one time for each plan. Setup writes it as `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`. A tier that the table lacks gets no cap. |
+
+## Spec
+
+| Name | Value | File | Purpose |
+| --- | --- | --- | --- |
+| `CODE_LINES_MAX` | `781` | `plugins/claudetto/slices/spec/limits.ts` | The most lines of the TypeScript of the `spec` slice and of `bin/minispec`. |
+| `CODE_BYTES_MAX` | `27,441` | `plugins/claudetto/slices/spec/limits.ts` | The most bytes of the same files. |
+| `PRESET_BYTES_MAX` | `10,327` | `plugins/claudetto/slices/spec/limits.ts` | The most bytes of the files in `slices/spec/presets/`. |
+| `SKILL_BYTES_MAX` | `3,581` | `plugins/claudetto/slices/spec/limits.ts` | The most bytes of the four `SKILL.md` files of MiniSpec. |
+
+## Goal
+
+| Name | Value | File | Purpose |
+| --- | --- | --- | --- |
+| `OUTPUT_TAIL_CHARS` | `1,500` | `plugins/claudetto/slices/goal/limits.ts` | The most characters of a check output that the state keeps and the next turn shows. The tail has the error. |
+| `RUN_TIMEOUT_MS` | `300,000` | `plugins/claudetto/slices/goal/limits.ts` | The most time that a `run` check may take. |
 
 ## Handoff
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
-| `HANDOFF_LINES_MAX` | `10` | `src/plugins/claudetto/slices/handoff/limits.ts` | The most lines of a handoff, as its prompt asks for them. |
-| `CALL_INPUT_CHARS_MAX` | `300` | `src/plugins/claudetto/slices/handoff/limits.ts` | The most characters of the input of one tool call that the fork prompt names. |
-| `CHARS_PER_TOKEN` | `4` | `src/plugins/claudetto/slices/handoff/limits.ts` | The characters of one token in the estimate of the size of the new context. |
-| `CACHE_TTL_MS` | `3,600,000` | `src/plugins/claudetto/slices/handoff/limits.ts` | The prompt cache TTL of a root session, 1 hour. A handoff after it needs no model call. |
-| `COLD_FILES_MAX` | `20` | `src/plugins/claudetto/slices/handoff/limits.ts` | The most changed files that a cold handoff names. |
-| `COLD_PROMPTS_MAX` | `3` | `src/plugins/claudetto/slices/handoff/limits.ts` | The most user messages that a cold handoff quotes. |
-| `COLD_PROMPT_CHARS_MAX` | `1,500` | `src/plugins/claudetto/slices/handoff/limits.ts` | The most characters of the task and of one quoted user message in a cold handoff. |
-
-## Patch
-
-| Name | Value | File | Purpose |
-| --- | --- | --- | --- |
-| `GIT_TIMEOUT_MS` | `60,000` | `src/plugins/claudetto/slices/patch/limits.ts` | The time that one `git` run of the `patch` slice may take. |
+| `HANDOFF_LINES_MAX` | `10` | `plugins/claudetto/slices/handoff/limits.ts` | The most lines of a handoff, as its prompt asks for them. |
+| `CALL_INPUT_CHARS_MAX` | `300` | `plugins/claudetto/slices/handoff/limits.ts` | The most characters of the input of one tool call that the fork prompt names. |
+| `CHARS_PER_TOKEN` | `4` | `plugins/claudetto/slices/handoff/limits.ts` | The characters of one token in the estimate of the size of the new context. |
+| `CACHE_TTL_MS` | `3,600,000` | `plugins/claudetto/slices/handoff/limits.ts` | The prompt cache TTL of a root session, 1 hour. A handoff after it needs no model call. |
+| `COLD_FILES_MAX` | `20` | `plugins/claudetto/slices/handoff/limits.ts` | The most changed files that a cold handoff names. |
+| `COLD_PROMPTS_MAX` | `3` | `plugins/claudetto/slices/handoff/limits.ts` | The most user messages that a cold handoff quotes. |
+| `COLD_PROMPT_CHARS_MAX` | `1,500` | `plugins/claudetto/slices/handoff/limits.ts` | The most characters of the task and of one quoted user message in a cold handoff. |
 
 ## Reply
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
-| `QUOTE_MAX_LINES` | `12` | `src/plugins/claudetto/slices/reply/limits.ts` | The most lines of a message that a `Reply` quote holds. A longer message keeps its first lines. |
+| `QUOTE_MAX_LINES` | `12` | `plugins/claudetto/slices/reply/limits.ts` | The most lines of a message that a `Reply` quote holds. A longer message keeps its first lines. |
 
 ## Status Line
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
-| `REFRESH_SECONDS` | `1` | `src/plugins/claudetto/slices/statusline/limits.ts` | The seconds between two runs of the status line. |
-| `TRIGGER_WARN_FRACTION` | `0.1` | `src/plugins/claudetto/slices/statusline/limits.ts` | The part of the handoff trigger within which the context shows in the warning color. |
-| `GIT_TIMEOUT_MS` | `1,500` | `src/plugins/claudetto/slices/statusline/limits.ts` | The time that the one `git status` call can take. |
-| `MAX_ROWS` | `3` | `src/plugins/claudetto/slices/statusline/limits.ts` | The most rows of the main status line. |
-| `DEFAULT_COLUMNS` | `120` | `src/plugins/claudetto/slices/statusline/limits.ts` | The width in columns when `COLUMNS` is not set. |
-| `COLUMNS_MARGIN` | `4` | `src/plugins/claudetto/slices/statusline/limits.ts` | The columns that stay free at the right edge. |
-| `SUBAGENT_ROWS_MAX` | `20` | `src/plugins/claudetto/slices/statusline/limits.ts` | The most subagent rows in the status line. |
-| `DESCRIPTION_ROOM_MIN` | `8` | `src/plugins/claudetto/slices/statusline/limits.ts` | The columns that a subagent row needs for its description before the description shows. |
-| `GIT_CACHE_MS` | `3,000` | `src/plugins/claudetto/slices/statusline/limits.ts` | The time that a `git status` result stays in the cache of the git segment. |
-| `FIVE_HOUR_S` | `18,000` | `src/plugins/claudetto/slices/statusline/limits.ts` | The length, in seconds, of the `5h` window of a limit. |
-| `SEVEN_DAY_S` | `604,800` | `src/plugins/claudetto/slices/statusline/limits.ts` | The length, in seconds, of the `7d` window of a limit. |
-| `PACE_MIN_FRACTION` | `0.03` | `src/plugins/claudetto/slices/statusline/limits.ts` | The part of a limit window that must pass before its pace arrow shows. |
-| `PROJECTED_WARN` | `75` | `src/plugins/claudetto/slices/statusline/limits.ts` | The projected use at the end of a window, in percent, from which the percent has the warning color. It is the first level of `USAGE_LEVELS`. |
-| `PROJECTED_RUNOUT` | `100` | `src/plugins/claudetto/slices/statusline/limits.ts` | The projected use at the end of a window, in percent, above which the percent has the limit color. |
-| `PERCENT_FIELD` | `4` | `src/plugins/claudetto/slices/statusline/limits.ts` | The columns of the percent field of a limit window. |
-| `ARROW_FIELD` | `5` | `src/plugins/claudetto/slices/statusline/limits.ts` | The columns of the pace arrow field of a limit window. |
-| `RUNOUT_FIELD` | `14` | `src/plugins/claudetto/slices/statusline/limits.ts` | The columns of the run-out time field of a limit window. |
+| `REFRESH_SECONDS` | `1` | `plugins/claudetto/slices/statusline/limits.ts` | The seconds between two runs of the status line. |
+| `TRIGGER_WARN_FRACTION` | `0.1` | `plugins/claudetto/slices/statusline/limits.ts` | The part of the handoff trigger within which the context shows in the warning color. |
+| `GIT_TIMEOUT_MS` | `1,500` | `plugins/claudetto/slices/statusline/limits.ts` | The time that the one `git status` call can take. |
+| `MAX_ROWS` | `3` | `plugins/claudetto/slices/statusline/limits.ts` | The most rows of the main status line. |
+| `DEFAULT_COLUMNS` | `120` | `plugins/claudetto/slices/statusline/limits.ts` | The width in columns when `COLUMNS` is not set. |
+| `COLUMNS_MARGIN` | `4` | `plugins/claudetto/slices/statusline/limits.ts` | The columns that stay free at the right edge. |
+| `SUBAGENT_ROWS_MAX` | `20` | `plugins/claudetto/slices/statusline/limits.ts` | The most subagent rows in the status line. |
+| `DESCRIPTION_ROOM_MIN` | `8` | `plugins/claudetto/slices/statusline/limits.ts` | The columns that a subagent row needs for its description before the description shows. |
+| `GIT_CACHE_MS` | `3,000` | `plugins/claudetto/slices/statusline/limits.ts` | The time that a `git status` result stays in the cache of the git segment. |
+| `FIVE_HOUR_S` | `18,000` | `plugins/claudetto/slices/statusline/limits.ts` | The length, in seconds, of the `5h` window of a limit. |
+| `SEVEN_DAY_S` | `604,800` | `plugins/claudetto/slices/statusline/limits.ts` | The length, in seconds, of the `7d` window of a limit. |
+| `PACE_MIN_FRACTION` | `0.03` | `plugins/claudetto/slices/statusline/limits.ts` | The part of a limit window that must pass before its pace arrow shows. |
+| `PROJECTED_WARN` | `75` | `plugins/claudetto/slices/statusline/limits.ts` | The projected use at the end of a window, in percent, from which the percent has the warning color. It is the first level of `USAGE_LEVELS`. |
+| `PROJECTED_RUNOUT` | `100` | `plugins/claudetto/slices/statusline/limits.ts` | The projected use at the end of a window, in percent, above which the percent has the limit color. |
+| `PERCENT_FIELD` | `4` | `plugins/claudetto/slices/statusline/limits.ts` | The columns of the percent field of a limit window. |
+| `ARROW_FIELD` | `5` | `plugins/claudetto/slices/statusline/limits.ts` | The columns of the pace arrow field of a limit window. |
+| `RUNOUT_FIELD` | `14` | `plugins/claudetto/slices/statusline/limits.ts` | The columns of the run-out time field of a limit window. |
 
-## See Also
+## Related Pages
 
 - [Bounds](Bounds)
 - [Bounds for Add-Ons](Bounds-Add-Ons)
-- [Advise](Advise)
 - [Decide](Decide)
 - [Goal](Goal)
 - [Guard](Guard)
+- [Session Hygiene](Hygiene)
+- [Spec](Spec)
+- [Setup](Setup)
 - [Handoff](Handoff)
-- [Patch](Patch)
 - [Reply](Reply)
 - [Status Line](Status-Line)

@@ -19,7 +19,7 @@ A test there changes only the sandbox, not your settings or your session history
 
 - Arguments after `just sandbox` or `just sandbox-alone PLUGIN` go to `claude`.
   For example, `just sandbox -p "prompt"` runs one headless turn.
-- `just sandbox` runs `tools/sandbox/run.ts`, which runs `plugins/claudetto-lab/bin/claudetto-sandbox` with a `--plugin-dir` for each plugin.
+- `just sandbox` runs `tools/sandbox/run.ts`, which runs `tools/sandbox/main.ts` with a `--plugin-dir` for each plugin.
 - To test an add-on with no core plugin, run `just sandbox-alone plugins/claudetto-docs`.
 - `just debug-agents` runs one headless session with a debug log.
   It fails when the log names an unknown frontmatter field.
@@ -39,7 +39,7 @@ Test that path before a release:
    Add `--continue` to continue the last session.
 
 Claude Code reads each plugin of a local marketplace from its folder in the checkout.
-So after `just generate`, an edit takes effect at the next session start or at `/reload-plugins`.
+So an edit takes effect at the next session start or at `/reload-plugins`.
 `claude plugin update` says there is nothing to update, and nothing is fetched from GitHub.
 
 ## Where the Sandbox Lives
@@ -94,7 +94,7 @@ Rules for agents:
 - Never put the token in a command line, a file, or your output.
 - Do not run `echo` or `env` in the sandbox session, because they show the token.
 
-## See Also
+## Related Pages
 
 - [Sandbox Sessions](Sandbox-Sessions)
 - [Sandbox Linux](Sandbox-Linux)

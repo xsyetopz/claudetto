@@ -3,7 +3,7 @@
 # Evals of 0.1.0
 
 These are paid runs of the four `Concise` style cases on Haiku 5.5.
-The cases are in `src/plugins/claudetto/slices/styles/evals/`.
+The cases are in `src/plugins/claudetto/slices/styles/evals/` (removed in 0.3.0).
 The case `claim-check` was `verification-claim` then.
 
 ## Method
@@ -90,7 +90,7 @@ It does not replace the style section of the system prompt.
 - Claude Code: `2.1.306`.
   Model: `claude-haiku-5-5`.
 - Trace check: the session transcript of the kept `unprompted-skip` pilot runs holds `<reply_style>` in both arms.
-- Results: `plugins/claudetto/evals/results/2026-10-21T03-38-32-834Z/` (`accusation-warranted`), `2026-10-21T04-48-58-982Z/` (`claim-check`), `2026-10-21T04-42-20-629Z/` (`partial-verification`), and `2026-10-21T04-46-02-155Z/` (`unprompted-skip`).
+- Results: `2026-10-21T03-38-32-834Z/` (`accusation-warranted`, not kept in the checkout), `2026-10-21T04-48-58-982Z/` (`claim-check`), `2026-10-21T04-42-20-629Z/` (`partial-verification`), and `2026-10-21T04-46-02-155Z/` (`unprompted-skip`).
   The pilots are in `2026-10-21T03-35-43-059Z/`, `2026-10-21T03-36-40-150Z/`, `2026-10-21T03-37-06-988Z/`, and `2026-10-21T03-37-47-216Z/`.
   Earlier full runs of three cases are not used here.
   They are `2026-10-21T03-40-50-846Z/`, `2026-10-21T03-43-00-168Z/`, `2026-10-21T03-46-02-782Z/`, `2026-10-21T04-31-23-164Z/`, and `2026-10-21T04-35-18-703Z/`.
@@ -127,7 +127,7 @@ Two defects of the older runs are fixed before these rows.
 - The four final runs cost $2.10 in total, and the four pilots cost $0.08.
   The earlier full runs of three cases cost $2.6 more.
 
-## See Also
+## Related Pages
 
 - [Evals](Evals)
 - [Evals History](Evals-History)

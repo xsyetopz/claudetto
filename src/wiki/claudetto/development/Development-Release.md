@@ -24,7 +24,7 @@ The workflows are in `.github/workflows/`.
 
 | Workflow | When it runs | What it does |
 | --- | --- | --- |
-| `ci.yml` | Each push and pull request | The `check` job runs `just ci` on Ubuntu and macOS, with `Bun` from `package.json`, `just` 1.58.0, and Claude Code 2.1.305. Require the `all-green` job in branch protection |
+| `ci.yml` | Each push and pull request | The `check` job runs `just ci` on Ubuntu and macOS, with `Bun` from `package.json`, `just` 1.58.0, and Claude Code 2.1.307. Require the `all-green` job in branch protection |
 | `claude.yml` | An `@claude` mention in an issue, review comment, or review | Answers with `anthropics/claude-code-action`, only for users with write access. It needs the `CLAUDE_CODE_OAUTH_TOKEN` secret and the Claude GitHub App. Its steps skip when the secret is empty, so a fork has no failed run |
 | `eval-new-claude-code.yml` | Each day at 06:00 UTC, and `workflow_dispatch`. Never on a pull request | Runs `just eval` for each release tag of `anthropics/claude-code` that is higher than the version in `ci.yml`. A cache entry marks each tag, so it runs once. Set the input `force` to run a marked tag again |
 
@@ -54,14 +54,9 @@ See [Evals](Evals).
    just bump minor
    ```
 
-   `just bump` changes the `version` line of `package.json` and two lines of `CHANGELOG.md`.
-   It moves the `[Unreleased]` entries under a dated heading.
-3. Copy the version to each `plugin.json`, then commit.
-
-   ```bash
-   just generate
-   ```
-
+   `just bump` changes the `version` line of `package.json`, of each `plugin.json`, and of the marketplace file.
+   It also changes two lines of `CHANGELOG.md`, and it moves the `[Unreleased]` entries under a dated heading.
+3. Commit.
    Commit before you tag.
    `claude plugin tag` checks that each `plugin.json` agrees with its marketplace entry, and it stops on a dirty tree.
 4. Run `just release-check CHANGE`, with the name of the change folder under `openspec/changes/`.
@@ -73,7 +68,7 @@ See [Evals](Evals).
    just release
    ```
 
-`just release` checks the tree, the generated files, and the tag names of all plugins before it tags.
+`just release` checks the tree, the generated wiki, and the tag names of all plugins before it tags.
 So a bad manifest stops the release with no tag made.
 It then pushes all tags to `origin` in one atomic push.
 When a tag step or the push fails, it deletes the tags it made.
@@ -82,14 +77,14 @@ The notes of each release are in [Release History](Release-History).
 ## Wiki
 
 1. Edit a page in `src/wiki/`.
-   `just generate` writes `wiki/` from it.
+   `just generate` writes `wiki/` from it, and `just generate --check` names each page that differs.
    Do not edit `wiki/` by hand.
    `tests/support/wiki-links.test.ts` checks that each link resolves and each page name is unique.
 2. Run `just wiki` to publish `wiki/` to the GitHub wiki.
 
 The wiki repository exists only after the first page is made in the GitHub web UI.
 
-## See Also
+## Related Pages
 
 - [Development](Development)
 - [Release History](Release-History)

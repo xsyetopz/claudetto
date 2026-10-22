@@ -227,7 +227,7 @@ This is a limit of Claude Code, not a defect of `claudetto`.
   It gives no price, and the mod API has no call that adds a cost to the session.
 - `advise` sends the token counts to the user with `$.ui.log`, in the line "`advise`: opus used N tokens in (R read from the cache, W written to the cache), M tokens out."
   The debug log holds every `$.ui.log` line (the type `UiLogOptions` in the mod API), so `claude --debug-file <path>` captures them.
-  `tools/compare-builtins.ts` passes `--debug-file` for each run, and `tools/advise-usage.ts` sums the lines and prices them.
+  `tools/compare-builtins.ts` passes `--debug-file` for each run, and `tools/advise-usage.ts` (removed in 0.3.0) sums the lines and prices them.
 - The price is the price table that Claude Code uses for its own `total_cost_usd`, read from the bundle as evidence only.
   The model catalog of Claude Code `2.1.305` (`external/cc-2.1.305/strings.txt`) has the entry of `claude-opus-5-5` (`VERTEX_REGION_CLAUDE_5_5_OPUS`) with the pricing `tier_4_20_cache_read_0_20`.
   That is $4 for one million tokens in, $20 out, $5 for a cache write, and $0.20 for a cache read.
@@ -299,8 +299,8 @@ A first pass with fewer runs for each arm picked the levers, and the table holds
   For ``node check/qa.mjs` exits 0`, the `run` check passed in the last turn, but the `judge` check failed, because the model could not run the command and its answer had no proof.
   The goal stopped by `stall` although the command exited 0.
   The first run of the case (before the fix) shows it: `results` held a passing `run` check and a failing `judge` check with the same time.
-- The fix is in `checksOf` (`slices/goal/domain/plan.ts`): the words `both`, `all`, `each`, `exits 0`, `passes`, `succeeds`, and `green` no longer make a text a `judge` check.
-  The test is in `tests/claudetto/goal/plan.test.ts`, and `Goal.md` has the rule.
+- The fix is in `checksOf` (`slices/goal/domain/plan.ts` at `v0.2.0`): the words `both`, `all`, `each`, `exits 0`, `passes`, `succeeds`, and `green` no longer make a text a `judge` check.
+  The test was in `tests/claudetto/goal/plan.test.ts` at `v0.2.0`, and `Goal.md` has the rule.
   After the fix, 10 of 10 runs passed.
 - The first-round cases `goal-two-checks` and `goal-first-violation` ran before the fix.
   Their condition ("both exit 0") now gives two `run` checks and no `judge` check, so the engine decides from the exit codes only.
@@ -333,9 +333,8 @@ Each case and arm has a folder `full-<case>-<arm>/`, and each pilot has a folder
 It holds `summary.json`, and for each run `run-N/stream.jsonl` and the workspace `run-N/project/`.
 `rest.log` and `advise-full.log` hold the console lines.
 
-## See Also
+## Related Pages
 
 - [Evals](Evals)
 - [Evals 2.1.304](Evals-2.1.304)
-- [Advise](Advise)
 - [Goal](Goal)
