@@ -1,9 +1,9 @@
 // The rows of `claudetto-statusline --subagent`.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
-import { SUBAGENT_ROWS_MAX } from "../../../src/plugins/claudetto/slices/statusline/limits.ts";
-import { width } from "../../../src/plugins/claudetto/slices/statusline/width.ts";
+import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { SUBAGENT_ROWS_MAX } from "../../../plugins/claudetto/slices/statusline/limits.ts";
+import { width } from "../../../plugins/claudetto/slices/statusline/width.ts";
 import { depsFor, NOW, type Run } from "./support.ts";
 
 const ESC = String.fromCharCode(27);

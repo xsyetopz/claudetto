@@ -1,7 +1,7 @@
 // The inputs of 2.1.300 and later: a field that is absent is out, and a field with a wrong type shows the error mark.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
 import { depsFor, NOW, type Run, rowsOf } from "./support.ts";
 
 const WINDOW_S = NOW / 1000;

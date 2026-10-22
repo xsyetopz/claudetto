@@ -2,7 +2,7 @@
 // and a symbol with text presentation takes one.
 
 import { expect, test } from "bun:test";
-import { width } from "../../../src/plugins/claudetto/slices/statusline/width.ts";
+import { width } from "../../../plugins/claudetto/slices/statusline/width.ts";
 
 test("an emoji with default emoji presentation takes two columns", () => {
   for (const glyph of ["⚡", "✅", "⭐", "❌", "✨", "⛔", "🚀"]) {

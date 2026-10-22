@@ -1,12 +1,12 @@
 // The color scale of three steps for each percent, and the helpers of the width.
 
 import { expect, test } from "bun:test";
-import { USAGE_LEVELS } from "../../../src/kernel/budget.ts";
-import { colorOff } from "../../../src/plugins/claudetto/slices/statusline/color.ts";
+import { USAGE_LEVELS } from "../../../plugins/claudetto/kernel/budget.ts";
+import { colorOff } from "../../../plugins/claudetto/slices/statusline/color.ts";
 import {
   truncate,
   width,
-} from "../../../src/plugins/claudetto/slices/statusline/width.ts";
+} from "../../../plugins/claudetto/slices/statusline/width.ts";
 import { DARK, NO_COLOR } from "./support.ts";
 
 const ESC = String.fromCharCode(27);

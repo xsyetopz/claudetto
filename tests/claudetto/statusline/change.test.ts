@@ -4,7 +4,7 @@ import { expect, test } from "bun:test";
 import {
   activeChange,
   changeOf,
-} from "../../../src/plugins/claudetto/slices/statusline/adapters/change.ts";
+} from "../../../plugins/claudetto/slices/statusline/adapters/change.ts";
 import { rowsOf } from "./support.ts";
 
 const ROOT = "/work/claudetto";

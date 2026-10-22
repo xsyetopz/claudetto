@@ -2,12 +2,12 @@
 // The cases run `main` with a fixed clock, a fake `git`, and a fixed status object.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
-import { MAX_ROWS } from "../../../src/plugins/claudetto/slices/statusline/limits.ts";
+import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { MAX_ROWS } from "../../../plugins/claudetto/slices/statusline/limits.ts";
 import {
   plainText,
   width,
-} from "../../../src/plugins/claudetto/slices/statusline/width.ts";
+} from "../../../plugins/claudetto/slices/statusline/width.ts";
 import { depsFor, GIT_TEXT, type Run, STATUS } from "./support.ts";
 
 const ESC = String.fromCharCode(27);

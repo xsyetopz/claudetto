@@ -1,7 +1,7 @@
 // The context segment: the percent against the window that Claude Code gives, and the distance to the handoff.
 
 import { expect, test } from "bun:test";
-import type { Deps } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
+import type { Deps } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
 import { rowsOf } from "./support.ts";
 
 const withContext = (

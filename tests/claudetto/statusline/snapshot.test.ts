@@ -2,7 +2,7 @@
 // Each snapshot is the text of the rows, so a change of a segment, an icon, or the fit to a width shows in the diff.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
 import { depsFor, type Run, STATUS } from "./support.ts";
 
 const render = async (

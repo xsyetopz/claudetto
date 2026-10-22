@@ -3,7 +3,7 @@
 // Before 3% of the window has passed, the raw percent gives the color.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
 import { depsFor, NOW, type Run, STATUS } from "./support.ts";
 
 const GREEN = "\u001b[38;2;78;186;101m";

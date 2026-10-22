@@ -1,11 +1,11 @@
 // The fakes and fixtures of the tests of the `statusline` slice.
 
-import type { FileReader } from "../../../src/kernel/ports.ts";
-import type { Deps } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
+import type { FileReader } from "../../../plugins/claudetto/kernel/ports.ts";
+import type { Deps } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
 import {
   paintOf,
   themeOf,
-} from "../../../src/plugins/claudetto/slices/statusline/color.ts";
+} from "../../../plugins/claudetto/slices/statusline/color.ts";
 
 // The clock of a limit prints local time, so the tests that print it fix the zone to UTC and do not depend on `TZ`.
 process.env["TZ"] = "UTC";
@@ -94,7 +94,7 @@ export const rowsOf = async (
 ): Promise<{ text: string; run: Run }> => {
   const run: Run = { status: -1, out: [], err: [] };
   const { main } = await import(
-    "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts"
+    "../../../plugins/claudetto/slices/statusline/adapters/cli.ts"
   );
   run.status = await main(
     [],

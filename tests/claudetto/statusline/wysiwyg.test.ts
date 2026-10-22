@@ -2,7 +2,7 @@
 // The inputs are recorded shapes of the status line JSON of Claude Code 2.1.302 and later.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
 import { depsFor, NOW, type Run, rowsOf } from "./support.ts";
 
 const NOW_S = NOW / 1000;

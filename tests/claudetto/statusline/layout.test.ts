@@ -2,11 +2,11 @@
 // A place that is empty keeps its column, and a block of rows drops the alignment together when one row does not fit.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
 import {
   plainText,
   width,
-} from "../../../src/plugins/claudetto/slices/statusline/width.ts";
+} from "../../../plugins/claudetto/slices/statusline/width.ts";
 import { depsFor, type Run, STATUS } from "./support.ts";
 
 const rowsAt = async (columns: number): Promise<string[]> => {

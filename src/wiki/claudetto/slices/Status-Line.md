@@ -127,7 +127,7 @@ The command reads the `theme` key of `.claude.json` in `CLAUDE_CONFIG_DIR`, or e
 
 A `NO_COLOR` value that is not empty turns off all color.
 
-- A percent has the warning color from 75% and the limit color from 90% (`USAGE_LEVELS` in `src/kernel/budget.ts`).
+- A percent has the warning color from 75% and the limit color from 90% (`USAGE_LEVELS` in `plugins/claudetto/kernel/budget.ts`).
 - The percent of a limit with a pace follows its projected use: warning from 75%, limit color above 100%.
 - The distance to the handoff has the warning color within 10% of the trigger and the limit color at the trigger.
 
@@ -142,7 +142,7 @@ It runs `git` for at most 1.5 seconds (see `slices/statusline/limits.ts`).
 A failure never stops the status line.
 The command writes the cause to stderr and exits with 0.
 
-## See Also
+## Related Pages
 
 - [Handoff](Handoff)
 - [Settings Snippet](Settings-Snippet)

@@ -3,9 +3,9 @@
 // The status object is the one of `pace.test.ts`: a `5h` window that is 36% elapsed.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
-import { paceOf } from "../../../src/plugins/claudetto/slices/statusline/format.ts";
-import { FIVE_HOUR_S } from "../../../src/plugins/claudetto/slices/statusline/limits.ts";
+import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { paceOf } from "../../../plugins/claudetto/slices/statusline/format.ts";
+import { FIVE_HOUR_S } from "../../../plugins/claudetto/slices/statusline/limits.ts";
 import { depsFor, NOW, type Run, STATUS } from "./support.ts";
 
 /** The `5h` window, used at `used` percent, with `leftS` seconds to the reset. */

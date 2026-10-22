@@ -2,7 +2,7 @@
 // The separator ` · ` stays next to the item that it separates, so no separator dangles before an empty place.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
 import { depsFor, type Run, STATUS } from "./support.ts";
 
 /** The plain rows of `main` for `input` at `columns`, with the color off. */

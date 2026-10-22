@@ -1,8 +1,8 @@
 // The placement of the rows: the plans are built one at a time, and the first plan that keeps every item is the only one built.
 
 import { expect, test } from "bun:test";
-import type { StatusSegment } from "../../../src/kernel/slice.ts";
-import { renderRows } from "../../../src/plugins/claudetto/slices/statusline/rows.ts";
+import type { StatusSegment } from "../../../plugins/claudetto/kernel/slice.ts";
+import { renderRows } from "../../../plugins/claudetto/slices/statusline/rows.ts";
 
 /** A segment with `text` in `row`, and a count of the renders of each segment id in `renders`. */
 const counted =

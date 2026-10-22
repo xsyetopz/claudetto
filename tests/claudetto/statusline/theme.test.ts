@@ -4,7 +4,7 @@ import { expect, test } from "bun:test";
 import {
   paintOf,
   themeOf,
-} from "../../../src/plugins/claudetto/slices/statusline/color.ts";
+} from "../../../plugins/claudetto/slices/statusline/color.ts";
 import { rowsOf } from "./support.ts";
 
 const ESC = String.fromCharCode(27);

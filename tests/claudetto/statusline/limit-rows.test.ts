@@ -2,7 +2,7 @@
 // The label, percent, arrow, run-out time, and reset of the two windows align field by field.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
 import { depsFor, type Run, STATUS } from "./support.ts";
 
 /** The plain rows of `main` for `input` at 200 columns. */

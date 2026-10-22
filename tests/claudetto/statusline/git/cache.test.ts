@@ -5,12 +5,12 @@ import { expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { main } from "../../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
-import { cacheFile } from "../../../../src/plugins/claudetto/slices/statusline/adapters/git-cache.ts";
+import { main } from "../../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { cacheFile } from "../../../../plugins/claudetto/slices/statusline/adapters/git-cache.ts";
 import {
   GIT_CACHE_MS,
   REFRESH_SECONDS,
-} from "../../../../src/plugins/claudetto/slices/statusline/limits.ts";
+} from "../../../../plugins/claudetto/slices/statusline/limits.ts";
 import { depsFor, GIT_TEXT, NOW, type Run, STATUS } from "../support.ts";
 
 /** A fake of the files of a run: `write` stores the text, and `read` gives it back, or `null` for a missing file. */

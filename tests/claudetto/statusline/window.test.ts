@@ -1,7 +1,7 @@
 // The window of a subagent row is the `contextWindowSize` that Claude Code reports, with no assumed window.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../src/plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
 import { depsFor, NOW, type Run } from "./support.ts";
 
 const subagentRow = async (task: Record<string, unknown>) => {
