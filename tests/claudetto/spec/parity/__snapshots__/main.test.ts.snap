@@ -1,0 +1,1395 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`OpenSpec 1.14.3: new change in a project with no openspec folder 1`] = `
+{
+  "code": 1,
+  "facts": [
+    "✖ Error: Schema 'story' not found. Available schemas:",
+    "spec-driven",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: new change 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "Created change 'add-thing' at openspec/changes/add-thing/",
+    "Schema: story",
+    "Next: openspec status --change add-thing",
+    "- Creating change 'add-thing' with schema 'story'...",
+  ],
+  "removed": [],
+  "written": {
+    "openspec/changes/add-thing/.openspec.yaml": 
+"schema: story
+created: <date>
+"
+,
+  },
+}
+`;
+
+exports[`OpenSpec 1.14.3: new change with the task preset 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "Created change 'fix-thing' at openspec/changes/fix-thing/",
+    "Schema: task",
+    "Next: openspec status --change fix-thing",
+    "- Creating change 'fix-thing' with schema 'task'...",
+  ],
+  "removed": [],
+  "written": {
+    "openspec/changes/fix-thing/.openspec.yaml": 
+"schema: task
+created: <date>
+skip_specs: true
+"
+,
+  },
+}
+`;
+
+exports[`OpenSpec 1.14.3: new change with a bad name 1`] = `
+{
+  "code": 1,
+  "facts": [
+    "✖ Error: Change name must be lowercase (use kebab-case)",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: new change that exists 1`] = `
+{
+  "code": 1,
+  "facts": [
+    "- Creating change 'add-greeting-name' with schema 'story'...",
+    "✖ Error: Change 'add-greeting-name' already exists at <root>/openspec/changes/add-greeting-name",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: new change with an unknown schema 1`] = `
+{
+  "code": 1,
+  "facts": [
+    "✖ Error: Schema 'nope' not found. Available schemas:",
+    "epic",
+    "spec-driven",
+    "story",
+    "task",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: list 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "changes": [
+      {
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "add-greeting-name",
+        "status": "in-progress",
+        "totalTasks": 1,
+      },
+      {
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "bad-scenario",
+        "status": "no-tasks",
+        "totalTasks": 0,
+      },
+      {
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "build-greeter",
+        "status": "in-progress",
+        "totalTasks": 1,
+      },
+      {
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "fix-greeting-typo",
+        "status": "in-progress",
+        "totalTasks": 1,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: list with tasks that the line rule reads differently 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "changes": [
+      {
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "add-greeting-name",
+        "status": "in-progress",
+        "totalTasks": 1,
+      },
+      {
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "bad-scenario",
+        "status": "no-tasks",
+        "totalTasks": 0,
+      },
+      {
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "build-greeter",
+        "status": "in-progress",
+        "totalTasks": 1,
+      },
+      {
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "fix-greeting-typo",
+        "status": "in-progress",
+        "totalTasks": 1,
+      },
+      {
+        "completedTasks": 1,
+        "lastModified": "<date>",
+        "name": "odd-tasks",
+        "status": "in-progress",
+        "totalTasks": 2,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: status of the task sample 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "actionContext": {
+      "allowedEditRoots": [
+        "<root>",
+      ],
+      "constraints": [
+        "Repo-local change artifacts and implementation edits are scoped to this project.",
+      ],
+      "linkedContext": [],
+      "mode": "repo-local",
+      "planningArtifacts": [
+        "proposal",
+        "tasks",
+      ],
+      "requiresAffectedAreaSelection": false,
+      "sourceOfTruth": "repo",
+    },
+    "applyRequires": [
+      "tasks",
+    ],
+    "artifactPaths": {
+      "proposal": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/fix-greeting-typo/proposal.md",
+        ],
+        "outputPath": "proposal.md",
+        "resolvedOutputPath": "<root>/openspec/changes/fix-greeting-typo/proposal.md",
+      },
+      "tasks": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/fix-greeting-typo/tasks.md",
+        ],
+        "outputPath": "tasks.md",
+        "resolvedOutputPath": "<root>/openspec/changes/fix-greeting-typo/tasks.md",
+      },
+    },
+    "artifacts": [
+      {
+        "id": "proposal",
+        "outputPath": "proposal.md",
+        "requires": [],
+        "status": "done",
+      },
+      {
+        "id": "tasks",
+        "outputPath": "tasks.md",
+        "requires": [
+          "proposal",
+        ],
+        "status": "done",
+      },
+    ],
+    "changeName": "fix-greeting-typo",
+    "changeRoot": "<root>/openspec/changes/fix-greeting-typo",
+    "isComplete": true,
+    "isPlanningComplete": true,
+    "nextSteps": [
+      "All planning artifacts are complete. Run openspec instructions apply --change "fix-greeting-typo" --json to inspect implementation progress.",
+    ],
+    "planningHome": {
+      "changesDir": "<root>/openspec/changes",
+      "defaultSchema": "spec-driven",
+      "kind": "repo",
+      "root": "<root>",
+    },
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "schemaName": "task",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: status of the story sample 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "actionContext": {
+      "allowedEditRoots": [
+        "<root>",
+      ],
+      "constraints": [
+        "Repo-local change artifacts and implementation edits are scoped to this project.",
+      ],
+      "linkedContext": [],
+      "mode": "repo-local",
+      "planningArtifacts": [
+        "proposal",
+        "specs",
+        "design",
+        "tasks",
+        "review",
+      ],
+      "requiresAffectedAreaSelection": false,
+      "sourceOfTruth": "repo",
+    },
+    "applyRequires": [
+      "review",
+    ],
+    "artifactPaths": {
+      "design": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/add-greeting-name/design.md",
+        ],
+        "outputPath": "design.md",
+        "resolvedOutputPath": "<root>/openspec/changes/add-greeting-name/design.md",
+      },
+      "proposal": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/add-greeting-name/proposal.md",
+        ],
+        "outputPath": "proposal.md",
+        "resolvedOutputPath": "<root>/openspec/changes/add-greeting-name/proposal.md",
+      },
+      "review": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/add-greeting-name/review.md",
+        ],
+        "outputPath": "review.md",
+        "resolvedOutputPath": "<root>/openspec/changes/add-greeting-name/review.md",
+      },
+      "specs": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/add-greeting-name/specs/greeting/spec.md",
+        ],
+        "outputPath": "specs/**/*.md",
+        "resolvedOutputPath": "<root>/openspec/changes/add-greeting-name/specs/**/*.md",
+      },
+      "tasks": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/add-greeting-name/tasks.md",
+        ],
+        "outputPath": "tasks.md",
+        "resolvedOutputPath": "<root>/openspec/changes/add-greeting-name/tasks.md",
+      },
+    },
+    "artifacts": [
+      {
+        "id": "proposal",
+        "outputPath": "proposal.md",
+        "requires": [],
+        "status": "done",
+      },
+      {
+        "id": "specs",
+        "outputPath": "specs/**/*.md",
+        "requires": [
+          "proposal",
+        ],
+        "status": "done",
+      },
+      {
+        "id": "design",
+        "outputPath": "design.md",
+        "requires": [
+          "proposal",
+        ],
+        "status": "done",
+      },
+      {
+        "id": "tasks",
+        "outputPath": "tasks.md",
+        "requires": [
+          "specs",
+          "design",
+        ],
+        "status": "done",
+      },
+      {
+        "id": "review",
+        "outputPath": "review.md",
+        "requires": [
+          "tasks",
+        ],
+        "status": "done",
+      },
+    ],
+    "changeName": "add-greeting-name",
+    "changeRoot": "<root>/openspec/changes/add-greeting-name",
+    "isComplete": true,
+    "isPlanningComplete": true,
+    "nextSteps": [
+      "All planning artifacts are complete. Run openspec instructions apply --change "add-greeting-name" --json to inspect implementation progress.",
+    ],
+    "planningHome": {
+      "changesDir": "<root>/openspec/changes",
+      "defaultSchema": "spec-driven",
+      "kind": "repo",
+      "root": "<root>",
+    },
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "schemaName": "story",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: status of the epic sample 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "actionContext": {
+      "allowedEditRoots": [
+        "<root>",
+      ],
+      "constraints": [
+        "Repo-local change artifacts and implementation edits are scoped to this project.",
+      ],
+      "linkedContext": [],
+      "mode": "repo-local",
+      "planningArtifacts": [
+        "prd",
+        "architecture",
+        "proposal",
+        "specs",
+        "design",
+        "tasks",
+        "review",
+      ],
+      "requiresAffectedAreaSelection": false,
+      "sourceOfTruth": "repo",
+    },
+    "applyRequires": [
+      "review",
+    ],
+    "artifactPaths": {
+      "architecture": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/build-greeter/architecture.md",
+        ],
+        "outputPath": "architecture.md",
+        "resolvedOutputPath": "<root>/openspec/changes/build-greeter/architecture.md",
+      },
+      "design": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/build-greeter/design.md",
+        ],
+        "outputPath": "design.md",
+        "resolvedOutputPath": "<root>/openspec/changes/build-greeter/design.md",
+      },
+      "prd": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/build-greeter/prd.md",
+        ],
+        "outputPath": "prd.md",
+        "resolvedOutputPath": "<root>/openspec/changes/build-greeter/prd.md",
+      },
+      "proposal": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/build-greeter/proposal.md",
+        ],
+        "outputPath": "proposal.md",
+        "resolvedOutputPath": "<root>/openspec/changes/build-greeter/proposal.md",
+      },
+      "review": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/build-greeter/review.md",
+        ],
+        "outputPath": "review.md",
+        "resolvedOutputPath": "<root>/openspec/changes/build-greeter/review.md",
+      },
+      "specs": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/build-greeter/specs/greeting/spec.md",
+        ],
+        "outputPath": "specs/**/*.md",
+        "resolvedOutputPath": "<root>/openspec/changes/build-greeter/specs/**/*.md",
+      },
+      "tasks": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/build-greeter/tasks.md",
+        ],
+        "outputPath": "tasks.md",
+        "resolvedOutputPath": "<root>/openspec/changes/build-greeter/tasks.md",
+      },
+    },
+    "artifacts": [
+      {
+        "id": "prd",
+        "outputPath": "prd.md",
+        "requires": [],
+        "status": "done",
+      },
+      {
+        "id": "architecture",
+        "outputPath": "architecture.md",
+        "requires": [
+          "prd",
+        ],
+        "status": "done",
+      },
+      {
+        "id": "proposal",
+        "outputPath": "proposal.md",
+        "requires": [
+          "prd",
+          "architecture",
+        ],
+        "status": "done",
+      },
+      {
+        "id": "specs",
+        "outputPath": "specs/**/*.md",
+        "requires": [
+          "proposal",
+          "prd",
+        ],
+        "status": "done",
+      },
+      {
+        "id": "design",
+        "outputPath": "design.md",
+        "requires": [
+          "proposal",
+          "architecture",
+        ],
+        "status": "done",
+      },
+      {
+        "id": "tasks",
+        "outputPath": "tasks.md",
+        "requires": [
+          "specs",
+          "design",
+        ],
+        "status": "done",
+      },
+      {
+        "id": "review",
+        "outputPath": "review.md",
+        "requires": [
+          "tasks",
+        ],
+        "status": "done",
+      },
+    ],
+    "changeName": "build-greeter",
+    "changeRoot": "<root>/openspec/changes/build-greeter",
+    "isComplete": true,
+    "isPlanningComplete": true,
+    "nextSteps": [
+      "All planning artifacts are complete. Run openspec instructions apply --change "build-greeter" --json to inspect implementation progress.",
+    ],
+    "planningHome": {
+      "changesDir": "<root>/openspec/changes",
+      "defaultSchema": "spec-driven",
+      "kind": "repo",
+      "root": "<root>",
+    },
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "schemaName": "epic",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: status of a change with a missing artifact 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "actionContext": {
+      "allowedEditRoots": [
+        "<root>",
+      ],
+      "constraints": [
+        "Repo-local change artifacts and implementation edits are scoped to this project.",
+      ],
+      "linkedContext": [],
+      "mode": "repo-local",
+      "planningArtifacts": [
+        "proposal",
+        "specs",
+        "design",
+        "tasks",
+        "review",
+      ],
+      "requiresAffectedAreaSelection": false,
+      "sourceOfTruth": "repo",
+    },
+    "applyRequires": [
+      "review",
+    ],
+    "artifactPaths": {
+      "design": {
+        "existingOutputPaths": [],
+        "outputPath": "design.md",
+        "resolvedOutputPath": "<root>/openspec/changes/bad-scenario/design.md",
+      },
+      "proposal": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/bad-scenario/proposal.md",
+        ],
+        "outputPath": "proposal.md",
+        "resolvedOutputPath": "<root>/openspec/changes/bad-scenario/proposal.md",
+      },
+      "review": {
+        "existingOutputPaths": [],
+        "outputPath": "review.md",
+        "resolvedOutputPath": "<root>/openspec/changes/bad-scenario/review.md",
+      },
+      "specs": {
+        "existingOutputPaths": [
+          "<root>/openspec/changes/bad-scenario/specs/x/spec.md",
+        ],
+        "outputPath": "specs/**/*.md",
+        "resolvedOutputPath": "<root>/openspec/changes/bad-scenario/specs/**/*.md",
+      },
+      "tasks": {
+        "existingOutputPaths": [],
+        "outputPath": "tasks.md",
+        "resolvedOutputPath": "<root>/openspec/changes/bad-scenario/tasks.md",
+      },
+    },
+    "artifacts": [
+      {
+        "id": "proposal",
+        "outputPath": "proposal.md",
+        "requires": [],
+        "status": "done",
+      },
+      {
+        "id": "specs",
+        "outputPath": "specs/**/*.md",
+        "requires": [
+          "proposal",
+        ],
+        "status": "done",
+      },
+      {
+        "id": "design",
+        "outputPath": "design.md",
+        "requires": [
+          "proposal",
+        ],
+        "status": "ready",
+      },
+      {
+        "id": "tasks",
+        "missingDeps": [
+          "design",
+        ],
+        "outputPath": "tasks.md",
+        "requires": [
+          "specs",
+          "design",
+        ],
+        "status": "blocked",
+      },
+      {
+        "id": "review",
+        "missingDeps": [
+          "tasks",
+        ],
+        "outputPath": "review.md",
+        "requires": [
+          "tasks",
+        ],
+        "status": "blocked",
+      },
+    ],
+    "changeName": "bad-scenario",
+    "changeRoot": "<root>/openspec/changes/bad-scenario",
+    "isComplete": false,
+    "isPlanningComplete": false,
+    "nextSteps": [
+      "Run openspec instructions design --change "bad-scenario" --json before writing that artifact.",
+    ],
+    "planningHome": {
+      "changesDir": "<root>/openspec/changes",
+      "defaultSchema": "spec-driven",
+      "kind": "repo",
+      "root": "<root>",
+    },
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "schemaName": "story",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: status of an unknown change 1`] = `
+{
+  "code": 1,
+  "facts": {
+    "status": [
+      {
+        "code": "change_error",
+        "message": 
+"Change 'nope' not found. Available changes:
+  add-greeting-name
+  bad-scenario
+  build-greeter
+  fix-greeting-typo"
+,
+        "severity": "error",
+      },
+    ],
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of the story sample 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "items": [
+      {
+        "id": "add-greeting-name",
+        "issues": [],
+        "type": "change",
+        "valid": true,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 0,
+          "items": 1,
+          "passed": 1,
+        },
+      },
+      "totals": {
+        "failed": 0,
+        "items": 1,
+        "passed": 1,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of the task sample 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "items": [
+      {
+        "id": "fix-greeting-typo",
+        "issues": [
+          {
+            "level": "INFO",
+            "message": "skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted",
+            "path": "file",
+          },
+        ],
+        "type": "change",
+        "valid": true,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 0,
+          "items": 1,
+          "passed": 1,
+        },
+      },
+      "totals": {
+        "failed": 0,
+        "items": 1,
+        "passed": 1,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of the epic sample with --strict 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "items": [
+      {
+        "id": "build-greeter",
+        "issues": [],
+        "type": "change",
+        "valid": true,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 0,
+          "items": 1,
+          "passed": 1,
+        },
+      },
+      "totals": {
+        "failed": 0,
+        "items": 1,
+        "passed": 1,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of a requirement with no scenario 1`] = `
+{
+  "code": 1,
+  "facts": {
+    "items": [
+      {
+        "id": "bad-scenario",
+        "issues": [
+          {
+            "level": "ERROR",
+            "message": "ADDED "A" must include at least one scenario",
+            "path": "x/spec.md",
+          },
+        ],
+        "type": "change",
+        "valid": false,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 1,
+          "items": 1,
+          "passed": 0,
+        },
+      },
+      "totals": {
+        "failed": 1,
+        "items": 1,
+        "passed": 0,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of a requirement with no SHALL 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "items": [
+      {
+        "id": "no-shall",
+        "issues": [
+          {
+            "level": "WARNING",
+            "message": "ADDED "B" should contain SHALL or MUST (RFC 2119 best practice for English specs)",
+            "path": "y/spec.md",
+          },
+        ],
+        "type": "change",
+        "valid": true,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 0,
+          "items": 1,
+          "passed": 1,
+        },
+      },
+      "totals": {
+        "failed": 0,
+        "items": 1,
+        "passed": 1,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of a requirement with no SHALL with --strict 1`] = `
+{
+  "code": 1,
+  "facts": {
+    "items": [
+      {
+        "id": "no-shall",
+        "issues": [
+          {
+            "level": "WARNING",
+            "message": "ADDED "B" should contain SHALL or MUST (RFC 2119 best practice for English specs)",
+            "path": "y/spec.md",
+          },
+        ],
+        "type": "change",
+        "valid": false,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 1,
+          "items": 1,
+          "passed": 0,
+        },
+      },
+      "totals": {
+        "failed": 1,
+        "items": 1,
+        "passed": 0,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of a change with no delta 1`] = `
+{
+  "code": 1,
+  "facts": {
+    "items": [
+      {
+        "id": "odd-tasks",
+        "issues": [
+          {
+            "level": "ERROR",
+            "message": "Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one "#### Scenario:" block. If this change intentionally modifies no specs (pure refactor, tooling, docs), set "skip_specs: true" in the change's .openspec.yaml instead. Tip: run "openspec change show <change-id> --json --deltas-only" to inspect parsed deltas.",
+            "path": "file",
+          },
+        ],
+        "type": "change",
+        "valid": false,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 1,
+          "items": 1,
+          "passed": 0,
+        },
+      },
+      "totals": {
+        "failed": 1,
+        "items": 1,
+        "passed": 0,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of the merge change 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "items": [
+      {
+        "id": "merge-all",
+        "issues": [],
+        "type": "change",
+        "valid": true,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 0,
+          "items": 1,
+          "passed": 1,
+        },
+      },
+      "totals": {
+        "failed": 0,
+        "items": 1,
+        "passed": 1,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of an unknown change 1`] = `
+{
+  "code": 1,
+  "facts": {
+    "status": [
+      {
+        "code": "unknown_item",
+        "message": "Unknown item 'nope'. Did you mean: bad-scenario, build-greeter, add-greeting-name, fix-greeting-typo?",
+        "severity": "error",
+      },
+    ],
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: archive of the story sample 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "Proposal warnings in proposal.md (non-blocking):",
+    "⚠ Why section must be at least 50 characters",
+    "Task status: 0/1 tasks",
+    "Warning: 1 incomplete task(s) found. Continuing due to --yes flag.",
+    "Specs to update:",
+    "greeting: create",
+    "Applying changes to openspec/specs/greeting/spec.md:",
+    "+ 1 added",
+    "Totals: + 1, ~ 0, - 0, → 0",
+    "Specs updated successfully.",
+    "Change 'add-greeting-name' archived as '<date>-add-greeting-name'.",
+  ],
+  "removed": [
+    "openspec/changes/add-greeting-name/.openspec.yaml",
+    "openspec/changes/add-greeting-name/design.md",
+    "openspec/changes/add-greeting-name/proposal.md",
+    "openspec/changes/add-greeting-name/review.md",
+    "openspec/changes/add-greeting-name/specs/greeting/spec.md",
+    "openspec/changes/add-greeting-name/tasks.md",
+  ],
+  "written": {
+    "openspec/changes/archive/<date>-add-greeting-name/.openspec.yaml": 
+"schema: story
+created: <date>
+"
+,
+    "openspec/changes/archive/<date>-add-greeting-name/design.md": 
+"## Context
+
+See \`proposal.md\` and \`specs/greeting/spec.md\`.
+
+## Decisions
+
+- Read the name from the first argument, because it needs no parser.
+
+## Risks / Trade-Offs
+
+- [An empty name] -> Print \`Hello, world!\`.
+"
+,
+    "openspec/changes/archive/<date>-add-greeting-name/proposal.md": 
+"## Why
+
+A user wants the greeting to use their name.
+
+## What Changes
+
+- The greeting takes an optional name.
+
+## Capabilities
+
+### New Capabilities
+
+- \`greeting\`: print a greeting for a name
+
+### Modified Capabilities
+
+None.
+
+## Impact
+
+\`src/greet.ts\` and its tests.
+"
+,
+    "openspec/changes/archive/<date>-add-greeting-name/review.md": 
+"## Agreement
+
+- [x] Each capability of the proposal has a spec
+- [x] Each requirement has a scenario
+- [x] The design covers each requirement
+- [x] No \`[NEEDS CLARIFICATION\` marker is open
+
+## Gaps
+
+None.
+"
+,
+    "openspec/changes/archive/<date>-add-greeting-name/specs/greeting/spec.md": 
+"## Purpose
+
+The greeting prints a short hello message for a person or for the world.
+
+## ADDED Requirements
+
+### Requirement: Greeting with a Name
+
+The system SHALL print \`Hello, <name>!\` when the user gives a name.
+
+#### Scenario: A Name Is Given
+
+- **WHEN** the user runs the command with the name \`Ada\`
+- **THEN** the output is \`Hello, Ada!\`
+"
+,
+    "openspec/changes/archive/<date>-add-greeting-name/tasks.md": 
+"## 1. Greeting
+
+- [ ] 1.1 Add the name argument, and verify it with \`just check\`
+"
+,
+    "openspec/specs/greeting/spec.md": 
+"# greeting Specification
+
+## Purpose
+The greeting prints a short hello message for a person or for the world.
+
+## Requirements
+
+### Requirement: Greeting with a Name
+
+The system SHALL print \`Hello, <name>!\` when the user gives a name.
+
+#### Scenario: A Name Is Given
+
+- **WHEN** the user runs the command with the name \`Ada\`
+- **THEN** the output is \`Hello, Ada!\`
+"
+,
+  },
+}
+`;
+
+exports[`OpenSpec 1.14.3: archive of a change with each kind of delta 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "Task status: ✓ Complete",
+    "Specs to update:",
+    "base: update",
+    "fresh-cap: create",
+    "Applying changes to openspec/specs/base/spec.md:",
+    "+ 1 added",
+    "~ 1 modified",
+    "- 1 removed",
+    "→ 1 renamed",
+    "Applying changes to openspec/specs/fresh-cap/spec.md:",
+    "+ 1 added",
+    "Totals: + 2, ~ 1, - 1, → 1",
+    "Specs updated successfully.",
+    "Change 'merge-all' archived as '<date>-merge-all'.",
+  ],
+  "removed": [
+    "openspec/changes/merge-all/.openspec.yaml",
+    "openspec/changes/merge-all/proposal.md",
+    "openspec/changes/merge-all/specs/base/spec.md",
+    "openspec/changes/merge-all/specs/fresh-cap/spec.md",
+    "openspec/changes/merge-all/tasks.md",
+  ],
+  "written": {
+    "openspec/changes/archive/<date>-merge-all/.openspec.yaml": 
+"schema: story
+created: <date>
+"
+,
+    "openspec/changes/archive/<date>-merge-all/proposal.md": 
+"## Why
+
+The fixture of a merge with each delta section, for the parity test of \`archive\`.
+
+## What Changes
+
+- The capability \`base\` gets each kind of delta.
+"
+,
+    "openspec/changes/archive/<date>-merge-all/specs/base/spec.md": 
+"## ADDED Requirements
+
+### Requirement: Fresh
+
+The system SHALL add this requirement at the end.
+
+#### Scenario: Added
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+
+## MODIFIED Requirements
+
+### Requirement: Change Me
+
+The system SHALL behave in the new way.
+
+#### Scenario: Old Way
+
+- **WHEN** a condition holds
+- **THEN** the old outcome follows
+
+#### Scenario: New Way
+
+- **WHEN** a condition holds
+- **THEN** the new outcome follows
+
+## REMOVED Requirements
+
+### Requirement: Drop Me
+
+**Reason**: The fixture drops it.
+
+## RENAMED Requirements
+
+- FROM: \`### Requirement: Old Name\`
+- TO: \`### Requirement: New Name\`
+"
+,
+    "openspec/changes/archive/<date>-merge-all/specs/fresh-cap/spec.md": 
+"## Purpose
+
+The fresh capability of the merge fixture in the parity test.
+
+## ADDED Requirements
+
+### Requirement: First
+
+The system SHALL start the capability.
+
+#### Scenario: Started
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+"
+,
+    "openspec/changes/archive/<date>-merge-all/tasks.md": 
+"## 1. Merge
+
+- [x] 1.1 Merge the deltas
+"
+,
+    "openspec/specs/base/spec.md": 
+"# base Specification
+
+## Purpose
+
+The base capability of the merge fixture in the parity test.
+
+## Requirements
+
+### Requirement: Keep
+
+The system SHALL keep this requirement.
+
+#### Scenario: Kept
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+
+### Requirement: Change Me
+
+The system SHALL behave in the new way.
+
+#### Scenario: Old Way
+
+- **WHEN** a condition holds
+- **THEN** the old outcome follows
+
+#### Scenario: New Way
+
+- **WHEN** a condition holds
+- **THEN** the new outcome follows
+
+### Requirement: New Name
+
+The system SHALL keep its text when renamed.
+
+#### Scenario: Renamed
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+
+### Requirement: Fresh
+
+The system SHALL add this requirement at the end.
+
+#### Scenario: Added
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+"
+,
+    "openspec/specs/fresh-cap/spec.md": 
+"# fresh-cap Specification
+
+## Purpose
+The fresh capability of the merge fixture in the parity test.
+
+## Requirements
+
+### Requirement: First
+
+The system SHALL start the capability.
+
+#### Scenario: Started
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+"
+,
+  },
+}
+`;
+
+exports[`OpenSpec 1.14.3: archive of a change that does not validate 1`] = `
+{
+  "code": 1,
+  "facts": [
+    "Validation errors in change delta specs:",
+    "✗ ADDED "A" must include at least one scenario",
+    "Validation failed. Please fix the errors before archiving.",
+    "To skip validation (not recommended), use --no-validate flag.",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: archive of a change that modifies a missing spec 1`] = `
+{
+  "code": 1,
+  "facts": [
+    "Task status: No tasks",
+    "Specs to update:",
+    "ghost: create",
+    "ghost: target spec does not exist; only ADDED requirements are allowed for new specs. MODIFIED and RENAMED operations require an existing spec.",
+    "Aborted. No files were changed.",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: archive of an unknown change 1`] = `
+{
+  "code": 1,
+  "facts": [
+    "✖ Error: Change 'nope' not found. Available changes: add-greeting-name, bad-scenario, build-greeter, fix-greeting-typo",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;

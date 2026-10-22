@@ -2,61 +2,51 @@
 
 # Spec
 
-The `spec` slice helps you plan a change with OpenSpec.
-OpenSpec is a tool that keeps a plan, its specs, and its tasks in files.
-The slice ships three presets, `task`, `story`, and `epic`, and a skill that picks one for you.
+The `spec` slice helps you plan a change in files, do it, and check it.
+It keeps the plan, its specs, and its tasks in `openspec/changes/<name>/`, in the layout of OpenSpec.
+The slice ships the command `minispec`, three presets (`task`, `story`, and `epic`), and four skills, one for each step.
 
 ## What It Does for You
 
-OpenSpec has the engine, the `/opsx:*` commands, and the delta specs.
-The slice adds only the presets and the text that picks one.
-It has one skill and no hook, no CLI, and no `userConfig` key.
+The four skills are `/claudetto:propose`, `/claudetto:apply`, `/claudetto:verify`, and `/claudetto:archive`.
+They match the steps `/opsx:propose`, `/opsx:apply`, `/opsx:verify`, and `/opsx:archive` of OpenSpec.
+Only you can start a skill, because each has `disable-model-invocation: true`.
+So the four skills add no description to the request at session start.
+The slice has no hook and no `userConfig` key.
+It runs no `openspec init` and changes no global config of OpenSpec.
 
-Only you can start the skill `spec`, because it has `disable-model-invocation: true`.
-Its `argument-hint` is `[task|story|epic] [change]`.
-It picks a preset and hands off to the `/opsx:*` commands.
-It does no other step.
+| Skill | Argument | What it does |
+| --- | --- | --- |
+| `/claudetto:propose` | `[task|story|epic] <change or idea>` | Picks a preset, makes the change, and writes one artifact at a time. |
+| `/claudetto:apply` | `[change]` | Does the open tasks of `tasks.md`, and ticks each one when its check passes. |
+| `/claudetto:verify` | `[change]` | Checks that the code does what the tasks, specs, and design say. |
+| `/claudetto:archive` | `[change]` | Merges the delta specs into `openspec/specs/`, and moves the change to `openspec/changes/archive/`. |
 
-## How to Use It
+## The Command `minispec`
 
-The skill never overwrites a file, because you may have changed it.
+The skills call `minispec`, a command in `bin/` of the plugin.
+It reads and writes the files of the OpenSpec layout, so you can still run OpenSpec on the same files.
+A schema in `openspec/schemas/<name>/` wins over the preset of the same name in the slice.
 
-1. If the `/opsx:*` commands are missing, it runs `bunx @fission-ai/openspec@1.14.3 init --tools claude --profile core`.
-   They are missing when neither `.claude/commands/opsx/propose.md` nor `.claude/skills/openspec-propose/SKILL.md` exists.
-   The skill does not test for the folder `openspec/`, because a folder with only `changes/` is not an init.
-2. It copies each `schemas/<preset>` folder of the skill to `openspec/schemas/<preset>`, only when that folder is missing.
-3. It copies `config.yaml` to `openspec/config.yaml`, only when that file is missing.
-4. It reads the global config with `bunx @fission-ai/openspec@1.14.3 config list`.
-   - If `delivery` is `both`, each workflow is listed twice.
-   - If `verify` is not in `workflows`, `/opsx:verify` is missing.
+| Command | What it does |
+| --- | --- |
+| `minispec new change <name> [--schema <preset>]` | Makes `openspec/changes/<name>/`. The default preset is `story`. |
+| `minispec list [--json]` | Lists the changes with their task counts. |
+| `minispec status --change <name> [--json]` | Gives each artifact with its status, template, and instruction. The JSON also has `context`, `rules`, `apply`, and `tasks`. |
+| `minispec validate <name> [--strict] [--json]` | Checks the delta specs of a change. |
+| `minispec archive <name> [--yes]` | Validates the change, merges its delta specs, and moves it to the archive. With open tasks, it asks first unless you pass `--yes`. |
 
-The global config is outside the project, so the skill asks you before it changes it.
-It gives you the commands `bunx @fission-ai/openspec@1.14.3 config set delivery skills` and `bunx @fission-ai/openspec@1.14.3 config profile`.
+## The Size Bounds
 
-## Profile Sizes
-
-The sizes in this section are bytes, not tokens.
-They are the bytes of the files that `openspec init --tools claude --profile core` writes, measured with `@fission-ai/openspec` version `1.14.3`.
-The mode is the `delivery` key of the global config, because `init` has no flag for it.
-The prompt bytes leave out `openspec/config.yaml`, which is 998 bytes.
-
-| Setup | Prompt bytes | Times `minispec` |
-| --- | ---: | ---: |
-| `core`, `commands` | 92122 | 7.4 |
-| `core`, `skills` | 95587 | 7.6 |
-| `core` + `verify`, `skills` | 115816 | 9.3 |
-| `core`, `both` (the default) | 187565 | 15.0 |
-
-`minispec` is the preset of 0.1.0, at 12500 bytes.
-The last column is the prompt bytes divided by 12500.
-
-Only the skill description loads at session start.
-The body of a skill loads when the skill runs.
-`commands` has no description cost at start, so it is the smaller choice for context.
+MiniSpec stays small on purpose.
+`slices/spec/limits.ts` holds four bounds, and a test fails when a file grows past one:
+`CODE_LINES_MAX` (781 lines of TypeScript), `CODE_BYTES_MAX` (27,441 bytes), `PRESET_BYTES_MAX` (10,327 bytes of presets), and `SKILL_BYTES_MAX` (3,581 bytes of the four skills).
+Raise a bound only for a behavior that the design of the change `0-3-0` names.
+See [Bounds for Slices](Bounds-Slices#spec).
 
 ## Picking a Preset
 
-The skill states the facts that it used.
+`/claudetto:propose` states the facts that it used.
 It then uses the first rule that fits:
 
 1. You name a preset: that preset.
@@ -64,12 +54,6 @@ It then uses the first rule that fits:
 3. The change does not change behavior: `task`.
 4. The change touches one capability: `story`.
 5. Unsure: `story`, and ask you.
-
-## Hand Off
-
-The skill runs `/opsx:propose` and names the schema.
-The command then runs `new change <change> --schema <preset>`.
-The skill points you to `/opsx:apply`, `/opsx:verify`, and `/opsx:archive`.
 
 ## The Schemas
 
@@ -100,7 +84,6 @@ A spec states behavior that you can observe, with these rules:
 - Use the headers `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, and `## RENAMED Requirements`.
 - Write each requirement as `### Requirement: <name>` with SHALL or MUST.
 - Give each requirement at least one `#### Scenario: <name>` with WHEN and THEN.
-- Keep each requirement to 500 characters or fewer.
 - Start a new capability with a `## Purpose` of 50 characters or more.
 - Write `[NEEDS CLARIFICATION: <question>]` in place of a guess.
 
@@ -121,15 +104,15 @@ The `proposal` takes the why from `prd.md`.
 The `review` template adds checklists for the PM, the architect, and QA.
 The `apply` step requires `review`.
 
-## The `config.yaml` Template
+## The `config.yaml` File
 
-The template sets `schema: story`.
-It has a `context` block and `rules` for each artifact.
-OpenSpec puts `context` into each artifact, and `rules.<artifact>` into that artifact only.
-The template says to write only what an agent cannot learn from the code, and to delete each line that does not apply.
+An optional `openspec/config.yaml` sets `schema`, a `context` block, and `rules` for each artifact.
+`minispec status --json` gives `context` and `rules`, and `/claudetto:propose` adds `context` to each artifact and `rules.<artifact>` to that artifact only.
+Write only what an agent cannot learn from the code, and delete each line that does not apply.
 
-## See Also
+## Related Pages
 
 - [Ground](Ground)
+- [Bounds for Slices](Bounds-Slices)
 - [Handoff](Handoff)
 - [Setup](Setup)

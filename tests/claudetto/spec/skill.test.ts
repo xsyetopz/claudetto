@@ -1,69 +1,30 @@
-// The skill `spec`: the frontmatter, the rule of each preset, and the files that ship next to it.
+// The four step skills of MiniSpec: the frontmatter, the rule of each preset, and the calls to `minispec`.
 
 import { expect, test } from "bun:test";
 import path from "node:path";
 import { REPO } from "../../support/repo.ts";
 
-const DIR = path.join(REPO, "plugins/claudetto/skills/spec");
-const skill = await Bun.file(path.join(DIR, "SKILL.md")).text();
+const STEPS = ["propose", "apply", "verify", "archive"] as const;
 
-test("the skill `spec` is user-invoked and takes a preset and a change", () => {
-  expect(skill).toMatch(/^name: spec$/m);
-  expect(skill).toMatch(/^disable-model-invocation: true$/m);
-  expect(skill).toContain('argument-hint: "[task|story|epic] [change]"');
-});
+const read = (step: string): Promise<string> =>
+  Bun.file(path.join(REPO, `plugins/claudetto/skills/${step}/SKILL.md`)).text();
+const skills = Object.fromEntries(
+  await Promise.all(STEPS.map(async (s) => [s, await read(s)])),
+) as Record<(typeof STEPS)[number], string>;
 
-test.each([
-  ["a named preset", "- The user names a preset: that preset."],
-  [
-    "a new project",
-    "- No `openspec/specs/` and a near-empty repository: `epic`.",
-  ],
-  ["no change of behavior", "- The change has no change of behavior: `task`."],
-  ["one capability", "- The change touches one capability: `story`."],
-  ["doubt", "- Unsure: `story`, and ask the user."],
-])("the skill `spec` has the rule for %s", (_name, line) => {
-  expect(skill).toContain(line);
-});
-
-test("the skill `spec` copies only what is missing and never overwrites", () => {
-  expect(skill).toContain("Never overwrite a file, because");
-  expect(skill).toContain(
-    "to `openspec/schemas/<preset>` only when that folder is missing",
-  );
-  expect(skill).toContain(
-    "`openspec/config.yaml` only when that file is missing",
-  );
-  expect(skill).toContain("ask the user before you change it");
-});
-
-test.each(["task", "story", "epic", "config"])(
-  "the skill `spec` ships %s next to it",
-  async (name) => {
-    const file =
-      name === "config" ? "config.yaml" : `schemas/${name}/schema.yaml`;
-    expect(await Bun.file(path.join(DIR, file)).exists()).toBe(true);
+test.each(STEPS)(
+  "the skill `%s` is user-invoked and may call only `minispec`",
+  (step) => {
+    expect(skills[step]).toMatch(new RegExp(`^name: ${step}$`, "m"));
+    expect(skills[step]).toMatch(/^disable-model-invocation: true$/m);
+    expect(skills[step]).toMatch(/^allowed-tools: Bash\(minispec \*\)$/m);
   },
 );
 
-test("the skill `spec` tests for the `/opsx:*` commands, and not for the folder `openspec/`, before `openspec init`", () => {
-  expect(skill).not.toContain("If `openspec/` is missing");
-  expect(skill).toContain("If the `/opsx:*` commands are missing, run");
-  expect(skill).toContain(".claude/commands/opsx/propose.md");
-  expect(skill).toContain(".claude/skills/openspec-propose/SKILL.md");
-  expect(skill.indexOf("openspec init")).toBeLessThan(
-    skill.indexOf("Copy `$" + "{CLAUDE_SKILL_DIR}/config.yaml`"),
+test("the skill `propose` takes a preset and a change", () => {
+  expect(skills.propose).toContain(
+    'argument-hint: "[task|story|epic] <change or idea>"',
   );
-});
-
-test("each `bunx @fission-ai/openspec` command of the skill `spec` pins the version of `package.json`", async () => {
-  const pkg = await Bun.file(path.join(REPO, "package.json")).json();
-  const version = pkg.devDependencies["@fission-ai/openspec"];
-  const commands = skill.match(/bunx @fission-ai\/openspec\S*/g) ?? [];
-  expect(commands.length).toBe(4);
-  for (const command of commands) {
-    expect(command).toBe(`bunx @fission-ai/openspec@${version}`);
-  }
 });
 
 test("`tools/vanilla.py` pins the `@fission-ai/openspec` version of `package.json`", async () => {
