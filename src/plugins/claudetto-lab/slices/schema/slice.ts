@@ -1,8 +1,0 @@
-import type { Slice } from "../../../../kernel/slice.ts";
-
-export const slice = {
-  name: "schema",
-  ladder:
-    "built-in: a plugin `bin/` command, because the schema build runs outside a session",
-  cli: { bin: "claudetto-schema" },
-} satisfies Slice;

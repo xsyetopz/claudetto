@@ -1,0 +1,81 @@
+# Lab Sandbox
+
+The script `tools/sandbox/main.ts` runs Claude Code in a config folder apart from yours.
+A test of a plugin then cannot change your settings, sessions, or installed plugins.
+
+```text
+bun tools/sandbox/main.ts [--dir DIR] [--check-frontmatter] [--plugin-dir DIR]... [claude arguments...]
+bun tools/sandbox/main.ts [--dir DIR] --clean
+```
+
+## The Options
+
+| Option | What it does |
+| --- | --- |
+| (no option) | Set up the folder, then run `claude` with your arguments. |
+| `--plugin-dir DIR` | Load a plugin folder. Pass it once for each plugin. The command loads no plugin by itself. It makes the path absolute, because `claude` runs in the `project/` folder. |
+| `--check-frontmatter` | Add `--debug-file` and `-p "Reply with OK."` to the call. Print each line of the debug log that names an unknown field. |
+| `--clean` | Remove the folder. |
+| `--dir DIR` | Set the folder. The default is `claudetto-sandbox` in the system temp folder. A value that starts with `--` exits 1 with a message. |
+
+`--check-frontmatter` exits 1 when:
+
+- the session fails
+- the log names an unknown field
+- the log shows no loaded plugin, because the check then proves nothing
+
+## The Folder
+
+| Part | What it is |
+| --- | --- |
+| `config/` | `CLAUDE_CONFIG_DIR`. The setup marks onboarding as done and trusts `project/`. |
+| `project/` | An empty git repository. It is the working directory. |
+| `home/` | The `HOME` of Claude Code. A setup script that changes shell files changes only the sandbox. |
+| `.claudetto-sandbox` | A marker file. It shows that the sandbox made the folder. |
+
+## Clean Rules
+
+`--clean` exits 0 with a note when the folder does not exist.
+It exits 1 on a symbolic link.
+For a folder other than the default, it also exits 1 when:
+
+- the folder holds an entry outside `config`, `project`, `home`, and the marker
+- the folder has no marker file
+
+The default folder skips these two checks.
+
+## Login Token
+
+The command reads the token from these sources, in this order:
+
+1. The variable `CLAUDE_CODE_OAUTH_TOKEN`.
+2. On macOS, the Keychain entry `Claude Code-credentials`.
+3. The file `~/.claude/.credentials.json`.
+
+The token goes only into the environment of the child process.
+The command does not write it to disk or print it.
+If it finds no token, the command still runs and tells you to run `/login` in the sandbox.
+
+## The Child Environment
+
+The child process is the `claude` that the command starts.
+It drops these variables, because they would join the parent session or fake its state:
+
+- The variables that the parent Claude Code session sets for its own tools: `CLAUDECODE`, `CLAUDE_PROJECT_DIR`, and each `CLAUDE_CODE_SESSION_`, `CLAUDE_CODE_MESSAGING_`, and `CLAUDE_PLUGIN_` variable.
+- Each variable that your own settings `env` sets to the same value.
+- `ZDOTDIR` and `XDG_CONFIG_HOME`.
+
+It sets `HOME` and `CLAUDE_CONFIG_DIR` to the sandbox.
+
+## The Model Check
+
+Claude Code gives no error for a `--model` that `availableModels` leaves out.
+The session then runs on another model.
+The command reads `availableModels` of the sandbox settings.
+It warns when a `claude-` model is not in the list.
+
+## Related Pages
+
+- [Lab](Lab)
+- [Sandbox](Sandbox)
+- [Troubleshooting](Troubleshooting)

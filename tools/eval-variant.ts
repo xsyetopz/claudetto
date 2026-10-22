@@ -21,11 +21,8 @@ import os from "node:os";
 import path from "node:path";
 
 const REPO = path.resolve(import.meta.dirname, "..");
-// The comparison itself is the `claudetto-lab` command. This script adds the git worktree.
-const COMPARE = path.join(
-  REPO,
-  "plugins/claudetto-lab/bin/claudetto-eval-compare",
-);
+// The comparison itself is the `tools/eval-compare/main.ts` command. This script adds the git worktree.
+const COMPARE = path.join(REPO, "tools/eval-compare/main.ts");
 
 /** The arguments of `claudetto-eval-compare` for the checkout and the variant in `tree`. */
 export const compareArgs = (tree: string, rest: string[]): string[] => [

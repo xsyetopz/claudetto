@@ -5,7 +5,7 @@ import { afterEach, beforeEach, expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { main } from "../../plugins/claudetto-lab/slices/sandbox/adapters/cli.ts";
+import { main } from "../../tools/sandbox/adapters/cli.ts";
 
 let scratch = "";
 beforeEach(() => {

@@ -7,7 +7,7 @@ import { has, pluginDirs, REPO } from "../recipes.ts";
 const dirs = pluginDirs()
   .filter((dir) => has(dir, ".claude-plugin", "plugin.json"))
   .flatMap((dir) => ["--plugin-dir", dir]);
-const bin = path.join("plugins", "claudetto-lab", "bin", "claudetto-sandbox");
+const bin = path.join("tools", "sandbox", "main.ts");
 // The sandbox session is interactive, so it gets the terminal of this process.
 const child = Bun.spawn(["bun", bin, ...Bun.argv.slice(2), ...dirs], {
   cwd: REPO,

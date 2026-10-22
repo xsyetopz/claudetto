@@ -1,6 +1,6 @@
 // Installs plugins of this checkout into a new sandbox config with the `claude plugin` CLI, as a user installs them (`just sandbox-install`).
 // The checkout is a local marketplace, so Claude Code reads each plugin from its folder.
-// An edit takes effect after `just generate`, at the next session start or `/reload-plugins`.
+// An edit takes effect at the next session start or `/reload-plugins`.
 // The arguments are the names of the plugins to install, and with none the script installs `claudetto`.
 // Then the script starts Claude Code in the sandbox. `just sandbox-installed` starts it again with no new install.
 
@@ -11,7 +11,7 @@ import { $claude } from "../telemetry.ts";
 /** The sandbox folder of the install, apart from `just sandbox` and `just sandbox-alone`. */
 const INSTALL_DIR = "/tmp/claudetto-sandbox-install";
 
-const bin = path.join("plugins", "claudetto-lab", "bin", "claudetto-sandbox");
+const bin = path.join("tools", "sandbox", "main.ts");
 
 /**
  * Runs `claudetto-sandbox` in the install folder with `args`.

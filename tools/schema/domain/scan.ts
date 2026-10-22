@@ -1,0 +1,211 @@
+export type Call = [name: string, args: string];
+
+export type Chain = { head: string; headArgs?: string; calls: Call[] };
+
+export const ANCHOR = "{$schema:()=>";
+
+const OPEN = "([{";
+const CLOSE = ")]}";
+const REGEX_AFTER = "(,=:[!&|?{};+-*%<>~^";
+const KEYWORDS_BEFORE_REGEX = /(?:return|typeof|case|in|of|void|delete)$/;
+
+type Visit = (index: number, char: string, depth: number) => boolean;
+
+export const skipToken = (src: string, i: number, prev: string): number => {
+  const c = src[i];
+  if (c === '"' || c === "'") return skipQuoted(src, i, c);
+  if (c === "`") return skipTemplate(src, i);
+  if (c !== "/") return i;
+  if (src[i + 1] === "/") {
+    const end = src.indexOf("\n", i);
+    return end < 0 ? src.length : end;
+  }
+  if (src[i + 1] === "*") return src.indexOf("*/", i + 2) + 2;
+  const before = src.slice(Math.max(0, i - 8), i).trimEnd();
+  const isRegex =
+    prev === "" ||
+    REGEX_AFTER.includes(prev) ||
+    KEYWORDS_BEFORE_REGEX.test(before);
+  return isRegex ? skipRegex(src, i) : i;
+};
+
+const skipQuoted = (src: string, i: number, quote: string): number => {
+  for (let j = i + 1; j < src.length; j++) {
+    if (src[j] === "\\") j++;
+    else if (src[j] === quote) return j + 1;
+  }
+  return src.length;
+};
+
+const skipTemplate = (src: string, i: number): number => {
+  for (let j = i + 1; j < src.length; j++) {
+    if (src[j] === "\\") j++;
+    else if (src[j] === "`") return j + 1;
+    else if (src[j] === "$" && src[j + 1] === "{")
+      j = matchClose(src, j + 1) ?? src.length;
+  }
+  return src.length;
+};
+
+const skipRegex = (src: string, i: number): number => {
+  let inClass = false;
+  for (let j = i + 1; j < src.length; j++) {
+    const c = src[j];
+    if (c === "\\") j++;
+    else if (c === "[") inClass = true;
+    else if (c === "]") inClass = false;
+    else if (c === "/" && !inClass) {
+      let end = j + 1;
+      while (/[a-z]/i.test(src[end] ?? "")) end++;
+      return end;
+    }
+  }
+  return src.length;
+};
+
+const walk = (src: string, from: number, visit: Visit): number | null => {
+  let depth = 0;
+  let prev = "";
+  for (let i = from; i < src.length; i++) {
+    const next = skipToken(src, i, prev);
+    if (next !== i) {
+      prev = "x";
+      i = next - 1;
+      continue;
+    }
+    const c = src[i] as string;
+    if (CLOSE.includes(c)) depth--;
+    if (visit(i, c, depth)) return i;
+    if (OPEN.includes(c)) depth++;
+    if (!/\s/.test(c)) prev = c;
+  }
+  return null;
+};
+
+export const matchClose = (src: string, open: number): number | null =>
+  walk(src, open, (_i, c, depth) => CLOSE.includes(c) && depth === 0);
+
+export const splitTop = (text: string): string[] => {
+  const parts: string[] = [];
+  let start = 0;
+  walk(text, 0, (i, c, depth) => {
+    if (c === "," && depth === 0) {
+      parts.push(text.slice(start, i));
+      start = i + 1;
+    }
+    return false;
+  });
+  parts.push(text.slice(start));
+  return parts.map((p) => p.trim()).filter(Boolean);
+};
+
+export const exprEnd = (src: string, from: number): number => {
+  const stop = walk(
+    src,
+    from,
+    (_i, c, depth) =>
+      (depth === 0 && (c === "," || c === ";")) ||
+      (depth < 0 && CLOSE.includes(c)),
+  );
+  return stop ?? src.length;
+};
+
+export const findSchemaBody = (src: string): string | null => {
+  const start = src.indexOf(ANCHOR);
+  if (start < 0) return null;
+  const end = matchClose(src, start);
+  return end === null ? null : src.slice(start + 1, end);
+};
+
+/**
+ * The bodies of the `shape` objects of the gated features, such as `autoMode:{buildGate:...,shape:()=>({...})}`, in bundle order.
+ * The settings schema spreads these keys after its own keys.
+ */
+export const findFeatureShapes = (src: string): string[] =>
+  [
+    ...src.matchAll(/[\w$]+:\{buildGate:[\s\S]{0,300}?shape:\(\)=>\(\{/g),
+  ].flatMap((m) => {
+    const open = (m.index ?? 0) + m[0].length - 1;
+    const close = matchClose(src, open);
+    return close === null ? [] : [src.slice(open + 1, close)];
+  });
+
+const ESCAPES: Record<string, string> = {
+  n: "\n",
+  t: "\t",
+  r: "\r",
+  b: "\b",
+  f: "\f",
+  v: "\v",
+  0: "\0",
+};
+
+export const unquote = (lit: string): string => {
+  const body = lit.slice(1, -1);
+  return body.replace(
+    /\\(?:u([0-9a-fA-F]{4})|x([0-9a-fA-F]{2})|([\s\S]))/g,
+    (
+      _m: string,
+      u: string | undefined,
+      x: string | undefined,
+      c: string | undefined,
+    ) =>
+      u || x
+        ? String.fromCharCode(Number.parseInt((u || x) as string, 16))
+        : ((ESCAPES[c as string] ?? c) as string),
+  );
+};
+
+export const splitPlus = (expr: string): string[] => {
+  const parts: string[] = [];
+  let start = 0;
+  walk(expr, 0, (i, c, depth) => {
+    if (c === "+" && depth === 0) {
+      parts.push(expr.slice(start, i).trim());
+      start = i + 1;
+    }
+    return false;
+  });
+  parts.push(expr.slice(start).trim());
+  return parts;
+};
+
+export const chainCalls = (expr: string): Chain => {
+  const calls: Call[] = [];
+  let i = expr.search(/\(/);
+  const head = expr.slice(0, i).trim();
+  if (i < 0) return { head: expr.trim(), calls };
+  const first = matchClose(expr, i) as number;
+  const headArgs = expr.slice(i + 1, first);
+  i = first + 1;
+  while (i < expr.length) {
+    const m = /^\s*\.([\w$]+)\(/.exec(expr.slice(i));
+    if (!m) break;
+    const open = i + m[0].length - 1;
+    const close = matchClose(expr, open);
+    if (close === null) break;
+    calls.push([m[1] as string, expr.slice(open + 1, close)]);
+    i = close + 1;
+  }
+  return { head, headArgs, calls };
+};
+
+export const parseEntries = (
+  body: string,
+  thunk: boolean,
+): Array<[string, string]> => {
+  const entries: Array<[string, string]> = [];
+  for (const part of splitTop(body)) {
+    const gated = /^\.\.\.[^{]*?&&\{/.exec(part);
+    if (gated) {
+      const open = gated[0].length - 1;
+      const close = matchClose(part, open);
+      if (close !== null)
+        entries.push(...parseEntries(part.slice(open + 1, close), thunk));
+      continue;
+    }
+    const m = (thunk ? /^([\w$]+):\(\)=>/ : /^([\w$]+):/).exec(part);
+    if (m) entries.push([m[1] as string, part.slice(m[0].length).trim()]);
+  }
+  return entries;
+};
