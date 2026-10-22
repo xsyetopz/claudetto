@@ -12,10 +12,7 @@ type Case = {
   graders: { name: string; type: string; focus?: string; criteria?: string }[];
 };
 
-const STYLE_EVALS = path.join(
-  REPO,
-  "src/plugins/claudetto/slices/styles/evals",
-);
+const EVALS = path.join(REPO, "plugins/claudetto/evals");
 const PADDED_EVALS = path.join(import.meta.dir, "padded/evals");
 
 const load = async (dir: string): Promise<Case[]> =>
@@ -38,7 +35,7 @@ test("each case of the test plugin has only the judge `plain-reply`", async () =
 });
 
 test("the judge `plain-reply` is the same in each style case and in the test plugin", async () => {
-  const style = await load(STYLE_EVALS);
+  const style = (await load(EVALS)).filter(judgeOf);
   expect(style.length).toBe(5);
   const judges = [...style, ...(await load(PADDED_EVALS))].map((c) => {
     const g = judgeOf(c);

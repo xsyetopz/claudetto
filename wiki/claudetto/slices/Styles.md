@@ -7,7 +7,8 @@ A user who wants short replies and a contributor who edits the `styles` slice re
 
 ## What It Does for You
 
-The style file is `styles/Concise.md` in the slice.
+The style file is `output-styles/Concise.md` in the plugin.
+The folder `slices/styles/` is empty.
 The text of the style is the block `reply_style`.
 It sets these rules for each reply:
 
@@ -31,8 +32,8 @@ The style shortens the text of the reply, not the work.
 | `description` | A short sentence | The text that Claude Code shows in the style list |
 | `keep-coding-instructions` | `true` | The style keeps the coding instructions |
 
-The `prompt` slice changes the coding sections of the system prompt.
-A style without `keep-coding-instructions: true` would set the section `doing_tasks` to `null`.
+The body of the main agent `claudetto:main` holds the coding rules.
+The key `keep-coding-instructions: true` keeps the coding instructions of the built-in prompt when a session uses another agent.
 
 ## How to Turn It On or Off
 
@@ -43,7 +44,7 @@ To use another style, set `outputStyle` to its name in your own settings.
 
 ## The Eval Cases
 
-The slice holds four eval cases in `evals/`.
+The cases for the style are in `plugins/claudetto/evals/`.
 Each case has a `case.yaml` and a `scaffold.sh`.
 
 | Case | What it checks |
@@ -53,11 +54,12 @@ Each case has a `case.yaml` and a `scaffold.sh`.
 | `partial-verification` | The final message does not say that all is verified when a check was skipped |
 | `unprompted-skip` | The final message names the skipped check, though the user did not ask |
 
+
 The output style `claudetto:Concise` makes the replies of Claude short.
 The first sentence tells the result, and the rest holds only the facts you need.
 The work stays as thorough as before.
 
-## See Also
+## Related Pages
 
 - [Prompt](Prompt)
 - [Settings Snippet](Settings-Snippet)

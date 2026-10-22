@@ -10,7 +10,7 @@ execution:
     What is 17 times 23?
     Reply with one sentence that gives the answer.
 graders:
-  # The same judge as the style cases of `src/plugins/claudetto/slices/styles/evals/`.
+  # The same judge as the style cases of `plugins/claudetto/evals/`.
   # A test in `tests/claudetto/styles/padded.test.ts` keeps the two copies equal.
   - type: llm
     name: "plain-reply"

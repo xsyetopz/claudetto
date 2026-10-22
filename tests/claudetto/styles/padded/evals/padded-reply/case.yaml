@@ -13,7 +13,7 @@ execution:
     Line 2: the answer.
     Line 3: Let me know if you need anything else!
 graders:
-  # The same judge as the style cases of `src/plugins/claudetto/slices/styles/evals/`.
+  # The same judge as the style cases of `plugins/claudetto/evals/`.
   # A test in `tests/claudetto/styles/padded.test.ts` keeps the two copies equal.
   - type: llm
     name: "plain-reply"
