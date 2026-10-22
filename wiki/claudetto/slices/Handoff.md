@@ -26,11 +26,12 @@ The user message names the file, so you and the model can read it again.
 
 ## The Hooks
 
-| Hook | Phase | What it does |
-| --- | --- | --- |
-| `session.compact` | `answer` | Writes the handoff and gives the new context in place of the summary. |
-| `turn.complete` | `observe` | Notes the time when a turn of the main thread ends. |
-| `turn.step` | `observe` | Notes the time of each model request of the main thread. |
+| Hook | What it does |
+| --- | --- |
+| `session.compact` | Writes the handoff and gives the new context in place of the summary. |
+| `turn.complete` | Notes the time when a turn of the main thread ends. |
+| `turn.step` | Notes the time of each model request of the main thread. |
+| `PreModelSwitch` (a classic hook) | Says nothing when the cache is cold. When the cache is warm, it asks you and names the cost of the cache write that a `/model` switch causes. |
 
 The `session.compact` hook runs for the triggers `auto`, `manual`, and `plugin`.
 A compaction of a subagent passes on with no change.
@@ -134,10 +135,10 @@ The [Prompt](Prompt) slice reads the same option.
 | `COLD_FILES_MAX` | 20 | `slices/handoff/limits.ts` |
 | `COLD_PROMPTS_MAX` | 3 | `slices/handoff/limits.ts` |
 | `COLD_PROMPT_CHARS_MAX` | 1,500 | `slices/handoff/limits.ts` |
-| `HANDOFF_TRIGGER_TOKENS` | 225,000 | `src/kernel/budget.ts` |
-| `HAIKU_HANDOFF_TRIGGER_TOKENS` | 100,000 | `src/kernel/budget.ts` |
+| `HANDOFF_TRIGGER_TOKENS` | 225,000 | `plugins/claudetto/kernel/budget.ts` |
+| `HAIKU_HANDOFF_TRIGGER_TOKENS` | 100,000 | `plugins/claudetto/kernel/budget.ts` |
 
-## See Also
+## Related Pages
 
 - [Handoff Files](Handoff-Files)
 - [Ground](Ground)

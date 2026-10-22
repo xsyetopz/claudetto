@@ -49,7 +49,7 @@ A handoff is a short note that `claudetto` writes in place of the summary of a c
 This page shows what the note holds and where the file is.
 [Handoff](Handoff) tells when and how it runs.
 
-## See Also
+## Related Pages
 
 - [Handoff](Handoff)
 - [Ground](Ground)

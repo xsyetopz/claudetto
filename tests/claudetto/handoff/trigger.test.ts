@@ -4,21 +4,28 @@
 // The client blocks the next request at `E - 3000`.
 
 import { expect, test } from "bun:test";
-import { SNIPPET } from "../../../plugins/claudetto/snippets.ts";
 import {
   COMPACT_OUTPUT_RESERVE,
   HAIKU_HANDOFF_TRIGGER_TOKENS,
   HANDOFF_TRIGGER_TOKENS,
-} from "../../../src/kernel/budget.ts";
+} from "../../../plugins/claudetto/kernel/budget.ts";
+import { SNIPPET } from "../../../plugins/claudetto/snippets.ts";
 
 type Settings = {
   env: Record<string, string>;
   autoCompactWindow: number;
   modelSettings: Record<string, { autoCompactWindow: number }>;
-  availableModels: string[];
 };
 
 const settings = SNIPPET as unknown as Settings;
+
+/** The current model of each family. */
+const MODELS = [
+  "claude-opus-5-5",
+  "claude-sonnet-5-5",
+  "claude-fable-5-1",
+  "claude-haiku-5-5",
+];
 
 const effective = (window: number): number => window - COMPACT_OUTPUT_RESERVE;
 
@@ -48,15 +55,11 @@ test("the auto compaction of each model family starts at or below its bound and 
     settings.env["CLAUDE_AUTOCOMPACT_PCT_OVERRIDE"] ?? "",
   );
   expect(pct > 0 && pct <= 100).toBe(true);
-  const families = ["opus", "sonnet", "fable", "haiku"];
-  for (const family of families) {
-    const model = settings.availableModels.find((m) => m.includes(family));
-    expect(model, family).toBeDefined();
-    const window = windowOf(model as string);
-    const bound =
-      family === "haiku"
-        ? HAIKU_HANDOFF_TRIGGER_TOKENS
-        : HANDOFF_TRIGGER_TOKENS;
+  for (const model of MODELS) {
+    const window = windowOf(model);
+    const bound = model.includes("haiku")
+      ? HAIKU_HANDOFF_TRIGGER_TOKENS
+      : HANDOFF_TRIGGER_TOKENS;
     const at = trigger(window, pct);
     expect(at, model).toBeLessThanOrEqual(bound);
     expect(at, model).toBeGreaterThan(bound - 100);

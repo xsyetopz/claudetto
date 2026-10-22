@@ -2,12 +2,12 @@
 // The done list holds only the checked tasks of `tasks.md`, also when the model text says that a step is done.
 
 import { expect, test } from "bun:test";
+import { openChange } from "../../../plugins/claudetto/kernel/change.ts";
 import { passedChecks } from "../../../plugins/claudetto/slices/handoff/checks.ts";
 import {
   statusFree,
   withChange,
 } from "../../../plugins/claudetto/slices/handoff/compact.ts";
-import { openChange } from "../../../src/kernel/change.ts";
 
 const change = openChange([
   {

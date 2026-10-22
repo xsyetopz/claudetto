@@ -3,7 +3,7 @@
 // It asks only for a typed `/model` command, because `ask` is a refusal in the other sources.
 
 import { expect, test } from "bun:test";
-import { switchDecision } from "../../../src/plugins/claudetto/slices/handoff/adapters/switch.ts";
+import { switchDecision } from "../../../plugins/claudetto/slices/handoff/adapters/switch.ts";
 
 const input = (warm: boolean, source = "command") => ({
   hook_event_name: "PreModelSwitch",

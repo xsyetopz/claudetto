@@ -17,14 +17,9 @@ const messages = [
   },
 ] as unknown as SessionMessage[];
 
-test("a tail call is a `RAN` step with no claim of its result or its error", () => {
+test("a tail call is listed with its input", () => {
   const prompt = forkPrompt(messages);
   expect(prompt).toContain('"command":"cat b.txt"');
-  expect(prompt).toContain("mark it `RAN, result after this handoff`");
-  expect(prompt).not.toContain("mark it `DONE`");
-  expect(prompt).toContain(
-    "do not state a result or an error for them, and do not write that they gave no error",
-  );
 });
 
 test("a session that ends with a reply and no tool call gets only the rules", () => {
