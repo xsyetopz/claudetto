@@ -1,22 +1,13 @@
 {
-  "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
+  "$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-plugin-manifest.json",
   "name": "claudetto-browser",
-  "version": "0.2.0",
-  "description": "Drives a browser with `agent-browser`, or with CloakBrowser on sites with bot detection when the user chooses it. With the `cloakbrowser` backend, answers each `WebSearch` call that the permission rules allow with a search in CloakBrowser, and needs its binary.",
+  "version": "0.3.0-alpha.1",
+  "description": "Drives a real browser with `agent-browser` for pages that need JavaScript, a login, or clicks, and for checks of a UI change. `WebFetch` and `WebSearch` stay the tools for reading and search, because they cost fewer tokens.",
   "author": {
     "name": "xsyetopz"
   },
   "repository": "https://github.com/xsyetopz/claudetto",
   "license": "MIT",
-  "userConfig": {
-    "backend": {
-      "type": "string",
-      "title": "Browser backend",
-      "description": "Use `agent-browser` (the default), or `cloakbrowser` for sites with bot detection. CloakBrowser runs only when you choose it here. It runs through `agent-browser` with its own Chromium binary. Only `cloakbrowser` answers `WebSearch` with a browser search, because search engines give the plain browser a bot check. With `agent-browser`, the built-in `WebSearch` answers.",
-      "default": "agent-browser",
-      "options": ["agent-browser", "cloakbrowser"]
-    }
-  },
   "homepage": "https://github.com/xsyetopz/claudetto/wiki/Browser",
-  "keywords": ["browser", "agent-browser", "cloakbrowser", "web-search"]
+  "keywords": ["browser", "agent-browser"]
 }

@@ -1,4 +1,0 @@
-{
-  "description": "claudetto-browser: answer each `WebSearch` call with a search in the headless browser",
-  "modules": ["./register.ts"]
-}

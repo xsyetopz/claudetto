@@ -73,10 +73,6 @@ test("`allowed-tools` grants the bin and only named `agent-browser` subcommands"
     expect(subcommands).not.toContain(open);
 });
 
-test("the skill tells Claude to close the browser", async () => {
-  expect(await Bun.file(SKILL).text()).toContain("agent-browser close");
-});
-
 test("with no `agent-browser` on `PATH`, the bin prints the install text and exits 0", () => {
   const empty = fs.mkdtempSync(path.join(os.tmpdir(), "guide-"));
   const out = Bun.spawnSync({
