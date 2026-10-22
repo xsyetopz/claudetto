@@ -14,7 +14,7 @@ It makes no model call, because a check that guesses can block correct text.
 
 ## The Hook
 
-The slice adds one `tool.call` hook on `Write` and `Edit`, in the phase `check`.
+The slice adds one `tool.call` hook on `Write` and `Edit`.
 The hook checks only these files:
 
 - A file under `openspec/changes/`.
@@ -73,19 +73,15 @@ If the hook throws, Claude Code logs the failure and the call runs.
 
 ## Replay
 
-A replay runs the check of the hook on the tool calls of recorded sessions.
-It makes no model call.
+A replay ran the check of the hook on the tool calls of recorded sessions.
+It made no model call.
+The replay script is not in 0.3.0, and the shipped plugin has no replay entry point.
 
-- The module `slices/ground/adapters/check.ts` exports `check(event, prior)`.
-  It runs the source check on one recorded `PreToolUse` call.
-- The script `replay.ts` of the `sessions` skill in `claudetto-sessions` feeds it the calls:
-  `bun plugins/claudetto-sessions/skills/sessions/replay.ts plugins/claudetto/slices/ground/adapters/check.ts`
-- The replay reads the files of the project as they are today.
-  A `file:line` reference resolves as a path suffix under the `cwd`, and a reference that does not resolve passes.
-
-The `checked` export of the same module counts the events that the shipped filter takes, which are the writes of a plan or a spec file.
-`replay.ts` prints `checked` when the module exports it.
-The rate is the denies divided by the events checked.
+- The replay ran the source check on one recorded `PreToolUse` call at a time.
+- The replay read the files of the project as they were on the day of the run.
+  A `file:line` reference resolved as a path suffix under the `cwd`, and a reference that did not resolve passed.
+- The rate is the denies divided by the events checked.
+  The events checked are the writes of a plan or a spec file.
 
 The run of 2026-10-21 used 1,014 transcript files (952 MB) from `~/.claude/projects`.
 The transcripts now hold plan edits, so the rate is measured.
@@ -111,9 +107,8 @@ A fix does not accept a guess: a binary size needs the exact product, a table to
 The sample is 53 events from 5 projects, so the rate has a wide margin.
 A false deny costs one rewrite, because the deny names each claim and gives three ways out.
 
-## See Also
+## Related Pages
 
 - [Spec](Spec)
 - [Goal](Goal)
 - [Controls](Controls)
-- [Sessions](Sessions)
