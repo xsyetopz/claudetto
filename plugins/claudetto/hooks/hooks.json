@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-plugin-hooks.json",
   "modules": ["./register.ts"],
   "hooks": {
     "PreModelSwitch": [
