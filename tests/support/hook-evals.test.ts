@@ -51,7 +51,7 @@ const root = async (files: Record<string, string>): Promise<string> => {
   return dir;
 };
 
-const LAB = "plugins/p/tests/claudetto-lab.test.ts";
+const LAB = "plugins/p/tests/lab.test.ts";
 const CASE = "plugins/p/evals/stop/case.yaml";
 const STOP_CASE = `name: stop
 graders:

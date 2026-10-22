@@ -15,17 +15,20 @@ import {
 import { runScaffold } from "../../support/eval-patterns.ts";
 import { REPO } from "../../support/repo.ts";
 
-const SLICE = `${REPO}/src/plugins/claudetto/slices/prompt/evals`;
+/** The cases of the `prompt` rules: each has a tag `set:NAME`. */
+const EVALS = `${REPO}/plugins/claudetto/evals`;
 const DIR = `${REPO}/tests/claudetto/evals/reference-runs`;
 
-type Case = { name: string; graders: Grader[]; dir: string };
+type Case = { name: string; tags?: string[]; graders: Grader[]; dir: string };
 
-const cases: Case[] = await Promise.all(
-  [...new Bun.Glob("*/case.yaml").scanSync(SLICE)].map(async (f) => {
-    const doc = parse(await Bun.file(`${SLICE}/${f}`).text()) as Case;
-    return { ...doc, dir: path.dirname(`${SLICE}/${f}`) };
-  }),
-);
+const cases: Case[] = (
+  await Promise.all(
+    [...new Bun.Glob("*/case.yaml").scanSync(EVALS)].map(async (f) => {
+      const doc = parse(await Bun.file(`${EVALS}/${f}`).text()) as Case;
+      return { ...doc, dir: path.dirname(`${EVALS}/${f}`) };
+    }),
+  )
+).filter((c) => c.tags?.some((t) => t.startsWith("set:")));
 
 /** The graders that run without a model. */
 const offline = (c: Case): Grader[] =>

@@ -121,6 +121,30 @@ const refFault = async (
       ];
 };
 
+// The faults of one manifest entry `entry` of the hook `id`.
+const entryFaults = async (
+  root: string,
+  plugin: string,
+  id: string,
+  entry: Entry,
+): Promise<string[]> => {
+  const faults: string[] = [];
+  if (!(entry.requests >= 0 && entry.tokens >= 0))
+    faults.push(
+      `${plugin}: the hook \`${id}\` records no \`requests\` and \`tokens\` for each turn`,
+    );
+  for (const kind of kinds(entry))
+    faults.push(...(await refFault(root, plugin, id, kind, entry[kind])));
+  if (entry.requests > 0) {
+    const dir = path.join(root, "plugins", plugin, "evals", entry.eval ?? "");
+    if (!entry.eval || !fs.existsSync(path.join(dir, "case.yaml")))
+      faults.push(
+        `${plugin}: the hook \`${id}\` adds a model request and names no \`claude plugin eval\` case`,
+      );
+  }
+  return faults;
+};
+
 /**
  * The faults of the hook evals of the plugin `plugin` under `root`, each naming the hook.
  * `hooks` are the ids that the code of the plugin has.
@@ -140,26 +164,12 @@ export const evalFaults = async (
       faults.push(
         `${plugin}: the hook \`${id}\` has no entry in \`evals/hooks.json\``,
       );
-  for (const [id, entry] of Object.entries(manifest)) {
-    if (!hooks.includes(id)) {
+  for (const [id, entry] of Object.entries(manifest))
+    if (hooks.includes(id))
+      faults.push(...(await entryFaults(root, plugin, id, entry)));
+    else
       faults.push(
         `${plugin}: \`evals/hooks.json\` names \`${id}\`, which is not a hook of the plugin`,
       );
-      continue;
-    }
-    if (!(entry.requests >= 0 && entry.tokens >= 0))
-      faults.push(
-        `${plugin}: the hook \`${id}\` records no \`requests\` and \`tokens\` for each turn`,
-      );
-    for (const kind of kinds(entry))
-      faults.push(...(await refFault(root, plugin, id, kind, entry[kind])));
-    if (entry.requests > 0) {
-      const dir = path.join(root, "plugins", plugin, "evals", entry.eval ?? "");
-      if (!entry.eval || !fs.existsSync(path.join(dir, "case.yaml")))
-        faults.push(
-          `${plugin}: the hook \`${id}\` adds a model request and names no \`claude plugin eval\` case`,
-        );
-    }
-  }
   return faults;
 };

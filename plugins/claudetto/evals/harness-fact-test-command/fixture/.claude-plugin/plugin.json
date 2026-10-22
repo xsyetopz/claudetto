@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-plugin-manifest.json",
   "name": "eval-project-fact",
   "version": "0.0.0",
   "description": "Eval fixture: a SessionStart hook that states one project fact."

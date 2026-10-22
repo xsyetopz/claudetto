@@ -20,7 +20,7 @@ test("each eval case names its metric, bounds, bad run, and split", async () => 
 for (const file of new Bun.Glob("*.json").scanSync(DIR)) {
   const name = file.replace(/\.json$/, "");
   test(`the case ${name} fails the grader that its bad run names`, async () => {
-    const dir = `${REPO}/src/plugins/claudetto`;
+    const dir = `${REPO}/plugins/claudetto`;
     const found = await Promise.all(
       [...new Bun.Glob("**/evals/*/case.yaml").scanSync(dir)].map(async (f) =>
         parse(await Bun.file(`${dir}/${f}`).text()),
