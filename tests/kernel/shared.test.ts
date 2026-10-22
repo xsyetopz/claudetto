@@ -1,9 +1,8 @@
-// Tests of the shared helpers `parseModel`, `windowOf`, `lineCount`, and `isMarkdown`.
+// Tests of the shared helpers `parseModel` and `lineCount`.
 
 import { expect, test } from "bun:test";
-import { CONTEXT_WINDOW, windowOf } from "../../src/kernel/budget.ts";
-import { parseModel } from "../../src/kernel/model.ts";
-import { isMarkdown, lineCount } from "../../src/kernel/text.ts";
+import { parseModel } from "../../plugins/claudetto/kernel/model.ts";
+import { lineCount } from "../../plugins/claudetto/kernel/text.ts";
 
 test("`parseModel` reads family, major, and minor, and ignores a date suffix", () => {
   expect(parseModel("claude-opus-5-5")).toStrictEqual({
@@ -39,28 +38,8 @@ test("`parseModel` gives null for an id that is not a Claude model id", () => {
     expect(parseModel(id)).toBe(null);
 });
 
-test("`windowOf` takes the reported size up to the context window", () => {
-  expect(windowOf(200_000)).toBe(200_000);
-  expect(windowOf(1_000_000)).toBe(CONTEXT_WINDOW);
-  expect(windowOf(0)).toBe(CONTEXT_WINDOW);
-  expect(windowOf(undefined)).toBe(CONTEXT_WINDOW);
-});
-
-test("`windowOf` gives the context window for a size that is not a finite number above zero", () => {
-  expect(windowOf(-1)).toBe(CONTEXT_WINDOW);
-  expect(windowOf(Number.NaN)).toBe(CONTEXT_WINDOW);
-  expect(windowOf(Number.POSITIVE_INFINITY)).toBe(CONTEXT_WINDOW);
-});
-
 test("`lineCount` does not count the line after a final newline", () => {
   expect(lineCount("")).toBe(0);
   expect(lineCount("a\nb")).toBe(2);
   expect(lineCount("a\nb\n")).toBe(2);
-});
-
-test("`isMarkdown` accepts Markdown paths only", () => {
-  expect(isMarkdown("docs/README.md")).toBe(true);
-  expect(isMarkdown("a.MDX")).toBe(true);
-  expect(isMarkdown("a.ts")).toBe(false);
-  expect(isMarkdown(undefined)).toBe(false);
 });

@@ -1,14 +1,17 @@
-// The shell reader of `src/kernel/shell.ts`, with commands as strings.
+// The shell reader of `plugins/claudetto/kernel/shell.ts`, with commands as strings.
 // No command runs.
 
 import { expect, test } from "bun:test";
 import {
   BRACE_WORDS_MAX,
   SHELL_SCAN_MAX_CHARS,
-} from "../../src/kernel/budget.ts";
-import { commands, parse } from "../../src/kernel/shell.ts";
-import { hiddenLevel } from "../../src/kernel/shellkinds.ts";
-import { stripWrappers, words } from "../../src/kernel/wrappers.ts";
+} from "../../plugins/claudetto/kernel/budget.ts";
+import { commands, parse } from "../../plugins/claudetto/kernel/shell.ts";
+import { hiddenLevel } from "../../plugins/claudetto/kernel/shellkinds.ts";
+import {
+  stripWrappers,
+  words,
+} from "../../plugins/claudetto/kernel/wrappers.ts";
 
 test("`parse` gives `truncated` only for a text over the scan bound", () => {
   const word = "a";

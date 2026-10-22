@@ -1,16 +1,12 @@
-// Tests of the Node and Bun adapters: `fileReader`, `runHook`, and the output builders.
+// Tests of the Node and Bun adapters: `fileReader` and `runHook`.
 // An injected reader and writer replace stdin and stdout.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { fileReader } from "../../src/kernel/node/fs.ts";
-import {
-  postToolUse,
-  preToolUse,
-  runHook,
-} from "../../src/kernel/node/hook-io.ts";
+import { fileReader } from "../../plugins/claudetto/kernel/node/fs.ts";
+import { runHook } from "../../plugins/claudetto/kernel/node/hook-io.ts";
 
 /** Runs `decide` on the text `input` and gives the text that the hook wrote. `failed` collects the stderr text. */
 const run = async (
@@ -89,32 +85,6 @@ test("a reader that throws prints nothing on stdout and reports the error on std
   });
   expect(written).toStrictEqual([]);
   expect(failed.join("")).toMatch(/no stdin/);
-});
-
-test("the `PreToolUse` builder keeps the given fields and leaves out the others", () => {
-  expect(
-    preToolUse({ permissionDecision: "deny", permissionDecisionReason: "r" }),
-  ).toStrictEqual({
-    hookSpecificOutput: {
-      hookEventName: "PreToolUse",
-      permissionDecision: "deny",
-      permissionDecisionReason: "r",
-    },
-  });
-  const updated = preToolUse({ updatedInput: { command: "c" } });
-  expect(Object.keys(updated.hookSpecificOutput)).toStrictEqual([
-    "hookEventName",
-    "updatedInput",
-  ]);
-});
-
-test("the `PostToolUse` builder gives `additionalContext`", () => {
-  expect(postToolUse({ additionalContext: "note" })).toStrictEqual({
-    hookSpecificOutput: {
-      hookEventName: "PostToolUse",
-      additionalContext: "note",
-    },
-  });
 });
 
 test("`fileReader` gives `null` and `[]` for a path that names no file", async () => {

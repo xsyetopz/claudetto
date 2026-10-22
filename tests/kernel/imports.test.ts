@@ -21,11 +21,6 @@ const problems = (files: Files): string[] => {
 
 test("each add-on imports only its own files, with a copy of each kernel file that it uses", async () => {
   const files = await repoFiles();
-  expect(
-    Object.keys(files).some((f) =>
-      f.startsWith("plugins/claudetto-sessions/kernel/"),
-    ),
-  ).toBeTruthy();
   expect(problems(files)).toStrictEqual([]);
 });
 

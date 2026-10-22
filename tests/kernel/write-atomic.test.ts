@@ -1,11 +1,14 @@
-// Tests of `writeAtomic` in `src/kernel/node/fs.ts`: the file gets the text, and no temp file stays in its folder.
+// Tests of `writeAtomic` in `plugins/claudetto/kernel/node/fs.ts`: the file gets the text, and no temp file stays in its folder.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { RENAME_TRIES } from "../../src/kernel/budget.ts";
-import { writeAtomic, writeAtomicWith } from "../../src/kernel/node/fs.ts";
+import { RENAME_TRIES } from "../../plugins/claudetto/kernel/budget.ts";
+import {
+  writeAtomic,
+  writeAtomicWith,
+} from "../../plugins/claudetto/kernel/node/fs.ts";
 
 const folder = (): string => fs.mkdtempSync(path.join(os.tmpdir(), "atomic-"));
 
