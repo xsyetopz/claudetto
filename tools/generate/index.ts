@@ -1,31 +1,23 @@
 #!/usr/bin/env -S bun --no-env-file
-// Runs `just generate`: writes each file that a plugin ships from its source in `src/` (design, "Generated tree").
+// Runs `just generate`: writes `wiki/` from `src/wiki/` (`wiki.ts`).
 //
-//   bun tools/generate/index.ts           write each generated file
-//   bun tools/generate/index.ts --check   exit 1 and name each generated file that differs from its source
-//
-// Both modes also exit 1 and name each file in `plugins/` that the generator did not write.
+//   bun tools/generate/index.ts           write each page
+//   bun tools/generate/index.ts --check   exit 1 and name each page that differs from its source
 
 import fs from "node:fs";
 import path from "node:path";
-import { formatted } from "./format.ts";
-import { modeProblems, setModes } from "./modes.ts";
-import { generated, problems } from "./outputs.ts";
+import { pages, problems } from "./wiki.ts";
 
 const REPO = path.resolve(import.meta.dir, "../..");
 
-if (process.argv[1] === import.meta.path) {
-  const made = await formatted(REPO, await generated(REPO));
-  if (!process.argv.includes("--check"))
-    for (const o of made) {
-      const at = path.join(REPO, o.file);
-      if (fs.existsSync(at) && (await Bun.file(at).text()) === o.text) continue;
-      fs.mkdirSync(path.dirname(at), { recursive: true });
-      await Bun.write(at, o.text);
-      console.log(`Wrote ${o.file}`);
-    }
-  if (!process.argv.includes("--check")) setModes(REPO, made);
-  const found = [...(await problems(REPO, made)), ...modeProblems(REPO, made)];
-  for (const line of found) console.error(line);
-  process.exit(found.length ? 1 : 0);
-}
+if (!process.argv.includes("--check"))
+  for (const { file, text } of await pages(REPO)) {
+    const at = path.join(REPO, file);
+    if (fs.existsSync(at) && (await Bun.file(at).text()) === text) continue;
+    fs.mkdirSync(path.dirname(at), { recursive: true });
+    await Bun.write(at, text);
+    console.log(`Wrote ${file}`);
+  }
+const found = await problems(REPO);
+for (const line of found) console.error(line);
+process.exit(found.length ? 1 : 0);
