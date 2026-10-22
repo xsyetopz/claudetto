@@ -1,1 +1,0 @@
- - Model IDs: Fable 5.1 `claude-fable-5-1`, Opus 5.5 `claude-opus-5-5`, Sonnet 5.5 `claude-sonnet-5-5`, Haiku 5.5 `claude-haiku-5-5`. Use the latest and most capable model for an AI application.

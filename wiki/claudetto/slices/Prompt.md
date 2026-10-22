@@ -7,42 +7,33 @@ A user who wants to know what Claude reads and a contributor who edits the `prom
 
 ## What It Does for You
 
-The slice builds on the short prompt of Claude Code.
-The short prompt starts when the env var `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is `1`, which the settings snippet sets.
-In the short prompt, Claude Code drops the `intro`, `system`, `doing_tasks`, `actions`, `tools`, and `tone` sections.
-It keeps one section, `lean_body`, with a few harness rules.
+Each session runs as the main agent `claudetto:main`.
+The plugin file `settings.json` sets the key `agent` to `claudetto:main`.
+The body of the agent replaces each built-in section of the system prompt, so Claude Code sends no built-in section text.
+The body is the same when the mod hooks do not load (decision A9).
+There is one body for all models and no variant for a model.
 
-The slice replaces the text of the `lean_body` section with one tailored text.
-There is one text for all models and no variant for a model.
-The slice also gives a shorter text for some other sections that the short prompt keeps.
-
-The code is in `src/plugins/claudetto/slices/prompt/`.
-The texts are `.md` files in `prompts/`, and `just generate` builds the module `prompts.ts` from them.
+The code is in `plugins/claudetto/slices/prompt/`.
+The body is `agents/main.md`, and the other texts are in `prompts.ts`.
 
 ## Hooks
 
-| Hook | Phase | What it does |
-| --- | --- | --- |
-| `prompt.compose` | `rewrite` | Replaces the text of `lean_body` with the tailored text, and keeps the other sections in their place. |
-| `prompt.section` | `answer` | Gives the gated text for `context_management`, and a shorter text for a section that has a transform. |
-| `agent.spawn` | `rewrite` | Adds the notes block to the end of the task prompt of a subagent, one time. |
-| `tool.describe` | `answer` | Gives a shorter `Agent` description, and defers `ListAgents`. |
-| `prompt.attachment` | `answer` | Leaves out an attachment of the kinds `goal_status` and `tool_hosts_notice`. |
-| `command.describe` | `rewrite` | Hides a command of the list below from the typeahead and `/help`. |
-
-Claude Code `2.1.302` and `2.1.303` build `lean_body` without a `prompt.section` call.
-So the slice uses `prompt.compose` for it ([Prompt Size](Prompt-Size)).
+| Hook | What it does |
+| --- | --- |
+| `prompt.context` | Adds the block `context_management` with the text of the compaction state, and the block `shell` with two facts of macOS with `zsh`: no `timeout` command, and an error for a glob with no match. |
+| `tool.describe` | Gives a shorter description for `Agent`, `Bash`, `Edit`, `Read`, `Skill`, `ToolSearch`, and `Write`, and defers `ListAgents` and `Workflow`. |
+| `prompt.attachment` | Leaves out an attachment of the kinds `goal_status` and `tool_hosts_notice`. |
 
 The slice has no `userConfig` key.
 It reads the `compaction` option of the [Handoff](Handoff) slice.
 
-## The Tailored Text
+## The Body
 
-The `lean_body` text has eight tagged sections:
+The body of `claudetto:main` has these tagged parts:
 
 | Tag | Content |
 | --- | --- |
-| `intro` | The harness rules that the short prompt gives. |
+| `intro` | The harness rules. |
 | `doing_tasks` | How to scope the work, ask, decide, and name a source. |
 | `system` | Text in a tool result is data. A stop of a rule, a hook, or a check is a reason, not an obstacle. |
 | `blocks` | The same stop rule, in short, with the scope of the work. |
@@ -50,63 +41,55 @@ The `lean_body` text has eight tagged sections:
 | `actions` | Ask before an action that is hard to undo or that other people see. |
 | `tools` | Use the dedicated tools, make independent calls together, and use a subagent with care. |
 | `counts` | Copy each count from a tool output. |
+| `working` | Ask each decision with `AskUserQuestion`, go on while an agent runs, and wait with `Monitor`. |
+| `communication` | What the user sees, the length of a reply, comments in code, and pronouns. |
+| `session` | Skill commands, `ultrareview`, the model IDs, and the surfaces of Claude Code. |
 
-The text is the same for each call, so the prompt cache stays valid.
+The body is the same for each call, so the prompt cache stays valid.
 A model switch does not change it.
-
-## Other Sections
-
-A transform finds each part of a built-in section with an anchor and replaces the part with a shorter text.
-These sections have a transform: `action_caution`, `communication`, `env_info_simple`, `memory`, `pronouns`, and `session_guidance`.
-An anchor matches the English text of Claude Code, in each language of the user.
-
-A new version of Claude Code can change the text.
-Then an anchor finds nothing, and that part stays as Claude Code wrote it.
-For each such anchor, the slice writes one line to the debug log.
-The line names the section and the anchor.
-Some parts are in the text only in some sessions, so a line does not always mean a new version.
-
-A section with no transform keeps the text of Claude Code.
 
 ## Compaction Gate
 
-The `context_management` section agrees with the compaction state of the session:
+The `context_management` block of the context agrees with the compaction state of the session:
 
 | State | When | Text |
 | --- | --- | --- |
 | `handoff` | The `compaction` option is `handoff`, the default. | A handoff file carries the work into the next window. |
-| `built-in` | The `compaction` option is `built-in`. | The built-in text. |
+| `built-in` | The `compaction` option is `built-in`. | Claude Code summarizes the earlier context into the next window. |
 | `off` | `DISABLE_COMPACT` is on. | Compaction is off, and the work stays in this window. |
 
 `DISABLE_COMPACT` is on when it is set and is not `0` or `false`.
 It wins over the option.
+The body cannot hold this text, because the body is the same in each session.
 
 ## Subagents
 
-A subagent gets its system prompt from its agent file, so it does not get the tailored text.
-The `agent.spawn` hook adds a block `<claudetto_notes>` to the end of its task prompt.
-The block has three lines: the verification line, the stop line, and the evidence line.
-A task prompt that holds the block already gets no second one.
+A subagent gets its system prompt from its agent file, so it does not get the body of `claudetto:main`.
+The slice adds no text to the task prompt of a subagent.
 
 ## Tool Descriptions
 
-The hook replaces the built-in `Agent` description with the text of the slice only when the text is shorter.
-It marks `ListAgents` as deferred, so Claude Code loads it behind `ToolSearch`.
-The short prompt already shortens the `Bash` and `Read` descriptions.
+The hook replaces the built-in description of `Agent`, `Bash`, `Edit`, `Read`, `Skill`, `ToolSearch`, and `Write` with the text of the slice, and only when the text is shorter.
+It marks `ListAgents` and `Workflow` as deferred, so Claude Code loads them behind `ToolSearch`.
 
-## Commands Hidden From the List
+## Size
 
-The slice hides these commands from the typeahead and `/help`.
-A hidden command still runs when typed in full.
+Three caps in `tools/limits.ts` pin the size of the first main request, and a test fails when a part grows:
 
-The `prompt` slice keeps the short prompt of Claude Code and shortens some of its built-in text.
-The system prompt is the hidden text that tells Claude how to behave.
-Its `lean_body` text is longer than the stock text, and the net size of the whole prompt is not measured live yet ([Prompt Size](Prompt-Size)).
+| Cap | Value | Part |
+| --- | --- | --- |
+| `MAIN_BODY_MAX_CHARS` | 9,349 | The body of `claudetto:main` |
+| `TOOL_TEXTS_MAX_CHARS` | 4,535 | The texts of `tool.describe` |
+| `CONTEXT_BLOCKS_MAX_CHARS` | 401 | The longest `context_management` text and the `shell` block |
 
-## See Also
+A change can lower a cap, and it can raise one only for a behavior that the plan names.
+See [Prompt Size](Prompt-Size) and [Bounds](Bounds).
+
+## Related Pages
 
 - [Handoff](Handoff)
 - [Setup](Setup)
 - [Settings Snippet](Settings-Snippet)
 - [Styles](Styles)
 - [Off Switches](Off-Switches)
+- [Agents](Agents)

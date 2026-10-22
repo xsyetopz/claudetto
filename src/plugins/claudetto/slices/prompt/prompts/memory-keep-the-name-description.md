@@ -1,1 +1,0 @@
-- Keep the `name`, `description`, and `type` fields current. Group memories by topic.

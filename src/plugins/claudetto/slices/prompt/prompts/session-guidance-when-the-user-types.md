@@ -1,1 +1,0 @@
- - For a `/<skill-name>` command, invoke the skill with the Skill tool. Use only the skills in the user-invocable list.

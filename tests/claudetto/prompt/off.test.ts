@@ -2,12 +2,8 @@
 // except the rows that a setting of the snippet already covers.
 
 import { expect, test } from "bun:test";
-import {
-  OFF_ATTACHMENTS,
-  OFF_COMMANDS,
-} from "../../../plugins/claudetto/slices/prompt/domain/off.ts";
-import { slice } from "../../../plugins/claudetto/slices/prompt/slice.ts";
-import { slice as setup } from "../../../plugins/claudetto/slices/setup/slice.ts";
+import { OFF_ATTACHMENTS } from "../../../plugins/claudetto/slices/prompt/domain/off.ts";
+import { SNIPPET } from "../../../plugins/claudetto/snippets.ts";
 import { VERDICTS } from "../../../tools/builtins/verdicts.ts";
 
 /** The names of a list, sorted. */
@@ -20,23 +16,20 @@ const offNames = (group: string): string[] =>
     .map(([key]) => key.slice(group.length + 1))
     .sort();
 
-/** The settings of the snippet that `prompt` and `setup` set together. */
-const env: Record<string, string> = {
-  ...setup.settings.env,
-  ...slice.settings.env,
-};
-const key = slice.settings as unknown as Record<string, unknown>;
-const deny = slice.settings.permissions.deny;
+const env: Record<string, string> = SNIPPET.env;
+const key = SNIPPET as unknown as Record<string, unknown>;
+const deny = SNIPPET.permissions.deny;
 
 /** An `off` row that a setting covers, with the setting: an `env` name, a settings key, or a deny rule. */
 const COVERED: Record<string, { env?: string; key?: string; deny?: string }> = {
+  "attachments:advisor_tool": { env: "CLAUDE_CODE_DISABLE_ADVISOR_TOOL" },
   "attachments:session_cron_carry": { env: "CLAUDE_CODE_DISABLE_CRON" },
   "attachments:task_reminder": { deny: "TaskUpdate" },
   "attachments:workflow_keyword_request": { key: "enableWorkflows" },
+  "commands:advisor": { env: "CLAUDE_CODE_DISABLE_ADVISOR_TOOL" },
   "commands:artifacts": { key: "enableArtifact" },
   "commands:extra-usage": { env: "DISABLE_EXTRA_USAGE_COMMAND" },
   "commands:usage-credits": { env: "DISABLE_EXTRA_USAGE_COMMAND" },
-  "commands:upgrade": { env: "DISABLE_UPGRADE_COMMAND" },
   "commands:install-github-app": { env: "DISABLE_INSTALL_GITHUB_APP_COMMAND" },
   "commands:fast": { env: "CLAUDE_CODE_DISABLE_FAST_MODE" },
   "commands:remote-control": { key: "disableRemoteControl" },
@@ -51,8 +44,8 @@ test("the `off` attachment kinds equal the `off` rows that no setting covers", (
   expect(sorted(OFF_ATTACHMENTS)).toStrictEqual(hooked("attachments"));
 });
 
-test("the hidden commands equal the `off` rows that no setting covers", () => {
-  expect(sorted(OFF_COMMANDS)).toStrictEqual(hooked("commands"));
+test("a setting covers each `off` command row, because no hook hides a command (fault 30)", () => {
+  expect(hooked("commands")).toStrictEqual([]);
 });
 
 test("each covered `off` row has its setting in the snippet", () => {
@@ -65,7 +58,7 @@ test("each covered `off` row has its setting in the snippet", () => {
 });
 
 test("the `false` entries of `enabledPlugins` are the `off` plugin rows", () => {
-  const off = Object.entries(slice.settings.enabledPlugins)
+  const off = Object.entries(SNIPPET.enabledPlugins)
     .filter(([, on]) => on === false)
     .map(([key]) => key);
   expect(sorted(off)).toStrictEqual(

@@ -1,8 +1,8 @@
-// The `Read` deny rules for `.env` files of the `prompt` slice: each env file that holds secrets is denied.
+// The `Read` deny rules for `.env` files of the settings snippet: each env file that holds secrets is denied.
 // The example, sample, and template files stay readable, because no deny rule names them.
 
 import { expect, test } from "bun:test";
-import { slice } from "../../../plugins/claudetto/slices/prompt/slice.ts";
+import { SNIPPET } from "../../../plugins/claudetto/snippets.ts";
 
 const ENV_RULES = [
   "Read(**/.env)",
@@ -21,14 +21,14 @@ const ENV_RULES = [
 
 const READABLE = [".env.example", ".env.sample", ".env.template"];
 
-const deny = slice.settings.permissions.deny;
+const deny = SNIPPET.permissions.deny;
 
-test("the `prompt` deny rules list each `.env` file that holds secrets", () => {
+test("the deny rules of the snippet list each `.env` file that holds secrets", () => {
   const envRules = deny.filter((rule) => rule.startsWith("Read(**/.env"));
   expect(envRules).toStrictEqual(ENV_RULES);
 });
 
-test("no `prompt` deny rule names an example, sample, or template `.env` file", () => {
+test("no deny rule of the snippet names an example, sample, or template `.env` file", () => {
   for (const name of READABLE)
     expect(deny.filter((rule) => rule.includes(name))).toStrictEqual([]);
 });

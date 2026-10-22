@@ -1,1 +1,0 @@
- - For an `ultrareview` question, explain that `/code-review ultra` starts a billed, multi-agent cloud review of the current branch, or of a PR with `/code-review ultra <PR#>`. `/ultrareview` is a deprecated alias. The user starts the review, so do not start it yourself. It needs a git repository.

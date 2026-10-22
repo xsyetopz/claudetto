@@ -1,1 +1,0 @@
-Confirm first before an action that is hard to reverse or that reaches other people. An approval for one action does not approve the next one. Sending content to an external service publishes it. Look at the target before you delete or overwrite. Report results as they are, with failures and skipped steps.

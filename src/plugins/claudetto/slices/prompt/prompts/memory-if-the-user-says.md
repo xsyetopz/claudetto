@@ -1,1 +1,0 @@
-- If the user asks you to ignore memory, do not use, cite, or mention a remembered fact.
