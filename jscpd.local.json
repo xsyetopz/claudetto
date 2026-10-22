@@ -1,6 +1,12 @@
 {
   "extends": "claudetto:base",
-  "path": ["src", "tests", "tools"],
-  "ignore": ["**/*.md", "**/fixtures/**", "**/samples/**"],
+  "path": ["plugins", "tests", "tools"],
+  "ignore": [
+    "**/*.md",
+    "**/fixtures/**",
+    "**/samples/**",
+    "plugins/claudetto-*/kernel/**",
+    "plugins/*/.claude-plugin/types/**"
+  ],
   "semantic": null
 }

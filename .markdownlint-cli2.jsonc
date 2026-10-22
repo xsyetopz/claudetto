@@ -9,12 +9,13 @@
     "**/.claude/**",
     "**/.openspec/**",
     "**/.claudetto/**",
-    // `plugins/` is generated output, and `wiki/` is generated from `src/wiki/`.
+    // The openspec changes and specs quote the user as is, such as in the session handoff (`slices/handoff/compact.ts`).
+    "openspec/**",
+    // A skill, agent, or output style file has the format of a Claude Code prompt, not of Markdown, and a lint fix would change its words or its size pin.
     "plugins/**",
-    // The wiki is frozen until the 0.2.0 tag.
+    // `wiki/` is generated from `src/wiki/`.
     "wiki/**",
-    "src/wiki/**",
-    // A prompt fragment has the format of the Claude Code prompt, not of Markdown, and a lint fix would change its words or its size pin.
-    "src/**/prompts/**"
+    // Task 11.4 of change `0-3-0` rewrites `src/wiki/`.
+    "src/wiki/**"
   ]
 }

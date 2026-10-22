@@ -1,48 +1,30 @@
 {
-  "$schema": "https://www.schemastore.org/claude-code-marketplace.json",
+  "$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-marketplace.json",
   "name": "claudetto",
   "owner": {
     "name": "xsyetopz"
   },
-  "description": "Lists the claudetto plugin and its optional code-graph, browser, docs, sessions, and lab plugins.",
+  "description": "Lists the claudetto plugin and its optional browser and docs plugins.",
   "metadata": {
-    "version": "0.2.0"
+    "version": "0.3.0-alpha.1"
   },
   "plugins": [
     {
       "name": "claudetto",
       "source": "./plugins/claudetto",
-      "description": "Adds a lean output style, a status line command, the `setup` skill, and Jev answers for `AskUserQuestion` when a key is set. Adds hooks that deny a `Bash` command that only prints a file, check plan files for claims with no source, and check Markdown line breaks.",
-      "category": "productivity"
-    },
-    {
-      "name": "claudetto-codegraph",
-      "source": "./plugins/claudetto-codegraph",
-      "description": "Gives Claude the code graph of a project from the CodeGraph CLI `codegraph`. The skill `codegraph` shows the commands, and `/claudetto:setup` offers `codegraph install` when this add-on is on.",
+      "description": "Adds a lean output style, a main agent with a small agent roster, a permission gate for `Bash` commands, a status line command, and the `setup` skill. Adds the MiniSpec skills `propose`, `apply`, `verify`, and `archive`, a handoff file in place of the compaction summary, a `goal` check that blocks the stop until it passes, a ledger of edited files, and a cleanup at session start. Jev answers `AskUserQuestion` when a key is set.",
       "category": "productivity"
     },
     {
       "name": "claudetto-browser",
       "source": "./plugins/claudetto-browser",
-      "description": "Drives a browser with `agent-browser`, or with CloakBrowser on sites with bot detection when the user chooses it. With the `cloakbrowser` backend, answers each `WebSearch` call that the permission rules allow with a search in CloakBrowser, and needs its binary.",
+      "description": "Drives a real browser with `agent-browser` for pages that need JavaScript, a login, or clicks, and for checks of a UI change. `WebFetch` and `WebSearch` stay the tools for reading and search, because they cost fewer tokens.",
       "category": "productivity"
     },
     {
       "name": "claudetto-docs",
       "source": "./plugins/claudetto-docs",
       "description": "Gets current library and API docs with the Context7 CLI `ctx7`. Works with no key.",
-      "category": "productivity"
-    },
-    {
-      "name": "claudetto-sessions",
-      "source": "./plugins/claudetto-sessions",
-      "description": "Reads the setup of Claude Code and past transcripts with two scripts: an audit of settings, plugins, hooks, and the bytes that load at session start, and a replay of a hook on past tool calls.",
-      "category": "productivity"
-    },
-    {
-      "name": "claudetto-lab",
-      "source": "./plugins/claudetto-lab",
-      "description": "Tools for plugin authors. Runs Claude Code in a sandbox, captures and sizes the requests, writes the JSON Schema of `settings.json`, and compares the eval scores of two plugin folders.",
       "category": "productivity"
     }
   ]

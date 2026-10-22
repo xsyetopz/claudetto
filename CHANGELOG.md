@@ -9,6 +9,108 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ## [Unreleased]
 
+## [0.3.0-alpha.1] - 2026-10-22
+
+### Removed
+
+- **BREAKING** The add-on plugin `claudetto-codegraph` is gone, with its skill `codegraph` and the command `claudetto-codegraph-check` (faults 18, 46, 47, and F17).
+  `/claudetto:setup` no longer offers `codegraph install`, and `claudetto-setup --addons` is gone.
+  Run `claude plugin uninstall claudetto-codegraph@claudetto` to remove it.
+  An index in `.codegraph/` of a project stays, and the `codegraph` CLI works without the plugin.
+- **BREAKING** The `advise` tool and the `--advisor` flag of the compare runs are gone.
+  The snippet sets `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` to `1`.
+- **BREAKING** The add-on plugins `claudetto-sessions` and `claudetto-lab` are gone, with the skills `sessions` and `eval-compare` (D6, the user, 2026-10-22).
+  The MCP server of the `cc-docs` plugin covers sessions and the Claude Code binary.
+  Run `claude plugin uninstall claudetto-sessions@claudetto` and `claude plugin uninstall claudetto-lab@claudetto` to remove them.
+  The repository tools of `claudetto-lab` moved to `tools/`: `tools/sandbox/`, `tools/capture/`, `tools/schema/`, and `tools/eval-compare/`.
+  The recipes `just sandbox`, `just capture`, `just schema`, and `just eval-variant` keep their names and arguments.
+  The `replay` entry point `slices/ground/adapters/check.ts` of the core plugin is gone with its only caller.
+- **BREAKING** The skill `patch` and the command `claudetto-patch` are gone.
+- **BREAKING** The `sembr` slice is gone, so a `Write` or an `Edit` of a Markdown file is no longer rewritten.
+- **BREAKING** `/goal` has no stops: `--max-turns`, `--budget`, `--until`, and `--stall` are gone.
+  Use `/goal clear` to stop a goal.
+- The print guard, the `command.describe` hooks, the text that a subagent spawn added to its prompt, and the shorter memory texts are gone (D6).
+  29 built-in commands are no longer turned off.
+- The `ProposeGoal` deny is gone.
+  The snippet sets `modelProposedGoals` to `disabled`.
+- **BREAKING** The settings snippet no longer writes `sandbox`, the `permissions.ask` and `permissions.allow` rules, `model`, `availableModels`, `bashOutputMaxChars`, `DISABLE_UPGRADE_COMMAND`, or `feedbackSurveyRate` (D8).
+  Each key of the snippet now comes from a row of the replace matrix or a decision of the design, and a test fails on a key with no source.
+- **BREAKING** `claudetto-setup` no longer offers the Docker socket in `sandbox.network.allowUnixSockets`, or `docker *` in `sandbox.excludedCommands`.
+- `claudetto-setup` no longer removes `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`, because the snippet sets it again.
+- **BREAKING** `claudetto-browser` has no CloakBrowser, no `backend` option, and no `WebSearch` handler (the user, 2026-10-22).
+  The built-in `WebSearch` answers each search, because each search engine gives the plain headless browser a bot check.
+  The skill `browse` drives `agent-browser` with its own Chrome, and it reads a page with `WebFetch` when the page needs no JavaScript, login, or click, because `WebFetch` puts fewer tokens in the context.
+  For a page that needs the browser, it reads one element with `get text <selector>`, and stops a long output with `--max-output`.
+  `claudetto-browser` now tells the agent to install `agent-browser` with `bun add -g agent-browser`, and then to run `agent-browser install`.
+- The `prompt.compose` and `prompt.section` rewrites of the system sections are gone (fault 44).
+- The `Agent` description no longer sends a short task to a fork, and no longer tells Claude to wait for a delegated search and do nothing else (faults 37 and 10).
+
+### Added
+
+- The core plugin ships four subagents: `claudetto:scout` (Haiku, read-only search), `claudetto:worker` (one planned edit step, the default for a call with no type), `claudetto:reviewer` (a fresh review of a diff against its plan), and `claudetto:researcher` (web research to a report file) (D1, D2).
+  Each has `omitClaudeMd: true` and no `maxTurns`.
+  The engine agents are hidden, and the snippet denies `Agent(general-purpose)`, `Agent(Explore)`, `Agent(Plan)`, `Agent(claude)`, `Agent(claude-code-guide)`, `Agent(statusline-setup)`, and `Agent(fork)`.
+- The `spec` slice is MiniSpec: the command `minispec` (`new change`, `list`, `status`, `validate`, and `archive`) on the OpenSpec layout, with the presets `task`, `story`, and `epic`, and the skills `claudetto:propose`, `claudetto:apply`, `claudetto:verify`, and `claudetto:archive`.
+  A parity test runs it against `@fission-ai/openspec@1.14.3` (D10).
+- The gate logs each `ask` with its tool, target, reason, and decider to `claudetto/gate/<session>.jsonl` in the temp folder (task 5.2).
+- `claudetto-setup` names the official Context7 skill `find-docs` and a Context7 rule in `~/.claude/` and in the project, with the characters that each adds to a session, next to the 155 of `claudetto-docs:find-docs` (D11).
+  It deletes neither, so you keep the one that you want.
+- A test runs the pinned `ctx7@0.6.1 --help` and checks the `library` and `docs` commands that the skill `claudetto-docs:find-docs` runs.
+- Each session runs as the main agent `claudetto:main`, through the key `agent` of the plugin file `settings.json` (A9).
+  Its body holds the tailored rules of 0.2.0 and the rules of D9: decisions go to `AskUserQuestion`, independent work goes on while an agent runs, and a long command waits with `Monitor`.
+  The body stays when the mod hooks do not load.
+- A `prompt.context` block `context_management` carries the text of the compaction state.
+- At session start, claudetto removes each `fswatch-probe-*` folder older than one hour from the temp folder of Claude Code, and logs the count.
+  Claude Code leaves these folders behind (anthropics/claude-code#104170), and the session does not wait for the cleanup.
+- At session start, claudetto also removes the session folders and claudetto files of ended sessions that are older than `cleanupPeriodDays`, and each worktree in `.claude/worktrees/` that is older than `cleanupPeriodDays` and keeps no work.
+  A worktree stays when a session file has its `cwd` in it, when it has a changed, untracked, or git-ignored file outside the folders that a tool makes again, such as `node_modules` and `dist`, or when it has a commit that no other branch or remote has.
+- The settings snippet denies `sudo`, `doas`, `su`, `rm -rf $HOME`, the disk erase, SIP, Gatekeeper, `nvram`, and keychain delete commands, and an `Edit` or `Write` in `/System`, `/Library`, and the system folders of `/usr`.
+  So the gate stays when hooks do not load, such as with `disableAllHooks: true`.
+  Run `/claudetto:setup` again to get the rules.
+
+### Renamed
+
+Each skill name is a verb or starts with a verb (D11).
+`claudetto:setup` and `claudetto-browser:browse` keep their names.
+
+| 0.2.0 | 0.3.0 | Note |
+| --- | --- | --- |
+| `claudetto:dry` | `claudetto:dedupe` | The folder is `skills/dedupe/`. The `dry` slice, the command `jscpd-config`, and `just dry` keep their names. |
+| `claudetto:spec` | `claudetto:propose`, `claudetto:apply`, `claudetto:verify`, `claudetto:archive` | The steps of `/opsx:*`, with no description at session start. Each step runs `minispec` in place of `openspec`. |
+| `claudetto-docs:docs` | `claudetto-docs:find-docs` | The name of the Context7 skill `find-docs`. The `Skill(...)` rule of the snippet names the new skill, so run `/claudetto:setup` again. |
+| `claudetto-lab:eval-compare` | `compare-evals` | The skill is gone with `claudetto-lab`. The tool is `tools/eval-compare/` and keeps its path. |
+| `claudetto-sessions:sessions` | `claudetto-lab:replay-hooks` | The skill is gone with both plugins (D6). |
+
+### Fixed
+
+- `claudetto-schema` now reads the keys of the gated features, such as `useAutoModeDuringPlan`, `autoMode`, and `voiceEnabled`, so `schemas/` has the 171 keys of Claude Code 2.1.307 in the order of the docs schema.
+
+### Changed
+
+- **BREAKING** The `guard` slice is one permission gate: a `tool.check` hook on `Bash`, `Read`, `Grep`, `Glob`, `Edit`, and `Write`.
+  It lets a call run, asks only before a loss for good (a delete of a path with uncommitted work, a `git reset --hard` over changes, a force push), and denies `sudo`, a disk erase, a write to a system folder, and a read of a secret (D4).
+  The `ask` of a delete or of local `git` work goes to Jev first when the `decide` option is `jev` and the key is set, and a person sees the dialog otherwise.
+  The dialog has no "always allow" row.
+- `/goal` is one check command that the `Stop` hook runs, and `/goal`, `/goal status`, and `/goal clear` answer with no model turn.
+- The `prompt` slice gives shorter `tool.describe` texts for `Agent`, `Bash`, `Edit`, `Read`, `Skill`, `ToolSearch`, and `Write`, defers `ListAgents` and `Workflow`, and leaves out the attachments `goal_status` and `tool_hosts_notice`.
+- `claudetto` now targets Claude Code 2.1.307 (`MIN_CLAUDE_CODE_VERSION`, the CI, the issue templates, and the schemas in `schemas/`).
+  The facts that name 2.1.303 to 2.1.305 are not checked again on 2.1.307.
+- The output style `Concise` sends each decision to `AskUserQuestion` (fault 8).
+  Its "What I Need from You" list holds a task for the user, so a turn that needs nothing ends on what is next.
+- Biome bounds the cognitive complexity of each function at 15, and a test bounds each `.ts` and `.py` file of `plugins/`, `tools/`, and `tests/` at 400 lines (`MAX_FILE_LINES`, D7, fault 27).
+- The settings snippet sets `permissions.disableAutoMode` to `disable` and `permissions.defaultMode` to `default`, so auto mode and its classifier calls are off (D5).
+  It also turns off the commands `/feedback`, `/extra-usage`, and `/install-github-app`, the feedback survey and drafts, error reports, spinner tips, and the IDE extension auto install.
+- The keys of the settings snippet are in the order of the settings schema, and its `env` names are in the order of the `configure/env-vars` pages of `claude-code-docs`.
+  The snippet names the settings schema of `claude-code-docs` in `$schema`.
+- Each control on the `Controls` page names the source of its incident, and no control records `none recorded` (fault 24).
+- **BREAKING** `claudetto-setup` removes the keys of 0.2.0 that 0.3.0 does not set, such as the 170 `permissions.ask` rules, `sandbox`, and `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`, and lists each removed key (faults 4, 12, 13, and 41).
+  A value that you changed or added stays, and a list loses its 0.2.0 entries only when it has all of them.
+  Setup also removes all of `autoMode`, because auto mode is off and its rules do nothing (fault 15), and the `UserPromptSubmit` hook `codegraph prompt-hook` (fault 18).
+  Copy `autoMode` and `sandbox` before you run setup if you want to set them again.
+- `claudetto-setup` writes `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` from the plan of the login in `.claude.json`: `2` for Pro, `4` for Max 5x, and `6` for Max 20x (fault 17, D3).
+  For another plan, and in the project settings, it writes no cap and says why.
+  The snippet no longer sets the fixed cap `2`.
+
 ## [0.2.0] - 2026-10-21
 
 This release cuts `claudetto` to the parts that Claude Code does not do already, so the `.ts` source under `src/` (without `lab/`) goes from 33,219 lines to 11,288 lines, it needs Claude Code 2.1.305 or later, and `/claudetto:setup` must run again after the update, because it cleans the settings of 0.1.0.
@@ -374,4 +476,4 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 | [0.1 and 0.2](https://github.com/xsyetopz/claudetto/wiki/Release-0.1-0.2) | 0.2.0, 0.1.0 |
 
 [unreleased]:
-  https://github.com/xsyetopz/claudetto/compare/claudetto--v0.2.0...HEAD
+  https://github.com/xsyetopz/claudetto/compare/claudetto--v0.3.0-alpha.1...HEAD

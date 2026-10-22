@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.2/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -10,9 +10,8 @@
     "includes": [
       "**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,json,jsonc}",
       "!!**/.agents",
-      "!!plugins",
+      "!!plugins/*/.claude-plugin/types",
       "!!wiki",
-      "!**/slices/*/prompts/*.json",
       "!!**/node_modules",
       "!!**/dist",
       "!!**/*.generated.{js,jsx,mjs,cjs,ts,tsx,mts,cts}"
@@ -36,7 +35,11 @@
     "rules": {
       "preset": "recommended",
       "complexity": {
-        "useLiteralKeys": "off"
+        "useLiteralKeys": "off",
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": { "maxAllowedComplexity": 15 }
+        }
       }
     },
     "domains": {

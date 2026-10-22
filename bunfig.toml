@@ -8,6 +8,5 @@ linker = "isolated"
 # The tests of the repository; `plugins/*/tests/` holds the hook labs, which `claude plugin test` runs.
 root = "tests"
 # Each temporary folder of the tests goes under one folder that the run removes at exit.
-# A `prompts.ts` that code of `src/` imports is the generated module of `plugins/`.
-preload = ["./tests/support/tmp-root.ts", "./tests/support/prompt-modules.ts"]
+preload = ["./tests/support/tmp-root.ts"]
 timeout = 5000

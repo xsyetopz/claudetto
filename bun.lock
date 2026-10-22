@@ -5,34 +5,38 @@
     "": {
       "name": "claudetto",
       "devDependencies": {
-        "@biomejs/biome": "^2.5.15",
+        "@biomejs/biome": "^2.6.2",
         "@fission-ai/openspec": "1.14.3",
         "@types/node": "^26.6.5",
         "bun-types": "^1.4.3",
-        "jscpd": "5.4.1",
-        "markdownlint-cli2": "^0.23.3",
+        "jscpd": "5.4.2",
+        "markdownlint-cli2": "^0.24.0",
         "yaml": "^2.9.1",
       },
     },
   },
   "packages": {
-    "@biomejs/biome": ["@biomejs/biome@2.5.15", "", { "optionalDependencies": { "@biomejs/cli-darwin-arm64": "2.5.15", "@biomejs/cli-darwin-x64": "2.5.15", "@biomejs/cli-linux-arm64": "2.5.15", "@biomejs/cli-linux-arm64-musl": "2.5.15", "@biomejs/cli-linux-x64": "2.5.15", "@biomejs/cli-linux-x64-musl": "2.5.15", "@biomejs/cli-win32-arm64": "2.5.15", "@biomejs/cli-win32-x64": "2.5.15" }, "bin": { "biome": "bin/biome" } }, "sha512-WZTW4slm/pdkh92K6t/3aEN++44JD1PQ7squ7RCMLI1flHGl43DVOIGXvCjHiZgBMO1V4uYxoFNtqrIA4qGuIQ=="],
+    "@biomejs/biome": ["@biomejs/biome@2.6.2", "", { "optionalDependencies": { "@biomejs/cli-android-arm64": "2.6.2", "@biomejs/cli-android-x64": "2.6.2", "@biomejs/cli-darwin-arm64": "2.6.2", "@biomejs/cli-darwin-x64": "2.6.2", "@biomejs/cli-linux-arm64": "2.6.2", "@biomejs/cli-linux-arm64-musl": "2.6.2", "@biomejs/cli-linux-x64": "2.6.2", "@biomejs/cli-linux-x64-musl": "2.6.2", "@biomejs/cli-win32-arm64": "2.6.2", "@biomejs/cli-win32-x64": "2.6.2" }, "bin": { "biome": "bin/biome" } }, "sha512-JLTFAFF9vfJcWwLhwuL4ZHflLg+XfTEC4IUnAlJRX1cMRt57++Xd1Ysb9Fdmlh9YUrvyCXfPEHjjEIqKJGdPKw=="],
 
-    "@biomejs/cli-darwin-arm64": ["@biomejs/cli-darwin-arm64@2.5.15", "", { "os": "darwin", "cpu": "arm64" }, "sha512-BZVzFhJ/mUvTLMYbc9x6el0o2Uv5zP7bACYyhFb6fSc1giroXm7PL0a5KqMJ9F+/BnkYRjagD/ROSDVOZ6eapg=="],
+    "@biomejs/cli-android-arm64": ["@biomejs/cli-android-arm64@2.6.2", "", { "os": "android", "cpu": "arm64" }, "sha512-dMpdpH7zFEL5FxuIA9LJW+RoNyC3oeDB7PJyjqVVwtMNoKB5uo8OZYmrVSBikn71txzYwy/3xga7UME6bJQZ6A=="],
 
-    "@biomejs/cli-darwin-x64": ["@biomejs/cli-darwin-x64@2.5.15", "", { "os": "darwin", "cpu": "x64" }, "sha512-V5Kw63V+fVGNFhFrizDxMbGXAzZCh8kYzJpy3GI6gTapWDg7bZK9oYC9CbVgQSEdTnupz0U5Efz8Ev+5vdBBXw=="],
+    "@biomejs/cli-android-x64": ["@biomejs/cli-android-x64@2.6.2", "", { "os": "android", "cpu": "x64" }, "sha512-XCwEhPBGYzuRA502dRkCcQ+5cefQwuxQR7f9wa4do92dvIcuBL6VMLMFB/fL9hlpZ4dGSfHdpGFSIDlp52mg0A=="],
 
-    "@biomejs/cli-linux-arm64": ["@biomejs/cli-linux-arm64@2.5.15", "", { "os": "linux", "cpu": "arm64" }, "sha512-XaG7P7eeSLYETD3K9grfB0mQmpLQZjygdbsxekWBJAg4am79fGAtRpfRyNnTvXB2fZFNnJZG3nXm7HBat0+VUw=="],
+    "@biomejs/cli-darwin-arm64": ["@biomejs/cli-darwin-arm64@2.6.2", "", { "os": "darwin", "cpu": "arm64" }, "sha512-rpXtabRgyZNz3aCjd/cRoSZGYi92R9eAXdUUe1sigIsRDyfMwgThaa98Yxt1fiZ7mxquqkAyIHIo08N/e1ToBA=="],
 
-    "@biomejs/cli-linux-arm64-musl": ["@biomejs/cli-linux-arm64-musl@2.5.15", "", { "os": "linux", "cpu": "arm64" }, "sha512-tGzZUTcJCV7tj5Adh/Gn6nR4MycqA3iohq2LEcrarAgRBkU0h0OKd2UzCRkOsOYOuUGaUJb4YmqRqyy2feGGSw=="],
+    "@biomejs/cli-darwin-x64": ["@biomejs/cli-darwin-x64@2.6.2", "", { "os": "darwin", "cpu": "x64" }, "sha512-7GGzlm1GxUKoQ9CNV8tQZ+XXad4sz+v+uzNsWlhaGjsnZqUOVBw1OmAMpG3uNV/Mr0UrCpRJvSK0qvfuqSQOjg=="],
 
-    "@biomejs/cli-linux-x64": ["@biomejs/cli-linux-x64@2.5.15", "", { "os": "linux", "cpu": "x64" }, "sha512-xE4iEW/3LqlYj9GFgGrFsFSH51dEEpUbYWBfeOv0q87WkUDxK2o/HhreSb7qMJqck70RVM6Lg96hgedcAYcOkA=="],
+    "@biomejs/cli-linux-arm64": ["@biomejs/cli-linux-arm64@2.6.2", "", { "os": "linux", "cpu": "arm64" }, "sha512-Qs4CofCE8MdkjZFfEjswh2NAcbyQ7IVYtGSzQBvLqFlla/CSXroGbktUFndWG/kVSTywadauzAspYWtSfqAc2g=="],
 
-    "@biomejs/cli-linux-x64-musl": ["@biomejs/cli-linux-x64-musl@2.5.15", "", { "os": "linux", "cpu": "x64" }, "sha512-IlxUcyxilVGPsE008x13pWdkTbU3nQpP2i9b5UrbOYj6goBkKsRX1XB7yJLcV+O1H9LBchIIm4adOaVLZBX0ZQ=="],
+    "@biomejs/cli-linux-arm64-musl": ["@biomejs/cli-linux-arm64-musl@2.6.2", "", { "os": "linux", "cpu": "arm64" }, "sha512-I+FYCLVSmR3cYfKcQ+KNeLOZ5w0wRd9fQFlw3JbSvy7bkegvTqdHaBRRcJzHQB/1ldldTLIcG21ka6X2cTWmJw=="],
 
-    "@biomejs/cli-win32-arm64": ["@biomejs/cli-win32-arm64@2.5.15", "", { "os": "win32", "cpu": "arm64" }, "sha512-2kPKzhNlm8C+Ru3GcO0Me2ODkCBLrVOUNuyi84RJyWDVKAA4+Kjj3jMjL938lF6BRfvltC4vB2nPY9SvN51Ovg=="],
+    "@biomejs/cli-linux-x64": ["@biomejs/cli-linux-x64@2.6.2", "", { "os": "linux", "cpu": "x64" }, "sha512-FJKsb95418139xDdbv9XnNJsIIwvsgR21Of0aE9B9U+nQlOtRq5gJl2ps0jZUmYBxTaOlP9BKo8N+Ff8+Rui1g=="],
 
-    "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.5.15", "", { "os": "win32", "cpu": "x64" }, "sha512-yAzh4UqEImV6Hcy0zjUqNfJAsUhoD64FBQCdTG8Md/Z2wQeVP/ZmJ3XRYAs1g8J9fjTFyl2fCtc5FB5til47+g=="],
+    "@biomejs/cli-linux-x64-musl": ["@biomejs/cli-linux-x64-musl@2.6.2", "", { "os": "linux", "cpu": "x64" }, "sha512-wnjEXAK2pDd2j8r9gKI3L+44sIxjkYzS5aHmD1+K57RNJ3sFyT4n22NH6QFPqqeVdRBxN54H3kckUUCrFKCcJw=="],
+
+    "@biomejs/cli-win32-arm64": ["@biomejs/cli-win32-arm64@2.6.2", "", { "os": "win32", "cpu": "arm64" }, "sha512-/PEOo6evlgrQOfKhMNtC/4Gk8ai3hySXXEtjUzCqZe/4iAbMdqelpp7qvZEDyLxlZS+BjOMQFpq2gXI/BPaAqw=="],
+
+    "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.6.2", "", { "os": "win32", "cpu": "x64" }, "sha512-FVlWD+mDDz8nN5LWKRWUhhb7wKIK0VE3oXQvQBX7Fwwj00CvqMVhMyiz1iz8O5aZGmnkhFlKSwJPrUvMh5prQw=="],
 
     "@fission-ai/openspec": ["@fission-ai/openspec@1.14.3", "", { "dependencies": { "@inquirer/core": "^12.0.0", "@inquirer/prompts": "^8.5.2", "brace-expansion": "^5.0.12", "chalk": "^5.6.2", "commander": "^14.0.0", "cross-spawn": "7.0.6", "diff": "^9.0.0", "ora": "^9.4.1", "picomatch": "^4.0.4", "tinyglobby": "^0.2.17", "yaml": "^2.8.3", "zod": "^4.4.3" }, "bin": { "openspec": "bin/openspec.js" } }, "sha512-ALFW1d5bSm6t27Kmcle93SDFuqUc8fLwy5ZdBfIiNffo0Yk9AEOJxw6xDqBv38eMM7l7TeOZBB/7C08luxYGfg=="],
 
@@ -176,25 +180,25 @@
 
     "isexe": ["isexe@2.0.0", "", {}, "sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw=="],
 
-    "js-yaml": ["js-yaml@5.4.1", "", { "dependencies": { "argparse": "2.0.1" }, "bin": { "js-yaml": "bin/js-yaml.mjs" } }, "sha512-28R/k+NAjeuf7+CKlTxWZVExJGwVVLwY06DgEnOMz2gEpfNkDcD7QvyiVPT0xy0XXhU8vHsd4Ot42OOPdJG7dQ=="],
+    "js-yaml": ["js-yaml@5.4.3", "", { "dependencies": { "argparse": "^2.0.1" }, "bin": { "js-yaml": "bin/js-yaml.mjs" } }, "sha512-yzzNtgczwgoVHNigCyKTXcQJU4Y8t/ikU4UxXW0BvrLfHTGWZhsNcOT2s/a7vn81/4KqVnNmHjaUEPlvWnNwVw=="],
 
-    "jscpd": ["jscpd@5.4.1", "", { "optionalDependencies": { "jscpd-darwin-arm64": "5.4.1", "jscpd-darwin-x64": "5.4.1", "jscpd-linux-arm64-gnu": "5.4.1", "jscpd-linux-arm64-musl": "5.4.1", "jscpd-linux-x64-gnu": "5.4.1", "jscpd-linux-x64-musl": "5.4.1", "jscpd-windows-arm64-msvc": "5.4.1", "jscpd-windows-x64-msvc": "5.4.1" }, "bin": { "jscpd": "run-jscpd.js" } }, "sha512-afUt+LSQMmzSPYrWZlNGTwj8X4tmwVJbMNmr92qxPf4uUF/naLwG7SQyMPEZtrHqGgzGxmAzNjiwlVdjls2MyQ=="],
+    "jscpd": ["jscpd@5.4.2", "", { "optionalDependencies": { "jscpd-darwin-arm64": "5.4.2", "jscpd-darwin-x64": "5.4.2", "jscpd-linux-arm64-gnu": "5.4.2", "jscpd-linux-arm64-musl": "5.4.2", "jscpd-linux-x64-gnu": "5.4.2", "jscpd-linux-x64-musl": "5.4.2", "jscpd-windows-arm64-msvc": "5.4.2", "jscpd-windows-x64-msvc": "5.4.2" }, "bin": { "jscpd": "run-jscpd.js" } }, "sha512-bxZ1ObA4NyWBcM7Zh+QoGrdcMovbCxrDofFaLo2Lwgk/Axe/e45VYu8EM+mpPx2CpU/QGCoktONRnaRZl8Yq2w=="],
 
-    "jscpd-darwin-arm64": ["jscpd-darwin-arm64@5.4.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-LXHVeH60C9BsozcVIMPmXWvj97KqFKbCJYmYG4hDwfwIwS1kz+uF7yiObckP6h2xo12pD88nI4XjWTB5frjZUw=="],
+    "jscpd-darwin-arm64": ["jscpd-darwin-arm64@5.4.2", "", { "os": "darwin", "cpu": "arm64" }, "sha512-EGoPYQZqESW2kJfxKZrUYsYWhzq2Irk6sBQQWZ7VPAGj2wwk3n8HtDP2FnJOiHWZtSz55I8zQWldzIrD55B5Vw=="],
 
-    "jscpd-darwin-x64": ["jscpd-darwin-x64@5.4.1", "", { "os": "darwin", "cpu": "x64" }, "sha512-Gqck4tcMZjv4IvYHU2Vcikb885zTADo5T/YfEqeu1i5W5tfFpLdViiTYrh5wbrW+uxBqC33gHpG1hy0xbGYknQ=="],
+    "jscpd-darwin-x64": ["jscpd-darwin-x64@5.4.2", "", { "os": "darwin", "cpu": "x64" }, "sha512-/bz/rgoahqeK0p5r+KjeTTS59d7bZpMxD7hQ4CaQ0qKZWBZIyu7hRdExzJ7/KrCEJ5cmRogvXX1jhFqldYLNXw=="],
 
-    "jscpd-linux-arm64-gnu": ["jscpd-linux-arm64-gnu@5.4.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-XUYZJZVxSY7JIBEoyOOMTgvJwmymkns4wG55tu6I/vRKXnS5QtaTESQfRLt6xj1+62aflAvr01FAhPAy+du6tA=="],
+    "jscpd-linux-arm64-gnu": ["jscpd-linux-arm64-gnu@5.4.2", "", { "os": "linux", "cpu": "arm64" }, "sha512-YW/eX+mOYZmT/A3QEARYmJQoVQNV/cfecKCobNXZcD3mE57drpKHmJnvuL9uS85z0cUKWGCM57JVkVz6Y9oxxw=="],
 
-    "jscpd-linux-arm64-musl": ["jscpd-linux-arm64-musl@5.4.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-h2sH8Bk++yBxWqq2QAy4fvPzXkw1vecDSyOmzLwPfnRQoQ2Q/EWxCNOrgJSb+SNMLWoHLLzfqx8m9wt2GG6a8w=="],
+    "jscpd-linux-arm64-musl": ["jscpd-linux-arm64-musl@5.4.2", "", { "os": "linux", "cpu": "arm64" }, "sha512-jOLTO8YVRz65NaeYNeXoIf13yOPWhbM61xKXpv51DXQ2BXce6XfgPaJVeDCOM5s+8mt6aDtq0BZ8zptNeqGuIw=="],
 
-    "jscpd-linux-x64-gnu": ["jscpd-linux-x64-gnu@5.4.1", "", { "os": "linux", "cpu": "x64" }, "sha512-UiC4YoGAVVLy6hPVz8A6cndo7W5br4FAO2hADnFeinhBPnXPu0QFh1q/s/8B3ldeQHQkpYd/l5cjqNBMrbm78w=="],
+    "jscpd-linux-x64-gnu": ["jscpd-linux-x64-gnu@5.4.2", "", { "os": "linux", "cpu": "x64" }, "sha512-eAmKLxx+pIOEX4lZ342CCCjL5bvf+a3gdmaaVHXiGIx2Zr3zKkF32YkfuN2sCvCui5I/wnely80XsRvVVFO47Q=="],
 
-    "jscpd-linux-x64-musl": ["jscpd-linux-x64-musl@5.4.1", "", { "os": "linux", "cpu": "x64" }, "sha512-toAafl5roqfFotPrDJNMY9noNVZ9dReBqcO/nT5pJ8+7aq+opbscaLUcV4+8jxTq5btUD6CiO72+Fu+TyUZv3Q=="],
+    "jscpd-linux-x64-musl": ["jscpd-linux-x64-musl@5.4.2", "", { "os": "linux", "cpu": "x64" }, "sha512-ers9YFscD6DrmhyjBDXo/L+yBKcclHdWTFLMulYVGLcoGRKfBFhmK08MI3ajN/GMmCpJu7rkDYKL3egdfE8OIw=="],
 
-    "jscpd-windows-arm64-msvc": ["jscpd-windows-arm64-msvc@5.4.1", "", { "os": "win32", "cpu": "arm64" }, "sha512-JLMga/NIwv/OPurPsXA2/d5OdWfdwrsBk2D4NhyKnrV/uNjo1BIi2zXztzDyTQVKMK/TEK6GPgLD143GG1fZ0A=="],
+    "jscpd-windows-arm64-msvc": ["jscpd-windows-arm64-msvc@5.4.2", "", { "os": "win32", "cpu": "arm64" }, "sha512-kOhVw4cVhN8T9jr3OVThB3pPpbff0ITHTwpJ/+4EGzMkbf0y6QtPpHDzRgiHJj7u1FSTBXTI6VhPhDUhT/os1g=="],
 
-    "jscpd-windows-x64-msvc": ["jscpd-windows-x64-msvc@5.4.1", "", { "os": "win32", "cpu": "x64" }, "sha512-sN57Y9YP3ijrqc1IsWDceOFHUwbukg9/mU2NSDHTryKKc5CUvWz+o9GId8uKTiJIhkKfR/Ce5GKkCepTwB6kaw=="],
+    "jscpd-windows-x64-msvc": ["jscpd-windows-x64-msvc@5.4.2", "", { "os": "win32", "cpu": "x64" }, "sha512-BuR5DCV7F/G5ukMEIzCrz43ea5C0t0ALcP7v+opOWefoi4aiQYCEmtoRwfXMM/zjOmNYmvJBDDfeH05U9uuzEg=="],
 
     "jsonc-parser": ["jsonc-parser@3.3.1", "", {}, "sha512-HUgH65KyejrUFPvHFPbqOY0rsFip3Bo5wb4ngvdi1EpCYWUQDC5V+Y7mZws+DLkr4M//zQJoanu1SP+87Dv1oQ=="],
 
@@ -206,11 +210,11 @@
 
     "log-symbols": ["log-symbols@7.0.1", "", { "dependencies": { "is-unicode-supported": "^2.0.0", "yoctocolors": "^2.1.1" } }, "sha512-ja1E3yCr9i/0hmBVaM0bfwDjnGy8I/s6PP4DFp+yP+a+mrHO4Rm7DtmnqROTUkHIkqffC84YY7AeqX6oFk0WFg=="],
 
-    "markdown-it": ["markdown-it@15.0.1", "", { "dependencies": { "argparse": "3.0.2", "entities": "8.1.0", "linkify-it": "6.1.0", "mdurl": "2.1.0", "punycode.js": "2.3.1", "uc.micro": "3.0.0" }, "bin": { "markdown-it": "bin/markdown-it.mjs" } }, "sha512-9/7gE95FNPkfUWrjJIoHZza2iLmuJlPD0UNMxPi7bxUrbCR525YZY0r+zyfes0dZI5ZZ/uNIXUJca0pJvtw41g=="],
+    "markdown-it": ["markdown-it@15.0.3", "", { "dependencies": { "argparse": "^3.0.3", "entities": "^8.1.0", "linkify-it": "^6.1.0", "mdurl": "^2.1.0", "punycode.js": "^2.3.1", "uc.micro": "^3.0.0" }, "bin": { "markdown-it": "bin/markdown-it.mjs" } }, "sha512-+Az7Ojz3iRGu8KYMvJ6xVhvrxP3eE+vEtJX75Ow88XBpcQNV/0lGX5ZynIIBftREo4DC2jsveAMDaeltmm8QvQ=="],
 
-    "markdownlint": ["markdownlint@0.41.1", "", { "dependencies": { "micromark": "4.0.2", "micromark-core-commonmark": "2.0.3", "micromark-extension-directive": "4.0.0", "micromark-extension-gfm-autolink-literal": "2.1.0", "micromark-extension-gfm-footnote": "2.1.0", "micromark-extension-gfm-table": "2.1.1", "micromark-extension-math": "3.1.0", "micromark-util-types": "2.0.2", "string-width": "8.2.1" } }, "sha512-qHKeU2E1bdyNAT077go2FVTNXvYcktN5IHtF6XyeD1l0PClxzSp2tUApAV14ORI8DGX4H9bNKZEzelZp4qn8IA=="],
+    "markdownlint": ["markdownlint@0.42.0", "", { "dependencies": { "micromark": "4.0.3", "micromark-core-commonmark": "2.0.4", "micromark-extension-directive": "4.0.0", "micromark-extension-gfm-autolink-literal": "2.1.0", "micromark-extension-gfm-footnote": "2.1.0", "micromark-extension-gfm-table": "2.1.2", "micromark-extension-math": "3.1.0", "micromark-util-types": "2.0.3", "re2js": "2.8.6", "string-width": "8.3.0" } }, "sha512-kzsCV/rPWRFn3jUhcB919YF4Qgeh0g9tcogoXFadGSo6Zxj6662YOqWXv0jDn8nv5KCCxDfMKJZv6N4HkNkvTg=="],
 
-    "markdownlint-cli2": ["markdownlint-cli2@0.23.3", "", { "dependencies": { "globby": "16.2.4", "js-yaml": "5.4.1", "jsonc-parser": "3.3.1", "jsonpointer": "5.0.1", "markdown-it": "15.0.1", "markdownlint": "0.41.1", "markdownlint-cli2-formatter-default": "0.0.6", "micromatch": "4.0.8", "smol-toml": "1.8.0" }, "bin": { "markdownlint-cli2": "markdownlint-cli2-bin.mjs" } }, "sha512-xAr5o/TGpC3v6lE6cKIW4b5eOFRrRX5u7Vtjae9ix3RALv8nNOd94XMkD/1OXXBtpMcJ4uQGbpSo3hv5UqS4uQ=="],
+    "markdownlint-cli2": ["markdownlint-cli2@0.24.0", "", { "dependencies": { "globby": "16.2.4", "js-yaml": "5.4.3", "jsonc-parser": "3.3.1", "jsonpointer": "5.0.1", "markdown-it": "15.0.3", "markdownlint": "0.42.0", "markdownlint-cli2-formatter-default": "0.0.6", "micromatch": "4.0.8", "smol-toml": "1.9.1" }, "bin": { "markdownlint-cli2": "markdownlint-cli2-bin.mjs" } }, "sha512-c5hU2MDoTlS230MLzdNlkIyxImXq5acxGKz4nYz4aDhH/2BgFtpsA7iK9/OoTHMgZ4FuR0wedTQA31K6Lp9I/Q=="],
 
     "markdownlint-cli2-formatter-default": ["markdownlint-cli2-formatter-default@0.0.6", "", { "peerDependencies": { "markdownlint-cli2": ">=0.0.4" } }, "sha512-VVDGKsq9sgzu378swJ0fcHfSicUnMxnL8gnLm/Q4J/xsNJ4e5bA6lvAz7PCzIl0/No0lHyaWdqVD2jotxOSFMQ=="],
 
@@ -218,9 +222,9 @@
 
     "merge2": ["merge2@1.4.1", "", {}, "sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg=="],
 
-    "micromark": ["micromark@4.0.2", "", { "dependencies": { "@types/debug": "4.1.13", "debug": "4.4.3", "decode-named-character-reference": "1.3.0", "devlop": "1.1.0", "micromark-core-commonmark": "2.0.3", "micromark-factory-space": "2.1.0", "micromark-util-character": "2.1.1", "micromark-util-chunked": "2.0.1", "micromark-util-combine-extensions": "2.0.1", "micromark-util-decode-numeric-character-reference": "2.0.2", "micromark-util-encode": "2.0.1", "micromark-util-normalize-identifier": "2.0.1", "micromark-util-resolve-all": "2.0.1", "micromark-util-sanitize-uri": "2.0.1", "micromark-util-subtokenize": "2.1.0", "micromark-util-symbol": "2.0.1", "micromark-util-types": "2.0.2" } }, "sha512-zpe98Q6kvavpCr1NPVSCMebCKfD7CA2NqZ+rykeNhONIJBpc1tFKt9hucLGwha3jNTNI8lHpctWJWoimVF4PfA=="],
+    "micromark": ["micromark@4.0.3", "", { "dependencies": { "@types/debug": "^4.0.0", "debug": "^4.0.0", "decode-named-character-reference": "^1.0.0", "devlop": "^1.0.0", "micromark-core-commonmark": "^2.0.0", "micromark-factory-space": "^2.0.0", "micromark-util-character": "^2.0.0", "micromark-util-chunked": "^2.0.0", "micromark-util-combine-extensions": "^2.0.0", "micromark-util-decode-numeric-character-reference": "^2.0.0", "micromark-util-edit-map": "^1.0.0", "micromark-util-encode": "^2.0.0", "micromark-util-normalize-identifier": "^2.0.0", "micromark-util-resolve-all": "^2.0.0", "micromark-util-sanitize-uri": "^2.0.0", "micromark-util-subtokenize": "^2.0.0", "micromark-util-symbol": "^2.0.0", "micromark-util-types": "^2.0.0" } }, "sha512-oGYfQzHSG5dOMovQcJ3fyTmZlWAWpi0XA0sJwJs+i6OT88o1+Jtw/8z0CmdowSLxGhhFK89rQ/oXph/wN02PNw=="],
 
-    "micromark-core-commonmark": ["micromark-core-commonmark@2.0.3", "", { "dependencies": { "decode-named-character-reference": "1.3.0", "devlop": "1.1.0", "micromark-factory-destination": "2.0.1", "micromark-factory-label": "2.0.1", "micromark-factory-space": "2.1.0", "micromark-factory-title": "2.0.1", "micromark-factory-whitespace": "2.0.1", "micromark-util-character": "2.1.1", "micromark-util-chunked": "2.0.1", "micromark-util-classify-character": "2.0.1", "micromark-util-html-tag-name": "2.0.1", "micromark-util-normalize-identifier": "2.0.1", "micromark-util-resolve-all": "2.0.1", "micromark-util-subtokenize": "2.1.0", "micromark-util-symbol": "2.0.1", "micromark-util-types": "2.0.2" } }, "sha512-RDBrHEMSxVFLg6xvnXmb1Ayr2WzLAWjeSATAoxwKYJV94TeNavgoIdA0a9ytzDSVzBy2YKFK+emCPOEibLeCrg=="],
+    "micromark-core-commonmark": ["micromark-core-commonmark@2.0.4", "", { "dependencies": { "decode-named-character-reference": "^1.0.0", "devlop": "^1.0.0", "micromark-factory-destination": "^2.0.0", "micromark-factory-label": "^2.0.0", "micromark-factory-space": "^2.1.0", "micromark-factory-title": "^2.0.0", "micromark-factory-whitespace": "^2.0.0", "micromark-util-character": "^2.0.0", "micromark-util-chunked": "^2.0.0", "micromark-util-classify-character": "^2.0.0", "micromark-util-edit-map": "^1.0.0", "micromark-util-html-tag-name": "^2.0.0", "micromark-util-normalize-identifier": "^2.0.0", "micromark-util-resolve-all": "^2.0.0", "micromark-util-subtokenize": "^2.0.0", "micromark-util-symbol": "^2.0.0", "micromark-util-types": "^2.0.3" } }, "sha512-wxEeE8v8XVvOrxn1TZj74qYhAtTQsSqufHVS3uNVyT1MupXxhyaHk8/9xDNPh9BmL77QNDgWTkZ3RsYHB2ry7w=="],
 
     "micromark-extension-directive": ["micromark-extension-directive@4.0.0", "", { "dependencies": { "devlop": "1.1.0", "micromark-factory-space": "2.1.0", "micromark-factory-whitespace": "2.0.1", "micromark-util-character": "2.1.1", "micromark-util-symbol": "2.0.1", "micromark-util-types": "2.0.2", "parse-entities": "4.0.2" } }, "sha512-/C2nqVmXXmiseSSuCdItCMho7ybwwop6RrrRPk0KbOHW21JKoCldC+8rFOaundDoRBUWBnJJcxeA/Kvi34WQXg=="],
 
@@ -228,7 +232,7 @@
 
     "micromark-extension-gfm-footnote": ["micromark-extension-gfm-footnote@2.1.0", "", { "dependencies": { "devlop": "1.1.0", "micromark-core-commonmark": "2.0.3", "micromark-factory-space": "2.1.0", "micromark-util-character": "2.1.1", "micromark-util-normalize-identifier": "2.0.1", "micromark-util-sanitize-uri": "2.0.1", "micromark-util-symbol": "2.0.1", "micromark-util-types": "2.0.2" } }, "sha512-/yPhxI1ntnDNsiHtzLKYnE3vf9JZ6cAisqVDauhp4CEHxlb4uoOTxOCJ+9s51bIB8U1N1FJ1RXOKTIlD5B/gqw=="],
 
-    "micromark-extension-gfm-table": ["micromark-extension-gfm-table@2.1.1", "", { "dependencies": { "devlop": "1.1.0", "micromark-factory-space": "2.1.0", "micromark-util-character": "2.1.1", "micromark-util-symbol": "2.0.1", "micromark-util-types": "2.0.2" } }, "sha512-t2OU/dXXioARrC6yWfJ4hqB7rct14e8f7m0cbI5hUmDyyIlwv5vEtooptH8INkbLzOatzKuVbQmAYcbWoyz6Dg=="],
+    "micromark-extension-gfm-table": ["micromark-extension-gfm-table@2.1.2", "", { "dependencies": { "devlop": "^1.0.0", "micromark-factory-space": "^2.0.0", "micromark-util-character": "^2.0.0", "micromark-util-symbol": "^2.0.0", "micromark-util-types": "^2.0.0" } }, "sha512-pRzm4kDTu0MjlmBkxmS9yYhw60nncfcEwu9NNdPFSQEFXS95ZKyIIyTSHu/o3ReBUrLKYEq+7YaXCRn/bPB4MA=="],
 
     "micromark-extension-math": ["micromark-extension-math@3.1.0", "", { "dependencies": { "@types/katex": "0.16.8", "devlop": "1.1.0", "katex": "0.16.47", "micromark-factory-space": "2.1.0", "micromark-util-character": "2.1.1", "micromark-util-symbol": "2.0.1", "micromark-util-types": "2.0.2" } }, "sha512-lvEqd+fHjATVs+2v/8kg9i5Q0AP2k85H0WUOwpIVvUML8BapsMvh1XAogmQjOCsLpoKRCVQqEkQBB3NhVBcsOg=="],
 
@@ -252,6 +256,8 @@
 
     "micromark-util-decode-numeric-character-reference": ["micromark-util-decode-numeric-character-reference@2.0.2", "", { "dependencies": { "micromark-util-symbol": "2.0.1" } }, "sha512-ccUbYk6CwVdkmCQMyr64dXz42EfHGkPQlBj5p7YVGzq8I7CtjXZJrubAYezf7Rp+bjPseiROqe7G6foFd+lEuw=="],
 
+    "micromark-util-edit-map": ["micromark-util-edit-map@1.0.0", "", { "dependencies": { "micromark-util-types": "^2.0.0" } }, "sha512-Pa2ljlsEL6sVwFaYeyrOLSYbQt73JvGbPOYFq+9AElXiSnfI5Q4465RRZ1sHv7lDjDOnGRDDaqPXqClqWK/q1Q=="],
+
     "micromark-util-encode": ["micromark-util-encode@2.0.1", "", {}, "sha512-c3cVx2y4KqUnwopcO9b/SCdo2O67LwJJ/UyqGfbigahfegL9myoEFoDYZgkT7f36T0bLrM9hZTAaAyH+PCAXjw=="],
 
     "micromark-util-html-tag-name": ["micromark-util-html-tag-name@2.0.1", "", {}, "sha512-2cNEiYDhCWKI+Gs9T0Tiysk136SnR13hhO8yW6BGNyhOC4qYFnwF1nKfD3HFAIXA5c45RrIG1ub11GiXeYd1xA=="],
@@ -266,7 +272,7 @@
 
     "micromark-util-symbol": ["micromark-util-symbol@2.0.1", "", {}, "sha512-vs5t8Apaud9N28kgCrRUdEed4UJ+wWNvicHLPxCa9ENlYuAY31M0ETy5y1vA33YoNPDFTghEbnh6efaE8h4x0Q=="],
 
-    "micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+    "micromark-util-types": ["micromark-util-types@2.0.3", "", {}, "sha512-oxB2Ik03hI0gv+VNn9tnh1t1YEe9MDPptViAEgfdf3YQHsn0pzGTgCdlSCJXcwhqm8phaEuM7zeEu3QQzVBrPg=="],
 
     "micromatch": ["micromatch@4.0.8", "", { "dependencies": { "braces": "3.0.3", "picomatch": "2.3.2" } }, "sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA=="],
 
@@ -290,6 +296,8 @@
 
     "queue-microtask": ["queue-microtask@1.2.3", "", {}, "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A=="],
 
+    "re2js": ["re2js@2.8.6", "", {}, "sha512-xLgQil4kIUCrAzVk9fRSkxkFNwmygLFjVxXrLc65aE1F0+Zsb8rxumFBy4XKyvgMCTL6kilDq3EZ0piE2dP/Dg=="],
+
     "restore-cursor": ["restore-cursor@5.1.0", "", { "dependencies": { "onetime": "^7.0.0", "signal-exit": "^4.1.0" } }, "sha512-oMA2dcrw6u0YfxJQXm342bFKX/E4sG9rbTzO9ptUcR/e8A33cHuvStiYOwH7fszkZlZ1z/ta9AAoPk2F4qIOHA=="],
 
     "reusify": ["reusify@1.1.0", "", {}, "sha512-g6QUff04oZpHs0eG5p83rFLhHeV00ug/Yf9nZM6fLeUrPguBTkTQOdpAWWspMh55TZfVQDPaN3NQJfbVRAxdIw=="],
@@ -306,7 +314,7 @@
 
     "slash": ["slash@5.1.0", "", {}, "sha512-ZA6oR3T/pEyuqwMgAKT0/hAv8oAXckzbkmR0UkUosQ+Mc4RxGoJkRmwHgHufaenlyAgE1Mxgpdcrf75y6XcnDg=="],
 
-    "smol-toml": ["smol-toml@1.8.0", "", {}, "sha512-kCZr2V3ch9i00x8zXRhjUNVcjG9ijES5dDudkXvUVCT5QlJNQWElSJdZqyPemffHoLNUYwOcou0Fy+ojN0uHSQ=="],
+    "smol-toml": ["smol-toml@1.9.1", "", {}, "sha512-j7WyPdf0CJoutMzMoPLF/bVXHtKZIT9Rb4eGeEbWw8X2t5oirjPgpL+OpaENZrILYaXqYwnVH+qgUwVbl+pUJQ=="],
 
     "stdin-discarder": ["stdin-discarder@0.3.2", "", {}, "sha512-eCPu1qRxPVkl5605OTWF8Wz40b4Mf45NY5LQmVPQ599knfs5QhASUm9GbJ5BDMDOXgrnh0wyEdvzmL//YMlw0A=="],
 
@@ -336,7 +344,39 @@
 
     "katex/commander": ["commander@8.3.0", "", {}, "sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww=="],
 
-    "markdown-it/argparse": ["argparse@3.0.2", "", {}, "sha512-mFdDM6WqWKraGLsVb+C9CahPnzTXOefAOLq3jYcca2YZ8bEWpr++Tzj+zSaKW9+X9L5uSxcm1AZ3Y6aZJ09OhQ=="],
+    "markdown-it/argparse": ["argparse@3.0.3", "", {}, "sha512-Sn98ftV3KfsO8xfLPHG6oT8y+b0yvbrLgZjgPDXsharNY15tTAjqIsIju4S32nl6/iEUNNE4v+yL2Zhm8ooP3w=="],
+
+    "markdownlint/string-width": ["string-width@8.3.0", "", { "dependencies": { "get-east-asian-width": "^1.5.0", "strip-ansi": "^7.1.2" } }, "sha512-ZbmZM0JCihQN91dWnxoipT2KOEyHqEyfRXUyjuRhW8b/xnqPDoq4gWEVApTVa9db2wN8mmoikgFBbjh71+cGeQ=="],
+
+    "micromark-extension-directive/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+
+    "micromark-extension-gfm-autolink-literal/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+
+    "micromark-extension-gfm-footnote/micromark-core-commonmark": ["micromark-core-commonmark@2.0.3", "", { "dependencies": { "decode-named-character-reference": "1.3.0", "devlop": "1.1.0", "micromark-factory-destination": "2.0.1", "micromark-factory-label": "2.0.1", "micromark-factory-space": "2.1.0", "micromark-factory-title": "2.0.1", "micromark-factory-whitespace": "2.0.1", "micromark-util-character": "2.1.1", "micromark-util-chunked": "2.0.1", "micromark-util-classify-character": "2.0.1", "micromark-util-html-tag-name": "2.0.1", "micromark-util-normalize-identifier": "2.0.1", "micromark-util-resolve-all": "2.0.1", "micromark-util-subtokenize": "2.1.0", "micromark-util-symbol": "2.0.1", "micromark-util-types": "2.0.2" } }, "sha512-RDBrHEMSxVFLg6xvnXmb1Ayr2WzLAWjeSATAoxwKYJV94TeNavgoIdA0a9ytzDSVzBy2YKFK+emCPOEibLeCrg=="],
+
+    "micromark-extension-gfm-footnote/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+
+    "micromark-extension-math/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+
+    "micromark-factory-destination/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+
+    "micromark-factory-label/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+
+    "micromark-factory-space/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+
+    "micromark-factory-title/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+
+    "micromark-factory-whitespace/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+
+    "micromark-util-character/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+
+    "micromark-util-classify-character/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+
+    "micromark-util-combine-extensions/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+
+    "micromark-util-resolve-all/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
+
+    "micromark-util-subtokenize/micromark-util-types": ["micromark-util-types@2.0.2", "", {}, "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA=="],
 
     "micromatch/picomatch": ["picomatch@2.3.2", "", {}, "sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA=="],
   }

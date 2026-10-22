@@ -1,6 +1,6 @@
 {
   "name": "claudetto",
-  "version": "0.2.0",
+  "version": "0.3.0-alpha.1",
   "private": true,
   "description": "A very opinionated Claude Code plugin designed by a Rustacean",
   "type": "module",
@@ -17,12 +17,12 @@
   },
   "packageManager": "bun@1.4.3",
   "devDependencies": {
-    "@biomejs/biome": "^2.5.15",
+    "@biomejs/biome": "^2.6.2",
     "@fission-ai/openspec": "1.14.3",
     "@types/node": "^26.6.5",
     "bun-types": "^1.4.3",
-    "jscpd": "5.4.1",
-    "markdownlint-cli2": "^0.23.3",
+    "jscpd": "5.4.2",
+    "markdownlint-cli2": "^0.24.0",
     "yaml": "^2.9.1"
   }
 }

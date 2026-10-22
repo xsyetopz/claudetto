@@ -28,7 +28,6 @@ node_modules/
 /.jscpd.json
 
 # Local session state and research notes, not for the public repository.
-/HANDOVER.md
 /.claudetto/
 
 # Local state, cache, and scratch files of claudetto, not for the public repository.

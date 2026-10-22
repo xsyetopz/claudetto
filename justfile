@@ -4,7 +4,7 @@ set positional-arguments
 default:
     @just --list
 
-# Run the test suite with `bun test`; a file argument runs that file in place of all of them, and an option goes to bun test (-t RE). It generates `plugins/` first, because many tests import the generated copy, such as each `prompts.ts`. A test run is not a Claude Code session, so the session id does not reach the commit hook of the session
+# Run the test suite with `bun test`; a file argument runs that file in place of all of them, and an option goes to bun test (-t RE). It writes `wiki/` first, because a test reads the generated pages. A test run is not a Claude Code session, so the session id does not reach the commit hook of the session
 test *args:
     bun tools/generate/index.ts
     env -u CLAUDE_CODE_SESSION_ID bun test "$@"
@@ -36,7 +36,7 @@ lab:
 docker *args:
     bun tools/lock.ts --name check bun tools/docker.ts "$@"
 
-# The full local gate: lint, the type check, the generated files, tests, plugin validation, and the hook lab
+# The full local gate: lint, the type check, the generated wiki, tests, plugin validation, and the hook lab
 check:
     bun tools/lock.ts --name check just gate
 
@@ -53,8 +53,8 @@ sandbox *args:
 
 # Run Claude Code with only the plugin folder PLUGIN, in a new sandbox config with no settings, apart from `just sandbox`; extra arguments go to claude (-p "prompt")
 sandbox-alone plugin *args:
-    bun plugins/claudetto-lab/bin/claudetto-sandbox --dir /tmp/claudetto-sandbox-alone --clean
-    bun plugins/claudetto-lab/bin/claudetto-sandbox --dir /tmp/claudetto-sandbox-alone --plugin-dir "$@"
+    bun tools/sandbox/main.ts --dir /tmp/claudetto-sandbox-alone --clean
+    bun tools/sandbox/main.ts --dir /tmp/claudetto-sandbox-alone --plugin-dir "$@"
 
 # Install plugins of this checkout (default: claudetto) into a new sandbox config with `claude plugin install`, as a user installs them, then run Claude Code there
 sandbox-install *plugins:
@@ -62,7 +62,7 @@ sandbox-install *plugins:
 
 # Run Claude Code again in the sandbox config of `just sandbox-install`, with no new install; extra arguments go to claude (--continue)
 sandbox-installed *args:
-    bun plugins/claudetto-lab/bin/claudetto-sandbox --dir /tmp/claudetto-sandbox-install "$@"
+    bun tools/sandbox/main.ts --dir /tmp/claudetto-sandbox-install "$@"
 
 # Run one live session of Claude Code in a Linux container, to check that the seccomp helper blocks a Unix socket in a sandboxed `Bash` call; the login of the host goes to the container on stdin, and the session costs money
 sandbox-linux:
@@ -70,11 +70,11 @@ sandbox-linux:
 
 # Remove the sandbox config and project
 sandbox-clean:
-    bun plugins/claudetto-lab/bin/claudetto-sandbox --clean
+    bun tools/sandbox/main.ts --clean
 
 # Log the requests of Claude Code through a local proxy and size each part of the first one; extra arguments go to the proxy (--port N, --out DIR, --no-count)
 capture *args:
-    bun plugins/claudetto-lab/bin/claudetto-capture "$@"
+    bun tools/capture/main.ts "$@"
 
 # Publish wiki/ to the GitHub wiki; the wiki repository exists only after its first page is made in the web UI
 wiki:
@@ -96,12 +96,12 @@ release-check change:
 release *flags:
     bun tools/release.ts "$@"
 
-# Write the settings schemas of the installed Claude Code to schemas/ and format them with Biome; extra arguments go to claudetto-schema (--bundle FILE, --version X.Y.Z)
+# Write the settings schemas of the installed Claude Code to schemas/ and format them with Biome; extra arguments go to `tools/schema/main.ts` (--bundle FILE, --version X.Y.Z)
 schema *args:
-    bun plugins/claudetto-lab/bin/claudetto-schema --out schemas "$@"
+    bun tools/schema/main.ts --out schemas "$@"
     bunx biome format --write schemas
 
-# Write each text that a plugin ships from its source in src/; add --check to name each generated file that differs from its source
+# Write wiki/ from its source in src/wiki/; add --check to name each page that differs from its source
 generate *flags:
     bun tools/generate/index.ts "$@"
 
@@ -130,7 +130,7 @@ eval-budget *args:
 
 # Print the statistics of the with/without comparison from `aggregate-result.json` files or folders of results (Fisher p, Newcombe CI, bootstrap CI over cases, judge agreement); add --json, --seed N, or --pick oldest
 eval-stats *args:
-    bun tools/stats.ts "$@"
+    bun tools/stats/main.ts "$@"
 
 # Run the eval cases on the checkout and on a variant at a git ref (in a temporary worktree), to compare the two plugin arms; extra arguments go to the eval, and --model is required as for `eval`
 eval-variant ref *args:

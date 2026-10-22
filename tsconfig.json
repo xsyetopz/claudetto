@@ -18,14 +18,12 @@
       "claude-code-mcp",
       "claude-code-tools",
       "node"
-    ],
-    "rootDirs": ["src", ".", "plugins/claudetto"]
+    ]
   },
   "exclude": ["node_modules"],
   "include": [
     "plugins/**/*.ts",
     "tests/**/*.ts",
-    "tools/**/*.ts",
-    "src/**/*.ts"
+    "tools/**/*.ts"
   ]
 }
