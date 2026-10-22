@@ -1,1 +1,0 @@
-Use `off` for no pick, or `jev` for Jev (it needs `TYPESAFE_API_KEY`, and the questions go to the TypeSafe API). With `jev` and the key, Jev answers each `AskUserQuestion` call and the dialog does not show, unless Jev is not sure about a question.

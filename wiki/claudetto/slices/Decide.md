@@ -30,7 +30,7 @@ Only the value `jev` with a key sends data to the TypeSafe API.
 
 ## How the Hook Works
 
-The slice adds a `tool.call` hook on `AskUserQuestion`, in the phase `rewrite`.
+The slice adds a `tool.call` hook on `AskUserQuestion`.
 One call costs one request to Jev.
 The hook does these steps:
 
@@ -139,6 +139,13 @@ The live calls confirmed the nested shape of the answer.
 The four fractions are at `q.box.{top,bottom,left,right}`, and the confidence is at `q.confidence`.
 See [Jev Images](Jev-Images) for the calls.
 
+## Jev for the Permission Gate
+
+The `guard` slice can also ask Jev before it asks you.
+For an `ask` about a delete or a local `git` loss, it runs `claudetto-decide yes --json` once, with a timeout of 12,000 ms.
+The call runs when `P(yes)` is 0.8 or more.
+See [Guard](Guard#who-decides-an-ask).
+
 ## Bounds
 
 All bounds are in `slices/decide/limits.ts`.
@@ -157,9 +164,9 @@ All bounds are in `slices/decide/limits.ts`.
 | `IMAGE_PIXELS_MAX` | 2,458,624 px in total for an `--image`. |
 | `SCALE_TIMEOUT_MS` | 5,000 ms for `sips` to scale the images. |
 
-## See Also
+## Related Pages
 
-- [Advise](Advise)
 - [Install](Install)
+- [Guard](Guard)
 - [Controls](Controls)
 - [Bounds](Bounds)
