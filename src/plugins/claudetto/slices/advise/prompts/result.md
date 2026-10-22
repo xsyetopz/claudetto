@@ -1,2 +1,0 @@
-Advice from {{model}}:
-{{text}}

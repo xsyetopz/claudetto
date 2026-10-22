@@ -1,1 +1,0 @@
-Use `claudetto` (the default) for the tool `advise`, with a model, an effort, and a context that you control, and the slice turns off the advisor of Claude Code for the session. Use `builtin` for the advisor of Claude Code.
