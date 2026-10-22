@@ -1,8 +1,8 @@
 // Tests of the `>` quote of the `reply` slice.
 
 import { expect, test } from "bun:test";
-import { quoteOf } from "../../../src/plugins/claudetto/slices/reply/adapters/mod.ts";
-import { QUOTE_MAX_LINES } from "../../../src/plugins/claudetto/slices/reply/limits.ts";
+import { quoteOf } from "../../../plugins/claudetto/slices/reply/adapters/mod.ts";
+import { QUOTE_MAX_LINES } from "../../../plugins/claudetto/slices/reply/limits.ts";
 
 test("`quoteOf` starts each line with `>` and ends with a blank line", () => {
   expect(quoteOf("a\n\nb\n")).toBe("> a\n>\n> b\n\n");

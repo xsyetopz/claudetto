@@ -11,7 +11,7 @@ The slice draws a dim `Reply` button under each message of Claude.
 A press of the button puts the text of the message in the prompt box as a `>` quote.
 Then you write your answer below the quote, and you do not copy the message by hand.
 
-The slice has one hook, `ui.render` on the component `AssistantMessage`, with the phase `answer`.
+The slice has one hook, `ui.render` on the component `AssistantMessage`.
 The hook draws the button.
 The press handler of the button fills the prompt, so the slice needs no `ui.press` hook.
 The slice has no `userConfig` key, no command, and no setting.
@@ -46,7 +46,7 @@ The `reply` slice adds a `Reply` button under each message of Claude.
 A press puts the message in your prompt box as a quote.
 You then write your answer below it.
 
-## See Also
+## Related Pages
 
 - [Prompt](Prompt)
 - [Styles](Styles)
