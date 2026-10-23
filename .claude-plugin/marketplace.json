@@ -12,7 +12,7 @@
     {
       "name": "claudetto",
       "source": "./plugins/claudetto",
-      "description": "Adds a lean output style, a main agent with a small agent roster, a permission gate for `Bash` commands, a status line command, and the `setup` skill. Adds the MiniSpec skills `propose`, `apply`, `verify`, and `archive`, a handoff file in place of the compaction summary, a `goal` check that blocks the stop until it passes, a ledger of edited files, and a cleanup at session start. Jev answers `AskUserQuestion` when a key is set.",
+      "description": "Adds a lean output style, a main agent with a roster of six agents, a permission gate that answers each permission prompt, a status line command with the plan usage, and the `setup` skill. Adds the MiniSpec skills `propose`, `apply`, `verify`, `archive`, `explore`, `update`, and `sync`, a handover to a fresh session in place of the compaction summary, a `goal` check and a check of each ticked task, a ledger of edited files, and a cleanup at session start. With a key, Jev answers `AskUserQuestion`, the asks of the gate, and the handover offer.",
       "category": "productivity"
     },
     {
@@ -24,7 +24,7 @@
     {
       "name": "claudetto-docs",
       "source": "./plugins/claudetto-docs",
-      "description": "Gets current library and API docs with the Context7 CLI `ctx7`. Works with no key.",
+      "description": "Gets current library and API docs from the Context7 MCP server, or with the Context7 CLI `ctx7`. Works with no key, and keeps an optional key in secure storage.",
       "category": "productivity"
     }
   ]

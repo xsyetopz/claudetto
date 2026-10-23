@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-plugin-manifest.json",
   "name": "claudetto",
   "version": "0.3.0-alpha.2",
-  "description": "Adds a lean output style, a main agent with a small agent roster, a permission gate for `Bash` commands, a status line command, and the `setup` skill. Adds the MiniSpec skills `propose`, `apply`, `verify`, and `archive`, a handoff file in place of the compaction summary, a `goal` check that blocks the stop until it passes, a ledger of edited files, and a cleanup at session start. Jev answers `AskUserQuestion` when a key is set.",
+  "description": "Adds a lean output style, a main agent with a roster of six agents, a permission gate that answers each permission prompt, a status line command with the plan usage, and the `setup` skill. Adds the MiniSpec skills `propose`, `apply`, `verify`, `archive`, `explore`, `update`, and `sync`, a handover to a fresh session in place of the compaction summary, a `goal` check and a check of each ticked task, a ledger of edited files, and a cleanup at session start. With a key, Jev answers `AskUserQuestion`, the asks of the gate, and the handover offer.",
   "author": {
     "name": "xsyetopz"
   },
@@ -20,9 +20,20 @@
     "compaction": {
       "type": "string",
       "title": "Compaction",
-      "description": "Use `handoff` to write a handoff file in place of the compaction summary, or `built-in` for the compaction of Claude Code.",
-      "default": "handoff",
-      "options": ["handoff", "built-in"]
+      "description": "Use `auto` to pick a handover or a compaction for each case from the table, `handover` to hand over at each trigger, or `built-in` for the compaction of Claude Code.",
+      "default": "auto",
+      "options": ["auto", "handover", "built-in"]
+    },
+    "plan": {
+      "type": "string",
+      "title": "Plan",
+      "description": "The plan tier of the login, such as `default_claude_max_20x`. `claudetto-setup` writes it from `~/.claude.json`. Keep it empty for an API key or an unknown tier."
+    },
+    "TYPESAFE_API_KEY": {
+      "type": "string",
+      "title": "TypeSafe API Key",
+      "description": "The key of Jev for the `decide` option. Claude Code keeps it in secure storage, not in a settings file.",
+      "sensitive": true
     }
   },
   "homepage": "https://github.com/xsyetopz/claudetto/wiki/Architecture",
