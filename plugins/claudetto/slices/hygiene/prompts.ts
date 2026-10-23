@@ -1,17 +1,23 @@
-export const CLEANED = (v: {
-  folders: string;
-  bytes: string;
-  files: string;
-  worktrees: string;
-  probes: string;
+export const CLEANED = (v: { list: string; size: string }): string =>
+  `claudetto cleanup removed ${v.list}${v.size}.`;
+
+export const WHO_CHANGED = (v: {
+  own: string;
+  others: string;
+  user: string;
 }): string =>
-  `claudetto cleanup removed ${v.folders} session folders with ${v.bytes} bytes, ${v.files} files, ${v.worktrees} worktrees, and ${v.probes} leftover \`fswatch-probe-*\` folders of Claude Code (anthropics/claude-code#104170).`;
+  [
+    "Who changed the files of this work tree, from the edit ledger of claudetto:",
+    v.own && `- This session: ${v.own}.`,
+    v.others && `- Another Claude session: ${v.others}.`,
+    v.user &&
+      `- The user: ${v.user}. A change of the user is intended. It is part of the work tree that the user owns, so keep it, and change or stage it only when the user asks.`,
+  ]
+    .filter(Boolean)
+    .join("\n");
 
-export const WORKTREES_KEPT = (v: { count: string; list: string }): string =>
-  `claudetto cleanup kept ${v.count} worktrees: ${v.list}.`;
-
-export const UNKNOWN_KEPT = (v: { count: string }): string =>
-  `claudetto cleanup kept ${v.count} entries of the temp folder that no rule names.`;
+export const HEADINGS_CASED = (v: { path: string; count: number }): string =>
+  `claudetto set the Chicago Title Case of ${v.count} heading${v.count === 1 ? "" : "s"} in \`${v.path}\`. Read the file again before the next \`Edit\` of it.`;
 
 export const FILE_CHANGED = (v: { path: string; agent: string }): string =>
   `The user or a tool changed \`${v.path}\` after the last edit of \`${v.agent}\`.`;

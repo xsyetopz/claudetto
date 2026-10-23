@@ -1,21 +1,18 @@
 // The cleanup at session start (spec `session-hygiene`, D12 of change `0-3-0`).
-// One `sh` script does the work, so a test runs the same script on a fake tree.
-// The script prints one line for each result, and `parseCleanup` reads them.
-// Every rule is here: the script removes a folder only when no file of the sessions folder names its session and it is older than `days`.
+// One `sh` script does the work, so a test runs the same script on a fake tree, and `parseCleanup` reads its lines.
+// It removes a folder only when no file of the sessions folder names its session and it is older than `days`.
 
-/** Where the script works. `tmp` is the temp folder of Claude Code, `sessions` is `~/.claude/sessions/`, and `worktrees` is `<project>/.claude/worktrees/`. */
-export interface CleanupRoots {
+/** `tmp` is the temp folder of Claude Code, `sessions` is `~/.claude/sessions/`, `worktrees` is `<project>/.claude/worktrees/`, and `current` is the live session id. */
+interface CleanupRoots {
   readonly tmp: string;
   readonly sessions: string;
   readonly worktrees: string;
-  /** The age in days over which a folder is old (`cleanupPeriodDays`). */
   readonly days: number;
-  /** The id of this session, which is live whatever the sessions folder holds. */
   readonly current: string;
 }
 
 // The positional parameters are `$1` tmp, `$2` sessions, `$3` worktrees, `$4` days, and `$5` current.
-// A name of 36 characters in the shape of a UUID is a session id. Any other name is not a session.
+// A name of 36 characters in the shape of a UUID is a session id.
 // A git-ignored file keeps a worktree, because `git worktree remove` deletes it, such as a `.env`.
 // The files in a folder that a tool makes again, such as `node_modules`, keep no work, so `$rebuilt` skips them.
 const SCRIPT = String.raw`
@@ -100,18 +97,8 @@ export const cleanupArgv = (roots: CleanupRoots): string[] => [
   roots.current,
 ];
 
-export interface CleanupReport {
-  readonly folders: number;
-  readonly bytes: number;
-  readonly files: number;
-  readonly worktrees: string[];
-  readonly kept: { path: string; reason: string }[];
-  /** The entries of the temp folder that no rule names. */
-  readonly unknown: number;
-}
-
-/** The report from the output of the script. A line that it does not know adds nothing. */
-export const parseCleanup = (stdout: string): CleanupReport => {
+/** The report from the output of the script. `unknown` counts the entries of the temp folder that no rule names. A line that it does not know adds nothing. */
+export const parseCleanup = (stdout: string) => {
   const report = {
     folders: 0,
     bytes: 0,
@@ -123,12 +110,11 @@ export const parseCleanup = (stdout: string): CleanupReport => {
   for (const line of stdout.split("\n")) {
     const [kind = "", a = "", b = ""] = line.split("\t");
     if (kind === "dir" || kind === "file") {
-      if (kind === "dir") report.folders++;
-      else report.files++;
+      report[kind === "dir" ? "folders" : "files"]++;
       report.bytes += Number(a) || 0;
     } else if (kind === "worktree") report.worktrees.push(a);
     else if (kind === "kept") report.kept.push({ path: b, reason: a });
-    else if (kind === "unknown") report.unknown = Number(a) || 0;
+    else if (kind === "unknown") report.unknown += Number(a) || 0;
   }
   return report;
 };
