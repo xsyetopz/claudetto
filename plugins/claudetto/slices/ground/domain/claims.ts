@@ -1,18 +1,17 @@
-// The source check of `ground`: the claims of a new text that no source of the session backs.
-// A source is a user message, a tool result, or a file of the project.
-// The six kinds are numbers, `file:line` references, attributions to the user, conventions, and done-claims.
+// The source check of `ground`: the claims of a new text that no source backs (a user message, a tool result, or a file of the project).
+// The kinds are numbers, `file:line` references, attributions to the user, conventions, and done-claims.
 // A line with `(proposed)` or `[NEEDS CLARIFICATION: ...]`, and a fenced code block, pass.
-// Only checks that a program can run, with no model call, because a check that guesses blocks correct text.
-// The functions are pure: `adapters/` reads the session and the files.
+// The checks run in a program with no model call, because a check that guesses blocks correct text.
 
 import { lineCount } from "../../../kernel/text.ts";
 
-/** One message of the session, as the check reads it. `results` are the tool results of the message. */
+/** One message of the session, as the check reads it. `answers` are the answers of its `AskUserQuestion` calls, and each counts as a user message. */
 export interface Msg {
   role: "user" | "assistant";
   text: string;
   results: readonly string[];
   bash: number;
+  answers?: readonly string[];
 }
 
 /** The content of each file that `neededFiles` names, or `null` when the file is absent. */
@@ -42,11 +41,13 @@ const CONVENTIONS: readonly [readonly string[], string[]][] = [
   [["uv.lock"], ["pip", "pip3"]],
 ];
 /** The words that make a tool name in prose a command: a subcommand, a flag, or a package for `npx`. */
+const PIP =
+  "install|uninstall|freeze|list|show|download|wheel|check|cache|config|index|--?\\w[\\w-]*";
 const SUBCOMMANDS: Readonly<Record<string, string>> = {
   npm: "i|install|ci|run|test|start|build|exec|init|publish|update|uninstall|add|remove|link|pack|audit|ls|rebuild|version|view|outdated|x|r|un|t|pkg|cache|config|dedupe|prune|--?\\w[\\w-]*",
   npx: "[\\w@-]+",
-  pip: "install|uninstall|freeze|list|show|download|wheel|check|cache|config|index|--?\\w[\\w-]*",
-  pip3: "install|uninstall|freeze|list|show|download|wheel|check|cache|config|index|--?\\w[\\w-]*",
+  pip: PIP,
+  pip3: PIP,
 };
 const command = (tool: string) =>
   new RegExp(
@@ -56,8 +57,18 @@ const command = (tool: string) =>
 /** The files of the project that `findUnsourced` reads from the root: the rules and the lock files. */
 export const PROJECT_FILES: readonly string[] = [
   "CLAUDE.md",
+  "AGENTS.md",
   ...CONVENTIONS.flatMap(([locks]) => locks),
 ];
+
+/** The folder of the rule files that the adapter adds to `Files` by their project path. */
+export const RULES_DIR = ".claude/rules";
+
+/** True for a file that holds rules of the user: `CLAUDE.md` imports `AGENTS.md`, and the rest is in `.claude/rules/`. */
+const isRuleFile = (name: string): boolean =>
+  name === "CLAUDE.md" ||
+  name === "AGENTS.md" ||
+  name.startsWith(`${RULES_DIR}/`);
 
 /** The files that `text` references with `file:line`. A reference is not always relative to the root. */
 export const refFiles = (text: string): string[] => [
@@ -72,8 +83,7 @@ const proseLines = (text: string): string[] =>
     .split("\n")
     .filter((line) => !MARK.test(line));
 
-/** The numbers of a table that the table computes: a cell that is the sum of the cells above it in its column (three rows or more),
- * or the absolute difference of two other cells of its row. The values are signed in the sums and absolute in the result. */
+/** The numbers that a table computes: a cell that is the sum of the cells above it (three rows or more), or the absolute difference of two other cells of its row. */
 const columnTotals = (lines: readonly string[]): Set<number> => {
   const totals = new Set<number>();
   let rows: (number | null)[][] = [];
@@ -198,8 +208,7 @@ const conventionClaims = (x: Ctx, prose: readonly string[]): string[] => {
   return out;
 };
 
-/** The claims of `text` with no source in `msgs`, in `files`, or in `own`, the old text of the target file.
- * A file of a reference that is `null` did not resolve, and the check skips it, because a guess would deny a correct reference. */
+/** The claims of `text` with no source in `msgs`, in `files`, or in `own`, the old text of the target file. A `null` file did not resolve, and the check skips it, because a guess would deny a correct reference. */
 export const findUnsourced = (
   text: string,
   msgs: readonly Msg[],
@@ -207,10 +216,15 @@ export const findUnsourced = (
   own = "",
 ): string[] => {
   const user = msgs
-    .filter((m) => m.role === "user")
-    .map((m) => m.text)
+    .flatMap((m) => [
+      ...(m.role === "user" ? [m.text] : []),
+      ...(m.answers ?? []),
+    ])
     .join("\n");
-  const rules = files["CLAUDE.md"] ?? "";
+  const rules = Object.entries(files)
+    .filter(([n]) => isRuleFile(n))
+    .map(([, t]) => t ?? "")
+    .join("\n");
   const corpus = [user, ...msgs.flatMap((m) => m.results), rules, own]
     .join("\n")
     .replace(/(?<=\d)[,_](?=\d{3})/g, "");
@@ -227,15 +241,14 @@ export const findUnsourced = (
     files,
     totals: columnTotals(prose),
   };
-  const claims = new Set<string>();
-  for (const line of prose)
-    for (const claim of [
-      ...numberClaims(x, line),
-      ...refClaims(x, line),
-      ...userClaims(x, line),
-      ...doneClaims(x, line),
-    ])
-      claims.add(claim);
-  for (const claim of conventionClaims(x, prose)) claims.add(claim);
-  return [...claims];
+  return [
+    ...new Set([
+      ...prose.flatMap((line) =>
+        [numberClaims, refClaims, userClaims, doneClaims].flatMap((f) =>
+          f(x, line),
+        ),
+      ),
+      ...conventionClaims(x, prose),
+    ]),
+  ];
 };

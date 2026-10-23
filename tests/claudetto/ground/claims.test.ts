@@ -7,7 +7,10 @@ import {
   findUnsourced,
   type Msg,
 } from "../../../plugins/claudetto/slices/ground/domain/claims.ts";
-import { planText } from "../../../plugins/claudetto/slices/ground/domain/plan.ts";
+import {
+  inScenario,
+  planText,
+} from "../../../plugins/claudetto/slices/ground/domain/plan.ts";
 
 const msg = (
   role: Msg["role"],
@@ -109,6 +112,15 @@ test("a mention of `npm` in prose or with a negation is no rule, and a plan line
 test("a rule in `CLAUDE.md` names the tool and passes", () => {
   const files = { "bun.lock": "", "CLAUDE.md": "Use `npm run build` here." };
   expect(findUnsourced("Run `npm run build`.", [], files)).toStrictEqual([]);
+});
+
+test("a rule in `AGENTS.md` or in a file of `.claude/rules/` names the tool and passes, when `CLAUDE.md` only imports", () => {
+  const base = { "bun.lock": "", "CLAUDE.md": "@AGENTS.md\n" };
+  for (const files of [
+    { ...base, "AGENTS.md": "Use `npm run build` here." },
+    { ...base, ".claude/rules/build.md": "Use `npm run build` here." },
+  ])
+    expect(findUnsourced("Run `npm run build`.", [], files)).toStrictEqual([]);
 });
 
 test("a done-claim fails with no `Bash` result in the turn, and passes with one", () => {
@@ -229,4 +241,31 @@ test("a flag or a subcommand of a package manager is a command, and the number a
   ])
     expect(findUnsourced(line, [], files)).toHaveLength(1);
   expect(findUnsourced("RFC 9110 has 7777 cases.", [], none)).toHaveLength(1);
+});
+
+test("an answer of `AskUserQuestion` counts as a message of the user", () => {
+  const ask = { ...msg("assistant", ""), answers: ['"Permit?"="Allow"'] };
+  expect(findUnsourced("The user chose Allow.", [ask], none)).toStrictEqual([]);
+  expect(findUnsourced("The user chose Refuse.", [ask], none)).toHaveLength(1);
+});
+
+test("`planText` skips the scenario blocks of a spec file, a test file, and a fixture", () => {
+  const spec = "/p/openspec/changes/c/specs/x/spec.md";
+  const content =
+    "#### Scenario: A\n\n- 292 lines\n\n### Requirement: B\n\n- 777";
+  expect(planText({ tool: "Write", file_path: spec, content })).toBe(
+    "### Requirement: B\n\n- 777",
+  );
+  for (const file_path of [
+    "/p/openspec/changes/c/a.test.ts",
+    "/p/openspec/changes/c/fixtures/a.md",
+  ])
+    expect(planText({ tool: "Write", file_path, content })).toBeNull();
+});
+
+test("`inScenario` is true for text inside a scenario block, and false after the next heading", () => {
+  const file = "### R\n\nx 1\n\n#### Scenario: A\n\n- 292\n\n### R2\n\n- 777";
+  expect(inScenario(file, "292")).toBe(true);
+  expect(inScenario(file, "777")).toBe(false);
+  expect(inScenario(file, "none")).toBe(false);
 });
