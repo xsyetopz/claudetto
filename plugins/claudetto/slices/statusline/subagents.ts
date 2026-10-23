@@ -1,5 +1,4 @@
 // The rows of `subagentStatusLine`: one row for each running subagent. The description fills the room that is left.
-
 import type { Paint } from "./color.ts";
 import { idLabel, span, thousands, windowText } from "./format.ts";
 import { ICON } from "./icons.ts";
@@ -7,22 +6,15 @@ import { DESCRIPTION_ROOM_MIN, ITEM_GAP, SUBAGENT_ROWS_MAX } from "./limits.ts";
 import type { SubagentInput, Task } from "./types.ts";
 import { truncate, width } from "./width.ts";
 
-/** The model and effort of a task, dimmed, or `""` when the task has no model. */
-const modelText = (task: Task, paint: Paint): string =>
-  task.model
-    ? ` ${paint.dim(`${idLabel(task.model)}${task.effort ? ` ${task.effort}` : ""}`)}`
-    : "";
-
 /** The context use of a task in its color, or `""` when the task has no tokens. */
 const contextText = (task: Task, paint: Paint): string => {
   const tokens = task.tokenCount ?? 0;
-  if (tokens <= 0) return "";
   const size = task.contextWindowSize;
+  if (tokens <= 0) return "";
   const percent = size ? Math.min(100, Math.round((tokens / size) * 100)) : 0;
+  const used = `${ICON.context} ${thousands(tokens)}`;
   return paint.level(percent)(
-    size
-      ? `${ICON.context} ${thousands(tokens)}/${windowText(size)} ${percent}%`
-      : `${ICON.context} ${thousands(tokens)}`,
+    size ? `${used}/${windowText(size)} ${percent}%` : used,
   );
 };
 
@@ -48,8 +40,11 @@ const renderTask = (
   const name = task.name || agentType || "agent";
   const type =
     agentType && agentType !== name ? paint.dim(` (${agentType})`) : "";
+  const model = task.model
+    ? ` ${paint.dim(`${idLabel(task.model)}${task.effort ? ` ${task.effort}` : ""}`)}`
+    : "";
   const line = [
-    `${ICON.agent} ${paint.bold(name)}${type}${modelText(task, paint)}`,
+    `${ICON.agent} ${paint.bold(name)}${type}${model}`,
     contextText(task, paint),
     timeText(task, now, paint),
   ]

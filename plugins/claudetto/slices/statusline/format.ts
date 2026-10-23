@@ -1,5 +1,4 @@
 // The number formats of the status line, the name of a model, and the pace of a limit window.
-
 import { PACE_MIN_FRACTION, PROJECTED_RUNOUT } from "./limits.ts";
 
 export const thousands = (n: number): string => `${Math.round(n / 1000)}k`;
@@ -40,11 +39,10 @@ export const baseName = (dir: string): string =>
 /** A model id as Claude Code gives it, without the `claude-` prefix: `sonnet-5-5`. */
 export const idLabel = (id: string): string => id.replace(/^claude-/, "");
 
-/** `used_percentage` is in percent, and `resets_at` is in seconds. */
+/** `used_percentage` is in percent, and `resets_at` is in seconds. The spend limit only has the `usd` fields and `period`. */
 export type LimitWindow = {
   used_percentage?: number;
   resets_at?: number | null;
-  /** The spend limit only, and each can be absent. */
   used_usd?: number;
   limit_usd?: number;
   period?: string;

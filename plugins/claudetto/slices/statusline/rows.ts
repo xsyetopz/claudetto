@@ -1,5 +1,4 @@
 // The rows of the main status line: the segments of a row, aligned in columns, joined, and fitted to the width.
-
 import type { StatusSegment } from "../../kernel/slice.ts";
 import { ITEM_GAP, MAX_ROWS } from "./limits.ts";
 import { truncate, width } from "./width.ts";
@@ -60,8 +59,7 @@ const align = (rows: Cells[], columns: number): string[] => {
 
 /**
  * The plans are tried in order: `segments`, then `fallback`, each with the full times and then the countdowns.
- * A plan is built only when the plans before it fail, and the first plan that keeps every item at `columns` wins.
- * When none does, the last plan is used.
+ * The first plan that keeps every item at `columns` wins, and when none does, the last plan is used.
  */
 export const renderRows = (
   segments: readonly StatusSegment[],

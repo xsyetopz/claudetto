@@ -1,15 +1,15 @@
 // The git state of the working folder, cached for `GIT_CACHE_MS` in one file for each repository, in the folder `claudetto-git-<uid>` of `os.tmpdir()`.
 // The status line runs every `REFRESH_SECONDS`, so the cache keeps `git` from running on each refresh.
-
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { failureText } from "../../../kernel/node/hook-io.ts";
 import type { FileReader, ProcessRunner } from "../../../kernel/ports.ts";
+import { parseJson } from "../../../kernel/text.ts";
 import { GIT_CACHE_MS, GIT_TIMEOUT_MS } from "../limits.ts";
 import type { GitFault, GitState } from "../types.ts";
 
-export interface GitPorts {
+interface GitPorts {
   readonly files: FileReader;
   readonly write: (file: string, text: string) => Promise<void>;
   readonly now: () => number;
@@ -47,9 +47,8 @@ export const cacheFile = (
   return path.join(folder, `claudetto-git-${key.slice(0, 16)}.jsonl`);
 };
 
-const CONTROL = /\p{Cc}/u;
 const plain = (v: unknown): boolean =>
-  typeof v === "string" && v !== "" && !CONTROL.test(v);
+  typeof v === "string" && v !== "" && !/\p{Cc}/u.test(v);
 const count = (v: unknown): boolean =>
   Number.isSafeInteger(v) && (v as number) >= 0;
 
@@ -83,10 +82,7 @@ const parseStatus = (text: string): GitState | null => {
 const oneLine = (text: string): string =>
   (text.trim().split("\n")[0] ?? "").replace(/\p{Cc}/gu, "").slice(0, 120);
 
-/**
- * A folder that is no repository gives `null`: `git status` exits with 128 and `git rev-parse --git-dir` fails too.
- * The check reads exit codes and no message, so the language of `git` does not matter.
- */
+/** A folder that is no repository gives `null`: `git status` exits with 128 and `git rev-parse --git-dir` fails too. The check reads exit codes and no message, so the language of `git` does not matter. */
 const runGit = (dir: string, { runner, env }: GitPorts): GitView => {
   const git = (args: string[]) =>
     runner.run("git", args, { cwd: dir, timeout: GIT_TIMEOUT_MS, env });
@@ -129,14 +125,13 @@ export const cachedGitState = async (
   const attempt = async <T>(run: () => Promise<T>): Promise<T | undefined> =>
     run().catch((err) => void onError(failureText(err)));
   if (file !== null) {
-    const text = await attempt(() => ports.files.read(file));
-    const saved: { at?: unknown; state?: unknown } | null = (() => {
-      try {
-        return text ? JSON.parse(text) : null;
-      } catch {
-        return null; // A torn or damaged file is no cache.
-      }
-    })();
+    // A torn or damaged file is no cache.
+    const saved = parseJson(
+      (await attempt(() => ports.files.read(file))) ?? "",
+    ) as {
+      at?: unknown;
+      state?: unknown;
+    } | null;
     const age = now - (saved?.at as number);
     if (
       typeof saved?.at === "number" &&

@@ -1,12 +1,10 @@
 // The width of text in terminal columns, and a cut to a width. A color sequence has no width.
-
 import { ICON } from "./icons.ts";
 
 const SPLIT = new RegExp(`(${String.fromCharCode(27)}\\[[0-9;]*m)`);
 
 export const plainText = (text: string): string => Bun.stripANSI(text);
 
-/** The columns of `text`: a color sequence has none, and the width rules of Unicode decide the rest. */
 export const width = (text: string): number => Bun.stringWidth(text);
 
 /** `text` cut to `max` columns with `…` last. A reset closes the cut text, so no color leaks. */
@@ -16,8 +14,8 @@ export const truncate = (text: string, max: number): string => {
   let out = "";
   let columns = 0;
   let colored = false;
+  // The odd parts are the color sequences.
   for (const [index, part] of text.split(SPLIT).entries()) {
-    // The odd parts are the color sequences.
     if (index % 2 === 1) {
       out += part;
       colored = part !== "\u001b[0m";

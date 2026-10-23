@@ -85,7 +85,7 @@ test("the context shows the `used_percentage` and `context_window_size` of the i
       used_percentage: 51,
     },
   });
-  expect(text).toContain("▤ 51% of 1M");
+  expect(text).toContain("▤ ctx 51% of 1M");
 });
 
 const subagent = async (task: Record<string, unknown>) => {
@@ -102,8 +102,8 @@ const subagent = async (task: Record<string, unknown>) => {
 test("a subagent row shows the resolved `model`, `effort`, and `agentType` of the task, also when the caller overrode the model", async () => {
   const content = await subagent({
     id: "t1",
-    agentType: "claudetto:scout",
-    name: "scout",
+    agentType: "claudetto:Scout",
+    name: "Scout",
     status: "running",
     model: "claude-opus-5-5",
     effort: "max",
@@ -111,7 +111,7 @@ test("a subagent row shows the resolved `model`, `effort`, and `agentType` of th
     tokenCount: 100_000,
     startTime: NOW - 5000,
   });
-  expect(content).toContain("● scout opus-5-5 max");
+  expect(content).toContain("● Scout opus-5-5 max");
   expect(content).toContain("100k/1M 10%");
 });
 

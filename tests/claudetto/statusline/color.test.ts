@@ -23,7 +23,8 @@ test("the step of a percent changes at each bound of `USAGE_LEVELS`", () => {
   expect(stepOf(warn - 1)).toBe(GREEN);
   expect(stepOf(warn)).toBe(YELLOW);
   expect(stepOf(alarm - 1)).toBe(YELLOW);
-  expect(stepOf(alarm)).toBe(RED);
+  expect(stepOf(alarm)).toBe(YELLOW);
+  expect(stepOf(alarm + 1)).toBe(RED);
   expect(stepOf(100)).toBe(RED);
   expect(stepOf(250)).toBe(RED);
 });

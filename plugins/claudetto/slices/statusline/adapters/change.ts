@@ -1,6 +1,5 @@
 // The active openspec change: the task counts of `openspec/changes/<name>/tasks.md`.
 // It is the first change by name with an open task, or else the first change. The `archive` folder is not a change.
-
 import path from "node:path";
 import { countTasks } from "../../../kernel/change.ts";
 import { failureText } from "../../../kernel/node/hook-io.ts";
@@ -16,41 +15,34 @@ export const changeOf = (name: string, tasks: string): Change => {
     : { name, state: "open", done, total, next };
 };
 
-/** A folder with neither `tasks.md` nor `proposal.md` is no change. A failed read is the state `error`. */
-const readChange = async (
-  dir: string,
-  name: string,
-  files: FileReader,
-  onError: (text: string) => void,
-): Promise<Change | null> => {
-  try {
-    const tasks = await files.read(path.join(dir, name, "tasks.md"));
-    if (tasks !== null) return changeOf(name, tasks);
-    const proposal = await files.read(path.join(dir, name, "proposal.md"));
-    return proposal === null ? null : { name, state: "planning" };
-  } catch (err) {
-    onError(failureText(err));
-    return { name, state: "error" };
-  }
-};
-
 export const activeChange = async (
   root: string,
   files: FileReader,
   onError: (text: string) => void,
 ): Promise<Change | null> => {
-  const dir = path.join(root, CHANGES_DIR);
-  let names: string[];
-  try {
-    names = await files.list(dir);
-  } catch (err) {
-    onError(failureText(err));
-    return null;
+  const failed = (err: unknown) => void onError(failureText(err));
+  // The session folder can be below the project root, so walk up to the first folder with a change.
+  let dir: string;
+  let names: string[] | null;
+  for (let at = root; ; at = path.dirname(at)) {
+    dir = path.join(at, CHANGES_DIR);
+    names = await files.list(dir).catch((err) => {
+      failed(err);
+      return null;
+    });
+    if (names?.length || path.dirname(at) === at) break;
   }
   const changes: Change[] = [];
-  for (const name of names.filter((n) => n !== "archive").sort()) {
-    const change = await readChange(dir, name, files, onError);
-    if (change) changes.push(change);
-  }
+  for (const name of (names ?? []).filter((n) => n !== "archive").sort())
+    try {
+      const tasks = await files.read(path.join(dir, name, "tasks.md"));
+      // A folder with neither `tasks.md` nor `proposal.md` is no change.
+      if (tasks !== null) changes.push(changeOf(name, tasks));
+      else if ((await files.read(path.join(dir, name, "proposal.md"))) !== null)
+        changes.push({ name, state: "planning" });
+    } catch (err) {
+      failed(err);
+      changes.push({ name, state: "error" });
+    }
   return changes.find((c) => c.state === "open") ?? changes[0] ?? null;
 };

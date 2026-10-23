@@ -21,7 +21,7 @@ test("an Opus session with a 1M window shows the `used_percentage` and the windo
     context_window_size: 1_000_000,
     used_percentage: 12,
   });
-  expect(text).toContain("▤ 12% of 1M ⇥47%");
+  expect(text).toContain("▤ ctx 12% of 1M ⇥47%");
 });
 
 test("an Opus session counts the distance from the handoff trigger of 225k tokens", async () => {
@@ -30,16 +30,16 @@ test("an Opus session counts the distance from the handoff trigger of 225k token
     context_window_size: 300_000,
     used_percentage: 15,
   });
-  expect(text).toContain("▤ 15% of 300k ⇥80%");
+  expect(text).toContain("▤ ctx 15% of 300k ⇥80%");
 });
 
-test("a Haiku session counts the distance from the Haiku trigger of 100k tokens", async () => {
+test("a Haiku session counts the distance from the Haiku trigger of 90k tokens", async () => {
   const { text } = await withContext("claude-haiku-4-5", {
     total_input_tokens: 40_000,
     context_window_size: 200_000,
     used_percentage: 20,
   });
-  expect(text).toContain("▤ 20% of 200k ⇥60%");
+  expect(text).toContain("▤ ctx 20% of 200k ⇥56%");
 });
 
 test("the compaction profile shows the distance to the compaction threshold with its own icon", async () => {
@@ -52,7 +52,7 @@ test("the compaction profile shows the distance to the compaction threshold with
     },
     { CLAUDE_PLUGIN_OPTION_COMPACTION: "built-in" },
   );
-  expect(text).toContain("▤ 15% of 300k ⇲80%");
+  expect(text).toContain("▤ ctx 15% of 300k ⇲80%");
 });
 
 test("a context past the trigger shows `now`", async () => {
@@ -101,11 +101,11 @@ const colored = async (model: string, tokens: number): Promise<string> => {
 };
 
 test("the context is normal far from the trigger, warning within 10% of it, and limit from it", async () => {
-  expect(await colored("claude-opus-5-5", 100_000)).toContain(`${GREEN}▤`);
-  expect(await colored("claude-opus-5-5", 203_000)).toContain(`${YELLOW}▤`);
-  expect(await colored("claude-opus-5-5", 225_000)).toContain(`${RED}▤`);
-  expect(await colored("claude-haiku-4-5", 92_000)).toContain(`${YELLOW}▤`);
-  expect(await colored("claude-haiku-4-5", 50_000)).toContain(`${GREEN}▤`);
+  expect(await colored("claude-opus-5-5", 100_000)).toContain(`${GREEN}⇥`);
+  expect(await colored("claude-opus-5-5", 203_000)).toContain(`${YELLOW}⇥`);
+  expect(await colored("claude-opus-5-5", 225_000)).toContain(`${RED}⇥`);
+  expect(await colored("claude-haiku-4-5", 82_000)).toContain(`${YELLOW}⇥`);
+  expect(await colored("claude-haiku-4-5", 50_000)).toContain(`${GREEN}⇥`);
 });
 
 test("Claude Code gives no plugin option to a `statusLine` command, so the profile reads `pluginConfigs` of the user settings", async () => {
@@ -132,7 +132,7 @@ test("Claude Code gives no plugin option to a `statusLine` command, so the profi
       },
     },
   );
-  expect(text).toContain("▤ 15% of 300k ⇲80%");
+  expect(text).toContain("▤ ctx 15% of 300k ⇲80%");
 });
 
 test("a settings file that is not JSON leaves the handoff icon and logs the cause", async () => {
@@ -152,6 +152,6 @@ test("a settings file that is not JSON leaves the handoff icon and logs the caus
       },
     },
   );
-  expect(text).toContain("▤ 15% of 300k ⇥80%");
+  expect(text).toContain("▤ ctx 15% of 300k ⇥80%");
   expect(run.err.length).toBeGreaterThan(0);
 });

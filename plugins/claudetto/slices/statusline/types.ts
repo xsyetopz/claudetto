@@ -1,5 +1,4 @@
 // The shapes that the status line reads. Claude Code can leave any field out.
-
 import type { Paint } from "./color.ts";
 import type { LimitWindow } from "./format.ts";
 
@@ -12,18 +11,17 @@ export type StatusInput = {
     total_lines_added?: number;
     total_lines_removed?: number;
   };
+  /** `used_percentage` is `null` before the first message. */
   context_window?: {
     total_input_tokens?: number;
     context_window_size?: number;
-    /** `null` before the first message. */
     used_percentage?: number | null;
   };
+  /** `ttl` is `5m` or `1h`, and `hit_ratio` is from 0 to 1 (`null` while no input tokens are counted). */
   prompt_cache?: {
     warm?: boolean;
     caching_observed?: boolean;
-    /** The lifetime of the cached prefix: `5m` or `1h`. */
     ttl?: string;
-    /** From 0 to 1, `null` while no input tokens are counted. */
     hit_ratio?: number | null;
     expires_at?: number | null;
     recache_tokens_if_cold?: number | null;
@@ -52,16 +50,10 @@ export type GitFault = { error: string };
 /** The active openspec change. `next` is the id of the first open task. */
 export type Change =
   | { name: string; state: "planning" | "error" }
-  | {
-      name: string;
-      state: "open";
-      done: number;
-      total: number;
-      next: string;
-    }
+  | { name: string; state: "open"; done: number; total: number; next: string }
   | { name: string; state: "done"; total: number };
 
-/** What a segment reads. `now` is in milliseconds, and `compact` means countdown times in place of the clock. */
+/** What a segment reads. `now` is in milliseconds, `compact` means countdown times in place of the clock, and `compaction` is true for the `built-in` compaction. */
 export type Status = {
   input: StatusInput;
   folder: string;
@@ -69,7 +61,6 @@ export type Status = {
   change: Change | null;
   now: number;
   paint: Paint;
-  /** True for the `built-in` compaction, so the context nears the compaction and not a handoff. */
   compaction: boolean;
   compact: boolean;
 };

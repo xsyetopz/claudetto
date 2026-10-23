@@ -2,10 +2,7 @@
 
 import type { FileReader } from "../../../plugins/claudetto/kernel/ports.ts";
 import type { Deps } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
-import {
-  paintOf,
-  themeOf,
-} from "../../../plugins/claudetto/slices/statusline/color.ts";
+import { paintOf } from "../../../plugins/claudetto/slices/statusline/color.ts";
 
 // The clock of a limit prints local time, so the tests that print it fix the zone to UTC and do not depend on `TZ`.
 process.env["TZ"] = "UTC";
@@ -83,9 +80,9 @@ export const depsFor = (
   ...over,
 });
 
-/** The styles of the `dark` theme, and the styles with no color. */
-export const DARK = paintOf(themeOf("dark"));
-export const NO_COLOR = paintOf(null);
+/** The styles with color, and the styles with no color. */
+export const DARK = paintOf(true);
+export const NO_COLOR = paintOf(false);
 
 /** The rows of one run of `main` on `STATUS` with `patch` merged in, with the env and the deps of `over`. */
 export const rowsOf = async (

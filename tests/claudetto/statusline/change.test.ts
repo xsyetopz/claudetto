@@ -39,6 +39,18 @@ test("a change with open tasks shows the count and the next task", async () => {
   expect(text).toContain("◆ add-login 2/4 ▸2.1");
 });
 
+test("a row too wide for the change name keeps the count and the next task", async () => {
+  const name = "release-with-a-very-long-change-name-for-a-narrow-terminal";
+  const { text } = await rowsOf(
+    {},
+    {
+      files: project({ [`${DIR}/${name}/tasks.md`]: TASKS }),
+      env: { COLUMNS: "80", NO_COLOR: "1" },
+    },
+  );
+  expect(text).toContain("◆ 2/4 ▸2.1");
+});
+
 test("a change with a proposal and no task is in planning", async () => {
   const { text } = await rowsOf(
     {},
@@ -93,6 +105,15 @@ test("the active change is the first one with an open task, and the archive is s
     next: "2.1",
   });
   expect(errors).toStrictEqual([]);
+});
+
+test("a folder below the project root finds the change of the nearest parent with `openspec/changes`", async () => {
+  const change = await activeChange(
+    `${DIR}/b-open`,
+    project({ [`${DIR}/b-open/tasks.md`]: TASKS }),
+    () => {},
+  );
+  expect(change).toMatchObject({ name: "b-open", done: 2, next: "2.1" });
 });
 
 test("`changeOf` counts only the lines that start with a task box", () => {
