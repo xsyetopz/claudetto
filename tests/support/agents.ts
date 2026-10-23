@@ -5,7 +5,14 @@ import { parse } from "yaml";
 import { PLUGINS } from "./repo.ts";
 
 export const AGENTS = path.join(PLUGINS, "claudetto/agents");
-export const ROSTER = ["scout", "worker", "reviewer", "researcher"];
+export const ROSTER = [
+  "Scout",
+  "Scoper",
+  "Reviewer",
+  "Researcher",
+  "Worker",
+  "Tester",
+];
 
 /** The frontmatter of the agent file `name`, or `null` when the file is absent. */
 export const front = async (
