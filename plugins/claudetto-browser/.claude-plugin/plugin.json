@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-plugin-manifest.json",
   "name": "claudetto-browser",
-  "version": "0.3.0-alpha.1",
+  "version": "0.3.0-alpha.2",
   "description": "Drives a real browser with `agent-browser` for pages that need JavaScript, a login, or clicks, and for checks of a UI change. `WebFetch` and `WebSearch` stay the tools for reading and search, because they cost fewer tokens.",
   "author": {
     "name": "xsyetopz"

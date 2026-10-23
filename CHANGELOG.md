@@ -9,6 +9,8 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ## [Unreleased]
 
+## [0.3.0-alpha.2] - 2026-10-23
+
 ## [0.3.0-alpha.1] - 2026-10-22
 
 ### Removed
@@ -476,4 +478,4 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 | [0.1 and 0.2](https://github.com/xsyetopz/claudetto/wiki/Release-0.1-0.2) | 0.2.0, 0.1.0 |
 
 [unreleased]:
-  https://github.com/xsyetopz/claudetto/compare/claudetto--v0.3.0-alpha.1...HEAD
+  https://github.com/xsyetopz/claudetto/compare/claudetto--v0.3.0-alpha.2...HEAD

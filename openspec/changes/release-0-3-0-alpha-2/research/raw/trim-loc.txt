@@ -1,0 +1,97 @@
+$ per slice (non-test .ts/.py/.md/.json under slices/<s>), wc -l
+agents code_lines=      27 files=       1
+decide code_lines=    1232 files=      10
+dry code_lines=     213 files=       4
+goal code_lines=     118 files=       4
+ground code_lines=     346 files=       4
+guard code_lines=     944 files=       9
+handoff code_lines=     682 files=       7
+hygiene code_lines=     465 files=       6
+prompt code_lines=     230 files=       6
+reply code_lines=      45 files=       2
+setup code_lines=     803 files=       8
+spec code_lines=     793 files=      18
+statusline code_lines=    1145 files=      13
+styles code_lines=       0 files=       0
+$ kernel files
+      12 plugins/claudetto/kernel/compaction.ts
+      14 plugins/claudetto/kernel/slice.ts
+      16 plugins/claudetto/kernel/errors.ts
+      19 plugins/claudetto/kernel/text.ts
+      23 plugins/claudetto/kernel/plugin-option.ts
+      31 plugins/claudetto/kernel/paths.ts
+      34 plugins/claudetto/kernel/model.ts
+      37 plugins/claudetto/kernel/ports.ts
+      38 plugins/claudetto/kernel/ground.ts
+      43 plugins/claudetto/kernel/shell/delimiter.ts
+      45 plugins/claudetto/kernel/node/process.ts
+      55 plugins/claudetto/kernel/node/hook-io.ts
+      62 plugins/claudetto/kernel/shell/ansi-c.ts
+      73 plugins/claudetto/kernel/change.ts
+      82 plugins/claudetto/kernel/budget.ts
+      97 plugins/claudetto/kernel/node/fs.ts
+     119 plugins/claudetto/kernel/shell/braces.ts
+     125 plugins/claudetto/kernel/shell.ts
+     152 plugins/claudetto/kernel/wrappers.ts
+     155 plugins/claudetto/kernel/shellkinds.ts
+     349 plugins/claudetto/kernel/shell/scan.ts
+    1581 total
+$ other plugin files
+     102 plugins/claudetto/hooks/register.ts
+      12 plugins/claudetto/snippets.ts
+       5 plugins/claudetto/bin/claudetto-decide
+       5 plugins/claudetto/bin/claudetto-setup
+       5 plugins/claudetto/bin/claudetto-statusline
+       5 plugins/claudetto/bin/jscpd-config
+       3 plugins/claudetto/bin/minispec
+     137 total
+$ agents
+     131 plugins/claudetto/agents/main.md
+      16 plugins/claudetto/agents/researcher.md
+      16 plugins/claudetto/agents/reviewer.md
+      15 plugins/claudetto/agents/scout.md
+      16 plugins/claudetto/agents/worker.md
+     194 total
+$ tools top-level and folders
+    2264 total
+tools/builtins/     1176
+tools/capture/      524
+tools/docker/       52
+tools/eval-compare/      180
+tools/generate/      160
+tools/lint/        8
+tools/sandbox/      641
+tools/schema/      916
+tools/stats/      610
+tools/yolo/      270
+$ test lines per slice
+agents       81
+decide     1626
+dry      182
+evals     5047
+goal       60
+ground      232
+guard      685
+handoff      358
+hygiene      384
+prompt      354
+reply       14
+setup     1001
+spec     2494
+statusline     2054
+styles      165
+surface       55
+$ tests/kernel tests/support
+tests/kernel      764
+tests/support     2540
+$ plugin tests dir
+plugins/claudetto/tests/profile.test.ts
+plugins/claudetto/tests/agents.test.ts
+plugins/claudetto/tests/off.test.ts
+plugins/claudetto/tests/hygiene.test.ts
+plugins/claudetto/tests/change.test.ts
+plugins/claudetto/tests/progress.test.ts
+plugins/claudetto/tests/ask.test.ts
+plugins/claudetto/tests/cache.test.ts
+plugins/claudetto/tests/tool.test.ts
+plugins/claudetto/tests/ground.test.ts

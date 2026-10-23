@@ -1,0 +1,56 @@
+default Bash description chars 1688
+Git section chars (from "# Git" to end) 665 with preceding blank line 667
+Bash description without Git section 1021
+claudetto TOOL_BASH 1048 vs default-without-git 1021
+Agent 3227 809 saved 2418
+Bash 1688 1048 saved 640
+Edit 360 280 saved 80
+Read 790 558 saved 232
+Skill 1417 998 saved 419
+ToolSearch 953 611 saved 342
+Write 240 231 saved 9
+total saved chars if all applied 4140 approx tokens (chars/4) 1035
+deferred: ListAgents 777 + Workflow 3480 = 4257 approx tokens 1064
+denied: ScheduleWakeup 3396 + ReportFindings 574 = 3970
+Notes block per subagent (subagent-custom system[2] 1344 minus body 59) 1285
+Default lean body system[2] 5627 main.md body 9351 delta 3724
+agent types list saved by disable-explore-plan 905 by disable-builtin-agents 1638
+Explore+Plan+general-purpose+statusline-setup+claude lines in env message approx 1642
+
+--- default-sonnet.md line spans (chars, newlines included)
+skills block lines 143-159 5969
+agent types block lines 134-141 1636
+deferred tools block lines 122-132 359
+memory section lines 63-84 2061
+harness+intro lines 43-58 2205
+environment bullets lines 86-89 579
+context management lines 91-94 559
+untrusted-downloads bullet line 118 475
+pronoun paragraph line 56 357
+security IMPORTANT line 45 459
+
+--- extra sums
+schema chars of the 7 kept tools (no lever to edit) 6366
+default descriptions of 7 kept tools 8675
+claudetto descriptions of 7 kept tools 4535
+SendMessage default 4259 proposed target 600 saved when loaded 3659
+EnterWorktree default 3220 proposed target 500 saved when loaded 2720
+ExitWorktree default 1923 proposed target 400 saved when loaded 1523
+sum saved when all three load 7902
+git-off removes git status 571 + attribution 592 = 1163
+Agent text proposed add-back 2 lines about 250 chars, about tokens 62
+env message of default-sonnet 8854 minus skills 5969 minus agent types 1636 = 1249
+plan mode extra (docs say about 4.8k); proposed replacement 300
+subagent env message 7130 minus skills 5969 = 1161
+
+--- token estimates (chars divided by 4, rounded down)
+plan mode extra chars 20394 - 15515 = 4879 replace with 300 saves 4579 tokens 1144
+sum saved when SendMessage EnterWorktree ExitWorktree load tokens 1975
+Notes block per spawn tokens 321
+skills list 5969 chars tokens 1492 agent types 1636 chars tokens 409
+print-mode disable builtin agents 1638 chars tokens 409
+git rules back into main.md about 170 chars tokens 42
+main.md body 9351 chars tokens 2337 lean body 5627 tokens 1406
+memory section 2061 chars tokens 515
+git-off reminders 1163 chars tokens 290
+default Agent description 3227 minus 809 = 2418 tokens 604

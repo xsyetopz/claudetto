@@ -1,0 +1,64 @@
+$ sed -n "/^## All Variants/,/^See also/p" docs/prompts/index.md | cut -d"|" -f2,4,5
+ Variant | Characters | Tools 
+ --- | --- | --- 
+ [Default, Lean Prompt](./default-lean.md) | 15,515 | 12 
+ [Default, Sonnet 5.5](./default-sonnet.md) | 15,521 | 12 
+ [Default, Haiku 5.5](./default-haiku.md) | 18,310 | 12 
+ [Full Prompt](./full-prompt.md) | 36,899 | 12 
+ [Simple Prompt Switch on Sonnet](./simple-prompt-sonnet.md) (same text as default-sonnet) | 15,521 | 12 
+ [Simple Prompt Switch on Haiku](./simple-prompt-haiku.md) (same text as default-haiku) | 18,310 | 12 
+ [Simple Prompt Switch on Opus](./simple-prompt-opus.md) (same text as default-lean) | 15,515 | 12 
+ [Bare Mode](./bare.md) | 376 | 3 
+ [Simple Mode Env Var](./simple-env.md) (same text as bare) | 376 | 3 
+ [Exclude Dynamic Sections](./exclude-dynamic.md) | 15,410 | 12 
+ [Exclude Dynamic Sections, Full Prompt](./exclude-dynamic-full.md) | 36,909 | 12 
+ [Output Style, Explanatory](./style-explanatory.md) | 16,702 | 12 
+ [Output Style, Learning](./style-learning.md) | 20,561 | 12 
+ [Output Style, Proactive](./style-proactive.md) | 17,021 | 12 
+ [Output Style, Concise](./style-concise.md) | 17,055 | 12 
+ [Custom Output Style](./style-custom.md) | 15,733 | 12 
+ [Custom Output Style on the Full Prompt](./style-custom-full.md) | 33,796 | 12 
+ [Custom Output Style with Keep Coding Instructions](./style-custom-keep.md) | 37,117 | 12 
+ [Custom Output Style with Keep Coding Instructions, Lean Prompt](./style-custom-keep-lean.md) (same text as style-custom) | 15,733 | 12 
+ [Append System Prompt](./append-system-prompt.md) | 15,572 | 12 
+ [Replace System Prompt](./system-prompt.md) | 9,914 | 12 
+ [Replace and Append Together](./system-prompt-append.md) | 9,971 | 12 
+ [With a CLAUDE.md File](./claude-md.md) | 15,904 | 12 
+ [Inside a Git Repository](./git-repo.md) | 16,131 | 12 
+ [Main Thread Custom Agent](./agent-main.md) | 10,016 | 12 
+ [Permission Mode, Plan](./mode-plan.md) | 20,394 | 12 
+ [Permission Mode, Accept Edits](./mode-acceptEdits.md) (same text as default-lean) | 15,515 | 12 
+ [Permission Mode, Don't Ask](./mode-dontAsk.md) (same text as default-lean) | 15,515 | 12 
+ [Brief Mode](./brief.md) (same text as default-lean) | 15,515 | 12 
+ [Compaction Prompt](./compact.md) | 21,975 | 12 
+ [Subagent, General Purpose](./subagent-general-purpose.md) | 10,929 | 8 
+ [Subagent, Explore](./subagent-explore.md) | 11,459 | 5 
+ [Subagent, Plan](./subagent-plan.md) | 11,766 | 5 
+ [Subagent, Custom Agent](./subagent-custom.md) | 9,553 | 8 
+ [Subagent, Statusline Setup](./subagent-statusline-setup.md) | 15,551 | 2 
+ [Subagent, Claude (FleetView)](./subagent-claude.md) | 11,328 | 8 
+ [Subagent, Web Fetch](./subagent-web-fetch.md) | 5,525 | 1 
+ [Subagent, Claude Code Guide](./subagent-claude-code-guide.md) | 29,062 | 4 
+ [Override a Built-in Agent with a File](./override-agent-file.md) | 9,566 | 8 
+ [Override a Built-in Agent with --agents](./override-agents-flag.md) | 9,547 | 8 
+ [Append to Every Subagent Prompt](./override-append-subagent.md) | 11,487 | 5 
+ [Turn Off the Explore and Plan Agents](./disable-explore-plan.md) | 14,610 | 12 
+ [Turn Off All Built-in Agents](./disable-builtin-agents.md) | 13,877 | 12 
+ [Command, /init](./command-init.md) | 17,160 | 12 
+ [Command, /security-review](./command-security-review.md) | 16,040 | 12 
+ [Skill, /simplify](./command-simplify.md) | 18,392 | 12 
+ [Skill, /debug](./command-debug.md) | 17,162 | 12 
+ [Override /init with a Command File](./override-command-init.md) | 15,624 | 12 
+ [Override /simplify with a Skill File](./override-skill-simplify.md) | 15,577 | 12 
+ [Prompt Hook Request](./hook-prompt.md) | 1,478 | 0 
+ [Agent Hook Request](./hook-agent.md) | 2,362 | 10 
+ [Auto Mode Classifier](./auto-classifier.md) | 140,718 | 0 
+ [Auto Mode Classifier, Custom Rules](./auto-classifier-custom.md) | 76,028 | 0 
+ [Compaction Prompt, Custom Instructions](./compact-custom.md) | 22,485 | 12 
+ [Plan Mode, Custom Workflow](./plan-mode-instructions.md) | 17,011 | 12 
+ [Git Instructions Turned Off](./git-instructions-off.md) | 14,877 | 12 
+ [Auto Memory Turned Off](./memory-off.md) | 13,452 | 12 
+ [Custom Output Style with a Built-in Name](./style-override-builtin.md) | 15,730 | 12 
+ [Subagent with --system-prompt and --append-system-prompt](./subagent-with-prompt-flags.md) | 11,491 | 5 
+ [Prompt Hook on Stop](./hook-prompt-stop.md) | 12,416 | 0 
+ [All Tools Sent Upfront](./tools-upfront.md) | 15,154 | 20 

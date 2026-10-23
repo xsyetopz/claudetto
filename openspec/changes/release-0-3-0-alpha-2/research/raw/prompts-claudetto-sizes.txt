@@ -1,0 +1,26 @@
+$ bun -e (import prompts.ts, print length of each export)
+CONTEXT_MANAGEMENT_BUILT_IN 140
+CONTEXT_MANAGEMENT_HANDOFF 129
+CONTEXT_MANAGEMENT_OFF 91
+SHELL_MACOS 115
+SHELL_ZSH 125
+TOOL_AGENT 809
+TOOL_BASH 1048
+TOOL_EDIT 280
+TOOL_READ 558
+TOOL_SKILL 998
+TOOL_TOOL_SEARCH 611
+TOOL_WRITE 231
+
+$ wc -c plugins/claudetto/agents/*.md plugins/claudetto/output-styles/Concise.md plugins/claudetto/slices/setup/snippet-0.2.0.json
+    9459 plugins/claudetto/agents/main.md
+     638 plugins/claudetto/agents/researcher.md
+     618 plugins/claudetto/agents/reviewer.md
+     580 plugins/claudetto/agents/scout.md
+     681 plugins/claudetto/agents/worker.md
+    1451 plugins/claudetto/output-styles/Concise.md
+   10153 plugins/claudetto/slices/setup/snippet-0.2.0.json
+   23580 total
+
+$ bun -e main.md body length (without frontmatter)
+9351

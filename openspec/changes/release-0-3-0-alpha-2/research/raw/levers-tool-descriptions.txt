@@ -1,0 +1,22 @@
+### `Agent` :: Sent in full by default: ✅ Yes. Description: 3,227 characters. Schema: 1,942 characters.
+### `Bash` :: Sent in full by default: ✅ Yes. Description: 1,688 characters. Schema: 1,720 characters.
+### `CronCreate` :: Sent in full by default: ❌ No, deferred. Description: 3,123 characters. Schema: 958 characters.
+### `CronDelete` :: Sent in full by default: ❌ No, deferred. Description: 167 characters. Schema: 206 characters.
+### `CronList` :: Sent in full by default: ❌ No, deferred. Description: 106 characters. Schema: 119 characters.
+### `Edit` :: Sent in full by default: ✅ Yes. Description: 360 characters. Schema: 552 characters.
+### `EnterWorktree` :: Sent in full by default: ❌ No, deferred. Description: 3,220 characters. Schema: 687 characters.
+### `ExitWorktree` :: Sent in full by default: ❌ No, deferred. Description: 1,923 characters. Schema: 481 characters.
+### `ListAgents` :: Sent in full by default: ✅ Yes. Description: 777 characters. Schema: 316 characters.
+### `NotebookEdit` :: Sent in full by default: ❌ No, deferred. Description: 619 characters. Schema: 940 characters.
+### `Read` :: Sent in full by default: ✅ Yes. Description: 790 characters. Schema: 1,071 characters.
+### `ReportFindings` :: Sent in full by default: ✅ Yes. Description: 574 characters. Schema: 1,545 characters.
+### `ScheduleWakeup` :: Sent in full by default: ✅ Yes. Description: 3,396 characters. Schema: 1,392 characters.
+### `SendMessage` :: Sent in full by default: ❌ No, deferred. Description: 4,259 characters. Schema: 1,291 characters.
+### `Skill` :: Sent in full by default: ✅ Yes. Description: 1,417 characters. Schema: 327 characters.
+### `TaskStop` :: Sent in full by default: ❌ No, deferred. Description: 364 characters. Schema: 366 characters.
+### `WebFetch` :: Sent in full by default: ❌ No, deferred. Description: 469 characters. Schema: 554 characters.
+### `WebSearch` :: Sent in full by default: ❌ No, deferred. Description: 334 characters. Schema: 468 characters.
+### `Workflow` :: Sent in full by default: ✅ Yes. Description: 3,480 characters. Schema: 1,775 characters.
+### `Write` :: Sent in full by default: ✅ Yes. Description: 240 characters. Schema: 348 characters.
+### `ToolSearch` :: Sent in full by default: ✅ Yes. Description: 953 characters. Schema: 406 characters.
+### `DeferredToolPlaceholder` :: Sent in full by default: ✅ Yes. Description: 83 characters. Schema: 33 characters.

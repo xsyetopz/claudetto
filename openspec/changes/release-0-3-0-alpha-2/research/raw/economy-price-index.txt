@@ -1,0 +1,23 @@
+$ sed -n 126,138p claude-code-docs/docs/configure/models-and-providers.md (prices, Undocumented, from the 2.1.309 binary)
+Haiku 5.5 costs `0.5` for input and `2.5` for output above 100,000 prompt tokens.
+| `claude-sonnet-5-5` | 2 | 10 | 2.5 | 4 | 0.1 |
+| `claude-opus-5-5` | 4 | 20 | 5 | 8 | 0.2 |
+| `claude-haiku-5-5` | 0.1 | 0.5 | 0.125 | 0.2 | 0.01 |
+$ sed -n 166,177p ... (effort cost index, catalog, normalized to own high=1)
+| `claude-haiku-5-5` | medium | 0.38, 0.52, 1, 2.03, 4.34 |
+| `claude-opus-5-5` | medium | 0.48, 0.66, 1, 1.66, 3.44 |
+
+$ awk: breakeven ratio r = tokens(Sonnet5.5 high)/tokens(Opus5.5 high) at which costs are equal (input price 2 vs 4, same 2x ratio for output and cache)
+Opus low: Opus cost = 4*0.48*To = 1.92 To. Sonnet high = 2*Ts. Equal at Ts/To = 0.96
+Opus medium: Opus cost = 4*0.66*To = 2.64 To. Sonnet high = 2*Ts. Equal at Ts/To = 1.32
+
+Thread numbers (user report 2026-09-29 "Sonnet 5.5 vs Opus 5.5 vs Sonnet 5 in Claude Code and pi", both High, 30/30 pass): Sonnet $0.15, Opus $0.36 per task
+cost ratio 2.40 -> Opus high tokens = 1.20 x Sonnet high tokens
+Opus low cost = 4*0.48*1.20 = 2.30 vs Sonnet high 2*1 = 2.00 (units of Ts*price)
+Opus medium cost = 4*0.66*1.20 = 3.17
+
+Thread numbers (user report "Rust decompressor", medium both): Opus $2.08, Sonnet $0.52
+cost ratio 4.00 -> Opus medium tokens = 2.00 x Sonnet medium tokens
+
+Sonnet 5.5 effort steps: medium->high x%.2f, low->high x%.2f
+Sonnet medium->high index x1.85 ; low->medium x1.10 ; Opus medium->high x1.52 ; Opus low->high x2.08

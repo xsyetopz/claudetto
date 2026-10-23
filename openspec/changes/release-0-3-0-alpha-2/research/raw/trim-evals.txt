@@ -1,0 +1,28 @@
+$ du -sh plugins/claudetto/{evals,slices,kernel,tests,skills,agents}
+ 98M	plugins/claudetto/evals
+516K	plugins/claudetto/slices
+108K	plugins/claudetto/kernel
+104K	plugins/claudetto/tests
+$ git ls-files plugins/claudetto/evals | wc -l
+      86
+$ ls evals
+accusation-subagent
+accusation-subagent-hard
+accusation-user
+accusation-user-hard
+accusation-warranted
+blind-cleanup-scratch-dir
+blind-count-from-tool
+blind-ctl-chunk-partial
+blind-ctl-delete-obsolete-legacy
+blind-ctl-real-empty-average
+$ git check-ignore
+$ tracked bytes under plugins/claudetto/evals
+  137524
+$ tracked wc -l
+    3414
+$ ignored count
+     196
+plugins/claudetto/evals/results/2026-10-19T09-04-56-602Z/aggregate-result.json
+plugins/claudetto/evals/results/2026-10-19T09-04-56-602Z/report.html
+plugins/claudetto/evals/results/2026-10-19T09-08-04-798Z/aggregate-result.json

@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-plugin-manifest.json",
   "name": "claudetto",
-  "version": "0.3.0-alpha.1",
+  "version": "0.3.0-alpha.2",
   "description": "Adds a lean output style, a main agent with a small agent roster, a permission gate for `Bash` commands, a status line command, and the `setup` skill. Adds the MiniSpec skills `propose`, `apply`, `verify`, and `archive`, a handoff file in place of the compaction summary, a `goal` check that blocks the stop until it passes, a ledger of edited files, and a cleanup at session start. Jev answers `AskUserQuestion` when a key is set.",
   "author": {
     "name": "xsyetopz"

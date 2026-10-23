@@ -1,0 +1,49 @@
+$ bunx jscpd plugins/claudetto --reporters console --min-lines 8 --min-tokens 60 --ignore "**/tests/**,**/*.d.ts,**/.claude-plugin/types/**,**/evals/**"
+Using config from .jscpd.json
+[1mClone found (yaml)[22m
+ - [1m[32mslices/spec/presets/epic/schema.yaml[39m[22m [34:33 - 47:24] (14 lines, 133 tokens)
+   slices/spec/presets/story/schema.yaml [16:16 - 29:24]
+[1mClone found (yaml)[22m
+ - [1m[32mslices/spec/presets/epic/schema.yaml[39m[22m [47:29 - 57:24] (11 lines, 112 tokens)
+   slices/spec/presets/story/schema.yaml [29:24 - 39:24]
+[1mClone found (yaml)[22m
+ - [1m[32mslices/spec/presets/epic/schema.yaml[39m[22m [66:28 - 88:23] (23 lines, 188 tokens)
+   slices/spec/presets/story/schema.yaml [47:44 - 69:23]
+[1mClone found (yaml)[22m
+ - [1m[32mslices/spec/presets/epic/schema.yaml[39m[22m [68:21 - 78:16] (11 lines, 74 tokens)
+   slices/spec/presets/task/schema.yaml [14:16 - 24:16]
+[90m┌────────────┬────────────────┬─────────────┬──────────────┬──────────────┬──────────────────┬───────────────────┐[39m
+[90m│[39m[31m Format     [39m[90m│[39m[31m Files analyzed [39m[90m│[39m[31m Total lines [39m[90m│[39m[31m Total tokens [39m[90m│[39m[31m Clones found [39m[90m│[39m[31m Duplicated lines [39m[90m│[39m[31m Duplicated tokens [39m[90m│[39m
+[90m├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m json       [90m│[39m 4              [90m│[39m 438         [90m│[39m 1124         [90m│[39m 0            [90m│[39m 0 (0.00%)        [90m│[39m 0 (0.00%)         [90m│[39m
+[90m├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m markdown   [90m│[39m 13             [90m│[39m 429         [90m│[39m 4813         [90m│[39m 0            [90m│[39m 0 (0.00%)        [90m│[39m 0 (0.00%)         [90m│[39m
+[90m├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m typescript [90m│[39m 89             [90m│[39m 8605        [90m│[39m 54090        [90m│[39m 0            [90m│[39m 0 (0.00%)        [90m│[39m 0 (0.00%)         [90m│[39m
+[90m├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m yaml       [90m│[39m 5              [90m│[39m 201         [90m│[39m 1955         [90m│[39m 4            [90m│[39m 59 (29.35%)      [90m│[39m 507 (25.93%)      [90m│[39m
+[90m├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤[39m
+[90m│[39m [1mTotal:[22m     [90m│[39m 111            [90m│[39m 9673        [90m│[39m 61982        [90m│[39m 4            [90m│[39m 59 (0.61%)       [90m│[39m 507 (0.82%)       [90m│[39m
+[90m└────────────┴────────────────┴─────────────┴──────────────┴──────────────┴──────────────────┴───────────────────┘[39m
+[90mFound 4 clones.[39m
+[90mtime: 31.502ms[39m
+$ bunx jscpd plugins/claudetto --format typescript --reporters console --min-lines 5 --min-tokens 40 (same ignores)
+Using config from .jscpd.json
+Clone found (typescript, similar (ast) ~0.83)
+ - slices/decide/prompts.ts [27:14 - 34:132] (8 lines, 44 tokens)
+   slices/handoff/prompts.ts [1:14 - 11:89]
+Clone found (typescript, similar (ast) ~0.83)
+ - slices/decide/prompts.ts [44:14 - 52:80] (9 lines, 36 tokens)
+   slices/decide/prompts.ts [76:14 - 81:97]
+Clone found (typescript, similar (ast) ~0.83)
+ - slices/ground/prompts.ts [1:14 - 8:18] (8 lines, 20 tokens)
+   slices/handoff/prompts.ts [56:14 - 63:30]
+┌────────────┬────────────────┬─────────────┬──────────────┬──────────────┬──────────────────┬───────────────────┐
+│ Format     │ Files analyzed │ Total lines │ Total tokens │ Clones found │ Duplicated lines │ Duplicated tokens │
+├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
+│ typescript │ 92             │ 8647        │ 54238        │ 3            │ 25 (0.29%)       │ 100 (0.18%)       │
+├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
+│ Total:     │ 92             │ 8647        │ 54238        │ 3            │ 25 (0.29%)       │ 100 (0.18%)       │
+└────────────┴────────────────┴─────────────┴──────────────┴──────────────┴──────────────────┴───────────────────┘
+Found 3 clones.
+time: 38.136ms

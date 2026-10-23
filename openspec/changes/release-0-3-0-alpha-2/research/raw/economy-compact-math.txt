@@ -1,0 +1,18 @@
+$ awk compaction trigger per docs formula: eff=window-min(out,20000), trigger=min(eff*pct/100, eff-13000)
+window 300000: effective 280000, pct trigger 225000, no-override trigger 267000, actual trigger 225000
+window 400000: effective 380000, pct trigger 305357, no-override trigger 367000, actual trigger 305357
+window 144444: effective 124444, pct trigger 100000, no-override trigger 111444, actual trigger 100000
+
+$ awk cache-read model: context ramps from base b=40k to trigger T, per-turn read of whole context at Opus 5.5 cache read 0.2 USD per M; compaction fixed cost K=0.30 USD (measured by one user as about 0.20 at 200k, see economy-compaction-reports.txt and economy-cache-reports.txt)
+T=225000: turns 62, avg ctx 132500, read cost per cycle 1.63 USD, per 100k new tokens 0.883 USD, compaction share per 100k 0.162 USD, total 1.045 USD
+T=305357: turns 88, avg ctx 172678, read cost per cycle 3.05 USD, per 100k new tokens 1.151 USD, compaction share per 100k 0.113 USD, total 1.264 USD
+ratio of read cost per unit work, T=305k vs T=225k: 1.30 (=(b+T2)/(b+T1))
+Opus 5.5 cache read of one full 225k context: 0.045 USD; of 305k: 0.061 USD; 1h cache write of 225k: 1.80 USD; 5m write: 1.12 USD
+
+$ awk compaction on 200k context: Opus 5.5 vs Haiku 5.5 if a route existed (none found in docs; summary output assumed 10k tokens)
+Opus 5.5 warm cache: read 0.040 + output 0.200 = 0.240 USD
+Haiku 5.5 cold (no cache hit, above 100k tier): input 0.100 + output 0.025 = 0.125 USD
+Extra cost of the two model switches: Opus 1h cache rewrite of 200k = 1.60 USD
+
+$ awk Haiku headroom: window for a 90k trigger with pct 80.3571 and out 20000
+window 132000 gives trigger 90000

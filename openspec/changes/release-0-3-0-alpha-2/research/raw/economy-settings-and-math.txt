@@ -1,0 +1,28 @@
+$ jq {env, autoCompactWindow, modelSettings} ~/.claude/settings.json | grep -E "CACHE|COMPACT|FORK|SUBAGENT|autoCompact|144444|Window"
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80.3571",
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "6",
+    "CLAUDE_CODE_PROMPT_CACHE_TTL": "1h",
+    "CLAUDE_CODE_FORK_SUBAGENT": "0",
+    "CLAUDE_CODE_MEMORY_SUBAGENT_APPEND": "1",
+  "autoCompactWindow": 300000,
+      "autoCompactWindow": 144444
+$ jq keys ~/.claude/settings.json (no model, effortLevel, maxEffortLevel, idleCompaction, subagentPromptCacheTtl key is set)
+autoCompactWindow autoDreamEnabled autoMemoryEnabled awaySummaryEnabled disableBundledSkills disableClaudeAiConnectors disableRemoteControl enableArtifact enableWorkflows enabledPlugins env extraKnownMarketplaces feedbackDrafts modelProposedGoals modelSettings outputStyle permissions promptSuggestionEnabled sandbox skillOverrides spinnerTipsEnabled statusLine subagentStatusLine useAutoModeDuringPlan worktree
+$ agents frontmatter (model, effort)
+main.md: 
+researcher.md: model: claude-sonnet-5-5 effort: low omitClaudeMd: true 
+reviewer.md: model: claude-sonnet-5-5 effort: high omitClaudeMd: true 
+scout.md: model: claude-haiku-5-5 effort: low omitClaudeMd: true 
+worker.md: model: claude-sonnet-5-5 effort: medium omitClaudeMd: true 
+
+$ awk fork vs typed worker break-even (Opus 5.5 parent cache read 0.2 USD/M, Sonnet 5.5 typed worker prefix P=30k tokens (user report: one-tool agent 30k, general-purpose 116k, see economy-subagent-reports.txt), 5m write 2.5 USD/M, read 0.1 USD/M)
+N=5 worker turns: typed cost 0.090 USD, fork is cheaper only if parent context C < 90000 tokens
+N=10 worker turns: typed cost 0.105 USD, fork is cheaper only if parent context C < 52500 tokens
+N=30 worker turns: typed cost 0.165 USD, fork is cheaper only if parent context C < 27500 tokens
+
+$ awk cache write price ratio 1h vs 5m
+Opus 5.5: 1h write 8 vs 5m write 5 = x1.60. Sonnet 5.5: 4 vs 2.5 = x1.60. Haiku 5.5: 0.2 vs 0.125 = x1.60. 1h write vs read: Opus 40x
+
+$ awk Haiku 100k threshold: price above 100k vs below (docs pricing section)
+input 0.5/0.1 = x5, output 2.5/0.5 = x5
+{"enableArtifact":false,"enableWorkflows":false,"awaySummaryEnabled":false,"autoDreamEnabled":false,"autoMemoryEnabled":false,"promptSuggestionEnabled":false}

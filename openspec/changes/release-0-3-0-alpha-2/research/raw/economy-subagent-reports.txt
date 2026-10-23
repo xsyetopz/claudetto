@@ -1,0 +1,123 @@
+#### 2026-10-21/reddit.com-r-claudecode-comments-1x97ix2-a-readonly-custom-subagent-cut-20261020T101449Z.md
+# A read-only custom subagent cut our tokens per call from about 116k to 30k
+
+**Vektoris\_AI\_Workflow** · 1 · 2026-10-18T16:30:16.000Z · `t3_1x97ix2`
+
+We have a Claude Code skill that runs five subagents as a review panel for business decisions. Each member gets its brief and a persona file as files, reads them and answers in JSON. One session we measured had 15 subagent calls.
+
+The first version used the general-purpose agent type. A call came in at roughly 116,000 tokens, for a job that comes down to reading two files and answering in JSON.
+
+So we gave the panel its own agent type in ~/.claude/agents, with one tool.
+
+    ---
+    name: panel-member
+    description: Member of a review panel. Reads its brief from a file and answers only with the requested JSON.
+    tools: Read
+    model: sonnet
+    ---
+
+Same briefs, same persona files. Measured on Oct 14, a call came down to roughly 30,000 tokens.
+
+We didn't break the 116k down, so this part is our guess. A general-purpose subagent starts out with every tool it's allowed to use, and we have a lot of MCP servers connected. The panel members never needed anything but Read.
+
+In money, recalculated from the subagent logs at API list prices, the panel part of a session now costs about $1 to $1.50. 88% of that is cache writes, since every subagent builds its context from scratch. The moderation in the main session comes on top. In one run we measured both, $1.46 for the panel and $4.38 for the main session. We run it on a subscription, so these are what the same run would cost through the API.
+
+Three things we tripped over.
+
+A new agent type only loads after you restart Claude Code.
+
+The cost hook we had installed used an outdated price table and came out about five times too high. We now sum usage per message ID from the subagent .jsonl files under ~/.claude/projects.
+
+Those logs record the last reply of each subagent without its final output tokens, so that sum runs a little low.
+
+Has anyone looked at where the starting context of a general-purpose subagent actually goes? And do you give every repeated subagent job its own type, or only the expensive ones?
+
+**AutoModerator** · 2026-10-18T16:30:16.000Z · `t1_phiupfm`
+
+Hey! Thanks for posting to r/ClaudeCode
+
+While participating in this thread, please follow our [community rules](https://www.reddit.com/r/ClaudeCode/about/rules). Keep discussions constructive. Attack the idea, not the person.
+
+## For help, project discussions, tips, and general chat, join the [ClaudeCode Discord](https://discord.gg/4QbtMRErUc).
+#### 2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md
+# Disable subagents = massive token savings
+
+**damndatassdoh** · 0 · 2026-08-17T15:59:39.000Z · `t3_1vqwab1`
+
+Keep seeing folks complain about usage issues..
+
+FYI, you can constrain subagent usage multiple ways. I have them almost completely disabled and Claude is still quite fast and I can make Fable last the month on x20 by using it for planning and as advisor.
+
+Default CC will spam subagents like a fiend and adios to your usage allotment.
+
+Edit: some support..
+
+Asked Claude:
+
+Trying to determine if Claude Code subagents make sense to use or not. Unconstrained, Claude seems to be inefficient in his usage of them, but I may be mistaken. Are there current studies showing efficiencies and costs of subagent usage vs. a single Claude Code agent doing all the work?
+
+Opus 5 high said:
+
+Short answer: the intuition is well-supported, and there's no clean controlled study of Claude Code subagents specifically. What exists is adjacent evidence that mostly cuts against unconstrained delegation.
+
+\*\*The headline numbers people cite are from research, not coding\*\*
+
+Anthropic's Research feature is the origin of the "multi-agent wins" claim: an Opus 4 lead with Sonnet 4 subagents beat single-agent Opus 4 by 90.2%, with token usage explaining 80% of performance variance, at roughly 15x the tokens of standard chat. But the same writeup is explicit that this excels at problems divisible into parallel strands and is \*less\* effective for tightly interdependent tasks such as coding. Anthropic's own boundary statement: domains requiring all agents to share context, or involving many dependencies between agents, are not a good fit today.
+
+\*\*Coding-specific evidence is less flattering\*\*
+
+\* An empirical eval of agent frameworks on code tasks found multi-agent systems take substantially more steps — nearly 2x on repair/vuln detection — while single-agent systems showed greater effectiveness in software development, particularly code executability and consistency. (arXiv 2511.00872)\
+\* A self-organizing multi-agent dev system consumed 1.65x the output tokens of plain Claude Code per submission attempt. (arXiv 2603.25928)\
+\* "The Illusion of Multi-Agent Advantage" (Jun 2026) found auto-generated MAS underperform single-agent CoT + self-consistency at up to 10x cost — but notably, expert-architected MAS consistently outperforms automatically generated architectures in both raw performance and cost-efficiency. That's the crux: hand-designed decomposition beats letting the model improvise one. (arXiv 2606.13003)\
+\* Cognition's "Don't Build Multi-Agents" gives the mechanism: decision-making becomes too dispersed and context isn't shared thoroughly enough between agents. Actions carry implicit decisions, and parallel agents make conflicting ones.
+
+\*\*Where subagents do pay\*\*
+
+Anthropic's own guidance is narrower than the hype: subagents carry overhead — each spins up its own context, consumes tokens, and adds indirection. They're worth it when context isolation, parallelism, or a fresh perspective actually helps. Bad fits: sequential dependent work, same-file edits, and small tasks.
+
+Cost figures floating around suggest subagent-heavy workflows can run \~7x the tokens of a single-thread session. The honest framing: tight token budget → explore sequentially. Tight time budget → explore in parallel.
+
+\*\*Practical takeaway\*\*
+
+Use them as \*read-side context firewalls\*, not write-side parallel implementers. Exploration, grep-heavy discovery, adversarial review, and independent domain checks (security / perf / API) return small summaries and keep the main window clean. Implementation stays single-threaded.
+#### 2026-10-21/reddit.com-r-claudeai-comments-1xb3ycs-stop-using-subagents-or-buying-5-20261020T223908Z.md
+# Stop using subagents or buying 5x?
+
+**JackSbirrow** · 2026-10-20T20:56:31.000Z · `t3_1xb3ycs`
+
+Hi everybody. I'm using Opus 5.5 on a huge C++/Python codebase. It is so damn powerful of course, never disappoints me. However, the 5h session only lasts a little more than 2 hours.
+
+My CLAUDE.MD states to plan with opus and using sonnet/haiku sub agents to write code, then opus reviews.
+
+Is this consuming more tokens than using just Opus?
+
+I was planning to go to 5x one month, but reading Claude page, it says it increases 5x the 5h session but not the weekly, so it is possible to finish weekly in 2 days.
+
+What do you think? Anybody using 5x or 20x? Is it really good compared to 5x? I plan to fully use 5h session for the next month every day.
+
+**Necessary\_Soil\_7574** · 1 · 2026-10-20T21:19:01.000Z · `t1_19reibui77p1d`
+
+You need max5
+
+> **JackSbirrow** · 1 · 2026-10-20T21:25:16.000Z · `t1_19reilvyba1kw`
+>
+> A little bit of explanation of why?
+
+> > **legit\_working** · 1 · 2026-10-20T21:38:50.000Z · `t1_19rej7obcpk00`
+> >
+> > Cuz you need to get addicted to Fable
+
+> > > **Relevant-Yak-9657** · 1 · 2026-10-20T21:53:51.000Z · `t1_19rejvssi1sow`
+> > >
+> > > I have a Max x5 and I don't touch Fable with a 5 foot pole. Until Fable 5.5 comes out, Opus has been cooking too hard and I never run out of usage either.
+
+> > > > **JackSbirrow** · 1 · 2026-10-20T21:59:54.000Z · `t1_19rek5if1wwht`
+> > > >
+> > > > But does x5 means x5 of the 5h session AND also the weekly?
+
+> > > > > **Relevant-Yak-9657** · 2 · 2026-10-20T22:06:44.000Z · `t1_19rekgho0rj42`
+> > > > >
+> > > > > No. Just the 5h. The weekly feels more like a 2-3x, though I can't confirm, since I never hit it. Others might be able to tell you more.
+
+> > > > > > **JackSbirrow** · 1 · 2026-10-20T22:12:24.000Z · `t1_19rekpkkfmvt1`
+> > > > > >

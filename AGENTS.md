@@ -49,8 +49,9 @@ Each of those rules has a `paths:` list, and Claude Code loads the rule when Cla
   Tests pin the copies of each bound in code and config, not in prose.
 - Never patch the Claude Code CLI binary or its npm package, although it is minified JavaScript that you can read.
   A patch violates Anthropic's terms of service.
-  Use only documented extension points.
   Reading the bundle for evidence is permitted.
+- Use an undocumented env var, settings key, payload field, or timing fact of Claude Code when it saves cost or time with no loss of behavior, and give each one a pin test that fails when an update drops it (the user, 2026-10-23).
+  Prefer the fastest and cheapest code that keeps each behavior, also when it is unusual.
 - Run the sandbox sessions and the measurements of a package yourself, and do not give them to the user.
   The user approves the use of their login in `just sandbox` and `just sandbox-alone` for this work (the user, 2026-10-13).
   When a guard stops a sandbox session in a subagent, run that session from the main session (the user, 2026-10-13).

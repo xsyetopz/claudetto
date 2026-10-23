@@ -1,0 +1,21 @@
+$ bun /tmp/trimscript/target.ts   (estimates are my own, line counts of now come from trim-loc.txt and trim-totals.txt)
+slice	now	target	change
+agents	27	27	0
+decide	1232	0	-1232
+dry	213	0	-213
+goal	118	118	0
+ground	346	280	-66
+guard	944	880	-64
+handoff	682	620	-62
+hygiene	465	375	-90
+prompt	230	190	-40
+reply	45	0	-45
+setup	803	550	-253
+spec	793	600	-193
+statusline	1145	700	-445
+slices total	7043	4340
+kernel	1581	1540
+hooks+snippets+bin	137	100
+plugin ts total	8761	5980
+shape B (spec replaced by upstream openspec CLI): plugin ts total	5380
+data files removed: snippet-0.2.0.json 357, dry base json 25

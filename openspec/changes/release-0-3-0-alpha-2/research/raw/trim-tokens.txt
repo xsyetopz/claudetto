@@ -1,0 +1,80 @@
+$ bun /tmp/trimscript/chars.ts
+chars	item
+809	tool.describe replacement Agent
+1048	tool.describe replacement Bash
+280	tool.describe replacement Edit
+558	tool.describe replacement Read
+998	tool.describe replacement Skill
+611	tool.describe replacement ToolSearch
+231	tool.describe replacement Write
+129	context block (handoff text)
+115	shell block macOS
+125	shell block zsh
+672	AskUserQuestion line (Jev, only with key)
+50	agent description reviewer.md
+618	agent file total reviewer.md
+48	agent description researcher.md
+638	agent file total researcher.md
+73	agent description main.md
+9459	agent file total main.md
+88	agent description worker.md
+681	agent file total worker.md
+72	agent description scout.md
+580	agent file total scout.md
+112	skill description propose (model-invocable=false)
+1091	skill body propose
+112	skill description apply (model-invocable=false)
+576	skill body apply
+120	skill description archive (model-invocable=false)
+452	skill body archive
+96	skill description verify (model-invocable=false)
+535	skill body verify
+172	skill description setup (model-invocable=false)
+2507	skill body setup
+159	skill description dedupe (model-invocable=true)
+2589	skill body dedupe
+1451	output style Concise.md total
+9360	main.md body (system prompt)
+431	plugin.json description
+
+$ head frontmatter of skills
+-- plugins/claudetto/skills/apply/SKILL.md
+name: apply
+description: Does the open tasks of a change in `openspec/changes/<name>/tasks.md`, and ticks each one when its check passes.
+disable-model-invocation: true
+-- plugins/claudetto/skills/archive/SKILL.md
+name: archive
+description: Merges the delta specs of a finished change into `openspec/specs/`, and moves the change to `openspec/changes/archive/`.
+disable-model-invocation: true
+-- plugins/claudetto/skills/dedupe/SKILL.md
+name: dedupe
+description: Finds duplicate code with jscpd and decides which clones to merge. Use after a change that adds or copies code, or when the user asks about duplication or DRY.
+-- plugins/claudetto/skills/propose/SKILL.md
+name: propose
+description: Plans a change in `openspec/changes/<name>/` with a preset (`task`, `story`, or `epic`), one artifact at a time.
+disable-model-invocation: true
+-- plugins/claudetto/skills/setup/SKILL.md
+name: setup
+description: Applies the claudetto settings snippet, and removes the keys and the `CLAUDE.md` block that claudetto 0.1.0 wrote. Use after an install or update of the plugin `claudetto`.
+disable-model-invocation: true
+-- plugins/claudetto/skills/verify/SKILL.md
+name: verify
+description: Checks that the code of a change does what its tasks, specs, and design say, before the archive.
+disable-model-invocation: true
+$ Concise.md frontmatter
+---
+name: Concise
+description: "Short replies that lead with the result and leave out the preamble and the narration."
+keep-coding-instructions: true
+---
+
+<reply_style>
+Make the first sentence the outcome: what changed, what was found, or what failed.
+
+$ derived sums (shell arithmetic)
+agent descriptions of worker, scout, reviewer, researcher: 258
+tool replacement texts, 7 tools: 4535
+context block + shell blocks (macOS and zsh): 369
+added to every request (agent descriptions + dedupe skill description + context and shell blocks + output style): 2237
+$ CHARS_PER_TOKEN
+10:export const CHARS_PER_TOKEN = 4;

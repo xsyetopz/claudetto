@@ -1,0 +1,18 @@
+$ grep -n -i "tool description\|right altitude\|fewer lines\|lines of rules\|short, high-signal\|<200\|200 lines\|150 instructions\|instruction budget" agent-failure-dossier/*.md claude-ai/*.md
+agent-failure-dossier/04-engineering-delegation-and-cost.md:53:- **Claude Code system prompt** *(strings)*: "Three similar lines is better than a premature abstraction"; no flags or shims "when you can just change the code"; no planning documents unless asked.
+claude-ai/swe-best-practices.md:85:- **B2-2 · P0 · Maintain a short, high-signal rules file** (`AGENTS.md` / `CLAUDE.md` / `.cursor/rules`): build/test commands, architecture boundaries, forbidden actions, conventions that aren't inferable from code. Target ≤ 1–2 screens. — Read every session; every line costs context and attention. — Review it like code; prune quarterly.
+claude-ai/swe-best-practices.md:122:- **B3-7 · P1 · System prompt at the "right altitude":** clear role, priorities, and heuristics; not a 500-line rule dump, not vague. Sectioned (XML/Markdown). — Too specific = brittle; too vague = ungrounded. — Prompt review + eval on change.
+claude-ai/swe-best-practices.md:127:- **B3-10 · P0 · Tool contracts like public APIs:** clear names, typed params, examples, token-efficient outputs, actionable error messages ("X failed because Y; try Z"). — Tool descriptions are prompts. — Tool-level unit tests + evals.
+claude-ai/swe-best-practices.md:171:4. **B5-4 · Minimal diff.** Change only what the task needs; no drive-by refactors, renames, or reformatting unless asked.
+claude-ai/swe-best-practices.md:178:11. **B5-11 · Honor freezes and scopes literally.** When told read-only, do not write — even to "fix" something.
+
+$ grep -n "I13\|Try once" 06-autonomy-and-consent.md | head
+60:1. **Try once before handing off.** A step goes to the user only after a failed attempt or a named hard block (sandbox path, missing credential, a payment the user has not approved).
+$ grep -n -i "subagent" 04-engineering-delegation-and-cost.md (Recipe I11)
+46:- *Speed at the Cost of Quality* [2511.04427] (2025): Cursor adoption raised velocity only briefly, while static-analysis warnings and complexity rose persistently.
+114:- **Claude Code agent frontmatter** *(strings)*: `isolation: worktree`, `maxTurns`, `permissionMode`, `hooks`, `effort`, `autoCompactWindow`. SubagentStart and SubagentStop hooks. `CLAUDE_CODE_AGENT_PROGRESS_SUMMARIES` is new in 2.1.296.
+
+$ grep -n -i "cache-stable\|ToolSearch\|single agent\|default to a single\|overlapping tools\|timestamp" 04-engineering-delegation-and-cost.md 01-grounding-and-memory.md 06-autonomy-and-consent.md
+04-engineering-delegation-and-cost.md:122:1. Use a single agent unless the task decomposes into parts that share little context.
+01-grounding-and-memory.md:101:- **The backtick rule decayed despite reinjection.** The rule was in CLAUDE.md and in every subagent brief, yet new `.txt` hook files broke it. The agent's verdict: "So a check would not have caught these, and I had to be told." (SL e473653f)
+01-grounding-and-memory.md:125:2. Reinject the 3–5 live corrections each turn: a UserPromptSubmit hook, or the *asisaid* pattern (UserPromptSubmit + Stop + PreCompact + SessionStart; its author claims answers about 50% shorter; [1wwiwf3](https://www.reddit.com/r/ClaudeCode/comments/1wwiwf3/)).

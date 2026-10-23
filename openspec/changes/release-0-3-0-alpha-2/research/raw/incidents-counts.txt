@@ -1,0 +1,186 @@
+# Counts per session: Agent calls by type and model, phrases in assistant text, repeated Reads, error classes, side-agent notes, ground blocks.
+
+$ agents.py
+48365a4f main_tool_calls 561 Agent 2
+    1 ('claudetto:reviewer', None, None)
+    1 ('claudetto:worker', None, False)
+44160c2d main_tool_calls 1340 Agent 20
+    8 ('claude', None, 'true')
+    6 ('claude', None, None)
+    6 ('claude', 'sonnet', None)
+ac5bebba main_tool_calls 2010 Agent 33
+    17 ('claude', None, 'true')
+    14 ('claude', None, None)
+    1 ('fork', None, None)
+    1 ('Explore', None, None)
+b92de5a9 main_tool_calls 684 Agent 16
+    7 ('claude', None, 'true')
+    7 ('claude', 'sonnet', 'true')
+    2 ('claude', None, None)
+a3686f55 main_tool_calls 1300 Agent 86
+    44 ('claude', None, 'true')
+    14 ('claude', 'opus', True)
+    10 ('claude', None, None)
+    10 ('claude', 'opus', None)
+    3 ('claude', 'opus', 'true')
+    2 ('implementer', None, True)
+    2 ('reviewer', None, True)
+    1 ('fork', None, None)
+803eb651 main_tool_calls 199 Agent 35
+    19 ('reviewer', None, None)
+    15 ('implementer', None, None)
+    1 ('writer', None, None)
+ed0fd28b main_tool_calls 199 Agent 40
+    21 ('implementer', None, True)
+    16 ('reviewer', None, True)
+    1 ('implementer', None, False)
+    1 ('scout', None, True)
+    1 ('writer', None, True)
+8d9e2230 main_tool_calls 191 Agent 14
+    4 ('reviewer', None, True)
+    4 ('implementer', 'sonnet', True)
+    3 ('implementer', 'sonnet', None)
+    2 ('implementer', 'sonnet', False)
+    1 ('writer', None, True)
+
+$ phr.py
+sid turns text_blocks ['needfromyou', 'bang', 'followups', 'later', 'askq']
+48365a4f 196 {'askq': 1, 'needfromyou': 2, 'bang': 2, 'followups': 2, 'later': 1}
+44160c2d 508 {'needfromyou': 10, 'bang': 13, 'followups': 6, 'later': 2}
+ac5bebba 754 {'askq': 24, 'needfromyou': 12, 'bang': 5, 'followups': 6, 'later': 1}
+b92de5a9 248 {'needfromyou': 10, 'bang': 6, 'askq': 3}
+a3686f55 652 {'askq': 2, 'needfromyou': 45, 'bang': 16, 'followups': 3, 'later': 1}
+803eb651 141 {'followups': 2}
+ed0fd28b 87 {'askq': 1}
+97afdb89 104 {'askq': 1}
+8d9e2230 94 {'askq': 5, 'bang': 1}
+d7464d89 85 {'followups': 1}
+42b48e25 75 {'needfromyou': 3, 'bang': 1, 'followups': 1}
+
+$ reads.py
+48365a4f Read calls 66 repeat same range 2
+     2 claude-code-docs/docs/extend/mod-api/index.md 12 1 [1600, 1634]
+     2 /private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/ccrel-managed-Zy5QVU/install.sh None None [2836, 2855]
+44160c2d Read calls 143 repeat same range 2
+     2 claude-code-docs/plugin/skills/claude-code-docs/SKILL.md None None [4623, 5026]
+     2 claude-code-docs/tools/schemas/code.ts 1 12 [6462, 8760]
+ac5bebba Read calls 196 repeat same range 5
+     2 claudetto/openspec/changes/0-3-0/handoff.md None None [79, 15034]
+     2 claudetto/tests/claudetto/prompt/faults.test.ts None None [799, 6063]
+b92de5a9 Read calls 53 repeat same range 2
+     2 claudetto/justfile 45 38 [3230, 3247]
+     2 claudetto/plugins/claudetto-lab/bin/claudetto-capture None 40 [3232, 3248]
+a3686f55 Read calls 148 repeat same range 3
+     2 OpenJoystickDriver/openspec/changes/platform-neutral-redesign/tasks.md 433 1 [8527, 8711]
+     2 OpenJoystickDriver/Sources/OpenJoystickDriverKit/Device/Discovery/HID/DeviceManager+HIDAdmission.swift 200 100 [12359, 12371]
+
+$ notes.py (side-agent notes of the harness)
+a3686f55 10869 2026-10-22T22:58 Steam fix may break PCSX2 and DuckStation
+a3686f55 11971 2026-10-22T23:23 Wiki screenshots may break until merged to main
+803eb651 2218 2026-10-21T16:22 New text keys can skip the language rules
+ed0fd28b 133 2026-10-21T09:29 Empty values now say "None" everywhere
+ed0fd28b 1262 2026-10-21T10:42 Most merged worker changes skipped review
+cdd8cc23 455 2026-10-21T08:47 Merged code's full test run hasn't happened
+97afdb89 1883 2026-10-21T08:11 Hidden menu bar icon breaks settings on update
+cb8db1ff 168 2026-10-21T06:15 Prompts pages can render from old captures
+d7464d89 1219 2026-10-21T04:38 The new app window hasn't been seen or approved yet
+d7464d89 1510 2026-10-21T05:04 New interface text is unreviewed machine translation
+dd4454f5 280 2026-10-21T04:08 Old test results predate the keychain fix
+dd4454f5 438 2026-10-21T04:36 Hook tests failed once with no known cause
+42b48e25 530 2026-10-21T03:28 Concise style line removed on thin evidence
+
+$ err2.py 'claims with no source' 260
+ac5bebba 361 <tool_use_error>This text has claims with no source: - "the user "Do A14 now", 2026-10-22): move each shipped file of `src/plugins/` and `src/kernel/` to `plugins/`, write `register" is in no user message. Do one of these for each claim, then write again: 1. N
+ac5bebba 370 <tool_use_error>This text has claims with no source: - "the user "Do A14 now", 2026-10-22): move each shipped file of `src/plugins/` and `src/kernel/` to `plugins/`, write `register" is in no user message. Do one of these for each claim, then write again: 1. N
+ac5bebba 376 <tool_use_error>This text has claims with no source: - "the user in the apply session of 2026-10-22: move each shipped file of `src/plugins/` and `src/kernel/` to `plugins/`, write `register" is in no user message. Do one of these for each claim, then write ag
+ac5bebba 423 Exit code 1 plugins/claudetto/hooks: hooks.json register.ts  plugins/claudetto/output-styles: Concise.md  plugins/claudetto/skills: dry patch setup spec  plugins/claudetto/skills/dry: SKILL.md  plugins/claudetto/skills/patch: SKILL.md  plugins/claudetto/skills
+ac5bebba 5185 ## Purpose  claudetto gives Claude a small set of its own subagents, each with a fixed model, effort, and tool list, and hides the built-in agents.  ## ADDED Requirements  ### Requirement: Own Agents Only  The system SHALL offer only claudetto agents to the `A
+ac5bebba 15354    tools/stats.test.ts [156:57 - 167:66] Clone found (typescript, similar (ast) ~0.83) [NEW]  - claudetto/slices/decide/prompts.ts [27:14 - 34:132] (8 lines, 44 tokens)    claudetto/slices/handoff/prompts.ts [1:14 - 11:89] --    claudetto/slices/handoff/prompt
+ac5bebba 16522 docker-ask: (eval):1: no matches found: --include=*.ts  git-ask: (eval):1: no matches found: --include=*.ts  rm-ask: (eval):1: no matches found: --include=*.ts  13:- A plugin cannot set `sandbox`, so the settings snippet carries the `sandbox` keys and `claudet
+ac5bebba 16535 docker-ask:  git-ask:  rm-ask:        19 plugins/claudetto/slices/prompt/domain/docker-ask.ts       35 plugins/claudetto/slices/prompt/domain/git-ask.ts       34 plugins/claudetto/slices/prompt/domain/rm-ask.ts       88 total Adds a lean output style, a status
+ac5bebba 16540 docker-ask:  git-ask:  rm-ask:        19 plugins/claudetto/slices/prompt/domain/docker-ask.ts       35 plugins/claudetto/slices/prompt/domain/git-ask.ts       34 plugins/claudetto/slices/prompt/domain/rm-ask.ts       88 total Adds a lean output style, a status
+ac5bebba 16643  M .claude-plugin/marketplace.json  M .claude/rules/arrow-functions.md  M .claude/rules/cli-adapters.md  M .claude/rules/engine-facts.md  M .claude/rules/extension-points.md  M .claude/rules/hooks-module.md  M .claude/rules/lab-tests.md  M .claude/rules/plugin
+ac5bebba 18784 <tool_use_error>This text has claims with no source: - `13,700` is in no user message and no tool result. - `18,000` is in no user message and no tool result. Do one of these for each claim, then write again: 1. Name the source: a user message, a tool result o
+ac5bebba 18790 <tool_use_error>This text has claims with no source: - `13,700` is in no user message and no tool result. - `18,000` is in no user message and no tool result. Do one of these for each claim, then write again: 1. Name the source: a user message, a tool result o
+b92de5a9 2060 <tool_use_error>This text has claims with no source: - "the user to trim freely, and to use each documented, undocumented, gated, and experimental lever that cuts cost (the user, 2026-10-21)" is in no user message. Do one of these for each claim, then write ag
+b92de5a9 2067 <tool_use_error>This text has claims with no source: - "the user to trim freely, and to use each documented, undocumented, gated, and experimental lever that cuts cost (the user, 2026-10-21)" is in no user message. Do one of these for each claim, then write ag
+b92de5a9 2664 <tool_use_error>This text has claims with no source: - `slice.ts:222`: the file has 140 lines. Do one of these for each claim, then write again: 1. Name the source: a user message, a tool result of this session, or a file of the project. 2. Mark the claim `(pr
+b92de5a9 2670 <tool_use_error>This text has claims with no source: - `slice.ts:222`: the file has 140 lines. Do one of these for each claim, then write again: 1. Name the source: a user message, a tool result of this session, or a file of the project. 2. Mark the claim `(pr
+b92de5a9 2709 claudetto-browser :: Drives a browser with `agent-browser`, or with CloakBrowser on sites with bot detection when the user chooses it. With the `cloakbrowser` backend, answers each `WebSearch` call that the permission rules allow with a search in Cloa claudett
+b92de5a9 2723 <tool_use_error>This text has claims with no source: - `slice.ts:222`: the file has 140 lines. Do one of these for each claim, then write again: 1. Name the source: a user message, a tool result of this session, or a file of the project. 2. Mark the claim `(pr
+b92de5a9 2730 <tool_use_error>This text has claims with no source: - `slice.ts:222`: the file has 140 lines. Do one of these for each claim, then write again: 1. Name the source: a user message, a tool result of this session, or a file of the project. 2. Mark the claim `(pr
+b92de5a9 3630 <tool_use_error>This text has claims with no source: - `4,105` is in no user message and no tool result. Do one of these for each claim, then write again: 1. Name the source: a user message, a tool result of this session, or a file of the project. 2. Mark the 
+b92de5a9 3637 <tool_use_error>This text has claims with no source: - `4,105` is in no user message and no tool result. Do one of these for each claim, then write again: 1. Name the source: a user message, a tool result of this session, or a file of the project. 2. Mark the 
+b92de5a9 4008 {   "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",   "name": "claudetto",   "version": "0.2.0",   "description": "Adds a lean output style, a status line command, the `setup` skill, and Jev answers for `AskUserQuestion` when a key i
+b92de5a9 4824 <tool_use_error>This text has claims with no source: - `142,700` is in no user message and no tool result. Do one of these for each claim, then write again: 1. Name the source: a user message, a tool result of this session, or a file of the project. 2. Mark th
+42b48e25 752      248 951M exit 0       "tool": "Write",       "reason": "This text has claims with no source:\n- `1,000,000` is in no user message and no tool result.\nDo one of these for each claim, then write again:\n1. Name the source: a user message, a tool result of 
+TOTAL 24
+
+$ err2.py 'only prints a file' 90 (counts only)
+44160c2d
+9072f19c
+TOTAL
+a3686f55
+ac5bebba
+b92de5a9
+96 lines
+
+$ err2.py 'Concurrent subagent limit' 120
+ac5bebba 160 1	# Findings for 0.3.0-alpha.1 2	 3	Input for `/opsx:propose`. 4	Collected 2026-10-21 in the session that ran `/claudett
+ac5bebba 340 1	# Faults of Claudetto 0.2.0 in Real Sessions 2	 3	Source: `~/.claude/projects/*/*.jsonl` and the `subagents/` folders,
+ac5bebba 12799 lrwxr-xr-x@ 1 krystian  staff  52 Oct 22 11:59 /Users/krystian/.local/bin/claude -> /Users/krystian/.local/share/claude/
+ac5bebba 12965 v reqs 6 [] []   sub system 3006 8728 [ "memory rule, take precedence over this reminder, but do not add at",   "memory/
+b92de5a9 491 Concurrent subagent limit reached. You can run 2 subagents at once. Do not retry. If the user wants more concurrent suba
+b92de5a9 492 Concurrent subagent limit reached. You can run 2 subagents at once. Do not retry. If the user wants more concurrent suba
+b92de5a9 2077      239 sessions.md 1:# Faults of Claudetto 0.2.0 in Real Sessions 10:## Scope Warning 45:## Ranked Fault Table 103:## 
+b92de5a9 2542 Concurrent subagent limit reached. You can run 2 subagents at once. Do not retry. If the user wants more concurrent suba
+b92de5a9 2543 Concurrent subagent limit reached. You can run 2 subagents at once. Do not retry. If the user wants more concurrent suba
+b92de5a9 2544 Concurrent subagent limit reached. You can run 2 subagents at once. Do not retry. If the user wants more concurrent suba
+b92de5a9 2545 Concurrent subagent limit reached. You can run 2 subagents at once. Do not retry. If the user wants more concurrent suba
+a3686f55 562 Concurrent subagent limit reached. You can run 2 subagents at once. Do not retry. If the user wants more concurrent suba
+a3686f55 563 Concurrent subagent limit reached. You can run 2 subagents at once. Do not retry. If the user wants more concurrent suba
+a3686f55 2785 - Later: 24.52 and 24.53, which build on 24.51, then 24.54 and 24.55, then 22.2, - Limit: `Concurrent subagent limit rea
+TOTAL 14
+
+$ err2.py 'classifier' 200
+ac5bebba 4043 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Irreversible Local Destruction]. If you have other tasks that don't depend on this action, continue working on t
+ac5bebba 10678 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Self-Modification]. If you have other tasks that don't depend on this action, continue working on those. IMPORTA
+ac5bebba 10732 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Self-Modification]. If you have other tasks that don't depend on this action, continue working on those. IMPORTA
+ed0fd28b 514 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Instruction Poisoning]. If you have other tasks that don't depend on this action, continue working on those. IMP
+cdd8cc23 230 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Irreversible Local Destruction]. If you have other tasks that don't depend on this action, continue working on t
+a2014c48 94 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Create Public Surface]. If you have other tasks that don't depend on this action, continue working on those. IMP
+a2014c48 136 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Irreversible Local Destruction]. If you have other tasks that don't depend on this action, continue working on t
+97afdb89 557 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Interfere With Workloads]. If you have other tasks that don't depend on this action, continue working on those. 
+cb8db1ff 142 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Security Weaken]. If you have other tasks that don't depend on this action, continue working on those. IMPORTANT
+cb8db1ff 152 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Security Weaken]. If you have other tasks that don't depend on this action, continue working on those. IMPORTANT
+cb8db1ff 312 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Irreversible Local Destruction]. If you have other tasks that don't depend on this action, continue working on t
+42b48e25 147 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Real-World Transactions]. If you have other tasks that don't depend on this action, continue working on those. I
+42b48e25 599 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Git Destructive]. If you have other tasks that don't depend on this action, continue working on those. IMPORTANT
+42b48e25 621 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Git Destructive]. If you have other tasks that don't depend on this action, continue working on those. IMPORTANT
+42b48e25 643 Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Git Destructive]. If you have other tasks that don't depend on this action, continue working on those. IMPORTANT
+TOTAL 15
+
+$ err2.py 'Permission to use Bash with command' 160
+9072f19c 57 ## main...origin/main 09c903b Thu Oct 22 12:50:59 2026 +0300 chore: bump to 2.1.308 and regenerate schemas deploy.yml openspec change: `openspec/changes/payload
+44160c2d 4406 Permission to use Bash with command rm -rf /tmp/ccd-scratch/mod-api-before && cp -R docs/extend/mod-api /tmp/ccd-scratch/mod-api-before && mkdir -p reference/ov
+44160c2d 5698 Permission to use Bash with command rm -rf /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/tmp.VXhSUWZ7kY && echo removed has been denied.
+44160c2d 10743 Permission to use Bash with command rm -rf /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/tmp.oxONI14Cdl has been denied.
+44160c2d 10749 Permission to use Bash with command rm -rf /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/tmp.oxONI14Cdl has been denied.
+44160c2d 12080 Permission to use Bash with command rm -rf /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/tmp.qwEhFFu1wx && git diff --stat -- inspect/mcp/src/resolve.ts tool
+44160c2d 14322 Permission to use Bash with command grep -E "✖|error" ; git log --oneline -1; rm -rf /tmp/claude-501/anch /tmp/claude-501/verify.txt; git status --short has bee
+ac5bebba 9982 cat .env -> exit 0: [[true,"Permission to use Bash with command cat .env has been denied."]] ls -> exit 0: [[false,"(Bash completed with no output)"]] Shell cwd
+ac5bebba 10077 cat .env -> exit 0: [[true,"Permission to use Bash with command cat .env has been denied."]] rm -rf ~ -> exit 0: [[true,"Permission to use Bash with command rm 
+ac5bebba 11901 226:### Old Bugs Get Fixed 235:### Positive Framing 243:### `$schema` in Each JSON File 250:## Jev before a Person (Task 5.1a) 263:## Gate Log (Task 5.2) 274:##
+ac5bebba 12397 Permission to use Bash with command cut -c1-60; rm -rf /tmp/ccd && echo cleaned has been denied.
+ac5bebba 12654 295	 296	## Gate without Mods (Task 5.3) 297	 298	Date: 2026-10-22. 299	Cost: $0, because a stub of the Messages API answers each request. 300	 301	Method: 302	
+ac5bebba 12658 295	 296	## Gate without Mods (Task 5.3) 297	 298	Date: 2026-10-22. 299	Cost: $0, because a stub of the Messages API answers each request. 300	 301	Method: 302	
+ac5bebba 13516 Permission to use Bash with command rm -rf /tmp/pin-explore/v020 && mkdir -p /tmp/pin-explore/v020 && git archive claudetto--v0.2.0 plugins/claudetto has been d
+ac5bebba 15035 1	openspec change: `openspec/changes/0-3-0/`. 2	Next open task: `11.1` in `tasks.md`. 3	Done tasks, checked in `tasks.md`: `1.2`, `1.3`, `1.4`, `2.1`, `3.1`, `3
+ac5bebba 19248 Permission to use Bash with command head -3; git worktree remove --force /private/tmp/t93/v020 && rm -rf /tmp/t93 /tmp/pin-explore; git worktree list has been d
+ac5bebba 19999 Permission to use Bash with command tail -3; rm -rf /tmp/claudetto-11-1; ls -d /tmp/claudetto-11-1 /tmp/claudetto-sandbox-install 2>&1 has been denied.
+a3686f55 889 Permission to use Bash with command rm -rf /tmp/ojdprobe && echo removed has been denied.
+a3686f55 1349 Permission to use Bash with command rm -rf /tmp/rev17a-scratch /tmp/rev17a-merged /tmp/rev17_build.log /tmp/rev17_targeted.log /tmp/rev17_full.log /tmp/rev17a-s
+a3686f55 5750 Permission to use Bash with command rm -rf /tmp/ojd-scratch; ls -d /tmp/ojd-scratch 2>&1 has been denied.
+a3686f55 8289 Permission to use Bash with command head; grep -h -E '^[A-Z_]*PROFILE[A-Z_]*=' .env.dev has been denied.
+a3686f55 10410 Permission to use Bash with command rm -rf /tmp/ojd-sdl /tmp/ojd-edit /tmp/ojd-check.out /tmp/ojd-probe /tmp/ojd-ioreg.txt && ls -d /tmp/ojd-* 2>/dev/null has b
+TOTAL 22
