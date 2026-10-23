@@ -1,0 +1,30 @@
+{
+  "minTokens": 50,
+  "minLines": 5,
+  "mode": "mild",
+  "gitignore": true,
+  "reporters": ["console"],
+  "ignore": [
+    "**/.git/**",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/target/**",
+    "**/vendor/**",
+    "**/*.min.*",
+    "**/*.lock",
+    "**/*lock.json",
+    "**/*lock.yaml",
+    "**/*.md",
+    "**/fixtures/**",
+    "**/samples/**",
+    "plugins/claudetto-*/kernel/**",
+    "plugins/*/.claude-plugin/types/**"
+  ],
+  "ignorePattern": [],
+  "formatsExts": {},
+  "similarity": 0.8,
+  "baseline": ".jscpd-baseline.json",
+  "failOnNewClones": 0,
+  "path": ["plugins", "tests", "tools"]
+}

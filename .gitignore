@@ -24,9 +24,6 @@ node_modules/
 /.claude/skills/claude-api
 /skills-lock.json
 
-# Written by `just dry` from `jscpd.local.json`.
-/.jscpd.json
-
 # Local session state and research notes, not for the public repository.
 /.claudetto/
 

@@ -18,8 +18,5 @@
   ],
   "ignorePattern": [],
   "formatsExts": {},
-  "similarity": 0.8,
-  "semantic": { "scope": "all" },
-  "baseline": ".jscpd-baseline.json",
-  "failOnNewClones": 0
+  "similarity": 0.8
 }
