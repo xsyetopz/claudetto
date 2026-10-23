@@ -1,35 +1,11 @@
-// Runs a program that npm or an installer put on `PATH`, on Linux, macOS, and WSL.
+// Runs a program that npm or an installer put on `PATH`.
 
-import type { ProcessOptions, ProcessRunner } from "../ports.ts";
+import type { ProcessRunner } from "../ports.ts";
 
-type ProgramOptions = {
-  cwd?: string;
-  env?: NodeJS.ProcessEnv;
-  timeout?: number;
-  stdin?: "ignore" | "pipe" | "inherit";
-  stdout?: "pipe" | "ignore" | "inherit";
-  stderr?: "pipe" | "ignore" | "inherit";
-};
-
-/**
- * Runs the program `file` with `args` and gives the result of `spawn`, which is `Bun.spawnSync` unless a test sets it.
- * `Bun.spawnSync` throws when `file` is missing, so a caller catches that error to treat the program as not found.
- */
-const runProgram = (
-  file: string,
-  args: string[],
-  options: ProgramOptions,
-  spawn = Bun.spawnSync,
-) => spawn([file, ...args], options);
-
-/** The `ProcessRunner` of Bun: it reads the output as text, and it gives a null exit code and the signal for a signal or a timeout. */
+/** The `ProcessRunner` of Bun. `Bun.spawnSync` throws when the program is missing, so a caller catches that. */
 export const processRunner: ProcessRunner = {
-  run: (
-    file: string,
-    args: readonly string[],
-    options: ProcessOptions = {},
-  ) => {
-    const result = runProgram(file, [...args], {
+  run: (file, args, options = {}) => {
+    const result = Bun.spawnSync([file, ...args], {
       ...options,
       stdout: "pipe",
       stderr: "pipe",

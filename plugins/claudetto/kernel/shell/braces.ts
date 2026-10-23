@@ -1,31 +1,24 @@
-// The brace expansion of bash and zsh (`{a,b}` and `{1..3}`), for the scan of `scan.ts`.
-// The function is pure and imports only `budget.ts`.
+// The brace expansion of bash and zsh (`{a,b}` and `{1..3}`), for `scan.ts`.
 
 import { BRACE_WORDS_MAX } from "../budget.ts";
 
 /** A character of a word, with true when it is an unquoted brace or comma. */
 type Char = { c: string; brace: boolean };
 
+type Group = { close: number; items: Char[][] };
+
 const SEQUENCE = /^(-?\d+|[A-Za-z])\.\.(-?\d+|[A-Za-z])(?:\.\.(-?\d+))?$/;
 
 const plain = (text: string): Char[] =>
   text.split("").map((c) => ({ c, brace: false }));
 
-/** The words from `from` to `to` by `step`, as numbers padded to `pad` or as letters. */
-const range = (
-  from: number,
-  to: number,
-  step: number,
-  numeric: boolean,
-  pad: number,
-): string[] => {
-  const out: string[] = [];
-  for (let n = from; step > 0 ? n <= to : n >= to; n += step) {
-    if (out.length > BRACE_WORDS_MAX) break;
-    out.push(numeric ? String(n).padStart(pad, "0") : String.fromCharCode(n));
-  }
-  return out;
-};
+const join = (w: Char[]): string => w.map((ch) => ch.c).join("");
+
+/** A number with a leading zero pads each number to the widest of the two ends. */
+const padOf = (numeric: boolean, a: string, b: string): number =>
+  numeric && [a, b].some((n) => /^-?0\d/.test(n))
+    ? Math.max(a.length, b.length)
+    : 0;
 
 /** The words of the sequence `from..to` or `from..to..step`, or null when `body` is not one. */
 const sequence = (body: string): string[] | null => {
@@ -37,26 +30,17 @@ const sequence = (body: string): string[] | null => {
   const from = numeric ? Number(a) : a.charCodeAt(0);
   const to = numeric ? Number(b) : b.charCodeAt(0);
   const step = (to < from ? -1 : 1) * (Math.abs(Number(s ?? 1)) || 1);
-  // A number with a leading zero pads each number to the widest of the two ends.
-  const padded = numeric && [a, b].some((n) => /^-?0\d/.test(n));
-  return range(
-    from,
-    to,
-    step,
-    numeric,
-    padded ? Math.max(a.length, b.length) : 0,
-  );
+  const pad = padOf(numeric, a, b);
+  const out: string[] = [];
+  for (let n = from; step > 0 ? n <= to : n >= to; n += step) {
+    if (out.length > BRACE_WORDS_MAX) break;
+    out.push(numeric ? String(n).padStart(pad, "0") : String.fromCharCode(n));
+  }
+  return out;
 };
 
-type Group = { close: number; items: Char[][] };
-
-/** The group that closes at `w[close]`: the comma items, or else the words of a sequence. */
-const closeGroup = (
-  w: Char[],
-  open: number,
-  cuts: number[],
-  close: number,
-): Group | null => {
+/** The comma items of the group, or else the words of a sequence. */
+const closeGroup = (w: Char[], open: number, cuts: number[], close: number) => {
   if (cuts.length > 1)
     return {
       close,
@@ -64,12 +48,7 @@ const closeGroup = (
         .slice(1)
         .map((cut, k) => w.slice((cuts[k] as number) + 1, cut)),
     };
-  const words = sequence(
-    w
-      .slice(open + 1, close)
-      .map((ch) => ch.c)
-      .join(""),
-  );
+  const words = sequence(join(w.slice(open + 1, close)));
   return words && { close, items: words.map(plain) };
 };
 
@@ -100,7 +79,7 @@ const expand = (w: Char[], out: string[]): void => {
     for (const item of group.items) expand([...head, ...item, ...tail], out);
     return;
   }
-  out.push(w.map((ch) => ch.c).join(""));
+  out.push(join(w));
 };
 
 /**

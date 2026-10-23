@@ -1,11 +1,10 @@
-// The `compaction` option of the core plugin, which the `handoff` slice declares and the `prompt` slice reads (spec `handoff`, "Opt-in compaction profile").
-// This file has no runtime import, so the hooks module can load it.
+// The `compaction` option (`auto`, `handover`, or `built-in`) that the `handoff` slice declares. No runtime import.
 
 import type { PluginOptions } from "claude-code";
 
-/** The name of the `userConfig` option that chooses the handoff or the built-in compaction. */
 export const COMPACTION_OPTION = "compaction";
 
+/** The value that leaves compaction to Claude Code. */
 export const BUILT_IN_COMPACTION = "built-in";
 
 export const isBuiltInCompaction = (options: PluginOptions | undefined) =>

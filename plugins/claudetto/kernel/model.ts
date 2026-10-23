@@ -1,24 +1,18 @@
-// The parts of a Claude model id. This file has no import, so every layer can use it.
+// The parts of a Claude model id. No import.
 
 /** The model families of Claude Code 2.1.305. */
 const FAMILIES = ["opus", "sonnet", "haiku", "fable", "mythos"] as const;
 
-/** A model family of `FAMILIES`, or `unknown` for a family that this list does not have. */
-type Family = (typeof FAMILIES)[number] | "unknown";
-
-/** The parts of a Claude model id: the family, the major version, and the minor version. */
 type ModelId = {
-  family: Family;
+  family: (typeof FAMILIES)[number] | "unknown";
   major: number;
   minor: number | null;
 };
 
 /**
  * The family, major, and minor version of a Claude model id, or `null` for any other id.
- * `claude-opus-5-5` gives `{ family: "opus", major: 5, minor: 5 }`.
- * An id with no minor version, such as `claude-haiku-5`, gives `minor: null`.
- * A date suffix, such as `-20251001`, is not a minor version.
- * A family that is not in `FAMILIES`, such as the one of `claude-zeta-9`, gives `family: "unknown"`.
+ * `claude-opus-5-5` gives `{ family: "opus", major: 5, minor: 5 }`, and `claude-haiku-5` gives `minor: null`.
+ * A date suffix, such as `-20251001`, is not a minor version, and a family not in `FAMILIES` gives `"unknown"`.
  */
 export const parseModel = (id: unknown): ModelId | null => {
   const m = /claude-([a-z]+)-(\d+)(?:-(\d{1,2})(?!\d))?/i.exec(

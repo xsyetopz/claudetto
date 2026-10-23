@@ -1,13 +1,9 @@
-// The heredoc delimiter after `<<` or `<<-`, for the scan of `scan.ts`.
-// The function is pure and imports nothing.
+// The heredoc delimiter after `<<` or `<<-`, for `scan.ts`.
 
 const ENDS = /[\s;&|<>()]/;
 
 /** The text of the part at `text[i]`, true when it is quoted, and the index of its last character. */
-const partAt = (
-  text: string,
-  i: number,
-): { text: string; quoted: boolean; last: number } => {
+const partAt = (text: string, i: number) => {
   const c = text[i] as string;
   if (c === "\\" && i + 1 < text.length)
     return { text: text[i + 1] as string, quoted: true, last: i + 1 };

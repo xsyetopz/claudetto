@@ -3,6 +3,7 @@
 import { expect, test } from "bun:test";
 import path from "node:path";
 import {
+  bandOf,
   CONTEXT_BLOCK_MARGIN,
   CONTEXT_WINDOW,
   HAIKU_HANDOFF_TRIGGER_TOKENS,
@@ -13,8 +14,8 @@ test("the trigger of Opus, Sonnet, and Fable is 225,000 tokens", () => {
   expect(HANDOFF_TRIGGER_TOKENS).toBe(225_000);
 });
 
-test("the trigger of Haiku is 100,000 tokens", () => {
-  expect(HAIKU_HANDOFF_TRIGGER_TOKENS).toBe(100_000);
+test("the trigger of Haiku is 90,000 tokens", () => {
+  expect(HAIKU_HANDOFF_TRIGGER_TOKENS).toBe(90_000);
 });
 
 test("each trigger is below the client block limit", () => {
@@ -37,4 +38,13 @@ test("no file of `plugins/claudetto/kernel/` other than `budget.ts` exports a nu
     )
       outside.push(f);
   expect(outside).toStrictEqual([]);
+});
+
+test("`bandOf` is green below 40, amber from 40 to 80, and red above 80", () => {
+  expect(bandOf(0)).toBe("green");
+  expect(bandOf(39.9)).toBe("green");
+  expect(bandOf(40)).toBe("amber");
+  expect(bandOf(80)).toBe("amber");
+  expect(bandOf(80.1)).toBe("red");
+  expect(bandOf(250)).toBe("red");
 });

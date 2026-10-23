@@ -1,10 +1,8 @@
 // The ports of the kernel: each interface that a CLI or a test replaces with an adapter or a fake.
-// The adapters of the runtimes are in `kernel/node/`, and the domain code imports only these interfaces.
 
 export interface ProcessOptions {
   readonly cwd?: string;
   readonly timeout?: number;
-  /** The environment of the process, in place of the one of the caller. */
   readonly env?: Readonly<Record<string, string | undefined>>;
 }
 
@@ -13,21 +11,15 @@ interface ProcessResult {
   readonly stdout: string;
   readonly stderr: string;
   readonly signal?: string;
-  /** True when the time bound of the run ended the process. */
   readonly timedOut?: boolean;
 }
 
-/**
- * Reads files and folders. A missing file gives `null`, and a missing folder gives an empty list.
- * Any other error, such as `EACCES` or `EISDIR`, rejects.
- * Each read is async, because the mod runtime reads files only async (`$.fs.read`).
- */
+/** A missing file gives `null`, and a missing folder gives an empty list. Any other error rejects. Async, as `$.fs.read` is. */
 export interface FileReader {
   read(file: string): Promise<string | null>;
   list(dir: string): Promise<string[]>;
 }
 
-/** Runs a program with its arguments, and gives its exit code and output. */
 export interface ProcessRunner {
   run(
     file: string,

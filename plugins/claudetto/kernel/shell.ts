@@ -1,9 +1,6 @@
-// The one shell reader of claudetto, for the guards in the slices.
-// It cannot run the shell, so it reads only the syntax that decides which command runs:
+// The one shell reader of claudetto, for the guards. It cannot run the shell, so it reads only the syntax that decides which command runs:
 // words, quotes, the operators between simple commands, nested scripts, and the wrapper commands.
-// Text that another program runs as code is in the `code` list of `parse`, for the code reader of a slice.
-// The scan of the text is in `shell/scan.ts`, and the word splitter is in `wrappers.ts`.
-// The functions are pure and import only `budget.ts`, `shell/scan.ts`, `shellkinds.ts`, and `wrappers.ts`.
+// The scan is in `shell/scan.ts`, the word splitter is in `wrappers.ts`, and the kinds of command are in `shellkinds.ts`.
 
 import { SHELL_SCAN_MAX_CHARS } from "./budget.ts";
 import { scan } from "./shell/scan.ts";
@@ -21,7 +18,6 @@ type Queued = { text: string; body: boolean };
 
 type Held = Queued & { outs: string[] };
 
-/** A redirection operator with its target word. */
 type Redirect = { op: string; target: string };
 
 type ParseResult = {
@@ -38,21 +34,24 @@ type ParseResult = {
  * Redirections, comments, quoted heredoc bodies, and the reserved words before a command (`if`, `then`, `{`, `!`) are not in the list.
  * The commands inside `$(...)`, backticks, an unquoted heredoc, `sh -c '...'`, `bash -c`, and `eval` are in the list too.
  * A wrapper such as `sudo` stays in front of its command: `stripWrappers` removes it.
- * The commands of a quoted heredoc are in the list when a shell reads it (`bash <<'EOF'`), or when the text runs a script that the reader cannot see (`hiddenLevel`), which a `while read` loop can take from the heredoc.
- * The text of a here-string given to a shell (`bash <<< '...'`) is a script too.
+ * The commands of a quoted heredoc or a here-string are in the list when a shell reads it (`bash <<'EOF'`), or when the text runs a script that the reader cannot see (`hiddenLevel`).
  * `code` lists each text that a program other than the shell can run as code (`runsCode`):
  * a heredoc body or a here-string that it reads, an argument with a space, a bracket, or a `;` (`python3 -c '...'`),
  * and a heredoc body that a data command writes to a file that such a program names, or to its standard output when the text runs such a program.
  * `redirects` lists the operator and the target word of each output redirection (`>`, `>>`, `>|`), except a file descriptor such as the `1` of `2>&1`.
- * The `&` of `&>` ends the command before it, so its operator is `>`.
- * `background` lists the words of each command that a lone `&` puts in the background, as `scan` gives them.
- * The cost grows with the length of `text`, because one pass with a stack finds the substitutions.
+ * `background` lists the words of each command that a lone `&` puts in the background.
  */
 export const parse = (text: unknown): ParseResult => {
   const out: string[][] = [];
   const redirects: Redirect[] = [];
   const code: string[] = [];
   const background: string[][] = [];
+  const queue: Queued[] = [{ text: String(text ?? ""), body: false }];
+  const seen = new Set<string>();
+  const held: { feed: Held[]; data: Held[] } = { feed: [], data: [] };
+  let scanned = 0;
+  let hidden = 0;
+  const later = (t: string, body = false) => queue.push({ text: t, body });
   const redirect = (op: string, target: string, line: string[]) => {
     if (op.startsWith(">") && !/^(?:\d+|-)$/.test(target))
       redirects.push({ op, target });
@@ -60,12 +59,6 @@ export const parse = (text: unknown): ParseResult => {
     if (readsScript(line)) later(target);
     else if (runsCode(line)) code.push(target);
   };
-  const queue: Queued[] = [{ text: String(text ?? ""), body: false }];
-  const seen = new Set<string>();
-  let scanned = 0;
-  const held: { feed: Held[]; data: Held[] } = { feed: [], data: [] };
-  let hidden = 0;
-  const later = (t: string, body = false) => queue.push({ text: t, body });
   const heredoc = (
     doc: string,
     quoted: boolean,
@@ -100,14 +93,20 @@ export const parse = (text: unknown): ParseResult => {
     queue.push(...ready);
     return ready.length > 0;
   };
+  const result = (truncated: boolean) => ({
+    commands: out,
+    redirects,
+    code,
+    background,
+    truncated,
+  });
   for (let n = 0; n < queue.length || release(); n++) {
     const { text: next, body } = queue[n] as Queued;
     const key = `${body}:${next}`;
     if (seen.has(key)) continue;
     seen.add(key);
     scanned += next.length;
-    if (scanned > SHELL_SCAN_MAX_CHARS)
-      return { commands: out, redirects, code, background, truncated: true };
+    if (scanned > SHELL_SCAN_MAX_CHARS) return result(true);
     scan(next, emit, body, redirect, heredoc, (line) => background.push(line));
   }
   // A data body is code when a program reads the file that it is written to, or its standard output.
@@ -119,7 +118,7 @@ export const parse = (text: unknown): ParseResult => {
         : programs.length > 0
     )
       code.push(doc);
-  return { commands: out, redirects, code, background, truncated: false };
+  return result(false);
 };
 
 export const commands = (text: unknown): string[][] => parse(text).commands;

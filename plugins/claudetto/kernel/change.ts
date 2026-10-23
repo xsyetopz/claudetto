@@ -1,28 +1,10 @@
-// The task state of an openspec change, read from the text of its `tasks.md`.
-// The handoff and the statusline share these rules.
-// The file has no import beyond `paths.ts`, so the module graph of a hooks module can use it.
+// The task state of an openspec change, read from the text of its `tasks.md`. No import, for the hooks module.
 
-import { CHANGE_HANDOFF_FILE, CHANGES_DIR } from "./paths.ts";
+/** A task line: `- [ ] 1.1 text` or `- [x] 1.1 text`. Group 1 is the mark, and group 2 is the id. */
+export const TASK_LINE = /^- \[([ xX])\] (\S+)/;
 
-/** A task line starts a line: `- [ ] 1.1 text` or `- [x] 1.1 text`. The group 1 is the mark, and the group 2 is the id. */
-const TASK_LINE = /^- \[([ xX])\] (\S+)/;
-
-/** The count of checked tasks, the count of all tasks, and the id of the next open task or `null`. */
-interface TaskCounts {
-  readonly done: number;
-  readonly total: number;
-  readonly next: string | null;
-  /** The ids of the checked tasks, in file order. */
-  readonly doneIds: readonly string[];
-}
-
-/**
- * The counts of the tasks in `tasks`, the text of a `tasks.md`.
- * The next task is the first open task after the last checked task, because a change can start at a later group.
- * When no open task follows the last checked task, it is the first open task.
- */
-export const countTasks = (tasks: string): TaskCounts => {
-  let done = 0;
+/** The next task is the first open task after the last checked task, or else the first open task. */
+export const countTasks = (tasks: string) => {
   const doneIds: string[] = [];
   let total = 0;
   let first: string | null = null;
@@ -31,34 +13,26 @@ export const countTasks = (tasks: string): TaskCounts => {
     const m = TASK_LINE.exec(line);
     if (!m) continue;
     total++;
+    const id = m[2] ?? "";
     if (m[1] !== " ") {
-      done++;
-      doneIds.push(m[2] ?? "");
+      doneIds.push(id);
       after = null;
     } else {
-      first ??= m[2] ?? "";
-      after ??= m[2] ?? "";
+      first ??= id;
+      after ??= id;
     }
   }
-  return { done, total, next: after ?? first, doneIds };
+  return { done: doneIds.length, total, next: after ?? first, doneIds };
 };
 
-/** The path of the handoff file of the change `name`, from the project root. */
-export const changeHandoffPath = (name: string): string =>
-  `${CHANGES_DIR}/${name}/${CHANGE_HANDOFF_FILE}`;
-
-/** The change in progress: its name and its next open task. */
+/** The change in progress: its name, its next open task, and the ids of its checked tasks (D48). */
 export interface OpenChange {
   readonly name: string;
   readonly next: string;
-  /** The ids of the checked tasks of `tasks.md`: the only source of the done list of a handoff (D48). */
   readonly done: readonly string[];
 }
 
-/**
- * The change in progress among `changes`, the names with the text of their `tasks.md` or `null` for no file:
- * the first by name that has an open task.
- */
+/** The first change by name that has an open task, from the names with the text of their `tasks.md` or `null`. */
 export const openChange = (
   changes: readonly { readonly name: string; readonly tasks: string | null }[],
 ): OpenChange | null => {

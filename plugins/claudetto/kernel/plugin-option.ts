@@ -1,8 +1,6 @@
-// The value of a plugin option for a command that Claude Code gives no `CLAUDE_PLUGIN_OPTION_*` env var.
-// The env var wins when it is set.
-// Otherwise the value is the first string value of the option in a `<plugin>@*` entry of `pluginConfigs` in the user settings.
+// The value of a plugin option for a command that gets no `CLAUDE_PLUGIN_OPTION_*` env var.
 
-/** The value of the option `name` of the plugin `plugin`, or `undefined` when neither the env var nor `pluginConfigs` has a string. */
+/** The env var, else the first string value of the option in a `<plugin>@*` entry of `pluginConfigs` in the user settings. */
 export const pluginOption = (
   plugin: string,
   name: string,

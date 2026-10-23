@@ -1,5 +1,4 @@
-// The escapes of an ANSI-C quote (`$'...'`) of bash and zsh, for the scan of `scan.ts`.
-// The function is pure and imports nothing.
+// The escapes of an ANSI-C quote (`$'...'`) of bash and zsh, for `scan.ts`.
 
 const LETTERS: Record<string, string> = {
   a: "\x07",
@@ -30,7 +29,7 @@ const charOf = (code: number): string =>
 
 /**
  * The text of the escape that starts at `text[at]`, the character after the backslash, and the index of its last character.
- * An octal escape gives one byte, `\0` gives `"\0"`, and an escape that the shells do not know keeps its backslash.
+ * An octal escape gives one byte, and an escape that the shells do not know keeps its backslash.
  */
 export const ansiEscape = (
   text: string,

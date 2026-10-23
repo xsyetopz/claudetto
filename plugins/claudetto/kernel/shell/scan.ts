@@ -1,26 +1,9 @@
 // The scan of `shell.ts`: one pass over a text with a stack of frames, one for each substitution, parenthesis, and backtick.
-// The function is pure and imports only `shellkinds.ts` and the files of this folder.
 
 import { RESERVED } from "../shellkinds.ts";
 import { ansiEscape } from "./ansi-c.ts";
 import { expandBraces } from "./braces.ts";
 import { delimiterAt } from "./delimiter.ts";
-
-/** A frame of the scan: one `$(`, backtick, or parenthesis, with the words of its command so far. */
-type Frame = {
-  closer: string | null;
-  body: boolean;
-  line: string[];
-  word: string | null;
-  quote: string | null;
-  skip: string | false;
-  heredocs: Heredoc[];
-  outs: string[];
-  start: number | null;
-  raws: string[];
-  marks: number[];
-  depth: number;
-};
 
 type Heredoc = {
   delimiter: string;
@@ -29,37 +12,38 @@ type Heredoc = {
   outs: string[];
 };
 
-/** The quote states of an ANSI-C quote (`$'...'`): the text, and the text after a `\0`, which the shell drops. */
-const ANSI = "$'";
-const ANSI_DROP = "$'\0";
-const ansi = (f: Frame): boolean => f.quote === ANSI || f.quote === ANSI_DROP;
-
+/** A frame: one `$(`, backtick, or parenthesis, with the words of its command so far. */
 const frame = (
   closer: string | null,
   body = false,
   start: number | null = null,
-): Frame => ({
+) => ({
   closer,
   body,
-  line: [],
-  word: null,
-  quote: null,
-  skip: false,
-  heredocs: [],
-  outs: [],
   start,
-  raws: [],
-  marks: [],
+  line: [] as string[],
+  word: null as string | null,
+  quote: null as string | null,
+  skip: false as string | false,
+  heredocs: [] as Heredoc[],
+  outs: [] as string[],
+  raws: [] as string[],
+  marks: [] as number[],
   depth: 0,
 });
+type Frame = ReturnType<typeof frame>;
+
+/** The quote states of an ANSI-C quote (`$'...'`): the text, and the text after a `\0`, which the shell drops. */
+const ANSI = "$'";
+const ANSI_DROP = "$'\0";
+const ansi = (f: Frame): boolean => f.quote === ANSI || f.quote === ANSI_DROP;
 
 /** The closer of an arithmetic frame (`$(( ))`), whose words are not a command. */
 const ARITH = "))";
 
 /**
  * True when the `$((` at `at` is arithmetic: its parentheses match up to a `))`.
- * A quote, a backtick, or a backslash before that point gives false, so the text keeps the stricter reading of a substitution.
- * The shell reads `$((cmd) )` as a substitution that holds a subshell, and so does this check.
+ * A quote, a backtick, or a backslash before that point gives false, which keeps the stricter reading of a substitution.
  */
 const arithmeticAt = (text: string, at: number): boolean => {
   let depth = 0;
@@ -73,24 +57,27 @@ const arithmeticAt = (text: string, at: number): boolean => {
   return false;
 };
 
+type RedirectCb = (op: string, target: string, line: string[]) => void;
+type HeredocCb = (
+  doc: string,
+  quoted: boolean,
+  head: string[],
+  outs: string[],
+) => void;
+
 /** The state of one scan: the text, the stack of frames, and the callbacks of `scan`. */
 type Ctx = {
   text: string;
   stack: Frame[];
   emit: (argv: string[]) => void;
-  redirect: (op: string, target: string, line: string[]) => void;
-  heredoc: (
-    doc: string,
-    quoted: boolean,
-    head: string[],
-    outs: string[],
-  ) => void;
+  redirect: RedirectCb;
+  heredoc: HeredocCb;
   background: (line: string[]) => void;
 };
 
 const push = (x: Ctx, f: Frame): void => {
   if (f.word !== null) {
-    // A word that is only substitutions is unreadable, so it is `""`, as before.
+    // A word that is only substitutions is unreadable, so it is `""`.
     const w = f.word === f.raws.join("") ? "" : f.word;
     if (f.skip) {
       x.redirect(f.skip, w, f.line);
@@ -113,9 +100,13 @@ const end = (x: Ctx, f: Frame): void => {
   f.outs = [];
 };
 
-// The source text of a substitution goes into its word, so the words after it stay with it.
+const append = (f: Frame, text: string): void => {
+  f.word = (f.word ?? "") + text;
+};
+
+/** The source text of a substitution goes into its word, so the words after it stay with it. */
 const addRaw = (f: Frame, raw: string): void => {
-  f.word = (f.word ?? "") + raw;
+  append(f, raw);
   f.raws.push(raw);
 };
 
@@ -124,7 +115,7 @@ const open = (x: Ctx, f: Frame, closer: string, at: number): void => {
   x.stack.push(frame(closer, false, at));
 };
 
-// A `$(` opens a substitution, and a `$((` with a matching `))` opens an arithmetic frame.
+/** A `$(` opens a substitution, and a `$((` with a matching `))` opens an arithmetic frame. */
 const openDollar = (x: Ctx, f: Frame, at: number): number => {
   if (x.text[at + 2] !== "(" || !arithmeticAt(x.text, at)) {
     open(x, f, ")", at);
@@ -145,8 +136,7 @@ const close = (x: Ctx, f: Frame, at: number): void => {
 /** Each handler below gets the index `i` of the character `c` and gives the index of the last character that it read. */
 const escapeAt = (f: Frame, text: string, i: number): number => {
   const n = text[i + 1] as string;
-  if (n !== "\n")
-    f.word = (f.word ?? "") + (f.quote && !'$`"\\'.includes(n) ? "\\" : "") + n;
+  if (n !== "\n") append(f, (f.quote && !'$`"\\'.includes(n) ? "\\" : "") + n);
   return i + 1;
 };
 
@@ -168,9 +158,9 @@ const ansiAt = (f: Frame, text: string, i: number, c: string): number => {
   else if (c === "\\" && i + 1 < text.length) {
     const { char, last } = ansiEscape(text, i + 1);
     if (char === "\0") f.quote = ANSI_DROP;
-    else if (f.quote === ANSI) f.word += char;
+    else if (f.quote === ANSI) append(f, char);
     return last;
-  } else if (f.quote === ANSI) f.word += c;
+  } else if (f.quote === ANSI) append(f, c);
   return i;
 };
 
@@ -178,7 +168,7 @@ const dquoteAt = (x: Ctx, f: Frame, i: number, c: string): number => {
   if (c === '"' && !f.body) f.quote = null;
   else if (c === "$" && x.text[i + 1] === "(") return openDollar(x, f, i);
   else if (c === "`") open(x, f, "`", i);
-  else f.word = (f.word ?? "") + c;
+  else append(f, c);
   return i;
 };
 
@@ -208,12 +198,8 @@ const redirectAt = (x: Ctx, f: Frame, i: number): number => {
   return last;
 };
 
-/** The end of the body that starts at `from`: the index after its last line, and the index of the line of `delimiter`. */
-const bodyEnd = (
-  text: string,
-  from: number,
-  delimiter: string,
-): { stop: number; pos: number } => {
+/** The end of the heredoc body that starts at `from`: the index after its last line, and the index of the line of `delimiter`. */
+const bodyEnd = (text: string, from: number, delimiter: string) => {
   let pos = from;
   let stop = from;
   while (pos < text.length) {
@@ -230,10 +216,9 @@ const newlineAt = (x: Ctx, f: Frame, i: number): number => {
   end(x, f);
   let pos = i + 1;
   for (const { delimiter, quoted, head, outs } of f.heredocs.splice(0)) {
-    const start = pos;
     const body = bodyEnd(x.text, pos, delimiter);
-    if (body.stop > start)
-      x.heredoc(x.text.slice(start, body.stop), quoted, head, outs);
+    if (body.stop > pos)
+      x.heredoc(x.text.slice(pos, body.stop), quoted, head, outs);
     const nl = x.text.indexOf("\n", body.pos);
     pos = nl < 0 ? x.text.length : nl + 1;
   }
@@ -257,7 +242,7 @@ const wordCharAt = (f: Frame, text: string, i: number, c: string): void => {
   // An unquoted brace or comma can expand, except the brace of `${`.
   if ("{,}".includes(c) && !(c === "{" && text[i - 1] === "$"))
     f.marks.push((f.word ?? "").length);
-  f.word = (f.word ?? "") + c;
+  append(f, c);
 };
 
 const operatorAt = (x: Ctx, f: Frame, i: number, c: string): number => {
@@ -307,7 +292,7 @@ const step = (x: Ctx, i: number): number => {
   if (f.closer === ARITH) return arithAt(x, f, i, c);
   if (f.quote === "'") {
     if (c === "'") f.quote = null;
-    else f.word += c;
+    else append(f, c);
     return i;
   }
   if (ansi(f)) return ansiAt(f, x.text, i, c);
@@ -316,7 +301,7 @@ const step = (x: Ctx, i: number): number => {
 };
 
 /**
- * One pass over `text` with a stack of frames, one for each `$(`, backtick, and parenthesis.
+ * One pass over `text`.
  * `emit(argv)` gets each simple command.
  * `redirect(op, target, line)` gets each redirection operator with the word after it and the words of its command so far.
  * `heredoc(doc, quoted, head, outs)` gets each heredoc body with the words of its command and the output targets of that command.
@@ -327,13 +312,8 @@ export const scan = (
   text: string,
   emit: (argv: string[]) => void,
   body: boolean,
-  redirect: (op: string, target: string, line: string[]) => void,
-  heredoc: (
-    doc: string,
-    quoted: boolean,
-    head: string[],
-    outs: string[],
-  ) => void,
+  redirect: RedirectCb,
+  heredoc: HeredocCb,
   background: (line: string[]) => void = () => {},
 ): void => {
   const first = frame(null, body);
