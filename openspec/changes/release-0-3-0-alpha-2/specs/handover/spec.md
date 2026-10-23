@@ -78,7 +78,7 @@ A handover or a compaction by claudetto SHALL start only at the end of a turn wi
 
 #### Scenario: Running Agent
 
-- **WHEN** the context is over the bound and a `claudetto:worker` still runs
+- **WHEN** the context is over the bound and a `claudetto:Worker` still runs
 - **THEN** nothing starts until the agent ends
 
 ### Requirement: Built-In Safety Net
@@ -103,7 +103,7 @@ A path SHALL win a case when paired runs show that it costs less and the next ta
 #### Scenario: Table Names Compact
 
 - **WHEN** the table maps a case to `compact`
-- **THEN** the code runs a compaction for that case and writes no handover
+- **THEN** the code runs `/compact` with the handover text as its instructions, and writes no handoff file
 
 #### Scenario: Table Names Both
 

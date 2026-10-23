@@ -30,7 +30,7 @@ The slice SHALL show a note for each of these events: the same permission ask or
 
 ### Requirement: Learn Block
 
-When a main reply ends with a `learn:` line, a `tag:` line, and an `explain:` block, the slice SHALL hide the block from the reply and show "<tag> · <line>" above the prompt.
+When a main reply ends with a `learn:` line, a `tag:` line, and an `explain:` block, the slice SHALL remove the block from the shown and stored reply, also in `-p` output, and show "<tag> · <line>" above the prompt.
 `learn: none` SHALL show nothing.
 The body of `claudetto:main` SHALL give the rubric of the built-in mod: a note only when the main session cannot cover it and it is relevant and consequential.
 

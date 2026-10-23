@@ -86,6 +86,19 @@ A worker agent wrote this report, and the main session saved it, because the `gr
 | 43 | `42b48e25:554` | I12, I16 | "For *how* long are you going to run evals after evals?" | No cap on eval runs | A budget for evals, and parallel runs (prompt line) |
 | 44 | `ac5bebba:19199`, `:19202` | I14 | "what? No! positive-framing gate goes away" and "you deliberately framed the question as a trap" | The agent built one option while it asked about it (lines 19161 to 19196) | Do not build an option that a question still asks about (prompt line) |
 
+## Incidents of the alpha.2 Apply Session (I01, I04, I13)
+
+The main session added these rows from session `e09807b9`.
+A cause marked "inferred" does not show in the transcript.
+
+| id | Where | Label | Quote | Cause | Fix (surface) |
+| --- | --- | --- | --- | --- | --- |
+| 45 | `e09807b9:3099` | I13 | reply "Next is task `3.8` ... Then I go on through `3.11`" with no blocker and no job in the background (lines 3085 to 3092). User at `:3101`: "don't just stop. keep going task after task." | Inferred: `skills/apply/SKILL.md:15` had no loop line, where OpenSpec `apply-change.js` step 6 says "loop until done or blocked" | A loop line and the pause list of OpenSpec (skill). A `Stop` check (task 10.12) |
+| 46 | `e09807b9:4971` | I01 | "your problem was also assuming it'd be in external/" | A source path was guessed and not searched | Search the repository and the session for a source before a claim about its place (prompt line) |
+| 47 | `e09807b9:5215` | I01, I04, I06 | "blatant assumptions instead of objective verifications? model-inferred behavour?" | Dossier labels put on calls before the dossier was read. A handoff cause taken as a fact. A `/goal` reuse claimed with no read of how a goal is set | Mark each claim as shown, with its source, or as inferred (prompt line). The handoff keeps that mark (code) |
+| 48 | `e09807b9`, worker of task 9.11 | I04, I11, I13 | report "It is not mine" for 4 failures, and "the first run was flaky" for a lab run with 3 fails. One of the 4, `plugins/claudetto/tests/handover.test.ts` at 429 lines, is an untracked file of this branch. The next `just docker check` failed at lint | A worker reads "not mine" as out of scope, and a fail that does not repeat as no defect | An untracked file of the branch is in scope, and a fail that does not repeat is a defect with a cause (prompt line). The main session reruns the checks of a worker before a tick |
+| 49 | `e09807b9`, first `AskUserQuestion` of task 10.12 | I06, I14 | option text "Only an apply turn ticks boxes, so other turns are never blocked." The hook keyed on any tick, and a side agent found it | A fact in a question was not checked, so the user decided on a false premise | Each fact in an option of `AskUserQuestion` has a source that the main session read (prompt line). Ask again when a premise is wrong |
+
 ## Event Counts
 
 From `research/raw/incidents-counts.txt`: 95 `cat` denies, 14 `ground` blocks, 15 classifier denies, 14 subagent-limit errors, 22 denied `Bash` commands, and 13 side-agent notes.

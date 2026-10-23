@@ -13,7 +13,7 @@ The evidence is in `research/`: `sessions.md`, `incidents.md` (44 incidents in 8
 - A fresh session takes about 15k tokens, and the goal is 10k or fewer.
   The claude.ai skills load, because the live settings lack `syncClaudeAiSkills: false` (`research/levers.md`, a).
   `agents/main.md` is longer than the default body that it replaces (`research/prompts.md`).
-- The text that Claude Code sends breaks the prompt guidance of Anthropic in many places, such as negative framing (the user, 2026-10-23: "it's a legitimate concern that the very company building this harness is violating its own documentation").
+- The text that Claude Code sends breaks the prompt guidance of Anthropic in many places, such as negative framing, and it is a fair concern that the company that builds the harness breaks its own documentation (the user, 2026-10-23).
   claudetto overrides only part of the surfaces that it can reach.
 - The `reviewer` agent runs Sonnet 5.5 at `high`, against the caps of the user (Sonnet at most `medium`, Opus at most `high`).
 - The label "Running SessionStart hooks…" stays up after each automatic handoff (`research/spinner.md`).
@@ -27,6 +27,8 @@ The evidence is in `research/`: `sessions.md`, `incidents.md` (44 incidents in 8
 - The user cannot find where the global instructions come from: no `~/.claude/CLAUDE.md` exists, the only global text is `~/.claude/rules/context7.md`, which `ctx7` installed, and the repository `CLAUDE.md` and `AGENTS.md` are 2 copies of 66 lines in place of the symlink that the user set up.
 - `minispec` differs from OpenSpec 1.14.3 in 5 cases and has 5 of its 24 commands, and it names no next command (`research/minispec-gaps.md`).
 - Agents report a claim as "not verified" and propose a free check in place of running it (`Concise.md:18`).
+- claudetto does not use the usage of the login: the model cannot see the 5-hour and weekly shares, nothing slows the work near a limit, delegation does not weigh cost, and no report gives the cost of a change (`handoff.md` of this change, line 14).
+- The roster has 4 lowercase agents and no tester or scoper, and the user wants a roster such as worker, reviewer, researcher, tester, and scoper (the user, 2026-10-23).
 - The code of claudetto is larger than its work needs (`research/trim.md`: 8761 lines of plugin TypeScript now, about 5980 as the estimate after the cuts).
 
 ## Users
@@ -56,6 +58,8 @@ The evidence is in `research/`: `sessions.md`, `incidents.md` (44 incidents in 8
 - G19: The global `~/.claude/CLAUDE.md` and the repository `AGENTS.md` hold 20 lines or fewer each, and the user can see where each always-on instruction comes from.
 - G20: `minispec` gives the same result as OpenSpec 1.14.3 for each command and flag that it has, names the next command, and stays at 793 lines or fewer.
 
+- G21: The main agent sees the 5-hour and weekly shares, plans fewer agents at a time as usage rises, asks before more agents or paid runs at the red bound, picks the cheapest agent that fits, and reports the cost of each change (D25).
+
 ## Non-Goals
 
 - No patch of the Claude Code binary or its npm package.
@@ -75,4 +79,5 @@ The evidence is in `research/`: `sessions.md`, `incidents.md` (44 incidents in 8
 - For each case of the handover table, the chosen path costs no more than the other paths in paired runs, and the next task passes as well or better.
 - The parity cases of `tests/claudetto/spec/parity/` pass for each command of D22, with OpenSpec as the oracle.
 - A test holds `~/.claude/CLAUDE.md` as written by setup and `AGENTS.md` at 20 lines or fewer.
+- The hook lab has a case for each band of D25 and for the gate at red, and the roster test holds the 6 agents of D6.
 - `just check` passes, and each fault of this release has a test.

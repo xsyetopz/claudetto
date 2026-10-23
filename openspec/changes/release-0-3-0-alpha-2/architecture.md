@@ -60,7 +60,7 @@ Alternatives: `defaultMode: "bypassPermissions"` (it adds a startup dialog, and 
 ### A3: Notes with No Model Call
 
 The built-in mod `cc-plugin-you-should-know` runs `$.model.fork` for each check (binary 2.1.309).
-claudetto turns it off, and `notes` uses rules on hook events and a tagged line that the model writes in its own turn (the user, 2026-10-23: "Both, rules first").
+claudetto turns it off, and `notes` uses rules on hook events and a tagged line that the model writes in its own turn, with the rules first (the user, 2026-10-23).
 Alternative: a `$.model.complete` call on Haiku, which is still a request.
 
 ### A4: Setup Asks, Then Writes
@@ -71,7 +71,7 @@ The default stays `merge`, because it loses nothing and is easy to change later.
 ### A5: `IS_DEMO` Is a Shell Alias
 
 `IS_DEMO` hides the email and the organization, and in 2.1.309 it also skips the trust, MCP approval, API key, and bypass dialogs (binary `chunk-f3syffrp.js`).
-So setup offers the alias `claude-demo` for `IS_DEMO=1 claude`, the plain `claude` keeps each dialog, and no settings file gets `IS_DEMO` (the user, 2026-10-23: "Shell alias").
+So setup offers the alias `claude-demo` for `IS_DEMO=1 claude`, the plain `claude` keeps each dialog, and no settings file gets `IS_DEMO`, because the user wants a shell alias (the user, 2026-10-23).
 
 ### A6: Token Goal by Measure
 
@@ -82,7 +82,7 @@ The cuts come in this order: the claude.ai skills, user skills that copy a claud
 
 Sessions last hours or days (the user, 2026-10-23), so the cost of a long context repeats on each request.
 A handover writes a short handoff in code and starts a fresh context, and a compaction is one model call over the long context.
-Neither path wins each case by reason alone, so a table picks the path for each case, and paired runs set its values (the user, 2026-10-23: "can it do same or better for cheaper than the other?").
+Neither path wins each case by reason alone, so a table picks the path for each case, and paired runs set its values, because one path must do the same or better for less cost than the other (the user, 2026-10-23).
 Alternative: one fixed path, which pays the higher cost in the cases where the other path is cheaper.
 
 ### A8: One Model, Thin Views, Least Code

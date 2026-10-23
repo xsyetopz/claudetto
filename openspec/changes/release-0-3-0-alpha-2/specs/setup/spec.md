@@ -99,14 +99,14 @@ The skill `setup` SHALL offer a `deniedMcpServers` entry in the project settings
 
 ### Requirement: Subagent Cap Restart
 
-Setup SHALL set `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` by plan tier from `slices/setup/limits.ts`: Pro 2, Max 5x 5, and Max 20x 8.
+Setup SHALL set `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` by plan tier from `slices/setup/limits.ts`: Pro 3, Max 5x 4, and Max 20x 5.
 For an API key or an unknown tier, it SHALL keep the value of the user.
 It SHALL say when a restart is needed.
 
 #### Scenario: Max 20x Cap
 
 - **WHEN** the plan is Max 20x and the user value is `6`
-- **THEN** setup writes `8`
+- **THEN** setup writes `5`
 
 #### Scenario: Unknown Tier Cap
 

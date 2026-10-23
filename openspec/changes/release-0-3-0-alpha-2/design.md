@@ -43,12 +43,12 @@ A hook lab probe checks whether `maxEffortLevel` caps the `effort` of an agent f
 
 `claudetto-setup --inventory` reads `~/.claude.json` (the plan keys and the MCP servers of the user and of the project), `~/.claude/settings.json`, and `~/.claude/skills/*/SKILL.md`, and prints JSON with no identity.
 `--mode merge` asks the user for each conflict, and `--mode replace` keeps a backup and writes the snippet.
-The skill `setup` shows the inventory as a short table, asks merge or replace, offers a `deniedMcpServers` entry in the project settings for each MCP server that the project does not use (such as `apple-docs`), and offers a shell alias `claude-demo` for `IS_DEMO=1 claude` (the user, 2026-10-23: "Shell alias"), because in 2.1.309 `IS_DEMO` also skips the trust, MCP approval, API key, and bypass dialogs, so the plain `claude` keeps them.
+The skill `setup` shows the inventory as a short table, asks merge or replace, offers a `deniedMcpServers` entry in the project settings for each MCP server that the project does not use (such as `apple-docs`), and offers a shell alias `claude-demo` for `IS_DEMO=1 claude` as the user chose (the user, 2026-10-23), because in 2.1.309 `IS_DEMO` also skips the trust, MCP approval, API key, and bypass dialogs, so the plain `claude` keeps them.
 `plugin.json` gets `userConfig.TYPESAFE_API_KEY` with `sensitive: true` (`extend/plugins/manifest.md:57-68`), so the key goes to secure storage, and `decide` and `guard` read it from `register(on, options)` or `CLAUDE_PLUGIN_OPTION_TYPESAFE_API_KEY`.
 A hook lab probe checks that `options` holds a sensitive value.
 Setup sets `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` by plan tier and says when a restart is needed (`research/incidents.md`, row 39, and `AskUserQuestion` answer, 2026-10-23: "Cap by plan tier").
-The values, in `slices/setup/limits.ts`: Pro 2, Max 5x 5, Max 20x 8, and the value of the user for an API key or an unknown tier.
-Reasons: Pro has the smallest 5-hour limit, and at 6 the sessions of the user on Max 20x hit "Concurrent subagent limit" 14 times (row 39).
+The values, in `slices/setup/limits.ts`: Pro 3, Max 5x 4, Max 20x 5, and the value of the user for an API key or an unknown tier (`AskUserQuestion` answer, 2026-10-23: "3 to 5 by tier").
+Reasons: the routing of D6 plans for 3 to 5 agents at a time (the user, 2026-10-23), Pro has the smallest 5-hour limit, and at 6 the sessions of the user on Max 20x hit "Concurrent subagent limit" 14 times (row 39).
 Setup sets `statusLine.refreshInterval` to 5 seconds, from 1 (the same session of answers).
 
 ### D5: Plan Line
@@ -57,41 +57,51 @@ Setup writes the plan as the plugin option `plan`, and the `prompt.context` bloc
 
 ### D6: Roster and Delegation
 
-| Agent | Model | Effort | Change |
-| --- | --- | --- | --- |
-| `scout` | Haiku 5.5 | `low` | none, search only |
-| `worker` | Sonnet 5.5 | `medium` | none |
-| `reviewer` | Sonnet 5.5 | `medium` | from `high`, the cap of the user |
-| `researcher` | Sonnet 5.5 | `medium` | from `low`, and it returns its report as its final message with no `Write`, because the subagent notes of Claude Code forbid report files (`research/prompts.md`, C1) |
+The roster has three categories, Inspector, Modifier, and Tester, and UpperCase names (the user, 2026-10-23, and `AskUserQuestion` answer, 2026-10-23: "6 agents").
 
+| Agent | Category | Model | Effort | Tools | Work |
+| --- | --- | --- | --- | --- | --- |
+| `Scout` | Inspector | Haiku 5.5 | `low` | `Read`, `Grep`, `Glob` | a search over many files |
+| `Scoper` | Inspector | Sonnet 5.5 | `medium` | `Read`, `Grep`, `Glob` | splits a task into file sets and steps for parallel Workers, in place of the built-in `Plan` |
+| `Reviewer` | Inspector | Sonnet 5.5 | `medium` | `Read`, `Grep`, `Glob`, `Bash` | a fresh review of a diff against its plan, from `high`, the cap of the user |
+| `Researcher` | Inspector | Sonnet 5.5 | `medium` | `WebSearch`, `WebFetch`, `Read` | web research, with its report as its final message and no `Write`, because the subagent notes of Claude Code forbid report files (`research/prompts.md`, C1) |
+| `Worker` | Modifier | Sonnet 5.5 | `medium` | `Read`, `Edit`, `Write`, `Grep`, `Glob`, `Bash`, `Monitor` | one planned edit step with its check |
+| `Tester` | Tester | Haiku 5.5 | `low` | `Read`, `Grep`, `Glob`, `Bash`, `Monitor` | runs the checks and reports each failure with file and line, and writes no code |
+
+Haiku gets only mechanical work: it matched Sonnet on code search at a third of the cost and passed 30 of 30 small fixes, but gave 10 wrong facts in research (`research/economy.md:71-89`).
+A plugin agent takes its name from its file, and a `name` has no `:` (`extend/subagents/frontmatter.md:31,58`), so `agents/Scout.md` is `claudetto:Scout`.
+A hook lab probe checks that name and an `Agent(claudetto:Scout)` deny rule.
+**BREAKING** The lowercase names go.
 The main agent runs Opus 5.5 at `medium` and raises the effort for a hard turn, because an effort change keeps the cache on the 5.5 models (`research/economy.md`).
 Each description starts with "Use proactively" and names the moment (`research/failures.md`, failure 5).
-`main.md` gets a routing block: `scout` for a search over many files, `worker` for each edit step, in parallel on separate file sets, `reviewer` before a part is reported, with the diff and the plan, and `researcher` for a web question.
-The main agent writes the files that `researcher` returns.
+`main.md` gets a routing block: `Scoper` first for work over more than one file set, then `Worker`s in parallel on separate file sets up to the cap of D4 and the band of D25, `Tester` after each group of `Worker`s, `Reviewer` before a part is reported, with the diff and the plan, `Scout` for a search over many files, and `Researcher` for a web question.
+The main agent keeps the decisions and the talk with the user, and writes the files that `Researcher` returns.
 Cache: each agent body is static text, the task text comes last, and the tool list of each agent is fixed, so spawns of one type share a cached prefix (`research/economy.md`, cache).
 The main agent passes no `model` in an `Agent` call, so the frontmatter applies.
 
 ### D7: Text Audit of Each Surface
 
-Each text that claudetto writes, and each text of Claude Code that a supported surface reaches, gets the same behavior in fewer words (the user, 2026-10-23: "can you convey the exact same behaviour using less words? ... Prompt engineering applies to any part of these non-prompt parts, too").
+Each text that claudetto writes, and each text of Claude Code that a supported surface reaches, gets the same behavior in fewer words, because prompt engineering applies to the non-prompt parts too (the user, 2026-10-23).
 The rules, from the prompt guidance of Anthropic and `external/claude-ai/swe-best-practices.md`:
 1. Say what to do, and give the reason in one clause.
    A rule in the form "do not X" becomes the action that replaces X.
-2. Keep each behavior of the text that it replaces.
-   A table in `research/text-audit.md` lists each behavior line of the default and the line that carries it.
+2. Keep a behavior of the text that it replaces only when claudetto's work needs it.
+   Facts settle the need, and `AskUserQuestion` gets each open case, which Jev answers when it is sure (the user, 2026-10-23).
+   A table in `research/text-audit.md` lists each behavior line of the default, its answer, and the line that carries it.
 3. One rule for one case, with no conflict between two texts (`research/prompts.md`, section 2).
 4. No restatement of a rule that another text in the same request already holds.
+5. A text that Claude writes gives the intent of the user as Claude understands it, so that a wrong reading shows, with `(the user, date)`, and copies only the exact values of the user (the user, 2026-10-23).
 
 The surfaces:
-- `agents/main.md`, with a size bound below the default lean body of 5,627 characters (`research/prompts.md`) in `slices/prompt/limits.ts`.
+- `agents/main.md`, shortened with no lost behavior and with no size bound, because it replaces the whole system prompt (the user, 2026-10-23).
 - `output-styles/Concise.md`, without the dead `keep-coding-instructions` line.
 - Each agent body and description, and each skill description.
 - `tool.describe` for each tool that a session can load, deferred tools such as `SendMessage`, `EnterWorktree`, and `ExitWorktree` too, after a hook lab probe that `tool.describe` fires for a deferred tool.
   The `Bash` text gets shorter than the default, so it applies again (C4), and the `Agent` text carries the warning that an agent report is a claim to check.
 - `prompt.attachment` for the plan mode text (C2) and for each reminder that has a shorter form.
-- `prompt.compose`, for the subagent notes block, when a test engine probe shows that it is a section.
+- `prompt.compose` cannot reach the subagent notes block, because `_rn` appends it outside the composer (task 11.4).
 - Each `prompts.ts` of a slice, the hook messages that Claude reads.
-- A `PreCompact` line for the `built-in` compaction path (`research/prompts.md`, rank 9).
+- A compaction line for the `built-in` path, which the `session.compact` mod hook adds to `instructions` with no process spawn (`research/prompts.md`, rank 9).
 
 The content changes that the research names go in the same pass: the lines of `research/failures.md` (failures 1 to 6) and the fixes of `research/incidents.md` (the 10 fixes), such as "fix each defect that you find, also an older one", "try once, install a missing tool, then give the exact `!` command", "print a file with `Read`", "commit and push when the user gave a standing permission", "keep the text of a task", and the restored `git` rules (C3).
 Tests: a lint test fails on a negative-framed rule (`do not`, `never`, `NOT`, `don't`) in a claudetto text that Claude reads (agent bodies, skills, the output style, hook messages, and tool texts), with an allow list for quoted text, and the docs and wiki are out of its scope (`AskUserQuestion` answer, 2026-10-23), and a size test fails when a replacement is longer than the default text of its capture.
@@ -105,6 +115,10 @@ A new slice `finish` holds two hooks with no model call.
   For each box that changes from `- [ ]` to `- [x]`, it needs a passed check of that task in the session record, and it denies with the task id otherwise.
 - `stop`: a `Stop` hook that sets a `notes` note when the last reply lists work as not done, not fixed, paused, or for later, with no named block, or says "ready" or "done" while `git status` shows uncommitted changes of the session or a task box has no check.
   The stop passes, and the user decides (`AskUserQuestion` answer, 2026-10-23: "Note only").
+- `loop`: the same `Stop` hook blocks a stop when the turn ticked a box of a `tasks.md` and that file still has an open box, with the next open task and the `AskUserQuestion` route for a blocker.
+  It blocks at most `GOAL_BLOCKS_MAX` times in a row, and then the stop goes on (`AskUserQuestion` answer, 2026-10-23: "Block, capped").
+  It blocks only in a session whose record shows `/claudetto:apply`, and never while a subagent of `$.agent.list()` is `pending`, `running`, or `waiting` (`AskUserQuestion` answer, 2026-10-23: "Apply sessions only", after the first question said wrongly that only an apply turn ticks boxes).
+  The cause: in alpha.1 the apply turn ended after task 3.7 with no blocker (`research/incidents.md` row 45), and the dossier shows that prose fixes of this kind decay (I02).
 The rules match on the shape of a reply, and their tests are fixtures: each known-bad reply of `research/incidents.md` sets a note, and each known-good reply, such as one that names a sandbox deny, sets none (`research/failures.md`, the dossier rule of I15).
 The `goal` slice merges into `finish`, because both hold a stop check (`research/trim.md`).
 
@@ -134,29 +148,28 @@ A `tool.call` hook on `git status` and `git diff` adds context that names each c
 
 ### D12: Handover in Place of Compaction
 
-A handover is a handoff, then `/clear`, then a resume (the user, 2026-10-23: "claudetto's handover is essentially handoff+clear+resume").
+A handover is a handoff, then `/clear`, then a resume (the user, 2026-10-23).
 The mod writes the handoff file with no model call, queues `/clear` with `$.command.run` (it runs once the session is idle, `extend/mod-api/tool-command-config.md:44`), and sends the handoff as the next user turn with `$.prompt.submit` (`extend/mod-api/turn-prompt.md:29`).
 Triggers, each checked at the end of a turn with no running agent or background task:
 1. The context passes 150k tokens, below the 225k start of automatic compaction (bound in `slices/handoff/limits.ts`, `AskUserQuestion` answer, 2026-10-23).
 2. The session was idle longer than the prompt cache TTL, so the cache is cold.
-   At the next `prompt.submit`, a note offers the handover, and it runs only on the yes of the user, with the held prompt after the resume (`AskUserQuestion` answer, 2026-10-23: "Ask on return").
+   At the next `prompt.submit`, a note offers the handover, and it runs only on a yes, with the held prompt after the resume (`AskUserQuestion` answer, 2026-10-23: "Ask on return"). With a Jev key, Jev gives the yes or no from the context size, the cold cache, and the open task, and the dialog shows only when Jev is not sure (`AskUserQuestion` answer, 2026-10-23: "Jev decides", task 10.15).
    Triggers 1 and 3 run with no question (the same answer).
 The old session stays on disk, and `/resume` opens it (`extend/skills-and-commands/slash-commands.md:39`).
 3. The open change moves to its next task group, or the session runs longer than 8 hours, at the end of a turn (the same answer).
 Reasons: `/usage` of the user flags "Stop sessions you no longer need · some ran 8 hours or more" and "Start fresh when you switch tasks", and its scan (binary 2.1.309, `chunk-xqcxmr5n.js`, the cases `cron`, `long_context`, and `cache_miss`, which titles "Compact before you step away") counts the cost of sessions that span many hours, of requests with a long context, and of a cold cache after a pause.
 A compaction is a model call over about 225k tokens, and a handover is a code-built file of a few thousand tokens.
 The automatic compaction of Claude Code stays as the safety net, with no claudetto hook on it, so the stuck label of `research/spinner.md` cannot occur: it comes only from a hook that replaces the compaction.
-The path of each case comes from measure, not from this text (the user, 2026-10-23: "can it do same or better for cheaper than the other?").
+The path of each case comes from measure, not from this text, because one path must do the same or better for less cost than the other (the user, 2026-10-23).
 A table in `slices/handoff/limits.ts` maps each case (trigger and context size) to `handover`, `compact`, or `handoff-then-compact`, and the code picks the path from it.
-Its first values are `handover` for each trigger, and the paired runs of task 11.6 set the final values: a path wins a case when it costs less and the next task passes as well or better.
-The option `compaction` becomes `auto` (default, the table), `handover`, or `built-in`.
+Its first values are `handover` for each trigger, and the paired runs of task 11.6 set the final values: a path wins a case when it costs less and the next task passes as well or better.The option `compaction` becomes `auto` (default, the table), `handover`, or `built-in`.
 The table also holds the model of the first request step after a handover, set by `next({ ...e, model })` on `TurnStepInput` (`extend/mod-api/types/turn-prompt.md:685`, aliases since 2.1.309).
 A fresh context starts cold, so the switch costs no cache.
 Its first value is the session model, and the paired runs of task 11.7 set it per case (`AskUserQuestion` answer, 2026-10-23: "Measure, then table").
 
 ### D13: Handoff Files
 
-Each handoff goes to `.claudetto/handoffs/`, and the change folder gets no `handoff.md` (the user, 2026-10-23: "claudetto already has handoffs/ files, so what was the point of handoff.md ?").
+Each handoff goes to `.claudetto/handoffs/`, and the change folder gets no `handoff.md`, because `.claudetto/handoffs/` already holds the handoff files (the user, 2026-10-23).
 The handoff text names the open change and its next task, the decisions and ruled-out options of `decide` (X18), the passed checks, and each user-owned value of the session.
 Its header treats a box with no passed check as open (`research/failures.md`, failure 3).
 
@@ -179,15 +192,15 @@ The status line writes the last `rate_limits` to the temp folder for the eval re
 - `dry` goes, and the skill `dedupe` calls `jscpd` with the config of the plugin.
 - `goal` merges into `finish` (D8).
 - `setup` drops `snippet-0.2.0.json` and the 0.1.0 upgrade path.
-- `decide` keeps the Jev call and drops its separate CLI path when the mod can call the API directly.
+- `decide` and `guard` call Jev from the mod with `$.http.fetch`, with no child process for each question, and `claudetto-decide` stays for image and `box` questions and for the calls of Claude (task 10.15).
 - The unused exports of `research/raw/trim-dead.txt` go, and the exports that only their own file uses lose `export`.
-- One model, thin views, in each slice (the user, 2026-10-23: "this applies to claudetto as well", on the shape of D22): each fact of a file is parsed once in `kernel/`, each command builds one object, and one kernel printer writes it as JSON or text.
+- Each slice of claudetto takes the shape of D22, one model with thin views (the user, 2026-10-23): each fact of a file is parsed once in `kernel/`, each command builds one object, and one kernel printer writes it as JSON or text.
   Today the `tasks.md` parse is shared (`kernel/change.ts`, imported by `spec`, `handoff`, and `statusline`), and the JSON output is not: `spec`, `setup`, and `dry` each print with their own `JSON.stringify(..., null, 2)`.
   Task 9.3 lists each other parse or output path that two slices hold, and folds it into `kernel/`.
-- Least code for the same behavior, in all of claudetto (the user, 2026-10-23: "we meant this part, too"): each task of this change gives the plugin line count before and after (`find plugins/claudetto/slices plugins/claudetto/kernel plugins/claudetto/hooks -name '*.ts' -not -name '*.d.ts' | xargs wc -l`, 8726 lines on 2026-10-23, the scope of the 8761 of `research/trim.md`, because a count of `plugins/` with the generated `.d.ts` files gives 55495).
+- Least code for the same behavior, in all of claudetto, so this part counts too (the user, 2026-10-23): each task of this change gives the plugin line count before and after (`find plugins/claudetto/slices plugins/claudetto/kernel plugins/claudetto/hooks -name '*.ts' -not -name '*.d.ts' | xargs wc -l`, 8726 lines on 2026-10-23, the scope of the 8761 of `research/trim.md`, because a count of `plugins/` with the generated `.d.ts` files gives 55495).
   A task that adds lines names the behavior that needs them, and a task that keeps a behavior with fewer lines is the preferred form.
-  The repository bound of task 9.3 in `tools/limits.ts` makes a test fail when the plugin grows past it.
-The target is about 5980 lines of plugin TypeScript (`research/trim.md`, an estimate), and a repository bound in `tools/limits.ts` holds the line count of the plugin.
+The target is about 5980 lines of plugin TypeScript (`research/trim.md`, an estimate).
+The goal is prose, not a test: no repository bound holds the line count, because a size bound is an arbitrary gate that checks no behavior (the user, 2026-10-23).
 
 ### D17: Pins
 
@@ -217,12 +230,12 @@ Off:
 - The project skills `.claude/skills/openspec-*` go from the repository.
   claudetto's `propose`, `apply`, `archive`, and `verify` cover four of them, and claudetto gets `explore`, `update`, and `sync` with `disable-model-invocation: true`, so none costs a token at start.
   `sync` calls a new `minispec sync <name>`, which runs the spec merge of `archive` with no move, so the merge is code and no model edits a spec file.
-Decided by a test:
-- `Glob`: a paired run measures it against `Grep` and `Bash` for finding files by a pattern, and it goes off when they cost less with the same result.
-- `EnterWorktree` and `ExitWorktree`: a `just sandbox` run with both denied checks the worktree work of the roster, such as `isolation: "worktree"` of `Agent`, and they go off when nothing fails.
+Decided by a test (task 11.8):
+- `Glob` stays on. The `claudetto:Scout` has no `Bash` and uses `Glob` to list files, and the main thread of a `-p` session in 2.1.309 gets neither `Glob` nor `Grep`, so `Bash` `find` already does its work there.
+- `EnterWorktree` and `ExitWorktree` go off: a `just sandbox` run with both denied ran a `claudetto:Worker` with `isolation: "worktree"` in its own worktree, with no denial. Setup recommends off for both.
 On: each other tool.
 
-OpenSpec goes when `minispec` is there (the user, 2026-10-23: "with minispec, openspec must be uninstalled, and setup will make sure to do so when it finds it").
+OpenSpec goes when `minispec` is there, and setup removes OpenSpec when it finds it (the user, 2026-10-23).
 The inventory finds `@fission-ai/openspec` in the global packages of `bun`, `npm`, `pnpm`, and `yarn`, an `openspec` on `PATH`, and the `openspec-*` skills and `opsx` commands in `~/.claude/` and in the project.
 Setup lists each find in its plan of changes, and after the yes of that plan it removes each one with the package manager that owns it, then checks that `openspec` is no longer on `PATH`.
 The dev dependency of this repository stays, because the parity tests of `tests/claudetto/spec/parity/` run OpenSpec to keep `minispec` equal to it (D14), and it is not on `PATH`.
@@ -234,7 +247,7 @@ The bound and the list are in `slices/prompt/limits.ts`, and task 11.5 measures 
 The user chose these on 2026-10-23 (`AskUserQuestion` answers).
 Setup manages the global `~/.claude/CLAUDE.md`, `claudeMdExcludes` with a `CLAUDE.local.md` template, the built-in agents, and the claudetto output style.
 
-Output style (the user, 2026-10-23: "Format only, rules to main.md"):
+Output style holds the format only, and the rules go to `main.md` (the user, 2026-10-23):
 - The docs reserve a style for "the role, tone, and format" of replies, send it with each request, and give it only to the main thread and a fork (`configure/output-styles.md:7-9`, How It Works).
 - `Concise.md` keeps only the reply format, and each behavior rule in it, such as line 18, moves to `agents/main.md`, so each rule lives in one text (D7 rule 3).
 
@@ -250,7 +263,7 @@ Global file:
   <!-- /claudetto setup -->
 
   ## Prose
-  - One sentence per line, with inline code for each code item.
+  - Inline code for each code item.
   - STE (ASD-STE100), with no semicolons.
 
   ## Toolchains
@@ -279,17 +292,18 @@ Global file:
   A rule with no known owner gets the fold or remove offer.
 - Rules follow the `external/` survey (`research/memory-files.md`): short lines, each tied to an incident, and no rule that a hook can check, because users report that a file rule is advice and a hook is the lock.
 
-Built-in agents (the user, 2026-10-23: "Off, roster only"):
+Built-in agents are off and only the roster stays (the user, 2026-10-23):
 - The snippet of D2 sets `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1`, which takes 324 tokens off each session (`how-it-works/context-budget.md:114`), and denies `general-purpose` next to `claude` and `claude-code-guide`.
 - An override file only swaps the text, so it saves nothing, and claudetto ships none.
 - The plan mode text says "only use the Explore subagent type" (`prompts/mode-plan.md:170`), so the `prompt.attachment` rewrite of D7 (C2) names `claudetto:scout` there.
-- Delegation stays the routing of D6 (the user, 2026-10-23: "Route by task").
+- Delegation stays the routing of D6, which sends each task to the agent that fits it (the user, 2026-10-23).
 
 Excludes and local notes:
 - Setup offers `claudeMdExcludes` globs for the parent and vendor files that the inventory finds, and a `CLAUDE.local.md` template that it adds to `.gitignore`.
 
 Project files (this repository, and the advice that setup gives):
-- `AGENTS.md` holds 20 lines at most (`MEMORY_FILE_MAX_LINES` in `tools/limits.ts`), and the overflow goes to `.claude/rules/` with `paths`, so it costs nothing at start.
+- `AGENTS.md` stays short, and the overflow goes to `.claude/rules/` with `paths`, so it costs nothing at start.
+  No test bounds its line count, because the goal is prose (the user, 2026-10-23).
 - `CLAUDE.md` and `AGENTS.md` are 2 plain files with the same blob `1e4bbae` (git mode `100644`), not the symlink that the user set up for Codex, so something wrote over the link.
 - The user wants `AGENTS.md` and `AGENTS.local.md` first, then `CLAUDE.md` and `CLAUDE.local.md`. No `instructionFiles` value of `cc-plugin-agents-md@builtin` gives that order, and `AGENTS.local.md` is never read (`configure/memory-and-rules.md:55`, `:70`).
 - Two options, and a check decides:
@@ -320,7 +334,7 @@ When the target fails, the report gives the count, and the user decides.
 
 ### D23: npm Packages Where They Fit
 
-claudetto uses a maintained npm package in place of its own code when the package does the same job in fewer lines of claudetto, and when the place of the code can load it (the user, 2026-10-23: "shouldn't be afraid to use external npm packages where fit, instead of re-inventing a solution, but it must adhere to what claude code plugins themselves support").
+claudetto uses a maintained npm package in place of its own code when the package does the same job in fewer lines of claudetto, and when the place of the code can load it, because claudetto need not avoid external npm packages when one fits better than a new solution, as long as Claude Code plugins support it (the user, 2026-10-23).
 Today no file in `plugins/` imports an npm package, and no plugin has a `package.json` (`rg` of the bare imports: only `claude-code`, `claude-code/testing`, and `node:` modules).
 
 What a plugin can load, by place:
@@ -349,10 +363,22 @@ Guards:
 
 Where to look (proposed, task 9.11 measures each):
 - The hot path: `guard` runs on each tool call. Precomputed tables and one-pass matching in place of repeated regex scans, and module-level caches that live as long as the mod.
-- The surfaces of the docs by tag (the user, 2026-10-23: "cc-docs also has undocumented surfaces, and experimental surfaces"): `<Undocumented />` 1742 rows in 93 pages, `<Experimental />` 21 rows in 14 pages, `<Gated />` 372 rows in 42 pages (a feature flag or server gate decides), and `<Differs />` 53 rows in 32 pages (the docs and the program disagree), counted with `rg -c` on 2026-10-23.
+- The surfaces of the docs by tag, because the docs also hold undocumented and experimental surfaces (the user, 2026-10-23): `<Undocumented />` 1742 rows in 93 pages, `<Experimental />` 21 rows in 14 pages, `<Gated />` 372 rows in 42 pages (a feature flag or server gate decides), and `<Differs />` 53 rows in 32 pages (the docs and the program disagree), counted with `rg -c` on 2026-10-23.
   An `<Experimental />` or `<Gated />` lever gets the same pin test, and its test also checks the flag or gate value that it needs, because a gate can change with no update. A `<Differs />` row follows the program, as the row says.
 - Token levers: the `<Undocumented />` rows of `../claude-code-docs/docs/how-it-works/context-budget.md` and `prompts/index.md` that remove text, such as `CLAUDE_CODE_DISABLE_ATTACHMENTS` and the reminder modes of `system-prompt.md:193`.
 - Cache shape: byte-stable text for each request prefix, so no claudetto text breaks the prompt cache.
+
+### D25: Usage Awareness
+
+It has four parts: the model sees usage, a gate at a limit, delegation by cost, and a cost report (`handoff.md` of this change, line 14).
+The source is the `session.measure` event, which fires after each main-thread turn and when a rate-limit window moves a whole point, and `$.session.usage()`, where a plain call costs nothing (`extend/mod-api/session.md:39,58`).
+The bands are the bounds of D15, green below 40%, amber from 40% to 80%, and red above 80%, and they move to `kernel/budget.ts` so the status line and this slice share them.
+- The model sees usage: the `prompt` slice adds one context line with the 5-hour and weekly shares when the band of either changes, and no line otherwise.
+- Delegation by cost: the routing of D6 picks the cheapest agent that fits, and the band sets the planned parallel count: the cap of D4 at green, 2 at amber (proposed), and 1 at red.
+- A gate at a limit: when the 5-hour share is red, `guard` returns `ask` with the share for an `Agent` call while an agent runs, and for each paid recipe (`AskUserQuestion` answer, 2026-10-23: "Ask, then 1 agent").
+  The weekly share sets the band but never the gate, because it falls only at its weekly reset, so a weekly gate could ask for days (`AskUserQuestion` answer, 2026-10-23: "5-hour only").
+- A cost report: the final report of `apply` and each handoff give the cost and the change of each share since the start, from `$.session.usage()`.
+With an API key there are no rate limits, so only the cost report applies.
 
 ## Risks / Trade-Offs
 
@@ -365,3 +391,4 @@ Where to look (proposed, task 9.11 measures each):
 - [A handover can cut a turn that needed the long context] -> It fires only at the end of a turn with no running agent, and the handoff carries the decisions, checks, and user values.
 - [`$.command.run` of `/clear` may differ from a typed `/clear`] -> The hook lab probe of task 6.1 checks the order of `/clear` and the resume prompt.
 - [Paid runs] -> One question at the end, in group 11.
+- [The usage gate reads a stale share] -> `session.measure` fires each time a rate-limit window moves a whole point.

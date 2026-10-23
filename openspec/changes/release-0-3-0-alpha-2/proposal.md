@@ -14,7 +14,8 @@ The problems and goals G1 to G20 are in `prd.md`, and the evidence is in `resear
   The Jev key goes to `userConfig` with `sensitive: true`, so Jev runs.
   Setup offers a shell alias `claude-demo` for `IS_DEMO=1 claude` and writes `IS_DEMO` to no settings file.
 - The `prompt.context` block gives the plan, branch, latest tag, open change, shell, and `grep` engine (D5).
-- `main.md` leads and delegates by a routing block, and the `reviewer` and `researcher` move to Sonnet 5.5 at `medium` (D6).
+- **BREAKING** The roster becomes 6 UpperCase agents in the categories Inspector, Modifier, and Tester: `Scout`, `Scoper`, `Reviewer`, `Researcher`, `Worker`, and `Tester`. `main.md` leads and delegates by a routing block, and `Reviewer` and `Researcher` run Sonnet 5.5 at `medium` (D6).
+- claudetto shows the model the plan usage when its band changes, plans fewer agents at a time as usage rises, asks before more agents or paid runs at the red bound, and reports the cost of each change (D25).
 - Each text that claudetto writes or replaces keeps its behavior in fewer words with positive framing, with a lint test and a size test (D7).
   `Concise.md` keeps only the reply format, its behavior rules move to `main.md`, and each agent runs each free check before it reports a claim as not verified.
 - New slice `finish`: a `box` hook denies a ticked task with no passed check, and a `stop` hook sets a note for a reply that defers finishable work or says "done" with no check (D8).
@@ -51,6 +52,7 @@ The problems and goals G1 to G20 are in `prd.md`, and the evidence is in `resear
 - `text-surfaces`: the text audit of each surface, with its lint and size tests.
 - `status-line`: the usage gradient and the `rate_limits` file.
 - `handover`: handoff, `/clear`, and resume in place of compaction.
+- `usage-awareness`: the usage line, the parallel count by band, the gate at red, and the cost report.
 
 ### Modified Capabilities
 

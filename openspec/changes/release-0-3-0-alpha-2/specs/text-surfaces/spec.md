@@ -6,7 +6,7 @@ Each text that claudetto writes, and each text of Claude Code that a supported s
 
 ### Requirement: Surfaces Covered
 
-The audit SHALL cover these surfaces: `agents/main.md`, `output-styles/Concise.md`, each agent body and description, each skill description, `tool.describe` for each tool that a session can load (deferred tools too), `prompt.attachment` texts, the subagent notes block of `prompt.compose`, the hook messages in each `prompts.ts`, and the `PreCompact` line for the `built-in` path.
+The audit SHALL cover these surfaces: `agents/main.md`, `output-styles/Concise.md`, each agent body and description, each skill description, `tool.describe` for each tool that a session can load (deferred tools too), `prompt.attachment` texts, the subagent notes block that the engine appends, the hook messages in each `prompts.ts`, and the compaction line of the `session.compact` hook for the `built-in` path.
 `Concise.md` SHALL have no `keep-coding-instructions` line.
 
 #### Scenario: Deferred Tool
@@ -46,18 +46,13 @@ A lint test SHALL fail on a rule in the form `do not`, `never`, `NOT`, or `don't
 
 ### Requirement: Shorter Than the Default
 
-A size test SHALL fail when a replacement is longer than the default text of its capture.
-`agents/main.md` SHALL stay below the default lean body of 5,627 characters, with the bound in `slices/prompt/limits.ts`.
+A size test SHALL fail when a replacement of a default text is longer than the default text of its capture.
+`agents/main.md` replaces the whole system prompt, so it has no size bound, and each rewrite makes it shorter with no lost behavior, and no arbitrary custom limit sets the size (the user, 2026-10-23).
 
 #### Scenario: Longer Replacement
 
 - **WHEN** a replacement of `Bash` text has more characters than the captured default
 - **THEN** the size test fails and names the tool
-
-#### Scenario: Main Body Grows
-
-- **WHEN** `agents/main.md` passes 5,627 characters
-- **THEN** the size test fails
 
 ### Requirement: One Rule per Case
 
@@ -80,7 +75,7 @@ The same pass SHALL carry the content fixes of `research/failures.md` (failures 
 ### Requirement: Run the Free Check
 
 No surface SHALL let Claude report a claim as not verified when a free local check can verify it.
-`Concise.md` SHALL tell Claude to run each free check before the report, and to name a claim as not verified only when its check needs a paid run, a login, a block, or the user, with that check.
+`agents/main.md` SHALL tell Claude to run each free check before the report, and to name a claim as not verified only when its check needs a paid run, a login, a block, or the user, with that check.
 
 #### Scenario: Free Check Runs
 

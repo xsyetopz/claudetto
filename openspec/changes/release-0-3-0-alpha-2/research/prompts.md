@@ -24,22 +24,22 @@ This file does not repeat `failures.md`.
 | Identity line | 62 | keeps | keep, fixed | none (`prompts/index.md`) |
 | Lean body | 5,627 | replaced by `main.md` 9,351 | the default is at the right altitude (B3-7), and `main.md` is 3,724 longer | `agent` setting, `--system-prompt` |
 | Security `IMPORTANT` line | 459 | drops | neutral (I10 warns of over-refusal) | `prompt.compose` |
-| Pronoun paragraph | 357 | `main.md` keeps a copy | keep | agent body |
+| Pronoun paragraph | 357 | dropped: no use for coding (the user, 2026-10-23) | cut | - |
 | Memory section | 2,061 | drops | keep dropped (B4-10, I02) | `autoMemoryEnabled` |
 | `Context management` | 559 | `prompt.context` block, 91 to 140 | keep the replacement, but "act, do not re-derive" is only partly in `main.md` | `prompt.context` |
-| Environment bullets | 579 | drops, `main.md` `<session>` adds the model IDs again | bloat in both | `prompt.compose` |
-| Untrusted-download bullet | 475 | keeps | keep (B4-2, B5-15) | none |
-| Deferred tool names | 359 | keeps | keep | `ENABLE_TOOL_SEARCH`, `isDeferred` |
+| Environment bullets | 579 | drops, `main.md` `<session>` keeps only the model IDs | the model IDs are needed for code of an AI application, and the surfaces and `ultrareview` lines are cut (the user, 2026-10-23) | `prompt.compose` |
+| Untrusted-download bullet | 475 | keeps | keep, needed: safety (B4-2, B5-15) | none |
+| Deferred tool names | 359 | keeps | keep, needed: a deferred tool loads only by its name | `ENABLE_TOOL_SEARCH`, `isDeferred` |
 | Agent types list | 1,636 | hidden by `agent.offer` | keep dropped (I11) | deny rules, `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` |
 | Skills list | 5,969 | dropped by `disableBundledSkills` | keep dropped | `disableBundledSkills`, `skillOverrides` |
 | Git status reminder | 571 | dropped by the git switch | conflicts with I01, the branch state is lost | `prompt.context`, `SessionStart` hook |
 | Attribution reminder | 592 | dropped | keep dropped | `includeGitInstructions` |
-| Output style wrapper | 1,451 style body | `claudetto:Concise` | keep | `outputStyle` |
-| Tool text, 7 kept tools | 8,675 | cut to 4,535 | keep, with the faults of section 3 | `tool.describe` |
+| Output style wrapper | 1,451 style body | `claudetto:Concise` | keep, needed: the output style of the user | `outputStyle` |
+| Tool text, 7 kept tools | 8,675 | cut to 4,535 | keep, needed: a wrong call fails or wastes a turn, with the faults of section 3 | `tool.describe` |
 | Tool schemas, 7 kept tools | 6,366 | keeps | bloat, no lever | only whole-tool removal |
 | Subagent notes block | 1,285 | keeps for each agent | conflicts with `researcher` | none in an interactive session |
 | Plan mode text | 20,394 against 15,515 | keeps, `ExitPlanMode` denied | conflicts | `prompt.attachment` type `plan_mode` |
-| Compaction prompt | 6,361 | the handoff replaces it | keep for the built-in path | `PreCompact` stdout |
+| Compaction prompt | 6,361 | the handoff replaces it | keep for the built-in path, needed: it writes the summary | `session.compact` `instructions` |
 | Stop prompt hook | 1,478 | not used | fixed text, large | `$.model.complete` in its place |
 | Bundled skills `/goal`, `/verify`, `/simplify` | `raw/prompts-index.txt` | off | `/verify` ("runtime observation") matches I04 and is lost | a skill file with the same name |
 
@@ -110,7 +110,7 @@ All built-in agents are already off through deny rules and `agent.offer`.
 4. Put the dossier lines back into `TOOL_AGENT`: "A report from an agent is a claim. Check it before you relay it. Delegate a review only for a read that is not anchored on yours, and give it the code, not your conclusion."
 5. Replace the lost git status with derived state in the `prompt.context` block (X5 of `research/external.md`).
 6. Shorten `SendMessage`, `EnterWorktree`, and `ExitWorktree` with `tool.describe`, after the probe of section 3.
-7. Probe in a test engine whether `prompt.compose` sees the subagent notes block as a section, and when it does, rewrite the "Do NOT Write report" bullet.
+7. Probe in a test engine whether `prompt.compose` sees the subagent notes block as a section. Result: it does not, so the "Do NOT Write report" bullet stays (task 11.4).
 8. Set `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS=1` in the env of the print wrappers.
 9. Add a `PreCompact` stdout line for the built-in compaction path: "Keep verbatim: each value that the user owns, each option the user rejected, the last passing and failing check with its command, and each step marked RAN."
 10. Remove the dead `keep-coding-instructions: true` line from `Concise.md` (C6).

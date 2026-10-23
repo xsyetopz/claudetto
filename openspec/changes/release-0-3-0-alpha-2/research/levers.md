@@ -67,6 +67,19 @@ The effort cost index is at `configure/models-and-providers.md:165-176`.
 Opus 5.5 and Sonnet 5.5 default to `medium`.
 Current agents: `researcher` sonnet-5-5 low, `reviewer` sonnet-5-5 high, `scout` haiku-5-5 low, `worker` sonnet-5-5 medium.
 
+Task 3.2, `maxEffortLevel` and the `effort` of an agent file (method: `cc-inspect` `search_binary` and `read_module` on 2.1.309, because the hook lab stubs the engine and cannot run the clamp).
+- Each API request resolves its effort with `Sw(model, Q.effortValue, …)` (`chunk-kang00hq.js:2782676`).
+- Each path of `Sw` ends in `I(…)`, which clamps a string level with `JJ` to the cap of `imn(model)` (`chunk-k1pg3fc2.js:27702`, `21648`).
+- `imn` takes the lowest cap of the settings files, `modelSettings.<model>.maxEffortLevel` before the top-level key (`chunk-k1pg3fc2.js:20734`).
+- The schema text says that anything above the cap is clamped (`chunk-0cfgmnxm.js:199236`), and only `CLAUDE_CODE_EXTRA_BODY` escapes it.
+- Result: the cap applies to an agent `effort`, so the roster needs no test of the caps. Not found: the line where an agent copies its frontmatter `effort` into `effortValue`.
+
+Task 10.8, `next({ ...e, model })` on `TurnStepInput` (method: the types of 2.1.309 and the hook lab, which stubs the engine).
+- The doc comment of `TurnStepInput` in `plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts` says `model` is "Which model the request names… `next({ ...e, model })` names another", and that a hook rewrites `model` or `effort` going down. The other `model` fields of that file take "an alias (`haiku`) or a full id".
+- Lab, what runs: after a handover with the model column `null`, the first main-thread step keeps the session model (`plugins/claudetto/tests/handover.test.ts`, "a step after a handover keeps the session model").
+- Lab, what cannot run: the stub of `turn.step` is the end of the chain and a lab file registers one handler per event, so no lab case sees the model that a hook passes with `next`. The hooks module also holds its own copy of `PATH_TABLE`, so a test cannot set a model in the column (a debug run showed the module read `null` after the test set `sonnet`).
+- Result: the alias and the full ID are not proven by a run. They need a sandbox session with the column set to `sonnet`, which task 11.7 runs.
+
 ### e. Context and compaction
 
 `autoCompactWindow` takes a number in the documented range or `"auto"` (`configure/settings/core.md:23`).
@@ -228,3 +241,43 @@ Those should reach the live file or be dropped on purpose.
 - The Bash tool description grew in 2.1.309 (`start/what-changed.md:27`), so any claudetto text that restates Bash rules costs more now.
 - The `cc-plugin-*@builtin` ids in the snippet are not checked against the docs.
 - No other 2.1.309 change to settings, hooks, or commands touches claudetto.
+
+## Task 9.11: Hidden Levers With Pins (2026-10-23)
+
+Method: `/tmp/claudetto-bench/lever-probe.ts` sizes the first request body of a stub run (no login, no cost) on Claude Code 2.1.309 with the full snippet `env` and one added var.
+The base request has 21,969 bytes.
+Tokens are derived at 4 bytes for each token (an estimate, not a count).
+The tags come from `how-it-works/context-budget.md`, `prompts/index.md`, `prompts/override.md`, `reference/probes.md`, and the env var pages of `configure/`.
+
+### Adopted
+
+None new. Each row of `context-budget.md` and `prompts/override.md` that removes text with no loss is already in `SNIPPET` (`plugins/claudetto/slices/setup/prompts.ts`) and has a pin in `tests/claudetto/setup/pin-effect.test.ts`.
+Their savings (measured by the docs on 2.1.305, Opus 5.5): deny `Workflow` 1,969 tokens, `ScheduleWakeup` 1,675, `ReportFindings` 807, `autoMemoryEnabled: false` 691, `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` 348, `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` 324.
+The code lever of this task is the pre-check in `namesSecret` (`plugins/claudetto/slices/guard/domain/paths.ts:73`), 2.2 to 2.6 µs less for each `Bash` call (`evidence.md`), with an equality test against the old function.
+
+### Rejected
+
+| Lever | Measured change | Reason |
+| --- | --- | --- |
+| `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS=1` (Undocumented) | +81 bytes (about +20 tokens) | Print mode only, and the `Agent` tool text grows. The snippet already denies each built-in agent. |
+| `CLAUDE_CODE_DISABLE_CLAUDE_API_SKILL=1`, `CLAUDE_CODE_DISABLE_CLAUDE_CODE_SKILL=1` (Undocumented) | 0 | `disableBundledSkills` already removes the skills. |
+| `CLAUDE_CODE_DISABLE_EXPLORE_INHERIT_CAP=1` (Undocumented) | 0 | The snippet removes `Explore`. |
+| `CLAUDE_CODE_ARTIFACT_OPENING_PREFETCH=false` (Undocumented) | 0 | Artifacts are off. The time saved is not measurable in a stub run. |
+| `CLAUDE_CODE_DISABLE_PROACTIVITY=1` (Undocumented) | 0 | No effect that a stub run shows. |
+| `CLAUDE_CODE_ACT_DONT_REDERIVE=0`, `CLAUDE_CODE_THISTLE_GREBE=no_nudges`, `CLAUDE_CODE_TOASTY_THIMBLE=0` (Undocumented, Gated) | 0 | Off in a stub run, and a change would alter the steer text of the model (a loss that only group 11 can rule out). |
+| `CLAUDE_CODE_TURN_UPDATES=0`, `CLAUDE_CODE_BISON_CAIRN=0` (Undocumented) | 0 | Off by default, so nothing to save. |
+| `CLAUDE_CODE_SKIP_PLUGIN_MCP_SERVERS` (Undocumented) | not run | Drops the MCP servers of plugins (a loss). It is in `NEVER_SET_ENV`. |
+| `CLAUDE_CODE_SIMULATE_PROXY_USAGE` (Undocumented) | not run | Removes the whole `anthropic-beta` header (a loss). |
+| `CLAUDE_CODE_MESSAGES_PROMPT_CACHE_TTL` (Undocumented) | not run | Forces the cache TTL to `5m` (a loss). |
+| `DISABLE_GROWTHBOOK`, `CLAUDE_CODE_DISABLE_STARTUP_WORK_GATE` (Undocumented) | not run | They change which gated features and start tasks run. |
+| `todoFeatureEnabled: false` (Undocumented) | not run | It hides the task panel and no token saving is shown. |
+
+### Left for Task 11.x
+
+These need a paid run to show the saving or the absence of loss.
+- `precomputeCompactionEnabled` (Undocumented): it builds the compaction summary early, which saves time at the compact and adds model calls, so its net cost needs a paid run.
+- `CLAUDE_CODE_SLEEP_COMPACT` and `CLAUDE_CODE_SLEEP_COMPACT_AFTER_MS` (Undocumented): the same trade of cost for time.
+- The prompt flags in the table above, in a real session with the server flags: the paired eval of task 11.7.
+- `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS=1` in a real `-p` session: whether plugin agents stay listed (`evidence.md` has the same item).
+
+The rejected rows with a measured size are in `src/wiki/claudetto/rationale/Decisions-Engine.md` ("Why These Hidden Levers Stay Unset").

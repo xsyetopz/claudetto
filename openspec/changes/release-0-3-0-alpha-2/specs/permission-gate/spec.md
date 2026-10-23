@@ -44,7 +44,7 @@ No answer SHALL carry `updatedPermissions`.
 
 #### Scenario: Prompt in a Subagent
 
-- **WHEN** a `claudetto:worker` calls `Monitor` on a temp log and no gate matches
+- **WHEN** a `claudetto:Worker` calls `Monitor` on a temp log and no gate matches
 - **THEN** `classic.PermissionRequest` returns `allow`
 
 #### Scenario: Gate Matches
@@ -182,7 +182,7 @@ The system SHALL ask a person before `git stash` (except `git stash list` and `g
 
 #### Scenario: Subagent Stash
 
-- **WHEN** a `claudetto:worker` runs `git stash`
+- **WHEN** a `claudetto:Worker` runs `git stash`
 - **THEN** a person must approve the call
 
 #### Scenario: Main Stash

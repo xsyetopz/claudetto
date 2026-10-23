@@ -20,7 +20,7 @@ The target column is an estimate (proposed), and each count of now is from `rese
 | `prompt` | 230 | 190 | keep | It carries the context block. |
 | `reply` | 45 | 0 | delete | The user allows its removal (`AskUserQuestion` answer, 2026-10-23), and the bubbles of the plan add code. |
 | `setup` | 803 | 550 | shrink | Drop `snippet-0.2.0.json` and the 0.1.0 upgrade path. |
-| `spec` | 793 | 600 | shrink | Same five commands as upstream `openspec` (`research/raw/trim-openspec-diff.txt`). |
+| `spec` | 793 | 600 | shrink | Upstream `openspec` has 24 top-level commands (`research/minispec-gaps.md`), and `minispec` keeps the workflow commands of D22 (`research/raw/trim-openspec-diff.txt`). |
 | `statusline` | 1145 | 700 | shrink | The largest slice for a display. The gradient of the user replaces the theme code. |
 
 Totals from `research/raw/trim-target.txt`: slices `7043` now, plugin TypeScript `8761` now, `5980` as the estimate after the cuts.
@@ -32,13 +32,62 @@ The kernel is `1581` lines, and `kernel/shell/scan.ts` alone is `349` (`research
 It also lists about 50 exports that only their own file uses.
 Delete the unused ones, and drop `export` from the rest.
 
+## Shared Paths (Task 9.3)
+
+Each parse or output path that two or more slices held, from a `grep` of `JSON.stringify(`, `JSON.parse(`, `YAML.parse`, `existsSync`, and `readdirSync` in `slices/` (2026-10-23).
+The counts are lines of `.ts` in each slice, before and after task 9.3.
+
+| Path | Slices | Result | Lines before -> after |
+| --- | --- | --- | --- |
+| A file read that gives `null`, `""`, or `[]` for a missing file | `setup` (5 sites), `spec` (2 sites), `statusline` | Moved: `setup` and `spec` use `fileReader` of `kernel/node/fs.ts`, which `statusline` used already | `setup` 706 -> 703, `spec` 793 -> 793 |
+| A JSON parse that gives `null` for bad text | `goal`, `statusline` | Moved: `parseJson` in `kernel/text.ts` (+9) | `goal` 118 -> 116, `statusline` 1145 -> 1144 |
+| The `tasks.md` parse | `spec`, `handoff`, `statusline` | Shared already in `kernel/change.ts` | no change |
+| The JSON printer `JSON.stringify(x, null, 2)` | `setup`, `spec` (`dry` went) | Kept: one line in each slice, and a kernel printer adds lines now. Tasks 9.7 and 9.9 add the text views, and the printer moves to `kernel/` then | no change |
+| A YAML parse | `setup` (skill frontmatter), `spec` (whole file) | Kept: two different inputs | no change |
+
+The other cuts of task 9.3: `dry` (213) and `reply` (45) went, `IMAGE_SIDE_MAX_TEXT` went, `HANDOFF_LINES_MAX` now writes the line count of the handoff prompt, and 27 exports that only their own file uses lost `export`.
+Plugin TypeScript in the scope of D16: `8667` -> `8408`.
+
+## npm Packages (Task 9.10, D23)
+
+Probe of 2026-10-23, Claude Code 2.1.309, Bun 1.4.4.
+Method: four temporary plugins in `/tmp` (deleted after), each with `hooks/hooks.json` (`"modules": ["./register.ts"]`), a `register.ts` that imports the package `ms` (version 2.1.3, no `dependencies`), and one lab test that reads the result of a `prompt.attachment` hook.
+`claude plugin test <dir>` ran each one through `$claude()` of `tools/telemetry.ts`, the runner of `just lab`.
+The docs say only "a hooks module imports its own files by relative path" (`types/claude-code/index.d.ts:20-24`), and the `extend/mod-api` pages were not loadable in this run.
+
+| Import form | Result |
+| --- | --- |
+| `from "ms"` | refused |
+| `from "ms@2.1.3"` | refused |
+| `from "https://esm.sh/ms@2.1.3"` | refused |
+| `from "npm:ms@2.1.3"` | refused |
+
+Each failed with `hooks module did not load: cannot import "<spec>" (from hooks/register.ts): a hooks module imports its own files by relative path and "claude-code", nothing else`.
+Result: the mod runtime resolves no package import in any form.
+So no package goes into the import graph of `hooks/register.ts` (the whole kernel and the `adapters/mod.ts` and `domain/` files), and a copy of package source in `plugins/` would be claudetto code, not a package.
+
+Candidates (`dependencies` and license from the registry metadata, 2026-10-23; the unpacked size of each is the `dist.unpackedSize` field there):
+
+| Candidate | Replaces | License | `dependencies` | Verdict |
+| --- | --- | --- | --- | --- |
+| `shell-quote` 1.12.0 | `kernel/shell/scan.ts` and its files (1005 lines with `shell.ts`) | MIT | none | No: the kernel is in the hooks graph (`guard`), which loads no package. It also only splits words, and the scan finds heredocs, `$(...)`, and `ansi-c` quoting. |
+| `shlex` 3.0.0 | same | MIT | none | No: same reason, and it has no operators. |
+| `bash-parser` 0.5.0 | same | MIT | many | No: it has `dependencies`, and the same graph rule. |
+| `sh-syntax` 0.7.0 | same | MIT | none listed | No: the same graph rule. |
+| `marked` 18.1.1 | `slices/spec/domain/markdown.ts` (244 of 1823 lines) | MIT | none | No (judged from the code, not prototyped): only CLI adapters import the file, so Bun could load it, but the rules follow the line regexes of OpenSpec 1.14.3 for parity, and a token stream needs a mapping back to raw blocks that adds lines. |
+| `remark-parse` 11.0.0, `markdown-it` 15.0.3 | same | MIT | yes | No: they have `dependencies`. |
+
+Adopted: none. The line counts stay as they are.
+Pin test: `tests/support/pinned-imports.test.ts` passes on zero imports today and checks each pinned import of `plugins/` against `package.json` and the `dependencies` of the package.
+Open: a prototype of `marked` for `markdown.ts` could change the verdict if the parity cases of `tests/claudetto/spec` pass with fewer lines.
+
 ## Handoff File in the Change Folder
 
 Writers: `kernel/paths.ts:28` (`CHANGE_HANDOFF_FILE`), `kernel/change.ts:47` (`changeHandoffPath`), `slices/handoff/compact.ts:65-69` (`handoffPath`).
 Tests: `plugins/claudetto/tests/change.test.ts:78` and `:87`.
 Docs: `src/wiki/claudetto/slices/Handoff-Files.md:20` and `src/wiki/claudetto/Quickstart.md:35`.
 Upstream `openspec` writes no handoff file.
-Decision: each handoff goes to `.claudetto/handoffs/`, and the handoff text keeps the name of the open change and its next task (the user, 2026-10-23: "claudetto already has handoffs/ files, so what was the point of handoff.md ?").
+Decision: each handoff goes to `.claudetto/handoffs/`, and the handoff text keeps the name of the open change and its next task, and a `handoff.md` has no use because `.claudetto/handoffs/` already holds the handoff files (the user, 2026-10-23).
 
 ## Agents
 

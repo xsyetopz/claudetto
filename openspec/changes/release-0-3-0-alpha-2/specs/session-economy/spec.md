@@ -15,7 +15,7 @@ When Claude starts `Monitor` with the same command as a running `Monitor` of the
 
 ### Requirement: Repeat Read
 
-When Claude reads a file that the session read before, and the hash of the file did not change, the system SHALL answer with a short result that says that the file did not change, unless the probe of task 10.6 shows that Claude Code already does so.
+When Claude reads a file that the session read before, and the hash of the file did not change, the system SHALL answer with a short result that says that the file did not change, unless the probe of task 10.3 shows that Claude Code already does so.
 
 #### Scenario: Unchanged File
 
