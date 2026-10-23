@@ -4,14 +4,14 @@
 
 The `spec` slice helps you plan a change in files, do it, and check it.
 It keeps the plan, its specs, and its tasks in `openspec/changes/<name>/`, in the layout of OpenSpec.
-The slice ships the command `minispec`, three presets (`task`, `story`, and `epic`), and four skills, one for each step.
+The slice ships the command `minispec`, three presets (`task`, `story`, and `epic`), and seven skills.
 
 ## What It Does for You
 
-The four skills are `/claudetto:propose`, `/claudetto:apply`, `/claudetto:verify`, and `/claudetto:archive`.
+The first four skills are `/claudetto:propose`, `/claudetto:apply`, `/claudetto:verify`, and `/claudetto:archive`.
 They match the steps `/opsx:propose`, `/opsx:apply`, `/opsx:verify`, and `/opsx:archive` of OpenSpec.
 Only you can start a skill, because each has `disable-model-invocation: true`.
-So the four skills add no description to the request at session start.
+So the skills add no description to the request at session start.
 The slice has no hook and no `userConfig` key.
 It runs no `openspec init` and changes no global config of OpenSpec.
 
@@ -21,6 +21,9 @@ It runs no `openspec init` and changes no global config of OpenSpec.
 | `/claudetto:apply` | `[change]` | Does the open tasks of `tasks.md`, and ticks each one when its check passes. |
 | `/claudetto:verify` | `[change]` | Checks that the code does what the tasks, specs, and design say. |
 | `/claudetto:archive` | `[change]` | Merges the delta specs into `openspec/specs/`, and moves the change to `openspec/changes/archive/`. |
+| `/claudetto:explore` | `[change or idea]` | Thinks through an idea with you, and writes no code. |
+| `/claudetto:update` | `[change]` | Revises the artifacts of a change, and keeps them equal to each other. |
+| `/claudetto:sync` | `[change]` | Merges the delta specs into `openspec/specs/` with no archive, and keeps the change. |
 
 ## The Command `minispec`
 
@@ -30,19 +33,20 @@ A schema in `openspec/schemas/<name>/` wins over the preset of the same name in 
 
 | Command | What it does |
 | --- | --- |
-| `minispec new change <name> [--schema <preset>]` | Makes `openspec/changes/<name>/`. The default preset is `story`. |
-| `minispec list [--json]` | Lists the changes with their task counts. |
-| `minispec status --change <name> [--json]` | Gives each artifact with its status, template, and instruction. The JSON also has `context`, `rules`, `apply`, and `tasks`. |
-| `minispec validate <name> [--strict] [--json]` | Checks the delta specs of a change. |
-| `minispec archive <name> [--yes]` | Validates the change, merges its delta specs, and moves it to the archive. With open tasks, it asks first unless you pass `--yes`. |
+| `minispec new change <name> [--schema <preset>] [--description <text>] [--json]` | Makes `openspec/changes/<name>/`. The default preset is `story`. |
+| `minispec list [--specs] [--archived] [--all] [--sort recent\|name] [--json]` | Lists the changes with their task counts, or the specs with their requirement counts. |
+| `minispec status --change <name> [--json]` | Prints the checklist of artifacts and a `Next:` line with the next skill. With `--json`, it gives each artifact with its status, template, and instruction, and `next`, `context`, `rules`, `apply`, and `tasks`. |
+| `minispec instructions apply\|<artifact> --change <name> [--json]` | Gives the task list and state of `apply`, or the template, dependencies, and unlocks of an artifact. |
+| `minispec show <change\|spec> [--json] [--deltas-only] [--diff] [--requirements] [-r <n>]` | Shows a change (proposal, deltas, diffs) or a spec. |
+| `minispec validate <name> \| --all \| --changes \| --specs [--strict] [--json]` | Checks the delta specs of a change, or the main specs. |
+| `minispec schemas [--json]` | Lists the schemas of the project and the presets. |
+| `minispec schema validate [<name>] [--json]` | Checks that each template and each `requires` of a schema exists. |
+| `minispec sync <name>` | Merges the delta specs into `openspec/specs/`, and keeps the change folder. |
+| `minispec archive <name> [--yes] [--skip-specs] [--no-validate] [--json]` | Validates the change, merges its delta specs, and moves it to the archive. With open tasks, it asks first unless you pass `--yes`. |
 
 ## The Size Bounds
 
-MiniSpec stays small on purpose.
-`slices/spec/limits.ts` holds four bounds, and a test fails when a file grows past one:
-`CODE_LINES_MAX` (781 lines of TypeScript), `CODE_BYTES_MAX` (27,441 bytes), `PRESET_BYTES_MAX` (10,327 bytes of presets), and `SKILL_BYTES_MAX` (3,581 bytes of the four skills).
-Raise a bound only for a behavior that the design of the change `0-3-0` names.
-See [Bounds for Slices](Bounds-Slices#spec).
+MiniSpec has no size bound.
 
 ## Picking a Preset
 

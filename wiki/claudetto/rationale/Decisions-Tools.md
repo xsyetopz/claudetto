@@ -24,7 +24,7 @@ There are no progress bars (the user, 2026-10-12).
 | `SUBAGENT_ROWS_MAX` | 20 |
 
 **Reason:** Both commands are documented extension points, so no undocumented file is read.
-`USAGE_LEVELS` is 75 and 90 percent.
+`USAGE_LEVELS` is 40 and 80 percent: green below 40, amber from 40 to 80, and red above 80 (D15 of `release-0-3-0-alpha-2`).
 The main session uses the distance to the handoff trigger for its context share.
 
 **Evidence:** `slices/statusline/limits.ts` and `plugins/claudetto/kernel/budget.ts`.
@@ -80,7 +80,7 @@ The comparison with the built-in LSP tool is not in the repository.
 **Choice:** Jev is an outside decision service.
 The `decide` slice of the core plugin has an option `decide` with the values `off` and `jev` (default, D66).
 The key `TYPESAFE_API_KEY` is the trigger, and with no key nothing goes out.
-With `jev` and a key, all decisions go to Jev: the `claudetto-decide` CLI picks an option of each `AskUserQuestion` question, and a call is answered with no dialog when Jev is sure about each question.
+With `jev` and a key, all decisions go to Jev: the hook calls Jev from the mod with `$.http.fetch` to pick an option of each `AskUserQuestion` question (the CLI `claudetto-decide` serves image and `box` questions and the calls of Claude), and a call is answered with no dialog when Jev is sure about each question.
 When Jev is not sure, the user sees the dialog.
 Approvals stay with the user: each request also asks Jev if the question asks for approval of money, a push, a release, a delete, or a step that cannot be undone.
 A yes, or an unsure answer, shows the dialog, and it costs no extra call.
@@ -92,7 +92,7 @@ The user also chose "Approvals stay with you (Recommended)", because a "(Recomme
 A fallback model and a `second_opinion` tool are not in 0.2.0, because no incident needs them.
 
 **Evidence:** `slices/decide/adapters/ask.ts`.
-`slices/decide/limits.ts` has `JEV_TIMEOUT_MS` 45 seconds, `TRIES` 3, and `ATTEMPT_TIMEOUT_MS` 12 seconds.
+`kernel/budget.ts` has `TRIES` 3 and `ATTEMPT_TIMEOUT_MS` 12 seconds.
 See [Decide](Decide).
 
 ## Related Pages

@@ -5,7 +5,7 @@
 The `setup` slice puts the right settings into your Claude Code settings file.
 A plugin cannot set permissions or env vars by itself, so this slice does it for you.
 Run `/claudetto:setup` once, and again after each update.
-The cleanup of the settings of 0.1.0 and 0.2.0 is on [Setup Cleanup](Setup-Cleanup).
+The removal of the old deny rules of 0.3.0-alpha.1 is on [Setup Cleanup](Setup-Cleanup).
 
 ## Why You Need It
 
@@ -23,7 +23,7 @@ It may run only `claudetto-setup *`.
 2. It runs `claudetto-setup --scope <scope>` and prints the list of changes as text.
 3. It asks you once whether to apply them.
 4. After a yes, it runs the same command with `--apply`.
-5. It gives you the `alias` line for `Glob` and `Grep`.
+5. It offers the shell `alias` `claude-demo` for `IS_DEMO=1 claude`.
 6. It lists the files that changed and tells you to restart Claude Code.
 
 The skill never edits a settings file itself.
@@ -32,20 +32,47 @@ The command is the checked path.
 ## The Command
 
 ```text
-claudetto-setup [--scope user|project|local] [--apply]
+claudetto-setup [--scope user|project|local] [--mode merge|replace] [--keep KEY]...
+                [--exclude-md GLOB]...
+                [--apply | --inventory | --demo-alias
+                 | (--remove-openspec | --global-md [--global-rule=LINE]... | --local-notes) [--apply]]
 ```
 
 | Option | Meaning |
 | --- | --- |
 | `--scope` | The settings file to change. The default is `user`. |
 | `--apply` | Write the changes. Without it, the command only prints them. |
+| `--mode` | `merge`, the default, keeps each key of the file that the snippet does not set. `replace` writes the snippet as the whole file, and first copies the old file to `<file>.<ms>.bak`. |
+| `--keep` | Keep the value of the file at this key path, such as `enabledPlugins.cc-plugin-tips@builtin`, where it differs from the snippet. Give one `--keep` for each key. |
+| `--inventory` | Print the inventory as one JSON object, and write no file. You cannot use it with `--apply`. |
+| `--exclude-md` | Write this glob to `claudeMdExcludes` of the settings file. Give one for each file. |
+| `--remove-openspec` | Print each OpenSpec install, and with `--apply` remove it. See [OpenSpec Goes](#openspec-goes). |
+| `--global-md` | Write the origin block of `~/.claude/CLAUDE.md` with `--apply`. See [The Global File](#the-global-file). |
+| `--global-rule=LINE` | One line for a new global file. Use the `=` form, because a line can start with `-`. |
+| `--local-notes` | Write the template `CLAUDE.local.md` and its `.gitignore` line with `--apply`. |
 | (an unknown option) | Print the usage to `stderr` and exit with code 2. |
 
-| Scope | Settings file | Markdown file for the cleanup |
-| --- | --- | --- |
-| `user` | `settings.json` in `CLAUDE_CONFIG_DIR`, or `~/.claude` | `CLAUDE.md` in the same folder |
-| `project` | `.claude/settings.json` in `CLAUDE_PROJECT_DIR`, or the current folder | `CLAUDE.md` in the project |
-| `local` | `.claude/settings.local.json` in the same folder | `CLAUDE.local.md` in the project |
+The inventory has these keys.
+It holds no email address, organization name, or UUID.
+
+| Key | Content |
+| --- | --- |
+| `plan` | The plan tier of the login and its subagent cap, or `null` when there is no cap |
+| `plugins` | The enabled plugins of the settings file |
+| `builtins` | Each built-in mod of the snippet and of the settings file, with its value, or `null` for its default state |
+| `mcpServers` | Each MCP server, with the scope `user` or `local` from `~/.claude.json`, or `project` from `.mcp.json` |
+| `skills` | Each skill in `~/.claude/skills/`, with the size of its description, and `copyOf` when an enabled plugin has a skill with the same name |
+| `claudeAiSync` | `syncClaudeAiSkills`, `syncClaudeAiPlugins`, and `ENABLE_CLAUDEAI_MCP_SERVERS`, or `null` when unset |
+| `openspec` | The OpenSpec finds: `global` (manager and version), `path`, `skills`, `commands`, and `devDependency` |
+| `rules` | Each file of `~/.claude/rules/` with its size, its `owner`, the `removal` command and `note` of a known owner when `claudetto-docs` is on, or `foldOrRemove` for a file with no owner |
+| `memoryFiles` | Each `CLAUDE.md` outside the project (`parent` or `vendor`) with its `glob`, and `excluded` when `claudeMdExcludes` has it |
+| `conflicts` | Each key where the settings file and the snippet have different values, with the two values |
+
+| Scope | Settings file |
+| --- | --- |
+| `user` | `settings.json` in `CLAUDE_CONFIG_DIR`, or `~/.claude` |
+| `project` | `.claude/settings.json` in `CLAUDE_PROJECT_DIR`, or the current folder |
+| `local` | `.claude/settings.local.json` in the same folder |
 
 | Exit code | Meaning |
 | --- | --- |
@@ -60,10 +87,8 @@ A second run with the same options changes nothing.
 
 The command works in this order:
 
-1. It removes what 0.1.0 wrote ([Setup Cleanup](Setup-Cleanup)).
-2. It removes what 0.2.0 wrote and 0.3.0 does not set ([Setup Cleanup](Setup-Cleanup#the-020-keys)).
-3. It removes the `claudetto` block of 0.1.0 from the `CLAUDE.md` file of the scope.
-4. It merges the settings snippet.
+1. It removes the deny rules of 0.3.0-alpha.1 that this version drops ([Setup Cleanup](Setup-Cleanup)).
+2. It merges the settings snippet.
 
 ## The Merge
 
@@ -90,18 +115,20 @@ It writes the cap of the plan into `env` of the `user` and `local` scopes:
 
 | Plan tier | Cap |
 | --- | --- |
-| `claude_pro` | 2 |
+| `claude_pro` | 3 |
 | `default_claude_max_5x` | 4 |
-| `default_claude_max_20x` | 6 |
+| `default_claude_max_20x` | 5 |
 
-For any other tier, the command writes no cap and names the tier in its output.
+At 6, sessions on Max 20x hit "Concurrent subagent limit" 14 times, so the cap of Max 20x is 5.
+For any other tier, and for an API key, the command writes no cap, keeps your value, and names the tier in its output.
+A running session keeps the old cap, so restart Claude Code after setup.
 The `project` scope gets no cap, because a plan belongs to one login.
 
 ## Context7 Notice
 
 The command looks in `~/.claude` and in `<project>/.claude` for the official Context7 `find-docs` skill and for a Context7 rule file.
 It prints each one that it finds with the characters that it adds to each session.
-The skill `claudetto-docs:find-docs` of the add-on uses the same `ctx7` CLI with 155 characters, so keep one of the two.
+The skill `claudetto-docs:find-docs` of the add-on uses the Context7 MCP server, or the same `ctx7` CLI, with 143 characters, so keep one of the two.
 
 ## Status Lines
 
@@ -110,17 +137,55 @@ Use the `user` or `local` scope for the status line.
 If your `statusLine` or `subagentStatusLine` runs another tool, the merge keeps it.
 The preview then prints `Kept your <key>, because it runs another tool.`
 
-## The Tools `Glob` and `Grep`
+## Off or On for Each Item
 
-The native build of Claude Code hides `Glob` and `Grep` unless the CLI tool list names them.
-A plugin cannot set a CLI flag.
-So the skill gives you this line for your shell startup file, such as `~/.zshrc`:
+The skill shows each tool, plugin, LSP plugin, MCP server, and skill that a session loads, with its docs text, and asks off or on for each.
+The tools come from the tool list of the session, because gates change them.
+The inventory gives the rest: each plugin with its `description`, an LSP plugin with the file extensions of its servers, and each user and project skill with its `description`.
+Each off pick adds only its own entry:
+
+| Flag | Entry | File |
+| --- | --- | --- |
+| `--off-tool <name>` | `<name>` in `permissions.deny`, which hides the tool from the model | the file of the scope |
+| `--off-skill <name>` | `"<name>": "off"` in `skillOverrides` | the file of the scope |
+| `--off-plugin <id>` | `"<id>": false` in `enabledPlugins` | `.claude/settings.json` only |
+| `--deny-mcp <name>` | `{ "serverName": "<name>" }` in `deniedMcpServers` | `.claude/settings.json` only |
+
+An off plugin or MCP server stays on in the other projects.
+`--off-plugin` and `--deny-mcp` with another scope write nothing and exit with code `2`.
+
+## OpenSpec Goes
+
+`minispec` replaces OpenSpec, so setup finds each OpenSpec install and removes it after your yes.
+It looks for `@fission-ai/openspec` in the global packages of `bun`, `npm`, `pnpm`, and `yarn`, for `openspec` on the `PATH`, and for the `openspec-*` skills and `opsx` commands in `~/.claude/` and in the project.
+`claudetto-setup --remove-openspec --apply` runs the removal command of the package manager that owns each package (for example `bun remove -g @fission-ai/openspec`), deletes the skill and command files, and then checks that `openspec` is not on the `PATH`.
+A project that lists `@fission-ai/openspec` in its `package.json` gets a report and no change.
+
+## The Global File
+
+`claudetto-setup --global-md --apply` writes `~/.claude/CLAUDE.md` with the title `# CLAUDE.md`, an origin line between two HTML comments, and, for a new file, the rules that you gave with `--global-rule=LINE`.
+A later run rewrites only the lines between the comments and keeps each line of yours.
+The file has 20 lines at most (`GLOBAL_CLAUDE_MD_MAX_LINES`). Over that, the command writes nothing and exits with code `1`, and the skill asks which lines move to `~/.claude/rules/`.
+A rule file of a known owner stays the owner's: setup never edits it, and offers the removal command of the owner, such as `ctx7 remove --claude --cli` for `context7.md`.
+Any other rule file gets the offer to fold it into the global file or remove it.
+
+## Excluded Files and Local Notes
+
+The inventory lists the `CLAUDE.md` files of the parent folders and of the packages in `node_modules`, `vendor`, `third_party`, and `external`.
+`--exclude-md <glob>` adds a glob to `claudeMdExcludes`, and Claude Code then skips that file.
+`claudetto-setup --local-notes --apply` writes `CLAUDE.local.md` once, and in a project with `.git/` adds `/CLAUDE.local.md` to `.gitignore`.
+
+## Demo Mode
+
+`IS_DEMO=1 claude` hides the email and the organization.
+It also skips the trust, MCP approval, API key, and bypass mode dialogs, so setup writes `IS_DEMO` to no settings file.
+On a yes, `claudetto-setup --demo-alias` adds this line once to `~/.zshrc` or `~/.bashrc`:
 
 ```sh
-alias claude='claude --allowedTools Glob,Grep'
+alias claude-demo='IS_DEMO=1 claude'
 ```
 
-The skill does not edit the file, because it is outside Claude Code.
+For another shell, the command prints the line for you to add.
 
 ## The `.gitignore` Lines
 

@@ -11,7 +11,7 @@ For Claude Code itself, see [Claude Code Docs](#claude-code-docs).
 It changes Claude Code with the Mod API, settings, hooks, skills, agents, and output styles.
 It does not patch the program.
 Its goal is the best quality for the lowest token cost.
-`claudetto` needs Claude Code `2.1.307` or later.
+`claudetto` needs Claude Code `2.1.309` or later.
 
 For example, the permission gate of the `guard` slice lets a safe command run, asks before a command that can lose work for good, and denies a command that can harm the system.
 
@@ -27,7 +27,7 @@ For example, the permission gate of the `guard` slice lets a safe command run, a
 
 The core plugin has 13 slices with code and one style.
 Each has a page:
-[Agents](Agents), [Decide](Decide), [Dry](Dry), [Goal](Goal), [Ground](Ground), [Guard](Guard), [Handoff](Handoff), [Session Hygiene](Hygiene), [Prompt](Prompt), [Reply](Reply), [Setup](Setup), [Spec](Spec), [Status Line](Status-Line), and [Styles](Styles).
+[Agents](Agents), [Decide](Decide), [Finish](Finish), [Ground](Ground), [Guard](Guard), [Handoff](Handoff), [Notes](Notes), [Session Hygiene](Hygiene), [Prompt](Prompt), [Setup](Setup), [Spec](Spec), [Status Line](Status-Line), and [Styles](Styles).
 
 ### Add-Ons
 

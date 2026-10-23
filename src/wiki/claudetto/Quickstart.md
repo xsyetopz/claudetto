@@ -11,7 +11,6 @@ After `/claudetto:setup` and a restart, you get these parts:
 - A status line with up to three rows.
 - The output style `claudetto:Concise`, which puts the result first and then only the facts you need. See [Styles](Styles).
 - A tailored system prompt: each session runs as the main agent `claudetto:main`. See [Prompt](Prompt).
-- A `Reply` button under each message of Claude. A press puts that message in the prompt box as a `>` quote. See [Reply](Reply).
 
 ## The Status Line
 
@@ -28,18 +27,20 @@ See [Status Line](Status-Line).
 
 ## Long Work
 
-When the context fills up, Claude writes a handoff file in place of a summary.
-It does this at {{HANDOFF_TRIGGER_TOKENS}} tokens of the {{CONTEXT_WINDOW}} window.
-For Haiku the trigger is {{HAIKU_HANDOFF_TRIGGER_TOKENS}} tokens.
+When the context gets long, `claudetto` hands over in place of a summary.
+A hook writes a handoff file with no model call, runs `/clear`, and sends the file as the next prompt.
+A handover starts at the end of a quiet turn when the context passes 150,000 tokens, when the open change moves to its next task group, or when the session is older than 8 hours.
 The file holds the goal, the state, and the next step, and a new context starts from it.
-The files are in `.claudetto/handoffs/`, or in the folder of the open OpenSpec change.
-Set the option `compaction` to `built-in` to turn this off.
+The files are in `.claudetto/handoffs/`.
+The automatic compaction of Claude Code stays as the safety net.
+It starts at {{HANDOFF_TRIGGER_TOKENS}} tokens of the {{CONTEXT_WINDOW}} window, and at {{HAIKU_HANDOFF_TRIGGER_TOKENS}} tokens for Haiku.
+Set the option `compaction` to `built-in` to turn the handover off.
 See [Handoff](Handoff).
 
 ## Plans and Goals
 
 - `/claudetto:propose`, `/claudetto:apply`, `/claudetto:verify`, and `/claudetto:archive` plan, do, check, and archive a change. See [Spec](Spec).
-- `/goal <check command>` sets a check that must exit `0` before Claude can stop. See [Goal](Goal).
+- `/goal <check command>` sets a check that must exit `0` before Claude can stop. See [Finish](Finish).
 - A plan file with a claim that has no source is denied. Claude must name the source, mark the claim `(proposed)`, or ask you. See [Ground](Ground).
 
 ## What Gets Allowed, Asked, or Denied

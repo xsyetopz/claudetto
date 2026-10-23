@@ -10,16 +10,15 @@ The shared and repository bounds are on [Bounds](Bounds).
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
-| `JEV_TIMEOUT_MS` | `45,000` | `plugins/claudetto/slices/decide/limits.ts` | The most time that the hook waits for one run of the TypeSafe client. |
-| `TRIES` | `3` | `plugins/claudetto/slices/decide/limits.ts` | The tries of the TypeSafe client on a 429 or a 529 reply. |
-| `BACKOFF_MS` | `1,000` | `plugins/claudetto/slices/decide/limits.ts` | The first wait before a retry, which doubles for each later wait. |
-| `ATTEMPT_TIMEOUT_MS` | `12,000` | `plugins/claudetto/slices/decide/limits.ts` | The timeout of one try of the TypeSafe client. |
-| `ERROR_BODY_MAX` | `200` | `plugins/claudetto/slices/decide/limits.ts` | The most characters of an error body of the TypeSafe API that the client keeps. |
+| `TRIES` | `3` | `plugins/claudetto/kernel/budget.ts` | The tries of the TypeSafe client on a 429 or a 529 reply. |
+| `BACKOFF_MS` | `1,000` | `plugins/claudetto/kernel/budget.ts` | The first wait before a retry, which doubles for each later wait. |
+| `ATTEMPT_TIMEOUT_MS` | `12,000` | `plugins/claudetto/kernel/budget.ts` | The timeout of one try of the TypeSafe client. |
+| `ERROR_BODY_MAX` | `200` | `plugins/claudetto/kernel/budget.ts` | The most characters of an error body of the TypeSafe API that the client keeps. |
 | `MIN_OPTIONS` | `2` | `plugins/claudetto/slices/decide/limits.ts` | The fewest options of a `pick` question. |
 | `MAX_OPTIONS` | `255` | `plugins/claudetto/slices/decide/limits.ts` | The most options of a `pick` question. |
-| `MIN_CONFIDENCE` | `0.5` | `plugins/claudetto/slices/decide/limits.ts` | The confidence under which a Jev answer says that Jev is not sure. |
-| `MIN_MARGIN` | `0.15` | `plugins/claudetto/slices/decide/limits.ts` | The margin that a pick needs over chance, `1 / options`. |
-| `YES_NO_UNSURE_BAND` | `0.2` | `plugins/claudetto/slices/decide/limits.ts` | The distance from 0.5 under which a yes or no answer says that Jev is not sure. |
+| `MIN_CONFIDENCE` | `0.5` | `plugins/claudetto/kernel/budget.ts` | The confidence under which a Jev answer says that Jev is not sure. |
+| `YES_NO_UNSURE_BAND` | `0.2` | `plugins/claudetto/kernel/budget.ts` | The distance from 0.5 under which a yes or no answer says that Jev is not sure. |
+| `APPROVAL_MAX` | `0.2` | `plugins/claudetto/slices/decide/limits.ts` | The most `P(yes)` of the approval question for a pick that Jev may answer. |
 
 ## Guard
 
@@ -44,23 +43,29 @@ The shared and repository bounds are on [Bounds](Bounds).
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
-| `PLAN_CAPS` | `claude_pro` 2, `default_claude_max_5x` 4, `default_claude_max_20x` 6 | `plugins/claudetto/slices/setup/limits.ts` | The cap of subagents at one time for each plan. Setup writes it as `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`. A tier that the table lacks gets no cap. |
+| `PLAN_CAPS` | `claude_pro` 3, `default_claude_max_5x` 4, `default_claude_max_20x` 5 | `plugins/claudetto/slices/setup/limits.ts` | The cap of subagents at one time for each plan. Setup writes it as `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`. A tier that the table lacks gets no cap. |
 
-## Spec
-
-| Name | Value | File | Purpose |
-| --- | --- | --- | --- |
-| `CODE_LINES_MAX` | `781` | `plugins/claudetto/slices/spec/limits.ts` | The most lines of the TypeScript of the `spec` slice and of `bin/minispec`. |
-| `CODE_BYTES_MAX` | `27,441` | `plugins/claudetto/slices/spec/limits.ts` | The most bytes of the same files. |
-| `PRESET_BYTES_MAX` | `10,327` | `plugins/claudetto/slices/spec/limits.ts` | The most bytes of the files in `slices/spec/presets/`. |
-| `SKILL_BYTES_MAX` | `3,581` | `plugins/claudetto/slices/spec/limits.ts` | The most bytes of the four `SKILL.md` files of MiniSpec. |
-
-## Goal
+## Finish
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
-| `OUTPUT_TAIL_CHARS` | `1,500` | `plugins/claudetto/slices/goal/limits.ts` | The most characters of a check output that the state keeps and the next turn shows. The tail has the error. |
-| `RUN_TIMEOUT_MS` | `300,000` | `plugins/claudetto/slices/goal/limits.ts` | The most time that a `run` check may take. |
+| `OUTPUT_TAIL_CHARS` | `1,500` | `plugins/claudetto/slices/finish/limits.ts` | The most characters of a check output that the state keeps and the next turn shows. The tail has the error. |
+| `RUN_TIMEOUT_MS` | `300,000` | `plugins/claudetto/slices/finish/limits.ts` | The most time that a `run` check may take. |
+| `GOAL_BLOCKS_MAX` | `5` | `plugins/claudetto/slices/finish/limits.ts` | The most re-blocks of the `/goal` stop in a row. Then the stop goes on, with a line to the user. |
+| `GIT_TIMEOUT_MS` | `10,000` | `plugins/claudetto/slices/finish/limits.ts` | The most time that the `git status` call of the `Stop` hook may take. |
+| `NOTE_ITEM_CHARS` | `80` | `plugins/claudetto/slices/finish/limits.ts` | The most characters of the deferred item in a note. |
+| `NOTE_FILES_MAX` | `5` | `plugins/claudetto/slices/finish/limits.ts` | The most file names in the line of a note. |
+
+## Notes
+
+| Name | Value | File | Purpose |
+| --- | --- | --- | --- |
+| `NOTE_PROMPTS` | `2` | `plugins/claudetto/slices/notes/limits.ts` | The prompts that a note stays above the prompt. |
+| `REPEAT_MIN` | `3` | `plugins/claudetto/slices/notes/limits.ts` | The equal denies, asks, or failing checks in a row that set a note. |
+| `BACKOFF_FROM` | `3` | `plugins/claudetto/slices/notes/limits.ts` | The ignored notes in a row from which the back-off starts. |
+| `SKIP_MAX` | `16` | `plugins/claudetto/slices/notes/limits.ts` | The most checks that the back-off skips. |
+| `RECENT_MAX` | `50` | `plugins/claudetto/slices/notes/limits.ts` | The last note lines that a new line is compared with. |
+| `SIGN_CHARS` | `100` | `plugins/claudetto/slices/notes/limits.ts` | The most characters of the failing test line in a note. |
 
 ## Handoff
 
@@ -73,12 +78,6 @@ The shared and repository bounds are on [Bounds](Bounds).
 | `COLD_FILES_MAX` | `20` | `plugins/claudetto/slices/handoff/limits.ts` | The most changed files that a cold handoff names. |
 | `COLD_PROMPTS_MAX` | `3` | `plugins/claudetto/slices/handoff/limits.ts` | The most user messages that a cold handoff quotes. |
 | `COLD_PROMPT_CHARS_MAX` | `1,500` | `plugins/claudetto/slices/handoff/limits.ts` | The most characters of the task and of one quoted user message in a cold handoff. |
-
-## Reply
-
-| Name | Value | File | Purpose |
-| --- | --- | --- | --- |
-| `QUOTE_MAX_LINES` | `12` | `plugins/claudetto/slices/reply/limits.ts` | The most lines of a message that a `Reply` quote holds. A longer message keeps its first lines. |
 
 ## Status Line
 
@@ -96,8 +95,7 @@ The shared and repository bounds are on [Bounds](Bounds).
 | `FIVE_HOUR_S` | `18,000` | `plugins/claudetto/slices/statusline/limits.ts` | The length, in seconds, of the `5h` window of a limit. |
 | `SEVEN_DAY_S` | `604,800` | `plugins/claudetto/slices/statusline/limits.ts` | The length, in seconds, of the `7d` window of a limit. |
 | `PACE_MIN_FRACTION` | `0.03` | `plugins/claudetto/slices/statusline/limits.ts` | The part of a limit window that must pass before its pace arrow shows. |
-| `PROJECTED_WARN` | `75` | `plugins/claudetto/slices/statusline/limits.ts` | The projected use at the end of a window, in percent, from which the percent has the warning color. It is the first level of `USAGE_LEVELS`. |
-| `PROJECTED_RUNOUT` | `100` | `plugins/claudetto/slices/statusline/limits.ts` | The projected use at the end of a window, in percent, above which the percent has the limit color. |
+| `PROJECTED_RUNOUT` | `100` | `plugins/claudetto/slices/statusline/limits.ts` | The projected use at the end of a window, in percent, above which the use runs out before the reset. |
 | `PERCENT_FIELD` | `4` | `plugins/claudetto/slices/statusline/limits.ts` | The columns of the percent field of a limit window. |
 | `ARROW_FIELD` | `5` | `plugins/claudetto/slices/statusline/limits.ts` | The columns of the pace arrow field of a limit window. |
 | `RUNOUT_FIELD` | `14` | `plugins/claudetto/slices/statusline/limits.ts` | The columns of the run-out time field of a limit window. |
@@ -107,11 +105,11 @@ The shared and repository bounds are on [Bounds](Bounds).
 - [Bounds](Bounds)
 - [Bounds for Add-Ons](Bounds-Add-Ons)
 - [Decide](Decide)
-- [Goal](Goal)
+- [Finish](Finish)
+- [Notes](Notes)
 - [Guard](Guard)
 - [Session Hygiene](Hygiene)
 - [Spec](Spec)
 - [Setup](Setup)
 - [Handoff](Handoff)
-- [Reply](Reply)
 - [Status Line](Status-Line)

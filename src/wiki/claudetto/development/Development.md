@@ -26,7 +26,7 @@ It installs the dev dependencies that `bun.lock` pins: Biome, `markdownlint-cli2
   Add a `CLAUDETTO_` env var only when neither can do the work.
 - Never patch the Claude Code CLI binary or its npm package.
   Reading the bundle for evidence is allowed.
-- Write docs in STE-flavored ASD-STE100, with semantic line breaks and inline code for each code item.
+- Write docs in STE-flavored ASD-STE100, with inline code for each code item.
 - Add a CHANGELOG entry under the version in the manifests when that version has no tag yet.
   Otherwise add it under `[Unreleased]`.
 

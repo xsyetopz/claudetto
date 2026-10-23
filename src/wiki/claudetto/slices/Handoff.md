@@ -1,38 +1,47 @@
 # Handoff
 
-Claude Code compacts the main thread when the context gets long.
+A long session costs more with each turn, and Claude Code compacts the main thread when the context gets long.
 The built-in compaction writes a summary.
-The `handoff` slice of `claudetto` writes a handoff in its place.
+The `handoff` slice of `claudetto` hands over in its place at three triggers: a handoff file, then `/clear`, then a resume.
 A handoff is a short note with the task, the steps that are done, and the next step.
 The new context starts from the note, so long work does not lose its place.
+The slice has no hook on the compaction of Claude Code.
 
-## What You Get
+## The Handover
 
-After a handoff, the context holds two parts:
+A handover is a handoff, then `/clear`, then a resume.
+The hook writes the handoff file with no model call, queues `/clear` with `$.command.run`, and sends the handoff as the next user turn with `$.prompt.submit`.
+The old session stays on disk, and `/resume` opens it.
+A handover starts only at the end of a turn with no running agent and no running background task.
 
-1. One user message.
-   It has the first user message of the session and the handoff.
-2. The tail: the newest messages.
-   The tail starts at the first message of the last reply that has a tool use.
+| Trigger | When | Question |
+| --- | --- | --- |
+| Context | The context passes 150,000 tokens. | None. |
+| Cold cache | The user sends a prompt after a pause longer than the cache TTL. | The note offers the handover, and it runs only on the yes. The prompt runs after the resume. |
+| Task group | The open change moves to its next task group, or the session is older than 8 hours. | None. |
 
-An image or an attachment of the first user message does not stay.
-The tail keeps each newest tool call with its result, so the model does not run a step again.
-If the last message is a reply with no tool use, the turn has ended and there is no tail.
+With a Jev key, Jev answers the offer of the cold cache case from the size of the context, the idle time, and the open task.
+A `P(yes)` of 0.7 or more is a yes, and 0.3 or less is a no.
+You see the dialog only when Jev is not sure.
+Each handoff also holds a cost line: the cost of the session and the change of each plan share since the first reading.
 
-The handoff also goes to a file.
-The user message names the file, so you and the model can read it again.
+`PATH_TABLE` in `slices/handoff/limits.ts` maps each case to `handover`, `compact`, or `handoff-then-compact`.
+Its first values are `handover` for each case, and the paired runs of task 11.6 set the final values.
+The automatic compaction of Claude Code stays as the safety net.
+
+Each row also has a `model`: the alias or full ID of the first request step after a handover, or `null` for the session model.
+Its first value is `null` for each case, and the paired runs of task 11.7 set the final values.
+Only the first step of the main thread after the resume gets it, and the later steps keep the session model.
 
 ## The Hooks
 
 | Hook | What it does |
 | --- | --- |
-| `session.compact` | Writes the handoff and gives the new context in place of the summary. |
 | `turn.complete` | Notes the time when a turn of the main thread ends. |
-| `turn.step` | Notes the time of each model request of the main thread. |
+| `classic.Stop` | Starts a handover for the context and task group triggers at a quiet turn end. |
+| `prompt.submit` | Offers a handover after a pause longer than the cache TTL, and holds the prompt for the answer. |
+| `turn.step` | Notes the time of each model request of the main thread, and sets the model of the first step after a handover from the table. |
 | `PreModelSwitch` (a classic hook) | Says nothing when the cache is cold. When the cache is warm, it asks you and names the cost of the cache write that a `/model` switch causes. |
-
-The `session.compact` hook runs for the triggers `auto`, `manual`, and `plugin`.
-A compaction of a subagent passes on with no change.
 
 ## When It Runs
 
@@ -46,78 +55,22 @@ That point is below the size where Claude Code blocks a request with "Prompt is 
 
 The snippet sets `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` and `autoCompactWindow` for this.
 It sets a window for `claude-haiku-5-5` with `modelSettings`.
-The same size limits the new context.
-If the new context is not below the trigger of the session model, the handoff does not run.
-See [When the Handoff Fails](#when-the-handoff-fails) and [Settings Snippet](Settings-Snippet).
-
-## How the Handoff Is Written
-
-The prompt cache decides how the hook writes the handoff.
-The cache is a store that makes repeated input cheap.
-The hook takes the cache as cold when no turn or model request of the main thread ended in the last hour.
-It also takes it as cold when it has seen no request in this process, such as after `--resume`.
-If the clock fails, the hook takes the cache as warm.
-
-| Cache | Mode | Cost |
-| --- | --- | --- |
-| Warm | A fork of the session writes the handoff. | One model request, mostly read from the cache. |
-| Cold | The hook writes the handoff from the messages. | No model call. |
-
-On a cold cache, a fork would read the full history as uncached input.
-That is why the hook does not use a fork then.
-
-The settings snippet sets `CLAUDE_CODE_PROMPT_CACHE_TTL` to `1h`, so the main thread keeps a 1-hour cache.
-Claude Code bills a 1-hour cache write at a higher rate.
-Each model request of the main thread renews the cache time, so a long turn stays warm.
-A subagent keeps the 5-minute default, and its requests do not renew the time.
-
-On a terminal, the status line shows `Writing the handoff…` while the hook works.
-A notice then names the file and its size.
-In `-p` mode the hooks draw nothing.
-
-## The Warm Handoff
-
-The prompt of the fork asks for a Markdown list of 10 lines or less.
-The list must hold:
-
-- The task, each step that is done, and the next step.
-- Each exact value with its label, in backticks.
-- The exact text of each error, in backticks.
-- Your words in one block, with an update of an earlier handoff in place of a second one.
-
-The fork does not see the results of the tail.
-So the prompt names each call of the first reply of the tail, with its input cut at 300 characters.
-The fork must mark each of these calls `RAN` and state no result for them.
-
-A reply with no value in backticks is not a handoff.
-The hook then gives the compaction back to Claude Code.
+This compaction stays on as the safety net, and `claudetto` has no hook on it.
+See [Settings Snippet](Settings-Snippet).
 
 ## The Handoff File
 
 [Handoff Files](Handoff-Files) tells about:
 
-- the cold handoff
 - the path of the file
 - the source of the status
-- the ground check
 - the update of an earlier handoff
-
-## When the Handoff Fails
-
-The hook gives the compaction back to Claude Code when:
-
-- The fork fails, gives no answer, or gives a text with no value in backticks.
-- The model of the session is not known.
-- The new context is not below the trigger of the model.
-- The file cannot be written, or it is empty after the write.
-
-Claude Code then does its built-in compaction.
 
 ## How to Turn It Off
 
 | Key | Default | Meaning |
 | --- | --- | --- |
-| `compaction` | `handoff` | `handoff` writes a handoff. `built-in` leaves each compaction to Claude Code. |
+| `compaction` | `auto` | `auto` picks the path of each case from the table. `handover` hands over at each trigger. `built-in` starts no path of `claudetto` and leaves each compaction to Claude Code. |
 
 To change it, run `/plugin`, select `claudetto`, select "Configure options", and set "Compaction".
 The [Prompt](Prompt) slice reads the same option.
@@ -130,6 +83,11 @@ The [Prompt](Prompt) slice reads the same option.
 | `CALL_INPUT_CHARS_MAX` | 300 | `slices/handoff/limits.ts` |
 | `CHARS_PER_TOKEN` | 4 | `slices/handoff/limits.ts` |
 | `CACHE_TTL_MS` | 3,600,000 | `slices/handoff/limits.ts` |
+| `HANDOVER_CONTEXT_TOKENS` | 150,000 | `slices/handoff/limits.ts` |
+| `HANDOVER_AGE_MS` | 28,800,000 | `slices/handoff/limits.ts` |
+| `DECISIONS_MAX` | 10 | `slices/handoff/limits.ts` |
+| `USER_VALUES_MAX` | 20 | `slices/handoff/limits.ts` |
+| `USER_VALUE_CHARS_MAX` | 200 | `slices/handoff/limits.ts` |
 | `COLD_FILES_MAX` | 20 | `slices/handoff/limits.ts` |
 | `COLD_PROMPTS_MAX` | 3 | `slices/handoff/limits.ts` |
 | `COLD_PROMPT_CHARS_MAX` | 1,500 | `slices/handoff/limits.ts` |

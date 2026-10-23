@@ -30,11 +30,10 @@ A value in a `{{...}}` placeholder is filled from the code when `just generate` 
 | `HAIKU_HANDOFF_TRIGGER_TOKENS` | `{{HAIKU_HANDOFF_TRIGGER_TOKENS}}` | `plugins/claudetto/kernel/budget.ts` | The context at which the auto handoff of a Haiku session starts. |
 | `AUTOCOMPACT_PCT` | `{{AUTOCOMPACT_PCT}}` | `plugins/claudetto/kernel/budget.ts` | The value of `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, which starts the auto compaction at `HANDOFF_TRIGGER_TOKENS` in the window `CONTEXT_WINDOW`. |
 | `HAIKU_AUTOCOMPACT_WINDOW` | `{{HAIKU_AUTOCOMPACT_WINDOW}}` | `plugins/claudetto/kernel/budget.ts` | The `autoCompactWindow` of a Haiku model, which starts the auto compaction below `HAIKU_HANDOFF_TRIGGER_TOKENS`. |
-| `SHELL_SCAN_MAX_CHARS` | `200,000` | `plugins/claudetto/kernel/budget.ts` | The most characters that `commands` in `plugins/claudetto/kernel/shell.ts` reads in one command. |
+| `SHELL_SCAN_MAX_CHARS` | `200,000` | `plugins/claudetto/kernel/budget.ts` | The most characters that `parse` in `plugins/claudetto/kernel/shell.ts` reads in one command with its nested scripts. |
 | `BRACE_WORDS_MAX` | `256` | `plugins/claudetto/kernel/budget.ts` | The most words that the brace expansion of one word gives. A word that gives more is unreadable. |
 | `RENAME_TRIES` | `10` | `plugins/claudetto/kernel/budget.ts` | The tries of a rename in `writeAtomic`, the first one included. |
 | `RENAME_WAIT_MS` | `100` | `plugins/claudetto/kernel/budget.ts` | The wait in milliseconds between two tries of a rename in `writeAtomic`. |
-| `GROUND_VALUE_CHARS_MIN` | `4` | `plugins/claudetto/kernel/budget.ts` | The fewest characters of a value in backticks that the ground check looks for. |
 
 ## Repository Bounds
 
@@ -47,12 +46,9 @@ A value in a `{{...}}` placeholder is filled from the code when `just generate` 
 | `OPENSPEC_RUN_TIMEOUT_MS` | `30,000` | `tools/limits.ts` | The time for one run of the OpenSpec CLI in the parity test of MiniSpec. |
 | `PIN_RUNS_TIMEOUT_MS` | `180,000` | `tools/limits.ts` | The time for all the stub runs of the settings pin test. |
 | `STUB_RUNS_AT_ONCE` | `6` | `tools/limits.ts` | The most stub runs at a time in the settings pin test. |
-| `MAX_FILE_LINES` | `400` | `tools/limits.ts` | The most lines in one `.ts` or `.py` file of `plugins/`, `tools/`, and `tests/`. |
-| `MAIN_BODY_MAX_CHARS` | `9,349` | `tools/limits.ts` | The most characters of the body of `claudetto:main`. |
-| `TOOL_TEXTS_MAX_CHARS` | `4,535` | `tools/limits.ts` | The most characters of the shorter tool texts of the `prompt` slice. |
-| `CONTEXT_BLOCKS_MAX_CHARS` | `401` | `tools/limits.ts` | The most characters of the context blocks of the `prompt` slice. |
+| `SKILL_MAX_TOKENS` | `5,000` | `tools/limits.ts` | The most tokens of one `SKILL.md` of a plugin, as 4 characters for each token. After a compaction, Claude Code keeps only 5,000 tokens of each skill that ran. |
 | `EVAL_MIN_RUNS_PER_ARM` | `10` | `tools/limits.ts` | The fewest runs of each arm of an eval. |
-| `MIN_CLAUDE_CODE_VERSION` | `2.1.307` | `tools/limits.ts` | The lowest Claude Code version that claudetto is built for. |
+| `MIN_CLAUDE_CODE_VERSION` | `2.1.309` | `tools/limits.ts` | The lowest Claude Code version that claudetto is built for. |
 | `DOCKER_CPUS` | `4` | `tools/limits.ts` | The CPUs of the container of `just docker`. |
 | `EVAL_MAX_COST_USD` | `5` | `tools/limits.ts` | The most US dollars for one `just eval` run. |
 | `LINUX_TOKEN_MIN_MINUTES` | `30` | `tools/limits.ts` | The fewest minutes of life of the access token before `just sandbox-linux` sends the login to its container. |

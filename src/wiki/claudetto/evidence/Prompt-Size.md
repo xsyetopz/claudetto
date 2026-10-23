@@ -1,7 +1,7 @@
 # Prompt Size
 
 **Status:** This page records 0.2.0.
-In 0.3.0, the body of the main agent `claudetto:main` replaces the `lean_body` text, and `MAIN_BODY_MAX_CHARS` bounds it ([Agents](Agents)).
+In 0.3.0, the body of the main agent `claudetto:main` replaces the `lean_body` text ([Agents](Agents)).
 The fixture and the `LEAN_BODY` module are gone.
 
 The `prompt` slice of 0.2.0 sent one tailored text for the `lean_body` section.

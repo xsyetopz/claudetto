@@ -20,7 +20,7 @@ The key names match `schemas/claude-code-settings.json`.
 
 | Option | Values | Effect | Read in |
 | --- | --- | --- | --- |
-| `compaction` | `handoff` (default), `built-in` | `built-in` turns off the handoff and keeps the compaction of Claude Code. | `slices/handoff/adapters/mod.ts` |
+| `compaction` | `auto` (default), `handover`, `built-in` | `built-in` starts no handover and leaves compaction to Claude Code. | `slices/handoff/adapters/mod.ts` |
 | `decide` | `off`, `jev` (default) | `off` sends no question to Jev. `jev` needs `TYPESAFE_API_KEY`, and then Jev answers each `AskUserQuestion` call that it is sure about. | `slices/decide/adapters/mod.ts` |
 
 The `prompt` slice also reads the env var `DISABLE_COMPACT`.
@@ -77,7 +77,7 @@ All are set in `slices/setup/prompts.ts`.
 
 All are set in `slices/setup/prompts.ts`.
 The keys `autoCompactWindow`, `modelSettings`, and `worktree` set a value and turn off nothing.
-The `prompt` slice also hides commands, tools, and attachments with hooks, not with a switch.
+The `prompt` slice also hides tools and attachments with hooks, not with a switch.
 See [Prompt](Prompt).
 
 ## Denied Tools and Agents
@@ -109,11 +109,9 @@ The snippet sets these entries of `enabledPlugins` to `false`:
 - `cc-plugin-responsive-mode@builtin`
 - `cc-plugin-telemetry@builtin`
 - `cc-plugin-tips@builtin`
+- `cc-plugin-you-should-know@builtin`, because it makes its own model calls when it is on (design D2 of `release-0-3-0-alpha-2`)
 
 The list is in `slices/setup/prompts.ts`.
-The snippet has no entry for `cc-plugin-you-should-know@builtin`, so the choice of the user stays (the user, 2026-10-22).
-Setup removes the `false` that the 0.2.0 snippet wrote.
-This plugin makes its own model calls when it is on.
 Claude Code runs it only when its feature flag `tengu_jolly_dewdrop` is on.
 
 ## Add-Ons and the Core Plugin

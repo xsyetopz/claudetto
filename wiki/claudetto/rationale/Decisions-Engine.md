@@ -34,7 +34,7 @@ A text that only the user reads costs none.
 **Choice:** A notice for the user calls `$.ui.log`.
 The types file says it appends one dim line to the transcript that is not sent to the model.
 A `-p` or SDK host receives it as `ui_log`.
-The `goal` and `handoff` slices use it.
+The `finish` and `handoff` slices use it.
 A line must hold no line break, because Claude Code draws a break as a bad glyph (`plugins/claudetto/kernel/text.ts`).
 
 **Reason:** A session-start notice sent as a `user` row was read as part of the task.
@@ -42,7 +42,7 @@ In an early run of the eval case `accusation-warranted` (Haiku), the reply ended
 That run had fewer than 10 runs per arm, so no score is kept (D25, [Evals of 0.1.0](Evals-0.1.0)).
 
 **Evidence:** The trace `out/trace.jsonl` of the failed run.
-`plugins/claudetto/tests/change.test.ts` checks the notice.
+`plugins/claudetto/tests/handover.test.ts` (the test "Order") checks that the notice of a handover is one line.
 
 ## Why a Hook That Calls `next` First Has No Catch-All
 
@@ -108,7 +108,7 @@ A value in that file holds for the whole session, but a `claudetto` value must h
 ## Why a `bin/` Command Is Named by Its Path
 
 **Choice:** A skill names its command by `${CLAUDE_PLUGIN_ROOT}/bin/<name>`.
-The `decide` hook runs `${$.plugin.root}/bin/claudetto-decide`.
+A text that names the CLI `claudetto-decide` gives `${$.plugin.root}/bin/claudetto-decide`.
 `claudetto` does not rely on `PATH`.
 
 **Reason:** The docs say the `bin/` folder is "on the Bash tool's `PATH` while the plugin is enabled".
@@ -118,7 +118,42 @@ In `claude plugin eval`, the config folder is in `denyRead`, so the source fails
 No debug log confirms this cause.
 
 **Evidence:** `external/cc-2.1.301/strings.txt` and the trace of the kept eval run.
-See `skills/dedupe/SKILL.md`.
+See `slices/decide/adapters/mod.ts`.
+
+## Why a Repeat `Read` Has No Hook
+
+**Choice:** `claudetto` adds no hook that shortens a second `Read` of an unchanged file (task 10.3, X6).
+
+**Reason:** Claude Code 2.1.309 already does it.
+A second `Read` of a file that did not change gives a `file_unchanged` result, and the model gets one line: "Wasted call — file unchanged since your last Read. Refer to that earlier tool_result instead."
+A hook can add no saving to that line.
+
+**Evidence:** `cc-inspect` on 2.1.309: the `file_unchanged` case of the `Read` result in `chunk-kang00hq.js` (offset 3332516), and its text in `chunk-5g5j1z3d.js` (offset 126226).
+
+## Why These Hidden Levers Stay Unset
+
+**Choice:** The settings snippet does not set the env vars below.
+They are `<Undocumented />` or `<Gated />` rows of the Claude Code docs (version 2.1.309) that look as if they remove text.
+
+**Reason:** A stub run (`stubCapture`, no login, no cost) with the full snippet env and one of them gave the first request of the same size, so they save no tokens.
+The one exception is `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS=1`, which made the request 81 bytes longer (about 20 tokens, derived at 4 bytes for each token), because the text of the `Agent` tool changes.
+In addition, it acts in print mode only.
+
+| Env var | Size change of the first request | Why it does not matter |
+| --- | --- | --- |
+| `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS=1` | +81 bytes | Print mode only, and the snippet denies each built-in agent |
+| `CLAUDE_CODE_DISABLE_CLAUDE_API_SKILL=1` | 0 | `disableBundledSkills` already removes the skill |
+| `CLAUDE_CODE_DISABLE_CLAUDE_CODE_SKILL=1` | 0 | `disableBundledSkills` already removes the skill |
+| `CLAUDE_CODE_DISABLE_EXPLORE_INHERIT_CAP=1` | 0 | The snippet removes the `Explore` agent |
+| `CLAUDE_CODE_ARTIFACT_OPENING_PREFETCH=false` | 0 | The snippet turns artifacts off |
+| `CLAUDE_CODE_DISABLE_PROACTIVITY=1` | 0 | No text effect in a stub run |
+| `CLAUDE_CODE_ACT_DONT_REDERIVE=0`, `CLAUDE_CODE_THISTLE_GREBE=no_nudges`, `CLAUDE_CODE_TOASTY_THIMBLE=0`, `CLAUDE_CODE_TURN_UPDATES=0`, `CLAUDE_CODE_BISON_CAIRN=0` | 0 | The prompt flag is off in a stub run, and a change would alter the steer text of the model |
+
+A server flag can change the result in a real session, and no paid run checked it.
+
+**Evidence:** `/tmp/claudetto-bench/lever-probe.ts` on 2026-10-23 with Claude Code 2.1.309.
+The first request had 21,969 bytes with the snippet env alone.
+The rows come from `prompts/disable-builtin-agents.md`, `configure/env-vars/models-and-effort.md`, and `reference/probes.md` of the Claude Code Docs.
 
 ## Related Pages
 

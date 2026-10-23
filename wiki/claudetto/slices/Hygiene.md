@@ -38,32 +38,57 @@ Otherwise the cleanup keeps it and names the reason: live, young, not a worktree
 
 ### The Messages
 
-The hook writes what it did to the log of the interface, which the model does not read:
-
-- `CLEANED` gives the counts of the removed folders, bytes, files, worktrees, and probe folders.
-- `WORKTREES_KEPT` names each kept worktree with its reason.
-- `UNKNOWN_KEPT` counts the entries of the `claude-<uid>` folder that no rule names.
-  The cleanup keeps them.
+The hook writes one line to the log of the interface, which the model does not read.
+The line is the `CLEANED` message:
+``claudetto cleanup removed 2 folders, 1 file of 3 MB.``
+It names only what the cleanup removed, with the count and the noun in the same number, and it adds the size when bytes went.
+When the cleanup removes nothing, or fails, the hook writes no line.
 
 ## The Edit Ledger
 
 Claude cannot know that a file changed after its last edit when the user or a tool changed it.
-The slice keeps a ledger for this.
+Another Claude session of the project can also change a file.
+The slice keeps one ledger for the project for this.
 
-1. After each `Edit` or `Write`, the `classic.PostToolUse` hook stores the path, a hash of the file (FNV-1a, 64 bits), and the agent that edited it (`main`, or the agent type).
-   The ledger lives in the plugin state.
+The ledger is the file `<tmp>/claudetto/ledger/<project key>.jsonl`.
+The project key is the base name of the project root and a hash of its path.
+Each line holds the path, the hash of the file (FNV-1a, 64 bits), the session, and the agent (`main`, or the agent type).
+Each session of the project reads the same file.
+The reader of the file is in `kernel/ledger.ts`, because the `guard` slice reads it too ([Guard](Guard)).
+
+1. After each `Edit` or `Write` that succeeds, the `classic.PostToolUse` hook adds a line.
+   After each `Bash` call, it adds a line for each file of `git status` whose time of change is after the start of the call.
    A write that lost a race to another write runs again, at most `LEDGER_WRITE_TRIES` (5) times.
-   The ledger holds at most `LEDGER_MAX_FILES` (200) files, and the oldest entry goes first.
-2. At each prompt, the `classic.UserPromptSubmit` hook hashes the files of the ledger again.
-   For a file that changed after the last edit, it adds one line to the context:
+   The ledger holds at most `LEDGER_MAX_FILES` (200) lines, and the oldest line goes first.
+2. At each prompt, the `classic.UserPromptSubmit` hook hashes the files of this session again.
+   For a file that changed after the last edit, and that no other line of the ledger explains, it adds one line to the context:
    ``The user or a tool changed `<path>` after the last edit of `<agent>`.``
-   It marks the file as told, so it says the line once for each change.
+   The plugin state (`$.state`) holds only what this session was told, so the hook says the line once for each change.
 3. When no file changed, the hook adds nothing, so the cost is 0 tokens.
+
+### Who Changed a File
+
+When `git status` or `git diff` runs through `Bash`, the `tool.call` hook adds context that sorts each changed file:
+
+- A change of this session.
+- A change of another Claude session, with its session and agent.
+- A change of the user, when no line of the ledger holds the path with the current hash.
+
+The context tells Claude that a change of the user is intended, so Claude keeps it and stages it only when the user asks.
+The hook reads at most `WHO_FILES_MAX` (50) changed files.
 
 Two limits of the ledger:
 
 - A subagent gets no line at its own next turn.
-- An edit by a `Bash` command shows as a change by "the user or a tool".
+- A file that a tool changed shows as a change by "the user or a tool".
+
+## Heading Case
+
+After an `Edit` or a `Write` of a `.md` file, the same hook sets the Chicago Title Case of each ATX heading (`#` to `######`) in the file.
+The front matter, a fenced code block, a code span, a word with a digit or an inner capital, and a path stay as typed.
+The hook sets the case before it hashes the file, so the ledger holds the file as it stays.
+The model gets one line that names the file and the count, and it must read the file again before the next `Edit`.
+A file over `HEADINGS_FILE_MAX` characters stays as it is.
 
 ## Related Pages
 

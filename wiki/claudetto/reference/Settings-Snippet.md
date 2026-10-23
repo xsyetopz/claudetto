@@ -13,7 +13,11 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
 ```json
 {
   "$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-settings.json",
+  "syncClaudeAiSkills": false,
+  "syncClaudeAiPlugins": false,
   "env": {
+    "ENABLE_CLAUDEAI_MCP_SERVERS": "false",
+    "CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH": "2048",
     "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
     "CLAUDE_CODE_PROMPT_CACHE_TTL": "1h",
     "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80.3571",
@@ -59,9 +63,7 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
       "Read(~/.netrc)",
       "Read(~/.docker/config.json)",
       "Bash(rm -rf /)",
-      "Bash(rm -rf /*)",
       "Bash(rm -rf ~)",
-      "Bash(rm -rf ~/*)",
       "Bash(mkfs *)",
       "Bash(mkfs.*)",
       "Bash(dd * of=/dev/*)",
@@ -125,6 +127,7 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
   "worktree": {
     "baseRef": "head"
   },
+  "disableAgentView": true,
   "disableRemoteControl": true,
   "enableArtifact": false,
   "enableWorkflows": false,
@@ -132,7 +135,7 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
     "type": "command",
     "command": "bun --no-env-file \"$(ls -d \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/plugins/cache/claudetto/claudetto/*/ | sort -V | tail -1)bin/claudetto-statusline\"",
     "padding": 0,
-    "refreshInterval": 1,
+    "refreshInterval": 5,
     "hideVimModeIndicator": true
   },
   "subagentStatusLine": {
@@ -149,14 +152,21 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
     "cc-plugin-plugin-authoring@builtin": false,
     "cc-plugin-responsive-mode@builtin": false,
     "cc-plugin-telemetry@builtin": false,
-    "cc-plugin-tips@builtin": false
+    "cc-plugin-tips@builtin": false,
+    "cc-plugin-you-should-know@builtin": false
   },
   "outputStyle": "claudetto:Concise",
   "feedbackDrafts": "off",
   "spinnerTipsEnabled": false,
   "modelSettings": {
+    "claude-opus-5-5": {
+      "maxEffortLevel": "high"
+    },
+    "claude-sonnet-5-5": {
+      "maxEffortLevel": "medium"
+    },
     "claude-haiku-5-5": {
-      "autoCompactWindow": 144444
+      "autoCompactWindow": 132000
     }
   },
   "autoCompactWindow": 300000,
@@ -165,6 +175,7 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
   "modelProposedGoals": "disabled",
   "autoMemoryEnabled": false,
   "autoDreamEnabled": false,
+  "idleCompaction": false,
   "useAutoModeDuringPlan": false
 }
 ```

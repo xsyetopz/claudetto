@@ -21,13 +21,14 @@ A test checks the keys against `schemas/claude-code-settings.json`, so a key tha
 | `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` | `1` | Removes the built-in advisor tool. | The advisor is a model call with no bound that the user sets. |
 | `CLAUDE_CODE_DISABLE_CFC_PROMPT` | `1` | Removes the Chrome prompt section. | `claudetto-browser:browse` takes the place of Claude in Chrome. |
 | `CLAUDE_CODE_DISABLE_CRON` | `1` | Removes the Cron tools and `/loop`. | No scheduled runs. |
-| `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` | `1` | Removes the `Explore` and `Plan` agents. | `claudetto:scout` takes the place of `Explore` ([Agents](Agents)). |
+| `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` | `1` | Removes the `Explore` and `Plan` agents. | `claudetto:Scout` takes the place of `Explore` ([Agents](Agents)). |
 | `CLAUDE_CODE_DISABLE_FAST_MODE` | `1` | Keeps fast mode off. | Fast mode stays off. |
 | `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY` | `1` | Stops the session quality survey. | No survey in a session. |
 | `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` | `1` | Removes the built-in git text, the git status block, and the attribution reminder. | They add tokens to each request, and `CLAUDE.md` of the project gives the git rules. |
 | `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` | `1` | Stops the terminal title and its small-model request. | No title and no request for one. |
 | `CLAUDE_CODE_FORK_SUBAGENT` | `0` | Turns off fork mode, in which a fork copies the whole parent context. | A fork costs the whole context. |
 | `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL` | `1` | Stops the IDE extension from installing itself. | No install without the user. |
+| `CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH` | `{{MCP_DESCRIPTION_MAX_CHARS}}` | Cuts each MCP tool description and server instruction to this length. | The defaults are 4,096 and 16,384 characters, and MCP text loads in each session. |
 | `CLAUDE_CODE_MEMORY_SUBAGENT_APPEND` | `1` | Controls the memory block in the prompt of each subagent. | On trial. The block is not sized. |
 | `CLAUDE_CODE_PLAN_V2_AGENT_COUNT` | `1` | Sets the number of agents of the plan mode. | One agent, in place of more. |
 | `CLAUDE_CODE_PLAN_V2_EXPLORE_AGENT_COUNT` | `1` | Sets the number of explore agents of the plan mode. | One agent, in place of more. |
@@ -39,6 +40,7 @@ A test checks the keys against `schemas/claude-code-settings.json`, so a key tha
 | `DISABLE_EXTRA_USAGE_COMMAND` | `1` | Removes the `/extra-usage` command. | No `/extra-usage` command. |
 | `DISABLE_FEEDBACK_COMMAND` | `1` | Removes the `/feedback` command. | No `/feedback` command. |
 | `DISABLE_INSTALL_GITHUB_APP_COMMAND` | `1` | Removes the `/install-github-app` command. | No `/install-github-app` command. |
+| `ENABLE_CLAUDEAI_MCP_SERVERS` | `false` | Stops the MCP servers of claude.ai in Claude Code. | No fetch and no tools of claude.ai connectors. |
 
 The snippet never sets the entries of [Never-Set Settings](Off-Switches-Never-Set).
 
@@ -62,10 +64,14 @@ The snippet has no `allow` list and no `ask` list.
 | `enableArtifact` | `false` | Disables the Artifact tool. | Removes the Artifact tool from each request. |
 | `enableWorkflows` | `false` | Disables the Workflows feature. | Removes the Workflow tool from each request. |
 | `disableBundledSkills` | `true` | Removes the bundled skills and workflows. | Removes the bundled skills from the listing. |
-| `statusLine` | The command `bun --no-env-file "<plugin folder>/bin/claudetto-statusline"`, `padding` `0`, `refreshInterval` `1`, and `hideVimModeIndicator` `true` | Sets the status line command. | The status line of [Status Line](Status-Line). `refreshInterval` keeps the countdowns current in an idle session. |
+| `statusLine` | The command `bun --no-env-file "<plugin folder>/bin/claudetto-statusline"`, `padding` `0`, `refreshInterval` `5`, and `hideVimModeIndicator` `true` | Sets the status line command. | The status line of [Status Line](Status-Line). `refreshInterval` keeps the countdowns current in an idle session. |
 | `subagentStatusLine` | The same command with `--subagent` | Sets the status line of each subagent. | One row for each running subagent. |
 | `autoCompactWindow` | `{{CONTEXT_WINDOW}}` | Sets the auto-compact window in tokens. | The window that `/context` shows. |
-| `modelSettings` | `claude-haiku-5-5` with an `autoCompactWindow` of `144444` | Sets per-model settings. | A Haiku session starts the auto handoff below {{HAIKU_HANDOFF_TRIGGER_TOKENS}} tokens (`HAIKU_AUTOCOMPACT_WINDOW`). |
+| `modelSettings` | `maxEffortLevel` `high` for `claude-opus-5-5` and `medium` for `claude-sonnet-5-5`, and an `autoCompactWindow` of `{{HAIKU_AUTOCOMPACT_WINDOW}}` for `claude-haiku-5-5` | Sets per-model settings. | The effort caps bound the cost of each model. A Haiku session starts the auto handoff at {{HAIKU_HANDOFF_TRIGGER_TOKENS}} tokens, so the compaction request stays under the price step of Haiku at 100,000 prompt tokens. |
+| `idleCompaction` | `false` | Stops the compaction while the user is away. Setting `true` does not turn it on. Source: `configure/settings/core.md:41` of the Claude Code docs (documented), and binary 2.1.309 `chunk-421e2x6t.js`. | The handoff offer decides when the user comes back. |
+| `disableAgentView` | `true` | Removes the agent view. | Only the agents of `claudetto` stay. |
+| `syncClaudeAiSkills` | `false` | Stops the skills of claude.ai in Claude Code. | The `anthropic-skills:` skills add text to each session. |
+| `syncClaudeAiPlugins` | `false` | Stops the plugins of claude.ai in Claude Code. | The same reason. |
 | `worktree` | `baseRef` set to `head` | Sets how a worktree starts. Default: `fresh`. | An agent worktree starts from the current `HEAD`. |
 | `autoMemoryEnabled` | `false` | Stops the auto-memory folder of the project from being read or written. | No auto memory. |
 | `autoDreamEnabled` | `false` | Stops the memory consolidation. It runs as a fork that shares the main request prefix. | No background fork. |
@@ -76,14 +82,14 @@ The snippet has no `allow` list and no `ask` list.
 | `feedbackDrafts` | `off` | Disables the `SendFeedback` tool. | Removes the tool. |
 | `disableRemoteControl` | `true` | Disables Remote Control. | No Remote Control. |
 | `disableClaudeAiConnectors` | `true` | Stops the claude.ai MCP connectors from being fetched. | No claude.ai connector server. |
-| `enabledPlugins` | Ten built-in plugins set to `false` | Enables or disables each plugin. | See [Off Switches](Off-Switches#built-in-plugins). |
+| `enabledPlugins` | Eleven built-in plugins set to `false` | Enables or disables each plugin. | See [Off Switches](Off-Switches#built-in-plugins). |
 | `skillOverrides` | `plugin-authoring` set to `name-only` | Lists the skill by name only. | A shorter listing line. |
 
 ## The Deny List
 
 | Denied items | Reason |
 | --- | --- |
-| `Read` of secret files, `rm -rf` of `/`, `/*`, `~`, `~/*`, `~/`, `$HOME`, and `"$HOME"`, `mkfs`, `dd` to a device, `sudo`, `doas`, and `su` | Secrets, disk wipes, and root stay out of reach of a tool call. |
+| `Read` of secret files, `rm -rf` of `/`, `~`, `~/`, `$HOME`, and `"$HOME"`, `mkfs`, `dd` to a device, `sudo`, `doas`, and `su` | Secrets, disk wipes, and root stay out of reach of a tool call. |
 | `newfs`, `diskutil` (`erase`, `zero`, `secureErase`, `partition`, and `reformat`), `csrutil` (`disable`, `clear`, and `authenticated-root`), `spctl` (`--master-disable` and `--global-disable`), `nvram` (a set, `-d`, and `-c`), and `security delete-*` | Commands that erase a disk or turn off a protection of macOS. |
 | `Edit` of `//System`, `//Library`, and `//usr/bin`, `sbin`, `lib`, `libexec`, and `share` | The system folders stay as they are. |
 | `Agent` of `general-purpose`, `Explore`, `Plan`, `claude`, `claude-code-guide`, `statusline-setup`, and `fork` | The roster of the plugin takes their place ([Agents](Agents)). |

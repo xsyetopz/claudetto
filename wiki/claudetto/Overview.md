@@ -22,7 +22,7 @@ For each feature, it picks the first of these that can do the work:
 4. Nothing.
 
 It writes no code for a feature that Claude Code already has.
-Claude Code 2.1.307 or later is the minimum version.
+Claude Code 2.1.309 or later is the minimum version.
 
 ## The Plugins
 
@@ -37,24 +37,25 @@ Claude Code 2.1.307 or later is the minimum version.
 ## The Slices of the Core Plugin
 
 A slice is one feature of the core plugin.
-The core plugin has 13 slices with code and one output style.
+The core plugin has 11 slices with code and one output style.
 
 | Slice | What it does |
 | --- | --- |
-| [`agents`](Agents) | Offers the roster `scout`, `worker`, `reviewer`, and `researcher`, and hides the built-in agents. |
+| [`agents`](Agents) | Offers the roster `Scout`, `Scoper`, `Reviewer`, `Researcher`, `Worker`, and `Tester`, and hides the built-in agents. |
 | [`decide`](Decide) | Lets Jev answer each `AskUserQuestion` call when `TYPESAFE_API_KEY` is set and Jev is sure. |
-| [`dry`](Dry) | Merges the config of `jscpd`, and gives the skill `dedupe`. |
-| [`goal`](Goal) | Replaces `/goal` with one check command that must exit `0` before Claude can stop. |
+| [`finish`](Finish) | Replaces `/goal` with one check command that must exit `0` before Claude can stop. |
 | [`ground`](Ground) | Denies a plan file that cites a `file:line` or a convention that the source does not hold. |
 | [`guard`](Guard) | The permission gate: allows by default, asks before a loss for good, and denies a danger to the system or a secret read. |
-| [`handoff`](Handoff) | Writes a handoff file in place of the summary of a compaction. |
+| [`handoff`](Handoff) | Hands over with a handoff file, `/clear`, and a resume at three triggers. |
 | [`hygiene`](Hygiene) | Cleans old session files and worktrees at session start, and tells Claude of a file that changed after its last edit. |
 | [`prompt`](Prompt) | Gives one tailored text for the main agent, and cuts built-in parts. |
-| [`reply`](Reply) | Adds a `Reply` button under each message of Claude. |
 | [`setup`](Setup) | Merges the settings snippet into a settings file. |
 | [`spec`](Spec) | MiniSpec: the command `minispec`, the presets `task`, `story`, and `epic`, and the skills `propose`, `apply`, `verify`, and `archive`. |
 | [`statusline`](Status-Line) | Shows the folder, git, model, context, cost, and limits. |
 | [`styles`](Styles) | Gives the output style `claudetto:Concise`. |
+
+The skill `dedupe` has no slice.
+It runs `jscpd` with the config `skills/dedupe/jscpd.json`, or with the `.jscpd.json` of the project, and decides which clones to merge.
 
 ## Change the Options
 
@@ -67,7 +68,7 @@ These `userConfig` options change how the core plugin works:
 | Option | Values | Default |
 | --- | --- | --- |
 | `decide` | `off`, `jev` | `jev` |
-| `compaction` | `handoff`, `built-in` | `handoff` |
+| `compaction` | `auto`, `handover`, `built-in` | `auto` |
 
 ## Related Pages
 

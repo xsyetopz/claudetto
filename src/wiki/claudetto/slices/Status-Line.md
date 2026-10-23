@@ -12,7 +12,7 @@ The `/claudetto:setup` skill replaces `<plugin folder>` with the folder of the i
 
 | Key | Value |
 | --- | --- |
-| `statusLine` | `bun --no-env-file "<plugin folder>/bin/claudetto-statusline"`, with `padding` 0, `refreshInterval` 1, and `hideVimModeIndicator` true |
+| `statusLine` | `bun --no-env-file "<plugin folder>/bin/claudetto-statusline"`, with `padding` 0, `refreshInterval` 5, and `hideVimModeIndicator` true |
 | `subagentStatusLine` | The same command with `--subagent` |
 
 The command runs no program except `git`, and it always exits with 0.
@@ -49,7 +49,7 @@ A field with a wrong type shows the error mark `✗` in place of the value.
 | Pull request | `⇄ #12 approved` | The number and the review state, with `!` for a merge request |
 | Change | `◆ add-login 4/13 ▸5.1` | The active OpenSpec change |
 | Model | `◈ Opus 5.5 high ✦ ↯` | `display_name`, the effort level, the thinking mark, and the fast mode mark |
-| Context | `▤ 12% of 300k ⇥53%` | The used percent of the window and the distance to the handoff |
+| Context | `▤ ctx 12% of 300k ⇥53%` | The used percent of the window and the distance to the handoff |
 | Cost | `$1.23 +300 -20` | The spend in dollars and the lines added and removed |
 | Limit | `◷ 5h 23% ▼13% ⏵2:10pm ↻1:50pm` | The used percent, the pace, the run-out time, and the reset |
 | Prompt cache | `⌁ 4m12s/5m 91%` | The time left, the cache TTL, and the hit ratio |
@@ -116,22 +116,21 @@ A task with no window size shows the tokens only.
 
 ## Colors
 
-The colors follow the built-in themes of Claude Code.
-The command reads the `theme` key of `.claude.json` in `CLAUDE_CONFIG_DIR`, or else in the home folder.
-
-| Theme | Colors |
-| --- | --- |
-| `dark`, or a name that is not built in | The `dark` values |
-| `light`, `dark-daltonized`, `light-daltonized` | The values of that theme |
-| `dark-ansi`, `light-ansi` | The 16 ANSI colors |
+The colors are one fixed palette, and the command has no theme code.
+It ignores the `theme` key of `.claude.json` and each theme option.
 
 A `NO_COLOR` value that is not empty turns off all color.
 
-- A percent has the warning color from 75% and the limit color from 90% (`USAGE_LEVELS` in `plugins/claudetto/kernel/budget.ts`).
-- The percent of a limit with a pace follows its projected use: warning from 75%, limit color above 100%.
+- The context, `5h`, and `7d` percents are green below 40%, amber from 40% to 80%, and red above 80% (`USAGE_LEVELS` in `plugins/claudetto/kernel/budget.ts`).
+- The labels (`ctx`, `5h`, `7d`) and the reset times are dim.
 - The distance to the handoff has the warning color within 10% of the trigger and the limit color at the trigger.
 
 A pull request has the color of its review state: `approved`, `pending`, `changes_requested`, or `draft`.
+
+## Rate Limits File
+
+When the input has `rate_limits`, the command writes them to `claudetto-rate-limits.json` in the temp folder (see `kernel/tmp.ts`) for the eval recipes.
+An input with no `rate_limits` keeps the last content.
 
 ## Git Cache and Failures
 

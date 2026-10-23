@@ -9,29 +9,30 @@ A contributor reads it before an edit of `agents/` or `slices/agents/`.
 The plugin `settings.json` sets `agent` to `claudetto:main`.
 So each session of a user who installs the plugin starts with this agent.
 Its body is `agents/main.md`, and it replaces the main system prompt of Claude Code.
-The body has tagged parts: `intro`, `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, `counts`, `working`, `communication`, and `session`.
-`MAIN_BODY_MAX_CHARS` of `tools/limits.ts` (9,349) caps the length of the body, and a test fails when it grows ([Prompt](Prompt)).
+The body has tagged parts: `intro`, `doing_tasks`, `system`, `blocks`, `verification`, `actions`, `tools`, `delegation`, `order`, `counts`, `working`, `communication`, and `session`.
 
 ## The Roster
 
-The plugin ships four subagents.
-Each has `omitClaudeMd: true`, so it does not load `CLAUDE.md` files, and each has a one-line description.
+The plugin ships six subagents.
+Each has `omitClaudeMd: true`, so it does not load `CLAUDE.md` files, and each has a one-line description that starts with "Use proactively".
 None sets `maxTurns`.
 
 | Agent | Model | Effort | Tools | Use |
 | --- | --- | --- | --- | --- |
-| `claudetto:scout` | `claude-haiku-5-5` | low | `Read`, `Grep`, `Glob` | A read-only search over many files that returns paths and lines |
-| `claudetto:worker` | `claude-sonnet-5-5` | medium | `Read`, `Edit`, `Write`, `Grep`, `Glob`, `Bash`, `Monitor` | One planned edit step with its check |
-| `claudetto:reviewer` | `claude-sonnet-5-5` | high | `Read`, `Grep`, `Glob`, `Bash` | A fresh review of a diff against its plan |
-| `claudetto:researcher` | `claude-sonnet-5-5` | low | `WebSearch`, `WebFetch`, `Read`, `Write` | Web research that goes to a report file |
+| `claudetto:Scout` | `claude-haiku-5-5` | low | `Read`, `Grep`, `Glob` | A read-only search over many files that returns paths and lines |
+| `claudetto:Scoper` | `claude-sonnet-5-5` | medium | `Read`, `Grep`, `Glob` | A split of a task into file sets and steps for parallel Workers |
+| `claudetto:Reviewer` | `claude-sonnet-5-5` | medium | `Read`, `Grep`, `Glob`, `Bash` | A fresh review of a diff against its plan |
+| `claudetto:Researcher` | `claude-sonnet-5-5` | medium | `WebSearch`, `WebFetch`, `Read` | Web research that returns its report as its final message |
+| `claudetto:Worker` | `claude-sonnet-5-5` | medium | `Read`, `Edit`, `Write`, `Grep`, `Glob`, `Bash`, `Monitor` | One planned edit step with its check |
+| `claudetto:Tester` | `claude-haiku-5-5` | low | `Read`, `Grep`, `Glob`, `Bash`, `Monitor` | A run of the checks that lists each failure with file and line |
 
 ## What the Slice Does
 
 The `agents` slice adds two hooks:
 
 - `agent.offer` hides each agent of the engine and `claudetto:main`.
-  So the model sees only the four agents above.
-- `tool.call` on `Agent` sets `subagent_type` to `claudetto:worker` when a call has none.
+  So the model sees only the six agents above.
+- `tool.call` on `Agent` sets `subagent_type` to `claudetto:Worker` when a call has none.
   The hook runs before the permission step, which treats a call with no type as `general-purpose`.
   Without it, the `deny` rule for `general-purpose` would refuse the call.
 

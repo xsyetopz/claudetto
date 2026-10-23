@@ -23,15 +23,23 @@ The hook checks only these files:
 For `Write`, the hook reads `content`.
 For `Edit`, it reads `new_string`.
 A write of any other file is not checked.
+A file named `*.test.*` and a file in a `fixtures` folder are not checked, also under `openspec/changes/`.
 
 ## What Counts as a Source
 
 A claim has a source when it is in one of these:
 
 - A user message of the session.
+- An answer of `AskUserQuestion`, which counts as a user message.
+- The text of the handoff, which counts as a user message in any role.
 - A tool result of the session.
 - `CLAUDE.md` in the project root.
 - The old text of the file that the call changes.
+
+The sources are the messages of the agent that makes the call.
+For a subagent, the hook reads the transcript of that subagent with `$.session.messages({ agentId })`.
+A tool result of the subagent counts for that subagent only.
+If the session cannot read the transcript, the hook skips the check and the call runs.
 
 A tool result that is a deny of this check is not a source.
 It names each claim, so a retry would pass on it.
@@ -54,12 +62,17 @@ If the check does not find the file, it skips the reference, because a guess wou
 
 - A line with `(proposed)` or `[NEEDS CLARIFICATION: ...]`.
 - A fenced code block.
+- A number in a `#### Scenario:` block of a `spec.md` file.
+  The block ends at the next heading of level 4 or above.
+  A number there is an input of a case and not a claim.
+- An `Edit` of a `spec.md` file whose `old_string` is in a scenario block.
 
 ## The Deny
 
 The deny lists each claim and gives three ways out:
 
 1. Name the source: a user message, a tool result of this session, or a file of the project.
+   When a local command with no model call or login can show the claim, run it, and name its result.
 2. Mark the claim `(proposed)` or `[NEEDS CLARIFICATION: ...]`.
 3. Ask the user.
 
@@ -110,5 +123,5 @@ A false deny costs one rewrite, because the deny names each claim and gives thre
 ## Related Pages
 
 - [Spec](Spec)
-- [Goal](Goal)
+- [Finish](Finish)
 - [Controls](Controls)

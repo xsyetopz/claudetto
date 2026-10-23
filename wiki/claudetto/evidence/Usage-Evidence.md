@@ -41,6 +41,7 @@ These facts come from the Anthropic help pages and are not checked again.
 | Subagents use 5 minutes | official, not checked again |
 | A prompt or `/compact` after the TTL writes the whole context again | official |
 | From `2.1.287`, the `SessionStart` input for `resume` and `fork` has `prompt_cache_likely_expired` | binary, not checked again |
+| From `2.1.251`, the `SessionStart` input for `resume` and `fork` has `seconds_since_last_response`, which the cold-cache offer uses as the pause | official (`extend/hooks/events`) |
 | Claude Code defaults Opus 5.5 and Sonnet 5.5 to `medium` effort | official, not checked again |
 | No hook event fires on an effort change | binary |
 

@@ -10,7 +10,7 @@ Add-ons are optional.
 
 | Need | For | Note |
 | --- | --- | --- |
-| Claude Code 2.1.307 or later | all plugins | |
+| Claude Code 2.1.309 or later | all plugins | |
 | `git` | `claudetto` | The status line uses it. |
 | [Bun](https://bun.sh) 1.4.3 or later, on `PATH` | all plugins | The `find-docs` skill runs `ctx7` with `bunx`. |
 | `agent-browser` | `claudetto-browser` | See [Browser](Browser). |
@@ -60,11 +60,11 @@ claudetto-setup --scope user --apply
 
 When `CLAUDE_CONFIG_DIR` is set, the command uses that folder in place of `~/.claude`.
 The merge adds the keys of the snippet, and your other keys stay.
-It also removes the keys, rules, and hook that 0.1.0 and 0.2.0 wrote ([Setup Cleanup](Setup-Cleanup)).
+It also removes two deny rules of 0.3.0-alpha.1 ([Setup Cleanup](Setup-Cleanup)).
 It writes a cap on the subagents that run at one time, from your plan ([Setup](Setup#subagent-cap)).
 
-The skill then gives an `alias` line for the search tools `Glob` and `Grep`.
-It does not edit your shell file.
+The skill then offers the shell `alias` `claude-demo` for `IS_DEMO=1 claude`.
+It edits your shell startup file only after your yes.
 
 ## Install an Add-On
 
@@ -104,7 +104,8 @@ See [Decide](Decide).
 2. Restart Claude Code.
 3. Read the new entry in the [CHANGELOG](https://github.com/xsyetopz/claudetto/blob/main/CHANGELOG.md).
 4. Run `/claudetto:setup` again.
-   The status line commands hold the path of the plugin version, so each update needs a new run.
+   The status line commands find the newest installed folder of the plugin, so they need no new path.
+   A new version can add keys to the settings snippet, and the run writes them.
 
 In a checkout of the repository, `just update` updates each plugin under `plugins/`.
 

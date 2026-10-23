@@ -36,8 +36,8 @@ The setup skill shows each change to your settings file, and it writes the chang
 
 Requirements:
 
-- Claude Code `2.1.307` or later.
-  claudetto is tested only on `2.1.307`.
+- Claude Code `2.1.309` or later.
+  claudetto is tested only on `2.1.309`.
 - `git`.
 - [Bun](https://bun.sh) `1.4.3` or later on `PATH`, for the status line, the setup command, and the Jev pick of `AskUserQuestion`.
 - [Node.js](https://nodejs.org) on `PATH`, for the npm installs of the add-ons.
@@ -51,7 +51,7 @@ You can also copy the keys that you want into your own `settings.json`.
 
 | Part | Effect |
 | --- | --- |
-| Compaction | The `handoff` slice replaces the summary of a compaction with a handoff. `autoCompactWindow` is `300000`. The `compaction` option `built-in` turns the handoff off. |
+| Compaction | The `handoff` slice hands over at three triggers: a handoff file, `/clear`, and a resume. The compaction of Claude Code stays as the safety net. `autoCompactWindow` is `300000`. The `compaction` option `built-in` starts no handover. |
 | Memory | `autoMemoryEnabled` is `false`. |
 | Prompt | `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is `1`, and the `prompt` slice gives one tailored text for the short prompt. |
 | Output style | `outputStyle` is `claudetto:Concise`. Your own `outputStyle` setting can change it. |

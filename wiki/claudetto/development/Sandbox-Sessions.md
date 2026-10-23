@@ -30,7 +30,7 @@ Use it for hook behavior that the reply shows.
 
 ## TUI Tests in `tmux`
 
-The status line, the `Reply` button, and dialogs show only in the TUI.
+The status line and dialogs show only in the TUI.
 Run it in a detached `tmux` session and read the screen:
 
 ```bash

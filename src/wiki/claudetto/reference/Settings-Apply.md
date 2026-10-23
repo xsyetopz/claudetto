@@ -54,7 +54,7 @@ It adds no line the file already has, and it changes nothing in a project with n
 
 ## Other Steps of Setup
 
-- Setup cleans up the keys, rules, hook, and `CLAUDE.md` block that 0.1.0 and 0.2.0 wrote, and keeps your keys ([Setup Cleanup](Setup-Cleanup)).
+- Setup removes two deny rules of 0.3.0-alpha.1, and keeps your keys ([Setup Cleanup](Setup-Cleanup)).
 - Setup writes the subagent cap of your plan into `env` ([Setup](Setup#subagent-cap)).
 - Setup names the Context7 skill or rule files that it finds in `~/.claude` or in the project.
 - Setup gives an alias line for your shell that starts Claude Code with `Glob` and `Grep`.

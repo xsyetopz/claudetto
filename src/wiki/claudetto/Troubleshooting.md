@@ -10,24 +10,24 @@ The debug log of Claude Code (`--debug-file <path>`) shows what a hook or a plug
 | Symptom | Cause and fix | Page |
 | --- | --- | --- |
 | The `env` entries and the `deny` list are not set | A plugin cannot set them. Run `/claudetto:setup` to merge the settings snippet. | [Setup](Setup) |
-| The status line shows nothing, or it fails after an update | The status line command holds the path of the plugin version. Run `/claudetto:setup` again after each update. | [Status Line](Status-Line) |
+| The status line shows nothing, or it fails after an update | The command of an older setup holds the path of one plugin version. Run `/claudetto:setup` again to write the command that finds the newest installed folder of the plugin. | [Status Line](Status-Line) |
 | The setup preview says it kept your status line | The setup does not replace a status line of another tool. Remove that key and run the setup again to use the `claudetto` one. | [Setup](Setup) |
-| The project scope sets no status line | The command holds an absolute path of one computer. Use the `user` or `local` scope. | [Setup](Setup) |
+| The project scope sets no status line | The command runs `claudetto` from the plugin cache of each user, and a person who shares the project can have no `claudetto`. Use the `user` or `local` scope. | [Setup](Setup) |
 | `claudetto-setup` says a settings file is not a JSON object, and changes nothing | Fix the JSON of that file, then run the setup again. | [Setup](Setup) |
-| `Glob` and `Grep` are missing | The native build of Claude Code hides them unless the tool list names them. Add the `alias` line from the setup skill to your shell file. | [Setup](Setup) |
+| `Glob` and `Grep` are missing | The native build of Claude Code hides them unless the tool list names them. The `Bash` shell then shadows `grep` with `ugrep` and `find` with `bfs`, so search with `Bash`. The setup skill gives no `alias` for these tools. | [Prompt](Prompt) |
 | A command shows a dialog | The permission gate asks before a command that can lose work for good, such as a delete of a path with changes, a `git reset --hard` over changes, or a force push. Approve it or change the command. | [Guard](Guard) |
 | A command is denied, and the reason names a danger | The gate denies `sudo`, a disk erase, a write to a system folder, and a read of a secret file. Run it yourself with `! <cmd>` if you want it. | [Guard](Guard) |
 | A dialog shows after a gate failure | The gate threw an error or timed out, so it asks a person. Approve the call or look at the debug log. | [Guard](Guard) |
 | Auto mode is not available | The settings snippet sets `permissions.disableAutoMode` to `disable`. The gate takes its place. | [Settings Snippet Keys](Settings-Snippet-Keys) |
-| A subagent type is missing, or `general-purpose` is denied | The snippet denies the agents of Claude Code. Use `scout`, `worker`, `reviewer`, or `researcher`. | [Agents](Agents) |
+| A subagent type is missing, or `general-purpose` is denied | The snippet denies the agents of Claude Code. Use `Scout`, `Scoper`, `Reviewer`, `Researcher`, `Worker`, or `Tester`. | [Agents](Agents) |
 | The setup says the plan tier has no subagent cap | The tier is not one of Pro, Max 5x, and Max 20x, so setup writes no cap. Set `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` by hand if you want one. | [Setup](Setup#subagent-cap) |
 | A folder or a worktree is gone after a start | The cleanup removes old session folders and worktrees that no session uses, are clean, and have no unmerged commit. | [Session Hygiene](Hygiene) |
 | Claude says a file changed after its last edit | The user or a tool changed the file. The edit ledger tells Claude once. | [Session Hygiene](Hygiene) |
 | `minispec` reports an error for a change | Run `minispec validate <name>`. The message names the file and the rule. | [Spec](Spec) |
 | A `Write` or `Edit` of a plan file is denied | The text has a claim with no source. Name the source, mark the claim `(proposed)`, or ask the user. | [Ground](Ground) |
-| The compaction is not a handoff | The option `compaction` is `built-in`. Set it to `handoff`. | [Handoff](Handoff) |
-| Claude proposes no goal | The settings snippet sets `modelProposedGoals` to `disabled`. Use `/goal` with a check command. | [Goal](Goal) |
-| Claude cannot stop, and says that the goal check failed | The `Stop` hook runs the check, and it blocks the stop until the check exits `0`. Fix the cause, or run `/goal clear`. | [Goal](Goal) |
+| The compaction is not a handoff | The option `compaction` is `built-in`. Set it to `auto` or `handover`. | [Handoff](Handoff) |
+| Claude proposes no goal | The settings snippet sets `modelProposedGoals` to `disabled`. Use `/goal` with a check command. | [Finish](Finish) |
+| Claude cannot stop, and says that the goal check failed | The `Stop` hook runs the check, and it blocks the stop until the check exits `0`. Fix the cause, or run `/goal clear`. | [Finish](Finish) |
 
 ## The Jev Pick
 

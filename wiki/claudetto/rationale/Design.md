@@ -99,7 +99,7 @@ The built-in compaction loses facts that the work needs.
 Set the option `compaction` to `built-in` to turn the handoff off.
 
 - `CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `HANDOFF_TRIGGER_TOKENS` are in `plugins/claudetto/kernel/budget.ts`.
-- The slice registers a `session.compact` hook.
+- The slice registers no `session.compact` hook: the compaction of Claude Code stays as the safety net.
 
 ## Record Progress in Checked Tasks
 

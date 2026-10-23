@@ -11,6 +11,134 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ## [0.3.0-alpha.2] - 2026-10-23
 
+### Removed
+
+- **BREAKING** The `reply` slice is gone, so Claude Code no longer shows a `Reply` button under a message (D16, the user, 2026-10-23).
+- **BREAKING** The `dry` slice, the command `jscpd-config`, and the file `jscpd.local.json` are gone (D16).
+  The skill `dedupe` runs `jscpd` with the `.jscpd.json` of the project, and `just dry` runs `bunx jscpd --no-tips`.
+- **BREAKING** `claudetto-setup` no longer removes the keys of 0.1.0 and 0.2.0, because `snippet-0.2.0.json` is gone (D16).
+  To update from one of these versions, run the setup of `0.3.0-alpha.1` first.
+- **BREAKING** The `compaction` value `handoff` is gone.
+  Use `auto`, `handover`, or `built-in`.
+- The settings snippet no longer holds the deny rules `Bash(rm -rf /*)` and `Bash(rm -rf ~/*)`, and `claudetto-setup` removes them from your settings (D2).
+  The `*` also matched a delete in the temp folder, such as `rm -rf /tmp/x`.
+  `guard` still denies a delete of `/`, `~`, and `$HOME`.
+- A change folder of `minispec` no longer gets a `handoff.md`, because each handoff goes to `.claudetto/handoffs/` (D13, the user, 2026-10-23).
+
+### Added
+
+- A handover replaces the compaction summary (D12, the user, 2026-10-23).
+  Code writes the handoff with no model call from the open change, its next task, the decisions and ruled-out options of `decide`, the passed checks, and the values of the user.
+  Then it runs `/clear` and sends the handoff as the next prompt.
+  A handover starts at the end of a turn with no running agent, when the context passes 150,000 tokens (`HANDOVER_CONTEXT_TOKENS`), when the open change moves to its next task group, or when the session is older than 8 hours.
+  After a pause longer than the cache TTL, `claudetto` offers the handover when you send the next prompt, and it holds the prompt until after the resume.
+  The held prompt comes back marked as your newest prompt.
+  In a session that you resumed, the pause counts from the last answer of the transcript (`seconds_since_last_response` of `SessionStart`), so a resume after a short pause gets no offer.
+  `/resume` opens the old session, and the automatic compaction of Claude Code stays as the safety net.
+  `PATH_TABLE` in `slices/handoff/limits.ts` maps each case to `handover`, `compact`, or `handoff-then-compact`.
+  From the paired runs of task 11.6, a move to the next task group with up to 75,000 tokens of context runs `/compact`, and each other case runs a handover.
+  `/compact` gets the facts of the handover as its instructions, so the summary keeps the task, the decisions, and your values.
+  The first request after a handover runs on `haiku`, which passed as often as `sonnet` at 5 to 10 times less cost (task 11.7).
+- With a Jev key, Jev also answers the handover offer, from the size of the context, the idle time, and the open task (task 10.15, the user, 2026-10-23).
+  You see the dialog only when Jev is not sure.
+- Jev answers from the hooks with `$.http.fetch` (see "Changed").
+- The core plugin ships six subagents in three categories (D6, the user, 2026-10-23).
+  Inspectors: `claudetto:Scout` (Haiku, a read-only search), `claudetto:Scoper` (Sonnet, a split of a task into file sets and steps), `claudetto:Reviewer`, and `claudetto:Researcher`.
+  Modifier: `claudetto:Worker`.
+  Tester: `claudetto:Tester` (Haiku, runs the checks and lists each failure with file and line).
+  `agents/main.md` has a routing block that sends `Scoper` first for work over more than one file set, `Worker`s in parallel on separate file sets, `Tester` after each group of `Worker`s, and `Reviewer` before a part is reported.
+- The model sees the plan usage and plans its agents by it (D25).
+  When the band of the 5-hour or the weekly share changes, the `prompt` slice adds one usage line to the next request.
+  The bands are green below 40%, amber from 40% to 80%, and red above 80% (`kernel/budget.ts`).
+  The body of `claudetto:main` plans the agents of one group up to the subagent cap at green, 2 at amber, and 1 at red.
+  An API key has no rate limits, so it gets no usage line.
+- At red for the 5-hour share, the `guard` gate asks before an `Agent` call while another agent runs, and before `just sandbox`, `just sandbox-alone`, `just eval`, `just eval-tune`, and `just eval-variant`.
+  The ask goes to the gate log with the decider `person`.
+  The weekly share never sets the gate, because it falls only at its weekly reset (D25).
+- Each tick of a box in a `tasks.md` adds a cost line to the context, and each handoff holds one.
+  The line gives the cost of the session and the change of each plan share since the first reading.
+  The skill `apply` ends its report with these figures.
+- The slice `finish` holds the old `goal` slice and two new hooks, with no model call (D8).
+  The `box` hook denies a tick of a `tasks.md` box that has no passed check in the session, and it names the task id.
+  The `Stop` hook sets a note for a reply that lists work as not done or for later with no named block, or that says "ready" or "done" with uncommitted changes or an unchecked box.
+  It also blocks a stop up to `GOAL_BLOCKS_MAX` (5) times in a row when the turn ticked a box and the file still has an open box.
+  The block applies only in a session that ran `/claudetto:apply`, and it waits while an agent runs.
+- The slice `notes` shows one line above the prompt for 2 prompts, from hook counters and a `learn:` line at the end of a reply, with no model call (D9).
+  The `learn:` block is removed from the shown reply, the transcript, and `-p` output while the reply streams. Only a lowercase `learn:` line with no indent and outside a code fence starts it.
+  A note comes from the same deny or ask three times, a check command that fails three times with the same test, a background task in flight for 30 minutes, a file that you changed before Claude edits it, and the `Stop` hook of `finish`.
+  Key `1` puts the note in the prompt box, key `2` turns notes off, and key `3` turns them on again.
+- `guard` has gates for a loss in a database or in infrastructure (X1).
+  They cover the clients `psql`, `mysql`, `mariadb`, `sqlite3`, `sqlcmd`, `duckdb`, and `clickhouse-client` with SQL that drops, truncates, or deletes with no `WHERE`, `dropdb`, `redis-cli` with `flushall` or `flushdb`, `prisma migrate reset`, `rails db:drop`, and `rake db:drop`.
+  For infrastructure, they cover `terraform destroy` and `tofu destroy` (also `apply -destroy`), `pulumi destroy`, `kubectl delete namespace`, and the `aws`, `gcloud`, `gsutil`, and `az` commands that delete a bucket, a disk, a volume, an instance, or a database.
+- `guard` asks before `git add -A`, `git add .`, and `git commit -a` when the work tree holds a change of the user, and before `git stash` and `pkill -f` from a subagent (X2, X4).
+  It denies `git add` of a secret file, a bare `printenv` or `env`, and an upload of a secret file with `curl -d @` or `-F` (X12).
+- `guard` answers a second `Monitor` with the command of a running one with a short refusal that names the task (X8).
+- The edit ledger is one file for the project, `<tmp>/claudetto/ledger/<project key>.jsonl`, and it holds the changed files of each `Bash` call (D11).
+  After `git status` and `git diff`, Claude gets the files that this session, another session, or you changed.
+- `ground` reads the messages of the agent that makes the call, counts an `AskUserQuestion` answer and the handoff text as sources, and skips the numbers of `#### Scenario:` blocks, test files, and fixtures (D10).
+- Each title is in Chicago Title Case (the user, 2026-10-23).
+  The output style `Concise` asks for it in a reply heading, a hook sets it in each Markdown heading after `Write` or `Edit`, a `finish` note names a reply heading in the wrong case, and `guard` sets it in the `--title` of `gh pr create` and `gh issue create`.
+  A code span stays as typed, and a commit subject stays in sentence case.
+- `claudetto-setup --inventory` prints the plan, plugins, built-in mods, MCP servers, skills, rules, and OpenSpec installs as JSON with no identity (D4).
+  `--mode merge|replace` writes the snippet, and `replace` first copies the old file to `<file>.<ms>.bak`.
+  `--off-tool`, `--off-skill`, `--off-plugin`, and `--deny-mcp` turn one item off, `--exclude-md` writes `claudeMdExcludes`, and `--local-notes` writes a `CLAUDE.local.md` template with its `.gitignore` line (D20, D21).
+  `--global-md` writes a `~/.claude/CLAUDE.md` of 20 lines or fewer, and `--remove-openspec` removes an OpenSpec install, because `minispec` replaces it.
+  `--demo-alias` writes the shell alias `claude-demo` for `IS_DEMO=1 claude` after your yes (the user, 2026-10-23).
+- The key `TYPESAFE_API_KEY` and the tier `plan` are plugin options, and the key has `sensitive: true`, so Claude Code keeps it in secure storage.
+  The hooks read the key from the options, and an exported `TYPESAFE_API_KEY` still works.
+- The settings snippet sets `syncClaudeAiSkills` and `syncClaudeAiPlugins` to `false`, `ENABLE_CLAUDEAI_MCP_SERVERS` to `false`, `CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH` to 2048, `disableAgentView` to `true`, and `idleCompaction` to `false`.
+  It turns off the built-in mod `cc-plugin-you-should-know`, and caps `maxEffortLevel` at `high` for Opus 5.5 and `medium` for Sonnet 5.5 (D2).
+  Run `/claudetto:setup` again to get these keys.
+- The `prompt.context` block gives the plan, branch, latest tag, open change, shell, and `grep` engine (D5).
+  The `tool.describe` hook defers each tool that fewer than 10% of 292 counted sessions use, such as `EnterWorktree`, `ExitWorktree`, `LSP`, and `Workflow` (D20).
+  The tools of the agent roster, `ToolSearch`, `SubagentHandback`, and `StructuredOutput` are never deferred.
+- The skills `explore`, `update`, and `sync` are in the core plugin with `disable-model-invocation: true`, and the command `minispec sync <name>` merges the delta specs with no archive (D20).
+- `minispec` gets the commands `instructions`, `show`, `schemas`, and `schema validate`, text views for `status` and `list`, the flags `--specs`, `--archived`, `--all`, and `--sort` of `list`, `--specs`, `--all`, and `--changes` of `validate`, `--skip-specs`, `--no-validate`, and `--json` of `archive`, and `--description` and `--json` of `new change` (D22).
+  `minispec status` prints a `Next:` line, and the skills `propose`, `apply`, and `verify` end with the command that follows.
+- The status line colors the context, 5-hour, and weekly values green below 40%, amber from 40% to 80%, and red above 80%, with dim labels and reset times, and it writes the last `rate_limits` to `claudetto-rate-limits.json` in the temp folder (D15).
+- `claudetto-docs` adds the Context7 MCP server `context7` (`https://mcp.context7.com/mcp`), next to the CLI `ctx7`.
+  The option `CONTEXT7_API_KEY` is optional and `sensitive`, so Claude Code keeps it in secure storage and sends it only in the `Context7-API-Key` header of that server.
+
+### Changed
+
+- **BREAKING** `guard` answers each permission prompt of Claude Code: it allows a call that no danger gate matches, in the main agent and in each subagent (D1).
+  A `tool.check` hook with no tool matcher and a `classic.PermissionRequest` hook run the same gates, so `-p` runs behave as the interactive ones.
+  The prompts for `Monitor`, MCP tools, paths outside the project, and shell variables are gone.
+  A gate that matches shows the prompt to a person, and a `deny` rule of the engine still wins.
+  The gate reads the commands inside `eval`, `sh -c`, and `bash -c`.
+- **BREAKING** The agent names are in UpperCase: `claudetto:Scout`, `claudetto:Worker`, `claudetto:Reviewer`, and `claudetto:Researcher` (D6, the user, 2026-10-23).
+  The lowercase names are gone, so update each `Agent(...)` rule that names one.
+  `Reviewer` and `Researcher` run at `medium` effort, and a call with no type still goes to `claudetto:Worker`.
+- **BREAKING** The `compaction` option has the values `auto` (default), `handover`, and `built-in` (D12).
+- `decide` and `guard` call Jev from the mod with `$.http.fetch` in place of a `claudetto-decide` child process for each question (D16, task 10.15).
+  `claudetto-decide` stays for image and `box` questions and for the calls of Claude.
+  The retry on 429 and 529 and the bound `ATTEMPT_TIMEOUT_MS` (12,000 ms) stay, with a `$.clock` race, because `HttpInit` has no timeout.
+- The thresholds of Jev come from the TypeSafe docs (`confidence.md`, `primitives-noul.md`).
+  A choice is sure at `confidence` 0.5 or more, with no second margin over chance.
+  A yes or no answer is a yes from `P(yes)` 0.7 and a no up to 0.3, and anything between shows the dialog.
+  The `guard` gate allows a call at `P(yes)` 0.8 or more, because a false yes there loses files.
+- `claudetto-setup` writes `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` as 3 for Pro, 4 for Max 5x, and 5 for Max 20x, in place of 2, 4, and 6 (D4).
+  The Max 20x sessions of the user hit "Concurrent subagent limit" 14 times at 6.
+  It also sets `statusLine.refreshInterval` to 5 seconds, from 1.
+- `/claudetto:setup` recommends off for `EnterWorktree` and `ExitWorktree`, because `isolation: "worktree"` of `Agent` works with both off (D20).
+- The `Concise` output style holds only the reply format, and its behavior rules moved to `agents/main.md` (D21, the user, 2026-10-23).
+  The rule "Run each free check yourself" replaces the line that let a free check go unrun.
+- The texts that Claude reads say what to do and give the reason in one clause, and keep their behavior in fewer words (D7, the user, 2026-10-23).
+  The plan mode text names `claudetto:Scout` in place of `Explore`.
+- A Haiku session starts its handoff at 90,000 tokens, from 100,000, and the snippet sets its `autoCompactWindow` to 132,000, from 144,444, so that it stays under the price step of 100,000 tokens (D2).
+- The status line colors with the bands of `kernel/budget.ts` in place of the old levels of 75% and 90%, and the theme code is gone (D15).
+- `claudetto` now targets Claude Code 2.1.309 (`MIN_CLAUDE_CODE_VERSION`, the CI, the issue templates, and the schemas in `schemas/`) (D17).
+- `minispec new change` maps each `.` of a name to `-` and prints the name that it used (D14).
+
+### Fixed
+
+- The status line keeps the task count of the openspec change in a narrow terminal, because the compact form of the change segment leaves out the change name.
+- The status line finds the openspec change when Claude Code starts in a folder below the project root, because it looks for `openspec/changes` in each parent folder.
+- `minispec` gives the same result as OpenSpec 1.14.3 for five inputs (D22).
+  `validate` reports a duplicate requirement in `ADDED`, and the refusals that `archive` would give for a missing `MODIFIED` requirement and an existing `ADDED` requirement.
+  It reports a `### Scenario:` that is not a level-4 heading, and `archive` leaves a spec as it is for a `REMOVED` requirement that does not exist.
+- The cleanup at session start names only what it removed, with a correct plural, and a handoff path is relative to the project (task 4.1).
+
 ## [0.3.0-alpha.1] - 2026-10-22
 
 ### Removed
@@ -119,7 +247,7 @@ This release cuts `claudetto` to the parts that Claude Code does not do already,
 
 ### Added
 
-- The `decide` option is `jev` by default, and with `TYPESAFE_API_KEY` set, Jev answers each `AskUserQuestion` call with no dialog when it is sure about each question (D66, the user, 2026-10-20: "when Jev is found, all 'decisions' go to Jev").
+- The `decide` option is `jev` by default, and with `TYPESAFE_API_KEY` set, Jev answers each `AskUserQuestion` call with no dialog when it is sure about each question (D66, the user, 2026-10-20).
   The kind gate (`facts`, `preference`, `project`) is gone, a multi-select question goes to the user, and one unsure question shows the normal dialog with the sure picks as notes.
   Approvals stay with you: each request also asks Jev if a question asks for approval of money, a push, a release, a delete, or a step that cannot be undone, and a yes or an unsure answer shows the dialog with no note on that question, at no extra call.
   The answer that Claude gets names Jev, the pick, and the confidence, and the text of the tool tells Claude to put the deciding facts in the question.

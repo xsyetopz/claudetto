@@ -2,63 +2,20 @@
 
 # Setup Cleanup
 
-This page tells what `claudetto-setup` removes from the settings and from `CLAUDE.md` that `claudetto` 0.1.0 and 0.2.0 wrote.
-A user who updates from one of these versions reads it.
+This page tells what `claudetto-setup` removes from the settings that `claudetto` 0.3.0-alpha.1 wrote.
 The cleanup runs before the merge of the snippet, in the same command (see [Setup](Setup)).
 
 ## What the Cleanup Removes
 
-The cleanup removes only what an old version wrote.
-It leaves each key and rule of the user.
-The preview lists each removal.
-Nothing is written without `--apply`.
-
-## The 0.1.0 Keys
-
-| Item | What the cleanup removes |
+| Entry | Reason |
 | --- | --- |
-| Git hook pairs | The `GIT_CONFIG_KEY_<n>` and `GIT_CONFIG_VALUE_<n>` pairs in `env` whose key starts with `hook.claudetto-` |
-| Hook enable pairs | The pairs `hook.commit-msg.enabled` and `hook.pre-push.enabled` with the value `true` |
-| `promptCacheTtl` | The key, when its value is `"5m"` |
-| `permissions.ask` | The ten 0.1.0 git rules, only when all ten are present |
-| `CLAUDE.md` block | The block between `<!-- claudetto:begin -->` and `<!-- claudetto:end -->` |
+| `Bash(rm -rf /*)` in `permissions.deny` | The `*` also matches a delete in `/tmp`, such as `rm -rf /tmp/x`. |
+| `Bash(rm -rf ~/*)` in `permissions.deny` | The `*` also matches a delete under the home folder, such as `rm -rf ~/proj/build`. |
 
-## The 0.2.0 Keys
+The `guard` slice still denies a delete of `/`, `~`, and `$HOME`.
+The cleanup lists each rule that it removes, and leaves each other rule of the user.
 
-The file `slices/setup/snippet-0.2.0.json` is the settings snippet of 0.2.0.
-The cleanup compares your settings with it and removes a value only when 0.2.0 wrote it and 0.3.0 does not set it:
+## Older Versions
 
-- A scalar goes when it equals the 0.2.0 value.
-  So `model`, `bashOutputMaxChars`, `feedbackSurveyRate`, `includeGitInstructions`, `syncClaudeAiSkills`, and `syncClaudeAiPlugins` go when you did not change them.
-- A list loses its 0.2.0 entries only when it holds all of them.
-  This is the signature of the old snippet.
-  So the 170 `permissions.ask` rules and the `allow` rules of 0.2.0 go, and the entries that 0.3.0 also sets stay.
-  The `availableModels` list goes in the same way.
-- An object that this makes empty goes.
-  This covers the `sandbox` keys of 0.2.0.
-- `autoMode` goes whole, because the snippet turns auto mode off and its rules do nothing.
-- The `UserPromptSubmit` hook with the command `codegraph prompt-hook` goes, because it adds code that the prompt did not ask for.
-  A different hook of the same event stays.
-
-Each removal has its own line in the preview.
-
-## Rules of the Cleanup
-
-- The git config pairs of the user move to the first slots, and `GIT_CONFIG_COUNT` follows.
-  The `GIT_CONFIG_COUNT` key goes when no pair is left.
-- The ten `permissions.ask` rules of 0.1.0 go only as a set.
-  One of them alone can be a safety rule of the user, so it stays.
-- The `CLAUDE.md` block goes only when the begin mark comes before the end mark.
-  The file is the one for the scope: `CLAUDE.md` or `CLAUDE.local.md`.
-- A value that the user changed stays, because the cleanup removes a value only when it equals the old value.
-
-## Git Hooks
-
-`setup` installs no git hooks.
-The cleanup removes the `GIT_CONFIG_*` pairs that 0.1.0 set in `env`.
-
-## Related Pages
-
-- [Setup](Setup)
-- [Settings Snippet](Settings-Snippet)
-- [Troubleshooting](Troubleshooting)
+Setup no longer removes the keys of 0.1.0 and 0.2.0.
+To update from one of these versions, run the setup of 0.3.0-alpha.1 first.

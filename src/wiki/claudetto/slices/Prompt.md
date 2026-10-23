@@ -18,8 +18,8 @@ The body is `agents/main.md`, and the other texts are in `prompts.ts`.
 
 | Hook | What it does |
 | --- | --- |
-| `prompt.context` | Adds the block `context_management` with the text of the compaction state, and the block `shell` with two facts of macOS with `zsh`: no `timeout` command, and an error for a glob with no match. |
-| `tool.describe` | Gives a shorter description for `Agent`, `Bash`, `Edit`, `Read`, `Skill`, `ToolSearch`, and `Write`, and defers `ListAgents` and `Workflow`. |
+| `prompt.context` | Adds the block `context_management` with the text of the compaction state, and the block `shell` with two facts of macOS with `zsh`: no `timeout` command, and an error for a glob with no match. It also adds the block `plan` with one line for the plan of the login, and the block `repo` with the branch, the latest tag, the open `openspec` change, the shell, and the `grep` engine of `Bash`: `ugrep` or the system `grep`. |
+| `tool.describe` | Gives a shorter description for `Agent`, `Bash`, `Edit`, `Read`, `Skill`, `ToolSearch`, and `Write`, and defers each tool that fewer than 10% of the sessions use (D20). |
 | `prompt.attachment` | Leaves out an attachment of the kinds `goal_status` and `tool_hosts_notice`. |
 
 The slice has no `userConfig` key.
@@ -52,13 +52,20 @@ The `context_management` block of the context agrees with the compaction state o
 
 | State | When | Text |
 | --- | --- | --- |
-| `handoff` | The `compaction` option is `handoff`, the default. | A handoff file carries the work into the next window. |
+| `handoff` | The `compaction` option is `auto`, the default, or `handover`. | A handoff file carries the work into the next window. |
 | `built-in` | The `compaction` option is `built-in`. | Claude Code summarizes the earlier context into the next window. |
 | `off` | `DISABLE_COMPACT` is on. | Compaction is off, and the work stays in this window. |
 
 `DISABLE_COMPACT` is on when it is set and is not `0` or `false`.
 It wins over the option.
 The body cannot hold this text, because the body is the same in each session.
+
+## Usage Line
+
+When the band of the 5-hour or the weekly plan share changes, the slice adds one usage line to the next request.
+The bands are green below 40%, amber from 40% to 80%, and red above 80%.
+The body of `claudetto:main` plans the agents of one group by the band: up to the subagent cap at green, 2 at amber, and 1 at red.
+An API key has no rate limits, so it gets no usage line.
 
 ## Subagents
 
@@ -68,17 +75,21 @@ The slice adds no text to the task prompt of a subagent.
 ## Tool Descriptions
 
 The hook replaces the built-in description of `Agent`, `Bash`, `Edit`, `Read`, `Skill`, `ToolSearch`, and `Write` with the text of the slice, and only when the text is shorter.
-It marks `ListAgents` and `Workflow` as deferred, so Claude Code loads them behind `ToolSearch`.
+It marks each tool of `DEFERRED_TOOLS` as deferred, so Claude Code loads them behind `ToolSearch`.
+The list is every tool that fewer than `DEFER_BELOW_PERCENT` (10) of the 292 counted sessions use, less the tools of the roster agents, `ToolSearch`, `SubagentHandback`, and `StructuredOutput`: `EnterWorktree`, `ExitWorktree`, `LSP`, `ListAgents`, `ListMcpResourcesTool`, `ReadMcpResourceDirTool`, `ReadMcpResourceTool`, `Skill`, `TodoWrite`, and `Workflow`.
+The count table and the method are in `research/tool-use.md` of the change `release-0-3-0-alpha-2`.
+
+## Search Engine of `Bash`
+
+On 2.1.309 the shell snapshot of `Bash` shadows `grep` with the embedded `ugrep` and `find` with `bfs` when the build is native, `Grep` and `Glob` are off, and `CLAUDE_CODE_ENTRYPOINT` is not `local-agent`.
+`ugrep` skips ignored files and the folders `.git`, `.svn`, `.hg`, `.bzr`, `.jj`, and `.sl`.
+The hook reads the native build from `CLAUDE_CODE_EXECPATH` (not `node` or `bun`), the tools from `$.tool.list()`, and the entry point from `CLAUDE_CODE_ENTRYPOINT`; when it cannot tell, the `repo` block names the system `grep`.
+`tests/tools/search-engine-pin.test.ts` pins these facts to `tests/claudetto/prompt/fixtures/search-engine-2.1.309.json`.
 
 ## Size
 
-Three caps in `tools/limits.ts` pin the size of the first main request, and a test fails when a part grows:
-
-| Cap | Value | Part |
-| --- | --- | --- |
-| `MAIN_BODY_MAX_CHARS` | 9,349 | The body of `claudetto:main` |
-| `TOOL_TEXTS_MAX_CHARS` | 4,535 | The texts of `tool.describe` |
-| `CONTEXT_BLOCKS_MAX_CHARS` | 401 | The longest `context_management` text and the `shell` block |
+Each fact value is cut to `FACT_VALUE_MAX_CHARS` (60) characters.
+The `plan` block is there only when the option `plan` holds a known tier, and it holds no email, name, or UUID.
 
 A change can lower a cap, and it can raise one only for a behavior that the plan names.
 See [Prompt Size](Prompt-Size) and [Bounds](Bounds).

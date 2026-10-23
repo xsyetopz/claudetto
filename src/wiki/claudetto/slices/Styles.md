@@ -15,7 +15,7 @@ It sets these rules for each reply:
 - The reply uses short sentences and plain words, and it puts each file, command, and identifier in single backticks.
 - The reply ends on what is next.
 - The work stays thorough.
-  The reply names each claim that the agent did not verify, with the command that verifies it.
+  The rule for a claim that is not verified is in `agents/main.md`: run each free check, and name a claim as not verified only when its check needs a paid run, a login, a block, or the user (D21 of `0.3.0-alpha.2`).
 - After a correction, the reply gives the next action, with no opening agreement and no apology.
 - The tone is free, and the tone of the user is not a topic.
   A strong word of the user is the severity of the problem, and the reply answers the work.
@@ -28,10 +28,9 @@ The style shortens the text of the reply, not the work.
 | --- | --- | --- |
 | `name` | `Concise` | The name of the style |
 | `description` | A short sentence | The text that Claude Code shows in the style list |
-| `keep-coding-instructions` | `true` | The style keeps the coding instructions |
 
 The body of the main agent `claudetto:main` holds the coding rules.
-The key `keep-coding-instructions: true` keeps the coding instructions of the built-in prompt when a session uses another agent.
+The style has no `keep-coding-instructions` key, because the key does nothing on the lean prompt of Claude Code (`prompts/style-custom-keep-lean.md` of the Claude Code docs).
 
 ## How to Turn It On or Off
 

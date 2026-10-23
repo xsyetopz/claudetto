@@ -64,7 +64,7 @@ The first round found that its cases were too easy, and the second round tried t
 | `advise-builtin` | Option `advisor` set to `builtin`, and the flag `--advisor opus`. The model calls the server tool `advisor`. |
 | `advise-none` | The control: `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` and no tool. The grader `advisor-called` is left out. |
 | `goal-ours` | The plugin as it is. The prompt `/goal <condition>` goes to the goal engine. |
-| `goal-builtin` | A copy of the plugin with the hooks of the `goal` slice removed, so the built-in `/goal` runs and the other slices stay. |
+| `goal-builtin` | A copy of the plugin with no `/goal` command hook, no stop hook of `finish`, and no `goal_status` attachment, so the built-in `/goal` runs and the other hooks stay. |
 
 ### The Cases
 
@@ -339,4 +339,4 @@ It holds `summary.json`, and for each run `run-N/stream.jsonl` and the workspace
 
 - [Evals](Evals)
 - [Evals 2.1.304](Evals-2.1.304)
-- [Goal](Goal)
+- [Finish](Finish)

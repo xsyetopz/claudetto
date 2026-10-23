@@ -54,7 +54,6 @@ The kernel of the core plugin has these files:
 | `paths.ts` | The paths of the files that `claudetto` reads or writes. |
 | `change.ts` | The task state of an OpenSpec change, from the text of `tasks.md`. |
 | `compaction.ts`, `plugin-option.ts` | The `compaction` option and the reader of the options of the plugin. |
-| `ground.ts` | The source check of quoted values, for `handoff` and `ground`. |
 | `shell.ts`, `shellkinds.ts`, `wrappers.ts`, `shell/` | The shell reader for the permission gate. It reads the syntax, and it does not run the shell. |
 | `model.ts`, `errors.ts`, `text.ts`, `ports.ts`, `slice.ts` | Model families, the error policy, small text tests, the ports that tests replace, and the shared hook types. |
 | `node/` | The adapters of Node and Bun, for the commands. |
@@ -71,14 +70,13 @@ The core plugin has these slices:
 | --- | --- | --- |
 | `agents` | Offers the roster of four subagents and hides the built-in agents | [Agents](Agents) |
 | `decide` | Gives Jev answers for `AskUserQuestion` | [Decide](Decide) |
-| `dry` | The `claudetto:dedupe` skill | [Dry](Dry) |
-| `goal` | The `/goal` check command and its `Stop` hook | [Goal](Goal) |
+| `finish` | The `/goal` check command, the `Stop` hook, and the `box` hook | [Finish](Finish) |
 | `ground` | Checks plan files for claims with no source | [Ground](Ground) |
 | `guard` | The permission gate | [Guard](Guard) |
-| `handoff` | Writes a handoff file in place of the compaction summary | [Handoff](Handoff) |
+| `handoff` | Hands over with a handoff file, `/clear`, and a resume, and leaves the compaction to Claude Code | [Handoff](Handoff) |
 | `hygiene` | The cleanup at session start and the edit ledger | [Session Hygiene](Hygiene) |
+| `notes` | The notes above the prompt | [Notes](Notes) |
 | `prompt` | The main agent body and the shorter tool texts | [Prompt](Prompt) |
-| `reply` | The reply button | [Reply](Reply) |
 | `setup` | The `claudetto-setup` command and the settings snippet | [Setup](Setup) |
 | `spec` | MiniSpec | [Spec](Spec) |
 | `statusline` | The status line | [Status Line](Status-Line) |

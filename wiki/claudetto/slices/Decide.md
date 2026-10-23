@@ -24,7 +24,8 @@ The option `decide` has two values:
 | `off` | The plugin sends no request to Jev. |
 | `jev` | The default. Jev answers, when `TYPESAFE_API_KEY` is set. The questions go to the TypeSafe API. |
 
-The key `TYPESAFE_API_KEY` in the environment of Claude Code turns Jev on.
+The plugin option `TYPESAFE_API_KEY` turns Jev on, and an exported `TYPESAFE_API_KEY` still works.
+The option has `sensitive: true`, so Claude Code keeps the key in secure storage.
 If the key is not set, the call passes unchanged and the text of the tool does not change.
 Only the value `jev` with a key sends data to the TypeSafe API.
 
@@ -39,8 +40,8 @@ The hook does these steps:
 2. It asks Jev for the best option of each such question.
    The same request asks Jev one yes or no question for each question: "Does this ask the user to approve money, a push, a release, a delete, or a step that cannot be undone?"
    This adds no extra call.
-3. It checks each pick: the confidence must be at least `MIN_CONFIDENCE` (0.5) and at least `1 / options + MIN_MARGIN` (0.15), and the pick must be one of the options.
-   So a pick of 2 options needs 0.65.
+3. It checks each pick: the confidence must be at least `MIN_CONFIDENCE` (0.5), and the pick must be one of the options.
+   There is no second margin over chance.
    The approval answer must be a confident no: `P(yes)` under `APPROVAL_MAX` (0.2).
    A missing or unsure approval answer fails toward you.
 4. When each question of the call has a pick that passes, the hook answers the call with `{ result }`, the way a hook answers in place of the tool.
@@ -50,7 +51,7 @@ The hook does these steps:
    A question with no confident "no" on approval gets no note, because a note there is a nudge.
 
 The text of the question does not change, because the answers come back with that text as key.
-If Jev gives no answer, or the run fails or times out, the dialog shows as Claude asked it.
+If Jev gives no answer, or the request fails or times out, the dialog shows as Claude asked it.
 
 A second hook, `tool.describe` on `AskUserQuestion`, adds a short text to the tool when Jev is on.
 It tells Claude that Jev may answer from the text alone, so Claude puts the facts that decide the question in the question and in the option descriptions.
@@ -60,8 +61,11 @@ The picks are as good as those facts.
 
 ## The Command
 
-The hook runs the command `claudetto-decide` with Bun.
-The key goes in the environment of the process and never in the arguments.
+The hooks call Jev from the mod with `$.http.fetch`, and they start no child process.
+The key goes only in the header of the request.
+`HttpInit` has no timeout, so the hooks race each try against `$.clock` for `ATTEMPT_TIMEOUT_MS`.
+The command `claudetto-decide` runs with Bun and serves image and `box` questions and the calls of Claude (the `ask` verb stays for those calls).
+In the command, the key goes in the environment of the process and never in the arguments.
 You can also use the command alone:
 
 | Command | Effect |
@@ -75,7 +79,7 @@ You can also use the command alone:
 A `--` ends the flags.
 The state is text and never a file path, because a path would send a file to the API.
 A `pick` question has `MIN_OPTIONS` (2) to `MAX_OPTIONS` (255) options.
-The output adds a line when Jev is not sure: a confidence under 0.5 for `pick`, or `P(yes)` within 0.2 of 0.5 for `yes`.
+The output adds a line when Jev is not sure: a confidence under 0.5 for `pick`, or `P(yes)` between 0.3 and 0.7 for `yes`.
 
 | Exit Code | Meaning |
 | --- | --- |
@@ -85,7 +89,7 @@ The output adds a line when Jev is not sure: a confidence under 0.5 for `pick`, 
 | 3 | The key is not valid (status 401). |
 | 4 | The account has no balance (status 402). |
 
-When the command fails, the hook leaves the question as Claude asked it.
+When a request fails, the hook leaves the question as Claude asked it.
 
 ## Images and `box`
 
@@ -142,7 +146,7 @@ See [Jev Images](Jev-Images) for the calls.
 ## Jev for the Permission Gate
 
 The `guard` slice can also ask Jev before it asks you.
-For an `ask` about a delete or a local `git` loss, it runs `claudetto-decide yes --json` once, with a timeout of 12,000 ms.
+For an `ask` about a delete or a local `git` loss, it sends one yes or no question to Jev from the mod, with a timeout of 12,000 ms.
 The call runs when `P(yes)` is 0.8 or more.
 See [Guard](Guard#who-decides-an-ask).
 
@@ -152,11 +156,12 @@ All bounds are in `slices/decide/limits.ts`.
 
 | Bound | Value |
 | --- | --- |
-| `JEV_TIMEOUT_MS` | 45,000 ms for the whole run of the hook. |
-| `ATTEMPT_TIMEOUT_MS` | 12,000 ms for one try. |
-| `TRIES` | 3 tries on a reply of 429 or 529. |
-| `BACKOFF_MS` | 1,000 ms before the first retry. Each later wait doubles. |
-| `ERROR_BODY_MAX` | 200 characters of an error body. |
+| `MIN_CONFIDENCE` | 0.5 for a sure pick (`kernel/budget.ts`). |
+| `APPROVAL_MAX` | 0.2 for `P(yes)` of the approval question. |
+| `ATTEMPT_TIMEOUT_MS` | 12,000 ms for one try (`kernel/budget.ts`). |
+| `TRIES` | 3 tries on a reply of 429 or 529 (`kernel/budget.ts`). |
+| `BACKOFF_MS` | 1,000 ms before the first retry. Each later wait doubles (`kernel/budget.ts`). |
+| `ERROR_BODY_MAX` | 200 characters of an error body (`kernel/budget.ts`). |
 | `IMAGE_BYTES_MAX` | 16 MiB for one `--image` file. |
 | `IMAGE_SIDE_MIN` | 280 px for the shortest side of an `--image`. |
 | `IMAGE_SIDE_MAX` | 1,568 px for the longest side of an `--image`. |

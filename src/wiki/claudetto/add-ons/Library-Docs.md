@@ -1,12 +1,12 @@
 # Library Docs
 
 The plugin `claudetto-docs` gets the current docs of a library from Context7.
-It adds one skill, `find-docs`, which calls the `ctx7` CLI.
-Read this page to install the plugin, or to learn how the skill calls `ctx7` and which limits it sets.
+It adds the MCP server `context7` and one skill, `find-docs`, which calls the tools of the server, or the `ctx7` CLI when the session has no such tool.
+Read this page to install the plugin, or to learn how the skill gets docs and which limits it sets.
 
 The plugin works without the core plugin.
-It has no hook, no command, no `userConfig`, and no code that runs in the plugin.
-It ships no MCP server.
+It has no hook, no command, and no code that runs in the plugin.
+Its one option is the sensitive key `CONTEXT7_API_KEY`.
 Its one slice is `docs`.
 
 ## How to Install It
@@ -17,7 +17,8 @@ Its one slice is `docs`.
 
 The plugin needs no key for the free quota.
 A key raises the quota of Context7.
-The skill names the variable `CONTEXT7_API_KEY` for that case.
+To set it, run `/plugin`, select `claudetto-docs`, select "Configure options", and enter "Context7 API Key".
+Claude Code keeps the key in secure storage, and Claude does not see it.
 
 ## How the Skill Works
 
@@ -71,26 +72,13 @@ The `claudetto-setup` command prints a notice when a `context7` file of the proj
 
 ## The MCP Server
 
-The plugin starts no MCP server, and the tool list has no `context7` tool.
-A plugin server with no `url` logs an error in each session, so the plugin does not ship one.
-To add the `context7` MCP server for each project, run this command, then start a new session:
-
-```sh
-claude mcp add --transport http --scope user context7 https://mcp.context7.com/mcp
-```
-
-The `context7` tools are then in the tool list.
-A key raises the quota of the server too.
-To send the key, add the server with an `Authorization` header, as `ctx7` 0.6.1 does:
-
-```sh
-claude mcp add --transport http --scope user \
-  --header "Authorization: Bearer $CONTEXT7_API_KEY" \
-  context7 https://mcp.context7.com/mcp
-```
-
-The shell puts the value of `CONTEXT7_API_KEY` into the command, so `~/.claude.json` keeps the key as text.
-To remove the server, run `claude mcp remove context7 --scope user`.
+The plugin starts the server `context7` at the fixed URL `https://mcp.context7.com/mcp`, with the tools `resolve-library-id` and `query-docs`.
+Claude Code fills the header `Context7-API-Key` from the option `CONTEXT7_API_KEY` in secure storage.
+A sensitive option never reaches a `Bash` call, so `ctx7` gets the key only from an exported `CONTEXT7_API_KEY`.
+With no key, the header is empty, because Claude Code gives an option that is not `required` its default, `""` (2.1.309, `chunk-3sf3xmv8.js`, offset 29050).
+Context7 answers a call with an empty key header on the free quota, which has a lower rate limit than a key.
+The server adds its instructions, 632 characters on 2026-10-23, to each session.
+If you added a `context7` server with `claude mcp add` before, remove it with `claude mcp remove context7 --scope user`, because `~/.claude.json` keeps its key as text.
 
 ## Bounds
 
