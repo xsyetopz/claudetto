@@ -3,6 +3,11 @@
 
 import { expect, spyOn, test } from "bun:test";
 import {
+  BACKOFF_MS,
+  ERROR_BODY_MAX,
+  TRIES,
+} from "../../../../plugins/claudetto/kernel/budget.ts";
+import {
   ApiError,
   buildBody,
   EXIT,
@@ -13,14 +18,6 @@ import {
   render,
   UsageError,
 } from "../../../../plugins/claudetto/slices/decide/adapters/cli.ts";
-import {
-  ATTEMPT_TIMEOUT_MS,
-  BACKOFF_MS,
-  ERROR_BODY_MAX,
-  JEV_TIMEOUT_MS,
-  SCALE_TIMEOUT_MS,
-  TRIES,
-} from "../../../../plugins/claudetto/slices/decide/limits.ts";
 import { BODY, KEY, replies, reply, waits } from "./support.ts";
 
 test("`yes` with a question and no flag reads the question as a word", () => {
@@ -149,16 +146,6 @@ test("an error body is cut to the bound of `ERROR_BODY_MAX` characters", async (
     (e: unknown) => e,
   )) as Error;
   expect(err.message.split("x").length - 1).toBe(ERROR_BODY_MAX);
-});
-
-test("the tries of the client and their waits fit in the time limit of the hook", () => {
-  const waitTotal = Array.from(
-    { length: TRIES - 1 },
-    (_, i) => BACKOFF_MS * 2 ** i,
-  ).reduce((sum, ms) => sum + ms, 0);
-  expect(
-    ATTEMPT_TIMEOUT_MS * TRIES + waitTotal + SCALE_TIMEOUT_MS,
-  ).toBeLessThanOrEqual(JEV_TIMEOUT_MS);
 });
 
 test("`main` with no key exits with the usage code and prints no key", async () => {

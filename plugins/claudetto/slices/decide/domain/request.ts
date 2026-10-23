@@ -1,8 +1,6 @@
-// The `decide` option and the call of the CLI.
-// The option is `jev` by default, but nothing goes to Jev while `TYPESAFE_API_KEY` is not set.
+// The `decide` option and the call of the CLI. Nothing goes to Jev while `TYPESAFE_API_KEY` is not set.
 
-/** The values of the `decide` option, as `/config` shows them. */
-export const MODES = ["off", "jev"] as const;
+const MODES = ["off", "jev"] as const;
 
 /** `off`: no call. `jev`: Jev answers each `AskUserQuestion` call that it is sure about. */
 export type Mode = (typeof MODES)[number];
@@ -11,16 +9,14 @@ export type Mode = (typeof MODES)[number];
 export const modeOf = (options: Readonly<Record<string, unknown>>): Mode =>
   MODES.find((m) => m === options["decide"]) ?? "off";
 
-/**
- * The structured answer of Jev: the chosen key (`yes` or `no` for a yes or no question), and the confidence from 0 to 1.
- * The confidence is the probability of the chosen key.
- */
+/** The sensitive option `TYPESAFE_API_KEY`, or `""`. */
+export const keyOf = (options: Readonly<Record<string, unknown>>): string => {
+  const key = options["TYPESAFE_API_KEY"];
+  return typeof key === "string" ? key : "";
+};
+
+/** The chosen key (`yes` or `no` for a yes or no question), and its probability from 0 to 1. */
 export interface Answer {
   readonly choice: string;
   readonly confidence: number;
-}
-
-export interface CliCall {
-  readonly args: readonly string[];
-  readonly stdin: string | undefined;
 }

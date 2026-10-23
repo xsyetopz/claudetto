@@ -172,14 +172,14 @@ test("`main` prints one line for a scaler that fails, then the size error", asyn
   const { scale } = fakeScaler(1, 1, false);
   const r = await runBad("big.png", BIG, undefined, { scale });
   expectStopped(r, 1554, 2000);
-  expect(r.text).toContain(`Could not scale \`${r.path}\` with \`sips\`.`);
+  expect(r.text).toContain(`The scale of \`${r.path}\` with \`sips\` failed.`);
 });
 
 test("`main` treats a scaler that writes no copy as a failed scaling, and does not say that the original is missing", async () => {
   const none = async () => true;
   const r = await runBad("big.png", BIG, undefined, { scale: none });
   expectStopped(r, 1554, 2000);
-  expect(r.text).toContain("Could not scale");
+  expect(r.text).toContain("with `sips` failed.");
   expect(r.text).not.toContain("does not exist");
 });
 
@@ -248,6 +248,6 @@ test("`ask` rejects `--state` and `--json` with a usage error, and sends no requ
     const { code, seen, err } = await runMain(["ask", ...flags]);
     expect(code).toBe(EXIT.usage);
     expect(seen).toHaveLength(0);
-    expect(err.join("\n")).toContain("does not take `--state` or `--json`");
+    expect(err.join("\n")).toContain("takes no `--state` and no `--json`");
   }
 });

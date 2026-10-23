@@ -1,17 +1,10 @@
-// The pick of Jev for an `AskUserQuestion` call: the request for the questions, the picks, and the questions with the picks added.
-// Jev picks for each question that has 2 or more options and is not multi-select, whatever its kind (D66).
-// A pick is sure when its confidence beats chance by `MIN_MARGIN` and reaches `MIN_CONFIDENCE`.
-// The same request asks Jev one yes or no question for each question, `approval_<i>`: does it ask the user to approve something that only the user may approve?
-// Jev answers a question only when its approval answer is a confident no, and a missing or unsure approval answer sends the question to the user with no note.
-// A multi-select question, a question with fewer than 2 options, and a question whose text another question repeats go to the user.
+// The pick of Jev for an `AskUserQuestion` call: the request, the sure picks, and the questions with the picks added.
+// Jev picks for each question that has 2 or more options and is not multi-select, whatever its kind (D66), and only when a second yes or no question, `approval_<i>`, is a confident no.
+// A pick is sure when its confidence reaches `MIN_CONFIDENCE`. The confidence is already measured above chance (`confidence.md`), so no second margin applies.
 // The question text stays as Claude sent it, because the answers come back keyed by that text.
 
-import {
-  APPROVAL_MAX,
-  MIN_CONFIDENCE,
-  MIN_MARGIN,
-  MIN_OPTIONS,
-} from "../limits.ts";
+import { MIN_CONFIDENCE } from "../../../kernel/budget.ts";
+import { APPROVAL_MAX, MIN_OPTIONS } from "../limits.ts";
 import { ASK_APPROVAL, ASK_NOTE, ASK_PICK } from "../prompts.ts";
 import type { Answer } from "./request.ts";
 
@@ -26,14 +19,13 @@ export interface AskQuestion {
   readonly options?: readonly AskOption[];
 }
 
-/** The answers of Jev by key: `pick_<i>` for the pick of question `i`, and `approval_<i>` for its approval answer, with P(yes) as the `confidence`. */
+/** The answers of Jev by key: `pick_<i>` and `approval_<i>` (P(yes) as the `confidence`). */
 export type AskAnswers = Record<string, Answer | undefined>;
 
-/** Whether Jev can pick for the question: 2 or more options, and one choice. */
 const isPickable = (q: AskQuestion): boolean =>
   (q.options ?? []).length >= MIN_OPTIONS && !q.multiSelect;
 
-/** The request of `ask` for the questions: the state and the questions of the API, or `null` when no question needs Jev. */
+/** The request of `ask` for the questions, or `null` when no question needs Jev. */
 export const askRequest = (
   questions: readonly AskQuestion[],
 ): { state: string; questions: Record<string, unknown> } | null => {
@@ -64,7 +56,7 @@ export const askRequest = (
   return { state: state.join("\n"), questions: Object.fromEntries(asked) };
 };
 
-/** The pick of Jev for question `i`, or `undefined` when Jev is not sure, the pick is not an option, or Jev is not sure that the question is no approval. */
+/** The pick for question `i`, or `undefined` when Jev is not sure, the pick is no option, or the question may be an approval. */
 export const sureAnswer = (
   questions: readonly AskQuestion[],
   answers: AskAnswers,
@@ -80,17 +72,14 @@ export const sureAnswer = (
     pick === undefined ||
     approval === undefined ||
     !(approval.confidence < APPROVAL_MAX) ||
-    !(
-      pick.confidence >=
-      Math.max(MIN_CONFIDENCE, 1 / options.length + MIN_MARGIN)
-    ) ||
+    !(pick.confidence >= MIN_CONFIDENCE) ||
     !options.some((o) => o.label === pick.choice)
   )
     return undefined;
   return pick;
 };
 
-/** The questions with the pick of Jev in the picked option of each question that Jev is sure about, and the other fields kept. */
+/** The questions with the note of Jev in the picked option of each sure question. */
 export const withPicks = <Q extends AskQuestion>(
   questions: readonly Q[],
   answers: AskAnswers,
@@ -112,12 +101,13 @@ export const withPicks = <Q extends AskQuestion>(
     };
   });
 
+const unit = (x: unknown): x is number =>
+  typeof x === "number" && x >= 0 && x <= 1;
+
 const asAnswer = (value: unknown): Answer | undefined => {
   if (typeof value !== "object" || value === null) return undefined;
   const { choice, confidence, noul } = value as Record<string, unknown>;
-  const unit = (x: unknown): x is number =>
-    typeof x === "number" && x >= 0 && x <= 1;
-  // A yes or no answer has `noul`, the probability of yes, which is the `confidence` of the answer "yes".
+  // `noul` is P(yes), the `confidence` of the answer "yes".
   if (typeof noul === "number")
     return unit(noul) ? { choice: "yes", confidence: noul } : undefined;
   return typeof choice === "string" && unit(confidence)
@@ -125,14 +115,8 @@ const asAnswer = (value: unknown): Answer | undefined => {
     : undefined;
 };
 
-/** The answers of `ask` from its JSON output. An entry that is not an answer is `undefined`, so its question stays as asked. */
-export const parseAskAnswers = (stdout: string): AskAnswers | undefined => {
-  let value: unknown;
-  try {
-    value = JSON.parse(stdout);
-  } catch {
-    return undefined;
-  }
+/** The answers of `ask` from the `answers` of the API. An entry that is no answer is `undefined`. */
+export const answersOf = (value: unknown): AskAnswers | undefined => {
   if (typeof value !== "object" || value === null || Array.isArray(value))
     return undefined;
   return Object.fromEntries(

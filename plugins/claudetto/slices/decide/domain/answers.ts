@@ -1,15 +1,15 @@
 // The answers of the TypeSafe API, as the CLI prints them for Claude, and as data for the hooks module.
-// The API gives the fields of the kind of the question, and `qOf` checks them before any use.
 
-import { MIN_CONFIDENCE, YES_NO_UNSURE_BAND } from "../limits.ts";
+import { MIN_CONFIDENCE, YES_NO_UNSURE_BAND } from "../../../kernel/budget.ts";
+import { noulOf } from "../../../kernel/jev.ts";
 import { PICK_UNSURE, YES_UNSURE } from "../prompts.ts";
 import type { Answer } from "./request.ts";
 
-export interface YesNoAnswer {
+interface YesNoAnswer {
   readonly noul: number;
 }
 
-export interface PickAnswer {
+interface PickAnswer {
   readonly choice: string;
   readonly confidence: number;
   readonly probabilities: Record<string, number>;
@@ -23,33 +23,31 @@ const isRecord = (x: unknown): x is Record<string, unknown> =>
 const isProbability = (x: unknown): x is number =>
   typeof x === "number" && x >= 0 && x <= 1;
 
-/** The text of a yes or no answer, with a line when the probability is near one half. */
-export const formatYesNo = (a: YesNoAnswer): string => {
-  const unsure = Math.abs(a.noul - 0.5) < YES_NO_UNSURE_BAND;
-  return `P(yes) = ${num(a.noul)}${unsure ? `\n${YES_UNSURE}` : ""}`;
-};
+const formatYesNo = (a: YesNoAnswer): string =>
+  `P(yes) = ${num(a.noul)}${Math.abs(a.noul - 0.5) < YES_NO_UNSURE_BAND ? `\n${YES_UNSURE}` : ""}`;
 
-/** The text of a pick answer: the chosen key, the confidence, and the probability of each key, most probable first. */
-export const formatPick = (a: PickAnswer): string => {
-  const head = `${a.choice} (confidence ${num(a.confidence)})`;
+/** The chosen key, the confidence, and the probability of each key, most probable first. */
+const formatPick = (a: PickAnswer): string => {
   const rows = Object.entries(a.probabilities)
     .sort((x, y) => y[1] - x[1])
     .map(([k, p]) => `  ${num(p)} ${k}`);
   const low = a.confidence < MIN_CONFIDENCE ? [PICK_UNSURE] : [];
-  return [head, ...rows, ...low].join("\n");
+  return [
+    `${a.choice} (confidence ${num(a.confidence)})`,
+    ...rows,
+    ...low,
+  ].join("\n");
 };
 
-/**
- * The fields of the answer of the kind `yes` or `pick`, from the `q` field of `answers`.
- * It throws when the reply has no answer of that kind, and the CLI then exits with the failure code.
- */
+/** The checked answer of the kind in the `q` field of `answers`. It throws when there is none. */
 const qOf = (
   kind: "yes" | "pick",
   answers: unknown,
 ): YesNoAnswer | PickAnswer => {
   const q = isRecord(answers) ? answers["q"] : undefined;
   if (kind === "yes") {
-    if (isRecord(q) && isProbability(q["noul"])) return { noul: q["noul"] };
+    const noul = noulOf(answers, "q");
+    if (noul !== undefined) return { noul };
   } else if (
     isRecord(q) &&
     typeof q["choice"] === "string" &&
@@ -75,7 +73,7 @@ export const formatAnswer = (
     : formatPick(q as PickAnswer);
 };
 
-/** The structured answer of the API for the kind `yes` or `pick`. A yes or no answer picks the side with the higher probability. */
+/** The structured answer. A yes or no answer picks the side with the higher probability. */
 export const answerOf = (kind: "yes" | "pick", answers: unknown): Answer => {
   const q = qOf(kind, answers);
   if (kind === "pick") {
@@ -88,41 +86,32 @@ export const answerOf = (kind: "yes" | "pick", answers: unknown): Answer => {
     : { choice: "no", confidence: 1 - noul };
 };
 
-/** The answer of the API to a `box` question: fractions from 0 to 1 from the top-left corner, and the confidence. */
-export interface BoxAnswer {
-  readonly top: number;
-  readonly bottom: number;
-  readonly left: number;
-  readonly right: number;
-  readonly confidence: number;
-}
+const SIDES = ["top", "bottom", "left", "right"] as const;
+
+/** Fractions from 0 to 1 from the top-left corner, and the confidence. */
+type BoxAnswer = Record<(typeof SIDES)[number] | "confidence", number>;
 
 /**
- * The `box` answer from the `q` field of `answers`.
+ * The `box` answer of `{"q": {"box": {top, bottom, left, right}, "confidence": c}}`. It throws when the reply has no valid box.
  * The API gives `{"type": "box", "box": {top, bottom, left, right}, "confidence": c}`, as `jev-1.14.0` showed live.
- * It throws when the reply has no valid box.
  */
 export const boxOf = (answers: unknown): BoxAnswer => {
   const q = isRecord(answers) ? answers["q"] : undefined;
   const b = isRecord(q) ? q["box"] : undefined;
-  const sides = ["top", "bottom", "left", "right"] as const;
   if (
     isRecord(q) &&
     isRecord(b) &&
-    sides.every((side) => isProbability(b[side])) &&
+    SIDES.every((side) => isProbability(b[side])) &&
     isProbability(q["confidence"])
   )
     return {
-      ...(Object.fromEntries(sides.map((k) => [k, b[k]])) as Record<
-        (typeof sides)[number],
-        number
-      >),
+      ...(Object.fromEntries(SIDES.map((k) => [k, b[k]])) as BoxAnswer),
       confidence: q["confidence"],
     };
   throw new Error("The reply of the TypeSafe API has no valid box. Try again.");
 };
 
-/** The text of a box answer: one line with the four fractions and the confidence, and the pixels when the size is known. */
+/** One line with the four fractions and the confidence, and the pixels when the size is known. */
 export const formatBox = (
   a: BoxAnswer,
   size?: { readonly width: number; readonly height: number },

@@ -1,151 +1,254 @@
-// Lab tests of the hooks of the `decide` slice for `AskUserQuestion`: they ask Jev only with the option `jev` and a key.
-// The stub of `process.run` stands for the Jev CLI and records each run, so no network call goes out.
-// The file is self-contained, because `just generate` copies it to `tests/` of the plugin, where it cannot import a relative file.
+// Lab tests of the `decide` hooks: they ask Jev only with the option `jev` and a key. The stub of `http.fetch` stands for the TypeSafe API, so no test sends a request.
 
 import type { On, PluginOptions } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
+import {
+  ATTEMPT_TIMEOUT_MS,
+  BACKOFF_MS,
+  MIN_CONFIDENCE,
+} from "../kernel/budget.ts";
 
-const answers = (confidence: number, approval = 0.05) =>
-  JSON.stringify({
-    pick_0: { choice: "sql", confidence },
-    approval_0: { noul: approval },
+const answers = (confidence: number, approval = 0.05) => ({
+  pick_0: {
+    type: "choice",
+    choice: "sql",
+    confidence,
+    probabilities: { sql: 0.9, kv: 0.1 },
+  },
+  approval_0: { type: "noul", noul: approval },
+});
+
+/** A reply of the API with `status` and the `answers` as JSON. */
+const reply = (status: number, body: unknown = {}) => ({
+  value: {
+    status,
+    ok: status >= 200 && status < 300,
+    headers: {},
+    text: JSON.stringify(body),
+  },
+});
+
+const okay = (body: object) =>
+  reply(200, {
+    model: "jev-latest",
+    answers: body,
+    usage: { input_tokens: 1, output_tokens: 1 },
   });
-
-/** Stubs `process.run` with the Jev CLI output `stdout`, and records the argv of each run in `runs`. */
-const reply = (on: On, stdout: string, runs: (readonly string[])[] = []) =>
-  on("process.run", (_$, e) => {
-    runs.push(e.argv);
-    return {
-      value: {
-        exitCode: 0,
-        stdout,
-        stderr: "",
-        isStdoutTruncated: false,
-        isStderrTruncated: false,
-      },
-    };
-  });
-
-/** Stubs for one test: the key, the confidence of the pick, and the list of the process runs. */
-const stub = (
-  on: On,
-  key: string,
-  confidence = 0.9,
-  approval = 0.05,
-): (readonly string[])[] => {
-  mock.env(on, { TYPESAFE_API_KEY: key });
-  const runs: (readonly string[])[] = [];
-  reply(on, answers(confidence, approval), runs);
-  return runs;
-};
 
 const option = (decide: string): { options: PluginOptions } => ({
   options: { decide },
 });
 
-const STORE = {
-  question: "Which store?",
-  header: "Store",
+const choose = (
+  question: string,
+  header: string,
+  rows: [string, string][],
+) => ({
+  question,
+  header,
   multiSelect: false,
-  options: [
-    { label: "sql", description: "relations" },
-    { label: "kv", description: "keys" },
-  ],
-};
+  options: rows.map(([label, description]) => ({ label, description })),
+});
 
-const COLOR = {
-  question: "Which color?",
-  header: "Color",
-  multiSelect: false,
-  options: [
-    { label: "red", description: "warm" },
-    { label: "blue", description: "cool" },
-  ],
-};
+const STORE = choose("Which store?", "Store", [
+  ["sql", "relations"],
+  ["kv", "keys"],
+]);
+const COLOR = choose("Which color?", "Color", [
+  ["red", "warm"],
+  ["blue", "cool"],
+]);
 
 const ask = ($: Engine, questions = [STORE]) =>
   $.tool.call({ tool: "AskUserQuestion", questions });
 
-/** Stubs the built-in tool, which answers with the input that the hook passes on. */
-const builtIn = (on: On): { input: unknown } => {
+/** `fetches` holds the argument of each `http.fetch`, `seen.input` the input that the built-in tool got, and `processes` the argv of each process run. */
+const stub = (
+  on: On,
+  key: string,
+  body: object = answers(0.9),
+  send: (n: number, clock: ReturnType<typeof mock.clock>) => unknown = () =>
+    okay(body),
+) => {
+  mock.env(on, { TYPESAFE_API_KEY: key });
+  const clock = mock.clock(on);
+  const fetches: {
+    url: string;
+    init?: { headers?: Record<string, string>; body?: string };
+  }[] = [];
+  const processes: (readonly string[])[] = [];
   const seen = { input: undefined as unknown };
+  on("http.fetch", (_$, e) => {
+    fetches.push(e);
+    return send(fetches.length, clock) as never;
+  });
+  on("process.run", (_$, e) => {
+    processes.push(e.argv);
+    return { deny: "no process" };
+  });
   on("tool.call", (_$, e, next) => {
     if (e.tool !== "AskUserQuestion") return next(e);
     seen.input = e;
     return { result: "ok" };
   });
-  return seen;
+  return { fetches, processes, seen, clock };
 };
 
 test(
   "with the option off, `AskUserQuestion` passes unchanged and no process runs",
   option("off"),
   async ($: Engine, on: On) => {
-    const runs = stub(on, "typesafe-key");
-    const seen = builtIn(on);
+    const { fetches, seen } = stub(on, "typesafe-key");
     await ask($);
-    expect(runs).toEqual([]);
+    expect(fetches).toEqual([]);
     expect(JSON.stringify(seen.input)).not.toContain("Jev");
   },
 );
 
 test(
-  "with the option `jev` and no key, `AskUserQuestion` sends nothing to Jev",
+  "No Key: with the option `jev` and no key, `AskUserQuestion` sends nothing to Jev and the dialog shows",
   option("jev"),
   async ($: Engine, on: On) => {
-    const runs = stub(on, "");
-    builtIn(on);
+    const { fetches, processes, seen } = stub(on, "");
     await ask($);
-    expect(runs).toEqual([]);
+    expect(fetches).toEqual([]);
+    expect(processes).toEqual([]);
+    expect(JSON.stringify(seen.input)).toContain("Which store?");
   },
 );
 
 test(
-  "with the option `jev` and a key, one run asks Jev for the questions",
+  "with the option `jev` and a key, one request asks Jev for the questions, and no process runs",
   option("jev"),
   async ($: Engine, on: On) => {
-    const runs = stub(on, "typesafe-key");
-    builtIn(on);
+    const { fetches, processes } = stub(on, "typesafe-key");
     await ask($);
-    expect(runs).toHaveLength(1);
-    expect(runs[0]).toContain("ask");
+    expect(processes).toEqual([]);
+    expect(fetches).toHaveLength(1);
+    expect(fetches[0]?.url).toBe("https://api.typesafe.ai/v1/systemone");
+    const body = JSON.parse(fetches[0]?.init?.body ?? "{}");
+    expect(body.model).toBe("jev-latest");
+    expect(Object.keys(body.questions)).toEqual(["pick_0", "approval_0"]);
+    expect(fetches[0]?.init?.headers?.["authorization"]).toBe(
+      "Bearer typesafe-key",
+    );
   },
 );
 
 test(
-  "with the option `jev` and a sure pick, Jev answers and the built-in tool does not run",
+  "Jev Picks: with the option `jev` and a sure pick, Jev answers and the built-in tool does not run",
   option("jev"),
   async ($: Engine, on: On) => {
-    stub(on, "typesafe-key", 0.9);
-    const seen = builtIn(on);
-    const answer = await ask($);
+    const { seen } = stub(on, "typesafe-key");
+    const answer = JSON.stringify(await ask($));
     expect(seen.input).toBeUndefined();
-    expect(JSON.stringify(answer)).toContain('"Which store?":"sql"');
-    expect(JSON.stringify(answer)).toContain("Jev answered");
-    expect(JSON.stringify(answer)).toContain("0.90");
+    expect(answer).toContain('"Which store?":"sql"');
+    expect(answer).toContain("Jev answered");
+    expect(answer).toContain("0.90");
   },
 );
 
-/** The input that the built-in tool gets when Jev gives the pick and the approval answer. */
-const shownWith = async (
-  $: Engine,
-  on: On,
-  confidence: number,
-  approval: number,
-) => {
-  stub(on, "typesafe-key", confidence, approval);
-  const seen = builtIn(on);
+test(
+  "Timeout: a try over `ATTEMPT_TIMEOUT_MS` ends with no retry, and the dialog shows",
+  option("jev"),
+  async ($: Engine, on: On) => {
+    const { fetches, seen, clock } = stub(
+      on,
+      "typesafe-key",
+      answers(0.9),
+      async (_n, c) => {
+        await c.sleep(ATTEMPT_TIMEOUT_MS * 5);
+        return okay(answers(0.9));
+      },
+    );
+    const pending = ask($);
+    await clock.settle();
+    await clock.advance(ATTEMPT_TIMEOUT_MS);
+    await pending;
+    expect(fetches).toHaveLength(1);
+    expect(JSON.stringify(seen.input)).toContain("Which store?");
+  },
+);
+
+test(
+  "Rate Limit Retry: a 429 and then a 529 wait `BACKOFF_MS` and twice that, and the third try answers",
+  option("jev"),
+  async ($: Engine, on: On) => {
+    const { fetches, seen, clock } = stub(
+      on,
+      "typesafe-key",
+      answers(0.9),
+      (n) => (n === 1 ? reply(429) : n === 2 ? reply(529) : okay(answers(0.9))),
+    );
+    const pending = ask($);
+    await clock.settle();
+    expect(fetches).toHaveLength(1);
+    await clock.advance(BACKOFF_MS);
+    expect(fetches).toHaveLength(2);
+    await clock.advance(BACKOFF_MS * 2);
+    const answer = JSON.stringify(await pending);
+    expect(fetches).toHaveLength(3);
+    expect(seen.input).toBeUndefined();
+    expect(answer).toContain('"Which store?":"sql"');
+  },
+);
+
+test(
+  "a 429 on each try ends after `TRIES` tries, and the dialog shows",
+  option("jev"),
+  async ($: Engine, on: On) => {
+    const { fetches, seen, clock } = stub(
+      on,
+      "typesafe-key",
+      answers(0.9),
+      () => reply(429),
+    );
+    const pending = ask($);
+    await clock.settle();
+    await clock.advance(BACKOFF_MS * 3);
+    await pending;
+    expect(fetches).toHaveLength(3);
+    expect(JSON.stringify(seen.input)).toContain("Which store?");
+  },
+);
+
+test(
+  "a 401 is not retried, the dialog shows, and the key is in no message",
+  option("jev"),
+  async ($: Engine, on: On) => {
+    const { fetches, seen } = stub(on, "typesafe-key", answers(0.9), () =>
+      reply(401, { detail: "bad" }),
+    );
+    await ask($);
+    expect(fetches).toHaveLength(1);
+    expect(JSON.stringify(seen.input)).not.toContain("typesafe-key");
+  },
+);
+
+const shownWith = async ($: Engine, on: On, pick: number, approval: number) => {
+  const { seen } = stub(on, "typesafe-key", answers(pick, approval));
   await ask($);
   return JSON.stringify(seen.input);
 };
 
 test(
-  "with the option `jev` and an unsure pick, the dialog stays",
+  "Jev Unsure: with the option `jev` and an unsure pick, the dialog stays",
   option("jev"),
   async ($: Engine, on: On) => {
-    const shown = await shownWith($, on, 0.55, 0.05);
+    const shown = await shownWith($, on, MIN_CONFIDENCE - 0.01, 0.05);
     expect(shown).toContain("Which store?");
     expect(shown).not.toContain("Jev picks");
+  },
+);
+
+// The floor is 0.5 for a pick (`confidence.md`) (the user, 2026-10-23: "follow typesafe's guidelines/best practices").
+test(
+  "Jev Picks: a pick just over the floor of 0.5 answers with no dialog",
+  option("jev"),
+  async ($: Engine, on: On) => {
+    const { seen } = stub(on, "typesafe-key", answers(MIN_CONFIDENCE + 0.01));
+    expect(JSON.stringify(await ask($))).toContain('"Which store?":"sql"');
+    expect(seen.input).toBeUndefined();
   },
 );
 
@@ -160,12 +263,10 @@ test(
 );
 
 const describeAsk = ($: Engine, on: On) => {
-  on("tool.describe", () => ({ description: "Asks the user." }));
-  return $.tool.describe({
-    tool: "AskUserQuestion",
-    description: "Asks the user.",
-    provider: { plugin: "engine", tier: "core" },
-  });
+  const description = "Asks the user.";
+  on("tool.describe", () => ({ description }));
+  const provider = { plugin: "engine", tier: "core" } as const;
+  return $.tool.describe({ tool: "AskUserQuestion", description, provider });
 };
 
 test(
@@ -176,6 +277,22 @@ test(
     const answer = await describeAsk($, on);
     expect(answer.description).toStartWith("Asks the user.");
     expect(answer.description).toContain("Jev may answer");
+  },
+);
+
+test(
+  "Key Set: the sensitive option `TYPESAFE_API_KEY` in `options` turns Jev on with no env var, and goes in the header",
+  { options: { decide: "jev", TYPESAFE_API_KEY: "secure-key" } },
+  async ($: Engine, on: On) => {
+    const { fetches } = stub(on, "");
+    expect((await describeAsk($, on)).description).toContain("Jev may answer");
+    await ask($, [STORE]);
+    expect(fetches.map((f) => f.init?.headers?.["authorization"])).toEqual([
+      "Bearer secure-key",
+    ]);
+    expect(JSON.stringify(fetches.map((f) => f.init?.body))).not.toContain(
+      "secure-key",
+    );
   },
 );
 
@@ -192,17 +309,16 @@ test(
   "with one sure pick and one unsure pick, the dialog gets the note of Jev",
   option("jev"),
   async ($: Engine, on: On) => {
-    mock.env(on, { TYPESAFE_API_KEY: "typesafe-key" });
-    reply(
-      on,
-      JSON.stringify({
-        pick_0: { choice: "sql", confidence: 0.9 },
-        approval_0: { noul: 0.05 },
-        pick_1: { choice: "red", confidence: 0.55 },
-        approval_1: { noul: 0.05 },
-      }),
-    );
-    const seen = builtIn(on);
+    const unsure = {
+      pick_1: {
+        type: "choice",
+        choice: "red",
+        confidence: MIN_CONFIDENCE - 0.01,
+        probabilities: { red: 0.7, blue: 0.3 },
+      },
+    };
+    const body = { ...answers(0.9), ...unsure, approval_1: { noul: 0.05 } };
+    const { seen } = stub(on, "typesafe-key", body);
     await ask($, [STORE, COLOR]);
     expect(JSON.stringify(seen.input)).toContain("Jev picks");
   },

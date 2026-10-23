@@ -1,5 +1,5 @@
 export const ASK_APPROVAL = (v: { index: string }): string =>
-  `Does question ${v.index} ask the user to approve money, a push, a release, a delete, or a step that cannot be undone?`;
+  `Does question ${v.index} ask the user to approve money, a push, a release, a delete, or a step with no undo?`;
 
 export const ASK_NOTE = (v: { confidence: string }): string =>
   `Jev picks this option (confidence ${v.confidence}).`;
@@ -9,7 +9,7 @@ export const ASK_PICK = (v: { index: string }): string =>
 
 export const ERROR_ASK_FLAGS = (v: {
   usage: string;
-}): string => `\`ask\` takes the state in the JSON on stdin, and it prints JSON, so it does not take \`--state\` or \`--json\`.
+}): string => `\`ask\` takes the state in the JSON on stdin, and it prints JSON, so it takes no \`--state\` and no \`--json\`.
 ${v.usage}`;
 
 export const ERROR_ASK_QUESTIONS = (v: { usage: string }): string =>
@@ -80,20 +80,20 @@ export const JEV_ANSWERED = (v: {
 }): string =>
   `Jev answered the question "${v.question}" with \`${v.choice}\` (confidence ${v.confidence}).`;
 
-export const JEV_CONTINUE = `The user did not see a dialog.
+export const JEV_CONTINUE = `The user saw no dialog.
 Continue with those answers.
 Tell the user in your next reply that Jev answered, and name each pick and its confidence.`;
 
-export const OPTION_DESCRIPTION = `Use \`off\` for no pick, or \`jev\` for Jev (it needs \`TYPESAFE_API_KEY\`, and the questions go to the TypeSafe API). With \`jev\` and the key, Jev answers each \`AskUserQuestion\` call and the dialog does not show, unless Jev is not sure about a question.`;
+export const OPTION_DESCRIPTION = `Use \`off\` for no pick, or \`jev\` for Jev (it needs \`TYPESAFE_API_KEY\`, and the questions go to the TypeSafe API). With \`jev\` and the key, Jev answers each \`AskUserQuestion\` call and the dialog stays hidden, except when Jev is unsure about a question.`;
 
 export const PICK_UNSURE = `The confidence is under 0.5, so Jev is not sure.`;
 
 export const TOOL_ASK = `Jev may answer a question in place of the user, from the question text and the option texts alone.
-Jev cannot read a file or this session.
+Jev reads the question and the options only, and no file or session.
 Put the facts that decide the question in the question and in the option descriptions: the file lines and the tool results, with their sources.
 Keep secrets, keys, and personal data out of the question, because the text goes to the TypeSafe API.
 When Jev is not sure, the user answers the dialog.
-An approval question goes only to the user: a question that asks the user to approve money, a push, a release, a delete, or a step that cannot be undone.
+An approval question goes only to the user: a question that asks the user to approve money, a push, a release, a delete, or a step with no undo.
 State in the question that it asks for approval, so that the user gets the dialog.`;
 
 export const USAGE = `Use one of these forms:
@@ -108,6 +108,6 @@ On other systems, scale the picture first, such as with \`magick in.png -resize 
 A \`box\` can come back when the target is absent from the image, so read its confidence.`;
 
 export const WARN_IMAGE_SCALE_FAILED = (v: { path: string }): string =>
-  `Could not scale \`${v.path}\` with \`sips\`.`;
+  `The scale of \`${v.path}\` with \`sips\` failed.`;
 
 export const YES_UNSURE = `P(yes) is near 0.5, so Jev is not sure.`;

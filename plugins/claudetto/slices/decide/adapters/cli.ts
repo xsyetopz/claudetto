@@ -1,30 +1,12 @@
-// The command `claudetto-decide`: it asks the TypeSafe API for one answer, and prints the answer as text.
-// It runs on Bun, so it may use `Bun` and the `node:` modules, and the hooks module runs it as a child process.
-// The key comes in the environment as `TYPESAFE_API_KEY`, and never in the argument list, a log, or a test.
-//
-//   claudetto-decide yes  [--json] [--state <- | text>] [--] "<question>"
-//   claudetto-decide pick [--json] [--state <- | text>] [--] "<question>" <key>[=<description>]...
-//   claudetto-decide ask < questions.json
-//   claudetto-decide box  --image <path> [--image <path>]... [--json] [--state <- | text>] [--] "<what to find>"
-//
-// The state is text or `-` for stdin, and never a file path, because a path would send a file to the API.
-// The one exception is `--image <path>`, which `yes`, `pick`, `ask`, and `box` take, and which repeats.
-// It takes a path to a PNG or JPEG file only, and a check of the first bytes must pass (design D8).
-// `--json` prints one object with the `text` and the structured `answer`, for a hooks module.
-// `ask` takes no `--state` and no `--json`: the JSON on stdin has the state, and the output is JSON.
-// `ask` reads one JSON object with the `questions` of the API and an optional `state`, and prints the answers as JSON.
-// A `--` ends the flags, so that no word of the model is read as a flag.
-// Exit codes: 0 an answer, 1 a failure, 2 a usage fault, 3 a key that is not valid, and 4 an account with no balance.
+// The command `claudetto-decide`: it asks the TypeSafe API for one answer, and prints it. It runs on Bun. Claude runs it, and the mod runs it for no question: the mod calls the API itself (`adapters/mod.ts`).
+// The key comes in `TYPESAFE_API_KEY`, never in the arguments. `USAGE` in `prompts.ts` lists the verbs.
+// The state is text or `-` for stdin, and never a file path, because a path would send a file to the API. `--image <path>` takes a PNG or JPEG file (design D8).
+// `ask` takes no `--state` and no `--json`: the JSON on stdin has the state, and the output is JSON. A `--` ends the flags.
 
+import { ATTEMPT_TIMEOUT_MS } from "../../../kernel/budget.ts";
+import { JEV_API, JEV_MODEL, retried } from "../../../kernel/jev.ts";
 import { answerOf, boxOf, formatAnswer, formatBox } from "../domain/answers.ts";
-import {
-  ATTEMPT_TIMEOUT_MS,
-  BACKOFF_MS,
-  ERROR_BODY_MAX,
-  MAX_OPTIONS,
-  MIN_OPTIONS,
-  TRIES,
-} from "../limits.ts";
+import { MAX_OPTIONS, MIN_OPTIONS } from "../limits.ts";
 import {
   ERROR_ASK_FLAGS,
   ERROR_ASK_QUESTIONS,
@@ -53,14 +35,10 @@ import {
 export type { ImageSize, LoadedImage, ReadOptions, Scaler };
 export { ApiError, EXIT, imageSize, UsageError };
 
-const API = "https://api.typesafe.ai/v1/systemone";
-const MODEL = "jev-latest";
-/** The pinned model of a request with a `box` question, which needs Jev 1.14 (design D3). */
+// A `box` question needs Jev 1.14 (design D3), and a request with images or a `box` needs the header (design D1).
 const BOX_MODEL = "jev-1.14.0";
-/** The header that turns on the images and the `box` question, on each request that uses one (design D1). */
 const IMAGES_HEADER = "TypeSafe-Danger-Zone-Images";
 
-/** The parsed arguments: the kind, the words after the flags, the value of `--state`, and the `--json` flag. */
 export interface Args {
   readonly kind: "yes" | "pick" | "ask" | "box";
   readonly words: readonly string[];
@@ -71,7 +49,6 @@ export interface Args {
 
 const KINDS: readonly string[] = ["yes", "pick", "ask", "box"];
 
-/** The flags and the words after the verb. The words after `--` are literal words. */
 const parseFlags = (rest: readonly string[]) => {
   let state: string | undefined;
   let json = false;
@@ -91,7 +68,6 @@ const parseFlags = (rest: readonly string[]) => {
   return { state, json, images, words };
 };
 
-/** The path after `--image`, which is a path and never a flag. */
 const imagePath = (path: string | undefined): string => {
   if (!path || path.startsWith("-"))
     throw new UsageError(ERROR_IMAGE_PATH({ usage: USAGE }));
@@ -104,13 +80,11 @@ export const parseArgs = (argv: readonly string[]): Args => {
   if (!verb || !KINDS.includes(verb))
     throw new UsageError(ERROR_VERB({ verb: verb ?? "", usage: USAGE }));
   const { state, json, images, words } = parseFlags(rest);
-  // `ask` takes its state and its output format from the JSON on stdin, so a flag for them would do nothing.
   if (verb === "ask" && (state !== undefined || json))
     throw new UsageError(ERROR_ASK_FLAGS({ usage: USAGE }));
   return { kind: verb as Args["kind"], words, state, json, images };
 };
 
-/** The request body of `ask`: the JSON object on stdin, with its `questions` and an optional `state`. */
 const askBody = async (stdin: () => Promise<string>): Promise<object> => {
   let req: Record<string, unknown> | null;
   try {
@@ -123,7 +97,7 @@ const askBody = async (stdin: () => Promise<string>): Promise<object> => {
     throw new UsageError(ERROR_ASK_QUESTIONS({ usage: USAGE }));
   return {
     state: typeof state === "string" ? state : "",
-    model: MODEL,
+    model: JEV_MODEL,
     questions,
   };
 };
@@ -154,7 +128,7 @@ export const buildBody = async (
   const type = { yes: "noul", box: "box", pick: "choice" }[kind];
   return {
     state: text,
-    model: MODEL,
+    model: JEV_MODEL,
     questions: {
       q: {
         type,
@@ -165,7 +139,6 @@ export const buildBody = async (
   };
 };
 
-/** The exit code of an error: the status of an `ApiError` for 3 and 4, and `EXIT.usage` or `EXIT.failed` otherwise. */
 export const exitOf = (err: unknown): number => {
   if (err instanceof UsageError) return EXIT.usage;
   if (err instanceof ApiError && err.status === 401) return EXIT.invalidKey;
@@ -173,7 +146,7 @@ export const exitOf = (err: unknown): number => {
   return EXIT.failed;
 };
 
-/** The request body, and the headers that go with it. The body is a JSON string, or a `FormData` for images. */
+/** The body is a JSON string, or a `FormData` for images. */
 export interface Request {
   readonly body: string | FormData;
   readonly headers: Record<string, string>;
@@ -181,9 +154,8 @@ export interface Request {
 
 /**
  * The request for a body and its images (design D1, D2, D3).
- * With no image and no `box` question, it is the JSON string of the body, with no header.
  * Each image gets a UUID in `assets`, a file part `img<n>`, and a state line `Image img<n>: <uuid>`.
- * The model is `jev-1.14.0` when a question has the type `box`, and the model of the body otherwise.
+ * The model is `jev-1.14.0` when a question has the type `box`.
  */
 export const buildRequest = (
   body: { state: string; model: string; questions: object },
@@ -216,29 +188,25 @@ export const buildRequest = (
   return { body: form, headers };
 };
 
-export interface PostOptions {
-  /** The image files to send with the body, in the order of `--image`. */
+interface PostOptions {
   readonly images?: readonly Blob[];
   readonly fetchFn?: typeof fetch;
   readonly sleep?: (ms: number) => Promise<void>;
 }
 
-/**
- * POST the body, with a retry and backoff on 429 and 529.
- * The tries and the waits fit in the time limit of the hook (see `limits.ts`).
- */
+/** POST the body, with a retry and backoff on 429 and 529. */
 export const post = async (
   body: object,
   key: string,
   { fetchFn = fetch, sleep = Bun.sleep, images = [] }: PostOptions = {},
 ): Promise<unknown> => {
-  // One request for all tries, so that a retry sends the same UUIDs.
+  // One request for all tries, so a retry sends the same UUIDs.
   const request = buildRequest(
     body as Parameters<typeof buildRequest>[0],
     images,
   );
-  for (let i = 0; ; i++) {
-    const res = await fetchFn(API, {
+  return retried(async () => {
+    const res = await fetchFn(JEV_API, {
       method: "POST",
       headers: {
         authorization: `Bearer ${key}`,
@@ -251,17 +219,10 @@ export const post = async (
       body: request.body,
       signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
     });
-    if (res.ok) return res.json();
-    if ((res.status === 429 || res.status === 529) && i < TRIES - 1) {
-      await sleep(BACKOFF_MS * 2 ** i);
-      continue;
-    }
-    const detail = (await res.text()).slice(0, ERROR_BODY_MAX);
-    throw new ApiError(res.status, `TypeSafe API ${res.status}: ${detail}`);
-  }
+    return { status: res.status, ok: res.ok, text: await res.text() };
+  }, sleep);
 };
 
-/** The output of the command: the answers as JSON for `ask`, the text for Claude, or the text and the answer with `--json`. */
 export const render = (
   args: Args,
   answers: unknown,
@@ -270,7 +231,6 @@ export const render = (
   if (args.kind === "ask") return JSON.stringify(answers ?? null);
   if (args.kind === "box") {
     const box = boxOf(answers);
-    // `--json` prints the raw answer of the API, which `boxOf` has checked.
     return args.json
       ? JSON.stringify((answers as { q: unknown }).q)
       : formatBox(box, size);
@@ -280,7 +240,6 @@ export const render = (
   return JSON.stringify({ text, answer: answerOf(args.kind, answers) });
 };
 
-/** Runs the command with `argv`, prints the answer or the error, and gives the exit code. */
 export const main = async (
   argv: readonly string[],
   options: ReadOptions = {},
@@ -290,11 +249,10 @@ export const main = async (
     if (!key) throw new UsageError(ERROR_NO_KEY);
     const args = parseArgs(argv);
     const body = await buildBody(args, () => Bun.stdin.text());
-    // `readImage` reads and checks each file here, so that a bad file stops the command before the request.
     const loaded = await Promise.all(
       args.images.map((path) => readImage(path, options)),
     );
-    // One line on stderr for each scaled image, so that the stdout of `--json` stays JSON.
+    // The note goes to stderr, so the stdout of `--json` stays JSON.
     for (const [i, image] of loaded.entries()) {
       if (!(image.scaled && image.size)) continue;
       const path = args.images[i] as string;
@@ -306,14 +264,12 @@ export const main = async (
       );
     }
     const images = loaded.map((image) => image.blob);
-    // The pixels come from the file that the user named in the first `--image`, which the `box` question names (design D5).
-    // The fractions do not depend on the scale, so a scaled copy gives the same box.
+    // The pixels come from the first `--image` as the user named it (design D5), because the fractions do not depend on the scale.
     const size = args.kind === "box" ? loaded[0]?.size : undefined;
     const res = (await post(body, key, { images })) as { answers?: unknown };
     console.log(render(args, res.answers, size));
     return EXIT.ok;
   } catch (err) {
-    // The message names the fault. It never holds the key, because the key is not in any message.
     console.error(err instanceof Error ? err.message : String(err));
     return exitOf(err);
   }

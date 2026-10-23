@@ -1,69 +1,53 @@
-// The mod handlers of the `decide` slice. With the option `off`, or with no key, the handlers send no call and change nothing.
-// The `tool.call` handler answers an `AskUserQuestion` call with the picks of Jev when Jev is sure about each question (documented: a `tool.call` hook answers with `{ result }`).
-// When Jev is not sure about one question, the dialog shows, with the pick of Jev in the description of the picked option.
-// The `tool.describe` handler adds the line to the tool text that tells Claude to put the facts in the question.
+// The mod handlers of the `decide` slice. With the option `off`, or with no key, they change nothing. Jev gets one request with `$.http.fetch`, and the key goes only in its header.
 // Each `$.env.get` call needs a literal name, so that `claude plugin validate` can follow it.
 
 import type { EngineInterface, MatchedHook, PluginOptions } from "claude-code";
-import { type CliCall, type Mode, modeOf } from "../domain/request.ts";
-import { JEV_TIMEOUT_MS } from "../limits.ts";
+import { jevBody, postJev } from "../../../kernel/jev.ts";
+import { keyOf, type Mode, modeOf } from "../domain/request.ts";
 import { JEV_ANSWERED, JEV_CONTINUE, TOOL_ASK } from "../prompts.ts";
-import { type CliRun, judgeQuestions } from "./ask.ts";
+import { judgeQuestions } from "./ask.ts";
 
-/** Runs the CLI `claudetto-decide` with the key in its environment, never in the arguments. */
-const runCli = async (
-  $: EngineInterface,
-  key: string,
-  call: CliCall,
-): Promise<CliRun> => {
-  const run = await $.process.run(
-    [
-      "bun",
-      "--no-env-file",
-      `${$.plugin.root}/bin/claudetto-decide`,
-      ...call.args,
-    ],
-    {
-      env: { TYPESAFE_API_KEY: key },
-      timeoutMs: JEV_TIMEOUT_MS,
-      ...(call.stdin === undefined ? {} : { stdin: call.stdin }),
-    },
-  );
-  return { exitCode: run.exitCode, stdout: run.stdout, stderr: run.stderr };
-};
+const kept: { mode: Mode; key: string } = { mode: "off", key: "" };
 
-/** The mode of the `decide` option, which the generated `register` sets once with `keepOptions`. */
-const kept: { mode: Mode } = { mode: "off" };
-
-/** Keeps the mode from the `userConfig` values of the plugin for the hooks of the slice. */
+/** Keeps the mode and the key from the `userConfig` values, which the generated `register` sets once. */
 export const keepOptions = (options: PluginOptions): void => {
   kept.mode = modeOf(options);
+  kept.key = keyOf(options);
 };
 
-export type DescribeHook = MatchedHook<
+/** The key of the option, else the exported `TYPESAFE_API_KEY` of 0.3.0-alpha.1. */
+const jevKey = async ($: EngineInterface): Promise<string | undefined> =>
+  kept.key || (await $.env.get("TYPESAFE_API_KEY"));
+
+type DescribeHook = MatchedHook<
   "tool.describe",
   { readonly tool: readonly ["AskUserQuestion"] }
 >;
 
-export type AskHook = MatchedHook<
+type AskHook = MatchedHook<
   "tool.call",
   { readonly tool: readonly ["AskUserQuestion"] }
 >;
 
-/** The `AskUserQuestion` call answered by Jev, or with the pick of Jev in each question that Jev is sure about. With the option not `jev`, or with no key, the call passes unchanged. */
+/** Answers the call with the picks of Jev when it is sure of each question, else adds the picks to the dialog. */
 export const onAskUserQuestion: AskHook = async ($, e, next) => {
   if (kept.mode !== "jev") return next(e);
-  const key = await $.env.get("TYPESAFE_API_KEY");
+  const key = await jevKey($);
   if (!key) return next(e);
-  const outcome = await judgeQuestions(e.questions, (call) =>
-    runCli($, key, call),
+  const outcome = await judgeQuestions(e.questions, (request) =>
+    postJev(
+      key,
+      jevBody(request.state, request.questions),
+      { fetch: (url, init) => $.http.fetch(url, init) },
+      { sleep: (ms, options) => $.clock.sleep(ms, options) },
+    ),
   );
   if (outcome === undefined) return next(e);
   if ("questions" in outcome)
     return next({ ...e, questions: outcome.questions });
   const { answered } = outcome;
-  // The answers come back keyed by the question text, as when the user picks.
-  // The context names Jev, so Claude tells the user who answered.
+  // The `tool.call` handler answers an `AskUserQuestion` call with the picks of Jev when Jev is sure about each question (documented: a `tool.call` hook answers with `{ result }`).
+  // The answers are keyed by the question text, as when the user picks. The context names Jev.
   const told = answered.map((p) =>
     JEV_ANSWERED({ ...p, confidence: p.confidence.toFixed(2) }),
   );
@@ -76,10 +60,9 @@ export const onAskUserQuestion: AskHook = async ($, e, next) => {
   };
 };
 
-/** The text of the `AskUserQuestion` tool with the line for Jev, only when Jev can answer. */
+/** Adds the line for Jev to the tool text, only when Jev can answer. */
 export const onDescribe: DescribeHook = async ($, e, next) => {
   const answer = await next(e);
-  if (kept.mode !== "jev" || !(await $.env.get("TYPESAFE_API_KEY")))
-    return answer;
+  if (kept.mode !== "jev" || !(await jevKey($))) return answer;
   return { ...answer, description: `${answer.description}\n\n${TOOL_ASK}` };
 };
