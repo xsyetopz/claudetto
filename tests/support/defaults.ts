@@ -47,6 +47,10 @@ export const ENV_DEFAULTS: Readonly<Record<string, Value>> = {
   DISABLE_EXTRA_USAGE_COMMAND: "0",
   DISABLE_FEEDBACK_COMMAND: "0",
   DISABLE_INSTALL_GITHUB_APP_COMMAND: "0",
+  // With no entry, a logged-in user gets the claude.ai MCP servers (`configure/env-vars/plugins-and-mcp`).
+  ENABLE_CLAUDEAI_MCP_SERVERS: "true",
+  // With no entry, the limits are 4096 and 16384 characters, and no one value has both (`extend/mcp/runtime`).
+  CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH: null,
 };
 
 /** The default of each settings key with a single value. */
@@ -55,6 +59,11 @@ export const SETTINGS_DEFAULTS: Readonly<Record<string, Value>> = {
   // With no entry, a server default chooses.
   autoDreamEnabled: null,
   autoMemoryEnabled: true,
+  disableAgentView: false,
+  // The 2.1.309 bundle defaults it to `true` (design D2 of `release-0-3-0-alpha-2`).
+  idleCompaction: true,
+  syncClaudeAiPlugins: true,
+  syncClaudeAiSkills: true,
   awaySummaryEnabled: true,
   modelProposedGoals: "auto",
   disableBundledSkills: false,

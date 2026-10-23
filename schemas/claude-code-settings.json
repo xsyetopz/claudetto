@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$comment": "Extracted from Claude Code 2.1.307",
+  "$comment": "Extracted from Claude Code 2.1.309",
   "type": "object",
   "properties": {
     "$schema": {
@@ -1354,5 +1354,5 @@
     }
   },
   "additionalProperties": false,
-  "title": "Claude Code 2.1.307 settings.json"
+  "title": "Claude Code 2.1.309 settings.json"
 }

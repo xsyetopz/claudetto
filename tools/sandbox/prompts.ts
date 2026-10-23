@@ -1,8 +1,17 @@
+export const FEWER_PLUGINS_LOADED = (v: {
+  loaded: string;
+  expected: string;
+}): string =>
+  `${v.loaded} plugins loaded, and the arm has ${v.expected} \`--plugin-dir\` folders, so the session is not the arm.`;
+
 export const MODEL_NOT_ALLOWED = (v: {
   model: string;
   allowed: string;
 }): string =>
-  `--model ${v.model} is not in availableModels of the sandbox (${v.allowed}), so Claude Code runs another model.`;
+  `--model ${v.model} is not in availableModels of the sandbox (${v.allowed}), so Claude Code runs another model and the session is not the arm.`;
+
+export const MISSING_PLUGIN_DIR = (v: { dir: string }): string =>
+  `--plugin-dir ${v.dir} has no .claude-plugin/plugin.json, so Claude Code loads no plugin from it and the session is not the arm.`;
 
 export const NO_PLUGIN_LOADED = `No plugin loaded, so the check proves nothing. Pass \`--plugin-dir DIR\` for each plugin folder.`;
 

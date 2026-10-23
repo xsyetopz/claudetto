@@ -35,7 +35,6 @@ A change of the words of a heading changes its anchor, so update each link to it
   Use active voice, simple tenses, and one topic in each paragraph.
   Use no semicolons, no phrasal verbs, and no marketing adjectives.
 - Put each code item in single backticks, such as a command, a tool name, a file path, an env var, a settings key, and a literal value.
-- Use semantic line breaks: start each sentence on a new line.
 - Start each page with a short paragraph that says what the page tells and who reads it.
 - Give each section one concern, and give each section a heading that names that concern.
   Put the sections in the order in which the reader needs them: the concept first, then the steps, then the details and the edge cases.

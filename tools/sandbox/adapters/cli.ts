@@ -4,6 +4,7 @@ import path from "node:path";
 import { cleanRefusal } from "../domain/clean.ts";
 import { report } from "../domain/frontmatter.ts";
 import {
+  MISSING_PLUGIN_DIR,
   MODEL_NOT_ALLOWED,
   NOTHING_TO_REMOVE,
   REFUSE_SYMLINK,
@@ -65,8 +66,27 @@ const childEnv = async (
   return env;
 };
 
-// Claude Code gives no error for a `--model` that `availableModels` leaves out.
-const warnModel = async (rest: string[], config: string): Promise<void> => {
+/** The count of `--plugin-dir` folders of `rest`, or null (after it prints why) when one holds no plugin manifest. */
+const checkPluginDirs = (rest: string[]): number | null => {
+  const dirs = rest.flatMap((a, i) =>
+    rest[i - 1] === "--plugin-dir"
+      ? [a]
+      : a.startsWith("--plugin-dir=")
+        ? [a.slice(13)]
+        : [],
+  );
+  const missing = dirs.filter(
+    (dir) => !fs.existsSync(path.join(dir, ".claude-plugin", "plugin.json")),
+  );
+  for (const dir of missing) console.error(MISSING_PLUGIN_DIR({ dir }));
+  return missing.length > 0 ? null : dirs.length;
+};
+
+// Claude Code gives no error for a `--model` that `availableModels` leaves out, so the run would serve another model than the arm. Returns true when it would.
+const modelDiffers = async (
+  rest: string[],
+  config: string,
+): Promise<boolean> => {
   const model = rest.includes("--model")
     ? rest[rest.indexOf("--model") + 1]
     : "";
@@ -75,14 +95,18 @@ const warnModel = async (rest: string[], config: string): Promise<void> => {
     Array.isArray(allowed) &&
     model?.startsWith("claude-") &&
     !allowed.includes(model)
-  )
+  ) {
     console.error(MODEL_NOT_ALLOWED({ model, allowed: allowed.join(", ") }));
+    return true;
+  }
+  return false;
 };
 
 /** The exit code of a `--check-frontmatter` session, from its exit and its debug log. */
 const frontmatterResult = async (
   exitCode: number,
   log: string | null,
+  plugins: number,
 ): Promise<number> => {
   if (exitCode !== 0) {
     console.error(`The sandbox session failed with exit ${exitCode}.`);
@@ -92,9 +116,29 @@ const frontmatterResult = async (
     console.error(`The session wrote no debug log at ${log}.`);
     return 1;
   }
-  const { lines, code } = report(log, await Bun.file(log).text());
+  const { lines, code } = report(log, await Bun.file(log).text(), plugins);
   for (const l of lines) console.log(l);
   return code;
+};
+
+/** The arguments of a `--check-frontmatter` session, and its debug log: one headless session that writes the log. */
+const frontmatterRun = (rest: string[]): { rest: string[]; log: string } => {
+  const log = path.join(
+    fs.mkdtempSync(
+      path.join(process.env["TMPDIR"] || os.tmpdir(), "sandbox-frontmatter-"),
+    ),
+    "debug.txt",
+  );
+  return {
+    rest: [
+      ...rest.filter((a) => a !== "--check-frontmatter"),
+      "--debug-file",
+      log,
+      "-p",
+      "Reply with OK.",
+    ],
+    log,
+  };
 };
 
 export const main = async (argv: string[]): Promise<number> => {
@@ -122,24 +166,12 @@ export const main = async (argv: string[]): Promise<number> => {
   if (args[0] === "--clean") return cleanRoot(root);
 
   let rest = absolutePluginDirs(args);
+  const plugins = checkPluginDirs(rest);
+  if (plugins === null) return 1;
 
   const check = rest.includes("--check-frontmatter");
   let log: string | null = null;
-  if (check) {
-    log = path.join(
-      fs.mkdtempSync(
-        path.join(process.env["TMPDIR"] || os.tmpdir(), "sandbox-frontmatter-"),
-      ),
-      "debug.txt",
-    );
-    rest = [
-      ...rest.filter((a) => a !== "--check-frontmatter"),
-      "--debug-file",
-      log,
-      "-p",
-      "Reply with OK.",
-    ];
-  }
+  if (check) ({ rest, log } = frontmatterRun(rest));
 
   await setUp({ root, config, home, project });
   const claude = Bun.which("claude");
@@ -148,7 +180,7 @@ export const main = async (argv: string[]): Promise<number> => {
     return 1;
   }
   const env = await childEnv(config, home);
-  await warnModel(rest, config);
+  if (await modelDiffers(rest, config)) return 1;
   // Managed settings can lock a plugin name, and then Claude Code ignores its `--plugin-dir` copy.
   const { exitCode } = Bun.spawnSync([claude, ...rest], {
     cwd: project,
@@ -156,5 +188,5 @@ export const main = async (argv: string[]): Promise<number> => {
     stdio: ["inherit", "inherit", "inherit"],
   });
   if (!check) return exitCode ?? 1;
-  return frontmatterResult(exitCode ?? 1, log);
+  return frontmatterResult(exitCode ?? 1, log, plugins);
 };

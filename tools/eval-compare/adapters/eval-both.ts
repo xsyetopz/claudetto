@@ -1,7 +1,14 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { type Arm, armHeading, evalArgs, verdict } from "../compare.ts";
+import {
+  type Arm,
+  armHeading,
+  type Expected,
+  evalArgs,
+  modelOf,
+  verdict,
+} from "../compare.ts";
 
 export type Spawn = (
   file: string,
@@ -29,6 +36,16 @@ const evalOf = async (
   return { code, result: (await file.exists()) ? await file.text() : null };
 };
 
+/** The arm of the plugin folder `dir`: the folder as given and with links resolved, because the result may hold either. */
+const expectedOf = (dir: string, opts: string[]): Expected => {
+  const real = fs.existsSync(dir) ? fs.realpathSync(dir) : dir;
+  const model = modelOf(opts);
+  return {
+    plugins: [...new Set([dir, real])],
+    ...(model === undefined ? {} : { model }),
+  };
+};
+
 export const runBoth = async (
   a: string,
   b: string,
@@ -44,7 +61,10 @@ export const runBoth = async (
     const x = await evalOf(first, rest, path.join(dir, "a.json"), run);
     log(armHeading("B", second));
     const y = await evalOf(second, rest, path.join(dir, "b.json"), run);
-    const result = verdict(x, y);
+    const result = verdict(x, y, [
+      expectedOf(first, rest),
+      expectedOf(second, rest),
+    ]);
     for (const line of result.lines) log(line);
     return result.code;
   } finally {

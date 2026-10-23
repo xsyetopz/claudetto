@@ -11,11 +11,11 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   AUTOCOMPACT_PCT,
-  BASH_OUTPUT_MAX_CHARS,
   CONTEXT_WINDOW,
   HAIKU_AUTOCOMPACT_WINDOW,
   HAIKU_HANDOFF_TRIGGER_TOKENS,
   HANDOFF_TRIGGER_TOKENS,
+  MCP_DESCRIPTION_MAX_CHARS,
   USAGE_LEVELS,
 } from "../../plugins/claudetto/kernel/budget.ts";
 import { MAX_ROWS } from "../../plugins/claudetto/slices/statusline/limits.ts";
@@ -42,7 +42,7 @@ export const formatJson = (json: unknown): string =>
 export const VALUES: Record<string, string> = {
   ...Object.fromEntries(
     Object.entries({
-      BASH_OUTPUT_MAX_CHARS,
+      MCP_DESCRIPTION_MAX_CHARS,
       CONTEXT_WINDOW,
       HAIKU_AUTOCOMPACT_WINDOW,
       HAIKU_HANDOFF_TRIGGER_TOKENS,

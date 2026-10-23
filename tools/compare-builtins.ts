@@ -17,6 +17,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { withoutGoal } from "./compare/without-goal.ts";
 
 type Arm = {
   /** Plugin options, written to `pluginConfigs` of the sandbox settings. */
@@ -82,19 +83,14 @@ const out = path.resolve(
 const extra = flag("--claude-flags", "").split(" ").filter(Boolean);
 const BIN = path.join(REPO, "tools/sandbox/main.ts");
 
-/** The plugin folder of the arm. The arm `goal-builtin` gets a copy with the hooks of the `goal` slice removed. */
+/** The plugin folder of the arm. The arm `goal-builtin` gets a copy with no goal hooks (`withoutGoal`). */
 const pluginDir = async (): Promise<string> => {
   const source = path.join(REPO, "plugins/claudetto");
   if (armName !== "goal-builtin") return source;
   const copy = path.join(out, "plugin-without-goal");
   fs.cpSync(source, copy, { recursive: true });
   const file = path.join(copy, "hooks/register.ts");
-  const kept = (await Bun.file(file).text())
-    .split("\n")
-    .filter((line) => !/^\s*(on\(.*, h[6789]\)|\/\/ eval: .* goal)/.test(line))
-    .join("\n")
-    .replace('["goal_status", "tool_hosts_notice"]', '["tool_hosts_notice"]');
-  await Bun.write(file, kept);
+  await Bun.write(file, withoutGoal(await Bun.file(file).text()));
   return copy;
 };
 const PLUGIN = await pluginDir();

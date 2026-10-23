@@ -23,9 +23,8 @@ typecheck:
 validate:
     bun run validate
 
-# Fail on a clone that `.jscpd-baseline.json` does not hold: merge `jscpd.local.json` into `.jscpd.json`, then run jscpd (`bunx jscpd --update-baseline` accepts the clones of the run)
+# Fail on a clone that `.jscpd-baseline.json` does not hold (`bunx jscpd --update-baseline` accepts the clones of the run)
 dry:
-    bun plugins/claudetto/bin/jscpd-config
     bunx jscpd --no-tips
 
 # Run the hook lab: the tests of each plugin hooks module, with stubbed Claude Code events

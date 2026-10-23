@@ -23,7 +23,7 @@ plugins:responsive-mode	off	-	Already \`false\` in \`enabledPlugins\` (\`prompt\
 plugins:sec-default	keep	-	A security policy plugin for managed settings. No lever makes it better.
 plugins:telemetry	off	-	Already \`false\` in \`enabledPlugins\` (\`prompt\` slice).
 plugins:tips	off	-	Already \`false\` in \`enabledPlugins\` (\`prompt\` slice).
-plugins:you-should-know	keep	-	The snippet leaves it to the user, because its side agent flags what the user can miss, and it makes its own model calls (the user, 2026-10-22).
+plugins:you-should-know	off	-	It makes its own model calls, so the snippet turns it off (design D2 of \`release-0-3-0-alpha-2\`).
 sections:act_dont_rederive	keep	-	behaviour rule against re-deriving facts, no lever makes it better
 sections:action_caution	off	-	the body of \`claudetto:main\` replaces the system sections (A9)
 sections:actions	off	3605	the body of \`claudetto:main\` replaces the system sections (A9)

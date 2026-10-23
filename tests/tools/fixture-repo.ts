@@ -16,6 +16,7 @@ const COMPARE = path.join(REPO, "tools/eval-compare");
 
 // Writes a file in `evals/results/` of the plugin path (the argument after `eval`).
 // Writes a valid result document to the file after `--json`, because the compare command reads it.
+// The document names the plugin path, because the compare command refuses a result of another plugin.
 // Exits with `FAKE_EXIT`.
 const FAKE_CLAUDE = `(async () => {
 const fs = require("node:fs");
@@ -26,7 +27,7 @@ fs.mkdirSync(results, { recursive: true });
 await Bun.write(path.join(results, "run.txt"), plugin);
 const json = process.argv.indexOf("--json");
 if (json !== -1)
-  await Bun.write(process.argv[json + 1], JSON.stringify({ partial: false, suite: { plugins: [{ name: "p" }] }, cases: [{ aggregates: { score: 1, scoreWithout: 0.5 } }] }));
+  await Bun.write(process.argv[json + 1], JSON.stringify({ partial: false, suite: { plugins: [{ name: "p", path: plugin }] }, cases: [{ aggregates: { score: 1, scoreWithout: 0.5 } }] }));
 process.exit(Number(process.env.FAKE_EXIT ?? 0));
 })();
 `;

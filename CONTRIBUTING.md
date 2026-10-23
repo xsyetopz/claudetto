@@ -2,7 +2,7 @@
 
 ## Set Up
 
-1. Install Bun 1.4.3 (the `packageManager` field of `package.json`), `just`, and Claude Code 2.1.302.
+1. Install Bun 1.4.3 (the `packageManager` field of `package.json`), `just`, and Claude Code 2.1.309.
 2. Run `bun install` in the repository root.
 3. Run `just check`.
    It runs the lint, the type check, the tests, the plugin validation, and the hook lab.
@@ -14,7 +14,7 @@
 In short:
 
 - Keep each file at 300 lines or less, and each test file at 500 lines or less.
-- Write docs in STE-flavored ASD-STE100, with semantic line breaks and no semicolons.
+- Write docs in STE-flavored ASD-STE100, with no semicolons.
 - Put each code item in inline code.
 - Use only the documented extension points of Claude Code.
 - A plugin imports nothing from another plugin.

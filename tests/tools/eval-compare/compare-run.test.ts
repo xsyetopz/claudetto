@@ -6,18 +6,26 @@ import { runBoth as runBothOn } from "../../../tools/eval-compare/adapters/eval-
 import {
   armProblem,
   baselineProblem,
+  modelOf,
   withCostBound,
 } from "../../../tools/eval-compare/compare.ts";
 
 const runBoth = runBothOn;
 
-/** A valid result document: one case with a score, and a plugin that loaded. */
-const GOOD = JSON.stringify({
-  schemaVersion: 1,
-  partial: false,
-  suite: { plugins: [{ name: "p", path: "/p" }] },
-  cases: [{ aggregates: { score: 1, scoreWithout: 0.5 } }],
-});
+/** A valid result document: one case with a score, and the plugin at `plugin` that loaded under `model`. */
+const good = (plugin = "/p", model?: string): string =>
+  JSON.stringify({
+    schemaVersion: 1,
+    partial: false,
+    suite: {
+      plugins: [{ name: "p", path: plugin }],
+      ...(model === undefined ? {} : { modelOverride: model }),
+    },
+    cases: [{ runsPerCase: 10, aggregates: { score: 1, scoreWithout: 0.5 } }],
+  });
+
+/** A result document for the plugin of the call that reads it. */
+const GOOD = (plugin: string): string => good(plugin);
 
 /**
  * A fake runner that gives each call the next status and records the folders and the arguments.
@@ -25,7 +33,7 @@ const GOOD = JSON.stringify({
  */
 const fake = (
   statuses: (number | undefined)[],
-  docs: (string | null)[] = [],
+  docs: (string | ((plugin: string) => string) | null)[] = [],
 ) => {
   const calls: string[] = [];
   const argvs: string[][] = [];
@@ -37,8 +45,12 @@ const fake = (
     spawn: (_cmd: string, args: string[]) => {
       calls.push(args[2] as string);
       argvs.push(args);
+      const plugin = args[2] as string;
+      const given = docs[calls.length - 1];
       const doc =
-        docs[calls.length - 1] ?? (calls.length <= docs.length ? null : GOOD);
+        typeof given === "function"
+          ? given(plugin)
+          : (given ?? (calls.length <= docs.length ? null : good(plugin)));
       // The fake runner is sync, as `spawnSync` is, so it cannot wait for `Bun.write`.
       if (doc !== null) {
         const fd = openSync(args[args.indexOf("--json") + 1] as string, "w");
@@ -123,7 +135,7 @@ test("`--json` is the last argument of a run, because it takes the words after i
 test("`armProblem` names each way that a result is not valid", async () => {
   const doc = (x: object) =>
     JSON.stringify({ cases: [{ aggregates: { score: 1 } }], ...x });
-  expect(armProblem(GOOD)).toBe(null);
+  expect(armProblem(GOOD("/p"))).toBe(null);
   expect(armProblem("not json")).toMatch(/not JSON/);
   expect(armProblem("null")).toMatch(/not an object/);
   expect(armProblem(JSON.stringify({ cases: [{ aggregates: {} }] }))).toMatch(
@@ -171,4 +183,52 @@ test("`baselineProblem` accepts one case below the maximum and names a missing s
   expect(baselineProblem(doc(1, 1))).toMatch(/maximum/);
   expect(baselineProblem(doc(0.5, undefined))).toMatch(/no baseline score/);
   expect(baselineProblem(null)).toBe(null);
+});
+
+test("an arm that loaded another plugin than the one it names fails the comparison", async () => {
+  const f = fake([0, 0], [GOOD, () => good("/elsewhere")]);
+  expect(await runBoth("a", "b", [], f.spawn, f.log)).toBe(1);
+  const out = f.lines.join("\n");
+  expect(out).toMatch(/Arm B has no valid result: the plugin of the arm/);
+  expect(out).not.toMatch(/Arm A (failed|has)/);
+});
+
+test("an arm that served another model than `--model` fails the comparison", async () => {
+  const f = fake([0, 0], [(p) => good(p, "haiku"), (p) => good(p, "sonnet")]);
+  expect(await runBoth("a", "b", ["--model", "haiku"], f.spawn, f.log)).toBe(1);
+  const out = f.lines.join("\n");
+  expect(out).toMatch(/Arm B has no valid result: the model served is sonnet/);
+  expect(out).not.toMatch(/Arm A (failed|has)/);
+});
+
+test("a result with no model override fails when `--model` names one, and passes with the model", async () => {
+  const bad = fake([0, 0]);
+  expect(await runBoth("a", "b", ["--model=haiku"], bad.spawn, bad.log)).toBe(
+    1,
+  );
+  const ok = fake([0, 0], [(p) => good(p, "haiku"), (p) => good(p, "haiku")]);
+  expect(await runBoth("a", "b", ["--model", "haiku"], ok.spawn, ok.log)).toBe(
+    0,
+  );
+});
+
+test("`modelOf` reads both forms of `--model`", () => {
+  expect(modelOf(["--model", "haiku"])).toBe("haiku");
+  expect(modelOf(["--model=haiku"])).toBe("haiku");
+  expect(modelOf(["--runs", "1"])).toBe(undefined);
+});
+
+test("a baseline at the maximum says that the case does not separate the arms", () => {
+  const ceiling = JSON.stringify({
+    cases: [{ aggregates: { score: 1, scoreWithout: 1 } }],
+  });
+  expect(baselineProblem(ceiling)).toMatch(/does not separate the arms/);
+});
+
+test("a passing verdict gives the runs of each case next to it", async () => {
+  const f = fake([0, 0]);
+  expect(await runBoth("a", "b", [], f.spawn, f.log)).toBe(0);
+  expect(f.lines.join("\n")).toMatch(
+    /Runs of each case: 10 \(arm A\), 10 \(arm B\)/,
+  );
 });

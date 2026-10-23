@@ -30,15 +30,47 @@ const NOT_LOADED = new Set([
   "will_not_load",
 ]);
 
+/** The arm that the run names: the folders that the plugin can be recorded under, and the model of `--model`, if any. */
+export type Expected = { plugins: string[]; model?: string };
+
 type Doc = {
   partial?: unknown;
-  suite?: { plugins?: { name?: unknown; problem?: unknown }[] };
+  suite?: {
+    modelOverride?: unknown;
+    plugins?: { name?: unknown; path?: unknown; problem?: unknown }[];
+  };
   cases?: { aggregates?: { score?: unknown; scoreWithout?: unknown } }[];
 };
 
 const MAX_SCORE = 1;
 
-export const armProblem = (result: string | null): string | null => {
+/** The value of `--model` in `opts`, in either form, or `undefined`. */
+export const modelOf = (opts: string[]): string | undefined => {
+  const at = opts.findIndex((o) => o === "--model" || o.startsWith("--model="));
+  if (at === -1) return undefined;
+  return opts[at]?.startsWith("--model=")
+    ? opts[at]?.slice("--model=".length)
+    : opts[at + 1];
+};
+
+/** Why the loaded plugin or the model served is not the arm that the run names, or null. */
+const armMismatch = (doc: Doc, expected: Expected): string | null => {
+  const plugins = doc.suite?.plugins ?? [];
+  if (
+    plugins.length > 0 &&
+    !plugins.some((p) => expected.plugins.includes(String(p?.path)))
+  )
+    return `the plugin of the arm (${expected.plugins[0]}) is not the loaded plugin (${plugins.map((p) => String(p?.path)).join(", ")})`;
+  const model = doc.suite?.modelOverride;
+  return expected.model !== undefined && model !== expected.model
+    ? `the model served is ${String(model)}, and the arm names ${expected.model}`
+    : null;
+};
+
+export const armProblem = (
+  result: string | null,
+  expected?: Expected,
+): string | null => {
   if (result === null) return "it wrote no result file";
   let doc: Doc;
   try {
@@ -64,7 +96,7 @@ export const armProblem = (result: string | null): string | null => {
     if (bad)
       return `the plugin ${String(bad.name)} did not load (${String(bad.problem)})`;
   }
-  return null;
+  return expected ? armMismatch(doc, expected) : null;
 };
 
 export const baselineProblem = (result: string | null): string | null => {
@@ -74,11 +106,23 @@ export const baselineProblem = (result: string | null): string | null => {
   if (!scores.every((s) => Number.isFinite(s as number | undefined)))
     return "a case in its result has no baseline score";
   if ((scores as number[]).every((s) => s >= MAX_SCORE))
-    return "its baseline is at the maximum, so no gain can show";
+    return "its baseline is at the maximum, so no gain can show and the case does not separate the arms";
   return null;
 };
 
-export const verdict = (x: Arm, y: Arm): Verdict => {
+/** The runs of each case in `result`, for the line of a verdict. */
+const sampleSize = (result: string | null): string => {
+  const runs = (
+    JSON.parse(result ?? "{}") as { cases?: { runsPerCase?: unknown }[] }
+  ).cases?.map((c) => c.runsPerCase);
+  return runs?.length ? runs.join(", ") : "unknown";
+};
+
+export const verdict = (
+  x: Arm,
+  y: Arm,
+  expected?: [Expected, Expected],
+): Verdict => {
   const failed = (
     [
       ["A", x],
@@ -87,7 +131,7 @@ export const verdict = (x: Arm, y: Arm): Verdict => {
   ).flatMap(([name, arm]) => {
     if (arm.code !== 0)
       return [`Arm ${name} failed with exit code ${arm.code}.`];
-    const problem = armProblem(arm.result);
+    const problem = armProblem(arm.result, expected?.[name === "A" ? 0 : 1]);
     if (problem) return [`Arm ${name} has no valid result: ${problem}.`];
     const base = baselineProblem(arm.result);
     return base ? [`Arm ${name} has no usable baseline: ${base}.`] : [];
@@ -95,7 +139,9 @@ export const verdict = (x: Arm, y: Arm): Verdict => {
   if (failed.length === 0)
     return {
       code: 0,
-      lines: ["\nCompare the WITH column of the two tables."],
+      lines: [
+        `\nCompare the WITH column of the two tables. Runs of each case: ${sampleSize(x.result)} (arm A), ${sampleSize(y.result)} (arm B).`,
+      ],
     };
   return {
     code: 1,

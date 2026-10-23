@@ -7,7 +7,7 @@ import path from "node:path";
 import { SNIPPET } from "../../plugins/claudetto/snippets.ts";
 import { REPO, tmpDir } from "./repo.ts";
 
-const PACKAGE_MANAGER = "bun@1.4.3";
+const PACKAGE_MANAGER = "bun@1.4.4";
 const PLUGIN_COMMAND = /^bun --no-env-file /;
 
 type Manifest = { packageManager?: string; scripts?: Record<string, string> };
@@ -40,7 +40,7 @@ const offPluginBun = (commands: string[]): string[] =>
   commands.filter((command) => !PLUGIN_COMMAND.test(command));
 
 // A lint of the live repository.
-test("lint: each script of `package.json` starts with `bun`, and `packageManager` is `bun@1.4.3`", async () => {
+test("lint: each script of `package.json` starts with `bun`, and `packageManager` is `bun@1.4.4`", async () => {
   const manifest = await Bun.file(path.join(REPO, "package.json")).json();
   expect(offBun(manifest)).toEqual([]);
 });

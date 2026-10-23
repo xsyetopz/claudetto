@@ -35,7 +35,7 @@ jobs:
         with:
           just-version: 1.58.0
       # The version in `MIN_CLAUDE_CODE_VERSION` of `tools/limits.ts`.
-      - run: bun add --global @anthropic-ai/claude-code@2.1.307
+      - run: bun add --global @anthropic-ai/claude-code@2.1.309
       - run: claude --version
       - run: git config --global user.email ci@example.com && git config --global user.name ci
       - run: just ci
