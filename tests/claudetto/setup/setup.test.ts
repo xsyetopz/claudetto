@@ -1,31 +1,21 @@
-// The `setup` CLI: the settings snippet, and the cleanup of the keys that claudetto 0.1.0 wrote.
+// The `setup` CLI: the settings snippet, and the removal of the deny rules of 0.3.0-alpha.1.
 // Each test runs `main` in a temp folder with its own config folder.
 
 import { expect, test } from "bun:test";
-import { mkdtemp } from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
+import {
+  HAIKU_AUTOCOMPACT_WINDOW,
+  MCP_DESCRIPTION_MAX_CHARS,
+} from "../../../plugins/claudetto/kernel/budget.ts";
 import { main } from "../../../plugins/claudetto/slices/setup/adapters/cli.ts";
+import {
+  DROPPED_DENY,
+  SNIPPET,
+} from "../../../plugins/claudetto/slices/setup/prompts.ts";
+import { runSetup } from "../../support/setup-run.ts";
 
-const BLOCK = "<!-- claudetto:begin -->\nold rules\n<!-- claudetto:end -->";
-
-/** Runs `claudetto-setup --scope user --apply` on `settings` and `claudeMd`, and returns the files after the run. */
-const run = async (settings: object, claudeMd?: string) => {
-  const dir = await mkdtemp(path.join(os.tmpdir(), "setup-"));
-  const file = path.join(dir, "settings.json");
-  await Bun.write(file, JSON.stringify(settings));
-  const md = path.join(dir, "CLAUDE.md");
-  if (claudeMd !== undefined) await Bun.write(md, claudeMd);
-  const io = { log: () => {}, error: () => {} };
-  const env = { CLAUDE_CONFIG_DIR: dir, CLAUDE_PROJECT_DIR: dir };
-  expect(await main(["--scope", "user", "--apply"], env, dir, io)).toBe(0);
-  return {
-    settings: await Bun.file(file).json(),
-    claudeMd: (await Bun.file(md).exists())
-      ? await Bun.file(md).text()
-      : undefined,
-  };
-};
+/** Runs `claudetto-setup --scope user --apply` on `settings`, and gives the file after the run and the printed text. */
+const run = (settings: object) =>
+  runSetup({ "settings.json": JSON.stringify(settings) });
 
 test("the snippet holds no `promptCacheTtl` and no `subagentPromptCacheTtl`", async () => {
   const { settings } = await run({});
@@ -41,62 +31,39 @@ test("the snippet keeps the keys of the user, and a second run changes nothing",
   expect((await run(first)).settings).toStrictEqual(first);
 });
 
-/** The eight pairs that 0.1.0 wrote for the two hooks. */
-const PAIRS_0_1_0: [string, string][] = [
-  ["hook.claudetto-attribution.event", "commit-msg"],
-  ["hook.claudetto-attribution.command", "script"],
-  ["hook.claudetto-attribution.enabled", "true"],
-  ["hook.commit-msg.enabled", "true"],
-  ["hook.claudetto-policy.event", "pre-push"],
-  ["hook.claudetto-policy.command", "script"],
-  ["hook.claudetto-policy.enabled", "true"],
-  ["hook.pre-push.enabled", "true"],
-];
-
-test("the cleanup removes the eight git config pairs of 0.1.0 from `env`, and keeps the pair of the user", async () => {
-  const pairs = [["user.name", "Ann"], ...PAIRS_0_1_0];
-  const env = Object.fromEntries([
-    ["GIT_CONFIG_COUNT", String(pairs.length)],
-    ...pairs.flatMap(([k, v], i) => [
-      [`GIT_CONFIG_KEY_${i}`, k],
-      [`GIT_CONFIG_VALUE_${i}`, v],
-    ]),
-  ]);
-  const { settings } = await run({ env });
-  const git = Object.entries(settings.env).filter(([k]) =>
-    k.startsWith("GIT_CONFIG"),
-  );
-  expect(Object.fromEntries(git)).toStrictEqual({
-    GIT_CONFIG_COUNT: "1",
-    GIT_CONFIG_KEY_0: "user.name",
-    GIT_CONFIG_VALUE_0: "Ann",
-  });
-});
-
-test("the cleanup removes `GIT_CONFIG_COUNT` when only the pairs of claudetto were there", async () => {
-  const { settings } = await run({
+test("Fresh Install: an empty file gets the off switches, the agent denies, the model caps, and the MCP bound, and no `IS_DEMO`", async () => {
+  const { settings } = await run({});
+  expect(settings).toMatchObject({
+    syncClaudeAiSkills: false,
+    syncClaudeAiPlugins: false,
+    idleCompaction: false,
+    disableAgentView: true,
+    enabledPlugins: { "cc-plugin-you-should-know@builtin": false },
+    modelSettings: {
+      "claude-opus-5-5": { maxEffortLevel: "high" },
+      "claude-sonnet-5-5": { maxEffortLevel: "medium" },
+      "claude-haiku-5-5": { autoCompactWindow: HAIKU_AUTOCOMPACT_WINDOW },
+    },
     env: {
-      GIT_CONFIG_COUNT: "1",
-      GIT_CONFIG_KEY_0: "hook.claudetto-policy.event",
-      GIT_CONFIG_VALUE_0: "pre-push",
+      ENABLE_CLAUDEAI_MCP_SERVERS: "false",
+      CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS: "1",
+      CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH: String(MCP_DESCRIPTION_MAX_CHARS),
     },
   });
-  expect(Object.keys(settings.env).filter((k) => k.startsWith("GIT"))).toEqual(
-    [],
-  );
+  for (const name of ["claude", "claude-code-guide", "general-purpose"])
+    expect(settings.permissions.deny).toContain(`Agent(${name})`);
+  expect(settings.env).not.toHaveProperty("IS_DEMO");
+  expect(settings.permissions.deny).not.toContain("TaskStop");
 });
 
-test("the cleanup removes the claudetto block of `CLAUDE.md`, and keeps the text of the user", async () => {
-  const { claudeMd } = await run({}, `# Mine\n\n${BLOCK}\n`);
-  expect(claudeMd).toBe("# Mine\n");
-});
-
-test('the cleanup removes `promptCacheTtl: "5m"`, and keeps other values', async () => {
-  const { settings } = await run({ promptCacheTtl: "5m" });
-  expect(settings.promptCacheTtl).toBeUndefined();
-  expect((await run({ promptCacheTtl: "1h" })).settings.promptCacheTtl).toBe(
-    "1h",
-  );
+test("Upgrade from Alpha 1: setup removes `Bash(rm -rf /*)` and `Bash(rm -rf ~/*)`, lists both, and keeps the other rules", async () => {
+  const deny = [...SNIPPET.permissions.deny, ...DROPPED_DENY, "Read(./x)"];
+  const { settings, text } = await run({ permissions: { deny } });
+  for (const rule of DROPPED_DENY) {
+    expect(settings.permissions.deny).not.toContain(rule);
+    expect(text).toContain(`\`${rule}\``);
+  }
+  expect(settings.permissions.deny).toContain("Read(./x)");
 });
 
 test("`--help` and an unknown flag such as `--aply` return 2 with the usage and write nothing", async () => {

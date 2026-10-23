@@ -1,14 +1,9 @@
-// The CLI `claudetto-setup` of the `setup` slice. The launcher `bin/claudetto-setup` calls `main`.
-//
-//   claudetto-setup [--scope user|project|local] [--apply]
-//
-// It cleans the keys of 0.1.0 and 0.2.0 out of the settings file and out of `CLAUDE.md`, then merges the settings snippet into the settings file.
-// It writes nothing without `--apply`.
-// With `--apply`, in a project with `.git/`, it also appends the local files of claudetto to `.gitignore`.
-
+// The CLI `claudetto-setup`, which the launcher `bin/claudetto-setup` calls. Usage: see `usage` in `prompts.ts`.
+// It writes nothing without `--apply`. `--global-rule=LINE` takes the `=` form, because a line can start with `-`.
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { parseArgs } from "node:util";
 import { writeAtomic } from "../../../kernel/node/fs.ts";
 import {
   CLAUDE_DIR,
@@ -17,40 +12,37 @@ import {
   PROJECT_SETTINGS,
   SETTINGS_FILE,
 } from "../../../kernel/paths.ts";
+import { withIgnores, withLines } from "../domain/gitignore.ts";
+import { inventory } from "../domain/inventory.ts";
+import { dropOldDeny, type Json, merge, snippetFor } from "../domain/merge.ts";
+import { planCap, planOption } from "../domain/plan.ts";
+import { t } from "../prompts.ts";
 import {
-  cleanGitConfig,
-  cleanLegacyKeys,
-  cleanUpgrade,
-  stripBlock,
-} from "../domain/cleanup.ts";
-import { withIgnores } from "../domain/gitignore.ts";
-import { isObject, type Json, merge, snippetFor } from "../domain/merge.ts";
-import { planCap } from "../domain/plan.ts";
+  findMemoryFiles,
+  writeGlobalMd,
+  writeLocalNotes,
+} from "./claude-md.ts";
+import { findOpenspec, openspecRun } from "./openspec.ts";
 import {
-  CLAUDE_MD_REMOVED,
-  CLEANED,
-  CONTEXT7_FOUND,
-  DRY_RUN,
-  KEPT_KEY,
-  NO_PLAN_CAP,
-  PROJECT_NO_PLAN_CAP,
-  PROJECT_NO_STATUS_LINE,
-  REMOVED_RULE,
-  SCOPE_MISSING,
-  SETTINGS_FAILED,
-  SETTINGS_MATCH,
-  UNKNOWN_SCOPE,
-  USAGE,
-  WROTE,
-} from "../prompts.ts";
+  amend,
+  context7Files,
+  pluginInfo,
+  readOr,
+  readSettings,
+  rulesIn,
+  skillsIn,
+} from "./scan.ts";
 
-/** Where the CLI prints. */
-export type Io = { log: (line: string) => void; error: (line: string) => void };
+type Io = { log: (line: string) => void; error: (line: string) => void };
+type Dirs = { configDir: string; projectDir: string };
 
-const consoleIo: Io = { log: console.log, error: console.error };
-
-/** The plugin folder, three levels above this file. */
 const ROOT = path.resolve(import.meta.dirname, "..", "..", "..");
+const multi = {
+  type: "string",
+  multiple: true,
+  default: [] as string[],
+} as const;
+const flag = { type: "boolean", default: false } as const;
 
 /** Prints `message` as an error and gives the exit status of a bad call. */
 const fail = (io: Io, message: string): number => {
@@ -58,149 +50,217 @@ const fail = (io: Io, message: string): number => {
   return 2;
 };
 
-/** The parsed JSON of `file`, `{}` when the file is missing. Throws on text that is not a JSON object. */
-const readSettings = async (file: string): Promise<Json> => {
-  if (!fs.existsSync(file)) return {};
-  const data: unknown = JSON.parse(await Bun.file(file).text());
-  if (!isObject(data)) throw new Error("The settings are not an object.");
-  return data;
-};
-
-/** The settings of `file`, or `undefined` after an error line when the file does not parse. */
-const readReported = async (
-  file: string,
-  io: Io,
-): Promise<Json | undefined> => {
-  const settings = await readSettings(file).catch((err: Error) => err);
-  if (!(settings instanceof Error)) return settings;
-  io.error(SETTINGS_FAILED({ file, message: settings.message }));
-  return undefined;
-};
-
-/** Appends the local files of claudetto to the `.gitignore` of the project, when the project has `.git/`. */
-const ignoreLocal = async (projectDir: string): Promise<void> => {
-  if (!fs.existsSync(path.join(projectDir, ".git"))) return;
-  const file = path.join(projectDir, ".gitignore");
-  const text = fs.existsSync(file) ? await Bun.file(file).text() : "";
-  const next = withIgnores(text);
-  if (next !== text) await writeAtomic(file, next);
-};
-
-/** The size of the frontmatter `description` of the skill file `text`, or of all of `text` when it has none. */
-const descriptionChars = (text: string): number => {
+/** The options of the arguments, or the usage to print when they are wrong. */
+const parseOptions = (args: string[]) => {
   try {
-    const meta = Bun.YAML.parse(text.split(/^---$/m)[1] ?? "") as Json | null;
-    const description = meta?.["description"];
-    if (typeof description === "string") return description.length;
-  } catch {}
-  return text.length;
-};
-
-/** The official Context7 skill `find-docs` and the Context7 rules in `dir`, each with the characters that it adds to each session. */
-const context7Files = async (dir: string): Promise<[string, number][]> => {
-  const found: [string, number][] = [];
-  const skill = path.join(dir, "skills", "find-docs", "SKILL.md");
-  if (fs.existsSync(skill))
-    found.push([skill, descriptionChars(await Bun.file(skill).text())]);
-  const rules = path.join(dir, "rules");
-  const names = fs.existsSync(rules) ? fs.readdirSync(rules) : [];
-  for (const name of names.filter((n) => /context7.*\.md$/i.test(n)).sort()) {
-    const file = path.join(rules, name);
-    found.push([file, (await Bun.file(file).text()).length]);
+    const { values } = parseArgs({
+      args,
+      options: {
+        scope: { type: "string", default: "user" },
+        mode: { type: "string", default: "merge" },
+        keep: multi,
+        "off-tool": multi,
+        "off-skill": multi,
+        "off-plugin": multi,
+        "deny-mcp": multi,
+        "exclude-md": multi,
+        "global-rule": multi,
+        apply: flag,
+        inventory: flag,
+        "demo-alias": flag,
+        "remove-openspec": flag,
+        "global-md": flag,
+        "local-notes": flag,
+      },
+    });
+    // The three write actions take `--apply` as their yes, so `--apply` clashes with the other actions only.
+    const writes = [
+      values["remove-openspec"],
+      values["global-md"],
+      values["local-notes"],
+    ];
+    const others = [values.inventory, values["demo-alias"]].filter(Boolean);
+    const count = writes.filter(Boolean).length;
+    const clash = count
+      ? count + others.length > 1
+      : others.length + Number(values.apply) > 1;
+    return clash || !["merge", "replace"].includes(values.mode)
+      ? { error: t("usage") }
+      : values;
+  } catch {
+    return { error: t("usage") };
   }
-  return found;
 };
 
-/** The scope of the arguments, or the message to print when they are wrong. */
-const parseOptions = (
-  args: string[],
-): { apply: boolean; scope: string } | { error: string } => {
-  const at = args.indexOf("--scope");
-  const scope = at < 0 ? "user" : args[at + 1];
-  const bad = args.filter(
-    (a, i) => !["--apply", "--scope"].includes(a) && !(i > 0 && at === i - 1),
+type Options = Exclude<ReturnType<typeof parseOptions>, { error: string }>;
+
+/** The settings that turn off the names in `o`, with no key for an empty list. An off plugin or MCP server is for one project. */
+const offSettings = (o: Options): Json => {
+  const each = (names: string[], value: unknown) =>
+    Object.fromEntries(names.map((n) => [n, value]));
+  const [tools, skills, plugins, servers] = [
+    o["off-tool"],
+    o["off-skill"],
+    o["off-plugin"],
+    o["deny-mcp"],
+  ];
+  const keys: [string, string[], unknown][] = [
+    ["permissions", tools, { deny: tools }],
+    ["claudeMdExcludes", o["exclude-md"], o["exclude-md"]],
+    ["skillOverrides", skills, each(skills, "off")],
+    ["enabledPlugins", plugins, each(plugins, false)],
+    [
+      "deniedMcpServers",
+      servers,
+      servers.map((serverName) => ({ serverName })),
+    ],
+  ];
+  return Object.fromEntries(
+    keys
+      .filter(([, names]) => names.length)
+      .map(([key, , value]) => [key, value]),
   );
-  if (bad.length > 0) return { error: USAGE };
-  if (!scope || scope.startsWith("--")) return { error: SCOPE_MISSING };
-  return { apply: args.includes("--apply"), scope };
 };
 
-const scopeFiles = (
-  scope: string,
-  configDir: string,
-  projectDir: string,
-): [string, string] | undefined => {
-  const files: Record<string, [string, string]> = {
-    user: [
-      path.join(configDir, SETTINGS_FILE),
-      path.join(configDir, "CLAUDE.md"),
-    ],
-    project: [
-      path.join(projectDir, PROJECT_SETTINGS),
-      path.join(projectDir, "CLAUDE.md"),
-    ],
-    local: [
-      path.join(projectDir, PROJECT_LOCAL_SETTINGS),
-      path.join(projectDir, "CLAUDE.local.md"),
-    ],
-  };
-  return Object.hasOwn(files, scope) ? files[scope] : undefined;
+type Run = {
+  file: string;
+  settings: Json;
+  changes: string[];
+  apply: boolean;
+  backup: boolean;
 };
 
-const askOf = (s: Json): unknown[] =>
-  isObject(s["permissions"]) && Array.isArray(s["permissions"]["ask"])
-    ? s["permissions"]["ask"]
-    : [];
+/** Writes `settings` to `file` with `apply` and a change, after a copy of the old file with `backup`, or prints the dry-run line. */
+const save = async (
+  io: Io,
+  { file, settings, changes, apply, backup }: Run,
+): Promise<number> => {
+  if (!changes.length) return 0;
+  if (!apply) io.log(`\n${t("dryRun")}`);
+  else {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    if (backup && fs.existsSync(file)) {
+      const copy = `${file}.${Date.now()}.bak`;
+      fs.copyFileSync(file, copy);
+      io.log(t("backup", { file: copy }));
+    }
+    await writeAtomic(file, `${JSON.stringify(settings, null, 2)}\n`);
+    io.log(`\n${t("wrote", { file })}`);
+  }
+  return 0;
+};
 
-/** The messages for the keys and the `ask` rules that the cleaning removed. */
-const cleaningChanges = (current: Json, cleaned: Json): string[] => {
-  const changes = Object.keys(current)
-    .filter((k) => JSON.stringify(cleaned[k]) !== JSON.stringify(current[k]))
-    .map((key) => CLEANED({ key }));
-  const keptAsk = askOf(cleaned);
-  for (const rule of askOf(current))
-    if (!keptAsk.includes(rule))
-      changes.push(REMOVED_RULE({ rule: String(rule) }));
-  return changes;
+/** The file by the key `name` of `files`, or `undefined` for a key that `files` does not hold itself. */
+const pick = (files: Record<string, string>, name: string) =>
+  Object.hasOwn(files, name) ? files[name] : undefined;
+
+/** Appends the alias once to the startup file of the `zsh` or `bash` shell of the user. */
+const writeDemoAlias = async (
+  env: NodeJS.ProcessEnv,
+  io: Io,
+): Promise<number> => {
+  const shell = path.basename(env["SHELL"] ?? "");
+  const home = env["HOME"] || os.homedir();
+  const file = pick(
+    {
+      zsh: path.join(env["ZDOTDIR"] || home, ".zshrc"),
+      bash: path.join(home, ".bashrc"),
+    },
+    shell,
+  );
+  if (!file) return fail(io, t("demoNoRc", { shell: shell || "(unset)" }));
+  await amend(file, (text) =>
+    withLines(text, t("demoHeader"), [t("demoAlias")]),
+  );
+  io.log(t("demoWrote", { file }));
+  return 0;
+};
+
+type Info = {
+  file: string;
+  scope: string;
+  cap: unknown;
+  tier: string;
+  kept: string[];
+  dirs: string[];
+  changes: string[];
 };
 
 /** Prints the target, the notes, the `context7` files, and the changes. */
 const report = async (
   io: Io,
-  info: {
-    file: string;
-    scope: string;
-    cap: unknown;
-    tier: string;
-    kept: string[];
-    dirs: string[];
-    changes: string[];
-  },
-): Promise<void> => {
-  const { file, scope, cap, tier, kept, dirs, changes } = info;
+  { file, scope, cap, tier, kept, dirs, changes }: Info,
+) => {
   io.log(`Target: ${file} (${scope} scope)`);
-  if (scope === "project") io.log(PROJECT_NO_STATUS_LINE);
-  if (scope === "project") io.log(PROJECT_NO_PLAN_CAP);
-  else if (!cap) io.log(NO_PLAN_CAP({ tier }));
-  for (const key of kept) io.log(KEPT_KEY({ key }));
+  if (scope === "project") io.log(t("projectNoStatus"));
+  if (scope === "project") io.log(t("projectNoCap"));
+  else if (!cap) io.log(t("noPlanCap", { tier }));
+  for (const key of kept) io.log(t("keptKey", { key }));
   for (const dir of new Set(dirs))
     for (const [found, chars] of await context7Files(dir))
-      io.log(CONTEXT7_FOUND({ file: found, chars }));
-  io.log(changes.length ? `${changes.length} change(s):` : SETTINGS_MATCH);
+      io.log(t("context7", { file: found, chars }));
+  io.log(changes.length ? `${changes.length} change(s):` : t("settingsMatch"));
   for (const line of changes) io.log(`  ${line}`);
 };
 
-/** Writes the settings file, and the `CLAUDE.md` file when its text changed. */
-const writeAll = async (
-  file: string,
-  settings: Json,
-  claudeMd: string,
-  mdNext: string,
-  mdChanged: boolean,
-): Promise<void> => {
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  await writeAtomic(file, `${JSON.stringify(settings, null, 2)}\n`);
-  if (mdChanged) await writeAtomic(claudeMd, mdNext);
+type Have = Pick<
+  Parameters<typeof inventory>[0],
+  "current" | "snippet" | "state" | "plan"
+>;
+
+/** The inventory, with the files that `have` leaves out read from the config and project folders. */
+const inventoryOf = async (
+  env: NodeJS.ProcessEnv,
+  have: Have,
+  { configDir, projectDir }: Dirs,
+) =>
+  inventory({
+    ...have,
+    projectDir,
+    mcpJson: await readOr(path.join(projectDir, ".mcp.json")),
+    skills: [
+      ...(await skillsIn(configDir, "user")),
+      ...(await skillsIn(path.join(projectDir, CLAUDE_DIR), "project")),
+    ],
+    pluginInfo: await pluginInfo(configDir, have.current["enabledPlugins"]),
+    openspec: await findOpenspec(env, configDir, projectDir),
+    rules: await rulesIn(configDir),
+    memoryFiles: await findMemoryFiles(
+      projectDir,
+      configDir,
+      have.current["claudeMdExcludes"],
+    ),
+  });
+
+/** The action that changes no settings file, or `undefined` when `o` names none. */
+const sideAction = (
+  io: Io,
+  env: NodeJS.ProcessEnv,
+  o: Options,
+  { configDir, projectDir }: Dirs,
+) => {
+  if (o["demo-alias"]) return writeDemoAlias(env, io);
+  if (o["remove-openspec"])
+    return openspecRun(io, env, o.apply, configDir, projectDir);
+  if (o["global-md"])
+    return writeGlobalMd(io, configDir, o["global-rule"], o.apply);
+  if (o["local-notes"]) return writeLocalNotes(io, projectDir, o.apply);
+  return undefined;
+};
+
+/** Merges only the off entries of `o` into `current` and saves them, or `undefined` when `o` has none. */
+const turnOff = (io: Io, o: Options, file: string, current: Json) => {
+  const off = offSettings(o);
+  if (!Object.keys(off).length) return undefined;
+  if (
+    (off["enabledPlugins"] ?? off["deniedMcpServers"]) &&
+    o.scope !== "project"
+  )
+    return fail(io, t("denyMcpScope"));
+  const changes: string[] = [];
+  const settings = merge(current, off, changes);
+  for (const line of changes) io.log(`  ${line}`);
+  return save(io, { file, settings, changes, apply: o.apply, backup: false });
 };
 
 /** Run the CLI with `args` and return the exit status. */
@@ -208,44 +268,64 @@ export const main = async (
   args: string[],
   env: NodeJS.ProcessEnv = process.env,
   cwd: string = process.cwd(),
-  io: Io = consoleIo,
+  io: Io = { log: console.log, error: console.error },
 ): Promise<number> => {
   const options = parseOptions(args);
   if ("error" in options) return fail(io, options.error);
-  const { apply, scope } = options;
+  const { apply, scope, mode, keep } = options;
   const configDir =
     env["CLAUDE_CONFIG_DIR"] || path.join(os.homedir(), CLAUDE_DIR);
-  const projectDir = path.resolve(env["CLAUDE_PROJECT_DIR"] || cwd);
-  const [file, claudeMd] = scopeFiles(scope, configDir, projectDir) ?? [];
-  if (!file || !claudeMd) return fail(io, UNKNOWN_SCOPE({ scope }));
-  const current = await readReported(file, io);
-  if (!current) return 1;
-  const cleaned = cleanLegacyKeys(cleanGitConfig(current));
-  const changes = cleaningChanges(current, cleaned);
-  const upgraded = cleanUpgrade(cleaned, changes);
+  const dirs = {
+    configDir,
+    projectDir: path.resolve(env["CLAUDE_PROJECT_DIR"] || cwd),
+  };
+  const side = sideAction(io, env, options, dirs);
+  if (side) return side;
+  const file = pick(
+    {
+      user: path.join(configDir, SETTINGS_FILE),
+      project: path.join(dirs.projectDir, PROJECT_SETTINGS),
+      local: path.join(dirs.projectDir, PROJECT_LOCAL_SETTINGS),
+    },
+    scope,
+  );
+  if (!file) return fail(io, t("unknownScope", { scope }));
+  const current = await readSettings(file).catch((err: Error) => err);
+  if (current instanceof Error) {
+    io.error(t("settingsFailed", { file, message: current.message }));
+    return 1;
+  }
+  const off = turnOff(io, options, file, current);
+  if (off) return off;
+  const changes: string[] = [];
+  const upgraded = dropOldDeny(mode === "replace" ? {} : current, changes);
   const { snippet, kept } = snippetFor(upgraded, ROOT, scope === "project");
-  const state = await readSettings(
+  const state = await readOr(
     path.join(env["CLAUDE_CONFIG_DIR"] || os.homedir(), CLAUDE_STATE_FILE),
-  ).catch(() => ({}));
+  );
   const { cap, tier } = planCap(state);
-  if (cap && scope !== "project")
+  if (cap && scope !== "project") {
     snippet["env"] = {
       ...(snippet["env"] as Json),
       CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: String(cap),
     };
-  const settings = merge(upgraded, snippet, changes);
-  const mdText = fs.existsSync(claudeMd) ? await Bun.file(claudeMd).text() : "";
-  const mdNext = stripBlock(mdText);
-  if (mdNext !== mdText) changes.push(CLAUDE_MD_REMOVED({ file: claudeMd }));
-  const dirs = [configDir, path.join(projectDir, CLAUDE_DIR)];
-  await report(io, { file, scope, cap, tier, kept, dirs, changes });
-  if (apply) await ignoreLocal(projectDir);
-  if (!changes.length) return 0;
-  if (!apply) {
-    io.log(`\n${DRY_RUN}`);
+    snippet["pluginConfigs"] = planOption(current, tier);
+  }
+  if (options.inventory) {
+    const have = { current, snippet, state, plan: { tier, cap } };
+    io.log(JSON.stringify(await inventoryOf(env, have, dirs), null, 2));
     return 0;
   }
-  await writeAll(file, settings, claudeMd, mdNext, mdText !== mdNext);
-  io.log(`\n${WROTE({ file })}`);
-  return 0;
+  const settings = merge(upgraded, snippet, changes, keep);
+  const searched = [configDir, path.join(dirs.projectDir, CLAUDE_DIR)];
+  await report(io, { file, scope, cap, tier, kept, dirs: searched, changes });
+  if (apply && fs.existsSync(path.join(dirs.projectDir, ".git")))
+    await amend(path.join(dirs.projectDir, ".gitignore"), withIgnores);
+  return save(io, {
+    file,
+    settings,
+    changes,
+    apply,
+    backup: mode === "replace",
+  });
 };

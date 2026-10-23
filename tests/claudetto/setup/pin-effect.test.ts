@@ -78,10 +78,8 @@ const deniedTools = SNIPPET.permissions.deny.filter((rule) =>
 const offPlugins = Object.entries(SNIPPET.enabledPlugins)
   .filter(([, on]) => !on)
   .map(([source]) => source);
-const [haiku, haikuSettings] = Object.entries(SNIPPET.modelSettings)[0] as [
-  string,
-  { autoCompactWindow: number },
-];
+const haiku = "claude-haiku-5-5";
+const haikuSettings = SNIPPET.modelSettings[haiku];
 const PINS: Record<string, Pin> = {
   CLAUDE_CODE_DISABLE_FAST_MODE: {
     effect: (c) => init(c)["fast_mode_disabled_reason"] === "disabled_by_env",
@@ -116,7 +114,8 @@ const PINS: Record<string, Pin> = {
     effect: (c) => !text(c.requests[0]).includes("If you are the fork"),
   },
   CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: {
-    run: { calls: [agent(1), agent(2), agent(3)] },
+    // One call more than the smallest cap of `PLAN_CAPS`, so the limit shows.
+    run: { calls: [agent(1), agent(2), agent(3), agent(4)] },
     effect: (c) =>
       text(c.requests).includes(
         `You can run ${LEVERS["CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS"]?.env?.["CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS"]} subagents at once`,
@@ -202,7 +201,9 @@ const PINS: Record<string, Pin> = {
   },
   feedbackDrafts: {
     run: FEEDBACK,
-    effect: (c) => plain(c.screen).includes("Submit feedback"),
+    effect: (c) =>
+      plain(c.screen).includes("Submit feedback") &&
+      !plain(c.screen).includes("Feedback drafts"),
   },
   modelSettings: {
     run: { prompt: "/context", args: ["--model", haiku] },
@@ -254,6 +255,14 @@ const UNREACHED: Record<string, string> = {
   awaySummaryEnabled: "The summary needs a terminal that loses focus.",
   modelProposedGoals: NO_CHANGE,
   autoDreamEnabled: "Auto dream starts only after many sessions.",
+  syncClaudeAiSkills: LOGIN,
+  syncClaudeAiPlugins: LOGIN,
+  ENABLE_CLAUDEAI_MCP_SERVERS: LOGIN,
+  CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH:
+    "It cuts only the text of an MCP server, and a stub run has none.",
+  idleCompaction:
+    "Idle compaction starts only after about an hour with no input.",
+  disableAgentView: `${NO_CHANGE} The agent view is a panel of the terminal.`,
 };
 
 test("each name of the snippet has a pin or a reason in `UNREACHED`, and no other name", () => {
@@ -292,6 +301,27 @@ const pairs = new Map(
       ])
     : [],
 );
+
+// The screen keeps each frame, so a run without the lever can show the drafts panel and, in a later frame, the form.
+test("`feedbackDrafts` reads no effect on a screen that showed the drafts panel before the form", () => {
+  const screen = (s: string): Capture => ({
+    requests: [],
+    events: [],
+    debug: "",
+    screen: s,
+  });
+  const pin = PINS["feedbackDrafts"] as Pin;
+  expect(
+    pin.effect(
+      screen(
+        "Feedback drafts Loading… Esc to close Submit feedback / bug report",
+      ),
+    ),
+  ).toBe(false);
+  expect(pin.effect(screen("Submit feedback / bug report Esc to cancel"))).toBe(
+    true,
+  );
+});
 
 for (const [name, pin] of Object.entries(PINS))
   test.skipIf(!installed)(

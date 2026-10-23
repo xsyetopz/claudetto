@@ -5,9 +5,7 @@
 
 import { expect, test } from "bun:test";
 import { snippetFor } from "../../../plugins/claudetto/slices/setup/domain/merge.ts";
-import OLD from "../../../plugins/claudetto/slices/setup/snippet-0.2.0.json";
 import { DOCS_SNIPPET, SNIPPET } from "../../../plugins/claudetto/snippets.ts";
-import { runSetup } from "../../support/setup-run.ts";
 
 type Snippet = {
   env?: Record<string, string>;
@@ -101,43 +99,24 @@ test("faults 28 and 49: the model proposes no goal", () => {
   expect(S["modelProposedGoals"]).toBe("disabled");
 });
 
-/** Runs setup on `settings`, and gives the file after the run and the printed text. */
-const upgrade = async (settings: object) => {
-  const { settings: out, text } = await runSetup({
-    "settings.json": JSON.stringify(settings),
-  });
-  return { out, text };
+/** True when the `Bash` rule `rule` matches `command` by the wildcard syntax of Claude Code: `*` is any text, and a final ` *` also matches no argument. */
+const matches = (rule: string, command: string): boolean => {
+  const body = rule
+    .slice(5, -1)
+    .split("*")
+    .map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&"))
+    .join(".*")
+    .replace(/ \.\*$/, "(?: .*)?");
+  return new RegExp(`^${body}$`).test(command);
 };
 
-const CODEGRAPH_HOOK = {
-  UserPromptSubmit: [
-    { hooks: [{ type: "command", command: "codegraph prompt-hook" }] },
-  ],
-};
-
-// Fixed by task 7.3.
-test("faults 4, 12, 13, 15, and 41: setup removes the `ask` rules, the `sandbox` keys, the auto mode keys, and the no-op env var of 0.2.0, and names each", async () => {
-  const { out, text } = await upgrade({
-    ...OLD,
-    autoMode: { environment: ["Trusted repo: ~/.claude"] },
-  });
-  expect(out.permissions.ask ?? []).not.toContain("Bash(rm -r*)");
-  expect(out).not.toHaveProperty("sandbox");
-  expect(out).not.toHaveProperty("autoMode");
-  expect(out.env).not.toHaveProperty("CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT");
-  for (const key of [
-    "sandbox",
-    "autoMode",
-    "CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT",
-    "Bash(rm -r*)",
-  ])
-    expect(text).toContain(key);
-});
-
-// Fixed by task 7.3.
-test("faults 18, 46, 47, and 50: setup removes the `UserPromptSubmit` hook that `codegraph install` wrote", async () => {
-  const { out } = await upgrade({ hooks: CODEGRAPH_HOOK });
-  expect(JSON.stringify(out.hooks ?? {})).not.toContain("codegraph");
+// Fixed by task 3.1 of change `release-0-3-0-alpha-2`.
+test("Deny Rules Match Only Their Target: no `Bash` deny rule matches a delete in the temp folder or under the home folder, and one matches `rm -rf /`", () => {
+  const rules = deny.filter((rule) => rule.startsWith("Bash("));
+  const hits = (command: string) => rules.filter((r) => matches(r, command));
+  for (const safe of ["rm -rf /tmp/x", "rm -rf ~/proj/build", "rm -rf ./build"])
+    expect([safe, hits(safe)]).toStrictEqual([safe, []]);
+  expect(hits("rm -rf /")).toStrictEqual(["Bash(rm -rf /)"]);
 });
 
 // Fixed by task 9.2.

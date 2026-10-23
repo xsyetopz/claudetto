@@ -1,62 +1,71 @@
-export const CLAUDE_MD_REMOVED = (v: { file: string }): string =>
-  `Remove the claudetto block of 0.1.0 from ${v.file}.`;
-
-export const CLEANED = (v: { key: string }): string =>
-  `${v.key}: removed the entries of 0.1.0.`;
-
-export const CONTEXT7_FOUND = (v: { file: string; chars: number }): string =>
-  `${v.file}: ${v.chars} characters in each session. The skill \`claudetto-docs:find-docs\` uses the same \`ctx7\` CLI with ${DOCS_SKILL_CHARS} characters, so keep one of the two.`;
+import {
+  AUTOCOMPACT_PCT,
+  CONTEXT_WINDOW,
+  HAIKU_AUTOCOMPACT_WINDOW,
+  MCP_DESCRIPTION_MAX_CHARS,
+} from "../../kernel/budget.ts";
 
 /** The size of the description of `claudetto-docs:find-docs`, which loads in each session. */
-export const DOCS_SKILL_CHARS = 155;
+export const DOCS_SKILL_CHARS = 143;
 
-export const DROPPED_AUTO_MODE = `\`autoMode\`: removed, because the snippet turns auto mode off, so its rules do nothing.`;
+const ALIAS = `alias claude-demo='IS_DEMO=1 claude'`;
 
-export const DROPPED_ENTRY = (v: { key: string; entry: string }): string =>
-  `\`${v.key}\`: removed the entry \`${v.entry}\` of 0.2.0.`;
+/** One message for each line as `key=text`, with `{name}` for a value. */
+const TEXT = `
+backup=Kept the old settings in {file}.
+context7={file}: {chars} characters in each session. The skill \`claudetto-docs:find-docs\` gets the same Context7 docs with ${DOCS_SKILL_CHARS} characters, so keep one of the two.
+demoAlias=${ALIAS}
+demoHeader=# claudetto: Claude Code in demo mode, which hides the email and the organization.
+demoNoRc=Setup knows no startup file for the shell {shell}. Add this line to it yourself: ${ALIAS}
+demoWrote={file} has the alias claude-demo. Open a new shell to use it.
+denyMcpScope=--deny-mcp and --off-plugin write only the project settings, so use them with --scope project.
+droppedEntry=\`{key}\`: removed the entry \`{entry}\` of 0.3.0-alpha.1.
+dryRun=Dry run. Run again with --apply to write these changes.
+mdEnd=<!-- /claudetto setup -->
+mdMatch={file} is up to date.
+mdOrigin=This file comes from claudetto setup. Edit each line below the block freely.
+mdOver={file} would have {lines} lines, and the limit is {max}. Setup wrote nothing. Ask the user which lines move to ~/.claude/rules/, then run setup again.
+mdStart=<!-- claudetto setup: /claudetto:setup rewrites only this block -->
+mdTitle=# CLAUDE.md
+mdWrote=Wrote {file}. Restart Claude Code to load it.
+keptKey=Kept your {key}, because it runs another tool.
+notesWrote={file} is the file for your notes in this project, and .gitignore lists it.
+noPlanCap=The plan tier {tier} has no subagent cap in claudetto, so setup writes no CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS.
+projectNoCap=Project settings get no CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS, because the cap comes from the plan of each login. Run setup with the user or local scope for it.
+projectNoStatus=Project settings get no status line, because its command runs claudetto from the plugin cache of each user, and a person who shares the project can have no claudetto. Run setup with the user or local scope for it.
+openspecDev={file} lists @fission-ai/openspec as a dependency of the project. Setup leaves it, because a test or a script of the project can run OpenSpec. Remove it yourself when none does.
+openspecFile={file} is a skill or command of OpenSpec. Setup deletes it, because minispec replaces OpenSpec.
+openspecGlobal=OpenSpec {version} is a global package of {manager}. Setup removes it with \`{command}\`.
+openspecPath={file} is \`openspec\` on the PATH. Setup removes the package that owns it.
+openspecFailed=\`{command}\` failed. Run it yourself.
+openspecStill=\`openspec\` is still on the PATH at {file}. Remove it yourself.
+ruleEdits=The removal command also deletes any edit that you made to the file.
+settingsFailed={file}: {message} Nothing changed.
+settingsMatch=Settings match the snippet.
+unknownScope=Unknown scope "{scope}". Use user, project, or local.
+usage=Usage: claudetto-setup [--scope user|project|local] [--mode merge|replace] [--keep KEY]... [--off-tool NAME]... [--off-skill NAME]... [--off-plugin ID]... [--deny-mcp NAME]... [--exclude-md GLOB]... [--apply | --inventory | --demo-alias | (--remove-openspec | --global-md [--global-rule LINE]... | --local-notes) [--apply]]
+wrote=Wrote {file}. Restart Claude Code for the env and model settings to take effect.
+`;
 
-export const DROPPED_HOOK = (v: { command: string }): string =>
-  `\`hooks.UserPromptSubmit\`: removed the hook \`${v.command}\`, because it adds code that the prompt did not ask for.`;
+const MESSAGES = new Map(
+  TEXT.trim()
+    .split("\n")
+    .map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1)]),
+);
 
-export const DROPPED_KEY = (v: { key: string }): string =>
-  `\`${v.key}\`: removed the value of 0.2.0, because 0.3.0 does not set it.`;
+/** The message `key`, with each `{name}` replaced by its value in `v`. */
+export const t = (key: string, v: Record<string, string | number> = {}) =>
+  (MESSAGES.get(key) ?? key).replace(/\{(\w+)\}/g, (_, k) => String(v[k]));
 
-export const DRY_RUN = `Dry run. Run again with --apply to write these changes.`;
+export const LOCAL_NOTES_TEMPLATE = `# CLAUDE.local.md
+<!-- Notes for this project that only you read. Git ignores this file. -->
+`;
 
-export const KEPT_KEY = (v: { key: string }): string =>
-  `Kept your ${v.key}, because it runs another tool.`;
-
-export const LEGACY_KEYS = {
-  ask: [
-    "Bash(git push *--force*)",
-    "Bash(git push -f*)",
-    "Bash(git push * -f)",
-    "Bash(git push * -f *)",
-    "Bash(git reset --hard*)",
-    "Bash(git clean -f*)",
-    "Bash(git clean -d*)",
-    "Bash(git branch -D *)",
-    "Bash(git checkout -- *)",
-    "Bash(git restore *)",
-  ],
-};
-
-export const NO_PLAN_CAP = (v: { tier: string }): string =>
-  `The plan tier ${v.tier} has no subagent cap in claudetto, so setup writes no CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS.`;
-
-export const PROJECT_NO_PLAN_CAP = `Project settings get no CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS, because the cap comes from the plan of each login. Run setup with the user or local scope for it.`;
-
-export const PROJECT_NO_STATUS_LINE = `Project settings get no status line, because its command runs claudetto from the plugin cache of each user, and a person who shares the project can have no claudetto. Run setup with the user or local scope for it.`;
-
-export const REMOVED_RULE = (v: { rule: string }): string =>
-  `\`permissions.ask\`: removed the rule \`${v.rule}\` of 0.1.0.`;
-
-export const SCOPE_MISSING = `The option --scope needs a value. Use user, project, or local.`;
-
-export const SETTINGS_FAILED = (v: { file: string; message: string }): string =>
-  `${v.file}: ${v.message} Nothing changed.`;
-
-export const SETTINGS_MATCH = `Settings match the snippet.`;
+const list = (text: string, by: string | RegExp = /\s+/) =>
+  text
+    .split(by)
+    .map((s) => s.trim())
+    .filter(Boolean);
 
 /** The status line command picks the newest installed folder of the plugin, so an update of the plugin needs no second setup. */
 const STATUSLINE_COMMAND = `bun --no-env-file "$(ls -d "\${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/plugins/cache/claudetto/claudetto/*/ | sort -V | tail -1)bin/claudetto-statusline"`;
@@ -64,10 +73,14 @@ const STATUSLINE_COMMAND = `bun --no-env-file "$(ls -d "\${CLAUDE_CONFIG_DIR:-$H
 export const SNIPPET = {
   $schema:
     "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-settings.json",
+  syncClaudeAiSkills: false,
+  syncClaudeAiPlugins: false,
   env: {
+    ENABLE_CLAUDEAI_MCP_SERVERS: "false",
+    CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH: String(MCP_DESCRIPTION_MAX_CHARS),
     CLAUDE_CODE_DISABLE_FAST_MODE: "1",
     CLAUDE_CODE_PROMPT_CACHE_TTL: "1h",
-    CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: "80.3571",
+    CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: String(AUTOCOMPACT_PCT),
     CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS: "1",
     CLAUDE_CODE_TOTAL_TOKENS_REMINDER: "off",
     CLAUDE_CODE_BASH_OUTPUT_AUDIENCE_NOTE: "0",
@@ -91,91 +104,28 @@ export const SNIPPET = {
     DISABLE_INSTALL_GITHUB_APP_COMMAND: "1",
   },
   permissions: {
-    deny: [
-      "Read(**/.env)",
-      "Read(**/.env.local)",
-      "Read(**/.env.production)",
-      "Read(**/.env.*.local)",
-      "Read(**/.env.development)",
-      "Read(**/.env.dev)",
-      "Read(**/.env.staging)",
-      "Read(**/.env.stage)",
-      "Read(**/.env.test)",
-      "Read(**/.env.prod)",
-      "Read(**/.env.qa)",
-      "Read(**/.env.preview)",
-      "Read(~/.ssh/**)",
-      "Read(~/.aws/credentials)",
-      "Read(~/.gnupg/**)",
-      "Read(~/.netrc)",
-      "Read(~/.docker/config.json)",
-      "Bash(rm -rf /)",
-      "Bash(rm -rf /*)",
-      "Bash(rm -rf ~)",
-      "Bash(rm -rf ~/*)",
-      "Bash(mkfs *)",
-      "Bash(mkfs.*)",
-      "Bash(dd * of=/dev/*)",
-      "Bash(rm -rf ~/)",
-      "Bash(rm -rf $HOME)",
-      'Bash(rm -rf "$HOME")',
-      "Bash(sudo *)",
-      "Bash(doas *)",
-      "Bash(su *)",
-      "Bash(newfs*)",
-      "Bash(diskutil erase*)",
-      "Bash(diskutil zero*)",
-      "Bash(diskutil secureErase*)",
-      "Bash(diskutil partition*)",
-      "Bash(diskutil reformat*)",
-      "Bash(csrutil disable*)",
-      "Bash(csrutil clear*)",
-      "Bash(csrutil authenticated-root *)",
-      "Bash(spctl --master-disable*)",
-      "Bash(spctl --global-disable*)",
-      "Bash(nvram *=*)",
-      "Bash(nvram -d *)",
-      "Bash(nvram -c*)",
-      "Bash(security delete-*)",
-      "Edit(//System/**)",
-      "Edit(//Library/**)",
-      "Edit(//usr/bin/**)",
-      "Edit(//usr/sbin/**)",
-      "Edit(//usr/lib/**)",
-      "Edit(//usr/libexec/**)",
-      "Edit(//usr/share/**)",
-      "Agent(general-purpose)",
-      "Agent(Explore)",
-      "Agent(Plan)",
-      "Agent(claude)",
-      "Agent(claude-code-guide)",
-      "Agent(statusline-setup)",
-      "Agent(fork)",
-      "mcp__computer-use",
-      "ScheduleWakeup",
-      "ReportFindings",
-      "EnterPlanMode",
-      "ExitPlanMode",
-      "Workflow",
-      "Artifact",
-      "DesignSync",
-      "RemoteTrigger",
-      "TaskCreate",
-      "TaskGet",
-      "TaskList",
-      "TaskUpdate",
-    ],
+    deny: list(
+      `Read(**/.env) | Read(**/.env.local) | Read(**/.env.production) | Read(**/.env.*.local) | Read(**/.env.development) | Read(**/.env.dev)
+      | Read(**/.env.staging) | Read(**/.env.stage) | Read(**/.env.test) | Read(**/.env.prod) | Read(**/.env.qa) | Read(**/.env.preview)
+      | Read(~/.ssh/**) | Read(~/.aws/credentials) | Read(~/.gnupg/**) | Read(~/.netrc) | Read(~/.docker/config.json)
+      | Bash(rm -rf /) | Bash(rm -rf ~) | Bash(mkfs *) | Bash(mkfs.*) | Bash(dd * of=/dev/*) | Bash(rm -rf ~/) | Bash(rm -rf $HOME) | Bash(rm -rf "$HOME")
+      | Bash(sudo *) | Bash(doas *) | Bash(su *) | Bash(newfs*) | Bash(diskutil erase*) | Bash(diskutil zero*) | Bash(diskutil secureErase*)
+      | Bash(diskutil partition*) | Bash(diskutil reformat*) | Bash(csrutil disable*) | Bash(csrutil clear*) | Bash(csrutil authenticated-root *)
+      | Bash(spctl --master-disable*) | Bash(spctl --global-disable*) | Bash(nvram *=*) | Bash(nvram -d *) | Bash(nvram -c*) | Bash(security delete-*)
+      | Edit(//System/**) | Edit(//Library/**) | Edit(//usr/bin/**) | Edit(//usr/sbin/**) | Edit(//usr/lib/**) | Edit(//usr/libexec/**) | Edit(//usr/share/**)
+      | Agent(general-purpose) | Agent(Explore) | Agent(Plan) | Agent(claude) | Agent(claude-code-guide) | Agent(statusline-setup) | Agent(fork)
+      | mcp__computer-use | ScheduleWakeup | ReportFindings | EnterPlanMode | ExitPlanMode | Workflow | Artifact | DesignSync | RemoteTrigger
+      | TaskCreate | TaskGet | TaskList | TaskUpdate`,
+      "|",
+    ),
     defaultMode: "default",
     disableAutoMode: "disable",
   },
   disableClaudeAiConnectors: true,
-  skillOverrides: {
-    "plugin-authoring": "name-only",
-  },
+  skillOverrides: { "plugin-authoring": "name-only" },
   disableBundledSkills: true,
-  worktree: {
-    baseRef: "head",
-  },
+  worktree: { baseRef: "head" },
+  disableAgentView: true,
   disableRemoteControl: true,
   enableArtifact: false,
   enableWorkflows: false,
@@ -183,46 +133,35 @@ export const SNIPPET = {
     type: "command",
     command: STATUSLINE_COMMAND,
     padding: 0,
-    refreshInterval: 1,
+    refreshInterval: 5,
     hideVimModeIndicator: true,
   },
   subagentStatusLine: {
     type: "command",
     command: `${STATUSLINE_COMMAND} --subagent`,
   },
-  enabledPlugins: {
-    "cc-plugin-agents-md@builtin": false,
-    "cc-plugin-claude-test@builtin": false,
-    "cc-plugin-diff@builtin": false,
-    "cc-plugin-easel@builtin": false,
-    "cc-plugin-mermaid@builtin": false,
-    "cc-plugin-mods-guide@builtin": false,
-    "cc-plugin-plugin-authoring@builtin": false,
-    "cc-plugin-responsive-mode@builtin": false,
-    "cc-plugin-telemetry@builtin": false,
-    "cc-plugin-tips@builtin": false,
-  },
+  enabledPlugins: Object.fromEntries(
+    list(
+      "agents-md claude-test diff easel mermaid mods-guide plugin-authoring responsive-mode telemetry tips you-should-know",
+    ).map((name) => [`cc-plugin-${name}@builtin`, false]),
+  ),
   outputStyle: "claudetto:Concise",
   feedbackDrafts: "off",
   spinnerTipsEnabled: false,
   modelSettings: {
-    "claude-haiku-5-5": {
-      autoCompactWindow: 144444,
-    },
+    "claude-opus-5-5": { maxEffortLevel: "high" },
+    "claude-sonnet-5-5": { maxEffortLevel: "medium" },
+    "claude-haiku-5-5": { autoCompactWindow: HAIKU_AUTOCOMPACT_WINDOW },
   },
-  autoCompactWindow: 300000,
+  autoCompactWindow: CONTEXT_WINDOW,
   promptSuggestionEnabled: false,
   awaySummaryEnabled: false,
   modelProposedGoals: "disabled",
   autoMemoryEnabled: false,
   autoDreamEnabled: false,
+  idleCompaction: false,
   useAutoModeDuringPlan: false,
 };
 
-export const UNKNOWN_SCOPE = (v: { scope: string }): string =>
-  `Unknown scope "${v.scope}". Use user, project, or local.`;
-
-export const USAGE = `Usage: claudetto-setup [--scope user|project|local] [--apply]`;
-
-export const WROTE = (v: { file: string }): string =>
-  `Wrote ${v.file}. Restart Claude Code for the env and model settings to take effect.`;
+/** The deny rules of 0.3.0-alpha.1 that setup removes: with `*`, they also match a delete in the temp folder (spec `setup`, "Old Deny Rules Go"). */
+export const DROPPED_DENY = ["Bash(rm -rf /*)", "Bash(rm -rf ~/*)"];

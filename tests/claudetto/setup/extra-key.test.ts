@@ -1,4 +1,4 @@
-// Each key of the settings snippet has a source: the `Lever` of a `disable` row of the replace matrix, or a decision of the design (spec `settings-levers`, "Extra Key").
+// Each key of the settings snippet has a source: the `Lever` of a `disable` row of the replace matrix, or a decision of the design of `0-3-0` or `release-0-3-0-alpha-2` (spec `settings-levers`, "Extra Key").
 // The files are found by glob, so the test also reads them after the change goes to `openspec/changes/archive/`.
 
 import { expect, test } from "bun:test";
@@ -6,12 +6,12 @@ import { SNIPPET } from "../../../plugins/claudetto/snippets.ts";
 import { REPO } from "../../support/repo.ts";
 import { snippetLevers } from "../../support/settings-pin.ts";
 
-/** The text of the one file of change `0-3-0` that matches `name`. */
-const changeFile = async (name: string): Promise<string> => {
+/** The text of the one file of `change` that matches `name`. */
+const changeFile = async (name: string, change = "0-3-0"): Promise<string> => {
   const [file] = [
-    ...new Bun.Glob(`openspec/changes/**/*0-3-0/${name}`).scanSync(REPO),
+    ...new Bun.Glob(`openspec/changes/**/*${change}/${name}`).scanSync(REPO),
   ];
-  if (!file) throw new Error(`No file ${name} of change 0-3-0.`);
+  if (!file) throw new Error(`No file ${name} of change ${change}.`);
   return Bun.file(`${REPO}/${file}`).text();
 };
 
@@ -46,7 +46,11 @@ const extra = (list: string[], sources: Set<string>): string[] =>
   );
 
 const sources = codeItems(
-  `${levers(await changeFile("research/replace-matrix.md"))}\n${await changeFile("design.md")}`,
+  [
+    levers(await changeFile("research/replace-matrix.md")),
+    await changeFile("design.md"),
+    await changeFile("design.md", "release-0-3-0-alpha-2"),
+  ].join("\n"),
 );
 
 test("each key of the snippet has a row of the matrix or a decision of the design", () => {
