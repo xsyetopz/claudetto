@@ -2,8 +2,8 @@
 
 import { expect, test } from "bun:test";
 import type { EngineInterface } from "claude-code";
-import { runCheck } from "../../../plugins/claudetto/slices/goal/adapters/mod.ts";
-import { OUTPUT_TAIL_CHARS } from "../../../plugins/claudetto/slices/goal/limits.ts";
+import { runCheck } from "../../../plugins/claudetto/slices/finish/adapters/mod.ts";
+import { OUTPUT_TAIL_CHARS } from "../../../plugins/claudetto/slices/finish/limits.ts";
 
 type Stubs = { exitCode?: number; stdout?: string };
 

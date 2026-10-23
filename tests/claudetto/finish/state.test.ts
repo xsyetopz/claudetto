@@ -4,7 +4,7 @@ import { expect, test } from "bun:test";
 import {
   checkOf,
   parseGoal,
-} from "../../../plugins/claudetto/slices/goal/domain/state.ts";
+} from "../../../plugins/claudetto/slices/finish/domain/state.ts";
 
 test("a goal survives a write and a read", () => {
   expect(parseGoal(JSON.stringify({ check: "just check" }))).toEqual({
