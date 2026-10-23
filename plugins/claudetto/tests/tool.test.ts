@@ -44,7 +44,7 @@ test("`tool.describe` passes an unknown tool on with no change", async ($: Engin
 
 test("`tool.describe` gives each kept tool a shorter text, and does not defer `ToolSearch`", async ($: Engine, on: On) => {
   on("tool.describe", () => ({ description: BUILT_IN }));
-  for (const tool of ["Bash", "Edit", "Read", "Skill", "ToolSearch", "Write"]) {
+  for (const tool of ["Bash", "Edit", "Read", "ToolSearch", "Write"]) {
     const answer = await $.tool.describe({
       tool,
       description: BUILT_IN,
@@ -57,4 +57,44 @@ test("`tool.describe` gives each kept tool a shorter text, and does not defer `T
 
 test("`tool.describe` defers `Workflow`", async ($: Engine, on: On) => {
   expect((await describe($, on, "Workflow")).isDeferred).toBe(true);
+});
+
+test("D20: a tool that under 10% of the sessions use is deferred with its built-in text, and a roster tool stays on the base prompt", async ($: Engine, on: On) => {
+  on("tool.describe", () => ({ description: BUILT_IN }));
+  const ask = (tool: string) =>
+    $.tool.describe({
+      tool,
+      description: BUILT_IN,
+      provider: { plugin: "engine", tier: "core" },
+    });
+  const deferred = await ask("Workflow");
+  expect(deferred.isDeferred).toBe(true);
+  expect(deferred.description).toBe(BUILT_IN);
+  for (const tool of ["Bash", "Read", "Grep", "Glob", "Monitor", "WebFetch"])
+    expect((await ask(tool)).isDeferred, tool).toBeUndefined();
+});
+
+test("D20: `Skill` is deferred and keeps the shorter claudetto text", async ($: Engine, on: On) => {
+  const answer = await describe($, on, "Skill");
+  expect(answer.isDeferred).toBe(true);
+  expect(answer.description.length).toBeLessThan(BUILT_IN.length);
+});
+
+test("Deferred Text: `tool.describe` fires for a deferred tool, and the answer holds the shorter claudetto text and the deferral", async ($: Engine, on: On) => {
+  on("tool.describe", () => ({ description: BUILT_IN }));
+  for (const tool of ["EnterWorktree", "ExitWorktree"]) {
+    const answer = await $.tool.describe({
+      tool,
+      description: BUILT_IN,
+      provider: { plugin: "engine", tier: "core" },
+    });
+    expect(answer.isDeferred, tool).toBe(true);
+    expect(answer.description.length, tool).toBeLessThan(BUILT_IN.length);
+  }
+});
+
+test("Deferred Text: `SendMessage` keeps the shorter claudetto text and stays on the base prompt", async ($: Engine, on: On) => {
+  const answer = await describe($, on, "SendMessage");
+  expect(answer.isDeferred).toBeUndefined();
+  expect(answer.description.length).toBeLessThan(BUILT_IN.length);
 });

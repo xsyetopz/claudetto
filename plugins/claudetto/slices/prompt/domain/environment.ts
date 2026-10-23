@@ -1,5 +1,4 @@
-// The shell facts of the `shell` context block (D9 of change `0-3-0`, faults F29 and F33).
-// The environment section of Claude Code names the platform and the shell, but not the traps of each.
+// The shell facts of the `shell` context block (D9 of change `0-3-0`, faults F29 and F33): the traps of the platform and the shell.
 
 import { SHELL_MACOS, SHELL_ZSH } from "../prompts.ts";
 

@@ -1,0 +1,9 @@
+{
+  "version": "2.1.309",
+  "source": "strings of the native binary ~/.local/share/claude/versions/2.1.309 (minified names of that build); chunk-kang00hq.js:183904 and :3215642",
+  "kT": "function kT(){if(!Ne(\"true\"))return!1;if(Ies())return!1;return i.CLAUDE_CODE_ENTRYPOINT!==\"local-agent\"}",
+  "searchToolsOptIn": "function Ies(){return n().host.launchOptions.searchToolsOptIn()}",
+  "snapshot": "eot(\"find\",\"bfs\",[\"-S\",\"dfs\",\"-regextype\",\"findutils-default\"]),eot(\"grep\",\"ugrep\",[\"-G\",\"--ignore-files\",\"--hidden\",\"-I\",...LEr.map((e)=>`--exclude-dir=${e}`)]",
+  "vcsFolders": "LEr=[\".git\",\".svn\",\".hg\",\".bzr\",\".jj\",\".sl\"]",
+  "execPath": "ke[rot]=process.execPath, with rot=\"CLAUDE_CODE_EXECPATH\", in getEnvironmentOverrides of the shell provider"
+}

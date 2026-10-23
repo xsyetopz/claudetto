@@ -1,10 +1,10 @@
 // Spec `prompt-base`, "Rule Kept": each claudetto tool text keeps each rule of the default text that the model needs.
-// `fixtures/tool-texts-2.1.307.json` holds the default texts of a stub capture of Claude Code 2.1.307.
+// `fixtures/tool-texts-2.1.309.json` holds the default texts of a stub capture of Claude Code 2.1.309.
 // Each rule is a pair: a phrase of the default text, which shows that the rule is there, and a phrase of the claudetto text.
 
 import { expect, test } from "bun:test";
 import { TOOL_TEXTS } from "../../../plugins/claudetto/slices/prompt/domain/tools.ts";
-import DEFAULTS from "./fixtures/tool-texts-2.1.307.json";
+import DEFAULTS from "./fixtures/tool-texts-2.1.309.json";
 
 const RULES: Readonly<Record<string, readonly (readonly [string, string])[]>> =
   {
@@ -12,7 +12,7 @@ const RULES: Readonly<Record<string, readonly (readonly [string, string])[]>> =
       ["prefer absolute paths", "Use absolute paths"],
       [
         "Shell state (env vars, functions) does not persist",
-        "the shell state (env vars, functions) does not",
+        "the shell state (env vars, functions) resets",
       ],
       [
         "`cat`, `head`, `tail`, `sed`, `awk`, or `echo`",
@@ -63,7 +63,7 @@ const RULES: Readonly<Record<string, readonly (readonly [string, string])[]>> =
     ],
     Write: [
       ["overwriting if one exists", "replaces the file when it exists"],
-      ["you haven't Read will fail", "that you did not read fails"],
+      ["you haven't Read will fail", "that you skipped in `Read` fails"],
       ["use Edit instead", "use `Edit`"],
     ],
     Skill: [
@@ -82,7 +82,10 @@ const RULES: Readonly<Record<string, readonly (readonly [string, string])[]>> =
     ],
     ToolSearch: [
       ["Deferred tools appear by name", "The deferred tools are named"],
-      ["cannot be invoked", "you cannot call a deferred tool"],
+      [
+        "cannot be invoked",
+        "Call a deferred tool only after you get its schema",
+      ],
       ["<functions> block", "`<functions>` block"],
       ['"select:Read,Edit,Grep"', '"select:Read,Edit,Grep"'],
       ['"notebook jupyter"', '"notebook jupyter"'],
