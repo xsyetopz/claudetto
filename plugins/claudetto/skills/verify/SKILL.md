@@ -14,4 +14,6 @@ allowed-tools: Bash(minispec *)
    - Each scenario of the delta specs has a test, and the test passes.
    - The code follows each decision of `design.md`.
 4. List each gap with its fix, and fix it only when the user says so.
-5. With no gap, point the user to `/claudetto:archive`.
+5. End the report with this line to the user, as the last line:
+   With no gap, `Next: /claudetto:archive`.
+   With a gap, `Next: /claudetto:apply` after the fix.

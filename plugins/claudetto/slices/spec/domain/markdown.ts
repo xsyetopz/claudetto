@@ -1,162 +1,177 @@
-// The Markdown of a spec: requirement blocks and delta sections.
-// The rules follow OpenSpec 1.14.3, so that both tools read the same files.
+// The Markdown of a spec, read as OpenSpec 1.14.3 reads it: requirement blocks and delta sections.
 
-/** A requirement: its name and its text from the `### Requirement:` line to the next header. */
-export interface Block {
-  readonly name: string;
-  readonly raw: string;
-}
+export type Block = { name: string; raw: string };
+export type Delta = ReturnType<typeof parseDelta>;
 
-/** The sections of a delta spec. */
-export interface Delta {
-  readonly added: Block[];
-  readonly modified: Block[];
-  readonly removed: string[];
-  readonly renamed: { readonly from: string; readonly to: string }[];
-  /** The body of `## Purpose`, or `null`. */
-  readonly purpose: string | null;
-  /** The headers of the delta sections that the file has, such as `## ADDED Requirements`. */
-  readonly sections: string[];
-}
-
-const REQUIREMENT = /^###\s*Requirement:\s*(.+)\s*$/i;
+const REQ = /^###\s*Requirement:\s*(.+)\s*$/i;
 const TOP = /^##\s+/;
-const BULLET_REMOVED = /^\s*[-*+]\s*`?###\s*Requirement:\s*(.+?)`?\s*$/;
+const STRAY = /^###\s+(.+?)\s*$/;
+const BULLET = /^\s*[-*+]\s*`?###\s*Requirement:\s*(.+?)`?\s*$/;
 const PAIR = /^\s*[-*+]?\s*(FROM|TO):\s*`?###\s*Requirement:\s*(.+?)`?\s*$/;
+const FENCE = /^\s*(```+|~~~+)/;
 
-/** `true` for each line inside a fenced code block, with the fence lines. */
-const fenceMask = (lines: readonly string[]): boolean[] => {
-  let fence: string | null = null;
-  return lines.map((line) => {
-    const m = /^\s*(```+|~~~+)/.exec(line);
-    if (fence === null) {
-      fence = m?.[1]?.[0] ?? null;
-      return fence !== null;
+/** The lines with each fenced line blank, so that no pattern matches inside a code block. */
+const plain = (ls: string[]): string[] => {
+  let fence = "";
+  return ls.map((l) => {
+    const c = FENCE.exec(l)?.[1]?.[0] ?? "";
+    if (!fence) {
+      fence = c;
+      return c ? "" : l;
     }
-    if (m?.[1]?.[0] === fence) fence = null;
-    return true;
+    if (c === fence) fence = "";
+    return "";
   });
 };
 
-const unfenced = (ls: readonly string[]): string[] => {
-  const mask = fenceMask(ls);
-  return ls.filter((_, i) => !mask[i]);
-};
+/** The index and the match of each unfenced line that matches `re`. */
+const heads = (ls: string[], re: RegExp) =>
+  plain(ls).flatMap((l, i) => {
+    const m = re.exec(l);
+    return m ? [{ i, m }] : [];
+  });
 
-/** The indexes of the lines of `ls` outside fenced code blocks that match `re`. */
-const headers = (ls: readonly string[], re: RegExp): number[] => {
-  const mask = fenceMask(ls);
-  return ls.flatMap((l, i) => (!mask[i] && re.test(l) ? [i] : []));
-};
+const clean = (s: string) => s.replace(/[ \t]+#+[ \t]*$/, "").trim();
 
-/** The name of a requirement header: the closing `###` run and the spaces leave. */
-export const cleanName = (name: string): string =>
-  name.replace(/[ \t]+#+[ \t]*$/, "").trim();
-
-const lines = (text: string): string[] =>
+const split = (text: string) =>
   text.replace(/^﻿/, "").replace(/\r\n?/g, "\n").split("\n");
 
-const blocksOf = (
-  body: readonly string[],
-): { preamble: string; blocks: Block[] } => {
-  const starts = headers(body, REQUIREMENT);
-  const join = (from: number, to?: number): string =>
-    body.slice(from, to).join("\n").trimEnd();
+const blocksOf = (body: string[]) => {
+  const at = heads(body, REQ);
+  const join = (a: number, b?: number) => body.slice(a, b).join("\n").trimEnd();
   return {
-    preamble: join(0, starts[0]),
-    blocks: starts.map((at, k) => ({
-      name: cleanName(REQUIREMENT.exec(body[at] ?? "")?.[1] ?? ""),
-      raw: join(at, starts[k + 1]),
-    })),
+    preamble: join(0, at[0]?.i),
+    blocks: at.map(
+      ({ i, m }, k): Block => ({
+        name: clean(m[1] ?? ""),
+        raw: join(i, at[k + 1]?.i),
+      }),
+    ),
   };
 };
 
-/** The `FROM` and `TO` pairs of the `## RENAMED Requirements` lines. */
-const renames = (body: readonly string[]): Delta["renamed"] => {
-  const renamed: { from: string; to: string }[] = [];
-  let from: string | null = null;
-  for (const line of unfenced(body)) {
-    const [, side, name] = PAIR.exec(line) ?? [];
-    if (side === "FROM") from = cleanName(name ?? "");
-    else if (side === "TO" && from !== null) {
-      renamed.push({ from, to: cleanName(name ?? "") });
-      from = null;
+const renames = (body: string[]) => {
+  const out: { from: string; to: string }[] = [];
+  let from = "";
+  for (const l of plain(body)) {
+    const [, side, name = ""] = PAIR.exec(l) ?? [];
+    if (side === "FROM") from = clean(name);
+    else if (side === "TO" && from) {
+      out.push({ from, to: clean(name) });
+      from = "";
     }
   }
-  return renamed;
+  return out;
 };
 
-export const parseDelta = (text: string): Delta => {
-  const all = lines(text);
-  const tops = headers(all, TOP);
-  const bodies = new Map<string, string[]>();
-  const sections: string[] = [];
-  for (const [k, at] of tops.entries()) {
-    const line = all[at] ?? "";
-    const title = line.replace(TOP, "").trim().toLowerCase();
-    const rest = all.slice(at + 1, tops[k + 1]);
-    bodies.set(title, [...(bodies.get(title) ?? []), ...rest]);
-    if (title.endsWith(" requirements") && title !== "requirements")
-      sections.push(line.trim());
-  }
-  const body = (title: string): string[] => bodies.get(title) ?? [];
+export const parseDelta = (text: string) => {
+  const all = split(text);
+  const tops = heads(all, TOP);
+  const secs = tops.map(({ i }, k) => ({
+    at: i,
+    line: all[i] ?? "",
+    title: (all[i] ?? "").replace(TOP, "").trim(),
+    body: all.slice(i + 1, tops[k + 1]?.i),
+  }));
+  const body = (t: string) =>
+    secs.filter((s) => s.title.toLowerCase() === t).flatMap((s) => s.body);
+  const removed = body("removed requirements");
   return {
     added: blocksOf(body("added requirements")).blocks,
     modified: blocksOf(body("modified requirements")).blocks,
-    removed: unfenced(body("removed requirements")).flatMap((line) => {
-      const m = REQUIREMENT.exec(line) ?? BULLET_REMOVED.exec(line);
-      return m?.[1] ? [cleanName(m[1])] : [];
+    removed: plain(removed).flatMap((l) => {
+      const m = REQ.exec(l) ?? BULLET.exec(l);
+      return m?.[1] ? [clean(m[1])] : [];
     }),
+    removedBlocks: blocksOf(removed).blocks,
     renamed: renames(body("renamed requirements")),
-    purpose: bodies.has("purpose") ? body("purpose").join("\n").trim() : null,
-    sections,
+    purpose: secs.some((s) => s.title.toLowerCase() === "purpose")
+      ? body("purpose").join("\n").trim()
+      : null,
+    sections: secs
+      .filter((s) => /.\srequirements$/i.test(s.title))
+      .map((s) => s.line.trim()),
+    // The `###` headers in ADDED and MODIFIED that are no requirements: validation ignores them.
+    strays: secs
+      .filter((s) => /^(added|modified) requirements$/i.test(s.title))
+      .flatMap((s) =>
+        heads(s.body, STRAY)
+          .filter(({ m }) => !REQ.test(m[0]))
+          .map(({ i, m }) => ({
+            header: m[1] ?? "",
+            section: s.title,
+            line: s.at + i + 2,
+          })),
+      ),
   };
 };
 
-/** The parts of a main spec around its `## Requirements` section. */
-export interface MainSpec {
-  readonly before: string;
-  readonly header: string;
-  readonly preamble: string;
-  readonly blocks: Block[];
-  readonly after: string;
-}
-
-export const parseMain = (text: string): MainSpec => {
-  const all = lines(text);
-  const start = headers(all, /^##\s+Requirements\s*$/i)[0];
-  if (start === undefined)
-    return parseMain(`${text.trimEnd()}\n\n## Requirements\n`);
-  const end = headers(all, TOP).find((i) => i > start) ?? all.length;
+export const parseMain = (text: string) => {
+  let all = split(text);
+  let start = heads(all, /^##\s+Requirements\s*$/i)[0]?.i;
+  if (start === undefined) {
+    all = [...split(text.trimEnd()), "", "## Requirements", ""];
+    start = all.length - 2;
+  }
+  const end = heads(all, TOP).find(({ i }) => i > (start ?? 0))?.i;
   return {
     before: all.slice(0, start).join("\n"),
     header: all[start] ?? "",
-    ...blocksOf(all.slice(start + 1, end)),
-    after: all.slice(end).join("\n"),
+    ...blocksOf(all.slice(start + 1, end ?? all.length)),
+    after: all.slice(end ?? all.length).join("\n"),
   };
 };
 
-/** The text of a requirement: the lines up to the first header, with no blank line and no fenced line. */
-export const requirementText = (raw: string): string => {
-  const text: string[] = [];
-  for (const line of unfenced(raw.split("\n").slice(1))) {
-    if (/^#{1,6}\s/.test(line)) break;
-    if (line.trim()) text.push(line.trim());
-  }
-  return text.join("\n");
+/** The text of a requirement: its lines up to the first header, with no blank and no fenced line. */
+export const requirementText = (raw: string) => {
+  const ls = plain(raw.split("\n").slice(1));
+  const stop = ls.findIndex((l) => /^#{1,6}\s/.test(l));
+  return ls
+    .slice(0, stop < 0 ? undefined : stop)
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .join("\n");
 };
 
-/** The count of scenarios in a requirement: the `####` headers that have a body. */
-export const scenarios = (raw: string): number => {
+/** The scenarios of a requirement: each `####` header outside a fence, and the text up to the next header. */
+export const scenarioList = (raw: string) => {
   const body = raw.split("\n").slice(1);
-  const heads = headers(body, /^#{1,4}\s/);
-  return headers(body, /^####\s+/).filter((i) =>
-    body
-      .slice(
-        i + 1,
-        heads.find((j) => j > i),
-      )
-      .join("")
+  const next = heads(body, /^#{1,4}\s/);
+  return heads(body, /^####\s+/).map(({ i }) => ({
+    name: clean((body[i] ?? "").replace(/^####\s+/, "")).replace(
+      /^Scenario:\s*/i,
+      "",
+    ),
+    rawText: body
+      .slice(i + 1, next.find((h) => h.i > i)?.i)
+      .join("\n")
       .trim(),
-  ).length;
+  }));
+};
+
+/** The scenarios of `current` that `incoming` lacks, and the sentence that counts both blocks. */
+export const scenarioLoss = (current: string, incoming: string) => {
+  const without = (a: string[], b: string[]) => {
+    const left = [...b];
+    return a.filter((n) => {
+      const at = left.indexOf(n);
+      if (at >= 0) left.splice(at, 1);
+      return at < 0;
+    });
+  };
+  const [had, has] = [current, incoming].map((r) =>
+    scenarioList(r).map((s) => s.name),
+  ) as [string[], string[]];
+  const added = without(has, had);
+  const n = (c: number) => `${c} ${c === 1 ? "scenario" : "scenarios"}`;
+  const adds = added.length
+    ? `It adds ${n(added.length)} not in the current spec: ${added
+        .slice(0, 3)
+        .map((a) => `"${a}"`)
+        .join(", ")}${added.length > 3 ? ` and ${added.length - 3} more` : ""}.`
+    : "It adds none.";
+  return {
+    missing: without(had, has),
+    balance: `The modified block has ${n(has.length)}; the current spec has ${n(had.length)}. ${adds}`,
+  };
 };

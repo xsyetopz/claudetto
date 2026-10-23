@@ -1393,3 +1393,2014 @@ exports[`OpenSpec 1.14.3: archive of an unknown change 1`] = `
   "written": {},
 }
 `;
+
+exports[`OpenSpec 1.14.3: validate of dup-added 1`] = `
+{
+  "code": 1,
+  "facts": {
+    "items": [
+      {
+        "id": "dup-added",
+        "issues": [
+          {
+            "level": "ERROR",
+            "message": "Duplicate requirement in ADDED: "Wave"",
+            "path": "greet/spec.md",
+          },
+        ],
+        "type": "change",
+        "valid": false,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 1,
+          "items": 1,
+          "passed": 0,
+        },
+      },
+      "totals": {
+        "failed": 1,
+        "items": 1,
+        "passed": 0,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of mod-missing 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "items": [
+      {
+        "id": "mod-missing",
+        "issues": [
+          {
+            "level": "INFO",
+            "message": "Archive would refuse this delta: greet MODIFIED failed for header "### Requirement: Goodbye" - not found",
+            "path": "greet/spec.md",
+          },
+        ],
+        "type": "change",
+        "valid": true,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 0,
+          "items": 1,
+          "passed": 1,
+        },
+      },
+      "totals": {
+        "failed": 0,
+        "items": 1,
+        "passed": 1,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of add-exists 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "items": [
+      {
+        "id": "add-exists",
+        "issues": [
+          {
+            "level": "INFO",
+            "message": "Archive would refuse this delta: greet ADDED failed for header "### Requirement: Hello" - already exists",
+            "path": "greet/spec.md",
+          },
+        ],
+        "type": "change",
+        "valid": true,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 0,
+          "items": 1,
+          "passed": 1,
+        },
+      },
+      "totals": {
+        "failed": 0,
+        "items": 1,
+        "passed": 1,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of h3-scenario 1`] = `
+{
+  "code": 1,
+  "facts": {
+    "items": [
+      {
+        "id": "h3-scenario",
+        "issues": [
+          {
+            "level": "INFO",
+            "line": 7,
+            "message": "Header "### Scenario: Wave Works" in ADDED Requirements is not a "### Requirement:" header and is ignored by validation. Use "### Requirement: Scenario: Wave Works" if it should be validated as a requirement.",
+            "path": "greet/spec.md",
+          },
+          {
+            "level": "ERROR",
+            "message": "ADDED "Wave" must include at least one scenario",
+            "path": "greet/spec.md",
+          },
+        ],
+        "type": "change",
+        "valid": false,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 1,
+          "items": 1,
+          "passed": 0,
+        },
+      },
+      "totals": {
+        "failed": 1,
+        "items": 1,
+        "passed": 0,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of long-requirement 1`] = `
+{
+  "code": 1,
+  "facts": {
+    "items": [
+      {
+        "id": "long-requirement",
+        "issues": [
+          {
+            "level": "WARNING",
+            "message": "ADDED "Long": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.",
+            "path": "greet/spec.md",
+          },
+        ],
+        "type": "change",
+        "valid": false,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 1,
+          "items": 1,
+          "passed": 0,
+        },
+      },
+      "totals": {
+        "failed": 1,
+        "items": 1,
+        "passed": 0,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of mod-drops-scenario 1`] = `
+{
+  "code": 1,
+  "facts": {
+    "items": [
+      {
+        "id": "mod-drops-scenario",
+        "issues": [
+          {
+            "level": "ERROR",
+            "message": "MODIFIED "Hello" omits scenario(s) the current spec still has: "Hello Twice". The modified block has 1 scenario; the current spec has 2 scenarios. It adds none. Copy the omitted scenarios into the MODIFIED block (a MODIFIED requirement replaces the whole block, so archive refuses to drop them).",
+            "path": "greet/spec.md",
+          },
+        ],
+        "type": "change",
+        "valid": false,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 1,
+          "items": 1,
+          "passed": 0,
+        },
+      },
+      "totals": {
+        "failed": 1,
+        "items": 1,
+        "passed": 0,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: archive of a change that removes a missing requirement 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "Task status: ✓ Complete",
+    "Specs to update:",
+    "greet: update",
+    "⚠️  Warning: greet - REMOVED requirement "Goodbye" is not in the current spec; treating it as already removed.",
+    "Totals: + 0, ~ 0, - 0, → 0",
+    "Specs already in sync; no files changed.",
+    "Change 'rem-missing' archived as '<date>-rem-missing'.",
+  ],
+  "removed": [
+    "openspec/changes/rem-missing/.openspec.yaml",
+    "openspec/changes/rem-missing/specs/greet/spec.md",
+    "openspec/changes/rem-missing/tasks.md",
+  ],
+  "written": {
+    "openspec/changes/archive/<date>-rem-missing/.openspec.yaml": 
+"schema: story
+created: <date>
+"
+,
+    "openspec/changes/archive/<date>-rem-missing/specs/greet/spec.md": 
+"## REMOVED Requirements
+
+### Requirement: Goodbye
+
+**Reason**: It never existed.
+"
+,
+    "openspec/changes/archive/<date>-rem-missing/tasks.md": 
+"## 1. Work
+
+- [x] 1.1 Do it
+"
+,
+  },
+}
+`;
+
+exports[`OpenSpec 1.14.3: list as text 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "Changes:",
+    "add-greeting-name     0/1 tasks <ago>",
+    "bad-scenario          No tasks <ago>",
+    "build-greeter         0/1 tasks <ago>",
+    "fix-greeting-typo     0/1 tasks <ago>",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: list sorted by name 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "changes": [
+      {
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "add-greeting-name",
+        "status": "in-progress",
+        "totalTasks": 1,
+      },
+      {
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "bad-scenario",
+        "status": "no-tasks",
+        "totalTasks": 0,
+      },
+      {
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "build-greeter",
+        "status": "in-progress",
+        "totalTasks": 1,
+      },
+      {
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "fix-greeting-typo",
+        "status": "in-progress",
+        "totalTasks": 1,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: list of specs 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "specs": [
+      {
+        "id": "base",
+        "requirementCount": 4,
+      },
+    ],
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: list of specs as text 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "Specs:",
+    "base     requirements 4",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: list of archived changes 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "changes": [],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: list of all changes 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "changes": [
+      {
+        "archived": false,
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "add-greeting-name",
+        "status": "in-progress",
+        "totalTasks": 1,
+      },
+      {
+        "archived": false,
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "bad-scenario",
+        "status": "no-tasks",
+        "totalTasks": 0,
+      },
+      {
+        "archived": false,
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "build-greeter",
+        "status": "in-progress",
+        "totalTasks": 1,
+      },
+      {
+        "archived": false,
+        "completedTasks": 0,
+        "lastModified": "<date>",
+        "name": "fix-greeting-typo",
+        "status": "in-progress",
+        "totalTasks": 1,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of each change and spec 1`] = `
+{
+  "code": 1,
+  "facts": {
+    "items": [
+      {
+        "id": "add-greeting-name",
+        "issues": [],
+        "type": "change",
+        "valid": true,
+      },
+      {
+        "id": "bad-scenario",
+        "issues": [
+          {
+            "level": "ERROR",
+            "message": "ADDED "A" must include at least one scenario",
+            "path": "x/spec.md",
+          },
+        ],
+        "type": "change",
+        "valid": false,
+      },
+      {
+        "id": "base",
+        "issues": [],
+        "type": "spec",
+        "valid": true,
+      },
+      {
+        "id": "build-greeter",
+        "issues": [],
+        "type": "change",
+        "valid": true,
+      },
+      {
+        "id": "fix-greeting-typo",
+        "issues": [
+          {
+            "level": "INFO",
+            "message": "skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted",
+            "path": "file",
+          },
+        ],
+        "type": "change",
+        "valid": true,
+      },
+      {
+        "id": "merge-all",
+        "issues": [],
+        "type": "change",
+        "valid": true,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 1,
+          "items": 5,
+          "passed": 4,
+        },
+        "spec": {
+          "failed": 0,
+          "items": 1,
+          "passed": 1,
+        },
+      },
+      "totals": {
+        "failed": 1,
+        "items": 6,
+        "passed": 5,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of each change 1`] = `
+{
+  "code": 1,
+  "facts": {
+    "items": [
+      {
+        "id": "add-greeting-name",
+        "issues": [],
+        "type": "change",
+        "valid": true,
+      },
+      {
+        "id": "bad-scenario",
+        "issues": [
+          {
+            "level": "ERROR",
+            "message": "ADDED "A" must include at least one scenario",
+            "path": "x/spec.md",
+          },
+        ],
+        "type": "change",
+        "valid": false,
+      },
+      {
+        "id": "build-greeter",
+        "issues": [],
+        "type": "change",
+        "valid": true,
+      },
+      {
+        "id": "fix-greeting-typo",
+        "issues": [
+          {
+            "level": "INFO",
+            "message": "skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted",
+            "path": "file",
+          },
+        ],
+        "type": "change",
+        "valid": true,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "change": {
+          "failed": 1,
+          "items": 4,
+          "passed": 3,
+        },
+      },
+      "totals": {
+        "failed": 1,
+        "items": 4,
+        "passed": 3,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of each spec 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "items": [
+      {
+        "id": "base",
+        "issues": [],
+        "type": "spec",
+        "valid": true,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "spec": {
+          "failed": 0,
+          "items": 1,
+          "passed": 1,
+        },
+      },
+      "totals": {
+        "failed": 0,
+        "items": 1,
+        "passed": 1,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of each spec as text 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "✓ spec/base",
+    "Totals: 1 passed, 0 failed (1 items)",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of specs with a short purpose and no scenario 1`] = `
+{
+  "code": 1,
+  "facts": {
+    "items": [
+      {
+        "id": "bare",
+        "issues": [
+          {
+            "level": "ERROR",
+            "message": "Requirement must have at least one scenario",
+            "path": "requirements.0.scenarios",
+          },
+          {
+            "level": "WARNING",
+            "message": 
+"Requirement must have at least one scenario. Scenarios must use level-4 headers. Convert bullet lists into:
+#### Scenario: Short name
+- **WHEN** ...
+- **THEN** ...
+- **AND** ..."
+,
+            "path": "requirements[0].scenarios",
+          },
+          {
+            "level": "WARNING",
+            "message": "Requirement "Bare" should contain SHALL or MUST (RFC 2119 best practice for English specs)",
+            "path": "requirements[0]",
+          },
+        ],
+        "type": "spec",
+        "valid": false,
+      },
+      {
+        "id": "tiny",
+        "issues": [
+          {
+            "level": "WARNING",
+            "message": "Purpose section is too brief (less than 50 characters)",
+            "path": "overview",
+          },
+        ],
+        "type": "spec",
+        "valid": false,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "spec": {
+          "failed": 2,
+          "items": 2,
+          "passed": 0,
+        },
+      },
+      "totals": {
+        "failed": 2,
+        "items": 2,
+        "passed": 0,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of a spec 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "items": [
+      {
+        "id": "base",
+        "issues": [],
+        "type": "spec",
+        "valid": true,
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "summary": {
+      "byType": {
+        "spec": {
+          "failed": 0,
+          "items": 1,
+          "passed": 1,
+        },
+      },
+      "totals": {
+        "failed": 0,
+        "items": 1,
+        "passed": 1,
+      },
+    },
+    "version": "1.0",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: validate of a change as text 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "Change 'add-greeting-name' is valid",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: show of a change 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "deltaCount": 5,
+    "deltas": [
+      {
+        "description": "Add requirement: The system SHALL add this requirement at the end.",
+        "operation": "ADDED",
+        "requirement": {
+          "name": "Fresh",
+          "scenarios": [
+            {
+              "name": "Added",
+              "rawText": 
+"- **WHEN** a condition holds
+- **THEN** an outcome follows"
+,
+            },
+          ],
+          "text": "The system SHALL add this requirement at the end.",
+        },
+        "requirements": [
+          {
+            "name": "Fresh",
+            "scenarios": [
+              {
+                "name": "Added",
+                "rawText": 
+"- **WHEN** a condition holds
+- **THEN** an outcome follows"
+,
+              },
+            ],
+            "text": "The system SHALL add this requirement at the end.",
+          },
+        ],
+        "spec": "base",
+      },
+      {
+        "description": "Modify requirement: The system SHALL behave in the new way.",
+        "operation": "MODIFIED",
+        "requirement": {
+          "name": "Change Me",
+          "scenarios": [
+            {
+              "name": "Old Way",
+              "rawText": 
+"- **WHEN** a condition holds
+- **THEN** the old outcome follows"
+,
+            },
+            {
+              "name": "New Way",
+              "rawText": 
+"- **WHEN** a condition holds
+- **THEN** the new outcome follows"
+,
+            },
+          ],
+          "text": "The system SHALL behave in the new way.",
+        },
+        "requirements": [
+          {
+            "name": "Change Me",
+            "scenarios": [
+              {
+                "name": "Old Way",
+                "rawText": 
+"- **WHEN** a condition holds
+- **THEN** the old outcome follows"
+,
+              },
+              {
+                "name": "New Way",
+                "rawText": 
+"- **WHEN** a condition holds
+- **THEN** the new outcome follows"
+,
+              },
+            ],
+            "text": "The system SHALL behave in the new way.",
+          },
+        ],
+        "spec": "base",
+      },
+      {
+        "description": "Remove requirement: **Reason**: The fixture drops it.",
+        "operation": "REMOVED",
+        "requirement": {
+          "name": "Drop Me",
+          "scenarios": [],
+          "text": "**Reason**: The fixture drops it.",
+        },
+        "requirements": [
+          {
+            "name": "Drop Me",
+            "scenarios": [],
+            "text": "**Reason**: The fixture drops it.",
+          },
+        ],
+        "spec": "base",
+      },
+      {
+        "description": "Rename requirement from "Old Name" to "New Name"",
+        "operation": "RENAMED",
+        "rename": {
+          "from": "Old Name",
+          "to": "New Name",
+        },
+        "spec": "base",
+      },
+      {
+        "description": "Add requirement: The system SHALL start the capability.",
+        "operation": "ADDED",
+        "requirement": {
+          "name": "First",
+          "scenarios": [
+            {
+              "name": "Started",
+              "rawText": 
+"- **WHEN** a condition holds
+- **THEN** an outcome follows"
+,
+            },
+          ],
+          "text": "The system SHALL start the capability.",
+        },
+        "requirements": [
+          {
+            "name": "First",
+            "scenarios": [
+              {
+                "name": "Started",
+                "rawText": 
+"- **WHEN** a condition holds
+- **THEN** an outcome follows"
+,
+              },
+            ],
+            "text": "The system SHALL start the capability.",
+          },
+        ],
+        "spec": "fresh-cap",
+      },
+    ],
+    "id": "merge-all",
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "title": "merge-all",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: show of the deltas of a change 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "deltaCount": 5,
+    "deltas": [
+      {
+        "description": "Add requirement: The system SHALL add this requirement at the end.",
+        "operation": "ADDED",
+        "requirement": {
+          "name": "Fresh",
+          "scenarios": [
+            {
+              "name": "Added",
+              "rawText": 
+"- **WHEN** a condition holds
+- **THEN** an outcome follows"
+,
+            },
+          ],
+          "text": "The system SHALL add this requirement at the end.",
+        },
+        "requirements": [
+          {
+            "name": "Fresh",
+            "scenarios": [
+              {
+                "name": "Added",
+                "rawText": 
+"- **WHEN** a condition holds
+- **THEN** an outcome follows"
+,
+              },
+            ],
+            "text": "The system SHALL add this requirement at the end.",
+          },
+        ],
+        "spec": "base",
+      },
+      {
+        "description": "Modify requirement: The system SHALL behave in the new way.",
+        "operation": "MODIFIED",
+        "requirement": {
+          "name": "Change Me",
+          "scenarios": [
+            {
+              "name": "Old Way",
+              "rawText": 
+"- **WHEN** a condition holds
+- **THEN** the old outcome follows"
+,
+            },
+            {
+              "name": "New Way",
+              "rawText": 
+"- **WHEN** a condition holds
+- **THEN** the new outcome follows"
+,
+            },
+          ],
+          "text": "The system SHALL behave in the new way.",
+        },
+        "requirements": [
+          {
+            "name": "Change Me",
+            "scenarios": [
+              {
+                "name": "Old Way",
+                "rawText": 
+"- **WHEN** a condition holds
+- **THEN** the old outcome follows"
+,
+              },
+              {
+                "name": "New Way",
+                "rawText": 
+"- **WHEN** a condition holds
+- **THEN** the new outcome follows"
+,
+              },
+            ],
+            "text": "The system SHALL behave in the new way.",
+          },
+        ],
+        "spec": "base",
+      },
+      {
+        "description": "Remove requirement: **Reason**: The fixture drops it.",
+        "operation": "REMOVED",
+        "requirement": {
+          "name": "Drop Me",
+          "scenarios": [],
+          "text": "**Reason**: The fixture drops it.",
+        },
+        "requirements": [
+          {
+            "name": "Drop Me",
+            "scenarios": [],
+            "text": "**Reason**: The fixture drops it.",
+          },
+        ],
+        "spec": "base",
+      },
+      {
+        "description": "Rename requirement from "Old Name" to "New Name"",
+        "operation": "RENAMED",
+        "rename": {
+          "from": "Old Name",
+          "to": "New Name",
+        },
+        "spec": "base",
+      },
+      {
+        "description": "Add requirement: The system SHALL start the capability.",
+        "operation": "ADDED",
+        "requirement": {
+          "name": "First",
+          "scenarios": [
+            {
+              "name": "Started",
+              "rawText": 
+"- **WHEN** a condition holds
+- **THEN** an outcome follows"
+,
+            },
+          ],
+          "text": "The system SHALL start the capability.",
+        },
+        "requirements": [
+          {
+            "name": "First",
+            "scenarios": [
+              {
+                "name": "Started",
+                "rawText": 
+"- **WHEN** a condition holds
+- **THEN** an outcome follows"
+,
+              },
+            ],
+            "text": "The system SHALL start the capability.",
+          },
+        ],
+        "spec": "fresh-cap",
+      },
+    ],
+    "id": "merge-all",
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "title": "merge-all",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: show of a change as text 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "## Why",
+    "The fixture of a merge with each delta section, for the parity test of \`archive\`.",
+    "## What Changes",
+    "- The capability \`base\` gets each kind of delta.",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: show of the diffs of a change 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "## Why",
+    "The fixture of a merge with each delta section, for the parity test of \`archive\`.",
+    "## What Changes",
+    "- The capability \`base\` gets each kind of delta.",
+    "Specifications Changed (diffs)",
+    "base",
+    "ADDED: Fresh",
+    "### Requirement: Fresh",
+    "The system SHALL add this requirement at the end.",
+    "#### Scenario: Added",
+    "- **WHEN** a condition holds",
+    "- **THEN** an outcome follows",
+    "REMOVED: Drop Me",
+    "### Requirement: Drop Me",
+    "**Reason**: The fixture drops it.",
+    "RENAMED: Old Name → New Name",
+    "MODIFIED: Change Me",
+    "@@ -1,8 +1,13 @@",
+    "### Requirement: Change Me",
+    "-The system SHALL behave in the old way.",
+    "+The system SHALL behave in the new way.",
+    "#### Scenario: Old Way",
+    "- **WHEN** a condition holds",
+    "- **THEN** the old outcome follows",
+    "+",
+    "+#### Scenario: New Way",
+    "+",
+    "+- **WHEN** a condition holds",
+    "+- **THEN** the new outcome follows",
+    "fresh-cap",
+    "ADDED: First",
+    "### Requirement: First",
+    "The system SHALL start the capability.",
+    "#### Scenario: Started",
+    "- **WHEN** a condition holds",
+    "- **THEN** an outcome follows",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: show of a spec 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "id": "base",
+    "metadata": {
+      "format": "openspec",
+      "version": "1.0.0",
+    },
+    "overview": "The base capability of the merge fixture in the parity test.",
+    "requirementCount": 4,
+    "requirements": [
+      {
+        "name": "Keep",
+        "scenarios": [
+          {
+            "name": "Kept",
+            "rawText": 
+"- **WHEN** a condition holds
+- **THEN** an outcome follows"
+,
+          },
+        ],
+        "text": "The system SHALL keep this requirement.",
+      },
+      {
+        "name": "Change Me",
+        "scenarios": [
+          {
+            "name": "Old Way",
+            "rawText": 
+"- **WHEN** a condition holds
+- **THEN** the old outcome follows"
+,
+          },
+        ],
+        "text": "The system SHALL behave in the old way.",
+      },
+      {
+        "name": "Drop Me",
+        "scenarios": [
+          {
+            "name": "Gone",
+            "rawText": 
+"- **WHEN** a condition holds
+- **THEN** an outcome follows"
+,
+          },
+        ],
+        "text": "The system SHALL go away.",
+      },
+      {
+        "name": "Old Name",
+        "scenarios": [
+          {
+            "name": "Renamed",
+            "rawText": 
+"- **WHEN** a condition holds
+- **THEN** an outcome follows"
+,
+          },
+        ],
+        "text": "The system SHALL keep its text when renamed.",
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "title": "base",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: show of one requirement of a spec 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "id": "base",
+    "metadata": {
+      "format": "openspec",
+      "version": "1.0.0",
+    },
+    "overview": "The base capability of the merge fixture in the parity test.",
+    "requirementCount": 1,
+    "requirements": [
+      {
+        "name": "Change Me",
+        "scenarios": [
+          {
+            "name": "Old Way",
+            "rawText": 
+"- **WHEN** a condition holds
+- **THEN** the old outcome follows"
+,
+          },
+        ],
+        "text": "The system SHALL behave in the old way.",
+      },
+    ],
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "title": "base",
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: show of a spec as text 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "# base Specification",
+    "## Purpose",
+    "The base capability of the merge fixture in the parity test.",
+    "## Requirements",
+    "### Requirement: Keep",
+    "The system SHALL keep this requirement.",
+    "#### Scenario: Kept",
+    "- **WHEN** a condition holds",
+    "- **THEN** an outcome follows",
+    "### Requirement: Change Me",
+    "The system SHALL behave in the old way.",
+    "#### Scenario: Old Way",
+    "- **WHEN** a condition holds",
+    "- **THEN** the old outcome follows",
+    "### Requirement: Drop Me",
+    "The system SHALL go away.",
+    "#### Scenario: Gone",
+    "- **WHEN** a condition holds",
+    "- **THEN** an outcome follows",
+    "### Requirement: Old Name",
+    "The system SHALL keep its text when renamed.",
+    "#### Scenario: Renamed",
+    "- **WHEN** a condition holds",
+    "- **THEN** an outcome follows",
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: instructions apply 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "changeDir": "<root>/openspec/changes/add-greeting-name",
+    "changeName": "add-greeting-name",
+    "contextFiles": {
+      "design": [
+        "<root>/openspec/changes/add-greeting-name/design.md",
+      ],
+      "proposal": [
+        "<root>/openspec/changes/add-greeting-name/proposal.md",
+      ],
+      "review": [
+        "<root>/openspec/changes/add-greeting-name/review.md",
+      ],
+      "specs": [
+        "<root>/openspec/changes/add-greeting-name/specs/greeting/spec.md",
+      ],
+      "tasks": [
+        "<root>/openspec/changes/add-greeting-name/tasks.md",
+      ],
+    },
+    "instruction": 
+"Read the context files, do the pending tasks, and tick each one when done.
+After a change of behavior, run a fast check of the changed files.
+At the end of each task group, run the full checks.
+An edit that changes no behavior needs no check.
+Stop at a blocker."
+,
+    "progress": {
+      "complete": 0,
+      "remaining": 1,
+      "total": 1,
+    },
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "schemaName": "story",
+    "state": "ready",
+    "taskTrackingConfigured": true,
+    "tasks": [
+      {
+        "description": "1.1 Add the name argument, and verify it with \`just check\`",
+        "done": false,
+        "id": "1",
+        "line": 3,
+        "sourcePath": "<root>/openspec/changes/add-greeting-name/tasks.md",
+      },
+    ],
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: instructions apply of a change that waits for an artifact 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "changeDir": "<root>/openspec/changes/merge-all",
+    "changeName": "merge-all",
+    "contextFiles": {
+      "proposal": [
+        "<root>/openspec/changes/merge-all/proposal.md",
+      ],
+      "specs": [
+        "<root>/openspec/changes/merge-all/specs/base/spec.md",
+        "<root>/openspec/changes/merge-all/specs/fresh-cap/spec.md",
+      ],
+      "tasks": [
+        "<root>/openspec/changes/merge-all/tasks.md",
+      ],
+    },
+    "instruction": 
+"Cannot apply this change yet. Missing artifacts: review.
+Not created yet, in build order: design, review. Build the ones this change needs before applying - the schema says which are conditional.
+Create each with \`openspec instructions <artifact> --change merge-all\` (\`openspec status --change merge-all\` shows what is left)."
+,
+    "missingArtifacts": [
+      "review",
+    ],
+    "missingPrerequisites": [
+      "design",
+      "review",
+    ],
+    "progress": {
+      "complete": 1,
+      "remaining": 0,
+      "total": 1,
+    },
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "schemaName": "story",
+    "state": "blocked",
+    "taskTrackingConfigured": true,
+    "tasks": [
+      {
+        "description": "1.1 Merge the deltas",
+        "done": true,
+        "id": "1",
+        "line": 3,
+        "sourcePath": "<root>/openspec/changes/merge-all/tasks.md",
+      },
+    ],
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: instructions of the proposal 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "artifactId": "proposal",
+    "changeDir": "<root>/openspec/changes/merge-all",
+    "changeName": "merge-all",
+    "dependencies": [],
+    "description": "Why, what changes, and capabilities",
+    "existingOutputPaths": [
+      "<root>/openspec/changes/merge-all/proposal.md",
+    ],
+    "instruction": 
+"Write why the change is needed.
+Sections: **Why** (1-2 sentences), **What Changes** (bullets, mark breaking changes **BREAKING**), **Capabilities**, **Impact**.
+Under Capabilities, list each new capability (kebab-case path, named for a durable behavior) and each modified capability (the exact path under \`openspec/specs/\`).
+Read the related specs in \`openspec/specs/\` first, and reuse an existing path.
+Each listed capability gets a delta spec.
+Keep it to 1-2 pages, and leave the how to \`design.md\`.
+"
+,
+    "outputPath": "proposal.md",
+    "planningHome": {
+      "changesDir": "<root>/openspec/changes",
+      "defaultSchema": "spec-driven",
+      "kind": "repo",
+      "root": "<root>",
+    },
+    "resolvedOutputPath": "<root>/openspec/changes/merge-all/proposal.md",
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "schemaName": "story",
+    "template": 
+"## proposal
+
+Write the proposal here.
+"
+,
+    "unlocks": [
+      "specs",
+      "design",
+    ],
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: instructions of the tasks 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "artifactId": "tasks",
+    "changeDir": "<root>/openspec/changes/merge-all",
+    "changeName": "merge-all",
+    "dependencies": [
+      {
+        "description": "Delta specs with clarify markers",
+        "done": true,
+        "id": "specs",
+        "path": "specs/**/*.md",
+      },
+      {
+        "description": "How to build it",
+        "done": false,
+        "id": "design",
+        "path": "design.md",
+      },
+    ],
+    "description": "Implementation checklist",
+    "existingOutputPaths": [
+      "<root>/openspec/changes/merge-all/tasks.md",
+    ],
+    "instruction": 
+"Write the task list as checkboxes \`- [ ] X.Y Task\` under \`## N.\` headings, because the apply step parses them.
+Order the tasks by dependency, and keep each small enough for one session.
+Each task states how to verify it, and lands its own tests and docs.
+"
+,
+    "outputPath": "tasks.md",
+    "planningHome": {
+      "changesDir": "<root>/openspec/changes",
+      "defaultSchema": "spec-driven",
+      "kind": "repo",
+      "root": "<root>",
+    },
+    "resolvedOutputPath": "<root>/openspec/changes/merge-all/tasks.md",
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+    "schemaName": "story",
+    "template": 
+"## tasks
+
+Write the tasks here.
+"
+,
+    "unlocks": [
+      "review",
+    ],
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: archive with --json 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "archive": {
+      "archivedAs": "<date>-merge-all",
+      "change": "merge-all",
+      "path": "<root>/openspec/changes/archive/<date>-merge-all",
+      "specsUpdated": true,
+      "totals": {
+        "added": 2,
+        "modified": 1,
+        "removed": 1,
+        "renamed": 1,
+      },
+    },
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+  },
+  "removed": [
+    "openspec/changes/merge-all/.openspec.yaml",
+    "openspec/changes/merge-all/proposal.md",
+    "openspec/changes/merge-all/specs/base/spec.md",
+    "openspec/changes/merge-all/specs/fresh-cap/spec.md",
+    "openspec/changes/merge-all/tasks.md",
+  ],
+  "written": {
+    "openspec/changes/archive/<date>-merge-all/.openspec.yaml": 
+"schema: story
+created: <date>
+"
+,
+    "openspec/changes/archive/<date>-merge-all/proposal.md": 
+"## Why
+
+The fixture of a merge with each delta section, for the parity test of \`archive\`.
+
+## What Changes
+
+- The capability \`base\` gets each kind of delta.
+"
+,
+    "openspec/changes/archive/<date>-merge-all/specs/base/spec.md": 
+"## ADDED Requirements
+
+### Requirement: Fresh
+
+The system SHALL add this requirement at the end.
+
+#### Scenario: Added
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+
+## MODIFIED Requirements
+
+### Requirement: Change Me
+
+The system SHALL behave in the new way.
+
+#### Scenario: Old Way
+
+- **WHEN** a condition holds
+- **THEN** the old outcome follows
+
+#### Scenario: New Way
+
+- **WHEN** a condition holds
+- **THEN** the new outcome follows
+
+## REMOVED Requirements
+
+### Requirement: Drop Me
+
+**Reason**: The fixture drops it.
+
+## RENAMED Requirements
+
+- FROM: \`### Requirement: Old Name\`
+- TO: \`### Requirement: New Name\`
+"
+,
+    "openspec/changes/archive/<date>-merge-all/specs/fresh-cap/spec.md": 
+"## Purpose
+
+The fresh capability of the merge fixture in the parity test.
+
+## ADDED Requirements
+
+### Requirement: First
+
+The system SHALL start the capability.
+
+#### Scenario: Started
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+"
+,
+    "openspec/changes/archive/<date>-merge-all/tasks.md": 
+"## 1. Merge
+
+- [x] 1.1 Merge the deltas
+"
+,
+    "openspec/specs/base/spec.md": 
+"# base Specification
+
+## Purpose
+
+The base capability of the merge fixture in the parity test.
+
+## Requirements
+
+### Requirement: Keep
+
+The system SHALL keep this requirement.
+
+#### Scenario: Kept
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+
+### Requirement: Change Me
+
+The system SHALL behave in the new way.
+
+#### Scenario: Old Way
+
+- **WHEN** a condition holds
+- **THEN** the old outcome follows
+
+#### Scenario: New Way
+
+- **WHEN** a condition holds
+- **THEN** the new outcome follows
+
+### Requirement: New Name
+
+The system SHALL keep its text when renamed.
+
+#### Scenario: Renamed
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+
+### Requirement: Fresh
+
+The system SHALL add this requirement at the end.
+
+#### Scenario: Added
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+"
+,
+    "openspec/specs/fresh-cap/spec.md": 
+"# fresh-cap Specification
+
+## Purpose
+The fresh capability of the merge fixture in the parity test.
+
+## Requirements
+
+### Requirement: First
+
+The system SHALL start the capability.
+
+#### Scenario: Started
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+"
+,
+  },
+}
+`;
+
+exports[`OpenSpec 1.14.3: archive with --skip-specs 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "Task status: ✓ Complete",
+    "Skipping spec updates (--skip-specs flag provided).",
+    "Change 'merge-all' archived as '<date>-merge-all'.",
+  ],
+  "removed": [
+    "openspec/changes/merge-all/.openspec.yaml",
+    "openspec/changes/merge-all/proposal.md",
+    "openspec/changes/merge-all/specs/base/spec.md",
+    "openspec/changes/merge-all/specs/fresh-cap/spec.md",
+    "openspec/changes/merge-all/tasks.md",
+  ],
+  "written": {
+    "openspec/changes/archive/<date>-merge-all/.openspec.yaml": 
+"schema: story
+created: <date>
+"
+,
+    "openspec/changes/archive/<date>-merge-all/proposal.md": 
+"## Why
+
+The fixture of a merge with each delta section, for the parity test of \`archive\`.
+
+## What Changes
+
+- The capability \`base\` gets each kind of delta.
+"
+,
+    "openspec/changes/archive/<date>-merge-all/specs/base/spec.md": 
+"## ADDED Requirements
+
+### Requirement: Fresh
+
+The system SHALL add this requirement at the end.
+
+#### Scenario: Added
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+
+## MODIFIED Requirements
+
+### Requirement: Change Me
+
+The system SHALL behave in the new way.
+
+#### Scenario: Old Way
+
+- **WHEN** a condition holds
+- **THEN** the old outcome follows
+
+#### Scenario: New Way
+
+- **WHEN** a condition holds
+- **THEN** the new outcome follows
+
+## REMOVED Requirements
+
+### Requirement: Drop Me
+
+**Reason**: The fixture drops it.
+
+## RENAMED Requirements
+
+- FROM: \`### Requirement: Old Name\`
+- TO: \`### Requirement: New Name\`
+"
+,
+    "openspec/changes/archive/<date>-merge-all/specs/fresh-cap/spec.md": 
+"## Purpose
+
+The fresh capability of the merge fixture in the parity test.
+
+## ADDED Requirements
+
+### Requirement: First
+
+The system SHALL start the capability.
+
+#### Scenario: Started
+
+- **WHEN** a condition holds
+- **THEN** an outcome follows
+"
+,
+    "openspec/changes/archive/<date>-merge-all/tasks.md": 
+"## 1. Merge
+
+- [x] 1.1 Merge the deltas
+"
+,
+  },
+}
+`;
+
+exports[`OpenSpec 1.14.3: archive with --no-validate 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "⚠️  WARNING: Skipping validation may archive invalid specs.",
+    "[<date>] Validation skipped for change: bad-scenario",
+    "Affected files: <root>/openspec/changes/bad-scenario",
+    "Task status: No tasks",
+    "Specs to update:",
+    "x: create",
+    "Applying changes to openspec/specs/x/spec.md:",
+    "+ 1 added",
+    "Totals: + 1, ~ 0, - 0, → 0",
+    "Specs updated successfully.",
+    "Change 'bad-scenario' archived as '<date>-bad-scenario'.",
+  ],
+  "removed": [
+    "openspec/changes/bad-scenario/proposal.md",
+    "openspec/changes/bad-scenario/specs/x/spec.md",
+  ],
+  "written": {
+    "openspec/changes/archive/<date>-bad-scenario/proposal.md": 
+"## Why
+
+The fixture of a requirement with no scenario, for the parity test of \`validate\`.
+
+## What Changes
+
+- The capability \`x\` gets the requirement \`A\`.
+"
+,
+    "openspec/changes/archive/<date>-bad-scenario/specs/x/spec.md": 
+"## ADDED Requirements
+
+### Requirement: A
+
+The system SHALL do A.
+"
+,
+    "openspec/specs/x/spec.md": 
+"# x Specification
+
+## Purpose
+TBD - created by archiving change bad-scenario. Update Purpose after archive.
+
+## Requirements
+
+### Requirement: A
+
+The system SHALL do A.
+"
+,
+  },
+}
+`;
+
+exports[`OpenSpec 1.14.3: new change with a description 1`] = `
+{
+  "code": 0,
+  "facts": [
+    "Created change 'add-thing' at openspec/changes/add-thing/",
+    "Schema: story",
+    "Next: openspec status --change add-thing",
+    "- Creating change 'add-thing' with schema 'story'...",
+  ],
+  "removed": [],
+  "written": {
+    "openspec/changes/add-thing/.openspec.yaml": 
+"schema: story
+created: <date>
+"
+,
+    "openspec/changes/add-thing/README.md": 
+"# add-thing
+
+Hello there
+"
+,
+  },
+}
+`;
+
+exports[`OpenSpec 1.14.3: new change with --json 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "change": {
+      "id": "add-thing",
+      "metadataPath": "<root>/openspec/changes/add-thing/.openspec.yaml",
+      "path": "<root>/openspec/changes/add-thing",
+      "schema": "story",
+    },
+    "root": {
+      "path": "<root>",
+      "source": "nearest",
+    },
+  },
+  "removed": [],
+  "written": {
+    "openspec/changes/add-thing/.openspec.yaml": 
+"schema: story
+created: <date>
+"
+,
+  },
+}
+`;
+
+exports[`OpenSpec 1.14.3: schemas 1`] = `
+{
+  "code": 0,
+  "facts": [
+    {
+      "artifacts": [
+        "prd",
+        "architecture",
+        "proposal",
+        "specs",
+        "design",
+        "review",
+        "tasks",
+      ],
+      "description": "A new project, a large feature, or a regulated system - prd, architecture, proposal, specs, design, review, tasks",
+      "name": "epic",
+      "source": "project",
+    },
+    {
+      "artifacts": [
+        "proposal",
+        "specs",
+        "design",
+        "tasks",
+      ],
+      "description": "Default OpenSpec workflow - proposal → specs → design → tasks",
+      "name": "spec-driven",
+      "source": "package",
+    },
+    {
+      "artifacts": [
+        "proposal",
+        "specs",
+        "design",
+        "review",
+        "tasks",
+      ],
+      "description": "One feature in an existing codebase - proposal, specs, design, review, tasks",
+      "name": "story",
+      "source": "project",
+    },
+    {
+      "artifacts": [
+        "proposal",
+        "tasks",
+      ],
+      "description": "A bug fix, a small change, or a refactor with no change of behavior - proposal, tasks",
+      "name": "task",
+      "source": "project",
+    },
+  ],
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: schema validate of a schema with its templates 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "issues": [],
+    "name": "story",
+    "path": "<root>/openspec/schemas/story",
+    "valid": true,
+  },
+  "removed": [],
+  "written": {},
+}
+`;
+
+exports[`OpenSpec 1.14.3: schema validate of each schema 1`] = `
+{
+  "code": 0,
+  "facts": {
+    "schemas": [
+      {
+        "issues": [],
+        "name": "epic",
+        "path": "<root>/openspec/schemas/epic",
+        "valid": true,
+      },
+      {
+        "issues": [],
+        "name": "story",
+        "path": "<root>/openspec/schemas/story",
+        "valid": true,
+      },
+      {
+        "issues": [],
+        "name": "task",
+        "path": "<root>/openspec/schemas/task",
+        "valid": true,
+      },
+    ],
+    "valid": true,
+  },
+  "removed": [],
+  "written": {},
+}
+`;

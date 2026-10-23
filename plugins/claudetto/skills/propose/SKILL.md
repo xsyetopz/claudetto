@@ -13,7 +13,8 @@ Ask the user in place of a guess.
    Use the first rule that fits:
    - The user names a preset: that preset.
    - No `openspec/specs/` and a near-empty repository: `epic`.
-   - The change has no change of behavior: `task`.
+   - A release that changes more than one capability: `epic`.
+   - The change has no change of behavior: `task`, and only then.
    - The change touches one capability: `story`.
    - Unsure: `story`, and ask the user.
 2. Pick a kebab-case name, and run `minispec new change <name> --schema <preset>`.
@@ -23,4 +24,7 @@ Ask the user in place of a guess.
    Read its template, follow its instruction, the `context`, and its list in `rules`, and write its `outputPath` in the change folder.
    Then run step 3 again.
 5. When each artifact is `done`, run `minispec validate <name>` and fix each issue.
-6. Point the user to `/claudetto:apply`.
+6. End the report with this line to the user, as the last line:
+   `Next: /claudetto:apply`.
+   Take the command from `next` in `minispec status --change <name> --json`.
+   Give JSON to the user only when the user asks for it.

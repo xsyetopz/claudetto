@@ -5,6 +5,7 @@ import path from "node:path";
 import { REPO } from "../../support/repo.ts";
 
 const STEPS = ["propose", "apply", "verify", "archive"] as const;
+const EXTRA = ["explore", "update", "sync"] as const;
 
 const read = (step: string): Promise<string> =>
   Bun.file(path.join(REPO, `plugins/claudetto/skills/${step}/SKILL.md`)).text();
@@ -21,9 +22,29 @@ test.each(STEPS)(
   },
 );
 
+test.each(EXTRA)(
+  "the skill `%s` sets `disable-model-invocation: true`",
+  async (name) => {
+    const text = await read(name);
+    expect(text).toMatch(new RegExp(`^name: ${name}$`, "m"));
+    expect(text).toMatch(/^disable-model-invocation: true$/m);
+    expect(text).toMatch(/^allowed-tools: Bash\(minispec \*\)$/m);
+  },
+);
+
+test("the skill `sync` calls `minispec sync`", async () => {
+  expect(await read("sync")).toContain("`minispec sync <name>`");
+});
+
 test("the skill `propose` takes a preset and a change", () => {
   expect(skills.propose).toContain(
     'argument-hint: "[task|story|epic] <change or idea>"',
+  );
+});
+
+test("Release with Several Capabilities", () => {
+  expect(skills.propose).toContain(
+    "A release that changes more than one capability: `epic`.",
   );
 });
 

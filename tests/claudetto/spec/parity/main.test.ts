@@ -56,7 +56,7 @@ test.each(
 
 test("each named difference is used by a case and is in design D10", async () => {
   const design = await Bun.file(
-    path.join(REPO, "openspec/changes/0-3-0/design.md"),
+    path.join(REPO, "openspec/changes/archive/2026-10-23-0-3-0/design.md"),
   ).text();
   const d10 = design.slice(
     design.indexOf("### D10"),

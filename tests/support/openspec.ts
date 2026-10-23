@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { main } from "../../plugins/claudetto/slices/spec/adapters/cli.ts";
+import { captureIo } from "./io.ts";
 import { REPO, tmpDir } from "./repo.ts";
 
 /** An empty folder in the temp folder. */
@@ -41,13 +42,9 @@ export const openspec = async (cwd: string, args: string[]) => {
 
 /** Run `minispec` in `cwd` in this process, and return the exit code and the printed text. */
 export const minispec = async (cwd: string, args: string[]) => {
-  const lines: string[] = [];
-  const io = {
-    log: (l: string) => lines.push(l),
-    error: (l: string) => lines.push(l),
-  };
+  const { io, text } = captureIo();
   const code = await main(args, cwd, io);
-  return { code, out: lines.join("\n") };
+  return { code, out: text() };
 };
 
 /** A project with the sample change of each preset in `presets`, the schema of each, and `config.yaml` with `schema: <first preset>`. */

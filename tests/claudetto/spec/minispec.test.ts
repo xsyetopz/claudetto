@@ -37,6 +37,25 @@ const withDelta = async (delta = DELTA): Promise<string> => {
   return root;
 };
 
+/** Runs the `args` on a project with a delta, and expects the requirement `A` in `openspec/specs/`. */
+const mergesDelta = async (root: string, args: string[]): Promise<void> => {
+  const run = await minispec(root, args);
+  expect(run.code).toBe(0);
+  expect(
+    await Bun.file(path.join(root, "openspec/specs/x/spec.md")).text(),
+  ).toContain("### Requirement: A");
+};
+
+const skills = Object.fromEntries(
+  ["propose", "apply", "verify"].map((name) => [
+    name,
+    () =>
+      Bun.file(
+        path.join(REPO, `plugins/claudetto/skills/${name}/SKILL.md`),
+      ).text(),
+  ]),
+) as Record<"propose" | "apply" | "verify", () => Promise<string>>;
+
 const filesOf = (root: string): string[] =>
   walk(root).map((f) => path.relative(root, f));
 
@@ -46,6 +65,32 @@ test("a fresh project gets only the change folder, and no OpenSpec install", asy
   expect(run.code).toBe(0);
   expect(filesOf(root)).toEqual(["openspec/changes/add-thing/.openspec.yaml"]);
   expect(fs.existsSync(path.join(root, ".claude"))).toBe(false);
+});
+
+test("Version Name", async () => {
+  const root = tmpEmpty("minispec-version");
+  const run = await minispec(root, ["new", "change", "release-2.1.309"]);
+  expect(run.code).toBe(0);
+  expect(run.out).toContain("release-2-1-309");
+  expect(
+    fs.existsSync(path.join(root, "openspec/changes/release-2-1-309")),
+  ).toBe(true);
+});
+
+test("Bad Name", async () => {
+  const root = tmpEmpty("minispec-bad-name");
+  const run = await minispec(root, ["new", "change", "Release_X"]);
+  expect(run.code).not.toBe(0);
+  expect(run.out).toContain("is not kebab-case");
+  expect(filesOf(root)).toEqual([]);
+});
+
+test("New Change", async () => {
+  const root = tmpEmpty("minispec-no-handoff");
+  await minispec(root, ["new", "change", "release-x"]);
+  expect(
+    fs.existsSync(path.join(root, "openspec/changes/release-x/handoff.md")),
+  ).toBe(false);
 });
 
 test("`new change` without --schema uses the schema of `config.yaml`, and `story` with no file", async () => {
@@ -112,6 +157,53 @@ test("`status --json` gives the template, the instruction, the context, the rule
   expect(status.tasks).toEqual({ done: 0, total: 1, next: "1.1" });
 });
 
+test("Planning Done", async () => {
+  const root = await sampleProject(["story"]);
+  await Bun.write(
+    path.join(root, "openspec/changes/add-greeting-name/tasks.md"),
+    "## 1. A\n\n- [x] 1.1 Done\n\n## 2. B\n\n- [ ] 2.1 Open\n",
+  );
+  const args = ["status", "--change", "add-greeting-name"];
+  const text = await minispec(root, args);
+  expect(text.out.trimEnd().split("\n").at(-1)).toBe("Next: /claudetto:apply");
+  const json = JSON.parse((await minispec(root, [...args, "--json"])).out);
+  expect(json.next).toBe("/claudetto:apply");
+  expect(json.tasks.next).toBe("2.1");
+  expect(await skills.propose()).toContain("`Next: /claudetto:apply`");
+});
+
+test("`status` names `propose` while an artifact is open, and `archive` when each task is done", async () => {
+  const root = tmpEmpty("minispec-next");
+  await minispec(root, ["new", "change", "a", "--schema", "story"]);
+  const args = ["status", "--change", "a"];
+  expect((await minispec(root, args)).out).toContain(
+    "Next: /claudetto:propose",
+  );
+  const done = await sampleProject(["story"]);
+  await Bun.write(
+    path.join(done, "openspec/changes/add-greeting-name/tasks.md"),
+    "- [x] 1.1 Done\n",
+  );
+  const run = await minispec(done, ["status", "--change", "add-greeting-name"]);
+  expect(run.out).toContain("All planning artifacts complete!");
+  expect(run.out).toContain("Next: /claudetto:archive");
+});
+
+test("JSON Only on Request", async () => {
+  const root = await sampleProject(["story"]);
+  const run = await minispec(root, ["status", "--change", "add-greeting-name"]);
+  expect(run.code).toBe(0);
+  expect(run.out).toContain("Progress: ");
+  expect(run.out).toContain("[x] proposal");
+  expect(run.out).toContain("Next: ");
+  expect(() => JSON.parse(run.out)).toThrow();
+});
+
+test("the skills `propose`, `apply`, and `verify` end with the command as a line", async () => {
+  expect(await skills.apply()).toContain("`Next: /claudetto:verify`");
+  expect(await skills.verify()).toContain("`Next: /claudetto:archive`");
+});
+
 test("`status` gives the ready artifacts of a new change", async () => {
   const root = tmpEmpty("minispec-ready");
   await minispec(root, ["new", "change", "a", "--schema", "story"]);
@@ -128,7 +220,7 @@ test("`status` gives the ready artifacts of a new change", async () => {
 
 test("`validate` names the requirement that has no scenario, and exits not 0", async () => {
   const root = await withDelta(DELTA.replace(/#### Scenario[\s\S]*$/, ""));
-  const run = await minispec(root, ["validate", "c"]);
+  const run = await minispec(root, ["validate", "c", "--json"]);
   expect(run.code).not.toBe(0);
   expect(JSON.parse(run.out).items[0].issues[0].message).toBe(
     'ADDED "A" must include at least one scenario',
@@ -148,15 +240,27 @@ test(
 
 test("`archive` merges a delta into `openspec/specs/` and moves the change", async () => {
   const root = await withDelta();
-  const run = await minispec(root, ["archive", "c", "--yes"]);
-  expect(run.code).toBe(0);
-  expect(
-    await Bun.file(path.join(root, "openspec/specs/x/spec.md")).text(),
-  ).toContain("### Requirement: A");
+  await mergesDelta(root, ["archive", "c", "--yes"]);
   expect(fs.existsSync(path.join(root, "openspec/changes/c"))).toBe(false);
   const archived = fs.readdirSync(path.join(root, "openspec/changes/archive"));
   expect(archived).toHaveLength(1);
   expect(archived[0]).toMatch(/^\d{4}-\d{2}-\d{2}-c$/);
+});
+
+test("Sync a Change", async () => {
+  const root = await withDelta();
+  await mergesDelta(root, ["sync", "c"]);
+  expect(fs.existsSync(path.join(root, "openspec/changes/c"))).toBe(true);
+  expect(fs.existsSync(path.join(root, "openspec/changes/archive"))).toBe(
+    false,
+  );
+});
+
+test("`sync` of a change whose merge fails writes no spec", async () => {
+  const root = await withDelta(DELTA.replace("## ADDED", "## MODIFIED"));
+  const run = await minispec(root, ["sync", "c"]);
+  expect(run.code).toBe(1);
+  expect(fs.existsSync(path.join(root, "openspec/specs"))).toBe(false);
 });
 
 test("`archive` stops at open tasks until `--yes`", async () => {
