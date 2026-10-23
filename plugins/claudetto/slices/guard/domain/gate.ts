@@ -1,162 +1,93 @@
-// The permission gate (spec `permission-gate`, D4 of change `0-3-0`).
-// It allows each call that no rule matches, and it stops only a call that loses bytes for good, tampers with the system, or reads a secret.
-// A loss that a person can still approve gets `ask`, and a disk wipe, system tampering, and a secret read get `deny`.
-// The function is pure except for `Facts.git`, which the adapter runs, and which a test stubs.
+// The permission gate (spec `permission-gate`, D4): it stops only a call that loses bytes for good, tampers with the system, or reads a secret.
+// The function is pure except for `Facts.git` and `Facts.userEdits`, which the adapter runs and a test stubs.
 
 import { parse } from "../../../kernel/shell.ts";
 import { readsScript, scriptOf } from "../../../kernel/shellkinds.ts";
 import { baseName, stripWrappers } from "../../../kernel/wrappers.ts";
 import * as T from "../prompts.ts";
-import { erasesDisk } from "./disk.ts";
-import { type GitScope, gitCall, localLoss, remoteRewrite } from "./git.ts";
+import { DELETES, deleteTargets, erasesDisk, operands } from "./delete.ts";
 import {
-  codeNamesSecret,
+  bulkStage,
+  type GitScope,
+  gitCall,
+  localLoss,
+  remoteRewrite,
+} from "./git.ts";
+import { isDbFile, lossKind } from "./loss.ts";
+import {
+  codeSecret,
   globsSecret,
-  inBuild,
   inTmp,
   isSystem,
   namesSecret,
   type Places,
   pathOf,
-  under,
 } from "./paths.ts";
 
-/** The folders of the session, and `git`, which gives `"clean"` when the files of `paths` in `scope` have a commit and no change. */
+/** The folders of the session, `git` (`"clean"` when the files of `paths` in `scope` have a commit and no change), and `userEdits` (the changed files of `dir` that the edit ledger does not know). */
 export type Facts = Places & {
   git: (
     scope: GitScope,
     dir: string,
     paths: string[],
   ) => Promise<"clean" | "dirty">;
+  userEdits: (dir: string) => Promise<string[]>;
 };
 
-/** A verdict. An `ask` with `jev` comes only from the delete and local `git` gates, so Jev can decide it before a person (D4). */
+/** An `ask` with `jev` comes only from the delete and local `git` gates (D4). A `secret` verdict gives no `!` command in its reason. */
 export type Verdict = {
   decision: "allow" | "ask" | "deny";
   reason?: string;
   jev?: true;
+  secret?: true;
 };
 
-/** A verdict of a rule, which is `secret` when it stops a secret read, so the reason gives no `!` command. */
-type Rule = Verdict & { secret?: true };
-
-/** One finding of a rule: a verdict, or a `git` check whose dirty answer gives `ask` with `reason`. */
-type Finding =
-  | Rule
-  | {
-      scope: GitScope;
-      dir: string;
-      paths: string[];
-      reason: string;
-      jev?: true;
-    };
+/** A verdict, or a check that runs `git` or reads the ledger, and gives an `ask` or `null`. */
+type Finding = Verdict | (() => Promise<Verdict | null>);
 
 const ask = (reason: string): Verdict => ({ decision: "ask", reason });
 const askJev = (reason: string): Verdict => ({ ...ask(reason), jev: true });
 const deny = (reason: string): Verdict => ({ decision: "deny", reason });
-const denySecret = (word: string): Rule => ({
+const denySecret = (word: string): Verdict => ({
   ...deny(T.DENY_SECRET({ word })),
   secret: true,
 });
-
-const DELETES = new Set(["rm", "shred", "srm", "unlink"]);
-const FIND_RUNS = new Set(["-exec", "-execdir", "-ok", "-okdir"]);
-const PIPED = new Set(["xargs", "parallel"]);
-/** The commands that take a secret path as a name only, and show no byte of the file. */
-const NO_READ = new Set(
-  "echo printf ls test [ touch stat cp mv rm unlink chmod chown ln".split(" "),
+const words = (s: string) => new Set(s.split(" "));
+const LOSS = {
+  db: askJev(T.ASK_DB_LOSS),
+  infra: ask(T.ASK_INFRA_LOSS),
+  none: null,
+};
+const PIPED = words("xargs parallel");
+const ROOT_USERS = words("sudo doas su");
+const DOWNLOADS = words("curl wget");
+/** The commands that take a secret path as a name only. */
+const NO_READ = words(
+  "echo printf ls test [ touch stat cp mv rm unlink chmod chown ln",
 );
-/** The commands that write to each operand, and the commands that write to the last one. */
 const WRITES_ALL = new Set([
-  "tee",
-  "touch",
-  "mkdir",
-  "rmdir",
-  "chmod",
-  "chown",
-  "chgrp",
-  "truncate",
+  ...words("tee touch mkdir rmdir chmod chown chgrp truncate"),
   ...DELETES,
 ]);
-const WRITES_LAST = new Set(["cp", "mv", "install", "rsync", "ditto", "ln"]);
-const ROOT_USERS = new Set(["sudo", "doas", "su"]);
+const WRITES_LAST = words("cp mv install rsync ditto ln");
+/** The file of an upload word: `@f` of `curl -d @f`, `-d@f`, and `name=@f` or `name=<f` of `curl -F`. */
+const UPLOAD = /^(?:-[A-Za-z]|[^=@<]*=)?[@<](.+)$/;
 
-const operands = (args: string[]): string[] => {
-  const at = args.indexOf("--");
-  const before = at < 0 ? args : args.slice(0, at);
-  const after = at < 0 ? [] : args.slice(at + 1);
-  return [...before.filter((a) => !a.startsWith("-")), ...after];
-};
+const systemWrite = (path: string | null): Verdict | null =>
+  path !== null && isSystem(path) ? deny(T.DENY_SYSTEM_WRITE({ path })) : null;
 
-/** The paths that the delete command `rest` removes, or `null` when it is not a delete. */
-const deleteTargets = (rest: string[]): string[] | null => {
-  const name = baseName(rest[0] ?? "");
-  if (DELETES.has(name)) return operands(rest.slice(1));
-  if (name !== "find") return null;
-  const runsDelete = rest.some(
-    (w, i) =>
-      w === "-delete" ||
-      (FIND_RUNS.has(w) && DELETES.has(baseName(rest[i + 1] ?? ""))),
-  );
-  if (!runsDelete) return null;
-  const end = rest.findIndex((w, i) => i > 0 && /^[-(!]/.test(w));
-  const roots = rest.slice(1, end < 0 ? undefined : end);
-  return roots.length ? roots : ["."];
-};
-
+/** A delete asks when the gate cannot read its target or removes a database file outside the temp folder, and it is denied for the root or the home folder (D1). */
 const deleteFindings = (
   targets: string[],
   dir: string | null,
   f: Facts,
-): Finding[] => {
-  const tracked: string[] = [];
-  const out: Finding[] = [];
-  for (const target of targets) {
+): Verdict[] =>
+  targets.flatMap((target) => {
     const path = dir === null ? null : pathOf(dir, target, f);
-    if (path === null) out.push(askJev(T.ASK_DELETE_UNREAD({ target })));
-    else if (path === "/" || path === f.home)
-      out.push(deny(T.DENY_ROOT({ target })));
-    else if (inBuild(path, f)) continue;
-    // A project in the temp folder keeps the `git` check of the project.
-    else if (under(path, f.cwd)) tracked.push(path);
-    else if (!inTmp(path, f))
-      out.push(askJev(T.ASK_DELETE_OUTSIDE({ target })));
-  }
-  if (tracked.length)
-    out.push({
-      scope: "delete",
-      dir: f.cwd,
-      paths: tracked,
-      reason: T.ASK_DELETE({ target: targets.join(" ") }),
-      jev: true,
-    });
-  return out;
-};
-
-const writeTargets = (rest: string[]): string[] => {
-  const name = baseName(rest[0] ?? "");
-  const words = operands(rest.slice(1));
-  if (WRITES_ALL.has(name)) return words;
-  return WRITES_LAST.has(name) ? words.slice(-1) : [];
-};
-
-const rootModeFinding = (
-  rest: string[],
-  f: Facts,
-  dir: string,
-): Verdict | null => {
-  const recursive = rest.some(
-    (w) => w === "--recursive" || /^-[A-Za-z]*R/.test(w),
-  );
-  if (!recursive || !/^ch(?:mod|own|grp)$/.test(baseName(rest[0] ?? "")))
-    return null;
-  for (const target of operands(rest.slice(1))) {
-    const path = pathOf(dir, target, f);
-    if (path === "/" || path === f.home)
-      return deny(T.DENY_ROOT_MODE({ target }));
-  }
-  return null;
-};
+    if (path === null) return [askJev(T.ASK_DELETE_UNREAD({ target }))];
+    if (path === "/" || path === f.home) return [deny(T.DENY_ROOT({ target }))];
+    return isDbFile(path) && !inTmp(path, f) ? [askJev(T.ASK_DB_LOSS)] : [];
+  });
 
 const systemFinding = (
   argv: string[],
@@ -164,61 +95,35 @@ const systemFinding = (
   f: Facts,
   dir: string,
 ): Verdict | null => {
+  const name = baseName(rest[0] ?? "");
   const prefix = argv.slice(0, argv.length - rest.length);
-  if (
-    prefix.some((w) => ROOT_USERS.has(baseName(w))) ||
-    ROOT_USERS.has(baseName(rest[0] ?? ""))
-  )
+  if (prefix.some((w) => ROOT_USERS.has(baseName(w))) || ROOT_USERS.has(name))
     return deny(T.DENY_ROOT_USER);
-  if (erasesDisk(baseName(rest[0] ?? ""), rest)) return deny(T.DENY_DISK);
-  const root = rootModeFinding(rest, f, dir);
-  if (root) return root;
-  for (const target of writeTargets(rest)) {
+  if (erasesDisk(name, rest)) return deny(T.DENY_DISK);
+  const all = WRITES_ALL.has(name);
+  if (!all && !WRITES_LAST.has(name)) return null;
+  const args = operands(rest.slice(1));
+  const recursive = rest.some(
+    (w) => w === "--recursive" || /^-[A-Za-z]*R/.test(w),
+  );
+  for (const target of recursive && /^ch(?:mod|own|grp)$/.test(name)
+    ? args
+    : []) {
     const path = pathOf(dir, target, f);
-    if (path !== null && isSystem(path))
-      return deny(T.DENY_SYSTEM_WRITE({ path }));
+    if (path === "/" || path === f.home)
+      return deny(T.DENY_ROOT_MODE({ target }));
   }
-  return null;
+  const written = all ? args : args.slice(-1);
+  return (
+    written.map((w) => systemWrite(pathOf(dir, w, f))).find(Boolean) ?? null
+  );
 };
 
-const scriptFile = (rest: string[]): string | undefined => {
-  const name = baseName(rest[0] ?? "");
-  if (name === "source" || name === ".") return rest[1];
-  if (/\.(?:sh|bash|zsh)$/.test(name)) return rest[0];
-  return readsScript(rest) ? operands(rest.slice(1))[0] : undefined;
-};
-
-/** The finding of a command whose effect the gate cannot read: `eval`, a shell that reads its input, or a script that `git` has no commit of. */
-const hiddenFinding = (
-  argv: string[],
-  rest: string[],
-  f: Facts,
-  dir: string | null,
-): Finding | null => {
-  const name = baseName(rest[0] ?? "");
-  const script = scriptOf(argv);
-  if (
-    name === "eval" ||
-    name.startsWith("$") ||
-    rest[0] === "" ||
-    script === "" ||
-    /^\$\{?\w+\}?$/.test(script ?? "")
-  )
-    return ask(T.ASK_HIDDEN);
-  const file = scriptFile(rest);
-  if (file === undefined) return readsScript(rest) ? ask(T.ASK_HIDDEN) : null;
-  const path = dir === null ? null : pathOf(dir, file, f);
-  if (path !== null && under(path, f.cwd))
-    return {
-      scope: "delete",
-      dir: f.cwd,
-      paths: [path],
-      reason: T.ASK_SCRIPT({ path: file }),
-    };
-  return path === null || inTmp(path, f)
-    ? ask(T.ASK_SCRIPT({ path: file }))
-    : null;
-};
+/** A shell that runs a download from the network: `curl ... | sh`. */
+const runsDownload = (commands: string[][]): boolean =>
+  commands.some((argv) =>
+    DOWNLOADS.has(baseName(stripWrappers(argv)[0] ?? "")),
+  ) && commands.some((argv) => readsScript(argv) || scriptOf(argv) === "");
 
 /** The finding of a `git` call: a push that rewrites the remote, or a local command that can lose work. */
 const gitFinding = (
@@ -229,21 +134,38 @@ const gitFinding = (
   const call = gitCall(argv);
   if (call === null) return null;
   if (remoteRewrite(call)) return ask(T.ASK_PUSH);
+  const at = dir === null ? null : pathOf(dir, call.dir ?? ".", f);
+  if (bulkStage(call))
+    return async () => {
+      const files = await f.userEdits(at ?? f.cwd);
+      const list = files.map((p) => `\`${p}\``).join(", ");
+      return files.length > 0 ? ask(T.ASK_BULK_STAGE({ files: list })) : null;
+    };
   const loss = localLoss(call);
   if (loss === null) return null;
   const reason = T.ASK_GIT_LOSS({ verb: call.verb });
-  const at = dir === null ? null : pathOf(dir, call.dir ?? ".", f);
   if (loss === "always" || at === null) return askJev(reason);
-  return { ...loss, dir: at, reason, jev: true };
+  return async () =>
+    (await f.git(loss.scope, at, loss.paths)) === "dirty"
+      ? askJev(reason)
+      : null;
 };
 
+/** A read of a secret file by name or by an upload word, or a print of each environment variable with a bare `env` or `printenv`. */
 const secretFinding = (
+  argv: string[],
   rest: string[],
   f: Facts,
   dir: string | null,
-): Rule | null => {
-  if (NO_READ.has(baseName(rest[0] ?? ""))) return null;
-  const word = rest.find((w) => namesSecret(dir ?? f.cwd, w, f));
+): Verdict | null => {
+  const name = baseName(rest[0] ?? "");
+  const bareEnv = rest.length === 0 && argv.some((w) => baseName(w) === "env");
+  if (bareEnv || (name === "printenv" && operands(rest.slice(1)).length === 0))
+    return { ...deny(T.DENY_ENV_DUMP), secret: true };
+  if (NO_READ.has(name)) return null;
+  const word = rest
+    .flatMap((w) => [w, UPLOAD.exec(w)?.[1] ?? ""])
+    .find((w) => w !== "" && namesSecret(dir ?? f.cwd, w, f));
   return word === undefined ? null : denySecret(word);
 };
 
@@ -260,59 +182,68 @@ const nextDir = (
   return dir === null || target === "-" ? null : pathOf(dir, target, f);
 };
 
+/** A `git stash` (except `list` and `show`) or a `pkill -f` from a subagent, which changes the state of the main agent (X4). */
+const sharedFinding = (argv: string[], rest: string[]): Verdict | null => {
+  const call = gitCall(argv);
+  const stash =
+    call?.verb === "stash" && !["list", "show"].includes(call.args[0] ?? "");
+  const pkill =
+    baseName(rest[0] ?? "") === "pkill" &&
+    rest.some((w) => w === "--full" || /^-[A-Za-z]*f/.test(w));
+  return stash || pkill ? ask(T.ASK_SHARED_TREE) : null;
+};
+
 const commandFindings = (
   argv: string[],
   rest: string[],
   dir: string | null,
   f: Facts,
+  subagent: boolean,
 ): Finding[] => {
   const targets = deleteTargets(rest);
   const piped = targets !== null && argv.some((w) => PIPED.has(baseName(w)));
   return [
     ...[
       systemFinding(argv, rest, f, dir ?? f.cwd),
-      secretFinding(rest, f, dir),
-      hiddenFinding(argv, rest, f, dir),
+      secretFinding(argv, rest, f, dir),
       gitFinding(argv, f, dir),
+      subagent ? sharedFinding(argv, rest) : null,
       piped && targets.length === 0 ? askJev(T.ASK_DELETE_PIPED) : null,
+      LOSS[lossKind(rest) ?? "none"],
     ].filter((x) => x !== null),
     ...(targets ? deleteFindings(targets, dir, f) : []),
   ];
 };
 
-/** The finding of a secret that a `<` redirection or the code of the command reads. */
-const inputFindings = (
+const bashFindings = (
   command: string,
-  code: string[],
   f: Facts,
+  subagent: boolean,
 ): Finding[] => {
-  const inputs = command.matchAll(/<\s*(['"]?)([^\s;&|<>'"]+)\1/g);
-  const words = [...inputs].map((m) => m[2] as string);
-  const secret = [
-    ...words.filter((w) => namesSecret(f.cwd, w, f)),
-    ...code.filter(codeNamesSecret),
-  ][0];
-  return secret === undefined ? [] : [denySecret(secret)];
-};
-
-const bashFindings = (command: string, f: Facts): Finding[] => {
   const parsed = parse(command);
   if (parsed.truncated) return [ask(T.ASK_TRUNCATED)];
-  const out: Finding[] = [];
+  const out: Finding[] = runsDownload(parsed.commands)
+    ? [ask(T.ASK_DOWNLOAD)]
+    : [];
   let dir: string | null = f.cwd;
   for (const argv of parsed.commands) {
     const rest = stripWrappers(argv);
     const moved = nextDir(rest, dir, f);
     if (moved !== undefined) dir = moved;
-    out.push(...commandFindings(argv, rest, dir, f));
+    out.push(...commandFindings(argv, rest, dir, f, subagent));
   }
   for (const { target } of parsed.redirects) {
-    const path = pathOf(dir ?? f.cwd, target, f);
-    if (path !== null && isSystem(path))
-      out.push(deny(T.DENY_SYSTEM_WRITE({ path })));
+    const found = systemWrite(pathOf(dir ?? f.cwd, target, f));
+    if (found) out.push(found);
   }
-  out.push(...inputFindings(command, parsed.code, f));
-  return out;
+  const inputs = command.matchAll(/<\s*(['"]?)([^\s;&|<>'"]+)\1/g);
+  const secret = [
+    ...[...inputs]
+      .map((m) => m[2] as string)
+      .filter((w) => namesSecret(f.cwd, w, f)),
+    ...parsed.code.map(codeSecret).filter((w) => w !== undefined),
+  ][0];
+  return secret === undefined ? out : [...out, denySecret(secret)];
 };
 
 const fileFindings = (
@@ -323,51 +254,47 @@ const fileFindings = (
   const text = (key: string) =>
     typeof input[key] === "string" ? (input[key] as string) : "";
   const file = text("file_path");
-  if (tool === "Edit" || tool === "Write") {
-    const path = pathOf(f.cwd, file, f);
-    return path !== null && isSystem(path)
-      ? [deny(T.DENY_SYSTEM_WRITE({ path }))]
-      : [];
-  }
-  const words = [file, text("path")].filter(
+  if (tool === "Edit" || tool === "Write")
+    return [systemWrite(pathOf(f.cwd, file, f))].filter((x) => x !== null);
+  const named = [file, text("path")].filter(
     (w) => w !== "" && namesSecret(f.cwd, w, f),
   );
   const globs = [text(tool === "Grep" ? "glob" : "pattern")].filter(
     globsSecret,
   );
-  const word = [...words, ...globs][0];
+  const word = [...named, ...globs][0];
   return word === undefined ? [] : [denySecret(word)];
 };
 
-const dirtyVerdicts = async (
-  findings: Finding[],
-  f: Facts,
-): Promise<Rule[]> => {
-  const out: Rule[] = [];
-  for (const x of findings) {
-    if ("decision" in x) continue;
-    if ((await f.git(x.scope, x.dir, x.paths)) === "dirty")
-      out.push(x.jev ? askJev(x.reason) : ask(x.reason));
-  }
-  return out;
-};
+/** True when a gate can match the call: its input has a command, a path, or a pattern. Each other call is allowed with no read of the session. */
+export const gated = (input: unknown): boolean =>
+  ["command", "file_path", "path", "pattern", "glob"].some(
+    (k) => typeof (input as Record<string, unknown> | null)?.[k] === "string",
+  );
 
 /**
  * The verdict of the gate for the call of `tool` with `input`.
  * The strictest finding wins, and each `git` check runs only when no finding denies.
  * An `ask` gives the reason of each finding that asks, and it has `jev` only when each of them has it.
  * A `deny` of a `Bash` command that reads no secret gives the exact `!` command for the user.
+ * `agentId` is set only for a call of a subagent.
  */
 export const gate = async (
-  { tool, input }: { tool: string; input: unknown },
+  {
+    tool,
+    input,
+    agentId,
+  }: { tool: string; input: unknown; agentId?: string | undefined },
   f: Facts,
 ): Promise<Verdict> => {
   const fields = (input ?? {}) as Record<string, unknown>;
   const command =
     typeof fields["command"] === "string" ? (fields["command"] as string) : "";
   const findings =
-    tool === "Bash" ? bashFindings(command, f) : fileFindings(tool, fields, f);
-  const verdicts = findings.filter((x): x is Rule => "decision" in x);
+    tool === "Bash" || tool === "Monitor"
+      ? bashFindings(command, f, agentId !== undefined)
+      : fileFindings(tool, fields, f);
+  const verdicts = findings.filter((x) => typeof x !== "function");
   const denied = verdicts.find((v) => v.decision === "deny");
   if (denied)
     return deny(
@@ -375,7 +302,10 @@ export const gate = async (
         ? `${denied.reason}\n${T.RUN_HINT({ command })}`
         : (denied.reason as string),
     );
-  verdicts.push(...(await dirtyVerdicts(findings, f)));
+  for (const check of findings.filter((x) => typeof x === "function")) {
+    const found = await check();
+    if (found) verdicts.push(found);
+  }
   const asks = verdicts.filter((v) => v.decision === "ask");
   if (asks.length === 0) return { decision: "allow" };
   const reason = [...new Set(asks.map((v) => v.reason))].join("\n");

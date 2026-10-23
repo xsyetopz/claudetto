@@ -3,11 +3,13 @@
 // The fake `process.run` stands for `git`, so no command runs.
 
 import { expect, test } from "bun:test";
+import { ATTEMPT_TIMEOUT_MS } from "../../../plugins/claudetto/kernel/budget.ts";
 import {
   keepOptions,
   onCheck,
   onCheckFail,
 } from "../../../plugins/claudetto/slices/guard/adapters/mod.ts";
+import { JEV_YES_MIN } from "../../../plugins/claudetto/slices/guard/limits.ts";
 
 type Verdict = { decision: string; decider?: string; reason?: string };
 
@@ -15,6 +17,7 @@ type Verdict = { decision: string; decider?: string; reason?: string };
 const fake = (status: string, runs: (readonly string[])[] = []) => ({
   session: { cwd: async () => "/p" },
   env: { get: async (name: string) => ({ HOME: "/u", TMPDIR: "/t/" })[name] },
+  fs: { stat: async () => Promise.reject(new Error("ENOENT")) },
   process: {
     run: async (argv: readonly string[]) => {
       runs.push(argv);
@@ -30,26 +33,16 @@ const check = (command: string, engine: Verdict, $ = fake("")) =>
     async () => engine,
   );
 
-test("Uncommitted File: the delete asks a person, so the dialog shows no always-allow row", async () => {
+test("Local Git Loss: `git clean -fd` over an untracked file asks a person, so the dialog shows no always-allow row", async () => {
   const runs: (readonly string[])[] = [];
   const v = await check(
-    "rm notes.md",
+    "git clean -fd",
     { decision: "allow" },
     fake("?? notes.md\n", runs),
   );
   expect(v).toMatchObject({ decision: "ask", decider: "person" });
   expect(runs).toStrictEqual([
-    [
-      "git",
-      "-C",
-      "/p",
-      "status",
-      "--porcelain",
-      "--untracked-files=all",
-      "--ignored",
-      "--",
-      "/p/notes.md",
-    ],
+    ["git", "-C", "/p", "status", "--porcelain", "--untracked-files=all", "--"],
   ]);
 });
 
@@ -76,77 +69,93 @@ test("Gate Fails Closed: the error handler asks a person, and the reason names t
   expect(v.reason).toContain("`guard`");
 });
 
-// "Jev before a Person" (task 5.1a): a fake `claudetto-decide` answers with `stdout`, and `git` says that `notes.md` has no commit.
-const JEV_SURE = '{"text":"yes","answer":{"choice":"yes","confidence":0.93}}';
+// "Jev before a Person" (task 5.1a, 10.15): a fake `$.http.fetch` answers for the TypeSafe API, and `git` prints an untracked `notes.md`.
+type Reply = { status: number; ok: boolean; headers: object; text: string };
+type Fetch = {
+  url: string;
+  init?: { headers?: Record<string, string>; body?: string } | undefined;
+};
 
-/** A fake `$` with the key `key`, whose `git` prints an untracked `notes.md`, and whose Jev run gives `jev`. */
+/** A reply of the API with the `noul` answer `q`, or the `status` with no answer. */
+const answerOf =
+  (noul: number, status = 200) =>
+  async (): Promise<Reply> => ({
+    status,
+    ok: status === 200,
+    headers: {},
+    text: JSON.stringify({ answers: { q: { type: "noul", noul } } }),
+  });
+
+/** A fake `$` with the key `key`, whose `git` prints an untracked `notes.md`, whose `http.fetch` gives `jev`, and whose `clock.sleep` waits for an abort. */
 const jevFake = (
   key: string | undefined,
-  jev: () => Promise<{ exitCode: number; stdout: string }>,
+  jev: () => Promise<Reply>,
   runs: (readonly string[])[] = [],
+  fetches: Fetch[] = [],
 ) => ({
-  ...fake(""),
-  plugin: { root: "/root" },
+  ...fake("?? notes.md\n", runs),
   env: {
     get: async (name: string) =>
       ({ HOME: "/u", TMPDIR: "/t/", TYPESAFE_API_KEY: key })[name],
   },
-  process: {
-    run: async (argv: readonly string[]) => {
-      runs.push(argv);
-      return argv[0] === "git"
-        ? { exitCode: 0, stdout: "?? notes.md\n", stderr: "" }
-        : { ...(await jev()), stderr: "" };
+  http: {
+    fetch: async (url: string, init?: Fetch["init"]) => {
+      fetches.push({ url, init });
+      return jev();
     },
+  },
+  clock: {
+    sleep: (_ms: number, options?: { signal?: AbortSignal }) =>
+      new Promise<void>((_resolve, reject) =>
+        options?.signal?.addEventListener("abort", () =>
+          reject(new Error("aborted")),
+        ),
+      ),
   },
 });
 
-const sure = async () => ({ exitCode: 0, stdout: JEV_SURE });
+const sure = answerOf(0.93);
 
-test("Jev Is Sure: a confident yes allows the delete, and the reason names Jev and `P(yes)`", async () => {
+test("Jev Is Sure: a confident yes allows the `git` loss, and the reason names Jev and `P(yes)`", async () => {
   keepOptions({ decide: "jev" });
   const runs: (readonly string[])[] = [];
+  const fetches: Fetch[] = [];
   const v = await check(
-    "rm notes.md",
+    "git clean -fd",
     { decision: "ask" },
-    jevFake("k", sure, runs) as never,
+    jevFake("k", sure, runs, fetches) as never,
   );
   expect(v).toStrictEqual({
     decision: "allow",
     reason: "Jev approved this call with `P(yes)` = 0.93.",
   });
-  const jev = runs.find((r) => r[0] === "bun") ?? [];
-  expect(jev.slice(1, 5)).toStrictEqual([
-    "--no-env-file",
-    "/root/bin/claudetto-decide",
-    "yes",
-    "--json",
-  ]);
-  expect(jev.join(" ")).toContain("Command: rm notes.md");
+  expect(runs.every((r) => r[0] === "git")).toBe(true);
+  expect(fetches).toHaveLength(1);
+  expect(fetches[0]?.url).toBe("https://api.typesafe.ai/v1/systemone");
+  expect(fetches[0]?.init?.headers?.["authorization"]).toBe("Bearer k");
+  const body = JSON.parse(fetches[0]?.init?.body ?? "{}");
+  expect(body.state).toContain("Command: git clean -fd");
+  expect(body.questions.q.type).toBe("noul");
+  expect(fetches[0]?.init?.body).not.toContain('"k"');
+});
+
+// The floor is `JEV_YES_MIN` of 0.8, above the 0.7 of `primitives-noul.md`, because a false yes loses files (the user, 2026-10-23: "follow typesafe's guidelines/best practices").
+test("Jev Is Sure: a yes at `JEV_YES_MIN` allows the call", async () => {
+  keepOptions({ decide: "jev" });
+  const v = await check(
+    "git clean -fd",
+    { decision: "ask" },
+    jevFake("k", answerOf(JEV_YES_MIN)) as never,
+  );
+  expect(v).toMatchObject({ decision: "allow" });
 });
 
 for (const [name, key, decide, jev] of [
+  ["a yes under the bound", "k", "jev", answerOf(0.79)],
+  ["a no", "k", "jev", answerOf(0.05)],
+  ["a failed call", "k", "jev", answerOf(0.9, 500)],
   [
-    "a yes under the bound",
-    "k",
-    "jev",
-    async () => ({
-      exitCode: 0,
-      stdout: '{"answer":{"choice":"yes","confidence":0.79}}',
-    }),
-  ],
-  [
-    "a no",
-    "k",
-    "jev",
-    async () => ({
-      exitCode: 0,
-      stdout: '{"answer":{"choice":"no","confidence":0.95}}',
-    }),
-  ],
-  ["a failed run", "k", "jev", async () => ({ exitCode: 3, stdout: "" })],
-  [
-    "a run that throws, such as on a timeout",
+    "a call that throws",
     "k",
     "jev",
     () => Promise.reject(new Error("timeout")),
@@ -157,7 +166,7 @@ for (const [name, key, decide, jev] of [
   test(`Jev Is Not Sure: ${name} asks a person, so the dialog shows no always-allow row`, async () => {
     keepOptions({ decide });
     const v = await check(
-      "rm notes.md",
+      "git clean -fd",
       { decision: "allow" },
       jevFake(key, jev) as never,
     );
@@ -165,16 +174,34 @@ for (const [name, key, decide, jev] of [
     expect(v).not.toHaveProperty("jev");
   });
 
-test("an `ask` that is not a loss, such as `eval`, goes to a person and not to Jev", async () => {
+test("Timeout: a call that never answers ends at `ATTEMPT_TIMEOUT_MS` with no retry, and a person decides", async () => {
   keepOptions({ decide: "jev" });
-  const runs: (readonly string[])[] = [];
+  const slept: number[] = [];
+  const fetches: Fetch[] = [];
+  const $ = {
+    ...jevFake("k", () => new Promise<Reply>(() => {}), [], fetches),
+    clock: {
+      sleep: async (ms: number) => {
+        slept.push(ms);
+      },
+    },
+  };
+  const v = await check("git clean -fd", { decision: "allow" }, $ as never);
+  expect(v).toMatchObject({ decision: "ask", decider: "person" });
+  expect(slept).toStrictEqual([ATTEMPT_TIMEOUT_MS]);
+  expect(fetches).toHaveLength(1);
+});
+
+test("an `ask` that is not a loss, such as a forced push, goes to a person and not to Jev", async () => {
+  keepOptions({ decide: "jev" });
+  const fetches: Fetch[] = [];
   const v = await check(
-    'eval "$X"',
+    "git push --force",
     { decision: "allow" },
-    jevFake("k", sure, runs) as never,
+    jevFake("k", sure, [], fetches) as never,
   );
   expect(v).toMatchObject({ decision: "ask", decider: "person" });
-  expect(runs.some((r) => r[0] === "bun")).toBe(false);
+  expect(fetches).toEqual([]);
 });
 
 // Task 5.2: each `ask` goes to the log of the session, and a log that cannot be written changes no verdict.
@@ -188,8 +215,9 @@ const withLog = <T extends object>(
 ) => ({
   ...$,
   session: { ...($ as { session: object }).session, id: async () => "s1" },
-  clock: { now: async () => 0 },
+  clock: { ...($ as { clock?: object }).clock, now: async () => 0 },
   fs: {
+    ...($ as { fs: object }).fs,
     exists: async (path: string) => files.has(path),
     read: async (path: string) => files.get(path) ?? "",
     write,
@@ -208,20 +236,20 @@ test("Gate Log: two checks at the same time keep both lines, each with its reaso
   const files = new Map<string, string>();
   const $ = withLog(fake("?? notes.md\n"), files) as never;
   await Promise.all([
-    check("rm notes.md", { decision: "allow" }, $),
-    check("rm ./notes.md", { decision: "allow" }, $),
+    check("git clean -fd", { decision: "allow" }, $),
+    check("git clean -fd .", { decision: "allow" }, $),
   ]);
   const got = lines(files);
   expect(got.map((l) => l.target).sort()).toStrictEqual([
-    "rm ./notes.md",
-    "rm notes.md",
+    "git clean -fd",
+    "git clean -fd .",
   ]);
   expect(
     got.every(
       (l) =>
         l.decider === "person" &&
         l.tool === "Bash" &&
-        l.reason.includes("notes.md"),
+        l.reason.includes("git clean"),
     ),
   ).toBe(true);
   expect(got[0].at).toBe("1970-01-01T00:00:00.000Z");
@@ -231,7 +259,7 @@ test("Gate Log: an `ask` that Jev allows has the decider `jev`", async () => {
   keepOptions({ decide: "jev" });
   const files = new Map<string, string>();
   await check(
-    "rm notes.md",
+    "git clean -fd",
     { decision: "ask" },
     withLog(jevFake("k", sure), files) as never,
   );
@@ -249,8 +277,24 @@ test("Gate Log: a write that fails keeps the `ask` for a person", async () => {
   const $ = withLog(fake("?? notes.md\n"), new Map(), async () => {
     throw new Error("disk full");
   }) as never;
-  expect(await check("rm notes.md", { decision: "allow" }, $)).toMatchObject({
+  expect(await check("git clean -fd", { decision: "allow" }, $)).toMatchObject({
     decision: "ask",
     decider: "person",
   });
+});
+
+test("Gate Log: an `ask` at red writes one line with its reason and `person`", async () => {
+  const files = new Map<string, string>();
+  const $ = withLog(fake(""), files) as { session: object };
+  $.session = {
+    ...$.session,
+    usage: async () => ({
+      rateLimits: [{ kind: "five_hour", percentUsed: 95 }],
+    }),
+  };
+  const v = await check("just sandbox", { decision: "allow" }, $ as never);
+  expect(v).toMatchObject({ decision: "ask", decider: "person" });
+  expect(lines(files)).toMatchObject([
+    { tool: "Bash", reason: v.reason, decider: "person" },
+  ]);
 });

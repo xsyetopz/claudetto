@@ -13,6 +13,7 @@ const FACTS = {
   cwd: "/p",
   home: "/u",
   tmp: "/tmp",
+  temps: ["/tmp", "/private/tmp"],
   git: async () => "clean" as const,
 };
 

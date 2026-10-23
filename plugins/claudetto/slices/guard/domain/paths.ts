@@ -1,39 +1,18 @@
 // The path facts of the permission gate: where a word of a command points, and what kind of folder holds it.
-// The functions are pure, and the folders of the session come in `Places`.
 
 import { baseName } from "../../../kernel/wrappers.ts";
 
-/** The folders of the session: the project, the home folder, and the temp folder. */
-export type Places = { cwd: string; home: string; tmp: string };
-
-/** The folders that a build or an install writes again, so a delete in them loses no source. */
-const BUILD = new Set([
-  "node_modules",
-  "dist",
-  "build",
-  "out",
-  "target",
-  "coverage",
-  ".next",
-  ".nuxt",
-  ".turbo",
-  ".cache",
-  ".parcel-cache",
-  ".build",
-  "DerivedData",
-  "__pycache__",
-  ".pytest_cache",
-  ".mypy_cache",
-  ".ruff_cache",
-  ".venv",
-  ".gradle",
-]);
+/** The folders of the session: the project, the home folder, `$TMPDIR`, and each spelling of each temp folder of `kernel/tmp.ts`. */
+export type Places = {
+  cwd: string;
+  home: string;
+  tmp: string;
+  temps: readonly string[];
+};
 
 /** The folders of the system that the gate keeps from each write. `/usr/local` is not one, because Homebrew writes there. */
 const SYSTEM = /^\/(?:System|Library|usr(?!\/local(?:\/|$)))(?:\/|$)/;
-
 const ENV_FILE = /^\.env(?:\.(?!(?:example|sample|template)$)[\w.-]+)?$/;
-
 const HOME_SECRETS = [
   ".ssh/",
   ".gnupg/",
@@ -51,16 +30,9 @@ const normal = (path: string): string => {
   return `/${parts.join("/")}`;
 };
 
-/** `word` with a leading `~`, `$HOME`, or `$TMPDIR` replaced by its folder. */
-const expand = (word: string, at: Places): string =>
-  word
-    .replace(/^~(?=\/|$)/, at.home)
-    .replace(/^\$(?:HOME|\{HOME\})(?=\/|$)/, at.home)
-    .replace(/^\$(?:TMPDIR|\{TMPDIR\})(?=\/|$)/, at.tmp);
-
 /**
  * The absolute path of the word `word` from the folder `dir`, or `null` when the gate cannot read it:
- * an empty word (a substitution), or a word with a variable, a backtick, or `{}` after the expansion.
+ * an empty word, or a word with a variable, a backtick, or `{}` after the expansion of `~`, `$HOME`, and `$TMPDIR`.
  * A glob part and each part after it are cut, so `src/*.ts` points to `src`.
  */
 export const pathOf = (
@@ -68,7 +40,10 @@ export const pathOf = (
   word: string,
   at: Places,
 ): string | null => {
-  const text = expand(word, at);
+  const text = word
+    .replace(/^~(?=\/|$)/, at.home)
+    .replace(/^\$(?:HOME|\{HOME\})(?=\/|$)/, at.home)
+    .replace(/^\$(?:TMPDIR|\{TMPDIR\})(?=\/|$)/, at.tmp);
   if (text === "" || /[$`]|\{\}/.test(text)) return null;
   const glob = text.search(/[*?[]/);
   const plain =
@@ -76,36 +51,26 @@ export const pathOf = (
   return normal(plain.startsWith("/") ? plain : `${dir}/${plain}`);
 };
 
-/** True when `path` is `root` or in it. */
-export const under = (path: string, root: string): boolean =>
+const under = (path: string, root: string): boolean =>
   path === root || path.startsWith(root === "/" ? "/" : `${root}/`);
 
 /** True when `path` is in the temp folder, but is not the temp folder itself. */
 export const inTmp = (path: string, at: Places): boolean =>
-  [at.tmp, "/tmp", "/private/tmp"].some(
-    (root) => path !== root && under(path, root),
-  );
-
-export const inBuild = (path: string, at: Places): boolean =>
-  under(path, at.cwd) &&
-  path
-    .slice(at.cwd.length)
-    .split("/")
-    .some((part) => BUILD.has(part));
+  at.temps.some((root) => path !== root && under(path, root));
 
 export const isSystem = (path: string): boolean => SYSTEM.test(path);
 
-const isEnvName = (name: string): boolean => ENV_FILE.test(name);
-
 const isSecretPath = (path: string, at: Places): boolean =>
-  isEnvName(baseName(path)) ||
+  ENV_FILE.test(baseName(path)) ||
   HOME_SECRETS.some((s) =>
     s.endsWith("/")
       ? under(path, `${at.home}/${s.slice(0, -1)}`)
       : path === `${at.home}/${s}`,
   );
 
+/** True when `word` points to a secret file from the folder `dir`. Each secret name has a `.`, so a word with no `.`, `$`, or `~` in a folder with no `/.` part cannot name one. */
 export const namesSecret = (dir: string, word: string, at: Places): boolean =>
+  (/[.$~]/.test(word) || dir.includes("/.")) &&
   [word, ...word.split(/[=:,]/)].some((part) => {
     const path = pathOf(dir, part, at);
     return path !== null && isSecretPath(path, at);
@@ -120,10 +85,11 @@ export const globsSecret = (glob: string): boolean => {
     .replace(/\*/g, "[^/]*")
     .replace(/\?/g, ".");
   const re = new RegExp(`^${source}$`);
-  return [".env", ".env.local"].some((name) => re.test(name));
+  return [".env", ".env.local"].some((n) => re.test(n));
 };
 
-export const codeNamesSecret = (code: string): boolean =>
-  [...code.matchAll(/(?<![\w.-])\.env(?:\.[\w.-]+)?(?![\w.-])/g)].some((m) =>
-    isEnvName(m[0]),
-  );
+// `$`, `)`, and `]` before `.env` make a property access, such as `$.env.get`, not a file name.
+export const codeSecret = (code: string): string | undefined =>
+  [...code.matchAll(/(?<![\w.$)\]-])\.env(?:\.[\w.-]+)?(?![\w.-])/g)]
+    .map((m) => m[0])
+    .find((name) => ENV_FILE.test(name));

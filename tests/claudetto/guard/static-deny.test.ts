@@ -65,7 +65,9 @@ const facts = {
   cwd: "/p",
   home: "/u",
   tmp: "/t",
+  temps: ["/t", "/tmp", "/private/tmp"],
   git: async () => "clean" as const,
+  userEdits: async () => [],
 };
 
 test("Mods Off: each command that the gate denies has a static `deny` rule", async () => {

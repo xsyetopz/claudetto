@@ -1,5 +1,4 @@
-// The log of each `ask` of the gate, for question Q1 of change `0-3-0` (task 5.2).
-// One JSON line for each `ask`: the time, the tool, the command or path, the reason, and who decided.
+// The log of each `ask` of the gate, for question Q1 of change `0-3-0`: one JSON line with the time, the tool, the target, the reason, and who decided.
 
 /** Who settled an `ask`: Jev, which allowed it, or a person, who saw the dialog. */
 export type Decider = "jev" | "person";
@@ -14,13 +13,14 @@ export const logLine = (v: {
   reason: string;
   decider: Decider;
 }): string => {
-  const fields = (v.input ?? {}) as Record<string, unknown>;
-  const target = fields["command"] ?? fields["file_path"] ?? fields["path"];
+  const f = (v.input ?? {}) as Record<string, unknown>;
+  const target = f["command"] ?? f["file_path"] ?? f["path"];
+  const { tool, reason, decider } = v;
   return `${JSON.stringify({
     at: new Date(v.at).toISOString(),
-    tool: v.tool,
+    tool,
     target: typeof target === "string" ? target : "",
-    reason: v.reason,
-    decider: v.decider,
+    reason,
+    decider,
   })}\n`;
 };
