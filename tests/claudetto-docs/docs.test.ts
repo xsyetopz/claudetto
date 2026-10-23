@@ -63,12 +63,19 @@ test("the settings snippet allows the same commands as the skill", () => {
   expect(bash).toStrictEqual(READ_SUBCOMMANDS.map(rule));
 });
 
-test("the plugin ships no MCP server and no MCP option", async () => {
-  const full: { userConfig?: Record<string, unknown> } = await Bun.file(
+test("the `context7` server has a fixed `url`, and sends the sensitive key, empty by default, only in its header", async () => {
+  const full = await Bun.file(
     path.join(ROOT, ".claude-plugin/plugin.json"),
   ).json();
-  expect(fs.existsSync(path.join(ROOT, ".mcp.json"))).toBe(false);
-  expect(full.userConfig).toBeUndefined();
+  expect(full.mcpServers.context7).toStrictEqual({
+    type: "http",
+    url: "https://mcp.context7.com/mcp",
+    // biome-ignore lint/suspicious/noTemplateCurlyInString: the placeholder of Claude Code for a plugin option
+    headers: { "Context7-API-Key": "${user_config.CONTEXT7_API_KEY}" },
+  });
+  const key = full.userConfig.CONTEXT7_API_KEY;
+  expect([key.sensitive, key.default]).toStrictEqual([true, ""]);
+  expect(SKILL).toContain("mcp__plugin_claudetto-docs_context7__query-docs");
 });
 
 test(
