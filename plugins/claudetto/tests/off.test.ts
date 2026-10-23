@@ -20,3 +20,23 @@ test("`prompt.attachment` leaves out an attachment of an `off` kind", async ($: 
 test("`prompt.attachment` keeps an attachment of another kind", async ($: Engine, on: On) => {
   expect((await attach($, on, "auto_mode")).text).toBe("engine text");
 });
+
+const ENGINE_PLAN = `Plan mode is active. ${"x".repeat(2000)}
+You should create your plan at /home/u/.claude/plans/a-b.md using the Write tool.
+## Plan Workflow
+### Phase 1: Initial Understanding
+Launch up to 3 Explore agents IN PARALLEL.
+### Phase 5: Call ExitPlanMode`;
+
+test("`prompt.attachment` gives the plan mode text a shorter text with the plan file and `claudetto:Scout`", async ($: Engine, on: On) => {
+  on("prompt.attachment", () => ({ text: ENGINE_PLAN }));
+  const { text } = await $.prompt.attachment({
+    type: "plan_mode",
+    text: ENGINE_PLAN,
+    origin: { kind: "engine" },
+  });
+  expect(text).toContain("/home/u/.claude/plans/a-b.md");
+  expect(text).toContain("`claudetto:Scout`");
+  expect(text).not.toContain("ExitPlanMode");
+  expect(text?.length).toBeLessThan(ENGINE_PLAN.length);
+});

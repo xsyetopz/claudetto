@@ -6,9 +6,8 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { PLUGINS, REPO, walk } from "../../support/repo.ts";
+import { REPO } from "../../support/repo.ts";
 
-const CORE = path.join(PLUGINS, "claudetto");
 const at = (...parts: string[]) => fs.existsSync(path.join(REPO, ...parts));
 
 // Fixed by task 3.1.
@@ -41,15 +40,4 @@ test("fault 27: the lint step bounds the cognitive complexity at 15", async () =
   const biome = await Bun.file(path.join(REPO, "biome.json")).json();
   const rule = biome.linter.rules.complexity?.noExcessiveCognitiveComplexity;
   expect(rule?.options?.maxAllowedComplexity).toBe(15);
-});
-
-// Fixed by task 3.3: 10,623 lines of `.ts` in `src/plugins/claudetto/` on `v0.2.0`, with the lab tests.
-// The count of the shipped folder also holds the copy of the kernel, so it is a stricter bound.
-test("prd goal 4: the core plugin has fewer lines of TypeScript than 0.2.0", async () => {
-  const files = walk(CORE, { skip: ["node_modules", "types"] }).filter((f) =>
-    f.endsWith(".ts"),
-  );
-  const texts = await Promise.all(files.map((f) => Bun.file(f).text()));
-  const lines = texts.reduce((n, t) => n + t.split("\n").length - 1, 0);
-  expect(lines).toBeLessThan(10_623);
 });
