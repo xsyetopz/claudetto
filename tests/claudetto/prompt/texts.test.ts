@@ -18,7 +18,7 @@ import DEFAULTS from "./fixtures/text-defaults-2.1.309.json";
 const CORE = path.join(PLUGINS, "claudetto");
 const AUDIT = path.join(
   REPO,
-  "openspec/changes/release-0-3-0-alpha-2/research/text-audit.md",
+  "openspec/changes/archive/2026-10-23-release-0-3-0-alpha-2/research/text-audit.md",
 );
 
 /** A negative-framed rule in any case: a modal with `not` (`do not`, `must not`), `never`, `cannot`, a `n't` contraction, and `NOT` in capitals. A state report such as `is not set` stays out. */
