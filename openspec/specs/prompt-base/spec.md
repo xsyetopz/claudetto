@@ -35,23 +35,52 @@ It SHALL NOT defer `ToolSearch`.
 - **WHEN** a test compares the default text of `Bash` with the claudetto text
 - **THEN** each rule that the plan lists for `Bash` is in the claudetto text
 
-### Requirement: Request Size Only Shrinks
-
-A test SHALL pin the size of each part of the first main request that claudetto writes (the body of `claudetto:main`, the tool texts, and the context blocks) at the value that the first version measures after its rewrite pass.
-A stub capture SHALL record the size of the whole request in the evidence file.
-A change that raises the size SHALL fail the test, unless it adds a behavior that the plan names.
-
-#### Scenario: Text Grows
-
-- **WHEN** a change adds text to the body of `claudetto:main` and adds no named behavior
-- **THEN** `just check` fails and names the pinned size
-
 ### Requirement: Base without Mods
 
-When mod hooks do not load, the main agent and the settings levers SHALL still apply, and the body of `claudetto:main` SHALL be at most its pinned size.
-The size of the probe `mainfloor` in `research/probes.md` is no bar, because its agent body has 65 characters and the body of D9 has more than 9,000 (the user, 2026-10-22: "Cut repeats, pin").
+When mod hooks do not load, the main agent and the settings levers SHALL still apply.
 
 #### Scenario: Mods Off
 
 - **WHEN** a stub probe captures the first main request with the mods turned off
-- **THEN** the request has the body of `claudetto:main`, and the body is at most its pinned size
+- **THEN** the request has the body of `claudetto:main`
+
+### Requirement: Plan Line
+
+The `prompt.context` block SHALL give one line with the plan of the login, from the plan keys of `oauthAccount` in `~/.claude.json`.
+On a subscription, the line SHALL tell Claude to speak of usage as a share of the plan limits, not as dollars.
+With no known plan, the block SHALL give no plan line.
+
+#### Scenario: Max 20x
+
+- **WHEN** `oauthAccount.organizationRateLimitTier` is `default_claude_max_20x`
+- **THEN** the context of the first request says that the login is a Max 20x subscription
+
+#### Scenario: API Key
+
+- **WHEN** the session runs with an API key and no `oauthAccount`
+- **THEN** the context has no plan line
+
+#### Scenario: No Identity
+
+- **WHEN** the plan line is built
+- **THEN** it holds no email, name, or UUID
+
+### Requirement: Repository Facts
+
+The `prompt.context` block SHALL give the branch, the latest tag, the open `openspec` changes, the shell, and the `grep` engine of the session, built by code with no model call, in at most one line each.
+
+#### Scenario: Release in Progress
+
+- **WHEN** the branch is `main`, the latest tag is `claudetto--v0.3.0-alpha.1`, and the change `release-0-3-0-alpha-2` is open
+- **THEN** the context of the first request names all three
+
+### Requirement: Fresh Session Size
+
+A fresh session in this repository, with the settings that setup writes, SHALL show 10k tokens or fewer in `/context` on Claude Code 2.1.309 with `claude-opus-5-5`.
+The release run of `/context` SHALL be the one check of the total size of the first request, and no test SHALL bound that total, because only the release run checks the size (the user, 2026-10-23).
+The size tests of the requirement "Shorter Than the Default" of spec `text-surfaces` stay (the user, 2026-10-23).
+
+#### Scenario: Fresh Session
+
+- **WHEN** `just sandbox` starts a session in this repository and runs `/context` as its first prompt
+- **THEN** the total is 10k tokens or fewer, and the evidence file records each category
