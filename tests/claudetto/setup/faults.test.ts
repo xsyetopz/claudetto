@@ -4,7 +4,7 @@
 // The task that fixes a fault changes its `test.failing` to `test`.
 
 import { expect, test } from "bun:test";
-import { snippetFor } from "../../../plugins/claudetto/slices/setup/domain/merge.ts";
+import { snippetFor } from "../../../plugins/claudetto/modules/setup/domain/merge.ts";
 import { DOCS_SNIPPET, SNIPPET } from "../../../plugins/claudetto/snippets.ts";
 
 type Snippet = {
@@ -75,7 +75,7 @@ test("fault 41: the snippet sets no `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`, which ha
 });
 
 // Fixed by task 7.1.
-// The three compaction keys are one control: `tests/claudetto/handoff/trigger.test.ts` records how they combine, and the handoff needs each (the user, 2026-10-22).
+// The three compaction keys are one control: `tests/claudetto/session/handoff/trigger.test.ts` records how they combine, and the handoff needs each (the user, 2026-10-22).
 // The user keeps the documented `DISABLE_*_COMMAND` switches (2026-10-22: "should disable feedback commands etc."), so only the gated one goes.
 test("fault 42: the snippet has one key for each effect", () => {
   const both =

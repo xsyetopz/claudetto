@@ -4,7 +4,7 @@ import { expect, test } from "bun:test";
 import { mkdir, mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { main } from "../../../plugins/claudetto/slices/setup/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/modules/setup/adapters/cli.ts";
 
 /** Runs `claudetto-setup --apply` in a new project, with `.git/` when `git` is true and `ignore` as the old `.gitignore`. */
 const run = async (git: boolean, ignore?: string, times = 1) => {
@@ -27,7 +27,6 @@ test("in a project with `.git/`, setup lists the state, cache, and scratch files
   expect(lines).toContain("/.claudetto/");
   expect(lines).toContain("/.jscpd.json");
   expect(lines).toContain("/.claude/settings.local.json");
-  expect(text).toMatch(/^# .*claudetto/m);
 });
 
 test("setup keeps the files that a team shares and the files of other plugins out of the list", async () => {

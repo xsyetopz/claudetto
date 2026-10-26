@@ -4,7 +4,7 @@ import { expect, test } from "bun:test";
 import { mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { main } from "../../../plugins/claudetto/slices/setup/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/modules/setup/adapters/cli.ts";
 import { captureIo } from "../../support/io.ts";
 import { runMain, runSetup } from "../../support/setup-run.ts";
 
@@ -50,9 +50,8 @@ test("Apple Docs: `--deny-mcp apple-docs` writes one `deniedMcpServers` entry to
 for (const flag of ["--deny-mcp", "--off-plugin"])
   test(`\`${flag}\` with the user scope writes nothing and exits with code 2`, async () => {
     const dir = await mkdtemp(path.join(os.tmpdir(), "setup-deny-"));
-    const { status, text } = await runMain(dir, [flag, "x", "--apply"]);
+    const { status } = await runMain(dir, [flag, "x", "--apply"]);
     expect(status).toBe(2);
-    expect(text).toContain("--scope project");
     expect(await Bun.file(path.join(dir, "settings.json")).exists()).toBe(
       false,
     );

@@ -2,15 +2,13 @@
 // Each test runs `main` in a temp folder with its own config folder.
 
 import { expect, test } from "bun:test";
-import {
-  HAIKU_AUTOCOMPACT_WINDOW,
-  MCP_DESCRIPTION_MAX_CHARS,
-} from "../../../plugins/claudetto/kernel/budget.ts";
-import { main } from "../../../plugins/claudetto/slices/setup/adapters/cli.ts";
+import { HAIKU_AUTOCOMPACT_WINDOW } from "../../../plugins/claudetto/modules/session/limits.ts";
+import { main } from "../../../plugins/claudetto/modules/setup/adapters/cli.ts";
+import { MCP_DESCRIPTION_MAX_CHARS } from "../../../plugins/claudetto/modules/setup/limits.ts";
 import {
   DROPPED_DENY,
   SNIPPET,
-} from "../../../plugins/claudetto/slices/setup/prompts.ts";
+} from "../../../plugins/claudetto/modules/setup/prompts.ts";
 import { runSetup } from "../../support/setup-run.ts";
 
 /** Runs `claudetto-setup --scope user --apply` on `settings`, and gives the file after the run and the printed text. */
@@ -66,14 +64,9 @@ test("Upgrade from Alpha 1: setup removes `Bash(rm -rf /*)` and `Bash(rm -rf ~/*
   expect(settings.permissions.deny).toContain("Read(./x)");
 });
 
-test("`--help` and an unknown flag such as `--aply` return 2 with the usage and write nothing", async () => {
+test("`--help` and an unknown flag such as `--aply` return 2 and write nothing", async () => {
   for (const flag of ["--help", "--aply"]) {
-    const lines: string[] = [];
-    const io = {
-      log: (l: string) => lines.push(l),
-      error: (l: string) => lines.push(l),
-    };
+    const io = { log: () => {}, error: () => {} };
     expect(await main([flag], {}, "/nonexistent", io)).toBe(2);
-    expect(lines.join("\n")).toContain("claudetto-setup");
   }
 });

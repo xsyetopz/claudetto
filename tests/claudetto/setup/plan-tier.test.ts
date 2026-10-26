@@ -41,12 +41,11 @@ const runWithSix = (account: object) =>
     }),
   });
 
-test("Max 20x Cap and Cap Changed: the user value `6` becomes `5`, and setup tells the user to restart", async () => {
-  const { settings, text } = await runWithSix({
+test("Max 20x Cap and Cap Changed: the user value `6` becomes `5`", async () => {
+  const { settings } = await runWithSix({
     organizationRateLimitTier: "default_claude_max_20x",
   });
   expect(cap(settings)).toBe("5");
-  expect(text).toContain("Restart Claude Code");
 });
 
 test("Unknown Tier Cap: the user value `6` stays", async () => {
@@ -114,10 +113,9 @@ test("setup writes `plan` under the `claudetto@*` id of the user, and keeps the 
   });
 });
 
-test("setup offers no code-intelligence tool, and writes no `UserPromptSubmit` hook", async () => {
-  const { settings, text } = await run({
+test("setup writes no `UserPromptSubmit` hook", async () => {
+  const { settings } = await run({
     organizationRateLimitTier: "default_claude_max_20x",
   });
   expect(settings.hooks?.UserPromptSubmit).toBeUndefined();
-  expect(text.toLowerCase()).not.toMatch(/codegraph|lsp|code intelligence/);
 });

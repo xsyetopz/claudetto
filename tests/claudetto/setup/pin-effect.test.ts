@@ -7,14 +7,14 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { PLAN_CAPS } from "../../../plugins/claudetto/slices/setup/limits.ts";
+import { installedBundle } from "../../../dev/schema/adapters/cli.ts";
+import { PLAN_CAPS } from "../../../plugins/claudetto/modules/setup/limits.ts";
 import { SNIPPET } from "../../../plugins/claudetto/snippets.ts";
 import {
   BUNDLE_SCAN_TIMEOUT_MS,
   PIN_RUNS_TIMEOUT_MS,
   STUB_RUNS_AT_ONCE,
 } from "../../../tools/limits.ts";
-import { installedBundle } from "../../../tools/schema/adapters/cli.ts";
 import { PLUGINS } from "../../support/repo.ts";
 import { type Settings, snippetLevers } from "../../support/settings-pin.ts";
 import {
@@ -222,6 +222,10 @@ const PINS: Record<string, Pin> = {
     effect: (c) =>
       c.requests[0] !== undefined && !("safeguards" in c.requests[0]),
   },
+  // Out of plan mode, `opusplan` sends Sonnet, and the default sends Opus.
+  model: {
+    effect: (c) => String(c.requests[0]?.["model"]).includes("sonnet"),
+  },
 };
 
 const LOGIN =
@@ -237,6 +241,8 @@ const UNREACHED: Record<string, string> = {
   CLAUDE_CODE_TODO_REMINDER_MODE: `${NO_CHANGE} The reminder is not in a stub capture without it either.`,
   CLAUDE_CODE_MEMORY_SUBAGENT_APPEND: `${NO_CHANGE} The subagent request is the same, also with a seeded memory.`,
   CLAUDE_CODE_AUTO_CONNECT_IDE: "It acts only when an IDE runs.",
+  showClearContextOnPlanAccept:
+    "It adds an option to the plan-approval dialog, which a headless stub run does not show.",
   CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL: "It acts only when an IDE runs.",
   CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY:
     "The survey shows only after some turns, at random.",

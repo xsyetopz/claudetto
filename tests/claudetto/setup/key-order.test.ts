@@ -3,7 +3,7 @@
 // The `env` order comes from the `configure/env-vars` pages of `claude-code-docs`, which a test cannot read offline.
 
 import { expect, test } from "bun:test";
-import { isObject } from "../../../plugins/claudetto/slices/setup/domain/merge.ts";
+import { isObject } from "../../../plugins/claudetto/modules/setup/domain/merge.ts";
 import { SNIPPET } from "../../../plugins/claudetto/snippets.ts";
 import { SCHEMA } from "../../support/settings-pin.ts";
 

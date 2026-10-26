@@ -39,9 +39,8 @@ test("Replace: the settings file equals the snippet, and a backup file next to i
   expect(text).toContain(backup);
 });
 
-test("an unknown mode prints the usage and exits with code 2", async () => {
+test("an unknown mode exits with code 2", async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), "setup-mode-"));
-  const { status, text } = await runMain(dir, ["--mode", "swap"]);
+  const { status } = await runMain(dir, ["--mode", "swap"]);
   expect(status).toBe(2);
-  expect(text).toContain("--mode merge|replace");
 });

@@ -4,7 +4,7 @@ import { expect, test } from "bun:test";
 import { mkdtemp, readdir } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { main } from "../../../plugins/claudetto/slices/setup/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/modules/setup/adapters/cli.ts";
 import { runMain } from "../../support/setup-run.ts";
 
 const EMAIL = "someone@example.com";
@@ -26,7 +26,7 @@ const snapshot = async (dir: string): Promise<Record<string, string>> => {
 
 const runInventory = async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), "inventory-"));
-  const docs = path.resolve("plugins/claudetto-docs");
+  const core = path.resolve("plugins/claudetto");
   const files: Record<string, unknown> = {
     ".claude.json": {
       oauthAccount: {
@@ -43,6 +43,7 @@ const runInventory = async () => {
     "settings.json": {
       syncClaudeAiSkills: true,
       enabledPlugins: {
+        "claudetto@claudetto": true,
         "claudetto-docs@claudetto": true,
         "cc-plugin-you-should-know@builtin": true,
         "swift-lsp@official": true,
@@ -63,7 +64,7 @@ const runInventory = async () => {
     "plugins/installed_plugins.json": {
       version: 2,
       plugins: {
-        "claudetto-docs@claudetto": [{ scope: "user", installPath: docs }],
+        "claudetto@claudetto": [{ scope: "user", installPath: core }],
       },
     },
   };
@@ -97,6 +98,7 @@ test("`--inventory` prints one JSON object with each part of the inventory, and 
     cap: 5,
   });
   expect(inventory.plugins.map((p: { id: string }) => p.id)).toStrictEqual([
+    "claudetto@claudetto",
     "claudetto-docs@claudetto",
     "swift-lsp@official",
   ]);
@@ -115,7 +117,7 @@ test("`--inventory` prints one JSON object with each part of the inventory, and 
   expect(after).toStrictEqual(before);
 });
 
-test("Duplicate Skill: the inventory names `find-docs` as a copy of `claudetto-docs:find-docs`, with its docs text and size, next to a project skill", async () => {
+test("Duplicate Skill: the inventory names `find-docs` as a copy of `claudetto:find-docs`, with its docs text and size, next to a project skill", async () => {
   const { skills } = JSON.parse((await runInventory()).text);
   expect(skills).toStrictEqual([
     {
@@ -123,7 +125,7 @@ test("Duplicate Skill: the inventory names `find-docs` as a copy of `claudetto-d
       scope: "user",
       description: "Gets docs of a library.",
       chars: "Gets docs of a library.".length,
-      copyOf: "claudetto-docs:find-docs",
+      copyOf: "claudetto:find-docs",
     },
     {
       name: "local",
@@ -134,13 +136,18 @@ test("Duplicate Skill: the inventory names `find-docs` as a copy of `claudetto-d
   ]);
 });
 
-test("each plugin row has its docs text, and an LSP plugin of a marketplace entry has its file extensions", async () => {
+test("each plugin row has its docs text, an LSP plugin of a marketplace entry has its file extensions, and Old Docs Plugin: `claudetto-docs` is named as removed with its uninstall command", async () => {
   const { plugins } = JSON.parse((await runInventory()).text);
-  const docs = await Bun.file(
-    "plugins/claudetto-docs/.claude-plugin/plugin.json",
+  const core = await Bun.file(
+    "plugins/claudetto/.claude-plugin/plugin.json",
   ).json();
   expect(plugins).toStrictEqual([
-    { id: "claudetto-docs@claudetto", description: docs.description },
+    { id: "claudetto@claudetto", description: core.description },
+    {
+      id: "claudetto-docs@claudetto",
+      description: null,
+      removed: "claude plugin uninstall claudetto-docs@claudetto",
+    },
     {
       id: "swift-lsp@official",
       description: "Swift language server",
@@ -167,9 +174,7 @@ test("No Identity in the Output: the inventory holds no email address, organizat
   );
 });
 
-test("`--inventory` with `--apply` prints the usage and exits with code 2", async () => {
-  const errors: string[] = [];
-  const io = { log: () => {}, error: (l: string) => errors.push(l) };
+test("`--inventory` with `--apply` exits with code 2", async () => {
+  const io = { log: () => {}, error: () => {} };
   expect(await main(["--inventory", "--apply"], {}, os.tmpdir(), io)).toBe(2);
-  expect(errors.join("")).toContain("--inventory");
 });

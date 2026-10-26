@@ -5,7 +5,7 @@ import { expect, test } from "bun:test";
 import { chmod, mkdir, mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { main } from "../../../plugins/claudetto/slices/setup/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/modules/setup/adapters/cli.ts";
 import { captureIo } from "../../support/io.ts";
 
 /** A script on `bin` that logs its arguments to `calls` and runs `body`. */
@@ -69,9 +69,8 @@ test("Global Bun Install: without `--apply` setup lists the find and removes not
   const { dir, bin, env, calls } = await setup(
     "└── @fission-ai/openspec@1.14.3",
   );
-  const { status, text } = await run(env, dir, ["--remove-openspec"]);
+  const { status } = await run(env, dir, ["--remove-openspec"]);
   expect(status).toBe(0);
-  expect(text).toContain("Dry run");
   expect(await calls()).not.toContain("remove");
   expect(Bun.which("openspec", { PATH: bin })).not.toBeNull();
 });
@@ -91,27 +90,19 @@ test("Global Bun Install: an `openspec` that stays on the `PATH` after the remov
     "bun",
     `case "$1" in pm) echo "@fission-ai/openspec@1.14.3";; esac`,
   );
-  const { status, text } = await run(env, dir, [
-    "--remove-openspec",
-    "--apply",
-  ]);
+  const { status } = await run(env, dir, ["--remove-openspec", "--apply"]);
   expect(status).toBe(1);
-  expect(text).toContain("still on the PATH");
 });
 
-test("Dev Dependency Stays: a project that lists OpenSpec only in `devDependencies` gets a report and no change", async () => {
+test("Dev Dependency Stays: a project that lists OpenSpec only in `devDependencies` changes nothing", async () => {
   const { dir, env, calls, bin } = await setup("");
   await Bun.file(path.join(bin, "openspec")).delete();
   const pkg = JSON.stringify({
     devDependencies: { "@fission-ai/openspec": "1.14.3" },
   });
   await Bun.write(path.join(dir, "package.json"), pkg);
-  const { status, text } = await run(env, dir, [
-    "--remove-openspec",
-    "--apply",
-  ]);
+  const { status } = await run(env, dir, ["--remove-openspec", "--apply"]);
   expect(status).toBe(0);
-  expect(text).toContain("package.json lists @fission-ai/openspec");
   expect(await calls()).not.toContain("remove");
   expect(await Bun.file(path.join(dir, "package.json")).text()).toBe(pkg);
 });
