@@ -10,7 +10,7 @@ Where the source states no license, the row says `not stated`.
 
 | Work | Link | License | What `claudetto` uses it for |
 | --- | --- | --- | --- |
-| Context7 with the `ctx7` CLI | [context7.com](https://context7.com), [upstash/context7](https://github.com/upstash/context7) | MIT for `upstash/context7`. Not checked for the `ctx7` package. | The `find-docs` skill of `claudetto-docs` runs `ctx7` with `bunx` to read the current docs of a library. |
+| Context7 with the `ctx7` CLI | [context7.com](https://context7.com), [upstash/context7](https://github.com/upstash/context7) | MIT for `upstash/context7`. Not checked for the `ctx7` package. | The `find-docs` skill of `claudetto` runs `ctx7` with `bunx` to read the current docs of a library. |
 | agent-browser | [vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser) | Apache-2.0 | The `browse` skill of `claudetto-browser` runs it. |
 | OpenSpec | [Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec) | MIT | The `spec` slice keeps the OpenSpec file layout and the format of its schemas, and runs no OpenSpec package. |
 | jscpd | [kucherenko/jscpd](https://github.com/kucherenko/jscpd) | MIT | The `dry` slice merges the config of `jscpd`, and `just dry` runs it. |

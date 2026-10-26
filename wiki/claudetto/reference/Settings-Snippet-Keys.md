@@ -23,7 +23,7 @@ A test checks the keys against `schemas/claude-code-settings.json`, so a key tha
 | `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` | `1` | Removes the built-in advisor tool. | The advisor is a model call with no bound that the user sets. |
 | `CLAUDE_CODE_DISABLE_CFC_PROMPT` | `1` | Removes the Chrome prompt section. | `claudetto-browser:browse` takes the place of Claude in Chrome. |
 | `CLAUDE_CODE_DISABLE_CRON` | `1` | Removes the Cron tools and `/loop`. | No scheduled runs. |
-| `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` | `1` | Removes the `Explore` and `Plan` agents. | `claudetto:Scout` takes the place of `Explore` ([Agents](Agents)). |
+| `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` | `1` | Removes the `Explore` and `Plan` agents. | `claudetto:Artemis` takes the place of `Explore` ([Agents](Agents)). |
 | `CLAUDE_CODE_DISABLE_FAST_MODE` | `1` | Keeps fast mode off. | Fast mode stays off. |
 | `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY` | `1` | Stops the session quality survey. | No survey in a session. |
 | `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` | `1` | Removes the built-in git text, the git status block, and the attribution reminder. | They add tokens to each request, and `CLAUDE.md` of the project gives the git rules. |
@@ -86,6 +86,8 @@ The snippet has no `allow` list and no `ask` list.
 | `disableClaudeAiConnectors` | `true` | Stops the claude.ai MCP connectors from being fetched. | No claude.ai connector server. |
 | `enabledPlugins` | Eleven built-in plugins set to `false` | Enables or disables each plugin. | See [Off Switches](Off-Switches#built-in-plugins). |
 | `skillOverrides` | `plugin-authoring` set to `name-only` | Lists the skill by name only. | A shorter listing line. |
+| `model` | `opusplan` | Uses Opus in plan mode and Sonnet in each other mode. | Opus plans and Sonnet builds with no manual switch (the user, 2026-10-26). Each change of model is a cache miss, so the plan starts on a small context. The snippet sets no `effortLevel` for each model, because the plan turn on Opus takes the saved effort of Sonnet ([Model Guidance](Model-Guidance)). |
+| `showClearContextOnPlanAccept` | `true` | Adds "clear context" options to the plan-approval dialog. With auto mode off, the option is "clear context and auto-accept edits". | The build starts on Sonnet with a small new context that holds the plan, so the cache write of the model change is small. The gate decides each call after the approval, in place of the auto-mode classifier. |
 
 ## The Deny List
 

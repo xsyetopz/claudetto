@@ -28,6 +28,7 @@ It runs no `openspec init` and changes no global config of OpenSpec.
 The skills call `minispec`, a command in `bin/` of the plugin.
 It reads and writes the files of the OpenSpec layout, so you can still run OpenSpec on the same files.
 A schema in `openspec/schemas/<name>/` wins over the preset of the same name in the slice.
+In this repository, `just generate` writes `openspec/schemas/` from the presets, and `just generate --check` fails on a file that differs from its preset.
 
 | Command | What it does |
 | --- | --- |

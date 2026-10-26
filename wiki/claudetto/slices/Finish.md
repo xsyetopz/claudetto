@@ -80,7 +80,7 @@ It sets a note for the slice [Notes](Notes) in two cases:
   The note names the files and the boxes.
 
 The rules match on the form of the reply.
-The tests in `tests/claudetto/finish/reply.test.ts` hold a known-bad reply for each incident row and known-good replies that must set no note.
+The tests in `tests/claudetto/work/finish/reply.test.ts` hold a known-bad reply for each incident row and known-good replies that must set no note.
 
 ## Built-In Parts That Are Off
 

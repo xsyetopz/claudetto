@@ -119,6 +119,7 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
     "defaultMode": "default",
     "disableAutoMode": "disable"
   },
+  "model": "opusplan",
   "disableClaudeAiConnectors": true,
   "skillOverrides": {
     "plugin-authoring": "name-only"
@@ -172,6 +173,7 @@ The reason and default of each key are on [Settings Snippet Keys](Settings-Snipp
   "autoCompactWindow": 300000,
   "promptSuggestionEnabled": false,
   "awaySummaryEnabled": false,
+  "showClearContextOnPlanAccept": true,
   "modelProposedGoals": "disabled",
   "autoMemoryEnabled": false,
   "autoDreamEnabled": false,

@@ -80,6 +80,17 @@ So Haiku can classify a reply, but it cannot verify work.
 - The [tools reference](https://code.claude.com/docs/en/tools-reference) gives the time limits of a background `Bash` command.
 - Checkpoints do not track an edit that `Bash` makes.
 
+## Effort, `ultrathink`, and `opusplan`
+
+These facts come from the program of Claude Code 2.1.310 and the [request and cache page](https://xsyetopz.github.io/claude-code-docs/how-it-works/request-and-cache).
+
+- The word `ultrathink` in a prompt adds one meta line that asks for deeper reasoning on that turn. It does not change the `effort` of the request (`uFr` in `chunk-31gxg38t.js`). It also fires on a quote of the word. A server flag gates it, and no setting turns it off. Use `/effort` or the `effort:` key of an agent or a skill to change the effort.
+- A change of effort keeps the prompt cache on Opus 5.5, Sonnet 5.5, Haiku 5.5, and Fable 5.1, because these models take the effort with each message.
+- A change of model is a full cache miss, because each model has its own cache. `opusplan` changes the model when plan mode starts and when it ends. So each change sends the full context again as a cache write, unless the cache of that model from its last phase is still in its time to live.
+- Under `opusplan`, plan mode stays on Sonnet when the context is over 200k tokens (`wKr` in `chunk-27xjmczp.js`).
+- One model with an effort for each phase, such as Opus at `xhigh` to plan and at `medium` to build, keeps the cache.
+- Under `opusplan`, the plan turn on Opus takes the saved effort of Sonnet, not its own. In a paid probe of 2026-10-26 (`claude -p`, 2.1.310), the project settings held the `effortLevel` `low` for `claude-opus-5-5` and `high` for `claude-sonnet-5-5`, and the user settings held the snippet caps (`maxEffortLevel` `high` for Opus and `medium` for Sonnet). The plan turn on Opus sent `high`, the build turn on Sonnet sent `medium` (its `high` cut by its cap), and a plan turn with no project settings sent `medium`.
+
 ## What the Texts Do Not Give
 
 - No mechanism stops the user from seeing an opener or an apology.

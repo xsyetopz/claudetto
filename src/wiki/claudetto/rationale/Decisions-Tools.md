@@ -5,7 +5,7 @@ These decisions explain why `claudetto` ships each tool and feature in its curre
 ## Why the Status Line Is Small
 
 **Choice:** One `statusLine` command and one `subagentStatusLine` command.
-The code is in `slices/statusline/`.
+The code is in `plugins/claudetto/modules/statusline/`.
 The command reads the status object from stdin and the active change from `openspec/changes/<name>/tasks.md`.
 It makes one `git` call and caches it for `GIT_CACHE_MS`.
 `NO_COLOR` turns off colors, and the icons stay.
@@ -13,7 +13,7 @@ There are no progress bars (the user, 2026-10-12).
 
 | Bound | Value |
 | --- | --- |
-| `MAX_ROWS` | 3 |
+| `MAX_ROWS` | 4 |
 | `REFRESH_SECONDS` | 1 |
 | `GIT_TIMEOUT_MS` | 1500 |
 | `GIT_CACHE_MS` | 3000 |
@@ -25,19 +25,19 @@ There are no progress bars (the user, 2026-10-12).
 `USAGE_LEVELS` is 40 and 80 percent: green below 40, amber from 40 to 80, and red above 80 (D15 of `release-0-3-0-alpha-2`).
 The main session uses the distance to the handoff trigger for its context share.
 
-**Evidence:** `slices/statusline/limits.ts` and `plugins/claudetto/kernel/budget.ts`.
+**Evidence:** `plugins/claudetto/modules/statusline/limits.ts` and `plugins/claudetto/kernel/budget.ts`.
 See [Status Line](Status-Line).
 
-## Why Library Docs Come From a Pinned Skill
+## Why Library Docs Come from a Pinned Skill
 
-**Choice:** The `find-docs` skill of `claudetto-docs` runs `ctx7@0.6.1` through `bunx -y` with `CTX7_TELEMETRY_DISABLED=1`.
+**Choice:** The `find-docs` skill of `claudetto` runs `ctx7@0.6.1` through `bunx -y` with `CTX7_TELEMETRY_DISABLED=1`.
 Its `allowed-tools` rule allows only the read forms `library` and `docs`.
 It makes at most 3 `ctx7` calls for one question.
 
 **Reason:** The model needs the API of a library version that the project does not show.
 The pin keeps the allowed command the same until a release changes it.
 
-**Evidence:** `plugins/claudetto-docs/skills/find-docs/SKILL.md`.
+**Evidence:** `plugins/claudetto/skills/find-docs/SKILL.md`.
 See [Library Docs](Library-Docs).
 
 ## Why Evals Use `claude plugin eval`
@@ -73,7 +73,7 @@ The comparison with the built-in LSP tool is not in the repository.
 
 **Evidence:** `slices/graph/slice.ts` and `tests/claudetto-codegraph/layout.test.ts` at the tag `claudetto-codegraph--v0.2.0`.
 
-## Why Jev Is On When the Key Is Set
+## Why Jev Is on When the Key Is Set
 
 **Choice:** Jev is an outside decision service.
 The `decide` slice of the core plugin has an option `decide` with the values `off` and `jev` (default, D66).

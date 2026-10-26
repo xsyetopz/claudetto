@@ -83,22 +83,24 @@ The shared and repository bounds are on [Bounds](Bounds).
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
-| `REFRESH_SECONDS` | `1` | `plugins/claudetto/slices/statusline/limits.ts` | The seconds between two runs of the status line. |
-| `TRIGGER_WARN_FRACTION` | `0.1` | `plugins/claudetto/slices/statusline/limits.ts` | The part of the handoff trigger within which the context shows in the warning color. |
-| `GIT_TIMEOUT_MS` | `1,500` | `plugins/claudetto/slices/statusline/limits.ts` | The time that the one `git status` call can take. |
-| `MAX_ROWS` | `3` | `plugins/claudetto/slices/statusline/limits.ts` | The most rows of the main status line. |
-| `DEFAULT_COLUMNS` | `120` | `plugins/claudetto/slices/statusline/limits.ts` | The width in columns when `COLUMNS` is not set. |
-| `COLUMNS_MARGIN` | `4` | `plugins/claudetto/slices/statusline/limits.ts` | The columns that stay free at the right edge. |
-| `SUBAGENT_ROWS_MAX` | `20` | `plugins/claudetto/slices/statusline/limits.ts` | The most subagent rows in the status line. |
-| `DESCRIPTION_ROOM_MIN` | `8` | `plugins/claudetto/slices/statusline/limits.ts` | The columns that a subagent row needs for its description before the description shows. |
-| `GIT_CACHE_MS` | `3,000` | `plugins/claudetto/slices/statusline/limits.ts` | The time that a `git status` result stays in the cache of the git segment. |
-| `FIVE_HOUR_S` | `18,000` | `plugins/claudetto/slices/statusline/limits.ts` | The length, in seconds, of the `5h` window of a limit. |
-| `SEVEN_DAY_S` | `604,800` | `plugins/claudetto/slices/statusline/limits.ts` | The length, in seconds, of the `7d` window of a limit. |
-| `PACE_MIN_FRACTION` | `0.03` | `plugins/claudetto/slices/statusline/limits.ts` | The part of a limit window that must pass before its pace arrow shows. |
-| `PROJECTED_RUNOUT` | `100` | `plugins/claudetto/slices/statusline/limits.ts` | The projected use at the end of a window, in percent, above which the use runs out before the reset. |
-| `PERCENT_FIELD` | `4` | `plugins/claudetto/slices/statusline/limits.ts` | The columns of the percent field of a limit window. |
-| `ARROW_FIELD` | `5` | `plugins/claudetto/slices/statusline/limits.ts` | The columns of the pace arrow field of a limit window. |
-| `RUNOUT_FIELD` | `14` | `plugins/claudetto/slices/statusline/limits.ts` | The columns of the run-out time field of a limit window. |
+| `REFRESH_SECONDS` | `1` | `plugins/claudetto/modules/statusline/limits.ts` | The seconds between two runs of the status line. |
+| `TRIGGER_WARN_FRACTION` | `0.1` | `plugins/claudetto/modules/statusline/limits.ts` | The part of the handoff trigger within which the context shows in the warning color. |
+| `GIT_TIMEOUT_MS` | `1,500` | `plugins/claudetto/modules/statusline/limits.ts` | The time that the one `git status` call can take. |
+| `MAX_ROWS` | `4` | `plugins/claudetto/modules/statusline/limits.ts` | The most rows of the main status line. |
+| `DEFAULT_COLUMNS` | `120` | `plugins/claudetto/modules/statusline/limits.ts` | The width in columns when `COLUMNS` is not set. |
+| `COLUMNS_MARGIN` | `4` | `plugins/claudetto/modules/statusline/limits.ts` | The columns that stay free at the right edge. |
+| `SUBAGENT_ROWS_MAX` | `20` | `plugins/claudetto/modules/statusline/limits.ts` | The most subagent rows in the status line. |
+| `DESCRIPTION_ROOM_MIN` | `8` | `plugins/claudetto/modules/statusline/limits.ts` | The columns that a subagent row needs for its description before the description shows. |
+| `GIT_CACHE_MS` | `3,000` | `plugins/claudetto/modules/statusline/limits.ts` | The time that a `git status` result stays in the cache of the git segment. |
+| `READING_KEEP_MS` | `60,000` | `plugins/claudetto/modules/statusline/limits.ts` | The time that a saved limit reading with the same window stays as it is, so that a refresh writes no file. |
+| `FIVE_HOUR_S` | `18,000` | `plugins/claudetto/modules/statusline/limits.ts` | The length, in seconds, of the `5h` window of a limit. |
+| `SEVEN_DAY_S` | `604,800` | `plugins/claudetto/modules/statusline/limits.ts` | The length, in seconds, of the `7d` window of a limit. |
+| `PACE_MIN_FRACTION` | `0.03` | `plugins/claudetto/modules/statusline/limits.ts` | The part of a limit window that must pass before its pace arrow shows. |
+| `PROJECTED_RUNOUT` | `100` | `plugins/claudetto/modules/statusline/limits.ts` | The projected use at the end of a window, in percent, above which the use runs out before the reset. |
+| `ALIGNED_ROWS` | `2` | `plugins/claudetto/modules/statusline/limits.ts` | The first rows of the main status line that share columns. |
+| `GRADIENT_GREEN_PERCENT` | `20` | `plugins/claudetto/modules/statusline/limits.ts` | The usage percent of the green stop of the color gradient. Below it the color stays green. |
+| `GRADIENT_AMBER_PERCENT` | `60` | `plugins/claudetto/modules/statusline/limits.ts` | The usage percent of the amber stop of the color gradient. |
+| `GRADIENT_RED_PERCENT` | `90` | `plugins/claudetto/modules/statusline/limits.ts` | The usage percent of the red stop of the color gradient. Above it the color stays red. |
 
 ## Related Pages
 

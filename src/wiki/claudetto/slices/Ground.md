@@ -115,7 +115,7 @@ The denies before the fixes, by cause:
 - `npm` in a project with `bun.lock` (1 deny): the text says "an npm marketplace", which is a name of a Claude Code feature and no command.
 - `140` (1 deny, true): "140 pages" of a wiki folder, and the session listed no count.
 
-The 5 fixes are in `slices/ground/domain/claims.ts`, and each has a test in `tests/claudetto/ground/claims.test.ts`.
+The 5 fixes are in `slices/ground/domain/claims.ts`, and each has a test in `tests/claudetto/work/ground/claims.test.ts`.
 A fix does not accept a guess: a binary size needs the exact product, a table total needs the exact sum of the column, and a difference needs two cells of the same row.
 The sample is 53 events from 5 projects, so the rate has a wide margin.
 A false deny costs one rewrite, because the deny names each claim and gives three ways out.

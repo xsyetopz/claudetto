@@ -21,7 +21,7 @@ These decisions explain how.
 GitHub issue #35357 records a model that printed context warnings with false values (not checked here).
 No eval proves the `Stop` prompt hook that judges replies, because its eval of 2026-10-12 had too few runs (D25, [Stop Hook Eval](Stop-Hook-Eval)).
 
-**Evidence:** `plugins/claudetto/tests/context.test.ts` and `tests/claudetto/handoff/status.test.ts`.
+**Evidence:** `plugins/claudetto/tests/context.test.ts` and `tests/claudetto/session/handoff/status.test.ts`.
 
 ## Why Markdown Gets Semantic Line Breaks
 
@@ -74,7 +74,7 @@ A crash or timeout gives an `ask` for a person, with the reason that the gate fa
 A guard that fails open lets a denied call through.
 A false `ask` costs little, because a person can answer it.
 
-**Evidence:** The header of `plugins/claudetto/slices/guard/adapters/mod.ts` and `tests/claudetto/guard/faults.test.ts`.
+**Evidence:** The header of `plugins/claudetto/slices/guard/adapters/mod.ts` and `tests/claudetto/gate/faults.test.ts`.
 
 ## Related Pages
 

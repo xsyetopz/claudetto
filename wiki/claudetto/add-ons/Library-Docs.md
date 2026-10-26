@@ -2,25 +2,22 @@
 
 # Library Docs
 
-The plugin `claudetto-docs` gets the current docs of a library from Context7.
-It adds the MCP server `context7` and one skill, `find-docs`, which calls the tools of the server, or the `ctx7` CLI when the session has no such tool.
-Read this page to install the plugin, or to learn how the skill gets docs and which limits it sets.
+The skill `claudetto:find-docs` gets the current docs of a library from Context7.
+It is a skill of the core plugin `claudetto`, and it needs no add-on.
+Read this page to learn how the skill gets docs and which limits it sets.
 
-The plugin works without the core plugin.
-It has no hook, no command, and no code that runs in the plugin.
-Its one option is the sensitive key `CONTEXT7_API_KEY`.
-Its one slice is `docs`.
+The skill runs only the `ctx7` CLI.
+There is no MCP server, no `mcpServers` entry, and no plugin option in `/plugin`.
 
-## How to Install It
+## What You Need
 
 1. Have Bun on `PATH`.
    The skill runs `bunx`, which comes with Bun.
-2. Install the plugin with `/plugin install claudetto-docs@claudetto`.
+2. Install the core plugin `claudetto`.
 
-The plugin needs no key for the free quota.
-A key raises the quota of Context7.
-To set it, run `/plugin`, select `claudetto-docs`, select "Configure options", and enter "Context7 API Key".
-Claude Code keeps the key in secure storage, and Claude does not see it.
+No key is needed.
+A Context7 key raises the quota.
+To use a key, set the env var `CONTEXT7_API_KEY` before Claude Code starts.
 
 ## How the Skill Works
 
@@ -56,13 +53,15 @@ The other `ctx7` subcommands, such as `setup`, `login`, and `upgrade`, write fil
 So the permission rules allow `library` and `docs` and no other subcommand.
 If Claude Code denies a call, the skill tells Claude to ask the user, and not to change the form.
 
-The settings snippet has no `allow` list, so the `allowed-tools` entry of the skill is the only permission for these two forms.
-A test pins the pin in the skill and in `limits.ts`.
+The settings snippet has no `allow` list for these forms.
+So the `allowed-tools` entry of the skill is the only permission for them.
+You can add the rules by hand from the [optional snippet](Settings-Snippet-Docs).
 The `claudetto-setup` command prints a notice when a `context7` file of the project or the user adds text to each session, because the skill does the same work ([Setup](Setup#context7-notice)).
 
 ## Rules in the Skill
 
 - At most 3 `ctx7` calls answer one question.
+  Only the text of the skill sets this cap, and no code checks it.
   When 3 calls do not answer, Claude says what is missing.
 - Each query has one concept.
 - A query carries only the library name and the topic.
@@ -72,31 +71,20 @@ The `claudetto-setup` command prints a notice when a `context7` file of the proj
   For a quota error, Claude names `CONTEXT7_API_KEY` as the way to raise the limit.
 - Claude does not give recalled facts as if they came from the docs.
 
-## The MCP Server
+## Move From the Old Plugin
 
-The plugin starts the server `context7` at the fixed URL `https://mcp.context7.com/mcp`, with the tools `resolve-library-id` and `query-docs`.
-Claude Code fills the header `Context7-API-Key` from the option `CONTEXT7_API_KEY` in secure storage.
-A sensitive option never reaches a `Bash` call, so `ctx7` gets the key only from an exported `CONTEXT7_API_KEY`.
-With no key, the header is empty, because Claude Code gives an option that is not `required` its default, `""` (2.1.309, `chunk-3sf3xmv8.js`, offset 29050).
-Context7 answers a call with an empty key header on the free quota, which has a lower rate limit than a key.
-The server adds its instructions, 632 characters on 2026-10-23, to each session.
-If you added a `context7` server with `claude mcp add` before, remove it with `claude mcp remove context7 --scope user`, because `~/.claude.json` keeps its key as text.
+Versions before 0.4.0 had the add-on plugin `claudetto-docs`.
+It is gone from the marketplace.
+If you installed it, uninstall it with `claude plugin uninstall claudetto-docs@claudetto`.
+The command `claudetto-setup --inventory` shows the plugin with the field `removed` and this command.
 
-## Bounds
+The inventory also helps with the other copies of the skill:
 
-The bounds are in `plugins/claudetto-docs/slices/docs/limits.ts`.
-
-| Bound | Value | Use |
-| --- | --- | --- |
-| `CTX7_VERSION` | `0.6.1` | The `ctx7` version that the skill and the snippet run |
-| `MAX_CALLS` | 3 | The most `ctx7` calls for one question |
-
-The plugin `claudetto-docs` lets Claude read the current docs of a library.
-The docs come from Context7, a service for library docs, through the `ctx7` command.
-Claude then writes code from the real docs and not from memory.
+- A user skill in `~/.claude/skills/find-docs/` is named as a copy of `claudetto:find-docs`.
+- When `claudetto` is enabled, the rule `~/.claude/rules/context7.md` gets the removal offer `ctx7 remove --claude --cli`.
 
 ## Related Pages
 
-- [Settings Snippet](Settings-Snippet)
+- [Settings Snippet Docs](Settings-Snippet-Docs)
 - [Attributions](Attributions)
 - [Troubleshooting](Troubleshooting)

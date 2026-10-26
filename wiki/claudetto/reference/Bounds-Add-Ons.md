@@ -13,16 +13,8 @@ The shared and repository bounds are on [Bounds](Bounds).
 | `MAX_GUIDE_CHARS` | `40,000` | `plugins/claudetto-browser/slices/browse/limits.ts` | The most characters of the `agent-browser` guide in the skill. |
 | `GUIDE_TIMEOUT_MS` | `15,000` | `plugins/claudetto-browser/slices/browse/limits.ts` | The time that `agent-browser skills get core` may take. |
 
-## Library Docs
-
-| Name | Value | File | Purpose |
-| --- | --- | --- | --- |
-| `CTX7_VERSION` | `0.6.1` | `plugins/claudetto-docs/slices/docs/limits.ts` | The `ctx7` version that the skill and the settings snippet run. |
-| `MAX_CALLS` | `3` | `plugins/claudetto-docs/slices/docs/limits.ts` | The most `ctx7` calls for one question. |
-
 ## Related Pages
 
 - [Bounds](Bounds)
 - [Bounds for Slices](Bounds-Slices)
 - [Browser](Browser)
-- [Library Docs](Library-Docs)

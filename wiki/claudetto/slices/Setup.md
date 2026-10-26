@@ -35,7 +35,7 @@ The command is the checked path.
 claudetto-setup [--scope user|project|local] [--mode merge|replace] [--keep KEY]...
                 [--exclude-md GLOB]...
                 [--apply | --inventory | --demo-alias
-                 | (--remove-openspec | --global-md [--global-rule=LINE]... | --local-notes) [--apply]]
+                 | (--remove-openspec | --claude-md [--claude-md-rule=LINE]... | --local-notes) [--apply]]
 ```
 
 | Option | Meaning |
@@ -47,8 +47,8 @@ claudetto-setup [--scope user|project|local] [--mode merge|replace] [--keep KEY]
 | `--inventory` | Print the inventory as one JSON object, and write no file. You cannot use it with `--apply`. |
 | `--exclude-md` | Write this glob to `claudeMdExcludes` of the settings file. Give one for each file. |
 | `--remove-openspec` | Print each OpenSpec install, and with `--apply` remove it. See [OpenSpec Goes](#openspec-goes). |
-| `--global-md` | Write the origin block of `~/.claude/CLAUDE.md` with `--apply`. See [The Global File](#the-global-file). |
-| `--global-rule=LINE` | One line for a new global file. Use the `=` form, because a line can start with `-`. |
+| `--claude-md` | Write the origin block of `~/.claude/CLAUDE.md` with `--apply`. See [The Global File](#the-global-file). |
+| `--claude-md-rule=LINE` | One line for a new global file. Use the `=` form, because a line can start with `-`. |
 | `--local-notes` | Write the template `CLAUDE.local.md` and its `.gitignore` line with `--apply`. |
 | (an unknown option) | Print the usage to `stderr` and exit with code 2. |
 
@@ -64,7 +64,7 @@ It holds no email address, organization name, or UUID.
 | `skills` | Each skill in `~/.claude/skills/`, with the size of its description, and `copyOf` when an enabled plugin has a skill with the same name |
 | `claudeAiSync` | `syncClaudeAiSkills`, `syncClaudeAiPlugins`, and `ENABLE_CLAUDEAI_MCP_SERVERS`, or `null` when unset |
 | `openspec` | The OpenSpec finds: `global` (manager and version), `path`, `skills`, `commands`, and `devDependency` |
-| `rules` | Each file of `~/.claude/rules/` with its size, its `owner`, the `removal` command and `note` of a known owner when `claudetto-docs` is on, or `foldOrRemove` for a file with no owner |
+| `rules` | Each file of `~/.claude/rules/` with its size, its `owner` (left out for a file with no known owner), the `removal` command and `note` of a known owner when `claudetto` is enabled, or `foldOrRemove` for a file with no owner |
 | `memoryFiles` | Each `CLAUDE.md` outside the project (`parent` or `vendor`) with its `glob`, and `excluded` when `claudeMdExcludes` has it |
 | `conflicts` | Each key where the settings file and the snippet have different values, with the two values |
 
@@ -128,7 +128,8 @@ The `project` scope gets no cap, because a plan belongs to one login.
 
 The command looks in `~/.claude` and in `<project>/.claude` for the official Context7 `find-docs` skill and for a Context7 rule file.
 It prints each one that it finds with the characters that it adds to each session.
-The skill `claudetto-docs:find-docs` of the add-on uses the Context7 MCP server, or the same `ctx7` CLI, with 143 characters, so keep one of the two.
+The skill `claudetto:find-docs` runs the same `ctx7` CLI, so keep one of the two.
+The inventory names a user skill `find-docs` as a copy of it, and offers `ctx7 remove --claude --cli` for the rule `context7.md`.
 
 ## Status Lines
 
@@ -163,7 +164,7 @@ A project that lists `@fission-ai/openspec` in its `package.json` gets a report 
 
 ## The Global File
 
-`claudetto-setup --global-md --apply` writes `~/.claude/CLAUDE.md` with the title `# CLAUDE.md`, an origin line between two HTML comments, and, for a new file, the rules that you gave with `--global-rule=LINE`.
+`claudetto-setup --claude-md --apply` writes `~/.claude/CLAUDE.md` with the title `# CLAUDE.md`, an origin line between two HTML comments, and, for a new file, the rules that you gave with `--claude-md-rule=LINE`.
 A later run rewrites only the lines between the comments and keeps each line of yours.
 The file has 20 lines at most (`GLOBAL_CLAUDE_MD_MAX_LINES`). Over that, the command writes nothing and exits with code `1`, and the skill asks which lines move to `~/.claude/rules/`.
 A rule file of a known owner stays the owner's: setup never edits it, and offers the removal command of the owner, such as `ctx7 remove --claude --cli` for `context7.md`.

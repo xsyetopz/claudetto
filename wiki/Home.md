@@ -36,7 +36,6 @@ Each add-on is a separate plugin, and it works without the core plugin.
 | Plugin | What it does | Page |
 | --- | --- | --- |
 | `claudetto-browser` | Drives a browser with `agent-browser`. | [Browser](Browser) |
-| `claudetto-docs` | Gets current docs of libraries and APIs. | [Library Docs](Library-Docs) |
 
 The marketplace is on [Add-Ons](Add-Ons).
 

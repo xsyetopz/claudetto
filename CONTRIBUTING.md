@@ -5,8 +5,16 @@
 1. Install Bun 1.4.3 (the `packageManager` field of `package.json`), `just`, and Claude Code 2.1.309.
 2. Run `bun install` in the repository root.
 3. Run `just check`.
-   It runs the lint, the type check, the tests, the plugin validation, and the hook lab.
+   It runs the lint, the type check, the check of the generated files, the tests, the plugin validation, and the hook lab.
    It must pass before you open a pull request.
+
+## Layout
+
+- `plugins/claudetto/` has the kernel in `kernel/`, one folder for each module in `modules/`, and the one hooks module `hooks/register.ts`.
+  The [Architecture](https://github.com/xsyetopz/claudetto/wiki/Architecture) page names each module and its job.
+- `tools/` holds the scripts of `just check`, and `dev/` holds the paid and manual tools.
+- `tests/claudetto/<module>/` holds the unit tests of each module, and `tests/repo/` holds the tests of the rules of the repository.
+- [`.claude/rules/`](.claude/rules/) has the rules of each part.
 
 ## Rules
 

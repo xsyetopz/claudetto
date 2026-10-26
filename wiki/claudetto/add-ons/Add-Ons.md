@@ -3,22 +3,22 @@
 # Add-On Plugins
 
 An add-on is an optional plugin of `claudetto`.
-There are two, and you install only the ones you want.
-Each add-on works without the core plugin.
+There is one, `claudetto-browser`, and you install it only if you want it.
+The add-on works without the core plugin.
 
 ## The Add-Ons
 
-The marketplace lists the core plugin and the two add-ons in `.claude-plugin/marketplace.json`.
+The marketplace lists the core plugin and the add-on in `.claude-plugin/marketplace.json`.
 Add the marketplace first with `/plugin marketplace add xsyetopz/claudetto`.
 See [Install](Install) for details.
 
 | Plugin | What it adds | Needs | Page |
 | --- | --- | --- | --- |
 | `claudetto-browser` | The skill `browse`, which drives a browser with `agent-browser`. | `agent-browser`. | [Browser](Browser) |
-| `claudetto-docs` | The skill `find-docs`, which gets the current docs of a library from Context7 with the `ctx7` CLI. | Bun on `PATH`, for `bunx`. No key. | [Library Docs](Library-Docs) |
 
 Install each add-on with `/plugin install <plugin>@claudetto`.
-For example, run `/plugin install claudetto-docs@claudetto`.
+For example, run `/plugin install claudetto-browser@claudetto`.
+The skill `find-docs` is in the core plugin, so it is not an add-on ([Library Docs](Library-Docs)).
 
 ## Install One Add-On
 

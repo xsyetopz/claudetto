@@ -38,14 +38,14 @@ The first round found that its cases were too easy, and the second round tried t
 - The eval child takes only `EVAL_*` keys in `execution.env`, and it has no `--advisor` flag.
   A run with `CLAUDE_CODE_ENABLE_EXPERIMENTAL_ADVISOR_TOOL=1` in the shell gave no advisor tool to the model.
   An option of the plugin has no way into the eval child.
-- `tools/compare-builtins.ts` runs `claude -p` in the sandbox of `claudetto-sandbox` ([Sandbox](Sandbox)).
+- `tools/compare-builtins.ts` (removed in 0.4.0) ran `claude -p` in the sandbox of `claudetto-sandbox` ([Sandbox](Sandbox)).
   It reads the prompt, the scaffold, and the graders of a `case.yaml`, so the cases keep the form of the other eval cases.
 - A run has a new workspace, built by the `scaffold.sh` of the case.
   The plugin loads with `--plugin-dir`, and the options of the arm are in `pluginConfigs` of the sandbox settings.
   The script grades the files with the `regex` graders, and the tool calls with the `tool_used` graders.
   An optional `final.sh` of the case runs in the workspace, and it must exit 0.
-  The cases are in `tests/compare/`, not in `evals/` of a slice, so they do not ship in `plugins/`.
-  So `claude plugin eval`, `just eval`, and `just eval-tune` never see them (`tests/claudetto/evals/compare-cases.test.ts`).
+  The cases were in `tests/compare/`, not in `evals/` of a slice, so they did not ship in `plugins/`.
+  So `claude plugin eval`, `just eval`, and `just eval-tune` never saw them.
   A run passes when all graders pass.
 - Command: `bun tools/compare-builtins.ts <case dir> <arm> --runs 10 -j 4 --max-cost-usd <usd>`.
 - Pilots: one run of each case on each arm ran first, to catch a broken grader.
@@ -84,7 +84,7 @@ The first round found that its cases were too easy, and the second round tried t
   Graders: `src/slug.mjs` exists, `qa.mjs` was not read, and `final.sh` runs `qa.mjs`.
   The built-in `/goal` has no engine that runs a check, so this case tests exactly the feature that differs.
 
-The cases are in `tests/compare/`.
+The cases were in `tests/compare/`, which 0.4.0 removed. The git history keeps them.
 
 ## Results
 
@@ -227,7 +227,7 @@ This is a limit of Claude Code, not a defect of `claudetto`.
   It gives no price, and the mod API has no call that adds a cost to the session.
 - `advise` sends the token counts to the user with `$.ui.log`, in the line "`advise`: opus used N tokens in (R read from the cache, W written to the cache), M tokens out."
   The debug log holds every `$.ui.log` line (the type `UiLogOptions` in the mod API), so `claude --debug-file <path>` captures them.
-  `tools/compare-builtins.ts` passes `--debug-file` for each run, and `tools/advise-usage.ts` (removed in 0.3.0) sums the lines and prices them.
+  `tools/compare-builtins.ts` passed `--debug-file` for each run, and `tools/advise-usage.ts` (removed in 0.3.0) sums the lines and prices them.
 - The price is the price table that Claude Code uses for its own `total_cost_usd`, read from the bundle as evidence only.
   The model catalog of Claude Code `2.1.305` (`external/cc-2.1.305/strings.txt`) has the entry of `claude-opus-5-5` (`VERTEX_REGION_CLAUDE_5_5_OPUS`) with the pricing `tier_4_20_cache_read_0_20`.
   That is $4 for one million tokens in, $20 out, $5 for a cache write, and $0.20 for a cache read.

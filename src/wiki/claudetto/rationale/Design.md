@@ -50,7 +50,7 @@ Version 0.3.0 removed the generator and the manifests, because one reader can fo
 `just generate` now writes only `wiki/`.
 
 - `register.ts` has one literal `on()` call for each handler, because the mod runtime reads the event name only as a literal.
-- `tests/support/hook-evals.test.ts` fails when an `on()` call has no `// eval:` comment or no entry in `evals/hooks.json`.
+- `tests/repo/hook-evals.test.ts` fails when an `on()` call has no `// eval:` comment or no entry in `evals/hooks.json`.
 
 ## Let Each Plugin Work Alone
 
@@ -58,7 +58,7 @@ A plugin imports nothing from another plugin.
 An add-on must work when the user installs it alone, so it cannot need the core plugin.
 
 - An add-on keeps its own copy of each kernel file that it uses, and a test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
-- `.claude/rules/plugin-imports.md` and `tests/support/addons.test.ts` enforce the rule.
+- `.claude/rules/plugin-imports.md` and `tests/repo/addons.test.ts` enforce the rule.
 
 ## Give Each Bound One Owner
 

@@ -59,7 +59,7 @@ It adds no line the file already has, and it changes nothing in a project with n
 - Setup names the Context7 skill or rule files that it finds in `~/.claude` or in the project.
 - Setup gives an alias line for your shell that starts Claude Code with `Glob` and `Grep`.
   It does not edit your shell startup file.
-- When `claudetto-docs` is installed, merge the [lines for the add-on](Settings-Snippet-Docs) by hand.
+- To allow the skill `claudetto:find-docs` with no prompt, merge the [optional lines](Settings-Snippet-Docs) by hand.
 
 ## Copy It by Hand
 

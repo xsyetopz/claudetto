@@ -4,6 +4,7 @@ paths:
   - "plugins/**"
   - "tests/**"
   - "tools/**"
+  - "dev/**"
 ---
 
 Use the env vars of Claude Code and flags.

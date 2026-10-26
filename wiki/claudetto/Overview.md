@@ -8,8 +8,8 @@ A token is the small piece of text that a model reads or writes, and you pay for
 
 ## What You Get
 
-`claudetto` has one core plugin and two add-ons.
-Each add-on works without the core plugin.
+`claudetto` has one core plugin and one add-on.
+The add-on works without the core plugin.
 You install only the parts that you want.
 
 It changes Claude Code only in documented ways.
@@ -30,7 +30,6 @@ Claude Code 2.1.309 or later is the minimum version.
 | --- | --- | --- |
 | `claudetto` | The core: the main agent and its roster, the permission gate, the settings snippet, the slices below, the output style, and the status line. | This page |
 | `claudetto-browser` | The `browse` skill, which drives a browser with `agent-browser`. | [Browser](Browser) |
-| `claudetto-docs` | The `find-docs` skill, with current library docs from the CLI `ctx7`. | [Library Docs](Library-Docs) |
 
 [Add-Ons](Add-Ons) helps you pick one.
 
@@ -41,7 +40,7 @@ The core plugin has 11 slices with code and one output style.
 
 | Slice | What it does |
 | --- | --- |
-| [`agents`](Agents) | Offers the roster `Scout`, `Scoper`, `Reviewer`, `Researcher`, `Worker`, and `Tester`, and hides the built-in agents. |
+| [`agents`](Agents) | Offers the roster `Artemis`, `Zeus`, `Athena`, `Hermes`, `Hephaestus`, and `Apollo`, and hides the built-in agents. |
 | [`decide`](Decide) | Lets Jev answer each `AskUserQuestion` call when `TYPESAFE_API_KEY` is set and Jev is sure. |
 | [`finish`](Finish) | Replaces `/goal` with one check command that must exit `0` before Claude can stop. |
 | [`ground`](Ground) | Denies a plan file that cites a `file:line` or a convention that the source does not hold. |

@@ -9,6 +9,146 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ## [Unreleased]
 
+## [0.4.0-alpha.1] - 2026-10-25
+
+### Removed
+
+- **BREAKING** The `claudetto-docs` plugin is gone, and its skill is now `claudetto:find-docs` in the core plugin, with the `ctx7` CLI path and its permission rules (A4).
+  It has no MCP server and no key option.
+  Run `claude plugin uninstall claudetto-docs@claudetto`.
+  To use the `context7` MCP server, add it to your own settings.
+  `claudetto-setup` names an enabled `claudetto-docs` as removed.
+- **BREAKING** (maintainer) The recipes `just gate` and `just ci` are gone.
+  `just check` and the CI workflow run `tools/check.ts`, and CI runs `bun tools/check.ts --ci`, which skips the type check and says so (A5).
+- (maintainer) The tools with no caller are gone: `tools/compare-builtins.ts`, `tools/compare/`, `tools/yolo/`, and `tools/vanilla.py`, with their tests (A7).
+  Git history keeps them.
+
+### Changed
+
+- The settings snippet now sets `model` to `opusplan` and `showClearContextOnPlanAccept` to `true`, so Opus plans, the approval can clear the context, and Sonnet builds with no manual switch of the model (the user, 2026-10-26).
+  Auto mode stays off, and the gate decides each call after the approval.
+  The snippet sets no `effortLevel` for each model, because a paid probe showed that the plan turn on Opus takes the saved effort of Sonnet.
+- **BREAKING** The flags `--global-md` and `--global-rule=LINE` of `claudetto-setup` are now `--claude-md` and `--claude-md-rule=LINE`.
+- **BREAKING** (maintainer) `plugins/claudetto/slices/` is now `plugins/claudetto/modules/`, with the modules `shell`, `project`, `jev`, `session`, `work`, `gate`, `agents`, `statusline`, `setup`, and `spec` (A1).
+  A module imports another module only through its `index.ts`, and `tests/repo/imports.test.ts` checks each import rule.
+- **BREAKING** (maintainer) A `// rule: <module>.<job>` comment names each `on()` call of `hooks/register.ts`, and the keys of `evals/hooks.json` are these rule names (A2).
+- **BREAKING** (maintainer) The paid and manual tools move from `tools/` to `dev/`, such as the sandbox, the capture, the schema tool, and the eval tools (A5).
+  The `just` recipes keep their names.
+- Each `$.state` value has one owner module, which lists it in `STATE_KEYS` of its `state.ts`, and a type test checks each owner type against its contract (A3).
+- Each fact that more than one part read, such as the edits of the user, the `git status` parse, the running agents, and the open change, has one function in its owner module.
+- The kernel keeps only the options, the text helpers, the ports, the hook types, and `kernel/node/`, and it reads the options in one place.
+- `just test` runs only `bun test`, and no longer writes the wiki.
+- `just generate` writes `openspec/schemas/` from the presets of `spec`, and `just generate --check` fails on a schema that differs from its preset.
+- The status line has 4 fixed rows, and no item moves to another row.
+  Row 1 shows the folder, git, and the change, row 2 the model, the context, and the cost, row 3 the `5h`, `7d`, and spend limits, and row 4 the prompt cache.
+  A narrow terminal first gets the countdowns, then a cut at the right edge.
+- `claudetto-setup --claude-md` writes 3 rules of claudetto in its block of `~/.claude/CLAUDE.md`.
+  A later run gives an existing file the same block, and keeps each user line.
+  The rule of a check before done is now the stop check of `finish`, so the block no longer has it.
+- The percents and the countdowns of the status line get a color from a linear gradient of 3 stops, green at 20%, amber at 60%, and red at 90%, in place of 3 fixed colors.
+- The body of `claudetto:main` is rebuilt from the system prompt sections of Claude Code 2.1.310, and each XML tag has the name of its section.
+  Each rule works in the TUI and in `claude -p`.
+  When `AskUserQuestion` is not in the tools, the model decides, states the assumption, and stops only before an action with no undo.
+- `claudetto:main` objects to a claim or a choice only on evidence of a fault, and first checks that the text of the user does not already cover the point.
+  It answers "why did you do X?" with the reason, and it keeps a position until new evidence comes.
+- The output style, the skills, the agents, and the hook texts no longer conflict with `claudetto:main`, and each ask of a skill has a form for `claude -p`.
+- (maintainer) The modules `statusline`, `jev`, `shell`, and `gate` are rewritten with no change of behavior.
+  `gate` uses `operands`, `nameOf`, and `wordSet` of `shell`, and `gate/domain/loss.ts` holds the delete, `git`, and loss rules.
+- **BREAKING** The agents are named for gods, and the file of each agent has its new name: `claudetto:Hephaestus` for `claudetto:Worker`, `claudetto:Artemis` for `claudetto:Scout`, `claudetto:Hermes` for `claudetto:Researcher`, `claudetto:Athena` for `claudetto:Reviewer`, `claudetto:Apollo` for `claudetto:Tester`, and `claudetto:Zeus` for `claudetto:Scoper` (the user, 2026-10-26).
+  Each description is plain and about the job of the agent, and a call with no type goes to `claudetto:Hephaestus`.
+  A rule of `permissions.deny` or a `TURN_BOUNDS` key with an old type no longer matches.
+- `claudetto:main` does the work in the main loop, and starts an agent only for context bloat, parallel work with fresh context, or a choice among many tools (the user, 2026-10-26).
+
+### Added
+
+- A session with no `Grep` and no `Glob`, such as a native build, gets the tools `mcp__claudetto__grep` and `mcp__claudetto__glob` in their place (task 19.14).
+  They run the first search program of the host (`rg`, `ugrep`, then `grep`, and `rg` or `find` for `glob`) with `$.process`, take the input fields of the built-in tools that they can serve, and skip `.git` and the secret environment files.
+  Their schemas are in the prompt, so no `ToolSearch` call comes first.
+  The secret-read rule of `gate` covers them as it covers `Grep` and `Glob`.
+- A test fails when a tool that a deny text of claudetto names, such as `Monitor` in the long-wait deny, is behind `ToolSearch` (task 19.15).
+- At the start, claudetto sets `BASH_MAX_OUTPUT_LENGTH` to 24,000 when you set neither it nor `bashOutputMaxChars`, below the default of 30,000 (task 19.9).
+  Claude Code keeps the start of a long output, and 24,000 keeps the failure lines of the largest failed `just check` step that was measured.
+- (maintainer) `just check` prints only the count lines of each passed step, and the full output of a failed step (task 20.0).
+- `claudetto-setup` writes `sandbox.filesystem.denyRead` for `~/.ssh`, `~/.gnupg`, `~/.aws/credentials`, `~/.netrc`, and `~/.docker/config.json`, and `sandbox.filesystem.denyWrite` for `/System`, `/Library`, and the folders of `/usr` except `/usr/local` (task 19.13).
+  The sandbox applies to each process in `Bash`, so it also stops `python3` and `perl`. A probe showed that `Edit` stays allowed under `denyWrite`.
+  The lists come from `gate/domain/paths.ts`, which feed the gate too. Setup keeps your entries, and does not turn `sandbox.enabled` on.
+  A `.env` file has no entry, because under a `**/.env` deny `bun` exits with code 1 in a folder with a `.env` file. The gate and the value filter of task 19.16 cover `.env` files.
+- A subagent gets a refusal for a foreground `Bash` call whose `timeout` is over 240 s, and the reason points to `run_in_background: true` and `Monitor` (task 19.11).
+  A subagent cache lasts 5 minutes, so a long wait wrote the context to the cache again.
+  The `timeout` is the one of the call, else `BASH_DEFAULT_TIMEOUT_MS`, else 120 s.
+  The rule is off for the main thread and for a `1h` value of `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` or `subagentPromptCacheTtl`.
+- A subagent gets one line of `additionalContext` at a soft turn limit, in place of `maxTurns`, which stops an agent with no report: at its bound of tool calls, it is asked to stop and report what is done and what is open (task 19.10).
+  The bounds are in `TURN_BOUNDS`, for each agent type, above the largest count of the subagent transcripts of 2026-10-26.
+  The main thread gets no line.
+  When the state of the session fails, the line goes out one time for each agent, and not with each call, also when the state recovers later.
+  The line comes one time at the first call at or over the bound, also when parallel calls skip the bound, and a failed call counts too (task 19.19).
+  When the count cannot be written after a bound of tries, the line comes, because an extra line costs less than a missed one.
+- `src/wiki/claudetto/Architecture.md` names each module, kernel file, and `$.state` value, and a test fails when the page and the code differ.
+- `just check` fails for a test file that runs 0 cases, and for a tool with no caller.
+- The stop hook of `finish` blocks a stop one time when the turn edited a file that is not Markdown and ran no passed check after the last edit.
+  It applies only to a project with a check recipe in its `justfile` or a `bun.lock`, and its reason names those checks.
+- The recipes `just builtins` and `just text-defaults` run the tools of `dev/` that had no recipe.
+- When Claude Code leaves a limit window out of the status input, such as `rate_limits.seven_day`, the status line shows the last reading, dimmed with its age, until its `resets_at` passes.
+- `claudetto-setup --claude-md --apply` writes `~/.claude/rules/claudetto-tests.md`, a rule for test files, when the file is not there, and the inventory lists it with the owner `claudetto`.
+- (maintainer) `just builtins` also writes `Sections.md`, with the text of each system prompt section.
+- A prompt of over 40,000 characters gets one line of `additionalContext` that names its size and says that a large paste is sent again with each later request.
+- A `Bash` call can no longer change a protected file (task 19.12).
+  The protected files are the boxes of a `tasks.md`, the plan and spec files that `work.ground` checks, `.claudetto/goal.json`, and `.jscpd-baseline.json`.
+  The rule checks the effect on the file, not the command, so `python3`, `perl`, `sed`, and a rename count the same.
+  It turns on `tool_response.bashEditDiff` with `CLAUDE_CODE_BASH_EDIT_DIFF` at the start, saves the files before the call, and after it writes back a changed file (or deletes one that the call created) with a line that names `Edit`.
+  When the field has `unavailable` or `skipped`, or is missing, such as in a sandbox, it compares the content instead.
+  It keeps a changed file when the new content equals the file in a commit that git had at the first `Bash` call of the session (a ref tip, `HEAD`, or the stash), or in a remote-tracking ref that moved and that `git ls-remote` shows at the remote. So `git pull`, `git checkout`, `git stash pop`, a `git merge` of a branch from before the session, and `git reset --hard <ref>` are not undone. A commit or a `git update-ref` of any call of the session does not make a change stay, because only a commit from before the first `Bash` call counts, with one limit: a commit that the agent makes, pushes to the real remote, and fetches is trusted, because the remote has it and no sound check can tell it from a commit of another person (task 19.18).
+  A remote counts only with the URL that it had at the first `Bash` call, and only when this URL is on the network (`https`, `ssh`, `git`, or `user@host:path`). `git ls-remote` runs against this URL, so `git config remote.origin.url <path>`, a new remote, and a remote with a path as URL are not trusted.
+  `git ls-remote` also reads the `git` config, `~/.ssh/config`, some env vars, and the programs `ssh` and `git`, and a call can change them with no change of `git remote -v` (`url.<base>.insteadOf` for the pinned URL, `core.sshCommand`, `http.proxy`, `include.path`, a write of a config file, or an `ssh` earlier in `PATH`). So the pin holds a stamp of each: the output of `git config --list --show-origin --show-scope`, which holds each config file and include, the text of `~/.ssh/config`, the env vars, and the real paths of `ssh` and `git` that `PATH` names. The config stamp leaves out the keys that `git ls-remote` never reads (`branch.*` and `submodule.*`), so `git push -u`, `git switch -c --track`, and a `git checkout` of `origin/<n>` do not undo the trust. A remote counts for nothing when a stamp changed, and the result gets one line that says which one.
+  A script or program that a setting names can be rewritten with no change of any stamp, so claudetto gives no trust to the remote of its transport: an `ssh` remote when `~/.ssh/config` has an `Include`, a `Match exec`, a `ProxyCommand`, `ProxyJump`, `LocalCommand`, `KnownHostsCommand`, or `ControlPath` line (a value of `none` is no block), or when `core.sshCommand`, `GIT_SSH`, or `GIT_SSH_COMMAND` is more than `ssh` with `-4`, `-6`, `-v`, `-q`, `-i <file>`, or `-p <port>`, or when the file of `ssh` is under the home folder or the project, a `git://` remote when `core.gitProxy` or `GIT_PROXY_COMMAND` is set, and each remote when the file of `git` is under the home folder or the project. A credential helper, `core.askPass`, and `GIT_ASKPASS` give a program the credentials only and cannot change the refs, so an `https` remote with none of the other blocks keeps its trust.
+  The pin is taken at `session.start` when the folder has a `.git` entry, else at the first `Bash` call, so an `Edit` of `.git/config` before the first `Bash` call cannot change it, and a write to the pin keeps the first pin when two writes race. Limits: the content of a script, of the `ssh` or `git` file, and of a file that `/etc/ssh` or an `ssh` option names is not read, a program in a folder that the user can write but that is not under the home folder or the project (such as `/usr/local/bin` on an Intel Mac) is not seen as writable, a `ControlPath` socket and the CA files of `http.sslCAInfo` are not read, and an `Edit` of a config file before `session.start` ends is not seen.
+  When git gives no commits at the first `Bash` call, no commit is trusted for the session, a `git pull` or `git checkout` of a protected file is undone, and the result of that call gets one line that says so.
+  A `git merge` of a branch that a call of the session made is undone, because its commits are not from before the first `Bash` call.
+  A protected file that a call deletes is written back, unless `git checkout`, `git switch`, or `git pull` removed it: the new `HEAD` is from before the session or a moved remote ref that the remote has, and the index equals this `HEAD`. So `git symbolic-ref`, `git update-ref --no-deref HEAD`, and `git reset --soft` after an `rm` do not make the delete stay. `git read-tree` alone does not make it stay, because it leaves `HEAD` as it was. `git read-tree` after a move of `HEAD` with `git update-ref --no-deref HEAD` or `git symbolic-ref`, and `git reset --mixed`, to a commit from before that lacks the file do make it stay. `git reset --mixed` also moves the branch ref, which `git checkout` does not, so the end state is not the same (accepted). A staged change of the user makes the delete of a real `git checkout` get written back (fail-safe).
+  A new `tasks.md` or spec that `git pull`, `git checkout`, or `git merge` brings in from a commit from before the session stays. A new `tasks.md` that a call writes is deleted only when it has a checked box, and a new spec or other protected file that a call writes is deleted.
+  The text is hashed as it is and with `\r\n` changed to `\n`, with no filter, so a tick that a checkout brings stays also when `core.autocrlf` changed the line ends. Each `git` call runs with `--no-replace-objects`, so `git replace` cannot make a commit of the agent look known. After the pin, each `git` call runs by the real path that `git` had at the pin, and `sh` and `rm` always run by `/bin/sh` and `/bin/rm`, so a program that a call puts earlier in `PATH` is not run. No commit is trusted at the undo in four cases: `PATH` names another `git` than the pinned file, `PATH` has no `git`, the pinned `git` is a file that a call can write (under the home folder or the project, or a path that is not absolute), and the pin has no `git` path. The last case happens when the first `git` call finds no repo or fails, when `git config --list` fails, when `~/.ssh/config` is over the size bound, or when the lookup or the stamp of `git` fails. A `git pull` or `git checkout` of a protected file is then undone. When `rm` cannot delete a protected file that a call created, the model gets a line that names the file.
+- The model no longer sees a value of an env file (task 19.16).
+  A rule on each tool, also `mcp__claudetto__grep` and `mcp__claudetto__glob`, replaces each value of 8 or more characters and its base64 form in the result with `[value of KEY]`.
+  A value of 4 to 7 characters is replaced as a whole word when its key name holds `KEY`, `TOKEN`, `SECRET`, `PASS`, `PWD`, `AUTH`, `CREDENTIAL`, or `PRIVATE`, so `PORT=8080` and `DEBUG=true` stay visible (task 19.20).
+  The env files of the project are found at any depth with `rg --files --hidden --no-ignore`, else `find`, up to 1,000 files. When a bound is hit, the result gets one line that says that some values are not masked.
+  A value stays replaced after `mv` or `rm` removes its file. A value of 12 or more characters also stays replaced after a reload of the mod in the same session, because `$.state` keeps a slow hash of it with its length and key, and no value. `$.state` is in the memory of Claude Code with no file, so the record keeps the first 32 bits of the rolling hash, and a result of 30,000 characters gets about 0 false finds. A shorter value is kept only in the memory of the mod.
+  When the record bound is hit, the result gets one line that says that some values are not masked, and hashes that were not saved are saved again on the next call.
+  A short value goes from the memory when its file still exists and no longer holds it, so an edit does not fill the memory.
+  When the memory of short values is full, the result gets a line that says a short value may show after its file is gone.
+  A result with many near matches gets one slow check, and each other near match is replaced with no check and with one line that says so, so that a long result stays fast.
+  A value that a program changes first, such as reversed, split, or hex, is not found.
+
+### Fixed
+
+- The gate judges the program that runs, not the word that the text spells (a paid eval trace of 2026-10-26 let `G=/Applications/Xcode.app/Contents/Developer/usr/bin/git; $G push --force-with-lease=main:cab2a44 origin main` through).
+  A program word `$NAME` or `${NAME}` takes the last literal value that the same command assigned (`NAME=v`, `export`, `readonly`, `declare`), and a program with no known value asks.
+  A `git -c alias.X=...` call with the verb `X` is judged as the git call or, for a `!` body, the shell command that the alias runs.
+- The gate now reads the forms of the same bypass that it missed, and asks when the text holds too little to read them: `$D/git` with `D` assigned, `bash -c "$c"` and `eval` of built text, aliases from `~/.gitconfig`, `.git/config`, `GIT_CONFIG_*`, and `git config alias.X ...`, `-calias.X=...` with no space, an alias that calls another alias, and an assignment in a branch, loop, function, or subshell that may not have run.
+  A `git` verb that is no command and no alias asks. When `git` cannot give its commands, a short fixed list stands in.
+  The gate also fills the known variables of each argument (`X=--force; git push $X`), splits an unquoted value into words, and treats `unset`, `printf -v`, and `getopts` as a change of the variable.
+  It also asks for `NAME+=x`, for a name that a loop or a function reads and the text assigns again anywhere, and for `declare -n`, `typeset -n`, and `local -n`, and a `-i`, `-l`, `-u`, `-a`, or `-A` flag or a bare `local NAME` makes the value unreadable.
+  It also follows a copy `Y=$X`, splits a word such as `"a b"$X` only at the value, and reads the `git` aliases again when an `include` file changes (task 19.21).
+  A `git` alias from the config is known only when the whole text is one plain `git` call, with no env prefix, no wrapper, no other command, and no `-C`, `--git-dir`, `--work-tree`, `--config-env`, or `-c` other than `-c alias.X=...`. In each other text, a verb that is not built in asks, so `git co main && git pull` asks and `git co main` does not (the user, 2026-10-26).
+  In a project with an env file, a command asks when an operand comes from `$(...)`, backticks, `xargs`, or a variable with no known value, unless the gate can read the operand in full, such as a literal heredoc in `git commit -m "$(cat <<'EOF' ... EOF)"`. A command that takes only names, such as `echo`, stays as it is (the user, 2026-10-26).
+  The gate also denies `cp`, `mv`, and `ln` of a secret file, asks for a `<` read of a target that it cannot read, and asks for a `git -c` key that can run a program, such as `core.pager`, and for a program env var, such as `GIT_SSH_COMMAND`, with a value other than `true`, `false`, `:`, or `cat` (the user, 2026-10-26).
+  It reads the `git` aliases again when the text of a config file changes, also when a rewrite keeps the mtime and the size (`touch -r`).
+  It does not read a `git` config file over 1 MB, and then it asks for a `git` verb that is not built in.
+- The gate now asks for `git stash`, `git stash apply` or `pop` with no `--index`, and `git reset` with no path when the edit ledger shows a change of the user or of another session, because these verbs change the whole work tree (task 19.22).
+- The gate now denies a read of `prod.env`, `.env-prod`, `.env_prod`, and `.envrc`, which the name test missed. A read of `.env.example` is still allowed (task 19.16).
+- The gate now denies a glob that can match a secret file (`cat .e*`, `cat .*`, `Grep` with `glob: "*.env"`) and a `~user` path (`cat ~root/.ssh/id_rsa`), asks when a read program takes its file from `$(...)`, backticks, or `xargs` and the text holds a secret name, checks `notebook_path` of `NotebookEdit`, and reads a `<` redirect from the folder that a `cd` set.
+- With an empty `TMPDIR`, the gate now reads the edit ledger at `/tmp`, where the cleanup writes it.
+- The gate no longer denies a script that calls a method `.env(...)`, such as `` $`cmd`.env(env) `` of Bun, as a read of a `.env` file.
+- The status line keeps the last limit reading in one file for each `CLAUDE_CONFIG_DIR`, so a reading of one account does not show for another.
+- The task parse of a change now reads a `tasks.md` with CRLF line ends.
+- The main thread again gets the security-testing policy of Claude Code.
+  `claudetto:main` turns off the `intro` section, which holds that policy, and now has the same text in a `<security>` block.
+- A handoff no longer takes a slash command, such as `/clear`, or a local command note as the task or as the last words of the user. A command with arguments counts as `/name args`.
+- `claudetto-decide ask` now keeps a `state` that is an object, and the mod now sends the state of `AskUserQuestion` to Jev as an object with one named field for each question.
+  Before, the CLI changed an object `state` to an empty string, and the mod sent one joined text.
+- The status line now shows the context window in effect, for the main row and for each subagent row, not the window of the model.
+  It reads `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, then `autoCompactWindow` of `modelSettings.<model>`, then the top-level `autoCompactWindow`, from the local, project, and user settings in that order. The percent and the handoff mark are of that window, so 120k tokens show as `40% of 300k`.
+- A finished subagent now has a claudetto row, with `✓ done`, `✗ failed`, or `stopped` in place of the clock. Before, it kept the default row.
+
 ## [0.3.0-alpha.2] - 2026-10-23
 
 ### Removed
@@ -606,4 +746,4 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 | [0.1 and 0.2](https://github.com/xsyetopz/claudetto/wiki/Release-0.1-0.2) | 0.2.0, 0.1.0 |
 
 [unreleased]:
-  https://github.com/xsyetopz/claudetto/compare/claudetto--v0.3.0-alpha.2...HEAD
+  https://github.com/xsyetopz/claudetto/compare/claudetto--v0.4.0-alpha.1...HEAD

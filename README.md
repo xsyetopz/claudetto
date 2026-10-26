@@ -10,14 +10,13 @@ The docs of Claude Code itself are on the [Claude Code docs](https://xsyetopz.gi
 
 ## Plugins
 
-claudetto is a marketplace with one core plugin and two add-on plugins.
-Each add-on works without the core plugin.
+claudetto is a marketplace with one core plugin and one add-on plugin.
+The add-on works without the core plugin.
 
 | Plugin | What it gives |
 | --- | --- |
 | `claudetto` | The core: the settings snippet, the status line, the output style, the `setup` skill, the `/handoff` command, the `guard` and `ground` hooks, the tailored prompt, and the Jev pick of `AskUserQuestion`. |
 | `claudetto-browser` | The `browse` skill, which drives a real browser with `agent-browser`. |
-| `claudetto-docs` | The `find-docs` skill, with current library docs from the CLI `ctx7`. |
 
 ## Install
 
@@ -51,9 +50,9 @@ You can also copy the keys that you want into your own `settings.json`.
 
 | Part | Effect |
 | --- | --- |
-| Compaction | The `handoff` slice hands over at three triggers: a handoff file, `/clear`, and a resume. The compaction of Claude Code stays as the safety net. `autoCompactWindow` is `300000`. The `compaction` option `built-in` starts no handover. |
+| Compaction | The `session` module hands over at three triggers: a handoff file, `/clear`, and a resume. The compaction of Claude Code stays as the safety net. `autoCompactWindow` is `300000`. The `compaction` option `built-in` starts no handover. |
 | Memory | `autoMemoryEnabled` is `false`. |
-| Prompt | `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is `1`, and the `prompt` slice gives one tailored text for the short prompt. |
+| Prompt | `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is `1`, and the `session` module gives one tailored text for the short prompt. |
 | Output style | `outputStyle` is `claudetto:Concise`. Your own `outputStyle` setting can change it. |
 | Permissions | Reads of secret files and destructive commands such as `rm -rf /` are denied. A force push asks. |
 | Sandbox | Bash runs in the sandbox. Its network reaches GitHub and the package registries only. |
@@ -87,24 +86,24 @@ Each pick sends the question and the options to the TypeSafe API.
 When Jev gives no pick, the question stays as Claude asked it.
 See [Decide](https://github.com/xsyetopz/claudetto/wiki/Decide).
 
-## Add-On Plugins
+## Add-on Plugins
 
 Install each add-on that you need.
 
 ```bash
 # --- CLI -----------------------------
 claude plugin install claudetto-browser@claudetto
-claude plugin install claudetto-docs@claudetto
 
 # --- TUI -----------------------------
 /plugin install claudetto-browser@claudetto
-/plugin install claudetto-docs@claudetto
 ```
 
 - `claudetto-browser` uses `agent-browser`.
   Install it with `bun add -g agent-browser`.
   See [Browser](https://github.com/xsyetopz/claudetto/wiki/Browser).
-- `claudetto-docs` needs no key.
+- The skill `claudetto:find-docs` is in the core plugin and needs no key.
+  A Context7 key in the env var `CONTEXT7_API_KEY`, set before Claude Code starts, raises the quota.
+  If you installed `claudetto-docs`, run `claude plugin uninstall claudetto-docs@claudetto`.
   See [Library docs](https://github.com/xsyetopz/claudetto/wiki/Library-Docs).
 
 ## Update

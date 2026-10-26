@@ -19,7 +19,7 @@ The debug log of Claude Code (`--debug-file <path>`) shows what a hook or a plug
 | A command is denied, and the reason names a danger | The gate denies `sudo`, a disk erase, a write to a system folder, and a read of a secret file. Run it yourself with `! <cmd>` if you want it. | [Guard](Guard) |
 | A dialog shows after a gate failure | The gate threw an error or timed out, so it asks a person. Approve the call or look at the debug log. | [Guard](Guard) |
 | Auto mode is not available | The settings snippet sets `permissions.disableAutoMode` to `disable`. The gate takes its place. | [Settings Snippet Keys](Settings-Snippet-Keys) |
-| A subagent type is missing, or `general-purpose` is denied | The snippet denies the agents of Claude Code. Use `Scout`, `Scoper`, `Reviewer`, `Researcher`, `Worker`, or `Tester`. | [Agents](Agents) |
+| A subagent type is missing, or `general-purpose` is denied | The snippet denies the agents of Claude Code. Use `Artemis`, `Zeus`, `Athena`, `Hermes`, `Hephaestus`, or `Apollo`. | [Agents](Agents) |
 | The setup says the plan tier has no subagent cap | The tier is not one of Pro, Max 5x, and Max 20x, so setup writes no cap. Set `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` by hand if you want one. | [Setup](Setup#subagent-cap) |
 | A folder or a worktree is gone after a start | The cleanup removes old session folders and worktrees that no session uses, are clean, and have no unmerged commit. | [Session Hygiene](Hygiene) |
 | Claude says a file changed after its last edit | The user or a tool changed the file. The edit ledger tells Claude once. | [Session Hygiene](Hygiene) |

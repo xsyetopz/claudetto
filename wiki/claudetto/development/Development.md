@@ -56,10 +56,10 @@ Each recipe runs from the repository root.
 
 | Command | What it does |
 | --- | --- |
-| `just check` | Runs lint, typecheck, `generate --check`, test, validate, lab, and dry. It must pass before a change is done |
-| `just ci` | The same gate without the type check. It is the CI `check` job |
+| `just check` | Runs `tools/check.ts`: lint, typecheck, `generate --check`, test, validate, lab, and dry. The test step fails on a test file with 0 cases. It must pass before a change is done |
+| `bun tools/check.ts --ci` | The same gate without the type check. It is the CI `check` job |
 | `just docker [RECIPE]` | Runs a recipe (`check` by default) in a container with at most `DOCKER_CPUS` CPUs |
-| `just test [FILE]` | Runs `just generate`, then `bun test`. A file argument runs only that file |
+| `just test [FILE]` | Runs `bun test`. A file argument runs only that file. Run `just generate` first after a change of `src/wiki/` |
 | `just lint` | Runs Biome and `markdownlint-cli2` |
 | `just typecheck` | Checks each `.ts` file and the core hooks module |
 | `just validate` | Fails on an eval case that checks only the reply, then runs `claude plugin validate --strict` |
@@ -79,7 +79,7 @@ Each recipe runs from the repository root.
 
 ```bash
 just check                                     # must pass before a change is done
-just test tests/claudetto/guard/gate.test.ts  # one file
+just test tests/claudetto/gate/gate.test.ts  # one file
 bun run lint:md                                # lint Markdown
 ```
 

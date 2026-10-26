@@ -14,7 +14,7 @@ After the copy, a plugin cannot use a file outside its folder.
 **Evidence:**
 
 - `plugins/claudetto/hooks/register.ts` shows the relative imports and literal event names.
-- `tests/claudetto/imports.test.ts` and `tests/support/import-rules.ts` check the import rules over `plugins/`.
+- `tests/repo/imports.test.ts` checks the import rules over `plugins/`.
 - `.claude/rules/hooks-module.md` forbids a `node:` or `bun:` import in the hooks module.
 - [Plugin Layout](Plugin-Layout) shows the tree.
 
@@ -51,7 +51,7 @@ See [Sandbox Sessions](Sandbox-Sessions#capture-session).
 
 **Choice:** An optional feature that costs tokens or needs an outside tool is its own plugin.
 The plugin is the unit of install and disable.
-The add-ons are `claudetto-docs` and `claudetto-browser`.
+The only add-on is `claudetto-browser`.
 `claudetto-browser` replaces the built-in `WebSearch` with a headless browser.
 Jev is not an add-on.
 It is the `decide` slice of the core plugin, and it sends nothing until the user sets `TYPESAFE_API_KEY`.

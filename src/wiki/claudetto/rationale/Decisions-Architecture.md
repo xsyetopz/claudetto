@@ -27,7 +27,7 @@ Version 0.3.0 removed the generator of the plugins and the manifests.
 The generator and the manifests were more code than the 18 calls they wrote, and `plugins/` as the source is what Claude Code reads.
 
 **Evidence:** `register.ts` has 18 `on()` calls.
-`tests/support/hook-evals.test.ts` fails when a call has no `// eval:` comment or no entry in `evals/hooks.json`.
+`tests/repo/hook-evals.test.ts` fails when a call has no `// eval:` comment or no entry in `evals/hooks.json`.
 
 ## Why One Hook Module Replaces Most Command Hooks
 
@@ -52,7 +52,7 @@ A usage report as a skill took 2 turns and $0.038.
 As a `command.run` handler, it took 0 turns and $0.
 This is one sample.
 
-## Why Add-Ons Import Nothing From Other Plugins
+## Why Add-Ons Import Nothing from Other Plugins
 
 **Choice:** Each add-on has its own folder in `plugins/`.
 It keeps its own copy of each kernel file that it uses, and a test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
@@ -62,8 +62,8 @@ A shared npm package would add an install step and version skew.
 
 **Evidence:**
 
-- `tests/support/addons.test.ts` fails when an add-on file names `../claudetto/` or `plugins/claudetto/`.
-- `checkPluginBoundary` in `tests/support/import-rules.ts` flags each import that leaves its plugin.
+- `tests/repo/addons.test.ts` fails when an add-on file names `../claudetto/` or `plugins/claudetto/`.
+- `checkPluginBoundary` in `tests/repo/imports.test.ts` flags each import that leaves its plugin.
 
 ## Why Bounds Have Three Tiers
 

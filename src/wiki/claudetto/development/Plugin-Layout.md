@@ -29,7 +29,6 @@ Read it before you add a file, a slice, or a plugin.
 | --- | --- | --- | --- |
 | `claudetto` | `plugins/claudetto/` | `tests/claudetto/<slice>/` and `plugins/claudetto/tests/` | [Overview](Overview) |
 | `claudetto-browser` | `plugins/claudetto-browser/` | `tests/claudetto-browser/` | [Browser](Browser) |
-| `claudetto-docs` | `plugins/claudetto-docs/` | `tests/claudetto-docs/` | [Library Docs](Library-Docs) |
 
 `plugins/claudetto/tests/` holds the hook lab tests of the core plugin.
 
@@ -58,15 +57,15 @@ The parts of a slice are on [Plugin Layout Slices](Plugin-Layout-Slices).
 
 ## Imports
 
-The import rules are in `tests/support/import-rules.ts`.
-`tests/claudetto/imports.test.ts` runs them over `plugins/`.
-`tests/claudetto/import-rules.test.ts` breaks each rule with a fixture.
+`tests/repo/imports.test.ts` holds the import rules.
+It runs each rule over `plugins/`, and breaks each rule with a fixture.
 
-- A plugin imports nothing from another plugin, `tools/`, or `tests/`.
+- A plugin imports nothing from another plugin, `tools/`, `dev/`, or `tests/`.
 - A plugin imports only relative paths and `node:` or `bun:` modules.
   The one allowed package is a type import of `claude-code`.
-- A slice imports only the `kernel/` of its plugin and its own folder.
-  Biome enforces this with `noRestrictedImports`.
+- A file outside a module imports the module only through its `index.ts`.
+  A `bin/` file imports only the `cli.ts` of a module.
+- The modules have no import cycle, and the kernel imports no module.
 - Domain code in `domain/` imports no adapter and no `kernel/node/` file.
 - Each plugin has its own copy of the kernel files it imports.
   A test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
@@ -79,14 +78,14 @@ The rules for each folder are in `.claude/rules/`, such as `slice-imports.md` an
   It has one literal `on()` call for each mod handler.
 - A file in the import graph of the hooks module has no `node:` import, no `bun:` import, no `import()`, and no `Bun`.
   The event name of each `on()` call is a string literal.
-  `.claude/rules/hooks-module.md` states the rule, and `tests/support/import-rules.ts` checks it.
+  `.claude/rules/hooks-module.md` states the rule, and `tests/repo/imports.test.ts` checks it.
 - A CLI adapter runs on Bun, so it may use `node:`, `bun:`, and `Bun` (`.claude/rules/cli-adapters.md`).
 
 ## Hook Evals
 
 Each hook of each plugin has an entry in `evals/hooks.json`.
 A person writes the file.
-`tests/support/hook-evals.test.ts` checks it.
+`tests/repo/hook-evals.test.ts` checks it.
 
 - The id of a mod hook is `<event> <slice>`.
   `register.ts` has the comment `// eval: <id>` above its `on()` call.
@@ -104,11 +103,11 @@ A person writes the file.
 | --- | --- |
 | Runtime code in `plugins/` | `.ts` files with erasable syntax, on Bun 1.4.3 or later |
 | Tests and `tools/` | Bun 1.4.3 or later, with `bun test` |
-| Python | Code that needs Python is Python. The one tracked script is `tools/vanilla.py` |
+| Python | Code that needs Python is Python |
 
 A plugin ships no `.js`, `.mjs`, or `.tsx` file.
 A `.d.ts` file is allowed only when a manifest names it.
-`tests/support/runtimes.test.ts` fails on any other script type.
+`tests/repo/runtimes.test.ts` fails on any other script type.
 
 ## Bound Tiers
 

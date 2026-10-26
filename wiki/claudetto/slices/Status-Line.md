@@ -22,23 +22,21 @@ See [Settings Snippet](Settings-Snippet) for how the keys reach your settings.
 
 ## The Rows
 
-The main line has at most `3` rows.
+The main line has at most `4` rows.
 A segment with no input has no text, and a row with no text is not shown.
-The segments of a row line up in columns with the same segments of the other rows.
+The segments of rows 0 and 1 line up in columns.
+Rows 2 and 3 are joined with no columns.
 
 | Row | Segments, in order |
 | --- | --- |
-| 0 | Folder, git and pull request, change, 7-day limit |
-| 1 | Model, context, cost, 5-hour limit |
-| 2 | Spend limit, prompt cache |
+| 0 | Folder, git and pull request, change |
+| 1 | Model, context, cost |
+| 2 | 5-hour limit, 7-day limit, spend limit |
+| 3 | Prompt cache |
 
 The width is `COLUMNS` minus 4, or 120 minus 4 when `COLUMNS` is not set.
-The command tries four layouts in order and uses the first one in which every row fits.
-The layouts are the table above or a version where the 5-hour and 7-day limits share row 2.
-Each comes first with clock times for the resets, then with countdowns.
-If no layout fits, the last one is used.
-Each row that is too wide then drops its items at the right, one by one.
-The last item is cut with `…`.
+The rows show the clock times of the resets when each row fits, and the countdowns when a row does not fit.
+A row that is still too wide is cut at the right edge with `…`.
 
 ## Segments
 
@@ -88,6 +86,13 @@ It gives percent points against the elapsed time.
 A clock time is `1:50pm` within 24 hours and `Oct 19 at 7am` later.
 A countdown is `45s`, `12m`, `3h12m`, or `2d4h`.
 
+Claude Code leaves out a limit window when the API does not report it.
+Then the segment shows the last reading of that window in the dim color, with its age, such as `◷ 7d 80% ↻Oct 28 at 7am (5m ago)`.
+The last reading has no pace, and it shows until its `resets_at` passes.
+A window with no `resets_at`, such as the spend limit, shows no last reading.
+The readings are in one file for each `CLAUDE_CONFIG_DIR`, in the folder of the git cache.
+A refresh with the same windows writes the file at most one time in a minute (`READING_KEEP_MS`).
+
 ### Prompt Cache
 
 A warm cache shows the time to `expires_at`, `/`, the `ttl`, and the `hit_ratio`.
@@ -123,8 +128,12 @@ It ignores the `theme` key of `.claude.json` and each theme option.
 
 A `NO_COLOR` value that is not empty turns off all color.
 
-- The context, `5h`, and `7d` percents are green below 40%, amber from 40% to 80%, and red above 80% (`USAGE_LEVELS` in `plugins/claudetto/kernel/budget.ts`).
-- The labels (`ctx`, `5h`, `7d`) and the reset times are dim.
+- The context, `5h`, and `7d` percents have a color that code makes between 3 stops.
+- The stops are green at 20% and below, amber at 60%, and red at 90% and above.
+- A percent between two stops has the color in the line between them, in linear RGB.
+- The reset time of `5h` and `7d` has the same gradient at the percent of the window that is left.
+- The run-out time fades from amber, at the reset, to red, now.
+- The labels (`ctx`, `5h`, `7d`) and the reset time of the spend limit are dim.
 - The distance to the handoff has the warning color within 10% of the trigger and the limit color at the trigger.
 
 A pull request has the color of its review state: `approved`, `pending`, `changes_requested`, or `draft`.
@@ -138,7 +147,7 @@ An input with no `rate_limits` keeps the last content.
 
 The git state is cached for 3 seconds in one file for each repository, in the folder `claudetto-git-<uid>` of the temp folder.
 The command uses that folder only when it has mode `0700`, the right owner, and no link.
-It runs `git` for at most 1.5 seconds (see `slices/statusline/limits.ts`).
+It runs `git` for at most 1.5 seconds (see `plugins/claudetto/modules/statusline/limits.ts`).
 
 A failure never stops the status line.
 The command writes the cause to stderr and exits with 0.

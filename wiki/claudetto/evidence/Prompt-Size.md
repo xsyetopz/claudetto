@@ -29,7 +29,7 @@ The sections are counted in `LEAN_BODY`, which has eight `<tag>` lines.
 
 ## Size Against the Stock Text
 
-The stock `lean_body` text of Claude Code `2.1.302` was in `tests/claudetto/prompt/fixtures/lean_body.txt` at `v0.2.0`.
+The stock `lean_body` text of Claude Code `2.1.302` was in `tests/claudetto/session/prompt/fixtures/lean_body.txt` at `v0.2.0`.
 It is 616 bytes, which is 612 characters, and 99 words.
 The net growth is about 6,900 bytes.
 

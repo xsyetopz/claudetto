@@ -14,17 +14,17 @@ The body has tagged parts: `intro`, `doing_tasks`, `system`, `blocks`, `verifica
 ## The Roster
 
 The plugin ships six subagents.
-Each has `omitClaudeMd: true`, so it does not load `CLAUDE.md` files, and each has a one-line description that starts with "Use proactively".
+Each has `omitClaudeMd: true`, so it does not load `CLAUDE.md` files, and each has a one-line description of its job.
 None sets `maxTurns`.
 
 | Agent | Model | Effort | Tools | Use |
 | --- | --- | --- | --- | --- |
-| `claudetto:Scout` | `claude-haiku-5-5` | low | `Read`, `Grep`, `Glob` | A read-only search over many files that returns paths and lines |
-| `claudetto:Scoper` | `claude-sonnet-5-5` | medium | `Read`, `Grep`, `Glob` | A split of a task into file sets and steps for parallel Workers |
-| `claudetto:Reviewer` | `claude-sonnet-5-5` | medium | `Read`, `Grep`, `Glob`, `Bash` | A fresh review of a diff against its plan |
-| `claudetto:Researcher` | `claude-sonnet-5-5` | medium | `WebSearch`, `WebFetch`, `Read` | Web research that returns its report as its final message |
-| `claudetto:Worker` | `claude-sonnet-5-5` | medium | `Read`, `Edit`, `Write`, `Grep`, `Glob`, `Bash`, `Monitor` | One planned edit step with its check |
-| `claudetto:Tester` | `claude-haiku-5-5` | low | `Read`, `Grep`, `Glob`, `Bash`, `Monitor` | A run of the checks that lists each failure with file and line |
+| `claudetto:Artemis` | `claude-haiku-5-5` | low | `Read`, `Grep`, `Glob` | A read-only search over many files that returns paths and lines |
+| `claudetto:Zeus` | `claude-sonnet-5-5` | medium | `Read`, `Grep`, `Glob` | A split of a task into file sets and steps for parallel `claudetto:Hephaestus` agents |
+| `claudetto:Athena` | `claude-sonnet-5-5` | medium | `Read`, `Grep`, `Glob`, `Bash` | A fresh review of a diff against its plan |
+| `claudetto:Hermes` | `claude-sonnet-5-5` | medium | `WebSearch`, `WebFetch`, `Read` | Web research that returns its report as its final message |
+| `claudetto:Hephaestus` | `claude-sonnet-5-5` | medium | `Read`, `Edit`, `Write`, `Grep`, `Glob`, `Bash`, `Monitor` | One planned edit step with its check |
+| `claudetto:Apollo` | `claude-haiku-5-5` | low | `Read`, `Grep`, `Glob`, `Bash`, `Monitor` | A run of the checks that lists each failure with file and line |
 
 ## What the Slice Does
 
@@ -32,7 +32,7 @@ The `agents` slice adds two hooks:
 
 - `agent.offer` hides each agent of the engine and `claudetto:main`.
   So the model sees only the six agents above.
-- `tool.call` on `Agent` sets `subagent_type` to `claudetto:Worker` when a call has none.
+- `tool.call` on `Agent` sets `subagent_type` to `claudetto:Hephaestus` when a call has none.
   The hook runs before the permission step, which treats a call with no type as `general-purpose`.
   Without it, the `deny` rule for `general-purpose` would refuse the call.
 

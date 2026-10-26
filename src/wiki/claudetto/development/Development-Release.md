@@ -24,7 +24,7 @@ The workflows are in `.github/workflows/`.
 
 | Workflow | When it runs | What it does |
 | --- | --- | --- |
-| `ci.yml` | Each push and pull request | The `check` job runs `just ci` on Ubuntu and macOS, with `Bun` from `package.json`, `just` 1.58.0, and Claude Code 2.1.307. Require the `all-green` job in branch protection |
+| `ci.yml` | Each push and pull request | The `check` job runs `bun tools/check.ts --ci` on Ubuntu and macOS, with `Bun` from `package.json` and Claude Code 2.1.309. Require the `all-green` job in branch protection |
 | `claude.yml` | An `@claude` mention in an issue, review comment, or review | Answers with `anthropics/claude-code-action`, only for users with write access. It needs the `CLAUDE_CODE_OAUTH_TOKEN` secret and the Claude GitHub App. Its steps skip when the secret is empty, so a fork has no failed run |
 | `eval-new-claude-code.yml` | Each day at 06:00 UTC, and `workflow_dispatch`. Never on a pull request | Runs `just eval` for each release tag of `anthropics/claude-code` that is higher than the version in `ci.yml`. A cache entry marks each tag, so it runs once. Set the input `force` to run a marked tag again |
 
@@ -79,7 +79,7 @@ The notes of each release are in [Release History](Release-History).
 1. Edit a page in `src/wiki/`.
    `just generate` writes `wiki/` from it, and `just generate --check` names each page that differs.
    Do not edit `wiki/` by hand.
-   `tests/support/wiki-links.test.ts` checks that each link resolves and each page name is unique.
+   `tests/repo/wiki-links.test.ts` checks that each link resolves and each page name is unique.
 2. Run `just wiki` to publish `wiki/` to the GitHub wiki.
 
 The wiki repository exists only after the first page is made in the GitHub web UI.

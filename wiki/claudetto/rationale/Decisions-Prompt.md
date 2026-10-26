@@ -37,7 +37,7 @@ The 0.2.0 route, a `prompt.compose` rewrite of the `lean_body` section of the sh
 
 **Reason:** The same rules are needed for every model, and one text serves them all.
 
-**Evidence:** `tests/claudetto/prompt/faults.test.ts` checks that the plugin `settings.json` selects `claudetto:main`.
+**Evidence:** `tests/claudetto/session/prompt/faults.test.ts` checks that the plugin `settings.json` selects `claudetto:main`.
 
 ## Why Requests Are Captured
 

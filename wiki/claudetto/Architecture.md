@@ -2,8 +2,9 @@
 
 # Architecture
 
-This page is the map of the `claudetto` repository: the plugins, the kernel, the slices, and the hooks module.
+This page is the map of the `claudetto` repository: the plugins, the kernel, the modules, the state, and the hooks module.
 Read it before you read the code or add a feature.
+`tests/repo/architecture-page.test.ts` fails when this page names a module, a kernel file, or a state value that does not exist, or leaves one out.
 
 ## The Plugins
 
@@ -13,9 +14,8 @@ No build step writes them.
 
 | Plugin | Folder | What it holds |
 | --- | --- | --- |
-| `claudetto` | `plugins/claudetto/` | The core plugin: the main agent, the roster, the permission gate, and the other slices. |
+| `claudetto` | `plugins/claudetto/` | The core plugin: the main agent, the roster, the permission gate, and the other modules. |
 | `claudetto-browser` | `plugins/claudetto-browser/` | The browser add-on. |
-| `claudetto-docs` | `plugins/claudetto-docs/` | The library docs add-on. |
 
 Each add-on works without the core plugin, so it imports nothing from another plugin.
 Only `plugins/` ships to users.
@@ -23,25 +23,24 @@ The core plugin sets `agent` to `claudetto:main` in its `settings.json`.
 
 ## The Layers
 
-Each plugin has the same layers.
+The core plugin has three layers.
 A layer uses only the layers below it.
 
 | Layer | Folder | What it holds | Imports |
 | --- | --- | --- | --- |
-| Kernel | `plugins/<plugin>/kernel/` | Pure code that the slices of the plugin share: bounds, paths, the shell reader, the model ids, and the ports that tests replace. | Nothing, except `kernel/node/` |
-| Runtime adapters | `plugins/<plugin>/kernel/node/` | The adapters of Node and Bun: files, processes, and hook input and output. | The kernel |
-| Slices | `plugins/<plugin>/slices/<s>/` | One feature each. | The kernel, and its own folder |
-| Entry points | `plugins/<plugin>/hooks/register.ts` and `bin/` | The hooks module and the commands. | The slices |
+| Kernel | `plugins/claudetto/kernel/` | Pure code with no owner module: text helpers, the error policy, the ports, the hook types, the options read, and the adapters of `kernel/node/`. | Nothing, except `kernel/node/` |
+| Modules | `plugins/claudetto/modules/` | One job each. | The kernel, its own folder, and the `index.ts` of another module |
+| Entry points | `plugins/claudetto/hooks/register.ts` and `bin/` | The hooks module and the commands. | The modules |
 
 The rules of the layers:
 
-- A slice never imports another slice.
+- A module imports another module only through its `index.ts`, and the imports of the modules make no cycle.
+- A `bin/` file imports only the `cli.ts` of a module.
 - A plugin never imports another plugin.
-  An add-on keeps its own copy of each kernel file that it uses, and a test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
 - A file in the import graph of the hooks module has no `node:` import, no `bun:` import, and no `Bun`.
-  So a mod handler imports only the pure kernel.
+  So a mod handler imports only the pure kernel and the pure parts of the modules.
 
-The tests in `tests/claudetto/imports.test.ts` and `tests/claudetto/import-rules.test.ts` check the import rules.
+The test `tests/repo/imports.test.ts` checks the import rules.
 See [Plugin Layout](Plugin-Layout#imports).
 
 ## The Kernel
@@ -50,59 +49,79 @@ The kernel of the core plugin has these files:
 
 | File | What it holds |
 | --- | --- |
-| `budget.ts` | The shared runtime bounds, such as `CONTEXT_WINDOW` and the handoff trigger. |
-| `paths.ts` | The paths of the files that `claudetto` reads or writes. |
-| `change.ts` | The task state of an OpenSpec change, from the text of `tasks.md`. |
-| `compaction.ts`, `plugin-option.ts` | The `compaction` option and the reader of the options of the plugin. |
-| `shell.ts`, `shellkinds.ts`, `wrappers.ts`, `shell/` | The shell reader for the permission gate. It reads the syntax, and it does not run the shell. |
-| `model.ts`, `errors.ts`, `text.ts`, `ports.ts`, `slice.ts` | Model families, the error policy, small text tests, the ports that tests replace, and the shared hook types. |
-| `node/` | The adapters of Node and Bun, for the commands. |
+| `text.ts` | Small text helpers, and the Chicago Title Case of a title. |
+| `errors.ts` | The error policy: a `catch` names the errors that it expects. |
+| `ports.ts` | The interfaces that a command or a test replaces with an adapter or a fake. |
+| `hooks.ts` | The shared types of the hooks of the modules. |
+| `options.ts` | The `userConfig` values of the plugin, read once for each process. |
+| `node/fs.ts` | The file reader of Node for the commands, and the atomic write. |
+| `node/hook-io.ts` | The glue of the classic command hooks. |
+| `node/process.ts` | The run of a program on `PATH`. |
+| `node/limits.ts` | The bounds of the kernel commands. |
 
-Change a shared bound only in `budget.ts`.
+A bound belongs to the `limits.ts` of the module that reads it.
 See [Bounds](Bounds).
 
-## The Slices
+## The Modules
 
-A slice adds one feature, in one folder `slices/<s>/`.
-The core plugin has these slices:
+A module does one job, in one folder `modules/<name>/`.
+The core plugin has these modules:
 
-| Slice | What it does | Page |
+| Module | What it does | Page |
 | --- | --- | --- |
-| `agents` | Offers the roster of four subagents and hides the built-in agents | [Agents](Agents) |
-| `decide` | Gives Jev answers for `AskUserQuestion` | [Decide](Decide) |
-| `finish` | The `/goal` check command, the `Stop` hook, and the `box` hook | [Finish](Finish) |
-| `ground` | Checks plan files for claims with no source | [Ground](Ground) |
-| `guard` | The permission gate | [Guard](Guard) |
-| `handoff` | Hands over with a handoff file, `/clear`, and a resume, and leaves the compaction to Claude Code | [Handoff](Handoff) |
-| `hygiene` | The cleanup at session start and the edit ledger | [Session Hygiene](Hygiene) |
-| `notes` | The notes above the prompt | [Notes](Notes) |
-| `prompt` | The main agent body and the shorter tool texts | [Prompt](Prompt) |
+| `shell` | Reads the syntax of a shell command for the permission gate, and runs no shell | [Guard](Guard) |
+| `project` | The facts of the work tree and the transcript: the root, the tasks of a change, the edits of the user, `git status`, the temp folders, and the running agents | [Spec](Spec) |
+| `jev` | Gives Jev answers for `AskUserQuestion`, and holds the TypeSafe calls | [Decide](Decide) |
+| `session` | The handoff, the prompt texts, the cleanup at session start, the edit ledger, and the usage line | [Handoff](Handoff), [Prompt](Prompt), [Session Hygiene](Hygiene) |
+| `work` | The `/goal` check, the `Stop` hook, the `box` hook, the ground check of plan files, and the notes above the prompt | [Finish](Finish), [Ground](Ground), [Notes](Notes) |
+| `gate` | The permission gate and the `Monitor` checks | [Guard](Guard) |
+| `agents` | Offers the roster of six subagents and hides the built-in agents | [Agents](Agents) |
+| `statusline` | The status line | [Status Line](Status-Line) |
 | `setup` | The `claudetto-setup` command and the settings snippet | [Setup](Setup) |
 | `spec` | MiniSpec | [Spec](Spec) |
-| `statusline` | The status line | [Status Line](Status-Line) |
-| `styles` | An empty folder. The style is in `output-styles/Concise.md` | [Styles](Styles) |
 
-A slice has the parts that it needs:
+A module has the parts that it needs:
 
 | Part | Use |
 | --- | --- |
+| `index.ts` | The public surface: the one file that another module imports. |
+| `cli.ts` | The surface for a command in `bin/`. |
 | `domain/` | Pure logic with no I/O, and no import of an adapter. |
-| `adapters/mod.ts` | The functions that the hooks module registers. |
-| `adapters/cli.ts` | A command in `bin/` that exports `main`. |
+| `adapters/` | The handlers of the hooks module, and the commands that export `main`. |
 | `prompts.ts` | The texts for Claude and for the user. |
-| `limits.ts` | The bounds of the slice. |
+| `limits.ts` | The bounds of the module. |
+| `state.ts` | The `$.state` values that the module owns, in `STATE_KEYS`. |
 
-A skill is in `skills/<name>/SKILL.md`, an agent is in `agents/<name>.md`, and an output style is in `output-styles/`.
+A module that has more than one job keeps each job in a sub-folder, such as `modules/session/handoff/`.
+A skill is in `skills/<name>/SKILL.md`, an agent is in `agents/<name>.md`, and the output style is in `output-styles/Concise.md` ([Styles](Styles)).
+
+## The State
+
+Each `$.state` value of the hooks module has one owner module, which lists it in `STATE_KEYS` of its `state.ts`.
+`tests/claudetto/state-contract.ts` holds each owner type equal to the type of its contract.
+
+| Value | Owner | What it holds |
+| --- | --- | --- |
+| `watches` | `gate` | The running `Monitor` tasks by command, so a second `Monitor` with the same command is refused. |
+| `told` | `session` | The hash for which the session got a ledger line already, by path. |
+| `usage` | `session` | The last band and the first share of each usage window, and the usage line that waits for the next request. |
+| `calls` | `session` | The count of the tool calls of each running subagent by `agent_id`, for the soft turn limit. |
+| `goalBlocks` | `work` | The count of the stops in a row that the `/goal` check blocked. |
+| `loopBlocks` | `work` | The count of the stops in a row that an open task of the change blocked. |
+| `note` | `work` | The note for the next prompt. |
+| `notes` | `work` | The counters of the notes. |
 
 ## The Hooks Module
 
 The core plugin has one hooks module, `hooks/register.ts`.
 `hooks/hooks.json` names it with `{"modules": ["./register.ts"]}`, and it holds the one classic hook `PreModelSwitch`.
-The module has one literal `on()` call for each mod handler.
-The event name of each call is a string literal.
-The module is hand-written, so a new handler needs a new `on()` call there.
+The module has one literal `on()` call for each rule, in the order in which the rules run.
+The event name of each call is a string literal, and the handler is the name of a function.
+A `// rule: <module>.<job>` comment above each call names the rule, such as `gate.check` or `work.goal-stop`.
+The keys of `evals/hooks.json` are these rule names.
+The module is hand-written, so a new rule needs a new `on()` call there.
 Test each change to it in the hook lab (`just lab`).
-See [Plugin Layout](Plugin-Layout#hook-evals) for the eval entry of each hook.
+See [Plugin Layout](Plugin-Layout#hook-evals) for the eval entry of each rule.
 
 ## Related Pages
 

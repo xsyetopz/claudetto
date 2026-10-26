@@ -20,7 +20,7 @@ A test there changes only the sandbox, not your settings or your session history
 - Arguments after `just sandbox` or `just sandbox-alone PLUGIN` go to `claude`.
   For example, `just sandbox -p "prompt"` runs one headless turn.
 - `just sandbox` runs `tools/sandbox/run.ts`, which runs `tools/sandbox/main.ts` with a `--plugin-dir` for each plugin.
-- To test an add-on with no core plugin, run `just sandbox-alone plugins/claudetto-docs`.
+- To test an add-on with no core plugin, run `just sandbox-alone plugins/claudetto-browser`.
 - `just debug-agents` runs one headless session with a debug log.
   It fails when the log names an unknown frontmatter field.
 
@@ -32,7 +32,7 @@ It loads the checkout next to your installed `claudetto`, your settings, and you
 `just sandbox` loads plugin folders with `--plugin-dir`, but a user installs from the marketplace.
 Test that path before a release:
 
-1. Run `just sandbox-install`, or name plugins, such as `just sandbox-install claudetto claudetto-docs`.
+1. Run `just sandbox-install`, or name plugins, such as `just sandbox-install claudetto claudetto-browser`.
    The script runs `claude plugin marketplace add` with this checkout, then `claude plugin install NAME@claudetto` for each plugin, then starts Claude Code.
 2. In the session, run `/claudetto:setup`, then `/exit`.
 3. Run `just sandbox-installed` to start again with the settings of the setup.

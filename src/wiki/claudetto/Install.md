@@ -68,13 +68,11 @@ It edits your shell startup file only after your yes.
 
 ```text
 /plugin install claudetto-browser@claudetto
-/plugin install claudetto-docs@claudetto
 ```
 
 | Add-On | What it needs |
 | --- | --- |
 | `claudetto-browser` | `agent-browser`, installed with `bun add -g agent-browser`. See [Browser](Browser). |
-| `claudetto-docs` | No key. See [Library Docs](Library-Docs). |
 
 ## Turn On Jev
 
@@ -109,16 +107,17 @@ In a checkout of the repository, `just update` updates each plugin under `plugin
 
 ## Uninstall
 
-1. Uninstall each add-on, then the core plugin.
+1. Uninstall the add-on, then the core plugin.
 
    ```bash
    claude plugin uninstall claudetto-browser@claudetto
-   claude plugin uninstall claudetto-docs@claudetto
    claude plugin uninstall claudetto@claudetto
    ```
 
    The add-ons `claudetto-codegraph`, `claudetto-sessions`, and `claudetto-lab` of 0.2.0 are gone from the marketplace.
    Uninstall them in the same way if you still have them.
+   The add-on `claudetto-docs` of 0.3.0 is gone too, because its skill `find-docs` is now in the core plugin.
+   If you have it, run `claude plugin uninstall claudetto-docs@claudetto`.
 
 2. Remove the marketplace.
 
