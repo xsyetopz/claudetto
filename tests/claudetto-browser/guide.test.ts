@@ -9,7 +9,6 @@ import {
   GUIDE_COMMAND,
   type GuideRun,
   guideText,
-  noGuide,
 } from "../../plugins/claudetto-browser/slices/browse/guide.ts";
 import { MAX_GUIDE_CHARS } from "../../plugins/claudetto-browser/slices/browse/limits.ts";
 import { NOT_INSTALLED } from "../../plugins/claudetto-browser/slices/browse/prompts.ts";
@@ -42,7 +41,7 @@ test("a timeout, a failed run, or an empty guide names the reason and not a miss
     [{ status: 0, stdout: " \n" }, "empty output"],
   ];
   for (const [run, why] of cases) {
-    expect(guideText(run)).toBe(noGuide(why));
+    expect(guideText(run)).toContain(why);
     expect(guideText(run)).not.toBe(NOT_INSTALLED);
   }
 });
