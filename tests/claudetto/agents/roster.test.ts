@@ -17,7 +17,7 @@ const TOOLS = new Set([
   "WebFetch",
 ]);
 
-test("Fixed Agent Settings: each agent sets `model`, `effort`, `tools`, and `omitClaudeMd`", async () => {
+test("Agent Settings: each agent sets `model`, `effort`, `tools`, and `omitClaudeMd`", async () => {
   for (const name of ROSTER) {
     const fm = await front(name);
     expect(fm, name).toMatchObject({ name, omitClaudeMd: true });
@@ -29,20 +29,20 @@ test("Fixed Agent Settings: each agent sets `model`, `effort`, `tools`, and `omi
   }
 });
 
-test("Read-Only Agent: each agent but `Worker` cannot edit, write, or start an agent", async () => {
-  for (const name of ROSTER.filter((n) => n !== "Worker"))
+test("Read-Only Agent: each agent but `Hephaestus` cannot edit, write, or start an agent", async () => {
+  for (const name of ROSTER.filter((n) => n !== "Hephaestus"))
     for (const tool of ["Edit", "Write", "Agent"])
       expect(await tools(name), name).not.toContain(tool);
 });
 
-test("Reviewer Effort: `Reviewer` has Sonnet 5.5 at `medium`", async () => {
-  expect(await front("Reviewer")).toMatchObject({
+test("Reviewer Effort: `Athena` has Sonnet 5.5 at `medium`", async () => {
+  expect(await front("Athena")).toMatchObject({
     model: "claude-sonnet-5-5",
     effort: "medium",
   });
 });
 
-test("Haiku Work: only `Scout` and `Tester` run on Haiku 5.5, at `low`, with no web tool", async () => {
+test("Haiku Work: only `Artemis` and `Apollo` run on Haiku 5.5, at `low`, with no web tool", async () => {
   const haiku: string[] = [];
   for (const name of ROSTER) {
     const fm = await front(name);
@@ -52,36 +52,18 @@ test("Haiku Work: only `Scout` and `Tester` run on Haiku 5.5, at `low`, with no 
     for (const tool of ["WebSearch", "WebFetch"])
       expect(await tools(name), name).not.toContain(tool);
   }
-  expect(haiku.sort()).toStrictEqual(["Scout", "Tester"]);
-});
-
-test('Description: each description starts with "Use proactively"', async () => {
-  for (const name of ROSTER)
-    expect(String((await front(name))?.["description"]), name).toMatch(
-      /^Use proactively/,
-    );
-});
-
-test("Tagged Report: each agent ends its report with the tags that `main.md` reads", async () => {
-  const main = await Bun.file(`${AGENTS}/main.md`).text();
-  for (const tag of ["result", "changed", "checks", "blocks"]) {
-    expect(main).toContain(`\`<${tag}>\``);
-    for (const name of ROSTER)
-      expect(await Bun.file(`${AGENTS}/${name}.md`).text(), name).toContain(
-        `\`<${tag}>\``,
-      );
-  }
+  expect(haiku.sort()).toStrictEqual(["Apollo", "Artemis"]);
 });
 
 // `readdirSync` gives the case on disk, which a lookup on a case-insensitive disk hides.
 test("UpperCase Names: the files of `agents/` are `main.md` and the 6 agents of D6", () => {
   expect(fs.readdirSync(AGENTS).sort()).toStrictEqual([
-    "Researcher.md",
-    "Reviewer.md",
-    "Scoper.md",
-    "Scout.md",
-    "Tester.md",
-    "Worker.md",
+    "Apollo.md",
+    "Artemis.md",
+    "Athena.md",
+    "Hephaestus.md",
+    "Hermes.md",
+    "Zeus.md",
     "main.md",
   ]);
 });

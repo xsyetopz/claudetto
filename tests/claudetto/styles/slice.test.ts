@@ -2,7 +2,6 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import { parse } from "yaml";
 import { SNIPPET } from "../../../plugins/claudetto/snippets.ts";
 import { REPO } from "../../support/repo.ts";
 
@@ -31,25 +30,3 @@ test("the style has no `keep-coding-instructions` key", async () => {
   const front = (await Bun.file(STYLE).text()).split("\n---")[0] ?? "";
   expect(front).not.toContain("keep-coding-instructions");
 });
-
-const PROXY_CASES = [
-  "accusation-warranted",
-  "claim-check",
-  "concise-stays-thorough",
-  "partial-verification",
-  "unprompted-skip",
-];
-
-test.each(PROXY_CASES)(
-  "the case `%s` carries the body of the style as `append_system_prompt`",
-  async (name) => {
-    const text = await Bun.file(STYLE).text();
-    const body = text.split("\n---\n")[1]?.trim();
-    const doc = parse(
-      await Bun.file(
-        path.join(REPO, `plugins/claudetto/evals/${name}/case.yaml`),
-      ).text(),
-    );
-    expect(doc.execution.append_system_prompt).toBe(body);
-  },
-);

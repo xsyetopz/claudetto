@@ -27,13 +27,13 @@ test("F01: no agent of the roster runs in a worktree by default", async () => {
 });
 
 test("F16: the reviewer does not run on Opus", async () => {
-  expect(String((await front("Reviewer"))?.["model"] ?? "opus")).not.toContain(
+  expect(String((await front("Athena"))?.["model"] ?? "opus")).not.toContain(
     "opus",
   );
 });
 
 test("fault 9: the search agent cannot edit, write, or start an agent", async () => {
-  const scout = await tools("Scout");
+  const scout = await tools("Artemis");
   expect(scout).toContain("Read");
   for (const tool of ["Edit", "Write", "Agent"])
     expect(scout).not.toContain(tool);

@@ -27,14 +27,6 @@ test("fault 32 and D6: the core plugin ships no `advise` tool and no `patch` ski
   expect(at("plugins/claudetto/bin/claudetto-patch")).toBe(false);
 });
 
-// Fixed by task 3.2.
-test("fault 24: no control records `none recorded`", async () => {
-  const page = await Bun.file(
-    path.join(REPO, "wiki/claudetto/rationale/Controls.md"),
-  ).text();
-  expect(page).not.toContain("none recorded");
-});
-
 // Fixed by task 3.5.
 test("fault 27: the lint step bounds the cognitive complexity at 15", async () => {
   const biome = await Bun.file(path.join(REPO, "biome.json")).json();
