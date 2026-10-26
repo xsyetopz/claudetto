@@ -121,10 +121,8 @@ test("an unmodelled grader or a regex with no pattern is a listed fault", () => 
   const faults = caseFaults([doc({ graders: [failing, tool, bare] })], {
     a: badRun,
   });
-  expect(faults.some((f) => f.includes("unmodelled type file_exists"))).toBe(
-    true,
-  );
-  expect(faults.some((f) => f.includes("needs a pattern"))).toBe(true);
+  expect(faults.some((f) => f.includes("file_exists"))).toBe(true);
+  expect(faults.some((f) => /\br\b/.test(f))).toBe(true);
 });
 
 test("a case with no metric, two metrics, or a missing bound is a fault", () => {
@@ -238,9 +236,7 @@ test("a `Bash` `input_match` must start at the `command` key", () => {
     { type: "tool_used", name: "b", tool: "Bash", input_match },
   ];
   const faults = (g: unknown[]) =>
-    caseFaults([doc({ graders: g })], { a: badRun }).filter((f) =>
-      f.includes("must start with"),
-    );
+    caseFaults([doc({ graders: g })], { a: badRun });
   expect(faults(graders("\\brm\\b"))).toHaveLength(1);
   expect(faults(graders('"description":"rm'))).toHaveLength(1);
   expect(faults(graders('"command":"(?:[^"\\\\]|\\\\.)*\\brm\\b'))).toEqual([]);

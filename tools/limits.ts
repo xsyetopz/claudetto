@@ -1,5 +1,5 @@
 // Repository bounds, read only by the tests and the tools, so they do not ship in `plugins/`.
-// A shared runtime bound is in `plugins/claudetto/kernel/budget.ts`, and a slice bound is in `slices/<s>/limits.ts`.
+// A shared runtime bound is in the `limits.ts` of its owner module in `plugins/claudetto/modules/`, and a bound of one part of a module is in its own `limits.ts`.
 // The rule is in `.claude/rules/bounds.md`, and the wiki page `Bounds` lists each bound.
 
 /** Most milliseconds for one test that makes a `git worktree`, because worktree creation on a slow runner can take more than the 5,000 ms of `bunfig.toml`. */
@@ -28,6 +28,9 @@ export const EVAL_MAX_TOKENS = 200_000;
 /** The lowest Claude Code version that claudetto is built for. `ci.yml` installs it, and the files of `schemas/` come from its bundle. */
 export const MIN_CLAUDE_CODE_VERSION = "2.1.309";
 
+/** The `just` version of the image of `just docker` and `just sandbox-linux`. */
+export const JUST_VERSION = "1.58.0";
+
 /** Most tokens of one `SKILL.md`, because after a compaction Claude Code keeps only 5,000 tokens of each skill that ran (`extend/skills-and-commands/substitutions.md`, "Lifecycle", Documented). */
 export const SKILL_MAX_TOKENS = 5_000;
 
@@ -44,7 +47,7 @@ export const EVAL_STATS_RESAMPLES = 10_000;
 /** Default seed of the bootstrap in `just eval-stats`, so a rerun prints the same interval. The `--seed` flag changes it. */
 export const EVAL_STATS_SEED = 20_261_019;
 
-// Bounds of `just sandbox-linux`, checked by `tools/sandbox/linux/run.ts`.
+// Bounds of `just sandbox-linux`, checked by `dev/sandbox/linux/run.ts`.
 
 /**
  * Fewest minutes of life of the access token before `just sandbox-linux` sends the login to its container.

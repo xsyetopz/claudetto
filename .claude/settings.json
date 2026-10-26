@@ -1,0 +1,10 @@
+{
+  "enabledPlugins": {
+    "swift-lsp@claude-plugins-official": false
+  },
+  "deniedMcpServers": [
+    {
+      "serverName": "apple-docs"
+    }
+  ]
+}

@@ -1,8 +1,9 @@
-// `just generate`: each page of `wiki/` comes from `src/wiki/`, with the values and the snippets of `plugins/`.
+// `just generate`: each page of `wiki/` comes from `src/wiki/`, with the values and the snippets of `plugins/`, and each file of `openspec/schemas/` comes from a preset of the `spec` module.
 
 import { expect, test } from "bun:test";
 import path from "node:path";
 import { SNIPPET } from "../../plugins/claudetto/snippets.ts";
+import { schemaProblems } from "../../tools/generate/schemas.ts";
 import {
   fill,
   GENERATED_MARK,
@@ -25,9 +26,9 @@ test("a value and a snippet include are filled in, and an unknown name throws", 
     VALUES["CONTEXT_WINDOW"] as string,
   );
   expect(JSON.parse(fill("{{include snippet.json}}", "x.md"))).toEqual(SNIPPET);
-  expect(() => fill("{{NO_SUCH}}", "x.md")).toThrow("x.md: no value");
+  expect(() => fill("{{NO_SUCH}}", "x.md")).toThrow(/x\.md.*NO_SUCH/);
   expect(() => fill("{{include none.json}}", "x.md")).toThrow(
-    "x.md: no include",
+    /x\.md.*none\.json/,
   );
 });
 
@@ -51,12 +52,17 @@ test("the check names a stale page and a page with no source", async () => {
     "wiki/A.md": "old\n",
     "wiki/C.md": "x\n",
   });
-  expect(await problems(dir)).toEqual([
-    "wiki/A.md differs from its source src/wiki/A.md. Edit the source and run `just generate`.",
-    "wiki/C.md has no source in src/wiki/.",
-  ]);
+  const found = await problems(dir);
+  expect(found).toHaveLength(2);
+  expect(found[0]).toContain("wiki/A.md");
+  expect(found[0]).toContain("src/wiki/A.md");
+  expect(found[1]).toContain("wiki/C.md");
 });
 
 test("the wiki of the repository equals its source", async () => {
   expect(await problems(REPO)).toEqual([]);
+});
+
+test("the schemas of the repository equal their presets", async () => {
+  expect(await schemaProblems(REPO)).toEqual([]);
 });

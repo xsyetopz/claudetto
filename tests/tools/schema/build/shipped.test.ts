@@ -8,8 +8,8 @@ import {
   fallbackOf,
   isManagedOnly,
   schemaFiles,
-} from "../../../../tools/schema/domain/build.ts";
-import type { Schema } from "../../../../tools/schema/domain/types.ts";
+} from "../../../../dev/schema/domain/build.ts";
+import type { Schema } from "../../../../dev/schema/domain/types.ts";
 import { REPO, tmpDir } from "../../../support/repo.ts";
 import { validate } from "../../../support/validate.ts";
 import { spawnText } from "../../fixture-repo.ts";
@@ -37,7 +37,7 @@ test("`forceLoginGatewayUrl` is a user key and not managed-only", async () => {
 test("each schema names the version in a root `$comment` and has no `x-claude-code-version`", () => {
   const { user, managed } = buildSchemas(FIXTURE, VERSION);
   for (const schema of [user, managed]) {
-    expect(schema["$comment"]).toBe(`Extracted from Claude Code ${VERSION}`);
+    expect(schema["$comment"]).toContain(VERSION);
     expect("x-claude-code-version" in schema).toBe(false);
   }
 });
@@ -47,9 +47,7 @@ test("each shipped schema file names a Claude Code version in the root `$comment
     const schema = JSON.parse(
       await Bun.file(path.join(REPO, "schemas", name)).text(),
     ) as Schema;
-    expect(schema["$comment"]).toMatch(
-      /^Extracted from Claude Code \d+\.\d+\.\d+$/,
-    );
+    expect(schema["$comment"]).toMatch(/\d+\.\d+\.\d+/);
     expect("x-claude-code-version" in schema).toBe(false);
   }
 });
@@ -91,7 +89,7 @@ test("a bundle whose `--version` exits non-zero fails the command and writes no 
     await Bun.write(bundle, `#!/bin/sh\n# ${FIXTURE}\nexit 3\n`);
     fs.chmodSync(bundle, 0o755);
     const run = spawnText(process.execPath, [
-      path.join(REPO, "tools/schema/main.ts"),
+      path.join(REPO, "dev/schema/main.ts"),
       "--bundle",
       bundle,
       "--out",

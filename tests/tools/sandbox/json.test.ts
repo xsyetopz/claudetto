@@ -5,8 +5,8 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { parseJson, readJson } from "../../../tools/sandbox/adapters/login.ts";
-import { availableModels } from "../../../tools/sandbox/adapters/setup.ts";
+import { parseJson, readJson } from "../../../dev/sandbox/adapters/login.ts";
+import { availableModels } from "../../../dev/sandbox/adapters/setup.ts";
 import { tmpDir } from "../../support/repo.ts";
 
 const folder = () => tmpDir("lab-json");

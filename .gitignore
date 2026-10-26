@@ -29,3 +29,6 @@ node_modules/
 
 # Local state, cache, and scratch files of claudetto, not for the public repository.
 /.claude/settings.local.json
+
+# Personal notes of the user for this project.
+/CLAUDE.local.md

@@ -4,7 +4,7 @@ import { expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { tuningCasesIn } from "../../tools/tuning-cases.ts";
+import { tuningCasesIn } from "../../dev/tuning-cases.ts";
 import { REPO } from "../support/repo.ts";
 
 test("the tuning cases leave out the held-out cases", async () => {

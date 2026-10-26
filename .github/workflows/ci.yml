@@ -14,7 +14,7 @@ jobs:
   # The local gate without the type check: lint, tests, validation, and the hook lab.
   # `bun check` needs `.claude-plugin/types/`, which Claude Code writes only when an interactive session loads the plugin,
   # so the type check runs only in the local `just check`.
-  # Each recipe runs through a Bun script, so the same gate runs on Linux and macOS.
+  # `tools/check.ts` runs each step through Bun, so the same gate runs on Linux and macOS.
   check:
     strategy:
       fail-fast: false
@@ -31,14 +31,11 @@ jobs:
         with:
           bun-version-file: package.json
       - run: bun install --frozen-lockfile
-      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4
-        with:
-          just-version: 1.58.0
       # The version in `MIN_CLAUDE_CODE_VERSION` of `tools/limits.ts`.
       - run: bun add --global @anthropic-ai/claude-code@2.1.309
       - run: claude --version
       - run: git config --global user.email ci@example.com && git config --global user.name ci
-      - run: just ci
+      - run: bun tools/check.ts --ci
 
   # The one check to require in branch protection: it fails unless every
   # matrix job succeeded, including when one was cancelled or skipped.

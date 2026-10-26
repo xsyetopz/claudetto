@@ -3,7 +3,7 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import { absolutePluginDirs } from "../../../tools/sandbox/adapters/setup.ts";
+import { absolutePluginDirs } from "../../../dev/sandbox/adapters/setup.ts";
 
 test("a relative `--plugin-dir` value resolves against the caller folder", () => {
   expect(

@@ -1,20 +1,20 @@
-// Every `claude` command of `tools/` goes through the `$claude()` helper of `tools/telemetry.ts`.
+// Every `claude` command of `tools/` and `dev/` goes through the `$claude()` helper of `tools/telemetry.ts`.
 // The scan reads the code of each file after the transpiler has removed its comments, so a comment that names `claude` does not count.
 // The scan does not run `claude`.
 
 import { expect, test } from "bun:test";
 import path from "node:path";
 
-const TOOLS = path.resolve(import.meta.dirname, "../../tools");
+const REPO = path.resolve(import.meta.dirname, "../..");
 const HELPER = "$claude()";
 
 // Interactive sessions may start `claude` without the helper. Each entry gives the reason.
 const ALLOWED: Record<string, string> = {
-  "sandbox/run.ts":
+  "dev/sandbox/run.ts":
     "starts the interactive sandbox session, which the terminal of the script hosts",
-  "sandbox/install.ts":
+  "dev/sandbox/install.ts":
     "starts the interactive sandbox session after the install",
-  "eval-variant.ts":
+  "dev/eval-variant.ts":
     "runs the eval comparison on the plain env, so the eval flags stay as the user set them",
 };
 
@@ -53,12 +53,14 @@ test("a `claude` command outside the helper is a bypass, and a comment that name
   expect(viaHelper(code)).toBe(1);
 });
 
-test("every `claude` command of `tools/` goes through the helper", async () => {
+test("every `claude` command of `tools/` and `dev/` goes through the helper", async () => {
   const violations: string[] = [];
   let helperCalls = 0;
-  for await (const rel of new Bun.Glob("**/*.ts").scan({ cwd: TOOLS })) {
-    if (rel === "telemetry.ts" || ALLOWED[rel]) continue;
-    const code = codeOf(await Bun.file(path.join(TOOLS, rel)).text());
+  for await (const rel of new Bun.Glob("{tools,dev}/**/*.ts").scan({
+    cwd: REPO,
+  })) {
+    if (rel === "tools/telemetry.ts" || ALLOWED[rel]) continue;
+    const code = codeOf(await Bun.file(path.join(REPO, rel)).text());
     helperCalls += viaHelper(code);
     for (const hit of bypasses(code)) violations.push(`${rel}: ${hit}`);
   }

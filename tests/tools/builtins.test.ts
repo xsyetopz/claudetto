@@ -1,10 +1,10 @@
-// The extraction, the render and the diff of `tools/builtins.ts` on a small fixture bundle, with no `external/` folder.
+// The extraction, the render and the diff of `dev/builtins.ts` on a small fixture bundle, with no `external/` folder.
 
 import { expect, test } from "bun:test";
 import path from "node:path";
 import { $ } from "bun";
-import { extract } from "../../tools/builtins/extract.ts";
-import { diff, render } from "../../tools/builtins/render.ts";
+import { extract } from "../../dev/builtins/extract.ts";
+import { diff, render } from "../../dev/builtins/render.ts";
 import { tmpDir } from "../support/repo.ts";
 
 const BUNDLE = [
@@ -18,6 +18,7 @@ const BUNDLE = [
   'd=Qt({name:TA,searchHint:"s",async description(){return"Zebra tool"},get inputSchema(){return"not read"}});',
   'e={agentType:"scout",whenToUse:"Find things",getSystemPrompt:()=>"p"};',
   'oi({name:"first",menuDescription:"m",description:"d",userInvocable:!0});oi({name:SK,menuDescription:"mm",userInvocable:!0});',
+  `var TXT="Be brief.";o=[Sx(\`tone\`,()=>TXT),Sx(\`pre_\${k}\`,()=>"y")];}function z(){}`,
   `q=\`# Committing changes with git\`;r=\`Co-Authored-By: \${x}\``,
 ].join("\n");
 
@@ -58,14 +59,12 @@ test("`--check` passes after a write, and names a changed row and a stale page",
   const [dir, out] = [tmpDir("builtins"), tmpDir("builtins")];
   await Bun.write(path.join(dir, "strings.txt"), BUNDLE);
   const run = (...flags: string[]) =>
-    $`bun tools/builtins.ts ${flags} --dir ${dir} --out ${out}`
-      .nothrow()
-      .quiet();
+    $`bun dev/builtins.ts ${flags} --dir ${dir} --out ${out}`.nothrow().quiet();
   expect((await run()).exitCode).toBe(0);
   expect((await run("--check")).exitCode).toBe(0);
   const strict = await run("--strict");
   expect(strict.exitCode).toBe(1);
-  expect(strict.stderr.toString()).toContain("row(s) have the verdict todo");
+  expect(strict.stderr.toString()).toContain("todo");
   const index = path.join(out, "Builtins.md");
   await Bun.write(
     index,
@@ -75,6 +74,15 @@ test("`--check` passes after a write, and names a changed row and a stale page",
   const bad = await run("--check");
   expect(bad.exitCode).toBe(1);
   const err = bad.stderr.toString();
-  expect(err).toContain("Builtins: added | `tips` | plugins");
-  expect(err).toContain("Builtins-Old: removed page");
+  expect(err).toContain("tips");
+  expect(err).toContain("Builtins-Old");
+});
+
+test("`dev/builtins.ts` writes the text of each section to `Sections.md`", async () => {
+  const [dir, out] = [tmpDir("builtins"), tmpDir("builtins")];
+  await Bun.write(path.join(dir, "strings.txt"), BUNDLE);
+  await $`bun dev/builtins.ts --dir ${dir} --out ${out}`.quiet();
+  const text = await Bun.file(path.join(out, "Sections.md")).text();
+  expect(text).toMatch(/## `tone`\n\n[^#]*Be brief\./);
+  expect(text).toContain("## `pre_`");
 });

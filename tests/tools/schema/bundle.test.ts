@@ -3,17 +3,17 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import { BUNDLE_SCAN_TIMEOUT_MS } from "../../../tools/limits.ts";
 import {
   installedBundle,
   versionOf,
-} from "../../../tools/schema/adapters/cli.ts";
+} from "../../../dev/schema/adapters/cli.ts";
 import {
   buildSchemas,
   schemaFiles,
   unreadKeys,
-} from "../../../tools/schema/domain/build.ts";
-import type { Schema } from "../../../tools/schema/domain/types.ts";
+} from "../../../dev/schema/domain/build.ts";
+import type { Schema } from "../../../dev/schema/domain/types.ts";
+import { BUNDLE_SCAN_TIMEOUT_MS } from "../../../tools/limits.ts";
 import { REPO } from "../../support/repo.ts";
 
 const installed = (): string | null =>

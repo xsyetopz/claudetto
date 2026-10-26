@@ -5,10 +5,10 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { redact } from "../../../tools/capture/domain/count.ts";
+import { redact } from "../../../dev/capture/domain/count.ts";
 import { REPO, tmpDir } from "../../support/repo.ts";
 
-const TOOL = path.join(REPO, "tools/capture/main.ts");
+const TOOL = path.join(REPO, "dev/capture/main.ts");
 const TOKEN = "sk-ant-oat01-FIXTURE-TOKEN-4711";
 
 /** A fake upstream. A `count_tokens` call gets HTTP 400 with the received `authorization` header in the body. */

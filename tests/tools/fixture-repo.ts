@@ -1,4 +1,4 @@
-// The shared setup of the tests of `tools/eval-variant.ts`.
+// The shared setup of the tests of `dev/eval-variant.ts`.
 // The tool runs as a copy in a temporary repository with the same layout, so the real
 // repository gets no worktree. A fake `claude` on `PATH` stands for `claude plugin eval`.
 
@@ -11,8 +11,8 @@ import { type Env, REPO, tmpDir } from "../support/repo.ts";
 /** The paths of a test repository, as `setUp` makes them. */
 export type Sandbox = { repo: string; bin: string; tmp: string };
 
-const TOOL = path.join(REPO, "tools/eval-variant.ts");
-const COMPARE = path.join(REPO, "tools/eval-compare");
+const TOOL = path.join(REPO, "dev/eval-variant.ts");
+const COMPARE = path.join(REPO, "dev/eval-compare");
 
 // Writes a file in `evals/results/` of the plugin path (the argument after `eval`).
 // Writes a valid result document to the file after `--json`, because the compare command reads it.
@@ -61,13 +61,13 @@ const templateRepo = async () => {
   if (template) return template;
   const repo = path.join(tmpDir("lab-variant-template"), "repo");
   for (const d of [
-    path.join(repo, "tools"),
+    path.join(repo, "dev"),
     path.join(repo, "plugins/claudetto"),
   ])
     fs.mkdirSync(d, { recursive: true });
-  fs.copyFileSync(TOOL, path.join(repo, "tools/eval-variant.ts"));
-  // The tool calls the compare command in `tools/eval-compare/`, so the copy has the command too.
-  fs.cpSync(COMPARE, path.join(repo, "tools/eval-compare"), {
+  fs.copyFileSync(TOOL, path.join(repo, "dev/eval-variant.ts"));
+  // The tool calls the compare command in `dev/eval-compare/`, so the copy has the command too.
+  fs.cpSync(COMPARE, path.join(repo, "dev/eval-compare"), {
     recursive: true,
   });
   await Bun.write(path.join(repo, "plugins/claudetto/README.md"), "plugin\n");
@@ -109,7 +109,7 @@ export const setUp = async (): Promise<Sandbox> => {
 export const run = (s: Sandbox, ref: string, exit: number) =>
   spawnText(
     process.execPath,
-    ["--no-env-file", path.join(s.repo, "tools/eval-variant.ts"), ref],
+    ["--no-env-file", path.join(s.repo, "dev/eval-variant.ts"), ref],
     {
       env: {
         ...withPathFirst(process.env, s.bin),

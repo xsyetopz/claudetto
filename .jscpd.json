@@ -18,7 +18,6 @@
     "**/*.md",
     "**/fixtures/**",
     "**/samples/**",
-    "plugins/claudetto-*/kernel/**",
     "plugins/*/.claude-plugin/types/**"
   ],
   "ignorePattern": [],
@@ -26,5 +25,5 @@
   "similarity": 0.8,
   "baseline": ".jscpd-baseline.json",
   "failOnNewClones": 0,
-  "path": ["plugins", "tests", "tools"]
+  "path": ["plugins", "tests", "tools", "dev"]
 }

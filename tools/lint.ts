@@ -5,7 +5,7 @@
 import { $ } from "bun";
 import { must, output, recipe } from "./recipes.ts";
 
-const FOLDERS = ["plugins", "tests", "tools", "src"];
+const FOLDERS = ["plugins", "tests", "tools", "dev", "src"];
 
 await recipe(async () => {
   await must($`bunx biome ci --error-on-warnings ${FOLDERS}`);

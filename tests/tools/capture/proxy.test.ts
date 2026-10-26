@@ -4,17 +4,17 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { parts } from "../../../tools/capture/domain/report.ts";
+import { parts } from "../../../dev/capture/domain/report.ts";
 import type {
   Block,
   Body,
   Message,
   Part,
-} from "../../../tools/capture/domain/types.ts";
-import { resolveUpstream } from "../../../tools/capture/domain/upstream.ts";
+} from "../../../dev/capture/domain/types.ts";
+import { resolveUpstream } from "../../../dev/capture/domain/upstream.ts";
 import { REPO, tmpDir } from "../../support/repo.ts";
 
-const TOOL = path.join(REPO, "tools/capture/main.ts");
+const TOOL = path.join(REPO, "dev/capture/main.ts");
 
 /** The item at `i`, which the tests below know exists. */
 const item = <T>(list: readonly T[], i: number): T => list[i] as T;

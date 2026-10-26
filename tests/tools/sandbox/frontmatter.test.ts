@@ -5,25 +5,13 @@
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { pluginLoaded } from "../../../tools/sandbox/domain/frontmatter.ts";
+import { pluginLoaded } from "../../../dev/sandbox/domain/frontmatter.ts";
 import { withPathFirst, writeProgram } from "../../support/fake-program.ts";
-import { type Env, REPO, tmpDir } from "../../support/repo.ts";
+import { type Env, tmpDir } from "../../support/repo.ts";
 import { spawnText } from "../fixture-repo.ts";
+import { FAKE_CLAUDE, LAB, LOADED } from "./fake-claude.ts";
 
-const LAB = path.join(REPO, "tools/sandbox");
-const LOADED = "[DEBUG] Loaded inline plugin from path: demo";
 const UNKNOWN = "[WARN] agents/x.md: unknown frontmatter field `foo`";
-
-// Writes `FAKE_LOG_TEXT` to the file after `--debug-file`, and records its arguments.
-// Exits with `FAKE_EXIT`.
-const FAKE_CLAUDE = `(async () => {
-const argv = process.argv.slice(2);
-await Bun.write(process.env.FAKE_OUT, JSON.stringify(argv));
-if (process.env.FAKE_LOG_TEXT !== undefined)
-  await Bun.write(argv[argv.indexOf("--debug-file") + 1], process.env.FAKE_LOG_TEXT);
-process.exit(Number(process.env.FAKE_EXIT ?? 0));
-})();
-`;
 
 type Setup = { dir: string; claude: string; out: string };
 

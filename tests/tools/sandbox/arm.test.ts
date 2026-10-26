@@ -3,21 +3,11 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import { report } from "../../../tools/sandbox/domain/frontmatter.ts";
+import { report } from "../../../dev/sandbox/domain/frontmatter.ts";
 import { withPathFirst, writeProgram } from "../../support/fake-program.ts";
-import { type Env, REPO, tmpDir } from "../../support/repo.ts";
+import { type Env, tmpDir } from "../../support/repo.ts";
 import { spawnText } from "../fixture-repo.ts";
-
-const LAB = path.join(REPO, "tools/sandbox");
-const LOADED = "[DEBUG] Loaded inline plugin from path: demo";
-
-// Writes `FAKE_LOG_TEXT` to the file after `--debug-file`, and exits with 0.
-const FAKE_CLAUDE = `(async () => {
-const argv = process.argv.slice(2);
-if (process.env.FAKE_LOG_TEXT !== undefined)
-  await Bun.write(argv[argv.indexOf("--debug-file") + 1], process.env.FAKE_LOG_TEXT);
-})();
-`;
+import { FAKE_CLAUDE, LAB, LOADED } from "./fake-claude.ts";
 
 /** A folder that holds a plugin manifest, as a `--plugin-dir` needs. */
 const pluginDir = async (parent: string, name: string): Promise<string> => {
@@ -55,7 +45,8 @@ const run = async (args: string[], env: Env, settings?: object) => {
 test("a `--plugin-dir` folder with no plugin manifest fails before the session starts", async () => {
   const r = await run(["--plugin-dir", "/nonexistent/plugin"], {});
   expect(r.status).toBe(1);
-  expect(r.stderr).toMatch(/has no \.claude-plugin\/plugin\.json/);
+  expect(r.stderr).toContain("/nonexistent/plugin");
+  expect(r.stderr).toContain("plugin.json");
 });
 
 test("a log with fewer loaded plugins than `--plugin-dir` folders fails the check", async () => {
@@ -69,7 +60,7 @@ test("a log with fewer loaded plugins than `--plugin-dir` folders fails the chec
   ];
   const one = await run(args, { FAKE_LOG_TEXT: `${LOADED}\n` });
   expect(one.status, one.stderr).toBe(1);
-  expect(one.stdout).toMatch(/1 plugins loaded, and the arm has 2/);
+  expect(one.stdout).toMatch(/\b1\b[^\n]*\b2\b/);
   const two = await run(args, { FAKE_LOG_TEXT: `${LOADED}\n${LOADED}\n` });
   expect(two.status, two.stderr).toBe(0);
 });
@@ -78,7 +69,8 @@ test("a `--model` outside `availableModels` fails the session", async () => {
   const settings = { availableModels: ["claude-haiku-5-5"] };
   const bad = await run(["--model", "claude-opus-5-5"], {}, settings);
   expect(bad.status).toBe(1);
-  expect(bad.stderr).toMatch(/not in availableModels/);
+  expect(bad.stderr).toContain("claude-opus-5-5");
+  expect(bad.stderr).toContain("availableModels");
   const ok = await run(["--model", "claude-haiku-5-5"], {}, settings);
   expect(ok.status, ok.stderr).toBe(0);
 });

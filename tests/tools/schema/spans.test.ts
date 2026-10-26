@@ -1,11 +1,11 @@
-// The code spans of the schema descriptions (`tools/schema/domain/spans.ts`).
+// The code spans of the schema descriptions (`dev/schema/domain/spans.ts`).
 // The tests give the description texts as strings.
 
 import { expect, test } from "bun:test";
 import {
   applyCodeSpans,
   wrapCodeSpans,
-} from "../../../tools/schema/domain/spans.ts";
+} from "../../../dev/schema/domain/spans.ts";
 
 const KEYS = new Set(["cleanupPeriodDays", "permissions", "model", "env"]);
 const wrap = (text: string) => wrapCodeSpans(text, KEYS);

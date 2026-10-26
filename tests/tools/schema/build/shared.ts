@@ -1,8 +1,8 @@
 // Shared fixtures of `build*.test.ts`: the bundle fixture and the readers of the shipped schemas.
 
 import path from "node:path";
-import { schemaFiles } from "../../../../tools/schema/domain/build.ts";
-import type { Schema } from "../../../../tools/schema/domain/types.ts";
+import { schemaFiles } from "../../../../dev/schema/domain/build.ts";
+import type { Schema } from "../../../../dev/schema/domain/types.ts";
 import { REPO } from "../../../support/repo.ts";
 
 export const VERSION = "2.1.302";

@@ -1,11 +1,11 @@
-// Pins `tools/eval-variant.ts`: the results of the variant arm are copied out before the worktree goes.
+// Pins `dev/eval-variant.ts`: the results of the variant arm are copied out before the worktree goes.
 
 import { expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
 import { git, kept, resultsRoot, run, setUp } from "./fixture-repo.ts";
 
-test("the variant results are copied to a folder that the message names, and the worktree is gone", async () => {
+test("the variant results are copied to a folder that the output names, and the worktree is gone", async () => {
   const s = await setUp();
   const r = run(s, "feature/x+y", 0);
   expect(r.status, r.stderr).toBe(0);
@@ -14,9 +14,7 @@ test("the variant results are copied to a folder that the message names, and the
   expect(folders[0]).toMatch(/^variant-feature-x-y-\d{4}-\d\d-\d\dT[\d-]+Z$/);
   const folder = path.join(resultsRoot(s), folders[0] as string);
   // The temp folder can be a link, so the paths are compared as real paths.
-  const named = r.stdout.match(
-    /The results of the variant are in (.+)\.$/m,
-  )?.[1];
+  const named = r.stdout.match(/(\/\S*variant-feature-x-y-[\w-]+)/)?.[1];
   expect(named, r.stdout).toBeDefined();
   expect(fs.realpathSync.native(named as string)).toBe(
     fs.realpathSync.native(folder),

@@ -10,7 +10,7 @@ import { withPathFirst, writeProgram } from "../../support/fake-program.ts";
 import { type Env, PLUGINS, REPO, tmpDir } from "../../support/repo.ts";
 import { spawnText } from "../fixture-repo.ts";
 
-const TOOL = path.join(REPO, "tools/sandbox/main.ts");
+const TOOL = path.join(REPO, "dev/sandbox/main.ts");
 const BROWSER = path.join(PLUGINS, "claudetto-browser");
 const REAL_HOME = os.homedir();
 

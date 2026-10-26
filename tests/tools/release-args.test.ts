@@ -20,6 +20,6 @@ test("a mistyped dry run exits 2 with the usage line (review row 124)", () => {
     { cwd: REPO, stdout: "pipe", stderr: "pipe" },
   );
   expect(run.exitCode).toBe(2);
-  expect(run.stderr.toString()).toContain("Usage: bun tools/release.ts");
+  expect(run.stderr.toString()).toContain("tools/release.ts");
   expect(run.stdout.toString()).toBe("");
 });

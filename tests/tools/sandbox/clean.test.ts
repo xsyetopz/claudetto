@@ -1,13 +1,14 @@
 // Behavior of `claudetto-sandbox --clean`: it removes only the sandbox layout, and it refuses any other folder.
+// `just sandbox-install` runs it first, so it also passes on a missing folder.
 // Every test uses a folder under the temp folder, never the real home or the working folder.
 
 import { afterEach, beforeEach, expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { main } from "../../../tools/sandbox/adapters/cli.ts";
-import { setUp } from "../../../tools/sandbox/adapters/setup.ts";
-import { cleanRefusal } from "../../../tools/sandbox/domain/clean.ts";
+import { main } from "../../../dev/sandbox/adapters/cli.ts";
+import { setUp } from "../../../dev/sandbox/adapters/setup.ts";
+import { cleanRefusal } from "../../../dev/sandbox/domain/clean.ts";
 
 let scratch = "";
 beforeEach(() => {
@@ -151,4 +152,24 @@ test("`--clean` refuses a symlinked root and leaves the folder that the link poi
     fs.chmodSync(path.join(outside, "config"), 0o755);
     fs.chmodSync(outside, 0o755);
   }
+});
+
+test("`--clean` on a missing folder exits 0, and a second `--clean` does too", async () => {
+  const dir = path.join(scratch, "sandbox");
+
+  expect(await main(["--dir", dir, "--clean"])).toBe(0);
+  expect(await main(["--dir", dir, "--clean"])).toBe(0);
+  expect(fs.existsSync(dir)).toBe(false);
+});
+
+test("`--clean` removes a sandbox folder that holds a read-only file", async () => {
+  const dir = path.join(scratch, "sandbox");
+  fs.mkdirSync(path.join(dir, "config"), { recursive: true });
+  await Bun.write(path.join(dir, ".claudetto-sandbox"), "");
+  const locked = path.join(dir, "config", "settings.json");
+  await Bun.write(locked, "{}");
+  fs.chmodSync(locked, 0o444);
+
+  expect(await main(["--dir", dir, "--clean"])).toBe(0);
+  expect(fs.existsSync(dir)).toBe(false);
 });

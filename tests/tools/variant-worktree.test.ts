@@ -1,4 +1,4 @@
-// Pins `tools/eval-variant.ts`: the temporary `git worktree` is removed at the end of each run.
+// Pins `dev/eval-variant.ts`: the temporary `git worktree` is removed at the end of each run.
 // The results tests are in `results-copy.test.ts`, so each file stays inside the time bound of a test file.
 
 import { expect, test } from "bun:test";

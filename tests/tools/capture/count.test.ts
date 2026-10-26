@@ -1,7 +1,7 @@
 // `readCount` takes only a non-negative whole number as the count of a `count_tokens` reply.
 
 import { expect, test } from "bun:test";
-import { readCount } from "../../../tools/capture/domain/count.ts";
+import { readCount } from "../../../dev/capture/domain/count.ts";
 
 const reply = (value: unknown) => JSON.stringify({ input_tokens: value });
 

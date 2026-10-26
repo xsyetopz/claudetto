@@ -15,10 +15,10 @@ import {
   HAIKU_AUTOCOMPACT_WINDOW,
   HAIKU_HANDOFF_TRIGGER_TOKENS,
   HANDOFF_TRIGGER_TOKENS,
-  MCP_DESCRIPTION_MAX_CHARS,
   USAGE_LEVELS,
-} from "../../plugins/claudetto/kernel/budget.ts";
-import { MAX_ROWS } from "../../plugins/claudetto/slices/statusline/limits.ts";
+} from "../../plugins/claudetto/modules/session/limits.ts";
+import { MCP_DESCRIPTION_MAX_CHARS } from "../../plugins/claudetto/modules/setup/limits.ts";
+import { MAX_ROWS } from "../../plugins/claudetto/modules/statusline/limits.ts";
 import { DOCS_SNIPPET, SNIPPET } from "../../plugins/claudetto/snippets.ts";
 
 /** The words of the header, which a test finds in the first lines of a generated page. */
@@ -80,9 +80,13 @@ export const fill = (text: string, source: string): string =>
       return value;
     });
 
-/** `text` with the header that names `source`. A frontmatter starts the file, so the header goes inside it. */
-const withHeader = (source: string, text: string): string => {
+/** A generated file: its path, its text, and the path of its source, under the repository. */
+export type Page = { file: string; text: string; source: string };
+
+/** `text` with the header that names `source`. A frontmatter starts the file, so the header goes inside it, and a YAML file gets a comment line. */
+export const withHeader = (source: string, text: string): string => {
   const line = `${GENERATED_MARK} \`${source}\`. Edit the source and run \`just generate\`.`;
+  if (source.endsWith(".yaml")) return `# ${line}\n${text}`;
   return text.startsWith("---\n")
     ? `---\n# ${line}\n${text.slice(4)}`
     : `<!-- ${line} -->\n\n${text}`;
@@ -102,15 +106,14 @@ const walk = (dir: string): string[] =>
     .sort();
 
 /** Each page of `wiki/` in `root`, as its path and its text. */
-export const pages = async (
-  root: string,
-): Promise<{ file: string; text: string }[]> =>
+export const pages = async (root: string): Promise<Page[]> =>
   Promise.all(
     walk(path.join(root, "src/wiki")).map(async (rel) => {
       const source = `src/wiki/${rel}`;
       const text = await Bun.file(path.join(root, source)).text();
       return {
         file: `wiki/${rel}`,
+        source,
         text: rel.endsWith(".md")
           ? withHeader(source, fill(text, source))
           : text,
@@ -118,20 +121,29 @@ export const pages = async (
     }),
   );
 
-/** The messages for each page of `root` that differs from its source, and for each page of `wiki/` with no source. */
-export const problems = async (root: string): Promise<string[]> => {
-  const made = await pages(root);
+/** The messages for each page of `made` that differs from its file in `root`, and for each file of `dir` with no page, whose sources are in `from`. */
+export const stale = async (
+  root: string,
+  made: Page[],
+  dir: string,
+  from: string,
+): Promise<string[]> => {
   const found: string[] = [];
-  for (const { file, text } of made) {
+  for (const { file, text, source } of made) {
     const at = path.join(root, file);
     if (!fs.existsSync(at) || (await Bun.file(at).text()) !== text)
       found.push(
-        `${file} differs from its source src/${file}. Edit the source and run \`just generate\`.`,
+        `${file} differs from its source ${source}. Edit the source and run \`just generate\`.`,
       );
   }
   const known = new Set(made.map((p) => p.file));
-  for (const rel of walk(path.join(root, "wiki")))
-    if (!known.has(`wiki/${rel}`))
-      found.push(`wiki/${rel} has no source in src/wiki/.`);
+  for (const file of walk(path.join(root, dir)).map((rel) =>
+    path.posix.join(dir, rel),
+  ))
+    if (!known.has(file)) found.push(`${file} has no source in ${from}.`);
   return found;
 };
+
+/** The messages for each page of `wiki/` in `root` that differs from its source, and for each page with no source. */
+export const problems = async (root: string): Promise<string[]> =>
+  stale(root, await pages(root), "wiki", "src/wiki/");

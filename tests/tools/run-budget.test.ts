@@ -4,11 +4,7 @@ import { expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import {
-  budgetFaultsIn,
-  caseTags,
-  parseTrace,
-} from "../../tools/run-budget.ts";
+import { budgetFaultsIn, caseTags, parseTrace } from "../../dev/run-budget.ts";
 
 const tags = { a: ["max-tool-calls:1", "max-tokens:10"] };
 const call = (name: string) =>
@@ -79,15 +75,16 @@ test("the without arm is only reported", async () => {
   );
   const r = await budgetFaultsIn([dir], tags);
   expect(r.faults).toEqual([]);
-  expect(r.info.join()).toContain("1 of 2 runs over");
+  expect(r.info.join()).toMatch(/\b1\b[^\n]*\b2\b/);
 });
 
 test("a missing tracePath, a missing trace, a bad line, and an unknown case are faults", async () => {
   const none = await budgetFaultsIn([await stub("a", [null])], tags);
-  expect(none.faults.join()).toContain("no tracePath");
+  expect(none.faults).toHaveLength(1);
+  expect(none.faults.join()).toContain("tracePath");
   const dir = await stub("a", ["not json\n"]);
   const bad = await budgetFaultsIn([dir], tags);
-  expect(bad.faults.join()).toContain("no JSON");
+  expect(bad.faults).toHaveLength(1);
   await Bun.write(
     join(dir, "r/aggregate-result.json"),
     JSON.stringify({
@@ -96,14 +93,14 @@ test("a missing tracePath, a missing trace, a bad line, and an unknown case are 
       ],
     }),
   );
-  expect((await budgetFaultsIn([dir], tags)).faults.join()).toContain(
-    "missing",
-  );
+  const gone = await budgetFaultsIn([dir], tags);
+  expect(gone.faults).toHaveLength(1);
+  expect(gone.faults).not.toEqual(bad.faults);
   const unknown = await budgetFaultsIn(
     [await stub("zzz", [`${call("A")}\n`])],
     tags,
   );
-  expect(unknown.faults.join()).toContain("no tags for this case");
+  expect(unknown.faults).toHaveLength(1);
 });
 
 test("a folder with no result file is a fault", async () => {

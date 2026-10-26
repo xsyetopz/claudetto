@@ -7,7 +7,7 @@ import {
   type Session,
   tokenMinutes,
   verdict,
-} from "../../tools/sandbox/linux/result.ts";
+} from "../../dev/sandbox/linux/result.ts";
 
 const NOW = 1_000_000_000_000;
 

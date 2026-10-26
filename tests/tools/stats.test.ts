@@ -5,13 +5,13 @@ import {
   type Aggregate,
   buildReport,
   judgeAgreement,
-} from "../../tools/stats/main.ts";
+} from "../../dev/stats/main.ts";
 import {
   bootstrapMean,
   fisherExact,
   newcombe,
   zForConfidence,
-} from "../../tools/stats/math.ts";
+} from "../../dev/stats/math.ts";
 
 test("`fisherExact` matches known two-sided values", () => {
   expect(fisherExact(10, 10, 5, 10)).toBeCloseTo(0.0325, 4);
