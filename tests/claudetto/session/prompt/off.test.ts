@@ -2,9 +2,9 @@
 // except the rows that a setting of the snippet already covers.
 
 import { expect, test } from "bun:test";
-import { OFF_ATTACHMENTS } from "../../../plugins/claudetto/slices/prompt/domain/off.ts";
-import { SNIPPET } from "../../../plugins/claudetto/snippets.ts";
-import { VERDICTS } from "../../../tools/builtins/verdicts.ts";
+import { VERDICTS } from "../../../../dev/builtins/verdicts.ts";
+import { OFF_ATTACHMENTS } from "../../../../plugins/claudetto/modules/session/prompt/domain/off.ts";
+import { SNIPPET } from "../../../../plugins/claudetto/snippets.ts";
 
 /** The names of a list, sorted. */
 const sorted = (list: readonly string[]): string[] => [...list].sort();

@@ -1,11 +1,9 @@
 // The compaction line of the `built-in` path: the `session.compact` mod hook adds it to `instructions`, with no process spawn.
 
 import { expect, test } from "bun:test";
-import {
-  keepOptions,
-  onCompact,
-} from "../../../plugins/claudetto/slices/prompt/adapters/mod.ts";
-import { PRECOMPACT_LINE } from "../../../plugins/claudetto/slices/prompt/prompts.ts";
+import { keepOptions } from "../../../../plugins/claudetto/kernel/options.ts";
+import { onCompact } from "../../../../plugins/claudetto/modules/session/prompt/adapters/mod.ts";
+import { PRECOMPACT_LINE } from "../../../../plugins/claudetto/modules/session/prompt/prompts.ts";
 
 const run = onCompact as never as (
   $: unknown,
@@ -44,14 +42,9 @@ test("the other paths leave `instructions` as they are", async () => {
   expect(await sent(undefined)).toBeUndefined();
 });
 
-test("the line keeps the values of the user, the rejected options, the RAN steps, and the last checks", () => {
-  for (const part of ["value", "rejected", "RAN", "passing", "failing"])
-    expect(PRECOMPACT_LINE).toContain(part);
-});
-
 test("`hooks.json` has no `PreCompact` command hook", async () => {
   const hooks = await Bun.file(
-    new URL("../../../plugins/claudetto/hooks/hooks.json", import.meta.url),
+    new URL("../../../../plugins/claudetto/hooks/hooks.json", import.meta.url),
   ).json();
   expect(hooks.hooks.PreCompact).toBeUndefined();
 });

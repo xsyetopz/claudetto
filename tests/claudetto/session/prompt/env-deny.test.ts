@@ -2,7 +2,7 @@
 // The example, sample, and template files stay readable, because no deny rule names them.
 
 import { expect, test } from "bun:test";
-import { SNIPPET } from "../../../plugins/claudetto/snippets.ts";
+import { SNIPPET } from "../../../../plugins/claudetto/snippets.ts";
 
 const ENV_RULES = [
   "Read(**/.env)",

@@ -1,13 +1,13 @@
 // Spec `prompt-base`, D20 (task 10.10): a tool that fewer than `DEFER_BELOW_PERCENT` of the counted sessions use goes behind `ToolSearch`, and a roster tool never does.
 
 import { expect, test } from "bun:test";
-import { DEFERRED_TOOLS } from "../../../plugins/claudetto/slices/prompt/domain/tools.ts";
+import { DEFERRED_TOOLS } from "../../../../plugins/claudetto/modules/session/prompt/domain/tools.ts";
 import {
   COUNTED_SESSIONS,
   DEFER_BELOW_PERCENT,
   NEVER_DEFERRED,
   TOOL_SESSION_USE,
-} from "../../../plugins/claudetto/slices/prompt/limits.ts";
+} from "../../../../plugins/claudetto/modules/session/prompt/limits.ts";
 
 const ROSTER_TOOLS = [
   "Read",

@@ -2,13 +2,13 @@
 // The profile is the generated settings snippet, which merges the settings of each slice.
 
 import { expect, test } from "bun:test";
-import { SNIPPET } from "../../../plugins/claudetto/snippets.ts";
+import { SNIPPET } from "../../../../plugins/claudetto/snippets.ts";
 import {
   defaultOf,
   defaultViolations,
   singleValues,
-} from "../../support/defaults.ts";
-import type { Settings } from "../../support/settings-pin.ts";
+} from "../../../support/defaults.ts";
+import type { Settings } from "../../../support/settings-pin.ts";
 
 const PROFILE = SNIPPET as Settings;
 

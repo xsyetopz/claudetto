@@ -1,8 +1,11 @@
 // No rule of the snippet mixes `*` with a trailing `:*`: Claude Code reads such a rule as a literal prefix, so it matches nothing (task 13.17).
 
 import { expect, test } from "bun:test";
-import { SNIPPET } from "../../../plugins/claudetto/snippets.ts";
-import { bashPattern, mixesStarWithPrefix } from "../../support/bash-rules.ts";
+import { SNIPPET } from "../../../../plugins/claudetto/snippets.ts";
+import {
+  bashPattern,
+  mixesStarWithPrefix,
+} from "../../../support/bash-rules.ts";
 
 const permissions = (
   SNIPPET as unknown as { permissions: Record<string, string[]> }

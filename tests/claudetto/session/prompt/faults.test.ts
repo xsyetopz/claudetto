@@ -5,7 +5,7 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import { PLUGINS, walk } from "../../support/repo.ts";
+import { PLUGINS, walk } from "../../../support/repo.ts";
 
 const CORE = path.join(PLUGINS, "claudetto");
 

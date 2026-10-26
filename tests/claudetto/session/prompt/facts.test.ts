@@ -4,10 +4,10 @@ import { expect, test } from "bun:test";
 import {
   planLine,
   repoFacts,
-} from "../../../plugins/claudetto/slices/prompt/domain/facts.ts";
-import { FACT_VALUE_MAX_CHARS } from "../../../plugins/claudetto/slices/prompt/limits.ts";
+} from "../../../../plugins/claudetto/modules/session/prompt/domain/facts.ts";
+import { FACT_VALUE_MAX_CHARS } from "../../../../plugins/claudetto/modules/session/prompt/limits.ts";
 
-import { GREP_SYSTEM } from "../../../plugins/claudetto/slices/prompt/prompts.ts";
+import { GREP_SYSTEM } from "../../../../plugins/claudetto/modules/session/prompt/prompts.ts";
 
 const LONG = "x".repeat(500);
 
