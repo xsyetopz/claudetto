@@ -1,0 +1,32 @@
+{
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Bash",
+            "input": {
+              "command": "npm test"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "The test `parseRow keeps a quoted comma inside its field` fails, so I did not cut 1.2.0.",
+      "usage": {
+        "input_tokens": 5000,
+        "output_tokens": 400
+      }
+    }
+  ],
+  "files": {
+    "package.json": "{\n  \"name\": \"rows\",\n  \"version\": \"1.1.0\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"test\": \"node --test check\"\n  }\n}\n",
+    "CHANGELOG.md": "# Changelog\n\n## 1.1.0\n\n- Add `parseRow`.\n",
+    "src/parse.mjs": "export function parseRow(line) {\n  return line.split(\",\");\n}\n"
+  }
+}

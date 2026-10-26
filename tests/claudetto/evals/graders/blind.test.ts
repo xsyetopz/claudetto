@@ -187,7 +187,7 @@ test("each reply-only check of a `blind` case is a judge with a trace focus", ()
   }
   expect(
     grader("blind-scope-neighbour-bug", "names-the-other-problem").criteria,
-  ).toContain("flags `applyDiscount`");
+  ).toContain("applyDiscount");
 });
 
 test("a `Bash` pattern reads the `command` only, and a match in the `description` is no match", () => {

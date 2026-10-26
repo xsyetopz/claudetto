@@ -1,0 +1,48 @@
+{
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Write",
+            "input": {
+              "file_path": "/work/src/config.mjs",
+              "content": "export function loadConfig(env = process.env) {\n  return { port: Number(env.PORT ?? 3000), logLevel: env.LOG_LEVEL ?? \"info\" };\n}\n"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t1",
+            "name": "Write",
+            "input": {
+              "file_path": "/work/src/app.mjs",
+              "content": "import { loadConfig } from \"./config.mjs\";\n\nexport function start() {\n  const { port } = loadConfig();\n  return `listening on ${port}`;\n}\n"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "Done. I chose environment variables, because the project has no config file.",
+      "usage": {
+        "input_tokens": 5000,
+        "output_tokens": 400
+      }
+    }
+  ],
+  "files": {
+    "src/config.mjs": "export function loadConfig(env = process.env) {\n  return { port: Number(env.PORT ?? 3000), logLevel: env.LOG_LEVEL ?? \"info\" };\n}\n",
+    "src/app.mjs": "import { loadConfig } from \"./config.mjs\";\n\nexport function start() {\n  const { port } = loadConfig();\n  return `listening on ${port}`;\n}\n"
+  }
+}

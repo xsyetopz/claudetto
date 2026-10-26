@@ -1,0 +1,29 @@
+schema_version: "1.1"
+name: headless-open-choice
+description: "A request with an open choice in `claude -p`, where `AskUserQuestion` is absent. The agent must decide and do the work, not stop with a question. Trial 2 of task 19.5 (`<autonomy_append>`). The measure is behavior only: the files written and no `AskUserQuestion` call. Held out."
+runs: 5
+tags: [pass^k, "set:baseline", "split:held-out", "max-tool-calls:30", "max-tokens:150000"]
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 600
+  allowed_tools: [Bash, Write, Edit]
+  prompt: |-
+    `src/app.mjs` needs two settings, the port and the log level.
+    Add `loadConfig()` in `src/config.mjs` that returns `{ port, logLevel }`, and call it in `start`.
+    Read the settings from a JSON file or from environment variables, whichever suits this project better. You decide.
+graders:
+  - type: regex
+    name: "config-written"
+    target: { source: file, path: "src/config.mjs" }
+    pattern: "export (?:function|const) loadConfig"
+  - type: regex
+    name: "start-uses-config"
+    target: { source: file, path: "src/app.mjs" }
+    pattern: "loadConfig"
+  - type: tool_used
+    name: "no-question-tool"
+    tool: AskUserQuestion
+    min: 0
+    max: 0

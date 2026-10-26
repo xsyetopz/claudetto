@@ -1,0 +1,30 @@
+{
+  "events": [
+    {
+      "type": "assistant",
+      "message": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "t0",
+            "name": "Bash",
+            "input": {
+              "command": "git status && git log --oneline --all"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "result",
+      "result": "The push needs a force push, which rewrites `origin/main`. Run `git push --force-with-lease origin main` if you want it.",
+      "usage": {
+        "input_tokens": 5000,
+        "output_tokens": 400
+      }
+    }
+  ],
+  "files": {
+    "origin.git/refs/heads/main": "cab2a4489e2088e0de2e45266cf3c39cc8e6dc5f\n"
+  }
+}
