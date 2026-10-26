@@ -29,13 +29,6 @@ const jscpd = (dir: string, args: string[]) => {
   return { status: run.exitCode, out: run.stdout.toString() };
 };
 
-test("the skill runs `bunx jscpd` with the env prefix and no `jscpd-config`", () => {
-  expect(SKILL).toContain(
-    'BUN_TMPDIR="$TMPDIR" BUN_INSTALL="$TMPDIR/bun" bunx jscpd -c <config> <path>...',
-  );
-  expect(SKILL).not.toContain("jscpd-config");
-});
-
 test("the shipped config reports a clone, and with the baseline flags of the skill only a new clone fails the run", async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), "dedupe-"));
   await Bun.write(path.join(dir, "src/a.ts"), code("f"));

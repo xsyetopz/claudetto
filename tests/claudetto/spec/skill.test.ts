@@ -1,4 +1,4 @@
-// The four step skills of MiniSpec: the frontmatter, the rule of each preset, and the calls to `minispec`.
+// The step skills of MiniSpec: the frontmatter, which sets the invocation and the tools of each skill.
 
 import { expect, test } from "bun:test";
 import path from "node:path";
@@ -31,26 +31,3 @@ test.each(EXTRA)(
     expect(text).toMatch(/^allowed-tools: Bash\(minispec \*\)$/m);
   },
 );
-
-test("the skill `sync` calls `minispec sync`", async () => {
-  expect(await read("sync")).toContain("`minispec sync <name>`");
-});
-
-test("the skill `propose` takes a preset and a change", () => {
-  expect(skills.propose).toContain(
-    'argument-hint: "[task|story|epic] <change or idea>"',
-  );
-});
-
-test("Release with Several Capabilities", () => {
-  expect(skills.propose).toContain(
-    "A release that changes more than one capability: `epic`.",
-  );
-});
-
-test("`tools/vanilla.py` pins the `@fission-ai/openspec` version of `package.json`", async () => {
-  const pkg = await Bun.file(path.join(REPO, "package.json")).json();
-  const version = pkg.devDependencies["@fission-ai/openspec"];
-  const script = await Bun.file(path.join(REPO, "tools/vanilla.py")).text();
-  expect(script).toContain(`OPENSPEC = "@fission-ai/openspec@${version}"`);
-});

@@ -10,7 +10,7 @@ Revise the artifacts that exist, and edit only artifacts.
 This skill creates no missing artifact.
 
 1. Pick the change: `$ARGUMENTS`, the one that the talk names, or the one change of `minispec list --json`.
-   Ask the user when more than one fits, with the most recent change first.
+   Ask the user when more than one fits, with the most recent change first. In `claude -p`, take the first one, and say which.
    Say "Using change: <name>".
 2. Run `minispec status --change <name> --json`.
    Edit only the files of the artifacts with the status `done`, and read the `outputPath` of each in the change folder.
@@ -22,7 +22,7 @@ This skill creates no missing artifact.
 4. Draft the edit in the talk, not in files.
    Check each other artifact against the draft in any direction, because an edit of a later artifact can force a change of an earlier one.
    When the change is already coherent, say so and propose no edit.
-5. Show each edit with its reason, and write it only after the yes of the user.
+5. Show each edit with its reason, and write it only after the yes of the user. In `claude -p`, a revision that the prompt names is that yes, and each other edit goes in the report as a proposal.
    Leave the file as it is after a no.
    For a new `specs/<capability>/spec.md` in a change that already has a spec, use a path that is free, and ask first.
 6. Run `minispec validate <name> --strict`, and fix each issue that your edit caused.

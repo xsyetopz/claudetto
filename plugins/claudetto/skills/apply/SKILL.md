@@ -7,13 +7,13 @@ allowed-tools: Bash(minispec *)
 ---
 
 1. Pick the change: `$ARGUMENTS`, or the one change of `minispec list` with open tasks.
-   Ask the user when more than one fits.
+   Ask the user when more than one fits. In `claude -p`, take the first change of `minispec list` (the newest), and say which.
 2. Run `minispec status --change <name> --json`.
    When an artifact of `apply.requires` is not `done`, tell the user to finish it with `/claudetto:propose`, and stop.
 3. Read each file of the change, and follow `apply.instruction`.
 4. Do the open tasks in order, and change `- [ ]` to `- [x]` when the check of the task passes.
    After each task, start the next task in the same turn, until each task is ticked.
-5. Pause, and ask the user with `AskUserQuestion`, only when one of these stops a task:
+5. Pause, and ask the user (with `AskUserQuestion` when the tools have it, and when they do not, as in `claude -p`, end the report with the blocker), only when one of these stops a task:
    - The task is not clear.
    - The work shows a fault in the design, so an artifact needs a change.
    - The task needs work that is outside the specs and tasks, or it fits only when you drop, narrow, or defer specified behavior.

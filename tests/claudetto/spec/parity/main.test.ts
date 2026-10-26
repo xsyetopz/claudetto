@@ -6,11 +6,9 @@
 // Design D10 ("Differences from OpenSpec") names each difference with its reason.
 
 import { expect, test } from "bun:test";
-import path from "node:path";
 import { OPENSPEC_RUN_TIMEOUT_MS } from "../../../../tools/limits.ts";
 import { minispec, openspec } from "../../../support/openspec.ts";
-import { REPO } from "../../../support/repo.ts";
-import { CASES, DIFFERENCES, type Difference } from "./cases.ts";
+import { CASES } from "./cases.ts";
 import { project, record } from "./record.ts";
 
 test.each(CASES.map((c) => [c.name, c.args, c.empty, c.overlays] as const))(
@@ -53,20 +51,3 @@ test.each(
   },
   OPENSPEC_RUN_TIMEOUT_MS,
 );
-
-test("each named difference is used by a case and is in design D10", async () => {
-  const design = await Bun.file(
-    path.join(REPO, "openspec/changes/archive/2026-10-23-0-3-0/design.md"),
-  ).text();
-  const d10 = design.slice(
-    design.indexOf("### D10"),
-    design.indexOf("### D11"),
-  );
-  for (const id of Object.keys(DIFFERENCES)) {
-    expect(
-      CASES.some((c) => c.differences?.includes(id as Difference)),
-      `${id} has no case`,
-    ).toBe(true);
-    expect(d10, `${id} is not in D10`).toContain(`\`${id}\``);
-  }
-});

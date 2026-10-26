@@ -1,0 +1,177 @@
+// The Markdown of a spec, read as OpenSpec 1.14.3 reads it: requirement blocks and delta sections.
+
+export type Block = { name: string; raw: string };
+export type Delta = ReturnType<typeof parseDelta>;
+
+const REQ = /^###\s*Requirement:\s*(.+)\s*$/i;
+const TOP = /^##\s+/;
+const STRAY = /^###\s+(.+?)\s*$/;
+const BULLET = /^\s*[-*+]\s*`?###\s*Requirement:\s*(.+?)`?\s*$/;
+const PAIR = /^\s*[-*+]?\s*(FROM|TO):\s*`?###\s*Requirement:\s*(.+?)`?\s*$/;
+const FENCE = /^\s*(```+|~~~+)/;
+
+/** The lines with each fenced line blank, so that no pattern matches inside a code block. */
+const plain = (ls: string[]): string[] => {
+  let fence = "";
+  return ls.map((l) => {
+    const c = FENCE.exec(l)?.[1]?.[0] ?? "";
+    if (!fence) {
+      fence = c;
+      return c ? "" : l;
+    }
+    if (c === fence) fence = "";
+    return "";
+  });
+};
+
+/** The index and the match of each unfenced line that matches `re`. */
+const heads = (ls: string[], re: RegExp) =>
+  plain(ls).flatMap((l, i) => {
+    const m = re.exec(l);
+    return m ? [{ i, m }] : [];
+  });
+
+const clean = (s: string) => s.replace(/[ \t]+#+[ \t]*$/, "").trim();
+
+const split = (text: string) =>
+  text.replace(/^﻿/, "").replace(/\r\n?/g, "\n").split("\n");
+
+const blocksOf = (body: string[]) => {
+  const at = heads(body, REQ);
+  const join = (a: number, b?: number) => body.slice(a, b).join("\n").trimEnd();
+  return {
+    preamble: join(0, at[0]?.i),
+    blocks: at.map(
+      ({ i, m }, k): Block => ({
+        name: clean(m[1] ?? ""),
+        raw: join(i, at[k + 1]?.i),
+      }),
+    ),
+  };
+};
+
+const renames = (body: string[]) => {
+  const out: { from: string; to: string }[] = [];
+  let from = "";
+  for (const l of plain(body)) {
+    const [, side, name = ""] = PAIR.exec(l) ?? [];
+    if (side === "FROM") from = clean(name);
+    else if (side === "TO" && from) {
+      out.push({ from, to: clean(name) });
+      from = "";
+    }
+  }
+  return out;
+};
+
+export const parseDelta = (text: string) => {
+  const all = split(text);
+  const tops = heads(all, TOP);
+  const secs = tops.map(({ i }, k) => ({
+    at: i,
+    line: all[i] ?? "",
+    title: (all[i] ?? "").replace(TOP, "").trim(),
+    body: all.slice(i + 1, tops[k + 1]?.i),
+  }));
+  const body = (t: string) =>
+    secs.filter((s) => s.title.toLowerCase() === t).flatMap((s) => s.body);
+  const removed = body("removed requirements");
+  return {
+    added: blocksOf(body("added requirements")).blocks,
+    modified: blocksOf(body("modified requirements")).blocks,
+    removed: plain(removed).flatMap((l) => {
+      const m = REQ.exec(l) ?? BULLET.exec(l);
+      return m?.[1] ? [clean(m[1])] : [];
+    }),
+    removedBlocks: blocksOf(removed).blocks,
+    renamed: renames(body("renamed requirements")),
+    purpose: secs.some((s) => s.title.toLowerCase() === "purpose")
+      ? body("purpose").join("\n").trim()
+      : null,
+    sections: secs
+      .filter((s) => /.\srequirements$/i.test(s.title))
+      .map((s) => s.line.trim()),
+    // The `###` headers in ADDED and MODIFIED that are no requirements: validation ignores them.
+    strays: secs
+      .filter((s) => /^(added|modified) requirements$/i.test(s.title))
+      .flatMap((s) =>
+        heads(s.body, STRAY)
+          .filter(({ m }) => !REQ.test(m[0]))
+          .map(({ i, m }) => ({
+            header: m[1] ?? "",
+            section: s.title,
+            line: s.at + i + 2,
+          })),
+      ),
+  };
+};
+
+export const parseMain = (text: string) => {
+  let all = split(text);
+  let start = heads(all, /^##\s+Requirements\s*$/i)[0]?.i;
+  if (start === undefined) {
+    all = [...split(text.trimEnd()), "", "## Requirements", ""];
+    start = all.length - 2;
+  }
+  const end = heads(all, TOP).find(({ i }) => i > (start ?? 0))?.i;
+  return {
+    before: all.slice(0, start).join("\n"),
+    header: all[start] ?? "",
+    ...blocksOf(all.slice(start + 1, end ?? all.length)),
+    after: all.slice(end ?? all.length).join("\n"),
+  };
+};
+
+/** The text of a requirement: its lines up to the first header, with no blank and no fenced line. */
+export const requirementText = (raw: string) => {
+  const ls = plain(raw.split("\n").slice(1));
+  const stop = ls.findIndex((l) => /^#{1,6}\s/.test(l));
+  return ls
+    .slice(0, stop < 0 ? undefined : stop)
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .join("\n");
+};
+
+/** The scenarios of a requirement: each `####` header outside a fence, and the text up to the next header. */
+export const scenarioList = (raw: string) => {
+  const body = raw.split("\n").slice(1);
+  const next = heads(body, /^#{1,4}\s/);
+  return heads(body, /^####\s+/).map(({ i }) => ({
+    name: clean((body[i] ?? "").replace(/^####\s+/, "")).replace(
+      /^Scenario:\s*/i,
+      "",
+    ),
+    rawText: body
+      .slice(i + 1, next.find((h) => h.i > i)?.i)
+      .join("\n")
+      .trim(),
+  }));
+};
+
+/** The scenarios of `current` that `incoming` lacks, and the sentence that counts both blocks. */
+export const scenarioLoss = (current: string, incoming: string) => {
+  const without = (a: string[], b: string[]) => {
+    const left = [...b];
+    return a.filter((n) => {
+      const at = left.indexOf(n);
+      if (at >= 0) left.splice(at, 1);
+      return at < 0;
+    });
+  };
+  const [had, has] = [current, incoming].map((r) =>
+    scenarioList(r).map((s) => s.name),
+  ) as [string[], string[]];
+  const added = without(has, had);
+  const n = (c: number) => `${c} ${c === 1 ? "scenario" : "scenarios"}`;
+  const adds = added.length
+    ? `It adds ${n(added.length)} not in the current spec: ${added
+        .slice(0, 3)
+        .map((a) => `"${a}"`)
+        .join(", ")}${added.length > 3 ? ` and ${added.length - 3} more` : ""}.`
+    : "It adds none.";
+  return {
+    missing: without(had, has),
+    balance: `The modified block has ${n(has.length)}; the current spec has ${n(had.length)}. ${adds}`,
+  };
+};

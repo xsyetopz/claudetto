@@ -7,7 +7,8 @@ allowed-tools: Bash(minispec *)
 ---
 
 Plan the change in files, and stop before the code.
-Ask the user in place of a guess.
+Ask the user in place of a guess when an open question would change the specs, the approach, or the tasks.
+In `claude -p`, write `[NEEDS CLARIFICATION: <question>]` in place of the guess, and end the report with the open questions.
 
 1. Pick the preset, and state the facts that you used.
    Use the first rule that fits:
@@ -16,7 +17,7 @@ Ask the user in place of a guess.
    - A release that changes more than one capability: `epic`.
    - The change has no change of behavior: `task`, and only then.
    - The change touches one capability: `story`.
-   - Unsure: `story`, and ask the user.
+   - Unsure: `story`, and say that it is your choice.
 2. Pick a kebab-case name, and run `minispec new change <name> --schema <preset>`.
 3. Run `minispec status --change <name> --json`.
    It gives each artifact with its `status`, `outputPath`, `template`, and `instruction`, and the `context` and `rules` of `openspec/config.yaml` (`rules` hold a list for each artifact id).

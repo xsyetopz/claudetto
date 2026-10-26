@@ -7,7 +7,7 @@ allowed-tools: Bash(minispec *)
 ---
 
 1. Pick the change: `$ARGUMENTS`, or the one change of `minispec list`.
-   Ask the user when more than one fits.
+   Ask the user when more than one fits. In `claude -p`, take the first change of `minispec list` (the newest), and say which.
 2. Run `minispec validate <name> --strict`.
 3. Check each item, and give the file and line of each finding:
    - Each task is ticked, and its work is in the code.

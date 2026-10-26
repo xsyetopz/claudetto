@@ -7,9 +7,9 @@ allowed-tools: Bash(minispec *)
 ---
 
 1. Pick the change: `$ARGUMENTS`, or the one change of `minispec list` with each task done.
-   Ask the user when more than one fits.
+   Ask the user when more than one fits. In `claude -p`, list the changes that fit and stop, because an archive is hard to undo.
 2. Run `minispec archive <name>`.
    It validates the change, merges its delta specs, and moves it to `openspec/changes/archive/<date>-<name>/`.
 3. When it stops on open tasks, ask the user.
-   Run `minispec archive <name> --yes` only after their yes.
+   Run `minispec archive <name> --yes` only after their yes. In `claude -p`, report the open tasks and stop.
 4. Report the specs that changed and the archive folder.

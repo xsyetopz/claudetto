@@ -9,7 +9,7 @@ allowed-tools: Bash(minispec *)
 The command does the merge, so edit no spec file by hand.
 
 1. Pick the change: `$ARGUMENTS`, the one that the talk names, or the one change of `minispec list --json` that has files in `specs/`.
-   Ask the user when more than one fits.
+   Ask the user when more than one fits. In `claude -p`, take the first change of `minispec list` (the newest), and say which.
    Say "Using change: <name>".
 2. Run `minispec validate <name> --strict`.
    When it fails, show each issue and stop, because the merge would refuse it.
