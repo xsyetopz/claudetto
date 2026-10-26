@@ -1,30 +1,10 @@
 // Stubs of `handover.test.ts`: they record each step in order, so the tests show that the file comes first, then `/clear`, then the prompt.
 
-import type { AgentStatus, On, SessionMessage } from "claude-code";
+import type { AgentStatus, On } from "claude-code";
 import { type Engine, mock } from "claude-code/testing";
+import { MESSAGES } from "./messages.ts";
 
 export const HOUR = 3_600_000;
-
-const ask = {
-  tool_use_id: "q1",
-  tool: "AskUserQuestion",
-  input: {
-    questions: [
-      {
-        question: "Which store?",
-        options: [{ label: "sql" }, { label: "files" }],
-      },
-    ],
-  },
-  text: 'User has answered your questions: "Which store?"="sql". You can now continue.',
-};
-
-const MESSAGES: SessionMessage[] = [
-  { role: "user", text: "Build the export.", toolUses: [], handle: "h0" },
-  { role: "assistant", text: "", toolUses: [ask], handle: "h1" },
-  { role: "user", text: "Use `csv`, not JSON.", toolUses: [], handle: "h2" },
-  { role: "assistant", text: "Ok.", toolUses: [], handle: "h3" },
-];
 
 /** What the stubs answer: `tokens` is the context, `startedAt` the session start, and `agents` the status of each agent. */
 export type World = {
@@ -63,7 +43,7 @@ export const stubs = (on: On, world: World = {}) => {
     value: (world.agents ?? []).map((status, i) => ({
       id: `a${i}`,
       description: "",
-      type: "claudetto:Worker",
+      type: "claudetto:Hephaestus",
       status: status as AgentStatus,
     })),
   }));

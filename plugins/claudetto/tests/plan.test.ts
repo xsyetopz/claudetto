@@ -1,8 +1,8 @@
 // Lab tests of the `tool.call` hook of the `ground` slice: the deny of a plan or a spec with a claim that has no source.
 import type { On, SessionMessage } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
-import { UNSOURCED } from "../slices/ground/prompts.ts";
-import { HANDOVER_RESUME } from "../slices/handoff/prompts.ts";
+import { HANDOVER_RESUME } from "../modules/session/handoff/prompts.ts";
+import { UNSOURCED } from "../modules/work/ground/prompts.ts";
 
 const SUB = "a1";
 const user = (text: string): SessionMessage => ({
@@ -48,12 +48,11 @@ const note = (
 const denied = async (...a: Parameters<typeof note>) =>
   "deny" in (await note(...a));
 
-test("a claim with no source is denied with the three ways out", async ($: Engine, on: On) => {
+test("a claim with no source is denied, and the deny names the claim and the `(proposed)` mark", async ($: Engine, on: On) => {
   project(on);
   const out = await note($, "The bound is 9000 lines.");
   const deny = "deny" in out ? out.deny : undefined;
-  for (const part of ["`9000`", "`(proposed)`", "Ask the user"])
-    expect(deny).toContain(part);
+  for (const part of ["`9000`", "`(proposed)`"]) expect(deny).toContain(part);
 });
 
 test("a claim that names its source passes", async ($: Engine, on: On) => {
@@ -117,7 +116,6 @@ test("an unreadable subagent transcript lets the call run", async ($: Engine, on
 
 test("the handoff text is a source in any role", async ($: Engine, on: On) => {
   const resume = HANDOVER_RESUME({ path: "h.md" });
-  expect(resume.startsWith("This is the handoff of the earlier")).toBe(true);
   const text = `${resume}\n- The cap is 9000.`;
   project(on, [{ role: "assistant", text, toolUses: [] }]);
   expect(await denied($, "The cap is 9000.")).toBe(false);

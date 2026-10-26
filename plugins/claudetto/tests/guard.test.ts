@@ -126,6 +126,45 @@ test(
   "Only Agent Edits: with a ledger line for the hash of the file, a bulk stage of any Claude session runs",
   run(tree(entry(HASH_X, "s2")), STAGES, "allow"),
 );
+const WHOLE_TREE = [
+  "git stash",
+  "git stash push -u",
+  "git stash pop",
+  "git reset",
+  "git reset --soft HEAD~1",
+];
+test(
+  "User Edit in the Tree, Whole-Tree Verbs: `git stash`, `git stash pop`, and `git reset` ask, and the dialog names the file",
+  run(tree(entry("0000000000000000")), WHOLE_TREE, "ask", () => "`a.ts`"),
+);
+test(
+  "Only Agent Edits, Whole-Tree Verbs: with a ledger line for the hash of the file, `git stash` and `git reset` run",
+  run(tree(entry(HASH_X, "s2")), WHOLE_TREE, "allow"),
+);
+test(
+  "Whole-Tree Verbs with a Path: `git stash list` and `git reset -- a.ts` run in a tree with a change of the user",
+  run(
+    tree(entry("0000000000000000")),
+    ["git stash list", "git reset -- a.ts", "git reset HEAD a.ts"],
+    "allow",
+  ),
+);
+test("Empty TMPDIR: the gate reads the ledger at `/tmp`, where `hygiene` writes it", async ($: Engine, on: On) => {
+  on("tool.check", () => ({ decision: "ask" }));
+  on("session.cwd", () => ({ value: "/p" }));
+  on("session.root", () => ({ value: "/p" }));
+  mock.env(on, { HOME: "/u", TMPDIR: "" });
+  on("process.run", (_$, e) =>
+    ran(e.argv.includes("rev-parse") ? "/p\n" : " M a.ts\0"),
+  );
+  on("session.id", () => ({ value: "s1" }));
+  on("clock.now", () => ({ value: 0 }));
+  const isLedger = (path: string) => path.startsWith("/tmp/claudetto/ledger/");
+  on("fs.exists", (_$, e) => ({ value: isLedger(e.path) }));
+  on("fs.read", (_$, e) => ({ value: isLedger(e.path) ? entry(HASH_X) : "x" }));
+  on("fs.write", () => ({ value: undefined }));
+  expect((await bash($, "git add -A")).decision).toBe("allow");
+});
 test(
   "No Ledger File: the file is a change of the user, so a bulk stage asks",
   run(tree(null), ["git add -A"], "ask"),

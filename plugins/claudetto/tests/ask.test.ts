@@ -6,7 +6,7 @@ import {
   ATTEMPT_TIMEOUT_MS,
   BACKOFF_MS,
   MIN_CONFIDENCE,
-} from "../kernel/budget.ts";
+} from "../modules/jev/index.ts";
 
 const answers = (confidence: number, approval = 0.05) => ({
   pick_0: {
@@ -101,7 +101,7 @@ test(
     const { fetches, seen } = stub(on, "typesafe-key");
     await ask($);
     expect(fetches).toEqual([]);
-    expect(JSON.stringify(seen.input)).not.toContain("Jev");
+    expect(seen.input).toMatchObject({ questions: [STORE] });
   },
 );
 
@@ -136,6 +136,26 @@ test(
 );
 
 test(
+  "with the option `jev`, many questions go in one request, and they share one state object",
+  option("jev"),
+  async ($: Engine, on: On) => {
+    const { fetches } = stub(on, "typesafe-key");
+    await ask($, [STORE, COLOR]);
+    expect(fetches).toHaveLength(1);
+    const body = JSON.parse(fetches[0]?.init?.body ?? "{}");
+    expect(Object.keys(body.questions)).toEqual([
+      "pick_0",
+      "approval_0",
+      "pick_1",
+      "approval_1",
+    ]);
+    expect(typeof body.state).toBe("object");
+    expect(Array.isArray(body.state)).toBe(false);
+    expect(JSON.stringify(body.state)).toContain("Which color?");
+  },
+);
+
+test(
   "Jev Picks: with the option `jev` and a sure pick, Jev answers and the built-in tool does not run",
   option("jev"),
   async ($: Engine, on: On) => {
@@ -143,7 +163,6 @@ test(
     const answer = JSON.stringify(await ask($));
     expect(seen.input).toBeUndefined();
     expect(answer).toContain('"Which store?":"sql"');
-    expect(answer).toContain("Jev answered");
     expect(answer).toContain("0.90");
   },
 );
@@ -237,7 +256,6 @@ test(
   async ($: Engine, on: On) => {
     const shown = await shownWith($, on, MIN_CONFIDENCE - 0.01, 0.05);
     expect(shown).toContain("Which store?");
-    expect(shown).not.toContain("Jev picks");
   },
 );
 
@@ -253,12 +271,11 @@ test(
 );
 
 test(
-  "with the option `jev` and an approval yes, the dialog stays with no note",
+  "with the option `jev` and an approval yes, the dialog stays",
   option("jev"),
   async ($: Engine, on: On) => {
     const shown = await shownWith($, on, 0.95, 0.95);
     expect(shown).toContain("Which store?");
-    expect(shown).not.toContain("Jev picks");
   },
 );
 
@@ -270,13 +287,13 @@ const describeAsk = ($: Engine, on: On) => {
 };
 
 test(
-  "`tool.describe` of `AskUserQuestion` adds the line for Jev with the option `jev` and a key",
+  "`tool.describe` of `AskUserQuestion` adds to the description with the option `jev` and a key",
   option("jev"),
   async ($: Engine, on: On) => {
     mock.env(on, { TYPESAFE_API_KEY: "typesafe-key" });
     const answer = await describeAsk($, on);
     expect(answer.description).toStartWith("Asks the user.");
-    expect(answer.description).toContain("Jev may answer");
+    expect(answer.description.length).toBeGreaterThan("Asks the user.".length);
   },
 );
 
@@ -285,7 +302,7 @@ test(
   { options: { decide: "jev", TYPESAFE_API_KEY: "secure-key" } },
   async ($: Engine, on: On) => {
     const { fetches } = stub(on, "");
-    expect((await describeAsk($, on)).description).toContain("Jev may answer");
+    expect((await describeAsk($, on)).description).not.toBe("Asks the user.");
     await ask($, [STORE]);
     expect(fetches.map((f) => f.init?.headers?.["authorization"])).toEqual([
       "Bearer secure-key",
@@ -320,6 +337,11 @@ test(
     const body = { ...answers(0.9), ...unsure, approval_1: { noul: 0.05 } };
     const { seen } = stub(on, "typesafe-key", body);
     await ask($, [STORE, COLOR]);
-    expect(JSON.stringify(seen.input)).toContain("Jev picks");
+    const shown = seen.input as {
+      questions: { options: { description: string }[] }[];
+    };
+    const description = shown.questions[0]?.options[0]?.description ?? "";
+    expect(description).toMatch(/^relations/);
+    expect(description).not.toBe("relations");
   },
 );

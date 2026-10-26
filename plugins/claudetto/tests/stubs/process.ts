@@ -14,13 +14,17 @@ export const ran = (stdout: string, exitCode = 0) => ({
   },
 });
 
+/** The key of a state value in the store: a family member has its `id` after the key. */
+const id = (e: { key: string; id?: string | undefined }) =>
+  e.id === undefined ? e.key : `${e.key}/${e.id}`;
+
 /** Keeps the state in `store`: `state.get` reads a key, and `state.set` writes it. */
 export const stubState = (on: On, store: Map<string, unknown>) => {
   on("state.get", (_$, e) => ({
-    value: { value: store.get(e.key), version: 0 },
+    value: { value: store.get(id(e)), version: 0 },
   }));
   on("state.set", (_$, e) => {
-    store.set(e.key, e.value);
+    store.set(id(e), e.value);
     return { value: { isSet: true, version: 1 } };
   });
 };

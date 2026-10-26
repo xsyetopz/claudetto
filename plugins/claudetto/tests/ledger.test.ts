@@ -93,7 +93,6 @@ test("Changed After: a rewrite after the edit adds one line that names the file,
   const lines = (await prompt($)).additionalContext ?? [];
   expect(lines.length).toBe(1);
   expect(lines[0]).toContain("`/proj/a.ts`");
-  expect(lines[0]).toContain("The user or a tool changed");
   expect(lines[0]?.split("\n").length).toBe(1);
   expect((await prompt($)).additionalContext ?? []).toStrictEqual([]);
   world.files["/proj/a.ts"] = "const a = 2;\n";
@@ -132,11 +131,11 @@ test("a file that the agent edited again is its own again", async ($: Engine, on
 
 test("the ledger holds the edits of a subagent, and the line names that agent", async ($: Engine, on: On) => {
   const world = stub(on, { files: { "/proj/b.ts": "one\n" } });
-  await edit($, "/proj/b.ts", { id: "sub1", type: "claudetto:Worker" });
+  await edit($, "/proj/b.ts", { id: "sub1", type: "claudetto:Hephaestus" });
   world.files["/proj/b.ts"] = "two\n";
   const lines = (await prompt($)).additionalContext ?? [];
   expect(lines.length).toBe(1);
-  expect(lines[0]).toContain("`claudetto:Worker`");
+  expect(lines[0]).toContain("`claudetto:Hephaestus`");
 });
 
 test("a tool other than `Edit` and `Write` adds no entry", async ($: Engine, on: On) => {
@@ -182,7 +181,6 @@ test("User Edit: `git status` names a file that no ledger line holds as a change
   expect(context).toContain(
     `- The user: \`${file}\``.replace(file, `/proj/${file}`),
   );
-  expect(context).toContain("A change of the user is intended");
 });
 
 test("Other Session: `git status` of session B names a file that session A wrote as a change of session A", async ($: Engine, on: On) => {

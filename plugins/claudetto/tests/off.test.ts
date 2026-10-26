@@ -28,7 +28,7 @@ You should create your plan at /home/u/.claude/plans/a-b.md using the Write tool
 Launch up to 3 Explore agents IN PARALLEL.
 ### Phase 5: Call ExitPlanMode`;
 
-test("`prompt.attachment` gives the plan mode text a shorter text with the plan file and `claudetto:Scout`", async ($: Engine, on: On) => {
+test("`prompt.attachment` gives the plan mode text a shorter text with the plan file and `claudetto:Artemis`", async ($: Engine, on: On) => {
   on("prompt.attachment", () => ({ text: ENGINE_PLAN }));
   const { text } = await $.prompt.attachment({
     type: "plan_mode",
@@ -36,7 +36,7 @@ test("`prompt.attachment` gives the plan mode text a shorter text with the plan 
     origin: { kind: "engine" },
   });
   expect(text).toContain("/home/u/.claude/plans/a-b.md");
-  expect(text).toContain("`claudetto:Scout`");
+  expect(text).toContain("`claudetto:Artemis`");
   expect(text).not.toContain("ExitPlanMode");
   expect(text?.length).toBeLessThan(ENGINE_PLAN.length);
 });

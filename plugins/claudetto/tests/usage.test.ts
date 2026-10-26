@@ -53,7 +53,7 @@ const stub = (on: On, init: Partial<World> = {}): World => {
     value: world.agents.map((status, i) => ({
       id: `a${i}`,
       description: "",
-      type: "claudetto:Worker",
+      type: "claudetto:Hephaestus",
       status,
     })),
   }));
@@ -82,7 +82,7 @@ const check = ($: Engine, tool: string, input: Record<string, string>) =>
   $.tool.check({ tool, input } as ToolCheckArgs);
 
 const agentCall = ($: Engine) =>
-  check($, "Agent", { subagent_type: "claudetto:Worker", prompt: "do it" });
+  check($, "Agent", { subagent_type: "claudetto:Hephaestus", prompt: "do it" });
 
 test("Band Change", async ($: Engine, on: On) => {
   stub(on);

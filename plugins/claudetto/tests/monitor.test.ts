@@ -8,14 +8,28 @@ import { type Engine, expect, test } from "claude-code/testing";
 const TAIL = "tail -f /tmp/a.log | grep --line-buffered FAIL";
 
 /** Stubs core, the clock, and the `Stop` event. `world.now` is the time of the host, and `world.seen` holds the input of each call that reached core. */
-const stub = (on: On) => {
+const stub = (
+  on: On,
+  refuse?: { isError: true; result: unknown } | { deny: string },
+) => {
   const world = { now: 1_000, next: 0, seen: [] as Record<string, unknown>[] };
   on("clock.now", () => ({ value: world.now }));
   on("session.cwd", () => ({ value: "/p" }));
   on("env.get", (_$, e) => ({ value: e.name === "HOME" ? "/u" : undefined }));
   on("classic.Stop", () => ({}));
+  // Each process finds nothing, so the project holds no env file.
+  on("process.run", () => ({
+    value: {
+      exitCode: 0,
+      stdout: "",
+      stderr: "",
+      isStdoutTruncated: false,
+      isStderrTruncated: false,
+    },
+  }));
   on("tool.call", (_$, e) => {
     world.seen.push(e as unknown as Record<string, unknown>);
+    if (refuse) return refuse;
     return e.tool === "Monitor"
       ? { result: { taskId: `b${++world.next}`, timeoutMs: 300_000 } }
       : { result: "ok" };
@@ -90,6 +104,7 @@ test("Title Case of `gh`: `gh pr create --title` and `gh issue create -t` run wi
     "gh pr create --title 'Fix a Bug in the `guard` Slice' --body \"x -t y\"",
   );
   expect((pr.context ?? []).join("\n")).toContain("Title Case");
+  expect(pr.result).toBe("ok");
   await gh($, "cd /p && gh issue create -t 'add the --title fix' --label bug");
   expect(world.seen[1]?.["command"]).toBe(
     "cd /p && gh issue create -t 'Add the --title Fix' --label bug",
@@ -106,4 +121,23 @@ test("Title Case of `gh`: a title in the right case, a title with `$`, and anoth
   ];
   for (const command of commands) await gh($, command);
   expect(world.seen.map((e) => e["command"])).toStrictEqual(commands);
+});
+
+test("Duplicate Monitor: a `Monitor` that core refuses joins no set, so the same command runs again", async ($: Engine, on: On) => {
+  stub(on, { result: { taskId: "b9", timeoutMs: 300_000 }, isError: true });
+  await monitor($, TAIL);
+  expect((await monitor($, TAIL)).deny).toBeUndefined();
+});
+
+test("Duplicate Monitor: a `Stop` with no `background_tasks` keeps the set", async ($: Engine, on: On) => {
+  stub(on);
+  await monitor($, TAIL);
+  await $.classic.Stop({ stop_hook_active: false });
+  expect((await monitor($, TAIL)).deny).toContain("`b1`");
+});
+
+test("Title Case of `gh`: a call that core denies gets no context", async ($: Engine, on: On) => {
+  stub(on, { deny: "blocked" });
+  const v = await gh($, "gh pr create --title 'fix a bug'");
+  expect([v.deny, v.context]).toStrictEqual(["blocked", undefined]);
 });

@@ -21,7 +21,7 @@ const both = async ($: Engine, tool: string, input: object) => ({
       tool_name: tool,
       tool_input: input,
       agent_id: "a1",
-      agent_type: "claudetto:Worker",
+      agent_type: "claudetto:Hephaestus",
     } as never)
   ).decision,
 });

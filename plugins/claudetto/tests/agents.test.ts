@@ -31,7 +31,7 @@ test("`agent.offer` hides `claudetto:main`, the agent of the main thread", async
 
 test("`agent.offer` offers a plugin agent", async ($: Engine, on: On) => {
   on("agent.offer", () => ({ isOffered: true }));
-  expect(await offer($, "claudetto:Scout", "claudetto")).toStrictEqual({
+  expect(await offer($, "claudetto:Artemis", "claudetto")).toStrictEqual({
     isOffered: true,
   });
 });
@@ -51,12 +51,12 @@ const called = async ($: Engine, on: On, input: Record<string, string>) => {
   return type;
 };
 
-test("`tool.call` gives an `Agent` call with no type the type `claudetto:Worker`", async ($: Engine, on: On) => {
-  expect(await called($, on, {})).toBe("claudetto:Worker");
+test("`tool.call` gives an `Agent` call with no type the type `claudetto:Hephaestus`", async ($: Engine, on: On) => {
+  expect(await called($, on, {})).toBe("claudetto:Hephaestus");
 });
 
 test("`tool.call` keeps the type that an `Agent` call names", async ($: Engine, on: On) => {
-  expect(await called($, on, { subagent_type: "claudetto:Scout" })).toBe(
-    "claudetto:Scout",
+  expect(await called($, on, { subagent_type: "claudetto:Artemis" })).toBe(
+    "claudetto:Artemis",
   );
 });

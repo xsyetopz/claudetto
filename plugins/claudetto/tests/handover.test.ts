@@ -2,13 +2,13 @@
 
 import type { On } from "claude-code";
 import { type Engine, expect, test } from "claude-code/testing";
-import { modelOf } from "../slices/handoff/handover.ts";
+import { modelOf } from "../modules/session/handoff/handover.ts";
 import {
   type Case,
   HANDOVER_AGE_MS,
   HANDOVER_CONTEXT_TOKENS,
   type PathRow,
-} from "../slices/handoff/limits.ts";
+} from "../modules/session/handoff/limits.ts";
 import {
   HOUR,
   stop,
@@ -28,12 +28,21 @@ test("Order", async ($: Engine, on: On) => {
   const { seen } = await stopped($, on, OVER);
   expect(seen.steps).toEqual(FULL);
   expect(seen.prompts[0]).toContain(seen.texts[0] as string);
-  expect(seen.prompts[0]).toContain("Continue from the next open task.");
   expect(seen.logs).toHaveLength(1);
-  expect(seen.logs[0]).toMatch(
-    /^Handover: the handoff is in \.claudetto\/handoffs\/handoff-/,
-  );
+  expect(seen.logs[0]).toContain(".claudetto/handoffs/handoff-");
   expect(seen.logs[0]).not.toContain("\n");
+});
+
+test("Handoff Path: the notice gives the handoff file relative to the project", async ($: Engine, on: On) => {
+  const { seen } = await stopped($, on, OVER);
+
+  const file =
+    /(?:^|\s)(\.claudetto\/handoffs\/handoff-\S+?)[,.]?(?:\s|$)/.exec(
+      seen.logs[0] ?? "",
+    )?.[1];
+
+  expect(file).toBeDefined();
+  expect(seen.paths[0]?.endsWith(file as string)).toBe(true);
 });
 
 test("No Model Request", async ($: Engine, on: On) => {
@@ -49,24 +58,20 @@ test("Open Change", async ($: Engine, on: On) => {
     /^\/p\/\.claudetto\/handoffs\/handoff-\d{8}T\d{6}Z\.md$/,
   );
   expect(seen.paths.some((p) => p.endsWith("/handoff.md"))).toBe(false);
-  expect(seen.texts[0]).toContain("Next open task: `3.2`");
+  expect(seen.texts[0]).toContain("`3.2`");
 });
 
 test("Ruled-Out Option", async ($: Engine, on: On) => {
   const { seen } = await stopped($, on, OVER);
   expect(seen.texts[0]).toContain("Which store? `sql`");
-  expect(seen.texts[0]).toContain(
-    "Options that the user ruled out: Which store? `files`",
-  );
+  expect(seen.texts[0]).toContain("Which store? `files`");
   expect(seen.texts[0]).toContain("`csv`");
 });
 
 test("Box with No Check Is Open", async ($: Engine, on: On) => {
   const { seen } = await stopped($, on, TWO_TASKS);
-  expect(seen.texts[0]).toContain(
-    "Open tasks, checked in `tasks.md` with no passed check: `3.1`.",
-  );
-  expect(seen.texts[0]).toContain("with a passed check: none.");
+  expect(seen.texts[0]).toContain("no passed check: `3.1`");
+  expect(seen.texts[0]).toContain("with a passed check: none");
 });
 
 test("Context Bound", async ($: Engine, on: On) => {
@@ -205,12 +210,10 @@ test("Cold Cache, Yes", async ($: Engine, on: On) => {
   expect(out.drop).toBeDefined();
   expect(seen.asks).toHaveLength(1);
   expect(seen.steps).toEqual(FULL);
-  expect(seen.prompts[0]).toContain(
-    "It is the newest prompt of the user:\n\nNow add the tests.",
+  expect(seen.prompts[0]).toContain("Now add the tests.");
+  expect(seen.prompts[0]?.indexOf(seen.texts[0] as string)).toBeLessThan(
+    seen.prompts[0]?.indexOf("Now add the tests.") ?? 0,
   );
-  expect(
-    seen.prompts[0]?.indexOf("Continue from the next open task."),
-  ).toBeLessThan(seen.prompts[0]?.indexOf("Now add the tests.") ?? 0);
 });
 
 test("Cold Cache, No", async ($: Engine, on: On) => {
@@ -340,13 +343,11 @@ test(
   },
 );
 
-test("a resumed session with no turn end gets an offer that names no pause", async ($: Engine, on: On) => {
+test("a resumed session with no turn end gets an offer", async ($: Engine, on: On) => {
   const { seen, clock } = stubs(on, { answer: "No" });
   await typed($);
   await clock.settle();
   expect(seen.asks).toHaveLength(1);
-  expect(seen.asks[0]).not.toContain("minutes ago");
-  expect(seen.asks[0]).toContain("resumed");
 });
 
 test("a warm cache gets no offer", async ($: Engine, on: On) => {

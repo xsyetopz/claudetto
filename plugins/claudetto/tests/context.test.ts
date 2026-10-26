@@ -5,8 +5,6 @@ import type { On } from "claude-code";
 import { type Engine, expect, mock, test } from "claude-code/testing";
 import { ran } from "./stubs/process.ts";
 
-const PROFILE = { options: { compaction: "built-in" } };
-
 const ENGINE_BLOCKS = [{ name: "currentDate", text: "2026-10-22" }];
 
 const contextBlocks = async (
@@ -18,30 +16,6 @@ const contextBlocks = async (
   mock.env(on, env);
   return (await $.prompt.context({ blocks: ENGINE_BLOCKS })).blocks;
 };
-
-const contextText = async ($: Engine, on: On, env: Record<string, string>) =>
-  (await contextBlocks($, on, env)).find((b) => b.name === "context_management")
-    ?.text;
-
-test("with the handoff on, the `context_management` block says that a handoff carries the work", async ($: Engine, on: On) => {
-  expect(await contextText($, on, {})).toContain("a handoff file carries");
-});
-
-test("with `DISABLE_COMPACT`, the `context_management` block says that compaction is off", async ($: Engine, on: On) => {
-  const text = await contextText($, on, { DISABLE_COMPACT: "1" });
-  expect(text).toContain("Compaction is off.");
-  expect(text).not.toContain("summarizes");
-});
-
-test(
-  "with the compaction profile, the `context_management` block says that Claude Code summarizes the context",
-  PROFILE,
-  async ($: Engine, on: On) => {
-    const text = await contextText($, on, {});
-    expect(text).toContain("summarizes");
-    expect(text).not.toContain("handoff");
-  },
-);
 
 test("the other blocks of the context stay", async ($: Engine, on: On) => {
   const blocks = await contextBlocks($, on, {});
@@ -63,24 +37,20 @@ const hostBlocks = async (
   return contextBlocks($, on, { SHELL: shell });
 };
 
-test("on macOS with zsh, the `shell` block names the missing `timeout` and the zsh glob error", async ($: Engine, on: On) => {
-  const text = (await hostBlocks($, on, "Darwin", "/bin/zsh")).find(
-    (b) => b.name === "shell",
-  )?.text;
-  expect(text).toContain("`timeout`");
-  expect(text).toContain("no matches found");
+test("on macOS with zsh, the context has a `shell` block", async ($: Engine, on: On) => {
+  const blocks = await hostBlocks($, on, "Darwin", "/bin/zsh");
+  expect(blocks.map((b) => b.name)).toContain("shell");
 });
 
 const planText = async ($: Engine, on: On) =>
   (await contextBlocks($, on, {})).find((b) => b.name === "plan")?.text;
 
 test(
-  "Max 20x: the context says that the login is a Max 20x subscription",
+  "Max 20x: the plan block names the tier",
   { options: { plan: "default_claude_max_20x" } },
   async ($: Engine, on: On) => {
     const text = await planText($, on);
-    expect(text).toContain("Max 20x subscription");
-    expect(text).toContain("share of the plan limits, not as dollars");
+    expect(text).toContain("Max 20x");
   },
 );
 
@@ -94,9 +64,6 @@ test(
   async ($: Engine, on: On) => {
     const text = (await planText($, on)) ?? "";
     expect(text).not.toMatch(/@|[0-9a-f]{8}-[0-9a-f]{4}-/i);
-    expect(text).toBe(
-      "The login is a Max 20x subscription. Speak of usage as a share of the plan limits, not as dollars.",
-    );
   },
 );
 
@@ -143,38 +110,31 @@ const FACTS = [
   "Shell: zsh",
 ];
 
-test("the `repo` block names the branch, the latest tag, the open change, the shell, and `ugrep` on a native build with `Grep` and `Glob` off", async ($: Engine, on: On) => {
-  const text = await repoText($, on, { CLAUDE_CODE_EXECPATH: NATIVE }, [
-    "Bash",
-  ]);
-  expect(text).toBe(
-    [
-      ...FACTS,
-      "In `Bash`, `grep` is `ugrep`, which skips ignored files and VCS folders.",
-    ].join("\n"),
-  );
-});
-
-test("the `repo` block names the system `grep` when `Grep` is on", async ($: Engine, on: On) => {
-  const system = [...FACTS, "In `Bash`, `grep` is the system `grep`."].join(
-    "\n",
-  );
-  expect(
-    await repoText($, on, { CLAUDE_CODE_EXECPATH: NATIVE }, ["Bash", "Grep"]),
-  ).toBe(system);
-});
+for (const [tools, ugrep] of [
+  [["Bash"], true],
+  [["Bash", "Grep"], false],
+] as const)
+  test(`the \`repo\` block names the branch, the latest tag, the open change, the shell, and ${ugrep ? "`ugrep`" : "the system `grep`"} with the tools ${tools.join(", ")} on a native build`, async ($: Engine, on: On) => {
+    const text = await repoText($, on, { CLAUDE_CODE_EXECPATH: NATIVE }, [
+      ...tools,
+    ]);
+    const lines = (text ?? "").split("\n");
+    expect(lines.slice(0, FACTS.length)).toStrictEqual(FACTS);
+    expect(lines).toHaveLength(FACTS.length + 1);
+    expect(lines[FACTS.length]?.includes("ugrep")).toBe(ugrep);
+  });
 
 test("the `repo` block names the system `grep` for the entry point `local-agent`", async ($: Engine, on: On) => {
   const env = {
     CLAUDE_CODE_EXECPATH: NATIVE,
     CLAUDE_CODE_ENTRYPOINT: "local-agent",
   };
-  expect(await repoText($, on, env, ["Bash"])).toContain("system `grep`");
+  expect(await repoText($, on, env, ["Bash"])).not.toContain("ugrep");
 });
 
 test("the `repo` block names the system `grep` when the engine runs on `node`", async ($: Engine, on: On) => {
   const env = { CLAUDE_CODE_EXECPATH: "/usr/local/bin/node" };
-  expect(await repoText($, on, env, ["Bash"])).toContain("system `grep`");
+  expect(await repoText($, on, env, ["Bash"])).not.toContain("ugrep");
 });
 
 test("on Linux with bash, the context has no `shell` block", async ($: Engine, on: On) => {

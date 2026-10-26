@@ -104,7 +104,7 @@ export const looped = (on: On, goal: unknown = null, codes: number[] = [0]) => {
           value: agents.map((status, i) => ({
             id: `a${i}`,
             description: "",
-            type: "claudetto:Worker",
+            type: "claudetto:Hephaestus",
             status: status as AgentStatus,
           })),
         },
@@ -135,6 +135,24 @@ export const ticks = (id: string, file = PLAN): SessionMessage => ({
       },
       text: "ok",
     },
+  ] as never,
+});
+/** A row with an `Edit` of `file`. */
+export const edits = (file: string): SessionMessage => ({
+  role: "assistant",
+  text: "",
+  handle: "h",
+  toolUses: [
+    { tool_use_id: "e", tool: "Edit", input: { file_path: file }, text: "ok" },
+  ] as never,
+});
+/** A row with a `Bash` call of `command` that exits `0`, or fails with `isError`. */
+export const bash = (command: string, isError = false): SessionMessage => ({
+  role: "assistant",
+  text: "",
+  handle: "h",
+  toolUses: [
+    { tool_use_id: "b", tool: "Bash", input: { command }, text: "ok", isError },
   ] as never,
 });
 export const answered = (): SessionMessage => ({

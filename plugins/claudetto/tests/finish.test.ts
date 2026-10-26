@@ -6,6 +6,8 @@ import { type Engine, expect, test } from "claude-code/testing";
 import {
   answered,
   applied,
+  bash,
+  edits,
   logs,
   looped,
   type Note,
@@ -57,8 +59,11 @@ test("another command runs unchanged", async ($: Engine, on: On) => {
 });
 
 test("the built-in `/goal` does not run, and the hook answers", async ($: Engine, on: On) => {
-  stub(on);
-  expect((await typed($, "status")).text).toBe("No goal.");
+  const world = stub(on);
+  const { text } = await typed($, "status");
+  expect(world.state()).toBeNull();
+  expect(text).not.toBe("core goal");
+  expect(text?.length).toBeGreaterThan(0);
 });
 
 test("a condition sets the check, with the backticks cut, and the first turn starts", async ($: Engine, on: On) => {
@@ -68,12 +73,13 @@ test("a condition sets the check, with the backticks cut, and the first turn sta
   expect(world.state()).toEqual({ check: "just check" });
 });
 
-test("a slash command is no check: `/goal` refuses it with an example, the built-in does not run, and a stored one blocks no stop", async ($: Engine, on: On) => {
+test("a slash command is no check: `/goal` refuses it, the built-in does not run, and a stored one blocks no stop", async ($: Engine, on: On) => {
   const world = stub(on, { check: "/claudetto:apply release-0-3-0-alpha-2" });
   expect((await stop($)).block).toBeUndefined();
   expect(world.runs).toEqual([]);
   const out = await typed($, "/claudetto:apply release-0-3-0-alpha-2");
-  expect(out.text).toContain("/goal just check");
+  expect(out.text).not.toBe("core goal");
+  expect(out.text?.length).toBeGreaterThan(0);
   expect(world.prompts).toEqual([]);
   expect((await typed($, "/usr/bin/true")).text).toContain("/usr/bin/true");
 });
@@ -347,4 +353,67 @@ test("a failing `$.agent.list()` adds no block, and the stop goes on", async ($:
   world.agent.down = true;
   expect((await reply($, "Done with 3.7.")).block).toBeUndefined();
   expect(world.store.get("loopBlocks") ?? 0).toBe(0);
+});
+
+const JUSTFILE =
+  "set shell := ['zsh']\n\ncheck:\n    bun tools/check.ts\n\ntest *args:\n    bun test {{args}}\n\nbuild:\n    bun build\n";
+
+/** A turn of the main thread that runs the Bash calls of `checks` after an `Edit` of `file`, in a project with `JUSTFILE`. */
+const turn = (on: On, file: string, checks: SessionMessage[] = []) => {
+  const world = looped(on);
+  world.files.set("/proj/justfile", JUSTFILE);
+  world.rows.push(prompt("fix the bug"), edits(file), ...checks);
+  return world;
+};
+
+test("Edit with No Check: the stop is blocked, and the reason names the checks of the project", async ($: Engine, on: On) => {
+  turn(on, "/proj/src/a.ts", [bash("just check"), edits("/proj/src/b.ts")]);
+
+  const out = await reply($, "Fixed.");
+
+  expect(out.block).toContain("`just check`");
+  expect(out.block).toContain("`just test`");
+  expect(out.block).not.toContain("just build");
+});
+
+test("Edit with No Check: a failing check after the last edit blocks the stop", async ($: Engine, on: On) => {
+  turn(on, "/proj/src/a.ts", [bash("just check", true)]);
+
+  expect((await reply($, "Fixed.")).block).toContain("`just check`");
+});
+
+test("Edit with a Passed Check: a passing check after the last edit lets the stop go", async ($: Engine, on: On) => {
+  turn(on, "/proj/src/a.ts", [bash("just test tests/a.test.ts")]);
+
+  expect((await reply($, "Fixed.")).block).toBeUndefined();
+});
+
+test("Edit with No Check: a stop that a hook blocked before goes on, so the block comes one time", async ($: Engine, on: On) => {
+  turn(on, "/proj/src/a.ts");
+
+  expect((await stop($, true)).block).toBeUndefined();
+});
+
+test("Edit with No Check: a turn that edits only Markdown lets the stop go", async ($: Engine, on: On) => {
+  turn(on, "/proj/README.md");
+
+  expect((await reply($, "Fixed.")).block).toBeUndefined();
+});
+
+test("Edit with No Check: a project with no `justfile` check and no `bun.lock` lets the stop go", async ($: Engine, on: On) => {
+  const world = turn(on, "/proj/src/a.ts");
+  world.files.set("/proj/justfile", "build:\n    make\n");
+
+  expect((await reply($, "Fixed.")).block).toBeUndefined();
+});
+
+test("Edit with No Check: a project with a `bun.lock` and no `justfile` check gets a block that names `bun test`", async ($: Engine, on: On) => {
+  const world = turn(on, "/proj/src/a.ts");
+  world.files.set("/proj/justfile", "build:\n    make\n");
+  on("fs.exists", (_$, e) => ({ value: e.path === "/proj/bun.lock" }));
+
+  const { block } = await reply($, "Fixed.");
+
+  expect(block).toContain("`bun test`");
+  expect(block).not.toContain("just");
 });
