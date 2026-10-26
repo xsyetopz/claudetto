@@ -6,12 +6,12 @@ import { PLUGINS } from "./repo.ts";
 
 export const AGENTS = path.join(PLUGINS, "claudetto/agents");
 export const ROSTER = [
-  "Scout",
-  "Scoper",
-  "Reviewer",
-  "Researcher",
-  "Worker",
-  "Tester",
+  "Artemis",
+  "Zeus",
+  "Athena",
+  "Hermes",
+  "Hephaestus",
+  "Apollo",
 ];
 
 /** The frontmatter of the agent file `name`, or `null` when the file is absent. */

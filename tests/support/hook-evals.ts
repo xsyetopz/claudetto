@@ -1,6 +1,6 @@
 // The hook evals of each plugin (`wiki/claudetto/development/Plugin-Layout.md`).
 // `evals/hooks.json` of a plugin names each hook by its id, the hook-lab test of each case kind, and the model requests and tokens that the hook adds to each turn.
-// A hook in a hooks module has its id in a `// eval: <id>` comment on the line above its `on(` call.
+// A hook in a hooks module has its rule name in a `// rule: <module>.<job>` comment on the line above its `on(` call (D3 of change `redesign-0-4-0`).
 // A call that joins several hooks has one such comment for each hook, in the lines above it.
 // A classic hook has the id `<event> <command>`, with the plugin root and the `bun` launcher removed, or `<event> prompt`.
 
@@ -11,14 +11,17 @@ import path from "node:path";
  * One hook eval entry of `evals/hooks.json`. A test is `<file from the repository root> > <test name>`.
  * A hook that runs a model has its cases in `claude plugin eval`, and a case is `<path of its case.yaml> > <grader name>`.
  */
+/** One test, or a list of tests, of a case kind. */
+type Ref = string | string[];
+
 export type Entry = {
   requests: number;
   tokens: number;
   blocks: boolean;
-  allow: string;
-  text: string;
-  block?: string;
-  false?: string;
+  allow: Ref;
+  text: Ref;
+  block?: Ref;
+  false?: Ref;
   eval?: string;
 };
 
@@ -35,17 +38,17 @@ export const moduleHooks = (
     const lines = text.split("\n");
     lines.forEach((line, i) => {
       if (!/^\s*on\(\s*(?:"|$)/.test(line)) return;
-      // A call of joined handlers has one `// eval:` line for each handler, in a block above it.
+      // A call of joined handlers has one `// rule:` line for each handler, in a block above it.
       const above: string[] = [];
       for (let j = i - 1; j >= 0; j--) {
-        const id = /^\s*\/\/ eval: (.+)$/.exec(lines[j] ?? "")?.[1]?.trim();
+        const id = /^\s*\/\/ rule: (.+)$/.exec(lines[j] ?? "")?.[1]?.trim();
         if (!id) break;
         above.unshift(id);
       }
       if (above.length) ids.push(...above);
       else
         faults.push(
-          `${file}:${i + 1}: an \`on(\` call has no \`// eval:\` comment above it`,
+          `${file}:${i + 1}: an \`on(\` call has no \`// rule:\` comment above it`,
         );
     });
   }
@@ -133,8 +136,12 @@ const entryFaults = async (
     faults.push(
       `${plugin}: the hook \`${id}\` records no \`requests\` and \`tokens\` for each turn`,
     );
-  for (const kind of kinds(entry))
-    faults.push(...(await refFault(root, plugin, id, kind, entry[kind])));
+  for (const kind of kinds(entry)) {
+    const refs = [entry[kind]].flat();
+    // An empty list names no test, so it is checked as a missing one.
+    for (const ref of refs.length > 0 ? refs : [undefined])
+      faults.push(...(await refFault(root, plugin, id, kind, ref)));
+  }
   if (entry.requests > 0) {
     const dir = path.join(root, "plugins", plugin, "evals", entry.eval ?? "");
     if (!entry.eval || !fs.existsSync(path.join(dir, "case.yaml")))

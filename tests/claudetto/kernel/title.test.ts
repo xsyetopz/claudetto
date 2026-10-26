@@ -1,7 +1,7 @@
-// Tests of the Chicago Title Case function of `kernel/title.ts` (task 10.11).
+// Tests of the Chicago Title Case function of `kernel/text.ts` (task 10.11).
 
 import { expect, test } from "bun:test";
-import { titleCase } from "../../plugins/claudetto/kernel/title.ts";
+import { titleCase } from "../../../plugins/claudetto/kernel/text.ts";
 
 test("the first and last word and each major word get a capital", () => {
   expect(titleCase("the quick brown fox")).toBe("The Quick Brown Fox");
@@ -42,8 +42,8 @@ test("a word with a digit or an inner capital, a path, a file name, and an all-c
   expect(titleCase("add iOS support for x86 and the API")).toBe(
     "Add iOS Support for x86 and the API",
   );
-  expect(titleCase("edit kernel/title.ts and package.json")).toBe(
-    "Edit kernel/title.ts and package.json",
+  expect(titleCase("edit kernel/text.ts and package.json")).toBe(
+    "Edit kernel/text.ts and package.json",
   );
   expect(titleCase("pass --title to gh")).toBe("Pass --title to Gh");
 });

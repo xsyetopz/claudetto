@@ -1,8 +1,8 @@
 // Tests of the shared helpers `parseModel` and `lineCount`.
 
 import { expect, test } from "bun:test";
-import { parseModel } from "../../plugins/claudetto/kernel/model.ts";
-import { lineCount } from "../../plugins/claudetto/kernel/text.ts";
+import { lineCount } from "../../../plugins/claudetto/kernel/text.ts";
+import { parseModel } from "../../../plugins/claudetto/modules/statusline/model.ts";
 
 test("`parseModel` reads family, major, and minor, and ignores a date suffix", () => {
   expect(parseModel("claude-opus-5-5")).toStrictEqual({

@@ -1,4 +1,4 @@
-// The shared types of the hooks of a slice. No runtime import.
+// The shared types of the hooks of the modules. No runtime import.
 
 import type { EventName, Events } from "claude-code";
 

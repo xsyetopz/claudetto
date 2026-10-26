@@ -4,11 +4,11 @@ import { expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { RENAME_TRIES } from "../../plugins/claudetto/kernel/budget.ts";
 import {
   writeAtomic,
   writeAtomicWith,
-} from "../../plugins/claudetto/kernel/node/fs.ts";
+} from "../../../plugins/claudetto/kernel/node/fs.ts";
+import { RENAME_TRIES } from "../../../plugins/claudetto/kernel/node/limits.ts";
 
 const folder = (): string => fs.mkdtempSync(path.join(os.tmpdir(), "atomic-"));
 

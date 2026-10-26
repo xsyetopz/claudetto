@@ -1,9 +1,9 @@
 // The `FileReader` of Node, for the CLIs, and the atomic write.
 
 import fs from "node:fs/promises";
-import { RENAME_TRIES, RENAME_WAIT_MS } from "../budget.ts";
 import { ABSENT, isExpected, rethrowUnless } from "../errors.ts";
 import type { FileReader } from "../ports.ts";
+import { RENAME_TRIES, RENAME_WAIT_MS } from "./limits.ts";
 
 /** The `code` values of a rename that fails for a short time while another process holds the target open (a Windows file system). */
 const BUSY_RENAME = ["EPERM", "EACCES", "EBUSY"];

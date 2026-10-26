@@ -2,7 +2,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { main } from "../../plugins/claudetto/slices/spec/adapters/cli.ts";
+import { main } from "../../plugins/claudetto/modules/spec/adapters/cli.ts";
 import { captureIo } from "./io.ts";
 import { REPO, tmpDir } from "./repo.ts";
 
@@ -10,7 +10,10 @@ import { REPO, tmpDir } from "./repo.ts";
 export const tmpEmpty = tmpDir;
 
 /** The presets of MiniSpec: the schemas `task`, `story`, and `epic`, and the template `config.yaml`. */
-export const PRESETS = path.join(REPO, "plugins/claudetto/slices/spec/presets");
+export const PRESETS = path.join(
+  REPO,
+  "plugins/claudetto/modules/spec/presets",
+);
 const BIN = path.join(
   REPO,
   "node_modules/@fission-ai/openspec/bin/openspec.js",

@@ -5,8 +5,8 @@ import { expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { fileReader } from "../../plugins/claudetto/kernel/node/fs.ts";
-import { runHook } from "../../plugins/claudetto/kernel/node/hook-io.ts";
+import { fileReader } from "../../../plugins/claudetto/kernel/node/fs.ts";
+import { runHook } from "../../../plugins/claudetto/kernel/node/hook-io.ts";
 
 /** Runs `decide` on the text `input` and gives the text that the hook wrote. `failed` collects the stderr text. */
 const run = async (

@@ -4,7 +4,7 @@ import { expect } from "bun:test";
 import { mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { main } from "../../plugins/claudetto/slices/setup/adapters/cli.ts";
+import { main } from "../../plugins/claudetto/modules/setup/adapters/cli.ts";
 import { captureIo } from "./io.ts";
 
 /** Runs `claudetto-setup` with `args` in `dir`, which is the config folder, the project, and the home folder, and gives the exit status and the printed text. */

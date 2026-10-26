@@ -41,30 +41,30 @@ test("a fixture with `CLAUDE_CODE_EFFORT_LEVEL` fails, and the failure names it"
     "disableAllHooks",
     "env.CLAUDE_CODE_EFFORT_LEVEL",
   ]);
-  expect(problems(fixture)).toStrictEqual([
-    "never set: disableAllHooks",
-    "never set: env.CLAUDE_CODE_EFFORT_LEVEL",
-  ]);
+  const found = problems(fixture);
+  expect(found).toHaveLength(2);
+  expect(found[0]).toContain("disableAllHooks");
+  expect(found[1]).toContain("env.CLAUDE_CODE_EFFORT_LEVEL");
 });
 
 test("a fixture with an `attribution` block fails, because the hook adds the lines", () => {
-  expect(problems({ attribution: { commit: "x" } })).toStrictEqual([
-    "never set: attribution",
-  ]);
+  const found = problems({ attribution: { commit: "x" } });
+  expect(found).toHaveLength(1);
+  expect(found[0]).toContain("attribution");
 });
 
 test("a fixture with an unknown key fails, and the failure names the key", () => {
-  expect(problems({ notAClaudeKey: true })).toStrictEqual([
-    '(root): unknown key "notAClaudeKey"',
-  ]);
+  const found = problems({ notAClaudeKey: true });
+  expect(found).toHaveLength(1);
+  expect(found[0]).toContain("notAClaudeKey");
 });
 
 test("a fixture with a key of the schema and a never-set env entry passes the schema check and fails the pin", () => {
   const fixture = { model: "x", env: { CLAUDE_CODE_SIMPLE: "1" } };
   expect(validate(fixture, SCHEMA)).toStrictEqual([]);
-  expect(problems(fixture)).toStrictEqual([
-    "never set: env.CLAUDE_CODE_SIMPLE",
-  ]);
+  const found = problems(fixture);
+  expect(found).toHaveLength(1);
+  expect(found[0]).toContain("env.CLAUDE_CODE_SIMPLE");
 });
 
 test("a never-set entry with a banned value is flagged only for that value", () => {

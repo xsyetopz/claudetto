@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/slices/handoff/adapters/switch.ts\""
+            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/modules/session/handoff/adapters/switch.ts\""
           }
         ]
       }

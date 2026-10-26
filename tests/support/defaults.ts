@@ -73,6 +73,9 @@ export const SETTINGS_DEFAULTS: Readonly<Record<string, Value>> = {
   // With no entry, the plan chooses.
   enableWorkflows: null,
   fastMode: false,
+  // With no entry, the plan chooses (`default`).
+  model: null,
+  showClearContextOnPlanAccept: false,
   feedbackDrafts: "notify",
   outputStyle: "default",
   promptSuggestionEnabled: true,
