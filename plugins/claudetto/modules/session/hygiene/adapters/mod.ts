@@ -13,6 +13,7 @@ import {
   parseLedger,
   statusPaths,
   tempDirs,
+  withStateIgnore,
 } from "../../../project/index.ts";
 import { isGitView, whoChanged } from "../domain/authors.ts";
 import { cleanupArgv, parseCleanup } from "../domain/cleanup.ts";
@@ -102,9 +103,20 @@ export const sweep = async ($: EngineInterface): Promise<void> => {
   if (notice !== null) $.ui.log(notice);
 };
 
+/** In a project with `.git`, writes `/.claudetto/` to `.gitignore` when no entry covers the folder, and creates the file when it is missing. */
+const ignoreState = async ($: EngineInterface): Promise<void> => {
+  const root = (await $.session.root()).replace(/\/+$/, "");
+  if (!(await $.fs.exists(`${root}/.git`))) return;
+  const file = `${root}/.gitignore`;
+  const text = (await $.fs.exists(file)) ? await $.fs.read(file) : "";
+  const next = withStateIgnore(text);
+  if (next !== text) await $.fs.write(file, next);
+};
+
 /** Starts the sweep and does not wait for it. */
-export const onStart: Handler<"session.start"> = ($, e, next) => {
+export const onStart: Handler<"session.start"> = async ($, e, next) => {
   void sweep($).catch(() => undefined);
+  await ignoreState($).catch(() => undefined);
   return next(e);
 };
 

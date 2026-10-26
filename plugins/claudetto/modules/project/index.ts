@@ -3,6 +3,7 @@
 export * from "./domain/change.ts";
 export * from "./domain/checks.ts";
 export * from "./domain/edits.ts";
+export * from "./domain/gitignore.ts";
 export * from "./domain/ledger.ts";
 export * from "./domain/paths.ts";
 export * from "./domain/session.ts";

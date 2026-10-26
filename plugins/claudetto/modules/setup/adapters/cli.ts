@@ -11,8 +11,9 @@ import {
   PROJECT_LOCAL_SETTINGS,
   PROJECT_SETTINGS,
   SETTINGS_FILE,
+  withIgnores,
+  withLines,
 } from "../../project/index.ts";
-import { withIgnores, withLines } from "../domain/gitignore.ts";
 import { inventory } from "../domain/inventory.ts";
 import { dropOldDeny, type Json, merge, snippetFor } from "../domain/merge.ts";
 import { planCap, planOption } from "../domain/plan.ts";

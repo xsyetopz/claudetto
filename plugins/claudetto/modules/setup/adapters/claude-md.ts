@@ -2,13 +2,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileReader, writeAtomic } from "../../../kernel/node/fs.ts";
+import { withLocalNotes } from "../../project/index.ts";
 import {
   lineCount,
   type MemoryFile,
   TESTS_RULE,
   withClaudeMdBlock,
 } from "../domain/claude-md.ts";
-import { withLocalNotes } from "../domain/gitignore.ts";
 import { GLOBAL_CLAUDE_MD_MAX_LINES, VENDOR_DIRS } from "../limits.ts";
 import { LOCAL_NOTES_TEMPLATE, TESTS_RULE_TEMPLATE, t } from "../prompts.ts";
 import { amend } from "./scan.ts";

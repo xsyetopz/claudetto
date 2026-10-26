@@ -65,6 +65,8 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
   They run the first search program of the host (`rg`, `ugrep`, then `grep`, and `rg` or `find` for `glob`) with `$.process`, take the input fields of the built-in tools that they can serve, and skip `.git` and the secret environment files.
   Their schemas are in the prompt, so no `ToolSearch` call comes first.
   The secret-read rule of `gate` covers them as it covers `Grep` and `Glob`.
+- At each session start in a project with `.git`, claudetto adds `/.claudetto/` to `.gitignore` when no entry covers the folder, and creates `.gitignore` when it is missing (the user, 2026-10-26).
+  An equal entry, such as `.claudetto`, `.claudetto/`, `/.claudetto`, or `/.claudetto/**`, counts as present, also for `claudetto-setup --apply`.
 - A test fails when a tool that a deny text of claudetto names, such as `Monitor` in the long-wait deny, is behind `ToolSearch` (task 19.15).
 - At the start, claudetto sets `BASH_MAX_OUTPUT_LENGTH` to 24,000 when you set neither it nor `bashOutputMaxChars`, below the default of 30,000 (task 19.9).
   Claude Code keeps the start of a long output, and 24,000 keeps the failure lines of the largest failed `just check` step that was measured.
