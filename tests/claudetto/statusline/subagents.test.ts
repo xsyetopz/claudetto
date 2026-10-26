@@ -1,9 +1,9 @@
 // The rows of `claudetto-statusline --subagent`.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
-import { SUBAGENT_ROWS_MAX } from "../../../plugins/claudetto/slices/statusline/limits.ts";
-import { width } from "../../../plugins/claudetto/slices/statusline/width.ts";
+import { main } from "../../../plugins/claudetto/modules/statusline/adapters/cli.ts";
+import { SUBAGENT_ROWS_MAX } from "../../../plugins/claudetto/modules/statusline/limits.ts";
+import { width } from "../../../plugins/claudetto/modules/statusline/width.ts";
 import { depsFor, NOW, type Run } from "./support.ts";
 
 const ESC = String.fromCharCode(27);
@@ -42,15 +42,30 @@ test("a running task gives one JSON row with its id and a line of numbers", asyn
   ]);
 });
 
-test("a task that is not running, or has no id, gives no row", async () => {
+test("a task with no id gives no row, and a task with no status gives a row", async () => {
   const { rows } = await rowsFor({
     tasks: [
-      { ...task, id: "t2", status: "completed" },
       { ...task, id: undefined },
       { ...task, id: "t3", status: undefined },
     ],
   });
   expect(rows.map((row) => row.id)).toStrictEqual(["t3"]);
+});
+
+test("a finished task gives a row in the same form with its state in place of the clock", async () => {
+  const { rows } = await rowsFor({
+    tasks: [
+      { ...task, id: "a", status: "completed" },
+      { ...task, id: "b", status: "failed" },
+      { ...task, id: "c", status: "killed" },
+    ],
+  });
+  const head = "● builder (implementer) sonnet-5-5 high · ▤ 60k/300k 20%";
+  expect(rows).toStrictEqual([
+    { id: "a", content: `${head} · ✓ done · Rebuild the status line` },
+    { id: "b", content: `${head} · ✗ failed · Rebuild the status line` },
+    { id: "c", content: `${head} · stopped · Rebuild the status line` },
+  ]);
 });
 
 test("the rows are at most `SUBAGENT_ROWS_MAX`, and each row fits the width of the input", async () => {

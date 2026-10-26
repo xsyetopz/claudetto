@@ -2,13 +2,13 @@
 // The cases run `main` with a fixed clock, a fake `git`, and a fixed status object.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
-import { MAX_ROWS } from "../../../plugins/claudetto/slices/statusline/limits.ts";
+import { main } from "../../../plugins/claudetto/modules/statusline/adapters/cli.ts";
+import { MAX_ROWS } from "../../../plugins/claudetto/modules/statusline/limits.ts";
 import {
   plainText,
   width,
-} from "../../../plugins/claudetto/slices/statusline/width.ts";
-import { depsFor, GIT_TEXT, type Run, STATUS } from "./support.ts";
+} from "../../../plugins/claudetto/modules/statusline/width.ts";
+import { depsFor, GIT_TEXT, type Run, runMain, STATUS } from "./support.ts";
 
 const ESC = String.fromCharCode(27);
 /** The block, bar, and shade characters that a bar would use. */
@@ -27,22 +27,27 @@ const render = async (
   return run;
 };
 
-test("a wide terminal shows two rows of numbers with icons, and `NO_COLOR` keeps each icon", async () => {
+test("a wide terminal shows the place, the session, and the limits rows with icons, and `NO_COLOR` keeps each icon", async () => {
   const run = await render(124, { NO_COLOR: "1" });
   expect(run.status).toBe(0);
   expect(run.err).toStrictEqual([]);
   expect(run.out).toStrictEqual([
     [
-      "⌂ claudetto       · ⎇ main ✎2 ↑1 ↓2                         · ◷ 7d  80% ▲11%  ⏵Oct 13 at 5pm ↻Oct 14 at 4pm",
-      "◈ Opus 5.5 high ✦ · ▤ ctx 15% of 300k ⇥80% · $1.23 +300 -20 · ◷ 5h  23% ▼13%                 ↻3:12pm",
+      "⌂ claudetto       · ⎇ main ✎2 ↑1 ↓2",
+      "◈ Opus 5.5 high ✦ · ▤ ctx 15% of 300k ⇥80% · $1.23 +300 -20",
+      "◷ 5h 23% ▼13% ↻3:12pm · ◷ 7d 80% ▲11% ⏵Oct 13 at 5pm ↻Oct 14 at 4pm",
     ].join("\n"),
   ]);
 });
 
-test("a narrow terminal drops the segments at the right of a row, and the first segment stays", async () => {
+test("a narrow terminal cuts each row at the right edge, and the first segment stays", async () => {
   const run = await render(32, { NO_COLOR: "1" });
   expect(run.out).toStrictEqual([
-    ["⌂ claudetto", "◈ Opus 5.5 high ✦", "◷ 5h 23% ▼13% ↻3h12m"].join("\n"),
+    [
+      "⌂ claudetto · ⎇ main ✎2 ↑1 …",
+      "◈ Opus 5.5 high ✦ · ▤ ctx 1…",
+      "◷ 5h 23% ▼13% ↻3h12m · ◷ 7d…",
+    ].join("\n"),
   ]);
 });
 
@@ -102,18 +107,14 @@ test("a session with no git repository, no cost, and no limits shows the segment
 });
 
 test("a `git` that is missing shows the error mark, and the cause goes to stderr", async () => {
-  const run: Run = { status: -1, out: [], err: [] };
-  run.status = await main(
-    [],
-    depsFor(STATUS, run, {
-      env: { COLUMNS: "124", NO_COLOR: "1" },
-      runner: {
-        run: () => {
-          throw new Error("spawn git ENOENT");
-        },
+  const run = await runMain(STATUS, {
+    env: { COLUMNS: "124", NO_COLOR: "1" },
+    runner: {
+      run: () => {
+        throw new Error("spawn git ENOENT");
       },
-    }),
-  );
+    },
+  });
   expect(run.status).toBe(0);
   expect(run.out[0]).toContain("⎇ ✗");
   expect(run.out[0]).toContain("⌂ claudetto");

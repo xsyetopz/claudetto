@@ -1,37 +1,39 @@
-// The color scale of three steps for each percent, and the helpers of the width.
+// The usage gradient between three stops, and the helpers of the width.
 
 import { expect, test } from "bun:test";
-import { USAGE_LEVELS } from "../../../plugins/claudetto/kernel/budget.ts";
-import { colorOff } from "../../../plugins/claudetto/slices/statusline/color.ts";
+import { colorOff } from "../../../plugins/claudetto/modules/statusline/color.ts";
 import {
   truncate,
   width,
-} from "../../../plugins/claudetto/slices/statusline/width.ts";
+} from "../../../plugins/claudetto/modules/statusline/width.ts";
 import { DARK, NO_COLOR } from "./support.ts";
 
 const ESC = String.fromCharCode(27);
-const GREEN = `${ESC}[38;2;78;186;101mx${ESC}[0m`;
-const YELLOW = `${ESC}[38;2;255;193;7mx${ESC}[0m`;
-const RED = `${ESC}[38;2;255;107;128mx${ESC}[0m`;
+const style = (rgb: string) => `${ESC}[38;2;${rgb}mx${ESC}[0m`;
 
-const [warn, alarm] = USAGE_LEVELS;
-
-test("the step of a percent changes at each bound of `USAGE_LEVELS`", () => {
+test("the gradient has the stop colors at the stop percents and holds them beyond", () => {
   const { level } = DARK;
-  const stepOf = (percent: number) => level(percent)("x");
-  expect(stepOf(0)).toBe(GREEN);
-  expect(stepOf(warn - 1)).toBe(GREEN);
-  expect(stepOf(warn)).toBe(YELLOW);
-  expect(stepOf(alarm - 1)).toBe(YELLOW);
-  expect(stepOf(alarm)).toBe(YELLOW);
-  expect(stepOf(alarm + 1)).toBe(RED);
-  expect(stepOf(100)).toBe(RED);
-  expect(stepOf(250)).toBe(RED);
+  const green = style("78;186;101");
+  const amber = style("255;193;7");
+  const red = style("255;107;128");
+  expect([0, 20].map((p) => level(p)("x"))).toStrictEqual([green, green]);
+  expect(level(60)("x")).toBe(amber);
+  expect([90, 100, 250].map((p) => level(p)("x"))).toStrictEqual([
+    red,
+    red,
+    red,
+  ]);
+});
+
+test("the gradient is linear between two stops", () => {
+  const { level } = DARK;
+  expect(level(40)("x")).toBe(style("167;190;54"));
+  expect(level(75)("x")).toBe(style("255;150;68"));
 });
 
 test("with no color each style gives its text back, at each step", () => {
   const paint = NO_COLOR;
-  for (const percent of [0, warn, alarm, 100])
+  for (const percent of [0, 20, 60, 100])
     expect(paint.level(percent)("x")).toBe("x");
   expect(paint.bold("x")).toBe("x");
   expect(paint.dim("x")).toBe("x");

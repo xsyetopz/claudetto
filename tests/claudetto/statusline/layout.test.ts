@@ -1,27 +1,16 @@
-// The layout of the main status line: ` · ` between the items of a row, and the items of the rows in columns that line up.
-// A place that is empty keeps its column, and a block of rows drops the alignment together when one row does not fit.
+// The layout of the main status line: 4 fixed rows (the place, the session, the limits, and the cache), with ` · ` between the items of a row.
+// The place row and the session row share columns, and an empty place keeps its column. The limits row and the cache row are joined plainly.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
-import {
-  plainText,
-  width,
-} from "../../../plugins/claudetto/slices/statusline/width.ts";
-import { depsFor, type Run, STATUS } from "./support.ts";
+import { main } from "../../../plugins/claudetto/modules/statusline/adapters/cli.ts";
+import { width } from "../../../plugins/claudetto/modules/statusline/width.ts";
+import { depsFor, NOW, plainRows, type Run, STATUS } from "./support.ts";
 
-const rowsAt = async (columns: number): Promise<string[]> => {
-  const run: Run = { status: -1, out: [], err: [] };
-  await main(
-    [],
-    depsFor(STATUS, run, {
-      env: { COLUMNS: String(columns), NO_COLOR: "1" },
-    }),
-  );
-  return (run.out[0] ?? "").split("\n").map(plainText);
-};
+const rowsAt = (columns: number, input: unknown = STATUS) =>
+  plainRows(input, columns);
 
-/** The rows of the main status line for `input`, at 200 columns, with the color as the environment sets it. */
-const rowsOf = async (input: unknown): Promise<string[]> => {
+/** The rows of the main status line for `input`, at 200 columns, with color. */
+const colorRowsOf = async (input: unknown): Promise<string[]> => {
   const run: Run = { status: -1, out: [], err: [] };
   await main([], depsFor(input, run, { env: { COLUMNS: "200" } }));
   return (run.out[0] ?? "").split("\n");
@@ -31,70 +20,98 @@ const rowsOf = async (input: unknown): Promise<string[]> => {
 const columnOf = (line: string, marker: string): number =>
   width(line.slice(0, line.indexOf(marker)));
 
-/** The column of the first ` · ` in `line`, counted in characters. */
-const separatorColumn = (line: string): number => line.indexOf(" · ");
+const CACHE = {
+  caching_observed: true,
+  warm: true,
+  expires_at: NOW / 1000 + 300,
+  ttl: "1h",
+  hit_ratio: 0.9,
+};
+
+test("a wide terminal puts the `5h` and `7d` windows in the limits row, `5h` first", async () => {
+  const rows = await rowsAt(200);
+
+  expect(rows).toHaveLength(3);
+  expect(rows[0]).not.toContain("◷");
+  expect(rows[1]).not.toContain("◷");
+  expect(rows[2]?.indexOf("◷ 5h")).toBe(0);
+  expect(rows[2]?.indexOf("◷ 7d")).toBeGreaterThan(0);
+});
 
 test("the items of a row are joined by ` · `", async () => {
   const rows = await rowsAt(200);
-  expect(rows[1]).toContain(" · ▤ ctx 15% of 300k ⇥80% ");
-  expect(rows[0]).toContain(" · ◷ 7d");
-  expect(rows[1]).toContain("+300 -20 · ◷ 5h");
+
+  expect(rows[1]).toContain(" · ▤ ctx 15% of 300k ⇥80% · $1.23");
+  expect(rows[2]).toContain("↻3:12pm · ◷ 7d");
 });
 
-test("the first separator of each row is in the same column when the row fits", async () => {
-  const rows = await rowsAt(200);
-  const columns = rows.map(separatorColumn);
-  expect(columns[0]).toBeGreaterThan(0);
-  expect(columns[1]).toBe(columns[0]);
+test("the cache is in the fourth row", async () => {
+  const rows = await rowsAt(200, { ...STATUS, prompt_cache: CACHE });
+
+  expect(rows).toHaveLength(4);
+  expect(rows[3]?.startsWith("⌁")).toBe(true);
 });
 
-test("the rows drop the alignment together when one row does not fit", async () => {
-  // The aligned block is wider than 60 columns, so the rows are joined without the alignment.
-  // The one-row placement with the countdown times keeps every item at 60 columns.
-  const rows = await rowsAt(60);
-  expect(rows[0]).toBe("⌂ claudetto · ⎇ main ✎2 ↑1 ↓2");
-  expect(rows[1]).toBe("◈ Opus 5.5 high ✦ · ▤ ctx 15% of 300k ⇥80%");
-  expect(rows[2]).toBe("◷ 5h 23% ▼13% ↻3h12m · ◷ 7d 80% ▲11% ⏵1d5h ↻2d4h");
-});
-
-test("a row with an empty middle place keeps its later item in its column, with color codes", async () => {
-  // The `change` place of row 0 is empty, so the `7d` item keeps the column of the `5h` item in row 1.
-  const rows = await rowsOf(STATUS);
-  expect(columnOf(rows[0] ?? "", "◷")).toBe(columnOf(rows[1] ?? "", "◷"));
-});
-
-test("a row with fewer items keeps each item in its column", async () => {
-  // The `5h` item is absent, so the `7d` item keeps the column that it has with both windows.
-  const full = await rowsOf(STATUS);
-  const rows = await rowsOf({
+test("the limits row with only `7d` starts at the left edge", async () => {
+  const input = {
     ...STATUS,
     rate_limits: { seven_day: STATUS.rate_limits.seven_day },
-  });
-  expect(columnOf(rows[0] ?? "", "◷")).toBe(columnOf(full[0] ?? "", "◷"));
+  };
+
+  const rows = await rowsAt(200, input);
+
+  expect(rows[2]?.startsWith("◷ 7d")).toBe(true);
 });
 
-test("`spend` alone on row 2 starts in the column of the first place of rows 0 and 1", async () => {
-  // Row 2 holds only `spend`, so it is the first place of that row, in the column of the folder and of the model.
-  const rows = await rowsOf({
+test("the limits row with only `spend` starts at the left edge", async () => {
+  const input = {
     ...STATUS,
     rate_limits: {
-      ...STATUS.rate_limits,
       spend_limit: {
         used_percentage: 40,
         resets_at: STATUS.rate_limits.five_hour.resets_at,
       },
     },
-  });
-  expect(columnOf(rows[2] ?? "", "◷")).toBe(columnOf(rows[0] ?? "", "⌂"));
-  expect(columnOf(rows[2] ?? "", "◷")).toBe(columnOf(rows[1] ?? "", "◈"));
+  };
+
+  const rows = await rowsAt(200, input);
+
+  expect(rows[2]?.startsWith("◷ spend")).toBe(true);
 });
 
-test("a wide glyph in the folder name keeps the items of the rows in their columns", async () => {
+test("the first separator of the place row and the session row is in one column", async () => {
+  const rows = await rowsAt(200);
+
+  const column = rows[0]?.indexOf(" · ");
+
+  expect(column).toBeGreaterThan(0);
+  expect(rows[1]?.indexOf(" · ")).toBe(column);
+});
+
+test("the rows drop the alignment together when one row does not fit", async () => {
+  const rows = await rowsAt(60);
+
+  expect(rows[0]).toBe("⌂ claudetto · ⎇ main ✎2 ↑1 ↓2");
+});
+
+test("an empty middle place keeps its column, so the later item of its row starts after the item above it, with color codes", async () => {
+  const { context_window: _, ...noContext } = STATUS;
+
+  const rows = await colorRowsOf(noContext);
+
+  const gitEnd = columnOf(rows[0] ?? "", "⎇") + width("⎇ main ✎2 ↑1 ↓2");
+  expect(columnOf(rows[1] ?? "", "$")).toBe(gitEnd + width(" · "));
+});
+
+test("a wide glyph in the folder name keeps the items of the place row and the session row in their columns", async () => {
   // Each of the two CJK characters of the folder name has two columns.
-  const rows = await rowsOf({
+  const input = {
     ...STATUS,
     cwd: "/work/仕事",
     workspace: { current_dir: "/work/仕事", project_dir: "/work/仕事" },
-  });
+  };
+
+  const rows = await colorRowsOf(input);
+
   expect(columnOf(rows[0] ?? "", "⎇")).toBe(columnOf(rows[1] ?? "", "▤"));
 });

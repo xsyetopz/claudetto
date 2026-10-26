@@ -1,7 +1,7 @@
 // The context segment: the percent against the window that Claude Code gives, and the distance to the handoff.
 
 import { expect, test } from "bun:test";
-import type { Deps } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
+import type { Deps } from "../../../plugins/claudetto/modules/statusline/adapters/cli.ts";
 import { rowsOf } from "./support.ts";
 
 const withContext = (
@@ -92,7 +92,7 @@ const colored = async (model: string, tokens: number): Promise<string> => {
       context_window: {
         total_input_tokens: tokens,
         context_window_size: 1_000_000,
-        used_percentage: 5,
+        used_percentage: tokens / 10_000,
       },
     },
     { env: { COLUMNS: "160" } },
@@ -154,4 +154,71 @@ test("a settings file that is not JSON leaves the handoff icon and logs the caus
   );
   expect(text).toContain("▤ ctx 15% of 300k ⇥80%");
   expect(run.err.length).toBeGreaterThan(0);
+});
+
+const SETTINGS_BUILT_IN = JSON.stringify({
+  pluginConfigs: {
+    "claudetto@claudetto": { options: { compaction: "built-in" } },
+  },
+});
+
+const OPUS_CONTEXT = {
+  total_input_tokens: 45_000,
+  context_window_size: 300_000,
+  used_percentage: 15,
+};
+
+const settingsAt = (file: string, text: string) => ({
+  read: async (path: string) => (path === file ? text : null),
+  list: async () => [],
+});
+
+test("the env var `CLAUDE_PLUGIN_OPTION_COMPACTION` set to another value wins over `built-in` in `pluginConfigs`", async () => {
+  const { text } = await withContext(
+    "claude-opus-5-5",
+    OPUS_CONTEXT,
+    { CLAUDE_PLUGIN_OPTION_COMPACTION: "other" },
+    {
+      files: settingsAt("/home/user/.claude/settings.json", SETTINGS_BUILT_IN),
+    },
+  );
+  expect(text).toContain("⇥80%");
+  expect(text).not.toContain("⇲");
+});
+
+test("the env var `CLAUDE_PLUGIN_OPTION_COMPACTION` set to `built-in` wins over a `pluginConfigs` with another value", async () => {
+  const settings = JSON.stringify({
+    pluginConfigs: {
+      "claudetto@claudetto": { options: { compaction: "other" } },
+    },
+  });
+  const { text } = await withContext(
+    "claude-opus-5-5",
+    OPUS_CONTEXT,
+    { CLAUDE_PLUGIN_OPTION_COMPACTION: "built-in" },
+    { files: settingsAt("/home/user/.claude/settings.json", settings) },
+  );
+  expect(text).toContain("⇲80%");
+});
+
+test("the `settings.json` of `CLAUDE_CONFIG_DIR` is the one that sets the profile", async () => {
+  const { text } = await withContext(
+    "claude-opus-5-5",
+    OPUS_CONTEXT,
+    { CLAUDE_CONFIG_DIR: "/cfg" },
+    { files: settingsAt("/cfg/settings.json", SETTINGS_BUILT_IN) },
+  );
+  expect(text).toContain("⇲80%");
+});
+
+test("a `settings.json` that is not JSON still prints the line and exits 0", async () => {
+  const { text, run } = await withContext(
+    "claude-opus-5-5",
+    OPUS_CONTEXT,
+    { CLAUDE_CONFIG_DIR: "/cfg" },
+    { files: settingsAt("/cfg/settings.json", "{") },
+  );
+  expect(run.status).toBe(0);
+  expect(run.err.length).toBeGreaterThan(0);
+  expect(text).toContain("▤ ctx 15% of 300k");
 });

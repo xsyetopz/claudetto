@@ -3,10 +3,9 @@
 // The status object is the one of `pace.test.ts`: a `5h` window that is 36% elapsed.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
-import { paceOf } from "../../../plugins/claudetto/slices/statusline/format.ts";
-import { FIVE_HOUR_S } from "../../../plugins/claudetto/slices/statusline/limits.ts";
-import { depsFor, NOW, type Run, STATUS } from "./support.ts";
+import { paceOf } from "../../../plugins/claudetto/modules/statusline/format.ts";
+import { FIVE_HOUR_S } from "../../../plugins/claudetto/modules/statusline/limits.ts";
+import { NOW, outputOf, STATUS } from "./support.ts";
 
 /** The `5h` window, used at `used` percent, with `leftS` seconds to the reset. */
 const fiveHour = (used: number, leftS = 3 * 3600 + 12 * 60) => ({
@@ -23,15 +22,7 @@ const fiveHourInput = (
   rate_limits: { five_hour: fiveHour(used, leftS) },
 });
 
-/** The plain output of `main` for `input`, with no color. */
-const plainOutputOf = async (input: unknown): Promise<string> => {
-  const run: Run = { status: -1, out: [], err: [] };
-  await main(
-    [],
-    depsFor(input, run, { env: { COLUMNS: "200", NO_COLOR: "1" } }),
-  );
-  return run.out.join("\n");
-};
+const plainOutputOf = (input: unknown): Promise<string> => outputOf(input);
 
 test("the run-out time shows after the arrow when the use runs out before the reset", async () => {
   // The window is 36% elapsed, so a use of 50% runs out at 100% after 1 h 48 min, before the 3 h 12 min reset.

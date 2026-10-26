@@ -5,28 +5,20 @@ import { expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { main } from "../../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
-import { cacheFile } from "../../../../plugins/claudetto/slices/statusline/adapters/git-cache.ts";
+import { main } from "../../../../plugins/claudetto/modules/statusline/adapters/cli.ts";
+import { cacheFile } from "../../../../plugins/claudetto/modules/statusline/adapters/git-cache.ts";
 import {
   GIT_CACHE_MS,
   REFRESH_SECONDS,
-} from "../../../../plugins/claudetto/slices/statusline/limits.ts";
-import { depsFor, GIT_TEXT, NOW, type Run, STATUS } from "../support.ts";
-
-/** A fake of the files of a run: `write` stores the text, and `read` gives it back, or `null` for a missing file. */
-const memoryFiles = () => {
-  const files = new Map<string, string>();
-  return {
-    files,
-    reader: {
-      read: async (file: string) => files.get(file) ?? null,
-      list: async () => [],
-    },
-    write: async (file: string, text: string) => {
-      files.set(file, text);
-    },
-  };
-};
+} from "../../../../plugins/claudetto/modules/statusline/limits.ts";
+import {
+  depsFor,
+  GIT_TEXT,
+  memoryFiles,
+  NOW,
+  type Run,
+  STATUS,
+} from "../support.ts";
 
 test("a run inside `GIT_CACHE_MS` runs no `git`, and a run after it runs `git` again", async () => {
   const memory = memoryFiles();
@@ -105,7 +97,7 @@ test("the cache file is in the temp folder and does not name the repository path
     }),
   );
   const cached = [...memory.files.keys()].filter((file) =>
-    file.includes("claudetto-git-"),
+    path.basename(file).startsWith("claudetto-git-"),
   );
   expect(cached.length).toBe(1);
   expect(cached[0]?.startsWith(os.tmpdir())).toBe(true);
@@ -123,7 +115,7 @@ const runWithSaved = async (
 ): Promise<{ gitRuns: number; out: string }> => {
   const memory = memoryFiles();
   const file = cacheFile(STATUS.workspace.current_dir);
-  if (file === null) throw new Error("the test needs a cache folder");
+  if (file === undefined) throw new Error("the test needs a cache folder");
   memory.files.set(file, text);
   let gitRuns = 0;
   const runner = {
@@ -168,7 +160,7 @@ test("a cache folder with group or other mode bits is no cache folder", () => {
   const folder = path.join(root, `claudetto-git-${os.userInfo().uid}`);
   fs.mkdirSync(folder);
   fs.chmodSync(folder, 0o755);
-  expect(cacheFile(STATUS.workspace.current_dir, root)).toBeNull();
+  expect(cacheFile(STATUS.workspace.current_dir, root)).toBeUndefined();
 });
 
 test("a missing cache folder is made with mode `0700` and used", () => {

@@ -1,8 +1,8 @@
 // The fakes and fixtures of the tests of the `statusline` slice.
 
 import type { FileReader } from "../../../plugins/claudetto/kernel/ports.ts";
-import type { Deps } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
-import { paintOf } from "../../../plugins/claudetto/slices/statusline/color.ts";
+import type { Deps } from "../../../plugins/claudetto/modules/statusline/adapters/cli.ts";
+import { paintOf } from "../../../plugins/claudetto/modules/statusline/color.ts";
 
 // The clock of a limit prints local time, so the tests that print it fix the zone to UTC and do not depend on `TZ`.
 process.env["TZ"] = "UTC";
@@ -14,6 +14,21 @@ export const NOW = Date.UTC(2026, 9, 12, 12, 0, 0);
 export const noFiles: FileReader = {
   read: async () => null,
   list: async () => [],
+};
+
+/** A fake of the files of a run: `write` stores the text, and `read` gives it back, or `null` for a missing file. */
+export const memoryFiles = () => {
+  const files = new Map<string, string>();
+  return {
+    files,
+    reader: {
+      read: async (file: string) => files.get(file) ?? null,
+      list: async () => [],
+    },
+    write: async (file: string, text: string) => {
+      files.set(file, text);
+    },
+  };
 };
 
 /** The status object of a session with every field that a segment reads. */
@@ -80,6 +95,38 @@ export const depsFor = (
   ...over,
 });
 
+/** The run of `main` with no arguments on `input`, with the fakes of `depsFor` and `over`. */
+export const runMain = async (
+  input: unknown,
+  over: Partial<Deps> = {},
+): Promise<Run> => {
+  const run: Run = { status: -1, out: [], err: [] };
+  const { main } = await import(
+    "../../../plugins/claudetto/modules/statusline/adapters/cli.ts"
+  );
+  run.status = await main([], depsFor(input, run, over));
+  return run;
+};
+
+/** The rows of the main status line for `input` at `columns`, with the color off. */
+export const plainRows = async (
+  input: unknown,
+  columns: number,
+): Promise<string[]> =>
+  (await outputOf(input, { COLUMNS: String(columns), NO_COLOR: "1" })).split(
+    "\n",
+  );
+
+/** The output of `main` for `input`, at 200 columns unless `env` sets `COLUMNS`, with `env` added and the deps of `over`. */
+export const outputOf = async (
+  input: unknown,
+  env: Record<string, string> = { NO_COLOR: "1" },
+  over: Partial<Deps> = {},
+): Promise<string> =>
+  (await runMain(input, { env: { COLUMNS: "200", ...env }, ...over })).out.join(
+    "\n",
+  );
+
 /** The styles with color, and the styles with no color. */
 export const DARK = paintOf(true);
 export const NO_COLOR = paintOf(false);
@@ -91,7 +138,7 @@ export const rowsOf = async (
 ): Promise<{ text: string; run: Run }> => {
   const run: Run = { status: -1, out: [], err: [] };
   const { main } = await import(
-    "../../../plugins/claudetto/slices/statusline/adapters/cli.ts"
+    "../../../plugins/claudetto/modules/statusline/adapters/cli.ts"
   );
   run.status = await main(
     [],

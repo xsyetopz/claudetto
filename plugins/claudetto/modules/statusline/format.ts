@@ -1,0 +1,77 @@
+// The number formats of the status line, the name of a model, and the pace of a limit window.
+import { PACE_MIN_FRACTION, PROJECTED_RUNOUT } from "./limits.ts";
+
+export const thousands = (n: number): string => `${Math.round(n / 1000)}k`;
+
+export const windowText = (n: number): string =>
+  n >= 1_000_000 ? `${Number((n / 1_000_000).toFixed(1))}M` : thousands(n);
+
+export const span = (ms: number): string => {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const minutes = Math.floor(total / 60);
+  const hours = Math.floor(minutes / 60);
+  if (total < 60) return `${total}s`;
+  if (minutes < 60) return `${minutes}m`;
+  if (hours < 24) return `${hours}h${String(minutes % 60).padStart(2, "0")}m`;
+  return `${Math.floor(hours / 24)}d${hours % 24}h`;
+};
+
+/** A time in seconds as `1:50pm` within 24 hours of `nowMs`, and as `Oct 19 at 7am` later. */
+export const clock = (sec: number, nowMs: number): string => {
+  const d = new Date(sec * 1000);
+  const time = d
+    .toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: d.getMinutes() === 0 ? undefined : "2-digit",
+      hour12: true,
+    })
+    .replace(/[   ]([AP]M)/i, (_, meridiem: string) => meridiem.toLowerCase());
+  if (sec * 1000 - nowMs <= 24 * 3600_000) return time;
+  const date: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
+  if (d.getFullYear() !== new Date(nowMs).getFullYear()) date.year = "numeric";
+  // The date and the time are formatted apart, because ICU versions join them with ` at ` or `, `.
+  return `${d.toLocaleDateString("en-US", date)} at ${time}`;
+};
+
+export const baseName = (dir: string): string =>
+  dir.split(/[\\/]/).filter(Boolean).pop() ?? dir;
+
+/** `used_percentage` is in percent, and `resets_at` is in seconds. The spend limit only has the `usd` fields and `period`. */
+export type LimitWindow = {
+  used_percentage?: number;
+  resets_at?: number | null;
+  used_usd?: number;
+  limit_usd?: number;
+  period?: string;
+};
+
+/**
+ * The pace of `window` at `nowS` for a window of `spanS` seconds, or `undefined` while it is too early.
+ * `delta` is the used percent minus the elapsed percent (positive is a deficit), and `projected` is the use at the window end.
+ * `runOutAt` is set only when the use runs out before the reset.
+ */
+export const paceOf = (
+  window: LimitWindow | undefined,
+  nowS: number,
+  spanS: number,
+):
+  | { delta: number; projected: number; runOutAt: number | undefined }
+  | undefined => {
+  const used = window?.used_percentage;
+  const resetsAt = window?.resets_at;
+  if (typeof used !== "number" || !Number.isFinite(used)) return;
+  if (typeof resetsAt !== "number") return;
+  const left = resetsAt - nowS;
+  if (!(left >= 0 && left <= spanS)) return;
+  const elapsed = (spanS - left) / spanS;
+  if (elapsed < PACE_MIN_FRACTION) return;
+  const projected = used / elapsed;
+  const runsOut = used > 0 && used < 100 && projected > PROJECTED_RUNOUT;
+  return {
+    delta: Math.round(used - 100 * elapsed),
+    projected,
+    runOutAt: runsOut
+      ? nowS + ((100 - used) * elapsed * spanS) / used
+      : undefined,
+  };
+};

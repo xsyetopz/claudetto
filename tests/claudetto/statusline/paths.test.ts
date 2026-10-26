@@ -1,7 +1,7 @@
 // The folders of the main status line: `workspace.current_dir`, `workspace.project_dir`, and `cwd` are used only when each is a non-empty string.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/modules/statusline/adapters/cli.ts";
 import { depsFor, type Run, STATUS } from "./support.ts";
 
 const renderOf = async (input: unknown): Promise<Run> => {

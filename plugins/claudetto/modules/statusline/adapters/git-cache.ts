@@ -1,0 +1,158 @@
+// The git state of the working folder, cached for `GIT_CACHE_MS` in one file for each repository, in the folder `claudetto-git-<uid>` of `os.tmpdir()`.
+// The status line runs every `REFRESH_SECONDS`, so the cache keeps `git` from running on each refresh.
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { failureText } from "../../../kernel/node/hook-io.ts";
+import { parseJson } from "../../../kernel/text.ts";
+import { GIT_CACHE_MS, GIT_TIMEOUT_MS } from "../limits.ts";
+import type { GitFault, GitState } from "../types.ts";
+
+import type { Deps } from "./cli.ts";
+
+type GitPorts = Pick<Deps, "files" | "write" | "now" | "runner" | "env">;
+
+/** `undefined` is a folder that is no repository. */
+type GitView = GitState | GitFault | undefined;
+
+/**
+ * The cache folder of the status line, or `undefined` when it is not safe to use:
+ * it is made with mode `0700`, and it must have this owner, no group or other mode bits, and no link.
+ */
+export const cacheFolder = (
+  root: string = os.tmpdir(),
+  uid: number = os.userInfo().uid,
+): string | undefined => {
+  const folder = path.join(root, `claudetto-git-${uid}`);
+  try {
+    fs.mkdirSync(folder, { mode: 0o700 });
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== "EEXIST") return undefined;
+  }
+  try {
+    const stat = fs.lstatSync(folder);
+    if (!stat.isDirectory() || stat.uid !== uid || (stat.mode & 0o077) !== 0)
+      return undefined;
+  } catch {
+    return undefined;
+  }
+  return folder;
+};
+
+/** The cache file of the repository at `dir` in `cacheFolder`. The file name holds a hash, so the repository path is not in the temp folder. */
+export const cacheFile = (
+  dir: string,
+  root: string = os.tmpdir(),
+  uid: number = os.userInfo().uid,
+): string | undefined => {
+  const folder = cacheFolder(root, uid);
+  if (folder === undefined) return undefined;
+  const key = new Bun.CryptoHasher("sha256").update(dir).digest("hex");
+  return path.join(folder, `claudetto-git-${key.slice(0, 16)}.jsonl`);
+};
+
+const plain = (v: unknown): boolean =>
+  typeof v === "string" && v !== "" && !/\p{Cc}/u.test(v);
+const count = (v: unknown): boolean =>
+  Number.isSafeInteger(v) && (v as number) >= 0;
+
+/** True for a view that `runGit` can give (`null` is a folder that is no repository), so a damaged or foreign cache file is no cache. */
+const isView = (v: unknown): boolean => {
+  if (v === null) return true;
+  if (typeof v !== "object") return false;
+  const o = v as Record<string, unknown>;
+  return "error" in o
+    ? plain(o["error"])
+    : plain(o["branch"]) && [o["dirty"], o["ahead"], o["behind"]].every(count);
+};
+
+/** The state in `git status --porcelain=v2 -b` output. A detached head shows its short object name. */
+const parseStatus = (text: string): GitState | undefined => {
+  let branch: string | undefined;
+  let oid: string | undefined;
+  let [dirty, ahead, behind] = [0, 0, 0];
+  for (const line of text.split("\n")) {
+    if (line.startsWith("# branch.head ")) branch = line.slice(14);
+    else if (line.startsWith("# branch.oid ")) oid = line.slice(13, 20);
+    else if (line.startsWith("# branch.ab ")) {
+      const m = /\+(\d+) -(\d+)/.exec(line);
+      if (m) [ahead, behind] = [Number(m[1]), Number(m[2])];
+    } else if (line && !line.startsWith("#")) dirty++;
+  }
+  if (branch === "(detached)") branch = oid;
+  return branch ? { branch, dirty, ahead, behind } : undefined;
+};
+
+const oneLine = (text: string): string =>
+  (text.trim().split("\n")[0] ?? "").replace(/\p{Cc}/gu, "").slice(0, 120);
+
+/** A folder that is no repository gives `undefined`: `git status` exits with 128 and `git rev-parse --git-dir` fails too. The check reads exit codes and no message, so the language of `git` does not matter. */
+const runGit = (dir: string, { runner, env }: GitPorts): GitView => {
+  const git = (args: string[]) =>
+    runner.run("git", args, { cwd: dir, timeout: GIT_TIMEOUT_MS, env });
+  try {
+    const result = git(["status", "--porcelain=v2", "-b"]);
+    if (result.timedOut)
+      return { error: `git did not answer in ${GIT_TIMEOUT_MS} ms` };
+    if (result.exitCode === 0) return parseStatus(result.stdout);
+    if (
+      result.exitCode === 128 &&
+      git(["rev-parse", "--git-dir"]).exitCode !== 0
+    )
+      return undefined;
+    const how =
+      result.exitCode === null
+        ? `ended by ${result.signal ?? "a signal"}`
+        : `exited with ${result.exitCode}`;
+    const why = oneLine(result.stderr);
+    return { error: `git ${how}${why ? `: ${why}` : ""}` };
+  } catch (err) {
+    return {
+      error:
+        oneLine(err instanceof Error ? err.message : String(err)) ||
+        "git did not run",
+    };
+  }
+};
+
+/**
+ * A fresh saved view is given with no `git` run. Otherwise `git` runs and the view is saved, a fault too, so a failing `git` runs once for each window.
+ * A fault, an unreadable cache, and a failed write go to `onError`. With no safe cache folder, nothing is read or written.
+ */
+export const cachedGitState = async (
+  dir: string,
+  ports: GitPorts,
+  onError: (text: string) => void,
+): Promise<GitView> => {
+  const file = cacheFile(dir);
+  const now = ports.now();
+  const attempt = async <T>(run: () => Promise<T>): Promise<T | undefined> =>
+    run().catch((err) => void onError(failureText(err)));
+  if (file !== undefined) {
+    // A torn or damaged file is no cache.
+    const saved = parseJson(
+      (await attempt(() => ports.files.read(file))) ?? "",
+    ) as {
+      at?: unknown;
+      state?: unknown;
+    } | null;
+    const age = now - (saved?.at as number);
+    if (
+      typeof saved?.at === "number" &&
+      isView(saved.state) &&
+      age >= 0 &&
+      age < GIT_CACHE_MS
+    )
+      return (saved.state as GitView | null) ?? undefined;
+  }
+  const view = runGit(dir, ports);
+  if (view && "error" in view) onError(`git: ${view.error}`);
+  if (file !== undefined)
+    await attempt(() =>
+      ports.write(
+        file,
+        `${JSON.stringify({ at: now, state: view ?? null })}\n`,
+      ),
+    );
+  return view;
+};

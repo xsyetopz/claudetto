@@ -2,7 +2,7 @@
 // The times are built in local time, so the expected text does not depend on the time zone of the machine.
 
 import { expect, spyOn, test } from "bun:test";
-import { clock } from "../../../plugins/claudetto/slices/statusline/format.ts";
+import { clock } from "../../../plugins/claudetto/modules/statusline/format.ts";
 
 const NOW_MS = new Date(2026, 9, 12, 12, 0).getTime();
 

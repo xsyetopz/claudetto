@@ -2,7 +2,7 @@
 // The inputs are recorded shapes of the status line JSON of Claude Code 2.1.302 and later.
 
 import { expect, test } from "bun:test";
-import { main } from "../../../plugins/claudetto/slices/statusline/adapters/cli.ts";
+import { main } from "../../../plugins/claudetto/modules/statusline/adapters/cli.ts";
 import { depsFor, NOW, type Run, rowsOf } from "./support.ts";
 
 const NOW_S = NOW / 1000;
@@ -73,7 +73,7 @@ test("the spend limit with no dollars shows only the percent", async () => {
   const { text } = await rowsOf({
     rate_limits: { spend_limit: { used_percentage: 62.8 } },
   });
-  expect(text).toContain("◷ spend  63%");
+  expect(text).toContain("◷ spend 63%");
   expect(text).not.toContain("$500");
 });
 
@@ -102,8 +102,8 @@ const subagent = async (task: Record<string, unknown>) => {
 test("a subagent row shows the resolved `model`, `effort`, and `agentType` of the task, also when the caller overrode the model", async () => {
   const content = await subagent({
     id: "t1",
-    agentType: "claudetto:Scout",
-    name: "Scout",
+    agentType: "claudetto:Artemis",
+    name: "Artemis",
     status: "running",
     model: "claude-opus-5-5",
     effort: "max",
@@ -111,7 +111,7 @@ test("a subagent row shows the resolved `model`, `effort`, and `agentType` of th
     tokenCount: 100_000,
     startTime: NOW - 5000,
   });
-  expect(content).toContain("● Scout opus-5-5 max");
+  expect(content).toContain("● Artemis opus-5-5 max");
   expect(content).toContain("100k/1M 10%");
 });
 
