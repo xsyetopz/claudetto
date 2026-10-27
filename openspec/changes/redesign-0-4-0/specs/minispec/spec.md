@@ -30,5 +30,5 @@ A change that raises a pinned value SHALL fail the test, unless it adds a behavi
 
 ### Requirement: Release Preset
 
-**Reason**: Its only check was a test of the wording of the skill `propose`. The rule of `.claude/rules/test-behavior.md` deletes a test of prose (the user, 2026-10-26).
+**Reason**: Its only check was a test of the wording of the skill `propose`. The rule of `.claude/rules/tests.md` deletes a test of prose (the user, 2026-10-26).
 **Migration**: The skill `propose` keeps the text. No test checks it.

@@ -44,7 +44,7 @@ It is for a maintainer who checks the `--image` flag and the verb `box` of the `
 The post-fix wrapper call used the same method, the same image, and the same question.
 The wrapper runs call `post` and `render` directly, and not the launcher.
 The shipped-command call in the section below is the only end-to-end run of the shipped command.
-Running `cli.ts` directly does nothing, because only `plugins/claudetto/bin/claudetto-decide` calls `main`.
+Running `adapters/cli.ts` directly does nothing, because only `plugins/claudetto/bin/claudetto-decide` calls `main`.
 
 All results on this page are measured on 2026-10-20.
 
@@ -138,7 +138,7 @@ The confidence was `0.92`.
 The box is within `0.01` of the true box on each edge.
 The values come from the logging wrapper, because the CLI rejected the reply.
 
-### The `box` Call After the Fix
+### The `box` Call after the Fix
 
 The post-fix call ran after the fix in commit `38d39b78`.
 It used `jev-1.14.0`, and it returned the same box as the first call.

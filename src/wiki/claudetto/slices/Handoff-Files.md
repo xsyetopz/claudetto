@@ -6,7 +6,7 @@ See [Handoff](Handoff) for how and when the handoff runs.
 
 ## The File
 
-Each handoff goes to `.claudetto/handoffs/handoff-<UTC time>.md`, such as `handoff-20261016T120000Z.md`.
+Each handoff goes to `.claude/claudetto/handoffs/handoff-<UTC time>.md`, such as `handoff-20261016T120000Z.md`.
 A change folder of `openspec/changes/` gets no `handoff.md`.
 
 The open change is the first folder of `openspec/changes/`, by name, that has an open task in its `tasks.md`.

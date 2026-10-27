@@ -7,23 +7,23 @@ The layout of the core plugin: capability modules, one file for each hooked even
 ### Requirement: Capability Modules
 
 The runtime code of `plugins/claudetto/` SHALL be in `modules/<name>/`, one folder for each capability: `shell`, `project`, `jev`, `session`, `work`, `gate`, `agents`, `statusline`, `setup`, and `spec`.
-Each module SHALL have an `index.ts`, and a file outside the module SHALL import the module only through it.
-A module with a command SHALL also have `cli.ts` for `bin/`. A test MAY import any module file.
+A module SHALL have no `index.ts` barrel, and a file SHALL import the file that defines a name (the user, 2026-10-26).
+A module with a command SHALL also have `adapters/cli.ts` for `bin/`. A test MAY import any module file.
 The import graph of the modules SHALL have no cycle.
 
-#### Scenario: Deep Import
+#### Scenario: Barrel File
 
-- **WHEN** a file of `modules/work/` imports `modules/gate/domain/paths.ts`
-- **THEN** `just check` fails and names the import
+- **WHEN** a module holds an `index.ts` that re-exports the names of its files
+- **THEN** `just check` fails and names the file
 
 #### Scenario: Cycle
 
-- **WHEN** `modules/gate/index.ts` imports `modules/work/index.ts` and `modules/work/index.ts` imports `modules/gate/index.ts`
+- **WHEN** `modules/gate/paths.ts` imports `modules/work/notes.ts` and `modules/work/notes.ts` imports `modules/gate/paths.ts`
 - **THEN** `just check` fails and names both modules
 
-#### Scenario: Index Import
+#### Scenario: Defining File Import
 
-- **WHEN** a file of `modules/gate/` imports a function from `modules/work/index.ts`
+- **WHEN** a file of `modules/gate/` imports a function from the `modules/work/` file that defines it
 - **THEN** `just check` passes
 
 ### Requirement: Kernel Scope
@@ -34,7 +34,7 @@ The plugin options SHALL be read by one kernel function, which the mod and each 
 
 #### Scenario: Kernel Imports a Module
 
-- **WHEN** a kernel file imports `modules/session/index.ts`
+- **WHEN** a kernel file imports `modules/session/limits.ts`
 - **THEN** `just check` fails and names the import
 
 #### Scenario: One Options Read
@@ -45,7 +45,7 @@ The plugin options SHALL be read by one kernel function, which the mod and each 
 ### Requirement: One Register File
 
 `plugins/claudetto/hooks/register.ts` SHALL hold each hook of the plugin as a literal `on("<event>", <handler name>)` call with a `// rule: <module>.<job>` comment above it, because the mod runtime accepts no other form.
-It SHALL import only module `index.ts` files and the kernel.
+It SHALL import only `adapters/*.ts` files of the modules and the kernel.
 
 #### Scenario: Stop Order
 

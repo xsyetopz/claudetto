@@ -6,7 +6,7 @@ This change moves the core to capability modules with named hook rules, and spli
 ## What Changes
 
 - **BREAKING** (maintainer): `plugins/claudetto/slices/` becomes `plugins/claudetto/modules/` with the modules `shell`, `project`, `jev`, `session`, `work`, `gate`, `agents`, `statusline`, `setup`, and `spec` (A1).
-  A module imports another module only through its `index.ts`.
+  A module imports another module at the file that defines the name, with no `index.ts` barrel (the user, 2026-10-26).
 - **BREAKING** (maintainer): each `on` call of `hooks/register.ts` has a rule name, and `evals/hooks.json` is keyed by rule name (A2, D3 of `design.md`).
 - Each `$.state` value gets one owner module, and a type test checks `types/index.d.ts` against the owner types (A3).
 - Each duplicate detection of `research/core.md` ("Coupling" item 3) becomes one function in its owner module, and the commands and the mod hooks share it.

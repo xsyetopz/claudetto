@@ -16,7 +16,7 @@ MiniSpec SHALL write each change to `openspec/changes/<name>/` with the files an
 
 ### Requirement: No Start Cost
 
-The skills `claudetto:propose`, `claudetto:apply`, `claudetto:verify`, and `claudetto:archive` SHALL each have `disable-model-invocation: true`, and claudetto SHALL ship no other spec skill.
+The skills `claudetto:propose`, `claudetto:apply`, `claudetto:verify`, `claudetto:archive`, `claudetto:explore`, `claudetto:update`, and `claudetto:sync` SHALL each have `disable-model-invocation: true`, and claudetto SHALL ship no other spec skill.
 A skill with this key adds no description to the request (`research/probes.md` batch 13, `goalproj`).
 
 #### Scenario: Request at Session Start
@@ -26,8 +26,8 @@ A skill with this key adds no description to the request (`research/probes.md` b
 
 ### Requirement: Command Scope
 
-The `minispec` command SHALL have `new change`, `list`, `status`, `validate`, and `archive`, the commands of OpenSpec that the sessions of the user call (design D10).
-`status` SHALL give the ready artifacts and the task counts of `countTasks` of `src/kernel/change.ts`.
+The `minispec` command SHALL have `new change`, `list`, `status`, `instructions`, `show`, `validate`, `schemas`, `schema validate`, `sync`, and `archive`, the commands of OpenSpec that the sessions of the user call (design D10).
+`status` SHALL give the ready artifacts and the task counts of `countTasks` of `plugins/claudetto/modules/project/domain/change.ts`.
 `archive` SHALL merge the delta specs of a change into `openspec/specs/` and move the change to `openspec/changes/archive/`.
 
 #### Scenario: Archive Merges a Delta
@@ -42,7 +42,7 @@ The `minispec` command SHALL have `new change`, `list`, `status`, `validate`, an
 
 ### Requirement: Parity with OpenSpec
 
-For each command of the scope, a test SHALL run `minispec` and `@fission-ai/openspec@1.14.3` on the same fixtures and SHALL compare the exit codes, the files that each writes, and the facts that each prints.
+For each command of the scope, a test SHALL run `minispec` and `@fission-ai/openspec@1.15.0` on the same fixtures and SHALL compare the exit codes, the files that each writes, and the facts that each prints.
 A difference SHALL fail the test, unless design D10 names it as better, with its reason.
 
 #### Scenario: Archive Differs
@@ -132,7 +132,7 @@ The skills `propose`, `apply`, and `verify` SHALL end each report with that comm
 
 ### Requirement: Same Result as OpenSpec
 
-For each command and flag of D22, `minispec` SHALL give the same exit status, the same `valid` value, and the same issues as OpenSpec 1.14.3 for the same input, and SHALL write the same files.
+For each command and flag of D22, `minispec` SHALL give the same exit status, the same `valid` value, and the same issues as OpenSpec 1.15.0 for the same input, and SHALL write the same files.
 A difference SHALL be listed in the `differences` of its parity case.
 
 #### Scenario: Duplicate Requirement

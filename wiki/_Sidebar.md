@@ -55,6 +55,7 @@
   - [Evals of the Audit Lines](Evals-Audit-Lines)
   - [Eval History](Evals-History)
   - [Handoff Cost](Handoff-Cost)
+  - [Code Compaction Probe](Code-Compaction-Probe)
   - [Usage Evidence](Usage-Evidence)
 - Development
   - [Development](Development)

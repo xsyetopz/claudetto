@@ -90,7 +90,7 @@ Claude Code leaves out a limit window when the API does not report it.
 Then the segment shows the last reading of that window in the dim color, with its age, such as `◷ 7d 80% ↻Oct 28 at 7am (5m ago)`.
 The last reading has no pace, and it shows until its `resets_at` passes.
 A window with no `resets_at`, such as the spend limit, shows no last reading.
-The readings are in one file for each `CLAUDE_CONFIG_DIR`, in the folder of the git cache.
+The readings are in `limits.json` in the `claudetto` folder of each `CLAUDE_CONFIG_DIR` (see Rate Limits File).
 A refresh with the same windows writes the file at most one time in a minute (`READING_KEEP_MS`).
 
 ### Prompt Cache
@@ -142,6 +142,12 @@ A pull request has the color of its review state: `approved`, `pending`, `change
 
 When the input has `rate_limits`, the command writes them to `claudetto-rate-limits.json` in the temp folder (see `kernel/tmp.ts`) for the eval recipes.
 An input with no `rate_limits` keeps the last content.
+
+The command also saves the last reading of each limit window in `limits.json` in the folder `${CLAUDE_CONFIG_DIR:-~/.claude}/claudetto/`.
+The file is not in the temp folder, because it must outlive a reboot.
+Claude Code can leave out a window, such as `7d`, until its first reply, and the saved reading shows the `7d` value until its `resets_at` passes.
+Each config folder has its own file, so each account has its own readings.
+The command skips the file with no error when the config path is not absolute, the `claudetto` folder or `limits.json` is a link, another user owns the folder, or the folder or the write fails.
 
 ## Git Cache and Failures
 

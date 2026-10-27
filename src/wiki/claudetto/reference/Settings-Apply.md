@@ -45,7 +45,7 @@ A status line of another tool stays, and the preview says so.
 With `--apply`, in a project that has `.git/`, setup appends these lines to `.gitignore` under a comment header:
 
 ```text
-/.claudetto/
+/.claude/claudetto/
 /.jscpd.json
 /.claude/settings.local.json
 ```

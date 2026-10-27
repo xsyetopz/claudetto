@@ -5,7 +5,7 @@ The module names and the file names below are proposed.
 
 ### Core Plugin `plugins/claudetto/`
 
-- `modules/<m>/`: one capability each, with `index.ts` as its only public surface, `domain/` for pure code, `adapters/` for engine and runtime code, `prompts.ts` for texts, `limits.ts` for bounds, and `state.ts` for its `$.state` values.
+- `modules/<m>/`: one capability each, with no `index.ts` barrel (the user, 2026-10-26), `domain/` for pure code, `adapters/` for engine and runtime code, `prompts.ts` for texts, `limits.ts` for bounds, and `state.ts` for its `$.state` values.
   - `shell`: the shell reader, which leaves the kernel. It has no state.
   - `project`: the facts of the work tree and the transcript: the root, the paths, the task and change parse, the passed checks, the apply detection, the edit ledger, the `git status` parse, and the temp folders.
   - `gate`: the permission gate, the usage ask at red, the apply edit rule, the `Monitor` dedupe, and the `gh` titles.
@@ -34,15 +34,15 @@ It stays a separate plugin with no import from another plugin.
 
 ## Data and Interfaces
 
-- A module imports another module only through its `index.ts`, and the import graph of the modules has no cycle.
+- A module imports another module at the file that defines the name (the user, 2026-10-26), and the import graph of the modules has no cycle.
   The order is the kernel, then `shell`, `project`, and `jev`, then `session`, then `work`, then `gate`, and the command modules and `agents` last (proposed).
   This order fits each kernel import of each slice on 2026-10-25: `guard` reads `usage` and the shell reader, `hygiene` reads the shell reader and the ledger, and `finish` reads `usage` (`grep` of the `kernel/` imports of `slices/*/`).
-- `register.ts` imports module `index.ts` files and the kernel only.
+- `register.ts` imports module `adapters/*.ts` files and the kernel only (the user, 2026-10-26).
 - A rule of `register.ts` has a name, an optional matcher of the engine (`on(event, match, handler)`), and a handler.
   The rule name is the key of `plugins/claudetto/evals/hooks.json`, in place of the `// eval:` comment lines that `tests/support/hook-evals.ts` reads now.
 - Each `$.state` value has one owner module, whose `state.ts` declares its reference and its type.
   `types/index.d.ts` stays a contract with no import (its header), so a type test checks that each type of a `state.ts` and the contract type accept each other.
-- A value that one module writes and another reads, such as `usage` and `note`, is a reference of the owner's `index.ts`, so the reader imports it.
+- A value that one module writes and another reads, such as `usage` and `note`, is a reference of a file of the owner, so the reader imports it.
 - The commands in `bin/` and the mod hooks share each parse through the `domain/` of the owner module, so each fact has one parser for both runtimes.
 - The plugin options are read once by `register.ts` and by each command, through one kernel function, in place of four `keepOptions`.
 
@@ -58,7 +58,7 @@ It stays a separate plugin with no import from another plugin.
 
 ## Decisions
 
-- A1: Capability modules in place of slices, and a module imports another module through its `index.ts`.
+- A1: Capability modules in place of slices, and a module imports another module at the file that defines the name (the user, 2026-10-26).
   Why: the rule "a slice imports no slice" moved shared code into 8 kernel files with no owner, and the same fact got 2 or 3 copies (`research/core.md`, "Coupling" items 1 and 3).
   Alternatives: keep the slices and move each duplicate into the kernel, which keeps the kernel with no owner. Event-only layout (option B of `research/core.md`), which leaves the command duplicates.
 - A2: One file for each event, with an ordered list of named rules.

@@ -15,7 +15,7 @@ After the copy, a plugin cannot use a file outside its folder.
 
 - `plugins/claudetto/hooks/register.ts` shows the relative imports and literal event names.
 - `tests/repo/imports.test.ts` checks the import rules over `plugins/`.
-- `.claude/rules/hooks-module.md` forbids a `node:` or `bun:` import in the hooks module.
+- `.claude/rules/plugins.md` forbids a `node:` or `bun:` import in the hooks module.
 - [Plugin Layout](Plugin-Layout) shows the tree.
 
 ## Why Each File Has One Concern

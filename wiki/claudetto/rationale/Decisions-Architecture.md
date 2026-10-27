@@ -40,7 +40,7 @@ The one classic command hook is `PreModelSwitch` in `claudetto`, because the mod
 A mod handler runs inside Claude Code with no extra start.
 
 **Evidence:** The two `hooks.json` files.
-The hooks module has no `node:` import, no `bun:` import, and no `Bun` (`.claude/rules/hooks-module.md`).
+The hooks module has no `node:` import, no `bun:` import, and no `Bun` (`.claude/rules/plugins.md`).
 
 ## Why Scripts Beat Skills for Plain Work
 

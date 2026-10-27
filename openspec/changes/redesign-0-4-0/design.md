@@ -72,16 +72,16 @@ Alternative: one handler for each event that calls the module functions in order
 
 `tests/repo/imports.test.ts` reads each import line of `plugins/`, builds the graph, and fails for:
 
-- an import of a module file other than its `index.ts` from outside the module, except a `bin/` import of its `cli.ts` and a test, which includes the hook labs of `plugins/claudetto/tests/` (A6),
+- a `bin/` import other than the `adapters/cli.ts` of a module or the kernel,
 - a cycle between modules,
 - a kernel import of a module,
-- a `register.ts` import other than a module `index.ts` or the kernel,
+- a `register.ts` import other than a module `adapters/*.ts` file or the kernel,
 - an `on(` call outside `register.ts`,
 - a `node:` or `bun:` import or a `Bun` name in the import graph of `register.ts` (rule `hooks-module.md`),
 - an import of another plugin, `tools/`, `dev/`, or `tests/` from `plugins/` (rule `plugin-imports.md`).
 
 The three Biome `noRestrictedImports` blocks (`biome.json:88,108,128`) go, because a glob cannot say "another module".
-Until task 6.2, the blocks allow the `index.ts` of another module, so the moves of group 2 pass `just check` (Jev for the user, 2026-10-25, confidence 1.00).
+Until task 6.2, the blocks allow the files of another module, so the moves of group 2 pass `just check` (Jev for the user, 2026-10-25, confidence 1.00).
 The five import-rule test files of `research/tooling.md` merge into this one, and each case that they test stays as a case.
 
 Why: one graph check finds a cycle, which a path pattern cannot.

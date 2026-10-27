@@ -29,13 +29,13 @@ A layer uses only the layers below it.
 | Layer | Folder | What it holds | Imports |
 | --- | --- | --- | --- |
 | Kernel | `plugins/claudetto/kernel/` | Pure code with no owner module: text helpers, the error policy, the ports, the hook types, the options read, and the adapters of `kernel/node/`. | Nothing, except `kernel/node/` |
-| Modules | `plugins/claudetto/modules/` | One job each. | The kernel, its own folder, and the `index.ts` of another module |
+| Modules | `plugins/claudetto/modules/` | One job each. | The kernel, its own folder, and the file of another module that defines the name |
 | Entry points | `plugins/claudetto/hooks/register.ts` and `bin/` | The hooks module and the commands. | The modules |
 
 The rules of the layers:
 
-- A module imports another module only through its `index.ts`, and the imports of the modules make no cycle.
-- A `bin/` file imports only the `cli.ts` of a module.
+- A module imports the file of another module that defines the name, with no `index.ts` barrel, and the imports of the modules make no cycle.
+- A `bin/` file imports only the `adapters/cli.ts` of a module.
 - A plugin never imports another plugin.
 - A file in the import graph of the hooks module has no `node:` import, no `bun:` import, and no `Bun`.
   So a mod handler imports only the pure kernel and the pure parts of the modules.
@@ -84,8 +84,6 @@ A module has the parts that it needs:
 
 | Part | Use |
 | --- | --- |
-| `index.ts` | The public surface: the one file that another module imports. |
-| `cli.ts` | The surface for a command in `bin/`. |
 | `domain/` | Pure logic with no I/O, and no import of an adapter. |
 | `adapters/` | The handlers of the hooks module, and the commands that export `main`. |
 | `prompts.ts` | The texts for Claude and for the user. |

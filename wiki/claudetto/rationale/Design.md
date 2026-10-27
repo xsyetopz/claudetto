@@ -23,7 +23,7 @@ The order is: a default of Claude Code, a setting or env var, a mod handler, a c
 A skill adds its description to each session, so only a skill that the user starts has `disable-model-invocation`.
 
 - A slice that a setting can replace is not a slice. The `styles` slice is an empty folder, because the output style needs no code.
-- `.claude/rules/extension-points.md` forbids new runtime code for a feature that Claude Code already has.
+- `.claude/rules/plugins.md` forbids new runtime code for a feature that Claude Code already has.
 
 ## Do Not Call a Model for a Plain Check
 
@@ -60,7 +60,7 @@ A plugin imports nothing from another plugin.
 An add-on must work when the user installs it alone, so it cannot need the core plugin.
 
 - An add-on keeps its own copy of each kernel file that it uses, and a test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
-- `.claude/rules/plugin-imports.md` and `tests/repo/addons.test.ts` enforce the rule.
+- `.claude/rules/plugins.md` and `tests/repo/addons.test.ts` enforce the rule.
 
 ## Give Each Bound One Owner
 

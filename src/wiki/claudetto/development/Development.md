@@ -35,17 +35,13 @@ Claude Code loads a rule when Claude works on a matching file.
 
 | Rule file | Subject |
 | --- | --- |
-| `arrow-functions.md` | Each function is an arrow function |
-| `slice-imports.md` | A slice imports only the `kernel/` of its plugin and its own folder |
-| `plugin-imports.md` | A plugin imports no other plugin |
-| `hooks-module.md` | The hooks module graph has no `node:`, no `bun:`, and no `Bun` |
-| `cli-adapters.md` | A CLI adapter runs on Bun and may use `node:`, `bun:`, and `Bun` |
-| `engine-facts.md` | Facts of Claude Code that a hook relies on ([Engine Facts](Decisions-Engine)) |
-| `extension-points.md` | No runtime code for a feature that Claude Code has |
-| `lab-tests.md` | Hook lab tests are in `plugins/*/tests/*.test.ts` |
-| `ste-messages.md` | Messages to Claude are in strict ASD-STE100 |
-| `tests.md` | A test never runs a guarded command |
-| `wiki.md` | Title Case and the style of the wiki pages |
+| `changelog.md` | Where a CHANGELOG entry goes, and `just bump` for versions |
+| `claude-code.md` | Env vars and flags of Claude Code first, pin tests for undocumented facts, and the cheapest code |
+| `dev-tools.md` | Each file of `tools/` and `dev/` has a caller |
+| `plugins.md` | A plugin imports no other plugin, the hooks module graph has no `node:`, `bun:`, or `Bun`, and no copy of a built-in feature |
+| `rule-names.md` | One `on()` call and one `evals/hooks.json` key for each hook rule |
+| `tests.md` | Behavior tests, Arrange-Act-Assert, the layout of `tests/`, and the hook lab tests |
+
 
 ## Commands
 

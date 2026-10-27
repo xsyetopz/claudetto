@@ -38,5 +38,5 @@ Its result to the parent SHALL be short: what it found or changed, with paths, a
 
 ### Requirement: Fixed Agent Settings
 
-**Reason**: Its scenario "Description" was a test of the wording of each description. The rule of `.claude/rules/test-behavior.md` deletes a test of prose (the user, 2026-10-26).
+**Reason**: Its scenario "Description" was a test of the wording of each description. The rule of `.claude/rules/tests.md` deletes a test of prose (the user, 2026-10-26).
 **Migration**: The requirement "Agent Settings" and the requirement "Agent Results" keep each rule and each behavior scenario.

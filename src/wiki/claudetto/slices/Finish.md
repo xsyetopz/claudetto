@@ -16,7 +16,7 @@ The stop is blocked at most `GOAL_BLOCKS_MAX` (5) times in a row.
 Then the stop goes on, a line tells you why, and the goal stays set.
 A passed check clears the count.
 
-The state is in `.claudetto/goal.json` of the project root.
+The state is in `.claude/claudetto/goal.json` of the project root.
 The file holds the check command.
 The hook reads the file at each stop, so the goal survives a compaction, a `/clear`, and a resume of the session.
 

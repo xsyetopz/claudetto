@@ -16,7 +16,7 @@ The minimum Claude Code version is `2.1.307` (`MIN_CLAUDE_CODE_VERSION` in `tool
 **Reason:** More code breaks more often when Claude Code updates.
 `claudetto-setup` merges the snippet only with `--apply`.
 
-**Evidence:** `.claude/rules/extension-points.md` forbids runtime code for a feature Claude Code has.
+**Evidence:** `.claude/rules/plugins.md` forbids runtime code for a feature Claude Code has.
 `tests/claudetto/settings-pin.test.ts` checks each JSON block of [Settings Snippet](Settings-Snippet) against the schema.
 It fails on a key the schema lacks and on a never-set key (`NEVER_SET_KEYS`, `NEVER_SET_ENV` in `tests/support/settings-pin.ts`).
 

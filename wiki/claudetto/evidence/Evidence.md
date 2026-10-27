@@ -23,6 +23,7 @@ Each row below names a page, what it measures, and when.
 | [Probes of 2.1.301](Probes-2.1.301) | What a plugin `hooks.json`, agent, and `Stop` input accept | 2026-10-16 | `2.1.301` |
 | [Stop Hook Eval](Stop-Hook-Eval) | The behavior of a `type: "prompt"` hook on `Stop` | 2026-10-07 to 2026-10-12 | `2.1.292`, `2.1.296` |
 | [Sandbox Run 0.2.0](Sandbox-Run-0.2.0) | Live sandbox runs of 0.2.0, the slices that worked, and the faults fixed | 2026-10-20 | `2.1.304` |
+| [Code Compaction Probe](Code-Compaction-Probe) | Cost, quality, and cache of the built-in `/compact`, code compaction, and the handover | 2026-10-26 | `2.1.310` |
 | [Jev Images](Jev-Images) | Live `yes` and `box` calls with one image, the reply shape of `box`, an image over the pixel bound, and the cost | 2026-10-20 | Not applicable |
 
 ## Related Pages

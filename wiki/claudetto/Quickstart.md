@@ -33,7 +33,7 @@ When the context gets long, `claudetto` hands over in place of a summary.
 A hook writes a handoff file with no model call, runs `/clear`, and sends the file as the next prompt.
 A handover starts at the end of a quiet turn when the context passes 150,000 tokens, when the open change moves to its next task group, or when the session is older than 8 hours.
 The file holds the goal, the state, and the next step, and a new context starts from it.
-The files are in `.claudetto/handoffs/`.
+The files are in `.claude/claudetto/handoffs/`.
 The automatic compaction of Claude Code stays as the safety net.
 It starts at 225,000 tokens of the 300,000 window, and at 90,000 tokens for Haiku.
 Set the option `compaction` to `built-in` to turn the handover off.

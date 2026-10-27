@@ -39,7 +39,7 @@ The code imports each text from `../prompts.ts`.
 
 - A text with a parameter is a function that gives a string.
 - The code keeps the choice between texts, the short labels, and the log lines.
-- Messages to Claude are in strict ASD-STE100 (`.claude/rules/ste-messages.md`).
+- Messages to Claude are in strict ASD-STE100.
 
 ## How to Add a Slice
 

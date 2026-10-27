@@ -9,9 +9,8 @@ A patch violates Anthropic's terms of service.
 Reading the bundle for evidence is permitted.
 Ask the user before each new paid run, such as an eval, a sandbox session, a handoff test, or a model call (the user, 2026-10-15).
 Give the expected cost and the current weekly share with the question.
-This applies also to the sandbox sessions that the rule in `.claude/rules/sandbox-runs.md` approves.
+This applies also to each sandbox session.
 Put each code item in inline code (single backticks) in all text that is not code: Markdown, comments, test names, messages to Claude, commit messages, pull requests, and chat replies.
 A code item is a command, a tool name, a file path, an identifier, a settings key, an env var, or a literal value, such as `cat F`, `Read`, `hooks.json`, and `maxTurns`.
 The backticks show a reader, a person or a model, which words are code and which words are prose.
-Write docs in STE-flavored ASD-STE100.
-Use no semicolons.
+Use a period or a comma in place of each semicolon.

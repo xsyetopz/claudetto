@@ -40,10 +40,10 @@ The text audit in `research/text-audit.md` SHALL check each text for this rule, 
 
 ### Requirement: Behavior Kept
 
-**Reason**: Its only check was an audit test of the wording of each text. The rule of `.claude/rules/test-behavior.md` deletes a test of prose (the user, 2026-10-26).
+**Reason**: Its only check was an audit test of the wording of each text. The rule of `.claude/rules/tests.md` deletes a test of prose (the user, 2026-10-26).
 **Migration**: The eval cases check the behavior of the texts, and the requirement "Shorter Than the Default" checks the size.
 
 ### Requirement: Positive Framing
 
-**Reason**: Its only check was a lint test of the wording of each text (`do not`, `never`). The rule of `.claude/rules/test-behavior.md` deletes a test of prose (the user, 2026-10-26).
+**Reason**: Its only check was a lint test of the wording of each text (`do not`, `never`). The rule of `.claude/rules/tests.md` deletes a test of prose (the user, 2026-10-26).
 **Migration**: None. The eval cases check the behavior that each text causes.

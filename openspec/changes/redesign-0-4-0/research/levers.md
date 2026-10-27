@@ -123,7 +123,7 @@ Candidates (proposed). A `grep -il` of `plugins/claudetto/agents/*.md` on 2026-1
 
 ## Deletion of the Prose Tests
 
-The rule: "when writing tests, any test that's about implementation prose rather than behaviour is to be wiped entirely. in terms of behaviour, AAA method will be applied where fit." (the user, 2026-10-26). It is in `.claude/rules/test-behavior.md`.
+The rule: "when writing tests, any test that's about implementation prose rather than behaviour is to be wiped entirely. in terms of behaviour, AAA method will be applied where fit." (the user, 2026-10-26). It is in `.claude/rules/tests.md`.
 Four `claudetto:Scout`s classified each case as KEEP, PROSE, or MIXED (a behavior check with a wording check) on 2026-10-26. Three `claudetto:Worker`s, split by folder, checked each case again and acted on it. A MIXED case keeps its behavior check and the values that its message carries, and loses the check of the wording. The Worker reports of 2026-10-26 give the counts. `git status` and `git diff` show the edits.
 
 Worker for `tests/tools/`, `tests/repo/`, and `tests/claudetto-browser/`:

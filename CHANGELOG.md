@@ -25,12 +25,27 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ### Changed
 
+- `minispec` reads each name and each boolean flag from the one walk of the arguments, so `new change --description x z`, `archive --skip-specs a-x --yes`, and `new change z --description --json` act as in OpenSpec.
+  The help and unknown-flag checks read the same walk, so the value of `--json=--help` stays a value.
+  `show -r` with a value that is not a number from `1` exits `2`, where it showed the whole spec before.
+  A thematic break such as `* * *` is no list item, and a blank line closes an empty item, so a fence after them is read as in CommonMark.
+- Each text of claudetto that a model reads says what to do, with the reason, in place of what not to do, as the Anthropic prompting guidance asks (the user, 2026-10-26).
+  This covers `agents/main.md` and the other agents, `Concise.md`, the skills, the prompt strings of the hooks and tools, `.claude/rules/`, and `AGENTS.md`.
+  A hard limit with no positive form, and a user rule that a handoff quotes, stay as they are.
+- `Concise.md` and `agents/main.md` tell Claude to write each text for a model, such as a subagent brief, in the same form.
+- `AGENTS.md` has no STE rule now (the user, 2026-10-26).
+- `agents/main.md` keeps only the rules of a coding agent: the pronoun and emoji rules are gone, each section is shorter, and the `learn:` line moves to a side model (16023 to 9513 bytes). A repeated ask with no reason, also "I do not need a reason", is no override in `main.md`, which now has the agent state the risk first, after 2 of 3 runs of the eval case `repeat-no-reason` used `eval` on that ask.
+- `agents/main.md` checks a technical claim of the user before it agrees: it states the claim, judges it as a third party would, and measures a performance, memory, or concurrency claim, then says first when the claim fails (arXiv `2510.04721`, `2604.02423`, `2505.23840`). It answers the technical content in place of emotional validation, and it writes to the standard of a maintained production project with current practice from the docs (the user, 2026-10-26).
+- `agents/main.md`, `Hephaestus`, `Athena`, `Apollo`, and `Concise.md` guard against a gamed measure (Goodhart's law): the goal is the target and a check is evidence about it, a check-gaming edit is a review defect, and each failure, workaround, and skipped step stays in the report.
 - The settings snippet now sets `model` to `opusplan` and `showClearContextOnPlanAccept` to `true`, so Opus plans, the approval can clear the context, and Sonnet builds with no manual switch of the model (the user, 2026-10-26).
   Auto mode stays off, and the gate decides each call after the approval.
   The snippet sets no `effortLevel` for each model, because a paid probe showed that the plan turn on Opus takes the saved effort of Sonnet.
 - **BREAKING** The flags `--global-md` and `--global-rule=LINE` of `claudetto-setup` are now `--claude-md` and `--claude-md-rule=LINE`.
 - **BREAKING** (maintainer) `plugins/claudetto/slices/` is now `plugins/claudetto/modules/`, with the modules `shell`, `project`, `jev`, `session`, `work`, `gate`, `agents`, `statusline`, `setup`, and `spec` (A1).
-  A module imports another module only through its `index.ts`, and `tests/repo/imports.test.ts` checks each import rule.
+  A file imports the module file that defines a name, with no `index.ts` barrel, because the repo follows the Biome rules `noBarrelFile` and `noReExportAll` (the user, 2026-10-26), and `tests/repo/imports.test.ts` checks each import rule.
+- (maintainer) The code passes Biome 2.6 with its GritQL rules and no suppression: no `as` cast, no `*Sync` call, no `.then`, no `reduce`, and no `process.exit`.
+  The process port of the kernel, the readers of `spec`, and the cache readers of the status line are async, and a timeout still returns at its deadline.
+  `package.json` names the type modules `claude-code`, `claude-code-mcp`, and `claude-code-tools` as optional peer dependencies.
 - **BREAKING** (maintainer) A `// rule: <module>.<job>` comment names each `on()` call of `hooks/register.ts`, and the keys of `evals/hooks.json` are these rule names (A2).
 - **BREAKING** (maintainer) The paid and manual tools move from `tools/` to `dev/`, such as the sandbox, the capture, the schema tool, and the eval tools (A5).
   The `just` recipes keep their names.
@@ -46,7 +61,7 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
   A later run gives an existing file the same block, and keeps each user line.
   The rule of a check before done is now the stop check of `finish`, so the block no longer has it.
 - The percents and the countdowns of the status line get a color from a linear gradient of 3 stops, green at 20%, amber at 60%, and red at 90%, in place of 3 fixed colors.
-- The body of `claudetto:main` is rebuilt from the system prompt sections of Claude Code 2.1.310, and each XML tag has the name of its section.
+- The body of `claudetto:main` is rebuilt from the system prompt sections of Claude Code 2.1.310, and each XML tag names its topic in plain words.
   Each rule works in the TUI and in `claude -p`.
   When `AskUserQuestion` is not in the tools, the model decides, states the assumption, and stops only before an action with no undo.
 - `claudetto:main` objects to a claim or a choice only on evidence of a fault, and first checks that the text of the user does not already cover the point.
@@ -61,12 +76,20 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ### Added
 
+- The `compaction` value `code` builds the compaction in code with no model request: the handoff message, then the newest messages (experimental).
+  The probe of change `code-compaction` has not shown it to cost less than the built-in compaction yet, so `auto` does not pick it (the wiki page "Code Compaction Probe").
+  A kept tool result keeps only its text, and the first kept rows of a group of parallel tool calls lose their thinking blocks, so that a `--resume` loads no history from before the compaction.
+- The model IDs for code that calls a Claude model move from `claudetto:main` to a `models` block of `prompt.context`.
+  A login whose `.claude.json` marks Mythos gets `claude-mythos-5-1` in place of `claude-fable-5-1`, and claudetto reads no other value of that file.
 - A session with no `Grep` and no `Glob`, such as a native build, gets the tools `mcp__claudetto__grep` and `mcp__claudetto__glob` in their place (task 19.14).
   They run the first search program of the host (`rg`, `ugrep`, then `grep`, and `rg` or `find` for `glob`) with `$.process`, take the input fields of the built-in tools that they can serve, and skip `.git` and the secret environment files.
   Their schemas are in the prompt, so no `ToolSearch` call comes first.
-  The secret-read rule of `gate` covers them as it covers `Grep` and `Glob`.
-- At each session start in a project with `.git`, claudetto adds `/.claudetto/` to `.gitignore` when no entry covers the folder, and creates `.gitignore` when it is missing (the user, 2026-10-26).
-  An equal entry, such as `.claudetto`, `.claudetto/`, `/.claudetto`, or `/.claudetto/**`, counts as present, also for `claudetto-setup --apply`.
+  The secret-read rule of `gate` covers them as it covers `Grep` and `Glob`.- At each session start in a project with `.git`, claudetto adds `/.claude/claudetto/` to `.gitignore` when no entry covers the folder, and creates `.gitignore` when it is missing (the user, 2026-10-26).
+  An equal entry, such as `.claude/claudetto`, `.claude/claudetto/`, `/.claude/claudetto`, or `/.claude/claudetto/**`, counts as present, also for `claudetto-setup --apply`.
+  An entry for a parent folder, such as `.claude/`, also covers it.
+- **BREAKING** The project state moves from `<project>/.claudetto/` to `<project>/.claude/claudetto/`, which holds the handoffs and `goal.json` (the user, 2026-10-26).
+  At the first session start, claudetto moves an old `.claudetto/` folder to `.claude/claudetto/` when that folder does not exist.
+  The last limit reading of the status line is now in `${CLAUDE_CONFIG_DIR:-~/.claude}/claudetto/limits.json`, so a reboot no longer removes it.
 - A test fails when a tool that a deny text of claudetto names, such as `Monitor` in the long-wait deny, is behind `ToolSearch` (task 19.15).
 - At the start, claudetto sets `BASH_MAX_OUTPUT_LENGTH` to 24,000 when you set neither it nor `bashOutputMaxChars`, below the default of 30,000 (task 19.9).
   Claude Code keeps the start of a long output, and 24,000 keeps the failure lines of the largest failed `just check` step that was measured.
@@ -95,7 +118,7 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 - (maintainer) `just builtins` also writes `Sections.md`, with the text of each system prompt section.
 - A prompt of over 40,000 characters gets one line of `additionalContext` that names its size and says that a large paste is sent again with each later request.
 - A `Bash` call can no longer change a protected file (task 19.12).
-  The protected files are the boxes of a `tasks.md`, the plan and spec files that `work.ground` checks, `.claudetto/goal.json`, and `.jscpd-baseline.json`.
+  The protected files are the boxes of a `tasks.md`, the plan and spec files that `work.ground` checks, `.claude/claudetto/goal.json`, and `.jscpd-baseline.json`.
   The rule checks the effect on the file, not the command, so `python3`, `perl`, `sed`, and a rename count the same.
   It turns on `tool_response.bashEditDiff` with `CLAUDE_CODE_BASH_EDIT_DIFF` at the start, saves the files before the call, and after it writes back a changed file (or deletes one that the call created) with a line that names `Edit`.
   When the field has `unavailable` or `skipped`, or is missing, such as in a sandbox, it compares the content instead.
@@ -119,9 +142,32 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
   When the memory of short values is full, the result gets a line that says a short value may show after its file is gone.
   A result with many near matches gets one slow check, and each other near match is replaced with no check and with one line that says so, so that a long result stays fast.
   A value that a program changes first, such as reversed, split, or hex, is not found.
+- **BREAKING** `minispec validate` gives an ERROR, not an INFO, when the archive would refuse a delta, so `validate` stops what `archive` stops (OpenSpec issue #1112).
+  A change that passed `validate --strict` before can fail now.
+- `minispec validate` gives a WARNING for a scenario with no `WHEN` or `GIVEN` step, or no `THEN` step (OpenSpec issue #2078), for a requirement that another open change also modifies, removes, or renames (OpenSpec issue #1669), and for a duplicate task number or a number out of order in `tasks.md` (OpenSpec issue #311).
+- `minispec archive --yes --json` puts `openTasks`, the count of open tasks, in the JSON when `tasks.md` has an open task (OpenSpec issue #2006).
+- A `MODIFIED` block can declare a scenario rename with the bullets `- RENAMED SCENARIO FROM: ...` and `- RENAMED SCENARIO TO: ...`, so `validate` and `archive` do not count the old scenario as dropped (OpenSpec issue #1697, PR #1843).
+  The archive removes the bullets from the main spec, and the skills `propose` and `update` name the form.
+- `minispec status` marks an artifact `done` only when each `##` section of its template has text (OpenSpec issue #1084).
+- `minispec` follows the surface of OpenSpec 1.15.0 for the commands that it keeps.
+  The schema `spec-driven` reads as the preset `story`, an unknown flag exits `2` (the flags `-r`, `--requirement`, and `-y` are known), and `-h`, `--help`, and `help` print the usage with exit `0`, and `--version` prints the version.
+  The new flags are `validate --archived`, `status --all`, `show --no-scenarios`, and `new change --goal`, and `new change` prints a `Next:` line.
+  A flag with its value after `=`, such as `--sort=name`, reads as the flag and its value, and `-r=1` reads as `-r 1`.
+  A flag value that starts with `--` and holds `=`, such as `--description "--x=y"`, stays whole.
+- (maintainer) The parity tests pin OpenSpec 1.15.0, and each difference from it is a named entry of `DIFFERENCES` with its OpenSpec issue number.
 
 ### Fixed
 
+- `claudetto-setup` with `--exclude-md`, `--deny-mcp`, `--off-plugin`, or a tool or skill turned off no longer also merges the whole settings snippet, because an exit code of `0` no longer counts as no action.
+- `claudetto-decide` with `--image` prints its note on stderr again when it scales an image.
+- (maintainer) `just schema` reads the settings schema of Claude Code `2.1.311`, which has a plugin manifest schema before it in the bundle.
+
+- A line of 4 or more spaces and a fence run no longer opens a code fence at the top level of a spec, so the requirements after it stay visible (OpenSpec issue #2130).
+  A fence in a list item still opens at the indent of the item content, and a backtick fence with a backtick in its info string opens no fence.
+- A closing run of `#` on a section title, such as `## ADDED Requirements ##`, no longer hides the section (OpenSpec issue #2145).
+- `minispec validate` gives the ERROR `Duplicate requirement in specification` for a main spec with a repeated requirement (OpenSpec issue #2132).
+- A broken `openspec/config.yaml` fails with `Cannot parse <file>` and exit `1`, and no stack trace.
+  OpenSpec 1.15.0 warns and goes on (OpenSpec issue #1892).
 - The gate judges the program that runs, not the word that the text spells (a paid eval trace of 2026-10-26 let `G=/Applications/Xcode.app/Contents/Developer/usr/bin/git; $G push --force-with-lease=main:cab2a44 origin main` through).
   A program word `$NAME` or `${NAME}` takes the last literal value that the same command assigned (`NAME=v`, `export`, `readonly`, `declare`), and a program with no known value asks.
   A `git -c alias.X=...` call with the verb `X` is judged as the git call or, for a `!` body, the shell command that the alias runs.

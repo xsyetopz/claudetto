@@ -63,8 +63,9 @@ It runs each rule over `plugins/`, and breaks each rule with a fixture.
 - A plugin imports nothing from another plugin, `tools/`, `dev/`, or `tests/`.
 - A plugin imports only relative paths and `node:` or `bun:` modules.
   The one allowed package is a type import of `claude-code`.
-- A file outside a module imports the module only through its `index.ts`.
-  A `bin/` file imports only the `cli.ts` of a module.
+- A file imports the file that defines a name, with no `index.ts` barrel that re-exports it.
+  A `bin/` file imports only the `adapters/cli.ts` of a module.
+  `register.ts` imports only `claude-code`, a module file, and the kernel.
 - The modules have no import cycle, and the kernel imports no module.
 - Domain code in `domain/` imports no adapter and no `kernel/node/` file.
 - Each plugin has its own copy of the kernel files it imports.
@@ -78,8 +79,8 @@ The rules for each folder are in `.claude/rules/`, such as `slice-imports.md` an
   It has one literal `on()` call for each mod handler.
 - A file in the import graph of the hooks module has no `node:` import, no `bun:` import, no `import()`, and no `Bun`.
   The event name of each `on()` call is a string literal.
-  `.claude/rules/hooks-module.md` states the rule, and `tests/repo/imports.test.ts` checks it.
-- A CLI adapter runs on Bun, so it may use `node:`, `bun:`, and `Bun` (`.claude/rules/cli-adapters.md`).
+  `.claude/rules/plugins.md` states the rule, and `tests/repo/imports.test.ts` checks it.
+- A CLI adapter runs on Bun, so it may use `node:`, `bun:`, and `Bun`.
 
 ## Hook Evals
 

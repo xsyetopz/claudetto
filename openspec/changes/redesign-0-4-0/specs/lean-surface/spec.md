@@ -13,5 +13,5 @@ The lint step SHALL fail for a function above a cognitive complexity of 15 or a 
 
 ### Requirement: Evidence for Each Control
 
-**Reason**: Its only check was a test of the text of the page `Controls.md` (fault 24). The rule of `.claude/rules/test-behavior.md` deletes a test of prose (the user, 2026-10-26).
+**Reason**: Its only check was a test of the text of the page `Controls.md` (fault 24). The rule of `.claude/rules/tests.md` deletes a test of prose (the user, 2026-10-26).
 **Migration**: The review of a release reads `src/wiki/claudetto/rationale/Controls.md`.

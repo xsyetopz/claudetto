@@ -191,7 +191,7 @@ For another shell, the command prints the line for you to add.
 With `--apply`, in a project that has a `.git/` folder, the command adds these lines to `.gitignore`:
 
 ```text
-/.claudetto/
+/.claude/claudetto/
 /.jscpd.json
 /.claude/settings.local.json
 ```
