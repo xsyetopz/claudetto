@@ -79,13 +79,9 @@ update:
 bump level *flags:
     bun tools/bump-version.ts "$@"
 
-# Fail while a row of findings.md of an openspec change (a change folder name or a findings.md path, required) has no passed check (D38). Run it before `release`, and not in `check`.
+# Fail while a row of findings.md of an openspec change (a change folder name or a findings.md path, required) has no passed check (D38). Run it before the merge of a release into `main`, and not in `check`.
 release-check change:
     bun tools/findings-check.ts "{{change}}"
-
-# Tag each plugin under plugins/ at HEAD and push all tags in one atomic push; add --dry-run to preview
-release *flags:
-    bun tools/release.ts "$@"
 
 # Write the settings schemas of the installed Claude Code to schemas/ and format them with Biome; extra arguments go to `dev/schema/main.ts` (--bundle FILE, --version X.Y.Z)
 schema *args:

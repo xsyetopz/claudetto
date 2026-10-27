@@ -71,7 +71,7 @@ A missing CLI gives `ENOENT`.
 **Reason:** A skill with a CLI costs less at session start than an MCP server that the add-on ships.
 The comparison with the built-in LSP tool is not in the repository.
 
-**Evidence:** `slices/graph/slice.ts` and `layout.test.ts` of `claudetto-codegraph` at the tag `claudetto-codegraph--v0.2.0`.
+**Evidence:** `slices/graph/slice.ts` and `layout.test.ts` of `claudetto-codegraph` at its `0.2.0` release, commit `4d589256`.
 
 ## Why Jev Is on When the Key Is Set
 

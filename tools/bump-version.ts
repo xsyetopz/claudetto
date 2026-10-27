@@ -1,10 +1,10 @@
 #!/usr/bin/env -S bun --no-env-file
-// Bumps the version in `package.json` by semver, each plugin manifest, and the marketplace, moves the CHANGELOG's [Unreleased] entries under
-// a new dated heading, and points the [unreleased] compare link at the new tag (`just bump`).
+// Bumps the version in `package.json` by semver, each plugin manifest, and the marketplace, and moves the CHANGELOG's [Unreleased] entries under
+// a new dated heading (`just bump`).
 //
 //   bun tools/bump-version.ts <major|minor|patch|X.Y.Z[-PRE]> [--dry-run] [--root DIR]
 //
-// Only the "version" line of `package.json` and two CHANGELOG lines change, so formatting and key
+// Only the "version" line of `package.json` and the CHANGELOG headings change, so formatting and key
 // order stay as they are. The "version" line of each `plugin.json` and of the marketplace changes too.
 
 import { constants } from "node:fs";
@@ -18,9 +18,6 @@ const SEMVER = /^(\d+)\.(\d+)\.(\d+)$/;
 const TARGET = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z]+(?:\.[0-9A-Za-z]+)*)?$/;
 const VERSION_LINE = /^(\s*"version":\s*)"([^"]*)"/m;
 const UNRELEASED = "## [Unreleased]\n";
-// The version in the `[unreleased]: .../compare/<prefix>vX.Y.Z...HEAD` link.
-const UNRELEASED_LINK =
-	/(^\[unreleased\]:\s*\S+\/compare\/\S*?v)\d+\.\d+\.\d+(?:-[0-9A-Za-z.]+)?(\.\.\.HEAD)/im;
 
 /** The version after `current` for `level`, which is `major`, `minor`, `patch`, or an exact `X.Y.Z` with an optional pre-release part. */
 export const nextVersion = (current: string, level: string): string => {
@@ -84,9 +81,10 @@ export const plan = async (root: string, level: string, today: string) => {
 			...manifests,
 			{
 				file: changelog,
-				text: log
-					.replace(UNRELEASED, `${UNRELEASED}\n## [${next}] - ${today}\n`)
-					.replace(UNRELEASED_LINK, `$1${next}$2`),
+				text: log.replace(
+					UNRELEASED,
+					`${UNRELEASED}\n## [${next}] - ${today}\n`,
+				),
 			},
 		],
 	};

@@ -1,4 +1,4 @@
-# Evals of 2.1.304
+# Evals Of 2.1.304
 
 These are paid runs of 32 cases of the `prompt` slice on Haiku 5.5, on Claude Code `2.1.304`.
 They ran on 2026-10-20, after the prompt fix `0a213a22`.
@@ -210,16 +210,17 @@ The rerun replaces the old row of this case only, and the `without` arm gave 10 
 ## The Variant Run against `0.1.0-alpha.1`
 
 This section reports a separate paid run on 2026-10-20.
-It compares the checkout with the tag `claudetto--v0.1.0-alpha.1`.
+It compares the checkout with the `0.1.0-alpha.1` release, commit `24159415`.
 Its claims do not rest on the `blind` and `control` sets.
 The run used Claude Code `2.1.304` and model `claude-haiku-5-5`.
 
 ### Method
 
-- Command: `just eval-variant claudetto--v0.1.0-alpha.1 --model haiku --runs 10 --max-cost-usd 6`.
+- Command: `just eval-variant 24159415 --model haiku --runs 10 --max-cost-usd 6`.
 - Concurrency: 1.
 - Arm A: the checkout, plugin `0.2.0`, with 40 cases.
-- Arm B: the tag `claudetto--v0.1.0-alpha.1`, with 16 cases from its own case files in the tag worktree.
+- Arm B: commit `24159415`, with 16 cases from its own case files in the worktree of that commit.
+  The run named that commit by the tag `claudetto--v0.1.0-alpha.1`, which the repository has since deleted, so the results folder keeps the tag name.
 - Each arm runs each case with the plugin (`with`) and without it (`without`).
 - The Δ of a case is the mean run score with the plugin minus the mean run score without it.
   The Δ values in this section are score differences, not pass-rate differences.
@@ -366,7 +367,7 @@ It ran on 2026-10-21.
 - The run exited with code 1 only because the baseline was at the maximum, so no gain could show.
 - The check has 10 runs for each arm, so it meets the `D25` floor.
 
-The full record of the eval gate of task 6.4 is in the openspec change `release-0-2-0`, in the file [`eval-gate-6.4.md`](https://github.com/xsyetopz/claudetto/blob/1c579e10/openspec/changes/release-0-2-0/eval-gate-6.4.md) at the tag `claudetto--v0.2.0`.
+The full record of the eval gate of task 6.4 is in the openspec change `release-0-2-0`, in the file [`eval-gate-6.4.md`](https://github.com/xsyetopz/claudetto/blob/1c579e10/openspec/changes/release-0-2-0/eval-gate-6.4.md).
 
 ## Rerun of the Lower Cases of the Eval Gate
 

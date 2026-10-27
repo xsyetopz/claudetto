@@ -9,9 +9,9 @@ import { file as bunFile, write as bunWrite } from "bun";
 import { main, nextVersion } from "../../tools/bump-version.ts";
 
 const PACKAGE = '{\n  "version": "1.0.0"\n}\n';
-const CHANGELOG =
-	"# Changelog\n\n## [Unreleased]\n\n- A change.\n\n" +
-	"[unreleased]: https://example.com/compare/v1.0.0...HEAD\n";
+const CHANGELOG = "# Changelog\n\n## [Unreleased]\n\n- A change.\n";
+const BUMPED_ALPHA_2 =
+	/## \[Unreleased\]\n\n## \[0\.1\.0-alpha\.2\] - \d{4}-\d{2}-\d{2}\n\n- A change\./;
 
 let root = "";
 beforeEach(async () => {
@@ -70,18 +70,14 @@ test("a malformed pre-release target is refused", () => {
 	expect(() => nextVersion("1.0.0", "0.1.0-alpha..1")).toThrow();
 });
 
-test("a bump from a pre-release version moves the compare link", async () => {
+test("a bump from a pre-release version moves the [Unreleased] entries under the new heading", async () => {
 	await bunWrite(
 		path.join(root, "package.json"),
 		'{\n  "version": "0.1.0-alpha.1"\n}\n',
 	);
-	await bunWrite(
-		path.join(root, "CHANGELOG.md"),
-		CHANGELOG.replace("v1.0.0...", "v0.1.0-alpha.1..."),
-	);
 	expect(await main(["0.1.0-alpha.2", "--root", root])).toBe(0);
-	expect(await bunFile(path.join(root, "CHANGELOG.md")).text()).toContain(
-		"compare/v0.1.0-alpha.2...HEAD",
+	expect(await bunFile(path.join(root, "CHANGELOG.md")).text()).toMatch(
+		BUMPED_ALPHA_2,
 	);
 });
 

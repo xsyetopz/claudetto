@@ -29,7 +29,7 @@ It installs the dev dependencies that `bun.lock` pins: Biome, `markdownlint-cli2
 - Never patch the Claude Code CLI binary or its npm package.
   Reading the bundle for evidence is allowed.
 - Write docs in STE-flavored ASD-STE100, with inline code for each code item.
-- Add a CHANGELOG entry under the version in the manifests when that version has no tag yet.
+- Add a CHANGELOG entry under the version in the manifests when `main` does not have that version yet.
   Otherwise add it under `[Unreleased]`.
 
 The files in `.claude/rules/` apply to some paths only.
@@ -66,7 +66,6 @@ Each recipe runs from the repository root.
 | `just update` | Refreshes the marketplace and updates your installed plugins. Restart Claude Code after it |
 | `just bump LEVEL` | Bumps the version and moves the `[Unreleased]` CHANGELOG entries |
 | `just release-check CHANGE` | Fails while a row of `findings.md` has no passed check |
-| `just release` | Tags each plugin at `HEAD` and pushes the tags |
 | `just wiki` | Publishes `wiki/` to the GitHub wiki |
 | `just eval --model M` | Runs the eval cases with `claude plugin eval`. It costs money |
 | `just eval-variant REF --model M` | Runs the eval cases on the checkout and on a variant at a git ref |

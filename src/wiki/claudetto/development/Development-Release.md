@@ -42,8 +42,12 @@ See [Evals](Evals).
 
 ## Releases
 
+A release is the merge of a branch into `main`.
+Claude Code installs and updates a plugin from the default branch and the `version` of its manifest, so the repository makes no tags.
+Claude Code reads a `<name>--v<version>` tag only to resolve a dependency range, such as `claudetto@^0.4.0`, and with no matching tag it installs the copy at `HEAD`.
+
 1. Add each change to `CHANGELOG.md`.
-   When the version in `package.json` has no tag yet, add the change under the heading of that version.
+   When `main` does not have the version in `package.json` yet, add the change under the heading of that version.
    Otherwise add it under `## [Unreleased]`.
    `just bump` fails when that heading is missing.
 2. Preview the bump, then bump.
@@ -56,22 +60,11 @@ See [Evals](Evals).
 
    `just bump` changes the `version` line of `package.json`, of each `plugin.json`, and of the marketplace file.
    It also changes two lines of `CHANGELOG.md`, and it moves the `[Unreleased]` entries under a dated heading.
-3. Commit.
-   Commit before you tag.
-   `claude plugin tag` checks that each `plugin.json` agrees with its marketplace entry, and it stops on a dirty tree.
-4. Run `just release-check CHANGE`, with the name of the change folder under `openspec/changes/`.
+3. Run `just release-check CHANGE`, with the name of the change folder under `openspec/changes/`.
    It fails while a row of `findings.md` has a `Task` that is not `none`, `done`, or `(checked)`.
-5. Preview the tags, then tag and push.
+4. Run `just check`, then commit and push the branch.
+5. Merge the branch into `main` and push `main`.
 
-   ```bash
-   just release --dry-run
-   just release
-   ```
-
-`just release` checks the tree, the generated wiki, and the tag names of all plugins before it tags.
-So a bad manifest stops the release with no tag made.
-It then pushes all tags to `origin` in one atomic push.
-When a tag step or the push fails, it deletes the tags it made.
 The notes of each release are in [Release History](Release-History).
 
 ## Wiki
