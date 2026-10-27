@@ -131,7 +131,7 @@ eval-budget *args:
 eval-stats *args:
     bun dev/stats/main.ts "$@"
 
-# List the 18 forks of the code-compaction probe with `--dry-run` (no call), or run them with `--run [--dir D]`, which is a paid run that needs the approval of the user (openspec change `code-compaction`, task 3.1)
+# List the 18 forks of the code-compaction probe with `--dry-run` (no call), or run them with `--run [--dir D] [--runs N]` (3 runs of each arm and size by default), which is a paid run that needs the approval of the user (openspec change `code-compaction`, task 3.1)
 probe *args:
     bun dev/probe/main.ts "$@"
 

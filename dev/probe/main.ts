@@ -1,8 +1,8 @@
 #!/usr/bin/env -S bun --no-env-file
-// The probe of the code-compaction change (task 3.1): 3 arms, 2 sizes, 3 runs, so 18 forks, on `claude-sonnet-5-5`.
+// The probe of the code-compaction change (task 3.1): 3 arms, 2 sizes, 3 runs (or `--runs N`), so 18 forks by default, on `claude-sonnet-5-5`.
 //
 //   bun dev/probe/main.ts --dry-run              lists the 18 forks and their commands, and makes no call
-//   bun dev/probe/main.ts --run [--dir D]        runs them. This is a paid run, so run it only after the user approves its cost
+//   bun dev/probe/main.ts --run [--dir D] [--runs N]   runs them. This is a paid run, so run it only after the user approves its cost
 //
 // Each size has one base session (tasks 1 to 3, in a fixture of `dev/probe/fixture.ts`). Each fork resets the project to the end of the base, then runs `/compact` with its arm and 2 follow-ups.
 // The forks of a size share one folder, because Claude Code finds a session by the folder. So they run one after the other.
@@ -51,7 +51,6 @@ import {
 const MODEL = "claude-sonnet-5-5";
 /** An absolute path, because each run starts in a temp folder. */
 const PLUGIN = path.join(import.meta.dir, "../../plugins/claudetto");
-const RUNS = MIN_RUNS;
 /** The `compaction` option of each arm. */
 const OPTION: Record<Arm, string> = { B: "built-in", C: "code", H: "handover" };
 /** A cap for each step, so that a loop stops (a safety stop, not the cost of a round). It counts the cost of the step only. */
@@ -112,11 +111,11 @@ export const flags = (arm: Arm): string[] => [
 const hopsOf = (arm: Arm): string[] =>
 	arm === "H" ? hopPrompts.slice(1) : hopPrompts;
 
-/** The 18 forks. `$BASE` is the base session of the size, `$FORK` is the session that the last step ended in, and `$HANDOFF` is the resume prompt of H. */
-export const plan = (): Fork[] =>
+/** The forks, `runs` of each arm and size. `$BASE` is the base session of the size, `$FORK` is the session that the last step ended in, and `$HANDOFF` is the resume prompt of H. */
+export const plan = (runs = MIN_RUNS): Fork[] =>
 	SIZES.flatMap((size) =>
 		(["B", "C", "H"] as const).flatMap((arm) =>
-			Array.from({ length: RUNS }, (_, i) => ({
+			Array.from({ length: runs }, (_, i) => ({
 				arm,
 				size,
 				run: i + 1,
@@ -470,6 +469,7 @@ export interface Runners {
 export const runAll = async (
 	root: string,
 	run: Runners = { base: runBase, fork: runFork },
+	runs = MIN_RUNS,
 ): Promise<Result[]> => {
 	const bases = await mapInOrder(SIZES, async (size) => {
 		const dir = await realpath(
@@ -485,7 +485,7 @@ export const runAll = async (
 	const results: Result[] = [];
 	await eachInOrder(bases, ({ size, dir, start }) =>
 		eachInOrder(
-			plan().filter((x) => x.size === size),
+			plan(runs).filter((x) => x.size === size),
 			async (f) => {
 				const result = await run.fork(f, dir, start).catch(
 					(e): Result => ({
@@ -510,15 +510,30 @@ export const runAll = async (
 	return results;
 };
 
-const USAGE = "Usage: bun dev/probe/main.ts --dry-run | --run [--dir D]";
+const USAGE = `Usage: bun dev/probe/main.ts --dry-run | --run [--dir D] [--runs N], where N is a whole number of at least ${MIN_RUNS}`;
+
+/** The value of `--runs` in `args`, `MIN_RUNS` without the flag, or `null` when it is not a whole number of at least `MIN_RUNS`. */
+export const runsOf = (args: string[]): number | null => {
+	const at = args.indexOf("--runs");
+	if (at < 0) {
+		return MIN_RUNS;
+	}
+	const n = Number(args[at + 1]);
+	return Number.isInteger(n) && n >= MIN_RUNS ? n : null;
+};
 
 /** Runs the command line `args`, and gives the exit code. */
 const main = async (args: string[]): Promise<number> => {
 	const at = args.indexOf("--dir");
 	const root =
 		at < 0 ? path.join(os.tmpdir(), "claudetto-probe") : args[at + 1];
+	const runs = runsOf(args);
+	if (runs === null) {
+		console.error(USAGE);
+		return 2;
+	}
 	if (args.includes("--dry-run")) {
-		for (const [i, f] of plan().entries()) {
+		for (const [i, f] of plan(runs).entries()) {
 			process.stdout.write(
 				`fork ${i + 1}: arm ${f.arm}, ${f.size / 1000}k, run ${f.run}\n`,
 			);
@@ -526,13 +541,15 @@ const main = async (args: string[]): Promise<number> => {
 				process.stdout.write(`  claude ${c.map(quote).join(" ")}\n`);
 			}
 		}
-		process.stdout.write(`${plan().length} forks, no call made.\n`);
+		process.stdout.write(`${plan(runs).length} forks, no call made.\n`);
 		return 0;
 	}
 	if (args.includes("--run") && root) {
 		await mkdir(root, { recursive: true });
 		try {
-			process.stdout.write(`${report(verdict(await runAll(root)))}\n`);
+			process.stdout.write(
+				`${report(verdict(await runAll(root, undefined, runs)))}\n`,
+			);
 		} catch (e) {
 			console.error(e instanceof Error ? e.message : e);
 			return 1;

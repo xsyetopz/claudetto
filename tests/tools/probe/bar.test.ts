@@ -7,7 +7,7 @@ import {
 	report,
 	verdict,
 } from "../../../dev/probe/bar.ts";
-import { plan } from "../../../dev/probe/main.ts";
+import { plan, runsOf } from "../../../dev/probe/main.ts";
 
 const run = (arm: Arm, over: Partial<Result> = {}): Result => ({
 	arm,
@@ -116,4 +116,19 @@ test("Plan: 3 arms, 2 sizes, and 3 runs make 18 forks, and H has 1 follow-up les
 			.find((f) => f.arm === "H")
 			?.commands.some((c) => c.join(" ").includes("task 1.4")),
 	).toBe(false);
+});
+
+test("Plan: `--runs 5` makes 30 forks, numbered 1 to 5 for each arm and size", () => {
+	const forks = plan(runsOf(["--run", "--runs", "5"]) ?? 0);
+	expect(forks).toHaveLength(30);
+	expect(
+		forks.filter((f) => f.arm === "C" && f.size === 80_000).map((f) => f.run),
+	).toEqual([1, 2, 3, 4, 5]);
+});
+
+test("Plan: `--runs` defaults to 3, and a count below 3 or not a whole number is refused", () => {
+	expect(runsOf(["--run"])).toBe(3);
+	expect(runsOf(["--run", "--runs", "2"])).toBeNull();
+	expect(runsOf(["--run", "--runs", "4.5"])).toBeNull();
+	expect(runsOf(["--run", "--runs"])).toBeNull();
 });
