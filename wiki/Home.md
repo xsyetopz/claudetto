@@ -11,7 +11,7 @@ For Claude Code itself, see [Claude Code Docs](#claude-code-docs).
 It changes Claude Code with the Mod API, settings, hooks, skills, agents, and output styles.
 It does not patch the program.
 Its goal is the best quality for the lowest token cost.
-`claudetto` needs Claude Code `2.1.310` or later.
+`claudetto` needs Claude Code `2.1.311` or later.
 
 For example, the permission gate of the `guard` slice lets a safe command run, asks before a command that can lose work for good, and denies a command that can harm the system.
 

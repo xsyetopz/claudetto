@@ -39,7 +39,7 @@ const say = (
 ): SessionMessage => ({ role, text, toolUses: [], handle });
 
 /** A message of `chars` characters, so that the tail budget counts it. */
-const big = (role: SessionMessage["role"], handle: string, chars = 36_000) =>
+const big = (role: SessionMessage["role"], handle: string, chars = 9000) =>
 	say(role, `${handle} ${"x".repeat(chars)}`, handle);
 
 /** A session that the tail budget cuts to about a third, so that code compaction answers. */
@@ -142,7 +142,7 @@ test("Tool Pair Kept", CODE, async ($: Engine, on: On) => {
 			text: "",
 			toolUses: [],
 			toolResults: [
-				{ tool_use_id: "t1", text: "x".repeat(20_000), isError: false },
+				{ tool_use_id: "t1", text: "x".repeat(5000), isError: false },
 			],
 			handle: "h6",
 		},

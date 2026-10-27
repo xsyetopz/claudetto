@@ -1,12 +1,13 @@
-// The reader of the edit ledger of spec `session-hygiene`: one file in the temp folder for each project.
+// The reader of the edit ledger of spec `session-hygiene`: one value of the private store of the plugin for each project.
 // The mod runtime has no `node:` or `Bun` API, so the hash is plain JavaScript on numbers.
 
-/** One edit: the path, the hash of the content after the edit, the session, and the agent. */
+/** One edit: the path, the hash of the content after the edit, the session, the agent, and the origin: an `Edit` or `Write` call (`edit`), or the capture of a `Bash` call (`bash`). */
 export interface LedgerLine {
 	readonly path: string;
 	readonly hash: string;
 	readonly session: string;
 	readonly agent: string;
+	readonly via: "edit" | "bash";
 }
 
 /** One changed file of the work tree with the hash of its content now. */
@@ -41,39 +42,42 @@ export const hash64 = (text: string): string => {
 
 const TRAILING_SLASHES = /\/+$/;
 const DIRECTORY_PREFIX = /^.*\//;
+/** The longest base name in a key: a key of the store is at most 256 characters. */
+const KEY_NAME_MAX = 100;
 const RENAME_OR_COPY = /[RC]/;
 
 /** The base name and the hash of the root path, so two projects with one base name differ. */
 export const projectKey = (root: string): string => {
 	const name = root.replace(TRAILING_SLASHES, "").replace(DIRECTORY_PREFIX, "");
-	return `${name.replace(/[^A-Za-z0-9._-]/g, "_")}-${hash64(root)}`;
+	return `${name.replace(/[^A-Za-z0-9._-]/g, "_").slice(0, KEY_NAME_MAX)}-${hash64(root)}`;
 };
 
-export const ledgerPath = (tmp: string, root: string): string =>
-	`${tmp}/claudetto/ledger/${projectKey(root)}.jsonl`;
+/** The key of the ledger of the project at `root` in the store. */
+export const ledgerKey = (root: string): string => `ledger:${projectKey(root)}`;
 
-/** The edits in a ledger file. A line that is not an edit adds nothing. */
-export const parseLedger = (text: string): LedgerLine[] =>
-	text.split("\n").flatMap((line) => {
-		try {
-			const v: unknown = JSON.parse(line);
-			if (typeof v !== "object" || v === null) {
-				return [];
-			}
-			const path = Reflect.get(v, "path");
-			const hash = Reflect.get(v, "hash");
-			const session = Reflect.get(v, "session");
-			const agent = Reflect.get(v, "agent");
-			return typeof path === "string" &&
-				typeof hash === "string" &&
-				typeof session === "string" &&
-				typeof agent === "string"
-				? [{ path, hash, session, agent }]
-				: [];
-		} catch {
-			return [];
-		}
-	});
+const VIAS = ["edit", "bash"] as const;
+
+/** The edits in a stored value. An entry that is not an edit, or has no valid `via`, adds nothing. */
+export const parseLedger = (value: unknown): LedgerLine[] =>
+	Array.isArray(value)
+		? value.flatMap((v: unknown) => {
+				if (typeof v !== "object" || v === null) {
+					return [];
+				}
+				const path = Reflect.get(v, "path");
+				const hash = Reflect.get(v, "hash");
+				const session = Reflect.get(v, "session");
+				const agent = Reflect.get(v, "agent");
+				const via = VIAS.find((x) => x === Reflect.get(v, "via"));
+				return typeof path === "string" &&
+					typeof hash === "string" &&
+					typeof session === "string" &&
+					typeof agent === "string" &&
+					via !== undefined
+					? [{ path, hash, session, agent, via }]
+					: [];
+			})
+		: [];
 
 /** The edits that made `path` with the content of `hash`. No line means that the user or a tool made it. */
 export const madeBy = (

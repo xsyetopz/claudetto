@@ -52,6 +52,15 @@ test("`just docker` with a recipe is a check, and a shell operator is not", () =
 	]);
 });
 
+test("an `&&` chain that passed counts each check in it, and a chain with another operator counts none", () => {
+	const checks = passedChecks([
+		bash("a", "cd /p && bun test tests/a && just lab"),
+		bash("b", "bun test tests/b && just lint | tail -3"),
+	]);
+
+	expect(checks).toEqual(["bun test tests/a", "just lab"]);
+});
+
 test("a check with an error is not passed, and a later failure removes an earlier pass", () => {
 	expect(passedChecks([bash("a", "just lab", { isError: true })])).toEqual([]);
 	expect(

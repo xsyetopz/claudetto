@@ -11,48 +11,35 @@ import { passedChecks, proven } from "../../../project/domain/checks.ts";
 import { GOAL_FILE } from "../../../project/domain/paths.ts";
 import { projectRoot } from "../../../project/domain/session.ts";
 import { sessionCost } from "../../../session/domain/usage.ts";
-import type { Note } from "../../domain/notes.ts";
-import {
-	agentBusy,
-	changedPaths,
-	editedPaths,
-	ranApply,
-	tickedFiles,
-	turnRows,
-	uncommitted,
-	unprovenTicks,
-	unprovenWhat,
-} from "../domain/record.ts";
-import { claimsDone, deferredItem, wrongHeading } from "../domain/reply.ts";
 import {
 	checkOf,
 	type Goal,
 	isSlashCommand,
 	parseGoal,
 } from "../domain/state.ts";
-import { nextOpen, ticked } from "../domain/tasks.ts";
-import { projectChecks, uncheckedEdit } from "../domain/verify.ts";
+import { ticked } from "../domain/tasks.ts";
 import {
-	GIT_TIMEOUT_MS,
 	GOAL_BLOCKS_MAX,
 	LOOP_TASK_CHARS,
-	NOTE_FILES_MAX,
 	OUTPUT_TAIL_CHARS,
 	RUN_TIMEOUT_MS,
 } from "../limits.ts";
 import {
 	BOX_DENY,
-	DEFERRED_NOTE,
 	GOAL_CAP,
-	HEADING_NOTE,
 	LOOP,
 	LOOP_CAP,
 	NOT_A_CHECK,
 	RETRY,
 	START,
 	UNCHECKED,
-	UNPROVEN_NOTE,
 } from "../prompts.ts";
+import {
+	missingCheck,
+	openTask,
+	type Ports,
+	raiseNote,
+} from "./stop-checks.ts";
 
 const TRAILING_SLASHES = /\/+$/;
 
@@ -91,6 +78,16 @@ const inRoot = async (
 	return $.process.run(argv, { ...(root ? { cwd: root } : {}), timeoutMs });
 };
 
+/** The reads of the session for the checks of a `Stop`. */
+const portsOf = ($: EngineInterface): Ports => ({
+	messages: () => $.session.messages(),
+	agents: () => $.agent.list(),
+	read: (file) => $.fs.read(file),
+	exists: (file) => $.fs.exists(file),
+	root: () => rootOf($),
+	raise: (note) => $.state.set({ plugin: "claudetto", key: "note" }, note),
+});
+
 /** Runs `command` with `sh -c` in the project root: `pass` on exit 0, and the last `OUTPUT_TAIL_CHARS` characters of the output. */
 export const runCheck = async (
 	$: EngineInterface,
@@ -106,113 +103,9 @@ export const runCheck = async (
 // The re-blocks in a row live in the `$.state` (X21), the loop count apart from the `/goal` count, and the note goes to `notes`.
 const blocksRef = { plugin: "claudetto", key: "goalBlocks" } as const;
 const loopRef = { plugin: "claudetto", key: "loopBlocks" } as const;
-const noteRef = { plugin: "claudetto", key: "note" } as const;
 
 const setBlocks = ($: EngineInterface, count: number) =>
 	$.state.set(blocksRef, count);
-
-/** The first open task of `files`, read in order: a later file is read only when the earlier ones have none. */
-const firstOpen = async (
-	$: EngineInterface,
-	files: readonly string[],
-): Promise<{ id: string; task: string } | null> => {
-	const [file, ...rest] = files;
-	if (file === undefined) {
-		return null;
-	}
-	return nextOpen(await $.fs.read(file)) ?? firstOpen($, rest);
-};
-
-/** The next open task of the first `tasks.md` that the turn ticked and that has an open box, or `null` (also with no `/claudetto:apply`, with an agent in flight, or on a fault). */
-const openTask = async (
-	$: EngineInterface,
-): Promise<{ id: string; task: string } | null> => {
-	try {
-		const messages = await $.session.messages();
-		if (!ranApply(messages)) {
-			return null;
-		}
-		const rows = turnRows(messages);
-		const files = tickedFiles(rows);
-		if (files.length === 0 || agentBusy(await $.agent.list())) {
-			return null;
-		}
-		const open = await firstOpen($, files);
-		if (open !== null) {
-			return open;
-		}
-	} catch {
-		// A loop check is a help, so a fault of it adds no block.
-	}
-	return null;
-};
-
-/** The checks of the project when the turn edited a file that is not Markdown with no passed check after it, or `[]` (also on a fault). A stop that a hook blocked before has `stop_hook_active`, so the block comes one time. */
-const missingCheck = async (
-	$: EngineInterface,
-	active: boolean | undefined,
-): Promise<string[]> => {
-	try {
-		if (active || !uncheckedEdit(turnRows(await $.session.messages()))) {
-			return [];
-		}
-		const root = (await rootOf($)).replace(TRAILING_SLASHES, "");
-		const at = (file: string) => (root ? `${root}/${file}` : file);
-		return projectChecks(
-			await $.fs.read(at("justfile")).catch(() => undefined),
-			await $.fs.exists(at("bun.lock")).catch(() => false),
-		);
-	} catch {
-		// The check rule is a help, so a fault of it adds no block.
-		return [];
-	}
-};
-
-/** The note for the last reply, or `null` when the reply shows no sign of left or unproven work. */
-const noteOf = async (
-	$: EngineInterface,
-	reply: string,
-): Promise<Note | null> => {
-	const item = deferredItem(reply);
-	if (item !== null) {
-		return DEFERRED_NOTE({ item });
-	}
-	const heading = wrongHeading(reply);
-	if (!claimsDone(reply)) {
-		return heading && HEADING_NOTE(heading);
-	}
-	const messages = await $.session.messages();
-	const root = await rootOf($);
-	const status = await inRoot(
-		$,
-		["git", "status", "--porcelain", "-z"],
-		GIT_TIMEOUT_MS,
-	).catch(() => ({ exitCode: 1, stdout: "" }));
-	const files = uncommitted(
-		editedPaths(messages),
-		status.exitCode === 0 ? changedPaths(status.stdout) : [],
-	)
-		.map((f) =>
-			root && f.startsWith(`${root}/`) ? f.slice(root.length + 1) : f,
-		)
-		.slice(0, NOTE_FILES_MAX);
-	const boxes = unprovenTicks(messages, passedChecks(messages));
-	return files.length === 0 && boxes.length === 0
-		? heading && HEADING_NOTE(heading)
-		: UNPROVEN_NOTE({ what: unprovenWhat(files, boxes) });
-};
-
-/** Sets the note for `reply`. A fault here never changes the stop. */
-const raiseNote = async ($: EngineInterface, reply: string): Promise<void> => {
-	try {
-		const note = await noteOf($, reply);
-		if (note !== null) {
-			await $.state.set(noteRef, note);
-		}
-	} catch {
-		// A note is a help for the user, so a fault of it adds no block.
-	}
-};
 
 /** `classic.Stop`: a goal check that fails blocks the stop with its output, a turn that ticked a box with an open task left blocks the same way (the goal first), each at most `GOAL_BLOCKS_MAX` times in a row. Then a turn with an edit and no passed check after it blocks one time. A stop that nothing blocks sets a note. */
 export const onStop: Handler<"classic.Stop"> = async ($, e, next) => {
@@ -235,7 +128,7 @@ export const onStop: Handler<"classic.Stop"> = async ($, e, next) => {
 			$.ui.log(GOAL_CAP({ check: goal.check, count }));
 		}
 	}
-	const open = await openTask($);
+	const open = await openTask(portsOf($));
 	const loops = (await $.state.get(loopRef)).value ?? 0;
 	if (open !== null && loops < GOAL_BLOCKS_MAX) {
 		await $.state.set(loopRef, loops + 1);
@@ -253,11 +146,11 @@ export const onStop: Handler<"classic.Stop"> = async ($, e, next) => {
 	if (loops > 0) {
 		await $.state.set(loopRef, 0);
 	}
-	const checks = await missingCheck($, e.stop_hook_active);
+	const checks = await missingCheck(portsOf($), e.stop_hook_active);
 	if (checks.length > 0) {
 		return { ...(await next(e)), block: UNCHECKED({ checks }) };
 	}
-	await raiseNote($, e.last_assistant_message ?? "");
+	await raiseNote(portsOf($), e.last_assistant_message ?? "");
 	return next(e);
 };
 

@@ -9,6 +9,69 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ## [Unreleased]
 
+## [0.4.0-alpha.2] - 2026-10-27
+
+### Added
+
+- The `gate` hook denies a `Bash` call that `Read` can do (`cat`, `head`, or `tail` on a file) and names `Read` (the user, 2026-10-27).
+  A filter in a pipe, a `tail -f` of a log, and a `cat` that joins files or writes to a file stay allowed.
+- The `gate` hook has a classifier stage, a low-cost copy of the classifier of the auto mode of Claude Code (the user, 2026-10-27).
+  Each `ask` of the gate goes to Jev first, and a sure yes allows the call.
+  Else `claude-haiku-5-5` at the `high` effort reads the rules, the newest 3 requests of the user, and the call, and allows it or denies it with a reason.
+  A failure goes to the dialog, and a breaker sends the next `ask` to a person after 3 denials in a row or 20 in a session.
+  The new option `classifier` (`haiku` by default, or `off`) turns off the model step.
+- The `reply` hook blocks one time a reply that opens with agreement, praise, an apology, or self-blame, such as "You're right" or "Sorry", and asks Claude to send it again with the outcome or the next action as the first words (the user, 2026-10-27).
+  A judge reads the first 3 sentences and the last request, so it matches no word and works in any language.
+  Jev answers first, and `claude-haiku-5-5` at the `low` effort settles what Jev is not sure about, unless the option `classifier` is `off`. A fault lets the stop go.
+- The edit ledger moves from a file in the temp folder to the private store of the plugin (`$.store`, key `ledger:<project key>`), so a recreated temp folder no longer loses the lines of earlier Claude sessions, and the files that Claude wrote stay labeled as Claude's (the user, 2026-10-27).
+  Each line gets `via` (`edit` or `bash`), and a line with no valid `via` is dropped.
+  `LEDGER_MAX_FILES` rises from 200 to 2000.
+  An `Edit` or `Write` also records its line at `classic.PreToolUse`, with the hash of the content that it will write.
+- Free evals with no model call, which follow the sources of the wiki page `Eval-Sources` (the user, 2026-10-27).
+  `just eval-stats` reports the paired difference of the arms for each case, with a clustered standard error, a 95% CI, and the cases that a power check needs at `--gap`.
+  `just classifier-replay` scores the deterministic stage of the `gate` hook on benign calls from the session logs, the InjecAgent attacks, and harmful in-project edits.
+  `just handoff-probe` plants items in synthetic sessions and scores how many the code handoff keeps, and `--sessions` replays real transcripts.
+- `main`, `Hephaestus`, and `Athena` keep each concern in its own module, with a source file at 300 lines or fewer and a test file at 500 or fewer, and `tests/repo/file-size.test.ts` checks the limits in this repository (the user, 2026-10-27).
+
+### Changed
+
+- **BREAKING** claudetto needs Claude Code `2.1.311` or later (`MIN_CLAUDE_CODE_VERSION`), and CI tests on `2.1.311`.
+  The search-engine, client-data, and text-defaults fixtures come from its binary: each pinned fact is the same, and only minified names changed (`JT`, `nus`, `_7e`, `Ifi`).
+  The default texts of `compaction` (a new `<summary>` paragraph) and `Bash` (the `cd` line) changed in `2.1.311`.
+- The env-file and secrets rules of the `gate` hook read the value of a `-f` or `--file` option of `grep`, `sed`, and `awk` as a file, and the value of `-e` as a pattern. So `grep -f .env x` is a secret read, and the pattern of `grep -E "fail$"` no longer asks.
+- The env-file rule of the `gate` hook asks less: the pattern of `grep` and the other pattern programs is no file name, and a word with `$` is no env file read when its literal end cannot name one, such as `/tmp/old-$k.txt` or `$dir/notes.txt`.
+  A bare `"$f"`, a tail such as `$x.env`, and a failed scan for env files still ask.
+- The `Bash` text of claudetto says that a `cd` carries to the next call only in the main session, and that a command at its timeout returns its output so far and keeps running in the background, as in `2.1.311`.
+- The main agent fixes each defect that the session shows, in the same turn, and reports it apart, in place of offering the fix (the user, 2026-10-27). This covers an older defect, one in a file of the user or of another session, one in a hook or check of the project, and one that a tool, probe, or eval output shows. A report names a found defect only as fixed, or as blocked with its blocker, and the user is asked only for approvals and for choices that the facts leave open.
+  For code that only looks wrong, with no run that shows a defect, the main agent asks with `AskUserQuestion` whether to change it.
+- The main agent and the `Concise` style put each question for the user, a push back included, in `AskUserQuestion`, so that Jev can answer it, and the "What I Need from You" list holds only steps that only the user can do (the user, 2026-10-27).
+  A session had ended its turn with "Reply "launcher" ... or "bun only"" in the reply text, because the texts said to end the turn before a pushed-back change.
+- `just eval` and `just eval-variant` need `--judge-model`, because an `llm` grader has no model key and the default judge alias `haiku` can move to a new model.
+
+### Fixed
+
+- The `gate` hook no longer denies a `git` exclude pathspec of an env file, such as `git grep KEY -- . ':(exclude,glob)**/.env'`, as a read of a secret, because git reads no file that such a pathspec names (the user, 2026-10-27).
+- The handover no longer hangs at its `/clear` (the user, 2026-10-27). The chain awaited `$.command.run` for `/clear`, a promise that need not settle when the session is reset, so the resume prompt never ran and the run stayed `running` for good. The chain now sends `/clear` and goes on, the resume prompt waits in `$.state`, and the `classic.SessionStart` hook with `source` `clear` submits it in the new session. A run that waits for a `/clear` ends after 60 seconds, and a refused `/clear` ends it at once.
+- The keys of a note above the prompt show their hotkey once, such as `3: Turn notes on`, in place of `3: 3: Turn notes on`, because Claude Code draws a plain `Button` as `hotkey: label`.
+- The code handoff no longer drops early rules, values, files, and decisions of a long session (the user, 2026-10-27). Each section holds a token budget in place of a fixed count of the newest entries, and over it keeps the oldest and the newest. The probe lost 239 of 1,500 planted items before (early 72.4%, late 95.0%) and 0 after, with the largest handoff at 5,332 tokens.
+- The `protect` slice no longer writes back a plan or spec file that a `Bash` call moved with its text unchanged, such as `openspec archive` or `mv` of a change folder into `openspec/changes/archive/`, which made the change exist twice, and it no longer writes back the delete of a duplicate whose exact text is in the archive. A delete with no copy of the text, and each change of text, are still written back (the user, 2026-10-27).
+- The code handoff no longer reads the summary of a built-in compaction as words of the user, which made its bullets about older work into rules, the goal, and quoted user messages (the user, 2026-10-27).
+- The code handoff has a new section `## Running Work` with each background agent and `Bash` command that has no notification yet, so the next context knows what still runs (the user, 2026-10-27).
+- The `repo` block of the context reads the branch, the tag, and the open change again in each new session, `/clear` included, in place of one time for each process, which kept a branch from before a switch (the user, 2026-10-27).
+- The `protect` slice no longer deletes or writes back a protected file that an `Edit` or `Write` of another session or agent made during a `Bash` call, because a line of `edit` in the ledger holds the path with its current hash (the user, 2026-10-27).
+- A check that passed in an `&&` chain, such as `bun test tests/x && just lab`, now counts for a task box and the done list of a handoff. A chain with `||`, `;`, a pipe, or `$(` still counts no check.
+- The `gate` hook asks before `gh repo delete` and other remote destroys of `gh`, before a move or a delete of a file in the home folder outside the project, before a `curl` that sends a file from outside the project to a remote host, and before an `Edit` or `Write` of a `git` hook, a workflow, a settings file of Claude Code, an env file, or an install script of `package.json` (the user, 2026-10-27). The replay of the gate missed 33 of 34 InjecAgent attacks and 6 of 6 harmful edits, and it now misses 0 of 34 and 0 of 6 at the same 62 of 500 asks on benign calls (12.4%).
+
+### Removed
+
+- The tools `mcp__claudetto__grep` and `mcp__claudetto__glob` are gone (the user, 2026-10-27). On a native build, `rg` in `Bash` runs the ripgrep that Claude Code bundles, which skips git-ignored files. The copy fell back to `grep -r` and `find`, which read git-ignored files, and it returned up to 100,000 characters, where the built-in `Grep` returns 20,000.
+- The context that the edit ledger added is gone (the user, 2026-10-27): the line at each prompt for a file that changed after the last edit of its agent, and the list of who changed each file after `git status` and `git diff`. The ledger cannot tell who made a change, and the text led Claude to revert changes that it did not make. The ledger still feeds the `gate` and `protect` slices.
+- The checks that judge text by English words are gone, because such checks are brittle and not trustworthy (the user, 2026-10-27).
+  The `ground` hook no longer denies a plan line for an attribution such as "the user chose ...", a claim of done such as "tests pass", or a package manager such as `npx` in a project with `bun.lock`. It still denies a number with no source and a `file:line` reference past the end of its file.
+  The `Stop` hook no longer sets the `Deferred` note, and the `Not proven` note shows for a ticked box with no passed check, with no claim of "ready" or "done" needed and no `git status` read.
+  The bounds `NOTE_ITEM_CHARS` and `NOTE_FILES_MAX` are gone with them.
+  The 4 `regex` graders over the last reply of the eval cases `handoff`, `blind-count-from-tool`, and `blind-ctl-real-empty-average` are gone, and `tests/tools/word-graders.test.ts` fails on a new one.
+
 ## [0.4.0-alpha.1] - 2026-10-27
 
 ### Removed
@@ -795,4 +858,4 @@ The [Overview](https://github.com/xsyetopz/claudetto/wiki/Overview) page of the 
 | [0.1 and 0.2](https://github.com/xsyetopz/claudetto/wiki/Release-0.1-0.2) | 0.2.0, 0.1.0 |
 
 [unreleased]:
-  https://github.com/xsyetopz/claudetto/compare/claudetto--v0.4.0-alpha.1...HEAD
+  https://github.com/xsyetopz/claudetto/compare/claudetto--v0.4.0-alpha.2...HEAD

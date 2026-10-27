@@ -72,7 +72,7 @@ export interface SearchFacts {
 const NODE_RUNTIME = /^(node|nodejs|bun)(\.exe)?$/i;
 const PATH_SEPARATOR = /[\\/]/;
 
-/** Whether the shell snapshot of `Bash` shadows `grep` with `ugrep` (2.1.310, `NT()`): a native build, `Grep` and `Glob` off, and an entry point other than `local-agent`. */
+/** Whether the shell snapshot of `Bash` shadows `grep` with `ugrep` (2.1.311, `JT()`): a native build, `Grep` and `Glob` off, and an entry point other than `local-agent`. */
 export const usesUgrep = (facts: SearchFacts): boolean =>
 	facts.execPath !== "" &&
 	!NODE_RUNTIME.test(facts.execPath.split(PATH_SEPARATOR).pop() ?? "") &&

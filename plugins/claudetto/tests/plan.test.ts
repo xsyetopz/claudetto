@@ -100,10 +100,10 @@ test("Number with No Source", async ($: Engine, on: On) => {
 });
 
 test("Chosen Option", async ($: Engine, on: On) => {
-	const text = 'User has answered your questions: "Permit the call?"="Allow".';
+	const text = 'User has answered your questions: "Cap?"="4096".';
 	project(on, [user("Go."), used("AskUserQuestion", {}, text)]);
-	expect(await denied($, "The user chose Allow.")).toBe(false);
-	expect(await denied($, "The user chose Refuse.")).toBe(true);
+	expect(await denied($, "The cap is 4096.")).toBe(false);
+	expect(await denied($, "The cap is 8192.")).toBe(true);
 });
 
 test("Spec Scenario", async ($: Engine, on: On) => {

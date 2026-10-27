@@ -122,51 +122,33 @@ test("a pass resets the count of blocks", async ($: Engine, on: On) => {
 	expect((await stop($, true)).block).toBeUndefined();
 });
 
-// The notes of the `Stop` hook for a reply that defers work or says "done" with no proof.
+// The `Not proven` note of the `Stop` hook reads the boxes of the session, and no word of the reply.
 
-test("a reply that defers work sets one note that names the item, and the stop goes on", async ($: Engine, on: On) => {
+test("Box with No Check: a ticked box with no passed check sets a note that names the task, and the stop goes on", async ($: Engine, on: On) => {
 	const world = stub(on);
-	const out = await reply(
-		$,
-		"Not done: the side check. I deleted its temp folder without rerunning it.",
-	);
+	on("session.messages", () => ({ value: [ticks("3.2")] }));
+	const out = await reply($, "Next comes the wiki page.");
 	expect(out.block).toBeUndefined();
 	const value = noteOf(world.store);
-	expect(value?.tag).toBe("Deferred");
-	expect(value?.line).toContain("side check");
+	expect(value?.tag).toBe("Not proven");
+	expect(value?.line).toContain("3.2");
 });
 
-test("a reply that names a sandbox deny sets no note", async ($: Engine, on: On) => {
+test("Box with a Check: a ticked box after a passed check sets no note", async ($: Engine, on: On) => {
 	const world = stub(on);
-	await reply(
-		$,
-		"Not done: the old processes. The sandbox denied `pkill`, so run `! pkill -f old`.",
-	);
+	on("session.messages", () => ({
+		value: [bash("just check"), ticks("3.2")],
+	}));
+	await reply($, "Done.");
 	expect(world.store.get("note") ?? null).toBeNull();
 });
 
-test("a reply that says ready, with an edited file not committed, sets a note that names the file", async ($: Engine, on: On) => {
+test("the words of a reply set no note: a deferral, or a claim of done with an edited file not committed", async ($: Engine, on: On) => {
 	const world = stub(on);
-	const edit = {
-		tool_use_id: "e1",
-		tool: "Edit",
-		input: { file_path: "/proj/plugins/a.ts" },
-		text: "ok",
-	};
-	on("session.messages", () => ({
-		value: [{ role: "assistant", text: "", toolUses: [edit], handle: "h" }],
-	}));
+	on("session.messages", () => ({ value: [edits("/proj/plugins/a.ts")] }));
 	world.git.out = " M plugins/a.ts\0";
+	await reply($, "Not done: the side check.");
 	await reply($, "`0.3.0-alpha.1` is ready to publish.");
-	const value = noteOf(world.store);
-	expect(value?.line).toContain("plugins/a.ts");
-});
-
-test("a reply that says done, with a clean tree, sets no note", async ($: Engine, on: On) => {
-	const world = stub(on);
-	on("session.messages", () => ({ value: [] }));
-	world.git.out = "";
-	await reply($, "Done.");
 	expect(world.store.get("note") ?? null).toBeNull();
 });
 

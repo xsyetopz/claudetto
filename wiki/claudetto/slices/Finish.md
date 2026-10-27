@@ -74,15 +74,13 @@ A failing `/goal` check blocks first.
 The `Stop` hook never blocks for a note.
 It sets a note for the slice [Notes](Notes) in two cases:
 
-- The last reply lists work as not done, not fixed, paused, or for later, and names no block that stopped it, such as a sandbox deny.
-  The note names the item.
-- The last reply says "ready" or "done", and a file that the session edited is not committed, or a task box that an `Edit` of the session ticked has no passed check.
-  The note names the files and the boxes.
+- A task box that an `Edit` of the session ticked has no passed check. The note `Not proven` names the boxes.
+- A heading of the last reply is not in Chicago Title Case. The note names the right case.
 
-The rules match on the form of the reply.
-The tests in `tests/claudetto/work/finish/reply.test.ts` hold a known-bad reply for each incident row and known-good replies that must set no note.
+No note reads the words of the reply.
+The notes of deferred work and of a claim of "ready" or "done" were removed on 2026-10-27, because they matched English words.
 
-## Built-In Parts That Are Off
+## Built-in Parts That Are Off
 
 - The `setup` snippet sets `modelProposedGoals` to `disabled`, so the model proposes no goal.
 - The `prompt` slice leaves out the `goal_status` attachment.
@@ -91,7 +89,7 @@ The tests in `tests/claudetto/work/finish/reply.test.ts` hold a known-bad reply 
 
 | Hook | Filter | What it does |
 | --- | --- | --- |
-| `classic.Stop` | None | Runs the check and blocks the stop until it exits `0`, up to the cap. Blocks a stop of a turn that checked a task box while a box is open. Sets a note for a reply that defers work or says done with no proof. |
+| `classic.Stop` | None | Runs the check and blocks the stop until it exits `0`, up to the cap. Blocks a stop of a turn that checked a task box while a box is open. Sets a note for a ticked box with no passed check, and for a heading in the wrong case. |
 | `tool.call` | `Edit`, `Write` | The `box` hook for a `tasks.md`. |
 | `command.run` | `/goal` | Answers the command. |
 
@@ -100,6 +98,7 @@ A failure of the `command.run` hook answers `Goal: <message>`, so the built-in `
 ## Related Pages
 
 - [Notes](Notes)
+- [Reply](Reply)
 - [Spec](Spec)
 - [Handoff](Handoff)
 - [Controls](Controls)

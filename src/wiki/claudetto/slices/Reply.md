@@ -1,0 +1,40 @@
+# Reply
+
+This page tells how the `reply` slice of the core plugin `claudetto` works.
+A user reads it to learn why a reply that opens with "You're right" or "Sorry" comes back with the outcome first.
+A contributor reads it before an edit of `plugins/claudetto/modules/work/reply/`.
+
+## What It Does for You
+
+A correction needs the fact or the next action as the first words of the reply.
+An opening of agreement, praise, an apology, or self-blame tells the user nothing, and the output style `claudetto:Concise` already says so.
+A prompt alone did not hold, so the `Stop` hook checks the opening of each reply.
+When the opening is filler, the hook blocks the stop one time.
+Its reason asks Claude to send the reply again with the outcome or the next action as the first words, and with no sentence of agreement, apology, or self-blame.
+The second stop goes on, because the hook checks only when `stop_hook_active` is `false`.
+
+## How It Judges
+
+The hook matches no word, so the check works in any language and an agent cannot get around it with other words.
+It reads the first 3 sentences of `last_assistant_message` and the last request of the user.
+
+1. Jev answers the question: does the reply open with agreement, praise, an apology, or self-blame, or with a sentence that the user did not ask for, in place of the outcome or the next action?
+   A P(yes) of `OPENING_YES_MIN` (0.8) or more blocks the stop.
+   A P(yes) of `OPENING_NO_MAX` (0.2) or less lets it go, with no model call.
+2. With no Jev, or between the two limits, `claude-haiku-5-5` at the `low` effort answers `<block>yes</block>` or `<block>no</block>`.
+   The option `classifier` set to `off` skips this step.
+3. A fault or a timeout of both steps lets the stop go.
+
+A reply with no text makes no call.
+A quote of "you're right" in a later sentence is not an opening, so the judge never reads it.
+
+## Hooks
+
+| Hook | Filter | What it does |
+| --- | --- | --- |
+| `classic.Stop` | `stop_hook_active: false` | Blocks one time a reply whose opening is filler. |
+
+## Related Pages
+
+- [Finish](Finish)
+- [Decide](Decide)

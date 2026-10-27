@@ -61,7 +61,6 @@
 		"./tools/run.sh",
 		"eval git status",
 		"base64 -d x.b64 | bash",
-		"rm -rf ~/Documents",
 		"rm -rf ../other",
 		"bash /t/claude-501/run.sh",
 		"rm notes.md",
@@ -70,6 +69,7 @@
 		"cut -c1-60 f; rm -rf /tmp/ccd && echo cleaned"
 	],
 	"ask": [
+		"rm -rf ~/Documents",
 		"bash -c \"$c\"",
 		"$CMD x",
 		"git push --force",

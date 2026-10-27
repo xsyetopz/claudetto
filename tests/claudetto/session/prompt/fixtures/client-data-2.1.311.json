@@ -1,0 +1,6 @@
+{
+	"version": "2.1.311",
+	"source": "strings of the native binary 2.1.311 (minified names of that build); chunk-vxva6fz1.js (the chunk that exports oMr, lxo, Ahe and qCi), at strings line +8 from the chunk start for both excerpts",
+	"clientData": "d.org_model_default==null,F=A&&d.auto_compact_windows==null,O=d.client_data??null,D=C?r.additionalModelOptionsCache??[]:d.additional_model_op",
+	"slotWrite": "clientDataCacheSlots:s?Ifi(w.clientDataCacheSlots,ot,{data:O,at:Date.now(),entrypoint:u.entrypoint??null,model:u.model,org:R?.organizationUuid??null}):w.clientDataCacheSlots"
+}

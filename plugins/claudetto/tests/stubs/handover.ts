@@ -15,7 +15,14 @@ export interface World {
 	tasks?: string;
 	turns?: number;
 	answer?: Promise<string> | string;
+	/** True when the promise of `$.command.run` for `/clear` never settles, as the bundle leaves it when the session is reset. */
+	clearHangs?: boolean;
+	/** True when `$.command.run` refuses the `/clear`. */
+	clearFails?: boolean;
 }
+
+/** The engine of the last call of a helper below, which the stub of `/clear` uses to start the new session. */
+let current: Engine | undefined;
 
 /** The stubs of `fs.write`, `fs.stat`, and `ui.log` that record into `seen`: `failWrite` makes a write throw. */
 export const stubFiles = (
@@ -106,10 +113,30 @@ export const stubs = (on: On, world: World = {}) => {
 		return { value: world.tasks };
 	});
 	stubFiles(on, seen);
+	const held = new Map<string, { value: unknown; version: number }>();
+	on("state.get", (_$, e) => ({
+		value: held.get(e.key) ?? { value: undefined, version: 0 },
+	}));
+	on("state.set", (_$, e) => {
+		const version = (held.get(e.key)?.version ?? 0) + 1;
+		held.set(e.key, { value: e.value, version });
+		return { value: { isSet: true, version } };
+	});
+	on("classic.SessionStart", () => ({}));
 	on("command.run", (_$, e) => {
 		seen.steps.push(`command ${e.command}`);
 		seen.args.push(e.args);
-		return { text: "" };
+		if (e.command !== "clear") {
+			return { text: "" };
+		}
+		if (world.clearFails) {
+			throw new Error("refused");
+		}
+		// The bundle starts the new session at once, and the promise of the run may never settle.
+		void current?.classic.SessionStart({ source: "clear" });
+		return world.clearHangs
+			? new Promise<never>(() => undefined)
+			: { text: "" };
 	});
 	on("prompt.submit", (_$, e) => {
 		seen.steps.push("prompt");
@@ -149,22 +176,28 @@ export const stubs = (on: On, world: World = {}) => {
 };
 
 /** A `Stop` event with `tasks` in flight in the background. */
-export const stop = ($: Engine, tasks: BackgroundTaskSummary[] = []) =>
-	$.classic.Stop({ stop_hook_active: false, background_tasks: tasks });
+export const stop = ($: Engine, tasks: BackgroundTaskSummary[] = []) => {
+	current = $;
+	return $.classic.Stop({ stop_hook_active: false, background_tasks: tasks });
+};
 
 /** The end of a turn of the main thread, which keeps the cache warm. */
-export const turnEnd = ($: Engine) =>
-	$.turn.complete({
+export const turnEnd = ($: Engine) => {
+	current = $;
+	return $.turn.complete({
 		answer: "Done.",
 		durationMs: 1,
 		isAborted: false,
 		turnId: "t1",
 		reason: "answer",
 	});
+};
 
 /** A prompt that the user typed in the prompt box. */
-export const typed = ($: Engine, text = "Now add the tests.") =>
-	$.prompt.submit({ text, wait: false, origin: { kind: "composer" } });
+export const typed = ($: Engine, text = "Now add the tests.") => {
+	current = $;
+	return $.prompt.submit({ text, wait: false, origin: { kind: "composer" } });
+};
 
 /** The stubs for `world`, a `Stop` event, and the settled clock. */
 export const stopped = async ($: Engine, on: On, world: World = {}) => {

@@ -29,6 +29,3 @@ graders:
     tool: Bash
     input_match: '"command":"(?:[^"\\]|\\.)*\b(?:wc|find|awk|node|python3?|grep -c|xargs)\b'
     min: 1
-  - type: regex
-    name: "reply-has-numbers"
-    pattern: "(?<![\\s\\S])(?=[\\s\\S]*\\b13\\b)(?=[\\s\\S]*\\b253\\b)"

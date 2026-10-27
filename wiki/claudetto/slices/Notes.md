@@ -20,7 +20,7 @@ Only one note shows at a time, and a newer note replaces the older one.
 - A `learn:` block at the end of a main reply. The reply gives a `learn:` line, a `tag:` line, and an `explain:` block.
   The slice hides the block in the reply and shows `<tag> · <line>`.
   `learn: none` shows nothing.
-- The `Stop` hook of [Finish](Finish), for a reply that defers work or says done with no proof.
+- The `Stop` hook of [Finish](Finish), for a ticked box with no passed check, and for a heading in the wrong case.
 
 ## Keys
 

@@ -1,10 +1,8 @@
 // The CLI `claudetto-setup`, which the launcher `bin/claudetto-setup` calls. Usage: see `usage` in `prompts.ts`.
 // It writes nothing without `--apply`. `--claude-md-rule=LINE` takes the `=` form, because a line can start with `-`.
-import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { parseArgs } from "node:util";
-import { fileReader, writeAtomic } from "../../../kernel/node/fs.ts";
+import { fileReader } from "../../../kernel/node/fs.ts";
 import { withIgnores, withLines } from "../../project/domain/gitignore.ts";
 import {
 	CLAUDE_DIR,
@@ -30,35 +28,17 @@ import {
 	writeLocalNotes,
 } from "./claude-md.ts";
 import { findOpenspec, openspecRun } from "./openspec.ts";
+import { type Options, offSettings, parseOptions } from "./options.ts";
+import { fail, type Io, ROOT, report, save } from "./report.ts";
 import {
 	amend,
-	context7Files,
 	exists,
 	pluginInfo,
 	readOr,
 	readSettings,
 	rulesIn,
-	skillDescription,
 	skillsIn,
 } from "./scan.ts";
-
-interface Io {
-	log: (line: string) => void;
-	error: (line: string) => void;
-}
-interface Dirs {
-	configDir: string;
-	projectDir: string;
-}
-
-const ROOT = path.resolve(import.meta.dirname, "..", "..", "..");
-const NO_VALUES: string[] = [];
-const multi = {
-	type: "string",
-	multiple: true,
-	default: NO_VALUES,
-} as const;
-const flag = { type: "boolean", default: false } as const;
 
 /** The `env` of the snippet with the subagent cap `cap`. */
 const withCap = (env: unknown, cap: number): Json => ({
@@ -66,114 +46,10 @@ const withCap = (env: unknown, cap: number): Json => ({
 	CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: String(cap),
 });
 
-/** Prints `message` as an error and gives the exit status of a bad call. */
-const fail = (io: Io, message: string): number => {
-	io.error(message);
-	return 2;
-};
-
-/** The options of the arguments, or the usage to print when they are wrong. */
-const parseOptions = (args: string[]) => {
-	try {
-		const { values } = parseArgs({
-			args,
-			options: {
-				scope: { type: "string", default: "user" },
-				mode: { type: "string", default: "merge" },
-				keep: multi,
-				"off-tool": multi,
-				"off-skill": multi,
-				"off-plugin": multi,
-				"deny-mcp": multi,
-				"exclude-md": multi,
-				"claude-md-rule": multi,
-				apply: flag,
-				inventory: flag,
-				"demo-alias": flag,
-				"remove-openspec": flag,
-				"claude-md": flag,
-				"local-notes": flag,
-			},
-		});
-		// The three write actions take `--apply` as their yes, so `--apply` clashes with the other actions only.
-		const writes = [
-			values["remove-openspec"],
-			values["claude-md"],
-			values["local-notes"],
-		];
-		const others = [values.inventory, values["demo-alias"]].filter(Boolean);
-		const count = writes.filter(Boolean).length;
-		const clash = count
-			? count + others.length > 1
-			: others.length + Number(values.apply) > 1;
-		return clash || !["merge", "replace"].includes(values.mode)
-			? { error: t("usage") }
-			: values;
-	} catch {
-		return { error: t("usage") };
-	}
-};
-
-type Options = Exclude<ReturnType<typeof parseOptions>, { error: string }>;
-
-/** The settings that turn off the names in `o`, with no key for an empty list. An off plugin or MCP server is for one project. */
-const offSettings = (o: Options): Json => {
-	const each = (names: string[], value: unknown) =>
-		Object.fromEntries(names.map((n) => [n, value]));
-	const [tools, skills, plugins, servers] = [
-		o["off-tool"],
-		o["off-skill"],
-		o["off-plugin"],
-		o["deny-mcp"],
-	];
-	const keys: [string, string[], unknown][] = [
-		["permissions", tools, { deny: tools }],
-		["claudeMdExcludes", o["exclude-md"], o["exclude-md"]],
-		["skillOverrides", skills, each(skills, "off")],
-		["enabledPlugins", plugins, each(plugins, false)],
-		[
-			"deniedMcpServers",
-			servers,
-			servers.map((serverName) => ({ serverName })),
-		],
-	];
-	return Object.fromEntries(
-		keys
-			.filter(([, names]) => names.length)
-			.map(([key, , value]) => [key, value]),
-	);
-};
-
-interface Run {
-	file: string;
-	settings: Json;
-	changes: string[];
-	apply: boolean;
-	backup: boolean;
+interface Dirs {
+	configDir: string;
+	projectDir: string;
 }
-
-/** Writes `settings` to `file` with `apply` and a change, after a copy of the old file with `backup`, or prints the dry-run line. */
-const save = async (
-	io: Io,
-	{ file, settings, changes, apply, backup }: Run,
-): Promise<number> => {
-	if (changes.length === 0) {
-		return 0;
-	}
-	if (apply) {
-		await fs.mkdir(path.dirname(file), { recursive: true });
-		if (backup && (await exists(file))) {
-			const copy = `${file}.${Date.now()}.bak`;
-			await fs.copyFile(file, copy);
-			io.log(t("backup", { file: copy }));
-		}
-		await writeAtomic(file, `${JSON.stringify(settings, null, 2)}\n`);
-		io.log(`\n${t("wrote", { file })}`);
-	} else {
-		io.log(`\n${t("dryRun")}`);
-	}
-	return 0;
-};
 
 /** The file by the key `name` of `files`, or `undefined` for a key that `files` does not hold itself. */
 const pick = (files: Record<string, string>, name: string) =>
@@ -201,50 +77,6 @@ const writeDemoAlias = async (
 	);
 	io.log(t("demoWrote", { file }));
 	return 0;
-};
-
-interface Info {
-	file: string;
-	scope: string;
-	cap: unknown;
-	tier: string;
-	kept: string[];
-	dirs: string[];
-	changes: string[];
-}
-
-/** Prints the target, the notes, the `context7` files, and the changes. */
-const report = async (
-	io: Io,
-	{ file, scope, cap, tier, kept, dirs, changes }: Info,
-) => {
-	io.log(`Target: ${file} (${scope} scope)`);
-	if (scope === "project") {
-		io.log(t("projectNoStatus"));
-	}
-	if (scope === "project") {
-		io.log(t("projectNoCap"));
-	} else if (!cap) {
-		io.log(t("noPlanCap", { tier }));
-	}
-	for (const key of kept) {
-		io.log(t("keptKey", { key }));
-	}
-	const own = path.join(ROOT, "skills", "find-docs", "SKILL.md");
-	const ownChars = skillDescription(
-		await globalThis.Bun.file(own).text(),
-	).length;
-	for (const dir of new Set(dirs)) {
-		for (const [found, chars] of await context7Files(dir)) {
-			io.log(t("context7", { file: found, chars, ownChars }));
-		}
-	}
-	io.log(
-		changes.length > 0 ? `${changes.length} change(s):` : t("settingsMatch"),
-	);
-	for (const line of changes) {
-		io.log(`  ${line}`);
-	}
 };
 
 type Have = Pick<

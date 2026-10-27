@@ -7,12 +7,14 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { write } from "bun";
 import {
-	buildRequest,
 	EXIT,
 	parseArgs,
-	post,
 	UsageError,
 } from "../../../../plugins/claudetto/modules/jev/adapters/cli.ts";
+import {
+	buildRequest,
+	post,
+} from "../../../../plugins/claudetto/modules/jev/adapters/upload.ts";
 import { IMAGE_BYTES_MAX } from "../../../../plugins/claudetto/modules/jev/limits.ts";
 import { eachInOrder } from "../../../../tools/ordered.ts";
 import {

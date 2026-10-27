@@ -4,11 +4,15 @@ description: Finds duplicate code with jscpd and decides which clones to merge. 
 ---
 
 Duplicate code costs the same fix in two places.
-Find the clones, and merge only those that must change together.
+Find the clones. Merge only those that must change together.
 
 ## Find Clones
 
-Run jscpd when a change copies a block of code, before you finish a change that adds many lines, and when the user asks about duplication.
+Run jscpd in these cases:
+
+- A change copies a block of code.
+- You are about to finish a change that adds many lines.
+- The user asks about duplication.
 
 Run this command, with the paths to scan as arguments:
 
@@ -18,12 +22,14 @@ BUN_TMPDIR="$TMPDIR" BUN_INSTALL="$TMPDIR/bun" bunx jscpd -c <config> <path>...
 
 The env prefix moves the temp files and the cache of Bun to `TMPDIR`, because the sandbox allows writes there.
 `<config>` is the `.jscpd.json` of the project when it exists.
-Otherwise it is `${CLAUDE_SKILL_DIR}/jscpd.json`, the shipped base, and a project can copy it to `.jscpd.json` to set its own rules.
-The base has no `semantic`, because it needs a large model download, so add `--semantic` only when the user asks for it.
+Otherwise it is `${CLAUDE_SKILL_DIR}/jscpd.json`, the shipped base.
+A project can copy the base to `.jscpd.json` to set its own rules.
+The base has no `semantic`, because it needs a large model download.
+Add `--semantic` only when the user asks for it.
 
-When `.jscpd-baseline.json` exists, add `--baseline .jscpd-baseline.json --fail-on-new-clones 0`, so only a new clone fails the run.
+When `.jscpd-baseline.json` exists, add `--baseline .jscpd-baseline.json --fail-on-new-clones 0`. Then only a new clone fails the run.
 On the first run there is no baseline, so the run scans and reports each clone.
-Decide on the clones first, and make the baseline after that (see "When to Merge").
+Decide on the clones first. Make the baseline after that (see "When to Merge").
 
 ## Read a Clone
 
@@ -37,11 +43,16 @@ A clone report names two files, a line range in each, and the token count.
 
 ## When to Merge
 
-Merge when one change of the rule must change both blocks, and the blocks have the same behavior and the same effects.
-Keep the blocks separate when they only look alike, when the merge needs a flag or a callback for each difference, or when the merge makes the code longer.
+Merge when one change of the rule must change both blocks. Merge only when the blocks have the same behavior and the same effects.
+Keep the blocks separate in these cases:
+
+- The blocks only look alike.
+- The merge needs a flag or a callback for each difference.
+- The merge makes the code longer.
+
 A merge is good when the behavior and the effects stay the same, and the code gets shorter.
 
 - Keep the shared part in one function that both sites call.
-- Run the tests before and after the merge, and expect the same result.
+- Run the tests before and after the merge. Expect the same result.
 - Put a clone that you keep on purpose in the baseline: run the command again with `--baseline .jscpd-baseline.json --update-baseline`.
   Say why in your reply.

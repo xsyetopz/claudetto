@@ -4,7 +4,7 @@
 
 import { expect, test } from "bun:test";
 import { which } from "bun";
-import { flags } from "../../../dev/probe/main.ts";
+import { flags } from "../../../dev/probe/plan.ts";
 import { PIN_RUNS_TIMEOUT_MS } from "../../../tools/limits.ts";
 import { seedSession, stubCapture } from "../../support/stub-api.ts";
 
@@ -17,7 +17,7 @@ const rowsOf = (cwd: string): string =>
 		"Ok.",
 		"Do not touch `src/legacy.ts`.",
 		"Understood.",
-		...Array.from({ length: 6 }, (_, i) => `Filler ${i} ${"x".repeat(30_000)}`),
+		...Array.from({ length: 6 }, (_, i) => `Filler ${i} ${"x".repeat(15_000)}`),
 	]
 		.map((text, i) => ({
 			parentUuid:

@@ -32,7 +32,7 @@ jobs:
           bun-version-file: package.json
       - run: bun install --frozen-lockfile
       # The version in `MIN_CLAUDE_CODE_VERSION` of `tools/limits.ts`.
-      - run: bun add --global @anthropic-ai/claude-code@2.1.310
+      - run: bun add --global @anthropic-ai/claude-code@2.1.311
       - run: claude --version
       - run: git config --global user.email ci@example.com && git config --global user.name ci
       - run: bun tools/check.ts --ci

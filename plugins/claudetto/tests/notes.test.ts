@@ -21,6 +21,8 @@ const BAND = {
 } as const;
 
 const THREE = /\b3\b/;
+/** A label that starts with a hotkey, which Claude Code draws a second time in front of a plain `Button` label. */
+const HOTKEY_IN_LABEL = /\d: (Insert|Turn)/;
 
 /** The text that the band shows now. */
 const band = async ($: Engine): Promise<string> => {
@@ -30,13 +32,15 @@ const band = async ($: Engine): Promise<string> => {
 	return text;
 };
 
+const noLedger: unknown[] = [];
+
 /** Stubs the verdict of `tool.check` with a deny of one rule, the settings files, and the prompt box. */
 const stub = (on: On, fills: string[] = []) => {
 	const world = {
 		isAllowed: false,
 		now: 0,
 		status: "",
-		ledger: "",
+		ledger: noLedger,
 		file: "",
 		store: new Map<string, unknown>(),
 	};
@@ -64,12 +68,10 @@ const stub = (on: On, fills: string[] = []) => {
 	});
 	on("session.root", () => ({ value: "/p" }));
 	on("session.cwd", () => ({ value: "/p" }));
+	on("store.get", () => ({ value: world.ledger }));
 	on("fs.read", (_$, e) => {
 		if (e.path.endsWith("settings.local.json")) {
 			return { value: '{"permissions":{"deny":["Bash(rm:*)"]}}' };
-		}
-		if (e.path.endsWith(".jsonl")) {
-			return { value: world.ledger };
 		}
 		if (e.path === "/p/src/a.ts") {
 			return { value: world.file };
@@ -90,7 +92,7 @@ const TASK = { id: "b1", type: "shell", status: "running", description: "d" };
 const stop = ($: Engine, tasks: BackgroundTaskSummary[]) =>
 	$.classic.Stop({
 		stop_hook_active: false,
-		last_assistant_message: "Not done: the side check.",
+		last_assistant_message: "## the side check",
 		background_tasks: tasks,
 	});
 
@@ -225,6 +227,22 @@ test("Notes Off: the off key hides the note, and the on key brings the keys back
 	expect(await band($)).not.toContain("Line two.");
 });
 
+test("Key Labels: each key shows its hotkey once", async ($: Engine, on: On) => {
+	stub(on);
+	await answer($, "Done.\nlearn: Line one.\ntag: Heads up");
+	const shown = await band($);
+	const ui = await $.ui.mount(BAND);
+	await ui.press({ key: "off" });
+	await ui.unmount();
+	const off = await band($);
+
+	expect(shown).toContain("Insert in prompt");
+	expect(off).toContain("Turn notes on");
+	for (const text of [shown, off]) {
+		expect(text).not.toMatch(HOTKEY_IN_LABEL);
+	}
+});
+
 test("One Note at a Time: a newer note replaces the older one", async ($: Engine, on: On) => {
 	stub(on);
 	await answer($, "x\nlearn: First.\ntag: A");
@@ -317,7 +335,15 @@ test("User Edit: a file that a ledger line made with its hash shows no note", as
 	world.isAllowed = true;
 	world.status = " M src/a.ts\0";
 	world.file = "by claude";
-	world.ledger = `${JSON.stringify({ path: "/p/src/a.ts", hash: "baafca602d49bda6", session: "s", agent: "a" })}\n`;
+	world.ledger = [
+		{
+			path: "/p/src/a.ts",
+			hash: "baafca602d49bda6",
+			session: "s",
+			agent: "a",
+			via: "edit",
+		},
+	];
 	await edit($);
 	expect(await band($)).not.toContain("src/a.ts");
 });

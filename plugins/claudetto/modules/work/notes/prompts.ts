@@ -10,7 +10,7 @@ export const REPEAT_NOTE = (v: {
 }) => ({
 	tag: v.kind === "deny" ? "Repeated deny" : "Repeated ask",
 	line: `${v.rule} stopped ${v.count} calls`,
-	explain: `The rule ${v.rule} gave a ${v.kind} ${v.count} times in this session. It sits in ${v.where}. Change the rule, or ask Claude for another way.`,
+	explain: `The rule ${v.rule} gave a ${v.kind} ${v.count} times in this session. The rule is in ${v.where}. Change the rule, or ask Claude for another way.`,
 });
 
 export const CHECK_NOTE = (v: {
@@ -26,15 +26,18 @@ export const CHECK_NOTE = (v: {
 export const BACKGROUND_NOTE = (v: { what: string; minutes: number }) => ({
 	tag: "Background task",
 	line: `${v.what} runs for ${v.minutes} minutes`,
-	explain: `The background task ${v.what} runs for ${v.minutes} minutes. Ask Claude to read its output, or stop it if it hangs.`,
+	explain: `The background task ${v.what} runs for ${v.minutes} minutes. Ask Claude to read its output, or to stop it if it hangs.`,
 });
 
 export const USER_EDIT_NOTE = (v: { path: string }) => ({
 	tag: "Your edit",
 	line: `${v.path} has a change from another author`,
-	explain: `The file ${v.path} has a change that no session of Claude made, and Claude edits it next. Check that its edit keeps your change.`,
+	explain: `The file ${v.path} has a change that no session of Claude made. Claude edits the file next. Check that its edit keeps your change.`,
 });
 
-export const KEY_INSERT = "1: Insert in prompt";
+// Claude Code draws a plain `Button` as `hotkey: label`, so a label holds no hotkey.
+export const KEY_INSERT = "Insert in prompt";
 
-export const KEY_OFF = "2: Turn notes off";
+export const KEY_OFF = "Turn notes off";
+
+export const KEY_ON = "Turn notes on";

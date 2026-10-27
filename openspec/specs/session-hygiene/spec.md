@@ -8,18 +8,6 @@ claudetto tells the edits of an agent apart from the edits of the user or a form
 ### Requirement: Edit Ledger
 
 After each `Edit` or `Write` call that succeeds, the system SHALL keep the path, a 64-bit hash of the file content, the session, and the agent name in one ledger file of the project in the temp folder, so that each session of the project reads the same ledger.
-At the next turn, the system SHALL give the agent one line for each file in the ledger whose content changed after the last edit of the agent.
-It SHALL add no text when no such file changed.
-
-#### Scenario: Mine
-
-- **WHEN** the agent edits `a.ts`, and nothing else changes it
-- **THEN** the hash in the ledger equals the hash of `a.ts`, and the next turn gets no added line
-
-#### Scenario: Changed After
-
-- **WHEN** the agent edits `a.ts`, and a formatter then rewrites it
-- **THEN** the next turn gets one line that names `a.ts` and says that the user or a tool changed it after the last edit of the agent
 
 #### Scenario: Two Sessions
 
@@ -76,21 +64,6 @@ It SHALL NOT report these entries to the user.
 
 - **WHEN** the temp folder holds a folder `tscheck` that no rule names
 - **THEN** it stays, and the session shows no message about it
-
-### Requirement: Who Changed a File
-
-When `git status` or `git diff` runs through `Bash`, the system SHALL add context that sorts each changed file: changed by this session, by another Claude session (with its name), or by the user, when no ledger entry has the current hash of the file.
-The context SHALL tell Claude that a change of the user is intended and is part of the work tree that the user owns.
-
-#### Scenario: User Edit
-
-- **WHEN** the user edits `.github/workflows/commitlint.yml` by hand, and Claude runs `git status`
-- **THEN** the context names the file as a change of the user
-
-#### Scenario: Other Session
-
-- **WHEN** session A wrote `src/x.ts`, and session B runs `git status`
-- **THEN** the context of session B names `src/x.ts` as a change of session A
 
 ### Requirement: Notices Report a Change
 

@@ -4,11 +4,6 @@
 import type { EngineInterface, MatchedHook } from "claude-code";
 import type { Handler } from "../../../../kernel/hooks.ts";
 import { isCheck } from "../../../project/domain/checks.ts";
-import { userEdits } from "../../../project/domain/edits.ts";
-import {
-	PROJECT_LOCAL_SETTINGS,
-	PROJECT_SETTINGS,
-} from "../../../project/domain/paths.ts";
 import type { Note } from "../../domain/notes.ts";
 import { type Task, track, whatOf } from "../domain/background.ts";
 import {
@@ -30,14 +25,70 @@ import {
 	INSERT_INTRO,
 	KEY_INSERT,
 	KEY_OFF,
+	KEY_ON,
 	REPEAT_NOTE,
-	USER_EDIT_NOTE,
 } from "../prompts.ts";
+import { fieldOf, settingsOf, userEditNote } from "./rules.ts";
+
+type CheckHook = MatchedHook<
+	"tool.check",
+	{
+		readonly tool: readonly [
+			"Bash",
+			"Edit",
+			"Glob",
+			"Grep",
+			"Read",
+			"WebFetch",
+			"Write",
+		];
+	}
+>;
+/** `tool.check`: counts each deny and ask by rule. The third one of a rule sets a note. */
+export const onCheck: CheckHook = async ($, e, next) => {
+	const verdict = await next(e);
+	if (verdict.decision === "allow") {
+		const edited = await userEditNote(
+			{
+				git: (dir, args) =>
+					$.process.run(["git", "-C", dir, ...args], {
+						timeoutMs: GIT_TIMEOUT_MS,
+					}),
+				read: (file) => $.fs.read(file),
+				ledger: (key) => $.store.get(key),
+				root: () => $.session.root(),
+			},
+			e.tool,
+			e.input,
+		);
+		if (edited) {
+			await raise($, edited);
+		}
+	}
+	const rule = verdict.rule ?? verdict.reason;
+	if (verdict.decision === "allow" || !rule) {
+		return verdict;
+	}
+	const { count } = await apply($, (state) => countAsk(state, rule));
+	if (count === REPEAT_MIN) {
+		await raise(
+			$,
+			REPEAT_NOTE({
+				kind: verdict.decision === "deny" ? "deny" : "ask",
+				rule,
+				count,
+				where: await settingsOf(
+					{ read: (file) => $.fs.read(file), root: () => $.session.root() },
+					rule,
+				),
+			}),
+		);
+	}
+	return verdict;
+};
 
 const notesRef = { plugin: "claudetto", key: "notes" } as const;
 const pendingRef = { plugin: "claudetto", key: "note" } as const;
-
-const PARENT_DIR = /\/[^/]*$/;
 
 /** Writes the state that `next` gives, and tries again when another write landed first. */
 const apply = async <R extends { state: Notes }>(
@@ -67,119 +118,6 @@ const takePending = async ($: EngineInterface): Promise<void> => {
 	}
 	await $.state.set(pendingRef, null);
 	await raise($, value);
-};
-
-/** The first of `files` under `root` that holds `rule`, read in order, or `null`. */
-const holding = async (
-	$: EngineInterface,
-	root: string,
-	rule: string,
-	files: readonly string[],
-): Promise<string | null> => {
-	const [file, ...rest] = files;
-	if (file === undefined) {
-		return null;
-	}
-	const text = await $.fs.read(`${root}/${file}`).catch(() => "");
-	return text.includes(rule) ? file : holding($, root, rule, rest);
-};
-
-/** The settings file of the project that holds `rule`, or a generic name. */
-const settingsOf = async (
-	$: EngineInterface,
-	rule: string,
-): Promise<string> => {
-	const root = await $.session.root().catch(() => "");
-	return (
-		(await holding($, root, rule, [
-			PROJECT_LOCAL_SETTINGS,
-			PROJECT_SETTINGS,
-		])) ?? "your settings files"
-	);
-};
-
-type CheckHook = MatchedHook<
-	"tool.check",
-	{
-		readonly tool: readonly [
-			"Bash",
-			"Edit",
-			"Glob",
-			"Grep",
-			"Read",
-			"WebFetch",
-			"Write",
-		];
-	}
->;
-
-/** The field `key` of a tool input, or `undefined` when the input is no object. */
-const fieldOf = (input: unknown, key: string): unknown =>
-	typeof input === "object" && input !== null
-		? Object.entries(input).find(([k]) => k === key)?.[1]
-		: undefined;
-
-/** The path of an `Edit` or `Write` that has a change which no session made, as `git status` shows it, else `null`. The ledger is the file that `hygiene` writes. */
-const userEdited = async (
-	$: EngineInterface,
-	path: string,
-): Promise<string | null> => {
-	const dir = path.replace(PARENT_DIR, "") || "/";
-	const [rel] = await userEdits(
-		{
-			git: (args) =>
-				$.process.run(["git", "-C", dir, ...args], {
-					timeoutMs: GIT_TIMEOUT_MS,
-				}),
-			read: (file) => $.fs.read(file),
-			exists: (file) => $.fs.exists(file),
-			tmp: () => $.env.get("TMPDIR"),
-			root: () => $.session.root(),
-		},
-		path,
-	);
-	return rel ?? null;
-};
-
-/** The rule "user edit": an allowed `Edit` or `Write` of a file with a change of the user sets a note. A failure of the rule sets none. */
-const checkUserEdit = async (
-	$: EngineInterface,
-	tool: string,
-	input: unknown,
-): Promise<void> => {
-	const path = fieldOf(input, "file_path");
-	if ((tool !== "Edit" && tool !== "Write") || typeof path !== "string") {
-		return;
-	}
-	const rel = await userEdited($, path).catch(() => null);
-	if (rel) {
-		await raise($, USER_EDIT_NOTE({ path: rel }));
-	}
-};
-
-/** `tool.check`: counts each deny and ask by rule. The third one of a rule sets a note. */
-export const onCheck: CheckHook = async ($, e, next) => {
-	const verdict = await next(e);
-	if (verdict.decision === "allow") {
-		await checkUserEdit($, e.tool, e.input);
-	}
-	const rule = verdict.rule ?? verdict.reason;
-	if (verdict.decision === "allow" || !rule) {
-		return verdict;
-	}
-	const { count } = await apply($, (state) => countAsk(state, rule));
-	if (count === REPEAT_MIN) {
-		await raise(
-			$,
-			REPEAT_NOTE({
-				kind: verdict.decision === "deny" ? "deny" : "ask",
-				rule,
-				count,
-				where: await settingsOf($, rule),
-			}),
-		);
-	}
-	return verdict;
 };
 
 /** The command of a `Bash` input when it is a check, else `null`. */
@@ -327,7 +265,7 @@ export const onBand: BandHook = async ($, e, next) => {
 			onPress: () => void run(),
 		});
 	if (state?.isOff) {
-		return key("on", "3", "3: Turn notes on", () =>
+		return key("on", "3", KEY_ON, () =>
 			change($, (s) => ({ ...s, isOff: false })),
 		);
 	}

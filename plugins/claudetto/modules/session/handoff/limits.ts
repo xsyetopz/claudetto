@@ -3,8 +3,6 @@
 export const CHARS_PER_TOKEN = 4;
 /** The prompt cache TTL of a root session: 1 hour. Claudetto asks for it with `CLAUDE_CODE_PROMPT_CACHE_TTL`. */
 export const CACHE_TTL_MS = 3_600_000;
-/** The most changed files that a cold handoff names. */
-export const COLD_FILES_MAX = 20;
 /** The most user messages that a cold handoff quotes, from the end of the session. */
 export const COLD_PROMPTS_MAX = 3;
 /** The most characters of the task and of one quoted user message in a cold handoff. */
@@ -44,21 +42,23 @@ export const PATH_TABLE: readonly PathRow[] = [
 		model: "haiku",
 	})),
 ];
-/** The most decisions that a handover names, from the end of the session. */
+/** The rank of a decision up to which the handoff probe reports it as one of the newest (the handoff itself holds decisions by `DECISIONS_TOKENS`). */
 export const DECISIONS_MAX = 10;
-/** The most values of the user that a handover names, from the end of the session, and the most characters of one. */
-export const USER_VALUES_MAX = 20;
+/** The tokens that a section of the handoff may hold when a session has more than fits: the whole session keeps the oldest and the newest entries, and the middle gives way. The sums stay well below `HEAD_TOKENS`. */
+export const RULES_TOKENS = 2500;
+export const VALUES_TOKENS = 800;
+export const DECISIONS_TOKENS = 1000;
+export const EDITED_TOKENS = 1500;
+export const READS_TOKENS = 4500;
+/** The most characters of a value, a rule, a task text, and a question, and the most failed tool calls. */
 export const USER_VALUE_CHARS_MAX = 200;
-/** The most rules, errors, and files that the handoff format holds, and the most characters of a rule, a task text, and a question. */
-export const CONSTRAINTS_MAX = 40;
 export const CONSTRAINT_CHARS_MAX = 400;
 export const ERRORS_MAX = 8;
-export const READS_MAX = 20;
-export const TASK_CHARS_MAX = 160;
+export const TASK_CHARS_MAX = 400;
 export const QUESTION_CHARS_MAX = 120;
 /** The most characters of the goal. */
 export const GOAL_CHARS_MAX = 300;
 /** The tokens of the newest messages that code compaction keeps word for word (proposed, task 3.3 sets it from the probe). */
-export const TAIL_TOKENS = 20_000;
+export const TAIL_TOKENS = 5000;
 /** The tokens above which the handoff message is too big, and the built-in compaction runs. */
 export const HEAD_TOKENS = 12_000;

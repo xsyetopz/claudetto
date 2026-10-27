@@ -5,14 +5,11 @@
 
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
-import {
-	caseFaultsIn,
-	replyOnlyCasesIn,
-	thinEvalClaimsIn,
-} from "./case-checks.ts";
+import { caseFaultsIn, replyOnlyCasesIn } from "./case-checks.ts";
 import { EVAL_MIN_RUNS_PER_ARM } from "./limits.ts";
 import { eachInOrder } from "./ordered.ts";
 import { $claude } from "./telemetry.ts";
+import { thinEvalClaimsIn } from "./thin-claims.ts";
 
 const root = join(import.meta.dir, "..");
 const plugins = join(root, "plugins");

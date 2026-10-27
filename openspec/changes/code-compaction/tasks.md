@@ -15,6 +15,8 @@
 - [ ] 3.2 Run the probe after the user approves the cost of each round, and write the evidence page in `src/wiki/claudetto/evidence/` with the cost, quality, and cache numbers of each arm. When the code arm misses a bar, change the code path and run the next round, with a new approval. Check: `just generate`, then `just check`.
 - [ ] 3.3 Only when the code arm meets each bar of "Default Path from the Probe", set the default path and `PATH_TABLE` from the result, and add the entries to the `0.4.0-alpha.1` section of `CHANGELOG.md`, because each change of this session ships in `0.4.0-alpha.1` (the user, 2026-10-26). Check: `just check`.
 
+Tasks 3.2 and 3.3 are skipped for `0.4.0-alpha.2`, because the user chose no paid probe run (2026-10-27). The default path stays as it is until a probe round runs.
+
 ## 4. Close
 
 - [x] 4.1 Get a `claudetto:Reviewer` review of the diff against this plan, and fix each defect. Check: the review lists no open defect.

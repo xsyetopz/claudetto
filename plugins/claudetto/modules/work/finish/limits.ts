@@ -9,14 +9,5 @@ export const RUN_TIMEOUT_MS = 300_000;
 /** The most re-blocks of a stop in a row (X21). Then the stop goes on, with a line to the user. */
 export const GOAL_BLOCKS_MAX = 5;
 
-/** The most time that `git status` may take, in milliseconds. */
-export const GIT_TIMEOUT_MS = 10_000;
-
-/** The most characters of the deferred item in a note. */
-export const NOTE_ITEM_CHARS = 80;
-
-/** The most file names in the line of a note. */
-export const NOTE_FILES_MAX = 5;
-
 /** The most characters of the next open task in the text of a loop block. */
 export const LOOP_TASK_CHARS = 120;

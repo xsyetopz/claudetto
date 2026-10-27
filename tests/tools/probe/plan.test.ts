@@ -2,12 +2,8 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
-import {
-	handoffOf,
-	messagesOf,
-	plan,
-	resumeOf,
-} from "../../../dev/probe/main.ts";
+import { handoffOf, messagesOf, resumeOf } from "../../../dev/probe/handoff.ts";
+import { plan } from "../../../dev/probe/plan.ts";
 import { pathExists } from "../helpers.ts";
 
 const argsOf = (cmd: string[], flag: string): string[] =>

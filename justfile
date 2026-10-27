@@ -104,9 +104,10 @@ text-defaults *args:
 generate *flags:
     bun tools/generate/index.ts "$@"
 
-# Run the eval cases of the core plugin with `claude plugin eval`, on a path target so the checkout and not the installed copy is tested; extra arguments go to the eval (--case NAME). The run costs money, so --max-cost-usd bounds it, and a lock stops a second run while one is in progress. --keep-temp is always on, so each run keeps its sandbox and trace.jsonl (the eval prints "kept temp: /private/tmp/e-XXXX") to find the cause of a failed run. --model is required, because without it the eval uses the model of the session, which can cost many times more
+# Run the eval cases of the core plugin with `claude plugin eval`, on a path target so the checkout and not the installed copy is tested; extra arguments go to the eval (--case NAME). The run costs money, so --max-cost-usd bounds it, and a lock stops a second run while one is in progress. --keep-temp is always on, so each run keeps its sandbox and trace.jsonl (the eval prints "kept temp: /private/tmp/e-XXXX") to find the cause of a failed run. --model is required, because without it the eval uses the model of the session, which can cost many times more. --judge-model is required, because the `llm` graders have no model key, and the default alias `haiku` moves to a new model with no notice
 eval *args:
     @case " $* " in *" --model "*|*" --model="*) ;; *) echo 'Pass `--model`, such as `--model haiku`, because without it the eval uses the model of the session.' >&2; exit 1 ;; esac
+    @case " $* " in *" --judge-model "*|*" --judge-model="*) ;; *) echo 'Pass `--judge-model` with a full model ID, such as `--judge-model claude-haiku-5-5`, so that the judge of each run is known.' >&2; exit 1 ;; esac
     bun dev/unsandboxed.ts
     bun tools/lock.ts claude plugin eval plugins/claudetto --no-publish --scaffold --allow-tools Bash,Write,Edit --max-cost-usd 5 --keep-temp "$@"
 
@@ -127,17 +128,26 @@ eval-tune *args:
 eval-budget *args:
     bun dev/run-budget.ts "$@"
 
-# Print the statistics of the with/without comparison from `aggregate-result.json` files or folders of results (Fisher p, Newcombe CI, bootstrap CI over cases, judge agreement); add --json, --seed N, or --pick oldest
+# Print the statistics of the with/without comparison from `aggregate-result.json` files or folders of results (Fisher p, Newcombe CI, bootstrap CI over cases, judge agreement, and the paired difference of the arms with a clustered standard error and the cases a power check needs); add --json, --seed N, --gap G, or --pick oldest
 eval-stats *args:
     bun dev/stats/main.ts "$@"
+
+# Replay the deterministic stage of the permission gate on benign calls from your session logs (--limit N, --projects A,B), InjecAgent attacks (--injecagent DIR of a local clone), and synthetic in-project file edits; prints counts, rates with Wilson 95% intervals, and the ids of false positives, and makes no model call (--with-classifier prints the paid command only)
+classifier-replay *args:
+    bun dev/classifier-replay/main.ts "$@"
 
 # List the 18 forks of the code-compaction probe with `--dry-run` (no call), or run them with `--run [--dir D] [--runs N]` (3 runs of each arm and size by default), which is a paid run that needs the approval of the user (openspec change `code-compaction`, task 3.1)
 probe *args:
     bun dev/probe/main.ts "$@"
 
-# Run the eval cases on the checkout and on a variant at a git ref (in a temporary worktree), to compare the two plugin arms; extra arguments go to the eval, and --model is required as for `eval`
+# Plant a constraint, a fact, a file, a decision, and the next task in seeded sessions, build the handoff with code, and score survival with Wilson intervals (no model call); add --sessions [--limit N] to replay real transcripts (read only, counts only), or --with-compact to print the command of the paid comparison against `/compact`
+handoff-probe *args:
+    bun dev/handoff-probe/main.ts "$@"
+
+# Run the eval cases on the checkout and on a variant at a git ref (in a temporary worktree), to compare the two plugin arms; extra arguments go to the eval, and --model and --judge-model are required as for `eval`
 eval-variant ref *args:
     @case " $* " in *" --model "*|*" --model="*) ;; *) echo 'Pass `--model`, such as `--model haiku`, because without it the eval uses the model of the session.' >&2; exit 1 ;; esac
+    @case " $* " in *" --judge-model "*|*" --judge-model="*) ;; *) echo 'Pass `--judge-model` with a full model ID, such as `--judge-model claude-haiku-5-5`, so that the judge of each run is known.' >&2; exit 1 ;; esac
     bun dev/unsandboxed.ts
     bun tools/lock.ts bun dev/eval-variant.ts "$@"
 

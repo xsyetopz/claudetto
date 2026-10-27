@@ -22,7 +22,7 @@ For each feature, it picks the first of these that can do the work:
 4. Nothing.
 
 It writes no code for a feature that Claude Code already has.
-Claude Code 2.1.310 or later is the minimum version.
+Claude Code 2.1.311 or later is the minimum version.
 
 ## The Plugins
 
@@ -67,6 +67,7 @@ These `userConfig` options change how the core plugin works:
 | Option | Values | Default |
 | --- | --- | --- |
 | `decide` | `off`, `jev` | `jev` |
+| `classifier` | `haiku`, `off` | `haiku` |
 | `compaction` | `auto`, `handover`, `built-in` | `auto` |
 
 ## Related Pages

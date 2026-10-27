@@ -22,6 +22,7 @@ The key names match `schemas/claude-code-settings.json`.
 
 | Option | Values | Effect | Read in |
 | --- | --- | --- | --- |
+| `classifier` | `haiku` (default), `off` | `off` leaves each `ask` of the gate that Jev is not sure about to a person, with no model call. It also skips the model step of the [Reply](Reply) check of the opening of a reply. | `plugins/claudetto/modules/gate/adapters/classifier.ts`, `plugins/claudetto/modules/work/reply/adapters/mod.ts` |
 | `compaction` | `auto` (default), `handover`, `built-in` | `built-in` starts no handover and leaves compaction to Claude Code. | `plugins/claudetto/modules/session/handoff/adapters/mod.ts` |
 | `decide` | `off`, `jev` (default) | `off` sends no question to Jev. `jev` needs `TYPESAFE_API_KEY`, and then Jev answers each `AskUserQuestion` call that it is sure about. | `plugins/claudetto/modules/jev/adapters/mod.ts` |
 

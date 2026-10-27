@@ -26,7 +26,7 @@ export const EVAL_MAX_TOOL_CALLS = 60;
 export const EVAL_MAX_TOKENS = 200_000;
 
 /** The lowest Claude Code version that claudetto is built for. `ci.yml` installs it, and the files of `schemas/` come from its bundle. */
-export const MIN_CLAUDE_CODE_VERSION = "2.1.310";
+export const MIN_CLAUDE_CODE_VERSION = "2.1.311";
 
 /** The `just` version of the image of `just docker` and `just sandbox-linux`. */
 export const JUST_VERSION = "1.58.0";
@@ -46,6 +46,10 @@ export const EVAL_STATS_CONFIDENCE = 0.95;
 export const EVAL_STATS_RESAMPLES = 10_000;
 /** Default seed of the bootstrap in `just eval-stats`, so a rerun prints the same interval. The `--seed` flag changes it. */
 export const EVAL_STATS_SEED = 20_261_019;
+/** Default gap of pass rate (with minus without) that the power check of `just eval-stats` sizes the number of cases for. The `--gap` flag changes it. */
+export const EVAL_STATS_GAP = 0.1;
+/** Power of the power check of `just eval-stats`, with the significance level `1 - EVAL_STATS_CONFIDENCE`. */
+export const EVAL_STATS_POWER = 0.8;
 
 // Bounds of `just sandbox-linux`, checked by `dev/sandbox/linux/run.ts`.
 
@@ -65,3 +69,18 @@ export const COUNT_ATTEMPTS = 4;
 export const COUNT_BACKOFF_MS = 500;
 /** Most characters of a text block that `just capture` sizes as one part. */
 export const SPLIT_CHARS = 2000;
+/** Default most benign calls that `just classifier-replay` reads from the session logs, so a run reads few files. */
+export const REPLAY_LIMIT = 500;
+
+/** Seeds of each session size that `just handoff-probe` plants, so each kind and depth holds one item for each seed and size. */
+export const HANDOFF_PROBE_SEEDS = 25;
+/** The turns (a user message and an assistant message) of the synthetic sessions of `just handoff-probe`, one session size each. */
+export const HANDOFF_PROBE_SIZES = [30, 100, 300, 800] as const;
+/** Newest transcripts under `~/.claude/projects/` that `just handoff-probe --sessions` replays by default. */
+export const HANDOFF_PROBE_SESSIONS_MAX = 100;
+/** Largest transcript in bytes that `just handoff-probe --sessions` replays, so one run stays short. */
+export const HANDOFF_PROBE_FILE_BYTES_MAX = 30_000_000;
+/** Newest messages of a replayed transcript, as many as `$.session.messages` returns. */
+export const HANDOFF_PROBE_MESSAGES_MAX = 4096;
+/** Most ticked tasks of one replayed transcript that the replay scores. */
+export const HANDOFF_PROBE_TICKS_MAX = 3;

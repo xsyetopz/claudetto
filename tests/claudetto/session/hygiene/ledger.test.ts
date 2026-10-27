@@ -2,21 +2,15 @@
 
 import { expect, test } from "bun:test";
 import {
-	GONE,
 	hash64,
 	type LedgerLine,
-	ledgerPath,
+	ledgerKey,
 	madeBy,
 	parseLedger,
 	projectKey,
 	statusPaths,
 } from "../../../../plugins/claudetto/modules/project/domain/ledger.ts";
-import {
-	changedFiles,
-	ledgerText,
-	withEdit,
-	withTold,
-} from "../../../../plugins/claudetto/modules/session/hygiene/domain/ledger.ts";
+import { withEdit } from "../../../../plugins/claudetto/modules/session/hygiene/domain/ledger.ts";
 import { LEDGER_MAX_FILES } from "../../../../plugins/claudetto/modules/session/hygiene/limits.ts";
 
 const PATTERN_1 = /^app-[0-9a-f]{16}$/;
@@ -36,7 +30,8 @@ const line = (
 	hash: string,
 	session = "s1",
 	agent = "main",
-): LedgerLine => ({ path, hash, session, agent });
+	via: LedgerLine["via"] = "edit",
+): LedgerLine => ({ path, hash, session, agent, via });
 
 test("`hash64` gives the published FNV-1a vectors", () => {
 	expect(hash64("")).toBe("cbf29ce484222325");
@@ -62,20 +57,28 @@ test("`hash64` differs for text that differs by one unit", () => {
 	expect(hash64("const a = 1;")).not.toBe(hash64("const a = 1"));
 });
 
-test("the ledger file is in the temp folder, with a key for each project", () => {
-	expect(ledgerPath("/tmp", "/work/app")).toBe(
-		`/tmp/claudetto/ledger/${projectKey("/work/app")}.jsonl`,
-	);
+test("the ledger key is in the store, with a key for each project, and fits the key limit", () => {
+	expect(ledgerKey("/work/app")).toBe(`ledger:${projectKey("/work/app")}`);
 	expect(projectKey("/work/app")).toMatch(PATTERN_1);
 	expect(projectKey("/work/app")).not.toBe(projectKey("/other/app"));
+	expect(ledgerKey(`/w/${"x".repeat(400)}`).length).toBeLessThanOrEqual(256);
 });
 
-test("`parseLedger` reads the lines that `ledgerText` writes, and skips a bad line", () => {
-	const lines = [line("/a", "1"), line("/b", "2", "s2", "w")];
-	expect(parseLedger(ledgerText(lines))).toStrictEqual(lines);
+test("`parseLedger` reads the stored lines, and drops a bad line and a line with no valid `via`", () => {
+	const lines = [line("/a", "1"), line("/b", "2", "s2", "w", "bash")];
+	expect(parseLedger(lines)).toStrictEqual(lines);
+	const noVia = { path: "/c", hash: "3", session: "s1", agent: "main" };
 	expect(
-		parseLedger(`not json\n{"path":1}\n${ledgerText(lines)}`),
+		parseLedger([
+			"not a line",
+			{ path: 1 },
+			noVia,
+			{ ...noVia, via: "other" },
+			...lines,
+		]),
 	).toStrictEqual(lines);
+	expect(parseLedger(undefined)).toStrictEqual([]);
+	expect(parseLedger("text")).toStrictEqual([]);
 });
 
 test("`madeBy` finds the lines of a path with one hash, and none for a change of the user", () => {
@@ -97,40 +100,25 @@ test("`withEdit` moves the file to the end and keeps `LEDGER_MAX_FILES` lines", 
 	expect(lines.filter((l) => l.path === "/f5").length).toBe(1);
 });
 
+test("`withEdit` keeps an `edit` line and a `bash` line of one file and session", () => {
+	const lines = withEdit(
+		[line("/a", "1", "s1", "main", "edit")],
+		line("/a", "2", "s1", "main", "bash"),
+	);
+	expect(lines.map((l) => l.via)).toStrictEqual(["edit", "bash"]);
+});
+
 test("`withEdit` keeps the lines of two sessions for one file", () => {
 	const lines = withEdit([line("/a", "1", "s1")], line("/a", "2", "s2"));
 	expect(lines.map((l) => l.session)).toStrictEqual(["s1", "s2"]);
 });
 
 test("Two Sessions: session B finds the entry of session A for `b.ts`", () => {
-	const written = ledgerText(withEdit([], line("/p/b.ts", "1", "A", "main")));
-	const found = parseLedger(written).find((l) => l.path === "/p/b.ts");
+	const stored = structuredClone(
+		withEdit([], line("/p/b.ts", "1", "A", "main")),
+	);
+	const found = parseLedger(stored).find((l) => l.path === "/p/b.ts");
 	expect(found).toStrictEqual(line("/p/b.ts", "1", "A", "main"));
-});
-
-test("`changedFiles` skips a file that matches, a hash that the session knows, and a file of another session", () => {
-	const lines = [
-		line("/a", "1"),
-		line("/b", "1"),
-		line("/c", "1", "s1", "w"),
-		line("/d", "1"),
-		line("/e", "1", "s2"),
-		line("/f", "1"),
-		line("/f", "2", "s2"),
-	];
-	const now = { "/a": "1", "/b": "2", "/c": GONE, "/e": "9", "/f": "2" };
-	const told = { "/b": "2" };
-	expect(changedFiles(lines, "s1", told, now)).toStrictEqual([
-		{ path: "/c", agent: "w" },
-	]);
-});
-
-test("`withTold` keeps the new hash, so the same change gives one line", () => {
-	const lines = [line("/a", "1")];
-	const now = { "/a": "2" };
-	const told = withTold({}, changedFiles(lines, "s1", {}, now), now);
-	expect(told).toStrictEqual({ "/a": "2" });
-	expect(changedFiles(lines, "s1", told, now)).toStrictEqual([]);
 });
 
 test("`statusPaths` reads the files of `git status --porcelain -z`", () => {

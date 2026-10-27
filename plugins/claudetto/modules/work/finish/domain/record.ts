@@ -1,8 +1,7 @@
-// What the record of the session and the output of `git status` say about the work of the session.
+// What the record of the session says about the work of the session.
 
 import type { AgentInfo, SessionMessage } from "claude-code";
 import { proven } from "../../../project/domain/checks.ts";
-import { statusEntries } from "../../../project/domain/ledger.ts";
 import { runningAgents } from "../../../project/domain/session.ts";
 import { ticked } from "./tasks.ts";
 
@@ -30,28 +29,6 @@ const tickEdits = (messages: readonly SessionMessage[]) =>
 					},
 				]
 			: [],
-	);
-
-/** The paths of the successful `Edit` and `Write` calls in `messages`. */
-export const editedPaths = (messages: readonly SessionMessage[]): string[] => [
-	...new Set(
-		inputs(messages, "Edit", "Write")
-			.map((i) => i.file_path)
-			.filter((p): p is string => typeof p === "string"),
-	),
-];
-
-/** The paths in the output of `git status --porcelain -z`, from the project root. A rename gives its new path. */
-export const changedPaths = (output: string): string[] =>
-	statusEntries(output).map(({ path }) => path);
-
-/** The edited files of `edited` that `changed` lists as not committed. `changed` holds paths from the project root. */
-export const uncommitted = (
-	edited: readonly string[],
-	changed: readonly string[],
-): string[] =>
-	edited.filter((file) =>
-		changed.some((c) => file === c || file.endsWith(`/${c}`)),
 	);
 
 /** The ids of the boxes that an `Edit` of a `tasks.md` ticked and that no passed check in `passed` supports. The `box` hook denies such an edit, so a box here came through another way, such as a shell command. */
@@ -97,20 +74,3 @@ export const tickedFiles = (rows: readonly SessionMessage[]): string[] => [
 		tickEdits(rows).flatMap((t) => (t.boxes.length > 0 ? [t.file] : [])),
 	),
 ];
-
-const count = (n: number, one: string, many: string): string =>
-	`${n} ${n === 1 ? one : many}`;
-
-/** The reason in the line of a note: the files that are not committed, and the boxes that have no passed check. */
-export const unprovenWhat = (
-	files: readonly string[],
-	boxes: readonly string[],
-): string =>
-	[
-		files.length > 0 &&
-			`${count(files.length, "file of this session is", "files of this session are")} not committed: ${files.join(", ")}`,
-		boxes.length > 0 &&
-			`${count(boxes.length, "task box has", "task boxes have")} no passed check: ${boxes.join(", ")}`,
-	]
-		.filter(Boolean)
-		.join(", and ");

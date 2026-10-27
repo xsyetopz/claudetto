@@ -9,10 +9,10 @@ import {
 	exitOf,
 	main,
 	parseArgs,
-	post,
 	render,
 	UsageError,
 } from "../../../../plugins/claudetto/modules/jev/adapters/cli.ts";
+import { post } from "../../../../plugins/claudetto/modules/jev/adapters/upload.ts";
 import {
 	BACKOFF_MS,
 	ERROR_BODY_MAX,

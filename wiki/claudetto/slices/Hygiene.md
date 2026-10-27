@@ -50,37 +50,34 @@ Claude cannot know that a file changed after its last edit when the user or a to
 Another Claude session of the project can also change a file.
 The slice keeps one ledger for the project for this.
 
-The ledger is the file `<tmp>/claudetto/ledger/<project key>.jsonl`.
+The ledger is a value of the private store of the plugin (`$.store`), under the key `ledger:<project key>`.
+The store is one file for each plugin, with mode `0o600`, so the ledger is private to the user, and it stays when the temp folder is recreated.
 The project key is the base name of the project root and a hash of its path.
-Each line holds the path, the hash of the file (FNV-1a, 64 bits), the session, and the agent (`main`, or the agent type).
-Each session of the project reads the same file.
-The reader of the file is in `plugins/claudetto/modules/project/domain/ledger.ts`, because the `guard` slice reads it too ([Guard](Guard)).
+Each line holds the path, the hash of the file (FNV-1a, 64 bits), the session, the agent (`main`, or the agent type), and `via`: `edit` for an `Edit` or `Write`, and `bash` for the capture of a `Bash` call.
+A stored line with no valid `via` is dropped.
+Each session of the project reads the same value, because each `get` reads the store file from disk.
+The reader is in `plugins/claudetto/modules/project/domain/ledger.ts`, because the `guard` and `notes` slices read it too ([Guard](Guard)).
 
-1. After each `Edit` or `Write` that succeeds, the `classic.PostToolUse` hook adds a line.
+1. Before each `Edit` or `Write`, the `classic.PreToolUse` hook adds a line of `edit` with the hash of the content that the call will write.
+   For a `Write` that is the `content`, and for an `Edit` it is the file with `old_string` replaced.
+   It adds none when the read fails or `old_string` does not match.
+2. After each `Edit` or `Write` that succeeds, the `classic.PostToolUse` hook adds a line.
    After each `Bash` call, it adds a line for each file of `git status` whose time of change is after the start of the call.
-   A write that lost a race to another write runs again, at most `LEDGER_WRITE_TRIES` (5) times.
-   The ledger holds at most `LEDGER_MAX_FILES` (200) lines, and the oldest line goes first.
-2. At each prompt, the `classic.UserPromptSubmit` hook hashes the files of this session again.
-   For a file that changed after the last edit, and that no other line of the ledger explains, it adds one line to the context:
-   ``The user or a tool changed `<path>` after the last edit of `<agent>`.``
-   The plugin state (`$.state`) holds only what this session was told, so the hook says the line once for each change.
-3. When no file changed, the hook adds nothing, so the cost is 0 tokens.
+   A `get` and a `set` of the store are not atomic together, so a write that lost a race to another write runs again, at most `LEDGER_WRITE_TRIES` (5) times.
+   The ledger holds at most `LEDGER_MAX_FILES` (2000) lines, which is about 0.5 MB of the 4 MiB of the store, and the oldest line goes first.
+Notes on the ledger:
 
-### Who Changed a File
+- A file that a tool changed counts as a change of the user, because no ledger line holds it.
+- The `protect` slice reads the ledger too: a protected file that a line of `edit` holds with its current hash is the effect of an `Edit` or `Write`, and a `Bash` call does not undo it.
 
-When `git status` or `git diff` runs through `Bash`, the `tool.call` hook adds context that sorts each changed file:
+## Moved Plan Files
 
-- A change of this session.
-- A change of another Claude session, with its session and agent.
-- A change of the user, when no line of the ledger holds the path with the current hash.
-
-The context tells Claude that a change of the user is intended, so Claude keeps it and stages it only when the user asks.
-The hook reads at most `WHO_FILES_MAX` (50) changed files.
-
-Two limits of the ledger:
-
-- A subagent gets no line at its own next turn.
-- A file that a tool changed shows as a change by "the user or a tool".
+The `protect` slice leaves `ARCHIVE_DIR` (`openspec/changes/archive`) out of its search, so a plan or spec file that a `Bash` call moved there looks deleted.
+Before it writes a deleted file back, the slice looks for a file with the same text.
+It reads `openspec/changes/archive/*-<name>/<rel>` for a deleted `openspec/changes/<name>/<rel>`, which is the layout of `openspec archive`, and then the plan files of `openspec/` with the same name, archive included.
+A file with the same text moved, so no hook was skipped, and the slice writes nothing back.
+The same holds for the delete of a duplicate whose exact text is in the archive.
+A delete with no copy of the text, and a moved file whose text changed (a box ticked on the way), are still written back.
 
 ## Heading Case
 

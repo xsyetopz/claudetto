@@ -14,8 +14,6 @@ import {
 /** A literal `$`, so a shell expansion in a sample is no template placeholder. */
 const DOLLAR = "$";
 
-const PATTERN_1 = /^(?=.*\d)[\w-]+$/;
-
 const ABS = {
 	name: "abs-fixed",
 	target: { source: "file", path: "src/abs.mjs" },
@@ -260,23 +258,6 @@ const SAMPLES: Sample[] = [
 			"const max = (xs) => 1;\n",
 		],
 	},
-	{
-		caseName: "blind-count-from-tool",
-		name: "reply-has-numbers",
-		pass: ["There are 13 files and 253 lines.", "lines: 253\nfiles: 13"],
-		fail: [
-			"",
-			"There are 13 files.",
-			"42 modules and 3100 lines",
-			"113 files, 2530 lines",
-		],
-	},
-	{
-		caseName: "blind-ctl-real-empty-average",
-		name: "reply-not-empty",
-		pass: ["Fixed: `average([])` now returns 0."],
-		fail: ["", "  \n\t "],
-	},
 ];
 
 const textsOf = (g: Grader, texts: string[]) => {
@@ -335,20 +316,12 @@ test("a case about the final message has a judge, and no regex reads the words o
 			caseName,
 		).toBeTruthy();
 	}
-	// A regex can read the final message only for an exact value that the scaffold wrote, such as `amber-falcon-42`.
-	// Such a value is one token with a digit, so it is the same in each language of the reply.
-	const exactValue = (pattern: unknown) =>
-		typeof pattern === "string" && PATTERN_1.test(pattern);
-	// `reply-has-numbers` checks the two exact counts, and `reply-not-empty` checks that the reply has a character.
-	const exactCheck = new Set(["reply-has-numbers", "reply-not-empty"]);
 	for (const [name, c] of Object.entries(cases)) {
 		expect(
 			c.graders.some(
 				(g) =>
 					g.type === "regex" &&
-					(g.target === undefined || g.target === "last_message") &&
-					!exactCheck.has(g.name) &&
-					!exactValue(g.pattern),
+					(g.target === undefined || g.target === "last_message"),
 			),
 			`${name}: a regex reads the words of the final message`,
 		).toBeFalse();

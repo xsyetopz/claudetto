@@ -11,6 +11,15 @@ export interface Interval {
 	high: number;
 }
 
+/** The mean of `xs`, or `NaN` for no value. */
+export const mean = (xs: number[]): number => {
+	let total = 0;
+	for (const x of xs) {
+		total += x;
+	}
+	return xs.length === 0 ? Number.NaN : total / xs.length;
+};
+
 /** The sum of `ln(i)` for `i` up to `n`. */
 const logFactorials = (n: number): number[] => {
 	const out = [0];

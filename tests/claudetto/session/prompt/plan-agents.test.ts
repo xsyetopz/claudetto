@@ -4,11 +4,11 @@ import { expect, test } from "bun:test";
 import { onAttachment } from "../../../../plugins/claudetto/modules/session/prompt/adapters/mod.ts";
 import { SCOUT_AGENT } from "../../../../plugins/claudetto/modules/session/prompt/domain/plan-mode.ts";
 import { SNIPPET } from "../../../../plugins/claudetto/modules/setup/prompts.ts";
-import DEFAULTS from "./fixtures/text-defaults-2.1.310.json";
+import DEFAULTS from "./fixtures/text-defaults-2.1.311.json";
 
 const PATTERN_1 = /\bExplore\b|ExitPlanMode|Plan agent/;
 
-/** The plan mode text of Claude Code 2.1.310, with the plan file path of a session. */
+/** The plan mode text of Claude Code 2.1.311, with the plan file path of a session. */
 const defaults: Record<string, { text: string }> = DEFAULTS;
 const PLAN_TEXT = (defaults["plan-mode"]?.text ?? "").replace(
 	"<config-dir>/plans/<plan-name>.md",

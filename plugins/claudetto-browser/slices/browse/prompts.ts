@@ -11,4 +11,4 @@ export const NO_GUIDE = (v: {
 Run \`agent-browser --help\` to see the commands of the installed version.`;
 
 export const NOT_INSTALLED =
-	"agent-browser is not installed. Install it with `bun add -g agent-browser`, then run `agent-browser install` for its Chrome, and go on.";
+	"agent-browser is not installed. Install it with `bun add -g agent-browser`. Then run `agent-browser install` for its Chrome. Then continue.";

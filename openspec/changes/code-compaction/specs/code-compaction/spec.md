@@ -30,8 +30,14 @@ When the build fails, or the handoff message is over the head budget, the hook S
 
 ### Requirement: Handoff Format
 
-The handoff message and the handoff file SHALL have the sections `## Goal`, `## Constraints and Pins`, `## Decisions`, `## Open Change and Tasks`, `## Files`, `## Errors and Fixes`, `## Checks`, `## Next Step`, and `## User Messages`, in this order.
+The handoff message and the handoff file SHALL have the sections `## Goal`, `## Constraints and Pins`, `## Decisions`, `## Open Change and Tasks`, `## Files`, `## Errors and Fixes`, `## Checks`, `## Running Work`, `## Next Step`, and `## User Messages`, in this order.
 `## Constraints and Pins` SHALL quote each rule of the user word for word, with its source.
+`## Running Work` SHALL list each background `Agent` and `Bash` call that no `<task-notification>` names, with its task id.
+
+#### Scenario: Agent Still Running
+
+- **WHEN** a background agent started before the handoff and no notification of it arrived
+- **THEN** `## Running Work` names its description and its task id
 
 #### Scenario: Pinned Version
 
@@ -55,6 +61,11 @@ The handoff SHALL name each task of the open change in exactly one state: done, 
 
 - **WHEN** task `1.1` is the next open task
 - **THEN** the handoff names `1.1` as next, and no line says that no task is open
+
+#### Scenario: Open Task Keeps Its Text
+
+- **WHEN** task `1.2` is open and its line reads "Add `src/server.ts` on port 4317"
+- **THEN** the handoff names `1.2` with that text, so the model need not read `tasks.md` again
 
 ### Requirement: Default Path from the Probe
 

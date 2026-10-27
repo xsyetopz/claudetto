@@ -21,17 +21,13 @@ const stub = (on: On, out: Out = "", runs: Runs = []) => {
 	});
 };
 
-// `files`: the session id, the clock, the files in `map` (the gate log), and the ledger file `ledger` (none for `null`).
-const files = (on: On, map: Map<string, string>, ledger?: string | null) => {
-	const isLedger = (path: string) => path.startsWith("/t/claudetto/ledger/");
+// `files`: the session id, the clock, the files in `map` (the gate log), and the ledger value of the store (`ledger`, none when not given).
+const files = (on: On, map: Map<string, string>, ledger?: unknown) => {
 	on("session.id", () => ({ value: "s1" }));
 	on("clock.now", () => ({ value: 0 }));
-	on("fs.exists", (_$, e) => ({
-		value: isLedger(e.path) ? ledger !== null : map.has(e.path),
-	}));
-	on("fs.read", (_$, e) => ({
-		value: isLedger(e.path) ? (ledger ?? "") : (map.get(e.path) ?? "x"),
-	}));
+	on("store.get", () => ({ value: ledger ?? undefined }));
+	on("fs.exists", (_$, e) => ({ value: map.has(e.path) }));
+	on("fs.read", (_$, e) => ({ value: map.get(e.path) ?? "x" }));
 	on("fs.write", (_$, e) => {
 		map.set(e.path, e.text);
 		return { value: undefined };
@@ -43,10 +39,11 @@ const check = ($: Engine, tool: string, input: Record<string, string>) =>
 const bash = ($: Engine, command: string) => check($, "Bash", { command });
 
 const HASH_X = "af63f54c86021707"; // `hash64` of the text `x`, the content of `/p/a.ts`
-const entry = (hash: string, session = "s1") =>
-	`${JSON.stringify({ path: "/p/a.ts", hash, session, agent: "main" })}\n`;
+const entry = (hash: string, session = "s1") => [
+	{ path: "/p/a.ts", hash, session, agent: "main", via: "edit" },
+];
 // `tree`: a work tree at `/p` with the changed file `a.ts` and a ledger.
-const tree = (ledger: string | null) => (on: On) => {
+const tree = (ledger: unknown) => (on: On) => {
 	stub(on, (argv) => (argv.includes("rev-parse") ? "/p\n" : " M a.ts\0"));
 	files(on, new Map(), ledger);
 	on("session.root", () => ({ value: "/p" }));
@@ -152,7 +149,7 @@ test(
 		"allow",
 	),
 );
-test("Empty TMPDIR: the gate reads the ledger at `/tmp`, where `hygiene` writes it", async ($: Engine, on: On) => {
+test("Empty TMPDIR: the ledger is in the store, so the gate reads no temp folder", async ($: Engine, on: On) => {
 	on("tool.check", () => ({ decision: "ask" }));
 	on("session.cwd", () => ({ value: "/p" }));
 	on("session.root", () => ({ value: "/p" }));
@@ -160,16 +157,11 @@ test("Empty TMPDIR: the gate reads the ledger at `/tmp`, where `hygiene` writes 
 	on("process.run", (_$, e) =>
 		ran(e.argv.includes("rev-parse") ? "/p\n" : " M a.ts\0"),
 	);
-	on("session.id", () => ({ value: "s1" }));
-	on("clock.now", () => ({ value: 0 }));
-	const isLedger = (path: string) => path.startsWith("/tmp/claudetto/ledger/");
-	on("fs.exists", (_$, e) => ({ value: isLedger(e.path) }));
-	on("fs.read", (_$, e) => ({ value: isLedger(e.path) ? entry(HASH_X) : "x" }));
-	on("fs.write", () => ({ value: undefined }));
+	files(on, new Map(), entry(HASH_X));
 	expect((await bash($, "git add -A")).decision).toBe("allow");
 });
 test(
-	"No Ledger File: the file is a change of the user, so a bulk stage asks",
+	"No Ledger Value: the file has no maker, so a bulk stage asks",
 	run(tree(null), ["git add -A"], "ask"),
 );
 
@@ -197,6 +189,7 @@ for (const [name, options, ran_] of JEV) {
 	test(name, { options }, async ($: Engine, on: On) => {
 		const runs: Runs = [];
 		stub(on, "?? notes.md\n", runs);
+		on("session.id", () => ({ value: "s1" }));
 		mock.clock(on);
 		const kinds: string[] = [];
 		on("http.fetch", (_$, e) => {

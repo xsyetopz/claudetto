@@ -33,6 +33,13 @@ test("a checked box with a passed check is done", () => {
 	expect(lineOf(text, DONE)).toContain("`1.1`");
 	expect(lineOf(text, DONE)).toContain("`1.3`");
 	expect(lineOf(text, OPEN)).not.toContain("`1.1`");
+	expect(lineOf(text, DONE)).not.toContain("no passed check");
+});
+
+test("a long task line keeps its end, where the check is named", () => {
+	const line = `Add the server. ${"Pad the line by 2 spaces. ".repeat(10)}Check: \`bun test\`.`;
+	const text = handoff(`- [ ] 1.1 First\n- [ ] 1.2 ${line}\n`);
+	expect(lineOf(text, OPEN)).toContain("Check: `bun test`.");
 });
 
 test("a task line that names a check needs that check, and a line that names none needs any passed check", () => {

@@ -80,8 +80,15 @@ export const buildFixture = async (
 ): Promise<void> => {
 	const write = (f: string, text: string) =>
 		globalThis.Bun.write(path.join(dir, f), text);
-	const tasks = TASKS.map((t, i) => `- [ ] 1.${i + 1} ${t}`).join("\n");
+	// The gate of claudetto ticks a box only after a passed check, so each task names one that passes.
+	const tasks = TASKS.map(
+		(t, i) => `- [ ] 1.${i + 1} ${t} Check: \`bun test\`.`,
+	).join("\n");
 	await write("openspec/changes/demo/tasks.md", `## 1. Work\n\n${tasks}\n`);
+	await write(
+		"test/smoke.test.ts",
+		'import { expect, test } from "bun:test";\n\ntest("smoke", () => expect(1).toBe(1));\n',
+	);
 	await write(UNTOUCHED, 'export const pad = (s: string) => " " + s;\n');
 	await write(
 		"package.json",

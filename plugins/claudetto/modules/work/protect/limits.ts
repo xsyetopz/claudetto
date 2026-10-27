@@ -9,6 +9,9 @@ export const PROTECTED_FILES: readonly string[] = [
 /** The folder, below the project root, that holds the plan and spec files. */
 export const PLAN_DIR = "openspec";
 
+/** The folder, below the project root, that `openspec archive` moves a finished change into. */
+export const ARCHIVE_DIR = `${PLAN_DIR}/changes/archive`;
+
 /** The folders of `PLAN_DIR` that the search leaves out: the finished changes. */
 export const PLAN_SKIPPED: readonly string[] = ["archive", "node_modules"];
 

@@ -1,8 +1,8 @@
 {
 	"$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-plugin-manifest.json",
 	"name": "claudetto",
-	"version": "0.4.0-alpha.1",
-	"description": "Adds a lean output style, a main agent with a roster of six agents, a permission gate that answers each permission prompt, a status line command with the plan usage, and the `setup` skill. Adds the MiniSpec skills `propose`, `apply`, `verify`, `archive`, `explore`, `update`, and `sync`, a handover to a fresh session in place of the compaction summary, a `goal` check and a check of each ticked task, a ledger of edited files, and a cleanup at session start. With a key, Jev answers `AskUserQuestion`, the asks of the gate, and the handover offer.",
+	"version": "0.4.0-alpha.2",
+	"description": "Adds a lean output style, a main agent with a roster of six agents, and a permission gate that answers each permission prompt. Adds a status line command with the plan usage, and the `setup` skill. Adds the MiniSpec skills `propose`, `apply`, `verify`, `archive`, `explore`, `update`, and `sync`. Adds a handover to a fresh session in place of the compaction summary, and a `goal` check. Adds a check of each ticked task, a ledger of edited files, and a cleanup at session start. With a key, Jev answers `AskUserQuestion`, the asks of the gate, and the handover offer. A Haiku 5.5 classifier settles each ask of the gate that Jev does not settle.",
 	"author": {
 		"name": "xsyetopz"
 	},
@@ -13,9 +13,16 @@
 		"decide": {
 			"type": "string",
 			"title": "Second Opinion",
-			"description": "Use `off` for no pick, or `jev` for Jev (it needs `TYPESAFE_API_KEY`, and the questions go to the TypeSafe API). With `jev` and the key, Jev answers each `AskUserQuestion` call and the dialog does not show, unless Jev is not sure about a question.",
+			"description": "Use `off` for no pick, or `jev` for Jev (it needs `TYPESAFE_API_KEY`, and the questions go to the TypeSafe API). With `jev` and the key, Jev answers each `AskUserQuestion` call and the dialog does not show, unless Jev is not sure about a question. Jev also gets each ask of the permission gate, with the call and the newest 3 requests of the user.",
 			"default": "jev",
 			"options": ["off", "jev"]
+		},
+		"classifier": {
+			"type": "string",
+			"title": "Classifier",
+			"description": "Use `haiku` to let Haiku 5.5 settle each ask of the permission gate that Jev is not sure about: it allows a routine call or a call that the user asked for, and blocks the rest with a reason. A failure goes to the dialog. Use `off` to send each such ask to the dialog.",
+			"default": "haiku",
+			"options": ["haiku", "off"]
 		},
 		"compaction": {
 			"type": "string",

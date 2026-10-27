@@ -15,10 +15,10 @@ interface Edit {
 }
 
 /** A word (quoted runs, escapes, and plain characters) or one operator character. */
-const WORD_OR_OPERATOR =
+export const WORD_OR_OPERATOR =
 	/(?:'[^']*'|"(?:[^"\\]|\\[\s\S])*"|\\[\s\S]|[^\s'"\\;|&<>()])+|[;|&<>()\n]/g;
 
-const OPERATOR_CHAR = /[;|&<>()\n]/;
+export const OPERATOR_CHAR = /[;|&<>()\n]/;
 const UNSAFE_DOUBLE_QUOTED = /["$`\\]/;
 const PLAIN_BARE_WORD = /^[^\s'"$`\\*?[\]{}~!#]+$/;
 const INLINE_TITLE_FLAG = /^(--title=|-t=)(.*)$/s;

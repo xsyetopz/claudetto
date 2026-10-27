@@ -25,6 +25,7 @@ node_modules/
 /skills-lock.json
 
 # Local session state and research notes, not for the public repository.
+/.claudetto/
 /.claude/claudetto/
 
 # Local state, cache, and scratch files of claudetto, not for the public repository.

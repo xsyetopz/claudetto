@@ -12,7 +12,8 @@ import { OPENSPEC_RUN_TIMEOUT_MS } from "../../../../tools/limits.ts";
 import { minispec, openspec } from "../../../support/openspec.ts";
 import { REPO } from "../../../support/repo.ts";
 import { CASES } from "./cases.ts";
-import { project, record } from "./record.ts";
+import { record } from "./record.ts";
+import { project } from "./shared.ts";
 
 test("the installed OpenSpec is 1.15.0, the version of the parity record", async () => {
 	const pkg = await file(

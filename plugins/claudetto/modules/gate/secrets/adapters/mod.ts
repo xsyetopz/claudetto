@@ -8,258 +8,41 @@
 import type { EngineInterface } from "claude-code";
 import type { Handler } from "../../../../kernel/hooks.ts";
 import { projectRoot } from "../../../project/domain/session.ts";
-import { ENV_FILE } from "../../domain/paths.ts";
 import {
 	ENV_CONFIRMS_MAX,
 	ENV_FILE_CHARS,
-	ENV_FILES_MAX,
-	ENV_HASHES_PER_READ,
-	ENV_HEAD_BITS,
-	ENV_PERSIST_MIN,
 	ENV_SCAN_CACHE_MS,
 	ENV_SCAN_MS,
-	ENV_STATE_TRIES_MAX,
 	ENV_VALUES_MAX,
 } from "../../limits.ts";
 import {
 	type Entry,
 	type Mask,
 	masksOf,
-	needlesOf,
-	parseEnv,
 	scrub,
 	scrubDeep,
 } from "../domain/env.ts";
-import {
-	type Hashed,
-	hashOf,
-	newBudget,
-	newSalt,
-	SALT_ID,
-	scrubHashed,
-	validHashes,
-} from "../domain/hashes.ts";
+import { newBudget, scrubHashed } from "../domain/hash-scrub.ts";
+import { type Hashed, validHashes } from "../domain/hashes.ts";
 import {
 	CUT,
 	SHORT_VALUES_FULL,
 	UNMASKED,
-	WHY_FILES,
-	WHY_SCAN,
 	WHY_SIZE,
 	WHY_VALUES,
 } from "../prompts.ts";
+import { entriesOf, type Files, held, type Run, scan } from "./env-files.ts";
+import { type HashState, saveHashes } from "./hash-store.ts";
+import { remembered, rememberShorts, shortsOf } from "./short-values.ts";
 
 const TRAILING_SLASHES = /\/+$/;
 
 const hashedRef = { plugin: "claudetto", key: "envHashes" } as const;
 
-/** The entries of each env file by path, with the modification time of the read. The mod may load again in the same session, and then the files are read once more. A file that is gone leaves the hold. */
-const held = new Map<
-	string,
-	{ mtimeMs: number; entries: Entry[]; isLong: boolean }
->();
-
-/** The texts that this run put in the state, so that the state is written only for a new one. */
-const noted = new Set<string>();
-
-/** The records that a write to the state has not set yet, by needle, so that a write that missed does not hash again. The salt stands apart, because a state with no salt gets a new one in each try. */
-const unsaved = new Map<
-	string,
-	{ salt: string; hash: string; record: Hashed[string] }
->();
-let unsavedSalt: string | undefined;
-
-/** The values and the lines of a multiline value shorter than `ENV_PERSIST_MIN` that an env file held, by key and value, with the file that held them, for the life of the mod. The state never holds them. A value goes when its file still exists and no longer holds it, and stays when its file is gone. */
-const remembered = new Map<
-	string,
-	{ entry: Entry; path: string | undefined }
->();
-
 /** The last list of env files of a scan, with the time of the scan. */
 let listed:
 	| { root: string; at: number; files: string[]; why: string | undefined }
 	| undefined;
-
-/** The lines of the output of a listing that name an env file. */
-const named = (root: string, stdout: string): string[] =>
-	stdout
-		.split("\n")
-		.filter((l) => l !== "" && ENV_FILE.test(l.slice(l.lastIndexOf("/") + 1)))
-		.map((l) => (l.startsWith("/") ? l : `${root}/${l}`));
-
-/** The env files under `root` at any depth, without `node_modules` and `.git`, and the reason when a bound cut the list. */
-const scan = async (
-	$: EngineInterface,
-	root: string,
-): Promise<{ files: string[]; why: string | undefined }> => {
-	const run = (argv: string[]) =>
-		$.process
-			.run(argv, { cwd: root, timeoutMs: ENV_SCAN_MS })
-			.catch(() => undefined);
-	let out = await run([
-		...["rg", "--files", "--hidden", "--no-ignore"],
-		...["-g", ".env*", "-g", "*.env", "-g", "!node_modules", "-g", "!.git"],
-		root,
-	]);
-	if (out === undefined || out.exitCode > 1) {
-		out = await run([
-			...["find", root, "(", "-name", "node_modules", "-o", "-name", ".git"],
-			...[")", "-prune", "-o", "-type", "f", "(", "-name", ".env*"],
-			...["-o", "-name", "*.env", ")", "-print"],
-		]);
-	}
-	if (out === undefined || out.exitCode > 1) {
-		return { files: [], why: WHY_SCAN };
-	}
-	const files = named(root, out.stdout).sort(
-		(a, b) => a.split("/").length - b.split("/").length,
-	);
-	const why =
-		out.isStdoutTruncated || files.length > ENV_FILES_MAX
-			? WHY_FILES({ max: ENV_FILES_MAX })
-			: undefined;
-	return { files: files.slice(0, ENV_FILES_MAX), why };
-};
-
-/** The entries of the env file `path`, from the hold when its modification time is the same, and whether the file is too long to read. */
-const entriesOf = async (
-	$: EngineInterface,
-	path: string,
-): Promise<{ entries: Entry[]; isLong: boolean }> => {
-	const stat = await $.fs.stat(path).catch(() => undefined);
-	if (stat === undefined || stat.kind !== "file") {
-		held.delete(path);
-		return { entries: [], isLong: false };
-	}
-	if (stat.size > ENV_FILE_CHARS) {
-		return { entries: [], isLong: true };
-	}
-	const kept = held.get(path);
-	if (kept?.mtimeMs === stat.mtimeMs) {
-		return kept;
-	}
-	const text = await $.fs.read(path).catch(() => undefined);
-	if (typeof text !== "string") {
-		// A failed read is not a file with no values: the path leaves the hold, so it is not readable and its remembered values stay.
-		held.delete(path);
-		return { entries: [], isLong: false };
-	}
-	const isLong = text.length > ENV_FILE_CHARS;
-	const entries = isLong ? [] : parseEnv(text);
-	const read = { mtimeMs: stat.mtimeMs, entries, isLong };
-	held.set(path, read);
-	return read;
-};
-
-/** Adds to `known` a record for each needle of a value of `ENV_PERSIST_MIN` or more characters that a run has not noted, and gives whether it added one, whether `ENV_VALUES_MAX` left a needle without a record, and the needles that the state holds once `known` is written. A needle that is shorter, such as a short line of a long value, gets no record. A needle whose write missed keeps its hash in `unsaved`. */
-const persist = (
-	known: Hashed,
-	entries: readonly Entry[],
-): { isChanged: boolean; isFull: boolean; held: string[] } => {
-	let isChanged = false;
-	let isFull = false;
-	let made = 0;
-	const needles: string[] = [];
-	const longs = entries.filter((e) => e.value.length >= ENV_PERSIST_MIN);
-	for (const [needle, key] of needlesOf(longs)) {
-		if (noted.has(needle) || needle.length < ENV_PERSIST_MIN) {
-			continue;
-		}
-		if (Object.keys(known).length > ENV_VALUES_MAX) {
-			isFull = true;
-			break;
-		}
-		if (made >= ENV_HASHES_PER_READ) {
-			break;
-		}
-		const salt = known[SALT_ID]?.key ?? unsavedSalt ?? newSalt();
-		unsavedSalt = salt;
-		let staged = unsaved.get(needle);
-		if (staged?.salt !== salt || staged.record.key !== key) {
-			const [hash, record] = hashOf(salt, key, needle);
-			staged = { salt, hash, record };
-			unsaved.set(needle, staged);
-			made++;
-		}
-		if (!(staged.hash in known)) {
-			known[SALT_ID] = { key: salt, len: 0, head: ENV_HEAD_BITS };
-			known[staged.hash] = staged.record;
-			isChanged = true;
-		}
-		needles.push(needle);
-	}
-	return { isChanged, isFull, held: needles };
-};
-
-/** The records of the state with those of `entries` added, written with `ifVersion` up to `ENV_STATE_TRIES_MAX` tries: a try misses when a parallel call wrote first, and then the records are read again and merged. A needle is noted only after its write is set, so a miss is tried again by the next call, which writes the hashes of `unsaved` and makes no new one. Gives the records of the last try, and whether `ENV_VALUES_MAX` left a value without a record. */
-const saveHashes = async (
-	$: EngineInterface,
-	entries: readonly Entry[],
-	read: { value: unknown; version: number },
-	tries = 1,
-): Promise<{ known: Hashed; isFull: boolean }> => {
-	const known = validHashes(read.value);
-	// A record that does not fit the shape is dropped, and the state is written without it.
-	const isDropped =
-		Object.keys(known).length !== Object.keys(read.value ?? {}).length;
-	const { isChanged, isFull, held: needles } = persist(known, entries);
-	const isSet =
-		!(isChanged || isDropped) ||
-		(await $.state.set(hashedRef, known, { ifVersion: read.version })).isSet;
-	if (isSet) {
-		for (const needle of needles) {
-			noted.add(needle);
-			unsaved.delete(needle);
-		}
-		if (unsaved.size === 0) {
-			unsavedSalt = undefined;
-		}
-	}
-	if (isSet || tries >= ENV_STATE_TRIES_MAX) {
-		return { known, isFull };
-	}
-	return saveHashes($, entries, await $.state.get(hashedRef), tries + 1);
-};
-
-/** The entries to keep in memory for `entries`: a value shorter than `ENV_PERSIST_MIN` and each line of a longer one that is shorter, when `needlesOf` would mask it. */
-const shortsOf = (entries: readonly Entry[]): Entry[] =>
-	entries
-		.flatMap(({ key, value }) => [
-			{ key, value },
-			...(value.includes("\n") ? value.split("\n") : []).map((l) => ({
-				key,
-				value: l.trim(),
-			})),
-		])
-		.filter(
-			(e) => e.value.length < ENV_PERSIST_MIN && needlesOf([e]).length > 0,
-		);
-
-/** Updates `remembered` with the short `shorts` of a scan: a value goes when its file is in `readable` and no longer holds it, and a new value is added up to `ENV_VALUES_MAX`. Gives whether the bound left a value out. */
-const rememberShorts = (
-	shorts: readonly { entry: Entry; path: string | undefined }[],
-	readable: ReadonlySet<string>,
-): boolean => {
-	const current = new Set(shorts.map(({ entry }) => idOf(entry)));
-	for (const [id, { path }] of remembered) {
-		if (path !== undefined && readable.has(path) && !current.has(id)) {
-			remembered.delete(id);
-		}
-	}
-	let isFull = false;
-	for (const { entry, path } of shorts) {
-		const id = idOf(entry);
-		if (remembered.size < ENV_VALUES_MAX || remembered.has(id)) {
-			remembered.set(id, { entry, path: remembered.get(id)?.path ?? path });
-		} else {
-			isFull = true;
-		}
-	}
-	return isFull;
-};
-
-/** The key of an entry in `remembered`. */
-const idOf = ({ key, value }: Entry): string => `${key}=${value}`;
 
 /** The masks of each value of the env files of the project and of `extra`, the hashes of each value that a file held, the entries that the scan read, and the reason when a bound left a file unmasked. A scan reuses the last list when it is younger than `ENV_SCAN_CACHE_MS` and `isFresh` is not set. */
 const masksOfProject = async (
@@ -280,6 +63,19 @@ const masksOfProject = async (
 		})
 	).replace(TRAILING_SLASHES, "");
 	const stored = await $.state.get(hashedRef);
+	const run: Run = (argv) =>
+		$.process
+			.run(argv, { cwd: root, timeoutMs: ENV_SCAN_MS })
+			.catch(() => undefined);
+	const fileReads: Files = {
+		stat: (path) => $.fs.stat(path).catch(() => undefined),
+		read: (path) => $.fs.read(path).catch(() => undefined),
+	};
+	const hashState: HashState = {
+		get: () => $.state.get(hashedRef),
+		set: async (records, ifVersion) =>
+			(await $.state.set(hashedRef, records, { ifVersion })).isSet,
+	};
 	if (root === "") {
 		return {
 			masks: [],
@@ -295,7 +91,7 @@ const masksOfProject = async (
 		listed.root !== root ||
 		Date.now() - listed.at > ENV_SCAN_CACHE_MS
 	) {
-		listed = { root, at: Date.now(), ...(await scan($, root)) };
+		listed = { root, at: Date.now(), ...(await scan(run, root)) };
 	}
 	const entries: Entry[] = [...extra];
 	let why = listed.why;
@@ -304,7 +100,7 @@ const masksOfProject = async (
 	).map((entry) => ({ entry, path: undefined }));
 	const readable = new Set<string>();
 	const reads = await Promise.all(
-		listed.files.map((path) => entriesOf($, path)),
+		listed.files.map((path) => entriesOf(fileReads, path)),
 	);
 	for (const [i, read] of reads.entries()) {
 		const path = listed.files[i] ?? "";
@@ -317,7 +113,7 @@ const masksOfProject = async (
 		shorts.push(...shortsOf(read.entries).map((entry) => ({ entry, path })));
 	}
 	const isShortFull = rememberShorts(shorts, readable);
-	const { known, isFull } = await saveHashes($, entries, stored);
+	const { known, isFull } = await saveHashes(hashState, entries, stored);
 	if (isFull && why === undefined) {
 		why = WHY_VALUES({ max: ENV_VALUES_MAX });
 	}

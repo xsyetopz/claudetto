@@ -12,16 +12,10 @@ import {
 	planText,
 } from "../../../../plugins/claudetto/modules/work/ground/domain/plan.ts";
 
-const msg = (
-	role: Msg["role"],
-	text: string,
-	results: string[] = [],
-	bash = 0,
-): Msg => ({
+const msg = (role: Msg["role"], text: string, results: string[] = []): Msg => ({
 	role,
 	text,
 	results,
-	bash,
 });
 const none: Files = {};
 
@@ -70,86 +64,16 @@ test("a reference to a line out of range fails, a line in range passes, and a fi
 	);
 });
 
-test("an attribution to the user fails with no user message that says it, and passes with one", () => {
-	const text = "The user chose a weekly release schedule.";
-	expect(findUnsourced(text, [msg("user", "Fix the bug.")], none)).toHaveLength(
-		1,
-	);
-	expect(
-		findUnsourced(text, [msg("user", "Use a weekly release schedule.")], none),
-	).toStrictEqual([]);
-});
-
-test("`npx` in a `bun.lock` project fails with no user rule, and passes with one", () => {
-	const files = { "bun.lock": "" };
-	const text = "Run `npx markdownlint-cli2` for the docs.";
-	expect(findUnsourced(text, [], files)).toHaveLength(1);
-	expect(
-		findUnsourced(text, [msg("user", "Use npx here.")], files),
-	).toStrictEqual([]);
-	expect(findUnsourced(text, [], none)).toStrictEqual([]);
-	expect(
-		findUnsourced("Run `bunx markdownlint-cli2`.", [], files),
-	).toStrictEqual([]);
-});
-
-test("`pip` in a `uv.lock` project fails with no user rule", () => {
-	expect(
-		findUnsourced("Run `pip install x`.", [], { "uv.lock": "" }),
-	).toHaveLength(1);
-});
-
-test("a mention of `npm` in prose or with a negation is no rule, and a plan line that forbids the tool passes", () => {
-	const files = {
-		"bun.lock": "",
-		"CLAUDE.md": "Do not patch its npm package.\nNever run `npx tsc`.",
-	};
-	expect(findUnsourced("Run `npx tsc`.", [], files)).toHaveLength(1);
-	expect(findUnsourced("Never run `npx tsc` here.", [], files)).toStrictEqual(
-		[],
-	);
-});
-
-test("a rule in `CLAUDE.md` names the tool and passes", () => {
-	const files = { "bun.lock": "", "CLAUDE.md": "Use `npm run build` here." };
-	expect(findUnsourced("Run `npm run build`.", [], files)).toStrictEqual([]);
-});
-
-test("a rule in `AGENTS.md` or in a file of `.claude/rules/` names the tool and passes, when `CLAUDE.md` only imports", () => {
-	const base = { "bun.lock": "", "CLAUDE.md": "@AGENTS.md\n" };
-	for (const files of [
-		{ ...base, "AGENTS.md": "Use `npm run build` here." },
-		{ ...base, ".claude/rules/build.md": "Use `npm run build` here." },
+test("an attribution, a claim of done, or a package manager command in prose is no claim", () => {
+	const files: Files = { "bun.lock": "", "uv.lock": "" };
+	for (const line of [
+		"The user chose a weekly release schedule.",
+		"The tests pass now.",
+		"Run `npx markdownlint-cli2` for the docs.",
+		"Run pip install x first.",
 	]) {
-		expect(findUnsourced("Run `npm run build`.", [], files)).toStrictEqual([]);
+		expect(findUnsourced(line, [msg("user", "Go.")], files)).toStrictEqual([]);
 	}
-});
-
-test("a done-claim fails with no `Bash` result in the turn, and passes with one", () => {
-	const text = "The tests pass now.";
-	const before = [msg("user", "Go."), msg("assistant", "", [], 0)];
-	expect(findUnsourced(text, before, none)).toHaveLength(1);
-	expect(
-		findUnsourced(
-			text,
-			[msg("user", "Go."), msg("assistant", "", ["ok"], 1)],
-			none,
-		),
-	).toStrictEqual([]);
-	// A check of an earlier turn is not a source.
-	const old = [
-		msg("assistant", "", ["ok"], 1),
-		msg("user", "Next."),
-		msg("assistant", "", [], 0),
-	];
-	expect(findUnsourced(text, old, none)).toHaveLength(1);
-});
-
-test("a done-claim in a condition or a check line passes", () => {
-	expect(findUnsourced("Check: tests pass.", [], none)).toStrictEqual([]);
-	expect(findUnsourced("Done when the tests pass.", [], none)).toStrictEqual(
-		[],
-	);
 });
 
 test("`planText` reads a plan file and no other call", () => {
@@ -204,14 +128,6 @@ test("a size in a binary unit passes with its value in bytes, and fails with ano
 	).toHaveLength(1);
 });
 
-test("the name of a package manager in prose is no command, and the command with a subcommand fails in a project with a lock file", () => {
-	const files: Files = { "bun.lock": "" };
-	expect(
-		findUnsourced("An npm marketplace keeps the registry.", [], files),
-	).toStrictEqual([]);
-	expect(findUnsourced("Run npm install first.", [], files)).toHaveLength(1);
-});
-
 test("a total of three rows or more passes, and a total that is not the sum fails", () => {
 	const rows = [
 		"| Part | Lines |",
@@ -234,22 +150,14 @@ test("a total of three rows or more passes, and a total that is not the sum fail
 	).toHaveLength(1);
 });
 
-test("a flag or a subcommand of a package manager is a command, and the number after a standard name is a claim", () => {
-	const files: Files = { "bun.lock": "", "uv.lock": "" };
-	for (const line of [
-		"Run npm --version first.",
-		"Run npm view foo first.",
-		"Run pip --upgrade foo first.",
-	]) {
-		expect(findUnsourced(line, [], files)).toHaveLength(1);
-	}
+test("the number after a standard name is a claim", () => {
 	expect(findUnsourced("RFC 9110 has 7777 cases.", [], none)).toHaveLength(1);
 });
 
-test("an answer of `AskUserQuestion` counts as a message of the user", () => {
-	const ask = { ...msg("assistant", ""), answers: ['"Permit?"="Allow"'] };
-	expect(findUnsourced("The user chose Allow.", [ask], none)).toStrictEqual([]);
-	expect(findUnsourced("The user chose Refuse.", [ask], none)).toHaveLength(1);
+test("an answer of `AskUserQuestion` counts as a source", () => {
+	const ask = { ...msg("assistant", ""), answers: ['"Cap?"="4096"'] };
+	expect(findUnsourced("The cap is 4096.", [ask], none)).toStrictEqual([]);
+	expect(findUnsourced("The cap is 8192.", [ask], none)).toHaveLength(1);
 });
 
 test("`planText` skips the scenario blocks of a spec file, a test file, and a fixture", () => {

@@ -114,6 +114,36 @@ const homeRel = (path: string, at: Places): string | undefined => {
 	return m === null ? undefined : (m[1] ?? "");
 };
 
+/** The folders that a build or a tool rebuilds, which a delete or a move may touch in any project. */
+const REBUILT = new Set([
+	"node_modules",
+	"dist",
+	"build",
+	"out",
+	"target",
+	"coverage",
+	".next",
+	".nuxt",
+	".turbo",
+	".cache",
+	".parcel-cache",
+	".build",
+	"DerivedData",
+	"__pycache__",
+	".pytest_cache",
+	".mypy_cache",
+	".ruff_cache",
+	".venv",
+	".gradle",
+]);
+
+/** True when `path` is a file of the user: below a home folder, outside the project, outside the temp folders, and in no folder that a build rebuilds. */
+export const userFile = (path: string, at: Places): boolean =>
+	homeRel(path, at) !== undefined &&
+	!under(path, at.cwd) &&
+	!inTmp(path, at) &&
+	!path.split("/").some((part) => REBUILT.has(part));
+
 const isSecretPath = (path: string, at: Places): boolean => {
 	const rel = homeRel(path, at);
 	return (

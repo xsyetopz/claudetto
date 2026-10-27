@@ -5,24 +5,18 @@ import { STAGE_FILES_MAX, STAGE_NAMES_MAX } from "../limits.ts";
 import {
 	GONE,
 	hash64,
-	ledgerPath,
+	ledgerKey,
 	madeBy,
 	parseLedger,
 	statusPaths,
 } from "./ledger.ts";
 
-const TRAILING_SLASHES = /(.)\/+$/;
-
-/** The folder of the edit ledger: `$TMPDIR`, or `/tmp` when it is not set or empty, with no end slash. */
-export const ledgerTmp = (tmp: string | undefined): string =>
-	(tmp || "/tmp").replace(TRAILING_SLASHES, "$1");
-
 /** The reads of `userEdits`. `git` runs `git -C <dir>` with the arguments. */
 export interface EditPorts {
 	git: (args: string[]) => Promise<{ exitCode: number; stdout: string }>;
 	read: (path: string) => Promise<string>;
-	exists: (path: string) => Promise<boolean>;
-	tmp: () => Promise<string | undefined>;
+	/** The stored value of the ledger key of the project. */
+	ledger: (key: string) => Promise<unknown>;
 	root: () => Promise<string>;
 }
 
@@ -57,11 +51,7 @@ export const userEdits = async (
 	if (changed.length === 0) {
 		return [];
 	}
-	const tmp = ledgerTmp(await io.tmp().catch(() => undefined));
-	const file = ledgerPath(tmp, await io.root());
-	const lines = parseLedger(
-		((await io.exists(file)) && (await io.read(file))) || "",
-	);
+	const lines = parseLedger(await io.ledger(ledgerKey(await io.root())));
 	const isEdit = async (rel: string): Promise<boolean> => {
 		const hash = await hashOf(io.read, `${root}/${rel}`);
 		return hash !== GONE && madeBy(lines, `${root}/${rel}`, hash).length === 0;

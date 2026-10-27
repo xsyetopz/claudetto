@@ -12,10 +12,7 @@ import { pluginOptions } from "../../../../kernel/options.ts";
 import { oneLine } from "../../../../kernel/text.ts";
 import { openChange, readChanges } from "../../../project/domain/change.ts";
 import { passedChecks } from "../../../project/domain/checks.ts";
-import {
-	CHANGES_DIR,
-	CLAUDE_STATE_FILE,
-} from "../../../project/domain/paths.ts";
+import { CHANGES_DIR } from "../../../project/domain/paths.ts";
 import { projectRoot } from "../../../project/domain/session.ts";
 import {
 	isBuiltInCompaction,
@@ -30,122 +27,56 @@ import {
 	CONTEXT_TEXT,
 	compactionState,
 } from "../domain/compaction.ts";
-import { SHELL_BLOCK, shellFacts } from "../domain/environment.ts";
+import { SHELL_BLOCK } from "../domain/environment.ts";
 import {
-	hasMythos,
 	MODELS_BLOCK,
 	PLAN_BLOCK,
 	planLine,
 	REPO_BLOCK,
-	repoFacts,
-	usesUgrep,
 } from "../domain/facts.ts";
 import { planModeText } from "../domain/plan-mode.ts";
 import { DEFERRED_TOOLS, TOOL_TEXTS } from "../domain/tools.ts";
-import { type Calls, nextCalls, withoutCalls } from "../domain/turns.ts";
+import type { Calls } from "../domain/turns.ts";
 import { nextUsage } from "../domain/usage.ts";
-import {
-	FACT_CHANGES_MAX,
-	FACT_RUN_TIMEOUT_MS,
-	PROMPT_SIZE_MAX_CHARS,
-	STATE_TRIES_MAX,
-} from "../limits.ts";
+import { PROMPT_SIZE_MAX_CHARS } from "../limits.ts";
 import {
 	MODEL_FABLE,
 	MODEL_MYTHOS,
 	MODELS_LINE,
 	PRECOMPACT_LINE,
 	PROMPT_SIZE_LINE,
-	TURN_LIMIT_LINE,
 } from "../prompts.ts";
+import { mythosOf, repoFactsOf, shellFactsOf } from "./context-facts.ts";
+import { clearCount, withLimit } from "./subagent-calls.ts";
+
+/** The calls value of `$.state`: the tool calls of each running subagent, by `agent_id`. */
+const callsRef = { plugin: "claudetto", key: "calls" } as const;
+
+/** The calls of the engine that the helpers of this slice use. They take no `$`, so that `claude plugin validate` follows `$` in this file alone. */
+const portOf = ($: EngineInterface) => ({
+	env: {
+		CLAUDE_CODE_ENTRYPOINT: () => $.env.get("CLAUDE_CODE_ENTRYPOINT"),
+		CLAUDE_CODE_EXECPATH: () => $.env.get("CLAUDE_CODE_EXECPATH"),
+		CLAUDE_CONFIG_DIR: () => $.env.get("CLAUDE_CONFIG_DIR"),
+		HOME: () => $.env.get("HOME"),
+		SHELL: () => $.env.get("SHELL"),
+	},
+	fs: {
+		list: (dir: string) => $.fs.list(dir),
+		read: (file: string) => $.fs.read(file),
+	},
+	process: {
+		run: (argv: string[], options?: { cwd: string; timeoutMs: number }) =>
+			$.process.run(argv, options),
+	},
+	session: { cwd: () => $.session.cwd(), id: () => $.session.id() },
+	tool: { list: () => $.tool.list() },
+	getCalls: () => $.state.get(callsRef),
+	setCalls: async (calls: Calls, ifVersion: number) =>
+		(await $.state.set(callsRef, calls, { ifVersion })).isSet,
+});
 
 const TRAILING_SLASHES = /\/+$/;
-
-/** The value of an env read, or `""` when it is unset or the read fails. */
-const envValue = async (read: Promise<string | undefined>): Promise<string> => {
-	try {
-		return (await read) ?? "";
-	} catch {
-		return "";
-	}
-};
-
-/** The output of a run, or `""` when it fails. */
-const output = async (
-	run: Promise<{ exitCode: number; stdout: string }>,
-): Promise<string> => {
-	try {
-		const r = await run;
-		return r.exitCode === 0 ? r.stdout : "";
-	} catch {
-		return "";
-	}
-};
-
-/** The names of the tools that are on, or `Grep` alone when the read fails, so the block never claims `ugrep` from a guess. */
-const toolNamesOf = async ($: EngineInterface): Promise<string[]> => {
-	try {
-		return (await $.tool.list()).map((t) => t.name);
-	} catch {
-		return ["Grep"];
-	}
-};
-
-/** The shell facts of this process: `uname -s` runs one time, and a failed run gives no platform. */
-let facts: Promise<string> | undefined;
-const shellFactsOf = ($: EngineInterface): Promise<string> => {
-	facts ??= (async () => {
-		const [platform, shell] = await Promise.all([
-			output($.process.run(["uname", "-s"])),
-			envValue($.env.get("SHELL")),
-		]);
-		return shellFacts(platform, shell);
-	})();
-	return facts;
-};
-
-/** The repository facts of this process: the runs go one time, and a failed run gives an empty fact, because a throw here drops the `context_management` block too. */
-let repo: Promise<string> | undefined;
-const repoFactsOf = async ($: EngineInterface): Promise<string> => {
-	repo ??= (async () => {
-		const cwd = await $.session.cwd().catch(() => "");
-		if (cwd === "") {
-			return "";
-		}
-		const out = (argv: string[]) =>
-			output($.process.run(argv, { cwd, timeoutMs: FACT_RUN_TIMEOUT_MS }));
-		const [branch, tag, shell, execPath, entrypoint, toolNames, changes] =
-			await Promise.all([
-				out(["git", "branch", "--show-current"]),
-				out(["git", "describe", "--tags", "--abbrev=0"]),
-				envValue($.env.get("SHELL")),
-				envValue($.env.get("CLAUDE_CODE_EXECPATH")),
-				envValue($.env.get("CLAUDE_CODE_ENTRYPOINT")),
-				toolNamesOf($),
-				readChanges(
-					`${cwd}/${CHANGES_DIR}`,
-					{ list: (dir) => $.fs.list(dir), read: (file) => $.fs.read(file) },
-					FACT_CHANGES_MAX,
-				),
-			]);
-		const ugrep = usesUgrep({ execPath, toolNames, entrypoint });
-		return repoFacts({ branch, tag, changes, shell, ugrep });
-	})();
-	return repo;
-};
-
-/** Whether this login has Mythos, read one time from `.claude.json` in `CLAUDE_CONFIG_DIR` or the home folder. A failed read counts as no access. */
-let mythos: Promise<boolean> | undefined;
-const mythosOf = ($: EngineInterface): Promise<boolean> => {
-	mythos ??= (async () => {
-		const dir =
-			(await envValue($.env.get("CLAUDE_CONFIG_DIR"))) ||
-			(await envValue($.env.get("HOME")));
-		const file = `${dir}/${CLAUDE_STATE_FILE}`;
-		return dir !== "" && hasMythos(await $.fs.read(file).catch(() => ""));
-	})();
-	return mythos;
-};
 
 // A block of the same name from below is replaced, so each block is there one time.
 export const onContext: Handler<"prompt.context"> = async ($, e, next) => {
@@ -154,10 +85,10 @@ export const onContext: Handler<"prompt.context"> = async ($, e, next) => {
 		pluginOptions(),
 		await $.env.get("DISABLE_COMPACT"),
 	);
-	const shell = await shellFactsOf($);
+	const shell = await shellFactsOf(portOf($));
 	const plan = planLine(pluginOptions()["plan"]);
-	const repoText = await repoFactsOf($);
-	const top = (await mythosOf($)) ? MODEL_MYTHOS : MODEL_FABLE;
+	const repoText = await repoFactsOf(portOf($));
+	const top = (await mythosOf(portOf($))) ? MODEL_MYTHOS : MODEL_FABLE;
 	const own = [
 		{ name: CONTEXT_BLOCK, text: CONTEXT_TEXT[state] },
 		{ name: MODELS_BLOCK, text: MODELS_LINE(top) },
@@ -323,106 +254,19 @@ export const onPrompt: Handler<"classic.UserPromptSubmit"> = async (
 export const onBatch: Handler<"classic.PostToolBatch"> = async ($, e, next) =>
 	addLine($, await next(e));
 
-/** The calls value of `$.state`: the tool calls of each running subagent, by `agent_id`. */
-const callsRef = { plugin: "claudetto", key: "calls" } as const;
-
-/** The outcome of `updateCalls`. */
-type Updated<R> =
-	| { kind: "written"; result: R }
-	| { kind: "idle" }
-	| { kind: "lost" };
-
-/** Reads the counts, makes `step` of them, and writes the result with the version, up to `STATE_TRIES_MAX` tries: a try fails when another write landed first, so that parallel calls and a stop lose no count and no fired flag. A step that gives `undefined` writes nothing. Gives `written` with the `result` of the step that was written, `idle` when the step wrote nothing, or `lost` when every try lost the race or the state threw, so that the caller tells "no write needed" from a count that is gone. */
-const updateCalls = async <R>(
-	$: EngineInterface,
-	step: (
-		calls: Readonly<Calls> | undefined,
-	) => { calls: Calls; result: R } | undefined,
-): Promise<Updated<R>> => {
-	const attempt = async (tries: number): Promise<Updated<R>> => {
-		if (tries >= STATE_TRIES_MAX) {
-			return { kind: "lost" };
-		}
-		const { value, version } = await $.state.get(callsRef);
-		const next = step(value);
-		if (next === undefined) {
-			return { kind: "idle" };
-		}
-		const { isSet } = await $.state.set(callsRef, next.calls, {
-			ifVersion: version,
-		});
-		return isSet
-			? { kind: "written", result: next.result }
-			: attempt(tries + 1);
-	};
-	try {
-		return await attempt(0);
-	} catch {
-		// A fault of the state is a count that is gone, as a lost race is.
-		return { kind: "lost" };
-	}
-};
-
-/** The agents that got `TURN_LIMIT_LINE` while the state was broken: a broken state loses each count, so the line goes out once for each agent and not with each call. The flag stays when the state recovers, so that the agent gets no second line at its real bound. Only the stop of the agent clears it. */
-const toldWhileLost = new Set<string>();
-
-/** Counts one call of the subagent, and tells whether its line goes out with this call. An agent that got the line while the state was broken gets none at its bound. A count that every try lost is unknown, so the line goes out one time: one extra line costs less than a missed one, and a line with each call costs more. */
-const countCall = async (
-	$: EngineInterface,
-	id: string,
-	type: string | undefined,
-): Promise<boolean> => {
-	const done = await updateCalls($, (value) => {
-		const { calls, atBound } = nextCalls(value, id, type);
-		return { calls, result: atBound };
-	});
-	if (done.kind === "lost") {
-		if (toldWhileLost.has(id)) {
-			return false;
-		}
-		toldWhileLost.add(id);
-		return true;
-	}
-	return done.kind === "written" && done.result && !toldWhileLost.has(id);
-};
-
-/** `answer` with `TURN_LIMIT_LINE` when this call of the subagent is its first at or over the bound. The main thread has no `agent_id`, so it gets none. A fault of the state gives the line one time for the agent, through `countCall`, and a fault of `countCall` itself leaves it out. */
-const withLimit = async <A extends { additionalContext?: string[] }>(
-	$: EngineInterface,
-	e: { agent_id?: string | undefined; agent_type?: string | undefined },
-	answer: A,
-): Promise<A> => {
-	if (!e.agent_id) {
-		return answer;
-	}
-	try {
-		return (await countCall($, e.agent_id, e.agent_type))
-			? {
-					...answer,
-					additionalContext: [
-						...(answer.additionalContext ?? []),
-						TURN_LIMIT_LINE,
-					],
-				}
-			: answer;
-	} catch {
-		return answer;
-	}
-};
-
 /** `classic.PostToolUse`: a subagent gets `TURN_LIMIT_LINE` at its first call at or over the bound of its type, one time. */
 export const onSubagentCall: Handler<"classic.PostToolUse"> = async (
 	$,
 	e,
 	next,
-) => withLimit($, e, await next(e));
+) => withLimit(portOf($), e, await next(e));
 
 /** `classic.PostToolUseFailure`: a failed call of a subagent counts too. */
 export const onSubagentFail: Handler<"classic.PostToolUseFailure"> = async (
 	$,
 	e,
 	next,
-) => withLimit($, e, await next(e));
+) => withLimit(portOf($), e, await next(e));
 
 /** `classic.SubagentStop`: clears the count of the subagent that ended. */
 export const onSubagentEnd: Handler<"classic.SubagentStop"> = async (
@@ -430,16 +274,7 @@ export const onSubagentEnd: Handler<"classic.SubagentStop"> = async (
 	e,
 	next,
 ) => {
-	toldWhileLost.delete(e.agent_id);
-	try {
-		await updateCalls($, (value) =>
-			value?.[e.agent_id] === undefined
-				? undefined
-				: { calls: withoutCalls(value, e.agent_id), result: true },
-		);
-	} catch {
-		// A fault of the state leaves the count to the end of the session.
-	}
+	await clearCount(portOf($), e.agent_id);
 	return next(e);
 };
 

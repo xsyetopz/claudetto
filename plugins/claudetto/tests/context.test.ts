@@ -141,6 +141,35 @@ test("the `repo` block names the system `grep` when the engine runs on `node`", 
 	expect(await repoText($, on, env, ["Bash"])).not.toContain("ugrep");
 });
 
+test("New Session: after `/clear` the `repo` block reads the branch again, and in one session it reads it one time", async ($: Engine, on: On) => {
+	let session = "s1";
+	let branch = "main";
+	let runs = 0;
+	on("session.id", () => ({ value: session }));
+	on("session.cwd", () => ({ value: "/p" }));
+	on("process.run", (_$, e) => {
+		runs += e.argv[1] === "branch" ? 1 : 0;
+		return ran(e.argv[1] === "branch" ? `${branch}\n` : "v1\n");
+	});
+	mock.env(on, {});
+	on("prompt.context", () => ({ blocks: ENGINE_BLOCKS }));
+	const repo = async () =>
+		(await $.prompt.context({ blocks: ENGINE_BLOCKS })).blocks.find(
+			(b) => b.name === "repo",
+		)?.text;
+
+	const first = await repo();
+	branch = "feat/x";
+	const same = await repo();
+	session = "s2";
+	const cleared = await repo();
+
+	expect(first).toContain("Branch: main");
+	expect(same).toContain("Branch: main");
+	expect(cleared).toContain("Branch: feat/x");
+	expect(runs).toBe(2);
+});
+
 test("on Linux with bash, the context has no `shell` block", async ($: Engine, on: On) => {
 	const blocks = await hostBlocks($, on, "Linux", "/bin/bash");
 	expect(blocks.map((b) => b.name)).toEqual([

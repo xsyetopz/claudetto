@@ -4,21 +4,22 @@ import { afterAll, expect, test } from "bun:test";
 import { mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { write as bunWrite } from "bun";
+import { file as bunFile, write as bunWrite, spawn } from "bun";
+import type { Base } from "../../../dev/probe/events.ts";
+import { problem } from "../../../dev/probe/events.ts";
 import {
 	brokenIn,
 	buildFixture,
 	git,
 	PORT,
 } from "../../../dev/probe/fixture.ts";
+import { measure } from "../../../dev/probe/measure.ts";
+import { plan } from "../../../dev/probe/plan.ts";
+import { baseProblem, runAll } from "../../../dev/probe/round.ts";
 import {
-	type Base,
-	baseProblem,
-	measure,
-	plan,
-	problem,
-	runAll,
-} from "../../../dev/probe/main.ts";
+	proven,
+	taskLines,
+} from "../../../plugins/claudetto/modules/project/domain/checks.ts";
 
 const DIR = "/w";
 const base: Base = {
@@ -207,6 +208,24 @@ test("Missing Pin File: a deleted package.json breaks the pin and does not throw
 	const dir = await fixture();
 	await rm(path.join(dir, "package.json"));
 	expect((await brokenIn(dir)).broken).toBe(1);
+});
+
+test("Tickable Tasks: each task names a check that passes in the fixture, so the gate of claudetto lets the model tick it", async () => {
+	const dir = await fixture();
+	const text = await bunFile(
+		path.join(dir, "openspec/changes/demo/tasks.md"),
+	).text();
+	const lines = [...taskLines(text).values()].map((t) => t.line);
+	const smoke = spawn(["bun", "test"], {
+		cwd: dir,
+		stdout: "ignore",
+		stderr: "ignore",
+	});
+
+	expect(await smoke.exited).toBe(0);
+	expect(lines).toHaveLength(6);
+	expect(lines.filter((l) => !proven(l, ["bun test"]))).toEqual([]);
+	expect(lines.filter((l) => proven(l, ["just lab"]))).toEqual([]);
 });
 
 test("Base Guard: a base context below the size target is a problem", () => {

@@ -6,10 +6,10 @@ A contributor reads it before an edit of `plugins/claudetto/modules/work/ground/
 
 ## What It Does for You
 
-Claude can write a number, a `file:line` reference, or a convention with no source.
-An example is `npx` in a project that has `bun.lock`.
+Claude can write a number or a `file:line` reference with no source.
 The `ground` slice finds such claims in a plan file and denies the write.
 The check is a program.
+It reads digits and paths, and no English word, because a word rule is brittle and the user asked for each one to be removed (the user, 2026-10-27).
 It makes no model call, because a check that guesses can block correct text.
 
 ## The Hook
@@ -33,7 +33,7 @@ A claim has a source when it is in one of these:
 - An answer of `AskUserQuestion`, which counts as a user message.
 - The text of the handoff, which counts as a user message in any role.
 - A tool result of the session.
-- `CLAUDE.md` in the project root.
+- `CLAUDE.md` and `AGENTS.md` in the project root, and the files of `.claude/rules/`.
 - The old text of the file that the call changes.
 
 The sources are the messages of the agent that makes the call.
@@ -50,9 +50,8 @@ It names each claim, so a retry would pass on it.
 | --- | --- |
 | Number | A number of 3 digits or more is in no user message and no tool result. A year, a number in the name of a standard (`ISO 8601`, `RFC 3339`), and a number that the text computes do not count. The text computes a number when it is a binary size in bytes (`16 MiB` and `16,777,216`), a total of a table column (three rows or more) or the difference of two cells of the same row. A source can write the number with `_`, as `1_000_000`. |
 | `file:line` | The file is found and has fewer lines than the reference. |
-| Attribution | A sentence such as `the user chose ...` has words that are mostly not in a user message. |
-| Done claim | The text says that tests, checks, lint, or a build pass, or that something is fixed, and the turn has no `Bash` call. A sentence with `must`, `should`, `will`, `if`, or a similar word is not a claim. |
-| Convention | The text uses a command of `npm` or `npx` (not the word `npm` in a sentence) in a project with `bun.lock` or `bun.lockb`, or `pip` in a project with `uv.lock`, and no user rule names the tool. |
+
+The checks of an attribution (`the user chose ...`), of a claim of done (`tests pass`), and of a package manager in a project with another lock file were removed on 2026-10-27, because each one matched English words.
 
 For a `file:line` reference, the check looks for the file at the project root first.
 Then it searches the folders below the root, but it skips `node_modules` and dot folders and reads at most 2,000 folders.

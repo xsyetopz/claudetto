@@ -11,9 +11,8 @@ import {
 	overBudget,
 	replyOnlyCases,
 	replyOnlyCasesIn,
-	thinEvalClaims,
-	thinEvalClaimsIn,
 } from "../../tools/case-checks.ts";
+import { thinEvalClaims, thinEvalClaimsIn } from "../../tools/thin-claims.ts";
 import type { Transcript } from "../../tools/transcript-grade.ts";
 import { defined } from "./helpers.ts";
 

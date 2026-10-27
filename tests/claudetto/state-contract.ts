@@ -7,7 +7,6 @@ import type {
 } from "../../plugins/claudetto/modules/gate/state.ts";
 import type {
 	Calls,
-	Told,
 	Usage,
 } from "../../plugins/claudetto/modules/session/state.ts";
 import type {
@@ -34,7 +33,6 @@ type Same<A, B> = [A] extends [B]
 type Holds<T extends true> = T;
 
 export interface StateContract {
-	told: Holds<Same<Contract["told"], Told>>;
 	calls: Holds<Same<Contract["calls"], Calls>>;
 	usage: Holds<Same<Contract["usage"], Usage>>;
 	note: Holds<Same<Contract["note"], Note | null>>;

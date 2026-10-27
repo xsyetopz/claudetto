@@ -23,7 +23,7 @@ const rowsOf = (cwd: string): string =>
 		["assistant", "Understood."],
 		...Array.from({ length: 6 }, (_, i): [string, string] => [
 			i % 2 === 0 ? "user" : "assistant",
-			`Filler ${i} ${"x".repeat(30_000)}`,
+			`Filler ${i} ${"x".repeat(15_000)}`,
 		]),
 	]
 		.map(([role, text], i) => ({

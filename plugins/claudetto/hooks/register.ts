@@ -24,12 +24,12 @@ import {
 	onPrompt as h25,
 	onStop as h26,
 	onResume as h43,
+	onClear as h58,
 } from "../modules/session/handoff/adapters/mod.ts";
 import {
 	onStart as h20,
 	onEdited as h21,
-	onPrompt as h22,
-	onGitView as h24,
+	onIntent as h56,
 } from "../modules/session/hygiene/adapters/mod.ts";
 import {
 	onAttachment as h13,
@@ -44,11 +44,6 @@ import {
 	onSubagentFail as h55,
 } from "../modules/session/prompt/adapters/mod.ts";
 import { onOutputEnv as h54 } from "../modules/session/prompt/adapters/output.ts";
-import {
-	CALL_TOOLS,
-	onCall as h48,
-	onStart as h49,
-} from "../modules/session/search/adapters/mod.ts";
 import {
 	onCommand as h3,
 	onStop as h4,
@@ -71,6 +66,7 @@ import {
 	onSave as h52,
 	onUndo as h53,
 } from "../modules/work/protect/adapters/mod.ts";
+import { onStop as h57 } from "../modules/work/reply/adapters/mod.ts";
 
 /** Matches any value of a key, so a rule fires when the key is present. */
 const ANY_VALUE = /^/;
@@ -83,6 +79,8 @@ export const register = (on: On, options: PluginOptions): void => {
 	on("agent.offer", h17);
 	// rule: session.ledger
 	on("classic.PostToolUse", { tool_name: ["Edit", "Write", "Bash"] }, h21);
+	// rule: session.ledger-intent
+	on("classic.PreToolUse", { tool: ["Edit", "Write"] }, h56);
 	// rule: work.bash-save
 	on("classic.PreToolUse", { tool: ["Bash"] }, h52);
 	// rule: gate.permission
@@ -95,8 +93,8 @@ export const register = (on: On, options: PluginOptions): void => {
 	on("classic.Stop", { stop_hook_active: [true, false] }, h28);
 	// rule: work.background-stop
 	on("classic.Stop", { hook_event_name: "Stop" }, h38);
-	// rule: session.changed-files
-	on("classic.UserPromptSubmit", h22);
+	// rule: work.reply-opening
+	on("classic.Stop", { stop_hook_active: false }, h57);
 	// rule: work.goal
 	on("command.run", { command: "goal" }, h3);
 	// rule: session.attachment
@@ -131,10 +129,10 @@ export const register = (on: On, options: PluginOptions): void => {
 	on("session.start", { cwd: ANY_VALUE }, h51);
 	// rule: session.bash-output
 	on("session.start", { surface: ANY_VALUE }, h54);
-	// rule: session.search-register
-	on("session.start", { isInteractive: [true, false] }, h49);
 	// rule: session.resume
 	on("classic.SessionStart", { source: ["resume", "fork"] }, h43);
+	// rule: session.clear-resume
+	on("classic.SessionStart", { source: ["clear"] }, h58);
 	// rule: gate.secrets
 	on("tool.call", h50);
 	// rule: agents.default-type
@@ -151,10 +149,6 @@ export const register = (on: On, options: PluginOptions): void => {
 	on("tool.call", { tool: ["Bash"], command: GH_CREATE }, h29);
 	// rule: gate.long-wait
 	on("tool.call", { tool: ["Bash"] }, h47);
-	// rule: session.git-view
-	on("tool.call", { tool: ["Bash"] }, h24);
-	// rule: session.search-call
-	on("tool.call", { tool: CALL_TOOLS }, h48);
 	// rule: work.note-check
 	on(
 		"tool.check",

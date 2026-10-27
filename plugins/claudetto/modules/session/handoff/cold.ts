@@ -4,11 +4,7 @@ import type { SessionMessage } from "claude-code";
 import { isRecord, jevBody } from "../../jev/domain/jev.ts";
 import { YES_NO_UNSURE_BAND } from "../../jev/limits.ts";
 import { clip } from "./compact.ts";
-import {
-	CACHE_TTL_MS,
-	COLD_FILES_MAX,
-	COLD_PROMPT_CHARS_MAX,
-} from "./limits.ts";
+import { CACHE_TTL_MS, COLD_PROMPT_CHARS_MAX } from "./limits.ts";
 import { OFFER_QUESTION, OFFER_STATE } from "./prompts.ts";
 
 const WRITERS = new Set(["Edit", "Write", "MultiEdit", "NotebookEdit"]);
@@ -19,7 +15,7 @@ export const isCold = (now: number, lastTurnAt: number | null): boolean =>
 
 export const cut = (text: string): string => clip(text, COLD_PROMPT_CHARS_MAX);
 
-/** The paths that the tool calls changed, each once, the newest `COLD_FILES_MAX` in the order of first change. */
+/** The paths that the tool calls changed, each once, in the order of first change. */
 export const changedFiles = (messages: readonly SessionMessage[]): string[] => {
 	const files = new Set<string>();
 	for (const use of messages.flatMap((m) => m.toolUses)) {
@@ -28,7 +24,7 @@ export const changedFiles = (messages: readonly SessionMessage[]): string[] => {
 			files.add(path);
 		}
 	}
-	return [...files].slice(-COLD_FILES_MAX);
+	return [...files];
 };
 
 /** The request body that asks Jev, as the yes or no question `handover`, whether to hand over. `idleMs` is `null` when the process has seen no turn. */

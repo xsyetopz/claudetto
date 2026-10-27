@@ -1,17 +1,15 @@
 // `just eval-stats` must print honest statistics, so the math is pinned to published and known values.
 
 import { expect, test } from "bun:test";
-import {
-	type Aggregate,
-	buildReport,
-	judgeAgreement,
-} from "../../dev/stats/main.ts";
+import type { Aggregate } from "../../dev/stats/cases.ts";
+import { judgeAgreement } from "../../dev/stats/compare.ts";
 import {
 	bootstrapMean,
 	fisherExact,
 	newcombe,
 	zForConfidence,
 } from "../../dev/stats/math.ts";
+import { buildReport } from "../../dev/stats/report.ts";
 
 test("`fisherExact` matches known two-sided values", () => {
 	expect(fisherExact(10, 10, 5, 10)).toBeCloseTo(0.0325, 4);

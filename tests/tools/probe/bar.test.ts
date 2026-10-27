@@ -7,7 +7,8 @@ import {
 	report,
 	verdict,
 } from "../../../dev/probe/bar.ts";
-import { plan, runsOf } from "../../../dev/probe/main.ts";
+import { runsOf } from "../../../dev/probe/main.ts";
+import { plan } from "../../../dev/probe/plan.ts";
 
 const run = (arm: Arm, over: Partial<Result> = {}): Result => ({
 	arm,

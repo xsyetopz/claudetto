@@ -9,42 +9,42 @@ const ALIAS = `alias claude-demo='IS_DEMO=1 claude'`;
 
 /** One message for each line as `key=text`, with `{name}` for a value. */
 const TEXT = `
-backup=Kept the old settings in {file}.
-context7={file}: {chars} characters in each session. The skill \`claudetto:find-docs\` gets the same Context7 docs with {ownChars} characters, so keep one of the two.
+backup=Setup kept the old settings in {file}.
+context7={file}: {chars} characters in each session. The skill \`claudetto:find-docs\` gets the same Context7 docs with {ownChars} characters. Keep one of the two.
 demoAlias=${ALIAS}
-demoHeader=# claudetto: Claude Code in demo mode, which hides the email and the organization.
-demoNoRc=Setup knows no startup file for the shell {shell}. Add this line to it yourself: ${ALIAS}
+demoHeader=# claudetto: Claude Code in demo mode. Demo mode hides the email and the organization.
+demoNoRc=Setup knows no startup file for the shell {shell}. Add this line to your startup file yourself: ${ALIAS}
 demoWrote={file} has the alias claude-demo. Open a new shell to use it.
-denyMcpScope=--deny-mcp and --off-plugin write only the project settings, so use them with --scope project.
-droppedEntry=\`{key}\`: removed the entry \`{entry}\` of 0.3.0-alpha.1.
+denyMcpScope=--deny-mcp and --off-plugin write only the project settings. Use them with --scope project.
+droppedEntry=\`{key}\`: setup removed the entry \`{entry}\` of 0.3.0-alpha.1.
 dryRun=Dry run. Run again with --apply to write these changes.
 mdEnd=<!-- /claudetto setup -->
 mdMatch={file} is up to date.
 mdOrigin=This file comes from claudetto setup. Edit each line below the block freely.
-mdReport=Report the results, and give a plan only when asked.
-mdSource=Take a key, a flag, or a default from the repo or from the docs of the installed version, and name the source.
+mdReport=Report the results. Give a plan only when asked.
+mdSource=Take a key, a flag, or a default from the repo or from the docs of the installed version. Name the source.
 mdUserValue=A value that the user set and an option that the user rejected stay until the user changes them.
-mdOver={file} would have {lines} lines, and the limit is {max}. Setup wrote nothing. Ask the user which lines move to ~/.claude/rules/, then run setup again.
+mdOver={file} would have {lines} lines. The limit is {max}. Setup wrote nothing. Ask the user which lines move to ~/.claude/rules/. Then run setup again.
 mdStart=<!-- claudetto setup: /claudetto:setup rewrites only this block -->
 mdTitle=# CLAUDE.md
 mdWrote=Wrote {file}. Restart Claude Code to load it.
-keptKey=Kept your {key}, because it runs another tool.
-notesWrote={file} is the file for your notes in this project, and .gitignore lists it.
-noPlanCap=The plan tier {tier} has no subagent cap in claudetto, so setup writes no CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS.
-projectNoCap=Project settings get no CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS, because the cap comes from the plan of each login. Run setup with the user or local scope for it.
-projectNoStatus=Project settings get no status line, because its command runs claudetto from the plugin cache of each user, and a person who shares the project can have no claudetto. Run setup with the user or local scope for it.
-openspecDev={file} lists @fission-ai/openspec as a dependency of the project. Setup leaves it, because a test or a script of the project can run OpenSpec. Remove it yourself when none does.
-openspecFile={file} is a skill or command of OpenSpec. Setup deletes it, because minispec replaces OpenSpec.
+keptKey=Setup kept your {key}, because it runs another tool.
+notesWrote={file} is the file for your notes in this project. .gitignore lists it.
+noPlanCap=The plan tier {tier} has no subagent cap in claudetto. Setup writes no CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS.
+projectNoCap=Project settings get no CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS, because the cap comes from the plan of each login. Run setup with the user or local scope for the cap.
+projectNoStatus=Project settings get no status line, because its command runs claudetto from the plugin cache of each user. A person who shares the project can have no claudetto. Run setup with the user or local scope for the status line.
+openspecDev={file} lists @fission-ai/openspec as a dependency of the project. Setup leaves it, because a test or a script of the project can run OpenSpec. Remove it yourself when no test and no script runs OpenSpec.
+openspecFile={file} is a skill or command of OpenSpec. Setup removes it, because minispec replaces OpenSpec.
 openspecGlobal=OpenSpec {version} is a global package of {manager}. Setup removes it with \`{command}\`.
 openspecPath={file} is \`openspec\` on the PATH. Setup removes the package that owns it.
 openspecFailed=\`{command}\` failed. Run it yourself.
 openspecStill=\`openspec\` is still on the PATH at {file}. Remove it yourself.
-ruleEdits=The removal command also deletes any edit that you made to the file.
+ruleEdits=The removal command also removes any edit that you made to the file.
 settingsFailed={file}: {message} Nothing changed.
 settingsMatch=Settings match the snippet.
 unknownScope=Unknown scope "{scope}". Use user, project, or local.
 usage=Usage: claudetto-setup [--scope user|project|local] [--mode merge|replace] [--keep KEY]... [--off-tool NAME]... [--off-skill NAME]... [--off-plugin ID]... [--deny-mcp NAME]... [--exclude-md GLOB]... [--apply | --inventory | --demo-alias | (--remove-openspec | --claude-md [--claude-md-rule LINE]... | --local-notes) [--apply]]
-wrote=Wrote {file}. Restart Claude Code for the env and model settings to take effect.
+wrote=Wrote {file}. Restart Claude Code to apply the env and model settings.
 `;
 
 const MESSAGES = new Map(
@@ -73,8 +73,8 @@ paths:
 ---
 
 A test checks behavior: a decision, an exit status, a file, or a returned value.
-Delete each test that checks the prose of the implementation, such as the wording of a prompt, a message, or a doc, instead of behavior.
-Write a behavior test in the Arrange-Act-Assert order where it fits: set up the input, make one call, then check the result.
+Delete each test that checks the prose of the implementation instead of behavior. Prose is the wording of a prompt, a message, or a doc.
+Write a behavior test in the Arrange-Act-Assert order where it fits. Set up the input. Make one call. Then check the result.
 `;
 
 const WHITESPACE = /\s+/;

@@ -11,8 +11,8 @@ import {
   parseEntries,
   skipToken,
   splitTop,
-  unquote,
 } from "../../../../dev/schema/domain/scan.ts";
+import { unquote } from "../../../../dev/schema/domain/unquote.ts";
 import { REPO, tmpDir } from "../../../support/repo.ts";
 import { validate } from "../../../support/validate.ts";
 import { spawnText } from "../../fixture-repo.ts";

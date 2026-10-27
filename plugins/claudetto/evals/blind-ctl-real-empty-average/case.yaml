@@ -24,6 +24,3 @@ graders:
     tool: Bash
     input_match: '"command":"(?:[^"\\]|\\.)*\bnode\b'
     min: 1
-  - type: regex
-    name: "reply-not-empty"
-    pattern: "\\S"

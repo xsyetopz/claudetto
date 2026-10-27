@@ -2,7 +2,6 @@
 // Each file that calls `$.state` keeps its own literal ref, because the mod runtime takes no imported ref.
 
 export type { Usage } from "./domain/usage.ts";
-export type { Told } from "./hygiene/domain/ledger.ts";
 export type { Calls } from "./prompt/domain/turns.ts";
 
-export const STATE_KEYS = ["told", "usage", "calls"] as const;
+export const STATE_KEYS = ["usage", "calls", "resume"] as const;

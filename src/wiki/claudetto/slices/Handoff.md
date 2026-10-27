@@ -10,7 +10,7 @@ The slice has no hook on the compaction of Claude Code.
 ## The Handover
 
 A handover is a handoff, then `/clear`, then a resume.
-The hook writes the handoff file with no model call, queues `/clear` with `$.command.run`, and sends the handoff as the next user turn with `$.prompt.submit`.
+The hook writes the handoff file with no model call, keeps the resume prompt in `$.state`, and queues `/clear` with `$.command.run` without awaiting it, because its promise need not settle when the session is reset. The `classic.SessionStart` hook with `source` `clear` takes the resume prompt and sends it as the first user turn of the new session with `$.prompt.submit`. A handover that no new session takes ends after 60 seconds.
 The old session stays on disk, and `/resume` opens it.
 A handover starts only at the end of a turn with no running agent and no running background task.
 
@@ -83,10 +83,12 @@ The [Prompt](Prompt) slice reads the same option.
 | `CACHE_TTL_MS` | 3,600,000 | `plugins/claudetto/modules/session/handoff/limits.ts` |
 | `HANDOVER_CONTEXT_TOKENS` | 150,000 | `plugins/claudetto/modules/session/handoff/limits.ts` |
 | `HANDOVER_AGE_MS` | 28,800,000 | `plugins/claudetto/modules/session/handoff/limits.ts` |
-| `DECISIONS_MAX` | 10 | `plugins/claudetto/modules/session/handoff/limits.ts` |
-| `USER_VALUES_MAX` | 20 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `RULES_TOKENS` | 2,500 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `VALUES_TOKENS` | 800 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `DECISIONS_TOKENS` | 1,000 | `plugins/claudetto/modules/session/handoff/limits.ts` |
 | `USER_VALUE_CHARS_MAX` | 200 | `plugins/claudetto/modules/session/handoff/limits.ts` |
-| `COLD_FILES_MAX` | 20 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `EDITED_TOKENS` | 1,500 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `READS_TOKENS` | 4,500 | `plugins/claudetto/modules/session/handoff/limits.ts` |
 | `COLD_PROMPTS_MAX` | 3 | `plugins/claudetto/modules/session/handoff/limits.ts` |
 | `COLD_PROMPT_CHARS_MAX` | 1,500 | `plugins/claudetto/modules/session/handoff/limits.ts` |
 | `HANDOFF_TRIGGER_TOKENS` | {{HANDOFF_TRIGGER_TOKENS}} | `plugins/claudetto/modules/session/limits.ts` |

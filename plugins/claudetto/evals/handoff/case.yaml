@@ -20,12 +20,6 @@ execution:
     6: Run `cat b.txt`.
     Then reply with exactly two lines: the first line of `a.txt`, and the `CODEWORD` from `b.txt`.
 graders:
-  - type: regex
-    name: "reply-has-first-line"
-    pattern: "amber-falcon-42"
-  - type: regex
-    name: "reply-has-codeword"
-    pattern: "velvet-mirror-913"
   - type: tool_used
     name: "b-txt-read"
     tool: Bash

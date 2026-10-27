@@ -1,7 +1,7 @@
-# claim-grounding Specification
+# Claim-Grounding Specification
 
 ## Purpose
-claudetto stops a `Write` or an `Edit` that states a number or a fact with no source, and it counts each source that the writing agent saw.
+claudetto stops a `Write` or an `Edit` of a plan that states a number with no source or a `file:line` reference past the end of its file, and it counts each source that the writing agent saw.
 
 ## Requirements
 
@@ -19,15 +19,6 @@ A tool result of a subagent SHALL count for that subagent.
 
 - **WHEN** an agent writes a number that no message, tool result, or file that it saw holds
 - **THEN** the `Write` is stopped, and the reason names the number
-
-### Requirement: Answers Count as User Words
-
-The check SHALL count each answer of `AskUserQuestion` as a message of the user, so a line that says that the user chose an option has a source.
-
-#### Scenario: Chosen Option
-
-- **WHEN** the user answered "Allow" in `AskUserQuestion`, and the agent writes "The user chose Allow"
-- **THEN** the `Write` runs
 
 ### Requirement: Example Values
 

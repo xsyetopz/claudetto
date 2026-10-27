@@ -11,6 +11,38 @@ const STAMP_FRACTION = /\.\d+/;
 export const clip = (text: string, max: number): string =>
 	text.length > max ? `${text.slice(0, max)}...` : text;
 
+/**
+ * The entries of `items` that fit `budget` tokens, in their order. All of them when they fit.
+ * Else the newest and the oldest in turn, so an early entry survives as often as a late one, and the middle gives way.
+ */
+export const spread = <T>(
+	items: readonly T[],
+	budget: number,
+	textOf: (item: T) => string,
+): T[] => {
+	const cost = items.map((item) => tokensOf(textOf(item)) + 1);
+	let left = budget;
+	const kept = new Set<number>();
+	let low = 0;
+	let high = items.length - 1;
+	let fromEnd = true;
+	while (low <= high) {
+		const at = fromEnd ? high : low;
+		if ((cost[at] ?? 0) > left) {
+			break;
+		}
+		left -= cost[at] ?? 0;
+		kept.add(at);
+		if (fromEnd) {
+			high--;
+		} else {
+			low++;
+		}
+		fromEnd = !fromEnd;
+	}
+	return items.filter((_, i) => kept.has(i));
+};
+
 /** The path from the project root, such as `.claude/claudetto/handoffs/handoff-20261015T101010Z.md` (UTC). */
 export const handoffPath = (now: Date): string => {
 	const stamp = now

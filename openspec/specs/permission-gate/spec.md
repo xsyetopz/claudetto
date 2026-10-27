@@ -66,7 +66,7 @@ No answer SHALL carry `updatedPermissions`.
 
 The system SHALL deny a delete of `/`, `~`, `$HOME`, or a system folder of the OS.
 It SHALL ask a person for a delete whose target it cannot read, such as an empty-able variable, a command substitution, or a target that `xargs` gives.
-It SHALL allow each other delete, also of a file that `git` does not track (the user, 2026-10-23).
+It SHALL allow each other delete in the project and in the temp folders, also of a file that `git` does not track (the user, 2026-10-23).
 
 #### Scenario: Build Folder
 
@@ -102,6 +102,26 @@ It SHALL allow each other delete, also of a file that `git` does not track (the 
 
 - **WHEN** Claude runs `rm -rf ~` or `rm -rf "$HOME"`
 - **THEN** the call is denied with a reason
+
+### Requirement: User Files and Code That Runs
+
+The system SHALL ask a person before a move or a delete of a file in a home folder outside the project, the temp folders, and the build folders, before `gh repo delete` and the other `gh` commands that delete a remote resource, before a `curl` that sends a file from outside the project to a remote host, and before an `Edit` or `Write` of a `git` hook, a workflow, a settings file of Claude Code, an env file, or an install script of `package.json`.
+It SHALL decide by the path, the command, and its flags, and by no word of the text.
+
+#### Scenario: Move of User Files
+
+- **WHEN** Claude runs `mv ~/Documents/Private/* /tmp/`
+- **THEN** a person must approve the call
+
+#### Scenario: Remote Delete
+
+- **WHEN** Claude runs `gh repo delete x/y --yes`
+- **THEN** a person must approve the call
+
+#### Scenario: Hook Edit
+
+- **WHEN** Claude writes `.git/hooks/pre-push`
+- **THEN** a person must approve the call
 
 ### Requirement: Local Git Loss
 
@@ -238,7 +258,7 @@ The system SHALL ask a person before `terraform destroy`, `pulumi destroy`, `kub
 
 ### Requirement: Bulk Stage over User Edits
 
-The system SHALL ask a person before `git add -A`, `git add .`, or `git commit -a` when the work tree holds a change of the user (spec `session-hygiene`, "Who Changed a File").
+The system SHALL ask a person before `git add -A`, `git add .`, or `git commit -a` when the work tree holds a change of the user (spec `session-hygiene`, "Edit Ledger").
 It SHALL allow these commands when each change comes from a Claude session.
 
 #### Scenario: User Edit in the Tree

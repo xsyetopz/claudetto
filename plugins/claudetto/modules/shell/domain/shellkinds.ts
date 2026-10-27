@@ -28,10 +28,35 @@ const SCRIPT_FLAG = /^-[A-Za-z]*c[A-Za-z]*$/;
 export const nameOf = (argv: string[]): string =>
 	baseName(stripWrappers(argv)[0] ?? "");
 
-/** The words of `args` that are not options, with each word after `--`, and with the value of each option in `valueOpts` left out. */
+/** The flags of the option word `arg` (none for a word that is no option), the one of them that takes a value, and whether that value is the next word. In a short cluster (`-fe`) the first letter in `valueOpts` ends the cluster: when it is the last letter the next word is its value, otherwise the rest of the cluster is. */
+export const optionOf = (
+	arg: string,
+	valueOpts: ReadonlySet<string>,
+): { flags: string[]; value?: string; next: boolean } => {
+	if (!arg.startsWith("-")) {
+		return { flags: [], next: false };
+	}
+	if (arg.startsWith("--")) {
+		const name = arg.split("=", 1)[0] ?? arg;
+		return valueOpts.has(name)
+			? { flags: [name], value: name, next: name === arg }
+			: { flags: [name], next: false };
+	}
+	const flags: string[] = [];
+	for (let i = 1; i < arg.length; i++) {
+		const opt = `-${arg[i]}`;
+		flags.push(opt);
+		if (valueOpts.has(opt)) {
+			return { flags, value: opt, next: i === arg.length - 1 };
+		}
+	}
+	return { flags, next: false };
+};
+
+/** The words of `args` that are not options, with each word after `--`, and with the value of each option in `valueOpts` left out. A short cluster ends at its first letter that takes a value: `-fe` is `-f` with the file `e`, and `-qn 5` takes `5`. */
 export const operands = (
 	args: string[],
-	valueOpts = new Set<string>(),
+	valueOpts: ReadonlySet<string> = new Set<string>(),
 ): string[] => {
 	const out: string[] = [];
 	for (let i = 0; i < args.length; i++) {
@@ -41,7 +66,7 @@ export const operands = (
 		}
 		if (!arg.startsWith("-")) {
 			out.push(arg);
-		} else if (valueOpts.has(arg)) {
+		} else if (optionOf(arg, valueOpts).next) {
 			i++;
 		}
 	}

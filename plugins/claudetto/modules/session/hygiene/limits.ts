@@ -3,8 +3,8 @@
 export const PROBE_MAX_AGE_MIN = 60;
 /** The longest time of the one `find` run that removes the leftover probe folders, in milliseconds. */
 export const SWEEP_TIMEOUT_MS = 60_000;
-/** The most lines in the edit ledger file. The oldest line goes first. */
-export const LEDGER_MAX_FILES = 200;
+/** The most lines in the edit ledger of a project, about 250 bytes each, so about 0.5 MB of the 4 MiB of the store. The oldest line goes first. */
+export const LEDGER_MAX_FILES = 2000;
 /** The longest look-back in milliseconds of the capture of the changes of a `Bash` call, also when the call reports no run time. */
 export const BASH_CHANGE_MAX_MS = 600_000;
 /** The margin in milliseconds before the start of a `Bash` call, for the grain of the modification times of files. */

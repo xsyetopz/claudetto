@@ -1,11 +1,8 @@
 // The type contract of the `$.state` values of the plugin (`plugin.json`, key `types`).
-// A contract has no import, so the shape of `told` is the same as `Told` in `modules/session/hygiene/domain/ledger.ts`.
 
 declare module "claude-code" {
 	interface PluginState {
 		claudetto: {
-			/** The hash of each file for which this session got a line that it changed after the last edit of its agent, by path. The edit ledger itself is a file in the temp folder. */
-			told: { [path: string]: string };
 			/** The pending note of `finish`, in the shape of `Note` in `modules/work/domain/notes.ts`. The slice `notes` takes it and shows it. */
 			note: { tag: string; line: string; explain: string } | null;
 			/** The counters and the shown note of the slice `notes`, in the shape of `Notes` in `modules/work/notes/domain/counters.ts`. */
@@ -60,6 +57,8 @@ declare module "claude-code" {
 				start: { five_hour?: number; seven_day?: number };
 				line?: string;
 			};
+			/** The resume prompt of a handover that waits for its `/clear`, and the model of the first step after it, or `null`. The `classic.SessionStart` hook with `source` `clear` takes it. */
+			resume: { text: string; model: string | null } | null;
 		};
 	}
 }

@@ -1,8 +1,8 @@
-// The transport of `post` in `adapters/cli.ts`, which repeats the request flow of `postJev` in `domain/jev.ts`: the same request, the same retries, and a bound for each try.
+// The transport of `post` in `adapters/upload.ts`, which repeats the request flow of `postJev` in `domain/jev.ts`: the same request, the same retries, and a bound for each try.
 // The API is a fake `fetch`, and the waits are a fake `sleep`, so no test sends a request or waits.
 
 import { expect, test } from "bun:test";
-import { post } from "../../../../plugins/claudetto/modules/jev/adapters/cli.ts";
+import { post } from "../../../../plugins/claudetto/modules/jev/adapters/upload.ts";
 import { JEV_API } from "../../../../plugins/claudetto/modules/jev/domain/jev.ts";
 import {
 	BACKOFF_MS,

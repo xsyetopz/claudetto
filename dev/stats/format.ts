@@ -1,7 +1,7 @@
 // The text report of `dev/stats/main.ts`.
 
-import type { Report } from "./main.ts";
 import type { Interval } from "./math.ts";
+import type { Report } from "./report.ts";
 
 const pct = (x: number): string =>
 	Number.isNaN(x) ? "-" : `${(x * 100).toFixed(0)}%`;
@@ -88,6 +88,29 @@ export const formatReport = (r: Report): string => {
 			]),
 		),
 	);
+	out.push(
+		"",
+		"Paired (case = cluster, runs averaged first, CI: mean +/- z * SE, Miller 2024)",
+	);
+	out.push(
+		table(
+			["set", "cases", "mean delta", "SE", "CI", "corr"],
+			r.paired.map((p) => [
+				p.set,
+				`${p.cases}`,
+				sgn(p.meanDelta),
+				Number.isNaN(p.se) ? "-" : p.se.toFixed(3),
+				ci(p.ci),
+				sgn(p.correlation),
+			]),
+		),
+	);
+	for (const p of r.paired) {
+		const q = p.power;
+		out.push(
+			`power ${p.set}: cases needed = (zAlpha + zBeta)^2 * variance / gap^2 = (${q.zAlpha.toFixed(3)} + ${q.zBeta.toFixed(3)})^2 * ${Number.isNaN(q.variance) ? "-" : q.variance.toFixed(4)} / ${q.gap}^2 = ${Number.isNaN(q.casesNeeded) ? "-" : q.casesNeeded}`,
+		);
+	}
 	if (r.agreement.length > 0) {
 		out.push("", "Judge agreement (runs where all judge votes agree)");
 		out.push(

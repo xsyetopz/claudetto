@@ -21,7 +21,7 @@ It gives each call one of three answers:
 | Answer | What happens |
 | --- | --- |
 | Allow | The call runs. This is the default |
-| `ask` | A person decides in the dialog, unless Jev decides first (see below) |
+| `ask` | Jev or the classifier decides, and a person decides in the dialog when neither can (see below) |
 | `deny` | The call stops, and Claude gets the reason |
 
 The hook keeps a `deny` of the engine, such as a `deny` rule of the user.
@@ -54,12 +54,19 @@ The commands `rm`, `shred`, `srm`, `unlink`, and `find` with `-delete` or `-exec
 
 - A delete in the temporary folder runs, but a delete in a project in the temporary folder gets the check of the project.
 - A delete of a build folder runs: `node_modules`, `dist`, `build`, `out`, `target`, `coverage`, `.next`, `.nuxt`, `.turbo`, `.cache`, `.parcel-cache`, `.build`, `DerivedData`, `__pycache__`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, `.venv`, and `.gradle`.
-- A delete outside the project asks.
+- A delete outside the project asks when the path is in a home folder, outside the temporary folder, and in no build folder above.
+- A move (`mv`) asks by the same test for each source path, because the source leaves its place.
 - A delete inside the project runs `git status` and `git ls-files` for the paths.
   The delete runs when each path has a commit and no change.
   A path with a change, with no commit, or in a folder that `git` does not manage asks.
   For a delete, ignored and untracked files count as changes, because the delete removes them.
 - A delete whose paths come from a pipe (`xargs` and `parallel`), or whose target the gate cannot read, asks.
+
+### Remote Destroys, Uploads, and Edits of Files That Run Code
+
+- `gh repo delete`, `gh repo archive`, `gh api` with the method `DELETE`, and `gh` `delete` for a release, gist, key, secret, variable, label, issue, cache, or run ask.
+- A `curl` that sends a file (`-d @f`, `--data-binary @f`, `-F k=@f`, `-T f`) to a host other than `localhost`, `127.*`, `::1`, or `*.local` asks when the file is outside the project.
+- An `Edit` or `Write` of a file in `.git/hooks/`, `.husky/`, or `.github/workflows/`, of `.claude/settings*.json`, of an env file (not `.env.example`, a sample, or a template), or of a `package.json` that sets `install`, `preinstall`, `postinstall`, or `prepare` asks.
 
 ### Local `git` Work
 
@@ -83,17 +90,15 @@ They run with no prompt when each changed file comes from a Claude session.
 The gate finds a change of the user in the edit ledger of [Session Hygiene](Hygiene):
 
 1. The adapter runs `git status` in the work tree of the command (the `-C` folder, or the working folder).
-2. It hashes each changed file, and it reads the ledger file of the project.
+2. It hashes each changed file, and it reads the ledger of the project from the store.
 3. A file is a change of the user when no ledger line of any session holds its path with its current hash.
 
 The dialog names the files, up to `STAGE_NAMES_MAX` (10), and the reason tells Claude to stage only its own files by name.
-The `ask` is for a person only, because Jev does not decide it.
 The check hashes at most `STAGE_FILES_MAX` (200) changed files.
 
 ### History on a Remote
 
 A `git push` with `--force`, `--force-with-lease`, `--delete`, `--mirror`, or a refspec that starts with `+` or `:` asks.
-This ask is for a person only, because Jev does not decide it.
 
 ### Commands the Gate Cannot Read
 
@@ -105,22 +110,33 @@ These ask, because the gate cannot know what they do:
 
 ## Who Decides an `ask`
 
-Each `ask` carries `decider: "person"`, so the dialog has no "always allow" row, and no classifier settles it.
+Each `ask` of the gate goes to the classifier stage (`modules/gate/adapters/classifier.ts`), the low-cost copy of the classifier of the auto mode of Claude Code (the user, 2026-10-27).
+It has two steps:
+
+1. Jev, when the `decide` option is `jev` (the default) and the plugin option or the exported `TYPESAFE_API_KEY` is set.
+   The gate sends one yes or no question with `$.http.fetch` and a timeout of `JEV_TIMEOUT_MS` (12,000 ms): is the call safe to run with no person, because the user asked for it, or because it can lose only build output, a cache, a log, or a temporary file?
+   The state holds the tool, its input, the reason of the `ask`, and the newest `REQUESTS_KEPT` (3) messages that the user typed.
+   The call runs when `P(yes)` is `JEV_YES_MIN` (0.8) or more.
+   Jev never blocks a call, because a block needs a reason that Claude can act on.
+2. `CLASSIFIER_MODEL` (`claude-haiku-5-5`) at the `high` effort, when the `classifier` option is `haiku` (the default) and Jev is not sure.
+   `$.model.complete` sends the rules of the gate as the system prompt, and the same facts as the prompt, with a timeout of `CLASSIFIER_TIMEOUT_MS` (45,000 ms).
+   The rules block a loss, a shared change, a database or cloud loss, a secret read, a hidden program, a change of the files of the user, or a way around an earlier refusal, unless a request of the user names the action.
+   Each other call runs.
+   The model answers `<block>yes</block>` or `<block>no</block>` with a `<reason>`.
+   `no` allows the call, and `yes` denies it with the reason, so Claude takes another step or asks the user.
+
+A failure, a timeout, or an answer with no single `<block>` tag leaves the `ask` to a person.
+Each `ask` for a person carries `decider: "person"`, so the dialog has no "always allow" row.
 Where no person can be asked, Claude Code refuses the call.
 
-An `ask` of a delete or of local `git` work goes to Jev first when both of these are true:
-
-- The `decide` option of the plugin is `jev`, which is the default.
-- The plugin option `TYPESAFE_API_KEY` or the exported `TYPESAFE_API_KEY` is set.
-
-The gate sends one yes or no question to Jev from the mod with `$.http.fetch`, with a timeout of `JEV_TIMEOUT_MS` (12,000 ms).
-The question is whether each file that the command can lose is safe to lose, such as build output, a cache, a log, or a temporary file.
-The command and the reason of the `ask` go with it.
-The call runs when `P(yes)` is `JEV_YES_MIN` (0.8) or more.
-Any other answer, a failure, or a timeout leaves the `ask` to a person.
+A breaker stops a loop of denials: after `CLASSIFIER_STREAK_MAX` (3) denials in a row, the next `ask` goes to a person, and after `CLASSIFIER_DENIALS_MAX` (20) denials in one session, each `ask` does.
+`classic.PermissionRequest` of the same call reads the verdict of `tool.check` for `SETTLED_MS` (30,000 ms), so one call costs one classification, also for a tool whose dialog a hook `allow` cannot close.
+The deny of the gate, the wrong-tool deny, and the `ask` of the plan usage gate stay as they are.
 See [Decide](Decide) for the Jev client.
 
-The `ask` for a push, for `eval`, and for a script is for a person only.
+### Wrong Tool
+
+The gate denies a `Bash` call that `Read` can do: `cat`, `head`, or `tail` on a file.
 
 ### Plan Usage Gate
 
@@ -133,7 +149,7 @@ An API key has no rate limits, so it sets no gate.
 ## The Log
 
 The gate writes each `ask` as one JSON line to `<tmp>/claudetto/gate/<sessionId>.jsonl`.
-The fields are `at`, `tool`, `target`, `reason`, and `decider`, which is `jev` or `person`.
+The fields are `at`, `tool`, `target`, `reason`, and `decider`, which is `jev`, `classifier`, or `person`.
 A log that cannot be written changes no answer.
 The session cleanup removes the log with the other files of the session ([Session Hygiene](Hygiene)).
 

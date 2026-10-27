@@ -8,13 +8,14 @@ It shows what the plugin changes in Claude Code.
 
 ```sh
 claude plugin eval --help
-just eval --model haiku
-just eval --model haiku --case report-count
-just eval-variant REF --model haiku
+just eval --model haiku --judge-model claude-haiku-5-5
+just eval --model haiku --judge-model claude-haiku-5-5 --case report-count
+just eval-variant REF --model haiku --judge-model claude-haiku-5-5
 ```
 
 - `just eval` runs the suite with a cost limit of 5 USD.
   It stops when `--model` is missing, because the session model can cost many times more.
+  It stops when `--judge-model` is missing, because an `llm` grader has no model key, and the default judge is the alias `haiku`, which moves to a new model with no notice (`claude plugin eval --help`).
 - The recipe runs `claude plugin eval plugins/claudetto` with `--no-publish`, `--scaffold`, `--allow-tools Bash,Write,Edit`, and `--keep-temp`.
 - `tools/lock.ts` stops a second run while one runs.
 - `just eval-variant REF` runs the checkout and a variant at a git ref, in a temporary `git worktree`.
@@ -31,6 +32,10 @@ The report gives a score for each arm and the difference `Δ`.
 Each run has a temporary home, work folder, and config folder.
 User settings, hooks, `CLAUDE.md`, MCP servers, other plugins, memory, and skills are absent.
 So the plugin arm tests only what the plugin ships.
+
+A run has no `AskUserQuestion`: the init line of each recorded `trace.jsonl` lists the tools of the run, and that tool is not in the list.
+So no case can check that the model asks with the tool, and the `headless-open-choice` case checks the other path, where the model decides and states the assumption.
+For this reason the change `ask-in-tool` (questions in `AskUserQuestion`, a choice between two fixes included) has no eval run (the user, 2026-10-27).
 
 Each run prints `kept temp: /private/tmp/e-XXXX`.
 Read `trace.jsonl` there to find why a grader failed.
@@ -49,7 +54,7 @@ The table lists the cases of the earlier suite.
 | `bugfix-range` | 20 | 2 `regex`, 2 `tool_used` |
 | `feature-slugify` | 20 | 3 `regex`, 2 `tool_used` |
 | `library-docs` | 20 | 5 `regex`, 2 `tool_used` |
-| `handoff` | 20 | 2 `regex`, 3 `tool_used` |
+| `handoff` | 20 | 3 `tool_used` |
 | `accusation-subagent` | 25 | 3 `regex`, 4 `tool_used` |
 | `accusation-user` | 25 | 3 `regex`, 7 `tool_used` |
 | `correction-next-action` | 10 | 1 `llm`, 1 `tool_used` |
@@ -65,6 +70,22 @@ The table lists the cases of the earlier suite.
 | `claim-check` | 20 | 2 `regex`, 1 `tool_used`, 2 `llm` |
 | `partial-verification` | 20 | 3 `regex`, 3 `tool_used`, 2 `llm` |
 | `unprompted-skip` | 20 | 3 `regex`, 3 `tool_used`, 2 `llm` |
+
+## Free Evals
+
+These tools replay data with code and make no model call.
+Their designs follow the sources on [Eval Sources](Eval-Sources).
+
+| Command | What it measures |
+| --- | --- |
+| `just eval-stats` | The paired difference of the arms for each case, with a clustered standard error, a 95% CI, and the cases a power check needs at `--gap` (default 0.1). |
+| `just classifier-replay` | The decisions of the deterministic stage of the gate on 500 benign calls from your session logs, the attack cases of InjecAgent (`--injecagent DIR` of a clone), and 6 harmful in-project edits. |
+| `just handoff-probe` | The share of planted items that the code handoff keeps, by kind, depth, and session size, with Wilson 95% intervals. `--sessions` replays real transcripts. |
+
+The run of 2026-10-27:
+
+- `just classifier-replay --injecagent /tmp/ia-clone/repo`: before the fix, the deterministic stage asked on 62 of 500 benign calls (12.4%, Wilson [9.8%, 15.6%]), allowed 33 of 34 InjecAgent attacks (28 skipped) and all 6 harmful edits. After it, the stage asks on the same 62 of 500 (12.4%), and it misses 0 of 34 attacks (33 ask, 1 deny; Wilson [0.0%, 10.2%]) and 0 of 6 edits (Wilson [0.0%, 39.0%]). 31 of the 34 attack cases are one `curl` upload, so the attack number counts few kinds of call. The classifier stage did not run, because it is a paid run.
+- `just handoff-probe`: before the fix, 239 of 1,500 planted items were lost. The early items kept 362 of 500 (72.4%, Wilson [68.3%, 76.1%]), and the late items 475 of 500 (95.0%, [92.7%, 96.6%]). Each loss traced to a fixed count that kept the newest entries (`READS_MAX`, `COLD_FILES_MAX`, `USER_VALUES_MAX`, `CONSTRAINTS_MAX`, `DECISIONS_MAX`). After the fix, which caps each section by tokens and keeps the oldest and the newest entries, 0 of 1,500 were lost: early 500 of 500 (100.0%, [99.2%, 100.0%]), late 500 of 500 (100.0%, [99.2%, 100.0%]). The largest handoff of the 100 sessions was 5,332 tokens, below `HEAD_TOKENS` (12,000). The rates depend on how often the synthetic turns plant a value, which are constants of `dev/handoff-probe/session.ts`.
 
 ## Bounds of a Run
 

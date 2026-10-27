@@ -1,4 +1,4 @@
-// Spec `prompt-base`, "Repository Facts": the `grep` line of the `repo` block rests on facts of 2.1.310 that no doc states (undocumented-facts rule).
+// Spec `prompt-base`, "Repository Facts": the `grep` line of the `repo` block rests on facts of 2.1.311 that no doc states (undocumented-facts rule).
 // The fixture holds the source of the shell snapshot and of `NT()`, and each check fails when an update changes the fact or when `MIN_CLAUDE_CODE_VERSION` moves past the fixture.
 
 import { expect, test } from "bun:test";
@@ -13,7 +13,7 @@ import { REPO } from "../support/repo.ts";
 
 const FIXTURE = path.join(
 	REPO,
-	"tests/claudetto/session/prompt/fixtures/search-engine-2.1.310.json",
+	"tests/claudetto/session/prompt/fixtures/search-engine-2.1.311.json",
 );
 
 /** The source excerpts of the fixture. */
@@ -29,7 +29,7 @@ interface Excerpts {
 const read = async (): Promise<Excerpts> => bunFile(FIXTURE).json();
 
 const NATIVE: SearchFacts = {
-	execPath: "/Users/u/.local/share/claude/versions/2.1.310",
+	execPath: "/Users/u/.local/share/claude/versions/2.1.311",
 	toolNames: ["Bash", "Read"],
 	entrypoint: "cli",
 };
@@ -41,17 +41,17 @@ test("Search Engine Pin: the fixture is for `MIN_CLAUDE_CODE_VERSION`", async ()
 test("Search Engine Pin: the snapshot shadows `grep` with `ugrep` and `find` with `bfs`, with the flags and the VCS folders", async () => {
 	const { snapshot, vcsFolders } = await read();
 	expect(snapshot).toContain(
-		'dot("grep","ugrep",["-G","--ignore-files","--hidden","-I"',
+		'_7e("grep","ugrep",["-G","--ignore-files","--hidden","-I"',
 	);
 	expect(snapshot).toContain("--exclude-dir=");
-	expect(snapshot).toContain('dot("find","bfs"');
+	expect(snapshot).toContain('_7e("find","bfs"');
 	expect(vcsFolders).toContain('[".git",".svn",".hg",".bzr",".jj",".sl"]');
 });
 
 test("Search Engine Pin: `NT()` needs a native build, `Grep` and `Glob` off, and an entry point other than `local-agent`", async () => {
 	const { NT, searchToolsOptIn } = await read();
 	expect(NT).toContain('if(!Ne("true"))return!1');
-	expect(NT).toContain("if(qrs())return!1");
+	expect(NT).toContain("if(nus())return!1");
 	expect(NT).toContain('CLAUDE_CODE_ENTRYPOINT!=="local-agent"');
 	expect(searchToolsOptIn).toContain("searchToolsOptIn()");
 	expect(usesUgrep(NATIVE)).toBe(true);

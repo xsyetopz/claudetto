@@ -22,8 +22,7 @@ test("`userEdits` stops reading files once it has `STAGE_NAMES_MAX` names, in or
 			reads.push(file);
 			return file;
 		},
-		exists: async () => false,
-		tmp: async () => "/tmp",
+		ledger: async () => [],
 		root: async () => "/r",
 	};
 	const edits = await userEdits(io);

@@ -6,7 +6,7 @@
 import { expect, test } from "bun:test";
 import { stat } from "node:fs/promises";
 import path from "node:path";
-import { file, JSONC } from "bun";
+import { file, JSONC, resolveSync } from "bun";
 import { REPO } from "../../support/repo.ts";
 
 const at = async (...parts: string[]) => {
@@ -58,10 +58,23 @@ const isBiomeConfig = (value: unknown): value is BiomeConfig =>
 
 // Fixed by task 3.5.
 test("fault 27: the lint step bounds the cognitive complexity at 15", async () => {
-	const biome = JSONC.parse(await file(path.join(REPO, "biome.jsonc")).text());
-	if (!isBiomeConfig(biome)) {
-		throw new Error("`biome.jsonc` has no `linter.rules`");
-	}
-	const rule = biome.linter.rules.complexity?.noExcessiveCognitiveComplexity;
-	expect(rule?.options?.maxAllowedComplexity).toBe(15);
+	const root = path.join(REPO, "biome.jsonc");
+	const own: unknown = JSONC.parse(await file(root).text());
+	const bases =
+		typeof own === "object" && own !== null && "extends" in own
+			? [own.extends].flat().map((name) => resolveSync(String(name), REPO))
+			: [];
+	// A rule of the repo file overrides the same rule of an extended config.
+	const configs = await Promise.all(
+		[root, ...bases].map(async (p) => JSONC.parse(await file(p).text())),
+	);
+	const bound = configs
+		.filter(isBiomeConfig)
+		.map(
+			(c) =>
+				c.linter.rules.complexity?.noExcessiveCognitiveComplexity?.options
+					?.maxAllowedComplexity,
+		)
+		.find((max) => max !== undefined);
+	expect(bound).toBe(15);
 });

@@ -38,6 +38,27 @@ test("Order", async ($: Engine, on: On) => {
 	expect(seen.paths.filter((p) => p.includes("/.claudetto/"))).toEqual([]);
 });
 
+test("a /clear that never settles still resumes the session, and frees the run", async ($: Engine, on: On) => {
+	const { seen, clock } = await stopped($, on, { ...OVER, clearHangs: true });
+	expect(seen.steps).toEqual(FULL);
+	await stop($);
+	await clock.settle();
+	expect(seen.steps).toEqual([...FULL, ...FULL]);
+});
+
+test("a refused /clear leaves no resume prompt, and frees the run", async ($: Engine, on: On) => {
+	const { seen, clock } = await stopped($, on, { ...OVER, clearFails: true });
+	expect(seen.steps).toEqual(["write", "command clear"]);
+	await stop($);
+	await clock.settle();
+	expect(seen.steps).toEqual([
+		"write",
+		"command clear",
+		"write",
+		"command clear",
+	]);
+});
+
 test("Handoff Path: the notice gives the handoff file relative to the project", async ($: Engine, on: On) => {
 	const { seen } = await stopped($, on, OVER);
 

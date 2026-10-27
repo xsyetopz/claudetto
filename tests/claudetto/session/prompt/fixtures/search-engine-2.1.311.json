@@ -1,0 +1,9 @@
+{
+	"version": "2.1.311",
+	"source": "strings of the native binary ~/.local/share/claude/versions/2.1.311 (minified names of that build); chunk-fx30sdw1.js (the chunk that exports lbt and uWt), at strings line +59 (JT, nus call, execPath) and +2224 (snapshot, vcsFolders) from the chunk start; chunk names found by the import lists of the other chunks",
+	"NT": "function JT(){if(!Ne(\"true\"))return!1;if(nus())return!1;return i.CLAUDE_CODE_ENTRYPOINT!==\"local-agent\"}",
+	"searchToolsOptIn": "function nus(){return n().host.launchOptions.searchToolsOptIn()}",
+	"snapshot": "_7e(\"find\",\"bfs\",[\"-S\",\"dfs\",\"-regextype\",\"findutils-default\"]),_7e(\"grep\",\"ugrep\",[\"-G\",\"--ignore-files\",\"--hidden\",\"-I\",...ayr.map((e)=>`--exclude-dir=${e}`)]",
+	"vcsFolders": "ayr=[\".git\",\".svn\",\".hg\",\".bzr\",\".jj\",\".sl\"]",
+	"execPath": "be[S7e]=process.execPath, with S7e=\"CLAUDE_CODE_EXECPATH\", in getEnvironmentOverrides of the shell provider"
+}

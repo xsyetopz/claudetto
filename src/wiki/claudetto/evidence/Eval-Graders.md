@@ -8,7 +8,7 @@ Read this page before you write or change a `case.yaml`.
 
 | Kind | Passes when | Cost |
 | --- | --- | --- |
-| `regex` | A JavaScript regex is found in the last message, the trace, or one file | Free |
+| `regex` | A JavaScript regex is found in the trace or one file | Free |
 | `tool_used` | The count of matching tool calls is between `min` and `max` | Free |
 | `tool_order` | The first call of one tool comes before the first call of another | Free |
 | `file_exists` | A file the agent created matches a glob | Free |
@@ -16,6 +16,8 @@ Read this page before you write or change a `case.yaml`.
 | `baseline` | The judge finds the run at least as good as a reference transcript | Paid |
 
 The current cases use `regex`, `tool_used`, and `llm`.
+No `regex` grader reads the last message, because a match of English words is brittle (the user, 2026-10-27). `tests/tools/word-graders.test.ts` fails on one.
+The run names the judge of each `llm` grader with `--judge-model`, which `just eval` requires, because `case.yaml` has no model key for a grader.
 No grader runs a command or a test file.
 To test code, the prompt asks Claude to run the tests and write the result to a file.
 A `regex` grader then reads that file.
@@ -46,12 +48,12 @@ No run proved it.
 | Cost limit | ✅ | `--max-cost-usd`, exit code 2 with a partial result |
 | `k` runs for each case | ✅ | `runs:` or `--runs` |
 | Tamper check | Partly | `tool_used` with `max: 0` on `Edit` and `Write`, and a file-state `regex` |
-| Over-claim check | Partly | `regex` on the last message, and `tool_used` on `Bash` with `min: 1` |
+| Over-claim check | Partly | `tool_used` on `Bash` with `min: 1` |
 | Wrongful-revert and warranted-fix checks | Partly | `regex` on the final file content |
 | Cost for each resolved task | Partly | `costUsd` divided by hand by the passed runs |
 | Turns, tokens, and time | Partly | `durationSeconds` and a turn count. No token field is documented |
 | Hidden outcome check with its own test files | ❌ | No grader runs a test file |
-| Interval, and "not shown" when it includes 0 | ❌ | The result has a mean only |
+| Interval, and "not shown" when it includes 0 | Partly | The result has a mean only, and `just eval-stats` computes the paired CI from the results |
 
 ## Dropped Checks
 

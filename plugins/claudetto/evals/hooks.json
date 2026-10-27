@@ -58,7 +58,14 @@
 		"tokens": 0,
 		"blocks": false,
 		"allow": "plugins/claudetto/tests/ledger.test.ts > a tool other than `Edit` and `Write` adds no entry",
-		"text": "plugins/claudetto/tests/ledger.test.ts > Changed After: a rewrite after the edit adds one line that names the file, and only one time"
+		"text": "plugins/claudetto/tests/headings.test.ts > Heading Case: after a `Write` of a `.md` file, each heading gets the Chicago Title Case, a code span and a code block stay, and the model gets a line"
+	},
+	"session.ledger-intent": {
+		"requests": 0,
+		"tokens": 0,
+		"blocks": false,
+		"allow": "plugins/claudetto/tests/ledger.test.ts > a tool other than `Edit` and `Write` adds no entry",
+		"text": "plugins/claudetto/tests/ledger.test.ts > Intent: an `Edit` is in the ledger with the hash of its result before it runs"
 	},
 	"work.note-pass": {
 		"requests": 0,
@@ -73,6 +80,13 @@
 		"blocks": false,
 		"allow": "plugins/claudetto/tests/notes.test.ts > Check Loop: the same check failing 3 times with the same test shows a note with the test and the count",
 		"text": "plugins/claudetto/tests/notes.test.ts > Check Loop: the same check failing 3 times with the same test shows a note with the test and the count"
+	},
+	"session.clear-resume": {
+		"requests": 0,
+		"tokens": 0,
+		"blocks": false,
+		"allow": "plugins/claudetto/tests/handover.test.ts > a refused /clear leaves no resume prompt, and frees the run",
+		"text": "plugins/claudetto/tests/handover.test.ts > a /clear that never settles still resumes the session, and frees the run"
 	},
 	"session.resume": {
 		"requests": 0,
@@ -105,19 +119,21 @@
 			"plugins/claudetto/tests/finish.test.ts > Edit with No Check: a stop that a hook blocked before goes on, so the block comes one time"
 		]
 	},
+	"work.reply-opening": {
+		"requests": 0,
+		"tokens": 0,
+		"blocks": true,
+		"allow": "plugins/claudetto/tests/reply.test.ts > Reply Opening: a reply with the outcome first lets the stop go",
+		"text": "plugins/claudetto/tests/reply.test.ts > Reply Opening: a reply that the model finds to open with agreement blocks the stop, and the reason asks for the outcome first",
+		"block": "plugins/claudetto/tests/reply.test.ts > Reply Opening: a reply that the model finds to open with agreement blocks the stop, and the reason asks for the outcome first",
+		"false": "plugins/claudetto/tests/reply.test.ts > Reply Opening: a stop that a hook blocked before goes on, with no model call"
+	},
 	"session.handover-stop": {
 		"requests": 0,
 		"tokens": 0,
 		"blocks": false,
 		"allow": "plugins/claudetto/tests/handover.test.ts > a context at the bound starts no handover",
 		"text": "plugins/claudetto/tests/handover.test.ts > Context Bound"
-	},
-	"session.changed-files": {
-		"requests": 0,
-		"tokens": 0,
-		"blocks": false,
-		"allow": "plugins/claudetto/tests/ledger.test.ts > Mine: an edit that nothing else changes adds no line at the next turn",
-		"text": "plugins/claudetto/tests/ledger.test.ts > Changed After: a rewrite after the edit adds one line that names the file, and only one time"
 	},
 	"work.note-prompt": {
 		"requests": 0,
@@ -196,20 +212,6 @@
 		"allow": "plugins/claudetto/tests/hygiene.test.ts > with nothing to remove, the session starts and nothing is logged",
 		"text": "plugins/claudetto/tests/hygiene.test.ts > the session starts before the cleanup ends, and the cleanup logs what it removed"
 	},
-	"session.search-register": {
-		"requests": 0,
-		"tokens": 0,
-		"blocks": false,
-		"allow": "plugins/claudetto/tests/search.test.ts > Full Build: with `Grep` and `Glob` in the tool list, no tool is registered",
-		"text": "plugins/claudetto/tests/search.test.ts > Native Build: with no `Grep` and no `Glob` in the tool list, `grep` and `glob` are registered"
-	},
-	"session.search-call": {
-		"requests": 0,
-		"tokens": 0,
-		"blocks": false,
-		"allow": "plugins/claudetto/tests/search.test.ts > Native Build: a call of `glob` returns the files that match the pattern",
-		"text": "plugins/claudetto/tests/search.test.ts > Native Build: a call of `grep` returns the matching lines"
-	},
 	"agents.default-type": {
 		"requests": 0,
 		"tokens": 0,
@@ -241,13 +243,6 @@
 		"text": "plugins/claudetto/tests/plan.test.ts > a claim with no source is denied, and the deny names the claim and the `(proposed)` mark",
 		"block": "plugins/claudetto/tests/plan.test.ts > a claim with no source is denied, and the deny names the claim and the `(proposed)` mark",
 		"false": "plugins/claudetto/tests/plan.test.ts > a write of another file is not checked"
-	},
-	"session.git-view": {
-		"requests": 0,
-		"tokens": 0,
-		"blocks": false,
-		"allow": "plugins/claudetto/tests/ledger.test.ts > a command other than `git status` and `git diff` adds no context",
-		"text": "plugins/claudetto/tests/ledger.test.ts > User Edit: `git status` names a file that no ledger line holds as a change of the user"
 	},
 	"gate.check": {
 		"requests": 0,

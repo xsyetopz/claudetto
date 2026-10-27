@@ -9,6 +9,36 @@ export const GIT_CONFIG_FILE_MAX_BYTES = 1_000_000;
 /** The least `P(yes)` of Jev that allows a call: `1 - APPROVAL_MAX` of the `decide` slice, which a test pins. It is above the 0.7 of `primitives-noul.md` because the docs say "raise it when acting on a false yes is expensive", and a false yes here loses files. */
 export const JEV_YES_MIN = 0.8;
 
+/** The model of the classifier stage that settles an `ask` of the gate when Jev is not sure (the user, 2026-10-27: "fallback low-cost Haiku5-5 at high reasoning"). */
+export const CLASSIFIER_MODEL = "claude-haiku-5-5";
+
+/** The token cap of one classifier reply. It holds the thinking of the `high` effort and the two tags of the answer. */
+export const CLASSIFIER_MAX_TOKENS = 4096;
+
+/** The longest time of one classifier call, in milliseconds. A slower call leaves the `ask` to a person. */
+export const CLASSIFIER_TIMEOUT_MS = 45_000;
+
+/** The denials of the classifier in a row after which the next `ask` goes to a person. The built-in auto mode has such a breaker, and its docs give no number. */
+export const CLASSIFIER_STREAK_MAX = 3;
+
+/** The denials of the classifier in one session after which each `ask` goes to a person. */
+export const CLASSIFIER_DENIALS_MAX = 20;
+
+/** The newest messages of the user that the classifier and Jev read, so that they can see what the user asked for. */
+export const REQUESTS_KEPT = 3;
+
+/** The most characters of one message of the user that the classifier and Jev read. */
+export const REQUEST_MAX_CHARS = 1500;
+
+/** The most characters of the tool input that the classifier and Jev read. */
+export const INPUT_MAX_CHARS = 4000;
+
+/** The most verdicts of the classifier that wait for `classic.PermissionRequest` of the same call. */
+export const SETTLED_KEPT = 64;
+
+/** The time in milliseconds for which a verdict of the classifier answers the same call again. `classic.PermissionRequest` comes right after `tool.check`, and a later call of the same input gets a new verdict, because the requests of the user can change. */
+export const SETTLED_MS = 30_000;
+
 /** The longest `timeout` in milliseconds of a foreground `Bash` call of a subagent. The cache TTL of a subagent is 5 minutes (300,000 ms), and the bound leaves 1 minute for the time of the request before the call. A longer call can wake after the TTL and write the whole context to the cache again. */
 export const BASH_WAIT_MAX_MS = 240_000;
 

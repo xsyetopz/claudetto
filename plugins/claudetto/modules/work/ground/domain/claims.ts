@@ -1,5 +1,5 @@
 // The source check of `ground`: the claims of a new text that no source backs (a user message, a tool result, or a file of the project).
-// The kinds are numbers, `file:line` references, attributions to the user, conventions, and done-claims.
+// The kinds are numbers and `file:line` references. The check reads no English word, because a word rule is brittle (the user, 2026-10-27).
 // A line with `(proposed)` or `[NEEDS CLARIFICATION: ...]`, and a fenced code block, pass.
 // The checks run in a program with no model call, because a check that guesses blocks correct text.
 
@@ -10,7 +10,6 @@ export interface Msg {
 	role: "user" | "assistant";
 	text: string;
 	results: readonly string[];
-	bash: number;
 	answers?: readonly string[];
 }
 
@@ -25,42 +24,10 @@ const STANDARD =
 	/\b(?:ISO|IEC|RFC|BCP|STD|PEP|IEEE|ANSI|ECMA|DIN)[ -]?\d[\d.:]*/g;
 const SIZE = /(\d+(?:\.\d+)?)\s*(KiB|MiB|GiB|TiB)\b/g;
 const CELL = /^\s*([+\-−]?)(\d{1,3}(?:,\d{3})+|\d+)\b/;
-const USER =
-	/\bthe user (?:chose|said|decided|wants|asked|prefers|approved|confirmed|requested|told|picked|stated)\b([^.\n]*)/gi;
-const DONE =
-	/\b(?:(?:all\s+)?(?:tests?|checks?|lint|build|typecheck)\s+(?:now\s+)?(?:pass(?:es|ed)?|succeed(?:s|ed)?)|(?:is|are|was|now|been)\s+fixed)\b/i;
-const FUTURE =
-	/\b(?:must|should|will|would|can|could|if|when|until|before|after|unless|need|needs|then|expect)\b|^\W*(?:check|verify|done when|accept)/i;
 const YEAR = /^(?:19|20)\d\d$/;
 const MARK = /\(proposed\)|\[NEEDS CLARIFICATION/i;
-/** The tools that the lock files of a project forbid, and the lock files. */
-const CONVENTIONS: readonly [readonly string[], string[]][] = [
-	[
-		["bun.lock", "bun.lockb"],
-		["npm", "npx"],
-	],
-	[["uv.lock"], ["pip", "pip3"]],
-];
-/** The words that make a tool name in prose a command: a subcommand, a flag, or a package for `npx`. */
-const PIP =
-	"install|uninstall|freeze|list|show|download|wheel|check|cache|config|index|--?\\w[\\w-]*";
-const SUBCOMMANDS: Readonly<Record<string, string>> = {
-	npm: "i|install|ci|run|test|start|build|exec|init|publish|update|uninstall|add|remove|link|pack|audit|ls|rebuild|version|view|outdated|x|r|un|t|pkg|cache|config|dedupe|prune|--?\\w[\\w-]*",
-	npx: "[\\w@-]+",
-	pip: PIP,
-	pip3: PIP,
-};
-const command = (tool: string) =>
-	new RegExp(
-		`(?<![\\w/.-])${tool}\\s+(?:${SUBCOMMANDS[tool] ?? "[\\w@-]"})(?![\\w-])`,
-	);
-
-/** The files of the project that `findUnsourced` reads from the root: the rules and the lock files. */
-export const PROJECT_FILES: readonly string[] = [
-	"CLAUDE.md",
-	"AGENTS.md",
-	...CONVENTIONS.flatMap(([locks]) => locks),
-];
+/** The files of the project that `findUnsourced` reads from the root: the rules. */
+export const PROJECT_FILES: readonly string[] = ["CLAUDE.md", "AGENTS.md"];
 
 /** The folder of the rule files that the adapter adds to `Files` by their project path. */
 export const RULES_DIR = ".claude/rules";
@@ -75,8 +42,6 @@ const isRuleFile = (name: string): boolean =>
 export const refFiles = (text: string): string[] => [
 	...new Set([...text.matchAll(REF)].flatMap((m) => m[1] ?? [])),
 ];
-
-const NEGATION = /\b(?:not|never|no)\b/i;
 
 const proseLines = (text: string): string[] =>
 	text
@@ -135,10 +100,7 @@ const columnTotals = (lines: readonly string[]): Set<number> => {
 
 /** What the check of one text reads: the sources, and the facts of the text itself. */
 interface Ctx {
-	user: string;
 	corpus: string;
-	rules: string;
-	turn: readonly Msg[];
 	files: Files;
 	totals: Set<number>;
 }
@@ -182,54 +144,6 @@ const refClaims = (x: Ctx, line: string): string[] => {
 	return out;
 };
 
-const userClaims = (x: Ctx, line: string): string[] => {
-	const out: string[] = [];
-	for (const [, said = ""] of line.matchAll(USER)) {
-		const words = said.toLowerCase().match(/[a-z]{5,}/g) ?? [];
-		const known = words.filter((w) => x.user.toLowerCase().includes(w));
-		if (words.length > 0 && known.length * 2 < words.length) {
-			out.push(`"the user${said.trimEnd()}" is in no user message.`);
-		}
-	}
-	return out;
-};
-
-const doneClaims = (x: Ctx, line: string): string[] =>
-	DONE.test(line) && !FUTURE.test(line) && x.turn.every((m) => m.bash === 0)
-		? [`"${line.trim().slice(0, 80)}" has no check output in this turn.`]
-		: [];
-
-// A rule names the tool in a line with no negation. In a project file, the tool is also in backticks.
-const isRule = (l: string, tool: string, strict: boolean): boolean =>
-	!NEGATION.test(l) &&
-	(strict ? new RegExp(`\`[^\`]*\\b${tool}\\b`) : command(tool)).test(l);
-
-/** True when a line of `t` is a rule that names `tool`. */
-const said = (t: string, tool: string, strict: boolean): boolean =>
-	t.split("\n").some((l) => isRule(l, tool, strict));
-
-/** The claims of the tools that the lock files of the project forbid and `prose` uses. */
-const conventionClaims = (x: Ctx, prose: readonly string[]): string[] => {
-	const out: string[] = [];
-	for (const [locks, tools] of CONVENTIONS) {
-		if (!locks.some((lock) => x.files[lock] != null)) {
-			continue;
-		}
-		for (const tool of tools) {
-			const rule = command(tool);
-			const used = prose.some(
-				(l) => rule.test(l) && !NEGATION.test(l.slice(0, l.search(rule))),
-			);
-			if (used && !said(x.user, tool, false) && !said(x.rules, tool, true)) {
-				out.push(
-					`\`${tool}\` in a project with \`${locks[0]}\`, and no user rule names it.`,
-				);
-			}
-		}
-	}
-	return out;
-};
-
 /** The claims of `text` with no source in `msgs`, in `files`, or in `own`, the old text of the target file. A `null` file did not resolve, and the check skips it, because a guess would deny a correct reference. */
 export const findUnsourced = (
 	text: string,
@@ -250,27 +164,15 @@ export const findUnsourced = (
 	const corpus = [user, ...msgs.flatMap((m) => m.results), rules, own]
 		.join("\n")
 		.replace(/(?<=\d)[,_](?=\d{3})/g, "");
-	const turn = msgs.slice(
-		msgs.findLastIndex((m) => m.role === "user" && m.text !== "") + 1,
-	);
 	const prose = proseLines(text);
 	// A number that the text computes: a table total or difference, or a binary size.
-	const x: Ctx = {
-		user,
-		corpus,
-		rules,
-		turn,
-		files,
-		totals: columnTotals(prose),
-	};
+	const x: Ctx = { corpus, files, totals: columnTotals(prose) };
 	return [
-		...new Set([
-			...prose.flatMap((line) =>
-				[numberClaims, refClaims, userClaims, doneClaims].flatMap((f) =>
-					f(x, line),
-				),
-			),
-			...conventionClaims(x, prose),
-		]),
+		...new Set(
+			prose.flatMap((line) => [
+				...numberClaims(x, line),
+				...refClaims(x, line),
+			]),
+		),
 	];
 };

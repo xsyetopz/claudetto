@@ -35,6 +35,8 @@ const INFRA_COMMANDS = [
 	/^aws (?:.* )?(?:s3 rb|s3api delete-bucket|ec2 delete-volume|rds delete-db-(?:instance|cluster))\b/,
 	/^gcloud (?:.* )?(?:disks|buckets|instances) delete\b/,
 	/^gsutil (?:.* )?rb\b/,
+	/^gh (?:.* )?(?:repo (?:delete|archive)|(?:release|gist|ssh-key|gpg-key|secret|variable|label|issue|cache|run) delete)\b/,
+	/^gh api\b.*(?:-X|--method)[ =]?DELETE\b/i,
 	/^az (?:.* )?(?:disk|storage account|storage container|sql db|sql server|cosmosdb) delete\b/,
 ];
 
@@ -99,6 +101,19 @@ export const deleteTargets = (rest: string[]): string[] | undefined => {
 	const end = rest.findIndex((w, i) => i > 0 && FIND_EXPRESSION_START.test(w));
 	const roots = rest.slice(1, end < 0 ? undefined : end);
 	return roots.length > 0 ? roots : ["."];
+};
+
+const MOVES = wordSet("mv");
+const TARGET_OPT = /^(?:--target-directory(?:=|$)|-[A-Za-z]*t)/;
+const TARGET_OPTS = wordSet("-t --target-directory");
+
+/** The paths that the move \`rest\` takes from their place, or \`undefined\` when it is not a move: each operand but the last, or each operand when \`-t\` names the target. */
+export const moveSources = (rest: string[]): string[] | undefined => {
+	if (!MOVES.has(nameOf(rest))) {
+		return undefined;
+	}
+	const args = operands(rest.slice(1), TARGET_OPTS);
+	return rest.some((w) => TARGET_OPT.test(w)) ? args : args.slice(0, -1);
 };
 
 /** Which files of the paths count: tracked changes, untracked files, or each file that `git` has no commit of. */

@@ -26,6 +26,15 @@ The shared and repository bounds are on [Bounds](Bounds).
 | --- | --- | --- | --- |
 | `GIT_TIMEOUT_MS` | `5,000` | `plugins/claudetto/modules/gate/limits.ts` | The most time of one `git` run that gives the gate the state of a path. A slower run fails the gate, and a person decides. |
 | `JEV_YES_MIN` | `0.8` | `plugins/claudetto/modules/gate/limits.ts` | The least `P(yes)` of Jev that allows a call. It is `1 - APPROVAL_MAX` of the `decide` slice. |
+| `CLASSIFIER_MAX_TOKENS` | `4,096` | `plugins/claudetto/modules/gate/limits.ts` | The token cap of one classifier reply, with the thinking of the `high` effort. |
+| `CLASSIFIER_TIMEOUT_MS` | `45,000` | `plugins/claudetto/modules/gate/limits.ts` | The most time of one classifier call. A slower call leaves the `ask` to a person. |
+| `CLASSIFIER_STREAK_MAX` | `3` | `plugins/claudetto/modules/gate/limits.ts` | The denials of the classifier in a row after which the next `ask` goes to a person. |
+| `CLASSIFIER_DENIALS_MAX` | `20` | `plugins/claudetto/modules/gate/limits.ts` | The denials of the classifier in one session after which each `ask` goes to a person. |
+| `REQUESTS_KEPT` | `3` | `plugins/claudetto/modules/gate/limits.ts` | The newest messages of the user that Jev and the classifier read. |
+| `REQUEST_MAX_CHARS` | `1,500` | `plugins/claudetto/modules/gate/limits.ts` | The most characters of one message of the user that Jev and the classifier read. |
+| `INPUT_MAX_CHARS` | `4,000` | `plugins/claudetto/modules/gate/limits.ts` | The most characters of the tool input that Jev and the classifier read. |
+| `SETTLED_KEPT` | `64` | `plugins/claudetto/modules/gate/limits.ts` | The most classifier verdicts that wait for `classic.PermissionRequest` of the same call. |
+| `SETTLED_MS` | `30,000` | `plugins/claudetto/modules/gate/limits.ts` | The time for which a classifier verdict answers the same call again. |
 
 ## Hygiene
 
@@ -33,7 +42,7 @@ The shared and repository bounds are on [Bounds](Bounds).
 | --- | --- | --- | --- |
 | `PROBE_MAX_AGE_MIN` | `60` | `plugins/claudetto/modules/session/hygiene/limits.ts` | The age in minutes after which a `fswatch-probe-*` folder is a leftover. |
 | `SWEEP_TIMEOUT_MS` | `60,000` | `plugins/claudetto/modules/session/hygiene/limits.ts` | The most time of the one `find` run that removes the leftover probe folders. |
-| `LEDGER_MAX_FILES` | `200` | `plugins/claudetto/modules/session/hygiene/limits.ts` | The most files in the edit ledger. The oldest entry goes first. |
+| `LEDGER_MAX_FILES` | `2000` | `plugins/claudetto/modules/session/hygiene/limits.ts` | The most lines in the edit ledger of a project, about 0.5 MB of the 4 MiB of the store. The oldest entry goes first. |
 | `LEDGER_WRITE_TRIES` | `5` | `plugins/claudetto/modules/session/hygiene/limits.ts` | The most times that a write of the ledger runs again after another write landed first. |
 | `DEFAULT_CLEANUP_DAYS` | `30` | `plugins/claudetto/modules/session/hygiene/limits.ts` | The age in days over which a session folder is old, when `cleanupPeriodDays` is not set. |
 | `WORKTREES_DIR` | `.claude/worktrees` | `plugins/claudetto/modules/session/hygiene/limits.ts` | The folder of the worktrees of Claude Code, under the project root. |
@@ -52,8 +61,6 @@ The shared and repository bounds are on [Bounds](Bounds).
 | `RUN_TIMEOUT_MS` | `300,000` | `plugins/claudetto/modules/work/finish/limits.ts` | The most time that a `run` check may take. |
 | `GOAL_BLOCKS_MAX` | `5` | `plugins/claudetto/modules/work/finish/limits.ts` | The most re-blocks of the `/goal` stop in a row. Then the stop goes on, with a line to the user. |
 | `GIT_TIMEOUT_MS` | `10,000` | `plugins/claudetto/modules/work/finish/limits.ts` | The most time that the `git status` call of the `Stop` hook may take. |
-| `NOTE_ITEM_CHARS` | `80` | `plugins/claudetto/modules/work/finish/limits.ts` | The most characters of the deferred item in a note. |
-| `NOTE_FILES_MAX` | `5` | `plugins/claudetto/modules/work/finish/limits.ts` | The most file names in the line of a note. |
 
 ## Notes
 
@@ -72,7 +79,11 @@ The shared and repository bounds are on [Bounds](Bounds).
 | --- | --- | --- | --- |
 | `CHARS_PER_TOKEN` | `4` | `plugins/claudetto/modules/session/handoff/limits.ts` | The characters of one token in the estimate of the size of the new context. |
 | `CACHE_TTL_MS` | `3,600,000` | `plugins/claudetto/modules/session/handoff/limits.ts` | The prompt cache TTL of a root session, 1 hour. A handoff after it needs no model call. |
-| `COLD_FILES_MAX` | `20` | `plugins/claudetto/modules/session/handoff/limits.ts` | The most changed files that a cold handoff names. |
+| `RULES_TOKENS` | `2,500` | `plugins/claudetto/modules/session/handoff/limits.ts` | The tokens of the rules in a handoff. Over it, the oldest and the newest rules stay. |
+| `VALUES_TOKENS` | `800` | `plugins/claudetto/modules/session/handoff/limits.ts` | The tokens of the values of the user in a handoff, kept the same way. |
+| `DECISIONS_TOKENS` | `1,000` | `plugins/claudetto/modules/session/handoff/limits.ts` | The tokens of the decisions in a handoff, kept the same way. |
+| `EDITED_TOKENS` | `1,500` | `plugins/claudetto/modules/session/handoff/limits.ts` | The tokens of the edited files in a handoff, kept the same way. |
+| `READS_TOKENS` | `4,500` | `plugins/claudetto/modules/session/handoff/limits.ts` | The tokens of the read files in a handoff, kept the same way. |
 | `COLD_PROMPTS_MAX` | `3` | `plugins/claudetto/modules/session/handoff/limits.ts` | The most user messages that a cold handoff quotes. |
 | `COLD_PROMPT_CHARS_MAX` | `1,500` | `plugins/claudetto/modules/session/handoff/limits.ts` | The most characters of the task and of one quoted user message in a cold handoff. |
 

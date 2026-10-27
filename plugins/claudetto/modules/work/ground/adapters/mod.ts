@@ -70,7 +70,6 @@ export const onPlanCall: GroundHook = async ($, e, next) => {
 			...(m.toolResults ?? []).map((r) => r.text),
 			...m.toolUses.map((u) => u.text ?? ""),
 		].filter((r) => !r.includes(HEAD)),
-		bash: m.toolUses.filter((u) => u.tool === "Bash").length,
 		answers: m.toolUses
 			.filter((u) => u.tool === "AskUserQuestion" && !u.isError)
 			.map((u) => u.text ?? ""),

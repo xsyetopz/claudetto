@@ -1,13 +1,10 @@
-// The boxes of a `tasks.md`, and what the record and `git status` say about the work of the session.
+// The boxes of a `tasks.md`, and what the record says about the work of the session.
 
 import { expect, test } from "bun:test";
 import type { SessionMessage } from "claude-code";
 import {
 	agentBusy,
-	changedPaths,
-	editedPaths,
 	ranApply,
-	uncommitted,
 	unprovenTicks,
 } from "../../../../plugins/claudetto/modules/work/finish/domain/record.ts";
 import { ticked } from "../../../../plugins/claudetto/modules/work/finish/domain/tasks.ts";
@@ -42,29 +39,6 @@ const msg = (...toolUses: ReturnType<typeof use>[]): SessionMessage => {
 	}
 	return message;
 };
-
-test("the edited paths are the successful Edit and Write calls", () => {
-	const messages = [
-		msg(
-			use("Edit", { file_path: "/p/a.ts" }),
-			use("Write", { file_path: "/p/b.ts" }),
-		),
-		msg(
-			use("Edit", { file_path: "/p/c.ts" }, true),
-			use("Read", { file_path: "/p/d.ts" }),
-		),
-	];
-	expect(editedPaths(messages)).toEqual(["/p/a.ts", "/p/b.ts"]);
-});
-
-test("`git status -z` gives the paths, and a rename gives the new path only", () => {
-	expect(changedPaths(" M a.ts\0?? b/c.ts\0R  new.ts\0old.ts\0")).toEqual([
-		"a.ts",
-		"b/c.ts",
-		"new.ts",
-	]);
-	expect(uncommitted(["/p/a.ts", "/p/z.ts"], ["a.ts"])).toEqual(["/p/a.ts"]);
-});
 
 test("a tick by an Edit with no passed check is unproven", () => {
 	const edit = msg(

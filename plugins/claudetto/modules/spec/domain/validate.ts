@@ -1,6 +1,7 @@
 // The checks of `minispec validate`, with the levels, the paths, and the messages of OpenSpec 1.15.0.
 
 import { taskEntries } from "../../project/domain/change.ts";
+import { unfenced } from "./fences.ts";
 import {
 	type Block,
 	type Delta,
@@ -9,7 +10,6 @@ import {
 	requirementText,
 	scenarioList,
 	scenarioLoss,
-	unfenced,
 } from "./markdown.ts";
 import { mergeSpec } from "./merge.ts";
 

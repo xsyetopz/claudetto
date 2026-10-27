@@ -2,32 +2,15 @@
 // Row 0 is the place (folder, git, change), row 1 the session (model, context, cost), row 2 the limits (`5h`, `7d`, spend), and row 3 the cache.
 
 import type { StatusSegment } from "../../kernel/hooks.ts";
-import {
-	HAIKU_HANDOFF_TRIGGER_TOKENS,
-	HANDOFF_TRIGGER_TOKENS,
-} from "../session/limits.ts";
 import { paintOf } from "./color.ts";
-import {
-	clock,
-	type LimitWindow,
-	paceOf,
-	span,
-	thousands,
-	windowText,
-} from "./format.ts";
+import { contextText } from "./context.ts";
+import { clock, type LimitWindow, paceOf, span, thousands } from "./format.ts";
 import { ICON } from "./icons.ts";
-import { FIVE_HOUR_S, SEVEN_DAY_S, TRIGGER_WARN_FRACTION } from "./limits.ts";
-import { parseModel } from "./model.ts";
+import { FIVE_HOUR_S, SEVEN_DAY_S } from "./limits.ts";
+import { errorMark, isNumber, type Paint, type Text } from "./marks.ts";
 import type { Change, Limits, Status } from "./types.ts";
-import { windowInEffect } from "./window.ts";
-
-type Paint = Status["paint"];
-type Text = string | undefined;
 
 const PLAIN = paintOf(false);
-
-const isNumber = (value: unknown): value is number =>
-	typeof value === "number" && Number.isFinite(value);
 
 const isStatus = (v: unknown): v is Status =>
 	typeof v === "object" && v !== null && "input" in v && "paint" in v;
@@ -41,10 +24,6 @@ const segment = (
 	row,
 	render: (raw) => (isStatus(raw) ? text(raw) || null : null),
 });
-
-/** The mark of a field with a wrong type, after `icon` when there is one. */
-const errorMark = (paint: Paint, icon = ""): string =>
-	paint.limit(`${icon} ${ICON.error}`.trim());
 
 /** `⇄ #12 approved`, in the color of the review state. */
 const prText = ({ input, paint }: Status): Text => {
@@ -95,93 +74,12 @@ const changeText = (change: Change, paint: Paint, compact: boolean): string => {
 	}
 };
 
-/** The tokens in the window: the input, cache creation, and cache read tokens of `current_usage` (what `used_percentage` counts). Without them, the tokens that `used_percentage` is of `size`. */
-const tokensInUse = (
-	window: NonNullable<Status["input"]["context_window"]>,
-	size: number | undefined,
-): number | undefined => {
-	const usage = window.current_usage;
-	const counts = usage
-		? [
-				usage.input_tokens,
-				usage.cache_creation_input_tokens,
-				usage.cache_read_input_tokens,
-			].filter(isNumber)
-		: [];
-	if (counts.length > 0) {
-		return total(counts);
-	}
-	const used = window.used_percentage;
-	return isNumber(used) && size !== undefined ? (used / 100) * size : undefined;
-};
-
-const total = (counts: number[]): number => {
-	let sum = 0;
-	for (const n of counts) {
-		sum += n;
-	}
-	return sum;
-};
-
-/** The style of the handoff mark for `left` tokens of `trigger`: ok while far, limit at or past the trigger, else warn. */
-const handoffStyle = (paint: Paint, left: number, trigger: number) => {
-	if (left > trigger * TRIGGER_WARN_FRACTION) {
-		return paint.ok;
-	}
-	return left <= 0 ? paint.limit : paint.warn;
-};
-
 /** The reserve or deficit of a window, or `""` with none. */
 const arrowText = (paint: Paint, delta: number): string => {
 	if (delta < 0) {
 		return paint.ok(`${ICON.reserve}${-delta}%`);
 	}
 	return delta > 0 ? paint.warn(`${ICON.deficit}${delta}%`) : "";
-};
-
-/** ` ⇥47%`: the part of the handoff trigger that is left, or `""` without tokens. The trigger cannot be past the window. */
-const handoffText = (
-	{ input, paint, compaction }: Status,
-	size: number | undefined,
-	tokens: number | undefined,
-): string => {
-	if (tokens === undefined) {
-		return "";
-	}
-	const family = parseModel(input.model?.id)?.family;
-	const model =
-		family === "haiku" ? HAIKU_HANDOFF_TRIGGER_TOKENS : HANDOFF_TRIGGER_TOKENS;
-	const trigger = size === undefined ? model : Math.min(model, size);
-	const left = trigger - tokens;
-	const style = handoffStyle(paint, left, trigger);
-	const mark = compaction ? ICON.compaction : ICON.handoff;
-	return ` ${style(`${mark}${left <= 0 ? "now" : `${Math.round((left / trigger) * 100)}%`}`)}`;
-};
-
-/** `▤ ctx 40% of 300k ⇥45%`: the window in effect, the percent of it with the usage gradient, and the part of the handoff trigger that is left (the compaction threshold with `built-in`). The trigger cannot be past the window. */
-const contextText = (status: Status): Text => {
-	const { input, paint, windows } = status;
-	const window = input.context_window;
-	const used = window?.used_percentage ?? undefined;
-	if (!window || used === undefined) {
-		return undefined;
-	}
-	if (!isNumber(used)) {
-		return errorMark(paint, ICON.context);
-	}
-	const size = windowInEffect(
-		windows,
-		input.model?.id,
-		window.context_window_size,
-	);
-	const tokens = tokensInUse(window, window.context_window_size);
-	const percent =
-		tokens !== undefined && size !== undefined
-			? Math.min(100, Math.round((tokens / size) * 100))
-			: Math.round(used);
-	const of = size === undefined ? "" : ` of ${windowText(size)}`;
-	const distance = handoffText(status, size, tokens);
-	return `${paint.dim(`${ICON.context} ctx`)} ${paint.level(percent)(`${percent}%`)}${of}${distance}`;
 };
 
 /** `⌁ 4m12s/5m 91%`: the time to `expires_at`, the real `ttl`, and the `hit_ratio`. Cold gives `⌁ cold +120k` (the tokens to cache again). No segment when `caching_observed` is `false`. */

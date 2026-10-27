@@ -71,7 +71,7 @@ The core plugin has these modules:
 | `project` | The facts of the work tree and the transcript: the root, the tasks of a change, the edits of the user, `git status`, the temp folders, and the running agents | [Spec](Spec) |
 | `jev` | Gives Jev answers for `AskUserQuestion`, and holds the TypeSafe calls | [Decide](Decide) |
 | `session` | The handoff, the prompt texts, the cleanup at session start, the edit ledger, and the usage line | [Handoff](Handoff), [Prompt](Prompt), [Session Hygiene](Hygiene) |
-| `work` | The `/goal` check, the `Stop` hook, the `box` hook, the ground check of plan files, and the notes above the prompt | [Finish](Finish), [Ground](Ground), [Notes](Notes) |
+| `work` | The `/goal` check, the `Stop` hook, the `box` hook, the ground check of plan files, the check of the opening of a reply, and the notes above the prompt | [Finish](Finish), [Ground](Ground), [Notes](Notes), [Reply](Reply) |
 | `gate` | The permission gate and the `Monitor` checks | [Guard](Guard) |
 | `agents` | Offers the roster of six subagents and hides the built-in agents | [Agents](Agents) |
 | `statusline` | The status line | [Status Line](Status-Line) |
@@ -99,7 +99,6 @@ Each `$.state` value of the hooks module has one owner module, which lists it in
 | Value | Owner | What it holds |
 | --- | --- | --- |
 | `watches` | `gate` | The running `Monitor` tasks by command, so a second `Monitor` with the same command is refused. |
-| `told` | `session` | The hash for which the session got a ledger line already, by path. |
 | `usage` | `session` | The last band and the first share of each usage window, and the usage line that waits for the next request. |
 | `calls` | `session` | The count of the tool calls of each running subagent by `agent_id`, for the soft turn limit. |
 | `goalBlocks` | `work` | The count of the stops in a row that the `/goal` check blocked. |

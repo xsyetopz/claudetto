@@ -17,7 +17,7 @@ const facts = (isThere: boolean): Facts => ({
 	home: "/u",
 	tmp: "/t",
 	temps: ["/t", "/tmp", "/private/tmp"],
-	hasEnvFile: async () => isThere,
+	hasEnvFile: async () => (isThere ? [".env"] : []),
 	userEdits: async () => [],
 	git: async () => "clean",
 });
