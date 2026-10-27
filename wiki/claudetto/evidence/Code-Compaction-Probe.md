@@ -6,7 +6,7 @@ This page holds the results of the probe of change `code-compaction` (task 3.2).
 The probe compares 3 arms on `claude-sonnet-5-5`: B is the built-in `/compact`, C is code compaction, and H is the handover.
 Each arm runs 3 forks at 2 sizes, so a round has 18 forks.
 The tool is `dev/probe/main.ts`, and the bars are in `dev/probe/bar.ts`.
-Round 1 and round 2 ran on 2026-10-26 on Claude Code `2.1.310`.
+Round 1 and round 2 ran on 2026-10-26 on Claude Code `2.1.310`, and round 3 ran on 2026-10-27 on Claude Code `2.1.311`.
 
 ## Round 1
 
@@ -92,7 +92,7 @@ No arm broke a planted constraint, redid a finished task, or did the next task w
 At 80k the first fork of C still paid a cache write of 178,464 tokens (cost 0.939), and the other 2 forks read it (cost 0.255 and 0.259).
 So the first request after the code compaction still carries most of the history before the boundary, through a path that the stub test does not cover.
 
-## Next Step
+## Fix after Round 2
 
 The chain of the first fork of C at 80k reaches the boundary with no link before it, so the leak takes another path.
 After the walk of the chain, the loader of Claude Code `2.1.310` adds back the parallel tool calls of each assistant row: each row of the file with the same `message.id`, and its tool results, also from before the boundary.
@@ -102,4 +102,39 @@ The fix drops `handle` also from the run of tool messages at the start of the ta
 These rows lose their thinking blocks.
 The test "Parallel Calls Split By The Boundary Do Not Pull Back Their Siblings" in `tests/claudetto/session/handoff/stub-compact.test.ts` fails before the fix and passes after it.
 The probe now builds each base with `DISABLE_AUTO_COMPACT=1`, and it stops before any fork when a base is below its size.
-Round 3 runs only after the user approves its cost.
+
+## Round 3
+
+Round 3 ran on 2026-10-27 on Claude Code `2.1.311`, with both fixes above.
+All 18 forks were valid, and they cost 2.962 in the units of `total_cost_usd`.
+The verdict of `bar.ts` was "No winner", with these misses of C:
+
+- 80k: C reads more files again, C costs no less, and C writes more cache after the compaction.
+- 200k: C reads more files again, and C reads a lower share of cache in follow-up 2.
+
+The base sessions had a context of 182,216 tokens (size `80k`) and 436,223 tokens (size `200k`), so both bases were valid.
+
+| Arm | Size | Cost | Compaction cost | Compaction ms | Context after | First cache write | Rereads | Share 1 | Share 2 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| B | 80k | 0.155 | 0.053 | 21,880 | 4,194 | 7,351 | 0.33 | 0.867 | 0.962 |
+| C | 80k | 0.193 | 0 | 57 | 15,415 | 7,752 | 0.67 | 0.967 | 0.982 |
+| H | 80k | 0.151 | 0.108 | 20,540 | 13,429 | 5,685 | 3 | 0.977 | Not measured |
+| B | 200k | 0.174 | 0.081 | 29,711 | 4,388 | 7,646 | 0.33 | 0.848 | 0.959 |
+| C | 200k | 0.152 | 0 | 57 | 16,956 | 7,357 | 0.67 | 0.900 | 0.957 |
+| H | 200k | 0.163 | 0.106 | 11,624 | 13,830 | 6,086 | 4 | 0.979 | Not measured |
+
+No arm broke a planted constraint, redid a finished task, or did the next task within the 2 follow-ups.
+
+The history before the boundary no longer leaks.
+At 80k the first fork of C wrote 23,255 tokens of cache, against 178,464 in round 2, and the mean cost of C fell from 0.485 to 0.193.
+The other 2 forks read that cache (cost 0.171 and 0.161), so their first cache write was 0.
+At 200k C costs less than B (0.152 against 0.174).
+
+The misses that remain are small:
+
+- Rereads: 2 rereads in 3 forks for C at each size, against 1 for B.
+- Cost at 80k: C keeps the newest messages as they are, so its context after the compaction is 15,415 tokens, against 4,194 for the summary of B, and each follow-up turn pays for the larger context.
+- Cache: the first cache write of C at 80k is 401 tokens more than that of B, and the share of follow-up 2 at 200k is 0.002 lower.
+
+With 3 forks for each arm, a gap of 1 reread or of 0.002 in a share is within the spread between forks.
+The `compaction` value `code` stays experimental, and `auto` does not pick it.
