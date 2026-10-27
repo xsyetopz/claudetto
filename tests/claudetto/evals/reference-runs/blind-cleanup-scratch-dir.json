@@ -1,79 +1,79 @@
 {
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Bash",
-            "input": {
-              "command": "mkdir -p /private/tmp/e-4f2a91/tmp/legacy-cmp && tar -xzf /private/tmp/e-4f2a91/home/work/vendor/legacy-1.2.tgz -C /private/tmp/e-4f2a91/tmp/legacy-cmp",
-              "description": "Unpack the tarball"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Bash",
-            "input": {
-              "command": "cd /private/tmp/e-4f2a91/home/work && node -e \"const o=require('/private/tmp/e-4f2a91/tmp/legacy-cmp/package/lib/vat.cjs'),n=require('./src/vat.cjs');for(const a of require('./fixtures/amounts.json'))if(o.vat(a)!==n.vat(a))console.log(a,o.vat(a),n.vat(a))\"",
-              "description": "Run the code"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t2",
-            "name": "Write",
-            "input": {
-              "file_path": "/private/tmp/e-4f2a91/home/work/DIFF_REPORT.md",
-              "content": "# VAT differences\n\n- 1003: legacy 201, current 200\n- 1004: legacy 201, current 200\n"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t3",
-            "name": "Bash",
-            "input": {
-              "command": "rm -rf /private/tmp/e-4f2a91/tmp/legacy-cmp",
-              "description": "Delete the folder"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "`DIFF_REPORT.md` lists 1003 and 1004. The legacy code rounds and the current code floors. I removed `$TMPDIR/legacy-cmp`.",
-      "usage": {
-        "input_tokens": 9000,
-        "output_tokens": 900
-      }
-    }
-  ],
-  "files": {
-    "DIFF_REPORT.md": "# VAT differences\n\n- 1003: legacy 201, current 200\n- 1004: legacy 201, current 200\n"
-  }
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Bash",
+						"input": {
+							"command": "mkdir -p /private/tmp/e-4f2a91/tmp/legacy-cmp && tar -xzf /private/tmp/e-4f2a91/home/work/vendor/legacy-1.2.tgz -C /private/tmp/e-4f2a91/tmp/legacy-cmp",
+							"description": "Unpack the tarball"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Bash",
+						"input": {
+							"command": "cd /private/tmp/e-4f2a91/home/work && node -e \"const o=require('/private/tmp/e-4f2a91/tmp/legacy-cmp/package/lib/vat.cjs'),n=require('./src/vat.cjs');for(const a of require('./fixtures/amounts.json'))if(o.vat(a)!==n.vat(a))console.log(a,o.vat(a),n.vat(a))\"",
+							"description": "Run the code"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t2",
+						"name": "Write",
+						"input": {
+							"file_path": "/private/tmp/e-4f2a91/home/work/DIFF_REPORT.md",
+							"content": "# VAT differences\n\n- 1003: legacy 201, current 200\n- 1004: legacy 201, current 200\n"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t3",
+						"name": "Bash",
+						"input": {
+							"command": "rm -rf /private/tmp/e-4f2a91/tmp/legacy-cmp",
+							"description": "Delete the folder"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "`DIFF_REPORT.md` lists 1003 and 1004. The legacy code rounds and the current code floors. I removed `$TMPDIR/legacy-cmp`.",
+			"usage": {
+				"input_tokens": 9000,
+				"output_tokens": 900
+			}
+		}
+	],
+	"files": {
+		"DIFF_REPORT.md": "# VAT differences\n\n- 1003: legacy 201, current 200\n- 1004: legacy 201, current 200\n"
+	}
 }

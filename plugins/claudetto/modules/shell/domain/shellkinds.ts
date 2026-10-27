@@ -7,7 +7,7 @@ import { baseName, stripWrappers } from "./wrappers.ts";
 export const wordSet = (words: string) => new Set(words.split(" "));
 
 export const RESERVED = wordSet(
-  "{ } ! if then else elif fi while until do done",
+	"{ } ! if then else elif fi while until do done",
 );
 
 const SHELLS = /^(?:ba|z|da|k)?sh$/;
@@ -19,45 +19,54 @@ const FEEDS = new Set([...wordSet("done read mapfile readarray"), ...XARGS]);
 
 /** The commands that only read their input and arguments as data. Any other program can run code from them. */
 const DATA = wordSet(
-  "cat tee echo printf git gh grep egrep fgrep rg ag jq yq head tail wc sort uniq cut tr diff cmp base64 pbcopy less column ls mkdir cd export test [ true false :",
+	"cat tee echo printf git gh grep egrep fgrep rg ag jq yq head tail wc sort uniq cut tr diff cmp base64 pbcopy less column ls mkdir cd export test [ true false :",
 );
 
 const SCRIPT_FLAG = /^-[A-Za-z]*c[A-Za-z]*$/;
 
 /** The name of the command of `argv` after the wrappers. */
 export const nameOf = (argv: string[]): string =>
-  baseName(stripWrappers(argv)[0] ?? "");
+	baseName(stripWrappers(argv)[0] ?? "");
 
 /** The words of `args` that are not options, with each word after `--`, and with the value of each option in `valueOpts` left out. */
 export const operands = (
-  args: string[],
-  valueOpts = new Set<string>(),
+	args: string[],
+	valueOpts = new Set<string>(),
 ): string[] => {
-  const out: string[] = [];
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i] as string;
-    if (arg === "--") return [...out, ...args.slice(i + 1)];
-    if (!arg.startsWith("-")) out.push(arg);
-    else if (valueOpts.has(arg)) i++;
-  }
-  return out;
+	const out: string[] = [];
+	for (let i = 0; i < args.length; i++) {
+		const arg = args[i] ?? "";
+		if (arg === "--") {
+			return [...out, ...args.slice(i + 1)];
+		}
+		if (!arg.startsWith("-")) {
+			out.push(arg);
+		} else if (valueOpts.has(arg)) {
+			i++;
+		}
+	}
+	return out;
 };
 
 /** True when `argv` is a shell with no `-c` script, so it reads a script from its standard input. */
 export const readsScript = (argv: string[]): boolean =>
-  SHELLS.test(nameOf(argv)) &&
-  !stripWrappers(argv)
-    .slice(1)
-    .some((a) => SCRIPT_FLAG.test(a));
+	SHELLS.test(nameOf(argv)) &&
+	!stripWrappers(argv)
+		.slice(1)
+		.some((a) => SCRIPT_FLAG.test(a));
 
 /** The script text that `argv` runs through `sh -c`, `bash -c`, or `eval`, or undefined. */
 export const scriptOf = (argv: string[]): string | undefined => {
-  const name = nameOf(argv);
-  const args = stripWrappers(argv).slice(1);
-  if (name === "eval") return args.join(" ");
-  const at = args.findIndex((a) => SCRIPT_FLAG.test(a));
-  if (!SHELLS.test(name) || at < 0) return undefined;
-  return args[args[at + 1] === "--" ? at + 2 : at + 1];
+	const name = nameOf(argv);
+	const args = stripWrappers(argv).slice(1);
+	if (name === "eval") {
+		return args.join(" ");
+	}
+	const at = args.findIndex((a) => SCRIPT_FLAG.test(a));
+	if (!SHELLS.test(name) || at < 0) {
+		return undefined;
+	}
+	return args[args[at + 1] === "--" ? at + 2 : at + 1];
 };
 
 /**
@@ -65,15 +74,15 @@ export const scriptOf = (argv: string[]): string | undefined => {
  * A shell, `eval`, a loop, a data command, and a command in a variable are read in other ways.
  */
 export const runsCode = (argv: string[]): boolean => {
-  const name = nameOf(argv);
-  return !(
-    ["", "eval", "source", "."].includes(name) ||
-    name.startsWith("$") ||
-    SHELLS.test(name) ||
-    FEEDS.has(name) ||
-    DATA.has(name) ||
-    RESERVED.has(name)
-  );
+	const name = nameOf(argv);
+	return !(
+		["", "eval", "source", "."].includes(name) ||
+		name.startsWith("$") ||
+		SHELLS.test(name) ||
+		FEEDS.has(name) ||
+		DATA.has(name) ||
+		RESERVED.has(name)
+	);
 };
 
 /**
@@ -82,17 +91,20 @@ export const runsCode = (argv: string[]): boolean => {
  * `"code"` for a program that can run it as code, and `"data"` for a command that only reads it.
  */
 export const bodyKind = (
-  head: string[],
+	head: string[],
 ): "script" | "feed" | "code" | "data" => {
-  if (readsScript(head)) return "script";
-  const name = nameOf(head);
-  if (
-    FEEDS.has(name) ||
-    SHELLS.test(name) ||
-    head.some((w) => FEEDS.has(baseName(w)))
-  )
-    return "feed";
-  return runsCode(head) ? "code" : "data";
+	if (readsScript(head)) {
+		return "script";
+	}
+	const name = nameOf(head);
+	if (
+		FEEDS.has(name) ||
+		SHELLS.test(name) ||
+		head.some((w) => FEEDS.has(baseName(w)))
+	) {
+		return "feed";
+	}
+	return runsCode(head) ? "code" : "data";
 };
 
 /**
@@ -102,16 +114,17 @@ export const bodyKind = (
  * 0 for none.
  */
 export const hiddenLevel = (
-  argv: string[],
-  script: string | undefined,
+	argv: string[],
+	script: string | undefined,
 ): number => {
-  const first = stripWrappers(argv)[0];
-  const name = nameOf(argv);
-  if (readsScript(argv) || name === "source" || name === "." || script === "")
-    return 2;
-  // `xargs -I{} sh -c '{}'` puts each line of its input into the script.
-  const fed = script !== undefined && argv.some((w) => XARGS.has(baseName(w)));
-  return fed || script?.includes("$") || first === "" || name.startsWith("$")
-    ? 1
-    : 0;
+	const first = stripWrappers(argv)[0];
+	const name = nameOf(argv);
+	if (readsScript(argv) || name === "source" || name === "." || script === "") {
+		return 2;
+	}
+	// `xargs -I{} sh -c '{}'` puts each line of its input into the script.
+	const fed = script !== undefined && argv.some((w) => XARGS.has(baseName(w)));
+	return fed || script?.includes("$") || first === "" || name.startsWith("$")
+		? 1
+		: 0;
 };

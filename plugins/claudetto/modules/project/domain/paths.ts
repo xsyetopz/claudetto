@@ -1,8 +1,8 @@
-// The paths of the files that claudetto reads (`.claude/`) or writes (`.claudetto/`). No import.
+// The paths of the files that claudetto reads (`.claude/`) or writes (`.claude/claudetto/`). No import.
 
 export const CLAUDE_DIR = ".claude";
 
-const CLAUDETTO_DIR = ".claudetto";
+export const CLAUDETTO_DIR = `${CLAUDE_DIR}/claudetto`;
 
 /** The state file of Claude Code, in `CLAUDE_CONFIG_DIR` or in the home folder. */
 export const CLAUDE_STATE_FILE = ".claude.json";

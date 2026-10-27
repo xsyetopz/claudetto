@@ -81,14 +81,14 @@ test("the shipped schema has nested keys, and marks the managed-only keys", asyn
 });
 
 test("a bundle whose `--version` exits non-zero fails the command and writes no file", async () => {
-  const dir = tmpDir("schema-test");
+  const dir = await tmpDir("schema-test");
   try {
     // The file is a shell script, so `--version` exits 3, and it holds the schema, so the build alone would pass.
     const bundle = path.join(dir, "bundle");
     const out = path.join(dir, "out");
     await Bun.write(bundle, `#!/bin/sh\n# ${FIXTURE}\nexit 3\n`);
     fs.chmodSync(bundle, 0o755);
-    const run = spawnText(process.execPath, [
+    const run = await spawnText(process.execPath, [
       path.join(REPO, "dev/schema/main.ts"),
       "--bundle",
       bundle,

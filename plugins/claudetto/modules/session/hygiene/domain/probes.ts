@@ -4,14 +4,16 @@
 
 import { PROBE_MAX_AGE_MIN } from "../limits.ts";
 
+const TRAILING_SLASHES = /\/+$/;
+
 /** The argv that removes each probe folder older than `PROBE_MAX_AGE_MIN` under `base`, and prints each one. */
 export const sweepArgv = (base: string): string[] => [
-  "sh",
-  "-c",
-  `exec find "$1/claude-$(id -u)" -maxdepth 1 -type d -name 'fswatch-probe-*' -mmin +${PROBE_MAX_AGE_MIN} -print -exec rm -rf {} +`,
-  "sh",
-  base.replace(/\/+$/, "") || "/",
+	"sh",
+	"-c",
+	`exec find "$1/claude-$(id -u)" -maxdepth 1 -type d -name 'fswatch-probe-*' -mmin +${PROBE_MAX_AGE_MIN} -print -exec rm -rf {} +`,
+	"sh",
+	base.replace(TRAILING_SLASHES, "") || "/",
 ];
 
 export const removedCount = (stdout: string): number =>
-  stdout.split("\n").filter(Boolean).length;
+	stdout.split("\n").filter(Boolean).length;

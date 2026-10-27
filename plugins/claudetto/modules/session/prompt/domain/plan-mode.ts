@@ -11,15 +11,17 @@ export const REWRITTEN_ATTACHMENTS = ["plan_mode"] as const;
 
 /** The plan file path between the phrases of the 2.1.309 engine text (`chunk-kang00hq.js`, offset 5085584), which can hold spaces. */
 const PLAN_FILE =
-  /(?:already exists at|create your plan at) (.+?)(?:\. You can| using )/;
+	/(?:already exists at|create your plan at) (.+?)(?:\. You can| using )/;
+
+const PLAN_FILE_EXISTS = /plan file already exists/;
 
 /** The plan mode text for the engine text `text`, or `text` when ours is not shorter, such as a short reminder of a plan mode that is already active. */
 export const planModeText = (text: string): string => {
-  const file = PLAN_FILE.exec(text)?.[1] ?? "the plan file";
-  const ours = PLAN_MODE({
-    file,
-    exists: /plan file already exists/.test(text),
-    scout: SCOUT_AGENT,
-  });
-  return ours.length < text.length ? ours : text;
+	const file = PLAN_FILE.exec(text)?.[1] ?? "the plan file";
+	const ours = PLAN_MODE({
+		file,
+		exists: PLAN_FILE_EXISTS.test(text),
+		scout: SCOUT_AGENT,
+	});
+	return ours.length < text.length ? ours : text;
 };

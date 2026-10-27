@@ -6,9 +6,9 @@ export const SHELL_BLOCK = "shell";
 
 /** The shell facts for the `uname -s` value `platform` and the `SHELL` path `shell`, or `""` when none applies. */
 export const shellFacts = (platform: string, shell: string): string =>
-  [
-    platform.trim().toLowerCase() === "darwin" ? SHELL_MACOS : "",
-    shell.endsWith("/zsh") ? SHELL_ZSH : "",
-  ]
-    .filter(Boolean)
-    .join("\n");
+	[
+		platform.trim().toLowerCase() === "darwin" ? SHELL_MACOS : "",
+		shell.endsWith("/zsh") ? SHELL_ZSH : "",
+	]
+		.filter(Boolean)
+		.join("\n");

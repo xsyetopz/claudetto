@@ -1,8 +1,8 @@
 import {
-  AUTOCOMPACT_PCT,
-  CONTEXT_WINDOW,
-  HAIKU_AUTOCOMPACT_WINDOW,
-} from "../session/index.ts";
+	AUTOCOMPACT_PCT,
+	CONTEXT_WINDOW,
+	HAIKU_AUTOCOMPACT_WINDOW,
+} from "../session/limits.ts";
 import { MCP_DESCRIPTION_MAX_CHARS } from "./limits.ts";
 
 const ALIAS = `alias claude-demo='IS_DEMO=1 claude'`;
@@ -48,20 +48,20 @@ wrote=Wrote {file}. Restart Claude Code for the env and model settings to take e
 `;
 
 const MESSAGES = new Map(
-  TEXT.trim()
-    .split("\n")
-    .map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1)]),
+	TEXT.trim()
+		.split("\n")
+		.map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1)]),
 );
 
 /** The message `key`, with each `{name}` replaced by its value in `v`. */
 export const t = (key: string, v: Record<string, string | number> = {}) =>
-  (MESSAGES.get(key) ?? key).replace(/\{(\w+)\}/g, (_, k) => String(v[k]));
+	(MESSAGES.get(key) ?? key).replace(/\{(\w+)\}/g, (_, k) => String(v[k]));
 
 export const LOCAL_NOTES_TEMPLATE = `# CLAUDE.local.md
 <!-- Notes for this project that only you read. Git ignores this file. -->
 `;
 
-/** `rules/claudetto-tests.md` of the config folder: the rule of `.claude/rules/test-behavior.md` for the test files of each project. */
+/** `rules/claudetto-tests.md` of the config folder: the rule of `.claude/rules/tests.md` for the test files of each project. */
 export const TESTS_RULE_TEMPLATE = `---
 paths:
   - "**/*.test.*"
@@ -77,51 +77,53 @@ Delete each test that checks the prose of the implementation, such as the wordin
 Write a behavior test in the Arrange-Act-Assert order where it fits: set up the input, make one call, then check the result.
 `;
 
-const list = (text: string, by: string | RegExp = /\s+/) =>
-  text
-    .split(by)
-    .map((s) => s.trim())
-    .filter(Boolean);
+const WHITESPACE = /\s+/;
+
+const list = (text: string, by: string | RegExp = WHITESPACE) =>
+	text
+		.split(by)
+		.map((s) => s.trim())
+		.filter(Boolean);
 
 /** The status line command picks the newest installed folder of the plugin, so an update of the plugin needs no second setup. */
 const STATUSLINE_COMMAND = `bun --no-env-file "$(ls -d "\${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/plugins/cache/claudetto/claudetto/*/ | sort -V | tail -1)bin/claudetto-statusline"`;
 
 export const SNIPPET = {
-  $schema:
-    "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-settings.json",
-  syncClaudeAiSkills: false,
-  syncClaudeAiPlugins: false,
-  env: {
-    ENABLE_CLAUDEAI_MCP_SERVERS: "false",
-    CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH: String(MCP_DESCRIPTION_MAX_CHARS),
-    CLAUDE_CODE_DISABLE_FAST_MODE: "1",
-    CLAUDE_CODE_PROMPT_CACHE_TTL: "1h",
-    CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: String(AUTOCOMPACT_PCT),
-    CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS: "1",
-    CLAUDE_CODE_TOTAL_TOKENS_REMINDER: "off",
-    CLAUDE_CODE_BASH_OUTPUT_AUDIENCE_NOTE: "0",
-    CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1",
-    CLAUDE_CODE_AUTO_CONNECT_IDE: "false",
-    CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY: "1",
-    CLAUDE_CODE_DISABLE_TERMINAL_TITLE: "1",
-    CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL: "1",
-    CLAUDE_CODE_SILENT_TURN_REMINDER: "0",
-    DISABLE_ERROR_REPORTING: "1",
-    CLAUDE_CODE_DISABLE_CFC_PROMPT: "1",
-    CLAUDE_CODE_DISABLE_CRON: "1",
-    CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS: "1",
-    CLAUDE_CODE_FORK_SUBAGENT: "0",
-    CLAUDE_CODE_MEMORY_SUBAGENT_APPEND: "1",
-    CLAUDE_CODE_PLAN_V2_AGENT_COUNT: "1",
-    CLAUDE_CODE_PLAN_V2_EXPLORE_AGENT_COUNT: "1",
-    CLAUDE_CODE_TODO_REMINDER_MODE: "off",
-    DISABLE_EXTRA_USAGE_COMMAND: "1",
-    DISABLE_FEEDBACK_COMMAND: "1",
-    DISABLE_INSTALL_GITHUB_APP_COMMAND: "1",
-  },
-  permissions: {
-    deny: list(
-      `Read(**/.env) | Read(**/.env.local) | Read(**/.env.production) | Read(**/.env.*.local) | Read(**/.env.development) | Read(**/.env.dev)
+	$schema:
+		"https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-settings.json",
+	syncClaudeAiSkills: false,
+	syncClaudeAiPlugins: false,
+	env: {
+		ENABLE_CLAUDEAI_MCP_SERVERS: "false",
+		CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH: String(MCP_DESCRIPTION_MAX_CHARS),
+		CLAUDE_CODE_DISABLE_FAST_MODE: "1",
+		CLAUDE_CODE_PROMPT_CACHE_TTL: "1h",
+		CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: String(AUTOCOMPACT_PCT),
+		CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS: "1",
+		CLAUDE_CODE_TOTAL_TOKENS_REMINDER: "off",
+		CLAUDE_CODE_BASH_OUTPUT_AUDIENCE_NOTE: "0",
+		CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1",
+		CLAUDE_CODE_AUTO_CONNECT_IDE: "false",
+		CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY: "1",
+		CLAUDE_CODE_DISABLE_TERMINAL_TITLE: "1",
+		CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL: "1",
+		CLAUDE_CODE_SILENT_TURN_REMINDER: "0",
+		DISABLE_ERROR_REPORTING: "1",
+		CLAUDE_CODE_DISABLE_CFC_PROMPT: "1",
+		CLAUDE_CODE_DISABLE_CRON: "1",
+		CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS: "1",
+		CLAUDE_CODE_FORK_SUBAGENT: "0",
+		CLAUDE_CODE_MEMORY_SUBAGENT_APPEND: "1",
+		CLAUDE_CODE_PLAN_V2_AGENT_COUNT: "1",
+		CLAUDE_CODE_PLAN_V2_EXPLORE_AGENT_COUNT: "1",
+		CLAUDE_CODE_TODO_REMINDER_MODE: "off",
+		DISABLE_EXTRA_USAGE_COMMAND: "1",
+		DISABLE_FEEDBACK_COMMAND: "1",
+		DISABLE_INSTALL_GITHUB_APP_COMMAND: "1",
+	},
+	permissions: {
+		deny: list(
+			`Read(**/.env) | Read(**/.env.local) | Read(**/.env.production) | Read(**/.env.*.local) | Read(**/.env.development) | Read(**/.env.dev)
       | Read(**/.env.staging) | Read(**/.env.stage) | Read(**/.env.test) | Read(**/.env.prod) | Read(**/.env.qa) | Read(**/.env.preview)
       | Read(~/.ssh/**) | Read(~/.aws/credentials) | Read(~/.gnupg/**) | Read(~/.netrc) | Read(~/.docker/config.json)
       | Bash(rm -rf /) | Bash(rm -rf ~) | Bash(mkfs *) | Bash(mkfs.*) | Bash(dd * of=/dev/*) | Bash(rm -rf ~/) | Bash(rm -rf $HOME) | Bash(rm -rf "$HOME")
@@ -132,53 +134,53 @@ export const SNIPPET = {
       | Agent(general-purpose) | Agent(Explore) | Agent(Plan) | Agent(claude) | Agent(claude-code-guide) | Agent(statusline-setup) | Agent(fork)
       | mcp__computer-use | ScheduleWakeup | ReportFindings | EnterPlanMode | ExitPlanMode | Workflow | Artifact | DesignSync | RemoteTrigger
       | TaskCreate | TaskGet | TaskList | TaskUpdate`,
-      "|",
-    ),
-    defaultMode: "default",
-    disableAutoMode: "disable",
-  },
-  model: "opusplan",
-  disableClaudeAiConnectors: true,
-  skillOverrides: { "plugin-authoring": "name-only" },
-  disableBundledSkills: true,
-  worktree: { baseRef: "head" },
-  disableAgentView: true,
-  disableRemoteControl: true,
-  enableArtifact: false,
-  enableWorkflows: false,
-  statusLine: {
-    type: "command",
-    command: STATUSLINE_COMMAND,
-    padding: 0,
-    refreshInterval: 5,
-    hideVimModeIndicator: true,
-  },
-  subagentStatusLine: {
-    type: "command",
-    command: `${STATUSLINE_COMMAND} --subagent`,
-  },
-  enabledPlugins: Object.fromEntries(
-    list(
-      "agents-md claude-test diff easel mermaid mods-guide plugin-authoring responsive-mode telemetry tips you-should-know",
-    ).map((name) => [`cc-plugin-${name}@builtin`, false]),
-  ),
-  outputStyle: "claudetto:Concise",
-  feedbackDrafts: "off",
-  spinnerTipsEnabled: false,
-  modelSettings: {
-    "claude-opus-5-5": { maxEffortLevel: "high" },
-    "claude-sonnet-5-5": { maxEffortLevel: "medium" },
-    "claude-haiku-5-5": { autoCompactWindow: HAIKU_AUTOCOMPACT_WINDOW },
-  },
-  autoCompactWindow: CONTEXT_WINDOW,
-  promptSuggestionEnabled: false,
-  awaySummaryEnabled: false,
-  showClearContextOnPlanAccept: true,
-  modelProposedGoals: "disabled",
-  autoMemoryEnabled: false,
-  autoDreamEnabled: false,
-  idleCompaction: false,
-  useAutoModeDuringPlan: false,
+			"|",
+		),
+		defaultMode: "default",
+		disableAutoMode: "disable",
+	},
+	model: "opusplan",
+	disableClaudeAiConnectors: true,
+	skillOverrides: { "plugin-authoring": "name-only" },
+	disableBundledSkills: true,
+	worktree: { baseRef: "head" },
+	disableAgentView: true,
+	disableRemoteControl: true,
+	enableArtifact: false,
+	enableWorkflows: false,
+	statusLine: {
+		type: "command",
+		command: STATUSLINE_COMMAND,
+		padding: 0,
+		refreshInterval: 5,
+		hideVimModeIndicator: true,
+	},
+	subagentStatusLine: {
+		type: "command",
+		command: `${STATUSLINE_COMMAND} --subagent`,
+	},
+	enabledPlugins: Object.fromEntries(
+		list(
+			"agents-md claude-test diff easel mermaid mods-guide plugin-authoring responsive-mode telemetry tips you-should-know",
+		).map((name) => [`cc-plugin-${name}@builtin`, false]),
+	),
+	outputStyle: "claudetto:Concise",
+	feedbackDrafts: "off",
+	spinnerTipsEnabled: false,
+	modelSettings: {
+		"claude-opus-5-5": { maxEffortLevel: "high" },
+		"claude-sonnet-5-5": { maxEffortLevel: "medium" },
+		"claude-haiku-5-5": { autoCompactWindow: HAIKU_AUTOCOMPACT_WINDOW },
+	},
+	autoCompactWindow: CONTEXT_WINDOW,
+	promptSuggestionEnabled: false,
+	awaySummaryEnabled: false,
+	showClearContextOnPlanAccept: true,
+	modelProposedGoals: "disabled",
+	autoMemoryEnabled: false,
+	autoDreamEnabled: false,
+	idleCompaction: false,
+	useAutoModeDuringPlan: false,
 };
 
 /** The deny rules of 0.3.0-alpha.1 that setup removes: with `*`, they also match a delete in the temp folder (spec `setup`, "Old Deny Rules Go"). */

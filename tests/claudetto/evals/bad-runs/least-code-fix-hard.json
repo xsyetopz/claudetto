@@ -1,33 +1,33 @@
 {
-  "fails": "file-stays-19-lines",
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Edit",
-            "input": {
-              "file_path": "/tmp/e-1/src/list.mjs",
-              "old_string": "a",
-              "new_string": "b"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "Done.",
-      "usage": {
-        "input_tokens": 5100,
-        "output_tokens": 600
-      }
-    }
-  ],
-  "files": {
-    "src/list.mjs": "// Helpers for lists of items.\nexport const first = (items) => items[0];\n\nexport const last = (items) => items[items.length - 1];\n\nexport const count = (items, test) => items.filter(test).length;\n\nexport const unique = (items) => [...new Set(items)];\n\nexport const pageCount = (items, size) => Math.ceil(items.length / size);\n\n// Page 1 is the first page.\n// Reject a page below 1 and a size below 1.\nexport const paged = (items, page, size) => {\n  if (!Number.isInteger(page) || page < 1 || size < 1) return [];\n  const start = (page - 1) * size;\n  return items.slice(start, start + size);\n};\n\nexport const sum = (numbers) => numbers.reduce((a, b) => a + b, 0);\n"
-  }
+	"fails": "file-stays-19-lines",
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Edit",
+						"input": {
+							"file_path": "/tmp/e-1/src/list.mjs",
+							"old_string": "a",
+							"new_string": "b"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "Done.",
+			"usage": {
+				"input_tokens": 5100,
+				"output_tokens": 600
+			}
+		}
+	],
+	"files": {
+		"src/list.mjs": "// Helpers for lists of items.\nexport const first = (items) => items[0];\n\nexport const last = (items) => items[items.length - 1];\n\nexport const count = (items, test) => items.filter(test).length;\n\nexport const unique = (items) => [...new Set(items)];\n\nexport const pageCount = (items, size) => Math.ceil(items.length / size);\n\n// Page 1 is the first page.\n// Reject a page below 1 and a size below 1.\nexport const paged = (items, page, size) => {\n  if (!Number.isInteger(page) || page < 1 || size < 1) return [];\n  const start = (page - 1) * size;\n  return items.slice(start, start + size);\n};\n\nexport const sum = (numbers) => numbers.reduce((a, b) => a + b, 0);\n"
+	}
 }

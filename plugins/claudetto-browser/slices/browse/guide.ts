@@ -5,40 +5,50 @@ import { GUIDE_CUT, NO_GUIDE, NOT_INSTALLED } from "./prompts.ts";
 
 /** The command that prints the guide. */
 export const GUIDE_COMMAND: readonly [string, ...string[]] = [
-  "agent-browser",
-  "skills",
-  "get",
-  "core",
+	"agent-browser",
+	"skills",
+	"get",
+	"core",
 ];
 
 /** The result of one run of `GUIDE_COMMAND`. */
 export interface GuideRun {
-  error?: { code?: string; message: string };
-  status: number | null;
-  stdout?: string;
+	error?: { code?: string; message: string };
+	status: number | null;
+	stdout?: string;
 }
 
 /** The text when `agent-browser` runs but gives no guide, for example after a timeout or in an old version. */
 export const noGuide = (why: string): string =>
-  NO_GUIDE({ command: GUIDE_COMMAND.join(" "), why });
+	NO_GUIDE({ command: GUIDE_COMMAND.join(" "), why });
 
 /**
  * The guide text for the skill from one run of `GUIDE_COMMAND`.
  * A missing binary gives `NOT_INSTALLED`, a failed run gives `noGuide`, and a guide over `MAX_GUIDE_CHARS` stops with a notice.
  */
 export const guideText = (run: GuideRun, max = MAX_GUIDE_CHARS): string => {
-  if (run.error?.code === "ENOENT") return NOT_INSTALLED;
-  if (run.error) return noGuide(run.error.code ?? run.error.message);
-  if (run.status !== 0) return noGuide(`exit code ${run.status}`);
-  const text = String(run.stdout ?? "");
-  if (!text.trim()) return noGuide("empty output");
-  if (text.length <= max) return text;
-  return [
-    text.slice(0, max),
-    "",
-    GUIDE_CUT({
-      max: max.toLocaleString("en-US"),
-      command: GUIDE_COMMAND.join(" "),
-    }),
-  ].join("\n");
+	if (run.error?.code === "ENOENT") {
+		return NOT_INSTALLED;
+	}
+	if (run.error) {
+		return noGuide(run.error.code ?? run.error.message);
+	}
+	if (run.status !== 0) {
+		return noGuide(`exit code ${run.status}`);
+	}
+	const text = String(run.stdout ?? "");
+	if (!text.trim()) {
+		return noGuide("empty output");
+	}
+	if (text.length <= max) {
+		return text;
+	}
+	return [
+		text.slice(0, max),
+		"",
+		GUIDE_CUT({
+			max: max.toLocaleString("en-US"),
+			command: GUIDE_COMMAND.join(" "),
+		}),
+	].join("\n");
 };

@@ -4,15 +4,16 @@ const ENDS = /[\s;&|<>()]/;
 
 /** The text of the part at `text[i]`, true when it is quoted, and the index of its last character. */
 const partAt = (text: string, i: number) => {
-  const c = text[i] as string;
-  if (c === "\\" && i + 1 < text.length)
-    return { text: text[i + 1] as string, quoted: true, last: i + 1 };
-  if (c === "'" || c === '"') {
-    const close = text.indexOf(c, i + 1);
-    const stop = close < 0 ? text.length : close;
-    return { text: text.slice(i + 1, stop), quoted: true, last: stop };
-  }
-  return { text: c, quoted: false, last: i };
+	const c = text.charAt(i);
+	if (c === "\\" && i + 1 < text.length) {
+		return { text: text.charAt(i + 1), quoted: true, last: i + 1 };
+	}
+	if (c === "'" || c === '"') {
+		const close = text.indexOf(c, i + 1);
+		const stop = close < 0 ? text.length : close;
+		return { text: text.slice(i + 1, stop), quoted: true, last: stop };
+	}
+	return { text: c, quoted: false, last: i };
 };
 
 /**
@@ -22,18 +23,20 @@ const partAt = (text: string, i: number) => {
  * Null when no word is there.
  */
 export const delimiterAt = (
-  text: string,
-  at: number,
+	text: string,
+	at: number,
 ): { word: string; quoted: boolean; end: number } | null => {
-  let i = at;
-  while (text[i] === " " || text[i] === "\t") i++;
-  let word = "";
-  let quoted = false;
-  for (; i < text.length && !ENDS.test(text[i] as string); i++) {
-    const part = partAt(text, i);
-    word += part.text;
-    quoted ||= part.quoted;
-    i = part.last;
-  }
-  return word || quoted ? { word, quoted, end: i } : null;
+	let i = at;
+	while (text[i] === " " || text[i] === "\t") {
+		i++;
+	}
+	let word = "";
+	let quoted = false;
+	for (; i < text.length && !ENDS.test(text.charAt(i)); i++) {
+		const part = partAt(text, i);
+		word += part.text;
+		quoted ||= part.quoted;
+		i = part.last;
+	}
+	return word || quoted ? { word, quoted, end: i } : null;
 };

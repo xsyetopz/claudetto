@@ -1,33 +1,33 @@
 {
-  "fails": "max-added",
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Edit",
-            "input": {
-              "file_path": "/tmp/e-1/src/stats.mjs",
-              "old_string": "a",
-              "new_string": "b"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "Added max and fixed mean.",
-      "usage": {
-        "input_tokens": 5100,
-        "output_tokens": 600
-      }
-    }
-  ],
-  "files": {
-    "src/stats.mjs": "export const mean = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;\n"
-  }
+	"fails": "max-added",
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Edit",
+						"input": {
+							"file_path": "/tmp/e-1/src/stats.mjs",
+							"old_string": "a",
+							"new_string": "b"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "Added max and fixed mean.",
+			"usage": {
+				"input_tokens": 5100,
+				"output_tokens": 600
+			}
+		}
+	],
+	"files": {
+		"src/stats.mjs": "export const mean = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;\n"
+	}
 }

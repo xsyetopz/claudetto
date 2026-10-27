@@ -2,9 +2,9 @@
 /** The seconds between two runs of the status line. The countdowns of the limits use it. */
 export const REFRESH_SECONDS = 1;
 /** The time that the one `git status` call can take. */
-export const GIT_TIMEOUT_MS = 1_500;
+export const GIT_TIMEOUT_MS = 1500;
 /** How long a `git status` result stays cached: one `git` run in three refreshes, and a commit shows within 3 seconds. */
-export const GIT_CACHE_MS = 3_000;
+export const GIT_CACHE_MS = 3000;
 /** How long a saved limit reading with the same window stays as it is, so a refresh writes no file. Its age is in minutes. */
 export const READING_KEEP_MS = 60_000;
 /** The part of the handoff trigger within which the context segment has the warning color. */

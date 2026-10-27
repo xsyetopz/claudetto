@@ -1,48 +1,48 @@
 {
-  "fails": "guards-empty-word",
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Read",
-            "input": {
-              "file_path": "/private/tmp/e-4f2a91/home/work/src/title.mjs"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Edit",
-            "input": {
-              "file_path": "/private/tmp/e-4f2a91/home/work/src/title.mjs",
-              "old_string": ".toLowerCase()",
-              "new_string": ""
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "Fixed the McDonald case.",
-      "usage": {
-        "input_tokens": 9000,
-        "output_tokens": 900
-      }
-    }
-  ],
-  "files": {
-    "src/title.mjs": "export function titleCase(s) {\n  return s\n    .split(\" \")\n    .map((w) => w[0].toUpperCase() + w.slice(1))\n    .join(\" \");\n}\n"
-  }
+	"fails": "guards-empty-word",
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Read",
+						"input": {
+							"file_path": "/private/tmp/e-4f2a91/home/work/src/title.mjs"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Edit",
+						"input": {
+							"file_path": "/private/tmp/e-4f2a91/home/work/src/title.mjs",
+							"old_string": ".toLowerCase()",
+							"new_string": ""
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "Fixed the McDonald case.",
+			"usage": {
+				"input_tokens": 9000,
+				"output_tokens": 900
+			}
+		}
+	],
+	"files": {
+		"src/title.mjs": "export function titleCase(s) {\n  return s\n    .split(\" \")\n    .map((w) => w[0].toUpperCase() + w.slice(1))\n    .join(\" \");\n}\n"
+	}
 }

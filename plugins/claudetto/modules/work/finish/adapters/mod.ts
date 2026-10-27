@@ -7,93 +7,100 @@
 
 import type { EngineInterface, MatchedHook } from "claude-code";
 import type { Handler } from "../../../../kernel/hooks.ts";
-import {
-  GOAL_FILE,
-  passedChecks,
-  projectRoot,
-  proven,
-} from "../../../project/index.ts";
-import { sessionCost } from "../../../session/index.ts";
+import { passedChecks, proven } from "../../../project/domain/checks.ts";
+import { GOAL_FILE } from "../../../project/domain/paths.ts";
+import { projectRoot } from "../../../project/domain/session.ts";
+import { sessionCost } from "../../../session/domain/usage.ts";
 import type { Note } from "../../domain/notes.ts";
 import {
-  agentBusy,
-  changedPaths,
-  editedPaths,
-  ranApply,
-  tickedFiles,
-  turnRows,
-  uncommitted,
-  unprovenTicks,
-  unprovenWhat,
+	agentBusy,
+	changedPaths,
+	editedPaths,
+	ranApply,
+	tickedFiles,
+	turnRows,
+	uncommitted,
+	unprovenTicks,
+	unprovenWhat,
 } from "../domain/record.ts";
 import { claimsDone, deferredItem, wrongHeading } from "../domain/reply.ts";
 import {
-  checkOf,
-  type Goal,
-  isSlashCommand,
-  parseGoal,
+	checkOf,
+	type Goal,
+	isSlashCommand,
+	parseGoal,
 } from "../domain/state.ts";
 import { nextOpen, ticked } from "../domain/tasks.ts";
 import { projectChecks, uncheckedEdit } from "../domain/verify.ts";
 import {
-  GIT_TIMEOUT_MS,
-  GOAL_BLOCKS_MAX,
-  LOOP_TASK_CHARS,
-  NOTE_FILES_MAX,
-  OUTPUT_TAIL_CHARS,
-  RUN_TIMEOUT_MS,
+	GIT_TIMEOUT_MS,
+	GOAL_BLOCKS_MAX,
+	LOOP_TASK_CHARS,
+	NOTE_FILES_MAX,
+	OUTPUT_TAIL_CHARS,
+	RUN_TIMEOUT_MS,
 } from "../limits.ts";
 import {
-  BOX_DENY,
-  DEFERRED_NOTE,
-  GOAL_CAP,
-  HEADING_NOTE,
-  LOOP,
-  LOOP_CAP,
-  NOT_A_CHECK,
-  RETRY,
-  START,
-  UNCHECKED,
-  UNPROVEN_NOTE,
+	BOX_DENY,
+	DEFERRED_NOTE,
+	GOAL_CAP,
+	HEADING_NOTE,
+	LOOP,
+	LOOP_CAP,
+	NOT_A_CHECK,
+	RETRY,
+	START,
+	UNCHECKED,
+	UNPROVEN_NOTE,
 } from "../prompts.ts";
+
+const TRAILING_SLASHES = /\/+$/;
 
 /** The project root: `CLAUDE_PROJECT_DIR`, or the root of the session, or `""` with no root. */
 const rootOf = ($: EngineInterface): Promise<string> =>
-  projectRoot({
-    dir: () => $.env.get("CLAUDE_PROJECT_DIR"),
-    root: () => $.session.root(),
-  });
+	projectRoot({
+		dir: () => $.env.get("CLAUDE_PROJECT_DIR"),
+		root: () => $.session.root(),
+	});
 
 const fileOf = async ($: EngineInterface) => {
-  const root = await rootOf($);
-  return root ? `${root.replace(/\/+$/, "")}/${GOAL_FILE}` : GOAL_FILE;
+	const root = await rootOf($);
+	return root
+		? `${root.replace(TRAILING_SLASHES, "")}/${GOAL_FILE}`
+		: GOAL_FILE;
 };
 
-const readGoal = async ($: EngineInterface): Promise<Goal | null> =>
-  $.fs.read(await fileOf($)).then(parseGoal, () => null);
+const readGoal = async ($: EngineInterface): Promise<Goal | null> => {
+	const file = await fileOf($);
+	try {
+		return parseGoal(await $.fs.read(file));
+	} catch {
+		return null;
+	}
+};
 
 const writeGoal = async ($: EngineInterface, goal: Goal | null) =>
-  $.fs.write(await fileOf($), JSON.stringify(goal));
+	$.fs.write(await fileOf($), JSON.stringify(goal));
 
 const inRoot = async (
-  $: EngineInterface,
-  argv: string[],
-  timeoutMs: number,
+	$: EngineInterface,
+	argv: string[],
+	timeoutMs: number,
 ) => {
-  const root = await rootOf($);
-  return $.process.run(argv, { ...(root ? { cwd: root } : {}), timeoutMs });
+	const root = await rootOf($);
+	return $.process.run(argv, { ...(root ? { cwd: root } : {}), timeoutMs });
 };
 
 /** Runs `command` with `sh -c` in the project root: `pass` on exit 0, and the last `OUTPUT_TAIL_CHARS` characters of the output. */
 export const runCheck = async (
-  $: EngineInterface,
-  command: string,
+	$: EngineInterface,
+	command: string,
 ): Promise<{ pass: boolean; output: string }> => {
-  const run = await inRoot($, ["sh", "-c", command], RUN_TIMEOUT_MS).catch(
-    (error: Error) => ({ exitCode: 1, stdout: "", stderr: error.message }),
-  );
-  const output = (run.stdout + run.stderr).trim().slice(-OUTPUT_TAIL_CHARS);
-  return { pass: run.exitCode === 0, output };
+	const run = await inRoot($, ["sh", "-c", command], RUN_TIMEOUT_MS).catch(
+		(error: Error) => ({ exitCode: 1, stdout: "", stderr: error.message }),
+	);
+	const output = (run.stdout + run.stderr).trim().slice(-OUTPUT_TAIL_CHARS);
+	return { pass: run.exitCode === 0, output };
 };
 
 // The re-blocks in a row live in the `$.state` (X21), the loop count apart from the `/goal` count, and the note goes to `notes`.
@@ -102,128 +109,156 @@ const loopRef = { plugin: "claudetto", key: "loopBlocks" } as const;
 const noteRef = { plugin: "claudetto", key: "note" } as const;
 
 const setBlocks = ($: EngineInterface, count: number) =>
-  $.state.set(blocksRef, count);
+	$.state.set(blocksRef, count);
+
+/** The first open task of `files`, read in order: a later file is read only when the earlier ones have none. */
+const firstOpen = async (
+	$: EngineInterface,
+	files: readonly string[],
+): Promise<{ id: string; task: string } | null> => {
+	const [file, ...rest] = files;
+	if (file === undefined) {
+		return null;
+	}
+	return nextOpen(await $.fs.read(file)) ?? firstOpen($, rest);
+};
 
 /** The next open task of the first `tasks.md` that the turn ticked and that has an open box, or `null` (also with no `/claudetto:apply`, with an agent in flight, or on a fault). */
 const openTask = async (
-  $: EngineInterface,
+	$: EngineInterface,
 ): Promise<{ id: string; task: string } | null> => {
-  try {
-    const messages = await $.session.messages();
-    if (!ranApply(messages)) return null;
-    const rows = turnRows(messages);
-    const files = tickedFiles(rows);
-    if (files.length === 0 || agentBusy(await $.agent.list())) return null;
-    for (const file of files) {
-      const open = nextOpen(await $.fs.read(file));
-      if (open !== null) return open;
-    }
-  } catch {
-    // A loop check is a help, so a fault of it adds no block.
-  }
-  return null;
+	try {
+		const messages = await $.session.messages();
+		if (!ranApply(messages)) {
+			return null;
+		}
+		const rows = turnRows(messages);
+		const files = tickedFiles(rows);
+		if (files.length === 0 || agentBusy(await $.agent.list())) {
+			return null;
+		}
+		const open = await firstOpen($, files);
+		if (open !== null) {
+			return open;
+		}
+	} catch {
+		// A loop check is a help, so a fault of it adds no block.
+	}
+	return null;
 };
 
 /** The checks of the project when the turn edited a file that is not Markdown with no passed check after it, or `[]` (also on a fault). A stop that a hook blocked before has `stop_hook_active`, so the block comes one time. */
 const missingCheck = async (
-  $: EngineInterface,
-  active: boolean | undefined,
+	$: EngineInterface,
+	active: boolean | undefined,
 ): Promise<string[]> => {
-  try {
-    if (active || !uncheckedEdit(turnRows(await $.session.messages())))
-      return [];
-    const root = (await rootOf($)).replace(/\/+$/, "");
-    const at = (file: string) => (root ? `${root}/${file}` : file);
-    return projectChecks(
-      await $.fs.read(at("justfile")).catch(() => undefined),
-      await $.fs.exists(at("bun.lock")).catch(() => false),
-    );
-  } catch {
-    // The check rule is a help, so a fault of it adds no block.
-    return [];
-  }
+	try {
+		if (active || !uncheckedEdit(turnRows(await $.session.messages()))) {
+			return [];
+		}
+		const root = (await rootOf($)).replace(TRAILING_SLASHES, "");
+		const at = (file: string) => (root ? `${root}/${file}` : file);
+		return projectChecks(
+			await $.fs.read(at("justfile")).catch(() => undefined),
+			await $.fs.exists(at("bun.lock")).catch(() => false),
+		);
+	} catch {
+		// The check rule is a help, so a fault of it adds no block.
+		return [];
+	}
 };
 
 /** The note for the last reply, or `null` when the reply shows no sign of left or unproven work. */
 const noteOf = async (
-  $: EngineInterface,
-  reply: string,
+	$: EngineInterface,
+	reply: string,
 ): Promise<Note | null> => {
-  const item = deferredItem(reply);
-  if (item !== null) return DEFERRED_NOTE({ item });
-  const heading = wrongHeading(reply);
-  if (!claimsDone(reply)) return heading && HEADING_NOTE(heading);
-  const messages = await $.session.messages();
-  const root = await rootOf($);
-  const status = await inRoot(
-    $,
-    ["git", "status", "--porcelain", "-z"],
-    GIT_TIMEOUT_MS,
-  ).catch(() => ({ exitCode: 1, stdout: "" }));
-  const files = uncommitted(
-    editedPaths(messages),
-    status.exitCode === 0 ? changedPaths(status.stdout) : [],
-  )
-    .map((f) =>
-      root && f.startsWith(`${root}/`) ? f.slice(root.length + 1) : f,
-    )
-    .slice(0, NOTE_FILES_MAX);
-  const boxes = unprovenTicks(messages, passedChecks(messages));
-  return files.length === 0 && boxes.length === 0
-    ? heading && HEADING_NOTE(heading)
-    : UNPROVEN_NOTE({ what: unprovenWhat(files, boxes) });
+	const item = deferredItem(reply);
+	if (item !== null) {
+		return DEFERRED_NOTE({ item });
+	}
+	const heading = wrongHeading(reply);
+	if (!claimsDone(reply)) {
+		return heading && HEADING_NOTE(heading);
+	}
+	const messages = await $.session.messages();
+	const root = await rootOf($);
+	const status = await inRoot(
+		$,
+		["git", "status", "--porcelain", "-z"],
+		GIT_TIMEOUT_MS,
+	).catch(() => ({ exitCode: 1, stdout: "" }));
+	const files = uncommitted(
+		editedPaths(messages),
+		status.exitCode === 0 ? changedPaths(status.stdout) : [],
+	)
+		.map((f) =>
+			root && f.startsWith(`${root}/`) ? f.slice(root.length + 1) : f,
+		)
+		.slice(0, NOTE_FILES_MAX);
+	const boxes = unprovenTicks(messages, passedChecks(messages));
+	return files.length === 0 && boxes.length === 0
+		? heading && HEADING_NOTE(heading)
+		: UNPROVEN_NOTE({ what: unprovenWhat(files, boxes) });
 };
 
 /** Sets the note for `reply`. A fault here never changes the stop. */
 const raiseNote = async ($: EngineInterface, reply: string): Promise<void> => {
-  try {
-    const note = await noteOf($, reply);
-    if (note !== null) await $.state.set(noteRef, note);
-  } catch {
-    // A note is a help for the user, so a fault of it adds no block.
-  }
+	try {
+		const note = await noteOf($, reply);
+		if (note !== null) {
+			await $.state.set(noteRef, note);
+		}
+	} catch {
+		// A note is a help for the user, so a fault of it adds no block.
+	}
 };
 
 /** `classic.Stop`: a goal check that fails blocks the stop with its output, a turn that ticked a box with an open task left blocks the same way (the goal first), each at most `GOAL_BLOCKS_MAX` times in a row. Then a turn with an edit and no passed check after it blocks one time. A stop that nothing blocks sets a note. */
 export const onStop: Handler<"classic.Stop"> = async ($, e, next) => {
-  const goal = await readGoal($);
-  if (goal) {
-    const { pass, output } = await runCheck($, goal.check);
-    if (pass) {
-      await writeGoal($, null);
-      await setBlocks($, 0);
-    } else {
-      const count = (await $.state.get(blocksRef)).value ?? 0;
-      if (count < GOAL_BLOCKS_MAX) {
-        await setBlocks($, count + 1);
-        return {
-          ...(await next(e)),
-          block: RETRY({ check: goal.check, output }),
-        };
-      }
-      await setBlocks($, 0);
-      $.ui.log(GOAL_CAP({ check: goal.check, count }));
-    }
-  }
-  const open = await openTask($);
-  const loops = (await $.state.get(loopRef)).value ?? 0;
-  if (open !== null && loops < GOAL_BLOCKS_MAX) {
-    await $.state.set(loopRef, loops + 1);
-    return {
-      ...(await next(e)),
-      block: LOOP({
-        id: open.id,
-        task: open.task.slice(0, LOOP_TASK_CHARS),
-      }),
-    };
-  }
-  if (open !== null) $.ui.log(LOOP_CAP({ count: loops }));
-  if (loops > 0) await $.state.set(loopRef, 0);
-  const checks = await missingCheck($, e.stop_hook_active);
-  if (checks.length > 0)
-    return { ...(await next(e)), block: UNCHECKED({ checks }) };
-  await raiseNote($, e.last_assistant_message ?? "");
-  return next(e);
+	const goal = await readGoal($);
+	if (goal) {
+		const { pass, output } = await runCheck($, goal.check);
+		if (pass) {
+			await writeGoal($, null);
+			await setBlocks($, 0);
+		} else {
+			const count = (await $.state.get(blocksRef)).value ?? 0;
+			if (count < GOAL_BLOCKS_MAX) {
+				await setBlocks($, count + 1);
+				return {
+					...(await next(e)),
+					block: RETRY({ check: goal.check, output }),
+				};
+			}
+			await setBlocks($, 0);
+			$.ui.log(GOAL_CAP({ check: goal.check, count }));
+		}
+	}
+	const open = await openTask($);
+	const loops = (await $.state.get(loopRef)).value ?? 0;
+	if (open !== null && loops < GOAL_BLOCKS_MAX) {
+		await $.state.set(loopRef, loops + 1);
+		return {
+			...(await next(e)),
+			block: LOOP({
+				id: open.id,
+				task: open.task.slice(0, LOOP_TASK_CHARS),
+			}),
+		};
+	}
+	if (open !== null) {
+		$.ui.log(LOOP_CAP({ count: loops }));
+	}
+	if (loops > 0) {
+		await $.state.set(loopRef, 0);
+	}
+	const checks = await missingCheck($, e.stop_hook_active);
+	if (checks.length > 0) {
+		return { ...(await next(e)), block: UNCHECKED({ checks }) };
+	}
+	await raiseNote($, e.last_assistant_message ?? "");
+	return next(e);
 };
 
 /** The usage value that `prompt` keeps from `session.measure`, which holds the first share of each window. */
@@ -231,73 +266,87 @@ const usageRef = { plugin: "claudetto", key: "usage" } as const;
 
 /** The cost report for the model after a tick, or `undefined` with no figure or a fault of the read. */
 const costOf = async ($: EngineInterface): Promise<string | undefined> => {
-  const report = await sessionCost({
-    usage: () => $.session.usage(),
-    state: () => $.state.get(usageRef),
-  });
-  return report === "none" ? undefined : report;
+	const report = await sessionCost({
+		usage: () => $.session.usage(),
+		state: () => $.state.get(usageRef),
+	});
+	return report === "none" ? undefined : report;
 };
 
 type BoxHook = MatchedHook<
-  "tool.call",
-  { readonly tool: readonly ["Edit", "Write"] }
+	"tool.call",
+	{ readonly tool: readonly ["Edit", "Write"] }
 >;
 
 /** `tool.call` on `Edit` and `Write` of a `tasks.md`: a box that changes to checked needs a passed check in the transcript of the caller. A tick that goes through adds the cost report as context, so the final report of `apply` has its figures. */
 export const onBoxCall: BoxHook = async ($, e, next) => {
-  if (!e.file_path.endsWith("tasks.md")) return next(e);
-  const before = (await $.fs.exists(e.file_path))
-    ? await $.fs.read(e.file_path)
-    : "";
-  const after =
-    "content" in e
-      ? e.content
-      : e.replace_all
-        ? before.replaceAll(e.old_string, e.new_string)
-        : before.replace(e.old_string, () => e.new_string);
-  const opened = ticked(before, after);
-  if (opened.length === 0) return next(e);
-  const found =
-    e.agentId === undefined
-      ? await $.session.messages()
-      : await $.session.messages({ agentId: e.agentId });
-  // A subagent that the session cannot read has no record to check against, so the call runs.
-  if (!Array.isArray(found)) return next(e);
-  const passed = passedChecks(found);
-  const missing = opened.filter(({ line }) => !proven(line, passed));
-  if (missing.length > 0)
-    return { deny: BOX_DENY({ ids: missing.map(({ id }) => id).join(", ") }) };
-  const answer = await next(e);
-  if (answer.deny !== undefined) return answer;
-  const report = await costOf($);
-  return report === undefined
-    ? answer
-    : { ...answer, context: [...(answer.context ?? []), report] };
+	if (!e.file_path.endsWith("tasks.md")) {
+		return next(e);
+	}
+	const before = (await $.fs.exists(e.file_path))
+		? await $.fs.read(e.file_path)
+		: "";
+	let after: string;
+	if ("content" in e) {
+		after = e.content;
+	} else if (e.replace_all) {
+		after = before.replaceAll(e.old_string, e.new_string);
+	} else {
+		after = before.replace(e.old_string, () => e.new_string);
+	}
+	const opened = ticked(before, after);
+	if (opened.length === 0) {
+		return next(e);
+	}
+	const found =
+		e.agentId === undefined
+			? await $.session.messages()
+			: await $.session.messages({ agentId: e.agentId });
+	// A subagent that the session cannot read has no record to check against, so the call runs.
+	if (!Array.isArray(found)) {
+		return next(e);
+	}
+	const passed = passedChecks(found);
+	const missing = opened.filter(({ line }) => !proven(line, passed));
+	if (missing.length > 0) {
+		return { deny: BOX_DENY({ ids: missing.map(({ id }) => id).join(", ") }) };
+	}
+	const answer = await next(e);
+	if (answer.deny !== undefined) {
+		return answer;
+	}
+	const report = await costOf($);
+	return report === undefined
+		? answer
+		: { ...answer, context: [...(answer.context ?? []), report] };
 };
 
 const answer: Handler<"command.run"> = async ($, e) => {
-  const text = e.args.trim();
-  const goal = await readGoal($);
-  if (!text || text === "status") {
-    return { text: goal ? `Goal: \`${goal.check}\` must exit 0.` : "No goal." };
-  }
-  if (text === "clear") {
-    await writeGoal($, null);
-    return { text: "Goal cleared." };
-  }
-  const check = checkOf(text);
-  if (isSlashCommand(check)) return { text: NOT_A_CHECK({ check }) };
-  await writeGoal($, { check });
-  // Claude Code refuses `$.prompt.submit` in a `command.run` hook (see the header of `modules/session/handoff/adapters/mod.ts`), so a timer runs it after the hook.
-  $.clock.after(
-    0,
-    () => void $.prompt.submit({ text: START({ check }) }).catch(() => {}),
-  );
-  return { text: `Goal set: \`${check}\` must exit 0.` };
+	const text = e.args.trim();
+	const goal = await readGoal($);
+	if (!text || text === "status") {
+		return { text: goal ? `Goal: \`${goal.check}\` must exit 0.` : "No goal." };
+	}
+	if (text === "clear") {
+		await writeGoal($, null);
+		return { text: "Goal cleared." };
+	}
+	const check = checkOf(text);
+	if (isSlashCommand(check)) {
+		return { text: NOT_A_CHECK({ check }) };
+	}
+	await writeGoal($, { check });
+	// Claude Code refuses `$.prompt.submit` in a `command.run` hook (see the header of `modules/session/handoff/adapters/mod.ts`), so a timer runs it after the hook.
+	$.clock.after(
+		0,
+		() =>
+			void $.prompt.submit({ text: START({ check }) }).catch(() => undefined),
+	);
+	return { text: `Goal set: \`${check}\` must exit 0.` };
 };
 
 /** `command.run` of `/goal` (`status`, `clear`, or a check command): answers in place of the built-in command. A failure answers with its message, because a failing hook would let the built-in command run. */
 export const onCommand: Handler<"command.run"> = ($, e, next) =>
-  Promise.resolve(answer($, e, next)).catch((error: Error) => ({
-    text: `Goal: ${error.message}`,
-  }));
+	Promise.resolve(answer($, e, next)).catch((error: Error) => ({
+		text: `Goal: ${error.message}`,
+	}));

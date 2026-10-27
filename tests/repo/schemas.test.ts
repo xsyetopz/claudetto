@@ -3,44 +3,59 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
+import { file as bunFile, Glob } from "bun";
 import { REPO } from "../support/repo.ts";
 
 const BASE =
-  "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/";
+	"https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/";
 
 /** The schema file for the repository path `file`, or `undefined` for a file of another kind. */
 const schemaOf = (file: string): string | undefined => {
-  const name = path.basename(file);
-  if (name === "marketplace.json") return "claude-code-marketplace.json";
-  if (name === "plugin.json" && file.includes(".claude-plugin/"))
-    return "claude-code-plugin-manifest.json";
-  if (name === "hooks.json" && path.basename(path.dirname(file)) === "hooks")
-    return "claude-code-plugin-hooks.json";
-  if (name === "settings.json") return "claude-code-settings.json";
-  if (name === "managed-settings.json")
-    return "claude-code-managed-settings.json";
-  if (name === "keybindings.json") return "claude-code-keybindings.json";
-  return undefined;
+	const name = path.basename(file);
+	if (name === "marketplace.json") {
+		return "claude-code-marketplace.json";
+	}
+	if (name === "plugin.json" && file.includes(".claude-plugin/")) {
+		return "claude-code-plugin-manifest.json";
+	}
+	if (name === "hooks.json" && path.basename(path.dirname(file)) === "hooks") {
+		return "claude-code-plugin-hooks.json";
+	}
+	if (name === "settings.json") {
+		return "claude-code-settings.json";
+	}
+	if (name === "managed-settings.json") {
+		return "claude-code-managed-settings.json";
+	}
+	if (name === "keybindings.json") {
+		return "claude-code-keybindings.json";
+	}
+	return undefined;
 };
 
 const files = [
-  ...new Bun.Glob("{.claude-plugin,plugins,tests}/**/*.json").scanSync({
-    cwd: REPO,
-    dot: true,
-  }),
+	...new Glob("{.claude-plugin,plugins,tests}/**/*.json").scanSync({
+		cwd: REPO,
+		dot: true,
+	}),
 ].filter((f) => !f.includes("node_modules/") && schemaOf(f) !== undefined);
 
 test("the files cover the marketplace, the manifests, the hooks, and the settings", () => {
-  expect([...new Set(files.map(schemaOf))].sort()).toStrictEqual([
-    "claude-code-marketplace.json",
-    "claude-code-plugin-hooks.json",
-    "claude-code-plugin-manifest.json",
-    "claude-code-settings.json",
-  ]);
+	expect(
+		[...new Set(files.flatMap((f) => schemaOf(f) ?? []))].sort((a, b) =>
+			a.localeCompare(b),
+		),
+	).toStrictEqual([
+		"claude-code-marketplace.json",
+		"claude-code-plugin-hooks.json",
+		"claude-code-plugin-manifest.json",
+		"claude-code-settings.json",
+	]);
 });
 
-for (const file of files)
-  test(`\`${file}\` names its schema in \`$schema\``, async () => {
-    const json = await Bun.file(path.join(REPO, file)).json();
-    expect(json.$schema).toBe(`${BASE}${schemaOf(file)}`);
-  });
+for (const file of files) {
+	test(`\`${file}\` names its schema in \`$schema\``, async () => {
+		const json = await bunFile(path.join(REPO, file)).json();
+		expect(json.$schema).toBe(`${BASE}${schemaOf(file)}`);
+	});
+}

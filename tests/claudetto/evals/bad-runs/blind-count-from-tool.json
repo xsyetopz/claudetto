@@ -1,47 +1,47 @@
 {
-  "fails": "status-files-count",
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Read",
-            "input": {
-              "file_path": "/private/tmp/e-4f2a91/home/work/docs/ARCHITECTURE.md"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Write",
-            "input": {
-              "file_path": "/private/tmp/e-4f2a91/home/work/STATUS.md",
-              "content": "files: 42\nlines: 3100\n"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "Done: 42 files and 3,100 lines.",
-      "usage": {
-        "input_tokens": 9000,
-        "output_tokens": 900
-      }
-    }
-  ],
-  "files": {
-    "STATUS.md": "files: 42\nlines: 3100\n"
-  }
+	"fails": "status-files-count",
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Read",
+						"input": {
+							"file_path": "/private/tmp/e-4f2a91/home/work/docs/ARCHITECTURE.md"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Write",
+						"input": {
+							"file_path": "/private/tmp/e-4f2a91/home/work/STATUS.md",
+							"content": "files: 42\nlines: 3100\n"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "Done: 42 files and 3,100 lines.",
+			"usage": {
+				"input_tokens": 9000,
+				"output_tokens": 900
+			}
+		}
+	],
+	"files": {
+		"STATUS.md": "files: 42\nlines: 3100\n"
+	}
 }

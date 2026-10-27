@@ -3,11 +3,12 @@
 // one folder per process, so repeated runs leave nothing behind in the system temp folder.
 
 import { afterAll } from "bun:test";
-import fs from "node:fs";
+import { mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { spawn } from "bun";
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), "claudetto-tests-"));
+const root = await mkdtemp(path.join(os.tmpdir(), "claudetto-tests-"));
 process.env["TMPDIR"] = root;
 /** The script of the child that waits until the process `pid` exits and then removes the folder `dir`. */
 const REMOVE_AFTER_EXIT = `
@@ -21,13 +22,13 @@ require("node:fs").rmSync(dir, { recursive: true, force: true, maxRetries: 5 });
 // The hook runs once, after the last test file of the process.
 // A remove of thousands of files can take more than the hook timeout, and it can fail on a file that this process still holds open.
 // So a detached child removes the folder after this process exits, and the hook returns at once.
-afterAll(() => {
-  try {
-    Bun.spawn(
-      [process.execPath, "-e", REMOVE_AFTER_EXIT, root, String(process.pid)],
-      { stdio: ["ignore", "ignore", "ignore"], detached: true },
-    ).unref();
-  } catch {
-    fs.rmSync(root, { recursive: true, force: true });
-  }
+afterAll(async () => {
+	try {
+		spawn(
+			[process.execPath, "-e", REMOVE_AFTER_EXIT, root, String(process.pid)],
+			{ stdio: ["ignore", "ignore", "ignore"], detached: true },
+		).unref();
+	} catch {
+		await rm(root, { recursive: true, force: true });
+	}
 });

@@ -14,13 +14,13 @@ export const IMAGE_SIDE_MAX = 1568;
 export const IMAGE_PIXELS_MIN = 78_400;
 export const IMAGE_PIXELS_MAX = 2_458_624;
 /** The most time that `sips` has to scale the images, in milliseconds. They scale in parallel. */
-export const SCALE_TIMEOUT_MS = 5_000;
+export const SCALE_TIMEOUT_MS = 5000;
 
 /** The number of tries of a TypeSafe call on a 429 or a 529 reply, the first one included. */
 export const TRIES = 3;
 
 /** The first wait before a retry of a TypeSafe call, in milliseconds. Each later wait doubles. */
-export const BACKOFF_MS = 1_000;
+export const BACKOFF_MS = 1000;
 
 /** The time of one try of a TypeSafe call, in milliseconds. `HttpInit` has no timeout, so the mod races the call with `$.clock`. */
 export const ATTEMPT_TIMEOUT_MS = 12_000;

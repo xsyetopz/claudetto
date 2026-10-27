@@ -2,7 +2,7 @@
 // folder, and a temporary folder.
 // A test file imports from here and keeps no copy of these helpers.
 
-import fs from "node:fs";
+import { mkdtemp, readdir } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -16,7 +16,10 @@ export const PLUGINS = path.join(REPO, "plugins");
 const SKIP = ["node_modules"];
 
 /** The options of `walk`: the folder names to skip, and the test that selects a file. */
-type WalkOptions = { skip?: string[]; keep?: (file: string) => boolean };
+interface WalkOptions {
+	skip?: string[];
+	keep?: (file: string) => boolean;
+}
 
 /**
  * The files under `dir`, found at any depth, as full paths.
@@ -24,18 +27,21 @@ type WalkOptions = { skip?: string[]; keep?: (file: string) => boolean };
  * `keep(file)` selects the files to return.
  * A folder that does not exist gives an empty list.
  */
-export const walk = (
-  dir: string,
-  { skip = SKIP, keep = () => true }: WalkOptions = {},
-): string[] => {
-  if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      return skip.includes(entry.name) ? [] : walk(full, { skip, keep });
-    }
-    return keep(full) ? [full] : [];
-  });
+export const walk = async (
+	dir: string,
+	{ skip = SKIP, keep = () => true }: WalkOptions = {},
+): Promise<string[]> => {
+	const entries = await readdir(dir, { withFileTypes: true }).catch(() => []);
+	const found = await Promise.all(
+		entries.map(async (entry) => {
+			const full = path.join(dir, entry.name);
+			if (entry.isDirectory()) {
+				return skip.includes(entry.name) ? [] : walk(full, { skip, keep });
+			}
+			return keep(full) ? [full] : [];
+		}),
+	);
+	return found.flat();
 };
 
 /**
@@ -43,5 +49,5 @@ export const walk = (
  * `tests/support/tmp-root.ts` moves the temporary folder of the process,
  * and it removes the folder at exit, so a test does not free it.
  */
-export const tmpDir = (prefix: string): string =>
-  fs.mkdtempSync(path.join(os.tmpdir(), `${prefix}-`));
+export const tmpDir = (prefix: string): Promise<string> =>
+	mkdtemp(path.join(os.tmpdir(), `${prefix}-`));

@@ -1,32 +1,32 @@
 {
-  "fails": "birthday-fixed",
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Read",
-            "input": {
-              "file_path": "/tmp/e-1/src/age.mjs"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "No change needed.",
-      "usage": {
-        "input_tokens": 5100,
-        "output_tokens": 600
-      }
-    }
-  ],
-  "files": {
-    "src/age.mjs": "export const age = () => 0;\n",
-    "README.md": "x\n"
-  }
+	"fails": "birthday-fixed",
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Read",
+						"input": {
+							"file_path": "/tmp/e-1/src/age.mjs"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "No change needed.",
+			"usage": {
+				"input_tokens": 5100,
+				"output_tokens": 600
+			}
+		}
+	],
+	"files": {
+		"src/age.mjs": "export const age = () => 0;\n",
+		"README.md": "x\n"
+	}
 }

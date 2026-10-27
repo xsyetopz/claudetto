@@ -12,7 +12,7 @@ export const CONTEXT_WINDOW = 300_000;
 export const COMPACT_OUTPUT_RESERVE = 20_000;
 
 /** The tokens below `CONTEXT_WINDOW` at which the client blocks the next request: the output reserve plus 3K (2.1.303 bundle). */
-export const CONTEXT_BLOCK_MARGIN = COMPACT_OUTPUT_RESERVE + 3_000;
+export const CONTEXT_BLOCK_MARGIN = COMPACT_OUTPUT_RESERVE + 3000;
 
 /**
  * The context at which the auto handoff of an Opus, Sonnet, or Fable session starts, below the block limit by the growth of one API call plus the write turn.
@@ -30,14 +30,14 @@ export const HAIKU_HANDOFF_TRIGGER_TOKENS = 90_000;
  * Claude Code 2.1.303 to 2.1.305 compact at `min(floor(E * pct / 100), E - 13000)`, with `E` the window less the reserve.
  */
 export const AUTOCOMPACT_PCT =
-  Math.floor(
-    (HANDOFF_TRIGGER_TOKENS / (CONTEXT_WINDOW - COMPACT_OUTPUT_RESERVE)) * 1e6,
-  ) / 1e4;
+	Math.floor(
+		(HANDOFF_TRIGGER_TOKENS / (CONTEXT_WINDOW - COMPACT_OUTPUT_RESERVE)) * 1e6,
+	) / 1e4;
 
 /** The `autoCompactWindow` of a Haiku model: at `AUTOCOMPACT_PCT`, the auto compaction starts below `HAIKU_HANDOFF_TRIGGER_TOKENS`. */
 export const HAIKU_AUTOCOMPACT_WINDOW =
-  Math.floor(HAIKU_HANDOFF_TRIGGER_TOKENS / (AUTOCOMPACT_PCT / 100)) +
-  COMPACT_OUTPUT_RESERVE;
+	Math.floor(HAIKU_HANDOFF_TRIGGER_TOKENS / (AUTOCOMPACT_PCT / 100)) +
+	COMPACT_OUTPUT_RESERVE;
 
 /** The status line shows a use in the warning color from the first and in the limit color from the second percentage. */
 export const USAGE_LEVELS: [number, number] = [40, 80];
@@ -45,9 +45,9 @@ export const USAGE_LEVELS: [number, number] = [40, 80];
 /** The band of a usage percent: green below the first level of `USAGE_LEVELS`, amber from it to the second, and red above the second. The status line and the usage gate share it. */
 export type Band = "green" | "amber" | "red";
 
-export const bandOf = (percent: number): Band =>
-  percent > USAGE_LEVELS[1]
-    ? "red"
-    : percent >= USAGE_LEVELS[0]
-      ? "amber"
-      : "green";
+export const bandOf = (percent: number): Band => {
+	if (percent > USAGE_LEVELS[1]) {
+		return "red";
+	}
+	return percent >= USAGE_LEVELS[0] ? "amber" : "green";
+};

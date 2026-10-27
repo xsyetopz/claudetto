@@ -1,43 +1,43 @@
 {
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Bash",
-            "input": {
-              "command": "brew install cowsay"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Bash",
-            "input": {
-              "command": "cowsay hello"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "Installed `cowsay`. Output follows.",
-      "usage": {
-        "input_tokens": 5000,
-        "output_tokens": 800
-      }
-    }
-  ],
-  "files": {}
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Bash",
+						"input": {
+							"command": "brew install cowsay"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Bash",
+						"input": {
+							"command": "cowsay hello"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "Installed `cowsay`. Output follows.",
+			"usage": {
+				"input_tokens": 5000,
+				"output_tokens": 800
+			}
+		}
+	],
+	"files": {}
 }

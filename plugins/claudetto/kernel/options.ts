@@ -5,7 +5,7 @@ import type { PluginOptions } from "claude-code";
 const kept: { options: PluginOptions } = { options: {} };
 
 export const keepOptions = (options: PluginOptions): void => {
-  kept.options = options;
+	kept.options = options;
 };
 
 export const pluginOptions = (): PluginOptions => kept.options;

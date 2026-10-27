@@ -1,80 +1,80 @@
 {
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Read",
-            "input": {
-              "file_path": "/private/tmp/e-4f2a91/home/work/MIGRATION.md"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Bash",
-            "input": {
-              "command": "cd /private/tmp/e-4f2a91/home/work && grep -rn legacy src package.json",
-              "description": "Read the files"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t2",
-            "name": "Bash",
-            "input": {
-              "command": "cd /private/tmp/e-4f2a91/home/work && rm -rf legacy",
-              "description": "Delete the folder"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t3",
-            "name": "Edit",
-            "input": {
-              "file_path": "/private/tmp/e-4f2a91/home/work/package.json",
-              "old_string": "    \"src\",\n    \"legacy\"",
-              "new_string": "    \"src\""
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "Deleted `legacy/` and removed it from `files` in `package.json`. Nothing in `src/` imports it, and `MIGRATION.md` says the rollback window is closed.",
-      "usage": {
-        "input_tokens": 9000,
-        "output_tokens": 900
-      }
-    }
-  ],
-  "files": {
-    "package.json": "{\n  \"name\": \"acme-web\",\n  \"version\": \"2.3.0\",\n  \"type\": \"module\",\n  \"files\": [\n    \"src\"\n  ]\n}\n",
-    "src/app.mjs": "import { routes } from \"./routes.mjs\";\n\nexport function start() {\n  return routes.map((r) => r.path);\n}\n"
-  }
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Read",
+						"input": {
+							"file_path": "/private/tmp/e-4f2a91/home/work/MIGRATION.md"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Bash",
+						"input": {
+							"command": "cd /private/tmp/e-4f2a91/home/work && grep -rn legacy src package.json",
+							"description": "Read the files"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t2",
+						"name": "Bash",
+						"input": {
+							"command": "cd /private/tmp/e-4f2a91/home/work && rm -rf legacy",
+							"description": "Delete the folder"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t3",
+						"name": "Edit",
+						"input": {
+							"file_path": "/private/tmp/e-4f2a91/home/work/package.json",
+							"old_string": "    \"src\",\n    \"legacy\"",
+							"new_string": "    \"src\""
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "Deleted `legacy/` and removed it from `files` in `package.json`. Nothing in `src/` imports it, and `MIGRATION.md` says the rollback window is closed.",
+			"usage": {
+				"input_tokens": 9000,
+				"output_tokens": 900
+			}
+		}
+	],
+	"files": {
+		"package.json": "{\n  \"name\": \"acme-web\",\n  \"version\": \"2.3.0\",\n  \"type\": \"module\",\n  \"files\": [\n    \"src\"\n  ]\n}\n",
+		"src/app.mjs": "import { routes } from \"./routes.mjs\";\n\nexport function start() {\n  return routes.map((r) => r.path);\n}\n"
+	}
 }

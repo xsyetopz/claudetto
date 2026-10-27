@@ -10,14 +10,14 @@ const DEFAULT_AGENT = "claudetto:Hephaestus";
 const MAIN_AGENT = "claudetto:main";
 
 export const onOffer: Handler<"agent.offer"> = async (_$, e, next) =>
-  e.provider.plugin === "engine" || e.agent === MAIN_AGENT
-    ? { isOffered: false }
-    : next(e);
+	e.provider.plugin === "engine" || e.agent === MAIN_AGENT
+		? { isOffered: false }
+		: next(e);
 
 type AgentCall = MatchedHook<
-  "tool.call",
-  { readonly tool: readonly ["Agent"] }
+	"tool.call",
+	{ readonly tool: readonly ["Agent"] }
 >;
 
 export const onAgentCall: AgentCall = async (_$, e, next) =>
-  next(e.subagent_type ? e : { ...e, subagent_type: DEFAULT_AGENT });
+	next(e.subagent_type ? e : { ...e, subagent_type: DEFAULT_AGENT });

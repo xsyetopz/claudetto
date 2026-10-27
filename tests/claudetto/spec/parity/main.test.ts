@@ -1,4 +1,4 @@
-// The record of `@fission-ai/openspec@1.14.3` for each command that MiniSpec keeps (task 8.1 of change `0-3-0`, design D10),
+// The record of `@fission-ai/openspec@1.15.0` for each command that MiniSpec keeps (task 8.1 of change `0-3-0`, design D10),
 // and the check that `minispec` gives the same facts (task 8.2).
 // Each case runs on a fresh project with the three samples, the change `bad-scenario`, and the overlays that it names.
 // The snapshot holds the exit code, the facts that the command prints, and the files that it writes, with the paths and dates replaced.
@@ -6,48 +6,58 @@
 // Design D10 ("Differences from OpenSpec") names each difference with its reason.
 
 import { expect, test } from "bun:test";
+import path from "node:path";
+import { file } from "bun";
 import { OPENSPEC_RUN_TIMEOUT_MS } from "../../../../tools/limits.ts";
 import { minispec, openspec } from "../../../support/openspec.ts";
+import { REPO } from "../../../support/repo.ts";
 import { CASES } from "./cases.ts";
 import { project, record } from "./record.ts";
 
+test("the installed OpenSpec is 1.15.0, the version of the parity record", async () => {
+	const pkg = await file(
+		path.join(REPO, "node_modules/@fission-ai/openspec/package.json"),
+	).json();
+	expect(pkg.version).toBe("1.15.0");
+});
+
 test.each(CASES.map((c) => [c.name, c.args, c.empty, c.overlays] as const))(
-  "OpenSpec 1.14.3: %s",
-  // A rest parameter, because `bun test` reads a third named parameter as the `done` callback of the test.
-  async (...[, args, empty, overlays]) => {
-    expect(
-      await record(openspec, [...args], empty, overlays),
-    ).toMatchSnapshot();
-  },
-  OPENSPEC_RUN_TIMEOUT_MS,
+	"OpenSpec 1.15.0: %s",
+	// A rest parameter, because `bun test` reads a third named parameter as the `done` callback of the test.
+	async (...[, args, empty, overlays]) => {
+		expect(
+			await record(openspec, [...args], empty, overlays),
+		).toMatchSnapshot();
+	},
+	OPENSPEC_RUN_TIMEOUT_MS,
 );
 
 test.each(
-  CASES.map(
-    (c) =>
-      [
-        `${c.name}${c.differences ? ` (differs: ${c.differences.join(", ")})` : ""}`,
-        c,
-      ] as const,
-  ),
+	CASES.map(
+		(c) =>
+			[
+				`${c.name}${c.differences ? ` (differs: ${c.differences.join(", ")})` : ""}`,
+				c,
+			] as const,
+	),
 )(
-  "MiniSpec equals OpenSpec 1.14.3: %s",
-  async (...[, c]) => {
-    const text = c.text ?? true;
-    const command = c.args[0] ?? "";
-    const os = project(
-      "openspec",
-      command,
-      await record(openspec, c.args, c.empty, c.overlays),
-      text,
-    );
-    const ms = project(
-      "minispec",
-      command,
-      await record(minispec, c.args, c.empty, c.overlays),
-      text,
-    );
-    expect(ms).toEqual(c.expected ? c.expected(os) : os);
-  },
-  OPENSPEC_RUN_TIMEOUT_MS,
+	"MiniSpec equals OpenSpec 1.15.0: %s",
+	async (...[, c]) => {
+		const text = c.text ?? true;
+		const command = c.args[0] ?? "";
+		const os = project(
+			"openspec",
+			command,
+			await record(openspec, c.args, c.empty, c.overlays),
+			text,
+		);
+		const ms = project(
+			"minispec",
+			command,
+			await record(minispec, c.args, c.empty, c.overlays),
+			text,
+		);
+		expect(ms).toEqual(c.expected ? c.expected(os) : os);
+	},
+	OPENSPEC_RUN_TIMEOUT_MS,
 );

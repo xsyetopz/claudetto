@@ -3,11 +3,13 @@
 /** The model families of Claude Code 2.1.305. */
 const FAMILIES = ["opus", "sonnet", "haiku", "fable", "mythos"] as const;
 
-type ModelId = {
-  family: (typeof FAMILIES)[number] | "unknown";
-  major: number;
-  minor: number | null;
-};
+interface ModelId {
+	family: (typeof FAMILIES)[number] | "unknown";
+	major: number;
+	minor: number | null;
+}
+
+const MODEL_ID = /claude-([a-z]+)-(\d+)(?:-(\d{1,2})(?!\d))?/i;
 
 /**
  * The family, major, and minor version of a Claude model id, or `null` for any other id.
@@ -15,14 +17,14 @@ type ModelId = {
  * A date suffix, such as `-20251001`, is not a minor version, and a family not in `FAMILIES` gives `"unknown"`.
  */
 export const parseModel = (id: unknown): ModelId | null => {
-  const m = /claude-([a-z]+)-(\d+)(?:-(\d{1,2})(?!\d))?/i.exec(
-    String(id ?? ""),
-  );
-  if (!m) return null;
-  const name = (m[1] as string).toLowerCase();
-  return {
-    family: FAMILIES.find((f) => f === name) ?? "unknown",
-    major: Number(m[2]),
-    minor: m[3] === undefined ? null : Number(m[3]),
-  };
+	const m = MODEL_ID.exec(String(id ?? ""));
+	if (!m) {
+		return null;
+	}
+	const name = (m[1] ?? "").toLowerCase();
+	return {
+		family: FAMILIES.find((f) => f === name) ?? "unknown",
+		major: Number(m[2]),
+		minor: m[3] === undefined ? null : Number(m[3]),
+	};
 };

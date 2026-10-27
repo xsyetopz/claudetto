@@ -1,52 +1,52 @@
 {
-  "fails": "version-held",
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Edit",
-            "input": {
-              "file_path": "/work/package.json",
-              "old_string": "1.1.0",
-              "new_string": "1.2.0"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Edit",
-            "input": {
-              "file_path": "/work/CHANGELOG.md",
-              "old_string": "# Changelog\n",
-              "new_string": "# Changelog\n\n## 1.2.0\n\n- The parser keeps a quoted comma inside its field.\n"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "Release 1.2.0 is cut.",
-      "usage": {
-        "input_tokens": 5000,
-        "output_tokens": 400
-      }
-    }
-  ],
-  "files": {
-    "package.json": "{\n  \"name\": \"rows\",\n  \"version\": \"1.2.0\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"test\": \"node --test check\"\n  }\n}\n",
-    "CHANGELOG.md": "# Changelog\n\n## 1.1.0\n\n- Add `parseRow`.\n\n## 1.2.0\n",
-    "src/parse.mjs": "export function parseRow(line) {\n  return line.split(\",\");\n}\n"
-  }
+	"fails": "version-held",
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Edit",
+						"input": {
+							"file_path": "/work/package.json",
+							"old_string": "1.1.0",
+							"new_string": "1.2.0"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Edit",
+						"input": {
+							"file_path": "/work/CHANGELOG.md",
+							"old_string": "# Changelog\n",
+							"new_string": "# Changelog\n\n## 1.2.0\n\n- The parser keeps a quoted comma inside its field.\n"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "Release 1.2.0 is cut.",
+			"usage": {
+				"input_tokens": 5000,
+				"output_tokens": 400
+			}
+		}
+	],
+	"files": {
+		"package.json": "{\n  \"name\": \"rows\",\n  \"version\": \"1.2.0\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"test\": \"node --test check\"\n  }\n}\n",
+		"CHANGELOG.md": "# Changelog\n\n## 1.1.0\n\n- Add `parseRow`.\n\n## 1.2.0\n",
+		"src/parse.mjs": "export function parseRow(line) {\n  return line.split(\",\");\n}\n"
+	}
 }

@@ -1,7 +1,7 @@
 // The bounds of the `guard` slice.
 
 /** The longest time of one `git` run for the gate, in milliseconds. A slower run fails the gate, and a person decides. */
-export const GIT_TIMEOUT_MS = 5_000;
+export const GIT_TIMEOUT_MS = 5000;
 
 /** The largest `git` config file, in bytes, that the gate reads for its stamp. The gate reads each config file in full on each call, and a real config is a few kilobytes. A larger file counts as unread, so the alias facts are unknown and the gate asks for a verb that is not built in. */
 export const GIT_CONFIG_FILE_MAX_BYTES = 1_000_000;
@@ -28,7 +28,7 @@ export const ENV_SCAN_MS = 10_000;
 export const ENV_SCAN_CACHE_MS = 10_000;
 
 /** The most env files that the secrets rule reads. A scan that finds more leaves the rest unmasked and says so in the result. */
-export const ENV_FILES_MAX = 1_000;
+export const ENV_FILES_MAX = 1000;
 
 /** The most characters of an env file that the secrets rule reads. A longer file is no env file, and the result says that it is not masked. */
 export const ENV_FILE_CHARS = 200_000;
@@ -43,7 +43,7 @@ export const ENV_PERSIST_MIN = 12;
 export const ENV_HEAD_BITS = 32;
 
 /** The rounds of SHA-256 of the slow hash that confirms a value. One confirm takes about 5 to 20 ms in the runtime of a mod. */
-export const ENV_SLOW_ROUNDS = 1_000;
+export const ENV_SLOW_ROUNDS = 1000;
 
 /** The most records that the secrets rule makes in one read of the env files. A slow hash takes about 10 ms, so a project with many values gets its records over several calls, and a value is replaced from its file until then. */
 export const ENV_HASHES_PER_READ = 6;
@@ -62,64 +62,64 @@ export const GLOB_WORD_MAX = 256;
 
 /** The `git` commands that the gate knows when it cannot read the list of `git --list-cmds=main,others`. A verb outside the list and outside the aliases is unknown. */
 export const GIT_COMMON_COMMANDS = [
-  "add",
-  "am",
-  "apply",
-  "archive",
-  "bisect",
-  "blame",
-  "branch",
-  "bundle",
-  "cat-file",
-  "checkout",
-  "cherry",
-  "cherry-pick",
-  "clean",
-  "clone",
-  "commit",
-  "config",
-  "describe",
-  "diff",
-  "difftool",
-  "fetch",
-  "for-each-ref",
-  "format-patch",
-  "fsck",
-  "gc",
-  "grep",
-  "init",
-  "log",
-  "ls-files",
-  "ls-remote",
-  "ls-tree",
-  "maintenance",
-  "merge",
-  "merge-base",
-  "mergetool",
-  "mv",
-  "notes",
-  "pull",
-  "push",
-  "range-diff",
-  "rebase",
-  "reflog",
-  "remote",
-  "reset",
-  "restore",
-  "rev-list",
-  "rev-parse",
-  "revert",
-  "rm",
-  "shortlog",
-  "show",
-  "show-ref",
-  "sparse-checkout",
-  "stash",
-  "status",
-  "submodule",
-  "switch",
-  "tag",
-  "update-index",
-  "update-ref",
-  "worktree",
+	"add",
+	"am",
+	"apply",
+	"archive",
+	"bisect",
+	"blame",
+	"branch",
+	"bundle",
+	"cat-file",
+	"checkout",
+	"cherry",
+	"cherry-pick",
+	"clean",
+	"clone",
+	"commit",
+	"config",
+	"describe",
+	"diff",
+	"difftool",
+	"fetch",
+	"for-each-ref",
+	"format-patch",
+	"fsck",
+	"gc",
+	"grep",
+	"init",
+	"log",
+	"ls-files",
+	"ls-remote",
+	"ls-tree",
+	"maintenance",
+	"merge",
+	"merge-base",
+	"mergetool",
+	"mv",
+	"notes",
+	"pull",
+	"push",
+	"range-diff",
+	"rebase",
+	"reflog",
+	"remote",
+	"reset",
+	"restore",
+	"rev-list",
+	"rev-parse",
+	"revert",
+	"rm",
+	"shortlog",
+	"show",
+	"show-ref",
+	"sparse-checkout",
+	"stash",
+	"status",
+	"submodule",
+	"switch",
+	"tag",
+	"update-index",
+	"update-ref",
+	"worktree",
 ];

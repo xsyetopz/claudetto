@@ -22,30 +22,43 @@ export type Path = "handover" | "compact" | "handoff-then-compact";
  * `model` is the first request step after a handover, and `null` is the session model.
  */
 export interface PathRow {
-  readonly case: Case;
-  readonly tokensMax: number;
-  readonly path: Path;
-  readonly model: string | null;
+	readonly case: Case;
+	readonly tokensMax: number;
+	readonly path: Path;
+	readonly model: string | null;
 }
 /** The context of the `group` case up to which `/compact` costs less than a handover: between the 50k and 100k runs of task 11.6. */
 export const GROUP_COMPACT_TOKENS = 75_000;
 /** The path and the model of each case (design D12, spec `handover`), from the paired runs of tasks 11.6 and 11.7. */
 export const PATH_TABLE: readonly PathRow[] = [
-  {
-    case: "group",
-    tokensMax: GROUP_COMPACT_TOKENS,
-    path: "compact",
-    model: null,
-  },
-  ...(["context", "idle", "group", "age"] as const).map((kind) => ({
-    case: kind,
-    tokensMax: Number.POSITIVE_INFINITY,
-    path: "handover" as const,
-    model: "haiku",
-  })),
+	{
+		case: "group",
+		tokensMax: GROUP_COMPACT_TOKENS,
+		path: "compact",
+		model: null,
+	},
+	...(["context", "idle", "group", "age"] as const).map((kind) => ({
+		case: kind,
+		tokensMax: Number.POSITIVE_INFINITY,
+		path: "handover" as const,
+		model: "haiku",
+	})),
 ];
 /** The most decisions that a handover names, from the end of the session. */
 export const DECISIONS_MAX = 10;
 /** The most values of the user that a handover names, from the end of the session, and the most characters of one. */
 export const USER_VALUES_MAX = 20;
 export const USER_VALUE_CHARS_MAX = 200;
+/** The most rules, errors, and files that the handoff format holds, and the most characters of a rule, a task text, and a question. */
+export const CONSTRAINTS_MAX = 40;
+export const CONSTRAINT_CHARS_MAX = 400;
+export const ERRORS_MAX = 8;
+export const READS_MAX = 20;
+export const TASK_CHARS_MAX = 160;
+export const QUESTION_CHARS_MAX = 120;
+/** The most characters of the goal. */
+export const GOAL_CHARS_MAX = 300;
+/** The tokens of the newest messages that code compaction keeps word for word (proposed, task 3.3 sets it from the probe). */
+export const TAIL_TOKENS = 20_000;
+/** The tokens above which the handoff message is too big, and the built-in compaction runs. */
+export const HEAD_TOKENS = 12_000;

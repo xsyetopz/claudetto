@@ -5,27 +5,27 @@ import { expect, test } from "bun:test";
 import { width } from "../../../plugins/claudetto/modules/statusline/width.ts";
 
 test("an emoji with default emoji presentation takes two columns", () => {
-  for (const glyph of ["⚡", "✅", "⭐", "❌", "✨", "⛔", "🚀"]) {
-    expect(width(glyph)).toBe(2);
-  }
+	for (const glyph of ["⚡", "✅", "⭐", "❌", "✨", "⛔", "🚀"]) {
+		expect(width(glyph)).toBe(2);
+	}
 });
 
 test("a symbol with text presentation takes one column", () => {
-  for (const glyph of [
-    "✎",
-    "◷",
-    "✦",
-    "▲",
-    "▼",
-    "⎇",
-    "⌂",
-    "◈",
-    "▤",
-    "◔",
-    "●",
-    "◆",
-    "☺",
-  ]) {
-    expect(width(glyph)).toBe(1);
-  }
+	for (const glyph of [
+		"✎",
+		"◷",
+		"✦",
+		"▲",
+		"▼",
+		"⎇",
+		"⌂",
+		"◈",
+		"▤",
+		"◔",
+		"●",
+		"◆",
+		"☺",
+	]) {
+		expect(width(glyph)).toBe(1);
+	}
 });

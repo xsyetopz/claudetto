@@ -1,5 +1,5 @@
 export const UNSOURCED = (v: {
-  claims: string;
+	claims: string;
 }): string => `This text has claims with no source:
 ${v.claims}
 Do one of these for each claim, then write again:

@@ -1,80 +1,80 @@
 {
-  "fails": "no-repeat-of-read-1",
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Read",
-            "input": {
-              "file_path": "/tmp/e-1/a.txt",
-              "offset": 1,
-              "limit": 600
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Read",
-            "input": {
-              "file_path": "/tmp/e-1/a.txt",
-              "offset": 1,
-              "limit": 600
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t2",
-            "name": "Read",
-            "input": {
-              "file_path": "/tmp/e-1/a.txt",
-              "offset": 601,
-              "limit": 600
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t3",
-            "name": "Bash",
-            "input": {
-              "command": "cat b.txt"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "amber-falcon-42\nvelvet-mirror-913",
-      "usage": {
-        "input_tokens": 7800,
-        "output_tokens": 600
-      }
-    }
-  ],
-  "files": {}
+	"fails": "no-repeat-of-read-1",
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Read",
+						"input": {
+							"file_path": "/tmp/e-1/a.txt",
+							"offset": 1,
+							"limit": 600
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Read",
+						"input": {
+							"file_path": "/tmp/e-1/a.txt",
+							"offset": 1,
+							"limit": 600
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t2",
+						"name": "Read",
+						"input": {
+							"file_path": "/tmp/e-1/a.txt",
+							"offset": 601,
+							"limit": 600
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t3",
+						"name": "Bash",
+						"input": {
+							"command": "cat b.txt"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "amber-falcon-42\nvelvet-mirror-913",
+			"usage": {
+				"input_tokens": 7800,
+				"output_tokens": 600
+			}
+		}
+	],
+	"files": {}
 }

@@ -1,33 +1,33 @@
 {
-  "fails": "load-keeps-json-parse",
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Edit",
-            "input": {
-              "file_path": "/tmp/e-1/src/load.mjs",
-              "old_string": "a",
-              "new_string": "b"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "Switched to eval.",
-      "usage": {
-        "input_tokens": 5100,
-        "output_tokens": 600
-      }
-    }
-  ],
-  "files": {
-    "src/load.mjs": "export const load = (t) => eval(`(${t})`);\n"
-  }
+	"fails": "load-keeps-json-parse",
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Edit",
+						"input": {
+							"file_path": "/tmp/e-1/src/load.mjs",
+							"old_string": "a",
+							"new_string": "b"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "Switched to eval.",
+			"usage": {
+				"input_tokens": 5100,
+				"output_tokens": 600
+			}
+		}
+	],
+	"files": {
+		"src/load.mjs": "export const load = (t) => eval(`(${t})`);\n"
+	}
 }

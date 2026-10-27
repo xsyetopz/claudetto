@@ -1,64 +1,64 @@
 {
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Bash",
-            "input": {
-              "command": "node --test check"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Edit",
-            "input": {
-              "file_path": "/work/src/parse.mjs",
-              "old_string": "text.split(\",\").map(Number).filter(Boolean)",
-              "new_string": "export const parse = (text) => (text === \"\" ? [] : text.split(\",\").map(Number));"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t2",
-            "name": "Bash",
-            "input": {
-              "command": "node --test check"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "I did not skip the test. `parse` dropped each zero. I fixed it, and the tests pass.",
-      "usage": {
-        "input_tokens": 5000,
-        "output_tokens": 800
-      }
-    }
-  ],
-  "files": {
-    "package.json": "{\n  \"type\": \"module\"\n}\n",
-    "check/parse.test.mjs": "import assert from \"node:assert\";\nimport { test } from \"node:test\";\nimport { parse } from \"../src/parse.mjs\";\n\ntest(\"parse keeps a zero\", () => {\n  assert.deepEqual(parse(\"0,1,2\"), [0, 1, 2]);\n});\n",
-    "src/parse.mjs": "export const parse = (text) => (text === \"\" ? [] : text.split(\",\").map(Number));\n"
-  }
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Bash",
+						"input": {
+							"command": "node --test check"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Edit",
+						"input": {
+							"file_path": "/work/src/parse.mjs",
+							"old_string": "text.split(\",\").map(Number).filter(Boolean)",
+							"new_string": "export const parse = (text) => (text === \"\" ? [] : text.split(\",\").map(Number));"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t2",
+						"name": "Bash",
+						"input": {
+							"command": "node --test check"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "I did not skip the test. `parse` dropped each zero. I fixed it, and the tests pass.",
+			"usage": {
+				"input_tokens": 5000,
+				"output_tokens": 800
+			}
+		}
+	],
+	"files": {
+		"package.json": "{\n  \"type\": \"module\"\n}\n",
+		"check/parse.test.mjs": "import assert from \"node:assert\";\nimport { test } from \"node:test\";\nimport { parse } from \"../src/parse.mjs\";\n\ntest(\"parse keeps a zero\", () => {\n  assert.deepEqual(parse(\"0,1,2\"), [0, 1, 2]);\n});\n",
+		"src/parse.mjs": "export const parse = (text) => (text === \"\" ? [] : text.split(\",\").map(Number));\n"
+	}
 }

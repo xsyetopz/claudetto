@@ -1,25 +1,25 @@
 {
-  "$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-marketplace.json",
-  "name": "claudetto",
-  "owner": {
-    "name": "xsyetopz"
-  },
-  "description": "Lists the claudetto plugin and its optional browser and docs plugins.",
-  "metadata": {
-    "version": "0.4.0-alpha.1"
-  },
-  "plugins": [
-    {
-      "name": "claudetto",
-      "source": "./plugins/claudetto",
-      "description": "Adds a lean output style, a main agent with a roster of six agents, a permission gate that answers each permission prompt, a status line command with the plan usage, and the `setup` skill. Adds the MiniSpec skills `propose`, `apply`, `verify`, `archive`, `explore`, `update`, and `sync`, a handover to a fresh session in place of the compaction summary, a `goal` check and a check of each ticked task, a ledger of edited files, and a cleanup at session start. With a key, Jev answers `AskUserQuestion`, the asks of the gate, and the handover offer.",
-      "category": "productivity"
-    },
-    {
-      "name": "claudetto-browser",
-      "source": "./plugins/claudetto-browser",
-      "description": "Drives a real browser with `agent-browser` for pages that need JavaScript, a login, or clicks, and for checks of a UI change. `WebFetch` and `WebSearch` stay the tools for reading and search, because they cost fewer tokens.",
-      "category": "productivity"
-    }
-  ]
+	"$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-marketplace.json",
+	"name": "claudetto",
+	"owner": {
+		"name": "xsyetopz"
+	},
+	"description": "Lists the claudetto plugin and its optional browser and docs plugins.",
+	"metadata": {
+		"version": "0.4.0-alpha.1"
+	},
+	"plugins": [
+		{
+			"name": "claudetto",
+			"source": "./plugins/claudetto",
+			"description": "Adds a lean output style, a main agent with a roster of six agents, a permission gate that answers each permission prompt, a status line command with the plan usage, and the `setup` skill. Adds the MiniSpec skills `propose`, `apply`, `verify`, `archive`, `explore`, `update`, and `sync`, a handover to a fresh session in place of the compaction summary, a `goal` check and a check of each ticked task, a ledger of edited files, and a cleanup at session start. With a key, Jev answers `AskUserQuestion`, the asks of the gate, and the handover offer.",
+			"category": "productivity"
+		},
+		{
+			"name": "claudetto-browser",
+			"source": "./plugins/claudetto-browser",
+			"description": "Drives a real browser with `agent-browser` for pages that need JavaScript, a login, or clicks, and for checks of a UI change. `WebFetch` and `WebSearch` stay the tools for reading and search, because they cost fewer tokens.",
+			"category": "productivity"
+		}
+	]
 }

@@ -4,11 +4,11 @@
 
 /** `tmp` is the temp folder of Claude Code, `sessions` is `~/.claude/sessions/`, `worktrees` is `<project>/.claude/worktrees/`, and `current` is the live session id. */
 interface CleanupRoots {
-  readonly tmp: string;
-  readonly sessions: string;
-  readonly worktrees: string;
-  readonly days: number;
-  readonly current: string;
+	readonly tmp: string;
+	readonly sessions: string;
+	readonly worktrees: string;
+	readonly days: number;
+	readonly current: string;
 }
 
 // The positional parameters are `$1` tmp, `$2` sessions, `$3` worktrees, `$4` days, and `$5` current.
@@ -86,35 +86,46 @@ printf 'unknown\t%s\n' "$unknown"
 `.replace(/\\\$/g, "$");
 
 export const cleanupArgv = (roots: CleanupRoots): string[] => [
-  "sh",
-  "-c",
-  SCRIPT,
-  "sh",
-  roots.tmp,
-  roots.sessions,
-  roots.worktrees,
-  String(roots.days),
-  roots.current,
+	"sh",
+	"-c",
+	SCRIPT,
+	"sh",
+	roots.tmp,
+	roots.sessions,
+	roots.worktrees,
+	String(roots.days),
+	roots.current,
 ];
 
 /** The report from the output of the script. `unknown` counts the entries of the temp folder that no rule names. A line that it does not know adds nothing. */
 export const parseCleanup = (stdout: string) => {
-  const report = {
-    folders: 0,
-    bytes: 0,
-    files: 0,
-    worktrees: [] as string[],
-    kept: [] as { path: string; reason: string }[],
-    unknown: 0,
-  };
-  for (const line of stdout.split("\n")) {
-    const [kind = "", a = "", b = ""] = line.split("\t");
-    if (kind === "dir" || kind === "file") {
-      report[kind === "dir" ? "folders" : "files"]++;
-      report.bytes += Number(a) || 0;
-    } else if (kind === "worktree") report.worktrees.push(a);
-    else if (kind === "kept") report.kept.push({ path: b, reason: a });
-    else if (kind === "unknown") report.unknown += Number(a) || 0;
-  }
-  return report;
+	const report: {
+		folders: number;
+		bytes: number;
+		files: number;
+		worktrees: string[];
+		kept: { path: string; reason: string }[];
+		unknown: number;
+	} = {
+		folders: 0,
+		bytes: 0,
+		files: 0,
+		worktrees: [],
+		kept: [],
+		unknown: 0,
+	};
+	for (const line of stdout.split("\n")) {
+		const [kind = "", a = "", b = ""] = line.split("\t");
+		if (kind === "dir" || kind === "file") {
+			report[kind === "dir" ? "folders" : "files"]++;
+			report.bytes += Number(a) || 0;
+		} else if (kind === "worktree") {
+			report.worktrees.push(a);
+		} else if (kind === "kept") {
+			report.kept.push({ path: b, reason: a });
+		} else if (kind === "unknown") {
+			report.unknown += Number(a) || 0;
+		}
+	}
+	return report;
 };

@@ -3,20 +3,22 @@
 import { expect, test } from "bun:test";
 import { readCount } from "../../../dev/capture/domain/count.ts";
 
+const INPUT_TOKENS_RE = /input_tokens/;
+
 const reply = (value: unknown) => JSON.stringify({ input_tokens: value });
 
 test("`readCount` accepts zero and a whole number", () => {
-  expect(readCount(reply(0))).toBe(0);
-  expect(readCount(reply(42))).toBe(42);
+	expect(readCount(reply(0))).toBe(0);
+	expect(readCount(reply(42))).toBe(42);
 });
 
 test.each([1.5, -3, "7", null, Number.MAX_SAFE_INTEGER + 2])(
-  "`readCount` rejects the value %p",
-  (value) => {
-    expect(() => readCount(reply(value))).toThrow(/input_tokens/);
-  },
+	"`readCount` rejects the value %p",
+	(value) => {
+		expect(() => readCount(reply(value))).toThrow(INPUT_TOKENS_RE);
+	},
 );
 
 test("`readCount` rejects a reply with no `input_tokens`", () => {
-  expect(() => readCount("{}")).toThrow(/input_tokens/);
+	expect(() => readCount("{}")).toThrow(INPUT_TOKENS_RE);
 });

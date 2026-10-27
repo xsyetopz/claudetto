@@ -2,19 +2,20 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
+import { file as bunFile, Glob } from "bun";
 import { CHARS_PER_TOKEN } from "../../plugins/claudetto/modules/session/handoff/limits.ts";
 import { SKILL_MAX_TOKENS } from "../../tools/limits.ts";
 import { PLUGINS } from "../support/repo.ts";
 
 test("each `SKILL.md` of a plugin has at most `SKILL_MAX_TOKENS` tokens, as `CHARS_PER_TOKEN` characters for each", async () => {
-  const files = [...new Bun.Glob("*/skills/*/SKILL.md").scanSync(PLUGINS)];
-  expect(files.length).toBeGreaterThan(0);
-  const over: string[] = [];
-  for (const file of files) {
-    const tokens =
-      (await Bun.file(path.join(PLUGINS, file)).text()).length /
-      CHARS_PER_TOKEN;
-    if (tokens > SKILL_MAX_TOKENS) over.push(`${file}: ${Math.ceil(tokens)}`);
-  }
-  expect(over).toStrictEqual([]);
+	const files = [...new Glob("*/skills/*/SKILL.md").scanSync(PLUGINS)];
+	expect(files.length).toBeGreaterThan(0);
+	const texts = await Promise.all(
+		files.map((file) => bunFile(path.join(PLUGINS, file)).text()),
+	);
+	const over = files.flatMap((file, i) => {
+		const tokens = (texts[i] ?? "").length / CHARS_PER_TOKEN;
+		return tokens > SKILL_MAX_TOKENS ? [`${file}: ${Math.ceil(tokens)}`] : [];
+	});
+	expect(over).toStrictEqual([]);
 });

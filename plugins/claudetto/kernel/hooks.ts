@@ -7,7 +7,7 @@ export type Handler<E extends EventName = EventName> = Events[E];
 
 /** One segment of the status line, on the row `row`. */
 export interface StatusSegment {
-  readonly id: string;
-  readonly row: number;
-  readonly render: (status: unknown) => string | null;
+	readonly id: string;
+	readonly row: number;
+	readonly render: (status: unknown) => string | null;
 }

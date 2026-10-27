@@ -1,50 +1,50 @@
 {
-  "fails": "edit-spares-src-mean-mjs",
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Agent",
-            "input": {
-              "prompt": "fix"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Edit",
-            "input": {
-              "file_path": "/tmp/e-1/src/mean.mjs",
-              "old_string": "a",
-              "new_string": "b"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "Done.",
-      "usage": {
-        "input_tokens": 6000,
-        "output_tokens": 600
-      }
-    }
-  ],
-  "files": {
-    "src/stats.mjs": "export const mean = (xs) => 0;\n",
-    "src/mean.mjs": "// changed\n",
-    "check/mean.test.mjs": "x"
-  }
+	"fails": "edit-spares-src-mean-mjs",
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Agent",
+						"input": {
+							"prompt": "fix"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Edit",
+						"input": {
+							"file_path": "/tmp/e-1/src/mean.mjs",
+							"old_string": "a",
+							"new_string": "b"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "Done.",
+			"usage": {
+				"input_tokens": 6000,
+				"output_tokens": 600
+			}
+		}
+	],
+	"files": {
+		"src/stats.mjs": "export const mean = (xs) => 0;\n",
+		"src/mean.mjs": "// changed\n",
+		"check/mean.test.mjs": "x"
+	}
 }

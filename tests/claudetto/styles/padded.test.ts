@@ -4,45 +4,50 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
+import { deepEquals, file } from "bun";
 import { parse } from "yaml";
 import { REPO, walk } from "../../support/repo.ts";
 
-type Case = {
-  name: string;
-  graders: { name: string; type: string; focus?: string; criteria?: string }[];
-};
+interface Case {
+	name: string;
+	graders: { name: string; type: string; focus?: string; criteria?: string }[];
+}
 
 const EVALS = path.join(REPO, "plugins/claudetto/evals");
 const PADDED_EVALS = path.join(import.meta.dir, "padded/evals");
 
 const load = async (dir: string): Promise<Case[]> =>
-  Promise.all(
-    walk(dir, { keep: (f) => path.basename(f) === "case.yaml" }).map(
-      async (f) => parse(await Bun.file(f).text()) as Case,
-    ),
-  );
+	Promise.all(
+		(await walk(dir, { keep: (f) => path.basename(f) === "case.yaml" })).map(
+			async (f): Promise<Case> => parse(await file(f).text()),
+		),
+	);
 
 const judgeOf = (c: Case) => c.graders.find((g) => g.name === "plain-reply");
 
 test("the test plugin has the padded case and the plain case", async () => {
-  const names = (await load(PADDED_EVALS)).map((c) => c.name).sort();
-  expect(names).toEqual(["padded-reply", "plain-control"]);
+	const names = (await load(PADDED_EVALS))
+		.map((c) => c.name)
+		.sort((a, b) => Number(a > b) - Number(a < b));
+	expect(names).toEqual(["padded-reply", "plain-control"]);
 });
 
 test("each case of the test plugin has only the judge `plain-reply`", async () => {
-  for (const c of await load(PADDED_EVALS))
-    expect(c.graders.map((g) => g.name)).toEqual(["plain-reply"]);
+	for (const c of await load(PADDED_EVALS)) {
+		expect(c.graders.map((g) => g.name)).toEqual(["plain-reply"]);
+	}
 });
 
 test("the judge `plain-reply` is the same in each style case and in the test plugin", async () => {
-  const style = (await load(EVALS)).filter(judgeOf);
-  expect(style.length).toBe(5);
-  const judges = [...style, ...(await load(PADDED_EVALS))].map((c) => {
-    const g = judgeOf(c);
-    expect(g, c.name).toBeTruthy();
-    return { type: g?.type, focus: g?.focus, criteria: g?.criteria };
-  });
-  for (const j of judges) expect(j).toStrictEqual(judges[0] as typeof j);
-  expect(judges[0]?.type).toBe("llm");
-  expect(judges[0]?.focus).toBe("last_message");
+	const style = (await load(EVALS)).filter(judgeOf);
+	expect(style.length).toBe(5);
+	const judges = [...style, ...(await load(PADDED_EVALS))].map((c) => {
+		const g = judgeOf(c);
+		expect(g, c.name).toBeTruthy();
+		return { type: g?.type, focus: g?.focus, criteria: g?.criteria };
+	});
+	const different = judges.filter((j) => !deepEquals(j, judges[0], true));
+	expect(different).toStrictEqual([]);
+	expect(judges[0]?.type).toBe("llm");
+	expect(judges[0]?.focus).toBe("last_message");
 });

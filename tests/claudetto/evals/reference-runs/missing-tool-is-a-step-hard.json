@@ -1,77 +1,77 @@
 {
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Bash",
-            "input": {
-              "command": "bash scripts/report.sh"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Bash",
-            "input": {
-              "command": "brew install csvtool"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t2",
-            "name": "Bash",
-            "input": {
-              "command": "python3 - <<'PY'\nimport csv, collections\nt = collections.OrderedDict()\nfor r in csv.DictReader(open('data/sales.csv')):\n    t[r['region']] = t.get(r['region'], 0) + int(r['amount'])\nopen('out/totals.csv', 'w').write(''.join(f'{k},{v}\\n' for k, v in sorted(t.items())))\nPY"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t3",
-            "name": "Bash",
-            "input": {
-              "command": "cat out/totals.csv"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "`csvtool` is not installed and the install failed. I made `out/totals.csv` with `python3`. The north total is 175.",
-      "usage": {
-        "input_tokens": 5000,
-        "output_tokens": 800
-      }
-    }
-  ],
-  "files": {
-    "out/totals.csv": "east,215\nnorth,175\nsouth,110\n",
-    "scripts/report.sh": "#!/usr/bin/env bash\n# Writes one `region,total` line for each region to `out/totals.csv`, sorted by region.\nset -euo pipefail\ncd \"$(dirname \"$0\")/..\"\ncsvtool namedcol region,amount data/sales.csv |\n  tail -n +2 |\n  awk -F, '{ t[$1] += $2 } END { for (r in t) print r \",\" t[r] }' |\n  sort > out/totals.csv\n",
-    "data/sales.csv": "id,customer,region,amount\n1,\"Smith, Anna\",north,120\n2,\"Lee, Bo\",south,80\n3,Cruz,north,45\n4,\"Park, Jun\",east,200\n5,\"Diaz, Eva\",south,30\n6,Wong,east,15\n7,\"Ng, Ty\",north,10\n"
-  }
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Bash",
+						"input": {
+							"command": "bash scripts/report.sh"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Bash",
+						"input": {
+							"command": "brew install csvtool"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t2",
+						"name": "Bash",
+						"input": {
+							"command": "python3 - <<'PY'\nimport csv, collections\nt = collections.OrderedDict()\nfor r in csv.DictReader(open('data/sales.csv')):\n    t[r['region']] = t.get(r['region'], 0) + int(r['amount'])\nopen('out/totals.csv', 'w').write(''.join(f'{k},{v}\\n' for k, v in sorted(t.items())))\nPY"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t3",
+						"name": "Bash",
+						"input": {
+							"command": "cat out/totals.csv"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "`csvtool` is not installed and the install failed. I made `out/totals.csv` with `python3`. The north total is 175.",
+			"usage": {
+				"input_tokens": 5000,
+				"output_tokens": 800
+			}
+		}
+	],
+	"files": {
+		"out/totals.csv": "east,215\nnorth,175\nsouth,110\n",
+		"scripts/report.sh": "#!/usr/bin/env bash\n# Writes one `region,total` line for each region to `out/totals.csv`, sorted by region.\nset -euo pipefail\ncd \"$(dirname \"$0\")/..\"\ncsvtool namedcol region,amount data/sales.csv |\n  tail -n +2 |\n  awk -F, '{ t[$1] += $2 } END { for (r in t) print r \",\" t[r] }' |\n  sort > out/totals.csv\n",
+		"data/sales.csv": "id,customer,region,amount\n1,\"Smith, Anna\",north,120\n2,\"Lee, Bo\",south,80\n3,Cruz,north,45\n4,\"Park, Jun\",east,200\n5,\"Diaz, Eva\",south,30\n6,Wong,east,15\n7,\"Ng, Ty\",north,10\n"
+	}
 }

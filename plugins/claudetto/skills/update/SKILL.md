@@ -1,13 +1,13 @@
 ---
 name: update
-description: Revises the planning artifacts of a change and keeps them equal to each other, with no code edit.
+description: Revises the planning artifacts of a change and keeps them equal to each other, in artifacts only.
 disable-model-invocation: true
 argument-hint: "[change]"
 allowed-tools: Bash(minispec *)
 ---
 
 Revise the artifacts that exist, and edit only artifacts.
-This skill creates no missing artifact.
+Leave a missing artifact to `/claudetto:propose`.
 
 1. Pick the change: `$ARGUMENTS`, the one that the talk names, or the one change of `minispec list --json`.
    Ask the user when more than one fits, with the most recent change first. In `claude -p`, take the first one, and say which.
@@ -19,9 +19,15 @@ This skill creates no missing artifact.
 3. Find the request.
    When the user names a revision, that revision is the first edit.
    When the user only says "update" or "make it coherent", read the artifacts and check them against each other for contradictions, gaps, and repeats.
-4. Draft the edit in the talk, not in files.
+4. Draft the edit in the talk, so that the user agrees before a file changes.
    Check each other artifact against the draft in any direction, because an edit of a later artifact can force a change of an earlier one.
-   When the change is already coherent, say so and propose no edit.
+   When the change is already coherent, say so and leave the artifacts as they are.
+   When a `MODIFIED` requirement renames a scenario of the main spec, write two bullets in the block, before the scenarios, so that `validate` and `archive` read the old scenario as renamed:
+   ```text
+   - RENAMED SCENARIO FROM: `#### Scenario: <old name>`
+   - RENAMED SCENARIO TO: `#### Scenario: <new name>`
+   ```
+   The new scenario must be in the block. The archive removes the two bullets from the main spec.
 5. Show each edit with its reason, and write it only after the yes of the user. In `claude -p`, a revision that the prompt names is that yes, and each other edit goes in the report as a proposal.
    Leave the file as it is after a no.
    For a new `specs/<capability>/spec.md` in a change that already has a spec, use a path that is free, and ask first.

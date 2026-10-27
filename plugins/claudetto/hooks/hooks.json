@@ -1,16 +1,16 @@
 {
-  "$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-plugin-hooks.json",
-  "modules": ["./register.ts"],
-  "hooks": {
-    "PreModelSwitch": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/modules/session/handoff/adapters/switch.ts\""
-          }
-        ]
-      }
-    ]
-  }
+	"$schema": "https://raw.githubusercontent.com/xsyetopz/claude-code-docs/main/schemas/claude-code-plugin-hooks.json",
+	"modules": ["./register.ts"],
+	"hooks": {
+		"PreModelSwitch": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun --no-env-file \"${CLAUDE_PLUGIN_ROOT}/modules/session/handoff/adapters/switch.ts\""
+					}
+				]
+			}
+		]
+	}
 }

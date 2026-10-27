@@ -2,8 +2,8 @@
 
 /** The protected files at a fixed path below the project root, besides the plan and spec files and the `tasks.md` boxes that `kindOf` finds. */
 export const PROTECTED_FILES: readonly string[] = [
-  ".claudetto/goal.json",
-  ".jscpd-baseline.json",
+	".claude/claudetto/goal.json",
+	".jscpd-baseline.json",
 ];
 
 /** The folder, below the project root, that holds the plan and spec files. */
@@ -25,10 +25,10 @@ export const PROTECT_DIRS_MAX = 300;
 export const PROTECT_DEPTH_MAX = 6;
 
 /** The longest time of the `rm` run that deletes a protected file that a call created, in milliseconds. */
-export const RM_TIMEOUT_MS = 5_000;
+export const RM_TIMEOUT_MS = 5000;
 
 /** The longest time of one `git` run that the undo makes, in milliseconds. */
-export const GIT_TIMEOUT_MS = 5_000;
+export const GIT_TIMEOUT_MS = 5000;
 
 /** The most commits whose blob the undo compares with a changed file. */
 export const GIT_COMMITS_MAX = 200;
@@ -44,4 +44,4 @@ export const STAMP_IGNORED: readonly string[] = ["branch.", "submodule."];
 
 /** The script, run with `sh -c`, that prints the program that `ssh` and `git` name in `PATH` as `ssh=<path>` and `git=<path>`, a line each. A name that `PATH` does not have gives an empty path. */
 export const BIN_SCRIPT =
-  'for c in ssh git; do printf "%s=%s\\n" "$c" "$(command -v "$c")"; done';
+	'for c in ssh git; do printf "%s=%s\\n" "$c" "$(command -v "$c")"; done';

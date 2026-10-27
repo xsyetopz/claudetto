@@ -3,6 +3,7 @@
 
 import { expect, test } from "bun:test";
 import path from "node:path";
+import { Glob } from "bun";
 import { DEFERRED_TOOLS } from "../../plugins/claudetto/modules/session/prompt/domain/tools.ts";
 import { REPO } from "../support/repo.ts";
 
@@ -14,36 +15,44 @@ const FIELDS = new Proxy({}, { get: () => "x" });
 
 /** The names in backticks of the text `text`. */
 const quoted = (text: string): string[] =>
-  [...text.matchAll(/`([A-Za-z][\w]*)`/g)].map((m) => m[1] as string);
+	[...text.matchAll(/`([A-Za-z][\w]*)`/g)].map((m) => m[1] ?? "");
 
 /** The deny texts of each `prompts.ts` of the core plugin, by export name. */
 const denyTexts = async (): Promise<Record<string, string>> => {
-  const texts: Record<string, string> = {};
-  for (const file of new Bun.Glob("**/prompts.ts").scanSync(MODULES)) {
-    const exports = (await import(path.join(MODULES, file))) as Record<
-      string,
-      unknown
-    >;
-    for (const [name, value] of Object.entries(exports))
-      if (DENY.test(name))
-        texts[`${file} ${name}`] =
-          typeof value === "function" ? String(value(FIELDS)) : String(value);
-  }
-  return texts;
+	const texts: Record<string, string> = {};
+	const files = [...new Glob("**/prompts.ts").scanSync(MODULES)];
+	const loaded = await Promise.all(
+		files.map(
+			async (file): Promise<[string, Record<string, unknown>]> => [
+				file,
+				await import(path.join(MODULES, file)),
+			],
+		),
+	);
+	for (const [file, exports] of loaded) {
+		for (const [name, value] of Object.entries(exports)) {
+			if (DENY.test(name)) {
+				texts[`${file} ${name}`] =
+					typeof value === "function" ? String(value(FIELDS)) : String(value);
+			}
+		}
+	}
+	return texts;
 };
 
 test("no tool that a deny text names is deferred", async () => {
-  const texts = await denyTexts();
-  const deferred = Object.entries(texts).flatMap(([name, text]) =>
-    quoted(text)
-      .filter((tool) => DEFERRED_TOOLS.includes(tool))
-      .map((tool) => `${name}: ${tool}`),
-  );
-  expect(deferred).toEqual([]);
+	const texts = await denyTexts();
+	const deferred = Object.entries(texts).flatMap(([name, text]) =>
+		quoted(text)
+			.filter((tool) => DEFERRED_TOOLS.includes(tool))
+			.map((tool) => `${name}: ${tool}`),
+	);
+	expect(deferred).toEqual([]);
 });
 
 test("the scan finds the tools that the deny texts name", async () => {
-  const names = new Set(Object.values(await denyTexts()).flatMap(quoted));
-  for (const tool of ["Monitor", "TaskStop", "Edit", "Write"])
-    expect(names.has(tool), tool).toBe(true);
+	const names = new Set(Object.values(await denyTexts()).flatMap(quoted));
+	for (const tool of ["Monitor", "TaskStop", "Edit", "Write"]) {
+		expect(names.has(tool), tool).toBe(true);
+	}
 });

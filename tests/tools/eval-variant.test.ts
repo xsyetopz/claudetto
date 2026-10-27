@@ -4,7 +4,7 @@ import { expect, test } from "bun:test";
 import { compareArgs } from "../../dev/eval-variant.ts";
 
 test("the compare arguments keep the temp folder of each arm (review row 126)", () => {
-  const args = compareArgs("/tmp/tree", ["--case", "x"]);
-  expect(args).toContain("--keep-temp");
-  expect(args.slice(-2)).toStrictEqual(["--case", "x"]);
+	const args = compareArgs("/tmp/tree", ["--case", "x"]);
+	expect(args).toContain("--keep-temp");
+	expect(args.slice(-2)).toStrictEqual(["--case", "x"]);
 });

@@ -44,6 +44,14 @@ test("`unquote` reads escapes, and `chainCalls` reads a type chain", () => {
   ]);
 });
 
+test("`chainCalls` gives empty head args and no calls for an unbalanced head", () => {
+  expect(chainCalls("z.string(")).toStrictEqual({
+    head: "z.string",
+    headArgs: "",
+    calls: [],
+  });
+});
+
 test("the fixture gives its keys, nested keys, and managed-only keys", () => {
   const body = findSchemaBody(FIXTURE) as string;
   expect(parseEntries(body, true).map(([k]) => k)).toStrictEqual([
@@ -74,12 +82,12 @@ test("the fixture gives its keys, nested keys, and managed-only keys", () => {
 
 /** Runs `dev/schema/main.ts` on a bundle with the text `text`, and checks that it fails and writes no file. Gives the standard error. */
 const failsOnBundle = async (text: string): Promise<string> => {
-  const dir = tmpDir("schema-test");
+  const dir = await tmpDir("schema-test");
   try {
     const bundle = path.join(dir, "bundle.js");
     const out = path.join(dir, "out");
     await Bun.write(bundle, text);
-    const run = spawnText(process.execPath, [
+    const run = await spawnText(process.execPath, [
       path.join(REPO, "dev/schema/main.ts"),
       "--bundle",
       bundle,
@@ -104,11 +112,11 @@ test("a bundle without the schema fails with the version and writes no file", as
   expect(stderr.includes(VERSION), stderr).toBeTruthy();
 });
 
-test("`--version` of a version that is not installed fails with that version and writes no file", () => {
-  const dir = tmpDir("schema-test");
+test("`--version` of a version that is not installed fails with that version and writes no file", async () => {
+  const dir = await tmpDir("schema-test");
   try {
     const out = path.join(dir, "out");
-    const run = spawnText(process.execPath, [
+    const run = await spawnText(process.execPath, [
       path.join(REPO, "dev/schema/main.ts"),
       "--version",
       "9.9.9",
@@ -127,7 +135,7 @@ test("a bundle without the definitions of its type helpers stops the build and w
   expect(await failsOnBundle(FIXTURE.replace(HELPERS, ""))).not.toBe("");
 });
 
-test("a helper resolves in the module that exports it, and not in a later module that reuses its name", () => {
+test("a helper resolves in the module that exports it, and not in a later module that reuses its name", async () => {
   const bundle = [
     HELPERS.replace("export{o,", "export{o as s0,").replace(
       "import{o,",

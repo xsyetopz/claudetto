@@ -5,10 +5,16 @@ export const ABSENT = ["ENOENT", "ENOTDIR"];
 
 /** True when `err` has a `code` or a `name` in `kinds`. */
 export const isExpected = (err: unknown, ...kinds: string[]): boolean => {
-  const e = err as { code?: unknown; name?: unknown } | null | undefined;
-  return kinds.some((kind) => e?.code === kind || e?.name === kind);
+	if (typeof err !== "object" || err === null) {
+		return false;
+	}
+	const code = "code" in err ? err.code : undefined;
+	const name = "name" in err ? err.name : undefined;
+	return kinds.some((kind) => code === kind || name === kind);
 };
 
 export const rethrowUnless = (err: unknown, ...kinds: string[]): void => {
-  if (!isExpected(err, ...kinds)) throw err;
+	if (!isExpected(err, ...kinds)) {
+		throw err;
+	}
 };

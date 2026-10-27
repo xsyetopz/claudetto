@@ -1,46 +1,46 @@
 {
-  "fails": "scratch-folder-removed",
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Bash",
-            "input": {
-              "command": "mkdir -p $TMPDIR/claudetto-eval-scratch && cp data/* $TMPDIR/claudetto-eval-scratch"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Bash",
-            "input": {
-              "command": "wc -l data/* > total.txt"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "Wrote 12.",
-      "usage": {
-        "input_tokens": 6000,
-        "output_tokens": 600
-      }
-    }
-  ],
-  "files": {
-    "total.txt": "12\n"
-  }
+	"fails": "scratch-folder-removed",
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Bash",
+						"input": {
+							"command": "mkdir -p $TMPDIR/claudetto-eval-scratch && cp data/* $TMPDIR/claudetto-eval-scratch"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Bash",
+						"input": {
+							"command": "wc -l data/* > total.txt"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "Wrote 12.",
+			"usage": {
+				"input_tokens": 6000,
+				"output_tokens": 600
+			}
+		}
+	],
+	"files": {
+		"total.txt": "12\n"
+	}
 }

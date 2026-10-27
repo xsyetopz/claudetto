@@ -8,7 +8,7 @@ export const LEDGER_MAX_FILES = 200;
 /** The longest look-back in milliseconds of the capture of the changes of a `Bash` call, also when the call reports no run time. */
 export const BASH_CHANGE_MAX_MS = 600_000;
 /** The margin in milliseconds before the start of a `Bash` call, for the grain of the modification times of files. */
-export const BASH_CHANGE_SLACK_MS = 2_000;
+export const BASH_CHANGE_SLACK_MS = 2000;
 /** The most changed files of `git status` that the capture of a `Bash` call and the context of `git status` and `git diff` read. */
 export const WHO_FILES_MAX = 50;
 /** The longest time of one `git` run of the capture, in milliseconds. */

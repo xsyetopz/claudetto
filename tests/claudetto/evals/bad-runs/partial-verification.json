@@ -1,45 +1,45 @@
 {
-  "fails": "edit-spares-check-export-test-mjs",
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Bash",
-            "input": { "command": "node --test check/" }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Edit",
-            "input": {
-              "file_path": "/tmp/e-1/check/export.test.mjs",
-              "old_string": "{ skip: file === undefined ? \"BILLING_EXPORT is not set\" : false },",
-              "new_string": ""
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "All checks pass.",
-      "usage": { "input_tokens": 5100, "output_tokens": 600 }
-    }
-  ],
-  "files": {
-    "src/split.mjs": "export const split = (s) => s;\n",
-    "check/split.test.mjs": "x",
-    "check/export.test.mjs": "x"
-  }
+	"fails": "edit-spares-check-export-test-mjs",
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Bash",
+						"input": { "command": "node --test check/" }
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Edit",
+						"input": {
+							"file_path": "/tmp/e-1/check/export.test.mjs",
+							"old_string": "{ skip: file === undefined ? \"BILLING_EXPORT is not set\" : false },",
+							"new_string": ""
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "All checks pass.",
+			"usage": { "input_tokens": 5100, "output_tokens": 600 }
+		}
+	],
+	"files": {
+		"src/split.mjs": "export const split = (s) => s;\n",
+		"check/split.test.mjs": "x",
+		"check/export.test.mjs": "x"
+	}
 }

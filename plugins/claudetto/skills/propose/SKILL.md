@@ -24,6 +24,12 @@ In `claude -p`, write `[NEEDS CLARIFICATION: <question>]` in place of the guess,
 4. Take the first artifact with the status `ready`.
    Read its template, follow its instruction, the `context`, and its list in `rules`, and write its `outputPath` in the change folder.
    Then run step 3 again.
+   When a `MODIFIED` requirement renames a scenario of the main spec, write two bullets in the block, before the scenarios, so that `validate` and `archive` read the old scenario as renamed:
+   ```text
+   - RENAMED SCENARIO FROM: `#### Scenario: <old name>`
+   - RENAMED SCENARIO TO: `#### Scenario: <new name>`
+   ```
+   The new scenario must be in the block. The archive removes the two bullets from the main spec.
 5. When each artifact is `done`, run `minispec validate <name>` and fix each issue.
 6. End the report with this line to the user, as the last line:
    `Next: /claudetto:apply`.

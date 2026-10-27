@@ -1,62 +1,62 @@
 {
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Read",
-            "input": {
-              "file_path": "/work/src/dedupe.mjs"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Edit",
-            "input": {
-              "file_path": "/work/src/dedupe.mjs",
-              "old_string": "seen.set(row.id, row);",
-              "new_string": "if (!seen.has(row.id)) seen.set(row.id, row);"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t2",
-            "name": "Bash",
-            "input": {
-              "command": "node -e \"import('./src/dedupe.mjs').then(m => console.log(m.dedupe([{id:1,v:'a'},{id:1,v:'b'}])))\""
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "Fixed.",
-      "usage": {
-        "input_tokens": 5000,
-        "output_tokens": 400
-      }
-    }
-  ],
-  "files": {
-    "src/dedupe.mjs": "export function dedupe(rows) {\n  const seen = new Map();\n  for (const row of rows) if (!seen.has(row.id)) seen.set(row.id, row);\n  return [...seen.values()];\n}\n"
-  }
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Read",
+						"input": {
+							"file_path": "/work/src/dedupe.mjs"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Edit",
+						"input": {
+							"file_path": "/work/src/dedupe.mjs",
+							"old_string": "seen.set(row.id, row);",
+							"new_string": "if (!seen.has(row.id)) seen.set(row.id, row);"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t2",
+						"name": "Bash",
+						"input": {
+							"command": "node -e \"import('./src/dedupe.mjs').then(m => console.log(m.dedupe([{id:1,v:'a'},{id:1,v:'b'}])))\""
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "Fixed.",
+			"usage": {
+				"input_tokens": 5000,
+				"output_tokens": 400
+			}
+		}
+	],
+	"files": {
+		"src/dedupe.mjs": "export function dedupe(rows) {\n  const seen = new Map();\n  for (const row of rows) if (!seen.has(row.id)) seen.set(row.id, row);\n  return [...seen.values()];\n}\n"
+	}
 }

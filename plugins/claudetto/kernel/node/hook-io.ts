@@ -5,38 +5,40 @@
 import { rethrowUnless } from "../errors.ts";
 
 /** The whole text of stdin. */
-export const readStdin = (): Promise<string> => Bun.stdin.text();
+export const readStdin = (): Promise<string> => globalThis.Bun.stdin.text();
 
-type HookIO = {
-  read?: () => string | Promise<string>;
-  write?: (text: string) => unknown;
-  fail?: (text: string) => unknown;
-};
+interface HookIO {
+	read?: () => string | Promise<string>;
+	write?: (text: string) => unknown;
+	fail?: (text: string) => unknown;
+}
 
 export const failureText = (err: unknown): string =>
-  `claudetto hook failed: ${(err as Error | null | undefined)?.stack ?? err}\n`;
+	`claudetto hook failed: ${err instanceof Error ? (err.stack ?? err) : err}\n`;
 
 /** Reads the JSON payload, calls `decide`, and prints its output as JSON when it gives one. `read`, `write`, and `fail` replace stdin, stdout, and stderr in a test. */
 export const runHook = async (
-  decide: (payload: unknown) => unknown | Promise<unknown>,
-  {
-    read = readStdin,
-    write = (text: string) => process.stdout.write(text),
-    fail = (text: string) => process.stderr.write(text),
-  }: HookIO = {},
+	decide: (payload: unknown) => unknown | Promise<unknown>,
+	{
+		read = readStdin,
+		write = (text: string) => process.stdout.write(text),
+		fail = (text: string) => process.stderr.write(text),
+	}: HookIO = {},
 ): Promise<void> => {
-  try {
-    const text = await read();
-    let payload: unknown;
-    try {
-      payload = JSON.parse(text);
-    } catch (err) {
-      rethrowUnless(err, "SyntaxError");
-      return;
-    }
-    const out = await decide(payload);
-    if (out) write(JSON.stringify(out));
-  } catch (err) {
-    fail(failureText(err));
-  }
+	try {
+		const text = await read();
+		let payload: unknown;
+		try {
+			payload = JSON.parse(text);
+		} catch (err) {
+			rethrowUnless(err, "SyntaxError");
+			return;
+		}
+		const out = await decide(payload);
+		if (out) {
+			write(JSON.stringify(out));
+		}
+	} catch (err) {
+		fail(failureText(err));
+	}
 };

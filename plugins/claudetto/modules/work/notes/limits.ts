@@ -19,7 +19,7 @@ export const RECENT_MAX = 50;
 export const BACKGROUND_MS = 30 * 60 * 1000;
 
 /** The most time that a `git` run of the rule "user edit" takes. */
-export const GIT_TIMEOUT_MS = 5_000;
+export const GIT_TIMEOUT_MS = 5000;
 
 /** The most characters of the failing test line that a note keeps. */
 export const SIGN_CHARS = 100;

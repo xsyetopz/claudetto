@@ -4,7 +4,7 @@
 export const SEARCH_TIMEOUT_MS = 30_000;
 
 /** The longest time of the run that finds out if a program is on the host, in milliseconds. */
-export const PROBE_TIMEOUT_MS = 5_000;
+export const PROBE_TIMEOUT_MS = 5000;
 
 /** The most entries of `grep` that one call returns when `head_limit` is not set: the default of the built-in `Grep`. */
 export const HEAD_LIMIT_DEFAULT = 250;

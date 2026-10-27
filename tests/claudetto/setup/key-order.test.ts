@@ -4,38 +4,41 @@
 
 import { expect, test } from "bun:test";
 import { isObject } from "../../../plugins/claudetto/modules/setup/domain/merge.ts";
-import { SNIPPET } from "../../../plugins/claudetto/snippets.ts";
+import { SNIPPET } from "../../../plugins/claudetto/modules/setup/prompts.ts";
 import { SCHEMA } from "../../support/settings-pin.ts";
 
-type Node = { properties?: Record<string, Node> };
+interface Node {
+	properties?: Record<string, Node>;
+}
 
 /** The keys of `object` that `schema` names, in the order of `object`. */
 const known = (object: object, schema: Node): string[] =>
-  Object.keys(object).filter((key) =>
-    Object.hasOwn(schema.properties ?? {}, key),
-  );
+	Object.keys(object).filter((key) =>
+		Object.hasOwn(schema.properties ?? {}, key),
+	);
 
 /** The keys of `object` that `schema` names, in the order of `schema`. */
 const sorted = (object: object, schema: Node): string[] => {
-  const order = Object.keys(schema.properties ?? {});
-  return known(object, schema).sort(
-    (a, b) => order.indexOf(a) - order.indexOf(b),
-  );
+	const order = Object.keys(schema.properties ?? {});
+	return known(object, schema).sort(
+		(a, b) => order.indexOf(a) - order.indexOf(b),
+	);
 };
 
 const snippet: Record<string, unknown> = SNIPPET;
 
 test("the top-level keys of the snippet are in the order of the schema", () => {
-  expect(known(snippet, SCHEMA)).toStrictEqual(sorted(snippet, SCHEMA));
+	expect(known(snippet, SCHEMA)).toStrictEqual(sorted(snippet, SCHEMA));
 });
 
 test("the keys in each object of the snippet are in the order of the schema", () => {
-  for (const [key, value] of Object.entries(snippet)) {
-    const node: Node | undefined = SCHEMA.properties[key];
-    if (node?.properties && isObject(value))
-      expect([key, ...known(value, node)]).toStrictEqual([
-        key,
-        ...sorted(value, node),
-      ]);
-  }
+	const pairs = Object.entries(snippet).flatMap(([key, value]) => {
+		const node: Node | undefined = SCHEMA.properties[key];
+		return node?.properties && isObject(value)
+			? [{ key, actual: known(value, node), expected: sorted(value, node) }]
+			: [];
+	});
+	expect(pairs.map(({ key, actual }) => [key, ...actual])).toStrictEqual(
+		pairs.map(({ key, expected }) => [key, ...expected]),
+	);
 });

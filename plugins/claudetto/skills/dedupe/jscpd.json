@@ -1,22 +1,22 @@
 {
-  "minTokens": 50,
-  "minLines": 5,
-  "mode": "mild",
-  "gitignore": true,
-  "reporters": ["console"],
-  "ignore": [
-    "**/.git/**",
-    "**/node_modules/**",
-    "**/dist/**",
-    "**/build/**",
-    "**/target/**",
-    "**/vendor/**",
-    "**/*.min.*",
-    "**/*.lock",
-    "**/*lock.json",
-    "**/*lock.yaml"
-  ],
-  "ignorePattern": [],
-  "formatsExts": {},
-  "similarity": 0.8
+	"minTokens": 50,
+	"minLines": 5,
+	"mode": "mild",
+	"gitignore": true,
+	"reporters": ["console"],
+	"ignore": [
+		"**/.git/**",
+		"**/node_modules/**",
+		"**/dist/**",
+		"**/build/**",
+		"**/target/**",
+		"**/vendor/**",
+		"**/*.min.*",
+		"**/*.lock",
+		"**/*lock.json",
+		"**/*lock.yaml"
+	],
+	"ignorePattern": [],
+	"formatsExts": {},
+	"similarity": 0.8
 }

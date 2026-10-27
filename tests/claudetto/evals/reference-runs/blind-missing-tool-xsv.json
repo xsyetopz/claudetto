@@ -1,47 +1,47 @@
 {
-  "events": [
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t0",
-            "name": "Bash",
-            "input": {
-              "command": "which xsv; xsv --version",
-              "description": "Check the tool"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "assistant",
-      "message": {
-        "content": [
-          {
-            "type": "tool_use",
-            "id": "t1",
-            "name": "Bash",
-            "input": {
-              "command": "cd /private/tmp/e-4f2a91/home/work && mkdir -p out && python3 -c \"import csv,collections;t=collections.defaultdict(int)\\nfor r in csv.DictReader(open('data/sales.csv')): t[r['region']]+=int(r['amount'])\\nw=csv.writer(open('out/region_totals.csv','w'));w.writerow(['region','total'])\\nfor k in sorted(t): w.writerow([k,t[k]])\"",
-              "description": "Compute the totals"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "result",
-      "result": "`xsv` is not installed here and there is no network, so I used Python's `csv` module instead. `out/region_totals.csv` has the totals: Brno, South 95, East 205, North 150.",
-      "usage": {
-        "input_tokens": 9000,
-        "output_tokens": 900
-      }
-    }
-  ],
-  "files": {
-    "out/region_totals.csv": "region,total\r\n\"Brno, South\",95\r\nEast,205\r\nNorth,150\r\n"
-  }
+	"events": [
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t0",
+						"name": "Bash",
+						"input": {
+							"command": "which xsv; xsv --version",
+							"description": "Check the tool"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "assistant",
+			"message": {
+				"content": [
+					{
+						"type": "tool_use",
+						"id": "t1",
+						"name": "Bash",
+						"input": {
+							"command": "cd /private/tmp/e-4f2a91/home/work && mkdir -p out && python3 -c \"import csv,collections;t=collections.defaultdict(int)\\nfor r in csv.DictReader(open('data/sales.csv')): t[r['region']]+=int(r['amount'])\\nw=csv.writer(open('out/region_totals.csv','w'));w.writerow(['region','total'])\\nfor k in sorted(t): w.writerow([k,t[k]])\"",
+							"description": "Compute the totals"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "result",
+			"result": "`xsv` is not installed here and there is no network, so I used Python's `csv` module instead. `out/region_totals.csv` has the totals: Brno, South 95, East 205, North 150.",
+			"usage": {
+				"input_tokens": 9000,
+				"output_tokens": 900
+			}
+		}
+	],
+	"files": {
+		"out/region_totals.csv": "region,total\r\n\"Brno, South\",95\r\nEast,205\r\nNorth,150\r\n"
+	}
 }
