@@ -1,0 +1,5 @@
+language js
+
+JsCallExpression(callee=`JSON.parse`, arguments=JsCallArguments(args=[JsCallExpression(callee=`JSON.stringify`, arguments=JsCallArguments(args=[$x]))])) as $call where {
+	register_diagnostic(span=$call, message="Replace `JSON.parse(JSON.stringify(x))` with `structuredClone(x)`.", severity="error")
+}

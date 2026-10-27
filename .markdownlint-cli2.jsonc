@@ -1,21 +1,21 @@
 {
-  "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint-cli2/main/schema/markdownlint-cli2-config-schema.json",
-  "globs": ["**/*.md"],
-  "config": { "extends": "./.markdownlint.jsonc" },
-  "ignores": [
-    "external/**",
-    "**/node_modules/**",
-    "**/.agents/**",
-    "**/.claude/**",
-    "**/.openspec/**",
-    "**/.claudetto/**",
-    // The openspec changes and specs quote the user as is, such as in the session handoff (`slices/handoff/compact.ts`).
-    "openspec/**",
-    // A skill, agent, or output style file has the format of a Claude Code prompt, not of Markdown, and a lint fix would change its words or its size pin.
-    "plugins/**",
-    // `wiki/` is generated from `src/wiki/`.
-    "wiki/**",
-    // Task 11.4 of change `0-3-0` rewrites `src/wiki/`.
-    "src/wiki/**"
-  ]
+	"$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint-cli2/main/schema/markdownlint-cli2-config-schema.json",
+	"globs": ["**/*.md"],
+	"config": { "extends": "./.markdownlint.jsonc" },
+	"ignores": [
+		"external/**",
+		"**/node_modules/**",
+		"**/.agents/**",
+		"**/.claude/**",
+		"**/.openspec/**",
+		"**/.claude/claudetto/**",
+		// The openspec changes and specs quote the user as is, such as in the session handoff (`slices/handoff/compact.ts`).
+		"openspec/**",
+		// A skill, agent, or output style file has the format of a Claude Code prompt, not of Markdown, and a lint fix would change its words or its size pin.
+		"plugins/**",
+		// `wiki/` is generated from `src/wiki/`.
+		"wiki/**",
+		// Task 11.4 of change `0-3-0` rewrites `src/wiki/`.
+		"src/wiki/**"
+	]
 }

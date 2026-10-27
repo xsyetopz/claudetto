@@ -1,0 +1,5 @@
+language js
+
+`process.exit($args)` as $call where {
+	register_diagnostic(span=$call, message="Replace `process.exit()` with `process.exitCode = n` and return, so pending output and cleanup can finish.", severity="error")
+}

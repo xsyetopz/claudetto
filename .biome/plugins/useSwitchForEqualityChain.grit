@@ -1,0 +1,9 @@
+language js
+
+or {
+	JsIfStatement(test=`$x === $a`, else_clause=JsElseClause(alternate=JsIfStatement(test=`$x === $b`))),
+	JsIfStatement(test=`$a === $x`, else_clause=JsElseClause(alternate=JsIfStatement(test=`$b === $x`)))
+} as $chain where {
+	$chain <: not within JsElseClause(),
+	register_diagnostic(span=$chain, message="Use `switch (x)` for comparisons of one value against several cases.", severity="error")
+}

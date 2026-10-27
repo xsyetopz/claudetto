@@ -1,0 +1,6 @@
+language js
+
+JsExport() as $exp where {
+	$exp <: r"(?s)export\s+(?:let|var)\s.*",
+	register_diagnostic(span=$exp, message="Replace `export let`/`export var` with `export const`, or export a getter function for state that changes.", severity="error")
+}

@@ -10,8 +10,8 @@ import { $ } from "bun";
 
 /** The env that each `claude` call of `tools/` adds to the env of the process. */
 export const CLAUDE_ENV: Readonly<Record<string, string>> = {
-  CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1",
-  DISABLE_ERROR_REPORTING: "1",
+	CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1",
+	DISABLE_ERROR_REPORTING: "1",
 };
 
 /**

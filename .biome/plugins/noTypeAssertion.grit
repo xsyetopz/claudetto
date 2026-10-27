@@ -1,0 +1,8 @@
+language js
+
+or { TsAsExpression(), TsTypeAssertionExpression() } as $assert where {
+	$assert <: not r"(?s).*\bas\s+const\s*",
+	$assert <: not within or { TsAsExpression(expression=$assert), TsAsExpression(expression=JsParenthesizedExpression(expression=$assert)) },
+	$assert <: not or { `$_ as $mid as $_`, `($_ as $mid) as $_` } where { $mid <: or { `unknown`, `any` } },
+	register_diagnostic(span=$assert, message="Remove the `as` type assertion and narrow the value with a runtime check or a type guard instead (`as const` is allowed).", severity="error")
+}

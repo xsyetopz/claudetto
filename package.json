@@ -1,28 +1,52 @@
 {
-  "name": "claudetto",
-  "version": "0.4.0-alpha.1",
-  "private": true,
-  "description": "A very opinionated Claude Code plugin designed by a Rustacean",
-  "type": "module",
-  "scripts": {
-    "test": "bun test",
-    "validate": "bun tools/validate.ts",
-    "typecheck": "bun check",
-    "lint": "bun tools/lint.ts",
-    "lint:md": "bunx markdownlint-cli2"
-  },
-  "license": "MIT",
-  "engines": {
-    "bun": ">=1.4.4"
-  },
-  "packageManager": "bun@1.4.4",
-  "devDependencies": {
-    "@biomejs/biome": "^2.6.2",
-    "@fission-ai/openspec": "1.15.0",
-    "@types/node": "^26.6.5",
-    "bun-types": "^1.4.3",
-    "jscpd": "5.4.2",
-    "markdownlint-cli2": "^0.24.0",
-    "yaml": "^2.9.1"
-  }
+	"name": "claudetto",
+	"version": "0.4.0-alpha.1",
+	"private": true,
+	"description": "A very opinionated Claude Code plugin designed by a Rustacean",
+	"type": "module",
+	"scripts": {
+		"test": "bun test",
+		"validate": "bun tools/validate.ts",
+		"typecheck": "bun check",
+		"lint": "bunx biome check --error-on-warnings && bun run lint:suppressions",
+		"lint:md": "bunx markdownlint-cli2",
+		"lint:suppressions": "bun .biome/check-suppressions.mjs",
+		"lint:fix": "bunx biome check --write --error-on-warnings",
+		"lint:ci": "bunx biome ci --error-on-warnings"
+	},
+	"commitlint": {
+		"extends": [
+			"@commitlint/config-conventional"
+		]
+	},
+	"license": "MIT",
+	"engines": {
+		"bun": ">=1.4.4"
+	},
+	"packageManager": "bun@1.4.4",
+	"devDependencies": {
+		"@biomejs/biome": "~2.6.3",
+		"@fission-ai/openspec": "^1.15.0",
+		"@types/node": "^26.6.5",
+		"bun-types": "^1.4.4",
+		"jscpd": "5.4.2",
+		"markdownlint-cli2": "^0.24.0",
+		"yaml": "^2.9.1"
+	},
+	"peerDependencies": {
+		"claude-code": "*",
+		"claude-code-mcp": "*",
+		"claude-code-tools": "*"
+	},
+	"peerDependenciesMeta": {
+		"claude-code": {
+			"optional": true
+		},
+		"claude-code-mcp": {
+			"optional": true
+		},
+		"claude-code-tools": {
+			"optional": true
+		}
+	}
 }

@@ -92,7 +92,7 @@ schema *args:
     bun dev/schema/main.ts --out schemas "$@"
     bunx biome format --write schemas
 
-# Write the inventory of the built-in parts of Claude Code from the local folder `external/cc-<version>/` to `.claudetto/builtins/`; extra arguments go to `dev/builtins.ts` (--check, --strict, --dir D, --out D)
+# Write the inventory of the built-in parts of Claude Code from the local folder `external/cc-<version>/` to `.claude/claudetto/builtins/`; extra arguments go to `dev/builtins.ts` (--check, --strict, --dir D, --out D)
 builtins *args:
     bun dev/builtins.ts "$@"
 
@@ -130,6 +130,10 @@ eval-budget *args:
 # Print the statistics of the with/without comparison from `aggregate-result.json` files or folders of results (Fisher p, Newcombe CI, bootstrap CI over cases, judge agreement); add --json, --seed N, or --pick oldest
 eval-stats *args:
     bun dev/stats/main.ts "$@"
+
+# List the 18 forks of the code-compaction probe with `--dry-run` (no call), or run them with `--run [--dir D]`, which is a paid run that needs the approval of the user (openspec change `code-compaction`, task 3.1)
+probe *args:
+    bun dev/probe/main.ts "$@"
 
 # Run the eval cases on the checkout and on a variant at a git ref (in a temporary worktree), to compare the two plugin arms; extra arguments go to the eval, and --model is required as for `eval`
 eval-variant ref *args:

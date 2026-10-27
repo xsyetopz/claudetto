@@ -1,6 +1,6 @@
 // Repository bounds, read only by the tests and the tools, so they do not ship in `plugins/`.
 // A shared runtime bound is in the `limits.ts` of its owner module in `plugins/claudetto/modules/`, and a bound of one part of a module is in its own `limits.ts`.
-// The rule is in `.claude/rules/bounds.md`, and the wiki page `Bounds` lists each bound.
+// The wiki page `Bounds` lists each bound.
 
 /** Most milliseconds for one test that makes a `git worktree`, because worktree creation on a slow runner can take more than the 5,000 ms of `bunfig.toml`. */
 export const WORKTREE_TEST_TIMEOUT_MS = 15_000;
@@ -32,7 +32,7 @@ export const MIN_CLAUDE_CODE_VERSION = "2.1.309";
 export const JUST_VERSION = "1.58.0";
 
 /** Most tokens of one `SKILL.md`, because after a compaction Claude Code keeps only 5,000 tokens of each skill that ran (`extend/skills-and-commands/substitutions.md`, "Lifecycle", Documented). */
-export const SKILL_MAX_TOKENS = 5_000;
+export const SKILL_MAX_TOKENS = 5000;
 
 /** The CPUs of the container of `just docker`, so a check does not take each CPU of the host. */
 export const DOCKER_CPUS = 4;

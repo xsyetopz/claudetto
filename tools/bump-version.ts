@@ -7,8 +7,11 @@
 // Only the "version" line of `package.json` and two CHANGELOG lines change, so formatting and key
 // order stay as they are. The "version" line of each `plugin.json` and of the marketplace changes too.
 
-import fs from "node:fs";
+import { constants } from "node:fs";
+import { access } from "node:fs/promises";
 import path from "node:path";
+import { file as bunFile, Glob, write } from "bun";
+import { exists } from "./exists.ts";
 
 const SEMVER = /^(\d+)\.(\d+)\.(\d+)$/;
 // An exact target can have a pre-release part, such as `0.1.0-alpha.1`.
@@ -17,126 +20,136 @@ const VERSION_LINE = /^(\s*"version":\s*)"([^"]*)"/m;
 const UNRELEASED = "## [Unreleased]\n";
 // The version in the `[unreleased]: .../compare/<prefix>vX.Y.Z...HEAD` link.
 const UNRELEASED_LINK =
-  /(^\[unreleased\]:\s*\S+\/compare\/\S*?v)\d+\.\d+\.\d+(?:-[0-9A-Za-z.]+)?(\.\.\.HEAD)/im;
+	/(^\[unreleased\]:\s*\S+\/compare\/\S*?v)\d+\.\d+\.\d+(?:-[0-9A-Za-z.]+)?(\.\.\.HEAD)/im;
 
 /** The version after `current` for `level`, which is `major`, `minor`, `patch`, or an exact `X.Y.Z` with an optional pre-release part. */
 export const nextVersion = (current: string, level: string): string => {
-  if (TARGET.test(level)) return level;
-  const m = SEMVER.exec(current);
-  if (!m) throw new Error(`current version "${current}" is not X.Y.Z`);
-  const [major, minor, patch] = m.slice(1).map(Number) as [
-    number,
-    number,
-    number,
-  ];
-  switch (level) {
-    case "major":
-      return `${major + 1}.0.0`;
-    case "minor":
-      return `${major}.${minor + 1}.0`;
-    case "patch":
-      return `${major}.${minor}.${patch + 1}`;
-    default:
-      throw new Error(
-        `level must be major, minor, patch, X.Y.Z, or X.Y.Z-PRE, not "${level}"`,
-      );
-  }
+	if (TARGET.test(level)) {
+		return level;
+	}
+	const m = SEMVER.exec(current);
+	if (!m) {
+		throw new Error(`current version "${current}" is not X.Y.Z`);
+	}
+	const [major = 0, minor = 0, patch = 0] = m.slice(1).map(Number);
+	switch (level) {
+		case "major":
+			return `${major + 1}.0.0`;
+		case "minor":
+			return `${major}.${minor + 1}.0`;
+		case "patch":
+			return `${major}.${minor}.${patch + 1}`;
+		default:
+			throw new Error(
+				`level must be major, minor, patch, X.Y.Z, or X.Y.Z-PRE, not "${level}"`,
+			);
+	}
 };
 
 /** The files and new contents of a bump; it throws before anything is written. */
 export const plan = async (root: string, level: string, today: string) => {
-  const file = path.join(root, "package.json");
-  const text = await Bun.file(file).text();
-  const m = VERSION_LINE.exec(text);
-  if (!m) throw new Error('package.json has no "version" line');
-  const current = m[2] as string;
-  const next = nextVersion(current, level);
-  const manifests = await Promise.all(
-    [
-      ...new Bun.Glob("plugins/*/.claude-plugin/plugin.json").scanSync(root),
-      ".claude-plugin/marketplace.json",
-    ]
-      .map((rel) => path.join(root, rel))
-      .filter((f) => fs.existsSync(f))
-      .map(async (f) => ({
-        file: f,
-        text: (await Bun.file(f).text()).replace(VERSION_LINE, `$1"${next}"`),
-      })),
-  );
-  const changelog = path.join(root, "CHANGELOG.md");
-  const log = await Bun.file(changelog).text();
-  if (log.includes(`## [${next}]`))
-    throw new Error(`CHANGELOG.md already has a ${next} section`);
-  if (!log.includes(UNRELEASED))
-    throw new Error("CHANGELOG.md has no ## [Unreleased] heading");
-  return {
-    current,
-    next,
-    writes: [
-      { file, text: text.replace(VERSION_LINE, `$1"${next}"`) },
-      ...manifests,
-      {
-        file: changelog,
-        text: log
-          .replace(UNRELEASED, `${UNRELEASED}\n## [${next}] - ${today}\n`)
-          .replace(UNRELEASED_LINK, `$1${next}$2`),
-      },
-    ],
-  };
+	const file = path.join(root, "package.json");
+	const text = await bunFile(file).text();
+	const current = VERSION_LINE.exec(text)?.[2];
+	if (current === undefined) {
+		throw new Error('package.json has no "version" line');
+	}
+	const next = nextVersion(current, level);
+	const candidates = [
+		...new Glob("plugins/*/.claude-plugin/plugin.json").scanSync(root),
+		".claude-plugin/marketplace.json",
+	].map((rel) => path.join(root, rel));
+	const present = await Promise.all(candidates.map((f) => exists(f)));
+	const manifests = await Promise.all(
+		candidates
+			.filter((_f, i) => present[i])
+			.map(async (f) => ({
+				file: f,
+				text: (await bunFile(f).text()).replace(VERSION_LINE, `$1"${next}"`),
+			})),
+	);
+	const changelog = path.join(root, "CHANGELOG.md");
+	const log = await bunFile(changelog).text();
+	if (log.includes(`## [${next}]`)) {
+		throw new Error(`CHANGELOG.md already has a ${next} section`);
+	}
+	if (!log.includes(UNRELEASED)) {
+		throw new Error("CHANGELOG.md has no ## [Unreleased] heading");
+	}
+	return {
+		current,
+		next,
+		writes: [
+			{ file, text: text.replace(VERSION_LINE, `$1"${next}"`) },
+			...manifests,
+			{
+				file: changelog,
+				text: log
+					.replace(UNRELEASED, `${UNRELEASED}\n## [${next}] - ${today}\n`)
+					.replace(UNRELEASED_LINK, `$1${next}$2`),
+			},
+		],
+	};
 };
 
 /** True when the process may write `file`. */
-const writable = (file: string): boolean => {
-  try {
-    fs.accessSync(file, fs.constants.W_OK);
-    return true;
-  } catch {
-    return false;
-  }
+const writable = async (file: string): Promise<boolean> => {
+	try {
+		await access(file, constants.W_OK);
+		return true;
+	} catch {
+		return false;
+	}
 };
 
 /** Runs the bump with `args` and returns the exit status. */
 export const main = async (args: string[]): Promise<number> => {
-  const at = args.indexOf("--root");
-  const given = at >= 0 ? args[at + 1] : undefined;
-  if (at >= 0 && (given === undefined || given.startsWith("--"))) {
-    console.error("--root needs a folder, as in `--root DIR`.");
-    return 2;
-  }
-  const root = path.resolve(given ?? path.join(import.meta.dirname, ".."));
-  const rest = at < 0 ? args : args.filter((_a, i) => i !== at && i !== at + 1);
-  const level = rest.find((a) => !a.startsWith("--"));
-  const unknown = rest.filter((a) => a !== level && a !== "--dry-run");
-  if (!level || unknown.length > 0) {
-    console.error(
-      "Usage: bump-version.ts <major|minor|patch|X.Y.Z[-PRE]> [--dry-run] [--root DIR]",
-    );
-    return 2;
-  }
-  let result: Awaited<ReturnType<typeof plan>>;
-  try {
-    result = await plan(root, level, new Date().toISOString().slice(0, 10));
-  } catch (err) {
-    console.error((err as Error).message);
-    return 1;
-  }
-  console.log(`${result.current} -> ${result.next}`);
-  for (const { file } of result.writes)
-    console.log(`  ${path.relative(root, file)}`);
-  if (args.includes("--dry-run")) {
-    console.log("Dry run: nothing was written.");
-    return 0;
-  }
-  // A pre-check: a race or a failed second write is not rolled back.
-  const blocked = result.writes.find(({ file }) => !writable(file));
-  if (blocked) {
-    console.error(
-      `Cannot write ${path.relative(root, blocked.file)}, so nothing was changed.`,
-    );
-    return 1;
-  }
-  for (const { file, text } of result.writes) await Bun.write(file, text);
-  return 0;
+	const at = args.indexOf("--root");
+	const given = at >= 0 ? args[at + 1] : undefined;
+	if (at >= 0 && (given === undefined || given.startsWith("--"))) {
+		console.error("--root needs a folder, as in `--root DIR`.");
+		return 2;
+	}
+	const root = path.resolve(given ?? path.join(import.meta.dirname, ".."));
+	const rest = at < 0 ? args : args.filter((_a, i) => i !== at && i !== at + 1);
+	const level = rest.find((a) => !a.startsWith("--"));
+	const unknown = rest.filter((a) => a !== level && a !== "--dry-run");
+	if (!level || unknown.length > 0) {
+		console.error(
+			"Usage: bump-version.ts <major|minor|patch|X.Y.Z[-PRE]> [--dry-run] [--root DIR]",
+		);
+		return 2;
+	}
+	let result: Awaited<ReturnType<typeof plan>>;
+	try {
+		result = await plan(root, level, new Date().toISOString().slice(0, 10));
+	} catch (err) {
+		console.error(err instanceof Error ? err.message : String(err));
+		return 1;
+	}
+	process.stdout.write(`${result.current} -> ${result.next}\n`);
+	for (const { file } of result.writes) {
+		process.stdout.write(`  ${path.relative(root, file)}\n`);
+	}
+	if (args.includes("--dry-run")) {
+		process.stdout.write("Dry run: nothing was written.\n");
+		return 0;
+	}
+	// A pre-check: a race or a failed second write is not rolled back.
+	const writableFlags = await Promise.all(
+		result.writes.map(({ file }) => writable(file)),
+	);
+	const blocked = result.writes.find((_w, i) => !writableFlags[i]);
+	if (blocked) {
+		console.error(
+			`Cannot write ${path.relative(root, blocked.file)}, so nothing was changed.`,
+		);
+		return 1;
+	}
+	await Promise.all(result.writes.map(({ file, text }) => write(file, text)));
+	return 0;
 };
 
-if (import.meta.main) process.exitCode = await main(process.argv.slice(2));
+if (import.meta.main) {
+	process.exitCode = await main(process.argv.slice(2));
+}
