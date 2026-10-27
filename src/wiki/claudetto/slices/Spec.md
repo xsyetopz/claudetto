@@ -15,7 +15,7 @@ It runs no `openspec init` and changes no global config of OpenSpec.
 
 | Skill | Argument | What it does |
 | --- | --- | --- |
-| `/claudetto:propose` | `[task|story|epic] <change or idea>` | Picks a preset, makes the change, and writes one artifact at a time. |
+| `/claudetto:propose` | `[task\|story\|epic] <change or idea>` | Picks a preset, makes the change, and writes one artifact at a time. |
 | `/claudetto:apply` | `[change]` | Does the open tasks of `tasks.md`, and ticks each one when its check passes. |
 | `/claudetto:verify` | `[change]` | Checks that the code does what the tasks, specs, and design say. |
 | `/claudetto:archive` | `[change]` | Merges the delta specs into `openspec/specs/`, and moves the change to `openspec/changes/archive/`. |

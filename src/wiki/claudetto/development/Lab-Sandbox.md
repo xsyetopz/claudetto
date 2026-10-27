@@ -1,11 +1,11 @@
 # Lab Sandbox
 
-The script `tools/sandbox/main.ts` runs Claude Code in a config folder apart from yours.
+The script `dev/sandbox/main.ts` runs Claude Code in a config folder apart from yours.
 A test of a plugin then cannot change your settings, sessions, or installed plugins.
 
 ```text
-bun tools/sandbox/main.ts [--dir DIR] [--check-frontmatter] [--plugin-dir DIR]... [claude arguments...]
-bun tools/sandbox/main.ts [--dir DIR] --clean
+bun dev/sandbox/main.ts [--dir DIR] [--check-frontmatter] [--plugin-dir DIR]... [claude arguments...]
+bun dev/sandbox/main.ts [--dir DIR] --clean
 ```
 
 ## The Options

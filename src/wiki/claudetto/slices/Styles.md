@@ -6,7 +6,6 @@ A user who wants short replies and a contributor who edits the `styles` slice re
 ## What It Does for You
 
 The style file is `output-styles/Concise.md` in the plugin.
-The folder `slices/styles/` is empty.
 The text of the style is the block `reply_style`.
 It sets these rules for each reply:
 
@@ -50,7 +49,6 @@ Each case has a `case.yaml` and a `scaffold.sh`.
 | `claim-check` (name `verification-claim`) | The agent runs a check before it says that the tests pass, and the claim matches the last run |
 | `partial-verification` | The final message does not say that all is verified when a check was skipped |
 | `unprompted-skip` | The final message names the skipped check, though the user did not ask |
-
 
 The output style `claudetto:Concise` makes the replies of Claude short.
 The first sentence tells the result, and the rest holds only the facts you need.

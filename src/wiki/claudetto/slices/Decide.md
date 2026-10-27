@@ -150,16 +150,16 @@ See [Guard](Guard#who-decides-an-ask).
 
 ## Bounds
 
-All bounds are in `slices/decide/limits.ts`.
+All bounds are in `plugins/claudetto/modules/jev/limits.ts`.
 
 | Bound | Value |
 | --- | --- |
-| `MIN_CONFIDENCE` | 0.5 for a sure pick (`kernel/budget.ts`). |
+| `MIN_CONFIDENCE` | 0.5 for a sure pick (`modules/jev/limits.ts`). |
 | `APPROVAL_MAX` | 0.2 for `P(yes)` of the approval question. |
-| `ATTEMPT_TIMEOUT_MS` | 12,000 ms for one try (`kernel/budget.ts`). |
-| `TRIES` | 3 tries on a reply of 429 or 529 (`kernel/budget.ts`). |
-| `BACKOFF_MS` | 1,000 ms before the first retry. Each later wait doubles (`kernel/budget.ts`). |
-| `ERROR_BODY_MAX` | 200 characters of an error body (`kernel/budget.ts`). |
+| `ATTEMPT_TIMEOUT_MS` | 12,000 ms for one try (`modules/jev/limits.ts`). |
+| `TRIES` | 3 tries on a reply of 429 or 529 (`modules/jev/limits.ts`). |
+| `BACKOFF_MS` | 1,000 ms before the first retry. Each later wait doubles (`modules/jev/limits.ts`). |
+| `ERROR_BODY_MAX` | 200 characters of an error body (`modules/jev/limits.ts`). |
 | `IMAGE_BYTES_MAX` | 16 MiB for one `--image` file. |
 | `IMAGE_SIDE_MIN` | 280 px for the shortest side of an `--image`. |
 | `IMAGE_SIDE_MAX` | 1,568 px for the longest side of an `--image`. |

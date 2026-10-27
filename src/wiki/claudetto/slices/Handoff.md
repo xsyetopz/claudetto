@@ -25,7 +25,7 @@ A `P(yes)` of 0.7 or more is a yes, and 0.3 or less is a no.
 You see the dialog only when Jev is not sure.
 Each handoff also holds a cost line: the cost of the session and the change of each plan share since the first reading.
 
-`PATH_TABLE` in `slices/handoff/limits.ts` maps each case to `handover`, `compact`, or `handoff-then-compact`.
+`PATH_TABLE` in `plugins/claudetto/modules/session/handoff/limits.ts` maps each case to `handover`, `compact`, or `handoff-then-compact`.
 Its first values are `handover` for each case, and the paired runs of task 11.6 set the final values.
 The automatic compaction of Claude Code stays as the safety net.
 
@@ -79,20 +79,18 @@ The [Prompt](Prompt) slice reads the same option.
 
 | Bound | Value | Set in |
 | --- | --- | --- |
-| `HANDOFF_LINES_MAX` | 10 | `slices/handoff/limits.ts` |
-| `CALL_INPUT_CHARS_MAX` | 300 | `slices/handoff/limits.ts` |
-| `CHARS_PER_TOKEN` | 4 | `slices/handoff/limits.ts` |
-| `CACHE_TTL_MS` | 3,600,000 | `slices/handoff/limits.ts` |
-| `HANDOVER_CONTEXT_TOKENS` | 150,000 | `slices/handoff/limits.ts` |
-| `HANDOVER_AGE_MS` | 28,800,000 | `slices/handoff/limits.ts` |
-| `DECISIONS_MAX` | 10 | `slices/handoff/limits.ts` |
-| `USER_VALUES_MAX` | 20 | `slices/handoff/limits.ts` |
-| `USER_VALUE_CHARS_MAX` | 200 | `slices/handoff/limits.ts` |
-| `COLD_FILES_MAX` | 20 | `slices/handoff/limits.ts` |
-| `COLD_PROMPTS_MAX` | 3 | `slices/handoff/limits.ts` |
-| `COLD_PROMPT_CHARS_MAX` | 1,500 | `slices/handoff/limits.ts` |
-| `HANDOFF_TRIGGER_TOKENS` | {{HANDOFF_TRIGGER_TOKENS}} | `plugins/claudetto/kernel/budget.ts` |
-| `HAIKU_HANDOFF_TRIGGER_TOKENS` | {{HAIKU_HANDOFF_TRIGGER_TOKENS}} | `plugins/claudetto/kernel/budget.ts` |
+| `CHARS_PER_TOKEN` | 4 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `CACHE_TTL_MS` | 3,600,000 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `HANDOVER_CONTEXT_TOKENS` | 150,000 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `HANDOVER_AGE_MS` | 28,800,000 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `DECISIONS_MAX` | 10 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `USER_VALUES_MAX` | 20 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `USER_VALUE_CHARS_MAX` | 200 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `COLD_FILES_MAX` | 20 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `COLD_PROMPTS_MAX` | 3 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `COLD_PROMPT_CHARS_MAX` | 1,500 | `plugins/claudetto/modules/session/handoff/limits.ts` |
+| `HANDOFF_TRIGGER_TOKENS` | {{HANDOFF_TRIGGER_TOKENS}} | `plugins/claudetto/modules/session/limits.ts` |
+| `HAIKU_HANDOFF_TRIGGER_TOKENS` | {{HAIKU_HANDOFF_TRIGGER_TOKENS}} | `plugins/claudetto/modules/session/limits.ts` |
 
 ## Related Pages
 

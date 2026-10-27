@@ -11,8 +11,8 @@ Pick the tier by who reads the bound:
 
 | Tier | File | Use when |
 | --- | --- | --- |
-| Shared runtime | `plugins/claudetto/kernel/budget.ts` | The shipped code of more than one slice reads it |
-| Slice | `plugins/<plugin>/slices/<slice>/limits.ts` | One slice reads it |
+| Kernel | `plugins/claudetto/kernel/node/limits.ts` | The kernel code of the plugin reads it |
+| Module | `plugins/claudetto/modules/<module>/limits.ts` | One module reads it, or the modules that share it import it from the module that owns it |
 | Repository | `tools/limits.ts` | Only tests and tools read it, so it does not ship |
 
 A value in a `{{...}}` placeholder is filled from the code when `just generate` runs.
@@ -21,19 +21,19 @@ A value in a `{{...}}` placeholder is filled from the code when `just generate` 
 
 | Name | Value | File | Purpose |
 | --- | --- | --- | --- |
-| `CONTEXT_WINDOW` | `{{CONTEXT_WINDOW}}` | `plugins/claudetto/kernel/budget.ts` | The context window in tokens, which the settings snippet sets for Claude Code. |
-| `COMPACT_OUTPUT_RESERVE` | `20,000` | `plugins/claudetto/kernel/budget.ts` | The output reserve that Claude Code takes from the compaction window. |
-| `CONTEXT_BLOCK_MARGIN` | `23,000` | `plugins/claudetto/kernel/budget.ts` | The tokens below the window at which the client blocks the next request as too long. |
-| `USAGE_LEVELS` (low) | `{{USAGE_LEVEL_LOW}}` | `plugins/claudetto/kernel/budget.ts` | The percent at which the status line shows a use in the warning color. It applies to the pace of a limit and to the context of a subagent. |
-| `USAGE_LEVELS` (high) | `{{USAGE_LEVEL_HIGH}}` | `plugins/claudetto/kernel/budget.ts` | The percent at which the status line shows a use in the limit color. It applies to the pace of a limit and to the context of a subagent. |
-| `HANDOFF_TRIGGER_TOKENS` | `{{HANDOFF_TRIGGER_TOKENS}}` | `plugins/claudetto/kernel/budget.ts` | The context at which the auto handoff of an Opus, Sonnet, or Fable session starts. |
-| `HAIKU_HANDOFF_TRIGGER_TOKENS` | `{{HAIKU_HANDOFF_TRIGGER_TOKENS}}` | `plugins/claudetto/kernel/budget.ts` | The context at which the auto handoff of a Haiku session starts. |
-| `AUTOCOMPACT_PCT` | `{{AUTOCOMPACT_PCT}}` | `plugins/claudetto/kernel/budget.ts` | The value of `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, which starts the auto compaction at `HANDOFF_TRIGGER_TOKENS` in the window `CONTEXT_WINDOW`. |
-| `HAIKU_AUTOCOMPACT_WINDOW` | `{{HAIKU_AUTOCOMPACT_WINDOW}}` | `plugins/claudetto/kernel/budget.ts` | The `autoCompactWindow` of a Haiku model, which starts the auto compaction below `HAIKU_HANDOFF_TRIGGER_TOKENS`. |
-| `SHELL_SCAN_MAX_CHARS` | `200,000` | `plugins/claudetto/kernel/budget.ts` | The most characters that `parse` in `plugins/claudetto/kernel/shell.ts` reads in one command with its nested scripts. |
-| `BRACE_WORDS_MAX` | `256` | `plugins/claudetto/kernel/budget.ts` | The most words that the brace expansion of one word gives. A word that gives more is unreadable. |
-| `RENAME_TRIES` | `10` | `plugins/claudetto/kernel/budget.ts` | The tries of a rename in `writeAtomic`, the first one included. |
-| `RENAME_WAIT_MS` | `100` | `plugins/claudetto/kernel/budget.ts` | The wait in milliseconds between two tries of a rename in `writeAtomic`. |
+| `CONTEXT_WINDOW` | `{{CONTEXT_WINDOW}}` | `plugins/claudetto/modules/session/limits.ts` | The context window in tokens, which the settings snippet sets for Claude Code. |
+| `COMPACT_OUTPUT_RESERVE` | `20,000` | `plugins/claudetto/modules/session/limits.ts` | The output reserve that Claude Code takes from the compaction window. |
+| `CONTEXT_BLOCK_MARGIN` | `23,000` | `plugins/claudetto/modules/session/limits.ts` | The tokens below the window at which the client blocks the next request as too long. |
+| `USAGE_LEVELS` (low) | `{{USAGE_LEVEL_LOW}}` | `plugins/claudetto/modules/session/limits.ts` | The percent at which the status line shows a use in the warning color. It applies to the pace of a limit and to the context of a subagent. |
+| `USAGE_LEVELS` (high) | `{{USAGE_LEVEL_HIGH}}` | `plugins/claudetto/modules/session/limits.ts` | The percent at which the status line shows a use in the limit color. It applies to the pace of a limit and to the context of a subagent. |
+| `HANDOFF_TRIGGER_TOKENS` | `{{HANDOFF_TRIGGER_TOKENS}}` | `plugins/claudetto/modules/session/limits.ts` | The context at which the auto handoff of an Opus, Sonnet, or Fable session starts. |
+| `HAIKU_HANDOFF_TRIGGER_TOKENS` | `{{HAIKU_HANDOFF_TRIGGER_TOKENS}}` | `plugins/claudetto/modules/session/limits.ts` | The context at which the auto handoff of a Haiku session starts. |
+| `AUTOCOMPACT_PCT` | `{{AUTOCOMPACT_PCT}}` | `plugins/claudetto/modules/session/limits.ts` | The value of `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, which starts the auto compaction at `HANDOFF_TRIGGER_TOKENS` in the window `CONTEXT_WINDOW`. |
+| `HAIKU_AUTOCOMPACT_WINDOW` | `{{HAIKU_AUTOCOMPACT_WINDOW}}` | `plugins/claudetto/modules/session/limits.ts` | The `autoCompactWindow` of a Haiku model, which starts the auto compaction below `HAIKU_HANDOFF_TRIGGER_TOKENS`. |
+| `SHELL_SCAN_MAX_CHARS` | `200,000` | `plugins/claudetto/modules/shell/limits.ts` | The most characters that `parse` in `plugins/claudetto/modules/shell/domain/shell.ts` reads in one command with its nested scripts. |
+| `BRACE_WORDS_MAX` | `256` | `plugins/claudetto/modules/shell/limits.ts` | The most words that the brace expansion of one word gives. A word that gives more is unreadable. |
+| `RENAME_TRIES` | `10` | `plugins/claudetto/kernel/node/limits.ts` | The tries of a rename in `writeAtomic`, the first one included. |
+| `RENAME_WAIT_MS` | `100` | `plugins/claudetto/kernel/node/limits.ts` | The wait in milliseconds between two tries of a rename in `writeAtomic`. |
 
 ## Repository Bounds
 

@@ -2,7 +2,7 @@
 
 This page tells which agents the core plugin `claudetto` ships and how the `agents` slice offers them.
 A user reads it to learn which subagent Claude starts for a task.
-A contributor reads it before an edit of `agents/` or `slices/agents/`.
+A contributor reads it before an edit of `agents/` or `plugins/claudetto/modules/agents/`.
 
 ## The Main Agent
 

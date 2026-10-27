@@ -1,7 +1,7 @@
 # Decisions: Settings
 
 These decisions explain which keys `claudetto` sets, which parts of Claude Code it turns off, and when it asks the user.
-The minimum Claude Code version is `2.1.307` (`MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts`).
+The minimum Claude Code version is `2.1.309` (`MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts`).
 
 ## Why Each Need Takes the Simplest Way
 
@@ -33,13 +33,13 @@ A user-only skill needs no such line.
 
 ## Why the Schema Is Read From the Bundle
 
-**Choice:** `tools/schema/main.ts` (`just schema`) reads the settings schema out of the installed bundle.
+**Choice:** `dev/schema/main.ts` (`just schema`) reads the settings schema out of the installed bundle.
 It writes `schemas/claude-code-settings.json` and `schemas/claude-code-managed-settings.json`.
 The second file is a reference only.
 
 **Reason:** A schema typed by hand goes stale when Claude Code updates.
 
-**Evidence:** `tools/schema/domain/build.ts`.
+**Evidence:** `dev/schema/domain/build.ts`.
 The `$comment` of the schema names Claude Code `2.1.302`.
 
 ## Why There Is No Model Router
@@ -53,7 +53,7 @@ It never sets `CLAUDE_CODE_EFFORT_LEVEL` or `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`, 
 **Reason:** A hook that rewrites `model` or `effort` adds a rule that only a probe can prove.
 A cited study found a tool-call router wrong on about 1 route in 6 (arXiv 2605.07112, not checked here).
 
-**Evidence:** The `settings` object of `slices/setup/prompts.ts`.
+**Evidence:** The `SNIPPET` object of `plugins/claudetto/modules/setup/prompts.ts`.
 
 ## Why Some Parts Are Switched Off
 

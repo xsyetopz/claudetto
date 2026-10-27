@@ -6,10 +6,10 @@ It follows [Plugin Layout](Plugin-Layout).
 
 ## The Parts of a Slice
 
-The `guard` slice shows the usual parts:
+The `gate` module shows the usual parts:
 
 ```text
-plugins/claudetto/slices/guard/
+plugins/claudetto/modules/gate/
   limits.ts             the bounds of the slice
   prompts.ts            the texts for Claude and for the user
   domain/               pure code: data and functions, no I/O
@@ -45,12 +45,12 @@ The code imports each text from `../prompts.ts`.
 
 1. Choose the plugin.
    A feature that costs tokens when unused, or that needs an outside tool, goes in an add-on ([Add-Ons](Add-Ons)).
-2. Create `plugins/<plugin>/slices/<s>/`.
+2. Create `plugins/claudetto/modules/<s>/`, or `plugins/<add-on>/slices/<s>/` in an add-on.
    Put the logic in `domain/` and the entry points in `adapters/`.
 3. Export each mod handler from `adapters/mod.ts`.
-   Add one literal `on()` call for it in `hooks/register.ts`, with the comment `// eval: <event> <slice>` above it.
+   Add one literal `on()` call for it in `hooks/register.ts`, with the comment `// rule: <module>.<job>` above it.
 4. Add the texts to `prompts.ts`, and each skill to `skills/<name>/SKILL.md`.
-5. Add the bounds to `limits.ts` of the slice, and shared bounds to `plugins/claudetto/kernel/budget.ts`.
+5. Add the bounds to `limits.ts` of the slice.
    Never put a bound in two files.
 6. Add the tests.
    Put repository tests in `tests/<folder>/<s>/` and hook lab tests in `plugins/<plugin>/tests/`.

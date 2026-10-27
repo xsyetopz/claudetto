@@ -4,7 +4,7 @@
 
 This page tells how the `notes` slice of the core plugin `claudetto` works.
 A user reads it to learn what a note above the prompt means and how to use its keys.
-A contributor reads it before an edit of `slices/notes/`.
+A contributor reads it before an edit of `plugins/claudetto/modules/work/notes/`.
 The slice makes no model call, so a note adds no request and no token to a turn.
 
 ## What It Does for You

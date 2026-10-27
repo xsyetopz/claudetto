@@ -62,9 +62,9 @@ The option `decide` is `jev` by default, and `TYPESAFE_API_KEY` turns Jev on.
 | The sandbox warns about a `--model` | The model is not in `availableModels` of the sandbox, so Claude Code runs another model. Pass a model from that list. | [Lab Sandbox](Lab-Sandbox) |
 | The debug log says the plugin is locked | A managed setting locks the plugin name, so Claude Code ignores the `--plugin-dir` copy. Remove the managed `enabledPlugins` entry. | [Sandbox](Sandbox) |
 | `claude` finds no prompt in a headless run | Put the prompt before variadic flags such as `--allowedTools`. | [Sandbox](Sandbox) |
-| `tools/schema/main.ts` exits with 2 | The command needs `--out DIR`. | [Lab](Lab) |
-| `tools/capture/main.ts` says the upstream is the address of the proxy | Pass `--upstream URL`, or unset `ANTHROPIC_BASE_URL`. | [Lab Capture](Lab-Capture) |
-| `tools/eval-compare/main.ts` stops at a cost bound | The command adds `--max-cost-usd 5` to each run when the options set no bound. Pass `--max-cost-usd` with another value. | [Lab](Lab) |
+| `dev/schema/main.ts` exits with 2 | The command needs `--out DIR`. | [Lab](Lab) |
+| `dev/capture/main.ts` says the upstream is the address of the proxy | Pass `--upstream URL`, or unset `ANTHROPIC_BASE_URL`. | [Lab Capture](Lab-Capture) |
+| `dev/eval-compare/main.ts` stops at a cost bound | The command adds `--max-cost-usd 5` to each run when the options set no bound. Pass `--max-cost-usd` with another value. | [Lab](Lab) |
 
 ## Related Pages
 

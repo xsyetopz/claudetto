@@ -13,7 +13,7 @@ The body of the agent replaces each built-in section of the system prompt, so Cl
 The body is the same when the mod hooks do not load (decision A9).
 There is one body for all models and no variant for a model.
 
-The code is in `plugins/claudetto/slices/prompt/`.
+The code is in `plugins/claudetto/modules/session/prompt/`.
 The body is `agents/main.md`, and the other texts are in `prompts.ts`.
 
 ## Hooks

@@ -1,7 +1,7 @@
 # Settings Snippet
 
 The settings snippet is the set of Claude Code settings that `claudetto` needs, as one JSON block.
-It lives in `plugins/claudetto/slices/setup/prompts.ts`, and `just generate` writes it into this page.
+It lives in `plugins/claudetto/modules/setup/prompts.ts`, and `just generate` writes it into this page.
 A test checks each key against `schemas/claude-code-settings.json`.
 To apply it, see [Settings Apply](Settings-Apply).
 The reason and default of each key are on [Settings Snippet Keys](Settings-Snippet-Keys).

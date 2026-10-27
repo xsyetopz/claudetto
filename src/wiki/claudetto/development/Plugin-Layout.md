@@ -10,7 +10,8 @@ Read it before you add a file, a slice, or a plugin.
 | --- | --- |
 | `plugins/` | The plugins that users install. It is the source |
 | `tools/` | The repository scripts, and the generator of the wiki in `tools/generate/` |
-| `tests/` | One folder for each plugin, and `kernel/`, `support/`, and `tools/` |
+| `dev/` | The lab tools, such as `dev/sandbox/`, `dev/capture/`, `dev/schema/`, and `dev/eval-compare/` |
+| `tests/` | One folder for each plugin, and `repo/`, `support/`, and `tools/` |
 | `src/wiki/` | The source of the wiki pages |
 | `wiki/` | The wiki pages, written from `src/wiki/` by `just generate` |
 | `.claude-plugin/` | The marketplace file `marketplace.json` |
@@ -27,7 +28,7 @@ Read it before you add a file, a slice, or a plugin.
 
 | Plugin | Source | Tests | Page |
 | --- | --- | --- | --- |
-| `claudetto` | `plugins/claudetto/` | `tests/claudetto/<slice>/` and `plugins/claudetto/tests/` | [Overview](Overview) |
+| `claudetto` | `plugins/claudetto/` | `tests/claudetto/<module>/` and `plugins/claudetto/tests/` | [Overview](Overview) |
 | `claudetto-browser` | `plugins/claudetto-browser/` | `tests/claudetto-browser/` | [Browser](Browser) |
 
 `plugins/claudetto/tests/` holds the hook lab tests of the core plugin.
@@ -45,15 +46,13 @@ plugins/claudetto/kernel/                      shared code and ports
 plugins/claudetto/kernel/node/                 adapters of the Node and Bun runtimes
 plugins/claudetto/output-styles/               the output style
 plugins/claudetto/skills/                      the skills
-plugins/claudetto/slices/<s>/                  one feature of the plugin
+plugins/claudetto/modules/<m>/                  one feature of the plugin
 plugins/claudetto/snippets.ts                  the settings snippet
 plugins/claudetto/tests/                       hook lab tests
 ```
 
-The core plugin has 13 slices with code, and each add-on has one.
-An add-on keeps its own copy of each kernel file that it uses.
-A test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
-The parts of a slice are on [Plugin Layout Slices](Plugin-Layout-Slices).
+The core plugin has 10 modules, and each add-on has one slice.
+The parts of a module are on [Plugin Layout Slices](Plugin-Layout-Slices).
 
 ## Imports
 
@@ -68,10 +67,9 @@ It runs each rule over `plugins/`, and breaks each rule with a fixture.
   `register.ts` imports only `claude-code`, a module file, and the kernel.
 - The modules have no import cycle, and the kernel imports no module.
 - Domain code in `domain/` imports no adapter and no `kernel/node/` file.
-- Each plugin has its own copy of the kernel files it imports.
-  A test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
+- Each relative import reaches a file of its own plugin, so an add-on holds its own copy of each kernel file that it uses.
 
-The rules for each folder are in `.claude/rules/`, such as `slice-imports.md` and `plugin-imports.md`.
+The rules for each folder are in `.claude/rules/`, such as `plugins.md` and `tests.md`.
 
 ## The Hooks Module
 
@@ -88,8 +86,8 @@ Each hook of each plugin has an entry in `evals/hooks.json`.
 A person writes the file.
 `tests/repo/hook-evals.test.ts` checks it.
 
-- The id of a mod hook is `<event> <slice>`.
-  `register.ts` has the comment `// eval: <id>` above its `on()` call.
+- The id of a mod hook is its rule name `<module>.<job>`, such as `agents.offer`.
+  `register.ts` has the comment `// rule: <id>` above its `on()` call, and a call that joins several hooks has one comment for each.
 - The id of a classic hook is its event and command, without the `bun` launcher and the plugin root.
 - An entry has `requests` and `tokens`: the model requests and tokens the hook adds to each turn.
 - An entry names the test of each case kind as `<file from the repository root> > <test name>`.
@@ -117,11 +115,12 @@ The values are on [Bounds](Bounds).
 
 | Tier | File |
 | --- | --- |
-| Shared runtime | `plugins/claudetto/kernel/budget.ts` |
-| Slice | `plugins/<plugin>/slices/<s>/limits.ts` |
+| Kernel | `plugins/claudetto/kernel/node/limits.ts` |
+| Module | `plugins/claudetto/modules/<m>/limits.ts` |
+| Add-on slice | `plugins/claudetto-browser/slices/<s>/limits.ts` |
 | Repository | `tools/limits.ts` |
 
-A slice with no bound has no `limits.ts`.
+A module or slice with no bound has no `limits.ts`.
 A `userConfig` field in `plugin.json` is for a choice that the user makes.
 Each option adds one dialog at install, so it needs a real user choice.
 The core plugin has two: `decide` and `compaction`.

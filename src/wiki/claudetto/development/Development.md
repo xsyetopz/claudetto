@@ -10,7 +10,7 @@ Types, CI, releases, and the wiki are on [Development Release](Development-Relea
 | --- | --- | --- |
 | [`Bun`](https://bun.sh) | 1.4.3 or later | `package.json` sets the minimum in `engines`, `packageManager`, and `.bun-version` |
 | `just` | any (CI uses 1.58.0) | Runs the recipes |
-| Claude Code | 2.1.307 or later | `MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts` sets it. The recipes `sandbox`, `validate`, `lab`, `eval`, and `release` call `claude` |
+| Claude Code | 2.1.309 or later | `MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts` sets it. The recipes `sandbox`, `validate`, `lab`, `eval`, and `release` call `claude` |
 | `docker` (OrbStack or Docker) | any | For `just docker` and `just sandbox-linux` |
 
 Then run `bun install` in the repository root.
@@ -20,7 +20,7 @@ It installs the dev dependencies that `bun.lock` pins: Biome, `markdownlint-cli2
 
 - Edit the plugins in `plugins/`, because it is the source.
   Edit the wiki in `src/wiki/`, then run `just generate`, because `wiki/` is written from it.
-- Change a bound only in its owner file: `plugins/claudetto/kernel/budget.ts` (shared), `slices/<s>/limits.ts` (slice), or `tools/limits.ts` (repository).
+- Change a bound only in its owner file: `plugins/claudetto/kernel/node/limits.ts` (kernel), `modules/<m>/limits.ts` (module), `slices/<s>/limits.ts` (add-on slice), or `tools/limits.ts` (repository).
   See [Bounds](Bounds).
 - Use the env vars and flags of Claude Code.
   Add a `CLAUDETTO_` env var only when neither can do the work.
@@ -95,7 +95,7 @@ A container has its own `node_modules/` volume and its own lock.
 | --- | --- |
 | `tests/claudetto/<slice>/` | Tests of each slice of the core plugin |
 | `tests/claudetto-<add-on>/` | Tests of each add-on |
-| `tests/kernel/` | Tests of `plugins/claudetto/kernel/` |
+| `tests/claudetto/kernel/` | Tests of `plugins/claudetto/kernel/` |
 | `tests/support/` | Test helpers and repository checks, such as `wiki-links.test.ts` and `hook-evals.test.ts` |
 | `tests/tools/` | Tests of the scripts in `tools/` |
 

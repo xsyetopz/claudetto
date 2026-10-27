@@ -22,8 +22,8 @@ The key names match `schemas/claude-code-settings.json`.
 
 | Option | Values | Effect | Read in |
 | --- | --- | --- | --- |
-| `compaction` | `auto` (default), `handover`, `built-in` | `built-in` starts no handover and leaves compaction to Claude Code. | `slices/handoff/adapters/mod.ts` |
-| `decide` | `off`, `jev` (default) | `off` sends no question to Jev. `jev` needs `TYPESAFE_API_KEY`, and then Jev answers each `AskUserQuestion` call that it is sure about. | `slices/decide/adapters/mod.ts` |
+| `compaction` | `auto` (default), `handover`, `built-in` | `built-in` starts no handover and leaves compaction to Claude Code. | `plugins/claudetto/modules/session/handoff/adapters/mod.ts` |
+| `decide` | `off`, `jev` (default) | `off` sends no question to Jev. `jev` needs `TYPESAFE_API_KEY`, and then Jev answers each `AskUserQuestion` call that it is sure about. | `plugins/claudetto/modules/jev/adapters/mod.ts` |
 
 The `prompt` slice also reads the env var `DISABLE_COMPACT`.
 When it is on, the `prompt` slice gives the context section the text for no compaction.
@@ -56,7 +56,7 @@ The snippet sets other `env` entries that set a value and turn off nothing, such
 | `DISABLE_FEEDBACK_COMMAND` set to `1` | No `/feedback` command. |
 | `DISABLE_INSTALL_GITHUB_APP_COMMAND` set to `1` | No `/install-github-app` command. |
 
-All are set in `slices/setup/prompts.ts`.
+All are set in `plugins/claudetto/modules/setup/prompts.ts`.
 
 ## Settings Keys of the Snippet
 
@@ -77,14 +77,14 @@ All are set in `slices/setup/prompts.ts`.
 | `permissions.disableAutoMode` set to `"disable"` | No auto mode. |
 | `useAutoModeDuringPlan` set to `false` | No switch to auto mode in the plan mode. |
 
-All are set in `slices/setup/prompts.ts`.
+All are set in `plugins/claudetto/modules/setup/prompts.ts`.
 The keys `autoCompactWindow`, `modelSettings`, and `worktree` set a value and turn off nothing.
 The `prompt` slice also hides tools and attachments with hooks, not with a switch.
 See [Prompt](Prompt).
 
 ## Denied Tools and Agents
 
-The `permissions.deny` list of `slices/setup/prompts.ts` removes these tools and agents from the model.
+The `permissions.deny` list of `plugins/claudetto/modules/setup/prompts.ts` removes these tools and agents from the model.
 
 | Entry | Effect |
 | --- | --- |
@@ -113,7 +113,7 @@ The snippet sets these entries of `enabledPlugins` to `false`:
 - `cc-plugin-tips@builtin`
 - `cc-plugin-you-should-know@builtin`, because it makes its own model calls when it is on (design D2 of `release-0-3-0-alpha-2`)
 
-The list is in `slices/setup/prompts.ts`.
+The list is in `plugins/claudetto/modules/setup/prompts.ts`.
 Claude Code runs it only when its feature flag `tengu_jolly_dewdrop` is on.
 
 ## Add-Ons and the Core Plugin

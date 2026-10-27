@@ -7,7 +7,7 @@ The sizes and the evidence are in the research of the change `0-3-0` (`research/
 
 ## Where the Snippet Lives
 
-The snippet is the constant `SNIPPET` in `plugins/claudetto/slices/setup/prompts.ts`, and `plugins/claudetto/snippets.ts` exports it.
+The snippet is the constant `SNIPPET` in `plugins/claudetto/modules/setup/prompts.ts`, and `plugins/claudetto/snippets.ts` exports it.
 A test checks the keys against `schemas/claude-code-settings.json`, so a key that the schema lacks fails.
 `claudetto-setup` adds one more entry: the subagent cap ([Setup](Setup#subagent-cap)).
 
@@ -15,7 +15,7 @@ A test checks the keys against `schemas/claude-code-settings.json`, so a key tha
 
 | Entry | Value | What it does in Claude Code | Why `claudetto` sets it |
 | --- | --- | --- | --- |
-| `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | `{{AUTOCOMPACT_PCT}}` | Sets the percent of the auto-compact window at which automatic compaction starts. | At a window of {{CONTEXT_WINDOW}} tokens, the percent gives {{HANDOFF_TRIGGER_TOKENS}} tokens, the trigger of the auto handoff (`AUTOCOMPACT_PCT` in `plugins/claudetto/kernel/budget.ts`). |
+| `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | `{{AUTOCOMPACT_PCT}}` | Sets the percent of the auto-compact window at which automatic compaction starts. | At a window of {{CONTEXT_WINDOW}} tokens, the percent gives {{HANDOFF_TRIGGER_TOKENS}} tokens, the trigger of the auto handoff (`AUTOCOMPACT_PCT` in `plugins/claudetto/modules/session/limits.ts`). |
 | `CLAUDE_CODE_AUTO_CONNECT_IDE` | `false` | Default: the IDE connects by itself. | No IDE connection at start. |
 | `CLAUDE_CODE_BASH_OUTPUT_AUDIENCE_NOTE` | `0` | Stops a note that a rollout can add to each `Bash` result. | A shorter `Bash` result. The note is not sized. |
 | `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` | `1` | Removes the built-in advisor tool. | The advisor is a model call with no bound that the user sets. |

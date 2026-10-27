@@ -17,7 +17,7 @@ A test there changes only the sandbox, not your settings or your session history
 
 - Arguments after `just sandbox` or `just sandbox-alone PLUGIN` go to `claude`.
   For example, `just sandbox -p "prompt"` runs one headless turn.
-- `just sandbox` runs `tools/sandbox/run.ts`, which runs `tools/sandbox/main.ts` with a `--plugin-dir` for each plugin.
+- `just sandbox` runs `dev/sandbox/run.ts`, which runs `dev/sandbox/main.ts` with a `--plugin-dir` for each plugin.
 - To test an add-on with no core plugin, run `just sandbox-alone plugins/claudetto-browser`.
 - `just debug-agents` runs one headless session with a debug log.
   It fails when the log names an unknown frontmatter field.

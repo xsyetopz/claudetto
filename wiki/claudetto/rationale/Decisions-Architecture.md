@@ -15,8 +15,8 @@ An entry point is a mod handler, a CLI, or a status line segment.
 
 **Evidence:**
 
-- `plugins/claudetto/slices/` has 13 slices with code, and each add-on has 1.
-- `biome.json` limits the imports of a slice to the `kernel/` of its plugin and its own folder.
+- `plugins/claudetto/modules/` has 10 modules with code, and the add-on has 1 slice.
+- `tests/repo/imports.test.ts` fails when two modules import each other, when a kernel file imports a module, or when a `domain/` file imports an adapter.
 
 ## Why the Wiring Files Are Hand-Written
 
@@ -57,7 +57,7 @@ This is one sample.
 ## Why Add-Ons Import Nothing from Other Plugins
 
 **Choice:** Each add-on has its own folder in `plugins/`.
-It keeps its own copy of each kernel file that it uses, and a test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
+It keeps its own copy of each kernel file that it uses, and a test fails on each import that leaves its plugin.
 
 **Reason:** Each add-on must work alone.
 A shared npm package would add an install step and version skew.
@@ -69,14 +69,14 @@ A shared npm package would add an install step and version skew.
 
 ## Why Bounds Have Three Tiers
 
-**Choice:** A shared runtime bound is in `plugins/claudetto/kernel/budget.ts`.
-A slice bound is in `slices/<s>/limits.ts` (12 files).
+**Choice:** A kernel bound is in `plugins/claudetto/kernel/node/limits.ts`.
+A module bound is in `modules/<m>/limits.ts` (14 files).
 A repository bound is in `tools/limits.ts`.
 
 **Reason:** Copies of one bound in code, config, and prose drift apart.
 A test pins each copy, so one change in the owner file changes the copies.
 
-**Evidence:** `CONTEXT_WINDOW` is 300,000 tokens.
+**Evidence:** `CONTEXT_WINDOW` in `plugins/claudetto/modules/session/limits.ts` is 300,000 tokens.
 `tools/limits.ts` holds `MIN_CLAUDE_CODE_VERSION`, `DOCKER_CPUS`, and `EVAL_MAX_COST_USD`.
 See [Bounds](Bounds).
 
@@ -89,8 +89,8 @@ Domain code is plain data and functions, so a test needs no stub.
 
 **Reason:** The user decided this on 2026-10-12.
 
-**Evidence:** `biome.json` sets `useArrowFunction` to `error`.
-`tools/lint/arrow-functions.grit` flags a `function` declaration.
+**Evidence:** `biome.jsonc` sets `useArrowFunction` to `error`.
+`.biome/plugins/noFunctionDeclaration.grit` flags a `function` declaration.
 
 ## Related Pages
 

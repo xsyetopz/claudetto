@@ -90,7 +90,7 @@ The command works in this order:
 
 ## The Merge
 
-The snippet is in `plugins/claudetto/slices/setup/prompts.ts`.
+The snippet is in `plugins/claudetto/modules/setup/prompts.ts`.
 See [Settings Snippet](Settings-Snippet) for the value of each key and [Snippet Keys](Settings-Snippet-Keys) for the reason.
 
 | Kind of value | What the merge does |

@@ -2,7 +2,7 @@
 
 # Lab
 
-The folders `tools/sandbox/`, `tools/capture/`, `tools/schema/`, and `tools/eval-compare/` hold the lab tools of the repository.
+The folders `dev/sandbox/`, `dev/capture/`, `dev/schema/`, and `dev/eval-compare/` hold the lab tools of the repository.
 They help a plugin author test a plugin in a safe sandbox, log the requests of Claude Code, write the settings schema, and compare eval scores.
 They are not a plugin, so they do not ship to users.
 Earlier versions shipped them in two add-on plugins.
@@ -12,25 +12,25 @@ The MCP server of the `cc-docs` plugin now covers the work that those plugins di
 
 | Folder | Script | Recipe | Use |
 | --- | --- | --- | --- |
-| `tools/sandbox/` | `main.ts` | `just sandbox`, `just sandbox-alone`, `just sandbox-installed`, `just sandbox-clean` | Run Claude Code in a config folder apart from yours (see [Lab Sandbox](Lab-Sandbox)) |
-| `tools/capture/` | `main.ts` | `just capture` | Log the requests of Claude Code and size their parts (see [Lab Capture](Lab-Capture)) |
-| `tools/schema/` | `main.ts` | `just schema` | Write the JSON Schema of `settings.json` |
-| `tools/eval-compare/` | `main.ts` | `just eval-variant` | Compare the eval scores of two plugin folders |
+| `dev/sandbox/` | `main.ts` | `just sandbox`, `just sandbox-alone`, `just sandbox-installed`, `just sandbox-clean` | Run Claude Code in a config folder apart from yours (see [Lab Sandbox](Lab-Sandbox)) |
+| `dev/capture/` | `main.ts` | `just capture` | Log the requests of Claude Code and size their parts (see [Lab Capture](Lab-Capture)) |
+| `dev/schema/` | `main.ts` | `just schema` | Write the JSON Schema of `settings.json` |
+| `dev/eval-compare/` | `main.ts` | `just eval-variant` | Compare the eval scores of two plugin folders |
 
 ## What You Need
 
 1. Make sure that these tools are ready:
    - Bun 1.4.3 or later, because the commands are Bun scripts.
    - The `claude` executable on `PATH`. A shell function or an alias does not work.
-     The sandbox and `tools/eval-compare/main.ts` need it.
-     `tools/schema/main.ts` needs it when you do not pass `--bundle`.
+     The sandbox and `dev/eval-compare/main.ts` need it.
+     `dev/schema/main.ts` needs it when you do not pass `--bundle`.
    - A login token for the sandbox (see [Lab Sandbox](Lab-Sandbox)).
 
 ## The Sandbox
 
 ```text
-bun tools/sandbox/main.ts [--dir DIR] [--check-frontmatter] [--plugin-dir DIR]... [claude arguments...]
-bun tools/sandbox/main.ts [--dir DIR] --clean
+bun dev/sandbox/main.ts [--dir DIR] [--check-frontmatter] [--plugin-dir DIR]... [claude arguments...]
+bun dev/sandbox/main.ts [--dir DIR] --clean
 ```
 
 The first form runs Claude Code in a config folder apart from yours.
@@ -42,7 +42,7 @@ See [Lab Sandbox](Lab-Sandbox) for the details.
 ## The Schema Writer
 
 ```text
-bun tools/schema/main.ts --out DIR [--bundle FILE] [--version X.Y.Z]
+bun dev/schema/main.ts --out DIR [--bundle FILE] [--version X.Y.Z]
 ```
 
 A schema is a file that describes which keys a JSON file can have.
@@ -75,7 +75,7 @@ It exits 1 on an error.
 ## The Eval Compare
 
 ```text
-bun tools/eval-compare/main.ts A B [claude plugin eval options...]
+bun dev/eval-compare/main.ts A B [claude plugin eval options...]
 ```
 
 The command runs `claude plugin eval` on the plugin folders `A` and `B`, one after the other.
@@ -105,7 +105,7 @@ The output names the arm and the reason, and says not to compare the tables.
 | 1 | An arm fails |
 | 2 | A folder is missing, or a folder name starts with `-` |
 
-The compare logic is in `tools/eval-compare/compare.ts`.
+The compare logic is in `dev/eval-compare/compare.ts`.
 
 A folder needs `.claude-plugin/plugin.json` and an `evals/` folder.
 Compare the `WITH` column of the two tables.
@@ -115,8 +115,8 @@ Compare the `WITH` column of the two tables.
 
 | Bound | Value | File |
 | --- | --- | --- |
-| `DEPTH_MAX` | 8 levels | `tools/schema/domain/types.ts` |
-| `--max-cost-usd` | 5 USD for each run | `tools/eval-compare/compare.ts` |
+| `DEPTH_MAX` | 8 levels | `dev/schema/domain/types.ts` |
+| `--max-cost-usd` | 5 USD for each run | `dev/eval-compare/compare.ts` |
 
 ## Related Pages
 

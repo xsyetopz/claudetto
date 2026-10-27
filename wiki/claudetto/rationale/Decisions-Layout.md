@@ -24,13 +24,13 @@ After the copy, a plugin cannot use a file outside its folder.
 
 **Choice:** Each file has one concern.
 Each bound lives in one of three tiers (see [Architecture](Decisions-Architecture)).
-A slice imports only the `kernel/` of its plugin and its own folder.
+A module never imports a module that imports it back, and a kernel file imports no module (`tests/repo/imports.test.ts`).
 An add-on imports nothing from another plugin.
 
 **Reason:** A file with two concerns is hard to review, and a bound in prose drifts from the code.
 A rule on file length is not part of the design, because it made code split and grow (the user, 2026-10-19).
 
-**Evidence:** `tools/limits.ts`, `plugins/claudetto/kernel/budget.ts`, and the `limits.ts` files of the slices.
+**Evidence:** `tools/limits.ts`, `plugins/claudetto/kernel/node/limits.ts`, and the `limits.ts` files of the modules.
 The `userConfig` of `plugin.json` has the options `decide` and `compaction`, each with a default.
 
 ## Why the Snippet Allows Local Binding

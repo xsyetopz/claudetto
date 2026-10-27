@@ -2,7 +2,7 @@
 
 This page tells what the `hygiene` slice of the core plugin `claudetto` does at the start of a session and after each edit.
 A user reads it to learn which files and folders claudetto removes.
-A contributor reads it before an edit of `slices/hygiene/`.
+A contributor reads it before an edit of `plugins/claudetto/modules/session/hygiene/`.
 
 ## The Cleanup at Session Start
 
@@ -52,7 +52,7 @@ The ledger is the file `<tmp>/claudetto/ledger/<project key>.jsonl`.
 The project key is the base name of the project root and a hash of its path.
 Each line holds the path, the hash of the file (FNV-1a, 64 bits), the session, and the agent (`main`, or the agent type).
 Each session of the project reads the same file.
-The reader of the file is in `kernel/ledger.ts`, because the `guard` slice reads it too ([Guard](Guard)).
+The reader of the file is in `plugins/claudetto/modules/project/domain/ledger.ts`, because the `guard` slice reads it too ([Guard](Guard)).
 
 1. After each `Edit` or `Write` that succeeds, the `classic.PostToolUse` hook adds a line.
    After each `Bash` call, it adds a line for each file of `git status` whose time of change is after the start of the call.

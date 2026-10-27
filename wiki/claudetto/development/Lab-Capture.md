@@ -2,7 +2,7 @@
 
 # Lab Capture
 
-The script `tools/capture/main.ts` is a local proxy for Claude Code.
+The script `dev/capture/main.ts` is a local proxy for Claude Code.
 A proxy sits between two programs and passes their messages on.
 This one logs each request and sizes the parts of the first request that has tools.
 You see which part of a request costs the most tokens.
@@ -10,7 +10,7 @@ You see which part of a request costs the most tokens.
 ## How to Use It
 
 ```text
-bun tools/capture/main.ts [--port 8787] [--out DIR] [--upstream URL] [--no-count]
+bun dev/capture/main.ts [--port 8787] [--out DIR] [--upstream URL] [--no-count]
 ANTHROPIC_BASE_URL=http://127.0.0.1:8787 ENABLE_TOOL_SEARCH=true claude
 ```
 

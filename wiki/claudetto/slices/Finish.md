@@ -4,7 +4,7 @@
 
 This page tells how the `finish` slice of the core plugin `claudetto` works.
 A user reads it to set a goal with `/goal` and to learn when Claude gets a note or a deny at the end of work.
-A contributor reads it before an edit of `slices/finish/`.
+A contributor reads it before an edit of `plugins/claudetto/modules/work/finish/`.
 The slice holds the old `goal` slice, the `stop` hook, and the `box` hook.
 None of them makes a model call.
 

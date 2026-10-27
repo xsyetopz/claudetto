@@ -42,7 +42,7 @@ It also grants `Bash(claudetto-browser-guide)`.
 Other subcommands, such as `eval`, `network`, `auth`, `upload`, and `install`, make Claude Code ask for permission.
 
 The body of the skill includes the output of `claudetto-browser-guide`.
-The command runs `agent-browser skills get core` with `Bun.spawnSync` and no shell.
+The command runs `agent-browser skills get core` with async `globalThis.Bun.spawn` and no shell.
 The command cuts the guide at `MAX_GUIDE_CHARS`, and the cut text ends with a notice.
 The command exits with 0 also when the guide is missing, and the text then tells Claude what to do.
 

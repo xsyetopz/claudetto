@@ -138,7 +138,7 @@ A pull request has the color of its review state: `approved`, `pending`, `change
 
 ## Rate Limits File
 
-When the input has `rate_limits`, the command writes them to `claudetto-rate-limits.json` in the temp folder (see `kernel/tmp.ts`) for the eval recipes.
+When the input has `rate_limits`, the command writes them to `claudetto-rate-limits.json` in the temp folder (see `plugins/claudetto/modules/project/domain/tmp.ts`) for the eval recipes.
 An input with no `rate_limits` keeps the last content.
 
 The command also saves the last reading of each limit window in `limits.json` in the folder `${CLAUDE_CONFIG_DIR:-~/.claude}/claudetto/`.

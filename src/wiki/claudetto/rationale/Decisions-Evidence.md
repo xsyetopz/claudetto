@@ -9,7 +9,7 @@ These decisions explain how.
 
 1. No prompt text asks the model to estimate its context share.
 2. The handoff starts at a measured context, through `autoCompactWindow` and `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`.
-   The trigger is `HANDOFF_TRIGGER_TOKENS` in `plugins/claudetto/kernel/budget.ts`.
+   The trigger is `HANDOFF_TRIGGER_TOKENS` in `plugins/claudetto/modules/session/limits.ts`.
 3. The `context_management` transform agrees with the compaction state.
 4. The done list of a handoff comes from checked tasks in `tasks.md` and passed checks.
 5. The prompt rules ask for a run before a claim of done (the `verification` part of `agents/main.md`).
@@ -72,7 +72,7 @@ A crash or timeout gives an `ask` for a person, with the reason that the gate fa
 A guard that fails open lets a denied call through.
 A false `ask` costs little, because a person can answer it.
 
-**Evidence:** The header of `plugins/claudetto/slices/guard/adapters/mod.ts` and `tests/claudetto/gate/faults.test.ts`.
+**Evidence:** The header of `plugins/claudetto/modules/gate/adapters/mod.ts` and `tests/claudetto/gate/faults.test.ts`.
 
 ## Related Pages
 

@@ -41,8 +41,8 @@ To add a capability, add a slice.
 To remove it, remove the slice.
 Layers would spread one capability over many folders, and parallel work would conflict.
 
-- `biome.json` sets `noRestrictedImports`.
-  A slice imports only the `kernel/` of its plugin and its own folder.
+- `tests/repo/imports.test.ts` checks the imports.
+  Two modules never import each other, a kernel file imports no module, and a `domain/` file imports no adapter.
 
 ## Write the Joining Files by Hand
 
@@ -59,18 +59,18 @@ Version 0.3.0 removed the generator and the manifests, because one reader can fo
 A plugin imports nothing from another plugin.
 An add-on must work when the user installs it alone, so it cannot need the core plugin.
 
-- An add-on keeps its own copy of each kernel file that it uses, and a test keeps each copy equal to the file in `plugins/claudetto/kernel/`.
+- An add-on keeps its own copy of each kernel file that it uses, and a test fails on each import that leaves its plugin.
 - `.claude/rules/plugins.md` and `tests/repo/addons.test.ts` enforce the rule.
 
 ## Give Each Bound One Owner
 
 A number in two places drifts apart.
-So a shared runtime bound is in `plugins/claudetto/kernel/budget.ts`, a slice bound is in `slices/<s>/limits.ts`, and a repository bound is in `tools/limits.ts`.
+So a kernel bound is in `plugins/claudetto/kernel/node/limits.ts`, a module bound is in `modules/<m>/limits.ts`, and a repository bound is in `tools/limits.ts`.
 Tests pin each copy in code and config.
 
 - `CONTEXT_WINDOW` is `300_000`.
   The snippet sets `autoCompactWindow` to it for each model that is not a Haiku model.
-- `MIN_CLAUDE_CODE_VERSION` is `2.1.307`.
+- `MIN_CLAUDE_CODE_VERSION` is `2.1.309`.
 
 ## Keep the Prompt Short
 
@@ -90,7 +90,7 @@ It allows by default, asks before a loss for good, and denies a danger to the sy
 Jev can allow an `ask` first, and a person decides the rest.
 The snippet keeps a `deny` list as a second layer, and it sets no `allow` list and no `ask` list.
 
-- `plugins/claudetto/slices/guard/domain/gate.ts` holds the rules ([Guard](Guard)).
+- `plugins/claudetto/modules/gate/domain/gate.ts` holds the rules ([Guard](Guard)).
 
 ## Hand Off Instead of Compacting
 
@@ -98,14 +98,14 @@ The `handoff` slice replaces the summary of a compaction with a handoff.
 The built-in compaction loses facts that the work needs.
 Set the option `compaction` to `built-in` to turn the handoff off.
 
-- `CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `HANDOFF_TRIGGER_TOKENS` are in `plugins/claudetto/kernel/budget.ts`.
+- `CONTEXT_WINDOW`, `CONTEXT_BLOCK_MARGIN`, and `HANDOFF_TRIGGER_TOKENS` are in `plugins/claudetto/modules/session/limits.ts`.
 - The slice registers no `session.compact` hook: the compaction of Claude Code stays as the safety net.
 
 ## Record Progress in Checked Tasks
 
 The state of an OpenSpec change is in `tasks.md`, where a checked task is a done task.
 The handoff reads the done list from there and from checks that passed, never from model text.
-`plugins/claudetto/kernel/change.ts` holds the shared rules.
+`plugins/claudetto/modules/project/domain/change.ts` holds the shared rules.
 
 ## Related Pages
 

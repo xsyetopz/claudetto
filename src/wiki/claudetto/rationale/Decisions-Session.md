@@ -32,7 +32,7 @@ The env vars `CLAUDE_CODE_PROMPT_CACHE_TTL` and `CLAUDE_CODE_SUBAGENT_PROMPT_CAC
 
 The key `TYPESAFE_API_KEY` is a `userConfig` option with `sensitive: true`, so Claude Code keeps it in secure storage and writes it to no settings file.
 `decide` and `guard` read it from the `options` of `register(on, options)`, and the exported variable `TYPESAFE_API_KEY` stays a fallback.
-`kernel/plugin-option.ts` reads only `pluginConfigs` of the settings, so it cannot find the key.
+`plugins/claudetto/kernel/options.ts` keeps only the `options` that `register` receives, and a `statusLine` command reads only `pluginConfigs` of the settings, so it cannot find the key.
 
 **Evidence:** In the bundle of Claude Code 2.1.309, the option loader returns the `options` of `pluginConfigs` merged with the `pluginSecrets` of secure storage (`chunk-3sf3xmv8.js`, offset 21411).
 The reload compares the loaded `options` only after it drops each sensitive key (`chunk-kang00hq.js`, offset 4221826).

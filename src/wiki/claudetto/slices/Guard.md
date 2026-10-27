@@ -2,7 +2,7 @@
 
 This page tells how the `guard` slice of the core plugin `claudetto` decides which calls run, which ask a person, and which stop.
 A user reads it to learn why Claude Code shows a dialog or a refusal.
-A contributor reads it before an edit of `slices/guard/`.
+A contributor reads it before an edit of `plugins/claudetto/modules/gate/`.
 
 ## Why It Exists
 

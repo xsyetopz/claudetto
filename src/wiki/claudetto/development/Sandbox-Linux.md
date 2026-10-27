@@ -8,7 +8,7 @@ It uses your login and costs money.
 ## What It Checks
 
 The seccomp helper of the native Claude Code build must block a Unix socket in a sandboxed `Bash` call.
-The script is `tools/sandbox/linux/run.ts`, and it runs `tools/sandbox/linux/check.sh` in the container.
+The script is `dev/sandbox/linux/run.ts`, and it runs `dev/sandbox/linux/check.sh` in the container.
 
 The session uses these settings:
 
@@ -31,7 +31,7 @@ The recipe exits with 1 for any verdict but `blocked`.
 
 ## How It Runs
 
-1. Build the image from the image of `just docker`, with `bubblewrap` and `socat` added (`tools/sandbox/linux/Dockerfile`).
+1. Build the image from the image of `just docker`, with `bubblewrap` and `socat` added (`dev/sandbox/linux/Dockerfile`).
 2. Read the login of the host, from the Keychain on macOS or `.credentials.json` on Linux.
 3. Stop when the access token has less than `LINUX_TOKEN_MIN_MINUTES` (30) minutes left.
    A refresh in the container would make the login of the host fail.

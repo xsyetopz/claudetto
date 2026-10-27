@@ -25,7 +25,7 @@ There are no progress bars (the user, 2026-10-12).
 `USAGE_LEVELS` is 40 and 80 percent: green below 40, amber from 40 to 80, and red above 80 (D15 of `release-0-3-0-alpha-2`).
 The main session uses the distance to the handoff trigger for its context share.
 
-**Evidence:** `plugins/claudetto/modules/statusline/limits.ts` and `plugins/claudetto/kernel/budget.ts`.
+**Evidence:** `plugins/claudetto/modules/statusline/limits.ts` and `plugins/claudetto/modules/session/limits.ts`.
 See [Status Line](Status-Line).
 
 ## Why Library Docs Come from a Pinned Skill
@@ -48,7 +48,7 @@ Each case has a `case.yaml` and a `scaffold.sh`.
 - `plugins/claudetto/evals/` holds 43 cases and `hooks.json`.
 - `just eval` uses `--max-cost-usd 5`, `--keep-temp`, and a lock, and it needs `--model`.
 - `just eval-variant` compares the checkout with a git ref.
-- `tools/eval-compare/main.ts` runs two plugin folders in turn.
+- `dev/eval-compare/main.ts` runs two plugin folders in turn.
 - `just validate` fails on a case that checks only words.
 
 **Reason:** Claude Code owns the case format, so a custom harness adds work for no gain.
@@ -60,7 +60,7 @@ See [Evals](Evals).
 
 **Status:** Removed in 0.3.0.
 The add-on and its setup step went for faults 18, 46, 47, and F17, by the decision of the user (2026-10-21).
-claudetto offers no code-intelligence tool in its place (`openspec/changes/0-3-0/design.md`).
+claudetto offers no code-intelligence tool in its place (`openspec/changes/archive/2026-10-23-0-3-0/design.md`).
 
 **Choice:** The `claudetto-codegraph` add-on used the `codegraph` CLI and a skill that showed its commands.
 It had no hook, because `codegraph` syncs its own index.
@@ -71,7 +71,7 @@ A missing CLI gives `ENOENT`.
 **Reason:** A skill with a CLI costs less at session start than an MCP server that the add-on ships.
 The comparison with the built-in LSP tool is not in the repository.
 
-**Evidence:** `slices/graph/slice.ts` and `tests/claudetto-codegraph/layout.test.ts` at the tag `claudetto-codegraph--v0.2.0`.
+**Evidence:** `slices/graph/slice.ts` and `layout.test.ts` of `claudetto-codegraph` at the tag `claudetto-codegraph--v0.2.0`.
 
 ## Why Jev Is on When the Key Is Set
 
@@ -89,8 +89,8 @@ The user chose this on 2026-10-20: "when Jev is found, all 'decisions' go to Jev
 The user also chose "Approvals stay with you (Recommended)", because a "(Recommended)" option makes a confident pick likely, and consent is for the user.
 A fallback model and a `second_opinion` tool are not in 0.2.0, because no incident needs them.
 
-**Evidence:** `slices/decide/adapters/ask.ts`.
-`kernel/budget.ts` has `TRIES` 3 and `ATTEMPT_TIMEOUT_MS` 12 seconds.
+**Evidence:** `plugins/claudetto/modules/jev/adapters/ask.ts`.
+`plugins/claudetto/modules/jev/limits.ts` has `TRIES` 3 and `ATTEMPT_TIMEOUT_MS` 12 seconds.
 See [Decide](Decide).
 
 ## Related Pages

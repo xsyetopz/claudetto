@@ -53,7 +53,7 @@ A `catch` names only the error it expects.
 So Claude Code logs the error and keeps the result.
 A catch-all would hide the error from the log.
 
-**Evidence:** Header comment of `slices/guard/adapters/mod.ts`.
+**Evidence:** Header comment of `plugins/claudetto/modules/gate/adapters/mod.ts`.
 
 ## Why the Sandbox Keys Come From Settings
 
@@ -64,7 +64,7 @@ The record below is what 0.2.0 did.
 
 **Reason:** A plugin cannot set `sandbox`.
 Of the `settings` of a plugin, "only `agent` and `subagentStatusLine` take effect".
-These facts shape `just sandbox-linux` (`tools/sandbox/linux/run.ts`):
+These facts shape `just sandbox-linux` (`dev/sandbox/linux/run.ts`):
 
 - With the default `failIfUnavailable: false`, a missing sandbox only warns, and commands run unsandboxed.
   So the check sets `failIfUnavailable: true` and `allowUnsandboxedCommands: false`.
@@ -118,7 +118,7 @@ In `claude plugin eval`, the config folder is in `denyRead`, so the source fails
 No debug log confirms this cause.
 
 **Evidence:** `external/cc-2.1.301/strings.txt` and the trace of the kept eval run.
-See `slices/decide/adapters/mod.ts`.
+See `plugins/claudetto/modules/jev/adapters/mod.ts`.
 
 ## Why a Repeat `Read` Has No Hook
 

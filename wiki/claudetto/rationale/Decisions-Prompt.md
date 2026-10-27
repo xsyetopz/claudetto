@@ -20,7 +20,7 @@ An unknown id passes on unchanged.
 Nothing cuts `session_context` or a block of `prompt.context`, because a cut needs an eval with no loss first.
 
 **Evidence:** `plugins/claudetto/tests/` tests the handlers.
-`tools/builtins/verdicts/` holds the verdict for each part.
+`dev/builtins/verdicts/` holds the verdict for each part.
 See [Prompt](Prompt).
 
 ## Why claudetto Owns the System Prompt
@@ -41,7 +41,7 @@ The 0.2.0 route, a `prompt.compose` rewrite of the `lean_body` section of the sh
 
 ## Why Requests Are Captured
 
-**Choice:** `just capture` runs a local logging proxy in `tools/capture/adapters/cli.ts`.
+**Choice:** `just capture` runs a local logging proxy in `dev/capture/adapters/cli.ts`.
 Claude Code reaches it through `ANTHROPIC_BASE_URL`.
 It records each request body and forwards it to `--upstream URL`, then to `ANTHROPIC_BASE_URL`, then to `https://api.anthropic.com`.
 It refuses an upstream that is its own address.

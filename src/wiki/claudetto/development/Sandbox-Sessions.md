@@ -45,7 +45,7 @@ tmux kill-session -t sandbox
 
 ## Capture Session
 
-`just capture` runs `tools/capture/main.ts`, a proxy that writes each request body.
+`just capture` runs `dev/capture/main.ts`, a proxy that writes each request body.
 Use it to size each part of the first request of a session.
 
 1. In a terminal, run `just capture`.
@@ -84,7 +84,7 @@ To see the real input, set a status line command in `config/settings.json` that 
 3. For `just sandbox-alone`, run the recipe again, or run:
 
    ```bash
-   bun tools/sandbox/main.ts --dir /tmp/claudetto-sandbox-alone --clean
+   bun dev/sandbox/main.ts --dir /tmp/claudetto-sandbox-alone --clean
    ```
 
 4. For `just sandbox-install`, use the same command with `--dir /tmp/claudetto-sandbox-install`.
