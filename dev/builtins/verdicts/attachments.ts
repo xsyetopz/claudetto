@@ -1,7 +1,7 @@
 // The verdicts of the attachments, written by hand.
 // One row for each part: `group:name`, the verdict, the bytes or `-`, and the reason, with a tab between them.
 
-export default `
+export const ATTACHMENTS = `
 attachments:account_memory_recall	keep	-	memory content, never turned off
 attachments:advisor_stripped	keep	-	marker with no model text, so nothing to remove
 attachments:advisor_tool	off	-	The \`advise\` tool went in 0.3.0 (D6 of \`0-3-0\`), and \`CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1\` of the snippet turns the built-in advisor off.

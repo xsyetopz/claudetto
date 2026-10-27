@@ -16,9 +16,10 @@
 // It also passes `--keep-temp`, as `just eval` does, so each paid arm keeps its sandbox and trace.
 // `claudetto-eval-compare` grants neither, because it also runs on suites of other authors.
 
-import fs from "node:fs";
+import { cp, mkdtemp, stat } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { spawn } from "bun";
 
 const REPO = path.resolve(import.meta.dirname, "..");
 // The comparison itself is the `dev/eval-compare/main.ts` command. This script adds the git worktree.
@@ -26,82 +27,90 @@ const COMPARE = path.join(REPO, "dev/eval-compare/main.ts");
 
 /** The arguments of `claudetto-eval-compare` for the checkout and the variant in `tree`. */
 export const compareArgs = (tree: string, rest: string[]): string[] => [
-  COMPARE,
-  path.join(REPO, "plugins/claudetto"),
-  path.join(tree, "plugins/claudetto"),
-  "--scaffold",
-  "--allow-tools",
-  "Bash,Write,Edit",
-  "--keep-temp",
-  ...rest,
+	COMPARE,
+	path.join(REPO, "plugins/claudetto"),
+	path.join(tree, "plugins/claudetto"),
+	"--scaffold",
+	"--allow-tools",
+	"Bash,Write,Edit",
+	"--keep-temp",
+	...rest,
 ];
 
 const git = (...a: string[]) =>
-  Bun.spawnSync(["git", "-C", REPO, ...a], {
-    stdin: "inherit",
-    stdout: "inherit",
-    stderr: "inherit",
-  }).exitCode;
+	spawn(["git", "-C", REPO, ...a], {
+		stdin: "inherit",
+		stdout: "inherit",
+		stderr: "inherit",
+	}).exited;
 
 /** Copies the results of the variant arm out of the worktree. Returns the new folder, or `null`. */
-const keepResults = (tree: string, ref: string): string | null => {
-  const from = path.join(tree, "plugins/claudetto/evals/results");
-  if (!fs.existsSync(from)) return null;
-  const safe = ref.replace(/[^A-Za-z0-9._-]/g, "-");
-  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const to = path.join(
-    REPO,
-    "plugins/claudetto/evals/results",
-    `variant-${safe}-${stamp}`,
-  );
-  fs.cpSync(from, to, { recursive: true });
-  return to;
+const keepResults = async (
+	tree: string,
+	ref: string,
+): Promise<string | null> => {
+	const from = path.join(tree, "plugins/claudetto/evals/results");
+	if (!(await stat(from).catch(() => null))) {
+		return null;
+	}
+	const safe = ref.replace(/[^A-Za-z0-9._-]/g, "-");
+	const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+	const to = path.join(
+		REPO,
+		"plugins/claudetto/evals/results",
+		`variant-${safe}-${stamp}`,
+	);
+	await cp(from, to, { recursive: true });
+	return to;
 };
 
 /** Runs both arms for the variant at `ref`, and returns the exit code. */
-const run = (ref: string, rest: string[]): number => {
-  const tree = fs.mkdtempSync(
-    path.join(process.env["TMPDIR"] || os.tmpdir(), "claudetto-variant-"),
-  );
-  if (git("worktree", "add", "--detach", tree, ref) !== 0) return 1;
-  let status = 1;
-  try {
-    console.log(
-      `\nArm A is the checkout (${REPO}). Arm B is the variant ${ref}.`,
-    );
-    status =
-      Bun.spawnSync(
-        [process.execPath, "--no-env-file", ...compareArgs(tree, rest)],
-        {
-          // The plain env: the telemetry-off env of `$claude` can change the flags that the evals fetch.
-          env: { ...process.env },
-          stdin: "inherit",
-          stdout: "inherit",
-          stderr: "inherit",
-        },
-      ).exitCode ?? 1;
-  } finally {
-    const kept = keepResults(tree, ref);
-    git("worktree", "remove", "--force", tree);
-    // `claudetto-eval-compare` says why when a run failed, and then the tables are not compared.
-    const compare =
-      status === 0 ? "Compare the WITH column of the two tables. " : "";
-    console.log(
-      `\n${compare}${
-        kept
-          ? `The results of the variant are in ${kept}.`
-          : "The variant arm wrote no results."
-      }`,
-    );
-  }
-  return status;
+const run = async (ref: string, rest: string[]): Promise<number> => {
+	const tree = await mkdtemp(
+		path.join(process.env["TMPDIR"] || os.tmpdir(), "claudetto-variant-"),
+	);
+	if ((await git("worktree", "add", "--detach", tree, ref)) !== 0) {
+		return 1;
+	}
+	let status = 1;
+	try {
+		process.stdout.write(
+			`\nArm A is the checkout (${REPO}). Arm B is the variant ${ref}.\n`,
+		);
+		status =
+			(await spawn(
+				[process.execPath, "--no-env-file", ...compareArgs(tree, rest)],
+				{
+					// The plain env: the telemetry-off env of `$claude` can change the flags that the evals fetch.
+					env: { ...process.env },
+					stdin: "inherit",
+					stdout: "inherit",
+					stderr: "inherit",
+				},
+			).exited) ?? 1;
+	} finally {
+		const kept = await keepResults(tree, ref);
+		await git("worktree", "remove", "--force", tree);
+		// `claudetto-eval-compare` says why when a run failed, and then the tables are not compared.
+		const compare =
+			status === 0 ? "Compare the WITH column of the two tables. " : "";
+		process.stdout.write(
+			`\n${compare}${
+				kept
+					? `The results of the variant are in ${kept}.`
+					: "The variant arm wrote no results."
+			}\n`,
+		);
+	}
+	return status;
 };
 
 if (import.meta.main) {
-  const [ref, ...rest] = process.argv.slice(2);
-  if (!ref) {
-    console.error("Usage: bun dev/eval-variant.ts REF [eval options...]");
-    process.exit(2);
-  }
-  process.exit(run(ref, rest));
+	const [ref, ...rest] = process.argv.slice(2);
+	if (ref) {
+		process.exitCode = await run(ref, rest);
+	} else {
+		console.error("Usage: bun dev/eval-variant.ts REF [eval options...]");
+		process.exitCode = 2;
+	}
 }

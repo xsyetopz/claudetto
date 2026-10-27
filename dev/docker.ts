@@ -12,8 +12,8 @@ import { checkImage } from "./docker/image.ts";
 const args = process.argv.slice(2);
 
 await recipe(async () => {
-  const image = await checkImage();
-  await must(
-    $`docker run --rm --cpus ${DOCKER_CPUS} --volume ${REPO}:/repo --volume claudetto-node-modules:/repo/node_modules ${image} sh -c ${'bun install --frozen-lockfile && just "$@"'} sh ${args.length > 0 ? args : ["check"]}`,
-  );
+	const image = await checkImage();
+	await must(
+		$`docker run --rm --cpus ${DOCKER_CPUS} --volume ${REPO}:/repo --volume claudetto-node-modules:/repo/node_modules ${image} sh -c ${'bun install --frozen-lockfile && just "$@"'} sh ${args.length > 0 ? args : ["check"]}`,
+	);
 });

@@ -1,7 +1,7 @@
 // The verdicts of the other groups, written by hand.
 // One row for each part: `group:name`, the verdict, the bytes or `-`, and the reason, with a tab between them.
 
-export default `
+export const OTHERS = `
 agents:Explore	keep	-	A read-only search agent. No lever makes it better.
 agents:Plan	keep	-	A read-only planning agent. No lever makes it better.
 agents:claude	keep	-	The default agent of FleetView, with a short prompt.

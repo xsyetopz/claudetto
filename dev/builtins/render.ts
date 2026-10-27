@@ -4,183 +4,193 @@
 import { GROUPS, type Group, type Part } from "./found.ts";
 import { VERDICTS, type Verdict } from "./verdicts.ts";
 
+/** The order of the default `sort`: by UTF-16 code unit. */
+const byCodeUnit = (x: string, y: string): number =>
+	Number(x > y) - Number(x < y);
+
 /** The levers of each group. `NAME` is the name of the part. */
 const LEVERS: Record<Group, [string, string]> = {
-  commands: [
-    "a settings key or a `DISABLE_*_COMMAND` env var of the snippet",
-    '`command.run` `{ command: "NAME" }` answers `{ text }` or `{}`',
-  ],
-  plugins: [
-    '`enabledPlugins` `"cc-plugin-NAME@builtin": false` (`"NAME@builtin"` works too since 2.1.285)',
-    "a plugin of claudetto",
-  ],
-  attachments: [
-    '`prompt.attachment` `{ type: "NAME" }` answers `{ text: null }`',
-    '`prompt.attachment` `{ type: "NAME" }` answers `{ text }`',
-  ],
-  sections: [
-    '`prompt.section` `{ name: "NAME" }` answers `{ text: null }`',
-    '`prompt.section` `{ name: "NAME" }` answers `{ text }`, or `prompt.compose`',
-  ],
-  tools: [
-    '`permissions.deny`, or `tool.call` `{ tool: "NAME" }` answers `{ deny }`',
-    '`tool.describe` `{ tool: "NAME" }`, or `$.tool.register` for a new tool',
-  ],
-  agents: [
-    '`agent.offer` `{ agent: "NAME" }` answers `{ isOffered: false }`, or `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`',
-    "`$.agent.register`",
-  ],
-  compaction: [
-    "`DISABLE_AUTO_COMPACT`",
-    "`session.compact` answers with its own `messages`",
-  ],
-  attribution: [
-    "the `attribution` setting",
-    '`attribution.text` `{ kind: "commit" }` or `{ kind: "pr" }`',
-  ],
-  git: [
-    "`includeGitInstructions: false`",
-    "`prompt.section` or `prompt.context`",
-  ],
-  statusline: ["no `statusLine` setting", "the `statusLine` command"],
-  skills: [
-    '`skillOverrides` `"NAME": "off"`, or `disableBundledSkills`, or `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS`',
-    '`skill.prompt` `{ skill: "NAME" }`',
-  ],
-  servertools: [
-    "`CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`",
-    "`$.tool.register`, because no hook can refuse or rewrite a server tool",
-  ],
+	commands: [
+		"a settings key or a `DISABLE_*_COMMAND` env var of the snippet",
+		'`command.run` `{ command: "NAME" }` answers `{ text }` or `{}`',
+	],
+	plugins: [
+		'`enabledPlugins` `"cc-plugin-NAME@builtin": false` (`"NAME@builtin"` works too since 2.1.285)',
+		"a plugin of claudetto",
+	],
+	attachments: [
+		'`prompt.attachment` `{ type: "NAME" }` answers `{ text: null }`',
+		'`prompt.attachment` `{ type: "NAME" }` answers `{ text }`',
+	],
+	sections: [
+		'`prompt.section` `{ name: "NAME" }` answers `{ text: null }`',
+		'`prompt.section` `{ name: "NAME" }` answers `{ text }`, or `prompt.compose`',
+	],
+	tools: [
+		'`permissions.deny`, or `tool.call` `{ tool: "NAME" }` answers `{ deny }`',
+		'`tool.describe` `{ tool: "NAME" }`, or `$.tool.register` for a new tool',
+	],
+	agents: [
+		'`agent.offer` `{ agent: "NAME" }` answers `{ isOffered: false }`, or `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`',
+		"`$.agent.register`",
+	],
+	compaction: [
+		"`DISABLE_AUTO_COMPACT`",
+		"`session.compact` answers with its own `messages`",
+	],
+	attribution: [
+		"the `attribution` setting",
+		'`attribution.text` `{ kind: "commit" }` or `{ kind: "pr" }`',
+	],
+	git: [
+		"`includeGitInstructions: false`",
+		"`prompt.section` or `prompt.context`",
+	],
+	statusline: ["no `statusLine` setting", "the `statusLine` command"],
+	skills: [
+		'`skillOverrides` `"NAME": "off"`, or `disableBundledSkills`, or `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS`',
+		'`skill.prompt` `{ skill: "NAME" }`',
+	],
+	servertools: [
+		"`CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`",
+		"`$.tool.register`, because no hook can refuse or rewrite a server tool",
+	],
 };
 
 /** The big groups, which have a page of their own. The other groups go on the index page. */
 const OWN: Partial<Record<Group, string>> = {
-  commands: "Builtins-Commands",
-  attachments: "Builtins-Attachments",
-  tools: "Builtins-Tools",
+	commands: "Builtins-Commands",
+	attachments: "Builtins-Attachments",
+	tools: "Builtins-Tools",
 };
 const INDEX = "Builtins";
 const COLUMNS = [
-  "Name",
-  "Group",
-  "Bytes",
-  "Verdict",
-  "Reason",
-  "Bytes saved or added",
+	"Name",
+	"Group",
+	"Bytes",
+	"Verdict",
+	"Reason",
+	"Bytes saved or added",
 ];
 const row = (p: Part, v?: Verdict) =>
-  `| \`${p.group === "commands" ? "/" : ""}${p.name}\` | ${p.group} | ${p.bytes ?? "-"} | ${v?.verdict ?? "todo"} | ${(v?.reason ?? "-").replace(/\|/g, "\\|")} | ${v?.bytes ?? "-"} |`;
+	`| \`${p.group === "commands" ? "/" : ""}${p.name}\` | ${p.group} | ${p.bytes ?? "-"} | ${v?.verdict ?? "todo"} | ${(v?.reason ?? "-").replace(/\|/g, "\\|")} | ${v?.bytes ?? "-"} |`;
 const table = (rows: string[]) => [
-  `| ${COLUMNS.join(" | ")} |`,
-  "| --- | --- | ---: | --- | --- | ---: |",
-  ...rows,
-  "",
+	`| ${COLUMNS.join(" | ")} |`,
+	"| --- | --- | ---: | --- | --- | ---: |",
+	...rows,
+	"",
 ];
 
 /** The pages (`Page` -> text) for the parts of the release `version`. */
 export const render = (
-  all: Part[],
-  version: string,
-  verdicts: Record<string, Verdict> = VERDICTS,
+	all: Part[],
+	version: string,
+	verdicts: Record<string, Verdict> = VERDICTS,
 ): Map<string, string> => {
-  const head = `<!-- Generated by \`bun dev/builtins.ts\` from Claude Code ${version}. Do not edit. The verdicts are in \`dev/builtins/verdicts.ts\`. -->`;
-  const sorted = [...all].sort(
-    (a, b) =>
-      GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) ||
-      +(a.name > b.name) - +(a.name < b.name),
-  );
-  const count = (g: Group) => sorted.filter((p) => p.group === g);
-  const rows = (g: Group) =>
-    count(g).map((p) => row(p, verdicts[`${g}:${p.name}`]));
-  const pages = new Map<string, string>();
-  pages.set(
-    INDEX,
-    [
-      head,
-      "",
-      "# Built-ins of Claude Code",
-      "",
-      `This page lists each built-in part of Claude Code ${version}, its levers, and what claudetto does with it.`,
-      "A script writes it from the strings of the Claude Code bundle, and `--check` fails when a new release shows a new part.",
-      "Run `bun dev/builtins.ts` to write the pages, and `bun dev/builtins.ts --check` to find a difference.",
-      "The size of a part is the count of bytes of its static text in the bundle, with the text of the constants and the functions that it names.",
-      "A dash means that the bundle holds no text for the part.",
-      "",
-      "## Groups",
-      "",
-      "`NAME` in a lever is the name of the part.",
-      "A group with a link has a page of its own.",
-      "",
-      "| Group | Parts | Without a verdict | Lever to turn off | Lever to replace |",
-      "| --- | ---: | ---: | --- | --- |",
-      ...GROUPS.map(
-        (g) =>
-          `| ${OWN[g] ? `[${g}](${OWN[g]})` : g} | ${count(g).length} | ${count(g).filter((p) => !verdicts[`${g}:${p.name}`]).length} | ${LEVERS[g].join(" | ")} |`,
-      ),
-      "",
-      "## Parts",
-      "",
-      ...table(GROUPS.filter((g) => !OWN[g]).flatMap(rows)),
-    ].join("\n"),
-  );
-  for (const g of GROUPS) {
-    const page = OWN[g];
-    if (page)
-      pages.set(
-        page,
-        [
-          head,
-          "",
-          `# Built-ins of Claude Code: ${g}`,
-          "",
-          `The levers of the group are on the page [${INDEX}](${INDEX}).`,
-          "",
-          ...table(rows(g)),
-        ].join("\n"),
-      );
-  }
-  return pages;
+	const head = `<!-- Generated by \`bun dev/builtins.ts\` from Claude Code ${version}. Do not edit. The verdicts are in \`dev/builtins/verdicts.ts\`. -->`;
+	const sorted = [...all].sort(
+		(a, b) =>
+			GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) ||
+			Number(a.name > b.name) - Number(a.name < b.name),
+	);
+	const count = (g: Group) => sorted.filter((p) => p.group === g);
+	const rows = (g: Group) =>
+		count(g).map((p) => row(p, verdicts[`${g}:${p.name}`]));
+	const pages = new Map<string, string>();
+	pages.set(
+		INDEX,
+		[
+			head,
+			"",
+			"# Built-ins of Claude Code",
+			"",
+			`This page lists each built-in part of Claude Code ${version}, its levers, and what claudetto does with it.`,
+			"A script writes it from the strings of the Claude Code bundle, and `--check` fails when a new release shows a new part.",
+			"Run `bun dev/builtins.ts` to write the pages, and `bun dev/builtins.ts --check` to find a difference.",
+			"The size of a part is the count of bytes of its static text in the bundle, with the text of the constants and the functions that it names.",
+			"A dash means that the bundle holds no text for the part.",
+			"",
+			"## Groups",
+			"",
+			"`NAME` in a lever is the name of the part.",
+			"A group with a link has a page of its own.",
+			"",
+			"| Group | Parts | Without a verdict | Lever to turn off | Lever to replace |",
+			"| --- | ---: | ---: | --- | --- |",
+			...GROUPS.map(
+				(g) =>
+					`| ${OWN[g] ? `[${g}](${OWN[g]})` : g} | ${count(g).length} | ${count(g).filter((p) => !verdicts[`${g}:${p.name}`]).length} | ${LEVERS[g].join(" | ")} |`,
+			),
+			"",
+			"## Parts",
+			"",
+			...table(GROUPS.filter((g) => !OWN[g]).flatMap(rows)),
+		].join("\n"),
+	);
+	for (const g of GROUPS) {
+		const page = OWN[g];
+		if (page) {
+			pages.set(
+				page,
+				[
+					head,
+					"",
+					`# Built-ins of Claude Code: ${g}`,
+					"",
+					`The levers of the group are on the page [${INDEX}](${INDEX}).`,
+					"",
+					...table(rows(g)),
+				].join("\n"),
+			);
+		}
+	}
+	return pages;
 };
 
 /** The lines of the rows of a page, by the cells `Name` and `Group`. */
 const rowsOf = (text: string) =>
-  new Map(
-    text
-      .split("\n")
-      .filter((l) => l.startsWith("| `"))
-      .map((l) => [l.split(" | ").slice(0, 2).join(" | "), l]),
-  );
+	new Map(
+		text
+			.split("\n")
+			.filter((l) => l.startsWith("| `"))
+			.map((l) => [l.split(" | ").slice(0, 2).join(" | "), l]),
+	);
 
 /** A short list of the added, removed, and changed rows between two renders. */
 export const diff = (
-  old: Map<string, string>,
-  next: Map<string, string>,
+	old: Map<string, string>,
+	next: Map<string, string>,
 ): string[] =>
-  [...new Set([...old.keys(), ...next.keys()])].sort().flatMap((page) => {
-    const a = old.get(page);
-    const b = next.get(page);
-    if (a === b) return [];
-    if (a === undefined || b === undefined)
-      return [`${page}: ${a === undefined ? "new" : "removed"} page`];
-    const [ra, rb] = [rowsOf(a), rowsOf(b)];
-    const out = [
-      ...[...rb.keys()]
-        .filter((k) => !ra.has(k))
-        .map((k) => `${page}: added ${k}`),
-      ...[...ra.keys()]
-        .filter((k) => !rb.has(k))
-        .map((k) => `${page}: removed ${k}`),
-      ...[...rb]
-        .filter(([k, l]) => ra.has(k) && ra.get(k) !== l)
-        .map(([k]) => `${page}: changed ${k}`),
-    ];
-    return out.length ? out : [`${page}: text differs`];
-  });
+	[...new Set([...old.keys(), ...next.keys()])]
+		.sort(byCodeUnit)
+		.flatMap((page) => {
+			const a = old.get(page);
+			const b = next.get(page);
+			if (a === b) {
+				return [];
+			}
+			if (a === undefined || b === undefined) {
+				return [`${page}: ${a === undefined ? "new" : "removed"} page`];
+			}
+			const [ra, rb] = [rowsOf(a), rowsOf(b)];
+			const out = [
+				...[...rb.keys()]
+					.filter((k) => !ra.has(k))
+					.map((k) => `${page}: added ${k}`),
+				...[...ra.keys()]
+					.filter((k) => !rb.has(k))
+					.map((k) => `${page}: removed ${k}`),
+				...[...rb]
+					.filter(([k, l]) => ra.has(k) && ra.get(k) !== l)
+					.map(([k]) => `${page}: changed ${k}`),
+			];
+			return out.length > 0 ? out : [`${page}: text differs`];
+		});
 
 /** The page `Sections.md`: a heading and the static text of each section, sorted by name. */
 export const renderSections = (all: Part[]): string =>
-  all
-    .filter((p) => p.group === "sections")
-    .sort((a, b) => +(a.name > b.name) - +(a.name < b.name))
-    .map((p) => `## \`${p.name}\`\n\n${p.text || "(no text in the bundle)"}\n`)
-    .join("\n");
+	all
+		.filter((p) => p.group === "sections")
+		.sort((a, b) => Number(a.name > b.name) - Number(a.name < b.name))
+		.map((p) => `## \`${p.name}\`\n\n${p.text || "(no text in the bundle)"}\n`)
+		.join("\n");

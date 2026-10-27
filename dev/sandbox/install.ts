@@ -5,6 +5,8 @@
 // Then the script starts Claude Code in the sandbox. `just sandbox-installed` starts it again with no new install.
 
 import path from "node:path";
+import { argv, spawn } from "bun";
+import { eachInOrder } from "../../tools/ordered.ts";
 import { must, REPO, recipe } from "../../tools/recipes.ts";
 import { $claude } from "../../tools/telemetry.ts";
 
@@ -18,21 +20,22 @@ const bin = path.join("dev", "sandbox", "main.ts");
  * The wrapper starts `claude` itself, so it gets the same telemetry-off env as the `claude` calls.
  */
 const sandbox = (args: string[]) =>
-  must($claude()`bun ${bin} --dir ${INSTALL_DIR} ${args}`);
+	must($claude()`bun ${bin} --dir ${INSTALL_DIR} ${args}`);
 
 await recipe(async () => {
-  const names = Bun.argv.slice(2);
-  await sandbox(["--clean"]);
-  await sandbox(["plugin", "marketplace", "add", REPO]);
-  for (const name of names.length > 0 ? names : ["claudetto"])
-    await sandbox(["plugin", "install", `${name}@claudetto`]);
-  console.log(
-    "Next: run `/claudetto:setup` in the session, then `/exit`, then `just sandbox-installed`.",
-  );
-  // The session is interactive, so it gets the terminal of this process.
-  const child = Bun.spawn(["bun", bin, "--dir", INSTALL_DIR], {
-    cwd: REPO,
-    stdio: ["inherit", "inherit", "inherit"],
-  });
-  process.exit(await child.exited);
+	const names = argv.slice(2);
+	await sandbox(["--clean"]);
+	await sandbox(["plugin", "marketplace", "add", REPO]);
+	await eachInOrder(names.length > 0 ? names : ["claudetto"], async (name) => {
+		await sandbox(["plugin", "install", `${name}@claudetto`]);
+	});
+	process.stdout.write(
+		"Next: run `/claudetto:setup` in the session, then `/exit`, then `just sandbox-installed`.\n",
+	);
+	// The session is interactive, so it gets the terminal of this process.
+	const child = spawn(["bun", bin, "--dir", INSTALL_DIR], {
+		cwd: REPO,
+		stdio: ["inherit", "inherit", "inherit"],
+	});
+	process.exitCode = await child.exited;
 });

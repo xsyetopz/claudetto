@@ -1,7 +1,7 @@
 // The verdicts of the commands, written by hand.
 // One row for each part: `group:name`, the verdict, the bytes or `-`, and the reason, with a tab between them.
 
-export default `
+export const COMMANDS = `
 commands:add-dir	keep	-	A user needs it for coding or for the session, and no lever makes it better.
 commands:advisor	off	-	The \`advise\` tool went in 0.3.0 (D6 of \`0-3-0\`), and \`CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1\` of the snippet turns the built-in advisor off.
 commands:agents	keep	-	A user needs it for coding or for the session, and no lever makes it better.

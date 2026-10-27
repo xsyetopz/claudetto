@@ -1,22 +1,29 @@
-export type Block = {
-  type?: string;
-  text?: unknown;
-  content?: unknown;
-  name?: unknown;
-};
+export interface Block {
+	type?: string;
+	text?: unknown;
+	content?: unknown;
+	name?: unknown;
+}
 
-export type Message = { role: string; content: string | Block[] };
+export interface Message {
+	role: string;
+	content: string | Block[];
+}
 
-export type Tool = { type?: string; name?: string; defer_loading?: boolean };
+export interface Tool {
+	type?: string;
+	name?: string;
+	defer_loading?: boolean;
+}
 
-export type Body = {
-  model?: string;
-  system?: string | Block[];
-  tools?: Tool[];
-  messages: Message[];
-  thinking?: unknown;
-  tool_choice?: unknown;
-};
+export interface Body {
+	model?: string;
+	system?: string | Block[];
+	tools?: Tool[];
+	messages: Message[];
+	thinking?: unknown;
+	tool_choice?: unknown;
+}
 
 export type Fix = (body: Body) => Body;
 
@@ -24,26 +31,26 @@ export type Swap = (next: Block | null) => Body;
 
 export type Wait = (ms: number) => Promise<void>;
 
-export type Part = {
-  kind: string;
-  name: string | undefined;
-  chars: number;
-  without: () => Body;
-};
+export interface Part {
+	kind: string;
+	name: string | undefined;
+	chars: number;
+	without: () => Body;
+}
 
-export type Row = {
-  kind: string;
-  name: string | undefined;
-  chars: number;
-  tokens: number | null;
-  note: string | null;
-};
+export interface Row {
+	kind: string;
+	name: string | undefined;
+	chars: number;
+	tokens: number | null;
+	note: string | null;
+}
 
-export type Sizing = {
-  model: string | undefined;
-  fixes: string[];
-  full: number;
-  parts: number;
-  rest: number;
-  rows: Row[];
-};
+export interface Sizing {
+	model: string | undefined;
+	fixes: string[];
+	full: number;
+	parts: number;
+	rest: number;
+	rows: Row[];
+}

@@ -1,7 +1,7 @@
 // The verdicts of the tools, written by hand.
 // One row for each part: `group:name`, the verdict, the bytes or `-`, and the reason, with a tab between them.
 
-export default `
+export const TOOLS = `
 tools:Agent	replace	17696	\`tool.describe\` swaps the description for the shorter \`TOOL_AGENT\`.
 tools:AppifactRepl	keep	-	not offered in a coding session: design or artifact mode only
 tools:Artifact	keep	-	not offered in a coding session: \`enableArtifact\` is false
