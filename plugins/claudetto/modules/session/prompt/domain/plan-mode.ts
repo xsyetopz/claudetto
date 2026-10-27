@@ -1,5 +1,5 @@
 // With `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` set (design D21), the built-in agents are off, so the plan mode text names `claudetto:Artemis` in place of `Explore` and `Plan`.
-// `planModeText` replaces the plan mode attachment of 2.1.309 (`prompts/mode-plan.md`) with a shorter text (design D7, C2).
+// `planModeText` replaces the plan mode attachment of 2.1.310 (`prompts/mode-plan.md`) with a shorter text (design D7, C2).
 
 import { PLAN_MODE } from "../prompts.ts";
 
@@ -9,7 +9,7 @@ export const SCOUT_AGENT = "claudetto:Artemis";
 /** The attachment kinds that `prompt.attachment` rewrites, and does not leave out. */
 export const REWRITTEN_ATTACHMENTS = ["plan_mode"] as const;
 
-/** The plan file path between the phrases of the 2.1.309 engine text (`chunk-kang00hq.js`, offset 5085584), which can hold spaces. */
+/** The plan file path between the phrases of the 2.1.310 engine text (`chunk-z339v9v2.js`, strings line +2940 from the chunk start), which can hold spaces. */
 const PLAN_FILE =
 	/(?:already exists at|create your plan at) (.+?)(?:\. You can| using )/;
 

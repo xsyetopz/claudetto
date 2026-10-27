@@ -8,7 +8,7 @@ Add-ons are optional.
 
 | Need | For | Note |
 | --- | --- | --- |
-| Claude Code 2.1.309 or later | all plugins | |
+| Claude Code 2.1.310 or later | all plugins | |
 | `git` | `claudetto` | The status line uses it. |
 | [Bun](https://bun.sh) 1.4.3 or later, on `PATH` | all plugins | The `find-docs` skill runs `ctx7` with `bunx`. |
 | `agent-browser` | `claudetto-browser` | See [Browser](Browser). |

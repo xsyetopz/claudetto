@@ -48,7 +48,7 @@ A value in a `{{...}}` placeholder is filled from the code when `just generate` 
 | `STUB_RUNS_AT_ONCE` | `6` | `tools/limits.ts` | The most stub runs at a time in the settings pin test. |
 | `SKILL_MAX_TOKENS` | `5,000` | `tools/limits.ts` | The most tokens of one `SKILL.md` of a plugin, as 4 characters for each token. After a compaction, Claude Code keeps only 5,000 tokens of each skill that ran. |
 | `EVAL_MIN_RUNS_PER_ARM` | `10` | `tools/limits.ts` | The fewest runs of each arm of an eval. |
-| `MIN_CLAUDE_CODE_VERSION` | `2.1.309` | `tools/limits.ts` | The lowest Claude Code version that claudetto is built for. |
+| `MIN_CLAUDE_CODE_VERSION` | `2.1.310` | `tools/limits.ts` | The lowest Claude Code version that claudetto is built for. |
 | `DOCKER_CPUS` | `4` | `tools/limits.ts` | The CPUs of the container of `just docker`. |
 | `EVAL_MAX_COST_USD` | `5` | `tools/limits.ts` | The most US dollars for one `just eval` run. |
 | `LINUX_TOKEN_MIN_MINUTES` | `30` | `tools/limits.ts` | The fewest minutes of life of the access token before `just sandbox-linux` sends the login to its container. |

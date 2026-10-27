@@ -12,7 +12,7 @@ Types, CI, releases, and the wiki are on [Development Release](Development-Relea
 | --- | --- | --- |
 | [`Bun`](https://bun.sh) | 1.4.3 or later | `package.json` sets the minimum in `engines`, `packageManager`, and `.bun-version` |
 | `just` | any (CI uses 1.58.0) | Runs the recipes |
-| Claude Code | 2.1.309 or later | `MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts` sets it. The recipes `sandbox`, `validate`, `lab`, `eval`, and `release` call `claude` |
+| Claude Code | 2.1.310 or later | `MIN_CLAUDE_CODE_VERSION` in `tools/limits.ts` sets it. The recipes `sandbox`, `validate`, `lab`, `eval`, and `release` call `claude` |
 | `docker` (OrbStack or Docker) | any | For `just docker` and `just sandbox-linux` |
 
 Then run `bun install` in the repository root.

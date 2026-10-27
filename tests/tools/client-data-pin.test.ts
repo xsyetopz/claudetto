@@ -9,7 +9,7 @@ import { REPO } from "../support/repo.ts";
 
 const FIXTURE = path.join(
 	REPO,
-	"tests/claudetto/session/prompt/fixtures/client-data-2.1.309.json",
+	"tests/claudetto/session/prompt/fixtures/client-data-2.1.310.json",
 );
 
 const read = async (): Promise<{

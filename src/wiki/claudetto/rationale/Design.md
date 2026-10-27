@@ -68,7 +68,7 @@ Tests pin each copy in code and config.
 
 - `CONTEXT_WINDOW` is `300_000`.
   The snippet sets `autoCompactWindow` to it for each model that is not a Haiku model.
-- `MIN_CLAUDE_CODE_VERSION` is `2.1.309`.
+- `MIN_CLAUDE_CODE_VERSION` is `2.1.310`.
 
 ## Keep the Prompt Short
 

@@ -1,11 +1,11 @@
 // Design D7: `agents/main.md` replaces the whole system prompt, so it carries the security policy of the section that it turns off.
-// `fixtures/text-defaults-2.1.309.json` holds the default text of each surface, which `bun dev/text-defaults.ts` captures.
+// `fixtures/text-defaults-2.1.310.json` holds the default text of each surface, which `bun dev/text-defaults.ts` captures.
 
 import { expect, test } from "bun:test";
 import path from "node:path";
 import { file as bunFile } from "bun";
 import { PLUGINS } from "../../../support/repo.ts";
-import DEFAULTS from "./fixtures/text-defaults-2.1.309.json";
+import DEFAULTS from "./fixtures/text-defaults-2.1.310.json";
 
 const PATTERN_1 = /^---\n[\s\S]*?\n---\n/;
 const PATTERN_2 = /Assist with authorized security testing[^\n]*use cases\./;

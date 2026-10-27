@@ -60,7 +60,7 @@ export const SETTINGS_DEFAULTS: Readonly<Record<string, Value>> = {
 	autoDreamEnabled: null,
 	autoMemoryEnabled: true,
 	disableAgentView: false,
-	// The 2.1.309 bundle defaults it to `true` (design D2 of `release-0-3-0-alpha-2`).
+	// The 2.1.310 bundle defaults it to `true` (design D2 of `release-0-3-0-alpha-2`).
 	idleCompaction: true,
 	syncClaudeAiPlugins: true,
 	syncClaudeAiSkills: true,

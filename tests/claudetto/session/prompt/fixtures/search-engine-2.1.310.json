@@ -1,0 +1,9 @@
+{
+	"version": "2.1.310",
+	"source": "strings of the native binary ~/.local/share/claude/versions/2.1.310 (minified names of that build); chunk-z339v9v2.js (the chunk that exports YYn and P5s), at strings line +58 (NT, qrs call, execPath) and +2289 (snapshot, vcsFolders) from the chunk start; chunk names found by the import lists of the other chunks, and the old 2.1.309 name chunk-kang00hq.js was not reproduced by that method (it gives chunk-q22q76rs.js for 2.1.309)",
+	"NT": "function NT(){if(!Ne(\"true\"))return!1;if(qrs())return!1;return i.CLAUDE_CODE_ENTRYPOINT!==\"local-agent\"}",
+	"searchToolsOptIn": "function qrs(){return n().host.launchOptions.searchToolsOptIn()}",
+	"snapshot": "dot(\"find\",\"bfs\",[\"-S\",\"dfs\",\"-regextype\",\"findutils-default\"]),dot(\"grep\",\"ugrep\",[\"-G\",\"--ignore-files\",\"--hidden\",\"-I\",...Lvr.map((e)=>`--exclude-dir=${e}`)]",
+	"vcsFolders": "Lvr=[\".git\",\".svn\",\".hg\",\".bzr\",\".jj\",\".sl\"]",
+	"execPath": "Se[cot]=process.execPath, with cot=\"CLAUDE_CODE_EXECPATH\", in getEnvironmentOverrides of the shell provider"
+}

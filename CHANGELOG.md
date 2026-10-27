@@ -25,6 +25,7 @@ The [Release History](https://github.com/xsyetopz/claudetto/wiki/Release-History
 
 ### Changed
 
+- **BREAKING** claudetto needs Claude Code `2.1.310` or later (`MIN_CLAUDE_CODE_VERSION`), and CI tests on `2.1.310`.
 - `minispec` reads each name and each boolean flag from the one walk of the arguments, so `new change --description x z`, `archive --skip-specs a-x --yes`, and `new change z --description --json` act as in OpenSpec.
   The help and unknown-flag checks read the same walk, so the value of `--json=--help` stays a value.
   `show -r` with a value that is not a number from `1` exits `2`, where it showed the whole spec before.

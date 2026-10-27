@@ -81,10 +81,10 @@ The count table and the method are in `research/tool-use.md` of the change `rele
 
 ## Search Engine of `Bash`
 
-On 2.1.309 the shell snapshot of `Bash` shadows `grep` with the embedded `ugrep` and `find` with `bfs` when the build is native, `Grep` and `Glob` are off, and `CLAUDE_CODE_ENTRYPOINT` is not `local-agent`.
+On 2.1.310 the shell snapshot of `Bash` shadows `grep` with the embedded `ugrep` and `find` with `bfs` when the build is native, `Grep` and `Glob` are off, and `CLAUDE_CODE_ENTRYPOINT` is not `local-agent`.
 `ugrep` skips ignored files and the folders `.git`, `.svn`, `.hg`, `.bzr`, `.jj`, and `.sl`.
 The hook reads the native build from `CLAUDE_CODE_EXECPATH` (not `node` or `bun`), the tools from `$.tool.list()`, and the entry point from `CLAUDE_CODE_ENTRYPOINT`; when it cannot tell, the `repo` block names the system `grep`.
-`tests/tools/search-engine-pin.test.ts` pins these facts to `tests/claudetto/session/prompt/fixtures/search-engine-2.1.309.json`.
+`tests/tools/search-engine-pin.test.ts` pins these facts to `tests/claudetto/session/prompt/fixtures/search-engine-2.1.310.json`.
 
 ## Size
 

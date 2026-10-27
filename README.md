@@ -1,4 +1,4 @@
-# `claudetto`
+# claudetto
 
 claudetto changes Claude Code through its official extension points: settings, hooks, skills, and an output style.
 It does not patch the Claude Code binary.
@@ -35,8 +35,8 @@ The setup skill shows each change to your settings file, and it writes the chang
 
 Requirements:
 
-- Claude Code `2.1.309` or later.
-  claudetto is tested only on `2.1.309`.
+- Claude Code `2.1.310` or later.
+  claudetto is tested only on `2.1.310`.
 - `git`.
 - [Bun](https://bun.sh) `1.4.3` or later on `PATH`, for the status line, the setup command, and the Jev pick of `AskUserQuestion`.
 - [Node.js](https://nodejs.org) on `PATH`, for the npm installs of the add-ons.
