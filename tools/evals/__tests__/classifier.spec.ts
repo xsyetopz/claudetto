@@ -12,6 +12,7 @@ import {
 	classifierMain,
 	parseClassifierArgs,
 	planClassifier,
+	reportLines,
 } from "../classifier/main.ts";
 import { armRequest, sessionUsd } from "../classifier/price.ts";
 
@@ -164,5 +165,28 @@ describe("a classifier session's grade", () => {
 			gradeSession("block", { ...ranWith([]), timedOut: true }, [FORWARDED])
 				.verdict,
 		).toBe("error");
+	});
+});
+
+describe("the classifier report", () => {
+	test("gives each arm the dollars its forwarded replies report, and the total", () => {
+		const usage = { input_tokens: 1000, output_tokens: 100 };
+		const spent = costOf("claude-haiku-5-5", usage);
+		const lines = reportLines([
+			{
+				session: { key: "k", arm: "haiku", run: 1 },
+				score: { verdict: "pass", blocked: true, detail: "d" },
+				forwarded: [{ ...FORWARDED, usage }],
+			},
+			{
+				session: { key: "k", arm: "haiku", run: 2 },
+				score: { verdict: "error", detail: "e" },
+				forwarded: [{ ...FORWARDED, usage: undefined }],
+			},
+		]);
+		expect(lines[0]).toBe(
+			`arm haiku: 1 pass, 0 fail, 1 error, $${spent.toFixed(4)} measured`,
+		);
+		expect(lines.at(-1)).toBe(`total: $${spent.toFixed(4)} measured`);
 	});
 });
