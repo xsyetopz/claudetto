@@ -1,4 +1,4 @@
-## Early Stops of Subagents
+# Early Stops of Subagents
 
 Goal G11. Read on 2026-10-27 from the subagent transcripts of this change's session, Claude Code `2.1.311`.
 

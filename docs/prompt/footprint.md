@@ -58,7 +58,7 @@ escaping term, so the residual stays named as the plug and not as a measurement.
 
 - The front matter is not sent. The third `system` block arrived at 5,572, the body with its ends
   trimmed, against 5,648 on disk. That closes the open question of `docs/prompt/overrides.md`, and
-  `tools/prompt-budgets.ts` measures the body alone.
+  the budget test measures the body alone (`tests/repo/prompt-budget.test.ts:22`).
 - The body replaces the default body: 5,572 stands where 5,856 stands in the plugin arm, and no other
   `system` block moves. The request falls 259 and not the 284 of the character count, because the body
   travels as a JSON string and ours escapes characters the default text does not. That is why the
@@ -80,9 +80,10 @@ escaping term, so the residual stays named as the plug and not as a measurement.
 -480. The second was 0 while `main` was the only agent file in the tree.
 
 "Byte Budgets" below holds the budget with its reading.
-`tools/__tests__/prompt-budget.spec.ts` checks the sent size against it, reports a file over its
-budget by name and size, reports a budget whose file is missing, and holds the counting rule that
-front matter is free.
+`tests/repo/prompt-budget.test.ts` checks the body of `agents/main.md` against the one budget it
+fixes (`tests/repo/prompt-budget.test.ts:30`), reports a body over it by name, size, and budget
+(`tests/repo/prompt-budget.test.ts:26`), and holds the counting rule that front matter is free
+(`tests/repo/prompt-budget.test.ts:46`).
 
 ### Why the Body Is Shaped This Way
 
@@ -197,15 +198,16 @@ every request larger than a stock session, so the figure is a bound and not a ta
 what the harness sends: for a prompt file the body with the front matter removed and the ends trimmed,
 and for a tool text the description string itself.
 
-`tools/prompt-budgets.ts` parses the table below and `tools/__tests__/prompt-budget.spec.ts` measures
-each piece against it. A row with an empty reading, a row whose file is missing, and a tool row whose
-budget disagrees with the stock reading it cites each fail the check.
+The table below holds the budget and the reading of each piece. No check parses it now. The one budget
+that a test checks is that of `agents/main.md`, in `tests/repo/prompt-budget.test.ts`, against the
+`DEFAULT_MAIN_BODY_CHARS` of `tools/limits.ts:40`. A row is meant to carry a reading, to name a file
+that ships, and for a tool to agree with the stock reading it cites, and nothing fails when one drifts.
 
 | Piece | Kind | Budget | Measured as | Reading |
 | --- | --- | --- | --- | --- |
 | `agents/main.md` | file | 5,680 | `request JSON` | The default body as the request carries it: 5,628 characters in the `system` blocks of the no-agent-file arm above, plus the 52 characters it escapes, both from the dumped request of 2026-10-29 |
 | `output-styles/Concise.md` | file | 1,540 | `characters` | The built-in `Concise` style it stands in for, 1,540 in `messages[1]` (`docs/prompt/overrides.md`) |
-| `Agent` | tool text | 2,906 | `characters` | The stock description it replaces, the smaller of docs 3,227 and capture 2,906 (`plugins/claudetto/src/tools/tools.ts`) |
+| `Agent` | tool text | 2,906 | `characters` | The stock description it replaces, the smaller of docs 3,227 and capture 2,906 (`plugins/claudetto/src/tools/tools.ts:32`) |
 | `Bash` | tool text | 1,267 | `characters` | The stock description it replaces, the smaller of docs 1,934 and capture 1,267 |
 | `Read` | tool text | 790 | `characters` | The stock description it replaces, docs and capture both 790 |
 | `Skill` | tool text | 1,417 | `characters` | The stock description it replaces, docs and capture both 1,417 |
@@ -264,11 +266,10 @@ the one skill of the tree, and its `description:` line is 151 characters.
 | --- | --- | --- |
 | `dedupe` | yes | The model starts it after a change that copies code, which is a moment the user does not name, so the description has to be in context |
 
-A row says whether the model is meant to start the skill, and why. `tools/skill-flags.ts` reads the
-table, and the check fails for a skill with no row, a row with no reason, a row with no `SKILL.md`, a
-skill the table leaves to the user that does not set the flag, and a skill the model may call that
-does. It also fails for a skill that a decision page under `docs/keep/skills/` marks as shipping and
-the tree lacks.
+A row says whether the model is meant to start the skill, and why. No check reads
+the table now. It is meant to hold a row with a reason and a `SKILL.md` for each skill, to leave the
+flag unset for a skill that only the user starts, and to set it for a skill the model may call, and
+nothing fails when a row drifts from that.
 
 ## Cache Stability
 
@@ -284,11 +285,11 @@ checks hold it.
   through `$.tool.describe` twice for each of the five described tools and compares the two
   descriptions character for character. The lab runs the registration of `plugins/claudetto/src/register.ts`
   and not a copy of its rule.
-- No impure reading on the prompt path. `tools/pure-prompts.ts` starts at the prompt modules,
-  `tools/texts.ts` and `tools/tools.ts`, follows their relative imports, and reports every line that reads a
-  clock (`Date.now`, `new Date`, `performance.now`, `process.hrtime`, `$.clock`), a counter
-  (`Math.random`, `randomUUID`), or a usage number (`session.usage`, `session.measure`). The scan
-  follows imports rather than taking the whole `src` folder, because the window recorder of group 7
+- No impure reading on the prompt path. The prompt modules, `plugins/claudetto/src/tools/texts.ts`
+  and `plugins/claudetto/src/tools/tools.ts`, read no clock (`Date.now`, `new Date`,
+  `performance.now`, `process.hrtime`, `$.clock`), no counter (`Math.random`, `randomUUID`), and no
+  usage number (`session.usage`, `session.measure`), found by grep on 2026-10-30. `tools.ts:8`
+  imports `texts.ts` and nothing else. No check scans for it now, and the window recorder of group 7
   reads usage numbers by design and is not on this path.
 
 What the two checks do not cover: a counter that moves once per session rather than once per call.
@@ -345,10 +346,9 @@ One piece failed that rule and is gone: the agent listing line for `claudetto:ma
 its `agent.offer`, and the arms of "What the Harness Sends" above show the file now costs 0 while it
 is not the thread.
 
-`tools/always-loaded.ts` parses the table below and `tools/__tests__/always-loaded.spec.ts` measures
-each piece against it. A row whose figure disagrees with the file, a row for a piece that does not
-ship, a piece that ships with no row, and a row whose behavior and check are both `none` each fail
-the check.
+The table below is meant to agree with the files: a figure that matches the file, a row only for a
+piece that ships, a row for each piece that ships, and no row whose behavior and check are both
+`none`. No check parses it now, and nothing fails when a row drifts.
 
 ### The Always-Loaded Pieces
 

@@ -29,7 +29,7 @@ eleven sections: `<role>`, `<security>`, `<harness>`, `<project>`, `<tools>`, `<
 
 The `Where it is now` column rests on a reading of `plugins/claudetto/agents/main.md`,
 `plugins/claudetto/output-styles/Concise.md`, `plugins/claudetto/.claude-plugin/plugin.json`,
-`plugins/claudetto/src/prompts.ts`, and `plugins/claudetto/src/compaction/compaction.ts`. The plugin folder holds
+`plugins/claudetto/src/prompts.ts`, and `plugins/claudetto/src/compaction/hook.ts`. The plugin folder holds
 no `skills/` folder. The default body lists its items in the order of the rows.
 
 | Default body item | Where it is now | Decision |
@@ -47,7 +47,7 @@ no `skills/` folder. The default body lists its items in the order of the rows.
 | `# Session-specific guidance` line: a `/<skill-name>` typed by the user is invoked through `Skill`, only from the user-invocable listing | nothing | dropped: no reason recorded |
 | `# Memory` block of roughly 1,900 characters: directory, file format and front matter, the four types, `[[name]]` links, the `MEMORY.md` index rule, the rules on duplicates, on not saving what the repo records, and on verifying a recalled file, function, or flag | nothing | dropped: no reason recorded |
 | `# Environment` block: Claude 5 model IDs, the places Claude Code runs, `/fast` | nothing; the harness's own `# Environment` in `messages[1]` was dumped and holds the working directory, whether it is a git repository, the platform, the shell, the OS version, the untrusted-download paragraph, and the running model's name, ID and cutoff, and holds no model list, no list of places Claude Code runs, and no `/fast` | dropped: no reason recorded |
-| `# Context management` block: a long conversation is summarized and carried into the next window so work need not wrap up early; when there is enough information to act, act | `agents/main.md` `<scope>` ("through to done", "A step inside that scope is yours to take now") and `<asking>` ("Otherwise decide, state the assumption, and go on") carry the act half; nothing for the summarized-and-carried half, since `src/compaction/compaction.ts` and `plugin.json` choose the compaction path and send the model no text | moved: the act half stands in two sections, the summary half is dropped |
+| `# Context management` block: a long conversation is summarized and carried into the next window so work need not wrap up early; when there is enough information to act, act | `agents/main.md` `<scope>` ("through to done", "A step inside that scope is yours to take now") and `<asking>` ("Otherwise decide, state the assumption, and go on") carry the act half; nothing for the summarized-and-carried half, since `src/compaction/hook.ts` answers `session.compact` with the cheap summary or leaves the compaction to Claude Code, and `plugin.json` sets that choice, and neither adds text to the prompt of the session | moved: the act half stands in two sections, the summary half is dropped |
 
 The table has 14 rows. Five carry `nothing` for the whole item: markdown rendering, pronouns, the
 slash-skill line, the memory block, and the environment block. Four more carry it for one clause: the

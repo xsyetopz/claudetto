@@ -3,7 +3,7 @@
 import { autoModeSnippet } from "../automode/automode.ts";
 import { autoModeFaults } from "../automode/faults.ts";
 import { builtinSnippet } from "../builtins.ts";
-import { denyList } from "../deny.ts";
+import { denyFaults, denyList } from "../deny.ts";
 import { compactionSnippet, type Value } from "../keys.ts";
 import { MAIN_AGENT, STYLE } from "../prompts.ts";
 import { sandboxFaults } from "../sandbox/faults.ts";
@@ -47,8 +47,8 @@ const faultLine = (
 /**
  * A platform that the composer could not name. `sandboxSupported` refuses it, so `sandbox.enabled`
  * is left out and `offFaults` of `../sandbox/faults.ts` reports nothing: a snippet composed where
- * the platform is unknown claims no sandbox rather than claiming one that may not be there. The
- * `settings.read` hook passes it when its one `uname` call fails, and the plugin test environment,
+ * the platform is unknown claims no sandbox rather than claiming one that may not be there.
+ * `onSetupCommand` passes it when its one `uname` call fails, and the plugin test environment,
  * which has no process at all, is such a place.
  */
 export const UNKNOWN_PLATFORM = "unknown";
@@ -71,11 +71,38 @@ export const snippetFaults = (platform: string): readonly string[] => [
 	...ruleFaults(ALLOW_RULES).map((rule) =>
 		faultLine("permissions", { rule, where: "permissions.allow" }),
 	),
+	...denyFaults(denyList()).map((rule) =>
+		faultLine("permissions", { rule, where: "permissions.deny" }),
+	),
 ];
 
-/** The `allow` list, or no key at all when `ruleFaults` finds a rule setup refuses, as the two blocks below are left out on a fault. */
+/**
+ * `block` when `faults` is empty, and no key at all when it is not.
+ *
+ * Leaving the key out is what every check of the snippet does with a fault: the key the user already
+ * has is kept, the report names the fault, and nothing repairs it (`../automode/faults.ts`,
+ * `../sandbox/faults.ts`). Writing a block a check has faulted would write the fault.
+ */
+export const cleanBlock = (
+	block: TierSnippet,
+	faults: readonly string[],
+): TierSnippet => (faults.length === 0 ? block : {});
+
+/** The `allow` list, or no key at all when `ruleFaults` finds a rule setup refuses. */
 const allowBlock = (): TierSnippet =>
-	ruleFaults(ALLOW_RULES).length === 0 ? { allow: [...ALLOW_RULES] } : {};
+	cleanBlock({ allow: [...ALLOW_RULES] }, ruleFaults(ALLOW_RULES));
+
+/**
+ * The `deny` list, or no key at all when `denyFaults` finds a name whose removal was measured to
+ * raise the request.
+ *
+ * `../__tests__/deny.spec.ts` already fails on such a name, so this check is the second line: the
+ * test guards the list as written here, and this guards what setup writes, the way the `allow`,
+ * `autoMode`, and `sandbox` blocks each do. Without it the one key of the snippet that trims the
+ * tool surface was also the one key with no run-time guard.
+ */
+const denyBlock = (): TierSnippet =>
+	cleanBlock({ deny: [...denyList()] }, denyFaults(denyList()));
 
 /** The `autoMode` block, or no key at all when a check of `../automode/faults.ts` finds a fault in it. */
 const autoModeBlock = (): TierSnippet => {
@@ -111,7 +138,7 @@ const sandboxBlock = (platform: string): TierSnippet => {
 export const tierSnippet = (row: TierRow, platform: string): TierSnippet => ({
 	...builtinSnippet(),
 	...compactionSnippet().settings,
-	permissions: { ...allowBlock(), deny: [...denyList()] },
+	permissions: { ...allowBlock(), ...denyBlock() },
 	agent: MAIN_AGENT,
 	outputStyle: STYLE,
 	...autoModeBlock(),

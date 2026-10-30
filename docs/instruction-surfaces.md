@@ -21,8 +21,8 @@ a user message, so it lands in `messages` and not in `system`.
 A rule file with `paths` front matter loads only when `Read`, `Write`, or `Edit`, or a Bash read such
 as `cat`, touches a matching file. It costs nothing in a session that never touches one. The harness
 reads only the `paths` key, and bad YAML loads the rule without it, which turns a scoped rule into an
-always-loaded one by accident. `tools/rule-scope.ts` checks that each shipped rule parses and names
-at least one glob.
+always-loaded one by accident. A shipped rule is meant to parse and to name at least one glob, and
+no check reads that now.
 
 The main thread's agent body replaces the default body of `system`. It is in the cached prefix of
 every request of every session, and it reloads after a compaction, so a rule there is paid even in a

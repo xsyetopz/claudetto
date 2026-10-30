@@ -1,18 +1,18 @@
-## Lever Audit
+# Lever Audit
 
 One row per key of Claude Code `2.1.311`. A row needs a source line from `cc-inspect` and a measurement. A key with no measurement stays "not measured" and is not added to a tier.
 
 ## Already Set by Setup
 
-Source: `plugins/claudetto/modules/setup/prompts.ts`, found by grep on 2026-10-27.
+Source: `archive/plugins/claudetto/modules/setup/prompts.ts`, found by grep on 2026-10-27.
 
 `CLAUDE_CODE_DISABLE_FAST_MODE`, `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`, `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`, `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`, `CLAUDE_CODE_DISABLE_TERMINAL_TITLE`, `DISABLE_ERROR_REPORTING`, `CLAUDE_CODE_DISABLE_CFC_PROMPT`, `CLAUDE_CODE_DISABLE_CRON`, `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`, `skillOverrides`, `disableBundledSkills`, `promptSuggestionEnabled`, `awaySummaryEnabled`, `autoMemoryEnabled`, `autoDreamEnabled`, `idleCompaction`, and `maxEffortLevel` per model.
 
 ## Already Handled by a Mod
 
-- `bashOutputMaxChars`: the `session.start` hook (`plugins/claudetto/modules/session/prompt/adapters/output.ts`) sets `BASH_MAX_OUTPUT_LENGTH` to `BASH_OUTPUT_MAX_CHARS` (24,000, measured on the failed `lab` step, see `modules/session/prompt/limits.ts`) unless the user set it or the setting. Schema text in `chunk-z1xn9dp7.js:153004` of `2.1.311`: default 30000, clamp 4000 through 128000, more output goes to a file with a preview.
-- Deferred tools: `DEFERRED_TOOLS` (`modules/session/prompt/domain/tools.ts`) defers each tool that under 10% of the 292 counted sessions use (`TOOL_SESSION_USE` in `modules/session/prompt/limits.ts`). `Workflow`, `Skill`, `EnterWorktree`, and `ExitWorktree` are deferred by it.
-- Turn bounds for subagents: `TURN_BOUNDS` in the same `limits.ts`, from 57 subagent transcripts of 2026-10-26 and 90 of 2026-10-27 (`docs/early-stops.md`). This is a soft bound. It injects a line asking the agent to stop and report. See the `maxTurns` row below, which is the hard bound the harness itself offers.
+- `bashOutputMaxChars`: the `session.start` hook (`archive/plugins/claudetto/modules/session/prompt/adapters/output.ts:13`) sets `BASH_MAX_OUTPUT_LENGTH` to `BASH_OUTPUT_MAX_CHARS` (24,000, measured on the failed `lab` step, see `archive/plugins/claudetto/modules/session/prompt/limits.ts:45`) unless the user set it or the setting. Schema text in `chunk-z1xn9dp7.js:153004` of `2.1.311`: default 30000, clamp 4000 through 128000, more output goes to a file with a preview.
+- Deferred tools: `DEFERRED_TOOLS` (`archive/plugins/claudetto/modules/session/prompt/domain/tools.ts:37`) defers each tool that under 10% of the 292 counted sessions use (`TOOL_SESSION_USE` in `archive/plugins/claudetto/modules/session/prompt/limits.ts:16`). `Workflow`, `Skill`, `EnterWorktree`, and `ExitWorktree` are deferred by it.
+- Turn bounds for subagents: `TURN_BOUNDS` in the same `limits.ts` (line 56), from 57 subagent transcripts of 2026-10-26 and 90 of 2026-10-27 (`docs/early-stops.md`). This is a soft bound. It injects a line asking the agent to stop and report. See the `maxTurns` row below, which is the hard bound the harness itself offers.
 
 ## Subagent Frontmatter
 
@@ -48,7 +48,7 @@ One dossier claim is settled by the same read. `docs/dossier/latest/latest.md:10
 
 ## Tool Text Sizes
 
-Built-in sizes: `cc-docs` page `prompts/tools` for `2.1.311`, field "Description". Ours: character count of the `TOOL_*` constants in `plugins/claudetto/modules/session/prompt/prompts.ts`, counted with `bun` on 2026-10-27. The handler uses our text only when it is shorter (`onToolDescribe`), so `Write` keeps the built-in text.
+Built-in sizes: `cc-docs` page `prompts/tools` for `2.1.311`, field "Description". Ours: character count of the `TOOL_*` constants in `archive/plugins/claudetto/modules/session/prompt/prompts.ts`, counted with `bun` on 2026-10-27. The handler uses our text only when it is shorter (`onToolDescribe`), so `Write` keeps the built-in text.
 
 | Tool | Built-in | Ours | Sent upfront by default |
 | --- | --- | --- | --- |

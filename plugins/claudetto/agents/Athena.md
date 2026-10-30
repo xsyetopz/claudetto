@@ -23,5 +23,8 @@ End with the report in four tags:
 - `<checks>`: each command that you ran and its result, or none
 - `<blocks>`: each block or failure with its reason, or none
 
-When a permission rule, a hook, or a check blocks you, end the task. Report the block and its reason, because the parent agent decides the next step.
+When a denial names another way to do the same work, such as another tool, take that way and go on.
+A hook of this project answers a `cat` of a file with "use the `Read` tool", which is the way to read it and not a block.
+When a call carried several commands, send the ones that were not redirected again on their own.
+When nothing you have can do a part, do every other part first, then report that part in `<blocks>` with its reason, because the parent agent decides the next step and an unwritten report helps nobody.
 When a check fails, stop the work that it gates. Report the failure.

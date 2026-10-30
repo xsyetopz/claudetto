@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { denyFaults, denyList } from "../../../plugins/claudetto/src/deny.ts";
 import {
 	ALLOW_RULES,
 	broadRules,
@@ -7,6 +8,7 @@ import {
 } from "../../../plugins/claudetto/src/tiers/allow.ts";
 import { applyTier } from "../../../plugins/claudetto/src/tiers/merge.ts";
 import {
+	cleanBlock,
 	snippetFaults,
 	tierSnippet,
 } from "../../../plugins/claudetto/src/tiers/snippet.ts";
@@ -19,10 +21,12 @@ if (row === undefined) {
 	throw new Error("the tier table has no row");
 }
 
-const allowOf = (permissions: unknown): unknown =>
+const keyOf = (permissions: unknown, name: string): unknown =>
 	typeof permissions === "object" && permissions !== null
-		? Object.entries(permissions).find(([key]) => key === "allow")?.[1]
+		? Object.entries(permissions).find(([key]) => key === name)?.[1]
 		: undefined;
+
+const allowOf = (permissions: unknown): unknown => keyOf(permissions, "allow");
 
 describe("broadRules", () => {
 	test("a tool with no content is broad", () => {
@@ -108,6 +112,27 @@ describe("ruleFaults", () => {
 
 	test("a list of narrow rules has no fault", () => {
 		expect(ruleFaults([...ALLOW_RULES])).toEqual([]);
+	});
+});
+
+describe("a faulted block is left out of the snippet", () => {
+	test("a block with no fault is written whole", () => {
+		expect(cleanBlock({ allow: ["Bash(git log)"] }, [])).toEqual({
+			allow: ["Bash(git log)"],
+		});
+	});
+
+	test("a block with a fault writes no key", () => {
+		expect(cleanBlock({ allow: ["Bash(*)"] }, ["broad allow rule"])).toEqual(
+			{},
+		);
+	});
+
+	test("the shipped deny list is written and reports no fault", () => {
+		const permissions = tierSnippet(row, "darwin")["permissions"];
+
+		expect(denyFaults(denyList())).toEqual([]);
+		expect(keyOf(permissions, "deny")).toEqual([...denyList()]);
 	});
 });
 

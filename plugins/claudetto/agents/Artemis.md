@@ -18,4 +18,5 @@ End with the report in four tags:
 - `<checks>`: none
 - `<blocks>`: each block, and each part of the task that you could not do, with its reason, or none
 
-When a permission rule or a hook blocks you, end the task. Report the block and its reason, because the parent agent decides the next step.
+When a denial names another way to do the same work, such as another tool, take that way and go on.
+When nothing you have can do a part, do every other part first, then report that part in `<blocks>` with its reason, because the parent agent decides the next step and an unwritten report helps nobody.

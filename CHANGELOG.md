@@ -43,14 +43,14 @@ After each update, do the steps in the "Update" section of the README.
   The keys are grouped because `$.ui.ask` takes two to four option labels and the snippet sets 13 top-level keys; `permissions.deny` sits with the two `builtinSnippet` switches in one group because `snippet.ts` ships it only with them.
   The command writes no `autoMode`, whatever the answer, because `autoMode.environment` is the readings of this repository (`plugins/claudetto/src/automode/environment.ts:1`, "the `autoMode.environment` facts of this project"): the `xsyetopz` remote, `plugins/claudetto/` as the product, and one macOS workstation.
   The auto-mode classifier reads those as the environment of whoever holds the settings file and decides from them whether a command runs without asking, so writing them into a stranger's settings would feed a permission decision facts that are false for that machine.
-  Nothing measured is lost: the `allow`, `soft_deny`, and `hard_deny` lists are `$defaults` alone, and keeping all three groups reads the same 31,909 characters as the full snippet, because the classifier reads the key later and not in the first request.
+  Nothing measured is lost: the `allow`, `soft_deny`, and `hard_deny` lists are `$defaults` alone, and keeping all three groups reads the same 31,959 characters as the full snippet, because the classifier reads the key later and not in the first request.
   `just setup` still writes it, because it runs inside this checkout, and `tools/capture/settings.ts` now measures what the command writes rather than what `just setup` writes, since the figures are quoted in `README.md`.
   A `command.run` hook answers the command in code and returns `text` with no `context`, so the person reads the report and the model reads nothing of it: running it costs the session no tokens.
   What it does cost is its row in the command listing. `just capture --arm plugin --shipped` read 31,909 characters against 31,861 with no command, so the row is 48 characters, all in `messages`, and the description in `commands/setup.md` is one short sentence because the first wording of it read 31,961.
   A hook that throws is skipped, which would send the body of `commands/setup.md` to the model as a prompt, so a failed read or write is reported in `text` instead.
   `just setup` is unchanged and still does the same work from a checkout.
 - Setup writes a `permissions.allow` list, which it had never written, so a read-only `git` call runs with no prompt and never reaches the auto-mode classifier (spec `low-hitl`, "Use Narrow Allow Rules" and "Settle Safe Calls before the Classifier").
-  The list is `Bash(git status *)`, `Bash(git diff)`, `Bash(git log)`, and `Bash(git show)` in `plugins/claudetto/src/tiers/allow.ts`, and it costs the first request nothing, because settings are not prompt text: the arm reads 31,909 with the list and without it.
+  The list is `Bash(git status *)`, `Bash(git diff)`, `Bash(git log)`, and `Bash(git show)` in `plugins/claudetto/src/tiers/allow.ts`, and it costs the first request nothing, because settings are not prompt text: the arm reads 31,959 with the list and without it.
   Only `git status` takes the wildcard form, which "also matches the bare command" (`configure/permissions/rules`, `2.1.314`). The other three are the bare form, which holds no `*` and matches that text alone, because each takes `--output=<file>` and writes that file: in this checkout `git diff --output=F HEAD~1`, `git log -1 --output=F`, and `git show --output=F HEAD` each exited `0` and left `F` on disk, where `git status --output=F` exited `129` and wrote nothing.
   A rule cannot exclude a flag, so a wildcard over those three would pre-approve an arbitrary file write, which is not the read-only permission the list claims to grant. The cost is a prompt for a `git diff` that carries arguments.
   `git branch` is left out because it creates, renames, and deletes branches, and a package manager, an interpreter, and a test runner are left out because each runs code and no such rule is true of every machine.
@@ -73,10 +73,9 @@ After each update, do the steps in the "Update" section of the README.
 - A call that auto mode denied twice is denied at `tool.check`, before the classifier, with the reason of the earlier denial and the rule that would allow it (task 10.4).
   `classic.PermissionDenied` counts each denial per call signature in one `$.state` value, so the main loop and each subagent count the same call together, and the hook answers `retry: true` only while the count is under the bound.
   The event cannot send text to the model, so the text reaches it in the deny: it says to stop and report, and it names `"Bash(<command>)"` or the bare tool name for `permissions.allow`, with no hint to work around the denial.
-- `just validate` fails a page that tells a reader to run a recipe the `justfile` does not define, through `tools/recipes.ts`.
-  Nothing compared a documented command against the `justfile`, which is how `CONTRIBUTING.md` kept naming `just bump` after that recipe and `tools/bump-version.ts` were removed.
-  A name is read from a backticked span only, at the start of a command, because `just` inside a sentence is the English adverb and reading those spans reported 25 recipes that no page asks a reader to run.
-  `RECORD_PAGES` holds `CHANGELOG.md`, `docs/test-diet.md`, and `docs/evidence/stop-hook-eval.md`, which names `just sandbox`, so a page that names a live recipe stays under the check.
+- `docs/README.md` is an index of every page under `docs/`, with a link and one line each, grouped by folder, and a line that says what `docs/keep/` and `docs/dossier/` hold, because their names do not say it.
+  It held three sentences and listed nothing, so the only way to find a page was to list the folder.
+  Eighteen stale citations across seven pages are repaired with it: a path of the pre-restart tree now carries the `archive/` prefix at a line that was opened and checked, a path of a live file written without its prefix is spelled in full, and a sentence whose file is gone from both trees says what holds today instead of naming the file.
 - `just eval` runs the rule cases of the main agent body against their fixtures, through `tools/evals/cli.ts`.
   Plan mode is the default and costs nothing, and `--run` makes the paid calls, so the recipe matches the other paid tools.
 - `just validate` fails when the four manifests that declare the version of this project disagree, through `tools/manifests.ts`.
@@ -85,6 +84,13 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Fixed
 
+- The handoff that Claude writes is now told to redact a secret, which only the handoff that the hooks build was (spec `session-handoff`).
+  `redact` runs over the file `handoff.ts` composes, so a key in a transcript never reached that file, while the nudge on `prompt.context` asked Claude for nine sections and said nothing about a secret, and a handoff is read back into every later session, so a key copied into one is read again each time.
+  The line is "Write `[REDACTED]` in place of a key or a token", 48 characters, and `just capture --arm plugin --shipped` reads 31,959 against 31,909 without it, all 50 on the wire in `messages`, carried in the `handoff context` row of `plugins/claudetto/src/cuts.ts`.
+- The deny list that setup writes is now behind its own guard at run time, which it was the only trimming key not to be (spec `surface-trim`, "No Deny for a Tool Whose Removal Raises the Request").
+  `denyFaults` was called from `plugins/claudetto/src/__tests__/deny.spec.ts` and from nowhere else, so a name whose removal raises the request failed the test suite and would still have been written into a settings file by a build that skipped the tests.
+  `snippetFaults` now reports it and `tierSnippet` omits the `deny` key on a fault, the way the `allow`, `autoMode`, and `sandbox` keys already behaved.
+  The shared `cleanBlock` holds that one rule, "write the block when nothing faults it and no key at all when something does", so the rule is pinned by a test for both the clean and the faulted case rather than repeated in four places.
 - A call the permission gate denies now tells the model to stop and report, with the rule that denied it (spec `permission-policy`, "Denied Calls Stop").
   That text existed only for a repeat auto-mode denial, so a direct gate denial said nothing and the model was free to retry or work around it.
   `stoppedText` wraps a gate denial in the new `DENY_GATED`, and both hook paths use it, `onCheck` and `onPermission` (`plugins/claudetto/src/gate/hooks.ts`).
@@ -128,11 +134,20 @@ After each update, do the steps in the "Update" section of the README.
 
 ### Removed
 
+- The nine checks of `tools/` that read prose rather than code are deleted, with their eight spec files, so `tools/` now holds only what the shipped plugin needs (the user, 2026-10-30: "clean up the mess that is `tools/` *ONLY* to what the plugin needs").
+  They are `tools/always-loaded.ts`, `citations.ts`, `keep-pages.ts`, `md-table.ts`, `prompt-budgets.ts`, `pure-prompts.ts`, `recipes.ts`, `rule-scope.ts`, and `skill-flags.ts`.
+  Each read a Markdown page and judged its wording, its table shape, or the paths it cited, so a change to a sentence failed `just check` while no shipped behavior had moved.
+  `just validate` runs the seven that read code: the agent tools, the folder clusters, the JSDoc blocks, the text literals, the Gitleaks rules, the rebuild constants, and the four version manifests.
+  What is lost with them: no check now compares a recipe named in a page against the `justfile`, resolves a cited `path:line`, or holds a prompt piece to a byte budget.
+  The one budget that a spec fixes a number for is kept as a test instead, `tests/repo/prompt-budget.test.ts`, because a budget with a measured value is behavior and the rest were prose.
 - The `compaction` option is gone, with `plugins/claudetto/src/compaction/compaction.ts` and its spec file (the user, 2026-10-30).
   It offered `auto`, `built-in`, and `code` in the plugin dialog while the `pathOf` that read it was imported by nothing but its own spec, so a person could set a value and nothing happened: `onCompact` (`compaction/hook.ts:34`) reads `cheapSummary` and never the path.
   An option in the dialog that no hook reads is worse than no option.
   The compaction of Claude Code is the one path that ships, which is what every probe round of `docs/evidence/code-compaction-probe.md` left in place by reporting no winner, and `tests/repo/compaction-default.test.ts` still fails when a verdict line stops saying that, which is the signal to build the code path and offer the option again.
   `tests/repo/manifests.test.ts` now pins the list of options the manifest declares, because no check can show that a hook reads a value: adding an option means changing that list, and whoever changes it has to name the hook that reads it.
+- `docs/test-diet.md` is deleted (the user, 2026-10-30).
+  It audited the test suite of the pre-restart tree: of the 209 test files it cited, 207 live only under `archive/`, and it named five `just` recipes that the `justfile` no longer defines.
+  The audit and its numbers stay in the git history, and `docs/README.md` indexes the page no more.
 - 15 pages under `docs/evidence/` are deleted, which is every page whose producer the restart removed and that reads nothing of the Claude Code binary (the user, 2026-10-30: "old docs means nothing that 0.0.0 restart and recent claude code binary searches have").
   They are the seven `docs/evidence/evals/` pages, both `docs/evidence/handoff-cost/` pages, `docs/evidence/usage-evidence/part-2.md`, `builtin-comparisons.md`, `jev-images.md`, `prompt-size.md`, and `sandbox-run-0.2.0.md`.
   Their producers are the `claude plugin eval` harness, `just eval-stats`, `just eval-variant`, `just classifier-replay`, `just handoff-probe`, `just sandbox`, `tools/compare-builtins.ts`, and the `claudetto-codegraph` add-on, none of which is in the tree.

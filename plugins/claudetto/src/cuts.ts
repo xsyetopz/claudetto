@@ -38,11 +38,12 @@ export interface Cut {
  * The 24,607 was a figure of no user's session: `shippedSettings` composed its own list and carried
  * `permissions.deny`, `agent`, and `outputStyle`, which `tierSnippet` did not write. It now derives
  * from `planSetup`, and wiring those keys in moved the reading to 31,861. Then `commands/setup.md`
- * shipped and its row in the command listing put 48 back, for 31,909. Every reading of 31,861 in the
- * rows below is of the arm before that command existed, which leaves each difference between two such
- * readings sound, because the row is in both arms of each pair.
+ * shipped and its row in the command listing put 48 back, for 31,909. Then the redaction line of
+ * `handoff.ts` put 50 more, for 31,959. Every reading of 31,861 in the rows below is of the arm
+ * before either landed, which leaves each difference between two such readings sound, because both
+ * pieces are in both arms of each pair.
  */
-export const SHIPPED_TOTAL = 31_909;
+export const SHIPPED_TOTAL = 31_959;
 
 /**
  * The cuts of the shipped `plugin` arm, including the pieces the tree adds, which carry a negative
@@ -128,7 +129,11 @@ export const SHIPPED_CUTS: readonly Cut[] = [
 	// `<system-reminder>` of 733 characters, which costs 770 on the wire: re-serializing the captured
 	// body without that content part gives 23,837 against 24,607. The inventory had no row for it,
 	// which is most of why its total had drifted 1,382 characters from the reading.
-	{ name: "handoff context", chars: -770 },
+	// The row is 820 since the redaction line joined `handoff.ts`: the arm read 31,959 with it and
+	// 31,909 without, all 50 in `messages`, which is the 48 characters of the line and the newline
+	// that carries it. It buys the one secret rule the Claude-written handoff has, where `redact`
+	// covers only the file the hooks build.
+	{ name: "handoff context", chars: -820 },
 	// A style adds to the body instead of replacing it, so this row is a cost and not a cut: the
 	// harness puts the body of `output-styles/Concise.md`, 1,526 characters, into the first message
 	// under a header, and appends a reminder that repeats on each user message. Moving the folder aside

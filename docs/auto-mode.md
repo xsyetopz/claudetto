@@ -141,13 +141,13 @@ Each key is in `schemas/claude-code-settings.json`.
 | `autoMode.classifyAllShell` | not written, so `false` | `schemas/claude-code-settings.json` line 1331 |
 | `sandbox.autoAllowBashIfSandboxed` | `true` | `schemas/claude-code-settings.json` line 577 |
 | `sandbox.allowUnsandboxedCommands` | `false` | `schemas/claude-code-settings.json` line 580 |
-| `sandbox.filesystem.denyRead` | the secret paths of the gate, already written before this task | `plugins/claudetto/modules/setup/domain/sandbox.ts` |
+| `sandbox.filesystem.denyRead` | the secret paths of the gate, already written before this task | `archive/plugins/claudetto/modules/setup/domain/sandbox.ts:64` |
 
-The sources for each key are `schemas/claude-code-settings.json` and the output of `claude auto-mode config` below. The lists are written for the user scope only, and the entries are in `plugins/claudetto/modules/setup/domain/auto-mode.ts`.
+The sources for each key are `schemas/claude-code-settings.json` and the output of `claude auto-mode config` below. The lists are written for the user scope only, and the entries are in `archive/plugins/claudetto/modules/setup/domain/auto-mode.ts`.
 
 ## The Test Fails First
 
-`tests/claudetto/setup/auto-mode.test.ts` was proved red on 2026-10-27 by patching `plugins/claudetto/modules/setup/domain/auto-mode.ts` three ways at once, dropping `DEFAULTS` from both lists, adding the broad rule "Project Tests: Running any command the project needs.", and setting `classifyAllShell: true`. `bun test tests/claudetto/setup/auto-mode.test.ts` then reported 4 pass and 4 fail, the four being:
+`archive/tests/claudetto/setup/auto-mode.test.ts` was proved red on 2026-10-27 by patching `archive/plugins/claudetto/modules/setup/domain/auto-mode.ts` three ways at once, dropping `DEFAULTS` from both lists, adding the broad rule "Project Tests: Running any command the project needs.", and setting `classifyAllShell: true`. `bun test tests/claudetto/setup/auto-mode.test.ts` then reported 4 pass and 4 fail, the four being:
 
 - setup writes `autoMode` lists that keep `$defaults`
 - setup does not set `classifyAllShell` to `true`
@@ -160,7 +160,7 @@ The file was restored from a copy, `git diff` on it is empty, and the same comma
 
 Run on 2026-10-27 as `claude --settings <file> auto-mode config`, where the file held only the `autoMode` snippet that `autoModeFor("user")` returns, so the real `~/.claude/settings.json` was not touched. Exit 0, an empty stderr, 131 lines, and 85,588 bytes.
 
-The listing is the "before the Change" listing above with `$defaults` expanded in its own position, plus our entries after it, so only our entries are repeated here. The built-in rules are not copied a second time, because a second copy drifts. It did drift: this section carried the pre-critique rules until 2026-10-27, after `plugins/claudetto/modules/setup/domain/auto-mode.ts` was rewritten from the findings of the critique below.
+The listing is the "before the Change" listing above with `$defaults` expanded in its own position, plus our entries after it, so only our entries are repeated here. The built-in rules are not copied a second time, because a second copy drifts. It did drift: this section carried the pre-critique rules until 2026-10-27, after `archive/plugins/claudetto/modules/setup/domain/auto-mode.ts` was rewritten from the findings of the critique below.
 
 Our four `allow` rules, at lines 20 to 23 of the output, after the sixteen built-in exceptions.
 

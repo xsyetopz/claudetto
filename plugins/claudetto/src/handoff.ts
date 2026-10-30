@@ -270,11 +270,17 @@ export const CONTEXT_BLOCK = "context_management";
 /**
  * What the session reads about the handoff. It rides the context of the first user message, so it
  * costs no request of its own.
+ *
+ * The redaction line is here because `redact` covers the file the hooks build and not the file
+ * Claude writes, and a handoff is read back into every later session, so a secret copied into one
+ * is read again each time. It is the shortest wording that names what to write and where: 48
+ * characters, which `../cuts.ts` carries in the `handoff context` row.
  */
 export const contextManagementText = (): string =>
 	`When the conversation grows long, a handoff file carries the work into the next context window.
 Write it under \`${HANDOFF_DIR}\` with these nine headings:
 ${HANDOFF_SECTIONS.map((section) => `\`${section}\``).join(", ")}
 Reference a plan, spec, issue, commit, or diff by its path or URL, in place of pasting its text.
+Write \`[REDACTED]\` in place of a key or a token.
 A file that you write holds the decisions and the reasons, which code cannot read off a transcript.
 Continue each task to its end.`;

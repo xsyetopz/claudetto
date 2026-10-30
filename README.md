@@ -11,7 +11,7 @@ The docs of Claude Code itself are on [clawdipedia](https://clawdipedia.cc), whi
 
 ## Features
 
-- A first request of 31,909 characters against 42,879 for a stock session, read with `just capture --arm plugin --shipped`.
+- A first request of 31,959 characters against 42,879 for a stock session, read with `just capture --arm plugin --shipped`.
 - A permission gate that stops only a call that loses bytes for good, tampers with the system, or reads a secret.
 - A handoff file written on a typed `/clear` and before a compaction, read back into the next session.
 - Run limits on subagents, on tool calls at heavy context, and on an identical retry after repeated failures.
@@ -54,7 +54,7 @@ Its row in the command listing costs 48 characters of the first request.
 
 | Group | What keeping it writes |
 | --- | --- |
-| Smaller prompt | `disableBundledSkills`, `enabledPlugins`, `permissions.deny`, `permissions.allow`, `agent`, `outputStyle`. Together they take the first request from 42,879 characters to 31,909, and the tool schemas from 12 tools to 9. The `allow` list is `Bash(git status *)` and the bare `Bash(git diff)`, `Bash(git log)`, and `Bash(git show)`, so those calls run without a prompt. |
+| Smaller prompt | `disableBundledSkills`, `enabledPlugins`, `permissions.deny`, `permissions.allow`, `agent`, `outputStyle`. Together they take the first request from 42,879 characters to 31,959, and the tool schemas from 12 tools to 9. The `allow` list is `Bash(git status *)` and the bare `Bash(git diff)`, `Bash(git log)`, and `Bash(git show)`, so those calls run without a prompt. |
 | Sandbox | `sandbox`, with `allowUnsandboxedCommands` set to `false`. It costs 7,254 characters of the first request and repays them, because a sandboxed command is auto-allowed before the auto-mode classifier runs and one classifier call is 140,718 characters. |
 | Models and windows | `model`, `effortLevel`, `env`, `autoCompactWindow`, `modelSettings`, `idleCompaction`. |
 
@@ -62,7 +62,7 @@ A group you discard writes none of its keys, and a key of that group you already
 
 The command writes no `autoMode`, whatever you answer.
 Its `environment` facts are readings of this repository, and the auto-mode classifier would read them as facts about your machine and decide from them whether a command runs without asking.
-Keeping all three groups costs the same 31,909 characters as the full snippet does, so leaving the key out costs nothing measured.
+Keeping all three groups costs the same 31,959 characters as the full snippet does, so leaving the key out costs nothing measured.
 
 A plugin's own settings reach only `agent` and `subagentStatusLine`, so a settings file is the one way claudetto can give you permissions, environment variables, and models.
 A `settings.read` hook that answers them instead was built and dropped: it read 61,353 characters against 31,861 for the file, so the readers that build the first request do not take its answer.

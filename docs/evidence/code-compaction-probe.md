@@ -418,7 +418,7 @@ B varies from 7,607 to 8,102 at `80k`, because a model wrote each of its summari
 
 ### Two Limits of the Measurement
 
-- Arms C and H carry 394 bytes more always-loaded prompt than B. `compactionState` of `modules/session/prompt/domain/compaction.ts` gives the `handoff` text for the options `code` and `handover` and the `built-in` text for `built-in`, and the trimmed texts measure 531 and 137 bytes. Every request of C and H pays that difference, so the cost gap in favour of C and H is understated here, not overstated.
+- Arms C and H carry 394 bytes more always-loaded prompt than B. `compactionState` of `archive/plugins/claudetto/modules/session/prompt/domain/compaction.ts:20` gives the `handoff` text for the options `code` and `handover` and the `built-in` text for `built-in`, and the trimmed texts measure 531 and 137 bytes. Every request of C and H pays that difference, so the cost gap in favour of C and H is understated here, not overstated.
 - The cache read share of the second follow-up of H is not measured in any of the 20 H forks, as in round 6, so no round has compared the second turn of H against B.
 
 ### What the Round Settles

@@ -31,7 +31,7 @@ describe("the inventory accounts for the whole fall", () => {
 			"sandbox block",
 			"setup command listing",
 		]);
-		expect(shippedChars(moving)).toBe(10_970);
+		expect(shippedChars(moving)).toBe(10_920);
 	});
 
 	test("a row that adds text counts against the fall", () => {
