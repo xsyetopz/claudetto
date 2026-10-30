@@ -24,7 +24,7 @@ A `cp -R` from a worktree copied three changed files into the main tree, and eac
 
 ### A hook lab file named after no block
 
-`plugins/claudetto/src/blocks/__tests__/catalog.spec.ts` checked that each block has a lab file or folder, but not that each lab entry names a block. `tests/goal.test.ts` was added beside `tests/finish.test.ts` for the `finish` block and broke that layout without failing anything. Fixed in `6ed34812`: both files moved to `tests/finish/`, and a new case fails on any lab entry that names no block. That case failed on `goal.test.ts` before the move.
+`plugins/claudetto/src/blocks/__tests__/catalog.spec.ts` checked that each block has a lab file or folder, but not that each lab entry names a block. `tests/goal.test.ts` was added beside `tests/finish.test.ts` for the `finish` block and broke that layout without failing anything. Fixed in `5782abb2`: both files moved to `tests/finish/`, and a new case fails on any lab entry that names no block. That case failed on `goal.test.ts` before the move.
 
 ### `just capture --help` ran a capture
 
