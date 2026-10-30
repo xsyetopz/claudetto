@@ -1,6 +1,6 @@
 ---
 name: Hephaestus
-description: "Makes one edit whose goal, files, and check are known, and runs the check, so that the reads and the tool output stay out of the main context. Use when the product is a change to files."
+description: "Makes one edit whose goal, files, and check are known, and runs the check, keeping reads and tool output out of the main context. Use for a change to files."
 effort: medium
 tools: Read, Edit, Write, Bash
 omitClaudeMd: true

@@ -1,6 +1,6 @@
 ---
 name: Hermes
-description: "Answers a question from the web and returns the sources, so that the pages it reads stay out of the main context. Use when the product is an answer that needs a web source. It changes no file."
+description: "Answers a question from the web with its sources, keeping the pages out of the main context. Use for an answer that needs a web source. It changes no file."
 effort: medium
 tools: WebSearch, WebFetch, Read
 omitClaudeMd: true

@@ -1,6 +1,6 @@
 ---
 name: Artemis
-description: "Searches many files read-only and returns paths and lines, so that the results stay out of the main context. Use when the product is a list of places across many files. It writes no file, runs no command, and counts nothing."
+description: "Searches many files read-only and returns paths and lines, keeping them out of the main context. Use for a list of places across many files. It writes no file, runs no command, and counts nothing."
 effort: medium
 tools: Read, Grep, Glob
 omitClaudeMd: true

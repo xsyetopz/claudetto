@@ -488,6 +488,7 @@ One surface at a time, each read with `just capture --shipped` against the readi
 | Output style, `Concise.md` | 31,770 | 31,721 | 49 | Shorter phrasings; every rule kept. File 1,646 to 1,597 |
 | Tool texts, `blocks/tool-describe/texts.ts` | 31,721 | 31,424 | 297 | `Agent` 1,092 to 1,047, `Bash` 1,090 to 1,085, `ListAgents` 695 to 567, `Skill` 1,023 to 975, `ToolSearch` 727 to 656 |
 | Hook output, the `handoff` reminder | 31,424 | 31,352 | 72 | Six lines merged to four; the folder, the nine headings, the path rule, `[REDACTED]`, and the decisions rule kept |
+| Agent and skill listings | 31,352 | 31,237 | 115 | Four agent descriptions 110 shorter ("Use for" in place of "Use when the product is"), `dedupe` 5 |
 
 The sandbox text stays: no setting shortens it, and the sandbox is kept on (user, 2026-10-31).
 
