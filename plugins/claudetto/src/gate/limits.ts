@@ -1,6 +1,6 @@
 // The bounds of the gate rules.
 
-/** The longest word, in characters, that the gate reads as a glob. A longer word with a glob character counts as a glob that can match a secret file, because the match of a long glob is slow. */
+/** The longest segment, in characters, that the gate reads inside a glob. A longer segment counts as a glob that can match a secret file, because that segment is the one expression the matcher compiles and a long one is slow. The bound is the segment and not the whole word, so a list of many short paths is read on its names. */
 export const GLOB_WORD_MAX = 256;
 
 /** The `git` commands that the gate knows when it cannot read the list of `git --list-cmds=main,others`. A verb outside the list and outside the aliases is unknown. */

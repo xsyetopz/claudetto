@@ -1,4 +1,4 @@
-// The permission gate (spec `permission-gate`, D4): it stops only a call that loses bytes for good, tampers with the system, or reads a secret.
+// The permission gate (spec `permission-policy`, D4): it stops only a call that loses bytes for good, tampers with the system, or reads a secret.
 // The function is pure except for `Facts.git` and `Facts.userEdits`, which the adapter runs and a test stubs.
 
 import { bashFindings, parseWithGit } from "./findings/bash.ts";

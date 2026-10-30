@@ -62,6 +62,8 @@ const HOME_FOLDER_PATH =
 	/^\/(?:(?:Users|home)\/[^/]+|root|var\/root)(?:\/(.*))?$/;
 const SECRET_NAME_HINT = /[.$~]/;
 const LIST_SEPARATOR = /[=:,]/;
+/** What splits a glob into the pieces `partRe` compiles one at a time: a path separator or a list separator. */
+const SEGMENT_SEPARATOR = /[/=:,]/;
 const GLOB_PART_START = /^[*?[]/;
 const WHITESPACE = /\s/;
 const VARIABLE_OR_BACKTICK = /[$`]/;
@@ -238,13 +240,16 @@ const matchesPath = (
 /**
  * True when `word` has a glob that can match a secret file from the folder `dir`: an env file name, or a path of `HOME_SECRETS`.
  * A last part of only wildcards, such as the `*` of `cat *`, does not count as a match of an env file, because it can match any name.
- * A word with a space is a pattern or an expression, not a glob. A word over `GLOB_WORD_MAX` characters counts as a match.
+ * A word with a space is a pattern or an expression, not a glob.
+ * A segment over `GLOB_WORD_MAX` characters counts as a match, because that segment is what `partRe` compiles and a long one is slow.
+ * The bound is the segment and not the whole word, because a list of many short paths is as cheap to read as one of them,
+ * and reading the word as a secret by its total length denied a `Glob` of a dozen source files.
  */
 export const globsSecret = (dir: string, word: string, at: Places): boolean => {
 	if (!GLOB_START.test(word) || WHITESPACE.test(word)) {
 		return false;
 	}
-	if (word.length > GLOB_WORD_MAX) {
+	if (word.split(SEGMENT_SEPARATOR).some((s) => s.length > GLOB_WORD_MAX)) {
 		return true;
 	}
 	const home = at.home.split("/").filter(Boolean);

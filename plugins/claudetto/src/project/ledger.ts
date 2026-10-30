@@ -1,4 +1,6 @@
-// The reader of the edit ledger of spec `session-hygiene`: one value of the private store of the plugin for each project.
+// The reader of the edit ledger: one value of the private store of the plugin for each project. No spec
+// in `openspec/` names it. It serves `userEdits` of the permission gate, which `gate/findings/git.ts:35`
+// reads before a destructive `git` call, and the counters of `run-limits/`.
 // The mod runtime has no `node:` or `Bun` API, so the hash is plain JavaScript on numbers.
 
 /** One edit: the path, the hash of the content after the edit, the session, the agent, and the origin: an `Edit` or `Write` call (`edit`), or the capture of a `Bash` call (`bash`). */

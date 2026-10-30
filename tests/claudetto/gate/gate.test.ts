@@ -11,6 +11,7 @@ import {
 	gated,
 	stricter,
 } from "../../../plugins/claudetto/src/gate/gate.ts";
+import { GLOB_WORD_MAX } from "../../../plugins/claudetto/src/gate/limits.ts";
 import { SHELL_SCAN_MAX_CHARS } from "../../../plugins/claudetto/src/shell/limits.ts";
 
 describe("the keys the gate reads", () => {
@@ -194,6 +195,28 @@ describe("file tools", () => {
 		const verdicts = await Promise.all([read("/p/.env"), read("/p/src/a.ts")]);
 
 		expect(verdicts.map((v) => v.decision)).toStrictEqual(["deny", "allow"]);
+	});
+
+	test("a `Glob` of source paths is allowed however long the pattern is", async () => {
+		const glob = (pattern: string) =>
+			gate({ tool: "Glob", input: { pattern } }, facts());
+		const long = Array.from(
+			{ length: 12 },
+			(_, i) => `plugins/claudetto/src/slice${i}/*.spec.ts`,
+		).join(",");
+
+		const verdicts = await Promise.all([glob("src/**/*.ts"), glob(long)]);
+
+		expect(long.length).toBeGreaterThan(GLOB_WORD_MAX);
+		expect(verdicts.map((v) => v.decision)).toStrictEqual(["allow", "allow"]);
+	});
+
+	test("a `Glob` whose one segment is longer than the bound is denied", async () => {
+		const pattern = `src/${"a".repeat(GLOB_WORD_MAX + 1)}*`;
+
+		const v = await gate({ tool: "Glob", input: { pattern } }, facts());
+
+		expect(v.decision).toBe("deny");
 	});
 });
 
