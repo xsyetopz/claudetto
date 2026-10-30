@@ -489,6 +489,8 @@ One surface at a time, each read with `just capture --shipped` against the readi
 | Tool texts, `blocks/tool-describe/texts.ts` | 31,721 | 31,424 | 297 | `Agent` 1,092 to 1,047, `Bash` 1,090 to 1,085, `ListAgents` 695 to 567, `Skill` 1,023 to 975, `ToolSearch` 727 to 656 |
 | Hook output, the `handoff` reminder | 31,424 | 31,352 | 72 | Six lines merged to four; the folder, the nine headings, the path rule, `[REDACTED]`, and the decisions rule kept |
 | Agent and skill listings | 31,352 | 31,237 | 115 | Four agent descriptions 110 shorter ("Use for" in place of "Use when the product is"), `dedupe` 5 |
+| `/init` interview, `blocks/init-interview/block.ts`, read with `--prompt "/init"` | 32,735 | 32,511 | 224 | The guide's three cuts: the file list the model reads unasked, the repeated "ask nothing a file answers", and the move rule folded into the approval step. Text 1,383 to 1,159 |
+| Plan mode reminder, `blocks/plan-mode/block.ts`, read with `permissions.defaultMode: "plan"` | 46,455 | 46,413 to 46,417 | 38 to 42 | The commit line that read-only covers, and the second `AskUserQuestion` line, cut. Text 1,160 to 1,117, a fall of 43; the plan file's random name moves each reading by a few characters; the built-in reminder it replaces reads 50,205 |
 
 The `autoMode` suite, `src/automode/rules.ts`, is read in the classifier request instead: shorter phrasings of 13 rules take its `system` text from 63,571 to 63,453, a fall of 118, and the suite still scored 120 of 120 on the scripted classifier cases.
 
