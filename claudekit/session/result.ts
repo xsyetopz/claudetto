@@ -3,6 +3,8 @@
 /** A tool call that the permission system refused during the run. */
 export interface PermissionDenial {
 	readonly toolName: string;
+	/** The id of the refused call, or `""` when the run did not report one. */
+	readonly toolUseId: string;
 	readonly toolInput: unknown;
 }
 
@@ -23,7 +25,16 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 const denialOf = (value: unknown): PermissionDenial[] =>
 	isRecord(value) && typeof value["tool_name"] === "string"
-		? [{ toolName: value["tool_name"], toolInput: value["tool_input"] }]
+		? [
+				{
+					toolName: value["tool_name"],
+					toolUseId:
+						typeof value["tool_use_id"] === "string"
+							? value["tool_use_id"]
+							: "",
+					toolInput: value["tool_input"],
+				},
+			]
 		: [];
 
 const resultOf = (value: Record<string, unknown>): RunResult => ({
