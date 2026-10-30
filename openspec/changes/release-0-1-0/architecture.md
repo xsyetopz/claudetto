@@ -8,7 +8,7 @@ One plugin, `claudetto`, on Claude Code `2.1.314`: the mod (`plugins/claudetto/s
 | `openspec-init` | Run `openspec init` in the project when setup runs there and the CLI is present | `$.command.run` or the setup CLI | D3 | `archive/plugins/claudetto/modules/spec/` (read for the adapter only) |
 | `statusline` | A `statusLine` and `subagentStatusLine` command that reads stdin JSON only | `bin/claudetto-statusline`, setting `statusLine` | G3 | `archive/plugins/claudetto/modules/statusline/`, `/tmp/ccx/report-statusline.md` D1 to D4 and D7 |
 | `version-floor` | Warn once at `SessionStart` when the running version is under `2.1.314` | `classic.SessionStart` | D13 | none |
-| `hygiene` | Remove stale claudetto work files and stale program-generated files under `~/.claude/` | a CLI and `classic.SessionStart` | D11 | `archive/plugins/claudetto/modules/session/hygiene/` |
+| `hygiene` | Remove stale claudetto work files and stale program-generated files under `~/.claude/` | `bin/claudetto-hygiene`, `just hygiene`, and `classic.SessionStart` of `src/blocks/hygiene/`, over the list `STALE_PATHS` of `src/hygiene/paths.ts` | D11 | `archive/plugins/claudetto/modules/session/hygiene/` |
 | `finish` | `/goal <cmd>` and the `tasks.md` loop | a command | D9 | `archive/plugins/claudetto/modules/work/finish/` |
 | `Hermes` | Web research agent whose pages stay out of the main window | `agents/Hermes.md` | D6 | `archive/plugins/claudetto/agents/Hermes.md` |
 | `docs-lookup` | A light Context7 integration, or our own if none is light enough | to be chosen in `design.md` | D15 | none; `find-docs` is not restored |

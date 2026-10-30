@@ -5,6 +5,7 @@ import { attachCompaction, compaction } from "./compaction/block.ts";
 import { attachDecide, decide } from "./decide/block.ts";
 import { attachGate, gateBlock } from "./gate/block.ts";
 import { attachHandoff, handoff } from "./handoff/block.ts";
+import { attachHygiene, hygiene } from "./hygiene/block.ts";
 import { attachInitInterview, initInterview } from "./init-interview/block.ts";
 import { attachRunLimits, runLimits } from "./run-limits/block.ts";
 import { attachSetupCommand, setupCommand } from "./setup-command/block.ts";
@@ -25,6 +26,7 @@ export const CATALOG: readonly Block[] = [
 	windowBlock,
 	compaction,
 	versionFloor,
+	hygiene,
 ];
 
 /** The hook loader takes `on` only into a function named at the top of a file, so each block is called by its own name. */
@@ -41,4 +43,5 @@ export const attachBlocks = (on: On, options: PluginOptions): void => {
 	attachWindow(on, context);
 	attachCompaction(on, context);
 	attachVersionFloor(on, context);
+	attachHygiene(on, context);
 };

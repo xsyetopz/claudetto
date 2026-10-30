@@ -58,6 +58,10 @@ check: lint typecheck test validate lab
 setup *args:
     bun plugins/claudetto/src/tiers/setup.ts "$@"
 
+# Remove the stale files of `STALE_PATHS` in `plugins/claudetto/src/hygiene/paths.ts`: probe folders and ended session folders in Claude Code's temp root, and old handoffs of this project, keeping the newest. `--dry-run` lists them and removes nothing; `--session ID` and `--days N` override `CLAUDE_CODE_SESSION_ID` and `cleanupPeriodDays`. Each session start runs it too, without waiting
+hygiene *args:
+    plugins/claudetto/bin/claudetto-hygiene "$@"
+
 # Print the window cost report from the rows this login's sessions recorded: points per task, and the weight of an input token, or "not measured" where too few rows back it. Free, with no model call
 window-report:
     bun tools/window-report.ts
