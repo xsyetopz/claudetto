@@ -3,13 +3,17 @@ import { type Engine, expect, test } from "claude-code/testing";
 import { OWN } from "../src/constants.ts";
 import { lab, steps, TURNED_ON, typed } from "./lab-kit.ts";
 
+const runCheck = async ($: Engine, on: On) => {
+	const l = lab(on);
+	await steps($, l, "t1", { from: 1, to: 6 });
+	return l;
+};
+
 test(
 	"a check makes exactly one request, with the model, the effort, and the bound named",
 	{ options: TURNED_ON },
 	async ($: Engine, on: On) => {
-		const l = lab(on);
-
-		await steps($, l, "t1", { from: 1, to: 6 });
+		const l = await runCheck($, on);
 
 		expect(l.asked).toHaveLength(1);
 		expect(l.asked[0]?.model).toBe("claude-haiku-5-5");
@@ -22,9 +26,7 @@ test(
 	"the fixed instructions are the cached block and the digest follows unmarked",
 	{ options: TURNED_ON },
 	async ($: Engine, on: On) => {
-		const l = lab(on);
-
-		await steps($, l, "t1", { from: 1, to: 6 });
+		const l = await runCheck($, on);
 
 		const blocks = l.asked[0]?.promptBlocks ?? [];
 		expect(blocks).toHaveLength(2);
@@ -37,9 +39,7 @@ test(
 	"the model and the effort come from the options of the plugin",
 	{ options: { enabled: true, model: "claude-sonnet-5-5", effort: "low" } },
 	async ($: Engine, on: On) => {
-		const l = lab(on);
-
-		await steps($, l, "t1", { from: 1, to: 6 });
+		const l = await runCheck($, on);
 
 		expect(l.asked[0]?.model).toBe("claude-sonnet-5-5");
 		expect(l.asked[0]?.effort).toBe("low");
@@ -50,9 +50,7 @@ test(
 	"an effort outside the five levels falls back to the default",
 	{ options: { enabled: true, effort: "maximum" } },
 	async ($: Engine, on: On) => {
-		const l = lab(on);
-
-		await steps($, l, "t1", { from: 1, to: 6 });
+		const l = await runCheck($, on);
 
 		expect(l.asked[0]?.effort).toBe("high");
 	},

@@ -20,16 +20,23 @@ const mountBand = ($: Engine) =>
 		props: BAND,
 	});
 
+const pressOn = async (
+	$: Engine,
+	on: On,
+	row: "offer" | "asked",
+	key: string,
+) => {
+	const l = lab(on, { store: { sessions: [openRow(row)], ...backedOff } });
+	const band = await mountBand($);
+	await band.press({ key });
+	return l;
+};
+
 test(
 	"knowing a line already adds it to the known list, closes the offer, and resets both counters",
 	ON,
 	async ($: Engine, on: On) => {
-		const l = lab(on, {
-			store: { sessions: [openRow("offer")], ...backedOff },
-		});
-		const band = await mountBand($);
-
-		await band.press({ key: "know" });
+		const l = await pressOn($, on, "offer", "know");
 
 		expect(l.store.get("known")).toEqual(["Tests run in order."]);
 		expect(l.store.get("sessions")).toMatchObject([{ view: null }]);
@@ -42,12 +49,7 @@ test(
 	"dismissing an offer is an answer, so it resets both counters and opens the asked row",
 	ON,
 	async ($: Engine, on: On) => {
-		const l = lab(on, {
-			store: { sessions: [openRow("offer")], ...backedOff },
-		});
-		const band = await mountBand($);
-
-		await band.press({ key: "dismiss" });
+		const l = await pressOn($, on, "offer", "dismiss");
 
 		expect(l.store.get("typedPastInARow")).toBe(0);
 		expect(l.store.get("looksToSkip")).toBe(0);
@@ -79,12 +81,7 @@ test(
 	"the dismiss key of the asked row ends the offer as a timeout does, with the counters kept",
 	ON,
 	async ($: Engine, on: On) => {
-		const l = lab(on, {
-			store: { sessions: [openRow("asked")], ...backedOff },
-		});
-		const band = await mountBand($);
-
-		await band.press({ key: "dismiss" });
+		const l = await pressOn($, on, "asked", "dismiss");
 
 		expect(l.store.get("sessions")).toMatchObject([{ view: null }]);
 		expect(l.store.get("typedPastInARow")).toBe(backedOff.typedPastInARow);
@@ -95,12 +92,7 @@ test(
 	"a helpful answer on the asked row adds the line to the known list and resets the counters",
 	ON,
 	async ($: Engine, on: On) => {
-		const l = lab(on, {
-			store: { sessions: [openRow("asked")], ...backedOff },
-		});
-		const band = await mountBand($);
-
-		await band.press({ key: "helpful" });
+		const l = await pressOn($, on, "asked", "helpful");
 
 		expect(l.store.get("known")).toEqual(["Tests run in order."]);
 		expect(l.store.get("looksToSkip")).toBe(0);
