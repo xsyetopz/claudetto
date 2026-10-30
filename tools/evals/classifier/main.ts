@@ -25,7 +25,7 @@ import {
 export const CLASSIFIER_USAGE =
 	"usage: just eval --classifier [--run] [--case KEY] [--arm ARM] [--runs N] [--upstream URL]";
 
-const POSITIVE_INTEGER = /^[1-9][0-9]*$/;
+export const POSITIVE_INTEGER = /^[1-9][0-9]*$/;
 
 interface Options {
 	readonly run: boolean;
@@ -35,9 +35,13 @@ interface Options {
 	readonly upstream: string;
 }
 
-type Patch = (options: Options, value: string) => Options | undefined;
+/** Sets the option a flag names from its value, or gives `undefined` when the value is not one the flag takes. */
+export type Patch<O> = (options: O, value: string) => O | undefined;
 
-const VALUE_FLAGS: ReadonlyMap<string, Patch> = new Map<string, Patch>([
+const VALUE_FLAGS: ReadonlyMap<string, Patch<Options>> = new Map<
+	string,
+	Patch<Options>
+>([
 	["--case", (o, v) => ({ ...o, only: v })],
 	["--arm", (o, v) => (isClassifierArm(v) ? { ...o, arm: v } : undefined)],
 	[
@@ -48,22 +52,20 @@ const VALUE_FLAGS: ReadonlyMap<string, Patch> = new Map<string, Patch>([
 	["--upstream", (o, v) => ({ ...o, upstream: v })],
 ]);
 
-export const parseClassifierArgs = (
+/** Reads `--run` and the flags of `flags`, each of which takes the value after it. */
+export const parseFlags = <O extends { readonly run: boolean }>(
 	args: readonly string[],
-	options: Options = {
-		run: false,
-		runs: EVAL_MIN_RUNS_PER_ARM,
-		upstream: UPSTREAM,
-	},
-): Options | { readonly error: string } => {
+	options: O,
+	flags: ReadonlyMap<string, Patch<O>>,
+): O | { readonly error: string } => {
 	const [flag, ...rest] = args;
 	switch (flag) {
 		case undefined:
 			return options;
 		case "--run":
-			return parseClassifierArgs(rest, { ...options, run: true });
+			return parseFlags(rest, { ...options, run: true }, flags);
 	}
-	const patch = VALUE_FLAGS.get(flag);
+	const patch = flags.get(flag);
 	const [value, ...after] = rest;
 	if (patch === undefined || value === undefined) {
 		return { error: `${flag} is not a flag, or it has no value` };
@@ -71,8 +73,18 @@ export const parseClassifierArgs = (
 	const next = patch(options, value);
 	return next === undefined
 		? { error: `${value} is not a value of ${flag}` }
-		: parseClassifierArgs(after, next);
+		: parseFlags(after, next, flags);
 };
+
+export const parseClassifierArgs = (
+	args: readonly string[],
+	options: Options = {
+		run: false,
+		runs: EVAL_MIN_RUNS_PER_ARM,
+		upstream: UPSTREAM,
+	},
+): Options | { readonly error: string } =>
+	parseFlags(args, options, VALUE_FLAGS);
 
 interface Planned {
 	readonly row: ClassifierCase;

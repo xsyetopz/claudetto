@@ -8,7 +8,12 @@ import {
 	type CommandRunner,
 	spawnCommand,
 } from "../../claudekit/session/command.ts";
-import { classifierMain } from "./classifier/main.ts";
+import {
+	classifierMain,
+	type Patch,
+	POSITIVE_INTEGER,
+	parseFlags,
+} from "./classifier/main.ts";
 import { type Deps, executeSession, type Outcome } from "./execute.ts";
 import { seededKeys } from "./fixture.ts";
 import { RULE_CASES, type RuleCase } from "./main-rules.ts";
@@ -27,8 +32,6 @@ export const USAGE =
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), "fixtures");
 
-const POSITIVE_INTEGER = /^[1-9][0-9]*$/;
-
 interface Options {
 	readonly run: boolean;
 	readonly request: Request;
@@ -36,9 +39,10 @@ interface Options {
 	readonly maxBudgetUsd?: number;
 }
 
-type Patch = (options: Options, value: string) => Options | undefined;
-
-const VALUE_FLAGS: ReadonlyMap<string, Patch> = new Map<string, Patch>([
+const VALUE_FLAGS: ReadonlyMap<string, Patch<Options>> = new Map<
+	string,
+	Patch<Options>
+>([
 	["--case", (o, v) => ({ ...o, request: { ...o.request, only: v } })],
 	[
 		"--arm",
@@ -62,26 +66,8 @@ const VALUE_FLAGS: ReadonlyMap<string, Patch> = new Map<string, Patch>([
 export const parseArgs = (
 	args: readonly string[],
 	options: Options = { run: false, request: {} },
-): Options | { readonly error: string } => {
-	const [flag, ...rest] = args;
-	switch (flag) {
-		case undefined:
-			return options;
-		case "--run":
-			return parseArgs(rest, { ...options, run: true });
-		default: {
-			const patch = VALUE_FLAGS.get(flag);
-			const [value, ...after] = rest;
-			if (patch === undefined || value === undefined) {
-				return { error: `${flag} is not a flag, or it has no value` };
-			}
-			const next = patch(options, value);
-			return next === undefined
-				? { error: `${value} is not a value of ${flag}` }
-				: parseArgs(after, next);
-		}
-	}
-};
+): Options | { readonly error: string } =>
+	parseFlags(args, options, VALUE_FLAGS);
 
 export const planLines = (plan: Plan): readonly string[] => [
 	...plan.sessions.map(

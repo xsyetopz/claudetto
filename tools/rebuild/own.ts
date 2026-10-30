@@ -3,6 +3,7 @@
 
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { reportFaults } from "../../claudekit/output.ts";
 import {
 	bodyOf,
 	INSTRUCTIONS,
@@ -142,12 +143,7 @@ const main = async (): Promise<void> => {
 			),
 		),
 	];
-	for (const line of faults) {
-		console.error(line);
-	}
-	if (faults.length > 0) {
-		process.exitCode = 1;
-	}
+	reportFaults(faults);
 };
 
 if (import.meta.main) {

@@ -3,6 +3,7 @@
 
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { reportFaults } from "../../claudekit/output.ts";
 import {
 	BORROWED,
 	OWN,
@@ -40,12 +41,7 @@ const main = async (): Promise<void> => {
 	const root = join(import.meta.dir, "../..");
 	const note = await readFile(join(root, SOURCE_NOTE), "utf8");
 	const faults = [...quoteFaults(BORROWED, note), ...quoteFaults(OWN, note)];
-	for (const line of faults) {
-		console.error(line);
-	}
-	if (faults.length > 0) {
-		process.exitCode = 1;
-	}
+	reportFaults(faults);
 };
 
 if (import.meta.main) {
