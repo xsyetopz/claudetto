@@ -21,7 +21,9 @@ describe("readResult", () => {
 			subtype: "success",
 			text: "done",
 			totalCostUsd: 0.25,
-			permissionDenials: [{ toolName: "Bash", toolInput: { command: "ls" } }],
+			permissionDenials: [
+				{ toolName: "Bash", toolUseId: "t1", toolInput: { command: "ls" } },
+			],
 		});
 	});
 
