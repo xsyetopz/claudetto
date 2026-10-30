@@ -11,12 +11,13 @@ check: lint typecheck test validate lab
 test *args:
     env -u CLAUDE_CODE_SESSION_ID bun test "$@"
 
-# Lint code, Markdown, file lengths, and comment narration
+# Lint code, Markdown, file lengths, comment narration, and clones outside the `jscpd` baseline
 lint:
     bun run lint
     bun run lint:md
     bun tools/file-lines.ts
     bun tools/no-narration.ts
+    bunx jscpd --no-tips plugins tests tools claudekit
 
 # Type-check against the vendored Claude Code types
 typecheck:
