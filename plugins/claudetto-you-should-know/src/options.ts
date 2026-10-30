@@ -6,7 +6,7 @@ import type { ModelEffort, PluginOptions } from "claude-code";
 export const DEFAULT_MODEL = "claude-haiku-5-5";
 
 /** Must equal the manifest's `default`, which reaches the hook as the option's value. */
-export const DEFAULT_EFFORT: ModelEffort = "medium";
+export const DEFAULT_EFFORT: ModelEffort = "high";
 
 const EFFORTS: readonly ModelEffort[] = [
 	"low",

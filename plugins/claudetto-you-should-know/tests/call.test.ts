@@ -13,7 +13,7 @@ test(
 
 		expect(l.asked).toHaveLength(1);
 		expect(l.asked[0]?.model).toBe("claude-haiku-5-5");
-		expect(l.asked[0]?.effort).toBe("medium");
+		expect(l.asked[0]?.effort).toBe("high");
 		expect(l.asked[0]?.maxTokens).toBe(OWN.MAX_TOKENS);
 	},
 );
@@ -54,7 +54,7 @@ test(
 
 		await steps($, l, "t1", { from: 1, to: 6 });
 
-		expect(l.asked[0]?.effort).toBe("medium");
+		expect(l.asked[0]?.effort).toBe("high");
 	},
 );
 

@@ -27,7 +27,7 @@
 			"type": "string",
 			"title": "Effort",
 			"description": "How hard the model thinks about each check.",
-			"default": "medium",
+			"default": "high",
 			"options": ["low", "medium", "high", "xhigh", "max"]
 		}
 	}
