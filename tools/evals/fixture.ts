@@ -1,7 +1,4 @@
-// A fixture folder is `<key>/prompt.txt` (the user's turn), `<key>/grade.ts` (the tree grader, a
-// command), and `<key>/repo/` (the files of the scratch repository). A file under `repo/` that ends in
-// `.tpl` is copied without that suffix: the suffix keeps the repository's own `.ts` and `.md` files
-// out of the lint, the type check, and the test run of this repository.
+// A `.tpl` suffix under `repo/` is dropped on copy, to keep the files out of this repo's lint and tests.
 
 import { mkdir, readdir } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
@@ -10,7 +7,7 @@ import type { CommandRunner } from "./command.ts";
 
 const TEMPLATE_SUFFIX = /\.tpl$/;
 
-/** The identity of the one seed commit, passed per command so no global git config is read or written. */
+/** Passed per command so no global git config is read or written. */
 const GIT_IDENTITY = [
 	"-c",
 	"user.name=eval",
@@ -20,18 +17,14 @@ const GIT_IDENTITY = [
 	"commit.gpgsign=false",
 ];
 
-/** The result of seeding a fixture: the user's prompt and the grader argv when it worked, or the reason it did not. */
 export type Seeded =
 	| {
 			readonly kind: "seeded";
-			/** The user's turn for the session. */
 			readonly prompt: string;
-			/** The tree grader as an argv, to run in the scratch repository. */
 			readonly grader: readonly string[];
 	  }
 	| { readonly kind: "failed"; readonly reason: string };
 
-/** The keys that have a fixture folder with a `repo/` in it. A missing root holds none. */
 export const seededKeys = async (
 	root: string,
 ): Promise<ReadonlySet<string>> => {
@@ -53,7 +46,6 @@ export const seededKeys = async (
 	}
 };
 
-/** Copies the files of `<root>/<key>/repo` into `dest`, dropping the `.tpl` suffix. */
 const copyRepo = async (source: string, dest: string): Promise<void> => {
 	const entries = await readdir(source, {
 		recursive: true,
@@ -74,7 +66,6 @@ const copyRepo = async (source: string, dest: string): Promise<void> => {
 	);
 };
 
-/** Runs the git commands that turn `dest` into a repository with one commit, or names the first that failed. */
 const GIT_STEPS: readonly (readonly string[])[] = [
 	["git", "init", "--quiet"],
 	["git", "add", "--all"],
@@ -98,7 +89,6 @@ const initRepo = async (
 	return initRepo(run, dest, rest);
 };
 
-/** Seeds `dest` with the fixture of `key` and commits it, or says why it could not. */
 export const seedFixture = async (
 	run: CommandRunner,
 	options: { root: string; key: string; dest: string },

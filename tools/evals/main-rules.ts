@@ -1,57 +1,34 @@
-// A case is data, not a run: a run calls a model, which needs the user's approval, and a citable arm
-// needs `EVAL_MIN_RUNS_PER_ARM` runs.
+// A case is data, not a run: a run calls a model, which needs the user's approval.
 
 import { file as bunFile } from "bun";
 import { MAIN_AGENT_FILE } from "../../plugins/claudetto/src/prompts.ts";
 import { EVAL_MIN_RUNS_PER_ARM } from "../limits.ts";
 
-/**
- * A check over the tree the session left behind: a command whose result decides the case without a
- * model reading anything.
- */
 export interface TreeGrader {
 	readonly kind: "tree";
-	/** The command or inspection that decides the case, exact enough to run. */
 	readonly check: string;
 }
 
-/**
- * A model reading the session's reply. Weaker than a `TreeGrader`, so it carries the reason the tree
- * cannot settle the case (`docs/evidence/grader-blindness.md`).
- */
+/** Weaker than a `TreeGrader`, so it carries the reason the tree cannot settle the case. */
 export interface ReplyGrader {
 	readonly kind: "reply";
-	/** What the grader is given, which is the reply and nothing else. */
 	readonly reads: string;
-	/** Why no command over the tree can decide this case. */
 	readonly whyNotTree: string;
 }
 
-/** One way to decide a case: a command over the tree or a model reading the reply. */
 export type Grader = TreeGrader | ReplyGrader;
 
-/** One case of the `main.md` evaluation: the rule, the scenario, what passes and what fails, and the graders that decide it. */
 export interface RuleCase {
-	/** The codes of `swe-worst-practices.md` and of the dossier that record the failure. */
 	readonly codes: readonly string[];
-	/** The section tag of `agents/main.md` that carries the rule. */
 	readonly section: string;
-	/** The rule, in one sentence. */
 	readonly rule: string;
-	/** What the session is given. */
 	readonly scenario: string;
-	/** The decision a reply has to reach to pass. */
 	readonly passes: string;
-	/** The recorded failure, which is what a reply must not do. */
 	readonly fails: string;
-	/**
-	 * How a run decides the case. A tree grader comes first where one exists, because a model reading
-	 * a reply scores a claim and a command scores the work.
-	 */
+	/** A tree grader comes first, because a model reading a reply scores a claim and a command the work. */
 	readonly graders: readonly Grader[];
 }
 
-/** The cases of the `main.md` evaluation, one per rule under test; the codes of a case name its fixture folder. */
 export const RULE_CASES: readonly RuleCase[] = [
 	{
 		codes: ["W5-13", "W1-8"],
@@ -212,17 +189,13 @@ export const RULE_CASES: readonly RuleCase[] = [
 	},
 ];
 
-/** The arms a run of these cases compares: the shipped prompt against no prompt of ours. */
 export const RULE_CASE_ARMS = ["main.md", "the default body"] as const;
 
-/** The sessions a citable run of every case needs. */
 export const plannedRuns = (cases: readonly RuleCase[] = RULE_CASES): number =>
 	cases.length * RULE_CASE_ARMS.length * EVAL_MIN_RUNS_PER_ARM;
 
-/** An opening section tag at the start of a line, as `main.md` writes one. */
 const SECTION_TAG = /^<([a-z]+)>$/gm;
 
-/** The section tags of a prompt file, in the order the file writes them. */
 export const sectionsOf = (text: string): readonly string[] => {
 	const tags: string[] = [];
 	for (const match of text.matchAll(SECTION_TAG)) {
@@ -234,7 +207,6 @@ export const sectionsOf = (text: string): readonly string[] => {
 	return tags;
 };
 
-/** The cases whose verdict rests on a model reading the reply, with no command behind it. */
 export const replyOnlyCases = (
 	cases: readonly RuleCase[] = RULE_CASES,
 ): readonly string[] =>
@@ -242,7 +214,6 @@ export const replyOnlyCases = (
 		.filter((row) => !row.graders.some((g) => g.kind === "tree"))
 		.map((row) => row.codes.join(", "));
 
-/** The faults of one case's graders, which is where an unreliable verdict enters. */
 const graderFaults = (row: RuleCase, name: string): readonly string[] => {
 	if (row.graders.length === 0) {
 		return [`${name}: the case names no grader, so a run cannot score it`];
@@ -264,10 +235,7 @@ const graderFaults = (row: RuleCase, name: string): readonly string[] => {
 	return faults;
 };
 
-/**
- * The faults of the inventory, one line each, empty when it may ship. A case with an empty field
- * scores nothing, and a case whose section is absent from the file names a rule the file dropped.
- */
+/** A case with an empty field scores nothing; a section the file dropped names a missing rule. */
 export const caseFaults = async (
 	cases: readonly RuleCase[] = RULE_CASES,
 	path = MAIN_AGENT_FILE,

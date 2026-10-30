@@ -28,7 +28,6 @@ const CASE_K: RuleCase = {
 };
 const CASE_Z: RuleCase = { ...CASE_K, codes: ["Z"] };
 
-/** A fixtures folder with the one fixture `K`. */
 const makeRoot = async (): Promise<string> => {
 	const root = await mkdtemp(join(tmpdir(), "evals-cli-"));
 	await mkdir(join(root, "K", "repo"), { recursive: true });

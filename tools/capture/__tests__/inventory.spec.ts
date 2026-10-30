@@ -1,7 +1,3 @@
-// The comparison is pure, so every case here plants a reading rather than spawning `claude`. The
-// three real rows are checked for the arm and settings they name, which is what makes a reading
-// comparable with the recorded figure, and not for their figures, which the capture reads.
-
 import { describe, expect, test } from "bun:test";
 import {
 	SHIPPED_TOTAL,
@@ -13,7 +9,6 @@ import {
 } from "../../../plugins/claudetto/src/deny.ts";
 import { inventoryFaults, rows, VARIANCE_CHARS } from "../inventory.ts";
 
-/** The settings text of the named row, which every row but the baseline carries. */
 const byRow = (name: string): string => {
 	const settings = rows().find((row) => row.name === name)?.settings;
 	if (settings === undefined) {
@@ -131,9 +126,7 @@ describe("the rows the capture reads", () => {
 	});
 
 	test("the two ends of the per-cut identity are both read rows", () => {
-		// `cuts.test.ts` holds `BASELINE_TOTAL - shippedChars() === SHIPPED_TOTAL`, which is sound only
-		// while a reading pins each end. Both ends are rows here, so a drift in the pieces now has to
-		// move one of them.
+		// `BASELINE_TOTAL - shippedChars() === SHIPPED_TOTAL` is sound only while a reading pins each end.
 		const read = new Set(rows().map((row) => row.recorded));
 
 		expect(read.has(BASELINE_TOTAL)).toBe(true);

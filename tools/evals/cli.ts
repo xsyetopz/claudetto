@@ -1,6 +1,5 @@
 #!/usr/bin/env bun
-// Plan mode is the default and costs nothing. A session starts only under `--run`, which is a paid
-// call that the user has to approve.
+// Plan mode is the default and costs nothing; a session starts only under `--run`, a paid call.
 
 import { dirname, join, resolve } from "node:path";
 import { argv, cwd } from "node:process";
@@ -19,7 +18,6 @@ import {
 import { reportLines } from "./report.ts";
 import { PLUGIN_DIR } from "./session.ts";
 
-/** The usage line printed after an argument error, listing every flag the eval command takes. */
 export const USAGE =
 	"usage: bun tools/evals/cli.ts [--run] [--case KEY] [--arm ARM] [--runs N] [--model NAME] [--budget USD]";
 
@@ -34,7 +32,6 @@ interface Options {
 	readonly maxBudgetUsd?: number;
 }
 
-/** What a flag with a value does to the options, or `undefined` when the value is not one it takes. */
 type Patch = (options: Options, value: string) => Options | undefined;
 
 const VALUE_FLAGS: ReadonlyMap<string, Patch> = new Map<string, Patch>([
@@ -58,7 +55,6 @@ const VALUE_FLAGS: ReadonlyMap<string, Patch> = new Map<string, Patch>([
 	],
 ]);
 
-/** The options of `args`, or the reason they cannot be read. */
 export const parseArgs = (
 	args: readonly string[],
 	options: Options = { run: false, request: {} },
@@ -81,7 +77,6 @@ export const parseArgs = (
 		: parseArgs(after, next);
 };
 
-/** The lines of plan mode: each session, the cases without a fixture, and the number of model calls. */
 export const planLines = (plan: Plan): readonly string[] => [
 	...plan.sessions.map(
 		(session) => `session ${session.key} | ${session.arm} | run ${session.run}`,
@@ -106,7 +101,6 @@ const runAll = async (
 	return runAll(deps, rest, [...done, outcome]);
 };
 
-/** The CLI as a function: the exit status, with each output line given to `out`. */
 export const main = async (
 	args: readonly string[],
 	io: {

@@ -1,10 +1,8 @@
-// The table and the counts of a set of outcomes. An `error` is counted apart and left out of the
-// rate, because a run that could not be graded says nothing about the arm.
+// An `error` is counted apart and left out of the rate: a run that was not graded says nothing.
 
 import { EVAL_MIN_RUNS_PER_ARM } from "../limits.ts";
 import type { Outcome } from "./execute.ts";
 
-/** The counts of passes, fails, and errors for one case under one arm. */
 export interface Row {
 	readonly key: string;
 	readonly arm: string;
@@ -13,7 +11,6 @@ export interface Row {
 	readonly error: number;
 }
 
-/** The counts per case and arm, in the order each pair first appears. */
 export const tally = (outcomes: readonly Outcome[]): readonly Row[] => {
 	const rows = new Map<string, Row>();
 	for (const { session, score } of outcomes) {
@@ -30,17 +27,14 @@ export const tally = (outcomes: readonly Outcome[]): readonly Row[] => {
 	return [...rows.values()];
 };
 
-/** Passes over graded runs as a percentage, or `n/a` when no run was graded. */
 export const rateOf = (row: Row): string => {
 	const graded = row.pass + row.fail;
 	return graded === 0 ? "n/a" : `${Math.round((100 * row.pass) / graded)}%`;
 };
 
-/** Whether the row has the runs that a citable arm needs, errors not counted. */
 export const isCitable = (row: Row): boolean =>
 	row.pass + row.fail >= EVAL_MIN_RUNS_PER_ARM;
 
-/** The report as lines: a table, then a total, then the arms too thin to cite. */
 export const reportLines = (
 	outcomes: readonly Outcome[],
 ): readonly string[] => {

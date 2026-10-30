@@ -1,16 +1,8 @@
-// A local fake Messages API, so that a capture run costs nothing and reaches no provider.
-// It listens on the loopback address, keeps every request body it is sent, and answers each one
-// with a short stream that ends the turn. The method is the one `docs/surfaces.md` records under
-// "The Probe, Kept Verbatim"; this is the new tree's own implementation of it, in one process
-// with the tool rather than a second server to start by hand.
-
 import { serve } from "bun";
 
-/** One line of a server-sent-event stream. */
 const sse = (event: string, data: unknown): string =>
 	`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
 
-/** The whole answer to a `POST /v1/messages`: a one-word reply that ends the turn. */
 const ANSWER = [
 	sse("message_start", {
 		type: "message_start",
@@ -43,18 +35,14 @@ const ANSWER = [
 	sse("message_stop", { type: "message_stop" }),
 ].join("");
 
-/** A running fake API server and what it has recorded, so a run can be read without any network call. */
 export interface FakeApi {
-	/** The loopback URL to give Claude Code as `ANTHROPIC_BASE_URL`. */
 	readonly url: string;
-	/** The raw body of each `POST` to the messages route, in the order they arrived. */
 	readonly bodies: string[];
 	/** The requests to any other route, which a reading must not depend on. */
 	readonly others: string[];
 	stop: () => Promise<void>;
 }
 
-/** Starts the fake API on a free loopback port. */
 export const startFakeApi = (): FakeApi => {
 	const bodies: string[] = [];
 	const others: string[] = [];

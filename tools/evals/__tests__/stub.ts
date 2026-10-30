@@ -1,5 +1,3 @@
-// A command runner that starts nothing: it records each call and answers from a function.
-
 import type {
 	CommandOptions,
 	CommandResult,

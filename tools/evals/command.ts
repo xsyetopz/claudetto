@@ -1,9 +1,7 @@
-// The one place that starts a process. Every other module takes a `CommandRunner` as a parameter,
-// so a test drives each of them with a stub and nothing under test can reach a model.
+// The one place that starts a process; other modules take a `CommandRunner` so tests can stub it.
 
 import { spawn } from "bun";
 
-/** What a finished command left behind: its exit status, its output streams, and whether the timeout killed it. */
 export interface CommandResult {
 	/** The exit status, or `undefined` when the process never exited with one (a kill, a spawn failure). */
 	readonly code: number | undefined;
@@ -12,15 +10,12 @@ export interface CommandResult {
 	readonly timedOut: boolean;
 }
 
-/** Where and how a command runs: its working folder, extra environment variables, and an optional timeout in milliseconds. */
 export interface CommandOptions {
 	readonly cwd: string;
-	/** Added to the environment of this process for the one command. */
 	readonly env?: Readonly<Record<string, string>>;
 	readonly timeoutMs?: number;
 }
 
-/** Runs `argv` as one process and resolves with its result; a test passes a stub so no real process starts. */
 export type CommandRunner = (
 	argv: readonly string[],
 	options: CommandOptions,
