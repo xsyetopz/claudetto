@@ -42,7 +42,7 @@ describe("the shipped snippet", () => {
 	});
 });
 
-describe("every list starts with $defaults", () => {
+describe("every list keeps $defaults", () => {
 	for (const name of AUTO_MODE_LISTS) {
 		test(`the shipped ${name} list starts with it`, () => {
 			expect(autoModeSnippet().autoMode[name][0]).toBe(DEFAULTS);
@@ -57,20 +57,16 @@ describe("every list starts with $defaults", () => {
 		});
 	}
 
-	test("a list that holds it later but not first is named", () => {
+	test("a list that holds it after a rule keeps the built-ins and passes", () => {
 		const moved = withAutoMode({ soft_deny: ["Our rule", DEFAULTS] });
 
-		expect(autoModeFaults(moved)).toEqual([
-			{ rule: "defaults-dropped", where: "soft_deny" },
-		]);
+		expect(autoModeFaults(moved)).toEqual([]);
 	});
 
-	test("an empty list is named", () => {
+	test("an empty list counts as unset and passes", () => {
 		const empty = withAutoMode({ environment: [] });
 
-		expect(autoModeFaults(empty)).toEqual([
-			{ rule: "defaults-dropped", where: "environment" },
-		]);
+		expect(autoModeFaults(empty)).toEqual([]);
 	});
 
 	test("a list with $defaults first and rules after it passes", () => {

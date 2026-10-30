@@ -133,8 +133,12 @@ Command: `just capture --classifier --arm plain --settings FILE`, one run per ro
 | All four replaced, rule `"x"` | one rule each | `58,439` | `81,576` |
 | Haiku | `CLAUDE_CODE_AUTO_MODE_MODEL=claude-haiku-5-5` | `140,239` | `-224` |
 | Haiku, all four `"x"` | both of the above | `58,663` | `81,352` |
+| `$defaults` after a rule | `soft_deny` `["Run tests.", "$defaults"]` | `140,028` | `-13` |
+| `$defaults` before a rule | `soft_deny` `["$defaults", "Run tests."]` | `140,028` | `-13` |
+| claudetto suite | the lists of `suiteSnippet` in `plugins/claudetto/src/automode/rules.ts` | `66,362` | `73,653` |
 
-- An empty list counts as unset and keeps the built-in rules.
+- An empty list counts as unset and keeps the built-in rules. `$defaults` keeps them wherever it sits in a list.
+- The claudetto suite covers each built-in rule with 18 broader rules in `4,830` characters. Its rest is the `environment` facts that setup already writes.
 - The four cuts add up exactly to the all-four cut, so each list is one block of text with no shared parts.
 - About `58,400` characters is the floor that settings can reach. The rest is the frame (threat model, user intent rule, evaluation rules, process), and no setting or env name of `2.1.314` changes it. A shorter request needs a classifier prompt of our own.
 - Each cut removes block rules, and the default rule is "allowed". A `soft_deny` of one rule lets through every action that the 72 built-in soft blocks stopped, such as `git push --force`, a production deploy, or printing a credential. These readings are sizes only. Whether a rung still blocks what the built-in blocks is unmeasured.
