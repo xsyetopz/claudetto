@@ -120,9 +120,9 @@ After each update, do the steps in the "Update" section of the README.
   The four manifests that carry the version are named instead, and the merge into `main` is the release (commit `c74e4dc6`).
 - About 20 pages under `docs/keep/` cited the pre-slice tree without the `archive/` prefix that their own other lines use, such as the `TOOL_BASH` source in `docs/keep/tools/Bash.txt`, which now reads `archive/plugins/claudetto/modules/session/prompt/prompts.ts:70`.
   78 distinct paths are prefixed, each one checked to be absent from the tree and present under `archive/` at the cited line.
-  `tools/citations.ts` reads a backticked span only, and these sat in bare parentheses, so no check reported them.
+  `tools/citations.ts`, which the Removed section of this release deletes, read a backticked span only, and these sat in bare parentheses, so no check reported them.
 - The `[Unreleased]` entry on the gated keys cited `modules/gate/domain/gate.ts:40`, and `GATED_KEYS` is at `plugins/claudetto/src/gate/gate.ts:55`.
-  `tools/citations.ts` skips a path whose first segment is not an entry of the repo root, so a repo path written without its prefix was never resolved.
+  `tools/citations.ts` skipped a path whose first segment is not an entry of the repo root, so a repo path written without its prefix was never resolved.
 - A `head` or `tail` of two files, and any reader of a glob, are no longer denied as the wrong tool (task 13.2).
   The rule already exempted a `cat` of more than one file, because that "does what `Read` cannot", and `Read` likewise takes one literal path, so the exemption now covers the three programs and an operand the gate cannot resolve to one path.
   Over the 49 real denials of 2026-10-27 the denying parts fall from 62 to 53, and 6 of the 49 commands stop being denied (`docs/early-stops.md`).
@@ -136,7 +136,7 @@ After each update, do the steps in the "Update" section of the README.
   `tools/thin-claims.ts` is gone and `just validate` does not run it, the nine-heading detection is `wroteOwn` and not a read of the file, `auto` resolves to `built-in` and not to `handover`, and `OPTION_DESCRIPTION` does not exist.
   The slice tree carries no dotted rule names at all, so `jev.ask`, `jev.decide`, and `jev.decide-register` named a registry of the old module tree, and the live names are cited instead.
   Five entries are removed with the code they described: the two on the heading title-caser, the one on the Table A total of `docs/prompt/footprint.md`, which that page no longer carries, the one on the lab cases of `plugins/claudetto/tests/tool.test.ts`, which lives only under `archive/`, and the one on the wording of the `compaction` option, which named `plugins/claudetto/src/compaction/compaction.ts:33` in a deleted file and `plugin.json:31`, a line that is now the `cheapSummary` description, while the Removed section already records that the whole option is gone.
-  No check reads a backticked identifier, so `tools/citations.ts` reported none of these: it resolves a `path:line` span only.
+  No check read a backticked identifier, so `tools/citations.ts` reported none of these: it resolved a `path:line` span only, and this release deletes it.
 - The report of `/claudetto:setup` no longer opens with a plan tier, which was always the wrong one.
   It printed `Tier: claude_pro.` to every user, because a hooks module cannot reach `.claude.json` to read the login and the command composes from `SNIPPET_ROW`, whichever row that constant names.
   `tierReport` now takes the tier as `string | undefined` and prints no line for `undefined`, which is what the hook passes; `just setup` reads the login itself and still prints its own tier.
@@ -199,7 +199,7 @@ After each update, do the steps in the "Update" section of the README.
 - `CONTRIBUTING.md` told a contributor to add an entry under `[Unreleased]`, and `.github/pull_request_template.md` asked for one, while this file has no such section between releases.
   Both now say to open the section above the newest release.
 - Eight citations in six pages under `docs/keep/skills/` named a line of this file that holds something else, which the collapse above surfaced.
-  The numbers had drifted as entries were added at the top, and `tools/citations.ts` reads whether a cited line exists and not whether it supports the sentence.
+  The numbers had drifted as entries were added at the top, and `tools/citations.ts` read whether a cited line exists and not whether it supports the sentence.
   Four of the eight also carried a claim the tree does not support: `commit.txt` and `commit-push-pr.txt` said setup installs a `commit-msg` hook and a `pre-push` hook of git, `init.txt` and `memory-types.txt` said `/claudetto:setup` writes a `CLAUDE.md`, and `claude-in-chrome.txt` said the repo ships its own browser plugin.
   Setup merges a settings snippet and installs no git hook, and the repo ships `claudetto` and `claudetto-you-should-know`.
   Each citation now names a file of this tree or of `archive/`, and the `drop` recommendation of the two commit pages rests on `docs/surfaces.md:3`, because the hook it named is not there.

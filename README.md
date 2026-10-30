@@ -96,6 +96,10 @@ claudetto is a marketplace with one core plugin and one add-on.
 | `claudetto` | Everything above. |
 | `claudetto-you-should-know` | One short note above the prompt when a side check finds something about the work that the person very likely does not understand. It ships off. |
 
+Turning the add-on on with its `enabled` option makes one model call every sixth step of a turn, on `claude-haiku-5-5` at `medium` effort.
+No price per token of that model sits in any file of this repository, so this page states the bounds of the call instead of a figure in money: a fixed instruction block sent with `cache: true`, a digest of at most 8,000 characters built by the plugin rather than the session window, and a reply bounded at 512 tokens.
+Its `model` and `effort` options move the first two of those.
+
 ## Configuration
 
 The core plugin's options are set in the plugin dialog of Claude Code, and `/config` lists them.
